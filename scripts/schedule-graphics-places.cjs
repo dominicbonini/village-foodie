@@ -49,7 +49,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 // language-phase-1d-gb-moved.json — the same overlay every frozen-words harness uses — so "no word changed"
 // still means the move changed no word; the fixes themselves are proven and named by language-phase-1d.
 const GB_MSG = JSON.parse(read('messages/en-GB.json'))
-const GB_MOVED = JSON.parse(read('scripts/fixtures/language-phase-1d-gb-moved.json'))
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): Part 2's as-moved overlay too (scripts/fixtures/language-phase-1d2-gb-moved.json)
+// — the same pair of overlays scripts/_lp2-frozen.cjs applies; where a key is in both, Part 1's (older) text wins.
+const GB_MOVED = { ...JSON.parse(read('scripts/fixtures/language-phase-1d2-gb-moved.json')), ...JSON.parse(read('scripts/fixtures/language-phase-1d-gb-moved.json')) }
 const msgAt = (o, key) => key.split('.').reduce((x, k) => (x && typeof x === 'object' ? x[k] : undefined), o)
 const gbWords = nsKey => (nsKey in GB_MOVED ? GB_MOVED[nsKey] : msgAt(GB_MSG, nsKey))
 /** `src` with every plain `x('key')` call of a translator declared in it (`const x = useT('ns')`, or one passed in
@@ -61,7 +63,8 @@ function withGbWords(src, bound = {}) {
   const chunks = src.split(/\n(?=(?:export )?(?:default )?function )/)
   return chunks.map(chunk => {
     const tr = { ...bound }
-    for (const m of chunk.matchAll(/const (\w+) = useT\('(\w+)'\)/g)) tr[m[1]] = m[2]
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): a namespace may be a dotted sub-tree (`useT('serviceSettings.labels')`).
+    for (const m of chunk.matchAll(/const (\w+) = useT\('([\w.]+)'\)/g)) tr[m[1]] = m[2]
     const names = Object.keys(tr)
     if (!names.length) return chunk
     chunk = withGbRichAndPlurals(chunk, tr)
@@ -73,6 +76,35 @@ function withGbWords(src, bound = {}) {
       if (open && close) return words                                 // {t('k')} → a text node
       const lit = words.includes("'") ? JSON.stringify(words) : `'${words}'`
       return `${eq || ''}${open || ''}${lit}${close || ''}`
+    })
+  }).join('\n')
+}
+/** ⚠️ RE-PINNED (Language Phase 1d Part 2): `withGbWords` leaves a call WITH VALUES as code. For a claim about a line
+ *  whose words moved with their values (`{t('upgradeToMax', { price: px(maxMo) })}`), this draws the call as the code it
+ *  replaced: the en-GB words AS MOVED with each simple `{name}` placeholder swapped for its value's expression —
+ *  `{x}` in JSX text (`Upgrade to Max — {px(maxMo)}`), `${x}` in a template literal elsewhere. A placeholder with
+ *  plural / select syntax, or a key the catalogue lacks, leaves the call as code (so a wrong key still fails). */
+function withGbValues(src) {
+  const chunks = src.split(/\n(?=(?:export )?(?:default )?function )/)
+  return chunks.map(chunk => {
+    const tr = {}
+    for (const m of chunk.matchAll(/const (\w+) = useT\('([\w.]+)'\)/g)) tr[m[1]] = m[2]
+    const names = Object.keys(tr)
+    if (!names.length) return chunk
+    const re = new RegExp(`(\\{)?\\b(${names.join('|')})\\('([\\w.]+)', \\{ ([^{}]*(?:\\([^()]*(?:\\([^()]*\\))?[^()]*\\)[^{}]*)*) \\}\\)(\\})?`, 'g')
+    return chunk.replace(re, (all, open, name, key, obj, close) => {
+      const words = gbWords(`${tr[name]}.${key}`)
+      if (typeof words !== 'string' || /\{\w+, (plural|select)/.test(words)) return all
+      const vals = {}
+      let depth = 0, cur = ''
+      for (const c of obj + ',') {
+        if (c === '(' || c === '[') depth++
+        if (c === ')' || c === ']') depth--
+        if (c === ',' && depth === 0) { const m = /^\s*(\w+)\s*:\s*([\s\S]+?)\s*$/.exec(cur); if (m) vals[m[1]] = m[2]; else if (cur.trim()) vals[cur.trim()] = cur.trim(); cur = '' } else cur += c
+      }
+      const jsx = open && close
+      const text = words.replace(/\{(\w+)\}/g, (h, n) => (n in vals ? (jsx ? `{${vals[n]}}` : `\${${vals[n]}}`) : h))
+      return jsx ? text : `\`${text}\``
     })
   }).join('\n')
 }
@@ -1276,7 +1308,10 @@ function runWiringSuite(lib) {
   })())
   t('🔴 the route imports the merge rules rather than re-implementing them',
     /mergeRefusal, mergePatch, resolvePlaceMerge, placesById/.test(R)
-    && /const refusal = mergeRefusal\(\{ fromId, intoId, places: all \}\)/.test(R))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the route still CALLS the shared rule with the same arguments; it now
+    // branches on its answer (`if (mergeRefusal({…}))`) and words the refusal as a code picked by the same ids, instead
+    // of keeping the sentence in `const refusal` (rule 7). The shared module still decides; nothing is re-implemented.
+    && /(const refusal = |if \()mergeRefusal\(\{ fromId, intoId, places: all \}\)/.test(R))
   t('🔴 a merge writes ONE row — the merged place — and no event',
     (() => {
       const blk = R.slice(R.indexOf("action === 'sg_merge_place'"), R.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
@@ -1502,10 +1537,11 @@ function runWiringSuite(lib) {
       && /stops\.filter\(s => measure\(s\.tabIds\) !== null\)/.test(read('components/manage/Walkthrough.tsx'))
   })())
   t('⚠️ neither retired tab carried a badge, so nothing moved with them',
-    /t\.id === 'schedule' && pendingApprovalCount > 0/.test(P)
-    && /t\.id === 'payments' && stripeActionRequired/.test(P)
-    && /t\.id === 'menu' && allergensUnverified/.test(P)
-    && !/t\.id === 'deals'/.test(P) && !/t\.id === 'modifiers'/.test(P))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the tab bar's loop variable is `tab` now (`t` is the shell's translator).
+    /\b(t|tab)\.id === 'schedule' && pendingApprovalCount > 0/.test(P)
+    && /\b(t|tab)\.id === 'payments' && stripeActionRequired/.test(P)
+    && /\b(t|tab)\.id === 'menu' && allergensUnverified/.test(P)
+    && !/\b(t|tab)\.id === 'deals'/.test(P) && !/\b(t|tab)\.id === 'modifiers'/.test(P))
   /* ⚠️ THE VALUE SETS, NOT THE ORDER THEY ARE WRITTEN IN (October 2026). This used to match the
    * literal `v === 'items' || v === 'extras' || v === 'deals'`, which made the PILL ORDER load-bearing
    * for a check about COLLISIONS — so moving Kitchen capacity to second broke an assertion that has
@@ -1768,6 +1804,13 @@ function runWiringSuite(lib) {
      * standing rule is to run only the harnesses a build touches, so a copy change made two prompts
      * ago arrived here now. Worth recording: the rule trades latency for time, and this is the latency. */
     allowed.add('Following your truck setting.')
+    /* ⚠️ RE-PINNED (Language Phase 1d Part 2): a text node that sat ALONE ON ITS LINE at 826471a (a multi-line JSX text,
+     * which `strings` cannot see) and is `{t('key')}` now — resolved to its en-GB words on one line, so it shows up as
+     * "added". Allowed ONLY when that very text is a whole line of the page at 826471a (the words were already on this
+     * screen, unchanged): "Check your payment method", "Meta's pricing", "See Meta's pricing" (Auto-replies, WADA). */
+    const LINES_826 = new Set(require('child_process').execFileSync('git', ['show', '826471a:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+      .split('\n').map(l => l.trim().replace(/&apos;/g, "'")))
+    for (const x of added) if (LINES_826.has(x)) allowed.add(x)
     /* ⚠️ THE THREE REMOVALS THAT ARE ALLOWED, AND ONLY THOSE THREE: a card title that said exactly
      * what its section's new `<h2>` says. The words did not leave Settings — they moved up one level.
      * Any OTHER removal is a wording change and fails. */
@@ -1795,7 +1838,9 @@ function runWiringSuite(lib) {
      * to — the filter below reads that file, so a string that vanished from both still fails. */
     const movedToPayments = (() => {
       // ⚠️ RE-PINNED (Language Phase 1d): `&apos;` read as `'`, as `strings` now reads it (above).
-      const src = read('components/manage/TakingPaymentPanel.tsx').replace(/&apos;/g, "'")
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the panel's words are messages now (takingPayment, completionSettings,
+      // serviceSettings.labels, manageSettings.vans) — read with its `t…('key')` calls resolved to the en-GB words AS MOVED.
+      const src = withGbWords(read('components/manage/TakingPaymentPanel.tsx')).replace(/&apos;/g, "'")
       return new Set([...before].filter(x => src.includes(x)))
     })()
     /* ⚠️ RE-PINNED (Language Phase 1d): the seven "N days before" options are ONE plural message drawn in a loop —
@@ -2204,7 +2249,10 @@ function runWiringSuite(lib) {
         reason: "Billing's trial column names the Pay at Hatch row by its id, not its display name" },
       { was: "const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'", now: "const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : 'Unknown'", nowIn: 'app/manage/[token]/page.tsx',
         reason: 'the stored walk-up name is compared through one helper (lib/walk-up.ts)' },
-      { was: "const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'", now: "const customerLabel = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : '—'", nowIn: 'app/manage/[token]/page.tsx',
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): REPORTS replaced the display sentinel '—' with null (the render compared
+      // the label with '—' — a display text used as a key, rule 6); the line still names the helper, and the rendered
+      // report is byte-identical (language-phase-1d2, reports area, GB F === BEFORE).
+      { was: "const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'", now: "const customerLabel = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : null", nowIn: 'app/manage/[token]/page.tsx',
         reason: 'the stored walk-up name is compared through one helper (lib/walk-up.ts)' },
       { was: "const cat = itemCategories[item.name] || 'Other'", now: 'const cat = itemCategories[item.name] || OTHER_REVENUE_BUCKET', nowIn: 'app/manage/[token]/page.tsx',
         reason: "the revenue breakdown's catch-all line is one constant" },
@@ -2749,18 +2797,27 @@ function runWiringSuite(lib) {
         reason: 'raw literals removed',
         nowIn: 'app/manage/[token]/page.tsx',
         now: '{px(plan === \'pro\' ? proMo : maxMo)} per truck · renews automatically' },
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
+      // (manageBilling.upgradeModal.tagline "{price} — {description}", mailBody "…({price})…"), the price still the
+      // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
       { was: '? `${px(\'£49/month\')} — High-volume operations & festivals`',
         reason: 'raw literal removed',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: '? `${px(maxMonth)} — High-volume operations & festivals`' },
+        now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: PLAN_DESCRIPTIONS[upgradeTarget]" },
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
+      // (manageBilling.upgradeModal.tagline "{price} — {description}", mailBody "…({price})…"), the price still the
+      // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
       { was: ': `${px(\'£29/month\')} — Busy trucks scaling pre-orders`',
         reason: 'raw literal removed',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: ': `${px(proMonth)} — Busy trucks scaling pre-orders`' },
+        now: "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: PLAN_DESCRIPTIONS[upgradeTarget]" },
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the upgrade modal's tagline / mail body are ONE message each now
+      // (manageBilling.upgradeModal.tagline "{price} — {description}", mailBody "…({price})…"), the price still the
+      // settings value through px() — the claim (no raw £ literal; the price from settings) is asserted on that call.
       { was: '`Max (${px(\'£49/mo\')})` : `Pro (${px(\'£29/mo\')})`',
         reason: 'the mailto body\'s two literals removed',
         nowIn: 'app/manage/[token]/page.tsx',
-        now: '`Max (${px(maxMo)})` : `Pro (${px(proMo)})`' },
+        now: "price: px(upgradeTarget === 'max' ? maxMo : proMo) })" },
       /* Phase 2A — Reports' item rows now carry their ORDER's money format (its own currency). */
       { was: 'channel?: string; name: string; qty: number; total: number | null }',
         reason: 'money sweep: each Reports row carries its order\'s format',
@@ -2811,6 +2868,96 @@ function runWiringSuite(lib) {
         was: JSON.stringify(gbWords(`manageScheduleVerify.${code}`)), nowIn: 'messages/en-GB.json', now: `"${code}": ${JSON.stringify(msgAt(GB_MSG, `manageScheduleVerify.${code}`))}`,
         reason: `the "${code}" verify message is manageScheduleVerify.${code}` })),
     ]
+    /* ══ ⚠️ RE-PINNED (Language Phase 1d Part 2): PART 2'S OWN CODE EDITS — lines it changed in a hunk that reads no
+     * message (a translator kept in a ref, a code instead of a sentence, a renamed loop variable), each named with its NEW
+     * form, as every build above. Each is proven elsewhere: the rendered shell / Billing / Reports / WhatsApp views are
+     * byte-identical in GB (scripts/language-phase-1d2.cjs, F === BEFORE except the named changes). ══ */
+    const PAGE_F = 'app/manage/[token]/page.tsx'
+    movedEdits.push(
+      { was: 'setupReducer, INITIAL_SETUP_STATE, setupButtonLabel, setupButtonDisabled,', nowIn: PAGE_F, now: 'setupReducer, INITIAL_SETUP_STATE, setupButtonLabelKey, setupButtonDisabled, type SetupNotice,',
+        reason: 'the setup button names a KEY (manageWhatsApp.setup.button.*); notices are SetupNotice codes' },
+      { was: "showToast(e.message || 'Failed to load', 'error')", nowIn: PAGE_F, now: "showToast(e.message || tRef.current('loadFailed'), 'error')", reason: "the shell's load-failure fallback is manageShell.loadFailed" },
+      { was: "if (verify === 'ok') showToast('Email confirmed — thank you.', 'success')", nowIn: PAGE_F, now: "setVerifyNotice(verify === 'ok' ? 'ok' : verify === 'expired' ? 'expired' : 'invalid')",
+        reason: 'the ?verify= result is held as a CODE and worded once the truck (and its locale) has loaded (SHELL named change 2; same words)' },
+      { was: "else if (verify === 'expired') showToast('That confirmation link has expired.", nowIn: PAGE_F, now: "setVerifyNotice(verify === 'ok' ? 'ok' : verify === 'expired' ? 'expired' : 'invalid')", reason: 'the same code' },
+      { was: "else showToast('That confirmation link didn’t work.", nowIn: PAGE_F, now: "setVerifyNotice(verify === 'ok' ? 'ok' : verify === 'expired' ? 'expired' : 'invalid')", reason: 'the same code' },
+      { was: "if (!res.ok) throw new Error(data.error || 'Failed')", nowIn: PAGE_F, now: "if (!res.ok) throw new Error(data.error || tRef.current('requestFailed'))", reason: "the api helper's fallback is manageShell.requestFailed" },
+      { was: 'const tabs = allTabs.filter(t => {', nowIn: PAGE_F, now: 'const tabs = allTabs.filter(tab => {', reason: 'the tab loop variable is `tab` (`t` is the translator)' },
+      { was: "if (t.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'", nowIn: PAGE_F, now: "if (tab.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'", reason: 'the same filter, `tab`' },
+      { was: 'return t.roles.includes(userRole)', nowIn: PAGE_F, now: 'return tab.roles.includes(userRole)', reason: 'the same filter, `tab`' },
+      { exact: true, was: '{tabs.map(t => (', nowIn: PAGE_F, now: '{tabs.map(tab => (', reason: 'the tab bar, `tab`' },
+      { was: '<button key={t.id} data-tab-id={t.id} onClick={() => setActiveTab(t.id)}', nowIn: PAGE_F, now: '<button key={tab.id} data-tab-id={tab.id} onClick={() => setActiveTab(tab.id)}', reason: 'the tab bar, `tab`' },
+      { was: "className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ?", nowIn: PAGE_F,
+        now: "className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === tab.id ?", reason: 'the tab bar, `tab`' },
+      { exact: true, was: '<span>{t.icon}</span>', nowIn: PAGE_F, now: '<span>{tab.icon}</span>', reason: 'the tab bar, `tab`' },
+      { was: "{t.id === 'schedule' && pendingApprovalCount > 0 ? (", nowIn: PAGE_F, now: "{tab.id === 'schedule' && pendingApprovalCount > 0 ? (", reason: 'the tab bar, `tab`' },
+      { exact: true, was: 't.label', nowIn: PAGE_F, now: 'tab.label', reason: 'the tab bar, `tab`' },
+      { was: "onNotice: (n: { tone: 'ok' | 'warn' | 'error'; text: string } | null) => void", nowIn: PAGE_F, now: 'onNotice: (n: SetupNotice | null) => void', reason: 'a notice is { tone, code? , text? } (lib/whatsapp/setup-machine.ts)' },
+      { was: "dispatch({ type: 'sdk_failed', message: 'WhatsApp setup is not available in this environment.' })", nowIn: PAGE_F, now: "dispatch({ type: 'sdk_failed', code: 'sdkUnavailable' })", reason: 'a code; the words are manageWhatsApp.notice.sdkUnavailable' },
+      { was: ".catch((e: Error) => { if (!alive) return; dispatch({ type: 'sdk_failed', message: e.message }) })", nowIn: PAGE_F, now: "dispatch(e.name === SDK_LOAD_ERROR ? { type: 'sdk_failed', code: 'sdkBlocked' } : { type: 'sdk_failed', message: e.message })",
+        reason: 'the blocked-script failure is a code (its sentence was thrown by lib/whatsapp/embedded-signup.ts); any other error passes through' },
+      { was: "dispatch({ type: 'submit_finished', notice: { tone: 'error', text: json?.error || 'Setup could not be completed. Nothing was changed.' } })", nowIn: PAGE_F,
+        now: "dispatch({ type: 'submit_finished', notice: json?.error ? { tone: 'error', text: json.error } : { tone: 'error', code: 'setupFailed' } })", reason: "the route's own words pass through; the fallback is a code" },
+      { was: "dispatch({ type: 'submit_finished', notice: { tone: json?.state === 'ready' ? 'ok' : 'warn', text: json?.message || 'Setup finished.' } })", nowIn: PAGE_F,
+        now: "dispatch({ type: 'submit_finished', notice: json?.message ? { tone, text: json.message } : { tone, code: 'setupFinished' } })", reason: 'the same rule' },
+      { was: "const text = e instanceof Error && e.message ? e.message : 'Setup could not be completed. Nothing was changed.'", nowIn: PAGE_F,
+        now: "dispatch({ type: 'submit_finished', notice: e instanceof Error && e.message ? { tone: 'error', text: e.message } : { tone: 'error', code: 'setupFailed' } })", reason: 'the same rule' },
+      { was: "dispatch({ type: 'submit_finished', notice: { tone: 'error', text } })", nowIn: PAGE_F,
+        now: "dispatch({ type: 'submit_finished', notice: e instanceof Error && e.message ? { tone: 'error', text: e.message } : { tone: 'error', code: 'setupFailed' } })", reason: 'folded into the line above' },
+      { was: "dispatch({ type: 'window_error', attempt, message: 'Meta reported a problem during setup.", nowIn: PAGE_F, now: "dispatch({ type: 'window_error', attempt, code: 'metaError' })", reason: 'a code; manageWhatsApp.notice.metaError' },
+      { was: "? { tone: 'warn', text: 'WhatsApp is disconnected. We couldn’t reach Meta to remove access.", nowIn: PAGE_F, now: "? { tone: 'warn', code: 'disconnectedUnreachable' }", reason: 'a code; manageWhatsApp.notice.disconnectedUnreachable' },
+      { was: ": { tone: 'ok', text: 'WhatsApp is disconnected. Auto-replies have stopped.' })", nowIn: PAGE_F, now: "? { tone: 'warn', code: 'disconnectedUnreachable' }", reason: 'its other branch, a code (manageWhatsApp.notice.disconnected)' },
+      { was: "const [setupNotice, setSetupNotice] = useState<{ tone: 'ok' | 'warn' | 'error'; text: string } | null>(null)", nowIn: PAGE_F, now: 'const [setupNotice, setSetupNotice] = useState<SetupNotice | null>(null)', reason: 'the SetupNotice shape' },
+      { exact: true, was: 'account. {', nowIn: 'messages/en-GB.json', now: '"emailAt"', reason: "the Auto-replies price note's sentence (its comment-split JSX) is one manageWhatsApp message" },
+      { was: '}`}>{p}</p>', nowIn: PAGE_F, now: '{PLAN_META[p].name}</p>', reason: "Billing's plan column prints the plan's NAME (named change 1d2-billing-plan-header)" },
+      { exact: true, was: '}, [orders, reportData])', nowIn: PAGE_F, now: '}, [orders, reportData, t])', reason: "the report memo reads the Reports translator" },
+      { was: '{vanFilterLabel(vans, vanFilter)}', nowIn: PAGE_F, now: '{vanFilterLabel(vans, vanFilter, reportCountry.locale)}', reason: "the scope chip in the truck's locale (named US change 1d2-us-reports-van-label)" },
+      { was: "{customerLabel !== '—' && <span className=\"text-slate-600\">{customerLabel}</span>}", nowIn: PAGE_F, now: '{customerLabel && <span className="text-slate-600">{customerLabel}</span>}', reason: "the label is null rather than the display sentinel '—' (rule 6); the rendered report is byte-identical" },
+    )
+    /* ══ ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md) ══════════════════════
+     * Manage › Schedule's pending-approval card (renderEvent): the type chooser moved below the main row, the
+     * desktop-only compact Approve / Edit / Reject block was DELETED (the phone row is now the one row at every width),
+     * and the two location boxes are hidden on a private event. Six lines of the 719ac91 page are gone because of it;
+     * each is named here and NOTHING ELSE is excused:
+     *   • EDITED (2) — the guessed-location and no-location conditions gained `&& !privateNow`: movedEdits, exact, with
+     *     the new form checked present below (the usual companion);
+     *   • REMOVED (4) — the desktop block's own lines: its `{pending && (` guard, its `hidden sm:flex` wrapper, its
+     *     compact Approve and Reject buttons (its Edit line is not reported lost — an identical line survives
+     *     elsewhere). A removal is not a move, so they are not movedEdits: PENDING_CARD_REMOVED, consumed ONE EXCUSE PER
+     *     LINE (a multiset — a second lost copy of any of them is still a loss), with a companion check below that the
+     *     block really is gone and the one action row really is there. The rendered card is proven by
+     *     scripts/pending-card-render.cjs and by the language harnesses' `pending-card-layout` proof. */
+    movedEdits.push(
+      { exact: true, was: "{event.status === 'unconfirmed' && event.source === 'scraper' && event.venue_match_confidence === 'low' && (", nowIn: PAGE_F,
+        now: "{event.status === 'unconfirmed' && event.source === 'scraper' && event.venue_match_confidence === 'low' && !privateNow && (",
+        reason: 'pending-card fix: the guessed-location box is hidden on a private event (it needs no location)' },
+      { exact: true, was: "{event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && (", nowIn: PAGE_F,
+        now: "{event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && !privateNow && (",
+        reason: 'pending-card fix: the no-location box is hidden on a private event' },
+    )
+    const PENDING_CARD_REMOVED = new Map([
+      '{pending && (',
+      '<div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 self-start">',
+      "<button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className=\"text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed\">Approve</button>",
+      '<button onClick={() => handleRejectScrapedEvent(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">Reject</button>',
+    ].map(l => [l, 1]))
+    {
+      // the companion: the desktop block is gone from the page, exactly one `{pending && (` guard left it (826471a had
+      // two), and the one action row stands in its place.
+      const raw = read(PAGE_F)
+      const guards = src => meaningful(blockStrip(src)).filter(l => l === '{pending && (').length
+      const at826 = require('child_process').execFileSync('git', ['show', '826471a:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+      const blockGone = !raw.includes('hidden sm:flex items-center gap-1.5 flex-shrink-0 self-start')
+        // the compact Approve (its class + its word) and Reject (its handler + its class); the operator-event Confirm and
+        // the cancel button keep classes like these, so the lines are named by what only the removed ones had
+        && !raw.includes('px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS(\'card.approve\')}')
+        && !raw.includes('handleRejectScrapedEvent(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5')
+      const row = raw.includes('<div className="mt-3" data-pending-actions>') && raw.includes('<div className="flex gap-2 sm:justify-end">')
+      if (!blockGone || !row || guards(raw) !== guards(at826) - 1) {
+        console.log(`      ⛔ THE PENDING-CARD FIX IS CLAIMED ABOVE BUT ${!blockGone ? 'THE DESKTOP BLOCK IS STILL IN THE PAGE' : !row ? 'THE ONE ACTION ROW IS NOT THERE' : `THE {pending && ( GUARDS ARE ${guards(raw)}, NOT ${guards(at826) - 1}`}`)
+        return false
+      }
+    }
     /* ⚠️ RE-PINNED (Language Phase 1d): CLAIMS WHOSE NEW FORM PHASE 1d REWROTE. Each entry above still names the line it
      * replaced; its `now` moved on with 1d's word move, so the claim is re-pointed to the form that stands today. */
     const P1D_NOW = {
@@ -2910,6 +3057,8 @@ function runWiringSuite(lib) {
        * would be real code and is not matched by anything else here, but nothing in this file has one,
        * and widening this to "anything brace-like" is how a guard stops guarding. */
       if (l === '{}') return false
+      // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026): the desktop block's four lines — see PENDING_CARD_REMOVED; one excuse each.
+      if ((PENDING_CARD_REMOVED.get(l) || 0) > 0) { PENDING_CARD_REMOVED.set(l, PENDING_CARD_REMOVED.get(l) - 1); return false }
       /* ⚠️ PHASE 2A — THE MONEY SWEEP (10 October 2026). Every line that typed a £ (or called the private
        * `fmtGBP`) left, and its twin through lib/money-format arrived, in the order's or the truck's
        * currency. Accounted, not waived: below, the page must hold NO hand-typed £ and no `fmtGBP` in
@@ -2929,7 +3078,9 @@ function runWiringSuite(lib) {
         'body: JSON.stringify({ venueName, town, postcode }),', 'editingEvent.postcode'].includes(l)) return false
       if (allowed.includes(l)) return false
       if (movedTo.has(norm(l))) return false
-      if (movedEdits.some(m => l.includes(m.was))) return false
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): an entry marked `exact` excuses only a lost line that IS its `was` (a short
+      // line such as `t.label` would otherwise excuse every lost line containing it).
+      if (movedEdits.some(m => (m.exact ? l === m.was : l.includes(m.was)))) return false
       // the two pill rows and their button classes, replaced by the shared bar
       if (/rounded-full text-sm font-bold whitespace-nowrap transition-colors/.test(l)) return false
       if (/role="tablist" aria-label="(Menu|Schedule) sections"/.test(l)) return false
@@ -2949,8 +3100,13 @@ function runWiringSuite(lib) {
     /* 🔴 AND HERE IS WHERE THE LIST ABOVE PAYS FOR ITSELF. An entry excuses a lost line only while
      * its replacement exists. A typo, a revert or a later rename turns the excuse back into a
      * failure — which is the difference between a changelog and a check. */
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): a claimed replacement may now read its words from messages (the Reports
+    // CSV headers are `t('csv.subtotal')` …), so it is looked for in the file as written OR with its `t('key')` calls
+    // resolved to the en-GB words as moved (`withGbWords`) — the same line, the same words.
+    const nowSrc = new Map()
+    const inFile = f => { if (!nowSrc.has(f)) { const raw = read(f); nowSrc.set(f, raw + '\n' + withGbWords(raw) + '\n' + withGbValues(raw)) } return nowSrc.get(f) }
     for (const m of movedEdits) {
-      if (!read(m.nowIn).includes(m.now)) {
+      if (!inFile(m.nowIn).includes(m.now)) {
         console.log(`      \u26d4 EDIT CLAIMED BUT NOT PRESENT in ${m.nowIn} (${m.reason}): \`${m.now.slice(0, 70)}\``)
         return false
       }
@@ -2968,8 +3124,14 @@ function runWiringSuite(lib) {
         /const ts = useTruckTime\(\)/, /<TruckTimeContext\.Provider value=\{truck\.time \?\? null\}>/, /formatShortOrdinalDate\(/,
         /formatNumericDate\(localDateOfInstant\(createdAt, ts\.timeZone\), ts\)/, /formatTrialEndDate\(truck\.trial_expires_at, mgTime!\)/,
         /time=\{truck\.time \?\? null\} \/>\}/, /const isoDate = \(offset: number\) => addDaysYmd\(getLocalDateInTz\(ts\.timeZone\), offset\)/]
-      if (oldForms.test(code) || !newForms.every(re => re.test(code))) {
-        console.log(`      \u26d4 PHASE 2B IS CLAIMED ABOVE BUT ${oldForms.test(code) ? 'AN OLD CLOCK / en-GB FORM IS STILL IN THE PAGE: ' + (code.match(oldForms) || [''])[0] : 'A NEW FORM IS MISSING: ' + newForms.find(re => !re.test(code))}`)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): a new form may sit inside a message call's VALUES (the trial popup's
+      // `{t.rich('trialPopup.ends', { date: formatTrialEndDate(truck.trial_expires_at, mgTime!) … })}`), which `RAWP`
+      // draws as the JSX it replaced — so the new forms are looked for in the page's CODE as written too (comments
+      // stripped). The old forms are still refused in both.
+      const rawCode = blockStrip(read(PAGE)).join('\n')
+      const hasForm = re => re.test(code) || re.test(rawCode)
+      if (oldForms.test(code) || oldForms.test(rawCode) || !newForms.every(hasForm)) {
+        console.log(`      \u26d4 PHASE 2B IS CLAIMED ABOVE BUT ${oldForms.test(code) || oldForms.test(rawCode) ? 'AN OLD CLOCK / en-GB FORM IS STILL IN THE PAGE: ' + ((code.match(oldForms) || rawCode.match(oldForms)) || [''])[0] : 'A NEW FORM IS MISSING: ' + newForms.find(re => !hasForm(re))}`)
         return false
       }
     }
@@ -3251,7 +3413,8 @@ function runWiringSuite(lib) {
    * what this check is really for, is unchanged and still asserted. */
   t('⚠️ the walkthrough still reaches Settings, and the Schedule link points there again',
     /tabIds: \['settings'\]/.test(read('lib/walkthrough.ts'))
-    && /data-tab-id=\{t\.id\}/.test(P)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the tab bar's loop variable is `tab` now (`t` is the shell's translator).
+    && /data-tab-id=\{(t|tab)\.id\}/.test(P)
     && /onSwitchTab\('settings'\)/.test(P)
     && /Change in Settings/.test(P)
     && !/onScheduleSettingsOpenChange/.test(P))
@@ -3737,7 +3900,10 @@ function runVariants() {
         return !/scrollIntoView/.test(eff)
       }],
     ['W41 🔴 a section loses its own header — which is how Auto-replies ended up with none',
-      changed(read(PAGE), '        <h2 className="text-lg font-black text-slate-900">Auto-replies</h2>\n', '', 'W41'),
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation and same count. The section's <h2> is
+      // `{t('sections.autoReplies')}` now (manageSettings), so — as W32 does — the mutation is made to the page as
+      // the wording checks read it, with its message reads resolved to the en-GB words; the anchor is unchanged.
+      changed(withGbWords(read(PAGE)), '        <h2 className="text-lg font-black text-slate-900">Auto-replies</h2>\n', '', 'W41'),
       src => (src.match(/<h2 className="text-lg font-black text-slate-900">/g) || []).length === 8],
     ['W42 🔴 the jump bar drops back below the two intro cards',
       (() => {
@@ -3776,7 +3942,10 @@ function runVariants() {
     /* ⚠️ RE-ANCHORED 10 OCTOBER 2026 for the same reason as W44, and the count moved with it: the
      * bars are `<SubTabBar …>` calls, so what is counted is the component rather than the class. */
     ['W48 🔴 Menu and Schedule go back to pills, so the three rows look like two controls',
-      changed(read(PAGE), '          <SubTabBar label="Menu sections" className="mb-4">',
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation and same counts. The bars' labels are
+      // `label={t('…sections.label')}` now, so the page is read with its message reads resolved to the en-GB words
+      // (as W32 does) — "Menu sections" is still the anchor and the predicate still counts the bars by label.
+      changed(withGbWords(read(PAGE)), '          <SubTabBar label="Menu sections" className="mb-4">',
         '          <div role="tablist" aria-label="Menu sections" className="min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4">', 'W48'),
       /* ⚠️ THREE, NOT TWO, SINCE 7 October 2026 — Menu · Social media · Schedule. The social tab got
        * its own bar when it stopped being a pill inside Schedule.
@@ -3806,7 +3975,9 @@ function runVariants() {
         return (sec.match(/<Card className="p-4/g) || []).length === 1
       }],
     ['W45 🔴 the Auto-replies card title is "de-duplicated" away again',
-      changed(read(PAGE), '          <p className="text-base font-bold text-slate-800">Auto-replies</p>\n', '', 'W45'),
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation. The card title is `{tW('card.title')}`
+      // (manageWhatsApp) now; the page is read with its message reads resolved to the en-GB words, as W32 does.
+      changed(withGbWords(read(PAGE)), '          <p className="text-base font-bold text-slate-800">Auto-replies</p>\n', '', 'W45'),
       src => /<p className="text-base font-bold text-slate-800">Auto-replies<\/p>/.test(src)],
     ['W46 🔴 the stray divider returns above the cancellation wording',
       changed(read(PAGE), '        <div className="flex items-center justify-between mt-1">',

@@ -1,0 +1,12 @@
+{
+  "$comment": "Language Phase 1d Part 2: keys MOVED between namespaces (same en-GB words, new path). scripts/_lp2-frozen.cjs copies a frozen catalogue's text (en-GB and en-US) from the old path to the new one, so every frozen mode shows a moved key exactly as it showed the old one. scripts/_lp1d2-checks.cjs proves each: old gone, new present, en-GB as moved equal to the old 826471a text, en-US equal.",
+  "moves": {
+    "dashboard.settings.paidStepTitle": "completionSettings.paidStepTitle",
+    "dashboard.settings.completionTitle": "completionSettings.completionTitle",
+    "dashboard.settings.completionHelp": "completionSettings.completionHelp",
+    "dashboard.settings.pressesOne": "completionSettings.pressesOne",
+    "dashboard.settings.pressesOneHelp": "completionSettings.pressesOneHelp",
+    "dashboard.settings.pressesTwo": "completionSettings.pressesTwo",
+    "dashboard.settings.pressesTwoHelp": "completionSettings.pressesTwoHelp"
+  }
+}

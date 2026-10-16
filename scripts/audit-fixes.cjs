@@ -183,8 +183,17 @@ async function compare() {
     && /repriceOrder\([\s\S]{0,400}discountCodeData/.test(sub), 'submit: the code is looked up by the SERVER in discount_codes_db (this truck, active only) and that row is what prices the order')
   ok(!/body\.(discountAmt|subtotal|total)\b[^=]*[^=]=[^=]/.test(sub.replace(/\/\/.*$/gm, '')), "submit: the browser's subtotal / discount / total are never used to price")
   const mg = read('app/api/manage/route.ts')
-  ok(mg.indexOf("supabase.from('discount_codes_db').select('*').eq('truck_id', truck.id)") > mg.indexOf('const access = await resolveTruckAccess(req, truck)') && /if \(!access\.ok\) return NextResponse\.json\(\{ error: access\.error \}, \{ status: access\.status \}\)/.test(mg),
-    "the operator's own code list (Manage GET) is read only after the signed-in access check")
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the GET's refusal now carries a code (SHELL: "GET refusals gain
+  // code/params") — `{ error: access.error }` became `manageErrorBody(<truck's locale>, access.code)`, still returned
+  // with access.status. The pin follows the refusal to its new shape and is now also POSITIONAL: the refusal sits
+  // between the access check and the code-list read (the first `resolveTruckAccess` in the file is the GET's).
+  {
+    const accessAt = mg.indexOf('const access = await resolveTruckAccess(req, truck)')
+    const codesAt = mg.indexOf("supabase.from('discount_codes_db').select('*').eq('truck_id', truck.id)")
+    const refusal = /if \(!access\.ok\) return NextResponse\.json\(manageErrorBody\(await localeForTruck\(truck\), access\.code\), \{ status: access\.status \}\)/.exec(mg.slice(accessAt))
+    ok(accessAt > 0 && codesAt > accessAt && refusal && accessAt + refusal.index < codesAt && mg.indexOf('export async function GET(') < accessAt,
+      "the operator's own code list (Manage GET) is read only after the signed-in access check")
+  }
 
   console.log('2. D34 — a fixed discount is capped at the subtotal')
   for (const k of Object.keys(B.calc)) {

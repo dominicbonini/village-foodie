@@ -147,15 +147,18 @@ async function run(ctx) {
       }
       const n = NAMED_MOD.apply(id, b)
       if (n.listed) {
-        if (!same(b, f)) { listed.push(id); for (const e of n.entries.filter(e => !e.expect)) claimed.get(e.id).push(id) } else identical++
+        if (!same(b, f)) { listed.push(id); for (const e of n.entries.filter(e => !e.expect && !e.prove)) claimed.get(e.id).push(id) } else identical++
         continue
       }
       if (same(b, f) && same(n.expected, b)) { identical++; continue }
       for (const e of n.touched) claimed.get(e).push(id)
       if (!n.touched.length) { t(`${cc} · ${id}: F === BEFORE (no named code change applies)`, same(b, f), firstDiff(b, f)); continue }
-      const ok = same(n.expected, f)
+      // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md): a structural named change
+      // (pending-card-layout, `n.matches`) is proven by its own proof instead of byte equality; every other view as before.
+      const pr = n.matches ? n.matches(f) : null
+      const ok = pr ? pr.ok : same(n.expected, f)
       if (ok) named++
-      t(`${cc} · ${id}: F === BEFORE with ONLY the named change(s) ${n.touched.join(' + ')}`, ok, `expected (BEFORE + named) vs F ${firstDiff(n.expected, f)}`)
+      t(`${cc} · ${id}: F === BEFORE with ONLY the named change(s) ${n.touched.join(' + ')}`, ok, pr ? pr.problems.join('\n      ') : `expected (BEFORE + named) vs F ${firstDiff(n.expected, f)}`)
     }
     return { identical, named, n1, listed }
   }
@@ -251,7 +254,7 @@ async function run(ctx) {
       const cv = codeView(id, BEFORE[id], F[id], catF, ['en-GB', 'en-US'])
       const n = NAMED_MOD.apply(id, BEFORE[id])
       const code = !same(BEFORE[id], F[id])
-      const why = !code ? 'words' : cv && cv.named ? `code: named difference 1 (${cv.code})` : `code: ${(n.listed ? n.entries.filter(e => !e.expect).map(e => e.id) : n.touched || []).join('+') || 'UNNAMED'}`
+      const why = !code ? 'words' : cv && cv.named ? `code: named difference 1 (${cv.code})` : `code: ${(n.listed ? n.entries.filter(e => !e.expect && !e.prove).map(e => e.id) : n.touched || []).join('+') || 'UNNAMED'}`
       lines.push(`${id}\t${why}${code && !same(F[id], A[id]) ? ' + words' : ''}`)
     }
     fs.writeFileSync(US_CHANGED_FILE, lines.join('\n') + '\n')
@@ -262,7 +265,7 @@ async function run(ctx) {
     if (!NAMED_MOD.NAMED.length) console.log('  (none named yet)')
     for (const e of NAMED_MOD.NAMED) {
       const n = claimed.get(e.id).length
-      console.log(`  ${n ? '·' : '⚠️'} ${e.id} (${e.country}${e.expect ? '' : ', LISTED'}): ${n} view(s)${n ? ` — ${claimed.get(e.id).slice(0, 4).join(', ')}${n > 4 ? ' …' : ''}` : ' — none changed (not landed, or stale)'}`)
+      console.log(`  ${n ? '·' : '⚠️'} ${e.id} (${e.country}${e.expect ? '' : e.prove ? ', STRUCTURAL — pending-card proof' : ', LISTED'}): ${n} view(s)${n ? ` — ${claimed.get(e.id).slice(0, 4).join(', ')}${n > 4 ? ' …' : ''}` : ' — none changed (not landed, or stale)'}`)
     }
   }
   if (on('api')) {
@@ -273,15 +276,21 @@ async function run(ctx) {
   // ══ OUT OF SCOPE ═══════════════════════════════════════════════════════════════════════════════════════════
   if (on('smoke')) {
     head('OUT OF SCOPE · Payments, Billing, Reports, Team, Social, WhatsApp, custom domain, account deletion — A === F === BEFORE')
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2) — WEAKER HERE, PROVEN THERE: these views are PART 2's surfaces, which Part 2
+    // changes on purpose. Part 1's claim was "Part 1 left them alone" (BEFORE 756ca09 = Part 1's end). Here that is now
+    // A === F (Part 1's words — 756ca09's pair vs 826471a's pair, on this code — change none of them), and F === BEFORE
+    // is no longer required: scripts/language-phase-1d2.cjs proves every one of these surfaces against 826471a (= Part
+    // 1's end, which this harness proved equal to 756ca09 for them), with named difference 1 and the named changes.
     const sm = ids.filter(isSmoke)
-    let ok = 0
+    let ok = 0, stillBefore = 0
     for (const id of sm) {
-      const good = same(BEFORE[id], F[id]) && same(BEFORE[id], A[id])
+      if (same(BEFORE[id], F[id]) && same(BEFORE[id], A[id])) stillBefore++
+      const good = same(F[id], A[id])
       if (good) ok++
-      else t(`smoke · ${id}: unchanged (BEFORE = F = A)`, false, same(BEFORE[id], F[id]) ? `A ${firstDiff(BEFORE[id], A[id])}` : `F ${firstDiff(BEFORE[id], F[id])}`)
+      else t(`smoke · ${id}: Part 1's words leave it alone (F = A)`, false, `A ${firstDiff(F[id], A[id])}`)
     }
-    t(`every out-of-scope view is unchanged in F and A, GB and US (${ok}/${sm.length})`, ok === sm.length)
-    console.log(`  ${sm.length} out-of-scope views (${sm.filter(i => !isUS(i)).length} GB, ${sm.filter(isUS).length} US) · ${ok} unchanged`)
+    t(`every out-of-scope view is unchanged by Part 1's words (F = A), GB and US (${ok}/${sm.length})`, ok === sm.length)
+    console.log(`  ${sm.length} out-of-scope views (${sm.filter(i => !isUS(i)).length} GB, ${sm.filter(isUS).length} US) · ${ok} with F = A · ${stillBefore} still equal to BEFORE (756ca09); the rest are Part 2's changes, proven by language-phase-1d2`)
   }
 
   // ══ THE US-WORDS CHECK ═════════════════════════════════════════════════════════════════════════════════════

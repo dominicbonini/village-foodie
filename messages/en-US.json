@@ -248,10 +248,6 @@
       "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Canceled} cooking {Cooking} ready {Ready} collected {Picked up} other {{status}}}"
     },
     "settings": {
-      "pressesOne": "One press (“Mark paid & picked up”)",
-      "pressesOneHelp": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & picked up”, which records the payment and clears the order together.",
-      "pressesTwo": "Two presses (“Mark paid” & “Picked up”)",
-      "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the window, then picks up when it’s ready. You get two buttons: “Mark paid” first, then “Picked up” when they take the food.",
       "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the window instead. Orders keep coming; only the card step stops.",
       "intervalsTitle": "Pickup times",
       "intervalsHelp": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
@@ -478,7 +474,13 @@
     "first_van_copy_failed": "The first truck’s settings could not be copied right now.",
     "capacity_copy_failed": "The first truck’s capacity could not be copied right now.",
     "category_copy_failed": "The first truck’s category settings could not be copied right now.",
-    "schedule_read_failed": "Couldn’t read your schedule, so places could not be figured out."
+    "schedule_read_failed": "Couldn’t read your schedule, so places could not be figured out.",
+    "select_one_van": "Please select at least one truck",
+    "wa_unrecognised_outcome": "Unrecognized signup outcome.",
+    "domain_send_unavailable": "We could not send that just now. Try again shortly — or copy the details on this screen and email them over yourself, which works just as well.",
+    "wp_licence_required": "Please check the box to confirm you own or have a license to use this font.",
+    "wp_last_toggle": "Keep either Location or Time switched on. A canceled event shows its place crossed out and the word CANCELED, so with both off there would be nothing to say it is canceled.",
+    "sg_merge_cycle": "Those two are already merged the other way around."
   },
   "manageApi": {
     "vanFallback": "Truck",
@@ -599,5 +601,212 @@
     "qr": {
       "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your window, on your truck, or share it online."
     }
+  },
+  "manageReports": {
+    "custom": {
+      "title": "Customizations"
+    },
+    "csv": {
+      "collectionTime": "Pickup time"
+    }
+  },
+  "socialPosts": {
+    "placePicturesBlurb": "Save images for a location — a bar’s logo, a photo, a festival’s poster. Your designs decide where they appear: in an image box on your weekly or single event post, or as the whole background.",
+    "allTextSample": "Font, color and effects for everything",
+    "followNote": "Same font, color and effects as All text",
+    "lookSameHint": "Font, color and effects come from All text. Pick “Its own style” to change them for this box only.",
+    "lookOwnHint": "This box has its own font, color and effects. Pick “Same as All text” to match the others again.",
+    "styleMatchHint": "Font, color and effects come from All text, so everything matches.",
+    "styleOwnHint": "Font, color and effects are set just for this.",
+    "effectBand": "Colored strip behind the words",
+    "effectAutoHint": "If the words are hard to read on your picture, we add a soft shadow. Your colors never change.",
+    "editorMoreSummary": "Spacing, tilt, words before, line spacing, darken the picture, center the box",
+    "editorMoreSummaryBox": "Words before, line spacing, tilt, long names, center the box",
+    "alignCentre": "≡ Center",
+    "labelCentreOn": "Center on the picture",
+    "nameFromScheduleNote": "Name and area come from your schedule. Edit them in Schedule › Events › Add event › Clean up places.",
+    "socialTagPlaceholder": "@austinmusicfest",
+    "captionThisPostNote": "Type right in the box to change it for this post only. Your template stays as it is.",
+    "effectOutline": "Outline around the letters"
+  },
+  "managePayments": {
+    "state": {
+      "unsupported": {
+        "body": "Stripe cannot enable card payments here. Get in touch and we will fix it with you."
+      }
+    },
+    "keyMismatch": {
+      "fix": "Both keys must be set for the same environment, and the site rebuilt afterward — the publishable key is baked in at build time, the secret key is read on every request."
+    },
+    "walkUp": {
+      "body": "How you take money at the window. HatchGrab charges no platform fee on walk-ups, whichever you choose.",
+      "ownTerminalHelp": "Square, Clover, or whatever you already use. Nothing to set up — only your provider’s own fees apply.",
+      "hatchgrabHelp": "Uses the same Stripe connection as your online payments — a card reader, or tap to pay straight from your phone or tablet.",
+      "hatchgrabFees": "{fee} per payment on {region}, plus {surcharge} for tap to pay on a phone or tablet. Other cards may cost more."
+    }
+  },
+  "manageShell": {
+    "verify": {
+      "expired": "That confirmation link has expired. Get in touch and we’ll fix it before you go live.",
+      "invalid": "That confirmation link didn’t work. Get in touch and we’ll fix it before you go live."
+    },
+    "tabs": {
+      "paymentsIcon": "💵"
+    },
+    "notices": {
+      "domainLive": "<link>{domain}</link> is live. Take a look at it, then tell us it is right in Settings.",
+      "stripe": "<b>Stripe needs something from you</b> — card payments can stop until it’s fixed."
+    }
+  },
+  "manageBilling": {
+    "footnote2Masked": "Online payments are powered by Stripe Connect. Platform and card processing fees are TBD and will be confirmed at launch.",
+    "upgradeModal": {
+      "body": "We’re setting up automated billing. To upgrade now, send us a message and we’ll get you set up within 24 hours."
+    }
+  },
+  "manageTeam": {
+    "toast": {
+      "emailChangeCancelled": "Email change canceled"
+    },
+    "ownerLine": "Owner · All trucks",
+    "cancelling": "Canceling…",
+    "phonePlaceholder": "+1 312 555 0100"
+  },
+  "manageWhatsApp": {
+    "preview": {
+      "examples": {
+        "doYouDo": "Do you have pepperoni?"
+      },
+      "placeholder": "What desserts do you have?",
+      "working": "Writing the reply…"
+    },
+    "card": {
+      "expiring": "Your WhatsApp connection needs to be renewed soon. Press Reconnect to keep auto-replies running."
+    },
+    "billing": {
+      "summary": "Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {free, number} a month are free. Correct as of {checked}; check <link>Meta’s pricing</link> for changes."
+    },
+    "disconnect": {
+      "body": "Auto-replies stop right away and HatchGrab loses access to your WhatsApp account. Your number keeps working in the WhatsApp Business app. To remove HatchGrab completely, also open WhatsApp Business → Settings → Account → Business Platform."
+    },
+    "signup": {
+      "needsRegistering": "Your account is linked, but this number needs to be registered by us before replies can start. Please contact support — your setup is saved, do not run it again.",
+      "numberTaken": "That WhatsApp number is already connected to another HatchGrab account. A number can only answer for one truck. Contact support and we will move it over."
+    }
+  },
+  "customDomain": {
+    "card": {
+      "justLive": "<b>{address}</b> is working. Take a look at it, then tell us it is right below."
+    },
+    "ready": {
+      "body": "Take a look at it, then tell us it is right in your settings."
+    },
+    "confirm": {
+      "heading": "Take a look, then tell us it is right"
+    },
+    "turnOff": {
+      "carriesOn": "This continues exactly as it is, and is where your QR code sends people:"
+    },
+    "providers": {
+      "cloudflare": {
+        "proxy": "Set “Proxy status” to “DNS only” — the cloud beside it must be gray, not orange."
+      },
+      "123reg": {
+        "value": "Put the second value below in “Value”, and add a period to the end of it.",
+        "caveat": "123 Reg needs a period at the end of the second value or it will not work."
+      }
+    },
+    "instructionsEmail": {
+      "introAt": "We are putting {truckName}’s live schedule on {address}, and it needs one record added to our domain at {provider}.",
+      "introHolder": "We are putting {truckName}’s live schedule on {address}, and it needs one record added to our domain with whoever holds our domain.",
+      "pointsAt": "The page it points at shows where we are serving next and keeps itself up to date."
+    },
+    "liveEmail": {
+      "body": "Your schedule is now showing at your own address. Take a look at it and check it is right: open {address}, make sure the events are yours and the dates look correct."
+    }
+  },
+  "deleteAccount": {
+    "upcoming": "<b>You have {count, plural, one {# upcoming order} other {# upcoming orders}}.</b> These will still need to be fulfilled."
+  },
+  "posterWords": {
+    "heading": "Week of {start}",
+    "daysOff": "Closed today",
+    "cancelled": "CANCELED",
+    "placeSample": {
+      "nameTownBelow": "Main Street Brewery\nAustin",
+      "nameTown": "Main Street Brewery, Austin",
+      "nameOnly": "Main Street Brewery"
+    },
+    "busyWeek": {
+      "venue1": "Austin Community Center",
+      "town1": "Austin",
+      "venue2": "Round Rock Memorial Park Recreation Center and Ballfields",
+      "town2": "Round Rock",
+      "venue3": "Town Square",
+      "town3": "Georgetown",
+      "town4": "San Marcos",
+      "venue5": "Main Street Brewery",
+      "town5": "Pflugerville",
+      "venue6": "Riverside Park",
+      "town6": "Cedar Park"
+    }
+  },
+  "captions": {
+    "dayLineCancelled": "{day} — {where} — CANCELED, sorry"
+  },
+  "weeklyPostApi": {
+    "licenceTick": "I own this font or have a license to use it"
+  },
+  "designEditor": {
+    "item": {
+      "weekHeadingSample": "Week of …"
+    },
+    "sample": {
+      "venue": "Main Street Brewery",
+      "area": "Austin"
+    },
+    "rows": {
+      "showCancelled": "Show canceled events",
+      "showCancelledHint": "A canceled event shows its place crossed out and the word CANCELED. Switched off, the day reads as a day off."
+    },
+    "picture": {
+      "drawBorderHint": "A line around the picture, in your own color."
+    },
+    "settings": {
+      "colour": "Color",
+      "textColour": "Text color",
+      "lastToggle": "{kind, select, weekly {Keep either Place or Time switched on. A canceled event shows its place crossed out and the word CANCELED, so with both off there would be nothing to say it is canceled.} other {Keep either Venue or Time switched on. A canceled event shows its place crossed out and the word CANCELED, so with both off there would be nothing to say it is canceled.}}"
+    },
+    "align": {
+      "centre": "Center"
+    },
+    "effects": {
+      "outlineColour": "Outline color",
+      "bandColour": "Band color",
+      "bandCancelled": "Band when the event is canceled",
+      "bandDaysOffHint": "Used instead of the band above on a day you’re closed.",
+      "bandCancelledHint": "Used instead of the band above when the event is canceled."
+    },
+    "bits": {
+      "chooseColourFor": "{label} — choose any color",
+      "chooseColour": "Choose any color"
+    }
+  },
+  "fontPicker": {
+    "licenceTick": "I own this font or have a license to use it"
+  },
+  "weeklyPost": {
+    "post": {
+      "weekOf": "Week of {date}",
+      "eventDateCancelled": "{date} · canceled",
+      "showCancelled": "Show canceled events",
+      "notePlaceholder": "e.g. Pre-order for pickup"
+    }
+  },
+  "completionSettings": {
+    "pressesOne": "One press (“Mark paid & picked up”)",
+    "pressesOneHelp": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & picked up”, which records the payment and clears the order together.",
+    "pressesTwo": "Two presses (“Mark paid” & “Picked up”)",
+    "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the window, then picks up when it’s ready. You get two buttons: “Mark paid” first, then “Picked up” when they take the food."
   }
 }

@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Week heading",
+    "weekHeadingSample": "Week commencing …",
+    "daysSample": "{first} to {last}",
+    "date": "Date",
+    "place": "Place",
+    "venue": "Venue",
+    "area": "Area",
+    "time": "Time",
+    "rows": "Rows",
+    "rowsSample": "{px}px apart · {first} to {last}",
+    "ownText": "Your own text",
+    "noteTokenSample": "The note you type when you make the post",
+    "nothingYet": "Nothing yet",
+    "thisBox": "this box"
+  },
+  "sample": {
+    "venue": "The Kings Arms",
+    "area": "Lavenham"
+  },
+  "bar": {
+    "previewWith": "Preview with",
+    "undo": "Undo",
+    "undoTitle": "Undo (⌘Z)",
+    "redo": "Redo",
+    "redoTitle": "Redo (⇧⌘Z)",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save design"
+  },
+  "grid": {
+    "eachRow": "Each row",
+    "placeOff": "The place name is in your picture — HatchGrab won’t add it."
+  },
+  "background": {
+    "uploading": "Uploading…",
+    "replace": "Replace picture",
+    "shape": {
+      "square": "Square (1:1)",
+      "portrait45": "Portrait (4:5)",
+      "portrait916": "Portrait (9:16)",
+      "landscape169": "Landscape (16:9)",
+      "portrait": "Portrait",
+      "landscape": "Landscape"
+    }
+  },
+  "scope": {
+    "title": "Text positions",
+    "standard": "Same positions as Standard",
+    "own": "Own positions for {place}",
+    "locked": "These positions come from your Standard design. Choose “Own positions for {place}” to move them just here."
+  },
+  "stage": {
+    "hint": "Drag a box to move it · drag a corner to resize",
+    "zoomOut": "Zoom out",
+    "zoomIn": "Zoom in"
+  },
+  "rows": {
+    "spacing": "Spacing",
+    "daysRun": "Days run {first} to {last}. Row 1’s three boxes are copied down by this distance.",
+    "whichEvents": "Which events",
+    "showCancelled": "Show cancelled events",
+    "showCancelledHint": "A cancelled event shows its place crossed out and the word CANCELLED. Switched off, the day reads as a day off."
+  },
+  "days": {
+    "reorder": "Reorder",
+    "move": "move"
+  },
+  "picture": {
+    "picture": "Picture",
+    "fill": "Fill the box",
+    "fit": "Fit inside",
+    "corners": "Corners",
+    "square": "Square",
+    "rounded": "Rounded",
+    "ifMissing": "If a location has no image",
+    "noPicture": {
+      "omit": "Leave it out",
+      "blank": "Leave a blank space",
+      "logo": "Show your logo"
+    },
+    "border": "Border",
+    "drawBorder": "Draw a border",
+    "drawBorderHint": "A line around the picture, in your own colour.",
+    "borderWidth": "Border width",
+    "cornerRadius": "Corner radius",
+    "locationPictures": "Location pictures",
+    "addLocationPictures": "+ Add location pictures",
+    "allHaveImage": "{total, plural, =0 {You don’t have any locations yet.} one {Your location has an image.} other {All # of your locations have an image.}}",
+    "someWithout": "{without} of your {total, plural, one {# location} other {# locations}} {without, plural, one {has} other {have}} no image yet"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Colour",
+    "textColour": "Text colour",
+    "ownStyleNote": "{count, plural, one {{names} has its own style, so it isn’t changed.} other {{names} have their own style, so they aren’t changed.}}",
+    "matchAgain": "Match it again",
+    "matchName": "Match {name}",
+    "lastToggle": "{kind, select, weekly {Keep either Place or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.} other {Keep either Venue or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — this font has a real italic"
+  },
+  "align": {
+    "left": "Left",
+    "centre": "Centre",
+    "right": "Right"
+  },
+  "effects": {
+    "outlineColour": "Outline colour",
+    "bandColour": "Band colour",
+    "bandDaysOff": "Band on days off",
+    "bandCancelled": "Band when the event is cancelled",
+    "bandDaysOffHint": "Used instead of the band above on a day with no trading.",
+    "bandCancelledHint": "Used instead of the band above when the event is cancelled."
+  },
+  "more": {
+    "dayOwnLine": "Day on its own line",
+    "dayOwnLineHint": "The weekday above the date. Date only.",
+    "noEventDay": "On a day with no event",
+    "wordsBeforePlaceholder": "e.g. Find us",
+    "neverHyphenate": "One long word with no space in it is always shrunk — we never hyphenate a place name."
+  },
+  "bits": {
+    "less": "Less",
+    "more": "More",
+    "chooseColourFor": "{label} — choose any colour",
+    "chooseColour": "Choose any colour"
+  }
+}

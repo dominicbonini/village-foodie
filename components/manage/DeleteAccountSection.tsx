@@ -56,6 +56,8 @@ import { nativeAuthHeader } from '@/lib/native/session'
 import type { ShowToast } from '@/lib/useToasts'
 import { formatInstant, type TimeSettings } from '@/lib/time-utils'
 import { useTruckTime } from '@/components/TruckTimeContext'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/deleteAccount'
 
 interface AccountSummary {
   ownerEmail: string | null
@@ -96,6 +98,9 @@ export function DeleteAccountSection({ truckName, showToast }: {
   showToast: ShowToast
 }) {
   const ts = useTruckTime()
+  // Language Phase 1d Part 2: every word is `deleteAccount`. ⚠️ The retention and data-copy sentences are LEGAL wording
+  // and carry no en-US override — they are listed for a legal decision, not translated.
+  const t = useT('deleteAccount')
   const [summary, setSummary] = useState<AccountSummary | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
   const [open, setOpen] = useState(false)
@@ -167,12 +172,12 @@ export function DeleteAccountSection({ truckName, showToast }: {
         body: JSON.stringify({ confirm: 'DELETE' }),
       })
       const data = await res.json()
-      if (!res.ok) { showToast(data.error || 'Could not submit the request', 'error'); return }
+      if (!res.ok) { showToast(data.error || t('failed'), 'error'); return }
       setOpen(false); setTyped('')
       load()
-      showToast('Account deletion requested. Check your email.')
+      showToast(t('requestedToast'))
     } catch {
-      showToast('Could not submit the request', 'error')
+      showToast(t('failed'), 'error')
     } finally { setSubmitting(false) }
   }
 
@@ -181,21 +186,19 @@ export function DeleteAccountSection({ truckName, showToast }: {
     return (
       <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="danger-zone-heading">
         <h3 id="danger-zone-heading" className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-red-800">
-          <DangerIcon />Danger zone
+          <DangerIcon />{t('dangerZone')}
         </h3>
         <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-4">
-          <p className="text-sm font-bold text-red-800">This account is scheduled for deletion</p>
+          <p className="text-sm font-bold text-red-800">{t('scheduled')}</p>
           <p className="mt-1 text-sm text-slate-700">
-            Requested on <strong>{fmtDate(summary.requestedAt, ts)}</strong>. It is due to be deleted on{' '}
-            <strong>{fmtDate(summary.dueAt, ts)}</strong>.
+            {t.rich('requested', { requested: fmtDate(summary.requestedAt, ts), due: fmtDate(summary.dueAt, ts), b: c => <strong>{c}</strong> })}
           </p>
           <p className="mt-2 text-sm text-slate-700">
-            Online ordering has stopped. Your dashboard stays available to read until then.
+            {t('orderingStopped')}
           </p>
           {/* 🔴 The sentence most likely to surprise someone, repeated in the state that needs it most. */}
           <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-            <strong>You cannot cancel this yourself.</strong> To stop it, email{' '}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="underline font-semibold">{SUPPORT_EMAIL}</a> as soon as possible.
+            {t.rich('cannotCancelPending', { email: SUPPORT_EMAIL, b: c => <strong>{c}</strong>, link: c => <a href={`mailto:${SUPPORT_EMAIL}`} className="underline font-semibold">{c}</a> })}
           </p>
         </div>
       </section>
@@ -209,13 +212,13 @@ export function DeleteAccountSection({ truckName, showToast }: {
   return (
     <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="danger-zone-heading">
       <h3 id="danger-zone-heading" className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-red-800">
-        <DangerIcon />Danger zone
+        <DangerIcon />{t('dangerZone')}
       </h3>
       <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <p className="text-sm font-bold text-slate-800">Delete your account</p>
+          <p className="text-sm font-bold text-slate-800">{t('title')}</p>
           <p className="mt-0.5 text-sm text-slate-600">
-            Permanently close this HatchGrab account and stop taking online orders.
+            {t('body')}
           </p>
         </div>
         {/* Opens the dialog. Requests NOTHING. Not styled as the primary destructive action. */}
@@ -224,7 +227,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
           onClick={() => { setTyped(''); setOpen(true) }}
           className="shrink-0 self-start rounded-xl border border-red-300 bg-white px-4 py-2 text-sm font-bold text-red-700 transition-colors hover:bg-red-50 sm:self-auto"
         >
-          Delete account…
+          {t('open')}
         </button>
       </div>
 
@@ -242,62 +245,54 @@ export function DeleteAccountSection({ truckName, showToast }: {
             onKeyDown={onDialogKeyDown}
             className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl sm:rounded-2xl"
           >
-            <h2 id="delete-account-title" className="text-lg font-black text-slate-900">Delete your account?</h2>
+            <h2 id="delete-account-title" className="text-lg font-black text-slate-900">{t('dialogTitle')}</h2>
 
             <div id="delete-account-desc" className="mt-3 flex flex-col gap-3 text-sm text-slate-700">
               {/* 🔴 FIRST, because it is the consequence an operator is most likely to misjudge. */}
               <p className="rounded-xl border-2 border-red-300 bg-red-50 px-3 py-2 font-semibold text-red-800">
-                Online ordering stops immediately — not in 30 days. Customers will not be able to order
-                from you as soon as you confirm.
+                {t('stopsImmediately')}
               </p>
 
               {summary.upcomingOrders > 0 && (
                 <p className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
-                  <strong>You have {summary.upcomingOrders} upcoming order{summary.upcomingOrders === 1 ? '' : 's'}.</strong>{' '}
-                  These will still need fulfilling.
+                  {t.rich('upcoming', { count: summary.upcomingOrders, b: c => <strong>{c}</strong> })}
                 </p>
               )}
 
               {names.length > 1 && (
                 <p>
-                  <strong>All {names.length} trucks on this account are included:</strong> {names.join(', ')}.
+                  {t.rich('allTrucks', { count: names.length, names: names.join(', '), b: c => <strong>{c}</strong> })}
                 </p>
               )}
 
               <p>
-                Your account will be deleted after <strong>30 days</strong>. Your dashboard stays available
-                to read during that time.
+                {t.rich('deletedAfter', { b: c => <strong>{c}</strong> })}
               </p>
 
               {/* 🔴 BEFORE the confirm action, never after. */}
               <p className="rounded-xl border-2 border-red-300 bg-red-50 px-3 py-2 font-semibold text-red-800">
-                You cannot cancel this yourself. To stop it, you must email{' '}
-                <a href={`mailto:${SUPPORT_EMAIL}`} className="underline">{SUPPORT_EMAIL}</a>.
+                {t.rich('cannotCancel', { email: SUPPORT_EMAIL, link: c => <a href={`mailto:${SUPPORT_EMAIL}`} className="underline">{c}</a> })}
               </p>
 
               <div>
-                <p className="font-bold text-slate-800">What is deleted, and what is kept</p>
+                <p className="font-bold text-slate-800">{t('whatHeading')}</p>
                 <ul className="mt-1 list-disc space-y-1 pl-5">
-                  <li>Your personal details and your team&apos;s are deleted, and your logins are removed.</li>
-                  <li>Your customers&apos; names, emails and phone numbers are deleted from your orders.</li>
+                  <li>{t('whatPersonal')}</li>
+                  <li>{t('whatCustomers')}</li>
                   <li>
-                    Anonymous accounting records are <strong>kept for six years</strong>, as UK law requires.
-                    See our <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline font-semibold">privacy policy</a>.
+                    {t.rich('whatAccounting', { b: c => <strong>{c}</strong>, link: c => <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline font-semibold">{c}</a> })}
                   </li>
                 </ul>
               </div>
 
               {/* 🔴 NO EXPORT FEATURE EXISTS. Say so plainly rather than implying one. */}
               <p className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2">
-                <strong>Want a copy of your data first?</strong> There is no download in the app. You have
-                the right to a copy — email{' '}
-                <a href={`mailto:${SUPPORT_EMAIL}`} className="underline font-semibold">{SUPPORT_EMAIL}</a>{' '}
-                <strong>before</strong> you confirm, and we will send it to you.
+                {t.rich('copyFirst', { email: SUPPORT_EMAIL, b: c => <strong>{c}</strong>, link: c => <a href={`mailto:${SUPPORT_EMAIL}`} className="underline font-semibold">{c}</a> })}
               </p>
 
               <label className="mt-1 block">
                 <span className="font-semibold text-slate-800">
-                  Type <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[13px]">{confirmTarget}</span> to confirm
+                  {t.rich('typeToConfirm', { name: confirmTarget, code: c => <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[13px]">{c}</span> })}
                 </span>
                 {/* ⚠️ Not autofocused — the dialog focuses Cancel. Enter does nothing: there is no form
                     element here, so there is no default-submit path to the destructive button. */}
@@ -306,7 +301,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
                   onChange={e => setTyped(e.target.value)}
                   autoComplete="off"
                   spellCheck={false}
-                  aria-label={`Type ${confirmTarget} to confirm account deletion`}
+                  aria-label={t('typeAria', { name: confirmTarget })}
                   className="mt-1.5 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </label>
@@ -321,7 +316,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
                 onClick={() => { setOpen(false); setTyped('') }}
                 className="w-full rounded-xl bg-slate-800 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-slate-900 sm:w-auto"
               >
-                Cancel — keep my account
+                {t('cancel')}
               </button>
               {/* 🔴 NAMES THE ACTION. Disabled until the name matches exactly. */}
               <button
@@ -330,7 +325,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
                 onClick={() => void request()}
                 className="w-full rounded-xl border border-red-300 bg-white px-5 py-3 text-sm font-bold text-red-700 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 disabled:hover:bg-white sm:w-auto"
               >
-                {submitting ? 'Requesting…' : 'Delete my account'}
+                {submitting ? t('requesting') : t('confirm')}
               </button>
             </div>
           </div>

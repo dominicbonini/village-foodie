@@ -16,6 +16,8 @@ import { placeForEvent, type Place, type PlaceEvent } from '@/lib/schedule-graph
 import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { formatTimeRangeFor, type TimeStyle } from './format'
 import type { WeekRange } from './week'
+import type { CountryCode } from './locale'
+import { posterWordsFor } from './words'
 
 /** An event as this module needs it: `PlaceEvent` plus the id, so one can be left off the image. */
 export interface WeekEvent extends PlaceEvent {
@@ -298,15 +300,24 @@ export function buildWeekData(
  * busy preview, and no live truck's data is involved in a check about layout.
  * ⚠️ IT GOES THROUGH THE SAME RENDERER as everything else — it is week DATA, not a second drawing path.
  */
-export function busyWeekData(range: WeekRange, opts: BuildWeekOptions): WeekData {
+export function busyWeekData(
+  range: WeekRange,
+  opts: BuildWeekOptions,
+  /** 🔴 The truck's poster country — the sample places are that country's (`posterWords.busyWeek`, Language Phase
+   *  1d Part 2): Suffolk villages for GB, as they always were, and the same shapes in Texas for the US. ⚠️ GB's when
+   *  absent. The SHAPES are what the fixture is for and are kept: a long name, a stacked day, a cancelled day. */
+  country: CountryCode = 'GB',
+): WeekData {
   const d = range.days
+  const w = posterWordsFor(country)
+  const v = (n: 1 | 2 | 3 | 4 | 5 | 6) => ({ venue_name: w(`busyWeek.venue${n}`), town: w(`busyWeek.town${n}`) })
   const events: WeekEvent[] = [
-    { id: 'busy-1', event_date: d[0], start_time: '17:00', end_time: '20:00', venue_name: 'Lavenham Village Hall', town: 'Lavenham', status: 'confirmed' },
-    { id: 'busy-2', event_date: d[2], start_time: '17:30', end_time: '20:30', venue_name: 'Great Waldingfield Recreation Ground and Playing Field', town: 'Great Waldingfield', status: 'confirmed' },
-    { id: 'busy-3', event_date: d[3], start_time: '12:00', end_time: '14:00', venue_name: 'Market Square', town: 'Sudbury', status: 'cancelled' },
-    { id: 'busy-4', event_date: d[5], start_time: '11:00', end_time: '14:30', venue_name: 'Food Festival', town: 'Bury St Edmunds', status: 'confirmed' },
-    { id: 'busy-5', event_date: d[5], start_time: '17:00', end_time: '21:00', venue_name: 'The Bull Inn', town: 'Cavendish', status: 'confirmed' },
-    { id: 'busy-6', event_date: d[6], start_time: '12:00', end_time: '16:00', venue_name: 'Church Green', town: 'Long Melford', status: 'unconfirmed' },
+    { id: 'busy-1', event_date: d[0], start_time: '17:00', end_time: '20:00', ...v(1), status: 'confirmed' },
+    { id: 'busy-2', event_date: d[2], start_time: '17:30', end_time: '20:30', ...v(2), status: 'confirmed' },
+    { id: 'busy-3', event_date: d[3], start_time: '12:00', end_time: '14:00', ...v(3), status: 'cancelled' },
+    { id: 'busy-4', event_date: d[5], start_time: '11:00', end_time: '14:30', ...v(4), status: 'confirmed' },
+    { id: 'busy-5', event_date: d[5], start_time: '17:00', end_time: '21:00', ...v(5), status: 'confirmed' },
+    { id: 'busy-6', event_date: d[6], start_time: '12:00', end_time: '16:00', ...v(6), status: 'unconfirmed' },
   ]
   // ⚠️ Tuesday and Friday are left empty on purpose — the days-off text has to be checked too.
   return buildWeekData(range, events, [], opts)

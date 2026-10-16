@@ -9,7 +9,7 @@
 // • Without `expect` (US only), the entry LISTS its views as changed by a named US behaviour; the harness writes each one
 //   to scripts/fixtures/language-phase-1d-us-changed.txt and the US-words check still reads every one.
 // View ids: `<area>/<GB|US>|…` (area = menu, schedule, settings, copy, api, smoke).
-const { mapStrings, mapFields, clock12 } = require('./_lp2-named.cjs')
+const { mapStrings, mapFields, clock12, applyNamed, pendingCardEntry } = require('./_lp2-named.cjs')
 const countryOf = id => (id.split('/').slice(1).join('/').split('|')[0] === 'US' ? 'US' : 'GB')
 
 const NAMED = [
@@ -42,18 +42,23 @@ const NAMED = [
   { id: '1d-us-settings-clock', country: 'US', agent: 'SETTINGS',
     what: 'Settings on the US clock: the collection-time examples ("Customers can pick 18:00, 18:10, 18:20…" → "6:00 PM, 6:10 PM, 6:20 PM…") and the pre-order rule’s cutoff, via formatSlot; phoneErrorMessage gets the truck’s locale.',
     views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
+  // ── ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md) ─────────────────────
+  //    Every Schedule tab view renders the pending card of e2 ("Market Square", an unconfirmed scraper event). Its
+  //    layout and DOM order changed on purpose (type chooser below the main row, ONE action row, the desktop duplicate
+  //    gone, the approveNeedsTimes sentence, location boxes hidden when private): STRUCTURAL, proven by
+  //    scripts/_lp2-named.cjs pendingCardProof — the rest of the view byte-identical with the card cut out of both,
+  //    the card's words BEFORE's apart from the named ones. Claims a view only when its BEFORE has a pending card.
+  //    (US Schedule tab views stay LISTED by 1d-us-address-style, as before — a LISTED view is not byte-proven.)
+  pendingCardEntry(id => /^schedule\/(GB|US)\|tab\|/.test(id)),
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.
 ]
 
+// ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md): through Phase 2's applyNamed,
+// so the structural `pending-card-layout` entry (`prove`) is understood; every other view gets what the old loop gave.
 function apply(id, before) {
-  const us = countryOf(id) === 'US'
-  const entries = NAMED.filter(e => (e.country === 'both' || (e.country === 'US') === us) && e.views(id))
-  if (entries.some(e => !e.expect)) return { entries, listed: true, touched: entries.filter(e => !e.expect).map(e => e.id) }
-  let v = before; const touched = []
-  for (const e of entries) { const w = e.expect(v, id); if (JSON.stringify(w) !== JSON.stringify(v)) touched.push(e.id); v = w }
-  return { entries, listed: false, expected: v, touched }
+  return applyNamed(NAMED, countryOf(id) === 'US', id, before)
 }
 
 module.exports = { NAMED, apply, countryOf, mapStrings, mapFields, clock12 }

@@ -33,63 +33,11 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 /* ── 9 October 2026: the three-column layout's own wording, in the one copy module. */
-import {
-  EDITOR_LEFT_TITLE, EDITOR_NOTHING_SELECTED,
-  /* ⛔ `EDITOR_SETTINGS_FOR` ("Settings for the box you've picked") IS NO LONGER DRAWN — §C replaces it
-   * with `SETTINGS_CLICKED`, which says how the box got there ("You clicked this on your poster") and
-   * therefore how to pick a different one. Kept as the record. */
-  /* ⛔ `EDITOR_SECTION_TEXT` IS NO LONGER IMPORTED. The panel had a "TEXT" heading over the font and
-   * colour rows; with the item's own name in bold directly above them it was a second heading for the
-   * same block. ⚠️ The `data-settings-section="TEXT"` marker stays — the harness measures that block. */
-  EDITOR_SECTION_MORE,
-  /* ⛔ `EDITOR_BACKGROUND_ITEM` IS NO LONGER DRAWN — §3 made the background a SECTION at the foot of
-   * every panel, with `BACKGROUND_SECTION` as its heading, so there is no item to title. Kept exported
-   * as the record of the wording. */
-  EDITOR_ADD_OWN_TEXT, EDITOR_PICTURE_ITEM, EDITOR_PICTURE_SAMPLE,
-  /* ⛔ THE THREE OLD MORE-OPTIONS SUMMARIES ARE NO LONGER DRAWN — §C replaces all three with one line
-   * in plain words (`MORE_SUMMARY_PLAIN`). Three summaries for one section was three places for the
-   * contents to be described differently from what is in it. All three stay exported. */
-  /* ⛔ `EDITOR_CLICK_TO_EDIT` AND `EDITOR_LINK_LEGEND` ARE BOTH RETIRED FROM THE GRID HEADING — §B9
-   * puts "click one to change it" in that slot, because with the Background button gone and the seven
-   * days one item, the 🔗 was explaining a glyph that now appears on two buttons. Both stay exported.
-   * ⛔ `EDITOR_PREVIEW_HINT` WENT WITH THE Edit/Preview SWITCH (§B1). */
-  EDITOR_FIT_TO_SCREEN, EDITOR_CLICK_ONE, FOLLOW_GLYPH, BACKGROUND_SECTION, BACKGROUND_SUMMARY,
-  BG_BEST_SUFFIX, BG_PORTRAIT_TIP, DARKEN_LABEL, DARKEN_HINT,
-  PREVIEW_POST_BTN, PREVIEW_POST_TITLE, PREVIEW_POST_HINT, PREVIEW_POST_CLOSE, PREVIEW_POST_WAIT,
-  /* ── §A · "The 7 days" */
-  DAYS_ITEM, DAYS_ICON, DAYS_BLURB, DAYS_QUICK_HEADING, DAYS_QUICK_HINT,
-  QL_ONE_LINE, QL_DAY_ON_TOP, QL_BIG_PICTURE,
-  DAYS_PARTS_HEADING, DAYS_PARTS_HINT, DAYS_OFF_HEADING, DAYS_OFF_MESSAGE, DAYS_OFF_OMIT,
-  DAYS_OFF_TEXT_LABEL, DAYS_OFF_OMIT_HINT, DAYS_PICTURE_SHAPE, DAYS_MORE_SUMMARY,
-  SHAPE_SQUARE, SHAPE_ROUNDED, SHAPE_CIRCLE,
-  PART_PICTURE_NAME, PART_PICTURE_EG, PART_DAY_NAME, PART_PLACE_NAME, PART_TIMES_NAME,
-  /* ── §C · plain words */
-  SETTINGS_CLICKED, STYLE_HEADING, STYLE_MATCH, STYLE_OWN, STYLE_MATCH_HINT, STYLE_OWN_HINT,
-  LABEL_DATE_STYLE, LABEL_TIME_STYLE, LABEL_PLACE_STYLE, LABEL_HEADING_TEXT, LABEL_OWN_TEXT,
-  OTHER_CHOICES, LABEL_TEXT_SIZE, TEXT_SIZE_HINT, LABEL_LINE_UP, ALIGN_LEFT, ALIGN_CENTRE, ALIGN_RIGHT,
-  /* ⚠️ `LETTERS_BOLD` / `LETTERS_ITALIC` / `LETTERS_CAPS` ARE THE **TOOLTIPS**, set on the B / I / AA
-   * buttons in `StyleRow` — which is where they are imported. */
-  LABEL_LETTERS, LETTERS_BOLD, LETTERS_ITALIC, LETTERS_CAPS, SECTION_EASIER_TO_READ,
-  DELETE_OWN_TEXT, DELETE_OWN_TEXT_KEY, LIVE_FONT_FALLBACK,
-  EFFECT_SHADOW, EFFECT_SHADOW_NONE, EFFECT_SHADOW_SOFT, EFFECT_SHADOW_STRONG,
-  EFFECT_OUTLINE, EFFECT_BAND, EFFECT_SEE_THROUGH, EFFECT_AUTO, EFFECT_AUTO_HINT,
-  MORE_SUMMARY_PLAIN, LABEL_LETTER_SPACE, LABEL_TILT, LABEL_WORDS_BEFORE, WORDS_BEFORE_HINT,
-  LABEL_TOO_LONG, TOO_LONG_SHRINK, TOO_LONG_TWO_LINES, LABEL_LINE_HEIGHT, LABEL_CENTRE_ON,
-  CENTRE_ACROSS, CENTRE_UPDOWN, LABEL_SHADOW_STRENGTH, LABEL_OUTLINE_WIDTH, LABEL_BAND_CORNERS,
-  LABEL_BAND_PADDING,
-  ALL_TEXT_ITEM, ALL_TEXT_SAMPLE, ALL_TEXT_TITLE, ALL_TEXT_BLURB, ALL_TEXT_SIZE_HINT,
-  /* ⛔ FOUR OF THE OLD NOTES' STRINGS ARE NO LONGER IMPORTED — §3's Look switch replaced them:
-   * `FOLLOW_NOTE`, `CHANGE_JUST_THIS`, `OWN_STYLE_LABEL` and `MATCH_ALL_AGAIN` were the two coloured
-   * paragraphs with their state-changing links buried inside. All four stay exported as the record.
-   * ⚠️ `USE_FOR_ALL_TEXT` AND `OWN_BADGE` SURVIVE: the first is still the link at the foot of an
-   * own-style box, which §3 says stays, and the second is still the grid's badge. */
-  USE_FOR_ALL_TEXT, OWN_BADGE,
-  /* ⚠️ §4 · THE PHONE EDITOR'S OWN WORDS — the hint, the bar's five or six labels, and the tabs. See
-   * their notes in the copy module for why they are shorter than the desktop's. */
-  PHONE_EDIT_HINT, PHONE_ITEM_ALL_TEXT, PHONE_ITEM_ADD_TEXT, PHONE_ITEM_PICTURE, PHONE_SHEET_CLOSE,
-  PHONE_TAB_WORDS, PHONE_TAB_SIZE, PHONE_TAB_STYLE, PHONE_TAB_READABLE, PHONE_TAB_MORE,
-  PHONE_TAB_LAYOUT, PHONE_TAB_ROW, PHONE_TAB_DAYS_OFF, PHONE_TAB_PICTURE, PHONE_TAB_DARKEN,
-} from '@/lib/copy/socialPosts'
+/* 🔴 LANGUAGE PHASE 1d PART 2: THE SOCIAL TAB'S EDITOR WORDS ARE THE `socialPosts` NAMESPACE (lib/copy/socialPosts.ts's
+ * exports, as messages; key = the export's name in camelCase), read here with `useT('socialPosts')` in the truck's
+ * locale — the exports themselves are always en-GB. Only the two glyphs are still imported. */
+import { FOLLOW_GLYPH, DAYS_ICON } from '@/lib/copy/socialPosts'
+import '@/lib/i18n/catalog/socialPosts'
 import { Btn } from './primitives'
 import { DraggableBox, NO_GUIDES, type DragInfo, type SnapGuides } from './DraggableBox'
 import { FontPicker } from './FontPicker'
@@ -100,11 +48,16 @@ import {
 import { averageSample } from '@/lib/weekly-post/contrast'
 import { formatTimeRangeFor, type TimeStyle } from '@/lib/weekly-post/format'
 import {
-  LOCALES, PLACE_STYLE_IDS, PLACE_STYLE_SAMPLES, placeStyleSample, dateTextFor,
+  LOCALES, PLACE_STYLE_IDS, DEFAULT_PLACE_STYLE, dateTextFor, intlLocaleFor, joinNameTown,
   type CountryCode, type DateStyleId, type PlaceStyleId,
 } from '@/lib/weekly-post/locale'
+import { addDaysYmd, weekdayName } from '@/lib/time-utils'
+/* 🔴 LANGUAGE PHASE 1d PART 2: this editor's own words are messages (`designEditor`), read in the truck's locale.
+ * ⚠️ THE WORDS IMPORTED FROM lib/copy/socialPosts.ts ABOVE ARE THAT MODULE'S (its en-GB exports). */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/designEditor'
 import {
-  LAST_TOGGLE_MESSAGE, MAX_NOTE_BOXES, NOTE_TOKEN,
+  MAX_NOTE_BOXES, NOTE_TOKEN,
   defaultEventNoteBox, defaultNoteBox, toggleIsAllowed,
   /* 🔴 **THE ONE STYLE RESOLVER**, shared with lib/weekly-post/render.ts. The brief requires the panel
    * and the satori renderer to answer "what does this box look like" through ONE function; importing it
@@ -113,7 +66,7 @@ import {
   type Align, type DateBox, type Effects, type EventLayout, type IfTooLong,
   type Layout, type NoteBox, type PlacePictureBox, type TextBox, type TextLook,
 } from '@/lib/weekly-post/layout'
-import { NO_PICTURE_LABELS, noPicturesLine, type NoPictureBehaviour } from '@/lib/weekly-post/place-pictures'
+import { type NoPictureBehaviour } from '@/lib/weekly-post/place-pictures'
 /* ══ 🔴 "THE 7 DAYS" — THE SAME LAYOUT MATHS THE RENDERER USES (10 October 2026) ═══════════════════
  * ⛔ THE EDITOR DOES NOT WORK OUT WHERE A PART OF A ROW GOES. `dayCells` is the one function that
  * does, and `lib/weekly-post/render.ts` calls it for the PNG — so a cell the operator clicks is the
@@ -341,36 +294,56 @@ export function dateSampleFor(l: AnyLayout, country: CountryCode): string {
   return dateTextFor('2026-10-14', l.dateStyle, country, { caps: l.date.caps, raisedOrdinals: false })
 }
 
-function itemsOf(l: AnyLayout, country: CountryCode): Item[] {
+type DesignEditorT = ReturnType<typeof useT<'designEditor'>>
+type SocialPostsT = ReturnType<typeof useT<'socialPosts'>>
+
+/** The first and last day of the truck's week ("Monday" … "Sunday" in GB, "Sunday" … "Saturday" in the US),
+ *  worded by Intl in the country's locale — never a hard-coded day name (Language Phase 1d Part 2). */
+export function weekRunOf(weekStart: 'monday' | 'sunday', country: CountryCode): { first: string; last: string } {
+  const first = weekStart === 'sunday' ? '2026-10-11' : '2026-10-12'
+  const loc = intlLocaleFor(country)
+  return { first: weekdayName(first, loc, 'long'), last: weekdayName(addDaysYmd(first, 6), loc, 'long') }
+}
+
+/** The example place for a place style, as lines — built from this screen's sample venue and area (messages),
+ *  in the same shapes as `PLACE_STYLE_SAMPLES`. ⚠️ SAFE ON AN UNKNOWN OR MISSING STYLE, like `placeStyleSample`. */
+function placeLinesFor(style: unknown, t: DesignEditorT): string[] {
+  const venue = t('sample.venue'), area = t('sample.area')
+  const s: PlaceStyleId = (PLACE_STYLE_IDS as readonly string[]).includes(style as string)
+    ? style as PlaceStyleId : DEFAULT_PLACE_STYLE
+  return s === 'nameTownBelow' ? [venue, area] : s === 'nameTown' ? [joinNameTown(venue, area)] : [venue]
+}
+
+function itemsOf(l: AnyLayout, country: CountryCode, t: DesignEditorT, run: { first: string; last: string }, sp: SocialPostsT): Item[] {
   const spec = LOCALES[country]
   const dateSample = dateSampleFor(l, country)
   /* 🔴 `placeStyleSample`, NOT `PLACE_STYLE_SAMPLES[...]` — 7 October 2026. The bare index threw on a
    * design saved before part 1, which has no `placeStyle` at all. The read path is fixed at source so
    * this should now always be a known id; the safe lookup stays because "should" is what the `as
    * EventLayout` cast on the route also said. */
-  const placeSample = placeStyleSample(l.placeStyle).split('\n').join(' · ')
+  const placeSample = placeLinesFor(l.placeStyle, t).join(' · ')
   const timeSample = formatTimeRangeFor('17:00', '21:00', l.timeStyle)
   void spec
 
   const items: Item[] = []
   if (isWeekLayout(l)) {
     items.push({
-      key: 'heading', name: 'Week heading', group: 'top', switchable: true,
+      key: 'heading', name: t('item.weekHeading'), group: 'top', switchable: true,
       enabled: l.heading.enabled,
-      sample: l.heading.text.trim() || 'Week commencing …',
+      sample: l.heading.text.trim() || t('item.weekHeadingSample'),
     })
   }
   /* ══ 🔴 "The 7 days" LEADS THE WEEKLY GRID, AND THE FOUR PARTS DROP OUT OF IT ════════════════════ */
   const week7 = isWeekLayout(l) && !!l.days
   if (week7) {
     items.push({
-      key: DAYS_KEY, name: `${DAYS_ICON} ${DAYS_ITEM}`, group: 'top', switchable: false, enabled: true,
-      sample: 'Monday to Sunday',
+      key: DAYS_KEY, name: `${DAYS_ICON} ${sp('daysItem')}`, group: 'top', switchable: false, enabled: true,
+      sample: t('item.daysSample', run),
     })
   }
   const group: Item['group'] = week7 ? 'part' : isWeekLayout(l) ? 'row' : 'top'
   items.push(
-    { key: 'date', name: 'Date', group, switchable: true, enabled: l.date.enabled, sample: dateSample },
+    { key: 'date', name: t('item.date'), group, switchable: true, enabled: l.date.enabled, sample: dateSample },
     /* ══ 🔴 VENUE AND TOWN ARE TWO ITEMS ON A SINGLE EVENT DESIGN (9 October 2026) ═══════════════
      * ⛔ ONE "Place" ITEM AND A STYLE DROPDOWN DREW THE TOWN AS A SECOND LINE INSIDE THE VENUE BOX, so
      * its position, size and colour were the venue's, scaled — and a truck who wanted the town
@@ -378,17 +351,17 @@ function itemsOf(l: AnyLayout, country: CountryCode): Item[] {
      * ⚠️ THE WEEKLY DESIGN KEEPS ONE "Place" ITEM AND ITS STYLE, because its place text lives inside
      * each day row and splitting it would be redesigning the weekly rows. */
     ...(isWeekLayout(l)
-      ? [{ key: 'location', name: 'Place', group, switchable: true, enabled: l.location.enabled, sample: placeSample } as Item]
+      ? [{ key: 'location', name: t('item.place'), group, switchable: true, enabled: l.location.enabled, sample: placeSample } as Item]
       : [
-        { key: 'location', name: 'Venue', group, switchable: true, enabled: l.location.enabled, sample: 'The Kings Arms' } as Item,
+        { key: 'location', name: t('item.venue'), group, switchable: true, enabled: l.location.enabled, sample: t('sample.venue') } as Item,
         /* ⚠️ "Area", NOT "Town" — 9 October 2026, AND THE DATA KEY IS STILL `town`. Half this
          * product's venues are in a village and the other half in a town, and a label that is wrong
          * for half the list is a label an operator has to translate. ⛔ RENAMING THE **KEY** WOULD BE A
          * MIGRATION of every stored event layout for a word on a button; the field is `town`, the
          * label is "Area", and the one place that has to know both is this line. */
-        { key: 'town', name: 'Area', group, switchable: true, enabled: l.town.enabled, sample: 'Lavenham' } as Item,
+        { key: 'town', name: t('item.area'), group, switchable: true, enabled: l.town.enabled, sample: t('sample.area') } as Item,
       ]),
-    { key: 'time', name: 'Time', group, switchable: true, enabled: l.time.enabled, sample: timeSample },
+    { key: 'time', name: t('item.time'), group, switchable: true, enabled: l.time.enabled, sample: timeSample },
   )
   /* ⛔ "Rows" EXISTS ONLY FOR A DESIGN STILL ON THE LEGACY ROW MODEL — which, inside this editor, is
    * none of them: `withDays` converts on open. It is kept for the one path that can still produce one
@@ -396,8 +369,8 @@ function itemsOf(l: AnyLayout, country: CountryCode): Item[] {
    * screen has a row-spacing control rather than no way at all to move the days. */
   if (isWeekLayout(l) && !l.days) {
     items.push({
-      key: 'rows', name: 'Rows', group: 'row', switchable: false, enabled: true,
-      sample: `${l.rowSpacing}px apart · Monday to Sunday`,
+      key: 'rows', name: t('item.rows'), group: 'row', switchable: false, enabled: true,
+      sample: t('item.rowsSample', { px: l.rowSpacing, ...run }),
     })
   }
   /* ══ 🔴 THE PLACE PICTURE (part 3) ═══════════════════════════════════════════════════════════
@@ -422,21 +395,21 @@ function itemsOf(l: AnyLayout, country: CountryCode): Item[] {
    * picture, used wherever a design has a space for it. One name, one thing. */
   items.push({
     key: 'place-picture',
-    name: EDITOR_PICTURE_ITEM,
+    name: sp('editorPictureItem'),
     group: week7 ? 'part' : isWeekLayout(l) ? 'row' : 'top',
     switchable: true,
     enabled: l.placePicture.enabled,
-    sample: EDITOR_PICTURE_SAMPLE,
+    sample: sp('editorPictureSample'),
   })
   l.notes.forEach((n, i) => items.push({
     key: `${NOTE_PREFIX}${i}`,
-    name: 'Your own text',
+    name: t('item.ownText'),
     group: 'own',
     switchable: true,
     enabled: n.enabled,
     sample: n.text.trim() === NOTE_TOKEN
-      ? 'The note you type when you make the post'
-      : (n.text.trim() || 'Nothing yet'),
+      ? t('item.noteTokenSample')
+      : (n.text.trim() || t('item.nothingYet')),
   }))
   return items
 }
@@ -476,6 +449,9 @@ export interface DesignEditorProps {
   initialLayout: AnyLayout
   /** The truck's country, through `countryForTruck()`. ⚠️ Never read from a component. */
   country: CountryCode
+  /** The first day of the truck's week, from the week the route loaded — the "Monday to Sunday" wording follows
+   *  it. ⚠️ Optional: an event design has no week, and with none given the editor says Monday (GB, unchanged). */
+  weekStart?: 'monday' | 'sunday'
 
   /** The blank / background picture. ⚠️ `width`/`height` are the NATIVE pixels every box is in. */
   background: { url: string; width: number; height: number }
@@ -566,7 +542,7 @@ interface History { past: AnyLayout[]; present: AnyLayout; future: AnyLayout[] }
 
 export function DesignEditor(props: DesignEditorProps) {
   const {
-    token, designName, backLabel, onBack, initialLayout, country, background, onReplacePicture, replacing,
+    token, designName, backLabel, onBack, initialLayout, country, weekStart, background, onReplacePicture, replacing,
     pictureNote, previewOptions, previewWith, onPreviewWith, renderPreview, liveData, onSave, saving, onCancel,
     onDirtyChange, onSaver,
     scope, readOnly, message, footer, hasLogo, placesWithout, onAddPlacePictures,
@@ -578,6 +554,9 @@ export function DesignEditor(props: DesignEditorProps) {
    * copy one render behind. `useFontLibrary` caches the request at module scope, so the remount this
    * component does on every design change costs nothing. */
   const fontLib = useFontLibrary(token)
+  const t = useT('designEditor')
+  const sp = useT('socialPosts')
+  const weekRun = useMemo(() => weekRunOf(weekStart ?? 'monday', country), [weekStart, country])
 
   /* 🔴 CONVERTED ON OPEN — see `withDays`. ⚠️ A `useMemo` SO IT RUNS ONCE PER LAYOUT IDENTITY rather
    * than on every render: `savedJson` below is compared against it, and a fresh object each render
@@ -887,7 +866,7 @@ export function DesignEditor(props: DesignEditorProps) {
   }, [])
 
   // ── EDITS ───────────────────────────────────────────────────────────────────────────────────────
-  const items = useMemo(() => itemsOf(layout, country), [layout, country])
+  const items = useMemo(() => itemsOf(layout, country, t, weekRun, sp), [layout, country, t, weekRun, sp])
   /* 🔴 §SNAP · THE RECTANGLE OF EVERY BOX THAT IS ACTUALLY DRAWN, for the alignment guides. ⚠️ THE
    * SAME TWO FILTERS THE OUTLINES USE — not the full item list — so "what I can line up with" is
    * exactly "what I can see". ⚠️ `useMemo`, because it is rebuilt on every pointer move otherwise and
@@ -1149,7 +1128,7 @@ export function DesignEditor(props: DesignEditorProps) {
      * customers to come to something that is not happening. `toggleIsAllowed` is the same rule the
      * validator enforces on the server; this is here so the truck is told rather than refused after
      * a save. */
-    if (!toggleIsAllowed(next)) { setLocalMsg({ text: LAST_TOGGLE_MESSAGE, bad: true }); return }
+    if (!toggleIsAllowed(next)) { setLocalMsg({ text: t('settings.lastToggle', { kind: isWeekLayout(layout) ? 'weekly' : 'event' }), bad: true }); return }
     setLocalMsg(null)
     commit(() => next)
   }
@@ -1317,22 +1296,22 @@ export function DesignEditor(props: DesignEditorProps) {
    */
   const groupsFor = (key: string): { id: SettingsGroup; label: string }[] => {
     if (key === 'background') {
-      return [{ id: 'picture', label: PHONE_TAB_PICTURE }, { id: 'darken', label: PHONE_TAB_DARKEN }]
+      return [{ id: 'picture', label: sp('phoneTabPicture') }, { id: 'darken', label: sp('phoneTabDarken') }]
     }
     if (key === DAYS_KEY) {
       return [
-        { id: 'layout', label: PHONE_TAB_LAYOUT },
-        { id: 'row', label: PHONE_TAB_ROW },
-        { id: 'daysoff', label: PHONE_TAB_DAYS_OFF },
-        { id: 'more', label: PHONE_TAB_MORE },
+        { id: 'layout', label: sp('phoneTabLayout') },
+        { id: 'row', label: sp('phoneTabRow') },
+        { id: 'daysoff', label: sp('phoneTabDaysOff') },
+        { id: 'more', label: sp('phoneTabMore') },
       ]
     }
     if (key === ALL_TEXT_KEY) {
       return [
-        { id: 'size', label: PHONE_TAB_SIZE },
-        { id: 'style', label: PHONE_TAB_STYLE },
-        { id: 'readable', label: PHONE_TAB_READABLE },
-        { id: 'more', label: PHONE_TAB_MORE },
+        { id: 'size', label: sp('phoneTabSize') },
+        { id: 'style', label: sp('phoneTabStyle') },
+        { id: 'readable', label: sp('phoneTabReadable') },
+        { id: 'more', label: sp('phoneTabMore') },
       ]
     }
     /* 🔴 **EVERY TAB IN THIS LIST DRAWS SOMETHING**, which is the whole reason the list is computed
@@ -1344,12 +1323,12 @@ export function DesignEditor(props: DesignEditorProps) {
     const b = boxAt(layout, key)
     const ownsIt = !!b && b.ownStyle
     const out: { id: SettingsGroup; label: string }[] = [
-      { id: 'words', label: PHONE_TAB_WORDS },
-      { id: 'size', label: PHONE_TAB_SIZE },
-      { id: 'style', label: PHONE_TAB_STYLE },
+      { id: 'words', label: sp('phoneTabWords') },
+      { id: 'size', label: sp('phoneTabSize') },
+      { id: 'style', label: sp('phoneTabStyle') },
     ]
-    if (ownsIt) out.push({ id: 'readable', label: PHONE_TAB_READABLE })
-    out.push({ id: 'more', label: PHONE_TAB_MORE })
+    if (ownsIt) out.push({ id: 'readable', label: sp('phoneTabReadable') })
+    out.push({ id: 'more', label: sp('phoneTabMore') })
     return out
   }
 
@@ -1533,7 +1512,7 @@ export function DesignEditor(props: DesignEditorProps) {
         * the screen that opened the editor had chosen, which is the same default the desktop starts on. */}
       {previewOptions.length > 0 && (
         <label className="hidden min-w-0 items-center gap-1 md:flex">
-          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">Preview with</span>
+          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">{t('bar.previewWith')}</span>
           <select value={previewWith} onChange={e => onPreviewWith(e.target.value)}
             className={`${TOOL_INPUT} min-w-0 max-w-[12rem] truncate`}>
             {previewOptions.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
@@ -1550,9 +1529,9 @@ export function DesignEditor(props: DesignEditorProps) {
         * `sr-only` keeps them for a screen reader, which is the only reader that cannot see the eye. */}
       <button type="button" onClick={() => setPreviewOpen(true)} data-preview-post
         className={`${TOOL_BTN} ${TOOL_BTN_OFF} shrink-0`}>
-        <span aria-hidden="true" className="md:hidden">{PREVIEW_POST_BTN.slice(0, 2)}</span>
-        <span className="hidden md:inline">{PREVIEW_POST_BTN}</span>
-        <span className="sr-only md:hidden">{PREVIEW_POST_BTN}</span>
+        <span aria-hidden="true" className="md:hidden">{sp('previewPostBtn').slice(0, 2)}</span>
+        <span className="hidden md:inline">{sp('previewPostBtn')}</span>
+        <span className="sr-only md:hidden">{sp('previewPostBtn')}</span>
       </button>
       {/* ⚠️ DISABLED RATHER THAN HIDDEN. A button that appears and disappears moves everything beside
         * it, so the Cancel and Save buttons would shift the first time anything was undone. */}
@@ -1560,11 +1539,11 @@ export function DesignEditor(props: DesignEditorProps) {
         * that makes "no confirm" safe everywhere else in this editor. The glyph leads on a phone where
         * the word would not fit beside four other controls. */}
       <button type="button" onClick={undo} disabled={!hist.past.length}
-        title="Undo (⌘Z)" data-phone-undo
+        title={t('bar.undoTitle')} data-phone-undo
         className={`${TOOL_BTN} ${TOOL_BTN_OFF} disabled:text-slate-300 disabled:border-slate-100`}>
         <span aria-hidden="true" className="md:hidden">↶</span>
-        <span className="hidden md:inline">Undo</span>
-        <span className="sr-only md:hidden">Undo</span>
+        <span className="hidden md:inline">{t('bar.undo')}</span>
+        <span className="sr-only md:hidden">{t('bar.undo')}</span>
       </button>
       {/* ⚠️ REDO AND CANCEL ARE DESKTOP-ONLY. ⛔ NOT BECAUSE THEY DO NOT MATTER but because the brief
         * names five controls for the phone bar and a sixth and seventh would make every one of them too
@@ -1579,10 +1558,10 @@ export function DesignEditor(props: DesignEditorProps) {
         * is why it was correctly hidden and this was not. */}
       <span className="hidden md:inline-flex">
         <button type="button" onClick={redo} disabled={!hist.future.length}
-          title="Redo (⇧⌘Z)"
-          className={`${TOOL_BTN} ${TOOL_BTN_OFF} disabled:text-slate-300 disabled:border-slate-100`}>Redo</button>
+          title={t('bar.redoTitle')}
+          className={`${TOOL_BTN} ${TOOL_BTN_OFF} disabled:text-slate-300 disabled:border-slate-100`}>{t('bar.redo')}</button>
       </span>
-      <span className="hidden md:inline-flex"><Btn label="Cancel" colour="slate" size="sm" onClick={onCancel} /></span>
+      <span className="hidden md:inline-flex"><Btn label={t('bar.cancel')} colour="slate" size="sm" onClick={onCancel} /></span>
       {/* 🔴 THE ORANGE SAVE, ON BOTH. ⚠️ `Btn`'s DEFAULT **IS** ORANGE, so "an orange Save" is the button
         * this row already had — there was nothing to change but the words, which shorten on a phone. */}
       {/* ⚠️ §4 · `shrink-0`, AND THE WORDS ARE THE DESKTOP'S. With Redo gone and "Preview post" down to
@@ -1590,7 +1569,7 @@ export function DesignEditor(props: DesignEditorProps) {
         * so shortening it on a phone would mean either two Save buttons or widening a primitive the
         * whole app shares. Neither is worth one word. */}
       <span data-phone-save className="shrink-0">
-        <Btn label={saving ? 'Saving…' : 'Save design'} loading={saving} size="sm"
+        <Btn label={saving ? t('bar.saving') : t('bar.save')} loading={saving} size="sm"
           disabled={!editable} onClick={() => { void doSave() }} />
       </span>
     </div>
@@ -1667,9 +1646,9 @@ export function DesignEditor(props: DesignEditorProps) {
           !b ? null
             : b.ownStyle
               ? <span className="shrink-0 rounded bg-amber-100 px-1 text-[9px] font-bold uppercase tracking-wide text-amber-700"
-                  data-own-badge>{OWN_BADGE}</span>
+                  data-own-badge>{sp('ownBadge')}</span>
               : <span className="shrink-0 text-[10px] leading-none text-slate-400"
-                  data-follow-glyph title={STYLE_MATCH}>{FOLLOW_GLYPH}</span>)}
+                  data-follow-glyph title={sp('styleMatch')}>{FOLLOW_GLYPH}</span>)}
       </div>
     )
   }
@@ -1683,14 +1662,14 @@ export function DesignEditor(props: DesignEditorProps) {
   const itemGrid = (
     <div data-item-grid>
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{EDITOR_LEFT_TITLE}</p>
+        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{sp('editorLeftTitle')}</p>
         {/* ══ ⚠️ "click one to change it" — §B9 ═══════════════════════════════════════════════════════
           * ⛔ THE 🔗 LEGEND HELD THIS SLOT FOR ONE ROUND AND IS GONE. It explained a glyph that, on the
           * weekly grid, now appears on nothing at all: the four text boxes it marked are inside "The 7
           * days", and the two buttons left are a heading and a block. An instruction is worth more than
           * a key to a symbol that is not on screen. ⚠️ THE GLYPH ITSELF SURVIVES on the single event
           * design's four buttons, with its meaning in the button's `title`. */}
-        <span className="text-[10px] text-slate-400" data-click-one>{EDITOR_CLICK_ONE}</span>
+        <span className="text-[10px] text-slate-400" data-click-one>{sp('editorClickOne')}</span>
       </div>
 
       {/* ══ 🔴 §4 · "Aa  Style all the writing", WITH ITS OWN SECOND LINE ════════════════════════════
@@ -1701,7 +1680,7 @@ export function DesignEditor(props: DesignEditorProps) {
         * line of its own underneath, where it has room. ⚠️ "Aa" STAYS: it says "letters" in two
         * characters and needs no asset. */}
       <div className="mt-1.5 flex">
-        {itemBtn(ALL_TEXT_KEY, `Aa  ${ALL_TEXT_ITEM}`, null, ALL_TEXT_SAMPLE)}
+        {itemBtn(ALL_TEXT_KEY, `Aa  ${sp('allTextItem')}`, null, sp('allTextSample'))}
       </div>
 
       {/* 🔴 TWO PER ROW. `grid-cols-2` rather than a wrapping flex, so the second column lines up down
@@ -1718,7 +1697,7 @@ export function DesignEditor(props: DesignEditorProps) {
         * without contradicting the brief. */}
       {rowItems.length > 0 && (
         <>
-          <p className="mt-2 text-[10px] font-bold uppercase tracking-wide text-slate-400">Each row</p>
+          <p className="mt-2 text-[10px] font-bold uppercase tracking-wide text-slate-400">{t('grid.eachRow')}</p>
           <div className="mt-1 grid grid-cols-2 gap-1.5">
             {rowItems.map(itemCell)}
           </div>
@@ -1730,14 +1709,14 @@ export function DesignEditor(props: DesignEditorProps) {
         * artwork that never says where they are. */}
       {!layout.location.enabled && !(isWeekLayout(layout) && layout.days) && (
         <p className="mt-1.5 text-[11px] leading-snug text-slate-500">
-          The place name is in your picture — HatchGrab won’t add it.
+          {t('grid.placeOff')}
         </p>
       )}
 
       {layout.notes.length < MAX_NOTE_BOXES && (
         <button type="button" onClick={addNote} disabled={!editable}
           className="mt-1.5 w-full rounded-lg border border-dashed border-slate-300 py-1.5 text-[12px] font-bold text-orange-700 hover:bg-orange-50 disabled:border-slate-200 disabled:text-slate-300"
-          data-add-note>{EDITOR_ADD_OWN_TEXT}</button>
+          data-add-note>{sp('editorAddOwnText')}</button>
       )}
 
       {/* ══ ⛔ TOMBSTONE · THE "Background picture" BUTTON — REMOVED 10 OCTOBER 2026 (§B3) ═══════════
@@ -1793,13 +1772,13 @@ export function DesignEditor(props: DesignEditorProps) {
             * ⚠️ WITHIN 1%, which is the same tolerance the poster shape rule uses. A 1080 × 1349 export
             * is a 4:5 design, and telling its owner otherwise would be pedantry with a green tick. */}
           <span className="block text-xs font-semibold text-slate-700" data-bg-size>
-            {W} × {H} · {shapeName(W, H)}
-            {isBestShape && <span className="font-bold text-green-700" data-bg-best> {BG_BEST_SUFFIX}</span>}
+            {W} × {H} · {t(`background.shape.${shapeName(W, H)}`)}
+            {isBestShape && <span className="font-bold text-green-700" data-bg-best> {sp('bgBestSuffix')}</span>}
           </span>
           <label className={`block text-xs font-bold cursor-pointer mt-1 ${replacing ? 'text-slate-400' : 'text-orange-700'}`}>
             <input type="file" accept="image/png,image/jpeg" className="hidden"
               onChange={e => { const f = e.target.files?.[0]; if (f) onReplacePicture(f) }} />
-            {replacing ? 'Uploading…' : 'Replace picture'}
+            {replacing ? t('background.uploading') : t('background.replace')}
           </label>
         </span>
       </div>
@@ -1808,7 +1787,7 @@ export function DesignEditor(props: DesignEditorProps) {
         * grey text. ⛔ AND IT IS **ADVICE, NOT A WARNING**: a landscape design still renders, still
         * posts, and is the right choice for some trucks. */}
       {!isBestShape && (
-        <p className="text-[11px] leading-snug text-slate-500" data-bg-tip>{BG_PORTRAIT_TIP}</p>
+        <p className="text-[11px] leading-snug text-slate-500" data-bg-tip>{sp('bgPortraitTip')}</p>
       )}
       {/* 🔴 THE ONE SENTENCE THAT PREVENTS THE MOST COMMON MISTAKE: uploading last week's finished
         * poster, with its dates already printed on it, and then wondering why every date appears
@@ -1828,8 +1807,8 @@ export function DesignEditor(props: DesignEditorProps) {
         * immediately inside `&& (` is not an expression, and the parser reports it lines later. */}
       {(only === undefined || only === 'darken') && (
         <div className={only === undefined ? 'border-t border-slate-100 pt-2' : ''} data-darken>
-          <Slider label={DARKEN_LABEL} value={layout.darken} min={0} max={MAX_DARKEN} step={5}
-            format={v => `${v}%`} hint={DARKEN_HINT}
+          <Slider label={sp('darkenLabel')} value={layout.darken} min={0} max={MAX_DARKEN} step={5}
+            format={v => `${v}%`} hint={sp('darkenHint')}
             onChange={v => commit(l => ({ ...l, darken: v }))} />
         </div>
       )}
@@ -1846,7 +1825,7 @@ export function DesignEditor(props: DesignEditorProps) {
    * of them to be forgotten — which on this component means a control that silently writes nowhere.
    * ⚠️ SPREADING THE SAME VALUES IS IDENTICAL OUTPUT, and the baseline fingerprint says so. */
   const panelProps = {
-    layout, selected, selItem, sel, country,
+    layout, selected, selItem, sel, country, weekRun,
     editable, H,
     patchSel, commit,
     patchEffects,
@@ -1877,9 +1856,9 @@ export function DesignEditor(props: DesignEditorProps) {
   /* ⚠️ THE SHEET'S TITLE IS THE ITEM'S OWN NAME, from the same `items` list the desktop panel names it
    * from — so the two cannot call the same box two things. */
   const sheetName = sheetFor === 'background'
-    ? BACKGROUND_SECTION
+    ? sp('backgroundSection')
     : (items.find(i => i.key === sheetFor)?.name
-      ?? (sheetFor === ALL_TEXT_KEY ? ALL_TEXT_TITLE : 'this box'))
+      ?? (sheetFor === ALL_TEXT_KEY ? sp('allTextTitle') : t('item.thisBox')))
 
   /**
    * ══ 🔴 THE BRIEF'S ITEM BAR, PER DESIGN ══════════════════════════════════════════════════════════
@@ -1892,36 +1871,36 @@ export function DesignEditor(props: DesignEditorProps) {
    * operator means by "the picture" of their poster, and it matches the brief's two tabs exactly.
    */
   const phoneItems: { key: string; icon: string; label: string; onPick: () => void }[] = [
-    { key: ALL_TEXT_KEY, icon: 'Aa', label: PHONE_ITEM_ALL_TEXT, onPick: () => openSheet(ALL_TEXT_KEY) },
+    { key: ALL_TEXT_KEY, icon: 'Aa', label: sp('phoneItemAllText'), onPick: () => openSheet(ALL_TEXT_KEY) },
     ...(isWeekLayout(layout)
       ? [
-        { key: 'heading', icon: '¶', label: items.find(i => i.key === 'heading')?.name ?? 'Week heading', onPick: () => openSheet('heading') },
+        { key: 'heading', icon: '¶', label: items.find(i => i.key === 'heading')?.name ?? t('item.weekHeading'), onPick: () => openSheet('heading') },
         ...((layout as Layout).days
-          ? [{ key: DAYS_KEY, icon: '▤', label: DAYS_ITEM, onPick: () => openSheet(DAYS_KEY) }]
+          ? [{ key: DAYS_KEY, icon: '▤', label: sp('daysItem'), onPick: () => openSheet(DAYS_KEY) }]
           /* ⚠️ A LEGACY DESIGN HAS NO BLOCK, so its three row boxes are reached by tapping them — the
            * same way every other box is. ⛔ A BUTTON FOR A BLOCK THAT DOES NOT EXIST would open an
            * empty sheet. */
           : []),
       ]
       : [
-        { key: 'date', icon: '📅', label: items.find(i => i.key === 'date')?.name ?? 'Date', onPick: () => openSheet('date') },
-        { key: 'location', icon: '📍', label: items.find(i => i.key === 'location')?.name ?? 'Venue', onPick: () => openSheet('location') },
-        { key: 'town', icon: '🏘', label: items.find(i => i.key === 'town')?.name ?? 'Area', onPick: () => openSheet('town') },
-        { key: 'time', icon: '🕒', label: items.find(i => i.key === 'time')?.name ?? 'Time', onPick: () => openSheet('time') },
+        { key: 'date', icon: '📅', label: items.find(i => i.key === 'date')?.name ?? t('item.date'), onPick: () => openSheet('date') },
+        { key: 'location', icon: '📍', label: items.find(i => i.key === 'location')?.name ?? t('item.venue'), onPick: () => openSheet('location') },
+        { key: 'town', icon: '🏘', label: items.find(i => i.key === 'town')?.name ?? t('item.area'), onPick: () => openSheet('town') },
+        { key: 'time', icon: '🕒', label: items.find(i => i.key === 'time')?.name ?? t('item.time'), onPick: () => openSheet('time') },
       ]),
     /* ⚠️ "＋ Add text" ADDS **AND OPENS**: `addNote` already selects the new box, so the sheet follows
      * it. ⛔ ADDING WITHOUT OPENING would leave a box on the poster with no way to type in it. */
     /* ⚠️ "＋ Add text" ADDS **AND OPENS** the new box's sheet, on the Words tab — which is where you
      * type the words. ⛔ ADDING WITHOUT OPENING would leave an empty box on the poster and no way in.
      * ⚠️ THE KEY IS COMPUTED BEFORE THE ADD, because `commit` has not run when `openSheet` asks. */
-    { key: 'add-note', icon: '＋', label: PHONE_ITEM_ADD_TEXT,
+    { key: 'add-note', icon: '＋', label: sp('phoneItemAddText'),
       onPick: () => {
         if (layout.notes.length >= MAX_NOTE_BOXES) return
         const key = `${NOTE_PREFIX}${layout.notes.length}`
         addNote()
         openSheet(key)
       } },
-    { key: 'background', icon: '🖼', label: PHONE_ITEM_PICTURE, onPick: () => openSheet('background') },
+    { key: 'background', icon: '🖼', label: sp('phoneItemPicture'), onPick: () => openSheet('background') },
   ]
 
   /* 🔴 THE SHEET'S BODY IS **THE SAME COMPONENT** THE DESKTOP PANEL IS. ⚠️ One instance each, both
@@ -1953,15 +1932,15 @@ export function DesignEditor(props: DesignEditorProps) {
 
       {scope && (
         <div className="rounded-2xl border border-slate-200 bg-white p-3">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">Text positions</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">{t('scope.title')}</p>
           {/* 🔴 THE TWO MODES, AND THE WHOLE POINT OF A PLACE'S OWN DESIGN. "Own positions for this
             * place" lets a differently laid-out picture — a venue's artwork with its name already
             * printed on it — carry its own box positions instead of borrowing Standard's. */}
           <select value={scope.mode} disabled={scope.busy}
             onChange={e => scope.onMode(e.target.value as 'own' | 'standard')}
             className={`${TOOL_INPUT} w-full`}>
-            <option value="standard">Same positions as Standard</option>
-            <option value="own">Own positions for {scope.placeName}</option>
+            <option value="standard">{t('scope.standard')}</option>
+            <option value="own">{t('scope.own', { place: scope.placeName })}</option>
           </select>
         </div>
       )}
@@ -2188,7 +2167,7 @@ export function DesignEditor(props: DesignEditorProps) {
                       <span className="text-[10px] font-bold uppercase tracking-wide text-white/90">
                           {/* ⚠️ ONE NAME ON BOTH DESIGNS — the same constant the left list uses, so
                               the chip on the poster and the row beside it cannot read differently. */}
-                          {EDITOR_PICTURE_ITEM}
+                          {sp('editorPictureItem')}
                         </span>
                     </div>
                   )}
@@ -2285,7 +2264,7 @@ export function DesignEditor(props: DesignEditorProps) {
                 * one gesture — while the phone's own grey line below already names both ways to choose
                 * a box. ⛔ THE PARAGRAPH IS NOT WHAT IS HIDDEN: the font warning under it is the one
                 * thing on this row a phone operator must still see, and it is `block` on its own. */}
-              <span className="hidden md:inline">Drag a box to move it · drag a corner to resize</span>
+              <span className="hidden md:inline">{t('stage.hint')}</span>
               {/* ══ 🔴 §2 · THE ONE THING THE LIVE STAGE CANNOT SHOW ══════════════════════════════
                 * ⛔ AN UPLOADED FAMILY IS NEVER SENT TO A BROWSER (the rule the route states where it
                 * is enforced), so those boxes draw live in Oswald and in the real font in the PNG.
@@ -2294,7 +2273,7 @@ export function DesignEditor(props: DesignEditorProps) {
                 * and only when the live stage is actually up — with the PNG on screen there is nothing
                 * to warn about. */}
               {liveTree && liveFonts.unavailable.length > 0 && (
-                <span className="block text-amber-700" data-live-font-note>{LIVE_FONT_FALLBACK}</span>
+                <span className="block text-amber-700" data-live-font-note>{sp('liveFontFallback')}</span>
               )}
             </p>
             {/* ══ 🔴 [−] [100%] [+] AND A SEPARATE "Fit to screen" — §2 ═════════════════════════════
@@ -2307,25 +2286,24 @@ export function DesignEditor(props: DesignEditorProps) {
               * would do nothing. ⚠️ `tabular-nums` AND A FIXED WIDTH, so stepping 100 → 125 → 156 does
               * not move the + button under the operator's finger. */}
             <div className="flex shrink-0 items-center gap-1" data-zoom>
-              <button type="button" aria-label="Zoom out" disabled={zoomStep <= ZOOM_MIN}
+              <button type="button" aria-label={t('stage.zoomOut')} disabled={zoomStep <= ZOOM_MIN}
                 onClick={() => setZoomStep(z => Math.max(ZOOM_MIN, z - 1))}
                 className={`${TOOL_BTN} ${TOOL_BTN_OFF} w-8 disabled:text-slate-300`}>−</button>
               <span data-zoom-readout
                 className="w-12 shrink-0 text-center text-xs font-semibold tabular-nums text-slate-600">
                 {zoomPercent}%
               </span>
-              <button type="button" aria-label="Zoom in" disabled={zoomStep >= ZOOM_MAX}
+              <button type="button" aria-label={t('stage.zoomIn')} disabled={zoomStep >= ZOOM_MAX}
                 onClick={() => setZoomStep(z => Math.min(ZOOM_MAX, z + 1))}
                 className={`${TOOL_BTN} ${TOOL_BTN_OFF} w-8 disabled:text-slate-300`}>+</button>
               <button type="button" onClick={() => setZoomStep(0)} disabled={atFit}
                 className={`${TOOL_BTN} ${TOOL_BTN_OFF} ml-1 disabled:border-slate-100 disabled:text-slate-300`}
-                data-zoom-fit>{EDITOR_FIT_TO_SCREEN}</button>
+                data-zoom-fit>{sp('editorFitToScreen')}</button>
             </div>
           </div>
           {!editable && scope && (
             <p className="text-xs text-slate-500 mt-1">
-              These positions come from your Standard design. Choose “Own positions for {scope.placeName}”
-              to move them just here.
+              {t('scope.locked', { place: scope.placeName })}
             </p>
           )}
 
@@ -2370,7 +2348,7 @@ export function DesignEditor(props: DesignEditorProps) {
             * names both ways in, because "tap the poster" is the one an operator will not guess. */}
           {!sheetTab && (
             <p className="px-1 pb-1.5 text-[11px] leading-snug text-slate-400" data-phone-hint>
-              {PHONE_EDIT_HINT}
+              {sp('phoneEditHint')}
             </p>
           )}
           {/* ⚠️ `overflow-x-auto` ON THE ROW AND NOTHING ON THE PAGE. Seven 64px squares do not fit a
@@ -2448,7 +2426,7 @@ export function DesignEditor(props: DesignEditorProps) {
             <button type="button" data-phone-sheet-close onClick={closeSheet}
               className="shrink-0 rounded-lg px-2 py-1 text-sm font-bold text-slate-500">
               <span aria-hidden="true">✕</span>
-              <span className="sr-only">{PHONE_SHEET_CLOSE}</span>
+              <span className="sr-only">{sp('phoneSheetClose')}</span>
             </button>
           </div>
           {/* ⚠️ THE TABS SCROLL SIDEWAYS TOO — five of them do not fit 390px either. */}
@@ -2481,13 +2459,13 @@ export function DesignEditor(props: DesignEditorProps) {
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-black/80 p-4"
           data-post-preview onClick={() => setPreviewOpen(false)}>
           {preview
-            ? <img src={preview} alt={PREVIEW_POST_TITLE} data-post-preview-img
+            ? <img src={preview} alt={sp('previewPostTitle')} data-post-preview-img
                 className="max-h-[82vh] max-w-full rounded-lg object-contain shadow-2xl" />
-            : <p className="text-sm text-white/80">{PREVIEW_POST_WAIT}</p>}
-          <p className="text-[11px] text-white/70">{PREVIEW_POST_HINT}</p>
+            : <p className="text-sm text-white/80">{sp('previewPostWait')}</p>}
+          <p className="text-[11px] text-white/70">{sp('previewPostHint')}</p>
           <button type="button" data-post-preview-close
             className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-900"
-            onClick={() => setPreviewOpen(false)}>{PREVIEW_POST_CLOSE}</button>
+            onClick={() => setPreviewOpen(false)}>{sp('previewPostClose')}</button>
         </div>
       )}
     </div>
@@ -2519,6 +2497,7 @@ function DaysLayer({
   onDrag: (patch: Partial<DaysBlock>, info?: DragInfo) => void
   bounds: { w: number; h: number }
 }) {
+  const sp = useT('socialPosts')
   /* ⚠️ THE GESTURE'S START BLOCK, so each frame recomputes the weights from where the drag began —
    * `moveBoundary` applied to the live block every frame would compound and the handle would run away
    * from the finger. */
@@ -2532,7 +2511,7 @@ function DaysLayer({
 
   return (
     <>
-      <DraggableBox label={DAYS_ITEM} box={days} scale={scale}
+      <DraggableBox label={sp('daysItem')} box={days} scale={scale}
         active={selected === DAYS_KEY} bounds={bounds2} locked={!editable}
         /* ⛔ SEVEN ROWS, EACH CLEARING THE 8px FLOOR `parseDays` ENFORCES. Without this a corner drag
          * could produce a block the validator refuses — an error at the END of the work. */
@@ -2611,14 +2590,15 @@ function DaysLayer({
 }
 
 /** "Portrait (4:5)". ⚠️ Named ratios only where they are the ones social platforms use. */
-function shapeName(w: number, h: number): string {
+/* ⚠️ RETURNS A KEY (`designEditor.background.shape.<key>`), worded by the caller — Language Phase 1d Part 2. */
+function shapeName(w: number, h: number): 'square' | 'portrait45' | 'portrait916' | 'landscape169' | 'portrait' | 'landscape' {
   const r = w / h
   const near = (a: number) => Math.abs(r - a) < 0.02
-  if (near(1)) return 'Square (1:1)'
-  if (near(4 / 5)) return 'Portrait (4:5)'
-  if (near(9 / 16)) return 'Portrait (9:16)'
-  if (near(16 / 9)) return 'Landscape (16:9)'
-  return r < 1 ? 'Portrait' : 'Landscape'
+  if (near(1)) return 'square'
+  if (near(4 / 5)) return 'portrait45'
+  if (near(9 / 16)) return 'portrait916'
+  if (near(16 / 9)) return 'landscape169'
+  return r < 1 ? 'portrait' : 'landscape'
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -2652,6 +2632,8 @@ interface SettingsProps {
   selItem: Item | undefined
   sel: TextBox | null
   country: CountryCode
+  /** The first and last day of the truck's week, worded (`weekRunOf`). */
+  weekRun: { first: string; last: string }
   editable: boolean
   H: number
   patchSel: (patch: Partial<DateBox & NoteBox>) => void
@@ -2712,26 +2694,28 @@ interface SettingsProps {
  * decision about what customers are told.
  * ⚠️ EVERY CONTROL IS THE ONE THAT WAS THERE, bound to the same field.
  */
-function RowsPanel({ layout, commit, editable, H }: {
+function RowsPanel({ layout, commit, editable, H, weekRun }: {
   layout: AnyLayout
   commit: (fn: (l: AnyLayout) => AnyLayout) => void
   editable: boolean
   H: number
+  weekRun: { first: string; last: string }
 }) {
+  const t = useT('designEditor')
   if (!isWeekLayout(layout)) return null
   return (
     <div className="space-y-3">
-      <Field label="Spacing">
+      <Field label={t('rows.spacing')}>
         <Stepper value={layout.rowSpacing} min={1} max={H} step={2} suffix="px"
           onChange={v => commit(l => (isWeekLayout(l) ? { ...l, rowSpacing: v } : l))} />
       </Field>
       <p className="text-[11px] leading-snug text-slate-400">
-        Days run Monday to Sunday. Row 1’s three boxes are copied down by this distance.
+        {t('rows.daysRun', weekRun)}
       </p>
       <div className="border-t border-slate-100 pt-3">
-        <GroupHeading>Which events</GroupHeading>
-        <CheckRow label="Show cancelled events" checked={layout.showCancelled}
-          hint="A cancelled event shows its place crossed out and the word CANCELLED. Switched off, the day reads as a day off."
+        <GroupHeading>{t('rows.whichEvents')}</GroupHeading>
+        <CheckRow label={t('rows.showCancelled')} checked={layout.showCancelled}
+          hint={t('rows.showCancelledHint')}
           onChange={v => editable && commit(l => (isWeekLayout(l) ? { ...l, showCancelled: v } : l))} />
       </div>
     </div>
@@ -2773,6 +2757,8 @@ function DaysPanel({
    */
   only?: SettingsGroup
 }) {
+  const t = useT('designEditor')
+  const sp = useT('socialPosts')
   const show = (g: SettingsGroup) => only === undefined || only === g
   const parts = normaliseParts(days.parts)
   const on = partsOn(layout)
@@ -2782,13 +2768,13 @@ function DaysPanel({
   /* ⚠️ THE EXAMPLES ARE **LIVE** — the design's own date wording and its own clock. A fixed "Mon 5th
    * Oct" beside a design set to "05/10" would be the one line on the panel that cannot be right. */
   const example: Record<DayPartKey, string> = {
-    picture: PART_PICTURE_EG,
+    picture: sp('partPictureEg'),
     dayDate: dateSampleFor(layout, country),
-    place: placeStyleSample(layout.placeStyle).split('\n')[0] || 'Five Bells',
+    place: placeLinesFor(layout.placeStyle, t)[0],
     times: formatTimeRangeFor('17:00', '21:00', layout.timeStyle),
   }
   const name: Record<DayPartKey, string> = {
-    picture: PART_PICTURE_NAME, dayDate: PART_DAY_NAME, place: PART_PLACE_NAME, times: PART_TIMES_NAME,
+    picture: sp('partPictureName'), dayDate: sp('partDayName'), place: sp('partPlaceName'), times: sp('partTimesName'),
   }
 
   /* ══ 🔴 ⋮⋮ REORDER — POINTER EVENTS, NOT HTML5 DRAG-AND-DROP ══════════════════════════════════════
@@ -2816,12 +2802,12 @@ function DaysPanel({
         * "All on one line" and "Day on top" is choosing a shape, and a shape is a thing to look at. */}
       {show('layout') && (
       <div data-quick-layouts>
-        <GroupHeading>{DAYS_QUICK_HEADING}</GroupHeading>
+        <GroupHeading>{sp('daysQuickHeading')}</GroupHeading>
         <div className="grid grid-cols-3 gap-1.5">
           {([
-            ['oneLine', QL_ONE_LINE],
-            ['dayOnTop', QL_DAY_ON_TOP],
-            ['bigPicture', QL_BIG_PICTURE],
+            ['oneLine', sp('qlOneLine')],
+            ['dayOnTop', sp('qlDayOnTop')],
+            ['bigPicture', sp('qlBigPicture')],
           ] as const).map(([id, label]) => (
             <button key={id} type="button" disabled={!editable} data-quick={id}
               onClick={() => onQuick(id)}
@@ -2832,7 +2818,7 @@ function DaysPanel({
             </button>
           ))}
         </div>
-        <p className="mt-1 text-[11px] text-slate-400">{DAYS_QUICK_HINT}</p>
+        <p className="mt-1 text-[11px] text-slate-400">{sp('daysQuickHint')}</p>
       </div>
       )}
 
@@ -2842,7 +2828,7 @@ function DaysPanel({
       {/* ⚠️ §4 · THE **Row** TAB: what each of the seven rows holds, and in which order. */}
       {show('row') && (
       <div>
-        <GroupHeading>{DAYS_PARTS_HEADING}</GroupHeading>
+        <GroupHeading>{sp('daysPartsHeading')}</GroupHeading>
         <div ref={rowsRef} className="space-y-1" data-part-list>
           {parts.map((p, i) => (
             <div key={p.key} data-part-row={p.key}
@@ -2856,7 +2842,7 @@ function DaysPanel({
                 <span className="block truncate text-[12px] font-semibold text-slate-700">{name[p.key]}</span>
                 <span className="block truncate text-[10px] text-slate-400" data-part-eg>{example[p.key]}</span>
               </button>
-              <span data-part-handle={p.key} aria-label="Reorder"
+              <span data-part-handle={p.key} aria-label={t('days.reorder')}
                 className="shrink-0 cursor-grab touch-none select-none px-1 text-slate-400"
                 onPointerDown={e => {
                   if (!editable) return
@@ -2879,11 +2865,11 @@ function DaysPanel({
             </div>
           ))}
         </div>
-        <p className="mt-1 text-[11px] leading-snug text-slate-400" data-parts-hint>{DAYS_PARTS_HINT}</p>
+        <p className="mt-1 text-[11px] leading-snug text-slate-400" data-parts-hint>{sp('daysPartsHint')}</p>
         {/* ⚠️ `onReorder` IS THE PANEL'S OTHER DOOR — kept wired so a keyboard or a test can reorder
           * without a pointer. ⛔ A PROP NOTHING CALLS WOULD BE DEAD WEIGHT, so it is used here. */}
         <button type="button" className="hidden" data-part-move
-          onClick={() => onReorder(0, 1)}>move</button>
+          onClick={() => onReorder(0, 1)}>{t('days.move')}</button>
       </div>
       )}
 
@@ -2892,9 +2878,9 @@ function DaysPanel({
         * be a field whose contents never appear anywhere. */}
       {show('daysoff') && (
       <div data-days-off>
-        <GroupHeading>{DAYS_OFF_HEADING}</GroupHeading>
+        <GroupHeading>{sp('daysOffHeading')}</GroupHeading>
         <div className="inline-flex overflow-hidden rounded-lg border border-slate-300 bg-white">
-          {([['message', DAYS_OFF_MESSAGE], ['omit', DAYS_OFF_OMIT]] as const).map(([id, label]) => (
+          {([['message', sp('daysOffMessage')], ['omit', sp('daysOffOmit')]] as const).map(([id, label]) => (
             <button key={id} type="button" disabled={!editable} data-days-off-opt={id}
               aria-pressed={days.daysOff === id}
               onClick={() => patch({ daysOff: id })}
@@ -2904,24 +2890,24 @@ function DaysPanel({
         </div>
         {days.daysOff === 'message' ? (
           <div className="mt-1.5">
-            <label className="block text-xs font-bold text-slate-600 mb-1">{DAYS_OFF_TEXT_LABEL}</label>
+            <label className="block text-xs font-bold text-slate-600 mb-1">{sp('daysOffTextLabel')}</label>
             <input value={layout.daysOffText} disabled={!editable} data-days-off-text
               className={`${TOOL_INPUT} w-full`}
               onChange={e => commit(l => (isWeekLayout(l) ? { ...l, daysOffText: e.target.value } : l))} />
           </div>
         ) : (
-          <p className="mt-1 text-[11px] text-slate-400">{DAYS_OFF_OMIT_HINT}</p>
+          <p className="mt-1 text-[11px] text-slate-400">{sp('daysOffOmitHint')}</p>
         )}
       </div>
       )}
 
       {show('more') && (
-      <Section title={EDITOR_SECTION_MORE} summary={DAYS_MORE_SUMMARY}
+      <Section title={sp('editorSectionMore')} summary={sp('daysMoreSummary')}
         open={more} onToggle={() => setMore(!more)}>
         <>
-          <GroupHeading>{DAYS_PICTURE_SHAPE}</GroupHeading>
+          <GroupHeading>{sp('daysPictureShape')}</GroupHeading>
           <div className="flex gap-1">
-            {([['square', SHAPE_SQUARE], ['rounded', SHAPE_ROUNDED], ['circle', SHAPE_CIRCLE]] as const)
+            {([['square', sp('shapeSquare')], ['rounded', sp('shapeRounded')], ['circle', sp('shapeCircle')]] as const)
               .map(([id, label]) => (
                 <button key={id} type="button" disabled={!editable} data-shape={id}
                   onClick={() => patch({ pictureShape: id as PictureShape })}
@@ -2934,8 +2920,8 @@ function DaysPanel({
             * decision about what the SEVEN DAYS contain, so it belongs with them — and it is a
             * decision about what customers are told, which is why it is not hidden behind a word. */}
           <div className="mt-3">
-            <CheckRow label="Show cancelled events" checked={layout.showCancelled}
-              hint="A cancelled event shows its place crossed out and the word CANCELLED. Switched off, the day reads as a day off."
+            <CheckRow label={t('rows.showCancelled')} checked={layout.showCancelled}
+              hint={t('rows.showCancelledHint')}
               onChange={v => editable && commit(l => (isWeekLayout(l) ? { ...l, showCancelled: v } : l))} />
           </div>
         </>
@@ -2998,6 +2984,7 @@ function PicturePanel({ layout, commit, editable, isWeek, hasLogo, placesWithout
   placesWithout: { without: number; total: number } | null
   onAddPlacePictures: () => void
 }) {
+  const t = useT('designEditor')
   const pic = layout.placePicture
   const set = (patch: Partial<PlacePictureBox>) =>
     commit(l => ({ ...l, placePicture: { ...l.placePicture, ...patch } }))
@@ -3013,41 +3000,41 @@ function PicturePanel({ layout, commit, editable, isWeek, hasLogo, placesWithout
     <div className="space-y-3">
       {/* ⛔ "WHERE IT GOES" IS STILL GONE — 7 October 2026. The rule is derived from the switch alone
         * (`eventImageMode`): photo space on ⇒ the box, off ⇒ the whole poster. */}
-      <Field label="Picture">
+      <Field label={t('picture.picture')}>
         {seg(pic.fit, [
-          { id: 'fill' as const, label: 'Fill the box' },
-          { id: 'fit' as const, label: 'Fit inside' },
+          { id: 'fill' as const, label: t('picture.fill') },
+          { id: 'fit' as const, label: t('picture.fit') },
         ], v => set({ fit: v }))}
       </Field>
-      <Field label="Corners">
+      <Field label={t('picture.corners')}>
         {seg(pic.corners, [
-          { id: 'square' as const, label: 'Square' },
-          { id: 'rounded' as const, label: 'Rounded' },
+          { id: 'square' as const, label: t('picture.square') },
+          { id: 'rounded' as const, label: t('picture.rounded') },
         ], v => set({ corners: v }))}
       </Field>
-      <Field label="If a location has no image">
+      <Field label={t('picture.ifMissing')}>
         <select value={pic.ifMissing} disabled={!editable} className={`${TOOL_INPUT} w-full`}
           onChange={e => set({ ifMissing: e.target.value as NoPictureBehaviour })}>
-          <option value="omit">{NO_PICTURE_LABELS.omit}</option>
-          <option value="blank">{NO_PICTURE_LABELS.blank}</option>
+          <option value="omit">{t('picture.noPicture.omit')}</option>
+          <option value="blank">{t('picture.noPicture.blank')}</option>
           {/* ⛔ "Show your logo" IS OFFERED ONLY TO A TRUCK THAT HAS ONE. An option that silently
             * draws nothing is worse than an option that is not there. */}
-          {hasLogo && <option value="logo">{NO_PICTURE_LABELS.logo}</option>}
+          {hasLogo && <option value="logo">{t('picture.noPicture.logo')}</option>}
         </select>
       </Field>
 
       <div className="border-t border-slate-100 pt-3">
-        <GroupHeading>Border</GroupHeading>
-        <OptionalColourRow label="Draw a border" value={pic.borderColour}
-          hint="A line around the picture, in your own colour."
+        <GroupHeading>{t('picture.border')}</GroupHeading>
+        <OptionalColourRow label={t('picture.drawBorder')} value={pic.borderColour}
+          hint={t('picture.drawBorderHint')}
           onChange={v => set({ borderColour: v })} />
         {pic.borderColour && (
-          <Slider label="Border width" value={pic.borderWidth} min={1}
+          <Slider label={t('picture.borderWidth')} value={pic.borderWidth} min={1}
             max={Math.max(2, Math.round(Math.min(pic.w, pic.h) / 2))} step={1}
             format={v => `${v}px`} onChange={v => set({ borderWidth: v })} />
         )}
         {pic.corners === 'rounded' && (
-          <Slider label="Corner radius" value={pic.radius} min={0}
+          <Slider label={t('picture.cornerRadius')} value={pic.radius} min={0}
             max={Math.max(4, Math.round(Math.min(pic.w, pic.h) / 2))} step={1}
             format={v => `${v}px`} onChange={v => set({ radius: v })} />
         )}
@@ -3059,13 +3046,15 @@ function PicturePanel({ layout, commit, editable, isWeek, hasLogo, placesWithout
         * answer, and the button goes to the screen that fixes it. */}
       {isWeek && placesWithout && (
         <div className="border-t border-slate-100 pt-3">
-          <span className={TOOL_LABEL}>Location pictures</span>
+          <span className={TOOL_LABEL}>{t('picture.locationPictures')}</span>
           <button type="button" onClick={onAddPlacePictures}
             className="mt-1 inline-flex h-8 items-center justify-center rounded-lg bg-orange-600 px-3 text-sm font-bold text-white hover:bg-orange-700">
-            + Add location pictures
+            {t('picture.addLocationPictures')}
           </button>
           <p className="mt-1 text-[11px] text-slate-400">
-            {noPicturesLine(placesWithout.without, placesWithout.total)}
+            {placesWithout.without === 0
+              ? t('picture.allHaveImage', { total: placesWithout.total })
+              : t('picture.someWithout', { without: placesWithout.without, total: placesWithout.total })}
           </p>
         </div>
       )}
@@ -3225,16 +3214,18 @@ function SettingsPanel(p: SettingsProps & {
   itemGrid: React.ReactNode
 }) {
   const {
-    layout, selected, selItem, sel, country, editable, H, patchSel, commit, patchEffects,
+    layout, selected, selItem, sel, country, weekRun, editable, H, patchSel, commit, patchEffects,
     patchShared, patchSharedEffects, makeOwn, makeFollow, promoteToShared, setAllTextSize,
     centreSel, removeNote, live, beginGesture, onQuick, onReorder, onToggleItem, onSelectItem,
     token, fontLib, sample, hasLogo, placesWithout,
     onAddPlacePictures, stand, setStand, more, setMore, itemGrid, ownNames, only,
   } = p
+  const t = useT('designEditor')
+  const sp = useT('socialPosts')
   const isWeek = isWeekLayout(layout)
   const spec = LOCALES[country]
   const dateBox = selected === 'date' ? (layout.date as DateBox) : null
-  const itemName = selItem?.name ?? 'this box'
+  const itemName = selItem?.name ?? t('item.thisBox')
   const shared = layout.textStyle
 
   /* 🔴 THE PANEL IS ALWAYS THE SAME SHELL: the item grid, then whatever the selection needs. ⛔ The
@@ -3259,7 +3250,7 @@ function SettingsPanel(p: SettingsProps & {
         <div className={title ? 'mt-2.5' : ''}>{body}</div>
       </div>
       <div className="mt-3" data-background-section>
-        <Section title={BACKGROUND_SECTION} summary={BACKGROUND_SUMMARY}
+        <Section title={sp('backgroundSection')} summary={sp('backgroundSummary')}
           open={p.bg} onToggle={() => p.setBg(!p.bg)}>
           {p.backgroundCard}
         </Section>
@@ -3293,11 +3284,11 @@ function SettingsPanel(p: SettingsProps & {
           * in one place rather than the sheet guessing. */}
         <div className="space-y-2" data-settings-section="TEXT">
           {show('style') && (
-          <Field label="Font">
+          <Field label={t('settings.font')}>
             <div className="flex items-center gap-1.5">
               <div className="min-w-0 grow">
                 <FontPicker value={shared.fontId} onChange={id => patchShared({ fontId: id })}
-                  token={token} disabled={!editable} sample={sample}
+                  token={token} disabled={!editable} sample={sample} country={country}
                   className={`${TOOL_INPUT} w-full`} />
               </div>
             </div>
@@ -3308,19 +3299,19 @@ function SettingsPanel(p: SettingsProps & {
             * selection, and the grey line says what the number does to the boxes that are not it. */}
           {show('size') && (
             <>
-              <Field label={LABEL_TEXT_SIZE}>
+              <Field label={sp('labelTextSize')}>
                 <Stepper value={layout.date.fontSize} min={6} max={H} step={2}
                   minusLabel="A−" plusLabel="A+" onChange={v => setAllTextSize(v)} />
               </Field>
-              <p className="text-[11px] leading-snug text-slate-400" data-all-size-hint>{ALL_TEXT_SIZE_HINT}</p>
+              <p className="text-[11px] leading-snug text-slate-400" data-all-size-hint>{sp('allTextSizeHint')}</p>
             </>
           )}
           {show('style') && (
             <>
-              <Field label="Colour">
-                <ColourField value={shared.color} onChange={c => patchShared({ color: c })} label="Text colour" />
+              <Field label={t('settings.colour')}>
+                <ColourField value={shared.color} onChange={c => patchShared({ color: c })} label={t('settings.textColour')} />
               </Field>
-              <Field label={LABEL_LETTERS}>
+              <Field label={sp('labelLetters')}>
                 <StyleRow look={shared} fontLib={fontLib} editable={editable}
                   onPatch={patchShared} align={null} onAlign={null} />
               </Field>
@@ -3332,14 +3323,14 @@ function SettingsPanel(p: SettingsProps & {
           * contents were collapsed would be a tab with a heading and nothing under it. ⛔ ON THE DESKTOP
           * `open` IS THE OPERATOR'S OWN FOLD, untouched. */}
         {show('readable') && (
-          <Section title={SECTION_EASIER_TO_READ} open={only !== undefined || stand}
+          <Section title={sp('sectionEasierToRead')} open={only !== undefined || stand}
             onToggle={() => setStand(!stand)}>
             <EffectsPanel fx={shared.effects} dateBox={null} isWeek={isWeek}
               patchSel={patchSel} patchEffects={patchSharedEffects} />
           </Section>
         )}
         {show('more') && (
-          <Section title={EDITOR_SECTION_MORE} summary={MORE_SUMMARY_PLAIN}
+          <Section title={sp('editorSectionMore')} summary={sp('moreSummaryPlain')}
             open={only !== undefined || more} onToggle={() => setMore(!more)}>
             <MoreShared fx={shared.effects} look={shared} layout={layout}
               patchLook={patchShared} patchEffects={patchSharedEffects} H={H} />
@@ -3355,23 +3346,23 @@ function SettingsPanel(p: SettingsProps & {
         {show('more') && ownNames.length > 0 && (
           <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-2.5 py-2" data-own-warning>
             <p className="text-[11px] leading-relaxed text-amber-800">
-              {ownNames.map(o => o.name).join(', ')} {ownNames.length === 1 ? 'has' : 'have'} its own style, so it isn’t changed.{' '}
+              {t('settings.ownStyleNote', { count: ownNames.length, names: ownNames.map(o => o.name).join(', ') })}{' '}
               {ownNames.map((o, i) => (
                 <button key={o.key} type="button" disabled={!editable} onClick={() => makeFollow(o.key)}
                   className="font-bold underline hover:no-underline" data-match-again>
-                  {i === 0 ? 'Match it again' : `Match ${o.name}`}
+                  {i === 0 ? t('settings.matchAgain') : t('settings.matchName', { name: o.name })}
                 </button>
               ))}
             </p>
           </div>
         )}
       </>,
-      ALL_TEXT_TITLE, ALL_TEXT_BLURB,
+      sp('allTextTitle'), sp('allTextBlurb'),
     )
   }
 
   /* ⛔ NOTHING SELECTED. The brief's own sentence, and it is an instruction rather than a status. */
-  if (!selItem) return wrap(<p className="text-sm text-slate-400">{EDITOR_NOTHING_SELECTED}</p>)
+  if (!selItem) return wrap(<p className="text-sm text-slate-400">{sp('editorNothingSelected')}</p>)
 
   /* ══ 🔴 "THE 7 DAYS" — ITS OWN PANEL, AND NO TEXT SETTINGS IN IT ══════════════════════════════ */
   if (selected === DAYS_KEY && isWeek && (layout as Layout).days) {
@@ -3384,7 +3375,7 @@ function SettingsPanel(p: SettingsProps & {
         onQuick={onQuick} onReorder={onReorder} more={more} setMore={setMore}
         only={only}
         onToggle={onToggleItem} onSelectPart={onSelectItem} />,
-      DAYS_ITEM, DAYS_BLURB,
+      sp('daysItem'), sp('daysBlurb'),
     )
   }
 
@@ -3406,7 +3397,7 @@ function SettingsPanel(p: SettingsProps & {
       <PicturePanel layout={layout} commit={commit} editable={editable} isWeek={isWeek}
         hasLogo={hasLogo === true} placesWithout={placesWithout ?? null}
         onAddPlacePictures={onAddPlacePictures ?? (() => {})} />,
-      itemName, SETTINGS_CLICKED,
+      itemName, sp('settingsClicked'),
     )
   }
 
@@ -3417,8 +3408,8 @@ function SettingsPanel(p: SettingsProps & {
        * converted design has no `rows` item at all. ⛔ IT STILL GOES THROUGH `wrap` so that a LEGACY
        * design opened on a phone is not a branch that renders the desktop's whole shell inside a
        * sheet. Its one group is `layout`, which is what `settingsGroupsFor` reports. */
-      <RowsPanel layout={layout} commit={commit} editable={editable} H={H} />,
-      itemName, SETTINGS_CLICKED,
+      <RowsPanel layout={layout} commit={commit} editable={editable} H={H} weekRun={weekRun} />,
+      itemName, sp('settingsClicked'),
     )
   }
 
@@ -3442,7 +3433,7 @@ function SettingsPanel(p: SettingsProps & {
     <>
       {selected === 'date' && (
         <>
-          <Field label={LABEL_DATE_STYLE}>
+          <Field label={sp('labelDateStyle')}>
             <select value={layout.dateStyle} disabled={!editable} className={`${TOOL_INPUT} w-full`}
               onChange={e => commit(l => ({ ...l, dateStyle: e.target.value as DateStyleId }))}>
               {/* ⚠️ THE OPTION'S WORDS ARE THE DATE ITSELF, from the locale table — "Long" and "Short"
@@ -3452,23 +3443,23 @@ function SettingsPanel(p: SettingsProps & {
           </Field>
           {otherDateChoices.length > 0 && (
             <p className="text-[11px] leading-snug text-slate-400" data-other-choices>
-              {OTHER_CHOICES(otherDateChoices.slice(0, 3))}
+              {sp('otherChoices', { choices: (otherDateChoices.slice(0, 3)).join(' · ') })}
             </p>
           )}
         </>
       )}
       {selected === 'location' && isWeek && (
-        <Field label={LABEL_PLACE_STYLE}>
+        <Field label={sp('labelPlaceStyle')}>
           <select value={layout.placeStyle} disabled={!editable} className={`${TOOL_INPUT} w-full`}
             onChange={e => commit(l => (isWeekLayout(l) ? { ...l, placeStyle: e.target.value as PlaceStyleId } : l))}>
             {PLACE_STYLE_IDS.map(id => (
-              <option key={id} value={id}>{PLACE_STYLE_SAMPLES[id].split('\n').join(' · ')}</option>
+              <option key={id} value={id}>{placeLinesFor(id, t).join(' · ')}</option>
             ))}
           </select>
         </Field>
       )}
       {selected === 'time' && (
-        <Field label={LABEL_TIME_STYLE}>
+        <Field label={sp('labelTimeStyle')}>
           <select value={layout.timeStyle} disabled={!editable} className={`${TOOL_INPUT} w-full`}
             onChange={e => commit(l => ({ ...l, timeStyle: e.target.value as TimeStyle }))}>
             <option value="12h">{formatTimeRangeFor('17:00', '21:00', '12h')}</option>
@@ -3477,13 +3468,13 @@ function SettingsPanel(p: SettingsProps & {
         </Field>
       )}
       {selected === 'heading' && isWeek && (
-        <Field label={LABEL_HEADING_TEXT}>
+        <Field label={sp('labelHeadingText')}>
           <input value={(layout as Layout).heading.text} disabled={!editable}
             className={`${TOOL_INPUT} w-full`} onChange={e => patchSel({ text: e.target.value })} />
         </Field>
       )}
       {selected.startsWith(NOTE_PREFIX) && (
-        <Field label={LABEL_OWN_TEXT}>
+        <Field label={sp('labelOwnText')}>
           <input value={(sel as NoteBox).text} disabled={!editable}
             className={`${TOOL_INPUT} w-full`} onChange={e => patchSel({ text: e.target.value })} />
         </Field>
@@ -3497,15 +3488,15 @@ function SettingsPanel(p: SettingsProps & {
    * the control most operators will actually use and the one nothing on screen mentioned. */
   const sizeRow = (
     <>
-      <Field label={LABEL_TEXT_SIZE}>
+      <Field label={sp('labelTextSize')}>
         <Stepper value={sel.fontSize} min={6} max={H} step={2} onChange={v => patchSel({ fontSize: v })}
           minusLabel="A−" plusLabel="A+" />
       </Field>
-      <p className="text-[11px] leading-snug text-slate-400" data-size-hint>{TEXT_SIZE_HINT}</p>
+      <p className="text-[11px] leading-snug text-slate-400" data-size-hint>{sp('textSizeHint')}</p>
     </>
   )
   const lineUpRow = (
-    <Field label={LABEL_LINE_UP}>
+    <Field label={sp('labelLineUp')}>
       <AlignButtons align={sel.align} editable={editable} onAlign={a => patchSel({ align: a })} />
     </Field>
   )
@@ -3532,9 +3523,9 @@ function SettingsPanel(p: SettingsProps & {
       <div data-look>
         {/* ⚠️ "Style", NOT "LOOK" — §C. The heading was a noun an operator had to map onto what the
           * switch did; the two positions now say it themselves. */}
-        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{STYLE_HEADING}</p>
+        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{sp('styleHeading')}</p>
         <div className="mt-1 inline-flex overflow-hidden rounded-lg border border-slate-300 bg-white">
-          {([[false, STYLE_MATCH], [true, STYLE_OWN]] as const).map(([wantOwn, label]) => (
+          {([[false, sp('styleMatch')], [true, sp('styleOwn')]] as const).map(([wantOwn, label]) => (
             <button key={label} type="button" disabled={!editable}
               data-look-opt={wantOwn ? 'own' : 'same'}
               aria-pressed={owns === wantOwn}
@@ -3547,7 +3538,7 @@ function SettingsPanel(p: SettingsProps & {
           ))}
         </div>
         <p className="mt-1 text-[11px] leading-relaxed text-slate-400" data-look-hint>
-          {owns ? STYLE_OWN_HINT : STYLE_MATCH_HINT}
+          {owns ? sp('styleOwnHint') : sp('styleMatchHint')}
         </p>
       </div>
       )}
@@ -3563,11 +3554,11 @@ function SettingsPanel(p: SettingsProps & {
         {owns ? (
           <>
             {show('style') && (
-              <Field label="Font">
+              <Field label={t('settings.font')}>
                 <div className="flex items-center gap-1.5">
                   <div className="min-w-0 grow">
                     <FontPicker value={shown.fontId} onChange={id => patchSel({ fontId: id })}
-                      token={token} disabled={!editable} sample={sample}
+                      token={token} disabled={!editable} sample={sample} country={country}
                       className={`${TOOL_INPUT} w-full`} />
                   </div>
                   {/* ══ ⚠️ THE INLINE SIZE STEPPER IS **DESKTOP ONLY** ═══════════════════════════════
@@ -3586,12 +3577,12 @@ function SettingsPanel(p: SettingsProps & {
               </Field>
             )}
             {show('style') && (
-              <Field label="Colour">
-                <ColourField value={shown.color} onChange={c => patchSel({ color: c })} label="Text colour" />
+              <Field label={t('settings.colour')}>
+                <ColourField value={shown.color} onChange={c => patchSel({ color: c })} label={t('settings.textColour')} />
               </Field>
             )}
             {show('style') && (
-              <Field label={LABEL_LETTERS}>
+              <Field label={sp('labelLetters')}>
                 <StyleRow look={shown} fontLib={fontLib} editable={editable}
                   onPatch={patchSel} align={sel.align} onAlign={a => patchSel({ align: a })} />
               </Field>
@@ -3620,14 +3611,14 @@ function SettingsPanel(p: SettingsProps & {
       {/* ⚠️ MAKE IT STAND OUT IS SHARED-OR-OWN LIKE THE REST OF THE LOOK, so a following box does not
         * get it — the shared one is on the "All text" panel, one press away and named there. */}
       {show('readable') && owns && (
-        <Section title={SECTION_EASIER_TO_READ} open={only !== undefined || stand} onToggle={() => setStand(!stand)}>
+        <Section title={sp('sectionEasierToRead')} open={only !== undefined || stand} onToggle={() => setStand(!stand)}>
           <EffectsPanel fx={shown.effects} dateBox={dateBox} isWeek={isWeek}
             patchSel={patchSel} patchEffects={patchEffects} />
         </Section>
       )}
       {show('more') && (
-      <Section title={EDITOR_SECTION_MORE}
-        summary={MORE_SUMMARY_PLAIN}
+      <Section title={sp('editorSectionMore')}
+        summary={sp('moreSummaryPlain')}
         open={more} onToggle={() => setMore(!more)}>
         <>
           <MoreBox layout={layout} selected={selected} sel={sel} isWeek={isWeek} isPart={isPart}
@@ -3660,9 +3651,9 @@ function SettingsPanel(p: SettingsProps & {
           <button type="button" disabled={!editable} data-delete-note
             onClick={() => removeNote(selected)}
             className="inline-flex items-center gap-1.5 rounded-xl border border-red-300 bg-white px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50 disabled:border-slate-200 disabled:text-slate-300">
-            {DELETE_OWN_TEXT}
+            {sp('deleteOwnText')}
           </button>
-          <span className="text-[11px] text-slate-400" data-delete-hint>{DELETE_OWN_TEXT_KEY}</span>
+          <span className="text-[11px] text-slate-400" data-delete-hint>{sp('deleteOwnTextKey')}</span>
         </div>
       )}
 
@@ -3675,12 +3666,12 @@ function SettingsPanel(p: SettingsProps & {
         <div className="mt-3 border-t border-slate-100 pt-2.5">
           <button type="button" disabled={!editable} onClick={() => promoteToShared(selected)}
             className="text-xs font-bold text-orange-700 disabled:text-slate-300" data-use-for-all>
-            {USE_FOR_ALL_TEXT}
+            {sp('useForAllText')}
           </button>
         </div>
       )}
     </>,
-    itemName, SETTINGS_CLICKED,
+    itemName, sp('settingsClicked'),
   )
 }
 
@@ -3700,6 +3691,8 @@ function StyleRow({ look, fontLib, editable, onPatch, align, onAlign }: {
   align: Align | null
   onAlign: ((a: Align) => void) | null
 }) {
+  const t = useT('designEditor')
+  const sp = useT('socialPosts')
   const support = faceSupport(fontLib, look.fontId)
   return (
     <div className="flex items-center gap-2">
@@ -3709,22 +3702,22 @@ function StyleRow({ look, fontLib, editable, onPatch, align, onAlign }: {
           * file, so the button would depress and change nothing. */}
         {support.bold && (
           <button type="button" disabled={!editable} onClick={() => onPatch({ bold: !look.bold })}
-            title={LETTERS_BOLD} aria-label={LETTERS_BOLD}
-            className={`${TOOL_BTN} ${look.bold ? TOOL_BTN_ON : TOOL_BTN_OFF} w-8 font-black`}>B</button>
+            title={sp('lettersBold')} aria-label={sp('lettersBold')}
+            className={`${TOOL_BTN} ${look.bold ? TOOL_BTN_ON : TOOL_BTN_OFF} w-8 font-black`}>{t('letters.boldGlyph')}</button>
         )}
         {support.italic && (
-          <button type="button" disabled={!editable} title={`${LETTERS_ITALIC} — this font has a real italic`}
-            aria-label={LETTERS_ITALIC}
+          <button type="button" disabled={!editable} title={t('letters.italicTitle', { italic: sp('lettersItalic') })}
+            aria-label={sp('lettersItalic')}
             onClick={() => onPatch({ italic: !look.italic })}
-            className={`${TOOL_BTN} ${look.italic ? TOOL_BTN_ON : TOOL_BTN_OFF} w-8 italic font-serif`}>I</button>
+            className={`${TOOL_BTN} ${look.italic ? TOOL_BTN_ON : TOOL_BTN_OFF} w-8 italic font-serif`}>{t('letters.italicGlyph')}</button>
         )}
         <button type="button" disabled={!editable} onClick={() => onPatch({ caps: !look.caps })}
-          title={LETTERS_CAPS} aria-label={LETTERS_CAPS}
-          className={`${TOOL_BTN} ${look.caps ? TOOL_BTN_ON : TOOL_BTN_OFF} w-9`}>AA</button>
+          title={sp('lettersCaps')} aria-label={sp('lettersCaps')}
+          className={`${TOOL_BTN} ${look.caps ? TOOL_BTN_ON : TOOL_BTN_OFF} w-9`}>{t('letters.capsGlyph')}</button>
       </div>
       {align !== null && onAlign && (
         <>
-          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">{LABEL_LINE_UP}</span>
+          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">{sp('labelLineUp')}</span>
           <AlignButtons align={align} editable={editable} onAlign={onAlign} />
         </>
       )}
@@ -3744,13 +3737,15 @@ function AlignButtons({ align, editable, onAlign }: {
   editable: boolean
   onAlign: (a: Align) => void
 }) {
+  const t = useT('designEditor')
+  const sp = useT('socialPosts')
   const LABELS: Record<Align, string> = {
-    left: ALIGN_LEFT, center: ALIGN_CENTRE, right: ALIGN_RIGHT,
+    left: sp('alignLeft'), center: sp('alignCentre'), right: sp('alignRight'),
   }
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-1">
       {(['left', 'center', 'right'] as Align[]).map(a => (
-        <button key={a} type="button" disabled={!editable} aria-label={alignLabel(a)}
+        <button key={a} type="button" disabled={!editable} aria-label={t(`align.${alignKey(a)}`)}
           aria-pressed={align === a} onClick={() => onAlign(a)} data-align={a}
           className={`${TOOL_BTN} ${align === a ? TOOL_BTN_ON : TOOL_BTN_OFF} px-2`}>
           {LABELS[a]}
@@ -3802,7 +3797,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
  * effects WITHOUT OPENING THE PANEL. The panel is never closed now: MAKE IT STAND OUT is a section on
  * screen, open by default, and its controls show their own state. */
 
-const alignLabel = (a: Align) => (a === 'left' ? 'Left' : a === 'center' ? 'Centre' : 'Right')
+/* ⚠️ A KEY (`designEditor.align.<key>`) — the words are messages; the stored value stays `center`. */
+const alignKey = (a: Align): 'left' | 'centre' | 'right' => (a === 'left' ? 'left' : a === 'center' ? 'centre' : 'right')
 
 /* ⛔ TOMBSTONE · `AlignIcon` — DELETED 10 OCTOBER 2026. Three shifted bars drew a PARAGRAPH, and the
  * thing being lined up is one line of a place name. §C replaces it with "⇤ Left | ≡ Centre | Right ⇥",
@@ -3830,17 +3826,19 @@ function EffectsPanel({ fx, dateBox, isWeek, patchSel, patchEffects }: {
   patchSel: (patch: Partial<DateBox & NoteBox>) => void
   patchEffects: (patch: Partial<Effects>) => void
 }) {
+  const t = useT('designEditor')
+  const sp = useT('socialPosts')
   return (
     <>
       {/* ⚠️ "Shadow behind the letters", NOT "Shadow" — §C. One word named a thing; the phrase names
         * where it goes, which is the part an operator is choosing between. */}
-      <GroupHeading>{EFFECT_SHADOW}</GroupHeading>
+      <GroupHeading>{sp('effectShadow')}</GroupHeading>
       <div className="flex gap-1 mb-3">
         {(['none', 'soft', 'strong'] as const).map(s => (
           <button key={s} type="button"
             onClick={() => patchEffects({ shadow: s })}
             className={`${TOOL_BTN} ${fx.shadow === s ? TOOL_BTN_ON : TOOL_BTN_OFF} grow`}>
-            {s === 'none' ? EFFECT_SHADOW_NONE : s === 'soft' ? EFFECT_SHADOW_SOFT : EFFECT_SHADOW_STRONG}
+            {s === 'none' ? sp('effectShadowNone') : s === 'soft' ? sp('effectShadowSoft') : sp('effectShadowStrong')}
           </button>
         ))}
       </div>
@@ -3851,20 +3849,20 @@ function EffectsPanel({ fx, dateBox, isWeek, patchSel, patchEffects }: {
         * explanation of a switch belongs when the switch's own label already says what it does. */}
       <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
         <label className="flex items-center gap-1.5 text-xs text-slate-700">
-          <Switch on={fx.outline} label={EFFECT_OUTLINE} onToggle={() => patchEffects({ outline: !fx.outline })} />
-          {EFFECT_OUTLINE}
+          <Switch on={fx.outline} label={sp('effectOutline')} onToggle={() => patchEffects({ outline: !fx.outline })} />
+          {sp('effectOutline')}
         </label>
         {/* ⚠️ "Coloured strip behind the words", NOT "Band behind" — §C. "Band" is a typesetter's word
           * and the old label was missing its object entirely. */}
         <label className="flex items-center gap-1.5 text-xs text-slate-700">
-          <Switch on={fx.band} label={EFFECT_BAND} onToggle={() => patchEffects({ band: !fx.band })} />
-          {EFFECT_BAND}
+          <Switch on={fx.band} label={sp('effectBand')} onToggle={() => patchEffects({ band: !fx.band })} />
+          {sp('effectBand')}
         </label>
       </div>
       {fx.outline && (
         <div className="mb-2">
           <ColourField value={fx.outlineColour} onChange={c => patchEffects({ outlineColour: c })}
-            label="Outline colour" />
+            label={t('effects.outlineColour')} />
         </div>
       )}
       {/* ⛔ THE BAND IS WHAT "Background behind the date" BECAME. The old setting was a colour on the
@@ -3876,10 +3874,10 @@ function EffectsPanel({ fx, dateBox, isWeek, patchSel, patchEffects }: {
         <div className="mb-2 flex items-center gap-2">
           <div className="min-w-0 grow">
             <ColourField value={fx.bandColour} onChange={c => patchEffects({ bandColour: c })}
-              label="Band colour" />
+              label={t('effects.bandColour')} />
           </div>
           <label className="flex shrink-0 items-center gap-1 text-[11px] text-slate-500">
-            {EFFECT_SEE_THROUGH}
+            {sp('effectSeeThrough')}
             {/* ⚠️ SHOWN AS "see-through" AND STORED AS OPACITY. "90% see-through" is what an operator
               * means; `bandOpacity: 10` is what the renderer needs. The conversion is here, once. */}
             <input type="number" min={0} max={100} step={5} value={100 - fx.bandOpacity}
@@ -3893,15 +3891,15 @@ function EffectsPanel({ fx, dateBox, isWeek, patchSel, patchEffects }: {
       {/* ── §7 · THE POST-TYPE ADD-ON ON THIS ITEM ──────────────────────────────────────────────── */}
       {dateBox && (
         <OptionalColourRow
-          label={isWeek ? 'Band on days off' : 'Band when the event is cancelled'}
+          label={isWeek ? t('effects.bandDaysOff') : t('effects.bandCancelled')}
           value={dateBox.bgDayOff}
           hint={isWeek
-            ? 'Used instead of the band above on a day with no trading.'
-            : 'Used instead of the band above when the event is cancelled.'}
+            ? t('effects.bandDaysOffHint')
+            : t('effects.bandCancelledHint')}
           onChange={v => patchSel({ bgDayOff: v })} />
       )}
 
-      <CheckRow label={EFFECT_AUTO} checked={fx.keepReadable} hint={EFFECT_AUTO_HINT}
+      <CheckRow label={sp('effectAuto')} checked={fx.keepReadable} hint={sp('effectAutoHint')}
         onChange={v => patchEffects({ keepReadable: v })} />
     </>
   )
@@ -3935,26 +3933,27 @@ function MoreShared({ fx, look, layout, patchLook, patchEffects, H }: {
   patchEffects: (patch: Partial<Effects>) => void
   H: number
 }) {
+  const sp = useT('socialPosts')
   /* ⚠️ THE SLIDER BOUNDS NEED A FONT SIZE AND THE SHARED LOOK HAS NONE — size is always per box. The
    * DATE box's size is used, which is the one every design has and the one the panel opens on. ⛔ IT IS
    * A BOUND, NOT A VALUE: nothing here is stored against that box. */
   const refSize = layout.date.fontSize
   return (
     <>
-      <Slider label={LABEL_LETTER_SPACE} value={look.letterSpacing}
+      <Slider label={sp('labelLetterSpace')} value={look.letterSpacing}
         min={-Math.round(refSize * 0.2)} max={Math.round(refSize * 0.6)} step={1}
         format={v => `${v}px`}
         onChange={v => patchLook({ letterSpacing: v })} />
 
-      <Slider label={LABEL_SHADOW_STRENGTH} value={fx.shadowStrength} min={0} max={100} step={5}
+      <Slider label={sp('labelShadowStrength')} value={fx.shadowStrength} min={0} max={100} step={5}
         format={v => `${v}%`} onChange={v => patchEffects({ shadowStrength: v })} />
-      <Slider label={LABEL_OUTLINE_WIDTH} value={fx.outlineWidth} min={1} max={10} step={1}
+      <Slider label={sp('labelOutlineWidth')} value={fx.outlineWidth} min={1} max={10} step={1}
         onChange={v => patchEffects({ outlineWidth: v })} />
-      <Slider label={LABEL_BAND_CORNERS} value={fx.bandRadius} min={0} max={Math.max(8, Math.round(H * 0.08))} step={1}
+      <Slider label={sp('labelBandCorners')} value={fx.bandRadius} min={0} max={Math.max(8, Math.round(H * 0.08))} step={1}
         format={v => `${v}px`} onChange={v => patchEffects({ bandRadius: v })} />
-      <Slider label={LABEL_BAND_PADDING} value={fx.bandPadding} min={0} max={Math.max(8, Math.round(H * 0.04))} step={1}
+      <Slider label={sp('labelBandPadding')} value={fx.bandPadding} min={0} max={Math.max(8, Math.round(H * 0.04))} step={1}
         format={v => `${v}px`} onChange={v => patchEffects({ bandPadding: v })} />
-      <CheckRow label={EFFECT_AUTO} checked={fx.keepReadable} hint={EFFECT_AUTO_HINT}
+      <CheckRow label={sp('effectAuto')} checked={fx.keepReadable} hint={sp('effectAutoHint')}
         onChange={v => patchEffects({ keepReadable: v })} />
       {/* ⛔ "Darken the picture" WAS HERE AND IS GONE (§B3). It is a setting about the PICTURE, and it
         * lived in the MORE OPTIONS of a text box — where, on a box that follows All text, this whole
@@ -3979,14 +3978,16 @@ function MoreBox({
   commit: (fn: (l: AnyLayout) => AnyLayout) => void
   centreSel: (axis: 'x' | 'y') => void
 }) {
+  const t = useT('designEditor')
+  const sp = useT('socialPosts')
   return (
     <>
       {selected === 'date' && (
         /* ⚠️ "Day on its own line", NOT "Two lines" — WHICH IS THE SAME STORED FIELD. "Two lines" was
          * read as "wrap this box when it is too long", which is what "If it doesn't fit" below does;
          * two settings that sounded like each other and did different things. */
-        <CheckRow label="Day on its own line" checked={(layout.date as DateBox).twoLines}
-          hint="The weekday above the date. Date only."
+        <CheckRow label={t('more.dayOwnLine')} checked={(layout.date as DateBox).twoLines}
+          hint={t('more.dayOwnLineHint')}
           onChange={v => commit(l => ({ ...l, date: { ...l.date, twoLines: v } }))} />
       )}
       {/* ⛔ "On a day with no event" HAS MOVED TO "The 7 days" › Days off ON A CONVERTED DESIGN, where
@@ -3994,26 +3995,26 @@ function MoreBox({
         * still on the legacy rows, which is the only place it can still be reached. */}
       {selected === 'location' && isWeek && !(layout as Layout).days && (
         <div className="mb-3">
-          <label className="block text-xs font-bold text-slate-600 mb-1">On a day with no event</label>
+          <label className="block text-xs font-bold text-slate-600 mb-1">{t('more.noEventDay')}</label>
           <input value={(layout as Layout).daysOffText} className={`${TOOL_INPUT} w-full`}
             onChange={e => commit(l => (isWeekLayout(l) ? { ...l, daysOffText: e.target.value } : l))} />
         </div>
       )}
       <div className="mb-3">
-        <label className="block text-xs font-bold text-slate-600 mb-1">{LABEL_WORDS_BEFORE}</label>
-        <input value={sel.wordsBefore} placeholder="e.g. Find us"
+        <label className="block text-xs font-bold text-slate-600 mb-1">{sp('labelWordsBefore')}</label>
+        <input value={sel.wordsBefore} placeholder={t('more.wordsBeforePlaceholder')}
           onChange={e => patchSel({ wordsBefore: e.target.value })}
           className={`${TOOL_INPUT} w-full`} />
-        <p className="text-[11px] text-slate-400 mt-0.5">{WORDS_BEFORE_HINT}</p>
+        <p className="text-[11px] text-slate-400 mt-0.5">{sp('wordsBeforeHint')}</p>
       </div>
 
       {/* ⚠️ LINE SPACING IS **PER BOX** AND IT IS A JUDGEMENT CALL, recorded in layout.ts: it is in the
         * same Advanced group as letter spacing, which IS shared, but it multiplies the drawn height of
         * a box's text — so it belongs with size and position rather than with colour. */}
-      <Slider label={LABEL_LINE_HEIGHT} value={sel.lineSpacing} min={60} max={220} step={5}
+      <Slider label={sp('labelLineHeight')} value={sel.lineSpacing} min={60} max={220} step={5}
         format={v => `${v}%`}
         onChange={v => patchSel({ lineSpacing: v })} />
-      <Slider label={LABEL_TILT} value={sel.tilt} min={-15} max={15} step={1}
+      <Slider label={sp('labelTilt')} value={sel.tilt} min={-15} max={15} step={1}
         format={v => `${v}°`}
         onChange={v => patchSel({ tilt: v })} />
       {/* ⛔ NOT FOR A PART OF A DAY ROW. A part's x/y are the legacy row-1 coordinates and nothing
@@ -4022,19 +4023,19 @@ function MoreBox({
         * is what moves, and it has its own handles. */}
       {!isPart && (
         <>
-          <p className="text-xs font-bold text-slate-600 mb-1">{LABEL_CENTRE_ON}</p>
+          <p className="text-xs font-bold text-slate-600 mb-1">{sp('labelCentreOn')}</p>
           <div className="flex gap-1 mb-3">
             <button type="button" onClick={() => centreSel('x')}
-              className={`${TOOL_BTN} ${TOOL_BTN_OFF} grow`}>{CENTRE_ACROSS}</button>
+              className={`${TOOL_BTN} ${TOOL_BTN_OFF} grow`}>{sp('centreAcross')}</button>
             <button type="button" onClick={() => centreSel('y')}
-              className={`${TOOL_BTN} ${TOOL_BTN_OFF} grow`}>{CENTRE_UPDOWN}</button>
+              className={`${TOOL_BTN} ${TOOL_BTN_OFF} grow`}>{sp('centreUpdown')}</button>
           </div>
         </>
       )}
 
       <div className="mb-3">
-        <label className="block text-xs font-bold text-slate-600 mb-1">{LABEL_TOO_LONG}</label>
-        {([['shrink', TOO_LONG_SHRINK], ['twoLines', TOO_LONG_TWO_LINES]] as const).map(([id, label]) => (
+        <label className="block text-xs font-bold text-slate-600 mb-1">{sp('labelTooLong')}</label>
+        {([['shrink', sp('tooLongShrink')], ['twoLines', sp('tooLongTwoLines')]] as const).map(([id, label]) => (
           <label key={id} className="flex items-center gap-2 text-sm text-slate-700 py-0.5">
             <input type="radio" name={`fit-${selected}`} checked={sel.ifTooLong === id}
               onChange={() => patchSel({ ifTooLong: id as IfTooLong })} />
@@ -4042,7 +4043,7 @@ function MoreBox({
           </label>
         ))}
         <p className="text-[11px] text-slate-400 mt-0.5">
-          One long word with no space in it is always shrunk — we never hyphenate a place name.
+          {t('more.neverHyphenate')}
         </p>
       </div>
 

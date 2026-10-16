@@ -1350,7 +1350,7 @@
 2/extra/US|card|sep|compact	code: P2-us-clock
 2/extra/US|card|oct|full	code: P2-us-clock
 2/extra/US|card|oct|compact	code: P2-us-clock
-2/extra/US|manage|schedule|cards	code: P2-us-clock+1d-us-address-style
+2/extra/US|manage|schedule|cards	code: P2-us-clock+1d-us-address-style+pending-card-layout
 2/extra/US|rows|demo|pizza	code: P2-demo-US + words
 2/extra/US|rows|demo|burgers	code: P2-demo-US + words
 2/extra/US|rows|demo|curries	code: P2-demo-US + words

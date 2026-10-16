@@ -14,10 +14,17 @@
 import { useState } from 'react'
 import { Card, Toggle } from './primitives'
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
-import { formatMinor } from '@/lib/money-format'
+import { formatMinor, currencySymbol, editableMinor } from '@/lib/money-format'
 import { applyBps } from '@/lib/order-charges'
 import { formatRateMilli, formatRateBps } from '@/lib/order-charge-lines'
 import { checkChargeSettings, feePhrase, pctText, type ChargeSettingsInput } from '@/lib/charge-settings'
+// Language Phase 1d Part 2: the card's words are `manageCharges`; a refusal is an `errorsManage` code — the same one
+// `update_charges` sends — worded here in the truck's locale; the example quotes the customer's own charge line
+// (`charges.serviceFeeCustomer`), so it can never name a line the customer does not see.
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/manageCharges'
+import '@/lib/i18n/catalog/errorsManage'
+import '@/lib/i18n/catalog/charges'
 
 export interface ChargesTruck {
   tax_rate_milli?: number | null
@@ -36,6 +43,10 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   onTruckUpdate: (partial: Partial<ChargesTruck>) => void
 }) {
   const cs = useCountrySettings()
+  const t = useT('manageCharges')
+  const tCharges = useT('charges')
+  // A refusal's code and values, worded (lib/charge-settings.ts returns `errorsManage` codes).
+  const tErr = useT('errorsManage') as unknown as (code: string, params?: Record<string, string>) => string
   const fmt = { currency: cs.currency, locale: cs.locale }
   const money = (minor: number) => formatMinor(minor, fmt)
   const [rate, setRate] = useState(truck.tax_rate_milli != null ? formatRateMilli(truck.tax_rate_milli) : '')
@@ -43,21 +54,21 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const [tipping, setTipping] = useState(typeof truck.tipping_enabled === 'boolean' ? truck.tipping_enabled : cs.tippingEnabledDefault)
   const [feeOn, setFeeOn] = useState(truck.service_fee_enabled === true)
   const [feePct, setFeePct] = useState(truck.service_fee_bps ? pctText(truck.service_fee_bps) : '')
-  const [feeFixed, setFeeFixed] = useState(truck.service_fee_fixed_minor ? (truck.service_fee_fixed_minor / 100).toFixed(2) : '')
+  const [feeFixed, setFeeFixed] = useState(truck.service_fee_fixed_minor ? editableMinor(truck.service_fee_fixed_minor, fmt) : '')
   const [feeError, setFeeError] = useState<string | null>(null)
 
   if (cs.pricesIncludeTax) return null
 
   const save = async (input: ChargeSettingsInput, onError: (e: string | null) => void) => {
     const r = checkChargeSettings(input, cs, money)
-    if (!r.ok) { onError(r.error); return false }
+    if (!r.ok) { onError(tErr(r.code, r.params)); return false }
     onError(null)
     try {
       const res = await api('update_charges', input as Record<string, unknown>)
       if (res?.truck) onTruckUpdate(res.truck)
       return true
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Couldn’t save — please try again.'
+      const msg = e instanceof Error ? e.message : t('saveFailed')
       onError(msg); showToast(msg, 'error')
       return false
     }
@@ -88,12 +99,12 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
 
   return (
     <Card className="p-4">
-      <h3 className="text-base font-bold text-slate-800">Tax, tips and fees</h3>
+      <h3 className="text-base font-bold text-slate-800">{t('heading')}</h3>
       <div className="divide-y divide-slate-100">
-        {row('Sales tax rate',
-          'The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.',
+        {row(t('rate.label'),
+          t('rate.hint'),
           <div className="flex items-center gap-1.5">
-            <input type="text" inputMode="decimal" aria-label="Sales tax rate" value={rate}
+            <input type="text" inputMode="decimal" aria-label={t('rate.label')} value={rate}
               onChange={e => setRate(e.target.value)}
               onBlur={() => { void save({ taxRate: rate }, setRateError) }}
               placeholder="0"
@@ -103,54 +114,54 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
           rateError ? <p className="text-xs text-red-600 mt-1" role="alert">{rateError}</p> : null,
           'rate')}
 
-        {row('Tips',
-          'Customers paying online by card can add a tip. It all goes to you.',
-          <Toggle on={tipping} ariaLabel="Tips"
+        {row(t('tips.label'),
+          t('tips.hint'),
+          <Toggle on={tipping} ariaLabel={t('tips.label')}
             onToggle={() => { const next = !tipping; setTipping(next); void save({ tippingEnabled: next }, () => {}) }} />,
           <div className="mt-2">
-            <p className="text-xs text-slate-500">Choices customers see:</p>
+            <p className="text-xs text-slate-500">{t('tips.choices')}</p>
             <div className="mt-1 flex flex-wrap gap-1.5" data-tip-chips>
               {cs.tipPresetsPct.map(p => (
-                <span key={p} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">{formatRateBps(Math.round(p * 100))}%</span>
+                <span key={p} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">{t('tips.chip', { rate: formatRateBps(Math.round(p * 100)) })}</span>
               ))}
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">Other amount</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">{t('tips.other')}</span>
             </div>
           </div>,
           'tips')}
 
-        {truckKeeps && row('Online service fee',
-          'Added to online orders only. Never on pay-at-the-truck or walk-up orders. You keep it.',
-          <Toggle on={feeOn} ariaLabel="Online service fee"
+        {truckKeeps && row(t('fee.label'),
+          t('fee.hint'),
+          <Toggle on={feeOn} ariaLabel={t('fee.label')}
             onToggle={() => { const next = !feeOn; setFeeOn(next); void save({ serviceFeeEnabled: next }, setFeeError) }} />,
           <div className="mt-2 space-y-1.5">
             <div className="flex items-center gap-1.5 text-sm text-slate-700" data-fee-boxes>
               {maxPct !== null && (<>
-                <input type="text" inputMode="decimal" aria-label="Service fee percentage" value={feePct}
+                <input type="text" inputMode="decimal" aria-label={t('fee.pctAria')} value={feePct}
                   onChange={e => setFeePct(e.target.value)} onBlur={() => { void save({ serviceFeePct: feePct }, setFeeError) }}
                   placeholder="0" className="w-16 rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-orange-400" />
                 <span>%</span>
               </>)}
               {maxPct !== null && maxFixed !== null && <span className="px-1">+</span>}
               {maxFixed !== null && (<>
-                <span>{money(0).replace(/[\d.,\s]/g, '')}</span>
-                <input type="text" inputMode="decimal" aria-label="Service fee fixed amount" value={feeFixed}
+                <span>{currencySymbol(fmt)}</span>
+                <input type="text" inputMode="decimal" aria-label={t('fee.fixedAria')} value={feeFixed}
                   onChange={e => setFeeFixed(e.target.value)} onBlur={() => { void save({ serviceFeeFixed: feeFixed }, setFeeError) }}
                   placeholder="0.00" className="w-20 rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </>)}
             </div>
-            <p className="text-xs text-slate-500">Most you can charge: {feePhrase(maxPct, maxFixed, cs.currency, money)}</p>
+            <p className="text-xs text-slate-500">{t('fee.max', { max: feePhrase(maxPct, maxFixed, cs.currency, money) })}</p>
             {feeError && <p className="text-xs text-red-600" role="alert">{feeError}</p>}
             <p className="text-xs text-slate-500">
-              Customers see it before they pay, as one line: &ldquo;Online service fee {money(exampleFee)}&rdquo;.
+              {t('fee.example', { label: tCharges('serviceFeeCustomer'), amount: money(exampleFee) })}
             </p>
           </div>,
           'fee')}
 
         {hatchgrabKeeps && (
           <div className="py-3" data-charges-row="fee-hatchgrab">
-            <p className="text-sm font-semibold text-slate-800">Online service fee</p>
+            <p className="text-sm font-semibold text-slate-800">{t('fee.label')}</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              HatchGrab adds a {feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, cs.currency, money)} service fee to your customers&apos; online orders. You don&apos;t pay it and can&apos;t change it.
+              {t('fee.hatchgrab', { fee: feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, cs.currency, money) })}
             </p>
           </div>
         )}

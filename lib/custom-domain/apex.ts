@@ -1,4 +1,8 @@
 import psl from 'psl'
+// Language Phase 1d Part 2: the refusal sentences are `customDomain.apex.<reason>`, in the caller's locale (en-GB when
+// none is given — what this always wrote). The screen passes its own; the manage route passes the truck's.
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/customDomain'
 
 /**
  * ── 🔴 THE APEX GUARD. IT RUNS BEFORE ANY PROVISIONING CODE, AND THAT ORDER IS THE POINT. ────────
@@ -28,7 +32,7 @@ import psl from 'psl'
 
 export type ApexVerdict =
   | { ok: true; host: string; registrable: string; subdomain: string }
-  | { ok: false; reason: 'empty' | 'unparseable' | 'apex' | 'not_a_domain' | 'too_deep'; host: string; message: string }
+  | { ok: false; reason: 'empty' | 'unparseable' | 'apex' | 'not_a_domain' | 'too_deep'; host: string; message: string; params: Record<string, string> }
 
 /** How many labels below the registrable domain we accept. `a.b.theirs.co.uk` is fine; deeper is not. */
 const MAX_SUBDOMAIN_LABELS = 3
@@ -41,9 +45,10 @@ const MAX_SUBDOMAIN_LABELS = 3
  * apex case in particular has to explain the CONSEQUENCE, because an operator who does not understand
  * why we refused will simply try again with the same thing.
  */
-export function checkSubdomain(input: string | null | undefined): ApexVerdict {
+export function checkSubdomain(input: string | null | undefined, locale?: string | null): ApexVerdict {
+  const t = translatorFor(locale, 'customDomain')
   const raw = (input ?? '').trim().toLowerCase()
-  if (!raw) return { ok: false, reason: 'empty', host: '', message: 'Type the address you would like to use.' }
+  if (!raw) return { ok: false, reason: 'empty', host: '', message: t('apex.empty'), params: {} }
 
   // Strip anything that is not the hostname — a scheme, a path, a port, a trailing dot.
   let host = raw
@@ -53,7 +58,7 @@ export function checkSubdomain(input: string | null | undefined): ApexVerdict {
     .replace(/\.$/, '')
 
   if (!host || host.includes(' ') || !host.includes('.')) {
-    return { ok: false, reason: 'not_a_domain', host, message: 'That does not look like a web address.' }
+    return { ok: false, reason: 'not_a_domain', host, message: t('apex.not_a_domain'), params: {} }
   }
 
   const parsed = psl.parse(host) as { domain: string | null; subdomain: string | null; error?: unknown }
@@ -61,7 +66,7 @@ export function checkSubdomain(input: string | null | undefined): ApexVerdict {
   if (parsed.error || !parsed.domain) {
     return {
       ok: false, reason: 'unparseable', host,
-      message: 'We could not read that as a web address. Check the spelling and try again.',
+      message: t('apex.unparseable'), params: {},
     }
   }
 
@@ -69,14 +74,14 @@ export function checkSubdomain(input: string | null | undefined): ApexVerdict {
   if (!parsed.subdomain) {
     return {
       ok: false, reason: 'apex', host,
-      message: `${host} is your whole website address. If you point that at us, your website is replaced by this page. Put a word in front of it instead — for example events.${host}.`,
+      message: t('apex.apex', { host }), params: { host },
     }
   }
 
   if (parsed.subdomain.split('.').length > MAX_SUBDOMAIN_LABELS) {
     return {
       ok: false, reason: 'too_deep', host,
-      message: 'That address has too many parts. Something like events.' + parsed.domain + ' works best.',
+      message: t('apex.too_deep', { domain: parsed.domain }), params: { domain: parsed.domain },
     }
   }
 

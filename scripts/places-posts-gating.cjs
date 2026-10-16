@@ -58,7 +58,14 @@ const KEY = 'schedule_graphics'
 /** ⛔ THE RETIRED PREVIEW KEY. Asserted ABSENT from the code, and asserted inert as an override. */
 const OLD_KEY = 'places_posts_preview'
 /** The plan sentence, read from the one module that holds it. */
-const WEEKLY_POST_COPY = (read('lib/copy/weeklyPost.ts').match(/WEEKLY_POST_PLAN_REFUSAL = '([^']+)'/) || [])[1]
+/* ⚠️ RE-PINNED (Language Phase 1d Part 2): lib/copy/weeklyPost.ts no longer holds the words as a literal — the export is
+ * `translatorFor(DEFAULT_LOCALE, 'weeklyPost')('planRefusal')`. So the module is COMPILED AND RUN and the export's VALUE
+ * is the sentence (the same thing the old regex lifted), and it must equal the en-GB message it reads. */
+const WEEKLY_POST_COPY = (() => {
+  const { compile } = require('./_slot-interval-compile.cjs')
+  const v = compile(REPO, ['lib/copy/weeklyPost.ts'], 'gating-wp-copy').req('lib/copy/weeklyPost.js').WEEKLY_POST_PLAN_REFUSAL
+  return v === msgAt('en-GB', 'weeklyPost.planRefusal') ? v : undefined
+})()
 
 let fails = 0
 const ok = [], bad = []
@@ -185,12 +192,14 @@ head('2 · the pills and panes are gated, and an old ?section= link lands on Eve
    * does sell it, and the answer is the same for a different reason: **every other plan-gated TAB on
    * this bar is filtered the same way**, and Billing is where a plan is changed. ⛔ A GREYED TAB WOULD
    * BE A NEW PATTERN on the one bar an operator uses every day. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): `t` is the page's translator now (useT('manageShell')), so the filter's
+  // and the bar's parameter is `tab`. Same filter, same key, same list rendered.
   t('🔴 the TOP TAB is filtered — there is no Social media tab without the key',
-    /if \(t\.id === 'social'\) \{/.test(code)
-    && new RegExp(`return t\\.roles\\.includes\\(userRole\\)\\s*\\n\\s*&& canAccess\\(truck\\?\\.plan \\?\\? 'starter', '${KEY}',`).test(code)
+    /if \(tab\.id === 'social'\) \{/.test(code)
+    && new RegExp(`return tab\\.roles\\.includes\\(userRole\\)\\s*\\n\\s*&& canAccess\\(truck\\?\\.plan \\?\\? 'starter', '${KEY}',`).test(code)
     /* ⛔ AND IT IS THE `tabs` LIST THE BAR RENDERS, not a second filtered copy. */
-    && /const tabs = allTabs\.filter\(t => \{/.test(code)
-    && /\{tabs\.map\(t => \(/.test(code))
+    && /const tabs = allTabs\.filter\(tab => \{/.test(code)
+    && /\{tabs\.map\(tab => \(/.test(code))
   /* ⛔ AND THE PANE IS MOUNTED BEHIND THE SAME ANSWER. A tab an operator cannot see is not a
    * sufficient guard on its own: `activeTab` is state, and a legacy URL sets it. The mount tests
    * `activeTab === 'social'`, and `activeTab` can only become `'social'` through a tab the filter
@@ -275,7 +284,9 @@ head('4 · the routes refuse without the key — and refuse with the right sente
    * sentence a Max truck was told. 🔴 THERE IS ONE GATE NOW, so the ordering has nothing to order and
    * the sentence has nothing to choose between. ⚠️ A COUNT IS WHAT SAYS SO: exactly one `canAccess`
    * call in `gated()`, and the retired key nowhere in the file's code. */
-  const g = code.slice(code.indexOf('function gated(truck: TruckRow)'), code.indexOf('async function loadDesign'))
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated` takes the truck's locale too (its refusal is worded in it), so the
+  // anchor is `gated(truck: TruckRow, locale: string)`; the slice is otherwise the same.
+  const g = code.slice(code.indexOf('function gated(truck: TruckRow, locale: string)'), code.indexOf('async function loadDesign'))
   t('🔴 /api/weekly-post has ONE gate, on the plan key',
     new RegExp(`'${KEY}' as never`).test(g)
     && (g.match(/canAccess\(/g) || []).length === 1
@@ -284,11 +295,21 @@ head('4 · the routes refuse without the key — and refuse with the right sente
    * this route, and a plan gate that only covered POST would serve a truck's fonts to a plan that
    * cannot have the feature. ⚠️ ASSERTED ON BOTH HANDLERS, because there are two entry points now and
    * there was one when this file was written. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated(truck)` → `gated(truck, locale)` — the locale is read on the line
+  // above (`localeForTruck`), so it is still the first thing each handler does after finding the truck.
   t('🔴 …and it is called at the top of BOTH handlers — the POST and the font GET',
-    /export async function GET\(req: NextRequest\)[\s\S]{0,900}const blocked = gated\(truck\)\s*\n\s*if \(blocked\) return blocked/.test(code)
-    && /export async function POST\(req: NextRequest\)[\s\S]{0,700}const blocked = gated\(truck\)\s*\n\s*if \(blocked\) return blocked/.test(code))
+    /export async function GET\(req: NextRequest\)[\s\S]{0,900}const locale = await localeForTruck\(truck\)\s*\n\s*const blocked = gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked/.test(code)
+    && /export async function POST\(req: NextRequest\)[\s\S]{0,700}const locale = await localeForTruck\(truck\)\s*\n\s*const blocked = gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked/.test(code))
+  /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the route no longer imports WEEKLY_POST_PLAN_REFUSAL; `gated` refuses with
+   * the `errorsManage.social_media_plan` code (through `refuse`, worded in the truck's language). ⚠️ WEAKER, SAID SO:
+   * "ONE shared sentence" was one imported symbol; it is now a second message key, held to the constant by asserting
+   * its GB words ARE the constant's value and that en-US overrides neither key with different words. Still no
+   * literal in the route. */
   t('⚠️ …and the refusal is the ONE shared sentence, never a literal in the route',
-    /WEEKLY_POST_PLAN_REFUSAL/.test(g)
+    /return ok \? null : refuse\(locale, 'social_media_plan', 403\)/.test(g)
+    && !!WEEKLY_POST_COPY && msgAt('en-GB', 'errorsManage.social_media_plan') === WEEKLY_POST_COPY
+    && (msgAt('en-US', 'errorsManage.social_media_plan') ?? null) === (msgAt('en-US', 'weeklyPost.planRefusal') ?? null)
+    && !/'Social media posts are on/.test(codeOf(POST_ROUTE))
     && !/not switched on/.test(codeOf(POST_ROUTE)))
 
   /* ══ 🔴 THE PLAN SENTENCE SAYS "Pro and Max", BECAUSE THE KEY IS IN `PRO_FEATURES` ═══════════════
@@ -311,15 +332,24 @@ head('4 · the routes refuse without the key — and refuse with the right sente
       && can('pro', KEY) === true
       && can('max', KEY) === true
       && can('trial', KEY) === true)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the routes send `errorsManage.social_media_plan`, so its GB words are
+    // held to the same sentence as the screen's constant.
     t('⛔ …so the refusal names Pro and Max, and does NOT say "on Max"',
       WEEKLY_POST_COPY === 'Social media posts are on Pro and Max'
-      && !/is on Max/.test(WEEKLY_POST_COPY))
+      && !/is on Max/.test(WEEKLY_POST_COPY)
+      && msgAt('en-GB', 'errorsManage.social_media_plan') === 'Social media posts are on Pro and Max')
     /* ⚠️ AND IT IS THE SAME STRING ON ALL THREE SURFACES. Two copies is what made the 5 October error
      * possible; there are three readers now, so the argument is stronger rather than weaker. */
+    /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the SCREEN still imports the constant; BOTH ROUTES now refuse with the
+     * `social_media_plan` code (/api/weekly-post's `gated`, and /api/manage's PLACES_TAB_ONLY gate). ⚠️ WEAKER, SAID
+     * SO: "one constant" becomes "one constant + one message key whose words are asserted identical" (GB exactly, and
+     * en-US overriding neither). Still no literal on any of the three surfaces. */
     t('⚠️ …and the screen and BOTH routes read that ONE constant, not three literals',
       /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(read('components/manage/SocialPosts.tsx'))
-      && /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(POST_ROUTE)
-      && /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(MANAGE_ROUTE)
+      && /refuse\(locale, 'social_media_plan', 403\)/.test(codeOf(POST_ROUTE))
+      && /PLACES_TAB_ONLY\.includes\(action\)[\s\S]{0,200}return refuse\('social_media_plan', 403\)/.test(codeOf(MANAGE_ROUTE))
+      && !!WEEKLY_POST_COPY && msgAt('en-GB', 'errorsManage.social_media_plan') === WEEKLY_POST_COPY
+      && (msgAt('en-US', 'errorsManage.social_media_plan') ?? null) === (msgAt('en-US', 'weeklyPost.planRefusal') ?? null)
       && !/'Social media posts are on/.test(codeOf(read('components/manage/SocialPosts.tsx')))
       && !/'Social media posts are on/.test(codeOf(POST_ROUTE))
       && !/'Social media posts are on/.test(codeOf(MANAGE_ROUTE)))
@@ -333,7 +363,8 @@ head('4 · the routes refuse without the key — and refuse with the right sente
       && can('starter', 'private_events') === false)
   }
   t('🔴 …and the gate runs before any action is dispatched',
-    /const blocked = gated\(truck\)\s*\n\s*if \(blocked\) return blocked\s*\n\s*\n?\s*const action = String\(body\.action \?\? ''\)/.test(code))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated(truck)` → `gated(truck, locale)`; still directly before dispatch.
+    /const blocked = gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked\s*\n\s*\n?\s*const action = String\(body\.action \?\? ''\)/.test(code))
 
   const m = codeOf(MANAGE_ROUTE)
   /* ══ 🔴 THE SPLIT IS THE POINT, AND BOTH HALVES ARE ASSERTED ═══════════════════════════════════

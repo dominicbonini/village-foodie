@@ -56,15 +56,15 @@ import {
   DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H, META_FREE_REPLIES_PER_MONTH,
   MONTHLY_REPLY_LIMIT_CHOICES, DEFAULT_MONTHLY_REPLY_LIMIT,
 } from '@/lib/whatsapp/reply-cap'
-import { META_PRICING_URL, WHATSAPP_MANAGER_URL, formatLimit, formatResetDate, META_PRICING_CHECKED_ON, META_FREE_ALLOWANCE_FROM } from '@/lib/whatsapp/copy'
+import { META_PRICING_URL, WHATSAPP_MANAGER_URL, formatResetDate, META_PRICING_CHECKED_ON_YMD, META_FREE_ALLOWANCE_FROM_YMD } from '@/lib/whatsapp/copy'
 // S2/S3: the connection VIEW type only — a state and three booleans. No token shape exists on the
 // client by construction; see lib/whatsapp/connection-read.ts for the server-side reduction.
 import type { WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
 // S4: the Embedded Signup launcher. Client-only by construction — it loads Meta's JS SDK and captures
 // the one-time code; it makes NO Graph call and stores nothing. See lib/whatsapp/embedded-signup.ts.
-import { startEmbeddedSignup, loadFacebookSdk, type FBGlobal, type EmbeddedSignupOutcome } from '@/lib/whatsapp/embedded-signup'
+import { startEmbeddedSignup, loadFacebookSdk, SDK_LOAD_ERROR, type FBGlobal, type EmbeddedSignupOutcome } from '@/lib/whatsapp/embedded-signup'
 import {
-  setupReducer, INITIAL_SETUP_STATE, setupButtonLabel, setupButtonDisabled,
+  setupReducer, INITIAL_SETUP_STATE, setupButtonLabelKey, setupButtonDisabled, type SetupNotice,
 } from '@/lib/whatsapp/setup-machine'
 import { whatsAppRowView } from '@/lib/whatsapp/connection-view'
 import { FeatureGate } from '@/components/FeatureGate'
@@ -112,7 +112,7 @@ import { KitchenCapacitySection } from '@/components/manage/KitchenCapacitySecti
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
-import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, TRIAL_NOT_STARTED_BILLING } from '@/lib/settings-copy'
+import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS } from '@/lib/settings-copy'   // Billing's not-started words: messages `manageBilling.notStarted`
 /* 🔴 THREE LABELS ON THIS PAGE ARE NOW CONSTANTS, because the Event types modal and the dashboard's
  * "This event" card show the same three settings and were calling them something shorter. Settings is
  * still the SOURCE of the words — they were lifted from here — but there is one copy of each now, so
@@ -188,6 +188,16 @@ import '@/lib/i18n/catalog/manageScheduleImport'
 import '@/lib/i18n/catalog/manageSettings'
 import '@/lib/i18n/catalog/serviceSettings'
 import '@/lib/i18n/catalog/offlineProtection'
+// Language Phase 1d Part 2 (Reports): the Reports tab's words and its CSV headers.
+import '@/lib/i18n/catalog/manageReports'
+// Language Phase 1d Part 2 (WhatsApp): the reply preview, the Set up control and Settings › Auto-replies.
+import '@/lib/i18n/catalog/manageWhatsApp'
+// Language Phase 1d Part 2 (shell): the page's own words (tab bar, header, banners, toasts, trial popup), Billing and Team.
+import '@/lib/i18n/catalog/manageShell'
+import '@/lib/i18n/catalog/manageBilling'
+import '@/lib/i18n/catalog/manageTeam'
+import { useAppLocale } from '@/lib/i18n/use-t'
+import { resolveLocale } from '@/lib/i18n/locales'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
@@ -568,6 +578,14 @@ const FOOD_EMOJI_CATEGORIES = [
 export default function ManagePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params)
   const router = useRouter()
+  // Language Phase 1d Part 2: the shell's words (messages `manageShell`), in the truck's locale once it has loaded.
+  const t = useT('manageShell')
+  /* ⚠️ A REF FOR THE TWO `[token]`-ONLY CALLBACKS (`load`, `api`): putting `t` in their deps would give them a new
+   * identity when a US truck's locale arrives, and `load`'s effect would refetch with the spinner. They read the
+   * current translator at the moment they need a fallback word. */
+  const tRef = useRef(t)
+  useEffect(() => { tRef.current = t }, [t])
+  const appLocale = useAppLocale()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
   const [scheduleSection, setScheduleSection] = useState<ScheduleSection>('events')
   /** Social media's pill. ⚠️ Opens on `create`, which is the screen a truck arrives wanting. */
@@ -680,6 +698,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // ⚠️ The `waiting` state is the one that earns its keep: setup ends with the operator closing the
   // tab, so a domain that never resolves produces NO signal at all without it.
   const [domainBannerDismissed, setDomainBannerDismissed] = useState(false)
+  /** The ?verify= outcome as a code (Language Phase 1d Part 2) — the toast's words are chosen once the locale is known. */
+  const [verifyNotice, setVerifyNotice] = useState<'ok' | 'expired' | 'invalid' | null>(null)
 
   // ── K3/K4: THE WALKTHROUGH ────────────────────────────────────────────────────────────────────────
   // 🔴 THERE IS NO AUTO-OPEN PATH, AND THAT IS THE GUARANTEE. `walkthroughOpen` starts false and is only
@@ -805,7 +825,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       // Silent refreshes remove even that, so the staleness has to become a STANDING statement rather
       // than a toast that fades. This is the condition on which the split ships.
       if (silent) setRefreshFailedAt(new Date())
-      showToast(e.message || 'Failed to load', 'error')
+      showToast(e.message || tRef.current('loadFailed'), 'error')
     }
     finally { if (!silent) setLoading(false) }
   }, [token])
@@ -990,17 +1010,25 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     // ⚠️ NO RESEND IS PROMISED. There is no resend path for SIGNUP verification —
     // /api/auth/resend-verification reads `operator_email_changes`, the email-CHANGE table, which is a
     // different one. The earlier "we'll send you a fresh one" named a mechanism that does not exist.
-    if (verify === 'ok') showToast('Email confirmed — thank you.', 'success')
-    else if (verify === 'expired') showToast('That confirmation link has expired. Get in touch and we’ll sort it before you go live.', 'error')
-    else showToast('That confirmation link didn’t work. Get in touch and we’ll sort it before you go live.', 'error')
+    // Language Phase 1d Part 2: a CODE here — the toast's words are chosen below, once the truck's locale is known.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVerifyNotice(verify === 'ok' ? 'ok' : verify === 'expired' ? 'expired' : 'invalid')
     // Strip it once consumed so a reload or a remount cannot repeat the toast. replaceState, not a
     // router navigation: this is an address-bar rewrite with no re-render and no refetch.
     // ⚠️ Deliberately touches ONLY `verify` — ?import=demo and ?tab= are left exactly as they are.
     params.delete('verify')
     const qs = params.toString()
     window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  /* The ?verify= toast, in the truck's words: it waits until the truck's country settings have loaded AND the
+   * provider has switched to their locale (the toast stack only renders after the first load anyway, so a GB truck
+   * sees the same toast as before). One toast, then the code is cleared. */
+  useEffect(() => {
+    if (!verifyNotice || !countrySettings || appLocale !== resolveLocale(countrySettings.locale)) return
+    showToast(t(`verify.${verifyNotice}`), verifyNotice === 'ok' ? 'success' : 'error')
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVerifyNotice(null)
+  }, [verifyNotice, countrySettings, appLocale, t, showToast])
 
   // Trial accounts default to billing tab on every page load
   // 🔴 NOT ON iOS (App Store 3.1.1/3.1.3) — opening straight onto the plan-and-upgrade surface is the
@@ -1086,9 +1114,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       if (!res.ok) throw new Error(data.error)
       setCurrentUserName(data.name)
       setShowProfileModal(false)
-      showToast('Profile updated')
+      showToast(t('profile.updated'))
     } catch (e: any) {
-      showToast(e.message || 'Failed to save', 'error')
+      showToast(e.message || t('profile.saveFailed'), 'error')
     } finally {
       setSavingProfile(false)
     }
@@ -1112,13 +1140,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       body: JSON.stringify({ token, action, ...extra }),
     })
     const data = await res.json()
-    if (!res.ok) throw new Error(data.error || 'Failed')
+    if (!res.ok) throw new Error(data.error || tRef.current('requestFailed'))
     return data
   }, [token])
 
   if (loading) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3"><Spinner /><p className="text-slate-400 text-sm">Loading management console...</p></div>
+      <div className="flex flex-col items-center gap-3"><Spinner /><p className="text-slate-400 text-sm">{t('loading')}</p></div>
     </div>
   )
 
@@ -1127,13 +1155,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // current. Cleared by the next successful load, not by time and not by a tap.
   const staleBar = refreshFailedAt ? (
     <div className="bg-amber-500 text-white px-4 py-2 text-sm font-bold text-center">
-      Couldn&apos;t refresh. Showing what was saved{lastLoadedAt ? ` at ${formatInstantClock(lastLoadedAt, mgTime)}` : ''}. Changes you make are still saved.
+      {t('stale', { hasTime: lastLoadedAt ? 'yes' : 'no', time: lastLoadedAt ? formatInstantClock(lastLoadedAt, mgTime) : '' })}
     </div>
   ) : null
 
   if (!truck) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <p className="text-red-500 font-bold">Invalid or expired token</p>
+      <p className="text-red-500 font-bold">{t('invalidToken')}</p>
     </div>
   )
 
@@ -1142,13 +1170,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // without the field), not a state a working deployment reaches.
   if (!countrySettings) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <p className="text-red-500 font-bold">Couldn&apos;t load this truck&apos;s country settings. Please refresh.</p>
+      <p className="text-red-500 font-bold">{t('noCountrySettings')}</p>
     </div>
   )
 
   const allTabs: { id: Tab; label: string; icon: string; roles: UserRole[] }[] = [
-    { id: 'menu',      label: 'Menu',      icon: truck?.truck_emoji || '🍕', roles: ['owner', 'manager'] },
-    { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
+    { id: 'menu',      label: t('tabs.menu'),      icon: truck?.truck_emoji || '🍕', roles: ['owner', 'manager'] },
+    { id: 'schedule',  label: t('tabs.schedule'),  icon: '📅', roles: ['owner', 'manager'] },
     /* ══ 🔴 SOCIAL MEDIA — ITS OWN TOP TAB, DIRECTLY AFTER SCHEDULE (7 October 2026) ════════════════
      * It was a pill inside Schedule for a day. ⛔ IT IS GATED ON `schedule_graphics` — Pro, Max and
      * trial since the 10 October launch — AND IS FILTERED OUT, NOT DISABLED, for a truck without it.
@@ -1169,7 +1197,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
      * full label safe at a width nobody has stood in front of.
      * ⚠️ 💬 — A SPEECH BUBBLE, NOT A LOUDSPEAKER (7 October 2026, Dominic). 📣 is broadcasting AT
      * people, which is what an ad is; a post about where the van will be is a message. */
-    { id: 'social',    label: 'Social media', icon: '💬', roles: ['owner', 'manager'] },
+    { id: 'social',    label: t('tabs.social'), icon: '💬', roles: ['owner', 'manager'] },
     /* ⛔ THE SEPARATE 'Schedule graphics' TAB IS GONE (3 October 2026). It sat here, between Schedule
      * and Deals. Its three sections are sub-tabs INSIDE Schedule now — Events · Weekly post · Places —
      * because every one of them is about the truck's own dates, and a second top-level tab made the
@@ -1178,24 +1206,25 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     /* ⛔ 'Deals' AND 'Extras & Upsells' WERE HERE. Both are pills inside Menu now — see
      * `MENU_SECTIONS`. Neither carried a badge or a count, so nothing moved with them; the only
      * badge on this half of the bar is Menu's own allergens `(!)`, which is unchanged. */
-    { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
-    { id: 'team',      label: 'Team',      icon: '👥', roles: ['owner', 'manager'] },
-    { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
+    { id: 'reports',   label: t('tabs.reports'),   icon: '📊', roles: ['owner', 'manager'] },
+    { id: 'team',      label: t('tabs.team'),      icon: '👥', roles: ['owner', 'manager'] },
+    { id: 'settings',  label: t('tabs.settings'),  icon: '🔧', roles: ['owner', 'manager'] },
     // 🔴 PAYMENTS — OWNER ONLY, AND IT MUST NOT INHERIT BILLING'S EXCLUSION.
     // The filter below carries `if (t.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'`.
     // That rule is keyed on the ID `'billing'`, so this tab does NOT get the `plan !== 'tester'` test and
     // falls through to the generic `t.roles.includes(userRole)` arm — owner-only, every plan, tester
     // included. That is intended: a tester truck still needs to reach Connect onboarding.
-    { id: 'payments',  label: 'Payments',  icon: '💷', roles: ['owner'] },
-    { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
+    // 💷 in GB, 💵 in the US (`tabs.paymentsIcon`).
+    { id: 'payments',  label: t('tabs.payments'),  icon: t('tabs.paymentsIcon'), roles: ['owner'] },
+    { id: 'billing',   label: t('tabs.billing'),   icon: '💳', roles: ['owner'] },
   ]
   /* 🔴 THE PAGE IS WIDE ONLY WHILE THE SOCIAL TAB IS THE ONE ON SCREEN. The pane reports `false` when
    * it unmounts, so this is belt and braces — but a stale `true` would silently widen Settings, and the
    * tab check costs nothing. */
   const wideContent = socialWide && activeTab === 'social'
 
-  const tabs = allTabs.filter(t => {
-    if (t.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'
+  const tabs = allTabs.filter(tab => {
+    if (tab.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'
     /* ══ 🔴 THE SOCIAL TAB FOLLOWS THE PLAN (10 October 2026 · launch) ═══════════════════════════════
      * ⛔ IT WAS `places_posts_preview` — a Feature in no plan, held through `trucks.feature_overrides`
      * and granted to one truck while this was being built. **It is `schedule_graphics` now**: Pro, Max
@@ -1204,12 +1233,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
      * ⚠️ A truck without it sees NO Social tab at all — not a greyed one — so nothing about the top bar
      * changes for them. 🔴 THAT IS THE EXISTING PATTERN FOR THIS BAR and it is the right one here: a tab
      * that opens a refusal is worse than no tab, and Billing is where a plan is changed. */
-    if (t.id === 'social') {
-      return t.roles.includes(userRole)
+    if (tab.id === 'social') {
+      return tab.roles.includes(userRole)
         && canAccess(truck?.plan ?? 'starter', 'schedule_graphics',
           truck?.feature_overrides ?? {}, truck?.trial_expires_at ?? null)
     }
-    return t.roles.includes(userRole)
+    return tab.roles.includes(userRole)
   })
 
   /* ══ 🔴 THE NOTIFICATION STACK — ONE NODE, RENDERED BELOW THE SUB-TAB BAR ════════════════════════
@@ -1234,12 +1263,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {showWalkthroughStrip && (
           <div className="mb-4 bg-slate-900 text-white rounded-xl px-4 py-2.5 flex items-center gap-3">
             <span aria-hidden>🧭</span>
-            <p className="text-sm font-semibold flex-1 min-w-0">Want a quick tour of your dashboard?</p>
+            <p className="text-sm font-semibold flex-1 min-w-0">{t('notices.tour')}</p>
             <button type="button" onClick={openWalkthrough}
               className="text-xs font-black bg-orange-600 hover:bg-orange-700 px-3 py-1.5 rounded-lg whitespace-nowrap">
-              Show me around
+              {t('notices.showMeAround')}
             </button>
-            <button type="button" aria-label="Dismiss"
+            <button type="button" aria-label={t('notices.dismiss')}
               onClick={() => { writeWalkthroughState(token, 'seen'); setWalkthroughStateLocal('seen') }}
               className="text-slate-400 hover:text-white text-xl leading-none">×</button>
           </div>
@@ -1250,9 +1279,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
             <span className="text-amber-500 text-lg shrink-0">📅</span>
             <p className="text-sm text-amber-800 flex-1">
-              We found <strong>{pendingApprovalCount}</strong> event{pendingApprovalCount !== 1 ? 's' : ''} for you — review and approve before they go live.
+              {t.rich('notices.approval', { count: pendingApprovalCount, b: chunks => <strong>{chunks}</strong> })}
             </p>
-            <button onClick={() => setActiveTab('schedule')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
+            <button onClick={() => setActiveTab('schedule')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">{t('notices.review')}</button>
             <button onClick={() => setBannerDismissedAtCount(pendingApprovalCount)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none shrink-0">✕</button>
           </div>
         )}
@@ -1264,9 +1293,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
             <span className="text-amber-500 text-lg shrink-0">⚠️</span>
             <p className="text-sm text-amber-800 flex-1">
-              <strong>Allergens not set</strong> — customers can&apos;t see allergen info until you verify it. Review each dish&apos;s allergens on the Menu tab.
+              {t.rich('notices.allergens', { b: chunks => <strong>{chunks}</strong> })}
             </p>
-            <button onClick={() => setActiveTab('menu')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
+            <button onClick={() => setActiveTab('menu')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">{t('notices.review')}</button>
           </div>
         )}
         {/* Custom-domain banner — the fourth instance of this page's one notification mechanism.
@@ -1282,7 +1311,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                    and it said "dashboard settings" when this card lives in manage → Settings — the tab
                    they are already on. `addressUrl` is the SAME helper the confirm block's step 1 uses,
                    so the two cannot disagree about how a stored host becomes a link. */
-                <><a href={addressUrl(truck.custom_domain)} target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-green-900">{truck.custom_domain}</a> is live. Have a look at it, then tell us it is right in Settings.</>}
+                t.rich('notices.domainLive', { domain: truck.custom_domain, link: chunks => <a href={addressUrl(truck.custom_domain!)} target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-green-900">{chunks}</a> })}
             </p>
             <button onClick={() => setDomainBannerDismissed(true)} className="text-sm font-bold leading-none shrink-0 text-green-400 hover:text-green-600">✕</button>
           </div>
@@ -1296,31 +1325,32 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             again, and if Stripe still wants something it comes back. */}
         {stripeActionRequired && !stripeBannerDismissed && activeTab !== 'payments' && (
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
-            <span className="text-amber-500 text-lg shrink-0">💷</span>
+            <span className="text-amber-500 text-lg shrink-0">{t('tabs.paymentsIcon')}</span>
             <p className="text-sm text-amber-800 flex-1">
-              <strong>Stripe needs something from you</strong> — card payments can stop until it&apos;s sorted.
+              {t.rich('notices.stripe', { b: chunks => <strong>{chunks}</strong> })}
             </p>
-            <button onClick={() => setActiveTab('payments')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
+            <button onClick={() => setActiveTab('payments')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">{t('notices.review')}</button>
             <button onClick={() => setStripeBannerDismissed(true)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none shrink-0">✕</button>
           </div>
         )}
         {/* Mandatory fields banner */}
         {(() => {
           const missing = [
-            !truck.name?.trim() && 'truck name',
-            !truck.cuisine_type?.trim() && 'cuisine type',
-            !truck.contact_email?.trim() && 'contact email',
-            !truck.contact_phone?.trim() && 'contact phone',
+            !truck.name?.trim() && t('notices.field.truckName'),
+            !truck.cuisine_type?.trim() && t('notices.field.cuisineType'),
+            !truck.contact_email?.trim() && t('notices.field.contactEmail'),
+            !truck.contact_phone?.trim() && t('notices.field.contactPhone'),
           ].filter(Boolean) as string[]
           if (missing.length === 0) return null
           return (
             <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
               <span className="text-amber-500 text-lg shrink-0">⚠</span>
               <div>
-                <p className="text-sm font-semibold text-amber-800">Complete your profile</p>
+                <p className="text-sm font-semibold text-amber-800">{t('notices.profileTitle')}</p>
                 <p className="text-xs text-amber-700 mt-0.5">
-                  Missing: {missing.join(', ')}.{' '}
-                  <button onClick={() => setActiveTab('settings')} className="underline font-medium">Go to Settings →</button>
+                  {/* The field names joined with ", " as they always were (Intl.ListFormat would add "and"). */}
+                  {t('notices.missing', { fields: missing.join(', ') })}{' '}
+                  <button onClick={() => setActiveTab('settings')} className="underline font-medium">{t('notices.goToSettings')}</button>
                 </p>
               </div>
             </div>
@@ -1350,11 +1380,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         sticky={false}
         truckName={truck.name}
         truckLogoUrl={truck.logo ?? null}
-        subtitle="Management console"
+        subtitle={t('header.subtitle')}
       >
         <AppLink href={`/dashboard/${token}`}
           className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">
-          ← Orders dashboard
+          {t('header.ordersDashboard')}
         </AppLink>
         <UserMenu
           operatorName={currentUserName || currentUserFirstName || ''}
@@ -1371,27 +1401,27 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {/* ⚠️ THE TAB BAR WIDENS WITH THE CONTENT, not independently of it. A 1024px bar centred over a
             1700px editor would read as two unrelated screens stacked on each other. */}
         <div className={`w-full px-4 flex gap-1 overflow-x-auto ${wideContent ? '' : 'min-[1400px]:max-w-5xl min-[1400px]:mx-auto'}`}>
-          {tabs.map(t => (
+          {tabs.map(tab => (
             // K3: `data-tab-id` is the walkthrough's ANCHOR. It is a stable identifier, not a position —
             // the tour resolves `[data-tab-id="settings"]` at open time, so this bar can be reordered,
             // role-filtered or extended without touching lib/walkthrough.ts. Do not remove it.
-            <button key={t.id} data-tab-id={t.id} onClick={() => setActiveTab(t.id)}
-              className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
-              <span>{t.icon}</span>
-              {t.id === 'schedule' && pendingApprovalCount > 0 ? (
+            <button key={tab.id} data-tab-id={tab.id} onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === tab.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
+              <span>{tab.icon}</span>
+              {tab.id === 'schedule' && pendingApprovalCount > 0 ? (
                 // Pending: show the count inline in the same font, reading "Schedule (8)" in orange.
-                <span className="text-orange-400">{t.label} ({pendingApprovalCount})</span>
-              ) : t.id === 'payments' && stripeActionRequired ? (
+                <span className="text-orange-400">{t('tabs.scheduleCount', { count: pendingApprovalCount })}</span>
+              ) : tab.id === 'payments' && stripeActionRequired ? (
                 // Stripe needs something from the truck: the SAME orange-400 (!) treatment the Menu tab
                 // uses for unverified allergens — a countless variant, because "how many requirements"
                 // is not a number an operator can act on. No new formatting was invented.
-                <span className="text-orange-400">{t.label} <span aria-label="Stripe needs your attention">(!)</span></span>
-              ) : t.id === 'menu' && allergensUnverified ? (
+                <span className="text-orange-400">{tab.label} <span aria-label={t('tabs.stripeAttention')}>(!)</span></span>
+              ) : tab.id === 'menu' && allergensUnverified ? (
                 // Allergens unverified: a (!) on the Menu tab. Uses the SAME orange-400 treatment as the
                 // Schedule needs-approval cue (consistency) — not amber.
-                <span className="text-orange-400">{t.label} <span aria-label="allergens not set">(!)</span></span>
+                <span className="text-orange-400">{tab.label} <span aria-label={t('tabs.allergensNotSet')}>(!)</span></span>
               ) : (
-                t.label
+                tab.label
               )}
             </button>
           ))}
@@ -1456,12 +1486,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             one-long-page behaviour, which was explicitly to be left alone. Nothing here scrolls,
             spies, or reads a `#hash`. */}
         {activeTab === 'menu' && (
-          <SubTabBar label="Menu sections" className="mb-4">
+          <SubTabBar label={t('menuSections.label')} className="mb-4">
               {MENU_SECTIONS.map(sec => (
                 <button key={sec.id} role="tab" aria-selected={menuSection === sec.id}
                   onClick={() => setMenuSection(sec.id)}
                   className={subtabBtn(menuSection === sec.id)}>
-                  {sec.label}
+                  {/* The pill's words from messages, by id (Language Phase 1d Part 2) — `sec.label` is the English the list carries. */}
+                  {t(`menuSections.${sec.id}`)}
                 </button>
               ))}
           </SubTabBar>
@@ -1474,7 +1505,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             of the three looking different.
             ⚠️ THE PANE NO LONGER RENDERS A CONTROL AT ALL — see `data-social-area`'s removal there. */}
         {activeTab === 'social' && (
-          <SubTabBar label="Social media sections" className="mb-4">
+          <SubTabBar label={t('socialSections.label')} className="mb-4">
               {SOCIAL_SECTIONS.map(sec => (
                 /* ══ 🔴 THE PILL ASKS THE PANE, AND THE PANE MAY REFUSE (9 October 2026) ══════════
                    ⛔ IT CALLED `setSocialSection` DIRECTLY, so pressing a pill while a design editor
@@ -1487,7 +1518,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                 <button key={sec.id} role="tab" aria-selected={socialSection === sec.id}
                   onClick={() => (socialGo.current ?? setSocialSection)(sec.id)}
                   className={subtabBtn(socialSection === sec.id)}>
-                  {sec.label}
+                  {t(`socialSections.${sec.id}`)}
                 </button>
               ))}
           </SubTabBar>
@@ -1581,16 +1612,18 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </button>
             <div className="text-center mb-4">
               <div className="text-3xl mb-2">🎉</div>
-              <h2 className="text-xl font-black text-slate-900">You&apos;re on a free trial</h2>
+              <h2 className="text-xl font-black text-slate-900">{t('trialPopup.title')}</h2>
               <p className="text-sm text-slate-500 mt-1">
-                Trial ends <span className="font-semibold text-orange-500">
-                  {truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : 'soon'}
-                </span>
+                {t.rich('trialPopup.ends', {
+                  hasDate: truck.trial_expires_at ? 'yes' : 'no',
+                  date: truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : '',
+                  hl: chunks => <span className="font-semibold text-orange-500">{chunks}</span>,
+                })}
               </p>
             </div>
             <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4 text-center">
               <p className="text-sm font-semibold text-orange-800">
-                Full Max features + Pay at Hatch ordering — completely free*
+                {t('trialPopup.offer')}
               </p>
               {/* 🔴 SAME CORRECTION AS THE BILLING TAB, 14 August 2026 — one false sentence, two copies.
                   This read "You won't be charged anything until your trial ends on {date}." Nothing
@@ -1605,26 +1638,20 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                   Starter-tier fallback at expiry that IS NOT BUILT. It is left exactly as found because
                   rewriting it was outside this task's brief, not because it is true. */}
               <p className="text-sm text-orange-700 mt-1">
-                {truck.trial_expires_at ? (
-                  <>
-                    You won&apos;t be charged anything during your trial, which runs until{' '}
-                    <strong>{formatTrialEndDate(truck.trial_expires_at, mgTime!)}</strong>.
-                  </>
-                ) : (
-                  <>You won&apos;t be charged anything while you&apos;re on trial.</>
-                )}
-                {' '}Billing only ever starts when you choose a plan and enter your payment details.
-                Until then there&apos;s nothing to cancel and nothing to pay.
-                Choose your plan before then — if you don&apos;t, access will revert to the free Starter tier and some features will stop working.
+                {t.rich('trialPopup.body', {
+                  hasDate: truck.trial_expires_at ? 'yes' : 'no',
+                  date: truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : '',
+                  b: chunks => <strong>{chunks}</strong>,
+                })}
               </p>
               <p className="text-xs text-orange-500 mt-2">
-                *Standard card processing fees apply on online orders
+                {t('trialPopup.fees')}
               </p>
             </div>
             <button
               onClick={() => { setShowTrialReminder(false); setActiveTab('billing') }}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors">
-              Upgrade here →
+              {t('trialPopup.upgrade')}
             </button>
           </div>
         </div>
@@ -1635,20 +1662,20 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
              onClick={e => e.target === e.currentTarget && setShowProfileModal(false)}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-slate-900">Edit profile</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{t('profile.title')}</h3>
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('profile.name')}</label>
               <input
                 type="text"
                 value={editProfileName}
                 onChange={e => setEditProfileName(e.target.value)}
-                placeholder="Your name"
+                placeholder={t('profile.namePlaceholder')}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
                 autoFocus
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('profile.email')}</label>
               <input
                 type="email"
                 value={currentUserEmail || ''}
@@ -1661,14 +1688,14 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                 onClick={() => setShowProfileModal(false)}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
               >
-                Cancel
+                {t('profile.cancel')}
               </button>
               <button
                 onClick={saveProfile}
                 disabled={!editProfileName.trim() || savingProfile}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700"
               >
-                {savingProfile ? 'Saving...' : 'Save'}
+                {savingProfile ? t('profile.saving') : t('profile.save')}
               </button>
             </div>
           </div>
@@ -8169,7 +8196,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const validateEventForm = (form: EditingEvent) => {
     const errors: Record<string, string> = {}
     if (!form.event_date) errors.event_date = tE('errors.date')
-    if (!form.venue_name?.trim()) errors.venue_name = tE('errors.venue')
+    /* 🔴 A PRIVATE EVENT NEEDS NO LOCATION (16 October 2026). Its venue is only for the truck's own reference and is
+     * never shown to guests, so approving one never waits on a venue name. The type chooser decides, as the save does
+     * (`chosenPrivate`). Every other event still needs one. */
+    const formPrivate = !!privateTypeId && eventTypeId === privateTypeId
+    if (!formPrivate && !form.venue_name?.trim()) errors.venue_name = tE('errors.venue')
     if (!form.start_time) errors.start_time = tE('errors.start')
     if (!form.end_time) errors.end_time = tE('errors.end')
     // V11.15: the end select can no longer OFFER an invalid time, but an event opened for editing may
@@ -8574,6 +8605,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     const dayName = formatYmd(event.event_date, ts, { weekday: 'short' }).toUpperCase()
     const dayNum = Number(event.event_date.slice(8, 10))
     const month = formatYmdShortMonth(event.event_date, ts, { month: 'short' }).toUpperCase()
+    /* ── 🔴 IS THIS EVENT PRIVATE *AS THE CARD STANDS*? (16 October 2026) ─────────────────────────────
+     * The type chooser decides, so switching it to Private hides the location boxes at once and switching back
+     * to Standard brings them back. Before the types load (`privateTypeId` null) the event's own flag decides —
+     * which is what `pendingTypeFor` would select anyway. A private event needs no location: it is never on a
+     * map, its venue is only for the truck's own reference, and approving it never waits on one. */
+    const privateNow = privateTypeId ? pendingTypeFor(event) === privateTypeId : event.is_private === true
+    const needsTimes = !event.start_time || !event.end_time
+    /** The private event's own "needs times" prompt is on the card (the chooser block below shows it). */
+    const privateTimesPrompt = pending && !isPast && !!privateTypeId && pendingTypeFor(event) === privateTypeId && needsTimes
 
     return (
       <Card key={event.id}>
@@ -8720,53 +8760,47 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               </div>
             )}
 
-            {/* ══ 🔴 THE APPROVAL CARD'S EVENT TYPE — THE SAME PILL CONTROL (5 October 2026) ══════════
-              * ⛔ A SCRAPED PRIVATE EVENT ARRIVES WITH PRIVATE SELECTED, and the truck can pick another
-              * type right here. The bridge sets `is_private` at insert from the word "private" in the
-              * found text; `pendingTypeFor` seeds the pill from that, because such an event has no
-              * `event_type_id` yet (§73.5 — nobody has reviewed it, so no type and no token are issued
-              * until confirm).
-              * 🔴 IT IS THE SAME `<EventTypeSelect>` AS ADD/EDIT, so the purple panel and the Event
-              * name field come with it, and there is no second control to disagree with the first.
-              * ⚠️ APPROVE THEN CARRIES WHAT THIS ROW SHOWS. A scraped private event has no times (the
-              * live facts say so), so Approve routes the operator into Edit with the time flagged —
-              * where this same control is waiting with Private still selected.
-              * ⚠️ `pending` ONLY. A confirmed event's type is changed from the dashboard card, with the
-              * confirm a live event needs. */}
-            {pending && !isPast && (
-              <div className="mt-3 w-full">
-                <EventTypeSelect token={token} venueName={event.venue_name}
-                  placeId={(event as { truck_place_id?: string | null }).truck_place_id ?? null}
-                  value={pendingTypeFor(event)}
-                  onChange={v => setPendingTypes(m => ({ ...m, [event.id]: v }))}
-                  privateName={pendingNames[event.id] ?? event.private_name ?? ''}
-                  onPrivateName={v => setPendingNames(m => ({ ...m, [event.id]: v }))} />
-                {/* ⛔ THE MISSING-TIMES PROMPT, WHEN PRIVATE IS SELECTED. A private event taking orders
-                  * by link needs times: the guest's page shows a closing time and the ordering window
-                  * derives from them. The scraper never captures times for these rows, so this is the
-                  * normal path — and the server refuses the confirm with the same sentence. */}
-                {privateTypeId && pendingTypeFor(event) === privateTypeId
-                  && (!event.start_time || !event.end_time) && (
-                  <p className="mt-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-900">
-                    {tP('form.needsTimes')}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Pending (Approve/Edit/Reject) — DESKTOP: compact, right-aligned in the main row (keeps
-                the card short). MOBILE keeps the full-width row below (sm:hidden there). Same handlers
-                as that row, including the conflict-acknowledge gate on Approve. */}
-            {pending && (
-              <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 self-start">
-                <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS('card.approve')}</button>
-                {!isPast && (
-                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">{tS('card.edit')}</button>
-                )}
-                <button onClick={() => handleRejectScrapedEvent(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">{tS('card.reject')}</button>
-              </div>
-            )}
           </div>
+
+          {/* ══ 🔴 BELOW THE MAIN ROW, NOT IN IT (16 October 2026, docs/private-event-approval-fix-report.md) ══════
+            * ⛔ IT WAS A `w-full` CHILD OF THE MAIN ROW'S FLEX, beside the details column (`flex-1 min-w-0`). A full-width
+            * flex item takes the row, so the details shrank to 0px at EVERY width and their text (title, badges, the
+            * "Time needed" note) spilled underneath this control — what Dominic saw on Pizzeria Gusto's pending private
+            * events. Now: details, THEN this at the card's full width, THEN the warnings, THEN Approve / Edit / Reject.
+            * scripts/pending-card-render.cjs measures it (the boxes must not intersect, 320–1440px, WebKit). */}
+          {/* ══ 🔴 THE APPROVAL CARD'S EVENT TYPE — THE SAME PILL CONTROL (5 October 2026) ══════════
+            * ⛔ A SCRAPED PRIVATE EVENT ARRIVES WITH PRIVATE SELECTED, and the truck can pick another
+            * type right here. The bridge sets `is_private` at insert from the word "private" in the
+            * found text; `pendingTypeFor` seeds the pill from that, because such an event has no
+            * `event_type_id` yet (§73.5 — nobody has reviewed it, so no type and no token are issued
+            * until confirm).
+            * 🔴 IT IS THE SAME `<EventTypeSelect>` AS ADD/EDIT, so the purple panel and the Event
+            * name field come with it, and there is no second control to disagree with the first.
+            * ⚠️ APPROVE THEN CARRIES WHAT THIS ROW SHOWS. A scraped private event has no times (the
+            * live facts say so), so Approve routes the operator into Edit with the time flagged —
+            * where this same control is waiting with Private still selected.
+            * ⚠️ `pending` ONLY. A confirmed event's type is changed from the dashboard card, with the
+            * confirm a live event needs. */}
+          {pending && !isPast && (
+            <div className="mt-3 w-full" data-pending-type>
+              <EventTypeSelect token={token} venueName={event.venue_name}
+                placeId={(event as { truck_place_id?: string | null }).truck_place_id ?? null}
+                value={pendingTypeFor(event)}
+                onChange={v => setPendingTypes(m => ({ ...m, [event.id]: v }))}
+                privateName={pendingNames[event.id] ?? event.private_name ?? ''}
+                onPrivateName={v => setPendingNames(m => ({ ...m, [event.id]: v }))} />
+              {/* ⛔ THE MISSING-TIMES PROMPT, WHEN PRIVATE IS SELECTED. A private event taking orders
+                * by link needs times: the guest's page shows a closing time and the ordering window
+                * derives from them. The scraper never captures times for these rows, so this is the
+                * normal path — and the server refuses the confirm with the same sentence. */}
+              {privateTypeId && pendingTypeFor(event) === privateTypeId
+                && (!event.start_time || !event.end_time) && (
+                <p className="mt-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-900">
+                  {tP('form.needsTimes')}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* 🔴 GUESSED-LOCATION WARNING — the map pin this approval will publish.
               A scraped event's coordinates come from lib/venue-matcher `findVenue`, which NEVER bails to
@@ -8778,7 +8812,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               ⚠️ WARN, NEVER BLOCK — approving stays one click, exactly as before. This only makes sure
               the approver has seen what they are deciding. Shown for unconfirmed scraper events whose
               location was guessed; a confidently-matched or operator-entered event shows nothing. */}
-          {event.status === 'unconfirmed' && event.source === 'scraper' && event.venue_match_confidence === 'low' && (
+          {event.status === 'unconfirmed' && event.source === 'scraper' && event.venue_match_confidence === 'low' && !privateNow && (
             <div className="mt-3 px-3 py-2.5 bg-orange-50 border border-orange-300 rounded-lg text-sm">
               <p className="font-bold text-orange-800 mb-1">{tS('guessed.title')}</p>
               <p className="text-orange-900 text-xs leading-relaxed">
@@ -8794,7 +8828,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           )}
           {/* A scraped event that reached no venue at all has NO coordinates: it will appear in listings
               but never on the map. Silent until now — the operator saw a normal-looking card. */}
-          {event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && (
+          {event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && !privateNow && (
             <div className="mt-3 px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
               <p className="font-bold text-slate-700 mb-1">{tS('noLocation.title')}</p>
               <p className="text-slate-600 text-xs leading-relaxed">
@@ -8841,19 +8875,27 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             </div>
           )}
 
-          {/* Pending approval actions — MOBILE ONLY now (sm:hidden): full-width row beneath the text,
-              flex-1 buttons, ≥16px text (iOS rule). On desktop these live compact in the main row above
-              (hidden sm:flex), so the card stays short. */}
+          {/* ══ 🔴 PENDING ACTIONS — ONE ROW, LAST, AT EVERY WIDTH (16 October 2026) ═══════════════════════
+              It was two copies: this row on phones (`sm:hidden`) and a compact one inside the main row from 640px
+              up, which sat beside the type chooser and helped squeeze the details to nothing. One row now, after
+              the chooser and the warnings — full-width buttons on a phone, compact from 640px.
+              Approve: with a conflict, the FIRST click reveals the acknowledge in the banner above
+              (warn-with-friction); the explicit "approve anyway" there confirms. No conflict → confirms.
+              ⚠️ IT IS OFF UNTIL THE EVENT HAS TIMES (the server refuses a confirm without them), and a disabled
+              button with only a hover title said nothing on a phone — Dominic read it as "greyed out". So the
+              card now SAYS why, in words, unless the private event's own times prompt above already does. */}
           {pending && (
-            <div className="flex sm:hidden gap-2 mt-3">
-              {/* Approve: with a conflict, the FIRST click reveals the acknowledge in the banner
-                  above (warn-with-friction); the explicit "approve anyway" there confirms. No conflict
-                  → confirms immediately. */}
-              <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS('card.approve')}</button>
-              {!isPast && (
-                <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">{tS('card.edit')}</button>
+            <div className="mt-3" data-pending-actions>
+              <div className="flex gap-2 sm:justify-end">
+                <button disabled={needsTimes} title={needsTimes ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS('card.approve')}</button>
+                {!isPast && (
+                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">{tS('card.edit')}</button>
+                )}
+                <button onClick={() => handleRejectScrapedEvent(event)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">{tS('card.reject')}</button>
+              </div>
+              {needsTimes && !privateTimesPrompt && (
+                <p className="mt-1.5 text-xs text-slate-500 sm:text-right" data-approve-reason>{tS('card.approveNeedsTimes')}</p>
               )}
-              <button onClick={() => handleRejectScrapedEvent(event)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">{tS('card.reject')}</button>
             </div>
           )}
 
@@ -10453,6 +10495,8 @@ function isRowComingSoon(rowId: PlanRowId): boolean {
 }
 
 function WhatsAppReplyPreview({ token }: { token: string }) {
+  // Language Phase 1d Part 2: every word is `manageWhatsApp.preview`.
+  const t = useT('manageWhatsApp')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ reply: string | null; classification: string } | null>(null)
@@ -10463,7 +10507,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
 
   // Shapes chosen to exercise DIFFERENT classifier buckets: a schedule question (SPECIFIC_QUERY), an
   // item question and a menu question (both MENU_QUERY, one of which reaches the grounded answerer).
-  const EXAMPLES = ['Where are you tonight?', 'Do you do pepperoni?', "What's on the menu?"]
+  const EXAMPLES = [t('preview.examples.where'), t('preview.examples.doYouDo'), t('preview.examples.menu')]
 
   const run = async (text: string) => {
     const trimmed = text.trim()
@@ -10478,10 +10522,10 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
       const data = await res.json()
       // The route reports its failures as themselves — rate limited, too long, structural — rather than
       // as an empty reply, so they are shown as themselves too.
-      if (!data.ok) setError(data.error || 'Could not build a preview just now.')
+      if (!data.ok) setError(data.error || t('preview.failed'))
       else setResult({ reply: data.reply ?? null, classification: data.classification })
     } catch {
-      setError('Could not reach the server. Check your connection and try again.')
+      setError(t('preview.unreachable'))
     } finally {
       setLoading(false)
     }
@@ -10500,7 +10544,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
             ⚠️ THE DESCRIPTION BELOW KEEPS `text-sm`, NOT the `text-xs` the channel boxes use — that size
             is a recorded decision ("SIZE MATCHED, NOT INVENTED", see the note under it) and shrinking it
             here would undo it for the sake of symmetry. */}
-        <p className="text-sm font-bold text-slate-800 mb-0.5">Try it before you connect</p>
+        <p className="text-sm font-bold text-slate-800 mb-0.5">{t('preview.title')}</p>
         {/* ⚠️ SIZE MATCHED, NOT INVENTED. `text-sm text-slate-500` is the class this Settings tab already
             uses for explanatory copy sitting under a heading — the "Remove {van}?", "Add another truck"
             and "Upgrade to add more vans" bodies all use it. These are per-element Tailwind utilities,
@@ -10521,7 +10565,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
             better reason: the preview exists so an operator can try the feature AHEAD of connecting, and
             most operators reading this genuinely have not connected yet. Not an oversight, and not a
             stale reference to a removed button. */}
-        <p className="text-sm text-slate-500">Type a question like a customer would ask, and see exactly what they&apos;d get back. Nothing is sent to anyone.</p>
+        <p className="text-sm text-slate-500">{t('preview.intro')}</p>
       </div>
 
       {/* ── CHIPS FIRST, THEN THE INPUT. REORDERED 24 August 2026 (operator decision). ─────────────
@@ -10563,12 +10607,12 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
           value={message}
           onChange={e => setMessage(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); void run(message) } }}
-          placeholder="What desserts do you do?"
+          placeholder={t('preview.placeholder')}
           maxLength={1000}
           className="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
         />
         <div className="sm:flex-shrink-0">
-          <Btn label="Send" size="sm" loading={loading} disabled={!message.trim()} onClick={() => void run(message)} />
+          <Btn label={t('preview.send')} size="sm" loading={loading} disabled={!message.trim()} onClick={() => void run(message)} />
         </div>
       </div>
 
@@ -10601,7 +10645,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
             128px would start moving the box; keep it to one short line.** */}
         {!asked && !loading && !error && !result && (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-sm text-slate-400 text-center">Your reply will appear here</p>
+            <p className="text-sm text-slate-400 text-center">{t('preview.empty')}</p>
           </div>
         )}
 
@@ -10612,7 +10656,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
         )}
 
         {loading && (
-          <div className="flex items-center gap-2 text-sm text-slate-400"><Spinner /><span>Working out the reply...</span></div>
+          <div className="flex items-center gap-2 text-sm text-slate-400"><Spinner /><span>{t('preview.working')}</span></div>
         )}
 
         {error && !loading && (
@@ -10625,8 +10669,8 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
             /* 🔴 THE IGNORE BUCKET WORKING, NOT A FAILURE. Rendered as a result, deliberately not as a
                bubble: the point is that nothing would be sent, so nothing is drawn as a message. */
             <div className="text-sm">
-              <p className="text-slate-600 font-medium">No reply would be sent.</p>
-              <p className="text-xs text-slate-400 mt-0.5">That reads as spam, a booking request or something unrelated, so the auto-reply stays quiet.</p>
+              <p className="text-slate-600 font-medium">{t('preview.noReply')}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t('preview.noReplyWhy')}</p>
             </div>
           ) : (
             /* ── THE "Read as" BUCKET LABEL WAS REMOVED FROM THE UI, 21 August 2026. ───────────────────
@@ -10670,7 +10714,7 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
           ⚠️ NOT THE DEFERRED CUSTOMER DISCLAIMER. §20 defers an AI disclaimer in the message a CUSTOMER
           receives, pending Meta's disclosure rules. This line is shown to the OPERATOR in the preview and
           changes nothing about what is sent. Do not merge the two. */}
-      <p className="text-xs text-slate-400">Replies are AI-generated and vary slightly each time, and can occasionally be wrong.</p>
+      <p className="text-xs text-slate-400">{t('preview.footnote')}</p>
     </div>
   )
 }
@@ -10738,9 +10782,12 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
   offerReauthorise: boolean
   /** From the view model. False on a working connection — see `showSetupControl`. */
   showButton: boolean
-  onNotice: (n: { tone: 'ok' | 'warn' | 'error'; text: string } | null) => void
+  onNotice: (n: SetupNotice | null) => void
   onConnectionUpdate: (c: WhatsAppConnectionView) => void
 }) {
+  // Language Phase 1d Part 2: the button's words and the pop-up hint are `manageWhatsApp.setup`; the notices this pushes
+  // up are CODES (`manageWhatsApp.notice`), worded where they render.
+  const t = useT('manageWhatsApp')
   const [state, dispatch] = useReducer(setupReducer, INITIAL_SETUP_STATE)
   const fbRef = useRef<FBGlobal | null>(null)
   // 🔴 THE ATTEMPT ID IS A REF, NOT STATE, BECAUSE THE CLICK NEEDS IT *NOW*. `dispatch` is asynchronous;
@@ -10756,12 +10803,16 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
   useEffect(() => {
     let alive = true
     if (!appId || !configId) {
-      dispatch({ type: 'sdk_failed', message: 'WhatsApp setup is not available in this environment.' })
+      dispatch({ type: 'sdk_failed', code: 'sdkUnavailable' })
       return
     }
     loadFacebookSdk(appId)
       .then(FB => { if (!alive) return; fbRef.current = FB; dispatch({ type: 'sdk_ready' }) })
-      .catch((e: Error) => { if (!alive) return; dispatch({ type: 'sdk_failed', message: e.message }) })
+      .catch((e: Error) => {
+        if (!alive) return
+        // Meta's script blocked → our own sentence, by code; anything else is passed on as it came.
+        dispatch(e.name === SDK_LOAD_ERROR ? { type: 'sdk_failed', code: 'sdkBlocked' } : { type: 'sdk_failed', message: e.message })
+      })
     return () => { alive = false }
   }, [appId, configId])
 
@@ -10786,17 +10837,18 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok || json?.ok === false) {
-        dispatch({ type: 'submit_finished', notice: { tone: 'error', text: json?.error || 'Setup could not be completed. Nothing was changed.' } })
+        // The route's refusal is already in the truck's language; with none, our own sentence by code.
+        dispatch({ type: 'submit_finished', notice: json?.error ? { tone: 'error', text: json.error } : { tone: 'error', code: 'setupFailed' } })
         return
       }
-      dispatch({ type: 'submit_finished', notice: { tone: json?.state === 'ready' ? 'ok' : 'warn', text: json?.message || 'Setup finished.' } })
+      const tone = json?.state === 'ready' ? 'ok' : 'warn'
+      dispatch({ type: 'submit_finished', notice: json?.message ? { tone, text: json.message } : { tone, code: 'setupFinished' } })
       // 🔴 THE NEW STATE COMES FROM THE DATABASE, NOT FROM THIS HANDLER, and is patched rather than
       // reloaded — a parent reload unmounts this tab behind a spinner (the §23 "iPhone" violation).
       if (json?.connection) onConnectionUpdate(json.connection as WhatsAppConnectionView)
     } catch (e: unknown) {
       // `unknown`, not `any` — a thrown value need not be an Error, and narrowing here is one line.
-      const text = e instanceof Error && e.message ? e.message : 'Setup could not be completed. Nothing was changed.'
-      dispatch({ type: 'submit_finished', notice: { tone: 'error', text } })
+      dispatch({ type: 'submit_finished', notice: e instanceof Error && e.message ? { tone: 'error', text: e.message } : { tone: 'error', code: 'setupFailed' } })
     }
   }
 
@@ -10817,7 +10869,7 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
       // Only closed/cancel/error may be ignored, and only when superseded — the reducer decides.
       cancelled: (o) => {
         if (o.kind === 'error') {
-          dispatch({ type: 'window_error', attempt, message: 'Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.' })
+          dispatch({ type: 'window_error', attempt, code: 'metaError' })
         } else {
           dispatch({ type: 'window_closed', attempt })
         }
@@ -10840,7 +10892,7 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
         disabled={setupButtonDisabled(state)}
         className="flex-shrink-0 text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {setupButtonLabel(state, offerReauthorise)}
+        {t(`setup.button.${setupButtonLabelKey(state, offerReauthorise)}`)}
       </button>
       {/* 🔴 "START AGAIN" NEEDS NO EVENT FROM META, which is the entire point: the state it rescues is
           the one where Meta will never tell us anything. It makes NO request and says nothing alarming —
@@ -10851,7 +10903,7 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
           onClick={() => dispatch({ type: 'start_again' })}
           className="flex-shrink-0 text-xs font-semibold text-orange-700 underline hover:text-orange-800"
         >
-          Start again
+          {t('setup.startAgain')}
         </button>
       )}
       {/* 🔴 THE STANDING INSTRUCTION IS NO LONGER RENDERED HERE (16 September 2026). It moved to the
@@ -10866,8 +10918,7 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
           line — the button stays visible, just below the title, for as long as that hint is showing. */}
       {state.showPopupHint && (
         <p className="basis-full text-xs text-amber-700">
-          Can’t see the Facebook window? It may have been blocked. Allow pop-ups for hatchgrab.com, then
-          press Start again.
+          {t('setup.popupHint')}
         </p>
       )}
     </>
@@ -11529,6 +11580,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // ⚠️ OPTIMISTIC, THEN CORRECTED. The select shows the new value immediately and reverts if the write
   // is refused — a dropdown that snaps back with no explanation is the shape operators report as "it
   // didn't save", so the error is toasted at the same moment.
+  // Language Phase 1d Part 2: Settings › Auto-replies' words are `manageWhatsApp` (the section's <h2> is `manageSettings`).
+  const tW = useT('manageWhatsApp')
   const [monthlyLimit, setMonthlyLimit] = useState<number>(
     truck.whatsapp_monthly_reply_limit ?? DEFAULT_MONTHLY_REPLY_LIMIT)
   const [disconnectOpen, setDisconnectOpen] = useState(false)
@@ -11540,10 +11593,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     try {
       await api('update_truck', { data: { whatsapp_monthly_reply_limit: next } })
       onTruckUpdate({ whatsapp_monthly_reply_limit: next })
-      showToast('Monthly reply limit saved')
+      showToast(tW('limit.saved'))
     } catch (e: unknown) {
       setMonthlyLimit(previous)
-      showToast(e instanceof Error ? e.message : 'Could not save the limit', 'error')
+      showToast(e instanceof Error ? e.message : tW('limit.saveFailed'), 'error')
     }
   }
 
@@ -11560,10 +11613,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         paymentBlockedAt: null,
       })
       setSetupNotice(res?.unsubscribed === false
-        ? { tone: 'warn', text: 'WhatsApp is disconnected. We couldn’t reach Meta to remove access. Please remove HatchGrab in WhatsApp Business → Settings → Account → Business Platform.' }
-        : { tone: 'ok', text: 'WhatsApp is disconnected. Auto-replies have stopped.' })
+        ? { tone: 'warn', code: 'disconnectedUnreachable' }
+        : { tone: 'ok', code: 'disconnected' })
     } catch (e: unknown) {
-      showToast(e instanceof Error ? e.message : 'Could not disconnect', 'error')
+      showToast(e instanceof Error ? e.message : tW('disconnect.failed'), 'error')
     } finally {
       setDisconnectBusy(false)
     }
@@ -11639,7 +11692,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   //
   // 🔴 META REQUIRES HTTPS FOR EMBEDDED SIGNUP DOMAINS, so this cannot be exercised on localhost —
   // the flow will refuse to open. That is an environment limit, not a bug in this handler.
-  const [setupNotice, setSetupNotice] = useState<{ tone: 'ok' | 'warn' | 'error'; text: string } | null>(null)
+  const [setupNotice, setSetupNotice] = useState<SetupNotice | null>(null)
 
   // 🔴 `onWhatsAppSetup` AND `setupBusy` ARE GONE, DELETED RATHER THAN LEFT. The handler awaited
   // `launchEmbeddedSignup`, which downloads Meta's SDK before calling FB.login — the await is what got
@@ -13512,7 +13565,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             "do not show the same words twice" as "drop the heading". That left the section with no
             header at all, which is the opposite of what a jump target needs. The HEADING stays and the
             duplicate CARD TITLE goes, so the words appear exactly once — as the section's header. */}
-        <h2 className="text-lg font-black text-slate-900">Auto-replies</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.autoReplies')}</h2>
       {/* Online presence & social */}
       {/* ── 🔴 THE WHOLE AUTO-REPLIES CARD IS HIDDEN IN THE NATIVE APP (25 August 2026). ─────────────
           ALL account types, ALL plans, heading included — so no empty bordered box is left behind.
@@ -13568,7 +13621,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               own title the box has nothing naming it — the duplication is the lesser cost, and it is
               the operator's call, not a tidiness rule.
               ⚠️ DO NOT "DE-DUPLICATE" THIS AGAIN. The repeat is intentional. */}
-          <p className="text-base font-bold text-slate-800">Auto-replies</p>
+          <p className="text-base font-bold text-slate-800">{tW('card.title')}</p>
         </div>
         {/* ── THE DESCRIPTION. OUTSIDE THE NATIVE HIDE, WITH THE TITLE AND THE PREVIEW. ───────────────
             ⚠️ `text-base` — deliberately LARGER than the preview's `text-sm` body copy, and un-bolded so
@@ -13585,7 +13638,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             is messaging rather than social media; the two actual social channels are `coming_soon` and
             unbuilt. Accurate about the DESTINATION, not about today. Recorded, not corrected.
             🔴 NAMES NO CHANNEL and 🔴 PROMISES NO VIEWER for past replies: no such surface exists (§20). */}
-        <p className="text-base text-slate-500">Answer customer questions automatically on your social media, using your menu and schedule.</p>
+        <p className="text-base text-slate-500">{tW('card.description')}</p>
 
         {/* ── ⚠️ ORDER: THE DEMO IS FIRST, SETUP IS SECOND. A DATED DECISION WHOSE DATE HAS ARRIVED. ──
             🔴 CORRECTED 4 September 2026 (S4). This note said "The Connect control does not yet connect
@@ -13672,7 +13725,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               container; nesting it inside itself would stack two shadows and two radii.
               🔴 THIS IS LAYOUT ONLY. Every visibility test below is a field of `whatsAppRowView` or an
               existing predicate; not one decision moved into this markup. */}
-          <p className="text-sm font-bold text-slate-700 mb-3">Channels</p>
+          <p className="text-sm font-bold text-slate-700 mb-3">{tW('card.channels')}</p>
 
           <div className="space-y-3">
 
@@ -13712,7 +13765,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                             <p className="text-xs text-slate-500 mt-0.5 truncate">{view.subtitle}</p>
                           )}
                           {view.showRequiresAccountHelper && (
-                            <p className="text-xs text-slate-500 mt-0.5">Requires a WhatsApp Business account.</p>
+                            <p className="text-xs text-slate-500 mt-0.5">{tW('card.requiresAccount')}</p>
                           )}
                         </div>
                         {/* ⚠️ `flex-shrink-0` AND NO `flex-wrap`: this group must hug the top-right corner
@@ -13722,7 +13775,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                         <div className="flex flex-shrink-0 items-center gap-2">
                           {view.showConnectedLabel && (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
-                              Connected
+                              {tW('card.connected')}
                             </span>
                           )}
                           {/* ⚠️ DISCONNECT IS NO LONGER HERE — it moved to the footer (D). */}
@@ -13751,8 +13804,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                           that used to be passed in as the control's `showInstruction` prop. */}
                       {view.showPopupInstruction && (
                         <p className="mt-2 text-xs text-slate-500">
-                          A Facebook window will open to connect your WhatsApp Business account. If nothing
-                          appears, allow pop-ups for hatchgrab.com in your browser, then press Set up again.
+                          {tW('card.popupInstruction')}
                         </p>
                       )}
 
@@ -13768,18 +13820,19 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                           already added is how a true alert gets dismissed as broken. */}
                       {view.showPaymentBlockedBanner && (
                         <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3">
-                          <p className="text-sm font-bold text-red-800">Your replies are not being delivered</p>
+                          <p className="text-sm font-bold text-red-800">{tW('blocked.title')}</p>
                           <p className="mt-1 text-xs text-red-700">
-                            WhatsApp is refusing to send your automatic replies because of a billing problem on your
-                            WhatsApp Business account. Customers can still message you and you will still see everything
-                            they send — but they are not getting a reply.
+                            {tW('blocked.body')}
                           </p>
                           <p className="mt-1 text-xs text-red-700">
-                            You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager.{' '}
-                            <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer"
-                              className="underline font-semibold whitespace-nowrap">
-                              Check your payment method
-                            </a>
+                            {tW.rich('blocked.fix', {
+                              link: c => (
+                                <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer"
+                                  className="underline font-semibold whitespace-nowrap">
+                                  {c}
+                                </a>
+                              ),
+                            })}
                           </p>
                         </div>
                       )}
@@ -13787,12 +13840,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                       {/* ── B. AUTO-REPLIES ──────────────────────────────────────────────────────── */}
                       {view.showMonthlyLimit && (
                         <div className="mt-3 border-t border-slate-100 pt-3">
-                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Auto-replies</p>
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{tW('limit.heading')}</p>
                           {/* ⚠️ THE ROW WRAPS AND THE USAGE BLOCK TAKES ITS OWN LINE ON A PHONE.
                               `basis-full sm:basis-auto sm:flex-1` with `min-w-0` is what stops the bar
                               forcing a horizontal scroll at 360px. */}
                           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-                            <label className="text-sm text-slate-600" htmlFor="wa-monthly-limit">Monthly limit</label>
+                            <label className="text-sm text-slate-600" htmlFor="wa-monthly-limit">{tW('limit.label')}</label>
                             <select
                               id="wa-monthly-limit"
                               value={monthlyLimit}
@@ -13800,7 +13853,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                               className="min-w-0 border border-slate-200 rounded-lg px-2 py-1 text-sm"
                             >
                               {MONTHLY_REPLY_LIMIT_CHOICES.map(v => (
-                                <option key={v} value={v}>{formatLimit(v)}</option>
+                                <option key={v} value={v}>{tW('limit.option', { n: v })}</option>
                               ))}
                             </select>
                             {whatsappUsage && (
@@ -13821,20 +13874,18 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                                   />
                                 </div>
                                 <p className="mt-1 text-xs text-slate-600">
-                                  {formatLimit(whatsappUsage.used)} of {formatLimit(whatsappUsage.limit)} used
-                                  {' · '}resets {formatResetDate(whatsappUsage.resetsOn)}
+                                  {tW('limit.usage', { used: whatsappUsage.used, limit: whatsappUsage.limit, date: formatResetDate(whatsappUsage.resetsOn, ts) })}
                                 </p>
                               </div>
                             )}
                           </div>
                           <p className="mt-2 text-xs text-slate-500">
-                            Up to {DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} replies per customer in 24 hours, then one
-                            message saying you&apos;ll reply personally.
+                            {tW('limit.perCustomer', { n: DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H })}
                           </p>
                           {/* ⚠️ THE EMAILS THIS PROMISES ARE NOT BUILT YET — recorded in the settings-row
                               report. The wording is the founder's and is rendered verbatim. */}
                           <p className="mt-1 text-xs text-slate-500">
-                            Replies pause at your limit. We&apos;ll email you at 80% and 100%.
+                            {tW('limit.emailAt')}
                           </p>
                         </div>
                       )}
@@ -13842,11 +13893,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                       {/* ── C. BILLING ───────────────────────────────────────────────────────────── */}
                       {view.showBillingSection && (
                         <div className="mt-3 border-t border-slate-100 pt-3">
-                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Billing</p>
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{tW('billing.heading')}</p>
 
                           {view.showBillingPaymentRow && (
                             <div className="mt-2 flex flex-wrap items-center gap-2">
-                              <span className="text-sm text-slate-600">Payment method</span>
+                              <span className="text-sm text-slate-600">{tW('billing.paymentMethod')}</span>
                               {/* 🔴 TWO PILLS, AND THE ROW IS ABSENT WHEN WE DO NOT KNOW. It used to carry a
                                   grey "Not checked" for `unknown` — which is EVERY connection today, because
                                   nothing writes the column. A row whose normal state is "we haven't looked"
@@ -13854,17 +13905,17 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                                   they have. `showBillingPaymentRow` now excludes 'unknown' entirely. */}
                               {view.paymentStatus === 'added' && (
                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
-                                  Payment method added
+                                  {tW('billing.added')}
                                 </span>
                               )}
                               {view.paymentStatus === 'missing' && (
                                 <>
                                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                                    No payment method added
+                                    {tW('billing.missing')}
                                   </span>
                                   <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer"
                                     className="text-xs font-semibold underline text-slate-600 hover:text-slate-800">
-                                    Add in WhatsApp Manager
+                                    {tW('billing.addInManager')}
                                   </a>
                                 </>
                               )}
@@ -13884,13 +13935,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                               features PDF, where a link cannot be clicked, so it says "check with Meta"
                               instead. Same fact, different medium — not a drift to reconcile. */}
                           <p className="mt-2 text-xs text-slate-500">
-                            Meta, not HatchGrab, bills your WhatsApp account for replies. From{' '}
-                            {META_FREE_ALLOWANCE_FROM} the first {formatLimit(META_FREE_REPLIES_PER_MONTH)} a
-                            month are free. Correct at {META_PRICING_CHECKED_ON}; check{' '}
-                            <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
-                              Meta&apos;s pricing
-                            </a>{' '}
-                            for changes.
+                            {tW.rich('billing.summary', {
+                              from: formatYmd(META_FREE_ALLOWANCE_FROM_YMD, ts, { day: 'numeric', month: 'long', year: 'numeric' }),
+                              free: META_FREE_REPLIES_PER_MONTH,
+                              checked: formatYmd(META_PRICING_CHECKED_ON_YMD, ts, { day: 'numeric', month: 'long', year: 'numeric' }),
+                              link: c => <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">{c}</a>,
+                            })}
                           </p>
 
                           {/* ⚠️ A NATIVE <details>, MATCHING THE PAGE'S EXISTING EXPANDER (:7435): `list-none`
@@ -13899,31 +13949,25 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                           <details className="mt-2 group">
                             <summary className="text-xs text-slate-500 cursor-pointer select-none hover:text-slate-700 list-none flex items-center gap-1">
                               <span className="transition-transform group-open:rotate-90 inline-block text-slate-300">▶</span>
-                              <span>How Meta charges</span>
+                              <span>{tW('billing.howMetaCharges')}</span>
                             </summary>
                             <div className="mt-2 text-xs text-slate-500">
-                              <p className="font-semibold text-slate-700">Meta charges for WhatsApp replies, not HatchGrab.</p>
+                              <p className="font-semibold text-slate-700">{tW('billing.chargesTitle')}</p>
                               <p className="mt-0.5">
-                                Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business
-                                account. {/* ⚠️ "From <date>, Meta includes" REPLACED "Meta currently includes"
-                                on 16 September 2026, and only that phrase — the rest of this approved
-                                paragraph and both its links are untouched. "Currently" was true of neither
-                                period: before the date the allowance has not started, and after it the word
-                                ages silently on a surface nobody re-reads. */}
-                                From {META_FREE_ALLOWANCE_FROM}, Meta includes {formatLimit(META_FREE_REPLIES_PER_MONTH)} free
-                                replies a month per number; after that, each reply is charged at Meta&apos;s rate.
-                                Replies you send yourself from the WhatsApp Business app aren&apos;t charged. Meta
-                                sets these prices and may change them.{' '}
-                                <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
-                                  See Meta&apos;s pricing
-                                </a>
+                                {/* ⚠️ "From <date>, Meta includes" REPLACED "Meta currently includes" on 16 September 2026 — see the
+                                    history in docs; the words are `manageWhatsApp.billing.chargesBody` (Language Phase 1d Part 2). */}
+                                {tW.rich('billing.chargesBody', {
+                                  from: formatYmd(META_FREE_ALLOWANCE_FROM_YMD, ts, { day: 'numeric', month: 'long', year: 'numeric' }),
+                                  free: META_FREE_REPLIES_PER_MONTH,
+                                  link: c => <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">{c}</a>,
+                                })}
                               </p>
                               {/* 🔴 THE ACTION MOVED IN HERE with the grey row that used to carry it. Someone
                                   reading how Meta charges is exactly the person who wants to go and add a
                                   payment method, and this is now the only always-available route to it. */}
                               <p className="mt-1">
                                 <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
-                                  Add a payment method in WhatsApp Manager
+                                  {tW('billing.addPaymentInManager')}
                                 </a>
                               </p>
                             </div>
@@ -13936,12 +13980,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                                   as advice — we have never asked Meta. The general wording says what is needed
                                   without claiming to know what they have. */}
                               {view.aboveAllowanceWarningVariant === 'missing'
-                                ? `Your limit is above Meta's ${formatLimit(META_FREE_REPLIES_PER_MONTH)} free replies. Without a payment method, Meta will stop all replies once those are used.`
-                                : `Your limit is above Meta's ${formatLimit(META_FREE_REPLIES_PER_MONTH)} free replies. Replies beyond that need a payment method on your WhatsApp account; without one, Meta stops all replies once the free ones are used.`}
+                                ? tW('billing.aboveMissing', { free: META_FREE_REPLIES_PER_MONTH })
+                                : tW('billing.aboveGeneral', { free: META_FREE_REPLIES_PER_MONTH })}
                               {' '}
                               <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer"
                                 className="underline font-semibold whitespace-nowrap">
-                                {view.aboveAllowanceWarningVariant === 'missing' ? 'Add in WhatsApp Manager' : 'Add a payment method'}
+                                {view.aboveAllowanceWarningVariant === 'missing' ? tW('billing.addInManager') : tW('billing.addPaymentMethod')}
                               </a>
                             </p>
                           )}
@@ -13956,7 +14000,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                             onClick={() => setDisconnectOpen(true)}
                             className="text-xs font-semibold text-red-600 underline hover:text-red-700"
                           >
-                            Disconnect WhatsApp
+                            {tW('disconnect.link')}
                           </button>
                         </div>
                       )}
@@ -13999,11 +14043,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <p className="text-sm font-bold text-slate-800">WhatsApp</p>
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">WhatsApp auto-replies are included on Pro and Max.</p>
+                  <p className="text-xs text-slate-500 mt-1">{tW('card.notOnPlan')}</p>
                   {purchaseCtaAllowed() && (
                     <p className="mt-1">
                       <a href={manageTabHref('billing')} className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">
-                        Upgrade &rarr;
+                        {tW('card.upgrade')}
                       </a>
                     </p>
                   )}
@@ -14014,20 +14058,18 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   else; at section level they read as if they applied to all three. */}
               {disconnectOpen && (
                 <div className="mt-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs space-y-2">
-                  <p className="font-bold text-red-900">Disconnect WhatsApp?</p>
+                  <p className="font-bold text-red-900">{tW('disconnect.title')}</p>
                   <p className="text-red-800">
-                    Auto-replies stop straight away and HatchGrab loses access to your WhatsApp account.
-                    Your number keeps working in the WhatsApp Business app. To remove HatchGrab completely,
-                    also open WhatsApp Business → Settings → Account → Business Platform.
+                    {tW('disconnect.body')}
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
                     <button type="button" disabled={disconnectBusy} onClick={() => setDisconnectOpen(false)}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-60">
-                      Cancel
+                      {tW('disconnect.cancel')}
                     </button>
                     <button type="button" disabled={disconnectBusy} onClick={() => { void doDisconnect() }}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-60">
-                      {disconnectBusy ? 'Disconnecting…' : 'Disconnect'}
+                      {disconnectBusy ? tW('disconnect.working') : tW('disconnect.confirm')}
                     </button>
                   </div>
                 </div>
@@ -14038,12 +14080,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   setupNotice.tone === 'ok'    ? 'border-emerald-200 bg-emerald-50 text-emerald-800' :
                   setupNotice.tone === 'warn'  ? 'border-amber-200 bg-amber-50 text-amber-800' :
                                                  'border-red-200 bg-red-50 text-red-700'}`}>
-                  <p>{setupNotice.text}</p>
+                  {/* Our own notices are codes, worded here; `text` is words passed on as they came (the route's answer). */}
+                  <p>{setupNotice.code ? tW(`notice.${setupNotice.code}`) : setupNotice.text}</p>
                   <button
                     onClick={() => setSetupNotice(null)}
                     className="mt-1 text-xs font-semibold underline"
                   >
-                    Close
+                    {tW('notice.close')}
                   </button>
                 </div>
               )}
@@ -14053,7 +14096,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   asks them to reconnect before that stops. It is NOT a state and must not become one. */}
               {whatsappConnection?.expiringSoon && (
                 <p className="mt-2 text-xs text-amber-700">
-                  Your WhatsApp connection needs renewing soon. Press Reconnect to keep auto-replies running.
+                  {tW('card.expiring')}
                 </p>
               )}
             </div>
@@ -14071,20 +14114,20 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 <div className="rounded-xl border border-slate-200 p-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <p className="text-sm font-bold text-slate-800">Instagram</p>
-                    <Badge label="Coming soon" colour="slate" />
+                    <Badge label={tW('card.comingSoon')} colour="slate" />
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Auto-replies to Instagram direct messages. Will require an Instagram professional account.
+                    {tW('card.instagram')}
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-slate-200 p-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <p className="text-sm font-bold text-slate-800">Messenger</p>
-                    <Badge label="Coming soon" colour="slate" />
+                    <Badge label={tW('card.comingSoon')} colour="slate" />
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Auto-replies to Facebook Messenger. Will require a Facebook Page.
+                    {tW('card.messenger')}
                   </p>
                 </div>
               </>
@@ -14297,7 +14340,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         style={{ scrollMarginTop: pinnedTop, minHeight: lastSectionMinHeight }}
         className="scroll-mt-0 space-y-6"
       >
-        <h2 className="text-lg font-black text-slate-900">Account deletion</h2>
+        <h2 className="text-lg font-black text-slate-900">{t('sections.accountDeletion')}</h2>
       {/* ── 🔴 DANGER ZONE — LAST, OWNER ONLY ──────────────────────────────────────────────────────
           The Settings tab is owner+manager; this narrows to OWNER, so a manager sees nothing at all —
           not a disabled control, which would only advertise the action and invite a support ticket.
@@ -14335,6 +14378,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   // they are rather than moved, because relocating live billing state is not this task. Do not "tidy" these
   // two down to join them.
   const px = usePriceMask()
+  // Language Phase 1d Part 2: Billing's own words (messages `manageBilling`). The comparison's rows, fees, footnotes
+  // and plan descriptions are the shared plan data in lib/plan-features.ts / lib/features.ts (also the marketing
+  // pages'), and the price words are PRICE_WORD — both left where they are.
+  const t = useT('manageBilling')
   const billingTime = useTruckTime()
   // Footnote 2 does not MASK a value, it substitutes a whole different sentence, so it needs the raw
   // question rather than the masking function.
@@ -14410,7 +14457,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           }`}>
             <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
               isCurrent(p) ? 'text-orange-500' : 'text-slate-400'
-            }`}>{p}</p>
+            }`}>{/* The plan's NAME, not its id (Language Phase 1d Part 2) — the column still shows it in capitals. */}{PLAN_META[p].name}</p>
             {/* ── 🔴 text-[13px] AND whitespace-nowrap ON MOBILE. THIS IS THE "£29/mo£49/mo" FIX. ─────
                 The column is `w-14` (56px) and the price was `text-base` (16px) bold, at which "£29/mo"
                 measures about 56.5px — wider than the column it sits in, with no space character to
@@ -14439,8 +14486,8 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                   ⚠️ The trial END DATE is unaffected and still shown by the reminder banner and the
                   "won't be charged until" line — this is the column header, not the trial's terms. */}
               {p === 'trial'
-                ? <span className="invisible" aria-hidden="true">per truck / month</span>
-                : <span>per truck / month</span>}
+                ? <span className="invisible" aria-hidden="true">{t('perTruckMonth')}</span>
+                : <span>{t('perTruckMonth')}</span>}
             </p>
           </div>
         ))}
@@ -14448,7 +14495,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       {/* Transaction fees */}
       <div className="mb-2">
         <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
-          <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
+          <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">{t('transactionFees')}</span>
           {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
         </div>
         {feeRows.map(row => (
@@ -14527,7 +14574,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                       <span className="text-slate-300 text-sm">—</span>
                     )}
                     {val === 'coming_soon' && (
-                      <span className="text-xs text-slate-400 italic leading-tight">Coming soon</span>
+                      <span className="text-xs text-slate-400 italic leading-tight">{t('comingSoon')}</span>
                     )}
                   </div>
                 )
@@ -14545,7 +14592,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <p key={f.number} className="text-xs text-slate-700">
           <sup>{f.number}</sup> {pricesVisible || f.number !== '2'
             ? f.text
-            : 'Online payments are powered by Stripe Connect. Platform and card processing fees are TBC and will be confirmed at launch.'}
+            : t('footnote2Masked')}
         </p>
       ))}
     </div>
@@ -14553,7 +14600,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
 
   const billingCard = (
     <div className="bg-white border border-slate-200 rounded-2xl p-6">
-      <p className="text-sm font-semibold text-slate-900 mb-4">Billing & payments</p>
+      <p className="text-sm font-semibold text-slate-900 mb-4">{t('card.title')}</p>
       {/* ── 🔴 THIS BLOCK RENDERS ON EVERY PLATFORM, iOS INCLUDED. DO NOT GATE IT AGAIN. ─────────────
           It was briefly wrapped in `purchaseCtaAllowed()` (25 August 2026). 🔴 THAT WAS WRONG AND WAS
           OBSERVED WRONG ON AN iPad THE SAME DAY: with the block suppressed, this card rendered its
@@ -14580,15 +14627,15 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex items-start gap-3">
         <span className="text-amber-500 flex-shrink-0 mt-0.5">⚙️</span>
         <div>
-          <p className="text-sm font-medium text-amber-800">Billing is managed by HatchGrab</p>
+          <p className="text-sm font-medium text-amber-800">{t('card.managed')}</p>
           <p className="text-xs text-amber-700 mt-0.5">
-            During early access we set up and adjust plans manually.
+            {t('card.earlyAccess')}
           </p>
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-slate-100">
         <p className="text-xs text-slate-400">
-          {truck.name} · {PLAN_META[currentPlan]?.name ?? currentPlan} plan{truck.trial_expires_at ? ' (trial)' : ''}
+          {t('card.planLine', { truck: truck.name, plan: PLAN_META[currentPlan]?.name ?? currentPlan, trial: truck.trial_expires_at ? 'yes' : 'no' })}
         </p>
       </div>
     </div>
@@ -14602,7 +14649,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <>
           <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
             <div className="mb-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Current plan</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">{t('currentPlan')}</p>
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
@@ -14610,7 +14657,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
               {truck.trial_expires_at && (
                 <p className="text-xs text-amber-600 mt-1">
-                  Trial ends {formatDate(truck.trial_expires_at)}
+                  {t('trialEnds', { date: formatDate(truck.trial_expires_at) })}
                 </p>
               )}
             </div>
@@ -14627,8 +14674,8 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                       ⚠️ THE DATED BRANCH IS BYTE-IDENTICAL to what Gusto and RTF read today. */}
                   <p className="text-sm font-bold text-slate-900">
                     {truck.trial_expires_at
-                      ? `Your trial ends ${formatDate(truck.trial_expires_at)}`
-                      : TRIAL_NOT_STARTED_HEADING}
+                      ? t('yourTrialEnds', { date: formatDate(truck.trial_expires_at) })
+                      : t('notStarted.heading')}
                   </p>
                   {/* 🔴 iOS (App Store 3.1.1/3.1.3) — the dated branch is SPLIT, not gated whole.
                       "You're on Max features." is a FACT about the account and must survive; "Choose a plan
@@ -14643,9 +14690,9 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                   <p className="text-xs text-slate-600 mt-0.5">
                     {truck.trial_expires_at
                       ? (purchaseCtaAllowed()
-                          ? "You're on Max features. Choose a plan before your trial ends to keep access."
-                          : "You're on Max features.")
-                      : TRIAL_NOT_STARTED_BILLING}
+                          ? t('onMax')
+                          : t('onMaxNoCta'))
+                      : t('notStarted.body')}
                   </p>
                 </div>
                 {/* 🔴 iOS (App Store 3.1.1/3.1.3): the two upgrade buttons are suppressed. The whole
@@ -14657,13 +14704,13 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                       onClick={() => openUpgrade('max')}
                       className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
                     >
-                      Upgrade to Max — {px(maxMo)}
+                      {t('upgradeToMax', { price: px(maxMo) })}
                     </button>
                     <button
                       onClick={() => openUpgrade('pro')}
                       className="w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
                     >
-                      Choose Pro — {px(proMo)}
+                      {t('choosePro', { price: px(proMo) })}
                     </button>
                   </div>
                 )}
@@ -14699,13 +14746,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                       not built (see the trial-reminder popup's own copy, which DOES promise it and is
                       flagged in docs/trial-billing-copy-report.md). Copy must not run ahead of the build
                       in the direction that costs an operator money or access. */}
-                  🔒 You won&apos;t be charged anything during your trial, which runs until{' '}
-                  {formatTrialEndDate(truck.trial_expires_at, billingTime)}.
-                  Billing only ever starts when you choose a plan and enter your payment details.
-                  Until then there&apos;s nothing to cancel and nothing to pay.
+                  {t('noCharge', { date: formatTrialEndDate(truck.trial_expires_at, billingTime) })}
                 </p>
                 <p className="text-xs text-center text-slate-400 mt-1">
-                  *Standard card processing fees apply on online orders
+                  {t('fees')}
                 </p>
               </>
             )}
@@ -14716,7 +14760,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               billingCard on iOS only. */}
           {purchaseCtaAllowed() && (
             <p className="text-xs text-amber-600 font-medium -mt-3">
-              ⏱ Set up payment before your trial ends to keep access
+              {t('setUpPayment')}
             </p>
           )}
           {billingCard}
@@ -14732,7 +14776,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <>
           <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
             <div className="mb-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Current plan</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">{t('currentPlan')}</p>
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
@@ -14746,19 +14790,19 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 below, which shows exactly what each tier includes. */}
             {purchaseCtaAllowed() && (
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                <p className="text-sm font-bold text-slate-900 mb-3">Upgrade your plan</p>
+                <p className="text-sm font-bold text-slate-900 mb-3">{t('upgradeYourPlan')}</p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => openUpgrade('pro')}
                     className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
                   >
-                    Pro — {px(proMo)}
+                    {t('planButton', { plan: 'Pro', price: px(proMo) })}
                   </button>
                   <button
                     onClick={() => openUpgrade('max')}
                     className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
                   >
-                    Max — {px(maxMo)}
+                    {t('planButton', { plan: 'Max', price: px(maxMo) })}
                   </button>
                 </div>
               </div>
@@ -14777,12 +14821,12 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <>
           <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
             <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Current plan</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">{t('currentPlan')}</p>
               <p className="text-2xl font-black text-slate-900">
                 {plan === 'pro' ? 'Pro' : 'Max'}
               </p>
               <p className="text-sm text-slate-500 mt-0.5">
-                {px(plan === 'pro' ? proMo : maxMo)} per truck · renews automatically
+                {t('perTruckRenews', { price: px(plan === 'pro' ? proMo : maxMo) })}
               </p>
             </div>
             <div className="mb-6">
@@ -14790,7 +14834,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 onClick={() => setShowMatrix(!showMatrix)}
                 className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
               >
-                {showMatrix ? '▲ Hide' : '▼ Compare all plans'}
+                {showMatrix ? t('hideMatrix') : t('compareAll')}
               </button>
               {showMatrix && matrixContent}
             </div>
@@ -14813,31 +14857,29 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
             <div>
               <h3 className="text-lg font-semibold text-slate-900">
-                Upgrade to {upgradeTarget === 'max' ? 'Max' : 'Pro'}
+                {t('upgradeModal.title', { plan: upgradeTarget === 'max' ? 'Max' : 'Pro' })}
               </h3>
               <p className="text-sm text-slate-500 mt-1">
-                {upgradeTarget === 'max'
-                  ? `${px(maxMonth)} — High-volume operations & festivals`
-                  : `${px(proMonth)} — Busy trucks scaling pre-orders`
-                }
+                {/* The plan's one-line description is the shared plan data (PLAN_DESCRIPTIONS — the same words). */}
+                {t('upgradeModal.tagline', { price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: PLAN_DESCRIPTIONS[upgradeTarget] })}
               </p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
               <p className="text-sm text-slate-700">
-                We&apos;re setting up automated billing. To upgrade now, drop us a message and we&apos;ll get you set up within 24 hours.
+                {t('upgradeModal.body')}
               </p>
             </div>
             <a
-              href={`mailto:${SUPPORT_EMAIL}?subject=Upgrade to ${upgradeTarget === 'max' ? 'Max' : 'Pro'} — ${truck.name}&body=Hi, I'd like to upgrade ${truck.name} to the ${upgradeTarget === 'max' ? `Max (${px(maxMo)})` : `Pro (${px(proMo)})`} plan.`}
+              href={`mailto:${SUPPORT_EMAIL}?subject=${t('upgradeModal.mailSubject', { plan: upgradeTarget === 'max' ? 'Max' : 'Pro', truck: truck.name })}&body=${t('upgradeModal.mailBody', { truck: truck.name, plan: upgradeTarget === 'max' ? 'Max' : 'Pro', price: px(upgradeTarget === 'max' ? maxMo : proMo) })}`}
               className="w-full py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl text-center hover:bg-orange-700 transition-colors"
             >
-              Email us to upgrade
+              {t('upgradeModal.email')}
             </a>
             <button
               onClick={() => setShowUpgradeModal(false)}
               className="w-full py-3 border border-slate-200 text-slate-600 text-sm rounded-xl hover:bg-slate-50 transition-colors"
             >
-              Cancel
+              {t('upgradeModal.cancel')}
             </button>
           </div>
         </div>
@@ -14873,6 +14915,8 @@ interface RecentEvent { id: string; venue_name: string | null; event_date: strin
 // orders in the truck's — both laid out in the truck's locale (the manage page's country settings). The CSV
 // keeps the format it always had: the symbol and two decimals, no separators ("£43.90").
 function fmtMoney(n: number, f: MoneyFormat) { return formatMajor(n, f) }
+/** Language Phase 1d Part 2: the Reports tab's words — screen, CSV headers and CSV cells — are `manageReports` messages. */
+type ReportsT = ReturnType<typeof useT<'manageReports'>>
 /** An order's format: its own currency (orders.currency), in the truck's locale; the truck's if the row
  *  pre-dates the column (it cannot be anything else — a truck's currency is fixed while it has orders). */
 function orderFormat(o: { currency?: string | null } | null | undefined, truckFmt: MoneyFormat): MoneyFormat {
@@ -14894,6 +14938,8 @@ function explodeOrderItems(
 ,
   truckFmt: MoneyFormat,
   ts: TimeSettings,
+  // Language Phase 1d Part 2: the CSV cells' words (`manageReports.csv`), in the truck's locale.
+  t: ReportsT,
 ): ExplodedItem[] {
   const rows: ExplodedItem[] = []
   for (const o of orders) {
@@ -14902,10 +14948,10 @@ function explodeOrderItems(
     const dateStr = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts) : ''
     const timePlaced = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
     const ev = resolveEvent(o)
-    const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
-    const collectionTime = o.slot ? formatTime(o.slot, ts) : 'ASAP'
-    const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : 'Unknown'
-    const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
+    const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : t('csv.unknownEvent')
+    const collectionTime = o.slot ? formatTime(o.slot, ts) : t('csv.asap')
+    const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : t('csv.unknownCustomer')
+    const orderType = o.customer_email ? t('csv.customerOnline') : t('csv.placedByTruck')
     const dealItemMap: Record<string, string> = {}
     for (const d of (Array.isArray(o.deals) ? o.deals : []))
       for (const itemName of Object.values(d.slots || {}))
@@ -14930,9 +14976,10 @@ function explodeOrderItems(
 }
 
 /* 🔴 THE REVENUE BREAKDOWN'S CATCH-ALL LINE (Language Phase 0, 14 October 2026). It is a KEY in the per-category
- * sums and, today, also the line's label — and it deliberately MERGES with a truck's own category called "Other"
- * and sorts among the categories by that name, exactly as before. ⚠️ Separating its key from its label is a
- * Phase 1d decision (a translated label would otherwise re-sort the line and stop merging); one constant until then. */
+ * sums — and it deliberately MERGES with a truck's own category called "Other" and sorts among the categories by
+ * that name, exactly as before. Language Phase 1d Part 2: the KEY stays this constant (so the merge and the sort
+ * never move with the language) and only the line's LABEL is a message, `manageReports.revenue.other` — "Other"
+ * in en-GB and en-US. A line keyed by it shows that label; every other line shows the truck's own category name. */
 const OTHER_REVENUE_BUCKET = 'Other'
 
 function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: any) => Promise<any> }) {
@@ -14952,8 +14999,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const clampPast = (v: string) => (v && v > todayLocal ? todayLocal : v)
   const [filterMode, setFilterMode] = useState<'date' | 'event'>(hasAdvanced ? 'date' : 'event')
   const [itemView, setItemView] = useState<'orders' | 'items'>('orders')
+  // Language Phase 1d Part 2: every word on this tab and in its two CSVs, in the truck's locale.
+  const t = useT('manageReports')
   // The truck's money format (the manage page's country settings) and each order's own.
-  const truckFmt = moneyFormatOf(useCountrySettings())
+  const reportCountry = useCountrySettings()
+  const truckFmt = moneyFormatOf(reportCountry)
   const money = (n: number) => fmtMoney(n, truckFmt)
   const orderMoney = (o: { currency?: string | null } | null | undefined, n: number) => fmtMoney(n, orderFormat(o, truckFmt))
   // Mobile order-history: which order rows are tap-expanded (desktop shows the full table, no expand).
@@ -15060,10 +15110,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     const total = revenueOrders.reduce((s: number, o: any) => s + foodOf(o), 0)
     const extraMinor = (k: string) => (revenueOrders as Record<string, unknown>[]).reduce((s: number, o) => s + (Number(o[k]) || 0), 0)
     const extras = [
-      { key: 'tax', label: reportData?.charges?.taxLabel ?? 'Tax', minor: extraMinor('tax_minor') },
-      { key: 'tips', label: 'Tips', minor: extraMinor('tip_minor') },
-      { key: 'fees', label: 'Service fees', minor: extraMinor('service_fee_minor') },
-      { key: 'cards', label: 'Card fees', minor: extraMinor('card_surcharge_minor') },
+      { key: 'tax', label: reportData?.charges?.taxLabel ?? t('revenue.tax'), minor: extraMinor('tax_minor') },
+      { key: 'tips', label: t('revenue.tips'), minor: extraMinor('tip_minor') },
+      { key: 'fees', label: t('revenue.serviceFees'), minor: extraMinor('service_fee_minor') },
+      { key: 'cards', label: t('revenue.cardFees'), minor: extraMinor('card_surcharge_minor') },
     ].filter(x => x.minor > 0)
     const base = total - dealRev - mods   // authoritative menu-items residual
     // Reconcile: categories MUST sum to `base` (so categories + dealRev + mods === total). Any drift
@@ -15076,7 +15126,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     ]
     const categories = ordered.map((name) => ({ name, revenue: catBase[name] })).filter((c) => Math.abs(c.revenue) > 0.005)
     return { categories, base, dealRev, mods, total, extras }
-  }, [orders, reportData]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [orders, reportData, t]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const dealBreakdown = useMemo(() => {
     const map: Record<string, { count: number; revenue: number }> = {}
@@ -15143,18 +15193,20 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
      * country adds tax at checkout or the range has a tip or fee (`charges`). Never for a UK truck, whose
      * file is byte-identical. */
     const csvCharges = reportData?.charges ?? null
-    const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Items', 'Deals', 'Modifiers', 'Notes',
-      ...(csvCharges ? ['Subtotal', csvCharges.taxLabel, 'Tip', 'Service fee'] : []), 'Total']
+    // 🔴 THE HEADERS ARE WORDS SOMEBODY READS (Language Phase 1d Part 2): `manageReports.csv`, in the truck's locale.
+    // en-GB is byte-identical to the file before; en-US says "Pickup time". The tax column is the country's tax label.
+    const headers = [t('csv.orderId'), t('csv.date'), t('csv.event'), t('csv.timePlaced'), t('csv.collectionTime'), t('csv.customerName'), t('csv.orderType'), t('csv.items'), t('csv.deals'), t('csv.modifiers'), t('csv.notes'),
+      ...(csvCharges ? [t('csv.subtotal'), csvCharges.taxLabel, t('csv.tip'), t('csv.serviceFee')] : []), t('csv.total')]
     const rows = orders.map((o: any) => {
       const createdAt = o.created_at ? new Date(o.created_at) : null
       const dateStr = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts) : ''
       const timePlaced = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
       const ev = resolveEvent(o)
-      const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
-      const collectionTime = o.slot ? formatTime(o.slot, ts) : 'ASAP'
-      const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : 'Unknown'
+      const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : t('csv.unknownEvent')
+      const collectionTime = o.slot ? formatTime(o.slot, ts) : t('csv.asap')
+      const customerName = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : t('csv.unknownCustomer')
       // customer_email IS NULL is the best available signal for operator-placed orders (no source column yet)
-      const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
+      const orderType = o.customer_email ? t('csv.customerOnline') : t('csv.placedByTruck')
       const itemStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => `${i.quantity || 1}× ${i.name}`).join('; ')
       const dealStr = (Array.isArray(o.deals) ? o.deals : []).map((d: any) => d.name).join('; ')
       const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${orderMoney(o, m.price)}`)).join('; ')
@@ -15177,8 +15229,8 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 
   const exportItemsCSV = () => {
     if (!orders.length) return
-    const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Item name', 'Qty', 'Unit price', 'Modifiers', 'Notes', 'Item total', 'Order total']
-    const rows = explodeOrderItems(orders, resolveEvent, truckFmt, ts).map(r =>
+    const headers = [t('csv.orderId'), t('csv.date'), t('csv.event'), t('csv.timePlaced'), t('csv.collectionTime'), t('csv.customerName'), t('csv.orderType'), t('csv.itemName'), t('csv.qty'), t('csv.unitPrice'), t('csv.modifiers'), t('csv.notes'), t('csv.itemTotal'), t('csv.orderTotal')]
+    const rows = explodeOrderItems(orders, resolveEvent, truckFmt, ts, t).map(r =>
       [r.orderId, r.dateStr, r.eventStr, r.timePlaced, r.collectionTime, r.customerName, r.orderType,
        r.itemLabel, String(r.qty), fmtMoney(r.basePrice, r.money), r.modStr, r.noteStr, fmtMoney(r.itemTotal, r.money), fmtMoney(r.orderTotal, r.money)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
@@ -15214,36 +15266,39 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             <>
               <button onClick={() => setFilterMode('date')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'date' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                📅 Date range
+                {t('filter.dateRange')}
               </button>
               <button onClick={() => setFilterMode('event')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'event' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                📍 Event
+                {t('filter.event')}
               </button>
             </>
           )}
           <button onClick={() => loadReport()} disabled={loading || (filterMode === 'event' && !reportEventId)}
             className="ml-auto px-3 py-1.5 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 whitespace-nowrap">
-            {loading ? 'Loading…' : 'View report'}
+            {loading ? t('filter.loading') : t('filter.viewReport')}
           </button>
         </div>
         {/* Row 2: filter inputs */}
         {filterMode === 'date' ? (
           <div className="flex items-center gap-2">
-            <input type="date" value={dateFrom} max={todayLocal} onChange={e => setDateFrom(clampPast(e.target.value))}
-              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
-            <span className="text-sm text-slate-400 flex-shrink-0">to</span>
-            <input type="date" value={dateTo} max={todayLocal} onChange={e => setDateTo(clampPast(e.target.value))}
-              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
+            {/* Language Phase 1d Part 2: ONE message with both pickers inside it (`filter.range`), not a bare "to". */}
+            {t.rich('filter.range', {
+              from: () => <input key="from" type="date" value={dateFrom} max={todayLocal} onChange={e => setDateFrom(clampPast(e.target.value))}
+                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />,
+              sep: chunks => <span key="sep" className="text-sm text-slate-400 flex-shrink-0">{chunks}</span>,
+              until: () => <input key="until" type="date" value={dateTo} max={todayLocal} onChange={e => setDateTo(clampPast(e.target.value))}
+                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />,
+            })}
           </div>
         ) : (
           <select value={reportEventId}
             onChange={e => { const id = e.target.value; setReportEventId(id); if (id) loadReport(undefined, undefined, id, 'event') }}
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
-            <option value="">Select an event…</option>
+            <option value="">{t('filter.selectEvent')}</option>
             {recentEvents.map(ev => {
               const evDate = formatYmdShortMonth(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
-              return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
+              return <option key={ev.id} value={ev.id}>{t('filter.eventOption', { venue: ev.venue_name || t('filter.unnamedEvent'), date: evDate })}</option>
             })}
           </select>
         )}
@@ -15251,11 +15306,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
         <div className={`flex items-center gap-2 ${orders.length === 0 ? 'invisible' : ''}`}>
           <button onClick={() => setItemView('orders')}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium ${itemView === 'orders' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-            📋 Orders
+            {t('filter.orders')}
           </button>
           <button onClick={() => setItemView('items')}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium ${itemView === 'items' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-            📦 Items
+            {t('filter.items')}
           </button>
           <button onClick={itemView === 'orders' ? exportCSV : exportItemsCSV}
             disabled={orders.length === 0}
@@ -15276,15 +15331,15 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             {/* Filter mode toggle — Pro/Max only */}
             {hasAdvanced && (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Filter by</span>
+                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t('filter.filterBy')}</span>
                 <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
                   <button onClick={() => setFilterMode('date')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'date' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
-                    📅 Date range
+                    {t('filter.dateRange')}
                   </button>
                   <button onClick={() => setFilterMode('event')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'event' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
-                    📍 Event
+                    {t('filter.event')}
                   </button>
                 </div>
               </div>
@@ -15294,20 +15349,22 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             <div className="flex items-center gap-2" style={{ minHeight: '44px' }}>
               {filterMode === 'date' ? (
                 <>
-                  <input type="date" value={dateFrom} max={todayLocal} onChange={e => setDateFrom(clampPast(e.target.value))}
-                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />
-                  <span className="text-sm text-slate-400 flex-shrink-0">to</span>
-                  <input type="date" value={dateTo} max={todayLocal} onChange={e => setDateTo(clampPast(e.target.value))}
-                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />
+                  {t.rich('filter.range', {
+                    from: () => <input key="from" type="date" value={dateFrom} max={todayLocal} onChange={e => setDateFrom(clampPast(e.target.value))}
+                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />,
+                    sep: chunks => <span key="sep" className="text-sm text-slate-400 flex-shrink-0">{chunks}</span>,
+                    until: () => <input key="until" type="date" value={dateTo} max={todayLocal} onChange={e => setDateTo(clampPast(e.target.value))}
+                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />,
+                  })}
                 </>
               ) : (
                 <select value={reportEventId}
                   onChange={e => { const id = e.target.value; setReportEventId(id); if (id) loadReport(undefined, undefined, id, 'event') }}
                   className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white w-[320px]">
-                  <option value="">Select an event…</option>
+                  <option value="">{t('filter.selectEvent')}</option>
                   {recentEvents.map(ev => {
                     const evDate = formatYmdShortMonth(ev.event_date, ts, { weekday: 'short', day: 'numeric', month: 'short' })
-                    return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
+                    return <option key={ev.id} value={ev.id}>{t('filter.eventOption', { venue: ev.venue_name || t('filter.unnamedEvent'), date: evDate })}</option>
                   })}
                 </select>
               )}
@@ -15322,26 +15379,26 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
           {/* MIDDLE: Show [Orders | Items] view toggle — TOP-aligned (self-start) so it sits inline on the
               top button line with the "Filter by" toggle (left) and "View report" (right). */}
           <div className={`flex-shrink-0 self-start flex items-center gap-2 h-10 ${orders.length === 0 ? 'invisible' : ''}`}>
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Show</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t('filter.show')}</span>
             <button onClick={() => setItemView('orders')}
               className={`${itemView === 'orders' ? 'bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium' : 'border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-sm hover:bg-slate-50'}`}>
-              📋 Orders
+              {t('filter.orders')}
             </button>
             <button onClick={() => setItemView('items')}
               className={`${itemView === 'items' ? 'bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium' : 'border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-sm hover:bg-slate-50'}`}>
-              📦 Items
+              {t('filter.items')}
             </button>
           </div>
           {/* RIGHT: View report (primary) stacked over Export CSV (secondary), equal width, right-aligned */}
           <div className="flex-shrink-0 flex flex-col gap-2 w-[150px]">
             <button onClick={() => loadReport()} disabled={loading || (filterMode === 'event' && !reportEventId)}
               className="h-10 w-full px-4 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50">
-              {loading ? 'Loading…' : 'View report'}
+              {loading ? t('filter.loading') : t('filter.viewReport')}
             </button>
             <button onClick={itemView === 'orders' ? exportCSV : exportItemsCSV}
               disabled={orders.length === 0}
               className={`h-10 w-full px-4 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors ${orders.length === 0 ? 'invisible' : ''}`}>
-              ⬇ Export CSV
+              {t('filter.exportCsv')}
             </button>
           </div>
         </div>
@@ -15349,10 +15406,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 
       {/* ── No data states ── */}
       {reportData === null && reportLoaded && (
-        <p className="text-sm text-slate-400 text-center py-10">No orders found for this period.</p>
+        <p className="text-sm text-slate-400 text-center py-10">{t('empty.noOrders')}</p>
       )}
       {filterMode === 'event' && !reportEventId && !reportLoaded && (
-        <p className="text-sm text-slate-400 text-center py-10">Select an event above to view its report.</p>
+        <p className="text-sm text-slate-400 text-center py-10">{t('empty.selectEvent')}</p>
       )}
 
       {orders.length > 0 && (
@@ -15369,10 +15426,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                 ⚠️ reportHeader (the venue · date line above) exists in EVENT mode only, so the totals line
                 is the one place present in both modes. */}
             <p className="text-base font-bold text-slate-900">
-              {orders.length} order{orders.length !== 1 ? 's' : ''} · {money(revenueBreakdown.total)}
+              {t('summary.totals', { n: orders.length, count: String(orders.length), total: money(revenueBreakdown.total) })}
               {vans.length > 1 && (
                 <span className="ml-2 align-middle inline-block text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-0.5">
-                  {vanFilterLabel(vans, vanFilter)}
+                  {vanFilterLabel(vans, vanFilter, reportCountry.locale)}
                 </span>
               )}
             </p>
@@ -15383,24 +15440,24 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             <>
               {/* Revenue breakdown */}
               <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <p className="text-sm font-semibold text-slate-900 mb-3">Revenue breakdown</p>
+                <p className="text-sm font-semibold text-slate-900 mb-3">{t('revenue.title')}</p>
                 <div className="space-y-2">
                   {/* Menu-item revenue SPLIT per category (sums to the old "Menu items" total). */}
                   {revenueBreakdown.categories.map((c) => (
                     <div key={c.name} className="flex justify-between text-sm">
-                      <span className="text-slate-600">{c.name}</span>
+                      <span className="text-slate-600">{c.name === OTHER_REVENUE_BUCKET ? t('revenue.other') : c.name}</span>
                       <span className="font-medium text-slate-900">{money(c.revenue)}</span>
                     </div>
                   ))}
                   {revenueBreakdown.dealRev > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Deal revenue</span>
+                      <span className="text-slate-600">{t('revenue.deals')}</span>
                       <span className="font-medium text-slate-900">{money(revenueBreakdown.dealRev)}</span>
                     </div>
                   )}
                   {revenueBreakdown.mods > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Modifier upcharges</span>
+                      <span className="text-slate-600">{t('revenue.modifiers')}</span>
                       <span className="font-medium text-slate-900">{money(revenueBreakdown.mods)}</span>
                     </div>
                   )}
@@ -15408,7 +15465,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                     {/* Phase 3 screens: with tax, tips or fees in the range, this line is FOOD SALES and
                         they follow as their own lines — never folded into "Other". With none (every UK
                         range) it reads "Total", exactly as before. */}
-                    <span className="text-slate-900">{revenueBreakdown.extras.length ? 'Food sales' : 'Total'}</span>
+                    <span className="text-slate-900">{revenueBreakdown.extras.length ? t('revenue.foodSales') : t('revenue.total')}</span>
                     <span className="text-slate-900">{money(revenueBreakdown.total)}</span>
                   </div>
                   {revenueBreakdown.extras.map(x => (
@@ -15423,15 +15480,15 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               {/* Items sold */}
               {reportData?.topItems && reportData.topItems.length > 0 && (
                 <div className="bg-white border border-slate-200 rounded-xl p-4">
-                  <p className="text-sm font-semibold text-slate-900 mb-3">Items sold</p>
+                  <p className="text-sm font-semibold text-slate-900 mb-3">{t('itemsSold.title')}</p>
                   <table className="w-full table-fixed text-sm">
                     <colgroup><col className="w-8" /><col /><col className="w-12" /><col className="w-20" /></colgroup>
                     <thead>
                       <tr className="text-xs text-slate-400 border-b border-slate-100">
                         <th className="font-medium text-left py-1">#</th>
-                        <th className="font-medium text-left py-1">Item</th>
-                        <th className="font-medium text-right py-1">Qty</th>
-                        <th className="font-medium text-right py-1">Total</th>
+                        <th className="font-medium text-left py-1">{t('table.item')}</th>
+                        <th className="font-medium text-right py-1">{t('table.qty')}</th>
+                        <th className="font-medium text-right py-1">{t('table.total')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -15451,7 +15508,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               {/* Deals */}
               {dealBreakdown.length > 0 && (
                 <div className="bg-white border border-slate-200 rounded-xl p-4">
-                  <p className="text-sm font-semibold text-slate-900 mb-3">Deals</p>
+                  <p className="text-sm font-semibold text-slate-900 mb-3">{t('dealsCard.title')}</p>
                   <div className="space-y-1">
                     {dealBreakdown.map((d, i) => (
                       <div key={i} className="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
@@ -15469,18 +15526,18 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               {/* Customisations */}
               {(modifierBreakdown.length > 0 || customerNotes.length > 0) && (
                 <div className="bg-white border border-slate-200 rounded-xl p-4">
-                  <p className="text-sm font-semibold text-slate-900 mb-3">Customisations</p>
+                  <p className="text-sm font-semibold text-slate-900 mb-3">{t('custom.title')}</p>
                   {modifierBreakdown.length > 0 && (
                     <>
-                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Paid modifiers</p>
+                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">{t('custom.paidModifiers')}</p>
                       <table className="w-full table-fixed text-sm mb-4">
                         <colgroup><col className="w-8" /><col /><col className="w-12" /><col className="w-20" /></colgroup>
                         <thead>
                           <tr className="text-xs text-slate-400 border-b border-slate-100">
                             <th className="font-medium text-left py-1">#</th>
-                            <th className="font-medium text-left py-1">Modifier</th>
-                            <th className="font-medium text-right py-1">Qty</th>
-                            <th className="font-medium text-right py-1">Total</th>
+                            <th className="font-medium text-left py-1">{t('table.modifier')}</th>
+                            <th className="font-medium text-right py-1">{t('table.qty')}</th>
+                            <th className="font-medium text-right py-1">{t('table.total')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -15498,11 +15555,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   )}
                   {customerNotes.length > 0 && (
                     <>
-                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Customer notes</p>
+                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">{t('custom.customerNotes')}</p>
                       <div className="space-y-1">
                         {customerNotes.map((n, i) => (
                           <div key={i} className="flex items-center justify-between py-1">
-                            <span className="text-sm text-slate-600 italic">"{n.note}"</span>
+                            <span className="text-sm text-slate-600 italic">{t('custom.note', { note: n.note })}</span>
                             {n.count > 1 && <span className="text-xs text-slate-400">{n.count}×</span>}
                           </div>
                         ))}
@@ -15519,10 +15576,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               Time = own column (mobile shows just dd/mm). Items view groups each DEAL as a parent row
               (deal name + single deal price) with indented member items (no per-item price). */}
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <p className="text-sm font-semibold text-slate-900 mb-3">{itemView === 'orders' ? 'Order breakdown' : 'Item breakdown'}</p>
+            <p className="text-sm font-semibold text-slate-900 mb-3">{itemView === 'orders' ? t('breakdown.orders') : t('breakdown.items')}</p>
             {/* Desktop fixed-column header (shared by both views) */}
             <div className="hidden sm:grid grid-cols-[2.5rem_4.5rem_3.5rem_5rem_1fr_2.5rem_5rem] gap-2 text-xs font-medium text-slate-400 border-b border-slate-100 pb-1.5">
-              <span>#</span><span>Date</span><span>Time</span><span>Channel</span><span>Item</span><span className="text-right">Qty</span><span className="text-right">Total</span>
+              <span>#</span><span>{t('table.date')}</span><span>{t('table.time')}</span><span>{t('table.channel')}</span><span>{t('table.item')}</span><span className="text-right">{t('table.qty')}</span><span className="text-right">{t('table.total')}</span>
             </div>
 
             {itemView === 'orders' && (
@@ -15535,8 +15592,8 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   const timePlaced = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
                   const ev = resolveEvent(o)
                   const venueName = ev?.venue_name ?? null
-                  const orderType = o.customer_email ? 'Online' : 'Walk-up'
-                  const customerLabel = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : '—'
+                  const orderType = o.customer_email ? t('channel.online') : t('channel.walkUp')
+                  const customerLabel = (o.customer_name && !isWalkUp(o.customer_name)) ? o.customer_name : null
                   const itemSummary = (Array.isArray(o.items) ? o.items : [])
                     .map((i: any) => `${i.quantity || 1}× ${i.name}`).join(', ')
                   const qtyTotal = (Array.isArray(o.items) ? o.items : []).reduce((s: number, i: any) => s + (i.quantity || 1), 0)
@@ -15570,7 +15627,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                               <span className="text-slate-500 font-medium">{orderType}</span>
                               <span className="text-slate-400">· {timePlaced}</span>
-                              {customerLabel !== '—' && <span className="text-slate-600">{customerLabel}</span>}
+                              {customerLabel && <span className="text-slate-600">{customerLabel}</span>}
                               {venueName && <span className="text-slate-400">· {venueName}</span>}
                             </div>
                             <div className="space-y-0.5">
@@ -15607,7 +15664,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                 const createdAt = o.created_at ? new Date(o.created_at) : null
                 const dateFull = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts, true) : ''
                 const time = createdAt ? formatTime(clockOfInstantInTz(createdAt, ts.timeZone), ts) : ''
-                const channel = o.customer_email ? 'Online' : 'Walk-up'
+                const channel = o.customer_email ? t('channel.online') : t('channel.walkUp')
                 const items = Array.isArray(o.items) ? o.items : []
                 const deals = Array.isArray(o.deals) ? o.deals : []
                 const dealMemberNames = new Set<string>()
@@ -15663,11 +15720,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
           {!hasAdvanced && (
             <div className="rounded-xl border border-slate-200 p-6 opacity-60">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-semibold text-slate-700">Revenue breakdown & analytics</span>
-                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pro feature</span>
+                <span className="font-semibold text-slate-700">{t('upsell.title')}</span>
+                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">{t('upsell.badge')}</span>
               </div>
               <p className="text-sm text-slate-400">
-                Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max.
+                {t('upsell.body')}
               </p>
             </div>
           )}
@@ -15688,6 +15745,8 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
   initialPendingEmailChange: PendingEmailChange | null
   onProfileSaved: (firstName: string, lastName: string, phone: string | null) => void
 }) {
+  // Language Phase 1d Part 2: Team's words (messages `manageTeam`).
+  const t = useT('manageTeam')
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [vans, setVans] = useState<Van[]>([])
   const [invitingMember, setInvitingMember] = useState(false)
@@ -15738,17 +15797,17 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
             requested_at: new Date().toISOString(),
             expired_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           })
-          showToast('Verification email sent')
+          showToast(t('toast.verificationSent'))
         } else {
-          showToast(emailData.error || 'Email change failed', 'error')
+          showToast(emailData.error || t('toast.emailChangeFailed'), 'error')
         }
       }
 
       onProfileSaved(ownProfileFirstName.trim(), ownProfileLastName.trim(), ownProfilePhone.trim() || null)
       setEditingOwnProfile(false)
-      showToast('Profile updated')
+      showToast(t('toast.profileUpdated'))
     } catch {
-      showToast('Failed to save profile', 'error')
+      showToast(t('toast.saveProfileFailed'), 'error')
     } finally {
       setSavingOwnProfile(false)
     }
@@ -15764,9 +15823,9 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
       })
       const data = await res.json()
       if (data.ok) {
-        showToast('Verification email resent — check your inbox')
+        showToast(t('toast.verificationResent'))
       } else {
-        showToast(data.error || 'Failed to resend', 'error')
+        showToast(data.error || t('toast.resendFailed'), 'error')
       }
     } finally {
       setResendingVerification(false)
@@ -15785,12 +15844,12 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
       const data = await res.json()
       if (data.ok) {
         setPendingEmailChange(null)
-        showToast('Email change cancelled')
+        showToast(t('toast.emailChangeCancelled'))
       } else {
-        showToast(data.error || 'Failed to cancel', 'error')
+        showToast(data.error || t('toast.cancelFailed'), 'error')
       }
     } catch {
-      showToast('Failed to cancel', 'error')
+      showToast(t('toast.cancelFailed'), 'error')
     } finally {
       setCancellingEmailChange(false)
     }
@@ -15846,7 +15905,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
           role: inviteRole,
           van_ids: inviteVanIds,
         })
-        showToast('Member updated')
+        showToast(t('toast.memberUpdated'))
       } else {
         await api('invite_team_member', {
           name: inviteName,
@@ -15854,7 +15913,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
           role: inviteRole,
           vanIds: inviteVanIds,
         })
-        showToast('Invite sent')
+        showToast(t('toast.inviteSent'))
       }
       await loadTeam()
       closeModal()
@@ -15866,11 +15925,11 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
   }
 
   const removeMember = async (memberId: string) => {
-    if (!window.confirm('Remove this team member?')) return
+    if (!window.confirm(t('confirmRemove'))) return
     try {
       await api('remove_team_member', { memberId })
       setTeamMembers(prev => prev.filter(m => m.id !== memberId))
-      showToast('Member removed')
+      showToast(t('toast.memberRemoved'))
     } catch (e: any) {
       showToast(e.message, 'error')
     }
@@ -15907,9 +15966,9 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
     <div className="flex flex-col gap-4 max-w-lg mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-semibold text-slate-900">Team members</p>
+          <p className="text-sm font-semibold text-slate-900">{t('title')}</p>
           <p className="text-xs text-slate-500 mt-0.5">
-            Invite staff to access the order screen and take orders
+            {t('intro')}
           </p>
         </div>
         {userRole !== 'staff' && (
@@ -15917,7 +15976,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
             onClick={openInviteModal}
             className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
           >
-            + Invite member
+            {t('inviteMember')}
           </button>
         )}
       </div>
@@ -15934,10 +15993,10 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                 const display = isViewerOwner && currentUserFirstName && currentUserLastName
                   ? `${currentUserFirstName} ${currentUserLastName}`
                   : (ownerEmail || truck.contact_email || '—')
-                return `${display}${isViewerOwner ? ' (you)' : ''}`
+                return t('ownerName', { name: display, you: isViewerOwner ? 'yes' : 'no' })
               })()}
             </p>
-            <p className="text-xs text-slate-400">Owner · All vans</p>
+            <p className="text-xs text-slate-400">{t('ownerLine')}</p>
           </div>
           {/* Edit (own-profile) shown ONLY to the owner — a non-owner viewer (e.g. admin) must not
               act on the owner's identity, and this button edits the viewer's OWN profile. */}
@@ -15952,7 +16011,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
               }}
               className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
             >
-              Edit
+              {t('edit')}
             </button>
           )}
         </div>
@@ -15960,9 +16019,9 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
         {pendingEmailChange && !editingOwnProfile && (
           <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold text-amber-800">⏳ Awaiting verification</p>
+              <p className="text-xs font-semibold text-amber-800">{t('awaiting')}</p>
               <p className="text-xs text-amber-700 mt-0.5">
-                Verification sent to <strong>{pendingEmailChange.new_email}</strong>. Check your inbox.
+                {t.rich('sentTo', { email: pendingEmailChange.new_email, b: chunks => <strong>{chunks}</strong> })}
               </p>
             </div>
             <div className="flex flex-col items-end gap-1 flex-shrink-0">
@@ -15971,14 +16030,14 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                 disabled={resendingVerification || cancellingEmailChange}
                 className="text-xs text-amber-700 font-semibold underline disabled:opacity-50"
               >
-                {resendingVerification ? 'Sending...' : 'Resend'}
+                {resendingVerification ? t('sending') : t('resend')}
               </button>
               <button
                 onClick={handleCancelEmailChange}
                 disabled={cancellingEmailChange || resendingVerification}
                 className="text-xs text-slate-500 underline disabled:opacity-50"
               >
-                {cancellingEmailChange ? 'Cancelling...' : 'Cancel'}
+                {cancellingEmailChange ? t('cancelling') : t('cancel')}
               </button>
             </div>
           </div>
@@ -15986,11 +16045,11 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
 
         {editingOwnProfile && (
           <div className="bg-slate-50 rounded-xl p-4 flex flex-col gap-3 mt-2">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">My profile</p>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('myProfile')}</p>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">First name *</label>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('firstName')}</label>
                 <input
                   type="text"
                   value={ownProfileFirstName}
@@ -15999,7 +16058,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Last name *</label>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('lastName')}</label>
                 <input
                   type="text"
                   value={ownProfileLastName}
@@ -16010,18 +16069,18 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Phone</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('phone')}</label>
               <input
                 type="tel"
                 value={ownProfilePhone}
                 onChange={e => setOwnProfilePhone(e.target.value)}
-                placeholder="+44 7700 900000"
+                placeholder={t('phonePlaceholder')}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('email')}</label>
               <input
                 type="email"
                 value={ownProfileEmail}
@@ -16032,9 +16091,9 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
               {pendingEmailChange ? (
                 <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold text-amber-800">⏳ Awaiting verification</p>
+                    <p className="text-xs font-semibold text-amber-800">{t('awaiting')}</p>
                     <p className="text-xs text-amber-700 mt-0.5">
-                      Verification sent to <strong>{pendingEmailChange.new_email}</strong>. Check your inbox.
+                      {t.rich('sentTo', { email: pendingEmailChange.new_email, b: chunks => <strong>{chunks}</strong> })}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
@@ -16043,26 +16102,26 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                       disabled={resendingVerification || cancellingEmailChange}
                       className="text-xs text-amber-700 font-semibold underline disabled:opacity-50"
                     >
-                      {resendingVerification ? 'Sending...' : 'Resend'}
+                      {resendingVerification ? t('sending') : t('resend')}
                     </button>
                     <button
                       onClick={handleCancelEmailChange}
                       disabled={cancellingEmailChange || resendingVerification}
                       className="text-xs text-slate-500 underline disabled:opacity-50"
                     >
-                      {cancellingEmailChange ? 'Cancelling...' : 'Cancel'}
+                      {cancellingEmailChange ? t('cancelling') : t('cancel')}
                     </button>
                   </div>
                 </div>
               ) : ownProfileEmail !== currentUserEmail && (
                 <p className="text-xs text-amber-600 mt-1">
-                  A verification link will be sent to this address. Your current email remains active until verified.
+                  {t('verifyNote')}
                 </p>
               )}
             </div>
 
             <p className="text-xs text-slate-600 bg-white border border-slate-100 rounded-lg px-3 py-2">
-              Your personal details are private and never shown to customers. They're used for account management and billing verification.
+              {t('privacy')}
             </p>
 
             <div className="flex gap-2">
@@ -16070,14 +16129,14 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                 onClick={() => setEditingOwnProfile(false)}
                 className="flex-1 border border-slate-200 text-slate-600 py-2 rounded-xl text-sm"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={saveOwnProfile}
                 disabled={!ownProfileFirstName.trim() || !ownProfileLastName.trim() || savingOwnProfile}
                 className="flex-1 bg-orange-600 text-white font-semibold py-2 rounded-xl text-sm disabled:opacity-40"
               >
-                {savingOwnProfile ? 'Saving...' : 'Save'}
+                {savingOwnProfile ? t('saving') : t('save')}
               </button>
             </div>
           </div>
@@ -16091,12 +16150,12 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                 {member.name || member.email}
               </p>
               <p className="text-xs text-slate-400">
-                {member.role === 'manager' ? 'Manager' : 'Staff'}
-                {' · '}
-                {member.van_names?.length
-                  ? member.van_names.join(', ')
-                  : 'All trucks'}
-                {!member.accepted_at && ' · Invite pending'}
+                {/* The van names are the truck's own data, joined with ", " as they always were. */}
+                {t('memberLine', {
+                  role: member.role === 'manager' ? 'manager' : 'staff',
+                  vans: member.van_names?.length ? member.van_names.join(', ') : t('allTrucks'),
+                  pending: !member.accepted_at ? 'yes' : 'no',
+                })}
               </p>
             </div>
             <div className="flex gap-2">
@@ -16105,7 +16164,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                   onClick={() => editMember(member)}
                   className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
                 >
-                  Edit
+                  {t('edit')}
                 </button>
               )}
               {canRemove(member) && (
@@ -16113,7 +16172,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                   onClick={() => removeMember(member.id)}
                   className="text-xs px-2.5 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
                 >
-                  Remove
+                  {t('remove')}
                 </button>
               )}
             </div>
@@ -16121,7 +16180,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
         ))}
 
         {visibleMembers.length === 0 && (
-          <p className="text-xs text-slate-400 py-3 text-center">No team members yet</p>
+          <p className="text-xs text-slate-400 py-3 text-center">{t('noMembers')}</p>
         )}
       </Card>
 
@@ -16131,57 +16190,57 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
              onClick={e => e.target === e.currentTarget && closeModal()}>
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <h3 className="text-lg font-semibold text-slate-900">
-              {editingMember ? 'Edit team member' : 'Invite team member'}
+              {editingMember ? t('modal.editTitle') : t('modal.inviteTitle')}
             </h3>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('modal.name')}</label>
               <input
                 type="text"
                 value={inviteName}
                 onChange={e => setInviteName(e.target.value)}
-                placeholder="e.g. Sarah"
+                placeholder={t('modal.namePlaceholder')}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('modal.email')}</label>
               <input
                 type="email"
                 value={inviteEmail}
                 onChange={e => setInviteEmail(e.target.value)}
-                placeholder="sarah@example.com"
+                placeholder={t('modal.emailPlaceholder')}
                 disabled={!!editingMember}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm disabled:bg-slate-50 disabled:text-slate-400"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Role</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('modal.role')}</label>
               <select
                 value={inviteRole}
                 onChange={e => setInviteRole(e.target.value as 'owner' | 'manager' | 'staff')}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
               >
                 {invitableRoles.includes('staff') && (
-                  <option value="staff">Staff — Take orders and manage the kitchen</option>
+                  <option value="staff">{t('modal.roleStaff')}</option>
                 )}
                 {invitableRoles.includes('manager') && (
-                  <option value="manager">Manager — Full access including menu and settings</option>
+                  <option value="manager">{t('modal.roleManager')}</option>
                 )}
                 {invitableRoles.includes('owner') && (
-                  <option value="owner">Owner — Full access including team and billing</option>
+                  <option value="owner">{t('modal.roleOwner')}</option>
                 )}
               </select>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Truck access</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('modal.truckAccess')}</label>
               {vans.length === 1 ? (
                 <label className="flex items-center gap-2 py-1.5 opacity-60 cursor-not-allowed">
                   <input type="checkbox" checked disabled />
-                  <span className="text-sm text-slate-700">{vans[0].name} <span className="text-slate-400">(only truck)</span></span>
+                  <span className="text-sm text-slate-700">{t.rich('modal.onlyTruck', { van: vans[0].name, muted: chunks => <span className="text-slate-400">{chunks}</span> })}</span>
                 </label>
               ) : (
                 <>
@@ -16202,7 +16261,7 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                     </label>
                   ))}
                   {vans.length > 1 && inviteVanIds.length === 0 && (
-                    <p className="text-xs text-amber-600 mt-1">Select at least one truck</p>
+                    <p className="text-xs text-amber-600 mt-1">{t('modal.selectOne')}</p>
                   )}
                 </>
               )}
@@ -16213,14 +16272,14 @@ function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFi
                 onClick={closeModal}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={sendInvite}
                 disabled={!inviteEmail || inviteLoading || (vans.length > 1 && inviteVanIds.length === 0)}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700"
               >
-                {inviteLoading ? 'Saving...' : editingMember ? 'Save changes' : 'Send invite'}
+                {inviteLoading ? t('saving') : editingMember ? t('modal.saveChanges') : t('modal.sendInvite')}
               </button>
             </div>
           </div>

@@ -67,6 +67,15 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 /* ⛔ COMMENTS STRIPPED BEFORE ANY SOURCE ASSERTION. Six variations of "a comment interfered with a
  * check on code" in this project, the last of them a comment that HID code from the stripper. */
 const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): the Social media tab's words are the `socialPosts` messages (the copy
+// module now exports each constant as `gb('<camelCaseKey>')`), the editor's are `designEditor`, the modal's are
+// `eventPost`, and the route's labels / refusals are `weeklyPostApi` / `errorsManage.wp_*`. A check that pinned
+// `NAME = 'words'` in lib/copy/socialPosts.ts now pins the SAME en-GB words on the message (and that the copy
+// module still exports NAME from that key); a check that pinned `{NAME}` at a use site pins the `t('<key>')` call.
+const GB_MSG = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+const SPM = GB_MSG.socialPosts, DEM = GB_MSG.designEditor
+const gbT = (ns) => require('next-intl').createTranslator({ locale: 'en-GB', messages: GB_MSG, namespace: ns })
+const exportsKey = (copySrc, NAME, key) => new RegExp(`export const ${NAME} =\\s*gb\\('${key}'\\)`).test(copySrc)
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE SYNTHETIC PICTURES
@@ -372,12 +381,13 @@ head('4 · "Whole background" AND THE SHAPE RULE')
        * not. ⛔ AND IT SAYS WHAT A POSTER DOES — replaces the standard design, and we add the date,
        * times and the mark — because "same shape as your standard design" with no explanation reads as
        * an arbitrary rule to be worked around. */
-      return /POSTER_BOX_TITLE = 'Event poster \(optional\)'/.test(copy)
-        && /POSTER_BOX_BLURB =\s*\n\s*'Got a ready-made poster for this location\? Upload it and we’ll use it instead of your single event '/.test(copy)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the title and blurb are socialPosts `posterBoxTitle` / `posterBoxBlurb`; same en-GB words.
+      return SPM.posterBoxTitle === 'Event poster (optional)' && exportsKey(copy, 'POSTER_BOX_TITLE', 'posterBoxTitle')
+        && SPM.posterBoxBlurb.startsWith('Got a ready-made poster for this location? Upload it and we’ll use it instead of your single event ')
+        && /POSTER_BOX_BLURB =\s*\n?\s*gb\('posterBoxBlurb'\)/.test(copy)
         /* ⛔ AND THE SIZE IS GONE FROM IT — asserted, because a removal that leaves the old constant
          * behind is a removal the next person undoes by importing the wrong one. */
-        && !/Same shape as your standard design/.test(
-          copy.slice(copy.indexOf('POSTER_BOX_BLURB ='), copy.indexOf('WEEKLY_ONLY_ADD_LINK')))
+        && !/Same shape as your standard design/.test(SPM.posterBoxBlurb)
         /* ⚠️ `PictureBox` TAKES `title` AND `blurb` AS TWO PLAIN PROPS since 9 October — `SlotBoxCopy`
          * went with `SlotBox`, because there is no longer a case where the pair is computed and passed
          * around together. The CLAIM is unchanged: the box is drawn from the copy module's constants. */
@@ -388,14 +398,17 @@ head('4 · "Whole background" AND THE SHAPE RULE')
         /* ⚠️ "(optional)" DROPPED 10 October 2026, §1: every box on the screen is optional, so the word
          * singled out the one that is no more optional than its neighbours — and it was the longest of
          * the three titles, which is what made the row look uneven. */
-        && /LOCATION_POSTER_TITLE = 'Location poster'/.test(copy)
-        && /title=\{LOCATION_POSTER_TITLE\} blurb=\{POSTER_BOX_BLURB\}/.test(read('components/manage/SocialPosts.tsx'))
+        && SPM.locationPosterTitle === 'Location poster' && exportsKey(copy, 'LOCATION_POSTER_TITLE', 'locationPosterTitle')
+        && /title=\{t\('locationPosterTitle'\)\} blurb=\{t\('posterBoxBlurb'\)\}/.test(read('components/manage/SocialPosts.tsx'))
         /* ⛔ THE SHAPED TILE IS GONE — see its own check below. The three boxes are the same size now,
          * which the brief asks for, and a box that took its shape from a design could not be. **The
          * loss is real and is in the report**: an operator uploading their first poster sees the target
          * shape only in the refusal. ⚠️ THAT REFUSAL STILL NAMES THE SIZE, which is what this line
          * asserts instead — `WRONG_SHAPE_NOTE` above, and the route's own sentence below. */
-        && /shapeRefusal|Same shape as your standard design/.test(read('lib/copy/socialPosts.ts'))
+        // ⚠️ RE-PINNED (Language Phase 1d Part 2): the sized sentence is `posterBoxBlurbSized.withSize` (ICU {w}/{h}),
+        // still built by the copy module's `posterBoxBlurb(w, h)`.
+        && /Same shape as your standard design \(\{w\} × \{h\}\)/.test(SPM.posterBoxBlurbSized.withSize)
+        && /gb\('posterBoxBlurbSized\.withSize', \{ w: String\(w\), h: String\(h\) \}\)/.test(read('lib/copy/socialPosts.ts'))
     })()
     /* ⛔ AND THE OLD DESIGN-DRIVEN WORDING LEFT THE SCREEN. `codeOf` first — the import tombstone names
      * every one of those constants in prose. */
@@ -412,8 +425,10 @@ head('4 · "Whole background" AND THE SHAPE RULE')
     && /!ctx\.locationImages\?\.poster \? 'none'/.test(route)
     && /: !posterFits \? 'wrong-shape'/.test(route)
     && /: plan\.background === 'poster' \? 'used'/.test(route)
-    && /This place’s picture is a different shape from your design, so the standard background is used\./
-      .test(read('app/api/weekly-post/route.ts'))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the warning is `weeklyPostApi.wrongShapeBackground`, pushed as a place-picture warning;
+    // same en-GB sentence.
+    && /out\.warnings\.push\(\{ where: 'place-picture', message: weeklyPostWordsFor\(locale\)\('wrongShapeBackground'\) \}\)/.test(route)
+    && GB_MSG.weeklyPostApi.wrongShapeBackground === 'This place’s picture is a different shape from your design, so the standard background is used.'
     /* ⛔ AND THERE IS STILL NO SECOND RESOLVER: nothing reassigns `picked2`, which is why it is a
      * `const`. A `let` here would be the shape the 7 October defect needed. */
     && /const picked2 = picked/.test(route)
@@ -615,18 +630,20 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
      * "Location settings": the id is what `?section=` carries and what `?section=places` resolves
      * onto, so renaming it would break a live URL to relabel a pill. */
     t('🔴 Location settings is its own pill, and the card heading matches it',
-      /LOCATIONS_TITLE = 'Location settings'/.test(COPY)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `locationsTitle` / `locationsCardTitle` / `tabLocationsHeading` (same en-GB
+      // words); the card is `<Box title={t('locationsCardTitle')}>`.
+      SPM.locationsTitle === 'Location settings' && exportsKey(COPY, 'LOCATIONS_TITLE', 'locationsTitle')
       && /\{ id: 'locations', label: 'Location settings' \}/.test(codeOf(read('app/manage/[token]/page.tsx')))
       /* ══ ⚠️ THE CARD INSIDE IT IS "Locations", AND IT CARRIES NO DESCRIPTION (8 October 2026) ═══════
        * The PILL and the PAGE HEADING say "Location settings"; the card beneath them says "Locations".
        * ⛔ AND THE CARD'S BLURB WENT because the page now has its own description directly above it —
        * the same sentence twice on one screen is the thing a per-tab description was added to stop. */
-      && /LOCATIONS_CARD_TITLE = 'Locations'/.test(COPY)
-      && /<Box title=\{LOCATIONS_CARD_TITLE\}>/.test(SP)
-      && /TAB_LOCATIONS_HEADING = 'Location settings'/.test(COPY)
+      && SPM.locationsCardTitle === 'Locations'
+      && /<Box title=\{t\('locationsCardTitle'\)\}>/.test(SP)
+      && SPM.tabLocationsHeading === 'Location settings'
       /* ⛔ AND THE OLD BOX IS GONE FROM **DESIGNS**, which is two boxes now. `codeOf` first — the
        * tombstone there names the box in prose. */
-      && !/PLACE_PICTURES_TITLE/.test(SP)
+      && !/PLACE_PICTURES_TITLE/.test(SP) && !/t\('placePicturesTitle'\)/.test(SP)
       && (SP.match(/<Box title=/g) || []).length === 5)
     /* ══ 🔴 THE COLUMNS NAME THE **THING**, NOT THE SURFACE (8 October 2026) ════════════════════════
      * ⛔ THEY WERE "WEEKLY" AND "EVENT", which named where each image appeared — and that stopped
@@ -644,20 +661,23 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
      * columns moved with them, because a table running one way beside a pane running the other is two
      * orders on one screen. */
     t('🔴 the table has LOCATION · EVENT · WEEKLY · POSTER, with a tick per slot, and a row selects',
-      /COL_LOCATION = 'Location'/.test(COPY)
-      && /COL_WEEKLY = 'Weekly'/.test(COPY) && /COL_EVENT = 'Event'/.test(COPY)
-      && /COL_POSTER = 'Poster'/.test(COPY)
-      && /<th className="w-\[44px\] py-1 text-center">\{COL_WEEKLY\}<\/th>/.test(SP)
-      && /<th className="w-\[44px\] py-1 text-center">\{COL_EVENT\}<\/th>/.test(SP)
-      && /<th className="w-\[44px\] py-1 text-center">\{COL_POSTER\}<\/th>/.test(SP)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the column words are socialPosts `colLocation` … `colPoster`, read with `t()`; same words,
+      // and the header ORDER is still asserted by position, on the t() calls.
+      SPM.colLocation === 'Location'
+      && SPM.colWeekly === 'Weekly' && SPM.colEvent === 'Event'
+      && SPM.colPoster === 'Poster'
+      && /<th className="w-\[44px\] py-1 text-center">\{t\('colWeekly'\)\}<\/th>/.test(SP)
+      && /<th className="w-\[44px\] py-1 text-center">\{t\('colEvent'\)\}<\/th>/.test(SP)
+      && /<th className="w-\[44px\] py-1 text-center">\{t\('colPoster'\)\}<\/th>/.test(SP)
       /* 🔴 THE CELLS ARE IN THE HEADER'S ORDER. A row whose cells ran differently would silently swap
        * the two pictures an operator is reading — and with two of them called "picture", that is a
        * mistake nobody would catch by looking. */
       && /\{tick\(pl\.eventPhotoImage \?\? null\)\}[\s\S]{0,120}\{tick\(pl\.weeklyImage \?\? null\)\}[\s\S]{0,120}\{tick\(pl\.eventImage \?\? null\)\}/.test(SP)
       /* ⛔ AND THE HEADER RUNS THE SAME WAY — asserted by POSITION, because three `<th>` regexes can
        * all match a header in any order. */
-      && SP.indexOf('{COL_EVENT}</th>') < SP.indexOf('{COL_WEEKLY}</th>')
-      && SP.indexOf('{COL_WEEKLY}</th>') < SP.indexOf('{COL_POSTER}</th>')
+      && SP.indexOf("{t('colEvent')}</th>") > 0
+      && SP.indexOf("{t('colEvent')}</th>") < SP.indexOf("{t('colWeekly')}</th>")
+      && SP.indexOf("{t('colWeekly')}</th>") < SP.indexOf("{t('colPoster')}</th>")
       /* ⚠️ AND THE NAME WRAPS TO TWO LINES AT WEIGHT 500, instead of being truncated in bold — "The
        * Kings Arms at Great Finborough" became "The Kings Arms at Great Fi…" in a 200px column, so the
        * one thing the row exists to identify was the thing it could not show. */
@@ -725,8 +745,10 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
         && !/\? 'weekly-only' : 'weekly'/.test(route)
       /* 🔴 ALL THREE CALL SITES REFUSE, and the refusal is ONE sentence from ONE helper — three
        * literals would be three chances for one of them to be a 200. */
-      const refusals = (route.match(/if \(!slot\) return badSlot\(\)/g) || []).length
-      const confirmRefuses = /if \(slotGiven && !slot\) return badSlot\(\)/.test(route)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): `badSlot` takes the truck's locale and returns the `wp_bad_slot` refusal (same en-GB
+      // sentence); the call sites are `badSlot(locale)`. Same counts, same order, same sentence.
+      const refusals = (route.match(/if \(!slot\) return badSlot\(locale\)/g) || []).length
+      const confirmRefuses = /if \(slotGiven && !slot\) return badSlot\(locale\)/.test(route)
       /* ⚠️ `place_picture_confirm` IS THE ONE CALL WHERE AN ABSENT SLOT IS LEGITIMATE — "saved, not used
        * anywhere yet" is the library's own upload path. ⛔ SO ABSENT AND MISSPELLED ARE TOLD APART
        * BEFORE THE PARSER RUNS, which is what `slotGiven` is for: a typo cannot pass as an omission. */
@@ -735,19 +757,25 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
        * anything on its way to being rejected. */
       const clearSlice = route.slice(route.indexOf("if (action === 'place_slot_clear')"),
         route.indexOf("if (action === 'place_picture_use')"))
-      const refusesFirst = clearSlice.indexOf('if (!slot) return badSlot()') < clearSlice.indexOf('await placeById')
+      const refusesFirst = clearSlice.indexOf('if (!slot) return badSlot(locale)') >= 0
+        && clearSlice.indexOf('if (!slot) return badSlot(locale)') < clearSlice.indexOf('await placeById')
       return parser && refusals === 2 && confirmRefuses && absentStillAllowed && refusesFirst
-        && /const badSlot = \(\) =>\s*\n\s*NextResponse\.json\(\{ error: 'That is not a picture slot\.' \}, \{ status: 400 \}\)/.test(route)
+        && /const badSlot = \(locale: string\) => refuse\(locale, 'wp_bad_slot', 400\)/.test(route)
+        && GB_MSG.errorsManage.wp_bad_slot === 'That is not a picture slot.'
     })())
     /* ⚠️ THE CONFIRM SAYS THE IMAGE IS KEPT, because it is. A truck told "Remove" without that
      * sentence has every reason to think they are about to lose the file. */
     t('⚠️ the Remove confirm says the image itself is kept',
-      /It stops being used\. The image itself is kept\./.test(COPY)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the confirm is socialPosts `slotRemoveConfirm` (an ICU select on `what`); the screen
+      // calls `t('slotRemoveConfirm', { what })` with the same two fixed words. Same sentences in en-GB.
+      /It stops being used\. The image itself is kept\./.test(SPM.slotRemoveConfirm)
       && CP.slotRemoveConfirm('photo') === 'Remove this photo? It stops being used. The image itself is kept.'
+      && gbT('socialPosts')('slotRemoveConfirm', { what: 'poster' }) === 'Remove this poster? It stops being used. The image itself is kept.'
+      && gbT('socialPosts')('slotRemoveConfirm', { what: 'picture' }) === 'Remove this picture? It stops being used. The image itself is kept.'
       /* ⚠️ "poster" AND "picture" ARE FIXED WORDS NOW. The confirm used to say "photo" or "poster"
        * depending on the DESIGN — which is the ambiguity this round removed. */
-      && /window\.confirm\(slotRemoveConfirm\('poster'\)\)/.test(SP)
-      && /window\.confirm\(slotRemoveConfirm\('picture'\)\)/.test(SP))
+      && /window\.confirm\(t\('slotRemoveConfirm', \{ what: 'poster' \}\)\)/.test(SP)
+      && /window\.confirm\(t\('slotRemoveConfirm', \{ what: 'picture' \}\)\)/.test(SP))
     /* ══ ⛔ "Use the event photo here too" IS GONE — 8 October 2026 ═══════════════════════════════
      * It pointed the weekly slot at the row the event slot already named, because under the old model
      * the only way to use one image for both jobs was to put it in both slots.
@@ -782,15 +810,16 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
       && !/weeklyOnlyImage/.test(codeOf(SP))
       /* 🔴 THREE BOXES, EACH NAMING WHERE ITS PICTURE APPEARS — which is the fact the single
        * "Location picture" box could not state, because the answer was "everywhere". */
-      && /WEEKLY_PIC_TITLE = 'Picture for weekly posts'/.test(COPY)
-      && /WEEKLY_PIC_BLURB = 'A logo or photo for this location’s line on your weekly post\.'/.test(COPY)
-      && /EVENT_PIC_TITLE = 'Picture for event posts'/.test(COPY)
-      && /EVENT_PIC_BLURB = 'A logo or photo in the picture space of your single event design\.'/.test(COPY)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `weeklyPicTitle` … `posterBoxBlurb`, same en-GB words.
+      && SPM.weeklyPicTitle === 'Picture for weekly posts'
+      && SPM.weeklyPicBlurb === 'A logo or photo for this location’s line on your weekly post.'
+      && SPM.eventPicTitle === 'Picture for event posts'
+      && SPM.eventPicBlurb === 'A logo or photo in the picture space of your single event design.'
       && (SP.match(/<PictureBox/g) || []).length === 3
       /* ⚠️ AND THE POSTER KEEPS ITS OWN WORDING, unchanged. ⛔ THE CONSTANT IS DECLARED OVER TWO LINES,
        * which is why the pattern allows the break — a single-line pattern reported "the poster's blurb
        * changed" when nothing had, which is the most expensive kind of false finding. */
-      && /POSTER_BOX_BLURB =\s*\n\s*'Got a ready-made poster for this location\? Upload it and we’ll use it instead of your single event '/.test(COPY))
+      && SPM.posterBoxBlurb === 'Got a ready-made poster for this location? Upload it and we’ll use it instead of your single event design.')
 
     /* ══ 🔴 THE TWO "Use the … picture" LINKS — ONE ROW, NOT A SECOND FILE ═══════════════════════════
      * ⛔ OFFERED ONLY WHEN **THIS** BOX IS EMPTY AND THE OTHER IS FULL, which is the only state in
@@ -800,8 +829,9 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
      * so no file is uploaded and none is copied. ⚠️ AND A COPY IS IMPOSSIBLE ANYWAY:
      * `place_pictures_path_uidx` is a FULL unique index on `path`. */
     t('🔴 each empty box offers the other\'s picture, by pointing at the same row', (() => {
-      return /USE_EVENT_PICTURE = 'Use the event post picture'/.test(COPY)
-        && /USE_WEEKLY_PICTURE = 'Use the weekly post picture'/.test(COPY)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `useEventPicture` / `useWeeklyPicture`, same en-GB words.
+      return SPM.useEventPicture === 'Use the event post picture' && /label: t\('useEventPicture'\)/.test(SP)
+        && SPM.useWeeklyPicture === 'Use the weekly post picture' && /label: t\('useWeeklyPicture'\)/.test(SP)
         /* ⛔ THE CONDITION IS "MINE EMPTY **AND** THEIRS SET", both ways round. */
         && /borrow=\{!selected\.weeklyImage && selected\.eventPhotoImage/.test(SP)
         && /borrow=\{!selected\.eventPhotoImage && selected\.weeklyImage/.test(SP)
@@ -907,7 +937,9 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
          * without this a caller could point a location at another truck's object and have it rendered
          * onto a poster. This is where the ownership check that left `event_render` now lives. */
         && /\.eq\('truck_id', truck\.id\)\.eq\('place_id', placeId\)\.eq\('id', pictureId\)/.test(use)
-        && /That image is not one of this location’s\./.test(use)
+        // ⚠️ RE-PINNED (Language Phase 1d Part 2): the refusal is `wp_image_not_this_location`, right after the ownership query.
+        && /\.eq\('id', pictureId\)\.maybeSingle\(\)\s*\n\s*if \(!owned\) return refuse\(locale, 'wp_image_not_this_location', 404\)/.test(use)
+        && GB_MSG.errorsManage.wp_image_not_this_location === 'That image is not one of this location’s.'
     })())
     /* ══ ⛔ THE EVENT BOX'S WORDING NO LONGER FOLLOWS THE DESIGN — 8 October 2026 ════════════════════
      * It said "Photo for your event posts" when the standard design had a photo space and "Poster for
@@ -920,10 +952,11 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
      * or a wide photo is the right choice. ⛔ "Used wherever your designs have a picture space" COULD
      * NOT SAY IT, because under that model the answer was "everywhere". */
     t('🔴 each box says where its picture appears, and the poster says what a poster does',
-      /POSTER_BOX_TITLE = 'Event poster \(optional\)'/.test(COPY)
-      && /title=\{WEEKLY_PIC_TITLE\} blurb=\{WEEKLY_PIC_BLURB\} slotKey="weekly"/.test(SP)
-      && /title=\{EVENT_PIC_TITLE\} blurb=\{EVENT_PIC_BLURB\} slotKey="event-photo"/.test(SP)
-      && /title=\{LOCATION_POSTER_TITLE\} blurb=\{POSTER_BOX_BLURB\} slotKey="event"/.test(SP))
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): each box's title/blurb pair is read with `t()` from socialPosts; same pairs, same slots.
+      SPM.posterBoxTitle === 'Event poster (optional)'
+      && /title=\{t\('weeklyPicTitle'\)\} blurb=\{t\('weeklyPicBlurb'\)\} slotKey="weekly"/.test(SP)
+      && /title=\{t\('eventPicTitle'\)\} blurb=\{t\('eventPicBlurb'\)\} slotKey="event-photo"/.test(SP)
+      && /title=\{t\('locationPosterTitle'\)\} blurb=\{t\('posterBoxBlurb'\)\} slotKey="event"/.test(SP))
     /* ══ ⛔ THE SHAPED POSTER TILE IS GONE, AND THAT IS A REAL LOSS ══════════════════════════════════
      * The tile took its aspect ratio from the standard design, so an EMPTY poster box said what shape
      * was wanted without a number. ⚠️ THE THREE BOXES ARE THE SAME SIZE NOW — the brief's instruction —
@@ -1003,9 +1036,10 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
     t('⛔ "Name on posts" left this screen, and the note names the real path',
       !/NameOnPosts/.test(codeOf(SP))
       && !/sg_upsert_place/.test(codeOf(SP))
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `nameFromScheduleNote`, rendered under `data-name-from-schedule`; same words.
       && /NAME_FROM_SCHEDULE_NOTE =/.test(COPY)
-      && /Schedule › Events › Add event › Tidy up places\./.test(COPY)
-      && /data-name-from-schedule/.test(SP)
+      && /Schedule › Events › Add event › Tidy up places\./.test(SPM.nameFromScheduleNote)
+      && /data-name-from-schedule>\s*\n\s*\{t\('nameFromScheduleNote'\)\}/.test(SP)
       /* ⚠️ NOTHING ABOUT `short_name` CHANGED: `locationName()` still reads it first, Tidy up places
        * still writes it, and every poster prints the same word it did yesterday. */
       && D.locationName({}, { name: 'The Kings Arms', short_name: 'Kings Arms' }) === 'Kings Arms'
@@ -1040,15 +1074,17 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
     })())
     t('⚠️ …and the route is the one writer, with no `check` on the column',
       /const r = normaliseSocialTag\(body\.tag\)/.test(route)
-      && /if \(!r\.ok\) return NextResponse\.json\(\{ error: r\.error \}/.test(route)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the normaliser's refusal is sent through `refuseWith` (worded in the truck's language;
+      // its en-GB `error` is the same sentence, which the driven check above still reads).
+      && /const r = normaliseSocialTag\(body\.tag\)\s*\n\s*if \(!r\.ok\) return refuseWith\(locale, r, 400\)/.test(route)
       && /\.update\(\{ social_tag: r\.tag \} as never\)/.test(route)
       /* ⚠️ THE NORMALISED VALUE COMES BACK, so the field shows what was stored rather than what was
        * typed — an operator who types `buresmusicfest` sees `@buresmusicfest` and learns the rule. */
       && /return NextResponse\.json\(\{ ok: true, tag: r\.tag \}\)/.test(route)
       && !/check \(social_tag/.test(read('supabase/migrations/20261020_poster_picture_tag_captions.sql'))
-      && /SOCIAL_TAG_LABEL = 'Tag on social media'/.test(COPY)
-      && /SOCIAL_TAG_HINT = '\(for captions\)'/.test(COPY)
-      && /SOCIAL_TAG_PLACEHOLDER = '@buresmusicfest'/.test(COPY)
+      && SPM.socialTagLabel === 'Tag on social media' && /\{t\('socialTagLabel'\)\}/.test(SP)
+      && SPM.socialTagHint === '(for captions)' && /\{t\('socialTagHint'\)\}/.test(SP)
+      && SPM.socialTagPlaceholder === '@buresmusicfest'
       && /api\('place_social_tag', \{ placeId: selected\.id, tag: value \}\)/.test(SP))
 
     /* ⚠️ "Name on posts" IS `short_name`, AND IT IS THE FIELD THAT DECIDES WHAT A POSTER PRINTS —
@@ -1070,7 +1106,8 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
       && !/PLACE_OWN_POSITIONS_LINK/.test(codeOf(SP))
       && !/removePictureConfirm\(/.test(SP)
       /* ⚠️ `slotRemoveConfirm` IS THE SURVIVOR and still says the image is kept. */
-      && /window\.confirm\(slotRemoveConfirm\('poster'\)\)/.test(SP)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): read as `t('slotRemoveConfirm', { what })` now.
+      && /window\.confirm\(t\('slotRemoveConfirm', \{ what: 'poster' \}\)\)/.test(SP)
       && !/kind: 'place-pictures'/.test(SP) && !/kind: 'place-design'/.test(SP)
       /* ══ ⛔ AND THERE IS NO `BackLink` AT ALL ANY MORE — 9 October 2026 ════════════════════════════
        * It drew a standalone "‹ Designs" row ABOVE each of the three full-page editors, and the
@@ -1126,37 +1163,52 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
      * photo", and the two names were the two SLOTS that no longer exist — a location has one picture,
      * used wherever a design has a space for it. One name, one thing. */
     t('🔴 the editor item is "Location picture" on both designs',
-      /name: EDITOR_PICTURE_ITEM/.test(ED)
-      && /EDITOR_PICTURE_ITEM = 'Location picture'/.test(COPY)
-      && /sample: EDITOR_PICTURE_SAMPLE/.test(ED)
-      && /EDITOR_PICTURE_SAMPLE = 'Each location’s picture'/.test(COPY)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `editorPictureItem` / `editorPictureSample` via `sp()`, and the "Place" item
+      // is `t('item.place')` (designEditor). Same en-GB words.
+      /name: sp\('editorPictureItem'\)/.test(ED)
+      && SPM.editorPictureItem === 'Location picture'
+      && /sample: sp\('editorPictureSample'\)/.test(ED)
+      && SPM.editorPictureSample === 'Each location’s picture'
       && !/'Location photo'/.test(codeOf(ED))
       /* ⛔ THE KEY IS AN IDENTIFIER AND IS UNCHANGED — it is stored in saved layouts. */
       && /key: 'place-picture'/.test(ED)
       /* ⚠️ AND THE "Place" TEXT ITEM KEEPS ITS NAME, which the brief says in those words. */
-      && /name: 'Place', group/.test(ED))
+      && /name: t\('item\.place'\), group/.test(ED) && DEM.item.place === 'Place')
     /* ⛔ "WHERE IT GOES" IS GONE AND THE RULE REPLACED IT. Two controls described one thing and could
      * contradict each other: a design could record `placement: 'box'` with the item switched OFF. */
     t('⛔ "Where it goes" is gone; Picture, Corners and the no-image choice remain',
       !/label="Where it goes"/.test(ED)
       && !/label: 'Whole background'/.test(ED)
       && !/\{ id: 'box' as const, label: 'In a box' \}/.test(ED)
-      && /label="Picture"/.test(ED) && /label="Corners"/.test(ED)
-      && /label="If a location has no image"/.test(ED)
-      && /Fill the box/.test(ED) && /Fit inside/.test(ED)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): designEditor `picture.*` labels via `t()`, same en-GB words.
+      && /label=\{t\('picture\.picture'\)\}/.test(ED) && DEM.picture.picture === 'Picture'
+      && /label=\{t\('picture\.corners'\)\}/.test(ED) && DEM.picture.corners === 'Corners'
+      && /label=\{t\('picture\.ifMissing'\)\}/.test(ED) && DEM.picture.ifMissing === 'If a location has no image'
+      && /label: t\('picture\.fill'\)/.test(ED) && DEM.picture.fill === 'Fill the box'
+      && /label: t\('picture\.fit'\)/.test(ED) && DEM.picture.fit === 'Fit inside'
       /* ⚠️ AND THE CANVAS NO LONGER HIDES THE BOX FOR A STORED `background`. With the item off there
        * is no box in the list at all, so a draggable box is on screen exactly when the design has a
        * photo space — the canvas and the switch are one fact. */
       && !/layout\.placePicture\.placement === 'background'/.test(ED))
     /* ⛔ "Show your logo" ONLY WHERE THERE IS A LOGO, and the server is what knows. */
     t('⛔ "Show your logo" is offered only to a truck that has one',
-      /\{hasLogo && <option value="logo">\{NO_PICTURE_LABELS\.logo\}<\/option>\}/.test(ED)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the option's word is designEditor `picture.noPicture.logo` (same as NO_PICTURE_LABELS.logo).
+      /\{hasLogo && <option value="logo">\{t\('picture\.noPicture\.logo'\)\}<\/option>\}/.test(ED)
+      && DEM.picture.noPicture.logo === PP.NO_PICTURE_LABELS.logo && DEM.picture.noPicture.logo === 'Show your logo'
       && /logo_storage_path/.test(route))
     t('🔴 the weekly toolbar has "+ Add location pictures" and the real count',
-      /\+ Add location pictures/.test(ED)
-      && /noPicturesLine\(placesWithout\.without, placesWithout\.total\)/.test(ED)
+      /* ⚠️ RE-PINNED (Language Phase 1d Part 2) — ⚠️ WEAKER, NAMED: the editor no longer calls `noPicturesLine`; it
+       * words the line with its own designEditor messages `picture.allHaveImage` / `picture.someWithout` (SOCIAL-B's
+       * named GB fixes), so "one function" can no longer be pinned. What IS asserted: the button is
+       * `t('picture.addLocationPictures')`, the line is driven by the REAL `placesWithout` counts, and for the counts
+       * this check always pinned (16/20, 0/20) the editor's en-GB words equal `noPicturesLine`'s. ⚠️ The two copies
+       * DIVERGE at 1-of-1 ("location" vs "locations") and 0-of-0 — reported, not pinned. */
+      /\{t\('picture\.addLocationPictures'\)\}/.test(ED) && DEM.picture.addLocationPictures === '+ Add location pictures'
+      && /\{placesWithout\.without === 0\s*\n\s*\? t\('picture\.allHaveImage', \{ total: placesWithout\.total \}\)\s*\n\s*: t\('picture\.someWithout', \{ without: placesWithout\.without, total: placesWithout\.total \}\)\}/.test(ED)
       && PP.noPicturesLine(16, 20) === '16 of your 20 locations have no image yet'
-      && PP.noPicturesLine(0, 20) === 'All 20 of your locations have an image.')
+      && PP.noPicturesLine(0, 20) === 'All 20 of your locations have an image.'
+      && gbT('designEditor')('picture.someWithout', { without: 16, total: 20 }) === PP.noPicturesLine(16, 20)
+      && gbT('designEditor')('picture.allHaveImage', { total: 20 }) === PP.noPicturesLine(0, 20))
     /* ══ 🔴 RE-AIMED 9 OCTOBER 2026 — IT OPENS **Location settings**, THROUGH THE GUARD ═════════════
      * ⛔ IT WENT TO Designs, AND BOTH HALVES OF THAT WERE WRONG BY NOW:
      *   • Designs has no per-location picture list any more. It had "Designs for a place", sorted so
@@ -1182,10 +1234,13 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
      * design had a photo space — because the slot meant two different things. It is the POSTER, so the
      * word is fixed. */
     t('🔴 the modal\'s choice is "Image", and the location option is always the POSTER',
-      /<Panel title="Image">/.test(EP)
-      && /options\.push\(\{ source: 'place', path: usablePlace\.path, label: `\$\{entry\.name\}’s poster` \}\)/.test(route)
-      && /label: 'Upload one for this post only'/.test(route)
-      && /label: 'Standard design'/.test(route)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the panel is `t('modal.imageHeading')` (eventPost) and the three option labels are
+      // weeklyPostApi `option.*` read through `words` (the truck's locale). Same en-GB words, same order.
+      /<Panel title=\{t\('modal\.imageHeading'\)\}>/.test(EP) && GB_MSG.eventPost.modal.imageHeading === 'Image'
+      && /options\.push\(\{ source: 'place', path: usablePlace\.path, label: words\('option\.placePoster', \{ name: entry\.name \}\) \}\)/.test(route)
+      && gbT('weeklyPostApi')('option.placePoster', { name: 'X' }) === 'X’s poster'
+      && /label: words\('option\.oneOff'\)/.test(route) && GB_MSG.weeklyPostApi.option.oneOff === 'Upload one for this post only'
+      && /label: words\('option\.standard'\)/.test(route) && GB_MSG.weeklyPostApi.option.standard === 'Standard design'
       /* ⛔ AND THE TILE CHOOSER LEFT NOTHING BEHIND — on either side of the wire. */
       && !/placePictures/.test(EP) && !/placePictureId/.test(EP)
       && !/data-place-picture-choices/.test(EP)
@@ -1212,11 +1267,14 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
       /* ⚠️ THE SLICE IS ANCHORED ON **CODE**, not on the `// one-off: keyed by the event` comment that
        * labels it — `route` is `codeOf()`-stripped, so a comment anchor finds nothing and the slice
        * silently becomes the whole file. */
-      const oneOff = route.slice(route.indexOf("const target = await eventPostContext(truck, eventId, eventDesign)"),
-        route.indexOf("if (which === 'event-default')"))
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED — `eventPostContext` takes a trailing locale now.
+      const oneOffAt = route.indexOf("const target = await eventPostContext(truck, eventId, eventDesign, undefined, locale)")
+      const oneOff = oneOffAt < 0 ? '' : route.slice(oneOffAt, route.indexOf("if (which === 'event-default')"))
       /* ⚠️ "as <Location>'s poster", NOT "for <Location>" (8 October 2026). A location has TWO images
        * now and "for" named neither — a truck ticking it could reasonably expect either. */
-      return /imageChoiceAlsoSave = \(place: string\): string => `Also save it as \$\{place\}’s poster`/.test(COPY)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `imageChoiceAlsoSave` with a `{place}` argument.
+      return gbT('socialPosts')('imageChoiceAlsoSave', { place: 'X' }) === 'Also save it as X’s poster'
+        && /imageChoiceAlsoSave = \(place: string\): string => gb\('imageChoiceAlsoSave', \{ place \}\)/.test(COPY)
         && /data-also-save/.test(EP)
         && /uploadTo\(token, file, 'one-off', \{ eventId, alsoSaveForPlace: alsoSave, fileName: file\.name \}\)/.test(EP)
         && /if \(body\.alsoSaveForPlace === true && target\.placeId\)/.test(oneOff)
@@ -1233,7 +1291,8 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
     t('⛔ a private booking is offered no location to save against',
       /placeId: ctx\.placeId,/.test(route)
       && /\{info\.placeId && \(/.test(EP)
-      && /IMAGE_CHOICE_PRIVATE = 'Private bookings always use your standard design\.'/.test(COPY))
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `imageChoicePrivate`, same en-GB words.
+      && SPM.imageChoicePrivate === 'Private bookings always use your standard design.' && exportsKey(COPY, 'IMAGE_CHOICE_PRIVATE', 'imageChoicePrivate'))
     t('⚠️ the WEEKLY post has no such choice — seven rows would be seven choosers',
       !/placePictureId/.test(codeOf(read('components/manage/WeeklyPost.tsx'))))
     /* 🔴 AND THE RENDERER IS GIVEN THE RIGHT SLOT. ⛔ UNTIL TODAY BOTH POSTS GOT "the Main one", so a
@@ -1324,8 +1383,9 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
        * old single blurb ended "Any shape.", which was the whole sentence there was room for; the two
        * say WHERE the picture appears instead, which is the more useful half. The shape freedom is
        * still real and is what the driven half below proves. */
-      && /WEEKLY_PIC_BLURB = 'A logo or photo for this location’s line on your weekly post\.'/.test(COPY)
-      && /EVENT_PIC_BLURB = 'A logo or photo in the picture space of your single event design\.'/.test(COPY)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the two blurbs are socialPosts messages; same en-GB words, still no shape in either.
+      && SPM.weeklyPicBlurb === 'A logo or photo for this location’s line on your weekly post.'
+      && SPM.eventPicBlurb === 'A logo or photo in the picture space of your single event design.'
       /* 🔴 AND `planEventImages` NEVER CONSULTS THE PICTURE'S SIZE — driven: a picture of any shape is
        * drawn whenever the design has a space and the EVENT slot has one. */
       && (() => {
@@ -1408,25 +1468,25 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
    * same size and the same distance from the bar, and that is a fact about one element. */
   t('🔴 each sub-tab has its own heading and description, from one block', (() => {
     const headBlock = SP.slice(SP.indexOf('data-tab-head'), SP.indexOf('data-tab-blurb'))
-    return /TAB_CREATE_HEADING = 'Create a post'/.test(COPY2)
-      && /TAB_DESIGNS_HEADING = 'Designs'/.test(COPY2)
-      && /TAB_LOCATIONS_HEADING = 'Location settings'/.test(COPY2)
-      /* ⚠️ THE BLURBS ARE MULTI-LINE CONCATENATIONS, so each is matched on a distinctive clause rather
-       * than on the whole sentence — which never appears contiguously in the source. */
-      && /We put your dates, places and times on your design, '/.test(COPY2)
-      && /Your two designs: one for the weekly schedule and one for single event posts\./.test(COPY2)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the three headings and blurbs are socialPosts `tab*` messages read with `t()` in the one
+    // block; same en-GB words (the blurbs are whole sentences in the catalogue now).
+    return SPM.tabCreateHeading === 'Create a post'
+      && SPM.tabDesignsHeading === 'Designs'
+      && SPM.tabLocationsHeading === 'Location settings'
+      && /We put your dates, places and times on your design, ready/.test(SPM.tabCreateBlurb)
+      && /Your two designs: one for the weekly schedule and one for single event posts\./.test(SPM.tabDesignsBlurb)
       /* ⚠️ "Pictures and social media tags", NOT "Images, names and …" — 9 October 2026, §1. ⛔ TWO WORDS
        * CHANGED FOR TWO REASONS: the three boxes say "picture" and so does the chip, so "images" was the
        * one place the screen used a different word for one thing; and "names" promised something this
        * screen does not do — the name is edited in Tidy up places, which it says in its own grey note.
        * A page description that claims to own a field it points elsewhere for is the second screen
        * claiming the field, which is the fault round 3 removed. */
-      && /Pictures and social media tags for each location\./.test(COPY2)
+      && /Pictures and social media tags for each location\./.test(SPM.tabLocationsBlurb)
       /* 🔴 ONE `data-tab-heading` AND ONE `data-tab-blurb` IN THE FILE — three copies of the markup is
        * three things to keep level. */
       && (SP.match(/data-tab-heading/g) || []).length === 1
       && (SP.match(/data-tab-blurb/g) || []).length === 1
-      && /area === 'create' \? TAB_CREATE_HEADING/.test(headBlock)
+      && /area === 'create' \? t\('tabCreateHeading'\)\s*\n\s*: area === 'designs' \? t\('tabDesignsHeading'\)\s*\n\s*: t\('tabLocationsHeading'\)/.test(headBlock)
       /* ⛔ AND THE SHARED INTRO IS GONE FROM THE SCREEN. */
       && !/data-page-intro/.test(SP)
       && !/INTRO_AFTER_DESIGNS/.test(SP)
@@ -1616,8 +1676,10 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
     return /\.from\('truck_post_designs'\)\s*\n\s*\.update\(\{ caption_template: template \} as never\)/.test(save)
       && /\.eq\('truck_id', truck\.id\)\.eq\('kind', kind\)/.test(save)
       /* ⛔ THE READ COMPUTES THE SEED AND DOES NOT PERSIST IT. */
-      && /seedWeekTemplate\(truck\.name\)/.test(overview)
-      && /seedEventTemplate\(truck\.name\)/.test(overview)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the seeds take the truck's `country` (GB's seed is byte-identical, proved by the driven
+      // check above); still computed on READ in the overview, never written.
+      && /seedWeekTemplate\(truck\.name, country\)/.test(overview)
+      && /seedEventTemplate\(truck\.name, country\)/.test(overview)
       && !/\.update\(/.test(overview) && !/\.insert\(/.test(overview) && !/\.upsert\(/.test(overview)
       /* ⚠️ AND `saved` TELLS THE SCREEN WHICH IT IS LOOKING AT, so a "Saved ✓" tick cannot appear over
        * a caption nobody has saved. */
@@ -1640,7 +1702,8 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
   t('⛔ the template panel saves on a press, not on a timer, and Cancel writes nothing',
     /const save = \(\) => \{/.test(SP)
     && /data-template-save/.test(SP) && /data-template-cancel/.test(SP)
-    && /TEMPLATE_SAVE = 'Save template'/.test(COPY2)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `templateSave` / `captionSavedNote` / `captionThisPostNote`, same en-GB words.
+    && SPM.templateSave === 'Save template' && /t\('templateSave'\)/.test(SP)
     /* ⛔ NO TIMER, NO DEBOUNCE, NO "saved" STATE — asserted inside the editor's own slice, because
      * `setTimeout` is correct elsewhere in this file. */
     && (() => {
@@ -1649,16 +1712,18 @@ head('9 · each tab says what it is for, and the captions are the truck\'s own')
     })()
     /* ⛔ AND THE TWO OLD STRINGS ARE OFF THE SCREEN. They stay EXPORTED as the record — `codeOf` first,
      * so the tombstone that names them is allowed to. */
-    && !/CAPTION_SAVED_NOTE/.test(codeOf(SP))
-    && !/CAPTION_SAVED_TICK/.test(codeOf(SP))
-    && /CAPTION_SAVED_NOTE = 'Saved automatically · used next time too'/.test(COPY2)
+    && !/CAPTION_SAVED_NOTE/.test(codeOf(SP)) && !/t\('captionSavedNote'\)/.test(codeOf(SP))
+    && !/CAPTION_SAVED_TICK/.test(codeOf(SP)) && !/t\('captionSavedTick'\)/.test(codeOf(SP))
+    && SPM.captionSavedNote === 'Saved automatically · used next time too' && exportsKey(COPY2, 'CAPTION_SAVED_NOTE', 'captionSavedNote')
     /* 🔴 AND THE CAPTION BOX SAYS THE OPPOSITE OF WHAT THAT NOTE SAID, which is the point. */
-    && /CAPTION_THIS_POST_NOTE =\s*\n\s*'Type straight in the box to change it for this post only\. Your template stays as it is\.'/.test(COPY2))
+    && SPM.captionThisPostNote === 'Type straight in the box to change it for this post only. Your template stays as it is.'
+    && /\{t\('captionThisPostNote'\)\}/.test(SP))
   /* 🔴 THE MAKE SCREENS FILL THE TEMPLATE FOR **THAT POST**, and the edit applies to that post only —
    * neither caption action writes the template back. */
   t('🔴 the make screens fill the template, and editing there changes that post only',
-    /const weekTpl = String\(design\?\.caption_template \?\? ''\)\.trim\(\) \|\| seedWeekTemplate\(truck\.name\)/.test(route2)
-    && /const eventTpl = String\(design\?\.caption_template \?\? ''\)\.trim\(\) \|\| seedEventTemplate\(truck\.name\)/.test(route2)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the seed fallback passes the truck's `country` (GB byte-identical — driven above).
+    /const weekTpl = String\(design\?\.caption_template \?\? ''\)\.trim\(\) \|\| seedWeekTemplate\(truck\.name, country\)/.test(route2)
+    && /const eventTpl = String\(design\?\.caption_template \?\? ''\)\.trim\(\) \|\| seedEventTemplate\(truck\.name, country\)/.test(route2)
     && /fillCaptionTemplate\(\s*\n?\s*weekTpl/.test(route2)
     && /fillCaptionTemplate\(eventTpl, eventCaptionValues\(\{/.test(route2)
     /* ⛔ A CANCELLED EVENT KEEPS `eventPostText`. That branch is an APOLOGY with no ordering link —

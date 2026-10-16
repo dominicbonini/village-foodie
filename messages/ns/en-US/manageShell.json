@@ -1,0 +1,13 @@
+{
+  "verify": {
+    "expired": "That confirmation link has expired. Get in touch and we’ll fix it before you go live.",
+    "invalid": "That confirmation link didn’t work. Get in touch and we’ll fix it before you go live."
+  },
+  "tabs": {
+    "paymentsIcon": "💵"
+  },
+  "notices": {
+    "domainLive": "<link>{domain}</link> is live. Take a look at it, then tell us it is right in Settings.",
+    "stripe": "<b>Stripe needs something from you</b> — card payments can stop until it’s fixed."
+  }
+}

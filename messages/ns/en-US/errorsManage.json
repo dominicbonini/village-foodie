@@ -10,5 +10,11 @@
   "first_van_copy_failed": "The first truck’s settings could not be copied right now.",
   "capacity_copy_failed": "The first truck’s capacity could not be copied right now.",
   "category_copy_failed": "The first truck’s category settings could not be copied right now.",
-  "schedule_read_failed": "Couldn’t read your schedule, so places could not be figured out."
+  "schedule_read_failed": "Couldn’t read your schedule, so places could not be figured out.",
+  "select_one_van": "Please select at least one truck",
+  "wa_unrecognised_outcome": "Unrecognized signup outcome.",
+  "domain_send_unavailable": "We could not send that just now. Try again shortly — or copy the details on this screen and email them over yourself, which works just as well.",
+  "wp_licence_required": "Please check the box to confirm you own or have a license to use this font.",
+  "wp_last_toggle": "Keep either Location or Time switched on. A canceled event shows its place crossed out and the word CANCELED, so with both off there would be nothing to say it is canceled.",
+  "sg_merge_cycle": "Those two are already merged the other way around."
 }

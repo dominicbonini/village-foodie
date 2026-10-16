@@ -1,0 +1,24 @@
+{
+  "heading": "Tax, tips and fees",
+  "rate": {
+    "label": "Sales tax rate",
+    "hint": "The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets."
+  },
+  "tips": {
+    "label": "Tips",
+    "hint": "Customers paying online by card can add a tip. It all goes to you.",
+    "choices": "Choices customers see:",
+    "chip": "{rate}%",
+    "other": "Other amount"
+  },
+  "fee": {
+    "label": "Online service fee",
+    "hint": "Added to online orders only. Never on pay-at-the-truck or walk-up orders. You keep it.",
+    "pctAria": "Service fee percentage",
+    "fixedAria": "Service fee fixed amount",
+    "max": "Most you can charge: {max}",
+    "example": "Customers see it before they pay, as one line: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab adds a {fee} service fee to your customers’ online orders. You don’t pay it and can’t change it."
+  },
+  "saveFailed": "Couldn’t save — please try again."
+}

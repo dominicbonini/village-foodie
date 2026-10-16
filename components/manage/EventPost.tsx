@@ -31,7 +31,26 @@ import type { DayEntry } from '@/lib/weekly-post/week-data'
 /* ⚠️ §6's TWO STRINGS. They live in lib/copy/socialPosts.ts beside the rest of this feature's wording
  * rather than inline, because the Locations screen says the same thing about the same slot and the two
  * must not drift. */
-import { imageChoiceAlsoSave, IMAGE_CHOICE_ONE_OFF, NEW_SHAPE_RESET } from '@/lib/copy/socialPosts'
+/* 🔴 LANGUAGE PHASE 1d PART 2: THIS SCREEN'S WORDS ARE `eventPost`; the three it shared with the Social media tab
+ * (`imageChoiceAlsoSave`, `imageChoiceOneOff`, `newShapeReset`) are read from `socialPosts`, where the copy module
+ * keeps them — both in the truck's locale. */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/eventPost'
+import '@/lib/i18n/catalog/socialPosts'
+
+/** A sentence of ours that a module function could not word (it has no translator): a key the screen words. */
+type SaidKey = 'error.somethingWrong' | 'error.previewFailed' | 'error.imageTooBig' | 'error.pngOrJpg'
+  | 'error.uploadIncomplete' | 'error.couldNotLoad' | 'error.uploadFailed' | 'error.couldNotChange'
+  | 'error.couldNotRemove' | 'error.couldNotSave' | 'error.couldNotBuild'
+class Unsaid extends Error {
+  constructor(readonly key: SaidKey, readonly values?: Record<string, string>) { super('') }
+}
+/** What a status line holds: the server's own sentence (or one already worded at click time), or a key. ⚠️ State
+ *  set from an effect holds this, never a sentence of ours (Language Phase 1d Part 2). */
+type Said = { text: string } | { key: SaidKey; values?: Record<string, string> }
+/** A caught error as a `Said`: a coded refusal, the server's words, or the fallback key. */
+const saidOf = (e: unknown, fallback: SaidKey): Said =>
+  e instanceof Unsaid ? { key: e.key, values: e.values } : e instanceof Error ? { text: e.message } : { key: fallback }
 /* ⛔ `manageSectionHref` WAS IMPORTED HERE for the "a different picture for one place?" pointer,
  * which is deleted — see the tombstone further down. This screen links nowhere now. */
 
@@ -88,7 +107,7 @@ const api = async (token: string, body: Record<string, unknown>) => {
     body: JSON.stringify({ token, ...body }),
   })
   const j = await r.json().catch(() => ({}))
-  if (!r.ok) throw new Error(j.error || 'Something went wrong')
+  if (!r.ok) throw (j.error ? new Error(j.error) : new Unsaid('error.somethingWrong'))
   return j
 }
 
@@ -105,7 +124,7 @@ export async function renderPng(token: string, body: Record<string, unknown>) {
   })
   if (!r.ok) {
     const j = await r.json().catch(() => ({}))
-    throw new Error(j.error || 'The preview could not be made')
+    throw (j.error ? new Error(j.error) : new Unsaid('error.previewFailed'))
   }
   const blob = await r.blob()
   let warnings: { where: string; message: string }[] = []
@@ -123,12 +142,12 @@ export async function renderPng(token: string, body: Record<string, unknown>) {
 async function uploadTo(
   token: string, file: File, which: string, extra: Record<string, unknown> = {},
 ): Promise<Record<string, unknown>> {
-  if (file.size > MAX_UPLOAD_BYTES) throw new Error(`That image is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 10MB.`)
-  if (!/^image\/(png|jpe?g)$/.test(file.type)) throw new Error('Please choose a PNG or JPG.')
+  if (file.size > MAX_UPLOAD_BYTES) throw new Unsaid('error.imageTooBig', { size: (file.size / 1024 / 1024).toFixed(1) })
+  if (!/^image\/(png|jpe?g)$/.test(file.type)) throw new Unsaid('error.pngOrJpg')
   const ext = file.type.includes('png') ? 'png' : 'jpg'
   const slot = await api(token, { action: 'upload_url', which, ext })
   const put = await fetch(slot.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
-  if (!put.ok) throw new Error('The upload did not complete')
+  if (!put.ok) throw new Unsaid('error.uploadIncomplete')
   return api(token, { action: 'confirm_upload', path: slot.path, which, ...extra })
 }
 
@@ -188,7 +207,11 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
   const [picking, setPicking] = useState(false)
   const [search, setSearch] = useState('')
   const [layout, setLayout] = useState<EventLayout | null>(null)
-  const [msg, setMsg] = useState<{ text: string; bad: boolean } | null>(null)
+  const t = useT('eventPost')
+  const tc = useT('socialPosts')
+  const [msg, setMsg] = useState<(Said & { bad: boolean }) | null>(null)
+  /** The status line's words, in the truck's locale. */
+  const msgText = msg ? ('text' in msg ? msg.text : t(msg.key, msg.values)) : ''
   /* ══ 🔴 §B8 · A MESSAGE THAT FADES — the same pattern as the weekly screen's ════════════════════
    * ⚠️ SEPARATE FROM `msg`, which is permanent ("Design saved.", a refusal) and must not vanish on a
    * timer. ⛔ THE TIMER IS CLEARED on a second flash and on unmount. */
@@ -233,7 +256,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       setPreviewEvents((r.previewEvents ?? []) as { id: string; label: string }[])
       setCountry((r.country as CountryCode) ?? DEFAULT_COUNTRY)
       setHasLogo(r.hasLogo === true)
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not load', bad: true }) }
+    } catch (e) { setMsg({ ...saidOf(e, 'error.couldNotLoad'), bad: true }) }
     finally { setLoading(false) }
   }, [token])
 
@@ -386,15 +409,15 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       if (stranded.length) {
         setMsg({
           bad: false,
-          text: `These place pictures use the standard positions and are a different shape, so they won’t be used until you replace them: ${stranded.map(s => s.name).join(', ')}.`,
+          text: t('setup.stranded', { places: stranded.map(s => s.name).join(', ') }),
         })
       } else if (done.resetLayout && shapeChanged) {
-        setFlash(NEW_SHAPE_RESET)
+        setFlash(tc('newShapeReset'))
       }
       setCurrent(null)
       await load()
       onPictureChanged?.()
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'The upload failed', bad: true }) }
+    } catch (e) { setMsg({ ...saidOf(e, 'error.uploadFailed'), bad: true }) }
     finally { setBusy(false) }
   }
 
@@ -405,10 +428,10 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       /* ⚠️ THE SERVER MAY HAVE RESET THIS PLACE'S BOXES — a different shape makes the old coordinates
        * meaningless. It returns the layout it stored, and `load()` brings it back; the message says so
        * rather than letting the boxes appear to move on their own. */
-      if (done.layout) setMsg({ text: 'Picture replaced.', bad: false })
+      if (done.layout) setMsg({ text: t('setup.pictureReplaced'), bad: false })
       await load()
       onPictureChanged?.()
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'The upload failed', bad: true }) }
+    } catch (e) { setMsg({ ...saidOf(e, 'error.uploadFailed'), bad: true }) }
     finally { setBusy(false) }
   }
 
@@ -422,7 +445,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       /* 🔴 THE REFUSAL IS SHOWN AS IT CAME BACK. "Own → Standard" on a differently shaped picture is
        * refused with a sentence that says what to do about it, and inventing a shorter one here would
        * give the truck less than the server already told us. */
-      setMsg({ text: e instanceof Error ? e.message : 'Could not change that', bad: true })
+      setMsg({ ...saidOf(e, 'error.couldNotChange'), bad: true })
     }
     finally { setBusy(false) }
   }
@@ -435,7 +458,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       setPending(prev => prev.filter(pl => pl.id !== current))
       setCurrent(null)
       await load()
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not remove', bad: true }) }
+    } catch (e) { setMsg({ ...saidOf(e, 'error.couldNotRemove'), bad: true }) }
     finally { setBusy(false); setConfirmRemove(false) }
   }
 
@@ -445,32 +468,31 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       const layout = next
       if (current === null) await api(token, { action: 'event_save_design', layout })
       else await api(token, { action: 'event_place_save_layout', placeId: current, layout })
-      setMsg({ text: 'Design saved.', bad: false })
+      setMsg({ text: t('setup.designSaved'), bad: false })
       await load()
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true }) }
+    } catch (e) { setMsg({ ...saidOf(e, 'error.couldNotSave'), bad: true }) }
     finally { setSaving(false) }
   }
 
-  if (loading) return <Card className="p-8 text-center"><p className="text-sm text-slate-400">Loading…</p></Card>
+  if (loading) return <Card className="p-8 text-center"><p className="text-sm text-slate-400">{t('loading')}</p></Card>
 
   // ── no picture yet ──────────────────────────────────────────────────────────────────────────────
   if (!standard) {
     return (
       <Card className="p-6">
         {/* ⚠️ "single event post", MATCHING THE BOX ON Designs THAT OPENS THIS CARD. */}
-        <p className="font-bold text-slate-800">Set up your single event post</p>
+        <p className="font-bold text-slate-800">{t('setup.firstTitle')}</p>
         {/* ⚠️ "those three" BECAME "those" (5 October 2026). The sentence already lists the three
           * things, so counting them again made the reader go back and check. */}
         <p className="text-sm text-slate-600 mt-1 max-w-prose">
-          Upload the picture you use for a single event — your artwork with no date, place or time on it.
-          HatchGrab adds those for each event.
+          {t('setup.firstBody')}
         </p>
         <label className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">
           <input type="file" accept="image/png,image/jpeg" className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) void uploadStandard(f) }} />
-          {busy ? 'Uploading…' : 'Upload your picture'}
+          {busy ? t('uploading') : t('setup.uploadYourPicture')}
         </label>
-        <p className="text-xs text-slate-400 mt-2">PNG or JPG, up to 10MB, at least {MIN_UPLOAD_SHORT_SIDE}px on the short side.</p>
+        <p className="text-xs text-slate-400 mt-2">{t('setup.fileRule', { px: String(MIN_UPLOAD_SHORT_SIDE) })}</p>
         {/* ══ ⛔ THE "a different picture for one place?" POINTER IS GONE (6 October 2026) ═══════════
           * It pointed at the Places tab, which no longer exists — and a truck reading this card is
           * already ON the screen that answers it: this is Social posts › Designs, and Box 3 of that
@@ -480,20 +502,20 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
           * `href="?section=places"`, and `scripts/places-tab.cjs` §6 tested RAW source for that string
           * — so the comment satisfied the assertion and it passed green for a day on a link that had
           * already been changed. `codeOf` first; it is in that harness's own header. */}
-        {msg && <p className={`text-sm mt-2 ${msg.bad ? 'text-red-600' : 'text-slate-600'}`}>{msg.text}</p>}
+        {msg && <p className={`text-sm mt-2 ${msg.bad ? 'text-red-600' : 'text-slate-600'}`}>{msgText}</p>}
       </Card>
     )
   }
 
   const currentName = current
-    ? (placeDesign?.name ?? pendingPlace?.name ?? 'This place')
-    : 'Standard'
+    ? (placeDesign?.name ?? pendingPlace?.name ?? t('setup.thisPlaceFallback'))
+    : t('setup.standard')
 
   /** The designs list: Standard first, then every place that has one, then anything pending. */
   const rows: Array<{ id: string | null; name: string; status: string }> = [
-    { id: null, name: 'Standard', status: 'Used at every other place' },
+    { id: null, name: t('setup.standard'), status: t('setup.standardStatus') },
     ...designs.map(d => ({ id: d.placeId, name: d.name, status: d.status })),
-    ...pending.map(pl => ({ id: pl.id, name: pl.name, status: 'No picture yet — using Standard' })),
+    ...pending.map(pl => ({ id: pl.id, name: pl.name, status: t('setup.pendingStatus') })),
   ]
 
   const pickable = places
@@ -515,7 +537,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       {/* ⚠️ A PHONE IS TOLD, NOT BLOCKED. Dragging a box on a 390px screen is unpleasant but it works,
           and refusing to show the screen would strand an operator who only has a phone. */}
       <p className="min-[900px]:hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-        Best on a computer or iPad — the boxes are small to drag on a phone.
+        {t('setup.phoneWarning')}
       </p>
 
       {/* ══ 🔴 THE DESIGNS LIST IS A PILL ROW ABOVE THE EDITOR NOW ═══════════════════════════════
@@ -528,7 +550,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
         * editor it would offer a way out of the page the operator is standing on, past its back link. */}
       {!onlyStandard && !onlyPlaceId && (
         <div className="rounded-2xl border border-slate-200 bg-white p-3">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">Designs</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">{t('setup.designsHeading')}</p>
           <div className="flex flex-wrap items-center gap-1.5">
             {rows.map(r => (
               <button key={r.id ?? 'standard'} type="button" onClick={() => setCurrent(r.id)}
@@ -536,11 +558,11 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
                 className={`h-8 px-3 inline-flex items-center rounded-lg border text-sm font-bold ${r.id === current
                   ? 'border-orange-500 text-orange-700 bg-orange-50'
                   : 'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'}`}>
-                {r.id === null ? 'Standard' : r.name}
+                {r.id === null ? t('setup.standard') : r.name}
               </button>
             ))}
             <button type="button" className="h-8 px-3 text-xs text-orange-700 font-bold"
-              onClick={() => { setPicking(true); setSearch('') }}>+ Add a design for a place</button>
+              onClick={() => { setPicking(true); setSearch('') }}>{t('setup.addPlaceDesignLink')}</button>
           </div>
           {/* ⚠️ ONE LINE OF STATUS, FROM THE SERVER, so the row and the editor cannot describe the
             * same design differently. */}
@@ -560,8 +582,8 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
           onSaver={onSaver}
           key={editorKey}
           token={token}
-          designName={current ? `${currentName} · event post design` : 'Single event post design'}
-          backLabel={onCancel ? '‹ Designs' : '‹ Back'}
+          designName={current ? t('setup.placeDesignName', { name: currentName }) : t('setup.standardDesignName')}
+          backLabel={onCancel ? t('setup.backToDesigns') : t('setup.back')}
           onBack={onCancel ?? (() => setCurrent(null))}
           initialLayout={layout}
           country={country}
@@ -569,7 +591,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
           background={{ url: bgUrl, width: canvasW, height: canvasH }}
           onReplacePicture={f => { if (current) void uploadPlace(current, f); else void uploadStandard(f) }}
           replacing={busy}
-          pictureNote="Your picture without any date or place on it. We add those."
+          pictureNote={t('setup.pictureNote')}
           previewOptions={previewEvents}
           previewWith={previewWith}
           onPreviewWith={setPreviewWith}
@@ -586,7 +608,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
           /* ⚠️ `onSave` TAKES THE EDITOR'S OWN LAYOUT, not this component's `layout` state. The editor
            * owns the undo history and therefore the live boxes; reading the stale copy here would save
            * whatever the design looked like when the editor was mounted. */
-          message={msg}
+          message={msg && { text: msgText, bad: msg.bad }}
           scope={current ? {
             mode,
             onMode: m => void setMode(m),
@@ -600,20 +622,19 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
              * up with the wrong wording. */
             current && !onStandard && !onlyPlaceId ? (
               <div className="rounded-2xl border border-slate-200 bg-white p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">This place</p>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">{t('setup.thisPlaceHeading')}</p>
                 {confirmRemove
                   ? <>
                       <p className="text-[11px] text-slate-600 mb-2">
-                        Remove {currentName}&rsquo;s picture and text positions? Events there will use your
-                        Standard design.
+                        {t('setup.removeConfirm', { name: currentName })}
                       </p>
                       <div className="flex gap-2">
-                        <Btn label="Remove" colour="red" size="sm" onClick={() => void removeDesign()} />
-                        <Btn label="Keep" colour="slate" size="sm" onClick={() => setConfirmRemove(false)} />
+                        <Btn label={t('setup.remove')} colour="red" size="sm" onClick={() => void removeDesign()} />
+                        <Btn label={t('setup.keep')} colour="slate" size="sm" onClick={() => setConfirmRemove(false)} />
                       </div>
                     </>
                   : <button type="button" className="text-xs text-red-600 font-semibold"
-                      onClick={() => setConfirmRemove(true)}>Remove this place&rsquo;s design</button>}
+                      onClick={() => setConfirmRemove(true)}>{t('setup.removeLink')}</button>}
               </div>
             ) : null
           }
@@ -621,7 +642,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
       )}
 
       {!previewPick?.eventId && (
-        <p className="text-xs text-amber-700">No events yet — add one and the preview will use it.</p>
+        <p className="text-xs text-amber-700">{t('setup.noEvents')}</p>
       )}
 
       {/* ── THE PLACE PICKER ─────────────────────────────────────────────────────────────────────
@@ -634,14 +655,14 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
           <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col overflow-hidden"
             onClick={e => e.stopPropagation()}>
             <div className="p-4 border-b border-slate-100">
-              <p className="font-bold text-slate-800 text-sm">Add a design for a place</p>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search places"
+              <p className="font-bold text-slate-800 text-sm">{t('setup.pickerTitle')}</p>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('setup.pickerSearch')}
                 className="mt-2 w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
             </div>
             <div className="overflow-y-auto p-2">
               {pickable.length === 0 && (
                 <p className="text-xs text-slate-400 p-2">
-                  {places.length === 0 ? 'No places yet.' : 'Every place already has a design.'}
+                  {places.length === 0 ? t('setup.pickerNoPlaces') : t('setup.pickerAllDone')}
                 </p>
               )}
               {pickable.map(pl => (
@@ -660,7 +681,7 @@ export function EventSetupScreen({ token, onCancel, onlyStandard, onlyPlaceId, o
               ))}
             </div>
             <div className="p-3 border-t border-slate-100 flex justify-end">
-              <Btn label="Cancel" colour="slate" size="sm" onClick={() => setPicking(false)} />
+              <Btn label={t('cancel')} colour="slate" size="sm" onClick={() => setPicking(false)} />
             </div>
           </div>
         </div>
@@ -722,7 +743,9 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
   /** The same picture as `png`, as the blob it came from — the share bar builds its `File` from this. */
   const [pngBlob, setPngBlob] = useState<Blob | null>(null)
   const [note, setNote] = useState('')
-  const [msg, setMsg] = useState<string | null>(null)
+  const t = useT('eventPost')
+  const tc = useT('socialPosts')
+  const [msg, setMsg] = useState<Said | null>(null)
   const [busy, setBusy] = useState(false)
 
   const load = useCallback(async () => {
@@ -731,7 +754,7 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
       if (!r.hasDesign) { onNeedsSetup(); return }
       setInfo(r)
       setChoice(r.chosen)
-    } catch (e) { setMsg(e instanceof Error ? e.message : 'Could not load') }
+    } catch (e) { setMsg(saidOf(e, 'error.couldNotLoad')) }
     finally { setLoading(false) }
   }, [token, eventId, onNeedsSetup])
 
@@ -751,7 +774,7 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
         setPng(prev => { if (prev) URL.revokeObjectURL(prev); return r.url })
         /* ⚠️ FROM THE SAME RESPONSE as the URL, so Share and Download cannot disagree. */
         setPngBlob(r.blob)
-      } catch (e) { if (alive) setMsg(e instanceof Error ? e.message : 'Could not build the picture') }
+      } catch (e) { if (alive) setMsg(saidOf(e, 'error.couldNotBuild')) }
     })()
     return () => { alive = false }
   }, [token, eventId, choice, note, info])
@@ -766,7 +789,7 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
       /* 🔴 A ONE-OFF IS SELECTED AS SOON AS IT IS UPLOADED — the brief's rule, and the obvious reading
        * of the act: nobody uploads a picture for this event and then wants the default. */
       setChoice('event')
-    } catch (e) { setMsg(e instanceof Error ? e.message : 'The upload failed') }
+    } catch (e) { setMsg(saidOf(e, 'error.uploadFailed')) }
     finally { setBusy(false); setAlsoSave(false) }
   }
 
@@ -796,26 +819,26 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
         onClick={e => e.stopPropagation()}>
         <div className="shrink-0 flex items-start justify-between gap-3 px-5 sm:px-6 pt-5 pb-3 border-b border-slate-200">
           <div className="min-w-0">
-            <h3 className="font-black text-slate-900">Post for this event</h3>
+            <h3 className="font-black text-slate-900">{t('modal.title')}</h3>
             {info && (
               <p className="text-xs text-slate-500 mt-0.5 truncate">
                 {info.event.date} · {info.event.name}{info.event.time ? ` · ${info.event.time}` : ''}
               </p>
             )}
           </div>
-          <button type="button" onClick={onClose} aria-label="Close"
+          <button type="button" onClick={onClose} aria-label={t('modal.close')}
             className="shrink-0 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold">✕</button>
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-6 py-4">
-          {loading && <p className="text-sm text-slate-400">Loading…</p>}
-          {msg && <p className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 mb-3">{msg}</p>}
+          {loading && <p className="text-sm text-slate-400">{t('loading')}</p>}
+          {msg && <p className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 mb-3">{'text' in msg ? msg.text : t(msg.key, msg.values)}</p>}
           {info && (
             <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_300px] gap-4">
               <div className="rounded-xl overflow-hidden bg-slate-100 relative" style={{ aspectRatio: '4 / 5' }}>
                 {png
-                  ? <img src={png} alt="Your event post" className="absolute inset-0 w-full h-full object-contain" />
-                  : <div className="absolute inset-0 flex items-center justify-center text-sm text-slate-400">Building…</div>}
+                  ? <img src={png} alt={t('modal.imageAlt')} className="absolute inset-0 w-full h-full object-contain" />
+                  : <div className="absolute inset-0 flex items-center justify-center text-sm text-slate-400">{t('modal.building')}</div>}
               </div>
 
               <div className="space-y-3">
@@ -828,7 +851,7 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
                   * ⚠️ THE OPTIONS' OWN LABELS COME FROM THE SERVER and say "<Location>'s photo" or
                   * "<Location>'s poster" depending on whether the design has a photo space. The client
                   * does not decide which word, so the label and the render cannot disagree. */}
-                <Panel title="Image">
+                <Panel title={t('modal.imageHeading')}>
                   {info.options.map(o => (
                     <label key={o.source} className="flex items-center gap-2 text-sm text-slate-700 py-1">
                       <input type="radio" name="bg" checked={choice === o.source} onChange={() => setChoice(o.source)} />
@@ -839,7 +862,7 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
                     * been chosen instead, so what is on screen is not this place's usual layout. */}
                   {choice === 'default' && info.layoutSource === 'place' && (
                     <p className="text-[11px] text-slate-500 mt-1">
-                      Standard’s picture and Standard’s text positions — not {info.placeName}’s.
+                      {t('modal.standardNotPlace', { place: info.placeName })}
                     </p>
                   )}
                   {/* ══ 🔴 "Also save it for <location>" — AND IT IS **ABOVE** THE UPLOAD LINK ══════
@@ -853,7 +876,7 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
                       <input type="checkbox" checked={alsoSave} disabled={busy}
                         onChange={e => setAlsoSave(e.target.checked)} data-also-save
                         className="mt-0.5" />
-                      <span>{imageChoiceAlsoSave(info.placeName)}</span>
+                      <span>{tc('imageChoiceAlsoSave', { place: info.placeName })}</span>
                     </label>
                   )}
                   <label className="block text-xs text-orange-700 font-bold cursor-pointer mt-1">
@@ -862,9 +885,9 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
                     {/* ⚠️ "REPLACE IT" ONCE ONE EXISTS. The radio above already reads "Upload one for
                       * this post only"; the same words twice would read as two different controls for
                       * the same thing. */}
-                    {busy ? 'Uploading…'
-                      : info.options.some(o => o.source === 'event') ? 'Replace it'
-                      : IMAGE_CHOICE_ONE_OFF}
+                    {busy ? t('uploading')
+                      : info.options.some(o => o.source === 'event') ? t('modal.replaceIt')
+                      : tc('imageChoiceOneOff')}
                   </label>
                 </Panel>
 
@@ -875,12 +898,12 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
                   * between: the choice is which SOURCE — this location's, the standard design, or an
                   * upload for this post only — and that is the radio group above. */}
 
-                <Panel title="Note (this post only)">
+                <Panel title={t('modal.noteHeading')}>
                   <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm resize-none" />
                 </Panel>
 
-                <Panel title="Post text">
+                <Panel title={t('modal.postTextHeading')}>
                   <p className="text-xs text-slate-600 whitespace-pre-wrap">{postText}</p>
                 </Panel>
 
@@ -890,7 +913,7 @@ export function EventPostModal({ token, eventId, onClose, onNeedsSetup, captionO
                   * cannot differ — which is the whole reason it is one `const` and not two reads. */}
                 <PostShareBar blob={pngBlob} url={png}
                   fileName={`event-post-${info.event.date}.png`}
-                  caption={postText} captionWord="Post text" onStatus={setMsg} />
+                  caption={postText} captionKind="postText" onStatus={text => setMsg({ text })} />
               </div>
             </div>
           )}

@@ -1,0 +1,97 @@
+{
+  "filter": {
+    "dateRange": "📅 Date range",
+    "event": "📍 Event",
+    "filterBy": "Filter by",
+    "show": "Show",
+    "range": "<from></from><sep>to</sep><until></until>",
+    "selectEvent": "Select an event…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Event",
+    "viewReport": "View report",
+    "loading": "Loading…",
+    "orders": "📋 Orders",
+    "items": "📦 Items",
+    "exportCsv": "⬇ Export CSV"
+  },
+  "empty": {
+    "noOrders": "No orders found for this period.",
+    "selectEvent": "Select an event above to view its report."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} order} other {{count} orders}} · {total}"
+  },
+  "revenue": {
+    "title": "Revenue breakdown",
+    "deals": "Deal revenue",
+    "modifiers": "Modifier upcharges",
+    "foodSales": "Food sales",
+    "total": "Total",
+    "other": "Other",
+    "tax": "Tax",
+    "tips": "Tips",
+    "serviceFees": "Service fees",
+    "cardFees": "Card fees"
+  },
+  "itemsSold": {
+    "title": "Items sold"
+  },
+  "dealsCard": {
+    "title": "Deals"
+  },
+  "custom": {
+    "title": "Customisations",
+    "paidModifiers": "Paid modifiers",
+    "customerNotes": "Customer notes",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Item",
+    "modifier": "Modifier",
+    "qty": "Qty",
+    "total": "Total",
+    "date": "Date",
+    "time": "Time",
+    "channel": "Channel"
+  },
+  "breakdown": {
+    "orders": "Order breakdown",
+    "items": "Item breakdown"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Walk-up"
+  },
+  "upsell": {
+    "title": "Revenue breakdown & analytics",
+    "badge": "Pro feature",
+    "body": "Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max."
+  },
+  "csv": {
+    "orderId": "Order ID",
+    "date": "Date",
+    "event": "Event",
+    "timePlaced": "Time placed",
+    "collectionTime": "Collection time",
+    "customerName": "Customer name",
+    "orderType": "Order type",
+    "items": "Items",
+    "deals": "Deals",
+    "modifiers": "Modifiers",
+    "notes": "Notes",
+    "subtotal": "Subtotal",
+    "tip": "Tip",
+    "serviceFee": "Service fee",
+    "total": "Total",
+    "itemName": "Item name",
+    "qty": "Qty",
+    "unitPrice": "Unit price",
+    "itemTotal": "Item total",
+    "orderTotal": "Order total",
+    "unknownEvent": "Unknown event",
+    "asap": "ASAP",
+    "unknownCustomer": "Unknown",
+    "customerOnline": "Customer online",
+    "placedByTruck": "Placed by truck"
+  }
+}

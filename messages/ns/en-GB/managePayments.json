@@ -1,0 +1,94 @@
+{
+  "heading": "Payments",
+  "loading": "Checking your Stripe account…",
+  "state": {
+    "not_connected": {
+      "title": "Not set up",
+      "body": "Takes about 10 minutes. You’ll need your bank details and ID.",
+      "chip": "Not set up"
+    },
+    "requirements": {
+      "title": "Stripe needs your details",
+      "body": "Card payments won’t work until Stripe has your business and bank details.",
+      "chip": "Action needed"
+    },
+    "pending": {
+      "title": "Connected — Stripe is checking your details",
+      "body": "Nothing for you to do. Stripe is reviewing what you sent, and this page updates when they’re done.",
+      "chip": "Checking"
+    },
+    "ready": {
+      "title": "Connected",
+      "body": "Your Stripe account is connected and able to take payments.",
+      "chip": "Ready"
+    },
+    "restricted": {
+      "title": "Card payments paused",
+      "body": "Stripe has paused card payments on your account until something is resolved.",
+      "chip": "Paused"
+    },
+    "unsupported": {
+      "title": "Card payments aren’t available on this account",
+      "body": "Stripe cannot enable card payments here. Get in touch and we will sort it out with you.",
+      "chip": "Unavailable"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe keys do not match",
+    "body": "This site’s server is using its <b>{server, select, live {live} other {test}}</b> Stripe key while the browser was built with the <b>{browser, select, live {live} other {test}}</b> one. Card payments would fail at the moment a customer tries to pay, so setting up Stripe is blocked until they agree.",
+    "fix": "Both keys must be set for the same environment, and the site rebuilt afterwards — the publishable key is baked in at build time, the secret key is read on every request."
+  },
+  "permission": {
+    "title": "Only the truck’s owner can set up payments",
+    "body": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own signed-in account. Nothing is wrong with this truck or with HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Card payments aren’t configured yet",
+    "fetchTitle": "We couldn’t check this truck’s Stripe account",
+    "keyMissing": "{name} is not set — the embedded components cannot load."
+  },
+  "errors": {
+    "requestFailed": "Request failed ({status})",
+    "unreachable": "Could not reach Stripe"
+  },
+  "online": {
+    "heading": "Online payments",
+    "body": "Customers pay by card when they order. Money goes straight to your own Stripe account — we never hold it.",
+    "feeLine": "Stripe charges {fee} per payment on standard {region}. Other cards may cost more. HatchGrab’s own fee on online orders depends on your plan — see Billing.",
+    "testMode": "Test mode. No real payments can be taken yet."
+  },
+  "trialNote": "Setting this up doesn’t start your subscription or charge you anything today. It’s how your customers pay you — your plan is separate.",
+  "admin": {
+    "title": "Viewing as platform admin",
+    "body": "This truck has not set up online payments. Only the owner can start it, from their own signed-in account — there is nothing to press here."
+  },
+  "setUp": {
+    "button": "Set up online payments",
+    "busy": "Setting up…"
+  },
+  "toast": {
+    "alreadySetUp": "Already set up — continuing",
+    "addDetails": "Now add your details for Stripe",
+    "createFailed": "Could not create the account"
+  },
+  "onboarding": {
+    "restricted": "Stripe takes it from here — you’ll sign in to Stripe and update the details it needs.",
+    "firstRun": "Stripe takes it from here — you’ll sign in to Stripe, then give your business and bank details."
+  },
+  "details": {
+    "title": "Your Stripe details",
+    "body": "Change the bank account you get paid into, or update your business details and documents.",
+    "button": "View or edit"
+  },
+  "walkUp": {
+    "heading": "Walk-up payments",
+    "body": "How you take money at the hatch. HatchGrab charges no platform fee on walk-ups, whichever you choose.",
+    "ownTerminal": "Your own card terminal",
+    "current": "Current",
+    "ownTerminalHelp": "Zettle, Square, or whatever you already use. Nothing to set up — only your provider’s own fees apply.",
+    "hatchgrab": "Through HatchGrab",
+    "comingSoon": "Coming soon",
+    "hatchgrabHelp": "Uses the same Stripe connection as your online payments — a card reader, or contactless straight from your phone or tablet.",
+    "hatchgrabFees": "{fee} per payment on {region}, plus {surcharge} for contactless taken on a phone or tablet. Other cards may cost more."
+  }
+}

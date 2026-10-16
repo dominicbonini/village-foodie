@@ -26,6 +26,7 @@ import { verifyAdmin } from '@/lib/auth/admin'
 import { releaseDomain } from '@/lib/custom-domain/vercel'
 import { sendConfirmationEmail } from '@/lib/email'
 import { liveEmail } from '@/lib/custom-domain/copy'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 // 🔴 THE CHECK IS SHARED WITH THE OPERATOR'S ON-DEMAND CHECK (5 September 2026). It used to be inline
 // here. `app/api/manage/route.ts` action `domain_check` is the other caller. ONE LOOKUP, TWO CALLERS —
 // two implementations of "is this domain working" would disagree, and the disagreement would present
@@ -77,7 +78,7 @@ export async function GET(req: NextRequest) {
     // ⚠️ `custom_domain_last_checked_at` IS SELECTED FOR THE ONCE-PER-TRANSITION RULE, not for display.
     // `decideAdminAlert` compares the threshold against BOTH now and the previous check's timestamp;
     // without this column every failing run would send an email. See lib/custom-domain/check.ts.
-    .select('id, name, slug, contact_email, custom_domain, custom_domain_verified_at, custom_domain_setup_state, custom_domain_setup_started_at, custom_domain_last_ok_at, custom_domain_last_checked_at')
+    .select('id, name, slug, country, contact_email, custom_domain, custom_domain_verified_at, custom_domain_setup_state, custom_domain_setup_started_at, custom_domain_last_ok_at, custom_domain_last_checked_at')
     .not('custom_domain', 'is', null)
 
   if (error) {
@@ -169,7 +170,8 @@ export async function GET(req: NextRequest) {
       await supabase.from('trucks').update(result.patch).eq('id', t.id)
       if (result.goingLive && t.contact_email) {
         try {
-          const mail = liveEmail({ truckName: t.name as string, address: host })
+          // Language Phase 1d Part 2: in the truck's language, like the operator's on-demand check (en-GB for a UK truck).
+          const mail = liveEmail({ truckName: t.name as string, address: host, locale: await localeForTruck(t as { country?: string | null }) })
           await sendConfirmationEmail({ to: t.contact_email as string, subject: mail.subject, html: mail.html, text: mail.text, senderName: 'HatchGrab' })
         } catch (e) {
           // A failed email must not roll back a domain that is genuinely live.

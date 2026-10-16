@@ -33,6 +33,11 @@ const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
 // useT(ns). `msgGB('ns.key')` reads the GB words at a key so a moved literal is still asserted EXACTLY.
 const GB_MESSAGES = JSON.parse(read('messages/en-GB.json'))
 const msgGB = (k) => k.split('.').reduce((o, p) => (o == null ? undefined : o[p]), GB_MESSAGES)
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): the Social media tab's US overrides (messages/en-US.json `socialPosts`), for
+// the two checks whose sentence moved there — a US override must still say the same thing.
+/** Every string leaf of a message subtree. */
+const leafStringsOf = (o) => (o == null ? [] : typeof o === 'string' ? [o] : Object.values(o).flatMap(leafStringsOf))
+const US_SP = () => JSON.parse(read('messages/en-US.json')).socialPosts || {}
 /* 🔴 `exists` IS BACK (6 October 2026), for one claim worth making directly: `PlacesTab.tsx` is
  * DELETED, not merely unmounted. An unmounted component is a component somebody re-mounts.
  * ⛔ ITS FIRST LIFE WAS DIFFERENT AND IS WORTH RECORDING: it guarded a hand-listed set of poster files
@@ -601,8 +606,14 @@ head('3 · the post picture lives in Social posts › Designs, and place_picture
    * survive, so pointing it back costs one press. ⚠️ IT IS STILL CONFIRMED, and the confirm SAYS the
    * image is kept — a truck told "Remove" without that sentence has every reason to think otherwise. */
   t('⛔ removing a location\'s image is confirmed, says the image is kept, and deletes nothing',
-    /window\.confirm\(slotRemoveConfirm\(/.test(SOCIAL)
-    && /It stops being used\. The image itself is kept\./.test(read('lib/copy/socialPosts.ts'))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): window.confirm(slotRemoveConfirm(…)) → window.confirm(t('slotRemoveConfirm',
+    // { what })) (useT('socialPosts')), and the sentence moved to socialPosts.slotRemoveConfirm — an ICU select whose
+    // every arm (poster / photo / picture) must still say the image is kept, in GB and in any US override.
+    /window\.confirm\(t\('slotRemoveConfirm', \{ what: '(?:picture|poster)' \}\)\)/.test(SOCIAL)
+    && /const t = useT\('socialPosts'\)/.test(SOCIAL)
+    && ['poster', 'photo', 'other'].every(arm => new RegExp(`${arm} \\{Remove this \\w+\\? It stops being used\\. The image itself is kept\\.\\}`)
+      .test(msgGB('socialPosts.slotRemoveConfirm')))
+    && (US_SP().slotRemoveConfirm === undefined || /It stops being used\. The image itself is kept\./.test(US_SP().slotRemoveConfirm))
     && /api\('place_slot_clear', \{ placeId: selected\.id, slot: 'event' \}\)/.test(SOCIAL)
     && /api\('place_slot_clear', \{ placeId: selected\.id, slot: 'weekly' \}\)/.test(SOCIAL)
     /* ⛔ AND THE OLD IRREVERSIBLE PATH IS NOT CALLED FROM ANY SCREEN. `event_remove_place_design` still
@@ -713,8 +724,16 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
     && /data-name-from-schedule/.test(SOCIAL)
     /* ⚠️ "area", NOT "town" (9 October 2026) — the same rename as the editor's item, for the same
      * reason: half the venues on this product are in a village, and this card calls the field "Area". */
-    && /'Name and area come from your schedule\. Edit them in Schedule › Events › Add event › Tidy up places\.'/
-      .test(read('lib/copy/socialPosts.ts')))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the sentence moved to socialPosts.nameFromScheduleNote (GB asserted
+    // exactly; the copy export now reads that key), drawn with t('nameFromScheduleNote'). The note ends with the
+    // button's own label (manageScheduleEvent.tidyUp) in GB, and in US with the US label ("Clean up places"), so it
+    // still names a real path on that truck's screen.
+    && msgGB('socialPosts.nameFromScheduleNote') === 'Name and area come from your schedule. Edit them in Schedule › Events › Add event › Tidy up places.'
+    && /export const NAME_FROM_SCHEDULE_NOTE =\s*gb\('nameFromScheduleNote'\)/.test(codeOf(read('lib/copy/socialPosts.ts')))
+    && /data-name-from-schedule>\s*\n\s*\{t\('nameFromScheduleNote'\)\}/.test(SOCIAL)
+    && msgGB('socialPosts.nameFromScheduleNote').endsWith(`› ${msgGB('manageScheduleEvent.tidyUp')}.`)
+    && (US_SP().nameFromScheduleNote === undefined
+      || US_SP().nameFromScheduleNote.endsWith(`› ${JSON.parse(read('messages/en-US.json')).manageScheduleEvent.tidyUp}.`)))
 
   t('⛔ …and nothing else defines a place list, detail or loader', (() => {
     const owners = walk('components').concat(walk('app'))
@@ -879,16 +898,34 @@ head('6 · Social posts: the two design editors, and a check that a COMMENT was 
   /* ⚠️ "Set up your SINGLE EVENT post" SINCE 6 October 2026 — the box on Designs that opens this card
    * is "Single event post design", and a card that named the design differently would send the operator
    * looking for a box that is not there. The CLAIM is unchanged: the two cards share one style. */
+  /* ⚠️ RE-PINNED (Language Phase 1d Part 2): both card headings are messages now — WeeklyPost's SetupScreen draws
+   * {t('setup.title')} (useT('weeklyPost')) and EventSetupScreen {t('setup.firstTitle')} (useT('eventPost')). The SAME
+   * element and classes are asserted around each call, and each key's GB words are asserted exactly. */
   t('🔴 …and the weekly card heading matches the event card\'s exactly', (() => {
-    const weekly = /<p className="font-bold text-slate-800">Set up your weekly post<\/p>/.test(WP)
-    const event = /<p className="font-bold text-slate-800">Set up your single event post<\/p>/.test(EP)
+    const weekly = /<p className="font-bold text-slate-800">\{t\('setup\.title'\)\}<\/p>/.test(WP)
+      && /const t = useT\('weeklyPost'\)/.test(WP)
+      && msgGB('weeklyPost.setup.title') === 'Set up your weekly post'
+    const event = /<p className="font-bold text-slate-800">\{t\('setup\.firstTitle'\)\}<\/p>/.test(EP)
+      && /const t = useT\('eventPost'\)/.test(EP)
+      && msgGB('eventPost.setup.firstTitle') === 'Set up your single event post'
     return weekly && event
   })())
+  /* ⚠️ RE-PINNED (Language Phase 1d Part 2): "the words appear once in the code" → the key that carries them is read
+   * exactly once in WeeklyPost's code, the words are not written out there at all, and exactly ONE weeklyPost message
+   * holds them — so a second heading cannot come back as a literal or as a second key. */
   t('⛔ and "Set up your weekly post" appears exactly ONCE in the rendered code',
-    (codeOf(WP).match(/Set up your weekly post/g) || []).length === 1)
+    (codeOf(WP).match(/t\('setup\.title'\)/g) || []).length === 1
+    && !/Set up your weekly post/.test(codeOf(WP))
+    && leafStringsOf(msgGB('weeklyPost')).filter(w => w === 'Set up your weekly post').length === 1)
 
-  t('⛔ the event copy no longer counts "three"', !/adds those three for each event/.test(EP))
-  t('🔴 …and says "HatchGrab adds those for each event."', /HatchGrab adds those for each event\./.test(EP))
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the event card's body is eventPost.setup.firstBody now, so "no longer
+  // counts three" is asserted over the component AND every eventPost GB message, and the new sentence at that key.
+  t('⛔ the event copy no longer counts "three"',
+    !/adds those three for each event/.test(EP)
+    && !leafStringsOf(msgGB('eventPost')).some(w => /adds those three for each event/.test(w)))
+  t('🔴 …and says "HatchGrab adds those for each event."',
+    /HatchGrab adds those for each event\.$/.test(msgGB('eventPost.setup.firstBody'))
+    && /\{t\('setup\.firstBody'\)\}/.test(EP))
 
   /* ══ ⛔ A CHECK THAT A COMMENT HAD BEEN SATISFYING, FOR A DAY (found 6 October 2026) ══════════════
    * It read `/href="\?section=places"/.test(EP)` — RAW source — and asserted that the "a different

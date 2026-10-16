@@ -23,7 +23,8 @@
 // `document`. The template's own grammar — tokens, labels, parsing — is `./caption-template.ts`, which
 // is pure and shared with the renderer.
 
-import { isCaptionLabel, parseCaptionTemplate, CAPTION_LABELS, type CaptionLabelId } from './caption-template'
+import { isCaptionLabel, parseCaptionTemplate, CAPTION_LABELS, captionLabelText, type CaptionLabelId } from './caption-template'
+import type { CountryCode } from './locale'
 
 /** The attribute every chip carries. ⚠️ One constant, so the writer and the readers cannot drift. */
 export const CHIP_ATTR = 'data-caption-chip'
@@ -42,7 +43,12 @@ export function captionChipHtml(id: CaptionLabelId, label: string): string {
 }
 
 /** The editor's HTML for a stored template. ⚠️ Text is escaped; chips are the product's own markup. */
-export function captionHtml(template: string): string {
+export function captionHtml(
+  template: string,
+  /** 🔴 The truck's country — the chips say their label in its words (`captions.labels`, Language Phase 1d Part 2).
+   *  ⚠️ GB's when absent, which is what every existing caller gets. */
+  country?: CountryCode | string | null,
+): string {
   const esc = (t: string) => t
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     /* ⚠️ NEWLINES BECOME `<br>`. A `contentEditable` div renders `\n` as a space, so a caption's own
@@ -51,7 +57,7 @@ export function captionHtml(template: string): string {
   return parseCaptionTemplate(template).map(p => (
     p.kind === 'text'
       ? esc(p.text)
-      : captionChipHtml(p.id, CAPTION_LABELS.find(l => l.id === p.id)?.label ?? p.id)
+      : captionChipHtml(p.id, country ? captionLabelText(p.id, country) : (CAPTION_LABELS.find(l => l.id === p.id)?.label ?? p.id))
   )).join('')
 }
 

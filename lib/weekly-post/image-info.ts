@@ -15,6 +15,9 @@
 // and the pixel-level work this feature needs (the readability sample) happens in the browser, where a
 // decoder already exists. lib/weekly-post/contrast.ts explains that split.
 
+/* Refusals are codes with an en-GB sentence (Language Phase 1d Part 2): `errorsManage.wp_…`, through ./words.ts. */
+import { wpRefusal, type WpRefusal } from './words'
+
 export type ImageFormat = 'png' | 'jpeg'
 
 export interface ImageInfo {
@@ -30,8 +33,8 @@ export interface ImageCheckOptions {
 
 export type ImageCheck =
   | { ok: true; info: ImageInfo }
-  /** A plain sentence, safe to show an operator. */
-  | { ok: false; error: string }
+  /** A plain sentence, safe to show an operator (en-GB), and the same refusal as a code (Language Phase 1d Part 2). */
+  | ({ ok: false } & { error: string } & WpRefusal)
 
 /** PNG: 8-byte signature, then an IHDR chunk whose width/height are 4-byte big-endian at 16 and 20. */
 function pngSize(b: Buffer): ImageInfo | null {
@@ -77,17 +80,17 @@ export function readImageInfo(bytes: Buffer): ImageInfo | null {
  * usually with a file Canva just gave them, and "415" tells them nothing about what to do next.
  */
 export function checkUpload(bytes: Buffer, opts: ImageCheckOptions): ImageCheck {
-  if (!bytes || bytes.length === 0) return { ok: false, error: 'That file was empty.' }
+  if (!bytes || bytes.length === 0) return { ok: false, ...wpRefusal('wp_upload_empty') }
   if (bytes.length > opts.maxBytes) {
     const mb = Math.round(opts.maxBytes / (1024 * 1024))
-    return { ok: false, error: `That image is ${(bytes.length / 1024 / 1024).toFixed(1)}MB. The limit is ${mb}MB — export it again at a smaller size.` }
+    return { ok: false, ...wpRefusal('wp_upload_too_big', { size: (bytes.length / 1024 / 1024).toFixed(1), max: String(mb) }) }
   }
   const info = readImageInfo(bytes)
-  if (!info) return { ok: false, error: 'That file is not a PNG or JPG. In Canva choose Share › Download and pick PNG.' }
-  if (!info.width || !info.height) return { ok: false, error: 'That image reports no size — try exporting it again.' }
+  if (!info) return { ok: false, ...wpRefusal('wp_upload_not_image') }
+  if (!info.width || !info.height) return { ok: false, ...wpRefusal('wp_upload_no_size') }
   const shortSide = Math.min(info.width, info.height)
   if (shortSide < opts.minShortSide) {
-    return { ok: false, error: `That image is ${info.width}×${info.height}. The shortest side needs to be at least ${opts.minShortSide}px so the text stays sharp.` }
+    return { ok: false, ...wpRefusal('wp_upload_too_small', { width: String(info.width), height: String(info.height), min: String(opts.minShortSide) }) }
   }
   return { ok: true, info }
 }

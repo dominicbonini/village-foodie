@@ -5,7 +5,17 @@
 import { useEffect, useState } from 'react'
 import { Toggle } from './primitives'
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
-import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'
+// Language Phase 1d Part 2: its own words are `takingPayment`. The words it SHARES are read from where they already
+// live, so each has one source: the dashboard's Settings sheet says the same title, completion rows and button names
+// (`completionSettings`, read by both screens — "Mark paid & collected" must match OrderCard, see the note on the
+// options below), the
+// cash row's name is `serviceSettings.labels.takes_cash`, and its help is Settings › Your trucks' per-van row
+// (`manageSettings.vans.takesCashHelp`).
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/takingPayment'
+import '@/lib/i18n/catalog/completionSettings'
+import '@/lib/i18n/catalog/serviceSettings'
+import '@/lib/i18n/catalog/manageSettings'
 
 /** The truck columns this section reads (the page's `Truck` row carries them all). */
 export interface TakingPaymentTruck {
@@ -31,6 +41,10 @@ export function TakingPaymentPanel({ truck, api, showToast, onTruckUpdate }: {
   showToast: (msg: string, type?: 'success' | 'error') => void
   onTruckUpdate: (partial: Partial<TakingPaymentTruck>) => void
 }) {
+  const t = useT('takingPayment')
+  const tCompletion = useT('completionSettings')
+  const tService = useT('serviceSettings.labels')
+  const tVans = useT('manageSettings.vans')
   const [form, setForm] = useState({ ...truck })
   const saveSetting = async (key: string, value: string | boolean | number | null) => {
     try {
@@ -62,8 +76,8 @@ export function TakingPaymentPanel({ truck, api, showToast, onTruckUpdate }: {
         <div>
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
             <div className="pb-3">
-              <p className={SUBCARD_HEADING}>Taking payment</p>
-              <p className="text-xs text-slate-500 mt-0.5">How your team records money for each order.</p>
+              <p className={SUBCARD_HEADING}>{t('heading')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('intro')}</p>
             </div>
             {/* ── SETTING 1 — trucks.show_paid_step, RELABELLED (10 August 2026) ─────────────────────
                 Same column, same save path, same per-event override. Only the words changed, because
@@ -77,9 +91,9 @@ export function TakingPaymentPanel({ truck, api, showToast, onTruckUpdate }: {
                 exactly the moment nobody remembers to come back and change it. Leave it as it is. */}
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
-                <p className="text-xs text-slate-500 mt-0.5">Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.</p>
-                <p className="text-xs text-slate-400 mt-1">This only affects orders you add. It doesn&apos;t affect online orders.</p>
+                <p className="text-sm font-semibold text-slate-800">{tCompletion('paidStepTitle')}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t('paidStepHelp')}</p>
+                <p className="text-xs text-slate-400 mt-1">{t('paidStepNote')}</p>
               </div>
               <Toggle
                 on={(form as any).show_paid_step === true}
@@ -105,8 +119,8 @@ export function TakingPaymentPanel({ truck, api, showToast, onTruckUpdate }: {
                 (app/api/manage/route.ts) — that list SILENTLY DROPS unlisted keys, so a missing entry
                 means this appears to save, returns {ok:true}, and writes nothing. */}
             <div className="py-3">
-              <p className="text-sm font-semibold text-slate-800">Completing an unpaid order</p>
-              <p className="text-xs text-slate-500 mt-0.5">What happens when an unpaid order is ready to hand over.</p>
+              <p className="text-sm font-semibold text-slate-800">{tCompletion('completionTitle')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{tCompletion('completionHelp')}</p>
               <div className="flex flex-col gap-2 mt-2">
                 {([
                   // ── 🔴 THE BUTTON NAMES HERE ARE QUOTED FROM THE CODE, NOT DESCRIBED ────────────
@@ -123,10 +137,10 @@ export function TakingPaymentPanel({ truck, api, showToast, onTruckUpdate }: {
                   // is where that second one is explained.
                   // ⚠️ CURLY QUOTES, matching how this file already names a button inline (the paid-step
                   // and cash rows both do it). Not a new convention.
-                  ['one', 'One press (“Mark paid & collected”)',
-                   'Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
-                  ['two', 'Two presses (“Mark paid” & “Collected”)',
-                   'Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.'],
+                  // ⚠️ LANGUAGE PHASE 1d PART 2: the four sentences are `completionSettings.pressesOne…`, the messages the
+                  // dashboard's Settings sheet reads too (they were word for word these) — one source for both screens.
+                  ['one', tCompletion('pressesOne'), tCompletion('pressesOneHelp')],
+                  ['two', tCompletion('pressesTwo'), tCompletion('pressesTwoHelp')],
                 ] as const).map(([v, lbl, help]) => (
                   /* 🔴 SHAPE COPIED VERBATIM FROM "Past the deadline" IN THIS SAME FILE — the page's
                      EXISTING two-option-with-descriptions control (button + drawn radio + font-medium
@@ -216,8 +230,10 @@ export function TakingPaymentPanel({ truck, api, showToast, onTruckUpdate }: {
             {!vanCashAvailable && (
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">{SERVICE_SETTING_LABELS.takes_cash}</p>
-                <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
+                <p className="text-sm font-semibold text-slate-800">{tService('takes_cash')}</p>
+                {/* ⚠️ NAMED GB CHANGE (Language Phase 1d Part 2): Settings › Your trucks' message, so "Cash" and "Card"
+                    now print with curly quotes here as they already do there — the one wording fix this row gets. */}
+                <p className="text-xs text-slate-500 mt-0.5">{tVans('takesCashHelp')}</p>
                 {/* ── 🔴 THE GATE NOW HAS TWO PARENTS, AND IT HAD TO (10 August 2026) ─────────────
                     The cash split renders in two places, and after the settings were split those two
                     places answer to DIFFERENT settings:

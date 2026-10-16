@@ -1,0 +1,71 @@
+{
+  "planRefusal": "Social media posts are on Pro and Max",
+  "error": {
+    "generic": "Something went wrong",
+    "previewFailed": "The preview could not be made",
+    "loadFailed": "Could not load",
+    "tooBig": "That image is {size, number, ::.0 group-off}MB. The limit is 10MB.",
+    "wrongType": "Please choose a PNG or JPG.",
+    "uploadIncomplete": "The upload did not complete",
+    "uploadFailed": "The upload failed",
+    "saveFailed": "Could not save",
+    "buildFailed": "Could not build the post",
+    "copyFailed": "Could not copy — select the text and copy it by hand."
+  },
+  "loading": "Loading…",
+  "missingTable": {
+    "title": "The weekly post needs a database update",
+    "body": "The design table has not been created yet. Once the migration has been applied this screen will work."
+  },
+  "kind": {
+    "label": "Which design",
+    "event": "Single event",
+    "week": "Weekly"
+  },
+  "setup": {
+    "title": "Set up your weekly post",
+    "intro": "Upload the blank version of the weekly schedule graphic you already make — the same design, with your own text boxes removed. HatchGrab fills in the week from your schedule.",
+    "canvaTitle": "How to export a blank from Canva",
+    "canvaStep1": "Open your usual weekly schedule design.",
+    "canvaStep2": "Delete the text boxes with the dates, places and times — leave the background and headings you want to keep.",
+    "canvaStep3": "Share › Download › PNG.",
+    "uploading": "Uploading…",
+    "upload": "Upload your blank image",
+    "uploadHint": "PNG or JPG, up to 10MB, at least {px}px on the short side.",
+    "phoneTip": "Best on a computer or iPad — the boxes are small to drag on a phone.",
+    "designName": "Weekly post design",
+    "backDesigns": "‹ Designs",
+    "back": "‹ Back",
+    "pictureNote": "Your picture without any date or place on it. We add those.",
+    "saved": "Design saved."
+  },
+  "week": {
+    "this": "This week",
+    "next": "Next week"
+  },
+  "post": {
+    "title": "Your weekly post",
+    "editDesign": "Edit design",
+    "weekOf": "w/c {date}",
+    "imageAlt": "Your weekly post",
+    "building": "Building your post…",
+    "updating": "Updating…",
+    "eventsTitle": "This week’s events",
+    "noEvents": "No events this week.",
+    "eventDateCancelled": "{date} · cancelled",
+    "showCancelled": "Show cancelled events",
+    "showPrivate": "Show private events",
+    "privateHint": "They show as “Private event” with the date and times — never the place.",
+    "noteTitle": "Note",
+    "notePlaceholder": "e.g. Pre-order for collection",
+    "noteHint": "Shows in the caption, and in the note box if you placed one.",
+    "captionTitle": "Caption for your page",
+    "perEventTitle": "Post for each event",
+    "nothingToPost": "Nothing to post this week.",
+    "textCopied": "Text copied.",
+    "copyText": "Copy text",
+    "image": "Image",
+    "share": "Share",
+    "noOrderLink": "No ordering link yet — set your truck’s web address in Settings."
+  }
+}

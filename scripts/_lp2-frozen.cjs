@@ -78,14 +78,24 @@ function withInline(frozen) {
 }
 
 const MOVED_FILE = path.join(REPO, 'scripts/fixtures/language-phase-1d-gb-moved.json')
-/** The 1d as-moved overlay as a message tree ({} when the file is absent or HG_MESSAGES_MOVED=off). */
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): a SECOND as-moved overlay, scripts/fixtures/language-phase-1d2-gb-moved.json
+// (written by Part 2's messages helper for every Part 2 GB wrong-English fix; a key that existed at 826471a is recorded
+// at its 826471a text). BOTH overlays apply in every frozen mode, so every older harness sees Part 2's fixes as moved,
+// exactly as it sees Part 1's. Where a key is in both, PART 1's as-moved text wins (it is the older text — what a
+// 756ca09-or-earlier frozen catalogue must show); under the 826471a pair the frozen file's own text wins anyway.
+const MOVED_FILE_1D2 = path.join(REPO, 'scripts/fixtures/language-phase-1d2-gb-moved.json')
+const MOVED_FILES = [MOVED_FILE_1D2, MOVED_FILE]   // applied in this order: a later file wins
+/** The as-moved overlays (Part 2's, then Part 1's over it) as one message tree ({} when absent or HG_MESSAGES_MOVED=off). */
 function movedTree(env = process.env) {
-  if (env.HG_MESSAGES_MOVED === 'off' || !fs.existsSync(MOVED_FILE)) return {}
+  if (env.HG_MESSAGES_MOVED === 'off') return {}
   const out = {}
-  for (const [key, text] of Object.entries(readJson(MOVED_FILE))) {
-    const parts = key.split('.'); let o = out
-    for (const p of parts.slice(0, -1)) { if (!isObj(o[p])) o[p] = {}; o = o[p] }
-    o[parts[parts.length - 1]] = text
+  for (const file of MOVED_FILES) {
+    if (!fs.existsSync(file)) continue
+    for (const [key, text] of Object.entries(readJson(file))) {
+      const parts = key.split('.'); let o = out
+      for (const p of parts.slice(0, -1)) { if (!isObj(o[p])) o[p] = {}; o = o[p] }
+      o[parts[parts.length - 1]] = text
+    }
   }
   return out
 }
@@ -102,13 +112,31 @@ function mode(env = process.env) {
   return null
 }
 
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): KEYS MOVED BETWEEN NAMESPACES (scripts/fixtures/language-phase-1d2-key-moves.json,
+// { moves: { old: new } }). A frozen catalogue knows a moved key only under its OLD path; its text (en-GB and en-US) is
+// copied to the NEW path too, so a frozen mode shows the moved key exactly as it showed the old one (e.g. the 826471a en-US
+// "Mark paid & picked up" overrides under dashboard.settings.* reach completionSettings.*).
+const KEY_MOVES_FILE = path.join(REPO, 'scripts/fixtures/language-phase-1d2-key-moves.json')
+const keyMoves = () => (fs.existsSync(KEY_MOVES_FILE) ? readJson(KEY_MOVES_FILE).moves || {} : {})
+function withMoves(tree) {
+  const out = JSON.parse(JSON.stringify(tree))
+  for (const [from, to] of Object.entries(keyMoves())) {
+    const v = getPath(out, from)
+    if (typeof v !== 'string' || getPath(out, to) !== undefined) continue
+    const parts = to.split('.'); let o = out
+    for (const p of parts.slice(0, -1)) { if (!isObj(o[p])) o[p] = {}; o = o[p] }
+    o[parts[parts.length - 1]] = v
+  }
+  return out
+}
+
 /** The two whole catalogues a run sees under the switch (or as authored, when it is off). */
 function catalogues(m = mode()) {
   const gb = readJson(path.join(REPO, 'messages/en-GB.json'))
   const us = readJson(path.join(REPO, 'messages/en-US.json'))
   if (m && m.mode === 'frozen') {
     const moved = m.moved === false ? {} : movedTree({})
-    return { 'en-GB': overlay(overlay(gb, moved), withInline(readJson(m.file))), 'en-US': m.usFile ? readJson(m.usFile) : {} }
+    return { 'en-GB': overlay(overlay(gb, moved), withMoves(withInline(readJson(m.file)))), 'en-US': m.usFile ? withMoves(readJson(m.usFile)) : {} }
   }
   return { 'en-GB': gb, 'en-US': us }
 }
@@ -174,4 +202,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2
   return out
 }
 
-module.exports = { REPO, MOVED_FILE, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILES, KEY_MOVES_FILE, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

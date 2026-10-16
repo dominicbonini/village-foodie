@@ -1,0 +1,31 @@
+{
+  "card": {
+    "justLive": "<b>{address}</b> is working. Take a look at it, then tell us it is right below."
+  },
+  "ready": {
+    "body": "Take a look at it, then tell us it is right in your settings."
+  },
+  "confirm": {
+    "heading": "Take a look, then tell us it is right"
+  },
+  "turnOff": {
+    "carriesOn": "This continues exactly as it is, and is where your QR code sends people:"
+  },
+  "providers": {
+    "cloudflare": {
+      "proxy": "Set “Proxy status” to “DNS only” — the cloud beside it must be gray, not orange."
+    },
+    "123reg": {
+      "value": "Put the second value below in “Value”, and add a period to the end of it.",
+      "caveat": "123 Reg needs a period at the end of the second value or it will not work."
+    }
+  },
+  "instructionsEmail": {
+    "introAt": "We are putting {truckName}’s live schedule on {address}, and it needs one record added to our domain at {provider}.",
+    "introHolder": "We are putting {truckName}’s live schedule on {address}, and it needs one record added to our domain with whoever holds our domain.",
+    "pointsAt": "The page it points at shows where we are serving next and keeps itself up to date."
+  },
+  "liveEmail": {
+    "body": "Your schedule is now showing at your own address. Take a look at it and check it is right: open {address}, make sure the events are yours and the dates look correct."
+  }
+}

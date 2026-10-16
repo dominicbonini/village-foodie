@@ -24,6 +24,8 @@
  * 13th and never "11st" — moved to lib/time-utils.ts (`ordinalSuffix`, `ordinalDay`), which every date path
  * now shares; this module keeps its two names so the poster's callers are untouched. */
 export { ordinalSuffix, ordinalDay as ordinal } from '@/lib/time-utils'
+/* ⚠️ `./words` IMPORTS `./locale` AS A TYPE ONLY, so reading the default heading from it closes no cycle at run time. */
+import { defaultHeadingFor } from './words'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // DATES
@@ -119,7 +121,10 @@ export function formatTimeRangeFor(
 // THE HEADING'S TOKENS
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-export const DEFAULT_HEADING = 'Week commencing {start} to {end}'
+/* ⛔ `DEFAULT_HEADING` IS GONE (Language Phase 1d Part 2). The default heading is a MESSAGE now — GB "Week commencing
+ * {start} to {end}", US "Week of {start}" — read through `defaultHeadingFor(country)` in ./words.ts, which every
+ * caller that needs "the heading a design gets when it has none" asks. ⚠️ A STORED HEADING IS NEVER REPLACED by it:
+ * `headingRuns` below uses the default ONLY when the stored text is empty or blank. */
 
 /**
  * Fill `{start}` and `{end}` in the heading, as runs so raised ordinals survive.
@@ -141,8 +146,13 @@ export function headingRuns(
   end: string,
   c: TextCase,
   dateRuns: (ymd: string, c: TextCase) => TextRun[],
+  /** 🔴 The heading drawn when the STORED one is empty — the poster's country's default (`defaultHeadingFor`).
+   *  ⚠️ Optional, and GB's when absent, as every country argument in this folder is. */
+  defaultHeading: string = defaultHeadingFor('GB'),
 ): TextRun[] {
-  const text = template && template.trim() ? template : DEFAULT_HEADING
+  /* 🔴 STORED BEATS DEFAULT. A heading the truck saved — "Week commencing {start} to {end}" included, on a truck in
+   * any country — is drawn exactly as saved; only an empty or blank one falls back to the country's default. */
+  const text = template && template.trim() ? template : defaultHeading
   const out: TextRun[] = []
   const re = /\{(start|end)\}/g
   let last = 0

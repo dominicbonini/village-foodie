@@ -62,6 +62,11 @@ async function browserBundle() {
     stdin: { contents: "import { runDateFixtures } from '@/scripts/_language-date-fixtures'\nglobalThis.__runDateFixtures = runDateFixtures", resolveDir: REPO, loader: 'ts' },
     bundle: true, write: false, platform: 'browser', format: 'iife', target: 'es2020', logLevel: 'silent',
     tsconfig: path.join(REPO, 'tsconfig.json'),
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the poster's caption words (CANCELLED / CANCELED, "Week commencing") are
+    // messages now, read in the truck's locale. The browser bundle must read the SAME frozen catalogue as the server side
+    // (scripts/_lp2-frozen.cjs, the switch the render kit already applies), or a US answer would carry today's US words
+    // in the browser and the frozen words on the server.
+    plugins: [{ name: 'lp2-frozen', setup(b) { b.onResolve({ filter: /(^|\/)messages\/(ns\/)?en-(GB|US)(\/[A-Za-z0-9]+)?\.json$/ }, a => { const abs = require('./_lp2-frozen.cjs').resolveMessages(a.path); return abs ? { path: abs } : undefined }) } }],
   })
   return res.outputFiles[0].text
 }

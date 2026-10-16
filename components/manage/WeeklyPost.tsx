@@ -23,8 +23,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 /* ⚠️ `Btn` IS NO LONGER IMPORTED HERE: the only two on this screen were Download and Share, and both
  * moved into `PostShareBar`. The remaining buttons are the text links in the side panels. */
 import { Card } from './primitives'
-/* ⚠️ ONE COPY MODULE FOR THE WHOLE SOCIAL TAB — §B8's line lives there with the rest. */
-import { NEW_SHAPE_RESET } from '@/lib/copy/socialPosts'
+/* ⚠️ ONE COPY MODULE FOR THE WHOLE SOCIAL TAB — §B8's line lives there with the rest. 🔴 LANGUAGE PHASE 1d PART 2:
+ * it is the `socialPosts` namespace now (`NEW_SHAPE_RESET` → `newShapeReset`), read below in the truck's locale. */
+import '@/lib/i18n/catalog/socialPosts'
 import { DesignEditor, type AnyLayout } from './DesignEditor'
 import {
   MAX_UPLOAD_BYTES, MIN_UPLOAD_SHORT_SIDE,
@@ -34,9 +35,29 @@ import { DEFAULT_COUNTRY, type CountryCode } from '@/lib/weekly-post/locale'
 /* ⚠️ §2 · THE POSTER'S OWN DAY SHAPE, not this screen's `WeekDayView`. The live stage draws through the
  * renderer's functions, so it needs the renderer's own type — and the route already sends exactly it. */
 import type { WeekDay } from '@/lib/weekly-post/week-data'
-import { weekLabel } from '@/lib/weekly-post/caption'
+import { shortDate, weekLabel } from '@/lib/weekly-post/caption'
 import { EventSetupScreen, EventPostModal } from './EventPost'
 import { PostShareBar } from './PostShareBar'
+/* 🔴 LANGUAGE PHASE 1d PART 2: this screen's words are messages (`weeklyPost`), read in the truck's locale. */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/weeklyPost'
+
+type WeeklyPostT = ReturnType<typeof useT<'weeklyPost'>>
+/** An error the route did not word: the screen words it from this code (`weeklyPost.error.<code>`). */
+type ErrorCode = 'generic' | 'previewFailed' | 'loadFailed' | 'buildFailed'
+class CodedError extends Error {
+  constructor(readonly code: ErrorCode) { super(code) }
+}
+/** What a failed call says: the route's own sentence when it sent one, else this screen's words for the code. */
+type Said = { text: string } | { code: ErrorCode }
+const saidOf = (e: unknown, fallback: ErrorCode): Said =>
+  e instanceof CodedError ? { code: e.code } : e instanceof Error ? { text: e.message } : { code: fallback }
+const sayWith = (t: WeeklyPostT, s: Said): string => ('text' in s ? s.text : t(`error.${s.code}`))
+/** 'monday' | 'sunday' — the first day of the week the route loaded (it follows the truck's country). */
+const weekStartOfYmd = (ymd: unknown): 'monday' | 'sunday' | undefined =>
+  typeof ymd === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ymd)
+    ? (new Date(`${ymd}T00:00:00Z`).getUTCDay() === 0 ? 'sunday' : 'monday')
+    : undefined
 
 interface LoadedDesign {
   width: number
@@ -62,7 +83,7 @@ const api = async (token: string, body: Record<string, unknown>) => {
     body: JSON.stringify({ token, ...body }),
   })
   const j = await r.json().catch(() => ({}))
-  if (!r.ok) throw new Error(j.error || 'Something went wrong')
+  if (!r.ok) throw j.error ? new Error(j.error) : new CodedError('generic')
   return j
 }
 
@@ -78,7 +99,7 @@ async function renderPng(token: string, body: Record<string, unknown>): Promise<
   })
   if (!r.ok) {
     const j = await r.json().catch(() => ({}))
-    throw new Error(j.error || 'The preview could not be made')
+    throw j.error ? new Error(j.error) : new CodedError('previewFailed')
   }
   const blob = await r.blob()
   let warnings: { where: string; message: string }[] = []
@@ -142,11 +163,15 @@ export function WeeklyPostApp({
    * on, exactly as it passes `onDirtyChange`. */
   onSaver?: (save: (() => void | Promise<void>) | null) => void
 }) {
+  const t = useT('weeklyPost')
   const [loading, setLoading] = useState(true)
   const [missingTable, setMissingTable] = useState(false)
   const [design, setDesign] = useState<LoadedDesign | null>(null)
   const [mode, setMode] = useState<'setup' | 'post'>(initialMode ?? 'post')
-  const [error, setError] = useState<string | null>(null)
+  /* ⚠️ SET IN AN EFFECT, SO IT HOLDS THE ROUTE'S OWN WORDS OR A CODE — the render words a code (Language Phase 1d). */
+  const [error, setError] = useState<Said | null>(null)
+  /* The week's first day, from the week the route loaded — the editor's "Monday to Sunday" follows it. */
+  const [weekStart, setWeekStart] = useState<'monday' | 'sunday' | undefined>(undefined)
   const [week, setWeek] = useState<'this' | 'next'>('this')
   const [days, setDays] = useState<WeekDayView[]>([])
   const [orderUrl, setOrderUrl] = useState<string | null>(null)
@@ -190,6 +215,7 @@ export function WeeklyPostApp({
       setDesign(r.design ?? null)
       setDays(r.week?.days ?? [])
       setWeek(r.week?.which ?? 'this')
+      setWeekStart(weekStartOfYmd(r.week?.start))
       setOrderUrl(r.orderUrl ?? null)
       setCountry((r.country as CountryCode) ?? DEFAULT_COUNTRY)
       setHasLogo(r.hasLogo === true)
@@ -200,7 +226,7 @@ export function WeeklyPostApp({
        * from, so setup is still forced — a post screen with no picture is a dead end whoever opened it. */
       setMode(r.design ? (initialMode ?? 'post') : 'setup')
       setError(null)
-    } catch (e) { setError(e instanceof Error ? e.message : 'Could not load') }
+    } catch (e) { setError(saidOf(e, 'loadFailed')) }
     finally { setLoading(false) }
   }, [token, initialMode])
 
@@ -214,14 +240,14 @@ export function WeeklyPostApp({
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(initialWeek, false) }, [load, initialWeek])
 
-  if (loading) return <Card className="p-8 text-center"><p className="text-sm text-slate-400">Loading…</p></Card>
+  if (loading) return <Card className="p-8 text-center"><p className="text-sm text-slate-400">{t('loading')}</p></Card>
 
   if (missingTable) {
     return (
       <Card className="p-6">
-        <p className="font-bold text-slate-800">The weekly post needs a database update</p>
+        <p className="font-bold text-slate-800">{t('missingTable.title')}</p>
         <p className="text-sm text-slate-500 mt-1">
-          The design table has not been created yet. Once the migration has been applied this screen will work.
+          {t('missingTable.body')}
         </p>
       </Card>
     )
@@ -246,8 +272,8 @@ export function WeeklyPostApp({
           {/* 🔴 "Single event" FIRST, AND SELECTED BY DEFAULT. "Week (7 days)" became "Weekly": the
             * parenthetical explained a format nobody was confused about, and it made the two options
             * read as different kinds of thing rather than two choices of the same kind. */}
-          <div role="tablist" aria-label="Which design" className="inline-flex rounded-xl border border-slate-200 overflow-hidden">
-            {([['event', 'Single event'], ['week', 'Weekly']] as const).map(([k, label]) => (
+          <div role="tablist" aria-label={t('kind.label')} className="inline-flex rounded-xl border border-slate-200 overflow-hidden">
+            {([['event', t('kind.event')], ['week', t('kind.week')]] as const).map(([k, label]) => (
               <button key={k} type="button" role="tab" aria-selected={designKind === k}
                 onClick={() => setDesignKind(k)}
                 className={`text-xs font-bold px-3 py-1.5 ${designKind === k ? 'bg-orange-50 text-orange-700' : 'text-slate-600 hover:bg-slate-50'}`}>
@@ -260,7 +286,7 @@ export function WeeklyPostApp({
             full page under a "‹ Designs" link, and a Cancel that dropped the operator onto the weekly
             POST screen — a screen they did not ask for — would be two exits that disagree. */}
         {designKind === 'week'
-          ? <SetupScreen token={token} design={design} country={country} onDirtyChange={onDirtyChange}
+          ? <SetupScreen token={token} design={design} country={country} weekStart={weekStart} onDirtyChange={onDirtyChange}
               onSaver={onSaver}
               hasLogo={hasLogo} placesWithout={placesWithout} onAddPlacePictures={onAddPlacePictures}
               onDone={() => { void load(week, showPrivate) }}
@@ -276,21 +302,22 @@ export function WeeklyPostApp({
     )
   }
 
-  return <PostScreen token={token} truckName={truckName} design={design!} days={days} week={week}
+  return <PostScreen token={token} truckName={truckName} design={design!} days={days} week={week} country={country}
     orderUrl={orderUrl} onWeek={w => { setWeek(w); void load(w, showPrivate) }}
     showPrivate={showPrivate}
     onShowPrivate={v => { setShowPrivate(v); void load(week, v) }}
-    onEdit={() => setMode('setup')} error={error} />
+    onEdit={() => setMode('setup')} error={error ? sayWith(t, error) : null} />
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE SETUP SCREEN
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlacePictures, onDone, onCancel, onDirtyChange, onSaver, onPictureChanged }: {
+function SetupScreen({ token, design, country, weekStart, hasLogo, placesWithout, onAddPlacePictures, onDone, onCancel, onDirtyChange, onSaver, onPictureChanged }: {
   token: string
   design: LoadedDesign | null
   country: CountryCode
+  weekStart?: 'monday' | 'sunday'
   hasLogo: boolean
   placesWithout: { without: number; total: number } | null
   onAddPlacePictures?: () => void
@@ -303,6 +330,8 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
   /** ⚠️ Threaded straight through too — see `WeeklyPostApp`. */
   onSaver?: (save: (() => void | Promise<void>) | null) => void
 }) {
+  const t = useT('weeklyPost')
+  const sp = useT('socialPosts')
   const [blankUrl, setBlankUrl] = useState<string | null>(design?.blankUrl ?? null)
   /* ⚠️ STILL SET BY THE UPLOAD PATH, WHICH IS UNTOUCHED (§B7) — only the panel that showed it over the
    * preview has gone, so nothing reads it any more. ⛔ KEPT RATHER THAN DELETED because the endpoint,
@@ -387,14 +416,14 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
     /* ⚠️ CHECKED IN THE BROWSER **AND** ON THE SERVER. This check is for speed — refusing a 40MB file
      * before it is uploaded — not for safety: the server reads the real bytes and is the one that
      * decides, because a client check is advice. */
-    if (file.size > MAX_UPLOAD_BYTES) { setMsg({ text: `That image is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 10MB.`, bad: true }); return }
-    if (!/^image\/(png|jpe?g)$/.test(file.type)) { setMsg({ text: 'Please choose a PNG or JPG.', bad: true }); return }
+    if (file.size > MAX_UPLOAD_BYTES) { setMsg({ text: t('error.tooBig', { size: file.size / 1024 / 1024 }), bad: true }); return }
+    if (!/^image\/(png|jpe?g)$/.test(file.type)) { setMsg({ text: t('error.wrongType'), bad: true }); return }
     setUploading(true)
     try {
       const ext = file.type.includes('png') ? 'png' : 'jpg'
       const slot = await api(token, { action: 'upload_url', which, ext })
       const put = await fetch(slot.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
-      if (!put.ok) throw new Error('The upload did not complete')
+      if (!put.ok) throw new Error(t('error.uploadIncomplete'))
       const done = await api(token, { action: 'confirm_upload', path: slot.path, which })
       if (which === 'blank') {
         /* ══ 🔴 §B8 · SAID ONLY WHEN IT IS TRUE, AND ONLY FOR FIVE SECONDS ══════════════════════════
@@ -421,11 +450,11 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
          * `WeeklyPostApp.onPictureChanged`. ⚠️ AFTER THE STATE ABOVE, so this screen is already correct
          * when the parent re-reads. */
         onPictureChanged?.()
-        if (done.resetLayout && shapeChanged && boxesMoved) setFlash(NEW_SHAPE_RESET)
+        if (done.resetLayout && shapeChanged && boxesMoved) setFlash(sp('newShapeReset'))
       } else {
         setExampleUrl(done.exampleUrl)
       }
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'The upload failed', bad: true }) }
+    } catch (e) { setMsg({ text: e instanceof CodedError ? t(`error.${e.code}`) : e instanceof Error ? e.message : t('error.uploadFailed'), bad: true }) }
     finally { setUploading(false) }
   }
 
@@ -433,9 +462,9 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
     setSaving(true)
     try {
       const r = await api(token, { action: 'save_design', layout: next })
-      setMsg({ text: r.warning ?? 'Design saved.', bad: false })
+      setMsg({ text: r.warning ?? t('setup.saved'), bad: false })
       onDone()
-    } catch (e) { setMsg({ text: e instanceof Error ? e.message : 'Could not save', bad: true }) }
+    } catch (e) { setMsg({ text: e instanceof CodedError ? t(`error.${e.code}`) : e instanceof Error ? e.message : t('error.saveFailed'), bad: true }) }
     finally { setSaving(false) }
   }
 
@@ -457,27 +486,26 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
       <Card className="p-6">
         {/* 🔴 THE SAME SIZE AND WEIGHT AS "Set up your single event post" (EventPost.tsx) — one style
           * for the two cards that do the same job. */}
-        <p className="font-bold text-slate-800">Set up your weekly post</p>
+        <p className="font-bold text-slate-800">{t('setup.title')}</p>
         <p className="text-sm text-slate-600 mt-1 max-w-prose">
-          Upload the blank version of the weekly schedule graphic you already make — the same design,
-          with your own text boxes removed. HatchGrab fills in the week from your schedule.
+          {t('setup.intro')}
         </p>
         {/* 🔴 THE CANVA NOTE IS THE WHOLE ONBOARDING. Operators make these in Canva and have no idea
             what "a blank" means until it is spelled out in Canva's own words. */}
         <div className="mt-4 rounded-xl bg-slate-50 border border-slate-200 p-4">
-          <p className="text-sm font-bold text-slate-800">How to export a blank from Canva</p>
+          <p className="text-sm font-bold text-slate-800">{t('setup.canvaTitle')}</p>
           <ol className="text-sm text-slate-600 mt-1 list-decimal ml-5 space-y-0.5">
-            <li>Open your usual weekly schedule design.</li>
-            <li>Delete the text boxes with the dates, places and times — leave the background and headings you want to keep.</li>
-            <li>Share › Download › PNG.</li>
+            <li>{t('setup.canvaStep1')}</li>
+            <li>{t('setup.canvaStep2')}</li>
+            <li>{t('setup.canvaStep3')}</li>
           </ol>
         </div>
         <label className="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">
           <input type="file" accept="image/png,image/jpeg" className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f, 'blank') }} />
-          {uploading ? 'Uploading…' : 'Upload your blank image'}
+          {uploading ? t('setup.uploading') : t('setup.upload')}
         </label>
-        <p className="text-xs text-slate-400 mt-2">PNG or JPG, up to 10MB, at least {MIN_UPLOAD_SHORT_SIDE}px on the short side.</p>
+        <p className="text-xs text-slate-400 mt-2">{t('setup.uploadHint', { px: MIN_UPLOAD_SHORT_SIDE })}</p>
         {msg && <p className="text-sm text-red-600 mt-2">{msg.text}</p>}
       </Card>
     )
@@ -488,7 +516,7 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
       {/* ⚠️ A PHONE IS TOLD, NOT BLOCKED. Dragging a box on a 390px screen is unpleasant but it works,
           and refusing to show the screen would strand an operator who only has a phone. */}
       <p className="min-[900px]:hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-3">
-        Best on a computer or iPad — the boxes are small to drag on a phone.
+        {t('setup.phoneTip')}
       </p>
       {/* ⛔ THE "Filled example" PANEL WAS A `footer` ON THIS EDITOR AND IS GONE — §B7. It uploaded a
         * finished poster and showed it at 30% over the preview so boxes could be lined up against the
@@ -512,23 +540,24 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
         hasLogo={hasLogo}
         placesWithout={placesWithout}
         onAddPlacePictures={onAddPlacePictures ?? (onCancel ?? onDone)}
-        designName="Weekly post design"
-        backLabel={onCancel ? '‹ Designs' : '‹ Back'}
+        designName={t('setup.designName')}
+        backLabel={onCancel ? t('setup.backDesigns') : t('setup.back')}
         onBack={onCancel ?? onDone}
         initialLayout={layout}
         country={country}
+        weekStart={weekStartOfYmd(liveWeek?.start) ?? weekStart}
         background={{ url: blankUrl, width: size.w, height: size.h }}
         onReplacePicture={f => void upload(f, 'blank')}
         replacing={uploading}
-        pictureNote="Your picture without any date or place on it. We add those."
+        pictureNote={t('setup.pictureNote')}
         /* ⛔ "A busy week" IS GONE — §B2 (10 October 2026). It rendered a FABRICATED week — a
            60-character place name, a stacked Saturday, a cancelled day — so a design could be checked
            against the worst case. ⚠️ IT WAS REAL AND IT WAS USEFUL, and it is still a server capability
            (`busy: true` on the render action). What it is not is a week this truck HAS: two of the
            three choices showed their schedule and one showed somebody else's. */
         previewOptions={[
-          { id: 'this', label: 'This week' },
-          { id: 'next', label: 'Next week' },
+          { id: 'this', label: t('week.this') },
+          { id: 'next', label: t('week.next') },
         ]}
         previewWith={previewWith}
         onPreviewWith={setPreviewWith}
@@ -559,12 +588,13 @@ function SetupScreen({ token, design, country, hasLogo, placesWithout, onAddPlac
 // THE POST SCREEN
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, showPrivate, onShowPrivate, onEdit, error }: {
+function PostScreen({ token, truckName, design, days, week, country, orderUrl, onWeek, showPrivate, onShowPrivate, onEdit, error }: {
   token: string
   truckName: string
   design: LoadedDesign
   days: WeekDayView[]
   week: 'this' | 'next'
+  country: CountryCode
   orderUrl: string | null
   onWeek: (w: 'this' | 'next') => void
   /** §9 · off by default. ⚠️ Owned by `WeeklyPostApp`, because changing it re-asks the server. */
@@ -573,6 +603,7 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
   onEdit: () => void
   error: string | null
 }) {
+  const t = useT('weeklyPost')
   const [excluded, setExcluded] = useState<string[]>([])
   const [note, setNote] = useState('')
   const [showCancelled, setShowCancelled] = useState(design.layout.showCancelled)
@@ -582,7 +613,8 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
   const [warnings, setWarnings] = useState<{ where: string; message: string }[]>([])
   const [caption, setCaption] = useState('')
   const [perEvent, setPerEvent] = useState<{ eventId: string; date: string; name: string; status: string; text: string }[]>([])
-  const [busyMsg, setBusyMsg] = useState<string | null>(null)
+  /* ⚠️ THE BUILD RUNS IN AN EFFECT, SO WHAT IT SETS HERE IS THE ROUTE'S WORDS OR A CODE, worded at render. */
+  const [busyMsg, setBusyMsg] = useState<Said | null>(null)
   const [rendering, setRendering] = useState(false)
   /** The event whose single-event post modal is open, if any. */
   const [postEventId, setPostEventId] = useState<string | null>(null)
@@ -609,7 +641,7 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
       setWarnings(img.warnings)
       setCaption(caps.caption ?? '')
       setPerEvent(caps.perEvent ?? [])
-    } catch (e) { setBusyMsg(e instanceof Error ? e.message : 'Could not build the post') }
+    } catch (e) { setBusyMsg(saidOf(e, 'buildFailed')) }
     finally { setRendering(false) }
   }, [token, week, excluded, note, showCancelled, showPrivate, design.layout])
 
@@ -618,10 +650,11 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void refresh() }, [refresh])
 
-  const copy = async (text: string, what: string) => {
-    try { await navigator.clipboard.writeText(text); setBusyMsg(`${what} copied.`) }
-    catch { setBusyMsg('Could not copy — select the text and copy it by hand.') }
+  const copy = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); setBusyMsg({ text: t('post.textCopied') }) }
+    catch { setBusyMsg({ text: t('error.copyFailed') }) }
   }
+  const status = busyMsg ? sayWith(t, busyMsg) : null
 
   /* ⛔ `share()` AND `download()` ARE GONE FROM THIS FILE, both of them, and not because they were
    * tidy to remove: the `share()` that was here is the one that downloaded on a Mac, and the single
@@ -632,12 +665,12 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-black text-slate-900">Your weekly post</h2>
-        <button type="button" onClick={onEdit} className="text-xs font-bold text-orange-700">Edit design</button>
+        <h2 className="text-lg font-black text-slate-900">{t('post.title')}</h2>
+        <button type="button" onClick={onEdit} className="text-xs font-bold text-orange-700">{t('post.editDesign')}</button>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {busyMsg && <p className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">{busyMsg}</p>}
+      {status && <p className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">{status}</p>}
       {warnings.length > 0 && (
         <div className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
           {warnings.map((w, i) => <p key={i}>{w.where}: {w.message}</p>)}
@@ -650,42 +683,44 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
             {(['this', 'next'] as const).map(w => (
               <button key={w} type="button" onClick={() => onWeek(w)}
                 className={`text-sm font-bold px-3 py-1.5 rounded-lg border ${week === w ? 'border-orange-500 text-orange-700 bg-orange-50' : 'border-slate-200 text-slate-600'}`}>
-                {w === 'this' ? 'This week' : 'Next week'}
+                {w === 'this' ? t('week.this') : t('week.next')}
               </button>
             ))}
-            <span className="text-xs text-slate-400">{days[0] ? `w/c ${weekLabel(days[0].date)}` : ''}</span>
+            <span className="text-xs text-slate-400">{days[0] ? t('post.weekOf', { date: weekLabel(days[0].date, country) }) : ''}</span>
           </div>
 
           <div className="relative rounded-xl overflow-hidden bg-slate-100" style={{ aspectRatio: `${design.width} / ${design.height}` }}>
             {png
-              ? <img src={png} alt="Your weekly post" className="absolute inset-0 w-full h-full object-contain" />
-              : <div className="absolute inset-0 flex items-center justify-center text-sm text-slate-400">Building your post…</div>}
-            {rendering && png && <div className="absolute top-2 right-2 text-[11px] bg-black/60 text-white px-2 py-0.5 rounded">Updating…</div>}
+              ? <img src={png} alt={t('post.imageAlt')} className="absolute inset-0 w-full h-full object-contain" />
+              : <div className="absolute inset-0 flex items-center justify-center text-sm text-slate-400">{t('post.building')}</div>}
+            {rendering && png && <div className="absolute top-2 right-2 text-[11px] bg-black/60 text-white px-2 py-0.5 rounded">{t('post.updating')}</div>}
           </div>
 
           {/* 🔴 ONE SHARE BAR, SHARED WITH THE SINGLE EVENT POST. The `share()` that used to live here
             * downloaded the picture on a Mac — see components/manage/PostShareBar.tsx. */}
           <div className="mt-3">
             <PostShareBar blob={pngBlob} url={png} fileName={`weekly-post-${week}.png`}
-              caption={caption} onStatus={setBusyMsg} />
+              caption={caption} onStatus={m => setBusyMsg({ text: m })} />
           </div>
         </div>
 
         <div className="space-y-3">
-          <Panel title="This week’s events">
-            {allEvents.length === 0 && <p className="text-xs text-slate-400">No events this week.</p>}
+          <Panel title={t('post.eventsTitle')}>
+            {allEvents.length === 0 && <p className="text-xs text-slate-400">{t('post.noEvents')}</p>}
             {allEvents.map(e => (
               <label key={e.eventId} className="flex items-start gap-2 text-sm text-slate-700 py-1">
                 <input type="checkbox" className="mt-1" checked={!excluded.includes(e.eventId)}
                   onChange={ev => setExcluded(x => ev.target.checked ? x.filter(i => i !== e.eventId) : [...x, e.eventId])} />
                 <span className="min-w-0">
                   <span className="font-semibold">{e.name}</span>
-                  <span className="text-xs text-slate-400 block">{e.date}{e.status === 'cancelled' ? ' · cancelled' : ''}</span>
+                  <span className="text-xs text-slate-400 block">{/* 🔴 LANGUAGE PHASE 1d PART 2 · NAMED GB CHANGE: the date was the raw ISO "2026-10-14"; it is now the caption's
+                       short form in the truck's country (GB "Wed 14 Oct", US "Wed Oct 14"), via time-utils' Intl names. */}
+                  {e.status === 'cancelled' ? t('post.eventDateCancelled', { date: shortDate(e.date, country) }) : shortDate(e.date, country)}</span>
                 </span>
               </label>
             ))}
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-              <span className="text-sm text-slate-700">Show cancelled events</span>
+              <span className="text-sm text-slate-700">{t('post.showCancelled')}</span>
               <Toggle on={showCancelled} onToggle={() => setShowCancelled(v => !v)} />
             </div>
             {/* ══ 🔴 §9 · "Show private events" — OFF BY DEFAULT ════════════════════════════════════
@@ -699,23 +734,23 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
               * PUBLIC schedule page obeys, so the poster cannot leak what the schedule will not. */}
             <div className="flex items-start justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
               <span className="min-w-0">
-                <span className="block text-sm text-slate-700">Show private events</span>
+                <span className="block text-sm text-slate-700">{t('post.showPrivate')}</span>
                 <span className="block text-[11px] text-slate-400 leading-snug">
-                  They show as “Private event” with the date and times — never the place.
+                  {t('post.privateHint')}
                 </span>
               </span>
               <Toggle on={showPrivate} onToggle={() => onShowPrivate(!showPrivate)} />
             </div>
           </Panel>
 
-          <Panel title="Note">
+          <Panel title={t('post.noteTitle')}>
             <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
-              placeholder="e.g. Pre-order for collection"
+              placeholder={t('post.notePlaceholder')}
               className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm resize-none" />
-            <p className="text-[11px] text-slate-400 mt-0.5">Shows in the caption, and in the note box if you placed one.</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{t('post.noteHint')}</p>
           </Panel>
 
-          <Panel title="Caption for your page">
+          <Panel title={t('post.captionTitle')}>
             <textarea value={caption} onChange={e => setCaption(e.target.value)} rows={7}
               className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm" />
             {/* ══ ⛔ THE SECOND "Copy caption" IS GONE — 7 October 2026, §7 ════════════════════════
@@ -727,8 +762,8 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
               * edit made here is what the bar copies. */}
           </Panel>
 
-          <Panel title="Post for each event">
-            {perEvent.length === 0 && <p className="text-xs text-slate-400">Nothing to post this week.</p>}
+          <Panel title={t('post.perEventTitle')}>
+            {perEvent.length === 0 && <p className="text-xs text-slate-400">{t('post.nothingToPost')}</p>}
             {perEvent.map(p => (
               <div key={p.eventId} className="border-t border-slate-100 pt-2 mt-2 first:border-0 first:pt-0 first:mt-0">
                 <p className="text-xs font-bold text-slate-700">{p.name}</p>
@@ -743,13 +778,13 @@ function PostScreen({ token, truckName, design, days, week, orderUrl, onWeek, sh
                     lives — sharing from here would have to re-derive which picture this event uses, and
                     that rule lives in one place on the server. */}
                 <div className="flex gap-3 mt-1">
-                  <button type="button" onClick={() => void copy(p.text, 'Text')} className="text-xs font-bold text-orange-700">Copy text</button>
-                  <button type="button" onClick={() => setPostEventId(p.eventId)} className="text-xs font-bold text-orange-700">Image</button>
-                  <button type="button" onClick={() => setPostEventId(p.eventId)} className="text-xs font-bold text-orange-700">Share</button>
+                  <button type="button" onClick={() => void copy(p.text)} className="text-xs font-bold text-orange-700">{t('post.copyText')}</button>
+                  <button type="button" onClick={() => setPostEventId(p.eventId)} className="text-xs font-bold text-orange-700">{t('post.image')}</button>
+                  <button type="button" onClick={() => setPostEventId(p.eventId)} className="text-xs font-bold text-orange-700">{t('post.share')}</button>
                 </div>
               </div>
             ))}
-            {!orderUrl && <p className="text-[11px] text-amber-700 mt-2">No ordering link yet — set your truck’s web address in Settings.</p>}
+            {!orderUrl && <p className="text-[11px] text-amber-700 mt-2">{t('post.noOrderLink')}</p>}
           </Panel>
         </div>
       </div>

@@ -32,11 +32,15 @@ import {
 // 🔴 EVERY FIGURE ON THIS PAGE COMES FROM CARD_FEES, VIA THESE LABELS. No rate is written as a literal
 // anywhere below — the landing page carries the same rule and the same reason: a rate typed twice is a
 // rate that disagrees with itself the first time one of them moves.
-import { cardFeeOnlineLabel, cardFeeInPersonLabel, tapToPaySurchargeLabel, cardRegionOnline, cardRegionInPerson } from '@/lib/plan-features'
+import { cardFeeOnlineLabel, cardFeeInPersonLabel, tapToPaySurchargeLabel, cardRegionInPerson } from '@/lib/plan-features'
 // The truck's own country's card fees and wording, from the provider the manage page mounts (never read by
 // the browser from the table — see components/CountrySettingsProvider.tsx).
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
-import { CONNECTING_STRIPE_NOT_A_COMMITMENT } from '@/lib/settings-copy'
+// Language Phase 1d Part 2: every word on this tab is a `managePayments` message (messages/en-GB.json; US words in
+// en-US.json), read in the truck's locale. The trial reassurance that was CONNECTING_STRIPE_NOT_A_COMMITMENT in
+// lib/settings-copy.ts is `managePayments.trialNote` — its reasoning is still recorded there.
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/managePayments'
 import {
   derivePaymentsState, shouldMountNotificationBanner, shouldShowOnboarding, shouldOfferAccountManagement,
   type PaymentsState,
@@ -64,6 +68,10 @@ type Status = {
  *  most alarming way to say "you're on the wrong account". These are now told apart by the HTTP status
  *  the server already sent, and each gets copy that is true of it. */
 type PostError = Error & { status?: number; code?: string }
+/** ⚠️ WHAT THE STATUS READ HIT (Language Phase 1d Part 2). It is set in an effect, so OUR sentences are held as a code
+ *  and worded at render: "Request failed (…)" when the route sent no words, "Could not reach Stripe" when nothing came
+ *  back. A plain string is a sentence we did not write (the route's own `error`, or the browser's), shown as it came. */
+type FetchFailure = string | { code: 'requestFailed'; status: number } | { code: 'unreachable' }
 
 // ── 🔴 ONE HEADLINE PER STATE, AND NOT ONE OF THEM CONTAINS AN INSTRUCTION ─────────────────────────
 // We own "can you take money" and the commercial framing. STRIPE OWNS THE TASK LIST, and under
@@ -74,7 +82,9 @@ type PostError = Error & { status?: number; code?: string }
 // steps are. That sentence is gone; the panel underneath carries the action.
 // ⚠️ `pending` IS THE POINT OF THE WHOLE CHANGE. It used to read "finish the steps below" — telling a
 // truck to go and do work that does not exist, while Stripe was simply verifying.
-const HEADER: Record<PaymentsState, { title: string; body: string; chip: string; chipClass: string }> = {
+// ⚠️ LANGUAGE PHASE 1d PART 2: each state's title, body and chip are `managePayments.state.<state>.*`, word for word
+// what this table held; the notes below stay with the state they explain. Only the chip's colour is code.
+const HEADER: Record<PaymentsState, { chipClass: string }> = {
   // ⚠️ "Not set up", NOT "Not connected", SINCE 13 AUGUST 2026. The button below no longer says
   // "Connect Stripe" — it says "Set up online payments" — and a card headed "Not connected" beside a
   // button offering to "set up" describes a different act from the one on offer. Title and chip move
@@ -85,9 +95,6 @@ const HEADER: Record<PaymentsState, { title: string; body: string; chip: string;
   // for consistency's sake — the pills already read as a progression: Not set up, Action needed,
   // Checking, Ready.
   not_connected: {
-    title: 'Not set up',
-    body: "Takes about 10 minutes. You'll need your bank details and ID.",
-    chip: 'Not set up',
     chipClass: 'bg-slate-50 text-slate-500 border-slate-200',
   },
   // ── 🔴 THIS STATE USED TO SAY "Connected — finishing verification" / "In progress". BOTH WERE FALSE
@@ -103,33 +110,18 @@ const HEADER: Record<PaymentsState, { title: string; body: string; chip: string;
   //    it is required of THEM. It is also what separates this state from `pending`, where the honest
   //    chip is "Checking" precisely because nothing is being asked of them.
   requirements: {
-    title: 'Stripe needs your details',
-    body: "Card payments won't work until Stripe has your business and bank details.",
-    chip: 'Action needed',
     chipClass: 'bg-amber-50 text-amber-700 border-amber-200',
   },
   pending: {
-    title: 'Connected — Stripe is checking your details',
-    body: "Nothing for you to do. Stripe is reviewing what you sent, and this page updates when they're done.",
-    chip: 'Checking',
     chipClass: 'bg-amber-50 text-amber-700 border-amber-200',
   },
   ready: {
-    title: 'Connected',
-    body: 'Your Stripe account is connected and able to take payments.',
-    chip: 'Ready',
     chipClass: 'bg-green-50 text-green-700 border-green-200',
   },
   restricted: {
-    title: 'Card payments paused',
-    body: 'Stripe has paused card payments on your account until something is resolved.',
-    chip: 'Paused',
     chipClass: 'bg-red-50 text-red-700 border-red-200',
   },
   unsupported: {
-    title: "Card payments aren't available on this account",
-    body: 'Stripe cannot enable card payments here. Get in touch and we will sort it out with you.',
-    chip: 'Unavailable',
     chipClass: 'bg-red-50 text-red-700 border-red-200',
   },
 }
@@ -139,20 +131,22 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
   /** 🔴 Phase 3 screens: what Manage places AFTER the online payments section and BEFORE "Walk-up
    *  payments" — the "Tax, tips and fees" card and "Taking payment" (moved here from Settings). */
   afterOnline?: React.ReactNode
-  /** The truck's plan. Only 'trial' renders the reassurance banner — see the copy constant's note. */
+  /** The truck's plan. Only 'trial' renders the reassurance banner — see its note in lib/settings-copy.ts
+   *  (the sentence itself is `managePayments.trialNote`). */
   plan: string | null | undefined
   /** ⚠️ No PIN. This route authenticates by SESSION + truck ownership, which is stronger than the
    *  shared dashboard PIN and is what Manage already has. See the route's requireOwner note. */
   showToast: (msg: string, type?: 'success' | 'error') => void
 }) {
   const cs = useCountrySettings()
+  const t = useT('managePayments')
   const [status, setStatus] = useState<Status | null>(null)
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   // ⚠️ TWO STATES, NOT ONE. `permissionError` is a 403 about who is signed in; `fetchError` is anything
   // else that stopped us reading Stripe. They render as different cards with different copy — see the
   // note on PostError above.
-  const [fetchError, setFetchError] = useState<string | null>(null)
+  const [fetchError, setFetchError] = useState<FetchFailure | null>(null)
   const [permissionError, setPermissionError] = useState<'not_permitted' | null>(null)
   // ⚠️ MOUNT-ON-DEMAND, AND IT NEVER GOES BACK TO FALSE. Account management is an iframe with a Stripe
   // sign-in popup; mounting it on page load for every owner who never opens it wastes a load cycle, and
@@ -178,7 +172,8 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
     if (!res.ok) {
       // ⚠️ THE STATUS AND THE CODE RIDE ON THE ERROR. The message alone cannot distinguish "you are not
       // this truck's owner" from "Stripe is down", and the caller has to.
-      const err: PostError = new Error(data.error || `Request failed (${res.status})`)
+      // ⚠️ An empty message means the route sent no words: the screen says "Request failed (status)" itself.
+      const err: PostError = new Error(data.error || '')
       err.status = res.status
       if (typeof data.code === 'string') err.code = data.code
       throw err
@@ -200,7 +195,9 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
         if (cancelled) return
         // 🔴 403 IS SORTED OUT HERE, ONCE. Everything else keeps the old behaviour exactly.
         if ((e as PostError)?.status === 403) setPermissionError('not_permitted')
-        else setFetchError(e instanceof Error ? e.message : 'Could not reach Stripe')
+        else setFetchError(!(e instanceof Error) ? { code: 'unreachable' }
+          : (e as PostError).status !== undefined && !e.message ? { code: 'requestFailed', status: (e as PostError).status as number }
+          : e.message)
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -266,8 +263,11 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
 
   // Derived, not stored: an account exists but the browser key is absent, so the components cannot mount.
   const keyMissing = !!status?.accountId && !publishableKey
-  const configError = fetchError
-    ?? (keyMissing ? 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set — the embedded components cannot load.' : null)
+  const fetchErrorText = fetchError === null || typeof fetchError === 'string' ? fetchError
+    : fetchError.code === 'requestFailed' ? t('errors.requestFailed', { status: fetchError.status })
+    : t('errors.unreachable')
+  const configError = fetchErrorText
+    ?? (keyMissing ? t('config.keyMissing', { name: 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY' }) : null)
 
   const createAccount = async () => {
     setCreating(true)
@@ -285,9 +285,11 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
       setConnectPressed(true)
       // ⚠️ THE TOAST NO LONGER SAYS "connected" EITHER — same reason as the headline. It names the one
       // thing that is true and about to happen on screen.
-      showToast(alreadyExisted ? 'Already set up — continuing' : 'Now add your details for Stripe')
+      showToast(alreadyExisted ? t('toast.alreadySetUp') : t('toast.addDetails'))
     } catch (e) {
-      showToast(e instanceof Error ? e.message : 'Could not create the account', 'error')
+      const status = (e as PostError)?.status
+      showToast(!(e instanceof Error) ? t('toast.createFailed')
+        : status !== undefined && !e.message ? t('errors.requestFailed', { status }) : e.message, 'error')
     } finally { setCreating(false) }
   }
 
@@ -318,8 +320,8 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
   }
 
   if (loading) {
-    return <div className="space-y-6"><h2 className="font-black text-slate-900 text-lg">Payments</h2>
-      <p className="text-sm text-slate-500">Checking your Stripe account…</p></div>
+    return <div className="space-y-6"><h2 className="font-black text-slate-900 text-lg">{t('heading')}</h2>
+      <p className="text-sm text-slate-500">{t('loading')}</p></div>
   }
 
   // ── 🔴 THE STATE IS DERIVED ONCE, FROM SERVER DATA ONLY ─────────────────────────────────────────
@@ -333,11 +335,11 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
     detailsSubmitted: status?.detailsSubmitted ?? false,
     cardPaymentsStatus: status?.cardPaymentsStatus ?? null,
   })
-  const header = HEADER[state]
+  const header = { ...HEADER[state], title: t(`state.${state}.title`), body: t(`state.${state}.body`), chip: t(`state.${state}.chip`) }
 
   return (
     <div className="space-y-6">
-      <h2 className="font-black text-slate-900 text-lg">Payments</h2>
+      <h2 className="font-black text-slate-900 text-lg">{t('heading')}</h2>
 
       {/* ── 🔴 THE KEY MISMATCH. RED, FIRST, AND IT STOPS THE FLOW. ───────────────────────────────
           The two Stripe keys are in DIFFERENT MODES. Left alone this does not fail here — it fails at
@@ -351,17 +353,14 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
           in which mode, which is what tells you whether to rebuild or to change the variable. */}
       {keyModeMismatch && (
         <div className="bg-white rounded-2xl shadow-sm border border-red-200 p-4">
-          <p className="text-sm font-semibold text-red-800">Stripe keys do not match</p>
+          <p className="text-sm font-semibold text-red-800">{t('keyMismatch.title')}</p>
           <p className="text-xs text-slate-600 mt-1">
-            This site&apos;s server is using its <strong>{serverLivemode ? 'live' : 'test'}</strong> Stripe key
-            while the browser was built with the <strong>{publishableLivemode ? 'live' : 'test'}</strong> one.
-            Card payments would fail at the moment a customer tries to pay, so setting up Stripe is
-            blocked until they agree.
+            {t.rich('keyMismatch.body', {
+              server: serverLivemode ? 'live' : 'test', browser: publishableLivemode ? 'live' : 'test',
+              b: chunks => <strong>{chunks}</strong>,
+            })}
           </p>
-          <p className="text-xs text-slate-500 mt-1">
-            Both keys must be set for the same environment, and the site rebuilt afterwards — the
-            publishable key is baked in at build time, the secret key is read on every request.
-          </p>
+          <p className="text-xs text-slate-500 mt-1">{t('keyMismatch.fix')}</p>
         </div>
       )}
 
@@ -373,11 +372,8 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
           disclose to whoever is holding the link, so the copy says what to do without saying who. */}
       {permissionError && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-          <p className="text-sm font-semibold text-slate-900">Only the truck&apos;s owner can set up payments</p>
-          <p className="text-xs text-slate-500 mt-1">
-            Stripe is connected by the person whose bank account receives the money, so it has to be set
-            up from their own signed-in account. Nothing is wrong with this truck or with HatchGrab.
-          </p>
+          <p className="text-sm font-semibold text-slate-900">{t('permission.title')}</p>
+          <p className="text-xs text-slate-500 mt-1">{t('permission.body')}</p>
         </div>
       )}
 
@@ -386,7 +382,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
       {configError && (
         <div className="bg-white rounded-2xl shadow-sm border border-amber-200 p-4">
           <p className="text-sm font-semibold text-amber-800">
-            {keyMissing ? "Card payments aren't configured yet" : "We couldn't check this truck's Stripe account"}
+            {keyMissing ? t('config.keyMissingTitle') : t('config.fetchTitle')}
           </p>
           <p className="text-xs text-slate-500 mt-1">{configError}</p>
         </div>
@@ -408,10 +404,8 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
           this same connection, a card headed "Online payments" carrying the account's own status will be
           describing two things at once. Revisit then — not before, and not as a tidy-up. */}
       <section>
-        <h3 className="text-base font-bold text-slate-800">Online payments</h3>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Customers pay by card when they order. Money goes straight to your own Stripe account — we never hold it.
-        </p>
+        <h3 className="text-base font-bold text-slate-800">{t('online.heading')}</h3>
+        <p className="text-xs text-slate-500 mt-0.5">{t('online.body')}</p>
 
         <div className="mt-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
           {/* 🔴 READINESS IS `chargesEnabled`, NEVER "an account exists" — and the five connected states
@@ -445,7 +439,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
                ⚠️ No heading line, because the pattern's heading slot needs heading copy and the wording
                here is fixed — one sentence, rendered in the notice's body treatment. */
             <div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3">
-              <p className="text-xs text-amber-700">{CONNECTING_STRIPE_NOT_A_COMMITMENT}</p>
+              <p className="text-xs text-amber-700">{t('trialNote')}</p>
             </div>
           )}
 
@@ -478,11 +472,8 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
               and the same distinction the walk-up section already draws for its coming-soon row. */}
           {state === 'not_connected' && isAdminViewer && (
             <div className="mt-3 rounded-xl bg-slate-50 border border-slate-100 p-3">
-              <p className="text-xs font-semibold text-slate-700">Viewing as platform admin</p>
-              <p className="text-xs text-slate-500 mt-0.5">
-                This truck has not set up online payments. Only the owner can start it, from their own
-                signed-in account — there is nothing to press here.
-              </p>
+              <p className="text-xs font-semibold text-slate-700">{t('admin.title')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('admin.body')}</p>
             </div>
           )}
           {state === 'not_connected' && !isAdminViewer && (
@@ -494,7 +485,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
               disabled={creating || !!configError || keyModeMismatch}
               className="mt-3 w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50"
             >
-              {creating ? 'Setting up…' : 'Set up online payments'}
+              {creating ? t('setUp.busy') : t('setUp.button')}
             </button>
           )}
           {/* ── 🔴 WHOSE FEE THIS IS, STATED — AND IT IS NOT OURS ────────────────────────────────
@@ -513,9 +504,9 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
               more, because "quoting the domestic rate alone would be a claim that is untrue for some
               customers".
               ⚠️ ONE LINE. Detail belongs in the plan pricing, not on this page. */}
+          {/* ⚠️ "standard" is in the message now (it was cardRegionOnline's prefix), so the sentence is whole. */}
           <p className="text-xs text-slate-500 mt-3">
-            Stripe charges {cardFeeOnlineLabel(cs)} per payment on {cardRegionOnline(cs)}. Other cards may
-            cost more. HatchGrab&apos;s own fee on online orders depends on your plan — see Billing.
+            {t('online.feeLine', { fee: cardFeeOnlineLabel(cs), region: cs.cardFeeRegionLabel })}
           </p>
           {/* ── 🔴 TEST MODE SAYS SO; LIVE MODE SAYS NOTHING. THE ASYMMETRY IS THE POINT. ──────────
               This line was once an unconditional literal reading "Test mode…" whatever keys were set —
@@ -537,7 +528,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
               nothing, exactly as live does — so the only claim this line ever makes is the cautious one.
               A missing warning about test mode is the failure worth having; a false one is not. */}
           {serverLivemode === false && (
-            <p className="text-[11px] text-slate-400 mt-3">Test mode. No real payments can be taken yet.</p>
+            <p className="text-[11px] text-slate-400 mt-3">{t('online.testMode')}</p>
           )}
         </div>
       </section>
@@ -620,9 +611,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
                   remediation updates one thing. Saying "give your business and bank details" to a truck
                   fixing a single flagged document would be wrong. */}
               <p className="text-xs text-slate-500 mb-3">
-                {state === 'restricted'
-                  ? "Stripe takes it from here — you'll sign in to Stripe and update the details it needs."
-                  : "Stripe takes it from here — you'll sign in to Stripe, then give your business and bank details."}
+                {state === 'restricted' ? t('onboarding.restricted') : t('onboarding.firstRun')}
               </p>
               {/* `onExit` fires when the operator leaves the flow — the moment readiness most often
                   changes, so it is the natural place to re-reconcile rather than waiting for the webhook. */}
@@ -650,10 +639,8 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
               explaining why an account will never take cards. */}
           {shouldOfferAccountManagement(state) && (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <p className="text-base font-bold text-slate-800">Your Stripe details</p>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Change the bank account you get paid into, or update your business details and documents.
-              </p>
+              <p className="text-base font-bold text-slate-800">{t('details.title')}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('details.body')}</p>
 
               {/* 🔴 STRIPE'S NOTIFICATION BANNER, INSIDE THE CARD. See the note above for why it moved
                   whole rather than selectively.
@@ -673,7 +660,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
                   onClick={() => setShowManagement(true)}
                   className="mt-3 w-full sm:w-auto px-4 py-2 bg-white text-slate-700 text-sm font-semibold rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
                 >
-                  View or edit
+                  {t('details.button')}
                 </button>
               )}
             </div>
@@ -692,10 +679,8 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
           below or in the online section. It is true of both walk-up options, which is exactly why it
           belongs to the section header rather than to either card. */}
       <section>
-        <h3 className="text-base font-bold text-slate-800">Walk-up payments</h3>
-        <p className="text-xs text-slate-500 mt-0.5">
-          How you take money at the hatch. HatchGrab charges no platform fee on walk-ups, whichever you choose.
-        </p>
+        <h3 className="text-base font-bold text-slate-800">{t('walkUp.heading')}</h3>
+        <p className="text-xs text-slate-500 mt-0.5">{t('walkUp.body')}</p>
 
         {/* ── 🔴 STACKED RADIO ROWS, AND NEITHER IS INTERACTIVE ─────────────────────────────────
             The radio SHAPE is copied from this file's neighbour pattern — Manage's "Past the deadline"
@@ -732,12 +717,12 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
               <span className="w-2 h-2 rounded-full bg-orange-500" />
             </span>
             <span className="text-sm min-w-0">
-              <span className="font-medium text-slate-700">Your own card terminal</span>
+              <span className="font-medium text-slate-700">{t('walkUp.ownTerminal')}</span>
               <span className="ml-2 align-middle text-[11px] font-bold px-2 py-0.5 rounded-full border bg-green-50 text-green-700 border-green-200">
-                Current
+                {t('walkUp.current')}
               </span>
               <span className="block text-xs text-slate-400 mt-0.5">
-                Zettle, Square, or whatever you already use. Nothing to set up — only your provider&apos;s own fees apply.
+                {t('walkUp.ownTerminalHelp')}
               </span>
             </span>
           </div>
@@ -745,13 +730,12 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
           <div className="flex items-start gap-2 opacity-60">
             <span className="mt-0.5 w-4 h-4 rounded-full border-2 border-slate-300 shrink-0" />
             <span className="text-sm min-w-0">
-              <span className="font-medium text-slate-700">Through HatchGrab</span>
+              <span className="font-medium text-slate-700">{t('walkUp.hatchgrab')}</span>
               <span className="ml-2 align-middle text-[11px] font-bold px-2 py-0.5 rounded-full border bg-slate-50 text-slate-500 border-slate-200">
-                Coming soon
+                {t('walkUp.comingSoon')}
               </span>
               <span className="block text-xs text-slate-400 mt-0.5">
-                Uses the same Stripe connection as your online payments — a card reader, or contactless
-                straight from your phone or tablet.
+                {t('walkUp.hatchgrabHelp')}
               </span>
               {/* 🔴 EVERY FIGURE FROM CARD_FEES. No literal rate.
                   ⚠️ TWO THINGS cardFees() ITSELF INSTRUCTS US TO SAY, and both are said here:
@@ -764,8 +748,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
                   ⚠️ cardFees() holds no reader price or hardware cost, so none is quoted. If one is ever
                   needed it goes in cardFees() first, not into this string. */}
               <span className="block text-xs text-slate-400 mt-1">
-                {cardFeeInPersonLabel(cs)} per payment on {cardRegionInPerson(cs)}, plus {tapToPaySurchargeLabel(cs)} for
-                contactless taken on a phone or tablet. Other cards may cost more.
+                {t('walkUp.hatchgrabFees', { fee: cardFeeInPersonLabel(cs), region: cardRegionInPerson(cs), surcharge: tapToPaySurchargeLabel(cs) })}
               </span>
             </span>
           </div>

@@ -127,11 +127,13 @@ export async function checkCaa(host: string): Promise<CaaVerdict> {
 export type ProviderSteps = {
   /** Their words for the fields the operator fills. `type: null` = this provider has no type field. */
   fieldLabels: { type: string | null; name: string; value: string }
-  /** Numbered on screen. One action each. Quoted strings are the provider's own button labels. */
+  /** Numbered on screen. One action each. Quoted strings are the provider's own button labels.
+   *  🔴 MESSAGE KEYS, NOT WORDS (Language Phase 1d Part 2): each is a `customDomain` key (`providers.<id>.<step>`), read
+   *  in the screen's locale by components/dashboard/CustomDomainSetup.tsx and in the truck's by the escape-hatch email. */
   steps: string[]
   /** The provider's own help page for this task. */
   helpUrl: string
-  /** One thing that will otherwise catch them out, or null. */
+  /** One thing that will otherwise catch them out, or null. A `customDomain` message key, like `steps`. */
   caveat: string | null
   /**
    * ── 🔴 DOES THIS PROVIDER REQUIRE A TRAILING FULL STOP ON THE TARGET? ──────────────────────────
@@ -192,16 +194,10 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
     // side — vercel.com/kb/guide/cloudflare-with-vercel. It fails silently, which is the worst shape.
     steps: {
       fieldLabels: { type: 'Type', name: 'Name', value: 'Target' },
-      steps: [
-        'Open your web address, then "DNS" and "Records".',
-        'Select "Add record", then pick "CNAME" as the "Type".',
-        'Put the first value below in "Name".',
-        'Put the second value below in "Target".',
-        'Set "Proxy status" to "DNS only" — the cloud beside it must be grey, not orange.',
-        'Leave "TTL" as "Auto" and select "Save".',
-      ],
+      // The words: messages `customDomain.providers.cloudflare` (Language Phase 1d Part 2).
+      steps: ['providers.cloudflare.open', 'providers.cloudflare.add', 'providers.cloudflare.name', 'providers.cloudflare.value', 'providers.cloudflare.proxy', 'providers.cloudflare.save'],
       helpUrl: 'https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/',
-      caveat: 'If the cloud stays orange the padlock will never appear, and nothing will say why.',
+      caveat: 'providers.cloudflare.caveat',
       // Their help page says nothing about a trailing full stop, and the value is accepted without one.
       targetTrailingDot: false,
     } },
@@ -212,16 +208,10 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
     // the verified one and is what the four-provider screen renders. See the report.
     steps: {
       fieldLabels: { type: 'Type', name: 'Name', value: 'Value' },
-      steps: [
-        'Open your "Domain Portfolio" and choose your web address.',
-        'On "Domain Settings", select "DNS".',
-        'Select "Add New Record", then pick "CNAME" from the "Type" menu.',
-        'Put the first value below in "Name".',
-        'Put the second value below in "Value".',
-        'Leave "TTL" as it is and select "Save".',
-      ],
+      // The words: messages `customDomain.providers.godaddy` (Language Phase 1d Part 2).
+      steps: ['providers.godaddy.open', 'providers.godaddy.dns', 'providers.godaddy.add', 'providers.godaddy.name', 'providers.godaddy.value', 'providers.godaddy.save'],
       helpUrl: 'https://www.godaddy.com/help/add-a-cname-record-19236',
-      caveat: 'If you added more than one at once, the button says "Save All Records".',
+      caveat: 'providers.godaddy.caveat',
       // Their help page says nothing about a trailing full stop, and the value is accepted without one.
       targetTrailingDot: false,
     } },
@@ -237,17 +227,10 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
     // record will not work correctly." It is the one provider where copying our value EXACTLY is wrong.
     steps: {
       fieldLabels: { type: 'Type', name: 'Name', value: 'Value' },
-      steps: [
-        'Sign in to your "123 Reg Control Panel".',
-        'Beside "Domains", select "Manage All", then choose your web address.',
-        'Select "DNS", then "Add New Record".',
-        'Pick "CNAME" from the "Type" list.',
-        'Put the first value below in "Name".',
-        'Put the second value below in "Value", and add a full stop to the end of it.',
-        'Leave "TTL" as "Default" and click "Save".',
-      ],
+      // The words: messages `customDomain.providers.123reg` (Language Phase 1d Part 2).
+      steps: ['providers.123reg.signIn', 'providers.123reg.manage', 'providers.123reg.dns', 'providers.123reg.type', 'providers.123reg.name', 'providers.123reg.value', 'providers.123reg.save'],
       helpUrl: 'https://www.123-reg.co.uk/support/domains/how-do-i-set-up-a-cname-record-on-my-domain-name/',
-      caveat: '123 Reg needs a full stop at the end of the second value or it will not work.',
+      caveat: 'providers.123reg.caveat',
       // 🔴 THE ONLY `true` IN THIS FILE. Their own page requires it; see the field's own note.
       targetTrailingDot: true,
     } },
@@ -259,16 +242,10 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
     // section. The "Got it" pop-up at step 3 is on their page and is the step most easily missed.
     steps: {
       fieldLabels: { type: null, name: 'Host Name', value: 'Value' },
-      steps: [
-        'Open "Domains", then click the "Domain Actions" icon beside your web address.',
-        'Choose "Manage DNS Records".',
-        'In the "CNAME (Aliases)" section, click "+ Add Record", then click "Got it".',
-        'Put the first value below in "Host Name".',
-        'Put the second value below in "Value".',
-        'Click "Save", then click "Save Changes" in the pop-up.',
-      ],
+      // The words: messages `customDomain.providers.wix` (Language Phase 1d Part 2).
+      steps: ['providers.wix.open', 'providers.wix.manage', 'providers.wix.add', 'providers.wix.name', 'providers.wix.value', 'providers.wix.save'],
       helpUrl: 'https://support.wix.com/en/article/adding-or-updating-cname-records-in-your-wix-account',
-      caveat: 'If your web address only points at Wix rather than being held there, Wix cannot make this change — whoever holds it has to.',
+      caveat: 'providers.wix.caveat',
       // 🔴 OBSERVED, NOT ASSUMED (5 September 2026): an operator pasted a dotted target into Wix and
       // WIX REJECTED IT. They deleted the full stop by hand and it saved. This field is why.
       targetTrailingDot: false,

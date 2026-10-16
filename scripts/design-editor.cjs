@@ -67,6 +67,17 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
  * that reads RAW source is satisfied by a COMMENT quoting the thing being checked, and a tombstone
  * explaining a removal kept a check green for a day after the code had changed. */
 const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): the editor's and the Social media tab's words moved into messages/*.json —
+// `socialPosts` (what lib/copy/socialPosts.ts exported as constants; each key is the export's name in camelCase, and
+// the module now exports `gb('<key>')`), `designEditor`, `fontPicker` and `weeklyPost`. A check that pinned
+// `NAME = 'words'` in the copy module now pins the SAME words on the en-GB message, and a check that pinned
+// `{NAME}` in the editor now pins `{sp('<key>')}` (socialPosts) or `{t('<key>')}` (designEditor).
+const GB_MSG = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+const SPM = GB_MSG.socialPosts, DEM = GB_MSG.designEditor
+const { createTranslator } = require('next-intl')
+const gbT = (ns) => createTranslator({ locale: 'en-GB', messages: GB_MSG, namespace: ns })
+/** The copy module still exports NAME as the en-GB message `key` — the one definition, never a second literal. */
+const exportsKey = (copySrc, NAME, key) => new RegExp(`export const ${NAME} =\\s*gb\\('${key}'\\)`).test(copySrc)
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE SYNTHETIC ARTWORK
@@ -415,10 +426,15 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * ⚠️ NOTHING PRIVATE IS PUBLISHED BY THE NEW DEFAULT: `locationName` returns the one public label and
    * returns it BEFORE the place is consulted, so the row carries a date and times and no name, no town
    * and no picture. ⚠️ THE TOGGLE STAYS — a truck that would rather show nothing still can. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the two labels are `weeklyPost.post.showCancelled` / `.showPrivate`
+  // (same en-GB words); their ORDER is asserted on the t() calls.
   t('🔴 the make screen has the toggle, ON by default, next to "Show cancelled events"',
-    /Show private events/.test(MAKE)
+    /\{t\('post\.showPrivate'\)\}/.test(MAKE)
+    && GB_MSG.weeklyPost.post.showPrivate === 'Show private events'
+    && GB_MSG.weeklyPost.post.showCancelled === 'Show cancelled events'
     && /useState\(true\)/.test(MAKE.slice(MAKE.indexOf('const [showPrivate'), MAKE.indexOf('const [showPrivate') + 200))
-    && MAKE.indexOf('Show cancelled events') < MAKE.indexOf('Show private events')
+    && MAKE.indexOf("{t('post.showCancelled')}") > 0
+    && MAKE.indexOf("{t('post.showCancelled')}") < MAKE.indexOf("{t('post.showPrivate')}")
     // ⚠️ and it is sent with BOTH requests, so the picture and the caption agree
     && /renderPng\(token, \{ week, excluded, note, layout, showPrivate \}\)/.test(MAKE)
     && /action: 'captions', week, excluded, note, showPrivate/.test(MAKE))
@@ -491,16 +507,19 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   /* ══ 🔴 THE ITEM GRID — TWO ACROSS, AT THE TOP OF THE PANEL, WITH "All text" LEADING ════════════════
    * ⚠️ ONE HEADING, ONE LIST, and a grey "click to edit" beside it: the buttons look like labels, and a
    * label is not obviously a control. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the heading is `{sp('editorLeftTitle')}` and "Each row" is `{t('grid.eachRow')}`;
+  // the words are pinned on the en-GB messages and the copy module still exports them from those keys.
   t('🔴 the item list is two across at the top of the panel, under one heading',
-    /EDITOR_LEFT_TITLE = 'ON YOUR POST'/.test(EDCOPY)
-    && /EDITOR_CLICK_TO_EDIT = 'click to edit'/.test(EDCOPY)
+    SPM.editorLeftTitle === 'ON YOUR POST' && exportsKey(EDCOPY, 'EDITOR_LEFT_TITLE', 'editorLeftTitle')
+    && SPM.editorClickToEdit === 'click to edit' && exportsKey(EDCOPY, 'EDITOR_CLICK_TO_EDIT', 'editorClickToEdit')
+    && /\{sp\('editorLeftTitle'\)\}/.test(ED)
     && /data-item-grid>/.test(ED)
     && /\{itemGrid\}/.test(ED)
     /* 🔴 `grid-cols-2`, NOT A WRAPPING FLEX — the second column lines up down the panel instead of
      * starting wherever the longest name on the row above ended. */
     && /<div className="mt-1\.5 grid grid-cols-2 gap-1\.5">/.test(ED)
     && !/On your weekly post/.test(ED) && !/Text on your post/.test(ED)
-    && /Each row/.test(ED))
+    && /\{t\('grid\.eachRow'\)\}/.test(ED) && DEM.grid.eachRow === 'Each row')
 
   /* ══ 🔴 §4 (10 October 2026) · "Aa  Style all the writing", WITH ITS OWN SECOND LINE ══════════════
    * ⛔ IT READ "Aa  All text · change all the writing at once" — a NAME, a middot and an EXPLANATION on
@@ -509,13 +528,14 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * is a grey line of its own underneath. */
   t('🔴 §4 · "Style all the writing" leads the grid, full width, with its own second line',
     /export const ALL_TEXT_KEY = 'all-text'/.test(ED)
-    && /ALL_TEXT_ITEM = 'Style all the writing'/.test(EDCOPY)
-    && /ALL_TEXT_SAMPLE = 'Font, colour and effects for everything'/.test(EDCOPY)
-    && /\{itemBtn\(ALL_TEXT_KEY, `Aa  \$\{ALL_TEXT_ITEM\}`, null, ALL_TEXT_SAMPLE\)\}/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the two lines are socialPosts `allTextItem` / `allTextSample`, same en-GB words.
+    && SPM.allTextItem === 'Style all the writing' && exportsKey(EDCOPY, 'ALL_TEXT_ITEM', 'allTextItem')
+    && SPM.allTextSample === 'Font, colour and effects for everything' && exportsKey(EDCOPY, 'ALL_TEXT_SAMPLE', 'allTextSample')
+    && /\{itemBtn\(ALL_TEXT_KEY, `Aa  \$\{sp\('allTextItem'\)\}`, null, sp\('allTextSample'\)\)\}/.test(ED)
     /* 🔴 THE SECOND LINE IS A LINE, NOT A SUFFIX — `data-item-sub`, on its own row, truncating on its
      * own. ⛔ A middot AND A SPAN ON THE SAME LINE IS WHAT IT REPLACED. */
     && /data-item-sub>\{subLabel\}/.test(ED)
-    && !/· \{ALL_TEXT_SAMPLE\}/.test(ED)
+    && !/· \{ALL_TEXT_SAMPLE\}/.test(ED) && !/· \{sp\('allTextSample'\)\}/.test(ED)
     /* ⚠️ AND IT IS **ABOVE** THE TWO-ACROSS GRID in document order, which is what "first" means. */
     && ED.indexOf('{itemBtn(ALL_TEXT_KEY,') < ED.indexOf('grid grid-cols-2 gap-1.5'))
 
@@ -537,10 +557,12 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * they have no text, and "All text" has nothing to say about them. */
   t('🔴 a following box shows 🔗, an own-style box shows "own", and the legend explains it',
     /border-orange-400 bg-orange-50/.test(ED)
-    && /OWN_BADGE = 'own'/.test(EDCOPY)
-    && /data-own-badge>\{OWN_BADGE\}/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the badge and the glyph's title are socialPosts `ownBadge` / `styleMatch` read with
+    // `sp()`; FOLLOW_GLYPH is still a literal export (a symbol, not a word).
+    && SPM.ownBadge === 'own' && exportsKey(EDCOPY, 'OWN_BADGE', 'ownBadge')
+    && /data-own-badge>\{sp\('ownBadge'\)\}/.test(ED)
     && /FOLLOW_GLYPH = '🔗'/.test(EDCOPY)
-    && /data-follow-glyph title=\{STYLE_MATCH\}>\{FOLLOW_GLYPH\}/.test(ED)
+    && /data-follow-glyph title=\{sp\('styleMatch'\)\}>\{FOLLOW_GLYPH\}/.test(ED)
     /* ⛔ THE THREE-WAY BRANCH, IN ORDER: no box at all ⇒ nothing, own ⇒ badge, otherwise ⇒ 🔗. */
     && /!b \? null\s*\n\s*: b\.ownStyle/.test(ED)
     /* ══ 🔴 §B9 (10 October 2026) · THE HEADING SAYS WHAT TO DO, NOT WHAT A GLYPH MEANS ═════════════
@@ -548,10 +570,11 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
      * NOTHING — the four text boxes it marked are inside "The 7 days" — so the legend explained a
      * symbol that is not on screen. ⚠️ THE GLYPH ITSELF SURVIVES on the single event design's buttons,
      * with its meaning in the button's `title`. */
-    && /EDITOR_CLICK_ONE = 'click one to change it'/.test(EDCOPY)
-    && /data-click-one>\{EDITOR_CLICK_ONE\}/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): `editorClickOne` via `sp()`, same en-GB words.
+    && SPM.editorClickOne === 'click one to change it' && exportsKey(EDCOPY, 'EDITOR_CLICK_ONE', 'editorClickOne')
+    && /data-click-one>\{sp\('editorClickOne'\)\}/.test(ED)
     && !/data-link-legend/.test(ED)
-    && !/\{EDITOR_CLICK_TO_EDIT\}/.test(ED))
+    && !/\{EDITOR_CLICK_TO_EDIT\}/.test(ED) && !/sp\('editorClickToEdit'\)/.test(ED))
 
   /* 🔴 Background picture IS THE LAST ROW, under a divider, and "+ Add your own text" is a full-width
    * dashed button above it. ⛔ THE BACKGROUND HAD A CARD OF ITS OWN BELOW THE LIST, which made it the
@@ -569,10 +592,11 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
      * 🔴 THE SECTION IS AT THE FOOT OF `shell`, so it is on EVERY panel, in the same place, folded. */
     && !/onPointerDown=\{\(\) => editable && setSelected\(BACKGROUND_KEY\)\}/.test(ED)
     && !/if \(selected === BACKGROUND_KEY\)/.test(ED)
-    && /BACKGROUND_SECTION = '🖼 BACKGROUND PICTURE'/.test(EDCOPY)
-    && /BACKGROUND_SUMMARY = 'Replace picture · Darken the picture · size advice'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `backgroundSection` / `backgroundSummary` via `sp()`, same en-GB words.
+    && SPM.backgroundSection === '🖼 BACKGROUND PICTURE' && exportsKey(EDCOPY, 'BACKGROUND_SECTION', 'backgroundSection')
+    && SPM.backgroundSummary === 'Replace picture · Darken the picture · size advice' && exportsKey(EDCOPY, 'BACKGROUND_SUMMARY', 'backgroundSummary')
     && /data-background-section>/.test(ED)
-    && /<Section title=\{BACKGROUND_SECTION\} summary=\{BACKGROUND_SUMMARY\}/.test(ED)
+    && /<Section title=\{sp\('backgroundSection'\)\} summary=\{sp\('backgroundSummary'\)\}/.test(ED)
     /* ⚠️ FOLDED BY DEFAULT, and the flag lives with the other two section flags so opening it survives
      * selecting a different box. */
     && /const \[bgOpen, setBgOpen\] = useState\(false\)/.test(ED)
@@ -594,9 +618,11 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     /<div className="flex items-center gap-2" data-field=\{label\}>/.test(ED)
     && /w-\[78px\] shrink-0 text-\[10px\] font-bold uppercase leading-tight tracking-wide text-slate-400/.test(ED)
     /* ⚠️ THE PAIRS THE BRIEF NAMES: Font with the Size stepper, and Style with Line up. */
-    && /<Field label="Font">\s*\n\s*<div className="flex items-center gap-1\.5">/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): "Font" is `t('settings.font')` (designEditor) and "Line up" is `sp('labelLineUp')`.
+    && /<Field label=\{t\('settings\.font'\)\}>\s*\n\s*<div className="flex items-center gap-1\.5">/.test(ED)
+    && DEM.settings.font === 'Font'
     && /<StyleRow look=\{shown\} fontLib=\{fontLib\} editable=\{editable\}\s*\n\s*onPatch=\{patchSel\} align=\{sel\.align\} onAlign/.test(ED)
-    && /\{LABEL_LINE_UP\}<\/span>\s*\n\s*<AlignButtons align=\{align\}/.test(ED))
+    && /\{sp\('labelLineUp'\)\}<\/span>\s*\n\s*<AlignButtons align=\{align\}/.test(ED))
 
   /* ══ 🔴 §C (10 October 2026) · "Shows" WAS FOUR QUESTIONS WEARING ONE LABEL ═══════════════════════
    * ⛔ IT SAT OVER A DATE FORMAT, A PLACE FORMAT, A CLOCK AND A FREE-TEXT BOX. The word told an operator
@@ -606,22 +632,22 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * asks before how it looks. */
   t('🔴 §C · the item\'s own setting is asked in plain words, and it still leads', (() => {
     const body = ED.slice(ED.indexOf('const showsRow = ('), ED.indexOf('function StyleRow'))
-    return /LABEL_DATE_STYLE = 'How the date is written'/.test(EDCOPY)
-      && /LABEL_TIME_STYLE = 'How the times are written'/.test(EDCOPY)
-      && /LABEL_PLACE_STYLE = 'How the place is written'/.test(EDCOPY)
-      && /LABEL_HEADING_TEXT = 'What the heading says'/.test(EDCOPY)
-      && /LABEL_OWN_TEXT = 'What it says'/.test(EDCOPY)
-      && /<Field label=\{LABEL_DATE_STYLE\}>/.test(body)
-      && /<Field label=\{LABEL_TIME_STYLE\}>/.test(body)
-      && /<Field label=\{LABEL_PLACE_STYLE\}>/.test(body)
-      && /<Field label=\{LABEL_HEADING_TEXT\}>/.test(body)
-      && /<Field label=\{LABEL_OWN_TEXT\}>/.test(body)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the five labels are socialPosts `labelDateStyle` … `labelOwnText` read with `sp()`, and
+    // "Font" is `t('settings.font')`; "Other choices: …" is the `otherChoices` message (one argument, the samples
+    // joined). Same en-GB words, same order, same "Shows" absence.
+    const L5 = { labelDateStyle: 'How the date is written', labelTimeStyle: 'How the times are written',
+      labelPlaceStyle: 'How the place is written', labelHeadingText: 'What the heading says', labelOwnText: 'What it says' }
+    return Object.entries(L5).every(([k, words]) => SPM[k] === words
+        && new RegExp(`<Field label=\\{sp\\('${k}'\\)\\}>`).test(body))
       /* ⛔ AND THE OLD WORD IS GONE FROM THE WHOLE FILE, so this cannot pass while "Shows" is still
        * drawn somewhere else. */
-      && !/label="Shows"/.test(ED)
-      && body.indexOf('<Field label={LABEL_DATE_STYLE}>') < body.indexOf('<Field label="Font">')
+      && !/label="Shows"/.test(ED) && !Object.values(DEM).some(v => v === 'Shows')
+      && body.indexOf("<Field label={sp('labelDateStyle')}>") >= 0
+      && body.indexOf("<Field label={sp('labelDateStyle')}>") < body.indexOf("<Field label={t('settings.font')}>")
       /* ⚠️ THE DATE'S "Other choices: …" NAMES WHAT THE CLOSED DROPDOWN CANNOT SHOW. */
       && /OTHER_CHOICES = \(samples: readonly string\[\]\): string =>/.test(EDCOPY)
+      && gbT('socialPosts')('otherChoices', { choices: 'A · B' }) === 'Other choices: A · B'
+      && /\{sp\('otherChoices', \{ choices: \(otherDateChoices\.slice\(0, 3\)\)\.join\(' · '\) \}\)\}/.test(body)
       && /data-other-choices>/.test(body)
       && /otherDateChoices = spec\.dateStyles\.filter\(d => d\.id !== layout\.dateStyle\)/.test(ED)
   })())
@@ -629,12 +655,15 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   /* ⚠️ EVERY CONTROL THE TOOLBAR HAD IS STILL REACHABLE — the three style buttons, the alignment icons,
    * the font picker, the size stepper and the colour field. ⛔ `Place style` IS WEEKLY-ONLY. */
   t('⚠️ every control the toolbar had is in the panel',
-    ['Font', 'Colour'].every(l => new RegExp(`label="${l}"`).test(ED))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): "Font"/"Colour" are designEditor `settings.font` / `.colour`; the four constants are
+    // socialPosts keys read with `sp()`. Same controls, same labels in en-GB.
+    [['font', 'Font'], ['colour', 'Colour']].every(([k, w]) => DEM.settings[k] === w
+      && new RegExp(`label=\\{t\\('settings\\.${k}'\\)\\}`).test(ED))
     /* ⚠️ THE OTHER FOUR ARE CONSTANTS NOW (§C), so they are asserted by the constant and not by a
      * literal — a literal would go stale the first time the wording changed and would pass anyway. */
-    && ['LABEL_TEXT_SIZE', 'LABEL_LINE_UP', 'LABEL_LETTERS', 'LABEL_DATE_STYLE']
-      .every(k => new RegExp(`label=\\{${k}\\}`).test(ED))
-    && /selected === 'location' && isWeek && \(\s*\n\s*<Field label=\{LABEL_PLACE_STYLE\}>/.test(ED)
+    && ['labelTextSize', 'labelLineUp', 'labelLetters', 'labelDateStyle']
+      .every(k => typeof SPM[k] === 'string' && new RegExp(`label=\\{sp\\('${k}'\\)\\}`).test(ED))
+    && /selected === 'location' && isWeek && \(\s*\n\s*<Field label=\{sp\('labelPlaceStyle'\)\}>/.test(ED)
     && /<FontPicker value=\{shared\.fontId\}/.test(ED)
     && /<FontPicker value=\{shown\.fontId\}/.test(ED)
     && /<ColourField value=\{shown\.color\}/.test(ED)
@@ -645,21 +674,24 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * above the font and colour rows it was a second heading for the same block. ⚠️ THE BLOCK IS STILL
    * MARKED `data-settings-section="TEXT"`, which is what the render harness measures. */
   t('🔴 MAKE IT STAND OUT is open by default and MORE OPTIONS is folded, with a summary',
-    /EDITOR_SECTION_STAND = 'MAKE IT STAND OUT'/.test(EDCOPY)
-    && /EDITOR_SECTION_MORE = 'MORE OPTIONS'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the section words and summaries are socialPosts messages (same en-GB words); the copy
+    // module still exports each from its key.
+    SPM.editorSectionStand === 'MAKE IT STAND OUT' && exportsKey(EDCOPY, 'EDITOR_SECTION_STAND', 'editorSectionStand')
+    && SPM.editorSectionMore === 'MORE OPTIONS' && exportsKey(EDCOPY, 'EDITOR_SECTION_MORE', 'editorSectionMore')
     && /const \[standOpen, setStandOpen\] = useState\(true\)/.test(ED)
     && /const \[moreOpen, setMoreOpen\] = useState\(false\)/.test(ED)
     && /data-settings-section="TEXT">/.test(ED)
-    && !/\{EDITOR_SECTION_TEXT\}/.test(ED)
+    && !/\{EDITOR_SECTION_TEXT\}/.test(ED) && !/sp\('editorSectionText'\)/.test(ED)
     /* 🔴 THREE SUMMARIES, BECAUSE MORE OPTIONS HOLDS THREE DIFFERENT THINGS. One was a lie on two of
      * the three selections: "All text" has no tilt and no "centre the box", and a FOLLOWING box has no
      * letter spacing and no band padding. A folded section whose sign names things that are not behind
      * it is worse than one with no sign. */
-    && /EDITOR_MORE_SUMMARY =\s*\n\s*'Spacing, tilt, words before, line spacing, darken the picture, centre the box'/.test(EDCOPY)
-    && /EDITOR_MORE_SUMMARY_ALL =/.test(EDCOPY)
-    && /EDITOR_MORE_SUMMARY_BOX =/.test(EDCOPY)
+    && SPM.editorMoreSummary === 'Spacing, tilt, words before, line spacing, darken the picture, centre the box'
+    && /EDITOR_MORE_SUMMARY =/.test(EDCOPY) && typeof SPM.editorMoreSummary === 'string'
+    && /EDITOR_MORE_SUMMARY_ALL =/.test(EDCOPY) && typeof SPM.editorMoreSummaryAll === 'string'
+    && /EDITOR_MORE_SUMMARY_BOX =/.test(EDCOPY) && typeof SPM.editorMoreSummaryBox === 'string'
     /* ⛔ AND "copy this style" IS OUT OF ALL THREE, because that button is gone. */
-    && !/copy this style/.test(EDCOPY.slice(EDCOPY.indexOf('EDITOR_MORE_SUMMARY ='), EDCOPY.indexOf('ALL_TEXT_ITEM'))))
+    && ![SPM.editorMoreSummary, SPM.editorMoreSummaryAll, SPM.editorMoreSummaryBox].some(v => /copy this style/i.test(v)))
 
   /* ══ 🔴 THE SHADOW ROW, AND THE TWO SWITCHES ON ONE LINE ════════════════════════════════════════════
    * ⚠️ THE BRIEF'S OWN LAYOUT: Shadow None/Soft/Strong, then Outline and Band behind on one line, then
@@ -667,20 +699,21 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * HINT UNDER EACH was four lines for two switches, on a panel whose whole problem is height. */
   t('🔴 Shadow is three buttons; Outline and Band share a line; the band\'s two settings share another',
     /\(\['none', 'soft', 'strong'\] as const\)\.map/.test(ED)
-    && /<Switch on=\{fx\.outline\} label=\{EFFECT_OUTLINE\}/.test(ED)
-    && /<Switch on=\{fx\.band\} label=\{EFFECT_BAND\}/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): every label below is a socialPosts message read with `sp()`, same en-GB words.
+    && /<Switch on=\{fx\.outline\} label=\{sp\('effectOutline'\)\}/.test(ED)
+    && /<Switch on=\{fx\.band\} label=\{sp\('effectBand'\)\}/.test(ED)
     && /\{fx\.band && \(\s*\n\s*<div className="mb-2 flex items-center gap-2">/.test(ED)
     /* ══ 🔴 §C · IN PLAIN WORDS, AND THE OLD ONES ARE GONE ═══════════════════════════════════════
      * ⛔ "MAKE IT STAND OUT" WAS A CLAIM; "MAKE IT EASIER TO READ" is the job. "Band behind" was a
      * typesetter's word with its object missing. */
-    && /SECTION_EASIER_TO_READ = 'MAKE IT EASIER TO READ'/.test(EDCOPY)
-    && /EFFECT_SHADOW = 'Shadow behind the letters'/.test(EDCOPY)
-    && /EFFECT_OUTLINE = 'Outline round the letters'/.test(EDCOPY)
-    && /EFFECT_BAND = 'Coloured strip behind the words'/.test(EDCOPY)
-    && /<GroupHeading>\{EFFECT_SHADOW\}<\/GroupHeading>/.test(ED)
-    && /title=\{SECTION_EASIER_TO_READ\}/.test(ED)
-    && !/\{EDITOR_SECTION_STAND\}/.test(ED)
-    && /\{EFFECT_SEE_THROUGH\}/.test(ED)
+    && SPM.sectionEasierToRead === 'MAKE IT EASIER TO READ'
+    && SPM.effectShadow === 'Shadow behind the letters'
+    && SPM.effectOutline === 'Outline round the letters'
+    && SPM.effectBand === 'Coloured strip behind the words'
+    && /<GroupHeading>\{sp\('effectShadow'\)\}<\/GroupHeading>/.test(ED)
+    && /title=\{sp\('sectionEasierToRead'\)\}/.test(ED)
+    && !/\{EDITOR_SECTION_STAND\}/.test(ED) && !/sp\('editorSectionStand'\)/.test(ED)
+    && /\{sp\('effectSeeThrough'\)\}/.test(ED)
     /* ⚠️ SHOWN AS "see-through" AND STORED AS OPACITY — the conversion lives in one place. */
     && /patchEffects\(\{ bandOpacity: 100 - Math\.min\(100, Math\.max\(0, Number\(e\.target\.value\) \|\| 0\)\) \}\)/.test(ED))
 
@@ -695,9 +728,11 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     && !/function AdvancedPanel\(/.test(ED)
     /* ⚠️ THE LOOK HALF — letter spacing, the shadow's strength, the outline's thickness, the band's
      * corners and padding, "keep it readable", and the design-wide darken. */
-    && ['LABEL_LETTER_SPACE', 'LABEL_SHADOW_STRENGTH', 'LABEL_OUTLINE_WIDTH', 'LABEL_BAND_CORNERS',
-      'LABEL_BAND_PADDING'].every(k => new RegExp(`label=\\{${k}\\}`).test(ED))
-    && /EFFECT_AUTO = 'Keep it readable automatically'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): each label/sentence in this check is a socialPosts message read with `sp()`; its en-GB
+    // words are pinned on the message. Same controls, same places.
+    && ['labelLetterSpace', 'labelShadowStrength', 'labelOutlineWidth', 'labelBandCorners',
+      'labelBandPadding'].every(k => typeof SPM[k] === 'string' && new RegExp(`label=\\{sp\\('${k}'\\)\\}`).test(ED))
+    && SPM.effectAuto === 'Keep it readable automatically'
     /* ══ 🔴 §B3 · "Darken the picture" LEFT MORE OPTIONS AND WENT TO THE PICTURE ═══════════════════
      * ⛔ **THIS IS WHY IT READ AS DOING NOTHING.** It was mounted in the MORE OPTIONS of "All text" and
      * of an own-style box — and on a box that FOLLOWS All text, `MoreShared` is not drawn at all, so an
@@ -710,32 +745,33 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
      * was raised to match — a slider that offered a value the save refuses would be worse than one
      * capped too low. ⛔ THE CEILING IS ONE CONSTANT, shared by the editor, the validator and the
      * renderer: 60 in one and 70 in another is a slider whose top third does nothing. */
-    && /<Slider label=\{DARKEN_LABEL\} value=\{layout\.darken\} min=\{0\} max=\{MAX_DARKEN\} step=\{5\}/.test(ED)
+    && /<Slider label=\{sp\('darkenLabel'\)\} value=\{layout\.darken\} min=\{0\} max=\{MAX_DARKEN\} step=\{5\}/.test(ED)
     && /export const MAX_DARKEN = 70/.test(read('lib/weekly-post/layout.ts'))
     /* ⚠️ `draw.ts` SINCE 10 OCTOBER (§2) — `darkenEl` moved with the rest of the poster tree so the
      * live editor could build the same one. The ceiling and its reason are unchanged. */
     && /Math\.min\(MAX_DARKEN, percent\)/.test(read('lib/weekly-post/draw.ts'))
     && !/Math\.min\(60, percent\)/.test(read('lib/weekly-post/draw.ts'))
-    && /DARKEN_HINT = 'Puts a dark layer over your picture so white writing is easier to read\.'/.test(EDCOPY)
+    && SPM.darkenHint === 'Puts a dark layer over your picture so white writing is easier to read.'
+    && /hint=\{sp\('darkenHint'\)\}/.test(ED)
     /* ⚠️ THE PER-BOX HALF — words before, line spacing, tilt, the two centre buttons, long names, and
      * removing a note box. */
     /* ⚠️ "Words before" IS A `<label>` WITH ITS OWN HINT, not a `Field` — it is a full-width text input
      * with a sentence under it, which is the one control in MORE OPTIONS that does not fit the
      * label-left row. Asserted by its own words rather than by a `Field` label it does not have. */
-    && /\{LABEL_WORDS_BEFORE\}<\/label>/.test(ED)
-    && /WORDS_BEFORE_HINT = 'Drawn in front of what this item says, like “From”\./.test(EDCOPY)
-    && ['LABEL_LINE_HEIGHT', 'LABEL_TILT'].every(k => new RegExp(`label=\\{${k}\\}`).test(ED))
-    && /\{LABEL_CENTRE_ON\}/.test(ED)
-    && /\{LABEL_TOO_LONG\}/.test(ED)
+    && /\{sp\('labelWordsBefore'\)\}<\/label>/.test(ED)
+    && /^Drawn in front of what this item says, like “From”\./.test(SPM.wordsBeforeHint)
+    && ['labelLineHeight', 'labelTilt'].every(k => typeof SPM[k] === 'string' && new RegExp(`label=\\{sp\\('${k}'\\)\\}`).test(ED))
+    && /\{sp\('labelCentreOn'\)\}/.test(ED)
+    && /\{sp\('labelTooLong'\)\}/.test(ED)
     /* ══ 🔴 §6 (10 October 2026) · "Remove this text box" LEFT MORE OPTIONS ═══════════════════════
      * ⛔ IT WAS A RED **LINK AT THE BOTTOM OF A FOLDED SECTION** — the hardest place on the panel to
      * find a destructive action, and the easiest to press by accident once found, because a link has no
      * edges. 🔴 IT IS A RED-OUTLINED BUTTON AT THE FOOT OF THE PANEL, with the key named beside it. */
     && !/Remove this text box/.test(ED)
-    && /DELETE_OWN_TEXT = '🗑 Delete this text'/.test(EDCOPY)
-    && /DELETE_OWN_TEXT_KEY = 'or press Delete'/.test(EDCOPY)
+    && SPM.deleteOwnText === '🗑 Delete this text' && /\{sp\('deleteOwnText'\)\}/.test(ED)
+    && SPM.deleteOwnTextKey === 'or press Delete'
     && /data-delete-note/.test(ED)
-    && /data-delete-hint>\{DELETE_OWN_TEXT_KEY\}/.test(ED)
+    && /data-delete-hint>\{sp\('deleteOwnTextKey'\)\}/.test(ED)
     && /border border-red-300 bg-white/.test(ED)
     /* 🔴 AND THE KEY, WITH THE SAME FOCUS TEST THE OTHER TWO HANDLERS USE — a Backspace in a text field
      * must delete a CHARACTER, or an operator correcting a typo loses their text box. */
@@ -747,8 +783,8 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     })()
     /* ⛔ THE GROUP HEADINGS WENT WITH §C. "Wording", "Position", "Long names" and "Stand out" were
      * labels ON labels — every control under them already says what it does, in full. */
-    && /MORE_SUMMARY_PLAIN =/.test(EDCOPY)
-    && /summary=\{MORE_SUMMARY_PLAIN\}/.test(ED)
+    && /MORE_SUMMARY_PLAIN =/.test(EDCOPY) && typeof SPM.moreSummaryPlain === 'string'
+    && /summary=\{sp\('moreSummaryPlain'\)\}/.test(ED)
     /* ⛔ AND THE ONE THING THAT WAS DELIBERATELY REMOVED IS GONE: "Copy this style to all text" was a
      * one-way bulk write, and "All text" replaces it with a relationship. */
     && !/Copy this style to all text/.test(ED)
@@ -758,20 +794,27 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * no box, so neither goes through the sections — they are their own bodies. */
   t('⚠️ the picture and the row spacing have their own panels, with every control they had',
     /function PicturePanel\(/.test(ED) && /function RowsPanel\(/.test(ED)
-    && /label="Picture">/.test(ED) && /label="Corners">/.test(ED)
-    && /label="If a location has no image">/.test(ED)
-    && /Draw a border/.test(ED) && /Border width/.test(ED) && /Corner radius/.test(ED)
-    && /label="Spacing">/.test(ED) && /Show cancelled events/.test(ED)
-    && /\+ Add location pictures/.test(ED))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the labels are designEditor `picture.*` / `rows.*` messages read with `t()`; each is asserted
+    // as its t() call AND as the same en-GB words.
+    && /label=\{t\('picture\.picture'\)\}>/.test(ED) && DEM.picture.picture === 'Picture'
+    && /label=\{t\('picture\.corners'\)\}>/.test(ED) && DEM.picture.corners === 'Corners'
+    && /label=\{t\('picture\.ifMissing'\)\}>/.test(ED) && DEM.picture.ifMissing === 'If a location has no image'
+    && /t\('picture\.drawBorder'\)/.test(ED) && DEM.picture.drawBorder === 'Draw a border'
+    && /t\('picture\.borderWidth'\)/.test(ED) && DEM.picture.borderWidth === 'Border width'
+    && /t\('picture\.cornerRadius'\)/.test(ED) && DEM.picture.cornerRadius === 'Corner radius'
+    && /label=\{t\('rows\.spacing'\)\}>/.test(ED) && DEM.rows.spacing === 'Spacing'
+    && /t\('rows\.showCancelled'\)/.test(ED) && DEM.rows.showCancelled === 'Show cancelled events'
+    && /\{t\('picture\.addLocationPictures'\)\}/.test(ED) && DEM.picture.addLocationPictures === '+ Add location pictures')
 
   /* ⚠️ WITH NOTHING SELECTED THE PANEL SAYS WHAT TO DO — an instruction, not a status. */
   t('⚠️ with nothing selected the panel gives the brief\'s instruction',
-    /EDITOR_NOTHING_SELECTED = 'Click anything on your post to change it'/.test(EDCOPY)
-    && /EDITOR_SETTINGS_FOR = 'Settings for the box you’ve picked'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `editorNothingSelected` / `editorSettingsFor`, same en-GB words, via `sp()`.
+    SPM.editorNothingSelected === 'Click anything on your post to change it' && exportsKey(EDCOPY, 'EDITOR_NOTHING_SELECTED', 'editorNothingSelected')
+    && SPM.editorSettingsFor === 'Settings for the box you’ve picked' && exportsKey(EDCOPY, 'EDITOR_SETTINGS_FOR', 'editorSettingsFor')
     /* ⚠️ `wrap`, NOT `shell`: with `only` undefined `wrap` IS `shell` (the desktop card), and with a
      * group set it is the sheet's bare body. One branch, both screens. */
     && /if \(!selItem\) return wrap\(/.test(ED)
-    && /\{EDITOR_NOTHING_SELECTED\}/.test(ED))
+    && /\{sp\('editorNothingSelected'\)\}/.test(ED))
 
   /* ══ 🔴 THE POSTER IS FITTED TO THE MEASURED AREA, AND THERE IS A ZOOM ═════════════════════════════
    * ⛔ IT WAS `maxHeight: min(64vh, 820px)` AND A WIDTH DERIVED FROM IT — a GUESS at how much of the
@@ -812,14 +855,15 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     /const \[zoomStep, setZoomStep\] = useState\(0\)/.test(ED)
     && /const ZOOM_FACTOR = 1\.25/.test(ED)
     && /const ZOOM_MIN = -2, ZOOM_MAX = 6/.test(ED)
-    && /EDITOR_FIT_TO_SCREEN = 'Fit to screen'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `editorFitToScreen` via `sp()`, same en-GB words.
+    && SPM.editorFitToScreen === 'Fit to screen' && exportsKey(EDCOPY, 'EDITOR_FIT_TO_SCREEN', 'editorFitToScreen')
     /* ⛔ THE READOUT IS A `<span>`, NOT A BUTTON — asserted as the element, because "it is a label" is
      * exactly the claim and a styled button would look identical. */
     && /<span data-zoom-readout\s*\n\s*className="w-12 shrink-0 text-center text-xs font-semibold tabular-nums text-slate-600">\s*\n\s*\{zoomPercent\}%/.test(ED)
     /* ⚠️ `tabular-nums` AND A FIXED WIDTH, so stepping 100 → 125 → 156 does not move + under the
      * operator's finger. */
     && /const zoomPercent = Math\.round\(ZOOM_FACTOR \*\* zoomStep \* 100\)/.test(ED)
-    && /data-zoom-fit>\{EDITOR_FIT_TO_SCREEN\}/.test(ED)
+    && /data-zoom-fit>\{sp\('editorFitToScreen'\)\}/.test(ED)
     && /onClick=\{\(\) => setZoomStep\(0\)\} disabled=\{atFit\}/.test(ED)
     && /const atFit = zoomStep === 0/.test(ED)
     /* ══ ⛔ `grid` + `margin:auto`, **NOT** `flex` + `justify-center` ════════════════════════════════
@@ -847,19 +891,20 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * ⚠️ AND IT SHOWS THE PNG THE STAGE IS ALREADY DRAWING — the real renderer's output — rather than
    * asking for a second one that could answer differently. */
   t('🔴 §B1 · "👁 Preview post" opens the real PNG over the top, and the Edit/Preview switch is gone',
-    /PREVIEW_POST_BTN = '👁 Preview post'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the button, the image's alt and Close are socialPosts messages read with `sp()`.
+    SPM.previewPostBtn === '👁 Preview post' && /\{sp\('previewPostBtn'\)\}/.test(ED)
     && /const \[previewOpen, setPreviewOpen\] = useState\(false\)/.test(ED)
     && /data-preview-post/.test(ED)
     && /data-post-preview onClick/.test(ED)
-    && /<img src=\{preview\} alt=\{PREVIEW_POST_TITLE\} data-post-preview-img/.test(ED)
+    && /<img src=\{preview\} alt=\{sp\('previewPostTitle'\)\} data-post-preview-img/.test(ED)
     && /data-post-preview-close/.test(ED)
-    && /PREVIEW_POST_CLOSE = 'Close'/.test(EDCOPY)
+    && SPM.previewPostClose === 'Close' && /\{sp\('previewPostClose'\)\}/.test(ED)
     /* ⛔ EVERY TRACE OF THE MODE IS GONE — the flag, the switch, the hint, and the `hidden` prop that
      * made a box disappear. A mode half-removed is a mode. */
     && !/preview3/.test(ED)
     && !/data-view-switch/.test(ED)
     && !/data-view-hint/.test(ED)
-    && !/\{EDITOR_PREVIEW_HINT\}/.test(ED)
+    && !/\{EDITOR_PREVIEW_HINT\}/.test(ED) && !/sp\('editorPreviewHint'\)/.test(ED)
     && !/hidden=\{/.test(ED)
     && !/if \(hidden\) return null/.test(BITS_BOX))
 
@@ -965,19 +1010,21 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
      * "LOOK" was a noun an operator had to map onto the switch's behaviour; "🔗 Same as All text" named
      * a relationship rather than an outcome. ⚠️ THE BEHAVIOUR IS BYTE-FOR-BYTE WHAT IT WAS — the same
      * two functions, in the same one commit. */
-    /STYLE_HEADING = 'Style'/.test(EDCOPY)
-    && /STYLE_MATCH = 'Match the other writing'/.test(EDCOPY)
-    && /STYLE_OWN = 'Style this one on its own'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the heading, the two positions and the two hints are socialPosts messages read with
+    // `sp()`; same en-GB words, same two-position switch, same behaviour.
+    SPM.styleHeading === 'Style' && /\{sp\('styleHeading'\)\}/.test(ED)
+    && SPM.styleMatch === 'Match the other writing'
+    && SPM.styleOwn === 'Style this one on its own'
     && /data-look>/.test(ED)
-    && /\(\[\[false, STYLE_MATCH\], \[true, STYLE_OWN\]\] as const\)\.map/.test(ED)
+    && /\(\[\[false, sp\('styleMatch'\)\], \[true, sp\('styleOwn'\)\]\] as const\)\.map/.test(ED)
     && /onClick=\{\(\) => \(wantOwn \? makeOwn\(selected\) : makeFollow\(selected\)\)\}/.test(ED)
     && /aria-pressed=\{owns === wantOwn\}/.test(ED)
     /* 🔴 AND THE HINT EXPLAINS THE POSITION YOU ARE IN AND NAMES THE OTHER ONE. */
-    && /data-look-hint>\s*\n\s*\{owns \? STYLE_OWN_HINT : STYLE_MATCH_HINT\}/.test(ED)
-    && /STYLE_MATCH_HINT = 'Font, colour and effects come from All text, so everything matches\.'/.test(EDCOPY)
-    && /STYLE_OWN_HINT = 'Font, colour and effects are set just for this\.'/.test(EDCOPY)
+    && /data-look-hint>\s*\n\s*\{owns \? sp\('styleOwnHint'\) : sp\('styleMatchHint'\)\}/.test(ED)
+    && SPM.styleMatchHint === 'Font, colour and effects come from All text, so everything matches.'
+    && SPM.styleOwnHint === 'Font, colour and effects are set just for this.'
     /* ⛔ AND THE OLD HEADING IS NO LONGER DRAWN. */
-    && !/\{LOOK_HEADING\}/.test(ED)
+    && !/\{LOOK_HEADING\}/.test(ED) && !/sp\('lookHeading'\)/.test(ED)
     /* ⛔ AND THE TWO NOTES LEFT THE SCREEN. `codeOf` first — the tombstone names them. */
     && !/data-follow-note/.test(ED) && !/data-own-note/.test(ED)
     && !/data-change-just-this/.test(ED) && !/data-match-all/.test(ED)
@@ -993,13 +1040,18 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * done is the fastest way to teach an operator to stop reading grey text. */
   t('🔴 §5 · a 4:5 background gets a green tick, anything else gets the tip',
     /const isBestShape = Math\.abs\(ratio - 4 \/ 5\) < 0\.01/.test(ED)
-    && /BG_BEST_SUFFIX = '✓ best for Instagram & Facebook'/.test(EDCOPY)
-    && /BG_PORTRAIT_TIP =\s*\n\s*'Tip: a portrait picture \(1080 × 1350, 4:5\) shows biggest on Instagram and Facebook feeds\.'/.test(EDCOPY)
-    && /\{isBestShape && <span className="font-bold text-green-700" data-bg-best> \{BG_BEST_SUFFIX\}<\/span>\}/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the tick and the tip are socialPosts messages read with `sp()`; `shapeName` now returns a
+    // KEY and the shape's words are designEditor `background.shape.<key>` — each asserted to read exactly what the
+    // old function returned in en-GB.
+    && SPM.bgBestSuffix === '✓ best for Instagram & Facebook'
+    && SPM.bgPortraitTip === 'Tip: a portrait picture (1080 × 1350, 4:5) shows biggest on Instagram and Facebook feeds.'
+    && /\{isBestShape && <span className="font-bold text-green-700" data-bg-best> \{sp\('bgBestSuffix'\)\}<\/span>\}/.test(ED)
     && /\{!isBestShape && \(/.test(ED)
-    && /data-bg-tip>\{BG_PORTRAIT_TIP\}/.test(ED)
+    && /data-bg-tip>\{sp\('bgPortraitTip'\)\}/.test(ED)
     /* ⛔ AND THE SIZE IS STILL THERE, in grey, before the green half. */
-    && /data-bg-size>\s*\n\s*\{W\} × \{H\} · \{shapeName\(W, H\)\}/.test(ED))
+    && /data-bg-size>\s*\n\s*\{W\} × \{H\} · \{t\(`background\.shape\.\$\{shapeName\(W, H\)\}`\)\}/.test(ED)
+    && JSON.stringify(DEM.background.shape) === JSON.stringify({ square: 'Square (1:1)', portrait45: 'Portrait (4:5)',
+      portrait916: 'Portrait (9:16)', landscape169: 'Landscape (16:9)', portrait: 'Portrait', landscape: 'Landscape' }))
 
   /* ══ ⚠️ THE Background picture BUTTON CARRIES ITS NAME AND NOTHING ELSE ════════════════════════════
    * DOMINIC: *"remove the box showing 'Background picture 3840×2160' unless it has a purpose but it
@@ -1019,7 +1071,9 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     && /const pictureCard = \(only\?: SettingsGroup\) => \(\s*\n\s*<div className="space-y-2">/.test(ED)
     && !/uppercase tracking-wide text-slate-400 mb-2">Background picture/.test(ED)
     /* ⚠️ AND "Replace picture" IS STILL THERE, which is the whole reason the control was kept. */
-    && /\{replacing \? 'Uploading…' : 'Replace picture'\}/.test(ED))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): designEditor `background.uploading` / `.replace`, same en-GB words.
+    && /\{replacing \? t\('background\.uploading'\) : t\('background\.replace'\)\}/.test(ED)
+    && DEM.background.uploading === 'Uploading…' && DEM.background.replace === 'Replace picture')
 
   /* ⚠️ THE HINT IS THE BRIEF'S SENTENCE, with a "·" between the two gestures rather than a full stop —
    * they are two gestures, not two sentences. ⛔ AND IT SHARES ITS LINE WITH THE ZOOM, so the control
@@ -1030,7 +1084,9 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * so the live-font warning inside it, which a phone operator must still see, keeps its place. */
   t('⚠️ the hint under the poster is the brief\'s sentence, on the zoom\'s line',
     /data-stage-hint>/.test(ED)
-    && /<span className="hidden md:inline">Drag a box to move it · drag a corner to resize<\/span>/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): designEditor `stage.hint`, same en-GB sentence.
+    && /<span className="hidden md:inline">\{t\('stage\.hint'\)\}<\/span>/.test(ED)
+    && DEM.stage.hint === 'Drag a box to move it · drag a corner to resize'
     && /data-live-font-note/.test(ED)
     && ED.indexOf('data-stage-hint') < ED.indexOf('data-zoom>'))
 
@@ -1098,33 +1154,38 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   head('6 · THE DESIGNS PAGE')
   const SP = codeOf(read('components/manage/SocialPosts.tsx'))
   const COPY = codeOf(read('lib/copy/socialPosts.ts'))
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): §6's words are the socialPosts messages now (the copy module exports `gb('<key>')`), and
+  // SocialPosts.tsx reads them with `t()` — the blurb is ONE message with "standard" in <b> tags, rendered with
+  // `t.rich` into the same <strong>. Each check pins the same en-GB words on the message and the same use site.
   t('🔴 Box 2 is "Single event post design", and "standard" is BOLD',
-    /EVENT_DESIGN_TITLE = 'Single event post design'/.test(COPY)
-    && /EVENT_DESIGN_BLURB_BOLD = 'standard'/.test(COPY)
-    && /<strong className="font-bold text-slate-700">\{EVENT_DESIGN_BLURB_BOLD\}<\/strong>/.test(SP)
+    SPM.eventDesignTitle === 'Single event post design' && /<Box title=\{t\('eventDesignTitle'\)\}/.test(SP)
+    && /<b>standard<\/b>/.test(SPM.eventDesignBlurb)
+    && /t\.rich\('eventDesignBlurb', \{\s*\n\s*b: chunks => <strong className="font-bold text-slate-700">\{chunks\}<\/strong>/.test(SP)
     // ⛔ and the old title is gone from the component, not merely unused
     && !/"Event post design"/.test(SP))
   t('⚠️ its description and "Used for:" line are the brief\'s',
-    /design for a post about one event\. We write that event’s date, place and times on top of it\./.test(COPY)
-    && /EVENT_DESIGN_USED_FOR = 'every post about a single event\.'/.test(COPY))
+    /design for a post about one event\. We write that event’s date, place and times on top of it\./.test(SPM.eventDesignBlurb)
+    && SPM.eventDesignUsedFor === 'every post about a single event.' && exportsKey(COPY, 'EVENT_DESIGN_USED_FOR', 'eventDesignUsedFor'))
   t('⚠️ its button reads "Set up single event design" / "Edit single event design"',
-    /EVENT_DESIGN_BUTTON_NEW = 'Set up single event design'/.test(COPY)
-    && /EVENT_DESIGN_BUTTON_EDIT = 'Edit single event design'/.test(COPY)
-    && /\{data\.standard\.ready \? EVENT_DESIGN_BUTTON_EDIT : EVENT_DESIGN_BUTTON_NEW\}/.test(SP))
+    SPM.eventDesignButtonNew === 'Set up single event design'
+    && SPM.eventDesignButtonEdit === 'Edit single event design'
+    && /\{data\.standard\.ready \? t\('eventDesignButtonEdit'\) : t\('eventDesignButtonNew'\)\}/.test(SP))
   /* ⚠️ BOX 3'S FOOTER IS NO LONGER ONE OF THE PLACES THAT HAS TO AGREE (part 3). It used to end
    * "…using your single event post design", so renaming Box 2 renamed it too — and that is exactly why
    * it was listed here. It counts PICTURES now and names no design at all, which removes it from this
    * check rather than weakening it. 🔴 THE REMAINING READERS ARE NAMED INDIVIDUALLY, so a copy that
    * reverts to the old name in any one of them fails. */
   t('🔴 the matching wording elsewhere agrees — nothing still says "event post design" on its own',
-    /EMPTY_EVENT_TITLE = 'You haven’t designed a single event post yet'/.test(COPY)
-    && /EVENT_DESIGN_BUTTON_EDIT = 'Edit single event design'/.test(COPY)
-    && /Everywhere else uses your single event post design\./.test(COPY)
-    && /Use your single event post design at \$\{place\}\?/.test(COPY)
-    && /USE_STANDARD_LINK = 'Use your single event post design here instead'/.test(COPY)
-    && !/otherwise your Standard event design/.test(COPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the same five sentences, pinned on the en-GB socialPosts messages (the `${place}`
+    // template is the ICU `{place}` argument now), and the two absences checked on the messages as well as the code.
+    SPM.emptyEventTitle === 'You haven’t designed a single event post yet'
+    && SPM.eventDesignButtonEdit === 'Edit single event design'
+    && /Everywhere else uses your single event post design\./.test(SPM.placeDesignScope)
+    && /Use your single event post design at \{place\}\?/.test(SPM.standardDesignConfirm)
+    && SPM.useStandardLink === 'Use your single event post design here instead'
+    && !/otherwise your Standard event design/.test(COPY) && !/otherwise your Standard event design/.test(JSON.stringify(SPM))
     /* ⛔ AND THE RETIRED FOOTER LEFT NOTHING BEHIND — see social-posts.cjs §4d. */
-    && !/placeDesignFooter/.test(COPY) && !/placeDesignFooter/.test(SP))
+    && !/placeDesignFooter/.test(COPY) && !/placeDesignFooter/.test(SP) && !('placeDesignFooter' in SPM))
   /* ══ ⛔ "Designs for a place" IS GONE AND SO IS ITS SORT — 7 October 2026 ════════════════════════
    * THE CLAIM THIS CHECK MADE: the locations with no picture sort FIRST, and their row button is
    * orange, because the box's job was to get a picture onto a venue that had not got one.
@@ -1143,14 +1204,16 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
      * that. ⛔ EACH RENAME FIXED A DIFFERENT FAULT: "missing" implied something ought to be there and
      * all of them are optional; "images" named the poster as well, and the chip now counts the two
      * PICTURES — which is also why the word matches the three boxes' own. */
-    /CHIP_NO_PICTURES = \(n: number\): string => `No pictures \$\{n\}`/.test(COPY)
-    && /CHIP_ALL = \(n: number\): string => `All \$\{n\}`/.test(COPY)
-    && /CHIP_HIDDEN = \(n: number\): string => `Hidden \$\{n\}`/.test(COPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the chip words are socialPosts `chipNoPictures` / `chipAll` / `chipHidden` with an `{n}`
+    // argument; the screen renders all three through the one `chip` helper with `t(key, { n })`.
+    gbT('socialPosts')('chipNoPictures', { n: 3 }) === 'No pictures 3'
+    && gbT('socialPosts')('chipAll', { n: 3 }) === 'All 3'
+    && gbT('socialPosts')('chipHidden', { n: 3 }) === 'Hidden 3'
     /* ⚠️ AND THE SCREEN RENDERS ALL THREE, from one helper — so a restyle cannot leave one of them
      * looking like a different control. */
-    && /\{chip\('all', CHIP_ALL\(visible\.length\)\)\}/.test(SP)
-    && /\{chip\('missing', CHIP_NO_PICTURES\(missing\.length\)\)\}/.test(SP)
-    && /\{chip\('hidden', CHIP_HIDDEN\(hidden\.length\)\)\}/.test(SP))
+    && /\{chip\('all', t\('chipAll', \{ n: visible\.length \}\)\)\}/.test(SP)
+    && /\{chip\('missing', t\('chipNoPictures', \{ n: missing\.length \}\)\)\}/.test(SP)
+    && /\{chip\('hidden', t\('chipHidden', \{ n: hidden\.length \}\)\)\}/.test(SP))
   /* 🔴 "MISSING" MEANS **EITHER** SLOT IS EMPTY, NOT BOTH, and that is the whole point of the number.
    * A location with an event photo and no weekly picture has something still to do; a chip counting
    * only the locations with nothing at all would report zero for a truck whose weekly poster is
@@ -1284,15 +1347,23 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     const route = codeOf(read('app/api/weekly-post/route.ts'))
     return /readStoredEventLayout\(design!\.layout, design!\.width \?\? 0, design!\.height \?\? 0\)\.layout/.test(route)
       && /readStoredEventLayout\(pl\.event_layout, pw, ph\)\.layout/.test(route)
-      && /readStoredLayout\(design!\.layout, design!\.width \?\? 0, design!\.height \?\? 0\)\.layout/.test(route)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): `readStoredLayout` takes the truck's `country` (for the days-off DEFAULT only).
+      && /readStoredLayout\(design!\.layout, design!\.width \?\? 0, design!\.height \?\? 0, country\)\.layout/.test(route)
       /* ⛔ AND THE RAW SEND IS GONE. The bug was `layout: design!.layout` — asserted as an absence so a
        * future read site cannot quietly reintroduce it beside the fixed one. */
       && !/layout: design!\.layout\b/.test(route)
   })())
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the editor's place sample is built by its own `placeLinesFor(style, t)` from its
+  // messages (sample venue/area) instead of `placeStyleSample(…).split`. The CLAIM is the same — no bare index into
+  // the samples table, and the lookup is total — so it is asserted on the new function: it validates the style
+  // against PLACE_STYLE_IDS and falls back to DEFAULT_PLACE_STYLE, and the call site passes the raw stored value.
   t('⛔ …and the editor no longer indexes the samples table directly', (() => {
     const ed = codeOf(read('components/manage/DesignEditor.tsx'))
-    return /placeStyleSample\(l\.placeStyle\)\.split/.test(ed)
-      && !/PLACE_STYLE_SAMPLES\[l\.placeStyle\]/.test(ed)
+    const fn = ed.slice(ed.indexOf('function placeLinesFor('), ed.indexOf('function itemsOf('))
+    return /placeLinesFor\(l\.placeStyle, t\)\.join/.test(ed)
+      && /\(PLACE_STYLE_IDS as readonly string\[\]\)\.includes\(style as string\)/.test(fn)
+      && /: DEFAULT_PLACE_STYLE/.test(fn)
+      && !/PLACE_STYLE_SAMPLES\[/.test(ed)
   })())
 
   // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -1315,9 +1386,10 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * poster opens that part's text settings — they are simply not buttons in the grid any more. */
   t('🔴 §A1 · the weekly grid is "Week heading" and "The 7 days", and the parts are not buttons',
     /export const DAYS_KEY = 'days'/.test(ED)
-    && /DAYS_ITEM = 'The 7 days'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): `daysItem` via `sp()`; DAYS_ICON is still a literal export (a glyph, not a word).
+    && SPM.daysItem === 'The 7 days' && exportsKey(EDCOPY, 'DAYS_ITEM', 'daysItem')
     && /DAYS_ICON = '☰'/.test(EDCOPY)
-    && /key: DAYS_KEY, name: `\$\{DAYS_ICON\} \$\{DAYS_ITEM\}`/.test(ED)
+    && /key: DAYS_KEY, name: `\$\{DAYS_ICON\} \$\{sp\('daysItem'\)\}`/.test(ED)
     /* 🔴 THE FOUR PARTS MOVE TO THE `part` GROUP, AND THE GRID FILTERS THAT GROUP OUT. */
     && /group: 'top' \| 'row' \| 'own' \| 'part'/.test(ED)
     && /const group: Item\['group'\] = week7 \? 'part'/.test(ED)
@@ -1376,21 +1448,23 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   t('🔴 §A2 · the panel has quick layouts, the parts list with ⋮⋮, days off and a picture shape',
     /function DaysPanel\(/.test(ED)
     && /data-quick-layouts>/.test(ED)
-    && /QL_ONE_LINE = 'All on one line'/.test(EDCOPY)
-    && /QL_DAY_ON_TOP = 'Day on top'/.test(EDCOPY)
-    && /QL_BIG_PICTURE = 'Big picture'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): every word below is a socialPosts message read with `sp()` in DaysPanel; same en-GB words.
+    && SPM.qlOneLine === 'All on one line' && /sp\('qlOneLine'\)/.test(ED)
+    && SPM.qlDayOnTop === 'Day on top' && /sp\('qlDayOnTop'\)/.test(ED)
+    && SPM.qlBigPicture === 'Big picture' && /sp\('qlBigPicture'\)/.test(ED)
     && /data-quick=\{id\}/.test(ED)
     && /<QuickLayoutIcon kind=\{id\} \/>/.test(ED)
-    && /DAYS_PARTS_HEADING = 'WHAT’S IN EACH ROW'/.test(EDCOPY)
+    && SPM.daysPartsHeading === 'WHAT’S IN EACH ROW' && /\{sp\('daysPartsHeading'\)\}/.test(ED)
     && /data-part-row=\{p\.key\}/.test(ED)
     && /data-part-handle=\{p\.key\}/.test(ED)
-    && /DAYS_PARTS_HINT =\s*\n\s*'Drag ⋮⋮ to change the order\. To change how the words look, click them on your poster\.'/.test(EDCOPY)
+    && SPM.daysPartsHint === 'Drag ⋮⋮ to change the order. To change how the words look, click them on your poster.'
+    && /\{sp\('daysPartsHint'\)\}/.test(ED)
     && /data-days-off>/.test(ED)
-    && /DAYS_OFF_MESSAGE = 'Show a message'/.test(EDCOPY)
-    && /DAYS_OFF_OMIT = 'Leave them out'/.test(EDCOPY)
+    && SPM.daysOffMessage === 'Show a message' && SPM.daysOffOmit === 'Leave them out'
+    && /\[\['message', sp\('daysOffMessage'\)\], \['omit', sp\('daysOffOmit'\)\]\]/.test(ED)
     && /data-days-off-text/.test(ED)
     && /data-shape=\{id\}/.test(ED)
-    && /SHAPE_CIRCLE = 'Circle'/.test(EDCOPY)
+    && SPM.shapeCircle === 'Circle' && /\['circle', sp\('shapeCircle'\)\]/.test(ED)
     /* ⛔ AND NO PERCENTAGE IS SHOWN ANYWHERE — the brief's instruction. The ⇔ handle moves a width the
      * operator can see; a number beside it would be a unit they have to learn. */
     && !/%<\/span>\s*\n\s*\{\/\* weight/.test(ED)
@@ -1399,7 +1473,8 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
      * stepper and still must, for a design whose stored block could not be read. */
     && (() => {
       const body = ED.slice(ED.indexOf('function DaysPanel('), ED.indexOf('function QuickLayoutIcon('))
-      return !/label="Spacing"/.test(body) && !/rowSpacing/.test(body)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): "Spacing" is `t('rows.spacing')` now, so its absence is checked too.
+      return !/label="Spacing"/.test(body) && !/rows\.spacing/.test(body) && !/rowSpacing/.test(body)
     })())
 
   /* ⚠️ THE EXAMPLES BESIDE THE PARTS ARE **LIVE** — the design's own date wording and its own clock.
@@ -1407,7 +1482,9 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
   t('⚠️ …and the parts\' examples are the design\'s own wording, not fixed strings',
     /dayDate: dateSampleFor\(layout, country\)/.test(ED)
     && /times: formatTimeRangeFor\('17:00', '21:00', layout\.timeStyle\)/.test(ED)
-    && /place: placeStyleSample\(layout\.placeStyle\)/.test(ED))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the place example is `placeLinesFor(layout.placeStyle, t)[0]` — still the DESIGN's own
+    // place style (the sample venue's words are designEditor messages, GB "The Kings Arms" as before).
+    && /place: placeLinesFor\(layout\.placeStyle, t\)\[0\]/.test(ED))
 
   /* ══ 🔴 §A1/§A3 · THE POSTER: ONE DRAGGABLE BLOCK, CELLS THAT CANNOT SWALLOW THE DRAG ═════════════
    * ⛔ CELLS THAT TOOK POINTER EVENTS WOULD LEAVE ALMOST NOWHERE TO GRAB THE BLOCK, and the brief's
@@ -1461,7 +1538,10 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * the filled example's upload endpoint and stored file are untouched. What they lost is their door. */
   t('🔴 §B2/§B7 · "A busy week" and the filled example are off the weekly editor',
     !/\{ id: 'busy', label: 'A busy week' \}/.test(WK)
-    && /\{ id: 'this', label: 'This week' \},\s*\n\s*\{ id: 'next', label: 'Next week' \},/.test(WK)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the two remaining week labels are weeklyPost `week.this` / `week.next`, same en-GB words.
+    && /\{ id: 'this', label: t\('week\.this'\) \},\s*\n\s*\{ id: 'next', label: t\('week\.next'\) \},/.test(WK)
+    && GB_MSG.weeklyPost.week.this === 'This week' && GB_MSG.weeklyPost.week.next === 'Next week'
+    && !/busy/i.test(JSON.stringify(GB_MSG.weeklyPost.week))
     && !/overlayUrl/.test(codeOf(ED))
     && !/Show it faintly/.test(WK)
     && !/Add a filled example/.test(WK)
@@ -1476,13 +1556,15 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
    * had, and stayed until something else replaced it. */
   t('🔴 §B8 · the "boxes have moved" line needs a new SHAPE and boxes that really moved, and it fades',
     /NEW_SHAPE_RESET =/.test(EDCOPY)
-    && /if \(done\.resetLayout && shapeChanged && boxesMoved\) setFlash\(NEW_SHAPE_RESET\)/.test(WK)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): NEW_SHAPE_RESET is read as socialPosts `newShapeReset` (same en-GB sentence) on both screens.
+    && SPM.newShapeReset === 'Your new picture is a different shape, so the boxes have moved to a starting position.'
+    && /if \(done\.resetLayout && shapeChanged && boxesMoved\) setFlash\(sp\('newShapeReset'\)\)/.test(WK)
     && /const shapeChanged = !before/.test(WK)
     && /const boxesMoved = !oldLayout/.test(WK)
     && /setTimeout\(\(\) => \{ setFlashText\(null\); flashTimer\.current = null \}, 5000\)/.test(WK)
     && /data-flash/.test(WK)
     /* ⚠️ AND THE SAME RULE ON THE SINGLE EVENT SCREEN. */
-    && /else if \(done\.resetLayout && shapeChanged\) \{\s*\n\s*setFlash\(NEW_SHAPE_RESET\)/.test(read('components/manage/EventPost.tsx'))
+    && /else if \(done\.resetLayout && shapeChanged\) \{\s*\n\s*setFlash\(tc\('newShapeReset'\)\)/.test(read('components/manage/EventPost.tsx'))
     /* ⛔ AND THE OLD UNCONDITIONAL SENTENCE IS GONE FROM BOTH. */
     && !/New image size — the boxes have been reset/.test(WK)
     && !/New picture size — the boxes have been reset/.test(read('components/manage/EventPost.tsx')))
@@ -1501,10 +1583,11 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
       && (soc.match(/\{leaveDialog\}/g) || []).length === 4
   })())
   t('🔴 §B10 · three buttons, and "Save and leave" waits for the save before it leaves',
-    /LEAVE_TITLE = 'Save your changes first\?'/.test(EDCOPY)
-    && /LEAVE_BODY = 'You’ve changed this design since you last saved\.'/.test(EDCOPY)
-    && /LEAVE_SAVE_AND_GO = 'Save and leave'/.test(EDCOPY)
-    && /LEAVE_WITHOUT_SAVING = 'Leave without saving'/.test(EDCOPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the dialog's four sentences are socialPosts messages, read in SocialPosts.tsx with `t()`.
+    SPM.leaveTitle === 'Save your changes first?' && /t\('leaveTitle'\)/.test(SOC)
+    && SPM.leaveBody === 'You’ve changed this design since you last saved.' && /t\('leaveBody'\)/.test(SOC)
+    && SPM.leaveSaveAndGo === 'Save and leave' && /t\('leaveSaveAndGo'\)/.test(SOC)
+    && SPM.leaveWithoutSaving === 'Leave without saving' && /t\('leaveWithoutSaving'\)/.test(SOC)
     && /data-save-and-leave/.test(SOC)
     && /data-leave-anyway/.test(SOC)
     && /data-keep-editing/.test(SOC)
@@ -1530,8 +1613,9 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     && /const ratio = to \/ from/.test(ED)
     && /const from = Math\.max\(1, l\.date\.fontSize\)/.test(ED)
     && /<Stepper value=\{layout\.date\.fontSize\} min=\{6\} max=\{H\} step=\{2\}\s*\n\s*minusLabel="A−" plusLabel="A\+" onChange=\{v => setAllTextSize\(v\)\}/.test(ED)
-    && /ALL_TEXT_SIZE_HINT = 'Changes every box at once and keeps the big ones bigger\.'/.test(EDCOPY)
-    && /data-all-size-hint>\{ALL_TEXT_SIZE_HINT\}/.test(ED)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): socialPosts `allTextSizeHint` via `sp()`, same en-GB words.
+    && SPM.allTextSizeHint === 'Changes every box at once and keeps the big ones bigger.'
+    && /data-all-size-hint>\{sp\('allTextSizeHint'\)\}/.test(ED)
     /* ⛔ AND THE TWO BUTTONS ARE GONE, so this cannot pass while they are still on the panel. */
     && !/data-all-smaller/.test(ED) && !/data-all-bigger/.test(ED) && !/scaleAllText/.test(ED))
 
@@ -1634,8 +1718,10 @@ head('1 · AN OLD DESIGN IS UNCHANGED')
     })()
     /* ⛔ AND AN UPLOADED FAMILY IS STILL NEVER SENT TO A BROWSER — the rule `font_sample` states, which
      * §2 does not get to reverse. The GET refuses it and `live-fonts.ts` does not ask. */
-    && /if \(ref\.kind === 'own'\) \{/.test(read('app/api/weekly-post/route.ts'))
-    && /An uploaded font is not served to the browser\./.test(read('app/api/weekly-post/route.ts')))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the refusal is the `errorsManage.wp_font_not_served` code (worded in the
+    // truck's language by `refuse`); it is asserted INSIDE the `own` branch, and the en-GB sentence is unchanged.
+    && /if \(ref\.kind === 'own'\) \{\s*\n\s*return refuse\(locale, 'wp_font_not_served', 403\)/.test(codeOf(read('app/api/weekly-post/route.ts')))
+    && GB_MSG.errorsManage.wp_font_not_served === 'An uploaded font is not served to the browser.')
 
   console.log('')
   if (fail) { console.log(`🔴 ${fail} CHECK(S) FAILED`); process.exit(1) }

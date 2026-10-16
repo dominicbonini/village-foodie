@@ -402,6 +402,50 @@ const TEXT_RULES = [
 // after "Templates" — so the admin text is compared with exactly that label taken out, and must then be
 // byte-identical (or differ only by the wording rules above).
 const ADMIN_NEW_TAB = ' 🌍 Countries'
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): Manage › Billing and Manage › Payments moved their words into messages/
+// (`manageBilling`, `managePayments`), and Part 2 named three kinds of change there — NOTHING ELSE is excused, and each
+// applies ONLY inside its own section (the billing renders, the payments renders):
+//   (a) GB wrong-English fixes, each a whole sentence (or the static part of one) as it was and as it is, listed below
+//       sentence by sentence — straight ' → ’, and the trial note's " - " → " — ". Each `to` is checked against the
+//       en-GB catalogue (it must be the key's text now) and each `from` against Part 2's as-moved record
+//       (scripts/fixtures/language-phase-1d2-gb-moved.json), so this list cannot excuse a sentence nobody named;
+//   (b) named code change 1d2-billing-plan-header (scripts/_lp1d2-named.cjs): the plan comparison's column header prints
+//       the plan's NAME from PLAN_META instead of its id ("starter" → "Starter"; the header is CSS-uppercased either
+//       way). Only a header followed by its own price cell ("<id> <price> per truck / month") is touched, and the names
+//       come from the modules section of this same run (PLAN_META), not typed here.
+//   The mailto body (an `attrs` leaf) carries fix (a)'s "I'd" too, so the billing `attrs` comparison applies (a) as well.
+const LP1D2_RULES = {
+  billing: [
+    ['manageBilling.notStarted.body', 'You choose which event starts your free trial - until then, nothing is counting down.', 'You choose which event starts your free trial — until then, nothing is counting down.'],
+    ['manageBilling.upgradeModal.body', "We're setting up automated billing. To upgrade now, drop us a message and we'll get you set up within 24 hours.", 'We’re setting up automated billing. To upgrade now, drop us a message and we’ll get you set up within 24 hours.'],
+    ['manageBilling.upgradeModal.mailBody', "Hi, I'd like to upgrade ", 'Hi, I’d like to upgrade '],
+  ],
+  payments: [
+    ['managePayments.state.not_connected.body', "Takes about 10 minutes. You'll need your bank details and ID.", 'Takes about 10 minutes. You’ll need your bank details and ID.'],
+    ['managePayments.online.feeLine', "HatchGrab's own fee on online orders depends on your plan — see Billing.", 'HatchGrab’s own fee on online orders depends on your plan — see Billing.'],
+    ['managePayments.walkUp.ownTerminalHelp', "Nothing to set up — only your provider's own fees apply.", 'Nothing to set up — only your provider’s own fees apply.'],
+    ['managePayments.trialNote', "Setting this up doesn't start your subscription or charge you anything today. It's how your customers pay you — your plan is separate.", 'Setting this up doesn’t start your subscription or charge you anything today. It’s how your customers pay you — your plan is separate.'],
+  ],
+}
+let SECTION = ''          // the section being compared (set by the main loop), so (a) and (b) stay in their own section
+let PLAN_NAMES = null     // { trial: 'Trial', … } from this run's PLAN_META
+const lp1d2Rules = () => LP1D2_RULES[SECTION] || []
+function lp1d2Apply(x) {
+  for (const [, from, to] of lp1d2Rules()) x = x.split(from).join(to)
+  if (SECTION === 'billing' && PLAN_NAMES) {
+    x = x.replace(/(^| )(trial|starter|pro|max)( (?:Free|TBC|£[0-9,.]+\/mo) per truck \/ month)/g, (m, a, p, c) => a + PLAN_NAMES[p] + c)
+  }
+  return x
+}
+/** The (a) list's own proof: every `to` is the en-GB key's text now and every `from` its as-moved text (both may be the
+ *  static part of a message with {placeholders}). Returns the rules that fail. */
+function lp1d2RulesProved() {
+  const gb = JSON.parse(read('messages/en-GB.json'))
+  const moved = JSON.parse(read('scripts/fixtures/language-phase-1d2-gb-moved.json'))
+  const get = k => k.split('.').reduce((o, p) => (o && typeof o === 'object' ? o[p] : undefined), gb)
+  return Object.values(LP1D2_RULES).flat().filter(([k, from, to]) => !(typeof get(k) === 'string' && get(k).includes(to.trimEnd())
+    && typeof moved[k] === 'string' && moved[k].includes(from.trimEnd())))
+}
 const allowedChange = (b, a, at = '') => {
   if (at.startsWith('admin') || at === '.text' && typeof a === 'string' && a.includes('✉️ Templates' + ADMIN_NEW_TAB)) {
     if (typeof a === 'string' && a.includes('✉️ Templates' + ADMIN_NEW_TAB)) a = a.replace('✉️ Templates' + ADMIN_NEW_TAB, '✉️ Templates')
@@ -410,6 +454,7 @@ const allowedChange = (b, a, at = '') => {
   if (typeof b !== 'string' || typeof a !== 'string') return false
   let x = b
   for (const [from, to] of TEXT_RULES) x = from instanceof RegExp ? x.replace(from, to) : x.split(from).join(to)
+  x = lp1d2Apply(x)   // ⚠️ RE-PINNED (Language Phase 1d Part 2): only in billing / payments — see LP1D2_RULES
   return x !== b && x === a
 }
 // 3 · the prefill: the two boxes held "4.5" and "20" and now hold "", and they gained two placeholders.
@@ -420,7 +465,9 @@ const attrsAllowed = (b, a) => {
   if (!Array.isArray(b) || !Array.isArray(a)) return false
   const after = JSON.stringify(a.filter(x => !NEW_PLACEHOLDERS.includes(x)))
   const emptied = JSON.stringify(b.map(x => (x === 'value=4.5' || x === 'value=20') ? 'value=' : x))
-  return after === JSON.stringify(b) || after === emptied
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): + the billing mailto body's named "I'd" → "I’d" (LP1D2_RULES; billing only).
+  const fixed = JSON.stringify(b.map(x => typeof x === 'string' ? lp1d2Apply(x) : x))
+  return after === JSON.stringify(b) || after === emptied || (lp1d2Rules().length > 0 && fixed !== JSON.stringify(b) && JSON.stringify(a) === fixed)
 }
 
 // ⚠️ FOR THE DEV-SERVER PAGES ONLY: space before closing punctuation is not compared. React's SSR puts a
@@ -469,8 +516,12 @@ function diff(before, after, at = '', out = { same: 0, allowed: [], bad: [] }, n
   if (before.pdf && typeof before.pdf.text === 'string') before.pdf.text = genDate(before.pdf.text)
   let fails = 0
   const sections = ['modules', 'pdf', 'billing', 'payments', 'admin', 'compare'].concat(snap.pages ? ['pages'] : [])
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the plan names for rule (b), from this run's PLAN_META.
+  PLAN_NAMES = Object.fromEntries(Object.entries(snap.modules.PLAN_META).map(([p, m]) => [p, m.name]))
   for (const s of sections) {
+    SECTION = s
     const d = diff(before[s], snap[s], '', undefined, s === 'pages' ? normPages : undefined)
+    SECTION = ''
     const ok = d.bad.length === 0
     if (!ok) fails++
     console.log(`${ok ? '✓' : '✗'} ${s}: ${d.same} identical leaves, ${d.allowed.length} with an allowed change${ok ? '' : `, ${d.bad.length} DIFFERENT`}`)
@@ -500,6 +551,22 @@ function diff(before, after, at = '', out = { same: 0, allowed: [], bad: [] }, n
   const payOk = payText.includes('Other cards may cost more.') && !payText.includes('Cards issued outside')
   if (isAfter && !payOk) { fails++; console.log('✗ the Payments sentence did not change — allowed change 2 is missing') }
   else if (isAfter) console.log('✓ allowed change 2 is present (Payments: "Other cards may cost more.", both places)')
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the named Part 2 changes are PROVED and PRESENT, or the excuse is vacuous —
+  // each sentence pair matches the catalogue (to = en-GB now, from = as moved), each `to` is in its section's render
+  // and no `from` is, and the billing headers print the four PLAN_META names.
+  {
+    const unproved = lp1d2RulesProved()
+    const flat = sec => JSON.stringify(snap[sec])
+    const absent = Object.entries(LP1D2_RULES).flatMap(([sec, rules]) => rules.filter(([, from, to]) => !flat(sec).includes(to) || flat(sec).includes(from)).map(r => r[0]))
+    const billingText = Object.values(snap.billing.published).map(v => v.text).join(' ')
+    const headersOk = ['trial', 'starter', 'pro', 'max'].every(p => typeof PLAN_NAMES[p] === 'string' && PLAN_NAMES[p] !== p
+      && new RegExp(` ${PLAN_NAMES[p]} (Free|TBC|£[0-9,.]+/mo) per truck / month`).test(billingText))
+      && !/ (trial|starter|pro|max) (Free|TBC|£[0-9,.]+\/mo) per truck \/ month/.test(billingText)
+    if (isAfter && (unproved.length || absent.length || !headersOk)) {
+      fails++
+      console.log(`✗ Language Phase 1d Part 2's named changes: unproved ${JSON.stringify(unproved.map(r => r[0]))} · not in the render ${JSON.stringify(absent)} · plan headers ${headersOk}`)
+    } else if (isAfter) console.log(`✓ Language Phase 1d Part 2's named changes are proved against the catalogue and present (${Object.values(LP1D2_RULES).flat().length} GB sentence fixes; plan headers print PLAN_META names)`)
+  }
   if (snap.pages) {
     const cmp = snap.pages['/compare'].attrs
     const emptyOk = !cmp.includes('value=4.5') && !cmp.includes('value=20') && NEW_PLACEHOLDERS.every(p => cmp.includes(p))

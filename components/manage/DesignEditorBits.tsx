@@ -15,6 +15,9 @@
 // compete with the design underneath. The class is `TOOL_LABEL` and there is one of it.
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
+/* 🔴 LANGUAGE PHASE 1d PART 2: the few words these controls carry are messages (`designEditor.bits`). */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/designEditor'
 
 /** The small uppercase label above every toolbar control. */
 export const TOOL_LABEL = 'block text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1 whitespace-nowrap'
@@ -62,12 +65,13 @@ export function Stepper({ value, onChange, min, max, step = 1, suffix, width = '
   minusLabel?: string
   plusLabel?: string
 }) {
+  const t = useT('designEditor')
   const [draft, setDraft] = useState<string | null>(null)
   const clamp = (v: number) => Math.max(min, Math.min(max, Math.round(v)))
   const shown = draft ?? String(value)
   return (
     <>
-      <button type="button" aria-label="Less"
+      <button type="button" aria-label={t('bits.less')}
         className={`${TOOL_BTN} ${TOOL_BTN_OFF} w-8`}
         onClick={() => onChange(clamp(value - step))}>{minusLabel ?? '−'}</button>
       <input
@@ -82,7 +86,7 @@ export function Stepper({ value, onChange, min, max, step = 1, suffix, width = '
         className={`${TOOL_INPUT} ${width} text-center`}
       />
       {suffix && <span className="text-xs text-slate-400">{suffix}</span>}
-      <button type="button" aria-label="More"
+      <button type="button" aria-label={t('bits.more')}
         className={`${TOOL_BTN} ${TOOL_BTN_OFF} w-8`}
         onClick={() => onChange(clamp(value + step))}>{plusLabel ?? '+'}</button>
     </>
@@ -136,6 +140,7 @@ export function ColourField({ value, onChange, label }: {
   onChange: (hex: string) => void
   label?: string
 }) {
+  const t = useT('designEditor')
   const id = useId()
   return (
     <div className="flex items-center gap-1">
@@ -151,7 +156,7 @@ export function ColourField({ value, onChange, label }: {
       <span className="relative inline-block w-8 h-6 rounded-md border-2 border-slate-300 overflow-hidden"
         style={{ backgroundColor: value }}>
         <input id={id} type="color" value={value}
-          aria-label={label ? `${label} — choose any colour` : 'Choose any colour'}
+          aria-label={label ? t('bits.chooseColourFor', { label }) : t('bits.chooseColour')}
           onChange={e => onChange(e.target.value)}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
       </span>

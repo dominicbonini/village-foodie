@@ -1,0 +1,107 @@
+{
+  "preview": {
+    "title": "Try it before you connect",
+    "intro": "Type a question like a customer would ask, and see exactly what they’d get back. Nothing is sent to anyone.",
+    "examples": {
+      "where": "Where are you tonight?",
+      "doYouDo": "Do you do pepperoni?",
+      "menu": "What’s on the menu?"
+    },
+    "placeholder": "What desserts do you do?",
+    "send": "Send",
+    "empty": "Your reply will appear here",
+    "working": "Working out the reply…",
+    "noReply": "No reply would be sent.",
+    "noReplyWhy": "That reads as spam, a booking request or something unrelated, so the auto-reply stays quiet.",
+    "footnote": "Replies are AI-generated and vary slightly each time, and can occasionally be wrong.",
+    "failed": "Could not build a preview just now.",
+    "unreachable": "Could not reach the server. Check your connection and try again."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Preparing…",
+      "unavailable": "Unavailable",
+      "waiting": "Waiting for Facebook window…",
+      "finishing": "Finishing…",
+      "reconnect": "Reconnect",
+      "setUp": "Set up"
+    },
+    "startAgain": "Start again",
+    "popupHint": "Can’t see the Facebook window? It may have been blocked. Allow pop-ups for hatchgrab.com, then press Start again."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsApp setup is not available in this environment.",
+    "sdkBlocked": "Meta’s login script could not load. An ad blocker or tracking protection is the usual cause.",
+    "setupFailed": "Setup could not be completed. Nothing was changed.",
+    "setupFinished": "Setup finished.",
+    "metaError": "Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.",
+    "closed": "Setup was closed before it finished. Nothing was changed — press Set up to try again.",
+    "disconnectedUnreachable": "WhatsApp is disconnected. We couldn’t reach Meta to remove access. Please remove HatchGrab in WhatsApp Business → Settings → Account → Business Platform.",
+    "disconnected": "WhatsApp is disconnected. Auto-replies have stopped.",
+    "close": "Close"
+  },
+  "card": {
+    "title": "Auto-replies",
+    "description": "Answer customer questions automatically on your social media, using your menu and schedule.",
+    "channels": "Channels",
+    "requiresAccount": "Requires a WhatsApp Business account.",
+    "connected": "Connected",
+    "popupInstruction": "A Facebook window will open to connect your WhatsApp Business account. If nothing appears, allow pop-ups for hatchgrab.com in your browser, then press Set up again.",
+    "notOnPlan": "WhatsApp auto-replies are included on Pro and Max.",
+    "upgrade": "Upgrade →",
+    "expiring": "Your WhatsApp connection needs renewing soon. Press Reconnect to keep auto-replies running.",
+    "comingSoon": "Coming soon",
+    "instagram": "Auto-replies to Instagram direct messages. Will require an Instagram professional account.",
+    "messenger": "Auto-replies to Facebook Messenger. Will require a Facebook Page."
+  },
+  "blocked": {
+    "title": "Your replies are not being delivered",
+    "body": "WhatsApp is refusing to send your automatic replies because of a billing problem on your WhatsApp Business account. Customers can still message you and you will still see everything they send — but they are not getting a reply.",
+    "fix": "You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager. <link>Check your payment method</link>"
+  },
+  "limit": {
+    "heading": "Auto-replies",
+    "label": "Monthly limit",
+    "option": "{n, number}",
+    "usage": "{used, number} of {limit, number} used · resets {date}",
+    "perCustomer": "Up to {n} replies per customer in 24 hours, then one message saying you’ll reply personally.",
+    "emailAt": "Replies pause at your limit. We’ll email you at 80% and 100%.",
+    "saved": "Monthly reply limit saved",
+    "saveFailed": "Could not save the limit"
+  },
+  "billing": {
+    "heading": "Billing",
+    "paymentMethod": "Payment method",
+    "added": "Payment method added",
+    "missing": "No payment method added",
+    "addInManager": "Add in WhatsApp Manager",
+    "summary": "Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {free, number} a month are free. Correct at {checked}; check <link>Meta’s pricing</link> for changes.",
+    "howMetaCharges": "How Meta charges",
+    "chargesTitle": "Meta charges for WhatsApp replies, not HatchGrab.",
+    "chargesBody": "Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business account. From {from}, Meta includes {free, number} free replies a month per number; after that, each reply is charged at Meta’s rate. Replies you send yourself from the WhatsApp Business app aren’t charged. Meta sets these prices and may change them. <link>See Meta’s pricing</link>",
+    "addPaymentInManager": "Add a payment method in WhatsApp Manager",
+    "aboveMissing": "Your limit is above Meta’s {free, number} free replies. Without a payment method, Meta will stop all replies once those are used.",
+    "aboveGeneral": "Your limit is above Meta’s {free, number} free replies. Replies beyond that need a payment method on your WhatsApp account; without one, Meta stops all replies once the free ones are used.",
+    "addPaymentMethod": "Add a payment method"
+  },
+  "disconnect": {
+    "link": "Disconnect WhatsApp",
+    "title": "Disconnect WhatsApp?",
+    "body": "Auto-replies stop straight away and HatchGrab loses access to your WhatsApp account. Your number keeps working in the WhatsApp Business app. To remove HatchGrab completely, also open WhatsApp Business → Settings → Account → Business Platform.",
+    "cancel": "Cancel",
+    "confirm": "Disconnect",
+    "working": "Disconnecting…",
+    "failed": "Could not disconnect"
+  },
+  "signup": {
+    "logged": "Logged.",
+    "partial": "We linked your WhatsApp Business account but could not complete the connection. Nothing is wrong on your side — please contact us and we will finish it.",
+    "noNumber": "Your WhatsApp Business account is linked, but no phone number came back. Press Reconnect and finish the number step.",
+    "needsRegistering": "Your account is linked, but this number needs registering by us before replies can start. Please contact support — your setup is saved, do not run it again.",
+    "registerRefused": "Your account is linked but Meta would not register the number. Your setup is saved — please contact support rather than running it again.",
+    "deliveryRefused": "Your account is linked but Meta would not turn on message delivery. Your setup is saved — please contact support rather than running it again.",
+    "numberTaken": "That WhatsApp number is already connected to another HatchGrab account. A number can only answer for one truck. Contact support and we will move it across.",
+    "saveIncomplete": "Almost there — we could not finish saving. Your setup is saved, please contact support rather than running it again.",
+    "connected": "WhatsApp is connected. Auto-replies will start answering messages to this number."
+  }
+}

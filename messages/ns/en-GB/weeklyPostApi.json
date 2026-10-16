@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "The heading did not fit and was shortened.",
+    "date": "The date did not fit and was shortened.",
+    "daysOff": "The days-off text did not fit and was shortened.",
+    "place": "The place name did not fit and was shortened.",
+    "time": "The time did not fit and was shortened.",
+    "note": "Your own text did not fit and was shortened.",
+    "venue": "The venue did not fit and was shortened.",
+    "area": "The area did not fit and was shortened."
+  },
+  "fontFallback": "A font this design uses ({id}) could not be loaded — those boxes are in Oswald.",
+  "wrongShapeBackground": "This place’s picture is a different shape from your design, so the standard background is used.",
+  "rowsFit": "The last day falls {px}px below the bottom of the image — reduce the row spacing or move row 1 up.",
+  "placeStatus": {
+    "ownBoth": "Own picture and text positions",
+    "wrongShape": "Different shape — not used until replaced",
+    "ownPicture": "Own picture, standard positions",
+    "ownPositions": "Standard picture, own text positions",
+    "none": "No picture yet — using Standard"
+  },
+  "standardStatus": "Used at every other place",
+  "option": {
+    "oneOff": "Upload one for this post only",
+    "placePoster": "{name}’s poster",
+    "standard": "Standard design"
+  },
+  "previewLabel": {
+    "lastEvent": "Preview uses your last event here",
+    "noEvents": "No events here yet — preview shows your next event with this place’s name"
+  },
+  "fontUsage": {
+    "weekly": "your weekly post design",
+    "event": "your single event post design",
+    "place": "your design for {place}",
+    "placeUnnamed": "your design for a place"
+  },
+  "face": {
+    "regular": "Regular",
+    "bold": "Bold",
+    "italic": "Italic"
+  },
+  "picture": {
+    "legacy": "Event poster",
+    "fallback": "Picture",
+    "wrongShape": "Different shape — can’t be used as a whole background"
+  },
+  "noPicture": {
+    "omit": "Leave it out",
+    "blank": "Leave a blank space",
+    "logo": "Show your logo"
+  },
+  "noPicturesAll": "{total, plural, one {Your location has an image.} other {All {total} of your locations have an image.}}",
+  "noPicturesSome": "{without, plural, one {{without} of your {total} locations has no image yet} other {{without} of your {total} locations have no image yet}}",
+  "licenceTick": "I own this font or have a licence to use it",
+  "fontUploadButton": "↑ Upload your font"
+}

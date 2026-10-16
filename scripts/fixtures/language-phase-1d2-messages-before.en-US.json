@@ -1,0 +1,603 @@
+{
+  "provisionContent": {
+    "firstVanName": "Truck 1",
+    "demoCategories": {
+      "mains": "Entrées"
+    },
+    "demoTemplates": {
+      "pizza": {
+        "label": "🍕 Pizza truck",
+        "items": {
+          "gardenVeg": "Garden Veggie",
+          "rocketParmesan": "Arugula & Parmesan"
+        }
+      },
+      "burgers": {
+        "label": "🍔 Burger truck"
+      },
+      "curries": {
+        "label": "🍛 Curry truck",
+        "items": {
+          "pilauRice": "Pulao Rice"
+        }
+      }
+    }
+  },
+  "order": {
+    "state": {
+      "confirmCancelled": "This order has been canceled.",
+      "cardFormLoadFailed": "We could not load the card form — check your connection and try again. Your cart is saved, and you have not been charged."
+    },
+    "tipNote": "100% of your tip goes to the truck. Calculated on the food, before tax.",
+    "authFailed": "That payment could not be authorized. You have not been charged — please try another card, or choose Pay at the truck.",
+    "couldNotPlace": "We could not place your order. You have not been charged.",
+    "paymentThrew": "Something went wrong taking that payment. You have not been charged — please try again, or choose Pay at the truck.",
+    "walkUpOnly": "This truck takes walk-up orders at the window.",
+    "mealDeals": "🎁 Combos",
+    "setupPending": "Setup pending",
+    "authorising": "Authorizing…",
+    "collectionTimeTitle": "Pickup time",
+    "collectionTimeChosen": "✓ Pickup time: {time}",
+    "payAtTruckLine": "Pay at the truck at pickup · No card details needed",
+    "modalAdd": "Add to cart · {amount}",
+    "collectionTime": "Pickup time: {time}",
+    "seeYou": "See you at the window!",
+    "preferredCollection": "Preferred pickup: {time}",
+    "willConfirmTime": "{truck} will confirm your pickup time when they accept your order."
+  },
+  "phone": {
+    "invalidMobile": "{withName, select, yes {Please enter a valid {name} phone number} other {Please enter a valid phone number}}{withExample, select, yes { (e.g. {example})} other {}}"
+  },
+  "errorsCustomer": {
+    "sold_out_paying": "{names} sold out while you were paying. We’ve removed {count, plural, one {it} other {them}} and you have not been charged — please check your order before placing it again.",
+    "private_link_only": "This event takes orders by private link only. Please use the organizer’s link or QR code.",
+    "card_unavailable": "We could not set up card payment just now, so your order has not been placed and you have not been charged. Your cart is saved — please try again, or choose Pay at the truck.",
+    "cannot_cancel": "This order can no longer be canceled",
+    "cancel_window_passed": "{n, plural, one {Orders can no longer be canceled within {count} minute of pickup} other {Orders can no longer be canceled within {count} minutes of pickup}}",
+    "order_not_placed": "Sorry — we could not place your order. You have not been charged.",
+    "truck_not_taking_orders": "This truck is no longer taking orders. You have not been charged.",
+    "category_closed_paying": "Sorry — {category} closed while you were paying, so we could not place your order. You have not been charged."
+  },
+  "deals": {
+    "inYourBasket": "── In your cart ──",
+    "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (in cart){state, select, used { — already in a deal} taken { — selected in another slot} other {}}"
+  },
+  "orderStatus": {
+    "cancelledTitle": "Order canceled",
+    "cancelledBody": "Your order has been canceled. If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.",
+    "statusCancelled": "This order has already been canceled.",
+    "statusTooLate": "This order can no longer be canceled.",
+    "statusName": {
+      "collected": "picked up",
+      "cancelled": "canceled"
+    },
+    "cancelling": "Canceling…"
+  },
+  "privateLink": {
+    "orderingOffBody": "This event isn’t taking orders online. Please order at the window.",
+    "replacedBody": "This link no longer works — {truck} has replaced it. Ask the organizer for the new link or QR code.",
+    "unknownBody": "This link doesn’t work. Check it with the organizer, or scan the QR code again."
+  },
+  "emailCustomer": {
+    "payNote": {
+      "partPaidTitle": "Partially paid",
+      "partPaidTitleOwing": "Partially paid — {balance} still due",
+      "partPaidBody": "The rest is due when you pick up.",
+      "partPaidBodyFigures": "{paid} of this order is paid. The remaining {balance} is due when you pick up.",
+      "partPaidText": "Partially paid. Some of this order is still due when you pick up.",
+      "partPaidTextFigures": "Partially paid: {paid} received, {balance} still due when you pick up.",
+      "partPaidShortFigures": "{paid} paid, {balance} still due",
+      "stillToPay": "{amount} still due.",
+      "partStillToPay": "Part of this order is still due.",
+      "heldShortTitleOwing": "Your card is held for part of this order — {owing} still due",
+      "heldShortBody": "{truck} takes the amount held when they confirm your order. The rest is due when you pick up.",
+      "heldShortBodyFigures": "{truck} takes the {held} held when they confirm your order. The remaining {owing} is due when you pick up.",
+      "heldShortText": "Your card is held for part of this order. {truck} takes the amount held when they confirm your order, and the rest is due when you pick up.",
+      "heldShortTextFigures": "Your card is held for {held}, which {truck} takes when they confirm your order. {owing} of this order is still due when you pick up.",
+      "heldShortShortOwing": "Card held for part of this order, {owing} still due",
+      "unknownBody": "Your card was authorized, so please do not pay again — {truck} will confirm at the window.",
+      "unknownText": "We’re still confirming your payment. Your card was authorized, so please do not pay again — {truck} will confirm at the window.",
+      "hatchTitle": "Pay at the truck at pickup",
+      "hatchText": "Pay at the truck at pickup."
+    },
+    "confirmation": {
+      "slotUpdated": "Your pickup time has been updated",
+      "collectionTime": "Pickup time: {time}",
+      "seeYou": "See you at the window!",
+      "preferredTime": "Preferred pickup time: {time}",
+      "weWillConfirm": "We’ll confirm your pickup time when we accept your order.",
+      "leadReady": "Your order is ready for pickup — come pick it up from {truck}.",
+      "textTitleReady": "Order #{id} is ready to pick up — {truck}",
+      "textReady": "Your order is ready for pickup — come pick it up.",
+      "textSlotUpdated": "Pickup time updated to {time} (was {previous}).",
+      "textCollection": "Pickup time: {time}. See you at the window!",
+      "textPreferred": "Preferred pickup: {time} — we’ll confirm when we accept your order."
+    },
+    "cancelSentence": {
+      "heldReleased": "Your card was held for this order, not charged. That hold has been released and you have not been charged."
+    },
+    "cancellation": {
+      "subject": "Your order has been canceled — {truck}",
+      "body": "Your order <b>#{id}</b> from <b>{truck}</b> has been canceled.",
+      "textLead": "Hi {withName, select, yes {{name}} other {there}}, your order #{id} from {truck} has been canceled."
+    },
+    "eventCancellation": {
+      "subject": "{truck} at {withLocation, select, yes {{location}} other {your event}} — canceled",
+      "body": "Unfortunately <b>{truck}</b>’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been canceled.",
+      "orderCancelled": "Your order <b>#{id}</b> has been canceled.",
+      "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been canceled. Your order #{id} has been canceled."
+    },
+    "rejection": {
+      "body": "Unfortunately <b>{truck}</b> is unable to fulfill order #{id}.",
+      "textLead": "Unfortunately {truck} is unable to fulfill order #{id}."
+    }
+  },
+  "setup": {
+    "verify": {
+      "expired": "That confirmation link has expired. Get in touch and we’ll fix it before you go live.",
+      "invalid": "That confirmation link didn’t work. Get in touch and we’ll fix it before you go live."
+    },
+    "identity": {
+      "phoneHelp": "Customers see this on their order confirmation so they can ask about an order. The checkbox decides whether that reads “Call us” or “WhatsApp us”. You can change both in Settings."
+    }
+  },
+  "goLive": {
+    "noVan": {
+      "title": "Add a truck",
+      "detail": "Events run against a truck — without one there is nothing to take orders through."
+    },
+    "kitchenCapacityUnset": {
+      "detail": "No capacity is set for {vans}. Without it we will keep promising customers pickup times your kitchen has no way to hit.",
+      "unnamedVan": "Unnamed truck"
+    },
+    "noPrepBearingCategory": {
+      "detail": "{categories, select, none {You have no menu categories yet, so we have no way to work out how long an order takes.} other {None of your categories has a cooking time set, so every order looks instant to us. We would keep giving customers pickup times your kitchen has no chance of hitting, and the busier you get the further out they would be.}}"
+    }
+  },
+  "walkthrough": {
+    "stops": {
+      "menu": {
+        "body": "Your dishes, prices and allergens. Change anything here and it’s live right away."
+      },
+      "schedule": {
+        "body": "Where and when you’re serving. Add an event here and customers can order for it."
+      },
+      "build": {
+        "body": "Deals, upsells, customizations and your kitchen capacity live under Menu — try them out."
+      }
+    }
+  },
+  "auth": {
+    "signup": {
+      "emailPlaceholder": "you@yourtruck.com"
+    }
+  },
+  "emailSignup": {
+    "verify": {
+      "next": "Once it’s confirmed I’ll send you everything you need to get started.",
+      "carryOn": "You can continue setting up in the meantime."
+    },
+    "welcome": {
+      "lookingForward": "{hasTruck, select, yes {Looking forward to seeing {truck} serving customers.} other {Looking forward to seeing your truck serving customers.}}"
+    }
+  },
+  "errorsOnboarding": {
+    "unauthorised": "Unauthorized"
+  },
+  "emailAccount": {
+    "deletionScheduled": {
+      "cannotCancel": "<b>This cannot be canceled from inside the app.</b> If this was not you, or you have\n    changed your mind, reply to this email as soon as possible."
+    }
+  },
+  "demoSaveEmail": {
+    "freshDay": "Each time you come back we’ll set up a fresh day of service so there’s something to play with."
+  },
+  "demoGetStarted": {
+    "upload": {
+      "sub": "Your menu carries right over."
+    },
+    "saveOnly": {
+      "sub": "We’ll keep it for 14 days and email you a link right back."
+    },
+    "confirmEmailed": "We’ve emailed you a link right back to this demo — no login needed.",
+    "emailPlaceholder": "you@yourtruck.com"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "you@yourtruck.com",
+    "sampleWhileYouWait": "Or look around with a sample menu while you wait",
+    "orSample": "Or look around with a sample menu",
+    "noPhoto": "Don’t have a menu photo handy?",
+    "noPhotoBody": "Look around with a sample truck instead — you can upload yours any time."
+  },
+  "orderCard": {
+    "markPaidAndCollected": "Mark paid & picked up",
+    "collected": "Picked up",
+    "cashAndCollected": "Cash & picked up",
+    "cardAndCollected": "Card & picked up",
+    "refundedTitle": "Refunded in full. Nothing to charge.",
+    "partRefundedTitle": "Charged in full, then partially refunded. Nothing to charge.",
+    "cardHeldTitle": "Card authorized — do not charge. Payment is taken when you confirm.",
+    "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Canceled} cooking {Cooking} ready {Ready} collected {Picked up} other {New}}",
+    "cashIcon": "💵"
+  },
+  "dashboard": {
+    "toast": {
+      "intervalsSaved": "Pickup times saved for this event",
+      "printMode": "{mode, select, onConfirmed {Tickets will print when you accept an order} other {Tickets will print shortly before pickup}}",
+      "cardPayments": "{state, select, off {Card payments off — customers pay at the window} other {Card payments back on}}",
+      "intervalsFailed": "Pickup times could not be saved right now.",
+      "eventCancelled": "Event canceled"
+    },
+    "demo": {
+      "lockBody": "This is where you start and close a service, pause orders when the line gets long, or switch to a different event."
+    },
+    "cancelReasons": {
+      "customer_cancelled": "Customer canceled",
+      "not_collected": "Order not picked up"
+    },
+    "cancelModal": {
+      "noRefund": "The order will be canceled and the {amount} will stay with you. Nothing goes back to the customer’s card.",
+      "held": "Their card is <b>held, not charged</b> — nothing has been charged, so there is nothing to refund. Canceling releases the hold right away."
+    },
+    "banner": {
+      "cardPaymentsOff": "Card payments are off — customers are paying at the window. This stays off, on every event, until you turn it back on."
+    },
+    "orders": {
+      "completedSection": "Completed & canceled ({count})",
+      "doneSummary": "{done} done{hasCancelled, select, yes { · {cancelled} canceled} other {}}",
+      "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Canceled} cooking {Cooking} ready {Ready} collected {Picked up} other {{status}}}"
+    },
+    "settings": {
+      "pressesOne": "One press (“Mark paid & picked up”)",
+      "pressesOneHelp": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & picked up”, which records the payment and clears the order together.",
+      "pressesTwo": "Two presses (“Mark paid” & “Picked up”)",
+      "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the window, then picks up when it’s ready. You get two buttons: “Mark paid” first, then “Picked up” when they take the food.",
+      "cardsHelp": "Turn this off during a card problem and customers will place orders as normal and pay at the window instead. Orders keep coming; only the card step stops.",
+      "intervalsTitle": "Pickup times",
+      "intervalsHelp": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+      "intervalsUnavailable": "Pickup times are unavailable right now.",
+      "customerTimes": "Customer pickup times",
+      "yourTimes": "Your pickup times",
+      "colCountsTitle": "Which categories count toward the total capacity. Cooked categories always count; check instant ones (sides, dips, drinks) to include them.",
+      "countsTick": "Check to include this instant category (sides, dips, drinks) in the shared per-window limit"
+    },
+    "stock": {
+      "howCategory": "<b>Category total</b> is a shared pool across every item in that category (e.g. 30 appetizers tonight).",
+      "howAvailable": "<b>Available</b>: green = on sale, gray = sold out (hidden from customers)."
+    },
+    "kds": {
+      "body": "Choose which truck’s kitchen screen to open:"
+    },
+    "edit": {
+      "extraToCollect": "Extra to charge",
+      "collectionTime": "Pickup time"
+    },
+    "eventBar": {
+      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Canceled} other {Not started}}"
+    }
+  },
+  "errorsKitchen": {
+    "unauthorised": "Unauthorized",
+    "already_paid_by_card": "This customer has already paid by card. Their card is authorized for this order and is charged automatically when you confirm it, so taking payment here would charge them twice. Nothing has been recorded.",
+    "intervals_choices": "Pickup times must be every {choices} minutes.",
+    "intervals_customer_first": "Set the customer pickup times before setting your own.",
+    "intervals_save_failed": "Pickup times could not be saved right now.",
+    "no_van_for_device": "This device isn’t set to a truck yet, so wired printing isn’t available.",
+    "van_not_for_truck": "That truck isn’t part of this account",
+    "van_not_for_target": "That truck isn’t part of the account you’re switching to"
+  },
+  "kitchenModals": {
+    "eventCancel": {
+      "affected": "{n, plural, one {{count} order} other {{count} orders}} will be canceled and customers notified.",
+      "cancelling": "Canceling…"
+    },
+    "actions": {
+      "notePlaceholder": "e.g. Park in the main parking lot, look for the orange tent"
+    },
+    "extraWait": {
+      "hint": "Adds to the pickup time quoted on new orders. It does not change the event finish time."
+    },
+    "picker": {
+      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Canceled} other {Not started}}"
+    }
+  },
+  "ticket": {
+    "collect": "PICKUP {time}",
+    "collectAsap": "PICKUP ASAP",
+    "doNotCollect": "DO NOT CHARGE",
+    "paymentStatus": "{status, select, refunded {REFUNDED} part_refunded {PARTIALLY REFUNDED} refund_due {REFUND DUE} failed {FAILED} other {{status}}}"
+  },
+  "printing": {
+    "say": {
+      "guard": {
+        "unbound": "This device isn’t set to a truck yet, so wired printing isn’t available."
+      }
+    },
+    "card": {
+      "noneRecognised": "No printers recognized yet. Everything nearby is listed below — if your printer is there, tap it and HatchGrab will check whether it can print.",
+      "summaryLead": "Print <b>{lead} min</b> before pickup · {paper}mm paper",
+      "modeLead": "A set time before pickup",
+      "leadLabel": "Minutes before the pickup time",
+      "modeOnConfirmedHint": "An advance pre-order prints when you accept it, which may be hours before the pickup time. Orders you have not accepted yet never print."
+    }
+  },
+  "kds": {
+    "header": {
+      "fullTitle": "Full cards — prices and payment details, as the window sees them.",
+      "cashIcon": "💵"
+    },
+    "event": {
+      "cancelled": "Event canceled"
+    },
+    "intro": {
+      "p2": "Cards move across as you tap them, so whoever’s cooking always knows what’s next and nobody has to shout. Everything here is your demo data — try it out."
+    },
+    "banner": {
+      "eventStatus": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Canceled} other {Not started}}"
+    }
+  },
+  "nativeShell": {
+    "gate": {
+      "undoneCollected": "Undone — order not picked up",
+      "collected": "Order #{id} {paidToo, select, yes {paid and picked up} other {picked up}}",
+      "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {picked up} undo_collected {restored} cancel {canceled} other {updated}}"
+    },
+    "van": {
+      "label": "Truck"
+    },
+    "setup": {
+      "noVanTitle": "No active truck",
+      "noVanBody": "This account has no active truck yet. Activate one in <b>Settings → Your trucks</b>, then this device sets up automatically — no further steps here.",
+      "body": "One-time setup for <b>this device</b>: the screen it opens to and which truck it’s for. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → “This device”.",
+      "whichVan": "Which truck is this device for?",
+      "selectVan": "Select a truck…"
+    },
+    "device": {
+      "truck": "Business",
+      "van": "Truck",
+      "patchFailed": "{setting, select, van {Truck} defaultScreen {Default screen} other {Order notifications}} didn’t save. {reason}"
+    }
+  },
+  "demo": {
+    "cashAndCollected": "Cash & picked up",
+    "cashIcon": "💵"
+  },
+  "paymentActions": {
+    "reason": "{reason, select, item_unavailable {Item unavailable} not_collected {Order not picked up} wrong_or_missing_item {Wrong or missing item} quality_issue {Quality issue} duplicate_payment {Duplicate payment} customer_cancelled {Customer canceled} other {Other}}",
+    "paidCardMachine": "Paid on your card reader{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Cash or your card reader — not recorded",
+    "part": "Partial"
+  },
+  "addOrder": {
+    "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add orders at the window; you’ll be asked to confirm.",
+    "savedToast": "Order {id} saved{paid, select, cash { — paid in cash} card { — paid on your card reader} other {}}",
+    "confirmedToast": "Order #{id} confirmed{paid, select, cash { — paid in cash} card { — paid on your card reader} other {}}",
+    "addAnywayConfirm": "{detail}\n\nAdd anyway (at the window)?\n\nOK = add anyway   ·   Cancel = edit the order",
+    "cashIcon": "💵"
+  },
+  "emailOperator": {
+    "newOrder": {
+      "collection": "Pickup: {time}"
+    }
+  },
+  "alertsOperator": {
+    "limit100": {
+      "startAgain": "They’ll start again on <b>{reset}</b>, or right away if you raise your monthly limit in Settings.",
+      "startAgainLink": "They’ll start again on {reset}, or right away if you raise your monthly limit in Settings:"
+    }
+  },
+  "manageAllergens": {
+    "cardEditor": {
+      "placeholder": "e.g. All our tacos contain wheat and milk. Fryer is shared with items containing gluten and nuts. Vegan options available — ask staff."
+    },
+    "cardUpload": {
+      "analysing": "Analyzing card…"
+    },
+    "wizard": {
+      "uncategorised": "Uncategorized"
+    }
+  },
+  "manageExtras": {
+    "addLabel": "+ Add customization",
+    "uncategorized": "Uncategorized",
+    "matrix": {
+      "help": "Check “Include” to add the group to a dish, then check which options it shows. Saves instantly."
+    }
+  },
+  "eventTypes": {
+    "vanGone": "That truck has gone.",
+    "sections": {
+      "vans": "TRUCKS"
+    },
+    "copyVanOne": "Copy Truck 1’s settings",
+    "phone": {
+      "vanSetup": "This truck’s usual setup — used at every event with no type."
+    },
+    "newType": {
+      "namePlaceholder": "e.g. School fair",
+      "chips": {
+        "pub": "Bar",
+        "privateHire": "Catering"
+      }
+    },
+    "summary": {
+      "collectionEvery": "pickup every {mins} min"
+    },
+    "errors": {
+      "noVans": "This account has no trucks to change."
+    }
+  },
+  "privateEvents": {
+    "form": {
+      "previewNote": "How it shows on your schedule — no venue, town or ZIP code."
+    },
+    "link": {
+      "newLinkConfirm": "Make a new link? The current link stops working right away, and any QR codes you have already printed will stop working too.",
+      "newLinkHelp": "Use this if the link has gone somewhere it shouldn’t. The current link stops working right away, and printed QR codes stop working too."
+    }
+  },
+  "vanFilter": {
+    "ariaLabel": "Filter by truck",
+    "all": "All trucks",
+    "unknown": "Unknown truck"
+  },
+  "manageMenu": {
+    "item": {
+      "optionsHelp": "Check a group to offer it on this dish, then choose which of its options to show."
+    }
+  },
+  "manageMenuImport": {
+    "toast": {
+      "demoGone": "Your demo menu is no longer available — please upload it again to continue."
+    },
+    "processing": {
+      "title": "Analyzing your menu",
+      "body": "AI is reading and categorizing your items…"
+    },
+    "review": {
+      "noPriceBody": "Set a price for each, or mark it free — otherwise it would go live at {zero}. You can’t continue until these are fixed."
+    },
+    "extras": {
+      "introSetup": "Some dishes can be set up as <b>one customizable item</b> or kept as <b>separate dishes</b>. Choose how each should appear. You can change this later.",
+      "intro": "Some dishes can be set up as <b>one customizable item</b> or kept as <b>separate dishes</b>. Choose how each should appear. You can change this later in Settings."
+    },
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.com/events",
+      "dateTbc": "Date TBD"
+    }
+  },
+  "errorsManage": {
+    "unauthorised": "Unauthorized",
+    "collection_interval_choices": "Pickup times must be every {choices} minutes.",
+    "collection_intervals_save_failed": "Pickup times could not be saved right now.",
+    "van_not_found": "That truck isn’t part of this account",
+    "first_van_self": "The first truck cannot follow itself.",
+    "no_first_van": "There is no first truck to follow.",
+    "last_van": "Cannot remove the last truck",
+    "van_capacity_save_failed": "That truck’s capacity settings could not be saved right now.",
+    "first_van_copy_failed": "The first truck’s settings could not be copied right now.",
+    "capacity_copy_failed": "The first truck’s capacity could not be copied right now.",
+    "category_copy_failed": "The first truck’s category settings could not be copied right now.",
+    "schedule_read_failed": "Couldn’t read your schedule, so places could not be figured out."
+  },
+  "manageApi": {
+    "vanFallback": "Truck",
+    "uncategorised": "Uncategorized"
+  },
+  "manageSchedule": {
+    "status": {
+      "cancelled": "Canceled"
+    },
+    "toast": {
+      "eventCancelled": "Event canceled",
+      "eventCancelledOrders": "Event canceled · {count, plural, one {# order} other {# orders}} canceled"
+    },
+    "conflict": {
+      "overlap": "This event’s time overlaps another event on the same day — a single truck can’t be in two places at once. Check before approving."
+    }
+  },
+  "manageScheduleEvent": {
+    "titleTidy": "Clean up places",
+    "tidyUp": "Clean up places",
+    "whereTrading": "Where are you serving?",
+    "area": "City or town",
+    "van": "Truck",
+    "selectVan": "Select a truck",
+    "notesPlaceholder": "e.g. Park in the main parking lot"
+  },
+  "manageScheduleImport": {
+    "analysing": "Analyzing…",
+    "pastePlaceholder": "Paste your schedule here e.g. {date}, {style, select, zip_state {Zilker Park, Austin} other {The Crown, Wickhambrook}}, {start} – {end}",
+    "review": {
+      "van": "Truck",
+      "selectVan": "Select a truck"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "That doesn’t look like a web address. Try something like yourtruck.com/events"
+  },
+  "schedulePlaces": {
+    "favRemoveAria": "Remove {name} from favorites",
+    "favAddAria": "Add {name} to favorites",
+    "favourites": "Favorites",
+    "favAddFailed": "Couldn’t add that favorite.",
+    "favRemoveFailed": "Couldn’t remove that favorite.",
+    "pickPlace": "Pick a place to clean up."
+  },
+  "serviceSettings": {
+    "labels": {
+      "collection_interval_mins": "Pickup times"
+    },
+    "typeFollowsVanTitle": "Follows each truck’s usual setting",
+    "sameSettingsAllVansLabel": "Same settings for all trucks",
+    "sameSettingsAllVansHeader": "All trucks",
+    "sameSettingsConfirm": "Copy Truck 1’s settings to every truck? This copies all of Truck 1’s truck settings, the same as ‘Same as Truck 1’ in Settings. Kitchen capacity has its own switch.",
+    "pricesTruckWideTitle": "Your prices are the same for every truck"
+  },
+  "offlineProtection": {
+    "switchHelp": "What happens when this truck loses its connection."
+  },
+  "kitchenCapacity": {
+    "desc": "The most items your kitchen can turn out at once, across all the categories you’ve checked. Each category’s own batch size still applies on top.",
+    "example": "Example: if you can cook 4 entrées in 5 minutes, then set it to 4 items every 5 minutes. The total capacity limits orders across all selected categories so if you want to only sell a maximum of 10 appetizers and entrées every 5 minutes, then set Total capacity to 10 items every 5 minutes and check the Appetizers and Entrées boxes. This will still keep your entrées restricted to 4 items every 5 minutes.",
+    "loadVansFailed": "Could not load your trucks",
+    "noVan": "Add a truck in Settings › Truck settings to set your kitchen capacity.",
+    "boxTitleAll": "All trucks · Kitchen capacity",
+    "lead": "How many items your kitchen can make, so customers can only choose pickup times you can meet.",
+    "sameForAll": "Same kitchen capacity for all trucks?",
+    "confirmBody": "All trucks will use {van}’s kitchen capacity. Each truck’s own numbers will be replaced.",
+    "colCountsTitle": "Which categories count toward the total capacity. Cooked categories always count; check instant ones (sides, dips, drinks) to include them.",
+    "countsTick": "Check to include this instant category (sides, dips, drinks) in the shared per-window limit"
+  },
+  "settingsCopy": {
+    "buzzers": {
+      "label": "Do you hand out buzzers for pickup?"
+    }
+  },
+  "whereYouTrade": {
+    "settingsHeading": "Where you serve"
+  },
+  "manageSettings": {
+    "emojiPicker": {
+      "categories": {
+        "fruitVeg": "Fruits & vegetables"
+      }
+    },
+    "contact": {
+      "tickWhatsApp": "⚠️ Check “This number is on WhatsApp” on the Phone field to use WhatsApp."
+    },
+    "preorders": {
+      "modalHelp": "Check which items are pre-order. They all use the global rule ({rule})."
+    },
+    "vans": {
+      "sameAs": "{hasName, select, yes {Same as {name}} other {Same as the first truck}}",
+      "sameOn": "This truck uses the same settings, except kitchen capacity.",
+      "sameOff": "Copy the first truck’s settings — everything except kitchen capacity — and keep them in step.",
+      "takesCashHelp": "Splits the payment button into “Cash” and “Card” so your sales reconcile against the cash register. You can turn this on for a single event from the dashboard.",
+      "newPlaceholder": "e.g. Truck 2, Festival Truck"
+    },
+    "collection": {
+      "help": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+      "unavailable": "Pickup times are unavailable right now.",
+      "customerTimes": "Customer pickup times",
+      "yourTimes": "Your pickup times"
+    },
+    "removeVan": {
+      "body": "This truck will be removed from your account and will no longer appear on your dashboard or in future events.",
+      "preservedEvents": "<b>✓ Preserved:</b> Past event records linked to this truck are unaffected.",
+      "removedLink": "<b>✕ Removed:</b> The truck’s kitchen screen link and settings will be deactivated.",
+      "keep": "Keep truck",
+      "remove": "Remove truck"
+    },
+    "vanUpgrade": {
+      "title": "Upgrade to add more trucks",
+      "body": "The Starter plan includes 1 truck. Upgrade to Pro or Max to add additional trucks."
+    },
+    "schedule": {
+      "urlPlaceholder": "https://yourtruck.com/events"
+    },
+    "qr": {
+      "printHelp": "Print or display this code so customers can scan and pre-order. Place it at your window, on your truck, or share it online."
+    }
+  }
+}

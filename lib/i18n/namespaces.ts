@@ -21,10 +21,14 @@ export const NAMESPACES = {
     'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',
     // Language Phase 1d (Schedule B): the private link & QR panel (components/manage/PrivateLinkPanel.tsx).
     'privateEvents',
+    // Language Phase 1d Part 2: the shared copy button (components/dashboard/CopyButton.tsx, via DemoWelcome).
+    'copyButton',
     // Language Phase 1d (Settings): the kitchen-capacity explainer and <BatchSizeSelect>, one namespace for both surfaces.
     'kitchenCapacity',
     // …and the two copy modules whose en-GB exports the dashboard still renders (lib/copy/offlineProtection, serviceSettings).
-    'offlineProtection', 'serviceSettings'],
+    'offlineProtection', 'serviceSettings',
+    // Language Phase 1d Part 2 (Payments): the settings card's completion rows, shared with Manage › Payments.
+    'completionSettings'],
   kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',
     'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',   // Language Phase 1c
     // Language Phase 1d (Settings): copy modules the KDS imports, whose en-GB exports read these namespaces.
@@ -42,7 +46,23 @@ export const NAMESPACES = {
     'eventTypes', 'privateEvents', 'vanFilter',
     // Language Phase 1d (Settings): the Settings tab, the copy modules it reads, Kitchen capacity, Where you trade.
     'manageSettings', 'serviceSettings', 'offlineProtection', 'kitchenCapacity', 'settingsCopy', 'whereYouTrade',
-    'stockCopy', 'managePrimitives'],
+    'stockCopy', 'managePrimitives',
+    // Language Phase 1d Part 2 (Reports): the Reports tab and its CSV headers.
+    'manageReports',
+    // Language Phase 1d Part 2 (Social posts A): the Social media tab and lib/copy/socialPosts.ts, the single event
+    // post screens (EventPost), and the share bar under a made post.
+    'socialPosts', 'eventPost', 'postShare',
+    // Language Phase 1d Part 2 (Social posts B): the design editor and its controls, the font picker, the weekly post.
+    'designEditor', 'fontPicker', 'weeklyPost',
+    // Language Phase 1d Part 2 (Payments): the tab, Tax/tips/fees (+ its refusal codes and the customer's charge-line
+    // label it quotes), Taking payment — whose completion and button words are `completionSettings`, shared with the
+    // dashboard's Settings sheet.
+    'managePayments', 'manageCharges', 'takingPayment', 'errorsManage', 'charges', 'completionSettings',
+    // Language Phase 1d Part 2 (WhatsApp, custom domain, account): Settings' Auto-replies, the custom-domain setup,
+    // account deletion, and the shared copy button.
+    'manageWhatsApp', 'customDomain', 'deleteAccount', 'copyButton',
+    // Language Phase 1d Part 2 (shell): the page's own words (tab bar, header, banners, toasts, trial popup), Billing, Team.
+    'manageShell', 'manageBilling', 'manageTeam'],
   // Language Phase 1c: the setup wizard.
   setup: ['setup', 'whereBased', 'tradeArea'],
 } as const satisfies Record<string, readonly AppNamespace[]>

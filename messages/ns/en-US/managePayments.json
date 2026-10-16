@@ -1,0 +1,16 @@
+{
+  "state": {
+    "unsupported": {
+      "body": "Stripe cannot enable card payments here. Get in touch and we will fix it with you."
+    }
+  },
+  "keyMismatch": {
+    "fix": "Both keys must be set for the same environment, and the site rebuilt afterward — the publishable key is baked in at build time, the secret key is read on every request."
+  },
+  "walkUp": {
+    "body": "How you take money at the window. HatchGrab charges no platform fee on walk-ups, whichever you choose.",
+    "ownTerminalHelp": "Square, Clover, or whatever you already use. Nothing to set up — only your provider’s own fees apply.",
+    "hatchgrabHelp": "Uses the same Stripe connection as your online payments — a card reader, or tap to pay straight from your phone or tablet.",
+    "hatchgrabFees": "{fee} per payment on {region}, plus {surcharge} for tap to pay on a phone or tablet. Other cards may cost more."
+  }
+}

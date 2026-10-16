@@ -1,0 +1,527 @@
+# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 525 changed). Written by scripts/language-phase-1d2.cjs.
+# view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
+shell/US|shell|loading	words
+shell/US|shell|noCountrySettings	words
+shell/US|shell|tab|menu	words
+shell/US|shell|tab|schedule	words
+shell/US|shell|tab|social	words
+shell/US|shell|tab|reports	words
+shell/US|shell|tab|team	words
+shell/US|shell|tab|settings	words
+shell/US|shell|tab|payments	words
+shell/US|shell|tab|billing	words
+shell/US|shell|tab|menu|extras	words
+shell/US|shell|tab|menu|deals	words
+shell/US|shell|tab|social|locations	words
+shell/US|shell|tab|social|wide	words
+shell/US|shell|tab|schedule|eventTypes	words
+shell/US|shell|plan|starter	words
+shell/US|shell|plan|tester	words
+shell/US|shell|plan|trial	words
+shell/US|shell|plan|socialOverride	words
+shell/US|shell|admin|header	words
+shell/US|shell|notice|none	words
+shell/US|shell|notice|tour	words
+shell/US|shell|notice|tourMidSetup	words
+shell/US|shell|notice|approval1	words
+shell/US|shell|notice|approval3	words
+shell/US|shell|notice|approvalDismissed	words
+shell/US|shell|notice|allergens	words
+shell/US|shell|notice|allergensCardMode	words
+shell/US|shell|notice|domainLive	words
+shell/US|shell|notice|domainDismissed	words
+shell/US|shell|notice|stripe	words
+shell/US|shell|notice|stripeDismissed	words
+shell/US|shell|notice|missing1	words
+shell/US|shell|notice|missingAll	words
+shell/US|shell|notice|stale	words
+shell/US|shell|notice|staleNoTime	words
+shell/US|shell|notices|all|menu	words
+shell/US|shell|notices|all|schedule	words
+shell/US|shell|notices|all|social	words
+shell/US|shell|notices|all|reports	words
+shell/US|shell|notices|all|settings	words
+shell/US|shell|notices|all|payments	words
+shell/US|shell|notices|all|billing	words
+shell/US|shell|trialPopup|dated	words
+shell/US|shell|trialPopup|undated	words
+shell/US|shell|trialPopup|ios	words
+shell/US|shell|profileModal	words
+shell/US|shell|profileModal|saving	words
+shell/US|shell|walkthrough	words
+shell/US|shell|toasts	words
+shell/US|billing|trial	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|notStarted	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|expired	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|ios	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|notStarted|ios	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|hidePricing	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|upgradeMax	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|upgradePro	code: 1d2-billing-plan-header + words
+shell/US|billing|trial|upgradeMax|ios	code: 1d2-billing-plan-header + words
+shell/US|billing|starter	code: 1d2-billing-plan-header
+shell/US|billing|starter|ios	code: 1d2-billing-plan-header
+shell/US|billing|starter|hidePricing	code: 1d2-billing-plan-header + words
+shell/US|billing|starter|upgradePro	code: 1d2-billing-plan-header + words
+shell/US|billing|starter|withTrialDate	code: 1d2-billing-plan-header
+shell/US|billing|pro|matrix	code: 1d2-billing-plan-header
+shell/US|billing|pro|matrix|hidePricing	code: 1d2-billing-plan-header + words
+shell/US|billing|max|matrix	code: 1d2-billing-plan-header
+shell/US|billing|max|upgradeMax	words
+shell/US|team|owner|empty	words
+shell/US|team|owner|members	words
+shell/US|team|owner|noName	words
+shell/US|team|owner|notOwnerViewer	words
+shell/US|team|owner|noOwnerEmail	words
+shell/US|team|manager|members	words
+shell/US|team|staff|self	words
+shell/US|team|staff|noRow	words
+shell/US|team|invite|noVans	words
+shell/US|team|invite|oneVan	words
+shell/US|team|invite|twoVansNone	words
+shell/US|team|invite|twoVansOne	words
+shell/US|team|invite|sending	words
+shell/US|team|invite|manager	words
+shell/US|team|invite|ownerRole	words
+shell/US|team|edit|member	words
+shell/US|team|edit|saving	words
+shell/US|team|profile|edit	words
+shell/US|team|profile|emailChanged	words
+shell/US|team|profile|missingName	words
+shell/US|team|profile|saving	words
+shell/US|team|profile|pendingInEditor	words
+shell/US|team|pending	words
+shell/US|team|pending|resending	words
+shell/US|team|pending|cancelling	words
+shell/US|team|handler|cancelChange|ok	words
+reports/US|tab|range|orders	words
+reports/US|tab|range|items	words
+reports/US|tab|range|expanded	words
+reports/US|tab|event|orders	words
+reports/US|tab|event|items	words
+reports/US|tab|event|noVenue	words
+reports/US|tab|single	words
+reports/US|tab|vans|all	code: 1d2-us-reports-van-label + words
+reports/US|tab|vans|van1	words
+reports/US|tab|vans|cafe	words
+reports/US|tab|vans|unassigned	words
+reports/US|tab|vans|oneVan	words
+reports/US|tab|extras|orders	words
+reports/US|tab|extras|items	words
+reports/US|csv|orders|range	words
+reports/US|csv|items|range	words
+reports/US|csv|orders|event	words
+reports/US|csv|items|event	words
+reports/US|csv|orders|eventNoVenue	words
+reports/US|csv|items|eventNoVenue	words
+reports/US|csv|orders|single	words
+reports/US|csv|items|single	words
+reports/US|csv|orders|vanCafe	words
+reports/US|csv|items|vanCafe	words
+reports/US|csv|orders|unassigned	words
+reports/US|csv|items|unassigned	words
+reports/US|csv|orders|extras	words
+reports/US|csv|items|extras	words
+reports/US|csv|orders|otherOnly	words
+payments/US|pay|fetchError|routeWords	words
+payments/US|pay|fetchError|requestFailed	words
+payments/US|pay|fetchError|unreachable	words
+payments/US|pay|notPermitted	words
+payments/US|pay|state|not_connected	words
+payments/US|pay|state|requirements	words
+payments/US|pay|state|pending	words
+payments/US|pay|state|ready	words
+payments/US|pay|state|restricted	words
+payments/US|pay|state|unsupported	words
+payments/US|pay|notConnected|trial	words
+payments/US|pay|notConnected|starter	words
+payments/US|pay|notConnected|creating	words
+payments/US|pay|notConnected|admin	words
+payments/US|pay|ready|admin	words
+payments/US|pay|testMode	words
+payments/US|pay|keyMismatch|serverLive	words
+payments/US|pay|keyMismatch|serverTest	words
+payments/US|pay|keyMissing	words
+payments/US|pay|ready|managementOpen	words
+payments/US|charges|hatchgrab	words
+payments/US|taking|default	code: 1d2-us-taking-shared-words + words
+payments/US|taking|paidStepOff|onePress	code: 1d2-us-taking-shared-words + words
+payments/US|taking|derived|one	code: 1d2-us-taking-shared-words + words
+payments/US|taking|cashRow|on	code: 1d2-us-taking-shared-words + words
+payments/US|taking|cashRow|off	code: 1d2-us-taking-shared-words + words
+payments/US|page|ready	code: 1d2-us-taking-shared-words + words
+social/US|posts|create|error	words
+social/US|posts|create|ready	words
+social/US|posts|create|sept	words
+social/US|posts|create|nextWeek	words
+social/US|posts|create|noEvents	words
+social/US|posts|create|onlyPrivate	words
+social/US|posts|create|chosenPoster	words
+social/US|posts|create|chosenStandard	words
+social/US|posts|create|posting	words
+social/US|posts|create|leave	words
+social/US|posts|locations|selected	words
+social/US|posts|locations|selectedEmpty	words
+social/US|event|setup|first	words
+social/US|event|setup|standard	words
+social/US|event|setup|standardOnly	words
+social/US|event|setup|placeOwn	words
+social/US|event|setup|placeStandard	words
+social/US|event|setup|picking	words
+social/US|event|setup|pickingNone	words
+social/US|event|modal|loadingError	words
+social/US|live|week	words
+social/US|weekly|setupWeek	words
+social/US|weekly|postReady	code: 1d2-us-week-start + words
+social/US|weekly|postBuilding	code: 1d2-us-week-start + words
+social/US|weekly|postNoEvents	code: 1d2-us-week-start + words
+social/US|editor|week|date	words
+social/US|editor|week|heading	words
+social/US|editor|week|days	words
+social/US|editor|week|daysMore	words
+social/US|editor|week|rowsLegacy	code: 1d2-us-week-start + words
+social/US|editor|week|picture	words
+social/US|editor|week|pictureNoLogo	words
+social/US|editor|week|ownText	words
+social/US|editor|week|allText	words
+social/US|editor|week|bgMore	words
+social/US|editor|week|timeMore	words
+social/US|editor|week|dateOwnStyle	words
+social/US|editor|week|previewWait	words
+social/US|editor|week|previewReady	words
+social/US|editor|week|sheetDate	words
+social/US|editor|week|sheetDays	words
+social/US|editor|week|sheetPicture	words
+social/US|editor|week|live	words
+social/US|editor|event|date	words
+social/US|editor|event|venue	words
+social/US|editor|event|area	words
+social/US|editor|event|sheetTime	words
+social/US|editor|event|scopeStandard	words
+social/US|editor|event|scopeOwn	words
+social/US|editor|event|live	words
+social/US|bits|colour	words
+social/US|bits|optionalColour	words
+social/US|font|openOwnEmpty	words
+social/US|font|upload	words
+social/US|font|uploadAdded	words
+poster/US|weekly|default	words
+poster/US|weekly|default.privateShown	words
+poster/US|weekly|default.cancelledHidden	words
+poster/US|weekly|default.emptyWeek	words
+poster/US|weekly|default.thisWeek	words
+poster/US|weekly|default.note	words
+poster/US|weekly|default.busy	words
+poster/US|weekly|default.squeezed	words
+poster/US|weekly|default.date-short	words
+poster/US|weekly|default.date-dayMonth	words
+poster/US|weekly|default.date-numeric	words
+poster/US|weekly|default.nameTown24h	words
+poster/US|weekly|stored.gbWords	words
+poster/US|weekly|stored.ownWords	words
+poster/US|weekly|stored.blanks	words
+poster/US|weekly|days.converted	words
+poster/US|weekly|days.omitDaysOff	words
+poster/US|weekly|days.dayOnTop	words
+poster/US|weekly|days.defaultBlock	words
+poster/US|weekly|days.storedGbWords	words
+poster/US|event|cancelled	words
+poster/US|event|stored.cancelled	words
+poster/US|caption|week.seed	words
+poster/US|caption|week.seed.more	words
+poster/US|caption|week.stored	words
+poster/US|caption|week.values	words
+poster/US|caption|week.perEvent	words
+poster/US|caption|event.seed	words
+poster/US|caption|event.cancelled	words
+poster/US|locale|placeStyleSamples	words
+poster/US|locale|defaults	words
+poster/US|locale|defaultLayoutWords	words
+poster/US|locale|headingRuns	words
+poster/US|copy|socialPosts|A	words
+poster/US|copy|socialPosts|C	words
+poster/US|copy|socialPosts|E	words
+poster/US|copy|socialPosts|F	words
+poster/US|copy|socialPosts|L	words
+poster/US|copy|socialPosts|N	words
+poster/US|copy|socialPosts|P	words
+poster/US|copy|socialPosts|S	words
+wada/US|settings|notConnected|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|connected|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|connectedNoFacts|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|connectedNumberOnly|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|needsReauthorise|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|onboardingIncomplete|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|tokenMissing|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|expiringSoon|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|usageNear|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|usageOver|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|limitAboveAllowance|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|limitAbovePaymentMissing|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|paymentAdded|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|paymentBlocked|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|disconnectOpen|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|notice|disconnected|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|notice|disconnectedUnreachable|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|notice|sdkUnavailable|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|notice|closed|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|notice|metaError|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|notice|setupFailed|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|notice|serverMessage|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|starter|auto-replies	words
+wada/US|settings|pro|auto-replies	code: 1d2-us-whatsapp-dates + words
+wada/US|settings|deletionDialog|account-deletion	words
+wada/US|preview|empty	words
+wada/US|preview|typing	words
+wada/US|preview|loading	words
+wada/US|preview|result|SPECIFIC_QUERY	words
+wada/US|preview|result|MENU_QUERY	words
+wada/US|preview|result|ALLERGEN_QUERY	words
+wada/US|preview|result|IGNORE	words
+wada/US|preview|error|server	words
+wada/US|preview|error|fallback	words
+wada/US|preview|error|network	words
+wada/US|delete|open|oneOrder	words
+wada/US|delete|open|partial	words
+wada/US|delete|open|exact	words
+wada/US|delete|open|severalTrucks	words
+wada/US|domain|card|justWentLive	words
+wada/US|domain|record|wix	words
+wada/US|domain|record|godaddy	words
+wada/US|domain|record|123reg	words
+wada/US|domain|record|cloudflare	words
+wada/US|domain|live|confirm	words
+wada/US|domain|live|saidNo	words
+wada/US|domain|turnOff|panel	words
+wada/US|domain|turnOff|busy	words
+wada/US|domain|turnOff|error	words
+wada/US|email|direct|generic	words
+wada/US|email|generic	words
+wada/US|email|wix	words
+wada/US|email|godaddy	words
+wada/US|email|123reg	words
+wada/US|email|namecheap	words
+wada/US|email|noOperatorEmail	words
+api/US|manage|noToken.update_charges	code: named difference 1 (token_required)
+api/US|manage|noToken.get_report	code: named difference 1 (token_required)
+api/US|manage|noToken.invite_team_member	code: named difference 1 (token_required)
+api/US|manage|noToken.domain_status	code: named difference 1 (token_required)
+api/US|manage|noToken.save_embed_setup	code: named difference 1 (token_required)
+api/US|manage|noToken.disconnect_whatsapp	code: named difference 1 (token_required)
+api/US|manage|noToken.sg_merge_place	code: named difference 1 (token_required)
+api/US|manage|badToken.update_charges	code: named difference 1 (invalid_token)
+api/US|manage|badToken.get_recent_events	code: named difference 1 (invalid_token)
+api/US|manage|badToken.domain_send_instructions	code: named difference 1 (invalid_token)
+api/US|manage|badToken.disconnect_whatsapp	code: named difference 1 (invalid_token)
+api/US|manage|noUser.update_charges	code: named difference 1 (sign_in_required)
+api/US|manage|noUser.get_report	code: named difference 1 (sign_in_required)
+api/US|manage|noUser.invite_team_member	code: named difference 1 (sign_in_required)
+api/US|manage|noUser.sg_place_usual_type	code: named difference 1 (sign_in_required)
+api/US|manage|noUser.domain_preflight	code: named difference 1 (sign_in_required)
+api/US|manage|notThisTruck.get_recent_events	code: named difference 1 (no_truck_access)
+api/US|manage|notThisTruck.get_team	code: named difference 1 (no_truck_access)
+api/US|manage|notThisTruck.domain_check	code: named difference 1 (no_truck_access)
+api/US|manage|staff.update_charges	code: named difference 1 (charges_owner_only)
+api/US|manage|staff.invite_team_member	code: named difference 1 (insufficient_permissions)
+api/US|manage|staff.remove_team_member	code: named difference 1 (insufficient_permissions)
+api/US|manage|staff.sg_merge_place	code: named difference 1 (insufficient_permissions)
+api/US|manage|staff.save_embed_setup	code: named difference 1 (insufficient_permissions)
+api/US|manage|staff.domain_provision	code: named difference 1 (insufficient_permissions)
+api/US|manage|staff.domain_send_instructions	code: named difference 1 (insufficient_permissions)
+api/US|manage|demo.domain_preflight	code: named difference 1 (demo_not_available)
+api/US|manage|demo.domain_turn_off	code: named difference 1 (demo_not_available)
+api/US|manage|charges.manager	code: named difference 1 (charges_owner_only)
+api/US|manage|charges.rateNotHere	code: named difference 1 (charges_rate_not_here)
+api/US|manage|charges.rateDecimals	code: named difference 1 (charges_rate_decimals)
+api/US|manage|charges.rateRange	code: named difference 1 (charges_rate_range)
+api/US|manage|charges.tipsNotBool	code: named difference 1 (charges_choose_on_off)
+api/US|manage|charges.feeNotHere	code: named difference 1 (charges_fee_not_here)
+api/US|manage|charges.feeHatchgrab	code: named difference 1 (charges_fee_hatchgrab)
+api/US|manage|charges.feeNotBool	code: named difference 1 (charges_choose_on_off)
+api/US|manage|charges.feePct	code: named difference 1 (charges_fee_pct)
+api/US|manage|charges.feePctPartNotAllowed	code: named difference 1 (charges_fee_part_not_allowed)
+api/US|manage|charges.feeOverPct	code: named difference 1 (charges_fee_over_pct)
+api/US|manage|charges.feeFixed	code: named difference 1 (charges_fee_fixed)
+api/US|manage|charges.feeFixedPartNotAllowed	code: named difference 1 (charges_fee_part_not_allowed)
+api/US|manage|charges.feeOverFixed	code: named difference 1 (charges_fee_over_fixed)
+api/US|manage|charges.nothingToSave	code: named difference 1 (charges_nothing_to_save)
+api/US|manage|embed.notOnPlan	code: named difference 1 (embed_not_on_plan)
+api/US|manage|embed.badWebsite	code: named difference 1 (embed_website_invalid)
+api/US|manage|embed.dbFail	code: named difference 1 (domain_save_failed)
+api/US|manage|preflight.rateLimited	code: named difference 1 (domain_too_many_checks)
+api/US|manage|preflight.limiterDown	code: 1d2-domain-preflight-step-keys
+api/US|manage|preflight.apex	code: named difference 1 (apex)
+api/US|manage|preflight.empty	code: named difference 1 (empty)
+api/US|manage|preflight.notAddress	code: named difference 1 (not_a_domain)
+api/US|manage|preflight.ok	code: 1d2-domain-preflight-step-keys
+api/US|manage|domainCheck.goesLive	words
+api/US|manage|provision.notOnPlan	code: named difference 1 (embed_not_on_plan)
+api/US|manage|provision.apex	code: named difference 1 (apex)
+api/US|manage|provision.wwwInner	code: named difference 1 (domain_www_inner)
+api/US|manage|provision.www	code: named difference 1 (domain_www)
+api/US|manage|provision.apexBySoa	code: named difference 1 (domain_apex)
+api/US|manage|provision.taken	code: named difference 1 (domain_provision_taken)
+api/US|manage|provision.refused	code: named difference 1 (domain_provision_refused)
+api/US|manage|provision.error	code: named difference 1 (domain_provision_error)
+api/US|manage|provision.notConfigured	code: named difference 1 (domain_provision_not_configured)
+api/US|manage|provision.dbFail	code: named difference 1 (domain_save_failed)
+api/US|manage|confirm.nothingYet	code: named difference 1 (domain_nothing_to_confirm)
+api/US|manage|confirm.dbFail	code: named difference 1 (domain_save_failed)
+api/US|manage|turnOff.releaseFails	code: named difference 1 (domain_turn_off_failed)
+api/US|manage|turnOff.clearFails	code: named difference 1 (domain_turn_off_failed)
+api/US|manage|instructions.badEmail	code: named difference 1 (domain_email_invalid)
+api/US|manage|instructions.noAddress	code: named difference 1 (domain_no_address)
+api/US|manage|instructions.limiterDown	code: named difference 1 (domain_send_unavailable) + words
+api/US|manage|instructions.limited	code: named difference 1 (domain_send_limit)
+api/US|manage|instructions.noRecord	code: named difference 1 (domain_record_unreadable)
+api/US|manage|instructions.sendFails	code: named difference 1 (domain_send_failed) + words
+api/US|manage|instructions.ok	words
+api/US|manage|disconnect.notAvailable	code: named difference 1 (wa_not_available)
+api/US|manage|disconnect.rowDeleteFails	code: named difference 1 (wa_disconnect_failed)
+api/US|manage|replyLimit	code: named difference 1 (wa_monthly_limit_choices)
+api/US|manage|inviteMember.noEmail	code: named difference 1 (email_required)
+api/US|manage|updateMember.staffOther	code: named difference 1 (insufficient_permissions)
+api/US|manage|updateMember.managerOnManager	code: named difference 1 (managers_edit_staff_only)
+api/US|manage|invite.managerInvitesManager	code: named difference 1 (managers_invite_staff_only)
+api/US|manage|invite.managerInvitesOwner	code: named difference 1 (managers_invite_staff_only)
+api/US|manage|invite.noEmail	code: named difference 1 (email_required)
+api/US|manage|invite.noVans	code: named difference 1 (select_one_van) + words
+api/US|manage|invite.alreadyMember	code: named difference 1 (already_member)
+api/US|manage|invite.createFails	code: named difference 1 (member_create_failed)
+api/US|manage|invite.ok	words
+api/US|manage|invite.ok.managerByOwner	words
+api/US|manage|invite.ok.existingAccount	words
+api/US|manage|invite.ok.mailRefused	words
+api/US|manage|removeTeam.managerOnManager	code: named difference 1 (managers_remove_staff_only)
+api/US|manage|usualType.notOnPlan	code: named difference 1 (social_media_plan)
+api/US|manage|usualType.noPlace	code: named difference 1 (sg_place_id_required)
+api/US|manage|usualType.migration	code: named difference 1 (sg_usual_type_migration)
+api/US|manage|merge.readFails	code: named difference 1 (sg_merge_read_failed) + words
+api/US|manage|merge.noIds	code: named difference 1 (sg_merge_pick)
+api/US|manage|merge.fromGone	code: named difference 1 (sg_merge_from_gone)
+api/US|manage|merge.intoGone	code: named difference 1 (sg_merge_into_gone)
+api/US|manage|merge.self	code: named difference 1 (sg_merge_self) + words
+api/US|manage|merge.otherWay	code: named difference 1 (sg_merge_cycle) + words
+api/US|manage|merge.writeFails	code: named difference 1 (sg_merge_write_failed) + words
+api/US|manageGET|noToken	code: named difference 1 (token_required)
+api/US|manageGET|badToken	code: named difference 1 (invalid_token)
+api/US|manageGET|noUser	code: named difference 1 (sign_in_required)
+api/US|manageGET|notThisTruck	code: named difference 1 (no_truck_access)
+api/US|weeklyPost|badJson	code: named difference 1 (bad_request)
+api/US|weeklyPost|noToken	code: named difference 1 (token_required)
+api/US|weeklyPost|badToken	code: named difference 1 (invalid_token)
+api/US|weeklyPost|plan.load	code: named difference 1 (social_media_plan)
+api/US|weeklyPost|plan.font_confirm	code: named difference 1 (social_media_plan)
+api/US|weeklyPost|unknownAction	code: named difference 1 (unknown_action)
+api/US|weeklyPost|overview.migration	code: named difference 1 (wp_migration_three_pictures)
+api/US|weeklyPost|confirm.unknownFile	code: named difference 1 (wp_unknown_file)
+api/US|weeklyPost|confirm.notArrived	code: named difference 1 (wp_upload_missing)
+api/US|weeklyPost|confirm.empty	code: named difference 1 (wp_upload_empty)
+api/US|weeklyPost|confirm.tooBig	code: named difference 1 (wp_upload_too_big)
+api/US|weeklyPost|confirm.notImage	code: named difference 1 (wp_upload_not_image)
+api/US|weeklyPost|confirm.tooSmall	code: named difference 1 (wp_upload_too_small)
+api/US|weeklyPost|confirm.place.noEventDesign	code: named difference 1 (wp_event_design_first)
+api/US|weeklyPost|confirm.place.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|confirm.place.wrongShape	code: named difference 1 (wp_picture_wrong_shape)
+api/US|weeklyPost|confirm.oneOff.noEvent	code: named difference 1 (event_not_found)
+api/US|weeklyPost|confirm.oneOff.wrongShape	code: named difference 1 (wp_picture_wrong_shape)
+api/US|weeklyPost|confirm.example.noDesign	code: named difference 1 (wp_upload_blank_first)
+api/US|weeklyPost|confirm.blank.newShape	words
+api/US|weeklyPost|saveDesign.noDesign	code: named difference 1 (wp_upload_blank_image_first)
+api/US|weeklyPost|saveDesign.invalid	code: named difference 1 (wp_layout_version)
+api/US|weeklyPost|captions.next.note	words
+api/US|weeklyPost|render.noDesign	code: named difference 1 (wp_no_design)
+api/US|weeklyPost|render.invalid	code: named difference 1 (wp_layout_version)
+api/US|weeklyPost|render.blankMissing	code: named difference 1 (wp_blank_unreadable)
+api/US|weeklyPost|render.busy	words
+api/US|weeklyPost|placeMode.noDesign	code: named difference 1 (wp_event_design_first)
+api/US|weeklyPost|placeMode.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|placeMode.backToStandardRefused	code: named difference 1 (wp_back_to_standard)
+api/US|weeklyPost|placeLayout.noDesign	code: named difference 1 (wp_event_design_first)
+api/US|weeklyPost|placeLayout.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|placeLayout.standardPositions	code: named difference 1 (wp_place_standard_positions)
+api/US|weeklyPost|placeLayout.invalid	code: named difference 1 (wp_layout_version)
+api/US|weeklyPost|eventDesign.noDesign	code: named difference 1 (wp_upload_event_picture_first)
+api/US|weeklyPost|eventDesign.invalid	code: named difference 1 (wp_layout_version)
+api/US|weeklyPost|removePlaceDesign.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|eventPost.private	code: named difference 1 (wp_private_no_single_post)
+api/US|weeklyPost|eventPost.noDesign	code: named difference 1 (wp_no_event_design)
+api/US|weeklyPost|eventPost.notFound	code: named difference 1 (event_not_found)
+api/US|weeklyPost|eventPost.cancelled	words
+api/US|weeklyPost|previewEntry.noId	code: named difference 1 (wp_event_id_required)
+api/US|weeklyPost|previewEntry.private	code: named difference 1 (wp_private_no_single_post)
+api/US|weeklyPost|previewEntry.noDesign	code: named difference 1 (wp_no_event_design)
+api/US|weeklyPost|previewEntry.placeNotFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|eventRender.private	code: named difference 1 (wp_private_no_single_post)
+api/US|weeklyPost|eventRender.noDesign	code: named difference 1 (wp_no_event_design)
+api/US|weeklyPost|eventRender.placeNotFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|eventRender.invalid	code: named difference 1 (wp_layout_version)
+api/US|weeklyPost|eventRender.pictureMissing	code: named difference 1 (wp_picture_unreadable)
+api/US|weeklyPost|fontChoose.unknown	code: named difference 1 (wp_font_unknown)
+api/US|weeklyPost|fontChoose.notLibrary	code: named difference 1 (wp_font_not_in_library)
+api/US|weeklyPost|fontChoose.libraryUnreachable	code: named difference 1 (wp_font_add_failed)
+api/US|weeklyPost|fontConfirm.unknownFile	code: named difference 1 (wp_unknown_file)
+api/US|weeklyPost|fontConfirm.noLicence	code: named difference 1 (wp_licence_required) + words
+api/US|weeklyPost|fontConfirm.notArrived	code: named difference 1 (wp_upload_missing)
+api/US|weeklyPost|fontConfirm.tooBig	code: named difference 1 (wp_font_too_big)
+api/US|weeklyPost|fontConfirm.woff	code: named difference 1 (wp_font_woff)
+api/US|weeklyPost|fontConfirm.notAFont	code: named difference 1 (wp_font_unreadable)
+api/US|weeklyPost|fontConfirm.storeFails	code: named difference 1 (wp_font_store_failed)
+api/US|weeklyPost|fontConfirm.migration	code: named difference 1 (wp_migration_fonts)
+api/US|weeklyPost|fontSample.notYours	code: named difference 1 (wp_font_not_yours)
+api/US|weeklyPost|fontRename.noName	code: named difference 1 (wp_name_required)
+api/US|weeklyPost|fontRename.notYours	code: named difference 1 (wp_font_not_yours)
+api/US|weeklyPost|fontRemove.notYours	code: named difference 1 (wp_font_not_yours)
+api/US|weeklyPost|pictureList.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|pictureConfirm.unknownFile	code: named difference 1 (wp_unknown_file)
+api/US|weeklyPost|pictureConfirm.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|pictureConfirm.notArrived	code: named difference 1 (wp_upload_missing)
+api/US|weeklyPost|pictureConfirm.tooSmall	code: named difference 1 (wp_upload_too_small)
+api/US|weeklyPost|pictureConfirm.migration	code: named difference 1 (wp_migration_library)
+api/US|weeklyPost|pictureConfirm.badSlot	code: named difference 1 (wp_bad_slot)
+api/US|weeklyPost|pictureConfirm.slotMigration	code: named difference 1 (wp_migration_slots)
+api/US|weeklyPost|pictureMain.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|pictureRename.noName	code: named difference 1 (wp_name_required)
+api/US|weeklyPost|pictureRename.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|pictureRemove.notFound	code: named difference 1 (wp_place_not_found)
+api/US|weeklyPost|pictureRemove.notOne	code: named difference 1 (wp_picture_not_this_place)
+api/US|weeklyPost|slotUse.badSlot	code: named difference 1 (wp_bad_slot)
+api/US|weeklyPost|slotUse.notFound	code: named difference 1 (wp_location_not_found)
+api/US|weeklyPost|slotUse.notOwned	code: named difference 1 (wp_image_not_this_location)
+api/US|weeklyPost|slotUse.migration	code: named difference 1 (wp_migration_slots)
+api/US|weeklyPost|slotClear.badSlot	code: named difference 1 (wp_bad_slot)
+api/US|weeklyPost|slotClear.notFound	code: named difference 1 (wp_location_not_found)
+api/US|weeklyPost|socialTag.spaces	code: named difference 1 (wp_tag_spaces)
+api/US|weeklyPost|socialTag.twoAts	code: named difference 1 (wp_tag_one_at)
+api/US|weeklyPost|socialTag.justAt	code: named difference 1 (wp_tag_just_at)
+api/US|weeklyPost|socialTag.tooLong	code: named difference 1 (wp_tag_too_long)
+api/US|weeklyPost|socialTag.notFound	code: named difference 1 (wp_location_not_found)
+api/US|weeklyPost|socialTag.migration	code: named difference 1 (wp_migration_three_pictures)
+api/US|weeklyPost|captionSave.tooLong	code: named difference 1 (wp_caption_too_long)
+api/US|weeklyPost|captionSave.noDesign	code: named difference 1 (wp_caption_needs_design)
+api/US|weeklyPost|captionSave.migration	code: named difference 1 (wp_migration_three_pictures)
+api/US|weeklyPostGET|noToken	code: named difference 1 (token_required)
+api/US|weeklyPostGET|badToken	code: named difference 1 (invalid_token)
+api/US|weeklyPostGET|plan	code: named difference 1 (social_media_plan)
+api/US|weeklyPostGET|noFont	code: named difference 1 (wp_font_required)
+api/US|weeklyPostGET|unknownFont	code: named difference 1 (wp_unknown_font)
+api/US|weeklyPostGET|uploadedFont	code: named difference 1 (wp_font_not_served)
+api/US|waPreview|badJson	code: named difference 1 (wa_bad_json)
+api/US|waPreview|noToken	code: named difference 1 (token_required)
+api/US|waPreview|badToken	code: named difference 1 (invalid_token)
+api/US|waPreview|empty	code: named difference 1 (wa_preview_empty)
+api/US|waPreview|tooLong	code: named difference 1 (wa_preview_too_long)
+api/US|waSignup|badJson	code: named difference 1 (wa_bad_json)
+api/US|waSignup|noToken	code: named difference 1 (token_required)
+api/US|waSignup|badToken	code: named difference 1 (invalid_token)
+api/US|waSignup|notAvailable	code: named difference 1 (wa_signup_not_available)
+api/US|waSignup|badKind	code: named difference 1 (wa_unrecognised_outcome) + words
+api/US|waSignup|noCode	code: named difference 1 (wa_no_code)
+api/US|waSignup|noWaba	code: named difference 1 (wa_no_waba)
+api/US|waSignup|noEncryptionKey	code: named difference 1 (wa_not_configured)
+api/US|waSignup|noAppId	code: named difference 1 (wa_not_configured)
+api/US|waSignup|exchangeFailed	code: named difference 1 (wa_code_expired)
+api/US|waSignup|exchangeThrew	code: named difference 1 (wa_code_expired)
+api/US|waSignup|phaseAFails	code: named difference 1 (wa_write_failed)
+api/US|waSignup|needsRegistering	words
+api/US|waSignup|numberTaken	words

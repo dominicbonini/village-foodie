@@ -64,7 +64,7 @@ import {
 import { EventSetupScreen, EventPostModal, renderPng } from '@/components/manage/EventPost'
 import { FeatureGate } from '@/components/FeatureGate'
 import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
-import { formatYmd, type TimeSettings } from '@/lib/time-utils'
+import { formatYmdShortMonth, type TimeSettings } from '@/lib/time-utils'
 import { useTruckTime } from '@/components/TruckTimeContext'
 import type { Plan } from '@/lib/features'
 /* ══ ⛔ ELEVEN COPY CONSTANTS LEFT THIS IMPORT — 7 October 2026 ════════════════════════════════════
@@ -77,71 +77,32 @@ import type { Plan } from '@/lib/features'
  * assert on them by name, and `scripts/place-pictures.cjs` drives the rules they describe. Deleting a
  * copy constant is a separate change from deleting the screen that read it, and a dead export with no
  * reader is cheaper than a harness that cannot find its subject. Named in docs/social-tab-report.md. */
-import {
-  MAKE_POST_FOOTNOTE, WEEKLY_BOX_BLURB, EVENT_BOX_BLURB, PRIVATE_EVENT_ROW,
-  WEEKLY_DESIGN_BLURB,
-  EVENT_DESIGN_TITLE, EVENT_DESIGN_BLURB_BEFORE, EVENT_DESIGN_BLURB_BOLD, EVENT_DESIGN_BLURB_AFTER,
-  EVENT_DESIGN_BUTTON_NEW, EVENT_DESIGN_BUTTON_EDIT,
-  /* ⛔ `INTRO_DESIGNS_WORD` / `INTRO_MAKE_WORD` / `INTRO_AFTER_DESIGNS` / `INTRO_AFTER_MAKE` ARE NO
-   * LONGER IMPORTED — the shared intro they built is gone (8 October 2026). They are still exported
-   * from the copy module, which three harnesses read by name. */
-  TAB_CREATE_HEADING, TAB_CREATE_BLURB, TAB_DESIGNS_HEADING, TAB_DESIGNS_BLURB,
-  TAB_LOCATIONS_HEADING, TAB_LOCATIONS_BLURB, LOCATIONS_CARD_TITLE,
-  /* ⛔ `POSTER_BOX_TITLE` ("Event poster (optional)") IS NO LONGER IMPORTED — §1 renames the box to
-   * "Location poster (optional)", because "Event poster" sat one word away from "Picture for event
-   * posts" while being a different thing. It stays exported as the record. */
-  LOCATION_POSTER_TITLE,
-  /* ── 9 October 2026: THREE pictures, one per job. ⛔ NINE CONSTANTS ARE NO LONGER IMPORTED and all
-   * nine stay EXPORTED, because harnesses read them by name and they are the record of the wording:
-   * `PICTURE_BOX_TITLE` / `PICTURE_BOX_BLURB` / `PICTURE_BOX_BLURB_V3` (the single "Location picture"
-   * box), `WEEKLY_ONLY_ADD_LINK` / `_BOX_TITLE` / `_BOX_BLURB` / `_BADGE` (the override and its "+1"),
-   * the four `PICTURE_USE_*` (the retired "Use it on" radios) and `posterBoxBlurb` (the size sentence
-   * the poster description lost). */
-  POSTER_BOX_BLURB, NAME_FROM_SCHEDULE_NOTE,
-  /* ⛔ `LEAVE_CONFIRM_TITLE` AND `LEAVE_CONFIRM_GO` ARE NO LONGER DRAWN — §B10 replaced the two-button
-   * dialog with a three-button one, and its title asks the question the third button answers. Both stay
-   * exported as the record of the wording. */
-  LEAVE_CONFIRM_STAY, LEAVE_TITLE, LEAVE_BODY, LEAVE_SAVE_AND_GO, LEAVE_WITHOUT_SAVING,
-  SOCIAL_TAG_LABEL, SOCIAL_TAG_HINT, SOCIAL_TAG_PLACEHOLDER,
-  CAPTION_WEEK_TITLE, CAPTION_EVENT_TITLE, captionAddLabel,
-  /* ⛔ `CAPTION_SAVED_NOTE` AND `CAPTION_SAVED_TICK` ARE NO LONGER IMPORTED. The template editor is
-   * Save / Cancel now rather than debounced autosave, so "Saved automatically" and its fading tick
-   * describe behaviour the screen no longer has. Both stay exported as the record. */
-  CREATE_FOR_NEXT, CREATE_FOR_THIS,
-  CAPTION_HEADING, CAPTION_THIS_POST_NOTE, EDIT_TEMPLATE_LINK,
-  TEMPLATE_PANEL_TITLE, TEMPLATE_PANEL_BLURB, TEMPLATE_PANEL_BLURB_WEEK,
-  TEMPLATE_SAVE, TEMPLATE_CANCEL, TEMPLATE_PANEL_NOTE,
-  /* ⛔ `WEEKLY_DESIGN_USED_FOR`, `EVENT_DESIGN_USED_FOR` AND `USED_FOR_LABEL` ARE NO LONGER IMPORTED —
-   * see the `UsedFor` tombstone below. The constants remain in the copy module as the record. */
-  EMPTY_WEEKLY_TITLE, EMPTY_EVENT_TITLE, EMPTY_BODY, EMPTY_BUTTON,
-  /* ── 7 October 2026: Create a post's two halves, and the Locations sub-tab. */
-  CREATE_WEEKLY_TITLE, CREATE_EVENT_TITLE, weekEventsLine, CREATE_WEEKLY_BUTTON,
-  /* ⛔ `NEXT_EVENT_HEADING`, `createPostForLabel` AND `MORE_EVENTS_LABEL` ARE NO LONGER IMPORTED —
-   * 9 October 2026, §5. The heading is `NEXT_EVENT_HEADING_V4` ("YOUR NEXT EVENT"); the button no
-   * longer names the date, because the card above it already shows which event it is about; and the
-   * expander is "Show all upcoming events (n) ⌄" over a list the first three of which are always
-   * visible. All three stay exported as the record of the wording. */ NO_UPCOMING_EVENTS, imageSourceLine,
-  LOCATIONS_SEARCH_LABEL, CHIP_ALL, CHIP_HIDDEN,
-  COL_LOCATION, LOCATIONS_NONE, LOCATIONS_NO_MATCH, LOCATIONS_PICK_ONE,
-  COL_POSTER, COL_WEEKLY, COL_EVENT, CHIP_NO_PICTURES,
-  WEEKLY_PIC_TITLE, WEEKLY_PIC_BLURB, EVENT_PIC_TITLE, EVENT_PIC_BLURB,
-  DROP_A_PICTURE, DROP_A_POSTER, USE_EVENT_PICTURE, USE_WEEKLY_PICTURE,
-  /* ⛔ ELEVEN MORE COPY CONSTANTS LEFT THIS IMPORT ON 8 OCTOBER, with the wording they carried:
-   * `LOCATIONS_TITLE`/`_BLURB` (the card's description, now the page's), `CHIP_MISSING` ("Missing
-   * images", now "No images"), the four `EVENT_BOX_PHOTO_*`/`_POSTER_*` pairs and
-   * `EVENT_BOX_POSTER_SHAPE`/`_ADD_PHOTO_SPACE` (the event box's wording used to follow the DESIGN —
-   * it does not any more), and `WEEKLY_BOX_TITLE`/`_BLURB_LOC`/`WEEKLY_USE_EVENT_IMAGE`/
-   * `WEEKLY_NOT_ON_LINE` (the weekly box became the LOCATION PICTURE box with its own radio).
-   * ⚠️ THEY ARE STILL **EXPORTED** AND THAT IS DELIBERATE: harnesses assert on them by name, and a dead
-   * export with no reader is cheaper than a harness that cannot find its subject. */
-  /* ⛔ `SLOT_REPLACE` AND `SLOT_EMPTY` ARE NO LONGER IMPORTED. "Replace" was a second button that did
-   * what dropping a file does, and "Nothing yet" was the empty tile's text — the empty box says "Drop a
-   * picture here" instead, which is an instruction rather than a status. Both stay exported. */
-  SLOT_UPLOAD, SLOT_REMOVE, slotRemoveConfirm,
-  /* ⚠️ §3 · THE PHONE SCREEN'S OWN LINES AND ITS BACK LINK — see their notes in the copy module for
-   * why the cards do not reuse the desktop blurbs. */
-  PHONE_PIC_EVENT_LINE, PHONE_PIC_WEEKLY_LINE, PHONE_PIC_POSTER_LINE, PHONE_ALL_LOCATIONS,
-} from '@/lib/copy/socialPosts'
+/* ══ 🔴 LANGUAGE PHASE 1d PART 2 · THE WORDS COME FROM `socialPosts` IN THE TRUCK'S LOCALE ══════════════════
+ * Every constant this screen imported from lib/copy/socialPosts.ts is now a message there (key = the export's
+ * name in camelCase), read with `useT` so a US truck gets its own words. The copy module's exports still exist
+ * and return the same en-GB words, for the harnesses and the record. */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/socialPosts'
+
+/** The `socialPosts` translator, for the helpers below that take one. */
+type SocialT = ReturnType<typeof useT<'socialPosts'>>
+
+/** Which image a single event post will use, in one whole sentence (it was `imageSourceLine` in the copy module,
+ *  which still returns the en-GB words). ⚠️ "this location" is a branch of the message, never a word put in. */
+function imageLine(t: SocialT, source: 'event' | 'place-photo' | 'place-poster' | 'standard' | 'none', place?: string | null): string {
+  const where = String(place ?? '').trim()
+  const hasPlace = where ? 'yes' : 'no'
+  if (source === 'none') return t('imageChoicePrivate')
+  if (source === 'event') return t('imageSource.event')
+  if (source === 'place-photo') return t('imageSource.placePhoto', { hasPlace, place: where })
+  if (source === 'place-poster') return t('imageSource.placePoster', { hasPlace, place: where })
+  return t('imageSource.standard')
+}
+
+/** A refusal with no words of the server's own: the render says it (state set in an effect holds a code). */
+class Unsaid extends Error {
+  constructor(readonly code: 'didNotWork' | 'didNotSave') { super('') }
+}
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE SHAPES `social_overview` ANSWERS WITH
@@ -283,7 +244,9 @@ export type SocialArea = 'create' | 'designs' | 'locations'
 export function shortDate(ymd: string | null | undefined, ts: TimeSettings | null | undefined): string {
   if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ''
   // The truck's words and order (Phase 2B): GB "Tue 13 Oct", US "Tue, Oct 13".
-  return formatYmd(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
+  /* ⚠️ LANGUAGE PHASE 1d PART 2: THE SHORT MONTH COMES FROM `monthName` (via `formatYmdShortMonth`), so GB
+   * September is "Sep", not Intl's en-GB "Sept" — the named change Phase 2 §2.4 made everywhere else. */
+  return formatYmdShortMonth(ymd, ts, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 /* ⛔ `timeLabel` WAS A SECOND TIME FORMATTER (6 October 2026). It wrote `17:00–20:00` with no spaces
@@ -379,12 +342,13 @@ function Box({ title, blurb, children, className = '' }: {
  * do; the button that leaves is outlined like every other button that goes somewhere.
  */
 function EmptyBox({ title, onGo }: { title: string; onGo: () => void }) {
+  const t = useT('socialPosts')
   return (
     <div data-empty-box
       className="flex min-h-[9rem] flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center">
       <p className="text-sm font-bold text-slate-700">{title}</p>
-      <p className="max-w-[20rem] text-sm text-slate-500">{EMPTY_BODY}</p>
-      <button type="button" className={`${BTN_OUTLINE} mt-1`} onClick={onGo}>{EMPTY_BUTTON}</button>
+      <p className="max-w-[20rem] text-sm text-slate-500">{t('emptyBody')}</p>
+      <button type="button" className={`${BTN_OUTLINE} mt-1`} onClick={onGo}>{t('emptyButton')}</button>
     </div>
   )
 }
@@ -506,6 +470,7 @@ function PostTile({ token, kind, eventId, week, fallbackUrl, w, h }: {
 }
 
 function DesignTile({ url, w, h }: { url: string | null; w: number | null; h: number | null }) {
+  const t = useT('socialPosts')
   /* 🔴 A FIXED HEIGHT AND A DERIVED WIDTH, not `aspect-ratio` on a full-width box. Three boxes in a
    * row are different widths; a width-driven aspect ratio would make the three previews three
    * different heights, which is the thing this is here to stop.
@@ -536,7 +501,7 @@ function DesignTile({ url, w, h }: { url: string | null; w: number | null; h: nu
         /* eslint-disable-next-line @next/next/no-img-element -- a signed, expiring Supabase URL;
            next/image would need the host in `remotePatterns` and would proxy a private object. */
         ? <img src={url} alt="" className="h-full w-full object-cover" />
-        : 'No design yet'}
+        : t('screen.noDesignYet')}
     </div>
   )
 }
@@ -566,9 +531,10 @@ function DesignTile({ url, w, h }: { url: string | null; w: number | null; h: nu
 
 /** "✓ Set up" / "Not set up". */
 function ReadyBadge({ ready }: { ready: boolean }) {
+  const t = useT('socialPosts')
   return ready
-    ? <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-bold text-green-700">✓ Set up</span>
-    : <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">Not set up</span>
+    ? <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-bold text-green-700">{t('screen.setUp')}</span>
+    : <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">{t('screen.notSetUp')}</span>
 }
 
 /* ⛔ `BackLink` IS GONE — 9 October 2026. It drew a standalone "‹ Designs" row above each full-page
@@ -676,8 +642,11 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
   manageApi: (action: string, extra?: Record<string, unknown>) => Promise<unknown>
 }) {
   const ts = useTruckTime() // the truck's clock and words (Phase 2B)
+  const t = useT('socialPosts')
   const [data, setData] = useState<Overview | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  /* ⚠️ THE SERVER'S OWN SENTENCE, or a CODE the render words (Language Phase 1d Part 2): it is set from `load`,
+   * which an effect calls, so it holds no sentence of ours. */
+  const [error, setError] = useState<{ text: string } | { code: 'didNotWork' | 'couldNotLoad' } | null>(null)
   const [view, setView] = useState<View>({ kind: 'boxes' })
   /* ══ 🔴 "THE EDITOR HAS UNSAVED CHANGES" — REPORTED UP FROM `DesignEditor` ════════════════════════
    * ⚠️ IT IS STATE HERE AND A REF THERE, and both are right: the editor reads it inside a handler that
@@ -730,11 +699,13 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
       /* 🔴 THE SERVER'S OWN SENTENCE, SHOWN AS IT CAME BACK. The refusals here are specific — a truck
        * without the plan is told which plan — and "something went wrong" would strip the only part an
        * operator can act on. */
-      if (!r.ok) throw new Error(String(j.error ?? 'That did not work.'))
+      if (!r.ok) throw (j.error != null ? new Error(String(j.error)) : new Unsaid('didNotWork'))
       setData(j as unknown as Overview)
       setWeek((j as unknown as Overview).weekly.defaultWeek)
       setError(null)
-    } catch (e) { setError(e instanceof Error ? e.message : 'Could not load') }
+    } catch (e) {
+      setError(e instanceof Unsaid ? { code: 'didNotWork' } : e instanceof Error ? { text: e.message } : { code: 'couldNotLoad' })
+    }
   }, [token])
 
   /* ⚠️ THE DISABLE IS PER-LINE AND NARROW, as everywhere else in Manage. The setState calls are inside
@@ -799,12 +770,12 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
     })
     if (!r.ok) {
       const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
-      throw new Error(String(j.error ?? 'That did not save.'))
+      throw new Error(String(j.error ?? t('screen.didNotSave')))
     }
     /* ⚠️ AWAITED, so the panel's `onSave` does not close over a screen that is still showing the old
      * words — the caller closes the editor the moment this resolves. */
     await load()
-  }, [token, load])
+  }, [token, load, t])
 
   /* ⛔ EVERY HOOK BEFORE EVERY EARLY RETURN. These three sat beside the other derived values near the
    * bottom — which is after the `if (view.kind === …) return` branches, so inside a full-page editor
@@ -968,18 +939,18 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
       onClick={() => setLeaveTo(null)}>
       <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl"
         onClick={e => e.stopPropagation()}>
-        <p className="text-sm font-bold text-slate-900" data-leave-title>{LEAVE_TITLE}</p>
-        <p className="mt-1 text-[12px] leading-snug text-slate-500" data-leave-body>{LEAVE_BODY}</p>
+        <p className="text-sm font-bold text-slate-900" data-leave-title>{t('leaveTitle')}</p>
+        <p className="mt-1 text-[12px] leading-snug text-slate-500" data-leave-body>{t('leaveBody')}</p>
         <div className="mt-4 flex flex-wrap justify-end gap-2">
           {/* ⛔ "Keep editing" IS FIRST AND IS THE OUTLINED ONE; the destructive answer is not where a
             * hurried press lands. 🔴 "Save and leave" IS THE ORANGE ONE — the brief's instruction, and
             * the one that loses nothing. */}
           <button type="button" data-keep-editing className={BTN_OUTLINE}
-            onClick={() => setLeaveTo(null)}>{LEAVE_CONFIRM_STAY}</button>
+            onClick={() => setLeaveTo(null)}>{t('leaveConfirmStay')}</button>
           <button type="button" data-leave-anyway
             className="inline-flex shrink-0 items-center justify-center rounded-xl border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
             onClick={() => { const to = leaveTo; setLeaveTo(null); leaveNow(to) }}>
-            {LEAVE_WITHOUT_SAVING}
+            {t('leaveWithoutSaving')}
           </button>
           {/* ⚠️ IT **AWAITS** THE SAVE BEFORE LEAVING. The editor's `onSave` goes to the server; leaving
             * first would unmount the screen that reports whether it worked, and an operator who chose
@@ -996,7 +967,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                 leaveNow(to)
               })()
             }}>
-            {LEAVE_SAVE_AND_GO}
+            {t('leaveSaveAndGo')}
           </button>
         </div>
       </div>
@@ -1004,7 +975,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
   )
 
   if (view.kind === 'weekly-post') {
-    return (<>{gate(<WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'}
+    return (<>{gate(<WeeklyPostApp token={token} truckName={truck?.name ?? t('screen.yourTruck')}
       initialMode="post" initialWeek={view.week} onBack={back} onDirtyChange={setEditorDirty}
       onSaver={fn => { editorSave.current = fn }} />)}{leaveDialog}</>)
   }
@@ -1018,7 +989,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
       *     the weekly design editor, with boxes possibly just moved — the one situation the sub-tab
       *     guard exists for. `requestArea` asks first and `goArea` closes the editor, so the `setView`
       *     this used to do by hand is already done for it. */
-    return (<>{gate(<WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'}
+    return (<>{gate(<WeeklyPostApp token={token} truckName={truck?.name ?? t('screen.yourTruck')}
       initialMode="setup" initialDesignKind="week" hideKindSwitch onBack={back}
       onDirtyChange={setEditorDirty}
       onSaver={fn => { editorSave.current = fn }}
@@ -1073,22 +1044,22 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
         * one element rather than a habit shared by three. */}
       <div className="min-w-0" data-tab-head>
         <p className="text-xl font-black text-slate-900" data-tab-heading>
-          {area === 'create' ? TAB_CREATE_HEADING
-            : area === 'designs' ? TAB_DESIGNS_HEADING
-            : TAB_LOCATIONS_HEADING}
+          {area === 'create' ? t('tabCreateHeading')
+            : area === 'designs' ? t('tabDesignsHeading')
+            : t('tabLocationsHeading')}
         </p>
         <p className="mt-0.5 max-w-[46rem] text-sm text-slate-500" data-tab-blurb>
-          {area === 'create' ? TAB_CREATE_BLURB
-            : area === 'designs' ? TAB_DESIGNS_BLURB
-            : TAB_LOCATIONS_BLURB}
+          {area === 'create' ? t('tabCreateBlurb')
+            : area === 'designs' ? t('tabDesignsBlurb')
+            : t('tabLocationsBlurb')}
         </p>
       </div>
 
       {error && (
         <p className="flex flex-wrap items-center gap-2 text-sm text-red-600">
-          {error}
+          {'text' in error ? error.text : error.code === 'didNotWork' ? t('screen.didNotWork') : t('screen.couldNotLoad')}
           <button type="button" onClick={() => void load()}
-            className="font-semibold underline hover:no-underline">Retry</button>
+            className="font-semibold underline hover:no-underline">{t('screen.retry')}</button>
         </p>
       )}
       {!data && !error && <div className="p-8 text-center"><Spinner /></div>}
@@ -1116,9 +1087,9 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
               * ⚠️ DESIGNS AND LOCATION SETTINGS MOVED IN THE SAME EDIT, so the three screens of this tab
               * agree about which post comes first; two of them disagreeing is worse than either order. */}
             {/* ── LEFT · SINGLE EVENT POST ────────────────────────────────────────────────────── */}
-            <Box title={CREATE_EVENT_TITLE} blurb={EVENT_BOX_BLURB}>
+            <Box title={t('createEventTitle')} blurb={t('eventBoxBlurb')}>
               {gate(!data.standard.ready ? (
-                <EmptyBox title={EMPTY_EVENT_TITLE} onGo={goToDesigns} />
+                <EmptyBox title={t('emptyEventTitle')} onGo={goToDesigns} />
               ) : (
                 <>
                   <NextEventHalf
@@ -1145,7 +1116,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                     filled={eventCaption}
                     template={data.captions?.event.template ?? ''}
                     busy={false}
-                    onSave={t => saveCaption('event', t)}
+                    onSave={tpl => saveCaption('event', tpl)}
                     onTextChange={setPostText}
                   />
                 </>
@@ -1153,9 +1124,9 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
             </Box>
 
             {/* ── RIGHT · WEEKLY POST ─────────────────────────────────────────────────────────── */}
-            <Box title={CREATE_WEEKLY_TITLE} blurb={WEEKLY_BOX_BLURB}>
+            <Box title={t('createWeeklyTitle')} blurb={t('weeklyBoxBlurb')}>
               {gate(!data.weekly.ready ? (
-                <EmptyBox title={EMPTY_WEEKLY_TITLE} onGo={goToDesigns} />
+                <EmptyBox title={t('emptyWeeklyTitle')} onGo={goToDesigns} />
               ) : (
                 <>
                   {/* 🔴 THE DESIGN'S OWN THUMBNAIL, IN ITS OWN SHAPE. Same tile the Designs box draws,
@@ -1180,21 +1151,23 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                     * operator plans around. 🔴 WHAT IT DOES SAY IS WHAT IS **LEFT OUT**: a week whose
                     * numbers do not add up is the question this answers before it is asked. */}
                   <p className="mt-2 text-center text-[11px] text-slate-400" data-week-events>
-                    {weekEventsLine(weekChoice?.events ?? 0, weekChoice?.privateEvents ?? 0)}
+                    {(weekChoice?.privateEvents ?? 0) > 0
+                      ? t('weekEventsLine.withPrivate', { events: weekChoice?.events ?? 0, privateEvents: weekChoice?.privateEvents ?? 0 })
+                      : t('weekEventsLine.events', { events: weekChoice?.events ?? 0 })}
                   </p>
-                  <label className="mt-3 block text-xs font-bold text-slate-600" htmlFor="which-week">Which week</label>
+                  <label className="mt-3 block text-xs font-bold text-slate-600" htmlFor="which-week">{t('screen.whichWeek')}</label>
                   <select id="which-week" value={week} onChange={e => setWeek(e.target.value as 'this' | 'next')}
                     data-week-select
                     className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
-                    <option value="this">This week · {shortDate(data.weekly.thisWeek.start, ts)} – {shortDate(data.weekly.thisWeek.end, ts)}</option>
-                    <option value="next">Next week · {shortDate(data.weekly.nextWeek.start, ts)} – {shortDate(data.weekly.nextWeek.end, ts)}</option>
+                    <option value="this">{t('screen.thisWeekOption', { start: shortDate(data.weekly.thisWeek.start, ts), end: shortDate(data.weekly.thisWeek.end, ts) })}</option>
+                    <option value="next">{t('screen.nextWeekOption', { start: shortDate(data.weekly.nextWeek.start, ts), end: shortDate(data.weekly.nextWeek.end, ts) })}</option>
                   </select>
                   {/* 🔴 ONE OF THE TWO ORANGE BUTTONS ON THIS AREA, and it is only drawn when the
                     * design is ready — the empty state above is the other branch. */}
                   <div className="mt-auto pt-3">
                     <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
                       onClick={() => setView({ kind: 'weekly-post', week })}>
-                      {CREATE_WEEKLY_BUTTON}
+                      {t('createWeeklyButton')}
                     </button>
                   </div>
                   {/* ══ 🔴 THE WEEKLY CARD IS THE SAME PATTERN AS THE EVENT ONE, AND NOW SO IS ITS TEXT
@@ -1216,14 +1189,14 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                     filled={weekChoice?.caption ?? data.captions?.week.template ?? ''}
                     template={data.captions?.week.template ?? ''}
                     busy={false}
-                    onSave={t => saveCaption('week', t)}
+                    onSave={tpl => saveCaption('week', tpl)}
                     onTextChange={setWeekCaption}
                   />
                 </>
               ))}
             </Box>
           </div>
-          <p className="text-xs leading-relaxed text-slate-400">{MAKE_POST_FOOTNOTE}</p>
+          <p className="text-xs leading-relaxed text-slate-400">{t('makePostFootnote')}</p>
         </>
       )}
 
@@ -1246,11 +1219,9 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
             * it ("Designs for a place") is ALSO a design for event posts. An operator reading the two
             * headings could not tell which one their next post would use. The bold "standard" is what
             * ties the two boxes together: this is the default, and a place with its own replaces it. */}
-          <Box title={EVENT_DESIGN_TITLE} blurb={<>
-            {EVENT_DESIGN_BLURB_BEFORE}
-            <strong className="font-bold text-slate-700">{EVENT_DESIGN_BLURB_BOLD}</strong>
-            {EVENT_DESIGN_BLURB_AFTER}
-          </>}>
+          <Box title={t('eventDesignTitle')} blurb={t.rich('eventDesignBlurb', {
+            b: chunks => <strong className="font-bold text-slate-700">{chunks}</strong>,
+          })}>
             {gate(
               <>
                 <div className="flex flex-col items-center">
@@ -1260,7 +1231,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                 <div className="mt-auto pt-3">
                   <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
                     onClick={() => setView({ kind: 'event-design' })}>
-                    {data.standard.ready ? EVENT_DESIGN_BUTTON_EDIT : EVENT_DESIGN_BUTTON_NEW}
+                    {data.standard.ready ? t('eventDesignButtonEdit') : t('eventDesignButtonNew')}
                   </button>
                 </div>
               </>,
@@ -1268,7 +1239,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
           </Box>
 
           {/* ── BOX 2 · WEEKLY DESIGN ──────────────────────────────────────────────────────────── */}
-          <Box title="Weekly post design" blurb={WEEKLY_DESIGN_BLURB}>
+          <Box title={t('screen.weeklyDesignTitle')} blurb={t('weeklyDesignBlurb')}>
             {gate(
               <>
                 {/* ⚠️ CENTRED, AND THE TILE IS THE SAME SIZE IN BOTH STATES. The badge sits under it,
@@ -1284,7 +1255,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
                 <div className="mt-auto pt-3">
                   <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
                     onClick={() => setView({ kind: 'weekly-design' })}>
-                    {data.weekly.ready ? 'Edit weekly design' : 'Set up weekly design'}
+                    {data.weekly.ready ? t('screen.editWeeklyDesign') : t('screen.setUpWeeklyDesign')}
                   </button>
                 </div>
               </>,
@@ -1389,6 +1360,7 @@ function NextEventHalf({
   onChoose: (id: string) => void
 }) {
   const ts = useTruckTime() // the truck's clock and words (Phase 2B)
+  const t = useT('socialPosts')
   /* 🔴 THE DEFAULT IS THE NEXT **PUBLIC** EVENT, not the next event. There is no post for a private
    * booking — the route refuses `event_post` for one — so a private event can never be the chosen one.
    * ⚠️ IT STILL APPEARS IN THE LIST BELOW, greyed, in its date position, because leaving it out would
@@ -1401,7 +1373,7 @@ function NextEventHalf({
   const others = events.filter(e => e.id !== chosen?.id)
 
   if (!chosen && others.length === 0) {
-    return <p className="py-3 text-sm text-slate-400">{NO_UPCOMING_EVENTS}</p>
+    return <p className="py-3 text-sm text-slate-400">{t('noUpcomingEvents')}</p>
   }
 
   return (
@@ -1426,7 +1398,7 @@ function NextEventHalf({
         * fallback for a payload from before that field existed, so the line is never blank. */}
       <p className="mt-2 text-center text-[11px] text-slate-400" data-image-source>
         {chosen
-          ? imageSourceLine(
+          ? imageLine(t,
             chosen.imageSource
               ?? (placeImageUrl(chosen.placeId) ? (photoSpace ? 'place-photo' : 'place-poster') : 'standard'),
             chosen.placeName ?? chosen.venue,
@@ -1436,13 +1408,13 @@ function NextEventHalf({
       {/* ⚠️ "Which event" TO THE WEEKLY HALF'S "Which week" — the same label shape, the same control,
         * the same place on the card. ⛔ EVERY EVENT IS IN IT, privates included and `disabled`, because
         * leaving them out would make the operator's own diary look wrong — the rule the old list had. */}
-      <label className="mt-3 block text-xs font-bold text-slate-600" htmlFor="which-event">Which event</label>
+      <label className="mt-3 block text-xs font-bold text-slate-600" htmlFor="which-event">{t('screen.whichEvent')}</label>
       <select id="which-event" value={chosen?.id ?? ''} data-event-select
         onChange={e => onChoose(e.target.value)}
         className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900">
         {events.map(ev => (
           <option key={ev.id} value={ev.id} disabled={ev.isPrivate}>
-            {shortDate(ev.date, ts)} · {ev.isPrivate ? PRIVATE_EVENT_ROW : (ev.venue ?? '—')}
+            {shortDate(ev.date, ts)} · {ev.isPrivate ? t('privateEventRow') : (ev.venue ?? '—')}
             {!ev.isPrivate && ev.town ? ` · ${ev.town}` : ''}
           </option>
         ))}
@@ -1463,7 +1435,7 @@ function NextEventHalf({
         <div className="mt-auto pt-3" data-post-action>
           <button type="button" data-primary className={`${BTN_PRIMARY} w-full`}
             onClick={() => onPost(chosen.id)}>
-            {chosen.id === postable[0]?.id ? CREATE_FOR_NEXT : CREATE_FOR_THIS}
+            {chosen.id === postable[0]?.id ? t('createForNext') : t('createForThis')}
           </button>
         </div>
       )}
@@ -1533,6 +1505,7 @@ function PostCaption({ kind, filled, template, busy, onSave, onTextChange }: {
   /** 🔴 Reported up so the post modal shares what is in the box. */
   onTextChange: (text: string) => void
 }) {
+  const t = useT('socialPosts')
   const [editingTemplate, setEditingTemplate] = useState(false)
   /* ⛔ THE BOX'S VALUE IS LOCAL STATE SEEDED FROM `filled`, and the `key` at the call site is what
    * re-seeds it when the chosen event changes. ⚠️ A `value={filled}` CONTROLLED BOX WOULD BE
@@ -1548,14 +1521,14 @@ function PostCaption({ kind, filled, template, busy, onSave, onTextChange }: {
   return (
     <div className="mt-3 border-t border-slate-100 pt-3" data-post-caption={kind}>
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{CAPTION_HEADING}</p>
+        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{t('captionHeading')}</p>
         {/* 🔴 THE LINK IS TOP RIGHT OF THE CAPTION, which is where a "settings for this thing" control
           * belongs — and it is the only way to the template, so the box below cannot be mistaken for
           * one. */}
         {!editingTemplate && (
           <button type="button" data-edit-template onClick={() => setEditingTemplate(true)}
             className="text-[11px] font-semibold text-slate-600 underline hover:no-underline">
-            {EDIT_TEMPLATE_LINK}
+            {t('editTemplateLink')}
           </button>
         )}
       </div>
@@ -1568,8 +1541,8 @@ function PostCaption({ kind, filled, template, busy, onSave, onTextChange }: {
           initial={template}
           busy={busy}
           onCancel={() => setEditingTemplate(false)}
-          onSave={async t => {
-            await onSave(t)
+          onSave={async tpl => {
+            await onSave(tpl)
             setEditingTemplate(false)
           }}
         />
@@ -1584,7 +1557,7 @@ function PostCaption({ kind, filled, template, busy, onSave, onTextChange }: {
             className="mt-1 w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <p className="mt-1 text-[11px] leading-relaxed text-slate-400" data-caption-note>
-            {CAPTION_THIS_POST_NOTE}
+            {t('captionThisPostNote')}
           </p>
         </>
       )}
@@ -1600,6 +1573,7 @@ function CaptionEditor({ kind, initial, busy, onSave, onCancel }: {
   /** 🔴 §5 · Back to the caption box, with nothing written. */
   onCancel: () => void
 }) {
+  const t = useT('socialPosts')
   const hostRef = useRef<HTMLDivElement | null>(null)
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -1620,7 +1594,7 @@ function CaptionEditor({ kind, initial, busy, onSave, onCancel }: {
     if (!host) return
     setSaving(true); setErr(null)
     void onSave(captionFromDom(host))
-      .catch(e => setErr(e instanceof Error ? e.message : 'That did not save.'))
+      .catch(e => setErr(e instanceof Error ? e.message : t('screen.didNotSave')))
       .finally(() => setSaving(false))
   }
 
@@ -1682,16 +1656,16 @@ function CaptionEditor({ kind, initial, busy, onSave, onCancel }: {
     if (cut) window.getSelection()?.deleteFromDocument()
   }
 
-  const title = kind === 'week' ? CAPTION_WEEK_TITLE : CAPTION_EVENT_TITLE
+  const title = kind === 'week' ? t('captionWeekTitle') : t('captionEventTitle')
 
   return (
     <div className="mt-1" data-caption-editor={kind}>
       {/* ⚠️ THE PANEL NAMES ITSELF AND SAYS WHAT IT GOVERNS. "Caption template" alone would leave the
         * operator guessing whether it is this post's or every post's — which is the one thing the box
         * it replaced got wrong. */}
-      <p className="text-sm font-bold text-slate-900">{TEMPLATE_PANEL_TITLE}</p>
+      <p className="text-sm font-bold text-slate-900">{t('templatePanelTitle')}</p>
       <p className="text-[11px] text-slate-400">
-        {kind === 'week' ? TEMPLATE_PANEL_BLURB_WEEK : TEMPLATE_PANEL_BLURB}
+        {kind === 'week' ? t('templatePanelBlurbWeek') : t('templatePanelBlurb')}
       </p>
       {/* ⚠️ `suppressContentEditableWarning` BECAUSE REACT IS RIGHT TO WARN IN GENERAL AND WRONG HERE:
         * the warning is about React managing children it does not own, and this editor deliberately
@@ -1734,7 +1708,7 @@ function CaptionEditor({ kind, initial, busy, onSave, onCancel }: {
           <button key={l.id} type="button" disabled={busy} data-caption-add={l.id}
             onClick={() => insert(l.id, l.label)}
             className="rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold text-orange-800 hover:bg-orange-100 disabled:opacity-50">
-            {captionAddLabel(l.label)}
+            {t('captionAddLabel', { name: l.label })}
           </button>
         ))}
       </div>
@@ -1742,15 +1716,15 @@ function CaptionEditor({ kind, initial, busy, onSave, onCancel }: {
         * was opened to do; Cancel is outlined because going back is not an action on the data. */}
       <div className="mt-2 flex items-center gap-1.5">
         <button type="button" disabled={busy || saving} onClick={save} data-template-save
-          className={`${BTN_PRIMARY}`}>{saving ? 'Saving…' : TEMPLATE_SAVE}</button>
+          className={`${BTN_PRIMARY}`}>{saving ? t('screen.saving') : t('templateSave')}</button>
         <button type="button" disabled={saving} onClick={onCancel} data-template-cancel
-          className={BTN_OUTLINE}>{TEMPLATE_CANCEL}</button>
+          className={BTN_OUTLINE}>{t('templateCancel')}</button>
       </div>
       {err && <p className="mt-1 text-[11px] text-red-600">{err}</p>}
       {/* ⚠️ THE NOTE SAYS WHAT THE ORANGE WORDS **ARE** and what Saving reaches. An operator looking at
         * a field full of chips needs the first; one about to press Save needs the second. */}
       <p className="mt-1 text-[11px] leading-relaxed text-slate-400" data-template-note>
-        {TEMPLATE_PANEL_NOTE}
+        {t('templatePanelNote')}
       </p>
     </div>
   )
@@ -1821,6 +1795,7 @@ function PictureBox({ title, blurb, slotKey, image, busy, onUpload, onRemove, bo
   borrow: { label: string; onClick: () => void } | null
   dropLabel?: string
 }) {
+  const t = useT('socialPosts')
   const inputId = `pic-${slotKey}`
   /* ⚠️ `over` IS PURELY VISUAL and it is per box, so dragging across the row highlights one at a time.
    * ⛔ `dragleave` FIRES WHEN THE POINTER CROSSES INTO A **CHILD** of the drop area, so the flag would
@@ -1899,10 +1874,10 @@ function PictureBox({ title, blurb, slotKey, image, busy, onUpload, onRemove, bo
           ? <img src={image.url} alt="" className="h-full w-full object-contain" />
           : (
             <div className="min-w-0 px-2 text-center">
-              <p className="text-[11px] font-semibold text-slate-400">{dropLabel ?? DROP_A_PICTURE}</p>
+              <p className="text-[11px] font-semibold text-slate-400">{dropLabel ?? t('dropAPicture')}</p>
               <label htmlFor={inputId} data-upload
                 className={`mt-1.5 inline-flex cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 ${busy ? 'pointer-events-none opacity-50' : ''}`}>
-                {SLOT_UPLOAD}
+                {t('slotUpload')}
               </label>
               {/* ══ 🔴 THE BORROW LINK IS **PINNED TO THE FOOT OF THE DROP AREA** ═══════════════════
                 * ⚠️ IT IS STILL INSIDE THE EMPTY AREA, because it is the other way to fill this box and
@@ -1943,7 +1918,7 @@ function PictureBox({ title, blurb, slotKey, image, busy, onUpload, onRemove, bo
         {image && (
           <button type="button" disabled={busy} onClick={onRemove} data-remove
             className="shrink-0 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 disabled:opacity-50">
-            {SLOT_REMOVE}
+            {t('slotRemove')}
           </button>
         )}
       </div>
@@ -1979,6 +1954,7 @@ function PhonePictureCard({ title, line, slotKey, image, busy, onUpload, onRemov
   /** "Use the … picture", or null. ⚠️ Only ever offered on an EMPTY card — see the desktop box. */
   borrow: { label: string; onClick: () => void } | null
 }) {
+  const t = useT('socialPosts')
   const inputId = `pic-phone-${slotKey}`
   return (
     <div data-phone-pic-card={slotKey}
@@ -2007,12 +1983,12 @@ function PhonePictureCard({ title, line, slotKey, image, busy, onUpload, onRemov
           {image ? (
             <button type="button" disabled={busy} onClick={onRemove} data-phone-remove
               className="shrink-0 rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 disabled:opacity-50">
-              {SLOT_REMOVE}
+              {t('slotRemove')}
             </button>
           ) : (
             <label htmlFor={inputId} data-phone-upload
               className={`inline-flex shrink-0 cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 ${busy ? 'pointer-events-none opacity-50' : ''}`}>
-              {SLOT_UPLOAD}
+              {t('slotUpload')}
             </label>
           )}
           {/* ⚠️ THE BORROW LINK STAYS ON THE EMPTY CARD — the brief says so, and it is the other way to
@@ -2039,18 +2015,19 @@ function SocialTagField({ initial, busy, onSave }: {
   busy: boolean
   onSave: (value: string) => void
 }) {
+  const t = useT('socialPosts')
   const [value, setValue] = useState(initial)
   return (
     <div className="mt-3">
       <label className="block text-xs font-bold text-slate-600">
-        {SOCIAL_TAG_LABEL} <span className="font-medium text-slate-400">{SOCIAL_TAG_HINT}</span>
+        {t('socialTagLabel')} <span className="font-medium text-slate-400">{t('socialTagHint')}</span>
       </label>
-      <input value={value} onChange={e => setValue(e.target.value)} placeholder={SOCIAL_TAG_PLACEHOLDER}
+      <input value={value} onChange={e => setValue(e.target.value)} placeholder={t('socialTagPlaceholder')}
         data-social-tag autoCapitalize="none" autoCorrect="off" spellCheck={false}
         className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
       <button type="button" disabled={busy} className={`${BTN_OUTLINE} mt-2`} data-save-tag
         onClick={() => onSave(value)}>
-        Save tag
+        {t('screen.saveTag')}
       </button>
     </div>
   )
@@ -2080,6 +2057,7 @@ function LocationsArea({
   onChanged: () => void
   gate: (children: React.ReactNode) => React.ReactNode
 }) {
+  const t = useT('socialPosts')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<LocFilter>('all')
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -2165,7 +2143,7 @@ function LocationsArea({
       body: JSON.stringify({ token, action, ...extra }),
     })
     const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
-    if (!r.ok) throw new Error(String(j.error ?? 'That did not work.'))
+    if (!r.ok) throw new Error(String(j.error ?? t('screen.didNotWork')))
     return j
   }
 
@@ -2176,7 +2154,7 @@ function LocationsArea({
       onChanged()
       setMsg({ text: after, bad: false })
     } catch (e) {
-      setMsg({ text: e instanceof Error ? e.message : 'That did not work.', bad: true })
+      setMsg({ text: e instanceof Error ? e.message : t('screen.didNotWork'), bad: true })
     } finally { setBusy(false) }
   }
 
@@ -2194,20 +2172,20 @@ function LocationsArea({
   const upload = (placeId: string, slot: 'event' | 'weekly' | 'event-photo') => async (file: File) => {
     setMsg(null)
     if (file.size > MAX_UPLOAD_BYTES) {
-      setMsg({ text: `That image is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 10MB.`, bad: true })
+      setMsg({ text: t('screen.imageTooBig', { size: (file.size / 1024 / 1024).toFixed(1) }), bad: true })
       return
     }
     if (!/^image\/(png|jpe?g)$/.test(file.type)) {
-      setMsg({ text: 'Please choose a PNG or JPG.', bad: true })
+      setMsg({ text: t('screen.pngOrJpg'), bad: true })
       return
     }
     await run(async () => {
       const ext = file.type.includes('png') ? 'png' : 'jpg'
       const up = (await api('upload_url', { which: 'place-picture', ext })) as { uploadUrl: string; path: string }
       const put = await fetch(up.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
-      if (!put.ok) throw new Error('The upload did not complete')
+      if (!put.ok) throw new Error(t('screen.uploadIncomplete'))
       await api('place_picture_confirm', { placeId, path: up.path, fileName: file.name, slot })
-    }, 'Image saved.')
+    }, t('screen.imageSaved'))
   }
 
   const chip = (id: LocFilter, label: string) => (
@@ -2280,15 +2258,15 @@ function LocationsArea({
         * 768px up. ⛔ `md:block` IS WHAT MAKES THE SECOND HALF TRUE — without it the desktop pane would
         * lose its table the moment a row was clicked. */}
       <div className={selectedId ? 'hidden md:block' : 'block'} data-loc-list-screen>
-      <Box title={LOCATIONS_CARD_TITLE}>
+      <Box title={t('locationsCardTitle')}>
         {gate(
           <>
-            <Input label={LOCATIONS_SEARCH_LABEL} value={search} onChange={setSearch}
-              placeholder="Name or area" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+            <Input label={t('locationsSearchLabel')} value={search} onChange={setSearch}
+              placeholder={t('screen.searchPlaceholder')} autoCapitalize="none" autoCorrect="off" spellCheck={false} />
             <div className="mt-2 flex flex-wrap gap-1.5" data-loc-chips>
-              {chip('all', CHIP_ALL(visible.length))}
-              {chip('missing', CHIP_NO_PICTURES(missing.length))}
-              {chip('hidden', CHIP_HIDDEN(hidden.length))}
+              {chip('all', t('chipAll', { n: visible.length }))}
+              {chip('missing', t('chipNoPictures', { n: missing.length }))}
+              {chip('hidden', t('chipHidden', { n: hidden.length }))}
             </div>
             {/* ⛔ `max-h` AND `overflow-y-auto` ARE WHAT MAKE THE LIST SCROLL **INSIDE ITS CARD**.
               * Without a cap a truck with sixty locations grows the card, the page grows with it, and
@@ -2298,7 +2276,7 @@ function LocationsArea({
               <table className="w-full table-fixed border-collapse text-sm">
                 <thead>
                   <tr className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
-                    <th className="w-auto py-1 text-left">{COL_LOCATION}</th>
+                    <th className="w-auto py-1 text-left">{t('colLocation')}</th>
                     {/* ══ ⚠️ WEEKLY · EVENT · POSTER — THE SAME ORDER AS THE THREE BOXES IN THE PANE ════
                       * ⛔ A TABLE WHOSE COLUMNS RAN IN A DIFFERENT ORDER FROM THE BOXES would make the
                       * operator re-learn which tick is which every time they looked from one to the
@@ -2311,9 +2289,9 @@ function LocationsArea({
                       * beside it and as the other two screens of this tab. ⛔ A TABLE WHOSE COLUMNS RUN
                       * ONE WAY AND A PANE WHOSE BOXES RUN THE OTHER is two orders on one screen, which
                       * is worse than either. */}
-                    <th className="w-[44px] py-1 text-center">{COL_EVENT}</th>
-                    <th className="w-[44px] py-1 text-center">{COL_WEEKLY}</th>
-                    <th className="w-[44px] py-1 text-center">{COL_POSTER}</th>
+                    <th className="w-[44px] py-1 text-center">{t('colEvent')}</th>
+                    <th className="w-[44px] py-1 text-center">{t('colWeekly')}</th>
+                    <th className="w-[44px] py-1 text-center">{t('colPoster')}</th>
                     {/* ══ 🔴 §3 · A `›` COLUMN, ON A PHONE ONLY ════════════════════════════════════
                       * ⚠️ `md:hidden` ON BOTH THE HEADER AND THE CELL, so from 768px up the column is
                       * not there at all and the table is the four columns it has always been — which
@@ -2333,7 +2311,7 @@ function LocationsArea({
                     * reports it as a missing `)` fifteen lines further down. */}
                   {rows.length === 0 && (
                     <tr><td colSpan={5} className="py-3 text-sm text-slate-400">
-                      {places.length === 0 ? LOCATIONS_NONE : LOCATIONS_NO_MATCH}
+                      {places.length === 0 ? t('locationsNone') : t('locationsNoMatch')}
                     </td></tr>
                   )}
                   {rows.map(pl => (
@@ -2363,7 +2341,7 @@ function LocationsArea({
                           <span className="text-sm font-medium leading-snug text-slate-900 line-clamp-2"
                             data-loc-name>{pl.name}</span>
                           <span className="block truncate text-xs text-slate-400">
-                            {pl.area ?? ''}{pl.isHidden ? (pl.area ? ' · hidden' : 'hidden') : ''}
+                            {pl.isHidden ? (pl.area ? t('screen.areaHidden', { area: pl.area }) : t('screen.hidden')) : (pl.area ?? '')}
                           </span>
                         </button>
                       </td>
@@ -2398,12 +2376,12 @@ function LocationsArea({
       {selected && (
         <button type="button" data-loc-back onClick={closeLocation}
           className="mb-2 inline-flex items-center text-sm font-semibold text-slate-600 md:hidden">
-          {PHONE_ALL_LOCATIONS}
+          {t('phoneAllLocations')}
         </button>
       )}
       <Card className="flex min-w-0 flex-col p-4" data-loc-pane>
         {!selected ? (
-          <p className="py-6 text-center text-sm text-slate-400">{LOCATIONS_PICK_ONE}</p>
+          <p className="py-6 text-center text-sm text-slate-400">{t('locationsPickOne')}</p>
         ) : gate(
           <>
             <p className="text-[17px] font-bold leading-tight text-slate-900">
@@ -2417,7 +2395,7 @@ function LocationsArea({
               * across two screens is how they come to disagree.
               * ⚠️ THE NOTE NAMES THE REAL PATH rather than saying "elsewhere". */}
             <p className="mt-1 text-[11px] leading-relaxed text-slate-400" data-name-from-schedule>
-              {NAME_FROM_SCHEDULE_NOTE}
+              {t('nameFromScheduleNote')}
             </p>
 
             {msgNode}
@@ -2449,50 +2427,50 @@ function LocationsArea({
               * object, which is harder to read than the thing it replaces. */}
             <div className="mt-3 space-y-2 md:hidden" data-loc-phone-cards>
               <PhonePictureCard
-                title={EVENT_PIC_TITLE} line={PHONE_PIC_EVENT_LINE} slotKey="event-photo"
+                title={t('eventPicTitle')} line={t('phonePicEventLine')} slotKey="event-photo"
                 image={selected.eventPhotoImage ?? null} busy={busy}
                 onUpload={upload(selected.id, 'event-photo')}
                 onRemove={() => {
-                  if (!window.confirm(slotRemoveConfirm('picture'))) return
-                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event-photo' }), 'Removed.')
+                  if (!window.confirm(t('slotRemoveConfirm', { what: 'picture' }))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event-photo' }), t('screen.removed'))
                 }}
                 borrow={!selected.eventPhotoImage && selected.weeklyImage
                   ? {
-                    label: USE_WEEKLY_PICTURE,
+                    label: t('useWeeklyPicture'),
                     onClick: () => void run(
                       () => api('place_slot_use', {
                         placeId: selected.id, slot: 'event-photo',
                         pictureId: selected.weeklyImage?.id,
                       }),
-                      'Event posts now use that picture too.'),
+                      t('screen.eventPostsUseThat')),
                   }
                   : null} />
               <PhonePictureCard
-                title={WEEKLY_PIC_TITLE} line={PHONE_PIC_WEEKLY_LINE} slotKey="weekly"
+                title={t('weeklyPicTitle')} line={t('phonePicWeeklyLine')} slotKey="weekly"
                 image={selected.weeklyImage ?? null} busy={busy}
                 onUpload={upload(selected.id, 'weekly')}
                 onRemove={() => {
-                  if (!window.confirm(slotRemoveConfirm('picture'))) return
-                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'weekly' }), 'Removed.')
+                  if (!window.confirm(t('slotRemoveConfirm', { what: 'picture' }))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'weekly' }), t('screen.removed'))
                 }}
                 borrow={!selected.weeklyImage && selected.eventPhotoImage
                   ? {
-                    label: USE_EVENT_PICTURE,
+                    label: t('useEventPicture'),
                     onClick: () => void run(
                       () => api('place_slot_use', {
                         placeId: selected.id, slot: 'weekly',
                         pictureId: selected.eventPhotoImage?.id,
                       }),
-                      'Weekly posts now use that picture too.'),
+                      t('screen.weeklyPostsUseThat')),
                   }
                   : null} />
               <PhonePictureCard
-                title={LOCATION_POSTER_TITLE} line={PHONE_PIC_POSTER_LINE} slotKey="event"
+                title={t('locationPosterTitle')} line={t('phonePicPosterLine')} slotKey="event"
                 image={selected.eventImage ?? null} busy={busy}
                 onUpload={upload(selected.id, 'event')}
                 onRemove={() => {
-                  if (!window.confirm(slotRemoveConfirm('poster'))) return
-                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event' }), 'Removed.')
+                  if (!window.confirm(t('slotRemoveConfirm', { what: 'poster' }))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event' }), t('screen.removed'))
                 }}
                 /* ⚠️ NO BORROW ON THE POSTER, for the reason the desktop box gives: a poster is held to
                  * the standard design's shape to within 1%, so pointing it at a logo would be offering
@@ -2511,22 +2489,22 @@ function LocationsArea({
                 * Designs and Create a post were reordered the same way in the same edit, so the three
                 * screens of this tab agree. ⚠️ THE TABLE'S COLUMNS MOVED WITH THEM, below. */}
               <PictureBox
-                title={EVENT_PIC_TITLE} blurb={EVENT_PIC_BLURB} slotKey="event-photo"
+                title={t('eventPicTitle')} blurb={t('eventPicBlurb')} slotKey="event-photo"
                 image={selected.eventPhotoImage ?? null} busy={busy}
                 onUpload={upload(selected.id, 'event-photo')}
                 onRemove={() => {
-                  if (!window.confirm(slotRemoveConfirm('picture'))) return
-                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event-photo' }), 'Removed.')
+                  if (!window.confirm(t('slotRemoveConfirm', { what: 'picture' }))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event-photo' }), t('screen.removed'))
                 }}
                 borrow={!selected.eventPhotoImage && selected.weeklyImage
                   ? {
-                    label: USE_WEEKLY_PICTURE,
+                    label: t('useWeeklyPicture'),
                     onClick: () => void run(
                       () => api('place_slot_use', {
                         placeId: selected.id, slot: 'event-photo',
                         pictureId: selected.weeklyImage?.id,
                       }),
-                      'Event posts now use that picture too.'),
+                      t('screen.eventPostsUseThat')),
                   }
                   : null}
               />
@@ -2539,12 +2517,12 @@ function LocationsArea({
                 * words, but a number to read before a job most trucks never do was a cost on everybody. */}
 
               <PictureBox
-                title={WEEKLY_PIC_TITLE} blurb={WEEKLY_PIC_BLURB} slotKey="weekly"
+                title={t('weeklyPicTitle')} blurb={t('weeklyPicBlurb')} slotKey="weekly"
                 image={selected.weeklyImage ?? null} busy={busy}
                 onUpload={upload(selected.id, 'weekly')}
                 onRemove={() => {
-                  if (!window.confirm(slotRemoveConfirm('picture'))) return
-                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'weekly' }), 'Removed.')
+                  if (!window.confirm(t('slotRemoveConfirm', { what: 'picture' }))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'weekly' }), t('screen.removed'))
                 }}
                 /* ══ 🔴 "Use the event post picture" — ONE ROW, NOT A SECOND FILE ════════════════════
                   * ⛔ OFFERED ONLY WHEN **THIS** BOX IS EMPTY AND THE OTHER IS FULL, which is the only
@@ -2557,25 +2535,25 @@ function LocationsArea({
                   * is why `slotOut` sends `legacy` with the id. */
                 borrow={!selected.weeklyImage && selected.eventPhotoImage
                   ? {
-                    label: USE_EVENT_PICTURE,
+                    label: t('useEventPicture'),
                     onClick: () => void run(
                       () => api('place_slot_use', {
                         placeId: selected.id, slot: 'weekly',
                         pictureId: selected.eventPhotoImage?.id,
                       }),
-                      'Weekly posts now use that picture too.'),
+                      t('screen.weeklyPostsUseThat')),
                   }
                   : null}
               />
 
               <PictureBox
-                title={LOCATION_POSTER_TITLE} blurb={POSTER_BOX_BLURB} slotKey="event"
+                title={t('locationPosterTitle')} blurb={t('posterBoxBlurb')} slotKey="event"
                 image={selected.eventImage ?? null} busy={busy}
-                dropLabel={DROP_A_POSTER}
+                dropLabel={t('dropAPoster')}
                 onUpload={upload(selected.id, 'event')}
                 onRemove={() => {
-                  if (!window.confirm(slotRemoveConfirm('poster'))) return
-                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event' }), 'Removed.')
+                  if (!window.confirm(t('slotRemoveConfirm', { what: 'poster' }))) return
+                  void run(() => api('place_slot_clear', { placeId: selected.id, slot: 'event' }), t('screen.removed'))
                 }}
                 borrow={null}
               />
@@ -2591,7 +2569,7 @@ function LocationsArea({
                 busy={busy}
                 onSave={value => void run(
                   () => api('place_social_tag', { placeId: selected.id, tag: value }),
-                  'Tag saved.',
+                  t('screen.tagSaved'),
                 )}
               />
             </div>

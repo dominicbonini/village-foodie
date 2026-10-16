@@ -288,10 +288,32 @@ module.exports = async function us(h) {
     // the card's source: rows, hints, variants
     const card = read('components/manage/ChargesCard.tsx')
     t('the card returns nothing where prices include tax (every UK truck)', /if \(cs\.pricesIncludeTax\) return null/.test(card))
-    t('its title and three rows, worded as approved', has(card, '>Tax, tips and fees<', "'Sales tax rate'", 'The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.',
-      "'Tips'", 'Customers paying online by card can add a tip. It all goes to you.', 'Choices customers see:', 'Other amount',
-      'Added to online orders only. Never on pay-at-the-truck or walk-up orders. You keep it.', 'Most you can charge: ', 'Customers see it before they pay, as one line: &ldquo;Online service fee ',
-      "HatchGrab adds a {feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, cs.currency, money)} service fee to your customers&apos; online orders. You don&apos;t pay it and can&apos;t change it."))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the card's words moved to messages/ (`manageCharges`, and the example's
+    // line name is the customer's own `charges.serviceFeeCustomer`). The same approved words are asserted, now in two
+    // halves: (1) the card reads each row's word from the key at the same spot (same argument shapes — the fee phrase
+    // is still `feePhrase(cs.serviceFeeHatchgrabBps, …)`, the maximum still `feePhrase(maxPct, maxFixed, …)`), and
+    // (2) each key's en-GB text — read from the catalogue this run uses (frozen words + as-moved overlay, so the
+    // named ’ fix on fee.hatchgrab is still seen as moved) — is the approved sentence, byte for byte.
+    {
+      const W = require('./_lp2-frozen.cjs').enGBForNode()
+      const mc = W.manageCharges || {}
+      const fill = (s, v) => String(s).replace(/\{(\w+)\}/g, (x, k) => (k in v ? v[k] : x))
+      t('its title and three rows, worded as approved',
+        has(card, "useT('manageCharges')", "useT('charges')", ">{t('heading')}<", "row(t('rate.label'),", "t('rate.hint'),", "aria-label={t('rate.label')}",
+          "row(t('tips.label'),", "t('tips.hint'),", "{t('tips.choices')}", "{t('tips.other')}",
+          "row(t('fee.label'),", "t('fee.hint'),", "{t('fee.max', { max: feePhrase(maxPct, maxFixed, cs.currency, money) })}",
+          "{t('fee.example', { label: tCharges('serviceFeeCustomer'), amount: money(exampleFee) })}",
+          "{t('fee.hatchgrab', { fee: feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, cs.currency, money) })}")
+        && mc.heading === 'Tax, tips and fees' && mc.rate?.label === 'Sales tax rate'
+        && mc.rate?.hint === 'The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.'
+        && mc.tips?.label === 'Tips' && mc.tips?.hint === 'Customers paying online by card can add a tip. It all goes to you.'
+        && mc.tips?.choices === 'Choices customers see:' && mc.tips?.other === 'Other amount'
+        && mc.fee?.hint === 'Added to online orders only. Never on pay-at-the-truck or walk-up orders. You keep it.'
+        && fill(mc.fee?.max, { max: '<P>' }) === 'Most you can charge: <P>'
+        && fill(mc.fee?.example, { label: W.charges?.serviceFeeCustomer, amount: '<A>' }).startsWith('Customers see it before they pay, as one line: “Online service fee <A>')
+        && fill(mc.fee?.hatchgrab, { fee: '<P>' }) === "HatchGrab adds a <P> service fee to your customers' online orders. You don't pay it and can't change it.",
+        JSON.stringify(mc).slice(0, 300))
+    }
     t('a fee part with no country maximum is hidden', /\{maxPct !== null && \(<>/.test(card) && /\{maxFixed !== null && \(<>/.test(card))
 
     // the move
@@ -302,8 +324,67 @@ module.exports = async function us(h) {
     const headSrc = execFileSync('git', ['show', '3033a53:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
     const was = headSrc.slice(headSrc.indexOf('        {/* ── TAKING PAYMENT (V9.5)'), headSrc.indexOf('        {/* ── OPENING AND CLOSING'))
     const panelSrc = read('components/manage/TakingPaymentPanel.tsx')
-    t('named difference 1: the Taking payment block is in components/manage/TakingPaymentPanel.tsx byte for byte (only its outer separator wrapper changed)',
-      was.length > 5000 && panelSrc.includes(was.replace('<div className="pt-3 border-t border-slate-100">', '<div>', 1).trimEnd()))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the panel's words moved to messages/ (`takingPayment`; the four shared
+    // completion sentences + titles to `completionSettings`, also read by the dashboard; the cash row to
+    // `serviceSettings.labels.takes_cash` — what SERVICE_SETTING_LABELS.takes_cash already read — and
+    // `manageSettings.vans.takesCashHelp`). The working panel can no longer hold 3033a53's block byte for byte, so the
+    // same property is held in three bounded steps (the pattern Part 1 used for SettingsTab below):
+    //   (A) the ORIGINAL byte comparison, unchanged, on 826471a's panel (the tree before Part 2; the file was unchanged
+    //       from e54c7ea to 826471a);
+    //   (B) 826471a → now, with comments set aside on both sides: every REMOVED line is one of the enumerated word moves
+    //       below (its words now come from the named key) or the SERVICE_SETTING_LABELS import/read, and every ADDED
+    //       line is the replacement call, an i18n import, or a `useT(…)` hook — so no code entered or left the block;
+    //   (C) each moved key's en-GB text in the catalogue this run uses (frozen + as-moved) is the removed text, byte for
+    //       byte (`&apos;` read as ').
+    {
+      const basePanel = execFileSync('git', ['show', '826471a:components/manage/TakingPaymentPanel.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
+      const okA = was.length > 5000 && basePanel.includes(was.replace('<div className="pt-3 border-t border-slate-100">', '<div>', 1).trimEnd())
+      const W = require('./_lp2-frozen.cjs').enGBForNode()
+      const get = k => k.split('.').reduce((o, p) => (o && typeof o === 'object' ? o[p] : undefined), W)
+      // [key, the call that now prints it, its text at 826471a as the source spelled it]
+      const MOVES = [
+        ['takingPayment.heading', "{t('heading')}", 'Taking payment'],
+        ['takingPayment.intro', "{t('intro')}", 'How your team records money for each order.'],
+        ['completionSettings.paidStepTitle', "{tCompletion('paidStepTitle')}", 'Take orders without payment'],
+        ['takingPayment.paidStepHelp', "{t('paidStepHelp')}", 'Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.'],
+        ['takingPayment.paidStepNote', "{t('paidStepNote')}", 'This only affects orders you add. It doesn&apos;t affect online orders.'],
+        ['completionSettings.completionTitle', "{tCompletion('completionTitle')}", 'Completing an unpaid order'],
+        ['completionSettings.completionHelp', "{tCompletion('completionHelp')}", 'What happens when an unpaid order is ready to hand over.'],
+        ['completionSettings.pressesOne', "['one', tCompletion('pressesOne'), tCompletion('pressesOneHelp')]", 'One press (“Mark paid & collected”)'],
+        ['completionSettings.pressesOneHelp', "['one', tCompletion('pressesOne'), tCompletion('pressesOneHelp')]", 'Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
+        ['completionSettings.pressesTwo', "['two', tCompletion('pressesTwo'), tCompletion('pressesTwoHelp')]", 'Two presses (“Mark paid” & “Collected”)'],
+        ['completionSettings.pressesTwoHelp', "['two', tCompletion('pressesTwo'), tCompletion('pressesTwoHelp')]", 'Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.'],
+        ['manageSettings.vans.takesCashHelp', "{tVans('takesCashHelp')}", 'Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.'],
+      ]
+      // The cash row's NAME: SERVICE_SETTING_LABELS.takes_cash was already gb('labels.takes_cash') at 826471a — the same key.
+      const REWRAP = [['{SERVICE_SETTING_LABELS.takes_cash}', "{tService('takes_cash')}"], ["import { SERVICE_SETTING_LABELS } from '@/lib/copy/serviceSettings'", null]]
+      const svcBase = execFileSync('git', ['show', '826471a:lib/copy/serviceSettings.ts'], { cwd: REPO, encoding: 'utf8' })
+      const okRewrap = /takes_cash: gb\('labels\.takes_cash'\)/.test(svcBase) && /const tService = useT\('serviceSettings\.labels'\)/.test(panelSrc)
+      const noComments = s => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').split('\n').filter(l => !/^\s*\/\//.test(l) && l.trim()).join('\n')
+      // (the text must be gone from the panel's CODE; a comment may still quote it)
+      const okC = MOVES.every(([k, call, text]) => basePanel.includes(text) && !noComments(panelSrc).includes(text) && panelSrc.includes(call) && get(k) === text.replace(/&apos;/g, "'"))
+      const A0 = noComments(basePanel).split('\n'), B0 = noComments(panelSrc).split('\n'), n0 = A0.length, m0 = B0.length
+      const L0 = Array.from({ length: n0 + 1 }, () => new Uint16Array(m0 + 1))
+      for (let i = n0 - 1; i >= 0; i--) for (let j = m0 - 1; j >= 0; j--) L0[i][j] = A0[i] === B0[j] ? L0[i + 1][j + 1] + 1 : Math.max(L0[i + 1][j], L0[i][j + 1])
+      const dels = [], adds = []
+      for (let i = 0, j = 0; i < n0 || j < m0;) {
+        if (i < n0 && j < m0 && A0[i] === B0[j]) { i++; j++; continue }
+        if (j < m0 && (i === n0 || L0[i][j + 1] >= L0[i + 1][j])) adds.push(B0[j++]); else dels.push(A0[i++])
+      }
+      // A removed line is explained only by holding one enumerated text (JSX text, or a ['one'|'two', label / help]
+      // tuple line), or by being the SERVICE_SETTING_LABELS import / read.
+      const badDel = dels.filter(l => !MOVES.some(([, , text]) => l.includes(text)) && !REWRAP.some(([from]) => l.includes(from)))
+      // An added line is explained only as a removed line with its text replaced by the key's call and nothing else
+      // (same element, same classes), the merged tuple line `['one'|'two', tCompletion(…), tCompletion(…)],`, the cash
+      // row's name re-read, an i18n import, or a `useT(…)` hook.
+      const swapped = new Set(dels.flatMap(d => [...MOVES.map(([, call, text]) => d.replace(text, call)), ...REWRAP.filter(([, to]) => to).map(([from, to]) => d.replace(from, to))]))
+      const badAdd = adds.filter(l => !swapped.has(l) && !MOVES.some(([, call]) => call.startsWith('[') && l.trim() === `${call},`)
+        && !/^import '@\/lib\/i18n\/catalog\/[A-Za-z]+'$/.test(l.trim()) && l.trim() !== "import { useT } from '@/lib/i18n/use-t'"
+        && !/^const t[A-Za-z]* = useT\('[A-Za-z.]+'\)$/.test(l.trim()))
+      t('named difference 1: the Taking payment block is in components/manage/TakingPaymentPanel.tsx byte for byte (only its outer separator wrapper changed)',
+        okA && okRewrap && okC && dels.length >= MOVES.length && badDel.length === 0 && badAdd.length === 0,
+        `A ${okA} · rewrap ${okRewrap} · C ${okC} · unexplained removed: ${badDel.slice(0, 4).join(' | ')} · unexplained added: ${badAdd.slice(0, 4).join(' | ')}`)
+    }
     const settings = P.slice(P.indexOf('function SettingsTab('), P.indexOf('function SettingsTab(') + 400000)
     t('…and it is gone from Settings: no "Taking payment", no "Take orders without payment", no "Completing an unpaid order" heading there',
       !settings.slice(0, settings.indexOf('\nfunction ', 10)).includes('>Taking payment<') && !/<p className="text-sm font-semibold text-slate-800">Take orders without payment<\/p>/.test(settings.slice(0, settings.indexOf('\nfunction ', 10))))
@@ -363,11 +444,36 @@ module.exports = async function us(h) {
       const NAMED = [
         ["    ctx.fillText('here', x + w / 2, y + h * 0.66)", /ctx\.fillText\(line2, x \+ w \/ 2, y \+ h \* 0\.66\)/],
         ["                <strong>{vanPx(vanAddonLabel('month'))}</strong>{' '}", /t\.rich\('vanBilling\.body', \{[^\n]*price: vanPx\(vanAddonLabel\('month'\)\), b: chunks => <strong>\{chunks\}<\/strong>/],
+        // ⚠️ RE-PINNED (Language Phase 1d Part 2): five more NAMED word moves — Settings › Auto-replies' words went to
+        // `manageWhatsApp`. Each removed line has no word of its own by the rule above, and each is excused ONLY when its
+        // replacement is in the same hunk:
+        //   · the setup notice now carries a CODE (worded at render), not an English sentence — its state's type is
+        //     lib/whatsapp/setup-machine's SetupNotice (tone + code; checked below, outside this list);
+        ["  const [setupNotice, setSetupNotice] = useState<{ tone: 'ok' | 'warn' | 'error'; text: string } | null>(null)", /^  const \[setupNotice, setSetupNotice\] = useState<SetupNotice \| null>\(null\)$/],
+        //   · the monthly-limit option's number is formatted by the message (`limit.option`, { n }) instead of formatLimit;
+        ["                                <option key={v} value={v}>{formatLimit(v)}</option>", /^\s+<option key=\{v\} value=\{v\}>\{tW\('limit\.option', \{ n: v \}\)\}<\/option>$/],
+        //   · the billing summary sentence (`billing.summary`): its "Correct at <date>" line, whose date is now the message's
+        //     `checked` value, and the closing `</a>{' '}` of its "Meta's pricing" link, now the rich `link` tag;
+        ["                            month are free. Correct at {META_PRICING_CHECKED_ON}; check{' '}", /^\s+checked: formatYmd\(META_PRICING_CHECKED_ON_YMD, ts, /],
+        ["                            </a>{' '}", /^\s+link: c => <a href=\{META_PRICING_URL\} target="_blank" rel="noreferrer" className="underline font-semibold">\{c\}<\/a>,$/],
+        //   · the last line of a JSX COMMENT (no code) that was shortened to a pointer when its paragraph became
+        //     `billing.chargesBody`; the replacement comment opens in the same hunk.
+        ["                                ages silently on a surface nobody re-reads. */}", /^\s+\{\/\* ⚠️ "From <date>, Meta includes" REPLACED "Meta currently includes" on 16 September 2026 — see the$/],
+        //   · a line of the "How Meta charges" paragraph (words only; the rule above misses it for its ';'), now
+        //     `billing.chargesBody`;
+        ["                                replies a month per number; after that, each reply is charged at Meta&apos;s rate.", /^\s+\{tW\.rich\('billing\.chargesBody', \{$/],
+        //   · the notice's render: our own notices print their CODE's words; `text` (words passed on from the route) still
+        //     prints as it came — the same <p>, the same fallback.
+        ["                  <p>{setupNotice.text}</p>", /^                  <p>\{setupNotice\.code \? tW\(`notice\.\$\{setupNotice\.code\}`\) : setupNotice\.text\}<\/p>$/],
       ]
       const named = (l, h) => NAMED.some(([line, re]) => l === line && h.add.some(x => re.test(x)))
       const unexcused = hunks.flatMap(h => h.del.filter(l => l.trim() && !wordSite(l) && !named(l, h) && !h.add.some(x => x.includes(l.trim()))))
       t('…(B) 756ca09 → now: every line that left SettingsTab is a word moved to messages/ (or the same code re-wrapped)',
-        hunks.length > 50 && unexcused.length === 0, unexcused.slice(0, 8).join('\n'))
+        // ⚠️ RE-PINNED (Language Phase 1d Part 2): + the setup notice's new state type really is { tone, code } (the
+        // named move above excuses its useState line only on that basis).
+        hunks.length > 50 && unexcused.length === 0
+        && /export interface SetupNotice \{ tone: NoticeTone; code\?: SetupNoticeCode; text\?: string \}/.test(read('lib/whatsapp/setup-machine.ts')),
+        unexcused.slice(0, 8).join('\n'))
       // (C) the saves, and the moved block staying out.
       const saves = r => [...r.matchAll(/saveSetting\(\s*'([a-z_]+)'|api\(\s*'([a-z_]+)'|\b(update_[a-z_]+)\b/g)].map(x => x[1] || x[2] || x[3]).sort().join(' ')
       const movedLines = was.split('\n').map(l => l.trim()).filter(l => l.length > 30 && !headStripped.includes(l))
@@ -380,7 +486,12 @@ module.exports = async function us(h) {
     }
     const pt = read('components/manage/PaymentsTab.tsx')
     t('Payments places it after the online section and before "Walk-up payments" (with the new card first)',
-      pt.indexOf('{afterOnline}') > 0 && pt.indexOf('{afterOnline}') < pt.indexOf('Walk-up payments</h3>')
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the "Walk-up payments" heading is `managePayments.walkUp.heading` now
+      // (PaymentsTab's `t` is useT('managePayments')); the same order is asserted at the heading's new source, and the
+      // key's en-GB text (frozen + as-moved) is still "Walk-up payments".
+      pt.indexOf('{afterOnline}') > 0 && pt.indexOf('{afterOnline}') < pt.indexOf(`{t('walkUp.heading')}</h3>`)
+      && /const t = useT\('managePayments'\)/.test(pt)
+      && require('./_lp2-frozen.cjs').enGBForNode().managePayments?.walkUp?.heading === 'Walk-up payments'
       && /<ChargesCard [\s\S]{0,200}\/>\s*<TakingPaymentPanel /.test(P))
   }
 

@@ -16,7 +16,16 @@ const FROZEN_US = path.join(REPO, 'scripts/fixtures/language-phase-1d-messages-b
 const MOVED = LP2.MOVED_FILE
 
 const F_MODE = { mode: 'frozen', file: FROZEN_GB, usFile: FROZEN_US, moved: true }
-const catalogues = which => LP2.catalogues(which === 'F' ? F_MODE : { mode: 'source' })
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): Part 1's "A words" are the words Part 1 ENDED with — 826471a's pair
+// (scripts/fixtures/language-phase-1d2-messages-before.{en-GB,en-US}.json) over the current keys, with BOTH as-moved
+// overlays — not the authored files, which now also carry Part 2's words (proven by scripts/language-phase-1d2.cjs).
+// HG_LP1D_A=source reads the authored files instead (only for a deliberate check).
+const PART1_END_GB = path.join(REPO, 'scripts/fixtures/language-phase-1d2-messages-before.en-GB.json')
+const PART1_END_US = path.join(REPO, 'scripts/fixtures/language-phase-1d2-messages-before.en-US.json')
+const A_MODE = process.env.HG_LP1D_A === 'source' || !fs.existsSync(PART1_END_GB) ? { mode: 'source' } : { mode: 'frozen', file: PART1_END_GB, usFile: PART1_END_US, moved: true }
+const catalogues = which => LP2.catalogues(which === 'F' ? F_MODE : A_MODE)
+/** The en-GB keys Part 1 ended with (826471a) — a key Part 2 deleted is not a Part 1 deletion. */
+const aKeys = () => new Set(LP2.leaves(A_MODE.mode === 'frozen' ? LP2.readJson(PART1_END_GB) : catalogues('A')['en-GB']).map(([k]) => k))
 const moved = () => (fs.existsSync(MOVED) ? JSON.parse(fs.readFileSync(MOVED, 'utf8')) : {})
 
 function gbKeyDiff() {
@@ -25,11 +34,13 @@ function gbKeyDiff() {
   const at756 = Object.fromEntries(LP2.leaves(LP2.readJson(FROZEN_GB)))
   const mv = moved()
   const out = {}
+  const inPart1 = aKeys()
   for (const k of Object.keys(a).sort()) {
-    if (f[k] === a[k]) continue
+    if (f[k] === a[k] || !inPart1.has(k)) continue
     out[k] = { before: f[k] ?? null, after: a[k], kind: k in mv ? (k in at756 ? `GB fix of a ${BEFORE_REF} key` : 'GB fix (moved, then fixed)') : `${BEFORE_REF} key reworded WITHOUT a recorded fix` }
   }
-  for (const k of Object.keys(at756).sort()) if (!(k in a)) out[k] = { before: at756[k], after: null, kind: `${BEFORE_REF} key deleted` }
+  const ak = aKeys()
+  for (const k of Object.keys(at756).sort()) if (!ak.has(k)) out[k] = { before: at756[k], after: null, kind: `${BEFORE_REF} key deleted` }
   return out
 }
 
@@ -48,7 +59,8 @@ function movedProblems() {
 /** Keys new since 756ca09 (the moved words), with the namespace they live in. */
 function newKeys() {
   const at756 = new Set(LP2.leaves(LP2.readJson(FROZEN_GB)).map(([k]) => k))
-  return LP2.leaves(catalogues('A')['en-GB']).filter(([k]) => !at756.has(k))
+  const inPart1 = aKeys()   // ⚠️ RE-PINNED (Language Phase 1d Part 2): Part 1's own new keys, not Part 2's
+  return LP2.leaves(catalogues('A')['en-GB']).filter(([k]) => !at756.has(k) && inPart1.has(k))
 }
 
-module.exports = { REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, catalogues, moved, gbKeyDiff, movedProblems, newKeys, LP2 }
+module.exports = { REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, A_MODE, aKeys, catalogues, moved, gbKeyDiff, movedProblems, newKeys, LP2 }

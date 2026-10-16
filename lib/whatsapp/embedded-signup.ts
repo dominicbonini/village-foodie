@@ -140,6 +140,9 @@ let sdkPromise: Promise<FBGlobal> | null = null
  * second press awaits the same promise. Rejects if the script cannot load, so the caller can say so
  * rather than leaving a button that does nothing.
  */
+/** The `name` of the error `loadFacebookSdk` rejects with when Meta's script cannot load. An id, not words. */
+export const SDK_LOAD_ERROR = 'SdkLoadError'
+
 export function loadFacebookSdk(appId: string): Promise<FBGlobal> {
   if (typeof window === 'undefined') return Promise.reject(new Error('Embedded Signup is browser-only'))
   if (sdkPromise) return sdkPromise
@@ -174,7 +177,14 @@ export function loadFacebookSdk(appId: string): Promise<FBGlobal> {
     // 🔴 A BLOCKED OR OFFLINE SDK MUST FAIL LOUDLY, not leave the caller waiting forever. Ad blockers
     // and tracking-protection lists routinely block connect.facebook.net, and an operator whose button
     // silently does nothing will report it as "your site is broken".
-    s.onerror = () => { sdkPromise = null; reject(new Error('Meta’s login script could not load. An ad blocker or tracking protection is the usual cause.')) }
+    // Language Phase 1d Part 2: the screen recognises this by its NAME (`SDK_LOAD_ERROR`) and shows its own words,
+    // `manageWhatsApp.notice.sdkBlocked`; the message stays for the console.
+    s.onerror = () => {
+      sdkPromise = null
+      const err = new Error('Meta’s login script could not load. An ad blocker or tracking protection is the usual cause.')
+      err.name = SDK_LOAD_ERROR
+      reject(err)
+    }
     document.body.appendChild(s)
   })
 

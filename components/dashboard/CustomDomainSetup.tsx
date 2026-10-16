@@ -5,7 +5,11 @@ import { canAccess, type Plan } from '@/lib/features'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { checkSubdomain, domainFromWebsite } from '@/lib/custom-domain/apex'
 import { CopyButton } from '@/components/dashboard/CopyButton'
-import { notificationCopy, recordRows, providerFieldRows, TIMING_LINE, CONFIRM_COPY, CONFIRMED_COPY, TURN_OFF_COPY, confirmProblemMailto, addressUrl, orderPageUrl, type RecordRow, scanUrl } from '@/lib/custom-domain/copy'
+import { notificationCopy, recordRows, providerFieldRows, CONFIRM_CHECKLIST, confirmProblemMailto, addressUrl, orderPageUrl, type RecordRow, scanUrl } from '@/lib/custom-domain/copy'
+// Language Phase 1d Part 2: every word on this card and in its wizard is `customDomain` — written to the operator
+// and their web person in plain English, US words for a US truck.
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/customDomain'
 import type { DnsProvider } from '@/lib/custom-domain/dns'
 import type { TimeSettings } from '@/lib/time-utils'
 
@@ -85,6 +89,8 @@ function domainOf(full: string | null | undefined): string {
 export default function CustomDomainSetup(props: Props) {
   const { token, plan, featureOverrides, trialExpiresAt, truckName } = props
   const allowed = canAccess(plan, 'embed_schedule', featureOverrides ?? {}, trialExpiresAt)
+  const t = useT('customDomain')
+  const locale = useAppLocale()
 
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<Step>('idle')
@@ -196,9 +202,9 @@ export default function CustomDomainSetup(props: Props) {
       body: JSON.stringify({ token, action, ...extra }),
     })
     const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data?.error || 'Something went wrong')
+    if (!res.ok) throw new Error(data?.error || t('wizard.genericError'))
     return data
-  }, [token])
+  }, [token, t])
 
   /**
    * 🔴 RESUME. An operator who closed the tab returns to the record, not to the start. This matters
@@ -242,14 +248,14 @@ export default function CustomDomainSetup(props: Props) {
         // ⚠️ THE REACHABLE-TODAY CASE. `cname_target` comes from the hosting config lookup, which needs
         // credentials that are not set, so this branch — not the catch — is the one that fires now.
         if (!d.address || !d.cname_target) { setResumeFailed(true); return }
-        const v = checkSubdomain(d.address)
+        const v = checkSubdomain(d.address, locale)
         setAddress(d.address)
-        setRows(recordRows({ provider: null, subdomainLabel: v.ok ? v.subdomain : d.address, cnameTarget: d.cname_target }))
+        setRows(recordRows({ locale, provider: null, subdomainLabel: v.ok ? v.subdomain : d.address, cnameTarget: d.cname_target }))
         setStep('record')
       } catch { if (!cancelled) setResumeFailed(true) }
     })()
     return () => { cancelled = true }
-  }, [open, props.customDomain, step, call])
+  }, [open, props.customDomain, step, call, locale])
 
   /**
    * ── 🔴 ESCAPE MUST NOT CLOSE THIS WIZARD EITHER, AND TODAY THAT IS TRUE BY ACCIDENT. ────────────
@@ -295,7 +301,7 @@ export default function CustomDomainSetup(props: Props) {
   const setUp = async () => {
     // 🔴 THE APEX GUARD, CLIENT-SIDE FIRST so the message arrives without a round trip. The server
     // runs it again before the hosting call — see app/api/manage/route.ts.
-    const v = checkSubdomain(address)
+    const v = checkSubdomain(address, locale)
     if (!v.ok) { setError(v.message); return }
 
     setBusy(true); setError(null); setProvisionFailed(false); setPre(null); setPhase('checking')
@@ -303,7 +309,7 @@ export default function CustomDomainSetup(props: Props) {
     try {
       const d = await call('domain_preflight', { address })
       if (!d.ok) {
-        setError(d.message || 'That address will not work.')
+        setError(d.message || t('address.willNotWork'))
         setBusy(false); setPhase('idle'); return
       }
       flight = d
@@ -325,16 +331,17 @@ export default function CustomDomainSetup(props: Props) {
     setPhase('setting')
     try {
       const d = await call('domain_provision', { address })
-      if (!d.ok) { setError(d.message || 'That address could not be set up.'); setProvisionFailed(true); return }
-      const w = checkSubdomain(d.address)
+      if (!d.ok) { setError(d.message || t('address.couldNotBeSetUp')); setProvisionFailed(true); return }
+      const w = checkSubdomain(d.address, locale)
       setRows(recordRows({
+        locale,
         provider: dnsProvider,
         subdomainLabel: w.ok ? w.subdomain : d.address,
         cnameTarget: d.cname_target ?? '',
       }))
       setStep('record')
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not set that up')
+      setError(e instanceof Error ? e.message : t('address.couldNotSetUp'))
       setProvisionFailed(true)
     } finally { setBusy(false); setPhase('idle') }
   }
@@ -349,10 +356,10 @@ export default function CustomDomainSetup(props: Props) {
     setOffBusy(true); setOffError(null)
     try {
       const d = await call('domain_turn_off')
-      if (!d.ok) { setOffError(d.message || TURN_OFF_COPY.failed); return }
+      if (!d.ok) { setOffError(d.message || t('turnOff.failed')); return }
       setTurnedOff(true); setOffAsking(false)
     } catch (e) {
-      setOffError(e instanceof Error ? e.message : TURN_OFF_COPY.failed)
+      setOffError(e instanceof Error ? e.message : t('turnOff.failed'))
     } finally { setOffBusy(false) }
   }
 
@@ -367,7 +374,7 @@ export default function CustomDomainSetup(props: Props) {
   const sendEmail = async () => {
     setBusy(true); setError(null)
     try { await call('domain_send_instructions', { to: emailTo }); setEmailSent(true) }
-    catch (e) { setError(e instanceof Error ? e.message : 'Could not send') }
+    catch (e) { setError(e instanceof Error ? e.message : t('record.sendFailed')) }
     finally { setBusy(false) }
   }
 
@@ -422,7 +429,7 @@ export default function CustomDomainSetup(props: Props) {
               ("Your website does not change — you just add a link to the new address."), so the
               reassurance survives one screen further in — but an operator who reads only the card no
               longer gets it. */}
-          <h3 className="font-bold text-slate-900">Add your schedule to your website</h3>
+          <h3 className="font-bold text-slate-900">{t('card.title')}</h3>
           <p className="text-sm text-slate-500 mt-0.5">
             {/* 🔴 THE TENSE FOLLOWS THE FACT (28 August 2026). Before setup we are describing something
                 we WILL do; once it is live there is nothing left to create, and "We create a page at…"
@@ -430,18 +437,10 @@ export default function CustomDomainSetup(props: Props) {
                 the same condition the `Live` badge above uses, so the badge and the sentence cannot
                 disagree about what "live" means. ⚠️ The ADDRESS is unchanged: still `cardAddress`, still
                 derived from `fixedDomain`, still no second normalisation. */}
-            {props.verifiedAt ? (
-              <>
-                <span className="font-mono text-slate-700 break-all">{cardAddress ?? `${PREFIX}.yourtruck.com`}</span>
-                {' is showing your schedule.'}
-              </>
-            ) : (
-              <>
-                {'We create a page at '}
-                <span className="font-mono text-slate-700 break-all">{cardAddress ?? `${PREFIX}.yourtruck.com`}</span>
-                {' showing your schedule.'}
-              </>
-            )}
+            {t.rich(props.verifiedAt ? 'card.live' : 'card.create', {
+              address: cardAddress ?? `${PREFIX}.${t('card.exampleDomain')}`,
+              addr: c => <span className="font-mono text-slate-700 break-all">{c}</span>,
+            })}
           </p>
         </div>
         {/* ── 🔴 THE WAITING MESSAGE. IT LIVES HERE AND NOWHERE ELSE (5 September 2026). ────────────
@@ -461,7 +460,7 @@ export default function CustomDomainSetup(props: Props) {
       {/* ⚠️ `justWentLive` IS WHY THIS DISAPPEARS WITHOUT A RELOAD. The check that just ran wrote
           `custom_domain_verified_at`, but `props.verifiedAt` is the value this page loaded with. */}
       {props.customDomain && !props.verifiedAt && !justWentLive && (() => {
-        const waiting = notificationCopy({ address: props.customDomain, startedAt: props.setupStartedAt, time: props.time }).waiting
+        const waiting = notificationCopy({ address: props.customDomain, startedAt: props.setupStartedAt, time: props.time, locale }).waiting
         return (
           <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 flex items-start gap-2.5">
             <span className="text-amber-500 text-base leading-none shrink-0 mt-0.5" aria-hidden>⏳</span>
@@ -479,7 +478,7 @@ export default function CustomDomainSetup(props: Props) {
         <div className="mb-3 rounded-xl border border-green-200 bg-green-50 px-3 py-2.5 flex items-start gap-2.5">
           <span className="text-green-600 text-base leading-none shrink-0 mt-0.5" aria-hidden>✅</span>
           <p className="text-sm text-green-900">
-            <strong>{props.customDomain}</strong> is working. Have a look at it, then tell us it is right below.
+            {t.rich('card.justLive', { address: props.customDomain ?? '', b: c => <strong>{c}</strong> })}
           </p>
         </div>
       )}
@@ -495,7 +494,7 @@ export default function CustomDomainSetup(props: Props) {
             320px phone) the two together take about half the width; a long label would leave the
             heading a column of single words. */}
         <div className="flex shrink-0 items-center gap-2">
-          {props.verifiedAt && <span className="rounded-full bg-green-50 text-green-700 border border-green-200 text-xs font-bold px-2.5 py-1">Live</span>}
+          {props.verifiedAt && <span className="rounded-full bg-green-50 text-green-700 border border-green-200 text-xs font-bold px-2.5 py-1">{t('card.liveBadge')}</span>}
           {/* ── 🔴 THREE LABELS, ONE BEHAVIOUR. The handler is UNCHANGED (28 August 2026). ────────────
               It opens the modal at `address` when nothing is stored, and at `idle` otherwise — where
               the resume effect fetches the status and lands on THE RECORD SCREEN.
@@ -514,7 +513,7 @@ export default function CustomDomainSetup(props: Props) {
               See docs/custom-domain-two-buttons-report.md §1 for what is reachable in that window. */}
           {!open && !(props.verifiedAt && !confirmed && !saidNo) && (
             <Btn onClick={() => { setOpen(true); setResumeFailed(false); setStep(props.customDomain ? 'idle' : 'address') }}>
-              {!props.customDomain ? 'Set up' : props.verifiedAt ? 'View setup' : 'Continue'}
+              {!props.customDomain ? t('card.setUp') : props.verifiedAt ? t('card.viewSetup') : t('card.continue')}
             </Btn>
           )}
         </div>
@@ -527,7 +526,7 @@ export default function CustomDomainSetup(props: Props) {
           a signal nobody reads is worse than a sentence naming who to contact. */}
       {props.verifiedAt && !confirmed && (
         <div className="mt-4 rounded-xl bg-green-50 border border-green-200 p-4">
-          <p className="text-sm font-bold text-green-900">{CONFIRM_COPY.heading}</p>
+          <p className="text-sm font-bold text-green-900">{t('confirm.heading')}</p>
           {/* ── 🔴 THE ADDRESS IS STEP ONE, AND STEP ONE IS THE LINK. ─────────────────────────────
               It was "Open your address and let the page load." — which named nothing and could not be
               clicked — with a SECOND copy of the address sitting above the list purely so there was
@@ -542,21 +541,25 @@ export default function CustomDomainSetup(props: Props) {
               <li className="flex gap-2 text-sm text-green-800">
                 <span className="shrink-0 font-bold">1.</span>
                 <span>
-                  {CONFIRM_COPY.openPrefix}
-                  <a
-                    href={addressUrl(props.customDomain)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="break-all font-mono font-semibold underline hover:text-green-900"
-                  >
-                    {props.customDomain}
-                  </a>
+                  {t.rich('confirm.open', {
+                    address: props.customDomain,
+                    link: c => (
+                      <a
+                        href={addressUrl(props.customDomain!)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="break-all font-mono font-semibold underline hover:text-green-900"
+                      >
+                        {c}
+                      </a>
+                    ),
+                  })}
                 </span>
               </li>
             )}
-            {CONFIRM_COPY.checklist.map((line, i) => (
-              <li key={i} className="flex gap-2 text-sm text-green-800">
-                <span className="shrink-0 font-bold">{i + 2}.</span><span>{line}</span>
+            {CONFIRM_CHECKLIST.map((key, i) => (
+              <li key={key} className="flex gap-2 text-sm text-green-800">
+                <span className="shrink-0 font-bold">{i + 2}.</span><span>{t(`confirm.${key}`)}</span>
               </li>
             ))}
           </ol>
@@ -568,13 +571,13 @@ export default function CustomDomainSetup(props: Props) {
             <Btn onClick={async () => {
               setBusy(true)
               try { await call('domain_confirm'); setConfirmed(true) }
-              catch (e) { setError(e instanceof Error ? e.message : 'Could not save') }
+              catch (e) { setError(e instanceof Error ? e.message : t('wizard.saveFailed')) }
               finally { setBusy(false) }
-            }} disabled={busy}>{CONFIRM_COPY.button}</Btn>
+            }} disabled={busy}>{t('confirm.yes')}</Btn>
             {/* ⚠️ SAME TONE AS "Yes", ON INSTRUCTION (28 August 2026). It was `tone="quiet"` — a bordered
                 secondary — which made the two answers different weights on a card that is asking a
                 straight question. Both are now the primary orange, so neither answer is nudged. */}
-            <Btn onClick={() => setSaidNo(true)} disabled={busy}>{CONFIRM_COPY.noButton}</Btn>
+            <Btn onClick={() => setSaidNo(true)} disabled={busy}>{t('confirm.no')}</Btn>
           </div>
           {/* ── 🔴 REVEALED BY "No", NOT FIRED BY IT. ───────────────────────────────────────────────
               Nothing is sent until the operator clicks the control, and the control is a plain mailto —
@@ -583,12 +586,12 @@ export default function CustomDomainSetup(props: Props) {
               moment it is sent, and `new Date()` in a render is a hydration mismatch. */}
           {saidNo && (
             <div className="mt-3 rounded-lg border border-green-200 bg-white p-3">
-              <p className="text-xs text-green-800 leading-relaxed">{CONFIRM_COPY.problemLine}</p>
+              <p className="text-xs text-green-800 leading-relaxed">{t('confirm.problemLine')}</p>
               <a
-                href={confirmProblemMailto({ truckName, address: props.customDomain ?? '', verifiedAt: props.verifiedAt, time: props.time })}
+                href={confirmProblemMailto({ truckName, address: props.customDomain ?? '', verifiedAt: props.verifiedAt, time: props.time, locale })}
                 className="mt-2 inline-block rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
-                {CONFIRM_COPY.problemButton}
+                {t('confirm.emailUs')}
               </a>
             </div>
           )}
@@ -603,8 +606,8 @@ export default function CustomDomainSetup(props: Props) {
           last week. */}
       {props.verifiedAt && confirmed && !props.confirmedAt && (
         <div className="mt-4 rounded-xl bg-green-50 border border-green-200 p-4">
-          <p className="text-sm font-bold text-green-900">{CONFIRMED_COPY.heading}</p>
-          <p className="mt-1 text-sm text-green-800">{CONFIRMED_COPY.body}</p>
+          <p className="text-sm font-bold text-green-900">{t('confirmed.heading')}</p>
+          <p className="mt-1 text-sm text-green-800">{t('confirmed.body')}</p>
         </div>
       )}
 
@@ -627,16 +630,16 @@ export default function CustomDomainSetup(props: Props) {
           {!offAsking ? (
             <button onClick={() => { setOffAsking(true); setOffError(null) }}
               className="text-xs font-semibold text-slate-400 hover:text-slate-600">
-              {TURN_OFF_COPY.link}
+              {t('turnOff.link')}
             </button>
           ) : (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-              <p className="text-sm font-bold text-red-900">{TURN_OFF_COPY.heading}</p>
+              <p className="text-sm font-bold text-red-900">{t('turnOff.heading')}</p>
 
-              <p className="mt-3 text-xs text-red-800">{TURN_OFF_COPY.stops}</p>
+              <p className="mt-3 text-xs text-red-800">{t('turnOff.stops')}</p>
               <p className="font-mono text-sm font-semibold text-red-900 break-all">{props.customDomain}</p>
 
-              <p className="mt-3 text-xs text-red-800">{TURN_OFF_COPY.carriesOn}</p>
+              <p className="mt-3 text-xs text-red-800">{t('turnOff.carriesOn')}</p>
               <p className="font-mono text-sm font-semibold text-slate-800 break-all">
                 {/* 🔴 `scanUrl`, NOT `orderPageUrl`, SINCE 29 August 2026. The line above this is
                     TURN_OFF_COPY.carriesOn — "and is where your QR code sends people" — which is a
@@ -646,15 +649,15 @@ export default function CustomDomainSetup(props: Props) {
                 {props.slug ? scanUrl(props.slug) : '—'}
               </p>
 
-              <p className="mt-3 text-xs text-red-800 leading-relaxed">{TURN_OFF_COPY.reAdd}</p>
+              <p className="mt-3 text-xs text-red-800 leading-relaxed">{t('turnOff.reAdd')}</p>
 
               {offError && <p className="mt-3 text-xs font-semibold text-red-700 leading-relaxed">{offError}</p>}
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {/* ⚠️ "Keep it on" FIRST and PRIMARY. The destructive one is the quiet one. */}
-                <Btn onClick={() => { setOffAsking(false); setOffError(null) }} disabled={offBusy}>{TURN_OFF_COPY.cancel}</Btn>
+                <Btn onClick={() => { setOffAsking(false); setOffError(null) }} disabled={offBusy}>{t('turnOff.cancel')}</Btn>
                 <Btn tone="quiet" onClick={turnOff} disabled={offBusy}>
-                  {offBusy ? TURN_OFF_COPY.working : TURN_OFF_COPY.confirm}
+                  {offBusy ? t('turnOff.working') : t('turnOff.confirm')}
                 </Btn>
               </div>
             </div>
@@ -687,14 +690,14 @@ export default function CustomDomainSetup(props: Props) {
           <div className="mt-4">
             {resumeFailed ? (
               <>
-                <p className="text-sm font-semibold text-slate-800">We could not load your setup.</p>
-                <p className="mt-1 text-sm text-slate-600">Nothing has changed. Try again shortly.</p>
+                <p className="text-sm font-semibold text-slate-800">{t('wizard.resumeFailedTitle')}</p>
+                <p className="mt-1 text-sm text-slate-600">{t('wizard.resumeFailedBody')}</p>
                 <div className="mt-3">
-                  <Btn onClick={closeWizard}>Close</Btn>
+                  <Btn onClick={closeWizard}>{t('wizard.close')}</Btn>
                 </div>
               </>
             ) : (
-              <p className="text-sm text-slate-600">Picking up where you left off…</p>
+              <p className="text-sm text-slate-600">{t('wizard.resuming')}</p>
             )}
           </div>
         )}
@@ -715,7 +718,7 @@ export default function CustomDomainSetup(props: Props) {
                 ⚠️ WHEN THERE IS NO WEBSITE ON FILE the same slot carries the field instead. The `events.`
                 half is fixed text beside the box, so the shape is still visible while they type. */}
             <div className="rounded-xl bg-slate-50 border border-slate-200 p-3">
-              <p className="text-sm text-slate-700">Your schedule gets its own web address.</p>
+              <p className="text-sm text-slate-700">{t('address.intro')}</p>
               {fixedDomain ? (
                 <p className="mt-1.5 font-mono text-base font-semibold text-slate-900 break-all">{address}</p>
               ) : (
@@ -730,8 +733,8 @@ export default function CustomDomainSetup(props: Props) {
                    why it was kept rather than replaced — this is the one path where an operator types the
                    domain, so an apex is reachable through the field. */
                 <div className="mt-2">
-                  <p className="text-sm font-semibold text-slate-800">What is your web address?</p>
-                  <p className="mt-0.5 text-sm text-slate-600">The one people already use to find you.</p>
+                  <p className="text-sm font-semibold text-slate-800">{t('address.question')}</p>
+                  <p className="mt-0.5 text-sm text-slate-600">{t('address.hint')}</p>
                   <div className="mt-2">
                     {/* 🔴 THE KEYBOARD MUST NOT REWRITE A WEB ADDRESS (V11.50). `pizzeriagusto` was
                         being autocapitalised and autocorrected into `Pizzeria Gusto`, and this field is
@@ -746,7 +749,7 @@ export default function CustomDomainSetup(props: Props) {
                         one. Switching the type would mark the commonest correct entry as invalid. */}
                     <input type="text" inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                       value={typedDomain} onChange={e => setTypedDomain(e.target.value)}
-                      placeholder="yourtruck.com" aria-label="Your own web address"
+                      placeholder={t('card.exampleDomain')} aria-label={t('address.aria')}
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono" />
                   </div>
                   {/* 🔴 THE RESULT, NOT A HALF-BUILT STRING. Before anything parses it shows a neutral
@@ -756,8 +759,8 @@ export default function CustomDomainSetup(props: Props) {
                       after it, which is the half-built string this line exists to avoid. */}
                   <p className="mt-2 text-xs text-slate-500">
                     {address
-                      ? <>Your address will be{' '}<span className="font-mono font-semibold text-slate-800 break-all">{address}</span></>
-                      : <>For example,{' '}<span className="font-mono text-slate-400">{PREFIX}.yourtruck.com</span></>}
+                      ? t.rich('address.willBe', { address, addr: c => <span className="font-mono font-semibold text-slate-800 break-all">{c}</span> })
+                      : t.rich('address.example', { address: `${PREFIX}.${t('card.exampleDomain')}`, addr: c => <span className="font-mono text-slate-400">{c}</span> })}
                   </p>
                 </div>
               )}
@@ -767,7 +770,7 @@ export default function CustomDomainSetup(props: Props) {
                   screen with one button. Saying it once is not a cut in meaning; three times reads as a
                   thing we are nervous about. */}
               <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-                Your website does not change — you just add a link to the new address.
+                {t('address.noChange')}
               </p>
               {/* ⛔ THE ORDERING LINE WAS REMOVED HERE ON 28 AUGUST 2026, TO BE PLACED ELSEWHERE.
                   It read: "Tapping Order takes customers to HatchGrab to pay, so card details stay with
@@ -787,33 +790,29 @@ export default function CustomDomainSetup(props: Props) {
                 leave them waiting for a padlock that never arrives. */}
             {pre && (
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-slate-800">We have not set this up.</p>
+                <p className="text-sm font-semibold text-slate-800">{t('address.notSetUp')}</p>
                 {/* 🔴 THE ONE THAT FAILS SILENTLY. Left unchecked, the padlock simply never appears and
                     nothing anywhere says why. */}
                 {pre.caa?.state === 'restricted' && (
                   <p className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 leading-relaxed">
-                    Whoever looks after your web address has to let us set up the padlock — the little
-                    lock customers see beside it. Until they add us it will not appear, so we have
-                    stopped rather than leave you waiting for it. Ask them to add us, then try again.
+                    {t('address.restricted')}
                   </p>
                 )}
                 {pre.caa?.state === 'blocked' && (
                   <p className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 leading-relaxed">
-                    Your web address currently blocks the padlock completely. Whoever looks after it
-                    has to allow it before this can work. Ask them to change that, then try again.
+                    {t('address.blocked')}
                   </p>
                 )}
                 {pre.already_elsewhere && (
                   <p className="rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-600 leading-relaxed">
                     {/* ⚠️ REWRITTEN: the old line said "pick a different word in front of your domain",
                         which is now advice nobody can take. It names what to do instead. */}
-                    Something already answers on that address. Send the message on the next screen to
-                    whoever looks after it — they will know what to do.
+                    {t('address.elsewhere')}
                   </p>
                 )}
                 {provider && (
                   <p className="text-xs text-slate-500">
-                    Your web address is looked after by <span className="font-semibold">{provider.label}</span>. We will show you where to go.
+                    {t.rich('address.provider', { provider: provider.label, b: c => <span className="font-semibold">{c}</span> })}
                   </p>
                 )}
               </div>
@@ -833,7 +832,7 @@ export default function CustomDomainSetup(props: Props) {
                 a retry is a retry rather than a resume into a state that never happened. */}
             {provisionFailed && error && (
               <div className="rounded-xl border border-red-200 bg-red-50 p-3">
-                <p className="text-sm font-semibold text-red-900">We could not set that address up.</p>
+                <p className="text-sm font-semibold text-red-900">{t('address.provisionFailed')}</p>
                 <p className="mt-1 text-xs text-red-800 leading-relaxed">{error}</p>
               </div>
             )}
@@ -847,12 +846,12 @@ export default function CustomDomainSetup(props: Props) {
                 a previous open once put an ENABLED provision button in front of an EMPTY field. */}
             <div className="flex flex-wrap gap-2">
               <Btn onClick={setUp} disabled={busy || !address.trim()}>
-                {phase === 'checking' ? 'Checking…'
-                  : phase === 'setting' ? 'Setting up…'
-                  : provisionFailed ? 'Try again'
-                  : 'Set up this address'}
+                {phase === 'checking' ? t('address.checking')
+                  : phase === 'setting' ? t('address.setting')
+                  : provisionFailed ? t('address.tryAgain')
+                  : t('address.setUpAddress')}
               </Btn>
-              <button onClick={closeWizard} className="text-xs font-semibold text-slate-400 hover:text-slate-600 px-2">Not now</button>
+              <button onClick={closeWizard} className="text-xs font-semibold text-slate-400 hover:text-slate-600 px-2">{t('address.notNow')}</button>
             </div>
           </div>
         )}
@@ -868,15 +867,15 @@ export default function CustomDomainSetup(props: Props) {
                 escape-hatch email renders from as well; this file holds no provider knowledge at all. */}
             {provider?.steps ? (
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-slate-800">Add this at {provider.label}</p>
+                <p className="text-sm font-semibold text-slate-800">{t('record.addAt', { provider: provider.label })}</p>
                 <a href={provider.dashboardUrl} target="_blank" rel="noopener noreferrer"
                   className="inline-block text-sm font-semibold text-orange-600 hover:underline">
-                  Open {provider.label}
+                  {t('record.open', { provider: provider.label })}
                 </a>
                 <ol className="space-y-1.5">
-                  {provider.steps.steps.map((t, i) => (
-                    <li key={i} className="flex gap-2 text-sm text-slate-700 leading-relaxed">
-                      <span className="shrink-0 font-bold text-slate-400">{i + 1}.</span><span>{t}</span>
+                  {provider.steps.steps.map((key, i) => (
+                    <li key={key} className="flex gap-2 text-sm text-slate-700 leading-relaxed">
+                      <span className="shrink-0 font-bold text-slate-400">{i + 1}.</span><span>{t(key as never)}</span>
                     </li>
                   ))}
                 </ol>
@@ -885,7 +884,7 @@ export default function CustomDomainSetup(props: Props) {
                     on Wix there is no type field and a row for one sends them hunting. The VALUES are
                     identical to the generic rows; only the label differs. */}
                 <div className="rounded-xl border border-slate-200 divide-y divide-slate-100">
-                  {providerFieldRows({ steps: provider.steps, subdomainLabel: subdomainOf(rows), cnameTarget: targetOf(rows) }).map(r => (
+                  {providerFieldRows({ locale, steps: provider.steps, subdomainLabel: subdomainOf(rows), cnameTarget: targetOf(rows) }).map(r => (
                     <div key={r.label} className="flex items-center gap-3 p-3">
                       <div className="w-24 shrink-0">
                         <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">{r.label}</p>
@@ -902,14 +901,14 @@ export default function CustomDomainSetup(props: Props) {
 
                 {provider.steps.caveat && (
                   <p className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 leading-relaxed">
-                    {provider.steps.caveat}
+                    {t(provider.steps.caveat as never)}
                   </p>
                 )}
 
                 {/* ⚠️ THEIR PAGE, LAST. Our wording goes stale the next time they redesign; theirs does not. */}
                 <a href={provider.steps.helpUrl} target="_blank" rel="noopener noreferrer"
                   className="inline-block text-xs font-semibold text-slate-500 hover:underline">
-                  {provider.label}&apos;s own guide to this
+                  {t('record.guide', { provider: provider.label })}
                 </a>
               </div>
             ) : (
@@ -919,12 +918,12 @@ export default function CustomDomainSetup(props: Props) {
                     the sentence does not need to say it twice. */}
                 <div>
                   <p className="text-sm font-semibold text-slate-800">
-                    {provider ? <>Add this at {provider.label}, and save.</> : <>Add this where your web address is looked after, and save.</>}
+                    {provider ? t('record.addAtSave', { provider: provider.label }) : t('record.addSomewhere')}
                   </p>
                   {provider && (
                     <a href={provider.dashboardUrl} target="_blank" rel="noopener noreferrer"
                       className="mt-1 inline-block text-sm font-semibold text-orange-600 hover:underline">
-                      Open {provider.label}
+                      {t('record.open', { provider: provider.label })}
                     </a>
                   )}
                 </div>
@@ -947,23 +946,23 @@ export default function CustomDomainSetup(props: Props) {
               </>
             )}
 
-            <p className="text-xs text-slate-500 leading-relaxed">{TIMING_LINE}</p>
+            <p className="text-xs text-slate-500 leading-relaxed">{t('record.timing')}</p>
 
             {/* 🔴 THE ESCAPE HATCH IS HERE, NOT AFTER THEY FAIL. Many operators do not hold their own
                 domain login — it sits with whoever built the site. Offering this only after a failure
                 assumes they could try at all. */}
             <div className="rounded-xl bg-slate-50 border border-slate-200 p-3">
               <p className="text-xs text-slate-600 leading-relaxed">
-                Someone else looks after your web address?
+                {t('record.someoneElse')}
               </p>
               {emailSent ? (
-                <p className="mt-2 text-xs font-semibold text-green-700">Sent to {emailTo}</p>
+                <p className="mt-2 text-xs font-semibold text-green-700">{t('record.sentTo', { email: emailTo })}</p>
               ) : (
                 <div className="mt-2 flex flex-wrap gap-2">
                   <input type="email" value={emailTo} onChange={e => setEmailTo(e.target.value)}
-                    placeholder="their email address"
+                    placeholder={t('record.emailPlaceholder')}
                     className="flex-1 min-w-[180px] rounded-lg border border-slate-200 px-3 py-1.5 text-sm" />
-                  <Btn tone="dark" onClick={sendEmail} disabled={busy || !emailTo}>{busy ? 'Sending…' : 'Send these details'}</Btn>
+                  <Btn tone="dark" onClick={sendEmail} disabled={busy || !emailTo}>{busy ? t('record.sending') : t('record.send')}</Btn>
                 </div>
               )}
             </div>
@@ -976,7 +975,7 @@ export default function CustomDomainSetup(props: Props) {
                 The fix is only that the label stops claiming completion and names what it actually does.
                 The timing line above already says what happens next and that they need not wait here. */}
             <div className="flex flex-wrap gap-2">
-              <Btn onClick={closeWizard}>Close</Btn>
+              <Btn onClick={closeWizard}>{t('wizard.close')}</Btn>
             </div>
           </div>
         )}

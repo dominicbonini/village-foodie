@@ -48,7 +48,8 @@
     "stock": "⚠️ Stock",
     "stockHidden": "Hidden — {reason}",
     "noDeals": "No deals active",
-    "dealsActive": "{count, plural, one {# deal} other {# deals}} active · {names}{hidden, plural, =0 {} other { · # hidden}}"
+    "dealsActive": "{count, plural, one {# deal} other {# deals}} active · {names}{hidden, plural, =0 {} other { · # hidden}}",
+    "approveNeedsTimes": "Approve is off until this event has a start and end time — add them with Edit."
   },
   "guessed": {
     "title": "📍 We guessed this location",

@@ -20,6 +20,9 @@ function args(ast, out = new Set()) {
   return out
 }
 
+/** en-US messages that leave out an en-GB argument ON PURPOSE (Language Phase 1d Part 2): key → { drop, reason }. */
+const ARG_DROPS = { 'posterWords.heading': { drop: ['end'], reason: 'approved US wording (audit §4.4 row 25): "Week commencing {start} to {end}" → "Week of {start}" — the US heading names the week by its first day only' } }
+
 module.exports = function area({ t, head, msgs }) {
   head('Phase 2 · US English and the wrong-English fixes')
   const gb = Object.fromEntries(LP2.leaves(msgs['en-GB'])), us = LP2.leaves(msgs['en-US'] || {})
@@ -31,7 +34,10 @@ module.exports = function area({ t, head, msgs }) {
     let a, b
     try { a = args(parse(v)) } catch (e) { t(`en-US · ${k}: valid ICU`, false, e.message); continue }
     try { b = args(parse(gb[k] ?? '')) } catch { continue }
-    const same = [...a].sort().join(',') === [...b].sort().join(',')
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): an en-US message may DROP an argument only where ARG_DROPS names it, with
+    // its reason — every other argument must still be the same.
+    const drop = ARG_DROPS[k] ? new Set(ARG_DROPS[k].drop) : new Set()
+    const same = [...a].sort().join(',') === [...b].filter(x => !drop.has(x)).sort().join(',')
     t(`en-US · ${k}: takes the same arguments as en-GB (${[...b].join(', ') || 'none'})`, same, `en-US ${[...a].join(', ')} · en-GB ${[...b].join(', ')}`)
   }
   for (const [loc, m] of [['en-GB', msgs['en-GB']], ['en-US', msgs['en-US'] || {}]]) {

@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Week dates",
+    "dayList": "List of days",
+    "place": "Place",
+    "venue": "Venue",
+    "area": "Area",
+    "dayDate": "Day & date",
+    "times": "Times",
+    "orderLink": "Order link",
+    "locationTag": "Location tag"
+  },
+  "weekHeader": "{truck} — where we are this week:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — CANCELLED, sorry",
+  "noDates": "No dates this week — check back soon.",
+  "orderAhead": "Order ahead: {url}",
+  "orderAheadTagged": "Order ahead: {url} {tag}",
+  "eventLine": "{truck} at {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} at {where} {when}.",
+  "cancelledSorry": "Sorry — we’re not able to make {where} {when}.",
+  "cancelledApology": "Apologies to everyone who was planning to come. We’ll be back soon.",
+  "when": {
+    "today": "today",
+    "tonight": "tonight",
+    "tomorrow": "tomorrow",
+    "dated": "on {date}"
+  }
+}

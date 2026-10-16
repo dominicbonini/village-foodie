@@ -20,6 +20,11 @@ import { formatOneTime, type TimeStyle } from './format'
  * is checked: the caption an operator copies today reads exactly as it did. */
 import { dateTextFor, shortDateTextFor, DEFAULT_COUNTRY, intlLocaleFor, type CountryCode } from './locale'
 import type { WeekData, DayEntry } from './week-data'
+/* 🔴 THE WORDS ARE MESSAGES (Language Phase 1d Part 2) — `captions`, in the truck's country's language, through the
+ * one door every word in this folder uses. ⚠️ GB's text is the literal each replaced, except two named typography
+ * fixes in the cancelled post ("we’re", "We’ll"). Captions are computed at copy time and never stored, so a
+ * truck's own saved template is untouched by any of this. */
+import { captionWordsFor } from './words'
 
 /** "Tue 13 Oct". ⚠️ The country is optional because every existing caller is a GB truck. */
 export function shortDate(ymd: string, country: CountryCode = DEFAULT_COUNTRY): string {
@@ -75,7 +80,8 @@ export function whenPhrase(
   tz: string,
 ): string {
   const w = whenWord(eventDate, startTime, now, tz)
-  return w === 'dated' ? `on ${shortDate(eventDate, country)}` : w
+  const t = captionWordsFor(country)
+  return w === 'dated' ? t('when.dated', { date: shortDate(eventDate, country) }) : t(`when.${w}`)
 }
 
 export interface EventPostInput {
@@ -102,11 +108,12 @@ export function eventPostText(input: EventPostInput): string {
   const { entry, date, truckName, orderUrl, timeStyle, now } = input
   const where = entry.town && !entry.name.includes(entry.town) ? `${entry.name}, ${entry.town}` : entry.name
   const when = whenPhrase(date, entry.startTime, now, input.country, input.timeZone)
+  const t = captionWordsFor(input.country)
 
   if (entry.status === 'cancelled') {
     return [
-      `Sorry — we're not able to make ${where} ${when}.`,
-      `Apologies to everyone who was planning to come. We'll be back soon.`,
+      t('cancelledSorry', { where, when }),
+      t('cancelledApology'),
     ].join('\n')
   }
 
@@ -114,13 +121,13 @@ export function eventPostText(input: EventPostInput): string {
   const to = entry.endTime ? formatOneTime(entry.endTime, timeStyle) : ''
   const times = from && to ? `${from} – ${to}` : from || to
   const lines = [
-    `${truckName} at ${where} ${when}${times ? `, ${times}` : ''}.`,
+    times ? t('eventLine', { truck: truckName, where, when, times }) : t('eventLineNoTimes', { truck: truckName, where, when }),
   ]
   /* ⚠️ THE LINK IS ITS OWN LINE. Facebook and Instagram both linkify a bare URL on its own line and
    * both mangle one that trails a sentence with a full stop stuck to it. */
   if (orderUrl) {
     lines.push('')
-    lines.push(`Order ahead: ${orderUrl}`)
+    lines.push(t('orderAhead', { url: orderUrl }))
   }
   return lines.join('\n')
 }
@@ -145,8 +152,9 @@ export interface WeekCaptionInput {
  */
 export function weekCaption(input: WeekCaptionInput): string {
   const { truckName, week, orderUrl, timeStyle, note } = input
+  const t = captionWordsFor(DEFAULT_COUNTRY)   // this caption names no country: GB's words, as it always has
   const lines: string[] = []
-  lines.push(`${truckName} — where we are this week:`)
+  lines.push(t('weekHeader', { truck: truckName }))
   lines.push('')
   for (const day of week.days) {
     if (day.isDayOff) continue
@@ -154,21 +162,21 @@ export function weekCaption(input: WeekCaptionInput): string {
     for (const e of day.entries) {
       const where = e.town && !e.name.includes(e.town) ? `${e.name}, ${e.town}` : e.name
       if (e.status === 'cancelled') {
-        lines.push(`${name} — ${where} — CANCELLED, sorry`)
+        lines.push(t('dayLineCancelled', { day: name, where }))
         continue
       }
       const from = e.startTime ? formatOneTime(e.startTime, timeStyle) : ''
       const to = e.endTime ? formatOneTime(e.endTime, timeStyle) : ''
       const times = from && to ? `${from} – ${to}` : from || to
-      lines.push(`${name} — ${where}${times ? ` — ${times}` : ''}`)
+      lines.push(times ? t('dayLine', { day: name, where, times }) : t('dayLineNoTimes', { day: name, where }))
     }
   }
   /* ⚠️ A WEEK WITH NO EVENTS STILL PRODUCES A CAPTION, because the operator may be posting exactly
    * that. An empty string here would look like the feature failed. */
-  if (lines.length === 2) lines.push('No dates this week — check back soon.')
+  if (lines.length === 2) lines.push(t('noDates'))
   const trimmedNote = String(note ?? '').trim()
   if (trimmedNote) { lines.push(''); lines.push(trimmedNote) }
-  if (orderUrl) { lines.push(''); lines.push(`Order ahead: ${orderUrl}`) }
+  if (orderUrl) { lines.push(''); lines.push(t('orderAhead', { url: orderUrl })) }
   return lines.join('\n')
 }
 

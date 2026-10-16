@@ -20,6 +20,7 @@ import type { FitLine } from './fit'
 import type { TextBox } from './layout'
 import { joinNameTown, type PlaceStyleId } from './locale'
 import type { DayEntry } from './week-data'
+import { cancelledWordFor } from './words'
 
 /**
  * "Words before" — the operator's lead-in, on the FIRST line of whatever the item says.
@@ -85,6 +86,9 @@ export function locationLinesFor(
  */
 export const timeLinesFor = (
   entries: readonly DayEntry[], textOf: (e: DayEntry) => string, placeStyle: PlaceStyleId,
+  /** 🔴 The word a cancelled event's Time box says, in the poster's country's language — GB "CANCELLED", US
+   *  "CANCELED" (`cancelledWordFor`, ./words.ts). Drawn at render time and never stored. ⚠️ GB's when absent. */
+  cancelledText: string = cancelledWordFor('GB'),
 ): FitLine[] => {
   if (entries.length === 0) return []
   /* 🔴 THE SPACER FOLLOWS THE PLACE STYLE, AND FORGETTING THAT WAS THE OBVIOUS BUG HERE. The blank
@@ -97,7 +101,7 @@ export const timeLinesFor = (
   for (const e of entries) {
     /* 🔴 "CANCELLED" WINS OVER ANY TIME FORMAT, on both posters. Each poster passes its own `textOf`,
      * and this branch is above it — so a cancelled event can never be given a time by a formatter. */
-    out.push({ runs: [{ text: e.status === 'cancelled' ? 'CANCELLED' : textOf(e) }] })
+    out.push({ runs: [{ text: e.status === 'cancelled' ? cancelledText : textOf(e) }] })
     if (e.town && townLines) out.push({ runs: [{ text: ' ' }], scale: 0.62 })
   }
   // every entry had an empty time and no town ⇒ nothing to draw

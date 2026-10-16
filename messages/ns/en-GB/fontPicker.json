@@ -1,0 +1,44 @@
+{
+  "tab": {
+    "all": "All",
+    "bold": "Bold & tall",
+    "hand": "Handwritten",
+    "classic": "Classic",
+    "clean": "Clean",
+    "own": "Yours",
+    "ownCount": "Yours ({count})"
+  },
+  "yoursTag": "· yours",
+  "loadingFonts": "Loading fonts…",
+  "search": "Search {count, number} fonts",
+  "uploadButton": "↑ Upload your font",
+  "loadingLibrary": "Loading the font library…",
+  "tryAgain": "Try again",
+  "noOwn": "You haven’t uploaded a font yet. Use the “↑ Upload your font” button above.",
+  "recent": "Recently used",
+  "popular": "Popular for posters",
+  "adding": "Adding…",
+  "noMatch": "No font matches “{query}”.",
+  "showing": "Showing {shown} of {total, number} — type more to narrow it down.",
+  "couldNotAdd": "That font could not be added",
+  "tooBig": "That font is {size, number, ::.0 group-off}MB. The limit is 5MB.",
+  "woff": "Please upload a TTF or OTF file — you can usually download one from where you bought the font.",
+  "uploadIncomplete": "The upload did not complete",
+  "added": "Added “{name}” as its {face} version.",
+  "face": {
+    "regular": "regular",
+    "bold": "bold",
+    "italic": "italic"
+  },
+  "licenceTick": "I own this font or have a licence to use it",
+  "checking": "Checking the font…",
+  "addFont": "Add font",
+  "cancel": "Cancel",
+  "missingFaces": "Add the {faces} version of “{name}” (optional) — choose the file again.",
+  "somethingWrong": "Something went wrong",
+  "faceLower": {
+    "regular": "regular",
+    "bold": "bold",
+    "italic": "italic"
+  }
+}

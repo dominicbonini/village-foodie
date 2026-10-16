@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Take orders without payment",
+  "completionTitle": "Completing an unpaid order",
+  "completionHelp": "What happens when an unpaid order is ready to hand over.",
+  "pressesOne": "One press (“Mark paid & collected”)",
+  "pressesOneHelp": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.",
+  "pressesTwo": "Two presses (“Mark paid” & “Collected”)",
+  "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food."
+}

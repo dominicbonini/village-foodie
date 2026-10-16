@@ -1,0 +1,22 @@
+{
+  "preview": {
+    "examples": {
+      "doYouDo": "Do you have pepperoni?"
+    },
+    "placeholder": "What desserts do you have?",
+    "working": "Writing the reply…"
+  },
+  "card": {
+    "expiring": "Your WhatsApp connection needs to be renewed soon. Press Reconnect to keep auto-replies running."
+  },
+  "billing": {
+    "summary": "Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {free, number} a month are free. Correct as of {checked}; check <link>Meta’s pricing</link> for changes."
+  },
+  "disconnect": {
+    "body": "Auto-replies stop right away and HatchGrab loses access to your WhatsApp account. Your number keeps working in the WhatsApp Business app. To remove HatchGrab completely, also open WhatsApp Business → Settings → Account → Business Platform."
+  },
+  "signup": {
+    "needsRegistering": "Your account is linked, but this number needs to be registered by us before replies can start. Please contact support — your setup is saved, do not run it again.",
+    "numberTaken": "That WhatsApp number is already connected to another HatchGrab account. A number can only answer for one truck. Contact support and we will move it over."
+  }
+}

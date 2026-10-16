@@ -204,7 +204,14 @@ export async function POST(req: NextRequest) {
     // Reuse the single venue match resolved once per row above (coords + postcode + the anchor/
     // confidence stamps all come from the same VenueMatch — never resolved twice).
     const match = venueMatch
-    const matchedVenue = match.venue
+    /* ══ 🔴 A PRIVATE EVENT GETS NO VENUE GUESS (16 October 2026, docs/private-event-approval-fix-report.md) ═══════
+     * A private booking is never on a map and its venue is only the truck's own reference, so a GUESSED venue (and its
+     * coordinates and postcode) is all risk and no use — Pizzeria Gusto's "Private Event" rows arrived pinned to a junk
+     * venue at the centre of the UK. The privacy test is the same one the insert spreads below (`scrapedPrivacyFields`);
+     * the dedup above still uses the match, unchanged. A generic title is also never matched at all (lib/venue-matcher
+     * `isGenericVenueName`), for every event type. */
+    const scrapedPrivate = scrapedPrivacyFields(row.venue_name, row.event_notes).is_private
+    const matchedVenue = scrapedPrivate ? null : match.venue
     const latitude: number | null = matchedVenue?.latitude ?? null
     const longitude: number | null = matchedVenue?.longitude ?? null
     const venuePostcode: string | null = matchedVenue?.postcode ?? null

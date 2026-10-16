@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Add your schedule to your website",
+    "live": "<addr>{address}</addr> is showing your schedule.",
+    "create": "We create a page at <addr>{address}</addr> showing your schedule.",
+    "exampleDomain": "yourtruck.com",
+    "liveBadge": "Live",
+    "setUp": "Set up",
+    "viewSetup": "View setup",
+    "continue": "Continue",
+    "justLive": "<b>{address}</b> is working. Have a look at it, then tell us it is right below."
+  },
+  "waiting": {
+    "title": "We are waiting for {address}",
+    "bodySince": "You set this up on {date}. New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did.",
+    "body": "New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did."
+  },
+  "ready": {
+    "title": "{address} is live",
+    "body": "Have a look at it, then tell us it is right in your settings."
+  },
+  "confirm": {
+    "heading": "Have a look, then tell us it is right",
+    "open": "Open <link>{address}</link>",
+    "checkTimes": "Check the dates and times look right.",
+    "yes": "Yes, it looks right",
+    "no": "No, there’s a problem",
+    "problemLine": "Tell us what you are seeing and we will look at it.",
+    "emailUs": "Email us",
+    "mailSubject": "Problem with {address}",
+    "mailLiveSince": "Live since {date}",
+    "mailSeeing": "What I am seeing:"
+  },
+  "confirmed": {
+    "heading": "Thanks — that is all noted.",
+    "body": "There is nothing else to do."
+  },
+  "turnOff": {
+    "link": "Turn this off",
+    "heading": "Turn off your own web address?",
+    "stops": "This will stop working:",
+    "carriesOn": "This carries on exactly as it is, and is where your QR code sends people:",
+    "reAdd": "If you are setting it up again later, leave the line you added at your web address company. If you are not, ask them to remove it.",
+    "cancel": "Keep it on",
+    "confirm": "Turn it off",
+    "working": "Turning it off…",
+    "failed": "We could not switch that off just now. Nothing has changed — your address is still working. Try again shortly."
+  },
+  "wizard": {
+    "resumeFailedTitle": "We could not load your setup.",
+    "resumeFailedBody": "Nothing has changed. Try again shortly.",
+    "close": "Close",
+    "resuming": "Picking up where you left off…",
+    "genericError": "Something went wrong",
+    "saveFailed": "Could not save"
+  },
+  "address": {
+    "intro": "Your schedule gets its own web address.",
+    "question": "What is your web address?",
+    "hint": "The one people already use to find you.",
+    "aria": "Your own web address",
+    "willBe": "Your address will be <addr>{address}</addr>",
+    "example": "For example, <addr>{address}</addr>",
+    "noChange": "Your website does not change — you just add a link to the new address.",
+    "notSetUp": "We have not set this up.",
+    "restricted": "Whoever looks after your web address has to let us set up the padlock — the little lock customers see beside it. Until they add us it will not appear, so we have stopped rather than leave you waiting for it. Ask them to add us, then try again.",
+    "blocked": "Your web address currently blocks the padlock completely. Whoever looks after it has to allow it before this can work. Ask them to change that, then try again.",
+    "elsewhere": "Something already answers on that address. Send the message on the next screen to whoever looks after it — they will know what to do.",
+    "provider": "Your web address is looked after by <b>{provider}</b>. We will show you where to go.",
+    "provisionFailed": "We could not set that address up.",
+    "willNotWork": "That address will not work.",
+    "couldNotBeSetUp": "That address could not be set up.",
+    "couldNotSetUp": "Could not set that up",
+    "checking": "Checking…",
+    "setting": "Setting up…",
+    "tryAgain": "Try again",
+    "setUpAddress": "Set up this address",
+    "notNow": "Not now"
+  },
+  "apex": {
+    "empty": "Type the address you would like to use.",
+    "not_a_domain": "That does not look like a web address.",
+    "unparseable": "We could not read that as a web address. Check the spelling and try again.",
+    "apex": "{host} is your whole website address. If you point that at us, your website is replaced by this page. Put a word in front of it instead — for example events.{host}.",
+    "too_deep": "That address has too many parts. Something like events.{domain} works best."
+  },
+  "record": {
+    "addAt": "Add this at {provider}",
+    "open": "Open {provider}",
+    "guide": "{provider}’s own guide to this",
+    "addAtSave": "Add this at {provider}, and save.",
+    "addSomewhere": "Add this where your web address is looked after, and save.",
+    "hintChoose": "Choose this from the list.",
+    "hintWord": "Just this word, not the whole address.",
+    "hintExact": "Copy this exactly.",
+    "timing": "It usually starts working within an hour, though it can take longer. You do not need to keep this page open.",
+    "someoneElse": "Someone else looks after your web address?",
+    "sentTo": "Sent to {email}",
+    "emailPlaceholder": "their email address",
+    "sending": "Sending…",
+    "send": "Send these details",
+    "sendFailed": "Could not send"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Open your web address, then “DNS” and “Records”.",
+      "add": "Select “Add record”, then pick “CNAME” as the “Type”.",
+      "name": "Put the first value below in “Name”.",
+      "value": "Put the second value below in “Target”.",
+      "proxy": "Set “Proxy status” to “DNS only” — the cloud beside it must be grey, not orange.",
+      "save": "Leave “TTL” as “Auto” and select “Save”.",
+      "caveat": "If the cloud stays orange the padlock will never appear, and nothing will say why."
+    },
+    "godaddy": {
+      "open": "Open your “Domain Portfolio” and choose your web address.",
+      "dns": "On “Domain Settings”, select “DNS”.",
+      "add": "Select “Add New Record”, then pick “CNAME” from the “Type” menu.",
+      "name": "Put the first value below in “Name”.",
+      "value": "Put the second value below in “Value”.",
+      "save": "Leave “TTL” as it is and select “Save”.",
+      "caveat": "If you added more than one at once, the button says “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Sign in to your “123 Reg Control Panel”.",
+      "manage": "Beside “Domains”, select “Manage All”, then choose your web address.",
+      "dns": "Select “DNS”, then “Add New Record”.",
+      "type": "Pick “CNAME” from the “Type” list.",
+      "name": "Put the first value below in “Name”.",
+      "value": "Put the second value below in “Value”, and add a full stop to the end of it.",
+      "save": "Leave “TTL” as “Default” and click “Save”.",
+      "caveat": "123 Reg needs a full stop at the end of the second value or it will not work."
+    },
+    "wix": {
+      "open": "Open “Domains”, then click the “Domain Actions” icon beside your web address.",
+      "manage": "Choose “Manage DNS Records”.",
+      "add": "In the “CNAME (Aliases)” section, click “+ Add Record”, then click “Got it”.",
+      "name": "Put the first value below in “Host Name”.",
+      "value": "Put the second value below in “Value”.",
+      "save": "Click “Save”, then click “Save Changes” in the pop-up.",
+      "caveat": "If your web address only points at Wix rather than being held there, Wix cannot make this change — whoever holds it has to."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "One record to add for {truckName}’s schedule page",
+    "hello": "Hello,",
+    "introAt": "We are putting {truckName}’s live schedule on {address}, and it needs one record adding to our domain at {provider}.",
+    "introHolder": "We are putting {truckName}’s live schedule on {address}, and it needs one record adding to our domain with whoever holds our domain.",
+    "stepsAt": "At {provider}:",
+    "guide": "Their own guide: {url}",
+    "wholeChange": "That is the whole change — nothing else on the website is affected, and the rest of our domain keeps working exactly as it does now. It usually starts working within an hour.",
+    "pointsAt": "The page it points at shows where we are trading next and keeps itself up to date.",
+    "replyTo": "Reply to {email} if you have any questions.",
+    "thanks": "Thank you,"
+  },
+  "liveEmail": {
+    "subject": "{address} is working",
+    "goodNews": "Good news — {address} is working.",
+    "body": "Your schedule is now showing at your own address. Have a look at it and check it is right: open {address}, make sure the events are yours and the dates look correct.",
+    "confirm": "When you have, open your settings on HatchGrab and tell us it is right. Nothing depends on that — it just means we know a person has seen it."
+  }
+}

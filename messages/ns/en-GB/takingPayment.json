@@ -1,0 +1,6 @@
+{
+  "heading": "Taking payment",
+  "intro": "How your team records money for each order.",
+  "paidStepHelp": "Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.",
+  "paidStepNote": "This only affects orders you add. It doesn’t affect online orders."
+}

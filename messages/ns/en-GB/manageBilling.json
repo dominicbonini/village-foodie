@@ -1,0 +1,40 @@
+{
+  "perTruckMonth": "per truck / month",
+  "transactionFees": "Transaction fees",
+  "comingSoon": "Coming soon",
+  "footnote2Masked": "Online payments are powered by Stripe Connect. Platform and card processing fees are TBC and will be confirmed at launch.",
+  "card": {
+    "title": "Billing & payments",
+    "managed": "Billing is managed by HatchGrab",
+    "earlyAccess": "During early access we set up and adjust plans manually.",
+    "planLine": "{trial, select, yes {{truck} · {plan} plan (trial)} other {{truck} · {plan} plan}}"
+  },
+  "currentPlan": "Current plan",
+  "trialEnds": "Trial ends {date}",
+  "yourTrialEnds": "Your trial ends {date}",
+  "notStarted": {
+    "heading": "Your free trial has not started yet",
+    "body": "You have every Max feature while you set up. You choose which event starts your free trial — until then, nothing is counting down."
+  },
+  "onMax": "You’re on Max features. Choose a plan before your trial ends to keep access.",
+  "onMaxNoCta": "You’re on Max features.",
+  "upgradeToMax": "Upgrade to Max — {price}",
+  "choosePro": "Choose Pro — {price}",
+  "noCharge": "🔒 You won’t be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay.",
+  "fees": "*Standard card processing fees apply on online orders",
+  "setUpPayment": "⏱ Set up payment before your trial ends to keep access",
+  "upgradeYourPlan": "Upgrade your plan",
+  "planButton": "{plan} — {price}",
+  "perTruckRenews": "{price} per truck · renews automatically",
+  "hideMatrix": "▲ Hide",
+  "compareAll": "▼ Compare all plans",
+  "upgradeModal": {
+    "title": "Upgrade to {plan}",
+    "tagline": "{price} — {description}",
+    "body": "We’re setting up automated billing. To upgrade now, drop us a message and we’ll get you set up within 24 hours.",
+    "mailSubject": "Upgrade to {plan} — {truck}",
+    "mailBody": "Hi, I’d like to upgrade {truck} to the {plan} ({price}) plan.",
+    "email": "Email us to upgrade",
+    "cancel": "Cancel"
+  }
+}

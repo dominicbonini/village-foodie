@@ -20,6 +20,8 @@
 
 import { ordinal, ordinalSuffix, type TextCase, type TextRun } from './format'
 import { weekdayName, monthName } from '@/lib/time-utils'
+/* ⚠️ `./words` imports THIS file as a type only, so this closes no cycle at run time. */
+import { posterWordsFor } from './words'
 
 /** The countries this table knows. ⚠️ A string union, not `string` — an unknown code is a bug, and
  *  `localeFor()` falls back to GB rather than producing an empty date. */
@@ -289,13 +291,15 @@ export const DATE_STYLE_IDS: readonly DateStyleId[] =
 
 export const PLACE_STYLE_IDS: readonly PlaceStyleId[] = ['nameTownBelow', 'nameTown', 'nameOnly']
 
-/** What the Place picker shows against each option. ⚠️ Country-independent: a place name is a place
- *  name everywhere; what differs is only whether the town is shown and where. */
-export const PLACE_STYLE_SAMPLES: Record<PlaceStyleId, string> = {
-  nameTownBelow: 'The Kings Arms\nLavenham',
-  nameTown: 'The Kings Arms, Lavenham',
-  nameOnly: 'The Kings Arms',
+/** What the Place picker shows against each option, in a country's words (`posterWords.placeSample`, Language Phase
+ *  1d Part 2): "The Kings Arms / Lavenham" for GB, "Main Street Brewery / Austin" for the US — the same three shapes.
+ *  ⚠️ What differs between the options is only whether the town is shown and where. */
+export const placeStyleSamplesFor = (country: CountryCode | string | null | undefined): Record<PlaceStyleId, string> => {
+  const t = posterWordsFor(country)
+  return { nameTownBelow: t('placeSample.nameTownBelow'), nameTown: t('placeSample.nameTown'), nameOnly: t('placeSample.nameOnly') }
 }
+/** GB's samples — the export every existing caller reads. ⚠️ A screen in the truck's language asks `placeStyleSample(style, country)`. */
+export const PLACE_STYLE_SAMPLES: Record<PlaceStyleId, string> = placeStyleSamplesFor('GB')
 
 /** The style a layout falls back to when it names none — the same default `validateEventLayout` uses. */
 export const DEFAULT_PLACE_STYLE: PlaceStyleId = 'nameTownBelow'
@@ -312,8 +316,9 @@ export const DEFAULT_PLACE_STYLE: PlaceStyleId = 'nameTownBelow'
  * fallback is unreachable, which is exactly the false comfort that let the bug ship: the value comes
  * out of a jsonb column, where the type system has no reach.
  */
-export function placeStyleSample(style: unknown): string {
+export function placeStyleSample(style: unknown, country: CountryCode | string | null = DEFAULT_COUNTRY): string {
+  const samples = country === DEFAULT_COUNTRY ? PLACE_STYLE_SAMPLES : placeStyleSamplesFor(country)
   return (PLACE_STYLE_IDS as readonly string[]).includes(style as string)
-    ? PLACE_STYLE_SAMPLES[style as PlaceStyleId]
-    : PLACE_STYLE_SAMPLES[DEFAULT_PLACE_STYLE]
+    ? samples[style as PlaceStyleId]
+    : samples[DEFAULT_PLACE_STYLE]
 }

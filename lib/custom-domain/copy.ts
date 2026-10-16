@@ -1,6 +1,15 @@
 import { recordLabelsFor } from './dns'
 import type { DnsProvider, ProviderSteps } from './dns'
 import { formatInstant, type TimeSettings } from '@/lib/time-utils'
+// Language Phase 1d Part 2: every word here — the record screen's hints, the escape-hatch email, the live email, the
+// waiting notice, the problem mailto — is `customDomain` in messages/, in the truck's locale (en-GB when none is given,
+// which is byte-for-byte what these functions always wrote). The admin alert below is HatchGrab's own and stays inline.
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/customDomain'
+
+/** The custom-domain words in a locale (en-GB when none is given). */
+const wordsFor = (locale?: string | null) =>
+  translatorFor(locale, 'customDomain') as unknown as (key: string, values?: Record<string, string>) => string
 
 /**
  * ── THE RECORD SCREEN'S WORDS, AND THE EMAIL'S. ONE SOURCE. ─────────────────────────────────────
@@ -61,19 +70,22 @@ export function dnsTargetValue(cnameTarget: string, steps?: ProviderSteps | null
 }
 
 export function providerFieldRows(args: {
+  locale?: string | null
   steps: ProviderSteps
   subdomainLabel: string
   cnameTarget: string
 }): RecordRow[] {
+  const t = wordsFor(args.locale)
   return [
-    { label: args.steps.fieldLabels.name,  value: args.subdomainLabel, hint: 'Just this word, not the whole address.' },
+    { label: args.steps.fieldLabels.name,  value: args.subdomainLabel, hint: t('record.hintWord') },
     // 🔴 `dnsTargetValue`, NEVER `args.cnameTarget` RAW. See that function — this row is the one the
     // operator pastes, and it is the row Wix rejected.
-    { label: args.steps.fieldLabels.value, value: dnsTargetValue(args.cnameTarget, args.steps), hint: 'Copy this exactly.' },
+    { label: args.steps.fieldLabels.value, value: dnsTargetValue(args.cnameTarget, args.steps), hint: t('record.hintExact') },
   ]
 }
 
 export function recordRows(args: {
+  locale?: string | null
   provider: DnsProvider | null
   subdomainLabel: string
   cnameTarget: string
@@ -81,17 +93,17 @@ export function recordRows(args: {
   // 🔴 ONE READER. The generic default used to be written out a THIRD time, right here, beside the
   // one already exported as GENERIC_RECORD_LABELS. Same values, so this line's output is unchanged.
   const labels = recordLabelsFor(args.provider)
+  const t = wordsFor(args.locale)
   return [
-    { label: labels.type,  value: 'CNAME',              hint: 'Choose this from the list.' },
-    { label: labels.name,  value: args.subdomainLabel,  hint: 'Just this word, not the whole address.' },
+    { label: labels.type,  value: 'CNAME',              hint: t('record.hintChoose') },
+    { label: labels.name,  value: args.subdomainLabel,  hint: t('record.hintWord') },
     // 🔴 THE GENERIC PATH HAS NO PROVIDER RECORD TO READ, SO IT IS DOTLESS — correct for every
     // provider we have seen except 123 Reg, which has verified steps and therefore never lands here.
-    { label: labels.value, value: dnsTargetValue(args.cnameTarget, args.provider?.steps), hint: 'Copy this exactly.' },
+    { label: labels.value, value: dnsTargetValue(args.cnameTarget, args.provider?.steps), hint: t('record.hintExact') },
   ]
 }
 
-export const TIMING_LINE =
-  'It usually starts working within an hour, though it can take longer. You do not need to keep this page open.'
+// ⛔ `TIMING_LINE` moved to messages (Language Phase 1d Part 2): `customDomain.record.timing`.
 
 /**
  * The escape hatch, on the record screen rather than after a failure.
@@ -114,57 +126,65 @@ export function instructionsEmail(args: {
    * byte-identical to what it always sent.
    */
   steps?: ProviderSteps | null
+  /** The truck's locale (Language Phase 1d Part 2). en-GB when absent — the email it always sent. */
+  locale?: string | null
 }): { subject: string; html: string; text: string } {
   const { truckName, address, providerLabel, rows, operatorEmail, steps } = args
-  const where = providerLabel ? ` at ${providerLabel}` : ' with whoever holds our domain'
+  const t = wordsFor(args.locale)
+  // 🔴 ONE SENTENCE PER CASE, NOT A SUFFIX: "…to our domain at {provider}." / "…with whoever holds our domain."
+  const intro = (name: string, addr: string, provider: string | null) =>
+    provider ? t('instructionsEmail.introAt', { truckName: name, address: addr, provider }) : t('instructionsEmail.introHolder', { truckName: name, address: addr })
   // 🔴 WITH VERIFIED STEPS THE EMAIL TAKES THE SCREEN'S SHAPE: the steps, THEN the two values the
   // steps refer to. The steps say "the first value below", so the values must actually be below them —
   // and the type row goes, because on Wix there is no type field for the recipient to look for.
   // ⚠️ THE VALUES ARE THE SAME VALUES. They are lifted out of the `rows` the caller already built
   // (rows[1] name, rows[2] target, the order `recordRows` fixes) rather than recomputed here.
-  const shown = steps ? providerFieldRows({ steps, subdomainLabel: rows[1]?.value ?? '', cnameTarget: rows[2]?.value ?? '' }) : rows
+  const shown = steps ? providerFieldRows({ locale: args.locale, steps, subdomainLabel: rows[1]?.value ?? '', cnameTarget: rows[2]?.value ?? '' }) : rows
   const table = shown.map(r => `  ${r.label}: ${r.value}`).join('\n')
-  const numbered = steps ? steps.steps.map((t, i) => `  ${i + 1}. ${t}`).join('\n') : ''
-  const stepsText = steps ? `At ${providerLabel}:\n\n${numbered}\n\n` : ''
-  const tailText = steps ? `\n\nTheir own guide: ${steps.helpUrl}${steps.caveat ? `\n\n${steps.caveat}` : ''}` : ''
+  // The steps and the caveat are message keys (lib/custom-domain/dns.ts), read here in the truck's locale.
+  const stepWords = steps ? steps.steps.map(k => t(k)) : []
+  const caveat = steps?.caveat ? t(steps.caveat) : null
+  const numbered = steps ? stepWords.map((w, i) => `  ${i + 1}. ${w}`).join('\n') : ''
+  const stepsText = steps ? `${t('instructionsEmail.stepsAt', { provider: providerLabel ?? '' })}\n\n${numbered}\n\n` : ''
+  const tailText = steps ? `\n\n${t('instructionsEmail.guide', { url: steps.helpUrl })}${caveat ? `\n\n${caveat}` : ''}` : ''
   const stepsHtml = steps
-    ? `<p style="margin-bottom:4px">At <strong>${providerLabel}</strong>:</p><ol style="margin:0 0 12px 0;padding-left:20px">${steps.steps.map(t => `<li style="margin:2px 0">${t.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</li>`).join('')}</ol>`
+    ? `<p style="margin-bottom:4px">${t('instructionsEmail.stepsAt', { provider: `<strong>${providerLabel}</strong>` })}</p><ol style="margin:0 0 12px 0;padding-left:20px">${stepWords.map(w => `<li style="margin:2px 0">${w.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</li>`).join('')}</ol>`
     : ''
   const tailHtml = steps
-    ? `<p>Their own guide: <a href="${steps.helpUrl}">${steps.helpUrl}</a></p>`
-      + (steps.caveat ? `<p><strong>${steps.caveat.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</strong></p>` : '')
+    ? `<p>${t('instructionsEmail.guide', { url: `<a href="${steps.helpUrl}">${steps.helpUrl}</a>` })}</p>`
+      + (caveat ? `<p><strong>${caveat.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</strong></p>` : '')
     : ''
 
   const text =
-`Hello,
+`${t('instructionsEmail.hello')}
 
-We are putting ${truckName}'s live schedule on ${address}, and it needs one record adding to our domain${where}.
+${intro(truckName, address, providerLabel)}
 
 ${stepsText}${table}${tailText}
 
-That is the whole change — nothing else on the website is affected, and the rest of our domain keeps working exactly as it does now. It usually starts working within an hour.
+${t('instructionsEmail.wholeChange')}
 
-The page it points at shows where we are trading next and keeps itself up to date.${operatorEmail ? `\n\nReply to ${operatorEmail} if you have any questions.` : ''}
+${t('instructionsEmail.pointsAt')}${operatorEmail ? `\n\n${t('instructionsEmail.replyTo', { email: operatorEmail })}` : ''}
 
-Thank you,
+${t('instructionsEmail.thanks')}
 ${truckName}`
 
   const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   const html =
 `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.6;color:#0f172a">
-  <p>Hello,</p>
-  <p>We are putting <strong>${esc(truckName)}</strong>'s live schedule on <strong>${esc(address)}</strong>, and it needs one record adding to our domain${esc(where)}.</p>
+  <p>${t('instructionsEmail.hello')}</p>
+  <p>${intro(`<strong>${esc(truckName)}</strong>`, `<strong>${esc(address)}</strong>`, providerLabel ? esc(providerLabel) : null)}</p>
   ${stepsHtml}
   <table style="border-collapse:collapse;margin:12px 0">
     ${shown.map(r => `<tr><td style="padding:4px 12px 4px 0;color:#64748b">${esc(r.label)}</td><td style="padding:4px 0;font-family:ui-monospace,monospace"><strong>${esc(r.value)}</strong></td></tr>`).join('')}
   </table>
   ${tailHtml}
-  <p>That is the whole change — nothing else on the website is affected, and the rest of our domain keeps working exactly as it does now. It usually starts working within an hour.</p>
-  <p>The page it points at shows where we are trading next and keeps itself up to date.${operatorEmail ? ` Reply to <a href="mailto:${esc(operatorEmail)}">${esc(operatorEmail)}</a> if you have any questions.` : ''}</p>
-  <p>Thank you,<br>${esc(truckName)}</p>
+  <p>${t('instructionsEmail.wholeChange')}</p>
+  <p>${t('instructionsEmail.pointsAt')}${operatorEmail ? ` ${t('instructionsEmail.replyTo', { email: `<a href="mailto:${esc(operatorEmail)}">${esc(operatorEmail)}</a>` })}` : ''}</p>
+  <p>${t('instructionsEmail.thanks')}<br>${esc(truckName)}</p>
 </div>`
 
-  return { subject: `One record to add for ${truckName}'s schedule page`, html, text }
+  return { subject: t('instructionsEmail.subject', { truckName }), html, text }
 }
 
 
@@ -176,12 +196,13 @@ ${truckName}`
  * simply wait, indefinitely, believing it is coming. This state is the only thing that turns a silent
  * stall into a sentence.
  */
-export function notificationCopy(args: { address: string; startedAt: string | null; time: TimeSettings | null | undefined }):
+export function notificationCopy(args: { address: string; startedAt: string | null; time: TimeSettings | null | undefined; locale?: string | null }):
   { waiting: { title: string; body: string }; ready: { title: string; body: string } } {
   // The truck's zone and words (Phase 2B): GB "9 October", US "October 9".
   const since = args.startedAt
     ? formatInstant(args.startedAt, args.time, { day: 'numeric', month: 'long' })
     : null
+  const t = wordsFor(args.locale)
   return {
     /**
      * ── 🔴 THIS IS NOT A FAILURE MESSAGE, AND THAT IS THE WHOLE POINT (5 September 2026). ──────────
@@ -206,14 +227,12 @@ export function notificationCopy(args: { address: string; startedAt: string | nu
      * it is phrased as a possibility rather than an accusation.
      */
     waiting: {
-      title: `We are waiting for ${args.address}`,
-      body: since
-        ? `You set this up on ${since}. New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did.`
-        : `New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did.`,
+      title: t('waiting.title', { address: args.address }),
+      body: since ? t('waiting.bodySince', { date: since }) : t('waiting.body'),
     },
     ready: {
-      title: `${args.address} is live`,
-      body: 'Have a look at it, then tell us it is right in your settings.',
+      title: t('ready.title', { address: args.address }),
+      body: t('ready.body'),
     },
   }
 }
@@ -289,25 +308,26 @@ export function adminDomainAlertEmail(args: {
  * 🔴 A DASHBOARD-ONLY NOTICE REACHES NOBODY HERE. Setup ends with the operator closing the tab and
  * going back to running a food truck; they have no reason to open the dashboard for days.
  */
-export function liveEmail(args: { truckName: string; address: string }): { subject: string; html: string; text: string } {
+export function liveEmail(args: { truckName: string; address: string; locale?: string | null }): { subject: string; html: string; text: string } {
   const { truckName, address } = args
+  const t = wordsFor(args.locale)
   const text =
-`Good news — ${address} is working.
+`${t('liveEmail.goodNews', { address })}
 
-Your schedule is now showing at your own address. Have a look at it and check it is right: open ${address}, make sure the events are yours and the dates look correct.
+${t('liveEmail.body', { address })}
 
-When you have, open your settings on HatchGrab and tell us it is right. Nothing depends on that — it just means we know a person has seen it.
+${t('liveEmail.confirm')}
 
 ${truckName}`
   const esc = (x: string) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   const html =
 `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.6;color:#0f172a">
-  <p>Good news — <strong>${esc(address)}</strong> is working.</p>
-  <p>Your schedule is now showing at your own address. Have a look at it and check it is right: open ${esc(address)}, make sure the events are yours and the dates look correct.</p>
-  <p>When you have, open your settings on HatchGrab and tell us it is right. Nothing depends on that — it just means we know a person has seen it.</p>
+  <p>${t('liveEmail.goodNews', { address: `<strong>${esc(address)}</strong>` })}</p>
+  <p>${t('liveEmail.body', { address: esc(address) })}</p>
+  <p>${t('liveEmail.confirm')}</p>
   <p>${esc(truckName)}</p>
 </div>`
-  return { subject: `${address} is working`, html, text }
+  return { subject: t('liveEmail.subject', { address }), html, text }
 }
 
 /**
@@ -330,37 +350,11 @@ export function addressUrl(host: string): string {
   return `https://${host}`
 }
 
-export const CONFIRM_COPY = {
-  heading: 'Have a look, then tell us it is right',
-  // 🔴 TWO STEPS, NOT THREE (29 August 2026). "Check the events shown are yours." was removed: an
-  // operator looking at their own dates and times has already established whose events they are, and a
-  // checklist earns its keep by being short enough to actually be done.
-  // 🔴 STEP 1 IS A PREFIX, NOT A WHOLE SENTENCE, BECAUSE IT ENDS IN THE ADDRESS AND THE ADDRESS IS A
-  // LINK. It read "Open your address and let the page load." — which named nothing and could not be
-  // clicked, so a separate copy of the address had to sit above the list to make it openable. The step
-  // now IS the link, and that second copy is gone.
-  // ⚠️ NO FULL STOP AFTER IT. A trailing dot immediately after a web address reads as part of the
-  // address, and this one is a link an operator may copy.
-  openPrefix: 'Open ',
-  checklist: [
-    'Check the dates and times look right.',
-  ],
-  button: 'Yes, it looks right',
-  // ── 🔴 TWO BUTTONS, AND "No" REVEALS RATHER THAN FIRES (29 August 2026). ─────────────────────
-  // It was one button and a sentence with a mailto in it, so the only way to say "no" was to notice a
-  // link inside a paragraph. Two buttons make both answers the same size.
-  // 🔴 "No" RECORDS NOTHING AND SENDS NOTHING. It reveals the line and the control below it, and the
-  // operator can still press "Yes" afterwards — there is no state on the server and nothing to undo.
-  noButton: "No, there's a problem",
-  problemLine: 'Tell us what you are seeing and we will look at it.',
-  problemButton: 'Email us',
-  supportEmail: 'hello@hatchgrab.com',
-  // ⛔ `gatesNothing` REMOVED 29 August 2026 on instruction. It read: "This changes nothing on your
-  // page. It just tells us a person has looked." ⚠️ IT WAS THE ONLY PLACE THAT SAID PRESSING THE
-  // BUTTON CHANGES NOTHING — the reassurance is now unstated, and an operator who hesitates over
-  // what the button will do to their live page has nothing on screen answering it. The FACT is
-  // unchanged: `domain_confirm` writes one timestamp and touches nothing the page renders.
-}
+/** The confirm step's checklist, after "Open {address}" — message keys under `customDomain.confirm` (Language Phase 1d
+ *  Part 2; the heading, the buttons and the problem line moved there too). */
+export const CONFIRM_CHECKLIST = ['checkTimes'] as const
+/** Where "Email us" writes to. An address, not a word. */
+export const CONFIRM_SUPPORT_EMAIL = 'hello@hatchgrab.com'
 
 /**
  * ── THE ESCAPE HATCH, WITH THE CONTEXT ALREADY IN IT. ───────────────────────────────────────────
@@ -421,23 +415,7 @@ export function orderPageUrl(slug: string): string {
  * ⚠️ The ordering address is spelled out rather than described, because it is the thing they will go
  * and check before pressing the button.
  */
-export const TURN_OFF_COPY = {
-  link: 'Turn this off',
-  heading: 'Turn off your own web address?',
-  stops: 'This will stop working:',
-  carriesOn: 'This carries on exactly as it is, and is where your QR code sends people:',
-  // 🔴 REVERSED 29 August 2026. It said the line they added "can stay where it is" — true, and the
-  // wrong advice. We remove the address from our hosting, but their CNAME is theirs and we never touch
-  // it, so it goes on pointing at a host that no longer recognises the name. What their customers then
-  // see is the hosting provider's own error page, under the operator's brand — worse than nothing.
-  // ⚠️ IT DOES NOT PROMISE WHAT THE ADDRESS WILL SHOW, because that has never been observed. It says
-  // what to do. If they ARE setting it up again the line is worth keeping, so both cases are named.
-  reAdd: 'If you are setting it up again later, leave the line you added at your web address company. If you are not, ask them to remove it.',
-  cancel: 'Keep it on',
-  confirm: 'Turn it off',
-  working: 'Turning it off…',
-  failed: 'We could not switch that off just now. Nothing has changed — your address is still working. Try again shortly.',
-}
+// ⛔ `TURN_OFF_COPY` moved to messages (Language Phase 1d Part 2): `customDomain.turnOff`.
 
 /**
  * ── THE ACKNOWLEDGEMENT AFTER "Yes". ────────────────────────────────────────────────────────────
@@ -445,29 +423,28 @@ export const TURN_OFF_COPY = {
  * the click; an operator who is not sure it registered presses again, or goes looking for what they
  * broke. One short line costs nothing and answers both.
  */
-export const CONFIRMED_COPY = {
-  heading: 'Thanks — that is all noted.',
-  body: 'There is nothing else to do.',
-}
+// ⛔ `CONFIRMED_COPY` moved to messages (Language Phase 1d Part 2): `customDomain.confirmed`.
 
 export function confirmProblemMailto(args: {
   truckName: string
   address: string
   verifiedAt: string | null
   time: TimeSettings | null | undefined
+  locale?: string | null
 }): string {
+  const t = wordsFor(args.locale)
   const live = args.verifiedAt
     ? formatInstant(args.verifiedAt, args.time, { day: 'numeric', month: 'long', year: 'numeric' })
     : null
   const body = [
     `${args.truckName}`,
     `${args.address}`,
-    live ? `Live since ${live}` : null,
+    live ? t('confirm.mailLiveSince', { date: live }) : null,
     '',
-    'What I am seeing:',
+    t('confirm.mailSeeing'),
     '',
   ].filter(l => l !== null).join('\n')
-  return `mailto:${CONFIRM_COPY.supportEmail}`
-    + `?subject=${encodeURIComponent(`Problem with ${args.address}`)}`
+  return `mailto:${CONFIRM_SUPPORT_EMAIL}`
+    + `?subject=${encodeURIComponent(t('confirm.mailSubject', { address: args.address }))}`
     + `&body=${encodeURIComponent(body)}`
 }

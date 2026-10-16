@@ -15,6 +15,9 @@
 // image decoding. The harness drives every branch with plain objects.
 
 /** A stored picture: a path in the private `post-designs` bucket, and its pixel size. */
+/* Refusals are codes with an en-GB sentence (Language Phase 1d Part 2): `errorsManage.wp_…`, through ./words.ts. */
+import { wpRefusal, type WpRefusal } from './words'
+
 export interface StoredImage {
   path: string
   width: number | null
@@ -76,7 +79,8 @@ export const ASPECT_TOLERANCE = 0.01
 
 export type AspectCheck =
   | { ok: true; ratio: number; defaultRatio: number }
-  | { ok: false; error: string; ratio: number; defaultRatio: number }
+  /** ⚠️ `error` is en-GB, as it always was; `code` and `params` are the same refusal (Language Phase 1d Part 2). */
+  | ({ ok: false; error: string; ratio: number; defaultRatio: number } & WpRefusal)
 
 /**
  * Does this picture match the default's shape?
@@ -102,13 +106,13 @@ export function checkAspect(
   const ratio = width / height
   const defaultRatio = defaultWidth / defaultHeight
   if (!Number.isFinite(ratio) || ratio <= 0 || !Number.isFinite(defaultRatio) || defaultRatio <= 0) {
-    return { ok: false, ratio, defaultRatio, error: 'That picture’s size could not be read.' }
+    return { ok: false, ratio, defaultRatio, ...wpRefusal('wp_picture_size_unknown') }
   }
   const drift = Math.abs(ratio - defaultRatio) / defaultRatio
   if (drift > ASPECT_TOLERANCE) {
     return {
       ok: false, ratio, defaultRatio,
-      error: `This picture is a different shape from your default (${defaultWidth}×${defaultHeight}). Export it at the same size.`,
+      ...wpRefusal('wp_picture_wrong_shape', { width: String(defaultWidth), height: String(defaultHeight) }),
     }
   }
   return { ok: true, ratio, defaultRatio }

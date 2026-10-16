@@ -1,0 +1,23 @@
+{
+  "heading": "Week of {start}",
+  "daysOff": "Closed today",
+  "cancelled": "CANCELED",
+  "placeSample": {
+    "nameTownBelow": "Main Street Brewery\nAustin",
+    "nameTown": "Main Street Brewery, Austin",
+    "nameOnly": "Main Street Brewery"
+  },
+  "busyWeek": {
+    "venue1": "Austin Community Center",
+    "town1": "Austin",
+    "venue2": "Round Rock Memorial Park Recreation Center and Ballfields",
+    "town2": "Round Rock",
+    "venue3": "Town Square",
+    "town3": "Georgetown",
+    "town4": "San Marcos",
+    "venue5": "Main Street Brewery",
+    "town5": "Pflugerville",
+    "venue6": "Riverside Park",
+    "town6": "Cedar Park"
+  }
+}

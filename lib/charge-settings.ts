@@ -4,26 +4,31 @@
 // PURE AND CLIENT-SAFE, like lib/admin/country-form.ts: the card checks a value before it sends it, and the
 // `update_charges` action runs the SAME function again on what arrives, so the two can never disagree.
 // Every refusal is a plain sentence a truck owner can act on; no message names a column.
+// ⚠️ LANGUAGE PHASE 1d PART 2: a refusal is a CODE (`errorsManage.charges_*` in messages/en-GB.json) and its values.
+// `update_charges` sends it with manageErrorBody in the truck's language; the card words it with `useT('errorsManage')`.
+// `error` is the same message in en-GB (one source, no second copy) for anything that reads the sentence directly.
+// The coin table, the "%" figures and the money amounts stay code: they are passed into the messages ready-made.
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { boxToBps } from '@/lib/admin/country-form'
+import type { ManageErrorCode } from '@/lib/i18n/manage-errors'
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/errorsManage'
 
 /** The four country facts the card and the action read. */
 export type ChargeCountry = Pick<CountrySettings,
   'name' | 'pricesIncludeTax' | 'serviceFeeAllowed' | 'serviceFeeRecipient'
   | 'serviceFeeTruckMaxBps' | 'serviceFeeTruckMaxFixedMinor' | 'currency'>
 
-export const CHARGE_ERRORS = {
-  rateDecimals: 'Use up to 3 decimal places, like 8.875.',
-  rateRange: 'Use a rate from 0 to 20%.',
-  rateNotHere: 'Prices in your country already include tax, so there is no rate to set.',
-  feeNotHere: 'Online service fees aren’t available in your country.',
-  feeHatchgrab: 'HatchGrab sets the online service fee in your country, so it can’t be changed here.',
-  feePct: 'Use a percentage like 3 or 3.5.',
-  feeFixed: 'Use an amount like 0.50.',
-  feeOverPct: (max: string) => `The most you can charge is ${max}%.`,
-  feeOverFixed: (max: string) => `The most you can charge is ${max}.`,
-  feePartNotAllowed: 'That part of the fee isn’t allowed in your country.',
-} as const
+/** A refusal's code: an `errorsManage` key that starts `charges_`. */
+export type ChargeErrorCode = Extract<ManageErrorCode, `charges_${string}`>
+export type ChargeRefusal = { ok: false; error: string; code: ChargeErrorCode; params: Record<string, string> }
+
+const gbErr = translatorFor(DEFAULT_LOCALE, 'errorsManage') as unknown as (code: string, params?: Record<string, string>) => string
+/** A refusal: its code, its values, and the en-GB sentence (`error`). */
+function refusal(code: ChargeErrorCode, params: Record<string, string> = {}): ChargeRefusal {
+  return { ok: false, error: gbErr(code, params), code, params }
+}
 
 /** A typed rate → thousandths of a percent, by string arithmetic ("8.875" → 8875). '' → null. */
 export function rateBoxToMilli(text: string): number | null | 'decimals' | 'bad' {
@@ -72,48 +77,48 @@ export function checkChargeSettings(
   input: ChargeSettingsInput,
   c: ChargeCountry,
   fmtMinor: (minor: number) => string,
-): { ok: true; values: ChargeSettingsValues } | { ok: false; error: string } {
+): { ok: true; values: ChargeSettingsValues } | ChargeRefusal {
   const values: ChargeSettingsValues = {}
   if ('taxRate' in input) {
-    if (c.pricesIncludeTax) return { ok: false, error: CHARGE_ERRORS.rateNotHere }
+    if (c.pricesIncludeTax) return refusal('charges_rate_not_here')
     const v = rateBoxToMilli(String(input.taxRate ?? ''))
-    if (v === 'decimals') return { ok: false, error: CHARGE_ERRORS.rateDecimals }
-    if (v === 'bad') return { ok: false, error: CHARGE_ERRORS.rateRange }
+    if (v === 'decimals') return refusal('charges_rate_decimals')
+    if (v === 'bad') return refusal('charges_rate_range')
     values.tax_rate_milli = v
   }
   if ('tippingEnabled' in input) {
-    if (typeof input.tippingEnabled !== 'boolean') return { ok: false, error: 'Choose on or off.' }
+    if (typeof input.tippingEnabled !== 'boolean') return refusal('charges_choose_on_off')
     values.tipping_enabled = input.tippingEnabled
   }
   const feeKeys = ['serviceFeeEnabled', 'serviceFeePct', 'serviceFeeFixed'] as const
   if (feeKeys.some(k => k in input)) {
     // 🔴 NOTHING IS SAVED FOR A COUNTRY THAT DOES NOT ALLOW IT, OR WHERE HATCHGRAB SETS THE FEE.
-    if (!c.serviceFeeAllowed) return { ok: false, error: CHARGE_ERRORS.feeNotHere }
-    if (c.serviceFeeRecipient !== 'truck') return { ok: false, error: CHARGE_ERRORS.feeHatchgrab }
+    if (!c.serviceFeeAllowed) return refusal('charges_fee_not_here')
+    if (c.serviceFeeRecipient !== 'truck') return refusal('charges_fee_hatchgrab')
     if ('serviceFeeEnabled' in input) {
-      if (typeof input.serviceFeeEnabled !== 'boolean') return { ok: false, error: 'Choose on or off.' }
+      if (typeof input.serviceFeeEnabled !== 'boolean') return refusal('charges_choose_on_off')
       values.service_fee_enabled = input.serviceFeeEnabled
     }
     if ('serviceFeePct' in input) {
       const v = boxToBps(String(input.serviceFeePct ?? ''))
-      if (v === 'bad') return { ok: false, error: CHARGE_ERRORS.feePct }
+      if (v === 'bad') return refusal('charges_fee_pct')
       if (v !== null && v > 0) {
-        if (c.serviceFeeTruckMaxBps === null) return { ok: false, error: CHARGE_ERRORS.feePartNotAllowed }
-        if (v > c.serviceFeeTruckMaxBps) return { ok: false, error: CHARGE_ERRORS.feeOverPct(pctText(c.serviceFeeTruckMaxBps)) }
+        if (c.serviceFeeTruckMaxBps === null) return refusal('charges_fee_part_not_allowed')
+        if (v > c.serviceFeeTruckMaxBps) return refusal('charges_fee_over_pct', { max: pctText(c.serviceFeeTruckMaxBps) })
       }
       values.service_fee_bps = v
     }
     if ('serviceFeeFixed' in input) {
       const v = moneyBoxToMinor(String(input.serviceFeeFixed ?? ''))
-      if (v === 'bad') return { ok: false, error: CHARGE_ERRORS.feeFixed }
+      if (v === 'bad') return refusal('charges_fee_fixed')
       if (v !== null && v > 0) {
-        if (c.serviceFeeTruckMaxFixedMinor === null) return { ok: false, error: CHARGE_ERRORS.feePartNotAllowed }
-        if (v > c.serviceFeeTruckMaxFixedMinor) return { ok: false, error: CHARGE_ERRORS.feeOverFixed(fmtMinor(c.serviceFeeTruckMaxFixedMinor)) }
+        if (c.serviceFeeTruckMaxFixedMinor === null) return refusal('charges_fee_part_not_allowed')
+        if (v > c.serviceFeeTruckMaxFixedMinor) return refusal('charges_fee_over_fixed', { max: fmtMinor(c.serviceFeeTruckMaxFixedMinor) })
       }
       values.service_fee_fixed_minor = v
     }
   }
-  if (Object.keys(values).length === 0) return { ok: false, error: 'Nothing to save.' }
+  if (Object.keys(values).length === 0) return refusal('charges_nothing_to_save')
   return { ok: true, values }
 }
 

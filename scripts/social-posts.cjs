@@ -70,6 +70,25 @@ const LINKS = read('lib/manage-links.ts')
 const { compile } = require('./_slot-interval-compile.cjs')
 const LINKS_MOD = compile(REPO, ['lib/manage-links.ts'], 'sp-links').req('lib/manage-links.js')
 
+/* ⚠️ RE-PINNED (Language Phase 1d Part 2): the Social media tab's words moved into messages/*.json (`socialPosts`),
+ * read in SocialPosts.tsx with `const t = useT('socialPosts')` — key = the copy export's name in camelCase, and the
+ * screen's own inline words under `screen.*`. lib/copy/socialPosts.ts still exports every constant, now as the en-GB
+ * message (`gb('<key>')`), so its SOURCE no longer holds the sentences.
+ *   • `msgGB('ns.key')` reads the GB words at a key, so a moved literal is still asserted EXACTLY;
+ *   • `CP` is lib/copy/socialPosts.ts COMPILED AND RUN (the same compile step as manage-links above), so a check that
+ *     pinned `EXPORT = '<words>'` in source now asserts the export's VALUE is those words — the same claim, executed;
+ *   • `tc('key')` is the component's call text, `{t('key')}`-style, for the checks that pinned `{CONSTANT}` at a site. */
+const GB_MESSAGES = JSON.parse(read('messages/en-GB.json'))
+const US_MESSAGES = JSON.parse(read('messages/en-US.json'))
+const msgAt = (tree, k) => k.split('.').reduce((o, p) => (o == null ? undefined : o[p]), tree)
+const msgGB = (k) => msgAt(GB_MESSAGES, k)
+const SPK = (k) => msgGB(`socialPosts.${k}`)
+const CP = compile(REPO, ['lib/copy/socialPosts.ts'], 'sp-copy').req('lib/copy/socialPosts.js')
+const tc = (k) => `t('${k}')`
+/** Every string leaf of a message subtree (for absence checks that used to scan the copy module's source). */
+const leafStrings = (o) => (o == null ? [] : typeof o === 'string' ? [o] : Object.values(o).flatMap(leafStrings))
+const SP_WORDS = [...leafStrings(GB_MESSAGES.socialPosts), ...leafStrings(US_MESSAGES.socialPosts)]
+
 /** The body of one action in the weekly-post route, bounded by the next `if (action === …)`. */
 function actionBody(name) {
   const code = codeOf(ROUTE)
@@ -114,15 +133,23 @@ head('1 · a private event is never offered a post, and carries no location')
    * operator's own diary look wrong, and offering it would offer a post the route refuses. */
   t('⚠️ a private event still takes its place in the dropdown, greyed and unchoosable',
     /<option key=\{ev\.id\} value=\{ev\.id\} disabled=\{ev\.isPrivate\}>/.test(SOCIAL)
-    && /PRIVATE_EVENT_ROW/.test(SOCIAL)
-    && /Private event · no post/.test(COPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): {PRIVATE_EVENT_ROW} → t('privateEventRow') in the option; the GB words
+    // are asserted at socialPosts.privateEventRow AND as the copy export's value.
+    && /\{ev\.isPrivate \? t\('privateEventRow'\) : /.test(SOCIAL)
+    && SPK('privateEventRow') === 'Private event · no post'
+    && CP.PRIVATE_EVENT_ROW === 'Private event · no post'
     /* 🔴 AND IT IS DRAWN FROM THE **POSTABLE** LIST, so a private event can never be the chosen one —
      * the screen's half of the rule the route enforces. */
     && /const postable = events\.filter\(e => !e\.isPrivate\)/.test(SOCIAL)
     && /const chosen = postable\.find\(e => e\.id === chosenId\) \?\? postable\[0\] \?\? null/.test(SOCIAL))
   /* ⛔ AND THE ROUTE REFUSES THE POST ITSELF, which is the guard the screen is only the first half of. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the route no longer imports PRIVATE_NO_SINGLE_POST; it refuses with the
+  // `errorsManage.wp_private_no_single_post` code through `refuse`. Asserted IN `event_post`'s own body (narrower than
+  // the old whole-file test), and the code's GB words are the sentence lib/private-events/copy.ts still exports.
   t('⛔ …and `event_post` refuses a private event server-side',
-    /PRIVATE_NO_SINGLE_POST/.test(codeOf(ROUTE)))
+    /if \(await isSinglePostBlocked\(eventId\)\) \{\s*\n\s*return refuse\(locale, 'wp_private_no_single_post', 400\)/.test(actionBody('event_post'))
+    && msgGB('errorsManage.wp_private_no_single_post') === msgGB('privateEvents.noSinglePost')
+    && /export const PRIVATE_NO_SINGLE_POST = gb\('noSinglePost'\)/.test(read('lib/private-events/copy.ts')))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -287,7 +314,10 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
   t('🔴 §3 · "‹ All locations" is phone-only, and the phone\'s own back gesture does the same thing',
     /data-loc-back onClick=\{closeLocation\}/.test(SOCIAL)
     && /md:hidden/.test(SOCIAL)
-    && /PHONE_ALL_LOCATIONS/.test(SOCIAL)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): {PHONE_ALL_LOCATIONS} → {t('phoneAllLocations')}; GB words asserted at
+    // the key and as the copy export's value.
+    && SOCIAL.includes(`{${tc('phoneAllLocations')}}`)
+    && SPK('phoneAllLocations') === '‹ All locations' && CP.PHONE_ALL_LOCATIONS === '‹ All locations'
     /* 🔴 ONE ENTRY PER OPEN, AND THE LINK **POPS** IT rather than clearing the state itself — so the
      * link and the gesture leave the history in the same place. ⛔ CLEARING AND PUSHING WOULD STRAND AN
      * ENTRY and the operator's second back press would appear to do nothing. */
@@ -301,15 +331,22 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
      * `<label htmlFor>` pairs with one id would both open the desktop box's file picker. */
     && /const inputId = `pic-phone-\$\{slotKey\}`/.test(SOCIAL)
     /* ⚠️ AND THE THREE LINES ARE THE BRIEF'S OWN WORDS, from the copy module rather than inline. */
-    && /PHONE_PIC_EVENT_LINE/.test(SOCIAL) && /PHONE_PIC_WEEKLY_LINE/.test(SOCIAL)
-    && /PHONE_PIC_POSTER_LINE/.test(SOCIAL))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the three PHONE_PIC_* constants → line={t('phonePic…Line')}; each GB
+    // sentence asserted at its key AND as the copy export's value (the brief's words, unchanged).
+    && SOCIAL.includes(`line={${tc('phonePicEventLine')}}`) && SOCIAL.includes(`line={${tc('phonePicWeeklyLine')}}`)
+    && SOCIAL.includes(`line={${tc('phonePicPosterLine')}}`)
+    && SPK('phonePicEventLine') === 'In your single event design’s picture space' && CP.PHONE_PIC_EVENT_LINE === SPK('phonePicEventLine')
+    && SPK('phonePicWeeklyLine') === 'On this location’s line of your weekly post' && CP.PHONE_PIC_WEEKLY_LINE === SPK('phonePicWeeklyLine')
+    && SPK('phonePicPosterLine') === 'Used instead of your single event design' && CP.PHONE_PIC_POSTER_LINE === SPK('phonePicPosterLine'))
   t('⚠️ §3 · the list keeps its search and its three tick columns, and gains a `›` on a phone only',
     /data-loc-chevron>›<\/td>/.test(SOCIAL)
     && /<th className="w-\[20px\] py-1 md:hidden" aria-hidden="true" \/>/.test(SOCIAL)
     /* ⛔ AND THE EMPTY-STATE `colSpan` FOLLOWS THE COLUMN COUNT. A `colSpan` that lagged the header
      * would pull a hairline across the table under the "no locations" line. */
     && /<tr><td colSpan=\{5\}/.test(SOCIAL)
-    && /LOCATIONS_SEARCH_LABEL/.test(SOCIAL))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): label={LOCATIONS_SEARCH_LABEL} → label={t('locationsSearchLabel')}.
+    && SOCIAL.includes(`<Input label={${tc('locationsSearchLabel')}}`)
+    && SPK('locationsSearchLabel') === 'Search locations' && CP.LOCATIONS_SEARCH_LABEL === 'Search locations')
 
   t('⛔ a row selects and the pane acts — the server supplies both slots',
     /* ⚠️ §3 (10 October 2026): THE ROW CALLS `openLocation`, NOT `setSelectedId` DIRECTLY. On a phone
@@ -357,8 +394,12 @@ head('3 · every box opens an existing flow — one modal, one drag surface')
      * is actually on the screen — "edit it elsewhere" would be a note that does not help. */
     /* ⚠️ "area", NOT "town" (9 October 2026) — the same reason the editor's item was renamed: half the
      * venues on this product are in a village, and the screen it points at calls the field "Area". */
-    && /'Name and area come from your schedule\. Edit them in Schedule › Events › Add event › Tidy up places\.'/
-      .test(read('lib/copy/socialPosts.ts'))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the note is socialPosts.nameFromScheduleNote (GB words asserted exactly,
+    // and as the copy export's value) and the pane draws it with t('nameFromScheduleNote'). en-US says "Clean up
+    // places" — Tidy up places' US name — so the path it names is still the one on that truck's screen.
+    && SPK('nameFromScheduleNote') === 'Name and area come from your schedule. Edit them in Schedule › Events › Add event › Tidy up places.'
+    && CP.NAME_FROM_SCHEDULE_NOTE === SPK('nameFromScheduleNote')
+    && /data-name-from-schedule>\s*\n\s*\{t\('nameFromScheduleNote'\)\}/.test(SOCIAL)
     && /data-name-from-schedule/.test(SOCIAL)
     /* ⛔ THE TAG FIELD STAYS, and it is the only keyed child left in the pane. */
     && /key=\{`t-\$\{selected\.id\}`\}/.test(SOCIAL)
@@ -459,17 +500,23 @@ head('3c · one empty state, identical in both halves')
   t('🔴 …keyed on `designIsReady`\'s answer, per half',
     /\{gate\(!data\.weekly\.ready \? \(/.test(SOCIAL)
     && (codeOf(SOCIAL).match(/\{gate\(!data\.standard\.ready \? \(/g) || []).length === 1)
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): title={EMPTY_*_TITLE} → title={t('empty*Title')}; the GB words are
+  // asserted at each key AND as the copy export's value.
   t('⚠️ …with the left half naming the weekly design and the right half the event design',
-    /<EmptyBox title=\{EMPTY_WEEKLY_TITLE\}/.test(SOCIAL)
-    && (codeOf(SOCIAL).match(/<EmptyBox title=\{EMPTY_EVENT_TITLE\}/g) || []).length === 1)
+    SOCIAL.includes(`<EmptyBox title={${tc('emptyWeeklyTitle')}}`)
+    && (codeOf(SOCIAL).match(/<EmptyBox title=\{t\('emptyEventTitle'\)\}/g) || []).length === 1
+    && SPK('emptyWeeklyTitle') === 'You haven’t designed a weekly post yet' && CP.EMPTY_WEEKLY_TITLE === SPK('emptyWeeklyTitle')
+    && SPK('emptyEventTitle') === 'You haven’t designed a single event post yet' && CP.EMPTY_EVENT_TITLE === SPK('emptyEventTitle'))
   /* ⚠️ THE HEADING AND THE DESCRIPTION STAY. That is what makes an empty box read as "not yet" rather
    * than "not available": the box still says what it is FOR. ⚠️ THE TITLES ARE CONSTANTS NOW —
    * `CREATE_WEEKLY_TITLE` / `CREATE_EVENT_TITLE` — so the halves and the Designs boxes cannot drift
    * apart in wording. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the Box's two constants → t('createWeeklyTitle') / t('weeklyBoxBlurb');
+  // `CREATE_*_TITLE = '<words>'` in source → the GB words at the keys AND the copy exports' values.
   t('⚠️ …and it replaces the box BODY, not the box',
-    /<Box title=\{CREATE_WEEKLY_TITLE\} blurb=\{WEEKLY_BOX_BLURB\}>\s*\n\s*\{gate\(!data\.weekly\.ready/.test(SOCIAL)
-    && /CREATE_WEEKLY_TITLE = 'Weekly post'/.test(COPY)
-    && /CREATE_EVENT_TITLE = 'Single event post'/.test(COPY))
+    /<Box title=\{t\('createWeeklyTitle'\)\} blurb=\{t\('weeklyBoxBlurb'\)\}>\s*\n\s*\{gate\(!data\.weekly\.ready/.test(SOCIAL)
+    && SPK('createWeeklyTitle') === 'Weekly post' && CP.CREATE_WEEKLY_TITLE === 'Weekly post'
+    && SPK('createEventTitle') === 'Single event post' && CP.CREATE_EVENT_TITLE === 'Single event post')
   /* ⚠️ RE-AIMED 9 October 2026: it goes through `requestArea`, NOT `onArea` directly. ⛔ THAT IS THE
    * SAME DOOR THE SUB-TAB PILLS NOW USE — one function that asks before discarding an unsaved design
    * and navigates straight through when there is nothing to lose. A second, unguarded path to the same
@@ -478,7 +525,9 @@ head('3c · one empty state, identical in both halves')
   t('🔴 …and its button goes to Designs through the one guarded section setter',
     /const goToDesigns = \(\) => requestArea\('designs'\)/.test(codeOf(SOCIAL))
     && /onGo=\{goToDesigns\}/.test(SOCIAL)
-    && /\{EMPTY_BUTTON\}/.test(SOCIAL)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): {EMPTY_BUTTON} → {t('emptyButton')} inside EmptyBox; GB words at the key.
+    && SOCIAL.includes(`onClick={onGo}>{${tc('emptyButton')}}</button>`)
+    && SPK('emptyButton') === 'Go to Designs' && CP.EMPTY_BUTTON === 'Go to Designs'
     /* ⛔ AND `onArea` IS CALLED IN EXACTLY ONE PLACE — inside `goArea`, which is the only thing
      * `requestArea` may reach. Any other caller would be an unguarded route out of the editor. */
     && (codeOf(SOCIAL).match(/onArea\(/g) || []).length === 1
@@ -519,7 +568,9 @@ head('4 · a truck without the preview key sees no change at all')
   t('🔴 the whole Social TAB is filtered out without the plan key', (() => {
     const code = codeOf(MANAGE)
     const filt = code.slice(code.indexOf('const tabs = allTabs.filter'), code.indexOf('const tabs = allTabs.filter') + 700)
-    return /t\.id === 'social'/.test(filt) && /schedule_graphics/.test(filt)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the filter's parameter is `tab` now (`t` is the page's translator,
+    // useT('manageShell')), so `t.id === 'social'` → `tab.id === 'social'`. Same filter, same key.
+    return /tab\.id === 'social'/.test(filt) && /schedule_graphics/.test(filt)
       /* ⛔ AND THE RETIRED KEY IS NOWHERE IN THE PAGE'S CODE — not merely absent from this filter,
        * which is also what a second forgotten gate elsewhere would look like. */
       && !code.includes('places_posts_preview')
@@ -530,9 +581,16 @@ head('4 · a truck without the preview key sees no change at all')
     !/\(!canPlacesPosts && \(section === 'posts'/.test(codeOf(MANAGE)))
   /* ⛔ ONE GATE IN THE ROUTE, ON THE PLAN KEY, AND IT GUARDS BOTH HANDLERS. The "not switched on"
    * sentence is gone with the preview key: a plan sells this now, so the refusal names the plan. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the route no longer imports WEEKLY_POST_PLAN_REFUSAL; `gated` refuses with
+  // the `errorsManage.social_media_plan` code. ⚠️ WEAKER IN ONE RESPECT, SAID SO: "shared" was ONE symbol; it is now two
+  // message keys (weeklyPost.planRefusal, which the screen's constant reads, and errorsManage.social_media_plan), held
+  // together by asserting their GB words are identical and en-US overrides neither with different words.
   t('⛔ …and the route refuses every action without it, with the shared plan sentence',
     /'schedule_graphics' as never/.test(codeOf(ROUTE))
-    && /WEEKLY_POST_PLAN_REFUSAL/.test(codeOf(ROUTE))
+    && /return ok \? null : refuse\(locale, 'social_media_plan', 403\)/.test(codeOf(ROUTE))
+    && msgGB('errorsManage.social_media_plan') === msgGB('weeklyPost.planRefusal')
+    && msgGB('errorsManage.social_media_plan') === 'Social media posts are on Pro and Max'
+    && (msgAt(US_MESSAGES, 'errorsManage.social_media_plan') ?? null) === (msgAt(US_MESSAGES, 'weeklyPost.planRefusal') ?? null)
     && !codeOf(ROUTE).includes('places_posts_preview')
     && !/not switched on/.test(codeOf(ROUTE)))
   /* ⚠️ `schedule_graphics` IS CHECKED PER BOX, which is the brief's shape — and it is ONE helper, so
@@ -602,9 +660,12 @@ head('4b · headings, buttons and tiles match the agreed design')
        * nothing else — never for a card heading, which is `BOX_HEADING`'s job. ⚠️ THE COUNT IS PINNED
        * so a third has to be argued for rather than appearing. */
       && upper.length === 2
-      && /\{CAPTION_HEADING\}/.test(upper.join('\n'))
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): {CAPTION_HEADING} / {COL_LOCATION} → {t('captionHeading')} /
+      // {t('colLocation')}; the same two permitted rows, same class, GB words at the keys.
+      && upper.join('\n').includes(`{${tc('captionHeading')}}`)
       && upper.every(l => /text-\[10px\] font-bold uppercase tracking-wide text-slate-400/.test(l))
-      && /\{COL_LOCATION\}/.test(code)
+      && code.includes(`{${tc('colLocation')}}`)
+      && SPK('captionHeading') === 'CAPTION' && SPK('colLocation') === 'Location'
   })())
   /* ══ ⚠️ FIVE BOXES, AND FOUR OF THE FIVE TITLES ARE **CONSTANTS** NOW (7 October 2026) ════════════
    * It was four literals and two constants. Create a post's two halves took `CREATE_WEEKLY_TITLE` /
@@ -616,18 +677,23 @@ head('4b · headings, buttons and tiles match the agreed design')
    * that dropped its blurb fails rather than reducing a total nobody checks. */
   t('⚠️ …and every box passes its description as the heading\'s own prop', (() => {
     const code = codeOf(SOCIAL)
-    const literal = (code.match(/<Box title="[^"]+" blurb=\{/g) || []).length
-    const consts = (code.match(/<Box title=\{([A-Z_]+)\} blurb=\{/g) || [])
+    /* ⚠️ RE-PINNED (Language Phase 1d Part 2): EVERY title is a `t('<key>')` call now — the four constants became
+     * keys and the one literal ("Weekly post design") became `screen.weeklyDesignTitle`. So "1 literal + 3 constants"
+     * is asserted as 4 translated titles WITH a blurb prop, named exactly, plus the Locations card without one; the
+     * literal's GB words are asserted at its key. */
+    const withBlurb = (code.match(/<Box title=\{t\('([A-Za-z.]+)'\)\} blurb=\{/g) || [])
+      .map(x => x.replace(/^<Box title=\{t\('/, '').replace(/'.*$/, '')).sort()
+    const literal = withBlurb.filter(k => k === 'screen.weeklyDesignTitle').length
+      * (msgGB('socialPosts.screen.weeklyDesignTitle') === 'Weekly post design' ? 1 : 0)
+    const consts = withBlurb.filter(k => k !== 'screen.weeklyDesignTitle')
     /* ══ ⚠️ FOUR OF FIVE BOXES PASS A BLURB, AND THE FIFTH DELIBERATELY DOES NOT (8 October 2026) ═════
      * The Locations card's description went when each sub-tab gained its own page description — the
      * same sentence twice on one screen is exactly what a per-tab description was added to stop. So
      * `<Box title={LOCATIONS_CARD_TITLE}>` has no `blurb` prop and is counted separately. */
-    const noBlurb = (code.match(/<Box title=\{LOCATIONS_CARD_TITLE\}>/g) || []).length
+    const noBlurb = (code.match(/<Box title=\{t\('locationsCardTitle'\)\}>/g) || []).length
     return literal === 1 && consts.length === 3 && noBlurb === 1
       && (code.match(/<Box title=/g) || []).length === 5
-      && consts.some(x => x.includes('CREATE_WEEKLY_TITLE'))
-      && consts.some(x => x.includes('CREATE_EVENT_TITLE'))
-      && consts.some(x => x.includes('EVENT_DESIGN_TITLE'))
+      && consts.join(' ') === 'createEventTitle createWeeklyTitle eventDesignTitle'
   })())
 
   /* ══ ⛔ ORANGE MEANS "MAKE SOMETHING", AND NOTHING ELSE ═══════════════════════════════════════════
@@ -686,9 +752,12 @@ head('4b · headings, buttons and tiles match the agreed design')
    * boxes' own. ⚠️ "EITHER, NOT BOTH" IS UNCHANGED and is still the point of the number. */
   t('🔴 "No pictures" is a chip with a real count, over EITHER empty PICTURE', (() => {
     const code = codeOf(SOCIAL)
-    return /CHIP_NO_PICTURES = \(n: number\): string => `No pictures \$\{n\}`/.test(COPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the chip's words are socialPosts.chipNoPictures ("No pictures {n}"),
+    // drawn with t('chipNoPictures', { n: missing.length }); the copy export is CALLED and must give `No pictures ${n}`.
+    return SPK('chipNoPictures') === 'No pictures {n}'
+      && [0, 1, 7].every(n => CP.CHIP_NO_PICTURES(n) === `No pictures ${n}`)
       && /visible\.filter\(p => !p\.weeklyImage \|\| !p\.eventPhotoImage\)/.test(code)
-      && /\{chip\('missing', CHIP_NO_PICTURES\(missing\.length\)\)\}/.test(code)
+      && /\{chip\('missing', t\('chipNoPictures', \{ n: missing\.length \}\)\)\}/.test(code)
       /* ⛔ AND THE RULE IS ALSO A PURE FUNCTION IN lib, so the screen's inline filter and
        * `missingImages` must be the same test — or the chip's number and the chip's list disagree.
        * ⚠️ ASSERTED ON THE SOURCE HERE AND **DRIVEN** IN `scripts/place-pictures.cjs` §1, which has the
@@ -734,7 +803,9 @@ head('4b · headings, buttons and tiles match the agreed design')
   t('🔴 the design tile is one component, sized the same with or without a picture',
     /style=\{\{ height, width, maxWidth: '100%' \}\}/.test(SOCIAL)
     && /const ratio = w && h \? w \/ h : 4 \/ 5/.test(SOCIAL)
-    && /: 'No design yet'/.test(SOCIAL))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the empty tile's words are t('screen.noDesignYet'); GB words at the key.
+    && /: t\('screen\.noDesignYet'\)/.test(SOCIAL)
+    && SPK('screen.noDesignYet') === 'No design yet')
   /* ══ ⛔ AND ITS WIDTH IS CAPPED — A LANDSCAPE DESIGN BURST OUT OF ITS BOX (6 October 2026) ════════
    * REPORTED LIVE: the event post design stretched past the edge of its card. With a fixed 220px
    * height and no cap, a 1920×1080 design is 391px wide and the column it sits in is 200–320px.
@@ -809,14 +880,16 @@ head('4b · headings, buttons and tiles match the agreed design')
     const code = codeOf(SOCIAL)
     const head = code.slice(code.indexOf('<thead>'), code.indexOf('</thead>'))
     const row = code.slice(code.indexOf('{rows.map(pl => ('), code.indexOf('</tbody>'))
-    const hw = head.indexOf('{COL_WEEKLY}'), he = head.indexOf('{COL_EVENT}'), hp = head.indexOf('{COL_POSTER}')
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the header cells are {t('colWeekly')} etc.; same order compared.
+    const hw = head.indexOf(`{${tc('colWeekly')}}`), he = head.indexOf(`{${tc('colEvent')}}`), hp = head.indexOf(`{${tc('colPoster')}}`)
     const rn = row.indexOf('{pl.name}')
     /* ⚠️ `eventImage` IS THE **POSTER** and `eventPhotoImage` the event PICTURE — the payload keys kept
      * their names when the meanings narrowed, for the same reason the columns did. */
     const rw = row.indexOf('tick(pl.weeklyImage')
     const re_ = row.indexOf('tick(pl.eventPhotoImage')
     const rp = row.indexOf('tick(pl.eventImage')
-    return head.indexOf('{COL_LOCATION}') < he && he < hw && hw < hp
+    return he > 0 && head.indexOf(`{${tc('colLocation')}}`) < he && he < hw && hw < hp
+      && SPK('colEvent') === 'Event' && SPK('colWeekly') === 'Weekly' && SPK('colPoster') === 'Poster'
       && rn > 0 && re_ > rn && rw > re_ && rp > rw
       /* ⛔ AND `DesignTag` IS STILL GONE — it marked "own design" on a row, and nothing marks a row. */
       && !/DesignTag/.test(code)
@@ -836,7 +909,11 @@ head('4b · headings, buttons and tiles match the agreed design')
       /* ⚠️ NOT `{imageSourceLine(` — the line moved under the tile on 10 October and is now inside a
        * `chosen ? … : ''`, so the call no longer follows the brace directly. The claim is that this
        * screen names the design in WORDS through that function, not where the brace sits. */
-      && /imageSourceLine\(/.test(code)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the screen calls its own `imageLine(t, …)` — the copy module's
+      // `imageSourceLine` with the truck's translator instead of en-GB. The next check proves the two answer each
+      // source from the SAME message keys, so this is still one wording, in WORDS.
+      && /\? imageLine\(t,/.test(code)
+      && /function imageLine\(t: SocialT, source: 'event' \| 'place-photo' \| 'place-poster' \| 'standard' \| 'none'/.test(code)
       /* ⚠️ AND THE SOURCE IS THE **SERVER'S** ANSWER, resolved by the same rule the renderer applies —
        * the client's `photoSpace` is only a fallback for a payload from before the field existed. */
       /* ⚠️ `chosen.imageSource` SINCE §5 — the card is about the CHOSEN event, which is the next public
@@ -850,15 +927,32 @@ head('4b · headings, buttons and tiles match the agreed design')
    * show, so each answer has to be the right sentence and a regex cannot tell a wrong branch from a
    * right one. ⚠️ WHAT IS PINNED HERE is that the function exists with all four arms and that the
    * other harness drives it — so "it is checked elsewhere" is a fact the reader can follow. */
-  t('🔴 …and the four sources each have their own sentence, driven elsewhere',
-    /if \(source === 'none'\) return IMAGE_CHOICE_PRIVATE/.test(COPY)
-    && /if \(source === 'event'\) return 'Using the image you uploaded for this post'/.test(COPY)
-    && /if \(source === 'place-photo'\) return `Using \$\{where\}’s photo`/.test(COPY)
-    && /if \(source === 'place-poster'\) return `Using \$\{where\}’s poster`/.test(COPY)
-    && /return 'Using your standard single event design'/.test(COPY)
-    /* ⚠️ AND A MISSING NAME DEGRADES TO "this location" rather than printing "undefined’s photo". */
-    && /const where = String\(place \?\? ''\)\.trim\(\) \|\| 'this location'/.test(COPY)
-    && /CP\.imageSourceLine/.test(read('scripts/place-pictures.cjs')))
+  /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the arms are `gb('imageSource.<source>', …)` now, so their words are not
+   * in the copy module's source. The function is COMPILED AND CALLED instead — each of the five arms must give its
+   * exact sentence, and a missing name must still degrade to "this location" (now an ICU `select` branch). And the
+   * screen's own `imageLine` must read each source from the SAME key as the copy module, so the two cannot drift. */
+  t('🔴 …and the four sources each have their own sentence, driven elsewhere', (() => {
+    const L = CP.imageSourceLine
+    const arms = (src, fn) => {
+      const body = src.slice(src.indexOf(fn), src.indexOf('\n}', src.indexOf(fn)))
+      return [...body.matchAll(/if \(source === '([a-z-]+)'\) return \w+\('([A-Za-z.]+)'/g)].map(m => `${m[1]}=${m[2]}`)
+        .concat([...body.matchAll(/\n\s*return \w+\('([A-Za-z.]+)'\)/g)].map(m => `default=${m[1]}`)).join(' ')
+    }
+    const copyArms = arms(COPY, 'export const imageSourceLine').replace(/^/, 'none=imageChoicePrivate ')
+    const screenArms = arms(SOCIAL, 'function imageLine(')
+    return L('none') === 'Private bookings always use your standard design.'
+      && CP.IMAGE_CHOICE_PRIVATE === L('none')
+      && /if \(source === 'none'\) return IMAGE_CHOICE_PRIVATE/.test(COPY)
+      && L('event') === 'Using the image you uploaded for this post'
+      && L('place-photo', 'The Kings Arms') === 'Using The Kings Arms’s photo'
+      && L('place-poster', 'The Kings Arms') === 'Using The Kings Arms’s poster'
+      && L('standard') === 'Using your standard single event design'
+      /* ⚠️ AND A MISSING NAME DEGRADES TO "this location" rather than printing "undefined’s photo". */
+      && L('place-photo', null) === 'Using this location’s photo' && L('place-poster', '  ') === 'Using this location’s poster'
+      && screenArms === copyArms
+      && screenArms === 'none=imageChoicePrivate event=imageSource.event place-photo=imageSource.placePhoto place-poster=imageSource.placePoster default=imageSource.standard'
+      && /CP\.imageSourceLine/.test(read('scripts/place-pictures.cjs'))
+  })())
 
 
   /* ⛔ AND THE TIME FORMAT IS THE PRODUCT'S ONE FORMATTER. This file had its own — `17:00–20:00` with
@@ -923,71 +1017,88 @@ head('4c · the agreed wording, from the one copy module')
    * ITS OWN. A sentence written out twice is two sentences the moment one is edited — which this
    * product has already shipped once ("the weekly post is on Pro and Max", in a route and a component,
    * both wrong, one corrected). */
-  const say = (name, text) => t(`⚠️ ${name}`, COPY.includes(text))
+  /* ⚠️ RE-PINNED (Language Phase 1d Part 2): THE SENTENCES LIVE IN messages/en-GB.json `socialPosts` NOW, and the copy
+   * module's exports return them (`gb('<key>')`). `say` used to find the words in the module's SOURCE — often as
+   * `EXPORT = '<words>'`. It now asserts the same pairing on the RUNNING module: the export's VALUE (or a call's
+   * result) is exactly those words. Where the old pin was a fragment of a sentence, the whole sentence is pinned. */
+  const say = (name, ok) => t(`⚠️ ${name}`, ok === true)
 
   say('the intro names Designs, then Make a post, and the order they go in',
-    "' is where you upload your background pictures, once. '")
+    CP.INTRO_AFTER_DESIGNS === ' is where you upload your background pictures, once. '
+    && CP.INTRO_DESIGNS_WORD === 'Designs' && CP.INTRO_MAKE_WORD === 'Make a post'
+    && SPK('pageIntro') === '<b>Designs</b> is where you upload your background pictures, once. <b>Make a post</b> puts your dates, places and times on them for you.')
   say('…and Make a post is what puts the words on them',
-    "' puts your dates, places and times on them for you.'")
-  say('Make a post › Weekly post', 'One picture showing everywhere you’ll be this week.')
-  say('Make a post › Single event post', 'One picture for one event: its date, place and times.')
+    CP.INTRO_AFTER_MAKE === ' puts your dates, places and times on them for you.')
+  say('Make a post › Weekly post', CP.WEEKLY_BOX_BLURB === 'One picture showing everywhere you’ll be this week.')
+  say('Make a post › Single event post', CP.EVENT_BOX_BLURB === 'One picture for one event: its date, place and times.')
   /* ⛔ "Post for a place" IS GONE — 7 October 2026. It was a third door into the same modal, and
    * Create a post's right half does that job better by naming the next event outright instead of
    * making the operator pick the venue it happens to be at. ⚠️ `PLACE_POST_BOX_BLURB` IS STILL
    * EXPORTED and nothing imports it; see the import note in SocialPosts.tsx for why a dead copy
    * constant is cheaper than a harness that cannot find its subject.
    * 🔴 WHAT REPLACED IT IS ASSERTED, so this is a substitution rather than a deletion. */
-  say('Create a post › the next event in full', "NEXT_EVENT_HEADING = 'Your next event'")
-  say('…and its button names the DATE', 'createPostForLabel = (date: string): string => `Create post for ')
+  say('Create a post › the next event in full', CP.NEXT_EVENT_HEADING === 'Your next event')
+  say('…and its button names the DATE', CP.createPostForLabel('Tue 13 Oct') === 'Create post for Tue 13 Oct')
   say('…and the rest are behind a disclosure that counts them',
-    'MORE_EVENTS_LABEL = (n: number): string => `More events (${n})`')
+    [0, 1, 4].every(n => CP.MORE_EVENTS_LABEL(n) === `More events (${n})`))
   /* ⚠️ "left out", NOT "hidden". A private booking is not posted about at all — there is no post it is
    * being kept out of the picture of — and "hidden" would read as a setting to go and change. */
-  say('…and the week line says what is LEFT OUT', "private event${privateEvents === 1 ? '' : 's'} left out`")
-  say('Designs › Weekly post design', 'Your background picture for the weekly schedule post.')
-  say('…and what we write on it', 'Each week we write your days, places and ')
+  say('…and the week line says what is LEFT OUT',
+    CP.weekEventsLine(4, 1) === '4 events · 1 private event left out'
+    && CP.weekEventsLine(1, 2) === '1 event · 2 private events left out'
+    && CP.weekEventsLine(3, 0) === '3 events')
+  say('Designs › Weekly post design', CP.WEEKLY_DESIGN_BLURB.startsWith('Your background picture for the weekly schedule post.'))
+  say('…and what we write on it', CP.WEEKLY_DESIGN_BLURB
+    === 'Your background picture for the weekly schedule post. Each week we write your days, places and times on top of it.')
   /* ⚠️ RE-WORDED 6 October 2026 (§8). Box 2 is "Single event post design" and its description names the
    * fact that makes Box 3 make sense — that this one is the STANDARD, which a place design replaces. */
-  say('Designs › Single event post design', "EVENT_DESIGN_TITLE = 'Single event post design'")
-  say('…and "standard" is the bold word in its description', "EVENT_DESIGN_BLURB_BOLD = 'standard'")
+  say('Designs › Single event post design', CP.EVENT_DESIGN_TITLE === 'Single event post design')
+  /* ⚠️ THE BOLD WORD IS A <b> TAG IN ONE MESSAGE NOW (rendered with `t.rich`); the export is cut from it at the tags. */
+  say('…and "standard" is the bold word in its description',
+    CP.EVENT_DESIGN_BLURB_BOLD === 'standard' && CP.EVENT_DESIGN_BLURB_BEFORE === 'Your '
+    && /^Your <b>standard<\/b> design /.test(SPK('eventDesignBlurb')))
   say('…and it says what we write on it',
-    'design for a post about one event. We write that event’s date, place and times on top of it.')
-  say('…and its button names the design',
-    "EVENT_DESIGN_BUTTON_NEW = 'Set up single event design'")
-  say('Designs › the two "Used for" lines', "'the weekly post only.'")
+    CP.EVENT_DESIGN_BLURB_AFTER === ' design for a post about one event. We write that event’s date, place and times on top of it.')
+  say('…and its button names the design', CP.EVENT_DESIGN_BUTTON_NEW === 'Set up single event design')
+  say('Designs › the two "Used for" lines', CP.WEEKLY_DESIGN_USED_FOR === 'the weekly post only.')
   /* ⚠️ THE "Used for:" LINE IS FIVE WORDS NOW. It used to repeat the description's own content ("unless
    * that place has its own design"); the description carries the "standard" fact, so this answers only
    * "which posts?" — which is what a Used-for line is for. */
   say('…and the event design\'s Used-for line answers only "which posts?"',
-    "EVENT_DESIGN_USED_FOR = 'every post about a single event.'")
+    CP.EVENT_DESIGN_USED_FOR === 'every post about a single event.')
   /* ══ ⛔ THE "Location images" BOX LEFT DESIGNS — 7 October 2026 ═══════════════════════════════════
    * Designs is TWO boxes: the weekly post design and the single event post design. A list of locations
    * was never a design; it was there because there was nowhere else to put it.
    * 🔴 IT IS THE **Location settings** PILL NOW, and its wording is the two-slot model rather than the
    * library's: a PHOTO or a POSTER for event posts, and a PICTURE beside a weekly row. */
-  say('Location settings › the pill and the card agree', "LOCATIONS_TITLE = 'Location settings'")
+  say('Location settings › the pill and the card agree', CP.LOCATIONS_TITLE === 'Location settings')
   say('…and its description says the images are used automatically',
-    'They are used automatically when you make a post.')
+    CP.LOCATIONS_BLURB === 'Give each location its images. They are used automatically when you make a post.')
   say('…and the event box asks for a PHOTO when the design has a space for one',
-    "EVENT_BOX_PHOTO_TITLE = 'Photo for your event posts'")
+    CP.EVENT_BOX_PHOTO_TITLE === 'Photo for your event posts')
   say('…or a POSTER when it has not, and says what a poster replaces',
-    'It replaces your standard design completely for events at this location.')
+    CP.EVENT_BOX_POSTER_BLURB === 'It replaces your standard design completely for events at this location.')
   say('…and the weekly box names where its picture goes',
-    "WEEKLY_BOX_TITLE = 'Picture beside its row on your weekly post'")
+    CP.WEEKLY_BOX_TITLE === 'Picture beside its row on your weekly post')
   /* 🔴 AND THE REMOVE CONFIRM SAYS THE IMAGE IS KEPT, because it is: Remove clears the slot and
    * nothing is deleted. A truck told "Remove" without that sentence has every reason to think
    * otherwise, and this screen has no undo. */
-  say('…and Remove says the image itself is kept', 'It stops being used. The image itself is kept.')
-  say('the empty state names the weekly design', 'You haven’t designed a weekly post yet')
-  say('…and the single event design', 'You haven’t designed a single event post yet')
+  /* ⚠️ THE CONFIRM IS AN ICU `select` NOW (poster / photo / other → "picture"); every arm the screen passes is called. */
+  say('…and Remove says the image itself is kept',
+    CP.slotRemoveConfirm('picture') === 'Remove this picture? It stops being used. The image itself is kept.'
+    && CP.slotRemoveConfirm('poster') === 'Remove this poster? It stops being used. The image itself is kept.')
+  say('the empty state names the weekly design', CP.EMPTY_WEEKLY_TITLE === 'You haven’t designed a weekly post yet')
+  say('…and the single event design', CP.EMPTY_EVENT_TITLE === 'You haven’t designed a single event post yet')
   /* ⛔ "It only takes a minute." WAS REMOVED ON 7 OCTOBER (Dominic). It is a promise about how long
    * something takes, made by a screen that does not know: setting a design up means exporting artwork
    * at the right shape, and for a truck who has not got one it is not a minute. */
   say('…and says what to do, without promising how long it takes',
-    "EMPTY_BODY = 'Upload your picture in Designs first.'")
+    CP.EMPTY_BODY === 'Upload your picture in Designs first.')
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the words are in the message files now, so the absence is asserted over
+  // every socialPosts message (GB and US) as well as the module's code — otherwise it would be vacuously true.
   t('⛔ …and the old promise is gone from the copy module',
-    !/It only takes a minute/.test(codeOf(COPY)))
-  say('…with one button out', "export const EMPTY_BUTTON = 'Go to Designs'")
+    !/It only takes a minute/.test(codeOf(COPY)) && !SP_WORDS.some(w => /It only takes a minute/.test(w)))
+  say('…with one button out', CP.EMPTY_BUTTON === 'Go to Designs')
 
   /* ⛔ CURLY APOSTROPHES, AS THE REST OF THE FILE USES. A straight one in a sentence beside twelve
    * curly ones is the kind of thing nobody sees until it is printed on a poster. */
@@ -995,7 +1106,9 @@ head('4c · the agreed wording, from the one copy module')
     const strings = [...COPY.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map(m => m[1])
     /* ⚠️ THE SOURCE'S OWN QUOTES ARE THE DELIMITERS, so a straight apostrophe INSIDE a string would
      * have had to be escaped — `\'` — and that is what this looks for. */
-    return !strings.some(x => /\\'/.test(x))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the exported strings are messages now, so every socialPosts message
+    // (GB and US) is checked for a straight apostrophe too — the module's own literals alone would be vacuous.
+    return !strings.some(x => /\\'/.test(x)) && SP_WORDS.length > 100 && !SP_WORDS.some(w => w.includes("'"))
   })())
 
   /* 🔴 AND THE COMPONENT QUOTES NONE OF THEM. Asserted as an absence of the sentences themselves. */
@@ -1006,7 +1119,11 @@ head('4c · the agreed wording, from the one copy module')
      * trivially not in the component. It is Box 3's live description now. */
     const want = ['One picture showing everywhere', 'Your background picture for', 'It only takes a minute',
       'Save images for a location', 'the weekly post only']
-    return want.every(x => COPY.includes(x)) && want.every(x => !code.includes(x))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): "must exist in COPY" → must exist in the copy module's source OR in a
+    // socialPosts GB message (where four of the five live now; "It only takes a minute" survives only in the module's
+    // tombstone, exactly as it did at 826471a). The absence from the component is unchanged.
+    return want.every(x => COPY.includes(x) || leafStrings(GB_MESSAGES.socialPosts).some(w => w.includes(x)))
+      && want.every(x => !code.includes(x))
   })())
 
   /* 🔴 THE TWO SENTENCES WITH BOLD IN THEM ARE SPLIT, NOT MARKED UP. A string with `**` in it would
@@ -1024,7 +1141,9 @@ head('4c · the agreed wording, from the one copy module')
    * third bolded word anywhere on this screen fails here rather than passing a pair of `.test`s. */
   t('⚠️ …and the component bolds exactly the two words that are the area names', (() => {
     const code = codeOf(SOCIAL)
-    const spans = (code.match(/<span className="font-bold text-slate-700">\{([A-Z_]+)\}<\/span>/g) || [])
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): a bolded word could now be a `{t('…')}` call as well as a constant, so
+    // both shapes are counted.
+    const spans = (code.match(/<span className="font-bold text-slate-700">\{(?:[A-Z_]+|t\('[A-Za-z.]+'\))\}<\/span>/g) || [])
       .map(x => x.replace(/^.*\{/, '').replace(/\}.*$/, '')).sort()
     /* ⛔ THREE, AND THE THIRD IS A LABEL, NOT A BOLDED WORD IN A SENTENCE. `USED_FOR_LABEL` is the
      * "Used for:" lead-in on both design panels — bold because it introduces a value, which is a
@@ -1045,10 +1164,12 @@ head('4c · the agreed wording, from the one copy module')
      * panels are gone, because the box TITLES carry the same fact. 🔴 SO THE CLAIM IS NOW AN EMPTY SET,
      * which is the strongest form this check has ever had: nothing on this screen bolds a constant
      * inside running prose, and a first one has to be argued for. */
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): `INTRO_DESIGNS_WORD = 'Designs'` → the export's value; and neither
+    // retired word is read as a message key either (pageIntro / usedForLabel).
     return spans.length === 0
-      && /INTRO_DESIGNS_WORD = 'Designs'/.test(COPY)
-      && !/INTRO_DESIGNS_WORD/.test(code)
-      && !/USED_FOR_LABEL/.test(code)
+      && CP.INTRO_DESIGNS_WORD === 'Designs'
+      && !/INTRO_DESIGNS_WORD/.test(code) && !/t\('pageIntro'/.test(code)
+      && !/USED_FOR_LABEL/.test(code) && !/t\('usedForLabel'/.test(code)
   })())
 }
 
@@ -1093,20 +1214,27 @@ head('4d · centred tiles, "Used for", and one-line place rows')
     && !/USED_FOR_LABEL/.test(codeOf(SOCIAL))
     /* ⚠️ STILL EXPORTED — three harnesses read them by name, and a dead export is cheaper than a
      * harness that cannot find what it is asking about. */
-    && /WEEKLY_DESIGN_USED_FOR = 'the weekly post only\.'/.test(COPY)
-    && /EVENT_DESIGN_USED_FOR = 'every post about a single event\.'/.test(COPY)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): `EXPORT = '<words>'` in source → the running export's value; and the
+    // screen reads none of the three as a message key either.
+    && CP.WEEKLY_DESIGN_USED_FOR === 'the weekly post only.'
+    && CP.EVENT_DESIGN_USED_FOR === 'every post about a single event.'
+    && !/t\('(?:weeklyDesignUsedFor|eventDesignUsedFor|usedForLabel)'/.test(codeOf(SOCIAL))
     /* 🔴 AND THE TITLES THAT REPLACED THEM ARE WHAT THE BOXES DRAW. */
-    && /CREATE_WEEKLY_TITLE = 'Weekly post'/.test(COPY)
-    && /EVENT_DESIGN_BUTTON_EDIT = 'Edit single event design'/.test(COPY))
+    && CP.CREATE_WEEKLY_TITLE === 'Weekly post'
+    && CP.EVENT_DESIGN_BUTTON_EDIT === 'Edit single event design')
   /* 🔴 THE BUTTON SAYS WHICH JOB IT IS, from `designIsReady`'s answer — Edit an existing design, or
    * Set up one that does not exist. ⚠️ Both open the SAME screen; only the word changes. */
   t('🔴 the design buttons say Edit or Set up, from the readiness answer',
-    /\{data\.weekly\.ready \? 'Edit weekly design' : 'Set up weekly design'\}/.test(SOCIAL)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the two literals are t('screen.editWeeklyDesign') /
+    // t('screen.setUpWeeklyDesign') and the two constants t('eventDesignButtonEdit') / t('eventDesignButtonNew') — the
+    // same ternaries on the same readiness answers; every label's GB words asserted (and the exports' values).
+    /\{data\.weekly\.ready \? t\('screen\.editWeeklyDesign'\) : t\('screen\.setUpWeeklyDesign'\)\}/.test(SOCIAL)
+    && SPK('screen.editWeeklyDesign') === 'Edit weekly design' && SPK('screen.setUpWeeklyDesign') === 'Set up weekly design'
     /* ⚠️ BOX 2'S TWO LABELS ARE CONSTANTS, because the empty state and the setup card have to agree
      * with them. The CLAIM is unchanged: the word follows `designIsReady`'s answer. */
-    && /\{data\.standard\.ready \? EVENT_DESIGN_BUTTON_EDIT : EVENT_DESIGN_BUTTON_NEW\}/.test(SOCIAL)
-    && /EVENT_DESIGN_BUTTON_EDIT = 'Edit single event design'/.test(COPY)
-    && /EVENT_DESIGN_BUTTON_NEW = 'Set up single event design'/.test(COPY))
+    && /\{data\.standard\.ready \? t\('eventDesignButtonEdit'\) : t\('eventDesignButtonNew'\)\}/.test(SOCIAL)
+    && SPK('eventDesignButtonEdit') === 'Edit single event design' && CP.EVENT_DESIGN_BUTTON_EDIT === SPK('eventDesignButtonEdit')
+    && SPK('eventDesignButtonNew') === 'Set up single event design' && CP.EVENT_DESIGN_BUTTON_NEW === SPK('eventDesignButtonNew'))
 
   /* ══ 🔴 A TABLE ROW IS ONE LINE AT EVERY WIDTH — THE SAME RULE, A NEW SHAPE ══════════════════════
    * ⛔ THE CLAIM IS UNCHANGED AND IT IS THE ONE THAT MATTERS: in a list where every row is the same
@@ -1122,7 +1250,8 @@ head('4d · centred tiles, "Used for", and one-line place rows')
     const row = code.slice(code.indexOf('{rows.map(pl => ('), code.indexOf('</tbody>'))
     return row.length > 0
       && /<table className="w-full table-fixed border-collapse text-sm">/.test(code)
-      && /<th className="w-\[44px\] py-1 text-center">\{COL_POSTER\}<\/th>/.test(code)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): {COL_POSTER} → {t('colPoster')} in the same fixed-width header cell.
+      && /<th className="w-\[44px\] py-1 text-center">\{t\('colPoster'\)\}<\/th>/.test(code)
       && !/flex-wrap/.test(row)
       && /<td className="min-w-0 py-1\.5 pr-2 align-top">/.test(row)
       /* ══ 🔴 THE NAME **WRAPS TO TWO LINES** NOW RATHER THAN TRUNCATING — AND THE CLAIM SURVIVES ══════
@@ -1185,11 +1314,14 @@ head('4d · centred tiles, "Used for", and one-line place rows')
       /* ⚠️ `CHIP_MISSING` IS THE **RETIRED** WORDING and is still exported as the record — "Missing
        * images" became "No images" (8 October) and then "No pictures" (9 October). The live one is
        * asserted in §4c; this line is only here to prove the old constant was not quietly reused. */
-      && /CHIP_MISSING = \(n: number\): string => `Missing images \$\{n\}`/.test(COPY)
-      && !/CHIP_MISSING/.test(code)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the retired export is CALLED (`Missing images ${n}`), and the screen
+      // reads neither it nor its key (chipMissing); the two retired headings are absent as constants AND as keys.
+      && [0, 3].every(n => CP.CHIP_MISSING(n) === `Missing images ${n}`)
+      && !/CHIP_MISSING/.test(code) && !/t\('chipMissing'/.test(code)
       /* ⛔ AND ALL THREE RETIRED MARKERS ARE GONE. */
       && !/data-group-none/.test(code) && !/data-group-some/.test(code)
       && !/PLACE_PICTURES_NONE_HEADING/.test(code) && !/PLACE_PICTURES_SOME_HEADING/.test(code)
+      && !/t\('placePictures(?:None|Some)Heading'/.test(code)
       && !/>Standard<\/span>/.test(code) && !/DesignTag/.test(code)
       /* 🔴 AND THE SELECTED ROW IS MARKED, which is the one thing a flat table must say: a two-pane
        * screen whose left side does not show which row the right side is about is two screens. */
@@ -1206,9 +1338,11 @@ head('4d · centred tiles, "Used for", and one-line place rows')
       && !/data-design-footer/.test(code)
       && !/picturesCount/.test(code)
       /* 🔴 AND EVERY CHIP CARRIES ITS OWN NUMBER, which is the half that replaced it. */
-      && /\{chip\('all', CHIP_ALL\(visible\.length\)\)\}/.test(code)
-      && /\{chip\('missing', CHIP_NO_PICTURES\(missing\.length\)\)\}/.test(code)
-      && /\{chip\('hidden', CHIP_HIDDEN\(hidden\.length\)\)\}/.test(code)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): CHIP_*(count) → t('chip*', { n: count }); each message carries {n}.
+      && /\{chip\('all', t\('chipAll', \{ n: visible\.length \}\)\)\}/.test(code)
+      && /\{chip\('missing', t\('chipNoPictures', \{ n: missing\.length \}\)\)\}/.test(code)
+      && /\{chip\('hidden', t\('chipHidden', \{ n: hidden\.length \}\)\)\}/.test(code)
+      && SPK('chipAll') === 'All {n}' && SPK('chipNoPictures') === 'No pictures {n}' && SPK('chipHidden') === 'Hidden {n}'
   })())
   /* ⚠️ THE SCHEDULE HALF OF THIS IS GONE WITH ITS MODAL (7 October 2026). There was one `onNeedsSetup`
    * per mount and Schedule's crossed tabs to reach Designs; its mount is gone, so the only one left is
@@ -1300,11 +1434,15 @@ head('4d · centred tiles, "Used for", and one-line place rows')
      * flagged as an open item because the bar could not be measured from here — `/manage/[token]`
      * needs a real operator session. Dominic looked at it on his laptop and asked for the full label,
      * which is that measurement taken by the person who can. */
-    return /id: 'social',\s+label: 'Social media',/.test(code)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the label is t('tabs.social') (useT('manageShell')) and the filter's
+    // parameter is `tab`; "Social media" is asserted as the GB words at manageShell.tabs.social.
+    return /id: 'social',\s+label: t\('tabs\.social'\),/.test(code)
+      && /const t = useT\('manageShell'\)/.test(code)
+      && msgGB('manageShell.tabs.social') === 'Social media'
       /* ⚠️ 💬 — A SPEECH BUBBLE, NOT A LOUDSPEAKER. 📣 is broadcasting AT people, which is what an ad
        * is; a post about where the van will be is a message. */
       && /icon: '💬'/.test(code)
-      && /t\.id === 'social'/.test(filt)
+      && /tab\.id === 'social'/.test(filt)
       && /schedule_graphics/.test(filt)
   })())
 }
@@ -1361,9 +1499,12 @@ head('4d · centred tiles, "Used for", and one-line place rows')
    * 🔴 ASSERTED AS BOTH HALVES: the reload is there, and the stale reasoning is gone — a comment that
    * still forbids it is the thing that would stop the next person putting it back. */
   t('🔴 saving a caption template reloads the screen, so the save is visible', (() => {
-    const fn = SP.slice(SP.indexOf('const saveCaption = useCallback'), SP.indexOf('}, [token, load])') + 20)
-    return /await load\(\)/.test(fn)
-      && /\}, \[token, load\]\)/.test(fn)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the dependency list is [token, load, t] — the fallback refusal is
+    // t('screen.didNotSave') now, so the translator is a dependency. The reload claim is unchanged.
+    const fn = SP.slice(SP.indexOf('const saveCaption = useCallback'), SP.indexOf('}, [token, load, t])') + 24)
+    return SP.indexOf('const saveCaption = useCallback') > 0
+      && /await load\(\)/.test(fn)
+      && /\}, \[token, load, t\]\)/.test(fn)
       /* ⛔ AND THE COMMENT THAT SAID NOT TO IS GONE FROM THE FILE. */
       && !/IT DOES \*\*NOT\*\* RELOAD THE PAGE AFTERWARDS/.test(SP)
       /* ⚠️ THE CARD'S OWN `key` IS THE FILLED CAPTION, so a reload re-seeds the box rather than leaving
@@ -1386,7 +1527,10 @@ head('4d · centred tiles, "Used for", and one-line place rows')
       /* ⚠️ AND THE WEEKLY ONE IS STILL PINNED THE SAME WAY. */
       && /<div className="mt-auto pt-3">\s*\n\s*<button type="button" data-primary/.test(SP)
       /* ⚠️ ITS WORDS STILL NAME THE EVENT, which is what makes moving it below the picker safe. */
-      && /\{chosen\.id === postable\[0\]\?\.id \? CREATE_FOR_NEXT : CREATE_FOR_THIS\}/.test(half)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): CREATE_FOR_NEXT / CREATE_FOR_THIS → t('createForNext') /
+      // t('createForThis'), the same ternary; GB words at the keys.
+      && /\{chosen\.id === postable\[0\]\?\.id \? t\('createForNext'\) : t\('createForThis'\)\}/.test(half)
+      && SPK('createForNext') === 'Create post for next event' && SPK('createForThis') === 'Create post for this event'
   })())
 }
 

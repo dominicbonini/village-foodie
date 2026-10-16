@@ -1,0 +1,10 @@
+{
+  "copy": "Copy",
+  "copied": "Copied ✓",
+  "failed": "Copy failed",
+  "aria": "{label} {thing}",
+  "announceCopied": "{thing} copied",
+  "announceCopiedValue": "Value copied",
+  "announceFailed": "Could not copy {thing}. Select the writing and copy it yourself.",
+  "announceFailedValue": "Could not copy the value. Select the writing and copy it yourself."
+}

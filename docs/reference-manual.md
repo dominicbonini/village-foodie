@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V15.8
+HatchGrab Engineering Reference Manual · V15.9
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 15.8**
+**Version 15.9**
 
 October 2026
 
@@ -34,9 +34,42 @@ service-account **private key** was printed into the transcript. ⛔ **THE COMMA
 the mistake was reasoning about a file format rather than refusing the file. The key was treated as
 compromised and rotated (new JSON key → `.env.local` and the Vercel Production environment → redeploy →
 delete the old key). ⚠️ **A FILE IS CHECKED FOR A NAME WITH A PARSER THAT EMITS NOTHING**, or it is not
-checked by an agent at all.
+checked by an agent at all. **Second precedent (V15.9, 15 October 2026):** a "names only" check —
+`cut -d= -f1 .env.local | grep -i …` — printed a continuation line of a multi-line value (the Firebase
+service account's `client_email`). Not a key, and nothing was rotated; but it is the same class, from the
+same reasoning, six days later. Check one name at a time with `grep -q "^NAME=." .env.local` and print only
+`set` / `missing`.
 
 # Changelog
+
+## V15.9 — 15 October 2026 — **OUTREACH: SEND IS INSTANT (WITH UNDO) AND THE SERVER STILL DECIDES**, A REFUSED SEND IS RECORDED AND FLAGGED, EMAIL TEMPLATES GET FORMATTING AND CAN ATTACH THE PLANS PDF, AND A SCREENSHOT NO LONGER TRUSTS A PHONE NUMBER ON ITS OWN
+
+- From four reports in `docs/`: `outreach-screenshot-match-report.md`, `template-formatting-report.md`,
+  `template-values-box-report.md`, `outreach-instant-send-report.md`.
+- **Send is instant.** The compose window closes on Send; a toast holds the message for five seconds with
+  **Undo**; then it goes once, under a key made at the press. Every guard still runs on the server before
+  the mail server is contacted. The Sent-folder copy and the contact log run **after** the answer.
+- **A refused send is recorded** (status `refused`) and listed on Today's "Emails needing a look" with the
+  reason; a guard that asks is answered on the prospect ("Send anyway", same words, same override write).
+- **Email templates are written in the compose window's own editor** (bold, italic, size, lists, links),
+  stored as template text with small tags. **`{{plans_pdf}}`** makes a template attach the plans PDF.
+  The Templates preview draws the formatted email live.
+- **The values box no longer covers the message** — 11229e3's flex-shrink overlap, a second time.
+- **A phone number alone no longer decides** which prospect a screenshot fills (Tacoman / Smash and Grab).
+- 🔴 **DEPLOYED BY PUSH.** `origin/main` is `accbb61`; a push to `main` is a deploy (§63.1). Migration
+  `20261015_outreach_messages_refused.sql` is applied on the live database (§49).
+
+| What | Where |
+|---|---|
+| **NEW — Outreach: instant Send, refusals, template formatting, `{{plans_pdf}}`, the screenshot match** | **NEW §78** |
+| Deploy posture at V15.9 | §49 (now headed by the current posture) |
+| The token vocabulary gains `plans_pdf`; templates may carry formatting | §58.1 (pointer to §78.2–78.3) |
+| One click, one email — the key is per press now; statuses gain `refused`; the copy runs after the answer | §60.3 (pointers to §78.5–78.6) |
+| A template can attach the plans PDF | §60.4 (pointer to §78.3) |
+| Today's "Emails needing a look" lists refused sends | §61.1 |
+| A blocked send is recorded; "Send anyway" has written `guard_override`, not a note, since 1 October | §62.4 (correction) |
+| The Templates view: the rich editor and the live formatted preview | §62.7 (pointer to §78.2, §78.4) |
+| The secrets rule gains a second precedent | Standing rules (top) |
 
 ## V15.8 — 14 October 2026 — **INTERNATIONAL READINESS**: ONE COUNTRY TABLE; MONEY, TIME, PHONE, SIGNUP, SCHEDULES AND ALLERGENS BY COUNTRY; THE TAX, TIPS AND FEES ENGINE AND SCREENS; THREE BROWSER-CALLABLE FUNCTIONS CLOSED; AND THE LANGUAGE FRAMEWORK (PHASE 0). NOT DEPLOYED.
 
@@ -26921,7 +26954,21 @@ Recorded so they are not briefed again.
 - ⚠️ **HARNESS FLAKINESS:** `event-types-render.cjs` failed once inside a full sweep running alongside a
   local `next start`, and **passed on its own**. Treat it as resource contention unless it recurs.
 
-# 49. Deploy posture (current at V15.8; earlier postures below, each dated)
+# 49. Deploy posture (current at V15.9; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V15.9 — `origin/main` IS `accbb61`; EVERYTHING TO 15 OCTOBER IS PUSHED
+
+- **OBSERVED** `origin/main` is `accbb61` ("email speed sending", 15 October) and the local `main` matches it.
+  The V15.8 checkpoints (`3033a53`, `e54c7ea`, `234b6a2`), Language Phases 1a/1b (`0914760` and after), the
+  template and screenshot work (`89b3f29`, `9fa4491`) and instant Send (`accbb61`) are all on it. Vercel's
+  production branch is `main`, so the push is a deploy (§63.1). ⚠️ **The Vercel build result was not checked
+  for this entry.**
+- **OBSERVED** (read-only, 15 October) `20261015_outreach_messages_refused.sql` is **applied**: the
+  `outreach_messages.refusal` column exists and one `refused` row is recorded.
+- ⚠️ **NOT VERIFIED HERE:** the V15.8 post-deploy steps below (the edge functions, re-running `_16`, its
+  verify). Their state is unknown to this entry, not "done".
+- ⚠️ **The manual has no entry yet for Language Phases 1a/1b** (`docs/language-phase-1a-report.md`,
+  `docs/language-phase-1b-report.md`); §77 still describes Phase 0. Open.
 
 ### 🔴 DEPLOY POSTURE AT V15.8 — LIVE IS `f4bd277`; NOTHING FROM 10–14 OCTOBER IS DEPLOYED
 
@@ -28074,6 +28121,9 @@ scraped hint, so not one row was personally verified.
   separate case, not an operator.
 - **`[[placeholder]]` — filled by Dominic.** Values live in `outreach_snippets`, one row per distinct
   name.
+- **V15.9:** the send-time tokens are `signature`, `opt_out` and now **`plans_pdf`** (attach the plans PDF —
+  §78.3). An email template's text may also carry **formatting markers** (`<b>`, `<i>`, `<small>`,
+  `<large>`, `<a href>`, "• " / "1. " lines) — §78.2.
 
 ## 58.2 🔴 The malformed-token guard keys off DELIMITERS, not the token pattern
 
@@ -28285,13 +28335,16 @@ directly from the mailbox, so the message is exactly what a mail client would pr
   - 🔴 Namecheap does **not** file an SMTP send in Sent by itself.
   - `info.message` exists only on `streamTransport`, which is why the first build's Sent copy was empty.
   - The append runs search → wait 3 s → search first, so a copy is never filed twice. "Save to Sent"
-    retries it by hand.
-- **Statuses:** `sending`, `sent`, `failed`, `uncertain` (the socket closed after DATA and we cannot know).
+    retries it by hand. **Since V15.9 it runs after the send has answered** (`runAfter`, §78.5).
+- **Statuses:** `sending`, `sent`, `failed`, `uncertain` (the socket closed after DATA and we cannot know),
+  and since V15.9 **`refused`** — a send the server declined before contacting the mail server (§78.6).
   Received mail adds `received`, `auto_reply`, `bounce`, and `bounced` on the original.
   **Sources:** `system`, `mailbox_import`, `poll`.
 - **One click, one email.** `outreach_messages.idempotency_key` is unique. The composer keys each message by
   its content (subject, document, step, attachment paths, reply target), and the server claims the key
   **before** building anything. A repeat returns the first result.
+  **SUPERSEDED V15.9 (§78.5):** the key is made **when Send is pressed**, one per send; the server half is
+  unchanged.
 - **Threading.**
   - A **first contact always starts a new thread**. Early on, one went out as "Re:" because the rule
     ignored the kind.
@@ -28304,6 +28357,9 @@ directly from the mailbox, so the message is exactly what a mail client would pr
     marks bold / small — and, since the demo-link build, `link`, whose href is itself an allow-list
     (`LINK_RE`, `https` only; `javascript:`, `data:`, `http:` and protocol-relative `//` are **refused,
     not stripped**). The document is validated on the server.
+    ⚠️ **STALE BEFORE V15.9, CORRECTED HERE:** since 1 October the schema also carries **italic**,
+    **large**, **bulleted and numbered lists**, and `LINK_RE` allows **http, https and mailto**
+    (`lib/outreach-doc.ts`: `ALLOWED_MARKS`, `ALLOWED_NODES`, `LINK_RE`). Everything else is still refused.
   - `docToHtml` renders Outlook-style `<div>`s at 12pt Aptos; "small" is 13.333333px.
   - The `text/plain` part carries no HTML.
   - `{{signature}}` and `{{opt_out}}` are **expanded into the document when a template loads**, through
@@ -28325,6 +28381,7 @@ directly from the mailbox, so the message is exactly what a mail client would pr
 - The **Plans PDF** is generated by `lib/plans-pdf.ts`, the same module the landing page's features-PDF
   route uses: one source for both.
 - Messages are `multipart/mixed` when anything is attached.
+- **V15.9:** a template can attach it — `{{plans_pdf}}` on a line of its own (§78.3).
 
 ## 60.5 Reply pickup (the poll)
 
@@ -28390,7 +28447,7 @@ nothing above waits on it". It ships in this build's commit, `29e1b74`.
 | **Replies waiting** | Inbound emails not handled or snoozed | Oldest first |
 | **Chasers due** | Contactable prospects whose derived step is due or overdue | Most overdue first |
 | **Follow-ups due** | `next_action_at` today or earlier, not already listed | Most overdue first |
-| **Emails needing a look** | Outbound `failed` / `uncertain` / `bounced` | Newest first |
+| **Emails needing a look** | Outbound `failed` / `uncertain` / `bounced` — and since V15.9 **`refused`**, shown as "Not sent" with the reason (§78.6) | Newest first |
 
 Mark done sets `handled_at`. Snooze sets `snoozed_until` and leaves `handled_at` null: "not now" is not
 "done".
@@ -28574,9 +28631,17 @@ was nothing to send. The composer now says so in words: *"No step to send: repli
 | h | The logged kind (`loggedKindFor`) | The step (62.3) |
 
 - `evaluateGuards` runs them; a blocked send writes nothing and sends nothing.
+  **SUPERSEDED V15.9:** it still sends nothing, and is now **recorded** as a `refused` row so the prospect
+  can be flagged — the compose window has closed by then (§78.6).
 - **"Send anyway"** resubmits with an override list, and the server writes a `note` event beginning
   `Sent anyway:` (`OVERRIDE_PREFIX`) **before** sending. The note is a `note` rather than a new event
   kind, to avoid a migration.
+  🔴 **STALE SINCE 1 OCTOBER, CORRECTED V15.9.** No note is written and `recordSendOverride` /
+  `OVERRIDE_PREFIX` are gone: the waved guards (ids and the sentences shown) are stored on the sent
+  message's own row, **`outreach_messages.guard_override`**, and shown in that email's reading panel
+  (`app/api/admin/outreach/mail-send/route.ts`, the insert; `lib/outreach-events.ts`). Old `Sent anyway:`
+  notes are data and were left alone. **Since V15.9 the question is asked on the prospect's history**
+  (`send_refused`) rather than in the window, with the same words and the same `guard_override` write.
 
 ## 62.5 Outlook sends carry no step
 
@@ -28615,6 +28680,9 @@ was nothing to send. The composer now says so in words: *"No step to send: repli
     (`resolvedTokenReference()`, `conditionReference()`); a hard-coded list is banned by the harness.
   - The preview expands `{{signature}}` / `{{opt_out}}` through `docFromTemplateText`, the composer's own
     call.
+  - **V15.9:** an **email** template is written in the compose window's own editor and the preview draws the
+    formatted email live, from the unsaved draft (§78.2); the values box sits below the editor in normal
+    flow (§78.4). WhatsApp templates keep the plain box.
   - The fields are **Template name / Subject / Message** — the 1-2-3 headings and their paragraphs were
     removed on 30 September, keeping one grey line under the Message label about `{{double braces}}` and
     `[[square brackets]]`.
@@ -31342,6 +31410,187 @@ the matching parts of 2.
 10. AI prompts state the output language and keep the menu's own language.
 11. Prefer words that work in both countries in new copy; existing UK text stays byte-identical until its
     phase.
+
+---
+
+# 78. Outreach — instant Send, refusals, template formatting and the screenshot match (V15.9 — 15 October 2026)
+
+From `docs/outreach-screenshot-match-report.md`, `docs/template-formatting-report.md`,
+`docs/template-values-box-report.md` and `docs/outreach-instant-send-report.md`. All on `main` at `accbb61`.
+
+## 78.1 🔴 A phone number alone never decides which prospect a screenshot fills
+
+**The incident.** On 5 October Smash and Grab's Facebook page was dropped on the Screenshots tab. Its mobile,
+07977 469367, is shared with Tacoman (one owner, two trucks). The matcher took the phone hit as definite and
+filled Tacoman's empty email and Instagram with Smash and Grab's. On 14 October a real outreach email
+("Ordering costs for Tacoman") went to `info@smashandgrabfoodtruck.com`, and the owner replied from it.
+
+**The rule** (`lib/admin/truck-details.ts`, `matchProspect`):
+- When the **only** key that hit a prospect is the phone, the names must also agree (`normalizeVenue`, the
+  name key's own normaliser). If they do not — or the screenshot shows no name — the result is
+  "Needs a look" with `ask: 'phone_only'`, and **nothing is written**.
+- The row asks: "This number belongs to ‹prospect›. The screenshot says ‹name›. Is this ‹prospect›, or a
+  different truck?" — **Same truck — update ‹prospect›**, **Different truck — add as new**, **Cancel**
+  (Cancel calls nothing).
+- A Facebook or website hit still decides on its own; a name match, or a name-and-phone match, fills as
+  before.
+
+**A different saved email or social link is asked about, never replaced on its own.** `planFill` still fills
+empty fields only. A saved email, Facebook link or Instagram link that differs (`CONFIRM_FIELDS`) is shown as
+"Email: old → new" with **Replace** / **Keep saved**. Only Replace writes (`replace_fields`), and
+`planReplace` re-derives the conflict from the row **as it stands**, refusing if the saved value is no
+longer the one shown. Mobile, phone and website keep today's behaviour (kept, and noted).
+
+**Where it lives.** The match-and-act step is `fileTruckDetails` (with `addAsNewTruck`,
+`fillConfirmedTruck`, `replaceConfirmed`) in `lib/admin/truck-details-write.ts`; the route calls them, so
+the harness (`scripts/screenshot-phone-match.cjs`, the real route against `_fake-pg`) drives the same code.
+
+**There is no prospect-to-prospect link in the schema.** "Same owner" is a note on both prospects.
+
+**OBSERVED (15 October, read-only):** the data fix has been run — Tacoman's Instagram cleared and a
+correction note in its history; the hidden Smash and Grab prospect filled.
+
+**Open:** a **shared email** can mislead the same way (only the phone is guarded); the 5 October
+`screenshot_log` row still names Tacoman.
+
+## 78.2 Formatting in email templates
+
+- **Email templates are written in the compose window's own editor** (`TemplateBodyEditor` in
+  `components/admin/TemplatesPanel.tsx`, wrapping `RichEmailEditor`): bold, italic, size, bulleted and
+  numbered lists, links. **WhatsApp templates keep the plain text box**, and warn if a template switched
+  from Email still carries tags.
+- **Stored as template TEXT, with small markers** — so the resolver's tokens and line-dropped `?conditions:`
+  keep working and WhatsApp is untouched:
+
+  | Formatting | Stored as |
+  |---|---|
+  | bold, italic | `<b>…</b>`, `<i>…</i>` |
+  | sizes | `<small>…</small>`, `<large>…</large>` |
+  | link | `<a href="…">…</a>` — a link only if the href passes `LINK_RE`; otherwise it stays text |
+  | lists | a line starting `• ` (bulleted) or `1. ` (numbered) — the markers the plain-text part already uses |
+
+  **Why tags and not markdown:** `_` is in every token name, `*` pairs are ambiguous where bold meets italic,
+  and a live template already uses "- " as plain text.
+- 🔴 **MARKS NEVER CROSS A LINE.** Each stored line opens and closes its own tags, so a `?condition:` line the
+  resolver drops can never leave bold switched on. A literal `<b>` is stored as `&lt;b>`; a paragraph that
+  merely starts like a list item is stored with a `\` in front.
+- **Where it is parsed:** `docFromTemplateText` (the compose window's call, where the signature is expanded);
+  `docFromTemplateMarkup` is the editor's view (the send-time tokens left as text); `templateMarkupFromDoc`
+  is the serialiser. It normalises (CRLF, a triple blank line) without changing the email.
+- 🧪 **All 9 live templates** (15 October, read-only) build byte-identical documents and HTML before and
+  after.
+- **The editor keeps its own document while typing** — template text and the editor's document are not
+  one-to-one, and re-deriving per keystroke would throw the caret.
+- **The preview draws the email as it will arrive** — `docToHtml`, the send's own renderer — from the
+  **unsaved draft**, so every change shows as it is made.
+- ⛔ **The editor sits in a `<div>`, never a `<label>`** (the 5 October bold bug).
+- Harness: `scripts/template-formatting.cjs` (baseline pinned to `0914760`, the last commit without markup).
+
+## 78.3 `{{plans_pdf}}` — a template that attaches the plans PDF
+
+- A **send-time token** like `{{signature}}`: the resolver returns it unchanged, so it is never "still to
+  fill", and it appears in **Insert token ▾** (hidden for WhatsApp). The template editor's toolbar has a
+  **Plans PDF** button (shows ✓ once present). It is always put on **a line of its own**.
+- **The line is not sent** — `docFromTemplateText` drops it (`PLANS_LINE_RE`).
+- **The compose window attaches the PDF** when such a template is chosen, or opened pre-chosen from the
+  queue — the code behind its own Plans PDF button, so it is the same freshly generated document.
+  **Never twice** (`isPlansPdfFilename`, and not while one is generating). Removing the chip is respected.
+- Typed mid-sentence it would be emailed as text, so **`literalTokenRefusal` refuses the send**.
+- Email only.
+
+## 78.4 The values box below the message — 11229e3's overlap, a second time
+
+- **Cause:** the email editor's wrapper was `flex-1 min-h-[7rem]` — right for the WhatsApp textarea, which
+  fills its box, and wrong for the rich editor, which **grows with its text**. The column squeezed the
+  wrapper, the editor kept its height, and the values box (a later sibling) was painted across the text.
+- **Fix:** the wrapper is `shrink-0`. The editor takes its own height; the values box follows in normal flow;
+  the column scrolls a long template; Save stays pinned below the scroller.
+- 🔴 **THE RULE: a block that grows with its content must not shrink.**
+- `scripts/outreach-templates-render.cjs` now mounts the **real** `TemplateBodyEditor` with a 30-line template
+  at 1440 and 820, in Chromium and WebKit, and checks that no line of text is under the box. Its control —
+  the old wrapper — reproduces the overlay.
+
+## 78.5 Instant Send, with Undo
+
+- **Send closes the compose window at once.** The tab's outbox (`lib/outreach-outbox.ts`,
+  `components/admin/OutboxToasts.tsx`) holds the message for **five seconds**: "Sending… Undo".
+- **Undo** sends nothing and re-opens the window **exactly as it was** — template, text, placeholder values,
+  the edited document, attachments, "include previous email", the reply target (`ComposeSnapshot`) — going
+  back to the prospect first if you have moved on.
+- After five seconds the request goes out — the same request as before — under an **idempotency key made at
+  the press** (one per send). The server refuses a repeat key (it answers with the first send's status).
+- **Closing the tab inside the five seconds sends nothing** — the same as Undo.
+- The history shows a held send as **"Sending…"** until the real row replaces it.
+- **The server answers as soon as SMTP accepts** (`sendRow`). The **Sent-folder copy**
+  (`fileCopyAndRecord`, with its 3-second search wait) and the **contact log** run after the answer through
+  Next's `after()` (`lib/outreach-after.ts`). Their failures go on the row (`sent copy: …`,
+  `sent, not logged: …`, `post-send: …`) — which the history already turns into Save to Sent and "log it" —
+  and the toast reads the row back a few seconds later to show a smaller notice.
+- **Retry and the poll's retry are unchanged**: `deliver` is still both halves, in order.
+- **Timing:** `OUTREACH_SEND_TIMING=1` logs `[send-timing]` per send (off by default). 🧪 Measured
+  15 October: the database reads before a send ≈ 0.4–0.6 s; the TLS set-up to `mail.privateemail.com`
+  ≈ 300 ms (≈ 450 ms to the first reply) on both ports. The Sent copy's fixed 3-second wait was the largest
+  single item on the old path. ⚠️ A full localhost timing run needs `OUTREACH_PRIMARY_USER` and
+  `OUTREACH_TEST_RECIPIENT` in `.env.local`; neither was set.
+- ⚠️ **A consequence worth knowing:** a second send to the same prospect within the seconds the contact log
+  is still running sees the first email as a message row without a contact yet — counted as a mailbox prior,
+  the way an Outlook-sent email is.
+
+## 78.6 A refused send is recorded, and flagged where problems already go
+
+- **Status `refused`** and **`refusal jsonb`** (`{ reason, guards, request }`) — migration
+  `20261015_outreach_messages_refused.sql`, **applied** (§49). Before it, a refusal is answered as before and
+  recorded nowhere (the route probes for the column).
+- Every refusal after the prospect is read is recorded — do-not-contact, no address, a linked truck, the
+  reply checks, the document schema, an empty body, a literal token, a malformed or must-resolve token, the
+  sequence guards, the thread and quote checks, a missing subject, attachments. **The order of the checks is
+  unchanged** and all of them run before the mail server is contacted. The full list, with file:line, is in
+  `docs/outreach-instant-send-report.md` §3.
+- 🔴 **NOT `failed`, ON PURPOSE.** A `failed` row offers Retry, and Retry re-sends a stored row **without**
+  the guards.
+- **A refused row is never an email:** the guards' prior sends and "last email", the same-address check on
+  other prospects, `pairHandLoggedEmails` and the thread parent all leave it out; the poll's sweeps select
+  other statuses.
+- **Today** ("Emails needing a look") lists it as **"Not sent"** with the reason. A dismissed or answered one
+  (`handled_at`) drops off. A refused **test** is not listed (tests never are).
+- **The prospect's history** shows "Not sent: ‹reason›" with **Dismiss** (`dismiss_refused`), and — when it
+  was a guard that asks — the same sentences with **Send anyway** / **Send it twice anyway**
+  (`send_refused`): the stored message goes through **the whole send path again**, the answered ids are
+  overridden and written to `guard_override`, under its own key (`‹row id›:anyway`), and the flag clears once
+  the new attempt has a row.
+- **The toast:** "Not sent — see ‹prospect›" (with the reason), or "May have been sent — see ‹prospect›" for
+  an uncertain send.
+- Harness: `scripts/outreach-instant-send.cjs` — the outbox on a fake clock and the real send and Today
+  routes against `_fake-pg`; every case has a broken variant that fails.
+
+## 78.7 Harnesses re-pinned for these builds (each restated, none weakened)
+
+- `screenshot-truck-details` — a phone match is definite only **with the same name**; with no name it asks.
+  Its sandbox check asks about the constant, not whole-file identity.
+- `outreach-editor-toolbar` — the Templates editor is this editor for email (stored as text), the textarea
+  for WhatsApp.
+- `outreach-sequence` — the key is per press; a second press is stopped by the in-flight gate and the window
+  closes; a blocked send sends nothing (recorded once migrated).
+- `outreach-crm-today` — the send route writes `handled_at` only on its own refused rows;
+  `PROBLEM_STATUSES` gains `refused`.
+- `outreach-send-read-failure` — the refusals are recorded (`flagged`); one send path = `deliver` (Retry) +
+  `sendRow` (Send), still no transport in the route.
+- `outreach-crm-polish`, `outreach-workspace-v4-fixes` — the guards are answered by the operator: the outbox
+  reads `needsConfirm`, the history offers `send_refused`.
+- `outreach-mail-poll`, `outreach-workspace` — `onSent` is the outbox's `onSettled`, same two effects.
+- `outreach-send-visible` — no `sending ?` branch on the Send label.
+- `outreach-schema-census` — set `refusal` aside as proposed. ⚠️ **Now that the migration is applied, move
+  `refusal` into its `LIVE_MESSAGES` list** (open).
+- `template-formatting` — the wrapper is `shrink-0`; the baseline pinned to `0914760`.
+
+## 78.8 Open
+
+1. A shared **email** between two trucks can mislead the screenshot match as the phone did (§78.1).
+2. `outreach-schema-census`: the proposed `refusal` column is now live — fold it into `LIVE_MESSAGES`.
+3. The full localhost timing table (§78.5) is waiting on two `.env.local` settings.
+4. The manual has no entry for Language Phases 1a/1b (§49).
+5. `outreach-editor-toolbar` with `HG_RENDER=1` failed one check once on 15 October and passed twice after;
+   the failing check was not captured.
 
 ---
 

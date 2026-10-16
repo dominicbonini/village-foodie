@@ -27,6 +27,9 @@
 //     one of their designs still uses — and a poster that will not render is worse than one in Oswald.
 
 /** The one id a design is always able to resolve. ⚠️ Mirrors `DEFAULT_FONT_ID` in `./font-list`. */
+/* The words this file exports are messages (Language Phase 1d Part 2), through ./words.ts. */
+import { gbRefusalText, weeklyPostWordsFor } from './words'
+
 export const FALLBACK_FONT_ID = 'oswald'
 
 export type FontKind = 'bundled' | 'library' | 'own'
@@ -102,10 +105,17 @@ export const faceFor = (bold: boolean, italic: boolean): FontFace =>
   italic ? { weight: 400, style: 'italic' } : { weight: bold ? 700 : 400, style: 'normal' }
 
 /** The three faces a family may have, in the order the upload prompt offers them. */
+/* ⚠️ THE FACE NAMES ARE MESSAGES (`weeklyPostApi.face`, Language Phase 1d Part 2). `label` is the en-GB word every
+ * existing reader shows; the route sends `faceLabelFor(face, locale)` in the truck's language. */
+const FACE_KEY = (f: FontFace): 'regular' | 'bold' | 'italic' =>
+  f.style === 'italic' ? 'italic' : f.weight >= 700 ? 'bold' : 'regular'
+/** A face's name in a locale's words — "Regular", "Bold", "Italic". ⚠️ en-GB when the locale is absent. */
+export const faceLabelFor = (f: FontFace, locale?: string | null): string => weeklyPostWordsFor(locale)(`face.${FACE_KEY(f)}`)
+
 export const FACES: readonly (FontFace & { label: string })[] = [
-  { weight: 400, style: 'normal', label: 'Regular' },
-  { weight: 700, style: 'normal', label: 'Bold' },
-  { weight: 400, style: 'italic', label: 'Italic' },
+  { weight: 400, style: 'normal', label: faceLabelFor({ weight: 400, style: 'normal' }) },
+  { weight: 700, style: 'normal', label: faceLabelFor({ weight: 700, style: 'normal' }) },
+  { weight: 400, style: 'italic', label: faceLabelFor({ weight: 400, style: 'italic' }) },
 ]
 
 export const faceKey = (f: FontFace): string => `${f.weight}${f.style === 'italic' ? 'i' : ''}`
@@ -114,9 +124,10 @@ export const faceKey = (f: FontFace): string => `${f.weight}${f.style === 'itali
 export const MAX_FONT_BYTES = 5 * 1024 * 1024
 
 /** The refusal for a WOFF/WOFF2, in the brief's words. ⛔ It says where to get a usable file. */
-export const WOFF_REFUSAL =
-  'Please upload a TTF or OTF file — you can usually download one from where you bought the font.'
+export const WOFF_REFUSAL = gbRefusalText('wp_font_woff')
 
-export const LICENCE_TICK = 'I own this font or have a licence to use it'
+/* ⚠️ en-GB (Language Phase 1d Part 2): the words are `weeklyPostApi.licenceTick` (US "license") and
+ * `weeklyPostApi.fontUploadButton`; a screen in the truck's language reads those keys. */
+export const LICENCE_TICK = weeklyPostWordsFor('en-GB')('licenceTick')
 /** 🔴 §8 · The button beside the search box. ⚠️ "↑", not "⤒" — one glyph every font has. */
-export const FONT_UPLOAD_BTN = '↑ Upload your font'
+export const FONT_UPLOAD_BTN = weeklyPostWordsFor('en-GB')('fontUploadButton')

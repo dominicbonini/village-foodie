@@ -1,0 +1,10 @@
+{
+  "download": "Download picture",
+  "copied": "Copied ✓",
+  "copyCaption": "Copy caption",
+  "share": "Share",
+  "copiedStatus": "{kind, select, postText {Post text copied.} other {Caption copied.}}",
+  "copyFailed": "Could not copy — select the text and copy it by hand.",
+  "sharedStatus": "{kind, select, postText {Post text copied — paste it into your post.} other {Caption copied — paste it into your post.}}",
+  "shareRefused": "{kind, select, postText {Sharing was refused, so the picture has been downloaded. Post text copied.} other {Sharing was refused, so the picture has been downloaded. Caption copied.}}"
+}

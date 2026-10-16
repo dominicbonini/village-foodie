@@ -30,6 +30,16 @@ import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { fetchUpcomingTruckEvents } from '@/lib/whatsapp/upcoming-events'
+// Language Phase 1d Part 2: refusals are `{ ok:false, kind, error, code, params }` — `errorsManage` words in the truck's
+// language (en-GB before the truck is known). The AI prompt is not moved (rule 10).
+import { manageErrorBody, type ManageErrorCode, type ManageErrorParams } from '@/lib/i18n/manage-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+
+/** A refusal: the body this route always sent (`ok`, `kind`, `error`), then `code` and `params` last. */
+function refusal(locale: string, kind: string, code: ManageErrorCode, status: number, params: ManageErrorParams = {}, headers?: Record<string, string>) {
+  return NextResponse.json({ ok: false, kind, ...manageErrorBody(locale, code, params) }, { status, headers })
+}
 
 // Worst case is two sequential Gemini calls: the classifier at GEMINI_TIMEOUT_MS plus either the tier-3
 // answerer at its own fixed 8000 or the SPECIFIC_QUERY reply at GEMINI_TIMEOUT_MS -- about 17s with
@@ -98,12 +108,12 @@ export async function POST(req: NextRequest) {
   try {
     body = (await req.json()) as { token?: unknown; message?: unknown }
   } catch {
-    return NextResponse.json({ ok: false, kind: 'bad_request', error: 'The request body was not valid JSON.' }, { status: 400 })
+    return refusal(DEFAULT_LOCALE, 'bad_request', 'wa_bad_json', 400)
   }
 
   const token = typeof body.token === 'string' ? body.token : ''
   if (!token) {
-    return NextResponse.json({ ok: false, kind: 'unauthorised', error: 'Token required' }, { status: 401 })
+    return refusal(DEFAULT_LOCALE, 'unauthorised', 'token_required', 401)
   }
 
   // 🔴 THE TRUCK COMES FROM THE TOKEN AND FROM NOTHING ELSE. There is deliberately no `body.truckId`
@@ -115,20 +125,18 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (!truck) {
-    return NextResponse.json({ ok: false, kind: 'unauthorised', error: 'Invalid token' }, { status: 401 })
+    return refusal(DEFAULT_LOCALE, 'unauthorised', 'invalid_token', 401)
   }
+  const locale = await localeForTruck(truck)
 
   const raw = typeof body.message === 'string' ? body.message : ''
   const message = raw.trim()
   if (!message) {
-    return NextResponse.json({ ok: false, kind: 'empty', error: 'Type a question first.' }, { status: 400 })
+    return refusal(locale, 'empty', 'wa_preview_empty', 400)
   }
   if (message.length > MAX_MESSAGE_CHARS) {
-    return NextResponse.json({
-      ok: false,
-      kind: 'too_long',
-      error: `That message is ${message.length} characters. Keep a test message under ${MAX_MESSAGE_CHARS}.`,
-    }, { status: 400 })
+    // Strings, so the numbers print as they always did (no grouping).
+    return refusal(locale, 'too_long', 'wa_preview_too_long', 400, { length: String(message.length), max: String(MAX_MESSAGE_CHARS) })
   }
 
   // Dev bypass mirrors app/api/demo/route.ts: a developer exercising this locally would otherwise burn
@@ -138,11 +146,7 @@ export async function POST(req: NextRequest) {
       const { success } = await previewRatelimit.limit(truck.id)
       if (!success) {
         console.warn(`${TAG} RATE LIMITED truck=${truck.id} -- 30/hour reached`)
-        return NextResponse.json({
-          ok: false,
-          kind: 'rate_limited',
-          error: 'You have run quite a few previews. Try again in a little while.',
-        }, { status: 429, headers: { 'Retry-After': '3600' } })
+        return refusal(locale, 'rate_limited', 'wa_preview_rate_limited', 429, {}, { 'Retry-After': '3600' })
       }
     } catch (err) {
       // Redis unreachable → FAIL OPEN, the same direction app/api/demo/route.ts takes and for the same
@@ -192,10 +196,6 @@ export async function POST(req: NextRequest) {
     // The shared function catches its own Gemini failures and degrades to deterministic replies, so
     // reaching here means something structural (the menu read throwing, a bad env). Reported as itself.
     console.error(`${TAG} truck=${truck.id} FAILED:`, err)
-    return NextResponse.json({
-      ok: false,
-      kind: 'failed',
-      error: 'Could not build a preview just now. Try again in a moment.',
-    }, { status: 500 })
+    return refusal(locale, 'failed', 'wa_preview_failed', 500)
   }
 }

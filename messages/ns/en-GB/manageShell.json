@@ -1,0 +1,82 @@
+{
+  "loading": "Loading management console…",
+  "loadFailed": "Failed to load",
+  "requestFailed": "Failed",
+  "invalidToken": "Invalid or expired token",
+  "noCountrySettings": "Couldn’t load this truck’s country settings. Please refresh.",
+  "stale": "{hasTime, select, yes {Couldn’t refresh. Showing what was saved at {time}. Changes you make are still saved.} other {Couldn’t refresh. Showing what was saved. Changes you make are still saved.}}",
+  "verify": {
+    "ok": "Email confirmed — thank you.",
+    "expired": "That confirmation link has expired. Get in touch and we’ll sort it before you go live.",
+    "invalid": "That confirmation link didn’t work. Get in touch and we’ll sort it before you go live."
+  },
+  "profile": {
+    "updated": "Profile updated",
+    "saveFailed": "Failed to save",
+    "title": "Edit profile",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save"
+  },
+  "header": {
+    "subtitle": "Management console",
+    "ordersDashboard": "← Orders dashboard"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Schedule",
+    "social": "Social media",
+    "reports": "Reports",
+    "team": "Team",
+    "settings": "Settings",
+    "payments": "Payments",
+    "billing": "Billing",
+    "paymentsIcon": "💷",
+    "scheduleCount": "Schedule ({count})",
+    "stripeAttention": "Stripe needs your attention",
+    "allergensNotSet": "allergens not set"
+  },
+  "menuSections": {
+    "label": "Menu sections",
+    "items": "Items",
+    "capacity": "Kitchen capacity",
+    "extras": "Extras & upsells",
+    "deals": "Deals"
+  },
+  "socialSections": {
+    "label": "Social media sections",
+    "create": "Create a post",
+    "designs": "Designs",
+    "locations": "Location settings"
+  },
+  "notices": {
+    "review": "Review →",
+    "tour": "Want a quick tour of your dashboard?",
+    "showMeAround": "Show me around",
+    "dismiss": "Dismiss",
+    "approval": "{count, plural, one {We found <b>{count}</b> event for you — review and approve before it goes live.} other {We found <b>{count}</b> events for you — review and approve before they go live.}}",
+    "allergens": "<b>Allergens not set</b> — customers can’t see allergen info until you verify it. Review each dish’s allergens on the Menu tab.",
+    "domainLive": "<link>{domain}</link> is live. Have a look at it, then tell us it is right in Settings.",
+    "stripe": "<b>Stripe needs something from you</b> — card payments can stop until it’s sorted.",
+    "profileTitle": "Complete your profile",
+    "missing": "Missing: {fields}.",
+    "goToSettings": "Go to Settings →",
+    "field": {
+      "truckName": "truck name",
+      "cuisineType": "cuisine type",
+      "contactEmail": "contact email",
+      "contactPhone": "contact phone"
+    }
+  },
+  "trialPopup": {
+    "title": "You’re on a free trial",
+    "ends": "{hasDate, select, yes {Trial ends <hl>{date}</hl>} other {Trial ends <hl>soon</hl>}}",
+    "offer": "Full Max features + Pay at Hatch ordering — completely free*",
+    "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.}}",
+    "fees": "*Standard card processing fees apply on online orders",
+    "upgrade": "Upgrade here →"
+  }
+}

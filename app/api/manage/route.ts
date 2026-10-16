@@ -37,9 +37,10 @@ import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageApi'
-/* ⚠️ THE ONE PLAN SENTENCE FOR SOCIAL MEDIA, shared with the screen and with `/api/weekly-post` — see
- * the header of `lib/copy/weeklyPost.ts` for why it is not written out twice. */
-import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
+// Language Phase 1d Part 2: the team invite email's words.
+import '@/lib/i18n/catalog/manageTeam'
+/* ⚠️ THE PLAN SENTENCE FOR SOCIAL MEDIA (the PLACES_TAB_ONLY gate) is `errorsManage.social_media_plan` now (Language
+ * Phase 1d Part 2) — the same words as `WEEKLY_POST_PLAN_REFUSAL` in lib/copy/weeklyPost.ts, with a code. */
 /* ── 🔴 PRIVATE EVENTS (20261014) ─────────────────────────────────────────────────────────────────
  * `applyPrivacy` is the ONLY writer of is_private / private_name / private_token / the private type
  * on an event — see its header. Nothing in this file writes those columns directly, and
@@ -79,11 +80,12 @@ const DETECT_BODY_CAP_BYTES = 256 * 1024
 // ⚠️ "Nothing has changed at your end" is on the two that are OUR fault, and it is the whole point of
 // them: an operator who has just watched a setup fail will otherwise go looking at their own web
 // address for damage that is not there.
-const PROVISION_FAILED: Record<'taken' | 'not_configured' | 'refused' | 'error', string> = {
-  not_configured: 'Something is not set up on our side, so we could not add your address. Nothing has changed at your end. Try again shortly.',
-  taken: 'That address is already in use somewhere else.',
-  refused: 'We were not allowed to add that address.',
-  error: 'We could not add that address just now. Nothing has changed at your end. Try again shortly.',
+// Language Phase 1d Part 2: the words are `errorsManage.domain_provision_*`, in the truck's language.
+const PROVISION_FAILED: Record<'taken' | 'not_configured' | 'refused' | 'error', ManageErrorCode> = {
+  not_configured: 'domain_provision_not_configured',
+  taken: 'domain_provision_taken',
+  refused: 'domain_provision_refused',
+  error: 'domain_provision_error',
 }
 import { sendConfirmationEmail } from '@/lib/email'
 import { INTERVAL_CHOICES, isIntervalChoice, readVanIntervalsForTruck, DEFAULT_INTERVAL } from '@/lib/slot-interval'
@@ -321,20 +323,35 @@ const MANAGE_TAB_ACTIONS: ReadonlySet<string> = new Set([
   // Settings
   'update_trade_area', 'update_settings', 'get_upload_url', 'update_truck', 'get_vans', 'update_van_settings',
   'upsert_van_category', 'set_van_same_as_first', 'set_van_capacity_same_as_first', 'add_van', 'delete_van', 'rename_van',
+  // Language Phase 1d Part 2 — WhatsApp, the custom domain and the embed (Settings › Auto-replies, Schedule).
+  'disconnect_whatsapp', 'save_embed_setup', 'get_embed_status',
+  'domain_preflight', 'domain_status', 'domain_check', 'domain_provision', 'domain_confirm', 'domain_turn_off', 'domain_send_instructions',
+  // Reports (Language Phase 1d Part 2): neither has a refusal of its own — only the shared token and access checks,
+  // which now carry a code. Their answers carry no words (the screen supplies every label from `manageReports`).
+  'get_report', 'get_recent_events',
+  // Payments › Tax, tips and fees (Language Phase 1d Part 2): its own refusals are `errorsManage.charges_*` codes.
+  'update_charges',
+  // Team (Language Phase 1d Part 2): their own refusals are `errorsManage` codes too, and the invite email is worded in
+  // the truck's language (`manageTeam.inviteEmail`).
+  'get_team', 'invite_member', 'update_member', 'remove_member', 'invite_team_member', 'remove_team_member',
+  // Social media › Places (Language Phase 1d Part 2): the usual-type pill and "A is really B" — their own refusals are
+  // `errorsManage.sg_*` codes, and the shared token, access, staff and plan checks now carry codes for them too.
+  'sg_place_usual_type', 'sg_merge_place',
 ])
 
 // ── GET — fetch all management data ──────────────────────────
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
-  if (!token) return NextResponse.json({ error: 'Token required' }, { status: 401 })
+  // Language Phase 1d Part 2: the GET's refusals carry a code too (en-GB until the truck is known, then its language).
+  if (!token) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'token_required'), { status: 401 })
 
   const truck = await getTruck(token)
-  if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'invalid_token'), { status: 401 })
 
   // 🔴 DENY BY DEFAULT. Was: `let userRole = 'owner'` narrowed only on a resolved session, so no
   // session meant owner. Now the role is GRANTED by resolveTruckAccess or the request is refused.
   const access = await resolveTruckAccess(req, truck)
-  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+  if (!access.ok) return NextResponse.json(manageErrorBody(await localeForTruck(truck), access.code), { status: access.status })
   const userRole = access.role
   const currentUserId = access.userId
   // The AUTHED session operator (account scope) — used to scope account-level data (pending email
@@ -489,7 +506,8 @@ export async function GET(req: NextRequest) {
     countrySettings = await countrySettingsForTruck(truck as { country?: string | null })
   } catch (e) {
     console.error('[manage] country settings read failed', e instanceof Error ? e.message : e)
-    return NextResponse.json({ error: 'Could not load this truck’s country settings. Try again in a moment.' }, { status: 500 })
+    // ⚠️ localeForTruck reads the same settings and falls back to en-GB when they cannot be read — it never throws.
+    return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'country_settings_failed'), { status: 500 })
   }
 
   // 🔴 THE TRUCK'S CLOCK AND HOW ITS TIMES AND DATES LOOK (Phase 2B) — one rule, lib/truck-time.ts. Same
@@ -648,7 +666,7 @@ export async function POST(req: NextRequest) {
     'domain_preflight', 'domain_status', 'domain_check', 'domain_provision', 'domain_confirm', 'domain_send_instructions', 'domain_turn_off',
   ]
   if (demoBlockedActions.includes(action) && access.via === 'demo') {
-    return NextResponse.json({ error: 'Not available on a demo truck' }, { status: 403 })
+    return refuse('demo_not_available', 403)   // Language Phase 1d Part 2: a code, in the truck's language
   }
 
   // ── CATEGORY CRUD ─────────────────────────────────────────
@@ -1383,7 +1401,7 @@ export async function POST(req: NextRequest) {
     // the one a request cannot skip. Note that /embed itself checks AGAIN at render (Stage 1), so
     // even a row that somehow held `embed_enabled = true` off-plan would still show the fallback.
     if (!canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return NextResponse.json({ error: 'Not available on this plan' }, { status: 403 })
+      return refuse('embed_not_on_plan', 403)
     }
 
     const enabled = body.enabled === true
@@ -1399,7 +1417,7 @@ export async function POST(req: NextRequest) {
     if (typeof body.website === 'string' && body.website.trim()) {
       const url = normaliseUrl(body.website)
       if (!url) {
-        return NextResponse.json({ error: 'That does not look like a web address' }, { status: 400 })
+        return refuse('embed_website_invalid', 400)
       }
       patch.website = url
     }
@@ -1407,7 +1425,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from('trucks').update(patch).eq('id', truck.id)
     if (error) {
       console.error('[save_embed_setup] update failed:', error.message)
-      return NextResponse.json({ error: 'Could not save' }, { status: 500 })
+      return refuse('domain_save_failed', 500)
     }
     return NextResponse.json({
       success: true,
@@ -1455,15 +1473,16 @@ export async function POST(req: NextRequest) {
       const pre = await domainPreflightRatelimit.limit(`preflight:${truck.id}`)
       if (!pre.success) {
         console.warn(`[ratelimit] REFUSED limiter=domain-preflight key=preflight:${truck.id} — returning 429`)
-        return NextResponse.json({ error: 'Too many checks just now. Try again in a few minutes.' }, { status: 429 })
+        return refuse('domain_too_many_checks', 429)
       }
     } catch (err) {
       console.error('[domain_preflight] rate-limit check failed, allowing through:', err)
     }
-    const verdict = checkSubdomain(typeof body.address === 'string' ? body.address : '')
+    // Language Phase 1d Part 2: the guard's sentence in the truck's language (`customDomain.apex.<reason>`).
+    const verdict = checkSubdomain(typeof body.address === 'string' ? body.address : '', await truckLocale())
     if (!verdict.ok) {
       // 🔴 THE APEX GUARD, SERVER-SIDE. The screen checks too, but a UI check is a courtesy.
-      return NextResponse.json({ ok: false, reason: verdict.reason, message: verdict.message })
+      return NextResponse.json({ ok: false, reason: verdict.reason, message: verdict.message, code: verdict.reason, params: verdict.params })   // Language Phase 1d Part 2: code = the reason (customDomain.apex.<reason>), params last
     }
 
     // 🔴 BOTH LOOKUPS TARGET THE PARENT, NEVER THE NEW SUBDOMAIN — see lib/custom-domain/dns.ts for
@@ -1590,7 +1609,7 @@ export async function POST(req: NextRequest) {
     // it first. Without this an operator who is told by the screen would never get the email.
     if (result.goingLive && truck.contact_email) {
       try {
-        const mail = liveEmail({ truckName: truck.name, address: truck.custom_domain })
+        const mail = liveEmail({ truckName: truck.name, address: truck.custom_domain, locale: await truckLocale() })
         await sendConfirmationEmail({ to: truck.contact_email, subject: mail.subject, html: mail.html, text: mail.text, senderName: 'HatchGrab' })
       } catch (e) {
         console.warn('[domain_check] live email failed:', e instanceof Error ? e.message : String(e))
@@ -1628,13 +1647,19 @@ export async function POST(req: NextRequest) {
 
   if (action === 'domain_provision') {
     if (!canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return NextResponse.json({ error: 'Not available on this plan' }, { status: 403 })
+      return refuse('embed_not_on_plan', 403)
+    }
+    /** A provisioning refusal: `{ ok:false, reason, message }` as before, the message in the truck's language, then
+     *  `code` and `params` last (Language Phase 1d Part 2, named difference 1). */
+    const provisionNo = async (reason: string, code: ManageErrorCode, status: number, params: ManageErrorParams = {}) => {
+      const b = manageErrorBody(await truckLocale(), code, params)
+      return NextResponse.json({ ok: false, reason, message: b.error, code: b.code, params: b.params }, { status })
     }
     // 🔴 THE GUARD RUNS AGAIN HERE, BEFORE THE HOSTING CALL. Not because the screen is untrusted, but
     // because this is the last line before a side effect that takes over a website if it is wrong.
-    const verdict = checkSubdomain(typeof body.address === 'string' ? body.address : '')
+    const verdict = checkSubdomain(typeof body.address === 'string' ? body.address : '', await truckLocale())
     if (!verdict.ok) {
-      return NextResponse.json({ ok: false, reason: verdict.reason, message: verdict.message }, { status: 400 })
+      return NextResponse.json({ ok: false, reason: verdict.reason, message: verdict.message, code: verdict.reason, params: verdict.params }, { status: 400 })   // Language Phase 1d Part 2: code = the reason (customDomain.apex.<reason>), params last
     }
 
     // ── 🔴 `www` IS REFUSED HERE, AND NEITHER APEX GUARD COVERS IT. ────────────────────────────────
@@ -1669,17 +1694,11 @@ export async function POST(req: NextRequest) {
     // 🔴 `shop.www-cafe.com` IS STILL ALLOWED. The test is on whole LABELS, so "www" as part of a name
     // is untouched — the same distinction the first-label test was written to preserve.
     if ((verdict.subdomain ?? '').split('.').includes('www') && (verdict.subdomain ?? '').split('.')[0] !== 'www') {
-      return NextResponse.json({
-        ok: false, reason: 'www_inner',
-        message: `That address has www in the middle of it. Take the www. off the front of your web address and try again.`,
-      }, { status: 400 })
+      return provisionNo('www_inner', 'domain_www_inner', 400)
     }
 
     if ((verdict.subdomain ?? '').split('.')[0] === 'www') {
-      return NextResponse.json({
-        ok: false, reason: 'www',
-        message: `${verdict.host} is usually where your existing website already lives. If you point that at us, your website is replaced by this page. Use a different word in front, like events.`,
-      }, { status: 400 })
+      return provisionNo('www', 'domain_www', 400, { host: verdict.host })
     }
 
     // 🔴 THE SECOND GUARD, AND IT SHARES NO DATA WITH THE FIRST. The list guard above is permissive by
@@ -1688,10 +1707,7 @@ export async function POST(req: NextRequest) {
     // ⚠️ FAILS OPEN on a resolver error ('unknown'), because the list guard is primary and has cleared it.
     const soa = await checkApexViaSoa(verdict.host)
     if (soa.state === 'apex') {
-      return NextResponse.json({
-        ok: false, reason: 'apex',
-        message: `${verdict.host} is your whole website address. If you point that at us, your website is replaced by this page. Put a word in front of it instead.`,
-      }, { status: 400 })
+      return provisionNo('apex', 'domain_apex', 400, { host: verdict.host })
     }
 
     const added = await addDomain(verdict.host)
@@ -1711,7 +1727,7 @@ export async function POST(req: NextRequest) {
       // ⚠️ THE RAW STRING IS KEPT — in the SERVER LOG, with the reason and the status beside it, which is
       // where whoever has to fix it will look. Nothing diagnostic is lost; it just stops being copy.
       console.error('[domain_provision] addDomain failed:', added.reason, added.status, added.message)
-      return NextResponse.json({ ok: false, reason: added.reason, message: PROVISION_FAILED[added.reason] }, { status: 200 })
+      return provisionNo(added.reason, PROVISION_FAILED[added.reason], 200)
     }
 
     // The record VALUE, from the response — never a constant. See lib/custom-domain/vercel.ts.
@@ -1741,7 +1757,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from('trucks').update(patch).eq('id', truck.id)
     if (error) {
       console.error('[domain_provision] update failed:', error.message)
-      return NextResponse.json({ ok: false, reason: 'error', message: 'Could not save' }, { status: 500 })
+      return provisionNo('error', 'domain_save_failed', 500)
     }
 
     return NextResponse.json({
@@ -1761,13 +1777,13 @@ export async function POST(req: NextRequest) {
    */
   if (action === 'domain_confirm') {
     if (!truck.custom_domain || !truck.custom_domain_verified_at) {
-      return NextResponse.json({ error: 'There is nothing to confirm yet' }, { status: 400 })
+      return refuse('domain_nothing_to_confirm', 400)
     }
     const { error } = await supabase.from('trucks')
       .update({ custom_domain_confirmed_at: new Date().toISOString() }).eq('id', truck.id)
     if (error) {
       console.error('[domain_confirm] update failed:', error.message)
-      return NextResponse.json({ error: 'Could not save' }, { status: 500 })
+      return refuse('domain_save_failed', 500)
     }
     return NextResponse.json({ success: true })
   }
@@ -1805,10 +1821,8 @@ export async function POST(req: NextRequest) {
     if (!release.ok) {
       // 🔴 NOTHING IS WRITTEN. The row still names the domain, so a retry is a retry.
       console.error(`[domain_turn_off] release failed for ${host}: ${release.reason} — row kept`)
-      return NextResponse.json({
-        ok: false, reason: release.reason,
-        message: 'We could not switch that off just now. Nothing has changed — your address is still working. Try again shortly.',
-      }, { status: 200 })
+      const b = manageErrorBody(await truckLocale(), 'domain_turn_off_failed')
+      return NextResponse.json({ ok: false, reason: release.reason, message: b.error, code: b.code, params: b.params }, { status: 200 })
     }
 
     const { error } = await supabase.from('trucks').update({
@@ -1823,10 +1837,8 @@ export async function POST(req: NextRequest) {
     }).eq('id', truck.id)
     if (error) {
       console.error('[domain_turn_off] update failed after a successful release:', error.message)
-      return NextResponse.json({
-        ok: false, reason: 'clear_failed',
-        message: 'We could not switch that off just now. Nothing has changed — your address is still working. Try again shortly.',
-      }, { status: 500 })
+      const b = manageErrorBody(await truckLocale(), 'domain_turn_off_failed')
+      return NextResponse.json({ ok: false, reason: 'clear_failed', message: b.error, code: b.code, params: b.params }, { status: 500 })
     }
     return NextResponse.json({ ok: true, released: release.reason })
   }
@@ -1834,10 +1846,10 @@ export async function POST(req: NextRequest) {
   if (action === 'domain_send_instructions') {
     const to = typeof body.to === 'string' ? body.to.trim() : ''
     if (!to || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) {
-      return NextResponse.json({ error: 'That does not look like an email address' }, { status: 400 })
+      return refuse('domain_email_invalid', 400)
     }
     const address = truck.custom_domain
-    if (!address) return NextResponse.json({ error: 'No address has been set up yet' }, { status: 400 })
+    if (!address) return refuse('domain_no_address', 400)
 
     // ── 🔴 THREE PER TRUCK PER ROLLING 24 HOURS. ───────────────────────────────────────────────────
     // The recipient stays CALLER-SUPPLIED because that is the requirement — the operator is emailing
@@ -1873,28 +1885,28 @@ export async function POST(req: NextRequest) {
         actor: { actorKind: requestingUserRole === 'owner' ? 'owner' : 'staff', actorId: requestingUserId, actorLabel: null },
         source: resolveActorSource(req, body),
       })
-      return NextResponse.json({
-        error: 'We could not send that just now. Try again shortly — or copy the details on this screen and email them across yourself, which works just as well.',
-      }, { status: 503 })
+      return refuse('domain_send_unavailable', 503)
     }
     if (!sendLimit.success) {
       console.warn(`[ratelimit] REFUSED limiter=domain-instructions key=instructions:${truck.id} — returning 429`)
-      return NextResponse.json({
-        error: 'You have sent these instructions a few times today already. Try again tomorrow, or forward the email you already have.',
-      }, { status: 429 })
+      return refuse('domain_send_limit', 429)
     }
 
     const cfg = await getDomainConfig(address)
     const target = cfg.ok ? cfg.recommendedCNAME : null
-    if (!target) return NextResponse.json({ error: 'Could not read the record just now' }, { status: 502 })
+    if (!target) return refuse('domain_record_unreadable', 502)
 
     const dns = await detectDnsProvider(address)
-    const verdict = checkSubdomain(address)
+    // Language Phase 1d Part 2: the email is in the truck's language (en-GB byte for byte for a UK truck).
+    const mailLocale = await truckLocale()
+    const verdict = checkSubdomain(address, mailLocale)
     const mail = domainInstructionsEmail({
+      locale: mailLocale,
       truckName: truck.name,
       address,
       providerLabel: dns.provider?.label ?? null,
       rows: recordRows({
+        locale: mailLocale,
         provider: dns.provider,
         subdomainLabel: verdict.ok ? verdict.subdomain : address,
         cnameTarget: target,
@@ -1909,7 +1921,7 @@ export async function POST(req: NextRequest) {
       await sendConfirmationEmail({ to, subject: mail.subject, html: mail.html, text: mail.text, senderName: truck.name })
     } catch (e) {
       console.error('[domain_send_instructions] send failed:', e instanceof Error ? e.message : String(e))
-      return NextResponse.json({ error: 'Could not send' }, { status: 502 })
+      return refuse('domain_send_failed', 502)
     }
 
     // ── 🔴 THE ADDRESS IS RECORDED, SO ABUSE IS VISIBLE AFTER THE FACT. ───────────────────────────
@@ -1957,7 +1969,7 @@ export async function POST(req: NextRequest) {
    * ⚠️ OWNER ONLY, like the Payments tab that shows it (and admins). Money settings are not a manager's. */
   if (action === 'update_charges') {
     if (requestingUserRole !== 'owner' && !requestingIsAdmin) {
-      return NextResponse.json({ error: 'Only the owner can change tax, tips and fees' }, { status: 403 })
+      return await refuse('charges_owner_only', 403)
     }
     const cs = await countrySettingsForTruck(truck)
     const { checkChargeSettings } = await import('@/lib/charge-settings')
@@ -1966,7 +1978,8 @@ export async function POST(req: NextRequest) {
     const input: Record<string, unknown> = {}
     for (const k of ['taxRate', 'tippingEnabled', 'serviceFeeEnabled', 'serviceFeePct', 'serviceFeeFixed']) if (k in body) input[k] = body[k]
     const r = checkChargeSettings(input, cs, m => formatMinor(m, fmt))
-    if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 })
+    // Language Phase 1d Part 2: the refusal's code and values (lib/charge-settings.ts), worded in the truck's language.
+    if (!r.ok) return await refuse(r.code, 400, r.params)
     const { data, error } = await supabase.from('trucks').update(r.values).eq('id', truck.id)
       .select('tax_rate_milli, tipping_enabled, service_fee_enabled, service_fee_bps, service_fee_fixed_minor').single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -2075,9 +2088,7 @@ export async function POST(req: NextRequest) {
     // back as a raw 23514. This layer says the sentence; the CHECK is the backstop. Both must be one of
     // INTERVAL_CHOICES; a null is refused (the UI never sends one — "Every 5 minutes" sends 5).
     if ('whatsapp_monthly_reply_limit' in safeData && !isMonthlyReplyLimit(safeData.whatsapp_monthly_reply_limit)) {
-      return NextResponse.json({
-        error: `Monthly reply limit must be one of ${MONTHLY_REPLY_LIMIT_CHOICES.join(', ')}.`,
-      }, { status: 400 })
+      return refuse('wa_monthly_limit_choices', 400, { choices: MONTHLY_REPLY_LIMIT_CHOICES.join(', ') })
     }
     const { error } = await supabase.from('trucks').update(safeData).eq('id', truck.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
@@ -2100,7 +2111,7 @@ export async function POST(req: NextRequest) {
   if (action === 'disconnect_whatsapp') {
     // Gated exactly like the signup route — the UI hides the link, but the UI is not the enforcement.
     if (!WHATSAPP_LIVE && !hasWhatsAppSetupPreview(truck.feature_overrides)) {
-      return NextResponse.json({ error: 'WhatsApp setup is not available for this account yet.' }, { status: 403 })
+      return refuse('wa_not_available', 403)
     }
 
     const { data: row } = await supabase
@@ -2149,7 +2160,7 @@ export async function POST(req: NextRequest) {
         const del = await supabase.from('whatsapp_connections').delete().eq('truck_id', truck.id)
         if (del.error) {
           console.error('[manage] disconnect_whatsapp', { truck_id: truck.id, outcome: 'row_delete_failed' })
-          return NextResponse.json({ error: 'Could not disconnect. Nothing was changed — please try again.' }, { status: 500 })
+          return refuse('wa_disconnect_failed', 500)
         }
       }
     }
@@ -2187,7 +2198,7 @@ export async function POST(req: NextRequest) {
 
   if (action === 'invite_member') {
     const { name, email, role, van_ids } = body
-    if (!email?.trim()) return NextResponse.json({ error: 'Email required' }, { status: 400 })
+    if (!email?.trim()) return refuse('email_required', 400)
     const { data: member, error } = await supabase
       .from('truck_users')
       .insert({ truck_id: truck.id, email: email.trim().toLowerCase(), name: name?.trim() || null, role })
@@ -2211,7 +2222,7 @@ export async function POST(req: NextRequest) {
         .eq('truck_id', truck.id)
         .single()
       if (!selfRow || selfRow.id !== body.memberId) {
-        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+        return refuse('insufficient_permissions', 403)
       }
     }
     if (requestingUserRole === 'manager') {
@@ -2221,7 +2232,7 @@ export async function POST(req: NextRequest) {
         .eq('id', body.memberId)
         .single()
       if (target?.role !== 'staff') {
-        return NextResponse.json({ error: 'Managers can only edit staff members' }, { status: 403 })
+        return refuse('managers_edit_staff_only', 403)
       }
     }
 
@@ -2879,22 +2890,22 @@ export async function POST(req: NextRequest) {
   // ── STAFF INVITE (full: auth user + email) ───────────────────
   if (action === 'invite_team_member') {
     if (!['owner', 'manager'].includes(requestingUserRole)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+      return refuse('insufficient_permissions', 403)
     }
     if (requestingUserRole === 'manager' && ['owner', 'manager'].includes(body.role || 'staff')) {
-      return NextResponse.json({ error: 'Managers can only invite staff' }, { status: 403 })
+      return refuse('managers_invite_staff_only', 403)
     }
 
     const { email, name, role, vanIds } = body
 
     if (!email) {
-      return NextResponse.json({ error: 'Email required' }, { status: 400 })
+      return refuse('email_required', 400)
     }
 
     // Validate van selection when truck has multiple vans
     const { data: allVans } = await supabase.from('truck_vans').select('id').eq('truck_id', truck.id).eq('active', true)
     if ((allVans?.length ?? 0) > 1 && (!vanIds || vanIds.length === 0)) {
-      return NextResponse.json({ error: 'Please select at least one van' }, { status: 400 })
+      return refuse('select_one_van', 400)
     }
 
     // Check not already a member
@@ -2906,7 +2917,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (existing) {
-      return NextResponse.json({ error: 'This person is already a team member' }, { status: 400 })
+      return refuse('already_member', 400)
     }
 
     // Create truck_user record
@@ -2922,7 +2933,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (memberError || !newMember) {
-      return NextResponse.json({ error: 'Failed to create member' }, { status: 500 })
+      return refuse('member_create_failed', 500)
     }
 
     // Assign van access if specified
@@ -2998,29 +3009,33 @@ export async function POST(req: NextRequest) {
 
     // Send invite email via Brevo
     const inviteUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/reset-password?token=${inviteToken}&invite=true`
-    const roleLabel = role === 'owner' ? 'Owner' : role === 'manager' ? 'Manager' : 'Staff'
-    const firstName = (name || '').split(' ')[0] || 'there'
+    // Language Phase 1d Part 2: the invite's words are `manageTeam.inviteEmail`, in the truck's language. The HTML
+    // around them, and the truck name inserted as it always was, are unchanged — so a GB invite is byte-identical.
+    const te = translatorFor(await truckLocale(), 'manageTeam')
+    const firstName = (name || '').split(' ')[0]
+    const inviteRole = role === 'owner' ? 'owner' : role === 'manager' ? 'manager' : 'staff'
+    const inviteSubject = te('inviteEmail.subject', { truck: truck.name })
 
     const html = `
       <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
         <img src="${HATCHGRAB_LOGO_URL}" alt="HatchGrab"
              width="180" style="margin-bottom:24px;display:block;"/>
         <h2 style="color:#0f172a;margin:0 0 16px;">
-          You've been invited to join ${truck.name} on HatchGrab
+          ${inviteSubject}
         </h2>
-        <p>Hi ${firstName},</p>
-        <p>${truck.name} has invited you to join their team as ${roleLabel === 'Owner' ? 'an Owner' : roleLabel === 'Manager' ? 'a Manager' : 'a Staff member'} on HatchGrab.</p>
-        <p>Click the button below to set your password and get started. This link expires in 7 days.</p>
+        <p>${te('inviteEmail.greeting', { hasName: firstName ? 'yes' : 'no', name: firstName })}</p>
+        <p>${te('inviteEmail.invited', { truck: truck.name, role: inviteRole })}</p>
+        <p>${te('inviteEmail.click')}</p>
         <p style="margin:32px 0;">
           <a href="${inviteUrl}"
              style="background:#ea580c;color:white;padding:14px 28px;
                     text-decoration:none;border-radius:8px;font-weight:bold;
                     display:inline-block;">
-            Accept invitation
+            ${te('inviteEmail.button')}
           </a>
         </p>
         <p style="color:#64748b;font-size:13px;">
-          If you weren't expecting this invitation, you can safely ignore this email.
+          ${te('inviteEmail.ignore')}
         </p>
         <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;"/>
         <p style="color:#94a3b8;font-size:12px;">HatchGrab</p>
@@ -3038,7 +3053,7 @@ export async function POST(req: NextRequest) {
         sender: { name: HATCHGRAB_SENDER.name, email: HATCHGRAB_SENDER.email },
         to: [{ email }],
         replyTo: { email: HATCHGRAB_SENDER.replyTo },
-        subject: `You've been invited to join ${truck.name} on HatchGrab`,
+        subject: inviteSubject,
         htmlContent: html,
       }),
     })
@@ -3054,7 +3069,7 @@ export async function POST(req: NextRequest) {
 
   if (action === 'remove_team_member') {
     if (requestingUserRole === 'staff') {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+      return refuse('insufficient_permissions', 403)
     }
     if (requestingUserRole === 'manager') {
       const { data: target } = await supabase
@@ -3063,7 +3078,7 @@ export async function POST(req: NextRequest) {
         .eq('id', body.memberId)
         .single()
       if (target?.role !== 'staff') {
-        return NextResponse.json({ error: 'Managers can only remove staff members' }, { status: 403 })
+        return refuse('managers_remove_staff_only', 403)
       }
     }
 
@@ -3347,7 +3362,8 @@ export async function POST(req: NextRequest) {
   const PLACES_TAB_ONLY = ['sg_place_usual_type']
   if (PLACES_TAB_ONLY.includes(action)
       && !canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-    return NextResponse.json({ error: WEEKLY_POST_PLAN_REFUSAL }, { status: 403 })
+    // Language Phase 1d Part 2: `errorsManage.social_media_plan` — the same words as WEEKLY_POST_PLAN_REFUSAL, with a code.
+    return refuse('social_media_plan', 403)
   }
 
   if (action === 'sg_places') {
@@ -3672,7 +3688,7 @@ export async function POST(req: NextRequest) {
    * the explanation, so the operator sees it before saving. Confirmed by Dominic, 5 October 2026. */
   if (action === 'sg_place_usual_type') {
     const placeId = String(body.placeId ?? '')
-    if (!placeId) return NextResponse.json({ error: 'placeId required' }, { status: 400 })
+    if (!placeId) return refuse('sg_place_id_required', 400)
     /* ══ 🔴 THREE CHOICES, AND EACH WRITES **BOTH** COLUMNS (20261016) ═════════════════════════════
      * The vocabulary on the wire is: absent/null/'' ⇒ nothing stored · `'standard'` ⇒ Standard · a
      * uuid ⇒ that type. And the three writes are:
@@ -3717,14 +3733,14 @@ export async function POST(req: NextRequest) {
       /* ⚠️ THE MISSING MIGRATION IS NAMED, not swallowed: an operator pressing a control that cannot
        * store anything deserves to be told why rather than watching it snap back. */
       const missing = ['42703', '42P01', 'PGRST204', 'PGRST205'].includes(error.code || '')
-      return NextResponse.json({
-        error: missing
-          /* ⚠️ BOTH MIGRATIONS ARE NAMED. The statement writes both columns, so either one missing
-           * fails it — and telling the operator to run 20261015 when it is 20261016 that is absent
-           * sends them to check something that is already applied. */
-          ? 'The usual event type isn’t available yet — migrations 20261015 and 20261016 must both be applied.'
-          : error.message,
-      }, { status: 400 })
+      /* ⚠️ BOTH MIGRATIONS ARE NAMED. The statement writes both columns, so either one missing
+       * fails it — and telling the operator to run 20261015 when it is 20261016 that is absent
+       * sends them to check something that is already applied.
+       * Language Phase 1d Part 2: our sentence is `errorsManage.sg_usual_type_migration`; the database's own
+       * message is passed on unchanged and without a code. */
+      return missing
+        ? refuse('sg_usual_type_migration', 400)
+        : NextResponse.json({ error: error.message }, { status: 400 })
     }
     return NextResponse.json({ ok: true, usual_event_type_id: typeId, usual_type_is_standard: wantStandard && !typeId })
   }
@@ -3773,19 +3789,30 @@ export async function POST(req: NextRequest) {
       .eq('truck_id', truck.id)
     if (readErr) {
       console.error('[sg_merge_place] read failed:', readErr.code, readErr.message)
-      return NextResponse.json({ error: "Couldn't read your places." }, { status: 400 })
+      return refuse('sg_merge_read_failed', 400)
     }
     const all = (rows ?? []) as SgPlace[]
-    const refusal = mergeRefusal({ fromId, intoId, places: all })
-    if (refusal) return NextResponse.json({ error: refusal }, { status: 400 })
+    /* 🔴 `mergeRefusal` STILL DECIDES (one rule, shared with the pane and the harness). Language Phase 1d Part 2: when it
+     * refuses, the CODE is told apart by the same ids it checked, in its order — never by comparing its words (rule 6).
+     * ⚠️ lib/schedule-graphics/places.ts still returns its en-GB sentence; returning a code there is its owner's step. */
+    if (mergeRefusal({ fromId, intoId, places: all })) {
+      const ids = new Set(all.map(p => p.id))
+      return refuse(
+        !fromId || !intoId ? 'sg_merge_pick'
+          : !ids.has(fromId) ? 'sg_merge_from_gone'
+          : !ids.has(intoId) ? 'sg_merge_into_gone'
+          : fromId === intoId ? 'sg_merge_self'
+          : 'sg_merge_cycle',
+        400)
+    }
     const patch = mergePatch({ fromId, intoId, places: all })
-    if (!patch) return NextResponse.json({ error: "Those places can't be merged." }, { status: 400 })
+    if (!patch) return refuse('sg_merge_impossible', 400)
     const { error } = await supabase.from('truck_places')
       .update({ merged_into_id: patch.merged_into_id, is_hidden: true, updated_at: new Date().toISOString() })
       .eq('id', patch.placeId).eq('truck_id', truck.id)
     if (error) {
       console.error('[sg_merge_place] write failed:', error.code, error.message)
-      return NextResponse.json({ error: "Couldn't merge those places." }, { status: 400 })
+      return refuse('sg_merge_write_failed', 400)
     }
     return NextResponse.json({ ok: true, into_id: patch.merged_into_id })
   }

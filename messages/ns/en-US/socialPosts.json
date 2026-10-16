@@ -1,0 +1,19 @@
+{
+  "placePicturesBlurb": "Save images for a location — a bar’s logo, a photo, a festival’s poster. Your designs decide where they appear: in an image box on your weekly or single event post, or as the whole background.",
+  "allTextSample": "Font, color and effects for everything",
+  "followNote": "Same font, color and effects as All text",
+  "lookSameHint": "Font, color and effects come from All text. Pick “Its own style” to change them for this box only.",
+  "lookOwnHint": "This box has its own font, color and effects. Pick “Same as All text” to match the others again.",
+  "styleMatchHint": "Font, color and effects come from All text, so everything matches.",
+  "styleOwnHint": "Font, color and effects are set just for this.",
+  "effectBand": "Colored strip behind the words",
+  "effectAutoHint": "If the words are hard to read on your picture, we add a soft shadow. Your colors never change.",
+  "editorMoreSummary": "Spacing, tilt, words before, line spacing, darken the picture, center the box",
+  "editorMoreSummaryBox": "Words before, line spacing, tilt, long names, center the box",
+  "alignCentre": "≡ Center",
+  "labelCentreOn": "Center on the picture",
+  "nameFromScheduleNote": "Name and area come from your schedule. Edit them in Schedule › Events › Add event › Clean up places.",
+  "socialTagPlaceholder": "@austinmusicfest",
+  "captionThisPostNote": "Type right in the box to change it for this post only. Your template stays as it is.",
+  "effectOutline": "Outline around the letters"
+}

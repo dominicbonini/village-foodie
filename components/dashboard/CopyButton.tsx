@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { attemptCopy } from '@/lib/clipboard'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/copyButton'
 
 /**
  * ── ONE COPY BUTTON. EVERY COPY BUTTON IN THE CUSTOM-DOMAIN SCREENS IS THIS ONE. ─────────────────
@@ -68,7 +70,7 @@ const TONE_CLASSES: Record<Tone, { idle: string; copied: string }> = {
 
 export function CopyButton({
   value,
-  label = 'Copy',
+  label,
   /** What the announcement names, so two buttons on one screen are distinguishable to a screen reader. */
   describedAs,
   tone = 'outline',
@@ -82,6 +84,9 @@ export function CopyButton({
 }) {
   // ⚠️ `shrink-0` IS NO LONGER IN THE BASE CLASSES. It was correct for the record rows and wrong for a
   // full-width button, and a caller cannot un-set a class. The two record-row call sites pass it.
+  // Language Phase 1d Part 2: the words are `copyButton` (the default label, the two outcomes, the announcements).
+  const t = useT('copyButton')
+  const shown = label ?? t('copy')
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -107,7 +112,7 @@ export function CopyButton({
         type="button"
         onClick={onClick}
         // 🔴 NEVER `disabled`. See above.
-        aria-label={describedAs ? `${label} ${describedAs}` : label}
+        aria-label={describedAs ? t('aria', { label: shown, thing: describedAs }) : shown}
         className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors ${
           failed
             ? 'border border-red-300 bg-red-50 text-red-700 hover:bg-red-100'
@@ -117,9 +122,9 @@ export function CopyButton({
         {/* ⚠️ THE WIDTH RESERVATION. All three labels sit in ONE grid cell, so the cell is as wide as
             the widest and the button never changes size. `invisible` keeps layout, `hidden` would not. */}
         <span className="grid">
-          <span className={`col-start-1 row-start-1 whitespace-nowrap ${copied || failed ? 'invisible' : ''}`}>{label}</span>
-          <span className={`col-start-1 row-start-1 whitespace-nowrap ${copied ? '' : 'invisible'}`} aria-hidden={!copied}>Copied ✓</span>
-          <span className={`col-start-1 row-start-1 whitespace-nowrap ${failed ? '' : 'invisible'}`} aria-hidden={!failed}>Copy failed</span>
+          <span className={`col-start-1 row-start-1 whitespace-nowrap ${copied || failed ? 'invisible' : ''}`}>{shown}</span>
+          <span className={`col-start-1 row-start-1 whitespace-nowrap ${copied ? '' : 'invisible'}`} aria-hidden={!copied}>{t('copied')}</span>
+          <span className={`col-start-1 row-start-1 whitespace-nowrap ${failed ? '' : 'invisible'}`} aria-hidden={!failed}>{t('failed')}</span>
         </span>
       </button>
 
@@ -127,8 +132,8 @@ export function CopyButton({
           a pause rather than interrupting. The failure text says what to do instead, because "copy
           failed" on its own leaves the operator with no way forward. */}
       <span role="status" aria-live="polite" className="sr-only">
-        {copied ? `${describedAs ?? 'Value'} copied` : ''}
-        {failed ? `Could not copy ${describedAs ?? 'the value'}. Select the writing and copy it yourself.` : ''}
+        {copied ? (describedAs ? t('announceCopied', { thing: describedAs }) : t('announceCopiedValue')) : ''}
+        {failed ? (describedAs ? t('announceFailed', { thing: describedAs }) : t('announceFailedValue')) : ''}
       </span>
     </>
   )

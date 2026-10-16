@@ -115,9 +115,9 @@ export const TRIAL_NOT_STARTED_BILLING =
 // reads as being about something else. NOTHING ELSE IN THE STRING MOVED: still two short sentences,
 // still no numbers, still scoped to "today", and the plan is still named as a separate thing — every
 // invariant above is intact. The CONSTANT'S NAME is unchanged deliberately: it is a code identifier.
-export const CONNECTING_STRIPE_NOT_A_COMMITMENT =
-  "Setting this up doesn't start your subscription or charge you anything today. It's how your customers "
-  + 'pay you — your plan is separate.'
+// ⚠️ LANGUAGE PHASE 1d PART 2: the sentence is now `managePayments.trialNote` in messages/en-GB.json (its one reader,
+// Manage › Payments, reads it with `useT` in the truck's language). The constant was deleted rather than kept as a
+// second copy; the reasoning above is still the sentence's record.
 
 export const SETTING_COPY = {
   /** Settings → Contact Details. ⚠️ LANGUAGE PHASE 1d: the sentence that wraps the <select> is ONE message,

@@ -20,7 +20,11 @@ import { DEFAULT_FONT_ID } from './font-list'
 /* ⚠️ `./font-refs` IS PURE AND BROWSER-SAFE, like `./font-list` and `./locale` and for the same
  * reason: this module is imported by the editor, so anything it pulls in has to be too. */
 import { parseFontId } from './font-refs'
-import { DEFAULT_HEADING } from './format'
+import {
+  defaultDaysOffFor, defaultHeadingFor, gbRefusalText, weeklyPostWordsFor,
+  type WpErrorCode, type WpErrorParams, type WpRefusal,
+} from './words'
+import type { CountryCode } from './locale'
 import type { TimeStyle } from './format'
 // ⚠️ `./locale` IS PURE AND BROWSER-SAFE, like `./font-list` and for the same reason: this module is
 // imported by the editor, so anything it pulls in has to be too.
@@ -582,7 +586,10 @@ export interface Layout {
   textStyle: TextLook
 }
 
-export const DEFAULT_DAYS_OFF_TEXT = 'No trading today'
+/* ⛔ `DEFAULT_DAYS_OFF_TEXT` IS GONE (Language Phase 1d Part 2). The days-off default is a MESSAGE — GB "No trading
+ * today", US "Closed today" — read through `defaultDaysOffFor(country)` (./words.ts). ⚠️ IT IS ONLY EVER A DEFAULT:
+ * `defaultLayout` offers it to a new design, and `validateLayout` fills it in where a stored layout has NONE. A
+ * stored days-off text — "No trading today" on a US truck included — is kept exactly as stored. */
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE DEFAULT DESIGN
@@ -599,7 +606,12 @@ export const DEFAULT_DAYS_OFF_TEXT = 'No trading today'
  * would run off the bottom of a square blank and the operator's first impression would be a broken
  * preview.
  */
-export function defaultLayout(width: number, height: number): Layout {
+export function defaultLayout(
+  width: number,
+  height: number,
+  /** 🔴 The truck's poster country — its default heading and days-off text are that country's words. ⚠️ GB's when absent. */
+  country: CountryCode = 'GB',
+): Layout {
   const w = Math.max(1, Math.round(width))
   const h = Math.max(1, Math.round(height))
   const pad = Math.round(w * 0.06)
@@ -631,7 +643,7 @@ export function defaultLayout(width: number, height: number): Layout {
     heading: {
       ...base, x: pad, y: Math.round(h * 0.07), w: inner, h: headingH,
       fontSize: Math.round(headingH * 0.5), align: 'center', caps: true,
-      text: DEFAULT_HEADING,
+      text: defaultHeadingFor(country),
     },
     date: {
       ...base, x: pad, y: top, w: dateW, h: rowH,
@@ -650,7 +662,7 @@ export function defaultLayout(width: number, height: number): Layout {
     /* ⚠️ SIZED AND PLACED LIKE A ROW, because it repeats per row exactly as the three text boxes do. */
     placePicture: defaultPlacePictureBox(w, h, { x: pad, y: top, h: rowH }),
     rowSpacing: spacing,
-    daysOffText: DEFAULT_DAYS_OFF_TEXT,
+    daysOffText: defaultDaysOffFor(country),
     timeStyle: '12h',
     keepReadable: true,
     showCancelled: true,
@@ -708,9 +720,22 @@ export interface ValidationResult {
   ok: boolean
   /** Present when ok. Fully normalised — every field bounded, no NaN, no missing key. */
   layout?: Layout
-  /** Plain sentences, safe to show an operator. */
+  /** Plain sentences, safe to show an operator — en-GB, as they always were (the route words `issues` in the truck's
+   *  language). */
   errors: string[]
+  /** 🔴 The same refusals as codes and values, in the same order (Language Phase 1d Part 2). */
+  issues: WpRefusal[]
 }
+
+/* ══ 🔴 A REFUSAL IS A CODE (Language Phase 1d Part 2) ════════════════════════════════════════════════════════════
+ * The validators collect `{ code, params }` (`errorsManage.wp_…`); `errors` is those codes in en-GB, byte for byte
+ * what it always said, so every reader of `errors` sees no change, and the route words `issues` in the truck's
+ * language. ⛔ A BOX'S NAME IS A SELECT IN ONE MESSAGE ("The heading box is missing."), never a label glued to an
+ * English tail. */
+type BoxId = 'heading' | 'date' | 'location' | 'time' | 'town' | 'days' | 'note'
+const issue = (code: WpErrorCode, params: WpErrorParams = {}): WpRefusal => ({ code, params })
+const refused = (issues: WpRefusal[]) =>
+  ({ ok: false as const, errors: issues.map(i => gbRefusalText(i.code, i.params)), issues })
 
 const HEX = /^#[0-9a-fA-F]{6}$/
 
@@ -858,25 +883,25 @@ function parseTextLook(v: unknown, dfltColour: string, keepReadableDflt: boolean
  */
 function parseBox(
   v: unknown,
-  path: string,
+  box: BoxId,
   W: number,
   H: number,
-  errors: string[],
+  errors: WpRefusal[],
   dfltColour: string,
   /** The design-wide `keepReadable`, which is what an old design meant for each of its boxes. */
   keepReadableDflt = true,
 ): TextBox | null {
-  if (!isObj(v)) { errors.push(`${path} is missing.`); return null }
+  if (!isObj(v)) { errors.push(issue('wp_box_missing', { box })); return null }
   const x = num(v.x, 0, W)
   const y = num(v.y, 0, H)
   const w = num(v.w, 8, W)
   const h = num(v.h, 8, H)
   if (x === null || y === null || w === null || h === null) {
-    errors.push(`${path} has a position or size that is not a number inside the image.`)
+    errors.push(issue('wp_box_not_number', { box }))
     return null
   }
   if (x + w > W + 1 || y + h > H + 1) {
-    errors.push(`${path} reaches outside the image.`)
+    errors.push(issue('wp_box_outside', { box }))
     return null
   }
   /* ══ 🔴 THE FONT ID IS VALIDATED BY **SHAPE**, NOT BY MEMBERSHIP (6 October 2026, part 2) ════════
@@ -968,7 +993,7 @@ function parseNotes(
   for (const raw of raws.slice(0, MAX_NOTE_BOXES)) {
     /* ⚠️ A THROWAWAY ERROR LIST. These boxes are dropped on failure, so their complaints must not
      * reach the operator's error list and refuse a save for a box that is simply not there. */
-    const b = parseBox(raw, 'Your own text', W, H, [], '#ffffff', keepReadableDflt)
+    const b = parseBox(raw, 'note', W, H, [], '#ffffff', keepReadableDflt)
     if (b) out.push(withText(b, raw))
   }
   return out
@@ -1031,20 +1056,20 @@ function parsePlacePicture(
  * that each clear the 8px floor a cell is built to.
  */
 function parseDays(
-  v: unknown, W: number, H: number, errors: string[],
+  v: unknown, W: number, H: number, errors: WpRefusal[],
 ): DaysBlock | undefined {
   if (v === undefined || v === null) return undefined
-  if (!isObj(v)) { errors.push('The 7 days box is missing.'); return undefined }
+  if (!isObj(v)) { errors.push(issue('wp_box_missing', { box: 'days' })); return undefined }
   const x = num(v.x, 0, W)
   const y = num(v.y, 0, H)
   const w = num(v.w, 8, W)
   const h = num(v.h, DAYS_IN_WEEK * 8, H)
   if (x === null || y === null || w === null || h === null) {
-    errors.push('The 7 days box has a position or size that is not a number inside the image.')
+    errors.push(issue('wp_box_not_number', { box: 'days' }))
     return undefined
   }
   if (x + w > W + 1 || y + h > H + 1) {
-    errors.push('The 7 days box reaches outside the image.')
+    errors.push(issue('wp_box_outside', { box: 'days' }))
     return undefined
   }
   const arrangement: DaysArrangement =
@@ -1081,15 +1106,21 @@ function parseDays(
  * `width`/`height`. The size is a fact about the stored file; letting a client declare it would let a
  * payload claim a 10,000px blank and have every box pass the bounds check.
  */
-export function validateLayout(input: unknown, width: number, height: number): ValidationResult {
-  const errors: string[] = []
+export function validateLayout(
+  input: unknown,
+  width: number,
+  height: number,
+  /** 🔴 The truck's poster country — ONLY for the days-off DEFAULT a layout with none stored gets. ⚠️ GB's when absent. */
+  country: CountryCode = 'GB',
+): ValidationResult {
+  const errors: WpRefusal[] = []
   const W = num(width, 1, 20000)
   const H = num(height, 1, 20000)
-  if (W === null || H === null) return { ok: false, errors: ['The design image size is not known.'] }
-  if (!isObj(input)) return { ok: false, errors: ['The design is missing.'] }
+  if (W === null || H === null) return refused([issue('wp_layout_size_unknown')])
+  if (!isObj(input)) return refused([issue('wp_layout_missing')])
   if (input.version !== LAYOUT_VERSION) {
-    errors.push(`This design was saved by a different version of the editor (expected ${LAYOUT_VERSION}).`)
-    return { ok: false, errors }
+    errors.push(issue('wp_layout_version', { version: String(LAYOUT_VERSION) }))
+    return refused(errors)
   }
 
   /* 🔴 THE DESIGN-WIDE READABILITY FLAG IS READ FIRST, because it is the DEFAULT for each box's own
@@ -1097,10 +1128,10 @@ export function validateLayout(input: unknown, width: number, height: number): V
    * handing it down is what makes "per item" arrive without changing any existing design's output. */
   const keepReadable = bool(input.keepReadable, true)
 
-  const heading = parseBox(input.heading, 'The heading box', W, H, errors, '#ffffff', keepReadable)
-  const date = parseBox(input.date, 'The date box', W, H, errors, '#ffffff', keepReadable)
-  const location = parseBox(input.location, 'The location box', W, H, errors, '#ffffff', keepReadable)
-  const time = parseBox(input.time, 'The time box', W, H, errors, '#ffffff', keepReadable)
+  const heading = parseBox(input.heading, 'heading', W, H, errors, '#ffffff', keepReadable)
+  const date = parseBox(input.date, 'date', W, H, errors, '#ffffff', keepReadable)
+  const location = parseBox(input.location, 'location', W, H, errors, '#ffffff', keepReadable)
+  const time = parseBox(input.time, 'time', W, H, errors, '#ffffff', keepReadable)
   const notes = parseNotes(input, W, H, keepReadable)
   const days = parseDays(input.days, W, H, errors)
 
@@ -1108,12 +1139,12 @@ export function validateLayout(input: unknown, width: number, height: number): V
    * seven days on one line (unreadable, and the operator cannot tell why); a huge value pushes six
    * rows off the bottom, which renders fine and looks like the renderer dropped them. */
   const rowSpacing = num(input.rowSpacing, 1, H)
-  if (rowSpacing === null) errors.push('The row spacing must be a number of pixels.')
+  if (rowSpacing === null) errors.push(issue('wp_row_spacing'))
 
   const headingText = str(isObj(input.heading) ? input.heading.text : undefined, 200)
-  if (headingText === null) errors.push('The heading text is too long (200 characters maximum).')
+  if (headingText === null) errors.push(issue('wp_heading_too_long', { max: '200' }))
   const daysOffText = str(input.daysOffText, 60)
-  if (daysOffText === null) errors.push('The days-off text is too long (60 characters maximum).')
+  if (daysOffText === null) errors.push(issue('wp_days_off_too_long', { max: '60' }))
 
   const timeStyle: TimeStyle = input.timeStyle === '24h' ? '24h' : '12h'
   /* ⚠️ AN UNKNOWN STYLE ID FALLS BACK TO THE LEGACY ONE rather than being refused. Every design saved
@@ -1138,7 +1169,7 @@ export function validateLayout(input: unknown, width: number, height: number): V
     : 0
 
   if (errors.length || !heading || !date || !location || !time || rowSpacing === null) {
-    return { ok: false, errors: errors.length ? errors : ['The design could not be read.'] }
+    return refused(errors.length ? errors : [issue('wp_layout_unreadable')])
   }
   /* ⛔ THE LAST-TOGGLE RULE NOW HOLDS ON THE WEEKLY POST TOO (6 October 2026), because the weekly post
    * draws cancelled events and says so the same two ways: the place name struck through and the word
@@ -1146,7 +1177,7 @@ export function validateLayout(input: unknown, width: number, height: number): V
    * design had switches; now both do, and one rule covers both.
    * ⚠️ IT CANNOT BREAK AN EXISTING DESIGN. Every design saved before `enabled` existed reads as all-on,
    * so this can only ever refuse a NEW payload that switched both off. */
-  if (!toggleIsAllowed({ location, time })) return { ok: false, errors: [LAST_TOGGLE_MESSAGE] }
+  if (!toggleIsAllowed({ location, time })) return refused([issue('wp_last_toggle')])
 
   /* ⚠️ THE SEVEN ROWS ARE CHECKED AGAINST THE BOTTOM OF THE IMAGE — a warning, not an error. The
    * operator may genuinely want the last row near the edge, and refusing to save would be worse than
@@ -1175,7 +1206,9 @@ export function validateLayout(input: unknown, width: number, height: number): V
       /* 🔴 `true` — THE WEEKLY POST HAS NO "whole background". */ true,
     ),
     rowSpacing,
-    daysOffText: daysOffText || DEFAULT_DAYS_OFF_TEXT,
+    /* 🔴 STORED BEATS DEFAULT: a stored days-off text is kept as stored; only an empty or missing one takes the
+     * truck's country's default ("No trading today" / "Closed today"). */
+    daysOffText: daysOffText || defaultDaysOffFor(country),
     timeStyle,
     keepReadable,
     showCancelled: bool(input.showCancelled, true),
@@ -1188,11 +1221,12 @@ export function validateLayout(input: unknown, width: number, height: number): V
      * what this produced with the design's own first enabled box. */
     textStyle: parseTextLook(input.textStyle, '#ffffff', keepReadable, H),
   }
-  return { ok: true, layout, errors: [] }
+  return { ok: true, layout, errors: [], issues: [] }
 }
 
-/** Does the seventh row fit inside the image? Reported to the operator, never used to refuse a save. */
-export function rowsFitWarning(l: Layout): string | null {
+/** Does the seventh row fit inside the image? Reported to the operator, never used to refuse a save.
+ *  ⚠️ `locale` is the truck's message locale (en-GB when absent) — the sentence is `weeklyPostApi.rowsFit`. */
+export function rowsFitWarning(l: Layout, locale?: string | null): string | null {
   /* 🔴 "THE 7 DAYS" CANNOT PRODUCE THIS WARNING, AND THAT IS THE POINT OF IT. The block is validated
    * as being inside the image and the seven rows share its height, so a seventh row below the bottom
    * edge is no longer a state the model can hold. ⚠️ The warning stays for every design still on the
@@ -1204,7 +1238,7 @@ export function rowsFitWarning(l: Layout): string | null {
     l.time.y + l.rowSpacing * 6 + l.time.h,
   )
   return bottom > l.height
-    ? `The last day falls ${Math.round(bottom - l.height)}px below the bottom of the image — reduce the row spacing or move row 1 up.`
+    ? weeklyPostWordsFor(locale)('rowsFit', { px: String(Math.round(bottom - l.height)) })
     : null
 }
 
@@ -1309,8 +1343,9 @@ export interface EventLayout {
  * ⚠️ ENFORCED IN THE VALIDATOR, so the rule holds for a hand-made payload as well as for the UI that
  * greys the last toggle out.
  */
-export const LAST_TOGGLE_MESSAGE =
-  'Keep either Location or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.'
+/** ⚠️ en-GB — the message is `errorsManage.wp_last_toggle` (US "canceled" / "CANCELED"); a screen in the truck's
+ *  language reads that code. Kept as an export because the editor and the harness compare against it. */
+export const LAST_TOGGLE_MESSAGE = gbRefusalText('wp_last_toggle')
 
 export function toggleIsAllowed(l: { location: { enabled: boolean }; time: { enabled: boolean } }): boolean {
   return l.location.enabled || l.time.enabled
@@ -1408,6 +1443,8 @@ export interface EventValidationResult {
   ok: boolean
   layout?: EventLayout
   errors: string[]
+  /** The same refusals as codes and values — see `ValidationResult`. */
+  issues: WpRefusal[]
 }
 
 /**
@@ -1420,23 +1457,23 @@ export interface EventValidationResult {
  * canvas could place a box anywhere and pass the bounds check.
  */
 export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {
-  const errors: string[] = []
+  const errors: WpRefusal[] = []
   const W = num(width, 1, 20000)
   const H = num(height, 1, 20000)
-  if (W === null || H === null) return { ok: false, errors: ['The design image size is not known.'] }
-  if (!isObj(input)) return { ok: false, errors: ['The design is missing.'] }
+  if (W === null || H === null) return refused([issue('wp_layout_size_unknown')])
+  if (!isObj(input)) return refused([issue('wp_layout_missing')])
   if (input.version !== LAYOUT_VERSION) {
-    return { ok: false, errors: [`This design was saved by a different version of the editor (expected ${LAYOUT_VERSION}).`] }
+    return refused([issue('wp_layout_version', { version: String(LAYOUT_VERSION) })])
   }
 
   const keepReadable = bool(input.keepReadable, true)
-  const date = parseBox(input.date, 'The date box', W, H, errors, '#ffffff', keepReadable)
-  const location = parseBox(input.location, 'The location box', W, H, errors, '#ffffff', keepReadable)
-  const time = parseBox(input.time, 'The time box', W, H, errors, '#ffffff', keepReadable)
+  const date = parseBox(input.date, 'date', W, H, errors, '#ffffff', keepReadable)
+  const location = parseBox(input.location, 'location', W, H, errors, '#ffffff', keepReadable)
+  const time = parseBox(input.time, 'time', W, H, errors, '#ffffff', keepReadable)
   const notes = parseNotes(input, W, H, keepReadable)
 
   if (errors.length || !date || !location || !time) {
-    return { ok: false, errors: errors.length ? errors : ['The design could not be read.'] }
+    return refused(errors.length ? errors : [issue('wp_layout_unreadable')])
   }
 
   /* ══ 🔴 THE TOWN BOX — PARSED WHEN PRESENT, **DERIVED** FROM THE OLD PLACE STYLE WHEN NOT ══════════
@@ -1478,8 +1515,8 @@ export function validateEventLayout(input: unknown, width: number, height: numbe
      * and the derivation below is what answers. A town box that is present but BROKEN is a different
      * case and still fails, because `parseBox` returns null for it too and the fallback then rebuilds
      * it from the venue, which is the safe shape. */
-    const townErrors: string[] = []
-    const parsed = parseBox(input.town, 'The town box', W, H, townErrors, '#ffffff', keepReadable)
+    const townErrors: WpRefusal[] = []
+    const parsed = parseBox(input.town, 'town', W, H, townErrors, '#ffffff', keepReadable)
     if (parsed) return parsed
     const oldStyle = input.placeStyle
     const showedTown = oldStyle !== 'nameOnly'
@@ -1497,7 +1534,7 @@ export function validateEventLayout(input: unknown, width: number, height: numbe
   /* ⚠️ `town` IS NEVER NULL — the fallback above always returns a box — so this is a type guard rather
    * than a path an input can reach. It is written as one anyway: the day someone adds a `return null`
    * to that closure, this is what stops a `null` reaching the layout. */
-  if (!town) return { ok: false, errors: ['The design could not be read.'] }
+  if (!town) return refused([issue('wp_layout_unreadable')])
 
   /* 🔴 A SWITCHED-OFF BOX IS ACCEPTED EXPLICITLY, and keeps its position. `enabled` defaults to TRUE
    * when absent, so every design saved before this existed reads as "all three on" — which is what they
@@ -1509,11 +1546,12 @@ export function validateEventLayout(input: unknown, width: number, height: numbe
   const timeOn = time.enabled
   /* ⛔ AND THE LAST ONE CANNOT GO. Enforced here as well as in the UI, so a hand-made payload cannot
    * produce a design on which a cancelled event reads as an ordinary poster. */
-  if (!locationOn && !timeOn) return { ok: false, errors: [LAST_TOGGLE_MESSAGE] }
+  if (!locationOn && !timeOn) return refused([issue('wp_last_toggle')])
 
   return {
     ok: true,
     errors: [],
+    issues: [],
     layout: {
       version: LAYOUT_VERSION,
       width: W,
@@ -1774,13 +1812,17 @@ export interface StoredLayoutRead<T> { layout: T; repaired: boolean }
  * ⚠️ `width`/`height` MUST BE THE DESIGN'S OWN CANVAS, never anything a caller sent: the size is what
  * proves a box sits inside the artwork, which is the rule `validateLayout` is built around.
  */
-export function readStoredLayout(input: unknown, width: number, height: number): StoredLayoutRead<Layout> {
-  const v = validateLayout(input, width, height)
+export function readStoredLayout(
+  input: unknown, width: number, height: number,
+  /** The truck's poster country — for the DEFAULTS a stored layout lacks (and the design a broken one is replaced by). */
+  country: CountryCode = 'GB',
+): StoredLayoutRead<Layout> {
+  const v = validateLayout(input, width, height, country)
   /* 🔴 THE ONE DOOR IN, SO THE MIGRATION IS IN THE ONE PLACE EVERY READER ALREADY GOES THROUGH. Putting
    * it inside `validateLayout` would run it on the editor's own SAVE path too, where the flags are the
    * operator's answers and re-deriving them would overwrite a deliberate "own style". */
   if (v.ok && v.layout) return { layout: adoptSharedLook(v.layout, hadSharedLook(input)), repaired: false }
-  return { layout: defaultLayout(width, height), repaired: true }
+  return { layout: defaultLayout(width, height, country), repaired: true }
 }
 
 /** A stored EVENT layout, normalised. Same contract as `readStoredLayout`. */

@@ -10,11 +10,15 @@
 // comment in supabase/migrations/20261020_poster_picture_tag_captions.sql.
 
 /** The brief's ceiling. ⚠️ Counted in characters, not bytes — a handle is a handle. */
+/* Refusals are codes with an en-GB sentence (Language Phase 1d Part 2): `errorsManage.wp_…`, through ./words.ts. */
+import { wpRefusal, type WpRefusal } from './words'
+
 export const MAX_SOCIAL_TAG = 60
 
 export type TagResult =
   | { ok: true; tag: string | null }
-  | { ok: false; error: string }
+  /** ⚠️ `error` is en-GB, as it always was; `code` and `params` are the same refusal (Language Phase 1d Part 2). */
+  | ({ ok: false; error: string } & WpRefusal)
 
 /**
  * Normalise a tag, or refuse it with a plain sentence.
@@ -38,23 +42,23 @@ export function normaliseSocialTag(raw: unknown): TagResult {
   /* ⚠️ CHECKED BEFORE THE `@` IS ADDED, so the message names what the operator typed. Any Unicode
    * whitespace, not just the space bar — a pasted handle can carry a non-breaking space. */
   if (/\s/.test(s)) {
-    return { ok: false, error: 'A tag can’t contain spaces. Use the handle on its own, like @buresmusicfest.' }
+    return { ok: false, ...wpRefusal('wp_tag_spaces') }
   }
   /* ⛔ ONE `@`, AND IT IS AT THE FRONT. "@bures@fest" is not a handle, and stripping the second would
    * be the same silent rewrite the whitespace rule refuses. */
   const body = s.startsWith('@') ? s.slice(1) : s
   if (body.includes('@')) {
-    return { ok: false, error: 'A tag can only have one @, at the start. Try @buresmusicfest.' }
+    return { ok: false, ...wpRefusal('wp_tag_one_at') }
   }
   if (!body) {
-    return { ok: false, error: 'That’s just an @ — add the handle after it, like @buresmusicfest.' }
+    return { ok: false, ...wpRefusal('wp_tag_just_at') }
   }
 
   const tag = `@${body}`
   /* ⚠️ MEASURED ON THE STORED VALUE, `@` INCLUDED, because that is what the column holds and what a
    * caption prints. Measuring the body would let a 60-character body become a 61-character tag. */
   if (tag.length > MAX_SOCIAL_TAG) {
-    return { ok: false, error: `That tag is ${tag.length} characters. The limit is ${MAX_SOCIAL_TAG}.` }
+    return { ok: false, ...wpRefusal('wp_tag_too_long', { length: String(tag.length), max: String(MAX_SOCIAL_TAG) }) }
   }
   return { ok: true, tag }
 }

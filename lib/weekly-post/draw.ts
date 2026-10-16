@@ -51,6 +51,7 @@ import { dayCells, shapeRadius, type DayPartsOn, type DaysBlock } from './days'
 import { locationLinesFor, timeLinesFor, withWordsBefore } from './lines'
 import type { FontBundle, ResolvedFace } from './font-bundle'
 import { DEFAULT_FONT_ID } from './font-list'
+import { cancelledWordFor, defaultHeadingFor, posterLocaleOf, weeklyPostWordsFor } from './words'
 
 
 export interface RenderWarning {
@@ -59,6 +60,27 @@ export interface RenderWarning {
   message: string
 }
 export const POWERED_BY = 'Powered by HatchGrab'
+
+/* ══ 🔴 THE WORDS A TREE DRAWS OR REPORTS, READ ONCE PER TREE (Language Phase 1d Part 2) ════════════════════════
+ * In the POSTER'S COUNTRY'S language (./words.ts explains why the country and not a request locale): the heading a
+ * design with an empty stored heading draws, the word in a cancelled event's Time box, and the "did not fit"
+ * warnings. ⚠️ NOTHING STORED IS READ FROM HERE — a saved heading or days-off text is drawn as saved. GB's are the
+ * literals they replaced, byte for byte. "Powered by HatchGrab" stays inline: it is the brand. */
+type ShortenedKey = 'heading' | 'date' | 'daysOff' | 'place' | 'time' | 'note' | 'venue' | 'area'
+interface TreeWords {
+  heading: string
+  cancelled: string
+  shortened: Record<ShortenedKey, string>
+}
+function treeWordsFor(country: CountryCode): TreeWords {
+  const api = weeklyPostWordsFor(posterLocaleOf(country))
+  const keys: ShortenedKey[] = ['heading', 'date', 'daysOff', 'place', 'time', 'note', 'venue', 'area']
+  return {
+    heading: defaultHeadingFor(country),
+    cancelled: cancelledWordFor(country),
+    shortened: Object.fromEntries(keys.map(k => [k, api(`shortened.${k}`)])) as Record<ShortenedKey, string>,
+  }
+}
 
 /* 🔴 RAISED ORDINALS ARE ALWAYS ON (6 October 2026). The per-box setting is gone, so every `TextCase`
  * this renderer builds says `true` — and it says it through ONE constant helper rather than at six
@@ -204,7 +226,10 @@ function boxEl(
   forcedBand: string | null | undefined,
   where: string,
   warnings: RenderWarning[],
-  label: string,
+  /** 🔴 THE WHOLE SENTENCE reported if this box's text had to be shortened — "The heading did not fit and was
+   *  shortened." — in the poster's language (`weeklyPostApi.shortened.*`, Language Phase 1d Part 2). ⛔ It was a
+   *  label ("The heading") glued to an English tail here, which no other language could reorder. */
+  shortenedMessage: string,
   fonts: FontBundle,
 ): El[] {
   /* 🔴 RESOLVED ONCE PER BOX. The face answers four questions at the same time — which family name
@@ -221,7 +246,7 @@ function boxEl(
     wrapToTwo: box.ifTooLong === 'twoLines',
   })
   if (fit.truncated) {
-    warnings.push({ where, message: `${label} did not fit and was shortened.` })
+    warnings.push({ where, message: shortenedMessage })
   }
   /* 🔴 THE AUTOMATIC RULE IS PER BOX NOW. `effects.keepReadable` defaults to the design's old
    * design-wide flag (see `parseEffects`), so an old design behaves exactly as it did. */
@@ -286,6 +311,8 @@ function noteEls(
   /** 🔴 The design's shared look. ⚠️ Threaded in rather than read off a layout, because this function
    *  is the one piece of box drawing shared by BOTH posters and neither layout type is in scope. */
   look: TextLook,
+  /** The "did not fit" sentence for a note box, in the poster's language. */
+  shortenedNote: string,
 ): El[] {
   const note = String(typed ?? '').trim()
   const out: El[] = []
@@ -297,7 +324,7 @@ function noteEls(
     const text = box.text.split(NOTE_TOKEN).join(note).trim()
     if (!text) return
     out.push(...boxEl(box, withWordsBefore([{ runs: [{ text }] }], box), scale, undefined,
-      `note-${i + 1}`, warnings, 'Your own text', fonts))
+      `note-${i + 1}`, warnings, shortenedNote, fonts))
   })
   return out
 }
@@ -478,6 +505,7 @@ function daysEls(
   fonts: FontBundle,
   country: CountryCode,
   pictures: PlacePictureSources | undefined,
+  words: TreeWords,
 ): El[] {
   const on: DayPartsOn = {
     picture: l.placePicture.enabled,
@@ -501,7 +529,7 @@ function daysEls(
          * takes `bgDayOff` if there is one, and a trading day hands the band back to the box's style. */
         const band = day.isDayOff ? (l.date.bgDayOff ?? null) : undefined
         out.push(...boxEl(box, withWordsBefore(dateLines(day.date, box, l.dateStyle, country), box),
-          scale, band, day.date, warnings, 'The date', fonts))
+          scale, band, day.date, warnings, words.shortened.date, fonts))
         continue
       }
       if (cell.key === 'place') {
@@ -513,15 +541,15 @@ function daysEls(
         out.push(...boxEl(box,
           withWordsBefore(locationLinesFor(day.entries, daysOffText, l.placeStyle), box),
           scale, undefined, day.date, warnings,
-          day.isDayOff ? 'The days-off text' : 'The place name', fonts))
+          day.isDayOff ? words.shortened.daysOff : words.shortened.place, fonts))
         continue
       }
       if (cell.key === 'times') {
-        const lines = timeLinesFor(day.entries, e => e.time, l.placeStyle)
+        const lines = timeLinesFor(day.entries, e => e.time, l.placeStyle, words.cancelled)
         if (!lines.length) continue
         const box = { ...rb(l.time), ...rect }
         out.push(...boxEl(box, withWordsBefore(lines, box), scale, undefined, day.date, warnings,
-          'The time', fonts))
+          words.shortened.time, fonts))
         continue
       }
       /* ══ 🔴 THE LOCATION PICTURE, IN ITS CELL ═══════════════════════════════════════════════════
@@ -636,6 +664,7 @@ export function weeklyTree(input: WeeklyTreeInput): PosterTree {
   const note = input.note
   const keepReadable = l.keepReadable
   const country: CountryCode = input.country ?? 'GB'
+  const words = treeWordsFor(country)
   /* 🔴 **THE ONE RESOLVER, BOUND ONCE PER TREE.** Every box below goes through it, so no call site can
    * read a stale `fontId` or `color` off a box that follows "Style all the writing".
    * ⛔ IT IS THE SAME EXPORTED FUNCTION THE EDITOR'S PANEL CALLS — `resolveTextBox` in layout.ts. */
@@ -664,8 +693,8 @@ export function weeklyTree(input: WeeklyTreeInput): PosterTree {
      * heading. ⚠️ `rb` IS DEFINED ONCE AT THE TOP OF THIS FUNCTION, so no call site here can forget. */
     const hb = rb(l.heading)
     const hRuns = headingRuns(hb.text, week.range.start, week.range.end, caseOf(hb),
-      (ymd, c) => dateLinesFor(ymd, l.dateStyle, country, c, false)[0])
-    children.push(...boxEl(hb, withWordsBefore([{ runs: hRuns }], hb), scale, undefined, 'heading', warnings, 'The heading', fonts))
+      (ymd, c) => dateLinesFor(ymd, l.dateStyle, country, c, false)[0], words.heading)
+    children.push(...boxEl(hb, withWordsBefore([{ runs: hRuns }], hb), scale, undefined, 'heading', warnings, words.shortened.heading, fonts))
   }
 
   // ── the seven rows ──────────────────────────────────────────────────────────────────────────────
@@ -677,7 +706,7 @@ export function weeklyTree(input: WeeklyTreeInput): PosterTree {
    * of it. ⚠️ THE TWO SHARE EVERY FUNCTION THAT DECIDES WHAT A ROW **SAYS** — only the rectangles
    * differ. */
   if (l.days) {
-    children.push(...daysEls(l, l.days, week, rb, scale, warnings, fonts, country, placePictures))
+    children.push(...daysEls(l, l.days, week, rb, scale, warnings, fonts, country, placePictures, words))
   } else {
   /* 🔴 ROWS 2–7 ARE ROW 1'S BOXES, OFFSET. The operator places three outlines once; the other six days
    * are the same three boxes plus `rowSpacing × n`. Storing seven sets would let them drift apart and
@@ -695,7 +724,7 @@ export function weeklyTree(input: WeeklyTreeInput): PosterTree {
      * OFF on that row, not fall through to the trading one. */
     const dayOffBand = day.isDayOff ? (l.date.bgDayOff ?? null) : undefined
     if (l.date.enabled) {
-      children.push(...boxEl(dateBox, withWordsBefore(dateLines(day.date, dateBox, l.dateStyle, country), dateBox), scale, dayOffBand, day.date, warnings, 'The date', fonts))
+      children.push(...boxEl(dateBox, withWordsBefore(dateLines(day.date, dateBox, l.dateStyle, country), dateBox), scale, dayOffBand, day.date, warnings, words.shortened.date, fonts))
     }
     if (l.location.enabled) {
       /* 🔴 THE PLACE TEXT IN A DAY ROW FOLLOWS "All text" LIKE EVERY OTHER TEXT BOX. There is one
@@ -703,12 +732,12 @@ export function weeklyTree(input: WeeklyTreeInput): PosterTree {
        * the weekly design needs no second rule for its rows. */
       const lb = off(rb(l.location))
       children.push(...boxEl(lb, withWordsBefore(locationLinesFor(day.entries, l.daysOffText, l.placeStyle), lb), scale, undefined, day.date, warnings,
-        day.isDayOff ? 'The days-off text' : 'The place name', fonts))
+        day.isDayOff ? words.shortened.daysOff : words.shortened.place, fonts))
     }
-    const tl = l.time.enabled ? timeLinesFor(day.entries, e => e.time, l.placeStyle) : []
+    const tl = l.time.enabled ? timeLinesFor(day.entries, e => e.time, l.placeStyle, words.cancelled) : []
     if (tl.length) {
       const tb = off(rb(l.time))
-      children.push(...boxEl(tb, withWordsBefore(tl, tb), scale, undefined, day.date, warnings, 'The time', fonts))
+      children.push(...boxEl(tb, withWordsBefore(tl, tb), scale, undefined, day.date, warnings, words.shortened.time, fonts))
     }
     /* ══ 🔴 THE PLACE PICTURE, REPEATED PER ROW — exactly as the three text boxes are ═══════════
      * ⚠️ THE **FIRST** ENTRY'S PLACE. A stacked day has two events at two venues and one picture box;
@@ -733,7 +762,7 @@ export function weeklyTree(input: WeeklyTreeInput): PosterTree {
   /* 🔴 THE NOTE BOX RENDERS ONLY WHEN THERE IS A NOTE — the brief's rule. An empty bordered area on
    * finished artwork looks like a mistake, and the operator placed the box for the weeks they have
    * something to say. */
-  children.push(...noteEls(l.notes, note, scale, warnings, fonts, l.textStyle))
+  children.push(...noteEls(l.notes, note, scale, warnings, fonts, l.textStyle, words.shortened.note))
 
   children.push(poweredByEl(W, H, keepReadable, fonts))
   return { children, warnings, W, H, scale }
@@ -762,6 +791,7 @@ export function eventTree(input: EventTreeInput): PosterTree {
   const { layout: l, entry, date, fonts, placePictures } = input
   const note = input.note
   const country: CountryCode = input.country ?? 'GB'
+  const words = treeWordsFor(country)
   /* 🔴 THE SAME ONE RESOLVER AS THE WEEKLY TREE AND AS THE EDITOR. See the note there. */
   const rb = <T extends TextBox>(b: T): T => resolveTextBox(l.textStyle, b)
   const scale = renderScale(l.width, l.height)
@@ -783,7 +813,7 @@ export function eventTree(input: EventTreeInput): PosterTree {
   const cancelledBand = entry.status === 'cancelled' ? (l.date.bgDayOff ?? null) : undefined
   if (l.date.enabled) {
     const db = rb(l.date)
-    children.push(...boxEl(db, withWordsBefore(dateLines(date, db, l.dateStyle, country), db), scale, cancelledBand, date, warnings, 'The date', fonts))
+    children.push(...boxEl(db, withWordsBefore(dateLines(date, db, l.dateStyle, country), db), scale, cancelledBand, date, warnings, words.shortened.date, fonts))
   }
   /* ══ 🔴 VENUE AND TOWN ARE TWO BOXES ON A SINGLE EVENT POST (9 October 2026) ═══════════════════════
    * ⛔ THEY WERE ONE BOX AND A `placeStyle`, which drew the town as a second line inside it. That made
@@ -796,7 +826,7 @@ export function eventTree(input: EventTreeInput): PosterTree {
    * and a cancelled event's crossed-out NAME is half of what says it is cancelled. */
   if (l.location.enabled) {
     const vb = rb(l.location)
-    children.push(...boxEl(vb, withWordsBefore(locationLinesFor(entries, null, 'nameOnly'), vb), scale, undefined, date, warnings, 'The venue', fonts))
+    children.push(...boxEl(vb, withWordsBefore(locationLinesFor(entries, null, 'nameOnly'), vb), scale, undefined, date, warnings, words.shortened.venue, fonts))
   }
   /* 🔴 THE TOWN'S OWN BOX. ⚠️ IT DRAWS NOTHING WHEN THE EVENT HAS NO TOWN — an empty bordered area on
    * finished artwork looks like a mistake, and the same rule the note box follows. */
@@ -807,7 +837,7 @@ export function eventTree(input: EventTreeInput): PosterTree {
       .map(t => ({ runs: [{ text: t }], strike: entries[0]?.status === 'cancelled' }))
     if (townLines.length) {
       const wb = rb(l.town)
-      children.push(...boxEl(wb, withWordsBefore(townLines, wb), scale, undefined, date, warnings, 'The area', fonts))
+      children.push(...boxEl(wb, withWordsBefore(townLines, wb), scale, undefined, date, warnings, words.shortened.area, fonts))
     }
   }
 
@@ -820,11 +850,11 @@ export function eventTree(input: EventTreeInput): PosterTree {
    * name. The town is its own box now, so the venue column has no second line and a spacer would push
    * the time down against nothing. */
   const tl = l.time.enabled
-    ? timeLinesFor(entries, e => formatTimeRangeFor(e.startTime, e.endTime, l.timeStyle), 'nameOnly')
+    ? timeLinesFor(entries, e => formatTimeRangeFor(e.startTime, e.endTime, l.timeStyle), 'nameOnly', words.cancelled)
     : []
   if (tl.length) {
     const tb = rb(l.time)
-    children.push(...boxEl(tb, withWordsBefore(tl, tb), scale, undefined, date, warnings, 'The time', fonts))
+    children.push(...boxEl(tb, withWordsBefore(tl, tb), scale, undefined, date, warnings, words.shortened.time, fonts))
   }
 
   /* ══ 🔴 THE PLACE PICTURE, IN A BOX ═══════════════════════════════════════════════════════════
@@ -842,7 +872,7 @@ export function eventTree(input: EventTreeInput): PosterTree {
 
   /* ⚠️ THE NOTE IS FOR THIS POST ONLY and is not stored on the event — the same rule as the weekly
    * post's note, and the same "only render the box when there is something to put in it". */
-  children.push(...noteEls(l.notes, note, scale, warnings, fonts, l.textStyle))
+  children.push(...noteEls(l.notes, note, scale, warnings, fonts, l.textStyle, words.shortened.note))
 
   children.push(poweredByEl(W, H, l.keepReadable, fonts))
   return { children, warnings, W, H, scale }

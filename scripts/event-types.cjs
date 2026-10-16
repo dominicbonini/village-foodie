@@ -2837,7 +2837,15 @@ head('5b · THE MODAL AND THE CARD')
      * `dashboard` message (placeholders and <b> tags cut out the same way). A lost line that carried no words at all
      * is not covered by this and must be on the ALLOWED list. The companion check below asserts the page reads the
      * namespace. */
-    const P1B_PIECES = (function flat(o) { return Object.values(o).flatMap(v => typeof v === 'string' ? [v] : flat(v)) })(GB_MESSAGES.dashboard)
+    /* ⚠️ RE-PINNED (Language Phase 1d Part 2): seven `dashboard.settings.*` keys MOVED, words unchanged, to
+     * `completionSettings.*` (scripts/fixtures/language-phase-1d2-key-moves.json — shared with Manage › Payments'
+     * TakingPaymentPanel). A `dashboard` key that moved is followed to its new path: its text there is a `dashboard`
+     * message for this proof, and ONLY the moves out of `dashboard.` in that file are followed. The page reading them
+     * from the new namespace is asserted with the Language Phase 2 companion check below. */
+    const LP1D2_DASH_MOVES = Object.entries(JSON.parse(fs.readFileSync(path.join(REPO, 'scripts/fixtures/language-phase-1d2-key-moves.json'), 'utf8')).moves || {})
+      .filter(([from]) => from.startsWith('dashboard.'))
+    const P1B_PIECES = [...(function flat(o) { return Object.values(o).flatMap(v => typeof v === 'string' ? [v] : flat(v)) })(GB_MESSAGES.dashboard),
+      ...LP1D2_DASH_MOVES.map(([, to]) => GB_MSG(to)).filter(v => typeof v === 'string')]
       // ICU syntax cut out: simple `{name}` placeholders, `{x, select|plural, ` heads and `key {` branch openers.
       .flatMap(m => m.replace(/<\/?b>/g, '\u0000').replace(/\{\w+\}/g, '\u0000').replace(/\{\w+, (select|plural), /g, '\u0000')
         .replace(/(^|[\s}\u0000])=?\w+ \{/g, '$1\u0000').split(/[\u0000{}]/))
@@ -2870,6 +2878,15 @@ head('5b · THE MODAL AND THE CARD')
        * / `capacityExample` to the ONE shared pair `kitchenCapacity.desc` / `.example` (read here as tCap, and by Manage). */
       && /\{tCap\('desc'\)\}/.test(now) && /\{tCap\('example'\)\}/.test(now)
     if (!lp2Moved) unexplained.push('(Language Phase 2: the status labels / capacity description are not read from `dashboard` messages)')
+    /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the companion for the followed moves above — all seven are moves out of
+     * `dashboard.settings.`, every one is gone from the page under its old key and read under its new one through
+     * `tCompletion` (useT('completionSettings'), its catalogue imported). */
+    const lp1d2Moved = LP1D2_DASH_MOVES.length === 7 && /import '@\/lib\/i18n\/catalog\/completionSettings'/.test(now)
+      && /const tCompletion=useT\('completionSettings'\)/.test(now)
+      && LP1D2_DASH_MOVES.every(([from, to]) => /^dashboard\.settings\.\w+$/.test(from) && /^completionSettings\.\w+$/.test(to)
+        && !now.includes(`tDash('${from.slice('dashboard.'.length)}')`) && now.includes(`tCompletion('${to.slice('completionSettings.'.length)}')`)
+        && typeof GB_MSG(to) === 'string' && GB_MSG(from) === undefined)
+    if (!lp1d2Moved) unexplained.push('(Language Phase 1d Part 2: the completion rows are not read from `completionSettings` under their moved keys)')
     if (unexplained.length) {
       console.log('      UNEXPLAINED LOSSES: ' + unexplained.length)
       for (const l of unexplained.slice(0, process.env.ET_SHOW_ALL ? 999 : 8)) console.log('        • ' + l.slice(0, process.env.ET_SHOW_ALL ? 400 : 100))

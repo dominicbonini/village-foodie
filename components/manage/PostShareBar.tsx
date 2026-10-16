@@ -52,12 +52,16 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Btn } from '@/components/manage/primitives'
-import { SHARE_CAPTION_NOTE } from '@/lib/copy/socialPosts'
+/* 🔴 LANGUAGE PHASE 1d PART 2: the bar's words are `postShare`; its grey line is `socialPosts.shareCaptionNote`
+ * (SHARE_CAPTION_NOTE in the copy module, which still exports the en-GB words). Both in the truck's locale. */
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/postShare'
+import '@/lib/i18n/catalog/socialPosts'
 
 /** What a share or a copy has to say afterwards. The two screens each own their own status line. */
 type Status = (message: string) => void
 
-export function PostShareBar({ blob, url, fileName, caption, captionWord = 'Caption', onStatus }: {
+export function PostShareBar({ blob, url, fileName, caption, captionKind = 'caption', onStatus }: {
   /** The rendered PNG, as the blob the render call already produced. `null` while it is building. */
   blob: Blob | null
   /** The object URL for that same blob — the one the screen is already showing in its `<img>`. */
@@ -66,8 +70,9 @@ export function PostShareBar({ blob, url, fileName, caption, captionWord = 'Capt
   fileName: string
   /** The caption or post text that travels with the picture. */
   caption: string
-  /** "Caption" on the weekly post, "Post text" on a single event — only for the status sentence. */
-  captionWord?: string
+  /** Which word the status sentences use: "Caption" on the weekly post, "Post text" on a single event.
+   *  ⚠️ A CODE, NOT THE WORD (Language Phase 1d Part 2): each status is one whole sentence per kind. */
+  captionKind?: 'caption' | 'postText'
   onStatus: Status
 }) {
   /**
@@ -86,6 +91,8 @@ export function PostShareBar({ blob, url, fileName, caption, captionWord = 'Capt
    * to manage: `blob` is only ever set from a fetch in the parent's effect, so on the server and on the
    * first client render it is null, `file` is null, and the Share button is absent in both.
    */
+  const t = useT('postShare')
+  const tc = useT('socialPosts')
   const file = useMemo(
     () => (blob ? new File([blob], fileName, { type: blob.type || 'image/png' }) : null),
     [blob, fileName])
@@ -140,8 +147,8 @@ export function PostShareBar({ blob, url, fileName, caption, captionWord = 'Capt
    */
   const copyCaption = () => {
     navigator.clipboard.writeText(caption)
-      .then(() => { setCopied(true); onStatus(`${captionWord} copied.`) })
-      .catch(() => onStatus('Could not copy — select the text and copy it by hand.'))
+      .then(() => { setCopied(true); onStatus(t('copiedStatus', { kind: captionKind })) })
+      .catch(() => onStatus(t('copyFailed')))
   }
 
   /**
@@ -159,26 +166,26 @@ export function PostShareBar({ blob, url, fileName, caption, captionWord = 'Capt
      * LITERAL IN THE TAP, with no `await` anywhere in front of it — the activation rule this whole
      * file exists for is unchanged. */
     navigator.share(canShareText ? { files: [file], text: caption } : { files: [file] })
-      .then(() => onStatus(`${captionWord} copied — paste it into your post.`))
+      .then(() => onStatus(t('sharedStatus', { kind: captionKind })))
       .catch((e: unknown) => {
         /* ⛔ THE OPERATOR CLOSING THE SHEET IS NOT AN ERROR AND MUST NOT DOWNLOAD ANYTHING. */
         if (e instanceof DOMException && e.name === 'AbortError') return
         /* 🔴 A REAL FAILURE FALLS BACK, AND SAYS WHAT IT DID. `canShare` said yes, so this is the
          * platform refusing at the moment of the share — the operator still needs the picture. */
         download()
-        onStatus(`Sharing was refused, so the picture has been downloaded. ${captionWord} copied.`)
+        onStatus(t('shareRefused', { kind: captionKind }))
       })
   }
 
   return (
     <div data-post-share-bar>
       <div className="flex flex-wrap gap-2">
-        <Btn label="Download picture" onClick={download} disabled={!url} />
-        <Btn label={copied ? 'Copied ✓' : 'Copy caption'} colour="slate" onClick={copyCaption} />
+        <Btn label={t('download')} onClick={download} disabled={!url} />
+        <Btn label={copied ? t('copied') : t('copyCaption')} colour="slate" onClick={copyCaption} />
         {/* 🔴 NO Share BUTTON WHERE A FILE CANNOT BE SHARED. The two buttons beside it are what it was
           * pretending to be. ⚠️ `canShareFile` is false while the picture is still building, so the
           * button appears with the picture rather than before it. */}
-        {canShareFile && <Btn label="Share" colour="slate" onClick={share} />}
+        {canShareFile && <Btn label={t('share')} colour="slate" onClick={share} />}
       </div>
       {/* ══ 🔴 THE ONE GREY LINE UNDER THE BUTTONS (8 October 2026) ══════════════════════════════
         * ⛔ IT NAMES THE TWO APPS rather than saying "some apps", because an operator whose caption did
@@ -189,7 +196,7 @@ export function PostShareBar({ blob, url, fileName, caption, captionWord = 'Capt
         * caption" themselves and the line would be explaining a problem they do not have. */}
       {canShareFile && (
         <p className="mt-2 text-[11px] leading-relaxed text-slate-400" data-share-caption-note>
-          {SHARE_CAPTION_NOTE}
+          {tc('shareCaptionNote')}
         </p>
       )}
     </div>

@@ -49,6 +49,10 @@ const PE = { PRIVATE_CHIP: 'chip', LINK_QR_BUTTON: 'link.button', PRIVATE_NEEDS_
   QR_DOWNLOAD: 'link.qrDownload', TABLE_CARDS: 'link.tableCards' }
 const STYLES = ['postcode', 'zip_state', null]
 const ADAPT = {
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): lib/settings-copy.ts CONNECTING_STRIPE_NOT_A_COMMITMENT was DELETED by the
+  // PAYMENTS agent — its only reader (Manage › Payments) reads `managePayments.trialNote`, which is that sentence AS MOVED
+  // (its curly-apostrophe fix is a named Part 2 GB fix, set back by the as-moved overlay under every frozen catalogue).
+  'settingsCopy.CONNECTING_STRIPE_NOT_A_COMMITMENT': (M, x) => x.tr('managePayments')('trialNote'),
   // lib/private-events/copy.ts → the `privateEvents` namespace (SCHED-B)
   ...Object.fromEntries(Object.entries(PE).map(([e, k]) => [`privateEvents.${e}`, (M, x) => x.tr('privateEvents')(k)])),
   // lib/copy/scheduleVerify.ts → `manageScheduleVerify`, one key per code (SCHED-A)
@@ -81,7 +85,7 @@ const READ_AS_WORDS = {
   // lib/event-types/types.ts: the name chips are ids now; their words are `eventTypes.newType.chips.<id>` (SCHED-B).
   'eventTypes.TYPE_NAME_CHIPS': (v, x) => (Array.isArray(v) && v.every(c => /^[a-z][A-Za-z]*$/.test(c)) ? v.map(id => x.tr('eventTypes')(`newType.chips.${id}`)) : v),
 }
-const ADAPT_NS = ['settingsCopy', 'eventTypes', 'privateEvents', 'manageScheduleVerify', 'manageScheduleEvent', 'manageScheduleImport', 'tradeArea']
+const ADAPT_NS = ['settingsCopy', 'eventTypes', 'privateEvents', 'manageScheduleVerify', 'manageScheduleEvent', 'manageScheduleImport', 'tradeArea', 'managePayments']
 
 const show = v => {
   if (typeof v === 'string') return v

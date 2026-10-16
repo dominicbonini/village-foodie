@@ -78,6 +78,11 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 /* ⛔ COMMENTS STRIPPED BEFORE ANY SOURCE ASSERTION. This project has shipped that bug twice, and once
  * as a COUNT that went UP because a note quoted the thing being counted. */
 const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): the picker's words are `fontPicker`, the route's labels/warnings are
+// `weeklyPostApi`, and its refusals are `errorsManage.wp_*` codes — all in messages/*.json. Checks that pinned a
+// literal now pin the same en-GB words on the message and the t()/refuse() call at the same site.
+const GB_MSG = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+const gbT = (ns) => require('next-intl').createTranslator({ locale: 'en-GB', messages: GB_MSG, namespace: ns })
 const ttf = (name) => fs.readFileSync(path.join(REPO, 'assets/fonts/weekly-post', name))
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -143,7 +148,10 @@ head('1 · THE CATALOGUE AND ITS LICENCES')
    * catalogue was rebuilt — and it is 1,819. */
   t('🔴 the count the picker shows comes from the catalogue, not from a literal',
     CAT.FONT_COUNT === raw.count
-    && /Search \$\{lib\.count\.toLocaleString\('en-GB'\)\} fonts/.test(read('components/manage/FontPicker.tsx'))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the placeholder is `t('search', { count: lib.count })` (ICU `{count, number}`); the
+    // catalogue's own count is asserted to render "Search 1,819 fonts"-style in en-GB, grouped as before.
+    && /t\('search', \{ count: lib\.count \}\)/.test(read('components/manage/FontPicker.tsx'))
+    && gbT('fontPicker')('search', { count: raw.count }) === `Search ${raw.count.toLocaleString('en-GB')} fonts`
     && !/1,500|1500\+/.test(codeOf(read('components/manage/FontPicker.tsx'))))
 }
 
@@ -223,7 +231,10 @@ head('3 · READING AN UPLOADED FONT')
   })())
   t('⛔ the operator-facing sentence tells them where to get a usable file',
     REFS.WOFF_REFUSAL === 'Please upload a TTF or OTF file — you can usually download one from where you bought the font.'
-    && /WOFF_REFUSAL/.test(codeOf(read('app/api/weekly-post/route.ts'))))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the route refuses a web font with the `wp_font_woff` code (worded in the truck's language;
+    // WOFF_REFUSAL is that code's en-GB text) instead of the constant — asserted on the WOFF magic branch itself.
+    && /if \(magic === 'wOFF' \|\| magic === 'wOF2'\) return discard\('wp_font_woff'\)/.test(codeOf(read('app/api/weekly-post/route.ts')))
+    && GB_MSG.errorsManage.wp_font_woff === REFS.WOFF_REFUSAL)
   t('⛔ junk, an empty file and a .ttc collection are all refused', (() => {
     const cases = [Buffer.alloc(0), Buffer.from('hello world, not a font'),
       Buffer.concat([Buffer.from('ttcf', 'latin1'), Buffer.alloc(64)]),
@@ -340,7 +351,10 @@ head('4 · A LIBRARY FONT IS FETCHED ONCE AND REUSED FROM CACHE')
   t('⛔ a font that cannot be loaded is REPORTED and the render still has a fallback',
     b2.missing.includes('u:deletedfont') && b2.bundle.resolve('u:deletedfont', false, false).family === 'Oswald')
   t('⚠️ …and the route turns that into a warning rather than an error',
-    /could not be loaded — those boxes are in Oswald/.test(read('app/api/weekly-post/route.ts')))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the warning is `weeklyPostApi.fontFallback` with the font id; both render paths push it as a
+    // `warnings` entry (not an error), and the en-GB sentence is unchanged.
+    (read('app/api/weekly-post/route.ts').match(/out\.warnings\.push\(\{ where: 'font', message: weeklyPostWordsFor\(locale\)\('fontFallback', \{ id \}\) \}\)/g) || []).length === 2
+    && gbT('weeklyPostApi')('fontFallback', { id: 'g:x' }) === 'A font this design uses (g:x) could not be loaded — those boxes are in Oswald.')
 
   // ══ 5 · THE BUNDLE AND THE RENDERER ══════════════════════════════════════════════════════════
   head('5 · THE RENDERER DRAWS WITH A LIBRARY AND AN UPLOADED FONT')
@@ -675,16 +689,19 @@ head('4 · A LIBRARY FONT IS FETCHED ONCE AND REUSED FROM CACHE')
   head('8 · THE PICKER')
   const PICK = codeOf(read('components/manage/FontPicker.tsx'))
   const HOOK = codeOf(read('components/manage/useFontLibrary.ts'))
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the tabs are ids and their words are `fontPicker.tab.<id>`; the ORDER is the TABS array and
+  // the six en-GB words are pinned on the messages, and each tab is drawn with `t(`tab.${id}`)`.
   t('🔴 the six group tabs the brief names, in order',
-    /\{ id: 'all', label: 'All' \}/.test(PICK)
-    && /label: 'Bold & tall'/.test(PICK) && /label: 'Handwritten'/.test(PICK)
-    && /label: 'Classic'/.test(PICK) && /label: 'Clean'/.test(PICK)
-    && /\{ id: 'own', label: 'Yours' \}/.test(PICK))
+    /const TABS: ReadonlyArray<Tab> = \['all', 'bold', 'hand', 'classic', 'clean', 'own'\]/.test(PICK)
+    && JSON.stringify(['all', 'bold', 'hand', 'classic', 'clean', 'own'].map(k => GB_MSG.fontPicker.tab[k]))
+      === JSON.stringify(['All', 'Bold & tall', 'Handwritten', 'Classic', 'Clean', 'Yours'])
+    && /t\(`tab\.\$\{id\}`\)/.test(PICK))
   t('🔴 each row shows the name in small grey and the SAMPLE in the font',
     /text-\[11px\].*text-slate-400/.test(PICK)
     && /fontFamily: `'\$\{font\.family\}', Georgia, serif`/.test(PICK))
   t('🔴 "Recently used" is at the top and comes from the truck\'s own saved designs',
-    /Recently used/.test(PICK)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): `{t('recent')}`, en-GB "Recently used".
+    /\{t\('recent'\)\}/.test(PICK) && GB_MSG.fontPicker.recent === 'Recently used'
     && /action: 'font_catalogue'/.test(HOOK)
     && /from\('truck_post_designs'\)/.test(codeOf(ROUTE)))
   t('🔴 the selected font is highlighted', /ring-1 ring-orange-400/.test(PICK))
@@ -696,8 +713,13 @@ head('4 · A LIBRARY FONT IS FETCHED ONCE AND REUSED FROM CACHE')
    * 🔴 THE BUTTON IS BESIDE THE SEARCH BOX AND IS **ALWAYS ENABLED**; the tick now gates "Add font".
    * ⚠️ NOTHING IS UPLOADED UNTIL THAT PRESS, which is the property the old order was protecting. */
   t('⚠️ §8 · the upload button is at the top, always enabled, and the tick gates the SEND',
-    /FONT_UPLOAD_BTN = '↑ Upload your font'/.test(read('lib/weekly-post/font-refs.ts'))
-    && /data-font-upload-btn/.test(PICK)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): FONT_UPLOAD_BTN / LICENCE_TICK are exported from `weeklyPostApi` messages in en-GB, the
+    // picker reads `fontPicker.uploadButton` / `.checking` / `.addFont` / `.cancel`, and the server's refusal is the
+    // `wp_licence_required` code inside the `licenceConfirmed !== true` branch. Same words, same places.
+    /export const FONT_UPLOAD_BTN = weeklyPostWordsFor\('en-GB'\)\('fontUploadButton'\)/.test(read('lib/weekly-post/font-refs.ts'))
+    && GB_MSG.weeklyPostApi.fontUploadButton === '↑ Upload your font' && REFS.FONT_UPLOAD_BTN === '↑ Upload your font'
+    && GB_MSG.fontPicker.uploadButton === '↑ Upload your font'
+    && /data-font-upload-btn>[\s\S]{0,700}\{t\('uploadButton'\)\}\s*\n\s*<\/label>/.test(PICK)
     && REFS.LICENCE_TICK === 'I own this font or have a licence to use it'
     /* ⛔ THE BUTTON IS A `<label>` ROUND A HIDDEN FILE INPUT WITH **NO `disabled`** — the native control
      * is the only thing that opens a picker without a user-gesture problem on Safari. */
@@ -706,18 +728,22 @@ head('4 · A LIBRARY FONT IS FETCHED ONCE AND REUSED FROM CACHE')
      * scrolling list would be a confirmation the operator never saw. */
     && /data-font-upload-card/.test(PICK)
     && /data-font-file-name/.test(PICK)
-    && /data-font-add>\{busy \? 'Checking the font…' : 'Add font'\}/.test(PICK)
-    && /data-font-cancel>Cancel/.test(PICK)
+    && /data-font-add>\{busy \? t\('checking'\) : t\('addFont'\)\}/.test(PICK)
+    && GB_MSG.fontPicker.checking === 'Checking the font…' && GB_MSG.fontPicker.addFont === 'Add font'
+    && /data-font-cancel>\{t\('cancel'\)\}/.test(PICK) && GB_MSG.fontPicker.cancel === 'Cancel'
     /* ⛔ "Add font" IS THE ONLY THING THE TICK DISABLES. */
     && /<button type="button" disabled=\{!ticked \|\| busy\} onClick=\{\(\) => void upload\(\)\}/.test(PICK)
     /* ⚠️ AND THE SERVER REFUSES IT ANYWAY, because a client-side gate is advice. */
-    && /Please tick to confirm you own or have a licence to use this font\./.test(codeOf(ROUTE))
+    && /if \(body\.licenceConfirmed !== true\) \{\s*\n\s*await fontStorage\.remove\(\[path\]\)\s*\n\s*return refuse\(locale, 'wp_licence_required', 400\)/.test(codeOf(ROUTE))
+    && GB_MSG.errorsManage.wp_licence_required === 'Please tick to confirm you own or have a licence to use this font.'
     /* ⛔ AND THE BOTTOM SECTION LEFT NOTHING BEHIND. `codeOf` first — the note beside the search box
      * explains what went and why. */
     && !/UploadYourOwn/.test(codeOf(PICK))
     && !/⤒ Upload your own font/.test(codeOf(PICK)))
   t('⚠️ "Add the bold version (optional)" is offered after the first upload',
-    /\(optional\)/.test(PICK) && /missingFaces/.test(PICK) && /missingFaces:/.test(codeOf(ROUTE)))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the sentence is `fontPicker.missingFaces`, which carries "(optional)"; the picker renders it.
+    /\(optional\)/.test(GB_MSG.fontPicker.missingFaces) && /\{t\('missingFaces', \{/.test(PICK)
+    && /missingFaces/.test(PICK) && /missingFaces:/.test(codeOf(ROUTE)))
   /* 🔴 THE LIST SCROLLS INSIDE THE PANEL. A panel that grew with its contents would be sixty rows tall
    * and the PAGE would scroll — taking the picture the operator is judging the font against off the
    * screen. ⚠️ Measured in a browser too, in `scripts/social-posts-render.cjs`. */
@@ -786,7 +812,10 @@ head('4 · A LIBRARY FONT IS FETCHED ONCE AND REUSED FROM CACHE')
   t('🔴 and PostgREST is reloaded, or every read returns PGRST205',
     /notify pgrst, 'reload schema';/.test(SQL))
   t('⚠️ the route handles the tables being absent with a sentence naming the migration',
-    /run supabase\/migrations\/20261017_post_fonts\.sql first/.test(codeOf(ROUTE)))
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the sentence is the `wp_migration_fonts` code; the route still returns it (503) and its
+    // en-GB text still names the migration file.
+    /return discard\('wp_migration_fonts', \{\}, 503\)/.test(codeOf(ROUTE))
+    && /run supabase\/migrations\/20261017_post_fonts\.sql first/.test(GB_MSG.errorsManage.wp_migration_fonts))
 
   console.log('')
   if (fail) { console.log(`🔴 ${fail} CHECK(S) FAILED`); process.exit(1) }

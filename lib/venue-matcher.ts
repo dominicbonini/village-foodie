@@ -7,6 +7,8 @@
 // approval UI can flag low-confidence guesses. Best-pick is DETERMINISTIC so a re-scrape of the same
 // event never flips which venue (and therefore which map pin) it resolves to.
 
+import GENERIC_LIST from './generic-venue-names.json'
+
 export type VenueRow = {
   id: string
   name: string
@@ -26,6 +28,21 @@ export type VenueMatch = {
 /** Aggressive normalised name: lowercase, strip everything non-alphanumeric. */
 export function normName(s: string | null): string {
   return (s || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+/* ══ 🔴 A GENERIC EVENT TITLE IS NOT A VENUE (16 October 2026, docs/private-event-approval-fix-report.md) ═══════════
+ * Pizzeria Gusto's schedule lists private bookings as "Private Event" / "Private Hire" with no place. The bridge passes
+ * that TITLE as `venue_name`, and `findVenue` matched it — exactly, by normalised name — to a junk venue row called
+ * "Private Event" (created 22 May 2026 at the centre of the UK), so three private events arrived with a "We guessed
+ * this location" box and a pin in Dumfriesshire. A title that names no place must never be matched as one, for ANY
+ * event type, and never be created as a venue either (lib/discovery-gate.ts asks this too).
+ * ⚠️ WHOLE NAME ONLY, after normalising: "Private Event" yes; "Party In The Park" and "TBC Black Dog Music Project"
+ * (real titles that merely start with such a word) no. The list is the live junk (see the report's Step 1b) plus the
+ * obvious ones — kept in lib/generic-venue-names.json so scripts/run-scraper.js reads the same list. */
+const GENERIC_VENUE_NAMES = new Set<string>(GENERIC_LIST.names)
+/** True when `name` is a generic title (e.g. "Private event", "TBC") rather than a place. */
+export function isGenericVenueName(name: string | null | undefined): boolean {
+  return GENERIC_VENUE_NAMES.has(normName(name ?? null))
 }
 
 // Stopwords dropped from token comparison so "The Star" ≈ "Star Inn".
@@ -192,6 +209,8 @@ export function findVenue(
   const want = country.toUpperCase()
   const allVenues = (allVenuesAnyCountry ?? []).filter(v => (v.country || 'GB').toUpperCase() === want)
   if (!allVenues || allVenues.length === 0 || !venueName) return { venue: null, confidence: 'none' }
+  // 🔴 A generic title ("Private Event", "TBC") names no place — never matched, whatever venue rows exist.
+  if (isGenericVenueName(venueName)) return { venue: null, confidence: 'none' }
   const sTok = new Set(toks(venueName))
   const normScraped = normName(venueName)
 

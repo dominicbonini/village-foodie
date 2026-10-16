@@ -27,6 +27,10 @@ import { dateTextFor, shortDateTextFor, DEFAULT_COUNTRY, intlLocaleFor, type Cou
  * "when does an event count as tonight" is a second rule that would drift. */
 import { whenPhrase } from './caption'
 import type { WeekData } from './week-data'
+/* 🔴 THE WORDS ARE MESSAGES (Language Phase 1d Part 2) — `captions`, through the one door every word in this folder
+ * uses. ⚠️ ONLY DEFAULTS AND FILLED VALUES: a truck's SAVED template is its own text and is never touched; the seed
+ * (what a truck with no saved template gets) and the values a label fills to are in the truck's country's words. */
+import { captionWordsFor } from './words'
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE LABELS
@@ -61,16 +65,27 @@ export interface CaptionLabel {
  *   Single event:  + Place · + Day & date · + Times · + Order link · + Location tag
  * ⚠️ `order-link` BELONGS TO BOTH and appears once here rather than twice — `labelsFor` filters.
  */
+/* ⚠️ THE CHIP WORDS ARE MESSAGES (`captions.labels`, Language Phase 1d Part 2). `label` below is the en-GB word, which
+ * every existing reader shows; a screen in the truck's language asks `captionLabelText(id, country)`. The ids, the
+ * tokens and the order are unchanged. */
+const LABEL_KEY: Record<CaptionLabelId, 'weekDates' | 'dayList' | 'place' | 'venue' | 'area' | 'dayDate' | 'times' | 'orderLink' | 'locationTag'> = {
+  'week-dates': 'weekDates', 'day-list': 'dayList', place: 'place', venue: 'venue', area: 'area',
+  'day-date': 'dayDate', times: 'times', 'order-link': 'orderLink', 'location-tag': 'locationTag',
+}
+/** What a chip says, in a country's words. ⚠️ GB's when the country is absent. */
+export const captionLabelText = (id: CaptionLabelId, country: CountryCode | string | null = DEFAULT_COUNTRY): string =>
+  captionWordsFor(country)(`labels.${LABEL_KEY[id]}`)
+
 export const CAPTION_LABELS: readonly CaptionLabel[] = [
-  { id: 'week-dates', label: 'Week dates', kinds: ['week'] },
-  { id: 'day-list', label: 'List of days', kinds: ['week'] },
-  { id: 'place', label: 'Place', kinds: ['event'] },
-  { id: 'venue', label: 'Venue', kinds: ['event'] },
-  { id: 'area', label: 'Area', kinds: ['event'] },
-  { id: 'day-date', label: 'Day & date', kinds: ['event'] },
-  { id: 'times', label: 'Times', kinds: ['event'] },
-  { id: 'order-link', label: 'Order link', kinds: ['week', 'event'] },
-  { id: 'location-tag', label: 'Location tag', kinds: ['event'] },
+  { id: 'week-dates', label: captionLabelText('week-dates'), kinds: ['week'] },
+  { id: 'day-list', label: captionLabelText('day-list'), kinds: ['week'] },
+  { id: 'place', label: captionLabelText('place'), kinds: ['event'] },
+  { id: 'venue', label: captionLabelText('venue'), kinds: ['event'] },
+  { id: 'area', label: captionLabelText('area'), kinds: ['event'] },
+  { id: 'day-date', label: captionLabelText('day-date'), kinds: ['event'] },
+  { id: 'times', label: captionLabelText('times'), kinds: ['event'] },
+  { id: 'order-link', label: captionLabelText('order-link'), kinds: ['week', 'event'] },
+  { id: 'location-tag', label: captionLabelText('location-tag'), kinds: ['event'] },
 ]
 
 /**
@@ -248,14 +263,18 @@ export function fillCaptionTemplate(template: string, values: CaptionValues): st
 // ⚠️ THE TRUCK NAME IS NOT A LABEL. It is interpolated at seed time, because a truck's name is not a
 // per-post fact and a chip for it would be a chip nobody ever needs to move.
 
-/** The weekly seed. ⚠️ `{week-dates}` is the heading's range; `{day-list}` is the day-by-day block. */
-export function seedWeekTemplate(truckName: string): string {
+/** The weekly seed. ⚠️ `{week-dates}` is the heading's range; `{day-list}` is the day-by-day block.
+ *  🔴 IN THE TRUCK'S COUNTRY'S WORDS (`captions`), and ONLY EVER A DEFAULT: a truck's saved template wins wherever
+ *  one exists, and the seed is computed on read and never written. ⚠️ GB's when the country is absent. The tokens
+ *  are passed into the messages as themselves, so a translation cannot misspell one. */
+export function seedWeekTemplate(truckName: string, country: CountryCode = DEFAULT_COUNTRY): string {
+  const t = captionWordsFor(country)
   return [
-    `${truckName} — where we are this week:`,
+    t('weekHeader', { truck: truckName }),
     '',
     tokenOf('day-list'),
     '',
-    `Order ahead: ${tokenOf('order-link')}`,
+    t('orderAhead', { url: tokenOf('order-link') }),
   ].join('\n')
 }
 
@@ -266,7 +285,7 @@ export function seedWeekTemplate(truckName: string): string {
  * mention a handle, so seeding one would CHANGE what every truck posts — which the brief's "nothing
  * changes until the truck edits it" forbids. The label is on the button row, one press away.
  */
-export function seedEventTemplate(truckName: string): string {
+export function seedEventTemplate(truckName: string, country: CountryCode = DEFAULT_COUNTRY): string {
   /* ══ 🔴 THE DEFAULT IS BUILT FROM `{venue}` AND `{area}` SINCE 9 OCTOBER ═══════════════════════════
    * ⛔ IT WAS `at {place} {day-date}, {times}.` — one token for the venue and the village together.
    * ⚠️ THE FILLED TEXT IS **ALMOST** THE SAME AND THE DIFFERENCE IS DELIBERATE: `{place}` only added
@@ -290,10 +309,18 @@ export function seedEventTemplate(truckName: string): string {
    * agree. **Flagged in the report** — it is the one place where what is shipped differs from the text
    * as written. ⚠️ AND IT MAKES THE SEED MATCH TODAY'S AUTO-CAPTION EXACTLY, which is the stronger
    * guarantee anyway: a truck who has never opened the editor sees the words they have always seen. */
+  /* 🔴 THE SAME MESSAGES `eventPostText` WRITES WITH, with the facts as tokens — which is what keeps the seed filling
+   * to exactly today's auto-caption. ⚠️ `{venue}, {area}` is the place join `eventPostText` makes for `{where}`. */
+  const t = captionWordsFor(country)
   return [
-    `${truckName} at ${tokenOf('venue')}, ${tokenOf('area')} ${tokenOf('day-date')}, ${tokenOf('times')}.`,
+    t('eventLine', {
+      truck: truckName,
+      where: `${tokenOf('venue')}, ${tokenOf('area')}`,
+      when: tokenOf('day-date'),
+      times: tokenOf('times'),
+    }),
     '',
-    `Order ahead: ${tokenOf('order-link')} ${tokenOf('location-tag')}`,
+    t('orderAheadTagged', { url: tokenOf('order-link'), tag: tokenOf('location-tag') }),
   ].join('\n')
 }
 
@@ -316,22 +343,23 @@ export function weekCaptionValues(input: {
 }): CaptionValues {
   const { week, orderUrl, timeStyle } = input
   const country = input.country ?? DEFAULT_COUNTRY
+  const t = captionWordsFor(country)
   const lines: string[] = []
   for (const day of week.days) {
     if (day.isDayOff) continue
     const name = weekdayName(day.date, intlLocaleFor(country), 'long')
     for (const e of day.entries) {
       const where = e.town && !e.name.includes(e.town) ? `${e.name}, ${e.town}` : e.name
-      if (e.status === 'cancelled') { lines.push(`${name} — ${where} — CANCELLED, sorry`); continue }
+      if (e.status === 'cancelled') { lines.push(t('dayLineCancelled', { day: name, where })); continue }
       const from = e.startTime ? formatOneTime(e.startTime, timeStyle) : ''
       const to = e.endTime ? formatOneTime(e.endTime, timeStyle) : ''
       const times = from && to ? `${from} – ${to}` : from || to
-      lines.push(`${name} — ${where}${times ? ` — ${times}` : ''}`)
+      lines.push(times ? t('dayLine', { day: name, where, times }) : t('dayLineNoTimes', { day: name, where }))
     }
   }
   /* ⚠️ A WEEK WITH NO EVENTS STILL SAYS SOMETHING — the same sentence `weekCaption()` uses, for the
    * same reason: an empty block would look like the feature failed. */
-  const dayList = lines.length ? lines.join('\n') : 'No dates this week — check back soon.'
+  const dayList = lines.length ? lines.join('\n') : t('noDates')
   const start = week.days[0]?.date ?? ''
   const end = week.days[week.days.length - 1]?.date ?? ''
   return {

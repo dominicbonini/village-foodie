@@ -23,6 +23,8 @@
 // with plain objects.
 
 import { checkAspect } from './backgrounds'
+/* The words this file exports are messages (Language Phase 1d Part 2), through ./words.ts. */
+import { weeklyPostWordsFor } from './words'
 
 /** One picture in a place's library, as every layer of the product sees it. */
 export interface PlacePicture {
@@ -49,8 +51,12 @@ export interface PlacePicture {
 }
 
 /** `label ?? file_name`, in one place. ⚠️ A blank label is treated as absent, as the CHECK allows. */
-export const labelOf = (row: { label?: string | null; file_name?: string | null }): string =>
-  String(row.label ?? '').trim() || String(row.file_name ?? '').trim() || 'Picture'
+export const labelOf = (
+  row: { label?: string | null; file_name?: string | null },
+  /** The truck's message locale, for the last-resort word only (`weeklyPostApi.picture.fallback`). ⚠️ en-GB when absent. */
+  locale?: string | null,
+): string =>
+  String(row.label ?? '').trim() || String(row.file_name ?? '').trim() || weeklyPostWordsFor(locale)('picture.fallback')
 
 /**
  * ══ 🔴 WHICH PICTURE IS THE MAIN ONE ══════════════════════════════════════════════════════════════
@@ -94,7 +100,9 @@ export function inGridOrder(pictures: readonly PlacePicture[]): PlacePicture[] {
  * ⚠️ `id` IS DERIVED FROM THE PLACE so the UI has a stable key, and it is prefixed so it can never be
  * mistaken for a real row id in a request.
  */
-export const LEGACY_PICTURE_LABEL = 'Event poster'
+/** ⚠️ en-GB, and WRITTEN TO `place_pictures.label` when a legacy picture is materialised — the same words in both
+ *  countries today (`weeklyPostApi.picture.legacy`, Language Phase 1d Part 2). */
+export const LEGACY_PICTURE_LABEL = weeklyPostWordsFor('en-GB')('picture.legacy')
 export const LEGACY_ID_PREFIX = 'legacy:'
 
 export function legacyMainPicture(place: {
@@ -142,7 +150,7 @@ export const isLegacyPictureId = (id: string): boolean => String(id ?? '').start
  * background, and the place's pictures page marks the picture itself. A background that quietly moved
  * every box is the failure this rule exists to prevent.
  */
-export const WRONG_SHAPE_NOTE = 'Different shape — can’t be used as a whole background'
+export const WRONG_SHAPE_NOTE = weeklyPostWordsFor('en-GB')('picture.wrongShape')
 
 export function usableAsWholeBackground(
   picture: Pick<PlacePicture, 'width' | 'height'>,
@@ -169,10 +177,12 @@ export function usableAsWholeBackground(
  */
 export type NoPictureBehaviour = 'omit' | 'blank' | 'logo'
 
+/** ⚠️ en-GB (Language Phase 1d Part 2): the words are `weeklyPostApi.noPicture.*`; a screen in the truck's
+ *  language reads those keys. */
 export const NO_PICTURE_LABELS: Record<NoPictureBehaviour, string> = {
-  omit: 'Leave it out',
-  blank: 'Leave a blank space',
-  logo: 'Show your logo',
+  omit: weeklyPostWordsFor('en-GB')('noPicture.omit'),
+  blank: weeklyPostWordsFor('en-GB')('noPicture.blank'),
+  logo: weeklyPostWordsFor('en-GB')('noPicture.logo'),
 }
 
 /**
@@ -192,10 +202,13 @@ export function placesWithoutPictures(
 /* ⚠️ "locations", "image" — WORDING ONLY (7 October 2026). The identifiers around it
  * (`noPicturesLine`, `placesWithoutPictures`, `pictureCount`) keep their names; see the note at the
  * head of lib/copy/socialPosts.ts's Location images block for why the rename stops at the strings. */
-export const noPicturesLine = (without: number, total: number): string =>
+/* ⚠️ MESSAGES WITH ICU PLURALS NOW (Language Phase 1d Part 2 — `weeklyPostApi.noPicturesAll` / `noPicturesSome`). A
+ * NAMED GB CHANGE for a count of one only: "1 of your 3 locations has no image yet" (was "have") and "Your location
+ * has an image." (was "All 1 of your locations have an image."). Every other count reads exactly as before. */
+export const noPicturesLine = (without: number, total: number, locale?: string | null): string =>
   without === 0
-    ? `All ${total} of your locations have an image.`
-    : `${without} of your ${total} locations have no image yet`
+    ? weeklyPostWordsFor(locale)('noPicturesAll', { total })
+    : weeklyPostWordsFor(locale)('noPicturesSome', { without, total })
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 🔴 TWO SLOTS, ONE JOB EACH (7 October 2026) — THE SECOND CHANGE OF MODEL

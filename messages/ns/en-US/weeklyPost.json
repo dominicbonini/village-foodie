@@ -1,0 +1,8 @@
+{
+  "post": {
+    "weekOf": "Week of {date}",
+    "eventDateCancelled": "{date} · canceled",
+    "showCancelled": "Show canceled events",
+    "notePlaceholder": "e.g. Pre-order for pickup"
+  }
+}

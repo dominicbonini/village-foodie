@@ -35,18 +35,23 @@ import {
   invalidateFontLibrary, useFontLibrary,
   type FontGroupKey, type LibraryFont,
 } from './useFontLibrary'
-import { FONT_UPLOAD_BTN, LICENCE_TICK, MAX_FONT_BYTES } from '@/lib/weekly-post/font-refs'
+import { MAX_FONT_BYTES } from '@/lib/weekly-post/font-refs'
+import { DEFAULT_COUNTRY, dateTextFor, type CountryCode } from '@/lib/weekly-post/locale'
+/* 🔴 LANGUAGE PHASE 1d PART 2: the picker's words are messages (`fontPicker`), read in the truck's locale. The
+ * upload button and the licence line were `FONT_UPLOAD_BTN` / `LICENCE_TICK` in lib/weekly-post/font-refs.ts;
+ * they are screen words, so this screen reads them from its own namespace. */
+import { useAppLocale, useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/fontPicker'
+
+/** The three faces a family may have, by the key the route sends (`faceKey` in lib/weekly-post/font-refs.ts). */
+const FACE_WORD = { '400': 'regular', '700': 'bold', '400i': 'italic' } as const
+const faceWord = (key: unknown): 'regular' | 'bold' | 'italic' =>
+  FACE_WORD[key as keyof typeof FACE_WORD] ?? 'regular'
 
 /** The brief's six tabs. ⚠️ "All" is no filter and "Yours" is not a catalogue group. */
 type Tab = 'all' | FontGroupKey | 'own'
-const TABS: ReadonlyArray<{ id: Tab; label: string }> = [
-  { id: 'all', label: 'All' },
-  { id: 'bold', label: 'Bold & tall' },
-  { id: 'hand', label: 'Handwritten' },
-  { id: 'classic', label: 'Classic' },
-  { id: 'clean', label: 'Clean' },
-  { id: 'own', label: 'Yours' },
-]
+/* ⚠️ THE TABS ARE IDS; their words are `fontPicker.tab.<id>`. */
+const TABS: ReadonlyArray<Tab> = ['all', 'bold', 'hand', 'classic', 'clean', 'own']
 
 /**
  * ══ 🔴 HOW MANY ROWS ARE DRAWN AT ONCE ════════════════════════════════════════════════════════════
@@ -72,6 +77,8 @@ export interface FontPickerProps {
   className?: string
   /** The sample the rows are drawn with. ⚠️ Passed in, so it is the design's own date wording. */
   sample?: string
+  /** The truck's country, for the default sample date's wording. ⚠️ Every caller today passes `sample`. */
+  country?: CountryCode
   /** Called after an upload or a removal, so the editor can re-read what faces exist. */
   onLibraryChanged?: () => void
   disabled?: boolean
@@ -117,6 +124,7 @@ function FontRow({ font, selected, sample, token, onPick }: {
   token: string
   onPick: () => void
 }) {
+  const t = useT('fontPicker')
   return (
     <button type="button" onClick={onPick}
       aria-pressed={selected}
@@ -128,7 +136,7 @@ function FontRow({ font, selected, sample, token, onPick }: {
           * the right one: an operator is choosing a LOOK, and they recognise it before they read it. */}
         <span className={`block truncate text-[11px] ${selected ? 'font-bold text-orange-700' : 'text-slate-400'}`}>
           {font.own ? (font.displayName || font.family) : font.family}
-          {font.own && <span className="ml-1 text-slate-300">· yours</span>}
+          {font.own && <span className="ml-1 text-slate-300">{t('yoursTag')}</span>}
         </span>
         {font.own
           ? <OwnSample token={token} family={font.family} sample={sample} />
@@ -177,7 +185,12 @@ function OwnSample({ token, family, sample }: { token: string; family: string; s
 }
 
 export function FontPicker(props: FontPickerProps) {
-  const { value, onChange, token, className, sample = 'Wednesday 14th October', onLibraryChanged, disabled } = props
+  const t = useT('fontPicker')
+  /* 🔴 THE DEFAULT SAMPLE IS A REAL DATE IN THE TRUCK'S OWN WORDING — Wednesday 14 October 2026 in the 'long'
+   * style, from the same table the poster uses: GB "Wednesday 14th October", US "Wednesday, October 14th". */
+  const { value, onChange, token, className, onLibraryChanged, disabled } = props
+  const sample = props.sample
+    ?? dateTextFor('2026-10-14', 'long', props.country ?? DEFAULT_COUNTRY, { caps: false, raisedOrdinals: false })
   const lib = useFontLibrary(token)
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState<Tab>('all')
@@ -269,16 +282,16 @@ export function FontPicker(props: FontPickerProps) {
         body: JSON.stringify({ token, action: 'font_choose', fontId: font.id }),
       })
       const j = await r.json().catch(() => ({}))
-      if (!r.ok || !j.ready) throw new Error(j.error || 'That font could not be added')
+      if (!r.ok || !j.ready) throw new Error(j.error || t('couldNotAdd'))
       onChange(font.id)
       setOpen(false)
     } catch (e) {
-      setMsg({ text: e instanceof Error ? e.message : 'That font could not be added', bad: true })
+      setMsg({ text: e instanceof Error ? e.message : t('couldNotAdd'), bad: true })
     } finally { setChoosing(null) }
-  }, [token, value, onChange])
+  }, [token, value, onChange, t])
 
   const label = chosen ? (chosen.own ? (chosen.displayName || chosen.family) : chosen.family)
-    : lib.loading ? 'Loading fonts…' : value
+    : lib.loading ? t('loadingFonts') : value
 
   return (
     <div className="relative">
@@ -321,7 +334,7 @@ export function FontPicker(props: FontPickerProps) {
               onChange={e => setQuery(e.target.value)}
               /* 🔴 THE REAL COUNT, FROM THE CATALOGUE. A hard-coded "1,500+" would be a number that goes
                 * stale the first time the catalogue is rebuilt — and this one is 1,819. */
-              placeholder={lib.loading ? 'Loading fonts…' : `Search ${lib.count.toLocaleString('en-GB')} fonts`}
+              placeholder={lib.loading ? t('loadingFonts') : t('search', { count: lib.count })}
               className="min-w-0 grow rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
             <label className="shrink-0 cursor-pointer rounded-xl border border-slate-300 px-2 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50"
@@ -334,7 +347,7 @@ export function FontPicker(props: FontPickerProps) {
                   e.currentTarget.value = ''
                   if (f) { setPicked(f); setMsg(null) }
                 }} />
-              {FONT_UPLOAD_BTN}
+              {t('uploadButton')}
             </label>
           </div>
 
@@ -356,12 +369,12 @@ export function FontPicker(props: FontPickerProps) {
           {/* ⚠️ THEY WRAP. Six tabs do not fit one line at 390px, and a scrolling strip would hide
             * "Yours" — the one tab an operator who has uploaded a font is looking for. */}
           <div className="mt-2 flex flex-wrap gap-1">
-            {TABS.map(t => (
-              <button key={t.id} type="button" onClick={() => setTab(t.id)}
-                className={`rounded-lg px-2 py-1 text-xs font-bold ${tab === t.id
+            {TABS.map(id => (
+              <button key={id} type="button" onClick={() => setTab(id)}
+                className={`rounded-lg px-2 py-1 text-xs font-bold ${tab === id
                   ? 'bg-orange-50 text-orange-700'
                   : 'text-slate-500 hover:bg-slate-50'}`}>
-                {t.label}{t.id === 'own' && lib.own.length ? ` (${lib.own.length})` : ''}
+                {id === 'own' && lib.own.length ? t('tab.ownCount', { count: lib.own.length }) : t(`tab.${id}`)}
               </button>
             ))}
           </div>
@@ -377,16 +390,16 @@ export function FontPicker(props: FontPickerProps) {
             * tall and the page would scroll instead — taking the picture the operator is judging the
             * font against off the screen. */}
           <div className="mt-2 max-h-[46vh] min-h-[8rem] overflow-y-auto overflow-x-hidden">
-            {lib.loading && <p className="p-3 text-xs text-slate-400">Loading the font library…</p>}
+            {lib.loading && <p className="p-3 text-xs text-slate-400">{t('loadingLibrary')}</p>}
             {lib.error && (
               <div className="p-3">
                 <p className="text-xs text-red-600">{lib.error}</p>
-                <button type="button" onClick={lib.reload} className="mt-1 text-xs font-bold text-orange-700">Try again</button>
+                <button type="button" onClick={lib.reload} className="mt-1 text-xs font-bold text-orange-700">{t('tryAgain')}</button>
               </div>
             )}
             {!lib.loading && !lib.error && tab === 'own' && !lib.own.length && (
               <p className="p-3 text-xs text-slate-400">
-                You haven&rsquo;t uploaded a font yet. Use the button below.
+                {t('noOwn')}
               </p>
             )}
 
@@ -395,7 +408,7 @@ export function FontPicker(props: FontPickerProps) {
               * wrong: the fonts they have used ARE the fonts in their designs. */}
             {recent.length > 0 && (
               <>
-                <p className="px-2 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">Recently used</p>
+                <p className="px-2 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">{t('recent')}</p>
                 {recent.map(f => (
                   <FontRow key={`r-${f.id}`} font={f} selected={f.id === value} sample={sample}
                     token={token} onPick={() => void pick(f)} />
@@ -405,21 +418,21 @@ export function FontPicker(props: FontPickerProps) {
             )}
 
             {!query.trim() && tab !== 'own' && rows.length > 0 && (
-              <p className="px-2 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">Popular for posters</p>
+              <p className="px-2 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">{t('popular')}</p>
             )}
             {rows.map(f => (
               <FontRow key={f.id} font={f} selected={f.id === value} sample={sample}
                 token={token} onPick={() => void pick(f)} />
             ))}
-            {choosing && <p className="px-2 py-1 text-[11px] text-slate-400">Adding&hellip;</p>}
+            {choosing && <p className="px-2 py-1 text-[11px] text-slate-400">{t('adding')}</p>}
             {!lib.loading && !lib.error && query.trim() && !rows.length && (
-              <p className="p-3 text-xs text-slate-400">No font matches &ldquo;{query.trim()}&rdquo;.</p>
+              <p className="p-3 text-xs text-slate-400">{t('noMatch', { query: query.trim() })}</p>
             )}
             {/* ⚠️ SAID OUT LOUD WHEN THE LIST IS CAPPED, so a short list is never mistaken for the
               * whole answer. */}
             {total > rows.length && (
               <p className="px-2 py-2 text-[11px] text-slate-400">
-                Showing {rows.length} of {total.toLocaleString('en-GB')} — type more to narrow it down.
+                {t('showing', { shown: rows.length, total })}
               </p>
             )}
           </div>
@@ -460,17 +473,19 @@ function UploadCard({ token, file, onDone, onCancel, onMessage }: {
   onCancel: () => void
   onMessage: (m: { text: string; bad: boolean } | null) => void
 }) {
+  const t = useT('fontPicker')
+  const locale = useAppLocale()
   const [ticked, setTicked] = useState(false)
   const [busy, setBusy] = useState(false)
   /** After a successful upload: which faces are still missing, so the prompt can offer them. */
-  const [added, setAdded] = useState<{ displayName: string; faceLabel: string; missing: { face: string; label: string }[] } | null>(null)
+  const [added, setAdded] = useState<{ displayName: string; missing: { face: string; label: string }[] } | null>(null)
 
   const upload = async () => {
     onMessage(null)
     /* ⚠️ CHECKED IN THE BROWSER **AND** ON THE SERVER. This is for speed — refusing a 40MB file before
      * it is uploaded — not for safety: the server reads the real bytes and is the one that decides. */
     if (file.size > MAX_FONT_BYTES) {
-      onMessage({ text: `That font is ${(file.size / 1024 / 1024).toFixed(1)}MB. The limit is 5MB.`, bad: true })
+      onMessage({ text: t('tooBig', { size: file.size / 1024 / 1024 }), bad: true })
       return
     }
     const name = file.name.toLowerCase()
@@ -478,22 +493,22 @@ function UploadCard({ token, file, onDone, onCancel, onMessage }: {
      * words — and the server repeats it from the file's MAGIC, because a renamed .woff2 would get
      * past this. Two checks, one sentence. */
     if (/\.woff2?$/.test(name)) {
-      onMessage({ text: 'Please upload a TTF or OTF file — you can usually download one from where you bought the font.', bad: true })
+      onMessage({ text: t('woff'), bad: true })
       return
     }
     const ext = name.endsWith('.otf') ? 'otf' : 'ttf'
     setBusy(true)
     try {
-      const slot = await api(token, { action: 'font_upload_url', ext })
+      const slot = await api(token, { action: 'font_upload_url', ext }, t('somethingWrong'))
       const put = await fetch(slot.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': 'font/ttf' } })
-      if (!put.ok) throw new Error('The upload did not complete')
-      const done = await api(token, { action: 'font_confirm', path: slot.path, licenceConfirmed: true })
-      setAdded({ displayName: done.displayName, faceLabel: done.faceLabel, missing: done.missingFaces ?? [] })
+      if (!put.ok) throw new Error(t('uploadIncomplete'))
+      const done = await api(token, { action: 'font_confirm', path: slot.path, licenceConfirmed: true }, t('somethingWrong'))
+      setAdded({ displayName: done.displayName, missing: done.missingFaces ?? [] })
       onMessage({
         /* 🔴 THE FACE IT DECIDED IS NAMED. A font that calls itself "SemiBold" lands on Bold, and an
          * operator who uploaded it as their regular needs to see that rather than wonder later why
          * their text is heavy. */
-        text: `Added “${done.displayName}” as its ${done.faceLabel}.`,
+        text: t('added', { name: done.displayName, face: t(`face.${faceWord(done.face)}`) }),
         bad: false,
       })
       /* ⚠️ THE CARD STAYS OPEN WHEN THERE ARE MORE FACES TO ADD, and closes when there are not — the
@@ -501,7 +516,7 @@ function UploadCard({ token, file, onDone, onCancel, onMessage }: {
       if (!(done.missingFaces ?? []).length) onDone(done.fontId ?? null)
       else onDone(done.fontId ?? null)
     } catch (e) {
-      onMessage({ text: e instanceof Error ? e.message : 'That font could not be added', bad: true })
+      onMessage({ text: e instanceof Error ? e.message : t('couldNotAdd'), bad: true })
     } finally { setBusy(false) }
   }
 
@@ -514,16 +529,16 @@ function UploadCard({ token, file, onDone, onCancel, onMessage }: {
       <label className={`mt-1.5 flex items-start gap-2 text-[11px] ${busy ? 'text-slate-400' : 'text-slate-600'}`}>
         <input type="checkbox" className="mt-0.5" checked={ticked} disabled={busy}
           onChange={e => setTicked(e.target.checked)} />
-        <span>{LICENCE_TICK}</span>
+        <span>{t('licenceTick')}</span>
       </label>
       <div className="mt-2 flex items-center gap-1.5">
         {/* ⛔ "Add font" IS THE ONLY THING THE TICK DISABLES. It is the press that sends the file. */}
         <button type="button" disabled={!ticked || busy} onClick={() => void upload()}
           className="rounded-xl bg-orange-600 px-2.5 py-1.5 text-xs font-bold text-white disabled:bg-slate-200 disabled:text-slate-400"
-          data-font-add>{busy ? 'Checking the font…' : 'Add font'}</button>
+          data-font-add>{busy ? t('checking') : t('addFont')}</button>
         <button type="button" disabled={busy} onClick={onCancel}
           className="rounded-xl border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700"
-          data-font-cancel>Cancel</button>
+          data-font-cancel>{t('cancel')}</button>
       </div>
 
       {/* 🔴 §3's PROMPT AFTER THE FIRST UPLOAD. A family can have three files and each is uploaded
@@ -531,21 +546,25 @@ function UploadCard({ token, file, onDone, onCancel, onMessage }: {
         * has landed. ⚠️ "(optional)" IS IN THE WORDS: a family with one file works perfectly. */}
       {added && added.missing.length > 0 && (
         <p className="mt-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-slate-600">
-          Add the {added.missing.map(m => m.label.toLowerCase()).join(' or ')} version of
-          {' '}&ldquo;{added.displayName}&rdquo; (optional) — choose the file again.
+          {t('missingFaces', {
+            name: added.displayName,
+            faces: new Intl.ListFormat(locale, { type: 'disjunction' })
+              .format(added.missing.map(m => t(`faceLower.${faceWord(m.face)}`))),
+          })}
         </p>
       )}
     </div>
   )
 }
 
-const api = async (token: string, body: Record<string, unknown>) => {
+/* ⚠️ THE FALLBACK SENTENCE IS PASSED IN (the caller's `t('somethingWrong')`) — this helper has no translator. */
+const api = async (token: string, body: Record<string, unknown>, fallback: string) => {
   const r = await fetch('/api/weekly-post', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token, ...body }),
   })
   const j = await r.json().catch(() => ({}))
-  if (!r.ok) throw new Error(j.error || 'Something went wrong')
+  if (!r.ok) throw new Error(j.error || fallback)
   return j
 }
 

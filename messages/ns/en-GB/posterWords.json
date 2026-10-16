@@ -1,0 +1,24 @@
+{
+  "heading": "Week commencing {start} to {end}",
+  "daysOff": "No trading today",
+  "cancelled": "CANCELLED",
+  "placeSample": {
+    "nameTownBelow": "The Kings Arms\nLavenham",
+    "nameTown": "The Kings Arms, Lavenham",
+    "nameOnly": "The Kings Arms"
+  },
+  "busyWeek": {
+    "venue1": "Lavenham Village Hall",
+    "town1": "Lavenham",
+    "venue2": "Great Waldingfield Recreation Ground and Playing Field",
+    "town2": "Great Waldingfield",
+    "venue3": "Market Square",
+    "town3": "Sudbury",
+    "venue4": "Food Festival",
+    "town4": "Bury St Edmunds",
+    "venue5": "The Bull Inn",
+    "town5": "Cavendish",
+    "venue6": "Church Green",
+    "town6": "Long Melford"
+  }
+}

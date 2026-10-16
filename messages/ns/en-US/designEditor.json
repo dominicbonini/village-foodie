@@ -1,0 +1,35 @@
+{
+  "item": {
+    "weekHeadingSample": "Week of …"
+  },
+  "sample": {
+    "venue": "Main Street Brewery",
+    "area": "Austin"
+  },
+  "rows": {
+    "showCancelled": "Show canceled events",
+    "showCancelledHint": "A canceled event shows its place crossed out and the word CANCELED. Switched off, the day reads as a day off."
+  },
+  "picture": {
+    "drawBorderHint": "A line around the picture, in your own color."
+  },
+  "settings": {
+    "colour": "Color",
+    "textColour": "Text color",
+    "lastToggle": "{kind, select, weekly {Keep either Place or Time switched on. A canceled event shows its place crossed out and the word CANCELED, so with both off there would be nothing to say it is canceled.} other {Keep either Venue or Time switched on. A canceled event shows its place crossed out and the word CANCELED, so with both off there would be nothing to say it is canceled.}}"
+  },
+  "align": {
+    "centre": "Center"
+  },
+  "effects": {
+    "outlineColour": "Outline color",
+    "bandColour": "Band color",
+    "bandCancelled": "Band when the event is canceled",
+    "bandDaysOffHint": "Used instead of the band above on a day you’re closed.",
+    "bandCancelledHint": "Used instead of the band above when the event is canceled."
+  },
+  "bits": {
+    "chooseColourFor": "{label} — choose any color",
+    "chooseColour": "Choose any color"
+  }
+}

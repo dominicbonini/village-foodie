@@ -4,7 +4,7 @@
 // ⚠️ UK English. Straight apostrophes are fine in these strings — they are rendered through {' '} style
 // expressions and JSX text where React escapes them, not as bare JSX apostrophes that the linter flags.
 
-import { monthName } from '@/lib/time-utils'
+import { formatYmd, formatLongDate, LEGACY_UK_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils'
 
 export const META_PRICING_URL = 'https://developers.facebook.com/docs/whatsapp/pricing'
 export const WHATSAPP_MANAGER_URL = 'https://business.facebook.com/wa/manage/home/'
@@ -23,7 +23,10 @@ export const WHATSAPP_MANAGER_URL = 'https://business.facebook.com/wa/manage/hom
  * Moving it forward without looking turns a verifiable statement into a false one, and it is printed on a
  * public pricing surface where "correct at <date>" is exactly the kind of sentence a buyer relies on.
  */
-export const META_PRICING_CHECKED_ON = '16 September 2026'
+export const META_PRICING_CHECKED_ON_YMD = '2026-09-16'
+/** 🔴 THE SAME DATE, WRITTEN THE UK WAY for the public pricing footnote (marketing is GB; Language Phase 1d Part 2 made the
+ *  date a calendar date so Manage can write it in the truck's style). Byte-identical: "16 September 2026". */
+export const META_PRICING_CHECKED_ON = formatLongDate(META_PRICING_CHECKED_ON_YMD, LEGACY_UK_TIME_SETTINGS)
 
 /**
  * 🔴 WHEN META'S FREE ALLOWANCE BEGINS. From this date Meta charges per message for service messages —
@@ -35,16 +38,20 @@ export const META_PRICING_CHECKED_ON = '16 September 2026'
  * 🔴 THIS IS THE SAME 1 October 2026 THAT lib/whatsapp/reply-cap.ts's header gives as the reason the cap
  * exists at all. If Meta moves it, both move.
  */
-export const META_FREE_ALLOWANCE_FROM = '1 October 2026'
+export const META_FREE_ALLOWANCE_FROM_YMD = '2026-10-01'
+/** The same date the UK way, for the public pricing footnote — "1 October 2026". See META_PRICING_CHECKED_ON. */
+export const META_FREE_ALLOWANCE_FROM = formatLongDate(META_FREE_ALLOWANCE_FROM_YMD, LEGACY_UK_TIME_SETTINGS)
 
 /** Formats 1000 → "1,000". One formatter so the select, the usage line and the copy agree. */
 export const formatLimit = (n: number): string => n.toLocaleString('en-GB')
 
-/** "2026-10-01" → "1 October". ⚠️ Day and month only: the year is noise on a date weeks away. */
-export function formatResetDate(isoDate: string): string {
+/** "2026-10-01" → "1 October" (GB) / "October 1" (US). ⚠️ Day and month only: the year is noise on a date weeks away.
+ *  🔴 THE TRUCK'S STYLE (Language Phase 1d Part 2): it was a fixed 'en-GB'; it is now lib/time-utils.ts's `formatYmd`
+ *  with the truck's settings — GB byte-identical. */
+export function formatResetDate(isoDate: string, ts?: TimeSettings | null): string {
   const [y, m, d] = isoDate.split('-').map(Number)
   if (!y || !m || !d) return isoDate
-  // Built from the parts, NOT `new Date(iso)` — that parses as UTC and can render the previous day. The month's
-  // name comes from lib/time-utils.ts (Intl, the calendar date pinned to UTC); en-GB, as this copy has always been.
-  return `${d} ${monthName(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`, 'en-GB', 'long')}`
+  // Built from the parts, NOT `new Date(iso)` — that parses as UTC and can render the previous day. `formatYmd` pins
+  // the calendar date to UTC, so it never shifts a day.
+  return formatYmd(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`, ts, { day: 'numeric', month: 'long' })
 }

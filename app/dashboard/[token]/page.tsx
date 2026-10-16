@@ -149,6 +149,8 @@ import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/dashboard'
+// Language Phase 1d Part 2: the settings card's completion rows are `completionSettings`, shared with Manage › Payments.
+import '@/lib/i18n/catalog/completionSettings'
 import '@/lib/i18n/catalog/kitchenCapacity'
 import '@/lib/i18n/catalog/offlineProtection'
 import '@/lib/i18n/catalog/serviceSettings'
@@ -278,6 +280,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
   // Language Phase 1b: every word on this screen is a message in `dashboard` (messages/en-GB.json).
   const tDash=useT('dashboard')
+  const tCompletion=useT('completionSettings')
   const tCap=useT('kitchenCapacity')   // Language Phase 1d: the capacity explainer, one message shared with Manage
   const tOff=useT('offlineProtection')   // Language Phase 1d: the offline-protection card, in the truck's language
   const tSvc=useT('serviceSettings')     // Language Phase 1d: the per-event prices card
@@ -5294,7 +5297,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   comment is for. Do not start annotating rows with their scope. */}
               <div className="flex items-center justify-between gap-3 pb-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">{tDash('settings.paidStepTitle')}</p>
+                  <p className="text-sm font-semibold text-slate-800">{tCompletion('paidStepTitle')}</p>
                   <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.paidStepHelp')}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
@@ -5314,8 +5317,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="py-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{tDash('settings.completionTitle')}</p>
-                    <p className="text-slate-500 text-xs mt-0.5">{tDash('settings.completionHelp')}</p>
+                    <p className="text-sm font-semibold text-slate-800">{tCompletion('completionTitle')}</p>
+                    <p className="text-slate-500 text-xs mt-0.5">{tCompletion('completionHelp')}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 ml-3">
                     {savingCompletionOverride&&<span className="text-xs text-slate-400 animate-pulse">{tDash('common.saving')}</span>}
@@ -5328,8 +5331,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       🔴 The button names are QUOTED FROM THE CODE — “Mark paid & collected”, “Mark paid”
                       and “Collected” are the exact `label` strings OrderCard renders. Verify against the
                       code before editing, and change the copy to match the button, never the reverse. */}
-                  {([['one',tDash('settings.pressesOne'),tDash('settings.pressesOneHelp')],
-                     ['two',tDash('settings.pressesTwo'),tDash('settings.pressesTwoHelp')]] as const).map(([v,lbl,help])=>(
+                  {([['one',tCompletion('pressesOne'),tCompletion('pressesOneHelp')],
+                     ['two',tCompletion('pressesTwo'),tCompletion('pressesTwoHelp')]] as const).map(([v,lbl,help])=>(
                     <button type="button" key={v} onClick={()=>saveCompletionPressesOverride(v)}
                       disabled={isOffline||!activeEvent||savingCompletionOverride}
                       className="w-full text-left flex items-start gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">

@@ -14,7 +14,7 @@
 //   1. TRUCK — `scheduleKeys`/`eventMatchesKeys` (lib/schedule-match: the EXISTING name+aliases matcher,
 //      exact after trim/lowercase), then the route's existing `normName` containment as the fallback the
 //      route always had. No sixth normaliser: both are imported.
-//   2. VENUE — `findVenue` (lib/venue-matcher, UNMODIFIED), then the R5 ACCEPTANCE CHECK on its output:
+//   2. VENUE — `findVenue` (lib/venue-matcher — unmodified apart from its generic-title guard, 16 October 2026), then the R5 ACCEPTANCE CHECK on its output:
 //        accept if the matcher said `high` (village agrees);
 //        else the venue must lie within 15 km of the event's village anchor (median of the other venues
 //        in that village — the matcher's own construction, re-derived here because its helper is private);
@@ -38,7 +38,7 @@
 // is hidden until it does. The fresh-row INSERT never names those columns, so it cannot fail for lack
 // of them.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
+import { isGenericVenueName, findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
 import { normalizeVenue } from '@/lib/venue-signature'
 import { scheduleKeys, eventMatchesKeys } from '@/lib/schedule-match'
 // Phase 2D-2: every comparison below stays inside ONE country (lib/discovery-country.ts).
@@ -262,6 +262,9 @@ export async function admitDiscoveryEvents(
       const r5 = r5Accept(row, match.venue, match.confidence, anchors)
       if (r5.ok) { venue = match.venue; out.venue = { id: venue.id, name: venue.name, how: match.confidence === 'high' ? 'high' : 'r5-accepted', reason: r5.reason } }
       else { rejectedByR5++; out.venue = { id: null, name: match.venue.name, how: 'r5-rejected', reason: `${match.venue.name} [${match.venue.village ?? '—'}]: ${r5.reason}` } }
+    } else if (row.venue_name && isGenericVenueName(row.venue_name)) {
+      // 🔴 A generic title ("Private Event", "TBC") is not a place: never created as a venue (16 October 2026).
+      out.venue = { id: null, name: row.venue_name, how: 'none', reason: 'generic title, not a venue — not matched, not created' }
     } else if (row.venue_name && row.village && !dry) {
       // no candidate at all → create on (name, village), no coordinates (the scraper's own shape)
       const { data: nv, error: cErr } = await supabase.from('venues')

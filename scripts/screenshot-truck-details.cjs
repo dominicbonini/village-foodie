@@ -464,7 +464,7 @@ function fakeDb(opts = {}) {
    * byte-identity check cannot tell a legitimate later build apart from a change to the bridging
    * logic. Each entry is a claim with a test attached — the loop below fails if a tolerated line is
    * no longer in the file, so a revert or a rename turns the excuse back into a failure. */
-  t('🔴 /api/inbound-schedule is unchanged apart from four named later builds', (() => {
+  t('🔴 /api/inbound-schedule is unchanged apart from five named later builds', (() => {
     const f = 'app/api/inbound-schedule/route.ts'
     const TOLERATED = [
       // event types stage 1-2: a creation path records that IT wrote order_ready_override.
@@ -496,6 +496,22 @@ function fakeDb(opts = {}) {
       "const fmtDate = (iso: string) => formatYmdShortMonth(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
       "const a = st ? formatTime(String(st), ts) : ''",
       "const b = et ? formatTime(String(et), ts) : ''",
+      /* ══ ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md) — THE FIFTH BUILD ══
+       * A scraped PRIVATE event gets no venue guess: the privacy test the insert already spreads
+       * (`scrapedPrivacyFields`) now also decides that the matcher's venue is not used (`matchedVenue` null), so no
+       * guessed coordinates or postcode are written for it. ⛔ The dedup above still reads the match, unchanged; no
+       * column, filter or admission rule moved. scripts/generic-venue-guess.cjs proves it (33/0). Named: the two code
+       * lines and the six lines of the comment block that explains them (comment lines are not compared by the diff
+       * below, so naming them here is what makes their presence a checked claim). The old `matchedVenue` line is in
+       * TOLERATED_REMOVED. */
+      "const scrapedPrivate = scrapedPrivacyFields(row.venue_name, row.event_notes).is_private",
+      "const matchedVenue = scrapedPrivate ? null : match.venue",
+      "/* ══ 🔴 A PRIVATE EVENT GETS NO VENUE GUESS (16 October 2026, docs/private-event-approval-fix-report.md) ═══════",
+      "* A private booking is never on a map and its venue is only the truck's own reference, so a GUESSED venue (and its",
+      "* coordinates and postcode) is all risk and no use — Pizzeria Gusto's \"Private Event\" rows arrived pinned to a junk",
+      "* venue at the centre of the UK. The privacy test is the same one the insert spreads below (`scrapedPrivacyFields`);",
+      "* the dedup above still uses the match, unchanged. A generic title is also never matched at all (lib/venue-matcher",
+      "* `isGenericVenueName`), for every event type. */",
     ]
     /* ══ ⛔ AND A LINE THAT WAS **REPLACED** NEEDS ITS OLD FORM TOLERATING TOO ════════════════════
      * `git diff` reports a replacement as a `-` AND a `+`, and this check reads both — so the first
@@ -519,6 +535,8 @@ function fakeDb(opts = {}) {
       // Language Phase 2 — the Phase 2B forms of the two lines it changed.
       "import { getLocalDateInTz, formatYmd, formatTime } from '@/lib/time-utils'",
       "const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
+      // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026): the line the fifth build replaced (a private event's guess is dropped).
+      "const matchedVenue = match.venue",
     ]
     if (gitClean(f)) return true
     let diff = ''

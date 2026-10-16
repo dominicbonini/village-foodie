@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import { createHash, randomUUID } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+// One list with lib/venue-matcher.ts: generic titles that are never a venue (16 October 2026).
+const GENERIC_VENUE_NAMES = new Set(JSON.parse(fs.readFileSync(new URL('../lib/generic-venue-names.json', import.meta.url), 'utf8')).names);
 // Phase 2D-2: the three schedule prompts, moved out UNCHANGED and given the source's country.
 import { buildPassARulePrompt, buildPassAEventPrompt, buildHgPrompt as hgPromptFor } from './scraper-prompts.js';
 // Authoritative geocoding + coordinate validation + the loud-failure assertions. A SEPARATE module so
@@ -2424,6 +2426,12 @@ if (newVenuesDetected.size > 0) {
         const village = q.village || null;
         if (!q.name || !village) {
           venueWriteFailures.push(`${q.name || '(no name)'}: no village — refused to write an unmatchable row`);
+          continue;
+        }
+        // 🔴 A GENERIC TITLE IS NOT A PLACE (16 October 2026): "Private Event", "TBC" … are never written as venues —
+        // the same list lib/venue-matcher.ts uses (lib/generic-venue-names.json), so findVenue never has one to match.
+        if (GENERIC_VENUE_NAMES.has(String(q.name).toLowerCase().replace(/[^a-z0-9]/g, ''))) {
+          venueWriteFailures.push(`${q.name} (${village}): a generic title, not a place — not written`);
           continue;
         }
 

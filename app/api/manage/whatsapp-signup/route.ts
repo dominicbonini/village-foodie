@@ -39,6 +39,13 @@ import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 import { parseMetaAppSecrets } from '@/lib/meta/webhook-signature'
 import { FINISH_COEXISTENCE, FINISH_CLOUD_API, FINISH_ONLY_WABA, FINISH_OBO_MIGRATION, FINISH_GRANT_ONLY_API_ACCESS } from '@/lib/whatsapp/embedded-signup'
 import { readWhatsAppConnection, type WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
+// Language Phase 1d Part 2: refusals are `{ ok:false, kind, error, code, params }` (`errorsManage`), and each outcome's
+// `message` is `manageWhatsApp.signup.<key>` — both in the truck's language (en-GB before the truck is known).
+import { manageErrorBody, type ManageErrorCode } from '@/lib/i18n/manage-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/manageWhatsApp'
 
 // Node runtime: token-crypto uses node:crypto, which the edge runtime does not provide.
 export const runtime = 'nodejs'
@@ -70,8 +77,7 @@ const GRAPH = `https://graph.facebook.com/${ONBOARDING_GRAPH_VERSION}`
 // name: it produces a confident date for a token whose real death we did not observe, and the
 // failure is silent until a truck stops answering customers mid-service.
 
-const CODE_DEAD_MESSAGE =
-  'That took too long and the one-time code from Meta expired. Nothing was saved. Press Set up and run through it again — it should only take a minute.'
+// ⛔ CODE_DEAD_MESSAGE moved to messages (Language Phase 1d Part 2): `errorsManage.wa_code_expired`.
 
 /** 🔴 THE ONE FUNNEL FOR GRAPH ERRORS. Meta's error bodies can echo the request, so the raw body never
  *  reaches a log line or the operator. Only the structured error code/type survive. */
@@ -88,11 +94,17 @@ function redactGraphError(body: unknown): { code: string | null; type: string | 
  *  ciphertext and no ids. Reusing it here means this route cannot invent a richer, leakier shape of
  *  its own, and the client updates its state from the DATABASE rather than from a guess. */
 type Ok = { ok: true; state: string; message: string; connection: WhatsAppConnectionView }
-type Fail = { ok: false; kind: string; error: string }
+type Fail = { ok: false; kind: string; error: string; code: ManageErrorCode; params: Record<string, string | number> }
 
-function fail(kind: string, error: string, status: number) {
-  return NextResponse.json<Fail>({ ok: false, kind, error }, { status })
+/** A refusal: the body this route always sent (`ok`, `kind`, `error`), then `code` and `params` last. */
+function fail(locale: string, kind: string, code: ManageErrorCode, status: number) {
+  const b = manageErrorBody(locale, code)
+  return NextResponse.json<Fail>({ ok: false, kind, error: b.error, code: b.code, params: b.params }, { status })
 }
+
+/** An outcome's words, `manageWhatsApp.signup.<key>`, in the truck's language. */
+type SignupMessage = 'logged' | 'partial' | 'noNumber' | 'needsRegistering' | 'registerRefused' | 'deliveryRefused' | 'numberTaken' | 'saveIncomplete' | 'connected'
+const signupWords = (locale: string, key: SignupMessage) => translatorFor(locale, 'manageWhatsApp')(`signup.${key}`)
 
 /**
  * 🔴 THE ONE WAY THIS ROUTE REPORTS SUCCESS, AND `state` IS DERIVED, NEVER TYPED IN. ───────────────
@@ -117,19 +129,20 @@ export async function POST(req: NextRequest) {
   try {
     body = (await req.json()) as Record<string, unknown>
   } catch {
-    return fail('bad_request', 'The request body was not valid JSON.', 400)
+    return fail(DEFAULT_LOCALE, 'bad_request', 'wa_bad_json', 400)
   }
 
   const token = typeof body.token === 'string' ? body.token : ''
-  if (!token) return fail('unauthorised', 'Token required', 401)
+  if (!token) return fail(DEFAULT_LOCALE, 'unauthorised', 'token_required', 401)
 
   // 🔴 THE TRUCK COMES FROM THE TOKEN AND FROM NOTHING ELSE. See the header.
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id, name, feature_overrides')
+    .select('id, name, feature_overrides, country')
     .eq('dashboard_token', token)
     .single()
-  if (!truck) return fail('unauthorised', 'Invalid token', 401)
+  if (!truck) return fail(DEFAULT_LOCALE, 'unauthorised', 'invalid_token', 401)
+  const locale = await localeForTruck(truck)
 
   // ── 🔴 THE PREVIEW GATE. BEFORE ANY GRAPH CALL AND BEFORE ANY WRITE. ──────────────────────────────
   // The UI already hides the Set up button unless this passes, but the UI is not the enforcement: this
@@ -143,11 +156,7 @@ export async function POST(req: NextRequest) {
   // sibling `update_truck` allowlist excludes it precisely so a token holder cannot self-grant.
   if (!WHATSAPP_LIVE && !hasWhatsAppSetupPreview(truck.feature_overrides)) {
     console.warn(`${TAG} setup refused — preview not enabled`, { truck_id: truck.id })
-    return fail(
-      'not_available',
-      'WhatsApp setup is not available for this account yet. Nothing was changed.',
-      403,
-    )
+    return fail(locale, 'not_available', 'wa_signup_not_available', 403)
   }
 
   const kind = typeof body.kind === 'string' ? body.kind : ''
@@ -167,10 +176,10 @@ export async function POST(req: NextRequest) {
       error_message: typeof body.errorMessage === 'string' ? body.errorMessage : null,
       session_id: typeof body.sessionId === 'string' ? body.sessionId : null,
     })
-    return NextResponse.json({ ok: true, state: 'unchanged', message: 'Logged.' })
+    return NextResponse.json({ ok: true, state: 'unchanged', message: signupWords(locale, 'logged') })
   }
 
-  if (kind !== 'complete') return fail('bad_request', 'Unrecognised signup outcome.', 400)
+  if (kind !== 'complete') return fail(locale, 'bad_request', 'wa_unrecognised_outcome', 400)
 
   const code = typeof body.code === 'string' ? body.code : ''
   const wabaId = typeof body.wabaId === 'string' && body.wabaId ? body.wabaId : ''
@@ -178,15 +187,15 @@ export async function POST(req: NextRequest) {
   const businessId = typeof body.businessId === 'string' && body.businessId ? body.businessId : null
   const finishType = typeof body.finishType === 'string' ? body.finishType : ''
 
-  if (!code) return fail('bad_request', 'Meta did not return a one-time code. Press Set up and try again.', 400)
-  if (!wabaId) return fail('bad_request', 'Meta did not return a WhatsApp Business Account. Press Set up and try again.', 400)
+  if (!code) return fail(locale, 'bad_request', 'wa_no_code', 400)
+  if (!wabaId) return fail(locale, 'bad_request', 'wa_no_waba', 400)
 
   // ── CONFIGURATION, CHECKED BEFORE THE CLOCK STARTS ───────────────────────────────────────────────
   // 🔴 CHECKED FIRST, DELIBERATELY. Discovering a missing env var AFTER burning the 30-second code
   // costs the operator a second run of the whole wizard for a fault that is entirely ours.
   if (!encryptionKeyConfigured()) {
     console.error(TAG, 'WHATSAPP_TOKEN_ENCRYPTION_KEY missing — refusing to exchange', { truck_id: truck.id })
-    return fail('not_configured', 'WhatsApp setup is not available right now. We have been alerted — please contact support.', 503)
+    return fail(locale, 'not_configured', 'wa_not_configured', 503)
   }
   const appId = process.env.NEXT_PUBLIC_WHATSAPP_SIGNUP_APP_ID
   const secrets = parseMetaAppSecrets(process.env.META_WHATSAPP_APP_SECRET)
@@ -194,7 +203,7 @@ export async function POST(req: NextRequest) {
     console.error(TAG, 'app id or app secret missing — refusing to exchange', {
       truck_id: truck.id, has_app_id: !!appId, secret_count: secrets.length,
     })
-    return fail('not_configured', 'WhatsApp setup is not available right now. We have been alerted — please contact support.', 503)
+    return fail(locale, 'not_configured', 'wa_not_configured', 503)
   }
   // ⚠️ `META_WHATSAPP_APP_SECRET` IS A COMMA-SEPARATED LIST (parseMetaAppSecrets) so the webhook can
   // verify signatures across an app-secret rotation. The exchange needs exactly ONE secret and it must
@@ -217,7 +226,7 @@ export async function POST(req: NextRequest) {
     const json = await res.json().catch(() => ({}))
     if (!res.ok || !json?.access_token) {
       console.error(TAG, 'code exchange failed', { truck_id: truck.id, status: res.status, ...redactGraphError(json) })
-      return fail('exchange_failed', CODE_DEAD_MESSAGE, 502)
+      return fail(locale, 'exchange_failed', 'wa_code_expired', 502)
     }
     accessToken = String(json.access_token)
     // 🔴 READ THE EXPIRY META ACTUALLY RETURNED. `expires_in` is seconds from now, and Meta omits it
@@ -230,7 +239,7 @@ export async function POST(req: NextRequest) {
     // ⚠️ `(e as Error).message` ONLY. A thrown fetch error can carry the request URL in some runtimes,
     // and that URL holds the secret and the code — so the error OBJECT is never spread or serialised.
     console.error(TAG, 'code exchange threw', { truck_id: truck.id, message: (e as Error).message })
-    return fail('exchange_failed', CODE_DEAD_MESSAGE, 502)
+    return fail(locale, 'exchange_failed', 'wa_code_expired', 502)
   }
 
   // 🔴 ONE INSTANT, USED FOR BOTH ENDS OF THE LIFETIME. `issuedAt` is captured here — immediately after
@@ -282,7 +291,7 @@ export async function POST(req: NextRequest) {
     if (noExpiry.error) {
       console.error(TAG, 'no-expiry write failed', { truck_id: truck.id, code: noExpiry.error.code, message: noExpiry.error.message })
     }
-    return ok(truck.id, 'We linked your WhatsApp Business account but could not complete the connection. Nothing is wrong on your side — please contact us and we will finish it.')
+    return ok(truck.id, signupWords(locale, 'partial'))
   }
 
   // ── PHASE A WRITE: THE TOKEN IS PERSISTED BEFORE CALLS 2 AND 3, WITHOUT `phone_number_id`. ───────
@@ -317,7 +326,7 @@ export async function POST(req: NextRequest) {
 
   if (phaseA.error) {
     console.error(TAG, 'phase A write failed', { truck_id: truck.id, code: phaseA.error.code, message: phaseA.error.message })
-    return fail('write_failed', 'We connected to Meta but could not save the connection. Please contact support — do not run the setup again yet.', 500)
+    return fail(locale, 'write_failed', 'wa_write_failed', 500)
   }
 
   // ── CALL 2: REGISTER THE BUSINESS PHONE NUMBER FOR CLOUD API USE ────────────────────────────────
@@ -353,7 +362,7 @@ export async function POST(req: NextRequest) {
   if (!phoneNumberId) {
     // FINISH_ONLY_WABA and abandonment-after-WABA both land here. The row stays at
     // `onboarding_incomplete` and the operator is told what is missing.
-    return ok(truck.id, 'Your WhatsApp Business account is linked, but no phone number came back. Press Reconnect and finish the number step.')
+    return ok(truck.id, signupWords(locale, 'noNumber'))
   }
 
   if (!rule.register) {
@@ -367,7 +376,7 @@ export async function POST(req: NextRequest) {
       console.error(TAG, 'registration required but WHATSAPP_REGISTRATION_PIN is unset or not six digits', {
         truck_id: truck.id, finish_type: finishType || null, why: rule.why,
       })
-      return ok(truck.id, 'Your account is linked, but this number needs registering by us before replies can start. Please contact support — your setup is saved, do not run it again.')
+      return ok(truck.id, signupWords(locale, 'needsRegistering'))
     }
     const reg = await fetch(`${GRAPH}/${encodeURIComponent(phoneNumberId)}/register`, {
       method: 'POST',
@@ -377,7 +386,7 @@ export async function POST(req: NextRequest) {
     if (!reg.ok) {
       const j = await reg.json().catch(() => ({}))
       console.error(TAG, 'phone number registration failed', { truck_id: truck.id, status: reg.status, ...redactGraphError(j) })
-      return ok(truck.id, 'Your account is linked but Meta would not register the number. Your setup is saved — please contact support rather than running it again.')
+      return ok(truck.id, signupWords(locale, 'registerRefused'))
     }
   }
 
@@ -391,7 +400,7 @@ export async function POST(req: NextRequest) {
   if (!sub.ok) {
     const j = await sub.json().catch(() => ({}))
     console.error(TAG, 'webhook subscription failed', { truck_id: truck.id, status: sub.status, ...redactGraphError(j) })
-    return ok(truck.id, 'Your account is linked but Meta would not turn on message delivery. Your setup is saved — please contact support rather than running it again.')
+    return ok(truck.id, signupWords(locale, 'deliveryRefused'))
   }
 
   // ── PHASE B WRITE: THE NUMBER GOES IN LAST, AND THAT IS WHAT MAKES THE STATE `ready`. ────────────
@@ -407,10 +416,10 @@ export async function POST(req: NextRequest) {
     // hunting through Postgres logs, so it is named exactly.
     if (phaseB.error.code === '23505') {
       console.error(TAG, 'phone_number_id already claimed by another truck', { truck_id: truck.id })
-      return ok(truck.id, 'That WhatsApp number is already connected to another HatchGrab account. A number can only answer for one truck. Contact support and we will move it across.')
+      return ok(truck.id, signupWords(locale, 'numberTaken'))
     }
     console.error(TAG, 'phase B write failed', { truck_id: truck.id, code: phaseB.error.code, message: phaseB.error.message })
-    return ok(truck.id, 'Almost there — we could not finish saving. Your setup is saved, please contact support rather than running it again.')
+    return ok(truck.id, signupWords(locale, 'saveIncomplete'))
   }
 
   // ── 🔴 THE DISPLAY PROFILE. LAST, AND DELIBERATELY AFTER EVERYTHING THAT MATTERS. ───────────────
@@ -458,5 +467,5 @@ export async function POST(req: NextRequest) {
     coexistence: isCoexistence, registered: rule.register, register_skipped: registerSkipped,
   })
 
-  return ok(truck.id, 'WhatsApp is connected. Auto-replies will start answering messages to this number.')
+  return ok(truck.id, signupWords(locale, 'connected'))
 }

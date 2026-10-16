@@ -16,7 +16,8 @@ import { createClient } from '@supabase/supabase-js'
 import { canAccess } from '@/lib/features'
 /* 🔴 THE PLAN SENTENCE, SHARED WITH THE SCREEN. See the note in that file for why it is not declared
  * here: the component needs it too, and a route file cannot be imported into the client bundle. */
-import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
+/* ⛔ `WEEKLY_POST_PLAN_REFUSAL` (lib/copy/weeklyPost.ts) IS NO LONGER IMPORTED HERE (Language Phase 1d Part 2): the gate's
+ * refusal is the `errorsManage.social_media_plan` code now — the same sentence, byte for byte, in the truck's language. */
 import { scanUrl } from '@/lib/custom-domain/copy'
 import type { Place } from '@/lib/schedule-graphics/places'
 /* 🔴 THE SHARED PLACE RULES, for `social_overview`. `groupEventsByPlace` follows `merged_into_id`, so a
@@ -30,6 +31,18 @@ import { buildWeekData, busyWeekData, type WeekEvent } from '@/lib/weekly-post/w
  * MAY DEFAULT TO 'GB' ITSELF — that would be a second answer to the same question. */
 import { countryForTruck } from '@/lib/weekly-post/locale'
 import { truckTimeSettings } from '@/lib/truck-time'
+/* ══ 🔴 EVERY REFUSAL IS A CODE, EVERY WORD A MESSAGE (Language Phase 1d Part 2) ═══════════════════════════════════
+ * A refusal of ours is `{ error, …extra, code, params }` through `manageErrorBody` (lib/i18n/manage-errors.ts) — the
+ * `errorsManage` codes, `wp_…` for this route's own — in the truck's language (`localeForTruck`; en-GB before the
+ * truck is known). `error` is today's English for a GB truck, byte for byte. A database or exception message we did
+ * not write is passed on unchanged and without a code. The other words this route sends (warnings, status lines,
+ * option labels) are `weeklyPostApi`; the words a poster DRAWS follow the poster's country (lib/weekly-post/words.ts). */
+import { manageErrorBody, type ManageErrorCode } from '@/lib/i18n/manage-errors'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { weeklyPostWordsFor, type WpRefusal } from '@/lib/weekly-post/words'
+import { localeFor } from '@/lib/weekly-post/locale'
+import { wpRefusal, type WpErrorCode } from '@/lib/weekly-post/words'
 import {
   defaultLayout, defaultEventLayout, rowsFitWarning, validateLayout, validateEventLayout,
   /* 🔴 THE ONE DOOR IN FOR A **STORED** LAYOUT (7 October 2026). The validators above guard every
@@ -45,7 +58,8 @@ import {
 import { renderEventPost } from '@/lib/weekly-post/render'
 /* 🔴 PRIVATE EVENTS (20261014): "Private event" with the date and times, and no single-event post. */
 import { readPrivateEventIds } from '@/lib/private-events/read'
-import { PRIVATE_NO_SINGLE_POST } from '@/lib/private-events/copy'
+/* ⚠️ `PRIVATE_NO_SINGLE_POST` (lib/private-events/copy.ts) is no longer imported: the refusal is `errorsManage.wp_private_no_single_post`,
+ * the same sentence for a GB truck (Language Phase 1d Part 2). */
 import { entryFor } from '@/lib/weekly-post/week-data'
 import { checkUpload, readImageInfo, toDataUri } from '@/lib/weekly-post/image-info'
 /* 🔴 "IS THIS DESIGN SET UP?", ANSWERED ONCE. Four readers in this file were asking it four different
@@ -65,7 +79,7 @@ import {
   type FontRegistry, type FontStorage, type LibraryFaceRow, type OwnFaceRow, type StoreDeps,
 } from '@/lib/weekly-post/font-store'
 import {
-  FACES, MAX_FONT_BYTES, WOFF_REFUSAL, faceKey, ownFontId, parseFontId, slugOfFamily,
+  FACES, MAX_FONT_BYTES, faceKey, faceLabelFor, ownFontId, parseFontId, slugOfFamily,
 } from '@/lib/weekly-post/font-refs'
 import { faceOfFont, lineHeightPx, measureText, readFontMetrics, readFontNames } from '@/lib/weekly-post/ttf-metrics'
 import { ImageResponse } from 'next/og'
@@ -110,8 +124,7 @@ const SLOT_NAMES = ['event', 'weekly', 'event-photo'] as const
 const asSlotName = (v: unknown): SlotName | null =>
   (SLOT_NAMES as readonly string[]).includes(String(v)) ? (String(v) as SlotName) : null
 /** The refusal, in one place so all three call sites say the same thing. */
-const badSlot = () =>
-  NextResponse.json({ error: 'That is not a picture slot.' }, { status: 400 })
+const badSlot = (locale: string) => refuse(locale, 'wp_bad_slot', 400)
 /* ── 8 October 2026: saved captions, with labels where the facts go. */
 import {
   seedWeekTemplate, seedEventTemplate, fillCaptionTemplate,
@@ -138,15 +151,38 @@ const EVENT_KIND = 'event'
  * following it would have re-run a migration that was fine and still had a broken screen.
  * ⚠️ SHARED BY EVERY READER AND WRITER THAT NAMES A SLOT COLUMN, so they cannot drift into different
  * answers — including `social_overview`'s own read, which is the one that found this. */
-const MIGRATION_NEEDED =
-  'Location pictures need a database update — run '
-  + 'supabase/migrations/20261022_three_location_pictures.sql first.'
+/* ⚠️ THE SENTENCE IS THE `errorsManage.wp_migration_three_pictures` CODE NOW (Language Phase 1d Part 2), sent through
+ * `refuse` — the same words for a GB truck, and still the one sentence every reader and writer shares. */
 type DesignKind = typeof KIND | typeof EVENT_KIND
 const kindOf = (v: unknown): DesignKind => (v === EVENT_KIND ? EVENT_KIND : KIND)
 /** How long a browser's view of the blank stays valid. Long enough to design, short enough to matter. */
 const SIGNED_URL_SECONDS = 60 * 60
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+
+/** A refusal of ours, in the truck's language: `{ error, …extra, code, params }`. */
+const refuse = (
+  locale: string | null | undefined, code: ManageErrorCode, status: number,
+  params: Record<string, string> = {}, extra?: Record<string, unknown>,
+) => NextResponse.json(manageErrorBody(locale, code, params, extra), { status })
+/** A refusal a lib function produced as a code (`WpRefusal`) — a layout check, an upload check, a tag check. */
+const refuseWith = (locale: string | null | undefined, r: WpRefusal, status: number, extra?: Record<string, unknown>) =>
+  refuse(locale, r.code, status, r.params, extra)
+
+/**
+ * A layout the validator refused: its FIRST issue as the refusal, and — where the body always carried it — `errors`,
+ * every issue worded in the truck's language. ⚠️ GB: `error` and `errors` are exactly the sentences they were.
+ * `fallback` is the sentence for a refusal with no issue (never produced today; kept as it was).
+ */
+const layoutRefusal = (
+  locale: string, v: { issues: WpRefusal[] }, fallback: ManageErrorCode, withList: boolean,
+) => {
+  const first: WpRefusal | undefined = v.issues[0]
+  const extra = withList
+    ? { errors: v.issues.map(i => manageErrorBody(locale, i.code, i.params).error) }
+    : undefined
+  return first ? refuseWith(locale, first, 400, extra) : refuse(locale, fallback, 400, {}, extra)
+}
 
 type TruckRow = {
   id: string; name: string; slug: string | null
@@ -184,7 +220,7 @@ async function getTruck(token: string): Promise<TruckRow | null> {
  * / `event_render`, the uploads, the caption writes and the font file are all behind it. There is no
  * other entry point.
  */
-function gated(truck: TruckRow): NextResponse | null {
+function gated(truck: TruckRow, locale: string): NextResponse | null {
   const ok = canAccess(
     truck.plan as never,
     'schedule_graphics' as never,
@@ -197,7 +233,7 @@ function gated(truck: TruckRow): NextResponse | null {
    * twice once before and both copies were wrong the same way. ⚠️ TRIAL, TESTER AND DEMO ALSO PASS,
    * because `TRIAL_FEATURES` spreads `MAX_FEATURES`; the sentence names the plan a paying truck buys,
    * which is what an upgrade prompt is for. */
-  return ok ? null : NextResponse.json({ error: WEEKLY_POST_PLAN_REFUSAL }, { status: 403 })
+  return ok ? null : refuse(locale, 'social_media_plan', 403)
 }
 
 async function loadDesign(truckId: string, kind: DesignKind = KIND) {
@@ -366,7 +402,7 @@ async function readPlaceSlots(
  */
 async function setPlaceSlot(
   truckId: string, placeId: string, slot: SlotName, pictureId: string | null,
-): Promise<{ ok: true } | { ok: false; error: string; status: number }> {
+): Promise<{ ok: true } | { ok: false; error: string; status: number; refusal?: WpRefusal }> {
   /* ⚠️ `weekly-only` IS THE THIRD SLOT SINCE 9 OCTOBER — the optional override weekly posts use
    * instead of the location picture. ⛔ IT IS ITS OWN COLUMN AND NOT A FLAG, because the override is a
    * DIFFERENT PICTURE: no flag on one row can hold two files. */
@@ -382,10 +418,8 @@ async function setPlaceSlot(
      * an operator seeing the file name forwards it to whoever runs SQL. The same shape
      * `place_picture_confirm` uses for the library's table. */
     if (code === 'PGRST204' || code === 'PGRST205' || code === '42703' || code === '42P01') {
-      return {
-        ok: false, status: 503,
-        error: 'Location images need a database update — run supabase/migrations/20261019_place_picture_slots.sql first.',
-      }
+      const r = wpRefusal('wp_migration_slots')
+      return { ok: false, status: 503, error: r.error, refusal: { code: r.code, params: r.params } }
     }
     return { ok: false, status: 500, error: error.message }
   }
@@ -683,26 +717,35 @@ function placeDesignStatus(a: {
   hasPicture: boolean
   ownPositions: boolean
   fitsDefault: boolean
-}): string {
-  if (a.hasPicture && a.ownPositions) return 'Own picture and text positions'
+}, locale: string): string {
+  const w = weeklyPostWordsFor(locale)
+  if (a.hasPicture && a.ownPositions) return w('placeStatus.ownBoth')
   /* ⚠️ THE SHAPE WARNING ONLY APPLIES TO A PLACE ON STANDARD'S POSITIONS. A place with its own
    * positions may be any shape, so "different shape" is not a fault there. */
-  if (a.hasPicture && !a.fitsDefault) return 'Different shape — not used until replaced'
-  if (a.hasPicture) return 'Own picture, standard positions'
-  if (a.ownPositions) return 'Standard picture, own text positions'
-  return 'No picture yet — using Standard'
+  if (a.hasPicture && !a.fitsDefault) return w('placeStatus.wrongShape')
+  if (a.hasPicture) return w('placeStatus.ownPicture')
+  if (a.ownPositions) return w('placeStatus.ownPositions')
+  return w('placeStatus.none')
 }
 
 /** The refusal when a place with a differently shaped picture is switched back to Standard positions. */
-const BACK_TO_STANDARD_REFUSAL =
-  'This place’s picture is a different shape from your Standard one, so the standard text positions would not fit it. Replace the picture with one the same shape as your Standard picture first, or keep this place’s own positions.'
+/* ⛔ `BACK_TO_STANDARD_REFUSAL` IS THE `errorsManage.wp_back_to_standard` CODE NOW (Language Phase 1d Part 2) — the same
+ * sentence for a GB truck, through `refuse`. */
+
+/** `eventPostContext`'s refusal: the en-GB `error` (as it always was) and the code the caller words it with. */
+const ctxRefusal = (code: WpErrorCode, status: number) => {
+  const r = wpRefusal(code)
+  return { error: r.error, status, refusal: { code: r.code, params: r.params } }
+}
 
 async function eventPostContext(
   truck: TruckRow,
   eventId: string,
   design: DesignRow,
-  force?: string | null,
-): Promise<{ error: string; status: number } | {
+  force: string | null | undefined,
+  /** The truck's message locale — for the option labels this returns. */
+  locale: string,
+): Promise<{ error: string; status: number; refusal: WpRefusal } | {
   entry: ReturnType<typeof entryFor>
   date: string
   placeId: string | null
@@ -722,12 +765,12 @@ async function eventPostContext(
   town: string | null
 }> {
   if (!design?.blank_path || !design.width || !design.height) {
-    return { error: 'No event design yet.', status: 400 }
+    return ctxRefusal('wp_no_event_design', 400)
   }
   const { data: ev } = await supabase.from('truck_events')
     .select('id, event_date, start_time, end_time, status, venue_name, venue_id, truck_place_id, town')
     .eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-  if (!ev) return { error: 'Event not found', status: 404 }
+  if (!ev) return ctxRefusal('event_not_found', 404)
 
   const { data: places } = await supabase.from('truck_places')
     .select(`id, venue_id, name_key, name, short_name, area, merged_into_id, is_hidden, event_bg_path, event_bg_width, event_bg_height, event_layout, ${SLOT_COLS}`)
@@ -843,15 +886,16 @@ async function eventPostContext(
    * standard text positions. Choosing it at a location with its own positions moves the text too,
    * which is why `layoutSource` crosses the wire beside it. */
   const photoSpace = standardLayout?.placePicture?.enabled === true
-  if (usableOneOff) options.push({ source: 'event', path: usableOneOff.path, label: 'Upload one for this post only' })
+  const words = weeklyPostWordsFor(locale)
+  if (usableOneOff) options.push({ source: 'event', path: usableOneOff.path, label: words('option.oneOff') })
   /* ══ ⛔ ALWAYS "poster" NOW — THE LABEL NO LONGER FOLLOWS THE DESIGN (8 October 2026) ═════════════
    * It read "<Location>'s photo" when the standard design had a photo space and "<Location>'s poster"
    * when it did not, because the slot meant two different things. The slot IS the poster now, so the
    * word is fixed — and `eventImageMode` is no longer consulted anywhere on this route. */
   if (usablePlace) {
-    options.push({ source: 'place', path: usablePlace.path, label: `${entry.name}’s poster` })
+    options.push({ source: 'place', path: usablePlace.path, label: words('option.placePoster', { name: entry.name }) })
   }
-  options.push({ source: 'default', path: design.blank_path, label: 'Standard design' })
+  options.push({ source: 'default', path: design.blank_path, label: words('option.standard') })
 
   const canvas = resolved.layoutSource === 'place' && sized(placeImgRaw)
     ? { width: placeImgRaw.width!, height: placeImgRaw.height! }
@@ -904,19 +948,20 @@ async function eventPostContext(
 export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const token = String(url.searchParams.get('token') ?? '')
-  if (!token) return NextResponse.json({ error: 'Token required' }, { status: 401 })
+  if (!token) return refuse(DEFAULT_LOCALE, 'token_required', 401)
   const truck = await getTruck(token)
-  if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-  const blocked = gated(truck)
+  if (!truck) return refuse(DEFAULT_LOCALE, 'invalid_token', 401)
+  const locale = await localeForTruck(truck)
+  const blocked = gated(truck, locale)
   if (blocked) return blocked
 
   const id = String(url.searchParams.get('font') ?? '')
-  if (!id) return NextResponse.json({ error: 'font required' }, { status: 400 })
+  if (!id) return refuse(locale, 'wp_font_required', 400)
   const ref = parseFontId(id)
-  if (!ref) return NextResponse.json({ error: 'Unknown font' }, { status: 404 })
+  if (!ref) return refuse(locale, 'wp_unknown_font', 404)
   /* 🔴 THE REFUSAL, AND IT IS THE FIRST THING CHECKED AFTER THE ID PARSES. See the note above. */
   if (ref.kind === 'own') {
-    return NextResponse.json({ error: 'An uploaded font is not served to the browser.' }, { status: 403 })
+    return refuse(locale, 'wp_font_not_served', 403)
   }
 
   /* ⚠️ `w` AND `s` NARROW TO THE FOUR FACES THIS PRODUCT HAS. Anything else is read as the regular,
@@ -931,7 +976,7 @@ export async function GET(req: NextRequest) {
   const face = loaded.bundle.resolve(id, bold, italic)
   const file = loaded.bundle.satoriFonts()
     .find(f => f.name === face.family && f.weight === face.weight && f.style === face.style)
-  if (!file) return NextResponse.json({ error: 'That font could not be loaded.' }, { status: 404 })
+  if (!file) return refuse(locale, 'wp_font_not_loaded', 404)
 
   return new NextResponse(new Uint8Array(file.data), {
     status: 200,
@@ -953,13 +998,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
-  try { body = await req.json() } catch { return NextResponse.json({ error: 'Bad request' }, { status: 400 }) }
+  try { body = await req.json() } catch { return refuse(DEFAULT_LOCALE, 'bad_request', 400) }
 
   const token = String(body.token ?? '')
-  if (!token) return NextResponse.json({ error: 'Token required' }, { status: 401 })
+  if (!token) return refuse(DEFAULT_LOCALE, 'token_required', 401)
   const truck = await getTruck(token)
-  if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-  const blocked = gated(truck)
+  if (!truck) return refuse(DEFAULT_LOCALE, 'invalid_token', 401)
+  const locale = await localeForTruck(truck)
+  const blocked = gated(truck, locale)
   if (blocked) return blocked
 
   const action = String(body.action ?? '')
@@ -1007,7 +1053,7 @@ export async function POST(req: NextRequest) {
        * was one old saved design away from the same crash. */
       design: designIsReady(design) ? {
         width: design!.width, height: design!.height,
-        layout: readStoredLayout(design!.layout, design!.width ?? 0, design!.height ?? 0).layout,
+        layout: readStoredLayout(design!.layout, design!.width ?? 0, design!.height ?? 0, country).layout,
         blankUrl: await signed(design!.blank_path),
         exampleUrl: await signed(design!.example_path),
         updatedAt: design!.updated_at,
@@ -1078,7 +1124,7 @@ export async function POST(req: NextRequest) {
     if (placeErr) {
       const code = (placeErr as { code?: string }).code
       if (code === 'PGRST204' || code === 'PGRST205' || code === '42703' || code === '42P01') {
-        return NextResponse.json({ error: MIGRATION_NEEDED }, { status: 503 })
+        return refuse(locale, 'wp_migration_three_pictures', 503)
       }
     }
     const allPlaces = ((placeRows ?? []) as unknown as Place[])
@@ -1134,9 +1180,9 @@ export async function POST(req: NextRequest) {
      * ⛔ `showPrivate` FOLLOWS THE POSTER — see the call below. It was `false` on the reasoning that
      * "the weekly poster leaves private bookings out"; it does not any more.
      */
-    const weekTplForCaption = String(weekDesign?.caption_template ?? '').trim() || seedWeekTemplate(truck.name)
+    const weekTplForCaption = String(weekDesign?.caption_template ?? '').trim() || seedWeekTemplate(truck.name, country)
     const weeklyTimeStyle = readStoredLayout(
-      weekDesign?.layout, weekDesign?.width ?? 1080, weekDesign?.height ?? 1350,
+      weekDesign?.layout, weekDesign?.width ?? 1080, weekDesign?.height ?? 1350, country,
     ).layout.timeStyle
     /* ⚠️ IT TAKES THE WHOLE `WeekRange`, not a start and an end: `buildWeekData` needs its seven `days`
      * to produce the days off, and `weekRange()` has already computed them. Passing two strings would
@@ -1309,11 +1355,11 @@ export async function POST(req: NextRequest) {
        * over a caption nobody has saved. */
       captions: {
         week: {
-          template: String(weekDesign?.caption_template ?? '') || seedWeekTemplate(truck.name),
+          template: String(weekDesign?.caption_template ?? '') || seedWeekTemplate(truck.name, country),
           saved: typeof weekDesign?.caption_template === 'string',
         },
         event: {
-          template: String(evDesign?.caption_template ?? '') || seedEventTemplate(truck.name),
+          template: String(evDesign?.caption_template ?? '') || seedEventTemplate(truck.name, country),
           saved: typeof evDesign?.caption_template === 'string',
         },
       },
@@ -1342,7 +1388,7 @@ export async function POST(req: NextRequest) {
        * produces nothing, and the screen is the only place that can say it before the truck finds out
        * from a finished poster. */
       weeklyPictureOn: readStoredLayout(
-        weekDesign?.layout, weekDesign?.width ?? 0, weekDesign?.height ?? 0,
+        weekDesign?.layout, weekDesign?.width ?? 0, weekDesign?.height ?? 0, country,
       ).layout.placePicture.enabled,
       /* ══ ⚠️ ELEVEN NOW, NOT SIX (7 October 2026) ═══════════════════════════════════════════════
        * "Single event post" shows the NEXT event in full plus "▾ More events (n)" — about ten — so the
@@ -1447,9 +1493,9 @@ export async function POST(req: NextRequest) {
   if (action === 'confirm_upload') {
     const path = String(body.path ?? '')
     const which = String(body.which ?? 'blank')
-    if (!path.startsWith(`${truck.id}/`)) return NextResponse.json({ error: 'Unknown file' }, { status: 400 })
+    if (!path.startsWith(`${truck.id}/`)) return refuse(locale, 'wp_unknown_file', 400)
     const bytes = await downloadObject(path)
-    if (!bytes) return NextResponse.json({ error: 'That upload did not arrive — please try again.' }, { status: 400 })
+    if (!bytes) return refuse(locale, 'wp_upload_missing', 400)
 
     /* 🔴 CHECKED FROM THE BYTES, NOT FROM WHAT THE CLIENT SAID. The dimensions decide every box's
      * bounds check later, so they are read here from the file's own header. */
@@ -1458,7 +1504,7 @@ export async function POST(req: NextRequest) {
       /* ⚠️ A REFUSED FILE IS REMOVED. Leaving it would accumulate unreferenced objects in a private
        * bucket that nothing ever lists. */
       await supabase.storage.from(BUCKET).remove([path])
-      return NextResponse.json({ error: check.error }, { status: 400 })
+      return refuseWith(locale, check, 400)
     }
 
     /* ══ 🔴 STAGE 2b · THE SHAPE RULE, WHICH NOW DEPENDS ON WHOSE POSITIONS ARE USED ══════════════
@@ -1476,7 +1522,7 @@ export async function POST(req: NextRequest) {
       const { design: eventDesign } = await loadDesign(truck.id, EVENT_KIND)
       if (!eventDesign?.width || !eventDesign?.height) {
         await supabase.storage.from(BUCKET).remove([path])
-        return NextResponse.json({ error: 'Set up your event post design first.' }, { status: 400 })
+        return refuse(locale, 'wp_event_design_first', 400)
       }
 
       if (which === 'place') {
@@ -1484,7 +1530,7 @@ export async function POST(req: NextRequest) {
         const { data: place } = await supabase.from('truck_places')
           .select(`id, event_bg_path, event_bg_width, event_bg_height, event_layout, ${SLOT_COLS}`)
           .eq('id', placeId).eq('truck_id', truck.id).maybeSingle()
-        if (!place) { await supabase.storage.from(BUCKET).remove([path]); return NextResponse.json({ error: 'Place not found' }, { status: 404 }) }
+        if (!place) { await supabase.storage.from(BUCKET).remove([path]); return refuse(locale, 'wp_place_not_found', 404) }
         const row = place as {
           event_bg_path?: string | null; event_bg_width?: number | null
           event_bg_height?: number | null; event_layout?: unknown
@@ -1496,7 +1542,7 @@ export async function POST(req: NextRequest) {
           const aspect = checkAspect(check.info.width, check.info.height, eventDesign.width, eventDesign.height)
           if (!aspect.ok) {
             await supabase.storage.from(BUCKET).remove([path])
-            return NextResponse.json({ error: aspect.error }, { status: 400 })
+            return refuseWith(locale, aspect, 400)
           }
         }
 
@@ -1540,7 +1586,7 @@ export async function POST(req: NextRequest) {
       const eventId = String(body.eventId ?? '')
       const { data: ev } = await supabase.from('truck_events')
         .select('id').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
-      if (!ev) { await supabase.storage.from(BUCKET).remove([path]); return NextResponse.json({ error: 'Event not found' }, { status: 404 }) }
+      if (!ev) { await supabase.storage.from(BUCKET).remove([path]); return refuse(locale, 'event_not_found', 404) }
 
       /* 🔴 A ONE-OFF MUST MATCH THE SHAPE OF THE DESIGN IT WOULD OTHERWISE HAVE USED, which is this
        * place's design when the place has its own positions — not always the Standard one. A one-off
@@ -1548,15 +1594,15 @@ export async function POST(req: NextRequest) {
        * fit. `eventPostContext` already decides that, and `canvas` is its answer; re-deriving it here
        * would be a second copy of the rule. `oneOffMustMatch` is the same rule as a pure function, and
        * is what the harness drives. */
-      const target = await eventPostContext(truck, eventId, eventDesign)
+      const target = await eventPostContext(truck, eventId, eventDesign, undefined, locale)
       if ('error' in target) {
         await supabase.storage.from(BUCKET).remove([path])
-        return NextResponse.json({ error: target.error }, { status: target.status })
+        return refuseWith(locale, target.refusal, target.status)
       }
       const aspect = checkAspect(check.info.width, check.info.height, target.canvas.width, target.canvas.height)
       if (!aspect.ok) {
         await supabase.storage.from(BUCKET).remove([path])
-        return NextResponse.json({ error: aspect.error }, { status: 400 })
+        return refuseWith(locale, aspect, 400)
       }
 
       const { data: prior } = await supabase.from('event_post_backgrounds')
@@ -1654,7 +1700,7 @@ export async function POST(req: NextRequest) {
 
     const { design } = await loadDesign(truck.id)
     if (which === 'example') {
-      if (!design) return NextResponse.json({ error: 'Upload the blank first.' }, { status: 400 })
+      if (!design) return refuse(locale, 'wp_upload_blank_first', 400)
       const old = design.example_path
       await supabase.from('truck_post_designs').update({ example_path: path, updated_at: new Date().toISOString() })
         .eq('truck_id', truck.id).eq('kind', KIND)
@@ -1669,7 +1715,7 @@ export async function POST(req: NextRequest) {
     const sameSize = design && design.width === check.info.width && design.height === check.info.height
     const layout = sameSize && design?.layout
       ? design.layout
-      : defaultLayout(check.info.width, check.info.height)
+      : defaultLayout(check.info.width, check.info.height, country)
     const oldBlank = design?.blank_path
     const row = {
       truck_id: truck.id, kind: KIND, blank_path: path,
@@ -1688,15 +1734,15 @@ export async function POST(req: NextRequest) {
   // ── SAVE THE DESIGN ─────────────────────────────────────────────────────────────────────────────
   if (action === 'save_design') {
     const { design } = await loadDesign(truck.id)
-    if (!design) return NextResponse.json({ error: 'Upload your blank image first.' }, { status: 400 })
+    if (!design) return refuse(locale, 'wp_upload_blank_image_first', 400)
     /* 🔴 VALIDATED AGAINST THE STORED SIZE, never the payload's own width/height. */
-    const v = validateLayout(body.layout, design.width ?? 0, design.height ?? 0)
-    if (!v.ok || !v.layout) return NextResponse.json({ error: v.errors[0] ?? 'That design could not be saved.', errors: v.errors }, { status: 400 })
+    const v = validateLayout(body.layout, design.width ?? 0, design.height ?? 0, country)
+    if (!v.ok || !v.layout) return layoutRefusal(locale, v, 'wp_design_not_saved', true)
     const { error } = await supabase.from('truck_post_designs')
       .update({ layout: v.layout, updated_at: new Date().toISOString() })
       .eq('truck_id', truck.id).eq('kind', KIND)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ ok: true, layout: v.layout, warning: rowsFitWarning(v.layout) })
+    return NextResponse.json({ ok: true, layout: v.layout, warning: rowsFitWarning(v.layout, locale) })
   }
 
   // ── THE CAPTIONS ────────────────────────────────────────────────────────────────────────────────
@@ -1725,7 +1771,7 @@ export async function POST(req: NextRequest) {
      * assumed.
      * ⛔ THE OPERATOR'S NOTE IS APPENDED, NOT TEMPLATED. It is a per-WEEK thing typed on the make
      * screen; a label for it would be a chip for something that changes every time. */
-    const weekTpl = String(design?.caption_template ?? '').trim() || seedWeekTemplate(truck.name)
+    const weekTpl = String(design?.caption_template ?? '').trim() || seedWeekTemplate(truck.name, country)
     const weekFilled = fillCaptionTemplate(
       weekTpl, weekCaptionValues({ week, orderUrl, timeStyle: layout?.timeStyle ?? '12h', country }))
     const trimmedNote = String(note ?? '').trim()
@@ -1744,16 +1790,16 @@ export async function POST(req: NextRequest) {
   // ── RENDER ──────────────────────────────────────────────────────────────────────────────────────
   if (action === 'render') {
     const { design } = await loadDesign(truck.id)
-    if (!design) return NextResponse.json({ error: 'No design yet.' }, { status: 400 })
+    if (!design) return refuse(locale, 'wp_no_design', 400)
     /* ⚠️ THE LAYOUT IN THE REQUEST IS PREFERRED **AND STILL VALIDATED**, so the setup screen can
      * preview an unsaved drag. An unvalidated one would reach the renderer as `left: NaN`. */
-    const v = validateLayout(body.layout ?? design.layout, design.width ?? 0, design.height ?? 0)
-    if (!v.ok || !v.layout) return NextResponse.json({ error: v.errors[0] ?? 'That design could not be rendered.' }, { status: 400 })
+    const v = validateLayout(body.layout ?? design.layout, design.width ?? 0, design.height ?? 0, country)
+    if (!v.ok || !v.layout) return layoutRefusal(locale, v, 'wp_design_not_rendered', false)
 
     const bytes = await downloadObject(design.blank_path)
-    if (!bytes) return NextResponse.json({ error: 'Your blank image could not be read.' }, { status: 500 })
+    if (!bytes) return refuse(locale, 'wp_blank_unreadable', 500)
     const info = readImageInfo(bytes)
-    if (!info) return NextResponse.json({ error: 'Your blank image could not be read.' }, { status: 500 })
+    if (!info) return refuse(locale, 'wp_blank_unreadable', 500)
 
     const which: WeekChoice = body.week === 'next' ? 'next' : body.week === 'this' ? 'this' : defaultWeekChoice(new Date(), wk)
     const range = weekRange(which, new Date(), wk)
@@ -1768,7 +1814,7 @@ export async function POST(req: NextRequest) {
      * cancelled day — before they approve a design against whatever three short names next week
      * happens to hold. It goes through this same renderer, so what it shows is true. */
     const week = body.busy === true
-      ? busyWeekData(range, opts)
+      ? busyWeekData(range, opts, country)
       : await (async () => {
           const { events, places } = await loadWeek(truck.id, range.start, range.end)
           return buildWeekData(range, events, places, opts)
@@ -1802,7 +1848,7 @@ export async function POST(req: NextRequest) {
       placePictures: weekPics,
     })
     for (const id of fontsLoaded.missing) {
-      out.warnings.push({ where: 'font', message: `A font this design uses (${id}) could not be loaded — those boxes are in Oswald.` })
+      out.warnings.push({ where: 'font', message: weeklyPostWordsFor(locale)('fontFallback', { id }) })
     }
     /* ⚠️ THE WARNINGS TRAVEL IN A HEADER because the body is the PNG. The screen reads them and names
      * the day whose text had to be shortened — the one failure an operator cannot see coming. */
@@ -1885,13 +1931,13 @@ export async function POST(req: NextRequest) {
       /* 🔴 THE LABEL IS NOT DECORATION. Previewing a design on an event that already happened, with no
        * sign of it, would have a truck checking their artwork against a date in the past and believing
        * it is what they are about to post. */
-      if (last) return { eventId: String(last.id), label: 'Preview uses your last event here', substituteName: false }
+      if (last) return { eventId: String(last.id), label: weeklyPostWordsFor(locale)('previewLabel.lastEvent'), substituteName: false }
       /* ⚠️ NO EVENT HERE AT ALL ⇒ the next event ANYWHERE, with this place's name put in, so the boxes
        * can still be judged against text of a realistic length. Flagged, because the date and time on
        * screen belong to a different booking. */
       return {
         eventId: anyNext ? String(anyNext.id) : null,
-        label: 'No events here yet — preview shows your next event with this place’s name',
+        label: weeklyPostWordsFor(locale)('previewLabel.noEvents'),
         substituteName: true,
       }
     }
@@ -1927,7 +1973,7 @@ export async function POST(req: NextRequest) {
             : null,
           /* Kept for the existing "Background for each place" behaviour this list replaces. */
           fitsDefault: fits,
-          status: placeDesignStatus({ hasPicture: !!pl.event_bg_path, ownPositions, fitsDefault: fits }),
+          status: placeDesignStatus({ hasPicture: !!pl.event_bg_path, ownPositions, fitsDefault: fits }, locale),
           preview: previewFor(String(pl.id)),
         }
       }))
@@ -1945,7 +1991,7 @@ export async function POST(req: NextRequest) {
         width: design!.width, height: design!.height,
         layout: readStoredEventLayout(design!.layout, design!.width ?? 0, design!.height ?? 0).layout,
         backgroundUrl: await signed(design!.blank_path),
-        status: 'Used at every other place',
+        status: weeklyPostWordsFor(locale)('standardStatus'),
         preview: previewFor(null),
       } : null,
       designs,
@@ -1993,11 +2039,11 @@ export async function POST(req: NextRequest) {
     const placeId = String(body.placeId ?? '')
     const mode = body.mode === 'own' ? 'own' : 'standard'
     const { design } = await loadDesign(truck.id, EVENT_KIND)
-    if (!design?.width || !design.height) return NextResponse.json({ error: 'Set up your event post design first.' }, { status: 400 })
+    if (!design?.width || !design.height) return refuse(locale, 'wp_event_design_first', 400)
     const { data: place } = await supabase.from('truck_places')
       .select('id, event_bg_width, event_bg_height, event_layout')
       .eq('id', placeId).eq('truck_id', truck.id).maybeSingle()
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
     const row = place as { event_bg_width?: number | null; event_bg_height?: number | null; event_layout?: unknown }
 
     if (mode === 'standard') {
@@ -2007,7 +2053,7 @@ export async function POST(req: NextRequest) {
        * refusing: it would look like it worked. */
       const differs = !!row.event_bg_width && !!row.event_bg_height
         && !checkAspect(row.event_bg_width, row.event_bg_height, design.width, design.height).ok
-      if (differs) return NextResponse.json({ error: BACK_TO_STANDARD_REFUSAL }, { status: 400 })
+      if (differs) return refuse(locale, 'wp_back_to_standard', 400)
       const { error } = await supabase.from('truck_places')
         .update({ event_layout: null }).eq('id', placeId).eq('truck_id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -2032,13 +2078,13 @@ export async function POST(req: NextRequest) {
   if (action === 'event_place_save_layout') {
     const placeId = String(body.placeId ?? '')
     const { design } = await loadDesign(truck.id, EVENT_KIND)
-    if (!design?.width || !design.height) return NextResponse.json({ error: 'Set up your event post design first.' }, { status: 400 })
+    if (!design?.width || !design.height) return refuse(locale, 'wp_event_design_first', 400)
     const { data: place } = await supabase.from('truck_places')
       .select('id, event_bg_width, event_bg_height, event_layout')
       .eq('id', placeId).eq('truck_id', truck.id).maybeSingle()
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
     const row = place as { event_bg_width?: number | null; event_bg_height?: number | null; event_layout?: unknown }
-    if (!row.event_layout) return NextResponse.json({ error: 'This place uses the standard text positions.' }, { status: 400 })
+    if (!row.event_layout) return refuse(locale, 'wp_place_standard_positions', 400)
 
     /* 🔴 THE CANVAS COMES FROM THE STORED PICTURE SIZE, NEVER FROM THE REQUEST. The size is the only
      * thing that proves a box sits inside the picture; taking it from the body would let a caller
@@ -2046,7 +2092,7 @@ export async function POST(req: NextRequest) {
     const w = row.event_bg_width || design.width
     const h = row.event_bg_height || design.height
     const v = validateEventLayout(body.layout, w, h)
-    if (!v.ok || !v.layout) return NextResponse.json({ error: v.errors[0] ?? 'That design could not be saved.', errors: v.errors }, { status: 400 })
+    if (!v.ok || !v.layout) return layoutRefusal(locale, v, 'wp_design_not_saved', true)
     const { error } = await supabase.from('truck_places')
       .update({ event_layout: v.layout }).eq('id', placeId).eq('truck_id', truck.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -2055,9 +2101,9 @@ export async function POST(req: NextRequest) {
 
   if (action === 'event_save_design') {
     const { design } = await loadDesign(truck.id, EVENT_KIND)
-    if (!design) return NextResponse.json({ error: 'Upload your event picture first.' }, { status: 400 })
+    if (!design) return refuse(locale, 'wp_upload_event_picture_first', 400)
     const v = validateEventLayout(body.layout, design.width ?? 0, design.height ?? 0)
-    if (!v.ok || !v.layout) return NextResponse.json({ error: v.errors[0] ?? 'That design could not be saved.', errors: v.errors }, { status: 400 })
+    if (!v.ok || !v.layout) return layoutRefusal(locale, v, 'wp_design_not_saved', true)
     const { error } = await supabase.from('truck_post_designs')
       .update({ layout: v.layout, updated_at: new Date().toISOString() })
       .eq('truck_id', truck.id).eq('kind', EVENT_KIND)
@@ -2079,7 +2125,7 @@ export async function POST(req: NextRequest) {
     const placeId = String(body.placeId ?? '')
     const { data: place } = await supabase.from('truck_places')
       .select('id, event_bg_path').eq('id', placeId).eq('truck_id', truck.id).maybeSingle()
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
     const old = (place as { event_bg_path?: string | null }).event_bg_path
     const { error } = await supabase.from('truck_places')
       .update({ event_bg_path: null, event_bg_width: null, event_bg_height: null, event_layout: null })
@@ -2101,11 +2147,11 @@ export async function POST(req: NextRequest) {
      * is the rule the event-types gate follows too ("the screen decides what is drawn, the route
      * decides what is done"). */
     if (await isSinglePostBlocked(eventId)) {
-      return NextResponse.json({ error: PRIVATE_NO_SINGLE_POST }, { status: 400 })
+      return refuse(locale, 'wp_private_no_single_post', 400)
     }
     const { design } = await loadDesign(truck.id, EVENT_KIND)
-    const ctx = await eventPostContext(truck, eventId, design)
-    if ('error' in ctx) return NextResponse.json({ error: ctx.error }, { status: ctx.status })
+    const ctx = await eventPostContext(truck, eventId, design, undefined, locale)
+    if ('error' in ctx) return refuseWith(locale, ctx.refusal, ctx.status)
     const layout = (design?.layout ?? null) as EventLayout | null
     /* ══ 🔴 THE POST TEXT COMES FROM THE TRUCK'S SAVED TEMPLATE (8 October 2026) ════════════════════
      * ⚠️ AND FALLS BACK TO THE SEED, WHICH FILLS TO EXACTLY WHAT `eventPostText` WROTE — including the
@@ -2118,7 +2164,7 @@ export async function POST(req: NextRequest) {
      * removes itself cleanly. */
     const now = new Date()
     const orderUrlForPost = truck.slug ? scanUrl(truck.slug) : null
-    const eventTpl = String(design?.caption_template ?? '').trim() || seedEventTemplate(truck.name)
+    const eventTpl = String(design?.caption_template ?? '').trim() || seedEventTemplate(truck.name, country)
     const text = ctx.entry.status === 'cancelled'
       ? eventPostText({
         truckName: truck.name, entry: ctx.entry, date: ctx.date,
@@ -2185,14 +2231,14 @@ export async function POST(req: NextRequest) {
    */
   if (action === 'event_preview_entry') {
     const eventId = String(body.eventId ?? '')
-    if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+    if (!eventId) return refuse(locale, 'wp_event_id_required', 400)
     if (await isSinglePostBlocked(eventId)) {
-      return NextResponse.json({ error: PRIVATE_NO_SINGLE_POST }, { status: 400 })
+      return refuse(locale, 'wp_private_no_single_post', 400)
     }
     const { design } = await loadDesign(truck.id, EVENT_KIND)
-    if (!design) return NextResponse.json({ error: 'No event design yet.' }, { status: 400 })
-    const ctx = await eventPostContext(truck, eventId, design, null)
-    if ('error' in ctx) return NextResponse.json({ error: ctx.error }, { status: ctx.status })
+    if (!design) return refuse(locale, 'wp_no_event_design', 400)
+    const ctx = await eventPostContext(truck, eventId, design, null, locale)
+    if ('error' in ctx) return refuseWith(locale, ctx.refusal, ctx.status)
 
     let entry = ctx.entry
     const designPlaceId = typeof body.designPlaceId === 'string' && body.designPlaceId
@@ -2205,7 +2251,7 @@ export async function POST(req: NextRequest) {
       const { data: place } = await supabase.from('truck_places')
         .select('id, name, short_name')
         .eq('id', designPlaceId).eq('truck_id', truck.id).maybeSingle()
-      if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+      if (!place) return refuse(locale, 'wp_place_not_found', 404)
       const row = place as Record<string, unknown>
       const nm = String(row.short_name ?? '').trim() || String(row.name ?? '')
       if (nm) entry = { ...entry, name: nm, placeId: designPlaceId }
@@ -2216,14 +2262,14 @@ export async function POST(req: NextRequest) {
   if (action === 'event_render') {
     const eventId = String(body.eventId ?? '')
     if (await isSinglePostBlocked(eventId)) {
-      return NextResponse.json({ error: PRIVATE_NO_SINGLE_POST }, { status: 400 })
+      return refuse(locale, 'wp_private_no_single_post', 400)
     }
     const { design } = await loadDesign(truck.id, EVENT_KIND)
-    if (!design) return NextResponse.json({ error: 'No event design yet.' }, { status: 400 })
+    if (!design) return refuse(locale, 'wp_no_event_design', 400)
 
     const forced = String(body.background ?? '')
-    const ctx = await eventPostContext(truck, eventId, design, forced || null)
-    if ('error' in ctx) return NextResponse.json({ error: ctx.error }, { status: ctx.status })
+    const ctx = await eventPostContext(truck, eventId, design, forced || null, locale)
+    if ('error' in ctx) return refuseWith(locale, ctx.refusal, ctx.status)
 
     /* ── WHICH DESIGN IS BEING DRAWN ──────────────────────────────────────────────────────────────
      * 🔴 THREE CALLERS, ONE RENDERER.
@@ -2244,7 +2290,7 @@ export async function POST(req: NextRequest) {
       const { data: place } = await supabase.from('truck_places')
         .select(`id, name, short_name, event_bg_path, event_bg_width, event_bg_height, ${SLOT_COLS}`)
         .eq('id', designPlaceId).eq('truck_id', truck.id).maybeSingle()
-      if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+      if (!place) return refuse(locale, 'wp_place_not_found', 404)
       const row = place as Record<string, unknown>
       const pw = (row.event_bg_width as number) ?? null
       const ph = (row.event_bg_height as number) ?? null
@@ -2268,7 +2314,7 @@ export async function POST(req: NextRequest) {
       body.layout ?? ctx.layout ?? design.layout,
       canvas.width, canvas.height,
     )
-    if (!v.ok || !v.layout) return NextResponse.json({ error: v.errors[0] ?? 'That design could not be rendered.' }, { status: 400 })
+    if (!v.ok || !v.layout) return layoutRefusal(locale, v, 'wp_design_not_rendered', false)
 
     /* ══ 🔴 THE WHOLE POSTER — AND IT IS **`resolveDesign`'s** ANSWER NOW (7 October 2026) ════════
      *
@@ -2340,9 +2386,9 @@ export async function POST(req: NextRequest) {
         : plan.background === 'poster' ? 'used'
         : 'none'
     const bytes = await downloadObject(picked2.path)
-    if (!bytes) return NextResponse.json({ error: 'That picture could not be read.' }, { status: 500 })
+    if (!bytes) return refuse(locale, 'wp_picture_unreadable', 500)
     const info = readImageInfo(bytes)
-    if (!info) return NextResponse.json({ error: 'That picture could not be read.' }, { status: 500 })
+    if (!info) return refuse(locale, 'wp_picture_unreadable', 500)
 
     const eventFonts = await loadFontsForDesign(idsOfLayout(v.layout, 'event'), truck.id, fontDeps)
     /* ⛔ THE PLAN DECIDES, NOT THE DESIGN SWITCH. `plan.pictureInPhotoSpace` is already false when the
@@ -2372,12 +2418,12 @@ export async function POST(req: NextRequest) {
       placePictures: eventPics,
     })
     for (const id of eventFonts.missing) {
-      out.warnings.push({ where: 'font', message: `A font this design uses (${id}) could not be loaded — those boxes are in Oswald.` })
+      out.warnings.push({ where: 'font', message: weeklyPostWordsFor(locale)('fontFallback', { id }) })
     }
     /* ⚠️ SAID OUT LOUD ON THE SCREEN, not only on the picture's own tile. An operator previewing this
      * event needs to know WHY their venue's poster is not the background. */
     if (wholeBackground === 'wrong-shape') {
-      out.warnings.push({ where: 'place-picture', message: 'This place’s picture is a different shape from your design, so the standard background is used.' })
+      out.warnings.push({ where: 'place-picture', message: weeklyPostWordsFor(locale)('wrongShapeBackground') })
     }
     return new NextResponse(new Uint8Array(out.png), {
       status: 200,
@@ -2475,7 +2521,7 @@ export async function POST(req: NextRequest) {
   if (action === 'font_choose') {
     const id = String(body.fontId ?? '')
     const ref = parseFontId(id)
-    if (!ref) return NextResponse.json({ error: 'That is not a font we know.' }, { status: 400 })
+    if (!ref) return refuse(locale, 'wp_font_unknown', 400)
     /* ⚠️ A BUNDLED FONT NEEDS NOTHING DOING. Its file is committed; there is no fetch and no row. */
     if (ref.kind === 'bundled') return NextResponse.json({ ok: true, ready: true, fetched: false })
     if (ref.kind === 'own') {
@@ -2488,7 +2534,7 @@ export async function POST(req: NextRequest) {
      * the apache/, ofl/ or ufl/ directory of google/fonts AND that have been probed to yield a static
      * TTF. A family outside it is refused rather than attempted. */
     if (!isChoosableLibraryFont(ref.id)) {
-      return NextResponse.json({ error: 'That font is not in the library.' }, { status: 400 })
+      return refuse(locale, 'wp_font_not_in_library', 400)
     }
     const entry = catalogueFamily(ref.id)!
     try {
@@ -2500,9 +2546,10 @@ export async function POST(req: NextRequest) {
     } catch (e) {
       /* ⚠️ THE REASON IS SHOWN, because the two likely ones need different actions from the operator:
        * the migration has not been run, or the font source is unreachable right now. */
-      return NextResponse.json({
-        error: `${entry.family} could not be added: ${e instanceof Error ? e.message : 'unknown error'}`,
-      }, { status: 502 })
+      /* ⚠️ THE EXCEPTION'S OWN TEXT IS PASSED ON AS `reason` — it is not ours to word. */
+      return e instanceof Error
+        ? refuse(locale, 'wp_font_add_failed', 502, { family: entry.family, reason: e.message })
+        : refuse(locale, 'wp_font_add_failed_unknown', 502, { family: entry.family })
     }
   }
 
@@ -2530,28 +2577,33 @@ export async function POST(req: NextRequest) {
     const path = String(body.path ?? '')
     /* ⛔ FIRST, BEFORE ANYTHING IS READ. A path outside this truck's folder is a request to parse — and
      * then publish under this truck's name — somebody else's file. */
-    if (!path.startsWith(`trucks/${truck.id}/`)) return NextResponse.json({ error: 'Unknown file' }, { status: 400 })
+    if (!path.startsWith(`trucks/${truck.id}/`)) return refuse(locale, 'wp_unknown_file', 400)
 
     /* 🔴 THE TICK IS A PRECONDITION, NOT A FLAG. §3: a required tick, and when it was ticked. The
      * column is NOT NULL, so there is no way to store the file without it — and the file is removed
      * rather than left in the bucket unreferenced. */
     if (body.licenceConfirmed !== true) {
       await fontStorage.remove([path])
-      return NextResponse.json({ error: 'Please tick to confirm you own or have a licence to use this font.' }, { status: 400 })
+      return refuse(locale, 'wp_licence_required', 400)
     }
 
     const bytes = await fontStorage.download(path)
-    if (!bytes) return NextResponse.json({ error: 'That upload did not arrive — please try again.' }, { status: 400 })
+    if (!bytes) return refuse(locale, 'wp_upload_missing', 400)
 
-    const discard = async (message: string, status = 400) => {
+    const discard = async (code: ManageErrorCode, params: Record<string, string> = {}, status = 400) => {
       /* ⚠️ A REFUSED FILE IS REMOVED. Leaving it would accumulate unreferenced objects in a private
        * bucket that nothing ever lists — the same rule `confirm_upload` follows for pictures. */
+      await fontStorage.remove([path])
+      return refuse(locale, code, status, params)
+    }
+    /** The same, for a message we did not write (a database error's) — passed on unchanged, with no code. */
+    const discardRaw = async (message: string, status: number) => {
       await fontStorage.remove([path])
       return NextResponse.json({ error: message }, { status })
     }
 
     if (bytes.length > MAX_FONT_BYTES) {
-      return discard(`That font is ${(bytes.length / 1024 / 1024).toFixed(1)}MB. The limit is 5MB.`)
+      return discard('wp_font_too_big', { size: (bytes.length / 1024 / 1024).toFixed(1) })
     }
 
     /* ⛔ WOFF AND WOFF2 ARE NAMED SEPARATELY, IN THE BRIEF'S WORDS, BECAUSE THEY ARE THE COMMON
@@ -2559,7 +2611,7 @@ export async function POST(req: NextRequest) {
      * foundry's site give you second; satori cannot read either, and "unknown magic 0x774f4632" would
      * tell the operator nothing about what to do next. */
     const magic = bytes.slice(0, 4).toString('latin1')
-    if (magic === 'wOFF' || magic === 'wOF2') return discard(WOFF_REFUSAL)
+    if (magic === 'wOFF' || magic === 'wOF2') return discard('wp_font_woff')
 
     let names, face, metrics
     try {
@@ -2570,14 +2622,16 @@ export async function POST(req: NextRequest) {
        * on a poster. */
       metrics = readFontMetrics(bytes)
     } catch (e) {
-      const why = e instanceof Error ? e.message.replace(/^font: /, '') : 'it could not be read'
-      return discard(`That file could not be read as a font — ${why}.`)
+      /* ⚠️ THE READER'S OWN REASON IS PASSED ON AS `reason`; with none, the message says so in its own words. */
+      return e instanceof Error
+        ? discard('wp_font_unreadable', { reason: e.message.replace(/^font: /, '') })
+        : discard('wp_font_unreadable_unknown')
     }
-    if (!metrics.advance.size) return discard('That font has no letters we can measure — it may be an icon font.')
+    if (!metrics.advance.size) return discard('wp_font_no_letters')
 
     const family = face.family
     const slug = slugOfFamily(family)
-    if (!slug) return discard('That font does not say what family it belongs to.')
+    if (!slug) return discard('wp_font_no_family')
 
     /* ⚠️ THE OPERATOR MAY HAVE RENAMED IT ALREADY, from the first face's prompt. A later face of the
      * same family inherits the name they chose rather than resetting it to the font's own. */
@@ -2596,7 +2650,9 @@ export async function POST(req: NextRequest) {
       await fontStorage.upload(finalPath, bytes)
       if (finalPath !== path) await fontStorage.remove([path])
     } catch (e) {
-      return discard(`That font could not be stored: ${e instanceof Error ? e.message : 'unknown error'}`, 500)
+      return e instanceof Error
+        ? discard('wp_font_store_failed', { reason: e.message }, 500)
+        : discard('wp_font_store_failed_unknown', {}, 500)
     }
 
     const { error: insErr } = await supabase.from('truck_fonts').upsert({
@@ -2614,9 +2670,9 @@ export async function POST(req: NextRequest) {
     if (insErr) {
       const missing = (insErr as { code?: string }).code
       if (missing === 'PGRST205' || missing === '42P01') {
-        return discard('Uploaded fonts need a database update — run supabase/migrations/20261017_post_fonts.sql first.', 503)
+        return discard('wp_migration_fonts', {}, 503)
       }
-      return discard(insErr.message, 500)
+      return discardRaw(insErr.message, 500)
     }
 
     /* 🔴 WHAT THE FACE WAS DECIDED TO BE IS RETURNED, so the editor can SAY so. A font that calls
@@ -2629,12 +2685,12 @@ export async function POST(req: NextRequest) {
       family,
       displayName,
       face: faceKey(face),
-      faceLabel: FACES.find(f => f.weight === face.weight && f.style === face.style)?.label ?? 'Regular',
+      faceLabel: faceLabelFor(FACES.find(f => f.weight === face.weight && f.style === face.style) ?? FACES[0], locale),
       saidSubfamily: face.saidSubfamily,
       saidWeight: face.saidWeight,
       /* ⚠️ WHICH FACES ARE STILL MISSING, in the order the prompt offers them — this is what drives
        * "Add the bold version (optional)". */
-      missingFaces: FACES.filter(f => !have.has(faceKey(f))).map(f => ({ face: faceKey(f), label: f.label })),
+      missingFaces: FACES.filter(f => !have.has(faceKey(f))).map(f => ({ face: faceKey(f), label: faceLabelFor(f, locale) })),
     })
   }
 
@@ -2653,8 +2709,12 @@ export async function POST(req: NextRequest) {
   if (action === 'font_sample') {
     const slug = slugOfFamily(String(body.family ?? ''))
     const faces = await fontRegistry.ownFaces(truck.id, slug)
-    if (!faces.length) return NextResponse.json({ error: 'That font is not one of yours.' }, { status: 404 })
-    const text = (typeof body.text === 'string' ? body.text : 'Wednesday 14th October').slice(0, 60)
+    if (!faces.length) return refuse(locale, 'wp_font_not_yours', 404)
+    /* ⚠️ THE DEFAULT SAMPLE IS THE COUNTRY'S OWN LONG-DATE SAMPLE (./locale.ts), so a US truck sees "Wednesday,
+     * October 14th" — GB's is "Wednesday 14th October", exactly as before. A date, so it is the locale table's, not a message. */
+    const text = (typeof body.text === 'string'
+      ? body.text
+      : (localeFor(country).dateStyles.find(d => d.id === 'long')?.sample ?? localeFor('GB').dateStyles[0].sample)).slice(0, 60)
 
     const id = `u:${slug}`
     const loaded = await loadFontsForDesign([id], truck.id, fontDeps)
@@ -2705,9 +2765,9 @@ export async function POST(req: NextRequest) {
   if (action === 'font_rename') {
     const slug = slugOfFamily(String(body.family ?? ''))
     const name = String(body.displayName ?? '').trim().slice(0, 60)
-    if (!slug || !name) return NextResponse.json({ error: 'A name is needed.' }, { status: 400 })
+    if (!slug || !name) return refuse(locale, 'wp_name_required', 400)
     const faces = await fontRegistry.ownFaces(truck.id, slug)
-    if (!faces.length) return NextResponse.json({ error: 'That font is not one of yours.' }, { status: 404 })
+    if (!faces.length) return refuse(locale, 'wp_font_not_yours', 404)
     const { error } = await supabase.from('truck_fonts')
       .update({ display_name: name })
       .eq('truck_id', truck.id).eq('family', faces[0].family)
@@ -2730,14 +2790,17 @@ export async function POST(req: NextRequest) {
       .select('kind, layout').eq('truck_id', truck.id)
     for (const d of (designs ?? []) as Array<{ kind: string; layout: unknown }>) {
       if (idsOfLayout(d.layout, d.kind === 'event' ? 'event' : 'week').includes(id)) {
-        used.push(d.kind === 'event' ? 'your single event post design' : 'your weekly post design')
+        used.push(weeklyPostWordsFor(locale)(d.kind === 'event' ? 'fontUsage.event' : 'fontUsage.weekly'))
       }
     }
     const { data: places } = await supabase.from('truck_places')
       .select('name, short_name, event_layout').eq('truck_id', truck.id).not('event_layout', 'is', null)
     for (const pl of (places ?? []) as Array<Record<string, unknown>>) {
       if (idsOfLayout(pl.event_layout, 'event').includes(id)) {
-        used.push(`your design for ${String(pl.short_name ?? '').trim() || String(pl.name ?? 'a place')}`)
+        const placeName = String(pl.short_name ?? '').trim() || (pl.name === null || pl.name === undefined ? '' : String(pl.name))
+        used.push(placeName
+          ? weeklyPostWordsFor(locale)('fontUsage.place', { place: placeName })
+          : weeklyPostWordsFor(locale)('fontUsage.placeUnnamed'))
       }
     }
     return NextResponse.json({ ok: true, used })
@@ -2755,7 +2818,7 @@ export async function POST(req: NextRequest) {
   if (action === 'font_remove') {
     const slug = slugOfFamily(String(body.family ?? ''))
     const faces = await fontRegistry.ownFaces(truck.id, slug)
-    if (!faces.length) return NextResponse.json({ error: 'That font is not one of yours.' }, { status: 404 })
+    if (!faces.length) return refuse(locale, 'wp_font_not_yours', 404)
     /* ⚠️ THE FILES GO FIRST, THEN THE ROWS. The other order would leave a row pointing at an object
      * that is gone — which renders as a missing font with no way to tell it from a storage outage. */
     await fontStorage.remove(faces.map(f => f.storage_path))
@@ -2782,7 +2845,7 @@ export async function POST(req: NextRequest) {
   if (action === 'place_picture_list') {
     const placeId = String(body.placeId ?? '')
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
     const library = await readPlaceLibrary(truck.id, [place as never])
     const pictures = library.get(placeId) ?? []
     const { design: evDesign } = await loadDesign(truck.id, EVENT_KIND)
@@ -2818,12 +2881,12 @@ export async function POST(req: NextRequest) {
     const path = String(body.path ?? '')
     /* ⛔ FIRST, BEFORE THE BYTES ARE READ. A path outside this truck's folder is a request to adopt
      * somebody else's object under this truck's name. */
-    if (!path.startsWith(`${truck.id}/`)) return NextResponse.json({ error: 'Unknown file' }, { status: 400 })
+    if (!path.startsWith(`${truck.id}/`)) return refuse(locale, 'wp_unknown_file', 400)
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
 
     const bytes = await downloadObject(path)
-    if (!bytes) return NextResponse.json({ error: 'That upload did not arrive — please try again.' }, { status: 400 })
+    if (!bytes) return refuse(locale, 'wp_upload_missing', 400)
     /* 🔴 CHECKED FROM THE BYTES, exactly as `confirm_upload` does: PNG/JPG, 10MB, ≥600px short side.
      * ⛔ AND NO SHAPE RULE HERE. A library picture is a logo or a photo — it is only held to the
      * design's shape if the operator later asks for it as a WHOLE BACKGROUND, which is decided per
@@ -2832,7 +2895,7 @@ export async function POST(req: NextRequest) {
     const check = checkUpload(bytes, { maxBytes: MAX_UPLOAD_BYTES, minShortSide: MIN_UPLOAD_SHORT_SIDE })
     if (!check.ok) {
       await supabase.storage.from(BUCKET).remove([path])
-      return NextResponse.json({ error: check.error }, { status: 400 })
+      return refuseWith(locale, check, 400)
     }
 
     /* ⚠️ THE LEGACY PICTURE IS WRITTEN IN FIRST, so this place's library stops being a mapping and
@@ -2868,7 +2931,7 @@ export async function POST(req: NextRequest) {
       await supabase.storage.from(BUCKET).remove([path])
       const code = (error as { code?: string }).code
       if (code === 'PGRST205' || code === '42P01' || code === '42703') {
-        return NextResponse.json({ error: 'Place pictures need a database update — run supabase/migrations/20261018_place_picture_library.sql first.' }, { status: 503 })
+        return refuse(locale, 'wp_migration_library', 503)
       }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
@@ -2887,14 +2950,14 @@ export async function POST(req: NextRequest) {
      * refused: the two are told apart BEFORE `asSlotName`, so a typo cannot pass as an omission. */
     const slotGiven = body.slot !== undefined && body.slot !== null
     const slot: SlotName | null = slotGiven ? asSlotName(body.slot) : null
-    if (slotGiven && !slot) return badSlot()
+    if (slotGiven && !slot) return badSlot(locale)
     if (slot) {
       const newId = String((inserted as { id?: string } | null)?.id ?? '')
       if (!newId) {
-        return NextResponse.json({ error: 'That image was saved but could not be used here — try again.' }, { status: 500 })
+        return refuse(locale, 'wp_picture_saved_not_used', 500)
       }
       const r = await setPlaceSlot(truck.id, placeId, slot, newId)
-      if (!r.ok) return NextResponse.json({ error: r.error }, { status: r.status })
+      if (!r.ok) return r.refusal ? refuseWith(locale, r.refusal, r.status) : NextResponse.json({ error: r.error }, { status: r.status })
     }
     return NextResponse.json({ ok: true, isMain: first })
   }
@@ -2911,7 +2974,7 @@ export async function POST(req: NextRequest) {
     const placeId = String(body.placeId ?? '')
     const id = String(body.pictureId ?? '')
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
     /* ⚠️ A MAPPED LEGACY PICTURE HAS NO ROW TO UPDATE, so it is written in first — and then it IS the
      * row this call is about. */
     if (isLegacyPictureId(id)) {
@@ -2932,9 +2995,9 @@ export async function POST(req: NextRequest) {
     const placeId = String(body.placeId ?? '')
     const id = String(body.pictureId ?? '')
     const label = String(body.label ?? '').trim().slice(0, 60)
-    if (!label) return NextResponse.json({ error: 'A name is needed.' }, { status: 400 })
+    if (!label) return refuse(locale, 'wp_name_required', 400)
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
     await materialiseLegacy(truck.id, place as never)
     if (isLegacyPictureId(id)) {
       const { error } = await supabase.from('place_pictures')
@@ -2964,7 +3027,7 @@ export async function POST(req: NextRequest) {
     const placeId = String(body.placeId ?? '')
     const id = String(body.pictureId ?? '')
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Place not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_place_not_found', 404)
     await materialiseLegacy(truck.id, place as never)
 
     const { data: rows } = await supabase.from('place_pictures')
@@ -2972,7 +3035,7 @@ export async function POST(req: NextRequest) {
     const all = ((rows ?? []) as never[]).map(r => toPicture(r as never))
     const legacyPath = String(place.event_bg_path ?? '')
     const target = isLegacyPictureId(id) ? all.find(p => p.path === legacyPath) : all.find(p => p.id === id)
-    if (!target) return NextResponse.json({ error: 'That picture is not one of this place’s.' }, { status: 404 })
+    if (!target) return refuse(locale, 'wp_picture_not_this_place', 404)
 
     const { error } = await supabase.from('place_pictures')
       .delete().eq('truck_id', truck.id).eq('place_id', placeId).eq('id', target.id)
@@ -3014,10 +3077,10 @@ export async function POST(req: NextRequest) {
   if (action === 'place_slot_use') {
     const placeId = String(body.placeId ?? '')
     const slot = asSlotName(body.slot)
-    if (!slot) return badSlot()
+    if (!slot) return badSlot(locale)
     const rawId = String(body.pictureId ?? '')
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Location not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_location_not_found', 404)
 
     /* 🔴 A LEGACY IMAGE HAS NO ROW TO POINT AT, so it is written in first — and the id this call was
      * given is not the row's id, so the row is found by its PATH. ⛔ WITHOUT THIS, "Use the event photo
@@ -3030,7 +3093,7 @@ export async function POST(req: NextRequest) {
         .select('id').eq('truck_id', truck.id).eq('place_id', placeId)
         .eq('path', String(place.event_bg_path ?? '')).maybeSingle()
       pictureId = String((row as { id?: string } | null)?.id ?? '')
-      if (!pictureId) return NextResponse.json({ error: 'That image could not be saved.' }, { status: 500 })
+      if (!pictureId) return refuse(locale, 'wp_image_not_saved', 500)
     }
 
     /* ⛔ THE PICTURE MUST BE **THIS LOCATION'S**. A picture id is a string a client sent; without this
@@ -3038,10 +3101,10 @@ export async function POST(req: NextRequest) {
      * poster. The same argument `event_render`'s own picture check makes. */
     const { data: owned } = await supabase.from('place_pictures')
       .select('id').eq('truck_id', truck.id).eq('place_id', placeId).eq('id', pictureId).maybeSingle()
-    if (!owned) return NextResponse.json({ error: 'That image is not one of this location’s.' }, { status: 404 })
+    if (!owned) return refuse(locale, 'wp_image_not_this_location', 404)
 
     const r = await setPlaceSlot(truck.id, placeId, slot, pictureId)
-    if (!r.ok) return NextResponse.json({ error: r.error }, { status: r.status })
+    if (!r.ok) return r.refusal ? refuseWith(locale, r.refusal, r.status) : NextResponse.json({ error: r.error }, { status: r.status })
     return NextResponse.json({ ok: true })
   }
 
@@ -3062,11 +3125,11 @@ export async function POST(req: NextRequest) {
     /* ⛔ THE REFUSAL COMES BEFORE THE LOOKUP, so a bad slot name cannot clear anything on the way to
      * being rejected. This is the call the defect was found on. */
     const slot = asSlotName(body.slot)
-    if (!slot) return badSlot()
+    if (!slot) return badSlot(locale)
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Location not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_location_not_found', 404)
     const r = await setPlaceSlot(truck.id, placeId, slot, null)
-    if (!r.ok) return NextResponse.json({ error: r.error }, { status: r.status })
+    if (!r.ok) return r.refusal ? refuseWith(locale, r.refusal, r.status) : NextResponse.json({ error: r.error }, { status: r.status })
     /* ⚠️ THE SCREEN IS TOLD WHETHER THE LEGACY IMAGE CAME BACK, so it can say so rather than showing a
      * thumbnail the operator just pressed Remove on and calling it a bug. */
     const legacyReturned = slot === 'event' && !!String(place.event_bg_path ?? '').trim()
@@ -3103,16 +3166,16 @@ export async function POST(req: NextRequest) {
   if (action === 'place_social_tag') {
     const placeId = String(body.placeId ?? '')
     const r = normaliseSocialTag(body.tag)
-    if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 })
+    if (!r.ok) return refuseWith(locale, r, 400)
     const place = await placeById(truck.id, placeId)
-    if (!place) return NextResponse.json({ error: 'Location not found' }, { status: 404 })
+    if (!place) return refuse(locale, 'wp_location_not_found', 404)
     const { error } = await supabase.from('truck_places')
       .update({ social_tag: r.tag } as never)
       .eq('id', placeId).eq('truck_id', truck.id)
     if (error) {
       const code = (error as { code?: string }).code
       if (code === 'PGRST204' || code === 'PGRST205' || code === '42703' || code === '42P01') {
-        return NextResponse.json({ error: MIGRATION_NEEDED }, { status: 503 })
+        return refuse(locale, 'wp_migration_three_pictures', 503)
       }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
@@ -3139,7 +3202,7 @@ export async function POST(req: NextRequest) {
     const kind = body.kind === 'event' ? EVENT_KIND : KIND
     const template = String(body.template ?? '')
     if (template.length > 4000) {
-      return NextResponse.json({ error: 'That caption is too long — 4,000 characters maximum.' }, { status: 400 })
+      return refuse(locale, 'wp_caption_too_long', 400)
     }
     /* ⛔ IT UPDATES AN EXISTING ROW RATHER THAN UPSERTING A NEW ONE. `truck_post_designs.blank_path` is
      * NOT NULL, so an upsert for a truck with no design would have to invent one — and a caption
@@ -3153,15 +3216,15 @@ export async function POST(req: NextRequest) {
     if (error) {
       const code = (error as { code?: string }).code
       if (code === 'PGRST204' || code === 'PGRST205' || code === '42703' || code === '42P01') {
-        return NextResponse.json({ error: MIGRATION_NEEDED }, { status: 503 })
+        return refuse(locale, 'wp_migration_three_pictures', 503)
       }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
     if (!row) {
-      return NextResponse.json({ error: 'Set this design up first — a caption belongs to a design.' }, { status: 400 })
+      return refuse(locale, 'wp_caption_needs_design', 400)
     }
     return NextResponse.json({ ok: true })
   }
 
-  return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+  return refuse(locale, 'unknown_action', 400)
 }

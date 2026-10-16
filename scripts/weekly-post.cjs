@@ -67,13 +67,29 @@ const LIB = [
    * harness — which is exactly what happened and is the right failure: a fixture that silently stubbed
    * the label would measure a poster nobody is served. */
   'lib/private-events/resolve.ts',
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): every word a poster draws, a caption is filled with and a refusal says
+  // now comes from messages/*.json through ONE door, lib/weekly-post/words.ts, which reads them with
+  // `translatorFor` and registers the posterWords / captions / weeklyPostApi / errorsManage namespaces. The
+  // product imports these, so the variant tree must carry them — an import the list lacks is a TS2307, the right
+  // failure. Nothing is stubbed: the real catalogue and the real translator are compiled.
+  'lib/weekly-post/words.ts',
+  'lib/i18n/translator.ts', 'lib/i18n/registry.ts', 'lib/i18n/locales.ts', 'lib/i18n/merge.ts',
+  'lib/i18n/catalog/posterWords.ts', 'lib/i18n/catalog/captions.ts',
+  'lib/i18n/catalog/weeklyPostApi.ts', 'lib/i18n/catalog/errorsManage.ts',
+]
+// ⚠️ RE-PINNED (Language Phase 1d Part 2): the JSON those catalogue modules import (and words.ts's `typeof enGB`
+// type import). COPIED into a variant tree, never handed to tsc as an entry — tsc copies a JSON it resolves.
+const LIB_DATA = [
+  'messages/en-GB.json',
+  ...['posterWords', 'captions', 'weeklyPostApi', 'errorsManage'].flatMap(ns =>
+    ['en-GB', 'en-US'].map(loc => `messages/ns/${loc}/${ns}.json`)),
 ]
 
 /** Compile the library (optionally with one file patched) and bind a require to it. */
 function build(patch) {
   const root = patch ? fs.mkdtempSync(path.join(require('os').tmpdir(), 'wp-var-')) : REPO
   if (patch) {
-    for (const f of LIB) {
+    for (const f of [...LIB, ...LIB_DATA]) {
       const dest = path.join(root, f)
       fs.mkdirSync(path.dirname(dest), { recursive: true })
       fs.writeFileSync(dest, f === patch.file ? patch.source : fs.readFileSync(path.join(REPO, f)))
@@ -1715,10 +1731,19 @@ head('9c · THE WIRING')
   /* 🔴 THE §9.3 FIX. Stage 1 recorded that the weekly post's per-event "Share" did exactly what "Copy
    * text" did — two buttons doing one thing — because there was no per-event image to share. There is
    * now, so Share opens the modal that owns the picture and its share. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the panel's words moved to messages `weeklyPost.post.*` (perEventTitle /
+  // copyText / image / share) and `copy()` lost its `what` argument (the toast is now `post.textCopied`). The list is
+  // sliced from `t('post.perEventTitle')`, the buttons are asserted as their t() keys AND those keys are asserted to
+  // read "Post for each event" / "Copy text" / "Image" / "Share" in en-GB — the same three-buttons-two-open claim.
   t('🔴 THE PER-EVENT LIST NOW HAS AN Image BUTTON, and Share is no longer a second Copy text', (() => {
-    const list = weekly.slice(weekly.indexOf('Post for each event'), weekly.indexOf('Post for each event') + 2200)
-    const copyButtons = (list.match(/void copy\(p\.text, 'Text'\)/g) || []).length
-    return />Image</.test(list) && />Share</.test(list)
+    const wpGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).weeklyPost.post
+    const at = weekly.indexOf("t('post.perEventTitle')")
+    const list = at < 0 ? '' : weekly.slice(at, at + 2200)
+    const copyButtons = (list.match(/void copy\(p\.text\)/g) || []).length
+    return wpGB.perEventTitle === 'Post for each event' && wpGB.copyText === 'Copy text'
+      && wpGB.image === 'Image' && wpGB.share === 'Share'
+      && />\{t\('post\.image'\)\}</.test(list) && />\{t\('post\.share'\)\}</.test(list)
+      && />\{t\('post\.copyText'\)\}</.test(list)
       && copyButtons === 1                                   // only "Copy text" copies now
       && (list.match(/setPostEventId\(p\.eventId\)/g) || []).length === 2   // Image and Share
   })())
@@ -1755,7 +1780,11 @@ head('9c · THE WIRING')
       /* ⛔ AND THE CLIPBOARD WRITE STILL HAPPENS EITHER WAY. Facebook and Instagram take the picture
        * and drop the caption whatever `canShare` said — the clipboard is the only thing that reaches
        * them, which is what the grey line under the buttons tells the operator. */
-      && /SHARE_CAPTION_NOTE/.test(code)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the grey line is read as `tc('shareCaptionNote')` (socialPosts
+      // namespace) instead of the SHARE_CAPTION_NOTE constant; its en-GB text is asserted to be the same sentence.
+      && /\{tc\('shareCaptionNote'\)\}/.test(code)
+      && JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).socialPosts.shareCaptionNote
+        === 'Facebook and Instagram don’t accept a ready-written caption from other apps — it’s copied, so just paste it in.'
       && /data-share-caption-note/.test(code)
       // 🔴 NOT ONE `await`, and the handler is not `async` — that is the fix, stated as code
       && !/\bawait\b/.test(body) && !/const share = async/.test(code)
@@ -1779,9 +1808,14 @@ head('9c · THE WIRING')
   t('⛔ …and where a file cannot be shared there are two honest buttons instead', (() => {
     const bar = fs.readFileSync(path.join(REPO, 'components/manage/PostShareBar.tsx'), 'utf8')
     const code = bar.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
-    return /\{canShareFile && <Btn label="Share"/.test(code)
-      && /<Btn label="Download picture" onClick=\{download\}/.test(code)
-      && /label=\{copied \? 'Copied ✓' : 'Copy caption'\}/.test(code)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the three labels moved to the `postShare` namespace; the same three
+    // buttons are asserted as their t() keys, and the keys are asserted to read the old en-GB words exactly.
+    const psGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).postShare
+    return /\{canShareFile && <Btn label=\{t\('share'\)\}/.test(code)
+      && /<Btn label=\{t\('download'\)\} onClick=\{download\}/.test(code)
+      && /label=\{copied \? t\('copied'\) : t\('copyCaption'\)\}/.test(code)
+      && psGB.share === 'Share' && psGB.download === 'Download picture'
+      && psGB.copied === 'Copied ✓' && psGB.copyCaption === 'Copy caption'
       /* ⚠️ FEATURE DETECTION, NOT USER-AGENT SNIFFING — neither platform is named in the component. */
       && !/userAgent|Macintosh|iPhone|Safari/.test(code)
   })())
@@ -1802,9 +1836,12 @@ head('9c · THE WIRING')
   /* 🔴 ONE GATE, SERVER-SIDE. The modal and the setup both call /api/weekly-post, which checks
    * `schedule_graphics` before every action — so an unentitled plan cannot reach the feature by
    * posting to the route, and the button needs no gate of its own. */
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated` now takes the truck's locale (its refusal is worded in the
+  // truck's language), so the call reads `gated(truck, locale)`. Same claim: the gate runs before the event actions.
   t('🔴 the route gates every action, including the event ones',
-    /const blocked = gated\(truck\)/.test(route)
-    && route.indexOf('const blocked = gated(truck)') < route.indexOf("action === 'event_load'"))
+    /const blocked = gated\(truck, locale\)/.test(route)
+    && route.indexOf('const blocked = gated(truck, locale)') > 0
+    && route.indexOf('const blocked = gated(truck, locale)') < route.indexOf("action === 'event_load'"))
 
   /* 🔴 REUSE, NOT A FORK. The event screens import the weekly post's editor pieces rather than copying
    * them, and the event renderer calls the same box machinery. */
@@ -1866,7 +1903,9 @@ head('9c · THE WIRING')
       route.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
     return /const forced = String\(body\.background \?\? ''\)/.test(fn)
       // the forced source is handed to the context, which hands it to resolveDesign
-      && /eventPostContext\(truck, eventId, design, forced \|\| null\)/.test(fn)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): `eventPostContext` gained a trailing `locale` argument (its refusals
+      // are worded in the truck's language); the forced source is still the fourth argument.
+      && /eventPostContext\(truck, eventId, design, forced \|\| null, locale\)/.test(fn)
       && /force: forced/.test(route)
       // 🔴 AND THE LAYOUT DRAWN IS THE RESOLVED ONE, not `design.layout` regardless of the choice
       && /body\.layout \?\? ctx\.layout \?\? design\.layout/.test(fn)
@@ -1896,10 +1935,30 @@ head('9c · THE WIRING')
     /* ⚠️ THE MESSAGE CARRIES ITS OWN `bad` NOW — the editor's own strip is separate from the caller's,
      * so a refusal cannot be hidden by a stale "Design saved." in the other slot. The CLAIM is
      * unchanged: it is the LAYOUT MODULE's sentence, not a second one written in the component. */
-    && /setLocalMsg\(\{ text: LAST_TOGGLE_MESSAGE, bad: true \}\)/.test(editorUi)
+    /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the editor's sentence is now `designEditor.settings.lastToggle`, a
+     * select on the layout kind — a NAMED GB FIX: it names the switch the operator actually sees ("Place" on the
+     * weekly post, "Venue" on an event post) where the layout module's refusal says "Location". It is still not a
+     * sentence written in the component (it is a catalogue message). Asserted: the component reads that key with
+     * the layout kind, and in en-GB each branch is the layout module's own refusal (errorsManage.wp_last_toggle,
+     * which is LAST_TOGGLE_MESSAGE) with only the switch's name changed — so the two cannot drift apart. */
+    && /setLocalMsg\(\{ text: t\('settings\.lastToggle', \{ kind: isWeekLayout\(layout\) \? 'weekly' : 'event' \}\), bad: true \}\)/.test(editorUi)
+    && (() => {
+      const { createTranslator } = require('next-intl')
+      const gb = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+      const de = createTranslator({ locale: 'en-GB', messages: gb, namespace: 'designEditor' })
+      const layoutMsg = gb.errorsManage.wp_last_toggle
+      return /export const LAST_TOGGLE_MESSAGE = gbRefusalText\('wp_last_toggle'\)/.test(
+          fs.readFileSync(path.join(REPO, 'lib/weekly-post/layout.ts'), 'utf8'))
+        && layoutMsg.startsWith('Keep either Location or Time switched on. A cancelled event shows its place crossed out')
+        && de('settings.lastToggle', { kind: 'weekly' }) === layoutMsg.replace('Location', 'Place')
+        && de('settings.lastToggle', { kind: 'event' }) === layoutMsg.replace('Location', 'Venue')
+    })()
     && /toggleIsAllowed\(next\)/.test(editorUi)
     // ⚠️ AND IT SAYS WHY when Place is off, which is the only switch with a reason to be off
-    && /The place name is in your picture/.test(editorUi)
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the sentence is `designEditor.grid.placeOff`, same en-GB words.
+    && /\{t\('grid\.placeOff'\)\}/.test(editorUi)
+    && JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).designEditor.grid.placeOff
+      === 'The place name is in your picture — HatchGrab won’t add it.'
     // ⛔ and the two screens no longer have a toggle of their own to disagree with it
     && !/toggleIsAllowed/.test(eventCode) && !/toggleIsAllowed/.test(weeklyCode))
   /* ⛔ AND THE RULE IS ENFORCED FOR THE WEEKLY POST TOO NOW. Both designs draw cancelled events the
@@ -1917,21 +1976,36 @@ head('9c · THE WIRING')
 
   /* 🔴 "+ ADD A DESIGN FOR A PLACE" USES THE SAME LIST AS ADD EVENT — favourites first, then by name,
    * with a search. The order comes from the SERVER, so the two screens cannot drift apart. */
-  t('🔴 the designs list has Standard first, a status per design, and the place picker',
-    /name: 'Standard', status: 'Used at every other place'/.test(eventCode)
-    && /\+ Add a design for a place/.test(eventCode)
-    && /placeholder="Search places"/.test(eventCode)
-    && /pl\.isFavourite \? '★ ' : ''/.test(eventCode)
-    && /Remove this place(’|&rsquo;)s design/.test(eventCode)
-    && /a\.is_favourite === true \? 0 : 1/.test(route))
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the list's words moved to `eventPost.setup.*`. Standard's row is still
+  // FIRST in the array literal, the link / search / remove are asserted as their t() keys, and each key is asserted
+  // to read the old en-GB words exactly.
+  t('🔴 the designs list has Standard first, a status per design, and the place picker', (() => {
+    const ep = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).eventPost.setup
+    return /\{ id: null, name: t\('setup\.standard'\), status: t\('setup\.standardStatus'\) \}/.test(eventCode)
+      && ep.standard === 'Standard' && ep.standardStatus === 'Used at every other place'
+      && /\{t\('setup\.addPlaceDesignLink'\)\}/.test(eventCode) && ep.addPlaceDesignLink === '+ Add a design for a place'
+      && /placeholder=\{t\('setup\.pickerSearch'\)\}/.test(eventCode) && ep.pickerSearch === 'Search places'
+      && /pl\.isFavourite \? '★ ' : ''/.test(eventCode)
+      && /setConfirmRemove\(true\)\}>\{t\('setup\.removeLink'\)\}/.test(eventCode) && ep.removeLink === 'Remove this place’s design'
+      && /a\.is_favourite === true \? 0 : 1/.test(route)
+  })())
 
-  t('🔴 the three status wordings the brief names are the server’s, in one function',
-    /function placeDesignStatus\(/.test(route)
-    && /'Own picture and text positions'/.test(route)
-    && /'Own picture, standard positions'/.test(route)
-    && /'Different shape — not used until replaced'/.test(route)
-    // ⛔ and the component does not write its own copy of them
-    && !/Own picture and text positions/.test(eventCode))
+  // ⚠️ RE-PINNED (Language Phase 1d Part 2): the three wordings moved to `weeklyPostApi.placeStatus.*`, read by
+  // `placeDesignStatus` in the route (still the one function). Asserted: the function reads those three keys, the
+  // keys read the brief's three wordings in en-GB, and neither the component's code nor its own namespace
+  // (eventPost) carries a copy of them.
+  t('🔴 the three status wordings the brief names are the server’s, in one function', (() => {
+    const gb = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+    const ps = gb.weeklyPostApi.placeStatus
+    const fn = route.slice(route.indexOf('function placeDesignStatus('), route.indexOf('async function eventPostContext('))
+    return /function placeDesignStatus\(/.test(route)
+      && /w\('placeStatus\.ownBoth'\)/.test(fn) && ps.ownBoth === 'Own picture and text positions'
+      && /w\('placeStatus\.ownPicture'\)/.test(fn) && ps.ownPicture === 'Own picture, standard positions'
+      && /w\('placeStatus\.wrongShape'\)/.test(fn) && ps.wrongShape === 'Different shape — not used until replaced'
+      // ⛔ and the component does not write its own copy of them
+      && !/Own picture and text positions/.test(eventCode)
+      && !/Own picture and text positions|Own picture, standard positions/.test(JSON.stringify(gb.eventPost))
+  })())
 
   /* 🔴 THE PREVIEW FALLS BACK IN THE BRIEF'S ORDER: the next event here, then the last event here with
    * a label saying so, then the next event anywhere with this place's name put in. */
@@ -1939,7 +2013,10 @@ head('9c · THE WIRING')
     const fn = route.slice(route.indexOf('const previewFor = (placeId'),
       route.indexOf('const designs = await Promise.all'))
     return /firstAt\(upcoming as never, placeId\)/.test(fn)
-      && /'Preview uses your last event here'/.test(fn)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): the label is `weeklyPostApi.previewLabel.lastEvent`, same en-GB words.
+      && /weeklyPostWordsFor\(locale\)\('previewLabel\.lastEvent'\)/.test(fn)
+      && JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).weeklyPostApi.previewLabel.lastEvent
+        === 'Preview uses your last event here'
       && /substituteName: true/.test(fn)
       && fn.indexOf('upcoming as never') < fn.indexOf('past as never')
       // 🔴 THE NAME IS SUBSTITUTED SERVER-SIDE, from the place id — never from text the client sent
@@ -2215,9 +2292,12 @@ async function variants(ctx) {
   }
   // V10 — the validator trusts the payload's own size
   {
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation. `validateLayout` gained a trailing
+    // `country` parameter (for the days-off default) and its errors are refusal codes (`WpRefusal[]`), so the
+    // signature is multi-line now; the anchor is the same four lines that read W and H from `width`/`height`.
     const p = patch('lib/weekly-post/layout.ts',
-      'export function validateLayout(input: unknown, width: number, height: number): ValidationResult {\n  const errors: string[] = []\n  const W = num(width, 1, 20000)\n  const H = num(height, 1, 20000)',
-      'export function validateLayout(input: unknown, width: number, height: number): ValidationResult {\n  const errors: string[] = []\n  const i = input as { width?: number; height?: number }\n  const W = num(i?.width ?? width, 1, 20000)\n  const H = num(i?.height ?? height, 1, 20000)')
+      "  country: CountryCode = 'GB',\n): ValidationResult {\n  const errors: WpRefusal[] = []\n  const W = num(width, 1, 20000)\n  const H = num(height, 1, 20000)",
+      "  country: CountryCode = 'GB',\n): ValidationResult {\n  const errors: WpRefusal[] = []\n  const i = input as { width?: number; height?: number }\n  const W = num(i?.width ?? width, 1, 20000)\n  const H = num(i?.height ?? height, 1, 20000)")
     let detected = true
     if (p) {
       const V = build(p)
@@ -2409,9 +2489,10 @@ async function variants(ctx) {
   }
   // V21 — the event validator stops trusting the server's size
   {
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation — the errors array is `WpRefusal[]` now.
     const p = patch('lib/weekly-post/layout.ts',
-      "export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {\n  const errors: string[] = []\n  const W = num(width, 1, 20000)\n  const H = num(height, 1, 20000)",
-      "export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {\n  const errors: string[] = []\n  const i = input as { width?: number; height?: number }\n  const W = num(i?.width ?? width, 1, 20000)\n  const H = num(i?.height ?? height, 1, 20000)")
+      "export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {\n  const errors: WpRefusal[] = []\n  const W = num(width, 1, 20000)\n  const H = num(height, 1, 20000)",
+      "export function validateEventLayout(input: unknown, width: number, height: number): EventValidationResult {\n  const errors: WpRefusal[] = []\n  const i = input as { width?: number; height?: number }\n  const W = num(i?.width ?? width, 1, 20000)\n  const H = num(i?.height ?? height, 1, 20000)")
     let detected = true
     if (p) {
       const V = build(p)
@@ -2422,8 +2503,10 @@ async function variants(ctx) {
   }
   // V22 — a cancelled event is given a time by the display setting
   if (ctx) {
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation — the word is the `cancelledText` parameter
+    // now (per country, GB "CANCELLED" by default) instead of a literal; the patch still drops the cancelled branch.
     const p = patch('lib/weekly-post/lines.ts',
-      "    out.push({ runs: [{ text: e.status === 'cancelled' ? 'CANCELLED' : textOf(e) }] })",
+      "    out.push({ runs: [{ text: e.status === 'cancelled' ? cancelledText : textOf(e) }] })",
       "    out.push({ runs: [{ text: textOf(e) }] })")
     let detected = true
     if (p) {
@@ -2527,8 +2610,10 @@ async function variants(ctx) {
    * off there is nothing left on the poster that can say "cancelled" — the place name is not there to
    * strike through and the time box is not there to carry the word. */
   {
+    // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation — the refusal is the `wp_last_toggle` code
+    // through `refused([issue(…)])` now, not the LAST_TOGGLE_MESSAGE string; the patch still deletes the rule.
     const p = patch('lib/weekly-post/layout.ts',
-      '  if (!locationOn && !timeOn) return { ok: false, errors: [LAST_TOGGLE_MESSAGE] }', '')
+      "  if (!locationOn && !timeOn) return refused([issue('wp_last_toggle')])", '')
     let detected = true
     if (p) {
       const V = build(p)
@@ -2648,11 +2733,13 @@ async function variants(ctx) {
     const forcePredicate = (route) => {
       const fn = route.slice(route.indexOf("if (action === 'event_render')"),
         route.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
-      return /eventPostContext\(truck, eventId, design, forced \|\| null\)/.test(fn)
+      // ⚠️ RE-PINNED (Language Phase 1d Part 2): RE-ANCHORED, same mutation. `eventPostContext` takes a trailing
+      // `locale`, so dropping the force now means passing `undefined` in its slot (the other two callers' shape).
+      return /eventPostContext\(truck, eventId, design, forced \|\| null, locale\)/.test(fn)
         && /body\.layout \?\? ctx\.layout \?\? design\.layout/.test(fn)
     }
-    const unforced = routeSrc.replace('eventPostContext(truck, eventId, design, forced || null)',
-      'eventPostContext(truck, eventId, design)')
+    const unforced = routeSrc.replace('eventPostContext(truck, eventId, design, forced || null, locale)',
+      'eventPostContext(truck, eventId, design, undefined, locale)')
     must('V34 🔴 the modal’s design choice stops reaching the resolver',
       unforced !== routeSrc && forcePredicate(routeSrc) && !forcePredicate(unforced))
 

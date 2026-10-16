@@ -28,7 +28,13 @@ export type SetupPhase =
   | 'submitting'   // a code came back and the server is being told
 
 export type NoticeTone = 'ok' | 'warn' | 'error'
-export interface SetupNotice { tone: NoticeTone; text: string }
+/** 🔴 OUR OWN NOTICES ARE CODES (Language Phase 1d Part 2): `manageWhatsApp.notice.<code>`, worded by the screen in the
+ *  truck's language. `text` is ONLY for words we did not write here and pass on as they came — the signup route's
+ *  answer (already in the truck's language) or an exception's message. */
+export type SetupNoticeCode =
+  | 'sdkUnavailable' | 'sdkBlocked' | 'setupFailed' | 'setupFinished' | 'metaError' | 'closed'
+  | 'disconnected' | 'disconnectedUnreachable'
+export interface SetupNotice { tone: NoticeTone; code?: SetupNoticeCode; text?: string }
 
 export interface SetupState {
   phase: SetupPhase
@@ -43,12 +49,12 @@ export interface SetupState {
 
 export type SetupEvent =
   | { type: 'sdk_ready' }
-  | { type: 'sdk_failed'; message: string }
+  | { type: 'sdk_failed'; code?: SetupNoticeCode; message?: string }
   | { type: 'clicked' }
   | { type: 'start_again' }
   | { type: 'waited_20s'; attempt: number }
   | { type: 'window_closed'; attempt: number }
-  | { type: 'window_error'; attempt: number; message: string }
+  | { type: 'window_error'; attempt: number; code?: SetupNoticeCode; message?: string }
   | { type: 'succeeded'; attempt: number }
   | { type: 'submit_finished'; notice: SetupNotice }
 
@@ -57,10 +63,14 @@ export const INITIAL_SETUP_STATE: SetupState = {
 }
 
 /** The message shown when Meta's window closed with nothing done. UNCHANGED from before this rewrite. */
-export const CLOSED_NOTICE: SetupNotice = {
-  tone: 'warn',
-  text: 'Setup was closed before it finished. Nothing was changed — press Set up to try again.',
-}
+export const CLOSED_NOTICE: SetupNotice = { tone: 'warn', code: 'closed' }
+
+/** A notice from an event: its code when it carries one, and any words passed on as they came. */
+const noticeOf = (tone: NoticeTone, e: { code?: SetupNoticeCode; message?: string }): SetupNotice => ({
+  tone,
+  ...(e.code ? { code: e.code } : {}),
+  ...(e.message !== undefined ? { text: e.message } : {}),
+})
 
 /** True when this event belongs to the attempt currently live. A stale attempt's closure is not news. */
 const isLive = (s: SetupState, attempt: number): boolean => s.attempt !== null && s.attempt === attempt
@@ -73,7 +83,7 @@ export function setupReducer(state: SetupState, event: SetupEvent): SetupState {
 
     case 'sdk_failed':
       return state.phase === 'preparing'
-        ? { ...state, phase: 'unavailable', notice: { tone: 'error', text: event.message } }
+        ? { ...state, phase: 'unavailable', notice: noticeOf('error', event) }
         : state
 
     case 'clicked': {
@@ -103,7 +113,7 @@ export function setupReducer(state: SetupState, event: SetupEvent): SetupState {
       if (state.phase !== 'waiting' || !isLive(state, event.attempt)) return state
       return {
         ...state, phase: 'idle', attempt: null, showPopupHint: false,
-        notice: { tone: 'error', text: event.message },
+        notice: noticeOf('error', event),
       }
 
     case 'succeeded':
@@ -120,14 +130,16 @@ export function setupReducer(state: SetupState, event: SetupEvent): SetupState {
   }
 }
 
-/** The button's label, derived — so the label cannot drift from the state that decides it. */
-export function setupButtonLabel(state: SetupState, offerReauthorise: boolean): string {
+/** The button's label, derived — so the label cannot drift from the state that decides it. A key of
+ *  `manageWhatsApp.setup.button` (Language Phase 1d Part 2); the screen supplies the words. */
+export type SetupButtonLabelKey = 'preparing' | 'unavailable' | 'waiting' | 'finishing' | 'reconnect' | 'setUp'
+export function setupButtonLabelKey(state: SetupState, offerReauthorise: boolean): SetupButtonLabelKey {
   switch (state.phase) {
-    case 'preparing':  return 'Preparing…'
-    case 'unavailable': return 'Unavailable'
-    case 'waiting':    return 'Waiting for Facebook window…'
-    case 'submitting': return 'Finishing…'
-    default:           return offerReauthorise ? 'Reconnect' : 'Set up'
+    case 'preparing':  return 'preparing'
+    case 'unavailable': return 'unavailable'
+    case 'waiting':    return 'waiting'
+    case 'submitting': return 'finishing'
+    default:           return offerReauthorise ? 'reconnect' : 'setUp'
   }
 }
 

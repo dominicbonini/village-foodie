@@ -1,0 +1,8 @@
+{
+  "_note": "Generic event titles that name no place (normalised: lower-case, letters and digits only). Never matched as a venue and never created as one — lib/venue-matcher.ts isGenericVenueName and scripts/run-scraper.js read this ONE list. 16 October 2026, docs/private-event-approval-fix-report.md.",
+  "names": [
+    "private", "privateevent", "privateevents", "privateparty", "privateparties", "privatehire", "privatebooking",
+    "privatefunction", "privatefunctions", "privatecatering", "corporateevent", "corporatelunch",
+    "closed", "tbc", "tba", "tbd", "venuetbc", "venuetba", "locationtbc", "locationtba", "event", "events"
+  ]
+}

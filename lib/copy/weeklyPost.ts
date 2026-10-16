@@ -19,6 +19,10 @@
 // sentence names the plan a paying truck would buy, which is what an upgrade prompt is for — the same
 // convention `lib/plan-features.ts` follows for every other row.
 
+import { translatorFor } from '@/lib/i18n/translator'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import '@/lib/i18n/catalog/weeklyPost'
+
 /**
  * What a truck without `schedule_graphics` is told, on the screen and by every route.
  *
@@ -35,4 +39,7 @@
  * and the gate cannot drift apart again — and it is now used by `/api/weekly-post`, `/api/manage` and
  * the screen, so there is one claim in one place.
  */
-export const WEEKLY_POST_PLAN_REFUSAL = 'Social media posts are on Pro and Max'
+// 🔴 LANGUAGE PHASE 1d PART 2: the words live in messages/en-GB.json `weeklyPost.planRefusal`; a screen or route that
+// knows the truck reads them with `useT('weeklyPost')` / `translatorFor(locale, 'weeklyPost')`. This export is the same
+// message in en-GB, for the callers that have not moved yet — one source, no second copy.
+export const WEEKLY_POST_PLAN_REFUSAL = translatorFor(DEFAULT_LOCALE, 'weeklyPost')('planRefusal')

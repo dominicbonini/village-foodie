@@ -1,0 +1,562 @@
+{
+  "captions.cancelledApology": {
+    "before": "Apologies to everyone who was planning to come. We'll be back soon.",
+    "after": "Apologies to everyone who was planning to come. We’ll be back soon.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "captions.cancelledSorry": {
+    "before": "Sorry — we're not able to make {where} {when}.",
+    "after": "Sorry — we’re not able to make {where} {when}.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.confirm.no": {
+    "before": "No, there's a problem",
+    "after": "No, there’s a problem",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.instructionsEmail.introAt": {
+    "before": "We are putting {truckName}'s live schedule on {address}, and it needs one record adding to our domain at {provider}.",
+    "after": "We are putting {truckName}’s live schedule on {address}, and it needs one record adding to our domain at {provider}.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.instructionsEmail.introHolder": {
+    "before": "We are putting {truckName}'s live schedule on {address}, and it needs one record adding to our domain with whoever holds our domain.",
+    "after": "We are putting {truckName}’s live schedule on {address}, and it needs one record adding to our domain with whoever holds our domain.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.instructionsEmail.subject": {
+    "before": "One record to add for {truckName}'s schedule page",
+    "after": "One record to add for {truckName}’s schedule page",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.123reg.dns": {
+    "before": "Select \"DNS\", then \"Add New Record\".",
+    "after": "Select “DNS”, then “Add New Record”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.123reg.manage": {
+    "before": "Beside \"Domains\", select \"Manage All\", then choose your web address.",
+    "after": "Beside “Domains”, select “Manage All”, then choose your web address.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.123reg.name": {
+    "before": "Put the first value below in \"Name\".",
+    "after": "Put the first value below in “Name”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.123reg.save": {
+    "before": "Leave \"TTL\" as \"Default\" and click \"Save\".",
+    "after": "Leave “TTL” as “Default” and click “Save”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.123reg.signIn": {
+    "before": "Sign in to your \"123 Reg Control Panel\".",
+    "after": "Sign in to your “123 Reg Control Panel”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.123reg.type": {
+    "before": "Pick \"CNAME\" from the \"Type\" list.",
+    "after": "Pick “CNAME” from the “Type” list.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.123reg.value": {
+    "before": "Put the second value below in \"Value\", and add a full stop to the end of it.",
+    "after": "Put the second value below in “Value”, and add a full stop to the end of it.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.cloudflare.add": {
+    "before": "Select \"Add record\", then pick \"CNAME\" as the \"Type\".",
+    "after": "Select “Add record”, then pick “CNAME” as the “Type”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.cloudflare.name": {
+    "before": "Put the first value below in \"Name\".",
+    "after": "Put the first value below in “Name”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.cloudflare.open": {
+    "before": "Open your web address, then \"DNS\" and \"Records\".",
+    "after": "Open your web address, then “DNS” and “Records”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.cloudflare.proxy": {
+    "before": "Set \"Proxy status\" to \"DNS only\" — the cloud beside it must be grey, not orange.",
+    "after": "Set “Proxy status” to “DNS only” — the cloud beside it must be grey, not orange.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.cloudflare.save": {
+    "before": "Leave \"TTL\" as \"Auto\" and select \"Save\".",
+    "after": "Leave “TTL” as “Auto” and select “Save”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.cloudflare.value": {
+    "before": "Put the second value below in \"Target\".",
+    "after": "Put the second value below in “Target”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.godaddy.add": {
+    "before": "Select \"Add New Record\", then pick \"CNAME\" from the \"Type\" menu.",
+    "after": "Select “Add New Record”, then pick “CNAME” from the “Type” menu.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.godaddy.caveat": {
+    "before": "If you added more than one at once, the button says \"Save All Records\".",
+    "after": "If you added more than one at once, the button says “Save All Records”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.godaddy.dns": {
+    "before": "On \"Domain Settings\", select \"DNS\".",
+    "after": "On “Domain Settings”, select “DNS”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.godaddy.name": {
+    "before": "Put the first value below in \"Name\".",
+    "after": "Put the first value below in “Name”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.godaddy.open": {
+    "before": "Open your \"Domain Portfolio\" and choose your web address.",
+    "after": "Open your “Domain Portfolio” and choose your web address.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.godaddy.save": {
+    "before": "Leave \"TTL\" as it is and select \"Save\".",
+    "after": "Leave “TTL” as it is and select “Save”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.godaddy.value": {
+    "before": "Put the second value below in \"Value\".",
+    "after": "Put the second value below in “Value”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.wix.add": {
+    "before": "In the \"CNAME (Aliases)\" section, click \"+ Add Record\", then click \"Got it\".",
+    "after": "In the “CNAME (Aliases)” section, click “+ Add Record”, then click “Got it”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.wix.manage": {
+    "before": "Choose \"Manage DNS Records\".",
+    "after": "Choose “Manage DNS Records”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.wix.name": {
+    "before": "Put the first value below in \"Host Name\".",
+    "after": "Put the first value below in “Host Name”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.wix.open": {
+    "before": "Open \"Domains\", then click the \"Domain Actions\" icon beside your web address.",
+    "after": "Open “Domains”, then click the “Domain Actions” icon beside your web address.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.wix.save": {
+    "before": "Click \"Save\", then click \"Save Changes\" in the pop-up.",
+    "after": "Click “Save”, then click “Save Changes” in the pop-up.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.providers.wix.value": {
+    "before": "Put the second value below in \"Value\".",
+    "after": "Put the second value below in “Value”.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "customDomain.record.guide": {
+    "before": "{provider}'s own guide to this",
+    "after": "{provider}’s own guide to this",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "designEditor.picture.allHaveImage": {
+    "before": "All {total} of your locations have an image.",
+    "after": "{total, plural, =0 {You don’t have any locations yet.} one {Your location has an image.} other {All # of your locations have an image.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "designEditor.picture.someWithout": {
+    "before": "{without} of your {total} locations have no image yet",
+    "after": "{without} of your {total, plural, one {# location} other {# locations}} {without, plural, one {has} other {have}} no image yet",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "designEditor.settings.lastToggle": {
+    "before": "{kind, select, weekly {Keep either Location or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.} other {Keep either Location or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.}}",
+    "after": "{kind, select, weekly {Keep either Place or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.} other {Keep either Venue or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "designEditor.settings.ownStyleNote": {
+    "before": "{count, plural, one {{names} has its own style, so it isn’t changed.} other {{names} have its own style, so it isn’t changed.}}",
+    "after": "{count, plural, one {{names} has its own style, so it isn’t changed.} other {{names} have their own style, so they aren’t changed.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.sg_merge_impossible": {
+    "before": "Those places can't be merged.",
+    "after": "Those places can’t be merged.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.sg_merge_read_failed": {
+    "before": "Couldn't read your places.",
+    "after": "Couldn’t read your places.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.sg_merge_self": {
+    "before": "A place can't be merged into itself.",
+    "after": "A place can’t be merged into itself.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "errorsManage.sg_merge_write_failed": {
+    "before": "Couldn't merge those places.",
+    "after": "Couldn’t merge those places.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.couldNotBuild": {
+    "before": "Could not build the picture",
+    "after": "Could not build the picture.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.couldNotChange": {
+    "before": "Could not change that",
+    "after": "Could not change that.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.couldNotLoad": {
+    "before": "Could not load",
+    "after": "Could not load.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.couldNotRemove": {
+    "before": "Could not remove",
+    "after": "Could not remove.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.couldNotSave": {
+    "before": "Could not save",
+    "after": "Could not save.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.previewFailed": {
+    "before": "The preview could not be made",
+    "after": "The preview could not be made.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.somethingWrong": {
+    "before": "Something went wrong",
+    "after": "Something went wrong.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.uploadFailed": {
+    "before": "The upload failed",
+    "after": "The upload failed.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "eventPost.error.uploadIncomplete": {
+    "before": "The upload did not complete",
+    "after": "The upload did not complete.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "fontPicker.added": {
+    "before": "Added “{name}” as its {face}.",
+    "after": "Added “{name}” as its {face} version.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "fontPicker.face.bold": {
+    "before": "Bold",
+    "after": "bold",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "fontPicker.face.italic": {
+    "before": "Italic",
+    "after": "italic",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "fontPicker.face.regular": {
+    "before": "Regular",
+    "after": "regular",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "fontPicker.noOwn": {
+    "before": "You haven’t uploaded a font yet. Use the button below.",
+    "after": "You haven’t uploaded a font yet. Use the “↑ Upload your font” button above.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageBilling.noCharge": {
+    "before": "🔒 You won't be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there's nothing to cancel and nothing to pay.",
+    "after": "🔒 You won’t be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageBilling.notStarted.body": {
+    "before": "You have every Max feature while you set up. You choose which event starts your free trial - until then, nothing is counting down.",
+    "after": "You have every Max feature while you set up. You choose which event starts your free trial — until then, nothing is counting down.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageBilling.onMax": {
+    "before": "You're on Max features. Choose a plan before your trial ends to keep access.",
+    "after": "You’re on Max features. Choose a plan before your trial ends to keep access.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageBilling.onMaxNoCta": {
+    "before": "You're on Max features.",
+    "after": "You’re on Max features.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageBilling.upgradeModal.body": {
+    "before": "We're setting up automated billing. To upgrade now, drop us a message and we'll get you set up within 24 hours.",
+    "after": "We’re setting up automated billing. To upgrade now, drop us a message and we’ll get you set up within 24 hours.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageBilling.upgradeModal.mailBody": {
+    "before": "Hi, I'd like to upgrade {truck} to the {plan} ({price}) plan.",
+    "after": "Hi, I’d like to upgrade {truck} to the {plan} ({price}) plan.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageCharges.fee.hatchgrab": {
+    "before": "HatchGrab adds a {fee} service fee to your customers' online orders. You don't pay it and can't change it.",
+    "after": "HatchGrab adds a {fee} service fee to your customers’ online orders. You don’t pay it and can’t change it.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.config.fetchTitle": {
+    "before": "We couldn't check this truck's Stripe account",
+    "after": "We couldn’t check this truck’s Stripe account",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.config.keyMissingTitle": {
+    "before": "Card payments aren't configured yet",
+    "after": "Card payments aren’t configured yet",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.keyMismatch.body": {
+    "before": "This site's server is using its <b>{server, select, live {live} other {test}}</b> Stripe key while the browser was built with the <b>{browser, select, live {live} other {test}}</b> one. Card payments would fail at the moment a customer tries to pay, so setting up Stripe is blocked until they agree.",
+    "after": "This site’s server is using its <b>{server, select, live {live} other {test}}</b> Stripe key while the browser was built with the <b>{browser, select, live {live} other {test}}</b> one. Card payments would fail at the moment a customer tries to pay, so setting up Stripe is blocked until they agree.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.onboarding.firstRun": {
+    "before": "Stripe takes it from here — you'll sign in to Stripe, then give your business and bank details.",
+    "after": "Stripe takes it from here — you’ll sign in to Stripe, then give your business and bank details.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.onboarding.restricted": {
+    "before": "Stripe takes it from here — you'll sign in to Stripe and update the details it needs.",
+    "after": "Stripe takes it from here — you’ll sign in to Stripe and update the details it needs.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.online.feeLine": {
+    "before": "Stripe charges {fee} per payment on standard {region}. Other cards may cost more. HatchGrab's own fee on online orders depends on your plan — see Billing.",
+    "after": "Stripe charges {fee} per payment on standard {region}. Other cards may cost more. HatchGrab’s own fee on online orders depends on your plan — see Billing.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.permission.title": {
+    "before": "Only the truck's owner can set up payments",
+    "after": "Only the truck’s owner can set up payments",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.state.not_connected.body": {
+    "before": "Takes about 10 minutes. You'll need your bank details and ID.",
+    "after": "Takes about 10 minutes. You’ll need your bank details and ID.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.state.pending.body": {
+    "before": "Nothing for you to do. Stripe is reviewing what you sent, and this page updates when they're done.",
+    "after": "Nothing for you to do. Stripe is reviewing what you sent, and this page updates when they’re done.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.state.requirements.body": {
+    "before": "Card payments won't work until Stripe has your business and bank details.",
+    "after": "Card payments won’t work until Stripe has your business and bank details.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.state.unsupported.title": {
+    "before": "Card payments aren't available on this account",
+    "after": "Card payments aren’t available on this account",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.trialNote": {
+    "before": "Setting this up doesn't start your subscription or charge you anything today. It's how your customers pay you — your plan is separate.",
+    "after": "Setting this up doesn’t start your subscription or charge you anything today. It’s how your customers pay you — your plan is separate.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "managePayments.walkUp.ownTerminalHelp": {
+    "before": "Zettle, Square, or whatever you already use. Nothing to set up — only your provider's own fees apply.",
+    "after": "Zettle, Square, or whatever you already use. Nothing to set up — only your provider’s own fees apply.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageReports.custom.note": {
+    "before": "\"{note}\"",
+    "after": "“{note}”",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.loading": {
+    "before": "Loading management console...",
+    "after": "Loading management console…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.noCountrySettings": {
+    "before": "Couldn't load this truck's country settings. Please refresh.",
+    "after": "Couldn’t load this truck’s country settings. Please refresh.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.notices.allergens": {
+    "before": "<b>Allergens not set</b> — customers can't see allergen info until you verify it. Review each dish's allergens on the Menu tab.",
+    "after": "<b>Allergens not set</b> — customers can’t see allergen info until you verify it. Review each dish’s allergens on the Menu tab.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.notices.approval": {
+    "before": "{count, plural, one {We found <b>{count}</b> event for you — review and approve before they go live.} other {We found <b>{count}</b> events for you — review and approve before they go live.}}",
+    "after": "{count, plural, one {We found <b>{count}</b> event for you — review and approve before it goes live.} other {We found <b>{count}</b> events for you — review and approve before they go live.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.notices.stripe": {
+    "before": "<b>Stripe needs something from you</b> — card payments can stop until it's sorted.",
+    "after": "<b>Stripe needs something from you</b> — card payments can stop until it’s sorted.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.profile.saving": {
+    "before": "Saving...",
+    "after": "Saving…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.stale": {
+    "before": "{hasTime, select, yes {Couldn't refresh. Showing what was saved at {time}. Changes you make are still saved.} other {Couldn't refresh. Showing what was saved. Changes you make are still saved.}}",
+    "after": "{hasTime, select, yes {Couldn’t refresh. Showing what was saved at {time}. Changes you make are still saved.} other {Couldn’t refresh. Showing what was saved. Changes you make are still saved.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.trialPopup.body": {
+    "before": "{hasDate, select, yes {You won't be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there's nothing to cancel and nothing to pay. Choose your plan before then — if you don't, access will revert to the free Starter tier and some features will stop working.} other {You won't be charged anything while you're on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there's nothing to cancel and nothing to pay. Choose your plan before then — if you don't, access will revert to the free Starter tier and some features will stop working.}}",
+    "after": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageShell.trialPopup.title": {
+    "before": "You're on a free trial",
+    "after": "You’re on a free trial",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageTeam.cancelling": {
+    "before": "Cancelling...",
+    "after": "Cancelling…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageTeam.inviteEmail.ignore": {
+    "before": "If you weren't expecting this invitation, you can safely ignore this email.",
+    "after": "If you weren’t expecting this invitation, you can safely ignore this email.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageTeam.inviteEmail.subject": {
+    "before": "You've been invited to join {truck} on HatchGrab",
+    "after": "You’ve been invited to join {truck} on HatchGrab",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageTeam.privacy": {
+    "before": "Your personal details are private and never shown to customers. They're used for account management and billing verification.",
+    "after": "Your personal details are private and never shown to customers. They’re used for account management and billing verification.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageTeam.saving": {
+    "before": "Saving...",
+    "after": "Saving…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageTeam.sending": {
+    "before": "Sending...",
+    "after": "Sending…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.billing.aboveGeneral": {
+    "before": "Your limit is above Meta's {free, number} free replies. Replies beyond that need a payment method on your WhatsApp account; without one, Meta stops all replies once the free ones are used.",
+    "after": "Your limit is above Meta’s {free, number} free replies. Replies beyond that need a payment method on your WhatsApp account; without one, Meta stops all replies once the free ones are used.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.billing.aboveMissing": {
+    "before": "Your limit is above Meta's {free, number} free replies. Without a payment method, Meta will stop all replies once those are used.",
+    "after": "Your limit is above Meta’s {free, number} free replies. Without a payment method, Meta will stop all replies once those are used.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.billing.chargesBody": {
+    "before": "Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business account. From {from}, Meta includes {free, number} free replies a month per number; after that, each reply is charged at Meta's rate. Replies you send yourself from the WhatsApp Business app aren't charged. Meta sets these prices and may change them. <link>See Meta's pricing</link>",
+    "after": "Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business account. From {from}, Meta includes {free, number} free replies a month per number; after that, each reply is charged at Meta’s rate. Replies you send yourself from the WhatsApp Business app aren’t charged. Meta sets these prices and may change them. <link>See Meta’s pricing</link>",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.billing.summary": {
+    "before": "Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {free, number} a month are free. Correct at {checked}; check <link>Meta's pricing</link> for changes.",
+    "after": "Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {free, number} a month are free. Correct at {checked}; check <link>Meta’s pricing</link> for changes.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.limit.emailAt": {
+    "before": "Replies pause at your limit. We'll email you at 80% and 100%.",
+    "after": "Replies pause at your limit. We’ll email you at 80% and 100%.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.limit.perCustomer": {
+    "before": "Up to {n} replies per customer in 24 hours, then one message saying you'll reply personally.",
+    "after": "Up to {n} replies per customer in 24 hours, then one message saying you’ll reply personally.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.preview.examples.menu": {
+    "before": "What's on the menu?",
+    "after": "What’s on the menu?",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.preview.intro": {
+    "before": "Type a question like a customer would ask, and see exactly what they'd get back. Nothing is sent to anyone.",
+    "after": "Type a question like a customer would ask, and see exactly what they’d get back. Nothing is sent to anyone.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "manageWhatsApp.preview.working": {
+    "before": "Working out the reply...",
+    "after": "Working out the reply…",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "socialPosts.screen.couldNotLoad": {
+    "before": "Could not load",
+    "after": "Could not load.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "socialPosts.screen.uploadIncomplete": {
+    "before": "The upload did not complete",
+    "after": "The upload did not complete.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "takingPayment.paidStepNote": {
+    "before": "This only affects orders you add. It doesn't affect online orders.",
+    "after": "This only affects orders you add. It doesn’t affect online orders.",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "weeklyPostApi.noPicturesAll": {
+    "before": "All {total} of your locations have an image.",
+    "after": "{total, plural, one {Your location has an image.} other {All {total} of your locations have an image.}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "weeklyPostApi.noPicturesSome": {
+    "before": "{without} of your {total} locations have no image yet",
+    "after": "{without, plural, one {{without} of your {total} locations has no image yet} other {{without} of your {total} locations have no image yet}}",
+    "kind": "GB fix (moved, then fixed)"
+  },
+  "dashboard.settings.completionHelp": {
+    "before": "What happens when an unpaid order is ready to hand over.",
+    "after": null,
+    "kind": "826471a key MOVED to completionSettings.completionHelp (scripts/fixtures/language-phase-1d2-key-moves.json)"
+  },
+  "dashboard.settings.completionTitle": {
+    "before": "Completing an unpaid order",
+    "after": null,
+    "kind": "826471a key MOVED to completionSettings.completionTitle (scripts/fixtures/language-phase-1d2-key-moves.json)"
+  },
+  "dashboard.settings.paidStepTitle": {
+    "before": "Take orders without payment",
+    "after": null,
+    "kind": "826471a key MOVED to completionSettings.paidStepTitle (scripts/fixtures/language-phase-1d2-key-moves.json)"
+  },
+  "dashboard.settings.pressesOne": {
+    "before": "One press (“Mark paid & collected”)",
+    "after": null,
+    "kind": "826471a key MOVED to completionSettings.pressesOne (scripts/fixtures/language-phase-1d2-key-moves.json)"
+  },
+  "dashboard.settings.pressesOneHelp": {
+    "before": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.",
+    "after": null,
+    "kind": "826471a key MOVED to completionSettings.pressesOneHelp (scripts/fixtures/language-phase-1d2-key-moves.json)"
+  },
+  "dashboard.settings.pressesTwo": {
+    "before": "Two presses (“Mark paid” & “Collected”)",
+    "after": null,
+    "kind": "826471a key MOVED to completionSettings.pressesTwo (scripts/fixtures/language-phase-1d2-key-moves.json)"
+  },
+  "dashboard.settings.pressesTwoHelp": {
+    "before": "Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.",
+    "after": null,
+    "kind": "826471a key MOVED to completionSettings.pressesTwoHelp (scripts/fixtures/language-phase-1d2-key-moves.json)"
+  }
+}
