@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import TruckListCard from '@/components/TruckListCard'
 import type { VillageEvent } from '@/types'
+import type { TimeSettings } from '@/lib/time-utils'
 
 /**
  * ── THE EVENT LIST. IT REUSES TruckListCard UNMODIFIED IN EVERY RESPECT BUT ONE. ─────────────────
@@ -35,6 +36,9 @@ import type { VillageEvent } from '@/types'
 export default function EmbedSchedule({ slug, truckName, orderOrigin }: { slug: string; truckName: string; orderOrigin?: string }) {
   const [events, setEvents] = useState<VillageEvent[] | null>(null)
   const [failed, setFailed] = useState(false)
+  // The truck's own TimeSettings, sent by /api/embed/events — a US truck's schedule reads "11:30 AM". Absent → the card's
+  // default (the discovery/GB settings), exactly as before.
+  const [time, setTime] = useState<TimeSettings | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -42,7 +46,7 @@ export default function EmbedSchedule({ slug, truckName, orderOrigin }: { slug: 
     // 3-per-minute STRICT bucket and returns every truck in the network (see the API route's header).
     fetch(`/api/embed/events?slug=${encodeURIComponent(slug)}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((d) => { if (!cancelled) setEvents(d.events ?? []) })
+      .then((d) => { if (!cancelled) { setTime(d.time ?? null); setEvents(d.events ?? []) } })
       .catch(() => { if (!cancelled) setFailed(true) })
     return () => { cancelled = true }
   }, [slug])
@@ -77,6 +81,7 @@ export default function EmbedSchedule({ slug, truckName, orderOrigin }: { slug: 
           key={event.id}
           event={event}
           slug={slug}
+          time={time}
           assumeHatchGrab
           openOrderInNewTab
           plainVenueName

@@ -89,14 +89,18 @@ export async function GET(
 
   // Fetch venue name via truck_id + event_date (orders have no direct FK to truck_events)
   let venueName: string | null = null
+  // The event's times too (17 October 2026): an event that runs past midnight puts a slot earlier than its start on the
+  // NEXT day (lib/event-window.ts), and the receipt's cancellation window reads the slot through that rule.
+  let eventTimes: { start_time: string | null; end_time: string | null } = { start_time: null, end_time: null }
   if (order.truck_id && order.event_date) {
     const { data: event } = await supabase
       .from('truck_events')
-      .select('venue_name')
+      .select('venue_name, start_time, end_time')
       .eq('truck_id', order.truck_id)
       .eq('event_date', order.event_date)
       .maybeSingle()
     venueName = event?.venue_name ?? null
+    eventTimes = { start_time: event?.start_time ?? null, end_time: event?.end_time ?? null }
   }
 
   // The truck's logo, resolved by the SAME shared resolver /api/menu uses, so the confirmation's header
@@ -127,6 +131,8 @@ export async function GET(
     customer_name: order.customer_name,
     slot: order.slot,
     event_date: order.event_date,
+    event_start_time: eventTimes.start_time,
+    event_end_time: eventTimes.end_time,
     items: order.items,
     deals: order.deals,
     total: order.total,

@@ -186,7 +186,14 @@ function opFixtures(cc) {
     submittedFallback: { ...submitted, cardFallbackNotice: true },
     privateNamed: { ...base, event: event({ is_private: true }), events: [event({ is_private: true })], privateHeader: { name: 'Sam & Tom’s wedding', named: true } },
     privateUnnamed: { ...base, event: event({ is_private: true }), events: [event({ is_private: true }), event({ id: 'ev-2' })], privateHeader: { name: 'Private event', named: false } },
-    closedAtTime: { ...base, event: event({ end_time: '15:00' }), events: [event({ end_time: '15:00' })] },
+    // ⚠️ RE-PINNED (events that run past midnight, 17 October 2026, docs/midnight-and-format-fixes-report.md): GB was
+    // 17:00–15:00 at 16:00 — under lib/event-window.ts an end before the start runs PAST MIDNIGHT, so that event is open.
+    // GB is now a normal event whose end has passed (12:00–15:00); the card's range is the only byte that moves, named in
+    // scripts/_lp2-named.cjs (midnight-closedAtTime-fixture-GB). US (10:00 in Chicago) never reached "closed" — it keeps
+    // 17:00–15:00, which is before its start either way and renders as before.
+    closedAtTime: cc === 'GB'
+      ? { ...base, event: event({ start_time: '12:00', end_time: '15:00' }), events: [event({ start_time: '12:00', end_time: '15:00' })] }
+      : { ...base, event: event({ end_time: '15:00' }), events: [event({ end_time: '15:00' })] },
     demoClosed: { ...base, eventEnded: true, __slug: 'demo-harness' },
     itemModalEdit: { ...withBasket, itemModal: { item: it('Margherita'), modGroups: it('Margherita').modifierGroups, upsells: [it('Garlic bread')], editCartKey: 'k1' }, modalMods: [{ name: 'Large', price: 2 }], modalNotes: 'Crispy' },
     itemModalUpsell: { ...withBasket, itemModal: { item: it('Margherita'), modGroups: it('Margherita').modifierGroups, upsells: [it('Garlic bread'), it('Coke')] }, modalMods: [{ name: 'Large', price: 2 }], modalUpsells: ['Garlic bread'] },

@@ -1,7 +1,8 @@
 // lib/utils.ts
 
 import { VillageEvent } from '@/types';
-import { ordinalDay } from '@/lib/time-utils';
+import { ordinalDay, addDaysYmd } from '@/lib/time-utils';
+import { crossesMidnight } from '@/lib/event-window';
 
 // ==========================================
 // --- GEOGRAPHY UTILITIES ---
@@ -123,9 +124,18 @@ export function getFullLocation(event: VillageEvent): string {
   return [event.venueName, settlement, postcode].filter(Boolean).join(', ');
 }
 
+/** The 'DD/MM/YYYY' the event ENDS on: its own date, or the NEXT day for an event that runs past midnight
+ *  (lib/event-window.ts) — so a 20:00–00:30 calendar entry ends at 00:30 the next morning, never before it starts. */
+export function eventEndDateStr(event: VillageEvent): string {
+  if (!crossesMidnight(event.startTime, event.endTime)) return event.date;
+  const [day, month, year] = event.date.split('/');
+  const [y, m, d] = addDaysYmd(`${year}-${month}-${day}`, 1).split('-');
+  return `${d}/${m}/${y}`;
+}
+
 export function getGoogleLink(event: VillageEvent): string {
   if (!event.date || !event.startTime || !event.endTime) return '#';
-  const dates = `${formatICSDate(event.date, event.startTime)}/${formatICSDate(event.date, event.endTime)}`;
+  const dates = `${formatICSDate(event.date, event.startTime)}/${formatICSDate(eventEndDateStr(event), event.endTime)}`;
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
   const fullLocation = getFullLocation(event);
   
@@ -135,7 +145,7 @@ export function getGoogleLink(event: VillageEvent): string {
 export function getOutlookLink(event: VillageEvent): string {
   if (!event.date || !event.startTime || !event.endTime) return '#';
   const start = formatWebDate(event.date, event.startTime);
-  const end = formatWebDate(event.date, event.endTime);
+  const end = formatWebDate(eventEndDateStr(event), event.endTime);
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
   const fullLocation = getFullLocation(event);
   
@@ -145,7 +155,7 @@ export function getOutlookLink(event: VillageEvent): string {
 export function downloadICS(event: VillageEvent) {
   if (!event.date || !event.startTime || !event.endTime) return;
   const start = formatICSDate(event.date, event.startTime);
-  const end = formatICSDate(event.date, event.endTime);
+  const end = formatICSDate(eventEndDateStr(event), event.endTime);
   const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
   const fullLocation = getFullLocation(event);
   

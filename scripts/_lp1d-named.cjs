@@ -12,6 +12,116 @@
 const { mapStrings, mapFields, clock12, applyNamed, pendingCardEntry } = require('./_lp2-named.cjs')
 const countryOf = id => (id.split('/').slice(1).join('/').split('|')[0] === 'US' ? 'US' : 'GB')
 
+// ══ ⚠️ RE-PINNED (events that run past midnight, 17 October 2026, docs/midnight-and-format-fixes-report.md) ══════════
+// Three PRECISE transforms for app/manage/[token]/page.tsx's intended changes (lib/event-window.ts is the rule: an end
+// EARLIER than the start is an event that runs past midnight; only an end EQUAL to the start is refused). Shared with
+// scripts/_lp1d2-named.cjs (its smoke-schedule views are this harness's Schedule views, re-rendered).
+//
+// One EventTimeSelect as React renders it: a wrapper div, the hour Select, the ":" span, the minute Select. Each Select
+// is <span class="relative inline-flex min-w-0 items-stretch text-sm {className}"><select aria-label=…>options</select>
+// <svg …></svg></span> (components/shared/Select). Captures: 1 hour span head, 2 hour aria, 3 hour options, 4 hour tail,
+// 5 minute span head, 6 minute aria, 7 minute options, 8 minute tail.
+const MN_TS = /<div class="flex items-center gap-1 w-full">(<span class="relative inline-flex min-w-0 items-stretch text-sm [^"]*"><select[^>]*? aria-label="([^"]*)"[^>]*>)((?:<option[^>]*>[^<]*<\/option>)*)(<\/select><svg[^>]*>[\s\S]*?<\/svg><\/span>)<span class="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:<\/span>(<span class="relative inline-flex min-w-0 items-stretch text-sm [^"]*"><select[^>]*? aria-label="([^"]*)"[^>]*>)((?:<option[^>]*>[^<]*<\/option>)*)(<\/select><svg[^>]*>[\s\S]*?<\/svg><\/span>)<\/div>/g
+const MN_HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
+const MN_MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'))
+/** The selected option's value of a captured option list ('' when the placeholder is selected, or none is). */
+const mnSelected = opts => (/<option value="([^"]*)" selected="">/.exec(opts) || [])[1] || ''
+/** page.tsx splitHhMm / hhMmToMins, and lib/time-utils.ts crossesMidnight (both times valid, end strictly earlier). */
+const mnMins = v => { const [h = '', m = ''] = String(v ?? '').split(':'); return /^\d{2}$/.test(h) && /^\d{2}$/.test(m) ? Number(h) * 60 + Number(m) : null }
+const mnCrosses = (s, e) => { const a = mnMins(s), b = mnMins(e); return a != null && b != null && b < a }
+/** EventTimeSelect's hour label: 24h "17"; 12h (US) clockOf(`${h}:00`, '12h', 'en-US') less ":00" — "5 PM", "12 AM". */
+const mnHourLabel = (h, us) => (us ? `${Number(h) % 12 || 12} ${Number(h) < 12 ? 'AM' : 'PM'}` : h)
+const mnOpt = (v, label, cur) => `<option value="${v}"${v === cur ? ' selected=""' : ''}>${label}</option>`
+/** The leading placeholder option(s) (value="") of a list, byte for byte. */
+const mnLead = opts => (/^(?:<option value=""[^>]*>[^<]*<\/option>)*/.exec(opts) || [''])[0]
+/** Walks every EventTimeSelect in a markup string, the most recent START time (aria "Start …") being the start of the
+ *  next END (aria "End …") — the add/edit form's pair and each import row's pair. `fn(m, ctx)` returns the new block. */
+function mnEachTimeSelect(s, fn, firstStart = null) {
+  let start = firstStart
+  return s.replace(MN_TS, (...m) => {
+    const isEnd = /^End\b/.test(m[2]), isStart = /^Start\b/.test(m[2])
+    const h = mnSelected(m[3]), mi = mnSelected(m[7])
+    const value = h ? `${h}:${mi}` : ''
+    const out = fn(m, { isEnd, start: isEnd ? start : null, value, h, mi, offset: m[m.length - 2], whole: m[m.length - 1] })
+    if (isStart) start = value || null
+    else if (isEnd) start = null
+    return out
+  })
+}
+/** (1) THE END SELECT'S OPTIONS (prop `notSameAs`, was `minExclusive`): every hour 00–23 (the value's own hour is one
+ *  of them), and in the value's hour every 5-minute step EXCEPT the start's own minute when that hour is the start's
+ *  hour; an off-grid stored minute is still injected (sorted), `selected` as BEFORE, the placeholder options as BEFORE.
+ *  The start is the form's / row's own start select; the component-level views (`timeSelect|…|end`) have no start
+ *  select — their fixture passes `notSameAs: '11:30'` (scripts/_lp1d-schedule.cjs), so 11:30 is theirs (`firstStart`). */
+function mnEndOptions(s, us, firstStart = null) {
+  return mnEachTimeSelect(s, (m, c) => {
+    if (!c.isEnd) return m[0]
+    const notMins = mnMins(c.start)
+    const minutes = notMins === null || !c.h ? MN_MINUTES : MN_MINUTES.filter(x => Number(c.h) * 60 + Number(x) !== notMins)
+    const minuteOptions = c.mi && !minutes.includes(c.mi) ? [...minutes, c.mi].sort() : minutes
+    const hours = mnLead(m[3]) + MN_HOURS.map(x => mnOpt(x, mnHourLabel(x, us), c.h)).join('')
+    const mins = mnLead(m[7]) + minuteOptions.map(x => mnOpt(x, x, c.mi)).join('')
+    return `<div class="flex items-center gap-1 w-full">${m[1]}${hours}${m[4]}<span class="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>${m[5]}${mins}${m[8]}</div>`
+  }, firstStart)
+}
+let MN_NEXT_DAY = null
+/** manageScheduleEvent.endsNextDay as F renders it (a key new since every frozen catalogue: the frozen overlay keeps new
+ *  keys at today's en-GB text; en-US has no override). */
+const mnNextDay = () => {
+  if (MN_NEXT_DAY == null) MN_NEXT_DAY = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../messages/en-GB.json'), 'utf8')).manageScheduleEvent.endsNextDay
+  return MN_NEXT_DAY
+}
+/** (2) "ENDS THE NEXT DAY" under an END whose time is EARLIER than its start (crossesMidnight), right after the time
+ *  control: in the import table `text-xs text-slate-400 mt-0.5 px-1.5` (its boxes carry the `border-b` cell classes);
+ *  elsewhere `text-xs text-slate-400 mt-1` — and in the Add / Edit form NOT when the end field shows its own error
+ *  (`{!formErrors.end_time && …}`: the fixture's add|errors view, 21:00–17:00 with an end error, keeps no hint). */
+function mnNextDayHint(s) {
+  return mnEachTimeSelect(s, (m, c) => {
+    if (!c.isEnd || !mnCrosses(c.start, c.value)) return m[0]
+    const after = c.whole.slice(c.offset + m[0].length)
+    if (/^<p class="text-xs text-red-500 mt-1">/.test(after)) return m[0]
+    const cls = /items-stretch text-sm bg-transparent border-b /.test(m[1]) ? 'text-xs text-slate-400 mt-0.5 px-1.5' : 'text-xs text-slate-400 mt-1'
+    return `${m[0]}<p class="${cls}">${mnNextDay()}</p>`
+  })
+}
+/** (3) THE IMPORT REVIEW'S LAYOUT. The cards/table switch moves from `md` to `lg` (the cards' `md:hidden` → `lg:hidden`,
+ *  the table's `hidden md:block` → `hidden lg:block` — only the one followed by the import table, not Event types'); the
+ *  table's <col> widths are refitted (date 130→120, venue 220→auto, area 150→100, postcode 100→84, start / end 100 →
+ *  timeColW = 132 GB / 156 US, van 120→110); and the table's TIME boxes take `tci` instead of the text inputs' `ci`
+ *  (less `px-1.5`, `w-full` and the focus underline classes) — only on the time Selects' wrappers, every other `ci`
+ *  input byte-identical. (The mobile card's time pair — `timeCls` and the `grid-cols-1 sm:grid-cols-2` stacking — is
+ *  rendered by NO captured view: the fixture's cards are not open for editing, so no transform claims it.) */
+const MN_CI = 'bg-transparent border-b text-sm text-slate-900 px-1.5 py-2 w-full rounded-none focus:outline-none '
+const MN_TCI = 'bg-transparent border-b text-sm text-slate-900 py-2 rounded-none focus:outline-none '
+const MN_CI_OK = 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50 focus:border-b-orange-500 focus:bg-slate-50 focus:rounded'
+const MN_TCI_OK = 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50'
+const MN_MISSING = 'border-b-amber-400 bg-amber-50'
+function mnImportLayout(s, us) {
+  const W = us ? 156 : 132
+  const col = w => (w == null ? '<col/>' : `<col style="width:${w}px"/>`)
+  s = s.replace('<div class="md:hidden flex flex-col gap-2">', '<div class="lg:hidden flex flex-col gap-2">')
+  s = s.replace(/<div class="hidden md:block overflow-x-auto">(<table class="w-full" style="table-layout:fixed"><colgroup>)<col style="width:32px"\/><col style="width:130px"\/><col style="width:220px"\/><col style="width:150px"\/><col style="width:100px"\/><col style="width:100px"\/><col style="width:100px"\/>(<col style="width:120px"\/>)?<col style="width:36px"\/><\/colgroup>/,
+    (_, table, van) => `<div class="hidden lg:block overflow-x-auto">${table}${[32, 120, null, 100, 84, W, W].map(col).join('')}${van ? col(110) : ''}${col(36)}</colgroup>`)
+  const swap = head => head.replace(`items-stretch text-sm ${MN_CI}${MN_CI_OK}"`, `items-stretch text-sm ${MN_TCI}${MN_TCI_OK}"`)
+    .replace(`items-stretch text-sm ${MN_CI}${MN_MISSING}"`, `items-stretch text-sm ${MN_TCI}${MN_MISSING}"`)
+  return mnEachTimeSelect(s, m => `<div class="flex items-center gap-1 w-full">${swap(m[1])}${m[3]}${m[4]}<span class="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>${swap(m[5])}${m[7]}${m[8]}</div>`)
+}
+/** The three as `NAMED` entries for a harness, over the views `re` picks (`<area>/<GB|US>|…`). */
+const midnightEntries = (re, agent = 'midnight + format fixes (17 Oct 2026)') => [
+  { id: 'midnight-end-select-not-same-as', country: 'both', agent,
+    what: '⚠️ RE-PINNED (17 October 2026, docs/midnight-and-format-fixes-report.md): Manage › Add / Edit event and the import review — the END time control (EventTimeSelect `notSameAs`, was `minExclusive`) offers every hour 00–23 and every 5-minute step except the start’s own time (an end before the start is an event that runs past midnight, lib/event-window.ts); it offered only times after the start. PRECISE: the end select’s hour and minute <option> lists rebuilt by that rule from BEFORE’s selected value and the form’s / row’s start; `selected`, the placeholder and an injected off-grid value as BEFORE.',
+    views: id => re.test(id) && /\|(timeSelect\|[^|]+\|end|tab\|(add|edit|import)\|?)/.test(id),
+    expect: (b, id) => mapStrings(b, s => mnEndOptions(s, countryOf(id) === 'US', /\|timeSelect\|[^|]+\|end$/.test(id) ? '11:30' : null)) },
+  { id: 'midnight-ends-next-day-hint', country: 'both', agent,
+    what: '⚠️ RE-PINNED (17 October 2026, docs/midnight-and-format-fixes-report.md): Manage › Add / Edit event — "Ends the next day" (manageScheduleEvent.endsNextDay) under End time when the end is EARLIER than the start and the end field shows no error. Shown by edit|times|midnight (20:00–00:00) and edit|private (12:00–00:00); NOT by add|errors (21:00–17:00, but its fixture holds an end_time error). errors.endSameAsStart (end EQUAL to start) is shown by no view: no fixture has an equal pair.',
+    views: id => re.test(id) && /\|tab\|(add|edit|import)\|?/.test(id),
+    expect: b => mapStrings(b, s => mnNextDayHint(s)) },
+  { id: 'midnight-import-review-layout', country: 'both', agent,
+    what: '⚠️ RE-PINNED (17 October 2026, docs/midnight-and-format-fixes-report.md): Schedule › Import review — cards below `lg` / the table from `lg` (was `md`); the table’s <col> widths refitted (time columns timeColW 132px GB / 156px US; date 120, venue auto, area 100, postcode 84, van 110); the table’s time boxes take `tci` (no px-1.5 / w-full / focus underline) instead of the text inputs’ `ci`. PRECISE: rows, values, inputs, controls and every other class byte-identical.',
+    views: id => re.test(id) && /\|tab\|import\|/.test(id),
+    expect: (b, id) => mapStrings(b, s => mnImportLayout(s, countryOf(id) === 'US')) },
+]
+
 const NAMED = [
   // ── SCHED-A ─────────────────────────────────────────────────────────────────────────────────────────────────
   { id: '1d-places-sept-sep', country: 'GB', agent: 'SCHED-A',
@@ -56,6 +166,12 @@ const NAMED = [
   //    the card's words BEFORE's apart from the named ones. Claims a view only when its BEFORE has a pending card.
   //    (US Schedule tab views stay LISTED by 1d-us-address-style, as before — a LISTED view is not byte-proven.)
   pendingCardEntry(id => /^schedule\/(GB|US)\|tab\|/.test(id)),
+  // ── ⚠️ RE-PINNED (events that run past midnight, 17 October 2026, docs/midnight-and-format-fixes-report.md) ───────
+  //    Three PRECISE transforms (defined above, shared with scripts/_lp1d2-named.cjs): the end select's options
+  //    (notSameAs), the "Ends the next day" hint, the import review's layout. US Schedule views stay LISTED by
+  //    1d-us-hour-pickers, as before; every GB view they claim must equal BEFORE + them byte for byte (the pending card,
+  //    where a view has one, still proven structurally on top).
+  ...midnightEntries(/^schedule\/(GB|US)\|/),
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.
@@ -67,4 +183,4 @@ function apply(id, before) {
   return applyNamed(NAMED, countryOf(id) === 'US', id, before)
 }
 
-module.exports = { NAMED, apply, countryOf, mapStrings, mapFields, clock12 }
+module.exports = { NAMED, apply, countryOf, mapStrings, mapFields, clock12, midnightEntries, mnEndOptions }

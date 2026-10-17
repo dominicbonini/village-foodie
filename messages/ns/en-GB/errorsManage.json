@@ -209,5 +209,6 @@
   "sg_merge_self": "A place can’t be merged into itself.",
   "sg_merge_cycle": "Those two are already merged the other way round.",
   "sg_merge_impossible": "Those places can’t be merged.",
-  "sg_merge_write_failed": "Couldn’t merge those places."
+  "sg_merge_write_failed": "Couldn’t merge those places.",
+  "event_times_same": "The finish time can’t be the same as the start time."
 }

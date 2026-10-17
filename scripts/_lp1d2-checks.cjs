@@ -312,6 +312,9 @@ async function run(ctx) {
     for (const e of NAMED_MOD.NAMED) {
       // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026): the structural entry claims OUT-OF-SCOPE views only — counted in the smoke section.
       if (e.prove) { console.log(`  · ${e.id} (${e.country}, STRUCTURAL — pending-card proof): out-of-scope views only — claimed and proven in the smoke section below`); continue }
+      // ⚠️ RE-PINNED (events that run past midnight, 17 October 2026, docs/midnight-and-format-fixes-report.md): a PRECISE
+      // entry that claims only smoke views (`smokeOnly`) is proven there, byte for byte — not "stale" here.
+      if (e.smokeOnly) { console.log(`  · ${e.id} (${e.country}, PRECISE): out-of-scope views only — claimed and proven in the smoke section below`); continue }
       const n = claimed.get(e.id).length
       console.log(`  ${n ? '·' : '⚠️'} ${e.id} (${e.country}${e.expect ? '' : e.prove ? ', STRUCTURAL — pending-card proof' : ', LISTED'}): ${n} view(s)${n ? ` — ${claimed.get(e.id).slice(0, 4).join(', ')}${n > 4 ? ' …' : ''}` : ' — none changed (not landed, or stale)'}`)
     }

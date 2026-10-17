@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { truckTimeZone } from '@/lib/truck-time'
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { getLocalDateInTz, getNowMinsInTz } from '@/lib/time-utils'
+import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { createClient } from '@supabase/supabase-js'
 // Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
 // truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
@@ -36,13 +37,21 @@ export async function GET(req: NextRequest) {
     .order('start_time', { ascending: true })
 
   if (status) query = query.eq('status', status)
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): `event_date >= today` dropped a running 20:00–00:30
+  // event at midnight. The query reads from YESTERDAY and `isUpcomingOrRunning` keeps a row dated today or later, or
+  // yesterday's overnight event until its end — so for every other event the list is exactly the old one.
+  let upcomingTz: string | null = null
   if (upcoming === 'true') {
     // The truck's today (Phase 2B; the UTC date was yesterday from 00:00 to 01:00 BST).
-    const today = getLocalDateInTz(await truckTimeZone(truck))
-    query = query.gte('event_date', today)
+    upcomingTz = await truckTimeZone(truck)
+    query = query.gte('event_date', upcomingQueryFloor(upcomingTz))
   }
 
   const { data, error } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (upcomingTz) {
+    const today = getLocalDateInTz(upcomingTz), nowMins = getNowMinsInTz(upcomingTz)
+    return NextResponse.json({ events: data ? data.filter(e => isUpcomingOrRunning(e, today, nowMins)) : data })
+  }
   return NextResponse.json({ events: data })
 }

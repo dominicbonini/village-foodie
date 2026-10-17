@@ -961,7 +961,8 @@
       "newFinishTime": "New finish time",
       "optionCurrent": "{time} (current)",
       "earlier": "That is earlier than the current finish time. Customers will not be able to order for times after it.",
-      "review": "Review change"
+      "review": "Review change",
+      "optionNextDay": "{time} (next day)"
     },
     "extraWait": {
       "title": "Add extra wait",
@@ -3143,7 +3144,8 @@
     "sg_merge_self": "A place can’t be merged into itself.",
     "sg_merge_cycle": "Those two are already merged the other way round.",
     "sg_merge_impossible": "Those places can’t be merged.",
-    "sg_merge_write_failed": "Couldn’t merge those places."
+    "sg_merge_write_failed": "Couldn’t merge those places.",
+    "event_times_same": "The finish time can’t be the same as the start time."
   },
   "tradeArea": {
     "country_missing": "Choose the country your truck is based in.",
@@ -3313,7 +3315,8 @@
       "start": "Start time is required",
       "end": "End time is required",
       "endAfterStart": "End time must be after the start time",
-      "van": "Please select a truck"
+      "van": "Please select a truck",
+      "endSameAsStart": "The end time can’t be the same as the start time"
     },
     "time": {
       "hour": "Hour",
@@ -3322,7 +3325,8 @@
       "minuteOf": "{label} minute"
     },
     "hiddenMatch": "{count, plural, one {# hidden place matches} other {# hidden places match}} · Show hidden",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "endsNextDay": "Ends the next day"
   },
   "manageScheduleImport": {
     "title": "Import schedule",

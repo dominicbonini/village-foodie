@@ -30,6 +30,7 @@ import { truckTimeSettings } from '@/lib/truck-time'
 import { loadChargeRules } from '@/lib/order-charge-rules'
 import { checkoutRulesFrom, type CheckoutRules } from '@/lib/order-charges'
 import { getLocalDateInTz, getNowMinsInTz, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { engineClock, nowOnEvent, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
 import { phoneCopyForTruck } from '@/lib/phone-copy'
 import type { PhoneCopy } from '@/lib/phone'
 import type { TruckMoney } from '@/lib/money-format'
@@ -200,9 +201,14 @@ export async function GET(req: NextRequest) {
   // Resolve the dashboard event context BEFORE reading orders, so the order lists
   // can be scoped to the selected event (V6.4: orders belong to an event, never a
   // pooled date). collection_times is fetched alongside (retained as-is).
+  // 🔴 NO `date` PARAM ⇒ "TODAY'S EVENTS" INCLUDES AN OVERNIGHT EVENT FROM YESTERDAY THAT IS STILL RUNNING
+  // (lib/event-window.ts): past midnight the board and the KDS keep showing it until it ends. Read from yesterday
+  // (upcomingQueryFloor) and keep today's rows plus a still-running overnight one, which leads — it is the event in
+  // progress. A request that names its date (the client sends the selected event's event_date) is unchanged.
+  const eventsFloor = dateParam ? date : upcomingQueryFloor(tz)
   const [
     { data: staticTimes, error: timesErr },
-    { data: todayEvents, error: eventsErr },
+    { data: rawEvents, error: eventsErr },
   ] = await Promise.all([
     supabase
       .from('collection_times')
@@ -221,10 +227,17 @@ export async function GET(req: NextRequest) {
       // the silent-empty-board path documented immediately below, not a visible error.
       .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override, takes_cash_override, completion_presses_override, buzzer_prompt')
       .eq('truck_id', truck.id)
-      .eq('event_date', date)
+      .in('event_date', eventsFloor === date ? [date] : [eventsFloor, date])
       .neq('status', 'cancelled')
       .order('start_time', { ascending: true }),
   ])
+  const todayEvents = rawEvents && eventsFloor !== date
+    ? (() => {
+        const nowM = getNowMinsInTz(tz)
+        const running = rawEvents.filter(e => e.event_date !== date && isUpcomingOrRunning(e, date, nowM))
+        return [...running, ...rawEvents.filter(e => e.event_date === date)]
+      })()
+    : rawEvents
 
   // ── 🔴 THE EVENTS QUERY MUST NEVER FAIL SILENTLY (V9.5) ───────────────────────────────────────────
   // This destructure used to drop its error, and that single omission produced the worst failure this
@@ -487,9 +500,13 @@ export async function GET(req: NextRequest) {
 
   // Compute event boundaries (HH:MM → minutes since midnight) from the SELECTED
   // event so times agree with the selected event's production units.
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): the engine reads slot strings as minute of day, so the
+  // selected event's times, occupancy keys and reservations go in on the ENGINE CLOCK ("00:15" → "24:15", after
+  // "23:55"), its end reads 24:30, and what comes out goes back to canonical "HH:MM". The identity for any other event.
+  const ec = engineClock(selectedEvent?.start_time, selectedEvent?.end_time)
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
   const eventStartMins = selectedEvent?.start_time ? toMins(selectedEvent.start_time) : null
-  const eventEndMins   = selectedEvent?.end_time   ? toMins(selectedEvent.end_time)   : null
+  const eventEndMins   = selectedEvent?.end_time   ? toMins(ec.to(selectedEvent.end_time)) : null
 
   // Generate slots only from event data — no static fallback
   // WINDOW-KEY MAP: collection_time → production_slot from the static collection_times table — the
@@ -747,10 +764,12 @@ export async function GET(req: NextRequest) {
       truckIntervalMins,
       eventReservations,
       resolveBatchReservations(truck),
+      selectedEvent,   // an overnight event is read on its engine clock; the map stays keyed by canonical times
     )
     slotsWithCapacity = buildSlotAvailability({
-      times: slots || [],
-      productionSlotUnits,
+      // On the engine clock for an overnight event (`ec` above); exactly the canonical inputs for any other.
+      times: ec.overnight ? (slots || []).map(s => ({ ...s, collection_time: ec.to(s.collection_time), production_slot: ec.to(s.production_slot), production_window_key: ec.to(s.production_window_key) })) : slots || [],
+      productionSlotUnits: ec.keysTo(productionSlotUnits),
       catConfigs,
       kitchenCapacity,
       capacityWindowMins,
@@ -769,10 +788,13 @@ export async function GET(req: NextRequest) {
       earliestCollectionMins: earliestMins,
       eventStartMins: eventStartMins ?? 0,
       eventEndMins: eventEndMins ?? undefined,
+      // An overnight event: "now" on its own timeline (lib/event-window.ts), on its date and the next.
+      eventNowMins: ec.overnight && selectedEvent ? nowOnEvent(selectedEvent.event_date, tz) : undefined,
     }).map(s => ({
-      collection_time: s.collection_time,
-      production_slot: s.production_slot,
-      production_window_key: s.production_window_key,
+      // Back to canonical "HH:MM" (identity unless the event crosses midnight).
+      collection_time: ec.from(s.collection_time),
+      production_slot: ec.from(s.production_slot),
+      production_window_key: ec.from(s.production_window_key),
       current_orders: s.current_orders,
       max_orders: s.max_orders,
       available: s.available,
@@ -783,8 +805,8 @@ export async function GET(req: NextRequest) {
       // EXACT key the write stores under), so on a windowed truck the strip matches the real load instead
       // of showing green. Falls back to buildSlotAvailability's tone only if the indicator is missing.
       // buildSlotAvailability's own tone/available (customer-facing) is unchanged.
-      tone: dayIndicators.get(s.collection_time)?.tone ?? s.tone,
-      label: dayIndicators.get(s.collection_time)?.label ?? '',
+      tone: dayIndicators.get(ec.from(s.collection_time))?.tone ?? s.tone,
+      label: dayIndicators.get(ec.from(s.collection_time))?.label ?? '',
     }))
 
     // PIECE 2 — after the (post-rebuild) authoritative production_slot_usage is read above, detect
@@ -802,6 +824,7 @@ export async function GET(req: NextRequest) {
       orders: (orders || []) as any,
       reservations: eventReservations,
       batchReservations: resolveBatchReservations(truck),
+      event: selectedEvent,   // an overnight event is read on its engine clock; breaches come back canonical
     })
   } catch (slotErr) {
     console.error('[dashboard] slot capacity error:', slotErr)

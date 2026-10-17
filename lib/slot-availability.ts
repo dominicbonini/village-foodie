@@ -14,6 +14,7 @@ import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
 import { getLocalDateInTz } from '@/lib/time-utils'
+import { fromEngineClock } from '@/lib/event-window'
 
 export interface CollectionTimeRow {
   collection_time: string
@@ -122,11 +123,16 @@ export function buildSlotAvailability(params: {
   reservations?: EngineReservation[]
   /** P3: the per-truck switch. Absent/false ⇒ P2 behaviour exactly. */
   batchReservations?: boolean
+  /** 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): "now" on the EVENT TIMELINE (`nowOnEvent`), passed
+   *  with times/units/reservations on the engine clock (`engineClock(...).rowsTo/keysTo`) and an extended
+   *  `eventEndMins`. It replaces the `date === today` minute-of-day reads below, which cannot see the next day.
+   *  Absent (every event that does not cross midnight) ⇒ exactly the original behaviour. */
+  eventNowMins?: number
 }): SlotAvailabilityRow[] {
   const {
     times, productionSlotUnits, catConfigs, kitchenCapacity, capacityWindowMins,
     date, nowMins, earliestCollectionMins, eventStartMins, eventEndMins,
-    basketByCat, tz, displayIntervalMins, reservations, batchReservations,
+    basketByCat, tz, displayIntervalMins, reservations, batchReservations, eventNowMins,
   } = params
   const displayInterval = displayIntervalMins ?? 5
   const capWindow = Math.max(1, Math.round(capacityWindowMins ?? 5))
@@ -151,7 +157,9 @@ export function buildSlotAvailability(params: {
   // NOW-CLAMP for the per-slot basket fit below: only meaningful when the event IS today (nowMins is
   // mins-of-day, so for a future-date event it would mis-compare across days). Future event ⇒ -Inf
   // (no clamp): the legacy eventStart-only behaviour, correct because the whole event is after now.
-  const nowClamp = date === today ? nowMins : Number.NEGATIVE_INFINITY
+  // An overnight event (eventNowMins passed — lib/event-window.ts) reads "now" on its own timeline instead: it is one
+  // axis with the engine-clock slots, on the event's date AND the next, and below every slot for a future event.
+  const nowClamp = eventNowMins !== undefined ? eventNowMins : date === today ? nowMins : Number.NEGATIVE_INFINITY
 
   // The dots need each slot's PREDECESSOR on the displayed grid (coverDotWindows covers the span between
   // them). Sorted once; `times` itself is not reordered.
@@ -165,7 +173,7 @@ export function buildSlotAvailability(params: {
     // (V7.1): the SINGLE readiness lead is now earliestCollectionMins (prep + queue + extraWait, via
     // calcMinReadyMins) carried by tooSoon. So available folds ONE prep-based floor, not two — the
     // ASAP slot (getAsapSlot, gated on available) now equals the earliest slot the picker allows.
-    const isPast = !isGrace && date === today && slotMins < nowMins
+    const isPast = !isGrace && (eventNowMins !== undefined ? slotMins < eventNowMins : date === today && slotMins < nowMins)
     const tooSoon = !isPast && slotMins < earliestCollectionMins
 
     let tone: SlotTone
@@ -1285,7 +1293,9 @@ export function buildAdmittedReservation(args: {
     cats[cat] = { items: M, batch, prepMins: prep, windows: windows.sort((a, b) => a.startMins - b.startMins) }
   }
   if (!Object.keys(cats).length) return { fits, record: null }
-  return { fits, record: { v: 1, source: fits ? 'fit' : 'override', slot: slotLabel, computed: { eventStartMins, capacityWindowMins, kitchenCapacity, gridIntervalMins: args.gridIntervalMins ?? null }, cats } }
+  // The STORED slot is canonical: an overnight event's engine-clock "24:15" goes back to "00:15" (lib/event-window.ts);
+  // the windows stay on the event timeline, which is what the engine reads them on. Identity for any other slot.
+  return { fits, record: { v: 1, source: fits ? 'fit' : 'override', slot: fromEngineClock(slotLabel), computed: { eventStartMins, capacityWindowMins, kitchenCapacity, gridIntervalMins: args.gridIntervalMins ?? null }, cats } }
 }
 
 export function projectBackwardOccupancy(

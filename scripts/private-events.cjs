@@ -253,20 +253,29 @@ const SURFACES = [
     what: 'the WhatsApp auto-reply’s grounding',
     handling: 'redact',
   },
+  // ⚠️ RE-PINNED (17 October 2026, docs/midnight-and-format-fixes-report.md): the two webhooks no longer hold their own
+  // copy of the upcoming-events query — both call lib/whatsapp/upcoming-events.ts fetchUpcomingTruckEvents (the surface
+  // above, which consults the privacy read and redacts). Asserted as DELEGATES: they must read upcoming events only
+  // through that function, with no truck_events query of their own that could skip the redaction.
   {
     file: 'app/api/webhooks/meta/whatsapp/route.ts',
-    what: 'the Meta WhatsApp webhook’s own copy of that query',
-    handling: 'redact',
+    what: 'the Meta WhatsApp webhook — through fetchUpcomingTruckEvents',
+    handling: 'delegates',
   },
   {
     file: 'app/api/webhooks/whatsapp/route.ts',
-    what: 'the dormant Twilio webhook’s copy',
-    handling: 'redact',
+    what: 'the dormant Twilio webhook — through fetchUpcomingTruckEvents',
+    handling: 'delegates',
   },
 ]
 
 for (const s of SURFACES) {
   const src = codeOf(read(s.file))
+  if (s.handling === 'delegates') {
+    t(`🔴 ${s.file} reads upcoming events ONLY through fetchUpcomingTruckEvents — ${s.what}`,
+      /fetchUpcomingTruckEvents\(/.test(src) && !/from\('truck_events'\)/.test(src))
+    continue
+  }
   t(`🔴 ${s.file} consults the privacy read — ${s.what}`,
     /from '@\/lib\/private-events\/read'/.test(src))
   if (s.handling === 'drop') {
@@ -1185,7 +1194,7 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
   }
 
   /* ── V1 · A PUBLIC SURFACE STOPS CONSULTING THE PRIVACY READ ─────────────────────────────────── */
-  for (const s of SURFACES) {
+  for (const s of SURFACES.filter(x => x.handling !== 'delegates')) {
     const broken = mutate(s.file, "from '@/lib/private-events/read'", "from '@/lib/private-events/resolve'")
     must(`V1 ⛔ ${s.file} stops importing the privacy read`,
       broken !== null && !/from '@\/lib\/private-events\/read'/.test(codeOf(broken)))

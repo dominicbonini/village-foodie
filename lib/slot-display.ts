@@ -9,6 +9,8 @@ import { projectBackwardOccupancy, backwardWindowStepMins, dotOccupancyAt, type 
 import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
+import type { SlotEventTimes } from '@/lib/slot-utils'
+import { engineClock } from '@/lib/event-window'
 
 /** Capitalise a lowercase byCat key for display ("pizza" → "Pizza"), matching the engine's capWord. */
 const capWord = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
@@ -138,7 +140,21 @@ export function buildSlotIndicators(
   reservations: EngineReservation[] = [],
   /** P3: the per-truck switch; false ⇒ P2 exactly. */
   batchReservations: boolean = false,
+  /** 🔴 The event's own times (lib/event-window.ts). Omitted, or an event that does not cross midnight ⇒ exactly as before. */
+  event?: SlotEventTimes,
 ): Map<string, SlotIndicator> {
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): the projection reads slot strings as minute of day, so its
+  // times, occupancy keys and reservations go in on the ENGINE CLOCK ("00:15" → "24:15", after "23:55") and the map
+  // comes back keyed by the canonical times the caller passed. Re-mapping an engine-clock input is a no-op.
+  const ec = engineClock(event?.start_time, event?.end_time)
+  if (ec.overnight) {
+    const inner = buildSlotIndicators(
+      slots.map(s => ({ ...s, collection_time: ec.to(s.collection_time), production_slot: ec.to(s.production_slot) })),
+      ec.keysTo(productionSlotUnits), catConfigs, kitchenCapacity, eventStartMins, categoryOrder, capacityWindowMins, intervalMins,
+      reservations.map(r => ({ ...r, slot: ec.to(r.slot) })), batchReservations,
+    )
+    return new Map([...inner].map(([k, v]) => [ec.from(k), v]))
+  }
   const out = new Map<string, SlotIndicator>()
   if (!slots.length) return out
 

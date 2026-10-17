@@ -1,4 +1,4 @@
-import { getLocalDateInTz, addDaysYmd, formatYmd, type TimeSettings } from '@/lib/time-utils'
+import { getLocalDateInTz, addDaysYmd, formatYmd, clockMins, type TimeSettings } from '@/lib/time-utils'
 export type ExtractedEvent = {
   event_date: string
   start_time: string
@@ -303,7 +303,11 @@ export async function extractScheduleEvents(
       end_time: (() => {
         const end = ev.end_time ?? ''
         const start = ev.start_time ?? ''
-        if (end && start && end <= start) return ''
+        // 🔴 17 October 2026: an end EARLIER than the start is an event that runs past midnight (lib/event-window.ts),
+        // kept — the review shows "Ends the next day" under it. Only an end EQUAL to the start is blanked (the review
+        // asks for one). Times that do not read as clock times keep the old string test.
+        const s = clockMins(start), e = clockMins(end)
+        if (end && start && (s != null && e != null ? e === s : end <= start)) return ''
         return end
       })(),
     }))

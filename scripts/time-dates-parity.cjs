@@ -773,7 +773,7 @@ async function cancelView() {
   cancelMods ??= {
     now: await kit.bundle('cancel', `export { POST } from '@/app/api/orders/cancel/route'`, { patches: [CANCEL_STOP] }),
     utcLine: await kit.bundle('cancel-utc', `export { POST } from '@/app/api/orders/cancel/route'`, { patches: [CANCEL_STOP,
-      { file: 'app/api/orders/cancel/route.ts', from: 'const slotTime = instantOfLocal(order.event_date, effectiveSlot, await truckTimeZone(truck))', to: 'const slotTime = new Date(`${order.event_date}T${effectiveSlot}`).getTime()' }] }),
+      { file: 'app/api/orders/cancel/route.ts', from: /const slotTime = (?:instantOfLocal\(order\.event_date|eventTimeInstant\(order\.event_date, event\?\.start_time, event\?\.end_time), effectiveSlot, await truckTimeZone\(truck\)\)/, to: 'const slotTime = new Date(`${order.event_date}T${effectiveSlot}`).getTime()' }] }),
   }
   const ui = await uiBundles()
   const { NextRequest } = require(path.join(REPO, 'node_modules/next/server'))

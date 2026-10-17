@@ -23,6 +23,8 @@
 import { useState } from 'react'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/kitchenModals'
+import { instantOfLocal, formatSlot, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { crossesMidnight, clockMins, eventTimeMins, eventTimeInstant } from '@/lib/event-window'
 
 /** Statuses that are over, so an order in one of them cannot be "due after" anything.
  *  ⚠️ THE SAME LIST THE KDS BOARD USES for `activeOrders`, kept here so both surfaces count identically
@@ -32,28 +34,71 @@ const TERMINAL_STATUSES = ['collected', 'cancelled', 'rejected']
 /** Only what the count needs. Both surfaces' order rows satisfy this structurally. */
 export type FinishTimeOrder = { slot: string | null; status: string }
 
+/** The event's own times — what places a clock time on the right day (lib/event-window.ts). */
+export type FinishTimeEventTimes = { start_time?: string | null; end_time?: string | null } | null | undefined
+
 /** Every 15-min boundary on the event's date that is STILL AHEAD OF THE CLOCK.
  *  🔴 "FUTURE" MEANS FUTURE RELATIVE TO NOW, NOT TO THE CURRENT FINISH TIME. That distinction is the
  *  whole point: a truck that has sold out at 19:20 must be able to set the finish to 19:30 even though
  *  the event is scheduled until 21:00 — an EARLIER time that is still ahead of the clock. Filtering
  *  against end_time instead would offer only extensions, which is the control this one replaced.
  *  ⚠️ Built against the EVENT'S DATE, not today's, so a past-dated event yields an empty list and the
- *  modal says so rather than offering times that have already gone. */
-export function finishTimeOptions(eventDate: string | null | undefined): string[] {
+ *  modal says so rather than offering times that have already gone.
+ *  🔴 THE TRUCK'S CLOCK, NOT THE DEVICE'S (17 October 2026): each boundary is read in `tz`, the truck's zone (was
+ *  `new Date('YYYY-MM-DDTHH:MM')`, the tablet's zone). 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): a
+ *  boundary earlier than its start is the NEXT day's, and the list runs in event order (20:15 … 23:45, 00:00 …).
+ *  🔴 THE EDITOR'S RULE FOR EVERY EVENT WITH A START (17 October 2026, Dominic's decision, docs/midnight-followups-report.md):
+ *  every boundary EXCEPT THE START — one after the start is on the event's date (exactly the list a normal event always had),
+ *  one EARLIER than the start is the next day's and is offered after them ("00:30 (next day)", `isNextDayFinish`). Choosing
+ *  it turns the event into one that runs past midnight; everything else follows the rule. An event with no start (or no
+ *  zone) keeps the old list. */
+export function finishTimeOptions(eventDate: string | null | undefined, tz?: string, event?: FinishTimeEventTimes): string[] {
   if (!eventDate) return []
+  const startMins = clockMins(event?.start_time)
+  if (tz && startMins != null) {
+    const start = event!.start_time as string
+    const opts: string[] = []
+    for (let mins = 0; mins < 24 * 60; mins += 15) {
+      if (mins === startMins) continue
+      const t = `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`
+      // The proposed finish IS the end: earlier than the start ⇒ the next day's (lib/event-window.ts).
+      if (eventTimeInstant(eventDate, start, t, t, tz) > Date.now()) opts.push(t)
+    }
+    return opts.sort((a, b) => (eventTimeMins(start, a, a) as number) - (eventTimeMins(start, b, b) as number))
+  }
   const now = Date.now()
   const out: string[] = []
+  const overnight = !!event && crossesMidnight(event.start_time, event.end_time)
   for (let mins = 0; mins < 24 * 60; mins += 15) {
     const hh = String(Math.floor(mins / 60)).padStart(2, '0')
     const mm = String(mins % 60).padStart(2, '0')
-    if (new Date(`${eventDate}T${hh}:${mm}`).getTime() > now) out.push(`${hh}:${mm}`)
+    const t = `${hh}:${mm}`
+    const at = !tz ? new Date(`${eventDate}T${t}`).getTime()
+      : overnight ? eventTimeInstant(eventDate, event!.start_time, event!.end_time, t, tz)
+      : instantOfLocal(eventDate, t, tz)
+    if (at > now) out.push(t)
   }
+  if (overnight) out.sort((a, b) => (eventTimeMins(event!.start_time, event!.end_time, a) as number) - (eventTimeMins(event!.start_time, event!.end_time, b) as number))
   return out
 }
 
+/** True when a finish time falls on the NEXT day: earlier than the event's start (lib/event-window.ts). */
+export function isNextDayFinish(start: string | null | undefined, finish: string | null | undefined): boolean {
+  return crossesMidnight(start, finish)
+}
+
 /** Live orders this event still owes that are due AFTER a proposed finish time.
- *  ⚠️ NULL-SLOT (ASAP) ORDERS ARE DELIBERATELY EXCLUDED: they have no promised time to fall after. */
-export function ordersDueAfter(orders: FinishTimeOrder[], endTime: string): number {
+ *  ⚠️ NULL-SLOT (ASAP) ORDERS ARE DELIBERATELY EXCLUDED: they have no promised time to fall after.
+ *  🔴 AN EVENT THAT RUNS PAST MIDNIGHT (pass `event`): the slot and the proposed finish are both read on the event's
+ *  timeline (lib/event-window.ts), so a 00:15 order is "after" a 23:00 finish. Any other event: the string compare. */
+export function ordersDueAfter(orders: FinishTimeOrder[], endTime: string, event?: FinishTimeEventTimes): number {
+  if (event && crossesMidnight(event.start_time, event.end_time)) {
+    const at = (t: string) => eventTimeMins(event.start_time, event.end_time, t) as number
+    const end = at(endTime)
+    return orders.filter(o =>
+      !TERMINAL_STATUSES.includes(o.status) && !!o.slot && at(o.slot.slice(0, 5)) > end
+    ).length
+  }
   return orders.filter(o =>
     !TERMINAL_STATUSES.includes(o.status) && !!o.slot && o.slot.slice(0, 5) > endTime
   ).length
@@ -63,15 +108,20 @@ export function EventFinishTimeModal({
   event,
   orders,
   busy = false,
+  time,
   onClose,
   onConfirm,
 }: {
-  /** The event being changed. `end_time` may be null; the modal says so rather than guessing. */
-  event: { id: string; end_time: string | null; event_date: string | null }
+  /** The event being changed. `end_time` may be null; the modal says so rather than guessing. `start_time` places an
+   *  overnight event's times on the right day (lib/event-window.ts). */
+  event: { id: string; end_time: string | null; event_date: string | null; start_time?: string | null }
   /** This event's orders. Terminal ones are excluded HERE, so callers pass their list unfiltered. */
   orders: FinishTimeOrder[]
   /** True while the caller's write is in flight. Disables both buttons. */
   busy?: boolean
+  /** The truck's time settings: the zone the options are read in, and the style every time is WRITTEN in (GB "18:30"
+   *  exactly as before, US "6:30 PM"). The option VALUES stay "HH:MM". */
+  time: TimeSettings | null | undefined
   /** The NON-COMMITTING arm. Wired to Cancel, to the backdrop, and to Android back by both callers. */
   onClose: () => void
   /** Fired ONLY from the confirm step. The caller performs the write and then closes. */
@@ -82,8 +132,23 @@ export function EventFinishTimeModal({
   const [selected, setSelected] = useState(current)
   const [step, setStep] = useState<'pick' | 'confirm'>('pick')
 
-  const options = finishTimeOptions(event.event_date)
-  const affected = ordersDueAfter(orders, selected)
+  const ts = timeSettingsOr(time, 'finish time')
+  /** A time for the screen, in the truck's style (GB: the string itself). */
+  const fmt = (t: string) => String(formatSlot(t, ts))
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT reads its times on the event's timeline (lib/event-window.ts).
+  const times = { start_time: event.start_time, end_time: event.end_time }
+  /** A finish time on the NEXT day (earlier than the start) — the current one, or one being chosen. */
+  const nextDay = (x: string) => !!x && isNextDayFinish(event.start_time, x)
+  /** A time for the screen, marked "(next day)" when it falls there. */
+  const label = (x: string) => (nextDay(x) ? t('finish.optionNextDay', { time: fmt(x) }) : fmt(x))
+  // 🔴 ON THE EVENT'S TIMELINE when the current OR the chosen finish runs past midnight (lib/event-window.ts); a same-day
+  // choice on a normal event is compared exactly as before.
+  const overnight = nextDay(current) || nextDay(selected)
+  const options = finishTimeOptions(event.event_date, ts.timeZone, times)
+  const affected = ordersDueAfter(orders, selected, { start_time: event.start_time, end_time: nextDay(selected) ? selected : event.end_time })
+  /** "Is the chosen finish earlier than the current one?" — on the event's timeline when either runs past midnight. */
+  const at = (x: string) => eventTimeMins(event.start_time, x, x) ?? -1
+  const earlier = !!current && (overnight ? at(selected) < at(current) : selected < current)
 
   // ── STEP 2: THE CONFIRM. THIS IS THE ONLY THING THAT WRITES. ────────────────────────────────────
   // 🔴 A CONFIRMATION, NOT AN UNDO. An undo toast expires, and the KDS runs UNATTENDED: a tap nobody
@@ -101,11 +166,11 @@ export function EventFinishTimeModal({
         <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
           <h3 className="font-black text-slate-900 text-base mb-1">{t('finish.confirmTitle')}</h3>
           <p className="text-sm text-slate-600">
-            {t.rich('finish.willFinish', { selected, current, hasCurrent: current ? 'yes' : 'no', b: c => <span className="font-bold text-slate-900">{c}</span> })}
+            {t.rich('finish.willFinish', { selected: label(selected), current: label(current), hasCurrent: current ? 'yes' : 'no', b: c => <span className="font-bold text-slate-900">{c}</span> })}
           </p>
           {affected > 0 && (
             <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 mt-3">
-              {t.rich('finish.dueAfter', { n: affected, count: String(affected), selected, b: c => <span className="font-bold">{c}</span> })}
+              {t.rich('finish.dueAfter', { n: affected, count: String(affected), selected: label(selected), b: c => <span className="font-bold">{c}</span> })}
             </p>
           )}
           <div className="flex gap-2 mt-5">
@@ -115,7 +180,7 @@ export function EventFinishTimeModal({
             </button>
             <button disabled={busy} onClick={onClose}
               className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">
-              {current ? t('finish.keepCurrent', { current }) : t('finish.keepAsIs')}
+              {current ? t('finish.keepCurrent', { current: label(current) }) : t('finish.keepAsIs')}
             </button>
           </div>
         </div>
@@ -135,7 +200,7 @@ export function EventFinishTimeModal({
         <h3 className="font-black text-slate-900 text-base mb-1">{t('finish.title')}</h3>
         <p className="text-sm text-slate-600">
           {current
-            ? t.rich('finish.currentlySet', { current, b: c => <span className="font-bold text-slate-900">{c}</span> })
+            ? t.rich('finish.currentlySet', { current: label(current), b: c => <span className="font-bold text-slate-900">{c}</span> })
             : t('finish.noFinishTime')}
         </p>
         {options.length === 0 ? (
@@ -152,13 +217,13 @@ export function EventFinishTimeModal({
                   never showing a blank while the operator decides. It cannot be SUBMITTED — the
                   button below is disabled while selected === current. */}
               {!options.includes(selected) && (
-                <option value={selected}>{t('finish.optionCurrent', { time: selected || '--:--' })}</option>
+                <option value={selected}>{t('finish.optionCurrent', { time: selected ? label(selected) : '--:--' })}</option>
               )}
               {options.map(opt => (
-                <option key={opt} value={opt}>{opt === current ? t('finish.optionCurrent', { time: opt }) : opt}</option>
+                <option key={opt} value={opt}>{opt === current ? t('finish.optionCurrent', { time: label(opt) }) : label(opt)}</option>
               ))}
             </select>
-            {current && selected < current && (
+            {earlier && (
               <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-2">
                 {t('finish.earlier')}
               </p>

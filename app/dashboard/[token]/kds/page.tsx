@@ -36,6 +36,8 @@ import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { readSoundConfig, seedSoundConfig, effectiveSoundConfig, writeSoundConfig } from '@/lib/sound-prefs'
 import { formatTime, formatTimeRange, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, clockOfInstantInTz, formatInstantClock, timeSettingsOr, LEGACY_UK_TIME_SETTINGS } from '@/lib/time-utils'
+// 17 October 2026: an event that runs past midnight — the one rule (docs/midnight-and-format-fixes-report.md).
+import { crossesMidnight, eventTimeMins, eventEndMins, nowOnEvent, isUpcomingOrRunning } from '@/lib/event-window'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_LIGHT, EVENT_STATUS_DOT } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
@@ -450,7 +452,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   // ⚠️ ONE STATE NOW, NOT TWO. The picker/confirm split moved INSIDE EventFinishTimeModal, which is
   // where it belongs — it is the safety property of the control, not of this screen. Non-null means the
   // modal is mounted for that event; every open is a fresh mount, so there is no draft to leak back in.
-  const [finishTimeTarget, setFinishTimeTarget] = useState<{ id: string; end_time: string | null; event_date: string | null } | null>(null)
+  const [finishTimeTarget, setFinishTimeTarget] = useState<{ id: string; end_time: string | null; event_date: string | null; start_time?: string | null } | null>(null)
   const [finishTimeBusy, setFinishTimeBusy] = useState(false)
   const [eventNoteInput, setEventNoteInput] = useState('')
   // ── EVENT-CANCEL GATE (was window.confirm) ──────────────────────────────────────────────────────
@@ -778,8 +780,12 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         const loadTz = timeSettingsOr(data.truck?.time, 'kds').timeZone
         const todayStr = getLocalDateInTz(loadTz)
         const currentTime = clockOfInstantInTz(new Date(), loadTz)
+        // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): yesterday's 20:00–00:30 is still today's event
+        // until it ends, and has started by definition. Every other row: the original test, unchanged.
+        const loadNowMins = getNowMinsInTz(loadTz)
         const stale = fetched.filter((e: TruckEvent) =>
-          e.event_date === todayStr && e.status === 'confirmed' && e.auto_open === true && e.start_time <= currentTime
+          ((e.event_date === todayStr && e.start_time <= currentTime) || (e.event_date < todayStr && isUpcomingOrRunning(e, todayStr, loadNowMins)))
+          && e.status === 'confirmed' && e.auto_open === true
         )
         for (const ev of stale) {
           await fetch('/api/events/action', {
@@ -1616,7 +1622,11 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     const ev = events.find(e => e.id === eventId)
     const nowMins = getNowMinsInTz(kdsTz)
     const endMins = ev?.end_time ? (() => { const [h, m] = ev.end_time.split(':').map(Number); return (h || 0) * 60 + (m || 0) })() : null
-    const finishingEarly = endMins != null && nowMins < endMins
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT: now and its next-day end on the event's timeline (lib/event-window.ts), so
+    // finishing at 23:50 a 00:30 event is EARLY. Any other event: the minute-of-day compare, unchanged.
+    const finishingEarly = ev && crossesMidnight(ev.start_time, ev.end_time)
+      ? nowOnEvent(ev.event_date, kdsTz) < (eventEndMins(ev.start_time, ev.end_time) as number)
+      : endMins != null && nowMins < endMins
     setFinishConfirm({ eventId, early: finishingEarly, endTime: ev?.end_time ? formatTime(ev.end_time, kdsTime) : '' })
   }
   const doFinishEvent = async (eventId: string) => {
@@ -1848,6 +1858,12 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const displayOrders = (boardMode === 'cook' ? (boardKeepsReady ? activeOrders : cookOrders) : windowOrders)
     .slice()
     .sort((a, b) => {
+      // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT sorts on the event's timeline — 00:15 after 23:45 (lib/event-window.ts);
+      // a slotless order still first. Any other event: the original clock compare.
+      if (activeEvent && crossesMidnight(activeEvent.start_time, activeEvent.end_time)) {
+        const at = (slot: string | null) => (slot ? (eventTimeMins(activeEvent.start_time, activeEvent.end_time, slot) ?? 0) : -1)
+        return at(a.slot) - at(b.slot)
+      }
       const ta = a.slot ? new Date(`1970-01-01T${a.slot}`).getTime() : 0
       const tb = b.slot ? new Date(`1970-01-01T${b.slot}`).getTime() : 0
       return ta - tb
@@ -3052,7 +3068,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
               {t('event.addWait')}
             </button>
           )}
-          onChangeFinishTime={() => { setShowEventMenu(false); setFinishTimeTarget({ id: activeEvent.id, end_time: activeEvent.end_time ?? null, event_date: activeEvent.event_date ?? null }) }}
+          onChangeFinishTime={() => { setShowEventMenu(false); setFinishTimeTarget({ id: activeEvent.id, end_time: activeEvent.end_time ?? null, event_date: activeEvent.event_date ?? null, start_time: activeEvent.start_time ?? null }) }}
           onFinishEvent={() => finishEvent(activeEvent.id)}
           onCancelEvent={() => cancelEventFromMenu(activeEvent)}
           onClose={() => setShowEventMenu(false)}
@@ -3136,6 +3152,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           event={finishTimeTarget}
           orders={overlayedOrders}
           busy={finishTimeBusy}
+          time={kdsTime}
           onClose={() => setFinishTimeTarget(null)}
           onConfirm={newEnd => { void applyFinishTime(finishTimeTarget.id, newEnd) }}
         />

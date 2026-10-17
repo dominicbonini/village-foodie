@@ -170,7 +170,27 @@ export function hasValidEventTimes(start?: string | null, end?: string | null): 
   const ok = (t?: string | null) => typeof t === 'string' && /^([01]\d|2[0-3]):[0-5]\d/.test(t)
   if (!ok(start) || !ok(end)) return false
   const mins = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5))
-  return mins(end as string) > mins(start as string)
+  // 🔴 17 OCTOBER 2026 — OVERNIGHT EVENTS ARE BUILT (docs/midnight-and-format-fixes-report.md). An end EARLIER than the
+  // start is an event that runs past midnight: its end is the next day's, and every surface reads it through ONE rule
+  // (lib/event-window.ts). ⛔ An end EQUAL to the start is still refused — "the same time" is ambiguous (zero length or
+  // 24 hours), so it keeps the behaviour it had and is a decision for Dominic, not something guessed at here.
+  return mins(end as string) !== mins(start as string)
+}
+
+// ── 🔴 AN EVENT THAT RUNS PAST MIDNIGHT — the rule's two basic predicates (the rest is lib/event-window.ts) ──
+/** "HH:MM[:SS]" → minute of day; null for anything else. */
+export function clockMins(t: string | null | undefined): number | null {
+  if (typeof t !== 'string') return null
+  const m = /^(\d{1,2}):(\d{2})/.exec(t.trim())
+  if (!m) return null
+  const h = Number(m[1]), mi = Number(m[2])
+  return h < 24 && mi < 60 ? h * 60 + mi : null
+}
+
+/** True when the event runs past midnight: both times valid and end strictly EARLIER than start. */
+export function crossesMidnight(start: string | null | undefined, end: string | null | undefined): boolean {
+  const s = clockMins(start), e = clockMins(end)
+  return s != null && e != null && e < s
 }
 
 /** Calendar date 'YYYY-MM-DD' in the given timezone (the tz-aware localToday). */
@@ -219,7 +239,10 @@ export function pickDefaultEventByTime<
   const sec = (t: string) => (t.length === 5 ? `${t}:00` : t.slice(0, 8))
   const nowKey = `${getLocalDateInTz(tz)}T${clockSecondsInTz(new Date(), tz)}`
   const startKey = (e: T) => e.start_time ? `${e.event_date}T${sec(e.start_time)}` : '\uffff'
-  const endKey = (e: T) => e.end_time ? `${e.event_date}T${sec(e.end_time)}` : '\uffff'
+  // An event that runs past midnight ends on the NEXT day (crossesMidnight, the one rule — lib/event-window.ts): its end
+  // key carries the next date. Any other event: unchanged.
+  const endDate = (e: T) => (crossesMidnight(e.start_time, e.end_time) ? addDaysYmd(e.event_date, 1) : e.event_date)
+  const endKey = (e: T) => e.end_time ? `${endDate(e)}T${sec(e.end_time)}` : '\uffff'
   const current = events.find(e => startKey(e) <= nowKey && nowKey <= endKey(e))
   if (current) return current
   const upcoming = events.filter(e => startKey(e) >= nowKey).sort((a, b) => (startKey(a) < startKey(b) ? -1 : startKey(a) > startKey(b) ? 1 : 0))

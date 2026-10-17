@@ -5,9 +5,8 @@ import { sendWhatsApp, logMessage } from '@/lib/twilio'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeSettings } from '@/lib/truck-time'
-import { getLocalDateInTz } from '@/lib/time-utils'
-/* 🔴 PRIVATE EVENTS (20261014): redacted before the reply model sees them. */
-import { redactPrivateRows } from '@/lib/private-events/read'
+/* 🔴 THE UPCOMING-EVENTS READ (private events redacted, overnight events kept until they end) — the shared one. */
+import { fetchUpcomingTruckEvents } from '@/lib/whatsapp/upcoming-events'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -67,23 +66,13 @@ export async function POST(req: NextRequest) {
 
     // 🔴 THE TRUCK'S CLOCK (Phase 2B): its today, and the date reference the reply is written against.
     const truckTime = await truckTimeSettings(truck)
-    const today = getLocalDateInTz(truckTime.timeZone)
-    const { data: events } = await supabase
-      .from('truck_events')
-      /* ⚠️ `id` ADDED 20261014 — only so the privacy probe below has something to ask about. */
-      .select('id, event_date, start_time, end_time, venue_name, town, postcode, status')
-      .eq('truck_id', truck.id)
-      .gte('event_date', today)
-      .in('status', ['confirmed', 'open', 'unconfirmed'])
-      .order('event_date', { ascending: true })
-      .limit(10)
-    /* ⛔ PRIVATE EVENTS ARE REDACTED BEFORE THE MODEL IS GROUNDED ON THEM (20261014). The reply is
-     * prose sent to a customer — a venue that reached this prompt would be published in a sentence
-     * nobody wrote and nobody reviewed. The row survives as "Private event", so the truck still reads
-     * as busy that day rather than free. Same helper, same fail-closed direction, as every feed. */
-    const safeEvents = await redactPrivateRows(supabase, events ?? [], 'whatsapp webhook')
+    /* 🔴 THE ONE SHARED READ (lib/whatsapp/upcoming-events.ts) — was an inline copy of it. It is where "upcoming"
+     * follows the overnight-event rule (lib/event-window.ts: an event running past midnight stays in the window until
+     * it ends) and where PRIVATE EVENTS ARE REDACTED before the model is grounded on them (20261014): the row survives
+     * as "Private event", so the truck still reads as busy that day. Same columns, statuses and limit as the copy had. */
+    const events = await fetchUpcomingTruckEvents(supabase, truck.id, truckTime.timeZone)
 
-    console.log('[WA webhook] events found:', events?.length)
+    console.log('[WA webhook] events found:', events.length)
 
     const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
     const { reply, classification } = await generateWhatsAppReply({
@@ -94,7 +83,7 @@ export async function POST(req: NextRequest) {
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,
       customerMessage: body,
-      events:          safeEvents,
+      events:          events,
       scheduleUrl:     truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
       orderUrl:        truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
       // DORMANT until whatsapp_logs is live in prod (then: existence check → isFollowUp). False
@@ -110,9 +99,9 @@ export async function POST(req: NextRequest) {
       customer_number: fromNumber,
       message_in:     body,
       classification,
-      events_found:   events?.length ?? 0,
+      events_found:   events.length,
       response_sent:  reply ?? null,
-      possible_miss:  classification === 'SPECIFIC_QUERY' && (events?.length ?? 0) === 0,
+      possible_miss:  classification === 'SPECIFIC_QUERY' && events.length === 0,
     }).then(({ error }) => {
       if (error) console.error('[WhatsApp] Logging failed:', error)
     })

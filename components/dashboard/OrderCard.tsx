@@ -804,6 +804,8 @@ export function OrderCard({
   // 🔴 THE TRUCK'S CLOCK (Phase 2B): the due time is the event's date + slot on the truck's wall clock, and
   // the label is written in its style — GB "17:00", US "5pm". Was the device's clock.
   const cardTime = timeSettingsOr(truck?.time, 'order card')
+  // 🔴 `event` carries its end_time, so on an event that runs past midnight a slot earlier than its start is read on
+  // the NEXT day (resolveCollectionTime → lib/event-window.ts): a 00:15 order at 23:50 is "in 25m", not "1415m late".
   const slotDt = resolveCollectionTime(order, event ?? null, cardTime.timeZone)
 
   // The time to show on the card — the resolved time, so an ASAP order reads "17:00"
@@ -827,7 +829,7 @@ export function OrderCard({
     const id = setInterval(() => setSlotOffset(computeOffset()), 15000)
     return () => clearInterval(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order.slot, order.event_date, event?.event_date, event?.start_time])
+  }, [order.slot, order.event_date, event?.event_date, event?.start_time, event?.end_time])
 
   // Prep-aware amber lead: amber fires when the slot is within (this order's cook time +
   // buffer) — so a long-cook order goes amber early enough to start it, and a no-cook one

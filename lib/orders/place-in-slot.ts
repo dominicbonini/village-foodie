@@ -24,6 +24,7 @@ import type { StoredCookingReservation } from '@/lib/slot-bookings'
 import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { engineClock, nowOnEvent } from '@/lib/event-window'
 import type { CatConfig } from '@/lib/prep-utils'
 
 export function timeToMins(t: string): number {
@@ -152,12 +153,17 @@ export async function placeOrderInSlotLocked(
           ? generateCollectionTimes(eventStartTime, eventEndTime, iv, dur)
           : []
     const basketByCat = orderItemsToQtyByCat(orderLines, itemCatMap)
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): the engine below reads slot strings as minute of day, so
+    // this event's times, occupancy keys, reservations and requested slot go in on the ENGINE CLOCK ("00:15" → "24:15")
+    // and the slot that comes out goes back to canonical before it is returned and stored. The identity for any other event.
+    const ec = engineClock(eventStartTime, eventEndTime)
+    const evTimes = { start_time: eventStartTime, end_time: eventEndTime }
 
     // Resolve the starting slot: explicit request, else ASAP via the existing resolver
     // (Section 6/7 — first slot at/after the ASAP floor; not forked).
     const startSlot =
       requestedSlot ??
-      getAsapSlot(times.map(t => ({ collection_time: t.collection_time, available: true })), eventDate, timeZone)?.collection_time ??
+      getAsapSlot(times.map(t => ({ collection_time: t.collection_time, available: true })), eventDate, timeZone, evTimes)?.collection_time ??
       null
 
     // No schedule / unresolvable start (e.g. pub / no collection_times) → book at the
@@ -176,10 +182,12 @@ export async function placeOrderInSlotLocked(
 
     // One FRESH read under the event lock — we are the sole writer for its duration. excludeOrderKey
     // drops THIS order from the empty-cache reseed so it doesn't self-occupy the start window (Option B).
-    const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId, excludeOrderKey)
+    // On the engine clock (an overnight event; the identity otherwise — see `ec` above).
+    const slotUnits = ec.keysTo(await getProductionSlotUnits(supabase, truckId, eventId, excludeOrderKey))
     // P1: the counting orders' reservations, read under the SAME lock; [] on any failure ⇒ today's walk.
-    const reservations = await readCookingReservations(supabase, truckId, eventId, excludeOrderKey)
-    const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
+    const reservations = (await readCookingReservations(supabase, truckId, eventId, excludeOrderKey)).map(r => (ec.overnight ? { ...r, slot: ec.to(r.slot) } : r))
+    // An overnight event's end is the next day's: "00:30" reads 24:30 on the engine clock.
+    const eventEndMins = eventEndTime ? timeToMins(ec.to(eventEndTime)) : Number.POSITIVE_INFINITY
     const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
 
     // Truly-uncounted order (no oven AND no ticked-instant categories) → book at the start slot
@@ -200,15 +208,20 @@ export async function placeOrderInSlotLocked(
     // when it fits; otherwise the order reassigns FORWARD to the next fitting slot (never
     // rejected). ASAP (no requested slot) → earliest fitting at/after the now-floor startSlot.
     const fromMins = requestedSlot
-      ? Math.max(timeToMins(startSlot), timeToMins(requestedSlot))
-      : timeToMins(startSlot)
+      ? Math.max(timeToMins(ec.to(startSlot)), timeToMins(ec.to(requestedSlot)))
+      : timeToMins(ec.to(startSlot))
     // NOW-CLAMP so the BOOKED slot is physically achievable (cooking can't start before now). Today
     // only — for a future-date event nowMins (mins-of-day) would mis-compare, so pass -Inf (no clamp).
     // The TRUCK's zone (Phase 2B; was a hard-coded London).
-    const placeNowMins = eventDate === getLocalDateInTz(timeZone)
-      ? getNowMinsInTz(timeZone)
-      : Number.NEGATIVE_INFINITY
-    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5, placeNowMins, reservations, batchReservations)
+    // 🔴 An overnight event: "now" on its own timeline (lib/event-window.ts nowOnEvent) — the same axis as its
+    // engine-clock slots, on its date and the next; below every window before it starts.
+    const placeNowMins = ec.overnight
+      ? nowOnEvent(eventDate, timeZone)
+      : eventDate === getLocalDateInTz(timeZone)
+        ? getNowMinsInTz(timeZone)
+        : Number.NEGATIVE_INFINITY
+    const engineTimes = ec.overnight ? times.map(t => ({ ...t, collection_time: ec.to(t.collection_time), production_slot: ec.to(t.production_slot) })) : times
+    const placement = earliestBackwardFitSlot(engineTimes, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5, placeNowMins, reservations, batchReservations)
     if (!placement || timeToMins(placement) > eventEndMins) {
       // No fitting slot before event end → event full → pending (never reject).
       return { finalSlot: null, booked: false }
@@ -219,6 +232,7 @@ export async function placeOrderInSlotLocked(
     const reservation = batchReservations
       ? buildAdmittedReservation({ back, slotLabel: placement, qtyByCat: basketByCat, catConfigs, kitchenCapacity: kitchenCapacity ?? null, eventStartMins, capacityWindowMins: capacityWindowMins ?? 5, nowMins: placeNowMins, gridIntervalMins: intervalMins ?? null }).record
       : buildReservationForOrder({ slot: placement, qtyByCat: basketByCat, catConfigs, eventStartMins, kitchenCapacity: kitchenCapacity ?? null, capacityWindowMins: capacityWindowMins ?? 5, gridIntervalMins: intervalMins ?? null, source: 'fit' })
-    return { finalSlot: placement, booked: true, reservation }
+    // STORED CANONICAL: "24:15" → "00:15" (the reservation records convert their own slot label).
+    return { finalSlot: ec.from(placement), booked: true, reservation }
   }
 }

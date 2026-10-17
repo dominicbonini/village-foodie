@@ -53,7 +53,8 @@
     "newFinishTime": "New finish time",
     "optionCurrent": "{time} (current)",
     "earlier": "That is earlier than the current finish time. Customers will not be able to order for times after it.",
-    "review": "Review change"
+    "review": "Review change",
+    "optionNextDay": "{time} (next day)"
   },
   "extraWait": {
     "title": "Add extra wait",

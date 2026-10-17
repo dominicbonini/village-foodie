@@ -13,6 +13,11 @@ import { VILLAGE_FOODIE_COUNTRY, countryOf } from '@/lib/discovery-country'
 /* 🔴 A ROW NAMING NO PUBLIC PLACE ("Private Hire", "Closed", "TBC") IS NEVER SERVED — the second guard; the gate
  * already writes such rows non-public (lib/discovery-private.ts). */
 import { isNonPublicDiscoveryRow } from '@/lib/discovery-private'
+/* 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts, the one rule) stays listed until it ENDS — a 20:00–00:30
+ * event dated yesterday is still on at 00:15. Every other event is kept by exactly the date test it always had. */
+import { crossesMidnight, isUpcomingOrRunning } from '@/lib/event-window'
+import { getLocalDateInTz, getNowMinsInTz, addDaysYmd, DISCOVERY_TIME_SETTINGS } from '@/lib/time-utils'
+import { truckTimeZone } from '@/lib/truck-time'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -77,8 +82,36 @@ const EV_SELECT = `
 
 const TR_SELECT = 'name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason, excluded, show_on_vf, show_on_hg'
 
+/**
+ * ══ 🔴 WHICH OPERATOR EVENTS ARE "UPCOMING" — lib/event-window.ts ══════════════════════════════════════════
+ * EVERY event is decided on ITS TRUCK'S clock (17 October 2026, Dominic's decision, docs/midnight-followups-report.md):
+ * dated on or after the truck's own today, or an overnight event (end < start) from its yesterday that is still running.
+ * This was the UTC date for an ordinary event — a GB truck's yesterday was listed from 00:00 to 01:00 BST and a US
+ * truck's today dropped off from 20:00 EDT. A truck whose zone cannot be resolved keeps the UTC `today` it had.
+ */
+async function upcomingOperatorRows<T extends { event_date: string; start_time?: string | null; end_time?: string | null; trucks?: unknown }>(rows: T[], today: string): Promise<T[]> {
+  const zones = new Map<string, Promise<string | null>>()
+  const zoneOf = (truck: { id?: string; country?: string | null; timezone?: string | null } | null) => {
+    const key = truck?.id ?? ''
+    if (!zones.has(key)) zones.set(key, truckTimeZone(truck).catch(() => null))
+    return zones.get(key) as Promise<string | null>
+  }
+  const keep = await Promise.all(rows.map(async e => {
+    const tz = await zoneOf(e.trucks as never)
+    if (!tz) return !crossesMidnight(e.start_time, e.end_time) && e.event_date >= today
+    return isUpcomingOrRunning(e, getLocalDateInTz(tz), getNowMinsInTz(tz))
+  }))
+  return rows.filter((_, i) => keep[i])
+}
+
 export async function GET(req: NextRequest) {
   const today = new Date().toISOString().split('T')[0]
+  // 🔴 THE SCRAPED ROWS ARE VILLAGE FOODIE'S MARKET'S (GB), SO "today" FOR THEM IS ITS ZONE'S (DISCOVERY_TIME_SETTINGS, the
+  // GB country row) — was the UTC date, which listed yesterday's events from 00:00 to 01:00 BST. The operator leg decides
+  // every event on its own truck's clock (see upcomingOperatorRows); `today` below is only its fallback for a truck whose
+  // zone cannot be read, and the floor of its read.
+  const vfZone = DISCOVERY_TIME_SETTINGS.timeZone
+  const vfToday = getLocalDateInTz(vfZone)
   const slug = req.nextUrl.searchParams.get('slug')
 
   const host = req.headers.get('host') || ''
@@ -97,20 +130,26 @@ export async function GET(req: NextRequest) {
     // applied, PostgREST rejects the filter (42703); the query is retried WITHOUT it and a warning is
     // logged, so applying the migration late costs nothing but the hiding. Fail-closed on any OTHER
     // error is unchanged below.
-    const evQuery = (withSuperseded: boolean) => {
-      let q = supabase.from('discovery_events').select(EV_SELECT).eq('country', VILLAGE_FOODIE_COUNTRY).eq(showCol, true).gte('event_date', today)
+    // 🔴 `yesterday` (lib/event-window.ts): the same read for YESTERDAY's rows, of which only an overnight event that is
+    // still running is kept (filtered below). A SECOND QUERY, NOT A WIDER ONE: the main read is capped at 1000 rows (and
+    // PostgREST's max_rows is 1000), so widening it to yesterday would let yesterday's rows push the last upcoming ones
+    // out. The main read is unchanged; yesterday's survivors are added in front of it (they sort first).
+    const evQuery = (withSuperseded: boolean, yesterday = false) => {
+      let q = supabase.from('discovery_events').select(EV_SELECT).eq('country', VILLAGE_FOODIE_COUNTRY).eq(showCol, true)
+      q = yesterday ? q.eq('event_date', addDaysYmd(vfToday, -1)) : q.gte('event_date', vfToday)
       if (withSuperseded) q = q.is('superseded_by', null)
       return q.order('event_date', { ascending: true }).order('start_time', { ascending: true, nullsFirst: false }).limit(1000)
     }
-    const evPromise = (async () => {
-      const r = await evQuery(true)
+    const evRead = async (yesterday: boolean) => {
+      const r = await evQuery(true, yesterday)
       if (r.error && /superseded_by/.test(r.error.message || '')) {
         console.warn('[Discovery] superseded_by column absent — migration 20260911 not applied; serving without the duplicate filter')
-        return await evQuery(false)
+        return await evQuery(false, yesterday)
       }
       return r
-    })()
-    const [evResult, trResult] = await Promise.all([
+    }
+    const evPromise = evRead(false)
+    const [evResult, trResult, ydResult] = await Promise.all([
       evPromise,
 
       supabase
@@ -119,13 +158,20 @@ export async function GET(req: NextRequest) {
         .eq('country', VILLAGE_FOODIE_COUNTRY)
         .eq(showCol, true)
         .order('name'),
+
+      evRead(true),
     ])
 
     if (evResult.error || trResult.error) {
       throw evResult.error || trResult.error
     }
 
-    evData = evResult.data || []
+    // Yesterday's rows: only an overnight event whose end is still ahead on Village Foodie's clock (lib/event-window.ts).
+    // A failed read of them costs only those rows — never the feed.
+    if (ydResult.error) console.error('[Discovery] yesterday\'s overnight events query failed:', ydResult.error.message)
+    const vfNow = getNowMinsInTz(vfZone)
+    const running = (ydResult.data || []).filter(e => crossesMidnight(e.start_time, e.end_time) && isUpcomingOrRunning(e, vfToday, vfNow))
+    evData = [...running, ...(evResult.data || [])]
     trData = trResult.data || []
   } catch (err) {
     // FAIL CLOSED: on error we drop the scraped-discovery feed entirely rather than fall back to an
@@ -248,6 +294,7 @@ export async function GET(req: NextRequest) {
           slug,
           active,
           country,
+          timezone,
           excluded,
           show_on_vf,
           show_on_hg,
@@ -256,20 +303,24 @@ export async function GET(req: NextRequest) {
         )
       `)
       .in('status', ['confirmed', 'open'])
-      .gte('event_date', today)
+      // From two days before the UTC date — every zone's yesterday — so an overnight event from the truck's yesterday is
+      // read; `upcomingOperatorRows` below keeps exactly the old set plus the ones still running (lib/event-window.ts).
+      .gte('event_date', addDaysYmd(today, -2))
       .order('event_date', { ascending: true })
       .order('start_time', { ascending: true })
-      .limit(200)
 
     if (opResult.error) {
       console.error('[Discovery] Operator events query failed:', opResult.error.message)
     } else {
+      // 🔴 THE LIMIT (200) AFTER THE FILTER, NEVER IN THE QUERY (lib/event-window.ts "UPCOMING"): yesterday's rows must
+      // not take places in it.
+      const opRows = (await upcomingOperatorRows(opResult.data || [], today)).slice(0, 200)
       // READ-THROUGH (Option D): fetch each operator truck's LINKED discovery_trucks row once (keyed by
       // hatchgrab_truck_id) so the mapping below can fill profile gaps (photo/logo/cuisine/contact) from the
       // truck's own discovery record. NOTHING is copied/moved — the discovery row stays source-of-truth, so a
       // plan change never loses data. Best-effort: on failure the map is empty and we fall back to
       // operator-only fields (previous behaviour), never throw.
-      const opTruckIds = Array.from(new Set((opResult.data || []).map((e: any) => e.trucks?.id).filter(Boolean)))
+      const opTruckIds = Array.from(new Set(opRows.map((e: any) => e.trucks?.id).filter(Boolean)))
       const linkedByTruckId = new Map<string, any>()
       if (opTruckIds.length) {
         try {
@@ -297,9 +348,9 @@ export async function GET(req: NextRequest) {
        * keeps serving scraped rows.
        * ⚠️ ONE PROBED READ FOR THE WHOLE PAGE (limit 200), not one per event. */
       const privacy = await readPrivateEventIds(
-        supabase, (opResult.data || []).map((e: any) => e.id), '/api/discovery/events')
+        supabase, opRows.map((e: any) => e.id), '/api/discovery/events')
 
-      mappedOperatorEvents = (opResult.data || [])
+      mappedOperatorEvents = opRows
         .filter((e: any) => {
           /* ⛔ FIRST, BEFORE ANY OTHER TEST. Nothing below may short-circuit past it. */
           if (privacy.isPrivate(e.id)) return false

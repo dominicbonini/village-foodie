@@ -110,6 +110,14 @@ function formatStandardDate(dateStr: string, ts: TimeSettings) {
 }
 
 
+/** The card's time range with each 12-hour time kept WHOLE: a no-break space (U+00A0) between the time and AM/PM, so
+ *  a narrow card never wraps "11:30 AM – 10:45 PM" as "11:30 / AM – 10:45 / PM". A 24-hour range (GB) has no AM/PM and is
+ *  returned exactly as formatTimeRange writes it. */
+function cardTimeRange(start: string, end: string, ts: TimeSettings) {
+    const range = formatTimeRange(start, end, ts);
+    return ts.timeFormat === '12h' ? range.replace(/ (AM|PM)\b/g, '\u00A0$1') : range;
+}
+
 // LIVE-REDEFINITION (V7.0): live = operator STARTED the event (status==='open', from the Start
 // button or auto-event-scheduler), NOT the published clock window. Published times stay DISPLAY-only.
 function isEventLive(status?: string): boolean {
@@ -161,7 +169,7 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                 {/* Time + INLINE "● Live" on ONE line (status-driven). Inline (not its own row) so a
                     live card is the SAME HEIGHT as a non-live card. Live condition + button flip unchanged. */}
                 <span className="flex items-center gap-2 text-[12px] font-bold text-slate-500 leading-none mt-0.5">
-                    <span>{formatTimeRange(event.startTime, event.endTime, ts)}</span>
+                    <span>{cardTimeRange(event.startTime, event.endTime, ts)}</span>
                     {liveNow && (
                         <span className="inline-flex items-center gap-1 text-green-600">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />{t('live')}

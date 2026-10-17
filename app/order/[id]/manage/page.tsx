@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
-import { formatSlot, instantOfLocal, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { formatSlot, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
+import { eventTimeInstant } from '@/lib/event-window'
 import { ChargeRows } from '@/components/ChargeRows'
 import type { ChargeLineSource } from '@/lib/order-charge-lines'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
@@ -21,6 +22,10 @@ type OrderState = {
   customer_name: string
   slot: string | null
   event_date: string | null
+  /** The order's event's times, when /api/orders/[id] sends them — so a slot past midnight on an overnight event reads
+   *  as the next day's (lib/event-window.ts). Absent ⇒ the slot is on event_date, as before. */
+  event_start_time?: string | null
+  event_end_time?: string | null
   items: any[]
   deals: any[]
   total: number
@@ -132,7 +137,8 @@ export default function ManageOrderPage() {
   const isPastCutoff = (): boolean => {
     if (!order.slot || !order.event_date || !order.cancellation_cutoff_mins) return false
     // The slot is the truck's wall clock (Phase 2B) — not the customer's device's.
-    const slotTime = instantOfLocal(order.event_date, order.slot, ts.timeZone)
+    // An overnight event's after-midnight slot is the NEXT day's (lib/event-window.ts); without its times, event_date.
+    const slotTime = eventTimeInstant(order.event_date, order.event_start_time, order.event_end_time, order.slot, ts.timeZone)
     const cutoff = new Date(slotTime - order.cancellation_cutoff_mins * 60 * 1000)
     return new Date() > cutoff
   }

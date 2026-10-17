@@ -8,6 +8,11 @@
 // COMPLEMENTARY to the inbound-schedule scrape dedup (name/signature, skips re-insert) — this flags
 // a DISTINCT pending event that conflicts with an already-confirmed one. Pure function, reusable on
 // client and server.
+// 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (end < start; lib/event-window.ts, 17 October 2026) touches TWO dates, so Check B
+// compares the two windows on ONE timeline (minutes after 00:00 of the candidate's date) across neighbouring dates: a
+// 20:00–00:30 event overlaps a 21:00–23:00 event that date AND a 00:00–01:00 event the next. Two events that do not
+// cross midnight can only overlap on the same date, so for them nothing changes.
+import { crossesMidnight, daysBetween } from '@/lib/event-window'
 
 export type ConflictKind = 'duplicate' | 'review' | 'overlap'
 
@@ -49,6 +54,15 @@ function toMins(t: string | null | undefined): number | null {
   return h * 60 + m
 }
 
+// A time of `e` on the candidate's timeline: its minutes, +1440 for the end of an event that crosses midnight (its end
+// is the next day's — lib/event-window.ts), + 1440 per day `e` is dated after the candidate. For an event that does not
+// cross midnight, on the candidate's date, it is exactly toMins.
+function onTimeline(e: ConflictEvent, which: 'start_time' | 'end_time', dayOff: number): number | null {
+  const m = toMins(e[which])
+  if (m === null) return null
+  return m + (which === 'end_time' && crossesMidnight(e.start_time, e.end_time) ? 1440 : 0) + dayOff * 1440
+}
+
 // Normalise a postcode for equality: uppercase + strip ALL whitespace. Null/empty → null (so a
 // missing postcode never matches another missing postcode — Check A skips, Check B still applies).
 function normPostcode(pc: string | null | undefined): string | null {
@@ -58,7 +72,8 @@ function normPostcode(pc: string | null | undefined): string | null {
 }
 
 /**
- * Conflicts for `candidate` against every existing confirmed/open event on the SAME date.
+ * Conflicts for `candidate` against every existing confirmed/open event on the SAME date (and, for the time
+ * overlap only, on the neighbouring date when either event runs past midnight — lib/event-window.ts).
  * One conflict per conflicting existing event, at the most specific/severe kind:
  *   pcMatch + same time   → 'duplicate' (Tier 1; overlap is implied)
  *   pcMatch + diff time   → 'review'    (Tier 2; same venue, edited time or separate slot)
@@ -69,26 +84,32 @@ export function detectEventConflicts(
   allEvents: ConflictEvent[]
 ): EventConflict[] {
   const cStart = toMins(candidate.start_time)
-  const cEnd = toMins(candidate.end_time)
+  // The end on the candidate's timeline (+1440 when it crosses midnight — lib/event-window.ts).
+  const cEnd = onTimeline(candidate, 'end_time', 0)
   const cPc = normPostcode(candidate.postcode)
   const out: EventConflict[] = []
 
   for (const ex of allEvents) {
     // Comparison set: same truck's list, same date, live/confirmed, not the candidate itself.
     if (ex.id === candidate.id) continue
-    if (ex.event_date !== candidate.event_date) continue
+    // Same date — or the neighbouring date when either event runs past midnight (lib/event-window.ts), where only the
+    // time overlap (Check B) can apply. `dayOff` places the existing event on the candidate's timeline.
+    const sameDate = ex.event_date === candidate.event_date
+    const dayOff = sameDate ? 0 : daysBetween(candidate.event_date, ex.event_date)
+    if (!sameDate && !(Math.abs(dayOff) === 1 && (crossesMidnight(candidate.start_time, candidate.end_time) || crossesMidnight(ex.start_time, ex.end_time)))) continue
     if (ex.status !== 'confirmed' && ex.status !== 'open') continue
     // VAN NOTE — one-van assumption: flag ALL same-day overlaps. When multi-van lands, add here:
     //   if (candidate.van_id && ex.van_id && candidate.van_id !== ex.van_id) continue
     // (two DIFFERENT vans can legitimately be in two places at once → not a conflict). Do NOT add
     // this predicate now — single-van trucks must flag every same-day time overlap.
 
-    const exStart = toMins(ex.start_time)
-    const exEnd = toMins(ex.end_time)
+    const exStart = onTimeline(ex, 'start_time', dayOff)
+    const exEnd = onTimeline(ex, 'end_time', dayOff)
     const exPc = normPostcode(ex.postcode)
 
     const haveBothTimes = cStart !== null && cEnd !== null && exStart !== null && exEnd !== null
-    const pcMatch = cPc !== null && exPc !== null && cPc === exPc
+    // The postcode checks (A) are same-date only, as before; across dates only an overlap is a conflict.
+    const pcMatch = sameDate && cPc !== null && exPc !== null && cPc === exPc
     const timeEqual = haveBothTimes && cStart === exStart && cEnd === exEnd
     // Half-open overlap: candStart < existEnd AND existStart < candEnd.
     const overlap = haveBothTimes && (cStart as number) < (exEnd as number) && (exStart as number) < (cEnd as number)

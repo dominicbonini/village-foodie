@@ -92,6 +92,9 @@ import { clockOf, formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantO
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
 import { isExcluded } from '@/lib/schedule-extract'
 import { detectEventConflicts } from '@/lib/event-conflicts'
+// 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (end < start) — the one rule, lib/event-window.ts. Every "is it over?" below reads
+// the event's END on its own timeline (the next day's when it crosses midnight); a normal event's numbers are unchanged.
+import { crossesMidnight, eventEndInstant, eventTimeDate } from '@/lib/event-window'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { SpiceLevel } from '@/components/SpiceLevel'
 import AppHeader from '@/components/shared/AppHeader'
@@ -879,7 +882,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         const now = Date.now()
         const n = d.events.filter((e: any) =>
           e.status === 'unconfirmed' && e.source === 'scraper' &&
-          (e.end_time ? now < instantOfLocal(e.event_date, e.end_time, mgTz) : instantOfLocal(e.event_date, '23:59', mgTz) >= now)
+          // The end on the event's timeline (lib/event-window.ts): an overnight event's is the next day's.
+          (e.end_time ? now < (eventEndInstant(e.event_date, e.start_time, e.end_time, mgTz) as number) : instantOfLocal(e.event_date, '23:59', mgTz) >= now)
         ).length
         setPendingApprovalCount(n)
       })
@@ -7358,10 +7362,11 @@ async function geocodeLocation(
     return { lat: null, lng: null }
   }
 }
-function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent['status']; event_date: string; end_time: string }) {
+function EventStatusBadge({ status, event_date, start_time, end_time }: { status: TruckEvent['status']; event_date: string; start_time?: string | null; end_time: string }) {
   const tz = useTruckTime().timeZone
   const t = useT('manageSchedule')
-  const isPast = end_time ? new Date().getTime() > instantOfLocal(event_date, end_time, tz) : false
+  // "Finished" once the END has passed — the next day's end for an event that crosses midnight (lib/event-window.ts).
+  const isPast = end_time ? new Date().getTime() > (eventEndInstant(event_date, start_time, end_time, tz) as number) : false
   if (status === 'cancelled') return (
     <span className="text-xs font-semibold text-slate-400">{t('status.cancelled')}</span>
   )
@@ -7415,9 +7420,10 @@ type EditingEvent = { id?: string; venue_name: string; town: string; postcode: s
 // selectable time would be one the server never generated. ⚠️ DO NOT MAKE THIS CONFIGURABLE.
 //
 // ⚠️ THE HOUR RANGE WIDENS FROM 07–23 TO 00–23. Deliberate: 07:00 was an accident of the old constant's
-// start offset and a 06:00 breakfast pitch could not be entered at all. It does NOT enable overnight
-// events — an end at or before the start is refused (see EventTimeSelect's `minExclusive` and
-// hasValidEventTimes), which is what keeps the customer picker's startH→endH loop non-empty.
+// start offset and a 06:00 breakfast pitch could not be entered at all.
+// 🔴 17 OCTOBER 2026 — OVERNIGHT EVENTS ARE BUILT (lib/event-window.ts): an end EARLIER than the start is an event
+// that runs past midnight (it ends the next day). Only an end EQUAL to the start is refused (EventTimeSelect's
+// `notSameAs`, endEqualsStart, hasValidEventTimes).
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
 const MINUTE_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'))
 
@@ -7452,28 +7458,28 @@ function hhMmToMins(value: string | null | undefined): number | null {
  * merely DISPLAYED round-trips byte-identically. Silently rewriting a stored event time is the failure
  * this design is built against.
  *
- * `minExclusive` is the end-after-start guard (it replaces the old `filter(t => t > start_time)`, which
- * was the ONLY ordering enforcement anywhere — hasValidEventTimes did not check it). Hours that cannot
- * hold a later time are omitted; within the boundary hour, minutes at or before it are omitted; and a
- * change to the hour re-picks the minute so the emitted value always satisfies it. ⚠️ It cannot repair
- * an ALREADY-invalid stored pair — that value is preserved and injected, so call sites flag it visually.
+ * `notSameAs` is the end field's guard: the one time an end may not be is its own start. (It was `minExclusive`, an
+ * end-strictly-after-start guard; since 17 October 2026 an end EARLIER than the start is an overnight event —
+ * lib/event-window.ts — so every hour is offered and only the start's own minute is left out of the start's hour.)
+ * A change to the hour re-picks the minute so the emitted value never equals it. ⚠️ It cannot repair an
+ * ALREADY-invalid stored pair — that value is preserved and injected, so call sites flag it visually.
  */
 function EventTimeSelect({
-  value, onChange, className, placeholder = '—:—', minExclusive = null, disabled = false, label,
+  value, onChange, className, placeholder = '—:—', notSameAs = null, disabled = false, label,
 }: {
   value: string | null | undefined
   /** Receives 'HH:MM', or '' when the hour is cleared. Never fires on its own. */
   onChange: (next: string) => void
   className: string
   placeholder?: string
-  /** The time the value must fall strictly AFTER (the start, when this is an end field). */
-  minExclusive?: string | null
+  /** The one time the value may not be (the start, when this is an end field — an end before it is overnight). */
+  notSameAs?: string | null
   disabled?: boolean
   /** Screen-reader name; the grid sites have no visible <label>. */
   label?: string
 }) {
   const { h: curH, m: curM } = splitHhMm(value)
-  const minMins = hhMmToMins(minExclusive)
+  const notMins = hhMmToMins(notSameAs)
   const t = useT('manageScheduleEvent')
   /* 🔴 THE HOUR'S LABEL IN THE TRUCK'S CLOCK (Language Phase 1d). 24h: "17", exactly as before. 12h: the truck's
    * own 12-hour form from `clockOf` without the ":00" the minute box beside it supplies — US "5 PM".
@@ -7481,12 +7487,13 @@ function EventTimeSelect({
   const ts = useTruckTime()
   const hourLabel = (h: string) => (ts.timeFormat === '12h' ? clockOf(`${h}:00`, '12h', ts.locale).replace(':00', '') : h)
 
-  // Minutes selectable for a given hour: the fixed 5-step list, narrowed only inside the boundary hour.
+  // Minutes selectable for a given hour: the fixed 5-step list, less the start's own minute inside the start's hour.
   const minutesFor = (h: string) =>
-    minMins === null || !h ? MINUTE_OPTIONS : MINUTE_OPTIONS.filter(m => Number(h) * 60 + Number(m) > minMins)
+    notMins === null || !h ? MINUTE_OPTIONS : MINUTE_OPTIONS.filter(m => Number(h) * 60 + Number(m) !== notMins)
 
-  // An hour is offered when ANY minute in it can beat the boundary (i.e. :55 does).
-  const hours = HOUR_OPTIONS.filter(h => minMins === null || Number(h) * 60 + 55 > minMins)
+  // Every hour is offered: an end before the start is an overnight event (lib/event-window.ts), and each hour keeps
+  // at least eleven minutes that are not the start.
+  const hours = [...HOUR_OPTIONS]
   if (curH && !hours.includes(curH)) hours.push(curH)          // preserve a stored/earlier hour
   hours.sort()
 
@@ -7497,7 +7504,7 @@ function EventTimeSelect({
     if (!h) { onChange(''); return }
     // Keep the operator's existing minute — INCLUDING an off-grid one — whenever it still satisfies
     // the boundary. Only when it cannot survive do we fall to the earliest minute that can.
-    const keeps = curM !== '' && (minMins === null || Number(h) * 60 + Number(curM) > minMins)
+    const keeps = curM !== '' && (notMins === null || Number(h) * 60 + Number(curM) !== notMins)
     onChange(`${h}:${keeps ? curM : (minutesFor(h)[0] ?? '00')}`)
   }
 
@@ -7536,16 +7543,20 @@ function EventTimeSelect({
   )
 }
 
-/** TRUE when both times are present AND the end is not strictly after the start — the condition every
- *  call site flags and the server refuses. Missing either time is NOT this error (it is the separate
- *  "needs a time" amber), so it returns false. */
-function endIsNotAfterStart(start: string | null | undefined, end: string | null | undefined): boolean {
+/** TRUE when both times are present AND the end EQUALS the start — the condition every call site flags and the
+ *  server refuses (hasValidEventTimes). An end EARLIER than the start is not this error: it is an event that runs past
+ *  midnight (lib/event-window.ts). (Was endIsNotAfterStart, `e <= s`, until 17 October 2026.) Missing either time is
+ *  NOT this error (it is the separate "needs a time" amber), so it returns false. */
+function endEqualsStart(start: string | null | undefined, end: string | null | undefined): boolean {
   const s = hhMmToMins(start)
   const e = hhMmToMins(end)
-  return s !== null && e !== null && e <= s
+  return s !== null && e !== null && e === s
 }
 
-function applyStartTimeChange(newStart: string, currentEnd: string): { start_time: string; end_time: string } {
+/** `prevStart` is the start being replaced: an event that ALREADY ran past midnight keeps its end (unless the new start
+ *  equals it); any other pair is treated exactly as before, so moving a daytime start past its end still clears the end
+ *  rather than silently turning the event into an overnight one (lib/event-window.ts). */
+function applyStartTimeChange(newStart: string, currentEnd: string, prevStart?: string | null): { start_time: string; end_time: string } {
   if (!newStart) return { start_time: '', end_time: currentEnd }
   if (!currentEnd) {
     const [h, m] = newStart.split(':').map(Number)
@@ -7557,11 +7568,18 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
     // used to auto-fill 23:00 (fine) but a 23:30 start would auto-fill 23:00, an end BEFORE its own
     // start. Leaving the field empty is the only honest answer: there is no valid three-hour end, and
     // inventing one would be the silent-wrong-time failure this work exists to remove. The operator
-    // picks an end, and EventTimeSelect's minExclusive then offers only valid ones.
+    // picks an end, and EventTimeSelect's notSameAs then offers only valid ones.
     // ⚠️ THE `<=` MATTERS: a 20:00 start clamps to exactly 23:00 and must still auto-fill.
+    // 🔴 17 October 2026: an overnight end is valid now (lib/event-window.ts), but the auto-fill still never INVENTS
+    // one — an event crosses midnight only when the operator picks an end before its start.
     if (clamped <= startMins) return { start_time: newStart, end_time: '' }
     const autoEnd = `${Math.floor(clamped / 60).toString().padStart(2, '0')}:${(clamped % 60).toString().padStart(2, '0')}`
     return { start_time: newStart, end_time: autoEnd }
+  }
+  // An event already running past midnight (lib/event-window.ts) keeps its end unless the new start equals it.
+  if (crossesMidnight(prevStart, currentEnd)) {
+    if (hhMmToMins(currentEnd) === hhMmToMins(newStart)) return { start_time: newStart, end_time: '' }
+    return { start_time: newStart, end_time: currentEnd }
   }
   if (currentEnd <= newStart) return { start_time: newStart, end_time: '' }
   return { start_time: newStart, end_time: currentEnd }
@@ -7844,7 +7862,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     const now = Date.now()
     const n = events.filter(e =>
       e.status === 'unconfirmed' && e.source === 'scraper' &&
-      (e.end_time ? now < instantOfLocal(e.event_date, e.end_time, tz) : instantOfLocal(e.event_date, '23:59', tz) >= now)
+      // The end on the event's timeline (lib/event-window.ts) — the same test as isPastEvent below.
+      (e.end_time ? now < (eventEndInstant(e.event_date, e.start_time, e.end_time, tz) as number) : instantOfLocal(e.event_date, '23:59', tz) >= now)
     ).length
     onPendingCount(n)
   }, [events, loadingEvents, onPendingCount, tz])
@@ -8206,7 +8225,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     // V11.15: the end select can no longer OFFER an invalid time, but an event opened for editing may
     // already hold one. Without this the modal would save it and the server would reject it with a
     // message about missing times, which is not what is wrong.
-    else if (endIsNotAfterStart(form.start_time, form.end_time)) errors.end_time = tE('errors.endAfterStart')
+    // 🔴 17 October 2026: only an end EQUAL to the start is invalid; an earlier end is overnight (lib/event-window.ts).
+    else if (endEqualsStart(form.start_time, form.end_time)) errors.end_time = tE('errors.endSameAsStart')
     if (vans.length > 1 && !form.van_id) errors.van_id = tE('errors.van')
     return errors
   }
@@ -8647,7 +8667,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <span aria-hidden="true">🔒</span>{tP('chip')}
                   </span>
                 )}
-                <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
+                <EventStatusBadge status={event.status} event_date={event.event_date} start_time={event.start_time} end_time={event.end_time} />
               </div>
               {/* ── 🔴 THE EVENT'S NAME, OR AN INVITATION TO GIVE IT ONE (20261014, decision 5) ────
                 * "Sarah & Tom's wedding" is what the guests see at the top of their order page, so an
@@ -8673,6 +8693,13 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {/* ⚠ Time needed — a pending event with no time can't go live; flag it so the operator fixes it. */}
                 {(!event.start_time || !event.end_time) && event.status === 'unconfirmed' && (
                   <span className="text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold">{tS('card.timeNeeded')}</span>
+                )}
+                {/* 🔴 AN OVERNIGHT EVENT WAITING FOR A PERSON SAYS SO (17 October 2026, docs/midnight-followups-report.md): an
+                    imported or emailed event whose end is earlier than its start (lib/event-window.ts) runs into the next
+                    day — stated beside its times, in this card's own warning style, before anyone approves it. Only while it
+                    waits (status 'unconfirmed': "Needs your approval" and "Needs confirmation"); a normal event is unchanged. */}
+                {event.status === 'unconfirmed' && crossesMidnight(event.start_time, event.end_time) && (
+                  <span className="ml-1.5 text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold" data-overnight-hint>{tE('endsNextDay')}</span>
                 )}
                 {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
               </p>
@@ -9048,8 +9075,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   // in the truck's zone.
   // DB status is never auto-written after event ends — all past detection is client-side
   const todayYmd = getLocalDateInTz(tz)
+  // 🔴 An event that runs past midnight (end < start) is past only once its NEXT-DAY end has gone (lib/event-window.ts),
+  // so a 20:00–00:30 event stays under Upcoming, and editable, until 00:30 the next morning. Any other event: unchanged.
   const isPastEvent = (e: TruckEvent) =>
-    e.end_time ? now > instantOfLocal(e.event_date, e.end_time, tz) : e.event_date < todayYmd
+    e.end_time ? now > (eventEndInstant(e.event_date, e.start_time, e.end_time, tz) as number) : e.event_date < todayYmd
   // Single-truck console: events are already token-scoped to this truck (events/manage). No truck filter.
   // ── VAN FILTER — CLIENT-SIDE, APPLIED ONCE, HERE (V9.6) ───────────────────────────────────────────
   // Filtering the ALREADY-FETCHED array rather than refetching: the events are all in memory, the filter
@@ -9070,8 +9099,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const past = vanFilteredEvents
     .filter(e => isPastEvent(e) || e.status === 'cancelled')
     .sort((a, b) => {
-      const ka = `${a.event_date}T${a.end_time || a.start_time || '00:00'}`
-      const kb = `${b.event_date}T${b.end_time || b.start_time || '00:00'}`
+      // The key's date is the one its time falls on (lib/event-window.ts): an overnight event's 00:30 end sorts on the
+      // next day, after that evening's other events. For any other event it is event_date, as before.
+      const key = (e: TruckEvent) => { const t = e.end_time || e.start_time || '00:00'; return `${eventTimeDate(e.event_date, e.start_time, e.end_time, t)}T${t}` }
+      const ka = key(a)
+      const kb = key(b)
       return kb.localeCompare(ka)
     })
   const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
@@ -9129,7 +9161,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           return updated
         }
         if ('start_time' in patch) {
-          const { start_time, end_time } = applyStartTimeChange(patch.start_time, e.end_time)
+          const { start_time, end_time } = applyStartTimeChange(patch.start_time, e.end_time, e.start_time)
           return { ...e, ...patch, start_time, end_time }
         }
         return { ...e, ...patch }
@@ -9174,6 +9206,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const p = (ev.event_date || '').split('/')
       return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : ev.event_date || ''
     }
+    // The desktop table's start/end column width: an hour box + ":" + a minute box at their own size — wider for the
+    // 12-hour clock's "11 PM" than the 24-hour "23" (measured in WebKit by scripts/_midnight-manage.cjs).
+    const timeColW = ts.timeFormat === '12h' ? 156 : 132
     /* ⛔ `getMissingLabel` WAS HERE, UNUSED — nothing called it. Removed with Language Phase 1d rather than moved. */
 
     const TrashBtn = ({ id }: { id: string }) => (
@@ -9201,7 +9236,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         )}
 
         {/* Mobile cards */}
-        <div className="md:hidden flex flex-col gap-2">
+        {/* 🔴 CARDS BELOW `lg`, THE TABLE FROM `lg` (was `md`, 17 October 2026). The table needs its time columns wide
+          * enough to show a value (below) and could not fit an 800px tablet's modal — it scrolled sideways by 258px. */}
+        <div className="lg:hidden flex flex-col gap-2">
           {(() => {
             const renderMobileCard = (ev: any, isHistorical: boolean) => {
             const canEdit = ev.selected || isHistorical
@@ -9215,31 +9252,39 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             const dateVal = getDateVal(ev)
 
             const fieldCls = (amber: boolean) => `bg-white border rounded-lg px-3 py-2.5 text-sm w-full focus:outline-none focus:ring-2 focus:ring-orange-400 ${amber ? 'border-amber-400 bg-amber-50' : 'border-slate-200'}`
-            // Flag (not block) an ALREADY-invalid pair: minExclusive stops one being CHOSEN, but an
-            // imported or previously-saved row can arrive with end <= start and must be visible.
-            const endBeforeStart = endIsNotAfterStart(ev.start_time, ev.end_time)
+            // Flag (not block) an ALREADY-invalid pair: notSameAs stops one being CHOSEN, but an imported or
+            // previously-saved row can arrive with end == start and must be visible. (An end before the start is an
+            // overnight event since 17 October 2026 — lib/event-window.ts — and says so under the box.)
+            const endSameAsStart = endEqualsStart(ev.start_time, ev.end_time)
+            /* 🔴 THE TIME BOXES TAKE NO PADDING OF THEIR OWN (17 October 2026). `className` lands on the shared Select's
+             * WRAPPER, while the select inside keeps its own px-2 + the chevron's pr-7 — so `fieldCls`'s px-3 left a
+             * 38px box with no room at all for "11" or "11 PM" (measured: scripts/_midnight-manage.cjs). The pair also
+             * stacks below `sm`: a US "11 PM" box and its minute do not fit half a phone card. */
+            const timeCls = (amber: boolean) => `w-full rounded-lg ${amber ? 'border border-amber-400 bg-amber-50' : ''}`
             const timePair = (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className={`text-xs font-medium mb-1 block ${!ev.start_time ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.startTime')}</label>
                   <EventTimeSelect
                     label={tI('review.startTime')}
                     value={ev.start_time}
                     onChange={v => updateEvent(ev.id, { start_time: v })}
-                    className={fieldCls(!ev.start_time)}
+                    className={timeCls(!ev.start_time)}
                     placeholder="—"
                   />
                 </div>
                 <div>
-                  <label className={`text-xs font-medium mb-1 block ${!ev.end_time || endBeforeStart ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.endTime')}</label>
+                  <label className={`text-xs font-medium mb-1 block ${!ev.end_time || endSameAsStart ? 'text-amber-600' : 'text-slate-500'}`}>{tI('review.endTime')}</label>
                   <EventTimeSelect
                     label={tI('review.endTime')}
                     value={ev.end_time}
                     onChange={v => updateEvent(ev.id, { end_time: v })}
-                    className={fieldCls(!ev.end_time || endBeforeStart)}
+                    className={timeCls(!ev.end_time || endSameAsStart)}
                     placeholder="—"
-                    minExclusive={ev.start_time}
+                    notSameAs={ev.start_time}
                   />
+                  {/* An end before the start: the event runs past midnight (lib/event-window.ts). */}
+                  {crossesMidnight(ev.start_time, ev.end_time) && <p className="text-xs font-medium text-amber-600 mt-1">{tE('endsNextDay')}</p>}
                 </div>
               </div>
             )
@@ -9260,6 +9305,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             ? tI('review.summary', { date: ev.event_date ? dateLabel : tI('review.noDate'), time: timeLabel })
                             : tI('review.summaryNoTime', { date: ev.event_date ? dateLabel : tI('review.noDate') })}
                         </p>
+                        {/* 🔴 An overnight row says so beside its times, in this review's warning colour, before it is added
+                            (17 October 2026, docs/midnight-followups-report.md; the rule is lib/event-window.ts). */}
+                        {crossesMidnight(ev.start_time, ev.end_time) && <p className="text-xs font-medium text-amber-600" data-overnight-hint>{tE('endsNextDay')}</p>}
                         <p className="text-sm text-slate-900 break-words">{ev.venue_name || <span className="text-amber-600">{tI('review.addVenue')}</span>}</p>
                         {(ev.town || ev.postcode) && <p className="text-xs text-slate-500">{[ev.town, ev.postcode].filter(Boolean).join(' · ')}</p>}
                       </div>
@@ -9386,17 +9434,20 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         </div>
 
         {/* Desktop table */}
-        <div className="hidden md:block overflow-x-auto">
+        <div className="hidden lg:block overflow-x-auto">
+          {/* 🔴 THE COLUMNS FIT THE MODAL (932px inside, from `lg`) — they summed to 988px with a van column and scrolled
+            * sideways. Each time column holds an hour box and a minute box at their own size (the select's padding
+            * plus its chevron, 46px, plus the value — a US "11 PM" is wider than "23"); the venue takes what is left. */}
           <table className="w-full" style={{ tableLayout: 'fixed' }}>
             <colgroup>
               <col style={{ width: '32px' }} />
-              <col style={{ width: '130px' }} />
-              <col style={{ width: '220px' }} />
-              <col style={{ width: '150px' }} />
+              <col style={{ width: '120px' }} />
+              <col />
               <col style={{ width: '100px' }} />
-              <col style={{ width: '100px' }} />
-              <col style={{ width: '100px' }} />
-              {vans.length > 1 && <col style={{ width: '120px' }} />}
+              <col style={{ width: '84px' }} />
+              <col style={{ width: `${timeColW}px` }} />
+              <col style={{ width: `${timeColW}px` }} />
+              {vans.length > 1 && <col style={{ width: '110px' }} />}
               <col style={{ width: '36px' }} />
             </colgroup>
             <thead>
@@ -9424,7 +9475,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 const dateVal = getDateVal(ev)
                 const dateLabel = getFriendlyDate(ev)
                 const ci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 px-1.5 py-2 w-full rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50 focus:border-b-orange-500 focus:bg-slate-50 focus:rounded'}`
-                const endBeforeStart = endIsNotAfterStart(ev.start_time, ev.end_time)
+                // The time boxes: `ci` less its px-1.5 and w-full — see timeColW.
+                const tci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 py-2 rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50'}`
+                const endSameAsStart = endEqualsStart(ev.start_time, ev.end_time)
                 return (
                   <Fragment key={ev.id}>
                   <tr className={`${rowAmber ? 'bg-amber-50' : isHistorical ? 'bg-slate-50' : 'bg-white'} ${!ev.selected && !isHistorical ? 'opacity-35' : ''} ${isHistorical ? 'opacity-70' : ''}`}>
@@ -9453,7 +9506,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         label={tI('review.startTime')}
                         value={ev.start_time}
                         onChange={v => updateEvent(ev.id, { start_time: v })}
-                        className={ci(missingStart)}
+                        className={tci(missingStart)}
                         placeholder="—"
                       />
                     </td>
@@ -9462,10 +9515,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         label={tI('review.endTime')}
                         value={ev.end_time}
                         onChange={v => updateEvent(ev.id, { end_time: v })}
-                        className={ci(missingEnd || endBeforeStart)}
+                        className={tci(missingEnd || endSameAsStart)}
                         placeholder="—"
-                        minExclusive={ev.start_time}
+                        notSameAs={ev.start_time}
                       />
+                      {crossesMidnight(ev.start_time, ev.end_time) && <p className="text-xs font-medium text-amber-600 mt-0.5 px-1.5" data-overnight-hint>{tE('endsNextDay')}</p>}
                     </td>
                     {vans.length > 1 && (
                       <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
@@ -9515,7 +9569,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     const dateVal = getDateVal(ev)
                     const dateLabel = getFriendlyDate(ev)
                     const ci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 px-1.5 py-2 w-full rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50 focus:border-b-orange-500 focus:bg-slate-50 focus:rounded'}`
-                    const endBeforeStart = endIsNotAfterStart(ev.start_time, ev.end_time)
+                    const tci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 py-2 rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50'}`
+                    const endSameAsStart = endEqualsStart(ev.start_time, ev.end_time)
                     return (
                       <Fragment key={ev.id}>
                       <tr className={`bg-slate-50 opacity-70`}>
@@ -9538,7 +9593,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             label={tI('review.startTime')}
                             value={ev.start_time}
                             onChange={v => updateEvent(ev.id, { start_time: v })}
-                            className={ci(missingStart)}
+                            className={tci(missingStart)}
                             placeholder="—"
                           />
                         </td>
@@ -9547,10 +9602,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             label={tI('review.endTime')}
                             value={ev.end_time}
                             onChange={v => updateEvent(ev.id, { end_time: v })}
-                            className={ci(missingEnd || endBeforeStart)}
+                            className={tci(missingEnd || endSameAsStart)}
                             placeholder="—"
-                            minExclusive={ev.start_time}
+                            notSameAs={ev.start_time}
                           />
+                          {crossesMidnight(ev.start_time, ev.end_time) && <p className="text-xs font-medium text-amber-600 mt-0.5 px-1.5" data-overnight-hint>{tE('endsNextDay')}</p>}
                         </td>
                         {vans.length > 1 && (
                           <td className="px-0 py-0 align-middle">
@@ -10122,7 +10178,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       label={tE('startTime')}
                       value={editingEvent.start_time}
                       onChange={v => {
-                        const { start_time, end_time } = applyStartTimeChange(v, editingEvent.end_time)
+                        const { start_time, end_time } = applyStartTimeChange(v, editingEvent.end_time, editingEvent.start_time)
                         setEditingEvent(p => ({ ...p!, start_time, end_time }))
                         if (formErrors.start_time) setFormErrors(p => ({ ...p, start_time: '' }))
                         if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' }))
@@ -10134,19 +10190,21 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">{tE('endTime')}<span className="text-red-400 ml-0.5">*</span></label>
-                    {/* 🔴 `minExclusive` IS THE REPLACEMENT FOR `filter(t => t > start_time)`, which was the
-                        only end-after-start enforcement in the product. It cannot repair a pair that is
-                        already invalid, so validateEventForm now rejects one too — belt and braces, plus
-                        hasValidEventTimes on the server. */}
+                    {/* 🔴 `notSameAs` (was `minExclusive`, the replacement for `filter(t => t > start_time)`): since
+                        17 October 2026 an end before the start is an overnight event (lib/event-window.ts), so only
+                        the start itself is left out. It cannot repair a pair that is already invalid, so
+                        validateEventForm rejects one too — belt and braces, plus hasValidEventTimes on the server. */}
                     <EventTimeSelect
                       label={tE('endTime')}
                       value={editingEvent.end_time}
                       onChange={v => { setEditingEvent(p => ({ ...p!, end_time: v })); if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' })) }}
                       className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                       placeholder="--"
-                      minExclusive={editingEvent.start_time}
+                      notSameAs={editingEvent.start_time}
                     />
                     {formErrors.end_time && <p className="text-xs text-red-500 mt-1">{formErrors.end_time}</p>}
+                    {/* An end before the start: the event runs past midnight (lib/event-window.ts) — said, so it is never a surprise. */}
+                    {!formErrors.end_time && crossesMidnight(editingEvent.start_time, editingEvent.end_time) && <p className="text-xs text-slate-400 mt-1">{tE('endsNextDay')}</p>}
                   </div>
                 </div>
                 {vans.length > 1 && (

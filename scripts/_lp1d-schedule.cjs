@@ -140,7 +140,11 @@ async function views(ctx) {
     // ── EventTimeSelect / EventStatusBadge ──
     if (M.EventTimeSelect) for (const v of ['07:00', '12:00', '12:05', '18:45', '23:55', '00:00', '']) {
       out[`${cc}|timeSelect|${v || 'empty'}`] = html({}, W(h(M.EventTimeSelect, { value: v, onChange: noop, className: 'ts', label: 'Start' })))
-      out[`${cc}|timeSelect|${v || 'empty'}|end`] = html({}, W(h(M.EventTimeSelect, { value: v, onChange: noop, className: 'ts', minExclusive: '11:30', label: 'End' })))
+      // ⚠️ RE-PINNED (events that run past midnight, 17 October 2026, docs/midnight-and-format-fixes-report.md): the end
+      // field's guard is `notSameAs` now (was `minExclusive`). BOTH are passed with the same start, so 756ca09 / 826471a
+      // (which read minExclusive and ignore notSameAs) render exactly the BEFORE they captured, and this code exercises
+      // the new rule (scripts/_lp1d-named.cjs midnight-end-select-not-same-as takes 11:30 as these views' start).
+      out[`${cc}|timeSelect|${v || 'empty'}|end`] = html({}, W(h(M.EventTimeSelect, { value: v, onChange: noop, className: 'ts', minExclusive: '11:30', notSameAs: '11:30', label: 'End' })))
     }
     if (M.EventStatusBadge) for (const e of evs) out[`${cc}|badge|${e.id}`] = html({}, W(h(M.EventStatusBadge, { status: e.status, event_date: e.event_date, end_time: e.end_time })))
 

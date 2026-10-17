@@ -58,7 +58,7 @@
  },
  "lib/schedule-extract.ts": {
   "added": [
-   "import { getLocalDateInTz, addDaysYmd, formatYmd, type TimeSettings } from '@/lib/time-utils'",
+   "import { getLocalDateInTz, addDaysYmd, formatYmd, clockMins, type TimeSettings } from '@/lib/time-utils'",
    "state?: string",
    "export type ScheduleContext = {",
    "truckName?: string | null",

@@ -9,6 +9,7 @@ import { getProductionSlotUnits, readCookingReservations } from '@/lib/slot-book
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { engineClock, nowOnEvent } from '@/lib/event-window'
 import { truckTimeZone } from '@/lib/truck-time'
 import { normaliseInterval, resolveIntervalsFor } from '@/lib/slot-interval'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
@@ -253,10 +254,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const today = getLocalDateInTz(eventTz)
   const nowMins = getNowMinsInTz(eventTz)
 
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): the engine reads slot strings as minute of day, so its
+  // times, occupancy keys and reservations go in on the ENGINE CLOCK ("00:15" → "24:15", after "23:55"), its end reads
+  // 24:30, and "now" is read on the event's own timeline (`eventNow`, also its date and the next). What comes out goes
+  // back to canonical "HH:MM" before it is returned. For every other event `ec` is the identity and `eventNow` unused.
+  const ec = engineClock(eventStart, eventEnd)
+  const eventNow = ec.overnight ? nowOnEvent(date, eventTz) : undefined
   // Customers cannot book slots before the event start time
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
   const eventStartMins = eventStart ? toMins(eventStart) : 0
-  const eventEndMins = eventEnd ? toMins(eventEnd) : undefined
+  const eventEndMins = eventEnd ? toMins(ec.to(eventEnd)) : undefined
   // Slot TIME floor — capacity is now per-window via fitOrderBackward (backward model), NOT a
   // front-of-queue cumulative push. So the floor is purely:
   //   - never before event start (eventStartMins), and
@@ -281,9 +288,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   for (const [cat, cfg] of Object.entries(catConfigs)) {
     if (cfg.secs > 0) oneBatchByCat[cat] = Math.max(1, cfg.batch)
   }
+  // An overnight event: now + prep on its timeline, on its date or the next (lib/event-window.ts); below its start before.
   const earliestCollectionMins = Math.max(
     eventStartMins,
-    date === today ? nowMins + calcMinReadyMins(oneBatchByCat, catConfigs) + extraWaitMins : 0,
+    eventNow !== undefined
+      ? eventNow + calcMinReadyMins(oneBatchByCat, catConfigs) + extraWaitMins
+      : date === today ? nowMins + calcMinReadyMins(oneBatchByCat, catConfigs) + extraWaitMins : 0,
   )
 
   // ── Live category-aware capacity inputs ───────────────────────────────────
@@ -310,14 +320,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   // P3: the per-truck switch, resolved from the truck row this route already read.
   const batchReservations = resolveBatchReservations(truck as { plan?: string | null; feature_overrides?: Record<string, unknown> | null })
 
-  const slots = buildSlotAvailability({
-    times,
-    productionSlotUnits,
+  const engineSlots = buildSlotAvailability({
+    // On the engine clock for an overnight event (see `ec`); exactly the canonical inputs for any other.
+    times: ec.overnight ? times.map(t => ({ ...t, collection_time: ec.to(t.collection_time), production_slot: ec.to(t.production_slot), production_window_key: ec.to(t.production_window_key) })) : times,
+    productionSlotUnits: ec.keysTo(productionSlotUnits),
     catConfigs,
     kitchenCapacity,
     capacityWindowMins,
     displayIntervalMins,
-    reservations,
+    reservations: ec.overnight ? reservations.map(r => ({ ...r, slot: ec.to(r.slot) })) : reservations,
     batchReservations,
     date,
     nowMins,
@@ -325,7 +336,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     eventStartMins,
     eventEndMins,
     tz: eventTz,
+    eventNowMins: eventNow,
   })
+  // Back to canonical "HH:MM" (an overnight event's "24:15" → "00:15"), still in the event's chronological order.
+  const slots = ec.overnight
+    ? engineSlots.map(s => ({ ...s, collection_time: ec.from(s.collection_time), production_slot: ec.from(s.production_slot), production_window_key: ec.from(s.production_window_key) }))
+    : engineSlots
 
   // Engine inputs so the operator panel can recompute basket-inclusive tones with
   // the SAME buildSlotAvailability (one engine — dot, modal, autoConfirm agree).
@@ -345,10 +361,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       kitchenCapacity,
       capacityWindowMins,
       eventStartMins,
+      // 🔴 An overnight event (lib/event-window.ts): these three minute values are on the EVENT TIMELINE (its end 24:30,
+      // "now" 24:15 after midnight), the axis an engine-clock re-run needs; productionSlotUnits/reservations stay
+      // canonical, as stored — a client re-running the engine maps them with engineClock(start, end) itself.
       eventEndMins: eventEndMins ?? null,
       earliestCollectionMins,
       date,
-      nowMins,
+      nowMins: eventNow ?? nowMins,
       // real production-window interval (slot config, never hardcoded) for the
       // oven-occupancy projection's rate scaling.
       windowSecs: (slotDurationMins > 0 ? slotDurationMins : intervalMins > 0 ? intervalMins : 5) * 60,

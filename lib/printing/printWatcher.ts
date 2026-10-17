@@ -52,6 +52,8 @@
 // policy CAN be written; none is. That belongs with the transport.
 import { useEffect, useRef } from 'react'
 import { Preferences } from '@capacitor/preferences'
+import { crossesMidnight, eventTimeMins } from '@/lib/event-window'
+import type { SlotEventTimes } from '@/lib/slot-utils'
 
 /** Statuses that mean "this order has been ACCEPTED and should be made". Excludes pending/cancelled/rejected.
  *  🔴 'modified' BELONGS BY THIS LIST'S OWN DEFINITION and was missing: it means accepted AND CHANGED SINCE,
@@ -94,9 +96,13 @@ export function timeToMins(hhmm?: string | null): number | null {
 /** PURE: the orders that should print right now (unit-testable — pass nowMins + the printed set). */
 export function selectDueToPrint<T extends DueOrder>(
   orders: T[],
-  opts: { mode: PrintTriggerMode; nowMins: number; leadMins: number; printed: Set<string>; eligible?: string[] },
+  // 🔴 `event` (lib/event-window.ts): the orders' event. When it runs past midnight the slot is read on the EVENT
+  // TIMELINE (its "00:15" is 24:15, after 23:55) and `nowMins` must be on that timeline too (`nowOnEvent`) — otherwise
+  // an 00:15 ticket would print at 20:00 the evening before. Omitted, or any other event ⇒ exactly as before.
+  opts: { mode: PrintTriggerMode; nowMins: number; leadMins: number; printed: Set<string>; eligible?: string[]; event?: SlotEventTimes },
 ): T[] {
   const eligible = opts.eligible ?? DEFAULT_ELIGIBLE
+  const overnight = !!opts.event && crossesMidnight(opts.event.start_time, opts.event.end_time)
   return orders.filter(o => {
     if (opts.printed.has(o.order_key)) return false          // dedup — printed once already
     if (!eligible.includes(o.status)) return false           // 🔴 not accepted (or rejected) ⇒ never print
@@ -106,7 +112,7 @@ export function selectDueToPrint<T extends DueOrder>(
     if (opts.mode === 'on_confirmed') return true
     // LEAD TIME — one rule for ASAP and scheduled: print when now >= slot − leadMins. ASAP orders have no
     // parseable slot ⇒ due now.
-    const due = timeToMins(o.slot)
+    const due = overnight && opts.event ? eventTimeMins(opts.event.start_time, opts.event.end_time, o.slot) : timeToMins(o.slot)
     if (due == null) return true
     return opts.nowMins >= due - opts.leadMins
   })
@@ -181,8 +187,13 @@ export function usePrintWatcher<T extends DueOrder>(args: {
   eligible?: string[]
   enabled?: boolean
   intervalMs?: number
+  /** The orders' event (lib/event-window.ts) — see selectDueToPrint. With an overnight event `nowMins()` must return
+   *  "now" on the event timeline. Omitted ⇒ as before. */
+  event?: SlotEventTimes
 }): void {
   const { orders, mode, leadMins, nowMins, onPrint, storageKey, eligible, enabled = true, intervalMs = 20000 } = args
+  const eventRef = useRef(args.event)
+  useEffect(() => { eventRef.current = args.event })
   const printed = useRef<Set<string>>(new Set())
   const unsettled = useRef<Record<string, UnsettledRecord>>({})
   const ready = useRef(false)                       // false until the durable set is loaded/primed
@@ -207,7 +218,7 @@ export function usePrintWatcher<T extends DueOrder>(args: {
     // delay, no backoff and no cap here. Those come with the transport.
     const tick = async () => {
       if (!ready.current || inFlight.current) return   // never print before the durable set is resolved
-      const due = selectDueToPrint(ordersRef.current, { mode, nowMins: nowRef.current(), leadMins, printed: printed.current, eligible })
+      const due = selectDueToPrint(ordersRef.current, { mode, nowMins: nowRef.current(), leadMins, printed: printed.current, eligible, event: eventRef.current })
       if (!due.length) return
       inFlight.current = true
       try {
@@ -260,7 +271,7 @@ export function usePrintWatcher<T extends DueOrder>(args: {
         // nothing in the order data distinguishes them. Resolving it needs a REAL connection state,
         // which does not exist (transport.ts's only `status()` hard-codes `connected: true`). Left as an
         // open decision in docs/printing-report.md. DO NOT resolve it here as a side effect of a tidy.
-        const due = selectDueToPrint(ordersRef.current, { mode, nowMins: nowRef.current(), leadMins, printed: new Set(), eligible })
+        const due = selectDueToPrint(ordersRef.current, { mode, nowMins: nowRef.current(), leadMins, printed: new Set(), eligible, event: eventRef.current })
         printed.current = new Set(due.map(o => o.order_key))
         await savePrinted(storageKey, { mode, keys: [...printed.current], unsettled: {} })
       }

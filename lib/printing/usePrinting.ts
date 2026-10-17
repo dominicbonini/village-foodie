@@ -35,14 +35,19 @@ import { onAppResume } from '@/lib/native/app'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 import type { LedgerRow } from '@/lib/payments/ledger'
 import { getNowMinsInTz, formatInstantClock, timeSettingsOr } from '@/lib/time-utils'
+import { crossesMidnight, nowOnEvent } from '@/lib/event-window'
 
 /** The four DEVICE-local settings the printing card writes. Read here, never written. */
 const K = { printer: 'hg_printer_name', lead: 'hg_print_lead_mins', paper: 'hg_paper_width', enabled: 'hg_print_enabled' } as const
 
 /** Minutes-of-day on the TRUCK's clock (Phase 2B; was the device's). The watcher's contract asks for
  *  minutes-of-day in the event's zone, which is the truck's. */
-function nowMinsLocal(truck: TruckData | null | undefined): number {
-  return getNowMinsInTz(timeSettingsOr(truck?.time, 'printing').timeZone)
+function nowMinsLocal(truck: TruckData | null | undefined, event?: TruckEvent | null): number {
+  const tz = timeSettingsOr(truck?.time, 'printing').timeZone
+  // 🔴 An event that runs past midnight (lib/event-window.ts): "now" on the EVENT TIMELINE, the axis its slots are read
+  // on in selectDueToPrint (00:15 is 24:15). Any other event, or none: the minute of day, exactly as before.
+  if (event?.event_date && crossesMidnight(event.start_time, event.end_time)) return nowOnEvent(event.event_date, tz)
+  return getNowMinsInTz(tz)
 }
 
 /** The ticket's printed-at stamp, on the truck's clock and in its style: GB "18:37", US "6:37pm". */
@@ -231,7 +236,8 @@ export function usePrinting(args: {
     orders,
     mode,
     leadMins: lead,
-    nowMins: () => nowMinsLocal(truckRef.current),
+    nowMins: () => nowMinsLocal(truckRef.current, eventRef.current),
+    event,
     onPrint,
     storageKey: token,
     enabled: active,
@@ -243,8 +249,8 @@ export function usePrinting(args: {
   // connected, therefore nothing printed, therefore every due order is waiting.
   const waitingCount = useMemo(() => {
     if (!active) return 0
-    return selectDueToPrint(orders, { mode, nowMins: nowMinsLocal(truck), leadMins: lead, printed: new Set<string>() }).length
-  }, [active, orders, mode, lead, truck])
+    return selectDueToPrint(orders, { mode, nowMins: nowMinsLocal(truck, event), leadMins: lead, printed: new Set<string>(), event }).length
+  }, [active, orders, mode, lead, truck, event])
 
   // When the wired guard blocks, the card must say WHY — through the same `status.detail` it already
   // shows, so no new prop reaches the dashboard page. Bluetooth never enters this branch.

@@ -24,6 +24,7 @@ import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tally
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz, instantOfLocal, clockOfInstantInTz, formatYmdShortMonth, formatSlot, formatInstantClock, addDaysYmd, timeSettingsOr } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel } from '@/lib/event-display'
+import { engineClock, crossesMidnight, eventEndMins, nowOnEvent } from '@/lib/event-window'
 import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { gatedAction, seedProvisionalSeq } from '@/lib/native/orderGate'
@@ -445,6 +446,24 @@ export function AddOrderPanel({
     eventEndMins: null, earliestCollectionMins: 0, date: '', nowMins: 0, windowSecs: 0,   // unused by the panel
   } : null), [apiCapacityInputs, offlineForThisEvent])
   const serverCatConfigs = Object.keys(apiCatConfigs).length ? apiCatConfigs : (offlineForThisEvent?.catConfigs ?? EMPTY_CAT_CONFIGS)
+  // ── 🔴 AN EVENT THAT RUNS PAST MIDNIGHT — THE ENGINE CLOCK (17 October 2026, lib/event-window.ts) ────────────────
+  // The capacity engine reads a slot as minute-of-day, so a 20:00–00:30 event's 00:15 would sit before its own 20:00.
+  // Every engine call below is handed the event's times on the EXTENDED clock ("00:15" → "24:15") through `ec`, and
+  // every time it hands back is turned canonical again (`ec.from`) before it is shown, stored or looked up. For any
+  // other event `ec` is the identity and these are the very objects the engine was given before.
+  const ec = useMemo(() => engineClock(manualEvent?.start_time, manualEvent?.end_time), [manualEvent?.start_time, manualEvent?.end_time])
+  const toEngineSlots = useCallback(<S extends { collection_time: string; production_slot?: string; production_window_key?: string }>(list: S[]): S[] => (ec.overnight
+    ? list.map(sl => ({ ...sl, collection_time: ec.to(sl.collection_time),
+        ...(sl.production_slot ? { production_slot: ec.to(sl.production_slot) } : {}),
+        ...(sl.production_window_key ? { production_window_key: ec.to(sl.production_window_key) } : {}) }))
+    : list), [ec])
+  const toEngineReservations = useCallback((list: EngineReservation[]): EngineReservation[] => (ec.overnight ? list.map(r => ({ ...r, slot: ec.to(r.slot) })) : list), [ec])
+  /** The engine's now-clamp: now on the event's timeline once it has begun (or, for any other event, now-mins on its
+   *  own date), else -Infinity — the SAME rule as before for every event that does not cross midnight. */
+  const fitNowClamp = useCallback((ev: { event_date: string } | null): number => {
+    if (ev && ec.overnight) { const n = nowOnEvent(ev.event_date, eventTz); return n >= 0 ? n : Number.NEGATIVE_INFINITY }
+    return ev?.event_date === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
+  }, [ec, eventTz])
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
   // ── 🔴 liveEvent — THE FRESH VERSION OF WHICHEVER EVENT manualEvent NAMES (V9.6) ─────────────────
@@ -553,7 +572,8 @@ export function AddOrderPanel({
   ])
 
   // ── derived ─────────────────────────────────────────────────────────────────
-  const manualAsapSlot = getAsapSlot(manualSlots, manualEvent?.event_date, eventTz)
+  // `manualEvent` passed: an overnight event's past-midnight slots are the next day's (lib/event-window.ts).
+  const manualAsapSlot = getAsapSlot(manualSlots, manualEvent?.event_date, eventTz, manualEvent)
   const availableDeals = (truckMenu?.bundles || []).filter(b => b.available)
 
   const calculation = useMemo(() => calculateOrderTotal(
@@ -616,19 +636,21 @@ export function AddOrderPanel({
   // comes from the slot config (rate scaling, never 5).
   const slotIndicators = useMemo(() => {
     if (!capacityInputs || !manualSlots.length) return new Map<string, SlotIndicator>()
-    return buildSlotIndicators(
-      manualSlots,
-      capacityInputs.productionSlotUnits || {},
+    // Engine clock in (ec), canonical keys out — lib/event-window.ts. Identity for any event not crossing midnight.
+    const ind = buildSlotIndicators(
+      toEngineSlots(manualSlots),
+      ec.keysTo(capacityInputs.productionSlotUnits || {}),
       serverCatConfigs,
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.eventStartMins,
       categoryOrder,
       capacityInputs.capacityWindowMins ?? 5,
       capacityInputs.intervalMins ?? 5,
-      capacityInputs.reservations ?? [],
+      toEngineReservations(capacityInputs.reservations ?? []),
       capacityInputs.batchReservations === true,
     )
-  }, [capacityInputs, manualSlots, serverCatConfigs, categoryOrder])
+    return ec.overnight ? new Map([...ind].map(([k, v]) => [ec.from(k), v] as const)) : ind
+  }, [capacityInputs, manualSlots, serverCatConfigs, categoryOrder, ec, toEngineSlots, toEngineReservations])
 
   // The engine speaks in lowercase keys (orderItemsToQtyByCat lowercases every category); the operator
   // reads the truck's own spelling. `categoryOrder` and `itemCategoryMap` both carry menu_categories.name
@@ -657,37 +679,37 @@ export function AddOrderPanel({
     const out = new Map<string, FitWhy>()
     if (!capacityInputs || !manualSlots.length) return out
     if (!Object.keys(basketByCat).length) return out            // empty order ⇒ the list is unchanged
+    // Engine clock in (ec) — lib/event-window.ts; the map stays keyed by the canonical slot.
+    const units = ec.keysTo(capacityInputs.productionSlotUnits || {})
     const back = projectBackwardOccupancy(
-      capacityInputs.productionSlotUnits || {},
+      units,
       serverCatConfigs,
       capacityInputs.eventStartMins,
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.capacityWindowMins ?? 5,
-      capacityInputs.reservations ?? [],
+      toEngineReservations(capacityInputs.reservations ?? []),
       capacityInputs.batchReservations === true,
     )
     // The SAME now-clamp rule the popup's fit and the customer page use.
-    const nowClamp = manualEvent?.event_date === getLocalDateInTz(eventTz)
-      ? getNowMinsInTz(eventTz)
-      : Number.NEGATIVE_INFINITY
+    const nowClamp = fitNowClamp(manualEvent)
     for (const s of manualSlots) {
       if (s.is_grace) continue
       const fit = fitOrderBackward(
         back,
-        readyToMins(s.collection_time),
+        readyToMins(ec.to(s.collection_time)),
         basketByCat,
         serverCatConfigs,
         capacityInputs.kitchenCapacity ?? null,
         capacityInputs.eventStartMins,
         capacityInputs.capacityWindowMins ?? 5,
         nowClamp,
-        (capacityInputs.productionSlotUnits || {})[s.collection_time] || {},
+        units[ec.to(s.collection_time)] || {},
         capacityInputs.batchReservations === true,
       )
       if (!fit.fits) out.set(s.collection_time, fit.why)
     }
     return out
-  }, [capacityInputs, manualSlots, serverCatConfigs, basketByCat, eventTz, manualEvent])
+  }, [capacityInputs, manualSlots, serverCatConfigs, basketByCat, manualEvent, ec, toEngineReservations, fitNowClamp])
 
   const slotIndicatorFor = (s: Slot): SlotIndicator =>
     slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', overTotal: 0, occ: null, overlap: null, ownLabel: false }
@@ -709,18 +731,17 @@ export function AddOrderPanel({
     // ⚠️ NOT-PAST AND NON-GRACE STILL APPLY — they are not capacity, and `isSlotPast` remains the single
     // source of truth for the first of them. getAsapSlot itself is untouched: other surfaces use it for
     // "the earliest SELECTABLE slot", which is a different question from "the earliest this order fits".
-    const asapStart = manualSlots.find(s => !s.is_grace && !isSlotPast(s, eventTz, manualEvent?.event_date))?.collection_time
+    const asapStart = manualSlots.find(s => !s.is_grace && !isSlotPast(s, eventTz, manualEvent?.event_date, manualEvent))?.collection_time
       ?? manualSlots.find(s => !s.is_grace)?.collection_time
     if (!asapStart) return { slot: manualAsapSlot, noFit: false }
-    const [sh, sm] = asapStart.split(':').map(Number)
+    // Engine clock in, canonical out (ec — lib/event-window.ts): an overnight event's 00:15 is searched as 24:15.
+    const [sh, sm] = ec.to(asapStart).split(':').map(Number)
     // NOW-CLAMP (today only — mins-of-day would mis-compare for a future-date event): the operator
     // ASAP can't place cooking windows before now, so a large order pushes out by its real cook span.
-    const nowClamp = manualEvent?.event_date === getLocalDateInTz(eventTz)
-      ? getNowMinsInTz(eventTz)
-      : Number.NEGATIVE_INFINITY
+    const nowClamp = fitNowClamp(manualEvent)
     const fitTime = earliestBackwardFitSlot(
-      manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
-      capacityInputs.productionSlotUnits || {},
+      toEngineSlots(manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot }))),
+      ec.keysTo(capacityInputs.productionSlotUnits || {}),
       serverCatConfigs,
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.eventStartMins,
@@ -728,10 +749,10 @@ export function AddOrderPanel({
       (sh || 0) * 60 + (sm || 0),
       capacityInputs.capacityWindowMins ?? 5,
       nowClamp,
-      capacityInputs.reservations ?? [],
+      toEngineReservations(capacityInputs.reservations ?? []),
       capacityInputs.batchReservations === true,
     )
-    const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === fitTime) : null
+    const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === ec.from(fitTime)) : null
     // noFit = there IS a basket but the engine found NO genuinely-fitting slot all day (truly full /
     // over capacity). With the window-scoped ceiling fix this is rare (only a genuinely full day),
     // not the old "any earlier breach reds out everything". The placement slot still falls back so the
@@ -742,7 +763,7 @@ export function AddOrderPanel({
       slot: fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot,
       noFit: hasBasket && !fitSlot,
     }
-  }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot, eventTz, manualEvent])
+  }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot, eventTz, manualEvent, ec, toEngineSlots, toEngineReservations, fitNowClamp])
   const adjustedAsapSlot = asapResult.slot
   const asapNoFit = asapResult.noFit
 
@@ -769,8 +790,9 @@ export function AddOrderPanel({
   const queueAwareGridSlot = queueAware.readyTime
     ? (manualSlots
         .map(s => s.collection_time)
-        .filter(t => readyToMins(t) >= readyToMins(queueAware.readyTime))
-        .sort((a, b) => readyToMins(a) - readyToMins(b))[0] ?? null)
+        // On the engine clock (ec — lib/event-window.ts), so an overnight event's 00:05 is after its 23:55.
+        .filter(t => readyToMins(ec.to(t)) >= readyToMins(ec.to(queueAware.readyTime)))
+        .sort((a, b) => readyToMins(ec.to(a)) - readyToMins(ec.to(b)))[0] ?? null)
     : null
   const readyTime = !fitReadyTime
     ? (queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs, eventTz))
@@ -785,12 +807,20 @@ export function AddOrderPanel({
     ? queueAware.minsFromNow
     : readyTime
     ? (() => {
+        // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT: ready time and now both on the event's timeline (lib/event-window.ts),
+        // so a 00:05 ready time at 23:50 is 15 minutes away, not none.
+        if (ec.overnight && manualEvent) return Math.max(0, readyToMins(ec.to(readyTime)) - nowOnEvent(manualEvent.event_date, eventTz))
         const nowM = getNowMinsInTz(eventTz)
         return Math.max(0, readyToMins(readyTime) - nowM)
       })()
     : queueAware.minsFromNow
 
   const isEventEnded = manualEvent ? (() => {
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT has ended only once now (on its timeline) is past its NEXT-day end
+    // (lib/event-window.ts): open at 00:15, ended at 00:31. Any other event: the lines below, unchanged.
+    if (crossesMidnight(manualEvent.start_time, manualEvent.end_time)) {
+      return nowOnEvent(manualEvent.event_date, eventTz) > (eventEndMins(manualEvent.start_time, manualEvent.end_time) as number)
+    }
     const today = getLocalDateInTz(eventTz) // the TRUCK's date (Phase 2B) — pairs with its clock below
     if (manualEvent.event_date > today) return false
     if (manualEvent.event_date < today) return true
@@ -1388,30 +1418,31 @@ setItemModal({ item, modGroups, editCartKey })
           stale = true
         }
         if (ci) {
+          // Engine clock in (ec — lib/event-window.ts): an overnight event's 00:15 is judged as 24:15. Identity otherwise.
+          const ciUnits = ec.keysTo(ci.productionSlotUnits || {})
+          const engSlot = ec.to(effectiveSlot)
           const back = projectBackwardOccupancy(
-            ci.productionSlotUnits || {},
+            ciUnits,
             freshCfgs,
             ci.eventStartMins,
             ci.kitchenCapacity ?? null,
             ci.capacityWindowMins ?? 5,
-            ci.reservations ?? [],
+            toEngineReservations(ci.reservations ?? []),
             ci.batchReservations === true,
           )
           // SAME now-clamp rule the panel/customer page use: now-mins for a today event,
           // -Infinity for a future-dated event (mins-of-day would mis-compare across days).
-          const nowClamp = manualEvent.event_date === getLocalDateInTz(eventTz)
-            ? getNowMinsInTz(eventTz)
-            : Number.NEGATIVE_INFINITY
+          const nowClamp = fitNowClamp(manualEvent)
           const fit = fitOrderBackward(
             back,
-            readyToMins(effectiveSlot),
+            readyToMins(engSlot),
             basketByCat,
             freshCfgs,
             ci.kitchenCapacity ?? null,
             ci.eventStartMins,
             ci.capacityWindowMins ?? 5,
             nowClamp,
-            (ci.productionSlotUnits || {})[effectiveSlot] || {},
+            ciUnits[engSlot] || {},
             ci.batchReservations === true,
           )
           if (!fit.fits) {
@@ -1426,10 +1457,10 @@ setItemModal({ item, modGroups, editCartKey })
             const seenTone = slotIndicators.get(effectiveSlot)?.tone ?? 'green'
             const freshStep = backwardWindowStepMins(freshCfgs)
             const freshInterval = ci.intervalMins ?? 5
-            const freshPrev = (() => { const ms = manualSlots.map(sl => readyToMins(sl.collection_time)).sort((x, y) => x - y); const i = ms.indexOf(readyToMins(effectiveSlot)); return i > 0 ? ms[i - 1] : null })()
+            const freshPrev = (() => { const ms = manualSlots.map(sl => readyToMins(ec.to(sl.collection_time))).sort((x, y) => x - y); const i = ms.indexOf(readyToMins(engSlot)); return i > 0 ? ms[i - 1] : null })()
             const freshW = freshInterval > 5
-              ? coverDotWindows(back, readyToMins(effectiveSlot), freshPrev, freshStep, ci.eventStartMins)
-              : (back.pileByStart.get(readyToMins(effectiveSlot)) ?? back.byStart.get(readyToMins(effectiveSlot) - freshStep) ?? null)
+              ? coverDotWindows(back, readyToMins(engSlot), freshPrev, freshStep, ci.eventStartMins)
+              : (back.pileByStart.get(readyToMins(engSlot)) ?? back.byStart.get(readyToMins(engSlot) - freshStep) ?? null)
             const freshTone = freshW?.tone ?? 'green'
 
             setCapacityConfirm({
@@ -1828,7 +1859,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
               Operators see every slot from NOW including the imminent next one (isSlotPast excludes
               only genuinely-elapsed slots, no +5 grace); too-soon/full slots stay visible with their
               traffic-light. */}
-          {manualSlots.filter(s => s.is_grace || !isSlotPast(s, eventTz, manualEvent?.event_date)).map(s => {
+          {manualSlots.filter(s => s.is_grace || !isSlotPast(s, eventTz, manualEvent?.event_date, manualEvent)).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>{`⚠️ ${t('afterClosing', { time: formatSlot(s.collection_time, panelTime) })}`}</option>
             const ind = slotIndicatorFor(s)
             // ❗ = this window is STRICTLY OVER the ceiling, not merely full. Red alone conflates the
@@ -1869,15 +1900,19 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           <option value="">{`⚡ ${t('asap')}`}</option>
           {(() => {
             const startMins = manualEvent ? (() => { const [h, m] = manualEvent.start_time.split(':').map(Number); return h * 60 + m })() : 10 * 60
-            const endMins = manualEvent ? (() => { const [h, m] = manualEvent.end_time.split(':').map(Number); return h * 60 + m })() : 22 * 60 + 30
+            // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT ends on the next day (lib/event-window.ts): the loop runs to its end on
+            // the event's timeline (00:30 → 1470) and writes each time canonically (t % 1440 → "00:15"). Otherwise as before.
+            const endMins = manualEvent ? (crossesMidnight(manualEvent.start_time, manualEvent.end_time)
+              ? eventEndMins(manualEvent.start_time, manualEvent.end_time) as number
+              : (() => { const [h, m] = manualEvent.end_time.split(':').map(Number); return h * 60 + m })()) : 22 * 60 + 30
             const opts: string[] = []
             for (let t = startMins; t <= endMins; t += 5) {
-              opts.push(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`)
+              opts.push(`${String(Math.floor((t % 1440) / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`)
             }
             // Same INVARIANT as the capacity dropdown: never offer a slot before now (this fallback
             // previously had NO past filter — a past time was selectable). isSlotPast in the event tz.
             return opts
-              .filter(time => !isSlotPast({ collection_time: time }, eventTz, manualEvent?.event_date))
+              .filter(time => !isSlotPast({ collection_time: time }, eventTz, manualEvent?.event_date, manualEvent))
               .map(time => <option key={time} value={time}>{formatSlot(time, panelTime)}</option>)
           })()}
         </select>

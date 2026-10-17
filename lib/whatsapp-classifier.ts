@@ -3,6 +3,7 @@ import { formatTime, formatYmd, getLocalDateInTz, addDaysYmd, type TimeSettings 
 import { formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/whatsappCustomer'
+import { crossesMidnight } from '@/lib/event-window'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -72,11 +73,16 @@ function formatEventForPrompt(event: TruckEvent, todayStr: string, ts: TimeSetti
   if (diffDays === 0) relativeLabel = ' (TODAY)'
   else if (diffDays === 1) relativeLabel = ' (TOMORROW)'
   else if (diffDays === 2) relativeLabel = ' (IN 2 DAYS)'
+  // An overnight event that started yesterday is still in the window until it ends (lib/event-window.ts) — say so, so the
+  // model does not read it as over. Any other event dated yesterday never reaches the prompt; its line is unchanged.
+  else if (diffDays === -1 && crossesMidnight(event.start_time, event.end_time)) relativeLabel = ' (STARTED YESTERDAY, ENDS THIS MORNING)'
 
   const friendlyDate = formatYmd(event.event_date, ts, { weekday: 'long', day: 'numeric', month: 'long' })
   const start = formatTime(event.start_time || '', ts)
   const end = formatTime(event.end_time || '', ts)
-  const time = start && end ? `${start}–${end}` : start || 'time TBC'
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): "20:00–00:30" is said to end the NEXT morning, so the
+  // model never reads it as finishing before it starts. Prompt text only; any other event's line is unchanged.
+  const time = start && end ? `${start}–${end}${crossesMidnight(event.start_time, event.end_time) ? ' (ends after midnight, the next morning)' : ''}` : start || 'time TBC'
   const location = [event.venue_name, event.town, event.postcode].filter(Boolean).join(', ')
   const confirmed = event.status === 'confirmed' || event.status === 'open'
   return `- ${friendlyDate}${relativeLabel}: ${location} ${time} [${confirmed ? 'CONFIRMED' : 'UNCONFIRMED'}]`

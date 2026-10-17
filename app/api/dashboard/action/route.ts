@@ -5,7 +5,8 @@ import { supabase } from '@/lib/supabase'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, sendRefundEmail, cancellationPaymentSentence, notifyCustomer } from '@/lib/email'
 import { moneyFormatForOrder, moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { getLocalDateInTz, getNowMinsInTz } from '@/lib/time-utils'
+import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
 import { formatMajor } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
 import { kitchenErrorBody, type KitchenErrorCode, type KitchenErrorParams } from '@/lib/i18n/kitchen-errors'
@@ -1415,7 +1416,22 @@ export async function POST(req: NextRequest) {
         console.error('[manual] required-modifier guard error — proceeding (fail-safe):', err)
       }
 
-      const eventDate = passedEventDate || getLocalDateInTz(await truckTimeZone(truck))
+      let eventDate = passedEventDate || getLocalDateInTz(await truckTimeZone(truck))
+      // 🔴 NO DATE FROM THE PANEL, PAST MIDNIGHT (lib/event-window.ts): an overnight event from YESTERDAY that is still
+      // running is the event being traded — the order belongs to it, not to an empty "today". Only when exactly one
+      // such event is running (and it is the one named, if an id came). With a date, nothing here runs.
+      if (!passedEventDate) {
+        const tz = await truckTimeZone(truck)
+        const today = getLocalDateInTz(tz), nowM = getNowMinsInTz(tz)
+        const { data: yEvents } = await supabase
+          .from('truck_events')
+          .select('id, event_date, start_time, end_time')
+          .eq('truck_id', truck.id)
+          .eq('event_date', upcomingQueryFloor(tz))
+          .neq('status', 'cancelled')
+        const running = (yEvents || []).filter(e => crossesMidnight(e.start_time, e.end_time) && isUpcomingOrRunning(e, today, nowM) && (!passedEventId || e.id === passedEventId))
+        if (running.length === 1) eventDate = running[0].event_date
+      }
       // Resolve event_id: prefer the explicit ID from the panel; fall back to a
       // truck_id + event_date lookup ONLY when exactly one event matches that date
       // (same-day multi-event would be ambiguous — leave null and let the display
@@ -2230,6 +2246,8 @@ export async function POST(req: NextRequest) {
       if (!ord?.slot) return NextResponse.json(await kErr('no_slot'), { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
+      // `% 24` keeps it canonical: "+10m" on an overnight event's 23:55 is "00:05" (lib/event-window.ts — storage holds
+      // canonical "HH:MM"; the readers that need its order put it on the engine clock from the event's times).
       const newSlot = `${String(Math.floor(newTotal / 60) % 24).padStart(2, '0')}:${String(newTotal % 60).padStart(2, '0')}`
       if (ord.event_date) {
         const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
@@ -2884,17 +2902,21 @@ export async function POST(req: NextRequest) {
 
     // ── GET EVENTS ────────────────────────────────────────────────────────────
     if (action === 'get_events') {
-      const today = getLocalDateInTz(await truckTimeZone(truck))
+      const tz = await truckTimeZone(truck)
+      const today = getLocalDateInTz(tz)
+      // 🔴 UPCOMING (lib/event-window.ts): read from YESTERDAY and keep a row that is today or later, or an overnight
+      // event from yesterday still running — so it stays selectable past midnight until it ends. The 20-row LIMIT is
+      // applied AFTER that filter; for events that do not cross midnight the list is exactly the old one.
       const { data: events } = await supabase
         .from('truck_events')
         .select('id, event_date, start_time, end_time, venue_name')
         .eq('truck_id', truck.id)
         .neq('status', 'cancelled')
-        .gte('event_date', today)
+        .gte('event_date', upcomingQueryFloor(tz))
         .order('event_date', { ascending: true })
         .order('start_time', { ascending: true })
-        .limit(20)
-      return NextResponse.json({ success: true, events: events || [] })
+      const nowM = getNowMinsInTz(tz)
+      return NextResponse.json({ success: true, events: (events || []).filter(e => isUpcomingOrRunning(e, today, nowM)).slice(0, 20) })
     }
 
     return NextResponse.json(await kErr('unknown_action'), { status: 400 })

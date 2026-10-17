@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { VillageEvent } from '@/types';
 import { parseDateString, getDistanceKm, createSlug, venueGroupKey } from '@/lib/utils';
+import { crossesMidnight } from '@/lib/event-window';
 
 export function useVillageData(
   userLocation: { lat: number; long: number } | null,
@@ -92,7 +93,13 @@ export function useVillageData(
       }
 
       if (filters.date !== 'all') {
-        if (filters.date === 'today' && eventDate.getTime() !== today.getTime()) return false;
+        // "Today" also holds an OVERNIGHT event that started yesterday (lib/event-window.ts): the feed only sends one
+        // while it is still running, so at 00:15 a 20:00–00:30 event from yesterday is today's. Any other: unchanged.
+        if (filters.date === 'today' && eventDate.getTime() !== today.getTime()) {
+          const yesterday = new Date(today);
+          yesterday.setDate(today.getDate() - 1);
+          if (!(eventDate.getTime() === yesterday.getTime() && crossesMidnight(event.startTime, event.endTime))) return false;
+        }
 
         if (filters.date === 'tomorrow') {
            const tomorrow = new Date(today);

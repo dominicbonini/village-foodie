@@ -3,6 +3,7 @@
 // Used by: truck dashboard (client), slots API (server), customer order form (client)
 
 import { clockOfInstantInTz, instantOfLocal } from '@/lib/time-utils'
+import { eventTimeDate } from '@/lib/event-window'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { readVanCategorySettings, resolveCategories } from '@/lib/van-category-settings'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
@@ -252,7 +253,7 @@ export interface CatConfig {
    */
   export function resolveCollectionTime(
     order: { slot: string | null; event_date: string | null },
-    event: { event_date: string | null; start_time: string | null } | null,
+    event: { event_date: string | null; start_time: string | null; end_time?: string | null } | null,
     tz: string,
   ): Date | null {
     const toLocal = (dateStr: string, timeStr: string): Date | null => {
@@ -266,7 +267,8 @@ export interface CatConfig {
     // THIS branch fires for every order placed after that fix → the operator card shows a stable
     // boundary time, not the drifting raw clock.
     if (order.slot && order.event_date) {
-      return toLocal(order.event_date, order.slot)
+      // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT: a slot earlier than its start is the NEXT day's (lib/event-window.ts).
+      return toLocal(event?.start_time ? eventTimeDate(order.event_date, event.start_time, event.end_time, order.slot) : order.event_date, order.slot)
     }
 
     const evDate = event?.event_date ?? order.event_date

@@ -57,6 +57,45 @@ async function zonesFor(truckIds: string[]): Promise<Map<string, string>> {
   return out
 }
 
+// ══ 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (17 October 2026) — THE RULE OF lib/event-window.ts, MIRRORED ══════════════
+// This Deno function cannot import lib/, so the rule is restated here, minimally, and scripts/_midnight-public.cjs checks
+// `shouldAutoClose` against lib/event-window.ts (eventEndMins, daysBetween) minute by minute — change one, change both.
+//   • An event CROSSES MIDNIGHT when its end is EARLIER than its start (end == start is not overnight). Its end is on
+//     the next calendar day.
+//   • So it is NOT closed on its own date (it ends tomorrow); on the NEXT date it closes when auto_close and its end has
+//     passed, exactly as an ordinary event does on its own date; and the prior-day sweep (which closes an ordinary event
+//     the day after its date) reaches it only the day after its END date — never while it is still running.
+// An event whose end is after its start is decided exactly as before.
+const clockMins = (t: unknown): number | null => {
+  const m = /^(\d{1,2}):(\d{2})/.exec(String(t ?? '').trim())
+  return m && Number(m[1]) < 24 && Number(m[2]) < 60 ? Number(m[1]) * 60 + Number(m[2]) : null
+}
+const crossesMidnight = (start: unknown, end: unknown): boolean => {
+  const s = clockMins(start), e = clockMins(end)
+  return s != null && e != null && e < s
+}
+const prevYmd = (ymd: string) => {
+  const [y, m, d] = ymd.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10)
+}
+
+/** Whether an OPEN event is closed now, on its truck's clock (`today` 'YYYY-MM-DD', `currentTime` 'HH:MM'). */
+export function shouldAutoClose(
+  e: { event_date: string; start_time?: string | null; end_time?: string | null; auto_close?: boolean | null },
+  today: string, currentTime: string,
+): boolean {
+  if (e.event_date > today) return false // a later day on this truck's clock — not yet
+  if (crossesMidnight(e.start_time, e.end_time)) {
+    if (e.event_date === today) return false // its own date: it ends tomorrow
+    if (e.event_date < prevYmd(today)) return true // the day after its END date → sweep closed
+    if (!e.auto_close) return false // its end date, manual-close: leave for the operator
+    return String(e.end_time).slice(0, 5) <= currentTime
+  }
+  if (e.event_date < today) return true // prior-day open event → sweep closed
+  if (!e.auto_close) return false // today, manual-close: leave for the operator
+  return !!e.end_time && String(e.end_time).slice(0, 5) <= currentTime
+}
+
 Deno.serve(async () => {
   const now = new Date()
   const timestamp = now.toISOString()
@@ -98,9 +137,10 @@ Deno.serve(async () => {
   //   • event_date < the truck's today → the event is unambiguously over → close it (self-heal / backfill),
   //                                      regardless of auto_close.
   //   • event_date = the truck's today → close only auto_close events whose end_time has passed.
+  //   (An overnight event ends on the NEXT date, and is decided on that one — see shouldAutoClose above.)
   const { data: openEvents, error: closeErr } = await supabase
     .from('truck_events')
-    .select('id, truck_id, event_date, end_time, auto_close')
+    .select('id, truck_id, event_date, start_time, end_time, auto_close')
     .eq('status', 'open')
     .lte('event_date', utcYmd(now, 1))
 
@@ -113,10 +153,7 @@ Deno.serve(async () => {
         const tz = zones.get(e.truck_id as string)
         if (!tz) return false
         const { today, currentTime } = nowIn(tz, now)
-        if (e.event_date > today) return false // a later day on this truck's clock — not yet
-        if (e.event_date < today) return true // prior-day open event → sweep closed
-        if (!e.auto_close) return false // today, manual-close: leave for the operator
-        return !!e.end_time && String(e.end_time).slice(0, 5) <= currentTime
+        return shouldAutoClose(e, today, currentTime)
       })
       .map(e => e.id)
 

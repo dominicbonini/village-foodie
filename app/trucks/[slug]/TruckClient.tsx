@@ -17,6 +17,7 @@ import { safeHref } from '@/lib/safe-href';
 import { contactHref } from '@/lib/contact-topics';
 import { I18nContext, useAppLocale, useT } from '@/lib/i18n/use-t';
 import type { AppLocale } from '@/lib/i18n/locales';
+import type { TimeSettings } from '@/lib/time-utils';
 import '@/lib/i18n/catalog/truckPage';
 
 /** The map's placeholder while its chunk loads — a component, so it reads the page's language like the rest. */
@@ -39,18 +40,20 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 // `discovery` (Language Phase 1e tidy): false for a truck outside Village Foodie's market — its page then shows none of
 // Village Foodie's discovery prompts (newsletter, weekly schedule, Hire / Add my Business / Truck Directory, the claim
 // links). Defaults to true, so a page that does not say keeps everything it had.
-export default function TruckClient({ slug, locale, discovery = true }: { slug: string; locale?: AppLocale; discovery?: boolean }) {
+// `time`: the HatchGrab truck's own TimeSettings (page.tsx), for its event cards — absent for a discovery-only truck,
+// whose cards keep the discovery (GB) settings.
+export default function TruckClient({ slug, locale, discovery = true, time }: { slug: string; locale?: AppLocale; discovery?: boolean; time?: TimeSettings }) {
   const around = useAppLocale();
   const active = locale ?? around;
   const i18n = useMemo(() => ({ locale: active, setLocale: () => {} }), [active]);
   return (
     <I18nContext.Provider value={i18n}>
-      <TruckProfile slug={slug} discovery={discovery} />
+      <TruckProfile slug={slug} discovery={discovery} time={time} />
     </I18nContext.Provider>
   );
 }
 
-function TruckProfile({ slug, discovery }: { slug: string; discovery: boolean }) {
+function TruckProfile({ slug, discovery, time }: { slug: string; discovery: boolean; time?: TimeSettings }) {
   const t = useT('truckPage');
   const posthog = usePostHog();
   const router = useRouter();
@@ -362,7 +365,7 @@ function TruckProfile({ slug, discovery }: { slug: string; discovery: boolean })
                 {/* LEFT: FLAT EVENT LIST */}
                 <div className={`flex-1 space-y-1 ${mobileView === 'map' ? 'hidden lg:block' : 'block'}`}>
                     {truckEventsFlat.map(event => (
-                        <TruckListCard key={event.id} event={event} slug={slug} />
+                        <TruckListCard key={event.id} event={event} slug={slug} time={time} />
                     ))}
                     
                     {/* Scraped/discovery affordance — hidden on an operator-claimed/orderable truck

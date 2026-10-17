@@ -585,7 +585,11 @@ function fakeDb(opts = {}) {
     const f = 'lib/schedule-extract.ts'
     if (gitClean(f)) return true
     const ADDED = [
-      "import { getLocalDateInTz, addDaysYmd, formatYmd, type TimeSettings } from '@/lib/time-utils'",
+      // ⚠️ MIDNIGHT EVENTS (17 October 2026, docs/midnight-and-format-fixes-report.md): the import gains clockMins, and
+      // an end EARLIER than the start is kept (an overnight event); only an end EQUAL to the start is blanked.
+      "import { getLocalDateInTz, addDaysYmd, formatYmd, clockMins, type TimeSettings } from '@/lib/time-utils'",
+      'const s = clockMins(start), e = clockMins(end)',
+      "if (end && start && (s != null && e != null ? e === s : end <= start)) return ''",
       'export function buildScheduleExtractionPrompt(inputText: string, ts: TimeSettings): string {',
       'const todayYmd = getLocalDateInTz(ts.timeZone)',
       "const todayStr = formatYmd(todayYmd, ts, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })",
@@ -599,6 +603,9 @@ function fakeDb(opts = {}) {
       "{ text: buildScheduleExtractionPrompt('', time) },",
     ]
     const REMOVED = [
+      // MIDNIGHT EVENTS (17 October 2026): the old import and the old "end at or before start → blank" test.
+      "import { getLocalDateInTz, addDaysYmd, formatYmd, type TimeSettings } from '@/lib/time-utils'",
+      "if (end && start && end <= start) return ''",
       'export function buildScheduleExtractionPrompt(inputText: string): string {',
       'const today = new Date()',
       "const todayStr = today.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })",

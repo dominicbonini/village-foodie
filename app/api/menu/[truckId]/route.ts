@@ -8,6 +8,7 @@ import { getLiveItemCounts } from '@/lib/stock-availability'
 import { resolveTruckLogo } from '@/lib/truck-logo'
 import { hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel, isPreorderOpenYet, formatPreorderOpenLabel } from '@/lib/preorder'
 import { canAccess } from '@/lib/features'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
@@ -186,16 +187,22 @@ export async function GET(
     }
   } else {
     // The truck's today (Phase 2B; the UTC date was yesterday from 00:00 to 01:00 BST).
-    const today = getLocalDateInTz((await truckTimeSettings(truck)).timeZone)
-    const { data: openEvent } = await supabase
+    const detectTz = (await truckTimeSettings(truck)).timeZone
+    const today = getLocalDateInTz(detectTz)
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): after midnight the event that started yesterday is still
+    // the one running, until its end. So read from yesterday and keep what is upcoming or still running, THEN take the
+    // first — the limit applies after the filter. A normal event from yesterday is dropped, so the pick is as before.
+    const detectNow = getNowMinsInTz(detectTz)
+    const upcomingFirst = <T extends { event_date: string | null; start_time?: string | null; end_time?: string | null }>(rows: T[] | null): T | null =>
+      (rows ?? []).find(e => isUpcomingOrRunning(e, today, detectNow)) ?? null
+    const { data: openEvents } = await supabase
       .from('truck_events')
-      .select('id')
+      .select('id, event_date, start_time, end_time')
       .eq('truck_id', truck.id)
       .in('status', ['open', 'confirmed'])
-      .gte('event_date', today)
+      .gte('event_date', upcomingQueryFloor(detectTz))
       .order('event_date', { ascending: true })
-      .limit(1)
-      .maybeSingle()
+    const openEvent = upcomingFirst(openEvents)
     effectiveEventId = openEvent?.id ?? null
 
     /* ══ ⛔ THE AUTO-DETECT MUST NEVER LAND ON A PRIVATE EVENT (20261014) ════════════════════════
@@ -221,14 +228,14 @@ export async function GET(
 
     // If no confirmed/open event, check for unconfirmed upcoming events
     if (!effectiveEventId) {
-      const { data: unconfirmedEvent } = await supabase
+      // The same upcoming-or-running read as above (lib/event-window.ts), the limit after the filter.
+      const { data: unconfirmedEvents } = await supabase
         .from('truck_events')
-        .select('id')
+        .select('id, event_date, start_time, end_time')
         .eq('truck_id', truck.id)
         .eq('status', 'unconfirmed')
-        .gte('event_date', today)
-        .limit(1)
-        .maybeSingle()
+        .gte('event_date', upcomingQueryFloor(detectTz))
+      const unconfirmedEvent = upcomingFirst(unconfirmedEvents)
       if (unconfirmedEvent) orderingAvailable = false
     }
   }

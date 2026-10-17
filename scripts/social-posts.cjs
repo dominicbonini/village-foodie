@@ -169,8 +169,11 @@ head('2 · one read for the whole page, and no `event_load` per place')
     !/\.insert\(|\.update\(|\.upsert\(|\.delete\(|\.remove\(/.test(body))
   /* ⚠️ FORWARD-ONLY AND BOUNDED. Both lists are about what is coming, so nothing before today is read
    * — which is also what keeps this cheap enough to replace the loop it exists to prevent. */
+  // ⚠️ RE-PINNED (17 October 2026, docs/midnight-and-format-fixes-report.md): the read starts at YESTERDAY
+  // (upcomingQueryFloor) so an overnight event that began yesterday and is still running is kept (isUpcomingOrRunning),
+  // and the 400 cap is applied AFTER that filter — still forward-only (nothing earlier than yesterday) and bounded.
   t('⚠️ …and the event read is forward-only and bounded',
-    /\.gte\('event_date', today\)/.test(body) && /\.limit\(400\)/.test(body))
+    /\.gte\('event_date', upcomingQueryFloor\(/.test(body) && /isUpcomingOrRunning\(/.test(body) && /\.slice\(0, 400\)/.test(body))
   /* 🔴 THE SHARED GROUPING, so a MERGED place's events land on its target exactly as everywhere else.
    * A second, weaker match here would give one place two different "next"s on two screens. */
   t('🔴 places are grouped with the SHARED rule, so a merged place behaves as it does elsewhere',

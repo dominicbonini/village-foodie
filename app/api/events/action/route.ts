@@ -4,7 +4,7 @@ import { sendEventCancellationEmail } from '@/lib/email'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { getSoleActiveVanId } from '@/lib/van-utils'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
-import { hasValidEventTimes } from '@/lib/time-utils'
+import { hasValidEventTimes, clockMins } from '@/lib/time-utils'
 /* ── 🔴 PRIVATE EVENTS (20261014) ──────────────────────────────────────────────────────────────── */
 import { applyPrivacy } from '@/lib/private-events/write'
 import { isEventPrivate } from '@/lib/private-events/read'
@@ -210,6 +210,26 @@ export async function POST(req: NextRequest) {
     const safe = Object.fromEntries(
       Object.entries(payload).filter(([k]) => allowed.includes(k))
     )
+
+    // 🔴 A TIME IS VALIDATED NOW (17 October 2026). This wrote `end_time` with no check at all — the finish-time
+    // control's write lands here. The pair it would leave (the payload's times over the event's stored ones) must pass
+    // hasValidEventTimes: an end EARLIER than the start is an event that runs past midnight (lib/event-window.ts) and
+    // is accepted; an end EQUAL to the start is refused. A draft may still hold a missing time — only a pair is judged.
+    // The refusal names the case: `event_times_same` when both are clock times and equal; anything malformed keeps
+    // `live_event_needs_times`. The response shape is every other refusal's here.
+    if ('start_time' in safe || 'end_time' in safe) {
+      const { data: cur } = await supabase
+        .from('truck_events')
+        .select('start_time, end_time')
+        .eq('id', eventId)
+        .eq('truck_id', truck.id)
+        .maybeSingle()
+      const start = ('start_time' in safe ? safe.start_time : cur?.start_time) as string | null | undefined
+      const end = ('end_time' in safe ? safe.end_time : cur?.end_time) as string | null | undefined
+      if (start != null && end != null && !hasValidEventTimes(start, end)) {
+        return refuse(clockMins(start) != null && clockMins(start) === clockMins(end) ? 'event_times_same' : 'live_event_needs_times', 400)
+      }
+    }
 
     const { error } = await supabase
       .from('truck_events')

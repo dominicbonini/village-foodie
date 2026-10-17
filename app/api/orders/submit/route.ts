@@ -29,7 +29,8 @@ import { validateModifierSelection, hasUnsatisfiableRequiredGroup, selectedCount
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
 // ⚠️ `getNowMinsInTz` LEFT WITH THE AUTO-ACCEPT TERMS — it was read only by the pre-order deadline
 // check, which now lives in lib/orders/auto-accept. The open-window gate below still needs the date one.
-import { getLocalDateInTz, formatSlot, formatNumericDate, type TimeSettings } from '@/lib/time-utils'
+import { getLocalDateInTz, getNowMinsInTz, formatSlot, formatNumericDate, type TimeSettings } from '@/lib/time-utils'
+import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { decideAutoAccept } from '@/lib/orders/auto-accept'
 import { canAccess, resolveBatchReservations } from '@/lib/features'
@@ -330,6 +331,24 @@ export async function POST(req: NextRequest) {
     // Use the actual truck UUID for all subsequent queries
     const resolvedTruckId = truck.id
 
+    // ── 🔴 THE ORDER'S DAY WHEN NO DATE WAS SENT — AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts) ──
+    // The truck's today, unless an overnight event that started YESTERDAY is still running: after midnight that is the
+    // event being ordered from, and its date is yesterday's. Read only when no date was sent (the order page always
+    // sends one). A normal event from yesterday is never running, so the answer is today — exactly as before.
+    let fallbackEventDate: string = getLocalDateInTz(truckTz)
+    if (eventDate == null) {
+      const { data: yesterdays } = await supabase
+        .from('truck_events')
+        .select('event_date, start_time, end_time')
+        .eq('truck_id', resolvedTruckId)
+        .eq('event_date', upcomingQueryFloor(truckTz))
+        .neq('status', 'cancelled')
+      const nowMins = getNowMinsInTz(truckTz)
+      const running = ((yesterdays ?? []) as { event_date: string | null; start_time: string | null; end_time: string | null }[])
+        .find(e => isUpcomingOrRunning(e, fallbackEventDate, nowMins))
+      if (running?.event_date) fallbackEventDate = running.event_date
+    }
+
     // (Pause is EVENT-scoped — the per-event guard below reads truck_events.paused_until /
     // online_paused_until. The old truck-level guard here was removed: nothing writes
     // trucks.paused_until anymore, and a stale pre-migration value would have falsely 423'd
@@ -350,7 +369,7 @@ export async function POST(req: NextRequest) {
         .maybeSingle()
       pauseEvent = data
     } else {
-      const pauseCheckDate = eventDate ?? getLocalDateInTz(truckTz)
+      const pauseCheckDate = eventDate ?? fallbackEventDate
       const { data } = await supabase
         .from('truck_events')
         .select('van_id, status, paused_until, online_paused_until')
@@ -531,7 +550,7 @@ export async function POST(req: NextRequest) {
     // ⚠️ WHERE NO CANDIDATE CHANGES A PRICE THE ORDER PROCEEDS AT MENU PRICES, which is every truck
     // today and is why this guard costs them nothing. In the last 90 days no order had a null
     // event_id at all.
-    const pricingEventDate = eventDate ?? getLocalDateInTz(truckTz)
+    const pricingEventDate = eventDate ?? fallbackEventDate
     let pricingEventId: string | null = null
     let pricingCandidates: string[] = []
     if (eventId) {
@@ -703,7 +722,7 @@ export async function POST(req: NextRequest) {
     // to (truck_id, event_date) when no id was sent — and then take the earliest by
     // start_time via limit(1) so 2+ same-date events no longer collapse to null
     // (Section 5). van_id is selected so the order can be associated with the van.
-    const orderEventDate = eventDate ?? getLocalDateInTz(truckTz)
+    const orderEventDate = eventDate ?? fallbackEventDate
 
     // PRE-ORDER OPEN-WINDOW HARD GATE (V8.3): reject BEFORE booking if any line's pre-order-tagged item
     // hasn't OPENED yet (now < open). Server-enforced (not just menu-hidden) — the SAME isPreorderOpenYet

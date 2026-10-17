@@ -20,6 +20,7 @@ import {
   getLevenshteinDistance 
 } from '@/lib/utils';
 import { VillageEvent } from '@/types'; 
+import { crossesMidnight } from '@/lib/event-window';
 
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
@@ -288,15 +289,24 @@ function VillageFoodieContent() {
                          return (h * 60) + mins;
                       };
 
+                      // The group dated YESTERDAY on this device (it can hold an overnight event still running).
+                      const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+                      const isYesterday = parseInt(d) === yesterday.getDate() && parseInt(m) === yesterday.getMonth() + 1 && parseInt(y) === yesterday.getFullYear();
+
                       const activeEvents = dateEvents.filter(event => {
                         // Operator events always LIST regardless of coords (they bypass the discovery-directory
                         // name gate — see verifiedMapEvents). The map component pins only coord-having events.
                         if (event.source !== 'operator' && !isEventVerified(event.truckName)) return false;
                         
-                        if (!isToday) return true; 
+                        // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): its end is the NEXT day's, so it is
+                        // compared on the event's timeline (end + 24h) — a 20:00–00:30 event is not hidden all evening —
+                        // and yesterday's is listed until it ends (now + 24h). Any other event: exactly as before.
+                        const overnight = crossesMidnight(event.startTime, event.endTime);
+                        if (!isToday && !(isYesterday && overnight)) return true; 
                         const endMins = getMinutes((event as any).endTime);
                         if (endMins === 9999) return true; 
                         const nowMins = (now.getHours() * 60) + now.getMinutes();
+                        if (overnight) return endMins + 1440 > nowMins + (isToday ? 0 : 1440);
                         return endMins > nowMins;
                       });
 

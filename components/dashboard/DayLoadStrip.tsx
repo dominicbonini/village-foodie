@@ -16,6 +16,7 @@
 
 import { getNowMinsInTz, getLocalDateInTz, formatSlot, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import type { Slot } from './types'
+import { crossesMidnight, eventTimeMins, nowOnEvent } from '@/lib/event-window'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/dashboardBanners'
 
@@ -27,7 +28,7 @@ const TONE: Record<'green' | 'amber' | 'red', { dot: string; text: string }> = {
   red: { dot: 'bg-red-500', text: 'text-red-700' },
 }
 
-export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }: {
+export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots, event }: {
   /** The dashboard's existing full-day slot series (already carries tone + counts). */
   slots: Slot[]
   /** Active event's date — drives the cross-day guard (only floor by "now" when the event is today). */
@@ -43,6 +44,9 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }:
    *  over-subscribed one look identical today. OPTIONAL: omitted or empty => no markers, and the strip
    *  renders exactly as it did. */
   breachedSlots?: Set<string>
+  /** The active event's own times. Only an event that runs past midnight reads them (lib/event-window.ts); omitted or
+   *  any other event ⇒ the strip is exactly as before. */
+  event?: { start_time?: string | null; end_time?: string | null } | null
 }) {
   // Cross-day guard mirrors the engine: only exclude past slots when the event IS today; a
   // pre-order event (future date) shows its whole day. nowMins is event-local minute-of-day.
@@ -51,9 +55,17 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots }:
   const tz = ts.timeZone
   const isToday = !!eventDate && eventDate === getLocalDateInTz(tz)
   const nowMins = getNowMinsInTz(tz)
-  const upcoming = slots
-    .filter(s => !s.is_grace && (!isToday || toMins(s.collection_time) >= nowMins))
-    .sort((a, b) => toMins(a.collection_time) - toMins(b.collection_time))
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): slots and "now" on the event's timeline, so 00:15 is
+  // after 23:55 and is still to come at 23:50 — and at 00:15 the next day the event is still running, not "another
+  // day's" with its whole list shown. Every other event takes the original two lines.
+  const overnight = !!eventDate && !!event && crossesMidnight(event.start_time, event.end_time)
+  const onEvent = (t: string) => eventTimeMins(event?.start_time, event?.end_time, t) ?? toMins(t)
+  const nowOn = overnight ? nowOnEvent(eventDate as string, tz) : 0
+  const upcoming = overnight
+    ? slots.filter(s => !s.is_grace && onEvent(s.collection_time) >= nowOn).sort((a, b) => onEvent(a.collection_time) - onEvent(b.collection_time))
+    : slots
+      .filter(s => !s.is_grace && (!isToday || toMins(s.collection_time) >= nowMins))
+      .sort((a, b) => toMins(a.collection_time) - toMins(b.collection_time))
 
   if (!upcoming.length) return null
 

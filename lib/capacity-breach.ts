@@ -20,6 +20,8 @@
 import { projectBackwardOccupancy, backwardWindowStepMins, contributingProductionSlots, coverDotWindows, type EngineReservation } from '@/lib/slot-availability'
 import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
+import type { SlotEventTimes } from '@/lib/slot-utils'
+import { engineClock } from '@/lib/event-window'
 
 // Local EPS — matches the engine's private 1e-9. We only READ, so no coupling risk.
 const BREACH_EPS = 1e-9
@@ -65,6 +67,8 @@ export interface DetectCapacityBreachesParams {
   intervalMins?: number
   /** Active/terminal orders for the event (only OCCUPYING ones map into breaches). */
   orders: Array<{ order_key: string; id: number; slot: string | null; status: string }>
+  /** 🔴 The event's own times (lib/event-window.ts). Omitted, or an event that does not cross midnight ⇒ exactly as before. */
+  event?: SlotEventTimes
 }
 
 /**
@@ -76,6 +80,24 @@ export interface DetectCapacityBreachesParams {
  * and the tone logic are all untouched; this only consumes their output.
  */
 export function detectCapacityBreaches(p: DetectCapacityBreachesParams): CapacityBreach[] {
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): every slot below is parsed as minute of day, so the times,
+  // occupancy keys, reservations and order slots go in on the ENGINE CLOCK ("00:15" → "24:15", after "23:55") and each
+  // breach comes back with canonical slots. Re-mapping an engine-clock input is a no-op; any other event skips this.
+  const ec = engineClock(p.event?.start_time, p.event?.end_time)
+  if (ec.overnight) {
+    return detectCapacityBreaches({
+      ...p,
+      event: undefined,
+      times: (p.times || []).map(t => ({ ...t, collection_time: ec.to(t.collection_time) })),
+      productionSlotUnits: ec.keysTo(p.productionSlotUnits || {}),
+      reservations: (p.reservations || []).map(r => ({ ...r, slot: ec.to(r.slot) })),
+      orders: (p.orders || []).map(o => (o && o.slot ? { ...o, slot: ec.to(o.slot) } : o)),
+    }).map(b => ({
+      ...b,
+      collection_time: ec.from(b.collection_time),
+      ...(b.override_orders ? { override_orders: b.override_orders.map(o => ({ ...o, slot: ec.from(o.slot) })) } : {}),
+    }))
+  }
   const { times, productionSlotUnits, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, intervalMins, orders, reservations, batchReservations } = p
   if (!Array.isArray(times) || times.length === 0) return []
   const displayInterval = intervalMins ?? 5

@@ -54,6 +54,16 @@ function preflightKeys(bodyText) {
   }
   return JSON.stringify(walk(o))
 }
+// ⚠️ RE-PINNED (events that run past midnight + US formats, 17 October 2026, docs/midnight-and-format-fixes-report.md)
+const { midnightEntries } = require('./_lp1d-named.cjs')
+/** An entry of Phase 2's table (scripts/_lp2-named.cjs NAMED), REUSED — its `what` and `expect` unchanged, ONE copy of
+ *  the transform — scoped to this harness's out-of-scope (smoke) views. Throws if the original entry is gone. */
+const reuseLp2 = (id, views) => {
+  const e = require('./_lp2-named.cjs').NAMED.find(x => x.id === id)
+  if (!e || !e.expect) throw new Error(`scripts/_lp2-named.cjs has no precise entry ${id} to reuse`)
+  return { ...e, views, smokeOnly: true, agent: `reused from scripts/_lp2-named.cjs ${id} (17 Oct 2026)` }
+}
+
 const NAMED = [
   // ── SHELL ─────────────────────────────────────────────────────────────────────────────────────────────────
   { id: '1d2-billing-plan-header', country: 'both', agent: 'SHELL',
@@ -107,6 +117,25 @@ const NAMED = [
     what: 'Billing › plan comparison footnote 4 (lib/plan-features.ts footnotes(s)): the WhatsApp dates go through formatLongDate on the country’s settings — for a US truck "From 1 October 2026 … Correct at 16 September 2026" → "From October 1, 2026 … Correct at September 16, 2026" (the same rule Part 2 named for Settings › Auto-replies, 1d2-us-whatsapp-dates).',
     views: id => /^shell\/US\|billing\|/.test(id),
     expect: b => mapStrings(b, s => s.replace(/From 1 October 2026/g, 'From October 1, 2026').replace(/Correct at 16 September 2026/g, 'Correct at September 16, 2026')) },
+  // ── ⚠️ RE-PINNED (events that run past midnight, 17 October 2026, docs/midnight-and-format-fixes-report.md) ───────
+  //    OUT OF SCOPE (smoke): Part 1's Schedule views — the end select's options (notSameAs), the "Ends the next day"
+  //    hint and the import review's layout. The SAME three precise transforms Part 1 names (scripts/_lp1d-named.cjs
+  //    midnightEntries), here on GB AND US (826471a already had the US 12-hour pickers, so a US view is byte-proven
+  //    too: the transform writes the US hour labels "12 AM" … "11 PM").
+  ...midnightEntries(/^smoke-schedule\/(GB|US)\|/).map(e => ({ ...e, smokeOnly: true })),
+  // ⚠️ RE-PINNED (events that run past midnight + US formats, 17 October 2026, docs/midnight-and-format-fixes-report.md):
+  // OUT OF SCOPE (smoke) — four intended changes Phase 2's table already names precisely for the 1b dashboard / Phase 2
+  // card views. REUSED, not copied (reuseLp2): the same `expect`, scoped here to smoke-schedule / smoke-dash.
+  //   midnight-card-time-nbsp-US       TruckListCard's 12-hour range keeps "5:00 PM" whole with a no-break space — the
+  //                                    Add / Edit event form's card preview (US smoke-schedule tab views).
+  //   midnight-dayloadstrip-event-prop the dashboard hands DayLoadStrip event={activeEvent}: its stub's props gain `event`
+  //                                    after `eventDate` (the stub module scripts/_lp1b-dashboard.cjs is not edited).
+  //   midnight-finish-modal-time-prop  EventFinishTimeModal gets time={dashTime}: its stub's props gain `time` after `busy`.
+  //   midnight-completed-slot-US       the Completed list's slot on the truck's clock: US "🕐 18:30" → "🕐 6:30 PM".
+  reuseLp2('midnight-card-time-nbsp-US', id => /^smoke-schedule\/US\|/.test(id)),
+  reuseLp2('midnight-dayloadstrip-event-prop', id => /^smoke-dash\/(GB|US)\|/.test(id)),
+  reuseLp2('midnight-finish-modal-time-prop', id => /^smoke-dash\/(GB|US)\|/.test(id)),
+  reuseLp2('midnight-completed-slot-US', id => /^smoke-dash\/US\|/.test(id)),
   { id: '1e-us-app-store-link', country: 'US', agent: 'CHROME + lead (Language Phase 1e)',
     what: 'Settings › the App Store badge (components/StoreBadges countryCode={truck?.country}, lib/app-badges appStoreUrlFor): a US truck gets the LOCALE-FREE listing https://apps.apple.com/app/id6803543106 instead of the UK storefront’s https://apps.apple.com/gb/app/hatchgrab/id6803543106. GB keeps the UK link byte-identical.',
     views: id => /^smoke-settings\/US\|/.test(id),

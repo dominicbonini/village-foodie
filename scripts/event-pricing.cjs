@@ -700,7 +700,8 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       "const preorderTz = (truck as any).timezone || 'Europe/London'",
     ])
     t('⚠️ …Phase 2B\'s four lines left the menu API for the truck\'s clock, and both replacements are there',
-      /const today = getLocalDateInTz\(\(await truckTimeSettings\(truck\)\)\.timeZone\)/.test(now)
+      // (17 October 2026, events past midnight: the zone is named once as detectTz, then today is read in it.)
+      (/const today = getLocalDateInTz\(\(await truckTimeSettings\(truck\)\)\.timeZone\)/.test(now) || /const detectTz = \(await truckTimeSettings\(truck\)\)\.timeZone\n\s*const today = getLocalDateInTz\(detectTz\)/.test(now))
       && /const truckTime = await truckTimeSettings\(truck\)\n\s*const preorderTz = truckTime\.timeZone/.test(now)
       && !/'Europe\/London'/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')))
     /* ⚠️ AUDIT D31 (docs/audit-fixes-report.md) REMOVED THE DISCOUNT-CODE READ AND ITS EMIT from the public menu,
@@ -728,9 +729,18 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       /formatPreorderLabel\('before', clock\.mins, clock\.date, preorderEventDate as string, truckTime\)/.test(now)
       && /formatPreorderLabel\('closed_pending', 0, '', '', truckTime\)/.test(now)
       && /formatPreorderOpenLabel\(\(truck as any\)\.preorder_open_rule, preorderEventDate as string, truckTime\)/.test(now))
+    /* ⚠️ EVENTS PAST MIDNIGHT (17 October 2026, docs/midnight-and-format-fixes-report.md): the event auto-detect and the
+     * unconfirmed check read from yesterday and keep what is upcoming or still running (lib/event-window.ts), the limit
+     * applied after the filter — so each lost its `.gte(today)`, `.limit(1)`, `.maybeSingle()` and one-column select. Excused
+     * PER INDENTED LINE (each query's lines are indented differently), and the companion check requires the replacement.
+     * None of them is on the price leg. */
+    const MIDNIGHT_REMOVED = new Map([['const today = getLocalDateInTz((await truckTimeSettings(truck)).timeZone)', 1], ['const { data: openEvent } = await supabase', 1],
+      ['const { data: unconfirmedEvent } = await supabase', 1], [".select('id')", 1], [".gte('event_date', today)", 1], ['.limit(1)', 1], ['.maybeSingle()', 1]])
+    t('⚠️ …the auto-detect reads from yesterday and filters to upcoming-or-running, both queries',
+      (now.match(/\.gte\('event_date', upcomingQueryFloor\(detectTz\)\)/g) || []).length === 2 && (now.match(/upcomingFirst\((openEvents|unconfirmedEvents)\)/g) || []).length === 2)
     const removed = []
     for (const [l, n] of mb) {
-      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0) - (PHASE_2_REMOVED.get(l.trim()) || 0)
+      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0) - (PHASE_2_REMOVED.get(l.trim()) || 0) - (MIDNIGHT_REMOVED.get(l.trim()) || 0)
       if (k > 0 && l.trim() && !PHASE_2B_REMOVED.has(l.trim())) removed.push([l.trim(), k])
     }
     t('⚠️ audit D31: the public menu neither reads nor sends discount codes', !/discount_codes_db/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')) && !/codes: \(codes/.test(now))

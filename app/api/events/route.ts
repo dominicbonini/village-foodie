@@ -10,7 +10,8 @@ import { readEventTypesForTruck } from '@/lib/event-types/read'
 import { readPrivateEventIds } from '@/lib/private-events/read'
 import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { truckTimeSettings } from '@/lib/truck-time'
-import { getLocalDateInTz, addDaysYmd, formatOrdinalDate, type TimeSettings } from '@/lib/time-utils'
+import { getLocalDateInTz, getNowMinsInTz, addDaysYmd, formatOrdinalDate, type TimeSettings } from '@/lib/time-utils'
+import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 // Language Phase 1d: the refusal of ours carries a code (lib/i18n/manage-errors.ts); "Today · …" / "Tomorrow · …" are
 // messages (`manageApi.eventsFeed`) in the truck's language. A database's message is passed on as it comes.
 import { manageErrorBody } from '@/lib/i18n/manage-errors'
@@ -78,22 +79,27 @@ export async function GET(req: NextRequest) {
   const ts = await truckTimeSettings(truck)
   const today = getLocalDateInTz(ts.timeZone)
 
-  const { data: rows, error } = await supabase
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): one that started yesterday is still on the schedule until
+  // its end on the next day. So the query reads from yesterday, the rows are kept when upcoming or still running, and
+  // THEN the 50 are taken — the limit after the filter. A normal event from yesterday is dropped: the list is as before.
+  const floor = upcomingQueryFloor(ts.timeZone)
+  const nowMins = getNowMinsInTz(ts.timeZone)
+  const { data: allRows, error } = await supabase
     .from('truck_events')
     // status + opened_at expose the operator-STARTED signal so customer surfaces derive "live" from
     // status==='open' (live-redefinition), not the published clock window. Times stay DISPLAY-only.
     .select('id, event_date, start_time, end_time, venue_name, town, postcode, notes, status, opened_at, van_id')
     .eq('truck_id', truck.id)
     .in('status', ['confirmed', 'open'])
-    .gte('event_date', today)
+    .gte('event_date', floor)
     .order('event_date', { ascending: true })
     .order('start_time', { ascending: true, nullsFirst: false })
-    .limit(50)
 
   if (error) {
     console.error('Events API error:', error.message)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+  const rows = (allRows || []).filter(e => isUpcomingOrRunning(e, today, nowMins)).slice(0, 50)
 
   // ── 🔴 THE CUSTOMER COLLECTION INTERVAL, PER EVENT — NOT PER TRUCK ────────────────────────────────
   // The order page's FALLBACK picker (reached only when /api/slots fails or returns nothing) needs to
@@ -114,7 +120,7 @@ export async function GET(req: NextRequest) {
   // which is this endpoint's behaviour before the event columns existed.
   const eventOverrides = await readEventIntervalsForTruck(supabase, truck.id)
   /* One extra probed read for the whole list, not one per event — see readEventTypesForTruck. */
-  const eventTypes = await readEventTypesForTruck(supabase, truck.id, today)
+  const eventTypes = await readEventTypesForTruck(supabase, truck.id, floor)   // from yesterday too: a running overnight event
 
   /* ══ 🔴 PRIVATE EVENTS APPEAR HERE, AND THEY APPEAR REDACTED (20261014) ═══════════════════════════
    * This is the truck's PUBLIC SCHEDULE, and decision 4 is that a private event always shows on it —

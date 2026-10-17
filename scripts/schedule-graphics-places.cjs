@@ -2051,6 +2051,42 @@ function runWiringSuite(lib) {
      * logo's card-title treatment, the cancellation group's stray divider and duplicate label, and the
      * lines that gained an id/import. Anything NOT on it is a loss. */
     const allowed = [
+      /* ⚠️ MIDNIGHT EVENTS AND THE IMPORT REVIEW (17 October 2026, docs/midnight-and-format-fixes-report.md), proved by
+       * scripts/midnight-events.cjs (area "manage") and the companion check below: the end-time field offers every time
+       * but the start's own (`notSameAs`, was `minExclusive`), `endEqualsStart` replaced `endIsNotAfterStart`, the status
+       * badge / Past sort read the end on its own day (`eventEndInstant`, `eventTimeDate`), applyStartTimeChange takes the
+       * previous start, and the Import review's time boxes stopped taking the text-input classes, with its cards/table
+       * switch moved from md to lg and its columns refitted. */
+      "function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent['status']; event_date: string; end_time: string }) {",
+      "value, onChange, className, placeholder = '—:—', minExclusive = null, disabled = false, label,",
+      "minExclusive?: string | null",
+      "const minMins = hhMmToMins(minExclusive)",
+      "minMins === null || !h ? MINUTE_OPTIONS : MINUTE_OPTIONS.filter(m => Number(h) * 60 + Number(m) > minMins)",
+      "const hours = HOUR_OPTIONS.filter(h => minMins === null || Number(h) * 60 + 55 > minMins)",
+      "const keeps = curM !== '' && (minMins === null || Number(h) * 60 + Number(curM) > minMins)",
+      "function endIsNotAfterStart(start: string | null | undefined, end: string | null | undefined): boolean {",
+      "return s !== null && e !== null && e <= s",
+      "function applyStartTimeChange(newStart: string, currentEnd: string): { start_time: string; end_time: string } {",
+      "<EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />",
+      "const ka = `${a.event_date}T${a.end_time || a.start_time || '00:00'}`",
+      "const kb = `${b.event_date}T${b.end_time || b.start_time || '00:00'}`",
+      "const { start_time, end_time } = applyStartTimeChange(patch.start_time, e.end_time)",
+      "<div className=\"md:hidden flex flex-col gap-2\">",
+      "const endBeforeStart = endIsNotAfterStart(ev.start_time, ev.end_time)",
+      "className={fieldCls(!ev.start_time)}",
+      "className={fieldCls(!ev.end_time || endBeforeStart)}",
+      "minExclusive={ev.start_time}",
+      "<div className=\"hidden md:block overflow-x-auto\">",
+      "<col style={{ width: '130px' }} />",
+      "<col style={{ width: '220px' }} />",
+      "<col style={{ width: '150px' }} />",
+      "<col style={{ width: '100px' }} />",
+      "{vans.length > 1 && <col style={{ width: '120px' }} />}",
+      "className={ci(missingStart)}",
+      "className={ci(missingEnd || endBeforeStart)}",
+      "const { start_time, end_time } = applyStartTimeChange(v, editingEvent.end_time)",
+      "minExclusive={editingEvent.start_time}",
+      "<div className=\"grid grid-cols-2 gap-3\">",
       /* ⚠️ WHAT THIS BUILD DELIBERATELY REPLACED, each asserted on its own elsewhere:
        *   • `Van` gained `categorySettings` and `same_as_first_van` (per-van settings);
        *   • the van card's capacity grid now reads THIS van's values, not the truck's;
@@ -3157,6 +3193,11 @@ function runWiringSuite(lib) {
       console.log('      \u26d4 PHASE 2D-2 IS CLAIMED ABOVE BUT THE GEOCODER CALLS DO NOT ALL SEND THE COUNTRY')
       return false
     }
+    // MIDNIGHT EVENTS AND THE IMPORT REVIEW: the replacements named above, each present in its new form.
+    // (Read from the raw source: RAWP has its t('…') calls replaced by their GB words.)
+    const SRC_MN = read(PAGE)
+    if (!(/notSameAs/.test(SRC_MN) && /function endEqualsStart\(/.test(SRC_MN) && /eventEndInstant\(/.test(SRC_MN) && /eventTimeDate\(/.test(SRC_MN)
+      && /tE\('endsNextDay'\)/.test(SRC_MN) && /lg:hidden/.test(SRC_MN) && /timeColW/.test(SRC_MN))) unexplained.push('(midnight events / import review: a named replacement is missing)')
     if (unexplained.length) {
       console.log('      LINES LOST: ' + unexplained.length)
       for (const l of unexplained.slice(0, 40)) console.log("        • " + l.slice(0, 260))
@@ -3465,7 +3506,8 @@ function runWiringSuite(lib) {
   t('🔴 THE PREVIEW RENDERS THE PUBLIC PAGE\'S OWN CARD, not a copy of its markup',
     /import TruckListCard from '@\/components\/TruckListCard'/.test(P)
     && /<TruckListCard\s*\n?\s*event=\{previewEvent\}/.test(P)
-    && /<TruckListCard key=\{event\.id\} event=\{event\} slug=\{slug\} \/>/.test(read('app/trucks/[slug]/TruckClient.tsx')))
+    // ⚠️ RE-PINNED (17 October 2026): the public page now hands the card the truck's own time settings (US formats).
+    && /<TruckListCard key=\{event\.id\} event=\{event\} slug=\{slug\}( time=\{time\})? \/>/.test(read('app/trucks/[slug]/TruckClient.tsx')))
   t('⚠️ …in the `compact` variant with no Order CTA — an unsaved event must not offer one',
     /compact\s*\n?\s*hideOrderButton/.test(P)
     && /status: 'unconfirmed'/.test(read(PREVIEW_LIB)))

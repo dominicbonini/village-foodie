@@ -925,7 +925,8 @@ head('5 · THE WIRING')
     /const \{ showPaidStep \} = resolvePaidStep\(truck, activeEvent\)/.test(kds)
     && !/event-types/.test(kds))
   t('🔴 the public events feed publishes the TYPE’s customer grid, batched',
-    /readEventTypesForTruck\(supabase, truck\.id, today\)/.test(events)
+    // (17 October 2026: from yesterday — `floor` — so a running overnight event keeps its type; lib/event-window.ts)
+    /readEventTypesForTruck\(supabase, truck\.id, (today|floor)\)/.test(events)
     && /eventTypes\.byEventId\.get\(e\.id\) \?\? null/.test(events))
   t('🔴 resolveIntervalsFor reads the type and still lets the event’s own pair win',
     /const et = await readEventType\(supabase, eventId\)/.test(slot)
@@ -2592,6 +2593,25 @@ head('5b · THE MODAL AND THE CARD')
     /* The five moved controls, the three inline offline expressions, the replaced mount and the
      * replaced state line — plus the structural closers they took with them. */
     const ALLOWED = [
+      /* ⚠️ MIDNIGHT EVENTS (17 October 2026, docs/midnight-and-format-fixes-report.md): thirteen lines replaced so an event
+       * that runs past midnight is read by the one rule (lib/event-window.ts) — the offline-cache prune keeps yesterday, today's
+       * events and the auto-open stale filter keep yesterday's running overnight event, auto-select reads the end on its own
+       * day, finishingEarly / the slot indicators / both prep sorts read the event timeline, the finish-time target carries
+       * the start — plus the Completed row's slot through formatSlot (the US format fix). Each replacement is asserted below
+       * (midnightMoved). */
+      /^if \(d && d < todayIso\) await cache\.delete\(req\)$/,
+      /^const\[finishTimeTarget,setFinishTimeTarget\]=useState<\{id:string;end_time:string\|null;event_date:string\|null\}\|null>\(null\)$/,
+      /^const fetched=\(eventsData\.events\?\?\[\]\)\.filter\(\(e:TruckEvent\)=>e\.event_date===todayStr\)$/,
+      /^const stale=fetched\.filter\(\(e:TruckEvent\)=>e\.status==='confirmed'&&e\.auto_open===true&&e\.start_time<=currentTime\)$/,
+      /^if\(e\.event_date!==todayStr\|\|!e\.start_time\|\|!e\.end_time\) return false$/,
+      /^const finishingEarly=endMins!=null && nowMins<endMins$/,
+      /^const ind=buildSlotIndicators\(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder\|\|\[\],capacityWindowMins,truckIntervalMins,serverReservations,batchReservationsOn\)$/,
+      /^return slots\.map\(s=>\(\{\.\.\.s,tone:ind\.get\(s\.collection_time\)\?\.tone\?\?s\.tone,label:ind\.get\(s\.collection_time\)\?\.label\?\?s\.label\}\)\)$/,
+      /^\.sort\(\(a,b\)=>a\.slot!\.localeCompare\(b\.slot!\)\)$/,
+      /^const aSlot=a\.slot\?parseInt\(a\.slot\.replace\(':',''\)\):99999$/,
+      /^const bSlot=b\.slot\?parseInt\(b\.slot\.replace\(':',''\)\):99999$/,
+      /^\{o\.slot&&<span className="text-xs text-slate-700">🕐 \{o\.slot\}<\/span>\}$/,
+      /^onChangeFinishTime=\{\(\)=>\{setShowEventMenu\(false\);setFinishTimeTarget\(\{id:activeEvent\.id,end_time:activeEvent\.end_time\?\?null,event_date:activeEvent\.event_date\?\?null\}\)\}\}$/,
       /* ⚠️ LANGUAGE PHASE 2 (docs/language-phase-2-report.md — the kitchen US-words work): three lines whose WORDS moved
        * into `dashboard` messages so the US can say them differently. Each is an edit, not a loss, and its replacement is
        * asserted at the end of this check: the event bar's status reads `eventBar.status`, an order's status chip reads
@@ -2778,7 +2798,8 @@ head('5b · THE MODAL AND THE CARD')
       return !/localTodayIso|toTimeString\(\)|\.getHours\(\)|toLocaleTimeString\(/.test(pg)
         && /pruneStaleEventCache\(timeSettingsOr\(truck\.time,'dashboard'\)\.timeZone\)/.test(flat)
         && /pickDefaultEventByTime\(upcomingEvents,dashTz\)/.test(flat)
-        && /getAsapSlot\(slots,selectedOrDefaultEvent\?\.event_date,dashTz\)/.test(flat)
+        // ⚠️ RE-PINNED (midnight events, 17 October 2026): getAsapSlot now also gets the event (its times place the slots).
+        && /getAsapSlot\(slots,selectedOrDefaultEvent\?\.event_date,dashTz(,[^)]*)?\)/.test(flat)
         && /constnowMins=getNowMinsInTz\(dashTz\)/.test(flat)
         && (flat.match(/resolveCollectionTime\([oab],activeEvent,dashTz\)/g) || []).length === 3
         && /degradedBanner\(degraded,lastRefresh,dashTime\)/.test(flat)
@@ -2877,6 +2898,11 @@ head('5b · THE MODAL AND THE CARD')
       /* ⚠️ RE-PINNED (Language Phase 1d): the capacity description and example moved on from `dashboard.settings.capacityDesc`
        * / `capacityExample` to the ONE shared pair `kitchenCapacity.desc` / `.example` (read here as tCap, and by Manage). */
       && /\{tCap\('desc'\)\}/.test(now) && /\{tCap\('example'\)\}/.test(now)
+    // MIDNIGHT EVENTS: the thirteen replacements above, each present in its new form.
+    const midnightMoved = /upcomingQueryFloor\(/.test(now) && /isUpcomingOrRunning\(/.test(now) && /eventEndInstant\(/.test(now)
+      && /nowOnEvent\(/.test(now) && /eventTimeMins\(/.test(now) && /toEngineClock\(/.test(now) && /eventDates\(/.test(now)
+      && /formatSlot\(o\.slot,\s*dashTime\)/.test(now) && /start_time:\s*activeEvent\.start_time/.test(now)
+    if (!midnightMoved) unexplained.push('(Midnight events: a replacement for one of the thirteen named lines is missing)')
     if (!lp2Moved) unexplained.push('(Language Phase 2: the status labels / capacity description are not read from `dashboard` messages)')
     /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the companion for the followed moves above — all seven are moves out of
      * `dashboard.settings.`, every one is gone from the page under its old key and read under its new one through

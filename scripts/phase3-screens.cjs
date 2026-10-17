@@ -184,9 +184,16 @@ async function main() {
   }
   head('1 · GB: the menu response, the status API and get_report are byte-identical to BEFORE')
   const before = JSON.parse(read(BEFORE_FILE)).views
+  /* ⚠️ RE-PINNED (17 October 2026, docs/midnight-and-format-fixes-report.md): the status API also sends the event's
+   * `event_start_time` / `event_end_time`, so the receipt can place a slot after midnight on the next day (lib/event-window.ts).
+   * The status views are compared WITHOUT exactly those two keys, and their presence is asserted on its own. */
+  const MIDNIGHT_KEYS = ['event_start_time', 'event_end_time']
+  const withoutMidnightKeys = v => (v && v.body && typeof v.body === 'object' ? { ...v, body: Object.fromEntries(Object.entries(v.body).filter(([k]) => !MIDNIGHT_KEYS.includes(k))) } : v)
   for (const [k, b] of Object.entries(before)) {
-    const d = diffJson(b, got[k])
-    t(`${k}: byte-identical to BEFORE`, d === null, d)
+    const isStatus = /^status/.test(k)
+    const d = diffJson(b, isStatus ? withoutMidnightKeys(got[k]) : got[k])
+    t(`${k}: byte-identical to BEFORE${isStatus ? ' (apart from the two named event-time keys)' : ''}`, d === null, d)
+    if (isStatus) t(`${k}: …and it sends the event's start and end times`, got[k] && got[k].body && MIDNIGHT_KEYS.every(x => x in got[k].body), got[k] && got[k].body && MIDNIGHT_KEYS.map(x => got[k].body[x]))
   }
   if (fs.existsSync(path.join(REPO, 'lib/order-charge-lines.ts'))) {
     await require('./_phase3-screens-us.cjs')({ kit, mods, t, head, read, REPO, menuView, menuTables, statusView, statusTables, reportView, reportTables, reportOrders, ORDER_BASE, GB, US, TRUCK, makeFakePg, NextRequest, snake, SEEDS })

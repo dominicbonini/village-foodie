@@ -4,6 +4,8 @@ import { createSlug } from '@/lib/utils';
 import { VILLAGE_FOODIE_COUNTRY } from '@/lib/discovery-country';
 import { supabase } from '@/lib/supabase';
 import { localeForTruck } from '@/lib/i18n/server-locale';
+import { truckTimeSettings } from '@/lib/truck-time';
+import type { TimeSettings } from '@/lib/time-utils';
 import { translatorFor } from '@/lib/i18n/translator';
 import '@/lib/i18n/catalog/truckPage';
 
@@ -13,15 +15,28 @@ import '@/lib/i18n/catalog/truckPage';
 // page at /trucks/<slug>/order resolves). A truck with no HatchGrab row is a discovery truck, and discovery is
 // Village Foodie's market only (lib/discovery-country.ts: a row of any other country is hidden on both sites), so
 // its country is VILLAGE_FOODIE_COUNTRY. This decides words only: a lookup that fails reads that same default.
-async function truckCountry(slug: string) {
-  let country: string | null = null;
+async function truckRow(slug: string) {
   try {
-    const { data } = await supabase.from('trucks').select('country').eq('slug', slug).maybeSingle();
-    country = (data as { country?: string | null } | null)?.country ?? null;
+    const { data } = await supabase.from('trucks').select('country, timezone').eq('slug', slug).maybeSingle();
+    return data as { country?: string | null; timezone?: string | null } | null;
   } catch {
-    country = null;
+    return null;
   }
-  return country || VILLAGE_FOODIE_COUNTRY;
+}
+async function truckCountry(slug: string) {
+  return (await truckRow(slug))?.country || VILLAGE_FOODIE_COUNTRY;
+}
+// 🔴 THE EVENT CARDS READ IN THE TRUCK'S OWN STYLE (US "Wed, Sep 30 · 11:30 AM – 10:45 PM"): a HatchGrab truck's
+// TimeSettings (lib/truck-time.ts — its zone, else its country's). A discovery-only truck (no HatchGrab row), or one
+// whose settings cannot be read, passes nothing and the cards keep DISCOVERY_TIME_SETTINGS (GB) exactly as before. A GB
+// HatchGrab truck's settings ARE the GB row, which DISCOVERY_TIME_SETTINGS mirrors, so its cards are unchanged too.
+async function truckTime(row: { country?: string | null; timezone?: string | null } | null): Promise<TimeSettings | undefined> {
+  if (!row?.country) return undefined;
+  try {
+    return await truckTimeSettings(row);
+  } catch {
+    return undefined;
+  }
 }
 const truckLocale = async (slug: string) => localeForTruck({ country: await truckCountry(slug) });
 
@@ -102,9 +117,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 // Finally, we load the interactive Client page we just built
 export default async function TruckProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const country = await truckCountry(resolvedParams.slug);
+  const row = await truckRow(resolvedParams.slug);
+  const country = row?.country || VILLAGE_FOODIE_COUNTRY;
   // 🔴 VILLAGE FOODIE'S DISCOVERY PROMPTS ONLY IN ITS OWN MARKET (Language Phase 1e tidy): the newsletter, the weekly
   // schedule button, Hire / Add my Business / Truck Directory and the claim links invite a visitor into Village
   // Foodie, which is UK-only (lib/discovery-country.ts). A truck of any other country shows its page without them.
-  return <TruckClient slug={resolvedParams.slug} locale={await localeForTruck({ country })} discovery={country === VILLAGE_FOODIE_COUNTRY} />;
+  return <TruckClient slug={resolvedParams.slug} locale={await localeForTruck({ country })} discovery={country === VILLAGE_FOODIE_COUNTRY} time={await truckTime(row)} />;
 }

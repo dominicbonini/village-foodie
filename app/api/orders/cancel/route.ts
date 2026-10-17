@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { sendCancellationEmail } from '@/lib/email'
 import { moneyFormatForOrder } from '@/lib/money-server'
 import { truckTimeZone } from '@/lib/truck-time'
-import { instantOfLocal } from '@/lib/time-utils'
+import { eventTimeInstant } from '@/lib/event-window'
 // RELEASE ONLY. It cannot capture and it refuses an order whose money was already taken; see the module.
 import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
           country
         ),
         truck_events!event_id (
+          start_time,
           end_time
         )
       `)
@@ -93,7 +94,10 @@ export async function POST(req: NextRequest) {
         // server (`new Date(\`${date}T${slot}\`)`), so a UK truck's cutoff fell an hour LATE all through BST
         // and a New York truck's four hours EARLY. Now the truck's zone, by the one rule — the same instant
         // the receipt page computes for its Cancel button.
-        const slotTime = instantOfLocal(order.event_date, effectiveSlot, await truckTimeZone(truck))
+        // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): a slot (or end) earlier than its start is the NEXT
+        // day's, so a 00:15 order on a 20:00–00:30 event is cut off at 00:15 on the next day − the window. Any other
+        // event (or no event row): the order's own date, exactly as before.
+        const slotTime = eventTimeInstant(order.event_date, event?.start_time, event?.end_time, effectiveSlot, await truckTimeZone(truck))
         const cutoffTime = new Date(slotTime - truck.cancellation_cutoff_mins * 60 * 1000)
         if (new Date() > cutoffTime) {
           return NextResponse.json(

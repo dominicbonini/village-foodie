@@ -18,9 +18,13 @@ export function generateSlots(start: string, end: string, intervalMins: number):
   const [startH, startM] = start.split(':').map(Number)
   const [endH, endM] = end.split(':').map(Number)
   let mins = startH * 60 + startM
-  const endMins = endH * 60 + endM
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (end earlier than start, lib/event-window.ts): its end is the next day's, so the
+  // walk continues past 23:59 and each slot is written canonically ("00:15"), in order after "23:55" — the rule
+  // generateCollectionTimes follows. Any other event: exactly as before.
+  const endMins = endH * 60 + endM < mins ? endH * 60 + endM + 1440 : endH * 60 + endM
   while (mins <= endMins) {
-    slots.push(`${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`)
+    const m = mins % 1440
+    slots.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
     mins += intervalMins
   }
   return slots

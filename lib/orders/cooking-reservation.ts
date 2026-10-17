@@ -19,14 +19,16 @@ import { buildItemCatMap, normaliseOrderLines, getProductionSlotUnits, readCooki
 import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import type { StoredCookingReservation } from '@/lib/slot-bookings'
+import { engineClock, fromEngineClock } from '@/lib/event-window'
 
 let columnMissingLogged = false
 
 /** The event's start and its van's ceiling, read through the CLIENT WE WERE HANDED (never the module
  *  client): the same lookups eventKitchenCapacity makes, so the split is computed with the inputs the
  *  placement used. Missing event ⇒ null ⇒ nothing is written. */
-async function loadEventCapacityMeta(supabase: SupabaseClient, truckId: string, eventId: string): Promise<{ eventStartMins: number; kitchenCapacity: number | null; capacityWindowMins: number } | null> {
-  const { data: ev } = await supabase.from('truck_events').select('start_time, van_id').eq('truck_id', truckId).eq('id', eventId).maybeSingle()
+async function loadEventCapacityMeta(supabase: SupabaseClient, truckId: string, eventId: string): Promise<{ eventStartMins: number; kitchenCapacity: number | null; capacityWindowMins: number; ec: ReturnType<typeof engineClock> } | null> {
+  // `end_time` too: an event that runs past midnight is computed on the ENGINE CLOCK (lib/event-window.ts) — see `ec`.
+  const { data: ev } = await supabase.from('truck_events').select('start_time, end_time, van_id').eq('truck_id', truckId).eq('id', eventId).maybeSingle()
   if (!ev) return null
   let kitchenCapacity: number | null = null, capacityWindowMins = 5
   if (ev.van_id) {
@@ -36,7 +38,10 @@ async function loadEventCapacityMeta(supabase: SupabaseClient, truckId: string, 
   }
   const t = ev.start_time ? String(ev.start_time) : null
   const eventStartMins = t ? (parseInt(t.slice(0, 2), 10) || 0) * 60 + (parseInt(t.slice(3, 5), 10) || 0) : 0
-  return { eventStartMins, kitchenCapacity, capacityWindowMins }
+  // 🔴 The event's engine clock: "00:15" → "24:15" on an overnight event, so the projection (minute-of-day parsing) seats
+  // a past-midnight slot after "23:55" rather than at minute 15. The identity for any other event.
+  const ec = engineClock(t, ev.end_time ? String(ev.end_time) : null)
+  return { eventStartMins, kitchenCapacity, capacityWindowMins, ec }
 }
 
 /** The reservation TODAY's projection would give this order on its own. Pure; exported for the harnesses. */
@@ -50,8 +55,11 @@ export function buildReservationForOrder(args: {
   gridIntervalMins: number | null
   source: 'fit' | 'override'
 }): StoredCookingReservation | null {
-  const { slot, qtyByCat, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins, gridIntervalMins, source } = args
-  const back = projectBackwardOccupancy({ [slot]: qtyByCat }, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
+  const { slot: engineSlot, qtyByCat, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins, gridIntervalMins, source } = args
+  // STORED CANONICAL: an overnight event's engine-clock "24:15" is recorded as "00:15" (lib/event-window.ts); its windows
+  // stay on the event timeline the engine reads them on. The identity for any other slot.
+  const slot = fromEngineClock(engineSlot)
+  const back = projectBackwardOccupancy({ [engineSlot]: qtyByCat }, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
   const cats: StoredCookingReservation['cats'] = {}
   for (const [catRaw, n] of Object.entries(qtyByCat)) {
     const cat = catRaw.toLowerCase(); const cfg = catConfigs[cat]; const items = Number(n) || 0
@@ -115,8 +123,10 @@ export async function admitForManual(
     ])
     if (!cap) return null
     const qtyByCat = orderItemsToQtyByCat(lines, itemCatMap)
-    const back = projectBackwardOccupancy(units, catConfigs, cap.eventStartMins, cap.kitchenCapacity, cap.capacityWindowMins, reservations, true)
-    return buildAdmittedReservation({ back, slotLabel, qtyByCat, catConfigs, kitchenCapacity: cap.kitchenCapacity, eventStartMins: cap.eventStartMins, capacityWindowMins: cap.capacityWindowMins, gridIntervalMins: null }).record
+    // On the event's engine clock (an overnight event; the identity otherwise — loadEventCapacityMeta).
+    const ec = cap.ec
+    const back = projectBackwardOccupancy(ec.keysTo(units), catConfigs, cap.eventStartMins, cap.kitchenCapacity, cap.capacityWindowMins, ec.overnight ? reservations.map(r => ({ ...r, slot: ec.to(r.slot) })) : reservations, true)
+    return buildAdmittedReservation({ back, slotLabel: ec.to(slotLabel), qtyByCat, catConfigs, kitchenCapacity: cap.kitchenCapacity, eventStartMins: cap.eventStartMins, capacityWindowMins: cap.capacityWindowMins, gridIntervalMins: null }).record
   } catch (e) { console.warn('[reservations] manual admission threw — no reservation written:', e instanceof Error ? e.message : e); void eventDate; return null }
 }
 
@@ -142,7 +152,8 @@ export async function writeCookingReservation(
     const lines = normaliseOrderLines((order.items as { name: string; quantity: number }[]) || [], (order.deals as { slots?: Record<string, unknown> }[] | null) ?? null)
     const qtyByCat = orderItemsToQtyByCat(lines, itemCatMap)
     const reservation = buildReservationForOrder({
-      slot: String(order.slot), qtyByCat, catConfigs, eventStartMins: cap.eventStartMins, kitchenCapacity: cap.kitchenCapacity,
+      // On the event's engine clock (an overnight event's "00:15" seats after "23:55"); the record stores it canonical.
+      slot: cap.ec.to(String(order.slot)), qtyByCat, catConfigs, eventStartMins: cap.eventStartMins, kitchenCapacity: cap.kitchenCapacity,
       capacityWindowMins: cap.capacityWindowMins, gridIntervalMins: args.gridIntervalMins ?? null,
       source: order.capacity_ack_at ? 'override' : 'fit',
     })

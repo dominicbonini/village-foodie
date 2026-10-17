@@ -28,6 +28,8 @@ import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-u
 import { hasFeature } from '@/lib/features';
 import { formatTime, formatSlot, getNowMinsInTz, getLocalDateInTz, instantOfLocal, addDaysYmd, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
 import { preorderOpenDate, formatPreorderOpenLabel } from '@/lib/preorder';
+// 17 October 2026: an event that runs past midnight — one rule, lib/event-window.ts (its after-midnight times are the next day's).
+import { crossesMidnight, eventTimeMins, eventEndMins, eventEndInstant, nowOnEvent, engineClock } from '@/lib/event-window';
 import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
 import { clockGridMinutes } from '@/lib/slot-generation'
@@ -768,7 +770,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     const [startH] = event.start_time.split(':').map(Number)
     const [endH] = event.end_time.split(':').map(Number)
     
-    const hours = []
+    const hours: string[] = []
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): its end hour is the next day's, so the walk runs on
+    // through 23 and wraps (20 … 23, 00). Any other event: the loop below, unchanged.
+    if (crossesMidnight(event.start_time, event.end_time)) {
+      for (let h = startH; h <= endH + 24; h++) {
+        const hh = String(h % 24).padStart(2, '0')
+        if (!hours.includes(hh)) hours.push(hh)
+      }
+      return hours
+    }
     for (let h = startH; h <= endH; h++) {
       hours.push(String(h).padStart(2, '0'))
     }
@@ -864,8 +875,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // slot change, or tz change, so it always reflects the CURRENT time in the event's timezone.
   // nowTick is intentionally a dependency (forces the re-derive); getAsapSlot reads getNowMinsInTz.
   const asapSlot = useMemo(
-    () => getAsapSlot(availableSlots, eventDateIso, eventTz)?.collection_time ?? null,
-    [availableSlots, eventDateIso, eventTz, nowTick],
+    // The event's times ride along so an overnight event's after-midnight slots read as the next day's (lib/event-window.ts).
+    () => getAsapSlot(availableSlots, eventDateIso, eventTz, event)?.collection_time ?? null,
+    [availableSlots, eventDateIso, eventTz, nowTick, event],
   )
 
   // Reload slot availability whenever truck/event is known or customer returns to the tab
@@ -1023,8 +1035,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             const nowMs = Date.now()
             const lastDay = addDaysYmd(getLocalDateInTz(listTz), 14)
             const upcoming = data.events.filter((e: EventData) => {
-              // Exclude events whose end time has passed
-              if (e.date_iso && e.end_time && nowMs >= instantOfLocal(e.date_iso, e.end_time, listTz)) return false
+              // Exclude events whose end time has passed — an overnight event's end is the NEXT day's (lib/event-window.ts)
+              if (e.date_iso && e.end_time && nowMs >= (eventEndInstant(e.date_iso, e.start_time, e.end_time, listTz) ?? instantOfLocal(e.date_iso, e.end_time, listTz))) return false
               const [d, m, y] = e.date.split('/').map(Number)
               const ymd = e.date_iso ?? `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
               return ymd <= lastDay
@@ -1753,12 +1765,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
     const todayIso = getLocalDateInTz(eventTz) // event-tz date — a future LOCAL event is never "today"
     const isToday = eventDateIso === todayIso
-    const nowMins = getNowMinsInTz(eventTz) // event tz, NOT device time — agrees with the slot floors
-    const beforeEvent = !isToday || nowMins < eventStartMins
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): "now" is read on the event's timeline (1440+ after
+    // midnight), so at 00:15 it is still running, not "a different day ⇒ before it"; the result is written back on the
+    // clock (never "24:10"). Any other event: today's minute of day and the today test, exactly as before.
+    const overnight = crossesMidnight(event.start_time, event.end_time)
+    const nowMins = overnight ? nowOnEvent(eventDateIso, eventTz) : getNowMinsInTz(eventTz) // event tz, NOT device time — agrees with the slot floors
+    const beforeEvent = overnight ? nowMins < eventStartMins : (!isToday || nowMins < eventStartMins)
+    const onClock = (mins: number) => (overnight ? mins % 1440 : mins)
 
     if (!menu) {
       if (!extraWait) return asapSlot || event.start_time
-      const rounded = Math.round((eventStartMins + extraWait) / 5) * 5
+      const rounded = onClock(Math.round((eventStartMins + extraWait) / 5) * 5)
       return `${String(Math.floor(rounded/60)).padStart(2,'0')}:${String(rounded%60).padStart(2,'0')}`
     }
 
@@ -1823,7 +1840,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
     if (asapMins === eventStartMins && extraWait === 0) return event.start_time
 
-    const roundedMins = Math.ceil(asapMins / 5) * 5 // ceil-to-grid (next 5-min slot), never round DOWN below the floor
+    const roundedMins = onClock(Math.ceil(asapMins / 5) * 5) // ceil-to-grid (next 5-min slot), never round DOWN below the floor
     const h = Math.floor(roundedMins / 60)
     const m = roundedMins % 60
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
@@ -1835,6 +1852,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     const [h, m] = time.split(':').map(Number)
     return h * 60 + m
   }
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): every "is this time before that one" on this page reads
+  // both on the event's timeline (00:15 → 1455, after 23:50), and the capacity engine is handed its times on the engine
+  // clock ("24:15") and gives them back canonical. Any other event: evMins IS toMins, the clock is the identity and the
+  // "now" is today's minute of day — exactly as before.
+  const overnightEvent = crossesMidnight(event?.start_time, event?.end_time)
+  const evMins = (time: string) => (overnightEvent ? (eventTimeMins(event?.start_time, event?.end_time, time) ?? toMins(time)) : toMins(time))
+  const evClock = engineClock(event?.start_time, event?.end_time)
+  const engineUnits = (units: Record<string, Record<string, number>>) => evClock.keysTo(units)
+  const engineReservations = (rs: EngineReservation[]) => (evClock.overnight ? rs.map(r => ({ ...r, slot: evClock.to(r.slot) })) : rs)
+  const nowClampFor = () => (overnightEvent
+    ? nowOnEvent(eventDateIso, eventTz)
+    : eventDateIso === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY)
 
   // ── Backward-occupancy fit (Stage 2): which slots can't fit the current order ──
   // The customer is HARD-BLOCKED from a slot whose backward cooking windows (ending at it)
@@ -1854,25 +1883,28 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const unfittableSlots = useMemo(() => {
     const out = new Set<string>()
     if (!capacityInputs || Object.keys(basketByCat).length === 0) return out
+    // An overnight event's slots enter the engine on its clock ("24:15"); identity otherwise (lib/event-window.ts).
+    const units = engineUnits(capacityInputs.productionSlotUnits || {})
     const back = projectBackwardOccupancy(
-      capacityInputs.productionSlotUnits || {},
+      units,
       serverCatConfigs,
       capacityInputs.eventStartMins,
       capacityInputs.kitchenCapacity,
       capacityInputs.capacityWindowMins ?? 5,
-      capacityInputs.reservations ?? [],
+      engineReservations(capacityInputs.reservations ?? []),
       capacityInputs.batchReservations === true,
     )
     // NOW-CLAMP (today only — mins-of-day would mis-compare for a future-date event): a basket can't
     // fit a slot whose cooking windows extend before now. void nowTick forces a live re-derive.
+    // An overnight event: now on its timeline, the same axis as its engine-clock slots.
     void nowTick
-    const nowClamp = eventDateIso === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
+    const nowClamp = nowClampFor()
     for (const s of availableSlots) {
-      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5, nowClamp, (capacityInputs.productionSlotUnits || {})[s.collection_time] || {}, capacityInputs.batchReservations === true)
+      const fit = fitOrderBackward(back, evMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5, nowClamp, units[evClock.to(s.collection_time)] || {}, capacityInputs.batchReservations === true)
       if (!fit.fits) out.add(s.collection_time)
     }
     return out
-  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick])
+  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick, event?.start_time, event?.end_time]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Backward-fit ASAP (Stage 3): the earliest slot the order actually fits — the SAME
   // engine the picker/server use, so the displayed "Around HH:MM" and the auto-booked slot
@@ -1883,12 +1915,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // such slot so earliestBackwardFitSlot can reach a worst-case-vetoed-but-actually-fits slot
     // (e.g. anchovies at a pizza-full 6pm with ceiling spare). Capacity is decided category-aware
     // inside fitOrderBackward; the !too_soon filter preserves the lead/ASAP floor.
-    const avail = availableSlots.filter(s => !isSlotPast(s, eventTz, eventDateIso) && !s.too_soon && !s.is_grace)
+    const avail = availableSlots.filter(s => !isSlotPast(s, eventTz, eventDateIso, event) && !s.too_soon && !s.is_grace)
     // NOW-CLAMP (today only): the backward-fit ASAP can't place cooking windows before now.
-    const nowClamp = eventDateIso === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
-    return earliestBackwardFitSlot(
-      avail.map(s => ({ collection_time: s.collection_time, production_slot: s.collection_time })),
-      capacityInputs.productionSlotUnits || {},
+    // An overnight event: now on its timeline; its slots go in on the engine clock and the answer comes back canonical
+    // (lib/event-window.ts). Any other event: the identity.
+    const nowClamp = nowClampFor()
+    const fit = earliestBackwardFitSlot(
+      evClock.rowsTo(avail.map(s => ({ collection_time: s.collection_time, production_slot: s.collection_time })), ['collection_time', 'production_slot']),
+      engineUnits(capacityInputs.productionSlotUnits || {}),
       serverCatConfigs,
       capacityInputs.kitchenCapacity,
       capacityInputs.eventStartMins,
@@ -1896,10 +1930,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       Number.NEGATIVE_INFINITY,
       capacityInputs.capacityWindowMins ?? 5,
       nowClamp,
-      capacityInputs.reservations ?? [],
+      engineReservations(capacityInputs.reservations ?? []),
       capacityInputs.batchReservations === true,
     )
-  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick])
+    return fit == null ? fit : evClock.from(fit)
+  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick, event]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ASAP is selected by DEFAULT (asapChosen initial = true) and submits as slot=null,
   // so there's nothing to auto-populate on load — the selection no longer depends on a
@@ -1912,7 +1947,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   useEffect(() => {
     if (asapChosen) return
     if (!selectedSlot || !customerAsapTime) return
-    if (toMins(selectedSlot) < toMins(customerAsapTime)) {
+    if (evMins(selectedSlot) < evMins(customerAsapTime)) { // the event's timeline (lib/event-window.ts)
       setAsapChosen(true)
       setSlotHour(''); setSlotMinute('')
     }
@@ -2548,6 +2583,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const isEventClosed = (() => {
     if (!event?.end_time || !event?.date_iso) return false
     // 🔴 THE TRUCK'S today and now (Phase 2B), not the device's — don't mark a future event "closed"
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): it closes when now, on its timeline, passes its end —
+    // 00:30 on the NEXT day — so it is open at 23:50 and 00:15 and closed at 00:31. Any other event: below, unchanged.
+    if (crossesMidnight(event.start_time, event.end_time)) {
+      return nowOnEvent(event.date_iso, eventTz) > (eventEndMins(event.start_time, event.end_time) as number)
+    }
     const todayIso = getLocalDateInTz(eventTz)
     if (event.date_iso !== todayIso) return false
     const [endH, endM] = event.end_time.split(':').map(Number)
@@ -3739,7 +3779,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     // basket-aware. 16:00 is is_grace:false (kept); 16:05+ excluded.
                                     // PAST: ALWAYS live (isSlotPast in the event tz) — never the
                                     // cached server is_past flag (stale once the clock advances).
-                                    if (isSlotPast(s, eventTz, eventDateIso)) return false
+                                    if (isSlotPast(s, eventTz, eventDateIso, event)) return false
                                     if (s.too_soon) return false // prep-time constraint (not a clock one) — server flag is fine
                                     if (s.is_grace) return false
                                     // CAPACITY — basket-aware when the customer has a basket: gate on the
@@ -3755,7 +3795,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                       return false
                                     }
                                     // Only show slots at or after the ASAP time
-                                    if (asapTime) return toMins(s.collection_time) >= toMins(asapTime)
+                                    // (on the event's timeline: an overnight event's 00:15 is after 23:50 — lib/event-window.ts)
+                                    if (asapTime) return evMins(s.collection_time) >= evMins(asapTime)
                                     return true
                                   })
                                   .map(slot => (
@@ -3768,7 +3809,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     .filter(m => {
                                       const time = `${h}:${m}`
                                       if (!asapTime) return true
-                                      return toMins(time) >= toMins(asapTime)
+                                      return evMins(time) >= evMins(asapTime)
                                     })
                                     .map(m => {
                                       const time = `${h}:${m}`

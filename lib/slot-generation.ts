@@ -82,7 +82,14 @@ export function generateCollectionTimes(
   graceAfterEndMins: number = 0
 ): CollectionTimeRow[] {
   const start = toMins(startTime)
-  const end = toMins(endTime)
+  // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (end earlier than start, lib/event-window.ts): its end is the next day's, so the
+  // walk continues past 23:59 and each time is written back on the clock ("00:15") — in order, after "23:55". Any other
+  // event: exactly as before.
+  const overnight = toMins(endTime) < start
+  const end = overnight ? toMins(endTime) + 1440 : toMins(endTime)
+  // ⚠️ ONLY an overnight event's times are written back on the clock (% 1440). A normal event whose end + grace passes
+  // midnight keeps the "24:xx" grace labels it always produced — byte-identical (scripts/slot-interval-generator.cjs).
+  const label = (m: number) => toStr(overnight ? m % 1440 : m)
   const result: CollectionTimeRow[] = []
   // 🔴 CLOCK ANCHORING: begin at the first multiple of the interval at or after the start, not at the
   // start itself. At interval 5 and a 5-minute-mark start this IS the start — see the header.
@@ -90,7 +97,7 @@ export function generateCollectionTimes(
 
   for (let mins = first; mins <= end + graceAfterEndMins; mins += intervalMins) {
     const prodMins = Math.floor(mins / slotDurationMins) * slotDurationMins
-    result.push({ collection_time: toStr(mins), production_slot: toStr(prodMins) })
+    result.push({ collection_time: label(mins), production_slot: label(prodMins) })
   }
 
   return result

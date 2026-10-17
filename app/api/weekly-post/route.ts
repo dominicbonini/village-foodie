@@ -131,6 +131,9 @@ import {
   weekCaptionValues, eventCaptionValues,
 } from '@/lib/weekly-post/caption-template'
 import { weekRange, defaultWeekChoice, todayInWeekTz, type WeekChoice } from '@/lib/weekly-post/week'
+/* 🔴 "UPCOMING" FOR THE SINGLE-EVENT PICKERS — an overnight event that started yesterday stays until it ends. */
+import { isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
+import { getNowMinsInTz } from '@/lib/time-utils'
 import { eventPostText, shortDate } from '@/lib/weekly-post/caption'
 
 /** 🔴 THE RENDER IS THE SLOW PATH and it is ~40ms warm; 30s matches /api/manage and leaves room for a
@@ -1100,11 +1103,12 @@ export async function POST(req: NextRequest) {
         .eq('truck_id', truck.id),
       /* ⚠️ BOUNDED AND FORWARD-ONLY. Both lists are about what is COMING, so nothing before today is
        * read at all — which is also what keeps this cheap enough to replace the per-place loop. */
+      /* 🔴 FROM THE TRUCK'S YESTERDAY, AND THE LIMIT (400) AFTER THE RULE (lib/event-window.ts "UPCOMING"): an overnight
+       * event that started yesterday is still coming-or-on until it ends; every other row is exactly the old set. */
       supabase.from('truck_events')
         .select('id, event_date, start_time, end_time, status, venue_name, venue_id, truck_place_id, town')
-        .eq('truck_id', truck.id).gte('event_date', today)
-        .order('event_date', { ascending: true }).order('start_time', { ascending: true })
-        .limit(400),
+        .eq('truck_id', truck.id).gte('event_date', upcomingQueryFloor(wk.timeZone))
+        .order('event_date', { ascending: true }).order('start_time', { ascending: true }),
     ])
 
     /* ══ 🔴 A MISSING COLUMN MUST NOT READ AS "YOU HAVE NO LOCATIONS" (9 October 2026) ════════════════
@@ -1128,7 +1132,10 @@ export async function POST(req: NextRequest) {
       }
     }
     const allPlaces = ((placeRows ?? []) as unknown as Place[])
+    const nowMins = getNowMinsInTz(wk.timeZone)
     const upcomingRaw = ((evRows ?? []) as unknown as WeekEvent[])
+      .filter(e => isUpcomingOrRunning(e as never, today, nowMins))
+      .slice(0, 400)
       .filter(e => countsAsUpcoming((e as { status?: string | null }).status))
     const privacy = await readPrivateEventIds(
       supabase, upcomingRaw.map(e => e.id), 'weekly-post social_overview')
@@ -1873,7 +1880,7 @@ export async function POST(req: NextRequest) {
     const { missingTable, design } = await loadDesign(truck.id, EVENT_KIND)
     const today = todayInWeekTz(new Date(), wk)
     const EV_COLS = 'id, event_date, start_time, end_time, status, venue_name, venue_id, truck_place_id, town'
-    const [{ data: places }, { data: upcoming }, { data: past }] = await Promise.all([
+    const [{ data: places }, { data: upcomingFromFloor }, { data: past }] = await Promise.all([
       supabase.from('truck_places')
         .select(`id, venue_id, name_key, name, short_name, area, merged_into_id, is_hidden, is_favourite, event_bg_path, event_bg_width, event_bg_height, event_layout, ${SLOT_COLS}`)
         .eq('truck_id', truck.id),
@@ -1882,13 +1889,18 @@ export async function POST(req: NextRequest) {
        * ⚠️ BOTH DIRECTIONS ARE LOADED, because a design for a place with nothing coming up previews on
        * the LAST event there. Bounded at 200 each: a truck with more than 200 events on one side of
        * today still gets a preview, just possibly from the generic fallback. */
+      /* 🔴 FROM THE TRUCK'S YESTERDAY, AND THE LIMIT AFTER THE RULE (lib/event-window.ts "UPCOMING") — see `upcoming`
+       * below. The PAST read is unchanged: a running overnight event from yesterday may also be in it, which only
+       * offers the same row twice to the preview's "last event at this place" fallback — never used while it is upcoming. */
       supabase.from('truck_events').select(EV_COLS)
-        .eq('truck_id', truck.id).gte('event_date', today)
-        .order('event_date', { ascending: true }).limit(200),
+        .eq('truck_id', truck.id).gte('event_date', upcomingQueryFloor(wk.timeZone))
+        .order('event_date', { ascending: true }),
       supabase.from('truck_events').select(EV_COLS)
         .eq('truck_id', truck.id).lt('event_date', today)
         .order('event_date', { ascending: false }).limit(200),
     ])
+    const nowMins = getNowMinsInTz(wk.timeZone)
+    const upcoming = (upcomingFromFloor ?? []).filter(e => isUpcomingOrRunning(e, today, nowMins)).slice(0, 200)
     /* 🔴 THE SETUP PREVIEW DRAWS REAL EVENTS, so a private one previews as "Private event" here too —
      * otherwise the operator would place their text boxes against a venue name the poster will not
      * print. Same probed read, same fail-closed direction. */

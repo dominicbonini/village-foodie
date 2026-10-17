@@ -8,17 +8,11 @@
 // a different status list or a missing limit changes what the model is grounded on, the reply still
 // looks plausible, and nothing fails. See docs/whatsapp-simulator-seam-report.md 2.b.
 //
-// ── ⚠️ THE TWO EXISTING CALLERS ARE DELIBERATELY NOT RE-POINTED AT THIS ─────────────────────────────
-// This is a NEW shared definition that the NEW caller uses; it is not a refactor of the live path.
-// Three reasons, recorded so the next person does not read it as an unfinished job:
-//   1. The Meta webhook is already modified in the working tree (the 20 August secret/lookup fixes) and
-//      is queued in an undeployed batch while an App Store review runs. Widening that file's diff with a
-//      refactor mixes an unreviewed behavioural change with an unreviewed structural one.
-//   2. The substitution is not purely local there: the webhook reuses its `events` binding for
-//      `events_found` in the whatsapp_logs insert, so swapping the query also moves that read.
-//   3. The dormant Twilio route is explicitly out of scope.
-// ⚠️ SO THE DUPLICATION STILL EXISTS -- this file reduces it from "two copies and a third being added"
-// to "two copies and one shared definition". Say that rather than calling it de-duplicated.
+// ── 🔴 EVERY CALLER READS IT HERE NOW (17 October 2026) ─────────────────────────────────────────────
+// The Meta webhook and the dormant Twilio webhook each carried an inline copy of this read; the overnight-
+// event rule below (lib/event-window.ts) would have had to be written into all three, which is exactly how
+// copies start to differ. Both now call `fetchUpcomingTruckEvents` — there is no second copy. Their
+// `events_found` counts the same rows they counted before (redaction keeps every row).
 //
 // ── 🔴 THE UTC DATE IS REPRODUCED ON PURPOSE. DO NOT "FIX" IT HERE. ─────────────────────────────────
 // `new Date().toISOString()` is UTC, so between 00:00 and 01:00 BST this returns YESTERDAY's date and
@@ -27,7 +21,8 @@
 // decision. A preview tool that silently disagreed with the live path about what day it is would be
 // worse than one that reproduces the defect faithfully. Fix both together or neither.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { getLocalDateInTz, getNowMinsInTz } from '@/lib/time-utils'
+import { isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
 /* 🔴 PRIVATE EVENTS NEVER GROUND THE MODEL ON A VENUE. See the call below. */
 import { redactPrivateRows } from '@/lib/private-events/read'
 
@@ -77,22 +72,29 @@ export async function fetchUpcomingTruckEvents(
 ): Promise<UpcomingTruckEvent[]> {
   const today = getLocalDateInTz(timeZone)
 
-  const { data, error } = await supabase
+  // 🔴 FROM THE TRUCK'S YESTERDAY, THEN THE RULE, THEN THE LIMIT (lib/event-window.ts "UPCOMING"): an overnight event
+  // that started yesterday is still upcoming until it ends (20:00–00:30 → still in the window at 00:15, gone at 00:31);
+  // every other row is kept exactly as `event_date >= today` kept it. The limit is applied AFTER the filter, so
+  // yesterday's rows never take a place in it.
+  const { data: rows, error } = await supabase
     .from('truck_events')
     .select(UPCOMING_EVENT_COLUMNS)
     .eq('truck_id', truckId)
-    .gte('event_date', today)
+    .gte('event_date', upcomingQueryFloor(timeZone))
     .in('status', UPCOMING_EVENT_STATUSES)
     .order('event_date', { ascending: true })
-    .limit(UPCOMING_EVENT_LIMIT)
 
   if (error) {
     console.error('[whatsapp/upcoming-events] query failed for truck', truckId, '--', error.message)
     return []
   }
+  const nowMins = getNowMinsInTz(timeZone)
+  const data = ((rows as UpcomingTruckEvent[] | null) ?? [])
+    .filter(e => isUpcomingOrRunning(e, today, nowMins))
+    .slice(0, UPCOMING_EVENT_LIMIT)
   /* ⛔ PRIVATE EVENTS ARE REDACTED BEFORE THEY REACH THE MODEL (20261014). The reply is prose a
    * customer reads; a venue that got into the prompt would be published in a sentence nobody wrote.
    * The row SURVIVES as "Private event" so the truck still reads as busy that day. */
   return await redactPrivateRows(
-    supabase, (data as UpcomingTruckEvent[] | null) ?? [], 'whatsapp/upcoming-events')
+    supabase, data, 'whatsapp/upcoming-events')
 }

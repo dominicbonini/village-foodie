@@ -134,6 +134,8 @@ import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, localDateOfInstant } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
+// 17 October 2026: an event that runs past midnight — the one rule (docs/midnight-and-format-fixes-report.md).
+import { crossesMidnight, eventTimeMins, eventTimeDate, eventEndMins, eventEndInstant, eventDates, nowOnEvent, toEngineClock, upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -214,11 +216,14 @@ async function pruneStaleEventCache(tz: string): Promise<void> {
     const cache = await caches.open('vf-data-v1')
     // The TRUCK's today (Phase 2B; was the UTC date — which, in a US evening, is already tomorrow and
     // would have purged today's live event).
-    const todayIso = getLocalDateInTz(tz)
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): the floor is YESTERDAY, not today — a 20:00–00:30
+    // event dated yesterday is still running at 00:15, and this is the only copy of its board offline. Yesterday's
+    // snapshot is therefore kept until the next day's launch (cache only, re-fetchable); older ones go as before.
+    const floorIso = upcomingQueryFloor(tz)
     for (const req of await cache.keys()) {
       try {
         const d = new URL(req.url).searchParams.get('date')   // /api/dashboard?…&date=YYYY-MM-DD (per-event)
-        if (d && d < todayIso) await cache.delete(req)
+        if (d && d < floorIso) await cache.delete(req)
       } catch { /* skip an unparseable key, never throw */ }
     }
   } catch { /* cache API unavailable / any error → no-op, never crash the dashboard */ }
@@ -424,7 +429,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showEventMenu,setShowEventMenu]=useState(false)
   // Change-event-finish-time target. Non-null mounts the SHARED modal, which owns the picker/confirm
   // split internally — so there is no draft state on this screen to leak between opens.
-  const[finishTimeTarget,setFinishTimeTarget]=useState<{id:string;end_time:string|null;event_date:string|null}|null>(null)
+  const[finishTimeTarget,setFinishTimeTarget]=useState<{id:string;end_time:string|null;event_date:string|null;start_time?:string|null}|null>(null)
   const[finishTimeBusy,setFinishTimeBusy]=useState(false)
   // DEMO: event actions are shown-but-locked; clicking any of them (event bar OR AddOrderPanel) opens this
   // one explainer instead of mutating anything. Centralised here so both surfaces share it.
@@ -1026,7 +1031,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const pauseReason:'manual'|'offline'|null=manualPaused?'manual':offlinePausedDisplay?'offline':null
   // ASAP date = the SELECTED/active event's own date (not "the live event"), so a future
   // event's ASAP is its first real slot, never now-floored against a different event's date.
-  const asapSlot=getAsapSlot(slots,selectedOrDefaultEvent?.event_date,dashTz)
+  // The event passed: an overnight event's past-midnight slots are the next day's (lib/event-window.ts).
+  const asapSlot=getAsapSlot(slots,selectedOrDefaultEvent?.event_date,dashTz,selectedOrDefaultEvent)
   const availableDeals = truckMenu?.bundles ?? []
   // Auto-decay: effective remaining extra wait based on elapsed time since it was set
   const waitMinutes=useMemo(()=>{
@@ -1327,13 +1333,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           // The truck's date and clock (Phase 2B) — from THIS response, so the first load is right too.
           const loadTz=timeSettingsOr(data.truck?.time,'dashboard').timeZone
           const todayStr=getLocalDateInTz(loadTz)
-          const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
+          // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT is today's event until it ends (lib/event-window.ts): yesterday's
+          // 20:00–00:30 is kept at 00:15 by isUpcomingOrRunning. Every other row: `event_date === today`, as before.
+          const loadNowMins=getNowMinsInTz(loadTz)
+          const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr||(e.event_date<todayStr&&isUpcomingOrRunning(e,todayStr,loadNowMins)))
           setTodayEvents(fetched)
           setUpcomingEvents(eventsData.events??[])
           // SUCCESS ONLY — inside the `eventsRes.ok` branch, never in the warn-and-keep branch above.
           setEventsLoaded(true)
           const currentTime=clockOfInstantInTz(new Date(),loadTz)
-          const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&e.start_time<=currentTime)
+          // A running overnight event from yesterday (the only earlier-dated row in `fetched`) has started by definition.
+          const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&(e.event_date<todayStr||e.start_time<=currentTime))
           for(const ev of stale){
             await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId:ev.id,payload:{}})})
           }
@@ -1428,9 +1438,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const todayStr=getLocalDateInTz(dashTz) // the TRUCK's date and clock (Phase 2B)
     const at=(date:string,time:string)=>new Date(instantOfLocal(date,time,dashTz))
     // Priority 1: currently open event (started, not ended)
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT touches today until it ends, and ends on the NEXT day (lib/event-window.ts):
+    // eventDates/eventEndInstant. For any other event both are exactly `event_date === today` and `at(date, end)`.
     const openEvent=upcomingEvents.find(e=>{
-      if(e.event_date!==todayStr||!e.start_time||!e.end_time) return false
-      return now>=at(e.event_date,e.start_time)&&now<=at(e.event_date,e.end_time)
+      if(!eventDates(e.event_date,e.start_time,e.end_time).includes(todayStr)||!e.start_time||!e.end_time) return false
+      return now>=at(e.event_date,e.start_time)&&now.getTime()<=(eventEndInstant(e.event_date,e.start_time,e.end_time,dashTz) as number)
     })
     if(openEvent){console.log('[auto-select] priority 1 open:',openEvent.id);setSelectedEventId(openEvent.id);return}
     // Priority 2: upcoming event today (not started yet)
@@ -2904,7 +2916,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const ev=todayEvents.find(e=>e.id===eventId)??upcomingEvents.find(e=>e.id===eventId)
     const nowMins=getNowMinsInTz(dashTz)
     const endMins=ev?.end_time?(()=>{const[h,m]=ev.end_time.split(':').map(Number);return (h||0)*60+(m||0)})():null
-    const finishingEarly=endMins!=null && nowMins<endMins
+    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT: now and its next-day end on the event's timeline (lib/event-window.ts), so
+    // finishing at 23:50 a 00:30 event is EARLY. Any other event: the minute-of-day compare, unchanged.
+    const finishingEarly=ev&&crossesMidnight(ev.start_time,ev.end_time)
+      ? nowOnEvent(ev.event_date,dashTz)<(eventEndMins(ev.start_time,ev.end_time) as number)
+      : endMins!=null && nowMins<endMins
     setFinishConfirm({eventId,early:finishingEarly,endTime:ev?.end_time?formatTime(ev.end_time,dashTime):''})
   }
   const doFinishEvent=async(eventId:string)=>{
@@ -3668,8 +3684,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const merged=offlineOccupancy
       const[h,m]=(activeEvent.start_time||'0:0').split(':').map(Number)
       const eventStartMins=(h||0)*60+(m||0)
-      const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder||[],capacityWindowMins,truckIntervalMins,serverReservations,batchReservationsOn)
-      return slots.map(s=>({...s,tone:ind.get(s.collection_time)?.tone??s.tone,label:ind.get(s.collection_time)?.label??s.label}))
+      // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT: the engine is handed its times on the extended clock ("00:15" → "24:15") and
+      // read back by the same key (toEngineClock, lib/event-window.ts). It is the identity for any other event.
+      const to=(t:string)=>toEngineClock(t,activeEvent.start_time,activeEvent.end_time)
+      const engSlots=slots.map(s=>({...s,collection_time:to(s.collection_time),production_slot:to(s.production_slot),...(s.production_window_key?{production_window_key:to(s.production_window_key)}:{})}))
+      const engMerged=Object.fromEntries(Object.entries(merged).map(([k,v])=>[to(k),v]))
+      const ind=buildSlotIndicators(engSlots,engMerged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder||[],capacityWindowMins,truckIntervalMins,serverReservations.map(r=>({...r,slot:to(r.slot)})),batchReservationsOn)
+      return slots.map(s=>({...s,tone:ind.get(to(s.collection_time))?.tone??s.tone,label:ind.get(to(s.collection_time))?.label??s.label}))
     }catch(e){
       console.warn('[displaySlots] offline capacity recompute failed — using server slots',e)
       return slots
@@ -4510,7 +4531,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             <div className="lg:hidden">
-              <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="strip" time={truck?.time} breachedSlots={breachedSlotTimes} />
+              <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} event={activeEvent} variant="strip" time={truck?.time} breachedSlots={breachedSlotTimes} />
             </div>
             {/* "To make" aggregate box removed (2026-06) — a cook-per-order truck doesn't work from a
                 day-wide item total. getAllDayCounts is retained (still used by the completed-order
@@ -4522,9 +4543,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               const BUFFER_SECS=0
 
               // Get all active orders with slots, sorted by slot time
+              // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT sorts its slots on the event's timeline (00:15 after 23:45 —
+              // lib/event-window.ts) and places each on the right DAY below. Any other event: as before.
+              const prepOvernight=!!activeEvent&&crossesMidnight(activeEvent.start_time,activeEvent.end_time)
+              const prepMins=(slot:string)=>eventTimeMins(activeEvent?.start_time,activeEvent?.end_time,slot) as number
               const slottedOrders=eventOrders
                 .filter(o=>['pending','confirmed','modified'].includes(o.status)&&o.slot)
-                .sort((a,b)=>a.slot!.localeCompare(b.slot!))
+                .sort((a,b)=>prepOvernight?prepMins(a.slot!)-prepMins(b.slot!):a.slot!.localeCompare(b.slot!))
 
               // Find the NEXT slot that needs action (start cooking time <= now+5min)
               const currentBatch:typeof slottedOrders=[]
@@ -4573,7 +4598,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 const [slotH,slotM]=slot.split(':').map(Number)
                 const orderEventDate=slotOrders[0].event_date
                 const hm=`${String(slotH).padStart(2,'0')}:${String(slotM).padStart(2,'0')}`
-                const slotDt=new Date(instantOfLocal(orderEventDate||todayStr,hm,dashTz))
+                const slotDay=orderEventDate||todayStr
+                const slotDt=new Date(instantOfLocal(prepOvernight?eventTimeDate(slotDay,activeEvent!.start_time,activeEvent!.end_time,hm):slotDay,hm,dashTz))
                 const startDt=new Date(slotDt.getTime()-totalSecs*1000)
                 const minsUntilStart=Math.floor((startDt.getTime()-Date.now())/60000)
                 const startStr=clockOfInstantInTz(startDt,dashTz)
@@ -4649,8 +4675,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               // Sort orders by slot then CREATION ORDER (first placed first — same fairness as the
               // order lists; not id.localeCompare, which mis-ranks "10" before "2" and ignores placement)
               const sortedBatch=[...currentBatch].sort((a,b)=>{
-                const aSlot=a.slot?parseInt(a.slot.replace(':','')):99999
-                const bSlot=b.slot?parseInt(b.slot.replace(':','')):99999
+                const aSlot=a.slot?(prepOvernight?prepMins(a.slot):parseInt(a.slot.replace(':',''))):99999
+                const bSlot=b.slot?(prepOvernight?prepMins(b.slot):parseInt(b.slot.replace(':',''))):99999
                 if(aSlot!==bSlot) return aSlot-bSlot
                 return new Date(a.created_at).getTime()-new Date(b.created_at).getTime()
               })
@@ -4832,7 +4858,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         <div className="flex items-center gap-2">
                           <span className="font-black text-slate-700 text-sm">#{o.id}</span>
                           <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${STATUS[o.status]?.bg||'bg-slate-100'} ${STATUS[o.status]?.text||'text-slate-500'}`}>{STATUS[o.status]?tDash('orders.status',{status:o.status}):o.status}</span>
-                          {o.slot&&<span className="text-xs text-slate-700">🕐 {o.slot}</span>}
+                          {o.slot&&<span className="text-xs text-slate-700">🕐 {formatSlot(o.slot,dashTime)}</span>}
                         </div>
                         <p className="text-slate-500 text-xs mt-0.5 truncate">{o.customer_name} · {Object.entries(getAllDayCounts([o])).map(([name,qty])=>`${qty}× ${name}`).join(', ')}</p>
                         {o.notes&&<p className="text-orange-500 text-xs truncate">📝 {o.notes}</p>}
@@ -4924,7 +4950,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   keeping. The panel is now simply a bounded flex sibling: pinned by structure, not by
                   position. NO hardcoded offset was introduced to replace it, and none is needed. */}
               <aside className="hidden lg:flex lg:flex-col lg:w-48 lg:flex-shrink-0 lg:min-h-0">
-                <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" time={truck?.time} breachedSlots={breachedSlotTimes} />
+                <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} event={activeEvent} variant="sidebar" time={truck?.time} breachedSlots={breachedSlotTimes} />
               </aside>
               </div>
               </>
@@ -6266,6 +6292,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           event={finishTimeTarget}
           orders={eventOrders}
           busy={finishTimeBusy}
+          time={dashTime}
           onClose={()=>setFinishTimeTarget(null)}
           onConfirm={newEnd=>{void applyFinishTime(finishTimeTarget.id,newEnd)}}
         />
@@ -6806,7 +6833,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           onPause={isDemo?undefined:()=>{setShowEventMenu(false);setShowPauseModal(true)}}
           onResume={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
           extraWaitControl={renderExtraWait('w-full','button')}
-          onChangeFinishTime={()=>{setShowEventMenu(false);setFinishTimeTarget({id:activeEvent.id,end_time:activeEvent.end_time??null,event_date:activeEvent.event_date??null})}}
+          onChangeFinishTime={()=>{setShowEventMenu(false);setFinishTimeTarget({id:activeEvent.id,end_time:activeEvent.end_time??null,event_date:activeEvent.event_date??null,start_time:activeEvent.start_time??null})}}
           onFinishEvent={()=>finishEvent(activeEvent.id)}
           onCancelEvent={()=>cancelEventFromMenu(activeEvent)}
           onClose={()=>setShowEventMenu(false)}

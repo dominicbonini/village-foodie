@@ -21,8 +21,9 @@ import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — now shared with the demo provisioner
 import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
-import { hasValidEventTimes, getLocalDateInTz, addDaysYmd, instantOfLocal } from '@/lib/time-utils'
+import { hasValidEventTimes, getLocalDateInTz, getNowMinsInTz, addDaysYmd, instantOfLocal } from '@/lib/time-utils'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
+import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { canAccess } from '@/lib/features'
 import { countrySettingsForTruck } from '@/lib/country-settings'
 import { checkTradeArea } from '@/lib/trade-area'
@@ -357,6 +358,8 @@ export async function GET(req: NextRequest) {
   // The AUTHED session operator (account scope) — used to scope account-level data (pending email
   // change) to the logged-in user, NOT the truck's operator_id (which can pool multiple trucks).
   const currentOperatorId = access.operatorId
+  // The truck's zone, for the upcoming-events window below (lib/event-window.ts).
+  const evTz = await truckTimeZone(truck)
 
   const [
     { data: categories },
@@ -386,8 +389,10 @@ export async function GET(req: NextRequest) {
     ),
     supabase.from('bundles_db').select('*').eq('truck_id', truck.id).order('sort_order'),
     supabase.from('discount_codes_db').select('*').eq('truck_id', truck.id),
+    // From the truck's YESTERDAY (lib/event-window.ts): an overnight event that started yesterday is still upcoming
+    // until it ends — `isUpcomingOrRunning` below drops every other row dated yesterday, so the list is as before.
     supabase.from('truck_events').select('*').eq('truck_id', truck.id)
-      .gte('event_date', getLocalDateInTz(await truckTimeZone(truck)))   // the truck's today (Phase 2B)
+      .gte('event_date', upcomingQueryFloor(evTz))   // the truck's zone (Phase 2B)
       .order('event_date'),
     // Upsell rules — folded into the initial parallel load (was a SEPARATE deferred get_upsell_rules POST
     // that fired on tab-open, so the Upsells section lagged ~2s behind the instant Custom-Extras/Deals).
@@ -528,7 +533,8 @@ export async function GET(req: NextRequest) {
     itemModGroups: itemModGroups || [],
     bundles: stockCheckedBundles,
     codes: codes || [],
-    events: events || [],
+    // Upcoming, or an overnight event from yesterday still running (lib/event-window.ts) — the query read from yesterday.
+    events: (events || []).filter(e => isUpcomingOrRunning(e, getLocalDateInTz(evTz), getNowMinsInTz(evTz))),
     upsellRules: upsellRules || [],
     userRole,
     currentUserId,

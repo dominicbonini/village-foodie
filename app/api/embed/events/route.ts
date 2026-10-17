@@ -10,6 +10,11 @@ import { createClient } from '@supabase/supabase-js'
 /* 🔴 PRIVATE EVENTS SHOW HERE, REDACTED — this is the truck's own public schedule. */
 import { readPrivateEventIds } from '@/lib/private-events/read'
 import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
+/* 🔴 THE TRUCK'S OWN CLOCK AND FORMAT: its zone decides whether an overnight event is still on (lib/event-window.ts), and
+ * its TimeSettings travel in the response so the schedule reads in its country's style (US "11:30 AM"). */
+import { truckTimeSettings } from '@/lib/truck-time'
+import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
+import { getLocalDateInTz, getNowMinsInTz, type TimeSettings } from '@/lib/time-utils'
 
 /**
  * ── /api/embed/events?slug=<trucks.slug> — ONE TRUCK'S UPCOMING EVENTS, FILTERED IN SQL ─────────
@@ -57,7 +62,7 @@ export async function GET(req: NextRequest) {
   // public route on a third-party page, so it reads the minimum the embed renders and nothing else.
   const { data: truck, error: truckErr } = await supabase
     .from('trucks')
-    .select('id, name, slug, active, embed_enabled, order_link_hg')
+    .select('id, name, slug, active, embed_enabled, order_link_hg, country, timezone')
     .eq('slug', slug)
     .maybeSingle()
 
@@ -75,13 +80,20 @@ export async function GET(req: NextRequest) {
   }
 
   const today = new Date().toISOString().split('T')[0]
+  // The truck's TimeSettings (lib/truck-time.ts). A truck whose country cannot be read gets none: the page then shows
+  // the discovery (GB) format it always has, and an overnight event is decided on the UTC date like any other.
+  let time: TimeSettings | null = null
+  try { time = await truckTimeSettings(truck) } catch (err) { console.error('[embed/events] no time settings for truck', truck.id, '—', (err as Error).message) }
+  // 🔴 READ FROM THE TRUCK'S YESTERDAY (lib/event-window.ts upcomingQueryFloor) so an overnight event that started
+  // yesterday is still listed until it ends. No limit here, so nothing can be pushed out by the extra day.
+  const floor = time ? upcomingQueryFloor(time.timeZone) : today
 
-  const { data: rows, error: evErr } = await supabase
+  const { data: allRows, error: evErr } = await supabase
     .from('truck_events')
     .select('id, event_date, start_time, end_time, venue_name, town, postcode, notes, status')
     .eq('truck_id', truck.id)
     .in('status', ['confirmed', 'open'])
-    .gte('event_date', today)
+    .gte('event_date', floor < today ? floor : today)
     .order('event_date', { ascending: true })
     .order('start_time', { ascending: true, nullsFirst: false })
 
@@ -89,6 +101,14 @@ export async function GET(req: NextRequest) {
     console.error('[embed/events] events query failed:', evErr.message)
     return NextResponse.json({ error: 'lookup failed' }, { status: 500 })
   }
+  // 🔴 WHICH ROWS ARE UPCOMING (lib/event-window.ts), ON THE TRUCK'S CLOCK FOR EVERY EVENT (17 October 2026, Dominic's
+  // decision, docs/midnight-followups-report.md): dated on or after the truck's own today, or an overnight event from
+  // its yesterday still running (20:00–00:30 → still listed at 00:15). It was the UTC date for an ordinary event, so a
+  // US truck's today dropped off from 20:00 EDT. A truck whose settings cannot be read keeps the UTC `today` it had.
+  const tz = time?.timeZone
+  const rows = (allRows || []).filter(e => (tz
+    ? isUpcomingOrRunning(e, getLocalDateInTz(tz), getNowMinsInTz(tz))
+    : !crossesMidnight(e.start_time, e.end_time) && e.event_date >= today))
 
   /* ══ 🔴 PRIVATE EVENTS, REDACTED — AND THIS ROUTE SERVES **TWO** SURFACES (20261014) ═══════════
    * `/embed/<slug>` is the widget an operator frames on their own website, and `app/domain/page.tsx`
@@ -122,7 +142,8 @@ export async function GET(req: NextRequest) {
     orderLinkHg: privacy.isPrivate(e.id) ? false : (truck.order_link_hg ?? true),
   }))
 
-  return NextResponse.json({ events }, { headers: CACHE_HEADERS })
+  // `time`: the truck's TimeSettings, for TruckListCard's `time` prop (absent when they could not be read).
+  return NextResponse.json(time ? { events, time } : { events }, { headers: CACHE_HEADERS })
 }
 
 // ── EDGE CACHE ────────────────────────────────────────────────────────────────────────────────────

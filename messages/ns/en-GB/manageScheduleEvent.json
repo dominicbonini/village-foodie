@@ -47,7 +47,8 @@
     "start": "Start time is required",
     "end": "End time is required",
     "endAfterStart": "End time must be after the start time",
-    "van": "Please select a truck"
+    "van": "Please select a truck",
+    "endSameAsStart": "The end time can’t be the same as the start time"
   },
   "time": {
     "hour": "Hour",
@@ -56,5 +57,6 @@
     "minuteOf": "{label} minute"
   },
   "hiddenMatch": "{count, plural, one {# hidden place matches} other {# hidden places match}} · Show hidden",
-  "saving": "Saving…"
+  "saving": "Saving…",
+  "endsNextDay": "Ends the next day"
 }

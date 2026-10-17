@@ -3,39 +3,39 @@
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
 1a/orderPage/US|eventLoading	words
-1a/orderPage/US|menu	code: P2-us-clock + words
-1a/orderPage/US|menuAllergens	code: P2-us-clock + words
-1a/orderPage/US|menuPaused	code: P2-us-clock + words
-1a/orderPage/US|menuOffline	code: P2-us-clock + words
-1a/orderPage/US|menuClosing	code: P2-us-clock + words
-1a/orderPage/US|menuUnavailable	code: P2-us-clock + words
+1a/orderPage/US|menu	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuAllergens	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuPaused	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuOffline	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuClosing	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuUnavailable	code: P2-us-clock+midnight-card-time-nbsp-US + words
 1a/orderPage/US|menuNoTimes	words
-1a/orderPage/US|menuClosed	code: P2-us-clock + words
-1a/orderPage/US|menuUnconfirmed	code: P2-us-clock + words
-1a/orderPage/US|menuEnded	code: P2-us-clock + words
-1a/orderPage/US|menuPrivate	code: P2-us-clock + words
-1a/orderPage/US|multiEvent	code: P2-us-clock
-1a/orderPage/US|basket	code: P2-us-clock + words
-1a/orderPage/US|basketExpanded	code: P2-us-clock + words
-1a/orderPage/US|discounted	code: P2-us-clock + words
-1a/orderPage/US|itemModal	code: P2-us-clock + words
-1a/orderPage/US|itemModalEmpty	code: P2-us-clock + words
-1a/orderPage/US|dealModal	code: P2-us-clock + words
-1a/orderPage/US|sheet	code: P2-us-clock + words
-1a/orderPage/US|sheetCard	code: P2-us-clock + words
-1a/orderPage/US|sheetHatch	code: P2-us-clock + words
-1a/orderPage/US|sheetTip15	code: P2-us-clock + words
-1a/orderPage/US|sheetTipOther	code: P2-us-clock + words
-1a/orderPage/US|sheetNoCard	code: P2-us-clock + words
-1a/orderPage/US|sheetSlots	code: P2-us-clock + words
-1a/orderPage/US|sheetSlotsLoading	code: P2-us-clock + words
-1a/orderPage/US|sheetPhone	code: P2-us-clock + words
-1a/orderPage/US|notices	code: P2-us-clock + words
-1a/orderPage/US|paymentFailed	code: P2-us-clock + words
-1a/orderPage/US|submitting	code: P2-us-clock + words
-1a/orderPage/US|payReady	code: P2-us-clock + words
-1a/orderPage/US|payFailed	code: P2-us-clock + words
-1a/orderPage/US|payProcessing	code: P2-us-clock + words
+1a/orderPage/US|menuClosed	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuUnconfirmed	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuEnded	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|menuPrivate	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|multiEvent	code: P2-us-clock+midnight-card-time-nbsp-US
+1a/orderPage/US|basket	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|basketExpanded	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|discounted	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|itemModal	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|itemModalEmpty	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|dealModal	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheet	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetCard	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetHatch	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetTip15	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetTipOther	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetNoCard	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetSlots	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetSlotsLoading	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetPhone	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|notices	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|paymentFailed	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|submitting	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|payReady	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|payFailed	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|payProcessing	code: P2-us-clock+midnight-card-time-nbsp-US + words
 1a/orderPage/US|submittedAuto	code: P2-us-clock + words
 1a/orderPage/US|submittedChanged	code: P2-us-clock + words
 1a/orderPage/US|confirmLoading	words
@@ -43,20 +43,20 @@
 1a/orderPage/US|confirmCancelled	words
 1a/orderPage/US|confirmErrCancelled	words
 1a/orderPage/US|confirmMissing	words
-1a/orderPage/US|payFormFailed	code: P2-us-clock + words
-1a/orderPage/US|payAuthorising	code: P2-us-clock + words
+1a/orderPage/US|payFormFailed	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|payAuthorising	code: P2-us-clock+midnight-card-time-nbsp-US + words
 1a/orderPage/US|submittedFallback	words
-1a/orderPage/US|privateNamed	code: P2-us-clock + words
-1a/orderPage/US|privateUnnamed	code: P2-us-clock + words
-1a/orderPage/US|closedAtTime	code: P2-us-clock + words
+1a/orderPage/US|privateNamed	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|privateUnnamed	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|closedAtTime	code: P2-us-clock+midnight-card-time-nbsp-US + words
 1a/orderPage/US|demoClosed	words
-1a/orderPage/US|itemModalEdit	code: P2-us-clock + words
-1a/orderPage/US|itemModalUpsell	code: P2-us-clock + words
-1a/orderPage/US|sheetEmailError	code: P2-us-clock + words
-1a/orderPage/US|sheetNoTimeSelection	code: P2-us-clock + words
-1a/orderPage/US|sheetChosen	code: P2-us-clock + words
-1a/orderPage/US|sheetDiscount	code: P2-us-clock + words
-1a/orderPage/US|paymentFailedUrl	code: P2-us-clock + words
+1a/orderPage/US|itemModalEdit	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|itemModalUpsell	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetEmailError	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetNoTimeSelection	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetChosen	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|sheetDiscount	code: P2-us-clock+midnight-card-time-nbsp-US + words
+1a/orderPage/US|paymentFailedUrl	code: P2-us-clock+midnight-card-time-nbsp-US + words
 1a/statusPage/US|loading	words
 1a/statusPage/US|pending	code: P2-us-clock
 1a/statusPage/US|confirmed	code: P2-us-clock
@@ -670,33 +670,33 @@
 1b/components/US|keepAwake|insecure	words
 1b/dashboard/US|loading	words
 1b/dashboard/US|boardUnavailableNoTruck	words
-1b/dashboard/US|orders	code: P2-us-clock + words
-1b/dashboard/US|ordersCollapsed	code: P2-us-clock + words
-1b/dashboard/US|ordersUnrecorded	code: P2-us-clock + words
-1b/dashboard/US|ordersEmpty	code: P2-us-clock + words
-1b/dashboard/US|ordersAllDone	code: P2-us-clock + words
-1b/dashboard/US|ordersNoCancelled	code: P2-us-clock + words
-1b/dashboard/US|boardUnavailable	code: P2-us-clock + words
-1b/dashboard/US|degradedUnreachable	code: P2-us-clock + words
-1b/dashboard/US|degradedServer	code: P2-us-clock + words
-1b/dashboard/US|menuSnapshot	code: P2-us-clock + words
-1b/dashboard/US|pausedManual	code: P2-us-clock + words
-1b/dashboard/US|pausedIndefinite	code: P2-us-clock + words
-1b/dashboard/US|pausedOffline	code: P2-us-clock + words
-1b/dashboard/US|extraWait	code: P2-us-clock + words
-1b/dashboard/US|prepBanner	code: P2-us-clock + words
-1b/dashboard/US|recentlyClosed	code: P2-us-clock + words
-1b/dashboard/US|cardsOff	code: P2-us-clock + words
-1b/dashboard/US|breach	code: P2-us-clock + words
-1b/dashboard/US|buzzerLoss	code: P2-us-clock + words
-1b/dashboard/US|header|soundOff	code: P2-us-clock + words
-1b/dashboard/US|header|private	code: P2-us-clock + words
-1b/dashboard/US|header|privateUnnamed	code: P2-us-clock + words
-1b/dashboard/US|header|eventType	code: P2-us-clock + words
-1b/dashboard/US|header|eventPaused	code: P2-us-clock + words
-1b/dashboard/US|prep	code: P2-us-clock + words
-1b/dashboard/US|prepEmpty	code: P2-us-clock + words
-1b/dashboard/US|prepAsapLater	code: P2-us-clock + words
+1b/dashboard/US|orders	code: P2-us-clock+midnight-dayloadstrip-event-prop+midnight-completed-slot-US + words
+1b/dashboard/US|ordersCollapsed	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|ordersUnrecorded	code: P2-us-clock+midnight-dayloadstrip-event-prop+midnight-completed-slot-US + words
+1b/dashboard/US|ordersEmpty	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|ordersAllDone	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|ordersNoCancelled	code: P2-us-clock+midnight-dayloadstrip-event-prop+midnight-completed-slot-US + words
+1b/dashboard/US|boardUnavailable	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|degradedUnreachable	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|degradedServer	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|menuSnapshot	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|pausedManual	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|pausedIndefinite	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|pausedOffline	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|extraWait	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|prepBanner	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|recentlyClosed	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cardsOff	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|breach	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|buzzerLoss	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|header|soundOff	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|header|private	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|header|privateUnnamed	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|header|eventType	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|header|eventPaused	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|prep	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|prepEmpty	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|prepAsapLater	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
 1b/dashboard/US|addTab	code: P2-us-clock
 1b/dashboard/US|addTabNoMenu	code: P2-us-clock + words
 1b/dashboard/US|settings	code: P2-us-clock + words
@@ -721,68 +721,68 @@
 1b/dashboard/US|stock|priceSaving	code: P2-us-clock + words
 1b/dashboard/US|stock|loading	code: P2-us-clock + words
 1b/dashboard/US|stock|noMenu	code: P2-us-clock + words
-1b/dashboard/US|modal|offlinePausedNotice	code: P2-us-clock + words
-1b/dashboard/US|modal|finishEarly	code: P2-us-clock + words
-1b/dashboard/US|modal|finish	code: P2-us-clock + words
-1b/dashboard/US|modal|pause	code: P2-us-clock + words
-1b/dashboard/US|modal|screenOff	code: P2-us-clock + words
-1b/dashboard/US|modal|kds	code: P2-us-clock + words
-1b/dashboard/US|modal|profile	code: P2-us-clock + words
-1b/dashboard/US|modal|profileSaving	code: P2-us-clock + words
-1b/dashboard/US|modal|qr	code: P2-us-clock + words
-1b/dashboard/US|modal|qrLoading	code: P2-us-clock + words
-1b/dashboard/US|modal|eventMenu	code: P2-us-clock + words
-1b/dashboard/US|modal|eventMenuWait	code: P2-us-clock + words
-1b/dashboard/US|modal|finishTime	code: P2-us-clock + words
-1b/dashboard/US|modal|eventCancel	code: P2-us-clock + words
-1b/dashboard/US|modal|extraWait	code: P2-us-clock + words
-1b/dashboard/US|modal|typePicker	code: P2-us-clock + words
-1b/dashboard/US|modal|typeConfirm	code: P2-us-clock + words
-1b/dashboard/US|modal|typeToPrivate	code: P2-us-clock + words
-1b/dashboard/US|modal|typeFromPrivate	code: P2-us-clock + words
-1b/dashboard/US|modal|privateLink	code: P2-us-clock + words
-1b/dashboard/US|modal|buzzer	code: P2-us-clock + words
-1b/dashboard/US|modal|payment	code: P2-us-clock + words
-1b/dashboard/US|cancel|card_paid	code: P2-us-clock + words
-1b/dashboard/US|cancel|card_paid|noRefund	code: P2-us-clock + words
-1b/dashboard/US|cancel|card_paid|busy	code: P2-us-clock + words
-1b/dashboard/US|cancel|card_paid|error	code: P2-us-clock + words
-1b/dashboard/US|cancel|part_refunded	code: P2-us-clock + words
-1b/dashboard/US|cancel|part_paid	code: P2-us-clock + words
-1b/dashboard/US|cancel|card_held	code: P2-us-clock + words
-1b/dashboard/US|cancel|pay_at_hatch	code: P2-us-clock + words
-1b/dashboard/US|cancel|reason|customer_cancelled	code: P2-us-clock + words
-1b/dashboard/US|cancel|reason|item_unavailable	code: P2-us-clock + words
-1b/dashboard/US|cancel|reason|not_collected	code: P2-us-clock + words
-1b/dashboard/US|cancel|reason|wrong_or_missing_item	code: P2-us-clock + words
-1b/dashboard/US|cancel|reason|quality_issue	code: P2-us-clock + words
-1b/dashboard/US|cancel|reason|duplicate_payment	code: P2-us-clock + words
-1b/dashboard/US|cancel|reason|other	code: P2-us-clock + words
-1b/dashboard/US|reject|card_held	code: P2-us-clock + words
-1b/dashboard/US|reject|big	code: P2-us-clock + words
-1b/dashboard/US|edit	code: P2-us-clock + words
-1b/dashboard/US|edit|down	code: P2-us-clock + words
-1b/dashboard/US|edit|same	code: P2-us-clock + words
-1b/dashboard/US|edit|graceCurrent	code: P2-us-clock + words
-1b/dashboard/US|edit|slotsLoading	code: P2-us-clock + words
-1b/dashboard/US|edit|noSlots	code: P2-us-clock + words
-1b/dashboard/US|edit|saving	code: P2-us-clock + words
-1b/dashboard/US|ordersRecording	code: P2-us-clock + words
-1b/dashboard/US|edit|itemModal	code: P2-us-clock + words
-1b/dashboard/US|edit|itemModalPlain	code: P2-us-clock + words
-1b/dashboard/US|edit|dealModal	code: P2-us-clock + words
-1b/dashboard/US|edit|reprice	code: P2-us-clock + words
-1b/dashboard/US|edit|repriceStale	code: P2-us-clock + words
-1b/dashboard/US|demo	code: P2-us-clock + words
-1b/dashboard/US|demo|settingUp	code: P2-us-clock + words
-1b/dashboard/US|demo|ended	code: P2-us-clock + words
-1b/dashboard/US|demo|endedRestarting	code: P2-us-clock + words
-1b/dashboard/US|demo|endedNoEvent	code: P2-us-clock + words
-1b/dashboard/US|demo|eventLock	code: P2-us-clock + words
+1b/dashboard/US|modal|offlinePausedNotice	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|finishEarly	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|finish	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|pause	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|screenOff	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|kds	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|profile	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|profileSaving	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|qr	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|qrLoading	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|eventMenu	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|eventMenuWait	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|finishTime	code: P2-us-clock+midnight-dayloadstrip-event-prop+midnight-finish-modal-time-prop + words
+1b/dashboard/US|modal|eventCancel	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|extraWait	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|typePicker	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|typeConfirm	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|typeToPrivate	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|typeFromPrivate	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|privateLink	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|buzzer	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|modal|payment	code: P2-us-clock+midnight-dayloadstrip-event-prop+midnight-completed-slot-US + words
+1b/dashboard/US|cancel|card_paid	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|card_paid|noRefund	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|card_paid|busy	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|card_paid|error	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|part_refunded	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|part_paid	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|card_held	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|pay_at_hatch	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|reason|customer_cancelled	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|reason|item_unavailable	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|reason|not_collected	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|reason|wrong_or_missing_item	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|reason|quality_issue	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|reason|duplicate_payment	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|cancel|reason|other	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|reject|card_held	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|reject|big	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|down	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|same	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|graceCurrent	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|slotsLoading	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|noSlots	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|saving	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|ordersRecording	code: P2-us-clock+midnight-dayloadstrip-event-prop+midnight-completed-slot-US + words
+1b/dashboard/US|edit|itemModal	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|itemModalPlain	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|dealModal	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|reprice	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|edit|repriceStale	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo|settingUp	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo|ended	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo|endedRestarting	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo|endedNoEvent	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo|eventLock	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
 1b/dashboard/US|demo|settings	code: P2-us-clock + words
-1b/dashboard/US|demo|qr	code: P2-us-clock + words
-1b/dashboard/US|demo|extraWait	code: P2-us-clock + words
-1b/dashboard/US|demo|branded	code: P2-us-clock + words
+1b/dashboard/US|demo|qr	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo|extraWait	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
+1b/dashboard/US|demo|branded	code: P2-us-clock+midnight-dayloadstrip-event-prop + words
 1b/dashboard/US|handler|openOrderFromPush	words
 1b/dashboard/US|handler|submitPin|s503	words
 1b/dashboard/US|handler|printMode|lead_time	words
@@ -838,7 +838,7 @@
 1b/kds/US|kdsToast	code: P2-us-clock + words
 1b/kds/US|buzzer	code: P2-us-clock + words
 1b/kds/US|eventCancel	code: P2-us-clock + words
-1b/kds/US|finishTime	code: P2-us-clock + words
+1b/kds/US|finishTime	code: P2-us-clock+midnight-finish-options-truck-zone+midnight-finish-modal-format-US + words
 1b/kds/US|toasts	code: P2-us-clock + words
 1b/kds/US|payFailure	code: P2-us-clock + words
 1b/kds/US|hidePaymentsDone	code: P2-us-clock + words
@@ -1346,10 +1346,10 @@
 2/extra/US|preorderOpen|6d|sep	code: P2-preorder-US
 2/extra/US|preorderOpen|7d|oct	code: P2-preorder-US
 2/extra/US|preorderOpen|7d|sep	code: P2-preorder-US
-2/extra/US|card|sep|full	code: P2-us-clock
-2/extra/US|card|sep|compact	code: P2-us-clock
-2/extra/US|card|oct|full	code: P2-us-clock
-2/extra/US|card|oct|compact	code: P2-us-clock
+2/extra/US|card|sep|full	code: P2-us-clock+midnight-card-time-nbsp-US
+2/extra/US|card|sep|compact	code: P2-us-clock+midnight-card-time-nbsp-US
+2/extra/US|card|oct|full	code: P2-us-clock+midnight-card-time-nbsp-US
+2/extra/US|card|oct|compact	code: P2-us-clock+midnight-card-time-nbsp-US
 2/extra/US|manage|schedule|cards	code: P2-us-clock+1d-us-address-style+pending-card-layout
 2/extra/US|rows|demo|pizza	code: P2-demo-US + words
 2/extra/US|rows|demo|burgers	code: P2-demo-US + words

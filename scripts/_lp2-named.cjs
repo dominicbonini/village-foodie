@@ -214,6 +214,78 @@ function applyNamed(NAMED, us, id, before) {
   return out
 }
 
+// ══ ⚠️ RE-PINNED (events that run past midnight + US formats, 17 October 2026, docs/midnight-and-format-fixes-report.md) ══
+// Helpers for the `midnight-*` entries that reach the 1b dashboard / KDS views. scripts/_lp1b-dashboard.cjs renders
+// every components/** import as <x-stub data-c="Name" data-p="{every prop, JSON, HTML-escaped}">, so a NEW PROP the page
+// passes changes the stub's JSON even where nothing rendered changes. These transforms add exactly that prop, with the
+// value it must hold, and refuse (leave BEFORE alone, so the view fails) whenever that value cannot be read exactly.
+/** React's attribute escaping (escapeTextForBrowser) and its inverse, for a stub's data-p. */
+const mnEsc = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const mnDec = s => s.replace(/&(quot|#x27|lt|gt|amp);/g, (_, e) => ({ quot: '"', '#x27': "'", lt: '<', gt: '>', amp: '&' })[e])
+const mnStubRe = name => new RegExp(`<x-stub data-c="${name}" data-p="([^"]*)"`, 'g')
+/** Every `name` stub's props in markup `s` (parsed), or null if any does not round-trip byte for byte. */
+const mnStubProps = (s, name) => {
+  const out = []
+  for (const m of s.matchAll(mnStubRe(name))) { const p = JSON.parse(mnDec(m[1])); if (mnEsc(JSON.stringify(p)) !== m[1]) return null; out.push(p) }
+  return out
+}
+/** Insert prop `key` = `value` right AFTER prop `after` (JSX order) in every `name` stub of `s`. A stub that already has
+ *  `key`, lacks `after`, or does not round-trip is left as it is (so the comparison fails rather than guesses). */
+const mnAddStubProp = (s, name, after, key, value) => s.replace(mnStubRe(name), (whole, raw) => {
+  const props = JSON.parse(mnDec(raw))
+  if (mnEsc(JSON.stringify(props)) !== raw || key in props || !(after in props)) return whole
+  const out = {}
+  for (const [k, v] of Object.entries(props)) { out[k] = v; if (k === after) out[key] = value }
+  return `<x-stub data-c="${name}" data-p="${mnEsc(JSON.stringify(out))}"`
+})
+/** The dashboard's `activeEvent` as BEFORE's own markup serialised it: the page passes activeEvent to AddOrderPanel twice
+ *  (todayEvent={activeEvent}, controlledEvent={activeEvent}). Exactly one AddOrderPanel stub, both props present and
+ *  identical — else undefined (no guess). */
+const mnActiveEvent = s => {
+  const panels = mnStubProps(s, 'AddOrderPanel')
+  if (!panels || panels.length !== 1) return undefined
+  const p = panels[0]
+  if (!('todayEvent' in p) || !('controlledEvent' in p) || JSON.stringify(p.todayEvent) !== JSON.stringify(p.controlledEvent)) return undefined
+  return { value: p.todayEvent }
+}
+/** The truck's time settings as BEFORE's own markup serialised them (DayLoadStrip time={truck?.time}; every DayLoadStrip
+ *  stub in the view must agree) — else undefined. */
+const mnTruckTime = s => {
+  const strips = mnStubProps(s, 'DayLoadStrip')
+  if (!strips || !strips.length || !strips.every(p => 'time' in p && JSON.stringify(p.time) === JSON.stringify(strips[0].time))) return undefined
+  return { value: strips[0].time }
+}
+/** The UTC instant of wall-clock `date` `hh:mm` in zone `tz` (what lib/time-utils.ts instantOfLocal returns): the
+ *  zone's offset read with Intl at a first guess, then corrected once (exact away from a DST jump; none on the fixture date). */
+const mnInstantOfLocal = (date, hhmm, tz) => {
+  const [y, mo, d] = date.split('-').map(Number), [hh, mm] = hhmm.split(':').map(Number)
+  const wall = Date.UTC(y, mo - 1, d, hh, mm)
+  const offsetAt = t => {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+      .formatToParts(new Date(t)).filter(x => x.type !== 'literal').map(x => [x.type, Number(x.value)]))
+    return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - t
+  }
+  let t = wall - offsetAt(wall)
+  t = wall - offsetAt(t)
+  return t
+}
+/** finishTimeOptions' RULE for a normal (not overnight) event: every 15-minute boundary "HH:MM" of `date`, read in
+ *  `tz`, that is still ahead of `nowMs`. */
+const mnFinishOptions = (date, tz, nowMs) => {
+  const out = []
+  for (let m = 0; m < 24 * 60; m += 15) {
+    const t = `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+    if (mnInstantOfLocal(date, t, tz) > nowMs) out.push(t)
+  }
+  return out
+}
+/** The modal's <select> body as BEFORE's code rendered it with 24-hour labels, for option list `list` and current finish
+ *  `current` ('' = none): the non-submittable "current" option first when current is not in the list, then each option,
+ *  the current one selected and labelled "… (current)". (The frozen words: finish.optionCurrent = "{time} (current)".) */
+const mnFinishSelectBody = (list, current) =>
+  (list.includes(current) ? '' : `<option value="${current}" selected="">${current || '--:--'} (current)</option>`) +
+  list.map(o => (o === current ? `<option value="${o}" selected="">${o} (current)</option>` : `<option value="${o}">${o}</option>`)).join('')
+
 const NAMED = [
   // ── PART 2 · DATES ──────────────────────────────────────────────────────────────────────────────────────
   { id: 'P2-deletion-email-date', part: 'Part 2 (dates)', country: 'both',
@@ -291,6 +363,70 @@ const NAMED = [
   pendingCardEntry(id => /^2\/extra\/(GB|US)\|manage\|schedule\|/.test(id)),
   // ⚠️ NOT AN ENTRY EITHER: P3-buzzer-removed claims no view today — no 1b fixture reaches the queued no-number
   // removal path. Its transform stays so a fixture that reaches it is proven, not merely allowed.
+
+  // ── ⚠️ RE-PINNED (events that run past midnight + US formats, 17 October 2026, docs/midnight-and-format-fixes-report.md) ──
+  // Both AFTER P2-us-clock (entries apply in table order): BEFORE's "5pm" is "5:00 PM" by the time these run.
+  { id: 'midnight-card-time-nbsp-US', part: 'Midnight + US formats (17 Oct 2026)', country: 'US',
+    what: 'TruckListCard’s time range (cardTimeRange): in a 12-hour range the space between the time and AM/PM is a no-break space (U+00A0), so a narrow card never wraps "11:30 AM – 10:45 PM" inside a time. Only the card’s time span; the en dash and its spaces, and GB’s 24-hour range, unchanged.',
+    // The views that render a TruckListCard: the US order page (its event list) and Phase 2's own US card views.
+    views: id => /^1a\/orderPage\/US\|/.test(id) || /^2\/extra\/US\|card\|/.test(id),
+    expect: b => mapStrings(b, s => s.replace(/(<span class="flex items-center gap-2 text-\[12px\] font-bold text-slate-500 leading-none mt-0\.5"><span>)([^<]*)(<\/span>)/g,
+      (_, open, range, close) => open + range.replace(/(\d{1,2}:\d{2}) (AM|PM)\b/g, '$1 $2') + close)) },
+  { id: 'midnight-closedAtTime-fixture-GB', part: 'Midnight (fixture re-pin, 17 Oct 2026)', country: 'GB',
+    what: 'FIXTURE, not product: the GB order page’s "closed at time" view modelled a closed event as 17:00–15:00 at 16:00. Under lib/event-window.ts an end earlier than the start runs PAST MIDNIGHT (hasValidEventTimes allows it), so that event is OPEN at 16:00. The fixture (scripts/language-phase-1a.cjs opFixtures) is now a normal 12:00–15:00 event whose end has passed: the closed banner ("ended at 15:00") and every other byte are as BEFORE; only the card’s range reads "12:00 – 15:00" where it read "17:00 – 15:00".',
+    views: id => id === '1a/orderPage/GB|closedAtTime',
+    expect: b => mapStrings(b, s => s.replace('<span class="flex items-center gap-2 text-[12px] font-bold text-slate-500 leading-none mt-0.5"><span>17:00 – 15:00</span>',
+      '<span class="flex items-center gap-2 text-[12px] font-bold text-slate-500 leading-none mt-0.5"><span>12:00 – 15:00</span>')) },
+
+  // ── ⚠️ RE-PINNED (events that run past midnight + US formats, 17 October 2026, docs/midnight-and-format-fixes-report.md) ──
+  // The 1b dashboard / KDS views (scripts/language-phase-1b.cjs, and the same 1b views in language-phase-2). Helpers:
+  // mnAddStubProp / mnActiveEvent / mnTruckTime above. Each entry adds exactly its change and nothing else.
+  { id: 'midnight-dayloadstrip-event-prop', part: 'Midnight (17 Oct 2026) — stub props only', country: 'both',
+    what: 'app/dashboard/[token]/page.tsx passes event={activeEvent} to BOTH DayLoadStrips (strip + sidebar), so an event that runs past midnight orders its slots on the event’s timeline (components/dashboard/DayLoadStrip.tsx; any other event renders exactly as before — the strip is proven in its own area). In this area DayLoadStrip is a STUB that serialises its props, so the only difference is the stub’s JSON gaining "event" right after "eventDate", holding the active event — read from BEFORE’s own markup, where the page passes the same activeEvent to AddOrderPanel (todayEvent / controlledEvent, which must agree). No rendered byte changes.',
+    views: id => /^1b\/dashboard\/(GB|US)\|/.test(id),
+    expect: b => mapStrings(b, s => {
+      if (!s.includes('<x-stub data-c="DayLoadStrip"')) return s
+      const ev = mnActiveEvent(s)
+      return ev && ev.value !== undefined ? mnAddStubProp(s, 'DayLoadStrip', 'eventDate', 'event', ev.value) : s
+    }) },
+  { id: 'midnight-finish-modal-time-prop', part: 'US formats (17 Oct 2026) — stub props only', country: 'both',
+    what: 'app/dashboard/[token]/page.tsx passes time={dashTime} to EventFinishTimeModal, so the modal writes times in the truck’s style (US "9:00 PM"; GB "21:00" exactly as before). In this area the modal is a STUB that serialises its props: its JSON gains "time" right after "busy", holding the truck’s time settings — read from BEFORE’s own markup (DayLoadStrip time={truck?.time}; dashTime = timeSettingsOr(truck.time), the same object for the fixture’s complete settings). No rendered byte changes; the modal’s own US output is the KDS entry below.',
+    views: id => /^1b\/dashboard\/(GB|US)\|/.test(id),
+    expect: b => mapStrings(b, s => {
+      if (!s.includes('<x-stub data-c="EventFinishTimeModal"')) return s
+      const tm = mnTruckTime(s)
+      return tm ? mnAddStubProp(s, 'EventFinishTimeModal', 'busy', 'time', tm.value) : s
+    }) },
+  { id: 'midnight-completed-slot-US', part: 'US formats (17 Oct 2026)', country: 'US',
+    what: 'The dashboard’s Completed list row writes the slot with the truck’s clock (formatSlot(o.slot, dashTime)) where it printed the raw "HH:MM": US "🕐 18:30" → "🕐 6:30 PM". GB’s formatSlot is the "HH:MM" itself — byte-identical (proven: the GB views are not claimed and do not change).',
+    views: id => /^1b\/dashboard\/US\|/.test(id),
+    expect: b => mapStrings(b, s => s.replace(/(<span class="text-xs text-slate-700">🕐 )(\d{2}):(\d{2})(<\/span>)/g, (_, o, hh, mm, c) => o + clock12(hh, mm) + c)) },
+  // ⚠️ BEFORE midnight-finish-modal-format-US in this table on purpose: it rebuilds the option list in BEFORE's 24-hour
+  // labels, and the format entry then writes every label in the truck's style — each entry says one change.
+  { id: 'midnight-finish-options-truck-zone', part: 'Finish time in the truck’s zone (17 Oct 2026)', country: 'both',
+    what: 'The Change finish time modal’s option list (finishTimeOptions) is every 15-minute boundary on the event’s date still ahead of now read in the TRUCK’s zone (instantOfLocal(date, t, truck tz)), where it was read in the DEVICE’s zone (new Date("YYYY-MM-DDTHH:MM")) — the inventory’s device-zone bug; every other "now" has been the truck’s clock since Phase 2B. Differs only where the truck zone ≠ the device zone: in the fixtures the US truck (America/Chicago) on the harness device (Europe/London), so kds · US|finishTime offers 12:30 onwards, not 18:30. GB (truck zone = device zone): byte-identical. COMPUTED FROM THE RULE: BEFORE’s list must be exactly the rule in the device zone (else BEFORE is left alone and the view fails), and is replaced by the rule in the truck’s zone; the current option, the selection and every other byte unchanged. Normal events only — an overnight event’s list is the midnight harness’s.',
+    views: id => /^1b\/kds\/(GB|US)\|/.test(id),
+    expect: (b, id) => {
+      const FIX = require('./_lp1b-fixtures.cjs')
+      const C = FIX.country(countryOf(id))
+      const DEVICE_TZ = 'Europe/London'   // the harness device (scripts/language-phase-1b.cjs kit.setDeviceTz)
+      const now = Date.parse(FIX.NOW), date = C.EVENT.event_date, truckTz = C.TRUCK.time && C.TRUCK.time.timeZone
+      if (!truckTz || !date || Number.isNaN(now)) return b
+      const devList = mnFinishOptions(date, DEVICE_TZ, now), truckList = mnFinishOptions(date, truckTz, now)
+      return mapStrings(b, s => s.replace(/(<h3 class="font-black text-slate-900 text-base mb-1">Change finish time<\/h3>[\s\S]*?<select [^>]*>)([\s\S]*?)(<\/select>)/g, (whole, open, body, close) => {
+        const cur = [...body.matchAll(/<option value="([^"]*)" selected="">(?:[^<]*) \(current\)<\/option>/g)]
+        if (cur.length !== 1) return whole
+        const current = cur[0][1]
+        if (body !== mnFinishSelectBody(devList, current)) return whole   // not exactly the device-zone rule: no guess
+        return open + mnFinishSelectBody(truckList, current) + close
+      }))
+    } },
+  { id: 'midnight-finish-modal-format-US', part: 'US formats (17 Oct 2026)', country: 'US',
+    what: 'The Change finish time modal (components/shared/EventFinishTimeModal.tsx, rendered for real on the KDS) writes every time in the truck’s style: "currently set to finish at 21:00" → "9:00 PM", each option’s TEXT "18:30" → "6:30 PM" and "21:00 (current)" → "9:00 PM (current)". Option VALUES stay "HH:MM". Scoped to the modal (its heading through its </select>). GB unchanged.',
+    views: id => /^1b\/kds\/US\|/.test(id),
+    expect: b => mapStrings(b, s => s.replace(/(<h3 class="font-black text-slate-900 text-base mb-1">Change finish time<\/h3>)([\s\S]*?<\/select>)/g, (_, h3, body) => h3 + body
+      .replace(/(currently set to finish at <span class="font-bold text-slate-900">)(\d{2}):(\d{2})(<\/span>)/, (_, o, hh, mm, c) => o + clock12(hh, mm) + c)
+      .replace(/(<option value="(\d{2}):(\d{2})"(?: selected="")?>)\2:\3( \(current\))?<\/option>/g, (_, open, hh, mm, cur) => `${open}${clock12(hh, mm)}${cur || ''}</option>`))) },
 ]
 
 /** The named entries that apply to a view, and what they make of its BEFORE value: { listed: true, entries } when an
