@@ -78,6 +78,7 @@ import { STANDARD_TYPE_NAME } from '@/lib/event-types/read'
 import { intervalExample } from '@/lib/slot-generation'
 import { KITCHEN_CAPACITY_GRID, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
+import { PHONE_TIME_PICKER, SCHEDULE_CARD_STACK_GB, IMPORT_HEADING_STACK_GB } from '@/components/manage/layout-choices'
 import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -7237,7 +7238,7 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
                   <span className="font-black text-orange-600">{tabAmount(bundle.bundle_price)}</span>
                   {bundle.original_price && <span className="text-slate-400 text-xs line-through">{tabAmount(bundle.original_price)}</span>}
                   {(bundle.start_time || bundle.end_time) && (
-                    <span className="text-xs text-slate-400">{[formatSlot(bundle.start_time, ts), formatSlot(bundle.end_time, ts)].filter(Boolean).join(' – ')}</span>
+                    <span className="text-xs text-slate-400">{[formatSlot(bundle.start_time, ts), formatSlot(bundle.end_time, ts)].filter(Boolean).join(ts.timeFormat === '12h' ? '\u00a0– ' : ' – ')}</span>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1 mt-1.5">
@@ -7465,7 +7466,7 @@ function hhMmToMins(value: string | null | undefined): number | null {
  * ALREADY-invalid stored pair — that value is preserved and injected, so call sites flag it visually.
  */
 function EventTimeSelect({
-  value, onChange, className, placeholder = '—:—', notSameAs = null, disabled = false, label,
+  value, onChange, className, placeholder = '—:—', notSameAs = null, disabled = false, label, phoneClassName, phoneHeight,
 }: {
   value: string | null | undefined
   /** Receives 'HH:MM', or '' when the hour is cleared. Never fires on its own. */
@@ -7477,6 +7478,12 @@ function EventTimeSelect({
   disabled?: boolean
   /** Screen-reader name; the grid sites have no visible <label>. */
   label?: string
+  /** The phone (<640px) control's box (fix 5, layout-choices.ts PHONE_TIME_PICKER). Defaults to `className`. A caller
+   *  whose `className` pads a box AROUND the select (Add/Edit event) passes one without that padding: the padded wrapper
+   *  plus the select's own px-2 + pr-7 left 16px for "11 AM" (audit C-03) and clipped GB's "30" by 3px. */
+  phoneClassName?: string
+  /** The phone control's height in px (the shared Select's `height`), to match the form's other fields. */
+  phoneHeight?: number
 }) {
   const { h: curH, m: curM } = splitHhMm(value)
   const notMins = hhMmToMins(notSameAs)
@@ -7485,6 +7492,8 @@ function EventTimeSelect({
    * own 12-hour form from `clockOf` without the ":00" the minute box beside it supplies — US "5 PM".
    * ⚠️ LABELS ONLY. The option VALUES stay "00"–"23", so what is stored is the same "HH:MM" as ever. */
   const ts = useTruckTime()
+  // 5B only: the AM/PM chosen before any hour is (the value carries it once there is one).
+  const [pendingMer, setPendingMer] = useState<'AM' | 'PM'>('PM')
   const hourLabel = (h: string) => (ts.timeFormat === '12h' ? clockOf(`${h}:00`, '12h', ts.locale).replace(':00', '') : h)
 
   // Minutes selectable for a given hour: the fixed 5-step list, less the start's own minute inside the start's hour.
@@ -7516,30 +7525,102 @@ function EventTimeSelect({
    * ⚠️ THE OPTIONS, THE VALUES AND THE "hour first" RULE ARE UNTOUCHED. `Select` takes the same
    * `{ value, label }` list the `<option>`s rendered, so this is a swap of the box and nothing else.
    * ⚠️ `className` IS STILL HONOURED — the caller sizes these, and `Select` merges it. */
-  return (
-    <div className="flex items-center gap-1 w-full">
+  const hourAria = label ? t('time.hourOf', { label }) : t('time.hour')
+  const minuteAria = label ? t('time.minuteOf', { label }) : t('time.minute')
+  const minuteSelect = (cls: string, height?: number) => (
+    <Select
+      ariaLabel={minuteAria}
+      value={curM}
+      // No hour means there is no time to attach a minute to; the hour is always chosen first.
+      disabled={disabled || !curH}
+      onChange={v => { if (curH) onChange(`${curH}:${v}`) }}
+      className={cls}
+      height={height}
+      options={[
+        ...(!curH ? [{ value: '', label: '--' }] : []),
+        ...minuteOptions.map(m => ({ value: m, label: m })),
+      ]}
+    />
+  )
+  const phoneCls = phoneClassName ?? className
+
+  /* ══ 🔴 THE PHONE CONTROL (fix 5, 17 October 2026 — US layout proposal, audit C-03) ════════════════════════════
+   * Below 640px the hour + minute pair did not fit: the caller's padded box around each select left 16px for its label,
+   * so a US "11 AM" / "10 PM" showed as "11" / "10" (AM/PM cut off — 8:00 PM – 12:30 AM read as 8 to half past noon) and
+   * GB's "30" / "45" lost 3–4px. Two answers for Dominic, chosen by PHONE_TIME_PICKER (components/manage/layout-choices.ts):
+   *   'select' (5A): ONE select per time, showing the whole time ("10:45 PM" / "22:45"), every 5 minutes;
+   *   'toggle' (5B): hour + minute selects plus an AM/PM toggle on a 12-hour truck; a 24-hour truck keeps hour + minute.
+   * ⚠️ THE GUARDS ARE THE SAME IN BOTH: the start's own time is never offered to the end (`notSameAs`), every other time
+   * is (an earlier end is an overnight event — lib/event-window.ts), and a stored off-grid value is injected, never
+   * rounded. ⚠️ From 640px up the control below the phone one is the hour + minute pair exactly as before. */
+  const phone = PHONE_TIME_PICKER === 'select' ? (() => {
+    // 5A — every 5-minute time of the day, less the start's own; the stored value (even off-grid) is always present.
+    const cur = curH && curM ? `${curH}:${curM}` : ''
+    const all = HOUR_OPTIONS.flatMap(h => MINUTE_OPTIONS.map(m => `${h}:${m}`)).filter(v => notMins === null || hhMmToMins(v) !== notMins)
+    if (cur && !all.includes(cur)) { all.push(cur); all.sort() }
+    return (
       <Select
-        ariaLabel={label ? t('time.hourOf', { label }) : t('time.hour')}
-        value={curH}
+        ariaLabel={label ?? t('time.time')}
+        value={cur}
         disabled={disabled}
-        onChange={v => onHour(v)}
-        className={className}
-        options={[{ value: '', label: placeholder ?? '--' }, ...hours.map(h => ({ value: h, label: hourLabel(h) }))]}
+        onChange={v => onChange(v)}
+        className={phoneCls}
+        height={phoneHeight}
+        options={[{ value: '', label: placeholder ?? '--' }, ...all.map(v => ({ value: v, label: clockOf(v, ts.timeFormat, ts.locale) }))]}
       />
+    )
+  })() : ts.timeFormat !== '12h' ? (
+    // 5B, 24-hour: the same hour + minute pair, in a box that leaves the label its room.
+    <>
+      <Select ariaLabel={hourAria} value={curH} disabled={disabled} onChange={v => onHour(v)} className={phoneCls} height={phoneHeight}
+        options={[{ value: '', label: placeholder ?? '--' }, ...hours.map(h => ({ value: h, label: h }))]} />
       <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
-      <Select
-        ariaLabel={label ? t('time.minuteOf', { label }) : t('time.minute')}
-        value={curM}
-        // No hour means there is no time to attach a minute to; the hour is always chosen first.
-        disabled={disabled || !curH}
-        onChange={v => { if (curH) onChange(`${curH}:${v}`) }}
-        className={className}
-        options={[
-          ...(!curH ? [{ value: '', label: '--' }] : []),
-          ...minuteOptions.map(m => ({ value: m, label: m })),
-        ]}
-      />
-    </div>
+      {minuteSelect(phoneCls, phoneHeight)}
+    </>
+  ) : (() => {
+    // 5B, 12-hour: hour 12, 1 … 11 + minute + AM/PM. The half of the day comes from the value; with no value yet it is
+    // held here until an hour is picked (PM first — most trading hours are afternoon and evening).
+    const mer: 'AM' | 'PM' = curH ? (Number(curH) >= 12 ? 'PM' : 'AM') : pendingMer
+    const to24 = (h12: number, m: 'AM' | 'PM') => String((h12 % 12) + (m === 'PM' ? 12 : 0)).padStart(2, '0')
+    const merWord = (m: 'AM' | 'PM') => clockOf(m === 'AM' ? '00:00' : '12:00', '12h', ts.locale).replace(/^[\d:]+[\s\u00a0]*/, '')
+    return (
+      <>
+        <Select ariaLabel={hourAria} value={curH ? String(Number(curH) % 12 || 12) : ''} disabled={disabled}
+          onChange={v => onHour(v ? to24(Number(v), mer) : '')} className={phoneCls} height={phoneHeight}
+          options={[{ value: '', label: placeholder ?? '--' }, ...[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(n => ({ value: String(n), label: String(n) }))]} />
+        <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
+        {minuteSelect(phoneCls, phoneHeight)}
+        <div data-meridiem role="group" aria-label={label ? t('time.meridiemOf', { label }) : t('time.meridiem')}
+          className="flex flex-shrink-0 self-stretch rounded-lg border border-slate-200 bg-white overflow-hidden"
+          style={phoneHeight ? { height: phoneHeight } : undefined}>
+          {(['AM', 'PM'] as const).map(m => (
+            <button key={m} type="button" aria-pressed={mer === m} disabled={disabled}
+              onClick={() => { if (curH) onHour(to24(Number(curH) % 12 || 12, m)); else setPendingMer(m) }}
+              className={`min-w-11 px-2.5 text-sm font-semibold disabled:opacity-50 ${mer === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+              {merWord(m)}
+            </button>
+          ))}
+        </div>
+      </>
+    )
+  })()
+
+  return (
+    <>
+      <div className="flex items-center gap-1 w-full max-sm:hidden">
+        <Select
+          ariaLabel={hourAria}
+          value={curH}
+          disabled={disabled}
+          onChange={v => onHour(v)}
+          className={className}
+          options={[{ value: '', label: placeholder ?? '--' }, ...hours.map(h => ({ value: h, label: hourLabel(h) }))]}
+        />
+        <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
+        {minuteSelect(className)}
+      </div>
+      <div className="flex items-center gap-1 w-full sm:hidden" data-phone-time>{phone}</div>
+    </>
   )
 }
 
@@ -8634,12 +8715,20 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     const needsTimes = !event.start_time || !event.end_time
     /** The private event's own "needs times" prompt is on the card (the chooser block below shows it). */
     const privateTimesPrompt = pending && !isPast && !!privateTypeId && pendingTypeFor(event) === privateTypeId && needsTimes
+    /* ── 🔴 THE PHONE CARD STACKS FOR A 12-HOUR TRUCK (fix 3, 17 October 2026 — US layout proposal, audit C-01/C-02) ──
+     * Below 640px the date column and four or five action icons left the details 68–103px, so "11:30 AM – 10:45 PM · Big
+     * van" took three or four lines and split a time from its AM. On a phone the icons now sit in a row BENEATH the
+     * details (grid: date | divider | details, then the icons under the details), so the time range has the details'
+     * full width to itself, and the van takes its own line. From 640px up nothing changes. A 24-hour (GB) truck keeps
+     * the old card unless SCHEDULE_CARD_STACK_GB (components/manage/layout-choices.ts) says otherwise. */
+    const stack = ts.timeFormat === '12h' || SCHEDULE_CARD_STACK_GB
+    const vanName = vans.length > 1 && event.van_id ? (vans.find(v => v.id === event.van_id)?.name || '') : null
 
     return (
       <Card key={event.id}>
         <div className="px-4 py-3">
           {/* Main row: date | venue | status | actions */}
-          <div className="flex items-start gap-4">
+          <div className={stack ? 'flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5' : 'flex items-start gap-4'}>
 
             {/* Date column — fixed width, calendar-style */}
             <div className="flex flex-col items-center justify-center w-12 flex-shrink-0 text-center pl-2">
@@ -8649,7 +8738,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             </div>
 
             {/* Divider */}
-            <div className="w-px bg-slate-100 self-stretch flex-shrink-0" />
+            <div className={stack ? 'w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2' : 'w-px bg-slate-100 self-stretch flex-shrink-0'} />
 
             {/* Venue / area & postcode / time — 3 lines */}
             <div className="flex-1 min-w-0">
@@ -8699,10 +8788,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     day — stated beside its times, in this card's own warning style, before anyone approves it. Only while it
                     waits (status 'unconfirmed': "Needs your approval" and "Needs confirmation"); a normal event is unchanged. */}
                 {event.status === 'unconfirmed' && crossesMidnight(event.start_time, event.end_time) && (
-                  <span className="ml-1.5 text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold" data-overnight-hint>{tE('endsNextDay')}</span>
+                  <span className={`ml-1.5 text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold${stack ? ' whitespace-nowrap' : ''}`} data-overnight-hint>{tE('endsNextDay')}</span>
                 )}
-                {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
+                {vanName !== null && (stack ? <span className="max-sm:hidden">{` · ${vanName}`}</span> : ` · ${vanName}`)}
               </p>
+              {/* Fix 3: on a phone the van is its own line under the time. */}
+              {stack && vanName !== null && <p className="sm:hidden text-xs font-semibold text-slate-600 mt-0.5" data-van-line>{vanName}</p>}
               {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
             </div>
 
@@ -8710,7 +8801,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 Pending (Approve/Edit/Reject) render in a full-width row BELOW the main row (see below),
                 so the venue/area/time block above gets the full card width. */}
             {!pending && (
-              <div className="flex items-center gap-1.5 flex-shrink-0 self-start">
+              <div className={stack ? 'flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap' : 'flex items-center gap-1.5 flex-shrink-0 self-start'} data-card-actions>
                 <>
                   {event.status === 'unconfirmed' && (
                     // SAME acknowledge gate as the scraper Approve button: with a conflict the first
@@ -9301,7 +9392,17 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-semibold leading-snug ${!ev.start_time || !ev.event_date ? 'text-amber-600' : 'text-slate-900'}`}>
-                          {timeLabel
+                          {/* Fix 4 (audit C-05): a 12-hour truck's heading puts the time on its own line under the date —
+                              "Wed, Sep 30th · 11:30 AM–10:45 PM" left "PM" alone on a phone. A 24-hour truck keeps the one
+                              line unless IMPORT_HEADING_STACK_GB (components/manage/layout-choices.ts) says otherwise. From
+                              640px up the heading is the one line it was. */}
+                          {timeLabel && (ts.timeFormat === '12h' || IMPORT_HEADING_STACK_GB)
+                            ? <>
+                                <span className="max-sm:hidden">{tI('review.summary', { date: ev.event_date ? dateLabel : tI('review.noDate'), time: timeLabel })}</span>
+                                <span className="sm:hidden block">{ev.event_date ? dateLabel : tI('review.noDate')}</span>
+                                <span className="sm:hidden block">{timeLabel}</span>
+                              </>
+                            : timeLabel
                             ? tI('review.summary', { date: ev.event_date ? dateLabel : tI('review.noDate'), time: timeLabel })
                             : tI('review.summaryNoTime', { date: ev.event_date ? dateLabel : tI('review.noDate') })}
                         </p>
@@ -10171,7 +10272,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 <Input label={tE('postcode', { style: addrStyle })} value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder={tE('postcodePlaceholder', { style: addrStyle })} />
                   </div>
                 </div>
-                <div className="sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2">
+                {/* Fix 5 (layout-choices.ts): with the 5B AM/PM toggle a 12-hour truck's start and end take a row each on a
+                    phone — "11 : 30 [AM|PM]" does not fit half of a 360px form. */}
+                <div className={`sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2${PHONE_TIME_PICKER === 'toggle' && ts.timeFormat === '12h' ? ' max-sm:grid-cols-1' : ''}`}>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">{tE('startTime')}<span className="text-red-400 ml-0.5">*</span></label>
                     <EventTimeSelect
@@ -10184,6 +10287,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' }))
                       }}
                       className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.start_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                      phoneClassName={`w-full [&>select]:rounded-xl [&>select]:text-slate-900 ${formErrors.start_time ? '[&>select]:border-red-400 [&>select]:bg-red-50' : ''}`}
+                      phoneHeight={42}
                       placeholder="--"
                     />
                     {formErrors.start_time && <p className="text-xs text-red-500 mt-1">{formErrors.start_time}</p>}
@@ -10199,6 +10304,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       value={editingEvent.end_time}
                       onChange={v => { setEditingEvent(p => ({ ...p!, end_time: v })); if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' })) }}
                       className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                      phoneClassName={`w-full [&>select]:rounded-xl [&>select]:text-slate-900 ${formErrors.end_time ? '[&>select]:border-red-400 [&>select]:bg-red-50' : ''}`}
+                      phoneHeight={42}
                       placeholder="--"
                       notSameAs={editingEvent.start_time}
                     />
@@ -12627,8 +12734,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               <div className={preordersOn ? '' : 'opacity-50'}>
               <label className="block text-xs font-bold text-slate-600 mb-1">{t('preorders.deadline')}</label>
               <div className="flex items-center gap-2 mb-3">
+                {/* Fix 12 (17 October 2026): `min-w-0` lets the type select give up the 11px this row was too wide by at 390px
+                    (its intrinsic width + the fixed 128px time box ran past the box, GB and US). Wider, it keeps its width. */}
                 <select value={gType} onChange={e => saveGlobalCfg({ type: e.target.value as any })}
-                  className="border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  className="min-w-0 border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                   <option value="hours_before">{t('preorders.hoursBefore')}</option>
                   <option value="daily_cutoff">{t('preorders.dailyCutoff')}</option>
                 </select>

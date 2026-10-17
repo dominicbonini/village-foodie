@@ -3322,7 +3322,10 @@
       "hour": "Hour",
       "minute": "Minute",
       "hourOf": "{label} hour",
-      "minuteOf": "{label} minute"
+      "minuteOf": "{label} minute",
+      "time": "Time",
+      "meridiem": "AM or PM",
+      "meridiemOf": "{label}: AM or PM"
     },
     "hiddenMatch": "{count, plural, one {# hidden place matches} other {# hidden places match}} · Show hidden",
     "saving": "Saving…",
