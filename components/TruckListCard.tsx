@@ -118,6 +118,15 @@ function cardTimeRange(start: string, end: string, ts: TimeSettings) {
     return ts.timeFormat === '12h' ? range.replace(/ (AM|PM)\b/g, '\u00A0$1') : range;
 }
 
+/** "● Live" — the green dot and the word, in the time line's type (12 px bold). */
+function LiveBadge({ label, className }: { label: string; className: string }) {
+  return (
+    <span className={`${className} items-center gap-1 text-[12px] font-bold leading-none text-green-600`}>
+      <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />{label}
+    </span>
+  );
+}
+
 // LIVE-REDEFINITION (V7.0): live = operator STARTED the event (status==='open', from the Start
 // button or auto-event-scheduler), NOT the published clock window. Published times stay DISPLAY-only.
 function isEventLive(status?: string): boolean {
@@ -160,22 +169,29 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
         {cornerAction && <div className="absolute top-2 right-2 z-10">{cornerAction}</div>}
         <div className={compact ? 'flex flex-row items-center gap-3' : 'flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4'}>
 
-            {/* DATE AND TIME */}
-            <div className={compact ? 'flex flex-col items-start gap-0.5 shrink-0 w-[112px]' : 'flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-0.5 shrink-0 sm:w-[140px]'}>
+            {/* DATE AND TIME
+                ── US layout proposal, fix 2 (A-01 GB and US, A-02, A-03, A-07): THE RANGE HAS A LINE OF ITS OWN ──
+                "● Live" used to share the time line, so a live range ("11:30 – 22:45", and every 12-hour range) wrapped
+                beside it in the narrow column. Live now sits on the DATE line and the range is alone on the line below,
+                so a live card is still the same height as a non-live one (two lines either way).
+                ⚠️ COMPACT (the order page's event header, Manage's preview): the column is at least 112 px and grows to
+                its content, so a 12-hour range ("11:30 AM – 10:45 PM", ~126 px) stays whole on one line instead of
+                wrapping in a fixed 112 px; a 24-hour range never reaches 112 px, so a non-live GB card is unchanged.
+                ⚠️ FULL CARD ON A PHONE (< sm) is a ROW — date · range · Live on one line — and keeps that order: the
+                Live beside the date shows from sm: up, the one after the range below sm: only. */}
+            <div className={compact ? 'flex flex-col items-start gap-0.5 shrink-0 min-w-[112px]' : 'flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-0.5 shrink-0 sm:w-[140px]'}>
                 {/* Date in normal case (was ALL-CAPS) — softer; keeps the orange accent. */}
-                <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none">
-                    {formatStandardDate(event.date, ts)}
+                <span className="flex items-center gap-2 leading-none whitespace-nowrap">
+                    <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none">
+                        {formatStandardDate(event.date, ts)}
+                    </span>
+                    {liveNow && <LiveBadge label={t('live')} className={compact ? 'inline-flex' : 'hidden sm:inline-flex'} />}
                 </span>
-                {/* Time + INLINE "● Live" on ONE line (status-driven). Inline (not its own row) so a
-                    live card is the SAME HEIGHT as a non-live card. Live condition + button flip unchanged. */}
-                <span className="flex items-center gap-2 text-[12px] font-bold text-slate-500 leading-none mt-0.5">
-                    <span>{cardTimeRange(event.startTime, event.endTime, ts)}</span>
-                    {liveNow && (
-                        <span className="inline-flex items-center gap-1 text-green-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />{t('live')}
-                        </span>
-                    )}
+                {/* The range, alone on its line (each 12-hour time kept whole: lib/time-utils.ts, fix 1). */}
+                <span className="text-[12px] font-bold text-slate-500 leading-none mt-0.5">
+                    {cardTimeRange(event.startTime, event.endTime, ts)}
                 </span>
+                {liveNow && !compact && <LiveBadge label={t('live')} className="inline-flex sm:hidden mt-0.5" />}
             </div>
 
             {/* VENUE NAME (left) + ORDER BUTTON (right) — side-by-side on ONE row at all widths

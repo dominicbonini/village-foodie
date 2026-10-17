@@ -6,6 +6,7 @@ import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { formatSlot, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { eventTimeInstant } from '@/lib/event-window'
 import { ChargeRows } from '@/components/ChargeRows'
+import { MANAGE_PICKUP_STACK_GB } from '@/lib/customer-layout'
 import type { ChargeLineSource } from '@/lib/order-charge-lines'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import { errorText } from '@/lib/i18n/customer-errors'
@@ -197,14 +198,26 @@ export default function ManageOrderPage() {
 
         {/* Order details */}
         <div className="px-6 py-4 border-b border-slate-100">
-          {order.slot && (
+          {/* ── US layout proposal, fix 11 (A-06): a 12-hour time and a long venue wrapped into the label ("Pickup12:45 PM",
+              no gap, the second line left-aligned). The stacked row has a gap after the label and the time and the venue
+              each on a line of their own, right-aligned like every other value. GB keeps its one-line row unless
+              MANAGE_PICKUP_STACK_GB (lib/customer-layout.ts) is switched on. */}
+          {order.slot && (ts.timeFormat === '12h' || MANAGE_PICKUP_STACK_GB ? (
+            <div className="flex justify-between gap-4 text-sm mb-1" data-pickup-row>
+              <span className="text-slate-500 shrink-0">{t('pickup')}</span>
+              <span className="font-medium text-slate-900 text-right min-w-0">
+                <span className="block">{formatSlot(order.slot, ts)}</span>
+                {order.venue_name && <span className="block">{order.venue_name}</span>}
+              </span>
+            </div>
+          ) : (
             <div className="flex justify-between text-sm mb-1">
               <span className="text-slate-500">{t('pickup')}</span>
               <span className="font-medium text-slate-900">
                 {formatSlot(order.slot, ts)}{order.venue_name ? ` · ${order.venue_name}` : ''}
               </span>
             </div>
-          )}
+          ))}
           {/* ── 🔴 WHAT THE CUSTOMER IS TOLD ABOUT MONEY, FROM THE ORDER ROW ───────────────────────
               A card payment no longer lands here at all — it is taken in-page on the order form and
               the customer goes to ?confirm=. This page is the "Cancel your order" email link. The rule

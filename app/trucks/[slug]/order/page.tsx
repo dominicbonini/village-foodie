@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use, type ReactNode } from 'react';
 import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy';
 import { isValidEmail } from '@/lib/contact-validation'
 import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
@@ -38,8 +38,8 @@ import { MoneyProvider } from '@/components/MoneyContext'
 // Phase 3 screens: tax, a tip and the service fee, SHOWN with the server's own pure engine. The server
 // re-prices on submit; the browser sends only the tip choice.
 import { computeOrderCharges, rulesFromCheckout, applyBps, type CheckoutRules, type TipChoice } from '@/lib/order-charges'
-import { ChargeRows } from '@/components/ChargeRows'
-import { formatRateBps, type ChargeLineSource } from '@/lib/order-charge-lines'
+import { ChargeRows, FoldedChargeRows } from '@/components/ChargeRows'
+import { formatRateBps, chargeLinesFor, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT, useTruckLocale, useAppLocale } from '@/lib/i18n/use-t'
 import { errorText, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
@@ -534,7 +534,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // The form sheet's own review-summary state — EXPANDED by default so the customer sees what they're
   // confirming on open (food-truck orders are small). A max-h cap on the summary (see render) keeps a
   // rare large order from burying the form. Customer can still collapse it. Separate from footer peek.
-  const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState(true)
+  // ── US layout proposal, fix 10 (A-05): COLLAPSED WHEN THE TOTALS BOX IS SHOWN ──
+  // `null` = the customer has not touched it, and the default is then derived at render (`sheetSummaryOpen`): expanded
+  // as before, EXCEPT where the checkout's totals box is shown (a truck with checkout rules — tax, fee or tip — never a
+  // UK truck), whose rows already restate the amount. A tap sets it either way and that sticks, as before.
+  const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState<boolean | null>(null)
+  // The basket footer's folded "Tax & fees" row (fix 10, A-04) — closed until tapped.
+  const [chargesExpanded, setChargesExpanded] = useState(false)
   const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
   // ⚠️ `viewportH` WAS HERE AND IS GONE (B6). Its only reader was menuMinHeight, which A2 replaced
@@ -1589,11 +1595,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // stale `window.innerHeight` mid-gesture. The two subtracted terms are measured element heights.
   const lastSectionMinHeight = `calc(100dvh - ${Math.round(pinnedTop)}px - ${Math.round(footerHeight)}px)`
 
+  // Whether this basket carries any tax / fee / tip line (never for a UK truck) — what caps the footer's breakdown.
+  const hasChargeLines = chargeLinesFor(pageCharges?.snapshot).length > 0
   // Shared order breakdown (deal lines + item lines + discount + total). Rendered in BOTH the footer
   // basket peek AND the form-sheet review summary so the two can never drift. DISPLAY-ONLY — no
   // add/remove here; quantity edits happen on the menu cards (close the sheet to change).
-  const orderBreakdownEl = (
+  // `foldCharges` (US layout proposal, fix 10, A-04): the FOOTER's copy folds tax, fee and tip into one
+  // "Tax & fees" row (FoldedChargeRows); the sheet's copy keeps every row, as its totals box does.
+  // With tax / fee / tip lines (never a UK truck) the footer's copy is also HEIGHT-CAPPED: the lines above the totals
+  // scroll inside the box (as the sheet's summary does), and Subtotal, "Tax & fees" and Total stay in view under them.
+  const orderBreakdown = (foldCharges: boolean) => {
+    const capItems = foldCharges && hasChargeLines
+    const lines = (n: ReactNode) => capItems ? <div className="max-h-[30vh] overflow-y-auto space-y-1.5" data-footer-breakdown>{n}</div> : n
+    return (
     <div className="bg-slate-50 rounded-xl p-3 mb-2 space-y-1.5 border border-slate-100">
+      {lines(<>
       {/* Deals first */}
       {appliedDeals.map((deal, i) => (
         <div key={i}>
@@ -1662,13 +1678,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <span className="text-green-600 font-medium">-{amount(discountAmt)}</span>
         </div>
       )}
+      </>)}
       {/* Phase 3 screens: Subtotal, tax, fee and tip — nothing for a UK truck. */}
-      <ChargeRows charges={pageCharges?.snapshot} amount={amount} />
+      {foldCharges
+        ? <FoldedChargeRows charges={pageCharges?.snapshot} amount={amount} expanded={chargesExpanded} onToggle={() => setChargesExpanded(e => !e)} />
+        : <ChargeRows charges={pageCharges?.snapshot} amount={amount} />}
       <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
         <span>{tOrder('total')}</span><span>{amount(grandTotal)}</span>
       </div>
     </div>
-  )
+    )
+  }
 
   // ══ 🔴 PHASE 3 SCREENS — THE CHECKOUT PIECES (approved mockup, docs/phase-3-screens-report.md) ══════
   // Every one of these is null, or renders nothing, for a truck with no `checkout` — every UK truck — so
@@ -1729,14 +1749,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   ) : null
   // THE TOTALS BOX, above Place order: Subtotal (when anything follows it), tax with its rate, the online
   // service fee, the tip, then Total, bold, above a top border. Each line only when non-zero.
-  const checkoutTotalsEl = checkout && hasItems ? (
+  // ── US layout proposal, fix 10 (A-05): TOTAL AND "Place order" MOVED TO A STICKY FOOTER ──
+  // Where this box is shown, its Total row is drawn in the sheet's sticky footer above Place order (see the sheet), so
+  // the amount and the button are on screen from the first frame; the box keeps Subtotal, tax, fee and tip.
+  const showTotalsBox = !!(checkout && hasItems)
+  const checkoutTotalsEl = showTotalsBox && hasChargeLines ? (
     <div className="mt-4 bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-1" data-checkout-totals>
       <ChargeRows charges={pageCharges?.snapshot} amount={amount} />
-      <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
-        <span>{tOrder('total')}</span><span>{amount(grandTotal)}</span>
-      </div>
     </div>
   ) : null
+  const sheetSummaryOpen = sheetSummaryExpanded ?? !showTotalsBox
 
   // ── Queue-aware ASAP time (pre-order, queue-aware) ───────────────────────────
   // Uses same batch logic as truck dashboard calcQueueAwareReadyTime.
@@ -3668,7 +3690,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {hasItems && (
                 <div className="mb-4">
                   <button
-                    onClick={() => setSheetSummaryExpanded(e => !e)}
+                    onClick={() => setSheetSummaryExpanded(!sheetSummaryOpen)}
                     className="w-full flex items-center justify-between group"
                   >
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
@@ -3676,7 +3698,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     </span>
                     <div className="flex items-center gap-1.5">
                       <span className="font-black text-slate-900 text-sm">{amount(grandTotal)}</span>
-                      <svg className={`w-4 h-4 text-slate-400 transition-transform ${sheetSummaryExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`w-4 h-4 text-slate-400 transition-transform ${sheetSummaryOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -3685,7 +3707,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       large order scrolls WITHIN this 40vh box so the collection-time + name/email
                       fields stay reachable below. The footer peek is uncapped (unchanged). */}
                   {taxNoticeEl}
-                  {sheetSummaryExpanded && <div className="mt-2 max-h-[40vh] overflow-y-auto">{orderBreakdownEl}</div>}
+                  {sheetSummaryOpen && <div className="mt-2 max-h-[40vh] overflow-y-auto">{orderBreakdown(false)}</div>}
                 </div>
               )}
 
@@ -3763,7 +3785,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 setSlotHour(''); setSlotMinute('')
                               }
                             }}
-                            className={`w-full h-full min-h-[68px] rounded-2xl border-2 px-3 py-3 text-sm font-bold appearance-none text-center cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${
+                            // US layout proposal, fix 12 (GB and US): below 380 px the select is ~123 px wide and its centred
+                            // "Choose time" ran 2 px into the ▾ (5 px by box). There the words are centred 4 px further left
+                            // (padding 6 / 14 px instead of 12 / 12, which also widens their room by 4 px) and the ▾ sits 4 px
+                            // nearer the edge, leaving ~5 px between them; at 380 px and wider nothing changes.
+                            className={`w-full h-full min-h-[68px] rounded-2xl border-2 px-3 max-[379px]:pl-1.5 max-[379px]:pr-3.5 py-3 text-sm font-bold appearance-none text-center cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${
                               hasChosenTime
                                 ? 'bg-orange-600 border-orange-600 text-white'
                                 : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
@@ -3818,7 +3844,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 )
                             }
                           </select>
-                          <div className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs ${hasChosenTime ? 'text-white' : 'text-slate-400'}`}>▾</div>
+                          <div className={`pointer-events-none absolute right-3 max-[379px]:right-2 top-1/2 -translate-y-1/2 text-xs ${hasChosenTime ? 'text-white' : 'text-slate-400'}`}>▾</div>
                         </div>
                       )
                     })() : (
@@ -3944,6 +3970,29 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               )}
               {showTip && tipBlockEl}
               {checkoutTotalsEl}
+              {/* ── US layout proposal, fix 10 (A-05): WHERE THE TOTALS BOX IS SHOWN, Total AND Place order ARE A STICKY
+                  FOOTER at the bottom of the sheet, so the amount and the button are on screen without scrolling. Without
+                  the box (no items) the button and its line are exactly as they were. */}
+              {showTotalsBox ? (
+              <div className="sticky z-10 -mx-5 px-5 pt-3 mt-4 bg-white border-t border-slate-200" data-sheet-footer
+                style={{ bottom: 'calc(-1 * max(8px, env(safe-area-inset-bottom)))', paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+                {/* ⚠️ The sheet's own bottom padding (the safe area) would otherwise leave a strip of scrolling content
+                    visible under a `bottom: 0` footer, so the footer sits that far lower and pads itself by the same amount. */}
+                <div className="flex justify-between text-sm font-black text-slate-900">
+                  <span>{tOrder('total')}</span><span>{amount(grandTotal)}</span>
+                </div>
+                <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
+                disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+                className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-2">
+                {submitting ? tOrder('placingOrder') : isClosed ? tOrder('orderingHasClosed') : isPaused ? tOrder('orderingPaused') : orderingTimeNotSet ? tOrder('setupPending') : !eventLoading && !event ? tOrder('noEvent') : tOrder('placeOrder')}
+              </button>
+              <p className="text-center text-slate-400 text-xs mt-2">
+                {truck?.card_payments_ready && payByCard
+                  ? tOrder('payByCardLine')
+                  : tOrder('payAtTruckLine')}
+              </p>
+              </div>
+              ) : (<>
                             <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
                 disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
@@ -3958,6 +4007,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   ? tOrder('payByCardLine')
                   : tOrder('payAtTruckLine')}
               </p>
+              </>)}
 
               </>) : (<>
                             <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
@@ -4046,8 +4096,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </button>
 
               {taxNoticeEl}
-              {/* Expanded breakdown — shared element (see orderBreakdownEl), also used in the sheet. */}
-              {summaryExpanded && orderBreakdownEl}
+              {/* Expanded breakdown — shared element (see orderBreakdown), also used in the sheet.
+                  US layout proposal, fix 10 (A-04): with tax / fee / tip lines (never a UK truck) its item lines are
+                  height-capped and scroll inside the footer, as the sheet's summary does, with the totals kept in view
+                  under them; without such lines it is the uncapped peek it always was. */}
+              {summaryExpanded && orderBreakdown(true)}
             </div>
           )}
 

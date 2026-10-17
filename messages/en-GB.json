@@ -574,7 +574,8 @@
     "tip": "Tip",
     "rate": "{rate}%",
     "line": "{label}: {amount}",
-    "lineWithRate": "{label} {rate}: {amount}"
+    "lineWithRate": "{label} {rate}: {amount}",
+    "taxAndFees": "Tax & fees"
   },
   "menuBadges": {
     "soldOut": "sold out",

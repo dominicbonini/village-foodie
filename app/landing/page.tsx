@@ -503,7 +503,13 @@ export default async function LandingPage({ params, searchParams }: { params?: P
           which left testimonial, pricing and the final CTA as three white blocks in a row with no
           seam between them. Reported by Dominic the same day.
           🔴 SO: IF YOU ADD, REMOVE OR REORDER A SECTION, RE-READ THIS LIST AND FIX THE `band` CLASSES.
-          The table above is the whole specification. */}
+          The table above is the whole specification.
+          ── WITHOUT THE TESTIMONIAL (every country but GB — US layout proposal, fix 13) ──────────────────
+          Dropping the white testimonial would put this wash band straight onto the wash pricing band. So where
+          `showTestimonial` is false the two after it swap, and the page still alternates:
+            trust strip wash · what it does white · how it works WASH · pricing WHITE · final CTA WASH · footer slate
+          (and `.switch-block`, paper on the wash band, becomes wash on the white one — still one step away from
+          what it sits on). 🔴 GB is untouched: the same `band` classes, the same attributes, byte for byte. */}
       <section className="band">
         <div className="wrap">
           <p className="eyebrow">{t('steps.eyebrow')}</p>
@@ -599,7 +605,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
           ON the tint instead of white-on-white, and the grid reads as three objects rather than one
           field. ⚠️ `.switch-block` HAD TO MOVE WITH IT — it was `background: var(--wash)`, the band's
           own colour, so it would have dissolved into it. See landing.css. */}
-      <section id="pricing" className="band">
+      <section id="pricing" className={showTestimonial ? 'band' : undefined}>
         <div className="wrap">
           <div className="price-head">
             <p className="eyebrow">{t('pricing.eyebrow')}</p>
@@ -882,7 +888,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
               🔴 /compare HAS ITS OWN GATE AND IT IS NOT THIS ONE. It refuses unless
               NEXT_PUBLIC_PRICING_PUBLISHED is 'true'; while that is unset this link lands on a redirect
               to /contact. See docs/landing-switching-block-report.md 7. */}
-          <div className="switch-block">
+          <div className="switch-block" style={showTestimonial ? undefined : { background: 'var(--wash)' }}>
             <p className="switch-head">{t('pricing.switchHead')}</p>
             <p className="switch-body">{t('pricing.switchBody')}</p>
             <p className="switch-cta"><a href={visitor.paths.compare}>{t('pricing.switchCta')}</a></p>
@@ -914,7 +920,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
           If those imports ever go too, the guard goes with them silently. */}
 
       {/* ============ FINAL CTA ============ */}
-      <section id="try">
+      <section id="try" className={showTestimonial ? undefined : 'band'}>
         <div className="wrap final">
           {/* Truck illustration — inlined VERBATIM from public/illustrations/food-truck-themed.svg.
               🔴 THEMED, NOT LITERAL: fills are var(--head, #16314F) and var(--orange, #EF8B2C), so this
