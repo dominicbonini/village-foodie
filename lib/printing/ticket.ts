@@ -469,6 +469,8 @@ const FOLD: Readonly<Record<string, string>> = {
   'ß': 'ss', 'æ': 'ae', 'Æ': 'AE', 'ø': 'o', 'Ø': 'O', 'œ': 'oe', 'Œ': 'OE',
   '\u2018': "'", '\u2019': "'", '\u201A': "'", '\u201B': "'", '\u201C': '"', '\u201D': '"', '\u201E': '"', '\u201F': '"',
   '\u2013': '-', '\u2014': '-', '\u2026': '...', '€': 'EUR',
+  // A US time's no-break space before AM/PM (lib/time-utils.ts) prints as the plain space it always was.
+  '\u00A0': ' ',
 }
 function fold(s: string): string {
   let t = ''

@@ -78,8 +78,11 @@ export function hhmm(time: string | null | undefined): string {
 
 /** A locale's own 12-hour form, by exact locale. A locale not listed gets the default (weekly-post) style. */
 const CLOCK_12H_RULES: Record<string, (h12: number, mm: string, pm: boolean) => string> = {
-  // US convention: "6:00 PM", "6:30 PM", "12:00 AM" — always minutes, an ASCII space, upper-case AM/PM.
-  'en-US': (h12, mm, pm) => `${h12}:${mm} ${pm ? 'PM' : 'AM'}`,
+  // US convention: "6:00 PM", "6:30 PM", "12:00 AM" — always minutes, upper-case AM/PM.
+  // 🔴 A NO-BREAK SPACE (U+00A0) before AM/PM, not an ASCII space: a time is never split across lines, so "PM"
+  // can't be left alone on a line (US layout fix 1, docs/us-layout-proposal-report.md). Printed tickets fold it
+  // back to a plain space (lib/printing/ticket.ts FOLD), so their bytes are unchanged.
+  'en-US': (h12, mm, pm) => `${h12}:${mm}\u00A0${pm ? 'PM' : 'AM'}`,
 }
 
 /**
@@ -130,7 +133,9 @@ export function formatTimeRange(start: string | null | undefined, end: string | 
   if (!s && !e) return ''
   if (!e) return s
   if (!s) return e
-  return `${s} – ${e}`
+  // 12-hour: a no-break space BEFORE the dash, so the range can only break after it ("11:30 AM –⏎10:45 PM").
+  // 24-hour keeps its ASCII spaces: GB output is byte-identical.
+  return timeSettingsOr(ts, 'formatTimeRange').timeFormat === '12h' ? `${s}\u00A0– ${e}` : `${s} – ${e}`
 }
 
 // TIMEZONE ARCHITECTURE (V7.x, finished Phase 2B) — the TRUCK's wall clock, not the device's or the
