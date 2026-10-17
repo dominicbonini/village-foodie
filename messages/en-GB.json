@@ -1499,7 +1499,8 @@
     "edit": "Edit",
     "cancel": "Cancel",
     "markPaidAndCollected": "Mark paid & collected",
-    "cashIcon": "💷"
+    "cashIcon": "💷",
+    "chargesSummary": "Tax, fees & tip"
   },
   "addOrder": {
     "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add for the hatch; you’ll be asked to confirm.",

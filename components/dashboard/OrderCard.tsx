@@ -27,6 +27,14 @@ export type ViewMode = 'solo' | 'window' | 'cook'
 // is just this one flag — nothing to re-implement.
 const ITEM_TICK_ENABLED = false
 
+/** US layout proposal, fix 10 (audit B-07) — the money lines on a KDS Full ticket. A US order carries
+ *  Subtotal, tax, service fee, card fee and tip lines; on a kitchen screen that is four or five extra lines
+ *  per ticket. 'one' = a single "Tax, fees & tip $x.xx" line; 'none' = no money lines at all (the order
+ *  total stays in the header). ⚠️ DOMINIC CHOOSES — 10(i) is 'one', 10(ii) is 'none'. A UK order has no
+ *  such lines, so either value leaves it exactly as it was. The dashboard card is not affected: it always
+ *  shows one summary line that expands on tap. */
+export const KDS_MONEY_LINES: 'one' | 'none' = 'one'
+
 // ── Shared UI primitives ──────────────────────────────────────────────────────
 
 /* ⚠️ `ariaLabel` AND THE SWITCH ROLE ADDED (4 October 2026) so the dashboard's "This event" card can
@@ -389,6 +397,9 @@ export function OrderCard({
   const amount = (major: number) => formatMajorOrBare(major, fmt, 'order card')
   // Phase 3 screens: the order's tax, fee and tip rows — empty for every UK order.
   const chargeLines = chargeLinesFor(chargeSourceOf(order as unknown as Record<string, unknown>), 'kitchen')
+  // Fix 10 (B-07): everything the lines add on top of the food — tax, fees and tip in one figure.
+  const chargesExtraMinor = chargeLines.reduce((sum, l) => (l.key === 'subtotal' ? sum : sum + l.minor), 0)
+  const [chargesOpen, setChargesOpen] = useState(false)
 
   // Dismiss the inline confirm whenever the payment state moves underneath it — the removal landed, or
   // another device changed it — so a stale "Remove payment?" can never sit over an order that is no
@@ -1132,6 +1143,31 @@ export function OrderCard({
     )
   )
 
+  // ── 🔴 US LAYOUT PROPOSAL, FIX 7 (audit B-05): THE NAME KEEPS 16 CHARACTERS ON A 12-HOUR TICKET ─────
+  // KDS row 2 is name · time · countdown, and "12:15 PM" is ~24 px wider than "12:15", all of it taken
+  // from the name ("Daniel Fitzg…"). On a 12-hour truck the row now WRAPS — the time and countdown drop
+  // to a second line, right-aligned — but ONLY when the name could not otherwise show its first 16
+  // characters. How, in CSS alone: the name sits in a `flex-1 basis-0` item whose minimum width is an
+  // invisible, zero-height copy of those 16 characters (+ "…", and the ✉ with its gap, built the way nameEl builds them). A flex row breaks a
+  // line on that minimum, so a name that fits stays on one line exactly as before, and one that would be
+  // cut below 16 characters takes the whole row instead. The real name holder is `w-0 min-w-full`, so it
+  // adds nothing to the minimum and still fills the item.
+  // ⚠️ ON THE FULL TICKET 24-HOUR TRUCKS ARE NOT TOUCHED: `keepName` is false and row 2 renders the old markup,
+  // byte for byte. The Cook ticket uses the rule for every truck (its row 2 changed for every truck: fix 6).
+  const NAME_KEEP_CHARS = 16
+  const keepName = cardTime.timeFormat === '12h'
+  const nameChars = Array.from(order.customer_name ?? '')
+  const nameKeepText = nameChars.length > NAME_KEEP_CHARS ? `${nameChars.slice(0, NAME_KEEP_CHARS).join('')}…` : nameChars.join('')
+  const nameKeep = (className: string) => (
+    <span className="flex-1 basis-0" data-name-keep>
+      <span aria-hidden className="flex gap-1 h-0 overflow-hidden invisible whitespace-nowrap">
+        <span>{nameKeepText}</span>
+        {(order.customer_email || order.customer_phone) && <span className="text-[10px]">{'\u2709'}</span>}
+      </span>
+      <span className="flex w-0 min-w-full">{nameEl(`${className} min-w-0 max-w-full`)}</span>
+    </span>
+  )
+
   // ── THE FAILURE MARKER ────────────────────────────────────────────────────────────────────────────
   // Above the header, inside the card, so it is visible without opening, expanding or scrolling anything.
   // 🔴 The money copy says what is UNTRUE ("not recorded") and what to DO, not "couldn't sync" — an
@@ -1179,31 +1215,43 @@ export function OrderCard({
               INHERIT from their row. Every other child of this row states its own size (`text-3xl`
               order number, `text-[10px]` buzzer chip, `text-xs` status badge, `text-[10px]` late pill),
               so none of them can see this declaration. */}
-          <div className="flex items-baseline justify-between gap-1 font-medium text-sm">
-            {/* Full's window arm renders `text-3xl font-bold` for the order number. So does this. */}
-            <span className="text-3xl font-bold text-slate-900 truncate">#{order.id}</span>
-            {/* Buzzer chip — row 1, beside the order number. See the buzzerChip note. */}
-            {buzzerChip}
-            {/* The status badge — the same row that already carries the buzzer chip and the late pill,
-                which is this header's small-indicator row. It sits before the ml-auto time group, so
-                that group stays hard right and nothing below row 1 moves. `Cooking` is suppressed here
-                — see statusBadgeKds. ⚠️ A STATUS IS NOT AN AMOUNT: this renders in Cook, where no
-                monetary element does. */}
-            {statusBadgeKds}
-            {/* Time — INHERITS `font-medium text-sm` from the row, exactly as Full's does. */}
+          {/* 🔴 US LAYOUT PROPOSAL, FIX 6 (audit B-06) — A NAMED GB BUG, SO GB CHANGES TOO. Row 1 used to carry
+              the number, the badge AND the time group, with the time `flex-shrink-0` and the NUMBER the item
+              that truncated: a Ready ticket read "#1…" in GB and "#…" in US, a late one "#12…" at 1280. The
+              order number is the one thing a cook calls out. Now row 1 is Full's row 1 without the money:
+              the number (never shrinks, never truncates) and the buzzer chip on the left, the status badge
+              on the right; and the time + countdown sit on row 2 beside the name, exactly where Full puts
+              them. `flex-wrap` is the last resort: a badge that cannot fit beside the number drops below it
+              rather than sitting on top of it. */}
+          <div className="flex flex-wrap items-baseline justify-between gap-x-2 font-medium text-sm">
+            {/* Full's window arm renders `text-3xl font-bold` for the order number. So does this. `-mr-2`:
+                see Full's row 1 — the badge drops below only when it would touch the number. */}
+            <div className="flex items-baseline gap-1.5 flex-shrink-0 -mr-2">
+              <span className="text-3xl font-bold text-slate-900 whitespace-nowrap">#{order.id}</span>
+              {/* Buzzer chip — row 1, beside the order number. See the buzzerChip note. */}
+              {buzzerChip}
+            </div>
+            {/* The status badge — hard right, as in Full. `Cooking` is suppressed here — see
+                statusBadgeKds. ⚠️ A STATUS IS NOT AN AMOUNT: this renders in Cook, where no monetary
+                element does. */}
+            {statusBadgeKds && <div className="flex items-baseline flex-shrink-0 ml-auto">{statusBadgeKds}</div>}
+          </div>
+          {/* Row 2 — name, then the time + countdown hard right: Full's row 2, with Cook's slate-600. The
+              time group INHERITS `font-medium text-sm` from the row, exactly as Full's does.
+              ⚠️ THE 16-CHARACTER RULE (fix 7, see nameKeep) HOLDS HERE FOR EVERY TRUCK, 24-HOUR TOO. Before
+              this change Cook's row 2 was the name alone and never cut it; moving the time here is the GB
+              bug fix, and without the rule it would start cutting GB names ("Christopher Mo…") that Cook
+              showed in full. With it, a name that cannot keep 16 characters beside the time takes the row,
+              and the time drops to a second line. */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-medium text-sm mt-0.5">
+            {nameKeep('text-slate-600')}
+            {allStruck && <span className="text-green-700 font-black text-xs">✓</span>}
             <span className="text-slate-600 flex-shrink-0 inline-flex items-center gap-1 ml-auto">
               {timeLabel}
               {offsetLabel && (isLate
                 ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white">{offsetLabel}</span>
                 : <>{` · ${offsetLabel}`}</>)}
             </span>
-          </div>
-          {/* Row 2 — `font-medium text-sm` on the row, the same as Full's row 2. The customer name
-              INHERITS it (it used to set `text-xs`, a step BELOW Full); the ✓ states `font-black
-              text-xs`, which is character-for-character what Full's ✓ states. */}
-          <div className="flex items-center gap-1 font-medium text-sm mt-0.5">
-            {nameEl('text-slate-600 min-w-0')}
-            {allStruck && <span className="text-green-700 font-black text-xs ml-1">✓</span>}
           </div>
         </div>
       ) : (
@@ -1219,7 +1267,12 @@ export function OrderCard({
                and never crowd the name out (the "Dom"→"D…" fix). Price is now the only number on the
                right of row 2, so time and price are no longer stacked in the same corner. */
             <>
-              <div className="flex items-center gap-2">
+              {/* 🔴 US LAYOUT PROPOSAL, FIX 8 (audit B-01/B-02): `flex-wrap` + the `ml-auto` group below. When
+                  "#1234 · 11:35 AM" leaves no room for the late pill / countdown, the group drops to its own
+                  line, still right-aligned — it is never clipped by the card's overflow-hidden and never
+                  pushed into the padding. When it fits (every GB card today) the row is exactly as before:
+                  `gap-x-2` is the old `gap-2` along the row, and the row gap only exists once it wraps. */}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="text-2xl font-bold flex-shrink-0">#{order.id}</span>
                 {timeLabel && <span className="text-lg font-bold flex-shrink-0">· {timeLabel}</span>}
                 {/* Buzzer chip — the identity cluster, before the ml-auto offset group. See the
@@ -1259,9 +1312,20 @@ export function OrderCard({
                price at the dense 240px column). Row 1 = the glance numbers (#order / £total); Row 2 =
                metadata (name + time + lateness). */
             <>
-              {/* Row 1 — order # (left) + total (right) */}
-              <div className="flex items-baseline justify-between gap-2">
-                <div className="flex items-baseline gap-1.5 min-w-0">
+              {/* Row 1 — order # (left) + total (right).
+                  🔴 US LAYOUT PROPOSAL, FIX 6 (the Full half; a named GB bug): the left cluster was `min-w-0`
+                  around a number that cannot truncate, so on a Ready + paid ticket with a 4-digit number at
+                  810 / 800 the right cluster ("Ready $35.00 PAID") was drawn OVER the last digit ("#123[5]"),
+                  in GB and US alike. The number's cluster now never shrinks, and the row wraps: when the two
+                  clusters cannot share the line, the right one drops below, still hard right (`ml-auto`).
+                  When they fit — nearly every ticket — the row is exactly as before (`gap-x-2` is the old
+                  `gap-2` along the row; there is no row gap until it wraps). */}
+              <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+                {/* `-mr-2` cancels the row gap for the WRAP DECISION only: the row breaks when the two clusters
+                    would actually touch, not when they merely eat into the 8 px gap. Before this change the
+                    old `min-w-0` cluster let the number run into the gap unseen (1 px on a GB Ready ticket at
+                    1180), and that ticket must not start wrapping. */}
+                <div className="flex items-baseline gap-1.5 flex-shrink-0 -mr-2">
                   {/* 🔴 `text-slate-900` IS STATED, NOT INHERITED — and it is COOK'S value, adopted here
                       on purpose. Without it this span inherits `headerCls`, which tints the number with
                       the urgency state (text-green-900 / text-amber-900 / text-red-900 / text-slate-900,
@@ -1279,7 +1343,7 @@ export function OrderCard({
                       See the buzzerChip note. */}
                   {buzzerChip}
                 </div>
-                <div className="flex items-baseline gap-1.5 flex-shrink-0">
+                <div className="flex items-baseline gap-1.5 flex-shrink-0 ml-auto">
                   {/* The status badge — FIRST in this cluster, mirroring solo, where it precedes the
                       price and the paid chip. This is the row that already carries the small
                       indicators (paidChip, ✓) and is already flex-shrink-0, which the badge is sized
@@ -1294,14 +1358,28 @@ export function OrderCard({
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                 </div>
               </div>
-              {/* Row 2 — customer name + time + lateness */}
-              <div className="flex items-center gap-2 font-medium text-sm mt-0.5">
-                {nameEl('opacity-80 min-w-0')}
-                {timeLabel && <span className="opacity-70 flex-shrink-0 ml-auto">{timeLabel}</span>}
-                {offsetLabel !== null && (isLate
-                  ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white flex-shrink-0">{offsetLabel}</span>
-                  : <span className="opacity-50 flex-shrink-0">· {offsetLabel}</span>)}
-              </div>
+              {/* Row 2 — customer name + time + lateness. On a 12-hour truck (fix 7, audit B-05) the time and
+                  lateness are one right-aligned group and the row wraps before the name loses its first 16
+                  characters — see nameKeep. A 24-hour truck renders the original row, unchanged. */}
+              {keepName ? (
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-medium text-sm mt-0.5">
+                  {nameKeep('opacity-80')}
+                  <span className="flex items-center gap-2 flex-shrink-0 ml-auto">
+                    {timeLabel && <span className="opacity-70">{timeLabel}</span>}
+                    {offsetLabel !== null && (isLate
+                      ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white">{offsetLabel}</span>
+                      : <span className="opacity-50">· {offsetLabel}</span>)}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 font-medium text-sm mt-0.5">
+                  {nameEl('opacity-80 min-w-0')}
+                  {timeLabel && <span className="opacity-70 flex-shrink-0 ml-auto">{timeLabel}</span>}
+                  {offsetLabel !== null && (isLate
+                    ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white flex-shrink-0">{offsetLabel}</span>
+                    : <span className="opacity-50 flex-shrink-0">· {offsetLabel}</span>)}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -1515,14 +1593,36 @@ export function OrderCard({
           {/* ── 🔴 PHASE 3 SCREENS — TAX, SERVICE FEE AND TIP, AFTER THE ITEMS ───────────────────────────
               The ticket's own rows (lib/order-charge-lines.ts, the kitchen's words), hidden in cook mode
               like every other amount. ⚠️ NONE FOR A UK ORDER — `chargeLines` is empty and nothing renders. */}
-          {!hideAmounts && chargeLines.length > 0 && (
+          {/* 🔴 US LAYOUT PROPOSAL, FIX 10 (audit B-07): the lines were drawn in full on every card and ticket,
+              +78 px per US order. Now ONE line, "Tax, fees & tip $x.xx" (tax + service fee + card fee + tip;
+              the food is already in the header's total):
+                • the dashboard card (solo) — the line is a button; a tap opens the full breakdown under it;
+                • the KDS Full ticket (window) — the one line, or nothing, by KDS_MONEY_LINES above.
+              A UK order still has no lines, so nothing renders for it in any mode. */}
+          {!hideAmounts && chargeLines.length > 0 && (cardStyle === 'solo' || KDS_MONEY_LINES === 'one') && (
             <div className="mx-3 mb-2 px-1 space-y-0.5 text-xs text-slate-600" data-charge-lines>
-              {chargeLines.map(l => (
-                <div key={l.key} className="flex justify-between gap-2">
-                  <span>{l.label}{l.rate ? <span className="ml-1 text-slate-400">{l.rate}</span> : null}</span>
-                  <span className="tabular-nums">{amount(l.minor / 100)}</span>
+              {cardStyle === 'solo' ? (
+                <button type="button" onClick={() => setChargesOpen(v => !v)} aria-expanded={chargesOpen}
+                  className="w-full flex justify-between gap-2 text-left" data-charge-summary>
+                  <span>{t('chargesSummary')} <span className="text-slate-400" aria-hidden>{chargesOpen ? '▴' : '▾'}</span></span>
+                  <span className="tabular-nums">{money(chargesExtraMinor)}</span>
+                </button>
+              ) : (
+                <div className="flex justify-between gap-2" data-charge-summary>
+                  <span>{t('chargesSummary')}</span>
+                  <span className="tabular-nums">{money(chargesExtraMinor)}</span>
                 </div>
-              ))}
+              )}
+              {cardStyle === 'solo' && chargesOpen && (
+                <div className="pl-2 space-y-0.5 text-slate-500">
+                  {chargeLines.map(l => (
+                    <div key={l.key} className="flex justify-between gap-2">
+                      <span>{l.label}{l.rate ? <span className="ml-1 text-slate-400">{l.rate}</span> : null}</span>
+                      <span className="tabular-nums">{amount(l.minor / 100)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

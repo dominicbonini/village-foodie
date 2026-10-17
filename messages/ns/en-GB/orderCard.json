@@ -41,5 +41,6 @@
   "edit": "Edit",
   "cancel": "Cancel",
   "markPaidAndCollected": "Mark paid & collected",
-  "cashIcon": "💷"
+  "cashIcon": "💷",
+  "chargesSummary": "Tax, fees & tip"
 }
