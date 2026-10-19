@@ -815,7 +815,26 @@ async function eventTypesView() {
   // reads "#43 £43.90 Ready" where it read "#43 Ready £43.90". Applied to the BEFORE side of kds.window.text only, as that
   // one ticket's exact words (found exactly once); every amount and every other ticket still compared byte for byte.
   const FIX6 = { id: 'us-layout-fix-6-kds-full-badge', view: 'kds.window.text', from: '#43 Ready £43.90 Sam Harness', to: '#43 £43.90 Ready Sam Harness' }
-  const fix2 = (k, v) => {
+  // ⚠️ RE-PINNED (US polish batch, 19 October 2026, docs/us-polish-batch-report.md) — us-polish-thousands-separators:
+  // lib/money-format.ts groups displayed amounts ("£1,234.56"). Applied to the BEFORE side as exactly that: every
+  // symbol-led amount of 1,000 or more gains its separators — on the printed ticket the one-space-per-comma comes out
+  // of the label/amount gap (the line's width is unchanged), and a row with no room keeps the ungrouped figure, as the
+  // ticket does (lib/printing/ticket.ts `fitted`). 🔴 THE CSV LEAVES ARE NOT TRANSFORMED: the Reports CSVs keep "£1234.56"
+  // (csvMoney), so their BEFORE bytes must still match exactly. Every other byte is compared as it always was.
+  const groupDigits = d => d.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const groupText = v => v.replace(/([£$])(-?)(\d{4,})((?:\.\d+)?)/g, (_, c, m, d, f) => c + m + groupDigits(d) + f)
+  const groupLine = (v, cur) => v.replace(new RegExp(`( +)(\\+?${cur}-?)(\\d{4,})(\\.\\d{2})`, 'g'), (all, sp, pre, d, f) => {
+    const g = groupDigits(d), k = g.length - d.length
+    return sp.length > k ? sp.slice(k) + pre + g + f : all
+  })
+  const grouped = (k, v) => {
+    if (typeof v !== 'string' || /(^|\.)csv\./.test(k)) return v
+    if (/^tickets\..*\.bytes$/.test(k)) return Buffer.from(groupLine(Buffer.from(v, 'hex').toString('latin1'), '[\\xa3$]'), 'latin1').toString('hex')
+    if (k.startsWith('tickets.')) return groupLine(v, '[£$]')
+    return groupText(v)
+  }
+  const fix2 = (k, v) => grouped(k, fix2core(k, v))
+  const fix2core = (k, v) => {
     if (k === FIX6.view) {
       if (typeof v !== 'string' || v.split(FIX6.from).length !== 2) { fail(`${FIX6.id}: "${FIX6.from}" is not in BEFORE ${k} exactly once`); return v }
       return v.replace(FIX6.from, FIX6.to)
@@ -836,16 +855,16 @@ async function eventTypesView() {
       let n = 0, wrong = 0
       const same = (got, want, what) => { n++; if (got !== want && wrong++ < 5) console.log(`  🔴 formatter: ${what} → ${got}, the old code printed ${want}`) }
       for (let i = -50000; i <= 500000; i++) {
-        same(F.formatMajor(i / 100, gb), `£${(i / 100).toFixed(2)}`, `formatMajor(${i / 100})`)
-        if (i % 7 === 0) same(F.formatMinor(i, gb), `£${(i / 100).toFixed(2)}`, `formatMinor(${i})`)
+        same(F.formatMajor(i / 100, gb), groupText(`£${(i / 100).toFixed(2)}`), `formatMajor(${i / 100})`)
+        if (i % 7 === 0) same(F.formatMinor(i, gb), groupText(`£${(i / 100).toFixed(2)}`), `formatMinor(${i})`)
       }
       let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647
       for (let i = 0; i < 200000; i++) {
         const a = Math.round(rnd() * 5000) / 100, b = Math.round(rnd() * 5000) / 100
-        for (const x of [a + b, a * 3, Math.abs(a - b), a * 1.1, rnd() * 5000]) same(F.formatMajor(x, gb), `£${x.toFixed(2)}`, `formatMajor(${x})`)
+        for (const x of [a + b, a * 3, Math.abs(a - b), a * 1.1, rnd() * 5000]) same(F.formatMajor(x, gb), groupText(`£${x.toFixed(2)}`), `formatMajor(${x})`)
       }
-      for (const x of [1.005, 1.115, 0.125, 2.675, 1.255, 8.345, 0.285, 1234.565, 1e-9, -1e-9, -0, 0.005, -0.005]) same(F.formatMajor(x, gb), `£${x.toFixed(2)}`.replace('£-0.00', '£0.00'), `formatMajor(${x})`)
-      const trim = x => `£${(Math.round(x * 100) / 100).toFixed(2).replace(/\.00$/, '')}`
+      for (const x of [1.005, 1.115, 0.125, 2.675, 1.255, 8.345, 0.285, 1234.565, 1e-9, -1e-9, -0, 0.005, -0.005]) same(F.formatMajor(x, gb), groupText(`£${x.toFixed(2)}`.replace('£-0.00', '£0.00')), `formatMajor(${x})`)
+      const trim = x => groupText(`£${(Math.round(x * 100) / 100).toFixed(2).replace(/\.00$/, '')}`)
       for (let i = 0; i <= 100000; i++) { const x = i / 100; same(F.formatMajor(Math.round(x * 100) / 100, gb, { trimWhole: true }), trim(x), `trimWhole(${x})`) }
       if (wrong) fail(`the formatter differs from the code it replaced on ${wrong} of ${n} values`)
       else console.log(`  formatter: ${n.toLocaleString('en-GB')} values identical to the toFixed code it replaced (a tiny negative that rounds to zero prints "£0.00" where toFixed printed "£-0.00" — nothing renders one)`)
@@ -860,7 +879,10 @@ async function eventTypesView() {
       if (!A.has(k)) fail(`${k} is missing now`)
       else if (d38(k, A.get(k)) !== fix2(k, v)) fail(`${k} changed${excerpt(fix2(k, v), A.get(k))}`)
     }
-    console.log(`  named: ${FIX2.id} on ${FIX2_VIEWS.length} views (${FIX2_VIEWS.join(', ')}); ${FIX6.id} on ${FIX6.view}`)
+    console.log(`  named: ${FIX2.id} on ${FIX2_VIEWS.length} views (${FIX2_VIEWS.join(', ')}); ${FIX6.id} on ${FIX6.view}; us-polish-thousands-separators on every leaf with an amount ≥ 1,000 except the CSVs`)
+    { const raw = [...A].filter(([k, v]) => /(^|\.)csv\./.test(k) && typeof v === 'string' && /£\d{4,}\.\d{2}/.test(v)).length
+      if (!raw) fail('us-polish-thousands-separators: no CSV leaf holds a raw four-figure amount — the CSV proof has nothing to check')
+      else console.log(`  the Reports CSVs keep raw figures: ${raw} CSV leaf(s) hold an ungrouped amount ≥ £1,000, byte-identical to BEFORE`) }
     for (const k of A.keys()) if (!B.has(k)) fail(`${k} is new (not in the BEFORE snapshot)`)
     console.log(bad ? `🔴 GB: ${bad} difference(s) from ${BEFORE_FILE}` : `✅ GB: all ${B.size} rendered strings and byte streams are identical to ${BEFORE_FILE}`)
     process.exit(bad ? 1 : 0)
@@ -893,13 +915,26 @@ async function eventTypesView() {
     for (const line of t.lines) if (typeof line === 'string' && /\$[^\s]*\?|\?[^\s]*\$|\d\?|\?\d/.test(line)) fail(`ticket ${k}: an amount holds a "?": ${line}`)
   }
   const asGb = v => (typeof v === 'string' ? v.replace(/\$/g, '£') : v)
+  // ⚠️ RE-PINNED (US polish batch, 19 October 2026, docs/us-polish-batch-report.md) — us-readiness-allergen-set: the
+  // GB snapshot predates 234b6a20 ("US readiness sweep: allergens…"), since when Manage's allergen toggles follow the
+  // truck's country (components/manage/primitives.tsx useAllergenVocab → lib/allergens.ts allergenVocab). A US truck's
+  // edit-item and edit-option panels list the US 9, which is RIGHT — the app is not changed. Applied to the BEFORE side
+  // of those two leaves only, as the UK 14's exact run (found exactly once in each); every other byte still compared.
+  const US_ALLERGENS = { id: 'us-readiness-allergen-set', views: ['manage.menu|editItem.text', 'manage.extras|editOption.text'],
+    from: 'Gluten Crustaceans Eggs Fish Peanuts Soy Dairy Tree nuts Celery Mustard Sesame Sulphites Lupin Molluscs',
+    to: 'Milk Eggs Fish Crustacean shellfish Tree nuts Peanuts Wheat Soybeans Sesame' }
+  const usAllergens = (k, v) => {
+    if (!US_ALLERGENS.views.includes(k)) return v
+    if (typeof v !== 'string' || v.split(US_ALLERGENS.from).length !== 2) { fail(`${US_ALLERGENS.id}: the UK 14 is not in BEFORE ${k} exactly once`); return v }
+    return v.replace(US_ALLERGENS.from, US_ALLERGENS.to)
+  }
   for (const [k, v] of B) {
     if (SKIP.has(k) || k.endsWith('.bytes')) continue
     if (!A.has(k)) { fail(`${k} is missing in the USD render`); continue }
-    if (asGb(d38(k, A.get(k))) !== fix2(k, v)) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(fix2(k, v), asGb(A.get(k)))}`)
+    if (asGb(d38(k, A.get(k))) !== usAllergens(k, fix2(k, v))) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(usAllergens(k, fix2(k, v)), asGb(A.get(k)))}`)
   }
   for (const [k, t] of Object.entries(snap.tickets)) {
-    const gb = Buffer.from(before.tickets[k].bytes, 'hex'), us = Buffer.from(d38('tickets.' + k, t.bytes), 'hex')
+    const gb = Buffer.from(grouped(`tickets.${k}.bytes`, before.tickets[k].bytes), 'hex'), us = Buffer.from(d38('tickets.' + k, t.bytes), 'hex')
     const swapped = Buffer.from(us.map(b => (b === 0x24 ? 0xa3 : b)))
     if (!swapped.equals(gb)) fail(`ticket ${k}: with 0x24 read as 0xA3 the bytes are not the GB ticket's`)
   }

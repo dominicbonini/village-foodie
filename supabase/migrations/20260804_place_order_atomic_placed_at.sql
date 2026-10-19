@@ -120,3 +120,12 @@ end;
 $$;
 
 notify pgrst, 'reload schema';
+
+-- ═══ 🔴 NOT CALLABLE WITH THE PUBLIC KEY (added 19 October 2026, docs/us-polish-batch-report.md) ══════════════════════
+-- A new function in `public` gets EXECUTE for anon and authenticated by DEFAULT (pg_default_acl), so without this the
+-- public (anon) key could call it over /rest/v1/rpc. Every caller is server code on the service role. On 12 October
+-- these grants were revoked live, then reopened by a hand-run GRANT; scripts/migration-function-grants.cjs now fails
+-- the sweep on any migration that creates a function without revoking it in the same file, or grants one back.
+-- Idempotent (revoke/grant of a privilege already in that state is a no-op).
+revoke execute on function public.place_order_atomic(jsonb, text, text, uuid, text, date, jsonb) from public, anon, authenticated;
+grant  execute on function public.place_order_atomic(jsonb, text, text, uuid, text, date, jsonb) to service_role;

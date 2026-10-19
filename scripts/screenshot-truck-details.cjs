@@ -512,6 +512,24 @@ function fakeDb(opts = {}) {
       "* venue at the centre of the UK. The privacy test is the same one the insert spreads below (`scrapedPrivacyFields`);",
       "* the dedup above still uses the match, unchanged. A generic title is also never matched at all (lib/venue-matcher",
       "* `isGenericVenueName`), for every event type. */",
+      /* ══ ⚠️ RE-PINNED (US polish batch, 19 October 2026, docs/us-polish-batch-report.md) — THE SIXTH BUILD ══
+       * The event's STATE: a row's two-letter `region` (the payload's own, or the screenshot model's `state`) is written
+       * to truck_events.region exactly as Manage's importer saves it — zip_state countries only, two letters only, never
+       * inferred; every GB insert is the columns it always had (the key is absent). ⛔ No filter, admission rule or other
+       * column moved. scripts/us-polish-batch.cjs §2 proves both (GB byte-identical to BEFORE). Named: the imports, the
+       * country-style read, the helper and the insert spread (comment lines are named so their presence is checked). */
+      "// The event's state (truck_events.region, US Polish 19 Oct 2026): the importer's rule — two letters, zip_state countries only.",
+      "import { normaliseRegion } from '@/lib/event-address'",
+      "import { getCountrySettings } from '@/lib/country-settings'",
+      "let zipState = false",
+      "try { zipState = (await getCountrySettings(country)).addressFormat === 'zip_state' } catch { zipState = false }",
+      "const eventRegionOf = (r: { region?: unknown }) => (zipState ? normaliseRegion(r.region) : null)",
+      "...(eventRegionOf(row) ? { region: eventRegionOf(row) } : {}),",
+      "/* ── THE EVENT'S STATE (US Polish batch, 19 October 2026; docs/us-polish-batch-report.md) ──────────────────────",
+      "* A row's `region` (the payload's own, or the model's `state` that lib/admin/screenshot-events.ts sends as `region`)",
+      "* is written to truck_events.region exactly as Manage's importer saves it: only in a zip_state country (the US), only",
+      "* a two-letter code, NEVER inferred (not from the truck's base town, not from the venue). Every other row — every GB",
+      "* row — inserts exactly the columns it always did: the key is absent, not null. */",
     ]
     /* ══ ⛔ AND A LINE THAT WAS **REPLACED** NEEDS ITS OLD FORM TOLERATING TOO ════════════════════
      * `git diff` reports a replacement as a `-` AND a `+`, and this check reads both — so the first
@@ -694,6 +712,9 @@ function fakeDb(opts = {}) {
     'app/api/inbound-schedule/route.ts',   // secret-gated producer, not a visitor surface
     'lib/discovery-gate.ts',               // the one writer into discovery_events; resolves truck ids
     'lib/self-serve-discovery-link.ts',    // the setup link + the shadow exclude
+    // ⚠️ RE-PINNED (US polish batch, 19 October 2026): a HatchGrab truck page's LINK PREVIEW, for a truck with no public
+    // HatchGrab row — reads only rows public on HatchGrab (show_on_hg = true, not excluded), the feed's own rule.
+    'lib/truck-share-meta.ts',
   ].sort()
   const found = queriers.sort()
   t('🔴 no NEW non-admin file queries discovery_trucks',

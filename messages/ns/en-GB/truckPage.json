@@ -1,6 +1,9 @@
 {
   "meta": {
     "fallbackTitle": "Food Truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Order from {truck}",
+    "orderDescription": "Order ahead from {truck} and collect it at the truck.",
     "title": "{truck} | Village Foodie",
     "logoAlt": "{truck} Logo"
   },

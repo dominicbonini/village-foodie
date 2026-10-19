@@ -28,11 +28,16 @@ import { DEMO_TEMPLATES } from '@/lib/demo-templates'
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/demoUpload'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsOnboarding'
 
 type Phase = 'idle' | 'working' | 'menu_failed' | 'error'
 /** A message this modal words itself (`demoUpload.error.<code>`), held in state as a code; a route's own words are
  *  held as the string it sent (Language Phase 1c). */
-type UploadMessage = string | { code: 'somethingWrong' | 'serverUnreachable' | 'sendFailed' }
+type UploadMessageCode = 'somethingWrong' | 'serverUnreachable' | 'sendFailed'
+// `server` (US polish batch, 19 October 2026): a route's refusal BODY, worded at render from its code (errorsOnboarding),
+// its English `error`, then `code`'s sentence, the fallbacks.
+type UploadMessage = string | { code: UploadMessageCode } | { server: { error?: unknown; code?: unknown; params?: unknown }; code: UploadMessageCode }
 
 // Framed around THEIR menu, not around us (spec Stage 2). No feature carousel, no tips.
 //
@@ -126,6 +131,7 @@ export function DemoCta({ id, className, children }: { id?: string; className?: 
 export function DemoModal() {
   const { open, setOpen } = useDemoModal()
   const t = useT('demoUpload')
+  const tErr = useT('errorsOnboarding')
   const [phase, setPhase] = useState<Phase>('idle')
   const [file, setFile] = useState<File | null>(null)
   const [text, setText] = useState('')
@@ -241,7 +247,7 @@ export function DemoModal() {
       if (data.outcome === 'menu_failed') {
         setFailedTruckId(data.truckId ?? null); setPhase('menu_failed'); return
       }
-      setMessage(data.error || { code: 'somethingWrong' })
+      setMessage({ server: data, code: 'somethingWrong' })
       setPhase('error')
     } catch {
       // An AbortError here is EXPECTED when a sample replaced this fetch — the stale guard suppresses it
@@ -262,7 +268,7 @@ export function DemoModal() {
       })
       const data = await res.json()
       if (data.ok) setBuildSent(true)
-      else setMessage(data.error || { code: 'sendFailed' })
+      else setMessage({ server: data, code: 'sendFailed' })
     } catch {
       setMessage({ code: 'sendFailed' })
     } finally {
@@ -276,7 +282,8 @@ export function DemoModal() {
   const shownSteps = templateRun ? TEMPLATE_STEPS : STEPS
   const stepLabel = (i: number) => (templateRun ? t(`templateSteps.${TEMPLATE_STEPS[i].key}`) : t(`steps.${STEPS[i].key}`))
   /** The words of the message held in state: a route's own string as it came, or our code's sentence. */
-  const messageText = message == null ? null : typeof message === 'string' ? message : t(`error.${message.code}`)
+  const messageText = message == null ? null : typeof message === 'string' ? message
+    : 'server' in message ? errorText(tErr, message.server, t(`error.${message.code}`)) : t(`error.${message.code}`)
   if (!open || typeof document === 'undefined') return null
 
   return createPortal(

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsOnboarding'
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -15,6 +17,8 @@ function ResetPasswordForm() {
   // (DEFAULT_LOCALE), as the page always did.
   const t = useT('auth.reset')
   const tField = useT('auth.fields')
+  // A refusal is worded from its code (errorsOnboarding), its English `error` the fallback (US polish batch, 19 Oct 2026).
+  const tErr = useT('errorsOnboarding')
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -67,7 +71,7 @@ function ResetPasswordForm() {
       const data = await res.json()
 
       if (!res.ok || data.error) {
-        setError(data.error || t('errorFallback'))
+        setError(errorText(tErr, data, t('errorFallback')))
         setLoading(false)
         return
       }

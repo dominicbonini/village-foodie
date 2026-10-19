@@ -10,7 +10,9 @@ export const NAMESPACES = {
   // The order page: its own words, the refusals it shows, and every shared piece it renders.
   order: ['order', 'errorsCustomer', 'eventCard', 'orderLine', 'deals', 'menuBadges', 'demo',
     // Language Phase 1c: the demo sign-up flow it can open (DemoGetStarted) and the pieces that flow renders.
-    'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea'],
+    'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',
+    // US polish batch (19 Oct 2026): the sign-up flow's refusals, worded from their codes.
+    'errorsOnboarding'],
   // The status / manage page.
   confirmation: ['orderStatus', 'errorsCustomer'],
   // Language Phase 1b: the kitchen surfaces and every shared piece they render (scripts/messages-split.cjs walks each
@@ -28,11 +30,16 @@ export const NAMESPACES = {
     // …and the two copy modules whose en-GB exports the dashboard still renders (lib/copy/offlineProtection, serviceSettings).
     'offlineProtection', 'serviceSettings',
     // Language Phase 1d Part 2 (Payments): the settings card's completion rows, shared with Manage › Payments.
-    'completionSettings'],
+    'completionSettings',
+    // US polish batch (19 Oct 2026): refusals worded from their codes — /api/dashboard/action, /api/events/action and
+    // /api/manage (custom domain), and the demo flow's.
+    'errorsKitchen', 'errorsManage', 'errorsOnboarding'],
   kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',
     'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',   // Language Phase 1c
     // Language Phase 1d (Settings): copy modules the KDS imports, whose en-GB exports read these namespaces.
-    'offlineProtection', 'serviceSettings'],
+    'offlineProtection', 'serviceSettings',
+    // US polish batch (19 Oct 2026): refusals worded from their codes.
+    'errorsKitchen', 'errorsManage', 'errorsOnboarding'],
   manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
     // Language Phase 1c: the cuisine and price controls, the walkthrough, and the where-based step.
     'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased', 'tradeArea',
@@ -62,7 +69,9 @@ export const NAMESPACES = {
     // account deletion, and the shared copy button.
     'manageWhatsApp', 'customDomain', 'deleteAccount', 'copyButton',
     // Language Phase 1d Part 2 (shell): the page's own words (tab bar, header, banners, toasts, trial popup), Billing, Team.
-    'manageShell', 'manageBilling', 'manageTeam'],
+    'manageShell', 'manageBilling', 'manageTeam',
+    // US polish batch (19 Oct 2026): the base-town step's and demo flow's refusals, worded from their codes.
+    'errorsOnboarding'],
   // Language Phase 1c: the setup wizard.
-  setup: ['setup', 'whereBased', 'tradeArea'],
+  setup: ['setup', 'whereBased', 'tradeArea', 'errorsOnboarding'],
 } as const satisfies Record<string, readonly AppNamespace[]>

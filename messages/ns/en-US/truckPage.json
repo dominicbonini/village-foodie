@@ -1,4 +1,7 @@
 {
+  "meta": {
+    "orderDescription": "Order ahead from {truck} and pick it up at the truck."
+  },
   "shareText": "Check out where {truck} is popping up next! 🚚",
   "noEvents": {
     "cta": "Send us a message to update!"

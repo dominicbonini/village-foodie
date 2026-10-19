@@ -104,8 +104,11 @@ console.log('\n── STRUCTURE: the real edit block ─────────
   const submitEdit = page.slice(page.indexOf('const submitEdit=async'), page.indexOf('const updateStock=async'))
   // Language Phase 1b re-pin: the fallback sentence is the message `dashboard.toast.editBusy` (asserted exactly);
   // the branch, its order and its `return` are unchanged.
+  // ⚠️ RE-PINNED (US polish batch, 19 October 2026): the route's refusal is now WORDED FROM ITS CODE
+  // (errorText(tErrK, data, …) — errorsKitchen, its English `error` the fallback, then editBusy); the branch, its order
+  // and its `return` are unchanged.
   check(GB_MESSAGES.dashboard.toast.editBusy === 'Someone else is updating orders right now. Please try again.'
-    && /if\(res\.status===409&&data\?\.retry\)\{\s*showToast\(data\?\.error\|\|tDash\('toast\.editBusy'\),'error'\)\s*return\s*\}/.test(submitEdit), 'the dashboard shows that message and returns — the edit modal and its edits stay (no setEditingOrder(null), no fetchAll)')
+    && /if\(res\.status===409&&data\?\.retry\)\{\s*showToast\(errorText\(tErrK,data,tDash\('toast\.editBusy'\)\),'error'\)\s*return\s*\}/.test(submitEdit), 'the dashboard shows that message and returns — the edit modal and its edits stay (no setEditingOrder(null), no fetchAll)')
   check(submitEdit.indexOf('data?.retry') < submitEdit.indexOf('if(!res.ok)throw'), '…and the branch sits before the generic throw, exactly where the Add Order panel handles the manual path\'s busy answer')
   for (const m of CALLEE_MODULES) {
     const src = fs.readFileSync(path.join(REPO, m), 'utf8')

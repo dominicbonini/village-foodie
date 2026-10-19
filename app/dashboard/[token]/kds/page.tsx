@@ -63,6 +63,9 @@ import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/kds'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsKitchen'
+import '@/lib/i18n/catalog/errorsManage'
 
 // View mode driven by ?view= query param
 // /kds           → window view (default, for the main iPad at the hatch)
@@ -146,6 +149,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   // that moment is the right one, and no callback (or the effects downstream of `fetchAll`) is re-created
   // when the language arrives. State set inside `fetchAll` holds a CODE (`error`), turned into words below.
   const t = useT('kds')
+  // A refusal is worded from its code + params, its English `error` the fallback (US polish batch, 19 October 2026):
+  // /api/dashboard → errorsKitchen, /api/events/action → errorsManage.
+  const tErrK = useT('errorsKitchen'), tErrM = useT('errorsManage')
   const tRef = useRef(t)
   useEffect(() => { tRef.current = t }, [t])
   // Van-level "show cooking step" preference (Settings). Gates the cook view's "Start
@@ -627,7 +633,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         loadedOnceRef.current = false
         setHasLoaded(false)
         // A CODE when the server sent no words (Language Phase 1b) — turned into words at render.
-        setError(data.error ?? 'error.linkInvalid')
+        setError(errorText(tErrK, data, 'error.linkInvalid'))
         setLoading(false)
         return
       }
@@ -1578,7 +1584,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'open', eventId, payload: {} }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); return }
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(errorText(tErrM, data, ''))
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() } : e))
       showKdsToast(t('event.started'))
       fetchAllRef.current() // re-sync from the server read so status propagates immediately
@@ -1610,7 +1616,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { end_time: newEnd } }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setFinishTimeTarget(null); return }
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(errorText(tErrM, data, ''))
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
       showKdsToast(t('event.finishTimeNow', { time: newEnd }))
       setFinishTimeTarget(null)
@@ -1639,7 +1645,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'close', eventId, payload: {} }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(errorText(tErrM, data, ''))
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'closed' as const, closed_at: new Date().toISOString() } : e))
       setShowEventMenu(false); showKdsToast(t('event.finished'))
       fetchAllRef.current() // re-sync so the status flips to "Finished" immediately
@@ -1672,7 +1678,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'cancel', eventId, payload: { cancellationReason, cancellationNote } }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(errorText(tErrM, data, ''))
       // 🔴 THE ONE PLACE THE DEFAULT PICK RUNS AGAIN, AND IT IS OPERATOR-INITIATED. The held event has
       // just been cancelled by a human on this screen, so there is nothing left to hold; leaving
       // `selectedEventId` null would strand the board on a blank event with no way back (the seed latch
@@ -1691,7 +1697,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { customer_note: eventNoteInput } }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(errorText(tErrM, data, ''))
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, customer_note: eventNoteInput || null } : e))
       setShowEventMenu(false); showKdsToast(t('event.noteSaved'))
     } catch (err: any) { showKdsToast(err.message || t('toast.failed')) }

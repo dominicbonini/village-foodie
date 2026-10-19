@@ -20,6 +20,8 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsOnboarding'
 
 function SignupForm() {
   const router = useRouter()
@@ -28,6 +30,8 @@ function SignupForm() {
   // provider, so they read en-GB (DEFAULT_LOCALE), as the page always did.
   const t = useT('auth.signup')
   const tField = useT('auth.fields')
+  // A refusal is worded from its code (errorsOnboarding), its English `error` the fallback (US polish batch, 19 Oct 2026).
+  const tErr = useT('errorsOnboarding')
   // Carried from the demo's "Save my menu" CTA so the account can be linked to the demo it came from.
   const demo = params.get('demo')
 
@@ -51,7 +55,7 @@ function SignupForm() {
       })
       const data = await res.json()
       if (!data.ok) {
-        setError(data.error || t('errorFallback'))
+        setError(errorText(tErr, data, t('errorFallback')))
         setExisting(!!data.existing)
         return
       }

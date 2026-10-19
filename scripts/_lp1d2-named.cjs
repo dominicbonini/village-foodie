@@ -188,6 +188,11 @@ const NAMED = [
     views: id => /^smoke-schedule\/US\|tab\|/.test(id),
     expect: b => mapStrings(b, x => x.replace(/<div><label class="block text-xs font-bold text-slate-600 mb-1">ZIP code<\/label><input type="text" placeholder="e\.g\. 78701" class="([^"]*)" value="[^"]*"\/><\/div>/g,
       (zip, cls) => `<div class="grid grid-cols-[5.5rem_1fr] gap-2"><div><label class="block text-xs font-bold text-slate-600 mb-1">State</label><input type="text" placeholder="e.g. NJ" class="${cls}" value=""/></div>${zip}</div>`)) },
+  // ── ⚠️ RE-PINNED (US polish batch, 19 October 2026, docs/us-polish-batch-report.md) ────────────────────────────────
+  { id: 'us-polish-thousands-separators', country: 'both', agent: 'US polish batch (19 Oct 2026)',
+    what: 'lib/money-format.ts groups every displayed amount ≥ 1,000 ("£1,234.56", "$1,234.56"); a printed ticket keeps its line width (scripts/_us-polish-grouping.cjs). PRECISE. The Reports CSVs are excluded — they keep raw figures.',
+    views: id => !/csv/i.test(id),
+    expect: b => mapStrings(b, require('./_us-polish-grouping.cjs').groupString) },
 ]
 
 const SMOKE_SHARED = [

@@ -133,6 +133,8 @@ const NAMED = [
         .replace(/(>Months 1–)([0-9]+\.[0-9]{4,})(<)/g, (m, a, n, b) => `${a}${f(n)}${b}`)
     },
   },
+  // us-polish-hg-truck-preview (19 October 2026) — defined below with its reason; applied here after metadataBase-www.
+  { id: 'us-polish-hg-truck-preview', what: 'see US_POLISH_HG_TRUCK_PREVIEW', views: id => US_POLISH_HG_TRUCK_PREVIEW.views(id), apply: (id, v) => US_POLISH_HG_TRUCK_PREVIEW.apply(id, v) },
 ]
 
 /** ⚠️ RE-PINNED, 18 October 2026 (US layout fixes, /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md) — a NAMED transform kept
@@ -156,6 +158,29 @@ const US_LAYOUT_FIX_13 = {
       if (v.split(a).length !== 2) throw new Error(`${this.id}: "${a}" is not in ${id} exactly once`)
       v = v.replace(a, b)
     }
+    return v
+  },
+}
+
+/** ⚠️ RE-PINNED, 19 October 2026 (US polish batch, docs/us-polish-batch-report.md) — us-polish-hg-truck-preview: on the
+ *  HatchGrab host a truck page's preview comes from the truck itself (lib/truck-share-meta.ts), never the Google Sheet.
+ *  The fixture's truck row has no `active` / `show_on_hg` (it is not public on HatchGrab) and there is no discovery row,
+ *  so — correctly — nothing about it is published: the page's title is "Food truck" (root template → "Food truck |
+ *  HatchGrab") and every other tag is the root layout's own (its description, og:*, the HatchGrab share card, twitter:*).
+ *  PRECISE: exactly those fields are set; metadataBase, manifest and icons are BEFORE's. Used by scripts/language-phase-1e.cjs
+ *  (NAMED, below) and scripts/language-phase-1e-tidy.cjs. The truck-specific HatchGrab preview is proved by
+ *  scripts/us-polish-batch.cjs §1. */
+const US_POLISH_HG_TRUCK_PREVIEW = {
+  id: 'us-polish-hg-truck-preview', what: 'HatchGrab truck page preview from the truck itself: a truck not public on HatchGrab previews generically ("Food truck | HatchGrab", the root layout\'s tags)',
+  views: id => /^parts\/truck\|(GB|US)\|meta$/.test(id),
+  apply(id, v) {
+    const m = v && v.merged ? v.merged : v
+    if (!m || typeof m !== 'object') return v
+    const description = 'The food truck management platform', image = `${ORIGIN}/logos/hatchgrab-share-card.png`
+    m.title = 'Food truck | HatchGrab'
+    m.description = description
+    m.openGraph = { title: 'HatchGrab', description, url: ORIGIN, siteName: 'HatchGrab', images: [{ url: image, width: 1200, height: 630, alt: 'HatchGrab Logo' }], locale: 'en_GB', type: 'website' }
+    m.twitter = { card: 'summary_large_image', title: 'HatchGrab', description, images: [image] }
     return v
   },
 }
@@ -191,4 +216,4 @@ function apply(id, before) {
   return { expected: v, touched }
 }
 
-module.exports = { NAMED, US_LAYOUT_FIX_13, apply, normalize, SEP, US_BEHAVIOUR, usBehaviour, ORIGIN, ROUTER, countryPath, seg, parse }
+module.exports = { NAMED, US_LAYOUT_FIX_13, US_POLISH_HG_TRUCK_PREVIEW, apply, normalize, SEP, US_BEHAVIOUR, usBehaviour, ORIGIN, ROUTER, countryPath, seg, parse }

@@ -440,6 +440,12 @@ const NAMED = [
     what: 'POST /api/orders/cancel answers {"ok":true,"paymentState":…} (an ADDED field, last): the cancel page shows "If you paid by card, any refund…" only when a card paid or is held. The fixture order is pay-at-the-truck, so the field reads "hatch". Status, redirect and every email it sends are unchanged. PRECISE.',
     views: id => /^1a\/api\/(GB|US)\|cancel\|ok$/.test(id),
     expect: b => mapFields(b, ['body'], x => (x === '{"ok":true}' ? '{"ok":true,"paymentState":"hatch"}' : x)) },
+
+  // ── ⚠️ RE-PINNED (US polish batch, 19 October 2026, docs/us-polish-batch-report.md) ────────────────────────────────
+  { id: 'us-polish-thousands-separators', part: 'US polish batch (19 Oct 2026)', country: 'both',
+    what: 'lib/money-format.ts groups every displayed amount: "£1234.56" → "£1,234.56", "$1234.56" → "$1,234.56" (≥ 1,000 only; below, nothing changes). On a printed ticket the right-aligned figure takes its commas out of the label gap, so the line keeps its width; a row with no room keeps the ungrouped figure (lib/printing/ticket.ts `fitted`). PRECISE (scripts/_us-polish-grouping.cjs). The Reports CSVs are excluded — they keep raw figures.',
+    views: id => !/csv/i.test(id),
+    expect: b => mapStrings(b, require('./_us-polish-grouping.cjs').groupString) },
 ]
 
 /** The named entries that apply to a view, and what they make of its BEFORE value: { listed: true, entries } when an

@@ -154,6 +154,8 @@ Then check the stranded-capture cron still runs. In Vercel's cron log, the next 
 
 **Rollback.** This restores the defaults; compare with the "before" output:
 
+⛔ DO NOT RUN — this reopens the functions to the public key. Running it is what undid the 12 Oct revokes.
+
 ```sql
 begin;
 grant execute on function public.find_stranded_authorisations(integer, integer) to public, anon, authenticated;

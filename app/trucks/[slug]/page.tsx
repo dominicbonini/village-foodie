@@ -11,6 +11,7 @@ import '@/lib/i18n/catalog/truckPage';
 import { headers } from 'next/headers';
 import { isHatchGrabHost } from '@/lib/brand';
 import { headerFromOperatorRow, type OperatorTruckRow } from '@/lib/truck-header';
+import { hatchGrabTruckMetadata } from '@/lib/truck-share-meta';
 
 // ── Language Phase 1e: THIS PAGE SPEAKS ITS TRUCK'S LANGUAGE, NOT THE VISITOR'S ─────────────────────────
 // It is the truck's own page, so its words, share text and link-preview text use the truck's country's locale.
@@ -90,6 +91,10 @@ async function getTruckMeta(slug: string) {
 // 👇 This is the magic Next.js function that builds the WhatsApp/Social Media cards 👇
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
+  // 🔴 ON HATCHGRAB THE PREVIEW COMES FROM THE TRUCK ITSELF (US polish batch, 19 October 2026; lib/truck-share-meta.ts):
+  // its name, its own cover/logo (else HatchGrab's share card), HatchGrab branding, this page's HatchGrab URL, in the
+  // truck's language — no Google Sheet. Village Foodie: the code below, unchanged.
+  if (isHatchGrabHost(await requestHost())) return hatchGrabTruckMetadata(resolvedParams.slug, 'page');
   const truck = await getTruckMeta(resolvedParams.slug);
   const locale = await truckLocale(resolvedParams.slug);
   const t = translatorFor(locale, 'truckPage');

@@ -60,6 +60,9 @@ import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import { translatorFor } from '@/lib/i18n/translator'
 import { resolveLocale } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/demoGetStarted'
+import { errorTextIn } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsOnboarding'
+import '@/lib/i18n/catalog/tradeArea'
 
 // ── THE SIGNUP OFFER ─────────────────────────────────────────────────────────────────────────────────
 // Stated once, in messages/en-GB.json `demo.signupOffer` (Language Phase 1c): the loop-complete card reads it from
@@ -105,7 +108,9 @@ type DemoCopyVariant = 'upload' | 'sample' | 'saveOnly'
  *  and worded at render (`demoGetStarted.error.<code>`). The route's own words, when it sent some, are held as the
  *  string it sent and shown as they came. */
 type DemoErrorCode = 'saveFailed' | 'savedNoEmail' | 'unreachable' | 'createAccountFailed' | 'truckCreateFailed' | 'truckUnreachable' | 'truckNoToken'
-type DemoError = string | { code: DemoErrorCode }
+// `server` (US polish batch, 19 October 2026): a route's refusal BODY, worded at render from its code (errorsOnboarding,
+// or tradeArea for /api/setup's base town) in the words of the moment; its English `error`, then `code`'s sentence, the fallbacks.
+type DemoError = string | { code: DemoErrorCode } | { server: { error?: unknown; code?: unknown; params?: unknown }; code: DemoErrorCode }
 /** A field's problem, held as a code (`demoGetStarted.fieldError.<code>`; 'phoneInvalid' is the shared phone sentence). */
 type FieldErrorCode = 'firstName' | 'lastName' | 'truck' | 'cuisine' | 'phoneMissing' | 'phoneInvalid' | 'email' | 'password' | 'terms'
 
@@ -205,6 +210,12 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const wizardLocale = step !== 'landing' && chosenCountry ? resolveLocale(chosenCountry.locale) : null
   const tWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'demoGetStarted') : null), [wizardLocale])
   const t = tWizard ?? tPage
+  // A refusal's words follow the same rule: the wizard's language once a country is chosen, else the page's.
+  const tErrPage = useT('errorsOnboarding'), tTradePage = useT('tradeArea')
+  const tErrWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'errorsOnboarding') : null), [wizardLocale])
+  const tTradeWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'tradeArea') : null), [wizardLocale])
+  const tErr = tErrWizard ?? tErrPage
+  const tTrade = tTradeWizard ?? tTradePage
   const wordsLocale = wizardLocale ?? pageLocale
   const validateBasedStep = (): boolean => {
     if (!base || !signupCountries.data) return false
@@ -340,7 +351,8 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // is its own decision. Omitted → the variant's button, which is what every banner uses.
   const triggerLabel = label ?? tPage(`${copyVariant}.bannerButton`)
   /** The words of an error held in state: the route's own string as it came, or our code's sentence. */
-  const errorText = (e: DemoError | null): string | null => (e == null ? null : typeof e === 'string' ? e : t(`error.${e.code}`))
+  const errorText = (e: DemoError | null): string | null => (e == null ? null : typeof e === 'string' ? e
+    : 'server' in e ? errorTextIn([tErr, tTrade] as never[], e.server, t(`error.${e.code}`)) : t(`error.${e.code}`))
   /** The words of a field's error code. The phone's malformed-number sentence is the shared one (lib/phone-message). */
   const fieldErrorText = (c: FieldErrorCode | undefined): string | null =>
     !c ? null : c === 'phoneInvalid' ? phoneErrorMessage('phone_number', signupPhone, wordsLocale) : t(`fieldError.${c}`)
@@ -358,7 +370,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
         body: JSON.stringify({ ...(token ? { token } : { slug }), email: email.trim() }),
       })
       const data = await res.json()
-      if (!data.ok) { setError(data.error || { code: 'saveFailed' }); return null }
+      if (!data.ok) { setError({ server: data, code: 'saveFailed' }); return null }
       const until = data.deletionDate ?? ''
       try {
         localStorage.setItem(storeKey, until)
@@ -492,7 +504,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
           // 409 existing / 403 gate closed / validation — surface the real message and stay put. The account
           // was NOT created, so leaving the guard false is correct: the button becomes a normal retry.
           setStages(s => ({ ...s, account: 'error' }))
-          setError(data.error || { code: 'createAccountFailed' })
+          setError({ server: data, code: 'createAccountFailed' })
           setExisting(!!data.existing)
           setBusy(false); return
         }
@@ -557,7 +569,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
       const data = await res.json().catch(() => ({}))
       if (!data.ok) {
         setStages(s => ({ ...s, truck: 'error' }))
-        setError(data.error || { code: 'truckCreateFailed' })
+        setError({ server: data, code: 'truckCreateFailed' })
         setBusy(false); return
       }
       dashboardToken = data.truck?.dashboard_token ?? null

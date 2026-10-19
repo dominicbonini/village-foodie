@@ -10,6 +10,8 @@ import { notificationCopy, recordRows, providerFieldRows, CONFIRM_CHECKLIST, con
 // and their web person in plain English, US words for a US truck.
 import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/customDomain'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsManage'
 import type { DnsProvider } from '@/lib/custom-domain/dns'
 import type { TimeSettings } from '@/lib/time-utils'
 
@@ -90,6 +92,8 @@ export default function CustomDomainSetup(props: Props) {
   const { token, plan, featureOverrides, trialExpiresAt, truckName } = props
   const allowed = canAccess(plan, 'embed_schedule', featureOverrides ?? {}, trialExpiresAt)
   const t = useT('customDomain')
+  // /api/manage's domain_* refusals, worded from their code (errorsManage) — US polish batch, 19 October 2026.
+  const tErr = useT('errorsManage')
   const locale = useAppLocale()
 
   const [open, setOpen] = useState(false)
@@ -202,9 +206,9 @@ export default function CustomDomainSetup(props: Props) {
       body: JSON.stringify({ token, action, ...extra }),
     })
     const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data?.error || t('wizard.genericError'))
+    if (!res.ok) throw new Error(errorText(tErr, data, t('wizard.genericError')))
     return data
-  }, [token, t])
+  }, [token, t, tErr])
 
   /**
    * 🔴 RESUME. An operator who closed the tab returns to the record, not to the start. This matters

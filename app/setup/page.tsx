@@ -34,6 +34,9 @@ import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, 
 import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/setup'
+import { errorTextIn } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsOnboarding'
+import '@/lib/i18n/catalog/tradeArea'
 
 // Language Phase 1c: the step names are messages (`setup.steps.<key>`); the keys stay the ids.
 const STEPS = [
@@ -47,6 +50,10 @@ function SetupWizard() {
   const router = useRouter()
   const params = useSearchParams()
   const t = useT('setup')
+  // /api/setup's refusals are worded from their code — errorsOnboarding, or tradeArea for the base town — with the
+  // English `error` the fallback (US polish batch, 19 October 2026).
+  const tErr = useT('errorsOnboarding')
+  const tTrade = useT('tradeArea')
   const verify = params.get('verify')
 
   const [name, setName] = useState('')
@@ -177,7 +184,7 @@ function SetupWizard() {
         }),
       })
       const data = await res.json()
-      if (!data.ok) { setError(data.error || t('createFailed')); return }
+      if (!data.ok) { setError(errorTextIn([tErr, tTrade], data, t('createFailed'))); return }
       // MENU STEP — reuse the real import wizard, pre-loaded from the demo's stored extraction (?import=demo).
       // It re-commits into this new truck: grouped-vs-separate re-asked, price gate applied, allergens
       // re-decided. If there's no claimed demo/extraction the wizard simply shows a normal upload.

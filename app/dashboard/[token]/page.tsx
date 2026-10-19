@@ -151,6 +151,10 @@ import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/dashboard'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsKitchen'
+import '@/lib/i18n/catalog/errorsManage'
+import '@/lib/i18n/catalog/errorsOnboarding'
 // Language Phase 1d Part 2: the settings card's completion rows are `completionSettings`, shared with Manage › Payments.
 import '@/lib/i18n/catalog/completionSettings'
 import '@/lib/i18n/catalog/kitchenCapacity'
@@ -285,6 +289,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
   // Language Phase 1b: every word on this screen is a message in `dashboard` (messages/en-GB.json).
   const tDash=useT('dashboard')
+  // A refusal is worded from its code + params, its English `error` the fallback (US polish batch, 19 October 2026):
+  // /api/dashboard/action → errorsKitchen, /api/events/action → errorsManage, /api/demo/restart → errorsOnboarding.
+  const tErrK=useT('errorsKitchen'), tErrM=useT('errorsManage'), tErrO=useT('errorsOnboarding')
   const tCompletion=useT('completionSettings')
   const tCap=useT('kitchenCapacity')   // Language Phase 1d: the capacity explainer, one message shared with Manage
   const tOff=useT('offlineProtection')   // Language Phase 1d: the offline-protection card, in the truck's language
@@ -1947,7 +1954,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // the dead one. Reloading would drop the operator back onto the same ended service with the error
       // gone and nothing to press. Instead: keep the card, show the real error, re-enable the button.
       if(!res.ok){
-        setRestartError(data?.error||tDash('demo.restartFailed'))
+        setRestartError(errorText(tErrO,data,tDash('demo.restartFailed')))
         restartingRef.current=false; setRestarting(false)
         return false
       }
@@ -2157,7 +2164,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       })
       if(!res.ok){
         let msg=tDash('toast.intervalsFailed')
-        try{ msg=(await res.clone().json())?.error ?? msg }catch{}
+        try{ msg=errorText(tErrK,await res.clone().json(),msg) }catch{}
         showToast(msg,'error')
         return
       }
@@ -2607,7 +2614,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const data=await res.json().catch(()=>({}))
       const refunded=orders.find(o=>o.order_key===orderKey)
       const money=formatMinorOrBare(amountMinor,orderMoney(refunded,truck?.money),'refund message')
-      if(!res.ok) return {ok:false,settled:false,message:typeof data?.error==='string'?data.error:tDash('refund.failed')}
+      if(!res.ok) return {ok:false,settled:false,message:errorText(tErrK,data,tDash('refund.failed'))}
       fetchAll(undefined,false,true)
       // 🔴 "SENT" IS NOT "REFUNDED", AND THE PENDING CASE SAYS SO. Stripe accepts a refund on a direct
       // charge as `pending` when the connected account's balance is short; no money has moved yet and
@@ -2767,10 +2774,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // the same shape the Add Order panel handles for a manual order: show the message, keep the edit on
       // screen, let the operator try again. Not an error thrown: the modal and its edits stay as they are.
       if(res.status===409&&data?.retry){
-        showToast(data?.error||tDash('toast.editBusy'),'error')
+        showToast(errorText(tErrK,data,tDash('toast.editBusy')),'error')
         return
       }
-      if(!res.ok)throw new Error(data.error)
+      if(!res.ok)throw new Error(errorText(tErrK,data,''))
       setEditReprice(null)
       // A slot-rebooking failure does NOT undo the saved edit — the server reports it so the operator
       // knows the capacity board is stale, and surfacing it must not read as "the edit failed".
@@ -2872,7 +2879,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const wasClosedEvent=upcomingEvents.find(e=>e.id===eventId)?.status==='closed'
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})
-      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       const opened=new Date().toISOString()
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
       setUpcomingEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
@@ -2893,7 +2900,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setFinishTimeBusy(true)
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{end_time:newEnd}})})
-      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,end_time:newEnd}:e))
       showToast(tDash('toast.finishTimeNow',{time:newEnd}))
       setFinishTimeTarget(null)
@@ -2932,7 +2939,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Flips the EVENT status to 'closed' only — existing orders are untouched and stay
       // fully visible/actionable; this just stops NEW customer orders.
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'close',eventId,payload:{}})})
-      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'closed' as const,closed_at:new Date().toISOString()}:e))
       setShowEventMenu(false); showToast(tDash('toast.eventFinished'))
       fetchAllRef.current() // re-sync so the status flips to "Finished" immediately (no manual refresh)
@@ -3037,7 +3044,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setEventCancelBusy(true)
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'cancel',eventId,payload:{cancellationReason,cancellationNote}})})
-      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.filter(e=>e.id!==eventId))
       setSelectedEventId(null); setShowEventMenu(false); showToast(tDash('toast.eventCancelled'))
       fetchAllRef.current() // re-sync so the cancelled event drops out immediately
@@ -3048,7 +3055,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const saveEventNote=async(eventId:string)=>{
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{customer_note:eventNoteInput}})})
-      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,customer_note:eventNoteInput||null}:e))
       setShowEventMenu(false); showToast(tDash('toast.noteSaved'))
     }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}

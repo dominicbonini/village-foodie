@@ -2593,6 +2593,12 @@ head('5b · THE MODAL AND THE CARD')
     /* The five moved controls, the three inline offline expressions, the replaced mount and the
      * replaced state line — plus the structural closers they took with them. */
     const ALLOWED = [
+      /* ⚠️ RE-PINNED (US polish batch, 19 October 2026, docs/us-polish-batch-report.md): seven refusal lines now word the
+       * route's refusal from its code + params (errorText — errorsKitchen for /api/dashboard/action, errorsManage for
+       * /api/events/action), the English `error` the fallback. Each replacement is asserted below (refusalsWorded). */
+      /^try\{ msg=\(await res\.clone\(\)\.json\(\)\)\?\.error \?\? msg \}catch\{\}$/,
+      /^if\(!res\.ok\)throw new Error\(data\.error\)$/,
+      /^const data=await res\.json\(\); if\(!res\.ok\) throw new Error\(data\.error\)$/,
       /* ⚠️ MIDNIGHT EVENTS (17 October 2026, docs/midnight-and-format-fixes-report.md): thirteen lines replaced so an event
        * that runs past midnight is read by the one rule (lib/event-window.ts) — the offline-cache prune keeps yesterday, today's
        * events and the auto-open stale filter keep yesterday's running overnight event, auto-select reads the end on its own
@@ -2903,6 +2909,10 @@ head('5b · THE MODAL AND THE CARD')
       && /nowOnEvent\(/.test(now) && /eventTimeMins\(/.test(now) && /toEngineClock\(/.test(now) && /eventDates\(/.test(now)
       && /formatSlot\(o\.slot,\s*dashTime\)/.test(now) && /start_time:\s*activeEvent\.start_time/.test(now)
     if (!midnightMoved) unexplained.push('(Midnight events: a replacement for one of the thirteen named lines is missing)')
+    // US polish batch: the seven refusal lines' replacements, each present.
+    const refusalsWorded = now.includes("try{ msg=errorText(tErrK,await res.clone().json(),msg) }catch{}") && now.includes("if(!res.ok)throw new Error(errorText(tErrK,data,''))")
+      && (now.match(/const data=await res\.json\(\); if\(!res\.ok\) throw new Error\(errorText\(tErrM,data,''\)\)/g) || []).length === 5
+    if (!refusalsWorded) unexplained.push('(US polish batch: a refusal line is not worded from its code)')
     if (!lp2Moved) unexplained.push('(Language Phase 2: the status labels / capacity description are not read from `dashboard` messages)')
     /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the companion for the followed moves above — all seven are moves out of
      * `dashboard.settings.`, every one is gone from the page under its old key and read under its new one through

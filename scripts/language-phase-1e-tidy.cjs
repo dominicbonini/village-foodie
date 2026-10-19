@@ -74,6 +74,8 @@ const NAMED = [
   // pricing loses `band`, the final CTA gains it, `.switch-block` an inline wash. The transform lives in
   // scripts/_lp1e-named.cjs (US_LAYOUT_FIX_13, exact substrings, each found exactly once); it names pages/landing|US|html only.
   { id: FIX13.id, what: FIX13.what, applies: id => FIX13.views(id), apply: (v, id) => FIX13.apply(id, v) },
+  // ⚠️ RE-PINNED, 19 October 2026 (US polish batch): the HatchGrab truck page's preview from the truck itself — scripts/_lp1e-named.cjs.
+  (P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) }))(require('./_lp1e-named.cjs').US_POLISH_HG_TRUCK_PREVIEW),
 ]
 /** BEFORE value → { expected, touched } */
 function expect(id, before) {

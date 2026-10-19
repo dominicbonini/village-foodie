@@ -42,6 +42,8 @@ import { WALK_UP_NAME } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/addOrder'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsKitchen'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -351,6 +353,8 @@ export function AddOrderPanel({
   // provides it to its leaves (the basket lines, the price editor, the deals modal) as well.
   const amount = (major: number) => formatMajorOrBare(major, truck.money, 'add order')
   const t = useT('addOrder')
+  // /api/dashboard/action's refusals, worded from their code (errorsKitchen) — US polish batch, 19 October 2026.
+  const tErr = useT('errorsKitchen')
 
   // ── order state ─────────────────────────────────────────────────────────────
   const [manualName, setManualName] = useState('')
@@ -1708,7 +1712,7 @@ setItemModal({ item, modGroups, editCartKey })
         showToast(t('offlineNotSent'), 'error')
         return
       }
-      if (!result.ok) throw new Error(data.error)
+      if (!result.ok) throw new Error(errorText(tErr, data, ''))
       // ── "Take payment £X" WENT THROUGH; THE MONEY DID NOT ────────────────────────────────────────
       // 🔴 THE THIRD paymentWarning PRODUCER, and the one whose lie lasts longest. The walk-up
       // paid-at-order path fails OPEN on the ledger write (action/route.ts:~1237): the ORDER is created

@@ -107,8 +107,10 @@ export function currencySymbol(f: MoneyFormat): string {
 //
 // ── 🔴 BYTE-IDENTICAL TO THE `£${n.toFixed(2)}` IT REPLACES, IN GB ──────────────────────────────────────
 //   • the currency's own decimals (2 for GBP/USD), ALWAYS shown — "£12.00", never "£12";
-//   • NO thousands separator by default — orders, tickets and emails have printed "£1234.56" since launch,
-//     and a ticket's columns are counted in characters;
+//   • THOUSANDS SEPARATORS ON (US polish batch, 19 October 2026 — docs/us-polish-batch-report.md): "£1,234.56",
+//     "$1,345.09", the country's own separator. Until then orders, tickets and emails printed "£1234.56". Below 1,000
+//     nothing changes. `grouping: false` keeps the raw figure where a machine reads it — the Reports CSVs — and the
+//     printed ticket falls back to it on the one row where a separator would push the line over its width;
 //   • ROUNDED BY toFixed, THEN FORMATTED BY Intl. The two round differently: toFixed rounds the double's
 //     EXACT binary value (1.005 is 1.00499…, so "1.00"), Intl rounds its shortest decimal form ("1.005",
 //     so "1.01"). The old code was toFixed, so toFixed decides the digits and Intl only lays them out —
@@ -128,7 +130,7 @@ export function currencySymbol(f: MoneyFormat): string {
 export interface TruckMoney extends MoneyFormat { localeByCountry?: Record<string, string> }
 
 export interface AmountOptions {
-  /** Thousands separators. OFF by default — see above. */
+  /** Thousands separators. ON by default (19 October 2026); `false` for a figure a machine reads (the CSVs). */
   grouping?: boolean
   /** "£12" for a whole amount, "£12.50" otherwise — event-pricing rule labels only. */
   trimWhole?: boolean
@@ -158,7 +160,7 @@ export function formatMajor(major: number, f: MoneyFormat, opts: AmountOptions =
   const n = rounded(major, digits)
   const whole = opts.trimWhole === true && Number.isInteger(n)
   const parts = nf(f.locale, {
-    style: 'currency', currency: f.currency, useGrouping: opts.grouping === true,
+    style: 'currency', currency: f.currency, useGrouping: opts.grouping !== false,
     minimumFractionDigits: whole ? 0 : digits, maximumFractionDigits: whole ? 0 : digits,
   }).formatToParts(Math.abs(n))
   if (opts.minusBeforeSymbol) return (n < 0 ? '-' : '') + parts.map(p => p.value).join('')
@@ -186,7 +188,7 @@ export function formatMajorNumber(major: number, f: MoneyFormat, opts: Pick<Amou
   const digits = minorDigits(f.currency)
   const n = rounded(major, digits)
   return minusBeforeDigits(
-    nf(f.locale, { useGrouping: opts.grouping === true, minimumFractionDigits: digits, maximumFractionDigits: digits }).formatToParts(Math.abs(n)),
+    nf(f.locale, { useGrouping: opts.grouping !== false, minimumFractionDigits: digits, maximumFractionDigits: digits }).formatToParts(Math.abs(n)),
     n < 0,
   )
 }
@@ -214,18 +216,25 @@ function warnOnce(where: string): void {
   console.warn(`[money] ${where}: no currency for this amount — printing it without a symbol`)
 }
 
+/** The bare figure, two decimals: "1,234.56" (grouped by threes with ",", as both seeded locales group), or
+ *  "1234.56" when `grouping` is false. */
+function bareFigure(major: number, grouping: boolean | undefined): string {
+  const s = rounded(major, 2).toFixed(2)
+  return grouping === false ? s : s.replace(/^(-?)(\d+)/, (_, sign: string, d: string) => sign + d.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+}
+
 /** formatMajor, or the bare figure ("43.90") and one warning when there is no format. */
 export function formatMajorOrBare(major: number, f: MoneyFormat | null | undefined, where: string, opts: AmountOptions = {}): string {
   if (f && f.currency && f.locale) return formatMajor(major, f, opts)
   warnOnce(where)
-  return rounded(major, 2).toFixed(2)
+  return bareFigure(major, opts.grouping)
 }
 
 /** formatMinor, or the bare figure and one warning when there is no format. */
 export function formatMinorOrBare(minor: number, f: MoneyFormat | null | undefined, where: string, opts: AmountOptions = {}): string {
   if (f && f.currency && f.locale) return formatMinor(minor, f, opts)
   warnOnce(where)
-  return rounded(Number(minor) / 100, 2).toFixed(2)
+  return bareFigure(Number(minor) / 100, opts.grouping)
 }
 
 /** The symbol for a box's prefix ("£", "$"), or nothing (and one warning) when there is no format. */

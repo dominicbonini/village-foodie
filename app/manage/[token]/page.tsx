@@ -15073,9 +15073,11 @@ interface ReportData {
 interface RecentEvent { id: string; venue_name: string | null; event_date: string; status: string }
 
 // 🔴 EVERY REPORT FIGURE IN ITS OWN CURRENCY (Phase 2A): an order's in orders.currency, totals across
-// orders in the truck's — both laid out in the truck's locale (the manage page's country settings). The CSV
-// keeps the format it always had: the symbol and two decimals, no separators ("£43.90").
+// orders in the truck's — both laid out in the truck's locale (the manage page's country settings). On screen with
+// thousands separators ("£1,234.56", 19 October 2026); the CSV keeps the format it always had — the symbol and two
+// decimals, NO separators ("£1234.56") — so a spreadsheet reads the figure as it always did (`csvMoney`).
 function fmtMoney(n: number, f: MoneyFormat) { return formatMajor(n, f) }
+function csvMoney(n: number, f: MoneyFormat) { return formatMajor(n, f, { grouping: false }) }
 /** Language Phase 1d Part 2: the Reports tab's words — screen, CSV headers and CSV cells — are `manageReports` messages. */
 type ReportsT = ReturnType<typeof useT<'manageReports'>>
 /** An order's format: its own currency (orders.currency), in the truck's locale; the truck's if the row
@@ -15126,7 +15128,7 @@ function explodeOrderItems(
         itemLabel: dealName ? `🎁 ${item.name} (${dealName})` : item.name,
         qty,
         basePrice: (item.unit_price || 0) - modSum,
-        modStr: (item.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${fmtMoney(m.price, orderFormat(o, truckFmt))}`).join('; '),
+        modStr: (item.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${csvMoney(m.price, orderFormat(o, truckFmt))}`).join('; '),
         noteStr: item.specialInstructions || '',
         itemTotal: (item.unit_price || 0) * qty,
         money: orderFormat(o, truckFmt),
@@ -15358,6 +15360,8 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     // en-GB is byte-identical to the file before; en-US says "Pickup time". The tax column is the country's tax label.
     const headers = [t('csv.orderId'), t('csv.date'), t('csv.event'), t('csv.timePlaced'), t('csv.collectionTime'), t('csv.customerName'), t('csv.orderType'), t('csv.items'), t('csv.deals'), t('csv.modifiers'), t('csv.notes'),
       ...(csvCharges ? [t('csv.subtotal'), csvCharges.taxLabel, t('csv.tip'), t('csv.serviceFee')] : []), t('csv.total')]
+    // The CSV's figures: no thousands separators (csvMoney), the screen's are grouped.
+    const csvOrderMoney = (o: { currency?: string | null } | null | undefined, n: number) => csvMoney(n, orderFormat(o, truckFmt))
     const rows = orders.map((o: any) => {
       const createdAt = o.created_at ? new Date(o.created_at) : null
       const dateStr = createdAt ? formatNumericDate(localDateOfInstant(createdAt, ts.timeZone), ts) : ''
@@ -15370,15 +15374,15 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
       const orderType = o.customer_email ? t('csv.customerOnline') : t('csv.placedByTruck')
       const itemStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => `${i.quantity || 1}× ${i.name}`).join('; ')
       const dealStr = (Array.isArray(o.deals) ? o.deals : []).map((d: any) => d.name).join('; ')
-      const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${orderMoney(o, m.price)}`)).join('; ')
+      const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +${csvOrderMoney(o, m.price)}`)).join('; ')
       const noteStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => i.specialInstructions).filter(Boolean).join('; ')
       const chargeCells = csvCharges ? [
-        orderMoney(o, o.food_minor != null ? Number(o.food_minor) / 100 : (o.total || 0)),
-        orderMoney(o, (Number(o.tax_minor) || 0) / 100),
-        orderMoney(o, (Number(o.tip_minor) || 0) / 100),
-        orderMoney(o, (Number(o.service_fee_minor) || 0) / 100),
+        csvOrderMoney(o, o.food_minor != null ? Number(o.food_minor) / 100 : (o.total || 0)),
+        csvOrderMoney(o, (Number(o.tax_minor) || 0) / 100),
+        csvOrderMoney(o, (Number(o.tip_minor) || 0) / 100),
+        csvOrderMoney(o, (Number(o.service_fee_minor) || 0) / 100),
       ] : []
-      return [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, itemStr, dealStr, modStr, noteStr, ...chargeCells, orderMoney(o, o.total || 0)]
+      return [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, itemStr, dealStr, modStr, noteStr, ...chargeCells, csvOrderMoney(o, o.total || 0)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
     })
     const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
@@ -15393,7 +15397,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     const headers = [t('csv.orderId'), t('csv.date'), t('csv.event'), t('csv.timePlaced'), t('csv.collectionTime'), t('csv.customerName'), t('csv.orderType'), t('csv.itemName'), t('csv.qty'), t('csv.unitPrice'), t('csv.modifiers'), t('csv.notes'), t('csv.itemTotal'), t('csv.orderTotal')]
     const rows = explodeOrderItems(orders, resolveEvent, truckFmt, ts, t).map(r =>
       [r.orderId, r.dateStr, r.eventStr, r.timePlaced, r.collectionTime, r.customerName, r.orderType,
-       r.itemLabel, String(r.qty), fmtMoney(r.basePrice, r.money), r.modStr, r.noteStr, fmtMoney(r.itemTotal, r.money), fmtMoney(r.orderTotal, r.money)]
+       r.itemLabel, String(r.qty), csvMoney(r.basePrice, r.money), r.modStr, r.noteStr, csvMoney(r.itemTotal, r.money), csvMoney(r.orderTotal, r.money)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
     )
     const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')

@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1357 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1360 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -446,26 +446,26 @@
 1b/components/US|card|asap|removePayment	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
 1b/components/US|card|asap|removePayment|offline	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
 1b/components/US|card|asap|contact	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card
-1b/components/US|card|big|dash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|dashReady	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card
+1b/components/US|card|big|dash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|dashReady	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators
 1b/components/US|card|big|dashCook	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-cook-header+us-layout-fix-10-charges-fold-card
-1b/components/US|card|big|kdsWindow	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|kdsWindowReady	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card
+1b/components/US|card|big|kdsWindow	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|kdsWindowReady	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators
 1b/components/US|card|big|kdsCook	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-cook-header
 1b/components/US|card|big|kdsWindowCookStyle	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-cook-header + words
-1b/components/US|card|big|kdsNoPay	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card
-1b/components/US|card|big|dash|oneCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|kdsWindowReady|oneCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card
-1b/components/US|card|big|kdsWindow|oneCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|dash|oneNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|kdsWindowReady|oneNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card
-1b/components/US|card|big|kdsWindow|oneNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|dash|twoNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|kdsWindowReady|twoNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card
-1b/components/US|card|big|kdsWindow|twoNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|removePayment	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|removePayment|offline	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
-1b/components/US|card|big|contact	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card + words
+1b/components/US|card|big|kdsNoPay	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators
+1b/components/US|card|big|dash|oneCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|kdsWindowReady|oneCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators
+1b/components/US|card|big|kdsWindow|oneCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|dash|oneNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|kdsWindowReady|oneNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators
+1b/components/US|card|big|kdsWindow|oneNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|dash|twoNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|kdsWindowReady|twoNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators
+1b/components/US|card|big|kdsWindow|twoNoCash	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|removePayment	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|removePayment|offline	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/components/US|card|big|contact	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
 1b/components/US|card|pendingSync	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-8-card-row1-wrap+us-layout-fix-10-charges-fold-card
 1b/components/US|card|pendingSync|kds	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card
 1b/components/US|card|conflict|payment	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card
@@ -759,7 +759,7 @@
 1b/dashboard/US|cancel|reason|duplicate_payment	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|cancel|reason|other	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|reject|card_held	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
-1b/dashboard/US|reject|big	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
+1b/dashboard/US|reject|big	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp+us-polish-thousands-separators + words
 1b/dashboard/US|edit	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|edit|down	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|edit|same	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
@@ -790,60 +790,61 @@
 1b/dashboard/US|handler|intervals|set	words
 1b/dashboard/US|handler|intervals|refusedBare	words
 1b/dashboard/US|handler|intervals|refusedNoJson	words
-1b/dashboard/US|handler|refund|settled	words
+1b/dashboard/US|handler|refund|pending	code: us-polish-thousands-separators
+1b/dashboard/US|handler|refund|settled	code: us-polish-thousands-separators + words
 1b/dashboard/US|handler|cancelEvent|ok	words
 1b/dashboard/US|handler|switchEvent	words
 1b/kds/US|loading	words
-1b/kds/US|windowList	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|windowGrid	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
+1b/kds/US|windowList	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|windowGrid	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
 1b/kds/US|windowCookCards	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-cook-header + words
-1b/kds/US|readyAndHandover	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
+1b/kds/US|readyAndHandover	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
 1b/kds/US|cookBoard	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-cook-header + words
-1b/kds/US|cookBoardFullCards	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|paidStepOff	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
+1b/kds/US|cookBoardFullCards	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|paidStepOff	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
 1b/kds/US|empty	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/kds/US|vanName	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|oneVan	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|degraded	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|degradedNoRefresh	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
+1b/kds/US|vanName	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|oneVan	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|degraded	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|degradedNoRefresh	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
 1b/kds/US|mismatch	code: P2-us-clock+us-layout-fix-1-nbsp + words
 1b/kds/US|mismatchNoEvent	words
-1b/kds/US|pausedManual	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|pausedOffline	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|offline0	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|offline1	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|offline3	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|extraWait	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|startEvent	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|notStarted	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|recentlyClosed	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|cancelledEvent	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|noEvent	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|phoneOpen	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|phoneOpenAll	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|deviceSheet	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|deviceSheetAll	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|screenOff0	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|screenOff1	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|screenOff2	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|eventMenu	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|eventMenuWait	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|eventMenuPaused	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|eventPicker	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|eventPickerOffline	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|extraWaitPicker	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|finishEarly	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-1-nbsp-fixture-finish-early+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|finishLate	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|reject	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|kdsToast	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|buzzer	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|eventCancel	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|finishTime	code: P2-us-clock+midnight-finish-options-truck-zone+midnight-finish-modal-format-US+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|toasts	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|payFailure	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
+1b/kds/US|pausedManual	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|pausedOffline	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|offline0	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|offline1	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|offline3	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|extraWait	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|startEvent	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|notStarted	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|recentlyClosed	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|cancelledEvent	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|noEvent	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|phoneOpen	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|phoneOpenAll	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|deviceSheet	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|deviceSheetAll	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|screenOff0	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|screenOff1	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|screenOff2	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|eventMenu	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|eventMenuWait	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|eventMenuPaused	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|eventPicker	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|eventPickerOffline	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|extraWaitPicker	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|finishEarly	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-1-nbsp-fixture-finish-early+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|finishLate	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|reject	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|kdsToast	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|buzzer	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|eventCancel	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|finishTime	code: P2-us-clock+midnight-finish-options-truck-zone+midnight-finish-modal-format-US+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|toasts	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|payFailure	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
 1b/kds/US|hidePaymentsDone	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-cook-header + words
-1b/kds/US|demoIntro	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
-1b/kds/US|demoPausedMenu	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card + words
+1b/kds/US|demoIntro	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
+1b/kds/US|demoPausedMenu	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-6-kds-full-badge+us-layout-fix-7-kds-name-16+us-layout-fix-10-charges-fold-card+us-polish-thousands-separators + words
 1b/kds/US|action|gate|collected	words
 1b/kds/US|action|gate|collected_cash	words
 1b/kds/US|action|gate|undo_collected	words
@@ -917,12 +918,13 @@
 1b/operatorMail/new|US|walk_up|postcode	code: P2-us-clock+us-layout-fix-1-nbsp + words
 1b/operatorMail/new|US|walk_up|townOnly	code: P2-us-clock+us-layout-fix-1-nbsp + words
 1b/operatorMail/new|US|walk_up|noLines	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/operatorMail/new|US|big	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/operatorMail/new|US|big|auto	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/operatorMail/new|US|big|bare	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/operatorMail/new|US|big|postcode	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/operatorMail/new|US|big|townOnly	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/operatorMail/new|US|big|noLines	code: P2-us-clock+us-layout-fix-1-nbsp + words
+1b/operatorMail/new|US|big	code: P2-us-clock+us-layout-fix-1-nbsp+us-polish-thousands-separators + words
+1b/operatorMail/new|US|big|auto	code: P2-us-clock+us-layout-fix-1-nbsp+us-polish-thousands-separators + words
+1b/operatorMail/new|US|big|bare	code: P2-us-clock+us-layout-fix-1-nbsp+us-polish-thousands-separators + words
+1b/operatorMail/new|US|big|postcode	code: P2-us-clock+us-layout-fix-1-nbsp+us-polish-thousands-separators + words
+1b/operatorMail/new|US|big|townOnly	code: P2-us-clock+us-layout-fix-1-nbsp+us-polish-thousands-separators + words
+1b/operatorMail/new|US|big|nameOnly	code: us-polish-thousands-separators
+1b/operatorMail/new|US|big|noLines	code: P2-us-clock+us-layout-fix-1-nbsp+us-polish-thousands-separators + words
 1b/operatorMail/alert|US|limit80	words
 1b/operatorMail/alert|US|limit80big	words
 1b/operatorMail/alert|US|limit100	words
@@ -1295,6 +1297,7 @@
 1c/setup/US|page|identity|otherCountry	words
 1c/setup/US|page|identity|noCountries	words
 1c/setup/US|step|allErrors	code: 1d-setup-step-fixture
+1c/setup/US|price|cell|big	code: us-polish-thousands-separators
 1c/setup/US|provision|operator|minimal	words
 1c/setup/US|provision|operator|signup	words
 1c/setup/US|provision|operator|whatsapp	words

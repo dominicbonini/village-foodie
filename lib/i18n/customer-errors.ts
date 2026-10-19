@@ -40,3 +40,17 @@ export function errorText(
   if (code && tr.has(code)) return tr(code, (body?.params && typeof body.params === 'object' ? body.params : {}) as CustomerErrorParams)
   return typeof body?.error === 'string' && body.error ? body.error : fallback
 }
+
+/** errorText over SEVERAL namespaces — a route that sends two families of codes (/api/setup: errorsOnboarding and
+ *  tradeArea). The first namespace that has the code words it; else the body's `error`, else the fallback. */
+export function errorTextIn(
+  ts: { (key: never, values?: never): string; has: (key: never) => boolean }[],
+  body: { error?: unknown; code?: unknown; params?: unknown } | null | undefined,
+  fallback: string,
+): string {
+  for (const t of ts) {
+    const w = errorText(t, { code: body?.code, params: body?.params }, '')
+    if (w) return w
+  }
+  return typeof body?.error === 'string' && body.error ? body.error : fallback
+}

@@ -20279,11 +20279,35 @@ it.** Check with `has_function_privilege('anon', …)`.
 - Verified false / false / true.
 - A live pay-at-the-truck order on Pizza Kitchen succeeded afterwards, and the stranded-capture cron returned 200.
 
-**SWEEP: CLOSED for SECURITY DEFINER functions** — a sweep of every SECURITY DEFINER function in `public`
-executable by anon returns **zero rows**. 🔴 **OPEN: the revokes were run by hand and are not in
-`supabase/migrations/`** — a migration file recording them is needed so a rebuilt database matches (§27).
-That is the same lesson as the policies above: a grep of the migrations directory is not an inventory of the
-database.
+🔴 **OBSERVED 19 October: THE REVOKES HAD BEEN UNDONE — by a hand-run GRANT, not by a migration.**
+- On 19 October all three were again executable by PUBLIC, anon and authenticated.
+- No migration after 12 October creates, replaces or alters them or the default privileges.
+- The ACL order shows what happened: `{postgres,service_role,=X,anon,authenticated}`, with PUBLIC, anon and
+  authenticated APPENDED after service_role, which is what an appended `grant execute … to public, anon,
+  authenticated` leaves. A re-created function lists PUBLIC first.
+- That grant is, most likely, the two reports' own rollback lines. Those blocks now carry "⛔ DO NOT RUN".
+- No GRANT could be dated: the logs keep 24 hours. In that window every RPC call was the service role.
+
+**OBSERVED 19 October: re-applied by Dominic and verified false / false / true** (docs/us-polish-batch-report.md).
+- Now **guarded by `scripts/migration-function-grants.cjs`** (in the sweep):
+  - every migration that creates or replaces a function must revoke EXECUTE from public, anon and authenticated in
+    the same file;
+  - no migration may grant a function back to them, except a short named allow-list with a reason each.
+- 🔴 **Undo / rollback SQL is never put in a chat reply**; it lives only in a report, under "Undo (only if Dominic
+  asks)".
+
+**SWEEP: CLOSED for SECURITY DEFINER functions** (re-checked 19 October) — a sweep of every SECURITY DEFINER
+function in `public` executable by anon returns **zero rows**.
+- **Recorded in migrations:** `supabase/migrations/20261012_revoke_public_functions.sql` (the dated record, "already
+  applied — file only"), and a same-file revoke in every migration that creates a function, so a rebuilt database is
+  closed (§27).
+- **OPEN on 19 October:** eight SECURITY INVOKER functions were still anon-callable by default grant:
+  - `update_updated_at`, `set_orders_updated_at` (triggers);
+  - `increment_order_counter`, `increment_event_order_counter`;
+  - `populate_event_slots`, `decrement_stock`;
+  - `assign_buzzer_atomic`, `claim_order_for_auto_reject`.
+  - Every caller is server code on the service role. Their "run now" revoke is in docs/us-polish-batch-report.md.
+- A grep of the migrations directory is still not an inventory of the database: three of those eight predate it.
 
 **OBSERVED (audit fixes, same period):**
 - `/api/menu` no longer sends discount codes to the public. It sent every active code with its value, and nothing in the browser used them.

@@ -12,6 +12,9 @@ import { getVanOrderReadyDefault } from '@/lib/van-utils'
 import { scrapedPrivacyFields } from '@/lib/private-events/write'
 // Phase 2D-2: the batch's country, and the rule that nothing is matched, bridged or emailed across countries.
 import { normaliseCountry, inCountry, countryOf } from '@/lib/discovery-country'
+// The event's state (truck_events.region, US Polish 19 Oct 2026): the importer's rule — two letters, zip_state countries only.
+import { normaliseRegion } from '@/lib/event-address'
+import { getCountrySettings } from '@/lib/country-settings'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -123,6 +126,15 @@ export async function POST(req: NextRequest) {
       for (const t of (hg ?? []) as { id: string; country?: string | null }[]) hgCountry.set(t.id, countryOf(t))
     }
   }
+
+  /* ── THE EVENT'S STATE (US Polish batch, 19 October 2026; docs/us-polish-batch-report.md) ──────────────────────
+   * A row's `region` (the payload's own, or the model's `state` that lib/admin/screenshot-events.ts sends as `region`)
+   * is written to truck_events.region exactly as Manage's importer saves it: only in a zip_state country (the US), only
+   * a two-letter code, NEVER inferred (not from the truck's base town, not from the venue). Every other row — every GB
+   * row — inserts exactly the columns it always did: the key is absent, not null. */
+  let zipState = false
+  try { zipState = (await getCountrySettings(country)).addressFormat === 'zip_state' } catch { zipState = false }
+  const eventRegionOf = (r: { region?: unknown }) => (zipState ? normaliseRegion(r.region) : null)
 
   let bridgedCount = 0
   const notifiedTruckIds = new Set<string>()
@@ -262,6 +274,7 @@ export async function POST(req: NextRequest) {
       venue_id:               matchedVenue?.id ?? null,
       venue_id_source:        matchedVenue ? 'scraper' : null,
       venue_match_confidence: matchedVenue ? match.confidence : null,
+      ...(eventRegionOf(row) ? { region: eventRegionOf(row) } : {}),
     }).select('id').single()
     if (insertErr) {
       console.error('[inbound-schedule] bridge insert failed:', insertErr.message)

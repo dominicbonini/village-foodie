@@ -24,7 +24,7 @@ parts/legal|US|chrome	code: legal-logo-country
 parts/legal|US|meta-privacy	code: metadataBase-www
 parts/legal|US|meta-terms	code: metadataBase-www
 parts/footer|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
-parts/truck|US|meta	code: metadataBase-www + US behaviour — CHROME: the truck page’s tags in the truck’s country (og:locale en_US) + words
+parts/truck|US|meta	code: metadataBase-www + us-polish-hg-truck-preview
 parts/truck|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|share	words
 parts/sitemap|US|hatchgrab-usOn	code: sitemap-country

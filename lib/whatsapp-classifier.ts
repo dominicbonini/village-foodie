@@ -342,8 +342,10 @@ Rules (follow exactly — same discipline as "never make up events"):
           items.filter(i => typeof i.price === 'number').map(i => (i.price as number).toFixed(2))
         )
         const sym = currencySymbol(money).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        const quotedPrices = (llmReply.match(new RegExp(`${sym}\\s?\\d+(?:\\.\\d{1,2})?`, 'g')) ?? []).map(p =>
-          parseFloat(p.replace(new RegExp(`${sym}|\\s`, 'g'), '')).toFixed(2)
+        // A figure may carry thousands separators ("£1,250.00", 19 October 2026 — the payload's prices are grouped
+        // now): read "1,250.00" as one figure, never as "£1" followed by text. Separators are dropped before parsing.
+        const quotedPrices = (llmReply.match(new RegExp(`${sym}\\s?(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,2})?`, 'g')) ?? []).map(p =>
+          parseFloat(p.replace(new RegExp(`${sym}|\\s|,`, 'g'), '')).toFixed(2)
         )
         const pricesValid = quotedPrices.every(p => allowedPrices.has(p))
 

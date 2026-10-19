@@ -136,10 +136,10 @@ export interface TicketOrder {
 /** An amount as the printer can print it. "£" (0xA3) and "$" (ASCII) print as themselves; a symbol the
  *  printer cannot encode would come out as "?", so it is replaced by the ISO code — "EUR 12.00" — never
  *  a "?" where money should be. */
-function ticketAmount(major: number, fmt: MoneyFormat | null | undefined): string {
-  const s = formatMajorOrBare(major, fmt, 'printed ticket')
+function ticketAmount(major: number, fmt: MoneyFormat | null | undefined, grouping?: boolean): string {
+  const s = formatMajorOrBare(major, fmt, 'printed ticket', { grouping })
   if (!fmt || printableText(s) === s) return s
-  return `${fmt.currency} ${formatMajorNumber(major, fmt)}`
+  return `${fmt.currency} ${formatMajorNumber(major, fmt, { grouping })}`
 }
 
 /** The same, from MINOR units (a ledger balance) — the currency's own decimals, never "÷ 100". */
@@ -224,6 +224,16 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   const largeWidth = Math.max(1, Math.floor(width / 2))   // double-width chars ⇒ half the chars/line
   const lines: TicketLine[] = []
   const amount = (major: number) => ticketAmount(major, order.money)
+  // 🔴 THOUSANDS SEPARATORS, BUT NEVER AT THE COST OF A LINE (19 October 2026): an amount sits beside its label with
+  // its separators ("£1,234.56") when the pair fits the line; if ONLY the separator would push it over (so the row
+  // would wrap, or a modifier's price be dropped), that one row prints the figure without them ("£1234.56"), as every
+  // ticket did before. Below 1,000 there is no separator and nothing changes.
+  const fitted = (label: string, major: number, prefix = '') => {
+    const grouped = prefix + amount(major)
+    if (label.length + grouped.length + 1 <= width) return grouped
+    const plain = prefix + ticketAmount(major, order.money, false)
+    return label.length + plain.length + 1 <= width ? plain : grouped
+  }
   // The ticket's words (messages/en-GB.json `ticket`). Every one is plain ASCII in its message, so the bytes, the
   // widths and the fit tests below measure exactly what they measured when the words were written here.
   const t = translatorFor(order.locale ?? order.money?.locale, 'ticket')
@@ -353,7 +363,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   for (const it of order.items || []) {
     const b: TicketLine[] = []
     const label = t('itemLine', { quantity: String(it.quantity), name: it.name })
-    const lineTotal = it.unit_price != null ? amount(it.unit_price * it.quantity) : ''
+    const lineTotal = it.unit_price != null ? fitted(label, it.unit_price * it.quantity) : ''
     // Only pad onto one line when both halves fit; otherwise wrap the name and put the price on its own
     // right-aligned line, so a long dish name never collides with its price.
     if (lineTotal && label.length + lineTotal.length + 1 <= width) {
@@ -364,7 +374,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
     }
     for (const m of it.modifiers ?? []) {
       const mLabel = `  + ${m.name}`
-      const mPrice = m.price != null && m.price > 0 ? `+${amount(m.price)}` : ''
+      const mPrice = m.price != null && m.price > 0 ? fitted(mLabel, m.price, '+') : ''
       if (mPrice && mLabel.length + mPrice.length + 1 <= width) b.push({ text: padBetween(mLabel, mPrice, width) })
       else for (const w of wrapIndented(`+ ${m.name}`, width)) b.push({ text: w })
     }
@@ -376,7 +386,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   for (const d of order.deals ?? []) {
     const b: TicketLine[] = []
     const dLabel = `* ${d.name}`
-    const dPrice = d.price != null ? amount(Number(d.price)) : ''
+    const dPrice = d.price != null ? fitted(dLabel, Number(d.price)) : ''
     if (dPrice && dLabel.length + dPrice.length + 1 <= width) b.push({ text: padBetween(dLabel, dPrice, width) })
     else for (const w of wrap(dLabel, width)) b.push({ text: w })
     // 🔴 ENTRIES, NOT VALUES. The slot KEY is what ties a fill to its modifiers and its note; iterating
@@ -387,7 +397,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
       for (const w of wrapIndented(`- ${fill}`, width)) b.push({ text: w })
       for (const m of d.slotModifiers?.[slotKey] ?? []) {
         const mLabel = `    + ${m.name}`
-        const mPrice = m.price != null && m.price > 0 ? `+${amount(m.price)}` : ''
+        const mPrice = m.price != null && m.price > 0 ? fitted(mLabel, m.price, '+') : ''
         if (mPrice && mLabel.length + mPrice.length + 1 <= width) b.push({ text: padBetween(mLabel, mPrice, width) })
         else for (const w of wrapIndented(`+ ${m.name}`, width, '    ')) b.push({ text: w })
       }
@@ -405,10 +415,10 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
 
   // Phase 3 screens: Subtotal, tax, service fee and tip, only when the order has them (never a UK order).
   for (const adj of order.adjustments ?? []) {
-    lines.push({ text: padBetween(adj.label, amount(adj.minor / 100), width) })
+    lines.push({ text: padBetween(adj.label, fitted(adj.label, adj.minor / 100), width) })
   }
 
-  lines.push({ text: padBetween(t('total'), amount(order.total), width), bold: true })
+  lines.push({ text: padBetween(t('total'), fitted(t('total'), order.total), width), bold: true })
 
   // ── PAYMENT (D) — the caller has already resolved this. See the TicketOrder note.
   // 🔴 ABSENT when showPaidStep is false. Not "unpaid" — a truck without the paid step has no such state.

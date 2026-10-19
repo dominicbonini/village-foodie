@@ -36,3 +36,15 @@ as $$
    where id = p_id
      and stock_count is not null;
 $$;
+
+-- ═══ 🔴 NOT CALLABLE WITH THE PUBLIC KEY (added 19 October 2026, docs/us-polish-batch-report.md) ══════════════════════
+-- A new function in `public` gets EXECUTE for anon and authenticated by DEFAULT (pg_default_acl), so without this the
+-- public (anon) key could call it over /rest/v1/rpc. Every caller is server code on the service role. On 12 October
+-- these grants were revoked live, then reopened by a hand-run GRANT; scripts/migration-function-grants.cjs now fails
+-- the sweep on any migration that creates a function without revoking it in the same file, or grants one back.
+-- Idempotent (revoke/grant of a privilege already in that state is a no-op).
+-- (increment_modifier_option_stock is dropped again by 20260715; the revoke here covers the window between.)
+revoke execute on function public.decrement_modifier_option_stock(uuid, integer) from public, anon, authenticated;
+grant  execute on function public.decrement_modifier_option_stock(uuid, integer) to service_role;
+revoke execute on function public.increment_modifier_option_stock(uuid, integer) from public, anon, authenticated;
+grant  execute on function public.increment_modifier_option_stock(uuid, integer) to service_role;

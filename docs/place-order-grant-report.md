@@ -115,6 +115,8 @@ Then place one pay-at-the-truck test order on **Pizza Kitchen** (`test-kitchen`)
 
 **Rollback.** This restores the default grants; compare with the "before" output:
 
+⛔ DO NOT RUN — this reopens the functions to the public key. Running it is what undid the 12 Oct revokes.
+
 ```sql
 begin;
 grant execute on function public.place_order_atomic(jsonb, text, text, uuid, text, date, jsonb) to public, anon, authenticated;

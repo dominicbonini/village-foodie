@@ -18,7 +18,11 @@ let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) { pass++; console.log(`  ✓ ${name}`) } else { fail++; console.log(`  ✗ ${name}${detail !== undefined ? `\n      ${typeof detail === 'string' ? detail : JSON.stringify(detail).slice(0, 900)}` : ''}`) } }
 const head = s => console.log(`\n${s}`)
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
-const atHead = f => execFileSync('git', ['show', `HEAD:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
+// ⚠️ RE-PINNED (US polish batch, 19 October 2026): BEFORE was "git HEAD", which was the tree these fixes started from
+// while they were uncommitted. They are committed in 8a5c4b5a ("US readiness"), so HEAD now CONTAINS them and stopped
+// being a BEFORE. Pinned to that commit's parent, 978f6f67 — the source these fixes changed, as they found it.
+const BEFORE_REF = '978f6f67'
+const atHead = f => execFileSync('git', ['show', `${BEFORE_REF}:${f}`], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 })
 const whole = (file, src) => ({ file, from: /^[\s\S]*$/, to: () => src })
 const textOf = html => html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim()
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))

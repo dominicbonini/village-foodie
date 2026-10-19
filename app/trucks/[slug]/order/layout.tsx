@@ -32,10 +32,26 @@
 // ⚠️ `force-dynamic` IS KEPT DELIBERATELY THOUGH NO SERVER WORK REMAINS. Removing it would let this
 // segment be statically prerendered, which is a rendering-mode change this workstream has no way to
 // verify under a deploy freeze. It costs a prerender, not a request.
+import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { I18nProvider } from '@/lib/i18n/client'
 import { NAMESPACES } from '@/lib/i18n/namespaces'
+import { isHatchGrabHost } from '@/lib/brand'
+import { hatchGrabTruckMetadata } from '@/lib/truck-share-meta'
 
 export const dynamic = 'force-dynamic'
+
+// ── THE ORDER LINK'S PREVIEW, ON HATCHGRAB (US polish batch, 19 October 2026; lib/truck-share-meta.ts) ──────────────
+// The page is a client component, so its preview lives here. It was the root layout's alone ("HatchGrab", the site
+// root's URL, nothing about the truck) — the link operators share most. Now: "Order from <truck>", its own cover/logo
+// (else the HatchGrab card), this page's URL, in the truck's language. Village Foodie (and a render with no request):
+// nothing added, so the inherited preview is exactly what it was.
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  let host = ''
+  try { host = (await headers()).get('host') || '' } catch { host = '' }
+  if (!isHatchGrabHost(host)) return {}
+  return hatchGrabTruckMetadata((await params).slug, 'order')
+}
 
 // Language Phase 0: the customer sees the truck's language (its country's locale, set by the page once the truck
 // loads), with only the order page's message namespaces sent to the browser.

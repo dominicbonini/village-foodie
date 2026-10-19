@@ -17,6 +17,8 @@ import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/whereBased'
 import '@/lib/i18n/catalog/tradeArea'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsOnboarding'
 
 export interface BasePlace {
   placeId: string | null; name: string; region: string | null; lat: number | null; lng: number | null
@@ -72,21 +74,25 @@ export function baseAnswerErrors(a: BaseAnswer, countries: SignupCountry[]): Bas
  *  demo modal waits until the wizard is entered, so a demo page view costs no request). */
 export function useSignupCountries(enabled = true) {
   const t = useT('whereBased')
+  const tErr = useT('errorsOnboarding')
   const [state, setState] = useState<{ countries: SignupCountry[]; guess: { code: string; fromLocation: boolean } } | null>(null)
   // Language Phase 1c: set inside the effect, so it holds the server's own words or null — the render supplies
   // ours (`whereBased.countriesFailed`), in the language of the moment.
-  const [error, setError] = useState<{ server: string | null } | null>(null)
+  // US polish batch (19 October 2026): it now holds the server's BODY, so the render words it from its code
+  // (errorsOnboarding) in the language of the moment, its English `error` the fallback.
+  // (A plain string — the server's words as they came — still reads as it always did.)
+  const [error, setError] = useState<{ server: string | { error?: unknown; code?: unknown; params?: unknown } | null } | null>(null)
   useEffect(() => {
     if (!enabled || state) return
     let cancelled = false
     fetch('/api/setup/countries').then(r => r.json()).then(d => {
       if (cancelled) return
       if (d?.ok && Array.isArray(d.countries) && d.countries.length) setState({ countries: d.countries, guess: d.guess })
-      else setError({ server: d?.error || null })
+      else setError({ server: d ?? null })
     }).catch(() => { if (!cancelled) setError({ server: null }) })
     return () => { cancelled = true }
   }, [enabled, state])
-  return { data: state, error: error ? (error.server || t('countriesFailed')) : null }
+  return { data: state, error: error ? (typeof error.server === 'string' ? (error.server || t('countriesFailed')) : errorText(tErr, error.server, t('countriesFailed'))) : null }
 }
 
 const newSession = () => { try { return crypto.randomUUID() } catch { return `${Date.now()}-${Math.random().toString(36).slice(2)}` } }

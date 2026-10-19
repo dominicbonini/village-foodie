@@ -33,6 +33,8 @@ import { removePendingStatusOp } from '@/lib/native/outbox'
 import type { ShowToast } from '@/lib/useToasts'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/nativeShell'
+import { errorText } from '@/lib/i18n/customer-errors'
+import '@/lib/i18n/catalog/errorsKitchen'
 
 // ── 🔴 THE PAYMENT-METHOD VOCABULARY. ONE SET OF WORDS, TAKEN FROM PaymentActionsModal. ─────────────
 // That modal is where an operator already reads how an order was paid, and it prints exactly:
@@ -127,6 +129,10 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
   const t = useT('nativeShell')
   const tRef = useRef(t)
   useEffect(() => { tRef.current = t }, [t])
+  // /api/dashboard/action's refusals, worded from their code (errorsKitchen) — US polish batch, 19 October 2026.
+  const tErr = useT('errorsKitchen')
+  const tErrRef = useRef(tErr)
+  useEffect(() => { tErrRef.current = tErr }, [tErr])
 
   return useCallback(async (
     result: GateResult,
@@ -178,7 +184,7 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
 
     // ── COMMITTED ─────────────────────────────────────────────────────────────────────────────────
     const data = result.data ?? {}
-    if (!result.ok) throw new Error(data.error)
+    if (!result.ok) throw new Error(errorText(tErrRef.current, data, ''))
     // The past-tense word per action is a SELECT in the message (gate.status, Language Phase 1b) — confirm →
     // "confirmed", reject → "rejected", ready, collected, undo_collected → "restored", cancel → "cancelled", and
     // any other action → "updated" (Language Phase 2: it used to print the raw action id, as the
