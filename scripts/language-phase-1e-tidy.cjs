@@ -59,6 +59,7 @@ const FOOTNOTE_EDITS = [
   ['Compatible printers are listed in our help centre.', 'Get in touch for the list of compatible printers.'],
   ['Compatible printers are listed in our help center.', 'Get in touch for the list of compatible printers.'],
 ]
+const FIX13 = require('./_lp1e-named.cjs').US_LAYOUT_FIX_13
 const NAMED = [
   { id: 'footnotes', what: 'footnote 1 (Tap to Pay: “a supported phone”, as its row says) and footnote 5 (“Get in touch for the list of compatible printers.”), both countries',
     applies: () => true,
@@ -69,6 +70,10 @@ const NAMED = [
   { id: 'legal-logo', what: 'the legal pages’ logo links to the visitor’s country page (/landing → /uk, /us)',
     applies: id => /^parts\/legal\|(GB|US)\|chrome/.test(id),
     apply: (v, id) => (typeof v === 'string' ? v.replace(/href="\/landing"/g, `href="/${SEG[ccOf(id)]}"`) : v) },
+  // ⚠️ RE-PINNED, 18 October 2026 (US layout fixes): us-layout-fix-13-us-landing-bands — the US landing (testimonial hidden):
+  // pricing loses `band`, the final CTA gains it, `.switch-block` an inline wash. The transform lives in
+  // scripts/_lp1e-named.cjs (US_LAYOUT_FIX_13, exact substrings, each found exactly once); it names pages/landing|US|html only.
+  { id: FIX13.id, what: FIX13.what, applies: id => FIX13.views(id), apply: (v, id) => FIX13.apply(id, v) },
 ]
 /** BEFORE value → { expected, touched } */
 function expect(id, before) {
@@ -167,6 +172,7 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
     t(`${cc}: footnotes 1 and 5 changed on /features and in the plans PDF`, fn.some(i => i.startsWith(`pages/features|${cc}|html`)) && fn.some(i => i.startsWith(`parts/pdf|${cc}|`)), fn.join(', '))
     t(`${cc}: the legal logo is named`, (byNamed['legal-logo'] || []).includes(`parts/legal|${cc}|chrome`))
   }
+  t(`${FIX13.id}: the US landing and nowhere else`, same(byNamed[FIX13.id] || [], ['pages/landing|US|html']), (byNamed[FIX13.id] || []).join(', '))
   t('the sitemap changed on both HatchGrab views and nowhere else', same((byNamed.sitemap || []).slice().sort(), ['parts/sitemap|GB|hatchgrab', 'parts/sitemap|US|hatchgrab-usOn']), (byNamed.sitemap || []).join(', '))
   const smA = AFTER['parts/sitemap|GB|hatchgrab'] || []
   t('the GB sitemap is exactly /uk and /uk/features', same(smA.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`]), JSON.stringify(smA.map(e => e.url)))

@@ -55,7 +55,33 @@ function preflightKeys(bodyText) {
   return JSON.stringify(walk(o))
 }
 // ⚠️ RE-PINNED (events that run past midnight + US formats, 17 October 2026, docs/midnight-and-format-fixes-report.md)
-const { midnightEntries } = require('./_lp1d-named.cjs')
+const { midnightEntries, uslEntries, uslTruckListCard } = require('./_lp1d-named.cjs')
+// ⚠️ RE-PINNED (US layout fixes, 18 October 2026, docs/us-layout-proposal-report.md) — the transforms for the entries at
+// the end of NAMED. us-layout-fix-1-nbsp: lib/time-utils.ts clockOf en-US writes U+00A0 before AM/PM — every "6:30 PM"
+// the code wrote (and EventTimeSelect's hour labels, clockOf less ":00": "5 PM") now has a no-break space; a word typed
+// by a person is not touched by the code, so a stored "5:00 PM" with an ASCII space would make the view FAIL here.
+const USL_CLOCK = /\b(\d{1,2}:\d{2}) (AM|PM)\b/g
+const uslNbsp = s => s.replace(USL_CLOCK, '$1\u00a0$2').replace(/(<option value="\d{2}"(?: selected="")?>\d{1,2}) (AM|PM)(<\/option>)/g, '$1\u00a0$2$3')
+/** a 12-hour formatTimeRange (fix 1) / DealsTab join (fix 1-manage-join): U+00A0 before the dash of "X – Y" (X, Y clocks). */
+const USL_RANGE = /(\d{1,2}:\d{2}\u00a0(?:AM|PM)) – (\d{1,2}:\d{2}\u00a0(?:AM|PM))/g
+const uslRangeJoin = s => s.replace(USL_RANGE, '$1\u00a0– $2')
+/** us-layout-fix-4-import-heading: a 12-hour truck's import row heading "{date} · {time}" (manageScheduleImport.review.summary)
+ *  is three spans — the one line from 640px, date and time as two block lines below it. Only when the heading has a time. */
+/** The fixture STATE a capture injects as text (not written by clockOf on this code): scripts/_lp1b-dashboard.cjs's
+ *  modal|finishEarly sets finishConfirm.endTime = '9:00 PM' (ASCII) directly, so that one sentence keeps BEFORE's space —
+ *  the dashboard's own path (setFinishConfirm → formatTime(ev.end_time, dashTime)) writes the no-break space. */
+const USL_FIXTURE_TEXT = { 'smoke-dash/US|modal|finishEarly': ['finish until 9:00 PM'] }
+const uslNbspView = (s, id) => {
+  const keep = USL_FIXTURE_TEXT[id] || []
+  keep.forEach((k, i) => { s = s.split(k).join(`\u0000USL${i}\u0000`) })
+  s = uslNbsp(s)
+  // the Add / Edit event preview (TruckListCard, BEFORE's markup): its range is a 12-hour formatTimeRange — U+00A0 before the dash
+  if (/^smoke-schedule\/US\|tab\|/.test(id)) s = s.replace(/(<span class="flex items-center gap-2 text-\[12px\] font-bold text-slate-500 leading-none mt-0\.5"><span>)([^<]*)(<\/span>)/g, (_, a, r, c) => a + uslRangeJoin(r) + c)
+  keep.forEach((k, i) => { s = s.split(`\u0000USL${i}\u0000`).join(k) })
+  return s
+}
+const uslImportHeading = s => s.replace(/(<p class="text-sm font-semibold leading-snug (?:text-amber-600|text-slate-900)">)([^<·]+?) · ([^<]*?\d\u00a0(?:AM|PM)[^<]*)(<\/p>)/g,
+  (_, p, date, time, end) => `${p}<span class="max-sm:hidden">${date} · ${time}</span><span class="sm:hidden block">${date}</span><span class="sm:hidden block">${time}</span>${end}`)
 /** An entry of Phase 2's table (scripts/_lp2-named.cjs NAMED), REUSED — its `what` and `expect` unchanged, ONE copy of
  *  the transform — scoped to this harness's out-of-scope (smoke) views. Throws if the original entry is gone. */
 const reuseLp2 = (id, views) => {
@@ -140,6 +166,28 @@ const NAMED = [
     what: 'Settings › the App Store badge (components/StoreBadges countryCode={truck?.country}, lib/app-badges appStoreUrlFor): a US truck gets the LOCALE-FREE listing https://apps.apple.com/app/id6803543106 instead of the UK storefront’s https://apps.apple.com/gb/app/hatchgrab/id6803543106. GB keeps the UK link byte-identical.',
     views: id => /^smoke-settings\/US\|/.test(id),
     expect: b => mapStrings(b, s => s.replace(/https:\/\/apps\.apple\.com\/gb\/app\/hatchgrab\/id6803543106/g, 'https://apps.apple.com/app/id6803543106')) },
+  // ── ⚠️ RE-PINNED (US layout fixes, 18 October 2026, docs/us-layout-proposal-report.md) ─────────────────────────────
+  //    PRECISE on GB and US. The Manage edits reach Part 1's Schedule / Settings views (smoke — the same transforms Part 1
+  //    names, scripts/_lp1d-named.cjs uslEntries), and the 12-hour no-break space reaches every US view with a time.
+  { id: 'us-layout-fix-1-nbsp', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): lib/time-utils.ts — an en-US clockOf writes U+00A0 before AM/PM ("6:30 PM"; EventTimeSelect’s hour labels "5 PM" with it), a 12-hour formatTimeRange U+00A0 before the dash. PRECISE: every "H:MM AM|PM" in a US view gains the no-break space (the shell’s stale notice, Reports’ order times and BOTH CSVs’ time columns, the dashboard header and Completed slots, Settings’ examples, the paste example, the menu read-back, the hour pickers’ "5 PM"); the Add / Edit preview card’s range also gains it before the dash (formatTimeRange); 24-hour (GB) byte-identical — no GB view is claimed. One sentence is fixture STATE, not code output, and keeps its ASCII space (USL_FIXTURE_TEXT: the finish-early modal’s injected endTime).',
+    views: id => countryOf(id) === 'US',
+    expect: (b, id) => mapStrings(b, x => uslNbspView(x, id)) },
+  { id: 'us-layout-fix-1-manage-join', country: 'US', agent: 'US layout fixes (18 Oct 2026)', smokeOnly: true,
+    what: '⚠️ RE-PINNED (18 October 2026): app/manage/[token]/page.tsx DealsTab — a deal’s slot range on a 12-hour truck joins with U+00A0 + "– " ("11:30 AM – 2:00 PM"). PRECISE: the deals views’ "X – Y" (both clocks) gain the no-break space before the dash.',
+    views: id => /^smoke-menu\/US\|deals\|/.test(id),
+    expect: b => mapStrings(b, uslRangeJoin) },
+  ...uslEntries(/^smoke-schedule\/(GB|US)\|/, /^smoke-settings\/(GB|US)\|[^|]+\|page$/).map(e => ({ ...e, smokeOnly: true })),
+  { id: 'us-layout-fix-4-import-heading', country: 'US', agent: 'US layout fixes (18 Oct 2026)', smokeOnly: true,
+    what: '⚠️ RE-PINNED (18 October 2026): Manage › Import review, 12-hour trucks only — the row heading "{date} · {time}" is `<span class="max-sm:hidden">` (the one line, from 640px) + two `sm:hidden block` spans (date, time). PRECISE (uslImportHeading); 24-hour unchanged (no GB view claimed).',
+    views: id => /^smoke-schedule\/US\|tab\|import\|/.test(id),
+    expect: b => mapStrings(b, uslImportHeading) },
+  // ── ⚠️ RE-PINNED (US dress rehearsal fixes, 19 October 2026, docs/us-dress-rehearsal-fixes-report.md) ─────────────────
+  { id: 'us-rehearsal-fix-event-state', country: 'US', agent: 'US dress rehearsal fixes (19 Oct 2026)', smokeOnly: true,
+    what: '⚠️ RE-PINNED (19 October 2026): the Add / Edit event form, US (zip_state) style only — a State box ("State", "e.g. NJ", empty on every fixture event) beside the ZIP code, the two in `grid grid-cols-[5.5rem_1fr] gap-2`. PRECISE: the ZIP code field is wrapped with the State field before it; GB (postcode style) unchanged — no GB view claimed.',
+    views: id => /^smoke-schedule\/US\|tab\|/.test(id),
+    expect: b => mapStrings(b, x => x.replace(/<div><label class="block text-xs font-bold text-slate-600 mb-1">ZIP code<\/label><input type="text" placeholder="e\.g\. 78701" class="([^"]*)" value="[^"]*"\/><\/div>/g,
+      (zip, cls) => `<div class="grid grid-cols-[5.5rem_1fr] gap-2"><div><label class="block text-xs font-bold text-slate-600 mb-1">State</label><input type="text" placeholder="e.g. NJ" class="${cls}" value=""/></div>${zip}</div>`)) },
 ]
 
 const SMOKE_SHARED = [

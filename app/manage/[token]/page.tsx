@@ -17,9 +17,11 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { CountrySettingsProvider, useCountrySettings, useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { allergenVocab, genericReplacements } from '@/lib/allergens'
+import { normaliseRegion } from '@/lib/event-address'   // the event's state (US), lib/event-address.ts
 import { addressStyleOf, upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's address words by address style (the words are in messages, Language Phase 1d)
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
-import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { moneyFormatOf, planPricesDecided, withPlaceholderPlanPrices, type CountrySettings } from '@/lib/country-settings-types'
+import { maskPriceFor } from '@/lib/pricing'
 import { perMonthLabel, formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
@@ -78,7 +80,6 @@ import { STANDARD_TYPE_NAME } from '@/lib/event-types/read'
 import { intervalExample } from '@/lib/slot-generation'
 import { KITCHEN_CAPACITY_GRID, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
-import { PHONE_TIME_PICKER, SCHEDULE_CARD_STACK_GB, IMPORT_HEADING_STACK_GB } from '@/components/manage/layout-choices'
 import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -4158,6 +4159,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           venue_name: ev.venue_name || '', town: ev.town || '', postcode: ev.postcode || '', address: ev.address || '',
           event_date: isoDate, start_time: ev.start_time || '', end_time: ev.end_time || '', notes: ev.notes || '',
           latitude: lat, longitude: lng, truck_id: truck.id,
+          ...(normaliseRegion(ev.state) ? { region: normaliseRegion(ev.state) } : {}),
         })
       }
       goToSettingsReview()   // K1 — was finishSetup(); the review screen now owns that call
@@ -7403,7 +7405,7 @@ function EventStatusBadge({ status, event_date, start_time, end_time }: { status
  * this form — `upsert_event` treats an ABSENT `is_private` as "this caller did not ask about privacy"
  * and leaves the flag alone, which is what stops every other editor of an event publishing a private
  * one. See the note at the save call. */
-type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null; truck_place_id?: string | null; is_private?: boolean; private_name?: string }
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null; truck_place_id?: string | null; is_private?: boolean; private_name?: string; region?: string | null }
 
 // ── EVENT TIME CONTROL (V11.15) ──────────────────────────────────────────────────────────────────
 // 🔴 REPLACES `SCHEDULE_TIME_OPTIONS`, which was `Array.from({length: 33}, i => 07:00 + i*30)` — a flat
@@ -7478,7 +7480,7 @@ function EventTimeSelect({
   disabled?: boolean
   /** Screen-reader name; the grid sites have no visible <label>. */
   label?: string
-  /** The phone (<640px) control's box (fix 5, layout-choices.ts PHONE_TIME_PICKER). Defaults to `className`. A caller
+  /** The phone (<640px) control's box (US layout fix 5). Defaults to `className`. A caller
    *  whose `className` pads a box AROUND the select (Add/Edit event) passes one without that padding: the padded wrapper
    *  plus the select's own px-2 + pr-7 left 16px for "11 AM" (audit C-03) and clipped GB's "30" by 3px. */
   phoneClassName?: string
@@ -7492,8 +7494,6 @@ function EventTimeSelect({
    * own 12-hour form from `clockOf` without the ":00" the minute box beside it supplies — US "5 PM".
    * ⚠️ LABELS ONLY. The option VALUES stay "00"–"23", so what is stored is the same "HH:MM" as ever. */
   const ts = useTruckTime()
-  // 5B only: the AM/PM chosen before any hour is (the value carries it once there is one).
-  const [pendingMer, setPendingMer] = useState<'AM' | 'PM'>('PM')
   const hourLabel = (h: string) => (ts.timeFormat === '12h' ? clockOf(`${h}:00`, '12h', ts.locale).replace(':00', '') : h)
 
   // Minutes selectable for a given hour: the fixed 5-step list, less the start's own minute inside the start's hour.
@@ -7544,17 +7544,15 @@ function EventTimeSelect({
   )
   const phoneCls = phoneClassName ?? className
 
-  /* ══ 🔴 THE PHONE CONTROL (fix 5, 17 October 2026 — US layout proposal, audit C-03) ════════════════════════════
+  /* ══ 🔴 THE PHONE CONTROL (US layout fix 5, 18 October 2026 — audit C-03) ═════════════════════════════════════════
    * Below 640px the hour + minute pair did not fit: the caller's padded box around each select left 16px for its label,
    * so a US "11 AM" / "10 PM" showed as "11" / "10" (AM/PM cut off — 8:00 PM – 12:30 AM read as 8 to half past noon) and
-   * GB's "30" / "45" lost 3–4px. Two answers for Dominic, chosen by PHONE_TIME_PICKER (components/manage/layout-choices.ts):
-   *   'select' (5A): ONE select per time, showing the whole time ("10:45 PM" / "22:45"), every 5 minutes;
-   *   'toggle' (5B): hour + minute selects plus an AM/PM toggle on a 12-hour truck; a 24-hour truck keeps hour + minute.
-   * ⚠️ THE GUARDS ARE THE SAME IN BOTH: the start's own time is never offered to the end (`notSameAs`), every other time
-   * is (an earlier end is an overnight event — lib/event-window.ts), and a stored off-grid value is injected, never
-   * rounded. ⚠️ From 640px up the control below the phone one is the hour + minute pair exactly as before. */
-  const phone = PHONE_TIME_PICKER === 'select' ? (() => {
-    // 5A — every 5-minute time of the day, less the start's own; the stored value (even off-grid) is always present.
+   * GB's "30" / "45" lost 3–4px. On a phone it is now ONE select per time, showing the whole time ("10:45 PM" / "22:45"),
+   * every 5 minutes (Dominic's choice "5A", 18 October; the hour + minute + AM/PM toggle option was not taken).
+   * ⚠️ THE GUARDS ARE THE SAME: the start's own time is never offered to the end (`notSameAs`), every other time is (an
+   * earlier end is an overnight event — lib/event-window.ts), and a stored off-grid value is injected, never rounded.
+   * ⚠️ From 640px up the control is the hour + minute pair exactly as before. */
+  const phone = (() => {
     const cur = curH && curM ? `${curH}:${curM}` : ''
     const all = HOUR_OPTIONS.flatMap(h => MINUTE_OPTIONS.map(m => `${h}:${m}`)).filter(v => notMins === null || hhMmToMins(v) !== notMins)
     if (cur && !all.includes(cur)) { all.push(cur); all.sort() }
@@ -7568,40 +7566,6 @@ function EventTimeSelect({
         height={phoneHeight}
         options={[{ value: '', label: placeholder ?? '--' }, ...all.map(v => ({ value: v, label: clockOf(v, ts.timeFormat, ts.locale) }))]}
       />
-    )
-  })() : ts.timeFormat !== '12h' ? (
-    // 5B, 24-hour: the same hour + minute pair, in a box that leaves the label its room.
-    <>
-      <Select ariaLabel={hourAria} value={curH} disabled={disabled} onChange={v => onHour(v)} className={phoneCls} height={phoneHeight}
-        options={[{ value: '', label: placeholder ?? '--' }, ...hours.map(h => ({ value: h, label: h }))]} />
-      <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
-      {minuteSelect(phoneCls, phoneHeight)}
-    </>
-  ) : (() => {
-    // 5B, 12-hour: hour 12, 1 … 11 + minute + AM/PM. The half of the day comes from the value; with no value yet it is
-    // held here until an hour is picked (PM first — most trading hours are afternoon and evening).
-    const mer: 'AM' | 'PM' = curH ? (Number(curH) >= 12 ? 'PM' : 'AM') : pendingMer
-    const to24 = (h12: number, m: 'AM' | 'PM') => String((h12 % 12) + (m === 'PM' ? 12 : 0)).padStart(2, '0')
-    const merWord = (m: 'AM' | 'PM') => clockOf(m === 'AM' ? '00:00' : '12:00', '12h', ts.locale).replace(/^[\d:]+[\s\u00a0]*/, '')
-    return (
-      <>
-        <Select ariaLabel={hourAria} value={curH ? String(Number(curH) % 12 || 12) : ''} disabled={disabled}
-          onChange={v => onHour(v ? to24(Number(v), mer) : '')} className={phoneCls} height={phoneHeight}
-          options={[{ value: '', label: placeholder ?? '--' }, ...[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(n => ({ value: String(n), label: String(n) }))]} />
-        <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
-        {minuteSelect(phoneCls, phoneHeight)}
-        <div data-meridiem role="group" aria-label={label ? t('time.meridiemOf', { label }) : t('time.meridiem')}
-          className="flex flex-shrink-0 self-stretch rounded-lg border border-slate-200 bg-white overflow-hidden"
-          style={phoneHeight ? { height: phoneHeight } : undefined}>
-          {(['AM', 'PM'] as const).map(m => (
-            <button key={m} type="button" aria-pressed={mer === m} disabled={disabled}
-              onClick={() => { if (curH) onHour(to24(Number(curH) % 12 || 12, m)); else setPendingMer(m) }}
-              className={`min-w-11 px-2.5 text-sm font-semibold disabled:opacity-50 ${mer === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
-              {merWord(m)}
-            </button>
-          ))}
-        </div>
-      </>
     )
   })()
 
@@ -8130,6 +8094,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     van_id: event.van_id || null,
     is_private: event.is_private === true,
     private_name: event.private_name || '',
+    ...(event.region ? { region: event.region } : {}),
   })
 
   /**
@@ -8385,6 +8350,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const chosenPrivate = !!privateTypeId && eventTypeId === privateTypeId
       await api('upsert_event', {
         ...editingEvent, latitude: lat, longitude: lng,
+        // The state (19 October 2026): sent only by the US (zip_state) form — the key is absent on every GB save.
+        region: addrStyle === 'zip_state' ? normaliseRegion(editingEvent.region) : undefined,
         is_private: chosenPrivate,
         private_name: chosenPrivate ? (editingEvent.private_name ?? '') : '',
         ...(editingEvent.id ? {} : { event_type_id: chosenPrivate ? null : eventTypeId }),
@@ -8505,6 +8472,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           latitude: lat,
           longitude: lng,
           truck_id: editingEvent?.truck_id || truck.id,
+          // The importer's `state` (zip_state prompt only, lib/schedule-extract.ts) — the key only when it read one.
+          ...(normaliseRegion(ev.state) ? { region: normaliseRegion(ev.state) } : {}),
         })
       }
       const count = toSave.length
@@ -8715,20 +8684,21 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     const needsTimes = !event.start_time || !event.end_time
     /** The private event's own "needs times" prompt is on the card (the chooser block below shows it). */
     const privateTimesPrompt = pending && !isPast && !!privateTypeId && pendingTypeFor(event) === privateTypeId && needsTimes
-    /* ── 🔴 THE PHONE CARD STACKS FOR A 12-HOUR TRUCK (fix 3, 17 October 2026 — US layout proposal, audit C-01/C-02) ──
+    /* ── 🔴 THE PHONE CARD STACKS (US layout fix 3, 18 October 2026 — audit C-01/C-02) ───────────────────────────────
      * Below 640px the date column and four or five action icons left the details 68–103px, so "11:30 AM – 10:45 PM · Big
-     * van" took three or four lines and split a time from its AM. On a phone the icons now sit in a row BENEATH the
-     * details (grid: date | divider | details, then the icons under the details), so the time range has the details'
-     * full width to itself, and the van takes its own line. From 640px up nothing changes. A 24-hour (GB) truck keeps
-     * the old card unless SCHEDULE_CARD_STACK_GB (components/manage/layout-choices.ts) says otherwise. */
-    const stack = ts.timeFormat === '12h' || SCHEDULE_CARD_STACK_GB
+     * van" took three or four lines and split a time from its AM (GB: two or three lines). On a phone the icons now sit in
+     * a row BENEATH the details (grid: date | divider | details, then the icons under the details), so the time range has
+     * the details' full width to itself. On a card WITH action icons the van takes its own line; a "Needs your approval"
+     * card (no icons — its buttons are a row below) keeps "time · van" on one line, and its divider spans one grid
+     * row, not two: a second, empty row would still add the 10px row gap. Every truck (Dominic, 18 October).
+     * From 640px up nothing changes. */
     const vanName = vans.length > 1 && event.van_id ? (vans.find(v => v.id === event.van_id)?.name || '') : null
 
     return (
       <Card key={event.id}>
         <div className="px-4 py-3">
           {/* Main row: date | venue | status | actions */}
-          <div className={stack ? 'flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5' : 'flex items-start gap-4'}>
+          <div className="flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5">
 
             {/* Date column — fixed width, calendar-style */}
             <div className="flex flex-col items-center justify-center w-12 flex-shrink-0 text-center pl-2">
@@ -8738,7 +8708,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             </div>
 
             {/* Divider */}
-            <div className={stack ? 'w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2' : 'w-px bg-slate-100 self-stretch flex-shrink-0'} />
+            <div className={pending ? 'w-px bg-slate-100 self-stretch flex-shrink-0' : 'w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2'} />
 
             {/* Venue / area & postcode / time — 3 lines */}
             <div className="flex-1 min-w-0">
@@ -8788,12 +8758,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     day — stated beside its times, in this card's own warning style, before anyone approves it. Only while it
                     waits (status 'unconfirmed': "Needs your approval" and "Needs confirmation"); a normal event is unchanged. */}
                 {event.status === 'unconfirmed' && crossesMidnight(event.start_time, event.end_time) && (
-                  <span className={`ml-1.5 text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold${stack ? ' whitespace-nowrap' : ''}`} data-overnight-hint>{tE('endsNextDay')}</span>
+                  <span className={`ml-1.5 text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold whitespace-nowrap`} data-overnight-hint>{tE('endsNextDay')}</span>
                 )}
-                {vanName !== null && (stack ? <span className="max-sm:hidden">{` · ${vanName}`}</span> : ` · ${vanName}`)}
+                {vanName !== null && (!pending ? <span className="max-sm:hidden">{` · ${vanName}`}</span> : ` · ${vanName}`)}
               </p>
-              {/* Fix 3: on a phone the van is its own line under the time. */}
-              {stack && vanName !== null && <p className="sm:hidden text-xs font-semibold text-slate-600 mt-0.5" data-van-line>{vanName}</p>}
+              {/* Fix 3: on a phone, a card with action icons gives the van its own line under the time. */}
+              {!pending && vanName !== null && <p className="sm:hidden text-xs font-semibold text-slate-600 mt-0.5" data-van-line>{vanName}</p>}
               {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
             </div>
 
@@ -8801,7 +8771,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 Pending (Approve/Edit/Reject) render in a full-width row BELOW the main row (see below),
                 so the venue/area/time block above gets the full card width. */}
             {!pending && (
-              <div className={stack ? 'flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap' : 'flex items-center gap-1.5 flex-shrink-0 self-start'} data-card-actions>
+              <div className="flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap" data-card-actions>
                 <>
                   {event.status === 'unconfirmed' && (
                     // SAME acknowledge gate as the scraper Approve button: with a conflict the first
@@ -9392,11 +9362,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-semibold leading-snug ${!ev.start_time || !ev.event_date ? 'text-amber-600' : 'text-slate-900'}`}>
-                          {/* Fix 4 (audit C-05): a 12-hour truck's heading puts the time on its own line under the date —
-                              "Wed, Sep 30th · 11:30 AM–10:45 PM" left "PM" alone on a phone. A 24-hour truck keeps the one
-                              line unless IMPORT_HEADING_STACK_GB (components/manage/layout-choices.ts) says otherwise. From
-                              640px up the heading is the one line it was. */}
-                          {timeLabel && (ts.timeFormat === '12h' || IMPORT_HEADING_STACK_GB)
+                          {/* US layout fix 4 (audit C-05): on a phone, a 12-hour truck's heading puts the time on its own line
+                              under the date — "Wed, Sep 30th · 11:30 AM–10:45 PM" left "PM" alone. Decided by the truck's clock
+                              alone (a 24-hour truck keeps the one line). From 640px up the heading is the one line it was. */}
+                          {timeLabel && ts.timeFormat === '12h'
                             ? <>
                                 <span className="max-sm:hidden">{tI('review.summary', { date: ev.event_date ? dateLabel : tI('review.noDate'), time: timeLabel })}</span>
                                 <span className="sm:hidden block">{ev.event_date ? dateLabel : tI('review.noDate')}</span>
@@ -10269,12 +10238,18 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 <div>
                   <Input label={tE('area')} value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder={tE('areaPlaceholder', { style: addrStyle })} />
                 </div>
+                {addrStyle === 'zip_state' ? (
+                  // The US form: State beside the ZIP (19 October 2026) — "Hoboken, NJ 07030" on every address line.
+                  <div className="grid grid-cols-[5.5rem_1fr] gap-2">
+                    <Input label={tE('state')} value={editingEvent.region ?? ''} onChange={v => setEditingEvent(p => ({...p!, region: v.toUpperCase().slice(0, 2)}))} placeholder={tE('statePlaceholder')} />
+                    <Input label={tE('postcode', { style: addrStyle })} value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder={tE('postcodePlaceholder', { style: addrStyle })} />
+                  </div>
+                ) : (
                 <Input label={tE('postcode', { style: addrStyle })} value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder={tE('postcodePlaceholder', { style: addrStyle })} />
+                )}
                   </div>
                 </div>
-                {/* Fix 5 (layout-choices.ts): with the 5B AM/PM toggle a 12-hour truck's start and end take a row each on a
-                    phone — "11 : 30 [AM|PM]" does not fit half of a 360px form. */}
-                <div className={`sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2${PHONE_TIME_PICKER === 'toggle' && ts.timeFormat === '12h' ? ' max-sm:grid-cols-1' : ''}`}>
+                <div className="sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">{tE('startTime')}<span className="text-red-400 ml-0.5">*</span></label>
                     <EventTimeSelect
@@ -11798,8 +11773,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // TODO: Wire to Stripe billing API when payments are integrated.
   const vanSettings = useCountrySettings()
   // Language Phase 1e: the masked word ('TBC') is shown in the truck's locale — US trucks read 'TBD'. GB identical.
-  const vanPx = (val: string) => priceText(vanMask(val), vanSettings.locale)
-  const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)
+  // A switched-off country's truck has no plan prices yet: the add-on is built from a placeholder row and always
+  // masked ("TBD"), rather than throwing (see BillingTab). GB unchanged.
+  const vanPricesDecided = planPricesDecided(vanSettings)
+  const vanPx = (val: string) => priceText(vanPricesDecided ? vanMask(val) : maskPriceFor(val, true), vanSettings.locale)
+  const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, withPlaceholderPlanPrices(vanSettings))
   const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, moneyFormatOf(vanSettings), unit)
   const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
 
@@ -14546,7 +14524,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   // down are BELOW that guard and are a PRE-EXISTING rules-of-hooks violation; they are left exactly as
   // they are rather than moved, because relocating live billing state is not this task. Do not "tidy" these
   // two down to join them.
-  const mask = usePriceMask()
+  const publishedMask = usePriceMask()
   // Language Phase 1d Part 2: Billing's own words (messages `manageBilling`). Language Phase 1e: the comparison's rows,
   // fees, footnotes, plan descriptions and price words are the shared `planFeatures` / `planMeta` messages (the same
   // ones /features and the plans PDF read), in the truck's country's locale — see `cs` below.
@@ -14554,10 +14532,19 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const billingTime = useTruckTime()
   // Footnote 2 does not MASK a value, it substitutes a whole different sentence, so it needs the raw
   // question rather than the masking function.
-  const pricesVisible = usePricesVisible()
+  const pricesPublished = usePricesVisible()
   // 🔴 THE TRUCK'S OWN COUNTRY'S PRICES (10 October 2026). Every price in this tab reads from here — there
   // is no '£29/mo' literal left in it. Above the `!truck` guard for the same hooks-order reason as above.
-  const cs = useCountrySettings()
+  const countryRow = useCountrySettings()
+  // 🔴 A SWITCHED-OFF COUNTRY'S TRUCK HAS NO PLAN PRICES YET (US dress rehearsal, 18 October 2026): the price
+  // helpers below throw on a NULL price (requirePlanPrice), which took the whole Manage page down — and a trial
+  // truck OPENS on this tab. Undecided ⇒ the helpers read a placeholder row and EVERY amount is masked to the
+  // existing "TBC" / US "TBD" word, exactly as when pricing is unpublished; footnote 2 takes its masked sentence.
+  // A country with prices (GB) gets the same row, the same mask and the same footnote as before.
+  const pricesDecided = planPricesDecided(countryRow)
+  const cs = pricesDecided ? countryRow : withPlaceholderPlanPrices(countryRow)
+  const mask = pricesDecided ? publishedMask : (val: string) => maskPriceFor(val, true)
+  const pricesVisible = pricesPublished && pricesDecided
   const prices = planPrices(cs)
   const money = moneyFormatOf(cs)
   const proMo = perMonthLabel(planMonthlyMinor('pro', cs), money)

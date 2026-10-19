@@ -91,6 +91,7 @@ interface EventData {
   venue_name: string
   village: string
   postcode?: string
+  region?: string        // the event's two-letter state, only when one is known (lib/event-address.ts)
   notes: string
   status?: string       // 'open' = operator-started/auto-opened = LIVE; else Pre-order. From /api/events.
   /** This event's van's CUSTOMER collection interval, from /api/events. The fallback picker's grid. */
@@ -227,6 +228,7 @@ function eventToVillage(e: EventData, truckName: string): VillageEvent {
     venueName: e.venue_name,
     village: e.village || undefined,
     postcode: e.postcode || undefined,   // "village · POSTCODE" line — matches the profile card
+    ...(e.region ? { region: e.region } : {}),
     status: e.status,             // 'open' ⇒ the "● Live" badge
     notes: e.notes || undefined,
     source: 'operator',           // /api/events returns confirmed/open OPERATOR events

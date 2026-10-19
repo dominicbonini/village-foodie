@@ -19,6 +19,7 @@ import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageApi'
+import { readEventRegions } from '@/lib/event-region-read'
 
 export const revalidate = 0
 
@@ -135,6 +136,8 @@ export async function GET(req: NextRequest) {
    * failure every event is treated as private, which is visible and safe rather than silent and
    * leaky. */
   const privacy = await readPrivateEventIds(supabase, (rows || []).map(e => e.id), '/api/events')
+  // The events' states (lib/event-region-read.ts): a separate best-effort read; a key only when one is known.
+  const regions = await readEventRegions(supabase, (rows || []).map(e => e.id))
 
   const tFeed = translatorFor(await localeForTruck(truck), 'manageApi')
   const seen = new Set<string>()
@@ -161,6 +164,7 @@ export async function GET(req: NextRequest) {
       venue_name:    isPrivate ? PRIVATE_PUBLIC_LABEL : (e.venue_name || ''),
       village:       isPrivate ? '' : (e.town || ''),
       postcode:      isPrivate ? '' : (e.postcode || ''),
+      ...(!isPrivate && regions.get(e.id) ? { region: regions.get(e.id) } : {}),
       notes:         isPrivate ? '' : (e.notes || ''),
       /* So the order page can show it without an Order button. */
       is_private:    isPrivate,

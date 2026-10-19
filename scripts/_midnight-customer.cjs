@@ -227,7 +227,9 @@ function checks(t, A, B) {
     const at2350 = opts(v(cc, '23:50', 'page'))
     t(`customer ${cc}: at 23:50 the picker offers 00:00, 00:15 and 00:30 (after midnight), nothing past, nothing in the grace`,
       ['00:00', '00:15', '00:30'].every(s => at2350.includes(s)) && !at2350.some(s => s >= '20:00' && s <= '23:45') && !at2350.includes('00:45'), at2350.join(' '))
-    t(`customer ${cc}: at 23:50 the 00:15 option reads ${cc === 'GB' ? '00:15' : '12:15 AM'}`, (v(cc, '23:50', 'page').options || []).includes(`00:15=${cc === 'GB' ? '00:15' : '12:15 AM'}`), (v(cc, '23:50', 'page').options || []).join(' '))
+    // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-1-nbsp: the US option label carries U+00A0 before AM ("12:15 AM"); the
+    // `around` text is whitespace-collapsed (kit.textOf) and its checks below are unchanged.
+    t(`customer ${cc}: at 23:50 the 00:15 option reads ${cc === 'GB' ? '00:15' : '12:15 AM (U+00A0 before AM)'}`, (v(cc, '23:50', 'page').options || []).includes(`00:15=${cc === 'GB' ? '00:15' : '12:15\u00A0AM'}`), (v(cc, '23:50', 'page').options || []).join(' '))
     const at0015 = opts(v(cc, '00:15', 'page'))
     t(`customer ${cc}: at 00:15 (next day) it offers 00:15 and 00:30 only`, JSON.stringify(at0015) === JSON.stringify(['00:15', '00:30']), at0015.join(' '))
     t(`customer ${cc}: at 19:00 it offers the whole evening, 20:00 … 00:30, in order`, (() => { const o = opts(v(cc, '19:00', 'page')); return o[0] === '20:00' && o[o.length - 1] === '00:30' && o.length === 19 })(), opts(v(cc, '19:00', 'page')).join(' '))
@@ -267,4 +269,13 @@ function checks(t, A, B) {
   }
 }
 
-module.exports = { views, checks }
+/* ══ NAMED (US layout fixes, 18 October 2026, /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md) ══════════════════════════════
+ * us-layout-fix-1-nbsp (lib/time-utils.ts clockOf): an en-US 12-hour time carries U+00A0 before AM/PM. On the US normal
+ * order-page views (normal|US|<moment>|page / fallback / fit) that is the picker's option LABELS ("11:30=11:30 AM" →
+ * "11:30=11:30\u00A0AM"); the option values, `closed` and `around` (whitespace-collapsed text) are BEFORE's exactly. GB: none. */
+function named(id, before) {
+  if (!/^normal\|US\|[^|]+\|(page|fallback|fit)$/.test(id) || !before || !Array.isArray(before.options)) return before
+  return { ...before, options: before.options.map(o => o.replace(/^([^=]*=\d{1,2}:\d{2}) (AM|PM)$/, '$1\u00A0$2')) }
+}
+
+module.exports = { views, checks, named }

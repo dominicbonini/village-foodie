@@ -71,6 +71,7 @@
     "clear": "Clear",
     "toMake": "To make",
     "today": "Today · {range}",
+    "onDate": "{date} · {range}",
     "startEvent": "Start event",
     "recentlyClosed": "Event finished · {venue} ended at {time}",
     "eventStatus": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
@@ -100,6 +101,7 @@
     "endNow": "Finish this event? No more orders will be taken.",
     "yes": "Yes",
     "started": "Event started",
+    "startFutureConfirm": "This event is on {date}. Start it now?",
     "finishTimeNow": "Finish time now {time}",
     "finished": "Event finished",
     "cancelled": "Event cancelled",

@@ -427,6 +427,19 @@ const NAMED = [
     expect: b => mapStrings(b, s => s.replace(/(<h3 class="font-black text-slate-900 text-base mb-1">Change finish time<\/h3>)([\s\S]*?<\/select>)/g, (_, h3, body) => h3 + body
       .replace(/(currently set to finish at <span class="font-bold text-slate-900">)(\d{2}):(\d{2})(<\/span>)/, (_, o, hh, mm, c) => o + clock12(hh, mm) + c)
       .replace(/(<option value="(\d{2}):(\d{2})"(?: selected="")?>)\2:\3( \(current\))?<\/option>/g, (_, open, hh, mm, cur) => `${open}${clock12(hh, mm)}${cur || ''}</option>`))) },
+
+  // ── ⚠️ RE-PINNED (US layout fixes, 18 October 2026, docs/us-layout-proposal-report.md; BEFORE 4d72838) ──────────────
+  // Each entry is one change of the brief (usl-out/REPIN-BRIEF.md), named by its id, precise (a transform of BEFORE,
+  // never a recapture). Helpers: USL below. Table order matters: these run AFTER every entry above, so a US "5pm" is
+  // already "5:00 PM" (P2-us-clock) and TruckListCard's range already has its AM/PM no-break spaces
+  // (midnight-card-time-nbsp-US) when they run.
+  ...require('./_lp2-named-usl.cjs').entries({ mapStrings, mapFields, clock12, isTicketView, countryOf }),
+
+  // ── ⚠️ RE-PINNED (US dress rehearsal fixes, 19 October 2026, docs/us-dress-rehearsal-fixes-report.md) ─────────────────
+  { id: 'us-rehearsal-fix-cancel-payment-state', part: 'US dress rehearsal fixes (19 Oct 2026)', country: 'both',
+    what: 'POST /api/orders/cancel answers {"ok":true,"paymentState":…} (an ADDED field, last): the cancel page shows "If you paid by card, any refund…" only when a card paid or is held. The fixture order is pay-at-the-truck, so the field reads "hatch". Status, redirect and every email it sends are unchanged. PRECISE.',
+    views: id => /^1a\/api\/(GB|US)\|cancel\|ok$/.test(id),
+    expect: b => mapFields(b, ['body'], x => (x === '{"ok":true}' ? '{"ok":true,"paymentState":"hatch"}' : x)) },
 ]
 
 /** The named entries that apply to a view, and what they make of its BEFORE value: { listed: true, entries } when an

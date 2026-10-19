@@ -5,7 +5,7 @@
   "loading": "Loading your order…",
   "errorTitle": "Something went wrong",
   "cancelledTitle": "Order cancelled",
-  "cancelledBody": "Your order has been cancelled. If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.",
+  "cancelledBody": "Your order has been cancelled.{card, select, no {} other { If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.}}",
   "statusCancelled": "This order has already been cancelled.",
   "statusRejected": "This order was not accepted by the truck.",
   "statusTooLate": "This order can no longer be cancelled.",

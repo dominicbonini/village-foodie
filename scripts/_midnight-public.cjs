@@ -177,7 +177,12 @@ async function views({ kit, REPO, FIX }) {
       if (kind === 'normal') {
         kit.setNow(FIX.utcOf(cc, FIX.EVENT_DATE, '12:00')); kit.setDeviceTz(tz)
         const fmtId = (what) => `${cc === 'GB' ? 'normal' : 'midnight'}|${cc}|fmt|${what}`
-        const cardText = html => [...html.matchAll(/text-orange-600 leading-none">([^<]*)<\/span>[\s\S]*?<span>([^<]*)<\/span>/g)].map(m => `${m[1]} · ${m[2]}`)
+        // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-2-live-on-date-line (components/TruckListCard.tsx): the range used to
+        // sit in a bare <span> inside the time line ("…text-slate-500 leading-none mt-0.5\"><span>11:30 – 22:45</span>"); it is
+        // now that line's own text ("…text-slate-500 leading-none mt-0.5\">11:30 – 22:45</span>"), with "● Live" moved up
+        // beside the date. The extractor reads the range by its line's classes, with the old inner <span> optional, so it
+        // reads both markups the same way (BEFORE's stored cards were taken with the old form).
+        const cardText = html => [...html.matchAll(/text-orange-600 leading-none">([^<]*)<\/span>[\s\S]*?text-slate-500 leading-none mt-0\.5">(?:<span>)?([^<]*)<\/span>/g)].map(m => `${m[1]} · ${m[2]}`)
         // the public truck page: the SERVER page decides the settings (a HatchGrab truck's; none for a discovery-only one)
         for (const [what, hasRow] of [['public-page', true], ['public-page-discovery-only', false]]) {
           await safe(fmtId(what), async () => {
@@ -271,7 +276,9 @@ function checks(t, A, B) {
     const pr = v('00:15', 'wa-prompt'), pr19 = v('19:00', 'wa-prompt')
     t(`public ${cc}: the prompt says the event ends after midnight (19:00) and, at 00:15, that it started yesterday and is still on`,
       typeof pr19 === 'string' && /ends after midnight/.test(pr19) && /\(TODAY\)/.test(pr19) && typeof pr === 'string' && /STARTED YESTERDAY, ENDS THIS MORNING/.test(pr), [pr19, pr])
-    t(`public ${cc}: the prompt line reads the truck's style (${cc === 'GB' ? '20:00–00:30' : '8:00 PM–12:30 AM'})`, typeof pr19 === 'string' && pr19.includes(cc === 'GB' ? '20:00–00:30' : '8:00 PM–12:30 AM'), pr19)
+    // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-1-nbsp: each US 12-hour time carries U+00A0 before AM/PM (the "–" here is
+    // the prompt's own join, no space either side, so nothing else moves). GB unchanged.
+    t(`public ${cc}: the prompt line reads the truck's style (${cc === 'GB' ? '20:00–00:30' : '8:00 PM–12:30 AM, U+00A0 before PM/AM'})`, typeof pr19 === 'string' && pr19.includes(cc === 'GB' ? '20:00–00:30' : '8:00\u00A0PM–12:30\u00A0AM'), pr19)
     // weekly post
     for (const w of ['wp-overview', 'wp-load']) {
       t(`public ${cc}: weekly post ${w === 'wp-overview' ? 'social_overview' : 'event_load'} offers the event at 23:50 and 00:15, not at 00:31`,
@@ -301,7 +308,9 @@ function checks(t, A, B) {
   t('public: PARITY — the edge function\'s shouldAutoClose agrees with lib/event-window.ts on every one of 4 shapes × auto_close × 5 days × 288 minutes', par.compared === 4 * 2 * 5 * 288 && par.mismatchCount === 0, par)
   // US format
   const us = A['midnight|US|fmt|public-page'] || {}, use = A['midnight|US|fmt|embed'] || {}
-  const want = 'Wed, Sep 30 · 11:30 AM – 10:45 PM'
+  // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-1-nbsp: a 12-hour formatTimeRange also writes U+00A0 BEFORE the dash, so
+  // the range breaks only after it. (U+00A0 before AM/PM was already the card's own rule.) Written as escapes.
+  const want = 'Wed, Sep 30 · 11:30\u00A0AM\u00A0– 10:45\u00A0PM'
   t('public US: the public truck page\'s card reads the truck\'s style, each time kept whole: "Wed, Sep 30 · 11:30 AM – 10:45 PM" (U+00A0 before AM/PM)', (us.cards || [])[0] === want, us)
   t('public US: the custom-domain schedule\'s card reads the same', (use.cards || [])[0] === want, use)
   const usTime = A['midnight|US|fmt|embed-time-US'] || {}
@@ -323,7 +332,25 @@ function checks(t, A, B) {
  * today, every row upcoming), kept when dated on or after the truck's own date at the moment. US at 22:40 / 22:50 EDT (UTC
  * already the next day) now keeps today's event; every other moment is unchanged. */
 const ddmm2ymd = d => `${d.slice(6, 10)}-${d.slice(3, 5)}-${d.slice(0, 2)}`
+/* ══ NAMED (US layout fixes, 18 October 2026, /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md) ══════════════════════════════
+ * us-layout-fix-2-live-on-date-line (components/TruckListCard.tsx) — the GB format views' stored HTML (the public truck page,
+ * its discovery-only form, the custom-domain schedule: normal|GB|fmt|*). On these FULL, NOT-LIVE cards the date gains a
+ * wrapping flex <span> (where "● Live" now sits when live) and the range, which sat in a bare <span> inside a flex time line,
+ * is now that line's own text with the line's classes trimmed to "text-[12px] font-bold text-slate-500 leading-none mt-0.5".
+ * Exact markup, each card matched in full; if any card is not that form (a live or compact one) nothing is transformed and
+ * the view fails. The text the cards read ("Wed 30 Sep · 11:30 – 22:45") is unchanged. */
+const FIX2_FULL_CARD = /<span class="text-\[13px\] sm:text-sm font-bold text-orange-600 leading-none">([^<]*)<\/span><span class="flex items-center gap-2 text-\[12px\] font-bold text-slate-500 leading-none mt-0\.5"><span>([^<]*)<\/span><\/span>/g
+const fix2FullCard = html => html.replace(FIX2_FULL_CARD, (m, date, range) =>
+  `<span class="flex items-center gap-2 leading-none whitespace-nowrap"><span class="text-[13px] sm:text-sm font-bold text-orange-600 leading-none">${date}</span></span><span class="text-[12px] font-bold text-slate-500 leading-none mt-0.5">${range}</span>`)
 function named(id, before, B) {
+  if (/^normal\|GB\|fmt\|(public-page|public-page-discovery-only|embed)$/.test(id) && before && typeof before.html === 'string') {
+    const n = (before.html.match(FIX2_FULL_CARD) || []).length
+    if (!n || n !== (before.cards || []).length) return before
+    return { ...before, html: fix2FullCard(before.html) }
+  }
+  // us-layout-fix-1-nbsp (lib/time-utils.ts clockOf): the US WhatsApp prompt's event line ("11:30 AM–10:45 PM") carries
+  // U+00A0 before each AM/PM; nothing else in the prompt moves. GB: none.
+  if (/^normal\|US\|[^|]+\|wa-prompt$/.test(id) && typeof before === 'string') return before.replace(/(\d{1,2}:\d{2}) (AM|PM)\b/g, '$1\u00A0$2')
   const m = /^normal\|(GB|US)\|([^|]+)\|(feed-hg|embed)$/.exec(id)
   if (!m) return before
   const FIX = require('./_midnight-fixtures.cjs')

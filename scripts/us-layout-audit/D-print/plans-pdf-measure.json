@@ -1,0 +1,26 @@
+{
+ "GB": {
+  "gen": "Generated 2026-09-30",
+  "headH": 44,
+  "genTop": 24,
+  "titleTop": 10,
+  "genRight": 794,
+  "headRight": 794,
+  "headOverflow": 0,
+  "docOverflow": 0,
+  "paper": "A4",
+  "width": 794
+ },
+ "US": {
+  "gen": "Generated 2026-09-30",
+  "headH": 44,
+  "genTop": 24,
+  "titleTop": 10,
+  "genRight": 816,
+  "headRight": 816,
+  "headOverflow": 0,
+  "docOverflow": 0,
+  "paper": "Letter",
+  "width": 816
+ }
+}

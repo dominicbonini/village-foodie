@@ -114,6 +114,7 @@
     "confirm": "Cancel order"
   },
   "switchEventConfirm": "You’re currently serving at {current}. Switch to {next}? Tap the current event to switch back.",
+  "startFutureConfirm": "This event is on {date}. Start it now?",
   "extraWait": {
     "activeTapToClear": "+{mins}m active · Tap to clear",
     "add": "Add extra wait",

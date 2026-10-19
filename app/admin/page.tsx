@@ -12,7 +12,8 @@ import { PLAN_META, type Plan, type Feature } from '@/lib/features'
 import { safeHref } from '@/lib/safe-href'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
 import { planPrices, FEATURE_SECTIONS, footnotes, transactionRows, platformFeeLabel, PAY_AT_HATCH_ROW } from '@/lib/plan-features'
-import type { CountrySettings } from '@/lib/country-settings-types'
+import { planPricesDecided, type CountrySettings } from '@/lib/country-settings-types'
+import { MASKED_PRICE } from '@/lib/pricing'
 // 🔴 The plan matrix shows the PUBLIC pages' country (named once — the visitor picker comes later); one
 // truck's modal shows THAT truck's country. Both arrive in the authenticated /api/admin response.
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'
@@ -1538,7 +1539,7 @@ export default function AdminPage() {
                   />
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400">{editingSettings ? platformFeeLabel(editingSettings) : '…'} transaction fee still applies at standard rate</p>
+              <p className="text-[10px] text-slate-400">{editingSettings ? (planPricesDecided(editingSettings) ? platformFeeLabel(editingSettings) : MASKED_PRICE) : '…'} transaction fee still applies at standard rate</p>
             </div>
 
             {/* Feature overrides */}

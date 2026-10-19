@@ -1,0 +1,378 @@
+{
+  "group": "D-print",
+  "issues": [
+    {
+      "id": "D-20",
+      "surface": "Social posts › Weekly post › Time column (legacy rows and \"All on one line\"; also \"Big picture\")",
+      "size": "1080x1350 (portrait)",
+      "what": "shrink",
+      "detail": "The 12-hour range \"11:30am – 10:45pm\" is 318.1px wide at the design's 44px, in a 250px Time box, so fitLines shrinks it. \"11:30 – 22:45\" is 223.3px and fits at full size. No truncation, no dropped line, never at the floor. The US time is the smallest text on its row; in wide families it is smaller than the place name. Rows also differ: \"8pm – 12:30am\" draws at 43px next to \"11:30am – 10:45pm\" at 34px (GB: 44/44px).",
+      "measured": "Default Oswald, single-event row (Thu 1 Oct): GB 44px → US 34px (−23%), asked 44px, floor 15px. Big picture: 44→35px. Worst family, Montserrat: 43→27px (−37%; the place name on that row is 30px). 19/21 bundled families shrink ≥15%. Two-event rows are height-bound, so mostly equal in Oswald; worst Archivo Black 34→23px.",
+      "frequency": "Every US weekly post with a non-:00 time (e.g. 11:30am). The 12h clock is the poster default in both countries, so a GB truck on 12h sees the same thing (GB 12h, Oswald: 34px). Only GB trucks that chose 24h avoid it.",
+      "severity": "UGLY",
+      "fix": "Widen the default Time share for 12h designs (weights 26 → about 32), or drop the spaces around the dash for 12h (\"11:30am–10:45pm\"), or default the Time box to \"Use two lines\" for 12h so start and end stack.",
+      "gb": "docs/us-layout-audit/D-print/social-weekly-oneline-portrait-gb.png",
+      "us": "docs/us-layout-audit/D-print/social-weekly-oneline-portrait-us.png",
+      "alsoSee": [
+        "docs/us-layout-audit/D-print/social-weekly-oneline-montserrat-portrait-gb.png",
+        "docs/us-layout-audit/D-print/social-weekly-oneline-montserrat-portrait-us.png",
+        "docs/us-layout-audit/D-print/social-weekly-bigpicture-portrait-us.png",
+        "docs/us-layout-audit/D-print/social-weekly-rows-portrait-us.png"
+      ]
+    },
+    {
+      "id": "D-21",
+      "surface": "Social posts › Weekly post › Time column (every arrangement)",
+      "size": "1080x1920 (story)",
+      "what": "shrink",
+      "detail": "On a story canvas the rows are taller but the Time box keeps the same width (247px), so the US range stays capped by width. It barely grows from portrait (34px) while the date (52px) and place (41px) on the same row grow. It is the biggest GB/US gap on the poster. No truncation, never at the floor (22px).",
+      "measured": "Oswald, single-event row: rows/one line GB 48 → US 34px (−29%); big picture 49→34px (−31%); day on top 62→51px (−18%). Raleway, one line: 44→28px (−36%). Montserrat, day on top: 62→41px. Families shrinking ≥15%: one line 21/21, day on top 18/21.",
+      "frequency": "Every US weekly post made on a 9:16 (story) blank with a non-:00 time.",
+      "severity": "UGLY",
+      "fix": "Same as D-20. A wider Time share or a two-line 12h time matters most here, because the row has spare height.",
+      "gb": "docs/us-layout-audit/D-print/social-weekly-oneline-story-gb.png",
+      "us": "docs/us-layout-audit/D-print/social-weekly-oneline-story-us.png",
+      "alsoSee": [
+        "docs/us-layout-audit/D-print/social-weekly-bigpicture-story-gb.png",
+        "docs/us-layout-audit/D-print/social-weekly-bigpicture-story-us.png",
+        "docs/us-layout-audit/D-print/social-weekly-dayontop-story-gb.png",
+        "docs/us-layout-audit/D-print/social-weekly-dayontop-story-us.png"
+      ]
+    },
+    {
+      "id": "D-22",
+      "surface": "Social posts › Weekly post › Time column (legacy rows and \"All on one line\")",
+      "size": "1080x1080 (square)",
+      "what": "shrink",
+      "detail": "With the default Oswald the square post is fine (35→34px). Square rows are short enough that height, not width, sets the size. With wider bundled families the 12h range becomes width-bound and shrinks well below GB and below the place name. No truncation; never at the floor (12px). \"Day on top\" and \"Big picture\" give Time a wider cell and are unaffected (0/21 families ≥15%).",
+      "measured": "Archivo Black: GB 35 → US 23px (−34%; place on the same row 27px). Merriweather and Work Sans: 35→26px. Inter, Montserrat and Poppins: 35→27–28px. 12/21 families shrink ≥15% (one line).",
+      "frequency": "US weekly posts on a square blank whose design uses a wide font (12 of the 21 bundled families).",
+      "severity": "UGLY",
+      "fix": "Same as D-20.",
+      "gb": "docs/us-layout-audit/D-print/social-weekly-oneline-archivoblack-square-gb.png",
+      "us": "docs/us-layout-audit/D-print/social-weekly-oneline-archivoblack-square-us.png",
+      "alsoSee": [
+        "docs/us-layout-audit/D-print/social-weekly-oneline-square-gb.png",
+        "docs/us-layout-audit/D-print/social-weekly-oneline-square-us.png"
+      ]
+    }
+  ],
+  "fine": [
+    {
+      "surface": "Printed ticket › header (#id + COLLECT/PICKUP time, double width)",
+      "sizes": [
+        "58mm/32col",
+        "80mm/48col"
+      ],
+      "note": "58 mm stacks in both (as designed); US \"PICKUP 12:45 PM\" = 15 of 16 double-width cols (GB \"COLLECT 12:45\" 13/16), also \"PICKUP 12:30 AM\"/\"10:45 PM\". 80 mm stays on one row: \"#A123  PICKUP 12:45 PM\" 21 of 24 dbl cols (GB 19/24); the US row stacks only once the id passes 8 chars (GB 10). No row wider than the paper in any scenario (main, held, part-refunded, midnight 00:30, ASAP, test).",
+      "gb": "docs/us-layout-audit/D-print/ticket-main-58mm-gb.png",
+      "us": "docs/us-layout-audit/D-print/ticket-main-58mm-us.png"
+    },
+    {
+      "surface": "Printed ticket › US tax / service fee / card fee / tip rows",
+      "sizes": [
+        "58mm/32col",
+        "80mm/48col"
+      ],
+      "note": "5 US-only rows (Subtotal, \"Sales tax 8.875%\", Service fee, Card fee, Tip) each exactly fill 32/48 cols via padBetween with 4-digit amounts ($1292.90, $1748.71) — no wrap. The US ticket is +5 rows (~+19 mm of paper at 58 mm: 69 vs 64 printed rows) — content, not a fixed-height element.",
+      "gb": "docs/us-layout-audit/D-print/ticket-main-80mm-gb.png",
+      "us": "docs/us-layout-audit/D-print/ticket-main-80mm-us.png"
+    },
+    {
+      "surface": "Printed ticket › payment line (CARD HELD / DO NOT CHARGE, PAYMENT PARTIALLY REFUNDED, TO PAY)",
+      "sizes": [
+        "58mm/32col",
+        "80mm/48col"
+      ],
+      "note": "US wording longer (\"DO NOT CHARGE\" vs \"DO NOT COLLECT\" is shorter; \"PARTIALLY REFUNDED\" 26/32 cols) — fits.",
+      "gb": "docs/us-layout-audit/D-print/ticket-held-58mm-gb.png",
+      "us": "docs/us-layout-audit/D-print/ticket-held-58mm-us.png"
+    },
+    {
+      "surface": "Printed ticket › print stamp + test ticket",
+      "sizes": [
+        "58mm/32col",
+        "80mm/48col"
+      ],
+      "note": "\"printed 11:50 AM\" 16 cols (GB 13). Test ticket \"#TEST  PICKUP 11:50 AM\" 21/24 dbl cols at 80 mm, stacked 15/16 at 58 mm. Aside, not US-specific: the stamp is time-only in both countries although TicketOrder.printedLabel documents \"date AND time\" (usePrinting stampNow uses formatInstantClock).",
+      "gb": "docs/us-layout-audit/D-print/ticket-test-58mm-gb.png",
+      "us": "docs/us-layout-audit/D-print/ticket-test-58mm-us.png"
+    },
+    {
+      "surface": "Email › customer order confirmed (time box + totals)",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 1154/1262 px, 600 1040/1165 px (US taller only by the 5 charge rows, each 1 line). Subject GB 21 / US 21 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-confirm-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-confirm-375-us.png"
+    },
+    {
+      "surface": "Email › customer confirmed, requested slot taken",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 1173/1281 px, 600 1040/1165 px (US taller only by the 5 charge rows, each 1 line). Subject GB 21 / US 21 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-confirm-taken-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-confirm-taken-375-us.png"
+    },
+    {
+      "surface": "Email › customer slot moved (time + previously)",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 1172/1280 px, 600 1058/1183 px (US taller only by the 5 charge rows, each 1 line). Subject GB 21 / US 21 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-slot-moved-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-slot-moved-375-us.png"
+    },
+    {
+      "surface": "Email › customer received, preferred time",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 1171/1279 px, 600 1055/1180 px (US taller only by the 5 charge rows, each 1 line). Subject GB 20 / US 20 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-received-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-received-375-us.png"
+    },
+    {
+      "surface": "Email › customer ready to collect",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 1019/1127 px, 600 937/1062 px (US taller only by the 5 charge rows, each 1 line). Subject GB 36 / US 36 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-ready-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-ready-375-us.png"
+    },
+    {
+      "surface": "Email › customer order edited, card held for part (4-digit figures)",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 1228/1336 px, 600 1098/1223 px (US taller only by the 5 charge rows, each 1 line). Subject GB 21 / US 21 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-edit-held-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-edit-held-375-us.png"
+    },
+    {
+      "surface": "Email › operator new order",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 800/849 px, 600 800/813 px (US taller only by the 5 charge rows, each 1 line). Subject GB 55 / US 58 chars. Subject \"🔔 New order #A123 — Alexandra Montgomery-Smith · 12:45 PM\" is cut by a phone inbox in both countries before the time; with a short name (\"Jo\") GB 31 / US 34 chars, both fit.",
+      "gb": "docs/us-layout-audit/D-print/email-new-order-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-new-order-375-us.png"
+    },
+    {
+      "surface": "Email › customer partial refund (4-digit)",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 800/800 px, 600 800/800 px. Subject GB 45 / US 45 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-refund-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-refund-375-us.png"
+    },
+    {
+      "surface": "Email › customer cancelled with refund (4-digit)",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 800/800 px, 600 800/800 px. Subject GB 45 / US 44 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-cancel-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-cancel-375-us.png"
+    },
+    {
+      "surface": "Email › customer event cancelled (long date)",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 800/800 px, 600 800/800 px. Subject GB 86 / US 85 chars.",
+      "gb": "docs/us-layout-audit/D-print/email-event-cancel-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-event-cancel-375-us.png"
+    },
+    {
+      "surface": "Email › operator new events found (date + time range, midnight)",
+      "sizes": [
+        375,
+        600
+      ],
+      "note": "no US element wraps more than its GB twin; no horizontal overflow (0 px both). Page height GB/US: 375 800/800 px, 600 800/800 px. Subject GB 50 / US 50 chars. US \"📅 Wed, Sep 30 | ⏱️ 11:30 AM–10:45 PM\" ≈ 280 of 335 px on one line at 375 (GB ≈ 230 px); \"8:00 PM–12:30 AM\" fits.",
+      "gb": "docs/us-layout-audit/D-print/email-new-events-375-gb.png",
+      "us": "docs/us-layout-audit/D-print/email-new-events-375-us.png"
+    },
+    {
+      "surface": "Plans PDF › header \"Generated\" date",
+      "sizes": [
+        "A4 794px",
+        "Letter 816px"
+      ],
+      "note": "Shows no times; its only date is \"Generated 2026-09-30\" (ISO, identical in both). Header row 44 px in both, date on the title row, 0 px overflow. Footnotes/plan messages contain no dates.",
+      "gb": "docs/us-layout-audit/D-print/plans-pdf-head-794-gb.png",
+      "us": "docs/us-layout-audit/D-print/plans-pdf-head-816-us.png"
+    },
+    {
+      "surface": "Social posts › Single-event post › Time box",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "\"11:30am – 10:45pm\" and \"8pm – 12:30am\" draw at the same size as GB \"11:30 – 22:45\" / \"20:00 – 00:30\" (portrait 61/61px) in all 21 bundled families. The box is the full inner width (928px)."
+    },
+    {
+      "surface": "Social posts › Single-event post › Date box",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "\"WEDNESDAY, SEPTEMBER 30TH\" vs \"WEDNESDAY 30TH SEPTEMBER\": equal at square and portrait. Story 85→83px (−2%). Worst family −2%. \"Day on its own line\" is identical in both."
+    },
+    {
+      "surface": "Social posts › Single-event post › Venue and town boxes",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "Not locale-formatted; identical GB and US."
+    },
+    {
+      "surface": "Social posts › Single-event post spanning midnight (20:00–00:30 / 8pm – 12:30am)",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "Same size as GB at every size; the 12h form is not longer than \"20:00 – 00:30\"."
+    },
+    {
+      "surface": "Social posts › Weekly post › Heading",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "The US default \"Week of {start}\" (\"WEEK OF SUNDAY, SEPTEMBER 27TH\") is much shorter than the GB \"Week commencing {start} to {end}\". The US draws larger: portrait GB 35px vs US 54px. A US truck keeping a stored GB-style heading fits like GB (34px). GB itself truncates this heading in 3 wide families at story size; that is not a US issue."
+    },
+    {
+      "surface": "Social posts › Weekly post › Date column (default \"Day on its own line\")",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "\"SEPTEMBER 30TH\" vs \"30TH SEPTEMBER\": 0% difference in every family, size and arrangement."
+    },
+    {
+      "surface": "Social posts › Weekly post › Date column, one line (Day on its own line off), all four date styles",
+      "sizes": [
+        "1080x1350"
+      ],
+      "note": "long: GB 26 vs US 25px (−4%). short / dayMonth / numeric: equal. Numeric shows 30/09 vs 09/30."
+    },
+    {
+      "surface": "Social posts › Weekly post › Time column, two-event (stacked) days in default Oswald",
+      "sizes": [
+        "1080x1080",
+        "1080x1350"
+      ],
+      "note": "Height sets the size; GB and US are equal or within 2px. In wide families they are covered by D-20/D-22."
+    },
+    {
+      "surface": "Social posts › Weekly post › Place column",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "Not locale-formatted; identical. The long name truncates in some wide families at story size in BOTH countries (pre-existing, not US)."
+    },
+    {
+      "surface": "Social posts › Weekly post › \"Day on top\" arrangement, Time cell",
+      "sizes": [
+        "1080x1080",
+        "1080x1350"
+      ],
+      "note": "Time gets about 40% of the row width; US equals GB in Oswald (portrait 44/44px). 0/21 families ≥15% at square; 1/21 at portrait (Archivo Black 44→35)."
+    },
+    {
+      "surface": "Social posts › Weekly post › Days-off text / cancelled word",
+      "sizes": [
+        "all"
+      ],
+      "note": "Not rendered (the fixture week trades every day). The US strings are shorter: \"Closed today\" vs \"No trading today\", \"CANCELED\" vs \"CANCELLED\". The boxes are the same, so they cannot fit worse."
+    },
+    {
+      "surface": "Social posts › captions (lib/weekly-post/caption.ts, caption-template.ts, caption-chips.ts)",
+      "sizes": [
+        "n/a"
+      ],
+      "note": "No fixed length limit in the code, so there is nothing to overflow."
+    },
+    {
+      "surface": "Social posts › Weekly post — truncation and floor",
+      "sizes": [
+        "1080x1080",
+        "1080x1350",
+        "1080x1920"
+      ],
+      "note": "Across 21 families × 3 sizes × 3 arrangements, plus the PNG shots: US time truncated: never. US at the floor where GB is not: never. No lines dropped in either country. Every US difference is a shrink (D-20..D-22)."
+    }
+  ],
+  "notChecked": [
+    {
+      "surface": "Printed ticket › physical printer output",
+      "why": "no printer; measured from the decoded ESC/POS bytes (exactly what the printer receives) and painted in Menlo — real glyph widths/code page not seen"
+    },
+    {
+      "surface": "Printed ticket › on-screen TicketPreview (Printing settings, /dev/ticket-preview)",
+      "why": "a dashboard screen, not paper; it draws the same TicketLine[] measured here"
+    },
+    {
+      "surface": "Email › rendering in Gmail/Outlook/Apple Mail",
+      "why": "painted in WebKit only (no email client CSS); widths < 375 px not checked"
+    },
+    {
+      "surface": "Email › operator \"new events found\" (app/api/inbound-schedule/route.ts)",
+      "why": "built inline in a route (no exported builder); its markup was transcribed and filled by the same time-utils formatters, not called"
+    },
+    {
+      "surface": "Email › private-event emails",
+      "why": "none exist — app/api/private-event sends no email; private-event orders use the order emails above"
+    },
+    {
+      "surface": "Social posts › design editor live stage (components/manage/LivePoster.tsx, DesignEditor.tsx) painted in a browser",
+      "why": "Not painted. It draws the same weeklyTree/eventTree element tree (lib/weekly-post/draw.ts) the PNG renderer uses, so the fitted sizes measured here are what it shows. The editor chrome around the canvas is an HTML surface for another part."
+    },
+    {
+      "surface": "Library (≈1,800 families) and uploaded fonts",
+      "why": "Need network or storage. Only the 21 bundled families in assets/fonts/weekly-post were swept."
+    },
+    {
+      "surface": "Non-default box settings: letter spacing, line spacing, \"Use two lines\" (ifTooLong), words-before, notes (\"Your own text\"), real place pictures/logo",
+      "why": "Default design values only. Note text is free text, not locale-formatted."
+    },
+    {
+      "surface": "lib/schedule-graphics/event-preview.ts and places.ts (Add-event preview card, Locations \"when\" line)",
+      "why": "Not fixed canvases. They feed HTML (TruckListCard, Locations list rows), which belongs to the HTML surface parts."
+    },
+    {
+      "surface": "Weekly post with a day off / a cancelled event",
+      "why": "Not rendered. US strings are shorter (see fine)."
+    },
+    {
+      "surface": "Wording (not layout): the poster 12h form is \"11:30am – 10:45pm\" (lowercase, no space), not the app's \"11:30 AM – 10:45 PM\"; US dates keep raised ordinals (\"SEPTEMBER 30TH\")",
+      "why": "Formatting choice, outside a layout audit. Recorded so the mockups use the real strings."
+    }
+  ],
+  "method": "Fixtures: Pizza Kitchen (test-truck), GB (GBP, en-GB, Europe/London, 24h, VAT incl., no tip/fee per seed) vs US (USD, en-US, America/New_York, 12h, sales tax 8.875% excl., 20% tip, service fee 3%+$0.30, card fee 3%), at Wed 30 Sep 2026 11:50 local (kit.setNow/setDeviceTz). Order #A123 (longest realistic: per-event counter or offline provisional), pickup 12:45/12:45 PM (plus 00:30 and ASAP), 6 items with a 6-modifier list, item notes, long order note, 4-digit totals. TICKETS: the real Order→mapOrderToTicket→renderTicket and renderTestTicket at 58/80 mm (scripts/us-layout-audit/D-print/tickets.cjs); the ESC/POS bytes were decoded back into printed rows and each row's physical columns (×2 for double width) compared with 32/48. EMAILS: the real lib/email.ts builders (formatConfirmationEmail x6 variants, formatNewOrderEmail; sendRefund/Cancellation/EventCancellationEmail with fetch replaced in-process by a recorder — nothing sent) plus the inbound-schedule markup transcribed, painted in WebKit at 375 and 600 px with network blocked; line counts via Range.getClientRects clustered by line, GB/US elements matched by normalised text then DOM path; horizontal overflow and page height (emails.cjs). PLANS PDF: real buildPlansPdfHtml(GB / US with fixture prices) painted at A4 794 px vs Letter 816 px, header row measured (plans-pdf.cjs). Sheets by sheets.cjs (sharp). SOCIAL POSTS: Rendered through the real renderer with no browser, DB, network, build or dev server. The tool compiles lib/weekly-post (render.ts → draw.ts → fit.ts, satori/resvg via next/og) with scripts/_slot-interval-compile.cjs, as scripts/_weekly-post-examples.cjs does, and wraps fit.ts `fitLines` to record each text box's asked size, height ceiling, floor (max(ABSOLUTE_MIN_FONT 8, round(asked × MIN_FONT_FRACTION 0.35))), fitted size, truncation and dropped lines. Box rectangles come from the element tree. Fixture: Pizza Kitchen (test-truck / test-kitchen) on a synthetic gradient blank. GB: Europe/London, Monday weeks, 24h, en-GB words. US: America/New_York, Sunday weeks, 12h, en-US words. Moment: Wednesday 30 September 2026 11:50 local, passed to weekRange as the clock (GB 10:50Z, US 15:50Z). Events are keyed by date over 27 Sep–4 Oct, so each poster shows its own 7 days and a date carries the same events in both countries. Every day trades, four days have two events, with 11:30–22:45, 20:00–00:30 and names up to \"Great Waldingfield Recreation Ground\". Templates use the default design at 1080×1080, 1080×1350 and 1080×1920: the weekly post as an unopened legacy-rows design, as converted on open (daysFromLegacy, \"All on one line\"), and as the \"Day on top\" and \"Big picture\" quick layouts; the single-event post (defaultEventLayout) with the long range and the midnight range. PNGs use the default Oswald, plus Montserrat (portrait) and Archivo Black (square) pairs as the worst families. A measurement-only sweep covers all 21 bundled families × 3 sizes × 3 weekly arrangements + the event post, plus all four date styles with \"Day on its own line\" on/off and GB on its default 12h clock. PNGs are downscaled to 540px wide (50%) with a palette. Scripts: scripts/us-layout-audit/D-print/social/render-social.cjs, make-sheet-and-findings.cjs."
+}

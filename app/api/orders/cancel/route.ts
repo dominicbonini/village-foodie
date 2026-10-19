@@ -173,7 +173,9 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({ ok: true })
+    // `paymentState` (additive, 19 October 2026 — US dress rehearsal Finding 5): the cancelled screen says
+    // "any refund is handled by the truck" only when a card paid or was authorised.
+    return NextResponse.json({ ok: true, paymentState })
   } catch (err) {
     console.error('[customer-cancel] error:', err)
     return NextResponse.json(customerErrorBody(locale, 'something_went_wrong'), { status: 500 })

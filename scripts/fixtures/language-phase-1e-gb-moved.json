@@ -22,6 +22,7 @@
   "landing.testimonial.business": "Nadia & Bogdan",
   "landing.testimonial.byline": "Owners, Pizzeria Gusto",
   "legalChrome.questions": "Questions? <link>Get in touch</link> — we're real people.",
+  "orderStatus.cancelledBody": "Your order has been cancelled. If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.",
   "planFeatures.footnote.n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe's own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
   "planFeatures.footnote.n2": "Online payments powered by Stripe Connect. Subject to {platformFee} HatchGrab platform fee plus Stripe card processing fees (~{onlineFee} per transaction on standard {region}).",
   "planFeatures.footnote.n5": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers listed in our help centre.",

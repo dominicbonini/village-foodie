@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V15.9
+HatchGrab Engineering Reference Manual · V16.0
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 15.9**
+**Version 16.0**
 
 October 2026
 
@@ -41,6 +41,61 @@ same reasoning, six days later. Check one name at a time with `grep -q "^NAME=."
 `set` / `missing`.
 
 # Changelog
+
+## V16.0 — 14–17 October 2026 — **LANGUAGES DONE FOR ENGLISH** (UK BASE, US OVERRIDES), MARKETING ON `/uk` AND `/us` WITH A COUNTRY ROUTER, PRIVATE BOOKINGS KEPT OFF VILLAGE FOODIE, EVENTS THAT RUN PAST MIDNIGHT, AND A US LAYOUT AUDIT
+
+- Applies the delta `reference-manual-delta-languages-midnight.md` (session 14–17 October 2026), drawn from the
+  reports it lists, all in `docs/` (`language-phase-0-report.md` … `midnight-followups-report.md`).
+- **Languages:** every user-facing word in the product now lives in the message files, about 4,900 en-GB
+  messages. `messages/en-US.json` holds about 500 overrides. UK output was proven byte-identical at every
+  phase, except for the named wrong-English fixes.
+- **Marketing:**
+  - The marketing pages live at `/uk…` and `/us…`.
+  - `hatchgrab.com/`, `/landing`, `/features` and `/compare` send each visitor (302) to their country's page.
+  - While the US is switched off, everyone lands on `/uk`.
+- **Village Foodie:** private bookings and "Closed"/"TBC"-style rows are stored hidden, and the public feed
+  never shows them. 14 existing rows were hidden on 16 Oct.
+- **Overnight events:** an event can now end after midnight (e.g. 20:00–00:30), driven by one rule in
+  `lib/event-window.ts`. Normal events were proven byte-identical.
+- **US layout audit:** 22 layout issues found for US trucks (3 broken). Fixes wait on mockups.
+- 🔴 **PUSHED IN SMALL STEPS UP TO `692adb4`; THE OVERNIGHT WORK IS UNCOMMITTED.** After pushing it, deploy the
+  `auto-event-scheduler` edge function (§49).
+
+| What | Where |
+|---|---|
+| Languages: how words are read, what each phase moved, US behaviour, the proof method, open items; new decisions; rule 1 extended | §77 (new §77.6–77.10; §77.2, §77.4, §77.5 updated) |
+| **NEW — Country addresses and the router** (`/uk`, `/us`, `proxy.ts`, metadata, sitemap) | §48 (new subsection, at its end) |
+| Private and generic events — the venue side and Village Foodie | §33 (after "Schedules, discovery and the scraper by country") |
+| **NEW — Overnight events** (the rule, follow-ups, US format bugs fixed alongside) | §15 (new subsection, at its end) |
+| **NEW — US readiness — layout** (the audit) | §76.8 — the manual has no section titled "US readiness"; §76 (International readiness) is where the V15.8 US readiness sweep lives |
+| **NEW — Tooling and workflow** (read-only Supabase connection, prompt rule, edge-function deploy) | **NEW §79** — the manual had no such section |
+| Deploy posture at V16.0 | §49 (now headed by the current posture) |
+| Backlog | §27, new block; V15.8 block corrected in place |
+| Nine cross-cutting invariants | §35 (35.ah, after 35.ag) |
+
+**OLDER LINES CORRECTED IN PLACE (not left beside the new ones):**
+- §15 "The end-after-start guard" and "Overnight events remain impossible, deliberately" — an end earlier than
+  the start is now the next day; only end = start is refused.
+- §27 "Overnight events" backlog line (V11.14) — built at V16.0; auto-open after midnight stays open.
+- §27 V15.8 block — `_16`, language phases 1a onwards, US URLs and hreflang, the demo country, the US App
+  Store link and US screenshots marked done; the "Sept" item narrowed.
+- §33 — `_16` was re-run after the deploy.
+- §48 sitemap lines (V12.5, V14.9) and the `/features` canonical and title — the sitemap now lists only the
+  country URLs; canonical and country word follow the page's own country.
+- §49 V15.9 and V15.8 postures — `_16` re-run; the missing Language 1a/1b entry closed.
+- §76.5 — marketing titles and tags follow the page's country, not the visitor's.
+- §77.1 (SEO, the demo country), §77.2 (marketing language, the US word table), §77.3 (phase status),
+  §77.4 (next-intl's extra dependencies, server components, the "Sept" sites).
+- §78.8 item 4 — the manual now has the Language 1a/1b entry.
+
+**THE DELTA, CHECKED AGAINST THE MANUAL:**
+- ⚠️ **It asks to remove the Phase 0 block's ⚠️ "check against the report" line. §77 carries no such line.**
+  The V15.8 merge had already checked that block against `docs/language-phase-0-report.md` and corrected it
+  (V15.8 entry below, kept as history). Nothing was removed.
+- Its two Phase 0 "details to add" were already in §77.4 (the extra dependencies; `lib/i18n/typecheck.ts`).
+  Only "nothing at runtime loads them" was new.
+- Its backlog "Close" item "loading only a truck's own language on Manage" was not in §27 to close; it is
+  recorded as a decision in §77.2.
 
 ## V15.9 — 15 October 2026 — **OUTREACH: SEND IS INSTANT (WITH UNDO) AND THE SERVER STILL DECIDES**, A REFUSED SEND IS RECORDED AND FLAGGED, EMAIL TEMPLATES GET FORMATTING AND CAN ATTACH THE PLANS PDF, AND A SCREENSHOT NO LONGER TRUSTS A PHONE NUMBER ON ITS OWN
 
@@ -11649,6 +11704,8 @@ hardcoded deliberately.
 does not end before it starts** — `hasValidEventTimes` checked range but not ordering. Two independent
 dropdowns would have deleted it. It is now enforced at four layers: option filtering in the control, a
 form error in the Edit modal, amber flags in the importer grid, and `hasValidEventTimes` server-side.
+⛔ **Corrected V16.0:** an end earlier than the start now means the next day (an overnight event); only an end
+**equal** to the start is refused, at the same layers (§15, "Overnight events").
 
 **All 81 live rows holding both times pass the new server rule**, verified by executing the shipped
 function against live data rather than by inspection.
@@ -11672,6 +11729,9 @@ seconds.
 END is harmless — only an off-grid START creates the disjoint set above.
 
 ### Overnight events remain impossible, deliberately
+
+⛔ **Superseded V16.0 — overnight events are now supported** by one rule in `lib/event-window.ts` (§15,
+"Overnight events"). The paragraph below is the V11 reasoning, kept as history.
 
 The hour range widened from 07–23 to 00–23, which makes an overnight event expressible for the first
 time. ⚠️ **It must not become possible**: the customer picker's `availableHours` loops
@@ -11765,6 +11825,48 @@ makes the whole branch unreachable by construction and produces an honest failur
 
 **Known and unclosed:** `captureOnConfirmation` performs no ownership check of its own. Five capture sites
 pass a `truckId` that is used as a fallback rather than a test. **Latent while Stripe is not live.**
+
+## Overnight events — events that run past midnight (V16.0 — 16–17 October 2026)
+
+*Source: `docs/midnight-and-format-fixes-report.md`, `docs/midnight-followups-report.md`.*
+
+### The rule (OBSERVED, 16–17 Oct)
+- **What it replaced:** before this work, an event could not end after midnight. `hasValidEventTimes` refused it, the Manage editor filtered such end times out, and the importer blanked the end. Live data had none.
+- **One module holds the rule:** `lib/event-window.ts`. Its two basic predicates, `crossesMidnight` and `clockMins`, sit in `lib/time-utils.ts`.
+  - **End earlier than start:** the end is on the next day, and on such an event a time earlier than the start (a slot) is on the next day too.
+  - **End equal to start:** still refused (DECIDED 17 Oct). The editor says "The end time can't be the same as the start time"; the API refusal is `event_times_same`.
+  - **A missing start or end:** today's behaviour (21 live events have one).
+- **The helpers:**
+  - the event timeline: minutes after 00:00 on `event_date`, +1440 for the next day; `nowOnEvent`;
+  - instants: `eventTimeInstant`, `eventEndInstant`, `eventDates`;
+  - upcoming: `upcomingQueryFloor` (yesterday) with `isUpcomingOrRunning`. Every "from today" read now starts at yesterday and keeps rows still running, with LIMIT applied after the filter.
+- **The engine clock:** the capacity engine parses slots as minute-of-day, so an overnight event's after-midnight slots enter it as "24:15" and leave as "00:15". Storage, screens, emails and tickets only ever hold "HH:MM".
+- **Every place that decides from an event's times uses the rule** (about 60 decisions in about 35 files):
+  - customer: the order page open/closed, slots, ASAP and cut-offs;
+  - the capacity engine and place-in-slot;
+  - dashboard: late and countdown, Add order, the finish-time modal;
+  - KDS sort; the print watcher's lead time;
+  - Manage: Upcoming/Past, conflicts, the importer;
+  - feeds and embed, WhatsApp upcoming events, weekly-post pickers, calendar links;
+  - the `auto-event-scheduler` edge function.
+- **The edge function can't import `lib/`.** It carries a named mirror (`shouldAutoClose`), proven equal to `lib/event-window` across 11,520 cases.
+  - 🔴 **Rule:** change both together (§35.ah).
+- **Normal events are byte-identical everywhere.** `scripts/midnight-events.cjs` covers this: 372 checks over 1,363 views, GB and US.
+- **Not done:** auto-open is start-anchored, so an overnight event that wasn't opened before midnight isn't auto-opened after it (§27).
+
+### Follow-ups (DECIDED 17 Oct; OBSERVED built)
+- **Change finish time** (dashboard and KDS) on any event:
+  - it offers every 15-minute time except the start; times earlier than the start are the next day's, labelled "(next day)";
+  - choosing one makes the event overnight;
+  - the options are read in the **truck's** zone, not the device's.
+- **Public feeds:** `/api/discovery/events` (operator leg) and `/api/embed/events` decide "today" on each truck's own date and clock, not UTC. The UTC date stays only as a fallback when a truck's zone can't be read. The Village Foodie leg uses Europe/London.
+- **Waiting events:** while an imported or emailed event waits for approval and crosses midnight, an amber "Ends the next day" pill shows on its card, and in Import review. No automatic path confirms or opens an imported event; `/api/inbound-schedule` always writes `unconfirmed`.
+
+### US format bugs fixed alongside (OBSERVED)
+- The public truck page and the embed/custom-domain schedule now use the truck's own time settings. Before, a US truck showed "Wed 30 Sep 11:30 – 22:45".
+- The dashboard's Completed list formats the slot in the truck's format.
+- The Change finish time modal uses the truck's format and zone.
+- Manage › Import review's time boxes showed nothing (0 px for the value) in both countries; fixed. Its table no longer scrolls sideways at 800–1180 px.
 
 # 16. Database schema essentials
 
@@ -15577,8 +15679,9 @@ and markup**.
 - **The allergen wizard's url-only empty panel** — two tokens, same bug already fixed in the Menu tab.
 - **`is_customer` on a promoted truck** — creating hidden then clearing `excluded` leaves a real customer
   `false`, diverging from the only two `true` rows.
-- **Overnight events** — expressible in the hour range, blocked at three layers, and would need the
-  customer picker's `availableHours` loop rewritten plus date-rollover handling.
+- ~~**Overnight events** — expressible in the hour range, blocked at three layers, and would need the
+  customer picker's `availableHours` loop rewritten plus date-rollover handling.~~ ✅ **Built V16.0** (§15,
+  "Overnight events"); auto-open after midnight stays open (§27, V16.0 block).
 
 ## 🔴 V11.14 — added 13 August 2026 (night)
 
@@ -17129,7 +17232,7 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   - venue creation;
   - a far-from-base review flag;
   - the scraper, migrated last, with a UK before/after comparison.
-- Re-run `_16` after deploy (§49). Add a migration file for the 12 October function revokes (§35).
+- ~~Re-run `_16` after deploy (§49).~~ ✅ Done (V16.0). Add a migration file for the 12 October function revokes (§35).
 - Country on the `discovery_events` unique key (§33).
 - US plan prices — needed before the US can be switched on, and before a US prospect's plans PDF works
   (§76.1, §76.7).
@@ -17137,14 +17240,31 @@ verification, and a fix in the repository is not a fix in production.** §36, §
 - **Service fee:** who keeps it (Dominic decides), and a home for a truck's own service fee in tax-inclusive countries.
 - Platform fee charging: `application_fee_amount` at capture, with a food-only clawback (§37).
 - **Legal text per country,** with a lawyer before the first non-UK signup: UK GDPR, the ICO, English law, the £100 cap, the sterling/VAT clause, six-year retention.
-- **Language phases 1a onwards (§77.3).** Also:
-  - US screenshots and testimonial; US marketing URLs and hreflang; the demo provisioned in the visitor's country;
+- ~~**Language phases 1a onwards (§77.3).**~~ ✅ **Done V16.0 for English** (1a–1e and 2; §77.7). Also:
+  - ~~US screenshots and testimonial; US marketing URLs and hreflang; the demo provisioned in the visitor's country;~~ ✅ done V16.0 (US hero screenshots; the testimonial is hidden on US pages; `/uk` and `/us` with hreflang; the demo is built in the visitor's country);
   - from the Phase 0 report: give the Reports 'Other' line an id (1d); store reject and cancel reasons as codes (1b);
-  - route the ~8 `formatYmd(…, { month: 'short' })` sites that still write "Sept" through `monthName` (a named visible change);
+  - route the ~8 `formatYmd(…, { month: 'short' })` sites that still write "Sept" through `monthName` (a named visible change) — Phase 2 changed most; the ones left are in `docs/language-phase-2-report.md` §6;
   - switch on next-intl's `precompile` once messages are many.
 - 🔴 The WhatsApp allergen floor made Unicode-aware before any non-English truck (§77.1).
-- Email sender on hatchgrab.com; US App Store link; support hours; CAN-SPAM postal address for US outreach.
+- Email sender on hatchgrab.com; ~~US App Store link~~ (done V16.0, §77.8); support hours; CAN-SPAM postal address for US outreach.
 - Privacy policy date mismatch: the page says "5 September 2026", `PRIVACY_UPDATED = '6 August 2026'`.
+
+## Added V16.0 — languages, marketing, private bookings, overnight events, US layout (17 October 2026)
+
+Still open from the V15.8 block above: the Google Maps key then Part B; US plan prices; Phase 5 and
+platform-fee charging; per-country legal documents; the revokes migration; country on the
+`discovery_events` unique key; reject reasons saved as ids (rule 6); the allergen floor. New:
+
+- **US layout fixes:** mockups first, from the audit's contact sheets (02, 05, 06, 07, 08), then a fix prompt. Include the GB items found by the audit and the two tinted bands on US pages (§76.8, §48).
+- **Re-check after the next import:** the private-event venue fix and the private discovery rows (`docs/private-discovery-rows-report.md` §3; §33).
+- The calculator's US saving examples (with US plan prices; §48).
+- **Screens that still show `error`** instead of wording refusals from `code`: onboarding and some kitchen screens.
+- **Gusto's past private events** (14–16 Oct) are still `unconfirmed` in its Manage. They are the owners' to approve or dismiss.
+- **Village Spice:** add a discovery truck if it should be listed.
+- **Auto-open of an overnight event after midnight** (not built; §15).
+- Truck-page metadata on the HatchGrab host (§48).
+- **Thousands separators on money**, both countries.
+- **Backup tables on the live database** — drop when happy (§49).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -17935,8 +18055,8 @@ Apps Script) belong in that manual too.
 - **OBSERVED** `_15` added the country-scoped unique keys: `discovery_trucks (country, name)`, the normalised-name key, and `venues (country, name, village)`. `_16` drops the old global keys and **must run only after Vercel and the scraper are on the new code**.
 - 🔴 **OBSERVED** **`_16` was run early on 10 October**, which would have broken the live (old) code's
   upserts. It was reversed the same day by re-adding `discovery_trucks_name_key`, `venues_name_village_key`
-  and `discovery_trucks_norm_name_uniq` by hand. **`_16` must be re-run after deploy** (§49). The class is
-  §35.ag.
+  and `discovery_trucks_norm_name_uniq` by hand. **`_16` must be re-run after deploy** (§49) — ✅ **re-run after
+  the deploy, as required (OBSERVED, V16.0).** The class is §35.ag.
 - **OBSERVED** `discovery_events` is still unique on (event_date, truck_name, venue_name) without country. A
   same-key US event is **skipped** by the gate rather than overwriting the UK row. Adding country to that key
   is open (§27).
@@ -17950,6 +18070,37 @@ Apps Script) belong in that manual too.
   (outside the repo; Dominic does this by hand).
 - **DECIDED 10 Oct** The Hatches Up importer is out of scope. Google Maps replaces the Gemini geocoder in
   Part B (waiting on the key).
+
+## Schedules, discovery and the scraper — private and generic events (V16.0 — 16 October 2026)
+
+*Source: `docs/private-event-approval-fix-report.md`, `docs/private-discovery-rows-report.md`.*
+
+### Private and generic events — the venue side (OBSERVED, fix 16 Oct)
+- **The bug, as Dominic saw it on his phone:** on Gusto's "Needs your approval" cards, the Event type chooser covered the details. The cause was a `w-full` child inside a flex row, which shrank the details column to 0 px at every width.
+- **The layout now:** the card runs details → event type chooser → warnings → **one** Approve / Edit / Reject row.
+- **Why Approve was grey:** it is disabled while an event has no times. The card now says why in visible text (`manageSchedule.card.approveNeedsTimes`), not only in a tooltip.
+- **No location for private events:** a private event gets no "We guessed this location" or "No location yet" box (DECIDED 16 Oct: private events need no location check).
+- **Generic titles are never venues:** `lib/generic-venue-names.json` with `isGenericVenueName` (`lib/venue-matcher.ts`). Titles such as "Private Event", "Private Hire", "Corporate Lunch", "Closed", "TBC" and "Event" are never matched to a venue or created as one, by the gate, the email bridge or the scraper.
+- **Live clean-up, 16 Oct:** the junk venues "Private Event" (at the geographic centre of the UK), "Private Party" and "Corporate Lunch" were deleted, with backups kept. Verified 0 / 0.
+  - 🔴 **Lesson:** the foreign-key check only stopped on cascade deletes (`confdeltype = 'c'`), but `truck_places` uses SET NULL (`'n'`). Gusto's saved place "Corporate Lunch" silently lost its link to the deleted venue. Harmless here. The rule is in §35.ah.
+
+### Private and generic events — Village Foodie (OBSERVED, fix 16 Oct)
+- **What was wrong:**
+  - The public feed `/api/discovery/events` is the **only** public reader of `discovery_events`, and every Village Foodie surface (home list and map, truck pages, venue pages) reads through it.
+  - It filters on `show_on_vf` / `show_on_hg`, the truck's own flags, the date and `superseded_by`. It **never reads the `visibility` column**.
+  - Every scraped row used to be written public, so generic rows showed. Marky D's "Closed" days (24 Dec and 3 Jan) were on his truck page, on a venue page `/venues/closed`, and would have reached the home list from 10 Dec.
+  - Gusto's private bookings were hidden only because Gusto's scraped listing is `excluded`.
+- **The fix, in one helper:** `lib/discovery-private.ts`.
+  - `isNonPublicDiscoveryRow` is true when the name is generic or the row is private by the same rule as `truck_events.is_private` (the whole word "private" in the venue or notes).
+  - `discoveryRowVisibility` gives such a row `visibility='hidden'`, `show_on_vf=false` and `show_on_hg=false`.
+  - It is used at the one write path (`admitDiscoveryEvents` in `lib/discovery-gate.ts`) and as a second guard in the feed.
+  - **Side effect (REASONED):** a real public event whose notes say "private" (e.g. "private car park") is also hidden. Nothing live matches today.
+- **Live data, 16 Oct (SQL run by Dominic):**
+  - 14 rows across 4 trucks set hidden: Gusto 10, Marky D's 2, Village Spice 1, Real Thai Food 1.
+  - Verified 0 still public, 14 hidden.
+  - The backup is `public.discovery_events_private_backup_20261016` (RLS on, anon/authenticated revoked). The undo SQL is in the report.
+- **OBSERVED** Village Spice has a scraped row but no discovery truck of that name, so its rows are dropped as unknown.
+- **Re-check after the next import:** both fixes had not yet met live data at 17 Oct (no import since they went live). Re-run §3 of `docs/private-discovery-rows-report.md` after the next daily scraper run.
 
 # Operator outreach from the discovery list (V12.1)
 
@@ -20366,6 +20517,18 @@ of this manual).
 - **English labels are not keys.** Compare ids or codes; translate at display (§77).
 - *A function's default grants are PUBLIC — revoke on creation:* recorded with its sweep above, beside the
   V12.1 policy class, rather than repeated here.
+
+## 35.ah 🔴 TIME, DISCOVERY AND LANGUAGE INVARIANTS (V16.0)
+
+- 🔴 **One time rule for events.** Anything that decides from an event's times uses `lib/event-window.ts`; never minute-of-day arithmetic or `event_date + time` by hand. The edge function's mirror must change with it (§15).
+- 🔴 **"Today" is the truck's date on the truck's clock,** never the server's UTC date.
+- 🔴 **A foreign-key check before a delete covers `'c'` and `'n'` delete rules.** SET NULL loses links silently (precedent: §33, 16 Oct).
+- **The public Village Foodie feed is the one gate for scraped rows.** It reads `show_on_vf` / `show_on_hg`, not `visibility`. Hide a row by setting all three.
+- **Generic names are never places.** Check `isGenericVenueName` before matching or creating a venue.
+- **Country pages never redirect;** only the root marketing paths route. New marketing pages go under `app/[country]/` by re-export, never as a copy.
+- **Words come from messages,** read with `useT` / `translatorFor`. Generated catalogue files are never edited by hand. Plan rows and price words are looked up by id.
+- **A `w-full` child inside a flex row** can shrink its siblings to 0 px. Put full-width blocks in normal flow.
+- **Measure before optimising bundle size.** The lazy-loading saving was 1.5 KB; gzip had already squeezed the near-duplicate US text.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -26573,7 +26736,7 @@ seen in a WhatsApp bubble.**
 
 🔴 **`Disallow: /trucks/` MEANS THE PER-TRUCK PAGES CANNOT RANK. That is a STANDING DECISION, not an oversight — do not quietly reverse it while doing SEO work.** It is recorded here so the next person meets it as a decision rather than as a bug.
 
-⚠️ **Sitemap scope, and why it is one URL:** 🔎 `/pricing` **is not a route** (it is a section id on the landing page) and 🔎 `/landing` **308-redirects to `/`**. `/compare` **stays `noindex` by decision.** `app/sitemap.ts` is host-aware and emits one URL per host.
+⚠️ **Sitemap scope, and why it is one URL:** 🔎 `/pricing` **is not a route** (it is a section id on the landing page) and 🔎 `/landing` **308-redirects to `/`**. `/compare` **stays `noindex` by decision.** `app/sitemap.ts` is host-aware and emits one URL per host. ⛔ **Superseded V16.0:** `/landing` now 302s to the visitor's country page and the sitemap lists only the country URLs (§48, "Country addresses and the router").
 
 ⚠️ **A route that used to exist as a `robots.ts` was removed, not merged:** it returned **HTTP 500** — Next.js refuses a conflicting public file and route file. **`public/robots.txt` won because it carries the blocklist.**
 
@@ -26678,15 +26841,16 @@ Recorded so they are not briefed again.
   - On a host with no brand (`localhost`) it is also a 404.
   - On a HatchGrab host it is a 200.
 - **OBSERVED** — indexing, **unlike `/compare`, which is `noindex`**: `robots: index, follow`; canonical
-  `https://www.hatchgrab.com/features`; title `Plans & features compared — HatchGrab {country}` — "UK" for GB, byte-identical;
-  since V15.8 the country word, OG/Twitter tags and `og:locale` follow the visitor's resolved country (§76.5) — set with
+  ~~`https://www.hatchgrab.com/features`~~ the page's own country address (`/uk/features`, `/us/features`; since V16.0); title `Plans & features compared — HatchGrab {country}` — "UK" for GB, byte-identical;
+  since V15.8 the country word, OG/Twitter tags and `og:locale` follow the country — since V16.0 the **page's** country, not the visitor's (§76.5) — set with
   `title: { absolute: … }` because `app/layout.tsx` carries a `'%s | HatchGrab'` template and a bare
   string gets the brand twice.
 - **REASONED — why it is indexable:** this content was public on the **indexed** landing page, and
   "what's on each plan" is a search people make. **Moving it without indexing would have made public
   content private by accident.**
 - **OBSERVED** — the sitemap is host-aware and now lists `https://www.hatchgrab.com/features` (monthly,
-  priority 0.8) **on the HatchGrab host only**. The Village Foodie sitemap is unchanged.
+  priority 0.8) **on the HatchGrab host only**. The Village Foodie sitemap is unchanged. ⛔ **Superseded
+  V16.0:** `/features` is now a 302; the sitemap lists `/uk/features` instead (and `/us…` while the US is on).
 - **OBSERVED** — `/features` uses **one** `.hg-landing` wrapper round the whole page, unlike `/compare`,
   which splits its in two — because nothing on it is Tailwind. ⚠️ **That single wrapper is also what keeps
   the priced header row `position: sticky`**, since a sticky element only travels inside its parent's box.
@@ -26954,7 +27118,61 @@ Recorded so they are not briefed again.
 - ⚠️ **HARNESS FLAKINESS:** `event-types-render.cjs` failed once inside a full sweep running alongside a
   local `next start`, and **passed on its own**. Treat it as resource contention unless it recurs.
 
-# 49. Deploy posture (current at V15.9; earlier postures below, each dated)
+### Country addresses and the router (V16.0 — 16 October 2026)
+
+*Source: `docs/language-phase-1e-report.md`, `docs/language-phase-1e-tidy-report.md`.*
+
+- **OBSERVED The country pages:**
+  - `/uk`, `/uk/features`, `/uk/compare` and `/us`, `/us/features`, `/us/compare` come from one dynamic segment, `app/[country]/…`, which **re-exports** the existing page modules. There is no second copy of any page.
+  - `lib/marketing-country.ts` maps uk → GB and us → US.
+  - Unknown segments 404 (`dynamicParams = false` plus a request-time `notFound()`).
+  - **Country pages never redirect.** A switched-off country's page 302s to the matching `/uk…` page.
+- **OBSERVED The router** (`proxy.ts`, HatchGrab hosts only):
+  - **Which paths:** `/`, `/landing`, `/features`, `/compare` and the unlisted landing preview route 302 to the visitor's country page.
+  - **The order it checks:** `?country=` → cookie `hg_country` → `x-vercel-ip-country` → GB, switched-on countries only (the same order as §76.5). A visitor's choice always beats location, and there is no special case for crawlers.
+  - **What it keeps:** query strings other than `country`. A `?country=` is remembered by a Set-Cookie on the 302.
+  - **Where it gets the list:** the switched-on countries come from the 60-second cached loader. On a failed read, the list is GB only.
+- **The flag selector** sets `hg_country` and moves to the same page in the chosen country.
+- **Links that skip the router:**
+  - internal marketing links point straight at `/uk…` or `/us…`;
+  - `routedAddress(page, req)` in `lib/visitor-country.ts` gives the legal-page logo and the demo bounces (`/api/demo/return`, `/demo/[ref]`) the router's own answer, with no hop.
+- **Metadata:**
+  - canonical and og:url are the page's own country address;
+  - hreflang lists every switched-on country (en-GB → `/uk…`, en-US → `/us…`) plus x-default → the root path;
+  - `metadataBase` is `https://www.hatchgrab.com`.
+- **Sitemap:** only the country URLs (`/uk`, `/uk/features`, plus `/us…` while the US is on). `/` and `/features` (now 302s) and `/compare` (noindex) are left out.
+- **Copyright:** "© {year}" is the current year in Europe/London at render (`copyrightYear()` in `lib/legal.ts`).
+- **Unchanged:** the Village Foodie host, custom domains, `/trucks/*`, `/order/*`, `/manage/*`, `/dashboard/*`, `/kds`, `/app`, `/api/*`, `/contact`, `/privacy`, `/terms`, `/login`, `/signup`, `/setup`, `/hire`.
+- **OBSERVED** Apple's Marketing URL (`https://www.hatchgrab.com/`) now lands on `/uk` via a 302. No action needed.
+- **Localhost:** plain `localhost:3000` renders Village Foodie. The marketing pages need `127.0.0.1 hatchgrab.localhost` in `/etc/hosts`, then `http://hatchgrab.localhost:3000`.
+
+#### Decision
+- **DECIDED 16 Oct:** "Most trucks will type hatchgrab.com. Can't have US trucks going to the UK page, or the reverse." Country addresses plus the root router.
+
+#### Open
+- With the testimonial hidden on US pages, "How it works" and "Pricing" are two tinted bands back to back. This goes with the US layout fixes (mockup first; §76.8).
+- The calculator's US saving examples reuse UK figures in dollars ("a year's general liability insurance" at $80–250 is too low). Revisit with US plan prices.
+- Truck page metadata on the HatchGrab host still uses the Village Foodie title template and a villagefoodie.co.uk og:url. Recorded in `docs/share-preview-report.md`.
+
+# 49. Deploy posture (current at V16.0; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.0 — PUSHED IN SMALL STEPS UP TO `692adb4`; THE OVERNIGHT WORK IS UNCOMMITTED
+
+*Replaces the V15.9 and V15.8 postures below as the current one; they stay as dated history.*
+
+- **OBSERVED** Dominic now pushes in small steps. The pushed commits include:
+  - `cea794f` "private event fix": Phase 1d Part 2 plus the pending-card fix;
+  - `eb7ed44` "outreach template fix";
+  - `ff9eeef` "landing page" and `a858ca5` "landing": Phase 1e;
+  - `692adb4`: the 1e tidy and the private-discovery-rows fix.
+
+  Check `git log origin/main` for the current tip.
+- **OBSERVED** `_16` (country-scoped unique keys) was re-run after the deploy, as required. That open item is closed.
+- **Uncommitted at 17 Oct:** the overnight-events work and its follow-ups, on top of `692adb4`. **After pushing:** deploy the `auto-event-scheduler` edge function (command: §79). Until then, the deployed copy closes an overnight event early.
+- **Before pushing,** run the localhost checks in `docs/midnight-and-format-fixes-report.md` ("Localhost check"), on Pizza Kitchen only. To see the after-midnight side by day, add an event dated yesterday that ends later today.
+- **Backup tables kept on the live database** (drop when happy):
+  - the junk-venue backups from 16 Oct;
+  - `discovery_events_private_backup_20261016`.
 
 ### 🔴 DEPLOY POSTURE AT V15.9 — `origin/main` IS `accbb61`; EVERYTHING TO 15 OCTOBER IS PUSHED
 
@@ -26966,9 +27184,10 @@ Recorded so they are not briefed again.
 - **OBSERVED** (read-only, 15 October) `20261015_outreach_messages_refused.sql` is **applied**: the
   `outreach_messages.refusal` column exists and one `refused` row is recorded.
 - ⚠️ **NOT VERIFIED HERE:** the V15.8 post-deploy steps below (the edge functions, re-running `_16`, its
-  verify). Their state is unknown to this entry, not "done".
-- ⚠️ **The manual has no entry yet for Language Phases 1a/1b** (`docs/language-phase-1a-report.md`,
-  `docs/language-phase-1b-report.md`); §77 still describes Phase 0. Open.
+  verify). Their state is unknown to this entry, not "done". *(V16.0: `_16` was re-run after the deploy —
+  OBSERVED; the edge functions are still not recorded.)*
+- ~~⚠️ **The manual has no entry yet for Language Phases 1a/1b** (`docs/language-phase-1a-report.md`,
+  `docs/language-phase-1b-report.md`); §77 still describes Phase 0. Open.~~ ✅ Closed V16.0 (§77.6–77.10).
 
 ### 🔴 DEPLOY POSTURE AT V15.8 — LIVE IS `f4bd277`; NOTHING FROM 10–14 OCTOBER IS DEPLOYED
 
@@ -26981,7 +27200,7 @@ Recorded so they are not briefed again.
 
   Language Phase 0 is **uncommitted** on top. Pushing `main` sends all three. Push one at a time with `git push origin <hash>:main` if deploying in stages.
 - **OBSERVED** Migrations `20261010_01` … `_18` have all been run on the live database. `_16` was reversed by
-  hand and **must be re-run after deploy** (§33). The three function revokes (§35) were run by hand and have
+  hand and **must be re-run after deploy** (§33) — ✅ re-run after the deploy (V16.0). The three function revokes (§35) were run by hand and have
   no migration file yet.
 - **Deploy order:**
   1. Vercel (or the push Vercel builds from);
@@ -31265,7 +31484,8 @@ languages in §77.*
   - A flag selector sits in the header (laptop) and footer (all widths), never a pop-up. Flags come from country-flag-icons 1.6.20.
   - The pricing section's copy never changes; only its values follow the country.
 - **OBSERVED** Landing and `/features` titles, OG/Twitter tags, and JSON-LD `areaServed` / `inLanguage` follow
-  the resolved country (`lib/marketing-meta.ts`); GB is byte-identical (§48).
+  the ~~resolved~~ **page's** country (`lib/marketing-meta.ts`; since V16.0 the page is `/uk…` or `/us…` and the
+  resolved country only routes the root paths); GB is byte-identical (§48, "Country addresses and the router").
 
 ## 76.6 Allergens by country
 - **OBSERVED** `lib/allergens.ts` holds two lists:
@@ -31283,12 +31503,49 @@ languages in §77.*
   to GB. A US prospect's PDF is refused with the existing message until US plan prices are set —
   deliberately, so no £ price list goes to a US prospect.
 
+## 76.8 US readiness — layout (V16.0 — 16 October 2026)
+
+*New at V16.0. The manual had no section titled "US readiness"; this sits with the rest of international
+readiness.*
+
+**The audit:** `docs/us-layout-audit-report.md`, 16 Oct. It was rendered from GB and US fixtures of Pizza Kitchen, with contact sheets in `docs/us-layout-audit/`. Every issue is recorded below in its current state.
+
+**BROKEN:**
+- **C-03 · Manage › Add/Edit event on a phone (390 px):** the hour boxes cut off AM/PM, so "12:30 AM" reads "12 : 30", which looks like noon.
+- **B-06 · KDS Cook ticket:** the order number is squeezed to "#…" because the time never shrinks. GB already cuts a Ready number to "#1…".
+- **B-01 · Dashboard order card on a portrait tablet:** the "15m late" pill is clipped once order numbers reach 4 digits.
+
+**UGLY (19), in groups:**
+- **A time range breaks inside a time:** A-02, C-01, C-02, C-04, C-05. Ranges are partly fixed by the no-break space added on 16 Oct.
+- **Fixed-width time columns:** B-03 (the capacity sidebar shows 22 → 13 rows), B-04, B-05, and posters D-20 to D-22 (the weekly-post Time column shrinks its font by up to 36%).
+- **Four extra US total lines** grow the basket (85% of a 360 px screen expanded), the checkout sheet ("Place order" at 768 px of scroll), dashboard cards and KDS tickets (KDS grid 6 → 3 tickets): A-04, A-05, B-07.
+- **Other:** A-01 (GB too), A-03, A-06, A-07, B-02.
+
+**FINE:** printed tickets (58 mm and 80 mm), emails, the plans PDF, Payments, Billing, the approval cards, and pickup-time pickers.
+
+**Six fix directions** (not yet built; mockups first):
+1. keep each time whole;
+2. "11:30AM" or "5 PM" on tight surfaces;
+3. time ranges on their own line where they share a row with icons or a badge;
+4. collapse tax, fee and tip into one expandable row on customer screens, and one line or none on the KDS;
+5. never shrink the order number;
+6. rebuild the phone time picker as one 12-hour select or an AM/PM toggle.
+
+**GB problems found too:**
+- the KDS Full ticket's "Ready" badge sits over the last digit of a 4-digit order number;
+- the minute boxes clip 3–4 px at 390;
+- the pre-order deadline row is 11 px too wide at 390;
+- "Choose time" overruns its ▾ by 5 px at 360;
+- totals have no thousands separator ("£1234.56");
+- the ticket's "printed" stamp shows only the time.
+
 ---
 
 # 77. Languages (V15.8 — 14 October 2026)
 
 *New at V15.8. Sources: `docs/language-readiness-audit-report.md` (the audit) and
-`docs/language-phase-0-report.md` (Phase 0 as built).*
+`docs/language-phase-0-report.md` (Phase 0 as built). Updated V16.0 from `language-phase-1a-report.md`,
+`-1b`, `-1c`, `-2`, `-1d-part1`, `-1d-part2`, `-1e` and `-1e-tidy` (§77.6–77.10).*
 
 ## 77.1 Facts (OBSERVED, language readiness audit)
 - There was no language layer: about 7,000 user-facing strings in 358 files, all literal UK English.
@@ -31312,8 +31569,9 @@ languages in §77.*
   (`mentionsAllergen`) only recognises English words and strips non a–z characters (§27).
 - **SEO:** once US marketing is on, Google (crawling mostly from US addresses) would index the US landing
   page for UK searchers. US marketing needs its own URLs (e.g. `/us/`) with hreflang, or noindex, before it is
-  switched on.
-- The demo is always provisioned as a GB truck.
+  switched on. ✅ **Done V16.0:** `/uk…` and `/us…` with hreflang (§48, "Country addresses and the router").
+- ~~The demo is always provisioned as a GB truck.~~ **Corrected V16.0:** since Phase 2 the demo is built in
+  the visitor's country.
 
 ## 77.2 Decisions (DECIDED 14 Oct)
 - **next-intl, with no URL routing for the app.**
@@ -31323,21 +31581,33 @@ languages in §77.*
 - **Who sees which language:**
   - a truck's screens, tickets, kitchen and emails use its country's locale, falling back to en-GB;
   - customers see the truck's language for now;
-  - marketing follows the visitor's country.
+  - marketing follows the **page's** country (`/uk` en-GB, `/us` en-US) — corrected V16.0; see §77.6.
 - "Pay at Hatch" stays a brand name in every country.
-- The US word table is agreed in principle; Dominic reviews it before phase 2.
+- The US word table: **approved 15 Oct** (77 rows) — see below.
 - Short month names (English): **option A** — see §77.4.
+
+**Later decisions (DECIDED):**
+- **15 Oct:** the US word table (77 rows) is approved, and all wrong-English items are to be fixed, in both
+  countries, as named changes. US times read "5:00 PM".
+- **16 Oct:** "As UK law requires" stays in every country (HatchGrab Ltd is a UK company).
+- **16 Oct:** Part C (lazy per-locale loading) reverted; revisit when a non-English language is added.
+- **16 Oct:**
+  - footnote 1 now reads "on a supported phone" (Tap to Pay doesn't work on iPad);
+  - footnote 5 now reads "Get in touch for the list of compatible printers" (there is no help centre).
 
 ## 77.3 The phases
 0 foundations → 1a customer → 1b kitchen → 1c onboarding → 1d Manage → 1e marketing → 2 en-US → 3 each
 later language. Each phase proves UK output byte-identical. **Before the first US truck:** 0, 1a, 1b, 1c and
 the matching parts of 2.
 
+✅ **Status at V16.0:** 0, 1a–1e and 2 are done for English (2 ran after 1c and US words were then added in
+each later phase). Phase 3 (each later language) has not started. What each phase moved: §77.7.
+
 ## 77.4 Phase 0 — built (OBSERVED, `docs/language-phase-0-report.md`; uncommitted on top of `234b6a2`)
 - **next-intl 4.14.8**, exact version, in no-URL-routing mode:
   - no `[locale]` segment, no next-intl middleware, no URL changed;
   - `next.config.ts` registers `./lib/i18n/request.ts`;
-  - ⚠️ 4.14 brings `@swc/core`, `@parcel/watcher` and `next-intl-swc-plugin-extractor` as hard dependencies, for message extraction, which is unused (about 780 lockfile lines).
+  - ⚠️ 4.14 brings `@swc/core`, `@parcel/watcher` and `next-intl-swc-plugin-extractor` as hard dependencies, for message extraction, which is unused (about 780 lockfile lines). Nothing at runtime loads them.
 - **Messages:**
   - `messages/en-GB.json` is the full base. Phase 0 holds two keys: `order.tipHeading` and `plansPdf.title`.
   - `messages/en-US.json` is `{}`.
@@ -31353,7 +31623,7 @@ the matching parts of 2.
 - **How code asks for words:**
   - **Client components use `useT(namespace)`, not next-intl's `useTranslations`.** It reads the same messages and ICU, with the same typed keys, but falls back to en-GB with no provider instead of throwing.
   - **Code with no request and no React** (emails, PDFs, API responses, tickets, crons) uses `translatorFor(locale, namespace)` (`lib/i18n/translator.ts`, client-safe).
-  - **Server components** use `getTranslations` via `lib/i18n/request.ts`. It is configured and tested, but no server component uses it yet; that comes with Phase 1e.
+  - **Server components** use `getTranslations` via `lib/i18n/request.ts`. It is configured and tested, but no server component uses it yet; that comes with Phase 1e. *(V16.0: as built, server code uses `translatorFor` with the truck's locale, and marketing pages set their locale with `<PageLocale>` — §77.6.)*
 - **End to end, today's UK text:** the order page's tip heading (client) and the plans PDF heading (server).
 - **Keys separated from labels** (stored values unchanged).
 
@@ -31383,7 +31653,7 @@ the matching parts of 2.
   - the first three letters of Intl's full month name ("Sep");
   - why: Intl's own en-GB short form is "Sept", every screen had written "Sep", and Intl data varies by device;
   - ⛔ the rule fails in other languages (French "juin" / "juillet" both give "jui"), so each later language defines its own form in `SHORT_MONTH_RULES`, and until then gets Intl's own;
-  - ⚠️ about eight existing `formatYmd(…, { month: 'short' })` sites still write "Sept"; they were left byte-identical (§27).
+  - ⚠️ about eight existing `formatYmd(…, { month: 'short' })` sites still wrote "Sept"; they were left byte-identical in Phase 0. **Phase 2 changed "Sept" → "Sep" as a named change** (§77.7); the sites it left are listed in `docs/language-phase-2-report.md` §6 (§27).
 - **Proof:**
   - 48,823 UK and US date answers matched the baseline on the server, in Chromium and in WebKit;
   - `language-phase-0` passes 168/168;
@@ -31397,7 +31667,8 @@ the matching parts of 2.
 ## 77.5 Rules for all new code (as in `.cursor/rules/language.mdc`)
 1. No new user-facing text written inline. New words go in `messages/en-GB.json` and are read with `useT`,
    `getTranslations` or `translatorFor`; `scripts/ui-literals.cjs` fails a new file that carries inline UI text.
-   US wording goes in `messages/en-US.json` only where it differs.
+   US wording goes in `messages/en-US.json` only where it differs. *(V16.0)* Import the namespace's catalog;
+   never edit generated files; refusal bodies come from an `errorBody` wrapper (§77.6).
 2. Whole sentences only; never build a sentence from pieces.
 3. No hand-written plurals (use ICU `plural`).
 4. No case changes on translatable or user text.
@@ -31410,6 +31681,77 @@ the matching parts of 2.
 10. AI prompts state the output language and keep the menu's own language.
 11. Prefer words that work in both countries in new copy; existing UK text stays byte-identical until its
     phase.
+
+*Note in `.cursor/rules/language.mdc` (V16.0):* per-locale lazy loading was built and reverted in Phase 1e;
+revisit when a non-English language is added.
+
+## 77.6 How words are read (OBSERVED; the architecture at V16.0)
+- **The source files:**
+  - `messages/en-GB.json` is the full base and the only file anyone writes for UK words.
+  - `messages/en-US.json` holds **only** the keys whose US wording differs. It is deep-merged over en-GB per namespace, and an array counts as a leaf.
+- **The catalogue split is generated:**
+  - `scripts/split-messages.cjs` writes `messages/ns/<locale>/<ns>.json` and `lib/i18n/catalog/<ns>.ts`. Each catalog file calls `registerNamespace(ns, base, { 'en-US': enUS })`.
+  - Both are marked "generated — do not edit". The script runs from `predev` and `prebuild`.
+  - Every locale is imported **statically**. Per-locale lazy loading was built in Phase 1e and reverted the same day: it saved about 1.5 KB gz and made a US truck's Manage fetch 37 chunks (DECIDED 16 Oct).
+- **Client code:**
+  - Client components use `useT(namespace)` from `lib/i18n/use-t.ts`, which reads the registry. With no provider it falls back to en-GB, and it never shows a raw key.
+  - Every file that reads a namespace must import `@/lib/i18n/catalog/<ns>`. The check `scripts/messages-split.cjs` enforces this; `--fix` adds a missing import.
+- **Server code:**
+  - Server code uses `translatorFor(locale, namespace)`, with the truck's locale from `localeForTruck` (`lib/i18n/server-locale.ts`). A truck that isn't known yet gets en-GB.
+  - Server components on marketing pages use `<PageLocale>` (`lib/i18n/page-locale.tsx`) as the page's locale boundary.
+- **Which language each audience sees:**
+  - A truck's screens, emails, tickets and customers use its country's `country_settings.locale`.
+  - Marketing follows the page's country (`/uk` en-GB, `/us` en-US).
+  - The public truck page follows the truck's country.
+  - Legal-page chrome is en-GB. The legal Markdown text is not in messages.
+- **Refusal bodies:**
+  - Every API refusal we write is `{ error: <today's English>, …existing fields…, code, params }`, with `code` and `params` added last.
+  - All of them are built by one helper, `errorBody(namespace, locale, code, params, extra)` in `lib/i18n/error-body.ts`.
+  - Thin wrappers sit over it: `customerErrorBody`, `kitchenErrorBody`, `onboardingErrorBody`, `manageErrorBody`, `tradeAreaErrorBody`. A new surface adds a wrapper, never a copy.
+  - Screens word refusals from `code` + `params`.
+- **Codes, not words:**
+  - Library functions return codes and screens supply the words: `checkGoLive` → `goLiveIssueText`, `printerText`, and `lib/trade-area.ts` returns `{ ok:false, code, params }`.
+  - React state set inside an effect holds a code, so the effect doesn't re-run when the language arrives.
+  - `/api/payments/return` redirects with `payment_failed=<code>` (plus `payment_failed_params`), not a sentence. Old sentence URLs still display as before.
+- **Stored content is not translated.** Provisioned rows, demo menus and stored poster layouts stay as stored. Words a truck stores ("Van 1", demo words) come from the `provisionContent` namespace at creation, so a US truck gets "Truck 1".
+
+## 77.7 What each phase moved (OBSERVED)
+| Phase | Scope | Messages | Key facts |
+|---|---|---:|---|
+| 1a | Customer: order page, status/cancel, private link, customer emails, WhatsApp fixed replies, charges, event card | 411 in 15 namespaces | Customer refusals gain `code`/`params`; `payment_failed` carries a code |
+| 1b | Kitchen and operator: dashboard, KDS, tickets, printing, modals, operator emails and alerts | 982 in 17 namespaces | The catalogue split; `lib/native/deviceSaveText.ts` and `lib/phone-message.ts` split out so catalogs don't leak into every page |
+| 1c | Onboarding: setup, auth pages, signup/account emails, demo flows, go-live checks, walkthrough | 379 in 14 namespaces | One `errorBody` helper; staff-only HatchGrab emails stay inline on purpose |
+| 2 | US English for 1a–1c, plus wrong-English fixes | 213 US overrides; 196 en-GB fixes | US clock "5:00 PM"; "Sept" → "Sep"; demo built in the visitor's country |
+| 1d part 1 | Manage › Menu, Schedule, Settings | 1,253 in 25 namespaces; 106 US | `manageErrorBody`; trade-area codes; 12-hour hour pickers and ZIP codes for the US |
+| 1d part 2 | The rest of Manage: shell, Billing, Team, Reports, Payments, Social posts, posters, WhatsApp, custom domain, account deletion | 1,334 in 21 namespaces + 137 `errorsManage` codes; 107 US | Manage page inline strings 894 → 5 (brand names); US posters "Week of", "Closed today", "CANCELED", "Sunday to Saturday"; Reports CSV header "Pickup time" in the US |
+| 1e | Marketing: landing, /features, /compare and calculator, plans PDF, nav, footers, contact, legal chrome, public truck page, plan rows shared with Billing | 376 in 12 namespaces; 65 US | Plan rows and price words read **by id** (`featureSections`, `rowName`, `priceText`), so Billing and marketing show the same text |
+
+## 77.8 US behaviour (OBSERVED)
+- **Clock:**
+  - en-US times read "6:30 PM" / "12:00 AM", with a no-break space before AM/PM in ranges.
+  - en-GB is unchanged.
+  - Posters keep their own "6:30pm" style; GB posters default to it.
+- **Dates and words:** US dates (mdy, "October 1, 2026" in long form) and Sunday-first weeks; ZIP codes are not upper-cased; small fees read "30¢" via `smallFeeLabel`.
+- **Plans PDF:** US Letter for US and CA, A4 otherwise.
+- **App Store link:** US pages use the locale-free `https://apps.apple.com/app/id6803543106`. GB keeps the UK storefront link.
+- **Landing page:**
+  - The Pizzeria Gusto testimonial and award show for GB only. The section is hidden on US pages.
+  - Three US hero images: `public/screenshots/{customer-order,dashboard-v4,kitchen}-us.png`, chosen by `landingScreenshot(name, country)` in `lib/landing-screens.ts`. Their render scripts are in `scripts/screenshots/` with a README. They never write into `public/`.
+- **Public truck page outside GB:** for a non-GB truck it hides every Village Foodie prompt: the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links and the add-business button. It keeps General Enquiry, Report Issue and the disclaimer.
+- **Signup, login, forgot and reset pages** know no country, so they render en-GB.
+
+## 77.9 Proof method used in every phase (OBSERVED)
+- Three captures are compared:
+  - **BEFORE:** the checkpoint commit, captured twice in a clean worktree, byte-identical;
+  - **F:** current code with the frozen words;
+  - **A:** current code with current words.
+- **GB:** A must equal BEFORE except for a NAMED table of intended changes.
+- **US:** every changed view is listed with its cause, and a US-words check fails on any leftover UK word outside an allow-list.
+- **Harnesses** (all in the sweep): `language-phase-0`, `-1a`, `-1b`, `-1c`, `-2`, `-1d`, `-1d2`, `-1e`, `-1e-tidy`, `messages-parity`, `messages-split`, `ui-literals` (a per-file baseline of inline UI text that may only go down).
+
+## 77.10 Open
+- **REASONED** Screens for the auth routes' own emails and pre-sign-in refusals are en-GB by design until signup knows a country.
+- The WhatsApp allergen floor is still English-only (§77.1). It must be made Unicode-aware before any non-English truck.
 
 ---
 
@@ -31588,9 +31930,25 @@ correction note in its history; the hidden Smash and Grab prospect filled.
 1. A shared **email** between two trucks can mislead the screenshot match as the phone did (§78.1).
 2. `outreach-schema-census`: the proposed `refusal` column is now live — fold it into `LIVE_MESSAGES`.
 3. The full localhost timing table (§78.5) is waiting on two `.env.local` settings.
-4. The manual has no entry for Language Phases 1a/1b (§49).
+4. ~~The manual has no entry for Language Phases 1a/1b (§49).~~ ✅ Closed V16.0 (§77.6–77.10).
 5. `outreach-editor-toolbar` with `HG_RENDER=1` failed one check once on 15 October and passed twice after;
    the failing check was not captured.
+
+---
+
+# 79. Tooling and workflow (V16.0 — 17 October 2026)
+
+*New at V16.0: the manual had no section for this.*
+
+- **OBSERVED Read-only Supabase connection for the coding agents:**
+  - Claude Code reads `.mcp.json`: `{"mcpServers":{"supabase":{"type":"http","url":"https://mcp.supabase.com/mcp?project_ref=ffphgwonshgxamtvefcv&read_only=true"}}}`. Authenticate once with `/mcp`.
+  - Cursor's own agent reads `.cursor/mcp.json`.
+  - Neither file holds a token.
+- **Standing rule for prompts:**
+  - Cursor may run **read-only** queries through this connection and reports each one inline.
+  - Every database change goes to Dominic as fenced SQL marked NOT RUN ("run now" or "run after deploy").
+- **Deploying edge functions** (the multi-line key in `.env.local` breaks the CLI's env parser):
+  `mv .env.local ~/env.local.bak; supabase functions deploy <name> --project-ref ffphgwonshgxamtvefcv; mv ~/env.local.bak .env.local`
 
 ---
 

@@ -1,0 +1,132 @@
+{
+  "group": "B-ops",
+  "issues": [
+    {
+      "id": "B-01",
+      "surface": "Dashboard › Orders tab › order card header row 1 (late order)",
+      "size": "810x1080, 800x1280",
+      "what": "clipped",
+      "detail": "Row 1 holds \"#1234 · 11:35 AM\" plus the red \"15m late\" pill, every item flex-shrink-0. In US the row is wider than the card's content box and the card's overflow-hidden cuts the right end of the pill (\"15m lat\"). In GB (\"#1234 · 11:35\") it fits. At 1180 and 1280 (3 wider columns) it fits in both countries.",
+      "measured": "810: row 1 overflows by 28 px (GB 0), card clips 12 px. 800: 31 px, clips 15 px. Calibration with 2-digit order numbers: 2–5 px spill into the card padding, no clipping. The worst case is a 4-digit number (the truck-level counter) or a 3-digit number with a 3-digit lateness (\"125m late\").",
+      "frequency": "every late order on a portrait tablet, once order numbers reach 4 digits (or 3 digits with ≥100m late)",
+      "severity": "BROKEN",
+      "fix": "drop the space before AM/PM on the card, or set the time one size smaller (text-base) on row 1, or move the lateness pill down to row 2",
+      "gb": "docs/us-layout-audit/B-ops/dash-orders-full-810x1080-gb.png",
+      "us": "docs/us-layout-audit/B-ops/dash-orders-full-810x1080-us.png"
+    },
+    {
+      "id": "B-02",
+      "surface": "Dashboard › Orders tab › order card header row 1 (on-time order, \"in 55m\")",
+      "size": "810x1080, 800x1280",
+      "what": "misaligned",
+      "detail": "\"#1236 · 12:15 PM in 25m\": the countdown is pushed past the row's right edge into the card's 16 px padding. It stays readable but no longer lines up with the price below, and it touches the card edge.",
+      "measured": "810: 4–7 px past the row (#1231 +4, #1236 +4, #1237 +6, #1233 +7). 800: 7–10 px (#1238 \"in 11h\" +3). GB 0 everywhere. Fits with 2-digit order numbers.",
+      "frequency": "every order with a slot time on a portrait tablet with 4-digit order numbers",
+      "severity": "UGLY",
+      "fix": "same as B-01: drop the space before PM or use a smaller time on row 1",
+      "gb": "docs/us-layout-audit/B-ops/dash-orders-full-810x1080-gb.png",
+      "us": "docs/us-layout-audit/B-ops/dash-orders-full-810x1080-us.png"
+    },
+    {
+      "id": "B-03",
+      "surface": "Dashboard › Orders tab › Kitchen capacity sidebar (DayLoadStrip variant=\"sidebar\", lg+)",
+      "size": "1180x820, 1280x800",
+      "what": "wrap",
+      "detail": "The time sits in a fixed 40 px column (w-10, text-xs bold). Every US time (\"11:50 AM\", and \"1:00 PM\" too) wraps to two lines, so each row is twice as tall. GB \"11:50\" fills the column on one line.",
+      "measured": "time text height 16 → 32 px on every row (2 lines). Rows visible in the panel: 22 → 13 at 1180×820, 21 → 13 at 1280×800 (−41%).",
+      "frequency": "always: every US truck on iPad landscape or a laptop",
+      "severity": "UGLY",
+      "fix": "a wider time column (≈ w-16), or drop the space before AM/PM (\"11:50AM\")",
+      "gb": "docs/us-layout-audit/B-ops/dash-orders-1180x820-gb.png",
+      "us": "docs/us-layout-audit/B-ops/dash-orders-1180x820-us.png"
+    },
+    {
+      "id": "B-04",
+      "surface": "Dashboard › Orders tab › Kitchen capacity strip (DayLoadStrip variant=\"strip\", below lg)",
+      "size": "810x1080, 800x1280",
+      "what": "grows",
+      "detail": "Each slot chip widens to fit \"11:50 AM\", so fewer chips show across the strip before it scrolls. Nothing is cut off, because the strip scrolls sideways by design.",
+      "measured": "time label 34 → 55 px. Chip pitch 52 → 73 px. Chips visible across the strip 15 → 10.",
+      "frequency": "always: every US truck on a portrait tablet",
+      "severity": "UGLY",
+      "fix": "drop the space before AM/PM, or a two-line chip (time over AM/PM)",
+      "gb": "docs/us-layout-audit/B-ops/dash-orders-810x1080-gb.png",
+      "us": "docs/us-layout-audit/B-ops/dash-orders-810x1080-us.png"
+    },
+    {
+      "id": "B-05",
+      "surface": "KDS › Full (handover) ticket, header row 2 (name · time · countdown), grid layout",
+      "size": "810x1080, 1180x820, 800x1280, 1280x800",
+      "what": "truncate",
+      "detail": "Row 2 is customer name (min-w-0, truncate), then the time, then \"· in 25m\". The 12-hour time is about 24 px wider, and that width comes out of the name. Names that fit in GB are cut in US: \"Daniel Fitzgerald\" becomes \"Daniel Fitzg…\", and at 1280 \"Chloe Nguyen\" loses its last letters.",
+      "measured": "name loses 18–25 px at every size. 810: Daniel 111/111 → 90/111 px, Fatima 116 → 95, Ava 112 → 87 of 131. 1180: Ava 131/131 → 113/131. 800: Daniel → 86/111. 1280: Chloe 93/93 → 85/93, Daniel 102 → 77 of 111. Same with 2-digit order numbers. The midnight event's \"12:00 AM\" with a late pill: Fatima 97 → 74.",
+      "frequency": "every KDS ticket whose customer name is longer than ~10–12 characters",
+      "severity": "UGLY",
+      "fix": "drop the space before PM, or give the name its own line, or move the time up to row 1 beside the order number",
+      "gb": "docs/us-layout-audit/B-ops/kds-grid-810x1080-gb.png",
+      "us": "docs/us-layout-audit/B-ops/kds-grid-810x1080-us.png"
+    },
+    {
+      "id": "B-06",
+      "surface": "KDS › Cook ticket header row 1 (order number · status badge · time · countdown)",
+      "size": "1280x800, 800x1280, 810x1080, 1180x820",
+      "what": "truncate",
+      "detail": "In Cook view the 3xl order number is the truncating item, and the time group (\"11:55 AM · in 5m\" / \"11:35 AM [15m late]\") is flex-shrink-0. The wider US time takes its width from the ticket number. A Ready ticket reads \"#…\" (GB \"#1…\"). A late ticket reads \"#12…\" at 1280 (GB \"#1234\" in full). The order number is the one thing a cook calls out.",
+      "measured": "Ready ticket #1235, number shown/needed px: 1280 GB 71/91 → US 46/91; 810 84 → 58; 800 80 → 55; 1180 91/91 (fits) → 84/91. Late ticket #1234 at 1280: GB fits, US short by 0.2 px, which WebKit draws as \"#12…\" (a sub-pixel case: a real device may land either side). 2-digit numbers: GB never truncates; US truncates the Ready ticket \"#35\" at 800 (+4 px) and 1280 (+13 px).",
+      "frequency": "every Cook-mode board: Ready tickets always, and late tickets on the laptop width",
+      "severity": "BROKEN",
+      "fix": "never let the order number shrink (shrink the time instead), or drop the space before AM/PM, or move the time to row 2 as Full does",
+      "gb": "docs/us-layout-audit/B-ops/kds-grid-cook-1280x800-gb.png",
+      "us": "docs/us-layout-audit/B-ops/kds-grid-cook-1280x800-us.png"
+    },
+    {
+      "id": "B-07",
+      "surface": "Dashboard order card and KDS Full ticket › tax / service fee / tip lines (data-charge-lines)",
+      "size": "810x1080, 1180x820, 800x1280, 1280x800",
+      "what": "grows",
+      "detail": "A US order adds Subtotal, Sales tax 8.875%, Service fee and Tip (plus Card fee where charged) after the items. A GB order adds nothing. Every ticket gets taller, so fewer whole tickets fit on a kitchen screen. Each line itself fits on one line. KDS Cook mode hides amounts and does not grow.",
+      "measured": "+78 px per order (4 lines), +96 px with a card fee. Dashboard card 331 → 409 px (+24%). Catering card 813 → 909. KDS Full ticket 301 → 379 (+26%). KDS list row 269 → 347. Tickets fully on screen: KDS grid 800×1280 6 → 3, KDS list 1180×820 and 1280×800 2 → 1, dashboard 810×1080 4 → 1.",
+      "frequency": "every US order, on every board",
+      "severity": "UGLY",
+      "fix": "on the KDS one line \"Tax, fees & tip $x.xx\" (or none: the kitchen does not need the split); on the dashboard card a collapsed one-line summary that expands",
+      "gb": "docs/us-layout-audit/B-ops/kds-grid-800x1280-gb.png",
+      "us": "docs/us-layout-audit/B-ops/kds-grid-800x1280-us.png"
+    }
+  ],
+  "fine": [
+    { "surface": "Dashboard › event bar (venue · 11:30 AM–10:45 PM, date line \"Today, September 30th\" / \"Wednesday, September 30th\")", "sizes": [810, 1180, 800, 1280], "note": "Both lines stay on one line with no truncation. Bar height is 55 px in GB and US. The midnight event \"8:00 PM–12:30 AM\" also fits." },
+    { "surface": "Dashboard › order cards at landscape / laptop", "sizes": [1180, 1280], "note": "Row 1 \"#1234 · 11:35 AM [15m late]\" fits (0 px overflow). The row-2 name truncation is the same in GB and US, because the totals are about the same width." },
+    { "surface": "Dashboard › + Add order › time picker (closed select), ASAP option, ready line", "sizes": [810, 1180, 800, 1280], "note": "\"12:45 PM 🟢\" is 111 px in a 254–456 px select. \"⚡ ASAP — 11:50 AM\" is 159 px. The longest real option label (\"× 12:45 PM 🟠❗ 4 Pizza, 2 Drinks · Not enough time\") is 397 px in US and 369 px in GB. It fits at 1180 and 1280. At portrait (258 px) it is clipped in GB already: US adds 28 px to a pre-existing clip." },
+    { "surface": "Dashboard › + Add order › event banner for a not-started midnight event (\"Today · 8:00 PM–12:30 AM\")", "sizes": [810, 1180, 800, 1280], "note": "One line, no truncation." },
+    { "surface": "Dashboard › + Add order › Select event picker rows (\"Wed, Oct 7 · 11:30 AM–10:45 PM\")", "sizes": [810, 1180, 800, 1280], "note": "Each date + range stays on one line. Long venues wrap the same way in GB and US." },
+    { "surface": "Dashboard › Manage event menu header (\"Today, September 30th, 11:30 AM – 10:45 PM\")", "sizes": [810, 1180, 800, 1280], "note": "One line." },
+    { "surface": "Dashboard › Orders › Prep list (\"Start by 12:40 PM · 50 min\")", "sizes": [810, 1180, 800, 1280], "note": "One line (166 px against GB 144 px)." },
+    { "surface": "Dashboard › Orders › Completed list rows", "sizes": [810, 1180, 800, 1280], "note": "Layout fits, but the time is printed raw in 24-hour form: see observations." },
+    { "surface": "Dashboard › Change event finish time modal", "sizes": [810, 1180, 800, 1280], "note": "Layout fits (334 px select), but it is 24-hour in US: see observations." },
+    { "surface": "KDS › event bar, date line, Start Event banner (\"Today · 8:00 PM – 12:30 AM\")", "sizes": [810, 1180, 800, 1280], "note": "One line each. The banner and the bar are the same height in GB and US." },
+    { "surface": "KDS › list layout ticket header", "sizes": [810, 1180, 800, 1280], "note": "The row is wide, so the name, time and countdown fit. The only difference is B-07 growth." },
+    { "surface": "KDS › ticket timers (\"· in 55m\", \"15m late\" pill) and the items with modifiers / special instructions", "sizes": [810, 1180, 800, 1280], "note": "Timers fit in Full view. Items, modifier lists and instructions wrap identically in GB and US." },
+    { "surface": "KDS / dashboard › the charge lines themselves (Subtotal, Sales tax 8.875%, Service fee, Card fee, Tip; 4-digit order total)", "sizes": [810, 1180, 800, 1280], "note": "Each is one line. \"$1669.82\" and \"PAID\" fit beside the order number. The cost is height only (B-07)." }
+  ],
+  "preExisting": [
+    { "surface": "KDS › Full ticket row 1, Ready + paid ticket with a 4-digit number", "sizes": [810, 800], "note": "The \"Ready\" badge is painted over the last digit (\"#123[5]\") in GB and US alike. Not caused by US formatting." },
+    { "surface": "KDS › Cook ticket, Ready ticket with a 4-digit number", "sizes": [810, 800, 1280], "note": "Already \"#1…\" in GB. US makes it worse (B-06)." },
+    { "surface": "Dashboard › order card row 2 (name · Ready · total · PAID)", "sizes": [810, 800], "note": "\"Chlo…\" in both countries." },
+    { "surface": "+ Add order › slot option with \"· Not enough time\"", "sizes": [810, 800], "note": "Wider than the closed select in both countries at portrait. US adds 28 px." }
+  ],
+  "observations": [
+    "NOT LAYOUT, found while rendering. Dashboard › Completed list prints the raw slot \"🕐 12:45\" for a US truck, not \"12:45 PM\" (app/dashboard/[token]/page.tsx ~4835, `{o.slot}` with no formatSlot).",
+    "NOT LAYOUT. The Change event finish time modal (components/shared/EventFinishTimeModal.tsx) is 24-hour for US: \"currently set to finish at 22:45\", options \"22:45 (current)\", and the confirm and keep buttons. The dashboard and the KDS share it.",
+    "NOT LAYOUT, both countries. Order totals have no thousands separator on the dashboard card and the KDS ticket: \"$1669.82\" / \"£1234.56\".",
+    "NOT LAYOUT, both countries. Midnight-spanning event (20:00–00:30): an order for 00:15 resolves to the event's own date and shows \"695m late\", sorted first. + Add order says \"This event has ended\" at 11:50 and offers no after-midnight slot (00:15 cannot be picked). lib/prep-utils resolveCollectionTime and the panel's isSlotPast use event_date + slot."
+  ],
+  "notChecked": [
+    { "surface": "The native dropdown lists of the slot picker, Add extra wait and finish-time selects (iPad popover / Android picker)", "why": "Drawn by the OS, not the page. Instead, every option label was measured against the select in its own font." },
+    { "surface": "Edit order modal (its own slot picker), item / modifier modal, payment / take-payment modals, buzzer picker", "why": "Not rendered in this pass. They need the edit-slot fetch state or a payment flow." },
+    { "surface": "Phone widths and the native app's status-bar inset", "why": "Not this group's sizes. Rendered as the web view with a 0 inset." },
+    { "surface": "Android's real system font (Roboto)", "why": "Painted in WebKit with system-ui (SF). Widths on Android differ by a few percent. B-06 at 1280 is a sub-pixel case and could land either side." },
+    { "surface": "Offline provisional order numbers (\"A13\"), KDS degraded banner (\"last updated 11:50 AM\"), printed tickets", "why": "Out of these states. Printing belongs to another surface." },
+    { "surface": "Live clock tick (countdown changes after 11:50)", "why": "Static render at one moment." }
+  ],
+  "method": "The REAL operator dashboard (app/dashboard/[token]/page.tsx, with the real AddOrderPanel, OrderCard, DayLoadStrip, EventPickerPanel, EventActionsModal and EventFinishTimeModal) and the REAL KDS (app/dashboard/[token]/kds/page.tsx) were server-rendered with scripts/_render-kit.cjs state patches. This is the method of scripts/screenshots/dash-us.cjs and kds-us.cjs: every useState starts from fixtures, Supabase is stubbed, and nothing reaches a database or the network. The pages were painted in Playwright WebKit with the compiled .next CSS from a 127.0.0.1 static server, at 810×1080, 1180×820, 800×1280 and 1280×800 (DSF 1). Pizza Kitchen (test-truck) comes from scripts/_lp1b-fixtures.cjs in two forms. GB: GBP, en-GB, Europe/London, 24h, no tax line, tips and service fee off (GB seed: serviceFeeAllowed false). US: USD, en-US, America/New_York, 12h, sales tax 8.875% exclusive, 20% tip, 3% + $0.30 service fee, and a 3% card surcharge on the catering order. The clock was Wednesday 30 September 2026 11:50 local (GB 10:50Z, US 15:50Z) via kit.setNow/setDeviceTz/setDeviceLocale. The \"Wednesday, September 30th\" date line was rendered from Sunday 27th. Order numbers are 4 digits (1231–1238): the per-event counter falls back to the never-resetting truck counter, and that fallback is the longest real form. A 2-digit calibration run (cal2-*) is used to state severity. The orders include a catering basket of 6 lines with a 3-option modifier list, special instructions, an order note and a 4-digit total, plus slots at 11:35 (late), 11:55, 12:15, 12:45 and 22:45. There is a midnight-spanning event 20:00–00:30 (not started, not auto-open), and a day-load series every 5 minutes. In the browser (scripts/us-layout-audit/B-ops/measure.cjs), for every element: scrollWidth vs clientWidth (clip/spill/scroller), and natural max-content width vs the laid-out box to the sub-pixel for ellipsis, because WebKit ellipsises at a 0.2 px shortfall that scrollWidth hides. For every time or date element: line count from the Range rects, overflow past its clipping ancestor, and collision with the next sibling. For every card: its height, header row heights, and the order-number and name natural/shown widths. For every select: option label widths in its own font. GB and US were paired by a format-blind key (compare.cjs). Run with: node scripts/us-layout-audit/B-ops/render.cjs && node scripts/us-layout-audit/B-ops/compare.cjs && node scripts/us-layout-audit/B-ops/sheets.cjs. Sheets: docs/us-layout-audit/sheet-05-dashboard.png and sheet-06-kds.png."
+}

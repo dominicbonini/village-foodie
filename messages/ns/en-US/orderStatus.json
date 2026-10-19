@@ -1,6 +1,6 @@
 {
   "cancelledTitle": "Order canceled",
-  "cancelledBody": "Your order has been canceled. If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.",
+  "cancelledBody": "Your order has been canceled.{card, select, no {} other { If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.}}",
   "statusCancelled": "This order has already been canceled.",
   "statusTooLate": "This order can no longer be canceled.",
   "statusName": {

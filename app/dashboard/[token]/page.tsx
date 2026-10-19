@@ -132,7 +132,7 @@ import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collect
 import { intervalExample } from '@/lib/slot-generation'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
-import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, localDateOfInstant } from '@/lib/time-utils'
+import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, formatShortDate, localDateOfInstant } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
 // 17 October 2026: an event that runs past midnight — the one rule (docs/midnight-and-format-fixes-report.md).
 import { crossesMidnight, eventTimeMins, eventTimeDate, eventEndMins, eventEndInstant, eventDates, nowOnEvent, toEngineClock, upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
@@ -2866,6 +2866,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // single choke point every caller (event-bar menu, AddOrderPanel) funnels through, so the guard belongs
     // here — before any fetch. The locked buttons open the explainer instead of calling this.
     if(isDemo)return
+    // A future-dated event asks first, naming its date (US dress rehearsal Finding 3). Today's starts as before.
+    const startDate=(upcomingEvents.find(e=>e.id===eventId)||todayEvents.find(e=>e.id===eventId))?.event_date
+    if(startDate&&startDate>getLocalDateInTz(dashTz)&&!window.confirm(tDash('startFutureConfirm',{date:formatShortDate(startDate,dashTime)})))return
     const wasClosedEvent=upcomingEvents.find(e=>e.id===eventId)?.status==='closed'
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})

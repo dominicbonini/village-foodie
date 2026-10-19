@@ -35,7 +35,7 @@ import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { readSoundConfig, seedSoundConfig, effectiveSoundConfig, writeSoundConfig } from '@/lib/sound-prefs'
-import { formatTime, formatTimeRange, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, clockOfInstantInTz, formatInstantClock, timeSettingsOr, LEGACY_UK_TIME_SETTINGS } from '@/lib/time-utils'
+import { formatTime, formatTimeRange, formatShortDate, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, clockOfInstantInTz, formatInstantClock, timeSettingsOr, LEGACY_UK_TIME_SETTINGS } from '@/lib/time-utils'
 // 17 October 2026: an event that runs past midnight — the one rule (docs/midnight-and-format-fixes-report.md).
 import { crossesMidnight, eventTimeMins, eventEndMins, nowOnEvent, isUpcomingOrRunning } from '@/lib/event-window'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_LIGHT, EVENT_STATUS_DOT } from '@/lib/event-display'
@@ -1571,6 +1571,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const showKdsToast = (msg: string) => { setKdsToast(msg); setTimeout(() => setKdsToast(null), 3500) }
 
   const openEvent = async (eventId: string) => {
+    // A future-dated event asks first, naming its date (Finding 3). Today's event starts as it always did.
+    const ev = events.find(e => e.id === eventId)
+    if (ev?.event_date && ev.event_date > getLocalDateInTz(kdsTz) && !window.confirm(t('event.startFutureConfirm', { date: formatShortDate(ev.event_date, kdsTime) }))) return
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'open', eventId, payload: {} }) })
       const data = await res.json()
@@ -2725,7 +2728,11 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {activeEvent?.status === 'confirmed' && !activeEvent.auto_open && (
         <div className="bg-white border-2 border-teal-500 m-3 rounded-2xl p-5 text-center flex-shrink-0">
           <div className="text-base font-semibold text-slate-900 mb-1">📍 {activeEvent.venue_name}</div>
-          <div className="text-sm text-slate-500 mb-3">{t('banner.today', { range: formatTimeRange(activeEvent.start_time, activeEvent.end_time, kdsTime) })}</div>
+          {/* 19 Oct 2026 (US dress rehearsal Finding 3): "Today" only when the event IS the truck's today —
+              a confirmed event on another day names its date ("Sun 25 Oct" / "Sun, Oct 25"). */}
+          <div className="text-sm text-slate-500 mb-3">{activeEvent.event_date === getLocalDateInTz(kdsTz)
+            ? t('banner.today', { range: formatTimeRange(activeEvent.start_time, activeEvent.end_time, kdsTime) })
+            : t('banner.onDate', { date: formatShortDate(activeEvent.event_date, kdsTime), range: formatTimeRange(activeEvent.start_time, activeEvent.end_time, kdsTime) })}</div>
           <button onClick={() => openEvent(activeEvent.id)}
             className="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-base hover:bg-teal-700 active:scale-[0.98] transition-all">
             {t('banner.startEvent')}

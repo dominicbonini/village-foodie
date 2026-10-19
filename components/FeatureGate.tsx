@@ -6,6 +6,8 @@ import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { manageTabHref } from '@/lib/manage-links'
 import { usePriceMask } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
+import { planPricesDecided } from '@/lib/country-settings-types'
+import { MASKED_PRICE } from '@/lib/pricing'
 
 interface FeatureGateProps {
   feature: Feature
@@ -51,7 +53,8 @@ export function FeatureGate({
           {upgradeMessage ?? `This feature requires the ${meta.name} plan`}
         </div>
         <div className="text-xs text-slate-400 mt-0.5">
-          {meta.name} · {priceText(px(planPrice(needed, settings)), settings.locale)} · {planDescription(needed, settings.locale)}
+          {/* A switched-off country's truck has no plan prices yet (planPrice would throw): the masked word instead. */}
+          {meta.name} · {priceText(planPricesDecided(settings) ? px(planPrice(needed, settings)) : MASKED_PRICE, settings.locale)} · {planDescription(needed, settings.locale)}
         </div>
       </div>
       {/* 🔴 iOS (App Store 3.1.1/3.1.3): the CTA goes, the EXPLANATION stays. The panel above still names

@@ -8,6 +8,9 @@ import { truckTimeSettings } from '@/lib/truck-time';
 import type { TimeSettings } from '@/lib/time-utils';
 import { translatorFor } from '@/lib/i18n/translator';
 import '@/lib/i18n/catalog/truckPage';
+import { headers } from 'next/headers';
+import { isHatchGrabHost } from '@/lib/brand';
+import { headerFromOperatorRow, type OperatorTruckRow } from '@/lib/truck-header';
 
 // ── Language Phase 1e: THIS PAGE SPEAKS ITS TRUCK'S LANGUAGE, NOT THE VISITOR'S ─────────────────────────
 // It is the truck's own page, so its words, share text and link-preview text use the truck's country's locale.
@@ -15,10 +18,14 @@ import '@/lib/i18n/catalog/truckPage';
 // page at /trucks/<slug>/order resolves). A truck with no HatchGrab row is a discovery truck, and discovery is
 // Village Foodie's market only (lib/discovery-country.ts: a row of any other country is hidden on both sites), so
 // its country is VILLAGE_FOODIE_COUNTRY. This decides words only: a lookup that fails reads that same default.
+// 19 October 2026 (US dress rehearsal Findings 1–2): the same one read also carries what the header needs when the
+// truck has no discovery row (lib/truck-header.ts) — read by slug, used only for a HatchGrab-public truck.
 async function truckRow(slug: string) {
   try {
-    const { data } = await supabase.from('trucks').select('country, timezone').eq('slug', slug).maybeSingle();
-    return data as { country?: string | null; timezone?: string | null } | null;
+    const { data } = await supabase.from('trucks')
+      .select('country, timezone, name, slug, logo_storage_path, cuisine_type, contact_phone, website, social_instagram, social_facebook, active, excluded, show_on_hg')
+      .eq('slug', slug).maybeSingle();
+    return data as ({ country?: string | null; timezone?: string | null } & OperatorTruckRow) | null;
   } catch {
     return null;
   }
@@ -39,6 +46,14 @@ async function truckTime(row: { country?: string | null; timezone?: string | nul
   }
 }
 const truckLocale = async (slug: string) => localeForTruck({ country: await truckCountry(slug) });
+// The request's host — '' when there is no request to ask (a build-time or test render), which is "not HatchGrab".
+async function requestHost(): Promise<string> {
+  try {
+    return (await headers()).get('host') || '';
+  } catch {
+    return '';
+  }
+}
 
 // This is the URL of your Trucks tab from Google Sheets
 const TRUCKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv';
@@ -122,5 +137,10 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ s
   // 🔴 VILLAGE FOODIE'S DISCOVERY PROMPTS ONLY IN ITS OWN MARKET (Language Phase 1e tidy): the newsletter, the weekly
   // schedule button, Hire / Add my Business / Truck Directory and the claim links invite a visitor into Village
   // Foodie, which is UK-only (lib/discovery-country.ts). A truck of any other country shows its page without them.
-  return <TruckClient slug={resolvedParams.slug} locale={await localeForTruck({ country })} discovery={country === VILLAGE_FOODIE_COUNTRY} time={await truckTime(row)} />;
+  // 🔴 THE OPERATOR TRUCK'S OWN HEADER (lib/truck-header.ts): built only on the HatchGrab host and only for a truck
+  // public there; TruckClient uses it only when the discovery list has no row for this slug. Village Foodie: never.
+  const onHatchGrab = isHatchGrabHost(await requestHost());
+  const operatorHeader = onHatchGrab ? headerFromOperatorRow(row, process.env.NEXT_PUBLIC_SUPABASE_URL || '') : null;
+  return <TruckClient slug={resolvedParams.slug} locale={await localeForTruck({ country })} discovery={country === VILLAGE_FOODIE_COUNTRY} time={await truckTime(row)}
+    {...(operatorHeader ? { operatorHeader } : {})} />;
 }

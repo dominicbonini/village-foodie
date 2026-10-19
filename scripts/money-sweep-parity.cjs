@@ -802,6 +802,28 @@ async function eventTypesView() {
   let bad = 0
   const fail = (msg) => { bad++; if (bad <= 40) console.log('  🔴 ' + msg) }
 
+  // ⚠️ ONE MORE NAMED DIFFERENCE — us-layout-fix-2-live-on-date-line (components/TruckListCard.tsx, 18 October 2026,
+  // /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md): "● Live" moves from the range line to the date line, so the order
+  // page header's text reads "Fri 9 Oct Live 17:00 – 21:00" where it read "Fri 9 Oct 17:00 – 21:00 Live". Applied to the
+  // BEFORE side, on the orderPage.<view>.text leaves only, as that exact substring; it must apply exactly once on each
+  // of the eight views that show the live card (menu … itemModal) — every other byte is still compared exactly. The --usd
+  // run applies it to the same leaves before its "$ read as £" comparison.
+  const FIX2 = { id: 'us-layout-fix-2-live-on-date-line', from: 'Fri 9 Oct 17:00 – 21:00 Live The Green', to: 'Fri 9 Oct Live 17:00 – 21:00 The Green' }
+  const FIX2_VIEWS = ['menu', 'basket', 'discounted', 'sheet', 'sheetDiscounted', 'payReady', 'payFailed', 'itemModal'].map(v => `orderPage.${v}.text`)
+  // ⚠️ AND us-layout-fix-6-kds-full-badge (components/dashboard/OrderCard.tsx, the KDS Full ticket's row 1): the status badge
+  // is one size down and OUT OF FLOW, pinned top-right above the total — rendered AFTER the total cluster, so the KDS text
+  // reads "#43 £43.90 Ready" where it read "#43 Ready £43.90". Applied to the BEFORE side of kds.window.text only, as that
+  // one ticket's exact words (found exactly once); every amount and every other ticket still compared byte for byte.
+  const FIX6 = { id: 'us-layout-fix-6-kds-full-badge', view: 'kds.window.text', from: '#43 Ready £43.90 Sam Harness', to: '#43 £43.90 Ready Sam Harness' }
+  const fix2 = (k, v) => {
+    if (k === FIX6.view) {
+      if (typeof v !== 'string' || v.split(FIX6.from).length !== 2) { fail(`${FIX6.id}: "${FIX6.from}" is not in BEFORE ${k} exactly once`); return v }
+      return v.replace(FIX6.from, FIX6.to)
+    }
+    if (!FIX2_VIEWS.includes(k)) return v
+    if (typeof v !== 'string' || v.split(FIX2.from).length !== 2) { fail(`${FIX2.id}: "${FIX2.from}" is not in BEFORE ${k} exactly once`); return v }
+    return v.replace(FIX2.from, FIX2.to)
+  }
   if (!USD) {
     // ── THE FORMATTER AGAINST THE CODE IT REPLACED, value by value. Every converted site was
     // `£${x.toFixed(2)}` (major), `£${(m / 100).toFixed(2)}` (minor) or price.ts's trimmed form; the
@@ -836,8 +858,9 @@ async function eventTypesView() {
       : v.replace(/Jalapenos/g, 'Jalapeños').replace(/4a616c6170656e6f73/g, '4a616c6170653f6f73')
     for (const [k, v] of B) {
       if (!A.has(k)) fail(`${k} is missing now`)
-      else if (d38(k, A.get(k)) !== v) fail(`${k} changed${excerpt(v, A.get(k))}`)
+      else if (d38(k, A.get(k)) !== fix2(k, v)) fail(`${k} changed${excerpt(fix2(k, v), A.get(k))}`)
     }
+    console.log(`  named: ${FIX2.id} on ${FIX2_VIEWS.length} views (${FIX2_VIEWS.join(', ')}); ${FIX6.id} on ${FIX6.view}`)
     for (const k of A.keys()) if (!B.has(k)) fail(`${k} is new (not in the BEFORE snapshot)`)
     console.log(bad ? `🔴 GB: ${bad} difference(s) from ${BEFORE_FILE}` : `✅ GB: all ${B.size} rendered strings and byte streams are identical to ${BEFORE_FILE}`)
     process.exit(bad ? 1 : 0)
@@ -873,7 +896,7 @@ async function eventTypesView() {
   for (const [k, v] of B) {
     if (SKIP.has(k) || k.endsWith('.bytes')) continue
     if (!A.has(k)) { fail(`${k} is missing in the USD render`); continue }
-    if (asGb(d38(k, A.get(k))) !== v) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(v, asGb(A.get(k)))}`)
+    if (asGb(d38(k, A.get(k))) !== fix2(k, v)) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(fix2(k, v), asGb(A.get(k)))}`)
   }
   for (const [k, t] of Object.entries(snap.tickets)) {
     const gb = Buffer.from(before.tickets[k].bytes, 'hex'), us = Buffer.from(d38('tickets.' + k, t.bytes), 'hex')

@@ -381,14 +381,18 @@ function checks(t, A, B) {
       [act('overnight'), act('extend'), act('same')])
     // US format
     if (cc === 'US') {
-      t('US Completed row reads 12-hour ("12:10 AM" on the midnight event, "5:00 PM" on the normal one)', eq(m('23:50', 'completed'), ['12:10 AM']) && eq(g('format|US|12:00|completed'), ['5:00 PM']),
+      // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-1-nbsp: each 12-hour time carries U+00A0 before AM/PM (NB) in the
+      // Completed row and in the picker's option LABELS; the `text` views are whitespace-collapsed (kit.textOf), so they
+      // still read an ASCII space and their checks are unchanged.
+      const NB = '\u00A0'
+      t('US Completed row reads 12-hour ("12:10 AM" on the midnight event, "5:00 PM" on the normal one; U+00A0 before AM/PM)', eq(m('23:50', 'completed'), [`12:10${NB}AM`]) && eq(g('format|US|12:00|completed'), [`5:00${NB}PM`]),
         [m('23:50', 'completed'), g('format|US|12:00|completed'), 'BEFORE', B['format|US|12:00|completed']])
       const pick = m('23:50', 'modal-pick') || {}, conf = m('23:50', 'modal-confirm') || {}
       t('US finish-time modal writes 12-hour: "currently set to finish at 12:30 AM", options "12:30 AM", "Keep 12:30 AM"',
         // ⚠️ RE-PINNED (follow-ups): a next-day time now says so — "12:30 AM (next day)".
-        /finish at 12:30 AM \(next day\)/.test(pick.text) && (pick.options || []).includes('00:30=12:30 AM (next day) (current)') && /Keep 12:30 AM \(next day\)/.test(conf.text) && /finish at 11:00 PM instead of 12:30 AM \(next day\)/.test(conf.text), [pick.text, (pick.options || []).slice(0, 4), conf.text])
+        /finish at 12:30 AM \(next day\)/.test(pick.text) && (pick.options || []).includes(`00:30=12:30${NB}AM (next day) (current)`) && /Keep 12:30 AM \(next day\)/.test(conf.text) && /finish at 11:00 PM instead of 12:30 AM \(next day\)/.test(conf.text), [pick.text, (pick.options || []).slice(0, 4), conf.text])
       const npick = g('format|US|12:00|modal-pick') || {}
-      t('US finish-time modal on the normal event: "10:45 PM", option values still "HH:MM"', /finish at 10:45 PM/.test(npick.text) && (npick.options || []).includes('22:45=10:45 PM (current)'), [npick.text, (npick.options || []).slice(0, 3)])
+      t('US finish-time modal on the normal event: "10:45 PM", option values still "HH:MM"', /finish at 10:45 PM/.test(npick.text) && (npick.options || []).includes(`22:45=10:45${NB}PM (current)`), [npick.text, (npick.options || []).slice(0, 3)])
     } else {
       // ⚠️ RE-PINNED (follow-ups): the picker's option list is a NAMED change (decision 2 — `named` below); the rest is BEFORE's.
       for (const k of Object.keys(A).filter(k => k.startsWith('format|GB|')))
@@ -418,6 +422,10 @@ function ruleFinishOptions(cc, ymd, hhmm, start) {
   return out.sort((a, b) => (mins(a) < s ? mins(a) + 1440 : mins(a)) - (mins(b) < s ? mins(b) + 1440 : mins(b)))
 }
 function named(id, before) {
+  // ⚠️ NAMED, 18 October 2026 — us-layout-fix-1-nbsp (lib/time-utils.ts clockOf; /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md):
+  // Add Order's ASAP option on the US normal event ("⚡ ASAP — 11:30 AM" → U+00A0 before AM/PM). The `slots` values are
+  // BEFORE's exactly; GB: none.
+  if (/^normal\|US\|[^|]+\|add$/.test(id) && before && typeof before.asap === 'string') return { ...before, asap: before.asap.replace(/(\d{1,2}:\d{2}) (AM|PM)$/, '$1\u00A0$2') }
   const m = /^(normal|format)\|(GB|US)\|([^|]+)\|(finish|modal-pick)$/.exec(id)
   if (!m || (m[1] === 'normal') !== (m[4] === 'finish') || (m[1] === 'format' && m[2] !== 'GB')) return before
   const moment = FIX.NORMAL_MOMENTS.find(x => x[0] === m[3])
@@ -443,7 +451,10 @@ function checksWithFollowups(t, A, B) {
       Array.isArray(f.options) && f.options.slice(0, 4).join() === '23:15,23:30,23:45,00:00' && f.options.includes('00:30') && f.options[f.options.length - 1] === '17:45' && !f.options.includes('18:00'), f.options && f.options.slice(0, 6))
     const pk = A[`fu|${cc}|23:00|modal-pick`] || {}, cf = A[`fu|${cc}|23:00|modal-confirm`] || {}, same = A[`fu|${cc}|23:00|modal-confirm-same`] || {}
     const z = cc === 'US' ? '12:30 AM (next day)' : '00:30 (next day)'
-    t(`fu ${cc}: the picker labels it "${z}"; the same-day times carry no label`, (pk.options || []).includes(`00:30=${z}`) && (pk.options || []).includes(`23:15=${cc === 'US' ? '11:15 PM' : '23:15'}`), (pk.options || []).slice(0, 5))
+    // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-1-nbsp: the option LABELS carry U+00A0 before AM/PM (the confirm `text`
+    // below is whitespace-collapsed and keeps reading `z`).
+    const zOpt = z.replace(/ (AM|PM)\b/, '\u00A0$1')
+    t(`fu ${cc}: the picker labels it "${z}"; the same-day times carry no label`, (pk.options || []).includes(`00:30=${zOpt}`) && (pk.options || []).includes(`23:15=${cc === 'US' ? '11:15\u00A0PM' : '23:15'}`), (pk.options || []).slice(0, 5))
     t(`fu ${cc}: choosing 00:30 — "This event will finish at ${z} instead of …"`, new RegExp(`finish at ${z.replace(/[()]/g, '\\$&')} instead of`).test(cf.text || ''), cf.text)
     t(`fu ${cc}: choosing a same-day time reads exactly as before (no "(next day)")`, !!same.text && !/next day/.test(same.text) && /finish at/.test(same.text), same.text)
     const act = A[`fu|${cc}|23:00|action-0030`] || {}

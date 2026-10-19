@@ -224,7 +224,14 @@ async function main() {
     x = x.replace(/\/screenshots\/(kitchen|dashboard-v4|customer-order)\.png/g, '/screenshots/$1-us.png').replace('<link rel="preload" as="image" href="/gusto-logo.png"/>', '')
     const q = x.match(/<section class="quote-sec">(?:(?!<section)[\s\S])*?Pizzeria Gusto[\s\S]*?<\/section>/)
     if (q) x = x.replace(q[0], '')
-    return x.replace(/https:\/\/apps\.apple\.com\/gb\/app\/hatchgrab\/id6803543106/g, 'https://apps.apple.com/app/id6803543106')
+    x = x.replace(/https:\/\/apps\.apple\.com\/gb\/app\/hatchgrab\/id6803543106/g, 'https://apps.apple.com/app/id6803543106')
+    // ⚠️ RE-PINNED, 18 October 2026: us-layout-fix-13-us-landing-bands (the US landing, testimonial hidden: pricing loses
+    // `band`, the final CTA gains it, `.switch-block` an inline wash) — the ONE named transform in scripts/_lp1e-named.cjs
+    // (US_LAYOUT_FIX_13), reused rather than restated. It must apply: a no-op throws. GB stays byte-identical.
+    const fix13 = require('./_lp1e-named.cjs').US_LAYOUT_FIX_13
+    const y = fix13.apply(`pages/landing|${cc}|html`, x)
+    if (y === x) throw new Error('us-layout-fix-13 re-pin: the stored US landing HTML no longer holds the old bands')
+    return y
   }
 
   head('2 · keys separated from labels — every output byte-identical to BEFORE (GB and US), apart from Phase 1e’s named changes')

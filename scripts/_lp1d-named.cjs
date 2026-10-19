@@ -106,6 +106,129 @@ function mnImportLayout(s, us) {
     .replace(`items-stretch text-sm ${MN_CI}${MN_MISSING}"`, `items-stretch text-sm ${MN_TCI}${MN_MISSING}"`)
   return mnEachTimeSelect(s, m => `<div class="flex items-center gap-1 w-full">${swap(m[1])}${m[3]}${m[4]}<span class="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>${swap(m[5])}${m[7]}${m[8]}</div>`)
 }
+// ══ ⚠️ RE-PINNED (US layout fixes, 18 October 2026, docs/us-layout-proposal-report.md) ═════════════════════════════════
+// PRECISE transforms for the Manage edits of the US layout work that reach a GB view (every truck): applied to BEFORE,
+// F must equal the result byte for byte. Shared with scripts/_lp1d2-named.cjs (its smoke-schedule / settings views are
+// this harness's views, re-rendered). Each runs AFTER the midnight transforms (it reads the time-select blocks they
+// read, and changes the wrapper class they match on).
+//
+// (5a) us-layout-fix-5a-phone-time-select — EventTimeSelect: the hour + minute pair's wrapper gains `max-sm:hidden`;
+// right after it a `sm:hidden` div with `data-phone-time` holds ONE shared Select: its span class is the caller's
+// `phoneClassName ?? className`, aria-label the caller's `label` (else manageScheduleEvent.time.time "Time"), the
+// `height` style when the caller passes `phoneHeight`, `disabled` as the hour select's, the chevron as the hour
+// select's; options = the hour select's placeholder (selected only when there is no whole value) + every 5-minute time
+// 00:00…23:55 EXCEPT the start's own time on an END (notSameAs), a stored off-grid value injected sorted; labels
+// clockOf: GB "22:45", US "10:45 PM" (U+00A0 before AM/PM, us-layout-fix-1-nbsp).
+// The Add / Edit form passes phoneClassName `w-full [&>select]:rounded-xl [&>select]:text-slate-900 ` (+ the red
+// `[&>select]:border-red-400 [&>select]:bg-red-50` when the field has an error) and phoneHeight 42; every other caller
+// (the import table, the component-level views) passes neither.
+const USL_FORM_CLS = 'w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white '
+const uslEsc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+const uslClock = (v, us) => { if (!us) return v; const [h, m] = v.split(':').map(Number); return `${h % 12 || 12}:${String(m).padStart(2, '0')}\u00a0${h < 12 ? 'AM' : 'PM'}` }
+function uslPhoneTimeSelect(s, us, firstStart = null) {
+  return mnEachTimeSelect(s, (m, c) => {
+    const head = m[1]
+    const spanCls = (/^<span class="relative inline-flex min-w-0 items-stretch text-sm ([^"]*)">/.exec(head) || [])[1]
+    const aria = (/ aria-label="([^"]*)"/.exec(head) || [])[1]
+    if (spanCls == null || aria == null) return m[0]
+    let phoneCls = spanCls, height = null
+    if (spanCls.startsWith(USL_FORM_CLS)) {
+      const rest = spanCls.slice(USL_FORM_CLS.length)
+      if (rest !== 'border-slate-200' && rest !== 'border-red-400 bg-red-50') return m[0]
+      phoneCls = uslEsc(`w-full [&>select]:rounded-xl [&>select]:text-slate-900 ${rest === 'border-red-400 bg-red-50' ? '[&>select]:border-red-400 [&>select]:bg-red-50' : ''}`)
+      height = 42
+    }
+    // the hour aria is time.hourOf "{label} hour" / time.hour "Hour" (en-GB and en-US alike) — the label is what precedes " hour"
+    const label = / hour$/.test(aria) ? aria.slice(0, -' hour'.length) : aria === 'Hour' ? 'Time' : null
+    if (label == null) return m[0]
+    const lead = (/^<option value=""[^>]*>([^<]*)<\/option>/.exec(m[3]) || [])[1]
+    if (lead == null) return m[0]
+    const cur = c.h && c.mi ? `${c.h}:${c.mi}` : ''
+    const notMins = c.isEnd ? mnMins(c.start) : null
+    const all = MN_HOURS.flatMap(h => MN_MINUTES.map(x => `${h}:${x}`)).filter(v => notMins === null || mnMins(v) !== notMins)
+    if (cur && !all.includes(cur)) { all.push(cur); all.sort() }
+    const phoneHead = head
+      .replace(`items-stretch text-sm ${spanCls}">`, `items-stretch text-sm ${phoneCls}">`)
+      .replace(` aria-label="${aria}"`, ` aria-label="${label}"${height ? ` style="height:${height}px"` : ''}`)
+    const opts = mnOpt('', lead, cur) + all.map(v => mnOpt(v, uslClock(v, us), cur)).join('')
+    const pair = m[0].replace('<div class="flex items-center gap-1 w-full">', '<div class="flex items-center gap-1 w-full max-sm:hidden">')
+    return `${pair}<div class="flex items-center gap-1 w-full sm:hidden" data-phone-time="true">${phoneHead}${opts}${m[4]}</div>`
+  }, firstStart)
+}
+// (3) us-layout-fix-3-schedule-phone-cards — Manage › Schedule cards: the main row gains the phone grid classes; on a
+// card WITH action icons (not "Needs your approval") the divider gains `max-sm:row-span-2`, the time line's " · van"
+// is wrapped in a `max-sm:hidden` span and the van gets its own `sm:hidden` line (`data-van-line`) right after the
+// time line, and the actions div gains `max-sm:col-start-3 max-sm:flex-wrap` + `data-card-actions`. A pending card's
+// divider and inline " · van" are BEFORE's (lead's narrowing, 18 October). The overnight chip (`data-overnight-hint`)
+// gains `whitespace-nowrap` on every card.
+const USL_ROW = '<div class="flex items-start gap-4"><div class="flex flex-col items-center justify-center w-12 flex-shrink-0 text-center pl-2">'
+const USL_ROW_NEW = '<div class="flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5"><div class="flex flex-col items-center justify-center w-12 flex-shrink-0 text-center pl-2">'
+const USL_ACTIONS = '<div class="flex items-center gap-1.5 flex-shrink-0 self-start">'
+const USL_TIME_VAN = /(<p class="text-sm font-semibold text-slate-700 mt-0\.5">(?:[^<]|<span[^>]*>[^<]*<\/span>)*?) · ([^<·]*)<\/p>/
+function uslScheduleCards(s) {
+  if (!s.includes(USL_ROW)) return s
+  const parts = s.split(USL_ROW)
+  const out = [parts[0]]
+  for (let seg of parts.slice(1)) {
+    const a = seg.indexOf(USL_ACTIONS)
+    if (a >= 0) { // a card with action icons: everything up to its actions div is this card's main row
+      let row = seg.slice(0, a)
+      row = row.replace('<div class="w-px bg-slate-100 self-stretch flex-shrink-0"></div>', '<div class="w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2"></div>')
+      row = row.replace(USL_TIME_VAN, (_, p, van) => `${p}<span class="max-sm:hidden"> · ${van}</span></p><p class="sm:hidden text-xs font-semibold text-slate-600 mt-0.5" data-van-line="true">${van}</p>`)
+      seg = row + '<div class="flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap" data-card-actions="true">' + seg.slice(a + USL_ACTIONS.length)
+    }
+    out.push(seg)
+  }
+  return out.join(USL_ROW_NEW).replace(/(<span class="ml-1\.5 text-amber-700 bg-amber-50 border border-amber-200 rounded px-1\.5 py-0\.5 text-\[11px\] font-bold)(" data-overnight-hint)/g, '$1 whitespace-nowrap$2')
+}
+// (12) us-layout-fix-12-deadline-row — Manage › Settings › Pre-orders › Deadline: the type select gains `min-w-0`.
+const uslDeadlineRow = s => s.replace('<select class="border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"><option value="hours_before"',
+  '<select class="min-w-0 border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"><option value="hours_before"')
+// (2) us-layout-fix-2-live-on-date-line — components/TruckListCard.tsx (Manage › Add / Edit event's preview is a compact
+// card): the date span is wrapped in a new `flex items-center gap-2 leading-none whitespace-nowrap` span that also holds
+// "● Live" (a LiveBadge: `inline-flex` on compact, `hidden sm:inline-flex` on the full card); the range is ONE span of its
+// own (`text-[12px] font-bold text-slate-500 leading-none mt-0.5`, the inner <span> gone); the full card repeats the
+// badge after the range as `inline-flex sm:hidden mt-0.5` (phones keep date · range · Live). Compact: the column is
+// `min-w-[112px]` (was `w-[112px]`), and `pr-20` moves from the venue row (now `… gap-3 ` with the empty branch) to the
+// venue <h3> (`line-clamp-1 pr-20`). Date, range and the Live word byte-identical.
+const USL_TLC_DATE = '<span class="text-[13px] sm:text-sm font-bold text-orange-600 leading-none">'
+const USL_TLC_LIVE_OLD = /<span class="inline-flex items-center gap-1 text-green-600"><span class="w-1\.5 h-1\.5 rounded-full bg-green-500 inline-block"><\/span>([^<]*)<\/span>/
+const uslLiveBadge = (cls, label) => `<span class="${cls} items-center gap-1 text-[12px] font-bold leading-none text-green-600"><span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>${label}</span>`
+const USL_TLC = /<div class="(flex flex-col items-start gap-0\.5 shrink-0 w-\[112px\]|flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-0\.5 shrink-0 sm:w-\[140px\])"><span class="text-\[13px\] sm:text-sm font-bold text-orange-600 leading-none">([^<]*)<\/span><span class="flex items-center gap-2 text-\[12px\] font-bold text-slate-500 leading-none mt-0\.5"><span>([^<]*)<\/span>((?:<span class="inline-flex items-center gap-1 text-green-600"><span class="w-1\.5 h-1\.5 rounded-full bg-green-500 inline-block"><\/span>[^<]*<\/span>)?)<\/span><\/div>(?:(<div class="flex-1 min-w-0 flex flex-row items-center justify-between gap-3) pr-20">((?:(?!<h3 )[\s\S])*?)(<h3 class="[^"]*? line-clamp-1)")?/g
+function uslTruckListCard(s) {
+  return s.replace(USL_TLC, (whole, colCls, date, range, live, row, between, h3) => {
+    const compact = colCls.includes('w-[112px]')
+    if (compact !== (row != null)) return whole // a compact column without its venue row (or the reverse): leave it, so the view fails
+    const label = live ? USL_TLC_LIVE_OLD.exec(live)[1] : null
+    const col = compact ? 'flex flex-col items-start gap-0.5 shrink-0 min-w-[112px]' : colCls
+    const dateLine = `<span class="flex items-center gap-2 leading-none whitespace-nowrap">${USL_TLC_DATE}${date}</span>${label != null ? uslLiveBadge(compact ? 'inline-flex' : 'hidden sm:inline-flex', label) : ''}</span>`
+    const rangeLine = `<span class="text-[12px] font-bold text-slate-500 leading-none mt-0.5">${range}</span>${label != null && !compact ? uslLiveBadge('inline-flex sm:hidden mt-0.5', label) : ''}`
+    const tail = compact ? `${row} ">${between}${h3} pr-20"` : ''
+    return `<div class="${col}">${dateLine}${rangeLine}</div>${tail}`
+  })
+}
+
+/** The US layout entries for a harness: `sched` picks Schedule views (`<area>/<GB|US>|…`), `settings` the Settings page
+ *  views. PRECISE on every view they claim (on a US view an existing LISTED entry still wins, as for the midnight ones). */
+const uslEntries = (sched, settings, country = 'both', agent = 'US layout fixes (18 Oct 2026)') => [
+  { id: 'us-layout-fix-3-schedule-phone-cards', country, agent,
+    what: '⚠️ RE-PINNED (18 October 2026, docs/us-layout-proposal-report.md): Manage › Schedule cards, every truck — below 640px a grid (date | divider | details, the icons beneath). PRECISE: the main row gains `max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5`; on a card WITH action icons the divider gains `max-sm:row-span-2`, " · van" becomes `<span class="max-sm:hidden"> · van</span>` + a `sm:hidden` `data-van-line` line holding the van, the actions div gains `max-sm:col-start-3 max-sm:flex-wrap` + `data-card-actions`; a pending card keeps BEFORE’s divider and inline " · van"; the overnight chip gains `whitespace-nowrap`. Every word and every other class byte-identical.',
+    views: id => sched.test(id) && /\|tab\|/.test(id),
+    expect: b => mapStrings(b, uslScheduleCards) },
+  { id: 'us-layout-fix-5a-phone-time-select', country, agent,
+    what: '⚠️ RE-PINNED (18 October 2026, docs/us-layout-proposal-report.md): EventTimeSelect (Add / Edit event, Import review, the component views), every truck — the hour + minute pair inside `max-sm:hidden`, PLUS a `sm:hidden` `data-phone-time` control: ONE Select per time listing every 5-minute time ("22:45" / "10:45 PM") without the start’s own time on an end, aria-label = the field’s label or "Time" (manageScheduleEvent.time.time); in Add / Edit its box is `w-full [&>select]:rounded-xl [&>select]:text-slate-900` (+ the red pair on an error) at 42px. PRECISE (uslPhoneTimeSelect): the pair byte-identical but its wrapper class.',
+    views: id => sched.test(id) && /\|(timeSelect\||tab\|(add|edit|import)\|?)/.test(id),
+    expect: (b, id) => mapStrings(b, s => uslPhoneTimeSelect(s, countryOf(id) === 'US', /\|timeSelect\|[^|]+\|end$/.test(id) ? '11:30' : null)) },
+  { id: 'us-layout-fix-2-live-on-date-line', country, agent,
+    what: '⚠️ RE-PINNED (18 October 2026, docs/us-layout-proposal-report.md): components/TruckListCard.tsx — Manage’s Add / Edit event preview (a compact card): "● Live" moves from the range line to the date line (a LiveBadge in a new flex span around the date), the range is a span of its own; compact column `min-w-[112px]` (was `w-[112px]`), `pr-20` moved from the venue row to the venue <h3>. PRECISE (uslTruckListCard): date, range and the Live word byte-identical.',
+    views: id => sched.test(id) && /\|tab\|/.test(id),
+    expect: b => mapStrings(b, uslTruckListCard) },
+  { id: 'us-layout-fix-12-deadline-row', country, agent,
+    what: '⚠️ RE-PINNED (18 October 2026, docs/us-layout-proposal-report.md): Manage › Settings › Pre-orders › Deadline — the type select gains `min-w-0` (the row was 11px too wide at 390px). PRECISE: that one class, on the select whose first option is hours_before.',
+    views: id => settings.test(id),
+    expect: b => mapStrings(b, uslDeadlineRow) },
+]
+
 /** The three as `NAMED` entries for a harness, over the views `re` picks (`<area>/<GB|US>|…`). */
 const midnightEntries = (re, agent = 'midnight + format fixes (17 Oct 2026)') => [
   { id: 'midnight-end-select-not-same-as', country: 'both', agent,
@@ -172,6 +295,34 @@ const NAMED = [
   //    1d-us-hour-pickers, as before; every GB view they claim must equal BEFORE + them byte for byte (the pending card,
   //    where a view has one, still proven structurally on top).
   ...midnightEntries(/^schedule\/(GB|US)\|/),
+  // ── ⚠️ RE-PINNED (US layout fixes, 18 October 2026, docs/us-layout-proposal-report.md) ─────────────────────────────
+  //    GB: three PRECISE transforms (defined above, shared with scripts/_lp1d2-named.cjs) — every GB view they claim must
+  //    equal BEFORE + them byte for byte. US: this harness's US Schedule / Settings / Menu views are LISTED (above), so the
+  //    same changes are LISTED there too, under the same ids, so that scripts/fixtures/language-phase-1d-us-changed.txt
+  //    names them; language-phase-1d2 holds the precise US proofs it can.
+  ...uslEntries(/^schedule\/GB\|/, /^settings\/GB\|[^|]+\|page$/, 'GB'),
+  { id: 'us-layout-fix-1-nbsp', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): lib/time-utils.ts — an en-US clockOf writes U+00A0 before AM/PM ("6:30 PM"), a 12-hour formatTimeRange U+00A0 before the dash ("5:00 PM – 9:30 PM"); 24-hour output byte-identical. LISTED: every US view here that shows a 12-hour time — the setup wizard’s schedule read-back, DealsTab, every Schedule tab / places / time-select view, every Settings page (collection-time examples, pre-order cutoff), the paste-a-schedule example.',
+    views: id => /^menu\/US\|(deals\||menuTab\|setup\|schedule\|)/.test(id) || /^schedule\/US\|(tab|places|timeSelect)\|/.test(id) || /^settings\/US\|[^|]+\|page$/.test(id)
+      || /^copy\/US\|addressPlaceholders\|(pastePlaceholder|addressPlaceholders)\|/.test(id) },
+  { id: 'us-layout-fix-1-manage-join', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): app/manage/[token]/page.tsx DealsTab — a deal’s slot range on a 12-hour truck joins with U+00A0 + "– " ("11:30 AM – 2:00 PM" never breaks before the dash); 24-hour " – " as before. LISTED: the US deals views.',
+    views: id => /^menu\/US\|deals\|/.test(id) },
+  { id: 'us-layout-fix-3-schedule-phone-cards', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): the Schedule cards’ phone grid (see the GB entry of this id, PRECISE there). LISTED: every US Schedule tab view.',
+    views: id => /^schedule\/US\|tab\|/.test(id) },
+  { id: 'us-layout-fix-2-live-on-date-line', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): the Add / Edit event preview’s TruckListCard (see the GB entry of this id, PRECISE there). LISTED: the US Schedule tab views.',
+    views: id => /^schedule\/US\|tab\|/.test(id) },
+  { id: 'us-layout-fix-4-import-heading', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): Manage › Import review, 12-hour trucks only — below 640px the row heading is two block lines (date, time); from 640px the one line as before (`max-sm:hidden` / `sm:hidden block` spans). 24-hour unchanged (no GB view changes). LISTED: the US import review views.',
+    views: id => /^schedule\/US\|tab\|import\|(review|reviewEditing|saving)$/.test(id) },
+  { id: 'us-layout-fix-5a-phone-time-select', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): EventTimeSelect’s phone control (see the GB entry of this id, PRECISE there). LISTED: the US views that render a time select — the component views, the Add form (picker, phone2, addressOpen, errors, private), every Edit view, the import review (review, reviewEditing, saving).',
+    views: id => /^schedule\/US\|(timeSelect\||tab\|(add\|(picker|phone2|addressOpen|errors|private)$|edit$|edit\||import\|(review|reviewEditing|saving)$))/.test(id) },
+  { id: 'us-layout-fix-12-deadline-row', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
+    what: '⚠️ RE-PINNED (18 October 2026): the pre-order Deadline type select gains `min-w-0` (see the GB entry of this id). LISTED: every US Settings page view.',
+    views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.
@@ -183,4 +334,4 @@ function apply(id, before) {
   return applyNamed(NAMED, countryOf(id) === 'US', id, before)
 }
 
-module.exports = { NAMED, apply, countryOf, mapStrings, mapFields, clock12, midnightEntries, mnEndOptions }
+module.exports = { NAMED, apply, countryOf, mapStrings, mapFields, clock12, midnightEntries, mnEndOptions, uslEntries, uslPhoneTimeSelect, uslScheduleCards, uslDeadlineRow, uslTruckListCard }

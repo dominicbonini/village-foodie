@@ -8,5 +8,5 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "taxAndFees": "Tax & fees"
+  "foldedCharges": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}"
 }

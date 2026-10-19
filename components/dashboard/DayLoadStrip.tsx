@@ -20,12 +20,6 @@ import { crossesMidnight, eventTimeMins, nowOnEvent } from '@/lib/event-window'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/dashboardBanners'
 
-/** US layout proposal, fix 9 (audit B-03) — the sidebar's time column. It was `w-10` (40 px): "11:50" fills it,
- *  but "11:50 AM" wrapped to two lines, doubling every row (22 → 13 rows in the panel at 1180×820). A 12-hour
- *  truck now gets `w-16`. ⚠️ OPEN QUESTION TO DOMINIC: should a 24-hour (GB) truck get the wider column too?
- *  false = no, GB is unchanged (its label column stays 24 px wider); true = every truck gets `w-16`. */
-export const DAYLOAD_SIDEBAR_WIDE_TIME_GB = false
-
 const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
 
 const TONE: Record<'green' | 'amber' | 'red', { dot: string; text: string }> = {
@@ -126,7 +120,10 @@ export function DayLoadStrip({ slots, eventDate, variant, time, breachedSlots, e
   //     would change what the operator can see rather than how much of it fits.
   // Below lg this component's sidebar variant is not rendered at all (the call site is `hidden lg:flex`),
   // so nothing here reaches portrait or a phone.
-  const wideTime = ts.timeFormat === '12h' || DAYLOAD_SIDEBAR_WIDE_TIME_GB
+  // US layout fix 9 (audit B-03): the time column was `w-10` (40 px). "11:50" fills it, but "11:50 AM" wrapped to two
+  // lines and doubled every row (22 → 13 rows in the panel at 1180×820). A 12-hour truck gets `w-16`; a 24-hour truck
+  // keeps `w-10` and its labels' width. Decided by the truck's clock alone.
+  const wideTime = ts.timeFormat === '12h'
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex flex-col min-h-0 flex-1">
       <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 shrink-0">{t('kitchenCapacity')}</p>

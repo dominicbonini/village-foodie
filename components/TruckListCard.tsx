@@ -9,6 +9,7 @@ import { isHatchGrab } from '@/lib/domain';
 import { formatTimeRange, formatYmdShortMonth, DISCOVERY_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
 import { useT } from '@/lib/i18n/use-t';
 import '@/lib/i18n/catalog/eventCard'
+import { eventAreaLineWithRegion } from '@/lib/event-address';
 
 interface TruckListCardProps {
   event: VillageEvent;
@@ -142,7 +143,9 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
   // event's postcode, de-emphasised. Null-safe — filter drops missing parts, so a null postcode
   // shows the area alone with NO trailing separator, and both-null → '' → line 2 not rendered.
   const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
-  const areaLine = [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');
+  // 19 October 2026: an event with a state reads "Hoboken, NJ 07030" (lib/event-address.ts); without one, as before.
+  const areaLine = eventAreaLineWithRegion({ town: showVillage ? event.village : null, region: event.region, postcode: event.postcode })
+    ?? [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');
 
   // Lifted out of the markup so the linked and the plain rendering below cannot drift apart — the two
   // differ ONLY in their wrapper element. `group-hover:text-orange-600` stays on the h3 in both: with
@@ -150,8 +153,12 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
   const venueLines = (
     <>
       {/* Line 1: venue NAME (primary). Compact uses line-clamp-1 (single tight row);
-          default uses line-clamp-2. */}
-      <h3 className={`text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight group-hover:text-orange-600 transition-colors ${compact ? 'line-clamp-1' : 'line-clamp-2'}`}>
+          default uses line-clamp-2.
+          ⚠️ COMPACT: THE NAME ALONE KEEPS THE 80px RESERVE (`pr-20`) for the corner slot ("Change event", a one-line
+          link at the card's top-right). It used to be on the whole column, so when the date column grew to fit
+          "Wed 30 Sep ● Live" or a 12-hour range (US layout fix 2), the area line below was cut at 360px ("Kingston ·
+          KT1 1L…"). The area line sits below the corner slot, so it may use the full width (18 October 2026). */}
+      <h3 className={`text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight group-hover:text-orange-600 transition-colors ${compact ? 'line-clamp-1 pr-20' : 'line-clamp-2'}`}>
         {event.venueName}
       </h3>
       {/* Line 2: area · postcode (SMALLER + MUTED, de-emphasised). Hidden when empty. */}
@@ -199,7 +206,7 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                 two lines (line-clamp-2) within its own width while the button stays right-aligned,
                 vertically centred, and never gets pushed off-screen or clipped against the button.
                 The mobile separator (border-t/pt/mt, sm-cleared) now spans the whole name+button row. */}
-            <div className={`flex-1 min-w-0 flex flex-row items-center justify-between gap-3 ${compact ? 'pr-20' : 'border-t border-slate-100 sm:border-t-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0'}`}>
+            <div className={`flex-1 min-w-0 flex flex-row items-center justify-between gap-3 ${compact ? '' : 'border-t border-slate-100 sm:border-t-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0'}`}>
 
                 {/* VENUE NAME AND VILLAGE */}
                 <div className="flex-1 min-w-0">

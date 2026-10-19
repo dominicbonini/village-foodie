@@ -1,7 +1,7 @@
 'use client'
 // components/dashboard/OrderCard.tsx
 
-import { chargeLinesFor, chargeSourceOf } from '@/lib/order-charge-lines'
+import { chargeLinesFor, chargeSourceOf, chargeParts } from '@/lib/order-charge-lines'
 import { useState, useEffect } from 'react'
 import type { Order, TruckData, Slot, TruckEvent } from './types'
 import { STATUS } from './types'
@@ -26,14 +26,6 @@ export type ViewMode = 'solo' | 'window' | 'cook'
 // The struckUnits/tapItem/allStruck code is RETAINED but unreachable when this is false, so re-enabling
 // is just this one flag — nothing to re-implement.
 const ITEM_TICK_ENABLED = false
-
-/** US layout proposal, fix 10 (audit B-07) — the money lines on a KDS Full ticket. A US order carries
- *  Subtotal, tax, service fee, card fee and tip lines; on a kitchen screen that is four or five extra lines
- *  per ticket. 'one' = a single "Tax, fees & tip $x.xx" line; 'none' = no money lines at all (the order
- *  total stays in the header). ⚠️ DOMINIC CHOOSES — 10(i) is 'one', 10(ii) is 'none'. A UK order has no
- *  such lines, so either value leaves it exactly as it was. The dashboard card is not affected: it always
- *  shows one summary line that expands on tap. */
-export const KDS_MONEY_LINES: 'one' | 'none' = 'one'
 
 // ── Shared UI primitives ──────────────────────────────────────────────────────
 
@@ -890,6 +882,11 @@ export function OrderCard({
   // Start cooking button, so nothing can currently reach status 'cooking'. That is why this costs
   // nothing now and why it must be written down rather than discovered later.
   const statusBadgeKds = order.status === 'cooking' ? null : statusBadgeStatic
+  /** The KDS Full ticket's row-1 badge, one size down (10px, leading-none, 1px padding: a 12px pill, not 20px) — US layout fix 6,
+   *  choice 3 (Dominic, 18 October 2026). See row 1 below for why it has to be this small. */
+  const statusBadgeKdsSmall = order.status === 'cooking' || ['confirmed', 'pending'].includes(order.status) ? null : (
+    <span className={`text-[10px] font-bold leading-none px-1.5 py-px rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{t('status', { status: order.status })}</span>
+  )
 
   const sortedItems = [...order.items].sort((a, b) =>
     getCategoryTime(b.name) - getCategoryTime(a.name)
@@ -1313,19 +1310,22 @@ export function OrderCard({
                metadata (name + time + lateness). */
             <>
               {/* Row 1 — order # (left) + total (right).
-                  🔴 US LAYOUT PROPOSAL, FIX 6 (the Full half; a named GB bug): the left cluster was `min-w-0`
-                  around a number that cannot truncate, so on a Ready + paid ticket with a 4-digit number at
-                  810 / 800 the right cluster ("Ready $35.00 PAID") was drawn OVER the last digit ("#123[5]"),
-                  in GB and US alike. The number's cluster now never shrinks, and the row wraps: when the two
-                  clusters cannot share the line, the right one drops below, still hard right (`ml-auto`).
-                  When they fit — nearly every ticket — the row is exactly as before (`gap-x-2` is the old
-                  `gap-2` along the row; there is no row gap until it wraps). */}
-              <div className="flex flex-wrap items-baseline justify-between gap-x-2">
-                {/* `-mr-2` cancels the row gap for the WRAP DECISION only: the row breaks when the two clusters
-                    would actually touch, not when they merely eat into the 8 px gap. Before this change the
-                    old `min-w-0` cluster let the number run into the gap unseen (1 px on a GB Ready ticket at
-                    1180), and that ticket must not start wrapping. */}
-                <div className="flex items-baseline gap-1.5 flex-shrink-0 -mr-2">
+                  🔴 US LAYOUT FIX 6, THE FULL HALF (a named GB bug; Dominic's choice 3, 18 October 2026): the status
+                  badge sat in the right cluster beside the total, and the number's cluster was `min-w-0`, so on a Ready
+                  + paid ticket with a 4-digit number at 810 / 800 / 1280 the badge was drawn OVER the last digit
+                  ("#123[5]"), GB and US alike (a 2-digit one by 2 px at 1280).
+                  ⛔ WITHOUT COSTING HEIGHT — no ticket may grow, or the GB 800×1280 grid loses a row of tickets:
+                  • the badge is one size down (statusBadgeKdsSmall, a 12px pill) and OUT OF FLOW, pinned to row 1's
+                    top-right corner, above the total — so it can never cover the number and cannot add height;
+                  • the total, PAID and ✓ are EXACTLY as before (same classes, same baseline, same right edge);
+                  • the number never shrinks (`flex-shrink-0`).
+                  ⛔ TRIED AND REJECTED, ALL MEASURED IN WEBKIT (the iPad's engine): lifting the badge only when it does
+                  not fit — a wrapping flex cluster, `wrap-reverse`, a floated badge — WebKit takes such a cluster's
+                  baseline from its TOP line, so the total dropped 16 px and row 1 grew 11–23 px; `align-self: last
+                  baseline` is not applied to flex items there (it fell back to the end edge and moved every total
+                  down ~4 px). docs/us-layout-fixes-report.md has the numbers. */}
+              <div className="relative flex items-baseline justify-between gap-2">
+                <div className="flex items-baseline gap-1.5 flex-shrink-0">
                   {/* 🔴 `text-slate-900` IS STATED, NOT INHERITED — and it is COOK'S value, adopted here
                       on purpose. Without it this span inherits `headerCls`, which tints the number with
                       the urgency state (text-green-900 / text-amber-900 / text-red-900 / text-slate-900,
@@ -1343,20 +1343,17 @@ export function OrderCard({
                       See the buzzerChip note. */}
                   {buzzerChip}
                 </div>
-                <div className="flex items-baseline gap-1.5 flex-shrink-0 ml-auto">
-                  {/* The status badge — FIRST in this cluster, mirroring solo, where it precedes the
-                      price and the paid chip. This is the row that already carries the small
-                      indicators (paidChip, ✓) and is already flex-shrink-0, which the badge is sized
-                      for. `Cooking` is suppressed here — see statusBadgeKds. */}
-                  {statusBadgeKds}
+                <div className="flex items-baseline gap-1.5 flex-shrink-0">
                   {/* 🔴 THIS IS THE ONE THAT MATTERS. With `viewMode` back on `boardMode`, a HANDOVER
-                      device renders this header even when its display is set to Cook — so without this
-                      guard the order total would print on a Cook card, which is the first thing Cook
-                      exists to remove. */}
+                        device renders this header even when its display is set to Cook — so without this
+                        guard the order total would print on a Cook card, which is the first thing Cook
+                        exists to remove. */}
                   {!hideAmounts && <span className="font-bold text-base">{amount(Number(order.total))}</span>}
                   {paidChip}
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                 </div>
+                {/* The status badge (`Cooking` is suppressed — see statusBadgeKds): top-right, above the total. */}
+                {statusBadgeKdsSmall && <span className="absolute top-0 right-0 flex" data-kds-row1-badge>{statusBadgeKdsSmall}</span>}
               </div>
               {/* Row 2 — customer name + time + lateness. On a 12-hour truck (fix 7, audit B-05) the time and
                   lateness are one right-aligned group and the row wraps before the name loses its first 16
@@ -1593,27 +1590,34 @@ export function OrderCard({
           {/* ── 🔴 PHASE 3 SCREENS — TAX, SERVICE FEE AND TIP, AFTER THE ITEMS ───────────────────────────
               The ticket's own rows (lib/order-charge-lines.ts, the kitchen's words), hidden in cook mode
               like every other amount. ⚠️ NONE FOR A UK ORDER — `chargeLines` is empty and nothing renders. */}
-          {/* 🔴 US LAYOUT PROPOSAL, FIX 10 (audit B-07): the lines were drawn in full on every card and ticket,
-              +78 px per US order. Now ONE line, "Tax, fees & tip $x.xx" (tax + service fee + card fee + tip;
-              the food is already in the header's total):
-                • the dashboard card (solo) — the line is a button; a tap opens the full breakdown under it;
-                • the KDS Full ticket (window) — the one line, or nothing, by KDS_MONEY_LINES above.
+          {/* 🔴 US LAYOUT FIX 10 (audit B-07; Dominic, 18 October 2026): the lines were drawn in full on every card and
+              ticket, +78 px per US order.
+                • the dashboard card (solo): ONE line — "Tax, fees & tip" when the order has a tip, "Tax & fees" when not
+                  (tax + service fee + card fee + tip; the food is already in the header's total) — a button; a tap
+                  opens the full breakdown under it;
+                • the KDS (window): NO money lines at all. The kitchen doesn't need the split; the total and PAID stay
+                  in the ticket's header.
               A UK order still has no lines, so nothing renders for it in any mode. */}
-          {!hideAmounts && chargeLines.length > 0 && (cardStyle === 'solo' || KDS_MONEY_LINES === 'one') && (
+          {/* 19 October 2026 (US dress rehearsal Finding 4): ONE charge beyond the food is drawn plainly — "Sales tax
+              6.625% $1.56", no fold — as the basket draws it; the fold is for two or more, named by what is in it. */}
+          {!hideAmounts && chargeLines.length === 2 && cardStyle === 'solo' && (
             <div className="mx-3 mb-2 px-1 space-y-0.5 text-xs text-slate-600" data-charge-lines>
-              {cardStyle === 'solo' ? (
-                <button type="button" onClick={() => setChargesOpen(v => !v)} aria-expanded={chargesOpen}
-                  className="w-full flex justify-between gap-2 text-left" data-charge-summary>
-                  <span>{t('chargesSummary')} <span className="text-slate-400" aria-hidden>{chargesOpen ? '▴' : '▾'}</span></span>
-                  <span className="tabular-nums">{money(chargesExtraMinor)}</span>
-                </button>
-              ) : (
-                <div className="flex justify-between gap-2" data-charge-summary>
-                  <span>{t('chargesSummary')}</span>
-                  <span className="tabular-nums">{money(chargesExtraMinor)}</span>
+              {chargeLines.filter(l => l.key !== 'subtotal').map(l => (
+                <div key={l.key} className="flex justify-between gap-2" data-charge-summary>
+                  <span>{l.label}{l.rate ? <span className="ml-1 text-slate-400">{l.rate}</span> : null}</span>
+                  <span className="tabular-nums">{money(l.minor)}</span>
                 </div>
-              )}
-              {cardStyle === 'solo' && chargesOpen && (
+              ))}
+            </div>
+          )}
+          {!hideAmounts && chargeLines.length > 2 && cardStyle === 'solo' && (
+            <div className="mx-3 mb-2 px-1 space-y-0.5 text-xs text-slate-600" data-charge-lines>
+              <button type="button" onClick={() => setChargesOpen(v => !v)} aria-expanded={chargesOpen}
+                className="w-full flex justify-between gap-2 text-left" data-charge-summary>
+                <span>{t('chargesSummary', { parts: chargeParts(chargeLines) })} <span className="text-slate-400" aria-hidden>{chargesOpen ? '▴' : '▾'}</span></span>
+                <span className="tabular-nums">{money(chargesExtraMinor)}</span>
+              </button>
+              {chargesOpen && (
                 <div className="pl-2 space-y-0.5 text-slate-500">
                   {chargeLines.map(l => (
                     <div key={l.key} className="flex justify-between gap-2">

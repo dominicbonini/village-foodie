@@ -114,6 +114,11 @@
     "after": "Questions? <link>Get in touch</link> — we’re real people.",
     "kind": "GB fix (moved, then fixed)"
   },
+  "orderStatus.cancelledBody": {
+    "before": "Your order has been cancelled. If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.",
+    "after": "Your order has been cancelled.{card, select, no {} other { If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.}}",
+    "kind": "GB fix of an eb7ed44 key"
+  },
   "planFeatures.footnote.n1": {
     "before": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe's own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you tap on a phone or tablet without a dedicated reader.",
     "after": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you take the payment on a supported phone instead of a separate card machine.",

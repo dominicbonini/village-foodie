@@ -6,7 +6,6 @@ import { formatMajorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { formatSlot, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { eventTimeInstant } from '@/lib/event-window'
 import { ChargeRows } from '@/components/ChargeRows'
-import { MANAGE_PICKUP_STACK_GB } from '@/lib/customer-layout'
 import type { ChargeLineSource } from '@/lib/order-charge-lines'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import { errorText } from '@/lib/i18n/customer-errors'
@@ -55,6 +54,8 @@ export default function ManageOrderPage() {
   const [errorCode, setErrorCode] = useState<{ code?: unknown; params?: unknown } | null>(null)
   const [cancelling, setCancelling] = useState(false)
   const [cancelled, setCancelled] = useState(false)
+  // What the cancel endpoint found about the money: the refund sentence is for a card that paid or is held.
+  const [cancelPaymentState, setCancelPaymentState] = useState<string | null>(null)
 
   useEffect(() => {
     // [id] is the order_key UUID — globally unique, no ?truck= needed
@@ -82,6 +83,7 @@ export default function ManageOrderPage() {
       setErrorCode(null)
     } else {
       setCancelled(true)
+      setCancelPaymentState(typeof data?.paymentState === 'string' ? data.paymentState : null)
     }
     setCancelling(false)
   }
@@ -125,7 +127,10 @@ export default function ManageOrderPage() {
               ⚠️ IT STILL ANSWERS THE QUESTION THE CUSTOMER HAS. Saying nothing about money would be
               worse than over-promising: it names who to ask, which is the one thing they need. */}
           <p className="text-sm text-slate-500">
-            {t('cancelledBody', { withTruck: order?.truck_name ? 'yes' : 'no', truck: order?.truck_name ?? '' })}
+            {/* 19 October 2026 (US dress rehearsal Finding 5): the card sentence only when a card paid or is
+                held. A pay-at-the-truck order ('hatch') reads just "Your order has been cancelled." 'unknown',
+                or no answer at all, keeps the sentence — it is conditional ("If you paid by card…") and never wrong. */}
+            {t('cancelledBody', { withTruck: order?.truck_name ? 'yes' : 'no', truck: order?.truck_name ?? '', card: cancelPaymentState === 'hatch' ? 'no' : 'yes' })}
           </p>
         </div>
       </div>
@@ -198,11 +203,11 @@ export default function ManageOrderPage() {
 
         {/* Order details */}
         <div className="px-6 py-4 border-b border-slate-100">
-          {/* ── US layout proposal, fix 11 (A-06): a 12-hour time and a long venue wrapped into the label ("Pickup12:45 PM",
-              no gap, the second line left-aligned). The stacked row has a gap after the label and the time and the venue
-              each on a line of their own, right-aligned like every other value. GB keeps its one-line row unless
-              MANAGE_PICKUP_STACK_GB (lib/customer-layout.ts) is switched on. */}
-          {order.slot && (ts.timeFormat === '12h' || MANAGE_PICKUP_STACK_GB ? (
+          {/* ── US layout fix 11 (A-06): a 12-hour time and a long venue wrapped into the label ("Pickup12:45 PM", no gap,
+              the second line left-aligned). For a 12-hour truck the row has a gap after the label and the time and the
+              venue each on a line of their own, right-aligned like every other value. Decided by the truck's clock alone:
+              a 24-hour truck keeps its one-line row. */}
+          {order.slot && (ts.timeFormat === '12h' ? (
             <div className="flex justify-between gap-4 text-sm mb-1" data-pickup-row>
               <span className="text-slate-500 shrink-0">{t('pickup')}</span>
               <span className="font-medium text-slate-900 text-right min-w-0">

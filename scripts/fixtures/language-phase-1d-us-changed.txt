@@ -1,4 +1,4 @@
-# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 316 changed). Written by scripts/language-phase-1d.cjs.
+# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 318 changed). Written by scripts/language-phase-1d.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 menu/US|menuTab|list	words
 menu/US|menuTab|list|open	words
@@ -40,7 +40,7 @@ menu/US|menuTab|setup|schedule|photo	words
 menu/US|menuTab|setup|schedule|manual	words
 menu/US|menuTab|setup|schedule|verifyError	words
 menu/US|menuTab|setup|schedule|verified	words
-menu/US|menuTab|setup|schedule|extracted	code: 1d-us-dates-times + words
+menu/US|menuTab|setup|schedule|extracted	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
 menu/US|menuTab|setup|settings	code: 1d-cancel-row-sentence + words
 menu/US|menuTab|setup|done	words
 menu/US|wizard|card	words
@@ -54,73 +54,75 @@ menu/US|extras|open	words
 menu/US|extras|editOption	words
 menu/US|extras|empty	words
 menu/US|extras|upsellAdding	words
-menu/US|deals|list	code: 1d-us-dates-times
+menu/US|deals|list	code: 1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-1-manage-join
 menu/US|deals|empty	words
-menu/US|deals|new	code: 1d-us-dates-times + words
-menu/US|deals|edit	code: 1d-us-dates-times + words
+menu/US|deals|new	code: 1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-1-manage-join + words
+menu/US|deals|edit	code: 1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-1-manage-join + words
 menu/US|capacity|oneVan	words
 menu/US|capacity|twoVans	words
 menu/US|capacity|confirmAllSame	words
 menu/US|capacity|unavailable	words
-schedule/US|tab|list	code: 1d-us-address-style + words
-schedule/US|tab|list|past	code: 1d-us-address-style + words
-schedule/US|tab|list|oneVan	code: 1d-us-address-style + words
-schedule/US|tab|list|vanFilter	code: 1d-us-address-style + words
-schedule/US|tab|list|expanded	code: 1d-us-address-style + words
+schedule/US|tab|list	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|list|past	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|list|oneVan	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|list|vanFilter	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|list|expanded	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
 schedule/US|tab|empty	words
-schedule/US|tab|pending	code: 1d-us-address-style + words
-schedule/US|tab|starter	code: 1d-us-address-style + words
+schedule/US|tab|pending	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|starter	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
 schedule/US|tab|eventTypes	words
-schedule/US|tab|add|picker	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|add|phone2	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|add|addressOpen	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|add|errors	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|add|private	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|add|upload	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|add|uploadProcessing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|add|uploadReview	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example + words
-schedule/US|tab|tidy	code: 1d-us-address-style + words
-schedule/US|tab|edit	code: 1d-us-address-style + words
-schedule/US|tab|edit|times|morning	code: 1d-us-address-style+1d-us-hour-pickers + words
-schedule/US|tab|edit|times|noon	code: 1d-us-address-style+1d-us-hour-pickers + words
-schedule/US|tab|edit|times|evening	code: 1d-us-address-style+1d-us-hour-pickers + words
-schedule/US|tab|edit|times|midnight	code: 1d-us-address-style+1d-us-hour-pickers + words
-schedule/US|tab|edit|private	code: 1d-us-address-style+1d-us-hour-pickers + words
-schedule/US|tab|edit|saving	code: 1d-us-address-style+1d-us-hour-pickers + words
-schedule/US|tab|import|paste	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
-schedule/US|tab|import|text	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
-schedule/US|tab|import|processing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
-schedule/US|tab|import|review	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
-schedule/US|tab|import|reviewEditing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
-schedule/US|tab|import|saving	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times + words
-schedule/US|tab|cancel	code: 1d-us-address-style + words
-schedule/US|tab|cancel|none	code: 1d-us-address-style + words
-schedule/US|tab|privateLink	code: 1d-us-address-style + words
-schedule/US|places|list|default	code: 1d-us-address-style + words
-schedule/US|places|list|selected	code: 1d-us-address-style + words
-schedule/US|places|list|hidden	code: 1d-us-address-style + words
-schedule/US|places|list|search	code: 1d-us-address-style
-schedule/US|places|list|starError	code: 1d-us-address-style + words
-schedule/US|places|list|empty	code: 1d-us-address-style
-schedule/US|places|detail|p1	code: 1d-us-address-style
-schedule/US|places|detail|p2	code: 1d-us-address-style
-schedule/US|places|detail|p3	code: 1d-us-address-style
-schedule/US|places|tidy	code: 1d-us-address-style + words
-schedule/US|places|tidy|hidden	code: 1d-us-address-style + words
-schedule/US|timeSelect|07:00	code: 1d-us-hour-pickers
-schedule/US|timeSelect|07:00|end	code: 1d-us-hour-pickers
-schedule/US|timeSelect|12:00	code: 1d-us-hour-pickers
-schedule/US|timeSelect|12:00|end	code: 1d-us-hour-pickers
-schedule/US|timeSelect|12:05	code: 1d-us-hour-pickers
-schedule/US|timeSelect|12:05|end	code: 1d-us-hour-pickers
-schedule/US|timeSelect|18:45	code: 1d-us-hour-pickers
-schedule/US|timeSelect|18:45|end	code: 1d-us-hour-pickers
-schedule/US|timeSelect|23:55	code: 1d-us-hour-pickers
-schedule/US|timeSelect|23:55|end	code: 1d-us-hour-pickers
-schedule/US|timeSelect|00:00	code: 1d-us-hour-pickers
-schedule/US|timeSelect|00:00|end	code: 1d-us-hour-pickers
-schedule/US|timeSelect|empty	code: 1d-us-hour-pickers
-schedule/US|timeSelect|empty|end	code: 1d-us-hour-pickers
+schedule/US|tab|add|picker	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|add|phone2	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|add|addressOpen	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|add|errors	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|add|private	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|add|upload	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|add|uploadProcessing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|add|uploadReview	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|tidy	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|edit	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|edit|times|morning	code: 1d-us-address-style+1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|edit|times|noon	code: 1d-us-address-style+1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|edit|times|evening	code: 1d-us-address-style+1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|edit|times|midnight	code: 1d-us-address-style+1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|edit|private	code: 1d-us-address-style+1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|edit|saving	code: 1d-us-address-style+1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|import|paste	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|import|text	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|import|processing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|import|review	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-4-import-heading+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|import|reviewEditing	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-4-import-heading+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|import|saving	code: 1d-us-address-style+1d-us-hour-pickers+1d-us-paste-example+1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line+us-layout-fix-4-import-heading+us-layout-fix-5a-phone-time-select + words
+schedule/US|tab|cancel	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|cancel|none	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|tab|privateLink	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
+schedule/US|places|list|default	code: 1d-us-address-style+us-layout-fix-1-nbsp + words
+schedule/US|places|list|selected	code: 1d-us-address-style+us-layout-fix-1-nbsp + words
+schedule/US|places|list|hidden	code: 1d-us-address-style+us-layout-fix-1-nbsp + words
+schedule/US|places|list|search	code: 1d-us-address-style+us-layout-fix-1-nbsp
+schedule/US|places|list|starError	code: 1d-us-address-style+us-layout-fix-1-nbsp + words
+schedule/US|places|list|empty	code: 1d-us-address-style+us-layout-fix-1-nbsp
+schedule/US|places|detail|p1	code: 1d-us-address-style+us-layout-fix-1-nbsp
+schedule/US|places|detail|p2	code: 1d-us-address-style+us-layout-fix-1-nbsp
+schedule/US|places|detail|p3	code: 1d-us-address-style+us-layout-fix-1-nbsp
+schedule/US|places|tidy	code: 1d-us-address-style+us-layout-fix-1-nbsp + words
+schedule/US|places|tidy|hidden	code: 1d-us-address-style+us-layout-fix-1-nbsp + words
+schedule/US|places|subLine|p1	code: 1d-us-address-style+us-layout-fix-1-nbsp
+schedule/US|places|subLine|p3	code: 1d-us-address-style+us-layout-fix-1-nbsp
+schedule/US|timeSelect|07:00	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|07:00|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|12:00	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|12:00|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|12:05	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|12:05|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|18:45	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|18:45|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|23:55	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|23:55|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|00:00	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|00:00|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|empty	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
+schedule/US|timeSelect|empty|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
 schedule/US|badge|e4	words
 schedule/US|eventTypes|grid	words
 schedule/US|eventTypes|empty	words
@@ -133,29 +135,29 @@ schedule/US|vanFilter|two	words
 schedule/US|vanFilter|label|all	words
 schedule/US|privateLink|on	words
 schedule/US|privateLink|copied	words
-settings/US|owner|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|twoVans|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|manager|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|starter|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|pro|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|legacy|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|addingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|renamingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|deletingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|vanBilling|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|vanUpgrade|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|qrModal|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|qrPreviews|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|verifyError|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|verifying|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|preorders|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|preordersOff|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|emoji|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|kds|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|noCuisine|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|setup|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|trial|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
-settings/US|noBase|page	code: 1e-us-app-store-link+1d-us-settings-clock + words
+settings/US|owner|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|twoVans|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|manager|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|starter|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|pro|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|legacy|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|addingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|renamingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|deletingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|vanBilling|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|vanUpgrade|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|qrModal|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|qrPreviews|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|verifyError|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|verifying|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|preorders|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|preordersOff|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|emoji|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|kds|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|noCuisine|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|setup|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|trial|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|noBase|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
 settings/US|whereYouTrade|set	words
 settings/US|whereYouTrade|unset	words
 settings/US|whereYouTrade|readOnly	words
@@ -170,12 +172,12 @@ copy/US|offlineProtection|OFFLINE_MODE_PAUSE_LABEL	words
 copy/US|offlineProtection|OFFLINE_PROTECTION_MODES	words
 copy/US|offlineProtection|OFFLINE_PROTECTION_PURPOSE	words
 copy/US|offlineProtection|OFFLINE_PROTECTION_SWITCH_LABEL	words
-copy/US|addressPlaceholders|addressPlaceholders|0	code: 1d-us-address-style+1d-us-paste-example + words
-copy/US|addressPlaceholders|addressPlaceholders|1	code: 1d-us-address-style+1d-us-paste-example + words
-copy/US|addressPlaceholders|addressPlaceholders|2	code: 1d-us-address-style+1d-us-paste-example + words
-copy/US|addressPlaceholders|pastePlaceholder|0	code: 1d-us-paste-example + words
-copy/US|addressPlaceholders|pastePlaceholder|1	code: 1d-us-paste-example + words
-copy/US|addressPlaceholders|pastePlaceholder|2	code: 1d-us-paste-example + words
+copy/US|addressPlaceholders|addressPlaceholders|0	code: 1d-us-address-style+1d-us-paste-example+us-layout-fix-1-nbsp + words
+copy/US|addressPlaceholders|addressPlaceholders|1	code: 1d-us-address-style+1d-us-paste-example+us-layout-fix-1-nbsp + words
+copy/US|addressPlaceholders|addressPlaceholders|2	code: 1d-us-address-style+1d-us-paste-example+us-layout-fix-1-nbsp + words
+copy/US|addressPlaceholders|pastePlaceholder|0	code: 1d-us-paste-example+us-layout-fix-1-nbsp + words
+copy/US|addressPlaceholders|pastePlaceholder|1	code: 1d-us-paste-example+us-layout-fix-1-nbsp + words
+copy/US|addressPlaceholders|pastePlaceholder|2	code: 1d-us-paste-example+us-layout-fix-1-nbsp + words
 copy/US|scheduleVerify|BLOCKED_DOMAIN_MSG	words
 copy/US|scheduleVerify|URL_MALFORMED_MSG	words
 copy/US|scheduleVerify|VERIFY_MESSAGES	words

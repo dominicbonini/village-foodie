@@ -120,6 +120,7 @@ import {
 /* 🔴 THE AUTOMATIC RULE AND THE WORD "Standard", both from the event-types module, so the Places
  * control's label and the Add event pre-selection are the same rule and the same word. */
 import { readPlaceTypeHistory, STANDARD_TYPE_NAME } from '@/lib/event-types/read'
+import { normaliseRegion } from '@/lib/event-address'
 /* ⛔ `readImageInfo` WAS IMPORTED HERE (5 October 2026). It measured an uploaded `place_pictures` row
  * server-side rather than trusting the browser's numbers. That pane and its four routes are deleted;
  * the POST picture is measured by the same function on /api/weekly-post, which is where it always was. */
@@ -1294,6 +1295,18 @@ export async function POST(req: NextRequest) {
           .from('event_deals')
           .upsert(eventDeals, { onConflict: 'event_id,bundle_id', ignoreDuplicates: true })
       }
+    }
+
+    /* ── THE EVENT'S STATE (19 October 2026, US dress rehearsal Finding 6; lib/event-address.ts) ──────────
+     * ⛔ ONLY WHEN THE CLIENT SENT THE KEY — the US (zip_state) Add/Edit form and the importer do; a GB form never
+     * does, so every GB save is the same writes as before. A SEPARATE, BEST-EFFORT WRITE, never a column in the
+     * insert/update above: until 20261019_truck_events_region.sql is applied the column does not exist, and a
+     * named column there would fail the whole save (PGRST204). Here a failure is logged and the event stands. */
+    if (body.region !== undefined && savedEvent?.id) {
+      const region = normaliseRegion(body.region)
+      const { error: regionErr } = await supabase.from('truck_events').update({ region }).eq('id', savedEvent.id as string).eq('truck_id', targetTruckId)
+      if (regionErr) console.warn('[upsert_event] region not saved (migration 20261019_truck_events_region not applied?):', regionErr.message)
+      else savedEvent = { ...savedEvent, region }
     }
 
     // Write slot_capacity rows from van kitchen_capacity if a van is assigned

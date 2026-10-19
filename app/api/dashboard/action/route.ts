@@ -71,6 +71,7 @@ import { writeCookingReservation, writeReservationRecord, admitForManual } from 
 import { resolveBatchReservations } from '@/lib/features'
 import { WALK_UP_NAME } from '@/lib/walk-up'
 import '@/lib/i18n/catalog/emailCustomer'
+import { readEventRegion } from '@/lib/event-region-read'
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // OPERATOR WRITES. Most handlers are fast DB writes, but this route imports captureOnConfirmation
@@ -196,7 +197,7 @@ async function deliverReadyEmail(order: any, truck: any) {
   if (!order.customer_email) return
   let eventQuery = supabase
     .from('truck_events')
-    .select('venue_name, town, postcode')
+    .select('id, venue_name, town, postcode')
     .eq('truck_id', truck.id)
   eventQuery = order.event_id
     ? eventQuery.eq('id', order.event_id)
@@ -228,6 +229,7 @@ async function deliverReadyEmail(order: any, truck: any) {
     venueName: eventRow?.venue_name ?? null,
     venueTown: eventRow?.town ?? null,
     venuePostcode: eventRow?.postcode ?? null,
+    venueRegion: await readEventRegion(supabase, eventRow?.id),
     preferredContactMethod: truck.preferred_contact_method ?? null,
     contactPhone: truck.contact_phone ?? null,
     whatsappSender: truck.whatsapp_sender ?? null,
@@ -350,7 +352,7 @@ export async function POST(req: NextRequest) {
         // order has no event_id (legacy rows).
         let eventQuery = supabase
           .from('truck_events')
-          .select('venue_name, town, postcode')
+          .select('id, venue_name, town, postcode')
           .eq('truck_id', truck.id)
         eventQuery = order.event_id
           ? eventQuery.eq('id', order.event_id)
@@ -376,6 +378,7 @@ export async function POST(req: NextRequest) {
           venueName: eventRow?.venue_name ?? null,
           venueTown: eventRow?.town ?? null,
           venuePostcode: eventRow?.postcode ?? null,
+          venueRegion: await readEventRegion(supabase, eventRow?.id),
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone: truck.contact_phone ?? null,
           whatsappSender: truck.whatsapp_sender ?? null,
@@ -1886,7 +1889,7 @@ export async function POST(req: NextRequest) {
       // (orderEventId null), mirroring the order row that was just written.
       let manualEventQuery = supabase
         .from('truck_events')
-        .select('venue_name, town, postcode')
+        .select('id, venue_name, town, postcode')
         .eq('truck_id', truck.id)
       manualEventQuery = orderEventId
         ? manualEventQuery.eq('id', orderEventId)
@@ -1927,6 +1930,7 @@ export async function POST(req: NextRequest) {
           venueName:              manualEventRow?.venue_name ?? null,
           venueTown:              manualEventRow?.town ?? null,
           venuePostcode:          manualEventRow?.postcode ?? null,
+          venueRegion:            await readEventRegion(supabase, manualEventRow?.id),
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone:           truck.contact_phone ?? null,
           whatsappSender:         truck.whatsapp_sender ?? null,
@@ -1961,6 +1965,7 @@ export async function POST(req: NextRequest) {
           venueName:     manualEventRow?.venue_name ?? null,
           venueTown:     manualEventRow?.town ?? null,
           venuePostcode: manualEventRow?.postcode ?? null,
+          venueRegion: await readEventRegion(supabase, manualEventRow?.id),
           autoAccepted: true,
         })
         await sendEmailUnlessDemo(truck, {
@@ -2285,7 +2290,7 @@ export async function POST(req: NextRequest) {
         const paymentState = await resolveEmailPaymentState(supabase, orderKey, adjustCapture)
         const { data: slotEventRow } = await supabase
           .from('truck_events')
-          .select('venue_name, town, postcode')
+          .select('id, venue_name, town, postcode')
           .eq('truck_id', truck.id)
           .eq('event_date', ord.event_date)
           .neq('status', 'cancelled')
@@ -2311,6 +2316,7 @@ export async function POST(req: NextRequest) {
           venueName: slotEventRow?.venue_name ?? null,
           venueTown: slotEventRow?.town ?? null,
           venuePostcode: slotEventRow?.postcode ?? null,
+          venueRegion: await readEventRegion(supabase, slotEventRow?.id),
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone: truck.contact_phone ?? null,
           whatsappSender: truck.whatsapp_sender ?? null,

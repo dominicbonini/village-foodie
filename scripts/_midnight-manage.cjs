@@ -363,13 +363,16 @@ function MEASURE() {
   const inner = modal ? modal.firstElementChild : document.body
   const table = inner.querySelector('table')
   const tableShown = !!table && vis(table)
-  const sel = [...inner.querySelectorAll('select')].filter(s => vis(s) && /hour|minute/i.test(s.getAttribute('aria-label') || ''))
+  // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-5a-phone-time-select: below 640px each time is ONE select inside
+  // [data-phone-time] (aria-label = the field's label, "Start time" / "End time"); the hour + minute pair is max-sm:hidden.
+  // Both kinds are measured; `phone` says which.
+  const sel = [...inner.querySelectorAll('select')].filter(s => vis(s) && (/hour|minute/i.test(s.getAttribute('aria-label') || '') || !!s.closest('[data-phone-time]')))
   const selects = sel.map(s => {
     const cs = getComputedStyle(s)
     const label = s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : ''
     const avail = s.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)
     const need = textW(s, label)
-    return { aria: s.getAttribute('aria-label'), label, width: Math.round(s.getBoundingClientRect().width), avail: Math.round(avail), need: Math.round(need), cut: Math.max(0, Math.round(need - avail)), fontSize: cs.fontSize }
+    return { aria: s.getAttribute('aria-label'), phone: !!s.closest('[data-phone-time]'), label, width: Math.round(s.getBoundingClientRect().width), avail: Math.round(avail), need: Math.round(need), cut: Math.max(0, Math.round(need - avail)), fontSize: cs.fontSize }
   })
   return {
     vw: window.innerWidth, layout: tableShown ? 'table' : 'cards', selects,
@@ -404,8 +407,11 @@ function checks(t, A, B) {
       t(`manage ${cc} ${w}: both hints are visible, inside the page, and nothing scrolls sideways`,
         !!p && Array.isArray(p.hints) && p.hints.length === 2 && p.hints.every(x => x.visible && x.right <= p.innerWidth) && p.scrollX === 0, p)
     }
-    t(`manage ${cc}: the waiting cards with normal times are byte-identical to BEFORE (the whole tab's markup)`,
-      typeof A[`normal|${cc}|any|waitingCards.html`] === 'string' && A[`normal|${cc}|any|waitingCards.html`] === B[`normal|${cc}|any|waitingCards.html`])
+    // ⚠️ RE-PINNED, 18 October 2026: byte-identical to BEFORE + the named US-layout changes (`named` below: fix 3's phone
+    // grid classes; fix 1's U+00A0 on US) — and those changes must actually apply.
+    const wk = `normal|${cc}|any|waitingCards.html`
+    t(`manage ${cc}: the waiting cards with normal times are byte-identical to BEFORE + us-layout-fix-3-schedule-phone-cards${cc === 'US' ? ' + us-layout-fix-1-nbsp' : ''} (the whole tab's markup)`,
+      typeof A[wk] === 'string' && named(wk, B[wk]) !== B[wk] && A[wk] === named(wk, B[wk]))
   }
   for (const cc of ['GB', 'US']) {
     for (const [m, up] of Object.entries(expectUpcoming)) {
@@ -457,13 +463,64 @@ function checks(t, A, B) {
     t(`manage ${cc}: upsert_event writes slot_capacity through 00:30 (generateSlots, lib/slots.ts), on the event's date`, up && up.status === 200 && up.has2355 && up.has0015 && up.last === '00:30' && up.count === 55 && JSON.stringify(up.dates) === JSON.stringify(['2026-09-30']), up)
 
     // Import review — every time value fully visible, no sideways scroll, at every size.
+    // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-5a-phone-time-select (EventTimeSelect). OLD at 390: "every hour/minute
+    // value fully visible" over the hour + minute pair. NEW at 390 (below 640px): ONE select per time — the three rows'
+    // six times, start then end — each showing the WHOLE time ("11:30" / "11:30 AM", U+00A0 before AM/PM), none cut, and no
+    // hour or minute select visible. From 640px up: the hour + minute pair exactly as before (and no phone select).
+    const WHOLE = cc === 'US' ? ['11:30 AM', '10:45 PM', '8:00 PM', '12:30 AM', '12:45 PM', '10:45 PM'].map(x => x.replace(' ', '\u00A0')) : ['11:30', '22:45', '20:00', '00:30', '12:45', '22:45']
     for (const w of SIZES) {
       const v = A[`fix|${cc}|any|import|${w}`]
       if (!v || typeof v === 'string') { t(`manage ${cc} import ${w}: measured`, false, v); continue }
-      t(`manage ${cc} import ${w}: every hour/minute value fully visible (${v.selects.length} selects, ${v.layout})`, v.selects.length >= 12 && v.selectsCut === 0 && v.emptyBoxes === 0, v.selects.filter(s => s.cut > 0))
+      if (w < 640) {
+        const ph = v.selects.filter(s => s.phone)
+        t(`manage ${cc} import ${w} (us-layout-fix-5a-phone-time-select): one select per time, each whole time fully visible (${ph.length} phone selects, ${v.layout})`,
+          ph.length === v.selects.length && JSON.stringify(ph.map(s => s.label)) === JSON.stringify(WHOLE) && JSON.stringify(ph.map(s => s.aria)) === JSON.stringify(['Start time', 'End time', 'Start time', 'End time', 'Start time', 'End time'])
+            && v.selectsCut === 0 && v.emptyBoxes === 0, v.selects.map(s => [s.aria, s.label, s.phone, s.cut]))
+      } else
+        t(`manage ${cc} import ${w}: every hour/minute value fully visible (${v.selects.length} selects, ${v.layout})`, v.selects.length >= 12 && !v.selects.some(s => s.phone) && v.selectsCut === 0 && v.emptyBoxes === 0, v.selects.filter(s => s.cut > 0 || s.phone))
       t(`manage ${cc} import ${w}: nothing scrolls sideways (table ${v.tableOver}, modal ${v.modalScrollX})`, (v.tableOver == null || v.tableOver <= 0) && v.modalScrollX <= 0 && v.pageScrollX <= 0, v)
     }
   }
 }
 
-module.exports = { views, checks }
+/* ══ NAMED (US layout fixes, 18 October 2026, /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md) ══════════════════════════════
+ * The normal views equal BEFORE with exactly these applied (scripts/midnight-events.cjs `named(id, before, B)`):
+ *  • us-layout-fix-5a-phone-time-select — normal|*|any|editor|startOptions (the select option VALUES EventTimeSelect renders
+ *    for a start at 11:30): BEFORE's hour list and minute list unchanged, plus a THIRD select — the phone control — offering
+ *    '' then every 5-minute time 00:00 … 23:55 (a start field: nothing excluded). Computed from the rule, not from AFTER.
+ *  • us-layout-fix-3-schedule-phone-cards — normal|*|any|waitingCards.html (Manage › Schedule, the waiting cards): each card's
+ *    row `flex items-start gap-4` gains `max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5`;
+ *    on a card WITH action icons ("Needs confirmation") the divider gains `max-sm:row-span-2` and the actions div gains
+ *    `max-sm:col-start-3 max-sm:flex-wrap` + data-card-actions="true"; a "Needs your approval" card (no icon cluster) keeps
+ *    BEFORE's divider. Exact substrings, one card at a time.
+ *  • us-layout-fix-1-nbsp — the same US view: the card's time line ("11:30 AM–10:45 PM") carries U+00A0 before AM/PM. */
+const ROW_OLD = '<div class="flex items-start gap-4">'
+const ROW_NEW = '<div class="flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5">'
+const DIV_OLD = '<div class="w-px bg-slate-100 self-stretch flex-shrink-0"></div>'
+const DIV_NEW = '<div class="w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2"></div>'
+const ACT_OLD = '<div class="flex items-center gap-1.5 flex-shrink-0 self-start">'
+const ACT_NEW = '<div class="flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap" data-card-actions="true">'
+function named(id, before) {
+  if (/^normal\|(GB|US)\|any\|editor\|startOptions$/.test(id) && Array.isArray(before) && before.length === 2) {
+    const all = []
+    for (let m = 0; m < 1440; m += 5) all.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`)
+    return [...before, ['', ...all]]
+  }
+  const w = /^normal\|(GB|US)\|any\|waitingCards\.html$/.exec(id)
+  if (w && typeof before === 'string') {
+    const parts = before.split(ROW_OLD)
+    if (parts.length < 2) return before
+    const cards = parts.slice(1).map(c => {
+      if (!c.includes(ACT_OLD)) return c   // no icon cluster: the divider stays as BEFORE
+      if (c.split(DIV_OLD).length !== 2 || c.split(ACT_OLD).length !== 2) return null
+      return c.replace(DIV_OLD, DIV_NEW).replace(ACT_OLD, ACT_NEW)
+    })
+    if (cards.includes(null)) return before
+    let v = [parts[0], ...cards].join(ROW_NEW)
+    if (w[1] === 'US') v = v.replace(/(<p class="text-sm font-semibold text-slate-700 mt-0\.5">)([^<]*)(<\/p>)/g, (m, a, x, b) => a + x.replace(/(\d{1,2}:\d{2}) (AM|PM)\b/g, '$1\u00A0$2') + b)
+    return v
+  }
+  return before
+}
+
+module.exports = { views, checks, named }

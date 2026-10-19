@@ -3033,6 +3033,78 @@ function runWiringSuite(lib) {
       const to = P1D_NOW[m.now]
       if (to) Object.assign(m, Array.isArray(to) ? { nowIn: to[0], now: to[1] } : { now: to })
     }
+    /* ⚠️ RE-PINNED (us-layout-fix-5a-phone-time-select, 18 October 2026, docs/us-layout-proposal-report.md): EventTimeSelect
+     * renders the hour + minute pair inside `max-sm:hidden` plus ONE phone select (`data-phone-time`), so the pair's two
+     * aria-labels are computed once (`hourAria` / `minuteAria`) and the minute Select became `minuteSelect(cls)`. The two
+     * claims above are re-pointed to the lines that hold the same reads today; the words are asserted just below
+     * (`p1dWordsHold`) and the phone control's own label (`time.time` "Time") with them.
+     * ⚠️ RE-PINNED (us-layout-fix-1-manage-join, same day): DealsTab's slot range joins with U+00A0 + "– " on a 12-hour
+     * truck (so "2:00 PM" never starts a line on its own), " – " on a 24-hour one — the deal-hours claim is re-pointed to
+     * that join; GB output is byte-identical (24-hour branch). */
+    const USL_NOW = {
+      "ariaLabel={label ? t('time.hourOf', { label }) : t('time.hour')}": "const hourAria = label ? t('time.hourOf', { label }) : t('time.hour')",
+      "ariaLabel={label ? t('time.minuteOf', { label }) : t('time.minute')}": "const minuteAria = label ? t('time.minuteOf', { label }) : t('time.minute')",
+      "{[formatSlot(bundle.start_time, ts), formatSlot(bundle.end_time, ts)].filter(Boolean).join(' – ')}":
+        "{[formatSlot(bundle.start_time, ts), formatSlot(bundle.end_time, ts)].filter(Boolean).join(ts.timeFormat === '12h' ? '\\u00a0– ' : ' – ')}",
+    }
+    for (const m of movedEdits) if (USL_NOW[m.now]) m.now = USL_NOW[m.now]
+    /* ⚠️ RE-PINNED (us-rehearsal-unpriced-billing, 18 October 2026, docs/us-dress-rehearsal-stage1-report.md): the van
+     * add-on still costs the plan's monthly price from settings, but reads it through `withPlaceholderPlanPrices` — a
+     * switched-off country (the US) has NULL plan prices, the raw read threw, and the price is then always masked. */
+    const USR_NOW = {
+      'const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)': 'const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, withPlaceholderPlanPrices(vanSettings))',
+      // the price word: `vanMask` while prices are decided; every amount masked (`maskPriceFor(val, true)`) while they are not
+      'const vanPx = (val: string) => priceText(vanMask(val), vanSettings.locale)': 'const vanPx = (val: string) => priceText(vanPricesDecided ? vanMask(val) : maskPriceFor(val, true), vanSettings.locale)',
+    }
+    for (const m of movedEdits) if (USR_NOW[m.now]) m.now = USR_NOW[m.now]
+    /* ⚠️ RE-PINNED (us-rehearsal-fix-event-state, 19 October 2026, docs/us-dress-rehearsal-fixes-report.md): the edit
+     * form's shape gained the event's two-letter state (`region`), sent only by the US (zip_state) form; the two privacy
+     * fields it was claimed for are unchanged, so the claim is re-pointed to the line as it reads now. */
+    const USRF_NOW = { 'is_private?: boolean; private_name?: string }': 'is_private?: boolean; private_name?: string; region?: string | null }' }
+    for (const m of movedEdits) if (USRF_NOW[m.now]) m.now = USRF_NOW[m.now]
+    /* ⚠️ RE-PINNED (US layout fixes, 18 October 2026): the FOUR lines of 719ac91 the US layout edits replaced (the diff
+     * 4d72838 → now is exactly fixes 1-manage-join, 3, 4, 5a and 12-deadline-row; every other line they touched is
+     * excused above or was not in 719ac91). One excuse each (a multiset, like PENDING_CARD_REMOVED), and each with its
+     * replacement asserted just below — a revert or a rename fails here:
+     *   us-layout-fix-5a-phone-time-select — the minute Select's `className={className}` is `className={cls}` inside
+     *     `minuteSelect(cls)` (the pair renders it with `minuteSelect(className)`);
+     *   us-layout-fix-3-schedule-phone-cards — the card's main row, divider and action cluster gained their `max-sm:`
+     *     grid classes (and `data-card-actions`); from 640px up the classes they had are all still there. The divider is
+     *     conditional: `max-sm:row-span-2` only on a card with action icons, a pending card's is BEFORE's. */
+    /* ⚠️ RE-PINNED (us-rehearsal-unpriced-billing, 18 October 2026, docs/us-dress-rehearsal-stage1-report.md): BillingTab
+     * reads the published-pricing flag as `pricesPublished` and shows a price only when it is also DECIDED for the truck's
+     * country (`pricesVisible = pricesPublished && pricesDecided`) — a switched-off country with NULL plan prices (the US)
+     * threw and took Manage down. One excuse, and its replacement asserted just below. */
+    const USR_REMOVED = new Map([['const pricesVisible = usePricesVisible()', 1]])
+    const USL_REMOVED = new Map([
+      'className={className}',
+      '<div className="flex items-start gap-4">',
+      '<div className="w-px bg-slate-100 self-stretch flex-shrink-0" />',
+      '<div className="flex items-center gap-1.5 flex-shrink-0 self-start">',
+    ].map(l => [l, 1]))
+    {
+      const raw = read(PAGE)
+      if (!raw.includes('ariaLabel={hourAria}') || !raw.includes('ariaLabel={minuteAria}') || !raw.includes("ariaLabel={label ?? t('time.time')}")
+        || !raw.includes('{minuteSelect(className)}') || !/const minuteSelect = \(cls: string, height\?: number\) => \(\s*<Select[\s\S]{0,400}?className=\{cls\}/.test(raw)
+        || !raw.includes('<div className="flex items-center gap-1 w-full sm:hidden" data-phone-time>{phone}</div>')
+        || gbWords('manageScheduleEvent.time.time') !== 'Time') {
+        console.log('      ⛔ us-layout-fix-5a IS CLAIMED ABOVE BUT THE TIME SELECTS DO NOT READ hourAria / minuteAria / minuteSelect(cls) / the phone control / time.time "Time"')
+        return false
+      }
+      if (!raw.includes('<div className="flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5">')
+        // the divider: a card with action icons spans both phone rows; a pending card's keeps BEFORE's classes (lead, 18 Oct)
+        || !raw.includes(`<div className={pending ? 'w-px bg-slate-100 self-stretch flex-shrink-0' : 'w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2'} />`)
+        || !raw.includes('<div className="flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap" data-card-actions>')) {
+        console.log('      ⛔ us-layout-fix-3 IS CLAIMED ABOVE BUT A SCHEDULE CARD LINE IS NOT ITS PHONE-GRID FORM')
+        return false
+      }
+      // us-rehearsal-unpriced-billing (see USR_REMOVED): the flag is read as `pricesPublished` and ANDed with DECIDED.
+      if (!raw.includes('const pricesPublished = usePricesVisible()') || !raw.includes('const pricesVisible = pricesPublished && pricesDecided')
+        || !raw.includes('const pricesDecided = planPricesDecided(countryRow)')) {
+        console.log('      ⛔ us-rehearsal-unpriced-billing IS CLAIMED ABOVE BUT BillingTab DOES NOT READ pricesPublished && pricesDecided')
+        return false
+      }
+    }
     /* …and the words those re-pointed claims carried, asserted where they live now (as moved; GB-fixed spellings are
      * proven by language-phase-1d): the address examples' UK branch, the van picker's placeholder, the time boxes'
      * labels, and the extra-truck button. */
@@ -3111,6 +3183,10 @@ function runWiringSuite(lib) {
       if (l === '{}') return false
       // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026): the desktop block's four lines — see PENDING_CARD_REMOVED; one excuse each.
       if ((PENDING_CARD_REMOVED.get(l) || 0) > 0) { PENDING_CARD_REMOVED.set(l, PENDING_CARD_REMOVED.get(l) - 1); return false }
+      // ⚠️ RE-PINNED (us-layout-fix-5a / us-layout-fix-3, 18 Oct 2026): see USL_REMOVED; one excuse each.
+      if ((USL_REMOVED.get(l) || 0) > 0) { USL_REMOVED.set(l, USL_REMOVED.get(l) - 1); return false }
+      // ⚠️ RE-PINNED (us-rehearsal-unpriced-billing, 18 Oct 2026): see USR_REMOVED; one excuse.
+      if ((USR_REMOVED.get(l) || 0) > 0) { USR_REMOVED.set(l, USR_REMOVED.get(l) - 1); return false }
       /* ⚠️ PHASE 2A — THE MONEY SWEEP (10 October 2026). Every line that typed a £ (or called the private
        * `fmtGBP`) left, and its twin through lib/money-format arrived, in the order's or the truck's
        * currency. Accounted, not waived: below, the page must hold NO hand-typed £ and no `fmtGBP` in

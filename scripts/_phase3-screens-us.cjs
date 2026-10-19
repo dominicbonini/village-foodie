@@ -135,8 +135,35 @@ module.exports = async function us(h) {
       kdsMode: false, viewMode: 'solo', ledgerRows: [], heldAuthorisation: false, effectiveOrderReady: true, readyStepOn: true, vanTakesCash: true, ...extra,
     })))).text
     const dash = card()
-    t('dashboard card: Subtotal $24.00, Sales tax 8.25% $1.98, Service fee $1.02, Tip $3.60', has(dash, 'Subtotal $24.00', 'Sales tax 8.25% $1.98', 'Service fee $1.02', 'Tip $3.60'), dash.slice(0, 600))
-    t('KDS card: the same rows', has(card({ kdsMode: true }), 'Sales tax 8.25% $1.98', 'Tip $3.60'))
+    // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-10-charges-fold (components/dashboard/OrderCard.tsx;
+    // /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md). OLD: the dashboard card drew Subtotal / Sales tax / Service fee / Tip
+    // in full, and the KDS card the same rows. NEW: the dashboard card draws ONE button line, "Tax, fees & tip ▾ $6.60"
+    // ($1.98 + $1.02 + $3.60; "Tax & fees" without a tip), whose tap opens the SAME four rows beneath it (proved by rendering
+    // the card with its `chargesOpen` state set — every row the old check asserted, with its amount); the KDS card draws NO
+    // money lines at all, its total staying in the header.
+    const cardHtml = (extra = {}, comp = cards.OrderCard, prov = cards.MoneyProvider) => renderStatic(el(prov, { fmt: USD }, el(comp, {
+      order, truck: TRK, event: EV, slots: [], actionLoading: null, onAction() {}, onRefund: async () => ({ ok: true }), onEdit() {},
+      kdsMode: false, viewMode: 'solo', ledgerRows: [], heldAuthorisation: false, effectiveOrderReady: true, readyStepOn: true, vanTakesCash: true, ...extra,
+    })))
+    const dashHtml = cardHtml()
+    t('dashboard card (us-layout-fix-10-charges-fold): ONE line "Tax, fees & tip ▾ $6.60", collapsed — no Subtotal / tax / fee / tip rows until tapped',
+      has(dash, 'Tax, fees & tip ▾ $6.60') && !/Subtotal|Sales tax|Service fee \$|Tip \$/.test(dash) && /<button[^>]*aria-expanded="false"[^>]*data-charge-summary/.test(dashHtml), dash.slice(0, 600))
+    const noTip = textOf(cardHtml({ order: { ...order, tip_minor: 0, tip_pct_bps: null, total: 27, total_minor: 2700 } })).text
+    t('dashboard card without a tip: "Tax & fees ▾ $3.00"', has(noTip, 'Tax & fees ▾ $3.00') && !noTip.includes('Tax, fees & tip'), noTip.slice(0, 400))
+    const open = await kit.bundle('p3-cards-open', "export * from '@/components/dashboard/OrderCard'\nexport { MoneyProvider } from '@/components/MoneyContext'", { patches: [{ file: 'components/dashboard/OrderCard.tsx', states: ['chargesOpen'] }] })
+    globalThis.__ms = { chargesOpen: true }
+    let opened
+    try { opened = textOf(cardHtml({}, open.OrderCard, open.MoneyProvider)).text } finally { delete globalThis.__ms }
+    t('dashboard card, tapped open: "Tax, fees & tip ▴ $6.60" then Subtotal $24.00, Sales tax 8.25% $1.98, Service fee $1.02, Tip $3.60',
+      has(opened, 'Tax, fees & tip ▴ $6.60 Subtotal $24.00 Sales tax 8.25% $1.98 Service fee $1.02 Tip $3.60'), opened.slice(0, 600))
+    // The KDS Full ticket as app/dashboard/[token]/kds/page.tsx renders it: cardStyle 'window' (Full), viewMode = boardMode
+    // ('window' with Payment & handover on, 'cook' with it off). (The old check passed kdsMode with the dashboard's 'solo'
+    // style, which the KDS never renders.)
+    for (const boardMode of ['window', 'cook']) {
+      const kdsHtml = cardHtml({ kdsMode: true, viewMode: boardMode, cardStyle: 'window' }), kds = textOf(kdsHtml).text
+      t(`KDS Full ticket, board ${boardMode} (us-layout-fix-10-charges-fold): NO money lines — no Subtotal, tax, fee, tip or summary line; the total $30.60 stays in the header`,
+        !/Subtotal|Sales tax|Service fee|Tip|Tax, fees|Tax & fees|\$1\.98|\$6\.60/.test(kds) && !/data-charge-(lines|summary)/.test(kdsHtml) && kds.includes('$30.60'), kds.slice(0, 600))
+    }
     const cook = card({ kdsMode: true, hideAmounts: true })
     t('cook mode: hidden with every other amount', !cook.includes('Sales tax') && !cook.includes('$1.98') && !cook.includes('Subtotal'))
     const ukCard = textOf(renderStatic(el(cards.MoneyProvider, { fmt: { currency: 'GBP', locale: 'en-GB' } }, el(cards.OrderCard, {
@@ -469,6 +496,10 @@ module.exports = async function us(h) {
         // (lib/plan-features priceText) — the mask is `vanMask` (the new line in this hunk) and `vanPx` wraps it a few
         // lines on, checked below with the other conditions of this assertion.
         ["  const vanPx = usePriceMask()", /^  const vanMask = usePriceMask\(\)$/],
+        // ⚠️ RE-PINNED (us-rehearsal-unpriced-billing, 18 October 2026, docs/us-dress-rehearsal-stage1-report.md): the add-on
+        // price is read through `withPlaceholderPlanPrices` — a switched-off country (the US) has NULL plan prices and the
+        // raw read threw — and is then always masked (the vanPx assertion below).
+        ["  const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)", /^  const vanAddonMinor = vanAddonMonthlyMinor\(truck\.plan, withPlaceholderPlanPrices\(vanSettings\)\)$/],
       ]
       const named = (l, h) => NAMED.some(([line, re]) => l === line && h.add.some(x => re.test(x)))
       const unexcused = hunks.flatMap(h => h.del.filter(l => l.trim() && !wordSite(l) && !named(l, h) && !h.add.some(x => x.includes(l.trim()))))
@@ -476,7 +507,9 @@ module.exports = async function us(h) {
         // ⚠️ RE-PINNED (Language Phase 1d Part 2): + the setup notice's new state type really is { tone, code } (the
         // named move above excuses its useState line only on that basis).
         hunks.length > 50 && unexcused.length === 0
-        && /\n  const vanPx = \(val: string\) => priceText\(vanMask\(val\), vanSettings\.locale\)\n/.test(nowR)   // ⚠️ RE-PINNED (Language Phase 1e)
+        // ⚠️ RE-PINNED (Language Phase 1e; us-rehearsal-unpriced-billing): the word through `vanMask` while prices are decided,
+        // every amount masked while they are not.
+        && /\n  const vanPx = \(val: string\) => priceText\(vanPricesDecided \? vanMask\(val\) : maskPriceFor\(val, true\), vanSettings\.locale\)\n/.test(nowR)
         && /export interface SetupNotice \{ tone: NoticeTone; code\?: SetupNoticeCode; text\?: string \}/.test(read('lib/whatsapp/setup-machine.ts')),
         unexcused.slice(0, 8).join('\n'))
       // (C) the saves, and the moved block staying out.

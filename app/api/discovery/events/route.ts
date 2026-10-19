@@ -18,6 +18,7 @@ import { isNonPublicDiscoveryRow } from '@/lib/discovery-private'
 import { crossesMidnight, isUpcomingOrRunning } from '@/lib/event-window'
 import { getLocalDateInTz, getNowMinsInTz, addDaysYmd, DISCOVERY_TIME_SETTINGS } from '@/lib/time-utils'
 import { truckTimeZone } from '@/lib/truck-time'
+import { readEventRegions } from '@/lib/event-region-read'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -152,10 +153,11 @@ export async function GET(req: NextRequest) {
     const [evResult, trResult, ydResult] = await Promise.all([
       evPromise,
 
-      supabase
-        .from('discovery_trucks')
-        .select(TR_SELECT)
-        .eq('country', VILLAGE_FOODIE_COUNTRY)
+      // 19 October 2026 (US dress rehearsal Finding 2): the trucks list is pinned to Village Foodie's market on
+      // the Village Foodie host only. On HatchGrab a row of any country lists when it is public there (rows of
+      // other countries are written hidden — lib/discovery-country.ts — so this shows nothing new by itself).
+      (isHG ? supabase.from('discovery_trucks').select(TR_SELECT)
+        : supabase.from('discovery_trucks').select(TR_SELECT).eq('country', VILLAGE_FOODIE_COUNTRY))
         .eq(showCol, true)
         .order('name'),
 
@@ -349,6 +351,8 @@ export async function GET(req: NextRequest) {
        * ⚠️ ONE PROBED READ FOR THE WHOLE PAGE (limit 200), not one per event. */
       const privacy = await readPrivateEventIds(
         supabase, opRows.map((e: any) => e.id), '/api/discovery/events')
+      // The events' states (lib/event-region-read.ts): a separate best-effort read; a key only when one is known.
+      const regions = await readEventRegions(supabase, opRows.map((e: { id: string }) => e.id))
 
       mappedOperatorEvents = opRows
         .filter((e: any) => {
@@ -381,10 +385,14 @@ export async function GET(req: NextRequest) {
             startTime: e.start_time || '',
             endTime: e.end_time || '',
             truckName: truck?.name || '',
+            // HatchGrab only: the truck's own slug — an operator-built truck page (lib/truck-header.ts) takes its events by
+            // it. Village Foodie never builds that page, so its feed carries no new key.
+            ...(isHG && truck?.slug ? { truckSlug: truck.slug } : {}),
             venueName: e.venue_name || '',
             status: e.status, // 'open' = LIVE (operator-started); 'confirmed' = Pre-order
             village: e.town || '',
             postcode: e.postcode || '',
+            ...(regions.get(e.id) ? { region: regions.get(e.id) } : {}),
             venueLat: e.latitude ? parseFloat(String(e.latitude)) : undefined,
             venueLong: e.longitude ? parseFloat(String(e.longitude)) : undefined,
             venuePhone: null,

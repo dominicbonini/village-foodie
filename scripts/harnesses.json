@@ -122,6 +122,8 @@
     "order-charges.cjs",
     "phase3-screens.cjs",
     "us-readiness.cjs",
+    "us-unpriced-country.cjs",
+    "us-rehearsal-fixes.cjs",
     "language-phase-0.cjs",
     "messages-parity.cjs",
     "ui-literals.cjs",

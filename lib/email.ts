@@ -20,6 +20,7 @@ import { formatSlot, formatYmd, type TimeSettings } from '@/lib/time-utils'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/emailCustomer'
 import '@/lib/i18n/catalog/emailOperator'
+import { eventAddressLine } from '@/lib/event-address'
 
 type EmailT = ReturnType<typeof translatorFor<'emailCustomer'>>
 const emailT = (locale: string | null | undefined): EmailT => translatorFor(locale, 'emailCustomer')
@@ -300,6 +301,8 @@ export function formatConfirmationEmail(params: {
   venueName?: string | null
   venueTown?: string | null
   venuePostcode?: string | null
+  /** The event's two-letter state (truck_events.region) — only a US event saved with one; lib/event-address.ts. */
+  venueRegion?: string | null
   preferredContactMethod?: string | null
   contactPhone?: string | null
   whatsappSender?: string | null
@@ -374,7 +377,8 @@ export function formatConfirmationEmail(params: {
     </div>` : ''
 
   // Collection venue — single line (matches the truck "new order" email format)
-  const venueOneLine = [params.venueName, params.venueTown, params.venuePostcode].filter(Boolean).join(', ')
+  // "Pier A Park, Hoboken, NJ 07030" when the event has a state; otherwise the same join as before (lib/event-address).
+  const venueOneLine = eventAddressLine({ venueName: params.venueName, town: params.venueTown, region: params.venueRegion, postcode: params.venuePostcode })
   const collectionSection = venueOneLine
     ? `<p style="margin:12px 0 0;font-size:14px;color:#475569">📍 ${venueOneLine}</p>`
     : ''
@@ -567,6 +571,8 @@ export function formatNewOrderEmail(params: {
   venueName?: string | null
   venueTown?: string | null
   venuePostcode?: string | null
+  /** The event's two-letter state (truck_events.region) — only a US event saved with one; lib/event-address.ts. */
+  venueRegion?: string | null
   autoAccepted?: boolean
   /** The ORDER's currency and its country's locale (lib/money-server.ts). */
   money: MoneyFormat
@@ -574,7 +580,7 @@ export function formatNewOrderEmail(params: {
   time: TimeSettings
 }): { subject: string; html: string; text: string } {
   const { orderId, customerName, customerPhone, items, deals, total, notes,
-          venueName, venueTown, venuePostcode, autoAccepted, money } = params
+          venueName, venueTown, venuePostcode, venueRegion, autoAccepted, money } = params
   const slot = formatSlot(params.slot, params.time)
 
   // Single-sourced line rendering (now shows deal bundle price + slot-modifier prices too).
@@ -586,7 +592,7 @@ export function formatNewOrderEmail(params: {
             <h2 style="color:#ea580c;margin:0 0 12px">🔔 ${t('heading')}</h2>
             <p>${t.markup('from', { id: orderId, name: customerName, b: strong })}</p>
             ${slot ? `<p style="font-size:16px"><strong>⏰ ${t('collection', { time: slot })}</strong></p>` : `<p>${t('asap')}</p>`}
-            ${(venueName || venueTown) ? `<p>📍 ${[venueName, venueTown, venuePostcode].filter(Boolean).join(', ')}</p>` : ''}
+            ${(venueName || venueTown) ? `<p>📍 ${eventAddressLine({ venueName, town: venueTown, region: venueRegion, postcode: venuePostcode })}</p>` : ''}
             ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
               ${orderLinesHtml}${chargeRowsHtml(params.charges, money)}
@@ -606,7 +612,7 @@ export function formatNewOrderEmail(params: {
   const text = t('text', {
     id: orderId, name: customerName,
     withSlot: slot ? 'yes' : 'no', slot: slot ?? '',
-    withVenue: (venueName || venueTown) ? 'yes' : 'no', venue: [venueName, venueTown].filter(Boolean).join(', '),
+    withVenue: (venueName || venueTown) ? 'yes' : 'no', venue: eventAddressLine({ venueName, town: venueTown, region: venueRegion }),
     withCharges: chargeText.length ? 'yes' : 'no', charges: chargeText.join('. '),
     total: formatMajor(total, money),
     withNotes: notes ? 'yes' : 'no', notes: notes ?? '',
@@ -921,7 +927,7 @@ export async function sendCancellationEmail({
 }
 
 export async function sendEventCancellationEmail({
-  to, customerName, orderId, truckName, venueName, village, eventDate, note, paymentStatus, time,
+  to, customerName, orderId, truckName, venueName, village, region, eventDate, note, paymentStatus, time,
 }: {
   to: string
   customerName: string
@@ -929,13 +935,15 @@ export async function sendEventCancellationEmail({
   truckName: string
   venueName: string | null
   village: string | null
+  /** The event's two-letter state, when it has one (lib/event-address.ts). */
+  region?: string | null
   eventDate: string | null
   note: string | null
   paymentStatus: string | null
   /** The truck's time settings (lib/truck-time.ts) — the date in its country's words and order. */
   time: TimeSettings
 }): Promise<void> {
-  const location = [venueName, village].filter(Boolean).join(', ')
+  const location = eventAddressLine({ venueName, town: village, region })
   const dateFormatted = eventDate
     ? formatYmd(eventDate, time, { weekday: 'long', day: 'numeric', month: 'long' })
     : null

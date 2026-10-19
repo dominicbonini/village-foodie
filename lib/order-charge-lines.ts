@@ -90,6 +90,16 @@ export function chargeLinesFor(src: ChargeLineSource | null | undefined, audienc
   return [{ key: 'subtotal', label: t('subtotal'), rate: null, minor: food }, ...lines]
 }
 
+/**
+ * Which kinds of charge a folded row adds up — the `parts` value the ONE ICU select names its row by
+ * ("Tax & fees", "Tax, fees & tip", "Fees & tip"…). Service fee and card fee are both "fees". 19 October 2026
+ * (US dress rehearsal Finding 4): the fold is named by what is in it, not always "Tax & fees".
+ */
+export function chargeParts(lines: ChargeLine[]): string {
+  const has = (...keys: ChargeLineKey[]) => lines.some(l => keys.includes(l.key))
+  return [has('tax') && 'tax', has('service_fee', 'card_fee') && 'fees', has('tip') && 'tip'].filter(Boolean).join('_')
+}
+
 /** One line as plain text, for the text email and the CSV: "Sales tax 8.25%: $1.98". */
 export function chargeLineText(line: ChargeLine, money: (minor: number) => string, locale?: string | null): string {
   const t = translatorFor(locale, 'charges')

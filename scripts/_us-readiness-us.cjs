@@ -95,7 +95,10 @@ module.exports = async function us(x) {
   const us = holders('zip_state', SEEDS.usFromSeed())
   t('US address', us.address === 'e.g. 123 Main St, Austin, TX 78701', us.address)
   t('US area', us.area === 'e.g. Austin', us.area)
-  t('US paste names Zilker Park, Austin, in the US truck\'s date and clock (named Language Phase 1d change)', us.paste === 'Paste your schedule here e.g. Saturday, June 14, Zilker Park, Austin, 5:00 PM – 9:00 PM', us.paste)
+  // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-1-nbsp (lib/time-utils.ts clockOf; /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md):
+  // each 12-hour time carries a NO-BREAK SPACE (U+00A0) before PM. The " – " between them is the message's own literal
+  // ({start} – {end} in messages/en-US.json, not formatTimeRange), so it keeps its ASCII spaces.
+  t('US paste names Zilker Park, Austin, in the US truck\'s date and clock (named Language Phase 1d change; us-layout-fix-1-nbsp)', us.paste === 'Paste your schedule here e.g. Saturday, June 14, Zilker Park, Austin, 5:00\u00A0PM – 9:00\u00A0PM', us.paste)
   t('no style → the UK examples', JSON.stringify(holders(undefined, SEEDS.gbFromSeed())) === JSON.stringify(gb) && C.addressStyleOf(undefined) === 'postcode' && C.addressStyleOf('xx') === 'postcode')
   t('the Schedule tab reads all three from the messages by the truck\'s style (no literal left)',
     P.includes('const addrStyle = addressStyleOf(tabSettings.addressFormat)')

@@ -1,0 +1,77 @@
+{
+  "group": "C-manage",
+  "issues": [
+    {
+      "id": "C-01", "surface": "Manage › Schedule › event cards (Open now, Confirmed, private events — cards with the right-hand action icons)", "size": 390, "what": "wrap",
+      "detail": "The details column is squeezed to 96–103 px by the date column and 4 action icons. '11:30 AM–10:45 PM' (≈135 px) cannot fit even with no van name, so it breaks after the dash; with ' · Big van' it takes 3 lines and leaves 'van' alone on the last line (GB '11:30–22:45' fits on one line without a van, 2 lines with one). Fine from 800 px up (one line at 800/810/1180/1280).",
+      "measured": "time line 2→3 lines (40→60 px); card 144→164 px (+20 px) on Market Square, The Old Crown (8:00 PM–12:30 AM), Community Centre; single-van truck: 1→2 lines",
+      "frequency": "every US event card on a phone, every time the Schedule tab is opened", "severity": "UGLY",
+      "fix": "put the time range on its own full-width line below the venue (or move the action icons to a row under the card on phones), keep each time + AM/PM unbreakable, and put the van on its own line",
+      "gb": "docs/us-layout-audit/C-manage/schedule-list-390-gb.png", "us": "docs/us-layout-audit/C-manage/schedule-list-390-us.png"
+    },
+    {
+      "id": "C-02", "surface": "Manage › Schedule › 'Needs confirmation' card (operator-added unconfirmed event, 5 action icons incl. ✓ Confirm)", "size": 390, "what": "wrap",
+      "detail": "The details column is only 68 px wide, so the range breaks INSIDE a time: '11:30' / 'AM–' / '10:45 PM' / '· Van 1'. The start time is split from its AM marker. GB: '11:30–' / '22:45 ·' / 'Van 1' (3 lines).",
+      "measured": "time line 3→4 lines (60→80 px); card 184→204 px (+20 px); details column 68 px for a 181 px line",
+      "frequency": "every operator-added event waiting for confirmation, on a phone", "severity": "UGLY",
+      "fix": "non-breaking space between the time and AM/PM (break only after the dash); same layout fix as C-01 (time on its own full-width line or icons below)",
+      "gb": "docs/us-layout-audit/C-manage/schedule-list-390-gb.png", "us": "docs/us-layout-audit/C-manage/schedule-list-390-us.png"
+    },
+    {
+      "id": "C-03", "surface": "Manage › Schedule › Add / Edit event (also Approve → Edit) › Start time / End time hour boxes", "size": 390, "what": "clipped",
+      "detail": "Each hour box leaves 16 px for its label (the wrapper's border + px-3 around a select with its own px-2 + pr-7 chevron room). US hour labels are '11 AM', '10 PM', '8 PM', '12 AM': the AM/PM is cut off entirely, so 11:30 AM – 10:45 PM shows as '11 : 30' – '10 : 45' and an 8:00 PM – 12:30 AM event shows '8 | : 00' – '12 : 30' (reads as 8 o'clock to half past noon). GB labels are 2 digits and lose only 3 px.",
+      "measured": "label needs 38–45 px in a 16 px text box: 22–29 px cut ('11 AM' 43/16, '10 PM' 45/16, '8 PM' 38/16, '12 AM' 45/16); GB '22' 19/16 (3 px). At 800/810 the box is 43 px (US needs 38–40, fits); at 1180/1280 83 px",
+      "frequency": "every event a US truck adds or edits on a phone (and every Approve that needs times)", "severity": "BROKEN",
+      "fix": "drop the inner select's own border/padding inside the wrapper (or a single 12-hour select per time, e.g. '10:45 PM', or an AM/PM toggle beside the minute box), or stack start and end on separate rows on phones",
+      "gb": "docs/us-layout-audit/C-manage/schedule-editor-390-gb.png", "us": "docs/us-layout-audit/C-manage/schedule-editor-390-us.png"
+    },
+    {
+      "id": "C-04", "surface": "Manage › Schedule › Add / Edit event › Preview card (TruckListCard compact, md and up)", "size": 810, "what": "wrap",
+      "detail": "The preview card's left date column is 112 px; '11:30 AM – 10:45 PM' wraps leaving 'PM' alone on a second line ('8:00 PM – 12:30 AM' wraps too). GB '11:30 – 22:45' is one line. Same at 800, 1180 and 1280.",
+      "measured": "time 1→2 lines (12→24 px); preview card 82→88 px (+6 px); 800/810/1180/1280 all affected",
+      "frequency": "every add/edit of an event on an iPad, Android tablet or laptop", "severity": "UGLY",
+      "fix": "widen the card's date/time column or let the range break after the dash with times kept whole (or drop the spaces around the dash)",
+      "gb": "docs/us-layout-audit/C-manage/schedule-editor-810-gb.png", "us": "docs/us-layout-audit/C-manage/schedule-editor-810-us.png"
+    },
+    {
+      "id": "C-05", "surface": "Manage › Schedule › Import schedule › review (phone card heading)", "size": 390, "what": "wrap",
+      "detail": "The card heading 'Wed, Sep 30th · 11:30 AM–10:45 PM' wraps and leaves 'PM' alone on line 2 (GB 'Wed 30th Sep · 11:30–22:45' is one line).",
+      "measured": "heading 1→2 lines (19→39 px, +20 px) in a 242 px column",
+      "frequency": "every imported or found event reviewed on a phone", "severity": "UGLY",
+      "fix": "put the time range on its own line under the date, or keep each time + AM/PM unbreakable so the whole range moves down",
+      "gb": "docs/us-layout-audit/C-manage/schedule-import-390-gb.png", "us": "docs/us-layout-audit/C-manage/schedule-import-390-us.png"
+    }
+  ],
+  "fine": [
+    { "surface": "Schedule › event cards (all kinds)", "sizes": [800, 810, 1180, 1280], "note": "every US time range, with the van name, on one line; card heights identical to GB" },
+    { "surface": "Schedule › 'Needs your approval' cards (pending, full-width details)", "sizes": [390, 800, 810, 1180, 1280], "note": "'11:30 AM–10:45 PM · Big van' and '8:00 PM–12:30 AM · Van 1' fit on one line (238 px column at 390); card heights identical to GB; type chooser and Approve/Edit/Reject unchanged" },
+    { "surface": "Schedule › pending card conflict box ('Already on your schedule: … · Oct 2 · 8:00 PM–12:30 AM · 62701')", "sizes": [390, 800, 810, 1180, 1280], "note": "2 lines at 390 in both GB and US, 1 line from 800 up; wraps as free text" },
+    { "surface": "Schedule › date column on event cards (WED / 30 / SEP)", "sizes": [390, 800, 810, 1180, 1280], "note": "short weekday/month in both, no overflow" },
+    { "surface": "Add / Edit event › hour boxes", "sizes": [800, 810, 1180, 1280], "note": "'11 AM' 38 px / '10 PM' 40 px / '12 AM' 40 px fit the 43 px (tablet) and 83 px (laptop) label space" },
+    { "surface": "Add / Edit event › Date field", "sizes": [390, 800, 810, 1180, 1280], "note": "'Wed, Sep 30th' vs 'Wed 30th Sep' — same width, no overflow" },
+    { "surface": "Import schedule › review, desktop table date column", "sizes": [800, 810, 1180, 1280], "note": "'Wed, Sep 30th' fits the 130 px column like GB" },
+    { "surface": "Settings › Pre-orders › daily cut-off time box + rule summary", "sizes": [390, 800, 810, 1180, 1280], "note": "the native time box shows '12:45 PM' inside its 128 px box; 'Order by 12:45 PM on the event day' wraps the same as GB (2 lines at 390, 1 above)" },
+    { "surface": "Settings › Collection times (per van) › interval selects and 'Customers can pick 6:00 PM, 6:15 PM, 6:30 PM…'", "sizes": [390, 800, 810, 1180, 1280], "note": "selects unchanged; the example sentence wraps to 2 lines at 390 (+16 px, help text, no fixed box), 1 line from 800" },
+    { "surface": "Payments › Tax, tips and fees (ChargesCard) — 8.875%, tips 10/15/20 + Other, fee 3% + $0.30, 'Most you can charge: 4% + 50¢', example 'Online service fee $1.02'", "sizes": [390, 800, 810, 1180, 1280], "note": "GB shows no card (prices include VAT — by design). US: rate input text 41 px in 70 px; fee boxes and tip chips on one row; no overflow" },
+    { "surface": "Payments › card fee lines ('Stripe charges 2.9% + 30¢ …', in-person 2.7% + 5¢)", "sizes": [390, 800, 810, 1180, 1280], "note": "same line count as GB at every size" },
+    { "surface": "Billing › Trial ('Trial ends September 30, 2026', 'Your trial ends …', the no-charge sentence, 'Upgrade to Max — $99/mo' / 'Choose Pro — $59/mo')", "sizes": [390, 800, 810, 1180, 1280], "note": "same line counts as GB; nowrap buttons within the card" },
+    { "surface": "Billing › comparison matrix (plan prices $39/$59/$99 per month, fee cells $300 / $1,000 / 1.5%) and Max plan 'renews' line, matrix open", "sizes": [390, 800, 810, 1180, 1280], "note": "no cell wider than its 56 px (phone) / 112 px column; heights equal to GB" },
+    { "surface": "Billing › upgrade modal ('$99/month — High-volume operations & festivals')", "sizes": [390, 800, 810, 1180, 1280], "note": "same line counts as GB" },
+    { "surface": "Manage shell › trial popup ('Trial ends September 30, 2026')", "sizes": [390, 800, 810, 1180, 1280], "note": "date wraps inside the sentence in both countries; popup heights equal" },
+    { "surface": "All rendered views", "sizes": [390, 800, 810, 1180, 1280], "note": "no sideways page scroll (scrollWidth − innerWidth = 0) in GB or US" }
+  ],
+  "preExisting": [
+    { "surface": "Add / Edit event › minute boxes (and GB hour box)", "sizes": [390], "note": "NOT US-caused: the same 16 px label space clips '30'/'45'/'00' by 3–4 px in BOTH countries ('30' shows as '3('); same root cause as C-03" },
+    { "surface": "Import schedule › review › every Start/End hour and minute box", "sizes": [390, 800, 810, 1180, 1280], "note": "NOT US-caused: 0 px left for the label (wrapper px-3 + select px-2/pr-7), so every time box is EMPTY in GB and US alike; the desktop table also scrolls sideways (258 px at 800/810, 56 px at 1180) in both" },
+    { "surface": "Settings › Pre-orders › Deadline row (type select + 128 px time box)", "sizes": [390], "note": "NOT US-caused: the row is 11 px wider than its inner box in both GB and US" },
+    { "surface": "Schedule › an event spanning midnight (20:00–00:30) on today's date", "sizes": [390, 800, 810, 1180, 1280], "note": "LOGIC, not layout, both countries: isPastEvent compares 00:30 on the START date, so at 11:50 the 9/30 20:00–00:30 event is already 'past' and disappears from Needs your approval / Confirmed into Past. The audit fixtures moved the pending midnight event to 5 Oct to keep it on screen" }
+  ],
+  "notChecked": [
+    { "surface": "Native date/time picker popovers (iOS wheel, Android dialog) behind the Date field and the pre-order cut-off", "why": "drawn by the OS, not the page; desktop WebKit renders the input box only. The time box was measured with Playwright locale en-US (shows '12:45 PM'); iOS Safari's own time-input styling may differ" },
+    { "surface": "Add event › venue suggestions dropdown (shows '· 11:30 AM–10:45 PM' after the town) and the place picker", "why": "opened by typing (effect-driven state); not reachable in a static render — free-flowing text, low risk" },
+    { "surface": "Schedule › Event types section, Places / weekly posts", "why": "no times or dates in the event-types grid; posts belong to Social media (other groups)" },
+    { "surface": "Billing › renewal dates", "why": "the product shows no renewal date (only 'per truck, renews monthly' with the price) — nothing to render" },
+    { "surface": "Trial popup date", "why": "rendered by scripts/_lp1d2-shell.cjs, whose fixture trial ends 20 November 2026; the painted HTML had the date replaced with 'September 30, 2026' / '30 September 2026' (same sentence, longest month)" }
+  ],
+  "method": "scripts/us-layout-audit/C-manage/render.cjs bundles the REAL app/manage/[token]/page.tsx (ScheduleTab, SettingsTab, BillingTab) and components/manage/PaymentsTab + ChargesCard + TakingPaymentPanel with scripts/_render-kit.cjs (useState patches, Supabase stubbed, createPortal inlined), renders them to static HTML for Pizza Kitchen (test-truck) in GB (GBP, en-GB, Europe/London, 24h) and US (USD, en-US, America/New_York, 12h, sales tax 8.875% exclusive, tips on, service fee 3% + $0.30 within a 4% + 50¢ cap) at Wednesday 30 September 2026 11:50 local (kit.setNow 10:50Z / 15:50Z, setDeviceTz, setDeviceLocale), with providers from scripts/_lp1d-fixtures.cjs and Settings props/vans from scripts/_lp1d-settings.cjs; the shell trial popup comes from scripts/_lp1d2-shell.cjs. Fixtures: events 11:30–22:45, 20:00–00:30 (confirmed and pending), an operator-unconfirmed event, a private event, a conflicting pending event, two vans; editor open on 11:30–22:45 and on 20:00–00:30; import review with three found events; pre-order daily cut-off 12:45; collection intervals 15/5 min; Billing trial ending 30 Sep and Max with the matrix open. Each view is painted in Playwright WebKit with the compiled .next CSS and Geist fonts (served on 127.0.0.1 by scripts/screenshots/common.cjs serve) in a browser context with the country's locale and time zone, at 390×844, 810×1080, 800×1280, 1180×820 and 1280×800, and measured in the page (line counts from height/line-height, select label width via canvas vs the select's content width, scrollWidth − clientWidth, card heights). scripts/us-layout-audit/C-manage/sheets.cjs builds sheets 07–09 from the measured boxes."
+}

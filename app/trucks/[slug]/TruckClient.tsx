@@ -18,6 +18,7 @@ import { contactHref } from '@/lib/contact-topics';
 import { I18nContext, useAppLocale, useT } from '@/lib/i18n/use-t';
 import type { AppLocale } from '@/lib/i18n/locales';
 import type { TimeSettings } from '@/lib/time-utils';
+import { headerFromDiscoveryListRow, type TruckHeader } from '@/lib/truck-header';
 import '@/lib/i18n/catalog/truckPage';
 
 /** The map's placeholder while its chunk loads — a component, so it reads the page's language like the rest. */
@@ -42,18 +43,21 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 // links). Defaults to true, so a page that does not say keeps everything it had.
 // `time`: the HatchGrab truck's own TimeSettings (page.tsx), for its event cards — absent for a discovery-only truck,
 // whose cards keep the discovery (GB) settings.
-export default function TruckClient({ slug, locale, discovery = true, time }: { slug: string; locale?: AppLocale; discovery?: boolean; time?: TimeSettings }) {
+// `operatorHeader` (19 October 2026, lib/truck-header.ts): the truck's own header, sent by page.tsx only on the
+// HatchGrab host for a truck public there. Used only when the discovery list has no row for this slug; its events are
+// then the feed's operator events for this truck's slug.
+export default function TruckClient({ slug, locale, discovery = true, time, operatorHeader }: { slug: string; locale?: AppLocale; discovery?: boolean; time?: TimeSettings; operatorHeader?: TruckHeader }) {
   const around = useAppLocale();
   const active = locale ?? around;
   const i18n = useMemo(() => ({ locale: active, setLocale: () => {} }), [active]);
   return (
     <I18nContext.Provider value={i18n}>
-      <TruckProfile slug={slug} discovery={discovery} time={time} />
+      <TruckProfile slug={slug} discovery={discovery} time={time} operatorHeader={operatorHeader} />
     </I18nContext.Provider>
   );
 }
 
-function TruckProfile({ slug, discovery, time }: { slug: string; discovery: boolean; time?: TimeSettings }) {
+function TruckProfile({ slug, discovery: discoveryProp, time, operatorHeader }: { slug: string; discovery: boolean; time?: TimeSettings; operatorHeader?: TruckHeader }) {
   const t = useT('truckPage');
   const posthog = usePostHog();
   const router = useRouter();
@@ -75,25 +79,23 @@ function TruckProfile({ slug, discovery, time }: { slug: string; discovery: bool
     distance: '1000'
   });
 
-  const truckInfo = useMemo(() => {
-    if (!allTrucks || allTrucks.length === 0) return null;
-    const truck = allTrucks.find(t => t.cleanKey === slug);
-    if (!truck) return null;
-
-    return {
-        name: truck.rawName,
-        type: truck.type,
-        logo: truck.logoUrl,
-        menuUrl: truck.menuUrl,
-        phoneNumber: truck.phoneNumber,
-        websiteUrl: truck.websiteUrl,
-        orderUrl: truck.orderUrl || null,
-    };
-  }, [allTrucks, slug]);
+  // The discovery row when there is one (exactly as before); otherwise the operator truck's own header, if
+  // page.tsx sent one. Never a mix of the two.
+  const discoveryTruck = useMemo(() => (allTrucks || []).find(t => t.cleanKey === slug) || null, [allTrucks, slug]);
+  const fromOperator = !discoveryTruck && !!operatorHeader;
+  const truckInfo = useMemo((): TruckHeader | null => {
+    if (discoveryTruck) return headerFromDiscoveryListRow(discoveryTruck);
+    if (loading || loadError) return null;
+    return operatorHeader ?? null;
+  }, [discoveryTruck, operatorHeader, loading, loadError]);
+  // An operator-built page invites nobody into Village Foodie's discovery (its prompts are for listed trucks).
+  const discovery = discoveryProp && !fromOperator;
 
   const truckEventsFlat = useMemo(() => {
+    // An operator-built page takes this truck's own operator events by slug (its name need not slug to its URL).
+    if (fromOperator) return mapEvents.filter(event => event.source === 'operator' && (event as { truckSlug?: string }).truckSlug === slug);
     return mapEvents.filter(event => createSlug(event.truckName) === slug);
-  }, [mapEvents, slug]);
+  }, [mapEvents, slug, fromOperator]);
 
   // Operator-claimed / orderable signal — REUSES the exact condition TruckListCard uses to render
   // Order/Pre-order buttons (isHatchGrab() && event.source === 'operator'), aggregated to truck level.
@@ -136,7 +138,7 @@ function TruckProfile({ slug, discovery, time }: { slug: string; discovery: bool
 
   const cleanPhone = truckInfo?.phoneNumber?.replace(/[^\d+]/g, '');
 
-  const getDisplayWebsite = (url: string) => {
+  const getDisplayWebsite = (url: string | null) => {
       if (!url) return '';
       const lowerUrl = url.toLowerCase();
       if (lowerUrl.includes('facebook.com')) return t('facebookPage');
@@ -268,6 +270,13 @@ function TruckProfile({ slug, discovery, time }: { slug: string; discovery: bool
                     <span className="truncate max-w-[200px] md:max-w-xs">{getDisplayWebsite(truckInfo.websiteUrl)}</span>
                 </a>
             )}
+            {/* The operator's own Instagram / Facebook — only an operator-built header carries them, only when set. */}
+            {truckInfo.socials?.filter(u => hrefFromStoredUrl(u)).map(u => (
+                <a key={u} href={hrefFromStoredUrl(u)} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 mt-1.5 text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline transition-colors">
+                    <span className="truncate max-w-[200px] md:max-w-xs">{getDisplayWebsite(u)}</span>
+                </a>
+            ))}
         </div>
       )}
 

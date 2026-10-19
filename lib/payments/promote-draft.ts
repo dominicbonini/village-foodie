@@ -81,6 +81,7 @@ import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/co
 import { resolveBatchReservations } from '@/lib/features'
 import type { StoredCookingReservation } from '@/lib/slot-bookings'
 import '@/lib/i18n/catalog/errorsCustomer'
+import { readEventRegion } from '@/lib/event-region-read'
 
 /** What a refusal tells the customer: the sentence, in the truck's language, and the code and values it was
  *  made from — which /api/payments/return carries to the page (?payment_failed=, and its JSON reply) so the
@@ -538,6 +539,7 @@ export async function promoteDraft(
           venueName:              eventRow?.venue_name ?? null,
           venueTown:              eventRow?.town ?? null,
           venuePostcode:          eventRow?.postcode ?? null,
+          venueRegion:            await readEventRegion(supabase, eventRow?.id),
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone:           truck.contact_phone ?? null,
           whatsappSender:         truck.whatsapp_sender ?? null,
@@ -573,6 +575,7 @@ export async function promoteDraft(
           venueName:     eventRow?.venue_name ?? null,
           venueTown:     eventRow?.town ?? null,
           venuePostcode: eventRow?.postcode ?? null,
+          venueRegion:   await readEventRegion(supabase, eventRow?.id),
           autoAccepted,
         })
         await sendConfirmationEmail({ to: truck.contact_email, subject, html, text, senderName: 'HatchGrab' })

@@ -360,6 +360,8 @@ export interface TruckEvent {
   address: string | null
   town: string | null
   postcode: string | null
+  /** The two-letter state (truck_events.region, 20261019 — absent until applied); US events only. */
+  region?: string | null
   start_time: string
   end_time: string
   status: 'unconfirmed' | 'confirmed' | 'open' | 'closed' | 'cancelled'

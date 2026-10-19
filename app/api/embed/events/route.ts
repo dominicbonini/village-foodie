@@ -15,6 +15,7 @@ import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
 import { getLocalDateInTz, getNowMinsInTz, type TimeSettings } from '@/lib/time-utils'
+import { readEventRegions } from '@/lib/event-region-read'
 
 /**
  * ── /api/embed/events?slug=<trucks.slug> — ONE TRUCK'S UPCOMING EVENTS, FILTERED IN SQL ─────────
@@ -119,6 +120,8 @@ export async function GET(req: NextRequest) {
    * schedule" is enforced on this surface: `TruckListCard` gates its CTA on that flag, so there is no
    * second place to change and no card that could render a button we did not mean. */
   const privacy = await readPrivateEventIds(supabase, (rows || []).map(e => e.id), '/api/embed/events')
+  // The events' states (lib/event-region-read.ts): a separate best-effort read; a key only when one is known.
+  const regions = await readEventRegions(supabase, (rows || []).map(e => e.id))
 
   // Shaped as the VillageEvent fields TruckListCard actually reads, so the card renders unmodified.
   // `source: 'operator'` is a statement of fact, not a flag: these rows come from truck_events.
@@ -132,6 +135,7 @@ export async function GET(req: NextRequest) {
     status: e.status,               // 'open' → Order now; 'confirmed' → Pre-order
     village: privacy.isPrivate(e.id) ? '' : (e.town || ''),
     postcode: privacy.isPrivate(e.id) ? '' : (e.postcode || ''),
+    ...(!privacy.isPrivate(e.id) && regions.get(e.id) ? { region: regions.get(e.id) } : {}),
     notes: privacy.isPrivate(e.id) ? '' : (e.notes || ''),
     eventNotes: '',
     isPrivate: privacy.isPrivate(e.id),

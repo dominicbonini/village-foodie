@@ -161,6 +161,7 @@ const CARD_PROBE = `(() => {
       range: range && range.innerText, rangeLines: range ? Math.round(rr.height / rangeLh) : null, rangeW: range ? Math.round(rr.width) : null, rangeNaturalW: range ? Math.round(__textW(range, range.textContent)) : null,
       live: !!live, liveOnDateLine: live ? Math.abs((lr.top + lr.bottom) / 2 - (dr.top + dr.bottom) / 2) < 5 : null, liveOnRangeLine: live && range ? Math.abs((lr.top + lr.bottom) / 2 - (rr.top + rr.bottom) / 2) < 5 : null,
       venueW: venueCol ? Math.round(venueCol.getBoundingClientRect().width) : null, h3Trunc: (() => { const h = card.querySelector('h3'); return h ? h.scrollWidth > h.clientWidth + 1 || h.scrollHeight > h.clientHeight + 1 : null })(),
+      areaTrunc: (() => { const h = card.querySelector('h3'); const p = h && h.nextElementSibling; if (!(p && p.tagName === 'P')) return null; const r = document.createRange(); r.selectNodeContents(p); const needs = r.getBoundingClientRect().width; return { text: p.textContent, shown: Math.round(p.clientWidth), needs: Math.round(needs * 10) / 10, cut: needs > p.clientWidth + 0.5 } })(),
       overflows: __overflows(card) }
   })
 })()`

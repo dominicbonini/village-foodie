@@ -135,6 +135,31 @@ const NAMED = [
   },
 ]
 
+/** ⚠️ RE-PINNED, 18 October 2026 (US layout fixes, /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md) — a NAMED transform kept
+ *  OUTSIDE `NAMED` (so scripts/language-phase-1e.cjs, which lists US views rather than transforming them, is untouched) and
+ *  reused by scripts/language-phase-0.cjs and scripts/language-phase-1e-tidy.cjs for the ONE view it names.
+ *  us-layout-fix-13-us-landing-bands (app/landing/page.tsx; the US landing has no testimonial): pricing loses `band`, the final
+ *  CTA gains it, and `.switch-block` gets an inline wash background. Exact substrings, each must be found exactly once;
+ *  GB landing HTML stays byte-identical (the views regex names the US landing only — `|US|html`, not `-usOff`, which renders
+ *  the GB page with its testimonial). */
+const US_LAYOUT_FIX_13 = {
+  id: 'us-layout-fix-13-us-landing-bands', what: 'US landing (no testimonial): #pricing loses class="band", #try gains it, .switch-block gets style="background:var(--wash)"',
+  views: id => /(^|\/)(pages\/)?landing\|US\|html$/.test(id),
+  EDITS: [
+    ['<section id="pricing" class="band">', '<section id="pricing">'],
+    ['<div class="switch-block">', '<div class="switch-block" style="background:var(--wash)">'],
+    ['<section id="try">', '<section id="try" class="band">'],
+  ],
+  apply(id, v) {
+    if (typeof v !== 'string') return v
+    for (const [a, b] of this.EDITS) {
+      if (v.split(a).length !== 2) throw new Error(`${this.id}: "${a}" is not in ${id} exactly once`)
+      v = v.replace(a, b)
+    }
+    return v
+  },
+}
+
 /** US code behaviours (LISTED, not transformed: a US view changes by design), each with the agent that made it. */
 const US_BEHAVIOUR = [
   [/^pages\/landing\|US\|html/, 'LANDING/SCREENSHOTS/CHROME: the -us screenshots, the Gusto testimonial GB-only, “Everything in Starter, plus” when Starter is priced, the locale-free App Store link'],
@@ -166,4 +191,4 @@ function apply(id, before) {
   return { expected: v, touched }
 }
 
-module.exports = { NAMED, apply, normalize, SEP, US_BEHAVIOUR, usBehaviour, ORIGIN, ROUTER, countryPath, seg, parse }
+module.exports = { NAMED, US_LAYOUT_FIX_13, apply, normalize, SEP, US_BEHAVIOUR, usBehaviour, ORIGIN, ROUTER, countryPath, seg, parse }

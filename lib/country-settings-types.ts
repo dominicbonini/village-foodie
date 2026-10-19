@@ -106,6 +106,34 @@ export function requirePlanPrice(s: CountrySettings, field: PlanPriceField): num
   return v
 }
 
+/** The six plan price fields, as a list (the enabled-needs-prices CHECK's columns). */
+const PLAN_PRICE_FIELDS: readonly PlanPriceField[] = [
+  'starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct',
+]
+
+/**
+ * True when every plan price is decided. The CHECK guarantees it for a switched-ON country; a switched-OFF
+ * country's truck (the US before its prices exist — e.g. a hidden US test truck) reaches Manage with them NULL,
+ * and its price surfaces must then MASK every amount ("TBC" / US "TBD") instead of calling requirePlanPrice and
+ * throwing — a thrown render takes the whole Manage page down (US dress rehearsal, 18 October 2026).
+ */
+export function planPricesDecided(s: CountrySettings): boolean {
+  return PLAN_PRICE_FIELDS.every(f => { const v = s[f]; return v !== null && v !== undefined && Number.isFinite(v) })
+}
+
+/**
+ * ⛔ DISPLAY ONLY, AND ONLY BEHIND A MASK THAT HIDES EVERY AMOUNT (maskPriceFor(v, true)). The same row with each
+ * undecided plan price set to a placeholder of 1, so the price helpers can build their strings — every one of which
+ * the caller then masks. Never pass the result to anything that charges, stores or quotes a price unmasked.
+ * A decided row is returned as it is (the same object), so a country with prices is untouched.
+ */
+export function withPlaceholderPlanPrices(s: CountrySettings): CountrySettings {
+  if (planPricesDecided(s)) return s
+  const out = { ...s }
+  for (const f of PLAN_PRICE_FIELDS) { const v = out[f]; if (v === null || v === undefined || !Number.isFinite(v)) out[f] = 1 }
+  return out
+}
+
 /** The two things a money formatter needs, taken from a settings row. */
 export function moneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): { currency: string; locale: string } {
   return { currency: s.currency, locale: s.locale }

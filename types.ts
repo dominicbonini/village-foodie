@@ -17,6 +17,8 @@ export interface VillageEvent {
   venueSlug?: string;
   town?: string;
   postcode?: string;
+  /** The event's two-letter state — only a US event saved with one (lib/event-address.ts). */
+  region?: string;
   venueLat?: number;
   venueLong?: number;
   venuePhone?: string;

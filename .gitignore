@@ -60,3 +60,9 @@ android/*.keystore
 android/*.jks
 
 certificates
+# US layout work (October 2026): the screenshot and contact-sheet folders stay local; the .md reports beside them
+# (docs/us-layout-*-report.md) and the scripts that made them (scripts/us-layout-*/) are tracked.
+docs/us-layout-audit/
+docs/us-layout-proposal/
+docs/us-layout-final/
+docs/us-dress-rehearsal/

@@ -623,12 +623,17 @@ async function usView() {
     d.week = helpers.W.weekRange('this', new Date(), wk); d.weekToday = helpers.W.todayInWeekTz(new Date(), wk)
     // Language Phase 2 (15 October 2026): the US 12-hour clock is en-US's convention, "6:30 PM" / "6:00 PM" (lib/time-utils
     // `clockOf` with the truck's locale; was "6:30pm" / "6pm"). Only these expected strings were re-pinned.
-    check(`${key}: 12-hour time`, d.time === '6:30 PM' && d.timeHour === '6:00 PM' && d.range === '5:00 PM – 9:30 PM', d)
+    // ⚠️ RE-PINNED, 18 October 2026 — us-layout-fix-1-nbsp (lib/time-utils.ts; /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md):
+    // en-US `clockOf` writes a NO-BREAK SPACE (U+00A0) before AM/PM, and a 12-hour formatTimeRange one before the dash, so a
+    // time never splits across lines. Only these US expected strings changed (NB = U+00A0); the ticket's printed BYTES fold
+    // it back to a space (lib/printing/ticket.ts FOLD), which "the ticket's collection time" below still asserts unchanged.
+    const NB = '\u00A0'
+    check(`${key}: 12-hour time`, d.time === `6:30${NB}PM` && d.timeHour === `6:00${NB}PM` && d.range === `5:00${NB}PM${NB}– 9:30${NB}PM`, d)
     check(`${key}: month-first numeric date`, d.numeric === '10/09/2026', d.numeric)
     check(`${key}: month-first short date`, d.short === 'Fri, Oct 9', d.short)
     check(`${key}: "today" label on the truck's clock`, d.labelToday === 'Today, October 9th' && d.labelTomorrow === 'Tomorrow', d)
     check(`${key}: ordinal date`, d.ordinal === 'Wednesday, October 14th', d.ordinal)
-    check(`${key}: the clock now`, d.clock === '8:00 PM', d.clock)
+    check(`${key}: the clock now`, d.clock === `8:00${NB}PM`, d.clock)   // us-layout-fix-1-nbsp
     check(`${key}: the week starts on Sunday`, d.week.start === '2026-10-04' && d.week.end === '2026-10-10' && d.weekToday === '2026-10-09', d.week)
     // the order page's event list (real route)
     globalThis.__harnessDb = kit.fakeDb({ trucks: [truck], country_settings: rowsFor(), truck_vans: [], private_event_links: [], truck_events: [
@@ -644,7 +649,7 @@ async function usView() {
     } finally { delete globalThis.__harnessDb }
     // an email and a ticket
     const conf = emailMod.E.formatConfirmationEmail({ orderId: '40', orderKey: 'k', truckName: 'Pizza Kitchen', customerName: 'Sam', slot: '18:30', items: [{ name: 'Margherita', quantity: 1, unit_price: 9.5, modifiers: [] }], deals: [], discountAmt: 0, total: 9.5, notes: null, venueName: 'Union Square', venueTown: 'NYC', allowCancellation: false, cancellationCutoffMins: 0, baseUrl: 'https://www.hatchgrab.com', truckSlug: truck.slug, variant: 'confirmation', autoAccepted: true, money: { currency: 'USD', locale: 'en-US' }, time: ts }).text
-    check(`${key}: the confirmation email's collection time`, conf.includes('Collection time: 6:30 PM'), conf.split('\n').find(l => /Collection/.test(l)))
+    check(`${key}: the confirmation email's collection time`, conf.includes(`Collection time: 6:30${NB}PM`), conf.split('\n').find(l => /Collection/.test(l)))   // us-layout-fix-1-nbsp
     d.email = conf.split('\n').find(l => /Collection/.test(l))
     // the printed ticket and the kitchen's order card, for the same order
     const ui = await uiBundles()
@@ -654,7 +659,8 @@ async function usView() {
     const lines = ui.print.T.buildTicketLines(ui.print.MAP.mapOrderToTicket({ order, truck: usTruck, event: dashEvent(D), ledgerRows: CASES.paid.ledger, printedLabel: ui.print.__tdStamp(usTruck) }), { paper_width: 80, show_phone: true }).map(l => l.text).filter(Boolean)
     d.ticket = lines.find(l => /COLLECT/.test(l))
     check(`${key}: the ticket's collection time`, /COLLECT 6:30 PM/.test(d.ticket || ''), d.ticket)
-    check(`${key}: the ticket's printed-at stamp`, ui.print.__tdStamp(usTruck) === '8:00 PM' && ui.print.__tdNowMins(usTruck) === 20 * 60, ui.print.__tdStamp(usTruck))
+    // us-layout-fix-1-nbsp: the printed-at LABEL is a screen string (U+00A0); the printer folds it to a space.
+    check(`${key}: the ticket's printed-at stamp`, ui.print.__tdStamp(usTruck) === `8:00${NB}PM` && ui.print.__tdNowMins(usTruck) === 20 * 60, ui.print.__tdStamp(usTruck))
     const card = kit.textOf(kit.renderStatic(h(ui.cards.OrderCard, { order, truck: usTruck, event: dashEvent(D), slots: [], actionLoading: null, onAction() {}, onRefund: async () => ({ ok: true }), onEdit() {}, kdsMode: false, viewMode: 'solo', ledgerRows: CASES.paid.ledger, heldAuthorisation: false, effectiveOrderReady: true, readyStepOn: true, vanTakesCash: true }))).text
     check(`${key}: the order card's collection time`, card.includes('6:30 PM') && !card.includes('18:30'), card.slice(0, 200))
     kit.setDeviceTz(SERVER)
@@ -704,7 +710,18 @@ const ALLOWED = [
   // Order); the snapshot also evaluates it on a UTC host, where it used to read that host's clock. It now
   // reads the truck's clock wherever it runs, so the UTC-host value must equal the UK device's.
   { id: 'ENV', site: 'lib/prep-utils.ts calcReadyTime evaluated on a UTC host (browser-only helper)', moments: Object.keys(MOMENTS), path: /^helpers\/utcServer\/calcReadyTime$/,
-    expect: (v, D, after) => v === after.helpers.ukDevice.calcReadyTime },
+    expect: (v, D, after) => v === after.helpers.ukDevice.calcReadyTime },  // ⚠️ RE-PINNED, 18 October 2026 — NOT A TIME CHANGE, a layout one, named so it is visible: us-layout-fix-2-live-on-date-line
+  // (components/TruckListCard.tsx; /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md). "● Live" moves from the range line to
+  // the date line, so the order page header's text reads "<date> Live 12:00 – 23:59" where it read "<date> 12:00 – 23:59 Live".
+  // At every instant; the new value must be EXACTLY the BEFORE value with that one move (found exactly once).
+  { id: 'L2', site: 'components/TruckListCard.tsx — us-layout-fix-2-live-on-date-line: the order page header reads "<date> Live <range>"', moments: Object.keys(MOMENTS), path: /^screens\/order\|today$/,
+    expect: (v, D, after, p, before) => { const re = /(Order from Pizza Kitchen \w{3} \d{1,2} \w{3}) (\d\d:\d\d – \d\d:\d\d) Live /g; return typeof before === 'string' && (before.match(re) || []).length === 1 && v === before.replace(re, '$1 Live $2 ') } },
+  // ⚠️ RE-PINNED, 18 October 2026 — NOT A TIME CHANGE, a layout one: us-layout-fix-6-kds-full-badge (components/dashboard/
+  // OrderCard.tsx, the KDS Full ticket's row 1). The status badge is one size down and out of flow, pinned top-right above the
+  // total — rendered after the total, so the board's text reads "#43 £26.90 Ready" where it read "#43 Ready £26.90". At every
+  // instant; the new value must be EXACTLY the BEFORE value with that one ticket's words swapped (found exactly once).
+  { id: 'L6', site: 'components/dashboard/OrderCard.tsx — us-layout-fix-6-kds-full-badge: the KDS ticket reads "#43 £26.90 Ready"', moments: Object.keys(MOMENTS), path: /^screens\/kds$/,
+    expect: (v, D, after, p, before) => { const re = /(#43) (Ready) (£\d+\.\d\d) (Sam Harness)/g; return typeof before === 'string' && (before.match(re) || []).length === 1 && v === before.replace(re, '$1 $3 $2 $4') } },
 ]
 function addDays(ymd, n) { const [y, m, d] = ymd.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10) }
 function leaves(o, p = '', out = {}) {
@@ -724,7 +741,8 @@ function compare(before, after) {
       const v = B[k] === undefined ? undefined : JSON.parse(B[k] === '«undefined»' ? 'null' : B[k])
       if (!rule) { fails.push(`${mk} ${k}: moved and no allowance names it\n     before ${String(A[k]).slice(0, 300)}\n     after  ${String(B[k]).slice(0, 300)}`); continue }
       if (!rule.moments.includes(mk)) { fails.push(`${mk} ${k}: ${rule.id} may move only at ${rule.moments.join(', ')}`); continue }
-      if (typeof v !== 'string' || !rule.expect(v, D, after[mk], k)) { fails.push(`${mk} ${k}: ${rule.id} moved to a value that is not the right one\n     after ${String(B[k]).slice(0, 300)}`); continue }
+      const was = A[k] === undefined ? undefined : JSON.parse(A[k] === '«undefined»' ? 'null' : A[k])   // the BEFORE value (L2 checks the exact move)
+      if (typeof v !== 'string' || !rule.expect(v, D, after[mk], k, was)) { fails.push(`${mk} ${k}: ${rule.id} moved to a value that is not the right one\n     after ${String(B[k]).slice(0, 300)}`); continue }
       ;(allowed[rule.id] ??= []).push(`${mk} ${k}`)
     }
   }

@@ -1,4 +1,4 @@
-# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 527 changed). Written by scripts/language-phase-1d2.cjs.
+# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 529 changed). Written by scripts/language-phase-1d2.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 shell/US|shell|loading	words
 shell/US|shell|noCountrySettings	words
@@ -34,15 +34,15 @@ shell/US|shell|notice|stripe	words
 shell/US|shell|notice|stripeDismissed	words
 shell/US|shell|notice|missing1	words
 shell/US|shell|notice|missingAll	words
-shell/US|shell|notice|stale	words
+shell/US|shell|notice|stale	code: us-layout-fix-1-nbsp + words
 shell/US|shell|notice|staleNoTime	words
-shell/US|shell|notices|all|menu	words
-shell/US|shell|notices|all|schedule	words
-shell/US|shell|notices|all|social	words
-shell/US|shell|notices|all|reports	words
-shell/US|shell|notices|all|settings	words
-shell/US|shell|notices|all|payments	words
-shell/US|shell|notices|all|billing	words
+shell/US|shell|notices|all|menu	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|schedule	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|social	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|reports	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|settings	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|payments	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|billing	code: us-layout-fix-1-nbsp + words
 shell/US|shell|trialPopup|dated	words
 shell/US|shell|trialPopup|undated	words
 shell/US|shell|trialPopup|ios	words
@@ -96,35 +96,37 @@ shell/US|team|pending	words
 shell/US|team|pending|resending	words
 shell/US|team|pending|cancelling	words
 shell/US|team|handler|cancelChange|ok	words
-reports/US|tab|range|orders	words
-reports/US|tab|range|items	words
-reports/US|tab|range|expanded	words
-reports/US|tab|event|orders	words
-reports/US|tab|event|items	words
-reports/US|tab|event|noVenue	words
-reports/US|tab|single	words
+reports/US|tab|range|orders	code: us-layout-fix-1-nbsp + words
+reports/US|tab|range|items	code: us-layout-fix-1-nbsp + words
+reports/US|tab|range|expanded	code: us-layout-fix-1-nbsp + words
+reports/US|tab|range|starter	code: us-layout-fix-1-nbsp
+reports/US|tab|event|orders	code: us-layout-fix-1-nbsp + words
+reports/US|tab|event|items	code: us-layout-fix-1-nbsp + words
+reports/US|tab|event|noVenue	code: us-layout-fix-1-nbsp + words
+reports/US|tab|single	code: us-layout-fix-1-nbsp + words
+reports/US|tab|otherOnly	code: us-layout-fix-1-nbsp
 reports/US|tab|vans|all	code: 1d2-us-reports-van-label + words
-reports/US|tab|vans|van1	words
-reports/US|tab|vans|cafe	words
-reports/US|tab|vans|unassigned	words
-reports/US|tab|vans|oneVan	words
-reports/US|tab|extras|orders	words
-reports/US|tab|extras|items	words
-reports/US|csv|orders|range	words
-reports/US|csv|items|range	words
-reports/US|csv|orders|event	words
-reports/US|csv|items|event	words
-reports/US|csv|orders|eventNoVenue	words
-reports/US|csv|items|eventNoVenue	words
-reports/US|csv|orders|single	words
-reports/US|csv|items|single	words
-reports/US|csv|orders|vanCafe	words
-reports/US|csv|items|vanCafe	words
-reports/US|csv|orders|unassigned	words
-reports/US|csv|items|unassigned	words
-reports/US|csv|orders|extras	words
-reports/US|csv|items|extras	words
-reports/US|csv|orders|otherOnly	words
+reports/US|tab|vans|van1	code: 1d2-us-reports-van-label + words
+reports/US|tab|vans|cafe	code: 1d2-us-reports-van-label + words
+reports/US|tab|vans|unassigned	code: 1d2-us-reports-van-label + words
+reports/US|tab|vans|oneVan	code: 1d2-us-reports-van-label + words
+reports/US|tab|extras|orders	code: us-layout-fix-1-nbsp + words
+reports/US|tab|extras|items	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|range	code: us-layout-fix-1-nbsp + words
+reports/US|csv|items|range	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|event	code: us-layout-fix-1-nbsp + words
+reports/US|csv|items|event	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|eventNoVenue	code: us-layout-fix-1-nbsp + words
+reports/US|csv|items|eventNoVenue	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|single	code: us-layout-fix-1-nbsp + words
+reports/US|csv|items|single	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|vanCafe	code: us-layout-fix-1-nbsp + words
+reports/US|csv|items|vanCafe	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|unassigned	code: us-layout-fix-1-nbsp + words
+reports/US|csv|items|unassigned	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|extras	code: us-layout-fix-1-nbsp + words
+reports/US|csv|items|extras	code: us-layout-fix-1-nbsp + words
+reports/US|csv|orders|otherOnly	code: us-layout-fix-1-nbsp + words
 payments/US|pay|fetchError|routeWords	words
 payments/US|pay|fetchError|requestFailed	words
 payments/US|pay|fetchError|unreachable	words

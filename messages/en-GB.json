@@ -296,6 +296,7 @@
       "confirm": "Cancel order"
     },
     "switchEventConfirm": "You’re currently serving at {current}. Switch to {next}? Tap the current event to switch back.",
+    "startFutureConfirm": "This event is on {date}. Start it now?",
     "extraWait": {
       "activeTapToClear": "+{mins}m active · Tap to clear",
       "add": "Add extra wait",
@@ -575,7 +576,7 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "taxAndFees": "Tax & fees"
+    "foldedCharges": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}"
   },
   "menuBadges": {
     "soldOut": "sold out",
@@ -656,7 +657,7 @@
     "loading": "Loading your order…",
     "errorTitle": "Something went wrong",
     "cancelledTitle": "Order cancelled",
-    "cancelledBody": "Your order has been cancelled. If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.",
+    "cancelledBody": "Your order has been cancelled.{card, select, no {} other { If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.}}",
     "statusCancelled": "This order has already been cancelled.",
     "statusRejected": "This order was not accepted by the truck.",
     "statusTooLate": "This order can no longer be cancelled.",
@@ -1155,6 +1156,7 @@
       "clear": "Clear",
       "toMake": "To make",
       "today": "Today · {range}",
+      "onDate": "{date} · {range}",
       "startEvent": "Start event",
       "recentlyClosed": "Event finished · {venue} ended at {time}",
       "eventStatus": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
@@ -1184,6 +1186,7 @@
       "endNow": "Finish this event? No more orders will be taken.",
       "yes": "Yes",
       "started": "Event started",
+      "startFutureConfirm": "This event is on {date}. Start it now?",
       "finishTimeNow": "Finish time now {time}",
       "finished": "Event finished",
       "cancelled": "Event cancelled",
@@ -1500,7 +1503,7 @@
     "cancel": "Cancel",
     "markPaidAndCollected": "Mark paid & collected",
     "cashIcon": "💷",
-    "chargesSummary": "Tax, fees & tip"
+    "chargesSummary": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}"
   },
   "addOrder": {
     "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add for the hatch; you’ll be asked to confirm.",
@@ -3297,6 +3300,8 @@
     "areaPlaceholder": "{style, select, zip_state {e.g. Austin} other {e.g. Wickhambrook}}",
     "postcode": "{style, select, zip_state {ZIP code} other {Postcode}}",
     "postcodePlaceholder": "{style, select, zip_state {e.g. 78701} other {e.g. CB8 8PD}}",
+    "state": "State",
+    "statePlaceholder": "e.g. NJ",
     "startTime": "Start time",
     "endTime": "End time",
     "van": "Van",
@@ -3325,9 +3330,7 @@
       "minute": "Minute",
       "hourOf": "{label} hour",
       "minuteOf": "{label} minute",
-      "time": "Time",
-      "meridiem": "AM or PM",
-      "meridiemOf": "{label}: AM or PM"
+      "time": "Time"
     },
     "hiddenMatch": "{count, plural, one {# hidden place matches} other {# hidden places match}} · Show hidden",
     "saving": "Saving…",

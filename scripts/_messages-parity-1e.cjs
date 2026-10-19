@@ -71,9 +71,13 @@ const wordsOf = s => (s.match(/[A-Za-z][A-Za-z'’]*/g) || []).map(w => w.replac
 /** GB fixes that change a message's ARGUMENTS on purpose: key → reason. */
 const FIX_ARGS = {
   'compare.smallPrint.onTop': 'COMPARE’s content fix: "question 4" was stale; the number is the fee step’s own ({n} = STEP.fee, "question 5")',
+  // ⚠️ RE-PINNED (US dress rehearsal fixes, 19 October 2026, docs/us-dress-rehearsal-fixes-report.md)
+  'orderStatus.cancelledBody': 'US dress rehearsal fix (Finding 5): the card-refund sentence is a {card} select — dropped for a pay-at-the-truck order; every word as it was',
 }
 /** Moved messages whose words are NEW on purpose (a named change), so no eb7ed44 string carries them: key → reason. */
 const NEW_WORDING = {
+  // ⚠️ RE-PINNED (US dress rehearsal fixes, 19 October 2026): the US Add / Edit event form's new State box.
+  'manageScheduleEvent.statePlaceholder': 'US dress rehearsal fix (Finding 6): the State box\'s example, a two-letter state ("e.g. NJ")',
 }
 const LEGAL_RE = /\bUK law\b|\blaw requires\b|\bby law\b|\blegally\b|\blegal(ly)? required\b|\bretention\b|\bHMRC\b|\bGDPR\b|data protection|tax records/i
 
