@@ -186,6 +186,7 @@
         "_plans-catalog-fixture.cjs",
         "_lp-seo-fixes.cjs",
         "_lp-pricing-tidy.cjs",
+        "_lp-compare-tidy.cjs",
         "_outreach-schema-census.cjs",
         "_png-decode.cjs",
         "_render-kit.cjs",

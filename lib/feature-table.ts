@@ -25,14 +25,24 @@ export interface FeatureTableRow {
   /** A product not built yet: "Coming soon" on every plan that has the feature (and "—" on one that switches it off). */
   comingSoon?: boolean
   /** A disclosure the row needs (pricing-tidy, 20 October 2026): a superscript marker on the row and a footnote under the
-   *  table (`planTable.notes.<note>`) on /features, Manage › Billing and the plans PDF. Numbered in NOTE_ORDER. */
+   *  table (`planTable.notes.<note>`) on /features, Manage › Billing and the plans PDF. Numbered by row position (noteOrder). */
   note?: TableNote
 }
 
 export type TableNote = 'whatsapp' | 'printing'
-/** The footnotes' order — and so their markers (1, 2…), after the card-fee footnote's "*". */
-export const NOTE_ORDER: readonly TableNote[] = ['whatsapp', 'printing']
-export const noteMarker = (n: TableNote): string => String(NOTE_ORDER.indexOf(n) + 1)
+
+/**
+ * The footnotes' order — and so their markers (1, 2…, after the card-fee footnote's "*") — is the order their ROWS
+ * appear in the table (groups in FEATURE_GROUPS order, then rows in FEATURE_TABLE order), DERIVED, never fixed per row:
+ * move a row and its number and footnote position follow (compare-tidy F1, 20 October 2026 — Kitchen ticket printing ¹,
+ * WhatsApp auto-replies ²).
+ */
+export function noteOrder(): TableNote[] {
+  const out: TableNote[] = []
+  for (const g of FEATURE_GROUPS) for (const r of FEATURE_TABLE) if (r.group === g && r.note && !out.includes(r.note)) out.push(r.note)
+  return out
+}
+export const noteMarker = (n: TableNote): string => String(noteOrder().indexOf(n) + 1)
 
 /**
  * The table's row footnotes — marker + words, in the country's locale — for each surface to render under the table in its
@@ -40,7 +50,7 @@ export const noteMarker = (n: TableNote): string => String(NOTE_ORDER.indexOf(n)
  */
 export function planTableNotes(locale: string | null | undefined): { marker: string; text: string }[] {
   const t = translatorFor(locale, 'planTable')
-  return NOTE_ORDER.map(n => ({ marker: noteMarker(n), text: t(`notes.${n}` as never) }))
+  return noteOrder().map(n => ({ marker: noteMarker(n), text: t(`notes.${n}` as never) }))
 }
 
 /**

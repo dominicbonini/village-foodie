@@ -354,6 +354,84 @@ if (RENDER) {
     'en-US': 'Every HatchGrab feature on every plan, side by side — Pay as you go, Pro, and Unlimited, with fees and allowances. Your first 3 months include everything.',
   }
   const rendered = v => typeof v === 'string' && !v.startsWith('ERROR') && v.length > 1000
+  /* ⚠️ RE-PINNED (compare-tidy, 20 October 2026) — THE NAMED /compare TIDY (docs/compare-tidy-report.md), applied to the
+   * /compare page HTML and the calculator's default / hasSystem views before the "Months free" check below. Each transform
+   * must apply exactly as named, or the view is left as it was and fails:
+   *   T-staff     BEFORE's staff card (the balanced Card <div> titled "How many people work the van?" — en-US "the truck?")
+   *               is cut out;
+   *   T-renumber  BEFORE's later card numbers 4 → 3, 5 → 4, 6 → 5 (each exactly once);
+   *   T-panel     AFTER's orders card renders the fee line and the "We suggest" panel after its slider (BEFORE: nothing
+   *               there) — asserted (fee-line <p>, then the panel naming the plan cheapest at the slider's value, and a
+   *               "Use … instead" button for every other public plan) and cut;
+   *   T-ungate    hasSystem only: the orders / fee / months-free cards were disabled (opacity:0.45) waiting on the staff
+   *               answer and are enabled (opacity:1) now; and the scroll link + results render — with no rate typed that is
+   *               the "Enter what you pay now…" prompt, asserted exactly (en-GB words; en-US has no override) and cut.
+   * ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026) — two more, same rules:
+   *   T-free      BEFORE's months-free card (the balanced Card <div> numbered 6, "Your introductory offer — how many months
+   *               free?", with the Months free input) is cut out; AFTER must have no Months free input — the months are
+   *               freeMonthsOverride ?? the trial (data), so the "Months free" mapping below no longer applies;
+   *   T-inert     every dimmed AFTER card is `style="…;opacity:0.45;pointer-events:none" inert=""` — asserted on each and
+   *               mapped back to BEFORE's `style="…;opacity:0.45"`; an undimmed card carries neither. */
+  const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/compare/CostComparison.tsx'))
+  const DIM_BEFORE = 'style="border-color:#E2E8F0;opacity:0.45"', DIM_AFTER = 'style="border-color:#E2E8F0;opacity:0.45;pointer-events:none" inert=""'
+  const CMP_MSG = JSON.parse(read('messages/ns/en-GB/compare.json'))
+  const CARD_OPEN = '<div class="rounded-2xl border bg-white p-5 shadow-sm transition md:p-6"'
+  const STEP_SPAN = n => `style="background-color:#F1F5F9">${n}</span><p class="text-base font-bold">`
+  const SLIDER_END = /aria-label="Monthly online order value per truck" value="(\d+)"\/>/
+  const balancedDiv = (html, s0) => { const re = /<div\b|<\/div>/g; re.lastIndex = s0; let d = 0
+    for (let m; (m = re.exec(html));) { d += m[0] === '</div>' ? -1 : 1; if (d === 0) return m.index + 6 } return -1 }
+  const once = (s, x) => s.split(x).length === 2
+  const tidyCompare = (k, a, b) => {
+    if (typeof a !== 'string' || typeof b !== 'string') return null
+    const cc = /\|US\|/.test(k) ? 'US' : 'GB', answered = /\|hasSystem$/.test(k)
+    // T-staff
+    // the staff card's title in BEFORE's words: en-GB "the van", en-US "the truck" (one truck in every one of these views)
+    const ti = b.indexOf(STEP_SPAN(3) + `How many people work the ${cc === 'US' ? 'truck' : 'van'}?</p>`); if (ti < 0) return null
+    const s0 = b.lastIndexOf(CARD_OPEN, ti), e0 = balancedDiv(b, s0); if (s0 < 0 || e0 < 0) return null
+    let bb = b.slice(0, s0) + b.slice(e0)
+    // T-free (compare-tidy-2)
+    if (COMPARE_TIDY_2) {
+      const fi = bb.indexOf(STEP_SPAN(6) + 'Your introductory offer'); if (fi < 0) return null
+      const f0 = bb.lastIndexOf(CARD_OPEN, fi), f1 = balancedDiv(bb, f0); if (f0 < 0 || f1 < 0) return null
+      if (!once(bb.slice(f0, f1), 'aria-label="Months free"')) return null
+      bb = bb.slice(0, f0) + bb.slice(f1)
+      if (a.includes('aria-label="Months free"') || /Your introductory offer/.test(a)) return null
+      // T-inert: every dimmed card inert, and nothing else
+      const cards = a.match(new RegExp(CARD_OPEN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^>]*>', 'g')) || []
+      if (!cards.every(c => c.includes('opacity:0.45') ? c.endsWith(DIM_AFTER + '>') : !/inert|pointer-events/.test(c))) return null
+      a = a.split(DIM_AFTER).join(DIM_BEFORE)
+    }
+    // T-renumber
+    for (const n of COMPARE_TIDY_2 ? [4, 5] : [4, 5, 6]) { if (!once(bb, STEP_SPAN(n))) return null; bb = bb.replace(STEP_SPAN(n), STEP_SPAN(n - 1)) }
+    if (COMPARE_TIDY_2 && (bb.includes(STEP_SPAN(5)) || a.includes(STEP_SPAN(5)))) return null
+    // T-panel
+    const ms = SLIDER_END.exec(a), mb = SLIDER_END.exec(bb); if (!ms || !mb || ms[1] !== mb[1]) return null
+    const pa = ms.index + ms[0].length, pe = a.indexOf('</div>' + CARD_OPEN, pa)
+    if (pe < 0 || !bb.startsWith('</div>' + CARD_OPEN, mb.index + mb[0].length)) return null
+    const panel = a.slice(pa, pe), gmv = Number(ms[1]) * 100
+    const offer = CATALOG.plans.filter(p => p.isPublic && p.active).sort((x, y) => x.sortOrder - y.sortOrder)
+      .map(p => ({ p, r: CATALOG.prices.find(r => r.planKey === p.key && r.countryCode === cc) })).filter(x => x.r)
+    const cost = ({ r }) => r.includedOnlineMinor === null ? r.monthlyMinor : r.monthlyMinor + (r.feeBps / 10000) * Math.max(0, gmv - r.includedOnlineMinor)
+    let best = null; for (const o of offer) if (!best || cost(o) < cost(best) - 1e-9) best = o
+    const panelOk = panel.startsWith('<p class="mt-3 text-sm leading-relaxed text-slate-600">')
+      && panel.includes(`</p><div class="mt-4 rounded-xl px-5 py-4" style="background-color:#F8FAFC"><p class="text-xs font-bold uppercase tracking-wider text-slate-400">${CMP_MSG.plan.weSuggest}</p><p class="mt-1 text-2xl font-black" style="color:#1A2233">${best.p.name}</p>`)
+      && offer.filter(o => o !== best).every(o => panel.includes(`>${CMP_MSG.plan.switchTo.replace('{plan}', o.p.name)}</button>`))
+      && panel.endsWith('</div></div>') && !panel.includes(CARD_OPEN) && !/How many people|Two or more|own login/.test(a)
+    if (!panelOk) return null
+    let aa = a.slice(0, pa) + a.slice(pe)
+    // T-ungate
+    if (answered) {
+      const dim = (bb.match(/style="border-color:#E2E8F0;opacity:0\.45"/g) || []).length
+      if (dim !== (COMPARE_TIDY_2 ? 2 : 3) || /opacity:0\.45/.test(aa)) return null   // ⚠️ RE-PINNED (compare-tidy-2): the months card (the 3rd) is cut
+      bb = bb.replace(/style="border-color:#E2E8F0;opacity:0\.45"/g, 'style="border-color:#E2E8F0;opacity:1"')
+      const results = '<p class="mt-6 text-center"><button type="button" class="text-sm font-semibold text-slate-500 underline underline-offset-4 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2">'
+        + CMP_MSG.jump.saving + '</button></p><div id="cost-results" class="mt-6 scroll-mt-4 space-y-4"><p class="rounded-2xl border bg-white p-6 text-center text-base font-semibold text-slate-600 shadow-sm" style="border-color:#E2E8F0">'
+        + CMP_MSG.enterRate + '</p></div>'
+      if (!once(aa, results) || bb.includes('id="cost-results"')) return null
+      aa = aa.replace(results, '')
+    } else if (aa.includes('id="cost-results"') || !/opacity:0\.45/.test(aa)) return null
+    return [aa, bb]
+  }
   /** The named Stage B change a view key falls under, as [name, (after, before) → ok]; null = must be byte-identical.
    *  Scoped to the exact views Stage B changes: every metadata view but /features', and every US-switched-off view
    *  (`-usOff`, where the US pricing is not shown), stay byte-identical. */
@@ -365,8 +443,12 @@ if (RENDER) {
     if (/^features\|[A-Z]+\|meta(-usOn)?$/.test(k)) return ['/features metadata: only the description (THE one SEO change; title / canonical / hreflang / robots / og:url unchanged)',
       (a, b) => JSON.stringify(dropDescriptions(a)) === JSON.stringify(dropDescriptions(b))
         && descriptions(a).length === 3 && descriptions(a).every(d => d === NEW_DESC[/\|US\|/.test(k) ? 'en-US' : 'en-GB'])]
-    if (/^compare\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k) || /^calc\|[A-Z]+\|(default|hasSystem)$/.test(k)) return ['/compare: only the "Months free" default (1 → the trial\'s 3 months)',
-      (a, b) => typeof a === 'string' && (a.match(MONTHS_FREE) || []).length === 1 && monthsFree1(a) === b]
+    // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): + the named /compare tidy (tidyCompare above), applied first.
+    if (/^compare\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k) || /^calc\|[A-Z]+\|(default|hasSystem)$/.test(k)) return [COMPARE_TIDY_2 ? '/compare: only compare-tidy\'s T-staff / T-renumber / T-panel / T-ungate and compare-tidy-2\'s T-free / T-inert (no "Months free" input left)' : '/compare: only the "Months free" default (1 → the trial\'s 3 months), and compare-tidy\'s T-staff / T-renumber / T-panel / T-ungate',
+      (a0, b0) => { const r = tidyCompare(k, a0, b0); if (!r) return false; const [a, b] = r
+        // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): no Months free input remains (T-free) — the rest is byte-identical.
+        if (COMPARE_TIDY_2) return typeof a === 'string' && a === b
+        return typeof a === 'string' && (a.match(MONTHS_FREE) || []).length === 1 && monthsFree1(a) === b }]
     if (/^calc\|/.test(k)) return ['calculator view rebuilt (plan suggested = cheapest at volume, lib/plan-offer cheapestAt) — scripts/pricing-pages.cjs', (a) => rendered(a)]
     if (/^pdf\|[A-Z]+\|html$/.test(k)) return ['plans PDF rebuilt (banner, cards, cheapest bar, the plan table, footnote) — scripts/pricing-pages.cjs', (a) => rendered(a) && a.includes('<table')]
     return null
@@ -475,10 +557,13 @@ if (RENDER) {
         const back = { ...a, openGraph: { ...a.openGraph, url: b.openGraph?.url } }; delete back.alternates
         return JSON.stringify(back) === JSON.stringify(b) ? [b, b] : null
       }]
-    if (/^sitemap\|/.test(k)) return ['SEO-sitemap: hreflang alternates + data lastmod on the country pages, then /privacy /terms /country-terms /contact; Village Foodie loses lastmod',
+    // ⚠️ RE-PINNED (compare-tidy F2, 20 October 2026): the Village Foodie sitemap gains a second entry, /contact (yearly, 0.3,
+    // no lastmod), after the home page — verified exactly here and cut, so BEFORE's one entry is still the comparison.
+    if (/^sitemap\|/.test(k)) return ['SEO-sitemap: hreflang alternates + data lastmod on the country pages, then /privacy /terms /country-terms /contact; Village Foodie loses lastmod and gains /contact (compare-tidy F2)',
       (a, b) => {
         if (!Array.isArray(a) || !Array.isArray(b)) return null
-        if (/villagefoodie/.test(k)) return JSON.stringify(a) === JSON.stringify([{ url: 'https://www.villagefoodie.co.uk/', changeFrequency: 'daily', priority: 1 }]) && b.length === 1 && b[0].url === a[0].url ? [b, b] : null
+        if (/villagefoodie/.test(k)) return JSON.stringify(a) === JSON.stringify([{ url: 'https://www.villagefoodie.co.uk/', changeFrequency: 'daily', priority: 1 },
+          { url: 'https://www.villagefoodie.co.uk/contact', changeFrequency: 'yearly', priority: 0.3 }]) && b.length === 1 && b[0].url === a[0].url ? [b, b] : null
         const on = /usOn/.test(k) ? ['uk', 'us'] : ['uk']
         const head = a.slice(0, b.length), tail = a.slice(b.length)
         const wantTail = [...['privacy', 'terms', 'country-terms'].map(p => ({ url: `https://www.hatchgrab.com/${p}`, lastModified: LEGAL_LASTMOD_OF[p], changeFrequency: 'yearly', priority: 0.3 })),

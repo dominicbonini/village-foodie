@@ -184,10 +184,88 @@ function stageBChecks(views, pdf) {
   ok(FOOTNOTE_GB_B.test(F), 'B-features · the pricing footnote')
   ok(views.features.attrs.filter(x => B_TABLE_ATTRS.test(x)).length > 0, 'B-features · the table cells are labelled (the excused attrs are present)')
   const cmp = views.compare.attrs, k = cmp.indexOf('aria-label=Months free')
-  ok(k >= 0 && cmp[k + 1] === `value=${n}`, `B-compare · "Months free" defaults to the trial's ${n}`)
+  // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): the months-free input is gone (T-free). The months are the data default
+  // (the trial's) unless the page's ?free=N (1–12) overrides them — the page hands that to the calculator as a prop.
+  if (COMPARE_TIDY_2) ok(k < 0 && /freeMonthsOverride=\{freeMonthsOverride\}/.test(read('app/compare/page.tsx')) && /freeMonthsOverride \?\? offerTrialMonths\(catalog\) \?\? 0/.test(read('app/compare/CostComparison.tsx')),
+    `B-compare · no "Months free" input; the months are freeMonthsOverride ?? the trial's (${n})`)
+  else ok(k >= 0 && cmp[k + 1] === `value=${n}`, `B-compare · "Months free" defaults to the trial's ${n}`)
   ok(pdf.text.includes(`Your first ${n} months are completely free`) && pdf.text.includes(tableHeadB()) && FOOTNOTE_GB_B.test(pdf.text) && pdf.text.includes('Generated <date>'),
     'B-pdf · banner, the plan table, the footnote and the date stamp')
   ok(offerB().every(({ p, r }) => pdf.text.includes(`${p.name} ${p.subtitle ? p.subtitle + ' ' : ''}${poundsB(r.monthlyMinor)} per truck / month`)), 'B-pdf · a card per public plan with its GB price')
+}
+// ══ ⚠️ RE-PINNED (compare-tidy, 20 October 2026) — THE NAMED /compare TIDY (docs/compare-tidy-report.md). Exactly these
+// transforms, each of which must apply ONCE (a boundary that is missing fails, never passes on a no-op):
+//   T-staff     BEFORE's staff card (" 3 How many people work the van? One Two or more") is removed;
+//   T-renumber  BEFORE's later cards renumbered with no gap: orders 4 → 3, fee 5 → 4, months free 6 → 5;
+//   T-panel     the orders card now renders its fee line and the "We suggest" panel (moved in, no longer waiting on a staff
+//               answer) between its caption and question 4 — cut from AFTER as a named region (BEFORE held nothing there)
+//               and asserted on its own in tidyChecks. Every other byte, and every attribute, is still compared.
+//   ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026) — three more, same rules:
+//   T-free      BEFORE's months-free card (" 5 Your introductory offer — how many months free? No plan fee, no service fee",
+//               numbered 5 after T-renumber) is removed, with its four attributes (min=0, max=12, aria-label=Months free,
+//               value=<the B-compare default>) — the months are data now (freeMonthsOverride ?? the trial);
+//   T-inert     not in the text or attributes: every dimmed card (opacity 0.45) also has pointer-events:none and `inert`,
+//               asserted on the HTML in tidyChecks.
+const COMPARE_TIDY = !/const \[staff, setStaff\]/.test(read('app/compare/CostComparison.tsx'))
+const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/compare/CostComparison.tsx'))
+const TIDY_FREE_TEXT = ' 5 Your introductory offer — how many months free? No plan fee, no service fee'
+const TIDY_STEPS = [[' 3 How many people work the van? One Two or more', ''],
+  [' 4 Online orders per month, per truck ', ' 3 Online orders per month, per truck '],
+  [' 5 What do you pay per order now? ', ' 4 What do you pay per order now? '],
+  [' 6 Your introductory offer', ' 5 Your introductory offer']]
+const TIDY_PANEL = ['Only orders placed through your ordering page — not cash or card at the window.', ' 4 What do you pay per order now? ']
+/** The T-panel region of a (renumbered) /compare text, or null when a boundary is missing. */
+function tidyRegion(text) {
+  const i = text.indexOf(TIDY_PANEL[0]); if (i < 0) return null
+  const a = i + TIDY_PANEL[0].length, j = text.indexOf(TIDY_PANEL[1], a)
+  return j < 0 ? null : { a, j, region: text.slice(a, j) }
+}
+/** BEFORE and AFTER of /compare with the compare-tidy transforms applied (other pages unchanged). */
+function tidySides(page, [B, A]) {
+  if (page !== 'compare' || !COMPARE_TIDY) return [B, A]
+  let bt = B.text
+  for (const [from, to] of TIDY_STEPS) {
+    if (bt.split(from).length !== 2) return [{ ...B, text: '(compare-tidy boundary missing: ' + from.trim() + ') ' + B.text }, A]
+    bt = bt.replace(from, to)
+  }
+  let ba = B.attrs
+  if (COMPARE_TIDY_2) {
+    if (bt.split(TIDY_FREE_TEXT).length !== 2) return [{ ...B, text: '(compare-tidy-2 boundary missing: months-free card) ' + bt }, A]
+    bt = bt.replace(TIDY_FREE_TEXT, '')
+    const i = ba.indexOf('aria-label=Months free')
+    if (i < 2 || ba[i - 2] !== 'min=0' || ba[i - 1] !== 'max=12' || !/^value=\d+$/.test(ba[i + 1] || '') || ba.indexOf('aria-label=Months free', i + 1) >= 0) return [{ ...B, text: '(compare-tidy-2 boundary missing: months-free attributes) ' + bt }, A]
+    ba = [...ba.slice(0, i - 2), ...ba.slice(i + 2)]
+  }
+  const rb = tidyRegion(bt), ra = tidyRegion(A.text)
+  if (!rb || rb.region !== '' || !ra) return [{ ...B, text: '(compare-tidy panel boundary missing) ' + bt }, A]
+  const mark = '<named: compare-tidy panel>'
+  return [{ ...B, text: bt.slice(0, rb.a) + mark + bt.slice(rb.j), attrs: ba }, { ...A, text: A.text.slice(0, ra.a) + mark + A.text.slice(ra.j) }]
+}
+/** T-panel's content, restated from the seed (GB, the slider's default): the fee line, then the panel. */
+function tidyChecks(views) {
+  const v = views.compare, r = tidyRegion(v.text)
+  const gi = v.attrs.indexOf('aria-label=Monthly online order value per truck'), gmv = Number((v.attrs[gi + 1] || '').replace('value=', '')) * 100
+  const cost = ({ r: x }) => x.includedOnlineMinor === null ? x.monthlyMinor : x.monthlyMinor + (x.feeBps / 10000) * Math.max(0, gmv - x.includedOnlineMinor)
+  const offer = offerB(); let best = null
+  for (const o of offer) if (!best || cost(o) < cost(best) - 1e-9) best = o
+  const pct = best.r.feeBps / 100 + '%', money2 = minor => '£' + (minor / 100).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  // The seed's cheapest plan at the default £2,500 is a fee-only plan with no monthly price (Pay as you go); a fixture where
+  // that stops being true fails here by name rather than being restated by reading the page.
+  const shapeOk = best.r.monthlyMinor === 0 && best.r.includedOnlineMinor === 0 && best.r.feeBps > 0
+  const want = ` ${pct} on every online card order — ${money2(gmv * best.r.feeBps / 10000)} a month per truck. We suggest ${best.p.name} No monthly fee — ${pct} on online card orders only. `
+    + offer.filter(o => o !== best).map(o => `Use ${o.p.name} instead`).join(' ')
+  ok(gmv === 250000 && shapeOk && !!r && r.region === want, `T-panel · /compare's orders card: the fee line, then "We suggest ${best.p.name}" and every other public plan`, r ? r.region : 'no region')
+  // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): no months-free card — fee 4 is the last question (T-free).
+  ok(!/How many people work|Two or more|Everyone gets their own login/.test(v.text) && / 3 Online orders per month, per truck .* 4 What do you pay per order now\? /.test(v.text)
+    && (COMPARE_TIDY_2 ? !/Your introductory offer|how many months free|No plan fee, no service fee/.test(v.text) && !v.attrs.includes('aria-label=Months free') : / 5 Your introductory offer/.test(v.text)),
+    'T-staff / T-renumber / T-free · no staff question, no months-free card; orders 3, fee 4')
+  if (COMPARE_TIDY_2) {
+    // T-inert: nothing answered on this view, so every card after question 1 is dimmed — each one also inert, no clicks.
+    const cards = v.html.match(/<div class="rounded-2xl border bg-white p-5 shadow-sm transition md:p-6"[^>]*>/g) || []
+    const dim = cards.filter(c => /opacity:0\.45/.test(c))
+    ok(cards.length === 4 && dim.length === 3 && dim.every(c => /style="border-color:#E2E8F0;opacity:0\.45;pointer-events:none" inert=""/.test(c)) && !/inert|pointer-events/.test(cards[0]),
+      'T-inert · the 3 dimmed cards carry pointer-events:none and inert; question 1\'s card neither', cards.join(' '))
+  }
 }
 const MENU_RE = /<div class="cc cc-(head|foot)">[\s\S]*?<\/div>/g
 // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the store badges (components/StoreBadges.tsx) gained loading="lazy", so React
@@ -232,7 +310,7 @@ async function compare() {
     for (const [label, req] of [['no country header', {}], ['GB visitor', { ip: 'GB' }], ['US visitor, US switched off', { ip: 'US', cookie: 'US', query: { country: 'US' } }], ['a country with no row', { ip: 'FR' }]]) {
       const v = await visit(p, { rows: [GB, US_OFF], build: 'marked', ...req })
       // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): compared with Stage B's named regions cut out of both sides.
-      const [B, A] = seoSides(stageBSides(p, BEFORE[p], v), v)   // ⚠️ RE-PINNED (seo-fixes): the badge preload hints named
+      const [B, A] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], v)), v)   // ⚠️ RE-PINNED (seo-fixes): the badge preload hints named; (compare-tidy): T-staff / T-renumber / T-panel
       if (label === 'GB visitor') viewsB[p] = v
       ok(A.text === B.text, `${p} · ${label} · text identical`, firstDiff(A.text, B.text))
       ok(JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · ${label} · attributes identical`)
@@ -248,6 +326,7 @@ async function compare() {
   if (STAGE_B) {
     console.log('1b. Stage B — the named regions, asserted (landing #pricing, /features main, /compare months-free, the PDF)')
     stageBChecks(viewsB, pdfGB)
+    if (COMPARE_TIDY) tidyChecks(viewsB)   // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the named /compare tidy, asserted
   } else ok(pdfGB.text === BEFORE.pdf.text && JSON.stringify(pdfGB.attrs) === JSON.stringify(BEFORE.pdf.attrs), 'plans PDF (GB) identical', firstDiff(pdfGB.text, BEFORE.pdf.text))
   const route = read('app/landing/features-pdf/route.ts')
   ok(/resolveVisitorCountry\(req\.nextUrl\.searchParams\.get\('country'\)\)/.test(route) && /generatePlansPdf\(visitor\.settings\.countryCode\)/.test(route), 'the PDF route prints the resolved country')
@@ -293,7 +372,7 @@ async function compare() {
   }
   for (const p of Object.keys(PAGES)) {
     const ukWithUsOn = await visit(p, { rows, ip: 'GB', build: 'marked', tables })
-    const [B, A] = seoSides(stageBSides(p, BEFORE[p], ukWithUsOn), ukWithUsOn)   // ⚠️ RE-PINNED (pricing-pages, Stage B): the named regions cut out; (seo-fixes): the badge preload hints named
+    const [B, A] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], ukWithUsOn)), ukWithUsOn)   // ⚠️ RE-PINNED (pricing-pages, Stage B): the named regions cut out; (seo-fixes): the badge preload hints named
     ok(A.text === B.text && JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · a UK visitor with US switched on · still identical to BEFORE`, firstDiff(A.text, B.text))
   }
   const toGB = await visit('landing', { rows, ip: 'US', query: { country: 'gb' }, build: 'marked', tables })

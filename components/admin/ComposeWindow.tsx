@@ -30,7 +30,6 @@ import {
 // 🔴 LEGAL FOLLOW-UPS (19 October 2026): the opt-out block's sentences come from messages/.
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/outreach'
-import { COMPANY } from '@/lib/company'
 import RichEmailEditor, { type EditorApi } from '@/components/admin/RichEmailEditor'
 // 🔴 THE TAB'S OUTBOX — Send hands the message here and the window closes (instant Send, with Undo).
 import { getOutbox } from '@/components/admin/OutboxToasts'
@@ -771,11 +770,8 @@ export default function ComposeWindow({
     : null
   const sendBlock: string | null =
     testBlock ?? optOutShown ?? (!toEmail ? 'This prospect has no email address' : null)
-  /** 🔴 THE COMPANY LINE, SHOWN READ-ONLY UNDER THE BOX (Dominic, 19 October 2026). `buildMessage` adds it to every
-   *  outreach email at send time; it is not in the document, so it cannot be edited or deleted — this only shows
-   *  it. Same message and same facts as the email (`outreach.companyFooter`, lib/company.ts); its words have no
-   *  en-US override, so what is shown is what every prospect gets. */
-  const companyLine = tOut('companyFooter', { company: COMPANY.name, number: COMPANY.number, address: COMPANY.address })
+  /* ⛔ THE READ-ONLY COMPANY LINE UNDER THE BOX IS GONE (Dominic, 20 October 2026): outreach emails no longer carry
+   * "HatchGrab Ltd · Company no. … · Registered office: …" (lib/outreach-mail-message.ts), so there is nothing to show. */
 
   /* ⚠️ THE `warnings` LIST WAS HERE (the opt-out WARNING for ladder steps). It is gone: the opt-out line
    * is a block now (`optOutStop`, above), and there is no other warning left for it to hold. */
@@ -1622,7 +1618,6 @@ export default function ComposeWindow({
                   </div>
                 ) : undefined}
               />
-              <p className="mt-1 text-[11px] text-slate-400 select-text" data-company-line>{companyLine}</p>
               </>
             ) : (
               /* ⚠️ THE WHATSAPP BOX, AND ONLY THAT. It is reached when a WhatsApp template is

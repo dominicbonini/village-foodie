@@ -5,9 +5,10 @@
 //   1. the Terms of Service: re-dated 20 October 2026 (§4 edited) — lib/legal.ts TERMS_UPDATED '20 October 2026',
 //      TERMS_VERSION '2026-10-20' (privacy and country terms stay 19 October 2026). So signup records terms_version
 //      '2026-10-20', and the sitemap's /terms lastmod is 2026-10-20;
-//   2. the one plan table: "WhatsApp auto-replies" ¹ and "Kitchen ticket printing" ² carry a superscript marker, and two
-//      footnotes follow the card-fee footnote (planTable.notes.whatsapp / .printing) on /features, Manage › Billing and
-//      the plans PDF;
+//   2. the one plan table: "Kitchen ticket printing" ¹ and "WhatsApp auto-replies" ² carry a superscript marker, and two
+//      footnotes follow the card-fee footnote (planTable.notes.printing / .whatsapp) on /features, Manage › Billing and
+//      the plans PDF; ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the markers follow ROW POSITION (lib/feature-table.ts
+//      noteOrder()) — printing (the earlier row) 1, WhatsApp 2, footnotes in that order (pricing-tidy had WhatsApp 1);
 //   3. Manage › Billing "not started" (a trial with no end date): the body <p> is gone, the heading alone
 //      (manageBilling.notStarted.body deleted);
 //   4. /contact on Village Foodie: self-canonical (https://www.villagefoodie.co.uk/contact).
@@ -47,23 +48,29 @@ const NOTE_TEXT = {
 }
 const reEsc = x => String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const SEP = '(?:<!-- -->)?'   // React's text separator between the marker and the words (a server render)
+// ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the markers follow ROW POSITION (lib/feature-table.ts noteOrder(),
+// scripts/_lp-compare-tidy.cjs NOTES_LANDED) — "Kitchen ticket printing" (the earlier row) ¹ and its footnote first,
+// "WhatsApp auto-replies" ² second. Before compare-tidy (NOTE_ORDER) it was WhatsApp ¹, printing ².
+const ROW_LABEL = { whatsapp: 'WhatsApp auto-replies', printing: 'Kitchen ticket printing' }
+const NOTE_ORDER = (() => { try { return require('./_lp-compare-tidy.cjs').NOTES_LANDED } catch { return false } })() ? ['printing', 'whatsapp'] : ['whatsapp', 'printing']
 const SURFACE = {
-  features: { fee: '<p class="price-note">* ', note: '<p class="price-note">', rows: ['<span>WhatsApp auto-replies<sup class="pt-sup">1</sup></span>', '<span>Kitchen ticket printing<sup class="pt-sup">2</sup></span>'], marker: /<sup class="pt-sup">/g },
-  billing: { fee: '<p class="text-xs text-slate-500 mt-3 px-1">* ', note: '<p class="text-xs text-slate-500 mt-1 px-1">', rows: ['<span>WhatsApp auto-replies<sup class="pt-sup">1</sup></span>', '<span>Kitchen ticket printing<sup class="pt-sup">2</sup></span>'], marker: /<sup class="pt-sup">/g },
-  pdf: { fee: '<p>* ', note: '<p>', rows: ['<span class="f-name">WhatsApp auto-replies<sup>1</sup></span>', '<span class="f-name">Kitchen ticket printing<sup>2</sup></span>'], marker: /<span class="f-name">[^<]*<sup>/g },
+  features: { fee: '<p class="price-note">* ', note: '<p class="price-note">', row: (l, n) => `<span>${l}<sup class="pt-sup">${n}</sup></span>`, marker: /<sup class="pt-sup">/g },
+  billing: { fee: '<p class="text-xs text-slate-500 mt-3 px-1">* ', note: '<p class="text-xs text-slate-500 mt-1 px-1">', row: (l, n) => `<span>${l}<sup class="pt-sup">${n}</sup></span>`, marker: /<sup class="pt-sup">/g },
+  pdf: { fee: '<p>* ', note: '<p>', row: (l, n) => `<span class="f-name">${l}<sup>${n}</sup></span>`, marker: /<span class="f-name">[^<]*<sup>/g },
 }
 /** The plan table's markers and footnotes on `surface` ('features' | 'billing' | 'pdf') → problems (exact strings). */
 function tableNotesProblems(html, surface) {
   const S = SURFACE[surface], p = []
   if (typeof html !== 'string') return [`pricing-tidy ${surface}: not HTML`]
-  for (const r of S.rows) { const n = html.split(r).length - 1; if (n !== 1) p.push(`pricing-tidy ${surface}: the row label ${JSON.stringify(r)} shows ${n} times, not once`) }
+  const rows = NOTE_ORDER.map((k, i) => S.row(ROW_LABEL[k], i + 1))
+  for (const r of rows) { const n = html.split(r).length - 1; if (n !== 1) p.push(`pricing-tidy ${surface}: the row label ${JSON.stringify(r)} shows ${n} times, not once`) }
   const m = (html.match(S.marker) || []).length
-  if (m !== S.rows.length) p.push(`pricing-tidy ${surface}: ${m} rows carry a footnote marker, not ${S.rows.length}`)
+  if (m !== rows.length) p.push(`pricing-tidy ${surface}: ${m} rows carry a footnote marker, not ${rows.length}`)
   const f = html.indexOf(S.fee)
   if (f < 0) return [...p, `pricing-tidy ${surface}: no card-fee footnote`]
   const end = html.indexOf('</p>', f) + 4
-  const want = new RegExp(`^${reEsc(S.note)}<sup>1</sup> ${SEP}${reEsc(NOTE_TEXT.whatsapp)}</p>${reEsc(S.note)}<sup>2</sup> ${SEP}${reEsc(NOTE_TEXT.printing)}</p>`)
-  if (!want.test(html.slice(end))) p.push(`pricing-tidy ${surface}: the card-fee footnote is not followed by footnotes 1 (WhatsApp auto-replies) and 2 (ticket printing) exactly — got ${JSON.stringify(html.slice(end, end + 200))}`)
+  const want = new RegExp(`^${NOTE_ORDER.map((k, i) => `${reEsc(S.note)}<sup>${i + 1}</sup> ${SEP}${reEsc(NOTE_TEXT[k])}</p>`).join('')}`)
+  if (!want.test(html.slice(end))) p.push(`pricing-tidy ${surface}: the card-fee footnote is not followed by ${NOTE_ORDER.map((k, i) => `footnote ${i + 1} (${ROW_LABEL[k]})`).join(' and ')} exactly — got ${JSON.stringify(html.slice(end, end + 200))}`)
   return p
 }
 

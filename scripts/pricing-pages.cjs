@@ -180,10 +180,12 @@ const withFourth = () => {
   const rowsIn = count(tbl, 'role="rowheader"')
   t('every feature row (32) + 3 money rows + 4 group rows', rowsIn === 32 + 3 + 4, rowsIn)
   // ⚠️ pricing-tidy (20 October 2026): two disclosures restored — markers on the rows, footnotes under the card-fee one.
-  t('pricing-tidy: "WhatsApp auto-replies" carries marker ¹ and "Kitchen ticket printing" marker ² (and no other row a marker)',
-    /<span>WhatsApp auto-replies<sup class="pt-sup">1<\/sup><\/span>/.test(tbl) && /<span>Kitchen ticket printing<sup class="pt-sup">2<\/sup><\/span>/.test(tbl) && count(tbl, 'class="pt-sup"') === 2)
-  t('pricing-tidy: /features footnotes, in order, same style as the card-fee one: *, ¹ WhatsApp, ² printing',
-    inOrder(text(featGB), ['* Plus', '1 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.', '2 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).']) && count(featGB, 'class="price-note"') === 3)
+  // ⚠️ RE-PINNED (compare-tidy F1, 20 October 2026): the markers follow ROW POSITION — Kitchen ticket printing (Run your
+  // service) ¹, WhatsApp auto-replies (Marketing) ², and the footnotes in that order.
+  t('"Kitchen ticket printing" carries marker ¹ and "WhatsApp auto-replies" marker ² — numbered by table position (and no other row a marker)',
+    /<span>Kitchen ticket printing<sup class="pt-sup">1<\/sup><\/span>/.test(tbl) && /<span>WhatsApp auto-replies<sup class="pt-sup">2<\/sup><\/span>/.test(tbl) && count(tbl, 'class="pt-sup"') === 2)
+  t('/features footnotes, in order, same style as the card-fee one: *, ¹ printing, ² WhatsApp',
+    inOrder(text(featGB), ['* Plus', '1 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).', '2 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.']) && count(featGB, 'class="price-note"') === 3)
   {
     const heads = [...tbl.matchAll(/role="rowheader">(.*?)<\/div>/g)].map(m => text(m[1]))
     const online = heads.slice(heads.indexOf('Online orders') + 1, heads.indexOf('Marketing & automation'))
@@ -206,19 +208,51 @@ const withFourth = () => {
   t('cheapest at £2,000 → payg; £2,800 → payg; £3,000 → pro; £7,900 → pro; £8,100 → unlimited', at(200000) === 'payg' && at(280000) === 'payg' && at(300000) === 'pro' && at(790000) === 'pro' && at(810000) === 'unlimited')
   t('the bands solved from the prices: 2,900 / 8,000 (GB) — and 2,900 / 9,000 with the old £5,000 allowance', JSON.stringify(L.cheapestBands(offers, 'GBP').map(b => [b.plan.plan.key, b.fromMinor, b.toMinor])) === JSON.stringify([['payg', null, 290000], ['pro', 290000, 800000], ['unlimited', 800000, null]])
     && (() => { const c = clone(CATALOG); price(c, 'pro', 'GB').includedOnlineMinor = 500000; return JSON.stringify(L.cheapestBands(L.offerPlans(c, 'GB'), 'GBP').map(b => b.toMinor)) === '[290000,900000,null]' })())
-  const CC = await ctx.bundle('pp-calc', "export { default } from '@/app/compare/CostComparison'\nexport { DemoModalProvider } from '@/components/landing/DemoUpload'", { patches: [{ file: 'app/compare/CostComparison.tsx', states: ['hasSystem', 'staff', 'gmv', 'planOverride'] }] })
+  const CC = await ctx.bundle('pp-calc', "export { default } from '@/app/compare/CostComparison'\nexport { DemoModalProvider } from '@/components/landing/DemoUpload'", { patches: [{ file: 'app/compare/CostComparison.tsx', states: ['hasSystem', 'gmv', 'planOverride', 'feePctRaw', 'feePenceRaw'] }] })   // ⚠️ RE-PINNED (compare-tidy): no `staff` state any more
   const compareAt = (state, cat = CATALOG, cs = ctx.GB()) => { globalThis.__ms = state; try { return kit.renderStatic(h(CC.DemoModalProvider, null, h(CC.default, { settings: cs, catalog: cat, locale: cs.locale }))) } finally { delete globalThis.__ms } }
-  const c1 = text(compareAt({ hasSystem: 'no', staff: 1, gmv: 2000 }))
-  const c2 = text(compareAt({ hasSystem: 'no', staff: 1, gmv: 5000 }))
-  const c3 = text(compareAt({ hasSystem: 'no', staff: 2, gmv: 10000 }))
+  const compareAtProps = (state, extra = {}, cat = CATALOG, cs = ctx.GB()) => ({ state, el: h(CC.DemoModalProvider, null, h(CC.default, { settings: cs, catalog: cat, locale: cs.locale, ...extra })) })
+  const h2s = ({ state, el }) => { globalThis.__ms = state; try { return kit.renderStatic(el) } finally { delete globalThis.__ms } }
+  const c1 = text(compareAt({ hasSystem: 'no', gmv: 2000 }))
+  const c2 = text(compareAt({ hasSystem: 'no', gmv: 5000 }))
+  const c3 = text(compareAt({ hasSystem: 'no', gmv: 10000 }))
   t('£2,000 a month → "We suggest Pay as you go" with "No monthly fee — 0.99% on online card orders only."', /We suggest Pay as you go No monthly fee — 0\.99% on online card orders only\./.test(c1), c1.match(/We suggest.{0,160}/))
   t('£5,000 → "We suggest Pro", "£29 per truck per month, with £4,000 of online orders included."', /We suggest Pro £29 per truck per month, with £4,000 of online orders included\./.test(c2), c2.match(/We suggest.{0,160}/))
-  t('£10,000 → "We suggest Unlimited", unlimited wording; two or more people → "Everyone gets their own login." on any plan', /We suggest Unlimited £69 per truck per month, with unlimited online orders and no HatchGrab fee\. Everyone gets their own login\./.test(c3), c3.match(/We suggest.{0,200}/))
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the staff question and its "Everyone gets their own login." line are gone.
+  t('£10,000 → "We suggest Unlimited", unlimited wording (and no "own login" line — the staff question is removed)', /We suggest Unlimited £69 per truck per month, with unlimited online orders and no HatchGrab fee\./.test(c3) && !/own login/.test(c3), c3.match(/We suggest.{0,200}/))
+  // ── compare-tidy (20 October 2026) ──
+  {
+    const at = (v, cs = ctx.GB(), cat = CATALOG) => (text(compareAt({ hasSystem: 'no', gmv: v }, cat, cs)).match(/We suggest (Pay as you go|Pro|Unlimited)/i) || [])[1]
+    t('compare-tidy: the suggestion depends on online order value alone — £2,000 / £3,000 / £8,500 → Pay as you go / Pro / Unlimited (GB data)', at(2000) === 'Pay as you go' && at(3000) === 'Pro' && at(8500) === 'Unlimited', [at(2000), at(3000), at(8500)])
+    const usOn = { ...ctx.US_ON(), enabled: true }
+    const usText = text(compareAt({ hasSystem: 'no', gmv: 3000 }, CATALOG, usOn))
+    t('compare-tidy: the US fixture (switched on) gives the same in $ — $2,000 / $3,000 / $8,500 → Pay as you go / Pro / Unlimited, and "$29 per truck per month"', at(2000, usOn) === 'Pay as you go' && at(3000, usOn) === 'Pro' && at(8500, usOn) === 'Unlimited' && /\$29 per truck per month/.test(usText) && !/£/.test(usText), [at(2000, usOn), at(3000, usOn), at(8500, usOn)])
+    const html = compareAt({ hasSystem: 'no', gmv: 3000 })
+    const heads = [...html.matchAll(/rounded-full text-xs font-black text-slate-500"[^>]*>(\d+)<\/span><p class="text-base font-bold">([^<]+)</g)].map(m => `${m[1]}:${m[2]}`)
+    // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): months free (5) is gone — four cards on each path.
+    t('compare-tidy: no staff question; the cards are numbered 1–4 with no gap (No path: orders 3, trading days 4; no months card)', !/How many people/.test(html) && JSON.stringify(heads.map(h => h.split(':')[0])) === '["1","2","3","4"]', heads)
+    const htmlYes = compareAt({ hasSystem: 'yes', gmv: 3000 })
+    t('compare-tidy: Yes path numbered 1–4 too (the fee question is 4, the last)', JSON.stringify([...htmlYes.matchAll(/text-slate-500"[^>]*>(\d+)<\/span><p class="text-base font-bold">/g)].map(m => m[1])) === '["1","2","3","4"]')
+    const ordersCard = html.slice(html.indexOf('How much do you think you'), html.indexOf('How many days a week'))
+    t('compare-tidy: the "We suggest" panel sits in the online-orders card, under the slider and its "£X included…" line', /class="hg-range[\s\S]*Inside the £4,000 of online orders included[\s\S]*We suggest/.test(ordersCard))
+    t('compare-tidy: everything after question 1 unlocks on question 1 alone (no card dimmed once it is answered)', !/opacity:0\.45/.test(html))
+  }
   t('switch links for EVERY other plan (data), e.g. at £5,000: "Use Pay as you go instead", "Use Unlimited instead"', c2.includes('Use Pay as you go instead') && c2.includes('Use Unlimited instead') && !c2.includes('Use Pro instead'))
-  const c4 = text(compareAt({ hasSystem: 'no', staff: 1, gmv: 5000, planOverride: 'unlimited' }))
+  const c4 = text(compareAt({ hasSystem: 'no', gmv: 5000, planOverride: 'unlimited' }))
   t('an override is honoured: "Your choice Unlimited"', /Your choice Unlimited/.test(c4))
   t('the fee line follows the plan: £5,000 on Pro → "£1,000 above is charged at 0.99% — £9.90 a month each"', /The £1,000 above is charged at 0\.99% — £9\.90 a month each\./.test(c2), c2.match(/included per truck.{0,120}/))
-  t('free months default to the trial (3)', /aria-label="Months free"[^>]*value="3"|value="3"[^>]*aria-label="Months free"/.test(compareAt({ hasSystem: 'no', staff: 1, gmv: 2000 })))
+  // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): the months-free QUESTION is gone — the months are data (plans.trial_months),
+  // or the outreach override `?free=N` (1–12) the page validates and passes as `freeMonthsOverride`.
+  {
+    const no = (extra = {}) => text(h2s(compareAtProps({ hasSystem: 'no', gmv: 3000 }, extra)))
+    const yes = (extra = {}) => text(h2s(compareAtProps({ hasSystem: 'yes', gmv: 3000, feePctRaw: '4.5', feePenceRaw: '20' }, extra)))
+    t('compare-tidy-2: no months-free card or input remains', !/how many months free|Months free/i.test(compareAt({ hasSystem: 'no', gmv: 3000 })))
+    t('compare-tidy-2: the months come from data — "first 3 months are on us", "Months 1–3", year one = 9 × £29 = £261', no().includes('And your first 3 months are on us.') && no().includes('Months 1–3') && yes().includes('£261 in year one'), [no().match(/first \d+ months/), yes().match(/£\d+ in year one/)])
+    t('compare-tidy-2: an override of 4 is used everywhere — "first 4 months", "Months 1–4", year one = 8 × £29 = £232', no({ freeMonthsOverride: 4 }).includes('And your first 4 months are on us.') && no({ freeMonthsOverride: 4 }).includes('Months 1–4') && yes({ freeMonthsOverride: 4 }).includes('£232 in year one'))
+    const pg = read('app/compare/page.tsx')
+    t('compare-tidy-2: the page accepts only a whole number 1–12 from ?free (0, 13, "abc" → the data value)', /typeof freeRaw === 'string' && \/\^\\d\{1,2\}\$\/\.test\(freeRaw\) && \+freeRaw >= 1 && \+freeRaw <= 12 \? \+freeRaw : null/.test(pg) && /freeMonthsOverride=\{freeMonthsOverride\}/.test(pg))
+    t('compare-tidy-2: dimmed cards are inert (pointer-events none + `inert`) until question 1', /pointerEvents: disabled \? 'none' : undefined/.test(read('app/compare/CostComparison.tsx')) && /inert=\{disabled \|\| undefined\}/.test(read('app/compare/CostComparison.tsx'))
+      && (compareAt({ hasSystem: null, gmv: 3000 }).match(/ inert=""/g) || []).length >= 3 && !/ inert=""/.test(compareAt({ hasSystem: 'no', gmv: 3000 })))
+  }
   const ccSrc = read('app/compare/CostComparison.tsx').replace(/\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '')
   t('no plan key or name in the calculator\'s code (\'pro\' / \'max\' / Pro / Max / Starter)', !/'(pro|max|payg|unlimited|starter)'|\b(Pro|Max|Starter)\b/.test(ccSrc), ccSrc.match(/'(pro|max|payg|unlimited|starter)'|\b(Pro|Max|Starter)\b/))
   const cmpPage = await page('compare', 'GB')
@@ -253,8 +287,8 @@ const withFourth = () => {
     const tr = bill(`${cc}|billing|plan|trial`)
     t(`${cc} Billing (trial): the table with no column highlighted (a trial is not a column)`, count(tr, 'class="pt pt-card"') === 1 && !tr.includes('pt-col pt-hl'))
     t(`${cc} Billing: prices in ${m}, the footnote under the table`, text(bill(`${cc}|billing|plan|pro`)).includes(`Pro ${m}29 / month`) && FOOTNOTE_ANY.test(text(bill(`${cc}|billing|plan|pro`))))
-    t(`${cc} Billing (pricing-tidy): the two row disclosures under the card-fee footnote, with the row markers`, inOrder(text(bill(`${cc}|billing|plan|pro`)), ['* Plus', '1 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.', '2 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).'])
-      && /<span>WhatsApp auto-replies<sup class="pt-sup">1<\/sup><\/span>/.test(bill(`${cc}|billing|plan|pro`)))
+    t(`${cc} Billing (pricing-tidy): the two row disclosures under the card-fee footnote, with the row markers`, inOrder(text(bill(`${cc}|billing|plan|pro`)), ['* Plus', '1 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).', '2 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.'])
+      && /<span>Kitchen ticket printing<sup class="pt-sup">1<\/sup><\/span>/.test(bill(`${cc}|billing|plan|pro`)) && /<span>WhatsApp auto-replies<sup class="pt-sup">2<\/sup><\/span>/.test(bill(`${cc}|billing|plan|pro`)))
     t(`${cc} Billing: no retired comparison copy (Starter / Max / "Max tier")`, !/\bStarter\b|\bMax\b/.test(text(bill(`${cc}|billing|plan|pro`))))
     t(`${cc} trial popup: "Every feature free for 3 months"; its fallback is "Pay as you go" (not the retired Starter tier)`,
       text(bill(`${cc}|shell|trialPopup|dated`)).includes('Every feature free for 3 months') && text(bill(`${cc}|shell|trialPopup|dated`)).includes('you’ll move to Pay as you go and some features will stop working') && !/Starter|Max features/.test(text(bill(`${cc}|shell|trialPopup|dated`))))
@@ -300,7 +334,7 @@ const withFourth = () => {
     const t4 = text(await page('features', 'GB', { cat: f4 }))
     const p4 = await pdf('GB', { cat: f4 })
     const b4 = kit.renderStatic(h(PT.PlanTable, { catalog: f4, settings: ctx.GB(), highlight: 'growth' }))
-    const c4x = text(compareAt({ hasSystem: 'no', staff: 1, gmv: 9000 }, f4))
+    const c4x = text(compareAt({ hasSystem: 'no', gmv: 9000 }, f4))
     t('a fourth public plan: a fourth card, in sort_order, with "Everything in Pro, plus"', inOrder(l4, ['Pro', 'Growth', 'Fixture subtitle', '£49 per truck / month', 'Everything in Pro, plus', 'Unlimited', 'Everything in Growth, plus']) && count(l4, 'Try free') === 4)
     t('…a fourth column on /features, in the PDF and in Billing\'s table', inOrder(t4, ['Pro £29 / month', 'Growth £49 / month', 'Unlimited £69 / month']) && count(p4, '<div class="th-plan">') === 4 && count(b4, 'role="columnheader"') === 4)
     t('…in the cheapest bar and the /compare choice', /→ Growth/.test(l4) && /We suggest Growth/.test(c4x), { bar: l4.match(/Which plan.{0,220}/), cmp: c4x.match(/We suggest.{0,60}/) })
@@ -319,8 +353,8 @@ const withFourth = () => {
   // pricing-tidy (20 October 2026): the plans PDF carries the two row disclosures too — GB and US, the same words, the markers.
   for (const [cc, html] of [['GB', pdfGB], ['US', await pdf('US', { usOn: true })]]) {
     t(`${cc} PDF (pricing-tidy): markers on the two rows and the two footnotes after the card-fee one`,
-      /WhatsApp auto-replies<sup>1<\/sup>/.test(html) && /Kitchen ticket printing<sup>2<\/sup>/.test(html)
-      && inOrder(text(html), ['* Plus', '1 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.', '2 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).']))
+      /Kitchen ticket printing<sup>1<\/sup>/.test(html) && /WhatsApp auto-replies<sup>2<\/sup>/.test(html)
+      && inOrder(text(html), ['* Plus', '1 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).', '2 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.']))
   }
   const pdfUSoff = text(await pdf('US', { usOn: false }))
   t('US switched OFF: the PDF masks every amount ("TBD") and says why', !/\$\d/.test(pdfUSoff) && /TBD per truck \/ month/.test(pdfUSoff) && pdfUSoff.includes('not yet published'), pdfUSoff.slice(0, 600))
@@ -412,7 +446,7 @@ const withFourth = () => {
     await measure('landing (GB)', shell(bodyOf(landGB)))
     await measure('/features (GB)', shell(bodyOf(featGB)))
     await measure('/features with a fourth plan', shell(bodyOf(await page('features', 'GB', { cat: withFourth() }))))
-    await measure('/compare (GB, answered)', shell(`<div class="hg-landing">${''}</div>${compareAt({ hasSystem: 'yes', staff: 2, gmv: 9000 })}`))
+    await measure('/compare (GB, answered)', shell(`<div class="hg-landing">${''}</div>${compareAt({ hasSystem: 'yes', gmv: 9000 })}`))
     await measure('Billing (GB, pro)', shell(`<div style="padding:16px">${bill('GB|billing|plan|pro')}</div>`))
   } catch (e) {
     t('headless Chrome available for the 375px check', false, String(e.message).slice(0, 300))

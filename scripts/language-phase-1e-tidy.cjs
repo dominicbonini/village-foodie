@@ -90,6 +90,9 @@ const NAMED = [
   // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the re-dated Terms — the HatchGrab sitemap's /terms lastmod 2026-10-20.
   // PRECISE, after seo-s5-sitemap, one copy in scripts/_lp-pricing-tidy.cjs.
   ...require('./_lp-pricing-tidy.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): F2 — the Village Foodie sitemap: the root, then /contact. PRECISE, after
+  // seo-s5-sitemap, one copy in scripts/_lp-compare-tidy.cjs.
+  ...require('./_lp-compare-tidy.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):
@@ -247,7 +250,10 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
   const smUS = AFTER['parts/sitemap|US|hatchgrab-usOn'] || []
   t('with the US on: /uk, /uk/features, /us, /us/features (+ seo-fixes: the legal pages and /contact)', same(smUS.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, `${ORIGIN}/us`, `${ORIGIN}/us/features`, ...SEO_TAIL]), JSON.stringify(smUS.map(e => e.url)))
   // ⚠️ RE-PINNED (seo-fixes S5, 20 October 2026): Village Foodie's one entry loses its request-time lastmod — nothing else.
-  t('the Village Foodie sitemap is unchanged but for its lastmod (seo-s5-sitemap: no request-time lastmod)', same(require('./_lp-seo-fixes.cjs').sitemapVF(BEFORE['parts/sitemap|GB|villagefoodie']), AFTER['parts/sitemap|GB|villagefoodie']) && !same(BEFORE['parts/sitemap|GB|villagefoodie'], AFTER['parts/sitemap|GB|villagefoodie']))
+  // ⚠️ RE-PINNED (compare-tidy F2, 20 October 2026): …and /contact follows it (yearly, 0.3, no lastmod) — exactly that.
+  const CT = require('./_lp-compare-tidy.cjs')
+  const vfWant = (b => (CT.SITEMAP_LANDED ? CT.sitemapVF(b) : b))(require('./_lp-seo-fixes.cjs').sitemapVF(BEFORE['parts/sitemap|GB|villagefoodie']))
+  t(`the Village Foodie sitemap is unchanged but for its lastmod (seo-s5-sitemap: no request-time lastmod)${CT.SITEMAP_LANDED ? ' and /contact after the root (compare-tidy F2)' : ''}`, same(vfWant, AFTER['parts/sitemap|GB|villagefoodie']) && !same(BEFORE['parts/sitemap|GB|villagefoodie'], AFTER['parts/sitemap|GB|villagefoodie']), JSON.stringify(AFTER['parts/sitemap|GB|villagefoodie']))
 
   // ── the US truck page and footer: Village Foodie's prompts hidden — proved by the controls ──
   head('US truck page and footer — Village Foodie’s prompts hidden (controls with `discovery` forced on)')

@@ -71,7 +71,7 @@ function renderWith(patches, tag, opts = {}) {
   // figures and the competitor prefill come from country_settings now). Parsed from the seed that was run.
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): CostComparison takes the plan catalogue (`catalog`) — the
   // SEEDED one (scripts/_plans-catalog-fixture.cjs: 20261024 + 20261025 + 20261026), as the server page reads it.
-  const html = renderToStaticMarkup(React.createElement(c.req('app/compare/CostComparison.js').default, { settings: opts.settings ?? GB, catalog: opts.catalog ?? CATALOG }))
+  const html = renderToStaticMarkup(React.createElement(c.req('app/compare/CostComparison.js').default, { settings: opts.settings ?? GB, catalog: opts.catalog ?? CATALOG, ...(opts.props || {}) }))
   if (opts.raw) return html
   return html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')
     .replace(/&pound;/g, '£').replace(/&amp;/g, '&').replace(/&apos;|&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ')
@@ -79,7 +79,9 @@ function renderWith(patches, tag, opts = {}) {
 }
 
 const SYS = v => ["useState<'yes' | 'no' | null>(null)", `useState<'yes' | 'no' | null>('${v}')`]
-const STAFF = n => ["useState<1 | 2 | null>(null)", `useState<1 | 2 | null>(${n})`]
+// ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the "How many people work the van?" question is removed with its
+// `staff` useState (`useState<1 | 2 | null>(null)` no longer exists), so the STAFF patch is gone and every case below
+// sets only the answers that still exist. Question 1 alone now unlocks the cards and the results.
 const DAYS = n => ['useState(4)\n  const [trucks', `useState(${n})\n  const [trucks`]
 const TRUCKS = n => ['const [trucks, setTrucks] = useState(1)', `const [trucks, setTrucks] = useState(${n})`]
 const GMV = n => ['useState(2500)', `useState(${n})`]
@@ -87,10 +89,9 @@ const GMV = n => ['useState(2500)', `useState(${n})`]
 const PCT_ANCHOR = "const [feePctRaw, setFeePctRaw] = useState('')"
 const PENCE_ANCHOR = "const [feePenceRaw, setFeePenceRaw] = useState('')"
 const PCT = v => [PCT_ANCHOR, `const [feePctRaw, setFeePctRaw] = useState('${v}')`]
-// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the free-months box defaults to the catalogue's trial months
-// (offerTrialMonths) — was the literal '1'. Same mutation: the operator types the months.
-const FREE_ANCHOR = 'useState(() => String(offerTrialMonths(catalog) ?? 0))'
-const FREE = v => [FREE_ANCHOR, `useState('${v}')`]
+// ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): the months-free QUESTION is removed with its `freeMonthsRaw` state (the
+// anchor `useState(() => String(offerTrialMonths(catalog) ?? 0))` no longer exists). The months are
+// `freeMonthsOverride ?? offerTrialMonths(catalog) ?? 0` — a case that needs other months passes the PROP (`opts.props`).
 const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it costs ↓)/, '$1')
 
 // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): THE PLAN IS THE CHEAPEST AT THE VOLUME NOW, FROM DATA. The
@@ -110,7 +111,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
 
 ;(async () => {
   // ── (a) THE "No" PATH, THE BRIEF'S WORKED EXAMPLE ───────────────────────────────────────────────
-  const a = renderWith([SYS('no'), STAFF(1), DAYS(4), GMV(2500)], 'a')
+  const a = renderWith([SYS('no'), DAYS(4), GMV(2500)], 'a')
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): was Pro "£2.24 a trading day · £38.90 a month · £29.00 + £9.90".
   // At £2,500 the cheapest seeded plan is Pay as you go: £0 + 0.99% × £2,500 = £24.75 a month → × 12 ÷ 52 ÷ 4 = £1.43.
   const A_PLAN = cheapest(2500), A_MONTH = oursAt(2500), A_DAY = A_MONTH * 12 / 52 / 4
@@ -161,38 +162,42 @@ const perWeekOf = monthly => (monthly * 12) / 52
    *      sequence read 1,2,3,5,6,7: a FALSE gap report about the exact property being checked.
    * A list of pairs cannot do either. */
   const numbered = (txt, pairs) => pairs.every(([n, title]) => txt.includes(`\n${n}\n${title}`))
-  t('⚠️ (a) card numbering runs 1-2-3-4-5-6 with NO GAP on the No path', numbered(a, [
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the staff question (was 3) is removed and the cards renumbered with
+  // no gap — system 1, trucks 2, orders 3, trading days 4, months free 5 — and its title is asserted ABSENT.
+  // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): the months-free question (was 5) is removed — 1-2-3-4, no 5th card,
+  // and its title is asserted ABSENT.
+  t('⚠️ (a) card numbering runs 1-2-3-4 with NO GAP on the No path', numbered(a, [
     [1, 'Do you take online orders now?'],
     [2, 'How many trucks do you run?'],
-    [3, 'How many people work the van?'],
-    [4, "How much do you think you’d take online, per month, per truck?"],   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
-    [5, 'How many days a week do you trade?'],
-    [6, 'Your introductory offer'],
-  ]))
+    [3, "How much do you think you’d take online, per month, per truck?"],   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
+    [4, 'How many days a week do you trade?'],
+  ]) && !a.includes('How many people work the van?') && !a.includes('Your introductory offer') && !/\n5\n/.test(a.slice(a.indexOf('any day the van’s out.'), a.indexOf('See what it costs ↓'))))   // after the days card's own 1…7 buttons
   /* 🔴 THE YES PATH IS 1–6 AGAIN (1 October 2026). The trading-days question left it — that result is
    * framed PER WEEK now, so there was nothing to divide by days and the answer would have been collected
    * and never used. ⚠️ ASSERTED FROM BOTH SIDES: absent on Yes, present on No. A check that only counted
    * to 6 would pass if the card were still rendered with a duplicate number. */
-  t('⚠️ (d) …and 1-2-3-4-5-6 with no gap on the Yes path, the fee question at 5', (() => {
-    const y = renderWith([SYS('yes'), STAFF(1)], 'num')
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): staff question removed — orders 3, fee 4, months free 5.
+  // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): the months-free question (was 5) is removed — 1-2-3-4, the fee at 4.
+  t('⚠️ (d) …and 1-2-3-4 with no gap on the Yes path, the fee question at 4', (() => {
+    const y = renderWith([SYS('yes')], 'num')
     return numbered(y, [
       [1, 'Do you take online orders now?'],
       [2, 'How many trucks do you run?'],
-      [3, 'How many people work the van?'],
-      [4, 'Online orders per month, per truck'],
-      [5, 'What do you pay per order now?'],
-      [6, 'Your introductory offer'],
-    ]) && !y.includes('How many days a week do you trade?')
+      [3, 'Online orders per month, per truck'],
+      [4, 'What do you pay per order now?'],
+    ]) && !y.includes('How many days a week do you trade?') && !y.includes('How many people work the van?')
+      && !y.includes('Your introductory offer') && !/\n5\n/.test(y.slice(0, y.indexOf('See your saving ↓')))
   })())
   t('🔴 the trading-days question is ABSENT on Yes and PRESENT on No',
-    !renderWith([SYS('yes'), STAFF(1)], 'dy').includes('How many days a week do you trade?')
+    !renderWith([SYS('yes')], 'dy').includes('How many days a week do you trade?')
     && a.includes('How many days a week do you trade?'))
-  t('⚠️ …and the No path still has it at 5, with its default and helper text intact',
-    /\n5\nHow many days a week do you trade\?/.test(a)
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): at 4 now (was 5) — the staff question above it is removed.
+  t('⚠️ …and the No path still has it at 4, with its default and helper text intact',
+    /\n4\nHow many days a week do you trade\?/.test(a)
     && a.includes("Events, markets, pitches — any day the van’s out."))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
 
   // ── (b) THE COFFEE CLAIM STOPS WHERE IT STOPS BEING TRUE ────────────────────────────────────────
-  const b = renderWith([SYS('no'), STAFF(1), DAYS(2), GMV(12000)], 'b')
+  const b = renderWith([SYS('no'), DAYS(2), GMV(12000)], 'b')
   t('🔴 (b) £12,000 on 2 days → coffee line ABSENT', !b.includes('Less than a coffee'))
   t('⚠️ (b) …and nothing is rendered in its place', !/than a (pint|sandwich|coffee)/.test(b))
 
@@ -202,7 +207,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
   // never rendered. 1.9% inclusive (their own fee 0.4% = £10.00) is dearer by £14.75 a month = £3.40 a week, which is
   // still ≥ £3.00, so every claim below keeps its meaning (weekly, no coffee line, the monthly box and breakdown).
   const C_PCT = '1.9', C_THEIRS = (Number(C_PCT) - 1.5) / 100 * 2500, C_MORE = oursAt(2500) - C_THEIRS, C_WEEK = perWeekOf(C_MORE)
-  const c = renderWith([SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT(C_PCT)], 'c')
+  const c = renderWith([SYS('yes'), DAYS(4), GMV(2500), PCT(C_PCT)], 'c')
   /* 🔴 (c) IS PER WEEK NOW, NOT PER TRADING DAY. £13.90 × 12 ÷ 52 = £3.2077 → "£3.21". ⚠️ AND THE
    * COFFEE LINE GOES WITH IT: 3.21 ≥ 3.00, so the same threshold that showed the line at 80p a DAY
    * correctly withholds it at £3.21 a WEEK. The claim stays true at both. */
@@ -226,7 +231,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
   // ── (d) THE SAVING CARD IS UNTOUCHED ────────────────────────────────────────────────────────────
   // 🔴 THE BRIEF'S OWN CASE, AND THE ONE THING THIS TASK MUST NOT CHANGE. Pinned as the literal text of
   // the result region, so any edit to that card — a word, a figure, an order — fails here.
-  const d = resultsOf(renderWith([SYS('yes'), STAFF(1)], 'd'))
+  const d = resultsOf(renderWith([SYS('yes')], 'd'))
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): THE SAVING CARD'S FIGURES MOVE WITH THE PLAN AND THE TRIAL —
   // its words, order and layout do not. Was Pro at £38.90 a month with 1 free month (£428 / £467, save £472 / £433). Now
   // the cheapest plan at £2,500 (Pay as you go, £24.75) with the trial's 3 free months: year one £24.75 × 9 = £222.75 →
@@ -245,13 +250,13 @@ const perWeekOf = monthly => (monthly * 12) / 52
     d.includes("Over two years that’s") && d.includes('excluded from both sides'))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
 
   // ── (e) MULTIPLE VANS — HEADLINE PER VAN, FLEET AS AN EXTRA LINE ────────────────────────────────
-  const e1 = renderWith([SYS('no'), STAFF(1), DAYS(4), GMV(2500), TRUCKS(3)], 'e1')
+  const e1 = renderWith([SYS('no'), DAYS(4), GMV(2500), TRUCKS(3)], 'e1')
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the cheapest plan's figures (see (a)) — per van and × 3.
   t(`🔴 (e) No path, 3 vans: the headline is still PER VAN (${gbp2(A_DAY)}), and says so`,
     e1.includes(`${gbp2(A_DAY)}\na trading day`) && e1.includes(`${gbp2(A_MONTH)} a month per van`))
   t('🔴 (e) …with the fleet monthly total as its own line', e1.includes(`Across 3 vans\n${gbp2(A_MONTH * 3)} a month`))
   t('⚠️ (e) …and the card-processing estimate is the fleet figure', e1.includes('~£212.50'))
-  const e2 = renderWith([SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT(C_PCT), TRUCKS(3)], 'e2')   // ⚠️ RE-PINNED (Stage B): (c)'s rate
+  const e2 = renderWith([SYS('yes'), DAYS(4), GMV(2500), PCT(C_PCT), TRUCKS(3)], 'e2')   // ⚠️ RE-PINNED (Stage B): (c)'s rate
   t('🔴 (e) Yes-dearer, 3 vans: headline per van and weekly, sub-line names the van',
     e2.includes(`\n${gbp2(C_WEEK)}\nmore a week`) && e2.includes(`${gbp2(C_MORE)} more per van a month than now`))
   /* 🔴 THE SANCTIONED VOCABULARY FIX (item 4). The grey box was the one place in the results still
@@ -262,7 +267,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
   /* ⚠️ AND ON THE SAVING CARD TOO, which is where the string actually lives — the dearer card shares the
    * same box, so pinning only the dearer path would miss a revert on the one case (d) protects. */
   t('🔴 (e) …and so does the SAVING card at 3 vans', (() => {
-    const sv = renderWith([SYS('yes'), STAFF(1), TRUCKS(3)], 'e3')
+    const sv = renderWith([SYS('yes'), TRUCKS(3)], 'e3')
     return sv.includes('You save') && sv.includes('across 3 vans') && !/across \d+ trucks/.test(sv)
   })())
   /* 🔴 UNDER £1 A WEEK STILL RENDERS AS WHOLE PENCE (item 5).
@@ -275,7 +280,10 @@ const perWeekOf = monthly => (monthly * 12) / 52
   // (Pay as you go, £14.85) is now far below their £28.50, so the fixture moves to £1,250 at 2.45% inclusive: their own
   // fee 0.95% = £11.875 against our 0.99% = £12.375 → 50p a month more → 12p a week. FREE(0) still load-bearing.
   t('🔴 a Yes-path difference under £1 a week renders whole pence + "more a week"', (() => {
-    const tiny = renderWith([SYS('yes'), STAFF(1), GMV(1250), PCT('2.45'), FREE('0')], 'tiny')
+    // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): FREE(0) was a patch on the removed months box; the same 0 months is
+    // now the prop `freeMonthsOverride: 0` — the value the component also takes from data when the catalogue has no trial
+    // (`?? 0`). (The page's own ?free=N passes 1–12 only.)
+    const tiny = renderWith([SYS('yes'), GMV(1250), PCT('2.45')], 'tiny', { props: { freeMonthsOverride: 0 } })
     return /\n12p\nmore a week/.test(tiny) && !/£0\.12/.test(tiny)
       && tiny.includes('50p a month more than now')
   })())
@@ -303,8 +311,8 @@ const perWeekOf = monthly => (monthly * 12) / 52
   t('🔴 (f) every transition straddles £3.00 exactly', boundaries.every(x =>
     perDay(oursPerTruck(x.gmv - 500), x.days) < 3.0 && perDay(oursPerTruck(x.gmv), x.days) >= 3.0))
   t('🔴 (f) …and the RENDER agrees at each boundary, both sides', boundaries.every(x => {
-    const below = renderWith([SYS('no'), STAFF(1), DAYS(x.days), GMV(x.gmv - 500)], `f${x.days}lo`)
-    const above = renderWith([SYS('no'), STAFF(1), DAYS(x.days), GMV(x.gmv)], `f${x.days}hi`)
+    const below = renderWith([SYS('no'), DAYS(x.days), GMV(x.gmv - 500)], `f${x.days}lo`)
+    const above = renderWith([SYS('no'), DAYS(x.days), GMV(x.gmv)], `f${x.days}hi`)
     return below.includes('Less than a coffee') && !above.includes('Less than a coffee')
   }))
 
@@ -327,7 +335,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
     !/competitor(Name|Pct|FixedMinor)|prefill\./.test(SRC)
     && SRC.includes(PCT_ANCHOR) && SRC.includes(PENCE_ANCHOR) && !/Hatches/.test(read('app/compare/CostComparison.tsx')))
   t('🔴 …rendered: both fee boxes are EMPTY and carry the neutral placeholders', (() => {
-    const h = renderWith([SYS('yes'), STAFF(1)], 'pf-empty', { raw: true, untyped: true })
+    const h = renderWith([SYS('yes')], 'pf-empty', { raw: true, untyped: true })
     const boxes = [...h.matchAll(/<input[^>]*inputMode="(?:decimal|numeric)"[^>]*>/g)].map(m => m[0])
       .filter(b => /aria-label="(Percentage fee|Pence per order)"/.test(b))
     return boxes.length === 2 && boxes.every(b => /value=""/.test(b))
@@ -340,19 +348,19 @@ const perWeekOf = monthly => (monthly * 12) / 52
   // ── 🔴 THE "Yes" PATH SHOWS NO RESULT UNTIL A RATE IS TYPED (Phase 2A, decided) ─────────────────────
   const GATE = 'Enter what you pay now to see your saving.'
   t('🔴 Yes path, nothing typed: the prompt stands in for the result — no saving, no year lines', (() => {
-    const txt = renderWith([SYS('yes'), STAFF(1)], 'gate-empty', { untyped: true })
+    const txt = renderWith([SYS('yes')], 'gate-empty', { untyped: true })
     return txt.includes(GATE) && !/Right now you pay|With HatchGrab\n|Year one|a week|a trading day|Save /.test(txt)
   })())
   t('🔴 Yes path, a rate typed: the result is back and the prompt is gone', (() => {
-    const txt = renderWith([SYS('yes'), STAFF(1), PCT('2.5')], 'gate-typed', { untyped: true })
+    const txt = renderWith([SYS('yes'), PCT('2.5')], 'gate-typed', { untyped: true })
     return !txt.includes(GATE) && txt.includes('Right now you pay')
   })())
   t('🔴 Yes path, only the per-order fee typed: that is a rate too — the result shows', (() => {
-    const txt = renderWith([SYS('yes'), STAFF(1), [PENCE_ANCHOR, "const [feePenceRaw, setFeePenceRaw] = useState('20')"]], 'gate-pence', { untyped: true })
+    const txt = renderWith([SYS('yes'), [PENCE_ANCHOR, "const [feePenceRaw, setFeePenceRaw] = useState('20')"]], 'gate-pence', { untyped: true })
     return !txt.includes(GATE) && txt.includes('Right now you pay')
   })())
   t('🔴 No path: the prompt never appears (there is nothing to type there)', (() => {
-    const txt = renderWith([SYS('no'), STAFF(1)], 'gate-no', { untyped: true })
+    const txt = renderWith([SYS('no')], 'gate-no', { untyped: true })
     return !txt.includes(GATE)
   })())
   t('🔴 the effective-rate line is still absent', !/effTheirs|effOurs/.test(SRC))
@@ -376,7 +384,7 @@ const perWeekOf = monthly => (monthly * 12) / 52
       txt => !/£2\.24\na trading day/.test(txt)],
     ['V2 🔴 the coffee line loses its threshold and always shows',
       [['perTradingDay(m.oursPerTruck, days) < COFFEE_MAX_PER_DAY', 'true']],
-      txt => txt.includes('Less than a coffee'), [SYS('no'), STAFF(1), DAYS(2), GMV(12000)]],
+      txt => txt.includes('Less than a coffee'), [SYS('no'), DAYS(2), GMV(12000)]],
     ['V3 🔴 the No path shows a per-order figure of ours',
       // ⚠️ RE-PINNED (Language Phase 1e): RE-ANCHORED, same mutation. "a trading day" is the `unit` tag of a message now.
       [['unit: c => <p className="mt-2 text-xl font-bold text-slate-700">{c}</p>,\n                  })}',
@@ -384,24 +392,24 @@ const perWeekOf = monthly => (monthly * 12) / 52
       txt => (resultsOf(txt).match(/per order/g) || []).length !== 1],
     ['V4 🔴 amounts under £1 render as £0.80 instead of 80p',
       [['  if (Math.abs(safe) < 1) return smallFeeLabel(Math.round(Math.abs(safe) * 10 ** minorDigits(f.currency)), f)', '  // removed']],
-      txt => !/80p\nmore a trading day/.test(txt), [SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('2.5')]],
+      txt => !/80p\nmore a trading day/.test(txt), [SYS('yes'), DAYS(4), GMV(2500), PCT('2.5')]],
     ['V5 🔴 the dearer path goes back to the "% more in your first year" line',
       [['                {dearer ? (', '                {false ? (']],
       // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): (c)'s dearer rate (2.5% is a saving now — see (c)).
-      txt => /more in your first year/.test(txt), [SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('1.9')]],
+      txt => /more in your first year/.test(txt), [SYS('yes'), DAYS(4), GMV(2500), PCT('1.9')]],
     /* 🔴 V6 — THE TRADING-DAYS QUESTION COMES BACK ON THE YES PATH. It would be collected and never
      * used there (that result is weekly), and it would put a seventh card into a path numbered to six. */
     ['V6 🔴 the days question is shown on the Yes path',
       [['          {noSystem && (\n          <Card n={STEP.days}', '          {true && (\n          <Card n={STEP.days}']],
-      txt => txt.includes('How many days a week do you trade?'), [SYS('yes'), STAFF(1)]],
+      txt => txt.includes('How many days a week do you trade?'), [SYS('yes')]],
     /* 🔴 V7 — THE SANCTIONED VOCABULARY FIX REVERTS. One object named two ways on one screen. */
     ['V7 🔴 the grey box goes back to "across N trucks"',
       // ⚠️ RE-PINNED (Language Phase 1e): RE-ANCHORED, same mutation. "across {fleet} vans" is compare.panel.acrossFleet now.
       [["{t('panel.acrossFleet', { fleet })}", "{t('panel.acrossFleet', { fleet }).replace('vans', 'trucks')}"]],
-      txt => /across \d+ trucks/.test(txt), [SYS('yes'), STAFF(1), TRUCKS(3), PCT('2.5')]],
+      txt => /across \d+ trucks/.test(txt), [SYS('yes'), TRUCKS(3), PCT('2.5')]],
   ]
   for (const [label, patches, caughtBy, state] of variants) {
-    const txt = renderWith([...(state ?? [SYS('no'), STAFF(1), DAYS(4), GMV(2500)]), ...patches], label.slice(0, 2))
+    const txt = renderWith([...(state ?? [SYS('no'), DAYS(4), GMV(2500)]), ...patches], label.slice(0, 2))
     const caught = caughtBy(txt)
     console.log(`  ${caught ? '✓ caught as required' : '🔴 NOT CAUGHT — THE HARNESS PROVES NOTHING'}  ${label}`)
     if (!caught) fails++

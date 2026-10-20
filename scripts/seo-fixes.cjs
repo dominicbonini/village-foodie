@@ -166,7 +166,8 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   // ══ 6 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('6 · S3 + N3 — robots per host')
   const RB = await ctx.bundle('seo-robots', "export { default } from '@/app/robots'", STUB)
-  const old = require('child_process').execSync('git show HEAD:public/robots.txt', { cwd: REPO, encoding: 'utf8' })
+  // The static file as it stood before seo-fixes — pinned to c6c44c9e (the commit that work started from; HEAD no longer has it).
+  const old = require('child_process').execSync('git show c6c44c9e:public/robots.txt', { cwd: REPO, encoding: 'utf8' })
   const oldRules = []; let ua = null
   for (const line of old.split('\n')) { const m = /^(User-agent|Disallow|Crawl-delay):\s*(.*)$/.exec(line.trim()); if (!m) continue; if (m[1] === 'User-agent') ua = m[2]; else oldRules.push(`${ua}|${m[1]}|${m[2]}`) }
   for (const [host, sm] of [[HG, 'https://www.hatchgrab.com/sitemap.xml'], [VF, 'https://www.villagefoodie.co.uk/sitemap.xml']]) {
@@ -198,7 +199,8 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   t('/contact has no lastmod (no content date exists) rather than request time', !('lastModified' in smOff.find(e => e.url.endsWith('/contact'))))
   t('no lastmod is the request time', smOn.every(e => !e.lastModified || iso(e.lastModified) !== new Date().toISOString()))
   t('country pages carry xhtml alternates — the same set as their <head> (US on: en-GB, en-US, x-default)', JSON.stringify(ukE.alternates?.languages) === JSON.stringify({ 'en-GB': 'https://www.hatchgrab.com/uk', 'en-US': 'https://www.hatchgrab.com/us', 'x-default': 'https://www.hatchgrab.com/' }), ukE.alternates)
-  t('Village Foodie: its root only, on the www host (= its og:url host), no lastmod', JSON.stringify(smVf) === JSON.stringify([{ url: 'https://www.villagefoodie.co.uk/', changeFrequency: 'daily', priority: 1 }]), smVf)
+  // ⚠️ RE-PINNED (compare-tidy F2, 20 October 2026): the VF sitemap also lists its self-canonical /contact (no lastmod).
+  t('Village Foodie: its root and its /contact, on the www host (= its og:url host), no lastmod', JSON.stringify(smVf) === JSON.stringify([{ url: 'https://www.villagefoodie.co.uk/', changeFrequency: 'daily', priority: 1 }, { url: 'https://www.villagefoodie.co.uk/contact', changeFrequency: 'yearly', priority: 0.3 }]), smVf)
 
   // ══ 8 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('8 · S4 — <html lang>')

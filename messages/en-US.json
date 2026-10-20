@@ -875,9 +875,6 @@
     "priceNoteMasked": "Prices shown as “TBD” are not yet published."
   },
   "compare": {
-    "people": {
-      "title": "{fleet, plural, one {How many people work the truck?} other {How many people work across your trucks?}}"
-    },
     "orders": {
       "captionNo": "A rough guess is fine — pre-orders and line-skippers, not cash or card at the window."
     },

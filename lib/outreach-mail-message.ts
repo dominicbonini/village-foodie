@@ -13,7 +13,6 @@
 // Pure: no network, no database, no nodemailer. `scripts/outreach-mail-send.cjs` proves every rule here.
 import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME, OUTREACH_TZ } from '@/lib/outreach-mail-config'
 import { docToHtml, docToText, type EmailDoc } from '@/lib/outreach-doc'
-import { COMPANY } from '@/lib/company'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/outreach'
 
@@ -30,25 +29,22 @@ const P_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12
 export const FOOTER_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 13.333333px; color: rgb(118, 118, 118);'
 
 /**
- * 🔴 THE FIXED COMPANY LINE — "HatchGrab Ltd · Company no. … · Registered office: …" — in the email's
- * locale. The WORDS are `outreach.companyFooter` in messages/; the FACTS are `COMPANY` (lib/company.ts),
- * passed in as ICU args, so the registered details are named once in code.
+ * ⛔ THE FIXED COMPANY LINE IS GONE (Dominic, 20 October 2026). Outreach emails no longer end with "HatchGrab Ltd ·
+ * Company no. … · Registered office: …" (added 19 October 2026, legal follow-ups). `FOOTER_STYLE` stays: it is how a
+ * STORED message's old line is recognised and removed on a retry (`rebuildStored`).
  */
-export function companyFooterLine(locale: string | null | undefined): string {
-  const t = translatorFor(locale, 'outreach')
-  return t('companyFooter', { company: COMPANY.name, number: COMPANY.number, address: COMPANY.address })
-}
 
 /**
- * 🔴 A STORED MESSAGE, REBUILT WITH TODAY'S COMPANY LINE — for a RETRY (Dominic, 19 October 2026). A retry resends a
+ * 🔴 A STORED MESSAGE, REBUILT AS `buildMessage` MAKES IT TODAY — for a RETRY (Dominic, 19 October 2026). A retry resends a
  * row that already exists, and the row holds the built bodies, not the document. So the rebuild works on what
  * `buildMessage` made, part by part, and puts back exactly what `buildMessage` would make today:
  *   • the NEW part (the document's HTML and text) is kept byte for byte;
  *   • any company line it already carries is taken out — found by its markup (the spacer, then the `FOOTER_STYLE`
  *     div) in the HTML, and as the text part's last paragraph only when the HTML had one;
- *   • the CURRENT line goes back in, where `buildMessage` puts it: after the new part, above any quote;
+  *   • NOTHING goes back in — since 20 October 2026 `buildMessage` adds no company line (Dominic), so a stored line is
+ *     simply dropped;
  *   • the quote (on a reply or a chase) is kept byte for byte.
- * So a row built before the company line existed gains it, and a row built with it is unchanged (idempotent) —
+ * So a row built with the old line loses it, and a row built without it is unchanged (idempotent) —
  * scripts/outreach-legal-footer.cjs proves both against `buildMessage` itself.
  * `newText` is the new part's text WITHOUT the company line or the quote — what the opt-out rule reads
  * (`lib/outreach-doc.ts#optOutBlockForText`). Null when the stored message is not one `buildMessage` made.
@@ -81,10 +77,10 @@ export function rebuildStored(
     if (i < 0 || bodyT.slice(i + 2).includes('\n')) return null
     docT = bodyT.slice(0, i)
   }
-  const footer = companyFooterLine(locale)
+  // 20 October 2026: no company line goes back in — the stored message is resent as `buildMessage` makes it today.
   return {
-    html: docH + spacer + div(FOOTER_STYLE, escapeHtml(footer)) + quoteH,
-    text: `${docT}\n\n${footer}${restT}`,
+    html: docH + quoteH,
+    text: `${docT}${restT}`,
     newText: docT,
   }
 }
@@ -267,24 +263,12 @@ export interface BuildInput {
  */
 export function buildMessage(input: BuildInput): BuiltMessage {
   // 🔴 THE DOCUMENT IS THE MESSAGE. `docToHtml` generates the captured Outlook markup from it and
-  // `docToText` the plain part. This function adds two things to what the operator wrote: the fixed
-  // company line, and the quoted parent on a reply (below, visible in the box's Show toggle).
-  /* ── 🔴 THE COMPANY LINE: LAST IN THE NEW MESSAGE, ABOVE ANY QUOTE (legal follow-ups, 19 October 2026,
-   * signed off by Dominic) ─────────────────────────────────────────────────────────────────────────────
-   * Every outreach email, both parts, no exceptions and no parameter that turns it off. WHERE, AND WHY:
-   *   • AFTER the whole document — the body, the signature and the opt-out line are all document text
-   *     (expanded into the box when the template is chosen), so "after the document" is after all three.
-   *   • BEFORE the quoted earlier email. A reply's quote is somebody else's message (or ours from an earlier
-   *     day); a line below it reads as part of THAT message. Above it, it is the last line of THIS one —
-   *     and an earlier email this system sent carries its own line inside the quote, as it should.
-   *   • A blank 12pt line first, the same spacer div the quote block opens with, so it sits apart from the
-   *     opt-out line instead of running into it.
-   * ⚠️ NOT IN THE DOCUMENT. It is not the operator's to edit or delete, and putting it in the box would make
-   * every template-render, Copy and Log carry it. The send-time guards read the document; this line has no
-   * token, no link and nothing they need to see. */
-  const footer = companyFooterLine(input.locale)
-  const bodyH = docToHtml(input.doc) + div(P_STYLE, '<br>') + div(FOOTER_STYLE, escapeHtml(footer))
-  const bodyT = `${docToText(input.doc)}\n\n${footer}`
+  // `docToText` the plain part. This function adds one thing to what the operator wrote: the quoted parent on a
+  // reply (below, visible in the box's Show toggle). (The fixed company line it also added was removed 20 October 2026.)
+  /* ⛔ THE COMPANY LINE IS NO LONGER ADDED (Dominic, 20 October 2026): the message is the document, plus the quoted
+   * parent on a reply. */
+  const bodyH = docToHtml(input.doc)
+  const bodyT = docToText(input.doc)
   if (!input.parent) {
     return {
       subject: input.subject,

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-// scripts/outreach-legal-footer.cjs — the company footer on every outreach email, and no send without an
+// scripts/outreach-legal-footer.cjs — ⚠️ RE-PINNED (Dominic, 20 October 2026): outreach emails NO LONGER carry the company
+// line ("HatchGrab Ltd · Company no. … · Registered office: …"); this proves it is gone from every email (a retry of an
+// old row included) — and, unchanged, no send without an
 // opt-out line (legal follow-ups, 19 October 2026; signed off by Dominic) — EXCEPT a test send and a reply to a
 // message the prospect sent, which still get the company line (Dominic's answers, 19 October 2026), and a RETRY
 // that rebuilds the stored message with today's line and applies the same rule (Part B2, Part D).
@@ -66,42 +68,32 @@ const EXAMPLES = {
 }
 
 // ── PART A · THE BUILDER ────────────────────────────────────────────────────────────────────────────
-console.log('\nA · every outreach email ends with the company line, in both parts')
-eq(`${C.COMPANY.name} · Company no. ${C.COMPANY.number} · Registered office: ${C.COMPANY.address}`, FOOTER,
-  'lib/company.ts holds exactly the signed-off name, number and registered office')
-eq(M.companyFooterLine('en-GB'), FOOTER, 'the en-GB message renders the signed-off sentence byte for byte')
-eq(M.companyFooterLine('en-US'), FOOTER, 'the en-US message renders the same sentence (no US override is needed)')
-check(/font-size: 13\.333333px/.test(M.FOOTER_STYLE) && /color: rgb\(118, 118, 118\)/.test(M.FOOTER_STYLE),
-  'the HTML line is 10pt (the opt-out line\'s 13.333333px) and grey', M.FOOTER_STYLE)
-
+// ⚠️ RE-PINNED (Dominic, 20 October 2026): the company line is REMOVED — no email carries it, in either part.
+console.log('\nA · no outreach email carries the company line (removed 20 October 2026), in either part')
+check(!('companyFooterLine' in M), 'the builder no longer exports a company-line function')
+check(!/companyFooter/.test(JSON.stringify(JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).outreach)), 'the `outreach.companyFooter` message is deleted')
 const built = {}
 for (const [k, ex] of Object.entries(EXAMPLES)) {
   const doc = D.docFromTemplateText(ex.template, SETTINGS)
   const b = M.buildMessage({ doc, subject: ex.subject, messageId: '<fixture@hatchgrab.com>', parent: null, fromName: 'Dominic Bonini', locale: ex.locale })
   built[k] = b
-  const lastText = b.text.replace(/\n+$/, '').split('\n').pop()
-  eq(lastText, FOOTER, `${k.toUpperCase()}: the text part's LAST line is the company line`)
-  const tail = `<div style="${M.FOOTER_STYLE}">${FOOTER}</div>`
-  check(b.html.endsWith(tail), `${k.toUpperCase()}: the HTML part ENDS with the company line, grey 10pt`)
-  check(b.html.indexOf(tail) > b.html.indexOf('rather not hear from me again') && b.text.indexOf(FOOTER) > b.text.indexOf('rather not hear from me again'),
-    `${k.toUpperCase()}: it sits below the opt-out line and the signature, in both parts`)
-  eq(b.html.split(FOOTER).length - 1, 1, `${k.toUpperCase()}: exactly once in the HTML`)
-  eq(b.text.split(FOOTER).length - 1, 1, `${k.toUpperCase()}: exactly once in the text`)
+  check(!b.html.includes('Company no.') && !b.text.includes('Company no.') && !b.html.includes('Registered office') && !b.text.includes('Registered office'),
+    `${k.toUpperCase()}: neither part carries the company line`)
+  eq(b.html, D.docToHtml(doc), `${k.toUpperCase()}: the HTML part is exactly the document — nothing appended`)
+  eq(b.text, `${D.docToText(doc)}\n`, `${k.toUpperCase()}: the text part is exactly the document — nothing appended`)
+  eq(b.text.replace(/\n+$/, '').split('\n').pop(), OPT, `${k.toUpperCase()}: the text part's LAST line is the opt-out line again`)
   check(!/<[a-z]/i.test(b.text), `${k.toUpperCase()}: the text part carries no markup`)
 }
 
-// A reply / chase: the line is the last thing in the NEW message, ABOVE the quoted earlier email.
+// A reply / chase: no company line between the new message and the quote either.
 {
   const doc = D.docFromTemplateText(EXAMPLES.uk.template, SETTINGS)
   const parent = { messageId: '<parent@hatchgrab.com>', references: null, quoted: PARENT }
   const r = M.buildMessage({ doc, subject: '', messageId: '<chase@hatchgrab.com>', parent, fromName: 'Dominic Bonini', locale: 'en-GB' })
-  const iF = r.html.indexOf(FOOTER), iQ = r.html.indexOf('mail-editor-reference-message-container'), iO = r.html.indexOf('rather not hear')
-  check(iO < iF && iF < iQ, 'a chase that quotes the earlier email: the line is BELOW the opt-out and ABOVE the quoted email (HTML)')
-  const tF = r.text.indexOf(FOOTER), tQ = r.text.indexOf('From: Dominic Bonini <dominic@hatchgrab.com>')
-  check(tF > 0 && tQ > tF, 'the same in the text part — the line comes before the quoted "From:" header')
+  check(!r.html.includes('Company no.') && !r.text.includes('Company no.'), 'a chase that quotes the earlier email: no company line (HTML or text)')
+  check(r.html.startsWith(D.docToHtml(doc)) && r.html.indexOf('mail-editor-reference-message-container') > 0, '…the new message is the document, then the quoted email')
   const n = M.buildMessage({ doc, subject: '', messageId: '<chase2@hatchgrab.com>', parent: { ...parent, quote: false }, fromName: 'Dominic Bonini', locale: 'en-GB' })
-  check(n.html.endsWith(`<div style="${M.FOOTER_STYLE}">${FOOTER}</div>`) && n.text.replace(/\n+$/, '').split('\n').pop() === FOOTER,
-    'a chase with "Include previous email" unticked: the line is the very last line again')
+  check(n.html === D.docToHtml(doc) && n.text === `${D.docToText(doc)}\n`, 'a chase with "Include previous email" unticked: exactly the document')
 }
 
 // ── PART B · THE ONE OPT-OUT DEFINITION ──────────────────────────────────────────────────────────────
@@ -132,13 +124,11 @@ console.log('\nB · `optOutBlock` — the single definition the composer and the
   }
 }
 
-// ── PART B2 · A RETRY REBUILDS THE STORED MESSAGE WITH TODAY'S COMPANY LINE ───────────────────────────
-/* ⚠️ ADDED (Dominic's answer 3, 19 October 2026). A retry has the row's built bodies, not the document, so
- * `rebuildStored` works on them. PROOF, against the builder itself: whatever the row holds — a message built
- * BEFORE the company line existed (the bodies `buildMessage` made then: no line), or one built with it — the
- * rebuild is byte for byte what `buildMessage` makes today, for a first contact, a reply with its quote, and a
- * chase with the quote unticked. */
-console.log('\nB2 · `rebuildStored` — a retry resends what `buildMessage` would build today')
+// ── PART B2 · A RETRY DROPS AN OLD COMPANY LINE ────────────────────────────────────────────────────────
+/* ⚠️ RE-PINNED (Dominic, 20 October 2026): a row built between 19 and 20 October 2026 carries the company line; a
+ * retry rebuilds it to what `buildMessage` makes TODAY — so the line is dropped. A row built without it is unchanged.
+ * Proved for a first contact, a reply with its quote, and a chase with the quote unticked. */
+console.log('\nB2 · `rebuildStored` — a retry resends what `buildMessage` builds today (no company line)')
 {
   const doc = D.docFromTemplateText('Hello there\n\n{{signature}}\n{{opt_out}}', SETTINGS)
   const quoted = { ...PARENT }
@@ -147,20 +137,22 @@ console.log('\nB2 · `rebuildStored` — a retry resends what `buildMessage` wou
     ['a reply with its quote', { messageId: '<p@x>', references: null, quoted }],
     ['a chase with "Include previous email" unticked', { messageId: '<p@x>', references: null, quoted, quote: false }],
   ]
-  // What a row built before 19 October 2026 holds: the same builder with no company line (its old body exactly).
-  const oldBuild = (parent) => {
-    const now = M.buildMessage({ doc, subject: 'S', messageId: '<m@x>', parent, fromName: 'Dominic Bonini', locale: 'en-GB' })
-    const spacerFooter = `<div style="font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);"><br></div><div style="${M.FOOTER_STYLE}">${FOOTER}</div>`
-    return { html_body: now.html.replace(spacerFooter, ''), text_body: now.text.replace(`\n\n${FOOTER}`, '') }
+  // What a row built on 19–20 October 2026 holds: today's bodies with the old line where the builder put it then —
+  // after the document, above any quote (spacer, then the FOOTER_STYLE div; in the text, its own last paragraph).
+  const spacer = '<div style="font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);"><br></div>'
+  const lineH = `${spacer}<div style="${M.FOOTER_STYLE}">${FOOTER}</div>`
+  const withLine = (now) => {
+    const docH = D.docToHtml(doc), docT = D.docToText(doc)
+    return { html_body: docH + lineH + now.html.slice(docH.length), text_body: docT + `\n\n${FOOTER}` + now.text.slice(docT.length) }
   }
   for (const [label, parent] of shapes) {
     const today = M.buildMessage({ doc, subject: 'S', messageId: '<m@x>', parent, fromName: 'Dominic Bonini', locale: 'en-GB' })
-    const old = oldBuild(parent)
-    check(!old.html_body.includes(FOOTER) && !old.text_body.includes(FOOTER), `${label}: the "before" row really has no company line`)
+    const old = withLine(today)
+    check(old.html_body.includes(FOOTER) && old.text_body.includes(FOOTER), `${label}: the old row really carries the company line`)
     const r1 = M.rebuildStored(old, 'en-GB')
-    check(!!r1 && r1.html === today.html && r1.text === today.text, `${label}: a row built BEFORE the line → exactly today's message (HTML and text)`)
+    check(!!r1 && r1.html === today.html && r1.text === today.text, `${label}: a row built WITH the line → exactly today's message, line dropped (HTML and text)`)
     const r2 = M.rebuildStored({ html_body: today.html, text_body: today.text }, 'en-GB')
-    check(!!r2 && r2.html === today.html && r2.text === today.text, `${label}: a row built WITH it → unchanged (idempotent)`)
+    check(!!r2 && r2.html === today.html && r2.text === today.text, `${label}: a row built WITHOUT it → unchanged (idempotent)`)
     check(!!r1 && r1.newText === D.docToText(doc), `${label}: the opt-out rule reads the new part only — no quote, no company line`)
   }
   check(M.rebuildStored({ html_body: '<p>hand-made</p>', text_body: 'no trailing newline' }, 'en-GB') === null, 'a body `buildMessage` did not make is not rebuilt (the retry refuses)')
@@ -188,7 +180,7 @@ console.log('\nD · where it is enforced')
   const PREP = codeOf(fs.readFileSync(path.join(REPO, 'lib/outreach-retry-rebuild.ts'), 'utf8'))
   check(/rebuildStored\(row, await localeForTruck\(\{ country \}\)\)/.test(PREP) && /optOutExempt\(\{ isTest: row\.is_test === true, parent \}\)/.test(PREP)
     && /optOutBlockForText\(rebuilt\.newText, /.test(PREP) && /t\('optOut\.unreadable'\)/.test(PREP) && /'optOut\.notSetUp' : 'optOut\.missing'/.test(PREP),
-    '`prepareRetry`: today\'s line in the prospect\'s language, the same exemption, the same opt-out test on the new part, the send\'s own refusal words')
+    '`prepareRetry`: the rebuild in the prospect\'s language, the same exemption, the same opt-out test on the new part, the send\'s own refusal words')
   check(/locale: footerLocale/.test(ROUTE) && /discovery_trucks\(name, contact_email, hatchgrab_truck_id, show_on_vf, excluded, country\)/.test(ROUTE),
     'the builder is handed the prospect truck\'s locale, read from its country')
   check(/optOutBlock\(doc, settings\.optOut\)/.test(CW), 'the composer calls the same `optOutBlock` on the document on screen')
@@ -221,7 +213,7 @@ async function browserParts() {
       await p.screenshot({ path: shot, fullPage: true })
       const last = await p.evaluate(() => { const d = [...document.body.querySelectorAll('div')]; return d[d.length - 1].textContent })
       const overflow = await p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
-      eq(last, FOOTER, `${k.toUpperCase()}: the last line on the rendered page is the company line`)
+      eq(last, OPT, `${k.toUpperCase()}: the last line on the rendered page is the opt-out line — no company line (removed 20 October 2026)`)
       check(!overflow, `${k.toUpperCase()}: no horizontal scroll at 600px (the line wraps)`)
       check(fs.statSync(shot).size > 5000, `${k.toUpperCase()}: screenshot written`, path.relative(REPO, shot))
       await ctx.close()
@@ -310,9 +302,9 @@ createRoot(document.getElementById('root')!).render(<div style={{ padding: 16, w
     check(!!ri.send && ri.send.disabled === false && !ri.body.includes(MSG.missing), 'a REPLY to a message the prospect sent, with no opt-out line: Send is ENABLED (exempt)', ri.send && ri.send.title)
     const ro = await state('replyOwn')
     check(!!ro.send && ro.send.disabled === true && ro.send.title === MSG.missing, 'a follow-up on OUR OWN email with no opt-out line: Send is still disabled', ro.send && ro.send.title)
+    // ⚠️ RE-PINNED (Dominic, 20 October 2026): the read-only company line under the box is gone with the line itself.
     for (const [m, st] of [['with', ok], ['without', no], ['replyInbound', ri]]) {
-      check(!!st.line && st.line.text === FOOTER && st.line.below && !st.line.editable && st.line.grey,
-        `${m}: the company line is shown under the box, read-only, grey (text-slate-400) — the exact line every email ends with`, JSON.stringify(st.line))
+      check(st.line === null && !st.body.includes('Company no.'), `${m}: no company line is shown under the box`, JSON.stringify(st.line))
     }
   } finally { await b.close() }
 }
@@ -320,6 +312,6 @@ createRoot(document.getElementById('root')!).render(<div style={{ padding: 16, w
 browserParts()
   .catch(e => { console.log(`  🔴 ${e && e.stack || e}`); fails++ })
   .finally(() => {
-    console.log(fails === 0 ? '\n✅ the company line ends every outreach email (a retry included), and only a test or a reply to the prospect leaves without an opt-out line' : `\n🔴 ${fails} failure(s)`)
+    console.log(fails === 0 ? '\n✅ no outreach email carries the company line (a retry of an old row included), and only a test or a reply to the prospect leaves without an opt-out line' : `\n🔴 ${fails} failure(s)`)
     process.exit(fails === 0 ? 0 : 1)
   })

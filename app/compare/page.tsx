@@ -152,6 +152,11 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
   // Phase 2D-1: the visitor's country (lib/visitor-country.ts), on the server, after the host gate.
   // Language Phase 1e: at a country address the country is the ADDRESS's (lib/visitor-country.ts resolveCountryPage).
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'compare' })
+  // compare-tidy-2 (20 October 2026): the OUTREACH override of the free months — `?free=N`, a whole number 1–12, replaces the
+  // trial's length (plans.trial_months) for this visit. Anything else (missing, 0, 13, "abc", "2.5", repeated) → null →
+  // the data value. No visible input.
+  const freeRaw = (await searchParams)?.free
+  const freeMonthsOverride = typeof freeRaw === 'string' && /^\d{1,2}$/.test(freeRaw) && +freeRaw >= 1 && +freeRaw <= 12 ? +freeRaw : null
   const settings = visitor.settings
   const catalog = await getPlanCatalog()
 
@@ -208,7 +213,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
         <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
       </div>
 
-      <CostComparison settings={settings} catalog={catalog} locale={localeOfCountry(settings)} />
+      <CostComparison settings={settings} catalog={catalog} locale={localeOfCountry(settings)} freeMonthsOverride={freeMonthsOverride} />
 
       <div className={CHROME}>
         <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />

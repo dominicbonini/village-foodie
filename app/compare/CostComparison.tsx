@@ -246,11 +246,14 @@ function anchor(v: number): AnchorId | null {
 // 🔴 DO NOT ADD A PROVIDER HERE TO "MAKE THIS COMPONENT SELF-CONTAINED". A second provider would give
 // these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
 // the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
-export default function CostComparison({ settings, catalog, locale }: {
+export default function CostComparison({ settings, catalog, locale, freeMonthsOverride = null }: {
   /** The marketing country's settings, read server-side by app/compare/page.tsx. */
   settings: CountrySettings
   /** The plan catalogue (public.plans / plan_prices / plan_features), read server-side by the page. */
   catalog: PlanCatalog
+  /** compare-tidy-2: the outreach override of the free months (`?free=N`, a whole number 1–12, validated by the page);
+   *  null → the trial's length from data. */
+  freeMonthsOverride?: number | null
   /** The page's language — the visitor's country's locale, decided by the server page (never re-resolved here). */
   locale: AppLocale
 }) {
@@ -280,7 +283,8 @@ export default function CostComparison({ settings, catalog, locale }: {
   // here is an estimate the operator adjusts, not an assumption about their business model.
   const [days, setDays] = useState(4)
   const [trucks, setTrucks] = useState(1)
-  const [staff, setStaff] = useState<1 | 2 | null>(null)
+  // ⛔ compare-tidy (20 October 2026): the "how many people work the van?" question is GONE, with its state. Every plan
+  // has separate logins, and the plan (so every figure) depends only on the online order value below.
   // ── 🔴 THE OVERRIDE IS `null`-ABLE ON PURPOSE, AND `null` IS NOT A PLAN. ──────────────────────────
   // No choice made (follow the suggestion), or the key of the plan chosen instead. A boolean
   // could not tell "they have not chosen" from "they chose the plan we suggest", and the eyebrow in the
@@ -296,8 +300,6 @@ export default function CostComparison({ settings, catalog, locale }: {
   // country_settings.competitor_* columns that used to fill these are retired and unread (20261010_10).
   const [feePctRaw, setFeePctRaw] = useState('')
   const [feePenceRaw, setFeePenceRaw] = useState('')
-  // Stage B: prefilled with the trial's length (plans.trial_months) — the offer a new truck actually gets.
-  const [freeMonthsRaw, setFreeMonthsRaw] = useState(() => String(offerTrialMonths(catalog) ?? 0))
   // ── 🔴 IS THE RATE THEY TYPED ALL-IN, OR PLATFORM-ONLY? ──────────────────────────────────────────
   // The page used to assume ALL-IN unconditionally and subtract card processing out of it. That is
   // right for a provider that quotes one all-in rate and WRONG for any
@@ -312,7 +314,10 @@ export default function CostComparison({ settings, catalog, locale }: {
   const feePence = numOr(feePenceRaw, 0)
   // Has the operator typed what they pay? Either box counts. Until then the "Yes" path shows no result.
   const rateTyped = feePctRaw.trim() !== '' || feePenceRaw.trim() !== ''
-  const freeMonths = numOr(freeMonthsRaw, 0)
+  // compare-tidy-2: the free months are DATA — the trial's length (plans.trial_months), or the validated outreach override
+  // (`?free=N`, 1–12, parsed by the server page). Every months figure below (year one, the savings, "Months 1–N — on us",
+  // "first N months are on us") follows this one value.
+  const freeMonths = freeMonthsOverride ?? offerTrialMonths(catalog) ?? 0
 
   // ── 🔴 ONE PLACE DECIDES THE ACTIVE PLAN, AND EVERYTHING DOWNSTREAM ALREADY READS IT. ───────────
   // Stage B: the suggestion is the CHEAPEST plan at the online volume entered (lib/plan-offer.ts cheapestAt — the
@@ -336,14 +341,16 @@ export default function CostComparison({ settings, catalog, locale }: {
 
   /* ── 🔴 THE CARD NUMBERS ARE COMPUTED, BECAUSE THE TWO PATHS HAVE DIFFERENT LENGTHS ─────────────
    * The "No" path hides "What do you pay per order now?" entirely, so hard-coded numbers would read
-   * 1, 2, 3, 4, 6, 7 — a gap that looks like a missing question and invites the operator to go looking
+   * 1, 2, 3, 5, 6 — a gap that looks like a missing question and invites the operator to go looking
    * for it. These are the only place a step number is written, and `n={STEP.x}` at each call site.
-   * ⚠️ THE FIRST FOUR ARE THE SAME ON BOTH PATHS, so they are literals; only the tail moves. */
+   * ⚠️ THE FIRST THREE ARE THE SAME ON BOTH PATHS, so they are literals; only the tail moves.
+   * compare-tidy (20 October 2026): renumbered with no gap after the staff question was removed (orders 4→3,
+   * fee / trading days 5→4, free months 6→5). */
   const STEP = {
-    system: 1, trucks: 2, people: 3, orders: 4,
-    fee: 5,     // Yes path only — hidden entirely on No
-    days: 5,    // No path only — hidden entirely on Yes (1 October 2026)
-    free: 6,    // both paths, and the last question on each
+    system: 1, trucks: 2, orders: 3,
+    fee: 4,     // Yes path only — hidden entirely on No
+    days: 4,    // No path only — hidden entirely on Yes (1 October 2026); the last question on that path
+    // (compare-tidy-2: months free, question 5, is gone — the months are data.)
   }
 
   const m = useMemo(() => {
@@ -477,14 +484,14 @@ export default function CostComparison({ settings, catalog, locale }: {
               asked "What do you pay per order now?", had no answer, and was shown a saving against the
               prefilled 4.5% — a figure WE put there. That is the page inventing the comparison it then
               wins, which is the one thing it cannot do and still be believed.
-              ⚠️ NO DEFAULT, AND THE BUTTONS ARE THE *STAFF* QUESTION'S BUTTONS, CLASS FOR CLASS —
+              ⚠️ NO DEFAULT, AND THE BUTTONS WERE THE (since removed — compare-tidy) STAFF QUESTION'S BUTTONS, CLASS FOR CLASS —
               `px-4 py-4 text-base font-bold`. 🔴 THEY WERE `px-3 py-3 text-sm font-black sm:text-base`
               AND THAT WAS WRONG (corrected 1 October 2026, operator spotted it): `font-black` is 900
               against the 700 every other WORDED option on this page uses, so these two read as a heavier
               class of control than "One" / "Two or more" directly below them. The numeric buttons —
               trucks, and trading days — keep `font-black` because a single digit at 700 looks unset
               beside them; it is the WORDED options that have to agree with each other.
-              ⚠️ SO THE RULE IS: worded options match the staff buttons, digits match the truck buttons.
+              ⚠️ SO THE RULE IS: worded options use these classes, digits match the truck buttons.
               ⚠️ `flex-wrap` AND `min-w-0 flex-1` FOR THE SAME REASON QUESTION 2 HAS THEM: at 375px two
               labels this long on one row need to be allowed to wrap rather than overflow the card. */}
           <Card n={STEP.system} title={t('system.title')}>
@@ -538,80 +545,6 @@ export default function CostComparison({ settings, catalog, locale }: {
             </div>
           </Card>
 
-          {/* ⚠️ THE TITLE FOLLOWS QUESTION 1. "each van" was wrong for a one-truck operator, who has one
-              van and is being asked about "each" of it. `fleet` is already the clamped truck count. */}
-          <Card n={STEP.people} title={t('people.title', { fleet })}
-            disabled={!hasSystem}>
-            {/* 🔴 ANSWERING QUESTION 2 CLEARS THE OVERRIDE (the `setPlanOverride(null)` below). Without
-                it, an operator who switched plan and then changed their answer would be shown "Your
-                choice" from before — a stale decision presented as a current one, made from an answer
-                they had just replaced. ⚠️ It resets on EVERY press,
-                including pressing the answer already selected: that is still the operator asserting it.
-                ⚠️ THIS COMMENT LIVES HERE, NOT NEXT TO THE onClick, BECAUSE A JSX COMMENT PLACED
-                DIRECTLY AFTER `.map(o => (` IS AN EXPRESSION, NOT A CHILD, AND FAILS THE BUILD. */}
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              {([{ v: 1 as const, label: t('people.one') }, { v: 2 as const, label: t('people.twoOrMore') }]).map(o => (
-                <button key={o.v} onClick={() => { setStaff(o.v); setPlanOverride(null) }}
-                  className="min-w-0 flex-1 rounded-xl border-2 px-4 py-4 text-base font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                  style={staff === o.v
-                    ? { backgroundColor: ORANGE, borderColor: ORANGE, color: '#fff' }
-                    : { borderColor: '#E2E8F0', backgroundColor: '#fff', color: SLATE }}>
-                  {o.label}
-                </button>
-              ))}
-            </div>
-            {/* ── 🔴 A RECOMMENDATION, NOT A FOOTNOTE, AND NOT A VERDICT. ───────────────────────────
-                This was a plain grey paragraph under the buttons, which reads as small print. It is the
-                OUTCOME of the question above it and it sets every figure on the page, so it now gets the
-                treatment of a result. The fill, rounding and padding deliberately MATCH THE HERO CONTEXT
-                PANEL (`#F8FAFC`, `rounded-xl`, `px-5 py-4`) so the two read as the same kind of object.
-                🔴 FLEX ROWS AND PLAIN BLOCKS ONLY — NO GRID TEMPLATE, NO WIDTH CLASS. Two grid attempts
-                in this file collapsed to a single column and rendered as five lines; see
-                docs/cost-comparison-panel-fix-report.md §1. ⚠️ DO NOT REINTRODUCE THAT PATTERN HERE.
-                ⚠️ Unlike the hero panel this one is FULL WIDTH — no centring wrapper, no width class. It
-                is a block inside a left-aligned card, not a centred island, so plain block flow is
-                already correct and adding a width would be the exact mistake that broke the hero twice.
-                🔴 EVERY NUMBER IS INTERPOLATED, from public.plan_prices (Stage B): `tier.monthly`, `tier.includedLabel`,
-                `tier.feePct`. ⚠️ NO PRICE, ALLOWANCE OR FEE IS WRITTEN IN THIS FILE.
-                ⚠️ "on each" IS GATED ON `fleet`, NOT ON `staff` — the allowance is per truck, so it only
-                means anything when there is more than one truck to spread it across. */}
-            {staff && (
-              <div className="mt-4 rounded-xl px-5 py-4" style={{ backgroundColor: '#F8FAFC' }}>
-                {/* ⚠️ THE EYEBROW TELLS THE TRUTH ABOUT WHOSE DECISION THIS IS. Once someone overrides,
-                    "We suggest" would be a lie — we suggested another plan and they declined it. */}
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  {planOverride ? t('plan.yourChoice') : t('plan.weSuggest')}
-                </p>
-                <p className="mt-1 text-2xl font-black" style={{ color: INK }}>{planName}</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  {/* Stage B: worded by the plan's SHAPE; every plan has separate logins, so "Two or more" says so on any. */}
-                  {tier.shape === 'included'
-                    ? t('plan.summary', { price: gbp(plan), allowance: tier.includedLabel ?? '', fleet })
-                    : tier.shape === 'feeOnly'
-                      ? t('plan.summaryFeeOnly', { hasMonthly: plan > 0 ? 'yes' : 'no', price: gbp(plan), pct: feePctLabel })
-                      : t('plan.summaryNoFee', { price: gbp(plan) })}
-                  {staff === 2 && <>{' '}{t('plan.ownLogin')}</>}
-                </p>
-                {/* ⚠️ TEXT BUTTONS, NOT A SECOND SET OF LARGE BUTTONS. Big choices here would
-                    compete with the answer buttons directly above and turn one question into two.
-                    Stage B: one per OTHER plan (the data's), in sort_order.
-                    ⚠️ SWITCHING BACK TO THE SUGGESTED PLAN CLEARS THE OVERRIDE RATHER THAN SETTING IT,
-                    so the eyebrow returns to "We suggest" instead of claiming a choice that now happens
-                    to agree with us. The underline is correct here — this one IS an affordance. */}
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
-                  {PLANS.filter(p => p.key !== activeKey).map(p => (
-                    <button key={p.key} type="button"
-                      onClick={() => setPlanOverride(p.key === suggestedKey ? null : p.key)}
-                      className="text-sm font-semibold underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                      style={{ color: ORANGE }}>
-                      {t('plan.switchTo', { plan: p.name })}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </Card>
-
           {/* ── 🔴 THE SAME SLIDER, TWO QUESTIONS ───────────────────────────────────────────────────
               On the Yes path this asks what they DO take online; on the No path what they THINK they
               would. 🔴 THE INPUT, RANGE, STEP AND "~N orders" ARE DELIBERATELY IDENTICAL — the quantity
@@ -619,7 +552,7 @@ export default function CostComparison({ settings, catalog, locale }: {
               change, because only the certainty does. */}
           <Card n={STEP.orders}
             title={noSystem ? t('orders.titleNo') : t('orders.titleYes')}
-            disabled={!hasSystem || !staff}>
+            disabled={!hasSystem}>
             {/* ── 🔴 THE CAPTION HAS TO EXCLUDE THE WINDOW, AND THIS IS AN HONESTY FIX. ──────────────
                 It read "One truck · about {N} orders", which named the SCOPE but never said what kind
                 of money. Most trucks take the majority of theirs on the card machine at the serving
@@ -668,26 +601,74 @@ export default function CostComparison({ settings, catalog, locale }: {
             <input type="range" min={0} max={12000} step={500} value={gmv}
               onChange={e => setGmv(numOr(e.target.value, 0))} className="hg-range mt-3"
               aria-label={t('orders.sliderAria')} />
-            {staff && (
-              <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                {/* Stage B: worded by the plan's SHAPE — a fee on everything, an included amount, or unlimited. */}
-                {tier.shape === 'noFee' ? (
-                  t('orders.noFee')
-                ) : tier.shape === 'feeOnly' ? (
-                  t.rich('orders.feeOnly', { pct: feePctLabel, over: gbp(m.overPerTruck, 2), b: c => <strong className="tabular-nums">{c}</strong> })
-                ) : m.excess > 0 ? (
-                  t.rich('orders.overAllowance', {
-                    allowance: tier.includedLabel ?? '', excess: gbp(m.excess), pct: feePctLabel, over: gbp(m.overPerTruck, 2),
-                    b: c => <strong className="tabular-nums">{c}</strong>,
-                  })
-                ) : (
-                  t('orders.insideAllowance', { allowance: tier.includedLabel ?? '' })
-                )}
-                {fleet > 1 && (
-                  <>{' '}{t.rich('orders.acrossFleet', { fleet, amount: gbp(m.fleetGmv), b: c => <strong className="tabular-nums">{c}</strong> })}</>
-                )}
+            {/* compare-tidy: no longer waits on any other answer — the card itself unlocks with question 1. */}
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+              {/* Stage B: worded by the plan's SHAPE — a fee on everything, an included amount, or unlimited. */}
+              {tier.shape === 'noFee' ? (
+                t('orders.noFee')
+              ) : tier.shape === 'feeOnly' ? (
+                t.rich('orders.feeOnly', { pct: feePctLabel, over: gbp(m.overPerTruck, 2), b: c => <strong className="tabular-nums">{c}</strong> })
+              ) : m.excess > 0 ? (
+                t.rich('orders.overAllowance', {
+                  allowance: tier.includedLabel ?? '', excess: gbp(m.excess), pct: feePctLabel, over: gbp(m.overPerTruck, 2),
+                  b: c => <strong className="tabular-nums">{c}</strong>,
+                })
+              ) : (
+                t('orders.insideAllowance', { allowance: tier.includedLabel ?? '' })
+              )}
+              {fleet > 1 && (
+                <>{' '}{t.rich('orders.acrossFleet', { fleet, amount: gbp(m.fleetGmv), b: c => <strong className="tabular-nums">{c}</strong> })}</>
+              )}
+            </p>
+            {/* ── 🔴 A RECOMMENDATION, NOT A FOOTNOTE, AND NOT A VERDICT. ───────────────────────────
+                This was a plain grey paragraph under the buttons, which reads as small print. It is the
+                OUTCOME of the slider above it and it sets every figure on the page, so it gets the
+                treatment of a result. compare-tidy (20 October 2026): it lived in the staff question's card;
+                with that question gone it sits HERE, under the slider and its "£X included…" line, and
+                follows the slider live (lib/plan-offer.ts cheapestAt, the landing bar's rule). The fill, rounding and padding deliberately MATCH THE HERO CONTEXT
+                PANEL (`#F8FAFC`, `rounded-xl`, `px-5 py-4`) so the two read as the same kind of object.
+                🔴 FLEX ROWS AND PLAIN BLOCKS ONLY — NO GRID TEMPLATE, NO WIDTH CLASS. Two grid attempts
+                in this file collapsed to a single column and rendered as five lines; see
+                docs/cost-comparison-panel-fix-report.md §1. ⚠️ DO NOT REINTRODUCE THAT PATTERN HERE.
+                ⚠️ Unlike the hero panel this one is FULL WIDTH — no centring wrapper, no width class. It
+                is a block inside a left-aligned card, not a centred island, so plain block flow is
+                already correct and adding a width would be the exact mistake that broke the hero twice.
+                🔴 EVERY NUMBER IS INTERPOLATED, from public.plan_prices (Stage B): `tier.monthly`, `tier.includedLabel`,
+                `tier.feePct`. ⚠️ NO PRICE, ALLOWANCE OR FEE IS WRITTEN IN THIS FILE.
+                ⚠️ "on each" IS GATED ON `fleet` — the allowance is per truck, so it only means anything when
+                there is more than one truck to spread it across. */}
+          <div className="mt-4 rounded-xl px-5 py-4" style={{ backgroundColor: '#F8FAFC' }}>
+              {/* ⚠️ THE EYEBROW TELLS THE TRUTH ABOUT WHOSE DECISION THIS IS. Once someone overrides,
+                  "We suggest" would be a lie — we suggested another plan and they declined it. */}
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                {planOverride ? t('plan.yourChoice') : t('plan.weSuggest')}
               </p>
-            )}
+              <p className="mt-1 text-2xl font-black" style={{ color: INK }}>{planName}</p>
+              <p className="mt-1 text-sm text-slate-600">
+                {/* Stage B: worded by the plan's SHAPE. */}
+                {tier.shape === 'included'
+                  ? t('plan.summary', { price: gbp(plan), allowance: tier.includedLabel ?? '', fleet })
+                  : tier.shape === 'feeOnly'
+                    ? t('plan.summaryFeeOnly', { hasMonthly: plan > 0 ? 'yes' : 'no', price: gbp(plan), pct: feePctLabel })
+                    : t('plan.summaryNoFee', { price: gbp(plan) })}
+              </p>
+              {/* ⚠️ TEXT BUTTONS, NOT A SECOND SET OF LARGE BUTTONS. Big choices here would
+                  compete with the questions' answer buttons and turn a suggestion into a question.
+                  Stage B: one per OTHER plan (the data's), in sort_order.
+                  ⚠️ SWITCHING BACK TO THE SUGGESTED PLAN CLEARS THE OVERRIDE RATHER THAN SETTING IT,
+                  so the eyebrow returns to "We suggest" instead of claiming a choice that now happens
+                  to agree with us. The underline is correct here — this one IS an affordance. */}
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                {PLANS.filter(p => p.key !== activeKey).map(p => (
+                  <button key={p.key} type="button"
+                    onClick={() => setPlanOverride(p.key === suggestedKey ? null : p.key)}
+                    className="text-sm font-semibold underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                    style={{ color: ORANGE }}>
+                    {t('plan.switchTo', { plan: p.name })}
+                  </button>
+                ))}
+              </div>
+            </div>
           </Card>
 
           {/* ── 🔴 HIDDEN ENTIRELY ON THE "No" PATH, NOT DISABLED ───────────────────────────────────
@@ -699,7 +680,7 @@ export default function CostComparison({ settings, catalog, locale }: {
               card is hidden, so switching back to "Yes" restores what was typed rather than silently
               clearing it. Nothing on the No path READS them — see the results branch. */}
           {!noSystem && (
-          <Card n={STEP.fee} title={t('fee.title')} disabled={!hasSystem || !staff}>
+          <Card n={STEP.fee} title={t('fee.title')} disabled={!hasSystem}>
             {/* ⚠️ `min-w-0` on both halves is what stops these overflowing at 375px: without it a flex
                 child refuses to shrink below its content width and the row pushes past the card. */}
             <div className="flex gap-2 sm:gap-3">
@@ -823,7 +804,7 @@ export default function CostComparison({ settings, catalog, locale }: {
               the card is hidden, so switching back to "No" restores what was chosen rather than silently
               returning it to 4. Nothing on the Yes path reads it. */}
           {noSystem && (
-          <Card n={STEP.days} title={t('days.title')} disabled={!hasSystem || !staff}>
+          <Card n={STEP.days} title={t('days.title')} disabled={!hasSystem}>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {[1, 2, 3, 4, 5, 6, 7].map(n => (
                 <button key={n} onClick={() => setDays(n)}
@@ -841,28 +822,9 @@ export default function CostComparison({ settings, catalog, locale }: {
           </Card>
           )}
 
-          {/* ── ⚠️ ITS OWN QUESTION, NOT A FOOTER ON QUESTION 4 (23 August 2026). ────────────────────
-              It sat inside "What do you pay per order now?", which asks about the operator's CURRENT
-              provider. Months free is a HatchGrab offer — the opposite side of the comparison — so
-              nesting it there put our number inside their question and quietly implied the free months
-              were something their provider gave them. Separate card, separate subject. */}
-          {/* ⚠️ AN OFFER FRAMING THAT STILL ASKS THE QUESTION. ⚠️ It is the only title with two clauses
-              and the longest of the five — but card 3 ("Online orders per month, per truck") already
-              breaks the plain-question pattern, so the set was never uniform, and rewording this to match
-              cards 1/2/4 would have cost the offer framing that is the point of the change. */}
-          <Card n={STEP.free} title={t('free.title')} disabled={!hasSystem || !staff}>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center rounded-lg border px-2" style={{ borderColor: '#CBD5E1' }}>
-                <input type="number" step={1} min={0} max={12} inputMode="numeric" value={freeMonthsRaw}
-                  onChange={e => setFreeMonthsRaw(e.target.value)}
-                  className="w-14 min-w-0 py-2 text-center text-lg font-black tabular-nums focus:outline-none focus-visible:ring-2"
-                  aria-label={t('free.aria')} />
-              </div>
-              <span className="text-sm text-slate-500">
-                {free === 0 ? t('free.none') : t('free.some')}
-              </span>
-            </div>
-          </Card>
+          {/* ⛔ compare-tidy-2 (20 October 2026): "Your introductory offer — how many months free?" is GONE. The free months
+              are the trial's length from data (plans.trial_months), or the outreach override `?free=N` (1–12) the
+              server page validated — `freeMonths` below; no visible input. */}
         </div>
 
         {/* ── 🔴 A NAVIGATION AID. IT IS NOT A GATE, AND MUST NEVER BECOME ONE. ─────────────────────
@@ -878,7 +840,7 @@ export default function CostComparison({ settings, catalog, locale }: {
             screen, so five of them push the results below the fold on a laptop as well as a phone —
             this is not a phone-only problem, and a cue that disappears at a breakpoint is a second
             behaviour to reason about for no gain.
-            ⚠️ GATED ON `staff` because the results block below is: without it the link would scroll to
+            ⚠️ GATED ON `hasSystem` (compare-tidy: it was `staff`, the removed question) because the results block below is: without it the link would scroll to
             an element that does not exist and appear to do nothing.
             🔴 `scrollIntoView`, NOT ARITHMETIC ON `window.scrollTo`. app/trucks/[slug]/order/page.tsx
             records why: the browser applies the target's own `scroll-margin-top`, so the offset lives
@@ -887,9 +849,9 @@ export default function CostComparison({ settings, catalog, locale }: {
             ⚠️ `html:has(.hg-landing) { scroll-behavior: smooth }` in landing.css does NOT reach this
             page — the calculator is deliberately outside that scope — so the behaviour is passed
             explicitly here, and reduced-motion is honoured by hand rather than inherited. */}
-        {/* ⚠️ GATED ON `hasSystem` AS WELL AS `staff` NOW, for the reason the note above gives: the
-            results block below is, so without it this would scroll to an element that does not exist. */}
-        {hasSystem && staff && (
+        {/* ⚠️ GATED ON `hasSystem` (compare-tidy: no longer on the removed staff answer), for the reason the note above
+            gives: the results block below is, so without it this would scroll to an element that does not exist. */}
+        {hasSystem && (
           <p className="mt-6 text-center">
             <button type="button"
               onClick={() => {
@@ -906,7 +868,7 @@ export default function CostComparison({ settings, catalog, locale }: {
           </p>
         )}
 
-        {hasSystem && staff && (
+        {hasSystem && (
           <div id="cost-results" className="mt-6 scroll-mt-4 space-y-4">
             {noSystem ? (
             /* ── 🔴 THE "No, not yet" RESULT — A PRICE, NOT A COMPARISON ─────────────────────────────
@@ -1175,7 +1137,7 @@ export default function CostComparison({ settings, catalog, locale }: {
                         so this line does not render there and that diff stays empty.
                         ⚠️ THIS COMMENT SITS ABOVE THE GUARD, NOT INSIDE IT. Placed directly after
                         `{fleet > 1 && (` it is an EXPRESSION, not a child, and fails the build — the same
-                        trap the staff question's own comment records a few hundred lines above. I made it
+                        trap a JSX-comment note elsewhere in this file records. I made it
                         here first and tsc caught it. */}
                     {fleet > 1 && (
                       <p className="mt-2 text-right text-xs text-slate-400">{t('panel.acrossFleet', { fleet })}</p>
@@ -1415,7 +1377,7 @@ export default function CostComparison({ settings, catalog, locale }: {
         <p className="mt-5 text-xs leading-relaxed text-slate-500">
           {t('smallPrint.yes', { aov: gbp(AOV), fee: cardFee })}
           {/* ⚠️ LANGUAGE PHASE 1e (named GB fix): this said "question 4", which went stale when "Do you take online
-              orders now?" became question 1 — the fee question is STEP.fee (5). The number now comes from STEP. */}
+              orders now?" became question 1 — the fee question is STEP.fee (4 since compare-tidy). The number now comes from STEP. */}
           {feeMode === 'ontop' && <>{' '}{t('smallPrint.onTop', { n: STEP.fee })}</>}
           {' '}{t('smallPrint.check')}
         </p>
@@ -1540,8 +1502,11 @@ function Card({ n, title, children, disabled }: {
   n: number; title: string; children: React.ReactNode; disabled?: boolean
 }) {
   return (
+    // compare-tidy-2 (20 October 2026): a dimmed card is INERT until question 1 is answered — no pointer events and nothing
+    // in it focusable (`inert`). Same look: only the opacity ever showed it.
     <div className="rounded-2xl border bg-white p-5 shadow-sm transition md:p-6"
-      style={{ borderColor: '#E2E8F0', opacity: disabled ? 0.45 : 1 }}>
+      style={{ borderColor: '#E2E8F0', opacity: disabled ? 0.45 : 1, pointerEvents: disabled ? 'none' : undefined }}
+      inert={disabled || undefined}>
       <div className="mb-4 flex items-center gap-3">
         <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-black text-slate-500"
           style={{ backgroundColor: '#F1F5F9' }}>

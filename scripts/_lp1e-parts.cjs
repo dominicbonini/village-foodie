@@ -14,6 +14,10 @@
 // 🔴 EVERY VIEW RUNS ON BOTH CODES.
 const CALC = 'app/compare/CostComparison.tsx'
 const STAGE_B = require('./_lp-stage-b.cjs')
+// ⚠️ RE-PINNED (compare-tidy, 20 October 2026): `staff` (the removed "How many people work the van?" question) is gone from
+// app/compare/CostComparison.tsx, so the capture drops it (`have` below; reported as skipped, never set). It stays named
+// here and in CALC_CASES so the BEFORE checkpoints (which have it) capture as they did; scripts/_lp-compare-tidy.cjs calc
+// expresses the change on BEFORE.
 const CALC_STATES = ['hasSystem', 'days', 'trucks', 'staff', 'planOverride', 'gmv', 'feePctRaw', 'feePenceRaw', 'freeMonthsRaw', 'feeMode', 'trucksRaw']
 const CALC_CASES = {
   default: {},
@@ -55,7 +59,11 @@ async function views(ctx) {
         // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the calculator takes the plan catalogue (`catalog`, read
         // server-side by app/compare/page.tsx) — the migrations' seed (scripts/_lp-stage-b.cjs catalog). Code without the
         // prop ignores it.
-        try { return kit.renderStatic(await inLocale(locale(cc), h(C.DemoModalProvider, null, h(C.CostComparison, { settings: settingsOf(cc), catalog: STAGE_B.catalog(), locale: locale(cc) })), C)) } finally { delete globalThis.__ms }
+        // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): with no `freeMonthsRaw` state (the months-free question is gone),
+        // a case's free months go in as the page passes them — `freeMonthsOverride`, app/compare/page.tsx's `?free=N` rule
+        // (a whole number 1–12, else null → the data's trial months). Code with the state ignores the prop.
+        const fm = st.freeMonthsRaw, freeMonthsOverride = !have.includes('freeMonthsRaw') && typeof fm === 'string' && /^\d{1,2}$/.test(fm) && +fm >= 1 && +fm <= 12 ? +fm : null
+        try { return kit.renderStatic(await inLocale(locale(cc), h(C.DemoModalProvider, null, h(C.CostComparison, { settings: settingsOf(cc), catalog: STAGE_B.catalog(), locale: locale(cc), freeMonthsOverride })), C)) } finally { delete globalThis.__ms }
       }))
     }
   }

@@ -398,7 +398,6 @@ async function adminView() {
 async function compareView() {
   const C = 'app/compare/CostComparison.tsx'
   const SYS = v => ({ file: C, from: "useState<'yes' | 'no' | null>(null)", to: `useState<'yes' | 'no' | null>('${v}')` })
-  const STAFF = n => ({ file: C, from: 'useState<1 | 2 | null>(null)', to: `useState<1 | 2 | null>(${n})` })
   const TRUCKS = n => ({ file: C, from: 'const [trucks, setTrucks] = useState(1)', to: `const [trucks, setTrucks] = useState(${n})` })
   const GMV = n => ({ file: C, from: 'useState(2500)', to: `useState(${n})` })
   // 🔴 Part C: the boxes start EMPTY now. To compare the RESULTS like for like with the snapshot (taken when
@@ -408,11 +407,14 @@ async function compareView() {
     { file: C, from: "const [feePctRaw, setFeePctRaw] = useState('')", to: "const [feePctRaw, setFeePctRaw] = useState('4.5')" },
     { file: C, from: "const [feePenceRaw, setFeePenceRaw] = useState('')", to: "const [feePenceRaw, setFeePenceRaw] = useState('20')" },
   ]
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the staff question is removed with its `staff` useState
+  // (`useState<1 | 2 | null>(null)` no longer exists), so no case sets it. The keys keep their BEFORE names (`staff=…`) so
+  // each render is still compared with its own snapshot; the staff answer is simply no longer an input (C1, below).
   const cases = {
-    'yes|staff=1|trucks=1|gmv=2500': [SYS('yes'), STAFF(1)],
-    'yes|staff=2|trucks=3|gmv=6000': [SYS('yes'), STAFF(2), TRUCKS(3), GMV(6000)],
-    'no|staff=1|trucks=1|gmv=2500': [SYS('no'), STAFF(1)],
-    'no|staff=1|trucks=1|gmv=1000': [SYS('no'), STAFF(1), GMV(1000)],
+    'yes|staff=1|trucks=1|gmv=2500': [SYS('yes')],
+    'yes|staff=2|trucks=3|gmv=6000': [SYS('yes'), TRUCKS(3), GMV(6000)],
+    'no|staff=1|trucks=1|gmv=2500': [SYS('no')],
+    'no|staff=1|trucks=1|gmv=1000': [SYS('no'), GMV(1000)],
   }
   const out = {}
   for (const [k, patches] of Object.entries(cases)) {
@@ -715,14 +717,61 @@ function stageBView(sec, b, a) {
   if (sec === 'compare') {
     // B4 — only the middle (from "We suggest" to the results) is named; the questions before it and the small print after
     // it are still compared (with the earlier named rules), and the attrs too, with "Months free" BEFORE read as the trial.
+    // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): C1 — named transforms, asserted in compareTidyChecks: BEFORE's head
+    // loses the staff card (" 3 How many people work the van? One Two or more"); AFTER's head loses the orders card, which
+    // now sits BEFORE "We suggest" (the panel moved into it) and is checked by name. What remains of both heads (intro,
+    // questions 1 and 2) is still compared byte for byte.
     const map = (x, isBefore) => Object.fromEntries(Object.entries(x).map(([k, v]) => [k, {
-      head: v.text.slice(0, v.text.indexOf(' We suggest ')),
+      head: isBefore ? v.text.slice(0, v.text.indexOf(' We suggest ')).replace(COMPARE_TIDY_STAFF_CARD, '')
+        : v.text.slice(0, v.text.indexOf(' We suggest ')).replace(COMPARE_TIDY_ORDERS_CARD, ''),
       tail: v.text.slice(v.text.indexOf(' Estimates based on ')),
-      attrs: isBefore ? v.attrs.map((y, i) => v.attrs[i - 1] === 'aria-label=Months free' && y === 'value=1' ? `value=${STAGE_B_TRIAL_MONTHS()}` : y) : v.attrs,
+      // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): C2 — the months-free input is gone, so BEFORE's pair
+      // ("aria-label=Months free", "value=1") is dropped (asserted present in compareTidyChecks) instead of read as the trial.
+      attrs: isBefore ? (COMPARE_TIDY_2 ? dropMonthsFree(v.attrs)
+        : v.attrs.map((y, i) => v.attrs[i - 1] === 'aria-label=Months free' && y === 'value=1' ? `value=${STAGE_B_TRIAL_MONTHS()}` : y)) : v.attrs,
     }]))
     return [map(b, true), map(a, false)]
   }
   return null
+}
+// ⚠️ RE-PINNED (compare-tidy, 20 October 2026) — C1, the /compare tidy (docs/compare-tidy-report.md): the staff question
+// is removed (card, buttons, "Everyone gets their own login."), the "We suggest" panel moved into the orders card right
+// after its "£X included…" line, nothing waits on a staff answer, and the cards are renumbered 1 system, 2 trucks,
+// 3 orders, 4 fee / trading days, 5 months free.
+const COMPARE_TIDY_STAFF_CARD = / 3 How many people work (?:the van|across your vans)\? One Two or more$/
+const COMPARE_TIDY_ORDERS_CARD = / 3 (?:Online orders per month, per truck|How much do you think you’d take online, per month, per truck\?) .*$/
+// The orders card, as it now reads up to the panel: its title, the slider, the caption, then the "£X included…" / fee line
+// (one of compare.orders.feeOnly | overAllowance | insideAllowance | noFee, plus acrossFleet at more than one truck).
+const COMPARE_TIDY_FEE_LINE = new RegExp(' ~\\d+ orders £[0-9,]+ (?:Only orders placed through your ordering page — not cash or card at the window\\.|A rough guess is fine — pre-orders and queue-skippers, not cash or card at the window\\.) '
+  + '(?:[0-9.]+% on every online card order — £[0-9,.]+ a month per truck\\.|£[0-9,]+ of online orders included per truck\\. The £[0-9,]+ above is charged at [0-9.]+% — £[0-9,.]+ a month each\\.'
+  + '|Inside the £[0-9,]+ of online orders included — nothing on top of the plan\\.|Unlimited online orders included — nothing on top of the plan\\.)(?: Across \\d+ trucks: £[0-9,]+ a month\\.)?$')
+// ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026) — C2: the months-free QUESTION is removed (card 5, its input and side
+// text); the months are `freeMonthsOverride ?? offerTrialMonths(catalog) ?? 0` (no override here → the seeded trial), so
+// every months figure in the results is the data default. Cards now run 1–4 on each path.
+const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/compare/CostComparison.tsx'))
+const MONTHS_FREE_PAIR = ['aria-label=Months free', 'value=1']
+const monthsFreeAt = a => a.findIndex((x, i) => x === MONTHS_FREE_PAIR[0] && a[i + 1] === MONTHS_FREE_PAIR[1])
+const dropMonthsFree = a => { const i = monthsFreeAt(a); return i < 0 ? ['(compare-tidy-2: no Months free pair in BEFORE)', ...a] : [...a.slice(0, i), ...a.slice(i + 2)] }
+/** C1, asserted on this run's renders. Returns the failures. */
+function compareTidyChecks(snap, before) {
+  const bad = []
+  const ck = (name, ok) => { if (!ok) bad.push(name) }
+  for (const [k, v] of Object.entries(snap.compare)) {
+    const t = v.text, no = k.startsWith('no|')
+    ck(`C1 ${k}: BEFORE had the staff card (the removal is not vacuous)`, COMPARE_TIDY_STAFF_CARD.test(before.compare[k].text.slice(0, before.compare[k].text.indexOf(' We suggest '))))
+    ck(`C1 ${k}: no staff question, no "Two or more", no "own login"`, !/How many people work|Two or more|Everyone gets their own login/.test(t))
+    const head = t.slice(0, t.indexOf(' We suggest '))
+    ck(`C1 ${k}: the orders card is question 3, and the panel follows its "£X included…" / fee line`,
+      COMPARE_TIDY_ORDERS_CARD.test(head) && COMPARE_TIDY_FEE_LINE.test(head))
+    const step4 = no ? ' 4 How many days a week do you trade? ' : ' 4 What do you pay per order now? '
+    const iS = t.indexOf(' We suggest '), i4 = t.indexOf(step4)
+    // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): C2 — no months-free card: 4 is the last question on each path.
+    ck(`C1/C2 ${k}: renumbered — the panel, then 4 ${no ? 'trading days' : 'fee'}, and no months-free card`, iS > 0 && i4 > iS
+      && (!COMPARE_TIDY_2 || (!/Your introductory offer|how many months free\?|No plan fee, no service fee|Paying from day one/.test(t) && !v.attrs.includes('aria-label=Months free'))))
+    if (COMPARE_TIDY_2) ck(`C2 ${k}: BEFORE had the months-free input (the removal is not vacuous)`, monthsFreeAt(before.compare[k].attrs) >= 0)
+    ck(`C1 ${k}: the results render on question 1 alone`, t.includes(no ? 'See what it costs ↓' : 'See your saving ↓'))
+  }
+  return bad
 }
 const STAGE_B_RETIRED_LP1D2 = ['manageBilling.notStarted.body']
 const STAGE_B_TRIAL_MONTHS = () => (CATALOG.plans.find(p => p.isSignupDefault && p.isTrial) || {}).trialMonths
@@ -789,9 +838,19 @@ function stageBChecks(snap, before) {
     for (const o of offer) if (!best || cost(o, gmv) < cost(best, gmv) - 1e-9) best = o
     ck(`B4 ${k}: suggests ${best.p.name} (cheapest at ${pounds(gmv)})`, v.text.includes(` We suggest ${best.p.name} `))
     ck(`B4 ${k}: offers every other public plan`, offer.filter(o => o !== best).every(o => v.text.includes(`Use ${o.p.name} instead`)))
-    const i = v.attrs.indexOf('aria-label=Months free')
-    ck(`B4 ${k}: the free-months default is the trial's ${trial}`, i >= 0 && v.attrs[i + 1] === `value=${trial}`)
-    ck(`B4 ${k}: the free months are named in the results`, v.text.includes(`first ${trial} months`) || v.text.includes('Year one'))
+    // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): there is no months input any more (C2) — the months in the RESULTS
+    // are the data default (the seeded trial): No path "first N months" + "Months 1–N £0 — on us"; Yes path year one =
+    // the plan's monthly cost × fleet × (12 − N), restated here from the seed.
+    if (COMPARE_TIDY_2) {
+      const fleet = Number(/trucks=([0-9]+)/.exec(k)[1]), y1 = Math.round(cost(best, gmv) / 100 * fleet * (12 - trial))
+      ck(`B4 ${k}: no months input; the results use the trial's ${trial} months (the data default)`, !v.attrs.includes('aria-label=Months free') && (k.startsWith('no|')
+        ? v.text.includes(`And your first ${trial} months are on us.`) && v.text.includes(`Months 1–${trial} £0 — on us`)
+        : v.text.includes(`With HatchGrab £${y1.toLocaleString('en-GB')} in year one`)))
+    } else {
+      const i = v.attrs.indexOf('aria-label=Months free')
+      ck(`B4 ${k}: the free-months default is the trial's ${trial}`, i >= 0 && v.attrs[i + 1] === `value=${trial}`)
+      ck(`B4 ${k}: the free months are named in the results`, v.text.includes(`first ${trial} months`) || v.text.includes('Year one'))
+    }
   }
   return bad
 }
@@ -952,6 +1011,12 @@ function stageAChecks(snap, before) {
     const sb = stageBChecks(snap, before)
     if (sb.length) { fails++; console.log(`✗ Stage B's named differences: ${sb.length} check(s) failed`); for (const n of sb.slice(0, 12)) console.log('    ✗ ' + n) }
     else console.log('✓ Stage B\'s named differences (B1–B4) hold: legacy display module gone, the new PDF, Billing\'s PlanTable = the PDF\'s table + the pricing footnote, /compare suggests the cheapest plan with the trial as free months')
+  }
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): C1 asserted (see COMPARE_TIDY above).
+  if (STAGE_B) {
+    const ct = compareTidyChecks(snap, before)
+    if (ct.length) { fails++; console.log(`✗ compare-tidy's named differences (C1): ${ct.length} check(s) failed`); for (const n of ct.slice(0, 12)) console.log('    ✗ ' + n) }
+    else console.log('✓ compare-tidy\'s named differences (C1) hold: no staff question, the panel inside the orders card, renumbered 1–4 with no months-free card (C2), results on question 1 alone')
   }
   if (STAGE_A) {
     const sa = stageAChecks(snap, before)

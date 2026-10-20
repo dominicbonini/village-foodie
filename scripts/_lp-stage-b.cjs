@@ -27,6 +27,9 @@ const highlighted = () => (publicPlans().find(p => p.isHighlighted) || null)
 // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the plan table's two row footnotes (scripts/_lp-pricing-tidy.cjs), checked
 // inside Stage B's /features, PDF and Billing regions on a tree with pricing-tidy. Lazy, so a checkpoint copy never needs it.
 const PT = () => require('./_lp-pricing-tidy.cjs')
+// ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the calculator without the staff question (scripts/_lp-compare-tidy.cjs),
+// applied to BEFORE inside calcProof on a tree with compare-tidy. Lazy, like PT.
+const CT = () => require('./_lp-compare-tidy.cjs')
 const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;')
 
 /** The end (index after the closing tag) of the balanced <tag …>…</tag> that opens at `start`, or -1. */
@@ -143,12 +146,25 @@ const CALC_CUTS = [
 /** The cutters that apply to a view: the suggested plan and the results only where BEFORE has them. */
 function calcProof(exp, f) {
   if (typeof exp !== 'string' || typeof f !== 'string') return { ok: false, problems: ['pricing-b-compare-calc: not HTML'] }
-  const cuts = CALC_CUTS.filter(([n, find]) => n === 'months-free value' || find(exp) != null)
+  // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): on a tree without the staff question, BEFORE (+ the harness's named
+  // changes) first takes compare-tidy's PRECISE calculator transform (scripts/_lp-compare-tidy.cjs calc: the staff card
+  // removed, the suggested-plan panel moved into the orders card after the "£X included…" line, ungated on question 1,
+  // renumbered) — then Stage B's cuts and checks below, unchanged. Lazy, so a checkpoint copy never needs it.
+  if (CT().CALC_LANDED) { try { exp = CT().calc(exp) } catch (e) { return { ok: false, problems: [`pricing-b-compare-calc: ${e.message}`] } } }
+  // ⚠️ RE-PINNED (compare-tidy-2, 20 October 2026): with the months-free question gone (scripts/_lp-compare-tidy.cjs
+  // FREE_LANDED — calc() above removed its card from BEFORE), the months-free value is cut only where BEFORE (so
+  // transformed) still has it, i.e. never on this tree: F must have no such input (the rest is byte-identical). The months
+  // are the data's (plans.trial_months) or the page's `?free=N`, inside the results, which this proof cuts.
+  const freeGone = CT().CALC_LANDED && CT().FREE_LANDED
+  const cuts = CALC_CUTS.filter(([n, find]) => (n === 'months-free value' && !freeGone) || find(exp) != null)
   const check = (R, ER) => {
     const p = []
-    const fv = /value="([^"]*)"/.exec(R['months-free value'] || '')[1], ev = /value="([^"]*)"/.exec(ER['months-free value'] || '')[1]
-    const want = ev === '1' && trialMonths() ? String(trialMonths()) : ev
-    if (fv !== want) p.push(`months free is ${JSON.stringify(fv)}, not ${JSON.stringify(want)} (BEFORE ${JSON.stringify(ev)}; the default is the trial's months)`)
+    if (freeGone) { if (/aria-label="Months free"/.test(f)) p.push('F still shows the months-free input (compare-tidy-2 removed it)') }
+    else {
+      const fv = /value="([^"]*)"/.exec(R['months-free value'] || '')[1], ev = /value="([^"]*)"/.exec(ER['months-free value'] || '')[1]
+      const want = ev === '1' && trialMonths() ? String(trialMonths()) : ev
+      if (fv !== want) p.push(`months free is ${JSON.stringify(fv)}, not ${JSON.stringify(want)} (BEFORE ${JSON.stringify(ev)}; the default is the trial's months)`)
+    }
     if (R['suggested plan']) {
       const name = /<p class="mt-1 text-2xl font-black"[^>]*>([^<]*)<\/p>/.exec(R['suggested plan'])
       if (!name || !publicPlans().some(x => escHtml(x.name) === name[1])) p.push(`the suggested plan ${JSON.stringify(name && name[1])} is not one of the catalogue's public plans`)

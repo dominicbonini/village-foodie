@@ -84,7 +84,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { url: HATCHGRAB_ORIGIN + '/contact', changeFrequency: 'yearly', priority: 0.3 },
     ]
   }
-  // Village Foodie: the discovery root only. /venues/[slug] is deliberately not enumerated here yet. Its content changes
-  // daily (the events), so it carries no lastmod rather than request time (S5).
-  return [{ url: `https://${BRANDS.VILLAGE_FOODIE.domain}/`, changeFrequency: 'daily', priority: 1 }]
+  // Village Foodie: the discovery root, and /contact — self-canonical on this host since pricing-tidy, so listed here
+  // (compare-tidy F2, 20 October 2026), with no lastmod, like the HatchGrab /contact. /venues/[slug] is deliberately not
+  // enumerated here yet. The root's content changes daily (the events), so it carries no lastmod rather than request time.
+  return [
+    { url: `https://${BRANDS.VILLAGE_FOODIE.domain}/`, changeFrequency: 'daily', priority: 1 },
+    { url: `https://${BRANDS.VILLAGE_FOODIE.domain}/contact`, changeFrequency: 'yearly', priority: 0.3 },
+  ]
 }

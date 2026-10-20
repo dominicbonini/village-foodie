@@ -288,6 +288,9 @@ for (const e of require('./_lp-seo-fixes.cjs').ITEMS) NAMED.push({ id: e.id, wha
 // seo-s5-sitemap, GB and US; one copy in scripts/_lp-pricing-tidy.cjs (the plan table's footnotes and Billing's not-started
 // heading sit inside Stage B's structural proofs above; no other view here changed).
 for (const e of require('./_lp-pricing-tidy.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (compare-tidy, 20 October 2026): F2 — the Village Foodie sitemap gains /contact. PRECISE, after seo-s5-sitemap,
+// one copy in scripts/_lp-compare-tidy.cjs (the calculator and F1's footnote order sit inside Stage B's structural proofs).
+for (const e of require('./_lp-compare-tidy.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

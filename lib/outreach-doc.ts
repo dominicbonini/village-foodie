@@ -4,9 +4,7 @@
 // sent. Nothing is appended, nothing is decorated, nothing is inferred. The box shows the message as it
 // will arrive; the server turns that same document into the two MIME parts and adds only the quoted
 // parent on a reply.
-// ⚠️ ONE SIGNED-OFF EXCEPTION (legal follow-ups, 19 October 2026): `buildMessage` appends the fixed
-// company line (name, number, registered office — lib/company.ts) after the document, above any quote.
-// It is not the operator's text and is not editable; see lib/outreach-mail-message.ts#companyFooterLine.
+// (The fixed company line `buildMessage` appended from 19 October 2026 was removed on 20 October 2026, Dominic.)
 //
 // ── WHY A DOCUMENT AND NOT HTML ON THE WIRE ─────────────────────────────────────────────────────────
 // The browser could POST the editor's HTML. It must not. HTML from a browser is an open set — a paste

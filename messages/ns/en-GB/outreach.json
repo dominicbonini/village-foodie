@@ -1,5 +1,4 @@
 {
-  "companyFooter": "{company} · Company no. {number} · Registered office: {address}",
   "optOut": {
     "missing": "This email has no opt-out line, so it cannot be sent. Use Insert opt-out to add it.",
     "notSetUp": "No opt-out sentence is set up, so no outreach email can be sent. Add one on the Templates tab’s Signature panel.",

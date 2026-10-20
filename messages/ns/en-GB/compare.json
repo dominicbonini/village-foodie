@@ -10,16 +10,10 @@
     "title": "How many trucks do you run?",
     "aria": "Number of trucks"
   },
-  "people": {
-    "title": "{fleet, plural, one {How many people work the van?} other {How many people work across your vans?}}",
-    "one": "One",
-    "twoOrMore": "Two or more"
-  },
   "plan": {
     "yourChoice": "Your choice",
     "weSuggest": "We suggest",
     "summary": "{price} per truck per month, with {allowance} of online orders included{fleet, plural, one {} other { on each}}.",
-    "ownLogin": "Everyone gets their own login.",
     "switchTo": "Use {plan} instead",
     "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truck per month, plus {pct} on online card orders.} other {No monthly fee — {pct} on online card orders only.}}",
     "summaryNoFee": "{price} per truck per month, with unlimited online orders and no HatchGrab fee."
@@ -54,12 +48,6 @@
   "days": {
     "title": "How many days a week do you trade?",
     "help": "Events, markets, pitches — any day the van’s out."
-  },
-  "free": {
-    "title": "Your introductory offer — how many months free?",
-    "aria": "Months free",
-    "none": "Paying from day one",
-    "some": "No plan fee, no service fee"
   },
   "jump": {
     "cost": "See what it costs ↓",
