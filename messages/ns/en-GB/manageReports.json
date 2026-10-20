@@ -62,11 +62,6 @@
     "online": "Online",
     "walkUp": "Walk-up"
   },
-  "upsell": {
-    "title": "Revenue breakdown & analytics",
-    "badge": "Pro feature",
-    "body": "Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max."
-  },
   "csv": {
     "orderId": "Order ID",
     "date": "Date",

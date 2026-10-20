@@ -65,7 +65,9 @@ const ALL_AREAS = ['shell', 'reports', 'payments', 'social', 'poster', 'wada', '
 const AREAS = (arg('areas') || ALL_AREAS.join(',')).split(',').filter(Boolean)
 const SECTIONS = (arg('only') || 'gb,keys,us,words,smoke,api,legal,bytes,literals').split(',')
 /** The scripts a capture needs, copied into the BEFORE worktree. Scripts only — never product code. */
-const CAPTURE_SCRIPTS = f => /^(language-phase-1d2\.cjs|_lp1d2-.*\.cjs|_lp1d-.*\.cjs|_lp1b-.*\.cjs|_lp2-named\.cjs|_lp2-checks\.cjs|_png-decode\.cjs|_slot-interval-compile\.cjs|_lp1b-fixtures\.cjs|_render-kit\.cjs|_lp2-frozen\.cjs|_lp2-text\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs)$/.test(f)
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): + scripts/_lp-stage-b.cjs (Stage B's named changes) and the plan
+// catalogue fixture it reads — both inert on a tree without the plan migrations.
+const CAPTURE_SCRIPTS = f => /^(language-phase-1d2\.cjs|_lp1d2-.*\.cjs|_lp1d-.*\.cjs|_lp1b-.*\.cjs|_lp2-named\.cjs|_lp2-checks\.cjs|_png-decode\.cjs|_slot-interval-compile\.cjs|_lp1b-fixtures\.cjs|_render-kit\.cjs|_lp2-frozen\.cjs|_lp2-text\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs|_lp-stage-b\.cjs|_plans-catalog-fixture\.cjs)$/.test(f)
 for (const a of AREAS) if (!ALL_AREAS.includes(a)) { console.error(`unknown area "${a}" — one of ${ALL_AREAS.join(', ')}`); process.exit(2) }
 
 // ══ internal: --capture-to=<dir> --area=<area> — one area's views, on whatever code this file sits in ═════════════
@@ -102,14 +104,17 @@ function captureAll(cwd, dir, env, areas = AREAS) {
 }
 const switchEnv = which => {
   const e = { HG_KIT_CACHE_SUFFIX: `lp1d2${which}` }
-  if (which === 'F') return { ...e, HG_MESSAGES_FROZEN: path.join(REPO, FROZEN_GB), HG_MESSAGES_SOURCE: '', HG_MESSAGES_MOVED: '' }
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): both F and A read the keys Stage A REWORDED at their text before Stage A
+  // (the opt-in overlay in scripts/_lp2-frozen.cjs) — a Part 2 key reworded by Stage A is not a Part 2 change.
+  const stageA = { HG_MESSAGES_STAGE_A: 'before' }
+  if (which === 'F') return { ...e, ...stageA, HG_MESSAGES_FROZEN: path.join(REPO, FROZEN_GB), HG_MESSAGES_SOURCE: '', HG_MESSAGES_MOVED: '' }
   // ⚠️ RE-PINNED (Language Phase 1e): this harness asserts PART 2's END STATE. Its "current words" are the words Part 2
   // ended with — eb7ed44's pair (scripts/fixtures/language-phase-1e-messages-before.{en-GB,en-US}.json) with every
   // as-moved overlay — on THIS code; Phase 1e's marketing words (incl. Billing's plan rows) are proven by
   // scripts/language-phase-1e.cjs. HG_LP1D2_A=source reads the authored files instead (only for a deliberate check).
   if (which === 'A') return process.env.HG_LP1D2_A === 'source' ? { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '1' }
-    : { ...e, HG_MESSAGES_FROZEN: path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-GB.json'), HG_MESSAGES_SOURCE: '' }
-  return { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '' }
+    : { ...e, ...stageA, HG_MESSAGES_FROZEN: path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-GB.json'), HG_MESSAGES_SOURCE: '' }
+  return { ...e, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '', HG_MESSAGES_STAGE_A: '' }
 }
 /** A capture directory → { 'area/viewKey': value }. */
 function load(dir, areas = AREAS) {

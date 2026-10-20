@@ -33,7 +33,9 @@ import { getLocalDateInTz, getNowMinsInTz, formatSlot, formatNumericDate, type T
 import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { decideAutoAccept } from '@/lib/orders/auto-accept'
-import { canAccess, resolveBatchReservations } from '@/lib/features'
+import { resolveBatchReservations } from '@/lib/features'
+import { truckCan, payAtHatchOn, truckPlanSwitch } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 // 🔴 THE ORDER WAS PLACED IN THIS REQUEST, FROM THIS TRUCK: place_order_atomic's insert fires the 20261010
 // trigger that copies trucks.currency/country onto the row, so the truck's format IS the order's.
@@ -729,8 +731,16 @@ export async function POST(req: NextRequest) {
     // hasn't OPENED yet (now < open). Server-enforced (not just menu-hidden) — the SAME isPreorderOpenYet
     // the menu API display uses, so display == enforcement (DRY linchpin). Date-based, event-tz (NEVER
     // device-local — BST lesson). Gated by plan + master toggle, like the deadline.
+    // 🔴 THE TRUCK'S PLAN (Stage A2): one catalogue read (cached 60 s) for the two plan-switched questions below.
+    const planCatalog = await getPlanCatalog()
+    /* 🔴 PAY AT HATCH IS THE PLAN'S TO ALLOW (plans.pay_at_hatch_allowed, enforced from Stage A2; true on every plan as
+     * seeded). A pay-at-the-truck order on a plan without it is refused HERE — before any booking, stock or money path —
+     * with its own sentence; the menu never offered it, so only a stale page or a hand-made request reaches this. */
+    if (payByCard !== true && !payAtHatchOn(truck, planCatalog)) {
+      return NextResponse.json(customerErrorBody(locale, 'pay_at_hatch_unavailable', {}, { payAtHatchUnavailable: true }), { status: 403 })
+    }
     {
-      const poFeatureOn = canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+      const poFeatureOn = truckCan(truck, planCatalog, 'advance_preordering')
       const poActive = poFeatureOn && (truck as any).preorders_enabled !== false
       if (poActive) {
         const poNowDate = getLocalDateInTz(truckTz)
@@ -1229,6 +1239,7 @@ export async function POST(req: NextRequest) {
             items,
             deals,
             timeZone: truckTz,
+            planAllows: truckPlanSwitch(truck, planCatalog),
           })
         }
         // !claim.booked -> event full / lock contended -> finalSlot stays requestedSlot (or ASAP/null),

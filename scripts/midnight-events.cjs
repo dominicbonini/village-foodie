@@ -27,7 +27,9 @@ const RUN = path.join(REPO, 'node_modules/.cache/midnight-events-run')
 const ALL_AREAS = fs.readdirSync(__dirname).filter(f => /^_midnight-[a-z]+\.cjs$/.test(f) && f !== '_midnight-fixtures.cjs').map(f => f.replace(/^_midnight-|\.cjs$/g, '')).sort()
 // --areas=a,b limits a run (or a recapture) to those areas; a recapture replaces only their BEFORE files.
 const AREAS = arg('areas') ? arg('areas').split(',').filter(a => ALL_AREAS.includes(a)) : ALL_AREAS
-const COPY = f => /^(midnight-events\.cjs|_midnight-.*\.cjs|_render-kit\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs|_lp2-frozen\.cjs|_lp1b-fixtures\.cjs|_lp1d-.*\.cjs|_lp1d2-.*\.cjs|_lp1e-fixtures\.cjs|_slot-interval-compile\.cjs|_png-decode\.cjs)$/.test(f)
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): _plans-catalog-fixture.cjs is copied too (the manage area's
+// fake database seeds public.plans from it; it returns null in a tree without the plans migration).
+const COPY = f => /^(midnight-events\.cjs|_midnight-.*\.cjs|_render-kit\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs|_lp2-frozen\.cjs|_lp1b-fixtures\.cjs|_lp1d-.*\.cjs|_lp1d2-.*\.cjs|_lp1e-fixtures\.cjs|_slot-interval-compile\.cjs|_png-decode\.cjs|_plans-catalog-fixture\.cjs)$/.test(f)
 
 // ══ internal: --capture-to=<dir> --area=<area> ════════════════════════════════════════════════════════════════
 if (arg('capture-to')) {

@@ -158,6 +158,10 @@ const SIGNATURE =
   const variant = (tag, file, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `oms-${tag}-`))
     fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): `messages/` is copied too. The builder now reads the
+    // company line through `translatorFor` + `lib/i18n/catalog/outreach`, which imports
+    // `messages/ns/*/outreach.json` — a lib-only copy no longer compiles. Nothing about a variant changes.
+    fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, file); const src = fs.readFileSync(f, 'utf8')
     const out = patch(src); if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }
@@ -469,7 +473,14 @@ const SIGNATURE =
     check(!html.includes('Kind regards,'), '🔴 a document with no signature produces no signature')
     check(!html.includes('rather not hear'), '…and no opt-out line appears from nowhere')
     const built = M.buildMessage({ doc, subject: 'S', messageId: '<x@hatchgrab.com>' })
-    eq(built.html, html, '🔴 buildMessage adds NOTHING to the document on a first contact')
+    /* ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): this asserted `built.html === html` — "buildMessage
+     * adds NOTHING". Dominic signed off ONE fixed addition: the company line (name, number, registered
+     * office), after the document. Pinned exactly: the document's HTML byte for byte, then the blank 12pt
+     * spacer div, then the grey 10pt company line — and nothing else. Still no signature, no opt-out. */
+    const COMPANY_LINE = 'HatchGrab Ltd · Company no. 17381557 · Registered office: Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom'
+    eq(built.html, `${html}<div style="${P12}"><br></div><div style="${M.FOOTER_STYLE}">${COMPANY_LINE}</div>`,
+      '🔴 buildMessage adds NOTHING to the document on a first contact except the fixed company line')
+    eq(built.text, `${D.docToText(doc)}\n\n${COMPANY_LINE}\n`, '…and the same one line in the text part')
     // 🔴 A LITERAL TOKEN IS A REFUSAL. Nothing expands it any more, so it would be emailed verbatim.
     const typed = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '{{signature}}' }] }] }
     eq(D.literalTokenRefusal(typed),
@@ -513,22 +524,25 @@ const SIGNATURE =
       'a display name adds no header outside the allow-list')
   }
 
-  console.log('\n── THE OPT-OUT WARNING (a warning, and the only one left) ───────────────────────────────')
+  console.log('\n── THE OPT-OUT LINE (a BLOCK since 19 October 2026, for every email) ────────────────────')
   {
+    /* ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): this section pinned `optOutWarning` — a WARNING,
+     * for the four ladder kinds only (a first contact and a final chase warned; `reply_handling` and an
+     * unstated kind did not). Dominic signed off a BLOCK on every outreach email with no opt-out line, for
+     * every prospect and every step, so the function is now `optOutBlock(doc, optOut)` with NO kind: the
+     * kinds that were exempt are blocked like the rest. What is unchanged and still pinned: the stored
+     * sentence counts, its absence is caught, and a hand-typed copy counts.
+     * ⚠️ RE-PINNED AGAIN (Dominic's answers 1 and 2, 19 October 2026): a TEST and a reply to a message the PROSPECT
+     * sent are exempt — `optOutExempt`, decided before this function is asked (scripts/outreach-legal-footer.cjs). */
     const withOpt = D.docFromTemplateText(TEMPLATE_TEXT, DOC_SETTINGS)
     const without = D.docFromTemplateText('Hi Sam,\n\n{{signature}}', DOC_SETTINGS)
-    eq(D.optOutWarning(withOpt, '1_first_contact', OPT.text), null, 'the sentence is there: no warning')
-    eq(D.optOutWarning(without, '1_first_contact', OPT.text), 'This outreach email has no opt-out line.',
-      'a first contact without it is warned about')
-    eq(D.optOutWarning(without, '4_final_chase', OPT.text), 'This outreach email has no opt-out line.',
-      'so is a final chase')
-    eq(D.optOutWarning(without, 'reply_handling', OPT.text), null,
-      '⚠️ a NON-ladder kind is not warned — a reply to a question is not a cold approach')
-    eq(D.optOutWarning(without, null, OPT.text), null, 'nor is an unstated kind')
+    eq(D.optOutBlock(withOpt, OPT.text), null, 'the sentence is there: allowed')
+    eq(D.optOutBlock(without, OPT.text), 'no_opt_out_line', 'without it: BLOCKED — a first contact, a final chase, a follow-up on our own email alike (a test and a reply to the prospect are exempt before this is asked)')
+    eq(D.optOutBlock(without, null), 'no_opt_out_set_up', 'no sentence set up at all: BLOCKED with its own reason')
     // 🔴 IT CHECKS THE SENTENCE, NOT A TOKEN. Typed out by hand counts, because what a recipient needs
     // is the sentence and not the mechanism that put it there.
     const typedOut = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: OPT.text }] }] }
-    eq(D.optOutWarning(typedOut, '1_first_contact', OPT.text), null,
+    eq(D.optOutBlock(typedOut, OPT.text), null,
       'the sentence typed by hand counts — it is the sentence that matters, not how it got there')
     const COMPOSE = fs.readFileSync(path.join(REPO, 'components/admin/ComposeWindow.tsx'), 'utf8')
     check(!/No \{\{signature\}\} in this message/.test(COMPOSE),

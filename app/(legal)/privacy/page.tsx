@@ -14,17 +14,26 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/legal/LegalPage'
-import { renderLegalMarkdown } from '@/lib/legal-markdown'
+import { renderLegalMarkdownHtml } from '@/lib/legal-markdown-html'   // seo-fixes S7: server-only static HTML
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
+import { ownUrlMetadata } from '@/lib/site-metadata'
+import { PRIVACY_PATH } from '@/lib/legal'
 import '@/lib/i18n/catalog/legalChrome'
 
 // Language Phase 1e: `legalChrome.meta`, en-GB (app/(legal)/layout.tsx says why). Read at build time, like the text.
 const t = translatorFor(DEFAULT_LOCALE, 'legalChrome')
 
-export const metadata: Metadata = {
-  title: t('meta.privacyTitle'),
-  description: t('meta.privacyDescription'),
+// seo-fixes S1 (20 October 2026): its canonical and og:url are its HatchGrab www address on EVERY host — the Village
+// Foodie host serves this same document, and the canonical names the HatchGrab copy (lib/site-metadata.ts).
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    // `absolute`: the document's own title ends "— HatchGrab", so the root template's "| HatchGrab" would double it
+    // (legal follow-ups, 19 October 2026).
+    title: { absolute: t('meta.privacyTitle') },
+    description: t('meta.privacyDescription'),
+    ...(await ownUrlMetadata(PRIVACY_PATH)),
+  }
 }
 
 const SOURCE = fs.readFileSync(
@@ -33,5 +42,5 @@ const SOURCE = fs.readFileSync(
 )
 
 export default function PrivacyPage() {
-  return <LegalPage>{renderLegalMarkdown(SOURCE)}</LegalPage>
+  return <LegalPage html={renderLegalMarkdownHtml(SOURCE)} />
 }

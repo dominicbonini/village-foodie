@@ -392,8 +392,12 @@ function compare(key, B, A, ctx) {
   // (en-GB for GB, en-US for US), or absent when there is no truck. Everything else in each call is unchanged.
   const SENDERS = ['sendSignupVerificationEmail', 'sendOperatorWelcomeEmail']
   const want = key.startsWith('US|') ? 'en-US' : 'en-GB'
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the welcome email's call now ends with Stage B's `trialMonths`
+  // (named pricing-b-verify-signup-trial-months, scripts/_lp2-named.cjs — already on BEFORE here), so `locale` is last
+  // BEFORE that one key.
+  const lastBeforeB = a => { const ks = Object.keys(a); return ks[ks.length - 1] === 'trialMonths' ? ks[ks.length - 2] : ks[ks.length - 1] }
   const localeOk = (A.calls || []).every(([n, a]) => !SENDERS.includes(n) || !a || !('locale' in a)
-    || (a.locale === want && Object.keys(a).pop() === 'locale' && !(B.calls || []).some(([m, b]) => m === n && b && 'locale' in b)))
+    || (a.locale === want && lastBeforeB(a) === 'locale' && !(B.calls || []).some(([m, b]) => m === n && b && 'locale' in b)))
   const noLocale = (A.calls || []).map(([n, a]) => (SENDERS.includes(n) && a && 'locale' in a ? [n, Object.fromEntries(Object.entries(a).filter(([k]) => k !== 'locale'))] : [n, a]))
   t(`api · ${key}: the same calls to the stubbed senders and provisioners (apart from the truck's locale)`, JSON.stringify(noLocale) === JSON.stringify(B.calls), ctx.diffJson(B.calls, noLocale))
   if ((A.calls || []).some(([n, a]) => SENDERS.includes(n) && a && 'locale' in a)) t(`api · ${key}: the signup email is handed the truck's locale (${want}), last`, localeOk, JSON.stringify(A.calls))

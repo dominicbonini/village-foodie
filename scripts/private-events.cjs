@@ -93,6 +93,12 @@ const LIB = [
   'lib/private-events/detect.ts', 'lib/private-events/resolve.ts',
   'lib/private-events/token.ts', 'lib/private-events/read.ts',
   'lib/private-events/type.ts', 'lib/private-events/write.ts',
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/features.ts is compiled too, so section 9 can CALL
+  // the override-only canAccess instead of reading plan tier sets that no longer exist.
+  'lib/features.ts',
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): lib/plans.ts too — canAccess needs the effective
+  // plan's switch (planFeatureSwitch / truckPlanSwitch), built here from the catalogue the two plan migrations seed.
+  'lib/plans.ts',
 ]
 function build(root, files, tag) {
   const c = compile(root, files, tag, { jsx: 'react-jsx', skipLibCheck: true })
@@ -105,6 +111,8 @@ function build(root, files, tag) {
     read: get('lib/private-events/read.js'),
     type: get('lib/private-events/type.js'),
     write: get('lib/private-events/write.js'),
+    features: get('lib/features.js'),
+    plans: get('lib/plans.js'),
   }
 }
 const NOW = build(REPO, LIB, 'pe-now')
@@ -788,31 +796,79 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
   // ══════════════════════════════════════════════════════════════════════════════════════════════
   // 9 · PLANS
   // ══════════════════════════════════════════════════════════════════════════════════════════════
-  head('9 · private events are Pro; making your own types stays Max')
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): there are no plan tiers any more — every active plan has
+  // every feature and only a per-truck override can switch one off. The heading and the tier checks below now assert that.
+  head('9 · private events and event types: two separate override-only gates')
 
   {
     const feat = read('lib/features.ts')
-    t('🔴 `private_events` is a Feature', /\| 'private_events'/.test(feat))
-    t('🔴 …and it is in PRO_FEATURES, which is exactly "Pro, Max and trial"',
-      new RegExp("'private_events',[\\s\\S]{0,40}\\]\\s*\\n\\s*const MAX_FEATURES").test(feat)
-      || feat.indexOf("'private_events',") < feat.indexOf('const MAX_FEATURES'))
-    t('⛔ …and `event_types` is STILL Max-only',
-      feat.indexOf("'event_types',") > feat.indexOf('const MAX_FEATURES'))
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `Feature` is derived from the runtime array FEATURES
+    // now (it was a string-union type), so the key is an entry of that array — and isFeature() agrees.
+    t('🔴 `private_events` is a Feature',
+      /export const FEATURES = \[[^\]]*\n\s*'private_events',\n[^\]]*\] as const/.test(feat)
+      && !!NOW.features && NOW.features.isFeature('private_events') === true && NOW.features.FEATURES.includes('event_types'))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "…and it is in PRO_FEATURES, which is exactly
+    // 'Pro, Max and trial'". PRO_FEATURES / MAX_FEATURES are gone; the gate is override-only, so CALL it: allowed with
+    // no override, denied by an override of false, allowed by an override of true — and event_types is independent.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): canAccess(feature, overrides, planAllows) — the
+    // plan switch is REQUIRED; order override → the EFFECTIVE plan's switch → on. The seed (public.plan_features) names
+    // neither key for any plan, so with no override both are on for EVERY seeded plan — proved through the real
+    // lib/plans.ts switch; the override still decides both ways, even against a plan that says no.
+    const F = NOW.features, P = NOW.plans
+    const CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
+    const PLAN_KEYS = CATALOG.plans.filter(p => p.active).map(p => p.key)
+    const sw = (k) => P.planFeatureSwitch(CATALOG, k)
+    const planOff = () => false
+    t('🔴 …and with no override the gate follows the plan — every seeded plan has it; `false` denies, `true` grants',
+      !!F && !!P && typeof F.canAccess === 'function' && F.canAccess.length === 3 && PLAN_KEYS.length > 0
+      && !CATALOG.features.some(f => f.feature === 'private_events')
+      && PLAN_KEYS.every(k => F.canAccess('private_events', undefined, sw(k)) === true
+        && F.canAccess('private_events', null, sw(k)) === true
+        && F.canAccess('private_events', {}, sw(k)) === true
+        && F.canAccess('private_events', { private_events: false }, sw(k)) === false
+        && F.canAccess('private_events', { private_events: true }, sw(k)) === true)
+      && F.canAccess('private_events', {}, planOff) === false
+      && F.featureBlock('private_events', {}, planOff) === 'plan'
+      && F.canAccess('private_events', { private_events: true }, planOff) === true
+      && !/PRO_FEATURES|MAX_FEATURES|PLAN_FEATURES/.test(codeOf(feat)))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "…and `event_types` is STILL Max-only". There is
+    // no Max tier; the surviving claim is that the TWO keys stay separate — switching one off never switches off the other.
+    // ⚠️ RE-PINNED (Stage A2): the same, through a seeded plan's switch — and a plan switch that turns ONE key off.
+    const onlyTypesOff = (f) => f !== 'event_types'
+    t('⛔ …and `event_types` is a SEPARATE key — switching one off leaves the other alone',
+      /'event_types'/.test(feat)
+      // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): 20261026_pricing_pages.sql switches `event_types` OFF for
+      // payg — so the "one key's override leaves the other alone" half is asked on pro (both on), and payg itself is now
+      // the seeded proof that a plan can switch event_types off while private_events stays on.
+      && F.canAccess('event_types', { private_events: false }, sw('pro')) === true
+      && F.canAccess('private_events', { event_types: false }, sw('payg')) === true
+      && F.canAccess('event_types', {}, sw('payg')) === false && F.canAccess('private_events', {}, sw('payg')) === true
+      && F.canAccess('event_types', { event_types: false }, sw('payg')) === false
+      && F.canAccess('private_events', {}, onlyTypesOff) === true
+      && F.canAccess('event_types', {}, onlyTypesOff) === false)
 
     const route = read('app/api/event-types/route.ts')
     t('🔴 the route has BOTH gates', /privateAllowed/.test(route) && /const allowed =/.test(route))
-    t('⛔ …and the link/QR action is gated on the PRO one, not the Max one',
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): label only — the gates are keys now, not Pro / Max tiers.
+    t('⛔ …and the link/QR action is gated on the `private_events` key, not the `event_types` one',
       /PRIVATE_ACTIONS = new Set\(\['set_private_link_ordering'\]\)/.test(route))
-    t('⛔ …and `load` is open to EITHER key, so a Pro truck is not told to upgrade off its own feature',
-      /READ_ACTIONS\.has\(action\) && !canWrite && !privateAllowed\(truck\)/.test(route))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): label only — "Pro truck" → a truck with only private events.
+    t('⛔ …and `load` is open to EITHER key, so a truck with only private events is not refused off its own feature',
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): both gates take the request's plan catalogue now.
+      /READ_ACTIONS\.has\(action\) && !canWrite && !privateAllowed\(truck, planCatalog\)/.test(route))
 
     const manage = read('app/api/manage/route.ts')
     t("🔴 making an event private is gated server-side, not only in the UI",
-      /canAccess\(truck\.plan, 'private_events'/.test(manage))
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): canAccess takes (feature, overrides) now — no plan.
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the route's one gate is `gateFeature` (lib/plan-refusal
+      // featureRefusal — override → effective plan → on, worded by why), asked for 'private_events'.
+      /const gateFeature = async \(feature: Feature\) => \{\s*const r = await featureRefusal\(truck, feature,/.test(manage)
+      && /await gateFeature\('private_events'\)/.test(manage))
     t('⛔ …and MAKING ONE PUBLIC is NOT gated — a downgraded truck must never be stranded', (() => {
       const c = codeOf(manage)
       const i = c.indexOf('const wantPrivate = body.is_private === true')
-      return i > 0 && /wantPrivate\s*\n?\s*&& !canAccess/.test(c.slice(i, i + 400))
+      // ⚠️ RE-PINNED (Stage A2): the gate sits inside `if (wantPrivate) { … }` now, not `wantPrivate && !canAccess(…)`.
+      return i > 0 && /^\s*if \(wantPrivate\) \{\s*const refused = await gateFeature\('private_events'\)\s*if \(refused\) return refused\s*\}/.test(c.slice(i + 'const wantPrivate = body.is_private === true'.length, i + 400))
     })())
   }
 
@@ -861,8 +917,13 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       /data-private-link-standard/.test(ui) && /PRIVATE_LINK_STANDARD_CELL/.test(ui))
     t('⛔ …and the section is ABSENT, not disabled, when there is no Private type',
       /if \(privateType\) \{/.test(ui))
-    t('🔴 the Pro truck gets a Max badge on "+ New event type" and the PRICES band',
-      /!canTypes && canPrivate && <MaxBadge/.test(ui) && (ui.match(/<MaxBadge/g) || []).length >= 2)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "the Pro truck gets a Max badge on '+ New event
+    // type' and the PRICES band". MaxBadge and the plan banner are removed (no plan to name). The surviving claim: a truck
+    // with private events but event types switched off still cannot press "+ New event type" — the button is held by
+    // the `canTypes` gate — and no plan badge or "Max plan" banner is drawn.
+    t('🔴 a truck without event types cannot press "+ New event type", and no plan badge is drawn',
+      /disabled=\{!editable \|\| !canTypes\}/.test(ui)
+      && !/MaxBadge/.test(codeOf(ui)) && !/upgradeMessage/.test(codeOf(ui)))
 
     /* ── ⛔ EVERY WORD FROM lib/private-events/copy.ts ───────────────────────────────────────── */
     const COPY_STRINGS = [
@@ -1026,7 +1087,10 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       return std > 0 && priv > std && cust > priv
     })())
     t('⛔ …and the field is drawn even for a truck with NO custom types, because Private is always a choice',
-      /if \(!ready\) return null/.test(ui) && !/if \(!ready \|\| types\.length === 0\) return null/.test(ui))
+      // ⚠️ RE-PINNED (pending-card buttons, 19 October 2026, docs/pending-card-buttons-report.md): before the types load the
+      // approval card's own buttons (`actions`) are drawn on their own — still nothing about an EMPTY type list.
+      /if \(!ready\) return (?:null|actions \? <div>\{actions\}\{actionsNote\}<\/div> : null)\n/.test(ui)
+      && !/if \(!ready \|\| types\.length === 0\) return/.test(ui))
 
     /* 🔴 SELECTING PRIVATE OPENS THE PANEL; SELECTING ANYTHING ELSE CLOSES IT. */
     t('🔴 the purple panel is gated on the Private pill being selected',
@@ -1145,7 +1209,8 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
     /* ⚠️ A PRO TRUCK SEES STANDARD AND PRIVATE ONLY — the pill row is filtered by the route's own
      * `canTypes`/`canPrivate`, which is why the LIST it receives is already correct. */
     t('⚠️ the route reports both gates separately, so Pro gets Standard + Private only',
-      /canPrivate: privateAllowed\(truck\)/.test(read('app/api/event-types/route.ts'))
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): privateAllowed takes the request's plan catalogue.
+      /canPrivate: privateAllowed\(truck, planCatalog\)/.test(read('app/api/event-types/route.ts'))
       && /canTypes: canWrite/.test(read('app/api/event-types/route.ts')))
 
     /* ⛔ AND THE FORM'S LAST NATIVE SELECTS ARE GONE — WebKit renders one at 23px (§65). */
@@ -1306,8 +1371,9 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
   {
     const c = codeOf(read('app/api/manage/route.ts'))
     const i = c.indexOf('const wantPrivate = body.is_private === true')
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the gate is `if (wantPrivate) { gateFeature(…) }` now.
     must('V10 ⛔ gating the PUBLIC direction would be caught',
-      i > 0 && /wantPrivate\s*\n?\s*&& !canAccess/.test(c.slice(i, i + 400)))
+      i > 0 && /^\s*if \(wantPrivate\) \{\s*const refused = await gateFeature\('private_events'\)/.test(c.slice(i + 'const wantPrivate = body.is_private === true'.length, i + 400)))
   }
 
   /* ── V11 · `kind` IS ADDED TO `TYPE_COLS` ────────────────────────────────────────────────────

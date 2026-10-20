@@ -2,6 +2,10 @@ import type { MetadataRoute } from 'next'
 import { headers } from 'next/headers'
 import { listCountrySettingsCached } from '@/lib/country-settings'
 import { HATCHGRAB_ORIGIN, MARKETING_COUNTRY, countryPagePath, routableCountries } from '@/lib/marketing-country'
+import { countryPageAlternates, MARKETING_COPY_UPDATED } from '@/lib/marketing-meta'
+import { planDataUpdatedAt } from '@/lib/plans-server'
+import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH, PRIVACY_UPDATED, TERMS_UPDATED, COUNTRY_TERMS_UPDATED, legalUpdatedDate } from '@/lib/legal'
+import { BRANDS } from '@/lib/brand'
 
 // app/sitemap.ts — serves /sitemap.xml. There was none before.
 //
@@ -41,24 +45,46 @@ import { HATCHGRAB_ORIGIN, MARKETING_COUNTRY, countryPagePath, routableCountries
 //
 // ⚠️ HOST-AWARE: one deployment serves both brands, and a host-blind sitemap would advertise
 // HatchGrab URLs on villagefoodie.co.uk.
+//
+// ── 🟢 seo-fixes S5 (20 October 2026, docs/seo-fixes-report.md) ────────────────────────────────────────────────────────
+//   • lastmod is a REAL content date, never request time: a country page's is the latest of its copy date
+//     (MARKETING_COPY_UPDATED), the plan data it shows (plans / that country's plan_prices / plan_features updated_at)
+//     and the country's settings row; a legal page's is its own "Last updated" date (lib/legal.ts). /contact has no
+//     content date, so it carries no lastmod rather than an invented one.
+//   • the indexable legal pages (/privacy, /terms, /country-terms) and /contact are listed — on the HatchGrab host only
+//     (their canonical is the HatchGrab address on every host, so the Village Foodie sitemap does not list them).
+//   • each country page carries its hreflang alternates as xhtml:link — the SAME set as its <head>
+//     (lib/marketing-meta.ts countryPageAlternates: every listed country + x-default).
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const host = (await headers()).get('host') ?? 'www.hatchgrab.com'
   const isHG = host.includes('hatchgrab')
   if (isHG) {
-    let live: string[]
-    try {
-      live = routableCountries((await listCountrySettingsCached()).filter(c => c.enabled).map(c => c.countryCode))
-    } catch {
-      live = []
-    }
+    let rows: Awaited<ReturnType<typeof listCountrySettingsCached>> = []
+    try { rows = await listCountrySettingsCached() } catch { rows = [] }
+    let live = routableCountries(rows.filter(c => c.enabled).map(c => c.countryCode))
     if (!live.includes(MARKETING_COUNTRY)) live = [MARKETING_COUNTRY, ...live]   // GB's address never redirects
+    const localeOf = (code: string) => rows.find(r => r.countryCode === code)?.locale ?? 'en-GB'
+    const alternates = live.map(code => ({ code, locale: localeOf(code) }))
+    const latest = (...ds: (Date | null | undefined)[]) => new Date(Math.max(...ds.filter((d): d is Date => !!d && Number.isFinite(d.getTime())).map(d => d.getTime())))
+    const countryPages = await Promise.all(live.map(async (code): Promise<MetadataRoute.Sitemap> => {
+      const settingsAt = rows.find(r => r.countryCode === code)?.updatedAt
+      const lastModified = latest(new Date(MARKETING_COPY_UPDATED), await planDataUpdatedAt(code), settingsAt ? new Date(settingsAt) : null)
+      return [
+        { url: HATCHGRAB_ORIGIN + countryPagePath(code, 'landing'), lastModified, changeFrequency: 'weekly', priority: 1,
+          alternates: { languages: countryPageAlternates('landing', code, alternates).languages } },
+        { url: HATCHGRAB_ORIGIN + countryPagePath(code, 'features'), lastModified, changeFrequency: 'monthly', priority: 0.8,
+          alternates: { languages: countryPageAlternates('features', code, alternates).languages } },
+      ]
+    }))
     return [
-      ...live.flatMap((code): MetadataRoute.Sitemap => [
-        { url: HATCHGRAB_ORIGIN + countryPagePath(code, 'landing'), lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
-        { url: HATCHGRAB_ORIGIN + countryPagePath(code, 'features'), lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-      ]),
+      ...countryPages.flat(),
+      { url: HATCHGRAB_ORIGIN + PRIVACY_PATH, lastModified: legalUpdatedDate(PRIVACY_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
+      { url: HATCHGRAB_ORIGIN + TERMS_PATH, lastModified: legalUpdatedDate(TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
+      { url: HATCHGRAB_ORIGIN + COUNTRY_TERMS_PATH, lastModified: legalUpdatedDate(COUNTRY_TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
+      { url: HATCHGRAB_ORIGIN + '/contact', changeFrequency: 'yearly', priority: 0.3 },
     ]
   }
-  // Village Foodie: the discovery root only. /venues/[slug] is deliberately not enumerated here yet.
-  return [{ url: 'https://www.villagefoodie.co.uk/', lastModified: new Date(), changeFrequency: 'daily', priority: 1 }]
+  // Village Foodie: the discovery root only. /venues/[slug] is deliberately not enumerated here yet. Its content changes
+  // daily (the events), so it carries no lastmod rather than request time (S5).
+  return [{ url: `https://${BRANDS.VILLAGE_FOODIE.domain}/`, changeFrequency: 'daily', priority: 1 }]
 }

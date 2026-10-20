@@ -18,7 +18,8 @@
 //
 // ── WHAT IT SUPPORTS, AND NOTHING ELSE ───────────────────────────────────────────────────────────────
 // BLOCK:  # h1 · ## h2 · ### h3 · --- rule · | tables | · - lists · paragraphs
-// INLINE: **bold**
+// INLINE: **bold** · [label](/site-path) — a link to a page of this site (19 October 2026: the documents point to the
+//         Country-specific terms page). ONLY a path starting with "/" becomes a link; any other [x](y) stays literal text.
 // ⚠️ Anything else passes through as LITERAL TEXT rather than being silently dropped. That is the correct
 // failure direction for legal copy: an unrendered construct is visible and reportable, a swallowed clause
 // is not. If a future amendment introduces a link or an ordered list, it will render as plain text and
@@ -34,9 +35,24 @@ function inline(text: string, keyBase: string): React.ReactNode[] {
     // Odd indices sit between a pair of `**` ⇒ bold. A trailing unmatched `**` leaves a final even
     // segment, which renders plain — the literal asterisks are then visible rather than eaten.
     i % 2 === 1
-      ? <strong key={`${keyBase}-b${i}`}>{seg}</strong>
-      : <React.Fragment key={`${keyBase}-t${i}`}>{seg}</React.Fragment>,
+      ? <strong key={`${keyBase}-b${i}`}>{links(seg, `${keyBase}-b${i}`)}</strong>
+      : <React.Fragment key={`${keyBase}-t${i}`}>{links(seg, `${keyBase}-t${i}`)}</React.Fragment>,
   )
+}
+
+/** `[label](/path)` → a link to a page of this site; everything else verbatim. 🔴 SPLIT-AND-REJOIN as above: the
+ *  regex's capture groups split the segment into text, label, path, text…, so every character is emitted once.
+ *  Only a site-relative path ("/terms", "/country-terms") is linked — never an external or scheme URL. */
+const LINK = /\[([^\]]+)\]\((\/[a-z0-9\-/#]*)\)/
+function links(text: string, keyBase: string): React.ReactNode {
+  if (!LINK.test(text)) return text
+  const parts = text.split(new RegExp(LINK.source, 'g'))
+  const out: React.ReactNode[] = []
+  for (let i = 0; i < parts.length; i += 3) {
+    if (parts[i]) out.push(<React.Fragment key={`${keyBase}-s${i}`}>{parts[i]}</React.Fragment>)
+    if (i + 2 < parts.length) out.push(<a key={`${keyBase}-a${i}`} href={parts[i + 2]} className="underline hover:text-slate-900">{parts[i + 1]}</a>)
+  }
+  return out
 }
 
 /** Render one legal markdown document. */

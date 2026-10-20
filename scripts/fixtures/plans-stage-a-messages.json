@@ -1,0 +1,98 @@
+{
+  "_about": "plans-data-model, Stage A (19 October 2026, docs/plans-data-model-report.md): the message keys Stage A REMOVED (with their text before) and REWORDED (before → after), per locale. Read by scripts/_lp2-frozen.cjs (the opt-in Stage A as-moved overlay, HG_MESSAGES_STAGE_A=before) and the language-phase key checks. Written from git HEAD c6c44c9e vs the Stage A tree; never recaptured.",
+  "en-GB": {
+    "removed": {
+      "eventTypes.maxPlanFallback": "Event types are part of the Max plan.",
+      "eventTypes.maxPlanBody": "Events that already have a type keep using it. To add, change or assign types, move to Max.",
+      "privateEvents.grid.maxOnly": "Max only",
+      "errorsManage.private_events_pro": "Private events are part of the Pro plan.",
+      "errorsManage.event_types_max": "Event types are part of the Max plan.",
+      "errorsManage.preorders_pro": "Pre-orders are part of the Pro plan.",
+      "errorsManage.social_media_plan": "Social media posts are on Pro and Max",
+      "errorsManage.embed_not_on_plan": "Not available on this plan",
+      "manageSettings.vanUpgrade.title": "Upgrade to add more vans",
+      "manageSettings.vanUpgrade.body": "The Starter plan includes 1 van. Upgrade to Pro or Max to add additional vans.",
+      "manageSettings.vanUpgrade.cancel": "Cancel",
+      "manageSettings.vanUpgrade.viewPlans": "View plans",
+      "manageReports.upsell.title": "Revenue breakdown & analytics",
+      "manageReports.upsell.badge": "Pro feature",
+      "manageReports.upsell.body": "Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max.",
+      "weeklyPost.planRefusal": "Social media posts are on Pro and Max",
+      "manageBilling.onMax": "You’re on Max features. Choose a plan before your trial ends to keep access.",
+      "manageBilling.onMaxNoCta": "You’re on Max features.",
+      "manageBilling.upgradeToMax": "Upgrade to Max — {price}",
+      "manageBilling.choosePro": "Choose Pro — {price}",
+      "manageBilling.upgradeYourPlan": "Upgrade your plan",
+      "manageBilling.perTruckRenews": "{price} per truck · renews automatically",
+      "manageBilling.hideMatrix": "▲ Hide",
+      "manageBilling.compareAll": "▼ Compare all plans",
+      "manageWhatsApp.card.notOnPlan": "WhatsApp auto-replies are included on Pro and Max.",
+      "manageWhatsApp.card.upgrade": "Upgrade →"
+    },
+    "reworded": {
+      "manageSettings.qr.lockedTitle": {
+        "before": "Branded codes are part of a higher plan",
+        "after": "Branded codes are switched off for your truck"
+      },
+      "manageSettings.qr.lockedBody": {
+        "before": "Branded codes are part of a higher plan. Your standard QR code works exactly the same for customers — the difference is your logo in the middle.",
+        "after": "Branded codes are switched off for your truck. Your standard QR code works exactly the same for customers — the difference is your logo in the middle."
+      },
+      "manageBilling.notStarted.body": {
+        "before": "You have every Max feature while you set up. You choose which event starts your free trial — until then, nothing is counting down.",
+        "after": "You have every feature while you set up. You choose which event starts your free trial — until then, nothing is counting down."
+      },
+      "manageBilling.setUpPayment": {
+        "before": "⏱ Set up payment before your trial ends to keep access",
+        "after": "⏱ Choose a plan before your trial ends"
+      },
+      "manageBilling.upgradeModal.title": {
+        "before": "Upgrade to {plan}",
+        "after": "Switch to {plan}"
+      },
+      "manageBilling.upgradeModal.body": {
+        "before": "We’re setting up automated billing. To upgrade now, drop us a message and we’ll get you set up within 24 hours.",
+        "after": "We’re setting up automated billing. To switch now, drop us a message and we’ll get you set up within 24 hours."
+      },
+      "manageBilling.upgradeModal.mailSubject": {
+        "before": "Upgrade to {plan} — {truck}",
+        "after": "Switch to {plan} — {truck}"
+      },
+      "manageBilling.upgradeModal.mailBody": {
+        "before": "Hi, I’d like to upgrade {truck} to the {plan} ({price}) plan.",
+        "after": "Hi, I’d like to switch {truck} to the {plan} ({price}) plan."
+      },
+      "manageBilling.upgradeModal.email": {
+        "before": "Email us to upgrade",
+        "after": "Email us to switch"
+      }
+    },
+    "added": {
+      "errorsManage.feature_switched_off": "This feature is switched off for your truck.",
+      "errorsManage.plans_failed": "Could not load this truck’s plan. Try again in a moment.",
+      "manageShell.noPlans": "Couldn’t load this truck’s plan. Please refresh.",
+      "manageBilling.plan.included": "Includes {amount} of online orders a month.",
+      "manageBilling.plan.includedUnlimited": "Unlimited online orders included.",
+      "manageBilling.plan.promo": "Special price.",
+      "manageBilling.plan.promoUntil": "Special price until {date}.",
+      "manageBilling.plan.ended": "Your {plan} plan ended on {date}. You’re now on {now}, with every feature.",
+      "manageBilling.onTrial": "You have every feature. Choose a plan before your trial ends.",
+      "manageBilling.onTrialNoCta": "You have every feature.",
+      "manageBilling.changeYourPlan": "Change your plan",
+      "manageWhatsApp.card.switchedOff": "WhatsApp auto-replies are switched off for your truck."
+    }
+  },
+  "en-US": {
+    "removed": {
+      "manageSettings.vanUpgrade.title": "Upgrade to add more trucks",
+      "manageSettings.vanUpgrade.body": "The Starter plan includes 1 truck. Upgrade to Pro or Max to add additional trucks."
+    },
+    "reworded": {
+      "manageBilling.upgradeModal.body": {
+        "before": "We’re setting up automated billing. To upgrade now, send us a message and we’ll get you set up within 24 hours.",
+        "after": "We’re setting up automated billing. To switch now, send us a message and we’ll get you set up within 24 hours."
+      }
+    },
+    "added": {}
+  }
+}

@@ -13,9 +13,12 @@
 // gate by RENDERING the control with the plugin mocked absent.
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO, headWorktree } = require('./_slot-interval-compile.cjs'); const { installMocks } = require('./_printing-mocks.cjs')
-const c = compile(REPO, ['lib/printing/transport.ts', 'lib/printing/bleTransport.ts', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/features.ts'], 'gating')
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): lib/plans.ts compiled too — canAccess now needs the
+// truck's effective-plan switch (truckPlanSwitch), built from the catalogue the two plan migrations seed.
+const c = compile(REPO, ['lib/printing/transport.ts', 'lib/printing/bleTransport.ts', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/features.ts', 'lib/plans.ts'], 'gating')
 const g = installMocks(c.out, { native: true })
-const T = c.req('lib/printing/transport.js'), F = c.req('lib/features.js')
+const T = c.req('lib/printing/transport.js'), F = c.req('lib/features.js'), P = c.req('lib/plans.js')
+const CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
 const NET = c.req('lib/printing/netTransport.js'), GUARD = c.req('lib/printing/networkGuard.js')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }
 ;(async () => {
@@ -47,8 +50,29 @@ console.log('\n── canAccess(ticket_printing) for the LIVE Pizzeria Gusto sha
 {
   // Pizzeria Gusto's live shape, read 17 September 2026 (trucks.plan / feature_overrides / trial_expires_at).
   const gusto = {"plan": "trial", "feature_overrides": {}, "trial_expires_at": "2026-12-31T23:59:59+00:00"}
-  check(F.canAccess(gusto.plan, 'ticket_printing', gusto.feature_overrides ?? {}, gusto.trial_expires_at) === true, `canAccess('${gusto.plan}', 'ticket_printing', ${JSON.stringify(gusto.feature_overrides)}, ${JSON.stringify(gusto.trial_expires_at)}) → true`)
-  check(F.canAccess('starter', 'ticket_printing') === false, 'starter → false (unchanged)')
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): canAccess is TWO args now — (feature, featureOverrides);
+  // the plan and trial expiry no longer gate anything. Gusto (no override for the key) → allowed, as before.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): canAccess is THREE args now —
+  // (feature, featureOverrides, planAllows); the plan switch is REQUIRED (lib/features.ts). Order: override → the
+  // EFFECTIVE plan's switch → on. Gusto (trial, no override, unexpired) → trial has no plan_features rows → allowed.
+  const NOW = new Date('2026-10-20T12:00:00Z')
+  const gustoPlan = P.truckPlanSwitch(gusto, CATALOG, NOW)
+  check(F.canAccess.length === 3, 'canAccess takes (feature, featureOverrides, planAllows) — the plan switch is required')
+  check(P.effectivePlan(gusto, CATALOG, NOW).plan.key === 'trial', "Gusto's effective plan is 'trial' (expiry 31 Dec 2026 not passed)")
+  check(F.canAccess('ticket_printing', gusto.feature_overrides ?? null, gustoPlan) === true, `canAccess('ticket_printing', ${JSON.stringify(gusto.feature_overrides)}, trial) → true`)
+  check(P.truckCan(gusto, CATALOG, 'ticket_printing', NOW) === true, "truckCan(gusto, catalogue, 'ticket_printing') → true (the server routes' one call)")
+  // ⚠️ RE-PINNED (Stage A2): the seed switches ticket_printing off for NO plan, so an ENDED trial (→ payg, with payg's
+  // switches) still prints; the plan arm is proved with a plan switch that says no.
+  const ended = { ...gusto, trial_expires_at: '2026-01-01T00:00:00+00:00' }
+  check(P.effectivePlan(ended, CATALOG, NOW).plan.key === 'payg' && P.truckCan(ended, CATALOG, 'ticket_printing', NOW) === true, 'an ENDED trial → payg, and payg keeps ticket_printing (no seed row switches it off)')
+  const planOff = () => false, planOn = () => true
+  check(F.canAccess('ticket_printing', {}, planOff) === false && F.featureBlock('ticket_printing', {}, planOff) === 'plan', "a plan that switches ticket_printing off → false, block 'plan'")
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "starter → false". The override arm: override false →
+  // false, any non-true value under the key → false; override true → true — and the override WINS over the plan (A2).
+  check(F.canAccess('ticket_printing', { ticket_printing: false }, gustoPlan) === false, 'override ticket_printing:false → false (override wins over a plan that allows it)')
+  check(F.canAccess('ticket_printing', { ticket_printing: 'yes' }, gustoPlan) === false, 'a non-true value under the key → false')
+  check(F.canAccess('ticket_printing', { ticket_printing: true }, planOff) === true, 'override ticket_printing:true → true, even when the plan switches it off')
+  check(F.canAccess('ticket_printing', { some_other_feature: false }, planOn) === true, "another feature's override does not switch printing off")
 }
 console.log("\n── usePrinting's gate: today's expression with guardOk folded in as a no-op for 'ble' ──")
 {

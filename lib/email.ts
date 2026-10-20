@@ -21,6 +21,7 @@ import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/emailCustomer'
 import '@/lib/i18n/catalog/emailOperator'
 import { eventAddressLine } from '@/lib/event-address'
+import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
 
 type EmailT = ReturnType<typeof translatorFor<'emailCustomer'>>
 const emailT = (locale: string | null | undefined): EmailT => translatorFor(locale, 'emailCustomer')
@@ -475,7 +476,7 @@ export function formatConfirmationEmail(params: {
   ${cancellationSection}
 
   <p style="text-align:center;margin-top:20px;font-size:11px;color:#94a3b8">
-    ${t.markup('confirmation.poweredBy', { brand: chunks => `<a href="https://hatchgrab.com" style="color:#ea580c;text-decoration:none;font-weight:700">${chunks}</a>` })}
+    ${t.markup('confirmation.poweredBy', { brand: chunks => `<a href="https://hatchgrab.com" style="color:#ea580c;text-decoration:none;font-weight:700">${chunks}</a>` })}${privacyFooterHtml(t as never)}
   </p>
 
 </body>
@@ -544,6 +545,7 @@ export function formatConfirmationEmail(params: {
     })(),
     '',
     t('common.poweredByText'),
+    privacyFooterText(t as never),
   ].filter(Boolean).join('\n')
 
   return { subject, html, text }
@@ -856,7 +858,7 @@ export async function sendRefundEmail(params: {
       ? t('refund.subjectFull', { id: params.orderId, truck: params.truckName })
       : t('refund.subjectPartial', { id: params.orderId, truck: params.truckName }),
     html,
-    text: `${hi} ${lead} ${timing} ${contact} ${t('common.poweredByText')}`,
+    text: `${hi} ${lead} ${timing} ${contact} ${t('common.poweredByText')} ${privacyFooterText(t as never)}`,
     truckName: params.truckName,
   })
 }
@@ -914,14 +916,14 @@ export async function sendCancellationEmail({
       ${refundLine}
       <p>${t('common.sorry')}</p>
       <p>${truckName}</p>
-      <p style="color:#94a3b8;font-size:12px">${t('common.poweredByDot')}</p>
+      <p style="color:#94a3b8;font-size:12px">${t('common.poweredByDot')}${privacyFooterHtml(t as never)}</p>
     </div>
   `
   await sendConfirmationEmail({
     to,
     subject: t('cancellation.subject', { truck: truckName }),
     html,
-    text: `${t('cancellation.textLead', { ...named, id: orderId, truck: truckName })}${reason ? ' ' + reason : ''}${refundText} ${t('common.sorry')} ${t('common.poweredByText')}`,
+    text: `${t('cancellation.textLead', { ...named, id: orderId, truck: truckName })}${reason ? ' ' + reason : ''}${refundText} ${t('common.sorry')} ${t('common.poweredByText')} ${privacyFooterText(t as never)}`,
     truckName,
   })
 }
@@ -966,14 +968,14 @@ export async function sendEventCancellationEmail({
       <p>${t.markup('eventCancellation.orderCancelled', { id: orderId, b: strong })}${refundLine}</p>
       <p>${t('common.sorry')}</p>
       <p>${truckName}</p>
-      <p style="color:#94a3b8;font-size:12px">${t('common.poweredByDot')}</p>
+      <p style="color:#94a3b8;font-size:12px">${t('common.poweredByDot')}${privacyFooterHtml(t as never)}</p>
     </div>
   `
   await sendConfirmationEmail({
     to,
     subject: t('eventCancellation.subject', where),
     html,
-    text: `${t('eventCancellation.textLead', { ...named, ...where, id: orderId })}${refundLine}${note ? ' ' + note : ''} ${t('common.sorry')} ${t('common.poweredByText')}`,
+    text: `${t('eventCancellation.textLead', { ...named, ...where, id: orderId })}${refundLine}${note ? ' ' + note : ''} ${t('common.sorry')} ${t('common.poweredByText')} ${privacyFooterText(t as never)}`,
     truckName,
   })
 }

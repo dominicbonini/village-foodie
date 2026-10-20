@@ -31,6 +31,9 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
 import CostComparison from './CostComparison'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/compare'
+import { getPlanCatalog } from '@/lib/plans-server'   // Stage B: the calculator's plans are the data's
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
 // Language Phase 1e: the calculator's words are read in THIS country's locale, handed down — CostComparison never
@@ -75,10 +78,18 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment, page: 'compare' })
   const at = countryPageAlternates('compare', visitor.settings.countryCode, visitor.countryPage?.alternates ?? [])
   const inherited = (await parent).openGraph
+  // seo-fixes N1 (20 October 2026): its own title and description, in the country's words (`compare.meta` —
+  // "Cost calculator — HatchGrab UK" / "… US"; the country is the row's short name). 🔴 STILL noindex.
+  const tm = translatorFor(visitor.settings.locale, 'compare')
+  const title = tm('meta.title', { country: marketingCountry(visitor.settings).short })
+  const description = tm('meta.description')
   return {
+    title: { absolute: title },
+    description,
     robots: { index: false, follow: false },
     alternates: { canonical: at.canonical, languages: at.languages },
-    openGraph: { ...(inherited ?? {}), url: at.canonical, locale: marketingCountry(visitor.settings).ogLocale } as Metadata['openGraph'],
+    openGraph: { ...(inherited ?? {}), title, description, url: at.canonical, locale: marketingCountry(visitor.settings).ogLocale } as Metadata['openGraph'],
+    twitter: { ...((await parent).twitter ?? {}), title, description } as Metadata['twitter'],
   }
 }
 
@@ -96,7 +107,8 @@ async function onHatchGrab(): Promise<boolean> {
 // identically; next/font deduplicates the font files themselves.
 const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap' })
+// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
+const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
 
 // 🔴 THE `.hg-landing` WRAPPER GOES ROUND THE CHROME ONLY — NEVER ROUND THE CALCULATOR.
 // All 195 rules in landing.css are scoped under `.hg-landing`, and one of them is `.hg-landing * {
@@ -141,6 +153,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
   // Language Phase 1e: at a country address the country is the ADDRESS's (lib/visitor-country.ts resolveCountryPage).
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'compare' })
   const settings = visitor.settings
+  const catalog = await getPlanCatalog()
 
   // ── 🔴 THE PROVIDER AND THE MODAL CAME BACK — 3 SEPTEMBER 2026. THIS PAGE'S CTAs OPEN THE DEMO. ───
   // They were removed on 23 August, when all three of this page's CTAs pointed at /signup and nothing in
@@ -195,7 +208,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
         <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
       </div>
 
-      <CostComparison settings={settings} locale={localeOfCountry(settings)} />
+      <CostComparison settings={settings} catalog={catalog} locale={localeOfCountry(settings)} />
 
       <div className={CHROME}>
         <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />

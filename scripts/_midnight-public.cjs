@@ -71,7 +71,11 @@ async function views({ kit, REPO, FIX }) {
   function world(cc, times, extra = {}) {
     const truck = { id: 'test-truck', name: 'Pizza Kitchen', slug: 'test-kitchen', country: cc, timezone: null, active: true, excluded: false,
       show_on_vf: true, show_on_hg: true, order_link_vf: false, order_link_hg: true, embed_enabled: true, dashboard_token: 'tok-public',
-      plan: 'max', feature_overrides: {}, trial_expires_at: null, cuisine_type: 'Pizza', logo_storage_path: null, cover_image_path: null,
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): 'max' is not a catalogue plan since Stage A, so it
+      // resolves to the expiry fallback (payg) — WITH payg's switches since Stage A2, and payg has schedule_graphics off,
+      // so the weekly-post route refused (feature_not_on_plan). With the plans migration the truck holds Max's stand-in
+      // (max → unlimited); BEFORE keeps 'max'.
+      plan: require('fs').existsSync(path.join(path.resolve(__dirname, '..'), 'supabase/migrations/20261024_plans.sql')) ? 'unlimited' : 'max', feature_overrides: {}, trial_expires_at: null, cuisine_type: 'Pizza', logo_storage_path: null, cover_image_path: null,
       contact_phone: null, website: null, phone_is_whatsapp: false }
     const ev = (id, date, status = 'confirmed', more = {}) => ({ ...FIX.eventRow(id, times, { event_date: date, status, is_private: false, venue_id: null, truck_place_id: null, ...more }), trucks: truck })
     const dt = { id: 'dt-kitchen', name: 'Pizza Kitchen', aliases: [], country: cc, show_on_vf: true, show_on_hg: true, excluded: false, exclude_reason: null,
@@ -79,7 +83,10 @@ async function views({ kit, REPO, FIX }) {
     const scraped = { id: 'de-1', event_date: FIX.EVENT_DATE, ...times, truck_name: 'Pizza Kitchen', venue_name: 'Village Green', village: 'Springfield', event_notes: null,
       discovery_truck_id: 'dt-kitchen', venue_id: null, show_on_vf: true, show_on_hg: true, superseded_by: null, country: cc, discovery_trucks: dt, venues: null }
     return { trucks: [truck], truck_events: [ev('ev-1', FIX.EVENT_DATE), ...(extra.events || []).map(([id, d, st, more]) => ev(id, d, st, more))],
-      discovery_trucks: [dt], discovery_events: [scraped], venues: [], country_settings: CS, truck_places: [], truck_post_designs: [], place_pictures: [] }
+      discovery_trucks: [dt], discovery_events: [scraped], venues: [], country_settings: CS, truck_places: [], truck_post_designs: [], place_pictures: [],
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan catalogue (FIX.planTables — the seeded
+      // plans / plan_prices / plan_features), which the weekly-post route (its async `gated`) now reads; fixture input, never recorded.
+      ...FIX.planTables(path.resolve(__dirname, '..')) }
   }
   const useDb = w => { const pg = makeFakePg(w); globalThis.__harnessDb = pg; clearAll(); return pg }
   const brief = list => (list || []).map(e => [e.date, String(e.startTime).slice(0, 5), String(e.endTime).slice(0, 5), e.venueName, e.source, e.status ?? null])

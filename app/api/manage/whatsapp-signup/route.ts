@@ -43,6 +43,7 @@ import { readWhatsAppConnection, type WhatsAppConnectionView } from '@/lib/whats
 // `message` is `manageWhatsApp.signup.<key>` — both in the truck's language (en-GB before the truck is known).
 import { manageErrorBody, type ManageErrorCode } from '@/lib/i18n/manage-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+import { featureRefusal } from '@/lib/plan-refusal'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageWhatsApp'
@@ -138,7 +139,7 @@ export async function POST(req: NextRequest) {
   // 🔴 THE TRUCK COMES FROM THE TOKEN AND FROM NOTHING ELSE. See the header.
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id, name, feature_overrides, country')
+    .select('id, name, feature_overrides, country, plan, trial_expires_at')
     .eq('dashboard_token', token)
     .single()
   if (!truck) return fail(DEFAULT_LOCALE, 'unauthorised', 'invalid_token', 401)
@@ -157,6 +158,18 @@ export async function POST(req: NextRequest) {
   if (!WHATSAPP_LIVE && !hasWhatsAppSetupPreview(truck.feature_overrides)) {
     console.warn(`${TAG} setup refused — preview not enabled`, { truck_id: truck.id })
     return fail(locale, 'not_available', 'wa_signup_not_available', 403)
+  }
+  // ── 🔴 THE FEATURE GATE (plan-features-config, Stage A2) — also above the exchange, for the same reason. ──────────
+  // WhatsApp auto-replies may be switched off by the truck's EFFECTIVE plan (refused `feature_not_on_plan`, naming the
+  // plan that has them) or by an override (`feature_switched_off`). Connecting a number a plan cannot use would only
+  // leave a connection that never replies.
+  {
+    const off = await featureRefusal(truck, 'whatsapp_replies', locale)
+    if (off) {
+      console.warn(`${TAG} setup refused — whatsapp_replies off (${off.code})`, { truck_id: truck.id })
+      const b = manageErrorBody(locale, off.code, off.params)
+      return NextResponse.json<Fail>({ ok: false, kind: 'not_available', error: b.error, code: b.code, params: b.params }, { status: 403 })
+    }
   }
 
   const kind = typeof body.kind === 'string' ? body.kind : ''

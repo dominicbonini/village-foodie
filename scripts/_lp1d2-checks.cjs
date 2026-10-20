@@ -187,7 +187,7 @@ async function run(ctx) {
       if (!n.touched.length) { t(`${cc} · ${id}: F === BEFORE (no named code change applies)`, same(b, f), firstDiff(b, f)); continue }
       // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md): a structural named change
       // (pending-card-layout, `n.matches`) is proven by its own proof instead of byte equality; every other view as before.
-      const pr = n.matches ? n.matches(f) : null
+      const pr = n.matches ? n.matches(f, F) : null   // ⚠️ RE-PINNED (plans-data-model, Stage A): the capture, for a twin proof
       const ok = pr ? pr.ok : same(n.expected, f)
       if (ok) named++
       t(`${cc} · ${id}: F === BEFORE with ONLY the named change(s) ${n.touched.join(' + ')}`, ok, pr ? pr.problems.join('\n      ') : `expected (BEFORE + named) vs F ${firstDiff(n.expected, f)}`)
@@ -316,7 +316,7 @@ async function run(ctx) {
       // entry that claims only smoke views (`smokeOnly`) is proven there, byte for byte — not "stale" here.
       if (e.smokeOnly) { console.log(`  · ${e.id} (${e.country}, PRECISE): out-of-scope views only — claimed and proven in the smoke section below`); continue }
       const n = claimed.get(e.id).length
-      console.log(`  ${n ? '·' : '⚠️'} ${e.id} (${e.country}${e.expect ? '' : e.prove ? ', STRUCTURAL — pending-card proof' : ', LISTED'}): ${n} view(s)${n ? ` — ${claimed.get(e.id).slice(0, 4).join(', ')}${n > 4 ? ' …' : ''}` : ' — none changed (not landed, or stale)'}`)
+      console.log(`  ${n ? '·' : '⚠️'} ${e.id} (${e.country}${e.expect ? '' : e.prove ? ', STRUCTURAL — pending-card proof' : e.proveWith ? ', STRUCTURAL' : ', LISTED'}): ${n} view(s)${n ? ` — ${claimed.get(e.id).slice(0, 4).join(', ')}${n > 4 ? ' …' : ''}` : ' — none changed (not landed, or stale)'}`)
     }
   }
   if (on('api')) {
@@ -339,7 +339,7 @@ async function run(ctx) {
       const n = NAMED_MOD.apply(id, b)
       // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md): a structural named change
       // (pending-card-layout, `n.matches`) is proven by its own proof instead of byte equality; every other view as before.
-      const pr = !n.listed && n.touched.length && n.matches && !same(b, f) ? n.matches(f) : null
+      const pr = !n.listed && n.touched.length && n.matches && !same(b, f) ? n.matches(f, F) : null
       const fOk = same(b, f) || (!n.listed && n.touched.length && (pr ? pr.ok : same(n.expected, f)))
       if (!fOk) { t(`smoke · ${id}: F === BEFORE${n.touched.length ? ` + ${n.touched.join(' + ')}` : ''}`, false, pr ? pr.problems.join('\n      ') : `F ${firstDiff(n.listed || !n.touched.length ? b : n.expected, f)}`); continue }
       if (!same(b, f)) { namedCode++; for (const e of n.touched) if (structural.has(e)) structural.get(e).push(id) }

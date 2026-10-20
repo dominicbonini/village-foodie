@@ -17,14 +17,16 @@ const FROZEN_GB = path.join(REPO, 'scripts/fixtures/language-phase-1d2-messages-
 const FROZEN_US = path.join(REPO, 'scripts/fixtures/language-phase-1d2-messages-before.en-US.json')
 const MOVED = LP2.MOVED_FILE_1D2
 
-const F_MODE = { mode: 'frozen', file: FROZEN_GB, usFile: FROZEN_US, moved: true }
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): both modes read the keys Stage A reworded at their pre-Stage-A text
+// (scripts/_lp2-frozen.cjs `stageA`), as the F / A captures do (HG_MESSAGES_STAGE_A=before).
+const F_MODE = { mode: 'frozen', file: FROZEN_GB, usFile: FROZEN_US, moved: true, stageA: true }
 // ⚠️ RE-PINNED (Language Phase 1e): Part 2's "A words" are the words Part 2 ENDED with — eb7ed44's pair
 // (scripts/fixtures/language-phase-1e-messages-before.{en-GB,en-US}.json) over the current keys, with every as-moved
 // overlay — not the authored files, which now also carry Phase 1e's marketing words (proven by
 // scripts/language-phase-1e.cjs). HG_LP1D2_A=source reads the authored files instead (only for a deliberate check).
 const PART2_END_GB = path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-GB.json')
 const PART2_END_US = path.join(REPO, 'scripts/fixtures/language-phase-1e-messages-before.en-US.json')
-const A_MODE = process.env.HG_LP1D2_A === 'source' || !fs.existsSync(PART2_END_GB) ? { mode: 'source' } : { mode: 'frozen', file: PART2_END_GB, usFile: PART2_END_US, moved: true }
+const A_MODE = process.env.HG_LP1D2_A === 'source' || !fs.existsSync(PART2_END_GB) ? { mode: 'source' } : { mode: 'frozen', file: PART2_END_GB, usFile: PART2_END_US, moved: true, stageA: true }
 const catalogues = which => LP2.catalogues(which === 'F' ? F_MODE : A_MODE)
 // ⚠️ RE-PINNED (Language Phase 1e): Part 2's key moves only (scripts/fixtures/language-phase-1d2-key-moves.json) — the
 // frozen switch now also merges Phase 1e's, which scripts/language-phase-1e.cjs checks against eb7ed44.
@@ -53,7 +55,11 @@ function movedProblems() {
   const a = Object.fromEntries(LP2.leaves(catalogues('A')['en-GB']))
   const at0 = Object.fromEntries(LP2.leaves(LP2.readJson(FROZEN_GB)))
   const out = []
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a key Stage A REMOVED (scripts/fixtures/plans-stage-a-messages.json) may
+  // stay in the as-moved list — the list is history — but only while it is absent from the catalogue.
+  const removed = LP2.stageA()['en-GB'].removed
   for (const [k, m] of Object.entries(moved())) {
+    if (k in removed && !(k in a)) continue
     if (!(k in a)) out.push(`${k}: in the as-moved list but not in messages/en-GB.json`)
     else if (a[k] === m) out.push(`${k}: its fixed text equals its as-moved text`)
     if (k in at0 && at0[k] !== m) out.push(`${k}: a ${BEFORE_REF} key whose as-moved text is not its ${BEFORE_REF} text (${JSON.stringify(m)} vs ${JSON.stringify(at0[k])})`)

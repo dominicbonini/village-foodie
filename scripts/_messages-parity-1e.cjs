@@ -78,6 +78,31 @@ const FIX_ARGS = {
 const NEW_WORDING = {
   // ⚠️ RE-PINNED (US dress rehearsal fixes, 19 October 2026): the US Add / Edit event form's new State box.
   'manageScheduleEvent.statePlaceholder': 'US dress rehearsal fix (Finding 6): the State box\'s example, a two-letter state ("e.g. NJ")',
+  // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md): the outreach company footer and
+  // the send block when no opt-out sentence is set up — both new words.
+  'outreach.companyFooter': 'legal follow-ups item 1: the company footer on every outreach email ("Registered office")',
+  'outreach.optOut.notSetUp': 'legal follow-ups item 1: no outreach email is sent without an opt-out sentence ("Templates tab’s Signature panel")',
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the Manage page's guard when the plan catalogue did not load
+  // (app/manage/[token]/page.tsx `!planCatalog`) — a new message, so no eb7ed44 string carries "Couldn’t".
+  'manageShell.noPlans': 'plans-data-model Stage A: the Manage page cannot load the truck’s plan catalogue ("Couldn’t load this truck’s plan")',
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the order submit route refuses a pay-at-the-truck order
+  // on a plan without Pay at Hatch (app/api/orders/submit/route.ts) — a new message (scripts/fixtures/plans-stage-a2-messages.json
+  // `added`), so no eb7ed44 string carries "isn’t taking pay-at-the-truck orders".
+  'errorsCustomer.pay_at_hatch_unavailable': 'plan-features-config Stage A2: a pay-at-the-truck order refused on a plan without Pay at Hatch ("isn’t taking pay-at-the-truck orders online")',
+}
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): plans are data and every plan has every
+// feature, so the plan-upsell words are REMOVED (plan refusals are errorsManage.feature_switched_off now; the van-upgrade
+// modal, the Reports upsell, the plan matrix toggles and the Max/Pro buttons are gone) and the Billing / QR words that
+// named a tier are REWORDED ("Upgrade" → "Switch", "every Max feature" → "every feature", "part of a higher plan" →
+// "switched off for your truck"). Stage A's own changes, not GB wrong-English fixes: they are named by
+// scripts/fixtures/plans-stage-a-messages.json (W.LP2.stageA(), exact before → after; removed = after null), not in the 1e
+// named fixture (shared with language-phase-1e and country-settings-parity). A diff is excused only when it is EXACTLY the
+// recorded change; every recorded change this phase can see must have happened so.
+function stageAChange(k) {
+  const g = W.LP2.stageA()['en-GB']
+  if (k in (g.removed || {})) return { before: g.removed[k], after: null }
+  if (k in (g.reworded || {})) return { before: g.reworded[k].before, after: g.reworded[k].after }
+  return null
 }
 const LEGAL_RE = /\bUK law\b|\blaw requires\b|\bby law\b|\blegally\b|\blegal(ly)? required\b|\bretention\b|\bHMRC\b|\bGDPR\b|data protection|tax records/i
 
@@ -157,10 +182,26 @@ module.exports = function area({ t, head }) {
   t('scripts/fixtures/language-phase-1e-gb-named.json exists', !!named)
   if (named) {
     const diff = W.gbKeyDiff()
-    const unnamed = Object.keys(diff).filter(k => !named[k] || named[k].before !== diff[k].before || named[k].after !== diff[k].after)
-    const stale = Object.keys(named).filter(k => !diff[k])
-    t(`every en-GB key whose text differs from ${BEFORE_REF}'s (as moved) is named, as it changed (${Object.keys(diff).length})`, unnamed.length === 0, unnamed.join(', '))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a key Stage A changed is named by its fixture (exactly).
+    const isStageA = k => { const c = stageAChange(k); return !!c && c.before === diff[k].before && c.after === diff[k].after }
+    const unnamed = Object.keys(diff).filter(k => !isStageA(k) && (!named[k] || named[k].before !== diff[k].before || named[k].after !== diff[k].after))
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): a named key a plan stage REMOVED (W.LP2.stageA().removed — Stage B
+    // deleted landing.pricing.summary, planFeatures.footnote.*, planMeta.*, …) has no text left to differ; it is not stale
+    // while it is absent from messages/en-GB.json (checked here).
+    const removedByStage = W.LP2.stageA()['en-GB'].removed || {}
+    const gbNow = Object.fromEntries(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'messages/en-GB.json'))))
+    const removedNamed = Object.keys(named).filter(k => !diff[k] && k in removedByStage)
+    t(`the named keys a plan stage removed are absent from messages/en-GB.json (${removedNamed.length})`, removedNamed.every(k => !(k in gbNow)), removedNamed.filter(k => k in gbNow).join(', '))
+    const stale = Object.keys(named).filter(k => !diff[k] && !removedNamed.includes(k))
+    const byStageA = Object.keys(diff).filter(isStageA)
+    t(`every en-GB key whose text differs from ${BEFORE_REF}'s (as moved) is named, as it changed (${Object.keys(diff).length}; ${byStageA.length} by plans-data-model Stage A / plan-features-config Stage A2 — W.LP2.stageA() reads both records)`, unnamed.length === 0, unnamed.join(', '))
     t('every named key did change', stale.length === 0, stale.join(', '))
+    // A Stage A change to a key eb7ed44 had (as moved) must show here exactly as recorded — unless the helper already reads
+    // that key at its pre-Stage-A words (then it does not differ at all).
+    const eb = Object.fromEntries([...W.LP2.leaves(W.LP2.readJson(W.FROZEN_GB)), ...W.LP2.leaves(F['en-GB'])])   // eb7ed44's keys, and the keys added since
+    const g = W.LP2.stageA()['en-GB']
+    const wrong = [...Object.keys(g.removed || {}), ...Object.keys(g.reworded || {})].filter(k => k in eb && diff[k] && !isStageA(k))
+    t(`every plans-data-model Stage A change this phase sees is exactly as recorded (${byStageA.length})`, wrong.length === 0, wrong.map(k => `${k}: ${JSON.stringify(diff[k])}`).join(' · '))
   }
   const mp = W.movedProblems()
   t('the as-moved list (scripts/fixtures/language-phase-1e-gb-moved.json) is consistent with the catalogue', mp.length === 0, mp.join(' · '))

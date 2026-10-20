@@ -17,7 +17,7 @@
     "phoneAlt": "Ordering from a food truck on HatchGrab: the menu with photos and prices, and a running basket total"
   },
   "trust": {
-    "freeMonth": "First month 100% free, everything unlocked",
+    "freeMonth": "{months, plural, one {First month completely free, everything unlocked} other {First # months completely free, everything unlocked}}",
     "noCard": "No card needed",
     "cancel": "Cancel anytime, no contract"
   },
@@ -61,49 +61,9 @@
   "pricing": {
     "eyebrow": "Pricing",
     "title": "Start free. Upgrade when you need to.",
-    "trialTitle": "Your first month is completely free — every feature unlocked.",
-    "trialBody": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. <bold>Adding online payments doesn’t start your subscription</bold>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.",
-    "mostTrucks": "Most trucks",
-    "planFee": "{allowance}<star>*</star>. No fee on walk-ups.",
-    "tryFree": "Try Free",
-    "starter": {
-      "lead": "Everything to run a service",
-      "walkUp": "Walk-up orders & kitchen screen",
-      "online": "Online ordering, pay at the hatch",
-      "menu": "Menu, meal deals & upsells",
-      "qr": "QR code",
-      "map": "Discovery map listing",
-      "app": "iPhone, iPad and Android kitchen app"
-    },
-    "pro": {
-      "lead": "{starterIsFree, select, yes {Everything in Free, plus} other {Everything in {starterName}, plus}}",
-      "offline": "Offline order protection",
-      "payOnline": "Take payment online",
-      "preorders": "Pre-orders & collection times",
-      "capacity": "Kitchen capacity management",
-      "privateEvents": "Private events",
-      "social": "Social media posts",
-      "whatsapp": "WhatsApp auto-replies (Messenger & Instagram coming soon)",
-      "whatsappSoon": "WhatsApp, Messenger & Instagram auto-replies <soon>Coming soon</soon>",
-      "payOnPhone": "Take payment on your phone <soon>Coming soon</soon>"
-    },
-    "max": {
-      "lead": "Everything in Pro, plus",
-      "sync": "Multi-device kitchen sync",
-      "staff": "Multi-staff logins",
-      "schedulePage": "Schedule page on your own website",
-      "printing": "Kitchen ticket printing",
-      "eventTypes": "Custom event types & pricing",
-      "loyalty": "Digital loyalty stamp cards <soon>Coming soon</soon>"
-    },
-    "compareLead": "Not sure which plan? See exactly what each one includes.",
-    "compareCta": "Compare all features →",
     "switchHead": "Switching from another platform?",
     "switchBody": "See what you’d be paying on HatchGrab for the same orders. Takes about a minute.",
-    "switchCta": "Compare what you’re paying",
-    "footCardFees": "*Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance.",
-    "footCancel": "Cancel by doing nothing. Even if you’ve added a card for payments, we’ll never charge it for a plan unless you actively choose one.",
-    "summary": "Pro is {proPrice} a month with {proAllowance} of online orders included. Max is {maxPrice} with {maxAllowance}. Anything above that is {platformFee}. Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal’s own fees still apply."
+    "switchCta": "Compare what you’re paying"
   },
   "final": {
     "truckLabel": "Food truck",

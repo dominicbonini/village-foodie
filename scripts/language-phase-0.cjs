@@ -86,36 +86,64 @@ async function browserDates(engine) {
 }
 
 /* ── 2 · outputs whose code moves from label-as-key to id-as-key ── */
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/legacy-pricing-display.ts and
+// components/landing/FeatureComparison.tsx are DELETED (docs/pricing-pages-report.md). The views they produced (plan
+// prices / labels / allowances, transaction rows, footnotes, sections, the price mask over their words, the landing
+// feature table) have no producer any more: §2 records each as RETIRED (the file gone, the view not rendered) — the one
+// plan table that replaced them is proven by scripts/pricing-pages.cjs. The plans PDF takes the plan catalogue
+// (buildPlansPdfHtml(settings, catalog)) and /compare's calculator a `catalog` prop: both are rendered on the migration's
+// own seed (scripts/_plans-catalog-fixture.cjs) and compared through Stage B's scoped named change (scripts/_lp-stage-b.cjs).
+const LEGACY_DISPLAY = fs.existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts'))
+const STAGE_B = require('./_lp-stage-b.cjs')
+const STAGE_B_RETIRED = ['planPrices', 'planPriceLabels', 'planAllowances', 'transactionRows', 'footnotes', 'sections', 'mask', 'featureComparison']
+const STAGE_B_SCOPED = { pdfHtml: STAGE_B.plansPdf, costComparison: STAGE_B.calcProof }
 async function keyViews() {
   const m = await kit.bundle('lp0-keys', [
-    "export * as PF from '@/lib/plan-features'", "export * as LT from '@/lib/landing-table'", "export * as PR from '@/lib/pricing'",
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts and lib/landing-table.ts are deleted;
+    // their content moved, unchanged and frozen, into lib/legacy-pricing-display.ts — both handles read that one file.
+    ...(LEGACY_DISPLAY ? ["export * as PF from '@/lib/legacy-pricing-display'", "export * as LT from '@/lib/legacy-pricing-display'", "export { FeatureComparison } from '@/components/landing/FeatureComparison'"] : ["export * as FT from '@/lib/feature-table'"]),
+    "export * as PR from '@/lib/pricing'",
     "export * as PDF from '@/lib/plans-pdf'", "export * as FE from '@/lib/features'", "export * as DA from '@/lib/demo-assumptions'",
     "export * as HE from '@/components/dashboard/helpers'", "export * as TK from '@/lib/printing/ticket'",
-    "export { FeatureComparison } from '@/components/landing/FeatureComparison'",
     "export { default as CostComparison } from '@/app/compare/CostComparison'",
     "export { default as Footer } from '@/components/Footer'", "export { DemoModalProvider } from '@/components/landing/DemoUpload'", "export { LandingFooter } from '@/components/landing/LandingFooter'",
   ].join('\n'), { stubs: STUBS })
   kit.setNow(NOW)
   const out = {}
+  const catalog = STAGE_B.catalog()
   for (const [k, s] of [['GB', GB], ['US', US_ON]]) {
     const v = out[k] = {}
-    v.planPrices = m.PF.planPrices(s)
-    v.planPriceLabels = m.LT.planPriceLabels(s)
-    v.planAllowances = m.PF.planAllowances(s)
-    v.transactionRows = m.PF.transactionRows(s)
-    v.footnotes = m.PF.footnotes(s)
-    v.sections = m.PF.FEATURE_SECTIONS.map(sec => ({
-      title: sec.title,
-      visible: m.LT.visibleRows(sec).map(r => r.name),
-      rows: sec.rows.map(r => ({ name: r.name, shown: m.LT.rowName(r), detail: m.LT.rowDetail(r), trial: m.LT.trialFeatureValue(r), cells: m.LT.TABLE_PLANS.map(p => m.LT.cellLabel(p === 'trial' ? m.LT.trialFeatureValue(r) : r[p])) })),
-    }))
-    const words = [...Object.values(v.planPrices), ...Object.values(v.planPriceLabels), ...v.transactionRows.flatMap(r => Object.values(r.cells ?? {}))]
-    v.mask = words.map(w => [w, m.PR.maskPrice(w), m.PR.maskPriceFor(w, false), m.PR.maskPriceFor(w, true)])
-    v.pdfHtml = m.PDF.buildPlansPdfHtml(s)
-    v.featureComparison = kit.renderStatic(kit.h(m.FeatureComparison, { settings: s }))
-    v.costComparison = kit.renderStatic(kit.h(m.DemoModalProvider, {}, kit.h(m.CostComparison, { settings: s })))
+    if (LEGACY_DISPLAY) {
+      v.planPrices = m.PF.planPrices(s)
+      v.planPriceLabels = m.LT.planPriceLabels(s)
+      v.planAllowances = m.PF.planAllowances(s)
+      v.transactionRows = m.PF.transactionRows(s)
+      v.footnotes = m.PF.footnotes(s)
+      v.sections = m.PF.FEATURE_SECTIONS.map(sec => ({
+        title: sec.title,
+        visible: m.LT.visibleRows(sec).map(r => r.name),
+        rows: sec.rows.map(r => ({ name: r.name, shown: m.LT.rowName(r), detail: m.LT.rowDetail(r), trial: m.LT.trialFeatureValue(r), cells: m.LT.TABLE_PLANS.map(p => m.LT.cellLabel(p === 'trial' ? m.LT.trialFeatureValue(r) : r[p])) })),
+      }))
+      const words = [...Object.values(v.planPrices), ...Object.values(v.planPriceLabels), ...v.transactionRows.flatMap(r => Object.values(r.cells ?? {}))]
+      v.mask = words.map(w => [w, m.PR.maskPrice(w), m.PR.maskPriceFor(w, false), m.PR.maskPriceFor(w, true)])
+      v.featureComparison = kit.renderStatic(kit.h(m.FeatureComparison, { settings: s }))
+    }
+    v.pdfHtml = LEGACY_DISPLAY ? m.PDF.buildPlansPdfHtml(s) : m.PDF.buildPlansPdfHtml(s, catalog)
+    v.costComparison = kit.renderStatic(kit.h(m.DemoModalProvider, {}, kit.h(m.CostComparison, LEGACY_DISPLAY ? { settings: s } : { settings: s, catalog })))
   }
-  out.parity = m.PF.findPlanParityViolations()
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): findPlanParityViolations (the tier cells vs the tiered
+  // gates) is deleted with the tiered gates. Its premise is replaced by the new state, recorded here and checked in §2:
+  // the frozen display exports no drift guard, and every plan-table row that is a Feature is gated by override only.
+  out.parity = {
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the frozen display is deleted — no drift guard can exist in it.
+    guardGone: LEGACY_DISPLAY ? !('findPlanParityViolations' in m.PF) && !('ROW_FEATURE_MAP' in m.PF) : !fs.existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts')),
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): canAccess takes a REQUIRED third argument, the truck's
+    // effective-plan switch. The override-only premise is asserted under a plan that has every feature ON (`on`), and two
+    // more answers are recorded under a plan with the feature OFF (`off`): no override → denied, override true → allowed.
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the plan table's rows are lib/feature-table.ts FEATURE_TABLE now;
+    // a row's gate is its `feature` (one Feature may gate two rows — each Feature once).
+    overrideOnly: (LEGACY_DISPLAY ? m.PF.FEATURE_SECTIONS.flatMap(sec => sec.rows).filter(r => typeof r.id === 'string') : [...new Set(m.FT.FEATURE_TABLE.map(r => r.feature).filter(Boolean))].map(id => ({ id }))).map(r => { const on = () => true, off = () => false; return [r.id, m.FE.canAccess(r.id, null, on), m.FE.canAccess(r.id, { [r.id]: false }, on), m.FE.canAccess(r.id, { [r.id]: true }, on), m.FE.canAccess(r.id, null, off), m.FE.canAccess(r.id, { [r.id]: true }, off)] }),
+  }
   out.footer = kit.renderStatic(kit.h(m.Footer, { onOpenTally() {} }))
   out.landingFooter = kit.renderStatic(kit.h(m.LandingFooter, {}))
   const CATS = [['Mains', 'Sides', 'Drinks'], ['Burgers', 'Dips & Sauces', 'Desserts'], ['Pizza', 'Specials', 'Other'], ['Specials', 'Other'], ['Wraps & Sandwiches', 'Starters'], ['Weird', 'Other']]
@@ -139,7 +167,9 @@ async function landingViews() {
   const { prerenderToNodeStream } = require(path.join(REPO, 'node_modules/react-dom/static'))
   const out = {}
   for (const [k, q] of [['GB', null], ['US', 'US']]) {
-    globalThis.__harnessDb = kit.fakeDb({ country_settings: [snake(GB), snake(US_ON)] }); m.clearCountrySettingsCache?.()
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the landing's #pricing reads the plan catalogue — the
+    // migration's seed rows (scripts/_lp1c-fixtures.cjs planTables), fixture input like the country rows.
+    globalThis.__harnessDb = kit.fakeDb({ country_settings: [snake(GB), snake(US_ON)], ...(LEGACY_DISPLAY ? {} : require('./_lp1c-fixtures.cjs').planTables()) }); m.clearCountrySettingsCache?.()
     try {
       out[k] = await kit.quietAsync(async () => {
         const { prelude } = await prerenderToNodeStream(kit.h(m.Page, { searchParams: Promise.resolve(q ? { country: q } : {}) }))
@@ -206,7 +236,9 @@ async function main() {
   const SEP = /<!-- -->/g
   const NAMED_1E = {
     transactionRows: (cc, v) => (Array.isArray(v) && got.keys[cc].transactionRows?.[0]?.id ? v.map((r, i) => ({ id: ROW_IDS[i], ...r })) : v),
-    footnotes: (cc, v) => (cc === 'US' ? mapStr(v, usDates) : v),
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): each footnote now carries an `id` (Billing masks the fee
+    // footnote by id, PRICE_FOOTNOTE_ID) — added first, by number; number and text stay byte-identical.
+    footnotes: (cc, v) => { const ids = { 1: 'walkupFees', 2: 'onlineFees', 3: 'kitchenDevice', 4: 'autoReplies', 5: 'printing' }; const x = cc === 'US' ? mapStr(v, usDates) : v; return Array.isArray(x) ? x.map(f => ({ id: ids[f.number], ...f })) : x },
     featureComparison: (cc, v) => (cc === 'US' ? usDates(v) : v),
     pdfHtml: (cc, v) => (cc === 'US' ? usDates(v).replace('@page { size: A4;', '@page { size: letter;') : v),
     costComparison: (cc, v) => (cc === 'US' ? v.replace('<span class="pl-1 text-lg font-bold text-slate-400">p</span>', '<span class="pl-1 text-lg font-bold text-slate-400">¢</span>').replace(/(of [0-9.]+% \+ )([0-9]+)p( per order)/g, '$1$2¢$3') : v),
@@ -234,14 +266,54 @@ async function main() {
     return y
   }
 
+  // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): seo-fixes's named markup changes, PRECISE, one copy in scripts/_lp-seo-fixes.cjs —
+  //   seo-s7-badges-lazy (the landing footer and the landing): both store badges gain loading="lazy", their preload links go;
+  //   seo-m1-country-menu (the landing, GB and US): the closed country menu is rendered after each trigger (both countries
+  //     switched on in this fixture, so two options; hrefs /uk and /us — the render has no pathname);
+  //   seo-m5-s9-json-ld (the landing): the JSON-LD is one @graph (Organization, WebSite, BEFORE's SoftwareApplication with
+  //     url = /uk or /us, publisher by @id, the seed catalogue's Offers in GBP / USD).
+  // Each must apply (a no-op throws). Nothing else in these views moves.
+  const SEO = require('./_lp-seo-fixes.cjs')
+  const seoFooter = SEO.must('seo-s7-badges-lazy', SEO.badgesLazy)
+  // ⚠️ RE-PINNED (copy, Dominic, 20 October 2026): + copy-trust-line — the landing trust line names the trial length.
+  const seoLanding = (cc, v) => SEO.must('copy-trust-line', SEO.trustLine)(SEO.must('seo-m5-s9-json-ld', x => SEO.jsonLdHtml(x, cc))(SEO.must('seo-m1-country-menu', x => SEO.countryMenu(x, { options: ['GB', 'US'] }))(seoFooter(v))))
+
   head('2 · keys separated from labels — every output byte-identical to BEFORE (GB and US), apart from Phase 1e’s named changes')
   for (const k of Object.keys(before.keys)) {
     if (k === 'contactLinks') continue   // the source changes by design; §2b of the AFTER module rebuilds the same links from ids
     if (k === 'GB' || k === 'US') {
-      for (const kk of Object.keys(before.keys[k])) { const d = diffJson(NAMED_1E[kk] ? NAMED_1E[kk](k, before.keys[k][kk]) : before.keys[k][kk], got.keys[k][kk]); t(`${k} · ${kk}`, d === null, d) }
-    } else { const d = diffJson(before.keys[k], got.keys[k]); t(k, d === null, d) }
+      for (const kk of Object.keys(before.keys[k])) {
+        const exp = NAMED_1E[kk] ? NAMED_1E[kk](k, before.keys[k][kk]) : before.keys[k][kk]
+        // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the views whose code Stage B DELETED are retired (the file is
+        // gone and nothing renders them; scripts/pricing-pages.cjs proves the plan table that replaced them); the plans PDF
+        // and /compare's calculator are compared through Stage B's scoped proofs (scripts/_lp-stage-b.cjs) — outside the
+        // regions Stage B replaced, byte-identical to BEFORE + Phase 1e's named changes.
+        if (!LEGACY_DISPLAY && STAGE_B_RETIRED.includes(kk)) { t(`${k} · ${kk}: retired with Stage B — its code is deleted (lib/legacy-pricing-display.ts, components/landing/FeatureComparison.tsx) and nothing renders it`, !(kk in got.keys[k]) && !fs.existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts')) && !fs.existsSync(path.join(REPO, 'components/landing/FeatureComparison.tsx'))); continue }
+        if (!LEGACY_DISPLAY && STAGE_B_SCOPED[kk]) { const r = STAGE_B_SCOPED[kk](exp, got.keys[k][kk]); t(`${k} · ${kk}: BEFORE + Phase 1e's named changes, apart from Stage B's regions (${kk === 'pdfHtml' ? 'pricing-b-plans-pdf' : 'pricing-b-compare-calc'})`, r.ok, r.problems.join(' · ')); continue }
+        const d = diffJson(exp, got.keys[k][kk]); t(`${k} · ${kk}`, d === null, d)
+      }
+    } else if (k === 'parity') {
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): BEFORE was "the drift guard finds nothing" ([]). The
+      // guard and the tiered gates it compared are gone; the check is now the new state (see keyViews).
+      const p = got.keys.parity
+      t('parity: BEFORE’s drift guard found nothing', JSON.stringify(before.keys.parity) === '[]')
+      t('parity → new state: the frozen display exports no drift guard (findPlanParityViolations / ROW_FEATURE_MAP gone)', p.guardGone === true)
+      const bad = p.overrideOnly.filter(([, none, off, on]) => !(none === true && off === false && on === true))
+      t(`parity → new state: every plan-table row's feature is override-only — no override allowed, false denied, true allowed (${p.overrideOnly.length} rows)`, p.overrideOnly.length > 20 && bad.length === 0, JSON.stringify(bad))
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan switch is consulted when no override —
+      // a plan with the feature off denies it, and an override `true` still wins over that plan.
+      const badPlan = p.overrideOnly.filter(([, , , , planOff, planOffGrant]) => !(planOff === false && planOffGrant === true))
+      t(`parity → Stage A2: with no override the plan's switch decides (off → denied); an override true wins over it (${p.overrideOnly.length} rows)`, p.overrideOnly.length > 20 && badPlan.length === 0, JSON.stringify(badPlan))
+    } else if (k === 'landingFooter') { const d = diffJson(seoFooter(before.keys[k]), got.keys[k]); t(`${k} (+ seo-s7-badges-lazy)`, d === null, d) }   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026)
+    else { const d = diffJson(before.keys[k], got.keys[k]); t(k, d === null, d) }
   }
-  for (const k of Object.keys(before.landing)) { const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d) }
+  for (const k of Object.keys(before.landing)) {
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): #pricing is Stage B's (banner → cards → cheapest bar → footnote)
+    // — scripts/_lp-stage-b.cjs landingPricing: the section's region cut from both, the rest byte-identical.
+    // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): + seo-fixes's named items (seoLanding, above), outside #pricing.
+    if (!LEGACY_DISPLAY) { const r = STAGE_B.landingPricing(seoLanding(k, landing1e(k, before.landing[k])), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing) and seo-fixes's named items`, r.ok, r.problems.join(' · ')); continue }
+    const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d)
+  }
 
   if (AFTER_CODE) await require('./_language-phase-0-after.cjs')({ kit, t, head, read, REPO, before, got, STUBS, GB, US_ON, snake })
   console.log(`\n${fail ? '✗' : '✓'} language-phase-0: ${pass} passed, ${fail} failed`)

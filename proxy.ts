@@ -9,6 +9,12 @@ import { isCustomHost, isAllowedOnCustomHost, isAcmeChallenge } from '@/lib/cust
 import { listCountrySettingsCached } from '@/lib/country-settings'
 import { MARKETING_COUNTRY, ROUTER_PATHS, countryPageOf, marketingRedirect, routableCountries } from '@/lib/marketing-country'
 import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE } from '@/lib/visitor-country-types'
+import { PAGE_LANG_HEADER } from '@/lib/page-lang'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH } from '@/lib/legal'
+
+// seo-fixes S4: the legal documents, written in en-GB on every host.
+const LEGAL_DOCUMENT_PATHS = new Set([PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH])
 
 // ── Rate-limit SCOPE = a POSITIVE ALLOWLIST of ONLY the public, scraping-prone endpoints. ───────────────
 // INVERTED by design (NOT "limit every /api/* minus an exempt list"). Operator surfaces — the dashboard /
@@ -296,6 +302,22 @@ export async function proxy(request: NextRequest) {
     rlRemaining = remaining
   }
 
+  // ── 🔴 seo-fixes S4 (20 October 2026): THE PAGE'S LANGUAGE, FOR <html lang> ───────────────────────────────────
+  // The root layout cannot see the URL, so the proxy — which already knows a country address — tells it, in a REQUEST
+  // header forwarded by `NextResponse.next({ request })` below (the same way the refreshed session cookies travel).
+  // A country page (/uk, /us/features, …) on a HatchGrab host → that country's locale (country_settings.locale, the
+  // 60-second cached list); the legal documents → en-GB, the language they are written in (DEFAULT_LOCALE). Anything
+  // else sets nothing and keeps "en". ⛔ A client-sent copy of the header is ALWAYS removed first, so it can't be forged.
+  request.headers.delete(PAGE_LANG_HEADER)
+  if (isHatchGrab(host)) {
+    const langPage = countryPageOf(pathname)
+    if (langPage) {
+      const row = (await listCountrySettingsCached().catch(() => [])).find(c => c.countryCode === langPage.code)
+      if (row?.locale) request.headers.set(PAGE_LANG_HEADER, row.locale)
+    }
+  }
+  if (LEGAL_DOCUMENT_PATHS.has(pathname)) request.headers.set(PAGE_LANG_HEADER, DEFAULT_LOCALE)
+
   // ── Supabase auth session ──────────────────────────────────────
   let supabaseResponse = NextResponse.next({ request })
 
@@ -531,7 +553,11 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // 🔴 seo-fixes M4 (20 October 2026, docs/seo-fixes-report.md): the exclusion read `_next_next/image` — a typo since
+  // 24 May 2026 (`69faf282 login build`) — so EVERY /_next/static/* and /_next/image request ran this proxy, including
+  // its `supabase.auth.getUser()` session call. Static assets and the image optimiser now skip it, as intended; every
+  // page and API path still runs it (and the auth guards above), exactly as before.
   matcher: [
-    '/((?!_next_next/image|favicon.ico|apple-touch-icon.png|logos|photos|sw.js|manifest.json|offline.html).*)',
+    '/((?!_next/static|_next/image|favicon.ico|apple-touch-icon.png|logos|photos|sw.js|manifest.json|offline.html).*)',
   ],
 }

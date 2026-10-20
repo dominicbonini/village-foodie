@@ -82,6 +82,10 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
   const variant = (tag, file, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `rep-${tag}-`))
     fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): `messages/` is copied too. The builder now reads the
+    // company line through `translatorFor` + `lib/i18n/catalog/outreach`, which imports
+    // `messages/ns/*/outreach.json` — a lib-only copy no longer compiles. Nothing about a variant changes.
+    fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, file); const src = fs.readFileSync(f, 'utf8')
     const out = patch(src); if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }
@@ -280,15 +284,25 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     eq(R.REPLY_KIND, 'reply', "the rung a reply is logged as is `reply`")
   }
 
-  console.log('\n── A REPLY IS NEVER A RUNG, AND CARRIES NO OPT-OUT ──────────────────────────────────────')
+  console.log('\n── A REPLY IS NEVER A RUNG — AND A REPLY TO THE PROSPECT IS EXEMPT FROM THE OPT-OUT LINE ──')
   {
-    // 🔴 `reply` IS NOT IN THE LADDER, so §57 counts nothing for it and the opt-out warning — which
-    // is for ladder rungs — stays silent. Both facts come from the same list.
+    /* ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): this used to assert that a reply with no opt-out
+     * line produces NO warning (`optOutWarning` was for ladder rungs only), and that a first contact
+     * without one is WARNED. Dominic signed off a BLOCK on every outreach email with no opt-out line, for
+     * every prospect and every step: `optOutBlock` takes no kind, so a reply and a first contact are now
+     * blocked alike. ⚠️ RE-PINNED AGAIN (Dominic's answer 1, 19 October 2026): a reply to a message the PROSPECT
+     * sent is EXEMPT (as the old warning was for replies) — `optOutExempt`, decided before `optOutBlock` is asked;
+     * a follow-up on OUR OWN email is not. `optOutBlock` itself still answers "no line" for the document.
+     * The "a reply is never a rung" half below is unchanged. */
     const doc = D.docFromTemplateText('Thanks for getting back to me.', DOC_SETTINGS)
-    eq(D.optOutWarning(doc, 'reply', 'Reply STOP to opt out.'), null,
-      '🔴 a reply with no opt-out line produces no warning')
-    check(!!D.optOutWarning(doc, '1_first_contact', 'Reply STOP to opt out.'),
-      '⚠️ …while a first contact without one still does, unchanged')
+    eq(D.optOutBlock(doc, 'Reply STOP to opt out.'), 'no_opt_out_line',
+      '🔴 the document check still finds no opt-out line in a reply without one')
+    eq(D.optOutExempt({ isTest: false, parent: { direction: 'inbound', is_test: false } }), true,
+      '🔴 …but a reply to a message the PROSPECT sent is exempt, so it is never asked')
+    eq(D.optOutExempt({ isTest: false, parent: { direction: 'outbound', is_test: false } }), false,
+      '🔴 …and a follow-up on OUR OWN email is not exempt: it is blocked like a first contact')
+    eq(D.optOutBlock(D.docFromTemplateText('Thanks for getting back to me.\n\nReply STOP to opt out.', DOC_SETTINGS), 'Reply STOP to opt out.'), null,
+      '⚠️ …and a reply that carries the line is allowed')
     const SEND = readStripped('app/api/admin/outreach/mail-send/route.ts')
     /* 🔴 RESTATED (30 September 2026, reply-to-any). The rule gained one condition: `reply` is for
      * ANSWERING SOMEBODY, and following up on MY OWN email is not answering anybody — it is the step
@@ -445,8 +459,13 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     const LIB = readStripped('lib/plans-pdf.ts')
     check(/export function buildPlansPdfHtml/.test(LIB) && /export async function generatePlansPdf/.test(LIB),
       '…exporting the HTML builder and the PDF itself')
-    check(/FEATURE_SECTIONS|transactionRows/.test(LIB),
-      '🔴 …still generated from lib/plan-features.ts, never from a copy of the markup')
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/plan-features.ts is gone. The PDF is built from DATA —
+    // buildPlansPdfHtml(settings, catalog) lays out the plan catalogue through lib/plan-offer (offerPlans, the one plan
+    // table's tableGroups / tableCell), and generatePlansPdf reads the live catalogue (getPlanCatalog) — never a copy.
+    check(/export function buildPlansPdfHtml\(s: CountrySettings, catalog: PlanCatalog\)/.test(LIB)
+      && /offerPlans\(catalog, s\.countryCode\)/.test(LIB) && /tableGroups\(\)/.test(LIB) && /tableCell\(/.test(LIB)
+      && /const catalog = await getPlanCatalog\(\)/.test(LIB) && /buildPlansPdfHtml\(settings, catalog\)/.test(LIB),
+      '🔴 …still generated from the plan data (the catalogue, through lib/plan-offer), never from a copy of the markup')
     const ROUTE = readStripped('app/landing/features-pdf/route.ts')
     // 10 October 2026: the generator takes a COUNTRY, and both callers pass 'GB' explicitly (prospects have
     // no country yet) — so the check names the argument rather than an empty call.

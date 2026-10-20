@@ -377,7 +377,9 @@ async function views(ctx) {
     ], existing_categories: [] }
     const countryRows = () => [GB_ROW(), US_ON()].map(snake)
     const runRows = async (key, fn, seed = {}) => {
-      const pg = makeFakePg({ country_settings: countryRows(), trucks: [], truck_vans: [], ...seed }, { keys: KEYS, defaults: { menu_items_db: { is_active: true } } })
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a demo is provisioned on the plan flagged is_demo, read through
+      // getPlanCatalog — the seeded plans / plan_prices ride along as fixture input and are never recorded (PLAN_TABLES).
+      const pg = makeFakePg({ country_settings: countryRows(), trucks: [], truck_vans: [], ...ctx.FIX.planTables(), ...seed }, { keys: KEYS, defaults: { menu_items_db: { is_active: true } } })
       // the seeder reads menu items with their category embedded (`menu_categories!category_id(…)`), which the fake
       // does not resolve: resolve that one embed from the stored categories, so the seeded orders are recorded too
       const from = pg.from.bind(pg)
@@ -399,7 +401,7 @@ async function views(ctx) {
       try { result = await kit.quietAsync(() => fn(pg)) } catch (e) { error = { name: e && e.name, message: e && e.message } } finally {
         delete globalThis.__harnessDb; delete globalThis.__extract
       }
-      const tables = Object.fromEntries(Object.keys(pg.tables).sort().filter(t => t !== 'country_settings').map(t => [t, pg.tables[t]]))
+      const tables = Object.fromEntries(Object.keys(pg.tables).sort().filter(t => t !== 'country_settings' && !ctx.FIX.PLAN_TABLES.includes(t)).map(t => [t, pg.tables[t]]))
       out[`${cc}|rows|${key}`] = JSON.stringify({ result, error, writes: pg.writes, tables })
       return pg
     }
@@ -421,7 +423,7 @@ async function views(ctx) {
       await runRows('outreach', pg => lib.provisionDemo(pg, { template: lib.getDemoTemplate('pizza'), now: NOW, name: 'Harness Pizza Co', discoveryTruckId: 'dt-harness', kitchen: { intervalMins: 10, prepSecs: 360, batchSize: 3 } }))
       // a fresh demo, then the return visit and the first-open restart on the rows it left
       const built = await runRows('return|build', pg => lib.provisionDemo(pg, { template: lib.getDemoTemplate('pizza'), now: NOW }))
-      const seedOf = pg => Object.fromEntries(Object.entries(pg.tables).filter(([t]) => t !== 'country_settings').map(([t, rows]) => [t, rows.map(r => ({ ...r }))]))
+      const seedOf = pg => Object.fromEntries(Object.entries(pg.tables).filter(([t]) => t !== 'country_settings' && !ctx.FIX.PLAN_TABLES.includes(t)).map(([t, rows]) => [t, rows.map(r => ({ ...r }))]))
       const truckId = built.tables.trucks[0] && built.tables.trucks[0].id
       await runRows('return|visit', pg => lib.provisionDemo(pg, { existingTruckId: truckId, now: LATER }), seedOf(built))
       await runRows('return|restart', pg => lib.restartDemoService(pg, truckId, { now: LATER }), seedOf(built))

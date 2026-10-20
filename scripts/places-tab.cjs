@@ -299,10 +299,12 @@ head('1b · a section link carries its tab, and a trial default cannot override 
     t('⛔ …and the trial default returns early when it did',
       /if \(urlAskedForTab\.current\) return/.test(code))
     const eff = code.slice(code.indexOf('if (urlAskedForTab.current) return'))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the default no longer compares `plan === 'trial'` —
+    // it reads `onTrialPlan` (the EFFECTIVE plan's isTrial, from the catalogue). Same claim: the guard comes first.
     t('🔴 …before it reads the plan at all', (() => {
       const guard = eff.indexOf('if (urlAskedForTab.current) return')
-      const plan = eff.indexOf("plan === 'trial'")
-      return guard === 0 && plan > 0
+      const plan = eff.indexOf('if (onTrialPlan && ')
+      return guard === 0 && plan > 0 && !/plan === 'trial'/.test(eff.slice(0, 400))
     })())
   /* ⛔ AND A BARE `?section=` COUNTS AS ASKING FOR A TAB. That is the exact path "Add a picture for
    * this place" took: no `?tab=` at all, the section implying Schedule. A fix that only covered
@@ -483,8 +485,15 @@ head('2 · the place\'s event type is a PILL ROW — one selected, and no "Autom
      * `canAccess(…, 'private_events')` and `canAccess(…, 'event_types')`, and the pill row draws what
      * it is sent. A Pro truck is not sent custom types at all. */
     const et = codeOf(read('app/api/event-types/route.ts'))
-    return /canAccess\(truck\.plan as never, 'private_events'/.test(et)
-      && /canPrivate: privateAllowed\(truck\)/.test(et)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): `canAccess(truck.plan as never, …)` →
+    // `canAccess('private_events', truck.feature_overrides)` — override-only, still the feature KEY, still no plan name.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the route asks lib/plans.ts
+    // `truckCan(truck, catalog, key)` (override → the truck's EFFECTIVE plan's switch → allowed) on the catalogue it reads
+    // once per request, so `privateAllowed` / `allowed` take that catalogue. Still the feature KEYS, still no plan name.
+    return /truckCan\(truck, catalog, 'private_events'\)/.test(et)
+      && /truckCan\(truck, catalog, 'event_types'\)/.test(et)
+      && !/canAccess\(/.test(et) && !/truckCan\(truck\.plan/.test(et)
+      && /canPrivate: privateAllowed\(truck, planCatalog\)/.test(et)
       && !/plan === 'pro'/.test(et) && !/plan === 'max'/.test(et)
   })())
 }

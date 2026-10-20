@@ -58,7 +58,9 @@ const ALL_AREAS = ['pages', 'parts', 'billing', 'router']
 const AREAS = (arg('areas') || ALL_AREAS.join(',')).split(',').filter(Boolean)
 const SECTIONS = (arg('only') || 'gb,keys,us,words,router,pdf,shots,literals').split(',')
 /** The scripts a capture needs, copied into the BEFORE worktree. Scripts only — never product code. */
-const CAPTURE_SCRIPTS = f => /^(language-phase-1e\.cjs|_lp1e-.*\.cjs|_lp1d2-.*\.cjs|_lp1d-.*\.cjs|_lp1b-.*\.cjs|_lp2-named\.cjs|_lp2-checks\.cjs|_png-decode\.cjs|_slot-interval-compile\.cjs|_render-kit\.cjs|_lp2-frozen\.cjs|_lp2-text\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs)$/.test(f)
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): + scripts/_lp-stage-b.cjs (Stage B's named changes) and the plan
+// catalogue fixture it reads — both inert on a tree without the plan migrations.
+const CAPTURE_SCRIPTS = f => /^(language-phase-1e\.cjs|_lp1e-.*\.cjs|_lp1d2-.*\.cjs|_lp1d-.*\.cjs|_lp1b-.*\.cjs|_lp2-named\.cjs|_lp2-checks\.cjs|_png-decode\.cjs|_slot-interval-compile\.cjs|_render-kit\.cjs|_lp2-frozen\.cjs|_lp2-text\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs|_lp-stage-b\.cjs|_plans-catalog-fixture\.cjs)$/.test(f)
 for (const a of AREAS) if (!ALL_AREAS.includes(a)) { console.error(`unknown area "${a}" — one of ${ALL_AREAS.join(', ')}`); process.exit(2) }
 
 // ══ internal: --capture-to=<dir> --area=<area> — one area's views, on whatever code this file sits in ═════════════

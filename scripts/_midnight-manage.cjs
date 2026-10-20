@@ -32,7 +32,12 @@ async function views({ kit, REPO, FIX }) {
   const C = cc => {
     const base = cc === 'US' ? ctx.US : ctx.GB
     const time = FIX.time(cc)
-    return { ...base, time, truck: { ...base.truck, timezone: time.timeZone, time } }
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the shared fixture truck's plan is 'max', which the
+    // Stage A catalogue no longer has — it resolves to the expiry fallback (payg), and since Stage A2 WITH payg's switches
+    // (schedule_graphics off), which drops the event rows' "Make post" shortcut. In a tree with the plans migration the
+    // truck holds the plan that stands in for Max (max → unlimited, as the API fixture below); BEFORE keeps 'max'.
+    const plan = fs.existsSync(path.join(REPO, 'supabase/migrations/20261024_plans.sql')) ? 'unlimited' : base.truck.plan
+    return { ...base, time, truck: { ...base.truck, plan, timezone: time.timeZone, time } }
   }
   const at = (cc, ymd, hhmm) => { kit.setNow(FIX.utcOf(cc, ymd, hhmm)); kit.setDeviceTz(FIX.COUNTRIES[cc].tz); kit.setDeviceLocale(FIX.COUNTRIES[cc].locale) }
 
@@ -206,7 +211,14 @@ async function views({ kit, REPO, FIX }) {
     const SEEDS = require(path.join(REPO, 'scripts/_country-settings-gb.cjs'))
     const { NextRequest } = require(path.join(REPO, 'node_modules/next/server'))
     const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
-    const API = await kit.bundle('midnight-manage-api', "export { POST as managePOST, GET as manageGET } from '@/app/api/manage/route'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'", {
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): GET /api/manage now loads the plan catalogue
+    // (public.plans / public.plan_prices via lib/plans-server.ts getPlanCatalog) and answers 500 plans_failed without it.
+    // The fake database carries the catalogue AS THE MIGRATION SEEDS IT (scripts/_plans-catalog-fixture.cjs), and the
+    // truck's plan is a real catalogue key ('max' is gone; trucks.plan has an FK). BEFORE trees (no plans migration) keep
+    // the old fixture exactly, so a recapture is unchanged. The events the GET returns are the same either way.
+    const CATALOG = fs.existsSync(path.join(REPO, 'scripts/_plans-catalog-fixture.cjs')) ? require(path.join(REPO, 'scripts/_plans-catalog-fixture.cjs')).seedCatalog(REPO) : null
+    const HAS_PLANS_SERVER = fs.existsSync(path.join(REPO, 'lib/plans-server.ts'))
+    const API = await kit.bundle('midnight-manage-api', "export { POST as managePOST, GET as manageGET } from '@/app/api/manage/route'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'" + (HAS_PLANS_SERVER ? "\nexport { clearPlanCatalogCache } from '@/lib/plans-server'" : ''), {
       stubs: {
         '@/lib/supabase/server': 'export async function createSupabaseServerClient() { return { auth: { getUser: async () => ({ data: { user: { id: "u-1" } }, error: null }) } } }',
         '@/lib/email': 'export const sendEventCancellationEmail = async () => {}\nexport const sendConfirmationEmail = async () => {}',
@@ -214,8 +226,10 @@ async function views({ kit, REPO, FIX }) {
     })
     const T = (cc, events) => ({
       country_settings: [snake(SEEDS.gbFromSeed()), snake(ctx.US.settings)],
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): + public.plan_features (the loader reads all three).
+      ...(CATALOG ? { plans: CATALOG.plans.map(snake), plan_prices: CATALOG.prices.map(snake), plan_features: (CATALOG.features || []).map(snake) } : {}),
       trucks: [{ id: 'test-truck', name: 'Pizza Kitchen', slug: 'test-kitchen', dashboard_token: 'tok', operator_id: 'op-1', country: cc, timezone: FIX.COUNTRIES[cc].tz,
-        plan: 'max', feature_overrides: {}, trial_expires_at: null, setup_step: null, takes_cash: true, currency: FIX.COUNTRIES[cc].currency, default_auto_open: true, default_auto_close: true }],
+        plan: CATALOG ? 'unlimited' : 'max', feature_overrides: {}, trial_expires_at: null, setup_step: null, takes_cash: true, currency: FIX.COUNTRIES[cc].currency, default_auto_open: true, default_auto_close: true }],
       operators: [{ id: 'op-1', auth_user_id: 'u-1', is_admin: false }], truck_users: [],
       menu_categories: [], menu_items_db: [], menu_subcategories: [], modifier_groups: [], modifier_options: [], item_modifier_groups: [], category_modifier_groups: [],
       bundles_db: [], discount_codes_db: [], upsell_rules: [], truck_events: events,
@@ -225,7 +239,7 @@ async function views({ kit, REPO, FIX }) {
     const run = async (cc, events, fn) => {
       const db = makeFakePg(T(cc, events), { keys: { slot_capacity: [['truck_id', 'event_date', 'slot']] } })
       globalThis.__harnessDb = { ...db, auth: { getUser: async () => ({ data: { user: { id: 'u-1' } }, error: null }) } }
-      API.clearCountrySettingsCache?.()
+      API.clearCountrySettingsCache?.(); API.clearPlanCatalogCache?.()
       try { const res = await kit.quietAsync(fn); return { status: res.status, body: JSON.parse(await res.text()), writes: db.writes } }
       finally { delete globalThis.__harnessDb }
     }
@@ -410,7 +424,7 @@ function checks(t, A, B) {
     // ⚠️ RE-PINNED, 18 October 2026: byte-identical to BEFORE + the named US-layout changes (`named` below: fix 3's phone
     // grid classes; fix 1's U+00A0 on US) — and those changes must actually apply.
     const wk = `normal|${cc}|any|waitingCards.html`
-    t(`manage ${cc}: the waiting cards with normal times are byte-identical to BEFORE + us-layout-fix-3-schedule-phone-cards${cc === 'US' ? ' + us-layout-fix-1-nbsp' : ''} (the whole tab's markup)`,
+    t(`manage ${cc}: the waiting cards with normal times are byte-identical to BEFORE + us-layout-fix-3-schedule-phone-cards${cc === 'US' ? ' + us-layout-fix-1-nbsp' : ''} + pending-card-buttons (the whole tab's markup)`,
       typeof A[wk] === 'string' && named(wk, B[wk]) !== B[wk] && A[wk] === named(wk, B[wk]))
   }
   for (const cc of ['GB', 'US']) {
@@ -493,13 +507,45 @@ function checks(t, A, B) {
  *    on a card WITH action icons ("Needs confirmation") the divider gains `max-sm:row-span-2` and the actions div gains
  *    `max-sm:col-start-3 max-sm:flex-wrap` + data-card-actions="true"; a "Needs your approval" card (no icon cluster) keeps
  *    BEFORE's divider. Exact substrings, one card at a time.
- *  • us-layout-fix-1-nbsp — the same US view: the card's time line ("11:30 AM–10:45 PM") carries U+00A0 before AM/PM. */
+ *  • us-layout-fix-1-nbsp — the same US view: the card's time line ("11:30 AM–10:45 PM") carries U+00A0 before AM/PM.
+ *  • ⚠️ RE-PINNED (pending-card buttons, 19 October 2026, docs/pending-card-buttons-report.md) — the same view: on each
+ *    "Needs your approval" card the chips and the summary are wrapped in the chips row, which holds a COPY of the bottom
+ *    row's own buttons markup (`max-sm:hidden`), the summary gains its `sm:` classes, the "why Approve is off" note is
+ *    added beside it only where the bottom row has one, and the bottom row becomes `mt-3 sm:hidden`. Every piece found
+ *    exactly once per card (the n-th chooser with the n-th bottom row), else BEFORE is returned (and the view fails). */
 const ROW_OLD = '<div class="flex items-start gap-4">'
 const ROW_NEW = '<div class="flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5">'
 const DIV_OLD = '<div class="w-px bg-slate-100 self-stretch flex-shrink-0"></div>'
 const DIV_NEW = '<div class="w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2"></div>'
 const ACT_OLD = '<div class="flex items-center gap-1.5 flex-shrink-0 self-start">'
 const ACT_NEW = '<div class="flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap" data-card-actions="true">'
+const PCB_ROW_OLD = '<div class="mt-3" data-pending-actions="true">'
+const PCB_ROW_NEW = '<div class="mt-3 sm:hidden" data-pending-actions="true">'
+function pendingCardButtons(html) {
+  const choosers = html.split('data-pending-type="true"').length - 1
+  if (!choosers || html.split(PCB_ROW_OLD).length - 1 !== choosers) return null
+  const rows = html.split(PCB_ROW_OLD)   // rows[n + 1] starts with card n's bottom row
+  const out = [rows[0]]
+  for (let n = 0; n < choosers; n++) {
+    const bottom = rows[n + 1]
+    const btn = /^<div class="flex gap-2 sm:justify-end">(?:(?!<\/div>)[\s\S])*<\/div>/.exec(bottom)
+    if (!btn) return null
+    const why = /^<p class="mt-1\.5 text-xs text-slate-500 sm:text-right" data-approve-reason="true">([^<]*)<\/p>/.exec(bottom.slice(btn[0].length))
+    // this card's chooser is in the text BEFORE its bottom row: the last radiogroup + summary in out[n]
+    const prev = out[n]
+    const re = /(<div role="radiogroup"[^>]*>(?:(?!<\/div>)[\s\S])*<\/div>)<p class="mt-1 text-xs text-slate-500">([\s\S]*?)<\/p>/g
+    const all = [...prev.matchAll(re)]
+    if (!all.length) return null
+    const m = all[all.length - 1]
+    const note = why ? `<div class="sm:ml-auto sm:text-right"><p class="max-sm:hidden text-xs text-slate-500 text-right" data-approve-reason="true">${why[1]}</p></div>` : ''
+    const row = '<div class="sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1" data-event-type-row="true">' + m[1]
+      + `<div class="sm:ml-auto"><div class="max-sm:hidden" data-pending-actions-row="true">${btn[0]}</div></div>`
+      + `<div class="sm:basis-full sm:flex sm:items-start sm:gap-x-3"><p class="mt-1 text-xs text-slate-500 sm:mt-0 sm:flex-1 sm:min-w-0">${m[2]}</p>${note}</div></div>`
+    out[n] = prev.slice(0, m.index) + row + prev.slice(m.index + m[0].length)
+    out.push(bottom)
+  }
+  return out.join(PCB_ROW_NEW)
+}
 function named(id, before) {
   if (/^normal\|(GB|US)\|any\|editor\|startOptions$/.test(id) && Array.isArray(before) && before.length === 2) {
     const all = []
@@ -518,7 +564,7 @@ function named(id, before) {
     if (cards.includes(null)) return before
     let v = [parts[0], ...cards].join(ROW_NEW)
     if (w[1] === 'US') v = v.replace(/(<p class="text-sm font-semibold text-slate-700 mt-0\.5">)([^<]*)(<\/p>)/g, (m, a, x, b) => a + x.replace(/(\d{1,2}:\d{2}) (AM|PM)\b/g, '$1\u00A0$2') + b)
-    return v
+    return pendingCardButtons(v) ?? before
   }
   return before
 }

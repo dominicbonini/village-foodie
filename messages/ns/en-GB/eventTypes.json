@@ -5,8 +5,6 @@
   "loading": "Loading…",
   "missingTitle": "Event types aren’t switched on yet.",
   "missingBody": "The database update for this feature hasn’t been applied. Nothing is broken — every event is using your normal setup.",
-  "maxPlanFallback": "Event types are part of the Max plan.",
-  "maxPlanBody": "Events that already have a type keep using it. To add, change or assign types, move to Max.",
   "column": "Column",
   "vanGone": "That van has gone.",
   "typeGone": "That type has gone.",

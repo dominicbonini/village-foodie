@@ -1,4 +1,4 @@
-# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 318 changed). Written by scripts/language-phase-1d.cjs.
+# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 319 changed). Written by scripts/language-phase-1d.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 menu/US|menuTab|list	words
 menu/US|menuTab|list|open	words
@@ -135,29 +135,29 @@ schedule/US|vanFilter|two	words
 schedule/US|vanFilter|label|all	words
 schedule/US|privateLink|on	words
 schedule/US|privateLink|copied	words
-settings/US|owner|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|twoVans|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|manager|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|starter|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|pro|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|legacy|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|addingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|renamingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|deletingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|vanBilling|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|vanUpgrade|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|qrModal|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|qrPreviews|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|verifyError|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|verifying|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|preorders|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|preordersOff|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|emoji|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|kds|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|noCuisine|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|setup|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|trial|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
-settings/US|noBase|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row + words
+settings/US|owner|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|twoVans|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|manager|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|starter|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|pro|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|legacy|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|addingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|renamingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|deletingVan|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|vanBilling|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|vanUpgrade|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|qrModal|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|qrPreviews|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|verifyError|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|verifying|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|preorders|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|preordersOff|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|emoji|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|kds|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|noCuisine|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|setup|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|trial|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
+settings/US|noBase|page	code: 1e-us-app-store-link+1d-us-settings-clock+us-layout-fix-1-nbsp+us-layout-fix-12-deadline-row+seo-s7-badges-lazy + words
 settings/US|whereYouTrade|set	words
 settings/US|whereYouTrade|unset	words
 settings/US|whereYouTrade|readOnly	words
@@ -184,6 +184,7 @@ copy/US|scheduleVerify|VERIFY_MESSAGES	words
 copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC	words
 copy/US|kitchenCapacity|KITCHEN_CAPACITY_EXAMPLE	words
 copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING	words
+copy/US|privateEvents|MAX_ONLY_TITLE	code: plans-max-badge-gone
 copy/US|privateEvents|NEW_LINK_CONFIRM	words
 copy/US|privateEvents|PRIVATE_PREVIEW_NOTE	words
 copy/US|eventTypes|TYPE_NAME_CHIPS	words
@@ -208,15 +209,15 @@ api/US|manage|itemGroupNotMine	code: named difference 1 (group_not_for_truck)
 api/US|manage|itemGroupItemNotMine	code: named difference 1 (item_not_for_truck)
 api/US|manage|bulkGroupNotMine	code: named difference 1 (group_not_for_truck)
 api/US|manage|excludedItemNotMine	code: named difference 1 (item_not_for_truck)
-api/US|manage|preorderNotPro	code: named difference 1 (preorders_pro) + words
-api/US|manage|privateLinkNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|preorderNotPro	code: named difference 1 (feature_switched_off)
+api/US|manage|privateLinkNotPro	code: named difference 1 (feature_switched_off)
 api/US|manage|privateLinkNoEvent	code: named difference 1 (event_not_found)
 api/US|manage|privateLinkNotPrivate	code: named difference 1 (event_not_private)
-api/US|manage|newLinkNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|newLinkNotPro	code: named difference 1 (feature_switched_off)
 api/US|manage|editLiveNoTimes	code: named difference 1 (live_event_needs_times)
-api/US|manage|editPrivateNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|editPrivateNotPro	code: named difference 1 (feature_switched_off)
 api/US|manage|createNoTimes	code: named difference 1 (event_needs_times)
-api/US|manage|createPrivateNotPro	code: named difference 1 (private_events_pro)
+api/US|manage|createPrivateNotPro	code: named difference 1 (feature_switched_off)
 api/US|manage|dealNoEvent	code: named difference 1 (event_not_found)
 api/US|manage|dealNoBundle	code: named difference 1 (event_not_found)
 api/US|manage|emptyTerm	code: named difference 1 (empty_term)
@@ -256,13 +257,13 @@ api/US|manage|addVanNoName	code: named difference 1 (name_required)
 api/US|manage|renameVanNoName	code: named difference 1 (name_required)
 api/US|manage|deleteLastVan	code: named difference 1 (last_van) + words
 api/US|manage|unknownAction	code: named difference 1 (unknown_action)
-api/US|manageGET|stockWarning	words
+api/US|manageGET|stockWarning	code: plans-manage-get-catalogue+pricing-b-country-settings-fields+pricing-b-catalogue-ignored-features + words
 api/US|eventTypes|badJson	code: named difference 1 (bad_request)
 api/US|eventTypes|noToken	code: named difference 1 (token_required)
 api/US|eventTypes|badToken	code: named difference 1 (invalid_token)
-api/US|eventTypes|notMax	code: named difference 1 (event_types_max)
-api/US|eventTypes|loadNotEntitled	code: named difference 1 (event_types_max)
-api/US|eventTypes|privateNotPro	code: named difference 1 (private_events_pro)
+api/US|eventTypes|notMax	code: named difference 1 (feature_switched_off)
+api/US|eventTypes|loadNotEntitled	code: named difference 1 (feature_switched_off)
+api/US|eventTypes|privateNotPro	code: named difference 1 (feature_switched_off)
 api/US|eventTypes|createNoName	code: named difference 1 (type_name_required)
 api/US|eventTypes|createTaken	code: named difference 1 (type_name_taken)
 api/US|eventTypes|updateNoId	code: named difference 1 (id_required) + words
@@ -284,14 +285,14 @@ api/US|eventTypes|typeItemPriceNoType	code: named difference 1 (event_type_not_f
 api/US|eventTypes|typeItemPriceNoItem	code: named difference 1 (item_not_found)
 api/US|eventTypes|privateNotReady	code: named difference 1 (private_not_ready)
 api/US|eventTypes|unknownAction	code: named difference 1 (unknown_action)
-api/US|eventTypes|loadWithPricesVanNoName	words
+api/US|eventTypes|loadWithPricesVanNoName	code: plans-event-types-no-upgrade-message + words
 api/US|eventsAction|noToken	code: named difference 1 (token_and_action_required)
 api/US|eventsAction|badToken	code: named difference 1 (truck_not_found)
 api/US|eventsAction|confirmFlags	code: named difference 1 (auto_open_close_required) + words
 api/US|eventsAction|confirmNoTimes	code: named difference 1 (event_needs_times)
 api/US|eventsAction|confirmPrivateNoTimes	code: named difference 1 (private_needs_times)
 api/US|eventsAction|confirmChooseVan	code: named difference 1 (choose_truck_for_event)
-api/US|eventsAction|confirmPrivateNotPro	code: named difference 1 (private_events_pro)
+api/US|eventsAction|confirmPrivateNotPro	code: named difference 1 (feature_switched_off)
 api/US|eventsAction|openNoTimes	code: named difference 1 (event_needs_times)
 api/US|eventsAction|cancelNotMine	code: named difference 1 (event_not_found)
 api/US|eventsAction|restoreNotMine	code: named difference 1 (event_not_found)

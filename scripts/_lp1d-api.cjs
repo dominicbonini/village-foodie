@@ -100,6 +100,9 @@ export { POST as verifyPOST } from '@/app/api/manage/verify-schedule-url/route'`
         { id: 'v2', truck_id: 'test-truck', name: over.vanNoName ? null : 'Van 2', active: true, created_at: '2026-02-01T00:00:00Z', same_as_first_van: false, capacity_same_as_first_van: false }],
       van_category_settings: over.vcs || [], excluded_terms: [], truck_places: [], event_types: over.types || [], event_item_prices: [],
       whatsapp_connections: [], whatsapp_logs: [], operator_email_changes: [],
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the GET (and every plan read) loads the plan catalogue —
+      // the migration's seed rows (scripts/_lp1c-fixtures.cjs planTables), fixture input.
+      ...require('./_lp1c-fixtures.cjs').planTables(),
     })
     const tok = (b) => ({ token: 'tok', ...b })
     const mg = (k, body, o = {}) => call(`${cc}|manage|${k}`, { tables: T(o), ...o }, () => M.managePOST(req('/api/manage', { method: 'POST', body })))
@@ -128,18 +131,20 @@ export { POST as verifyPOST } from '@/app/api/manage/verify-schedule-url/route'`
     await mg('itemGroupItemNotMine', tok({ action: 'set_item_modifier_group', group_id: 'g1', menu_item_id: 'i-x', attached: true }))
     await mg('bulkGroupNotMine', tok({ action: 'set_item_modifier_groups_bulk', group_id: 'g-x', menu_item_ids: ['i1'], attached: true }))
     await mg('excludedItemNotMine', tok({ action: 'set_item_group_excluded_options', group_id: 'g1', menu_item_id: 'i-x', excluded_option_ids: [] }))
-    await mg('preorderNotPro', tok({ action: 'set_item_preorder_bulk', menu_item_ids: ['i1'] }), { truck: { plan: 'starter' } })
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): no plan gates a feature any more — the refusal's premise (a Starter truck) is
+    // replaced by the new one: a per-truck override switching the feature off (named plans-refusal-switched-off).
+    await mg('preorderNotPro', tok({ action: 'set_item_preorder_bulk', menu_item_ids: ['i1'] }), { truck: { feature_overrides: { advance_preordering: false } } })
     await mg('categoryDbError', tok({ action: 'upsert_category', name: 'Sides' }), { fail: { menu_categories: ['insert'] } })
     // ── Schedule
-    await mg('privateLinkNotPro', tok({ action: 'private_link', id: 'ev-ok' }), { truck: { plan: 'starter' } })
+    await mg('privateLinkNotPro', tok({ action: 'private_link', id: 'ev-ok' }), { truck: { feature_overrides: { private_events: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await mg('privateLinkNoEvent', tok({ action: 'private_link', id: 'ev-x' }))
     await mg('privateLinkNotPrivate', tok({ action: 'private_link', id: 'ev-ok' }))
-    await mg('newLinkNotPro', tok({ action: 'private_new_link', id: 'ev-ok' }), { truck: { plan: 'starter' } })
+    await mg('newLinkNotPro', tok({ action: 'private_new_link', id: 'ev-ok' }), { truck: { feature_overrides: { private_events: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await mg('newLinkPassThrough', tok({ action: 'private_new_link', id: 'ev-x' }))
     await mg('editLiveNoTimes', tok({ action: 'upsert_event', id: 'ev-live', venue_name: 'The Crown', event_date: today }))
-    await mg('editPrivateNotPro', tok({ action: 'upsert_event', id: 'ev-ok', venue_name: 'Market', event_date: today, start_time: '17:00', end_time: '20:00', is_private: true }), { truck: { plan: 'starter' } })
+    await mg('editPrivateNotPro', tok({ action: 'upsert_event', id: 'ev-ok', venue_name: 'Market', event_date: today, start_time: '17:00', end_time: '20:00', is_private: true }), { truck: { feature_overrides: { private_events: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await mg('createNoTimes', tok({ action: 'upsert_event', venue_name: 'New', event_date: today }))
-    await mg('createPrivateNotPro', tok({ action: 'upsert_event', venue_name: 'New', event_date: today, start_time: '17:00', end_time: '20:00', is_private: true, van_id: 'v1' }), { truck: { plan: 'starter' } })
+    await mg('createPrivateNotPro', tok({ action: 'upsert_event', venue_name: 'New', event_date: today, start_time: '17:00', end_time: '20:00', is_private: true, van_id: 'v1' }), { truck: { feature_overrides: { private_events: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await mg('dealNoEvent', tok({ action: 'update_event_deal', eventId: 'ev-x', bundleId: 'b1', active: true }))
     await mg('dealNoBundle', tok({ action: 'update_event_deal', eventId: 'ev-ok', bundleId: 'b-x', active: true }))
     await mg('emptyTerm', tok({ action: 'add_exclusion_term', term: '  ' }))
@@ -184,13 +189,20 @@ export { POST as verifyPOST } from '@/app/api/manage/verify-schedule-url/route'`
     await call(`${cc}|manageGET|stockWarning`, { tables: T() }, () => M.manageGET(req('/api/manage?token=tok')))
 
     // ── /api/event-types
-    const et = (k, body, o = {}) => call(`${cc}|eventTypes|${k}`, { tables: T(o), keys: { event_types: [{ name: 'event_types_truck_name_uidx', expr: r => [r.truck_id, String(r.name).toLowerCase()] }] }, ...o }, () => M.etPOST(req('/api/event-types', { method: 'POST', body })))
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): Pay as you go has `event_types` switched OFF (20261026_pricing_pages.sql),
+    // and the plan key "max" resolves to Pay as you go — so these views' truck (entitled to event types at 756ca09) is on the
+    // plan Stage A mapped "max" to (scripts/_lp1d-fixtures.cjs FIXTURE_PLAN: `unlimited`, every feature on), unless the
+    // call sets its own plan. Each refusal's premise is unchanged: an override still switches the feature off.
+    const etPlan = o => ({ ...o, truck: { plan: require('./_lp1d-fixtures.cjs').FIXTURE_PLAN, ...(o.truck || {}) } })
+    const et = (k, body, o0 = {}) => { const o = etPlan(o0); return call(`${cc}|eventTypes|${k}`, { tables: T(o), keys: { event_types: [{ name: 'event_types_truck_name_uidx', expr: r => [r.truck_id, String(r.name).toLowerCase()] }] }, ...o }, () => M.etPOST(req('/api/event-types', { method: 'POST', body }))) }
     await et('badJson', '{nope')
     await et('noToken', { action: 'load' })
     await et('badToken', { token: 'nope', action: 'load' })
-    await et('notMax', tok({ action: 'create', name: 'Festival' }), { truck: { plan: 'starter' } })
-    await et('loadNotEntitled', tok({ action: 'load' }), { truck: { plan: 'starter' } })
-    await et('privateNotPro', tok({ action: 'set_private_link_ordering', on: true }), { truck: { plan: 'starter' } })
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): no plan gates event types or private events; each refusal's premise is now a
+    // per-truck override switching the feature off (named plans-refusal-switched-off). load: both off.
+    await et('notMax', tok({ action: 'create', name: 'Festival' }), { truck: { feature_overrides: { event_types: false } } })
+    await et('loadNotEntitled', tok({ action: 'load' }), { truck: { feature_overrides: { event_types: false, private_events: false } } })
+    await et('privateNotPro', tok({ action: 'set_private_link_ordering', on: true }), { truck: { feature_overrides: { private_events: false } } })
     await et('createNoName', tok({ action: 'create', name: ' ' }))
     await et('createTaken', tok({ action: 'create', name: 'Festival' }), { types: [{ id: 't1', truck_id: 'test-truck', name: 'festival', sort_order: 0 }] })
     await et('updateNoId', tok({ action: 'update' }))
@@ -223,7 +235,8 @@ export { POST as verifyPOST } from '@/app/api/manage/verify-schedule-url/route'`
     await ac('confirmNoTimes', tok({ action: 'confirm', eventId: 'ev-live', payload: { auto_open: true, auto_close: true } }))
     await ac('confirmPrivateNoTimes', tok({ action: 'confirm', eventId: 'ev-live', payload: { auto_open: true, auto_close: true, is_private: true } }))
     await ac('confirmChooseVan', tok({ action: 'confirm', eventId: 'ev-ok', payload: { auto_open: true, auto_close: true } }))
-    await ac('confirmPrivateNotPro', tok({ action: 'confirm', eventId: 'ev-ok', payload: { auto_open: true, auto_close: true, is_private: true } }), { truck: { plan: 'starter' }, vans: [{ id: 'v1', truck_id: 'test-truck', name: 'Van 1', active: true }] })
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan (named plans-refusal-switched-off)
+    await ac('confirmPrivateNotPro', tok({ action: 'confirm', eventId: 'ev-ok', payload: { auto_open: true, auto_close: true, is_private: true } }), { truck: { feature_overrides: { private_events: false } }, vans: [{ id: 'v1', truck_id: 'test-truck', name: 'Van 1', active: true }] })
     await ac('openNoTimes', tok({ action: 'open', eventId: 'ev-live' }))
     await ac('cancelNotMine', tok({ action: 'cancel', eventId: 'ev-x', payload: {} }))
     await ac('restoreNotMine', tok({ action: 'restore_rejected', eventId: 'ev-x' }))

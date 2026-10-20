@@ -14,6 +14,9 @@ const base = require('./_lp1b-fixtures.cjs')
 const SEEDS = require('./_country-settings-gb.cjs')
 
 const MANAGE = 'app/manage/[token]/page.tsx'
+const PLAN_CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(path.resolve(__dirname, '..'))
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the fixture truck's plan — see country() below.
+const FIXTURE_PLAN = PLAN_CATALOG && !PLAN_CATALOG.plans.some(p => p.key === 'max') && PLAN_CATALOG.plans.some(p => p.key === 'unlimited') ? 'unlimited' : 'max'
 const NOW = base.NOW   // 2026-10-09T17:20:00Z — a Friday
 
 function country(cc) {
@@ -29,7 +32,12 @@ function country(cc) {
     contact_phone: US ? '(201) 555-0123' : '07700 900123', social_instagram: 'pizzakitchen', social_facebook: null,
     website: 'https://pizzakitchen.example', whatsapp: null, phone_is_whatsapp: false, auto_accept: false,
     truck_order_email_enabled: true, dashboard_token: 'harness', crew_mode: 'solo', kds_mode: false, keep_screen_on: false,
-    plan: 'max', feature_overrides: {}, features: {}, trial_expires_at: null, hide_pricing: false, whatsapp_sender: null,
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `max` is no plan key since Stage A (20261024 mapped
+    // max → unlimited), so it resolves to the expiry fallback (payg) — and since A2 WITH payg's switches (whatsapp_replies,
+    // schedule_graphics, instagram_messenger_replies off), which would drop Make post / Social / the WhatsApp card from
+    // every Manage view. On a tree with the plans catalogue the truck is on `unlimited`, the plan Stage A mapped it to
+    // (every feature on); BEFORE (756ca09, no catalogue) keeps `max`.
+    plan: FIXTURE_PLAN, feature_overrides: {}, features: {}, trial_expires_at: null, hide_pricing: false, whatsapp_sender: null,
     allergen_info_url: null, allergen_info_text: null, allergen_display_mode: 'per_dish', preferred_contact_method: 'email',
     allow_customer_cancellation: true, cancellation_cutoff_mins: 30, default_auto_open: true, default_auto_close: true,
     qr_code_style: 'standard', truck_emoji: '🍕', scraper_preference: 'both', schedule_url: null, preorders_enabled: true,
@@ -52,9 +60,14 @@ function inManage(M, C, el) {
   if (M.TruckTimeContext) x = h(M.TruckTimeContext.Provider, { value: C.time }, x)
   if (M.MoneyProvider) x = h(M.MoneyProvider, { fmt: C.fmt }, x)
   if (M.CountrySettingsProvider) x = h(M.CountrySettingsProvider, { settings: C.settings }, x)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A): the page reads the plan catalogue from a provider, as it mounts it. The
+  // catalogue is the migration's own seed (scripts/_plans-catalog-fixture.cjs); a tree without it has no provider.
+  if (M.PlanCatalogProvider && PLAN_CATALOG) x = h(M.PlanCatalogProvider, { catalog: PLAN_CATALOG }, x)
   return x
 }
+const HAS_PLAN_PROVIDER = fs.existsSync(path.resolve(__dirname, '..', 'components/PlanCatalogProvider.tsx'))
 const PROVIDERS = [
+  ...(HAS_PLAN_PROVIDER ? ["export { PlanCatalogProvider } from '@/components/PlanCatalogProvider'"] : []),
   "export { I18nContext } from '@/lib/i18n/use-t'",
   "export { CountrySettingsProvider } from '@/components/CountrySettingsProvider'",
   "export { MoneyProvider } from '@/components/MoneyContext'",
@@ -87,7 +100,7 @@ function context(kit, REPO) {
     finally { delete globalThis.__ms; delete globalThis.__msSearch }
   }
   const GB = country('GB'), US = country('US')
-  return { kit, h: kit.h, html, states, skipped, src, read, REPO, GB, US, NOW, MANAGE, PROVIDERS, inManage, noop: () => {} }
+  return { kit, h: kit.h, html, states, skipped, src, read, REPO, GB, US, NOW, MANAGE, PROVIDERS, PLAN_CATALOG, inManage, noop: () => {} }
 }
 
-module.exports = { country, context, inManage, PROVIDERS, MANAGE, NOW, BEFORE_REF: '756ca09' }
+module.exports = { country, context, inManage, PROVIDERS, PLAN_CATALOG, FIXTURE_PLAN, MANAGE, NOW, BEFORE_REF: '756ca09' }

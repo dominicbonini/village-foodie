@@ -196,7 +196,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
       const replyId = q.get('reply')
       const m = replyId ? (t?.messages ?? []).find(x => x.id === replyId) : undefined
       if (m) {
-        setReplyTarget({ messageId: m.id, subject: m.subject ?? null, fromAddress: m.from_address ?? null, date: m.message_date ?? null })
+        setReplyTarget({ messageId: m.id, subject: m.subject ?? null, fromAddress: m.from_address ?? null, date: m.message_date ?? null, inbound: m.direction === 'inbound' })
         setPanel('email')
       } else if (q.get('compose') === '1') {
         setPanel('email')
@@ -682,7 +682,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     // row is our own mailbox, so using it either way would address the follow-up to ourselves — and
     // the server would refuse it, which is the right refusal for the wrong reason.
     const back = replyRecipientFor(m)
-    openPanel('email', { messageId: m.id, subject: m.subject ?? null, fromAddress: back, date: m.message_date ?? null })
+    openPanel('email', { messageId: m.id, subject: m.subject ?? null, fromAddress: back, date: m.message_date ?? null, inbound: m.direction === 'inbound' })
   }
 
   // ── KEYBOARD ────────────────────────────────────────────────────────────────────────────────────

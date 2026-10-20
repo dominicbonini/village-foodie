@@ -218,6 +218,10 @@ function runCensus(over = {}) {
   const libVariant = (tag, file, patch) => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `ran-${tag}-`))
     fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
+    // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): `messages/` is copied too. The builder now reads the
+    // company line through `translatorFor` + `lib/i18n/catalog/outreach`, which imports
+    // `messages/ns/*/outreach.json` — a lib-only copy no longer compiles. Nothing about a variant changes.
+    fs.cpSync(path.join(REPO, 'messages'), path.join(tmp, 'messages'), { recursive: true })
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
     const f = path.join(tmp, file)
     const src = fs.readFileSync(f, 'utf8')

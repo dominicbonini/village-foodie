@@ -1,82 +1,26 @@
 'use client'
-import { canAccess, requiredPlan, PLAN_META, planPrice, planDescription, type Plan, type Feature } from '@/lib/features'
-// Language Phase 1e: the plan's description and the masked price word in the truck's country's locale.
-import { priceText } from '@/lib/plan-features'
-import { useCountrySettings } from '@/components/CountrySettingsProvider'
-import { manageTabHref } from '@/lib/manage-links'
-import { usePriceMask } from '@/components/PricingPolicy'
-import { purchaseCtaAllowed } from '@/lib/commerce-policy'
-import { planPricesDecided } from '@/lib/country-settings-types'
-import { MASKED_PRICE } from '@/lib/pricing'
+import type { Feature } from '@/lib/features'
+import { useFeatures, type TruckFeatureContext } from '@/lib/useFeatures'
+import { PlanPrompt } from '@/components/PlanPrompt'
 
+/**
+ * Shows `children` when the truck may use `feature`; otherwise says why (plan-features-config, Stage A2).
+ * 🔴 ONE RESOLUTION ORDER (lib/features.ts): the per-truck override → the truck's EFFECTIVE plan's switch → allowed.
+ *   • off because of the PLAN → the one upgrade prompt (components/PlanPrompt.tsx), naming the plan that has it;
+ *   • off because of an OVERRIDE → `fallback` (nothing by default) — the surface's own "switched off" wording, never an
+ *     upgrade, because no plan change would turn an override back on.
+ */
 interface FeatureGateProps {
   feature: Feature
-  plan?: Plan | null
-  overrides?: Record<string, boolean> | null
-  trialExpiresAt?: string | null
+  truck: TruckFeatureContext | null | undefined
   children?: React.ReactNode
-  showUpgrade?: boolean
-  upgradeMessage?: string
+  fallback?: React.ReactNode
 }
 
-export function FeatureGate({
-  feature,
-  plan,
-  overrides,
-  trialExpiresAt,
-  children,
-  showUpgrade = true,
-  upgradeMessage,
-}: FeatureGateProps) {
-  // 🔴 BEFORE the early returns — hooks cannot sit after a conditional return. This is also why the
-  // truck arrives by CONTEXT rather than a prop: FeatureGate is shared, has no truck, and both of its
-  // render sites would otherwise have to remember to pass one.
-  const px = usePriceMask()
-  // The upgrade line quotes the required plan's price in the TRUCK's currency — the settings arrive the
-  // same way the mask does, by context, for the same reason. Both render sites sit under the manage page's
-  // CountrySettingsProvider; outside one, this throws rather than guess a currency.
-  const settings = useCountrySettings()
-
-  if (canAccess(plan ?? 'starter', feature, overrides ?? {}, trialExpiresAt ?? null)) {
-    return <>{children}</>
-  }
-
-  if (!showUpgrade) return null
-
-  const needed = requiredPlan(feature)
-  const meta = PLAN_META[needed]
-
-  return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 flex items-center justify-between gap-4">
-      <div>
-        <div className="text-sm font-medium text-slate-700">
-          {upgradeMessage ?? `This feature requires the ${meta.name} plan`}
-        </div>
-        <div className="text-xs text-slate-400 mt-0.5">
-          {/* A switched-off country's truck has no plan prices yet (planPrice would throw): the masked word instead. */}
-          {meta.name} · {priceText(planPricesDecided(settings) ? px(planPrice(needed, settings)) : MASKED_PRICE, settings.locale)} · {planDescription(needed, settings.locale)}
-        </div>
-      </div>
-      {/* 🔴 iOS (App Store 3.1.1/3.1.3): the CTA goes, the EXPLANATION stays. The panel above still names
-          the feature and the plan that carries it, which is information about what the plans include and is
-          permitted; the link is a call to action pointing at a purchase surface and is not.
-          ✅ Both render sites in app/manage/[token]/page.tsx inherit this automatically — the suppression
-          lives here precisely so neither call site has to know about it, and a third one added later is
-          compliant by default rather than by remembering.
-          ⚠️ href repointed /pricing → ?tab=billing on ALL platforms: /pricing has never existed as a route,
-          so this link has been a 404 on both render sites since it shipped. Billing already renders the
-          full plan matrix, which is what this link always meant to reach. */}
-      {purchaseCtaAllowed() && (
-        <a
-          /* ⚠️ THROUGH THE ONE BUILDER (5 October 2026). The string it returns is the one that was
-             hand-written here — the point is that there is now nowhere in the product where a link
-             into a Manage tab is assembled from a literal. See lib/manage-links.ts. */
-          href={manageTabHref('billing')}
-          className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap"
-        >
-          Upgrade →
-        </a>
-      )}
-    </div>
-  )
+export function FeatureGate({ feature, truck, children, fallback = null }: FeatureGateProps) {
+  const access = useFeatures(truck)
+  const block = access.block(feature)
+  if (block === null) return <>{children}</>
+  if (block === 'plan') return <PlanPrompt feature={feature} upgradeTo={access.upgradeTo(feature)} />
+  return <>{fallback}</>
 }

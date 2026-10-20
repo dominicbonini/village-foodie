@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** 6 August 2026
+**Last updated:** 20 October 2026
 
 These terms govern your use of HatchGrab. Please read them — by creating an account or using the service you agree to them.
 
@@ -15,6 +15,8 @@ HatchGrab is software that lets food truck operators take and manage orders. Vil
 These terms are between us and **you, the business** using HatchGrab. They do not apply to your customers — the people who order food from you. Those people have their own relationship with you, and our Privacy Policy explains how their data is handled.
 
 **HatchGrab is for business use only.** By accepting these terms you confirm you are acting for purposes relating to your trade or business, and not as a consumer.
+
+**Some countries have extra rules.** Where they apply to you, they're on our [Country-specific terms](/country-terms) page, which forms part of these terms.
 
 ---
 
@@ -31,7 +33,7 @@ These terms are between us and **you, the business** using HatchGrab. They do no
 
 You run the food business. We provide the software. That division matters, so it is worth stating plainly.
 
-**Food safety, allergens and labelling.** You are the food business operator. You are solely responsible for the accuracy of your menu, your ingredient and allergen information, and your compliance with food safety and food information law, including allergen disclosure requirements.
+**Food safety, allergens and labelling.** You are the food business operator. You are solely responsible for the accuracy of your menu, your ingredient and allergen information, and your compliance with the food safety and food information law where you trade, including allergen disclosure requirements, and for any permits or licences you need.
 
 🔴 **We do not verify allergen or ingredient information. We cannot, and we do not attempt to.** HatchGrab displays exactly what you enter, unchanged. Nothing in the service should be taken as a check, an approval, or a confirmation that what you have entered is correct or complete.
 
@@ -45,7 +47,7 @@ Where HatchGrab helps you build a menu — including any automated or AI-assiste
 
 If your allergen or ingredient information is wrong, incomplete or out of date, that is your responsibility and not ours.
 
-**Your prices and your tax.** You set your prices. You are responsible for charging the right amounts, for VAT, and for your own tax affairs.
+**Your prices and your tax.** You set your prices. You are responsible for charging the right amounts, for VAT, sales tax or similar taxes where they apply, and for your own tax affairs.
 
 **Your orders.** You are responsible for accepting, preparing and fulfilling orders, and for any refunds, cancellations or disputes with your customers.
 
@@ -61,21 +63,21 @@ If your allergen or ingredient information is wrong, incomplete or out of date, 
 
 **No contract, cancel anytime.** There is no minimum term and no notice period. You are never tied in.
 
-- Available plans, prices and included allowances are shown in the app and on our website. Prices are in pounds sterling and exclude VAT unless stated.
-- **Free trials.** We may offer a free trial. At the end of a trial your account moves to the free plan unless you have chosen a paid plan. We will tell you before your trial ends.
-- **Paid in advance, and non-refundable.** Subscription fees are billed one month in advance. **Fees already paid are non-refundable**, including if you cancel part-way through a month or stop using the service. This is the trade for there being no contract and no minimum term. Nothing here affects rights you have that cannot lawfully be excluded.
-- **Cancellation.** You can cancel at any time from within the service. Cancellation stops the next payment; it does not refund the month you are in. You keep full access until the end of the period you have paid for.
-- **Transaction fees.** Where your plan includes an allowance of online order value, we charge the stated percentage on value above that allowance. Card processing fees are charged by our payment provider and are separate from our fees.
-- **Price changes.** We may change our prices. We will give you at least 30 days' notice before a change affects you, and you may cancel before it takes effect.
+- **Plans.** Our plans, their monthly prices, the online order value each includes and the fee each charges are shown on our website and in the app. One plan has no monthly fee. Prices are in your local currency. We are not registered for VAT, so no VAT is added to our fees. Where another local tax applies to you, we will tell you before it is added.
+- **Free trial.** New accounts start with a free trial with every feature unlocked. Its length is shown on our website and in the app when you sign up. You do not need a card to start. At the end of the trial your account moves to our plan with no monthly fee unless you have chosen another plan. We will remind you in the app before your trial ends.
+- **Paid in advance, and non-refundable.** Monthly plan fees are billed one month in advance. **Fees already paid are non-refundable**, including if you cancel part-way through a month or stop using the service. This is the trade for there being no contract and no minimum term. Nothing here affects rights you have that cannot lawfully be excluded.
+- **Cancellation.** You can cancel at any time by contacting us or from within the service. Cancellation stops the next payment; it does not refund the month you are in. You keep full access until the end of the period you have paid for, then move to our plan with no monthly fee.
+- **HatchGrab fees on online card orders.** Depending on your plan, we charge a stated percentage of the value of online orders your customers pay for by card — on all of it, on the value above the amount your plan includes each month, or not at all. **We charge no fee on Pay at Hatch orders or on walk-up orders.**
+- **Card processing.** Card processing fees on online card orders are charged by our payment provider (Stripe), are paid to them and not to us, and are separate from our fees. Walk-up orders are taken on your own card reader, under your own agreement with its provider.
+- **Price changes.** We may change our prices, fees or what a plan includes. We will give you at least 30 days' notice before a change affects you, and you may change plan or cancel before it takes effect.
 
 ### If payment is not made
 
-**If a payment fails or is not made, your account moves down to the free plan.** We do not lock you out.
+**If a payment fails or is not made, your account moves to our plan with no monthly fee.** We do not lock you out.
 
-- We will email you when a payment fails and tell you how to fix it.
-- If it is not resolved within **7 days**, your account moves to the free plan. You keep your account, your menu, your orders and your data, and you can carry on taking walk-up orders and using the kitchen screen and dashboard. You lose the paid features your plan included.
+- If a payment is not made within **7 days** of its due date, your account moves to the plan with no monthly fee. You keep your account, your menu, your orders and your data, and you can carry on taking orders and using the kitchen screen and dashboard. You lose the features that plan does not include, and that plan's fee on online card orders applies.
 - Paying the outstanding amount restores your plan.
-- Moving to the free plan does not entitle you to a refund of fees already paid, and you remain liable for amounts due up to that date.
+- Moving plan does not entitle you to a refund of fees already paid, and you remain liable for amounts due up to that date.
 
 ⚠️ **Plan for this.** Some features your service depends on are only on paid plans. Keep the billing contact on your account an address you check, and keep your card details current.
 
@@ -141,7 +143,7 @@ Subject to that:
 
 **(d) We are not liable for third party services.** Payment processing, email delivery, messaging, mapping and hosting are provided by third parties. We choose them with care but do not control them.
 
-**(e) Our total liability** to you for all claims arising in any 12 month period, whether in contract, tort (including negligence), breach of statutory duty or otherwise, is limited to the greater of: the total fees you paid us in the 12 months before the claim arose, or £100.
+**(e) Our total liability** to you for all claims arising in any 12 month period, whether in contract, tort (including negligence), breach of statutory duty or otherwise, is limited to the greater of: the total fees you paid us in the 12 months before the claim arose, or £100 (or its equivalent in your local currency).
 
 **(f) You will indemnify us** against claims brought by third parties (including your customers) arising from your food, your ingredient or allergen information, any allergic reaction or illness connected with food you supply, your fulfilment of orders, or your breach of these terms.
 

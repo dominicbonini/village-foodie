@@ -1,0 +1,12 @@
+{
+  "companyFooter": "{company} · Company no. {number} · Registered office: {address}",
+  "optOut": {
+    "missing": "This email has no opt-out line, so it cannot be sent. Use Insert opt-out to add it.",
+    "notSetUp": "No opt-out sentence is set up, so no outreach email can be sent. Add one on the Templates tab’s Signature panel.",
+    "notLoaded": "The opt-out sentence has not loaded yet, so this cannot be sent.",
+    "unreadable": "The opt-out sentence could not be read, so nothing was sent."
+  },
+  "retry": {
+    "notRebuilt": "That message could not be rebuilt with the company line, so nothing was sent."
+  }
+}

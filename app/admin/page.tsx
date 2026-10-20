@@ -8,15 +8,14 @@
 // hand-rolls a copy button any more.
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { PLAN_META, type Plan, type Feature } from '@/lib/features'
+import type { Feature } from '@/lib/features'
+import { activePlans, planByKey, planPriceFor, effectivePlan, expiryFallbackPlan, plansInOrder, trialEndFor, extendTrialEnd, type PlanCatalog, type PlanKey, type PlanRow } from '@/lib/plans'
 import { safeHref } from '@/lib/safe-href'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
-import { planPrices, FEATURE_SECTIONS, footnotes, transactionRows, platformFeeLabel, PAY_AT_HATCH_ROW } from '@/lib/plan-features'
-import { planPricesDecided, type CountrySettings } from '@/lib/country-settings-types'
-import { MASKED_PRICE } from '@/lib/pricing'
+import { formatAmount, pctLabel } from '@/lib/money-format'
+import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 // 🔴 The plan matrix shows the PUBLIC pages' country (named once — the visitor picker comes later); one
 // truck's modal shows THAT truck's country. Both arrive in the authenticated /api/admin response.
-import { MARKETING_COUNTRY } from '@/lib/marketing-country'
 import AppHeader from '@/components/shared/AppHeader'
 import { CopyButton } from '@/components/dashboard/CopyButton'
 import UserMenu from '@/components/dashboard/UserMenu'
@@ -39,8 +38,13 @@ interface AdminTruck {
   name: string
   slug: string | null
   dashboard_token: string | null
-  plan: Plan
+  plan: PlanKey
   trial_expires_at: string | null
+  /** trucks.timezone — the zone a trial's end of day is counted in (null → the country's default). */
+  timezone?: string | null
+  plan_price_override_minor?: number | null
+  plan_price_override_until?: string | null
+  plan_price_override_note?: string | null
   feature_overrides: Record<string, boolean> | null
   active: boolean
   auto_accept: boolean
@@ -145,7 +149,7 @@ interface CreateTruckResponse {
     id: string
     slug: string
     name: string
-    plan: Plan
+    plan: PlanKey
     dashboard_token: string
     active: boolean
     excluded: boolean
@@ -187,27 +191,8 @@ interface CommitSummary {
   optionsCreated: number
 }
 
-const PLAN_ORDER: Plan[] = ['starter', 'trial', 'tester', 'demo', 'pro', 'max']
-
-// ── ⚠️ WHICH FEE COLUMN EACH ADMIN COLUMN READS ────────────────────────────────────────────────────
-// Admin shows SIX plans; TRANSACTION_ROWS (lib/plan-features.ts) carries the four a customer can be on.
-// `tester` and `demo` are internal and have no fee column of their own, so they are mapped here rather
-// than given values — the shared table's numbers are not touched.
-// ⚠️ BOTH MAP TO `trial`, AND THE REASON IS THE FEATURE SETS, NOT A GUESS. lib/features.ts defines
-// `TRIAL_FEATURES = [...MAX_FEATURES]`, `tester: new Set(MAX_FEATURES)` and `demo: new Set(TRIAL_FEATURES)`
-// with the comment "Mirrors TRIAL's feature profile" — so trial, tester and demo are the SAME feature set,
-// and all three are non-paying. Trial's cells (0% / Unlimited / Free) are therefore the only ones that can
-// be true of them. This table also already treats tester as trial's twin on the Pay-at-Hatch feature row.
-// ⚠️ IT IS STILL A MAPPING DECISION, NOT A FACT READ OUT OF THE CODE — there is no fee logic anywhere to
-// check it against. Point them at `max` instead if internal trucks should be shown the paid position.
-const FEE_COLUMN_FOR: Record<Plan, 'trial' | 'starter' | 'pro' | 'max'> = {
-  starter: 'starter',
-  trial:   'trial',
-  tester:  'trial',
-  demo:    'trial',
-  pro:     'pro',
-  max:     'max',
-}
+/* ⛔ PLAN_ORDER AND FEE_COLUMN_FOR WERE HERE (plans-data-model Stage A, 19 October 2026). The plan list, its order, names
+ * and prices are public.plans / public.plan_prices, delivered by /api/admin as `plans` and read through lib/plans.ts. */
 
 const OVERRIDEABLE_FEATURES: Feature[] = [
   'cook_screen',
@@ -217,14 +202,15 @@ const OVERRIDEABLE_FEATURES: Feature[] = [
   'ticket_printing',
 ]
 
-const PLAN_BADGE: Record<Plan, string> = {
-  starter: 'bg-slate-100 text-slate-600',
-  trial:   'bg-teal-100 text-teal-700',
-  tester:  'bg-purple-100 text-purple-700',
-  demo:    'bg-pink-100 text-pink-700',
-  pro:     'bg-blue-100 text-blue-700',
-  max:     'bg-orange-100 text-orange-700',
-}
+/** A plan's badge colour, from its FLAGS — never its name (Stage A): trial, demo, other internal, the expiry fallback,
+ *  any other public plan. Unknown → slate. */
+const planBadgeClass = (p: PlanRow | null): string =>
+  !p ? 'bg-slate-100 text-slate-500'
+    : p.isTrial ? 'bg-teal-100 text-teal-700'
+    : p.isDemo ? 'bg-pink-100 text-pink-700'
+    : p.isInternal ? 'bg-purple-100 text-purple-700'
+    : p.isExpiryFallback ? 'bg-slate-100 text-slate-600'
+    : 'bg-blue-100 text-blue-700'
 // Presentation-only pseudo-plan for scraped discovery rows (NOT in the Plan enum; derived from row type).
 const DISCOVERY_BADGE = 'bg-slate-100 text-slate-500'
 
@@ -255,6 +241,8 @@ export default function AdminPage() {
   const [trucks, setTrucks] = useState<AdminTruck[]>([])
   // Country settings keyed by code — the marketing country plus every truck's own — from /api/admin.
   const [countrySettings, setCountrySettings] = useState<Record<string, CountrySettings>>({})
+  // The plan catalogue (public.plans / public.plan_prices) — /api/admin delivers it; nothing here names a plan.
+  const [plans, setPlans] = useState<PlanCatalog>({ plans: [], prices: [], features: [] })
   // J3: operator_id → the code they typed at signup. Its own map rather than a field on AdminTruck,
   // because the value lives on OPERATORS: one operator may run several trucks on one deal, and every
   // truck of theirs should show the same code without it being duplicated per row.
@@ -286,7 +274,7 @@ export default function AdminPage() {
   }, [])
 
   const [truckSearch, setTruckSearch] = useState('')
-  const [planFilter, setPlanFilter] = useState<Plan | 'discovery' | ''>('')
+  const [planFilter, setPlanFilter] = useState<PlanKey | 'discovery' | ''>('')
   const [customersOnly, setCustomersOnly] = useState(false)   // Customers = non-Discovery (operator trucks)
 
   const [editingTruck, setEditingTruck] = useState<AdminTruck | null>(null)
@@ -418,6 +406,7 @@ export default function AdminPage() {
       if (!res.ok) throw new Error(data.error)
       setTrucks(data.trucks)
       setCountrySettings(data.countrySettings ?? {})
+      setPlans(data.plans ?? { plans: [], prices: [] })
       // J3: `operators` is absent on an older API build and [] before the migration — both fall through
       // to an empty map, so the column simply shows nothing rather than throwing.
       setPromoCodes(Object.fromEntries(
@@ -770,10 +759,12 @@ export default function AdminPage() {
     }
   }
 
-  const setModalTrial = (months: 1 | 3) => {
-    const expires = new Date()
-    expires.setMonth(expires.getMonth() + months)
-    setModalEdits(prev => ({ ...prev, plan: 'trial', trial_expires_at: expires.toISOString() }))
+  // 🔴 ONE PRESET, FROM DATA (Stage A2): "Start trial: N months", N = the trial plan's trial_months, ending at the end of
+  // that day in the truck's zone (lib/plans.ts trialEndFor — the same rule as signup). It shows only while the modal's
+  // plan is a trial plan, so it sets the END DATE only — the plan is already the one chosen. Replaced the hardcoded
+  // "1 month" / "3 months" chips.
+  const setModalTrialStart = (endIso: string) => {
+    setModalEdits(prev => ({ ...prev, trial_expires_at: endIso }))
   }
   // Custom trial end date from the date picker. Sets it to end-of-day so the trial lasts
   // THROUGH the chosen date. Selecting a date here makes neither month preset "active" (the
@@ -781,7 +772,7 @@ export default function AdminPage() {
   const setModalTrialDate = (dateStr: string) => {
     if (!dateStr) return
     const expires = new Date(`${dateStr}T23:59:59`)
-    setModalEdits(prev => ({ ...prev, plan: 'trial', trial_expires_at: expires.toISOString() }))
+    setModalEdits(prev => ({ ...prev, trial_expires_at: expires.toISOString() }))
   }
 
   if (checkingSession) return (
@@ -832,28 +823,39 @@ export default function AdminPage() {
     return true
   })
 
-  const currentModalPlan = (modalEdits.plan ?? editingTruck?.plan) as Plan | undefined
+  const currentModalPlan = (modalEdits.plan ?? editingTruck?.plan) as PlanKey | undefined
+  const currentModalPlanRow = planByKey(plans, currentModalPlan)
+  // The plan a trial preset puts the truck on: the active plan flagged is_trial (none → no presets).
+  const trialPlanRow = activePlans(plans).find(p => p.isTrial) ?? null
+  const fallbackPlanRow = plans.plans.some(p => p.isExpiryFallback) ? expiryFallbackPlan(plans) : null
   const modalTrialExpiry = modalEdits.trial_expires_at ? new Date(modalEdits.trial_expires_at) : null
   const modalTrialExpired = modalTrialExpiry ? modalTrialExpiry < new Date() : false
   const modalTrialDays = modalTrialExpiry
     ? Math.max(0, Math.ceil((modalTrialExpiry.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0
-  // Which preset (if any) the current expiry matches — drives the chip "selected" highlight.
-  // A custom picked date matches neither, so both chips show as deselected.
-  const presetYMD = (months: 1 | 3) => { const d = new Date(); d.setMonth(d.getMonth() + months); return d.toISOString().slice(0, 10) }
+  // The one preset's end date (null when the plan has no trial length or the truck has no zone) — and whether the
+  // current expiry is it, which drives the chip's "selected" highlight. A custom picked date does not match.
   const modalExpiryYMD = modalTrialExpiry ? modalTrialExpiry.toISOString().slice(0, 10) : null
-  const isTrialPreset1 = !!modalExpiryYMD && modalExpiryYMD === presetYMD(1)
-  const isTrialPreset3 = !!modalExpiryYMD && modalExpiryYMD === presetYMD(3)
 
-  // ── THE PLAN MATRIX'S PRICES: the marketing country's (GB), from settings — no literal left here. ──────
-  // ⚠️ '…' until /api/admin has answered. Never a guessed figure: the matrix is the reference an admin
-  // quotes from, and a placeholder that looks like a price is worse than one that obviously is not.
-  const matrixSettings = countrySettings[MARKETING_COUNTRY] as CountrySettings | undefined
-  const matrixPrices = matrixSettings ? planPrices(matrixSettings) : null
-  const matrixFeeRows = matrixSettings ? transactionRows(matrixSettings) : []
-  const matrixNotes = matrixSettings ? footnotes(matrixSettings) : []
-  // The truck being edited is quoted in ITS OWN country's platform fee, not the matrix's.
+  // ── THE PLANS TABLE: the catalogue, priced per country (Stage A — it replaced the old Starter / Pro / Max matrix).
+  // A country's amounts are formatted with its own settings when /api/admin sent them, else shown as raw minor units.
+  const priceCountries = [...new Set(plans.prices.map(p => p.countryCode))].sort()
+  const money = (minor: number, cc: string) => {
+    const cs = countrySettings[cc] as CountrySettings | undefined
+    return cs ? formatAmount(minor, moneyFormatOf(cs)) : `${minor} (minor units)`
+  }
+  const bpsLabel = (bps: number, cc: string) => {
+    const cs = countrySettings[cc] as CountrySettings | undefined
+    return cs ? pctLabel(bps / 100, moneyFormatOf(cs)) : `${bps} bps`
+  }
+  // The truck being edited is quoted in ITS OWN country's prices.
   const editingSettings = editingTruck?.country ? countrySettings[editingTruck.country] as CountrySettings | undefined : undefined
+  const modalTruckZone = editingTruck?.timezone ?? editingSettings?.defaultTimezone ?? null
+  const trialStartEnd = currentModalPlanRow && modalTruckZone ? trialEndFor(currentModalPlanRow, new Date(), modalTruckZone) : null
+  const isTrialStartPreset = !!trialStartEnd && modalEdits.trial_expires_at === trialStartEnd
+  // Stage B: "Extend trial by 1 month" — one calendar month after the CURRENT end date (the modal's), end of that day in
+  // the truck's zone (lib/plans.ts extendTrialEnd). Shown only when there is an end date to extend.
+  const trialExtendedEnd = modalEdits.trial_expires_at && modalTruckZone ? extendTrialEnd(modalEdits.trial_expires_at, 1, modalTruckZone) : null
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -1014,7 +1016,7 @@ export default function AdminPage() {
               plans-and-features download has nothing to do with them. */}
           <div className="flex items-center justify-between gap-3 mb-3">
             <p className="text-xs text-slate-500">
-              The table below, as a PDF — generated fresh from the same source each time.
+              The plans-and-features PDF — the current public pricing (frozen until the new plans are signed off). The table below is the new plans, from the database.
             </p>
             <button
               type="button"
@@ -1030,95 +1032,70 @@ export default function AdminPage() {
               {pdfBusy ? 'Generating PDF…' : 'Download PDF'}
             </button>
           </div>
+          {/* ── 🔴 THE PLANS, FROM THE TABLE (plans-data-model Stage A, 19 October 2026) ──────────────────────────────
+              ⛔ THE OLD FEATURE MATRIX WAS HERE (its frozen display copy is deleted, Stage B). This lists public.plans in sort order with their flags, included vans and
+              trial length, the features each plan switches OFF (public.plan_features — Stage A2; no row = on), and each
+              country's public.plan_prices row. READ-ONLY: switches are edited by SQL for now. The PDF above is the new
+              pricing (Stage B), built from the same data.
+              ⚠️ STAGE B: a plan_features row naming a feature this code does not know is IGNORED (lib/plans.ts
+              splitUnknownFeatures — it no longer breaks the catalogue) and listed here so it is not silently lost. */}
+          {(plans.ignoredFeatures?.length ?? 0) > 0 && (
+            <div className="mb-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-800">
+              <p className="font-bold">Ignored plan_features rows — the code knows no such feature:</p>
+              {plans.ignoredFeatures!.map(f => (
+                <code key={`${f.planKey}:${f.feature}`} className="block">{f.planKey} · {f.feature} · {f.enabled ? 'on' : 'off'}</code>
+              ))}
+            </div>
+          )}
           <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
             <table className="text-xs w-full">
               <thead>
                 <tr className="text-left border-b border-slate-100">
-                  <th className="px-4 py-3 text-slate-500 font-bold">Feature</th>
-                  {PLAN_ORDER.map(p => (
-                    <th key={p} className="px-3 py-3 text-slate-500 font-bold text-center">
-                      <span className="block">{PLAN_META[p].name}</span>
-                      <span className="block text-[10px] font-normal text-slate-400">
-                        {p === 'tester' ? 'Lifetime discount' : (matrixPrices?.[p] ?? '…')}
-                      </span>
-                    </th>
+                  <th className="px-4 py-3 text-slate-500 font-bold">Plan</th>
+                  <th className="px-3 py-3 text-slate-500 font-bold">Flags</th>
+                  <th className="px-3 py-3 text-slate-500 font-bold">Vans · trial</th>
+                  <th className="px-3 py-3 text-slate-500 font-bold">Features off</th>
+                  {priceCountries.map(cc => (
+                    <th key={cc} className="px-3 py-3 text-slate-500 font-bold">{cc} · monthly · included · fee above · extra van</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {/* Transaction fees */}
-                <tr className="bg-slate-50">
-                  <td colSpan={PLAN_ORDER.length + 1} className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wide border-t border-slate-100">
-                    Transaction fees
-                  </td>
-                </tr>
-                {/* ── ⚠️ THE FEE ROWS COME FROM TRANSACTION_ROWS NOW. THE LAST COPY IS GONE. ─────────
-                    These two rows were written out by hand: "Walk-up orders" was the literal string 0%
-                    in every column, and "Online orders" was
-                        {(p === 'starter' || p === 'trial' || p === 'tester') ? 'Pay at Hatch' : '<the platform fee> + card fee'}
-                    which disagreed with the landing page and Billing in four separate ways — see
-                    docs/admin-plan-table-report.md. Chief among them: `trial` and `tester` were told
-                    "Pay at Hatch" although both carry MAX's feature set including online payments, and
-                    `demo` fell through to the paid branch purely because its name was absent from that
-                    list, so the one prospect-sandbox plan was the internal plan shown the platform fee.
-                    ⚠️ NO MASKING, DELIBERATELY, AND UNCHANGED. This screen never imported lib/pricing and
-                    still does not: the prices in the header above are real, and so are these. transactionRows()
-                    holds plain strings — masking is each surface's own decision, which is why Billing wraps
-                    them in px() and the landing page and this screen do not.
-                    ⚠️ ADMIN'S OWN TREATMENT IS KEPT: the same <td> classes, the same footnote <sup>
-                    styling the feature rows below already use. Only the structure and the values are shared. */}
-                {matrixFeeRows.map(row => (
-                  <tr key={row.name} className="border-t border-slate-100">
+                {plansInOrder(plans).map(p => (
+                  <tr key={p.key} className={`border-t border-slate-100 ${p.active ? '' : 'opacity-50'}`}>
                     <td className="px-4 py-2 text-slate-700">
-                      {row.name}
-                      {row.footnote && <sup className="text-slate-400 ml-0.5">{row.footnote}</sup>}
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${planBadgeClass(p)}`}>{p.name}</span>
+                      <span className="block text-[10px] text-slate-400 mt-0.5"><code>{p.key}</code>{p.description ? ` · ${p.description}` : ''}</span>
                     </td>
-                    {PLAN_ORDER.map(p => (
-                      <td key={p} className="px-3 py-2 text-center text-slate-600 font-medium">
-                        {row.cells[FEE_COLUMN_FOR[p]]}
-                      </td>
-                    ))}
+                    <td className="px-3 py-2 text-slate-500">
+                      {[p.active ? 'active' : 'inactive', p.isPublic && 'public', p.isInternal && 'internal', p.isTrial && 'trial',
+                        p.isSignupDefault && 'signup default', p.isExpiryFallback && 'expiry fallback', p.isDemo && 'demo',
+                        p.isHighlighted && 'highlighted',
+                        p.payAtHatchAllowed ? 'Pay at Hatch' : 'no Pay at Hatch'].filter(Boolean).join(' · ')}
+                    </td>
+                    <td className="px-3 py-2 text-slate-500">
+                      {p.includedVans} {p.includedVans === 1 ? 'van' : 'vans'} included{p.trialMonths ? ` · ${p.trialMonths}-month trial` : ''}
+                    </td>
+                    <td className="px-3 py-2 text-slate-500">
+                      {(() => {
+                        const off = plans.features.filter(f => f.planKey === p.key && !f.enabled).map(f => f.feature).sort()
+                        return off.length ? off.map(f => <code key={f} className="block">{f}</code>) : <span className="text-slate-300">none — every feature on</span>
+                      })()}
+                    </td>
+                    {priceCountries.map(cc => {
+                      const pr = planPriceFor(plans, p.key, cc)
+                      return (
+                        <td key={cc} className="px-3 py-2 text-slate-600">
+                          {pr
+                            ? `${money(pr.monthlyMinor, cc)} · ${pr.includedOnlineMinor === null ? 'unlimited' : money(pr.includedOnlineMinor, cc)} · ${bpsLabel(pr.feeBps, cc)} · ${money(pr.extraVanMonthlyMinor, cc)}`
+                            : <span className="text-slate-300">—</span>}
+                        </td>
+                      )
+                    })}
                   </tr>
                 ))}
-                {/* Feature sections from FEATURE_SECTIONS */}
-                {FEATURE_SECTIONS.flatMap(section => [
-                  <tr key={`section-${section.title}`} className="bg-slate-50">
-                    <td colSpan={PLAN_ORDER.length + 1} className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wide border-t border-slate-100">
-                      {section.title}
-                    </td>
-                  </tr>,
-                  ...section.rows.map(row => (
-                    <tr key={`row-${row.name}`} className="border-t border-slate-100">
-                      <td className="px-4 py-2 text-slate-700">
-                        {row.name}
-                        {row.footnote && <sup className="text-slate-400 ml-0.5">{row.footnote}</sup>}
-                      </td>
-                      {PLAN_ORDER.map(p => {
-                        const isPayAtHatch = row.id === PAY_AT_HATCH_ROW
-                        const val = p === 'starter' ? row.starter
-                          : (p === 'trial' || p === 'tester') && isPayAtHatch ? true
-                          : p === 'pro' ? row.pro
-                          : row.max
-                        return (
-                          <td key={p} className="px-3 py-2 text-center">
-                            {val === true && <span className="text-green-500 font-black">✓</span>}
-                            {val === false && <span className="text-slate-200">—</span>}
-                            {val === 'coming_soon' && <span className="text-[10px] text-slate-400 italic">Coming soon</span>}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  )),
-                ])}
               </tbody>
             </table>
-            <div className="px-4 py-4 border-t border-slate-100 flex flex-col gap-1.5">
-              {matrixNotes.map(f => (
-                <p key={f.number} className="text-xs text-slate-500">
-                  <sup>{f.number}</sup> {f.text}
-                </p>
-              ))}
-            </div>
           </div>
           </>
         )}
@@ -1136,12 +1113,12 @@ export default function AdminPage() {
               />
               <select
                 value={planFilter}
-                onChange={e => setPlanFilter(e.target.value as Plan | 'discovery' | '')}
+                onChange={e => setPlanFilter(e.target.value as PlanKey | 'discovery' | '')}
                 className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
               >
                 <option value="">All plans</option>
-                {PLAN_ORDER.map(p => (
-                  <option key={p} value={p}>{PLAN_META[p].name}</option>
+                {activePlans(plans).map(p => (
+                  <option key={p.key} value={p.key}>{p.name}</option>
                 ))}
                 <option value="discovery">Discovery</option>
               </select>
@@ -1317,7 +1294,16 @@ export default function AdminPage() {
                         {/* Plan (Discovery derived for scraped rows) */}
                         <td className="px-3 py-2">
                           {isOp
-                            ? <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${PLAN_BADGE[r.op.plan]}`}>{PLAN_META[r.op.plan].name}</span>
+                            ? (() => {
+                                // 🔴 "ended → <fallback>" when the plan's end date (trial_expires_at) has passed (Stage A).
+                                const row = planByKey(plans, r.op.plan)
+                                const eff = plans.plans.length ? effectivePlan(r.op, plans) : null
+                                return (
+                                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${planBadgeClass(row)}`}>
+                                    {row?.name ?? r.op.plan}{eff?.ended ? ` ended → ${eff.plan.name}` : ''}
+                                  </span>
+                                )
+                              })()
                             : <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${DISCOVERY_BADGE}`}>Discovery</span>}
                         </td>
                         {/* VF · Map */}
@@ -1432,36 +1418,40 @@ export default function AdminPage() {
             <div>
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Plan</p>
               <div className="flex gap-1 flex-wrap">
-                {PLAN_ORDER.map(p => (
+                {/* 🔴 THE BUTTONS ARE THE TABLE'S ACTIVE PLANS, IN sort_order (Stage A) — no list in code. Choosing a plan
+                    that is not a trial clears the end date, as before. */}
+                {activePlans(plans).map(p => (
                   <button
-                    key={p}
+                    key={p.key}
                     onClick={() => setModalEdits(prev => ({
                       ...prev,
-                      plan: p,
-                      trial_expires_at: p !== 'trial' ? null : prev.trial_expires_at,
+                      plan: p.key,
+                      trial_expires_at: !p.isTrial ? null : prev.trial_expires_at,
                     }))}
                     className={`text-xs px-2.5 py-1 rounded-lg font-bold transition-colors ${
-                      currentModalPlan === p ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      currentModalPlan === p.key ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                     }`}
                   >
-                    {PLAN_META[p].name}
+                    {p.name}
                   </button>
                 ))}
               </div>
-              {currentModalPlan === 'trial' && (
+              {currentModalPlanRow?.isTrial && (
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  <button onClick={() => setModalTrial(1)}
-                    className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${
-                      isTrialPreset1 ? 'bg-slate-900 text-white' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
-                    }`}>
-                    1 month
-                  </button>
-                  <button onClick={() => setModalTrial(3)}
-                    className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${
-                      isTrialPreset3 ? 'bg-slate-900 text-white' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
-                    }`}>
-                    3 months
-                  </button>
+                  {trialStartEnd && currentModalPlanRow?.trialMonths && (
+                    <button onClick={() => setModalTrialStart(trialStartEnd)}
+                      className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${
+                        isTrialStartPreset ? 'bg-slate-900 text-white' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
+                      }`}>
+                      Start trial: {currentModalPlanRow.trialMonths} {currentModalPlanRow.trialMonths === 1 ? 'month' : 'months'}
+                    </button>
+                  )}
+                  {trialExtendedEnd && (
+                    <button onClick={() => setModalTrialStart(trialExtendedEnd)}
+                      className="text-xs font-bold px-2 py-1 rounded-lg transition-colors bg-teal-50 text-teal-700 hover:bg-teal-100">
+                      Extend trial by 1 month
+                    </button>
+                  )}
                   <input
                     type="date"
                     value={modalExpiryYMD ?? ''}
@@ -1472,7 +1462,7 @@ export default function AdminPage() {
                     <span className={`text-xs font-bold ${
                       modalTrialExpired ? 'text-red-500' : modalTrialDays <= 7 ? 'text-orange-500' : 'text-teal-600'
                     }`}>
-                      {modalTrialExpired ? 'Expired' : `${modalTrialDays}d remaining`}
+                      {modalTrialExpired ? `ended → ${fallbackPlanRow?.name ?? '?'}` : `${modalTrialDays}d remaining`}
                     </span>
                   )}
                 </div>
@@ -1539,7 +1529,62 @@ export default function AdminPage() {
                   />
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400">{editingSettings ? (planPricesDecided(editingSettings) ? platformFeeLabel(editingSettings) : MASKED_PRICE) : '…'} transaction fee still applies at standard rate</p>
+              <p className="text-[10px] text-slate-400">{(() => {
+                // The plan's own fee in the truck's country (Stage A: plan_prices.fee_bps), not a retired column.
+                const pr = currentModalPlan && editingTruck.country ? planPriceFor(plans, currentModalPlan, editingTruck.country) : null
+                return pr && editingSettings ? pctLabel(pr.feeBps / 100, moneyFormatOf(editingSettings)) : '—'
+              })()} transaction fee still applies at standard rate</p>
+            </div>
+
+            {/* ── 🔴 PROMOTIONAL MONTHLY PRICE (Stage A, 19 October 2026) ─────────────────────────────────────────
+                trucks.plan_price_override_minor / _until / _note: e.g. 49 a month on Unlimited for 12 months. It applies
+                while "until" is empty or not yet past (inclusive), then the standard price applies — at read time
+                (lib/plans.ts truckPlanPrice). Entered in the truck's currency, stored in minor units. */}
+            <div className="border border-slate-200 rounded-xl p-3 space-y-2">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Promotional monthly price</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs text-slate-500 mb-1 block">Price a month</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={(() => { const v = modalEdits.plan_price_override_minor !== undefined ? modalEdits.plan_price_override_minor : editingTruck.plan_price_override_minor; return v == null ? '' : (v / 100).toFixed(2) })()}
+                    onChange={e => setModalEdits(prev => ({
+                      ...prev,
+                      plan_price_override_minor: e.target.value === '' ? null : Math.round(parseFloat(e.target.value) * 100),
+                      ...(e.target.value === '' ? { plan_price_override_until: null } : {}),
+                    }))}
+                    placeholder="e.g. 49"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500 mb-1 block">Until (inclusive)</label>
+                  <input
+                    type="date"
+                    value={(modalEdits.plan_price_override_until !== undefined ? modalEdits.plan_price_override_until : editingTruck.plan_price_override_until) ?? ''}
+                    onChange={e => setModalEdits(prev => ({ ...prev, plan_price_override_until: e.target.value || null }))}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500 mb-1 block">Note</label>
+                  <input
+                    type="text"
+                    value={(modalEdits.plan_price_override_note !== undefined ? modalEdits.plan_price_override_note : editingTruck.plan_price_override_note) ?? ''}
+                    onChange={e => setModalEdits(prev => ({ ...prev, plan_price_override_note: e.target.value || null }))}
+                    placeholder="e.g. Launch offer"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-400">{(() => {
+                const pr = currentModalPlan && editingTruck.country ? planPriceFor(plans, currentModalPlan, editingTruck.country) : null
+                return pr && editingSettings
+                  ? `Standard price on ${currentModalPlanRow?.name ?? currentModalPlan}: ${formatAmount(pr.monthlyMinor, moneyFormatOf(editingSettings))} a month. Leave empty for the standard price.`
+                  : 'This plan has no price in this country, so a promotional price has nothing to replace.'
+              })()}</p>
             </div>
 
             {/* Feature overrides */}
@@ -2166,7 +2211,7 @@ export default function AdminPage() {
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1.5">
                     {newTruck.kind === 'operator'
-                      ? 'Readable id/slug derived from the name. Plan starts as demo (pre-trial setup mode) — the clock starts at go-live.'
+                      ? `Readable id/slug derived from the name. Plan starts as ${plans.plans.find(p => p.isSignupDefault)?.name ?? 'the signup-default plan'}, with no end date until one is set.`
                       : 'Random demo- prefixed id, slug and token (130-bit). Name is generated internally and never shown to the visitor.'}
                   </p>
                 </div>
@@ -2379,8 +2424,8 @@ export default function AdminPage() {
                   </div>
                   <div className="flex justify-between gap-3">
                     <span className="text-slate-500">plan</span>
-                    <span className={`px-1.5 rounded font-bold ${PLAN_BADGE[newTruckResult.truck.plan]}`}>
-                      {PLAN_META[newTruckResult.truck.plan].name}
+                    <span className={`px-1.5 rounded font-bold ${planBadgeClass(planByKey(plans, newTruckResult.truck.plan))}`}>
+                      {planByKey(plans, newTruckResult.truck.plan)?.name ?? newTruckResult.truck.plan}
                     </span>
                   </div>
                 </div>

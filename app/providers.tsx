@@ -126,6 +126,13 @@ if (typeof window !== 'undefined' && !IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY &&
     // ⚠️ It does not disable AUTOCAPTURE, which remains on (the library default) and is disclosed in
     // the privacy policy as clicks and pages viewed.
     disable_session_recording: true,
+    // 🔴 COOKIELESS (legal follow-ups, 19 October 2026; docs/legal-follow-ups-report.md). `memory` keeps PostHog's
+    // anonymous id and session in this page's memory only: NO cookie, NO localStorage. The privacy policy (section 5)
+    // says the analytics stores nothing in the browser — this line is what makes that true. What it changes: a visitor
+    // gets a new anonymous id on every full page load (a client-side navigation keeps it), so visitor and session
+    // counts read higher and a returning visitor is not recognised. The app reads no feature flags and calls no
+    // identify(), and session recording is off (above), so nothing else moves.
+    persistence: 'memory',
   })
 }
 

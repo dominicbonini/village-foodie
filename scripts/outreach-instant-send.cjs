@@ -69,17 +69,31 @@ function world() {
       prospect('p-linked', truck('linked', { hatchgrab_truck_id: 'hg-1' })),
       prospect('p-noaddr', truck('noaddr', { contact_email: null })),
       prospect('p-again', truck('again'), { stage: 'contacted' }),
+      // ⚠️ ADDED (Dominic's answers, 19 October 2026): a prospect who wrote back — the reply-exemption cases answer them.
+      prospect('p-talk', truck('talk'), { stage: 'contacted' }),
     ],
     discovery_trucks: [],
     outreach_contacts: [
       { id: 'c-1', prospect_id: 'p-again', contacted_at: YESTERDAY, created_at: YESTERDAY, direction: 'outbound', kind: '1_first_contact', channel: 'email', message: 'Hello again' },
+      // ⚠️ ADDED (Dominic's answers, 19 October 2026): p-talk was emailed, and wrote back.
+      { id: 'c-t1', prospect_id: 'p-talk', contacted_at: YESTERDAY, created_at: YESTERDAY, direction: 'outbound', kind: '1_first_contact', channel: 'email', message: 'Hello talk' },
+      { id: 'c-t2', prospect_id: 'p-talk', contacted_at: YESTERDAY, created_at: YESTERDAY, direction: 'inbound', kind: 'reply', channel: 'email', message: 'Yes please, tell me more' },
     ],
     outreach_messages: [
       { id: 'm-1', prospect_id: 'p-again', direction: 'outbound', status: 'sent', is_test: false, source: 'system', message_id: '<m1@fixture>', in_reply_to: null, references: null,
         subject: 'Hello', from_address: 'dominic@hatchgrab.com', to_address: 'owner@again.example', message_date: YESTERDAY, created_at: YESTERDAY,
         html_body: '<div>Hello again</div>', text_body: 'Hello again', contact_id: 'c-1', sent_copy: 'server_filed', attempts: 1, idempotency_key: 'k-old', handled_at: null },
+      { id: 'm-t1', prospect_id: 'p-talk', direction: 'outbound', status: 'sent', is_test: false, source: 'system', message_id: '<t1@fixture>', in_reply_to: null, references: null,
+        subject: 'Hello', from_address: 'dominic@hatchgrab.com', to_address: 'owner@talk.example', message_date: YESTERDAY, created_at: YESTERDAY,
+        html_body: '<div>Hello talk</div>', text_body: 'Hello talk', contact_id: 'c-t1', sent_copy: 'server_filed', attempts: 1, idempotency_key: 'k-t1', handled_at: null },
+      { id: 'm-in', prospect_id: 'p-talk', direction: 'inbound', status: 'received', is_test: false, source: 'system', message_id: '<in1@fixture>', in_reply_to: '<t1@fixture>', references: '<t1@fixture>',
+        subject: 'Re: Hello', from_address: 'owner@talk.example', to_address: 'dominic@hatchgrab.com', message_date: YESTERDAY, created_at: YESTERDAY,
+        html_body: '<div>Yes please, tell me more</div>', text_body: 'Yes please, tell me more', contact_id: 'c-t2', sent_copy: null, attempts: 0, idempotency_key: null, handled_at: null },
     ],
-    outreach_settings: [], outreach_events: [],
+    /* ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): the fixture now holds an `opt_out` settings row.
+     * The route REFUSES any email whose document lacks the stored opt-out sentence (`optOutBlock`), so a
+     * world with no row would refuse every send below for that reason instead of the one each case tests. */
+    outreach_settings: [{ key: 'opt_out', value: { text: OPT_OUT } }], outreach_events: [],
   }, { keys: { outreach_messages: [['idempotency_key'], ['message_id']] } })
   globalThis.__harnessDb = pg
   globalThis.__smtp = { sent: [], fail: null }
@@ -88,7 +102,15 @@ function world() {
   return pg
 }
 
-const DOC = text => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] })
+/* ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): every fixture document now ENDS with the opt-out line
+ * (10pt, as Insert opt-out places it). Before, `DOC(text)` was the text alone — which the route now refuses
+ * for want of the line. `BARE(text)` is the old shape, kept for the case that proves that refusal. */
+const OPT_OUT = 'If you would rather not hear from me again, reply with "no thanks" and I will not contact you.'
+const BARE = text => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] })
+const DOC = text => ({ type: 'doc', content: [
+  { type: 'paragraph', content: [{ type: 'text', text }] },
+  { type: 'paragraph', content: [{ type: 'text', text: OPT_OUT, marks: [{ type: 'small' }] }] },
+] })
 let keyN = 0
 const req = (prospectId, extra = {}) => ({
   action: 'send', prospect_id: prospectId, subject: 'Hello from the harness', kind: '1_first_contact',
@@ -114,6 +136,13 @@ const VARIANTS = {
   failureAsSent: [{ file: DELIVER_F, from: '    const outcome = classifySendFailure(err)', to: "    const outcome = 'sent' as const" }],
   // a missing Sent copy treated as a failed send — the email no longer counts as sent
   copyFailsTheSend: [{ file: DELIVER_F, from: "    sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,\n    // 🔴 A MISSING COPY NOW SAYS WHY.", to: "    ...(copy.sentCopy === 'absent' ? { status: 'failed' } : {}),\n    sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,\n    // 🔴 A MISSING COPY NOW SAYS WHY." }],
+  // the opt-out block skipped — an email with no opt-out line goes out (legal follow-ups, 19 October 2026)
+  // ⚠️ RE-POINTED (19 October 2026): the check now sits inside the exemption's `if`, two spaces deeper.
+  noOptOutBlock: [{ file: ROUTE_F, from: '    if (optOutStop) {\n      return await flagged(', to: '    if (false) {\n      return await flagged(' }],
+  // the exemptions dropped — a test and a reply to the prospect are refused again (Dominic's answers 1 and 2)
+  noExemption: [{ file: ROUTE_F, from: '  if (!optOutExempt({ isTest, parent: replyParent })) {', to: '  if (true) {' }],
+  // a retry that resends the stored bytes unchanged — no company line, no opt-out check (Dominic's answer 3)
+  noRetryRebuild: [{ file: ROUTE_F, from: '    const prep = await prepareRetry(supabase, row)\n    if (!prep.ok) return refuse(prep.refusal, { code: prep.code })', to: '    const prep = { ok: true as const, row }' }],
   // the Sent copy back on the critical path — the answer waits for IMAP again
   copyBeforeAnswer: [{ file: ROUTE_F, from: "  runAfter('Sent copy and contact log', async () => {", to: "  await (async (f) => f())(async () => {" }],
 }
@@ -301,6 +330,105 @@ const CASES = [
         await post(M, req('p-ok', { subject: 'Hi {{truck name}}' })),
       ]
       return { allRefused: cases.every(j => j.ok === false), nothingSent: globalThis.__smtp.sent.length === 0 }
+    },
+  },
+  {
+    // 🔴 LEGAL FOLLOW-UPS (19 October 2026, signed off by Dominic): the opt-out line is a BLOCK, and the company line
+    // ends every email that does go. ⚠️ RE-PINNED (Dominic's answer 2, 19 October 2026): a TEST without it now GOES —
+    // to his own address only — still ending with the company line.
+    name: 'an email with no opt-out line is refused (recorded, nothing sent) for a first contact; a TEST without it goes (with the company line); with the line it goes, ending with the company line',
+    broken: ['send', 'noOptOutBlock'],
+    async run(v) {
+      const M = await sendRoute(v); const pg = world()
+      const FOOTER = 'HatchGrab Ltd · Company no. 17381557 · Registered office: Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom'
+      const MISSING = JSON.parse(read('messages/en-GB.json')).outreach.optOut.missing
+      const a = await post(M, req('p-ok', { document: BARE('Hello there, this is a made-up email.') }))
+      const refusedRows = rows(pg, 'p-ok').filter(r => r.status === 'refused')
+      const nothingSent = globalThis.__smtp.sent.length === 0
+      const t = await post(M, req('p-ok', { document: BARE('A test with no opt-out line.'), is_test: true }))
+      const tRow = rows(pg, 'p-ok').find(r => r.is_test && r.status === 'sent') ?? {}
+      const testSent = t.ok === true && globalThis.__smtp.sent.length === 1 && tRow.to_address === 'me@hatchgrab.example'
+        && String(tRow.text_body ?? '').replace(/\n+$/, '').split('\n').pop() === FOOTER
+      const ok = await post(M, req('p-ok'))
+      // The row holds the built parts — exactly what `composeRaw` turns into the bytes handed to SMTP.
+      const m = rows(pg, 'p-ok').find(r => r.status === 'sent' && !r.is_test) ?? {}
+      return {
+        refused: a.ok === false && a.refusal === MISSING && a.code === 'no_opt_out_line',
+        testSent,
+        recorded: refusedRows.length === 1 && refusedRows.every(r => r.last_error === MISSING),
+        nothingSent,
+        withLineSent: ok.ok === true && ok.status === 'sent' && globalThis.__smtp.sent.length === 2,
+        footerLastInHtml: String(m.html_body ?? '').endsWith(`${FOOTER}</div>`),
+        footerLastInText: String(m.text_body ?? '').replace(/\n+$/, '').split('\n').pop() === FOOTER,
+      }
+    },
+  },
+  {
+    // ⚠️ ADDED (Dominic's answer 1, 19 October 2026): a reply to a message the PROSPECT sent needs no opt-out line —
+    // and still ends with the company line, above the quote; a follow-up on OUR OWN email does need it.
+    name: 'a REPLY to the prospect\'s message with no opt-out line goes (company line above the quote); a follow-up on our own email without it is refused',
+    broken: ['send', 'noExemption'],
+    async run(v) {
+      const M = await sendRoute(v); const pg = world()
+      const FOOTER = 'HatchGrab Ltd · Company no. 17381557 · Registered office: Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom'
+      const MISSING = JSON.parse(read('messages/en-GB.json')).outreach.optOut.missing
+      const own = await post(M, req('p-talk', { reply_to_message_id: 'm-t1', to: 'owner@talk.example', kind: 'reply', document: BARE('Following up on my email.') }))
+      const ownSent = globalThis.__smtp.sent.length
+      const r = await post(M, req('p-talk', { reply_to_message_id: 'm-in', to: 'owner@talk.example', kind: 'reply', document: BARE('Thanks — happy to explain.') }))
+      const row = rows(pg, 'p-talk').find(x => x.status === 'sent' && x.in_reply_to === '<in1@fixture>') ?? {}
+      const html = String(row.html_body ?? '')
+      return {
+        ownRefused: own.ok === false && own.refusal === MISSING && ownSent === 0,
+        replySent: r.ok === true && globalThis.__smtp.sent.length === 1,
+        footerAboveQuote: html.includes(FOOTER) && html.indexOf(FOOTER) < html.indexOf('mail-editor-reference-message-container'),
+      }
+    },
+  },
+  {
+    // ⚠️ ADDED (Dominic's answer 3, 19 October 2026): a manual RETRY rebuilds the stored message with today's company
+    // line and applies the same opt-out rule (with the reply and test exemptions) before resending; a refusal sends nothing.
+    name: 'Retry rebuilds with today\'s company line and applies the opt-out rule: an old row with the line goes (rebuilt); one without it is refused; a test and a reply to the prospect go',
+    broken: ['send', 'noRetryRebuild'],
+    async run(v) {
+      const M = await sendRoute(v); const pg = world()
+      const FOOTER = 'HatchGrab Ltd · Company no. 17381557 · Registered office: Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom'
+      const MISSING = JSON.parse(read('messages/en-GB.json')).outreach.optOut.missing
+      const P = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);'
+      // rows exactly as the builder made them BEFORE the company line: the document's parts, nothing appended
+      const failed = (id, text, extra = {}) => ({ id, prospect_id: 'p-ok', direction: 'outbound', status: 'failed', is_test: false, source: 'system', account: 'dominic',
+        message_id: `<${id}@fixture>`, in_reply_to: null, references: null, subject: 'Hello', from_address: 'dominic@hatchgrab.com', to_address: 'owner@ok.example',
+        message_date: YESTERDAY, created_at: YESTERDAY, html_body: `<div style="${P}">${text}</div>`, text_body: `${text}\n`, attempts: 1, attachments: [],
+        last_error: 'ETIMEDOUT: connection timed out', sent_copy: null, contact_id: null, idempotency_key: null, handled_at: null, ...extra })
+      pg.tables.outreach_messages.push(
+        failed('r-with', `Hello there. ${OPT_OUT}`),
+        failed('r-without', 'Hello there, no opt-out.'),
+        failed('r-test', 'A test, no opt-out.', { is_test: true, to_address: 'me@hatchgrab.example' }),
+        failed('r-reply', 'Thanks, no opt-out.', { prospect_id: 'p-talk', in_reply_to: '<in1@fixture>', references: '<t1@fixture> <in1@fixture>', to_address: 'owner@talk.example' }),
+      )
+      const retry = id => post(M, { action: 'retry', message_row_id: id })
+      const get = id => pg.tables.outreach_messages.find(x => x.id === id)
+      const w = await retry('r-with')
+      const afterWith = globalThis.__smtp.sent.length
+      const wo = await retry('r-without')
+      const afterWithout = globalThis.__smtp.sent.length
+      const te = await retry('r-test'), re = await retry('r-reply')
+      const endsWithFooter = id => String(get(id).text_body).replace(/\n+$/, '').split('\n').pop() === FOOTER && String(get(id).html_body).endsWith(`${FOOTER}</div>`)
+      return {
+        withRebuiltAndSent: w.ok === true && afterWith === 1 && endsWithFooter('r-with') && String(get('r-with').text_body).startsWith(`Hello there. ${OPT_OUT}\n\n`),
+        withoutRefused: wo.ok === false && wo.refusal === MISSING && afterWithout === 1 && get('r-without').status === 'failed' && !String(get('r-without').text_body).includes(FOOTER),
+        testSent: te.ok === true && endsWithFooter('r-test'),
+        replySent: re.ok === true && endsWithFooter('r-reply') && globalThis.__smtp.sent.length === 3,
+      }
+    },
+  },
+  {
+    name: 'no opt-out sentence set up at all: every send is refused with that reason',
+    broken: ['send', 'noOptOutBlock'],
+    async run(v) {
+      const M = await sendRoute(v); const pg = world()
+      pg.tables.outreach_settings.length = 0
+      const j = await post(M, req('p-ok'))
+      return { refused: j.ok === false && j.code === 'no_opt_out_set_up', nothingSent: globalThis.__smtp.sent.length === 0 }
     },
   },
 ]

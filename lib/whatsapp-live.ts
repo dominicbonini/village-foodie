@@ -39,3 +39,12 @@
  * can be switched back without also having to rebuild the per-truck preview route.
  */
 export const WHATSAPP_LIVE: boolean = true
+
+/**
+ * 🔴 MESSENGER & INSTAGRAM AUTO-REPLIES ARE NOT LIVE (plans-data-model Stage A, 19 October 2026). A product state, not a
+ * plan fact: it was read out of the old pricing matrix's 'coming_soon' cells (Manage's Settings card); that matrix is
+ * deleted (Stage B). One flag, read by BOTH: the Settings card, and the plan table's row and card bullet
+ * (lib/feature-table.ts), so they cannot disagree.
+ * ⚠️ TYPED `boolean`, NOT INFERRED AS `false`, so both branches stay type-checked.
+ */
+export const MESSENGER_INSTAGRAM_LIVE: boolean = false

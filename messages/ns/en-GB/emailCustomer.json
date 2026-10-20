@@ -99,7 +99,9 @@
     "hi": "Hi {withName, select, yes {{name}} other {there}},",
     "sorry": "We’re sorry for any inconvenience.",
     "poweredByDot": "Powered by HatchGrab · hatchgrab.com",
-    "poweredByText": "Powered by HatchGrab — hatchgrab.com"
+    "poweredByText": "Powered by HatchGrab — hatchgrab.com",
+    "privacyLink": "Privacy",
+    "privacyText": "Privacy: {url}"
   },
   "refund": {
     "subjectFull": "Your order #{id} has been refunded — {truck}",

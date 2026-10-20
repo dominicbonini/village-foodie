@@ -1,6 +1,6 @@
 {
   "footnote2Masked": "Online payments are powered by Stripe Connect. Platform and card processing fees are TBD and will be confirmed at launch.",
   "upgradeModal": {
-    "body": "We’re setting up automated billing. To upgrade now, send us a message and we’ll get you set up within 24 hours."
+    "body": "We’re setting up automated billing. To switch now, send us a message and we’ll get you set up within 24 hours."
   }
 }

@@ -16,6 +16,8 @@
   "total": "Total",
   "taxNotice": "Menu prices don’t include {tax}. It’s added below.",
   "noServiceFee": "No service fee.",
+  "serviceFeeNotice": "Online card orders include a service fee of {fee}.",
+  "privacyLink": "Privacy",
   "tipInPerson": "Tip the truck in person if you like.",
   "noTip": "No tip",
   "otherTip": "Other",

@@ -49,4 +49,23 @@ function utcOf(cc, ymd, hhmm) {
 const eventRow = (id, times, extra = {}) => ({ id, truck_id: 'test-truck', event_date: EVENT_DATE, ...times, venue_name: 'Market Square', town: 'Springfield',
   postcode: 'CB1 1AA', status: 'confirmed', auto_open: false, auto_close: false, collection_interval_mins: 15, van_id: null, notes: null, ...extra })
 
-module.exports = { EVENT_DATE, NEXT_DATE, NORMAL, MIDNIGHT, EXTENDED, COUNTRIES, time, MIDNIGHT_MOMENTS, NORMAL_MOMENTS, utcOf, eventRow }
+/** ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan catalogue's three tables — public.plans,
+ *  public.plan_prices, public.plan_features — AS THE MIGRATIONS SEED THEM (scripts/_plans-catalog-fixture.cjs), in their
+ *  own snake_case columns. Since Stage A2 /api/menu, /api/dashboard and the weekly-post route ask the catalogue whether the
+ *  truck's plan allows a feature (lib/plans-server.ts throws on an empty catalogue), so every fake database that reaches
+ *  them carries it. Fixture INPUT only — never part of a recorded view. Empty in a tree without the plans migration
+ *  (a BEFORE worktree: seedCatalog returns null there), so a recapture is unchanged. */
+function planTables(repo) {
+  const cat = require('./_plans-catalog-fixture.cjs').seedCatalog(repo)
+  if (!cat) return {}
+  return {
+    plans: cat.plans.map(p => ({ key: p.key, name: p.name, description: p.description, sort_order: p.sortOrder, is_public: p.isPublic, is_internal: p.isInternal,
+      is_trial: p.isTrial, is_signup_default: p.isSignupDefault, is_expiry_fallback: p.isExpiryFallback, is_demo: p.isDemo,
+      pay_at_hatch_allowed: p.payAtHatchAllowed, active: p.active, included_vans: p.includedVans, trial_months: p.trialMonths, is_highlighted: p.isHighlighted, subtitle: p.subtitle })),
+    plan_prices: cat.prices.map(r => ({ plan_key: r.planKey, country_code: r.countryCode, monthly_minor: r.monthlyMinor, included_online_minor: r.includedOnlineMinor,
+      fee_bps: r.feeBps, extra_van_monthly_minor: r.extraVanMonthlyMinor })),
+    plan_features: (cat.features || []).map(f => ({ plan_key: f.planKey, feature: f.feature, enabled: f.enabled })),
+  }
+}
+
+module.exports = { EVENT_DATE, NEXT_DATE, NORMAL, MIDNIGHT, EXTENDED, COUNTRIES, time, MIDNIGHT_MOMENTS, NORMAL_MOMENTS, utcOf, eventRow, planTables }

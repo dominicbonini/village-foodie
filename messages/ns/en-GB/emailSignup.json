@@ -16,6 +16,7 @@
   "welcome": {
     "subject": "{hasName, select, yes {Welcome to HatchGrab, {name}} other {Welcome to HatchGrab}}",
     "intro": "{hasTruck, select, yes {I’m really pleased to welcome {truck} to HatchGrab.} other {I’m really pleased to welcome your truck to HatchGrab.}}",
+    "trial": "{months, plural, one {Your one-month free trial has started — every feature unlocked.} other {Your #-month free trial has started — every feature unlocked.}}",
     "setup": "If you haven’t already, setting up is straightforward and takes about fifteen minutes.",
     "button": "Open your dashboard",
     "bookmark": "Worth bookmarking. It works on any device.",

@@ -12,7 +12,8 @@
 // operator's domain to buy. That closed a cycle with no error state (docs/qr-redirect-trace-report.md).
 // The decision now belongs to `/o/<slug>`, which only ever decides; the ordering page only ever serves.
 import { createClient } from '@supabase/supabase-js'
-import { canAccess } from '@/lib/features'
+import { truckCan } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { STOPPED_AFTER_MS } from '@/lib/custom-domain/cadence'
 
 const supabase = createClient(
@@ -52,7 +53,7 @@ export async function customDomainFor(slug: string): Promise<string | null> {
     if (!truck.custom_domain) return null
     if (!truck.custom_domain_verified_at) return null
     if (!truck.custom_domain_confirmed_at) return null
-    if (!canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at)) return null
+    if (!truckCan(truck, await getPlanCatalog(), 'embed_schedule')) return null   // override → effective plan → allowed (Stage A2)
 
     const lastOk = truck.custom_domain_last_ok_at ? new Date(truck.custom_domain_last_ok_at as string).getTime() : null
     if (!lastOk || Date.now() - lastOk > STOPPED_AFTER_MS) return null

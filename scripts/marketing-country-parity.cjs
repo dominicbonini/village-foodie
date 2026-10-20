@@ -53,7 +53,10 @@ async function pages(build = 'real') {
   const stubs = build === 'marked' ? MARKED : STUBS
   const mods = {}
   // The loader's 60s cache lives in each bundle; every visit clears it, so each fixture is read fresh.
-  for (const [k, f] of Object.entries(PAGES)) mods[k] = await kit.bundle(`page-${k}-${build}`, `export { default as Page } from '@/${f}'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'`, { stubs })
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): + the plan catalogue's cache clear (lib/plans-server.ts), so a
+  // visit with fixture plan_prices (`tables`) reads them, not the previous visit's cached catalogue.
+  const planClear = fs.existsSync(path.join(REPO, 'lib/plans-server.ts')) ? `\nexport { clearPlanCatalogCache } from '@/lib/plans-server'` : ''
+  for (const [k, f] of Object.entries(PAGES)) mods[k] = await kit.bundle(`page-${k}-${build}`, `export { default as Page } from '@/${f}'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'` + planClear, { stubs })
   mods.pdf = await kit.bundle('pdf', `export * as PDF from '@/lib/plans-pdf'`, { stubs: STUBS })
   mods.vc = await kit.bundle('visitor-country', `export * as VC from '@/lib/visitor-country'`, { stubs: STUBS })
   return (modsBy[build] = mods)
@@ -69,12 +72,17 @@ async function prerender(el) {
 }
 
 /** One visit: the country rows in the database, the request's host / ip-country / cookie, the page's query. */
-async function visit(page, { rows, ip = null, cookie = null, query = {}, build = 'real' }) {
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the landing's pricing section, /features, /compare and the plans
+// PDF read the plan catalogue now, so the fake database also holds public.plans / plan_prices / plan_features AS THE
+// MIGRATIONS SEED THEM (scripts/_lp1c-fixtures.cjs planTables) — overridable per visit through `tables`.
+const PLAN_ROWS = () => require('./_lp1c-fixtures.cjs').planTables()
+async function visit(page, { rows, ip = null, cookie = null, query = {}, build = 'real', tables = {} }) {
   const m = await pages(build)
   globalThis.__ccSeen = []
   kit.setNow('2026-10-09T14:20:00.000Z'); kit.setDeviceTz('Europe/London')
-  globalThis.__harnessDb = kit.fakeDb({ country_settings: rows.map(snake), trucks: [] })
+  globalThis.__harnessDb = kit.fakeDb({ country_settings: rows.map(snake), trucks: [], ...PLAN_ROWS(), ...tables })
   m[page].clearCountrySettingsCache()
+  if (m[page].clearPlanCatalogCache) m[page].clearPlanCatalogCache()
   globalThis.__mcReq = { headers: { host: 'www.hatchgrab.com', ...(ip ? { 'x-vercel-ip-country': ip } : {}) }, cookies: cookie ? { hg_country: cookie } : {} }
   try {
     const html = await prerender(h(m[page].Page, { searchParams: Promise.resolve(query), params: Promise.resolve({}) }))
@@ -85,9 +93,12 @@ async function visit(page, { rows, ip = null, cookie = null, query = {}, build =
   } finally { delete globalThis.__harnessDb; delete globalThis.__mcReq; delete globalThis.__ccSeen }
 }
 const genDate = text => text.replace(/Generated (?:[0-9]{1,2} [A-Za-z]+ [0-9]{4}|[0-9]{4}-[0-9]{2}-[0-9]{2})/g, 'Generated <date>')
-async function pdfText(row) {
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): buildPlansPdfHtml(settings, catalog) — the PDF reads the plan
+// catalogue (the SEEDED one unless a fixture catalogue is passed).
+const CATALOG = () => require('./_plans-catalog-fixture.cjs').seedCatalog(path.resolve(__dirname, '..'))
+async function pdfText(row, catalog = CATALOG()) {
   const m = await pages()
-  const html = m.pdf.PDF.buildPlansPdfHtml(row)
+  const html = m.pdf.PDF.buildPlansPdfHtml.length >= 2 ? m.pdf.PDF.buildPlansPdfHtml(row, catalog) : m.pdf.PDF.buildPlansPdfHtml(row)
   const t = kit.textOf(html); t.text = genDate(t.text)
   return t
 }
@@ -110,7 +121,97 @@ const firstDiff = (a, b) => { let i = 0; while (i < a.length && a[i] === b[i]) i
 // A US row switched on, with fixture prices (the seed leaves US prices undecided — null — on purpose).
 const usOn = () => ({ ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 3900, proMonthlyMinor: 5900, maxMonthlyMinor: 9900,
   proAllowanceMinor: 30000, maxAllowanceMinor: 100000, platformFeePct: 1.5 })
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): prices are plan_prices rows now — the row's old price fields above
+// are no longer read. The US fixture prices go where the pages read them: the US plan_prices rows, Pro $39 and Unlimited
+// $59 (fixture input; the seed's US rows equal GB's numbers, which would not show WHICH row a page read).
+const US_FIXTURE_MONTHLY = { pro: 3900, unlimited: 5900 }
+const usCatalog = () => { const c = CATALOG(); for (const r of c.prices) if (r.countryCode === 'US' && r.planKey in US_FIXTURE_MONTHLY) r.monthlyMinor = US_FIXTURE_MONTHLY[r.planKey]; return c }
+const usTables = () => { const t = PLAN_ROWS(); t.plan_prices = t.plan_prices.map(r => r.country_code === 'US' && r.plan_key in US_FIXTURE_MONTHLY ? { ...r, monthly_minor: US_FIXTURE_MONTHLY[r.plan_key] } : r); return t }
+
+// ══ ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026) — THE STAGE B NAMED DIFFERENCES (docs/pricing-pages-report.md)
+// Stage B rebuilt the pricing views from the plan catalogue. Exactly these regions are named — cut out of BOTH sides with
+// fixed boundary sentences (a boundary that is missing fails, never passes on a no-op) and asserted on their own below;
+// every other byte of each page is still compared with BEFORE:
+//   B-landing   the landing's #pricing body, from after its heading ("Pricing Start free. Upgrade when you need to.") to the
+//               next section ("Want to see how easy setup is?"): banner → cards → cheapest bar → footnote (+ the kept
+//               "Switching from another platform?" block);
+//   B-features  /features' main, between the header and the footer: h1 / lede / callout / PlanTable / footnote; its only
+//               new attributes are PlanTable's cell labels (aria-label=Included / Not included);
+//   B-compare   /compare's "Months free" default is the trial's months (value=1 → value=3); the text is unchanged;
+//   B-pdf       the plans PDF is rewritten: banner, cards, cheapest bar, the plan table, footnote.
+const STAGE_B = fs.existsSync(path.join(REPO, 'lib/plan-offer.ts')) && fs.existsSync(path.join(REPO, 'components/pricing/PlanTable.tsx'))
+const B_REGIONS = {
+  landing: ['Pricing Start free. Upgrade when you need to. ', ' Want to see how easy setup is?'],
+  features: [' Upload menu ', ' Less time booking. More time cooking.'],
+}
+const B_TABLE_ATTRS = /^aria-label=(Included|Not included)$/
+const trialMonthsB = () => (CATALOG().plans.find(p => p.isSignupDefault && p.isTrial) || {}).trialMonths
+/** Cuts the named region (B_REGIONS) out of a text; null when a boundary is missing. */
+function cutB(page, text) {
+  const r = B_REGIONS[page]; if (!r) return text
+  const i = text.indexOf(r[0]); const j = i < 0 ? -1 : text.indexOf(r[1], i + r[0].length)
+  return i < 0 || j < 0 ? null : text.slice(0, i + r[0].length) + '<named: B-' + page + '>' + text.slice(j)
+}
+const regionB = (page, text) => { const r = B_REGIONS[page]; const i = text.indexOf(r[0]); return text.slice(i + r[0].length, text.indexOf(r[1], i + r[0].length)) }
+/** BEFORE and AFTER of one page, with Stage B's named parts taken out. */
+function stageBSides(page, before, after) {
+  if (!STAGE_B) return [before, after]
+  const bt = cutB(page, before.text), at = cutB(page, after.text)
+  let ba = before.attrs, aa = after.attrs
+  if (page === 'features') aa = aa.filter(x => !B_TABLE_ATTRS.test(x))
+  if (page === 'compare') ba = ba.map((x, i) => ba[i - 1] === 'aria-label=Months free' && x === 'value=1' ? `value=${trialMonthsB()}` : x)
+  return [{ text: bt === null ? '(B boundary missing) ' + before.text : bt, attrs: ba }, { text: at === null ? '(B boundary missing) ' + after.text : at, attrs: aa }]
+}
+const poundsB = minor => '£' + (minor / 100).toLocaleString('en-GB', { maximumFractionDigits: 2 })
+const offerB = (cc = 'GB', cat = CATALOG()) => cat.plans.filter(p => p.isPublic && p.active).sort((x, y) => x.sortOrder - y.sortOrder)
+  .map(p => ({ p, r: cat.prices.find(r => r.planKey === p.key && r.countryCode === cc) })).filter(x => x.r)
+const FOOTNOTE_GB_B = /\* Plus \w+’s card processing on online card orders \(currently 1\.5% \+ 20p in the UK\), paid to \w+, not HatchGrab\. Walk-up orders use your own card reader — HatchGrab charges 0%\./
+const tableHeadB = () => offerB().map(({ p, r }) => `${p.name} ${poundsB(r.monthlyMinor)} / month`).join(' ') + ' What you pay '
+/** The named regions' new content, asserted (UK, GB prices from the seed). */
+function stageBChecks(views, pdf) {
+  const n = trialMonthsB()
+  const L = regionB('landing', views.landing.text), F = regionB('features', views.features.text)
+  ok(L.startsWith(`Your first ${n} months are completely free — every feature unlocked.`), 'B-landing · the banner leads with the trial months', L.slice(0, 120))
+  ok(offerB().every(({ p, r }) => L.includes(`${p.name} ${p.subtitle ? p.subtitle + ' ' : ''}${poundsB(r.monthlyMinor)} per truck / month`)), 'B-landing · a card per public plan, in order, with its GB price (from the seed)')
+  { let i = 0; ok(offerB().every(({ p }) => { const j = L.indexOf(` ${p.name} `, i); if (j < 0) return false; i = j; return true }), 'B-landing · the cards in sort order') }
+  ok(L.includes('Which plan is cheapest for me?') && L.indexOf('Which plan is cheapest for me?') < L.indexOf('* Plus '), 'B-landing · the cheapest bar, then the footnote')
+  ok(FOOTNOTE_GB_B.test(L), 'B-landing · the pricing footnote (GB card processing)')
+  ok(L.includes('Switching from another platform? See what you’d be paying on HatchGrab for the same orders. Takes about a minute. Compare what you’re paying'), 'B-landing · the /compare block is kept, word for word')
+  ok(!/Compare all features|Pro is £29 a month with|Starter/.test(L), 'B-landing · the old lede, "Compare all features" and Starter are gone')
+  ok(F.startsWith('Everything to run your service, on every plan.'), 'B-features · the new h1', F.slice(0, 80))
+  ok(F.includes(`${n} months free with every feature unlocked.`), 'B-features · the callout names the trial months')
+  ok(F.includes(tableHeadB()), 'B-features · THE plan table, its header from the catalogue', tableHeadB())
+  ok(FOOTNOTE_GB_B.test(F), 'B-features · the pricing footnote')
+  ok(views.features.attrs.filter(x => B_TABLE_ATTRS.test(x)).length > 0, 'B-features · the table cells are labelled (the excused attrs are present)')
+  const cmp = views.compare.attrs, k = cmp.indexOf('aria-label=Months free')
+  ok(k >= 0 && cmp[k + 1] === `value=${n}`, `B-compare · "Months free" defaults to the trial's ${n}`)
+  ok(pdf.text.includes(`Your first ${n} months are completely free`) && pdf.text.includes(tableHeadB()) && FOOTNOTE_GB_B.test(pdf.text) && pdf.text.includes('Generated <date>'),
+    'B-pdf · banner, the plan table, the footnote and the date stamp')
+  ok(offerB().every(({ p, r }) => pdf.text.includes(`${p.name} ${p.subtitle ? p.subtitle + ' ' : ''}${poundsB(r.monthlyMinor)} per truck / month`)), 'B-pdf · a card per public plan with its GB price')
+}
 const MENU_RE = /<div class="cc cc-(head|foot)">[\s\S]*?<\/div>/g
+// ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the store badges (components/StoreBadges.tsx) gained loading="lazy", so React
+// no longer emits the two <link rel="preload" as="image" href="/badges/…"> hints at the top of each page — the only
+// `href=/badges/…` attributes BEFORE held (the badge <img>s carry `src`). Named: dropped from BEFORE's attributes ONLY when
+// AFTER's own markup proves the change (both badge imgs lazy, no preload hint); otherwise BEFORE is left as it was and the
+// comparison fails. Nothing else in the attributes moves.
+const BADGE_HREF = /^href=\/badges\//
+// ⚠️ RE-PINNED (copy, Dominic, 20 October 2026): the landing trust line ("First month 100% free, everything unlocked") names
+// the trial length now — "First 3 months completely free, everything unlocked" (the seed's trial_months; scripts/_lp-seo-fixes.cjs
+// copy-trust-line). Applied to BEFORE's stored text only where AFTER carries the new line.
+function seoSides([B0, A], v) {
+  const trust = require('./_lp-seo-fixes.cjs').trustLine
+  const B = typeof B0.text === 'string' && B0.text.includes('First month 100% free, everything unlocked') && typeof A.text === 'string' && /First \d+ months completely free, everything unlocked/.test(A.text)
+    ? { ...B0, text: trust(B0.text) } : B0
+  const lazy = (v.html.match(/<img src="\/badges\/[^"]+" alt="[^"]+" width="\d+" height="40" loading="lazy"/g) || []).length === 2
+  const noPreload = !/<link rel="preload" as="image" href="\/badges\//.test(v.html)
+  if (!lazy || !noPreload || B.attrs.filter(x => BADGE_HREF.test(x)).length !== 2) return [B, A]
+  return [{ ...B, attrs: B.attrs.filter(x => !BADGE_HREF.test(x)) }, A]
+}
+// ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the country menu's list is ALWAYS rendered now (closed: class
+// "cc-menu cc-menu-closed", hidden by CSS), its options real links — <a href role="menuitemradio" aria-checked class="cc-item">.
+// The kit's pathname is '/', a page with no country address, so each option links to that country's landing.
+const MENU_UL_RE = /<ul id="(_R_[0-9a-z]+_)" role="menu" aria-label="Country" class="cc-menu cc-menu-closed">(.*?)<\/ul>/
 
 async function compare() {
   const BEFORE = JSON.parse(read(BEFORE_FILE))
@@ -125,12 +226,16 @@ async function compare() {
   }
   const GB = SEEDS.gbFromSeed(), US_OFF = SEEDS.usFromSeed()
 
+  const viewsB = {}
   console.log('1. UK — every page identical to BEFORE apart from the country buttons (marked build)')
   for (const p of Object.keys(PAGES)) {
     for (const [label, req] of [['no country header', {}], ['GB visitor', { ip: 'GB' }], ['US visitor, US switched off', { ip: 'US', cookie: 'US', query: { country: 'US' } }], ['a country with no row', { ip: 'FR' }]]) {
       const v = await visit(p, { rows: [GB, US_OFF], build: 'marked', ...req })
-      ok(v.text === BEFORE[p].text, `${p} · ${label} · text identical`, firstDiff(v.text, BEFORE[p].text))
-      ok(JSON.stringify(v.attrs) === JSON.stringify(BEFORE[p].attrs), `${p} · ${label} · attributes identical`)
+      // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): compared with Stage B's named regions cut out of both sides.
+      const [B, A] = seoSides(stageBSides(p, BEFORE[p], v), v)   // ⚠️ RE-PINNED (seo-fixes): the badge preload hints named
+      if (label === 'GB visitor') viewsB[p] = v
+      ok(A.text === B.text, `${p} · ${label} · text identical`, firstDiff(A.text, B.text))
+      ok(JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · ${label} · attributes identical`)
       ok(v.menus.length === 2 && v.menus.map(m => m.variant).join() === 'header,footer', `${p} · ${label} · one header and one footer button`, JSON.stringify(v.menus.map(m => m.variant)))
       const menu = v.menus[0]?.menu
       ok(menu?.current.code === 'GB' && menu.options.map(o => o.code).join() === 'GB', `${p} · ${label} · UK current, only the UK in the menu`, JSON.stringify(menu && { cur: menu.current.code, opts: menu.options.map(o => o.code) }))
@@ -139,7 +244,11 @@ async function compare() {
     }
   }
   const pdfGB = await pdfText(GB)
-  ok(pdfGB.text === BEFORE.pdf.text && JSON.stringify(pdfGB.attrs) === JSON.stringify(BEFORE.pdf.attrs), 'plans PDF (GB) identical', firstDiff(pdfGB.text, BEFORE.pdf.text))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the PDF is rewritten (B-pdf) — asserted by name, not compared.
+  if (STAGE_B) {
+    console.log('1b. Stage B — the named regions, asserted (landing #pricing, /features main, /compare months-free, the PDF)')
+    stageBChecks(viewsB, pdfGB)
+  } else ok(pdfGB.text === BEFORE.pdf.text && JSON.stringify(pdfGB.attrs) === JSON.stringify(BEFORE.pdf.attrs), 'plans PDF (GB) identical', firstDiff(pdfGB.text, BEFORE.pdf.text))
   const route = read('app/landing/features-pdf/route.ts')
   ok(/resolveVisitorCountry\(req\.nextUrl\.searchParams\.get\('country'\)\)/.test(route) && /generatePlansPdf\(visitor\.settings\.countryCode\)/.test(route), 'the PDF route prints the resolved country')
   ok(/verifyAdmin\(\)/.test(route) && /'Cache-Control': 'no-store, max-age=0'/.test(route), 'the PDF route keeps its admin gate and no-store')
@@ -159,31 +268,42 @@ async function compare() {
     ok(/<img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/>/.test(head || ''), `${p} · the flag is a small SVG image, not text`)
     ok(!/[\u{1F1E6}-\u{1F1FF}]/u.test(real.html), `${p} · no flag emoji anywhere`)
     ok(/aria-haspopup="menu"/.test(head || '') && /aria-expanded="false"/.test(head || ''), `${p} · a closed menu button`)
+    // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): each button is followed by its always-rendered, closed list — the UK only
+    // (US switched off), a real link to /uk, checked, with the tick; the list's id is the button's aria-controls.
+    for (const [w, html] of [['header', head], ['footer', foot]]) {
+      const ul = (html || '').match(MENU_UL_RE)
+      const ctl = ((html || '').match(/aria-controls="([^"]+)"/) || [])[1]
+      ok(!!ul && ul[1] === ctl && /^<li role="none"><a href="\/uk" role="menuitemradio" aria-checked="true" class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/><span class="cc-item-name">United Kingdom<\/span><svg class="cc-tick"[^>]*>.*?<\/svg><\/a><\/li>$/.test(ul[2]) && !/<button[^>]*cc-item/.test(html),
+        `${p} · ${w} · the closed menu list is rendered: one <a href="/uk" role="menuitemradio" aria-checked="true">, no option buttons`, ul ? ul[0].replace(/data:image[^"]*/g, 'DATA').slice(0, 400) : 'no <ul class="cc-menu cc-menu-closed">')
+    }
   }
 
   console.log('3. US switched on — US prices in the server render (first paint), and the choice sticks')
   const rows = [GB, usOn()]
-  const us = await visit('landing', { rows, ip: 'US' })
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): every section-3 visit carries the US fixture prices in plan_prices.
+  const tables = STAGE_B ? usTables() : {}
+  const us = await visit('landing', { rows, ip: 'US', tables })
   ok(us.text.includes('$39') && us.text.includes('$59') && !us.text.includes('£29'), 'landing · US visitor · $ prices, no £', us.text.match(/[£$][0-9]+/g)?.slice(0, 6).join(' '))
   ok(us.menus.length === 0 && /<span class="cc-name">US<\/span>/.test(us.html) && /Country: United States\. Change country/.test(us.html), 'landing · the header button says US')
-  const usMarked = await visit('landing', { rows, ip: 'US', build: 'marked' })
+  const usMarked = await visit('landing', { rows, ip: 'US', build: 'marked', tables })
   ok(usMarked.menus[0].menu.options.map(o => o.code).join() === 'GB,US' && usMarked.menus[0].menu.remember === null, 'landing · both switched-on countries in the menu; nothing to write (no ?country)')
   for (const p of ['features', 'compare']) {
-    const v = await visit(p, { rows, ip: 'US', build: 'marked' })
+    const v = await visit(p, { rows, ip: 'US', build: 'marked', tables })
     ok(v.menus[0].menu.current.code === 'US' && !v.text.includes('£29'), `${p} · US visitor · priced in US`, v.text.match(/[£$][0-9]+/g)?.slice(0, 6).join(' '))
   }
   for (const p of Object.keys(PAGES)) {
-    const ukWithUsOn = await visit(p, { rows, ip: 'GB', build: 'marked' })
-    ok(ukWithUsOn.text === BEFORE[p].text && JSON.stringify(ukWithUsOn.attrs) === JSON.stringify(BEFORE[p].attrs), `${p} · a UK visitor with US switched on · still identical to BEFORE`, firstDiff(ukWithUsOn.text, BEFORE[p].text))
+    const ukWithUsOn = await visit(p, { rows, ip: 'GB', build: 'marked', tables })
+    const [B, A] = seoSides(stageBSides(p, BEFORE[p], ukWithUsOn), ukWithUsOn)   // ⚠️ RE-PINNED (pricing-pages, Stage B): the named regions cut out; (seo-fixes): the badge preload hints named
+    ok(A.text === B.text && JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · a UK visitor with US switched on · still identical to BEFORE`, firstDiff(A.text, B.text))
   }
-  const toGB = await visit('landing', { rows, ip: 'US', query: { country: 'gb' }, build: 'marked' })
+  const toGB = await visit('landing', { rows, ip: 'US', query: { country: 'gb' }, build: 'marked', tables })
   ok(toGB.text.includes('£29') && !toGB.text.includes('$39') && toGB.menus[0].menu.current.code === 'GB', '?country=GB beats the US location')
   ok(toGB.menus.every(m => m.menu.remember === 'GB'), '?country=GB tells the menu to keep GB in the cookie')
-  const stuck = await visit('landing', { rows, ip: 'US', cookie: 'GB', build: 'marked' })
+  const stuck = await visit('landing', { rows, ip: 'US', cookie: 'GB', build: 'marked', tables })
   ok(stuck.text.includes('£29') && stuck.menus[0].menu.current.code === 'GB' && stuck.menus[0].menu.remember === null, 'the next visit, with the hg_country=GB cookie and no ?country, stays UK')
-  const cookieUS = await visit('landing', { rows, ip: 'GB', cookie: 'US', build: 'marked' })
+  const cookieUS = await visit('landing', { rows, ip: 'GB', cookie: 'US', build: 'marked', tables })
   ok(cookieUS.text.includes('$39') && cookieUS.menus[0].menu.current.code === 'US', 'the cookie beats the location (GB visitor who chose US sees $)')
-  const pdfUS = await pdfText(usOn())
+  const pdfUS = await pdfText(usOn(), STAGE_B ? usCatalog() : undefined)
   ok(pdfUS.text.includes('$39') && !pdfUS.text.includes('£29'), 'plans PDF · US row · $ prices')
 
   console.log('4. The precedence rule on its own (lib/visitor-country.ts pickVisitorCountry)')

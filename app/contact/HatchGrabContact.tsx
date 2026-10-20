@@ -33,7 +33,8 @@ import '../landing/landing.css'
 // The same three faces the landing page loads, mapped to the same CSS vars the stylesheet expects.
 const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap' })
+// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
+const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
 
 // The support mailbox. An address, not a word: the same in every language, so it is not in messages.
 const SUPPORT_EMAIL = 'hello@hatchgrab.com'

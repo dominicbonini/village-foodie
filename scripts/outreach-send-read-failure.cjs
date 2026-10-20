@@ -297,8 +297,19 @@ function runRouteSuite() {
         && writes.some(h => h.startsWith('app/api/admin/outreach/route.ts'))
     })())
   t('🔴 NOTHING WRITES `outreach_templates`', !/from\('outreach_templates'\)\s*\.(insert|update|upsert|delete)/.test(read(SEND)))
+  // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md): lib/outreach-mail-message.ts now
+  // changes on purpose (the company footer on every outreach email), so "that file has no diff" no longer stands in for
+  // the sandbox. The check reads the sandbox itself: the constant's own line in lib/outreach-workspace.ts is HEAD's, and
+  // no changed line of lib/outreach-mail-message.ts mentions a sandbox or a frame.
   t('🔴 EMAIL_FRAME_SANDBOX IS UNTOUCHED BY THIS BUILD',
-    (() => { try { return require('child_process').execFileSync('git', ['diff', 'HEAD', '--', 'lib/outreach-mail-message.ts'], { cwd: REPO, encoding: 'utf8' }).trim() === '' } catch { return true } })())
+    (() => {
+      const git = args => { try { return require('child_process').execFileSync('git', args, { cwd: REPO, encoding: 'utf8' }) } catch { return null } }
+      const LINE = "export const EMAIL_FRAME_SANDBOX = 'allow-same-origin'"
+      const head = git(['show', 'HEAD:lib/outreach-workspace.ts'])
+      if (head !== null && (!head.includes(LINE) || !read('lib/outreach-workspace.ts').includes(LINE))) return false
+      const diff = git(['diff', 'HEAD', '--', 'lib/outreach-mail-message.ts'])
+      return diff === null || !diff.split('\n').some(l => /^[+-](?![+-])/.test(l) && /sandbox|iframe|FRAME/i.test(l))
+    })())
 
   return { ok, bad }
 }

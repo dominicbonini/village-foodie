@@ -1,6 +1,7 @@
-# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 529 changed). Written by scripts/language-phase-1d2.cjs.
+# Language Phase 1d Part 2 — every in-scope US view that differs from BEFORE (826471a) (846 US views; 542 changed). Written by scripts/language-phase-1d2.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 shell/US|shell|loading	words
+shell/US|shell|invalidToken	code: pricing-b-first-load-line
 shell/US|shell|noCountrySettings	words
 shell/US|shell|tab|menu	words
 shell/US|shell|tab|schedule	words
@@ -8,15 +9,15 @@ shell/US|shell|tab|social	words
 shell/US|shell|tab|reports	words
 shell/US|shell|tab|team	words
 shell/US|shell|tab|settings	words
-shell/US|shell|tab|payments	words
+shell/US|shell|tab|payments	code: plans-payments-on-trial-prop+plans-a2-payments-features-prop + words
 shell/US|shell|tab|billing	words
 shell/US|shell|tab|menu|extras	words
 shell/US|shell|tab|menu|deals	words
 shell/US|shell|tab|social|locations	words
 shell/US|shell|tab|social|wide	words
 shell/US|shell|tab|schedule|eventTypes	words
-shell/US|shell|plan|starter	words
-shell/US|shell|plan|tester	words
+shell/US|shell|plan|starter	code: plans-every-plan-every-feature-2 + words
+shell/US|shell|plan|tester	code: plans-every-plan-every-feature-2 + words
 shell/US|shell|plan|trial	words
 shell/US|shell|plan|socialOverride	words
 shell/US|shell|admin|header	words
@@ -41,7 +42,7 @@ shell/US|shell|notices|all|schedule	code: us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|social	code: us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|reports	code: us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|settings	code: us-layout-fix-1-nbsp + words
-shell/US|shell|notices|all|payments	code: us-layout-fix-1-nbsp + words
+shell/US|shell|notices|all|payments	code: plans-payments-on-trial-prop+plans-a2-payments-features-prop+us-layout-fix-1-nbsp + words
 shell/US|shell|notices|all|billing	code: us-layout-fix-1-nbsp + words
 shell/US|shell|trialPopup|dated	words
 shell/US|shell|trialPopup|undated	words
@@ -50,26 +51,27 @@ shell/US|shell|profileModal	words
 shell/US|shell|profileModal|saving	words
 shell/US|shell|walkthrough	words
 shell/US|shell|toasts	words
-shell/US|billing|trial	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|notStarted	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|expired	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|notStarted|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|upgradeMax	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|upgradePro	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|trial|upgradeMax|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|starter	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
-shell/US|billing|starter|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
-shell/US|billing|starter|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|starter|upgradePro	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|starter|withTrialDate	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
-shell/US|billing|pro	code: 1e-us-billing-footnote-dates
-shell/US|billing|pro|matrix	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
-shell/US|billing|pro|matrix|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates + words
-shell/US|billing|max	code: 1e-us-billing-footnote-dates
-shell/US|billing|max|matrix	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates
-shell/US|billing|max|upgradeMax	code: 1e-us-billing-footnote-dates + words
+shell/US|billing|trial	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card + words
+shell/US|billing|trial|notStarted	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|trial|expired	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|trial|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|trial|notStarted|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|trial|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card + words
+shell/US|billing|trial|upgradeMax	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card + words
+shell/US|billing|trial|upgradePro	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card + words
+shell/US|billing|trial|upgradeMax|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|starter	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|starter|ios	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|starter|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|starter|upgradePro	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card + words
+shell/US|billing|starter|withTrialDate	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|pro	code: 1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|pro|matrix	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|pro|matrix|hidePricing	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|max	code: 1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|max|matrix	code: 1d2-billing-plan-header+1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|max|upgradeMax	code: 1e-us-billing-footnote-dates+plans-billing-plan-card
+shell/US|billing|tester	code: plans-billing-plan-card
 shell/US|team|owner|empty	words
 shell/US|team|owner|members	words
 shell/US|team|owner|noName	words
@@ -96,10 +98,11 @@ shell/US|team|pending	words
 shell/US|team|pending|resending	words
 shell/US|team|pending|cancelling	words
 shell/US|team|handler|cancelChange|ok	words
+reports/US|tab|initialStarter	code: plans-every-plan-every-feature-2
 reports/US|tab|range|orders	code: us-layout-fix-1-nbsp + words
 reports/US|tab|range|items	code: us-layout-fix-1-nbsp + words
 reports/US|tab|range|expanded	code: us-layout-fix-1-nbsp + words
-reports/US|tab|range|starter	code: us-layout-fix-1-nbsp
+reports/US|tab|range|starter	code: us-layout-fix-1-nbsp+plans-starter-twin + words
 reports/US|tab|event|orders	code: us-layout-fix-1-nbsp + words
 reports/US|tab|event|items	code: us-layout-fix-1-nbsp + words
 reports/US|tab|event|noVenue	code: us-layout-fix-1-nbsp + words
@@ -162,10 +165,13 @@ social/US|posts|create|noEvents	words
 social/US|posts|create|onlyPrivate	words
 social/US|posts|create|chosenPoster	words
 social/US|posts|create|chosenStandard	words
+social/US|posts|create|starter	code: plans-every-plan-every-feature-2+plans-a2-payg-social-prompt
 social/US|posts|create|posting	words
 social/US|posts|create|leave	words
+social/US|posts|designs|starter	code: plans-every-plan-every-feature-2+plans-a2-payg-social-prompt
 social/US|posts|locations|selected	words
 social/US|posts|locations|selectedEmpty	words
+social/US|posts|locations|starter	code: plans-a2-payg-social-prompt
 social/US|event|setup|first	words
 social/US|event|setup|standard	words
 social/US|event|setup|standardOnly	words
@@ -250,6 +256,7 @@ poster/US|copy|socialPosts|L	words
 poster/US|copy|socialPosts|N	words
 poster/US|copy|socialPosts|P	words
 poster/US|copy|socialPosts|S	words
+poster/US|copy|weeklyPost|W	code: plans-weekly-post-copy-gone
 wada/US|settings|notConnected|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|connected|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|connectedNoFacts|auto-replies	code: 1d2-us-whatsapp-dates + words
@@ -272,7 +279,7 @@ wada/US|settings|notice|closed|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|notice|metaError|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|notice|setupFailed|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|notice|serverMessage|auto-replies	code: 1d2-us-whatsapp-dates + words
-wada/US|settings|starter|auto-replies	words
+wada/US|settings|starter|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|pro|auto-replies	code: 1d2-us-whatsapp-dates + words
 wada/US|settings|deletionDialog|account-deletion	words
 wada/US|preview|empty	words
@@ -289,6 +296,7 @@ wada/US|delete|open|oneOrder	words
 wada/US|delete|open|partial	words
 wada/US|delete|open|exact	words
 wada/US|delete|open|severalTrucks	words
+wada/US|domain|starter	code: plans-every-plan-every-feature-2
 wada/US|domain|card|justWentLive	words
 wada/US|domain|record|wix	words
 wada/US|domain|record|godaddy	words
@@ -335,6 +343,7 @@ api/US|manage|staff.domain_send_instructions	code: named difference 1 (insuffici
 api/US|manage|demo.domain_preflight	code: named difference 1 (demo_not_available)
 api/US|manage|demo.domain_turn_off	code: named difference 1 (demo_not_available)
 api/US|manage|charges.manager	code: named difference 1 (charges_owner_only)
+api/US|manage|charges.admin	code: plans-a2-fixture-plan-unlimited
 api/US|manage|charges.rateNotHere	code: named difference 1 (charges_rate_not_here)
 api/US|manage|charges.rateDecimals	code: named difference 1 (charges_rate_decimals)
 api/US|manage|charges.rateRange	code: named difference 1 (charges_rate_range)
@@ -349,7 +358,9 @@ api/US|manage|charges.feeFixed	code: named difference 1 (charges_fee_fixed)
 api/US|manage|charges.feeFixedPartNotAllowed	code: named difference 1 (charges_fee_part_not_allowed)
 api/US|manage|charges.feeOverFixed	code: named difference 1 (charges_fee_over_fixed)
 api/US|manage|charges.nothingToSave	code: named difference 1 (charges_nothing_to_save)
-api/US|manage|embed.notOnPlan	code: named difference 1 (embed_not_on_plan)
+api/US|manage|charges.ok.tips	code: plans-a2-fixture-plan-unlimited
+api/US|manage|charges.ok.rateAndFee	code: plans-a2-fixture-plan-unlimited
+api/US|manage|embed.notOnPlan	code: named difference 1 (feature_switched_off)
 api/US|manage|embed.badWebsite	code: named difference 1 (embed_website_invalid)
 api/US|manage|embed.dbFail	code: named difference 1 (domain_save_failed)
 api/US|manage|preflight.rateLimited	code: named difference 1 (domain_too_many_checks)
@@ -359,7 +370,7 @@ api/US|manage|preflight.empty	code: named difference 1 (empty)
 api/US|manage|preflight.notAddress	code: named difference 1 (not_a_domain)
 api/US|manage|preflight.ok	code: 1d2-domain-preflight-step-keys
 api/US|manage|domainCheck.goesLive	words
-api/US|manage|provision.notOnPlan	code: named difference 1 (embed_not_on_plan)
+api/US|manage|provision.notOnPlan	code: named difference 1 (feature_switched_off)
 api/US|manage|provision.apex	code: named difference 1 (apex)
 api/US|manage|provision.wwwInner	code: named difference 1 (domain_www_inner)
 api/US|manage|provision.www	code: named difference 1 (domain_www)
@@ -397,7 +408,7 @@ api/US|manage|invite.ok.managerByOwner	words
 api/US|manage|invite.ok.existingAccount	words
 api/US|manage|invite.ok.mailRefused	words
 api/US|manage|removeTeam.managerOnManager	code: named difference 1 (managers_remove_staff_only)
-api/US|manage|usualType.notOnPlan	code: named difference 1 (social_media_plan)
+api/US|manage|usualType.notOnPlan	code: named difference 1 (feature_switched_off)
 api/US|manage|usualType.noPlace	code: named difference 1 (sg_place_id_required)
 api/US|manage|usualType.migration	code: named difference 1 (sg_usual_type_migration)
 api/US|manage|merge.readFails	code: named difference 1 (sg_merge_read_failed) + words
@@ -411,11 +422,13 @@ api/US|manageGET|noToken	code: named difference 1 (token_required)
 api/US|manageGET|badToken	code: named difference 1 (invalid_token)
 api/US|manageGET|noUser	code: named difference 1 (sign_in_required)
 api/US|manageGET|notThisTruck	code: named difference 1 (no_truck_access)
+api/US|manageGET|ok	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+pricing-b-country-settings-fields-2+pricing-b-catalogue-ignored-features-2
+api/US|manageGET|ok.staff	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+pricing-b-country-settings-fields-2+pricing-b-catalogue-ignored-features-2
 api/US|weeklyPost|badJson	code: named difference 1 (bad_request)
 api/US|weeklyPost|noToken	code: named difference 1 (token_required)
 api/US|weeklyPost|badToken	code: named difference 1 (invalid_token)
-api/US|weeklyPost|plan.load	code: named difference 1 (social_media_plan)
-api/US|weeklyPost|plan.font_confirm	code: named difference 1 (social_media_plan)
+api/US|weeklyPost|plan.load	code: named difference 1 (feature_switched_off)
+api/US|weeklyPost|plan.font_confirm	code: named difference 1 (feature_switched_off)
 api/US|weeklyPost|unknownAction	code: named difference 1 (unknown_action)
 api/US|weeklyPost|overview.migration	code: named difference 1 (wp_migration_three_pictures)
 api/US|weeklyPost|confirm.unknownFile	code: named difference 1 (wp_unknown_file)
@@ -506,7 +519,7 @@ api/US|weeklyPost|captionSave.noDesign	code: named difference 1 (wp_caption_need
 api/US|weeklyPost|captionSave.migration	code: named difference 1 (wp_migration_three_pictures)
 api/US|weeklyPostGET|noToken	code: named difference 1 (token_required)
 api/US|weeklyPostGET|badToken	code: named difference 1 (invalid_token)
-api/US|weeklyPostGET|plan	code: named difference 1 (social_media_plan)
+api/US|weeklyPostGET|plan	code: named difference 1 (feature_switched_off)
 api/US|weeklyPostGET|noFont	code: named difference 1 (wp_font_required)
 api/US|weeklyPostGET|unknownFont	code: named difference 1 (wp_unknown_font)
 api/US|weeklyPostGET|uploadedFont	code: named difference 1 (wp_font_not_served)

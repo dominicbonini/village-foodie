@@ -40,7 +40,9 @@ const US_CHANGED_FILE = path.join(REPO, 'scripts/fixtures/language-phase-2-us-ch
 const RUNS = path.join(REPO, 'node_modules/.cache/lp2-runs')
 const SECTIONS = (arg('only') || 'gb,us,words,tickets,keys').split(',')
 /** The scripts a capture needs, copied into the BEFORE worktree. Scripts only — never product code. */
-const CAPTURE_SCRIPTS = f => /^(language-phase-1[abc]\.cjs|language-phase-2\.cjs|_lp1[bc]-.*\.cjs|_lp2-.*\.cjs|_render-kit\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs|_language-phase-1a-after\.cjs)$/.test(f)
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): + scripts/_lp-stage-b.cjs (Stage B's named changes) and the plan
+// catalogue fixture it reads — both inert on a tree without the plan migrations.
+const CAPTURE_SCRIPTS = f => /^(language-phase-1[abc]\.cjs|language-phase-2\.cjs|_lp1[bc]-.*\.cjs|_lp2-.*\.cjs|_render-kit\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs|_lp-stage-b\.cjs|_plans-catalog-fixture\.cjs|_language-phase-1a-after\.cjs)$/.test(f)
 
 // ══ internal: --capture-extra=<dir> — Phase 2's own views, on whatever code this file sits in ══════════════════
 if (arg('capture-extra')) {

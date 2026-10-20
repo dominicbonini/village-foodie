@@ -58,20 +58,14 @@ export interface CountrySettings {
   /** The most a truck may set when the truck keeps it. NULL = that part is not allowed. */
   serviceFeeTruckMaxBps: number | null
   serviceFeeTruckMaxFixedMinor: number | null
-  /** The platform fee (platformFeePct of food) switched on. Default OFF; nothing sends it this phase. */
+  /** The platform fee switched on (the rate is the truck's plan's plan_prices.fee_bps). Default OFF; nothing sends it this phase. */
   platformFeeEnabled: boolean
   /** Whether the service fee and card surcharge are taxed (D8). Default false. */
   feesTaxed: boolean
   allergenSet: 'uk14' | 'us9'
 
-  // 🔴 NULL = NOT DECIDED (the US row today). Read through requirePlanPrice(), never directly: a NULL
-  // on a row being used for prices is a LOUD failure, never a fallback to another country's figure.
-  starterMonthlyMinor: number | null
-  proMonthlyMinor: number | null
-  maxMonthlyMinor: number | null
-  proAllowanceMinor: number | null
-  maxAllowanceMinor: number | null
-  platformFeePct: number | null
+  // ⛔ THE SIX OLD PLAN PRICE COLUMNS ARE NOT ON THIS TYPE (pricing-pages, Stage B): retired by plans-data-model Stage A
+  // and no longer read anywhere. Plans and their prices are public.plans / public.plan_prices, read through lib/plans.ts.
 
   // Stripe's card fees as we quote them. Percent as written (1.5 = 1.5%); fixed parts in minor units of
   // `currency`. THEIRS, not ours — every rendered string carries a "currently" hedge.
@@ -86,52 +80,6 @@ export interface CountrySettings {
   supportHours: string | null
   updatedAt: string
   updatedBy: string | null
-}
-
-/** The six plan price columns. The enabled-needs-prices CHECK names exactly these. */
-export type PlanPriceField =
-  | 'starterMonthlyMinor' | 'proMonthlyMinor' | 'maxMonthlyMinor'
-  | 'proAllowanceMinor' | 'maxAllowanceMinor' | 'platformFeePct'
-
-/**
- * 🔴 THE ONLY WAY A PLAN PRICE IS READ. Throws on NULL rather than returning a number to render — an
- * undecided price must stop the surface, not quietly borrow GB's (manual, "Currency and country": an
- * unknown (country, plan) is a loud failure, never a silent fallback to the UK number).
- */
-export function requirePlanPrice(s: CountrySettings, field: PlanPriceField): number {
-  const v = s[field]
-  if (v === null || v === undefined || !Number.isFinite(v)) {
-    throw new Error(`[country-settings] ${s.countryCode}.${field} is not set — plan prices for ${s.name} have not been decided. Refusing to show or charge a price.`)
-  }
-  return v
-}
-
-/** The six plan price fields, as a list (the enabled-needs-prices CHECK's columns). */
-const PLAN_PRICE_FIELDS: readonly PlanPriceField[] = [
-  'starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct',
-]
-
-/**
- * True when every plan price is decided. The CHECK guarantees it for a switched-ON country; a switched-OFF
- * country's truck (the US before its prices exist — e.g. a hidden US test truck) reaches Manage with them NULL,
- * and its price surfaces must then MASK every amount ("TBC" / US "TBD") instead of calling requirePlanPrice and
- * throwing — a thrown render takes the whole Manage page down (US dress rehearsal, 18 October 2026).
- */
-export function planPricesDecided(s: CountrySettings): boolean {
-  return PLAN_PRICE_FIELDS.every(f => { const v = s[f]; return v !== null && v !== undefined && Number.isFinite(v) })
-}
-
-/**
- * ⛔ DISPLAY ONLY, AND ONLY BEHIND A MASK THAT HIDES EVERY AMOUNT (maskPriceFor(v, true)). The same row with each
- * undecided plan price set to a placeholder of 1, so the price helpers can build their strings — every one of which
- * the caller then masks. Never pass the result to anything that charges, stores or quotes a price unmasked.
- * A decided row is returned as it is (the same object), so a country with prices is untouched.
- */
-export function withPlaceholderPlanPrices(s: CountrySettings): CountrySettings {
-  if (planPricesDecided(s)) return s
-  const out = { ...s }
-  for (const f of PLAN_PRICE_FIELDS) { const v = out[f]; if (v === null || v === undefined || !Number.isFinite(v)) out[f] = 1 }
-  return out
 }
 
 /** The two things a money formatter needs, taken from a settings row. */

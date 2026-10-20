@@ -77,12 +77,33 @@ export const PRIVACY_PATH = '/privacy'
 /** Canonical route for the terms. */
 export const TERMS_PATH = '/terms'
 
+/** Canonical route for the Country-specific terms — the one page of each country's extra rules, which forms part of the
+ *  terms and the privacy policy (19 October 2026). Linked from both documents and the legal footer. */
+export const COUNTRY_TERMS_PATH = '/country-terms'
+
 /** Human-readable last-updated dates.
  *  🔴 THESE MIRROR THE `**Last updated:**` LINE INSIDE content/legal/*.md, WHICH IS THE SOURCE OF TRUTH.
  *  The pages render the document's own line; these exist for anywhere else that needs the date without
  *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */
-export const PRIVACY_UPDATED = '6 August 2026'
-export const TERMS_UPDATED = '6 August 2026'
+export const PRIVACY_UPDATED = '19 October 2026'
+export const TERMS_UPDATED = '20 October 2026'
+export const COUNTRY_TERMS_UPDATED = '19 October 2026'
+
+/** One of the dates above ("19 October 2026") as a Date (UTC midnight), for the sitemap's lastmod (seo-fixes S5). */
+export function legalUpdatedDate(written: string): Date {
+  const m = /^(\d{1,2}) (January|February|March|April|May|June|July|August|September|October|November|December) (\d{4})$/.exec(written.trim())
+  if (!m) throw new Error(`[legal] not a "D Month YYYY" date: ${written}`)
+  const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(m[2])
+  return new Date(Date.UTC(Number(m[3]), month, Number(m[1])))
+}
+
+/** The version of the terms a signup accepts, recorded as `operators.terms_version` beside `terms_accepted_at`
+ *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific
+ *  terms dated above — the latest of them; 20 October 2026 since the Terms' §4 rewrite (pricing-tidy). It was
+ *  'holding-2026-07-23', typed in the route, and stayed there while the documents moved twice (legal follow-ups,
+ *  19 October 2026). ⚠️ It is only WRITTEN, at signup: nothing reads or compares it, so moving it asks no existing truck
+ *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */
+export const TERMS_VERSION = '2026-10-20'
 
 /** Both documents, for anywhere that renders the pair (footers, consent lines). */
 export const LEGAL_LINKS = [

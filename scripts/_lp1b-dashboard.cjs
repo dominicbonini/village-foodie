@@ -420,4 +420,7 @@ async function views(ctx) {
   return out
 }
 
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the dashboard hands <PrintingSettings> `features` in
+// place of `featureOverrides` — named in Phase 2's shared entry plans-printing-settings-props (scripts/_lp2-named.cjs),
+// which language-phase-1b applies to BEFORE before comparing; no area-specific compare is needed.
 module.exports = { views }

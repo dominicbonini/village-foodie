@@ -8,8 +8,9 @@
 //
 // ── 🔴 SETTINGS, NOT BILLING ────────────────────────────────────────────────────────────────────────
 // Billing is already owner-only, which would have made the role gate structural rather than a condition
-// — but the Billing TAB IS HIDDEN when `truck.plan === 'tester'`, so those owners would have had no
-// in-app deletion path at all. 5.1.1(v) has no plan exemption. Settings is visible to every owner.
+// — but the Billing TAB WAS HIDDEN from the 'tester' plan (until plans-data-model, Stage A, showed it to every
+// plan), so those owners would have had no in-app deletion path at all. 5.1.1(v) has no plan exemption, and
+// Settings is visible to every owner whatever any tab rule becomes.
 //
 // ── 🔴 NOTHING HERE CAN BE REACHED BY ACCIDENT ──────────────────────────────────────────────────────
 // This sits on a page an operator uses daily, so the safety properties are load-bearing, not decorative:

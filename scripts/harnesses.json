@@ -44,6 +44,11 @@
     "design-fonts.cjs",
     "place-pictures.cjs",
     "plan-feature-order.cjs",
+    "legacy-pricing-imports.cjs",
+    "plans-data-model.cjs",
+    "plan-features-config.cjs",
+    "pricing-pages.cjs",
+    "seo-fixes.cjs",
     "private-events.cjs",
     "event-types-render.cjs",
     "event-types.cjs",
@@ -127,6 +132,9 @@
     "us-rehearsal-fixes.cjs",
     "us-polish-batch.cjs",
     "migration-function-grants.cjs",
+    "us-legal-draft.cjs",
+    "legal-follow-ups.cjs",
+    "outreach-legal-footer.cjs",
     "language-phase-0.cjs",
     "messages-parity.cjs",
     "ui-literals.cjs",
@@ -142,6 +150,7 @@
     "language-phase-1e.cjs",
     "language-phase-1e-tidy.cjs",
     "pending-card-render.cjs",
+    "pending-card-buttons.cjs",
     "generic-venue-guess.cjs",
     "private-discovery-rows.cjs",
     "midnight-events.cjs"
@@ -174,6 +183,9 @@
         "_batch-rolling-snapshot.cjs",
         "_mini-dom.cjs",
         "_country-settings-gb.cjs",
+        "_plans-catalog-fixture.cjs",
+        "_lp-seo-fixes.cjs",
+        "_lp-pricing-tidy.cjs",
         "_outreach-schema-census.cjs",
         "_png-decode.cjs",
         "_render-kit.cjs",
@@ -207,6 +219,7 @@
         "_lp2-text.cjs",
         "_lp2-named.cjs",
         "_us-polish-grouping.cjs",
+        "_legal-followups-named.cjs",
         "_lp2-checks.cjs",
         "_messages-parity-2.cjs",
         "_lp1d-fixtures.cjs",
@@ -241,7 +254,8 @@
    "_lp1e-named.cjs",
    "_lp1e-words.cjs",
    "_lp1e-checks.cjs",
-   "_messages-parity-1e.cjs"
+   "_messages-parity-1e.cjs",
+   "_lp-stage-b.cjs"
       ]
     },
     "fixture_generators": {

@@ -1838,10 +1838,17 @@ head('9c · THE WIRING')
    * posting to the route, and the button needs no gate of its own. */
   // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated` now takes the truck's locale (its refusal is worded in the
   // truck's language), so the call reads `gated(truck, locale)`. Same claim: the gate runs before the event actions.
-  t('🔴 the route gates every action, including the event ones',
-    /const blocked = gated\(truck, locale\)/.test(route)
-    && route.indexOf('const blocked = gated(truck, locale)') > 0
-    && route.indexOf('const blocked = gated(truck, locale)') < route.indexOf("action === 'event_load'"))
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `gated` is async now (it reads the plan catalogue —
+  // override → the truck's EFFECTIVE plan's switch, through lib/plan-refusal.ts), so the call is
+  // `await gated(truck, locale)`. Same claim, asserted on the POST handler's own call: before the event actions.
+  t('🔴 the route gates every action, including the event ones', (() => {
+    const postAt = route.indexOf('export async function POST(')
+    const gateAt = route.indexOf('const blocked = await gated(truck, locale)', postAt)
+    return postAt > 0 && gateAt > postAt
+      && /async function gated\(truck: TruckRow, locale: string\): Promise<NextResponse \| null>/.test(route)
+      && !/const blocked = gated\(/.test(route)
+      && gateAt < route.indexOf("action === 'event_load'")
+  })())
 
   /* 🔴 REUSE, NOT A FORK. The event screens import the weekly post's editor pieces rather than copying
    * them, and the event renderer calls the same box machinery. */

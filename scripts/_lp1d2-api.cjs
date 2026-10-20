@@ -295,7 +295,10 @@ export const setWaLive = (v: boolean) => (WL as any).__harnessSetWaLive?.(v)`, {
       return {
         country_settings: [snake(SEEDS.gbFromSeed()), snake(ctx.US.settings)].map(csRow),
         trucks: [{ id: over.truckId || 'test-truck', name: 'Pizza Kitchen', slug: 'test-kitchen', dashboard_token: 'tok', operator_id: 'op-1', country: cc, timezone: zone,
-          plan: 'max', feature_overrides: {}, trial_expires_at: null, setup_step: null, takes_cash: true, currency: US ? 'USD' : 'GBP', active: true,
+          // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): "max" is no plan since Stage A and would resolve to
+          // payg WITH payg's switches (schedule_graphics / whatsapp_replies off → every weekly-post call refused); the truck is
+          // on `unlimited`, the plan Stage A mapped max to (scripts/_lp1d-fixtures.cjs FIXTURE_PLAN; "max" on a BEFORE tree).
+          plan: require('./_lp1d-fixtures.cjs').FIXTURE_PLAN, feature_overrides: {}, trial_expires_at: null, setup_step: null, takes_cash: true, currency: US ? 'USD' : 'GBP', active: true,
           contact_email: 'kitchen@example.test', website: 'https://pizzakitchen.example', logo_storage_path: null, embed_enabled: false, truck_emoji: '🍕',
           custom_domain: null, custom_domain_setup_state: null, custom_domain_setup_started_at: null, custom_domain_verified_at: null,
           custom_domain_last_checked_at: null, custom_domain_last_ok_at: null, custom_domain_last_seen_value: null, custom_domain_confirmed_at: null,
@@ -315,6 +318,8 @@ export const setWaLive = (v: boolean) => (WL as any).__harnessSetWaLive?.(v)`, {
         menu_items_db: [{ id: 'i1', truck_id: 'test-truck', name: 'Margherita', price: 9.5, category_id: 'c1', is_active: true, is_available: true, stock_count: null, allergens: [], dietary_info: [], sort_order: 1 }],
         menu_subcategories: [], modifier_groups: [], modifier_options: [], item_modifier_groups: [], category_modifier_groups: [], bundles_db: [], discount_codes_db: [], upsell_rules: [],
         operator_email_changes: [], event_deals: [],
+        // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the GET loads the plan catalogue — the migration's seed rows, fixture input.
+        ...require('./_lp1c-fixtures.cjs').planTables(),
         truck_events: over.events || [
           ev('ev-past', '2026-09-30', 'The Crown', 'p1'),
           ev('ev-past2', '2026-10-02', 'Market Square', 'p2', { status: 'closed' }),
@@ -399,12 +404,14 @@ export const setWaLive = (v: boolean) => (WL as any).__harnessSetWaLive?.(v)`, {
     await ch('ok.rateAndFee', { taxRate: '8.875', serviceFeeEnabled: true, serviceFeePct: '3', serviceFeeFixed: '0.50' }, { cs: { ...FEE, prices_include_tax: false } })
 
     // ── the embed (kept with no UI)
-    await mg('embed.notOnPlan', tok({ action: 'save_embed_setup', enabled: true }), { truck: { plan: 'starter' } })
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): no plan gates a feature; each '…notOnPlan' / 'starter' premise is now a
+    // per-truck override switching the feature off (named plans-refusal-switched-off-1d2).
+    await mg('embed.notOnPlan', tok({ action: 'save_embed_setup', enabled: true }), { truck: { feature_overrides: { embed_schedule: false } } })
     await mg('embed.badWebsite', tok({ action: 'save_embed_setup', enabled: true, website: 'not a web address' }))
     await mg('embed.dbFail', tok({ action: 'save_embed_setup', enabled: true }), { fail: { trucks: ['update'] } })
     await mg('embed.ok', tok({ action: 'save_embed_setup', enabled: true, website: 'pizzakitchen.example/menu' }))
     await mg('embedStatus.ok', tok({ action: 'get_embed_status' }), { truck: { embed_enabled: true } })
-    await mg('embedStatus.starter', tok({ action: 'get_embed_status' }), { truck: { plan: 'starter' } })
+    await mg('embedStatus.starter', tok({ action: 'get_embed_status' }), { truck: { feature_overrides: { embed_schedule: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
 
     // ── the custom domain
     const HOST = `events.${DOM}`
@@ -421,7 +428,7 @@ export const setWaLive = (v: boolean) => (WL as any).__harnessSetWaLive?.(v)`, {
     await mg('domainCheck.noDomain', tok({ action: 'domain_check' }))
     await mg('domainCheck.goesLive', tok({ action: 'domain_check' }), { truck: LIVE, dns: { CNAME: [{ name: HOST, type: 5, TTL: 300, data: 'cname.vercel-dns-harness.com.' }] } })
     await mg('domainCheck.notYet', tok({ action: 'domain_check' }), { truck: { ...LIVE, custom_domain_setup_started_at: '2026-09-01T09:00:00Z' } })
-    await mg('provision.notOnPlan', tok({ action: 'domain_provision', address: HOST }), { truck: { plan: 'starter' } })
+    await mg('provision.notOnPlan', tok({ action: 'domain_provision', address: HOST }), { truck: { feature_overrides: { embed_schedule: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await mg('provision.apex', tok({ action: 'domain_provision', address: DOM }))
     await mg('provision.wwwInner', tok({ action: 'domain_provision', address: `events.www.${DOM}` }))
     await mg('provision.www', tok({ action: 'domain_provision', address: `www.${DOM}` }))
@@ -497,7 +504,7 @@ export const setWaLive = (v: boolean) => (WL as any).__harnessSetWaLive?.(v)`, {
     await mg('recentEvents.ok', tok({ action: 'get_recent_events' }))
 
     // ── Places (Social media's usual type, and the merge)
-    await mg('usualType.notOnPlan', tok({ action: 'sg_place_usual_type', placeId: 'p1', typeId: 'standard' }), { truck: { plan: 'starter' } })
+    await mg('usualType.notOnPlan', tok({ action: 'sg_place_usual_type', placeId: 'p1', typeId: 'standard' }), { truck: { feature_overrides: { schedule_graphics: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await mg('usualType.noPlace', tok({ action: 'sg_place_usual_type', typeId: 'standard' }))
     await mg('usualType.migration', tok({ action: 'sg_place_usual_type', placeId: 'p1', typeId: 'standard' }), { fail: { truck_places: ['update'] }, failCode: '42703' })
     await mg('usualType.dbFail', tok({ action: 'sg_place_usual_type', placeId: 'p1', typeId: 'standard' }), { fail: { truck_places: ['update'] } })
@@ -527,7 +534,7 @@ export const setWaLive = (v: boolean) => (WL as any).__harnessSetWaLive?.(v)`, {
     await wp('badJson', '{nope')
     await wp('noToken', { action: 'load' })
     await wp('badToken', { token: 'nope', action: 'load' })
-    for (const a of ['load', 'font_confirm']) await wp(`plan.${a}`, tok({ action: a }), { truck: { plan: 'starter' } })
+    for (const a of ['load', 'font_confirm']) await wp(`plan.${a}`, tok({ action: a }), { truck: { feature_overrides: { schedule_graphics: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await wp('unknownAction', tok({ action: 'explode' }))
     // load / social_overview
     await wp('load.this', tok({ action: 'load', week: 'this' }))
@@ -683,7 +690,7 @@ export const setWaLive = (v: boolean) => (WL as any).__harnessSetWaLive?.(v)`, {
     const wg = (k, q, o = {}) => call(`${cc}|weeklyPostGET|${k}`, { tables: T(o), cc, ...o }, () => M.wpGET(req(`/api/weekly-post${q}`)))
     await wg('noToken', '?font=oswald')
     await wg('badToken', '?token=nope&font=oswald')
-    await wg('plan', '?token=tok&font=oswald', { truck: { plan: 'starter' } })
+    await wg('plan', '?token=tok&font=oswald', { truck: { feature_overrides: { schedule_graphics: false } } })   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override, not plan
     await wg('noFont', '?token=tok')
     await wg('unknownFont', '?token=tok&font=Bad!Font')
     await wg('uploadedFont', '?token=tok&font=u:bitter')

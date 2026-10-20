@@ -55,6 +55,14 @@ const ADAPT = {
   'settingsCopy.CONNECTING_STRIPE_NOT_A_COMMITMENT': (M, x) => x.tr('managePayments')('trialNote'),
   // lib/private-events/copy.ts → the `privateEvents` namespace (SCHED-B)
   ...Object.fromEntries(Object.entries(PE).map(([e, k]) => [`privateEvents.${e}`, (M, x) => x.tr('privateEvents')(k)])),
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the Max badge is gone with the tiers, and its key
+  // `privateEvents.grid.maxOnly` with it (scripts/fixtures/plans-stage-a-messages.json `removed`). The view now records
+  // that the key is ABSENT from both message files (named plans-max-badge-gone); a key still present renders as before.
+  'privateEvents.MAX_ONLY_TITLE': (M, x) => {
+    const removed = require('./_lp2-frozen.cjs').stageA()['en-GB'].removed
+    const has = l => { const m = JSON.parse(require('fs').readFileSync(require('path').join(x.REPO, `messages/${l}.json`), 'utf8')); return !!(m.privateEvents && m.privateEvents.grid && 'maxOnly' in m.privateEvents.grid) }
+    return 'privateEvents.grid.maxOnly' in removed && !has('en-GB') && !has('en-US') ? '[removed in Stage A: privateEvents.grid.maxOnly]' : x.tr('privateEvents')('grid.maxOnly')
+  },
   // lib/copy/scheduleVerify.ts → `manageScheduleVerify`, one key per code (SCHED-A)
   'scheduleVerify.URL_MALFORMED_MSG': (M, x) => x.tr('manageScheduleVerify')('malformed'),
   'scheduleVerify.BLOCKED_DOMAIN_MSG': (M, x) => x.tr('manageScheduleVerify')('blockedDomain'),
@@ -102,7 +110,7 @@ async function views(ctx) {
     + "\nexport { translatorFor } from '@/lib/i18n/translator'" + catalogs.map(ns => `\nimport '@/lib/i18n/catalog/${ns}'`).join(''))
   for (const C of [GB, US]) {
     const cc = C.cc
-    const x = { locale: C.locale, cc, ts: C.time, B, tr: ns => B.translatorFor(C.locale, ns) }
+    const x = { locale: C.locale, cc, ts: C.time, B, tr: ns => B.translatorFor(C.locale, ns), REPO: ctx.REPO }
     for (const name of Object.keys(MODULES)) {
       const M = B[name] || {}
       const exp = Object.keys(M).sort()

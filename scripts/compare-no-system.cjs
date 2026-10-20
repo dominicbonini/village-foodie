@@ -22,6 +22,7 @@
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const GB = require('./_country-settings-gb.cjs').gbFromSeed()
+const CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog()
 
 let fails = 0
 const ok = [], bad = []
@@ -68,7 +69,9 @@ function renderWith(patches, tag, opts = {}) {
   const { renderToStaticMarkup } = require(path.join(REPO, 'node_modules/react-dom/server'))
   // 🔴 THE GB SETTINGS, AS THE SERVER PAGE PASSES THEM (10 October 2026 — the plan, card and overage
   // figures and the competitor prefill come from country_settings now). Parsed from the seed that was run.
-  const html = renderToStaticMarkup(React.createElement(c.req('app/compare/CostComparison.js').default, { settings: opts.settings ?? GB }))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): CostComparison takes the plan catalogue (`catalog`) — the
+  // SEEDED one (scripts/_plans-catalog-fixture.cjs: 20261024 + 20261025 + 20261026), as the server page reads it.
+  const html = renderToStaticMarkup(React.createElement(c.req('app/compare/CostComparison.js').default, { settings: opts.settings ?? GB, catalog: opts.catalog ?? CATALOG }))
   if (opts.raw) return html
   return html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')
     .replace(/&pound;/g, '£').replace(/&amp;/g, '&').replace(/&apos;|&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ')
@@ -84,16 +87,37 @@ const GMV = n => ['useState(2500)', `useState(${n})`]
 const PCT_ANCHOR = "const [feePctRaw, setFeePctRaw] = useState('')"
 const PENCE_ANCHOR = "const [feePenceRaw, setFeePenceRaw] = useState('')"
 const PCT = v => [PCT_ANCHOR, `const [feePctRaw, setFeePctRaw] = useState('${v}')`]
-const FREE = v => ["useState('1')", `useState('${v}')`]
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the free-months box defaults to the catalogue's trial months
+// (offerTrialMonths) — was the literal '1'. Same mutation: the operator types the months.
+const FREE_ANCHOR = 'useState(() => String(offerTrialMonths(catalog) ?? 0))'
+const FREE = v => [FREE_ANCHOR, `useState('${v}')`]
 const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it costs ↓)/, '$1')
+
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): THE PLAN IS THE CHEAPEST AT THE VOLUME NOW, FROM DATA. The
+// calculator used to price everything as Pro (£29 + 0.99% above £1,500); Stage B suggests the public plan that costs least
+// at the operator's monthly online sales (lib/plan-offer cheapestAt) on the seeded catalogue (payg £0 + 0.99%, Pro £29 +
+// 0.99% above £4,000, Unlimited £69 flat), and the free months default to the trial's 3. Every figure below that moved is
+// RESTATED here from the seed rows — not read from the component — and the renders must agree with the restatement.
+const GB_PLANS = CATALOG.plans.filter(p => p.isPublic && p.active).sort((x, y) => x.sortOrder - y.sortOrder)
+  .map(p => ({ p, r: CATALOG.prices.find(r => r.planKey === p.key && r.countryCode === 'GB') })).filter(x => x.r)
+const costOf = ({ r }, gmv) => r.monthlyMinor / 100 + (r.includedOnlineMinor === null ? 0 : (r.feeBps / 10000) * Math.max(0, gmv - r.includedOnlineMinor / 100))
+const cheapest = gmv => GB_PLANS.reduce((best, x) => (!best || costOf(x, gmv) < costOf(best, gmv) - 1e-9 ? x : best), null)
+const oursAt = gmv => costOf(cheapest(gmv), gmv)
+const TRIAL = (CATALOG.plans.find(p => p.isSignupDefault && p.isTrial) || {}).trialMonths
+const gbp2 = n => '£' + n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const gbp0 = n => '£' + Math.round(n).toLocaleString('en-GB')
+const perWeekOf = monthly => (monthly * 12) / 52
 
 ;(async () => {
   // ── (a) THE "No" PATH, THE BRIEF'S WORKED EXAMPLE ───────────────────────────────────────────────
   const a = renderWith([SYS('no'), STAFF(1), DAYS(4), GMV(2500)], 'a')
-  t('🔴 (a) £2.24 a trading day', /£2\.24\na trading day/.test(a))
-  t('🔴 (a) …from £38.90 a month, on 4 days', a.includes('Based on 4 days a week · £38.90 a month'))
-  t('🔴 (a) breakdown is £29.00 + £9.90 → £38.90', a.includes('Pro plan\n£29.00')
-    && a.includes('above the £1,500 included\n£9.90') && a.includes('HatchGrab each month\n£38.90'))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): was Pro "£2.24 a trading day · £38.90 a month · £29.00 + £9.90".
+  // At £2,500 the cheapest seeded plan is Pay as you go: £0 + 0.99% × £2,500 = £24.75 a month → × 12 ÷ 52 ÷ 4 = £1.43.
+  const A_PLAN = cheapest(2500), A_MONTH = oursAt(2500), A_DAY = A_MONTH * 12 / 52 / 4
+  t(`🔴 (a) ${gbp2(A_DAY)} a trading day (the cheapest plan at £2,500: ${A_PLAN.p.name})`, a.includes(`We suggest\n${A_PLAN.p.name}\n`) && a.includes(`${gbp2(A_DAY)}\na trading day`))
+  t(`🔴 (a) …from ${gbp2(A_MONTH)} a month, on 4 days`, a.includes(`Based on 4 days a week · ${gbp2(A_MONTH)} a month`))
+  t(`🔴 (a) breakdown is ${gbp2(A_PLAN.r.monthlyMinor / 100)} + ${gbp2(A_MONTH - A_PLAN.r.monthlyMinor / 100)} → ${gbp2(A_MONTH)}`, a.includes(`${A_PLAN.p.name} plan\n${gbp2(A_PLAN.r.monthlyMinor / 100)}`)
+    && a.includes(`${A_PLAN.r.feeBps / 100}% on £2,500 of online orders\n${gbp2(A_MONTH - A_PLAN.r.monthlyMinor / 100)}`) && a.includes(`HatchGrab each month\n${gbp2(A_MONTH)}`))
   /* ⚠️ THE CARD-PROCESSING LINE IS ASSERTED WITHOUT NAMING THE PAYMENT PROVIDER, DELIBERATELY.
    * `scripts/run-harnesses.cjs` screens every listed file for that brand name as a whole word and
    * REFUSES THE ENTIRE RUN if it finds one — "the screen is a property of the FILE, not of anyone's
@@ -105,7 +129,8 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
     && a.includes("You’d pay much the same on a card machine at the window")   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
     && !/HatchGrab each month\n~/.test(a))
   t('🔴 (a) the coffee line is shown', a.includes('Less than a coffee.'))
-  t('🔴 (a) "And your first month is on us."', a.includes('And your first month is on us.'))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the free months default to the trial's (3), so the line counts them.
+  t(`🔴 (a) "And your first ${TRIAL} months are on us."`, a.includes(`And your first ${TRIAL} months are on us.`))
   t('🔴 (a) the scroll link says what it costs, never "saving"',
     a.includes('See what it costs ↓') && !a.includes('See your saving'))
   /* 🔴 NO PER-ORDER FIGURE OF OURS ON THIS PATH. The only "per order" in the results is the CARD
@@ -172,24 +197,29 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
   t('⚠️ (b) …and nothing is rendered in its place', !/than a (pint|sandwich|coffee)/.test(b))
 
   // ── (c) THE "Yes" PATH WHEN WE COST MORE ────────────────────────────────────────────────────────
-  const c = renderWith([SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('2.5')], 'c')
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): THE CASE'S RATE MOVES, NOT ITS PURPOSE. At 2.5% inclusive their own
+  // fee is 1% = £25.00 a month, and the cheapest plan now costs £24.75 — so 2.5% is a SAVING today and the dearer path
+  // never rendered. 1.9% inclusive (their own fee 0.4% = £10.00) is dearer by £14.75 a month = £3.40 a week, which is
+  // still ≥ £3.00, so every claim below keeps its meaning (weekly, no coffee line, the monthly box and breakdown).
+  const C_PCT = '1.9', C_THEIRS = (Number(C_PCT) - 1.5) / 100 * 2500, C_MORE = oursAt(2500) - C_THEIRS, C_WEEK = perWeekOf(C_MORE)
+  const c = renderWith([SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT(C_PCT)], 'c')
   /* 🔴 (c) IS PER WEEK NOW, NOT PER TRADING DAY. £13.90 × 12 ÷ 52 = £3.2077 → "£3.21". ⚠️ AND THE
    * COFFEE LINE GOES WITH IT: 3.21 ≥ 3.00, so the same threshold that showed the line at 80p a DAY
    * correctly withholds it at £3.21 a WEEK. The claim stays true at both. */
-  t('🔴 (c) "£3.21 more a week"', /£3\.21\nmore a week/.test(c))
-  t('🔴 (c) …£13.90 a month more than now, with NO "Based on N days" clause',
-    c.includes('£13.90 a month more than now') && !/Based on \d+ days?/.test(c))
-  t('🔴 (c) …and the coffee line is ABSENT, because £3.21 ≥ £3.00',
-    !c.includes('Less than a coffee'))
+  t(`🔴 (c) "${gbp2(C_WEEK)} more a week"`, c.includes(`\n${gbp2(C_WEEK)}\nmore a week`))
+  t(`🔴 (c) …${gbp2(C_MORE)} a month more than now, with NO "Based on N days" clause`,
+    c.includes(`${gbp2(C_MORE)} a month more than now`) && !/Based on \d+ days?/.test(c))
+  t(`🔴 (c) …and the coffee line is ABSENT, because ${gbp2(C_WEEK)} ≥ £3.00`,
+    C_WEEK >= 3 && !c.includes('Less than a coffee'))
   t('🔴 (c) …and nothing on this path says "a trading day"', !c.includes('a trading day'))
-  t('🔴 (c) the grey box is MONTHLY: £25.00 against £38.90',
-    c.includes('Right now you pay\n£25.00\na month') && c.includes('With HatchGrab\n£38.90\na month'))
+  t(`🔴 (c) the grey box is MONTHLY: ${gbp2(C_THEIRS)} against ${gbp2(oursAt(2500))}`,
+    c.includes(`Right now you pay\n${gbp2(C_THEIRS)}\na month`) && c.includes(`With HatchGrab\n${gbp2(oursAt(2500))}\na month`))
   t('🔴 (c) the "% more" line and "You\'d pay extra" are GONE on this path',
     !/more in your first year/.test(c) && !c.includes("You'd pay extra"))
   t('🔴 (c) …and the year schedule is replaced by the monthly breakdown',
     c.includes('Your month on HatchGrab') && !/Year one|Year two/.test(c))
   t('🔴 (c) …which names the provider\'s own fee at the rate the comparison used',
-    /Your current provider’s own fee \(1%\)\n£25\.00 a month/.test(c))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
+    c.includes(`Your current provider’s own fee (${Math.round((Number(C_PCT) - 1.5) * 100) / 100}%)\n${gbp2(C_THEIRS)} a month`))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
   t('⚠️ (c) the CTA pair and the cream strip are unchanged',
     c.includes('Upload my menu →') && c.includes('Ask us a question') && c.includes('No card needed to set up'))
 
@@ -197,26 +227,33 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
   // 🔴 THE BRIEF'S OWN CASE, AND THE ONE THING THIS TASK MUST NOT CHANGE. Pinned as the literal text of
   // the result region, so any edit to that card — a word, a figure, an order — fails here.
   const d = resultsOf(renderWith([SYS('yes'), STAFF(1)], 'd'))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): THE SAVING CARD'S FIGURES MOVE WITH THE PLAN AND THE TRIAL —
+  // its words, order and layout do not. Was Pro at £38.90 a month with 1 free month (£428 / £467, save £472 / £433). Now
+  // the cheapest plan at £2,500 (Pay as you go, £24.75) with the trial's 3 free months: year one £24.75 × 9 = £222.75 →
+  // "£223", save £677.25 → "£677" (75%); year two £297, save £603 (67%). Restated from the seed, not read from the page.
+  const D_THEIRS = (4.5 - 1.5) / 100 * 2500 * 12, D_Y1 = oursAt(2500) * (12 - TRIAL), D_Y2 = oursAt(2500) * 12
+  const pct = (save) => Math.round(save / D_THEIRS * 100) + '%'
   const D_EXPECTED = [
-    'See your saving ↓', 'Right now you pay', '£900', 'a year', 'With HatchGrab', '£428', 'in year one',
-    'You save', '£472', '52%', 'less in your first year', "That’s a weekend pitch at a food festival.",   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
-    'Upload my menu and save £472 →', 'Ask us a question', 'No card needed to set up',
-    'Year one', 'Save £472', '(52% less)', 'Current provider', '£900', '→', 'HatchGrab', '£428',
-    'Year two', 'Save £433', '(48% less)', 'Current provider', '£900', '→', 'HatchGrab', '£467',
+    'See your saving ↓', 'Right now you pay', gbp0(D_THEIRS), 'a year', 'With HatchGrab', gbp0(D_Y1), 'in year one',
+    'You save', gbp0(D_THEIRS - D_Y1), pct(D_THEIRS - D_Y1), 'less in your first year', 'That’s a couple of festival pitches.',
+    `Upload my menu and save ${gbp0(D_THEIRS - D_Y1)} →`, 'Ask us a question', 'No card needed to set up',
+    'Year one', `Save ${gbp0(D_THEIRS - D_Y1)}`, `(${pct(D_THEIRS - D_Y1)} less)`, 'Current provider', gbp0(D_THEIRS), '→', 'HatchGrab', gbp0(D_Y1),
+    'Year two', `Save ${gbp0(D_THEIRS - D_Y2)}`, `(${pct(D_THEIRS - D_Y2)} less)`, 'Current provider', gbp0(D_THEIRS), '→', 'HatchGrab', gbp0(D_Y2),
   ].join('\n')
-  t('🔴 (d) 4.5% + 20p inclusive, £2,500 — the saving card is EXACTLY as before', d.startsWith(D_EXPECTED))
+  t('🔴 (d) 4.5% + 20p inclusive, £2,500 — the saving card: same words and order, the cheapest plan\'s figures', d.startsWith(D_EXPECTED))
   t('🔴 (d) …and still carries the two-year total and the yearly small print',
     d.includes("Over two years that’s") && d.includes('excluded from both sides'))   // ⚠️ RE-PINNED (Language Phase 1e): GB fix ' → ’
 
   // ── (e) MULTIPLE VANS — HEADLINE PER VAN, FLEET AS AN EXTRA LINE ────────────────────────────────
   const e1 = renderWith([SYS('no'), STAFF(1), DAYS(4), GMV(2500), TRUCKS(3)], 'e1')
-  t('🔴 (e) No path, 3 vans: the headline is still PER VAN (£2.24), and says so',
-    /£2\.24\na trading day/.test(e1) && e1.includes('£38.90 a month per van'))
-  t('🔴 (e) …with the fleet monthly total as its own line', e1.includes('Across 3 vans\n£116.70 a month'))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the cheapest plan's figures (see (a)) — per van and × 3.
+  t(`🔴 (e) No path, 3 vans: the headline is still PER VAN (${gbp2(A_DAY)}), and says so`,
+    e1.includes(`${gbp2(A_DAY)}\na trading day`) && e1.includes(`${gbp2(A_MONTH)} a month per van`))
+  t('🔴 (e) …with the fleet monthly total as its own line', e1.includes(`Across 3 vans\n${gbp2(A_MONTH * 3)} a month`))
   t('⚠️ (e) …and the card-processing estimate is the fleet figure', e1.includes('~£212.50'))
-  const e2 = renderWith([SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('2.5'), TRUCKS(3)], 'e2')
+  const e2 = renderWith([SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT(C_PCT), TRUCKS(3)], 'e2')   // ⚠️ RE-PINNED (Stage B): (c)'s rate
   t('🔴 (e) Yes-dearer, 3 vans: headline per van and weekly, sub-line names the van',
-    /£3\.21\nmore a week/.test(e2) && e2.includes('£13.90 more per van a month than now'))
+    e2.includes(`\n${gbp2(C_WEEK)}\nmore a week`) && e2.includes(`${gbp2(C_MORE)} more per van a month than now`))
   /* 🔴 THE SANCTIONED VOCABULARY FIX (item 4). The grey box was the one place in the results still
    * saying "trucks", against "Across N vans" in both breakdown cards. ⚠️ IT IS INSIDE THE SAVING CARD,
    * so it is pinned here at a fleet size that renders it — case (d) is one van and never shows it. */
@@ -234,17 +271,23 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
    * failed: with one month free, year one is £319 against their £342, so the page is correctly showing a
    * SAVING and the dearer branch never renders. `dearer` is decided on year one, not on the monthly
    * difference — which is worth knowing about this page and is why the fixture says so. */
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): SAME 50p, NEW INPUTS. At £1,500 / 3.4% the cheapest plan
+  // (Pay as you go, £14.85) is now far below their £28.50, so the fixture moves to £1,250 at 2.45% inclusive: their own
+  // fee 0.95% = £11.875 against our 0.99% = £12.375 → 50p a month more → 12p a week. FREE(0) still load-bearing.
   t('🔴 a Yes-path difference under £1 a week renders whole pence + "more a week"', (() => {
-    const tiny = renderWith([SYS('yes'), STAFF(1), GMV(1500), PCT('3.4'), FREE('0')], 'tiny')
+    const tiny = renderWith([SYS('yes'), STAFF(1), GMV(1250), PCT('2.45'), FREE('0')], 'tiny')
     return /\n12p\nmore a week/.test(tiny) && !/£0\.12/.test(tiny)
       && tiny.includes('50p a month more than now')
   })())
-  t('🔴 (e) …and the fleet line is present', e2.includes('Across 3 vans\n£116.70 a month'))
+  t('🔴 (e) …and the fleet line is present', e2.includes(`Across 3 vans\n${gbp2(oursAt(2500) * 3)} a month`))
 
   // ── (f) THE THRESHOLD, EVERY DAY × EVERY SLIDER STEP ────────────────────────────────────────────
   // 🔴 THE ARITHMETIC IS RESTATED HERE AND THEN CHECKED AGAINST REAL RENDERS at each boundary, so a
   // restatement that drifted from the component would fail rather than quietly agree with itself.
-  const oursPerTruck = gmv => 29 + (Math.max(0, gmv - 1500) * 0.99) / 100
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): was Pro's `29 + 0.99% above £1,500`; now the cheapest seeded
+  // plan at each volume (oursAt, restated above). Its cost tops out at Unlimited's £69, so days 6–7 (under £3 a day up to
+  // £78 / £91 a month) never cross — the five transitions are days 1–5.
+  const oursPerTruck = oursAt
   const perDay = (monthly, days) => (monthly * 12) / 52 / days
   const boundaries = []
   for (let days = 1; days <= 7; days++) {
@@ -255,8 +298,8 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
       prev = on
     }
   }
-  t('🔴 (f) 175 points walked (7 days × 25 steps), exactly 5 transitions — days 1–2 never qualify',
-    boundaries.length === 5 && boundaries.every(x => x.on === false) && boundaries.map(x => x.days).join() === '3,4,5,6,7')
+  t('🔴 (f) 175 points walked (7 days × 25 steps), exactly 5 transitions — days 6–7 never cross (always under £3)',
+    boundaries.length === 5 && boundaries.every(x => x.on === false) && boundaries.map(x => x.days).join() === '1,2,3,4,5')
   t('🔴 (f) every transition straddles £3.00 exactly', boundaries.every(x =>
     perDay(oursPerTruck(x.gmv - 500), x.days) < 3.0 && perDay(oursPerTruck(x.gmv), x.days) >= 3.0))
   t('🔴 (f) …and the RENDER agrees at each boundary, both sides', boundaries.every(x => {
@@ -273,10 +316,11 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
     && (SRC.match(/COFFEE_MAX_PER_DAY/g) || []).length >= 3)
   // 🔴 10 October 2026: the figures come from the MARKETING COUNTRY'S SETTINGS (country_settings), through
   // the same plan-features / features functions every other surface uses — still no literal here.
-  t('🔴 every price still comes from the pricing modules — no new literal',
-    /planMonthlyMinor\('pro', s\)/.test(SRC) && /allowanceMinorFor\('pro', s\)/.test(SRC)
-    && /platformFeeOverAllowance\(s\)\.pct/.test(SRC) && /cardFees\(s\)\.online/.test(SRC)
-    && !/£29|£49|£1,500|£2,000|0\.99|2900|4900|150000|200000/.test(SRC))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the plans come from the CATALOGUE (offerPlans on the country,
+  // the suggestion from cheapestAt), the card fee from the country's settings — and still no price literal of any plan.
+  t('🔴 every price still comes from the plan data — no new literal',
+    /offerPlans\(catalog, s\.countryCode\)/.test(SRC) && /cheapestAt\(/.test(SRC) && /cardFees\(s\)\.online/.test(SRC)
+    && !/£29|£49|£69|£1,500|£2,000|£4,000|0\.99|2900|4900|6900|150000|200000|400000/.test(SRC))
   // 🔴 NO COMPETITOR PREFILL (decided 10 October 2026): nothing reads the retired competitor columns, the
   // boxes start empty, and the page names no other provider.
   t('🔴 there is no competitor prefill — the competitor columns are read nowhere and the boxes start empty',
@@ -343,7 +387,8 @@ const resultsOf = txt => txt.replace(/^[\s\S]*?(See your saving ↓|See what it 
       txt => !/80p\nmore a trading day/.test(txt), [SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('2.5')]],
     ['V5 🔴 the dearer path goes back to the "% more in your first year" line',
       [['                {dearer ? (', '                {false ? (']],
-      txt => /more in your first year/.test(txt), [SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('2.5')]],
+      // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): (c)'s dearer rate (2.5% is a saving now — see (c)).
+      txt => /more in your first year/.test(txt), [SYS('yes'), STAFF(1), DAYS(4), GMV(2500), PCT('1.9')]],
     /* 🔴 V6 — THE TRADING-DAYS QUESTION COMES BACK ON THE YES PATH. It would be collected and never
      * used there (that result is weekly), and it would put a seventh card into a path numbered to six. */
     ['V6 🔴 the days question is shown on the Yes path',

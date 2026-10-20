@@ -588,12 +588,25 @@ head('4 · a truck without the preview key sees no change at all')
   // the `errorsManage.social_media_plan` code. ⚠️ WEAKER IN ONE RESPECT, SAID SO: "shared" was ONE symbol; it is now two
   // message keys (weeklyPost.planRefusal, which the screen's constant reads, and errorsManage.social_media_plan), held
   // together by asserting their GB words are identical and en-US overrides neither with different words.
-  t('⛔ …and the route refuses every action without it, with the shared plan sentence',
-    /'schedule_graphics' as never/.test(codeOf(ROUTE))
-    && /return ok \? null : refuse\(locale, 'social_media_plan', 403\)/.test(codeOf(ROUTE))
-    && msgGB('errorsManage.social_media_plan') === msgGB('weeklyPost.planRefusal')
-    && msgGB('errorsManage.social_media_plan') === 'Social media posts are on Pro and Max'
-    && (msgAt(US_MESSAGES, 'errorsManage.social_media_plan') ?? null) === (msgAt(US_MESSAGES, 'weeklyPost.planRefusal') ?? null)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): every plan has Social media, so there is no plan
+  // sentence. The gate is `canAccess('schedule_graphics', truck.feature_overrides ?? null)` (override-only) and the
+  // refusal is the neutral `feature_switched_off`, pinned in GB, not overridden by en-US with other words; the old
+  // `social_media_plan` / `weeklyPost.planRefusal` keys are asserted GONE.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan is data again (Pay as you go switches
+  // `schedule_graphics` off). `gated` is async and asks lib/plan-refusal.ts `featureRefusal(truck, key, locale)`:
+  // off by the PLAN → `feature_not_on_plan` (naming the plan that has it), off by an OVERRIDE → the neutral
+  // `feature_switched_off`. The route forwards the chosen code; both messages' GB words are pinned.
+  t('⛔ …and the route refuses every action without it — plan-off names the plan, override-off is the neutral sentence',
+    /const off = await featureRefusal\(truck, 'schedule_graphics', locale\)/.test(codeOf(ROUTE))
+    && /return off \? refuse\(locale, off\.code, 403, off\.params as Record<string, string>\) : null/.test(codeOf(ROUTE))
+    && (codeOf(ROUTE).match(/await gated\(truck, locale\)/g) || []).length === 2
+    && msgGB('errorsManage.feature_not_on_plan') === '{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}'
+    && msgGB('planPrompt.features.schedule_graphics.name') === 'Social media posts'
+    && msgGB('errorsManage.feature_switched_off') === 'This feature is switched off for your truck.'
+    && [undefined, msgGB('errorsManage.feature_switched_off')].includes(msgAt(US_MESSAGES, 'errorsManage.feature_switched_off'))
+    && msgGB('errorsManage.social_media_plan') === undefined && msgGB('weeklyPost.planRefusal') === undefined
+    && msgAt(US_MESSAGES, 'errorsManage.social_media_plan') === undefined
+    && msgAt(US_MESSAGES, 'weeklyPost.planRefusal') === undefined
     && !codeOf(ROUTE).includes('places_posts_preview')
     && !/not switched on/.test(codeOf(ROUTE)))
   /* ⚠️ `schedule_graphics` IS CHECKED PER BOX, which is the brief's shape — and it is ONE helper, so
@@ -613,9 +626,19 @@ head('4 · a truck without the preview key sees no change at all')
      * a child with its own gate is a surface that can be gated on a different feature. */
     && /gate=\{gate\}/.test(SOCIAL)
     && /gate: \(children: React\.ReactNode\) => React\.ReactNode/.test(SOCIAL))
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): WEEKLY_POST_PLAN_REFUSAL and lib/copy/weeklyPost.ts are
+  // gone. The screen's gate takes only the feature and the truck's overrides — no plan, no upgradeMessage — and draws
+  // NOTHING when off (FeatureGate's default fallback), so there is still no second sentence, literal or imported.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): <FeatureGate> takes the TRUCK and resolves override →
+  // plan itself: off by the PLAN it draws the one shared <PlanPrompt> (the planPrompt messages — the same words as the
+  // route's `feature_not_on_plan`), off by an override it draws nothing. Still no sentence in SocialPosts.
   t('⛔ …and it is the route\'s own refusal sentence, not a second literal',
-    /WEEKLY_POST_PLAN_REFUSAL/.test(SOCIAL)
-    && !/'The weekly post is on/.test(codeOf(SOCIAL)))
+    /<FeatureGate\s+feature="schedule_graphics"\s+truck=\{truck\}\s*>/.test(codeOf(SOCIAL))
+    && /if \(block === 'plan'\) return <PlanPrompt feature=\{feature\} upgradeTo=\{access\.upgradeTo\(feature\)\} \/>/.test(codeOf(read('components/FeatureGate.tsx')))
+    && !/WEEKLY_POST_PLAN_REFUSAL|upgradeMessage|lib\/copy\/weeklyPost|fallback=/.test(codeOf(SOCIAL))
+    && !fs.existsSync(path.join(REPO, 'lib/copy/weeklyPost.ts'))
+    && !/'The weekly post is on/.test(codeOf(SOCIAL))
+    && !/'Social media posts are on/.test(codeOf(SOCIAL)))
   /* ⛔ AND NOTHING ELSE ON MANAGE CHANGED FOR A TRUCK WITHOUT THE KEY. The Add event additions are
    * inside the modal every truck has — so this is asserted where it can be: the suggestion rows and
    * the tick are not behind the key, because they are not new SURFACES, they are the places list this

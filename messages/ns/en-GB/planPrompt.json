@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} are not on your plan.} other {{feature} is not on your plan.}}",
+  "switchedOff": "{many, select, yes {{feature} are switched off for your truck.} other {{feature} is switched off for your truck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Upgrade →",
+  "features": {
+    "discovery_map": {
+      "name": "Discovery map listing",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "The web dashboard",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "The kitchen app",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "The QR code menu",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Meal deals",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Upsells",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Walk-up orders",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Pay at Hatch ordering",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "The sold-out toggle",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Stock countdown",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Offline order protection",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online payments",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Advance pre-ordering",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Customer time slots",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Kitchen capacity management",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Auto-accept",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger & Instagram auto-replies",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Branded QR codes",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Advanced reporting",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Kitchen ticket printing",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Multi-device kitchen sync",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "The cook screen",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp auto-replies",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Your schedule on your own website",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Social media posts",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Custom event types",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Private events",
+      "many": "yes"
+    }
+  }
+}

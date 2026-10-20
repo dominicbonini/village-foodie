@@ -32,7 +32,7 @@ import {
 // 🔴 EVERY FIGURE ON THIS PAGE COMES FROM CARD_FEES, VIA THESE LABELS. No rate is written as a literal
 // anywhere below — the landing page carries the same rule and the same reason: a rate typed twice is a
 // rate that disagrees with itself the first time one of them moves.
-import { cardFeeOnlineLabel, cardFeeInPersonLabel, tapToPaySurchargeLabel, cardRegionInPerson } from '@/lib/plan-features'
+import { cardFeeOnlineLabel, cardFeeInPersonLabel, tapToPaySurchargeLabel, cardRegionInPerson } from '@/lib/card-fees'
 // The truck's own country's card fees and wording, from the provider the manage page mounts (never read by
 // the browser from the table — see components/CountrySettingsProvider.tsx).
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
@@ -40,6 +40,10 @@ import { useCountrySettings } from '@/components/CountrySettingsProvider'
 // en-US.json), read in the truck's locale. The trial reassurance that was CONNECTING_STRIPE_NOT_A_COMMITMENT in
 // lib/settings-copy.ts is `managePayments.trialNote` — its reasoning is still recorded there.
 import { useT } from '@/lib/i18n/use-t'
+import type { FeatureAccessView } from '@/lib/useFeatures'
+import { PAY_AT_HATCH_FEATURE } from '@/lib/plans'
+import { PlanPrompt } from '@/components/PlanPrompt'
+import '@/lib/i18n/catalog/planPrompt'
 import '@/lib/i18n/catalog/managePayments'
 import {
   derivePaymentsState, shouldMountNotificationBanner, shouldShowOnboarding, shouldOfferAccountManagement,
@@ -126,20 +130,24 @@ const HEADER: Record<PaymentsState, { chipClass: string }> = {
   },
 }
 
-export function PaymentsTab({ token, plan, showToast, afterOnline }: {
+export function PaymentsTab({ token, onTrial, features, showToast, afterOnline }: {
   token: string
   /** 🔴 Phase 3 screens: what Manage places AFTER the online payments section and BEFORE "Walk-up
    *  payments" — the "Tax, tips and fees" card and "Taking payment" (moved here from Settings). */
   afterOnline?: React.ReactNode
-  /** The truck's plan. Only 'trial' renders the reassurance banner — see its note in lib/settings-copy.ts
-   *  (the sentence itself is `managePayments.trialNote`). */
-  plan: string | null | undefined
+  /** Whether the truck's EFFECTIVE plan is a trial (lib/plans.ts `effectivePlan(...).plan.isTrial` — plans-data-model,
+   *  Stage A; it was the string 'trial'). Only then does the reassurance banner render — see its note in
+   *  lib/settings-copy.ts (the sentence itself is `managePayments.trialNote`). */
+  onTrial: boolean
+  /** The truck's feature access (lib/useFeatures.ts) — read for Pay at Hatch, which the truck's plan may not include. */
+  features: FeatureAccessView
   /** ⚠️ No PIN. This route authenticates by SESSION + truck ownership, which is stronger than the
    *  shared dashboard PIN and is what Manage already has. See the route's requireOwner note. */
   showToast: (msg: string, type?: 'success' | 'error') => void
 }) {
   const cs = useCountrySettings()
   const t = useT('managePayments')
+  const tPrompt = useT('planPrompt')
   const [status, setStatus] = useState<Status | null>(null)
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
@@ -406,6 +414,16 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
       <section>
         <h3 className="text-base font-bold text-slate-800">{t('online.heading')}</h3>
         <p className="text-xs text-slate-500 mt-0.5">{t('online.body')}</p>
+        {/* 🔴 PAY AT HATCH IS THE PLAN'S TO ALLOW (Stage A2, plans.pay_at_hatch_allowed — enforced). There is no Pay at Hatch
+            switch to show: customers are offered it whenever the plan allows it. When the PLAN does not, the one upgrade
+            prompt says which plan does; when an OVERRIDE switched it off, the plain "switched off for your truck". Every
+            plan allows it as seeded, so neither line shows today. */}
+        {features.block(PAY_AT_HATCH_FEATURE) === 'plan' && (
+          <div className="mt-3"><PlanPrompt feature={PAY_AT_HATCH_FEATURE} upgradeTo={features.upgradeTo(PAY_AT_HATCH_FEATURE)} /></div>
+        )}
+        {features.block(PAY_AT_HATCH_FEATURE) === 'override' && (
+          <p className="mt-2 text-xs text-slate-500">{tPrompt('switchedOff', { feature: tPrompt(`features.${PAY_AT_HATCH_FEATURE}.name` as never), many: tPrompt(`features.${PAY_AT_HATCH_FEATURE}.many` as never) })}</p>
+        )}
 
         <div className="mt-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
           {/* 🔴 READINESS IS `chargesEnabled`, NEVER "an account exists" — and the five connected states
@@ -429,7 +447,7 @@ export function PaymentsTab({ token, plan, showToast, afterOnline }: {
               no existing trial string could be reused verbatim and whose shape this borrows.
               ⚠️ Rendered only while NOT connected: after connecting, the question it answers has been
               answered, and a standing "this doesn't charge you" note would read as a disclaimer. */}
-          {plan === 'trial' && state === 'not_connected' && (
+          {onTrial && state === 'not_connected' && (
             /* 🔴 THE PAGE'S AMBER NOTICE, REUSED VERBATIM — `rounded-xl bg-amber-50 border
                border-amber-200 p-3` with `text-xs text-amber-700`, exactly as the two allergen-card
                notices in app/manage/[token]/page.tsx use it. It rendered GREY

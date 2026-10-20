@@ -10,7 +10,8 @@ import { hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel, isPreorderOpenYet, formatPreorderOpenLabel } from '@/lib/preorder'
-import { canAccess } from '@/lib/features'
+import { truckCan, payAtHatchOn } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 // ⚠️ TEMPORARY — delete with the online-payments switch. See the migration named in that file.
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
@@ -535,9 +536,9 @@ export async function GET(
   const preorderTz = truckTime.timeZone
   const preorderNowMins = getNowMinsInTz(preorderTz)
   const preorderNowDate = getLocalDateInTz(preorderTz)
-  const preorderFeatureOn = canAccess(
-    truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null
-  )
+  // Stage A2: override → the truck's EFFECTIVE plan's switch → allowed (lib/plans.ts). One catalogue read, cached 60 s.
+  const planCatalog = await getPlanCatalog()
+  const preorderFeatureOn = truckCan(truck, planCatalog, 'advance_preordering')
   // MASTER toggle (V7.8): truck-level preorders_enabled gates ALL pre-order effects. !== false so a
   // null/pre-migration column reads as ENABLED (existing trucks unaffected). Per-item config is NOT
   // cleared when off — this gates at READ time only; the config persists ("saved but disabled").
@@ -821,6 +822,11 @@ export async function GET(
     }
     cardPaymentsReady = resolveOnlineCardPayments(op, truck).offered
   }
+  /* 🔴 PAY AT HATCH IS THE PLAN'S TO ALLOW (Stage A2, plans.pay_at_hatch_allowed — enforced; true on every plan as seeded).
+   * Off → the customer is not offered it, and /api/orders/submit refuses it. With no card option either, nothing can be
+   * paid online, so online ordering is unavailable — the existing "not taking orders" state, never a dead checkout. */
+  const payAtHatchOffered = payAtHatchOn(truck, planCatalog)
+  if (!payAtHatchOffered && !cardPaymentsReady) orderingAvailable = false
 
   // 🔴 THE TRUCK'S MONEY FORMAT — {currency, locale} only, never the settings row. Every price on the
   // customer page is shown in it. A truck with no currency or country is a LOUD error (it cannot happen:
@@ -860,7 +866,11 @@ export async function GET(
         const elapsed = (Date.now() - new Date(startedAt).getTime()) / 60000
         return Math.max(0, Math.ceil(mins - elapsed))
       })(),
-      plan: (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max',
+      plan: String(truck.plan ?? ''),
+      /** Whether advance pre-ordering is on for this truck — its override, else its effective plan's switch. */
+      preordering_on: preorderFeatureOn,
+      /** Whether customers may choose Pay at Hatch — the plan's flag and switch, and the truck's override. */
+      pay_at_hatch_on: payAtHatchOffered,
       allergen_info_url: truck.allergen_info_url ?? null,
       allergen_info_text: truck.allergen_info_text ?? null,
       // Allergen display mode (Slice 4): 'per_dish' | 'card' | 'both' | null. null = unset/legacy →

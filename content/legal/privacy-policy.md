@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 5 September 2026
+**Last updated:** 19 October 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -10,6 +10,8 @@ This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses per
 It also covers the HatchGrab mobile and tablet apps for iOS and Android.
 
 If you only came here because you ordered food from a truck, the section **"If you ordered from a food truck"** is the part that applies to you.
+
+**Some countries have extra rules.** Where they apply to you, they're on our [Country-specific terms](/country-terms) page, which forms part of this policy.
 
 ---
 
@@ -87,7 +89,9 @@ The truck decides how long to keep your details and how they contact you afterwa
 
 We collect basic technical data automatically: IP address, browser type, device type, pages viewed, and the site you arrived from. We use this to keep the sites working and secure, and to understand which pages are useful.
 
-**Cookies.** We use cookies that are strictly necessary to make the sites work — signing you in, keeping your basket, and remembering your preferences. We do not use advertising, tracking or third-party analytics cookies, and we do not track you across other websites.
+**Cookies and browser storage.** We use cookies and your browser's local storage only where they are strictly necessary to make the sites work — signing you in, keeping your basket, and remembering your preferences, such as your country and postcode. We do not use advertising or tracking cookies, and we do not track you across other websites.
+
+**Product analytics.** We use PostHog to understand which pages and features are used: pages viewed and clicks, with basic browser and device details. It stores nothing in your browser — no cookies and no local storage — so it cannot recognise you from one visit to the next. It does not run on the operator dashboard, kitchen screen or management pages, or on truck pages shown on an operator's own website.
 
 You can block or delete cookies in your browser settings, though parts of the site may stop working if you block the necessary ones.
 
@@ -102,6 +106,7 @@ We use a small number of service providers, each of which processes data only on
 | Supabase | Database and authentication | United Kingdom (London) |
 | Vercel | Website and application hosting | United Kingdom (London) |
 | Brevo | Sending transactional email | European Union |
+| PostHog | Product analytics: which pages and features are used | European Union |
 | Google (Gemini) | Reading menus you upload, to extract their contents, and reading messages your customers send you on WhatsApp, to write the automatic replies | United States |
 | Apple and Google | Delivering push notifications to your device | United States |
 | Meta (WhatsApp) | Carrying WhatsApp messages between your customers and your business number | United States |
@@ -120,11 +125,15 @@ As our service grows we may add providers, including an SMS provider. We will up
 ## 7. How long we keep data
 
 - **Operator accounts:** for as long as the account is active, and for 12 months after it closes.
-- **Order records containing customer details:** 12 months, after which the customer's name, email and phone are removed and only anonymised order data remains.
+- **Order records containing customer details:** 12 months, after which the customer's name, email and phone, and any notes on the order (including allergy or dietary notes), are removed and only anonymised order data remains.
+- **Unfinished online card orders** (started but never placed): deleted within a day of expiring. If a card payment was still being held, they are deleted within a day of that hold being released.
+- **WhatsApp messages your customers send a truck, and our automatic replies:** 12 months.
 - **Anonymised order and sales data:** retained indefinitely, so trucks keep their trading history. This data cannot be linked back to an individual.
 - **Accounting records:** six years from the end of the relevant financial year, as UK tax law requires.
 - **Support correspondence:** 24 months.
 - **Technical and security logs:** 90 days.
+
+Our email provider keeps delivery logs for a limited time under its own retention policy.
 
 We delete or anonymise data once these periods end.
 

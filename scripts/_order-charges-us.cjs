@@ -119,8 +119,15 @@ module.exports = async function us(h) {
     t('a part the country gives no maximum for is not allowed (no max fixed → fixed 0)',
       R.resolveChargeRules(US_SETTINGS({ serviceFeeTruckMaxBps: 400 }), { service_fee_enabled: true, service_fee_bps: 200, service_fee_fixed_minor: 25 }).serviceFee.fixedMinor === 0)
     t('the card fee payer is the truck\'s setting', R.resolveChargeRules(us, { card_fee_payer: 'customer' }).cardFeePayer === 'customer')
-    t('the platform fee is on only behind the country switch AND a rate', R.resolveChargeRules(US_SETTINGS({ platformFeeEnabled: true, platformFeePct: 0.99 }), {}).platformFee.bps === 99
-      && R.resolveChargeRules(US_SETTINGS({ platformFeePct: 0.99 }), {}).platformFee === null)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the rate is no longer country.platformFeePct (retired,
+    // not read) but the truck's effective plan's plan_prices.fee_bps, passed as resolveChargeRules' third argument
+    // (default null, so .length stays 2). Same rule: on only behind the country switch AND a rate.
+    t('the platform fee is on only behind the country switch AND a rate (the plan\'s fee_bps, 3rd argument)',
+      R.resolveChargeRules(US_SETTINGS({ platformFeeEnabled: true }), {}, 99).platformFee.bps === 99
+      && R.resolveChargeRules(US_SETTINGS({}), {}, 99).platformFee === null
+      && R.resolveChargeRules(US_SETTINGS({ platformFeeEnabled: true }), {}, null).platformFee === null)
+    t('…and the retired country.platformFeePct is never read: switched on with only that → no fee',
+      R.resolveChargeRules(US_SETTINGS({ platformFeeEnabled: true, platformFeePct: 0.99 }), {}).platformFee === null)
   }
 
   // ══════════════════════════════════════════════════════════════════════════════════════════════════════

@@ -37,6 +37,9 @@ export function StoreBadges({
    *  country ⇒ the locale-free App Store link (`appStoreUrlFor`), so a US visitor is not sent to the GB store. */
   countryCode?: string | null }) {
   const wrap = className ?? 'flex flex-wrap items-center gap-4'
+  // seo-fixes S7 (20 October 2026): both badges sit low on the page (the landing footer, Manage › Settings), so they are
+  // `loading="lazy"` — which also stops React preloading them in the <head>, where they competed with the hero image.
+  // The reserved width × height above means a lazy load shifts nothing.
   // 238.96 × 70.87 and 119.66 × 40 — the two viewBoxes. Widths derived so the reserved box is right
   // before the SVGs load; the CSS height is what actually sizes them.
   const playW = Math.round((238.96 / 70.87) * height)
@@ -45,12 +48,12 @@ export function StoreBadges({
     <div className={wrap}>
       {APP_STORE_URL && (
         <a href={appStoreUrlFor(countryCode)} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label="Download HatchGrab on the App Store">
-          <img src={APP_STORE_BADGE_SRC} alt="Download on the App Store" width={appleW} height={height} style={{ height, width: 'auto', display: 'block' }} />
+          <img src={APP_STORE_BADGE_SRC} alt="Download on the App Store" width={appleW} height={height} loading="lazy" style={{ height, width: 'auto', display: 'block' }} />
         </a>
       )}
       {GOOGLE_PLAY_URL && (
         <a href={GOOGLE_PLAY_URL} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label="Get HatchGrab on Google Play">
-          <img src={GOOGLE_PLAY_BADGE_SRC} alt="Get it on Google Play" width={playW} height={height} style={{ height, width: 'auto', display: 'block' }} />
+          <img src={GOOGLE_PLAY_BADGE_SRC} alt="Get it on Google Play" width={playW} height={height} loading="lazy" style={{ height, width: 'auto', display: 'block' }} />
         </a>
       )}
     </div>

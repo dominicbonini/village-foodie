@@ -3,6 +3,8 @@
 // Verified by dashboard_token + PIN
 
 import { NextRequest, NextResponse } from 'next/server'
+import { planBlocks, type PlanBlocks } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { supabase } from '@/lib/supabase'
 import { resolveActor } from '@/lib/audit/actor'
 import { resolveTruckLogo } from '@/lib/truck-logo'
@@ -976,9 +978,12 @@ export async function GET(req: NextRequest) {
       kds_mode:             truck.kds_mode ?? false,
       crew_mode:            truck.crew_mode ?? 'solo',
       display_mode:        (truck.display_mode ?? 'list') as 'list' | 'grid',
-      plan:                (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max' | 'trial',
+      plan:                String(truck.plan ?? ''),   // a key in public.plans (lib/plans.ts)
       trial_expires_at:     truck.trial_expires_at ?? null,
       feature_overrides:   (truck.feature_overrides ?? null) as Record<string, boolean> | null,
+      // 🔴 STAGE A2: the features the truck's EFFECTIVE plan switches off, each with the plan the one upgrade prompt names
+      // — this surface has no plan catalogue, so the server resolves it (lib/plans.ts planBlocks; lib/useFeatures.ts).
+      plan_blocks:          planBlocks(truck, await getPlanCatalog(), truck.country ?? null) as PlanBlocks,
       qr_code_style:       (truck.qr_code_style ?? 'standard') as 'standard' | 'branded',
       truck_emoji:          truck.truck_emoji ?? null,
       slug:                 truck.slug ?? null,

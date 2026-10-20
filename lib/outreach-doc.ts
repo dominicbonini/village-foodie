@@ -4,6 +4,9 @@
 // sent. Nothing is appended, nothing is decorated, nothing is inferred. The box shows the message as it
 // will arrive; the server turns that same document into the two MIME parts and adds only the quoted
 // parent on a reply.
+// ⚠️ ONE SIGNED-OFF EXCEPTION (legal follow-ups, 19 October 2026): `buildMessage` appends the fixed
+// company line (name, number, registered office — lib/company.ts) after the document, above any quote.
+// It is not the operator's text and is not editable; see lib/outreach-mail-message.ts#companyFooterLine.
 //
 // ── WHY A DOCUMENT AND NOT HTML ON THE WIRE ─────────────────────────────────────────────────────────
 // The browser could POST the editor's HTML. It must not. HTML from a browser is an open set — a paste
@@ -648,24 +651,69 @@ export function literalTokenRefusal(doc: EmailDoc): string | null {
   return null
 }
 
-/** The four outreach rungs. An email on one of these is a cold approach and wants an opt-out line. */
-const LADDER_KINDS = new Set(['1_first_contact', '2_chase_1', '3_chase_2', '4_final_chase'])
+/**
+ * 🔴 DOES THIS MESSAGE CARRY THE OPT-OUT LINE? — THE ONE DEFINITION (legal follow-ups, 19 October 2026).
+ * The stored opt-out sentence (`outreach_settings.opt_out`), whitespace-normalised, appears in the
+ * document's own text. ⚠️ IT CHECKS THE STORED SENTENCE AGAINST THE TEXT, not a token: the sentence is what
+ * a recipient needs, and whether it arrived via Insert opt-out or was typed out is not the point.
+ * ⚠️ THE DOCUMENT ONLY — never the built message. A reply's quoted parent may itself contain the sentence
+ * (our own earlier email), and that must not count for the new message.
+ * This is exactly the test the old `optOutWarning` made; only what happens when it fails has changed.
+ */
+export function hasOptOutLine(doc: EmailDoc, optOut: string | null): boolean {
+  return textHasOptOutLine(docPlainText(doc), optOut)
+}
+
+/** The same test on text — a RETRY has only the stored message, not the document (see `optOutBlockForText`). */
+export function textHasOptOutLine(text: string, optOut: string | null): boolean {
+  const want = (optOut ?? '').trim()
+  if (!want) return false
+  const norm = (s: string) => s.replace(/\s+/g, ' ').trim()
+  return norm(text).includes(norm(want))
+}
+
+/** Why a send is blocked for want of an opt-out line. The words are `outreach.optOut.*` in messages/. */
+export type OptOutBlockCode = 'no_opt_out_line' | 'no_opt_out_set_up'
 
 /**
- * ⚠️ A WARNING, NOT A REFUSAL, and only one of them now. The "no {{signature}}" warning is gone: the
- * signature is visible in the box, so telling him it is missing would be telling him what he can see.
- * The opt-out warning stays because its absence is the thing that is easy not to notice, and it is a
- * legal line under PECR.
- * 🔴 IT CHECKS THE STORED SENTENCE AGAINST THE TEXT, not a token. The sentence is what a recipient
- * needs; whether it arrived via the button or was typed out is not the point.
+ * 🔴 NO OUTREACH EMAIL LEAVES WITHOUT ITS OPT-OUT LINE — A BLOCK, NOT A WARNING (19 October 2026, signed
+ * off by Dominic). It used to be `optOutWarning`: advisory, and only for the four ladder steps. It is now a
+ * refusal for every email to a prospect, and it takes no step argument, so there is no kind for which it can
+ * quietly not apply. The composer disables Send with it and the send route refuses with it
+ * (`app/api/admin/outreach/mail-send/route.ts`), from this one function.
+ * ⚠️ THE TWO EXEMPTIONS ARE `optOutExempt`, decided BEFORE this is asked: a test send, and a reply to a message the
+ * prospect sent (Dominic, 19 October 2026).
+ *   no_opt_out_set_up — there is no stored sentence at all, so nothing could count as the line;
+ *   no_opt_out_line   — there is one, and this message does not contain it.
  */
-export function optOutWarning(doc: EmailDoc, kind: string | null, optOut: string | null): string | null {
-  if (!kind || !LADDER_KINDS.has(kind)) return null
-  const want = (optOut ?? '').trim()
-  if (!want) return null
-  const norm = (s: string) => s.replace(/\s+/g, ' ').trim()
-  if (norm(docPlainText(doc)).includes(norm(want))) return null
-  return 'This outreach email has no opt-out line.'
+export function optOutBlock(doc: EmailDoc, optOut: string | null): OptOutBlockCode | null {
+  return optOutBlockForText(docPlainText(doc), optOut)
+}
+
+/**
+ * `optOutBlock` for a message that exists only as its stored text: a RETRY (manual, or the reply poll's automatic
+ * one) checks the new part of the stored text body — never the quote, never the company line — before resending
+ * (lib/outreach-mail-message.ts#rebuildStored).
+ */
+export function optOutBlockForText(text: string, optOut: string | null): OptOutBlockCode | null {
+  if (!(optOut ?? '').trim()) return 'no_opt_out_set_up'
+  return textHasOptOutLine(text, optOut) ? null : 'no_opt_out_line'
+}
+
+/**
+ * 🔴 WHO DOES NOT NEED THE OPT-OUT LINE — Dominic's answers, 19 October 2026 (docs/legal-follow-ups-report.md):
+ *   • a TEST send — it goes only to Dominic's own address (`OUTREACH_TEST_RECIPIENT`), never to a prospect;
+ *   • a REPLY TO THE PROSPECT — an email that answers a message the prospect sent us: its parent is one of that
+ *     prospect's INBOUND, non-test messages. Answering somebody who wrote is not an unsolicited approach (the old
+ *     warning was silent for replies for the same reason).
+ * Everything else — first contact, every chase, a follow-up on our own earlier email — needs it.
+ * ⚠️ BOTH STILL CARRY THE COMPANY LINE: that is `buildMessage`'s, with no exemption at all.
+ * ONE RULE, FOUR CALLERS: the composer, the send route, the manual Retry and the poll's automatic retry. It reads
+ * only what all four can know — the send's own test flag and its parent message — so none of them has to guess.
+ */
+export function optOutExempt(input: { isTest: boolean; parent: { direction: string | null; is_test?: boolean | null } | null }): boolean {
+  if (input.isTest) return true
+  return !!input.parent && input.parent.direction === 'inbound' && input.parent.is_test !== true
 }
 
 // ── THE FROM HEADER ─────────────────────────────────────────────────────────────────────────────────

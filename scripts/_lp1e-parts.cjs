@@ -13,6 +13,7 @@
 //            (puppeteer stubbed): the HTML it prints, the @page size, and the options handed to page.pdf()
 // 🔴 EVERY VIEW RUNS ON BOTH CODES.
 const CALC = 'app/compare/CostComparison.tsx'
+const STAGE_B = require('./_lp-stage-b.cjs')
 const CALC_STATES = ['hasSystem', 'days', 'trucks', 'staff', 'planOverride', 'gmv', 'feePctRaw', 'feePenceRaw', 'freeMonthsRaw', 'feeMode', 'trucksRaw']
 const CALC_CASES = {
   default: {},
@@ -51,7 +52,10 @@ async function views(ctx) {
       await safeAsync(out, `calc|${cc}|${name}`, async () => withReq(reqOf(cc), async () => {
         const state = Object.fromEntries(Object.entries(st).filter(([k]) => have.includes(k)))
         globalThis.__ms = state
-        try { return kit.renderStatic(await inLocale(locale(cc), h(C.DemoModalProvider, null, h(C.CostComparison, { settings: settingsOf(cc), locale: locale(cc) })), C)) } finally { delete globalThis.__ms }
+        // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the calculator takes the plan catalogue (`catalog`, read
+        // server-side by app/compare/page.tsx) — the migrations' seed (scripts/_lp-stage-b.cjs catalog). Code without the
+        // prop ignores it.
+        try { return kit.renderStatic(await inLocale(locale(cc), h(C.DemoModalProvider, null, h(C.CostComparison, { settings: settingsOf(cc), catalog: STAGE_B.catalog(), locale: locale(cc) })), C)) } finally { delete globalThis.__ms }
       }))
     }
   }
@@ -147,14 +151,16 @@ async function views(ctx) {
   // ══ the plans PDF ══
   const PDF = await bundle('pdf', "export * as PDF from '@/lib/plans-pdf'")
   for (const cc of ['GB', 'US']) {
-    await safeAsync(out, `pdf|${cc}|html`, () => withReq(reqOf(cc), async () => PDF.PDF.buildPlansPdfHtml(settingsOf(cc))))
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): buildPlansPdfHtml(settings, catalog) — the seeded catalogue
+    // (the same rows generatePlansPdf reads from the fake database). Code with one parameter ignores the second.
+    await safeAsync(out, `pdf|${cc}|html`, () => withReq(reqOf(cc), async () => PDF.PDF.buildPlansPdfHtml(settingsOf(cc), STAGE_B.catalog())))
     await safeAsync(out, `pdf|${cc}|print`, () => withReq(reqOf(cc), async () => {
       globalThis.__pdfRec = {}
       const bytes = await PDF.PDF.generatePlansPdf(cc)
       const rec = globalThis.__pdfRec; delete globalThis.__pdfRec
       const page = /@page\s*\{\s*size:\s*([^;]+);/.exec(rec.html || '')
       return { pdf: rec.pdf, setContent: rec.setContent, closed: !!rec.closed, bytes: bytes && bytes.length,
-        cssPageSize: page ? page[1].trim() : null, printedHtmlEqualsBuild: rec.html === PDF.PDF.buildPlansPdfHtml(settingsOf(cc)) }
+        cssPageSize: page ? page[1].trim() : null, printedHtmlEqualsBuild: rec.html === PDF.PDF.buildPlansPdfHtml(settingsOf(cc), STAGE_B.catalog()) }
     }))
   }
   void exists

@@ -1,6 +1,6 @@
 // lib/marketing-country.ts — WHICH COUNTRY'S PRICES THE PUBLIC PAGES SHOW. Named once, here.
 //
-// The landing page, /features (FeatureComparison), /compare and Admin's plan matrix all quote ONE
+// The landing page, /features (components/pricing/PlanTable.tsx), /compare and Admin's plans table all quote ONE
 // country's plan prices, allowances and card fees, and before 10 October 2026 that country was implicit
 // in a dozen constants. It is now this one value, read through lib/country-settings.ts.
 //

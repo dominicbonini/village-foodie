@@ -1,0 +1,8 @@
+{
+  "banner": {
+    "body": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime."
+  },
+  "base": {
+    "preorders": "Pre-orders & pickup times"
+  }
+}

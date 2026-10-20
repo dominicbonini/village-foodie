@@ -30,15 +30,46 @@ const BAD = [/\$null/, /\bNaN\b/, /\bundefined\b/, /£/, /\bnull\/mo/]
   const US = { ...ctx.US, settings: { ...usSeed } }
 
   console.log('── the helpers')
-  const T = await kit.bundle('us-unpriced-types', "export * from '@/lib/country-settings-types'\nexport * as PF from '@/lib/plan-features'")
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): planPricesDecided / withPlaceholderPlanPrices moved from
+  // lib/country-settings-types.ts, and lib/plan-features.ts's price helpers moved, unchanged, into the frozen display
+  // copy lib/legacy-pricing-display.ts. The van add-on is now the plan's plan_prices.extra_van_monthly_minor (lib/plans.ts).
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/legacy-pricing-display.ts is DELETED, and with it
+  // planPricesDecided / withPlaceholderPlanPrices / planPrices (the raw read that threw on a NULL price). Nothing reads the
+  // six retired country_settings price columns any more (CountrySettings lost the fields; lib/country-settings.ts no longer
+  // selects them): every price is a plan_prices row, and a switched-OFF country is masked by its `enabled` flag — which
+  // the renders below prove ("TBD", no "$null" / "NaN"). So the three helper checks become: the helpers are gone, and the
+  // loader and the type no longer carry the columns (nothing can quietly borrow a number from them).
+  const LEGACY = require('fs').existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts'))
+  const T = await kit.bundle('us-unpriced-types', (LEGACY ? "export * as PF from '@/lib/legacy-pricing-display'\n" : '') + "export * as PL from '@/lib/plans'")
+  const CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
+  const RETIRED_COLS = ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct']
   t('the US row as seeded is switched off with every plan price NULL',
-    usSeed.enabled === false && ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct'].every(f => usSeed[f] === null), JSON.stringify(usSeed))
-  t('planPricesDecided: US (seeded) false, GB true', T.planPricesDecided(usSeed) === false && T.planPricesDecided(GB.settings) === true)
-  t('withPlaceholderPlanPrices returns GB\'s own row (the same object — a country with prices is untouched)', T.withPlaceholderPlanPrices(GB.settings) === GB.settings)
-  let threw = null; try { T.PF.planPrices(usSeed) } catch (e) { threw = e.message }
-  t('the guard still holds: a raw price read of the unpriced US row throws (nothing quietly borrows a number)', !!threw && /not been decided/.test(threw), threw)
-  t('the van add-on reads the placeholder row without throwing (Pro / Max)',
-    ['pro', 'max'].every(p => T.PF.vanAddonMonthlyMinor(p, T.withPlaceholderPlanPrices(usSeed)) === 1))
+    usSeed.enabled === false && RETIRED_COLS.every(f => usSeed[f] === null), JSON.stringify(usSeed))
+  if (LEGACY) {
+    T.planPricesDecided = T.PF.planPricesDecided; T.withPlaceholderPlanPrices = T.PF.withPlaceholderPlanPrices
+    t('planPricesDecided: US (seeded) false, GB true', T.planPricesDecided(usSeed) === false && T.planPricesDecided(GB.settings) === true)
+    t('withPlaceholderPlanPrices returns GB\'s own row (the same object — a country with prices is untouched)', T.withPlaceholderPlanPrices(GB.settings) === GB.settings)
+    let threw = null; try { T.PF.planPrices(usSeed) } catch (e) { threw = e.message }
+    t('the guard still holds: a raw price read of the unpriced US row throws (nothing quietly borrows a number)', !!threw && /not been decided/.test(threw), threw)
+  } else {
+    const fs = require('fs')
+    const walk = d => fs.readdirSync(path.join(REPO, d), { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : /\.tsx?$/.test(e.name) ? [path.join(d, e.name)] : [])
+    const strip = x => x.replace(/\/\/[^\n]*|\/\*[\s\S]*?\*\//g, '')
+    const defined = ['lib', 'components', 'app'].flatMap(walk).filter(f => /(function|const)\s+(planPricesDecided|withPlaceholderPlanPrices|requirePlanPrice)\b/.test(strip(fs.readFileSync(path.join(REPO, f), 'utf8'))))
+    const code = strip(['lib/country-settings.ts', 'lib/country-settings-types.ts'].map(f => fs.readFileSync(path.join(REPO, f), 'utf8')).join('\n'))
+    t('the price helpers are gone (planPricesDecided / withPlaceholderPlanPrices / requirePlanPrice defined nowhere in lib/, components/, app/)',
+      defined.length === 0, defined.join(', '))
+    t('CountrySettings and its loader carry none of the six retired price columns (nothing can borrow a number from them)',
+      !RETIRED_COLS.some(c => code.includes(c)) && !/starter_monthly_minor|pro_monthly_minor|max_monthly_minor|pro_allowance_minor|max_allowance_minor|platform_fee_pct/.test(code))
+  }
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "vanAddonMonthlyMinor reads the placeholder row (= 1)
+  // for Pro / Max". The van add-on no longer reads the retired columns at all: it is the plan_prices row's extra van
+  // price in the truck's country — the US rows exist in the seed, so it is a real number, unaffected by the NULL columns.
+  t('the van add-on is the US plan_prices extra-van price (Pro / Unlimited), never the retired columns',
+    ['pro', 'unlimited'].every(p => {
+      const row = CATALOG.prices.find(r => r.planKey === p && r.countryCode === 'US')
+      return row && row.extraVanMonthlyMinor > 0 && T.PL.extraVanMonthlyMinor({ plan: p, trial_expires_at: null }, CATALOG, 'US') === row.extraVanMonthlyMinor
+    }))
 
   console.log('── Manage › Billing, FeatureGate and Settings for a US truck with no plan prices')
   let M
@@ -51,7 +82,8 @@ const BAD = [/\$null/, /\bNaN\b/, /\bundefined\b/, /£/, /\bnull\/mo/]
       patches: [
         { file: M_FILE, append: 'export { BillingTab, SettingsTab }' },
         { file: M_FILE, from: "import { createPortal } from 'react-dom'", to: 'const createPortal = (el: any) => el' },
-        { file: M_FILE, states: ctx.states(M_FILE, ['showUpgradeModal', 'upgradeTarget', 'showMatrix']) },
+        // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): `showMatrix` is gone (the table always shows).
+        { file: M_FILE, states: ctx.states(M_FILE, ['showUpgradeModal', 'upgradeTarget']) },
       ],
     })
   } catch (e) { t('the Manage page bundles', false, e.message); return finish() }
@@ -68,7 +100,8 @@ const BAD = [/\$null/, /\bNaN\b/, /\bundefined\b/, /£/, /\bnull\/mo/]
   }
   const dollars = new Set()   // every "$n" left on a US Billing render — card-fee hedges only, reported below
   const billing = (C, truck, st = {}) => html(st, inManage(M, C, h(M.BillingTab, { truck })))
-  for (const plan of ['trial', 'starter', 'pro', 'max']) {
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): trucks hold public.plans keys — starter → payg, max → unlimited.
+  for (const plan of ['trial', 'payg', 'pro', 'unlimited']) {
     const truck = { ...US.truck, plan, trial_expires_at: plan === 'trial' ? '2026-12-31T23:59:59Z' : null }
     const out = clean(`US Billing · ${plan}`, billing(US, truck))
     if (out) {
@@ -78,19 +111,36 @@ const BAD = [/\$null/, /\bNaN\b/, /\bundefined\b/, /£/, /\bnull\/mo/]
   }
   console.log('     dollar amounts left on US Billing (expected: card processing fees only):', [...dollars].join(' '))
   {
-    const out = clean('US Billing · upgrade modal (Max)', billing(US, { ...US.truck, plan: 'pro' }, { showUpgradeModal: true, upgradeTarget: 'max' }))
-    if (out) t('US Billing · upgrade modal: "TBD", no dollar amount', /TBD/.test(out) && !/\$\d/.test(out), out.match(/\$[\d.,]+/g))
+    const out = clean('US Billing · upgrade modal (Unlimited)', billing(US, { ...US.truck, plan: 'pro' }, { showUpgradeModal: true, upgradeTarget: 'unlimited' }))
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the plan table never masks a ZERO ("$0 / month" — no secret);
+    // every other amount stays masked.
+    if (out) t('US Billing · upgrade modal: "TBD", no non-zero dollar amount', /TBD/.test(out) && !/\$(?!0\b)\d/.test(out), out.match(/\$[\d.,]+/g))
   }
   {
-    const all = billing(US, { ...US.truck, plan: 'starter' }, { showMatrix: true })
+    const all = billing(US, { ...US.truck, plan: 'payg' })   // ⚠️ RE-PINNED (Stage A): the matrix is always open now
     const out = clean('US Billing · comparison matrix open', all)
     if (out) t('US Billing · matrix: no plan amount in dollars (the card fee hedges are not plan prices)', /TBD/.test(out), out.match(/\$[\d.,]+/g))
   }
-  // FeatureGate refusing (a starter truck on a Pro feature): its upgrade line quotes the plan price.
+  // FeatureGate refusing.
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "a starter truck on a Pro feature: the upgrade line
+  // quotes the plan price as TBD". There are no plan tiers and no upgrade line: FeatureGate refuses only on an override
+  // (false) and then renders its fallback — no price at all, so nothing to crash on.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): FeatureGate takes the TRUCK (`truck`, was
+  // `overrides`) and resolves override → the effective plan's switch (plan_features) → on. The override refusal is
+  // unchanged (fallback only); "no override" now means a plan that has the feature (pro); and the PLAN refusal is back —
+  // a payg truck on whatsapp_replies (seeded off for payg) gets the one upgrade prompt naming Pro, whose US price is
+  // undecided, so it must render masked (no "$null" / "NaN"), never crash.
   {
-    const gate = html({}, inManage(M, US, h(M.FeatureGate, { feature: 'weekly_post', plan: 'starter', overrides: {}, trialExpiresAt: null })))
+    const gate = html({}, inManage(M, US, h(M.FeatureGate, { feature: 'weekly_post', truck: { ...US.truck, plan: 'pro', trial_expires_at: null, feature_overrides: { weekly_post: false } }, fallback: h('p', null, 'GATE-FALLBACK') }, h('p', null, 'GATE-CHILD'))))
     const out = clean('US FeatureGate · refused', gate)
-    if (out) t('US FeatureGate · refused: the price reads "TBD"', /TBD/.test(out), out.slice(0, 300))
+    if (out) t('US FeatureGate · refused (override false): its fallback only — no child, no price, no upgrade line',
+      /GATE-FALLBACK/.test(out) && !/GATE-CHILD/.test(out) && !/TBD|\$\d|upgrade/i.test(out.replace(/GATE-FALLBACK/, '')), out.slice(0, 300))
+    const open = html({}, inManage(M, US, h(M.FeatureGate, { feature: 'weekly_post', truck: { ...US.truck, plan: 'pro', trial_expires_at: null, feature_overrides: {} } }, h('p', null, 'GATE-CHILD'))))
+    t('US FeatureGate · no override, a plan with the feature: the child renders', /GATE-CHILD/.test(open))
+    const planOff = html({}, inManage(M, US, h(M.FeatureGate, { feature: 'whatsapp_replies', truck: { ...US.truck, plan: 'payg', trial_expires_at: null, feature_overrides: {} }, fallback: h('p', null, 'GATE-FALLBACK') }, h('p', null, 'GATE-CHILD'))))
+    const po = clean('US FeatureGate · plan-off (payg, whatsapp_replies)', planOff)
+    if (po) t('US FeatureGate · plan-off: the upgrade prompt naming Pro (no child, no fallback), its price masked — no dollar amount',
+      !/GATE-CHILD|GATE-FALLBACK/.test(po) && /included on Pro/.test(po) && !/\$\d/.test(po), po.slice(0, 400))
   }
   // GB control: Billing still shows a real or masked GB price word, and never "TBD" (GB's masked word is "TBC").
   {
@@ -98,7 +148,7 @@ const BAD = [/\$null/, /\bNaN\b/, /\bundefined\b/, /£/, /\bnull\/mo/]
     if (out) t('GB Billing · pro: GB words, no "TBD"', !/TBD/.test(out))
   }
   // Settings tab for a US Pro / Max truck: the van add-on price is built (masked) rather than thrown.
-  for (const plan of ['pro', 'max']) {
+  for (const plan of ['pro', 'unlimited']) {   // ⚠️ RE-PINNED (Stage A): max → unlimited
     const truck = { ...US.truck, plan }
     const noop = () => {}
     const props = { userRole: 'owner', truck, whatsappConnection: null, whatsappUsage: null, onConnectionUpdate: noop, token: 'harness', api: async () => ({}), showToast: noop,

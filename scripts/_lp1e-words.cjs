@@ -31,11 +31,26 @@ function gbKeyDiff() {
   }
   const moves = moves1e()
   for (const k of Object.keys(at0).sort()) if (!(k in a)) out[k] = { before: at0[k], after: null, kind: moves[k] ? `${BEFORE_REF} key MOVED to ${moves[k]} (scripts/fixtures/language-phase-1e-key-moves.json)` : `${BEFORE_REF} key deleted` }
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): this harness's A is the AUTHORED files, which now carry
+  // Stage A's word changes too. A key Stage A reworded or removed (scripts/fixtures/plans-stage-a-messages.json) is
+  // marked as STAGE A's — not Phase 1e's — when, and only when, its before / after are exactly what that file records.
+  const sa = LP2.stageA()['en-GB']
+  for (const [k, d] of Object.entries(out)) {
+    if (k in (sa.reworded || {}) && d.before === sa.reworded[k].before && d.after === sa.reworded[k].after) d.kind = STAGE_A_REWORDED
+    else if (k in (sa.removed || {}) && d.after === null && d.before === sa.removed[k]) d.kind = STAGE_A_REMOVED
+  }
   return out
 }
+const STAGE_A_REWORDED = 'plans-data-model Stage A: reworded (scripts/fixtures/plans-stage-a-messages.json)'
+const STAGE_A_REMOVED = 'plans-data-model Stage A: removed (scripts/fixtures/plans-stage-a-messages.json)'
+const isStageA = d => d.kind === STAGE_A_REWORDED || d.kind === STAGE_A_REMOVED
 function movedProblems() {
   const a = flat(catalogues('A')['en-GB']), at0 = flat(LP2.readJson(FROZEN_GB)), out = []
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): a key a plan stage REMOVED (LP2.stageA().removed) may stay in
+  // the as-moved list — the list is history — but only while it is absent from the catalogue (scripts/_lp1d-words.cjs's rule).
+  const removed = LP2.stageA()['en-GB'].removed || {}
   for (const [k, m] of Object.entries(moved())) {
+    if (k in removed && !(k in a)) continue
     if (!(k in a)) out.push(`${k}: in the as-moved list but not in messages/en-GB.json`)
     else if (a[k] === m) out.push(`${k}: its fixed text equals its as-moved text`)
     if (k in at0 && at0[k] !== m) out.push(`${k}: an ${BEFORE_REF} key whose as-moved text is not its ${BEFORE_REF} text (${JSON.stringify(m)} vs ${JSON.stringify(at0[k])})`)
@@ -67,4 +82,4 @@ function usDiff() {
   for (const k of Object.keys(b).sort()) if (!(k in a)) out.removed[k] = { before: b[k] }
   return out
 }
-module.exports = { REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, MOVED, catalogues, moved, moves1e, gbKeyDiff, movedProblems, keyMoveProblems, newKeys, usDiff, flat, LP2 }
+module.exports = { isStageA, STAGE_A_REWORDED, STAGE_A_REMOVED, REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, MOVED, catalogues, moved, moves1e, gbKeyDiff, movedProblems, keyMoveProblems, newKeys, usDiff, flat, LP2 }

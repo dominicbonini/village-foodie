@@ -36,6 +36,7 @@ const CAPTURE = argv.includes('--capture') ? argv[argv.indexOf('--capture') + 1]
 const BEFORE_FILE = 'scripts/fixtures/order-charges-before.json'
 const NOW = '2026-10-09T11:00:00.000Z'
 const SEEDS = require('./_country-settings-gb.cjs')
+const LFU = require('./_legal-followups-named.cjs')
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
 const { NextRequest } = require(path.join(REPO, 'node_modules/next/server'))
 const AFTER_CODE = fs.existsSync(path.join(REPO, 'lib/order-charges.ts'))
@@ -99,6 +100,11 @@ function tables(over = {}) {
     discount_codes_db: [{ id: 'd1', truck_id: 'test-truck', code: 'TENOFF', type: 'pct', value: 10, is_active: true }],
     orders: (over.orders || []).map(o => ({ ...o })),
     order_drafts: [], order_payments: [], booking_locks: [],
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): submit asks the plan catalogue whether the truck's
+    // plan allows Pay at Hatch / auto-accept (truckCan, decideAutoAccept's new `planAllows`), and promote-draft reads it
+    // through the client it is given (readPlanCatalog(supabase)) — so the fake database carries public.plans /
+    // plan_prices / plan_features AS THE MIGRATIONS SEED THEM. Fixture input only: no write, rpc or email touches them.
+    ...require('./_lp1c-fixtures.cjs').planTables(),
   }
 }
 
@@ -283,7 +289,10 @@ async function main() {
   for (const [name, b] of Object.entries(before)) {
     const a = stripNamed(name, got[name])
     for (const part of ['out', 'rpcs', 'writes', 'emails', 'push', 'auth', 'capture']) {
-      const d = diffJson(b[part], a[part])
+      // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md): the customer emails gain the
+      // named change legal-followups-privacy-link (the " · Privacy" footer link) — scripts/_legal-followups-named.cjs.
+      const bp = part === 'emails' && b[part] ? JSON.parse(JSON.stringify(b[part], (_, v) => LFU.emailPrivacy(v))) : b[part]
+      const d = diffJson(bp, a[part])
       t(`${name}: ${part} byte-identical to BEFORE apart from the named difference`, d === null, d)
     }
   }

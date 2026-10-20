@@ -7,10 +7,16 @@
 // 🔴 THE PAGE ALREADY RENDERED IN THE RIGHT COUNTRY — on the server (lib/visitor-country.ts). Choosing one here
 // keeps it in the hg_country cookie and asks the server for the page again; nothing is priced in the browser.
 // Flags are small images (country-flag-icons SVGs as data URIs, from the server), never emoji.
+// 🔴 seo-fixes M1 (20 October 2026, docs/seo-fixes-report.md): CRAWLABLE. Each option is a real <a href> to that
+// country's equivalent page (switchCountryPath: /uk/features → /us/features; a page with no country address links to
+// the country's landing page), and the menu is ALWAYS in the server-rendered HTML — closed, it is hidden by CSS
+// (`.cc-menu-closed`), not absent. The click is unchanged: it keeps the cookie and navigates (the default navigation is
+// prevented and the same router call as before runs). Only switched-on countries are options, so a switched-off
+// country is never linked.
 import { useEffect, useId, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE, type VisitorCountryMenu } from '@/lib/visitor-country-types'
-import { switchCountryPath } from '@/lib/marketing-country'   // pure, client-safe: the country-address table
+import { switchCountryPath, countryPagePath } from '@/lib/marketing-country'   // pure, client-safe: the country-address table
 // Language Phase 1e: the button's and the menu's labels are `landingNav.country` messages.
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/landingNav'
@@ -34,6 +40,9 @@ const Flag = ({ src }: { src: string | null }) => (src
 
 export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; variant: 'header' | 'footer' }) {
   const router = useRouter()
+  // The page's own path — known on the server too, so every option's href is in the server-rendered HTML.
+  const pathname = usePathname() ?? '/'
+  const hrefOf = (code: string) => switchCountryPath(pathname, code) ?? countryPagePath(code, 'landing') ?? undefined
   const t = useT('landingNav')
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLDivElement>(null)
@@ -46,7 +55,7 @@ export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; varia
 
   useEffect(() => {
     if (!open) return
-    const first = wrap.current?.querySelector<HTMLButtonElement>('[aria-checked="true"]') ?? wrap.current?.querySelector<HTMLButtonElement>('[role="menuitemradio"]')
+    const first = wrap.current?.querySelector<HTMLElement>('[aria-checked="true"]') ?? wrap.current?.querySelector<HTMLElement>('[role="menuitemradio"]')
     first?.focus()
     const away = (e: MouseEvent | TouchEvent) => { if (!wrap.current?.contains(e.target as Node)) setOpen(false) }
     const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); button.current?.focus() } }
@@ -72,8 +81,8 @@ export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; varia
   const moveFocus = (e: React.KeyboardEvent<HTMLUListElement>) => {
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
     e.preventDefault()
-    const items = [...(wrap.current?.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]') ?? [])]
-    const i = items.indexOf(document.activeElement as HTMLButtonElement)
+    const items = [...(wrap.current?.querySelectorAll<HTMLElement>('[role="menuitemradio"]') ?? [])]
+    const i = items.indexOf(document.activeElement as HTMLElement)
     items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length]?.focus()
   }
 
@@ -85,19 +94,20 @@ export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; varia
         <span className="cc-name">{variant === 'header' ? current.shortName : current.name}</span>
         <Chevron />
       </button>
-      {open && (
-        <ul id={listId} role="menu" aria-label={t('country.menu')} className="cc-menu" onKeyDown={moveFocus}>
-          {options.map(o => (
-            <li key={o.code} role="none">
-              <button type="button" role="menuitemradio" aria-checked={o.code === current.code} className="cc-item" onClick={() => choose(o.code)}>
-                <Flag src={o.flag} />
-                <span className="cc-item-name">{o.name}</span>
-                {o.code === current.code && <Tick />}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Always rendered (crawlable); closed = `.cc-menu-closed` (display:none — out of the layout, the tab order and the
+          accessibility tree, exactly as when it was absent). */}
+      <ul id={listId} role="menu" aria-label={t('country.menu')} className={`cc-menu${open ? '' : ' cc-menu-closed'}`} onKeyDown={moveFocus}>
+        {options.map(o => (
+          <li key={o.code} role="none">
+            <a href={hrefOf(o.code)} role="menuitemradio" aria-checked={o.code === current.code} className="cc-item"
+              onClick={e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); choose(o.code) }}>
+              <Flag src={o.flag} />
+              <span className="cc-item-name">{o.name}</span>
+              {o.code === current.code && <Tick />}
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

@@ -1,125 +1,102 @@
-# Reference manual update — V15.9 → V16.0
+# Reference manual update — V16.0 → V16.1
 
-**Date:** 17 October 2026
-**File changed:** `docs/reference-manual.md` (31,597 → 31,955 lines). Nothing else in the repository was touched.
-**Delta applied:** `~/Downloads/reference-manual-delta-languages-midnight.md` (session 14–17 October 2026).
+19 October 2026. I merged `~/Downloads/reference-manual-delta-us-rehearsal-legal.md` into `docs/reference-manual.md`,
+following the delta's own header:
+- each block is placed by heading text, and a new section is created at the end where none exists;
+- the delta is reconciled with the manual, with no duplicates;
+- where the delta contradicts the manual, it wins and the old line is corrected in place;
+- the version moves to the next minor (V16.1), with the delta's changelog entry.
 
-## Summary
+Nothing else in the manual was changed. No other file was touched, apart from this report. Nothing was committed or
+pushed, and no SQL was run.
 
-The delta has been merged in full:
-- each block is placed by its heading text;
-- contradicted lines are corrected in place (31 lines changed; no other existing text removed);
-- the previous delta's open items are closed in place;
-- the changelog entry is at the top of "# Changelog".
+**Result.**
+- **Version:** the manual is V16.1. The running header (line 1) and the front-matter `**Version 16.1**` agree; I
+  grepped both.
+- **Diff:** 423 lines added and 57 removed. I read every removed line. Each one is an in-place correction (the old text
+  is mostly kept struck through) or the version bump.
+- **Garbling or contradictions:** none. The prompt and the delta read cleanly, and nothing in them contradicted
+  anything else.
 
-The version moved from V15.9 to **V16.0**.
+## Where each block went
 
-## The prompt
-
-No span arrived garbled, and no two instructions contradicted each other. Three points in the delta needed a judgement call; they are listed under "Points to check" below.
-
-## Version
-
-**V15.9 → V16.0.** The manual's own precedent decides "next minor" after .9: the two most recent were V13.9 → V14.0 and V14.9 → V15.0 (changelog lines 344 → 321 and 1096 → 978). An older V11.9 → V11.10 exists, but it is not the current practice.
-
-The version is bumped in all three places it appears, checked with grep:
-- the header (line 1): `HatchGrab Engineering Reference Manual · V16.0`;
-- the front matter (line 9): `**Version 16.0**`;
-- §49's title: "Deploy posture (current at V16.0; …)".
-
-## Where each delta block went
-
-| Delta block | Placed at | How |
+| Delta block | Placed in | Why there |
 |---|---|---|
-| Proposed changelog entry | `## V16.0 — 14–17 October 2026 — …` at the top of "# Changelog" | Includes a "Where" table, the in-place corrections, and the delta-vs-manual notes |
-| Languages (UPDATE) | §77 | Phase 0 details folded into §77.4. New subsections: §77.6 How words are read, §77.7 What each phase moved, §77.8 US behaviour, §77.9 Proof method, §77.10 Open. Decisions appended to §77.2 under "Later decisions". Rule 1 extended in §77.5, plus the `language.mdc` note |
-| Marketing site and SEO (NEW subsection; with landing/marketing) | §48 "The landing page and marketing surfaces" → new `### Country addresses and the router (V16.0)` at its end | Its Decision and Open are `####` subheadings |
-| Schedules, discovery and the scraper (ADD) | §33, directly after "Schedules, discovery and the scraper by country (V15.8)" → `## Schedules, discovery and the scraper — private and generic events (V16.0)` | Both the venue-side block and the Village Foodie block |
-| Events and the schedule — overnight events (NEW subsection) | §15 "Events and venues" → new `## Overnight events — events that run past midnight (V16.0)` at its end | The rule, the follow-ups, and the US format bugs |
-| US readiness — layout (NEW subsection) | **§76.8**, inside §76 "International readiness — country settings" | **No section is titled "US readiness".** §76 is where the V15.8 US readiness sweep already lives (its sources list `us-readiness-sweep-report.md`). The subsection says so |
-| Tooling and workflow (ADD) | **NEW §79 "Tooling and workflow", created at the end** | **The manual had no such section.** The closest are §22 Development process and §26 Testing and dev environment, but neither has that heading. The new section says so |
-| Deploy posture (REPLACE) | §49 → new `### 🔴 DEPLOY POSTURE AT V16.0 …` leading the section | See "Points to check" 2 |
-| Open backlog (UPDATE) | §27 → new `## Added V16.0 …` after the "Added V15.8" block; the V15.8 block corrected in place | "Keep" items already in the V15.8 block are referenced in one line, not repeated |
-| Cross-cutting engineering invariants (ADD) | §35 → new `## 35.ah 🔴 TIME, DISCOVERY AND LANGUAGE INVARIANTS (V16.0)` after 35.ag | All nine invariants. The foreign-key and edge-mirror rules point back to §33 and §15, which hold the precedent, not a second copy of the rule |
+| Proposed changelog entry | New **V16.1** entry at the top of the Changelog, above V16.0 | Same format as V16.0: summary, placement table, corrected lines, and the delta checked against the manual |
+| US readiness — layout (UPDATE) | **§76.8** | The 22 issues, the six fix directions and five of the six GB problems are marked fixed in place. "How it was done", "Decisions (18 Oct)" and "What changed" (including the pending-card buttons) are added at its end |
+| US readiness — the hidden US test truck (NEW) | **§76.9** (new) | Next to §76.8; the US readiness subsections live in §76 |
+| Security (UPDATE) | **New §80 "Security"**, at the end | No section is titled Security, so the header's rule applies. Almost all of the block was already in §35, "A FUNCTION'S DEFAULT GRANT IS PUBLIC" (added 19 Oct), or in the secrets standing rule, so those lines were corrected there. §80 holds the one new rule (no browser `.rpc()` calls) and points to the rest |
+| Marketing site and SEO (ADD) | **§48** "The landing page and marketing surfaces", new subsection at its end | No section has that exact title; §48 is the marketing site's section, and its Open list held the truck-metadata item this resolves |
+| Money formatting (ADD) | **§76.2** "Client-safe formatting" | The delta says to place it with the money-format notes, and §76.2 holds the `lib/money-format.ts` note |
+| Languages (ADD) | **§77.11** (new) | §77 is Languages |
+| Legal (NEW or UPDATE) | **§43** "Legal, email and domain", new subsection at its end | An update of the existing legal section |
+| Tooling and workflow (ADD) | **§79**, at its end | |
+| Deploy posture (REPLACE the current block) | **§49**: a new current block for V16.1 | §49's heading says earlier postures stay below, each dated. So the V16.0 block is no longer current and stays as history. Its stale lines are corrected |
+| Open backlog (UPDATE) | **§27**: a new V16.1 block, with the V15.8 and V16.0 blocks corrected in place | Same pattern as V16.0 |
+| Cross-cutting engineering invariants (ADD) | **§35.ai** (new, after 35.ah) | |
 
-## Older lines corrected in place (the delta wins)
+## Older lines corrected in place
 
-**§15 Events and venues**
-- "The end-after-start guard" now notes that an end earlier than the start is the next day, and that only end = start is refused.
-- "Overnight events remain impossible, deliberately" is marked superseded, with a pointer. The V11 reasoning is kept as history.
+- **The secrets standing rule** (top of the manual):
+  - "report set or missing", "check with a parser that emits nothing" and "check one name at a time with
+    `grep -q`" are struck;
+  - the 18 October incident is its third precedent;
+  - the rule now reads as decided on 18 Oct: no agent opens, parses, lists, loads or tests any `.env*` file in any
+    form; configuration is worked out from code.
+- **§35, function grants:**
+  - "Verified false / false / true" now says it was undone, re-applied on 19 Oct, and is guarded;
+  - "OPEN on 19 October" (the eight functions) becomes "CLOSED", with the 0-rows verify;
+  - the migration record now says "do not run" and names 15 creating migrations;
+  - the guard's allow-list is recorded as empty.
+- **§43:** the V11.45 PostHog block ("OPEN — nothing has been changed") is marked resolved. So are item 1 of the
+  V11.54 three-defects list and the analytics half of item 2.
+- **§47:** "persistence defaults to cookie plus local storage" is corrected to `persistence: 'memory'`, with the note
+  that visitor counts read higher.
+- **§48:**
+  - the V12.6 "privacy policy is still contradicted" line is resolved;
+  - two Open items are fixed: the back-to-back tinted bands, and the truck-page metadata.
+- **§52 and §60:** "nothing is appended" now names the company line; §60's refusals gain the opt-out refusal and its two
+  exemptions.
+- **§53.8 item 8:** the opt-out line is enforced again; the signature is still the operator's.
+- **§27:**
+  - four "analytics cookie" open lines are closed;
+  - V15.8 block: the revokes migration and the date mismatch are done; "legal text per country, with a lawyer" is done
+    as best effort, with no lawyers decided on 18 Oct; US plan prices now include the unlimited plan;
+  - V16.0 block: the US layout fixes, screens still showing `error`, truck-page metadata and thousands separators are
+    done.
+- **§49:** the V16.0 and V15.9 postures note that the overnight work and `auto-event-scheduler` were deployed on 19 Oct.
 
-**§27 Open backlog**
-- The V11.14 "Overnight events" item is struck: built, and auto-open after midnight stays open.
-- In the V15.8 block:
-  - re-run `_16`: done;
-  - language phases 1a onwards: done for English;
-  - US screenshots, testimonial, URLs and hreflang, and the demo country: done;
-  - the US App Store link: done;
-  - the "Sept" item is narrowed: Phase 2 changed most sites; the rest are listed in `language-phase-2-report.md` §6.
+## Not repeated, because the manual already said it
 
-**§33 Discovery**
-- "`_16` must be re-run after deploy" now says it was re-run (OBSERVED).
+- **Most of the delta's Security block:** the cause, the ACL order, the 24-hour logs, the migration file, the guard,
+  "⛔ DO NOT RUN", and undo SQL kept out of chat. All of it was in §35 from 19 Oct.
+- **The localhost note** ("marketing pages need `hatchgrab.localhost:3000`") is already in §48; §79 points to it.
+- **"The SQL editor shows only the last statement's result"** is already recorded at V13.7. It is listed in §79 with
+  that reference.
+- **The first two of the delta's six invariants** (revoke in the same file; never print rollback SQL) are in §35's
+  function-grant class. 35.ai points to them, as 35.ag already does.
 
-**§48 The landing page and marketing surfaces**
-- V12.5 sitemap line: marked superseded (`/landing` is now a 302; the sitemap holds country URLs only).
-- V14.9 `/features` lines:
-  - the canonical is now the country address;
-  - the title and tags follow the page's country;
-  - the sitemap entry is superseded.
+## Judgment calls, stated
 
-**§49 Deploy posture**
-- V15.9 posture: `_16` re-run noted. Its "no entry for Language 1a/1b" item is struck and closed.
-- V15.8 posture: `_16` re-run noted.
+1. **Security got a new §80**, as the header asks when no section of that title exists. To avoid duplicates it is
+   short: one new rule, and pointers to §35, the standing rules and §27.
+2. **"Marketing site and SEO" went into §48,** not a new section, because §48 is the marketing site's section. This
+   follows the V16.0 merge, which placed "US readiness" under §76 for the same reason.
+3. **"REPLACE the current block" in §49** made the V16.1 block the current one and kept V16.0 as dated history, as the
+   section's own heading requires.
+4. **Backlog "Close: the state on emailed schedules"** had no backlog line to close; the fact is in §76.9.
+5. **The "Truck not found" fix** applies to trucks with no discovery row. The older §27 and §32 entries are about a
+   graduated truck's `excluded` shadow row, a different case, so they were left alone.
+6. **§76.8's last GB problem** ("the ticket's printed stamp shows only the time") stays open, because the delta does
+   not mention it.
+7. **Older changelog entries are history** and were not edited, including V11.45's PostHog line.
+8. **The twin truck's dashboard and KDS tokens** appear nowhere in the manual, as the delta instructs.
 
-**§76.5 Signup and landing by country**
-- Marketing titles and tags follow the page's country, not the visitor's.
+## Checks run
 
-**§77 Languages**
-- §77.1:
-  - SEO: country URLs done;
-  - "the demo is always provisioned as a GB truck" is struck (since Phase 2 it is built in the visitor's country).
-- §77.2:
-  - marketing follows the page's country;
-  - the US word table was approved on 15 Oct.
-- §77.3: a status line (0, 1a–1e and 2 done for English).
-- §77.4:
-  - "Nothing at runtime loads them" added to the dependency line;
-  - an as-built note on server components;
-  - the "Sept" line updated.
-
-**§78.8 Open**
-- Item 4 (no manual entry for Language 1a/1b) is struck and closed.
-
-## Points to check
-
-1. **"Remove its ⚠️ 'check against the report' line" (Languages, Phase 0).**
-   - §77 carries no such line. The V15.8 merge had already checked the Phase 0 block against `docs/language-phase-0-report.md` and corrected it.
-   - The only matching text is the V15.8 changelog's record of that check (line 113 before the merge). That record is history, so it was kept.
-   - Nothing was removed. The delta's two "details to add" were already in §77.4 except "nothing at runtime loads them", which was added.
-2. **"REPLACE the previous delta's block" (Deploy posture).**
-   - §49's own title says earlier postures stay below, each dated, with the current one leading. Every earlier merge followed that.
-   - I read "replace" as "replaces it as the current posture": the V16.0 block leads §49 and says it replaces the V15.9 and V15.8 postures as current.
-   - The older blocks are kept as dated history, with their `_16` and Language 1a/1b items corrected in place.
-   - If you meant the V15.8 block to be deleted outright, that is a one-block removal.
-3. **Backlog "Close: loading only a truck's own language on Manage".** No such item was in §27, so there was nothing to close. The decision is recorded in §77.2 ("Part C … reverted").
-
-**Side note, not changed:** the delta's list of pushed commits omits `c96fe5f` ("private events"), which is on `origin/main` between `a858ca5` and `692adb4` (from `git log origin/main`). The delta says "include", so the list is not claimed to be complete. It was copied as written, with its "Check `git log origin/main`" line.
-
-## Duplicates avoided
-
-- **Phase 0:** the extra dependencies and `typecheck.ts` were already in §77.4, so they were not added again.
-- **Landing country order:** the router's order is the same as §76.5's. §48 says "the same order as §76.5" rather than adding a second explanation.
-- **Allergen floor:** §77.10 points to §77.1 rather than restating it.
-- **Backlog:** "keep" items already in the V15.8 block (the Maps key, US plan prices, Phase 5, legal, the revokes migration, the `discovery_events` key, reject reasons, the allergen floor) are named once in a pointer line, not re-listed.
-- **Foreign-key rule and edge-mirror rule:** stated once in 35.ah, which points to the precedent in §33 and §15.
-
-## Checks
-
-- `grep -nE "V15\.9|Version 1[56]\.|V16\.0"`: the header and front matter read V16.0; §49's title reads V16.0. V15.9 remains only in history (its changelog heading, its posture, §78).
-- Every replacement in the merge script required exactly one match (35 edits; any miss would have stopped it).
-- `git diff` on the manual: 31 lines removed, and every one is an in-place correction listed above.
-- Headings checked in order: §76.1–76.8, §77.1–77.10, §78, §79.
-- The two harnesses that read the manual were run, and neither is affected:
-  - `compare-no-system`: 54/54 pass;
-  - `check-plain-english`: 111/112, the same one long-standing known violation as before.
-- No database queries were run, and no SQL is needed for this update.
+- `grep -nE "V16\.1|Version 16\."`: the header and the front matter both read 16.1.
+- No placeholder text is left in the manual.
+- `git diff --numstat`: 423 added, 57 removed. Every removed line was read and is intended.
+- A backup of the pre-merge manual is at
+  `/private/tmp/claude-501/-Users-dominicbonini-dev-village-foodie/4c8f3b39-c0f3-4916-81cd-95247f75baec/scratchpad/reference-manual.before.md`.
+  `git diff HEAD -- docs/reference-manual.md` shows the same change.

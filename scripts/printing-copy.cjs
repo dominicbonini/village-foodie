@@ -23,10 +23,18 @@ let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} 
 // below is its source PLUS those messages (both languages) — the words a visitor reads, wherever they are written.
 const MSG = loc => JSON.parse(read(`messages/${loc}.json`))
 const leaves = (o, p = '') => Object.entries(o || {}).flatMap(([k, v]) => (v && typeof v === 'object' ? leaves(v, `${p}${k}.`) : [[`${p}${k}`, v]]))
-const MARKETING_NS = /^(landing|landingNav|landingFooter|planFeatures|planMeta|featuresPage|plansPdf|compare)\./
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): planMeta / featuresPage were deleted; the landing pricing section's
+// words are `pricing.*` and the one plan table's are `planTable.*` — both are marketing words now.
+const MARKETING_NS = /^(landing|landingNav|landingFooter|planFeatures|pricing|planTable|plansPdf|compare)\./
 const marketingWords = () => ['en-GB', 'en-US'].flatMap(loc => leaves(MSG(loc)).filter(([k]) => MARKETING_NS.test(k)).map(([k, v]) => `${loc}:${k} = ${v}`)).join('\n')
-const landingText = () => noComments(read('app/landing/page.tsx')) + '\n' + marketingWords()
-const FACING = ['messages/en-GB.json', 'messages/en-US.json', 'components/printing/PrintingSettings.tsx', 'components/printing/PrinterTypeChoice.tsx', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts', 'lib/printing/usePrinting.ts', 'lib/plan-features.ts', 'app/landing/page.tsx', 'content/store-listing.md', 'app/api/printing/route.ts']
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the landing's pricing cards are components/pricing/PricingSection.tsx.
+const landingText = () => noComments(read('app/landing/page.tsx')) + '\n' + noComments(read('components/pricing/PricingSection.tsx')) + '\n' + marketingWords()
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts was DELETED; its content (rows, footnotes,
+// unchanged and frozen) now lives in lib/legacy-pricing-display.ts, so that file takes its place in every scan below.
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/legacy-pricing-display.ts was DELETED; the plan table's rows are
+// lib/feature-table.ts, drawn by components/pricing/PlanTable.tsx, and the landing cards by components/pricing/PricingSection.tsx.
+const PLAN_TABLE_FILE = 'lib/feature-table.ts'
+const FACING = ['messages/en-GB.json', 'messages/en-US.json', 'components/printing/PrintingSettings.tsx', 'components/printing/PrinterTypeChoice.tsx', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts', 'lib/printing/usePrinting.ts', PLAN_TABLE_FILE, 'components/pricing/PlanTable.tsx', 'components/pricing/PricingSection.tsx', 'app/landing/page.tsx', 'content/store-listing.md', 'app/api/printing/route.ts']
 console.log('── BROKEN VARIANT: MUST report FAILURE ──────────────────────────────────────────────────')
 {
   // Re-based 19 September 2026: this replaced "Bluetooth or wired printer" on the landing page, a phrase
@@ -34,7 +42,8 @@ console.log('── BROKEN VARIANT: MUST report FAILURE ────────
   // anything. It now reinstates the word in the bullet that IS there.
   // ⚠️ RE-PINNED (Language Phase 1e): the bullet is the message landing.pricing.max.printing — the variant reinstates the
   // word THERE (in the words the landing renders), and the same scan as below must catch it.
-  const v1 = landingText().replace('landing.pricing.max.printing = Kitchen ticket printing', 'landing.pricing.max.printing = Kitchen thermal ticket printing')
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the bullet is now pricing.base.printing (the first card's bullets).
+  const v1 = landingText().replace('pricing.base.printing = Kitchen ticket printing', 'pricing.base.printing = Kitchen thermal ticket printing')
   if (v1 === landingText()) { console.log('  🔴 V1: THE MUTATION DID NOT APPLY'); process.exit(1) }
   const hit = /thermal/i.test(v1)
   console.log(`  ${hit ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V1 "thermal" reinstated on the landing page is caught`)
@@ -44,7 +53,11 @@ console.log('\n── no "thermal" in rendered/returned strings ─────�
 for (const f of FACING) { const s = f.endsWith('.md') || f.endsWith('.json') ? read(f) : noComments(read(f)); const m = s.match(/.*thermal.*/i); check(!m, `${f}${m ? ' — ' + m[0].trim() : ''}`) }
 console.log('\n── marketing mentions say "Bluetooth or wired" ──────────────────────────────────────────')
 {
-  const pf = read('lib/plan-features.ts')
+  const pf = read(PLAN_TABLE_FILE) // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was lib/plan-features.ts (deleted, moved here)
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): PLAN_TABLE_FILE is lib/feature-table.ts. The card's bullet is
+  // `pricing.base.printing`, rendered by PricingSection as t(`base.${k}`) for each BASE_CARD_BULLETS key (`printing` gated by
+  // ticket_printing). The row `detail` and footnote n5 ("Bluetooth or wired") were deleted with every planFeatures detail /
+  // footnote — so they are asserted GONE, and the "Bluetooth or wired" rule still holds for every mention that names a printer.
   // 🔴 THE CARD NAMES THE FEATURE; THE TABLE CARRIES THE DETAIL. Asserted as AGREEMENT with the row's own
   // `name` rather than as a literal, so the two cannot drift — which is exactly what the landing page's
   // own comment warns about ("this bullet is hand-written and nothing checks it"). Now something does.
@@ -55,16 +68,17 @@ console.log('\n── marketing mentions say "Bluetooth or wired" ────�
   // footnote 5 say "Bluetooth or wired".
   const gbW = Object.fromEntries(leaves(MSG('en-GB'))), usW = { ...gbW, ...Object.fromEntries(leaves(MSG('en-US'))) }
   const rowName = /\{ id: 'ticket_printing',/.test(pf) ? gbW['planFeatures.row.ticket_printing.name'] : undefined
-  const landing = noComments(read('app/landing/page.tsx'))
+  const section = noComments(read('components/pricing/PricingSection.tsx'))
   check(!!rowName, `the comparison table still has a row named ${JSON.stringify(rowName ?? null)}`)
-  check(/<li>\{t\('pricing\.max\.printing'\)\}<\/li>/.test(landing) && gbW['landing.pricing.max.printing'] === rowName && usW['landing.pricing.max.printing'] === usW['planFeatures.row.ticket_printing.name'],
+  check(/\{ key: 'printing', feature: 'ticket_printing' \}/.test(pf) && /<li key=\{k\}>\{t\(`base\.\$\{k\}` as never\)\}<\/li>/.test(section)
+    && gbW['pricing.base.printing'] === rowName && usW['pricing.base.printing'] === usW['planFeatures.row.ticket_printing.name'],
     `the pricing card's bullet is that name exactly: "${rowName}" (GB and US)`)
-  check(![gbW, usW].some(w => /\(/.test(w['landing.pricing.max.printing'] || '')),
-    'and carries no parenthetical — which printers it works with is the table\'s job, not the card\'s')
-  check([gbW, usW].every(w => /Print order tickets to a Bluetooth or wired printer in the kitchen\./.test(w['planFeatures.row.ticket_printing.detail'] || '')), 'plan-features row detail (GB and US)')
-  check([gbW, usW].every(w => /compatible Bluetooth or wired printer \(neither supplied\)/.test(w['planFeatures.footnote.n5'] || '')), 'plan-features footnote (GB and US)')
+  check(![gbW, usW].some(w => /\(/.test(w['pricing.base.printing'] || '')),
+    'and carries no parenthetical — which printers it works with is not the card\'s job')
+  check([gbW, usW].every(w => w['planFeatures.row.ticket_printing.detail'] === undefined), 'the plan-features row detail is gone (Stage B) — GB and US')
+  check([gbW, usW].every(w => !Object.keys(w).some(k => k.startsWith('planFeatures.footnote.'))), 'the plan-features footnotes are gone (Stage B) — GB and US')
   check(!/Bluetooth receipt printer/.test(read('content/store-listing.md')) && /Bluetooth or wired printer/.test(read('content/store-listing.md')), 'store listing')
-  const mentions = [...FACING.filter(f => /landing|plan-features|store-listing/.test(f)).flatMap(f => (noComments(read(f)).match(/[^.\n]*printer[^.\n]*/gi) || []).map(x => f + ': ' + x.trim())),
+  const mentions = [...FACING.filter(f => /landing|feature-table|pricing\/|store-listing/.test(f)).flatMap(f => (noComments(read(f)).match(/[^.\n]*printer[^.\n]*/gi) || []).map(x => f + ': ' + x.trim())),
     ...(marketingWords().match(/[^.\n]*printer[^.\n]*/gi) || []).map(x => 'messages: ' + x.trim())]
   for (const m of mentions) check(/Bluetooth or wired|wired printer|Bluetooth printer|the printer|your printer|a printer|no printer|kitchen printer|Compatible printers|physical printer/i.test(m), m.slice(0, 140))
 }

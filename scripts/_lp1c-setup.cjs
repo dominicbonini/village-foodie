@@ -261,7 +261,9 @@ async function views(ctx) {
     const rows = cc === 'US' ? [GB_ROW(), US_ON()] : [GB_ROW(), US_OFF()]
     const provision = async (key, opts, over = {}) => {
       const writes = []
-      globalThis.__harnessDb = kit.fakeDb({ country_settings: (over.rows || rows).map(snake), trucks: [], truck_vans: [] }, writes)
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): provisioning reads the plan catalogue (getPlanCatalog) — the seeded
+      // plans / plan_prices rows ride along as fixture input (scripts/_lp1c-fixtures.cjs planTables).
+      globalThis.__harnessDb = kit.fakeDb({ country_settings: (over.rows || rows).map(snake), trucks: [], truck_vans: [], ...ctx.FIX.planTables() }, writes)
       globalThis.__lpRandSeed = over.seed || 0
       lib.clearCountrySettingsCache()
       let result = null, error = null
@@ -295,4 +297,7 @@ async function views(ctx) {
   return out
 }
 
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): a truck provisioned on a TRIAL plan now gets a dated
+// `trial_expires_at` — named ONCE, in Phase 2's shared table (scripts/_lp2-named.cjs plans-a2-trial-expires-at), which
+// language-phase-1c applies to BEFORE before comparing (and language-phase-2 to its own copies of these views).
 module.exports = { views }

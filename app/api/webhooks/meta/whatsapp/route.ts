@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { nationalDigitsOfInternational } from '@/lib/phone'
 import { createClient } from '@supabase/supabase-js'
-import { canAccess, type Plan } from '@/lib/features'
+import { truckCan } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
+import type { PlanKey } from '@/lib/plans'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeSettings, truckTimeZone } from '@/lib/truck-time'
@@ -185,7 +187,7 @@ interface TruckRow {
   whatsapp_sender: string | null
   whatsapp: string | null
   phone_number_id: string | null
-  plan: Plan
+  plan: PlanKey
   feature_overrides: Record<string, boolean> | null
   trial_expires_at: string | null
   whatsapp_monthly_reply_limit: number | null
@@ -519,7 +521,8 @@ export async function POST(req: NextRequest) {
     // 🔴 THE PLAN GATE NOW SAYS SO. It was a bare `return` — a customer messaged a truck on an expired
     // trial, nothing was sent, and NOTHING ANYWHERE recorded that a reply had been suppressed. That is
     // indistinguishable from the webhook never firing, which is how it would have been diagnosed.
-    if (!canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+    // Stage A2: override → the truck's EFFECTIVE plan's switch (an ended plan → the expiry fallback's) → allowed.
+    if (!truckCan(truck, await getPlanCatalog(), 'whatsapp_replies')) {
       console.warn(
         `[webhook/meta-whatsapp] PLAN GATE DENIED truck=${truck.id} plan=${truck.plan} ` +
         `feature=whatsapp_replies decision=deny — nothing sent.`,

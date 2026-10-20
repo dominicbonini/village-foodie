@@ -15,7 +15,7 @@
 
 import type { CountrySettings } from '@/lib/country-settings-types'
 import {
-  formToValues, checkNewCountry, asCountryForm, STALE_SAVE, PLAN_PRICE_FIELDS_STORED, type FieldError, type CountryValues,
+  formToValues, checkNewCountry, asCountryForm, STALE_SAVE, ENABLE_NEEDS_PRICES, type FieldError, type CountryValues,
 } from '@/lib/admin/country-form'
 
 // ── 🔴 THE ONLY PLACE THE PAGE'S FIELDS MEET COLUMN NAMES — kept here, server-side, so no column name is
@@ -33,8 +33,8 @@ export function valuesToColumns(v: CountryValues): Record<string, unknown> {
     card_surcharge_credit_only: v.cardSurchargeCreditOnly, card_surcharge_excluded_regions: v.cardSurchargeExcludedRegions,
     service_fee_allowed: v.serviceFeeAllowed, tipping_enabled_default: v.tippingEnabledDefault, tip_presets_pct: v.tipPresetsPct,
     allergen_set: v.allergenSet,
-    starter_monthly_minor: v.starterMonthlyMinor, pro_monthly_minor: v.proMonthlyMinor, max_monthly_minor: v.maxMonthlyMinor,
-    pro_allowance_minor: v.proAllowanceMinor, max_allowance_minor: v.maxAllowanceMinor, platform_fee_pct: v.platformFeePct,
+    // ⛔ The retired plan price columns (starter/pro/max monthly, allowances, platform_fee_pct) are NOT written here
+    // (plans-data-model, Stage A): plans and their prices are public.plans / public.plan_prices.
     card_fee_online_pct: v.cardFeeOnlinePct, card_fee_online_fixed_minor: v.cardFeeOnlineFixedMinor,
     card_fee_in_person_pct: v.cardFeeInPersonPct, card_fee_in_person_fixed_minor: v.cardFeeInPersonFixedMinor,
     tap_to_pay_fixed_minor: v.tapToPayFixedMinor, card_fee_region_label: v.cardFeeRegionLabel,
@@ -46,14 +46,13 @@ export function valuesToColumns(v: CountryValues): Record<string, unknown> {
   }
 }
 
-/** A brand-new country: copied from an existing one, switched OFF, with all six plan prices EMPTY — and its
- *  short name and example phone number empty too (Phase 2C). */
+/** A brand-new country: copied from an existing one, switched OFF — its short name and example phone number empty
+ *  (Phase 2C). It has no plan prices until plan_prices rows are added for it, and cannot be switched on before. */
 export function newCountryValues(code: string, name: string, from: CountrySettings): CountryValues {
   const v: CountryValues = { ...from } as CountryValues
   delete (v as Partial<CountrySettings>).countryCode
   delete (v as Partial<CountrySettings>).updatedAt
   delete (v as Partial<CountrySettings>).updatedBy
-  for (const k of PLAN_PRICE_FIELDS_STORED) (v as Record<string, unknown>)[k] = null
   // Phase 2C: the short name and example phone number are the COUNTRY's own words — copying another
   // country's ("UK", "07700 900123") would be wrong on day one, so they start empty, like the plan prices.
   return { ...v, name: name.trim(), enabled: false, shortName: null, phoneExample: null }
@@ -109,12 +108,21 @@ export async function saveCountry(
   const parsed = formToValues(form, { truckCount: trucks, storedCurrency: stored.currency, countryCode: stored.countryCode })
   if (!parsed.ok) return refuse(400, parsed.errors[0].message, parsed.errors)
 
-  const saved = await store.update(code, expected, { ...valuesToColumns(parsed.values), updated_at: stamp.at, updated_by: stamp.by })
+  let saved: CountrySettings | null
+  try {
+    saved = await store.update(code, expected, { ...valuesToColumns(parsed.values), updated_at: stamp.at, updated_by: stamp.by })
+  } catch (e) {
+    // 🔴 THE ENABLED RULE IS THE DATABASE TRIGGER'S (20261024_plans.sql) — its refusal is shown as the page's sentence.
+    if (e instanceof Error && e.message.includes('cannot be switched on')) {
+      return refuse(400, `${ENABLE_NEEDS_PRICES}.`, [{ field: 'enabled', message: `${ENABLE_NEEDS_PRICES}.` }])
+    }
+    throw e
+  }
   if (!saved) return refuse(409, STALE_SAVE)
   return { ok: true, data: { country: saved } }
 }
 
-/** Add a country: copied from an existing one, switched OFF, all six plan prices EMPTY. */
+/** Add a country: copied from an existing one, switched OFF. */
 export async function addCountry(
   store: CountryStore,
   body: { code?: unknown; name?: unknown; copyFrom?: unknown },

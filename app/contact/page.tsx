@@ -24,6 +24,7 @@
 // would be dead on arrival. Nothing in proxy.ts matches /contact either: its root rewrite is guarded
 // on `pathname === '/'`. Do not move this route under a gated segment.
 import type { Metadata } from 'next';
+import { ownUrlMetadata, hostUrlMetadata } from '@/lib/site-metadata';
 import { headers } from 'next/headers';
 import Script from 'next/script';
 import Link from 'next/link';
@@ -67,13 +68,19 @@ async function hatchGrabLocale(searchParams?: SearchParams): Promise<AppLocale> 
 // states index/follow explicitly anyway — /support did, and this is the page Apple was given.
 // ⚠️ `title: 'Support'` RENDERS AS "Support | HatchGrab" via the root layout's template. /support said
 // 'Support — HatchGrab' and rendered the brand TWICE, "Support — HatchGrab | HatchGrab". Not copied.
+// 🔴 seo-fixes S1 (20 October 2026) + pricing-tidy (decision 2): BOTH branches carry a canonical and og:url. The
+// HatchGrab page names https://www.hatchgrab.com/contact. The Village Foodie page is a DIFFERENT, VF-branded page, so it
+// is self-canonical — https://www.villagefoodie.co.uk/contact — and adds nothing else (its title, description and absent
+// robots stay the root layout's).
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
-  if (!(await onHatchGrab())) return {};
+  if (!(await onHatchGrab())) return hostUrlMetadata('/contact');
+  const own = await ownUrlMetadata('/contact');
   const t = translatorFor(await hatchGrabLocale(searchParams), 'contactPage');
   return {
     title: t('meta.title'),
     description: t('meta.description'),
     robots: { index: true, follow: true },
+    ...own,
   };
 }
 

@@ -68,6 +68,10 @@ function menuTables(truckOver = {}, countryRows = [GB, US]) {
     bundles_db: [], upsell_rules: [], discount_codes_db: [],
     modifier_groups: [], modifier_options: [], item_modifier_groups: [], truck_events: [], event_deals: [], truck_vans: [],
     operators: [{ id: 'op-test', stripe_account_id: null, charges_enabled: false }],
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): /api/menu now asks the plan catalogue whether the
+    // truck's plan allows each gated feature (truckCan / payAtHatchOn), so the fake db carries public.plans /
+    // plan_prices / plan_features AS THE MIGRATIONS SEED THEM (fixture input only; never part of the recorded view).
+    ...require('./_lp1c-fixtures.cjs').planTables(),
   }
 }
 async function menuView(tables) {
@@ -189,9 +193,20 @@ async function main() {
    * The status views are compared WITHOUT exactly those two keys, and their presence is asserted on its own. */
   const MIDNIGHT_KEYS = ['event_start_time', 'event_end_time']
   const withoutMidnightKeys = v => (v && v.body && typeof v.body === 'object' ? { ...v, body: Object.fromEntries(Object.entries(v.body).filter(([k]) => !MIDNIGHT_KEYS.includes(k))) } : v)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the menu payload's truck gained `preordering_on`
+  // (canAccess('advance_preordering', feature_overrides); the order page refuses on it instead of hasFeature(plan)).
+  // The menu views are compared WITHOUT exactly that key; it is asserted on its own (no override → true).
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the menu truck also gained `pay_at_hatch_on`
+  // (payAtHatchOn — plans.pay_at_hatch_allowed folded into the online_ordering_pay_at_hatch switch, enforced now). Pizza
+  // Kitchen is on pro (allowed, no plan_features row, no override) → true; asserted on its own, then set aside like
+  // preordering_on. ordering_available stays in the byte-compare.
+  const withoutPreorderingOn = v => (v && v.body && v.body.truck && typeof v.body.truck === 'object'
+    ? { ...v, body: { ...v.body, truck: Object.fromEntries(Object.entries(v.body.truck).filter(([k]) => k !== 'preordering_on' && k !== 'pay_at_hatch_on')) } } : v)
   for (const [k, b] of Object.entries(before)) {
-    const isStatus = /^status/.test(k)
-    const d = diffJson(b, isStatus ? withoutMidnightKeys(got[k]) : got[k])
+    const isStatus = /^status/.test(k), isMenu = /^menu/.test(k)
+    if (isMenu) t(`${k}: …its truck sends preordering_on = true (no override → allowed; Stage A addition)`, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.preordering_on === true, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.preordering_on)
+    if (isMenu) t(`${k}: …its truck sends pay_at_hatch_on = true (pro allows Pay at Hatch; Stage A2 addition)`, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.pay_at_hatch_on === true, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.pay_at_hatch_on)
+    const d = diffJson(b, isStatus ? withoutMidnightKeys(got[k]) : isMenu ? withoutPreorderingOn(got[k]) : got[k])
     t(`${k}: byte-identical to BEFORE${isStatus ? ' (apart from the two named event-time keys)' : ''}`, d === null, d)
     if (isStatus) t(`${k}: …and it sends the event's start and end times`, got[k] && got[k].body && MIDNIGHT_KEYS.every(x => x in got[k].body), got[k] && got[k].body && MIDNIGHT_KEYS.map(x => got[k].body[x]))
   }

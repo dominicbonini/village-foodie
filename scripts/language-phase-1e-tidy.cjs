@@ -24,7 +24,9 @@ const CHECKPOINT = 'a858ca5'   // "landing" — the Phase 1e work as Dominic com
 const BEFORE_DIR = path.join(REPO, 'scripts/fixtures/language-phase-1e-tidy-before')
 const RUN = path.join(REPO, 'node_modules/.cache/lp1e-tidy-run')
 const AREAS = ['pages', 'parts', 'billing', 'router']
-const CAPTURE_SCRIPTS = f => /^(language-phase-1e\.cjs|_lp1e-.*\.cjs|_lp1d2-.*\.cjs|_lp1d-.*\.cjs|_lp1b-.*\.cjs|_lp2-named\.cjs|_lp2-checks\.cjs|_png-decode\.cjs|_slot-interval-compile\.cjs|_render-kit\.cjs|_lp2-frozen\.cjs|_lp2-text\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs)$/.test(f)
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): + scripts/_lp-stage-b.cjs (Stage B's named changes) and the plan
+// catalogue fixture it reads — both inert on a tree without the plan migrations.
+const CAPTURE_SCRIPTS = f => /^(language-phase-1e\.cjs|_lp1e-.*\.cjs|_lp1d2-.*\.cjs|_lp1d-.*\.cjs|_lp1b-.*\.cjs|_lp2-named\.cjs|_lp2-checks\.cjs|_png-decode\.cjs|_slot-interval-compile\.cjs|_render-kit\.cjs|_lp2-frozen\.cjs|_lp2-text\.cjs|_fake-pg\.cjs|_country-settings-gb\.cjs|_lp-stage-b\.cjs|_plans-catalog-fixture\.cjs)$/.test(f)
 const ENV = tag => ({ HG_KIT_CACHE_SUFFIX: `tidy${tag}`, HG_MESSAGES_FROZEN: 'off', HG_MESSAGES_SOURCE: '1' })
 
 function captureAll(cwd, dir, env) {
@@ -76,8 +78,44 @@ const NAMED = [
   { id: FIX13.id, what: FIX13.what, applies: id => FIX13.views(id), apply: (v, id) => FIX13.apply(id, v) },
   // ⚠️ RE-PINNED, 19 October 2026 (US polish batch): the HatchGrab truck page's preview from the truck itself — scripts/_lp1e-named.cjs.
   (P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) }))(require('./_lp1e-named.cjs').US_POLISH_HG_TRUCK_PREVIEW),
+  // ⚠️ RE-PINNED, 19 October 2026 (US legal draft): the legal footer's "Country terms" link — scripts/_lp1e-named.cjs.
+  (P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) }))(require('./_lp1e-named.cjs').LEGAL_COUNTRY_TERMS_LINK),
+  // ⚠️ RE-PINNED, 19 October 2026 (legal follow-ups): the Terms and Privacy titles without the doubled " | HatchGrab" — scripts/_lp1e-named.cjs.
+  (P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) }))(require('./_lp1e-named.cjs').LEGAL_TITLES_ABSOLUTE),
+  // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the seo-fixes items — the always-rendered country menu, the lazy store badges,
+  // the landing's JSON-LD @graph, /compare's title + description, the canonical / og:url of /contact and the legal pages, the
+  // sitemap (alternates, real lastmod, legal + contact; Village Foodie without lastmod). PRECISE, GB and US, one copy in
+  // scripts/_lp-seo-fixes.cjs (shared with scripts/_lp1e-named.cjs). Applied after the items above (the sitemap after `sitemap`).
+  ...require('./_lp-seo-fixes.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the re-dated Terms — the HatchGrab sitemap's /terms lastmod 2026-10-20.
+  // PRECISE, after seo-s5-sitemap, one copy in scripts/_lp-pricing-tidy.cjs.
+  ...require('./_lp-pricing-tidy.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
-/** BEFORE value → { expected, touched } */
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
+// table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):
+// the card names the effective plan, the table is BEFORE's (+ the items above) byte for byte (exact / no column
+// highlighted / BEFORE pro|matrix's), the switch modal is the catalogue's, iOS has no purchase panel. GB and US.
+// The catalogue's own Billing views (`billing|<CC>|plan|…`, added by scripts/_lp1d2-shell.cjs) exist only AFTER; their
+// claims are proven by scripts/plans-data-model.cjs.
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026, docs/pricing-pages-report.md): Stage B's views, by the shared proofs
+// in scripts/_lp-stage-b.cjs (GB and US — both sides here carry their own authored words). STRUCTURAL: the region Stage B
+// replaced (#pricing after its h2; the /features body; the calculator's suggested plan, allowance sentence, months-free
+// value and results; the PDF's stylesheet and content) is cut from BEFORE (+ the named items above) and from AFTER, the
+// rest byte-identical; AFTER's region checked for what Stage B put there. The /features description is a PRECISE item.
+const STAGE_B = require('./_lp-stage-b.cjs')
+const STAGE_B_VIEWS = [
+  // (`-usOff`: the US switched off — a redirect, not the page; byte-identical as before.)
+  [/^pages\/landing\|(GB|US)\|html(?!-usOff)/, 'pricing-b-landing-pricing', STAGE_B.landingPricing],
+  [/^pages\/features\|(GB|US)\|html(?!-usOff)/, 'pricing-b-features-page', STAGE_B.featuresPage],
+  [/^pages\/compare\|(GB|US)\|html(?!-usOff)|^parts\/calc\|(GB|US)\|/, 'pricing-b-compare-calc', STAGE_B.calcProof],
+  [/^parts\/pdf\|(GB|US)\|html$/, 'pricing-b-plans-pdf', STAGE_B.plansPdf],
+]
+if (STAGE_B.LANDED) NAMED.push({ id: 'pricing-b-features-description', what: 'Stage B — THE ONE SEO change: /features’s description names the catalogue’s public plans and the trial’s months; titles, canonicals, hreflang, robots and og:url unchanged',
+  applies: id => /^pages\/features\|(GB|US)\|meta(?!-usOff)/.test(id), apply: (v, id) => STAGE_B.featuresDescription(v, ccOf(id) === 'US' ? 'en-US' : 'en-GB') })
+const PLANS_BILLING = /^billing\/billing\|(GB|US)\|(trial|starter|pro|max|tester)(\||$)/
+const PLANS_NEW_VIEWS = /^billing\/billing\|(GB|US)\|plan\|/
+let BILL_BEFORE = null
+/** BEFORE value → { expected, touched, matches? } */
 function expect(id, before) {
   let v = JSON.parse(JSON.stringify(before)); const touched = []
   for (const n of NAMED) {
@@ -86,7 +124,15 @@ function expect(id, before) {
     v = n.apply(v, id)
     if (JSON.stringify(v) !== prev) touched.push(n.id)
   }
-  return { expected: v, touched }
+  const out = { expected: v, touched }
+  const sb = STAGE_B.LANDED && STAGE_B_VIEWS.find(([re]) => re.test(id))
+  if (sb) { touched.push(sb[1]); out.matches = f => sb[2](v, f) }
+  if (PLANS_BILLING.test(id)) {
+    touched.push('plans-billing-plan-card')
+    const proof = require('./_lp1d2-named.cjs').makeBillingProof(cc => { const k = `billing/billing|${cc}|pro|matrix`; return expect(k, BILL_BEFORE[k]).expected })
+    out.matches = f => proof(v, f, id)
+  }
+  return out
 }
 /** The demo bounces: a router view whose Location is the landing with ?demo=… */
 const isDemo = id => /^router\/router\|X\|\S+ demo(Return|Ref) /.test(id)
@@ -149,8 +195,11 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
   const errs = id => typeof id === 'string' && id.startsWith('ERROR')
   t('every BEFORE view rendered', !ids.some(i => errs(BEFORE[i])), ids.filter(i => errs(BEFORE[i])).slice(0, 8).join(', '))
   t('every AFTER view rendered', !Object.keys(AFTER).some(i => errs(AFTER[i])), Object.keys(AFTER).filter(i => errs(AFTER[i])).map(i => `${i}: ${AFTER[i]}`).slice(0, 8).join('\n      '))
-  t('the same set of views on both', same(Object.keys(AFTER).sort(), ids.slice().sort()),
-    `only AFTER: ${Object.keys(AFTER).filter(i => !(i in BEFORE)).join(', ')} · only BEFORE: ${ids.filter(i => !(i in AFTER)).join(', ')}`)
+  BILL_BEFORE = BEFORE
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the catalogue's Billing views are new (PLANS_NEW_VIEWS), and only those.
+  const newOk = Object.keys(AFTER).filter(i => !(i in BEFORE) && PLANS_NEW_VIEWS.test(i))
+  t(`the same set of views on both (plus ${newOk.length} new Billing views of the plan catalogue)`, same(Object.keys(AFTER).filter(i => !newOk.includes(i)).sort(), ids.slice().sort()) && newOk.length > 0,
+    `only AFTER: ${Object.keys(AFTER).filter(i => !(i in BEFORE) && !newOk.includes(i)).join(', ')} · only BEFORE: ${ids.filter(i => !(i in AFTER)).join(', ')}`)
 
   // ── every view: BEFORE + its named items, byte for byte ──
   head('every view (GB and US) equals BEFORE with exactly its named items — the Part C revert changes nothing rendered')
@@ -158,12 +207,17 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
   let identical = 0
   for (const id of ids) {
     if (!(id in AFTER) || DISCOVERY.includes(id) || isDemo(id)) continue
-    const { expected, touched } = expect(id, BEFORE[id])
+    const { expected, touched, matches } = expect(id, BEFORE[id])
+    if (matches) {   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a structural item: its own proof, not byte equality
+      const pr = matches(AFTER[id])
+      if (!pr.ok) { mismatch.push(id); t(`${id}: BEFORE + named items (structural)`, false, pr.problems.join('\n      ')) } else for (const n of touched) (byNamed[n] = byNamed[n] || []).push(id)
+      continue
+    }
     if (!same(expected, AFTER[id])) { mismatch.push(id); continue }
     if (touched.length) for (const n of touched) (byNamed[n] = byNamed[n] || []).push(id)
     else identical++
   }
-  for (const id of mismatch.slice(0, 6)) t(`${id}: BEFORE + named items`, false, firstDiff(expect(id, BEFORE[id]).expected, AFTER[id]))
+  for (const id of mismatch.filter(i => !PLANS_BILLING.test(i)).slice(0, 6)) t(`${id}: BEFORE + named items`, false, firstDiff(expect(id, BEFORE[id]).expected, AFTER[id]))
   t(`every other view matches (${ids.length - DISCOVERY.length - ids.filter(isDemo).length} views; ${mismatch.length} mismatched)`, mismatch.length === 0, mismatch.join(', '))
   console.log(`  ${identical} byte-identical · ${Object.entries(byNamed).map(([n, v]) => `${n}: ${v.length}`).join(' · ')}`)
   for (const [n, v] of Object.entries(byNamed)) console.log(`    ${n.padEnd(11)} ${v.join(', ')}`)
@@ -171,16 +225,29 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
   console.log(`  GB views ${gbIds.length} · US views ${usIds.length} · router views ${ids.filter(i => i.startsWith('router/')).length}`)
   for (const cc of ['GB', 'US']) {
     const fn = byNamed.footnotes || []
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): /features and the plans PDF no longer carry the numbered
+    // footnotes (Stage B: one pricing footnote under the one plan table) — the tidy's footnote 1 / 5 edits are retired there:
+    // BEFORE showed the old sentences, AFTER shows neither the old nor the new ones.
+    if (STAGE_B.LANDED) {
+      const fviews = [`pages/features|${cc}|html`, `parts/pdf|${cc}|html`]
+      const olds = FOOTNOTE_EDITS.map(([a]) => a), news = FOOTNOTE_EDITS.map(([, b]) => b)
+      const shows = (v, w) => typeof v === 'string' && w.some(x => v.includes(x.replace(/&/g, '&amp;')))
+      t(`${cc}: footnotes 1 and 5 — BEFORE showed them on /features and in the plans PDF; Stage B retired them there (neither wording in AFTER)`, fviews.every(i => shows(BEFORE[i], olds) && !shows(AFTER[i], olds) && !shows(AFTER[i], news)), fviews.map(i => `${i}: BEFORE ${shows(BEFORE[i], olds)} · AFTER ${shows(AFTER[i], [...olds, ...news])}`).join(' · '))
+    } else
     t(`${cc}: footnotes 1 and 5 changed on /features and in the plans PDF`, fn.some(i => i.startsWith(`pages/features|${cc}|html`)) && fn.some(i => i.startsWith(`parts/pdf|${cc}|`)), fn.join(', '))
     t(`${cc}: the legal logo is named`, (byNamed['legal-logo'] || []).includes(`parts/legal|${cc}|chrome`))
   }
   t(`${FIX13.id}: the US landing and nowhere else`, same(byNamed[FIX13.id] || [], ['pages/landing|US|html']), (byNamed[FIX13.id] || []).join(', '))
   t('the sitemap changed on both HatchGrab views and nowhere else', same((byNamed.sitemap || []).slice().sort(), ['parts/sitemap|GB|hatchgrab', 'parts/sitemap|US|hatchgrab-usOn']), (byNamed.sitemap || []).join(', '))
   const smA = AFTER['parts/sitemap|GB|hatchgrab'] || []
-  t('the GB sitemap is exactly /uk and /uk/features', same(smA.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`]), JSON.stringify(smA.map(e => e.url)))
+  // ⚠️ RE-PINNED (seo-fixes S5, 20 October 2026): after the country addresses the HatchGrab sitemap lists the indexable legal
+  // pages and /contact (seo-s5-sitemap); the country addresses are still exactly these, and / and /features still absent.
+  const SEO_TAIL = [`${ORIGIN}/privacy`, `${ORIGIN}/terms`, `${ORIGIN}/country-terms`, `${ORIGIN}/contact`]
+  t('the GB sitemap is exactly /uk and /uk/features (+ seo-fixes: /privacy, /terms, /country-terms, /contact)', same(smA.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, ...SEO_TAIL]), JSON.stringify(smA.map(e => e.url)))
   const smUS = AFTER['parts/sitemap|US|hatchgrab-usOn'] || []
-  t('with the US on: /uk, /uk/features, /us, /us/features', same(smUS.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, `${ORIGIN}/us`, `${ORIGIN}/us/features`]), JSON.stringify(smUS.map(e => e.url)))
-  t('the Village Foodie sitemap is unchanged', same(BEFORE['parts/sitemap|GB|villagefoodie'], AFTER['parts/sitemap|GB|villagefoodie']))
+  t('with the US on: /uk, /uk/features, /us, /us/features (+ seo-fixes: the legal pages and /contact)', same(smUS.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, `${ORIGIN}/us`, `${ORIGIN}/us/features`, ...SEO_TAIL]), JSON.stringify(smUS.map(e => e.url)))
+  // ⚠️ RE-PINNED (seo-fixes S5, 20 October 2026): Village Foodie's one entry loses its request-time lastmod — nothing else.
+  t('the Village Foodie sitemap is unchanged but for its lastmod (seo-s5-sitemap: no request-time lastmod)', same(require('./_lp-seo-fixes.cjs').sitemapVF(BEFORE['parts/sitemap|GB|villagefoodie']), AFTER['parts/sitemap|GB|villagefoodie']) && !same(BEFORE['parts/sitemap|GB|villagefoodie'], AFTER['parts/sitemap|GB|villagefoodie']))
 
   // ── the US truck page and footer: Village Foodie's prompts hidden — proved by the controls ──
   head('US truck page and footer — Village Foodie’s prompts hidden (controls with `discovery` forced on)')

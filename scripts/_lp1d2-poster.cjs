@@ -92,7 +92,14 @@ const CALLS = {
 }
 /** An export 826471a had that this tree removed: how the new code gives the same words — (x) → value, x = { tr(ns) }.
  *  F must equal BEFORE through it. (Filled in as exports move; none has gone yet.) */
-const ADAPT = {}
+const ADAPT = {
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/copy/weeklyPost.ts is DELETED with the plan refusal it held
+  // (WEEKLY_POST_PLAN_REFUSAL, `weeklyPost.planRefusal`): the gate is override-only and refuses with the neutral
+  // errorsManage.feature_switched_off. The view records the export's absence (named plans-weekly-post-copy-gone).
+  'weeklyPost.WEEKLY_POST_PLAN_REFUSAL': () => '[removed in Stage A: lib/copy/weeklyPost.ts and weeklyPost.planRefusal]',
+}
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a copy module that no longer exists is not bundled; its views come from ADAPT.
+const COPY_PRESENT = REPO_ => Object.fromEntries(Object.entries(COPY).filter(([, f]) => require('fs').existsSync(require('path').join(REPO_, f))))
 const show = v => {
   if (typeof v === 'string') return v
   if (v === undefined) return '[undefined]'
@@ -444,9 +451,9 @@ export { translatorFor } from '@/lib/i18n/translator'` + (hasWords ? "\nexport *
 
   // ════ copy ════════════════════════════════════════════════════════════════════════════════════════════════
   // GB: the modules as they are. US: the same modules with their catalogue read in en-US (a no-op at 826471a).
-  const copyEntry = Object.entries(COPY).map(([k, f]) => `export * as ${k} from '@/${f.replace(/\.ts$/, '')}'`).join('\n')
+  const copyEntry = Object.entries(COPY_PRESENT(ctx.REPO)).map(([k, f]) => `export * as ${k} from '@/${f.replace(/\.ts$/, '')}'`).join('\n')
     + "\nexport { translatorFor } from '@/lib/i18n/translator'" + imports
-  const usPatches = Object.values(COPY).map(file => ({ file, from: /translatorFor\(DEFAULT_LOCALE,/g, to: "translatorFor('en-US',", optional: true }))
+  const usPatches = Object.values(COPY_PRESENT(ctx.REPO)).map(file => ({ file, from: /translatorFor\(DEFAULT_LOCALE,/g, to: "translatorFor('en-US',", optional: true }))
   const BG = await kit.bundle('lp1d2-poster-copy-gb', copyEntry)
   const BU = await kit.bundle('lp1d2-poster-copy-us', copyEntry, { patches: usPatches })
   for (const [C, B] of [[ctx.GB, BG], [ctx.US, BU]]) {

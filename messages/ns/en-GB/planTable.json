@@ -1,0 +1,37 @@
+{
+  "h1": "Everything to run your service, on every plan.",
+  "lede": "Ordering, pre-orders, capacity and the kitchen screen are included on every plan.{hasUpgrades, select, yes { {plans} add {features}, and lower fees.} other {}}",
+  "callout": "{months, plural, one {<b>One month free with every feature unlocked.</b>} other {<b># months free with every feature unlocked.</b>}} Then {fallback} automatically, unless you choose a plan.",
+  "perMonth": "{price} / month",
+  "group": {
+    "pay": "What you pay",
+    "run": "Run your service",
+    "online": "Online orders",
+    "marketing": "Marketing & automation"
+  },
+  "pay": {
+    "included": "Online orders included each month",
+    "fee": "HatchGrab fee on online card orders*",
+    "walkUp": "Walk-up orders"
+  },
+  "cell": {
+    "unlimited": "Unlimited",
+    "free": "Free",
+    "feeAbove": "<b>{fee}</b> above {included}",
+    "yes": "Included",
+    "none": "Not included",
+    "comingSoon": "Coming soon"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "social media",
+    "event_types": "custom event pricing"
+  },
+  "meta": {
+    "description": "Every HatchGrab feature on every plan, side by side — {plans}, with fees and allowances.{months, plural, =0 {} one { Your first month includes everything.} other { Your first # months include everything.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.",
+    "printing": "Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied)."
+  }
+}

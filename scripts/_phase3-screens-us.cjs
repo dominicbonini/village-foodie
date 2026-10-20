@@ -502,14 +502,59 @@ module.exports = async function us(h) {
         ["  const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)", /^  const vanAddonMinor = vanAddonMonthlyMinor\(truck\.plan, withPlaceholderPlanPrices\(vanSettings\)\)$/],
       ]
       const named = (l, h) => NAMED.some(([line, re]) => l === line && h.add.some(x => re.test(x)))
-      const unexcused = hunks.flatMap(h => h.del.filter(l => l.trim() && !wordSite(l) && !named(l, h) && !h.add.some(x => x.includes(l.trim()))))
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Stage A legitimately removed plan-tier code from
+      // SettingsTab — the starter van-upgrade modal and its state, INCLUDED_VANS, the 4-argument canAccess(plan, …), the
+      // QR FeatureGate upgrade prompts, the WhatsApp "included on Pro and Max" / "Upgrade →" branch, and the comments that
+      // described them. Each such HUNK is excused WHOLE only when (1) one of its removed lines is the named signature,
+      // (2) it removed exactly the named number of lines, and (3) its replacement is in the same hunk (or, for a pure
+      // removal, the removed thing appears nowhere in SettingsTab now). Anything else leaving Settings still fails.
+      //   [signature (a removed line contains it), removed-line count, replacement regex on an added line | null, absent-now regex | null]
+      const STAGE_A_HUNKS = [
+        ['const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)', 1, null, /showVanUpgradeModal/],
+        ['`locked` is the below-plan branded case', 1, /^  \/\/ The enlarged view\. `locked` is the switched-off branded case: /, null],
+        // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): SettingsTab's gates now ask `useFeatures(truck)`
+        // (override → the effective plan's switch → on), so each Stage A replacement line became `features.can(...)`;
+        // the same hunks (same removed lines, same counts) are excused only on the A2 replacement.
+        ["const canBrand = canAccess(truck.plan, 'branded_qr_code',", 1, /^    const canBrand = features\.can\('branded_qr_code'\)$/, null],
+        ["const preorderCan = canAccess(truck.plan, 'advance_preordering',", 1, /^  const preorderCan = features\.can\('advance_preordering'\)$/, null],
+        // ⚠️ RE-PINNED (Stage A2): the tab's local `can` (a 6-line canAccess(plan, …) call at 756ca09) is now the
+        // useFeatures switch — before A2 its words survived inside Stage A's 2-argument call, so no entry was needed.
+        ['const can = (feature: Feature) => canAccess(', 6, /^  const can = \(feature: Feature\) => features\.can\(feature\)$/, null],
+        ['`TRIAL_FEATURES = [...MAX_FEATURES]`', 4, /hasWhatsAppSetupPreview reads the per-truck override map and nothing else\./, null],
+        ["`VAN_ADDON_PRICE` — a map of RAW POUNDS", 5, /^  \/\/ ── THE PRICE OF EACH ADDITIONAL VAN \(plans-data-model Stage A, 19 October 2026\)/, null],
+        ['const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)', 1, /^  const vanAddonMinor = extraVanMonthlyMinor\(truck, vanCatalog, vanSettings\.countryCode\)$/, null],
+        ['const INCLUDED_VANS: Record<string, number>', 1, null, /INCLUDED_VANS: Record/],
+        // ⚠️ RE-PINNED (Stage A2): the van flow uses the plan's `includedVans` (plans.included_vans) instead of a literal 1.
+        ['const included = INCLUDED_VANS[truck.plan] ?? 1', 13, /^    if \(vans\.length >= vansIncluded && vanAddonMinor > 0\) setShowVanBillingModal\(true\)$/, null],
+        ['BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO', 3, /SWITCHED OFF FOR THIS TRUCK \(a feature override — no plan gates this since plans-data-model,$/, null],
+        ['showUpgrade={true}', 7, null, /showUpgrade|feature="branded_qr_code"/],
+        ['showUpgrade={true}', 9, null, /showUpgrade|feature="branded_qr_code"/],
+        ['🔴 WHO REACHES IT CHANGED ON 16 September 2026.', 27, /🔴 WHO REACHES IT CHANGED AGAIN with plans-data-model \(Stage A/, null],
+        ['that change — do not leave this one to cover both states. */}', 2, /sentence becomes wrong\. Restore a coming-soon branch in that change\. \*\/\}$/, null],
+        // ⚠️ RE-PINNED (Stage A2): the WhatsApp card's else branch shows <PlanPrompt> when the PLAN is why, and the same
+        // "switched off" line (now the ternary's second arm) when an override is.
+        ['WhatsApp auto-replies are included on Pro and Max.', 8, /^\s+: <p className="text-xs text-slate-500 mt-1">\{tW\('card\.switchedOff'\)\}<\/p>\}$/, null],
+        ['{isRowComingSoon(MESSENGER_INSTAGRAM_ROW) && (', 1, /^            \{!MESSENGER_INSTAGRAM_LIVE && \($/, null],
+        ['{/* Van upgrade modal (starter plan) */}', 33, /THE VAN UPGRADE MODAL \("The Starter plan includes 1 van…"\) WAS HERE\./, null],
+        // CustomDomainSetup no longer takes the now-unused `plan` / `trialExpiresAt` props (only the overrides gate it)
+        // ⚠️ RE-PINNED (Stage A2): CustomDomainSetup's `featureOverrides` prop became `truck` (it asks useFeatures itself).
+        ['<CustomDomainSetup token={token} plan={truck.plan}', 1, /<CustomDomainSetup token=\{token\} truck=\{truck\} truckName=/, null],
+      ]
+      const stageAHunk = h => STAGE_A_HUNKS.some(([sig, n, addRe, goneRe]) => h.del.some(l => l.includes(sig)) && h.del.length === n
+        && (addRe ? h.add.some(x => addRe.test(x)) : h.add.length === 0) && (!goneRe || !goneRe.test(nowR)))
+      const unexcused = hunks.filter(h => !stageAHunk(h)).flatMap(h => h.del.filter(l => l.trim() && !wordSite(l) && !named(l, h) && !h.add.some(x => x.includes(l.trim()))))
       t('…(B) 756ca09 → now: every line that left SettingsTab is a word moved to messages/ (or the same code re-wrapped)',
         // ⚠️ RE-PINNED (Language Phase 1d Part 2): + the setup notice's new state type really is { tone, code } (the
         // named move above excuses its useState line only on that basis).
         hunks.length > 50 && unexcused.length === 0
         // ⚠️ RE-PINNED (Language Phase 1e; us-rehearsal-unpriced-billing): the word through `vanMask` while prices are decided,
         // every amount masked while they are not.
-        && /\n  const vanPx = \(val: string\) => priceText\(vanPricesDecided \? vanMask\(val\) : maskPriceFor\(val, true\), vanSettings\.locale\)\n/.test(nowR)
+        // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the extra-van price is the effective plan's
+        // plan_prices.extra_van_monthly_minor (always a number), and the amount comes from extraVanMonthlyMinor over the
+        // plan catalogue. The word goes through `vanMask` while the truck's country is switched ON, and every amount is
+        // masked while it is OFF — as the US was before (then keyed on its undecided prices, now on its own switch).
+        && /\n  const vanPx = \(val: string\) => priceText\(vanSettings\.enabled \? vanMask\(val\) : maskPriceFor\(val, true\), vanSettings\.locale\)\n/.test(nowR)
+        && /\n  const vanCatalog = usePlanCatalog\(\)\n/.test(nowR)
         && /export interface SetupNotice \{ tone: NoticeTone; code\?: SetupNoticeCode; text\?: string \}/.test(read('lib/whatsapp/setup-machine.ts')),
         unexcused.slice(0, 8).join('\n'))
       // (C) the saves, and the moved block staying out.
@@ -537,8 +582,14 @@ module.exports = async function us(h) {
   head('10 · Admin › Countries — the fee rows')
   {
     const tab = read('components/admin/CountriesTab.tsx')
-    t('"Take our fee" after "Our fee above that", with its hint, "Needs a rate first" and the not-charged-yet note',
-      tab.indexOf("label: 'Take our fee'") > tab.indexOf("label: 'Our fee above that'") && has(tab, 'Off: the rate is shown on plans but never charged', 'Needs a rate first', 'Not charged yet — switching on has no effect until fee charging is built.'))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the "Our fee above that" rate row (platform_fee_pct)
+    // is retired with the other plan price rows — the rate is each plan's plan_prices.fee_bps, shown in the Plans table.
+    // "Take our fee" now opens the "HatchGrab platform fee" group; its hint speaks of each plan's fee, the
+    // not-charged-yet note stays, and "Needs a rate first" is gone (there is no country rate to need).
+    t('"Take our fee" heads the "HatchGrab platform fee" group (the "Our fee above that" row is retired), with its hint and the not-charged-yet note',
+      tab.indexOf("label: 'Take our fee'") > tab.indexOf("{ group: 'HatchGrab platform fee' }") && tab.indexOf("{ group: 'HatchGrab platform fee' }") > 0
+      && !tab.includes("label: 'Our fee above that'") && !tab.includes('Needs a rate first')
+      && has(tab, `hint: "Off: each plan's fee is shown on plans but never charged"`, 'Not charged yet — switching on has no effect until fee charging is built.'))
     t('the "Online service fee" group: Allowed in this country (moved), Who keeps it, HatchGrab\'s fee, Most a truck can charge — with their hints',
       has(tab, "group: 'Online service fee', hint: 'Online orders only — never pay at the truck or walk-up'", "label: 'Allowed in this country'", "label: 'Who keeps it'", '<option value="truck">The truck</option>', '<option value="hatchgrab">HatchGrab</option>',
         `label: "HatchGrab's fee", hint: "Used when HatchGrab keeps it; trucks can't change it"`, 'Only when &ldquo;HatchGrab&rdquo; is chosen', "label: 'Most a truck can charge', hint: 'Used when the truck keeps it; trucks set their own up to this'")
@@ -552,6 +603,10 @@ module.exports = async function us(h) {
     t('the form round-trips every new setting unchanged (GB defaults: truck, none, none, off, not taxed)', back.ok && back.values.serviceFeeRecipient === 'truck' && back.values.serviceFeeHatchgrabBps === null
       && back.values.serviceFeeTruckMaxFixedMinor === null && back.values.platformFeeEnabled === false && back.values.feesTaxed === false)
     const take = F.formToValues({ ...F.rowToForm({ ...gbRow, platformFeePct: null }), platformFeeEnabled: true }, { truckCount: 1, storedCurrency: 'GBP', countryCode: 'GB' })
-    t('"Take our fee" cannot be switched on without a rate', !take.ok && take.errors.some(e => e.field === 'platformFeeEnabled'))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the "platform fee switched on needs a rate" rule is gone
+    // — the rate is the plan's fee_bps, not country_settings.platform_fee_pct (retired; not shown, validated or written).
+    // So switching "Take our fee" on with no country rate is now accepted, and the retired rate is not in the values.
+    t('"Take our fee" can be switched on with no country rate (the rate is each plan\'s fee_bps), and the retired rate is not written',
+      take.ok && take.values.platformFeeEnabled === true && !('platformFeePct' in take.values), take.ok ? take.values.platformFeeEnabled : take.errors)
   }
 }

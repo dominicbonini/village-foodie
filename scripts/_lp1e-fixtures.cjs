@@ -15,6 +15,7 @@ const fs = require('fs'); const path = require('path')
 const SEEDS = require('./_country-settings-gb.cjs')
 
 const NOW = '2026-10-09T14:20:00.000Z'
+const PLAN_ROWS = () => require('./_lp1c-fixtures.cjs').planTables()
 const BEFORE_REF = 'eb7ed44'
 const HG_HOST = 'www.hatchgrab.com'
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
@@ -87,7 +88,10 @@ function context(kit, REPO) {
   /** Runs `fn` with this request (host / ip / cookie) and these country rows in the fake database. */
   async function withReq({ rows = ROWS.off(), host = HG_HOST, ip = null, cookie = null, tables = {} } = {}, fn) {
     kit.setNow(NOW); kit.setDeviceTz('Europe/London')
-    globalThis.__harnessDb = kit.fakeDb({ country_settings: rows.map(snake), trucks: [], ...tables })
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the marketing pages, /compare and the plans PDF read the
+    // plan catalogue now, so the database also holds public.plans / plan_prices / plan_features AS THE MIGRATIONS SEED
+    // THEM (scripts/_lp1c-fixtures.cjs planTables) — fixture input, overridable per request through `tables`.
+    globalThis.__harnessDb = kit.fakeDb({ country_settings: rows.map(snake), trucks: [], ...PLAN_ROWS(), ...tables })
     globalThis.__mcReq = { headers: { host, ...(ip ? { 'x-vercel-ip-country': ip } : {}) }, cookies: cookie ? { hg_country: cookie } : {} }
     try {
       for (const c of clears) c()

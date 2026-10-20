@@ -17,12 +17,15 @@
 //                         country's maximum).
 //   card surcharge        ⚠️ ALWAYS OFF in Phase 3, whatever the country says. The engine supports it.
 //   card fee payer        the truck's card_fee_payer (default 'truck').
-//   platform fee          the country's platform_fee_enabled + platform_fee_pct. Never sent this phase.
+//   platform fee          the country's platform_fee_enabled (OFF) + the truck's EFFECTIVE PLAN's fee_bps in its
+//                         country (public.plan_prices, lib/plans.ts). Never sent this phase. ⚠️ country_settings.
+//                         platform_fee_pct is RETIRED (plans-data-model, Stage A) and is not read here.
 //
 // 🔴 GB: tax included, every add-on off → the grand total is the food, exactly as before Phase 3.
 import 'server-only'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { countrySettingsForTruck } from '@/lib/country-settings'
+import { truckPlanFeeBps } from '@/lib/plans-server'
 import type { OrderChargeRules } from '@/lib/order-charges'
 
 /** The truck columns the rules read (20261010_17). Every one is optional so a row read before the
@@ -42,10 +45,12 @@ export interface TruckChargeFields {
 const pctToBps = (pct: number): number => Math.round(pct * 100)
 const int = (v: unknown): number | null => (typeof v === 'number' && Number.isSafeInteger(v) && v >= 0 ? v : null)
 
-/** PURE: the rules from the truck's country and the truck. Exported for the harness and for /api/menu. */
+/** PURE: the rules from the truck's country and the truck. Exported for the harness and for /api/menu.
+ *  `platformFeeBps` is the truck's effective plan's fee (lib/plans.ts), used only while the country's switch is on. */
 export function resolveChargeRules(
   country: CountrySettings,
   truck: TruckChargeFields,
+  platformFeeBps: number | null = null,
 ): OrderChargeRules {
   const taxInclusive = country.pricesIncludeTax
   const taxRateMilli = taxInclusive ? null : int(truck.tax_rate_milli)
@@ -76,17 +81,20 @@ export function resolveChargeRules(
     tipping,
     surcharge: null,                     // ⚠️ OFF in Phase 3 — see the header
     cardFeePayer: truck.card_fee_payer === 'customer' ? 'customer' : 'truck',
-    platformFee: country.platformFeeEnabled && country.platformFeePct !== null ? { bps: pctToBps(country.platformFeePct) } : null,
+    platformFee: country.platformFeeEnabled && platformFeeBps !== null ? { bps: platformFeeBps } : null,
   }
 }
 
 /**
  * The rules for an order on this truck, read from the database: the truck's country (the cached loader)
- * and the truck row the caller already holds. No other read — there is no per-event rate.
+ * and the truck row the caller already holds. No other read — there is no per-event rate — except the truck's plan,
+ * and only while the country's platform fee is switched on.
  */
 export async function loadChargeRules(
   truck: TruckChargeFields & { id: string },
 ): Promise<OrderChargeRules> {
   const country = await countrySettingsForTruck(truck)
-  return resolveChargeRules(country, truck)
+  // The plan's fee is read only while the country's platform fee is switched on (OFF everywhere this phase).
+  const platformFeeBps = country.platformFeeEnabled ? await truckPlanFeeBps(truck.id, country.countryCode) : null
+  return resolveChargeRules(country, truck, platformFeeBps)
 }

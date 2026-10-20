@@ -10,31 +10,33 @@
     "planLine": "{trial, select, yes {{truck} · {plan} plan (trial)} other {{truck} · {plan} plan}}"
   },
   "currentPlan": "Current plan",
+  "plan": {
+    "included": "Includes {amount} of online orders a month.",
+    "includedUnlimited": "Unlimited online orders included.",
+    "promo": "Special price.",
+    "promoUntil": "Special price until {date}.",
+    "ended": "Your {plan} plan ended on {date}. You’re now on {now}.",
+    "trialMonths": "A {months}-month free trial."
+  },
   "trialEnds": "Trial ends {date}",
   "yourTrialEnds": "Your trial ends {date}",
   "notStarted": {
-    "heading": "Your free trial has not started yet",
-    "body": "You have every Max feature while you set up. You choose which event starts your free trial — until then, nothing is counting down."
+    "heading": "Your free trial has not started yet"
   },
-  "onMax": "You’re on Max features. Choose a plan before your trial ends to keep access.",
-  "onMaxNoCta": "You’re on Max features.",
-  "upgradeToMax": "Upgrade to Max — {price}",
-  "choosePro": "Choose Pro — {price}",
+  "onTrial": "You have every feature. Choose a plan before your trial ends.",
+  "onTrialNoCta": "You have every feature.",
   "noCharge": "🔒 You won’t be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay.",
   "fees": "*Standard card processing fees apply on online orders",
-  "setUpPayment": "⏱ Set up payment before your trial ends to keep access",
-  "upgradeYourPlan": "Upgrade your plan",
+  "setUpPayment": "⏱ Choose a plan before your trial ends",
+  "changeYourPlan": "Change your plan",
   "planButton": "{plan} — {price}",
-  "perTruckRenews": "{price} per truck · renews automatically",
-  "hideMatrix": "▲ Hide",
-  "compareAll": "▼ Compare all plans",
   "upgradeModal": {
-    "title": "Upgrade to {plan}",
+    "title": "Switch to {plan}",
     "tagline": "{price} — {description}",
-    "body": "We’re setting up automated billing. To upgrade now, drop us a message and we’ll get you set up within 24 hours.",
-    "mailSubject": "Upgrade to {plan} — {truck}",
-    "mailBody": "Hi, I’d like to upgrade {truck} to the {plan} ({price}) plan.",
-    "email": "Email us to upgrade",
+    "body": "We’re setting up automated billing. To switch now, drop us a message and we’ll get you set up within 24 hours.",
+    "mailSubject": "Switch to {plan} — {truck}",
+    "mailBody": "Hi, I’d like to switch {truck} to the {plan} ({price}) plan.",
+    "email": "Email us to switch",
     "cancel": "Cancel"
   }
 }

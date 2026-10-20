@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { canAccess } from '@/lib/features'
+import { truckCan } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { sendWhatsApp, logMessage } from '@/lib/twilio'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { moneyFormatForTruck } from '@/lib/money-server'
@@ -55,9 +56,11 @@ export async function POST(req: NextRequest) {
     )
     }
 
-    console.log('[WA webhook] feature access:', canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at))
+    // Stage A2: override → the truck's EFFECTIVE plan's switch → allowed (lib/plans.ts truckCan).
+    const repliesOn = truckCan(truck, await getPlanCatalog(), 'whatsapp_replies')
+    console.log('[WA webhook] feature access:', repliesOn)
 
-    if (!canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+    if (!repliesOn) {
       return new NextResponse(
       '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
       { status: 200, headers: { 'Content-Type': 'text/xml' } }

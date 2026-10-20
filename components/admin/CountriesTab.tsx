@@ -22,7 +22,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import {
-  rowToForm, formToValues, emptyPlanPrices, isTimeZone, ENABLE_NEEDS_PRICES,
+  rowToForm, formToValues, isTimeZone,
   type CountryForm, type FieldError,
 } from '@/lib/admin/country-form'
 import { currencySymbol, minorUnitSuffix } from '@/lib/money-format'
@@ -169,18 +169,7 @@ export default function CountriesTab() {
     )
   }
 
-  const money = (code: string, field: 'starterMonthly' | 'proMonthly' | 'maxMonthly' | 'proAllowance' | 'maxAllowance') => (
-    <>
-      <div className={`flex max-w-[14rem] items-center rounded-lg border ${border(code, field, true)} px-2`}>
-        <span className="pr-1 text-sm font-semibold text-slate-500">{moneyOf(code).sym}</span>
-        <input className="w-full min-w-0 bg-transparent py-1.5 text-sm text-slate-900 focus:outline-none" inputMode="decimal"
-          aria-label={`${field} for ${code}`} value={forms[code][field]} placeholder="Not set"
-          onChange={e => setField(code, field, e.target.value)} />
-      </div>
-      {msg(code, field)}
-    </>
-  )
-  const pct = (code: string, field: 'platformFeePct' | 'cardFeeOnlinePct' | 'cardFeeInPersonPct' | 'cardSurchargeCapPct', amber?: boolean) => (
+  const pct = (code: string, field: 'cardFeeOnlinePct' | 'cardFeeInPersonPct' | 'cardSurchargeCapPct', amber?: boolean) => (
     <div className={`flex w-24 items-center rounded-lg border ${border(code, field, amber)} px-2`}>
       <input className="w-full min-w-0 bg-transparent py-1.5 text-sm text-slate-900 focus:outline-none" inputMode="decimal"
         aria-label={`${field} for ${code}`} value={forms[code][field]} placeholder={amber ? 'Not set' : ''}
@@ -265,33 +254,28 @@ export default function CountriesTab() {
   type RowDef = { group: string; hint?: string } | { label: string; hint?: string; cell: (code: string) => React.ReactNode }
   const ROWS: RowDef[] = [
     { group: 'Status' },
-    { label: 'Switched on', hint: 'Trucks can sign up from this country', cell: code => {
-      const f = forms[code]; const missing = emptyPlanPrices(f).length > 0
-      return (
+    /* 🔴 SWITCHING ON NEEDS EVERY PUBLIC PLAN PRICED FOR THIS COUNTRY (plan_prices) — the database trigger refuses
+     * otherwise, and the save shows its sentence under this switch. */
+    { label: 'Switched on', hint: 'Trucks can sign up from this country', cell: code => (
+      <>
         <div className="flex items-start gap-2">
-          {toggle(code, 'enabled', `Switched on, ${code}`, !f.enabled && missing)}
-          {missing && <span className="text-xs font-medium text-amber-700">{ENABLE_NEEDS_PRICES}</span>}
+          {toggle(code, 'enabled', `Switched on, ${code}`)}
         </div>
-      )
-    } },
+        {msg(code, 'enabled')}
+      </>
+    ) },
     { label: 'Country name', cell: code => text(code, 'name', undefined, 'max-w-[18rem]') },
 
-    { group: 'HatchGrab plan prices', hint: "What trucks pay us, in the country's currency" },
-    { label: 'Starter, per month', cell: code => money(code, 'starterMonthly') },
-    { label: 'Pro, per month', cell: code => money(code, 'proMonthly') },
-    { label: 'Max, per month', cell: code => money(code, 'maxMonthly') },
-    { label: 'Pro, online orders included', hint: 'Each month, before our fee starts', cell: code => money(code, 'proAllowance') },
-    { label: 'Max, online orders included', hint: 'Each month, before our fee starts', cell: code => money(code, 'maxAllowance') },
-    { label: 'Our fee above that', cell: code => <>{pct(code, 'platformFeePct', true)}{msg(code, 'platformFeePct')}</> },
+    /* ⛔ THE SIX PLAN PRICE ROWS (Starter/Pro/Max per month, allowances, "Our fee above that") ARE GONE — plans-data-model,
+     * Stage A. Plans and their per-country prices are public.plans / public.plan_prices, shown in the Plans table. */
+    { group: 'HatchGrab platform fee' },
     /* Phase 3 screens: the platform fee's own switch (country_settings.platform_fee_enabled). Charging is not
      * built, so the grey note says plainly that switching it on does nothing yet. */
-    { label: 'Take our fee', hint: 'Off: the rate is shown on plans but never charged', cell: code => {
-      const noRate = forms[code].platformFeePct.trim() === ''
+    { label: 'Take our fee', hint: "Off: each plan's fee is shown on plans but never charged", cell: code => {
       return (
         <>
           <div className="flex items-center gap-2">
-            {toggle(code, 'platformFeeEnabled', `Take our fee, ${code}`, noRate && !forms[code].platformFeeEnabled)}
-            {noRate && <span className="text-xs font-medium text-amber-700">Needs a rate first</span>}
+            {toggle(code, 'platformFeeEnabled', `Take our fee, ${code}`)}
           </div>
           <p className="mt-1 text-xs text-slate-400">Not charged yet — switching on has no effect until fee charging is built.</p>
           {msg(code, 'platformFeeEnabled')}
@@ -477,7 +461,6 @@ export default function CountriesTab() {
             const trucks = counts[code] ?? 0
             const dirty = JSON.stringify(f) !== JSON.stringify(rowToForm(r))
             const blocking = (problems[code] ?? []).length > 0
-            const missing = emptyPlanPrices(f).length > 0
             const canRemove = trucks === 0 && !r.enabled
             return (
               <div key={code} data-country-head={code} className="sticky top-0 z-20 border-b border-l border-slate-200 bg-white px-3 py-3">
@@ -495,7 +478,6 @@ export default function CountriesTab() {
                     className="shrink-0 rounded-xl bg-orange-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-slate-200 disabled:text-slate-500">
                     {c.saving ? 'Saving…' : 'Save'}</button>
                 </div>
-                {missing && <p className="mt-2 rounded-lg bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800">{ENABLE_NEEDS_PRICES}</p>}
                 {c.error && <p className="mt-2 text-xs font-semibold text-red-600" role="alert">{c.error}</p>}
                 {!c.error && blocking && dirty && <p className="mt-2 text-xs font-medium text-red-600">Fix the boxes marked in red to save.</p>}
                 {c.saved && !dirty && <p className="mt-2 text-xs font-semibold text-green-700">Saved. Live on the pricing pages within a minute.</p>}

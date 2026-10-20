@@ -31,6 +31,9 @@ let listCache: { at: number; value: CountrySettings[] } | null = null
 // arriving as `undefined` and rendering "£NaN" — and mapRow below refuses anything it cannot type.
 // ⚠️ competitor_name / competitor_pct / competitor_fixed_minor are NOT read: retired 10 October 2026
 // (/compare no longer prefills a competitor) and NULLed by 20261010_10. The columns stay; nothing reads them.
+// ⛔ NOR ARE THE SIX OLD PLAN PRICE COLUMNS (starter/pro/max monthly, pro/max allowance, platform_fee_pct): retired by
+// plans-data-model Stage A, and their last reader — the frozen display copy — was deleted in Stage B
+// (docs/pricing-pages-report.md). Plans and prices are public.plans / plan_prices (lib/plans.ts). The columns stay.
 export const COUNTRY_SETTINGS_COLUMNS = [
   'country_code', 'name', 'enabled',
   'currency', 'locale', 'time_format', 'date_order', 'week_start',
@@ -38,8 +41,6 @@ export const COUNTRY_SETTINGS_COLUMNS = [
   'prices_include_tax', 'tax_label',
   'card_surcharge_allowed', 'card_surcharge_cap_pct', 'card_surcharge_credit_only', 'card_surcharge_excluded_regions',
   'service_fee_allowed', 'tipping_enabled_default', 'tip_presets_pct', 'allergen_set',
-  'starter_monthly_minor', 'pro_monthly_minor', 'max_monthly_minor',
-  'pro_allowance_minor', 'max_allowance_minor', 'platform_fee_pct',
   'card_fee_online_pct', 'card_fee_online_fixed_minor',
   'card_fee_in_person_pct', 'card_fee_in_person_fixed_minor',
   'tap_to_pay_fixed_minor', 'card_fee_region_label',
@@ -121,12 +122,6 @@ export function mapCountryRow(r: Row): CountrySettings {
     tippingEnabledDefault: bool(c, r, 'tipping_enabled_default'),
     tipPresetsPct: numArr(c, r, 'tip_presets_pct'),
     allergenSet: oneOf(c, r, 'allergen_set', ['uk14', 'us9'] as const),
-    starterMonthlyMinor: numOrNull(c, r, 'starter_monthly_minor'),
-    proMonthlyMinor: numOrNull(c, r, 'pro_monthly_minor'),
-    maxMonthlyMinor: numOrNull(c, r, 'max_monthly_minor'),
-    proAllowanceMinor: numOrNull(c, r, 'pro_allowance_minor'),
-    maxAllowanceMinor: numOrNull(c, r, 'max_allowance_minor'),
-    platformFeePct: numOrNull(c, r, 'platform_fee_pct'),
     cardFeeOnlinePct: num(c, r, 'card_fee_online_pct'),
     cardFeeOnlineFixedMinor: num(c, r, 'card_fee_online_fixed_minor'),
     cardFeeInPersonPct: num(c, r, 'card_fee_in_person_pct'),

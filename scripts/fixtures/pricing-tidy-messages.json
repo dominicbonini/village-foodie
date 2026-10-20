@@ -1,0 +1,18 @@
+{
+  "_about": "pricing-tidy (20 October 2026): the message keys pricing-tidy REMOVED (with their text before), REWORDED (before → after) and ADDED (with their text), per locale — the fourth sibling of scripts/fixtures/plans-stage-a-messages.json, plans-stage-a2-messages.json and plans-stage-b-messages.json, same shape; scripts/_lp2-frozen.cjs stageA() applies it after Stage B. manageBilling.notStarted.body is deleted (Billing \"not started\" shows its heading alone); planTable.notes.whatsapp / .printing are the plan table's two new footnotes (en-US has no override). Written by hand from the working tree; never recaptured.",
+  "en-GB": {
+    "removed": {
+      "manageBilling.notStarted.body": "Your free trial hasn’t started yet."
+    },
+    "reworded": {},
+    "added": {
+      "planTable.notes.whatsapp": "WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.",
+      "planTable.notes.printing": "Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied)."
+    }
+  },
+  "en-US": {
+    "removed": {},
+    "reworded": {},
+    "added": {}
+  }
+}

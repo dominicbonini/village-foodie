@@ -591,10 +591,6 @@
       "keep": "Keep truck",
       "remove": "Remove truck"
     },
-    "vanUpgrade": {
-      "title": "Upgrade to add more trucks",
-      "body": "The Starter plan includes 1 truck. Upgrade to Pro or Max to add additional trucks."
-    },
     "schedule": {
       "urlPlaceholder": "https://yourtruck.com/events"
     },
@@ -661,7 +657,7 @@
   "manageBilling": {
     "footnote2Masked": "Online payments are powered by Stripe Connect. Platform and card processing fees are TBD and will be confirmed at launch.",
     "upgradeModal": {
-      "body": "We’re setting up automated billing. To upgrade now, send us a message and we’ll get you set up within 24 hours."
+      "body": "We’re setting up automated billing. To switch now, send us a message and we’ll get you set up within 24 hours."
     }
   },
   "manageTeam": {
@@ -835,16 +831,6 @@
       "menuBody": "Photograph your board or paste it in. Items, prices and extras all come through on their own. You just check they’re right.",
       "shareBody": "Post it on Facebook, stick the QR on the truck. Orders land on your screen, in the order you need to cook them."
     },
-    "pricing": {
-      "trialBody": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. <bold>Adding online payments doesn’t start your subscription</bold>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.",
-      "starter": {
-        "online": "Online ordering, pay at the window",
-        "menu": "Menu, combos & upsells"
-      },
-      "pro": {
-        "preorders": "Pre-orders & pickup times"
-      }
-    },
     "final": {
       "lede": "Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to try out in under 60 seconds. Your items, your prices. No sign-up, no card, nothing to install. Take a look, then decide."
     },
@@ -876,49 +862,13 @@
   },
   "planFeatures": {
     "row": {
-      "walkup_orders": {
-        "detail": "Take and manage orders at the window, paid on your own card terminal."
-      },
-      "sold_out_toggle": {
-        "detail": "Mark any item sold out in one tap — it grays out for customers right away."
-      },
-      "online_ordering_pay_at_hatch": {
-        "detail": "Customers order ahead online and pay in person when they pick up."
-      },
       "meal_deals_upsells": {
         "name": "Combos & upsells"
-      },
-      "time_slot_selection": {
-        "detail": "Customers choose a pickup time slot, spreading demand across your service."
-      },
-      "whatsapp_auto_replies": {
-        "detail": "Auto-reply to WhatsApp inquiries about your menu and schedule."
-      },
-      "messenger_instagram_replies": {
-        "detail": "Same as WhatsApp auto-replies, for Messenger and Instagram inquiries."
-      },
-      "tap_to_pay": {
-        "detail": "Take card payments on a supported phone, so you don’t need a separate card reader."
       }
-    },
-    "landing": {
-      "mergedAutoRepliesDetail": "Auto-reply to inquiries about your menu and schedule on WhatsApp, Messenger and Instagram."
-    },
-    "footnote": {
-      "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorization if you take the payment on a supported phone instead of a separate card reader.",
-      "n4Live": "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {from}, the first {count} a month are free. Correct as of {checked}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong."
     },
     "priceWord": {
       "masked": "TBD"
     }
-  },
-  "planMeta": {
-    "description": {
-      "starter": "Weekend trucks & walk-up spots"
-    }
-  },
-  "featuresPage": {
-    "lede": "Your free month includes everything — try it all before you pick."
   },
   "plansPdf": {
     "smallPrint": "Fine print",
@@ -958,6 +908,14 @@
       "festivalPitches": "That’s a couple of festival spots.",
       "vanDeposit": "That’s a deposit on a second truck.",
       "secondVan": "That’s a second truck on the road."
+    }
+  },
+  "pricing": {
+    "banner": {
+      "body": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime."
+    },
+    "base": {
+      "preorders": "Pre-orders & pickup times"
     }
   }
 }

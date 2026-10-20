@@ -182,6 +182,9 @@ async function views(ctx) {
     P('selected', { data: overview(), selectedId: 'p1', msg: { text: 'Saved — your image is in place.', bad: false } }, 'locations')
     P('selectedEmpty', { data: overview(), selectedId: 'p2', busy: true, msg: { text: 'That picture is too big', bad: true } }, 'locations')
     P('starter', { data: overview(), selectedId: 'p1' }, 'locations', { truck: { ...truck, plan: 'starter' } })
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): AFTER-only twin — the same state on the fixture's own truck. BEFORE has no
+    // Max view in this state; the named proof plans-starter-twin requires the Starter view to equal it (no plan gates Social).
+    P('starterAsMax', { data: overview(), selectedId: 'p1' }, 'locations')
 
     // ══ event — EventSetupScreen and EventPostModal ═════════════════════════════════════════════════════════
     const EL = M.defaultEventLayout(W, H)

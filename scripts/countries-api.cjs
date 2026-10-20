@@ -18,6 +18,13 @@
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const { gbFromSeed, usFromSeed } = require('./_country-settings-gb.cjs')
+const { seedCatalog } = require('./_plans-catalog-fixture.cjs')
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the enabled rule is no longer a CHECK on
+// country_settings but the trigger country_settings_require_plan_prices (20261024_plans.sql) — a country can be
+// switched on only when every ACTIVE PUBLIC plan has a plan_prices row for it. The store below models that trigger
+// on the SEEDED catalogue (GB and US priced; a new country such as ZZ is not), with the trigger's own message.
+const CATALOG = seedCatalog()
+if (!CATALOG) { console.error('🔴 no plans migration (supabase/migrations/20261024_plans.sql) — this harness needs it'); process.exit(1) }
 
 const ok = [], bad = []
 const t = (name, cond) => (cond ? ok : bad).push(name)
@@ -47,6 +54,23 @@ const COL = { // column → field, exactly lib/admin/country-form.ts valuesToCol
   service_fee_truck_max_fixed_minor: 'serviceFeeTruckMaxFixedMinor', platform_fee_enabled: 'platformFeeEnabled', fees_taxed: 'feesTaxed',
 }
 let checkFired = []
+let triggerFired = []
+/** 20261024_plans.sql's country_settings_require_plan_prices, one for one: BEFORE INSERT OR UPDATE, when the row is
+ *  switched on, every active public plan (by sort order) must have a plan_prices row for its code — else it raises. */
+function requirePlanPrices(r, prices) {
+  if (!r.enabled) return
+  const missing = CATALOG.plans.filter(p => p.active && p.isPublic)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .filter(p => !prices.some(pp => pp.planKey === p.key && pp.countryCode === r.countryCode))
+    .map(p => p.key)
+  if (missing.length) {
+    triggerFired.push(r.countryCode)
+    throw new Error(`country_settings: ${r.countryCode} cannot be switched on — no plan_prices row for: ${missing.join(', ')}`)
+  }
+}
+/** Retired plan price columns: still on the table (nullable, no default), never written by the form any more. */
+const RETIRED = ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct']
+const RETIRED_COLS = ['starter_monthly_minor', 'pro_monthly_minor', 'max_monthly_minor', 'pro_allowance_minor', 'max_allowance_minor', 'platform_fee_pct']
 /** 20261010_02's CHECKs, one for one. */
 function dbChecks(r) {
   const v = []
@@ -65,8 +89,8 @@ function dbChecks(r) {
   if (!r.tipPresetsPct.every(x => x !== null && x >= 0 && x <= 100)) v.push('tip_presets_chk')
   for (const k of ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor',
     'cardFeeOnlineFixedMinor', 'cardFeeInPersonFixedMinor', 'tapToPayFixedMinor']) if (r[k] !== null && !(r[k] >= 0)) v.push('minor_nonneg_chk')
-  if (r.enabled && ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct']
-    .some(k => r[k] === null)) v.push('enabled_needs_prices_chk')
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): country_settings_enabled_needs_prices_chk is DROPPED —
+  // its rule is now the trigger modelled in makeStore (requirePlanPrices), not a CHECK.
   if (typeof r.name !== 'string' || typeof r.taxLabel !== 'string' || typeof r.cardFeeRegionLabel !== 'string') v.push('not_null')
   // 20261010_17's three country_settings CHECKs (a NULL passes each), and its NOT NULL booleans.
   if (!['truck', 'hatchgrab'].includes(r.serviceFeeRecipient)) v.push('service_fee_recipient_chk')
@@ -75,11 +99,13 @@ function dbChecks(r) {
   if (typeof r.platformFeeEnabled !== 'boolean' || typeof r.feesTaxed !== 'boolean') v.push('not_null')
   return v
 }
-function makeStore(seed, trucks) {
+function makeStore(seed, trucks, opts = {}) {
   const rows = new Map(seed.map(r => [r.countryCode, structuredClone(r)]))
   const s = {
     writes: 0, raceOnce: null,
     rows,
+    prices: structuredClone(CATALOG.prices), // public.plan_prices, as seeded
+    lastColumns: null,                       // the columns the last update/insert was asked to write
     async list() { return [...rows.values()].map(r => structuredClone(r)).sort((a, b) => a.name.localeCompare(b.name)) },
     async get(code) { return rows.has(code) ? structuredClone(rows.get(code)) : null },
     async truckCounts(codes) { return Object.fromEntries(codes.map(c => [c, trucks[c] ?? 0])) },
@@ -88,15 +114,19 @@ function makeStore(seed, trucks) {
       const row = rows.get(code)
       if (!row || row.updatedAt !== expected) return null               // 🔴 WHERE updated_at = expected
       const next = { ...row }
+      s.lastColumns = Object.keys(cols)
       for (const [c, v] of Object.entries(cols)) { if (!(c in COL)) throw new Error('unknown column ' + c); next[COL[c]] = v }
+      if (!opts.noTrigger) requirePlanPrices(next, s.prices)   // BEFORE UPDATE trigger
       const v = dbChecks(next); if (v.length) { checkFired.push(...v); throw new Error('CHECK ' + v.join(',')) }
       rows.set(code, next); s.writes++
       return structuredClone(next)
     },
     async insert(cols) {
-      const next = {}
+      const next = Object.fromEntries(RETIRED.map(k => [k, null]))  // a column not written is NULL
+      s.lastColumns = Object.keys(cols)
       for (const [c, v] of Object.entries(cols)) { if (!(c in COL)) throw new Error('unknown column ' + c); next[COL[c]] = v }
       if (rows.has(next.countryCode)) { checkFired.push('pkey'); throw new Error('duplicate key') }
+      if (!opts.noTrigger) requirePlanPrices(next, s.prices)   // BEFORE INSERT trigger
       const v = dbChecks(next); if (v.length) { checkFired.push(...v); throw new Error('CHECK ' + v.join(',')) }
       rows.set(next.countryCode, next); s.writes++
       return structuredClone(next)
@@ -147,47 +177,54 @@ function makeStore(seed, trucks) {
     t('🔴 saving GB unchanged writes back EXACTLY what was there — every one of its values',
       r0.ok && keys.every(k => JSON.stringify(r0.data.country[k]) === JSON.stringify(GB[k])))
     t('…and stamps who and when', r0.ok && r0.data.country.updatedBy === 'admin@example.test' && r0.data.country.updatedAt !== GB.updatedAt)
-    t('GB\'s boxes read as typed: 29.00 · 49.00 · 1,500 · 2,000 · 0.99 · 1.5 + 20 · 1.4 + 10 · 10', (() => {
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the six plan price boxes are GONE from the form
+    // (plans and prices are public.plans / public.plan_prices). Was: GB's price boxes read 29.00 · 49.00 · 1,500 ·
+    // 2,000 · 0.99. Now: the form has NO plan price box, and the card fee boxes still read as typed.
+    const PRICE_BOXES = ['starterMonthly', 'proMonthly', 'maxMonthly', 'proAllowance', 'maxAllowance', 'platformFeePct']
+    t('🔴 the form has NO plan price box; GB\'s card fee boxes read as typed: 1.5 + 20 · 1.4 + 10 · 10', (() => {
       const f = F.rowToForm(GB)
-      return f.starterMonthly === '0.00' && f.proMonthly === '29.00' && f.maxMonthly === '49.00' && f.proAllowance === '1,500'
-        && f.maxAllowance === '2,000' && f.platformFeePct === '0.99' && f.cardFeeOnlinePct === '1.5' && f.cardFeeOnlineFixed === '20'
+      return PRICE_BOXES.every(k => !(k in f)) && !('PLAN_PRICE_FORM_FIELDS' in F) && !('emptyPlanPrices' in F)
+        && f.cardFeeOnlinePct === '1.5' && f.cardFeeOnlineFixed === '20'
         && f.cardFeeInPersonPct === '1.4' && f.cardFeeInPersonFixed === '10' && f.tapToPayFixed === '10'
     })())
-    // US: prices typed in major units are stored in minor units, exactly, and read back as typed.
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "US prices typed in major units are stored in
+    // minor units". Now: plan prices smuggled into a save are IGNORED — no retired column is written, and the
+    // stored retired values (still read by the frozen display copy) are left exactly as they were.
+    const usBefore = await s.get('US')
     const r1 = await save(s, 'US', f => Object.assign(f, {
       starterMonthly: '0', proMonthly: '19.99', maxMonthly: '1,234.56', proAllowance: '1,500', maxAllowance: '2000.5', platformFeePct: '0.95',
     }))
     const c = r1.ok && r1.data.country
-    t('🔴 19.99 → 1999 · 1,234.56 → 123456 · 1,500 → 150000 · 2000.5 → 200050 — string arithmetic, never * 100',
-      c && c.starterMonthlyMinor === 0 && c.proMonthlyMinor === 1999 && c.maxMonthlyMinor === 123456
-      && c.proAllowanceMinor === 150000 && c.maxAllowanceMinor === 200050 && c.platformFeePct === 0.95)
-    t('…and they read back as 19.99 · 1,234.56 · 1,500 · 2,000.50', (() => {
-      const f = F.rowToForm(c)
-      return f.proMonthly === '19.99' && f.maxMonthly === '1,234.56' && f.proAllowance === '1,500' && f.maxAllowance === '2,000.50'
-    })())
+    t('🔴 plan prices smuggled into a save are ignored: the save is OK and writes NO retired column',
+      r1.ok && Array.isArray(s.lastColumns) && RETIRED_COLS.every(col => !s.lastColumns.includes(col)))
+    t('…and the stored retired values are untouched', c && RETIRED.every(k => JSON.stringify(c[k]) === JSON.stringify(usBefore[k])))
     t('…and a save of what was read back changes nothing', await (async () => {
       const again = await save(s, 'US')
-      return again.ok && ['proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor'].every(k => again.data.country[k] === c[k])
+      return again.ok && Object.keys(c).filter(k => !['updatedAt', 'updatedBy'].includes(k)).every(k => JSON.stringify(again.data.country[k]) === JSON.stringify(c[k]))
     })())
-    t('🔴 US is still OFF — a price save never switches a country on', c && c.enabled === false)
-    // The decimals come from the COLUMN's currency: a zero-decimal currency stores what is typed.
+    t('🔴 US is still OFF — a save never switches a country on', c && c.enabled === false)
+    t('🔴 …and valuesToColumns names no retired column', (() => {
+      const cols = Object.keys(A.valuesToColumns(F.formToValues(F.rowToForm(GB), { truckCount: 0, storedCurrency: 'GBP', countryCode: 'GB' }).values))
+      return cols.length > 30 && RETIRED_COLS.every(col => !cols.includes(col))
+    })())
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "the decimals come from the column's currency —
+    // 2900 typed in JPY is 2900 stored; 29.5 in JPY refused". No box is typed in major units any more, so a JPY
+    // country saves with its retired prices untouched, and a smuggled '29.5' is neither refused nor stored.
     const s2 = makeStore([GB, US, { ...US, countryCode: 'JP', name: 'Japan', currency: 'JPY', locale: 'ja-JP' }], { GB: 14 })
-    const rj = await save(s2, 'JP', f => Object.assign(f, { proMonthly: '2900' }))
-    t('🔴 the decimals come from the column\'s currency — 2900 typed in JPY is 2900 stored', rj.ok && rj.data.country.proMonthlyMinor === 2900)
-    const rj2 = await save(s2, 'JP', f => Object.assign(f, { proMonthly: '29.5' }))
-    t('…and 29.5 in JPY is refused, in words', !rj2.ok && rj2.error === 'Pro, per month has more decimal places than JPY allows.')
+    const rj = await save(s2, 'JP', f => Object.assign(f, { proMonthly: '29.5' }))
+    t('🔴 a JPY country saves; a smuggled 29.5 plan price is neither refused nor stored', rj.ok && rj.data.country.proMonthlyMinor === US.proMonthlyMinor)
   }
 
   console.log('── 3 · EVERY RULE REFUSES WITH ITS PLAIN MESSAGE, BEFORE ANY CHECK ───────────────────────')
   const RULES = [
-    ['switching on with a plan price missing', 'US', f => { f.enabled = true }, "Can't switch on until the 6 plan prices are filled in."],
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): 'switching on with a plan price missing' is no longer
+    // a form rule refused BEFORE the database — it IS the database trigger's rule now; see section 3b.
     ['changing the currency while trucks use the country', 'GB', f => { f.currency = 'USD' }, "The currency can't change while 14 trucks use this country."],
     ['a currency that is not a code', 'US', f => { f.currency = 'Dollars' }, 'Currency must be a three-letter code, like GBP or USD.'],
     ['a currency code that does not exist', 'US', f => { f.currency = 'QQQ' }, 'Currency must be a three-letter code, like GBP or USD.'],
     ['an empty country name', 'US', f => { f.name = '  ' }, 'Give the country a name.'],
-    ['a plan price that is not an amount', 'US', f => { f.proMonthly = 'twenty' }, 'Pro, per month must be an amount, like 29.00.'],
-    ['a plan price with three decimals', 'US', f => { f.maxMonthly = '29.999' }, 'Max, per month has more decimal places than USD allows.'],
-    ['our fee above 100', 'US', f => { f.platformFeePct = '150' }, 'Our fee above that must be a percentage between 0 and 100, with at most 2 decimal places.'],
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the three plan price box rules (not an amount, three
+    // decimals, our fee above 100) are gone with the boxes — section 2 asserts such values are ignored, never written.
     ['a percentage with three decimals', 'US', f => { f.cardFeeOnlinePct = '2.905' }, 'Online card payments (%) must be a percentage between 0 and 100, with at most 2 decimal places.'],
     ['an empty card percentage', 'US', f => { f.cardFeeInPersonPct = '' }, "In-person card payments (%) can't be empty."],
     ['a fixed fee that is not a whole number', 'US', f => { f.cardFeeOnlineFixed = '30.5' }, "Online card payments (fixed part) must be a whole number of the currency's smallest unit, like 20."],
@@ -230,6 +267,46 @@ function makeStore(seed, trucks) {
       !r.ok && r.error === "The country code can't change after the country is created." && s.writes === 0)
     const r2 = await A.saveCountry(s, { code: 'US', expectedUpdatedAt: row.updatedAt, form: { name: 'x' } }, stamp())
     t('…and a malformed save is refused whole, never half-applied', !r2.ok && r2.status === 400 && s.writes === 0)
+  }
+
+  console.log('── 3b · SWITCHING ON NEEDS EVERY PUBLIC PLAN PRICED — the trigger\'s rule, in the page\'s words ──')
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was RULES' "switching on with a plan price missing →
+  // Can't switch on until the 6 plan prices are filled in." (a form rule, before any CHECK). The rule is now the
+  // trigger country_settings_require_plan_prices; saveCountry maps its error ("cannot be switched on") to a 400
+  // with ENABLE_NEEDS_PRICES on the field 'enabled'.
+  {
+    const WANT = "Can't switch on until every public plan has a price for this country (see Plans)."
+    t('the page\'s sentence is the exported ENABLE_NEEDS_PRICES', F.ENABLE_NEEDS_PRICES + '.' === WANT)
+    const s = fresh(); checkFired = []; triggerFired = []
+    const z = await A.addCountry(s, { code: 'ZZ', name: 'Zedland', copyFrom: 'US' }, stamp())
+    const before = JSON.stringify(await s.get('ZZ')); const w0 = s.writes
+    const r = await save(s, 'ZZ', f => { f.enabled = true })
+    t(`🔴 switching on a country with no plan_prices rows (ZZ) → “${WANT}” on 'enabled', 400, nothing written`,
+      z.ok && !r.ok && r.status === 400 && r.error === WANT && (r.errors ?? []).length === 1
+      && r.errors[0].field === 'enabled' && r.errors[0].message === WANT
+      && JSON.stringify(await s.get('ZZ')) === before && s.writes === w0)
+    t('…refused by the TRIGGER (the only thing that knows the catalogue), and no CHECK fired', triggerFired.join() === 'ZZ' && checkFired.length === 0)
+    t('…and the database\'s own words never reach the page', !messages.some(m => /cannot be switched on|plan_prices/.test(m)))
+    // One public plan priced is not enough — every ACTIVE PUBLIC plan must be.
+    s.prices.push({ ...CATALOG.prices.find(p => p.countryCode === 'US' && p.planKey === 'pro'), countryCode: 'ZZ' })
+    const r2 = await save(s, 'ZZ', f => { f.enabled = true })
+    t('🔴 …still refused with only Pro priced (payg and unlimited missing)', !r2.ok && r2.errors?.[0]?.field === 'enabled' && (await s.get('ZZ')).enabled === false)
+    // Internal plans (trial, demo, tester) are not needed.
+    for (const k of ['payg', 'unlimited']) s.prices.push({ ...CATALOG.prices.find(p => p.countryCode === 'US' && p.planKey === k), countryCode: 'ZZ' })
+    const r3 = await save(s, 'ZZ', f => { f.enabled = true })
+    t('🔴 …and switched on once every public plan (payg, pro, unlimited) has a row — internal plans not needed', r3.ok && r3.data.country.enabled === true)
+    // GB and US are priced in the seed: switching US on passes the trigger.
+    const s2 = fresh(); triggerFired = []
+    const rUS = await save(s2, 'US', f => { f.enabled = true })
+    t('🔴 US (priced in the seed) can be switched on', rUS.ok && rUS.data.country.enabled === true && triggerFired.length === 0)
+    const rGB = await save(s2, 'GB')
+    t('…and GB (switched on, priced) saves', rGB.ok && rGB.data.country.enabled === true)
+    // Any other database error is NOT mapped to the sentence: it is thrown, for the route's generic message.
+    const s3 = fresh()
+    s3.update = async () => { throw new Error('connection reset') }
+    let thrown = null
+    try { await save(s3, 'US', f => { f.enabled = true }) } catch (e) { thrown = e }
+    t('…and any other database error is thrown, not dressed up as the switch-on sentence', thrown && thrown.message === 'connection reset')
   }
 
   console.log('── 4 · A STALE SAVE IS REFUSED ───────────────────────────────────────────────────────────')
@@ -304,12 +381,19 @@ function makeStore(seed, trucks) {
     }
     const r = await A.addCountry(s, { code: 'zz', name: 'Zedland', copyFrom: 'US' }, stamp())
     const z = r.ok && r.data.country
-    t('🔴 a new country is created OFF, with all six plan prices EMPTY, everything else copied',
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): "all six plan prices EMPTY" now means the insert
+    // writes NO retired price column (so they are NULL), and the new country has no plan_prices row.
+    t('🔴 a new country is created OFF, writing no retired plan price column (all NULL), with no plan_prices row, everything else copied',
       z && z.countryCode === 'ZZ' && z.name === 'Zedland' && z.enabled === false
-      && ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct'].every(k => z[k] === null)
+      && RETIRED.every(k => z[k] === null) && RETIRED_COLS.every(col => !s.lastColumns.includes(col))
+      && !s.prices.some(p => p.countryCode === 'ZZ')
       && z.currency === 'USD' && z.cardFeeOnlinePct === US.cardFeeOnlinePct && JSON.stringify(z.timezones) === JSON.stringify(US.timezones))
     // It cannot be removed while switched on…
-    await save(s, 'ZZ', f => Object.assign(f, { starterMonthly: '0', proMonthly: '29', maxMonthly: '49', proAllowance: '1500', maxAllowance: '2000', platformFeePct: '1', enabled: true }))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "type the six prices and switch on". Prices are
+    // plan_prices rows now (added on the Plans page) — add ZZ's rows for every public plan, then switch it on.
+    for (const k of ['payg', 'pro', 'unlimited']) s.prices.push({ ...CATALOG.prices.find(p => p.countryCode === 'US' && p.planKey === k), countryCode: 'ZZ' })
+    const rEn = await save(s, 'ZZ', f => { f.enabled = true })
+    t('…priced on every public plan, ZZ switches on', rEn.ok && rEn.data.country.enabled === true)
     const rOn = await A.removeCountry(s, { code: 'ZZ' }, ['GB']); messages.push(rOn.ok ? '' : rOn.error)
     t("🔴 remove refuses a country that is switched on → “Switch Zedland off before removing it.”", !rOn.ok && rOn.error === 'Switch Zedland off before removing it.')
     const sT = makeStore([GB, US, { ...US, countryCode: 'CA', name: 'Canada' }], { GB: 14, CA: 2 })
@@ -338,26 +422,56 @@ function makeStore(seed, trucks) {
 
   console.log('── 7 · THE CONTROL — a broken rule must be caught ───────────────────────────────────────')
   {
-    // The same actions with the switch-on rule DELETED from lib/admin/country-form.ts. The request must now
-    // get past the actions and be stopped only by the table's CHECK — which is exactly what section 3
-    // asserts never happens. If this variant still "passes", section 3 was measuring nothing.
-    const FORM = path.join(REPO, 'lib/admin/country-form.ts')
-    let applied = false
-    const broken = await esbuild.build({
-      stdin: { contents: "export * as A from '@/lib/admin/country-actions'\nexport * as F from '@/lib/admin/country-form'", resolveDir: REPO, loader: 'ts' },
-      bundle: true, write: false, platform: 'node', format: 'cjs', target: 'node20', alias: { '@': REPO }, logLevel: 'silent',
-      plugins: [{ name: 'break', setup(b) { b.onLoad({ filter: /lib\/admin\/country-form\.ts$/ }, () => {
-        const src = fs.readFileSync(FORM, 'utf8'); const out = src.replace('  if (f.enabled) {\n    const missing', '  if (false) {\n    const missing')
-        applied = out !== src; return { contents: out, loader: 'ts' } }) } }],
-    })
-    const bfile = path.join(REPO, 'node_modules/.cache/countries-api-broken.cjs'); fs.writeFileSync(bfile, broken.outputFiles[0].text)
-    const B = require(bfile)
-    const s = fresh(); checkFired = []
-    const row = await s.get('US'); const form = B.F.rowToForm(row); form.enabled = true
-    let threw = false
-    try { await B.A.saveCountry(s, { code: 'US', expectedUpdatedAt: row.updatedAt, form }, stamp()) } catch { threw = true }
-    t('CONTROL: with the switch-on rule removed, the save reaches the table and its CHECK is what stops it',
-      applied && threw && checkFired.includes('enabled_needs_prices_chk'))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "the switch-on rule DELETED from
+    // lib/admin/country-form.ts → the table's CHECK enabled_needs_prices_chk stops it". That form rule no longer exists
+    // (the trigger is the rule). Three controls now, one per claim this harness makes:
+    const brokenBuild = async (file, find, repl) => {
+      let applied = false
+      const out = await esbuild.build({
+        stdin: { contents: "export * as A from '@/lib/admin/country-actions'\nexport * as F from '@/lib/admin/country-form'", resolveDir: REPO, loader: 'ts' },
+        bundle: true, write: false, platform: 'node', format: 'cjs', target: 'node20', alias: { '@': REPO }, logLevel: 'silent',
+        plugins: [{ name: 'break', setup(b) { b.onLoad({ filter: new RegExp(file.replace(/[./]/g, '\\$&') + '$') }, () => {
+          const src = fs.readFileSync(path.join(REPO, file), 'utf8'); const o = src.replace(find, repl)
+          applied = o !== src; return { contents: o, loader: 'ts' } }) } }],
+      })
+      const bfile = path.join(REPO, `node_modules/.cache/countries-api-broken-${Math.random().toString(36).slice(2)}.cjs`)
+      fs.writeFileSync(bfile, out.outputFiles[0].text)
+      const B = require(bfile); fs.unlinkSync(bfile)
+      return { B, applied }
+    }
+    // (a) section 3's "refused BEFORE any CHECK": with the phone code rule deleted from the form, the bad save gets
+    //     past the actions and the table's CHECK is what stops it.
+    {
+      const { B, applied } = await brokenBuild('lib/admin/country-form.ts',
+        "if (!/^[1-9][0-9]{0,2}$/.test(phoneCountryCode)) err(", "if (false) err(")
+      const s = fresh(); checkFired = []
+      const row = await s.get('US'); const form = B.F.rowToForm(row); form.phoneCountryCode = '1234'
+      let threw = false
+      try { await B.A.saveCountry(s, { code: 'US', expectedUpdatedAt: row.updatedAt, form }, stamp()) } catch { threw = true }
+      t('CONTROL (a): with a form rule removed, the save reaches the table and its CHECK is what stops it',
+        applied && threw && checkFired.includes('phone_chk'))
+    }
+    // (b) section 3b's mapping: with the "cannot be switched on" catch removed from saveCountry, the trigger's raw
+    //     error escapes instead of the page's sentence.
+    {
+      const { B, applied } = await brokenBuild('lib/admin/country-actions.ts',
+        "e.message.includes('cannot be switched on')", "e.message.includes('__never__')")
+      const s = fresh()
+      await B.A.addCountry(s, { code: 'ZZ', name: 'Zedland', copyFrom: 'US' }, stamp())
+      const row = await s.get('ZZ'); const form = B.F.rowToForm(row); form.enabled = true
+      let err = null, r = null
+      try { r = await B.A.saveCountry(s, { code: 'ZZ', expectedUpdatedAt: row.updatedAt, form }, stamp()) } catch (e) { err = e }
+      t('CONTROL (b): with the trigger-error mapping removed, the raw trigger message escapes (no ENABLE_NEEDS_PRICES)',
+        applied && r === null && err && /^country_settings: ZZ cannot be switched on — no plan_prices row for: payg, pro, unlimited$/.test(err.message))
+    }
+    // (c) the in-memory trigger is what refuses: without it, the REAL actions switch ZZ on unpriced.
+    {
+      const s = makeStore([GB, US], { GB: 14, US: 0 }, { noTrigger: true })
+      await A.addCountry(s, { code: 'ZZ', name: 'Zedland', copyFrom: 'US' }, stamp())
+      const r = await save(s, 'ZZ', f => { f.enabled = true })
+      t('CONTROL (c): without the trigger, an unpriced ZZ is switched on — the trigger, not the form, is the rule',
+        r.ok && r.data.country.enabled === true)
+    }
   }
 
   for (const n of ok) console.log('  ✓ ' + n)

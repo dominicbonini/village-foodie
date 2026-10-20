@@ -144,7 +144,10 @@ async function views(ctx) {
   })
   const KEYS = { demo_sessions: [['truck_id']], slot_capacity: [['truck_id', 'event_date', 'slot']], production_slot_usage: [['truck_id', 'event_id', 'production_slot']] }
   const runRows = async (key, fn) => {
-    const pg = makeFakePg({ country_settings: [GB_ROW(), US_ON()].map(snake), trucks: [], truck_vans: [] }, { keys: KEYS, defaults: { menu_items_db: { is_active: true } } })
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): provisioning reads the plan catalogue (getPlanCatalog) — the seeded
+    // plans / plan_prices rows ride along as fixture input and are never recorded (scripts/_lp1c-fixtures.cjs planTables).
+    const PF = require('./_lp1c-fixtures.cjs')
+    const pg = makeFakePg({ country_settings: [GB_ROW(), US_ON()].map(snake), trucks: [], truck_vans: [], ...PF.planTables() }, { keys: KEYS, defaults: { menu_items_db: { is_active: true } } })
     const from = pg.from.bind(pg)
     pg.from = t => {   // the seeder's `menu_categories!category_id(…)` embed, resolved from the stored categories (as _lp1c-demo does)
       const c = from(t)
@@ -162,7 +165,7 @@ async function views(ctx) {
     lib.clearCountrySettingsCache()
     let result = null, error = null
     try { result = await kit.quietAsync(() => fn(pg)) } catch (e) { error = { name: e && e.name, message: e && e.message } } finally { delete globalThis.__harnessDb; delete globalThis.__extract }
-    const tables = Object.fromEntries(Object.keys(pg.tables).sort().filter(t => t !== 'country_settings').map(t => [t, pg.tables[t]]))
+    const tables = Object.fromEntries(Object.keys(pg.tables).sort().filter(t => t !== 'country_settings' && !require('./_lp1c-fixtures.cjs').PLAN_TABLES.includes(t)).map(t => [t, pg.tables[t]]))
     out[key] = JSON.stringify({ result, error, writes: pg.writes, tables })
   }
   const NOW = new Date(ctx.FIX.NOW)

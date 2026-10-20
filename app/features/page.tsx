@@ -9,11 +9,11 @@
 // section moved here INTACT — same component, same data source, same row order — and the landing now
 // carries a text link to it under the plan cards.
 //
-// ── ⚠️ WHAT THIS PAGE IS NOT ──────────────────────────────────────────────────────────────────────
-// It is NOT a second pricing page. It has no plan cards, no trial banner and no CTA of its own beyond
-// the chrome's: the prices and the decision live on the landing, and the one link at the bottom sends
-// a reader back to them. Adding cards here would give the product two pricing surfaces to keep in
-// step, which is the duplication lib/plan-features.ts exists to prevent.
+// ── 🔴 STAGE B OF THE NEW PRICING (docs/pricing-pages-report.md; the approved mockup "/features") ─────────
+// h1, lede, the trial callout, THE ONE PLAN TABLE (components/pricing/PlanTable.tsx — the same component Manage ›
+// Billing renders) and the landing's card-fee footnote. Every plan, price, fee, allowance, switch and the trial
+// length come from public.plans / plan_prices / plan_features (lib/plans.ts); every word from the `planTable` /
+// `pricing` messages. ⚠️ STILL NOT A SECOND PRICING PAGE: no plan cards and no CTA beyond the chrome's.
 //
 // ── 🔴 HOST HANDLING: THE SAME SHAPE AS /compare, AND FOR THE SAME REASON ─────────────────────────
 // Village Foodie is the CONSUMER discovery brand. Someone there is looking for a food truck, not for
@@ -31,6 +31,7 @@
 // the landing and NOT indexing it here would have made a public page private by accident.
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
@@ -41,7 +42,14 @@ import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'  
 // from this boundary.
 import { PageLocale } from '@/lib/i18n/page-locale'
 import { localeOfCountry } from '@/lib/i18n/locales'
-import { FeatureComparison } from '@/components/landing/FeatureComparison'
+import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'
+import { getPlanCatalog } from '@/lib/plans-server'
+import { offerPlans, offerTrialMonths, offerFallback, upgradeSummary } from '@/lib/plan-offer'
+import { cardFeeOnlineLabel } from '@/lib/card-fees'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/planTable'
+import '@/lib/i18n/catalog/pricing'
+import '@/lib/i18n/catalog/planPrompt'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
@@ -61,6 +69,13 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'features' })
   const c = marketingCountry(visitor.settings)
   const at = visitor.countryPage && countryPageAlternates('features', visitor.settings.countryCode, visitor.countryPage.alternates)
+  // 🔴 STAGE B: the description named the retired tiers ("Starter, Pro and Max") and "your first month". It now names
+  // the public plans and the trial length from the data — the one SEO change on this page (the title is unchanged).
+  const catalog = await getPlanCatalog()
+  const description = translatorFor(visitor.settings.locale, 'planTable')('meta.description', {
+    plans: new Intl.ListFormat(visitor.settings.locale, { type: 'conjunction' }).format(offerPlans(catalog, visitor.settings.countryCode).map(p => p.plan.name)),
+    months: offerTrialMonths(catalog) ?? 0,
+  })
   return {
     // ── TITLE. Its own, in the landing's style: terms first, brand last, under Google's ~60 chars.
     // 🔴 `absolute`, NOT a bare string — app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
@@ -68,13 +83,11 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
     // and it was caught there in the SERVED <head> rather than in the source.
     title: { absolute: `Plans & features compared — HatchGrab ${c.short}` },
 
-    // ⚠️ IT NAMES THE TIERS AND THE FREE MONTH, which is what the page actually answers. It deliberately
+    // ⚠️ IT NAMES THE PLANS AND THE FREE TRIAL, which is what the page actually answers. It deliberately
     // does NOT repeat the landing's "not a POS" boundary — that line is there to make the wrong buyer
     // self-select out of a click on a page ABOUT the product; someone searching a feature comparison has
     // already decided what they are looking at.
-    description:
-      'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
-      + 'allowances. Your first month includes everything.',
+    description,
 
     robots: { index: true, follow: true },
 
@@ -88,18 +101,14 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
       siteName: 'HatchGrab',
       url: at ? at.canonical : 'https://www.hatchgrab.com/features',
       title: `Plans & features compared — HatchGrab ${c.short}`,
-      description:
-        'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
-        + 'allowances. Your first month includes everything.',
+      description,
       images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
       locale: c.ogLocale,
     },
     twitter: {
       card: 'summary_large_image',
       title: `Plans & features compared — HatchGrab ${c.short}`,
-      description:
-        'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and '
-        + 'allowances. Your first month includes everything.',
+      description,
       images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
     },
   }
@@ -118,13 +127,14 @@ async function onHatchGrab(): Promise<boolean> {
 // files themselves. /compare carries the same three declarations for the same reason.
 const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap' })
+// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
+const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
 
 // 🔴 ONE `.hg-landing` ROUND THE WHOLE PAGE, WHICH /compare DELIBERATELY DOES NOT DO.
 // All of landing.css is scoped under `.hg-landing`, and one of its rules is `.hg-landing * { margin: 0 }`.
 // That is why /compare splits its wrapper in two — its calculator is Tailwind and the scoped reset would
-// strip every `mt-3` and `space-y-3` in it. ⚠️ NOTHING ON THIS PAGE IS TAILWIND: the chrome and the table
-// are landing.css markup throughout, so one wrapper is correct here AND is what makes the sticky table
+// strip every `mt-3` and `space-y-3` in it. ⚠️ NOTHING ON THIS PAGE IS TAILWIND: the chrome is landing.css markup and
+// the table its own plan-table.css (two classes deep, so the reset cannot strip it), so one wrapper is correct here AND is what makes the sticky table
 // header work — `.hg-landing nav` is `position: sticky`, and a sticky element only travels inside its
 // parent's box, so the nav's containing block must be the page.
 const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
@@ -140,6 +150,19 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   // Language Phase 1e: at a country address the country is the ADDRESS's (lib/visitor-country.ts resolveCountryPage).
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'features' })
   const settings = visitor.settings
+  // 🔴 STAGE B: everything below the nav is the plan data, in the country's words.
+  const catalog = await getPlanCatalog()
+  const plans = offerPlans(catalog, settings.countryCode)
+  const months = offerTrialMonths(catalog)
+  const fallback = offerFallback(catalog, settings.countryCode)
+  const ups = upgradeSummary(catalog, plans)
+  const t = translatorFor(settings.locale, 'planTable')
+  const tPricing = translatorFor(settings.locale, 'pricing')
+  const tPrompt = translatorFor(settings.locale, 'planPrompt')
+  const list = (xs: string[]) => new Intl.ListFormat(settings.locale, { type: 'conjunction' }).format(xs)
+  // A feature's short word in the lede ("WhatsApp", "social media"), else its generic name.
+  const short = (f: string) => (t.has(`short.${f}` as never) ? t(`short.${f}` as never) : tPrompt(`features.${f}.name` as never))
+  const b = (c: ReactNode) => <b>{c}</b>
 
   return (
     <PageLocale locale={localeOfCountry(settings)}>
@@ -154,8 +177,27 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             `/landing#pricing`. One prop, both behaviours, no second nav. */}
         <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
 
-        {/* The moved section — heading, subline, table, footnotes 1–5. */}
-        <FeatureComparison settings={settings} />
+        {/* The approved mockup: h1, lede, the trial callout, the one plan table, the card-fee footnote. */}
+        <section className="band features-page">
+          <div className="wrap">
+            <h1>{t('h1')}</h1>
+            <p className="lede">{t('lede', {
+              hasUpgrades: ups.plans.length && ups.features.length ? 'yes' : 'no',
+              plans: list(ups.plans.map(p => p.plan.name)),
+              features: list(ups.features.map(short)),
+            })}</p>
+            {months !== null && (
+              <p className="features-callout">{t.rich('callout', { months, fallback: fallback.plan.name, b })}</p>
+            )}
+            {/* seo-fixes S7 (measured, 20 October 2026): rendered as the component, NOT as a static-HTML string — the
+                string, JSON-escaped into the RSC payload, made this page LARGER (89.5 → 102 KB); React's element tree
+                de-duplicates the repeated cells. The payload is already only what the page renders. */}
+            <PlanTable catalog={catalog} settings={settings} highlight={plans.find(p => p.highlighted)?.plan.key ?? null} />
+            <p className="price-note">{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>
+            {/* pricing-tidy: the rows' disclosures, marked ¹ ² in the table — same style as the card-fee footnote. */}
+            {planTableNotes(settings.locale).map(n => <p key={n.marker} className="price-note"><sup>{n.marker}</sup> {n.text}</p>)}
+          </div>
+        </section>
 
         {/* ══ ⛔ THE "See prices and plans →" LINK AND ITS SECTION ARE GONE — 6 October 2026 ══════════
             Removed on request. 🔴 THE WHOLE `<section>` WENT, NOT JUST THE `<p>`: every bare

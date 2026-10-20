@@ -4,7 +4,7 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo, use, Fragment } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { hasFeature, canAccess } from '@/lib/features'
+import { useFeatures } from '@/lib/useFeatures'
 import { scanUrl } from '@/lib/custom-domain/copy'   // the one builder for the address a QR encodes
 /* ✅ RESTORED IN FULL (5 October 2026). It had been trimmed to two strings when the offline-protection
  * control moved into the deleted "This event" card; the card is gone and the card's copy came back
@@ -281,6 +281,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[requiresPin,setRequiresPin]=useState(false)
   const[authenticated,setAuthenticated]=useState(false)
   const[truck,setTruck]=useState<TruckData|null>(null)
+  // Stage A2: override → the truck's EFFECTIVE plan's switch (server-sent `plan_blocks`) → allowed.
+  const features=useFeatures(truck)
   // 🔴 THE TRUCK'S TIME (Phase 2B): its zone decides "now" and "today" everywhere on this screen (was the
   // device's clock, or a fixed London), and its style writes every time and date. Before the truck has
   // loaded nothing time-dependent renders; GB's settings stand in silently until then.
@@ -2010,7 +2012,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!truck) return
     try{
       const{generateQRWithLogo}=await import('@/lib/generateQRCode')
-      const showBrandedQr=hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded'
+      const showBrandedQr=features.can('branded_qr_code')&&truck.qr_code_style==='branded'
       // FIX 4 — DEMO renders the BRANDED composite with placeholder text where the logo would sit. It
       // shows the branded-QR feature working and hints at what signing up adds, without faking a logo the
       // visitor hasn't given us. Real trucks are unaffected (placeholder is ignored when a logo exists).
@@ -3587,7 +3589,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // this screen is live again — but tickets do not appear while the dashboard is not on screen.
   // 🔴 THE PLAN GATE IS THE SAME PREDICATE THE SETTINGS CARD USES, resolved once here and passed down, so
   // the card and the watcher can never disagree about whether this truck may print.
-  const canPrintTickets = canAccess(truck?.plan ?? 'starter', 'ticket_printing', truck?.feature_overrides ?? {}, truck?.trial_expires_at ?? null)
+  const canPrintTickets = features.can('ticket_printing')
   const printing = usePrinting({
     token,
     orders,
@@ -4072,7 +4074,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       )}
       {isDemo&&!demoSettingUp&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}
         completionPresses={effectiveCompletionPresses} takesCash={effectiveTakesCash}
-        logoUrl={(demoBranded&&truck&&hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}
+        logoUrl={(demoBranded&&truck&&features.can('branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
           AND acquires it. */}
@@ -5827,7 +5829,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 app/manage/[token]/page.tsx (SettingsTab, above the danger zone) and §46 of the manual.
                 🔴 DO NOT RE-ADD THEM HERE. A truck-wide setting on the per-event screen is the exact
                 confusion the scope rule exists to prevent. */}
-            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount} time={truck.time}/>}
+            {!isDemo&&truck&&<PrintingSettings features={features} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount} time={truck.time}/>}
             {!isDemo&&<NotificationSettings token={token}/>}
           </div>
         )}

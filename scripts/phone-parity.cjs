@@ -128,8 +128,12 @@ async function screens(opTruck, emailExtra, setupState = {}, phones = SCREEN_PHO
   const basket = [{ menuItem: MENU.items[0], quantity: 1, modifiers: [], specialInstructions: '', cartKey: 'k1' }]
   for (const p of phones) {
     const r = kit.renderWith({ truck: opTruck, menu: MENU, events: [EVENT], event: EVENT, eventLoading: false, loading: false, basket, formSheetOpen: true, availableSlots: [], phone: p, name: 'Sam', email: 'sam@example.test' }, h(m.op.OrderPage, { params: { slug: 'test-kitchen' } }))
-    const i = r.text.indexOf('Phone number')
-    out[`order|${p}`] = { field: r.text.slice(i, i + 160), placeholders: r.attrs.filter(a => a.startsWith('placeholder=')) }
+    // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): the field is a fixed 160-character window, so the named change
+    // legal-followups-privacy-link (the word " Privacy" under Place order) is taken out BEFORE the window is cut — else
+    // every later character shifts. Only the --capture run (BEFORE) never has it to take out.
+    const text = r.text.includes(' Privacy') ? require('./_legal-followups-named.cjs').unPrivacy(r.text) : r.text
+    const i = text.indexOf('Phone number')
+    out[`order|${p}`] = { field: text.slice(i, i + 160), placeholders: r.attrs.filter(a => a.startsWith('placeholder=')) }
   }
   // setupState.phoneCopy (the old state) → the chosen country carrying that copy, on the truck step.
   const { phoneCopy, ...restSetup } = setupState
@@ -290,7 +294,17 @@ async function checkAfter() {
   // ── 3 · the rendered screens and emails, against BEFORE
   const opTruck = { id: 'test-truck', name: 'Pizza Kitchen', logo: null, mode: 'village', venue_name: null, time_selection_enabled: true, paused: false, plan: 'pro', ordering_available: true, card_payments_ready: false, money: FMT, time: GB_TS, country: 'GB', phone: GB }
   const after = await screens(opTruck, { phoneCountry: 'GB' }, { phoneCopy: GB })
+  // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md): the named change
+  // legal-followups-privacy-link — the order form gains a "Privacy" link under Place order and the customer emails a
+  // " · Privacy" footer link. Where BEFORE never says "Privacy", exactly that is taken out of AFTER
+  // (scripts/_legal-followups-named.cjs unPrivacy) and the screen is compared byte for byte as before.
+  const LFU = require('./_legal-followups-named.cjs')
+  let privacyNamed = 0
   for (const [k, v] of Object.entries(B.screens)) {
+    if (after[k] && !JSON.stringify(v).includes('Privacy')) {
+      const un = JSON.parse(JSON.stringify(after[k], (_, x) => LFU.unPrivacy(x)))
+      if (JSON.stringify(un) !== JSON.stringify(after[k])) { privacyNamed++; after[k] = un }
+    }
     if (JSON.stringify(after[k]) === JSON.stringify(v)) continue
     const input = k.startsWith('email|') ? k.slice(6) : null
     if (input && classify(LINK, { input })) { note(`E:${classify(LINK, { input })}`, input); continue }

@@ -34,6 +34,7 @@ import { translatorFor } from '@/lib/i18n/translator'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import type { ResolvedActor, ActorSource } from '@/lib/audit/actor'
 import '@/lib/i18n/catalog/emailCustomer'
+import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
 
 // Escape operator free-text before interpolating into a customer email's HTML (prevents broken
 // markup / injection from a rejection/cancellation reason). NOTE: the CANCEL email (:cancellation
@@ -140,14 +141,14 @@ export async function rejectOrder(
         ${reasonLine}
         ${rejectMoney.html}
         <p>${t('rejection.orderAtTruck')}</p>
-        <p style="color:#64748b;font-size:13px">${t('common.poweredByDot')}</p>
+        <p style="color:#64748b;font-size:13px">${t('common.poweredByDot')}${privacyFooterHtml(t as never)}</p>
       </body>`,
       // THE TEXT TWIN, FROM THE SAME SENTENCE. notifyCustomer's own contract: an email that states
       // what happened to a customer's money must say it in both renderings, or a text-only client
       // reads Brevo's strip of the markup and the two can disagree.
       t('rejection.textLead', { truck: truck.name, id: order.id })
       + `${rejectionReason ? ' ' + t('rejection.reason', { reason: rejectionReason }) : ''}${rejectMoney.text}`
-      + ` ${t('rejection.orderAtTruck')} ${t('common.poweredByText')}`)
+      + ` ${t('rejection.orderAtTruck')} ${t('common.poweredByText')} ${privacyFooterText(t as never)}`)
   }
   // ⚠️ ADDITIVE FIELD. `success` and `status` are unchanged and mean exactly what they meant; the
   // rejection did happen. `hold_release` is the money half of the answer, which had no field before

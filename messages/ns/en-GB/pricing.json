@@ -1,0 +1,46 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
+    "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime."
+  },
+  "card": {
+    "perTruckMonth": "per truck / month",
+    "mostTrucks": "Most trucks",
+    "tryFree": "Try free",
+    "seeEvery": "See every feature →",
+    "everything": "Everything to run a service",
+    "everythingIn": "Everything in {plan}, plus"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> on online card orders only. Walk-up orders are always free.",
+    "included": "First <b>{included}</b> of online orders included each month, then <b>{fee}*</b>. Walk-up orders are always free.",
+    "noFee": "<b>No HatchGrab fees</b> on online orders, however busy you get. One predictable monthly cost."
+  },
+  "base": {
+    "walkUp": "Walk-up orders & kitchen screen",
+    "online": "Online ordering",
+    "preorders": "Pre-orders & collection times",
+    "capacity": "Kitchen capacity management",
+    "privateEvents": "Private events",
+    "printing": "Kitchen ticket printing",
+    "app": "iPhone, iPad and Android kitchen app"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp auto-replies",
+    "schedule_graphics": "Social media posts — your Facebook and Instagram schedule — ready to post",
+    "event_types": "Custom event types & pricing"
+  },
+  "money": {
+    "unlimitedOrders": "Unlimited online orders, 0% HatchGrab fee",
+    "samePrice": "Same price in your busiest month"
+  },
+  "comingSoon": "Coming soon",
+  "bar": {
+    "title": "Which plan is cheapest for me?",
+    "first": "Under {to} of online orders a month → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Over {from} → <b>{plan}</b>",
+    "only": "Any volume → <b>{plan}</b>"
+  },
+  "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+}

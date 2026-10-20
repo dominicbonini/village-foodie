@@ -59,7 +59,7 @@ module.exports = function renderKit({ cacheTag }) {
 
   // ── bundling ──
   const NAV_STUB = `export const useRouter = () => ({ push(){}, replace(){}, refresh(){}, back(){}, prefetch(){} })
-export const usePathname = () => '/'
+export const usePathname = () => globalThis.__kitPathname ?? '/'   // seo-fixes: a harness may set the path (default '/', as before)
 export const useSearchParams = () => new URLSearchParams(globalThis.__msSearch || '')
 export const useParams = () => (globalThis.__msParams || { id: 'harness-order', slug: 'test-kitchen', token: 'harness' })
 export const notFound = () => { throw new Error('notFound') }

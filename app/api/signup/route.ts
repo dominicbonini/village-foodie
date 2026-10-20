@@ -26,15 +26,15 @@ import { isDemoIdentifier } from '@/lib/demo'
 import { onboardingErrorBody, type OnboardingErrorCode, type OnboardingErrorParams } from '@/lib/i18n/onboarding-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+// Which document they agreed to — the documents' own version (lib/legal.ts TERMS_VERSION), not typed here: it went stale
+// here once. Accounts that signed up under 'holding-2026-07-23' are still queryable by that value for re-consent.
+import { TERMS_VERSION } from '@/lib/legal'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 )
 
-/** Which document they agreed to. `holding-` marks the interim pages — these accounts need re-consent
- *  when real terms ship, and this value is what makes that queryable rather than guesswork. */
-const TERMS_VERSION = 'holding-2026-07-23'
 /** 30, not 7. The verification copy deliberately says this is not urgent, an operator may take weeks
  *  over their menu, and there is NO resend path yet — so a short window strands them silently. */
 const VERIFY_TTL_DAYS = 30

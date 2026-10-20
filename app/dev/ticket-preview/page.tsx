@@ -69,7 +69,7 @@ const SAMPLE_ORDER: Order = {
 const SAMPLE_TRUCK: TruckData = {
   id: 't-1', name: 'Real Thai Food', mode: 'event', venue_name: null, logo: null,
   dashboard_token: 'tok', kds_mode: false, crew_mode: 'solo', display_mode: 'grid',
-  keep_screen_on: false, plan: 'max', trial_expires_at: null, feature_overrides: null,
+  keep_screen_on: false, plan: 'pro', trial_expires_at: null, feature_overrides: null,
   show_paid_step: true, takes_cash: true,
   money: { ...SAMPLE_MONEY, localeByCountry: { [SAMPLE_COUNTRY]: SAMPLE_MONEY.locale } },
 }

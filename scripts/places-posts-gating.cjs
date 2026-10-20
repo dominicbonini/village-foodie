@@ -61,11 +61,26 @@ const OLD_KEY = 'places_posts_preview'
 /* ⚠️ RE-PINNED (Language Phase 1d Part 2): lib/copy/weeklyPost.ts no longer holds the words as a literal — the export is
  * `translatorFor(DEFAULT_LOCALE, 'weeklyPost')('planRefusal')`. So the module is COMPILED AND RUN and the export's VALUE
  * is the sentence (the same thing the old regex lifted), and it must equal the en-GB message it reads. */
-const WEEKLY_POST_COPY = (() => {
-  const { compile } = require('./_slot-interval-compile.cjs')
-  const v = compile(REPO, ['lib/copy/weeklyPost.ts'], 'gating-wp-copy').req('lib/copy/weeklyPost.js').WEEKLY_POST_PLAN_REFUSAL
-  return v === msgAt('en-GB', 'weeklyPost.planRefusal') ? v : undefined
-})()
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/copy/weeklyPost.ts is DELETED and there is no plan
+// sentence any more (every plan has Social media). The ONE refusal is the neutral `errorsManage.feature_switched_off`,
+// read here from the GB messages, and the deleted module and both retired keys are asserted ABSENT.
+const SWITCHED_OFF_COPY = msgAt('en-GB', 'errorsManage.feature_switched_off')
+const PLAN_SENTENCE_GONE = !fs.existsSync(path.join(REPO, 'lib/copy/weeklyPost.ts'))
+  && ['en-GB', 'en-US'].every(l => msgAt(l, 'weeklyPost.planRefusal') === undefined
+    && msgAt(l, 'errorsManage.social_media_plan') === undefined)
+
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan is DATA again — public.plan_features, NO ROW = ON,
+// seeded with Pay as you go switching `schedule_graphics` OFF. `canAccess` takes the truck's EFFECTIVE plan switch as a
+// REQUIRED third argument, so the gate is CALLED on the seeded catalogue (the migrations themselves, through
+// scripts/_plans-catalog-fixture.cjs) with lib/plans.ts's own switch — not on a hand-written stand-in.
+const { compile: compileTs } = require('./_slot-interval-compile.cjs')
+const PL_TREE = compileTs(REPO, ['lib/features.ts', 'lib/plans.ts'], 'gating-plans')
+const PL = PL_TREE.req('lib/plans.js')
+const SEED = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
+const sw = (planKey) => PL.planFeatureSwitch(SEED, planKey)
+const ALL_ON = () => true
+const truckOn = (plan, feature_overrides = {}) => ({ plan, plan_ends_at: null, trial_expires_at: null, feature_overrides })
+const NOT_ON_PLAN_COPY = msgAt('en-GB', 'errorsManage.feature_not_on_plan')
 
 let fails = 0
 const ok = [], bad = []
@@ -86,23 +101,27 @@ const show = r => {
 head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key is gone')
 {
   const code = codeOf(FEATURES)
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the Feature type is DERIVED from the runtime array
+  // `FEATURES` (`type Feature = (typeof FEATURES)[number]`), so the member is the array entry `'schedule_graphics',`.
   t('🔴 it is a `Feature`, so it goes through the ONE function that answers "may this truck do this"',
-    new RegExp(`\\|\\s*'${KEY}'`).test(code))
+    new RegExp(`^\\s*'${KEY}',$`, 'm').test(code.slice(code.indexOf('export const FEATURES = ['), code.indexOf('] as const')))
+    && /export type Feature = \(typeof FEATURES\)\[number\]/.test(code))
   /* ══ 🔴 THE INVERTED CLAIM. This check used to read "it appears exactly ONCE — the union member, no
    * plan set", and that single occurrence WAS the gate: a Feature in no set reaches `canAccess`'s last
    * line and returns false for every tier. ⛔ IT MUST NOW APPEAR **TWICE**: the union member and the
    * `PRO_FEATURES` entry. ⚠️ TWICE AND NOT MORE — a third occurrence would mean it had also been added
    * to `MAX_FEATURES` or a `PLAN_FEATURES` set, which is a duplicate in a Set rather than a second
    * grant, and is the kind of redundancy that makes the next reader wonder which one is load-bearing. */
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): there are no plan sets any more (every active plan has
+  // every feature), so the key appears exactly ONCE — the union member — and `canAccess` grants it with no override.
   const uses = (code.match(new RegExp(`'${KEY}'`, 'g')) || []).length
-  t(`🔴 …and it appears exactly TWICE in lib/features.ts — the union member and PRO_FEATURES (${uses})`,
-    uses === 2)
-  const planSets = code.slice(code.indexOf('const PRO_FEATURES'), code.indexOf('export function hasFeature'))
-  const proArr = planSets.slice(0, planSets.indexOf('const MAX_FEATURES'))
-  t('🔴 …and the one plan entry is in PRO_FEATURES, which MAX and TRIAL spread',
-    proArr.includes(`'${KEY}'`)
-    && /const MAX_FEATURES: Feature\[\] = \[\s*\n\s*\.\.\.PRO_FEATURES/.test(planSets)
-    && /const TRIAL_FEATURES: Feature\[\] = \[\.\.\.MAX_FEATURES\]/.test(planSets))
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): still ONCE — which plan has it is a public.plan_features row, not code.
+  t(`🔴 …and it appears exactly ONCE in lib/features.ts — the union member; there are no plan sets (${uses})`,
+    uses === 1)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the PRO/MAX/TRIAL spread is gone with the tiers — the
+  // check is now that NO plan set and no plan-reading helper survives in the code.
+  t('🔴 …and no plan set exists to hold it — PLAN_FEATURES / PRO / MAX / TRIAL and hasFeature are gone',
+    !/\b(PLAN_FEATURES|PRO_FEATURES|MAX_FEATURES|TRIAL_FEATURES|hasFeature|getPlanFeatures|requiredPlan)\b/.test(code))
   /* ══ ⛔ AND THE PREVIEW KEY IS GONE FROM THE **CODE** ════════════════════════════════════════════
    * ⚠️ FROM THE CODE, NOT FROM THE FILE: `codeOf` strips comments, and the tombstone that explains the
    * removal quotes the name several times. A check that matched the prose would fail on the tombstone
@@ -110,18 +129,28 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
   t('⛔ `places_posts_preview` is gone from lib/features.ts — union, every plan set, everywhere',
     !code.includes(OLD_KEY))
   t('⛔ …and from every product file that used to check it', (() => {
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts is deleted; its frozen content
+    // lives in lib/legacy-pricing-display.ts, which is read in its place.
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/legacy-pricing-display.ts is deleted; the plan table's
+    // rows are lib/feature-table.ts, read in its place.
     const files = ['app/manage/[token]/page.tsx', 'app/api/manage/route.ts',
-      'app/api/weekly-post/route.ts', 'lib/plan-features.ts']
+      'app/api/weekly-post/route.ts', 'lib/feature-table.ts']
     return files.every(f => !codeOf(read(f)).includes(OLD_KEY))
   })())
   /* ⚠️ AND `canAccess` STILL READS THE OVERRIDES FIRST. Unchanged mechanism — asserted because the
    * next check depends on it, and because reversing that order would silently change every
    * per-truck grant in the product. */
-  const ca = code.slice(code.indexOf('export function canAccess'))
-  const overrideAt = ca.indexOf('feature in featureOverrides')
-  const planAt = ca.indexOf('PLAN_FEATURES[plan]?.has(feature)')
-  t('⚠️ `canAccess` still consults feature_overrides BEFORE any plan — the mechanism is unchanged',
-    overrideAt > 0 && planAt > overrideAt)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): `canAccess(feature, featureOverrides)` reads NO plan
+  // at all — the override is consulted first and the fall-through is `return true`. The ordering claim becomes
+  // "override first, then allow", and the signature is asserted to carry no plan / expiry parameter.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the order is override → the effective plan's switch → allowed,
+  // decided in `featureBlock` (which canAccess returns `=== null` of). The plan switch is a REQUIRED third parameter.
+  const fb = code.slice(code.indexOf('export function featureBlock'), code.indexOf('export function canAccess'))
+  const overrideAt = fb.indexOf('hasOwnProperty.call(o, feature)')
+  const planAt = fb.indexOf("return planAllows(feature) ? null : 'plan'")
+  t('⚠️ `canAccess` consults feature_overrides FIRST, then the effective plan\'s switch, else allows',
+    overrideAt > 0 && planAt > overrideAt
+    && /export function canAccess\(feature: Feature, featureOverrides: Record<string, boolean> \| null \| undefined, planAllows: PlanFeatureSwitch\): boolean \{\s*\n\s*return featureBlock\(feature, featureOverrides, planAllows\) === null/.test(code))
 
   /* ══ 🔴 THE TIERS, BY CALLING `canAccess` — NOT BY READING A COMMENT ═════════════════════════════
    * ⛔ THE ONE CHECK IN THIS FILE'S HISTORY THAT CAUGHT A REAL SHIPPED BUG was this one: the refusal
@@ -129,11 +158,19 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
    * for every plan rather than believing the sentence. So the tiers are called, every time. */
   const { compile } = require('./_slot-interval-compile.cjs')
   const F = compile(REPO, ['lib/features.ts'], 'gating-features').req('lib/features.js')
-  const can = (plan, key) => F.canAccess(plan, key, {}, null)
-  t('🔴 Pro, Max, trial, tester and demo have it — and Starter does NOT', (() => {
-    const yes = ['pro', 'max', 'trial', 'tester', 'demo'].every(p => can(p, KEY) === true)
-    return yes && can('starter', KEY) === false
-  })())
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): there are no tiers to call. The gate is OVERRIDE-ONLY,
+  // so the three states of the override are called instead: none → allowed, `true` → allowed, `false` → denied.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the tiers are back as DATA. Called on the seeded
+  // catalogue: Pay as you go has it OFF (its plan_features row), Pro, Unlimited, the trial, demo and tester ON (no row);
+  // an override `true` grants it on Pay as you go, `false` denies it on Pro.
+  t('🔴 the plan decides — off on Pay as you go, on for every other seeded plan; an override wins both ways',
+    F.canAccess.length === 3 && !!SEED && SEED.features.length > 0
+    && F.canAccess(KEY, {}, sw('payg')) === false && F.canAccess(KEY, null, sw('payg')) === false
+    && ['pro', 'unlimited', 'trial', 'demo', 'tester'].every(k => F.canAccess(KEY, {}, sw(k)) === true)
+    && F.canAccess(KEY, { [KEY]: true }, sw('payg')) === true
+    && F.canAccess(KEY, { [KEY]: false }, sw('pro')) === false
+    && F.featureBlock(KEY, {}, sw('payg')) === 'plan' && F.featureBlock(KEY, { [KEY]: false }, sw('pro')) === 'override'
+    && PL.truckCan(truckOn('payg'), SEED, KEY) === false && PL.truckCan(truckOn('pro'), SEED, KEY) === true)
   /* ══ 🔴 "THE DATABASE ROW BECOMES HARMLESS" — PROVED, NOT ASSERTED ═══════════════════════════════
    * ⛔ THE LAUNCH DELIBERATELY LEAVES `{"places_posts_preview": true}` IN `trucks.feature_overrides`
    * rather than running an UPDATE, and the whole safety of that rests on one property of `canAccess`:
@@ -142,36 +179,57 @@ head('1 · the key is a PLAN key — Pro, Max and trial — and the preview key 
    * 🔴 AND THIS IS ALSO WHY THE KEY WAS REMOVED RATHER THAN PROMOTED. Had `places_posts_preview` stayed
    * and joined `PRO_FEATURES`, Pizza Kitchen would still be granted by its OVERRIDE — overrides win
    * first — so the one truck used to check the launch would be the one truck not testing the new gate. */
-  t('🔴 a stale `places_posts_preview` override grants NOTHING — the database row is inert',
-    F.canAccess('starter', KEY, { [OLD_KEY]: true }, null) === false
-    && F.canAccess('pro', KEY, { [OLD_KEY]: false }, null) === true)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): with no plan to deny it, "grants nothing" is proved as
+  // "decides nothing": a stale `false` does not deny, and a stale `true` cannot outvote a real `false` on the key.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): with a plan that DENIES it again, the original claim
+  // returns: a stale `true` grants nothing on Pay as you go, a stale `false` denies nothing on Pro, and it cannot outvote
+  // a real `false` on the key.
+  t('🔴 a stale `places_posts_preview` override decides NOTHING — the database row is inert',
+    F.canAccess(KEY, { [OLD_KEY]: false }, sw('pro')) === true
+    && F.canAccess(KEY, { [OLD_KEY]: true }, sw('payg')) === false
+    && F.canAccess(KEY, { [OLD_KEY]: true, [KEY]: false }, sw('pro')) === false)
 
   /* ══ 🔴 THE PROMISE IS ENFORCED NOW, WHICH IT WAS NOT ════════════════════════════════════════════
    * ⛔ 'Social media posts' WAS A HARD `true` ON A PUBLIC PRICING PAGE WITH NO `ROW_FEATURE_MAP` ENTRY,
    * so `findPlanParityViolations()` `continue`d past it and the table promised what no plan granted.
    * ⚠️ THE GUARD IS **RUN**, not read: it is the function the landing, /features, Billing and Admin all
    * depend on at module load, and a violation would take all four out in dev. */
-  const PF = compile(REPO, ['lib/features.ts', 'lib/plan-features.ts', 'lib/whatsapp-live.ts'],
-    'gating-plan-features').req('lib/plan-features.js')
-  t('🔴 the comparison table row is MAPPED to this key, so the guard checks the promise', (() => {
-    const pf = codeOf(read('lib/plan-features.ts'))
-    // Language Phase 0 (14 October 2026): the map is keyed on the row's CODE ID now, and each row carries one.
-    // ⚠️ RE-PINNED (Language Phase 1e): the row holds its id and cells; its NAME is the message
-    // planFeatures.row.social_media_posts.name ("Social media posts", unchanged).
+  /* ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts is deleted; the row is FROZEN
+   * display in lib/legacy-pricing-display.ts ("Display only. Nothing may gate on this."), and ROW_FEATURE_MAP /
+   * findPlanParityViolations are deleted with the tiers they compared against. So the row is asserted still there,
+   * unchanged, with its GB name — and the drift guard is asserted GONE from the code, since nothing gates on it. */
+  /* ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the frozen display copy is DELETED. The row is now
+   * `{ id: 'social_media_posts', group: 'marketing', feature: 'schedule_graphics' }` in lib/feature-table.ts — GATED BY
+   * THE KEY, so the promise is enforced by data again: a plan whose switch is off shows "—" (lib/plan-offer.ts tableCell
+   * → planAllowsFeature). The old drift guard stays gone; the row's `feature` IS the parity now. Asserted by calling
+   * tableCell on the seeded catalogue rather than reading the line. */
+  const FT = codeOf(read('lib/feature-table.ts'))
+  const PO = compile(REPO, ['lib/plan-offer.ts', 'lib/feature-table.ts'], 'gating-offer')
+  const OFFER = PO.req('lib/plan-offer.js'), TABLE = PO.req('lib/feature-table.js').FEATURE_TABLE
+  const smRow = TABLE.find(r => r.id === 'social_media_posts')
+  const smCells = smRow ? OFFER.offerPlans(SEED, 'GB').map(p => [p.plan.key, OFFER.tableCell(SEED, smRow, p)]) : []
+  t('🔴 the comparison table row is still there, in lib/feature-table.ts, gated by the key', (() => {
     const gbMsg = JSON.parse(read('messages/en-GB.json'))
-    return /\n  social_media_posts: 'schedule_graphics',/.test(pf)
-      && /\{ id: 'social_media_posts',[^\n]*starter: false, pro: true, max: true \}/.test(pf)
+    return /\{ id: 'social_media_posts', group: 'marketing', feature: 'schedule_graphics' \}/.test(FT)
+      && !!smRow && smRow.feature === KEY
       && gbMsg.planFeatures?.row?.social_media_posts?.name === 'Social media posts'
+      && !fs.existsSync(path.join(REPO, 'lib/plan-features.ts')) && !fs.existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts'))
   })())
-  t('🔴 …and `findPlanParityViolations()` reports clean with it mapped',
-    Array.isArray(PF.findPlanParityViolations()) && PF.findPlanParityViolations().length === 0)
+  t(`🔴 …and its cells follow the plan switch — ${smCells.map(([k, c]) => k + ' ' + c).join(', ')} (— where the plan has it off)`,
+    smCells.length >= 2 && smCells.every(([k, c]) => c === (PL.planAllowsFeature(SEED, k, KEY) ? 'on' : 'off'))
+    && smCells.find(([k]) => k === 'payg')?.[1] === 'off' && smCells.find(([k]) => k === 'pro')?.[1] === 'on')
+  t('🔴 …and the old drift guard stays GONE — no ROW_FEATURE_MAP, no findPlanParityViolations, no canAccess in the table',
+    !/\bROW_FEATURE_MAP\b/.test(FT) && !/\bfindPlanParityViolations\b/.test(FT)
+    && !/\bcanAccess\(/.test(FT))
   /* ⛔ AND THE CELLS NO LONGER SAY "coming soon" — in either tier. The cells are what carried that
    * label (Dominic's own correction on 6 October: cells, not a badge), so this is where launching it
    * is visible, and all four renderers follow from here. */
   t('⛔ …and neither cell says `coming_soon` any more', (() => {
     // ⚠️ RE-PINNED (Language Phase 1e): the row line is `{ id: 'social_media_posts', starter: …, pro: …, max: … }` (no name).
-    const row = (codeOf(read('lib/plan-features.ts')).match(/\{ id: 'social_media_posts',[^\n]*/) || [''])[0]
-    return row.length > 50 && /pro: true, max: true/.test(row) && !row.includes('coming_soon')
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): read from lib/legacy-pricing-display.ts (plan-features deleted).
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): coming soon is now the row's `comingSoon` flag — absent here,
+    // so no plan's cell is 'soon'.
+    return !!smRow && !smRow.comingSoon && smCells.every(([, c]) => c !== 'soon')
   })())
 }
 const s1 = show({ ok, bad })
@@ -182,8 +240,13 @@ const s1 = show({ ok, bad })
 head('2 · the pills and panes are gated, and an old ?section= link lands on Events')
 {
   const code = codeOf(MANAGE_PAGE)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the call is `canAccess(key, truck.feature_overrides)` —
+  // no plan argument exists any more; same one resolution, from the same truck row.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the call is `features.can(key)` on the tab's
+  // `const features = useFeatures(truck)` (override → the effective plan's switch, from the plan catalogue).
   t('🔴 the Schedule tab resolves the key once, from the truck row it already has',
-    new RegExp(`const canPlacesPosts = canAccess\\(truck\\.plan, '${KEY}'`).test(code))
+    new RegExp(`const canPlacesPosts = features\\.can\\('${KEY}'\\)`).test(code)
+    && /const features = useFeatures\(truck\)/.test(code))
   /* ══ 🔴 THE GATE MOVED UP A LEVEL — 7 October 2026 ══════════════════════════════════════════════
    * ⛔ IT USED TO DECIDE WHETHER SCHEDULE SHOWED A THIRD PILL, and these six checks were about that
    * pill: the filtered row, the derived `shownSection` that sent a gated id to Events in the same
@@ -199,9 +262,14 @@ head('2 · the pills and panes are gated, and an old ?section= link lands on Eve
    * BE A NEW PATTERN on the one bar an operator uses every day. */
   // ⚠️ RE-PINNED (Language Phase 1d Part 2): `t` is the page's translator now (useT('manageShell')), so the filter's
   // and the bar's parameter is `tab`. Same filter, same key, same list rendered.
-  t('🔴 the TOP TAB is filtered — there is no Social media tab without the key',
+  t('🔴 the TOP TAB is filtered by an OVERRIDE — a plan without it keeps the tab, which opens on the upgrade prompt',
     /if \(tab\.id === 'social'\) \{/.test(code)
-    && new RegExp(`return tab\\.roles\\.includes\\(userRole\\)\\s*\\n\\s*&& canAccess\\(truck\\?\\.plan \\?\\? 'starter', '${KEY}',`).test(code)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): `canAccess(truck?.plan ?? 'starter', key, …)` →
+    // `canAccess(key, truck?.feature_overrides)` — override-only; the tab is still filtered by the same key.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): INTENDED: a truck whose PLAN switches the key off
+    // (Pay as you go) now SEES the tab and gets <FeatureGate>'s upgrade prompt inside; only an OVERRIDE hides it. So the
+    // filter is `featureAccessView(…).block(key) !== 'override'`, and the prompt is asserted in §4.
+    && new RegExp(`return tab\\.roles\\.includes\\(userRole\\)\\s*\\n\\s*&& featureAccessView\\(truck, planCatalog, truck\\?\\.country \\?\\? null\\)\\.block\\('${KEY}'\\) !== 'override'`).test(code)
     /* ⛔ AND IT IS THE `tabs` LIST THE BAR RENDERS, not a second filtered copy. */
     && /const tabs = allTabs\.filter\(tab => \{/.test(code)
     && /\{tabs\.map\(tab => \(/.test(code))
@@ -228,7 +296,9 @@ head('2 · the pills and panes are gated, and an old ?section= link lands on Eve
   t('⚠️ `canPlacesPosts` survives for ONE reader — the "Make post" shortcut', (() => {
     const uses = (code.match(/\bcanPlacesPosts\b/g) || []).length
     return uses === 2  // the declaration, and the one guard
-      && new RegExp(`const canPlacesPosts = canAccess\\(truck\\.plan, '${KEY}'`).test(code)
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): override-only call, as in the check above.
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `features.can(key)`, as in the check above.
+      && new RegExp(`const canPlacesPosts = features\\.can\\('${KEY}'\\)`).test(code)
       && /\{!event\.is_private && canPlacesPosts && \(/.test(code)
   })())
   /* ══ ⛔ AND A STALE BOOKMARK STILL CANNOT REACH A GATED SCREEN ══════════════════════════════════
@@ -292,9 +362,14 @@ head('4 · the routes refuse without the key — and refuse with the right sente
   // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated` takes the truck's locale too (its refusal is worded in it), so the
   // anchor is `gated(truck: TruckRow, locale: string)`; the slice is otherwise the same.
   const g = code.slice(code.indexOf('function gated(truck: TruckRow, locale: string)'), code.indexOf('async function loadDesign'))
-  t('🔴 /api/weekly-post has ONE gate, on the plan key',
-    new RegExp(`'${KEY}' as never`).test(g)
-    && (g.match(/canAccess\(/g) || []).length === 1
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the call is `canAccess('schedule_graphics',
+  // truck.feature_overrides ?? null)` — no `as never` cast and no plan argument; still exactly one call.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `gated` is async and asks lib/plan-refusal.ts
+  // `featureRefusal(truck, key, locale)` (override → effective plan's switch → allowed, and WHICH refusal); still one call.
+  t('🔴 /api/weekly-post has ONE gate, on the feature key',
+    new RegExp(`const off = await featureRefusal\\(truck, '${KEY}', locale\\)`).test(g)
+    && (g.match(/featureRefusal\(|canAccess\(|truckCan\(/g) || []).length === 1
+    && /^async function gated\(truck: TruckRow, locale: string\): Promise<NextResponse \| null>/m.test(code)
     && !g.includes(OLD_KEY))
   /* ⛔ AND IT GUARDS THE **GET** AS WELL AS THE POST. The font file §2 of round 7 added is a GET on
    * this route, and a plan gate that only covered POST would serve a truck's fonts to a plan that
@@ -303,17 +378,27 @@ head('4 · the routes refuse without the key — and refuse with the right sente
   // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated(truck)` → `gated(truck, locale)` — the locale is read on the line
   // above (`localeForTruck`), so it is still the first thing each handler does after finding the truck.
   t('🔴 …and it is called at the top of BOTH handlers — the POST and the font GET',
-    /export async function GET\(req: NextRequest\)[\s\S]{0,900}const locale = await localeForTruck\(truck\)\s*\n\s*const blocked = gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked/.test(code)
-    && /export async function POST\(req: NextRequest\)[\s\S]{0,700}const locale = await localeForTruck\(truck\)\s*\n\s*const blocked = gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked/.test(code))
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `gated` is async now, so both handlers `await` it.
+    /export async function GET\(req: NextRequest\)[\s\S]{0,900}const locale = await localeForTruck\(truck\)\s*\n\s*const blocked = await gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked/.test(code)
+    && /export async function POST\(req: NextRequest\)[\s\S]{0,700}const locale = await localeForTruck\(truck\)\s*\n\s*const blocked = await gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked/.test(code))
   /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the route no longer imports WEEKLY_POST_PLAN_REFUSAL; `gated` refuses with
    * the `errorsManage.social_media_plan` code (through `refuse`, worded in the truck's language). ⚠️ WEAKER, SAID SO:
    * "ONE shared sentence" was one imported symbol; it is now a second message key, held to the constant by asserting
    * its GB words ARE the constant's value and that en-US overrides neither key with different words. Still no
    * literal in the route. */
-  t('⚠️ …and the refusal is the ONE shared sentence, never a literal in the route',
-    /return ok \? null : refuse\(locale, 'social_media_plan', 403\)/.test(g)
-    && !!WEEKLY_POST_COPY && msgAt('en-GB', 'errorsManage.social_media_plan') === WEEKLY_POST_COPY
-    && (msgAt('en-US', 'errorsManage.social_media_plan') ?? null) === (msgAt('en-US', 'weeklyPost.planRefusal') ?? null)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): `social_media_plan` → `feature_switched_off` (no plan
+  // sentence — every plan has it); its GB words are pinned and en-US may not override them with different words.
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): TWO refusals, chosen by lib/plan-refusal.ts and passed
+  // through by code: off by the PLAN → `feature_not_on_plan` (naming the plan), off by an OVERRIDE → `feature_switched_off`.
+  // The route names neither code; it forwards `off.code` / `off.params`. Both message keys' GB words are pinned.
+  t('⚠️ …and the refusal is the ONE shared pair of messages, never a literal in the route',
+    /return off \? refuse\(locale, off\.code, 403, off\.params as Record<string, string>\) : null/.test(g)
+    && NOT_ON_PLAN_COPY === '{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}'
+    && [undefined, NOT_ON_PLAN_COPY].includes(msgAt('en-US', 'errorsManage.feature_not_on_plan'))
+    && !/'Social media posts are included/.test(codeOf(POST_ROUTE))
+    && SWITCHED_OFF_COPY === 'This feature is switched off for your truck.'
+    && [undefined, SWITCHED_OFF_COPY].includes(msgAt('en-US', 'errorsManage.feature_switched_off'))
+    && !/'This feature is switched off/.test(codeOf(POST_ROUTE))
     && !/'Social media posts are on/.test(codeOf(POST_ROUTE))
     && !/not switched on/.test(codeOf(POST_ROUTE)))
 
@@ -331,30 +416,51 @@ head('4 · the routes refuse without the key — and refuse with the right sente
   {
     const { compile } = require('./_slot-interval-compile.cjs')
     const F = compile(REPO, ['lib/features.ts'], 'gating-features').req('lib/features.js')
-    const can = (plan, key) => F.canAccess(plan, key, {}, null)
-    t('🔴 `schedule_graphics` is Pro AND Max — canAccess says so for every plan, not a comment',
-      can('starter', KEY) === false
-      && can('pro', KEY) === true
-      && can('max', KEY) === true
-      && can('trial', KEY) === true)
-    // ⚠️ RE-PINNED (Language Phase 1d Part 2): the routes send `errorsManage.social_media_plan`, so its GB words are
-    // held to the same sentence as the screen's constant.
-    t('⛔ …so the refusal names Pro and Max, and does NOT say "on Max"',
-      WEEKLY_POST_COPY === 'Social media posts are on Pro and Max'
-      && !/is on Max/.test(WEEKLY_POST_COPY)
-      && msgAt('en-GB', 'errorsManage.social_media_plan') === 'Social media posts are on Pro and Max')
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the tiers are gone, so "Pro AND Max" becomes the
+    // override-only answer — still CALLED, not read: allowed with no override, denied only by its own `false`.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the tiers are data. Called on the seeded catalogue:
+    // off for a Pay as you go truck BECAUSE OF ITS PLAN, on for Pro / Unlimited / the trial, and an ended plan resolves to
+    // the expiry fallback (Pay as you go) WITH its switches — so an expired trial loses it too.
+    t('🔴 `schedule_graphics` follows the plan — off on Pay as you go (and on an ended plan), on for Pro, Unlimited and the trial',
+      PL.featureAccess(truckOn('payg'), SEED, KEY).block === 'plan'
+      && ['pro', 'unlimited', 'trial'].every(k => PL.truckCan(truckOn(k), SEED, KEY) === true)
+      && PL.truckCan({ plan: 'trial', plan_ends_at: null, trial_expires_at: '2020-01-01T00:00:00Z', feature_overrides: {} }, SEED, KEY) === false
+      && F.canAccess(KEY, { [KEY]: false }, sw('pro')) === false
+      && F.canAccess(KEY, { event_types: false, private_events: false }, sw('pro')) === true)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): with no plan to name, the 5 October bug's mirror is a
+    // refusal that names ANY plan. The sentence is the neutral one, it names no plan, and the plan sentence's module
+    // and both its message keys are gone.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the 5 October bug's mirror is back in its original form:
+    // the plan the refusal names must be a plan that HAS the feature. It is computed (upgradePlanFor — the first active
+    // public plan, in sort order, with it on), never written: Pro on the seed, which is checked to have it ON. The
+    // override refusal still names NO plan, and the old plan sentence's module and keys stay gone.
+    t('⛔ …so the plan refusal names a plan that HAS it (Pro, computed), and the override refusal names none',
+      PL.featureAccess(truckOn('payg'), SEED, KEY).upgradeTo?.key === 'pro'
+      && PL.upgradePlanFor(SEED, KEY)?.name === 'Pro' && PL.planAllowsFeature(SEED, 'pro', KEY) === true
+      && !/\b(Pro|Max|Starter|Unlimited)\b/.test(NOT_ON_PLAN_COPY) && /\{plan\}/.test(NOT_ON_PLAN_COPY)
+      && SWITCHED_OFF_COPY === 'This feature is switched off for your truck.'
+      && !/\b(Pro|Max|Starter|plan)\b/.test(SWITCHED_OFF_COPY)
+      && PLAN_SENTENCE_GONE)
     /* ⚠️ AND IT IS THE SAME STRING ON ALL THREE SURFACES. Two copies is what made the 5 October error
      * possible; there are three readers now, so the argument is stronger rather than weaker. */
     /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the SCREEN still imports the constant; BOTH ROUTES now refuse with the
      * `social_media_plan` code (/api/weekly-post's `gated`, and /api/manage's PLACES_TAB_ONLY gate). ⚠️ WEAKER, SAID
      * SO: "one constant" becomes "one constant + one message key whose words are asserted identical" (GB exactly, and
      * en-US overriding neither). Still no literal on any of the three surfaces. */
-    t('⚠️ …and the screen and BOTH routes read that ONE constant, not three literals',
-      /import \{ WEEKLY_POST_PLAN_REFUSAL \} from '@\/lib\/copy\/weeklyPost'/.test(read('components/manage/SocialPosts.tsx'))
-      && /refuse\(locale, 'social_media_plan', 403\)/.test(codeOf(POST_ROUTE))
-      && /PLACES_TAB_ONLY\.includes\(action\)[\s\S]{0,200}return refuse\('social_media_plan', 403\)/.test(codeOf(MANAGE_ROUTE))
-      && !!WEEKLY_POST_COPY && msgAt('en-GB', 'errorsManage.social_media_plan') === WEEKLY_POST_COPY
-      && (msgAt('en-US', 'errorsManage.social_media_plan') ?? null) === (msgAt('en-US', 'weeklyPost.planRefusal') ?? null)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the screen no longer imports a sentence — its
+    // FeatureGate takes only the feature and the truck's overrides (no plan, no upgradeMessage), and shows nothing
+    // when off; BOTH routes refuse with the one `feature_switched_off` code. Still no literal on any surface.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): <FeatureGate> takes the TRUCK (it resolves override →
+    // plan itself and shows <PlanPrompt> when the plan is why); both routes go through lib/plan-refusal.ts featureRefusal
+    // (/api/manage via its `gateFeature`), so they send the SAME code for the same truck.
+    t('⚠️ …and the screen gates on the same key with no plan sentence, and BOTH routes send the ONE code',
+      /<FeatureGate\s+feature="schedule_graphics"\s+truck=\{truck\}\s*>/.test(codeOf(read('components/manage/SocialPosts.tsx')))
+      && /if \(block === 'plan'\) return <PlanPrompt feature=\{feature\} upgradeTo=\{access\.upgradeTo\(feature\)\} \/>/.test(codeOf(read('components/FeatureGate.tsx')))
+      && !/WEEKLY_POST_PLAN_REFUSAL|upgradeMessage|lib\/copy\/weeklyPost/.test(codeOf(read('components/manage/SocialPosts.tsx')))
+      && /refuse\(locale, off\.code, 403, off\.params/.test(codeOf(POST_ROUTE))
+      && /PLACES_TAB_ONLY\.includes\(action\)[\s\S]{0,200}const refused = await gateFeature\('schedule_graphics'\)\s*\n\s*if \(refused\) return refused/.test(codeOf(MANAGE_ROUTE))
+      && /const gateFeature = async \(feature: Feature\) => \{\s*\n\s*const r = await featureRefusal\(truck, feature, await truckLocale\(\)\)/.test(codeOf(MANAGE_ROUTE))
+      && PLAN_SENTENCE_GONE && !!SWITCHED_OFF_COPY
       && !/'Social media posts are on/.test(codeOf(read('components/manage/SocialPosts.tsx')))
       && !/'Social media posts are on/.test(codeOf(POST_ROUTE))
       && !/'Social media posts are on/.test(codeOf(MANAGE_ROUTE)))
@@ -362,14 +468,27 @@ head('4 · the routes refuse without the key — and refuse with the right sente
      * states each one's plan, and this is what makes that statement a check rather than a claim.
      * ⛔ `places_posts_preview` HAS LEFT THIS LIST because it has left the product; §1 proves it is
      * gone and that a stale override grants nothing. */
-    t('🔴 `event_types` is Max-only · `private_events` is Pro AND Max',
-      can('pro', 'event_types') === false && can('max', 'event_types') === true
-      && can('pro', 'private_events') === true && can('max', 'private_events') === true
-      && can('starter', 'private_events') === false)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): no tiers — both keys are on for every truck and
+    // each is denied only by its OWN override (and not by the other's).
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): called with each seeded plan's switch: no plan
+    // switches either off (Pay as you go's rows are WhatsApp, Social media and Instagram only), so each is still off
+    // only by its own override.
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): 20261026_pricing_pages.sql switches `event_types` OFF for
+    // Pay as you go (a plan_features row). So event_types is off on payg by its PLAN, on every other seeded plan; an
+    // override `true` grants it past the plan; private_events is still on for every plan, off only by its own override.
+    t('🔴 `private_events` is on for every truck, `event_types` for every plan but Pay as you go — each else off only by its own override',
+      SEED.plans.every(p => F.canAccess('private_events', {}, sw(p.key)) === true)
+      && SEED.plans.filter(p => p.key !== 'payg').every(p => F.canAccess('event_types', {}, sw(p.key)) === true)
+      && F.canAccess('event_types', {}, sw('payg')) === false && F.featureBlock('event_types', {}, sw('payg')) === 'plan'
+      && F.canAccess('event_types', { event_types: true }, sw('payg')) === true
+      && F.canAccess('event_types', { event_types: false }, sw('pro')) === false
+      && F.canAccess('private_events', { private_events: false }, sw('pro')) === false
+      && F.canAccess('private_events', { event_types: false }, sw('payg')) === true)
   }
   t('🔴 …and the gate runs before any action is dispatched',
     // ⚠️ RE-PINNED (Language Phase 1d Part 2): `gated(truck)` → `gated(truck, locale)`; still directly before dispatch.
-    /const blocked = gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked\s*\n\s*\n?\s*const action = String\(body\.action \?\? ''\)/.test(code))
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `await gated(truck, locale)` — async now.
+    /const blocked = await gated\(truck, locale\)\s*\n\s*if \(blocked\) return blocked\s*\n\s*\n?\s*const action = String\(body\.action \?\? ''\)/.test(code))
 
   const m = codeOf(MANAGE_ROUTE)
   /* ══ 🔴 THE SPLIT IS THE POINT, AND BOTH HALVES ARE ASSERTED ═══════════════════════════════════

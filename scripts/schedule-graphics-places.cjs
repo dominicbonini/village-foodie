@@ -1037,7 +1037,15 @@ function runWiringSuite(lib) {
         'app/api/weekly-post/route.ts',
         'app/manage/[token]/page.tsx',
         'app/api/manage/route.ts',
-        'lib/plan-features.ts',
+        // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): 'lib/plan-features.ts' is DELETED, and with it
+        // ROW_FEATURE_MAP (the one place that named the key as data). Its frozen successor,
+        // lib/legacy-pricing-display.ts, names the key only in comments — "Nothing may gate on this" — so it is
+        // NOT a reader and is not in the list; a code reference there would fail this check, as it should.
+        // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the frozen copy is DELETED, and the plan table's rows +
+        // the pricing cards' bullets are lib/feature-table.ts, which names the key as DATA — the row 'social_media_posts'
+        // is gated by it (a plan with it off shows "—") and the cards list it as a feature a plan adds. A display reader,
+        // like ROW_FEATURE_MAP was, written down here so a further consumer still needs a human to add it.
+        'lib/feature-table.ts',
       ]
       return inCode.length === EXPECTED.length && EXPECTED.every(f => inCode.includes(f))
     })())
@@ -1046,7 +1054,10 @@ function runWiringSuite(lib) {
    * fail on the honest record of what happened. */
   t('⛔ …and `places_posts_preview` is gone from the code of all of them', (() => {
     const files = ['lib/features.ts', SOCIAL_UI, 'app/api/weekly-post/route.ts',
-      'app/manage/[token]/page.tsx', 'app/api/manage/route.ts', 'lib/plan-features.ts']
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts is deleted; its frozen content
+      // is lib/legacy-pricing-display.ts, which is read in its place.
+      // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): that file is deleted too; lib/feature-table.ts replaces it.
+      'app/manage/[token]/page.tsx', 'app/api/manage/route.ts', 'lib/feature-table.ts']
     return files.every(f => !codeOnly(read(f)).includes('places_posts_preview'))
   })())
   t('⚠️ `resolveTruckAccess` and the staff gate are UNCHANGED — widening plans never widened roles',
@@ -1498,8 +1509,11 @@ function runWiringSuite(lib) {
         && /if \(filter === VAN_FILTER_ALL\) return true/.test(V)
         && /return vanId === filter/.test(V)
     })())
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): Billing's frozen matrix (whose column heads read "per truck /
+  // month") is replaced by the one PlanTable ("{price} / month", planTable.perMonth) — so that phrase left this page by
+  // design. It still means a truck where prices are sold: the landing cards' `pricing.card.perTruckMonth`.
   t('⚠️ nothing that genuinely means a TRUCK was renamed',
-    /per truck \/ month/.test(P) && /Truck details/.test(P) && /Truck access/.test(P))
+    JSON.parse(read('messages/en-GB.json')).pricing?.card?.perTruckMonth === 'per truck / month' && /Truck details/.test(P) && /Truck access/.test(P))
 
   /* 🔴 THE MENU PILLS. */
   /* ⚠️ MATCHED INSIDE `allTabs` ONLY. `{ id: 'deals', label: 'Deals' }` is the new PILL, so a
@@ -1851,7 +1865,20 @@ function runWiringSuite(lib) {
     const daysMsg = /^\{n, plural, one \{(.*)\} other \{(.*)\}\}$/.exec(gbWords('manageSettings.preorders.openDaysBefore') || '')
     const MOVED_TO_DAYS_PLURAL = daysLoop && daysMsg
       ? [7, 6, 5, 4, 3, 2, 1].map(d => (d === 1 ? daysMsg[1] : daysMsg[2]).replace('{count}', String(d))) : []
-    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY, ...movedToPayments, ...MOVED_TO_DAYS_PLURAL])
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): THREE NAMED DIFFERENCES, each conditional on the
+    // message state that makes it the intended one. The WhatsApp card's plan line ("…included on Pro and Max.",
+    // manageWhatsApp.card.notOnPlan) became card.switchedOff ("…switched off for your truck.") because every plan has
+    // every feature now; and the van upgrade modal's title ("Upgrade to add more vans", manageSettings.vanUpgrade.*) left
+    // with the modal (first van included, more are a flat per-van add-on). Allowed ONLY while the old keys are gone and
+    // the new one says exactly these words; any OTHER addition or removal still fails.
+    if (gbWords('manageWhatsApp.card.switchedOff') === 'WhatsApp auto-replies are switched off for your truck.'
+        && gbWords('manageWhatsApp.card.notOnPlan') === undefined) {
+      allowed.add('WhatsApp auto-replies are switched off for your truck.')
+    }
+    const STAGE_A_REMOVED = []
+    if (gbWords('manageWhatsApp.card.notOnPlan') === undefined) STAGE_A_REMOVED.push('WhatsApp auto-replies are included on Pro and Max.')
+    if (gbWords('manageSettings.vanUpgrade') === undefined) STAGE_A_REMOVED.push('Upgrade to add more vans')
+    const removable = new Set([...allowed, 'Settings', ...MOVED_TO_CAPACITY, ...MOVED_TO_SCHEDULE_MODAL, ...MOVED_TO_SERVICE_COPY, ...movedToPayments, ...MOVED_TO_DAYS_PLURAL, ...STAGE_A_REMOVED])
     const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
     const badAdded = added.filter(x => !allowed.has(x))
     if (badAdded.length || removed.length) {
@@ -2249,7 +2276,12 @@ function runWiringSuite(lib) {
     const movedEdits = [
       /* ── Phase 3 screens, 13 October 2026 (docs/phase-3-screens-report.md) — each with its new form ── */
       { was: "{activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}",
-        now: "{activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast}", nowIn: 'app/manage/[token]/page.tsx',
+        // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): PaymentsTab's `plan` prop became `onTrial: boolean`
+        // (the EFFECTIVE plan's isTrial, `onTrialPlan`) — the raw plan name no longer reaches it. Same line otherwise.
+        // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): PaymentsTab gains `features` — the truck's
+        // FeatureAccessView (override → effective plan's switch), so Payments can show the one upgrade prompt when the plan
+        // switches Pay at Hatch off. Same line otherwise.
+        now: "{activeTab === 'payments'  && <PaymentsTab  token={token} onTrial={onTrialPlan} features={featureAccessView(truck, planCatalog, truck?.country ?? null)} showToast={showToast}", nowIn: 'app/manage/[token]/page.tsx',
         reason: 'Payments now receives `afterOnline`: the Tax, tips and fees card and the moved Taking payment section' },
       { was: '<div className="pt-3 border-t border-slate-100">', now: '<div>', nowIn: 'components/manage/TakingPaymentPanel.tsx',
         reason: 'the moved Taking payment block lost only its Settings separator wrapper (named difference 1)' },
@@ -2708,14 +2740,11 @@ function runWiringSuite(lib) {
        * ⚠️ TWO ENTRIES BECAUSE THE TWO ANCHORS ARE FORMATTED DIFFERENTLY — one has the href and the
        * className on one line, the other has the href alone. Both are in page.tsx; the third was in
        * components/FeatureGate.tsx, which this guard does not cover. */
-      { was: '<a href="?tab=billing" className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">',
-        reason: 'no Manage link is hand-written any more — see lib/manage-links.ts',
-        nowIn: 'app/manage/[token]/page.tsx',
-        now: "<a href={manageTabHref('billing')} className=\"text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap\">" },
-      { was: 'href="?tab=billing"',
-        reason: 'the van-limit modal\'s "View plans" link, likewise',
-        nowIn: 'app/manage/[token]/page.tsx',
-        now: "href={manageTabHref('billing')}" },
+      /* ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): BOTH ANCHORS ARE GONE, not hand-written again — the
+       * WhatsApp card's "Upgrade" link (card.notOnPlan → card.switchedOff: no plan to upgrade to) and the van-limit
+       * modal's "View plans" (the van upgrade modal is removed). They moved from this list to STAGE_A_REMOVED below,
+       * where each `was` line is excused once and the page is asserted to hold no `?tab=billing` literal and no
+       * `manageTabHref('billing')` CTA at all. */
 
       /* ══ 🔴 THE 6 OCTOBER BUILD: THE PLACES PILL DELETED, SOCIAL POSTS REBUILT ════════════════════
        * ⚠️ EVERY ONE CARRIES ITS NEW FORM, so "I edited this on purpose" is a claim with a test. */
@@ -3004,7 +3033,11 @@ function runWiringSuite(lib) {
         // the cancel button keep classes like these, so the lines are named by what only the removed ones had
         && !raw.includes('px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS(\'card.approve\')}')
         && !raw.includes('handleRejectScrapedEvent(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5')
-      const row = raw.includes('<div className="mt-3" data-pending-actions>') && raw.includes('<div className="flex gap-2 sm:justify-end">')
+      // ⚠️ RE-PINNED (pending-card buttons, 19 October 2026, docs/pending-card-buttons-report.md): the one action row is
+      // now ONE element, `pendingButtons`, placed at the bottom on a phone and on the chips' row from 640px up — see
+      // PCB_REMOVED below.
+      const row = raw.includes(`<div className={chooserShown ? 'mt-3 sm:hidden' : 'mt-3'} data-pending-actions>`) && raw.includes('<div className="flex gap-2 sm:justify-end">')
+        && raw.includes('actions={<div className="max-sm:hidden" data-pending-actions-row>{pendingButtons}</div>}')
       if (!blockGone || !row || guards(raw) !== guards(at826) - 1) {
         console.log(`      ⛔ THE PENDING-CARD FIX IS CLAIMED ABOVE BUT ${!blockGone ? 'THE DESKTOP BLOCK IS STILL IN THE PAGE' : !row ? 'THE ONE ACTION ROW IS NOT THERE' : `THE {pending && ( GUARDS ARE ${guards(raw)}, NOT ${guards(at826) - 1}`}`)
         return false
@@ -3062,7 +3095,83 @@ function runWiringSuite(lib) {
      * fields it was claimed for are unchanged, so the claim is re-pointed to the line as it reads now. */
     const USRF_NOW = { 'is_private?: boolean; private_name?: string }': 'is_private?: boolean; private_name?: string; region?: string | null }' }
     for (const m of movedEdits) if (USRF_NOW[m.now]) m.now = USRF_NOW[m.now]
-    /* ⚠️ RE-PINNED (US layout fixes, 18 October 2026): the FOUR lines of 719ac91 the US layout edits replaced (the diff
+    /* ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026, docs/plans-data-model-report.md): plans are data and every
+     * plan has every feature, so the lines earlier builds claimed as the replacements of 719ac91's plan code were
+     * themselves replaced. Each claim is re-pointed to the line that does the same job today — and fails if it goes:
+     *   • the imports: lib/features is `canAccess` alone; lib/plan-features became lib/legacy-pricing-display (frozen);
+     *   • the van add-on: the effective plan's `extra_van_monthly_minor` (lib/plans.ts extraVanMonthlyMinor) — the first
+     *     van is included, `addonPrice` is gone (its one reader tests `vanAddonMinor` directly), and the price word is
+     *     masked by `vanMask` while the country is switched on and fully while it is off (the decided/undecided split read
+     *     the retired country_settings plan prices; the country's own `enabled` switch replaces it);
+     *   • Billing: ONE data-driven plan card (`currentPriceLabel`, the catalogue's description) and a "Change your plan"
+     *     panel whose buttons are `planButton` per public plan — replacing "Upgrade to Max", "Choose Pro", "Pro —",
+     *     "Max —" and "… per truck · renews automatically"; the switch modal's tagline and mail body read the chosen
+     *     catalogue plan (`upgradePlan`, `longPrice`, `mailPrice`), not a Pro/Max ternary;
+     *   • the Billing TAB is the owner's on every plan (the tester hide is gone). */
+    const STAGE_A_NOW = {
+      "import { PLAN_META, canAccess, maxVans, planMonthlyMinor } from '@/lib/features'": "import { canAccess } from '@/lib/features'",
+      "import { planPrices, planDescriptions, transactionRows, FEATURE_SECTIONS, featureSections, footnotes, priceText, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from '@/lib/plan-features'":
+        "import { planPrices, transactionRows, featureSections, footnotes, PRICE_FOOTNOTE_ID, PAY_AT_HATCH_ROW, PLAN_META, legacyVanBillingVariant, legacyBillingColumns, planPricesDecided, withPlaceholderPlanPrices, type LegacyBillingColumn } from '@/lib/legacy-pricing-display'",
+      'const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, withPlaceholderPlanPrices(vanSettings))': 'const vanAddonMinor = extraVanMonthlyMinor(truck, vanCatalog, vanSettings.countryCode)',
+      'const addonPrice = vanAddonMinor': 'if (vans.length >= 1 && vanAddonMinor > 0) setShowVanBillingModal(true)',
+      // the word: `vanMask` while the truck's country is switched on, every amount masked while it is off (the US)
+      'const vanPx = (val: string) => priceText(vanPricesDecided ? vanMask(val) : maskPriceFor(val, true), vanSettings.locale)': 'const vanPx = (val: string) => priceText(vanSettings.enabled ? vanMask(val) : maskPriceFor(val, true), vanSettings.locale)',
+      '<p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>': '<p className="text-sm text-slate-700 mt-0.5">{px(currentPriceLabel)}</p>',
+      '<p className="text-sm text-slate-700 mt-0.5">{descriptions[currentPlan]}</p>': '<p className="text-sm text-slate-700 mt-0.5">{eff.plan.description}</p>',
+      'Upgrade to Max — {px(maxMo)}': "t('planButton', { plan: p.name, price: px(price) })",
+      'Choose Pro — {px(proMo)}': "t('planButton', { plan: p.name, price: px(price) })",
+      'Pro — {px(proMo)}': "t('planButton', { plan: p.name, price: px(price) })",
+      'Max — {px(maxMo)}': "t('planButton', { plan: p.name, price: px(price) })",
+      "{px(plan === 'pro' ? proMo : maxMo)} per truck · renews automatically": '<p className="text-sm text-slate-700 mt-0.5">{px(currentPriceLabel)}</p>',
+      "price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: descriptions[upgradeTarget]": "t('upgradeModal.tagline', { price: px(longPrice), description: upgradePlan.description })",
+      "price: px(upgradeTarget === 'max' ? maxMo : proMo) })": 'plan: upgradePlan.name, price: mailPrice }',
+      "if (tab.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'": "if (tab.id === 'billing') return userRole === 'owner'\n",
+    }
+    for (const m of movedEdits) if (STAGE_A_NOW[m.now]) m.now = STAGE_A_NOW[m.now]
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): `canAccess` needs the effective plan's switch now, so
+    // the page no longer calls it — every tab asks `useFeatures(truck)` (lib/useFeatures.ts: override → the plan's switch,
+    // from the catalogue) and the page imports only the `Feature` TYPE from lib/features. The import claim is re-pointed
+    // to the line that does the job today.
+    const STAGE_A2_NOW = {
+      "import { canAccess } from '@/lib/features'": "import { useFeatures, featureAccessView } from '@/lib/useFeatures'",
+      // the van flow: the first `includedVans` (plans.included_vans, 1 on every plan as seeded) are included — was a
+      // literal `1`. Same rule on the seed; the van modal opens only once the truck is at its plan's allowance.
+      'if (vans.length >= 1 && vanAddonMinor > 0) setShowVanBillingModal(true)': 'if (vans.length >= vansIncluded && vanAddonMinor > 0) setShowVanBillingModal(true)',
+      // Billing's plan card prices go through `cardPx = usePlanPriceMask()` (plan_prices + the van modal's mask) instead of
+      // `px` — the same amounts, masked by the same rule the van modal uses. Same lines otherwise.
+      '<p className="text-sm text-slate-700 mt-0.5">{px(currentPriceLabel)}</p>': '<p className="text-sm text-slate-700 mt-0.5">{cardPx(currentPriceLabel)}</p>',
+      "t('planButton', { plan: p.name, price: px(price) })": "t('planButton', { plan: p.name, price: cardPx(price) })",
+      "t('upgradeModal.tagline', { price: px(longPrice), description: upgradePlan.description })": "t('upgradeModal.tagline', { price: cardPx(longPrice), description: upgradePlan.description })",
+    }
+    for (const m of movedEdits) if (STAGE_A2_NOW[m.now]) m.now = STAGE_A2_NOW[m.now]
+    /* ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026, docs/pricing-pages-report.md): Billing's frozen matrix — its
+     * column heads, its section / row / fee / footnote lists, and the import of lib/legacy-pricing-display (deleted) — is
+     * REPLACED by the one plan table, `<PlanTable … px={cardPx} />` (components/pricing/PlanTable.tsx, the same component
+     * as /features), and its footnotes by the pricing footnote. Every claim whose replacement lived in that matrix is
+     * re-pointed to the line that does the job today; each still fails if that line goes. Rendered proof:
+     * scripts/pricing-pages.cjs. */
+    const BILLING_TABLE_NOW = '<PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />'
+    const STAGE_B_NOW = {
+      '? (row.id === PAY_AT_HATCH_ROW ? true : row.max)': BILLING_TABLE_NOW,
+      "import { planPrices, transactionRows, featureSections, footnotes, PRICE_FOOTNOTE_ID, PAY_AT_HATCH_ROW, PLAN_META, legacyVanBillingVariant, legacyBillingColumns, planPricesDecided, withPlaceholderPlanPrices, type LegacyBillingColumn } from '@/lib/legacy-pricing-display'":
+        "import { PlanTable } from '@/components/pricing/PlanTable'",
+      "{px(p === 'trial' ? PRICE_WORD.free : prices[p])}": BILLING_TABLE_NOW,
+      '{feeRows.map(row => (': BILLING_TABLE_NOW,
+      '{notes.map(f => (': "{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}",
+      'const px = (val: string) => priceText(mask(val), cs.locale)': 'const cardPx = usePlanPriceMask()',
+      '<div key={row.id} className="flex items-start py-2.5 border-t border-slate-100">': BILLING_TABLE_NOW,
+      '{sections.map(section => (': BILLING_TABLE_NOW,
+      '<div key={section.id} className="mb-2">': BILLING_TABLE_NOW,
+      '<div key={row.id} className="flex items-center py-2 border-t border-slate-100">': BILLING_TABLE_NOW,
+      '{PLAN_META[p].name}</p>': BILLING_TABLE_NOW,
+    }
+    for (const m of movedEdits) if (STAGE_B_NOW[m.now]) m.now = STAGE_B_NOW[m.now]
+    /* ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): Billing also renders the plan table's row footnotes (WhatsApp
+     * auto-replies¹, Kitchen ticket printing²) under the pricing footnote, so the import names `planTableNotes` too. */
+    const TIDY_NOW = { "import { PlanTable } from '@/components/pricing/PlanTable'": "import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'" }
+    for (const m of movedEdits) if (TIDY_NOW[m.now]) m.now = TIDY_NOW[m.now]
+    /* ⚠️ RE-PINNED (US layout fixes, 18 October 2026): the FOUR lines of 719ac91 the US layout edits replaced — FIVE since
+     * 19 October, when fix 3's van line had to be named too (see its note in the list) — (the diff
      * 4d72838 → now is exactly fixes 1-manage-join, 3, 4, 5a and 12-deadline-row; every other line they touched is
      * excused above or was not in 719ac91). One excuse each (a multiset, like PENDING_CARD_REMOVED), and each with its
      * replacement asserted just below — a revert or a rename fails here:
@@ -3076,11 +3185,26 @@ function runWiringSuite(lib) {
      * country (`pricesVisible = pricesPublished && pricesDecided`) — a switched-off country with NULL plan prices (the US)
      * threw and took Manage down. One excuse, and its replacement asserted just below. */
     const USR_REMOVED = new Map([['const pricesVisible = usePricesVisible()', 1]])
+    /* ⚠️ RE-PINNED (pending-card buttons, 19 October 2026, docs/pending-card-buttons-report.md): from 640px up the
+     * "Needs your approval" card's Approve / Edit / Reject sit on the Event type chips' row. Two lines of the page were
+     * rewritten for it, and only these are excused, one each:
+     *   • the bottom row's wrapper — now `sm:hidden` wherever the chooser shows (its new form is checked present above);
+     *   • the chooser's last prop line, which ended the element (`… />`) and is now followed by `actions` / `actionsNote`.
+     * The buttons' own lines are unchanged and moved into `pendingButtons`. Rendered proof: scripts/pending-card-buttons.cjs. */
+    const PCB_REMOVED = new Map([
+      '<div className="mt-3" data-pending-actions>',
+      'onPrivateName={v => setPendingNames(m => ({ ...m, [event.id]: v }))} />',
+    ].map(l => [l, 1]))
     const USL_REMOVED = new Map([
       'className={className}',
       '<div className="flex items-start gap-4">',
       '<div className="w-px bg-slate-100 self-stretch flex-shrink-0" />',
       '<div className="flex items-center gap-1.5 flex-shrink-0 self-start">',
+      /* ⚠️ RE-PINNED (pending-card buttons, 19 October 2026): us-layout-fix-3's van line — `vanName`, and on a phone its
+       * own line — replaced this one on 18 October. It was excused until now only because its removal shared a
+       * `git diff -U0 756ca09` hunk with a message read (the "1d word move" rule); this batch's new lines shifted the
+       * diff's alignment and split that hunk. Named here, where it belongs, with its new form checked below. */
+      "{vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}",
     ].map(l => [l, 1]))
     {
       const raw = read(PAGE)
@@ -3094,14 +3218,24 @@ function runWiringSuite(lib) {
       if (!raw.includes('<div className="flex items-start gap-4 max-sm:grid max-sm:grid-cols-[3rem_1px_minmax(0,1fr)] max-sm:gap-x-4 max-sm:gap-y-2.5">')
         // the divider: a card with action icons spans both phone rows; a pending card's keeps BEFORE's classes (lead, 18 Oct)
         || !raw.includes(`<div className={pending ? 'w-px bg-slate-100 self-stretch flex-shrink-0' : 'w-px bg-slate-100 self-stretch flex-shrink-0 max-sm:row-span-2'} />`)
-        || !raw.includes('<div className="flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap" data-card-actions>')) {
+        || !raw.includes('<div className="flex items-center gap-1.5 flex-shrink-0 self-start max-sm:col-start-3 max-sm:flex-wrap" data-card-actions>')
+        // the van line's new form (see USL_REMOVED)
+        || !raw.includes("const vanName = vans.length > 1 && event.van_id ? (vans.find(v => v.id === event.van_id)?.name || '') : null")
+        || !raw.includes('{vanName !== null && (!pending ? <span className="max-sm:hidden">{` · ${vanName}`}</span> : ` · ${vanName}`)}')) {
         console.log('      ⛔ us-layout-fix-3 IS CLAIMED ABOVE BUT A SCHEDULE CARD LINE IS NOT ITS PHONE-GRID FORM')
         return false
       }
       // us-rehearsal-unpriced-billing (see USR_REMOVED): the flag is read as `pricesPublished` and ANDed with DECIDED.
-      if (!raw.includes('const pricesPublished = usePricesVisible()') || !raw.includes('const pricesVisible = pricesPublished && pricesDecided')
-        || !raw.includes('const pricesDecided = planPricesDecided(countryRow)')) {
-        console.log('      ⛔ us-rehearsal-unpriced-billing IS CLAIMED ABOVE BUT BillingTab DOES NOT READ pricesPublished && pricesDecided')
+      // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): Billing's frozen matrix — the one reader of
+      // pricesPublished / pricesDecided (the retired country_settings plan prices) — is replaced by the one <PlanTable>,
+      // whose amounts come from public.plan_prices through the card's mask `cardPx = usePlanPriceMask()`, which masks
+      // EVERY amount while the truck's country is switched off (the US). So the same intent — an unpriced country shows no
+      // price and cannot throw — is asserted on the lines that carry it now.
+      if (!raw.includes('const cardPx = usePlanPriceMask()')
+        || !raw.includes('<PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />')
+        || !/return raw => priceText\(cs\?\.enabled \? policyMask\(raw\) : maskPriceFor\(raw, true\), cs\?\.locale \?\? null\)/.test(read('components/usePlanPriceLabel.ts'))
+        || /pricesPublished|planPricesDecided/.test(raw)) {
+        console.log('      ⛔ us-rehearsal-unpriced-billing IS CLAIMED ABOVE BUT BillingTab DOES NOT MASK ITS PLAN TABLE WITH cardPx (usePlanPriceMask)')
         return false
       }
     }
@@ -3166,8 +3300,124 @@ function runWiringSuite(lib) {
         }
       }
     }
+    /* ══ ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): THE PLAN TIERS LEFT THE PAGE ═══════════════════════
+     * Stage A deleted the code that decided things by plan name: the 4-argument `canAccess(truck.plan, …)` calls and the
+     * `can` helper built on it, the FeatureGate upgrade props (`plan` / `trialExpiresAt` / `showUpgrade`), INCLUDED_VANS
+     * and the Starter van-upgrade modal ("Upgrade to add more vans" / "View plans"), the WhatsApp card's upgrade link,
+     * the `truck.plan === 'trial'` defaults (now `onTrialPlan`, the effective plan's isTrial), Billing's Starter / Pro /
+     * Max columns, `upgradeTarget` / `openUpgrade` / `showMatrix`. Accounted like Phase 1d, not waived: a lost line is a
+     * Stage A removal ONLY IF Stage A's own diff (c6c44c9e, the commit it started from → now) removed it from the page,
+     * IN A HUNK THAT TOUCHES THE PLAN MODEL (a removed or added line matching STAGE_A_PLAN) — so a hunk that only
+     * deleted unrelated code is still a loss. One excuse per removal (a multiset), and the new forms are asserted just
+     * below (`stageAHolds`), so a revert fails. */
+    const STAGE_A_PLAN = /\btruck\??\.plan\b|\bcanAccess\(|FeatureGate|[Uu]pgrade|showMatrix|currentPlan|billingPlans|INCLUDED_VANS|\bplanCatalog\b|PlanCatalog|onTrialPlan|effectivePlan|extraVanMonthlyMinor|truckPlanPrice|planPriceFor|publicPlans|switchedOff|notOnPlan|isRowComingSoon|vanAddon|addonPrice|PLAN_META|maxVans|planMonthlyMinor|planPrices|pricesVisible|showTrialColumn|legacyBillingColumns|\b(starter|pro|max|trial)\b/
+    const stageAMoved = new Map()
+    {
+      const diff = require('child_process').execFileSync('git', ['diff', '-U0', 'c6c44c9e', '--', 'app/manage/[token]/page.tsx'],
+        { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+      for (const hunk of diff.split(/\n(?=@@ )/).slice(1)) {
+        const body = hunk.split('\n').slice(1)
+        const minus = body.filter(y => y.startsWith('-')).map(y => y.slice(1).trim())
+        const plus = body.filter(y => y.startsWith('+')).map(y => y.slice(1))
+        if (![...minus, ...plus].some(x => STAGE_A_PLAN.test(x))) continue
+        for (const x of minus) stageAMoved.set(norm(x), (stageAMoved.get(norm(x)) || 0) + 1)
+      }
+    }
+    /* ⚠️ AND THE LINES WHOSE 719ac91 FORM WAS WORDS (or a hand-written `?tab=billing`), which a raw diff from c6c44c9e
+     * cannot match — at c6c44c9e they were `t('key')` reads or `manageTabHref('billing')`. Named one by one (a multiset,
+     * one excuse each), each conditional on the message state that makes its removal the intended one:
+     *   • the Starter van-upgrade modal (manageSettings.vanUpgrade.*) and its "View plans" link — removed;
+     *   • the WhatsApp card's "Upgrade" link (`card.upgrade`, a `?tab=billing` anchor at 719ac91) — removed;
+     *   • the Reports "Pro feature" upsell (manageReports.upsell.*) — removed, with its `{!hasAdvanced && (` block;
+     *   • the switch modal's button: "Email us to upgrade" → "Email us to switch" (manageBilling.upgradeModal.email). */
+    const STAGE_A_WORDS_REMOVED = new Map()
+    {
+      const add = (cond, lines) => { if (cond) for (const l of lines) STAGE_A_WORDS_REMOVED.set(l, (STAGE_A_WORDS_REMOVED.get(l) || 0) + 1) }
+      add(gbWords('manageSettings.vanUpgrade') === undefined, [
+        '<h3 className="text-lg font-semibold text-slate-900">Upgrade to add more vans</h3>',
+        'The Starter plan includes 1 van. Upgrade to Pro or Max to add additional vans.',
+        'href="?tab=billing"', 'View plans'])
+      add(gbWords('manageWhatsApp.card.upgrade') === undefined && gbWords('manageWhatsApp.card.notOnPlan') === undefined, [
+        '<a href="?tab=billing" className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">'])
+      add(gbWords('manageReports.upsell') === undefined, [
+        '{!hasAdvanced && (', '<div className="rounded-xl border border-slate-200 p-6 opacity-60">',
+        '<div className="flex items-center justify-between mb-3">',
+        '<span className="font-semibold text-slate-700">Revenue breakdown & analytics</span>',
+        '<span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pro feature</span>',
+        '<p className="text-sm text-slate-400">',
+        'Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max.'])
+      add(gbWords('manageBilling.upgradeModal.email') === 'Email us to switch', ['Email us to upgrade'])
+    }
+    const stageAHolds = (() => {
+      const code = blockStrip(read('app/manage/[token]/page.tsx')).join('\n') // as written (RAWP resolves `t()` to words)
+      return /const \[planCatalog, setPlanCatalog\] = useState<PlanCatalog \| null>\(null\)/.test(code)
+        && /if \(!planCatalog\) return \(/.test(code)
+        && /<PlanCatalogProvider catalog=\{planCatalog\}>/.test(code)
+        && /const onTrialPlan = !!\(truck && planCatalog && effectivePlan\(truck, planCatalog\)\.plan\.isTrial\)/.test(code)
+        && /if \(onTrialPlan && purchaseCtaAllowed\(\)\) setActiveTab\('billing'\)/.test(code)
+        && !/canAccess\(truck\??\.plan/.test(code) && !/\bshowVanUpgradeModal\b/.test(code) && !/\bINCLUDED_VANS\b/.test(code)
+        && !/truck\??\.plan === '(trial|starter|pro|max)'/.test(code) && !/\bshowMatrix\b/.test(code)
+        // `upgradeTarget` survives as the chosen catalogue key (a string), never a Pro / Max choice
+        && /const \[upgradeTarget, setUpgradeTarget\] = useState<string>\(''\)/.test(code)
+        && !/upgradeTarget === '(pro|max)'|useState<'pro' \| 'max'>/.test(code) && !/trialExpiresAt=|showUpgrade=/.test(code)
+        // the Reports "Pro feature" upsell is gone with its gate's plan argument
+        && !/\{!hasAdvanced && \(/.test(code)
+        && /tW\('card\.switchedOff'\)/.test(code) && !/card\.notOnPlan|card\.upgrade'/.test(code)
+    })()
+    /* ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the 719ac91 lines that left with Billing's frozen matrix and
+     * were WORDS there (so neither the c6c44c9e diff nor a movedEdit can match them) — its "per truck / month" column
+     * heads, its "Transaction fees" heading, a "Coming soon" cell and the unpriced card-fee sentence — and the first-load
+     * fetch's two lines, which Stage B rewrote so a non-auth failure shows its reason (manageShell.loadFailedReason).
+     * One excuse each (a multiset), granted only while `stageBHolds` (the new forms, asserted just below). */
+    const stageBHolds = (() => {
+      const code = blockStrip(read('app/manage/[token]/page.tsx')).join('\n')
+      // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the import also names `planTableNotes` (the row footnotes).
+      return code.includes(BILLING_TABLE_NOW) && /import \{ PlanTable, planTableNotes \} from '@\/components\/pricing\/PlanTable'/.test(code)
+        && !/legacy-pricing-display|featureSections\(|transactionRows\(|legacyBillingColumns/.test(code)
+        // the load's final form (Stage B, then the "HTTP 500" toast fix the same day: an answer with no `error` falls back to "Failed to load")
+        && code.includes('const data = await res.json().catch(() => ({}))')
+        && code.includes('if (!res.ok) throw Object.assign(new Error(data.error), { auth: res.status === 401 || res.status === 403 })')
+        && code.includes("{firstLoadError ? t('loadFailedReason', { reason: firstLoadError }) : t('invalidToken')}")
+        && !fs.existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts'))
+    })()
+    const STAGE_B_REMOVED = new Map([
+      ['? <span className="invisible" aria-hidden="true">per truck / month</span>', 1],
+      [': <span>per truck / month</span>}', 1],
+      ['<span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>', 1],
+      ['<span className="text-xs text-slate-400 italic leading-tight">Coming soon</span>', 1],
+      ['const data = await res.json()', 1],
+      ['if (!res.ok) throw new Error(data.error)', 1],
+    ])
+    // the unpriced card-fee sentence names the card processor — matched by pattern (this file may not spell it)
+    let stageBFeeSentence = 1
+    const STAGE_B_FEE_SENTENCE = /^: 'Online payments are powered by \w+ Connect\. Platform and card processing fees are TBC and will be confirmed at launch\.'\}$/
+    /* ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): Billing's NOT-STARTED trial shows the heading alone — the body `<p>`
+     * ("Your free trial hasn’t started yet.", manageBilling.notStarted.body, deleted) is gated on `truck.trial_expires_at`.
+     * Removing it moved the line boundaries of Phase 1d's diff (756ca09 → now): the heading ternary's two 719ac91 lines now
+     * fall in a hunk whose added lines are the new comment and `{truck.trial_expires_at && (`, which carry no message read,
+     * so `p1dMoved` no longer excuses them — though the heading itself still renders, through `t()`. Exactly those two
+     * lines, one excuse each, granted only while the tidy's new form holds: the heading ternary on its messages, the body
+     * gated on the end date, and no `notStarted.body` read left. */
+    const TIDY_REMOVED = new Map([
+      ['? `Your trial ends ${formatDate(truck.trial_expires_at)}`', 1],
+      [': TRIAL_NOT_STARTED_HEADING}', 1],
+    ])
+    const tidyHolds = (() => {
+      const code = blockStrip(read('app/manage/[token]/page.tsx')).join('\n')
+      return code.includes("? t('yourTrialEnds', { date: formatDate(truck.trial_expires_at) })")
+        && code.includes(": t('notStarted.heading')}") && code.includes('{truck.trial_expires_at && (')
+        && !/notStarted\.body/.test(code)
+    })()
     const unexplained = gone.filter(l => {
       if (!l) return false
+      // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): see TIDY_REMOVED above — one excuse each, while tidyHolds.
+      if (tidyHolds && (TIDY_REMOVED.get(l) || 0) > 0) { TIDY_REMOVED.set(l, TIDY_REMOVED.get(l) - 1); return false }
+      // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): see STAGE_B_REMOVED above — one excuse each, while stageBHolds.
+      if (stageBHolds && (STAGE_B_REMOVED.get(l) || 0) > 0) { STAGE_B_REMOVED.set(l, STAGE_B_REMOVED.get(l) - 1); return false }
+      if (stageBHolds && stageBFeeSentence > 0 && STAGE_B_FEE_SENTENCE.test(l)) { stageBFeeSentence--; return false }
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): see `stageAMoved` above — one excuse per removal.
+      if ((stageAMoved.get(norm(l)) || 0) > 0) { stageAMoved.set(norm(l), stageAMoved.get(norm(l)) - 1); return false }
+      if ((STAGE_A_WORDS_REMOVED.get(l) || 0) > 0) { STAGE_A_WORDS_REMOVED.set(l, STAGE_A_WORDS_REMOVED.get(l) - 1); return false }
       // ⚠️ RE-PINNED (Language Phase 1d): see `p1dMoved` above — consumed as a multiset, one excuse per removal.
       // Whitespace-blind (`norm`), as `movedTo` is: a line that reached a MOVED_INTO file was reformatted on the way.
       if ((p1dMoved.get(norm(l)) || 0) > 0) { p1dMoved.set(norm(l), p1dMoved.get(norm(l)) - 1); return false }
@@ -3185,6 +3435,8 @@ function runWiringSuite(lib) {
       if ((PENDING_CARD_REMOVED.get(l) || 0) > 0) { PENDING_CARD_REMOVED.set(l, PENDING_CARD_REMOVED.get(l) - 1); return false }
       // ⚠️ RE-PINNED (us-layout-fix-5a / us-layout-fix-3, 18 Oct 2026): see USL_REMOVED; one excuse each.
       if ((USL_REMOVED.get(l) || 0) > 0) { USL_REMOVED.set(l, USL_REMOVED.get(l) - 1); return false }
+      // ⚠️ RE-PINNED (pending-card buttons, 19 Oct 2026): see PCB_REMOVED; one excuse each.
+      if ((PCB_REMOVED.get(l) || 0) > 0) { PCB_REMOVED.set(l, PCB_REMOVED.get(l) - 1); return false }
       // ⚠️ RE-PINNED (us-rehearsal-unpriced-billing, 18 Oct 2026): see USR_REMOVED; one excuse.
       if ((USR_REMOVED.get(l) || 0) > 0) { USR_REMOVED.set(l, USR_REMOVED.get(l) - 1); return false }
       /* ⚠️ PHASE 2A — THE MONEY SWEEP (10 October 2026). Every line that typed a £ (or called the private
@@ -3274,6 +3526,12 @@ function runWiringSuite(lib) {
     const SRC_MN = read(PAGE)
     if (!(/notSameAs/.test(SRC_MN) && /function endEqualsStart\(/.test(SRC_MN) && /eventEndInstant\(/.test(SRC_MN) && /eventTimeDate\(/.test(SRC_MN)
       && /tE\('endsNextDay'\)/.test(SRC_MN) && /lg:hidden/.test(SRC_MN) && /timeColW/.test(SRC_MN))) unexplained.push('(midnight events / import review: a named replacement is missing)')
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the companion of `stageAMoved` — the new forms hold.
+    if (!stageAHolds) unexplained.push('(plans-data-model Stage A: a named new form is missing, or a plan-tier form is back)')
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the companion of STAGE_B_REMOVED — the new forms hold.
+    if (!stageBHolds) unexplained.push('(pricing-pages Stage B: Billing is not the one <PlanTable>, or the first-load failure reason is missing)')
+    // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the companion of TIDY_REMOVED — the new form holds.
+    if (!tidyHolds) unexplained.push('(pricing-tidy: Billing\'s not-started heading ternary is not on its messages, the body is not gated on the end date, or notStarted.body is still read)')
     if (unexplained.length) {
       console.log('      LINES LOST: ' + unexplained.length)
       for (const l of unexplained.slice(0, 40)) console.log("        • " + l.slice(0, 260))

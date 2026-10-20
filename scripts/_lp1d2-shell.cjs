@@ -33,7 +33,10 @@ const DATA_PROPS = new Set(['truck', 'categories', 'items', 'subcategories', 'bu
 const SHELL_STATES = ['activeTab', 'scheduleSection', 'socialSection', 'socialWide', 'menuSection', 'showTrialReminder', 'userRole', 'truck', 'countrySettings',
   'items', 'loading', 'refreshFailedAt', 'lastLoadedAt', 'currentUserName', 'currentUserEmail', 'currentUserFirstName', 'isAdmin', 'showProfileModal',
   'editProfileName', 'savingProfile', 'pendingApprovalCount', 'bannerDismissedAtCount', 'stripeActionRequired', 'stripeBannerDismissed',
-  'domainBannerDismissed', 'walkthroughOpen', 'walkthroughState']
+  'domainBannerDismissed', 'walkthroughOpen', 'walkthroughState',
+  // ⚠️ RE-PINNED (plans-data-model, Stage A): the shell holds the plan catalogue the Manage GET returns. Skipped on a
+  // tree without it (states() reports it), so the same module still runs on an older commit.
+  'planCatalog']
 const BILLING_STATES = ['showUpgradeModal', 'upgradeTarget', 'showMatrix']
 const TEAM_STATES = ['teamMembers', 'vans', 'invitingMember', 'editingMember', 'inviteName', 'inviteEmail', 'inviteRole', 'inviteVanIds', 'inviteLoading',
   'editingOwnProfile', 'ownProfileFirstName', 'ownProfileLastName', 'ownProfilePhone', 'ownProfileEmail', 'pendingEmailChange', 'resendingVerification',
@@ -157,7 +160,8 @@ async function views(ctx) {
     const SA = (k, fn) => safeAsync(out, `${cc}|${k}`, fn)
     const truck = { ...C.truck, custom_domain_verified_at: null, custom_domain_confirmed_at: null }
     const page = () => W(h(M.ManagePage, { params: { token: 'harness' } }))
-    const loaded = { loading: false, truck, countrySettings: C.settings, items: [], userRole: 'owner', currentUserName: 'Olive Owner', currentUserEmail: 'owner@example.test' }
+    const loaded = { loading: false, truck, countrySettings: C.settings, items: [], userRole: 'owner', currentUserName: 'Olive Owner', currentUserEmail: 'owner@example.test',
+      ...(ctx.PLAN_CATALOG ? { planCatalog: ctx.PLAN_CATALOG } : {}) }
 
     // ══ THE SHELL ══════════════════════════════════════════════════════════════════════════════════════
     S('shell|loading', () => html({ loading: true }, page()))
@@ -253,6 +257,21 @@ async function views(ctx) {
       B('max|upgradeMax', { ...truck, plan: 'max' }, { showUpgradeModal: true, upgradeTarget: 'max' })
       B('tester', { ...truck, plan: 'tester' })
       B('noTruck', null)
+      // ── plans-data-model (Stage A): the catalogue's plans, each with and without a promotional price override, an
+      // ended plan, and the data-driven plan buttons' modal. On a tree without the catalogue these render the old branches.
+      if (ctx.PLAN_CATALOG) {
+        const promo = { plan_price_override_minor: 1900, plan_price_override_until: '2026-12-31', plan_price_override_note: 'Launch offer' }
+        for (const key of ['trial', 'demo', 'payg', 'pro', 'unlimited', 'tester']) {
+          const end = key === 'trial' ? '2026-11-20T00:00:00Z' : null
+          B(`plan|${key}`, { ...truck, plan: key, trial_expires_at: end })
+          B(`plan|${key}|promo`, { ...truck, plan: key, trial_expires_at: end, ...promo })
+        }
+        B('plan|pro|promoNoEnd', { ...truck, plan: 'pro', trial_expires_at: null, ...promo, plan_price_override_until: null })
+        B('plan|pro|promoLapsed', { ...truck, plan: 'pro', trial_expires_at: null, ...promo, plan_price_override_until: '2026-10-01' })
+        B('plan|pro|ended', { ...truck, plan: 'pro', trial_expires_at: '2026-10-01T00:00:00Z', ...promo })
+        B('plan|payg|switchToPro', { ...truck, plan: 'payg' }, { showUpgradeModal: true, upgradeTarget: 'pro' })
+        S('billing|plan|payg|ios', ios(() => html({}, W(h(Billing, { truck: { ...truck, plan: 'payg' } })))))
+      }
     }
 
     // ══ TEAM ══════════════════════════════════════════════════════════════════════════════════════════

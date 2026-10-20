@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
-import { canAccess } from '@/lib/features'
+import { truckCan } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { orderPageUrl } from '@/lib/custom-domain/copy'   // the one builder for the ordering address
 import { hostKey } from '@/lib/custom-host'
 import { Shell, TruckIdentity, PoweredBy, truckLogoUrl } from '@/components/embed/EmbedParts'
@@ -141,12 +142,7 @@ export default async function CustomDomainPage() {
   // has lapsed. Here there is no truck to name.
   if (!truck) notFound()
 
-  const planGrants = canAccess(
-    truck.plan as never,
-    'embed_schedule',
-    truck.feature_overrides ?? {},
-    truck.trial_expires_at
-  )
+  const planGrants = truckCan(truck, await getPlanCatalog(), 'embed_schedule')   // override → effective plan → allowed (Stage A2)
 
   /**
    * ── THE LAPSED-PLAN FALLBACK: their name, one link onward, the brand line. ──────────────────────

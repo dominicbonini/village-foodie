@@ -55,6 +55,9 @@ const LIB_NOW = [
   'lib/time-utils.ts',
   'lib/slot-interval-core.ts', 'lib/slot-interval.ts',
   'lib/buzzer.ts', 'lib/payments/paid-step.ts', 'lib/features.ts',
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): canAccess needs the effective plan's switch now,
+  // built by lib/plans.ts (planFeatureSwitch / truckPlanSwitch) from the seeded catalogue — section 1f calls it.
+  'lib/plans.ts',
   // lib/features.ts imports these two since 10 October 2026 (plan prices come from country_settings).
   'lib/country-settings-types.ts', 'lib/money-format.ts',
   // …and this one since Language Phase 0 (14 October 2026): its price words have one definition.
@@ -158,6 +161,8 @@ function build(root, files, tag) {
     buzzer: c.req('lib/buzzer.js'),
     paid: c.req('lib/payments/paid-step.js'),
     features: c.req('lib/features.js'),
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): guarded — only LIB_NOW compiles it.
+    plans: (() => { try { return c.req('lib/plans.js') } catch { return null } })(),
     copy: c.req('lib/copy/offlineProtection.js'),
     /* ⚠️ GUARDED LIKE `types`/`resolve`: the BEFORE tree has neither of these files, and an
      * unguarded require would throw there and be scored as "the build broke" rather than as the point
@@ -509,22 +514,65 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
     t('🔴 …and the submit route imports lib/event-pricing, NEVER lib/event-types directly',
       /@\/lib\/event-pricing\/read/.test(submit) && !/@\/lib\/event-types\//.test(submit))
 
-    // ── 1f · THE PLAN GATE IS SHUT FOR EVERY PLAN BUT MAX AND TRIAL ─────────────────────────────
-    const gate = (plan, trialExpiry) => NOW.features.canAccess(plan, 'event_types', {}, trialExpiry ?? null)
-    t('🔴 event_types is MAX only, so Max and the trial set — and nothing else',
-      gate('max') === true && gate('trial') === true && gate('demo') === true && gate('tester') === true
-      && gate('starter') === false && gate('pro') === false)
-    t('⚠️ an EXPIRED trial loses it, and a not-yet-started trial keeps it',
-      gate('trial', '2020-01-01') === false && gate('trial', null) === true)
-    t('⚠️ a per-truck override still wins both ways',
-      NOW.features.canAccess('starter', 'event_types', { event_types: true }, null) === true
-      && NOW.features.canAccess('max', 'event_types', { event_types: false }, null) === false)
-    /* ⛔ AND NO OTHER FEATURE'S ACCESS MOVED. Adding a key to MAX_FEATURES is a one-line edit to a
-     * shared list, and a mistyped bracket there would silently re-plan a different feature. */
+    // ── 1f · THE GATE: OVERRIDE → THE EFFECTIVE PLAN'S SWITCH → ON ─────────────────────────────────
+    /* ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): this section asserted "Max and the trial set only".
+     * ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): canAccess(feature, overrides, planAllows) — the
+     * plan switch is REQUIRED again, but it is DATA (public.plan_features; no row = on), not a tier list in code. The
+     * seed switches event_types off for NO plan, so the claim "open to every truck with no override" survives — proved
+     * on every seeded plan's switch, through the real lib/plans.ts. */
+    const CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
+    const P = NOW.plans
+    const sw = (key) => P.planFeatureSwitch(CATALOG, key)
+    const PLAN_KEYS = CATALOG.plans.filter(p => p.active).map(p => p.key)
+    const gate = (overrides, key = 'payg') => NOW.features.canAccess('event_types', overrides, sw(key))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "event_types is MAX only, so Max and the trial set
+    // — and nothing else". ⚠️ RE-PINNED (Stage A2): now "every seeded plan's switch has it on" — no plan_features row
+    // names event_types.
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): 20261026_pricing_pages.sql switches event_types OFF for payg
+    // (one plan_features row). So it is open with no override on every seeded plan EXCEPT payg, and that row is the only
+    // one naming it.
+    const etRows = CATALOG.features.filter(f => f.feature === 'event_types')
+    t('🔴 event_types is open to every truck with no override on every seeded plan but payg — whose ONE plan_features row switches it off',
+      PLAN_KEYS.length > 1 && PLAN_KEYS.filter(k => k !== 'payg').every(k => gate(undefined, k) === true && gate(null, k) === true && gate({}, k) === true)
+      && gate(undefined, 'payg') === false && gate({}, 'payg') === false
+      && etRows.length === 1 && etRows[0].planKey === 'payg' && etRows[0].enabled === false)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "an EXPIRED trial loses it".
+    // ⚠️ RE-PINNED (Stage A2): the gate takes THREE arguments (the plan switch is required); an ended plan resolves to
+    // the expiry fallback WITH ITS switches — and the fallback (payg) has event_types on, so an ending still cannot
+    // take it away.
+    const NOWD = new Date('2026-10-20T12:00:00Z')
+    const endedTrial = { plan: 'trial', trial_expires_at: '2026-01-01T00:00:00+00:00', feature_overrides: {} }
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the expiry fallback (payg) now has event_types OFF, so an
+    // ended trial LOSES it — by the fallback plan's switch, not by a rule about trials — and an override still grants it.
+    const endedWithOverride = { ...endedTrial, feature_overrides: { event_types: true } }
+    t('⚠️ a plan ending takes it away only through the fallback plan\'s switch — the ended trial falls back to payg (event_types off); an override still grants it',
+      NOW.features.canAccess.length === 3
+      && P.effectivePlan(endedTrial, CATALOG, NOWD).ended === true
+      && P.effectivePlan(endedTrial, CATALOG, NOWD).plan.key === 'payg'
+      && P.truckCan(endedTrial, CATALOG, 'event_types', NOWD) === false
+      && P.truckCan(endedWithOverride, CATALOG, 'event_types', NOWD) === true)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the 4-arg call (plan, feature, overrides, expiry) became
+    // (feature, overrides); ⚠️ RE-PINNED (Stage A2): + the plan switch. The override still wins both ways — even over a
+    // plan switch that says no — and any non-true value under the key denies.
+    const planOff = () => false
+    t('⚠️ a per-truck override still wins both ways (and over the plan)',
+      gate({ event_types: true }) === true && gate({ event_types: false }) === false
+      && gate({ event_types: 'true' }) === false
+      && NOW.features.canAccess('event_types', { event_types: true }, planOff) === true
+      && NOW.features.canAccess('event_types', {}, planOff) === false)
+    /* ⛔ AND NO OTHER FEATURE'S ACCESS MOVES WITH IT. */
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was a BEFORE-vs-NOW comparison across the six plans.
+    // ⚠️ RE-PINNED (Stage A2): per seeded plan, each feature with no override follows THAT PLAN'S switch (payg has
+    // whatsapp_replies off), switching event_types off touches none of them, and its own override still denies.
     const FEATURES = ['online_payments', 'embed_schedule', 'whatsapp_replies', 'ticket_printing', 'qr_menu', 'advance_preordering']
-    const moved = FEATURES.filter(f => ['starter', 'pro', 'max', 'trial', 'demo', 'tester']
-      .some(p => BEFORE.features.canAccess(p, f, {}, null) !== NOW.features.canAccess(p, f, {}, null)))
-    t('⛔ no OTHER feature changed plan when the key was added', moved.length === 0)
+    const moved = []
+    for (const k of PLAN_KEYS) for (const f of FEATURES) {
+      const planSays = P.planAllowsFeature(CATALOG, k, f)
+      if (NOW.features.canAccess(f, {}, sw(k)) !== planSays
+        || NOW.features.canAccess(f, { event_types: false }, sw(k)) !== planSays
+        || NOW.features.canAccess(f, { [f]: false }, sw(k)) !== false) moved.push(`${k}:${f}`)
+    }
+    t('⛔ no OTHER feature moves with the event_types key', moved.length === 0)
     if (moved.length) console.log('      moved: ' + J(moved))
   } finally { remove() }
 
@@ -959,7 +1007,14 @@ head('5 · THE WIRING')
       && JSON.stringify(reads) === JSON.stringify(['load'])
       && JSON.stringify(allPlan) === JSON.stringify(['event_item_prices', 'save_event_item_prices'])
       && JSON.stringify(priv) === JSON.stringify(['set_private_link_ordering'])
-      && /canAccess\(truck\.plan as never, 'event_types'/.test(route)
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): canAccess takes (feature, overrides) now — no plan.
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the route asks lib/plans.ts truckCan (override →
+      // the truck's EFFECTIVE plan's switch → on) with the catalogue it loads once per request, and refuses through
+      // featureRefusal (worded by why) — no direct canAccess call is left in the route.
+      && /truckCan\(truck, catalog, 'event_types'\)/.test(route)
+      && /const canWrite = allowed\(truck, planCatalog\)/.test(route)
+      && /return refuseFeature\('event_types'\)/.test(route)
+      && !/canAccess\(/.test(route.replace(/^\s*(\/\/|\*).*$/gm, ''))
       /* ⚠️ `load` STAYS OPEN SO EXISTING TYPES KEEP RESOLVING ON A DOWNGRADE — decision 4 — and says
        * so with readOnly. */
       && /readOnly: !canWrite/.test(route)
@@ -1210,8 +1265,10 @@ head('5 · THE WIRING')
    * ⚠️ IT STILL RETURNS NULL BEFORE THE TYPES HAVE LOADED, so the form does not flash a Standard-only
    * row and then grow — which is the half of the original claim worth keeping. */
   t('⛔ the picker is drawn even with no custom types, because Private is always a choice',
-    /if \(!ready\) return null/.test(ui)
-    && !/if \(!ready \|\| types\.length === 0\) return null/.test(ui))
+    // ⚠️ RE-PINNED (pending-card buttons, 19 October 2026, docs/pending-card-buttons-report.md): before the types load the
+    // approval card's own buttons (`actions`) are drawn on their own — still nothing about an EMPTY type list.
+    /if \(!ready\) return (?:null|actions \? <div>\{actions\}\{actionsNote\}<\/div> : null)\n/.test(ui)
+    && !/if \(!ready \|\| types\.length === 0\) return/.test(ui))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -2756,6 +2813,13 @@ head('5b · THE MODAL AND THE CARD')
        * now renders `{tCap('warning')}` (kitchenCapacity messages). An edit, not a loss: the replacement and the
        * message's as-moved words are asserted in "…and every ACCOUNTED EDIT" below. */
       /^<div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">\{KITCHEN_CAPACITY_WARNING\}<\/div>$/,
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): hasFeature and the 4-arg canAccess(plan, feature,
+      // overrides, expiry) are gone; the four gate lines now call canAccess(feature, truck.feature_overrides). Edits, not
+      // losses — each replacement is asserted present below (plansGatesMoved).
+      /^import \{ hasFeature, canAccess \} from '@\/lib\/features'$/,
+      /^const showBrandedQr=hasFeature\(truck\.plan,'branded_qr_code'\)&&truck\.qr_code_style==='branded'$/,
+      /^const canPrintTickets = canAccess\(truck\?\.plan \?\? 'starter', 'ticket_printing', truck\?\.feature_overrides \?\? \{\}, truck\?\.trial_expires_at \?\? null\)$/,
+      /^logoUrl=\{\(demoBranded&&truck&&hasFeature\(truck\.plan,'branded_qr_code'\)&&truck\.qr_code_style==='branded'\)\?\(truck\.logo\|\|null\):null\}\/>\}$/,
     ]
     t('⚠️ …and the Language Phase 1b replacements are present (the page reads `dashboard`; each enumerated line in its new form)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/dashboard/[token]/page.tsx'), 'utf8'))
@@ -2922,6 +2986,18 @@ head('5b · THE MODAL AND THE CARD')
       && LP1D2_DASH_MOVES.every(([from, to]) => /^dashboard\.settings\.\w+$/.test(from) && /^completionSettings\.\w+$/.test(to)
         && !now.includes(`tDash('${from.slice('dashboard.'.length)}')`) && now.includes(`tCompletion('${to.slice('completionSettings.'.length)}')`)
         && typeof GB_MSG(to) === 'string' && GB_MSG(from) === undefined)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the companion for the four gate lines above — each is
+    // present in its override-only form, and no plan-based gate is left on the page.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the page asks `const features=useFeatures(truck)`
+    // (lib/useFeatures.ts — override → the EFFECTIVE plan's switch from the server-sent `plan_blocks` → on) and each of
+    // the three gate lines calls features.can(...). No direct canAccess / hasFeature call is left on the page.
+    const plansGatesMoved = /^import \{ useFeatures \} from '@\/lib\/useFeatures'$/m.test(now)
+      && /^\s*const features=useFeatures\(truck\)$/m.test(now)
+      && now.includes("const showBrandedQr=features.can('branded_qr_code')&&truck.qr_code_style==='branded'")
+      && now.includes("const canPrintTickets = features.can('ticket_printing')")
+      && now.includes("logoUrl={(demoBranded&&truck&&features.can('branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}")
+      && !/hasFeature\(|canAccess\(/.test(codeOf(now))
+    if (!plansGatesMoved) unexplained.push('(plans-data-model Stage A / A2: a gate line is not in its features.can(feature) form)')
     if (!lp1d2Moved) unexplained.push('(Language Phase 1d Part 2: the completion rows are not read from `completionSettings` under their moved keys)')
     if (unexplained.length) {
       console.log('      UNEXPLAINED LOSSES: ' + unexplained.length)
@@ -2960,7 +3036,10 @@ function variants() {
      * noticed because it compiles inside the repo, where tsc follows the imports. These are copied UNPATCHED — no
      * variant mutates them; they are only what the modules under test now import. */
     // ⚠️ RE-PINNED (Language Phase 1e): + planMeta — lib/features.ts reads the plan descriptions from it now (copied unpatched).
-    const I18N_NAMESPACES = ['serviceSettings', 'settingsCopy', 'whereYouTrade', 'offlineProtection', 'planMeta']
+    // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the planMeta namespace is DELETED and lib/features.ts no longer
+    // imports anything from lib/i18n — so it leaves the closure (a namespace whose catalog file is absent is skipped).
+    const I18N_NAMESPACES = ['serviceSettings', 'settingsCopy', 'whereYouTrade', 'offlineProtection']
+      .filter(ns => fs.existsSync(path.join(REPO, `lib/i18n/catalog/${ns}.ts`)))
     const I18N_CLOSURE = [
       'lib/i18n/translator.ts', 'lib/i18n/locales.ts', 'lib/i18n/registry.ts', 'lib/i18n/merge.ts',
       ...I18N_NAMESPACES.map(ns => `lib/i18n/catalog/${ns}.ts`),
@@ -3108,14 +3187,22 @@ function variants() {
 
   // V9 — THE PLAN KEY WIDENED
   {
-    const p = patch('lib/features.ts', "  'event_types',\n]", "]")
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): MAX_FEATURES is gone, so the old break ("the key
+    // leaves MAX_FEATURES") has no anchor. The equivalent break now: a default-deny creeps back for event_types, so a
+    // truck with no override loses the feature — which section 1f asserts.
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the resolution lives in featureBlock now, and its
+    // last line asks the plan switch; the same break is a default-deny for event_types in that line, detected through a
+    // seeded plan's real switch (payg — the plan with the most switched off, and still has event_types on).
+    const p = patch('lib/features.ts',
+      "  return planAllows(feature) ? null : 'plan'\n",
+      "  return planAllows(feature) && feature !== 'event_types' ? null : 'plan'\n")
     let detected = true
     if (p) {
-      /* Removing it from MAX_FEATURES must make the gate refuse Max — which is what section 1f asserts. */
       const V = buildPatched(p, 'v9')
-      detected = V.features.canAccess('max', 'event_types', {}, null) !== true
+      const CAT = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
+      detected = V.features.canAccess('event_types', {}, V.plans.planFeatureSwitch(CAT, 'payg')) !== true
     }
-    must('V9 🔴 the feature key leaves MAX_FEATURES and Max loses the feature', detected)
+    must('V9 🔴 a default-deny creeps back for event_types and a truck with no override loses the feature', detected)
   }
 
   // V10 — "CLEAR MY CHANGES" REACHES A SETTING A TYPE CANNOT SET

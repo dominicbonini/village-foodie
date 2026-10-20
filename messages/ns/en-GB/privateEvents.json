@@ -4,8 +4,7 @@
   "grid": {
     "orderingSection": "ORDERING",
     "linkRowLabel": "Take orders by private link and QR code",
-    "columnTitle": "The built-in Private type. It cannot be renamed, moved or deleted.",
-    "maxOnly": "Max only"
+    "columnTitle": "The built-in Private type. It cannot be renamed, moved or deleted."
   },
   "form": {
     "help": "Shows on your schedule as “Private event” with the date and times only — never the address, the map or Village Foodie.",

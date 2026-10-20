@@ -59,6 +59,8 @@ import { resolveIntervalsFor } from '@/lib/slot-interval'
 // 🔴 THE ONE AUTO-ACCEPT DECISION, SHARED WITH app/api/orders/submit. This file used to compute its own
 // and the two drifted — see that module's header for what it cost.
 import { decideAutoAccept } from '@/lib/orders/auto-accept'
+import { truckPlanSwitch } from '@/lib/plans'
+import { readPlanCatalog } from '@/lib/plans-server'
 import type { PreorderConfig } from '@/lib/preorder'
 import { nextOrderId } from '@/lib/order-utils'
 import { enforceStockLimits } from '@/lib/stock-availability'
@@ -348,6 +350,8 @@ export async function promoteDraft(
             items,
             deals,
             timeZone: truckTz,
+            // Stage A2: the truck's EFFECTIVE plan's switches, read through the client this path runs on.
+            planAllows: truckPlanSwitch(truck, await readPlanCatalog(supabase)),
           })
         }
       }

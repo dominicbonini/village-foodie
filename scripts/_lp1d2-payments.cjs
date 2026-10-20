@@ -58,9 +58,13 @@ async function views(ctx) {
       "export * as CHG from '@/components/manage/ChargesCard'",
       "export * as TAK from '@/components/manage/TakingPaymentPanel'",
       "export * as CS from '@/lib/charge-settings'",
-      "export * as PF from '@/lib/plan-features'",
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts is deleted; the card-fee labels this
+      // module reads moved, unchanged, to lib/card-fees.ts (the tab imports them from there).
+      "export * as PF from '@/lib/card-fees'",
       "export { translatorFor } from '@/lib/i18n/translator'",
       "import '@/lib/i18n/catalog/errorsManage'",
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): PaymentsTab takes `features` (lib/useFeatures.ts).
+      ...(require('fs').existsSync(require('path').join(ctx.REPO, 'lib/useFeatures.ts')) ? ["export { featureAccessView } from '@/lib/useFeatures'"] : []),
       PROVIDERS,
     ].join('\n'), {
       stubs: { '@stripe/connect-js': STRIPE_JS, '@stripe/react-connect-js': STRIPE_REACT },
@@ -102,8 +106,13 @@ async function views(ctx) {
     // ══ PaymentsTab ═══════════════════════════════════════════════════════════════════════════════════════
     const Tab = M.PAY && M.PAY.PaymentsTab
     // `key: null` = the browser key NOT SET (undefined would take the default).
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the tab gains a required `features` prop (the truck's
+    // FeatureAccessView — Pay at Hatch's plan prompt reads it). Built from the view's plan over the seeded catalogue, as
+    // Manage builds it; "max" is the fixture truck's plan on a tree with the catalogue (FIXTURE_PLAN, `unlimited`). Every
+    // seeded plan allows Pay at Hatch, so no prompt shows and each view is unchanged.
+    const featuresFor = plan => (M.featureAccessView ? M.featureAccessView({ plan: plan === 'max' ? require('./_lp1d-fixtures.cjs').FIXTURE_PLAN : plan, trial_expires_at: null, feature_overrides: {} }, ctx.PLAN_CATALOG, cc) : undefined)
     const tab = (state, { plan = 'max', key = 'pk_live_harness', afterOnline } = {}) =>
-      withKey(key === null ? undefined : key, () => html({ loading: false, ...state }, W(h(Tab, { token: 'harness', plan, showToast: noop, afterOnline }))))
+      withKey(key === null ? undefined : key, () => html({ loading: false, ...state }, W(h(Tab, { token: 'harness', plan, onTrial: plan === 'trial', features: featuresFor(plan), showToast: noop, afterOnline }))))   // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the prop is `onTrial` (the effective plan isTrial); `plan` kept for older code
     if (Tab) {
       safe('pay|loading', () => tab({ loading: true }))
       // The status read failing: 826471a holds the sentence; this tree holds a code and words it at render.
@@ -133,7 +142,7 @@ async function views(ctx) {
       const toastCase = (k, res) => safeAsync(`payToast|${k}`, () => withKeyAsync('pk_live_harness', async () => {
         const toasts = []
         delete globalThis.__payCreate
-        html({ loading: false, status: ST.not_connected }, W(h(Tab, { token: 'harness', plan: 'max', showToast: (m, t) => toasts.push([m, t || null]) })))
+        html({ loading: false, status: ST.not_connected }, W(h(Tab, { token: 'harness', plan: 'max', onTrial: false, features: featuresFor('max'), showToast: (m, t) => toasts.push([m, t || null]) })))
         if (typeof globalThis.__payCreate !== 'function') return 'ERROR the handler was not exposed'
         globalThis.fetch = stubFetch(res)
         try { await kit.quietAsync(() => globalThis.__payCreate()) } finally { globalThis.fetch = origFetch; delete globalThis.__payCreate }

@@ -76,6 +76,11 @@ const US_SETTINGS_ROW = snakeRow(SEEDS.usFromSeed())
 const tsOf = (row, zone) => ({ timeZone: zone ?? row.default_timezone, locale: row.locale, timeFormat: row.time_format, dateOrder: row.date_order, weekStart: row.week_start })
 const GB_TS = tsOf(GB_SETTINGS_ROW)
 const GB_WEEK = { timeZone: GB_TS.timeZone, weekStart: GB_TS.weekStart }
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan catalogue AS THE TWO PLAN MIGRATIONS SEED IT —
+// camelCase for lib/plans.ts calls (decideAutoAccept's required planAllows), and the snake_case tables (plans, plan_prices,
+// plan_features) for every fake db whose route now loads the catalogue (lib/plans-server.ts). Fixture INPUT only.
+const PLAN_CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
+const PLAN_TABLES = () => require('./_lp1c-fixtures.cjs').planTables()
 
 // ══════════════════════════════════════════════════════════════════════════════════════════════════════════
 // 1 · HELPERS — on a UK device and on a UTC server
@@ -174,7 +179,12 @@ async function slotsView(M, D) {
 // ══════════════════════════════════════════════════════════════════════════════════════════════════════════
 let ordersMod
 async function ordersView(M, D) {
-  ordersMod ??= await kit.bundle('orders', `export { decideAutoAccept } from '@/lib/orders/auto-accept'\nexport { placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'`)
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): decideAutoAccept takes a REQUIRED `planAllows` (the
+  // truck's effective plan's switches) — passed exactly as the submit route builds it, truckPlanSwitch(truck, catalogue),
+  // on the catalogue the two plan migrations seed. GB_TRUCK's 'max' is no plan key any more, so it resolves to the
+  // expiry fallback (payg), which keeps advance_preordering on — the pre-order deadline decisions are unchanged.
+  ordersMod ??= await kit.bundle('orders', `export { decideAutoAccept } from '@/lib/orders/auto-accept'\nexport { placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'\nexport { truckPlanSwitch } from '@/lib/plans'`)
+  const planAllows = ordersMod.truckPlanSwitch(GB_TRUCK, PLAN_CATALOG)
   kit.setDeviceTz(SERVER)
   const out = {}
   const cfgs = {
@@ -188,7 +198,7 @@ async function ordersView(M, D) {
         out[`auto|${day}|${ck}|${start}`] = ordersMod.decideAutoAccept({
           truck: GB_TRUCK, orderLines: [{ name: 'Margherita' }], autoAcceptByName: { Margherita: true }, preorderByName: { Margherita: cfg },
           eventDate: D[day], eventStartMins: start, offlineNoAutoAcceptUntil: null, notes: null, items: [], deals: [],
-          timeZone: LONDON,
+          timeZone: LONDON, planAllows,
         })
       }
     }
@@ -504,7 +514,8 @@ async function dashApiView(D) {
   const out = {}
   for (const [k, start] of [['withStart', '12:00:00'], ['noStart', null]]) {
     for (const [v, mod] of Object.entries(dashApiMods)) {
-      globalThis.__harnessDb = kit.fakeDb({ trucks: [{ ...GB_TRUCK, dashboard_token: 'harness' }], country_settings: [GB_SETTINGS_ROW],
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): /api/dashboard loads the plan catalogue (plan_blocks).
+      globalThis.__harnessDb = kit.fakeDb({ ...PLAN_TABLES(), trucks: [{ ...GB_TRUCK, dashboard_token: 'harness' }], country_settings: [GB_SETTINGS_ROW],
         truck_events: [{ id: 'ev-d', truck_id: 'test-truck', event_date: D.today, start_time: start, end_time: '23:59:00', status: 'open', van_id: null, venue_name: 'The Green', town: 'Harnessville' }],
         orders: [], collection_times: [], menu_categories: [{ id: 'c1', truck_id: 'test-truck', name: 'Pizzas', prep_secs: 300, batch_size: 4, counts_toward_capacity: true, is_active: true, sort_order: 1 }], menu_items_db: [], truck_vans: [], order_payments: [] })
       try {
@@ -551,7 +562,8 @@ async function usView() {
     `export * as TT from '@/lib/truck-time'`,
   ].join('\n'))
   slotsMod ??= await kit.bundle('slots', `export { GET } from '@/app/api/slots/[truckId]/route'\nexport { buildSlotAvailability } from '@/lib/slot-availability'\nexport { getNowMinsInTz } from '@/lib/time-utils'`)
-  ordersMod ??= await kit.bundle('orders', `export { decideAutoAccept } from '@/lib/orders/auto-accept'\nexport { placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'`)
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the same bundle as ordersView (truckPlanSwitch too).
+  ordersMod ??= await kit.bundle('orders', `export { decideAutoAccept } from '@/lib/orders/auto-accept'\nexport { placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'\nexport { truckPlanSwitch } from '@/lib/plans'`)
   eventsMod ??= await kit.bundle('events', `export { GET } from '@/app/api/events/route'`)
   emailMod ??= await kit.bundle('email', `export * as E from '@/lib/email'`)
   const { NextRequest } = require(path.join(REPO, 'node_modules/next/server'))
@@ -585,7 +597,7 @@ async function usView() {
       .map(s => `${s.collection_time}:${s.available ? 'ok' : 'no'}${s.is_past ? ':past' : ''}`).join(' ')
     // auto-accept and place-in-slot
     for (const day of ['today', 'tomorrow']) for (const [ck, cfg] of Object.entries({ hours2: { enabled: true, deadlineType: 'hours_before', deadlineValue: 2, pastAction: 'force_pending' }, cutoff16: { enabled: true, deadlineType: 'daily_cutoff', deadlineValue: 16 * 60, pastAction: 'force_pending' }, cutoff2130: { enabled: true, deadlineType: 'daily_cutoff', deadlineValue: 21 * 60 + 30, pastAction: 'force_pending' } })) {
-      r[`auto|${day}|${ck}`] = JSON.stringify(ordersMod.decideAutoAccept({ truck, orderLines: [{ name: 'Margherita' }], autoAcceptByName: { Margherita: true }, preorderByName: { Margherita: cfg }, eventDate: D[day], eventStartMins: 21 * 60, offlineNoAutoAcceptUntil: null, notes: null, items: [], deals: [], timeZone: ts.timeZone }))
+      r[`auto|${day}|${ck}`] = JSON.stringify(ordersMod.decideAutoAccept({ truck, orderLines: [{ name: 'Margherita' }], autoAcceptByName: { Margherita: true }, preorderByName: { Margherita: cfg }, eventDate: D[day], eventStartMins: 21 * 60, offlineNoAutoAcceptUntil: null, notes: null, items: [], deals: [], timeZone: ts.timeZone, planAllows: ordersMod.truckPlanSwitch(truck, PLAN_CATALOG) })) // ⚠️ RE-PINNED (Stage A2): planAllows is required
     }
     globalThis.__harnessDb = kit.fakeDb({ collection_times: [], orders: [], production_slot_usage: [], cooking_reservations: [] })
     try {
@@ -723,6 +735,7 @@ const ALLOWED = [
   { id: 'L6', site: 'components/dashboard/OrderCard.tsx — us-layout-fix-6-kds-full-badge: the KDS ticket reads "#43 £26.90 Ready"', moments: Object.keys(MOMENTS), path: /^screens\/kds$/,
     expect: (v, D, after, p, before) => { const re = /(#43) (Ready) (£\d+\.\d\d) (Sam Harness)/g; return typeof before === 'string' && (before.match(re) || []).length === 1 && v === before.replace(re, '$1 $3 $2 $4') } },
 ]
+const LFU = require('./_legal-followups-named.cjs')
 function addDays(ymd, n) { const [y, m, d] = ymd.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10) }
 function leaves(o, p = '', out = {}) {
   if (o && typeof o === 'object') { const ks = Object.keys(o); if (!ks.length) out[p] = JSON.stringify(o); for (const k of ks) leaves(o[k], p ? `${p}/${k}` : k, out) } else out[p] = o === undefined ? '«undefined»' : JSON.stringify(o)
@@ -737,8 +750,17 @@ function compare(before, after) {
     for (const k of new Set([...Object.keys(A), ...Object.keys(B)])) {
       total++
       if (A[k] === B[k]) continue
+      // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md) — NOT A TIME CHANGE: the named
+      // change legal-followups-privacy-link adds a "Privacy" link to the customer emails' footer and under the order
+      // page's Place order / Back to links, at every instant. Where BEFORE never says "Privacy", the AFTER value has
+      // exactly what the link added taken out (scripts/_legal-followups-named.cjs unPrivacy) and is then compared as before.
+      let Bk = B[k]
+      if (typeof A[k] === 'string' && !A[k].includes('Privacy') && typeof Bk === 'string' && Bk !== '«undefined»') {
+        const raw = JSON.parse(Bk), un = typeof raw === 'string' ? JSON.stringify(LFU.unPrivacy(raw)) : Bk
+        if (un !== Bk) { Bk = un; (allowed.P ??= []).push(`${mk} ${k}`); if (A[k] === Bk) continue }
+      }
       const rule = ALLOWED.find(r => r.path.test(k))
-      const v = B[k] === undefined ? undefined : JSON.parse(B[k] === '«undefined»' ? 'null' : B[k])
+      const v = Bk === undefined ? undefined : JSON.parse(Bk === '«undefined»' ? 'null' : Bk)
       if (!rule) { fails.push(`${mk} ${k}: moved and no allowance names it\n     before ${String(A[k]).slice(0, 300)}\n     after  ${String(B[k]).slice(0, 300)}`); continue }
       if (!rule.moments.includes(mk)) { fails.push(`${mk} ${k}: ${rule.id} may move only at ${rule.moments.join(', ')}`); continue }
       const was = A[k] === undefined ? undefined : JSON.parse(A[k] === '«undefined»' ? 'null' : A[k])   // the BEFORE value (L2 checks the exact move)
@@ -916,6 +938,7 @@ if (require.main === module) {
     const c = compare(before, JSON.parse(JSON.stringify(snap)))
     fails.push(...c.fails)
     console.log(`GB: ${c.total} leaves at 4 instants compared with the BEFORE snapshot (${BEFORE_FILE})`)
+    console.log(`  allowed P   ${String((c.allowed.P || []).length).padStart(2)} leaf/leaves — legal-followups-privacy-link (customer email footers; order page under Place order / Back to)`)
     for (const r of ALLOWED) console.log(`  allowed ${r.id.padEnd(3)} ${String((c.allowed[r.id] || []).length).padStart(2)} leaf/leaves — ${r.site}${(c.allowed[r.id] || []).length ? '\n            ' + c.allowed[r.id].join('\n            ') : ''}`)
     // 2 · B1 — the dashboard API's "now": identical in GMT; in BST only `is_past` moves, and to London's clock
     const B1_MOMENTS = ['bstAfternoon', 'late2330', 'after0030'] // every instant in BST

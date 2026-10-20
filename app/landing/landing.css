@@ -12,13 +12,11 @@
 
    Fonts come from next/font (page.tsx) via --font-* → mapped to --display/-body/-ticket.
 
-   COMPARISON TABLE: rendered as a FLEX layout (.cmp2*), NOT a <table>. The v32
-   artifact used <table> inside `.cmp-wrap{overflow-x:auto}`, but overflow-x:auto
-   forces overflow-y:auto → `position:sticky` on the thead sticks inside that
-   content-height box and never pins on page scroll (the documented sticky trap).
-   This mirrors Manage → Billing's flex sticky header instead: fixed narrow plan
-   columns fit mobile with NO horizontal scroll, and the header pins to the page
-   (offset by --nav-h, below the sticky nav).
+   COMPARISON TABLE (Stage B): components/pricing/PlanTable.tsx with its own plan-table.css —
+   a GRID of divs, NOT a <table>, and never inside an overflow-x box: overflow-x:auto forces
+   overflow-y:auto, and `position:sticky` on its header would then stick inside that box and
+   never pin on page scroll (the documented sticky trap). Narrow plan columns fit mobile with
+   NO horizontal scroll; on /features the header pins below the sticky nav (--pt-top).
    ───────────────────────────────────────────────────────────────────────── */
 
 /* Tokens are shared with .hg-demo-modal — the demo upload modal PORTALS to <body>, so it sits outside
@@ -668,6 +666,8 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .trial-banner { background: var(--orange-wash); border: 1px solid var(--orange-line); border-radius: 12px; padding: 1.1rem 1.3rem; margin-bottom: 2rem; text-align: center; }
 .hg-landing .trial-banner strong { font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--head); letter-spacing: -.02em; display: block; margin-bottom: .15rem; }
 .hg-landing .trial-banner span { font-size: .92rem; color: var(--ink); }
+/* Stage B: the fallback plan's name in the banner body (<u>). The banner's size is the pre-Stage-B one (Dominic, 20 October 2026). */
+.hg-landing .trial-banner u { text-underline-offset: 2px; font-weight: 600; color: var(--head); }
 .hg-landing .plans { display: grid; gap: 1.15rem; grid-template-columns: 1fr; align-items: stretch; }
 @media(min-width:880px){ .hg-landing .plans { grid-template-columns: repeat(3,1fr); } }
 .hg-landing .plan { border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 1.6rem 1.4rem; display: flex; flex-direction: column; }
@@ -679,16 +679,27 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .plan-price span { display: block; font-size: .9rem; font-weight: 600; color: var(--ink-soft); letter-spacing: 0; margin-top: .3rem; }
 .hg-landing .plan-fee { font-size: .85rem; color: var(--ink-soft); margin-bottom: 1.2rem; min-height: 2.6em; }
 .hg-landing .plan-fee b { color: var(--head); font-weight: 600; }
-.hg-landing .fee-star { color: var(--orange); font-weight: 700; }   /* the 0.99%* marker → card-fee note below */
 .hg-landing .plan ul { list-style: none; margin-bottom: 1.5rem; display: grid; gap: .5rem; }
 .hg-landing .plan li { font-size: .92rem; color: var(--ink-soft); padding-left: 1.3rem; position: relative; }
 .hg-landing .plan li::before { content: ""; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
 .hg-landing .plan li.lead { color: var(--head); font-weight: 600; }
 .hg-landing .soon-inline { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); border: 1px solid var(--line); border-radius: 4px; padding: .05rem .3rem; margin-left: .2rem; white-space: nowrap; vertical-align: 1px; }
 .hg-landing .plan .btn { margin-top: auto; justify-content: center; }
-.hg-landing .price-foot { margin-top: 1.8rem; display: grid; gap: .5rem; max-width: 46rem; margin-inline: auto; text-align: center; }
-.hg-landing .price-foot p { font-size: .88rem; color: var(--ink-soft); }
-.hg-landing .price-foot p b { color: var(--head); font-weight: 600; }
+/* ── Stage B (docs/pricing-pages-report.md) — the pieces the data-built cards add ──────────────────────────────────
+   `.li-sub`: a feature shown beneath another (Messenger & Instagram under WhatsApp), smaller and muted, with its chip.
+   `.plan-more`: the first card's "See every feature →", orange text under its bullets (the route to /features).
+   `.cheap-bar`: "Which plan is cheapest for me?" — a white strip under the cards; its bands wrap on a phone.
+   `.price-note`: the card-fee footnote. */
+.hg-landing .plan .li-sub { display: block; font-size: .82rem; color: var(--ink-faint); margin-top: .15rem; }
+.hg-landing .plan .btn { width: 100%; }
+.hg-landing .plan-more { margin: -.6rem 0 1.4rem 1.3rem; }
+.hg-landing .plan-more a { color: var(--orange); font-weight: 600; font-size: .92rem; text-decoration: none; }
+.hg-landing .plan-more a:hover { text-decoration: underline; }
+.hg-landing .cheap-bar { margin-top: 1.6rem; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: .95rem 1.3rem;
+                         display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem 1.6rem; font-size: .92rem; color: var(--ink-soft); }
+.hg-landing .cheap-title { font-weight: 700; color: var(--head); }
+.hg-landing .cheap-band b { color: var(--head); font-weight: 700; }
+.hg-landing .price-note { margin-top: .8rem; font-size: .8rem; color: var(--ink-faint); line-height: 1.5; }
 /* The cost-comparison link under the plan cards. Sized ABOVE the small print around it and given the
    brand orange, so it reads as a route rather than another line of caveat — but it stays a link, not a
    button, so it never competes with the section's DemoCta. */
@@ -718,35 +729,8 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .switch-cta a { color: var(--orange); font-weight: 600; font-size: .95rem; text-decoration: none; }
 .hg-landing .switch-cta a:hover { text-decoration: underline; }
 
-/* ---------- "Compare all features →", under the plan cards ----------
-   ⚠️ THE LABEL AND THE STYLE HAVE BOTH MOVED ON — this block has read "See every feature, plan by
-   plan →" as a text link, "See every feature →" as an outlined `btn-ghost`, and is now a lead-in line
-   plus a filled navy button. What has NOT changed through any of it: the position (under the cards,
-   before the switching block) and the fact that `.btn` is `inline-flex`, so the button sizes to its
-   label at every width with nothing here to say so.
-   ⚠️ SO THESE RULES ONLY CENTRE IT. A `width` or a `max-width` would be the thing that makes it
-   full-width on a phone, which is what the brief asked it not to be — at 390 and at 1440 alike.
-   ⛔ `.features-back` WAS REMOVED FROM THIS BLOCK — the "See prices and plans →" link it styled is
-   gone from /features, so the rule would have styled nothing. Deleted with its markup, not left. */
-/* ══ 🔴 THE LEAD-IN LINE AND THE BUTTON UNDER IT (7 October 2026) ══════════════════════════════════
-   ⚠️ `margin-top: 2.2rem` RATHER THAN THE OLD 1.4rem. There are two blocks here now where there was
-   one, and the pair has to read as its own step between the plan cards above and the switching block
-   below — not as a tail on either. It is the same gap `.switch-block` takes.
-   ⛔ `.feat-cta` IS THE **LEAD-IN**'S RULE NOW, not the button's. It carries the centring for both. */
-.hg-landing .feat-cta { margin-top: 2.2rem; text-align: center; }
-/* 🔴 THE LEAD-IN. ⚠️ THE SAME SIZE AND COLOUR AS `.switch-body` — the brief's instruction, and the
-   right one: both are a muted secondary line introducing a link, so a second size would be a second
-   voice for one job. ⛔ IF ONE IS EVER CHANGED THE OTHER SHOULD BE LOOKED AT; they are not shared
-   because they sit in different blocks and a shared class would tie two sections together for a
-   resemblance rather than a reason. */
-.hg-landing .feat-lead { font-size: .88rem; color: var(--ink-soft); margin-bottom: .7rem; }
-/* ⚠️ `margin-bottom: .7rem` IS THE BRIEF'S "about 10–12px". The root is 16px, so .7rem = 11.2px. */
-.hg-landing .feat-btn { text-align: center; margin-bottom: .4rem; }
-/* ⛔ THE WHITE-FILL RULE IS GONE WITH THE OUTLINED BUTTON IT FILLED. It read
-   `.hg-landing .feat-cta .btn { background: var(--paper) }` and existed because `.btn-ghost` is
-   transparent and looked like a hole in the pricing band's tint. The button is FILLED NAVY now, so
-   there is nothing left for it to do — and a rule that fills a navy button white would be the next
-   person's puzzle. ⚠️ `.btn-ghost` ITSELF WAS NEVER CHANGED and still has its two "Try Free" users. */
+/* ⛔ The "Compare all features →" lead-in and navy button (.feat-cta / .feat-lead / .feat-btn) are gone with their markup
+   (Stage B): the first pricing card's "See every feature →" (.plan-more) is the route to /features now. */
 
 /* ══════════ 🔴 THE MOBILE ORDER OF THE PRICING SECTION — below 640px only ══════════════════════════
    On a phone the three plan cards were the fourth thing down, under the heading, the fee paragraph and
@@ -769,27 +753,15 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    deliberate, so nothing collapses by accident and a flex container changes no gap it is not told to. */
 @media(max-width:639px){
   .hg-landing #pricing .wrap { display: flex; flex-direction: column; }
-
-  /* a · the label, the heading and the fee paragraph, as one block */
+  /* Stage B: the heading, then the cards (in plan order), then the cheapest-plan bar, the trial banner, the switching
+     block and the footnote. The cards still come straight after the heading on a phone, as before. */
   .hg-landing #pricing .price-head { order: 1; }
-
-  /* b · the three plan cards */
   .hg-landing #pricing .plans { order: 2; }
-
-  /* c · the orange trial box. ⚠️ `.plans` has no bottom margin, so the box takes the gap above it — and
-     its own `margin-bottom: 2rem` would ADD to `.feat-cta`'s `margin-top` below, so it hands that one
-     over rather than keeping both. */
-  .hg-landing #pricing .trial-banner { order: 3; margin-top: 2rem; margin-bottom: 0; }
-
-  /* d · "Not sure which plan?" and the button, which stay the pair they are */
-  .hg-landing #pricing .feat-cta { order: 4; }
-  /* ⚠️ `margin-bottom: .4rem` COLLAPSED INTO `.switch-block`'s 2rem in block flow and would add to it
-     here. Zeroed, the gap below the button is the 2rem it has always been. */
-  .hg-landing #pricing .feat-btn { order: 5; margin-bottom: 0; }
-
-  /* e · the switching block, then f · the small print */
-  .hg-landing #pricing .switch-block { order: 6; }
-  .hg-landing #pricing .price-foot { order: 7; }
+  .hg-landing #pricing .cheap-bar { order: 3; }
+  .hg-landing #pricing .trial-banner { order: 4; margin-top: 2rem; margin-bottom: 0; }
+  .hg-landing #pricing .switch-block { order: 5; }
+  .hg-landing #pricing .price-note { order: 6; }
+  .hg-landing .cheap-bar { flex-direction: column; gap: .35rem; }
 }
 
 /* ⛔ `.li-note` WAS HERE AND IS DELETED — 6 October 2026. It made the WhatsApp bullet's
@@ -798,75 +770,17 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    own run. A rule styling markup that no longer exists is the thing this stylesheet's notes keep
    warning about, so it went in the same edit rather than being left for a sweep. */
 
-/* ---------- comparison (FLEX, mirrors Manage → Billing; see file header note) ---------- */
-/* Column width defined ONCE (--cmp-col) and referenced by BOTH the header cols AND the body cells, so a plan
-   header can never drift off its tick column. The left region (feat/label) is flex:1 in both, identical. */
-/* ⚠️ `--cmp-head-h` IS DECLARED BESIDE `--cmp-col` AND CHANGES AT THE SAME BREAKPOINT, DELIBERATELY.
-   The priced header's height follows its column width — 63px below 620px, 83px from 620 up (measured at
-   600/619/620/640) — and the GROUP headings pin directly beneath it. 🔴 TYING THE TWO TOGETHER IS THE
-   WHOLE POINT: a hard-coded offset on `.cmp2-grp` would silently desync the moment the header's
-   typography moved, and the group labels would pin over it or float below it. Same reasoning as
-   `--nav-h` driving both the nav's height and this table's own sticky offset. */
-.hg-landing .cmp2 { --cmp-col: 3.6rem; --cmp-head-h: 63px; margin-top: 1.4rem; font-size: .9rem; }
-@media(min-width:620px){ .hg-landing .cmp2 { --cmp-col: 6rem; --cmp-head-h: 83px; } }
-@media(min-width:900px){ .hg-landing .cmp2 { --cmp-col: 7rem; } }
-/* TOP-align columns: the Trial column has no sub-label, so flex-end dropped its name+price below the others.
-   flex-start lines the plan NAMES up on row 1 and the PRICES on row 2 across all columns; subs hang below. */
-.hg-landing .cmp2-head { position: sticky; top: var(--nav-h); z-index: 40; background: var(--wash); display: flex; align-items: flex-start; padding-top: .5rem; padding-bottom: .7rem; border-bottom: 2px solid var(--head); }
-.hg-landing .cmp2-feat { flex: 1; min-width: 0; padding-right: .6rem; }   /* header left spacer */
-/* Row left region — holds name (+ desc). MOBILE: desc STACKS under name (block flow). */
-.hg-landing .cmp2-label { flex: 1; min-width: 0; padding-right: .6rem; }
-/* 4 plan columns (Trial|Starter|Pro|Max) — narrow on phones so they fit with NO horizontal scroll (which
-   would re-introduce the overflow-x sticky trap); wider as room allows. col + cell share widths so they align. */
-.hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: var(--cmp-col); flex: none; text-align: center; padding-inline: .1rem; }
-/* Mobile plan name/price bumped up for readability on small phones (~360px); columns (--cmp-col 3.6rem) still
-   fit all four side by side with no horizontal scroll. Larger from 620px up. */
-.hg-landing .th-plan { font-family: var(--display); font-weight: 800; color: var(--head); font-size: .85rem; letter-spacing: -.02em; display: block; }
-@media(min-width:620px){ .hg-landing .th-plan { font-size: .95rem; } }
-.hg-landing .th-price { font-family: var(--display); font-weight: 800; color: var(--orange); font-size: .78rem; letter-spacing: -.02em; display: block; margin-top: .1rem; white-space: nowrap; }
-@media(min-width:620px){ .hg-landing .th-price { font-size: .9rem; } }
-.hg-landing .th-sub { display: block; font-size: .62rem; font-weight: 600; color: var(--ink-faint); line-height: 1.25; margin-top: .1rem; }
-@media(max-width:619px){ .hg-landing .th-sub { display: none; } }   /* keep the sticky header short on phones (2 lines: name + price) */
-/* ══ 🔴 THE GROUP HEADINGS STICK TOO — 7 October 2026, ON REQUEST ═════════════════════════════════
-   Fees · Starter tier · Pro tier · Max tier now pin directly under the priced header, so a reader
-   halfway down a 33-row table can still see **which plan tier** the rows belong to as well as which
-   column is which. ⚠️ THE PLAN COLUMNS ALREADY STUCK — `.cmp2-head` has done so since the table was
-   built; this is the second row of context, not a fix to the first.
-   📐 `top: calc(var(--nav-h) + var(--cmp-head-h))` — the nav's height plus the priced header's, both
-   variables, so nothing here is a magic number and nothing can desync when either moves.
-   ⛔ `z-index: 30`, BELOW `.cmp2-head`'s 40 AND ABOVE THE ROWS. When a group heading reaches the pin
-   point it must slide UNDER the priced header, not over it; the rows have no z-index and pass beneath
-   both. ⚠️ AND IT NEEDS AN OPAQUE BACKGROUND: `var(--wash)` is the band's own colour, so rows scrolling
-   behind it are hidden rather than showing through the letter-spacing.
-   ⚠️ THE TOP PADDING IS .8rem, HALVED FROM 1.6rem (7 October 2026, on request: *"theres too much space
-   between the line above"*). It is part of the sticky box, so it pins WITH the label — at 1.6rem that
-   put 25.6px of empty wash between the priced header and the tier name every time one stuck. Halving it
-   also tightens the gap between groups in normal flow, which is the same spacing seen from the other
-   direction and was the point. */
-.hg-landing .cmp2-grp { position: sticky; top: calc(var(--nav-h) + var(--cmp-head-h)); z-index: 30; background: var(--wash); font-family: var(--display); font-weight: 700; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); padding: .8rem 0 .5rem; }
-.hg-landing .cmp2-row { display: flex; align-items: flex-start; padding: .7rem 0; border-top: 1px solid var(--line); }
-.hg-landing .f-name { color: var(--head); font-weight: 600; display: block; }
-.hg-landing .f-desc { color: var(--ink-soft); font-size: .8rem; line-height: 1.4; display: block; margin-top: .15rem; max-width: 44ch; }
-/* DESKTOP (≥900px): give the description its OWN column so it fills the middle instead of leaving a dead gap
-   between the far-left name and the far-right plan columns. Below 900px it stays stacked under the name. */
-@media(min-width:900px){
-  .hg-landing .cmp2-label { display: flex; align-items: baseline; gap: 1.2rem; }
-  .hg-landing .cmp2-label .f-name { width: 12rem; flex: none; }
-  .hg-landing .cmp2-label .f-desc { flex: 1; margin-top: 0; max-width: none; }
-}
-.hg-landing .f-note { color: var(--ink-faint); font-size: .7rem; vertical-align: .3em; margin-left: .15rem; }
-.hg-landing .yes { color: var(--orange); font-weight: 700; font-size: 1.05rem; }
-.hg-landing .no { color: var(--ink-faint); }
-.hg-landing .val { font-size: .78rem; color: var(--ink); font-weight: 600; line-height: 1.3; display: inline-block; }
-/* Narrowest phones: shrink fee values a touch so single-word cells ("Unlimited", "£1,500") fit the 3.6rem
-   column on one line without overflowing into the next column. (Multi-word "Pay at Hatch" still wraps.) */
-@media(max-width:619px){ .hg-landing .val { font-size: .7rem; letter-spacing: -.01em; } }
-/* Narrow plan columns (3.5rem mobile) — "Coming soon" must WRAP, not nowrap-overflow the cell (mirrors
-   Billing, which wraps a small italic label in its w-14 column). No pill/border at this width. */
-.hg-landing .soon { display: inline-block; font-size: .7rem; font-weight: 600; font-style: italic; line-height: 1.15; color: var(--ink-faint); }
-.hg-landing .fn { margin-top: 1.4rem; display: grid; gap: .3rem; }
-.hg-landing .fn p { font-size: .8rem; color: var(--ink-faint); }
-.hg-landing .fn sup { color: var(--ink-soft); }
+/* ---------- /features (Stage B, docs/pricing-pages-report.md) ----------
+   ⛔ THE FLEX COMPARISON TABLE (.cmp2*, .th-*, .f-*, .yes/.no/.val/.soon, .fn) IS GONE with
+   components/landing/FeatureComparison.tsx. The table is components/pricing/PlanTable.tsx, styled by its own
+   plan-table.css (shared with Manage › Billing); only the page around it is styled here. Its sticky header
+   pins under the nav (`--pt-top: var(--nav-h)`, set on the wrapper below). */
+.hg-landing .features-page { --pt-top: var(--nav-h); }
+.hg-landing .features-page h1 { max-width: 22ch; }
+.hg-landing .features-page .lede { max-width: 60ch; margin-bottom: 1.4rem; }
+.hg-landing .features-callout { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 12px; padding: .9rem 1.1rem; color: var(--ink); margin-bottom: 1.8rem; max-width: 60ch; }
+.hg-landing .features-callout b { color: var(--head); }
+.hg-landing .features-page .price-note { margin-top: 1.2rem; }
 
 /* ---------- final cta ---------- */
 .hg-landing .final { text-align: center; }
@@ -1013,6 +927,11 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .cc-item[aria-checked="true"] { font-weight: 700; color: var(--head); }
 .hg-landing .cc-item .cc-flag { box-shadow: 0 0 0 1px var(--line); }
 .hg-landing .cc-item-name { flex: 1; }
+/* seo-fixes M1: the menu is always in the HTML (its options are crawlable <a href>s); closed, it is display:none — out of
+   the layout, the tab order and the accessibility tree, as when it was not rendered. The options were <button>s; as
+   anchors they keep the same box (`.cc-item` above sets it all) and never underline. */
+.hg-landing .cc-menu-closed { display: none; }
+.hg-landing a.cc-item { text-decoration: none; }
 .hg-landing .cc-tick { color: var(--orange-deep); flex-shrink: 0; }
 @media(max-width:720px){
   .hg-landing .cc-foot .cc-menu { right: auto; left: 50%; transform: translateX(-50%); }

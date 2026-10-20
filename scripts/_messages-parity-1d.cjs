@@ -74,6 +74,12 @@ const NEW_WORDING = {
   'manageMenuImport.settingsReview.cancelAria': '1d-cancel-row-sentence (MENU-B): the select’s new aria-label once the row is one sentence',
 }
 
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the keys Stage A removed / reworded are recorded once, in
+// scripts/fixtures/plans-stage-a-messages.json (W.LP2.stageA()). The QR lock rewording is invisible here (the helper reads both
+// F and A at the pre-Stage-A words); a REMOVED key may stay in the shared named list (it is history), but only while it is
+// absent from the authored en-GB — see the named and US checks below.
+const stageARemoved = () => W.LP2.stageA()['en-GB'].removed || {}
+
 module.exports = function area({ t, head }) {
   head(`Phase 1d · Manage's Menu, Schedule and Settings words that moved into messages/ — BEFORE (${BEFORE_REF}) against AFTER`)
   const F = W.catalogues('F'), A = W.catalogues('A')
@@ -133,7 +139,11 @@ module.exports = function area({ t, head }) {
   const gb = Object.fromEntries(W.LP2.leaves(A['en-GB']))
   const us756 = new Set(W.LP2.leaves(W.LP2.readJson(W.FROZEN_US)).map(([k]) => k))
   const usNew = W.LP2.leaves(A['en-US']).filter(([k]) => !us756.has(k))
-  const orphan = usNew.filter(([k]) => !(k in gb)).map(([k]) => k)
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): A's en-US is Part 1's end (the frozen 826471a pair), which
+  // still carries the van-upgrade modal's US words; Stage A removed those en-GB keys. Only an en-US key whose en-GB key Stage
+  // A REMOVED (the fixture) and that is absent from the authored en-GB is excused (the authored en-US: messages-parity §2).
+  const gbAuthored = new Set(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'messages/en-GB.json'))).map(([k]) => k))
+  const orphan = usNew.filter(([k]) => !(k in gb) && !(k in stageARemoved() && !gbAuthored.has(k))).map(([k]) => k)
   const copies = usNew.filter(([k, v]) => gb[k] === v).map(([k]) => k)
   t(`en-US: every key added since ${BEFORE_REF} exists in en-GB (${usNew.length})`, orphan.length === 0, orphan.join(', '))
   t('en-US: every key added differs from its en-GB text', copies.length === 0, copies.join(', '))
@@ -144,16 +154,19 @@ module.exports = function area({ t, head }) {
   t(`every GB fix takes the same arguments as the text it replaced (${Object.keys(mv).length})`, fixArgs.length === 0, fixArgs.join(' · '))
 
   // ── 4 · the named list ──
+  const gbNow = Object.fromEntries(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'messages/en-GB.json'))))   // the authored catalogue
   const file = path.join(REPO, 'scripts/fixtures/language-phase-1d-gb-named.json')
   const named = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null
   t('scripts/fixtures/language-phase-1d-gb-named.json exists', !!named)
   if (named) {
     const diff = W.gbKeyDiff()
     const unnamed = Object.keys(diff).filter(k => !named[k] || named[k].before !== diff[k].before || named[k].after !== diff[k].after)
-    const stale = Object.keys(named).filter(k => !diff[k])
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a named key Stage A REMOVED (errorsManage.preorders_pro) no
+    // longer differs — it is gone — and is excused only while it is absent from the authored en-GB.
+    const stale = Object.keys(named).filter(k => !diff[k] && !(k in stageARemoved() && !(k in gbNow)))
     t(`every en-GB key whose text differs from ${BEFORE_REF}'s (as moved) is named, as it changed (${Object.keys(diff).length})`, unnamed.length === 0, unnamed.join(', '))
     t('every named key did change', stale.length === 0, stale.join(', '))
   }
-  const mp = W.movedProblems()
+  const mp = W.movedProblems()   // ⚠️ Stage A's removed keys are excused by the helper itself (_lp1d-words movedProblems)
   t('the as-moved list (scripts/fixtures/language-phase-1d-gb-moved.json) is consistent with the catalogue', mp.length === 0, mp.join(' · '))
 }

@@ -18,7 +18,7 @@
 // columns; none of those is resolved by anything in this build, and drawing them would promise a truck
 // behaviour the next order does not deliver. They arrive with their own stages.
 
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 /* 🔴 THE SHARED CONTROLS. `Toggle` is the component page.tsx renders; `Select` is Settings' own
  * styling as a component. This file defines neither, by rule — see the note above TypeControl. */
 import { Btn, Toggle, Select, Input } from './primitives'
@@ -356,28 +356,8 @@ const MODAL_SIDE_PADDING = 16
  * alternative — a repeating background gradient sized to the columns — would be a one-off style that
  * silently breaks the moment a width changes. The two full-width section headings (SERVICE, USED BY)
  * are the only rows the line does not cross, because they genuinely span every column. */
-/**
- * ── 🔴 THE MAX BADGE (20261014) ───────────────────────────────────────────────────────────────────
- * Shown to a truck that has `private_events` (Pro) but not `event_types` (Max), beside the two things
- * that key buys: "+ New event type" and the PRICES section.
- * ⛔ A LOCK **PLUS THE WORD**, not a lock alone. A bare padlock beside a heading is ambiguous — the
- * Private column already carries one, meaning "built in, cannot be renamed" — so this one names the
- * plan, which is the only thing an operator can act on.
- * ⚠️ MODULE SCOPE, NOT A NESTED COMPONENT. Declared inside the panel it would be a new component type
- * on every render, which remounts its subtree and which `react-hooks/static-components` refuses. It
- * closes over nothing, so there is no reason for it to live inside.
- */
-function MaxBadge() {
-  const tp = useT('privateEvents')
-  return (
-    <span
-      title={tp('grid.maxOnly')}
-      className="ml-1.5 inline-flex shrink-0 items-center gap-0.5 rounded-full border border-amber-300 bg-amber-50 px-1.5 py-px text-[9px] font-bold normal-case tracking-wide text-amber-700"
-    >
-      <span aria-hidden="true">🔒</span>{tp('grid.maxOnly')}
-    </span>
-  )
-}
+/* ⛔ THE MAX BADGE WAS HERE (20261014 – 19 October 2026): it named the plan that carried event types. Every plan has
+ * them now (plans-data-model Stage A), so there is no plan to name. */
 
 const CELL_DIVIDER = 'border-l border-slate-100'
 
@@ -501,7 +481,6 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
   const [standardBusy, setStandardBusy] = useState(false)
   const [confirmMatch, setConfirmMatch] = useState<string | null>(null)
   const [readOnly, setReadOnly] = useState(false)
-  const [upgradeMessage, setUpgradeMessage] = useState<string | null>(null)
   const [missingTable, setMissingTable] = useState(false)
   const [msg, setMsg] = useState<Msg | null>(null)
   const [busy, setBusy] = useState(false)
@@ -546,7 +525,6 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
       setStandard(r.standard ?? null)
       setVans(Array.isArray(r.vans) ? (r.vans as VanRow[]) : [])
       setReadOnly(r.readOnly === true)
-      setUpgradeMessage(r.upgradeMessage ?? null)
       setMissingTable(r.missingTable === true)
       setSameSettings(r.sameSettingsAllVans === true)
       setSameSettingsAvailable(r.sameSettingsAvailable === true)
@@ -1075,7 +1053,6 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
           <div className="flex shrink-0 items-center">
             <Btn label={t('newTypeButton')} colour="ghost" disabled={!editable || !canTypes}
               onClick={() => setCreating(true)} />
-            {!canTypes && canPrivate && <MaxBadge />}
           </div>
           {/* ⚠️ NO ✕ WHEN INLINE — there is nothing to close; the pill above is how you leave. */}
           {!inline && (
@@ -1099,14 +1076,9 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
             </div>
           )}
 
-          {!loading && readOnly && (
-            <div className="m-4 p-3 rounded-xl border border-amber-200 bg-amber-50">
-              <p className="text-sm font-bold text-amber-900">{upgradeMessage ?? t('maxPlanFallback')}</p>
-              <p className="text-sm text-amber-800 mt-1">
-                {t('maxPlanBody')}
-              </p>
-            </div>
-          )}
+          {/* ⛔ THE "part of the Max plan" BANNER WAS HERE. Every plan has event types since plans-data-model Stage A
+            * (19 October 2026); a truck whose override switches them off still gets a read-only screen (`readOnly`),
+            * with no plan to name. */}
 
           {msg && (
             <p className={`m-4 text-sm rounded-xl px-3 py-2 border ${msg.bad
@@ -1340,7 +1312,6 @@ export function EventTypesPanel({ token, onClose, manageApi, inline = false }: {
                               * ⚠️ ON THE BAND, NOT ON EACH OF THE FOUR ROWS. One mark where the
                               * section is named reads as "this section is Max"; four marks read as
                               * four separate locks on four unrelated things. */}
-                            {r.id === 'sec-prices' && !canTypes && canPrivate && <MaxBadge />}
                             {/* 🔴 THE PILL, IMMEDIATELY AFTER THE HEADING, INSIDE THE BAND. The grid
                               * scrolls sideways; this is the one position visible at every scroll
                               * offset. It names the COUNT so the operator knows what is unfolding. */}
@@ -2536,7 +2507,7 @@ function NewTypePopup({ busy, onCancel, onCreate }: {
  * the same save the rest of the form uses and there is no second write path to keep in step.
  */
 export function EventTypeSelect({
-  token, venueName, placeId, value, onChange, disabled, privateName, onPrivateName, onUsual,
+  token, venueName, placeId, value, onChange, disabled, privateName, onPrivateName, onUsual, actions, actionsNote,
 }: {
   token: string
   /** The venue typed into the form — the fallback when no place is picked. */
@@ -2573,6 +2544,18 @@ export function EventTypeSelect({
    * replaces something; "Use … next time" sets something that was never set.
    */
   onUsual?: (u: { typeId: string | null; by: string | null }) => void
+  /**
+   * ── 🔴 THE APPROVAL CARD'S BUTTONS, ON THE CHIPS' ROW (19 October 2026, docs/pending-card-buttons-report.md) ──
+   * From 640px up, Manage › Schedule's "Needs your approval" card puts Approve / Edit / Reject on the same row as the
+   * pills, right-aligned and centred on them — and under the pills, right-aligned, when the two cannot fit side by side
+   * (a flex line that wraps, so they never overlap). `actionsNote` (the "why Approve is off" line) sits on the line
+   * below, right-aligned under the buttons, beside the summary line, which stays under the pills.
+   * ⚠️ THE CALLER DECIDES THE WIDTHS: every class here is `sm:`, so below 640px these are plain blocks and the caller's
+   * own `max-sm:hidden` keeps a phone exactly as it was. Without `actions` the markup is exactly what it always was —
+   * Add / Edit event pass neither.
+   */
+  actions?: ReactNode
+  actionsNote?: ReactNode
 }) {
   const t = useT('eventTypes')
   const tp = useT('privateEvents')
@@ -2635,8 +2618,10 @@ export function EventTypeSelect({
    * and hiding it was exactly the bug this section fixes from the other side: the separate "Private
    * event" tick existed because this control could not express Private.
    * ⚠️ IT STILL RETURNS NULL BEFORE THE TYPES HAVE LOADED, so the form does not flash a Standard-only
-   * row and then grow. */
-  if (!ready) return null
+   * row and then grow.
+   * ⚠️ …EXCEPT FOR THE CALLER'S BUTTONS: the approval card has no other Approve from 640px up, so while the types load
+   * they are shown on their own, right-aligned, and the pills arrive beside them. */
+  if (!ready) return actions ? <div>{actions}{actionsNote}</div> : null
 
   const selected = types.find(t => t.id === value) ?? null
   const isUsual = !!usual && usual === (value ?? null)
@@ -2668,28 +2653,51 @@ export function EventTypeSelect({
     </button>
   )
 
+  const pills = (
+    <div role="radiogroup" aria-labelledby="event-type-pills-label"
+      data-event-type-pills className="flex flex-wrap gap-1.5">
+      {pill('standard', t('standard'), value === null, 'standard', () => onChange(null))}
+      {/* 🔴 PRIVATE IS SECOND, STRAIGHT AFTER STANDARD — the same position it has on the grid, so a
+        * truck finds it in the same place on both screens. */}
+      {privateType && pill(privateType.id, privateType.name, privateChosen, 'private', () => onChange(privateType.id))}
+      {customTypes.map(t => pill(t.id, t.name, value === t.id, 'custom', () => onChange(t.id)))}
+    </div>
+  )
+  /* The "(usual for this place)" hint, and a one-line summary of what the type changes. */
+  const summary = (extra: string) => (
+    <p className={`mt-1 text-xs text-slate-500${extra ? ` ${extra}` : ''}`}>
+      {isUsual && (
+        <span className="font-semibold text-slate-600">
+          {`${t('select.usual', { name: selected ? selected.name : t('standard') })} `}
+        </span>
+      )}
+      {!privateChosen && summariseType(selected, summaryWords(t))}
+    </p>
+  )
+
   return (
     <div data-event-type-select>
       {/* ⚠️ A `radiogroup`, NOT A LIST OF BUTTONS. Exactly one is selected, which is what a radio group
         * means — and it is what makes the control reachable with arrow keys rather than only by tap. */}
       <p className="mb-1 block text-xs font-bold text-slate-600" id="event-type-pills-label">{t('select.label')}</p>
-      <div role="radiogroup" aria-labelledby="event-type-pills-label"
-        data-event-type-pills className="flex flex-wrap gap-1.5">
-        {pill('standard', t('standard'), value === null, 'standard', () => onChange(null))}
-        {/* 🔴 PRIVATE IS SECOND, STRAIGHT AFTER STANDARD — the same position it has on the grid, so a
-          * truck finds it in the same place on both screens. */}
-        {privateType && pill(privateType.id, privateType.name, privateChosen, 'private', () => onChange(privateType.id))}
-        {customTypes.map(t => pill(t.id, t.name, value === t.id, 'custom', () => onChange(t.id)))}
-      </div>
-      {/* The "(usual for this place)" hint, and a one-line summary of what the type changes. */}
-      <p className="mt-1 text-xs text-slate-500">
-        {isUsual && (
-          <span className="font-semibold text-slate-600">
-            {`${t('select.usual', { name: selected ? selected.name : t('standard') })} `}
-          </span>
-        )}
-        {!privateChosen && summariseType(selected, summaryWords(t))}
-      </p>
+      {actions ? (
+        /* The pills and the caller's buttons share one wrapping flex line (centred on each other); the summary and the
+         * caller's note share the next. Below 640px all of it is plain blocks — the markup below, as it always was. */
+        <div className="sm:flex sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1" data-event-type-row>
+          {pills}
+          <div className="sm:ml-auto">{actions}</div>
+          {/* An empty summary (Private chosen, no "usual" hint) with no note is no line at all from 640px up. */}
+          <div className={`sm:basis-full sm:flex sm:items-start sm:gap-x-3${privateChosen && !isUsual && !actionsNote ? ' sm:hidden' : ''}`}>
+            {summary('sm:mt-0 sm:flex-1 sm:min-w-0')}
+            {actionsNote && <div className="sm:ml-auto sm:text-right">{actionsNote}</div>}
+          </div>
+        </div>
+      ) : (
+        <>
+          {pills}
+          {summary('')}
+        </>
+      )}
 
       {/* ══ 🔴 THE PURPLE PANEL, DIRECTLY BELOW THE PILLS (5 October 2026) ═══════════════════════════
         * ⛔ THIS REPLACES THE SEPARATE "Private event" TICK, AND THAT TICK WAS THE BUG. The dropdown

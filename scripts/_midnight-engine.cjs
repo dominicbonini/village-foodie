@@ -45,6 +45,9 @@ function tables(FIX, cc, ev, over = {}) {
     orders: (over.orders || []).map((o, i) => ({ id: i + 1, truck_id: 'test-truck', event_id: 'ev-1', event_date: FIX.EVENT_DATE, status: 'confirmed', created_at: `2026-09-30T10:0${i}:00Z`, deals: null, ...o })),
     collection_times: [], production_slot_usage: [], order_payments: [], truck_users: [], van_devices: [], booking_locks: [],
     modifier_groups: [], modifier_options: [], item_modifier_groups: [], bundles_db: [], discount_codes_db: [], order_drafts: [], event_option_stock: [],
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan catalogue (FIX.planTables — the seeded
+    // plans / plan_prices / plan_features), which /api/dashboard (plan_blocks) and the order routes (truckCan) now reads; fixture input, never recorded.
+    ...FIX.planTables(path.resolve(__dirname, '..')),
   }
 }
 

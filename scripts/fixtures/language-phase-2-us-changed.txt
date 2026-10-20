@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1360 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2149 US views; 1381 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -15,48 +15,53 @@
 1a/orderPage/US|menuEnded	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
 1a/orderPage/US|menuPrivate	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
 1a/orderPage/US|multiEvent	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line
-1a/orderPage/US|basket	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
-1a/orderPage/US|basketExpanded	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer + words
-1a/orderPage/US|discounted	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer + words
-1a/orderPage/US|itemModal	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
-1a/orderPage/US|itemModalEmpty	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
-1a/orderPage/US|dealModal	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
-1a/orderPage/US|sheet	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetCard	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetHatch	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetTip15	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetTipOther	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetNoCard	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetSlots	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetSlotsLoading	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetPhone	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|notices	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|paymentFailed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|submitting	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|payReady	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|payFailed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|payProcessing	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|submittedAuto	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/orderPage/US|submittedChanged	code: P2-us-clock+us-layout-fix-1-nbsp + words
+1a/orderPage/US|basket	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
+1a/orderPage/US|basketExpanded	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+legal-followups-service-fee-notice + words
+1a/orderPage/US|discounted	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+legal-followups-service-fee-notice + words
+1a/orderPage/US|itemModal	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
+1a/orderPage/US|itemModalEmpty	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
+1a/orderPage/US|dealModal	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheet	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetCard	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetHatch	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetTip15	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetTipOther	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetNoCard	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetSlots	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetSlotsLoading	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetPhone	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|notices	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|paymentFailed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|submitting	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|payReady	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|payFailed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|payProcessing	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|submitted	code: legal-followups-privacy-link
+1a/orderPage/US|submittedAuto	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/orderPage/US|submittedChanged	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/orderPage/US|submittedAsap	code: legal-followups-privacy-link
+1a/orderPage/US|submittedPreferred	code: legal-followups-privacy-link
 1a/orderPage/US|confirmLoading	words
-1a/orderPage/US|confirmPaid	words
-1a/orderPage/US|confirmCancelled	words
+1a/orderPage/US|confirmPaid	code: legal-followups-privacy-link + words
+1a/orderPage/US|confirmPending	code: legal-followups-privacy-link
+1a/orderPage/US|confirmAsap	code: legal-followups-privacy-link
+1a/orderPage/US|confirmCancelled	code: legal-followups-privacy-link + words
 1a/orderPage/US|confirmErrCancelled	words
 1a/orderPage/US|confirmMissing	words
-1a/orderPage/US|payFormFailed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|payAuthorising	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|submittedFallback	words
+1a/orderPage/US|payFormFailed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|payAuthorising	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|submittedFallback	code: legal-followups-privacy-link + words
 1a/orderPage/US|privateNamed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
 1a/orderPage/US|privateUnnamed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
 1a/orderPage/US|closedAtTime	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
 1a/orderPage/US|demoClosed	words
-1a/orderPage/US|itemModalEdit	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
-1a/orderPage/US|itemModalUpsell	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line + words
-1a/orderPage/US|sheetEmailError	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetNoTimeSelection	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetChosen	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|sheetDiscount	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
-1a/orderPage/US|paymentFailedUrl	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer + words
+1a/orderPage/US|itemModalEdit	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
+1a/orderPage/US|itemModalUpsell	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetEmailError	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetNoTimeSelection	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetChosen	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|sheetDiscount	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
+1a/orderPage/US|paymentFailedUrl	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice + words
 1a/statusPage/US|loading	words
 1a/statusPage/US|pending	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-11-pickup-row
 1a/statusPage/US|confirmed	code: P2-us-clock+us-layout-fix-1-nbsp+us-layout-fix-11-pickup-row
@@ -77,37 +82,37 @@
 1a/shared/dealSlots|US|allFilledUnmet	words
 1a/shared/dealSlots|US|units	words
 1a/shared/dealSlots|US|unitsSaving	words
-1a/emails/confirm|US|plain	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|auto	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|pendingSlot	words
-1a/emails/confirm|US|asap	words
-1a/emails/confirm|US|changed	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|adjusted	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|held	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|captured	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|heldState	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|heldShort	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|hatch	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|unknown	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|partPaid	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|partPaidNoFig	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|contactWa	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|contactPhone	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|contactEmail	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|social	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|noNotes	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|noVenue	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|noCancel	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|cutoff0	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|noBase	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|ready	words
-1a/emails/confirm|US|readyCaptured	words
-1a/emails/confirm|US|readyHeldShort	words
-1a/emails/confirm|US|readyPartPaid	words
-1a/emails/confirm|US|readyUnknown	words
-1a/emails/confirm|US|readyHatch	words
-1a/emails/confirm|US|noDeals	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/emails/confirm|US|oneItem	code: P2-us-clock+us-layout-fix-1-nbsp + words
+1a/emails/confirm|US|plain	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|auto	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|pendingSlot	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|asap	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|changed	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|adjusted	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|held	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|captured	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|heldState	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|heldShort	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|hatch	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|unknown	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|partPaid	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|partPaidNoFig	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|contactWa	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|contactPhone	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|contactEmail	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|social	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|noNotes	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|noVenue	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|noCancel	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|cutoff0	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|noBase	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|ready	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|readyCaptured	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|readyHeldShort	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|readyPartPaid	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|readyUnknown	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|readyHatch	code: legal-followups-privacy-link + words
+1a/emails/confirm|US|noDeals	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/emails/confirm|US|oneItem	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
 1a/emails/note|US|held_short|figures	words
 1a/emails/note|US|held_short|noHeld	words
 1a/emails/note|US|held_short|none	words
@@ -122,30 +127,32 @@
 1a/emails/note|US|part_paid|none	words
 1a/emails/cancelSentence|US|held|{}	words
 1a/emails/cancelSentence|US|held_short|{}	words
-1a/emails/sent|US|2	words
-1a/emails/sent|US|3	words
-1a/emails/sent|US|4	words
-1a/emails/sent|US|5	words
-1a/emails/sent|US|6	words
-1a/emails/sent|US|7	words
-1a/emails/sent|US|8	words
+1a/emails/sent|US|0	code: legal-followups-privacy-link
+1a/emails/sent|US|1	code: legal-followups-privacy-link
+1a/emails/sent|US|2	code: legal-followups-privacy-link + words
+1a/emails/sent|US|3	code: legal-followups-privacy-link + words
+1a/emails/sent|US|4	code: legal-followups-privacy-link + words
+1a/emails/sent|US|5	code: legal-followups-privacy-link + words
+1a/emails/sent|US|6	code: legal-followups-privacy-link + words
+1a/emails/sent|US|7	code: legal-followups-privacy-link + words
+1a/emails/sent|US|8	code: legal-followups-privacy-link + words
 1a/whatsapp/US|menuDeterministic	words
 1a/api/US|submit|private	words
-1a/api/US|submit|soldOutItem	words
-1a/api/US|submit|placed	code: P2-us-clock+us-layout-fix-1-nbsp + words
+1a/api/US|submit|soldOutItem	code: legal-followups-privacy-link + words
+1a/api/US|submit|placed	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
 1a/api/US|cancel|tooLateStatus	words
 1a/api/US|cancel|cutoff	words
-1a/api/US|cancel|ok	code: us-rehearsal-fix-cancel-payment-state + words
-1a/api/US|action|confirm	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/api/US|action|reject	words
-1a/api/US|action|rejectNoReason	words
-1a/api/US|action|cancel	words
-1a/api/US|action|cancelRefunded	words
-1a/api/US|action|cancelDeclined	words
-1a/api/US|action|ready	words
-1a/api/US|action|edit	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/api/US|action|editSame	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1a/api/US|action|adjustSlot	code: P2-us-clock+us-layout-fix-1-nbsp + words
+1a/api/US|cancel|ok	code: us-rehearsal-fix-cancel-payment-state+legal-followups-privacy-link + words
+1a/api/US|action|confirm	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/api/US|action|reject	code: legal-followups-privacy-link + words
+1a/api/US|action|rejectNoReason	code: legal-followups-privacy-link + words
+1a/api/US|action|cancel	code: legal-followups-privacy-link + words
+1a/api/US|action|cancelRefunded	code: legal-followups-privacy-link + words
+1a/api/US|action|cancelDeclined	code: legal-followups-privacy-link + words
+1a/api/US|action|ready	code: legal-followups-privacy-link + words
+1a/api/US|action|edit	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/api/US|action|editSame	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
+1a/api/US|action|adjustSlot	code: P2-us-clock+us-layout-fix-1-nbsp+legal-followups-privacy-link + words
 1b/api/US|action|conflict	words
 1b/api/US|action|itemAvail|noItem	words
 1b/api/US|action|itemAvail|noEvent	words
@@ -699,22 +706,22 @@
 1b/dashboard/US|prepAsapLater	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|addTab	code: P2-us-clock+us-layout-fix-1-nbsp
 1b/dashboard/US|addTabNoMenu	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|offline	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|saving	code: P2-dashboard-off-since+P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|buzzer	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|scroll	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|offlineProtection	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|offlineNoAuto	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|intervalsOverride	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|intervalsEventOnly	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|intervalsVanSplit	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|intervalsUnavailable	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|capacity	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|capacity1	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|noVan	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings|noEvent	words
-1b/dashboard/US|settings|privateLink	code: P2-us-clock+us-layout-fix-1-nbsp + words
+1b/dashboard/US|settings	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|offline	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|saving	code: P2-dashboard-off-since+P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|buzzer	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|scroll	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|offlineProtection	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|offlineNoAuto	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|intervalsOverride	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|intervalsEventOnly	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|intervalsVanSplit	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|intervalsUnavailable	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|capacity	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|capacity1	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|noVan	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|noEvent	code: plans-printing-settings-props + words
+1b/dashboard/US|settings|privateLink	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
 1b/dashboard/US|stock	code: P2-us-clock+us-layout-fix-1-nbsp + words
 1b/dashboard/US|stock|options	code: P2-us-clock+us-layout-fix-1-nbsp + words
 1b/dashboard/US|stock|priceEditing	code: P2-us-clock+us-layout-fix-1-nbsp + words
@@ -1096,6 +1103,11 @@
 1c/api/US|setup|zoneBad	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townMissing	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townLong	code: 1d-setup-trade-area-codes
+1c/api/US|signup|gateAdmin	code: legal-followups-terms-version+pricing-tidy-terms-version
+1c/api/US|signup|limiterDown	code: legal-followups-terms-version+pricing-tidy-terms-version
+1c/api/US|signup|verifyRowFails	code: legal-followups-terms-version+pricing-tidy-terms-version
+1c/api/US|signup|ok	code: legal-followups-terms-version+pricing-tidy-terms-version
+1c/api/US|signup|okPlain	code: legal-followups-terms-version+pricing-tidy-terms-version
 1c/api/US|cancel-email-change|noChangeId	words
 1c/api/US|change-email|brevoFails	words
 1c/api/US|change-email|ok	words
@@ -1105,6 +1117,8 @@
 1c/api/US|resend-verification|brevoFails	words
 1c/api/US|resend-verification|ok	words
 1c/api/US|reset-password|short	words
+1c/api/US|verify-signup|okNoTruck	code: pricing-b-verify-signup-trial-months
+1c/api/US|verify-signup|okTruck	code: pricing-b-verify-signup-trial-months
 1c/api/US|save-email|ok	code: P2-save-email-date-US + words
 1c/api/US|save-email|okBySlug	code: P2-save-email-date-US + words
 1c/api/US|save-email|okOneDay	code: P2-save-email-date-US + words
@@ -1259,6 +1273,9 @@
 1c/demo/US|loop|admin	words
 1c/demo/US|loop|sample	words
 1c/demo/US|loop|ambiguous	words
+1c/demo/US|rows|return|build	code: plans-demo-batch-override
+1c/demo/US|rows|return|visit	code: plans-demo-batch-override
+1c/demo/US|rows|return|restart	code: plans-demo-batch-override
 1c/goLive/US|check|unverifiedOne	words
 1c/goLive/US|check|unverifiedOneOfOne	words
 1c/goLive/US|check|noVan	words
@@ -1298,14 +1315,17 @@
 1c/setup/US|page|identity|noCountries	words
 1c/setup/US|step|allErrors	code: 1d-setup-step-fixture
 1c/setup/US|price|cell|big	code: us-polish-thousands-separators
-1c/setup/US|provision|operator|minimal	words
-1c/setup/US|provision|operator|signup	words
-1c/setup/US|provision|operator|whatsapp	words
-1c/setup/US|provision|operator|regionCode	words
+1c/setup/US|provision|operator|minimal	code: plans-a2-trial-expires-at + words
+1c/setup/US|provision|operator|signup	code: plans-a2-trial-expires-at + words
+1c/setup/US|provision|operator|whatsapp	code: plans-a2-trial-expires-at + words
+1c/setup/US|provision|operator|regionCode	code: plans-a2-trial-expires-at + words
 1c/setup/US|provision|operator|public	words
-1c/setup/US|provision|operator|otherCuisine	words
-1c/setup/US|provision|demo	words
-1c/setup/US|provision|demo|seeded	words
+1c/setup/US|provision|operator|van	code: plans-a2-trial-expires-at
+1c/setup/US|provision|operator|noVan	code: plans-a2-trial-expires-at
+1c/setup/US|provision|operator|otherCuisine	code: plans-a2-trial-expires-at + words
+1c/setup/US|provision|demo	code: plans-demo-batch-override + words
+1c/setup/US|provision|demo|seeded	code: plans-demo-batch-override + words
+1c/setup/US|provision|refuse|plan	code: plans-invalid-plan-list
 2/extra/US|preorder|0|before|same	code: P2-preorder-US+us-layout-fix-1-nbsp
 2/extra/US|preorder|0|before|dayBefore	code: P2-preorder-US+us-layout-fix-1-nbsp
 2/extra/US|preorder|0|before|september	code: P2-preorder-US+us-layout-fix-1-nbsp
@@ -1358,5 +1378,6 @@
 2/extra/US|rows|demo|burgers	code: P2-demo-US + words
 2/extra/US|rows|demo|curries	code: P2-demo-US + words
 2/extra/US|rows|demo|outreach	code: P2-demo-US + words
-2/extra/US|rows|truck|operator	words
-2/extra/US|rows|truck|demo	words
+2/extra/US|rows|truck|operator	code: plans-a2-trial-expires-at + words
+2/extra/US|rows|truck|namedVan	code: plans-a2-trial-expires-at
+2/extra/US|rows|truck|demo	code: plans-demo-batch-override + words

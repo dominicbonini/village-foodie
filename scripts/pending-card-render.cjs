@@ -14,7 +14,10 @@
 // compiled CSS, and measures:
 //   1. the chooser's box does not intersect the details' box, and comes BELOW them (top ≥ details bottom);
 //   2. nothing in the card is wider than the card, and the page does not scroll sideways;
-//   3. the order: details → chooser → warnings → Approve / Edit / Reject (one row, last, at every width);
+//   3. the order: details → chooser → warnings → Approve / Edit / Reject (one row, last) below 640px; from 640px up
+//      Approve / Edit / Reject are INSIDE the chooser (on the chips' row) and every warning comes after the chooser —
+//      ⚠️ RE-PINNED (pending-card buttons, 19 October 2026, docs/pending-card-buttons-report.md; measured in full by
+//      scripts/pending-card-buttons.cjs);
 //   4. a PRIVATE pending event shows no "We guessed this location" box and no "No location yet" box; a STANDARD
 //      pending event with a guessed venue shows the guessed box exactly as before;
 //   5. Approve is enabled for a private event once it has times, disabled without — and then the card SAYS why (a
@@ -137,8 +140,15 @@ async function main() {
         t(`${L} · nothing sticks out of the card`, c.overflowRight <= 0.5, `${c.overflowRight}px past the card's right edge`)
         t(`${L} · the chooser spans the card's content width`, ch.w >= c.card.w - 2 * 16 - 1, `chooser ${ch.w} vs card ${c.card.w}`)
         t(`${L} · exactly one visible Approve`, c.approve.length === 1, `${c.approve.length}`)
-        if (c.approve.length === 1) t(`${L} · Approve comes after the chooser`, c.approve[0].box.t >= ch.b - 0.5, `approve top ${c.approve[0].box.t} < chooser bottom ${ch.b}`)
-        if (c.guessedBox && c.approve.length === 1) t(`${L} · the warning comes before Approve`, c.guessedBox.t <= c.approve[0].box.t)
+        // ⚠️ RE-PINNED (pending-card buttons, 19 October 2026): from 640px up Approve sits on the chips' row, inside the
+        // chooser, and the warnings follow the chooser; below 640px the order is exactly as it was.
+        if (w < 640) {
+          if (c.approve.length === 1) t(`${L} · Approve comes after the chooser`, c.approve[0].box.t >= ch.b - 0.5, `approve top ${c.approve[0].box.t} < chooser bottom ${ch.b}`)
+          if (c.guessedBox && c.approve.length === 1) t(`${L} · the warning comes before Approve`, c.guessedBox.t <= c.approve[0].box.t)
+        } else {
+          if (c.approve.length === 1) { const a = c.approve[0].box; t(`${L} · Approve is inside the chooser (the chips' row)`, a.t >= ch.t - 0.5 && a.b <= ch.b + 0.5 && a.r <= ch.r + 0.5, `approve ${JSON.stringify(a)} · chooser ${JSON.stringify(ch)}`) }
+          if (c.guessedBox) t(`${L} · the warning comes after the chooser`, c.guessedBox.t >= ch.b - 0.5)
+        }
       })
       const [pNo, pTimes, std, sNo] = m.cards
       if (pNo) {

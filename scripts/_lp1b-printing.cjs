@@ -63,6 +63,9 @@ async function views(ctx) {
     "export { PrinterTypeChoice } from '@/components/printing/PrinterTypeChoice'",
     "export { TicketPreview } from '@/components/printing/TicketPreview'",
     ...(AFTER ? ["export * as PT from '@/lib/printing/printerText'"] : []),
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): PrintingSettings takes `features` (a FeatureAccessView,
+    // lib/useFeatures.ts) in place of `featureOverrides` / `plan` / `trialExpiresAt`; the card builds it from the same overrides.
+    ...(require('fs').existsSync(require('path').join(ctx.REPO, 'lib/useFeatures.ts')) ? ["export { featureAccessView } from '@/lib/useFeatures'"] : []),
   ].join('\n')
   const SETTINGS_STATES = ['ready', 'enabled', 'printer', 'lead', 'paper', 'expanded', 'scanning', 'found', 'pairingError', 'availability',
     'localConnected', 'localName', 'connectingId', 'showOther', 'kind', 'netAddress', 'netInfo', 'netGuard', 'netBusy', 'netMsg', 'netOk', 'netAvailability']
@@ -210,6 +213,13 @@ async function views(ctx) {
   const card = (state, props = {}) => {
     const p = { plan: 'max', featureOverrides: { ticket_printing: true }, trialExpiresAt: null, mode: 'lead_time', onChangeMode: async () => {},
       connected: false, waitingCount: 0, time: GB.time, ...props }
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the same overrides, handed as the access view the card
+    // now reads (no catalogue, no plan_blocks → the override alone decides, exactly as BEFORE). `planBlocks` (AFTER only)
+    // adds the server's plan_blocks, for the one new view where the PLAN switches printing off.
+    if (m.featureAccessView) {
+      const { featureOverrides, plan, trialExpiresAt, planBlocks, ...rest } = p
+      return html({ ready: true, enabled: true, ...state }, h(m.PrintingSettings, { ...rest, features: m.featureAccessView({ feature_overrides: featureOverrides, plan_blocks: planBlocks ?? null }, null, 'GB') }))
+    }
     return html({ ready: true, enabled: true, ...state }, h(m.PrintingSettings, p))
   }
   const det = (before, code) => (AFTER ? code : before)   // a statusDetail prop: the sentence BEFORE, the code AFTER
@@ -284,6 +294,9 @@ async function views(ctx) {
   S.netUnauthorised = card({ kind: 'net', netInfo: info, netGuard: 'ok', netAvailability: 'unauthorised' })
   S.netUnsupported = card({ kind: 'net', netInfo: info, netGuard: 'ok', netAvailability: 'unsupported' })
   S.netMoveFail = card({ kind: 'net', netInfo: info, netGuard: 'other', netMsg: 'Could not move printing', __after: { netMsg: { code: 'couldNotMove' } } })
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): NEW view (no BEFORE) — the truck's PLAN switches ticket
+  // printing off (no override) → the one upgrade prompt (components/PlanPrompt.tsx) instead of the card; checked in `after`.
+  if (m.featureAccessView) S.planOff = card({}, { featureOverrides: {}, planBlocks: { ticket_printing: { upgradeTo: null } } })
   for (const [k, v] of Object.entries(S)) out[`card|${k}`] = v
   // The type choice, alone: present, and absent on a binary without the plugin.
   out['type|ble'] = html(null, h(m.PrinterTypeChoice, { kind: 'ble', onChoose() {} }))
@@ -308,4 +321,13 @@ async function views(ctx) {
   return out
 }
 
-module.exports = { views }
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan-off card is the upgrade prompt, not the card,
+// and not empty (an override-off card — `planNull` — stays empty, as BEFORE).
+async function after({ t, head, views }) {
+  head('printing · Stage A2 — a plan without ticket printing shows the upgrade prompt')
+  const v = views['card|planOff']
+  t('card|planOff rendered (no error)', typeof v === 'string' && !v.startsWith('ERROR'), String(v).slice(0, 300))
+  t('card|planOff is the prompt, not the printing card', typeof v === 'string' && v.length > 0 && v !== views['card|bleIdle'] && !v.includes('MUNBYN') && v !== views['card|planNull'] && /Kitchen ticket printing is not on your plan\./.test(v), String(v).slice(0, 400))
+}
+
+module.exports = { views, after }

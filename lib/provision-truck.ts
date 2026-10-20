@@ -13,7 +13,8 @@
 
 import { randomBytes } from 'crypto'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Plan } from '@/lib/features'
+import { isPlanKey, signupDefaultPlan, demoPlan, planByKey, trialEndFor, type PlanKey } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { createSlug } from '@/lib/utils'
 import { deleteTruckCascade } from '@/lib/delete-truck'
 import { DEMO_PREFIX } from '@/lib/demo'
@@ -85,7 +86,11 @@ export type ProvisionKind = 'operator' | 'demo'
 
 interface ProvisionProfile {
   identity: 'readable' | 'random'
-  plan: Plan
+  /** 🔴 WHICH PLAN, BY ROLE — never by name (plans-data-model Stage A, 19 October 2026). 'signupDefault' is the plan
+   *  flagged plans.is_signup_default; 'demo' the one flagged plans.is_demo. The table decides the key. */
+  planRole: 'signupDefault' | 'demo'
+  /** Per-truck feature overrides written at creation (absent → the column default, `{}`). */
+  featureOverrides?: Record<string, boolean>
   nameRequired: boolean
   truckOrderEmailEnabled: boolean
   allergenDisplayMode: 'per_dish' | 'card' | 'both' | null
@@ -172,10 +177,11 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     // longer needed, and 'demo' cost more than it saved — it is a prospect-sandbox value, so a
     // signed-up operator sat on a plan the Billing tab has no branch for and rendered EMPTY
     // (docs/billing-tab-report.md).
-    // ⚠️ ACCESS IS UNCHANGED BY THIS SWITCH. PLAN_FEATURES.demo is `new Set(TRIAL_FEATURES)` — the
-    // same set 'trial' grants — so a self-serve operator can do exactly what they could before.
+    // ⚠️ ACCESS NEVER DEPENDED ON THIS CHOICE, and since Stage A no plan gates any feature at all (lib/features.ts).
     // ⚠️ THE DEMO PROFILE BELOW STAYS ON 'demo'. A prospect's throwaway truck is not a signup.
-    plan: 'trial',
+    // 🔴 SINCE STAGE A (19 October 2026) THE KEY IS NOT WRITTEN HERE: the signup-default plan comes from the table
+    // (plans.is_signup_default — 'trial' as seeded), so this file names no plan.
+    planRole: 'signupDefault',
     nameRequired: true,
     truckOrderEmailEnabled: true,
     allergenDisplayMode: null,    // operator chooses in the wizard
@@ -214,7 +220,12 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
   },
   demo: {
     identity: 'random',
-    plan: 'demo',
+    // The plan flagged plans.is_demo ('demo' as seeded) — by role, not by name (Stage A).
+    planRole: 'demo',
+    // 🔴 BATCH RESERVATIONS ON FOR A DEMO, AS BEFORE — written as the per-truck override now, because
+    // resolveBatchReservations no longer names the demo plan (lib/features.ts; 20261024_plans.sql backfilled
+    // the existing demo trucks the same way).
+    featureOverrides: { batch_reservations: true },
     // A demo menu is short and the whole story is one uninterrupted walk-up order, so "One page" shows
     // the prospect the entire menu without a category tap. 🔴 DEMO ONLY — the operator profile below
     // declares nothing, so a real truck still takes the column default 'tabs'.
@@ -269,7 +280,7 @@ export interface ProvisionTruckOptions {
   country: string
   name?: string
   slug?: string
-  plan?: Plan
+  plan?: PlanKey
   visibility?: 'hidden' | 'public'
   contactEmail?: string | null
   // ── P2/P3: CONTACT DETAILS ARE PER-SIGNUP INPUTS, NOT PROFILE CONSTANTS ─────────────────────────
@@ -288,6 +299,8 @@ export interface ProvisionTruckOptions {
   van?: ProvisionVanOptions | false
   /** Phase 2D-1 — the truck's zone. Must be one of its country's `timezones`; absent → the country's default. */
   timezone?: string | null
+  /** The provisioning moment (default: now) — the trial's end date counts from it. Harnesses pass a fixed instant. */
+  now?: Date
   /** Phase 2D-1 — "Where's your truck based?": base town (+ point when picked) and travel distance, as the
    *  stored column names. Checked HERE with lib/trade-area.ts (the writer validates); absent → those columns
    *  are not written at all, so admin and demo creates are exactly as before. */
@@ -299,7 +312,7 @@ export interface ProvisionResult {
     id: string
     slug: string
     name: string
-    plan: Plan
+    plan: PlanKey
     dashboard_token: string
     active: boolean
     excluded: boolean
@@ -330,7 +343,6 @@ export class ProvisionError extends Error {
   }
 }
 
-const VALID_PLANS: Plan[] = ['starter', 'pro', 'max', 'trial', 'demo', 'tester']
 const MAX_INSERT_ATTEMPTS = 5
 
 interface Identity { id: string; slug: string; dashboard_token: string }
@@ -389,10 +401,13 @@ export async function provisionTruck(
     throw new ProvisionError('validation', 'name is required for an operator truck')
   }
 
-  const plan = opts.plan ?? profile.plan
-  if (!VALID_PLANS.includes(plan)) {
-    // Caught app-side so the caller gets a clear message instead of a raw 23514 trucks_plan_check violation.
-    throw new ProvisionError('validation', `Invalid plan "${plan}" — must be one of ${VALID_PLANS.join(', ')}`)
+  // 🔴 THE PLAN COMES FROM THE TABLE (Stage A): the profile's role picks the signup-default or the demo plan, and an
+  // explicit `opts.plan` (admin create) is validated against the active plans. Caught app-side so the caller gets a
+  // clear message instead of a raw 23503 trucks_plan_fkey violation.
+  const catalog = await getPlanCatalog()
+  const plan = opts.plan ?? (profile.planRole === 'demo' ? demoPlan(catalog) : signupDefaultPlan(catalog)).key
+  if (!isPlanKey(catalog, plan, { activeOnly: true })) {
+    throw new ProvisionError('validation', `Invalid plan "${plan}" — must be one of ${catalog.plans.filter(p => p.active).map(p => p.key).join(', ')}`)
   }
 
   // Fail-safe: hidden unless a human explicitly asks for public. A real truck goes public at NOMINATION
@@ -427,6 +442,10 @@ export async function provisionTruck(
     throw new ProvisionError('validation', tradeAreaWords(TRADE_AREA_ERRORS.zone(countrySettings.name)))
   }
   const truckTimezone = tradeArea?.timezone ?? opts.timezone ?? countrySettings.defaultTimezone
+  /* 🔴 THE TRIAL STARTS AT SIGNUP (Stage A2, Dominic 20 October 2026): a truck provisioned on a TRIAL plan ends it
+   * `plans.trial_months` after this moment, at the end of that day in the truck's time zone (lib/plans.ts trialEndFor).
+   * Any other plan (the demo plan, an admin-chosen paid plan), or a trial plan with no length, gets no end date. */
+  const trialEndsAt = trialEndFor(planByKey(catalog, plan)!, opts.now ?? new Date(), truckTimezone)
 
   const visibility = opts.visibility ?? 'hidden'
   const visibilityCols = visibility === 'public' ? PUBLIC_VISIBILITY : HIDDEN_VISIBILITY
@@ -481,6 +500,9 @@ export async function provisionTruck(
         sheet_id: '',
         active: true,
         plan,
+        // Written only when the profile declares overrides (the demo's batch reservations), so an operator create is
+        // byte-for-byte as before.
+        ...(profile.featureOverrides ? { feature_overrides: profile.featureOverrides } : {}),
         // 🔴 WRITTEN EXPLICITLY FROM THE COUNTRY'S SETTINGS, never left to the column defaults.
         country: countrySettings.countryCode,
         currency: countrySettings.currency,
@@ -493,10 +515,10 @@ export async function provisionTruck(
           // D22 (Phase 3): a 'zip_state' country's state code — the key exists only for one.
           ...('base_region_code' in tradeArea ? { base_region_code: tradeArea.base_region_code ?? null } : {}),
         } : {}),
-        // 🔴 STAYS NULL, and now MEANS something: "trial not started". Nomination — the operator
-        // choosing which event starts it — is what sets a date, and does not exist yet. canAccess
-        // reads NULL as not-started and grants the trial set; a PAST date still denies.
-        trial_expires_at: null,   // nomination sets this (§8)
+        // 🔴 THE PLAN'S END DATE (the column name is historical — lib/plans.ts planEndDate): signup + the trial plan's
+        // trial_months, at the end of that day in the truck's zone; NULL for a plan with no trial length. A past date
+        // resolves to the expiry-fallback plan, with its feature switches.
+        trial_expires_at: trialEndsAt,
         operator_id: null,        // set afterwards by /api/admin/create-operator — a separate concern
         contact_email: opts.contactEmail ?? null,
         // ── P2/P3: THE CONTACT BLOCK ────────────────────────────────────────────────────────────

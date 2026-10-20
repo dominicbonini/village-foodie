@@ -253,9 +253,13 @@ const cardBefore = () => {
       notes: null, slot: '12:30', autoAccepted: true, preferredContactMethod: null, contactPhone: null, whatsappSender: null, allowCancellation: true, cancellationCutoffMins: 30,
       baseUrl: 'https://www.hatchgrab.com', truckSlug: 'test-kitchen', eventDate: '2026-10-25', ...extra })
     const gbVenue = { venueName: 'The Bell', venueTown: 'Castle Hedingham', venuePostcode: 'CO9 3EJ' }
+    // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md): the BEFORE side gains the named
+    // change legal-followups-privacy-link (the " · Privacy" footer link) — scripts/_legal-followups-named.cjs — and nothing else.
+    const LFU = require('./_legal-followups-named.cjs')
+    const named = o => JSON.stringify(o, (_, v) => LFU.emailPrivacy(v))
     for (const fn of ['formatConfirmationEmail', 'formatNewOrderEmail']) {
       const a = EMAIL.A[fn](common('GB', gbVenue)), b = EMAIL.B[fn](common('GB', gbVenue))
-      t(`GB ${fn}: byte-identical to BEFORE (subject, HTML and text)`, JSON.stringify(a) === JSON.stringify(b))
+      t(`GB ${fn}: byte-identical to BEFORE (subject, HTML and text) apart from the named privacy link`, JSON.stringify(a) === named(b))
       const us = EMAIL.A[fn](common('US', { venueName: 'Pier A Park', venueTown: 'Hoboken', venuePostcode: '07030', venueRegion: 'NJ' }))
       const usNo = EMAIL.A[fn](common('US', { venueName: 'Pier A Park', venueTown: 'Hoboken', venuePostcode: '07030' }))
       t(`US ${fn} with a state: "📍 Pier A Park, Hoboken, NJ 07030"`, us.html.includes('📍 Pier A Park, Hoboken, NJ 07030') && (fn === 'formatNewOrderEmail' || us.text.includes('📍 Pier A Park, Hoboken, NJ 07030')), us.html.slice(0, 200))
@@ -265,7 +269,7 @@ const cardBefore = () => {
     sent.length = 0
     await EMAIL.A.sendEventCancellationEmail({ ...cancelArgs, venueName: 'The Bell', village: 'Castle Hedingham', time: GBT })
     await EMAIL.B.sendEventCancellationEmail({ ...cancelArgs, venueName: 'The Bell', village: 'Castle Hedingham', time: GBT })
-    t('GB event-cancellation email: byte-identical to BEFORE', sent.length === 2 && JSON.stringify(sent[0]) === JSON.stringify(sent[1]))
+    t('GB event-cancellation email: byte-identical to BEFORE apart from the named privacy link', sent.length === 2 && JSON.stringify(sent[0]) === named(sent[1]))
     sent.length = 0
     await EMAIL.A.sendEventCancellationEmail({ ...cancelArgs, venueName: 'Pier A Park', village: 'Hoboken', region: 'NJ', time: UST })
     t('US event-cancellation email with a state: "Pier A Park, Hoboken, NJ"', JSON.stringify(sent[0] || {}).includes('Pier A Park, Hoboken, NJ'))

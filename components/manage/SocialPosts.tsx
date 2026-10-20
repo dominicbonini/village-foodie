@@ -63,10 +63,9 @@ import {
  * and still drives `scripts/place-pictures.cjs`. */
 import { EventSetupScreen, EventPostModal, renderPng } from '@/components/manage/EventPost'
 import { FeatureGate } from '@/components/FeatureGate'
-import { WEEKLY_POST_PLAN_REFUSAL } from '@/lib/copy/weeklyPost'
 import { formatYmdShortMonth, type TimeSettings } from '@/lib/time-utils'
 import { useTruckTime } from '@/components/TruckTimeContext'
-import type { Plan } from '@/lib/features'
+import type { PlanKey } from '@/lib/plans'
 /* ══ ⛔ ELEVEN COPY CONSTANTS LEFT THIS IMPORT — 7 October 2026 ════════════════════════════════════
  * They belonged to the pictures library page and to "Post for a place", both of which are gone:
  * `PLACE_POST_BOX_BLURB`, `PLACE_POST_FOOTER_NOTE`, `PLACE_PICTURES_TITLE`/`_BLURB`/
@@ -561,7 +560,7 @@ function ReadyBadge({ ready }: { ready: boolean }) {
  */
 export function SocialPostsPane({ truck, token, area, onArea, manageApi, openEventId, onOpenedEvent, onRequestArea, onFullWidth }: {
   truck: {
-    plan: Plan
+    plan: PlanKey
     feature_overrides: Record<string, boolean> | null
     trial_expires_at: string | null
     name?: string | null
@@ -623,7 +622,7 @@ type View =
  * this pane needs to write through `/api/manage` will want it back. */
 function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, onRequestArea, onFullWidth }: {
   truck: {
-    plan: Plan
+    plan: PlanKey
     feature_overrides: Record<string, boolean> | null
     trial_expires_at: string | null
     name?: string | null
@@ -833,10 +832,7 @@ function SocialPosts({ truck, token, area, onArea, openEventId, onOpenedEvent, o
   const gate = (children: React.ReactNode) => (
     <FeatureGate
       feature="schedule_graphics"
-      plan={truck?.plan}
-      overrides={truck?.feature_overrides}
-      trialExpiresAt={truck?.trial_expires_at}
-      upgradeMessage={WEEKLY_POST_PLAN_REFUSAL}
+      truck={truck}
     >
       {children}
     </FeatureGate>

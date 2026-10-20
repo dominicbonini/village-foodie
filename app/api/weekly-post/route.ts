@@ -13,11 +13,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { canAccess } from '@/lib/features'
+import { featureRefusal } from '@/lib/plan-refusal'
 /* 🔴 THE PLAN SENTENCE, SHARED WITH THE SCREEN. See the note in that file for why it is not declared
  * here: the component needs it too, and a route file cannot be imported into the client bundle. */
 /* ⛔ `WEEKLY_POST_PLAN_REFUSAL` (lib/copy/weeklyPost.ts) IS NO LONGER IMPORTED HERE (Language Phase 1d Part 2): the gate's
- * refusal is the `errorsManage.social_media_plan` code now — the same sentence, byte for byte, in the truck's language. */
+ * refusal is a code — since plans-data-model Stage A, the neutral `errorsManage.feature_switched_off` (no plan sentence). */
 import { scanUrl } from '@/lib/custom-domain/copy'
 import type { Place } from '@/lib/schedule-graphics/places'
 /* 🔴 THE SHARED PLACE RULES, for `social_overview`. `groupEventsByPlace` follows `merged_into_id`, so a
@@ -223,20 +223,12 @@ async function getTruck(token: string): Promise<TruckRow | null> {
  * / `event_render`, the uploads, the caption writes and the font file are all behind it. There is no
  * other entry point.
  */
-function gated(truck: TruckRow, locale: string): NextResponse | null {
-  const ok = canAccess(
-    truck.plan as never,
-    'schedule_graphics' as never,
-    truck.feature_overrides ?? undefined,
-    truck.trial_expires_at ?? undefined,
-  )
-  /* ⚠️ THE SENTENCE NAMES **Pro**, AND IT IS SHARED. `schedule_graphics` is in `PRO_FEATURES` now, so
-   * "The weekly post is on Max" became a lie the moment the key moved — it would send a Starter truck
-   * to buy the wrong plan. ⛔ ONE COPY, IN `lib/copy/weeklyPost.ts`, because this claim was written out
-   * twice once before and both copies were wrong the same way. ⚠️ TRIAL, TESTER AND DEMO ALSO PASS,
-   * because `TRIAL_FEATURES` spreads `MAX_FEATURES`; the sentence names the plan a paying truck buys,
-   * which is what an upgrade prompt is for. */
-  return ok ? null : refuse(locale, 'social_media_plan', 403)
+async function gated(truck: TruckRow, locale: string): Promise<NextResponse | null> {
+  /* 🔴 STAGE A2 (plan-features-config, 20 October 2026): override → the truck's EFFECTIVE plan's switch → allowed. Off by
+   * the plan → `feature_not_on_plan` naming the plan that has Social media posts; off by an override →
+   * `feature_switched_off` (lib/plan-refusal.ts). */
+  const off = await featureRefusal(truck, 'schedule_graphics', locale)
+  return off ? refuse(locale, off.code, 403, off.params as Record<string, string>) : null
 }
 
 async function loadDesign(truckId: string, kind: DesignKind = KIND) {
@@ -955,7 +947,7 @@ export async function GET(req: NextRequest) {
   const truck = await getTruck(token)
   if (!truck) return refuse(DEFAULT_LOCALE, 'invalid_token', 401)
   const locale = await localeForTruck(truck)
-  const blocked = gated(truck, locale)
+  const blocked = await gated(truck, locale)
   if (blocked) return blocked
 
   const id = String(url.searchParams.get('font') ?? '')
@@ -1008,7 +1000,7 @@ export async function POST(req: NextRequest) {
   const truck = await getTruck(token)
   if (!truck) return refuse(DEFAULT_LOCALE, 'invalid_token', 401)
   const locale = await localeForTruck(truck)
-  const blocked = gated(truck, locale)
+  const blocked = await gated(truck, locale)
   if (blocked) return blocked
 
   const action = String(body.action ?? '')

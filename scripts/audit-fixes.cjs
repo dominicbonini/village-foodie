@@ -58,6 +58,10 @@ function menuDb() {
     ],
     modifier_groups: [], modifier_options: [], item_modifier_groups: [], truck_events: [], event_deals: [], truck_vans: [],
     operators: [{ id: 'op-test', stripe_account_id: null, charges_enabled: false }],
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): /api/menu now asks the plan catalogue whether the
+    // truck's plan allows each gated feature (truckCan / payAtHatchOn), so the fake db carries public.plans /
+    // plan_prices / plan_features AS THE MIGRATIONS SEED THEM (fixture input only; never part of the recorded view).
+    ...require('./_lp1c-fixtures.cjs').planTables(),
   })
 }
 async function menuView(path_ = 'test-kitchen', query = '') {
@@ -173,7 +177,18 @@ async function compare() {
   for (const [k, label] of [['menu', 'customer menu (/api/menu/test-kitchen)'], ['menuDashboard', 'dashboard read (/api/menu/test-truck?dashboard=1)']]) {
     ok(!('codes' in A[k].body.menu), `${label}: no "codes" field`)
     ok(!/TENOFF|FIVER/.test(J(A[k].body)), `${label}: no code string anywhere in the response`)
-    ok(J(A[k]) === J(without(B[k], 'codes')), `${label}: otherwise byte-identical to BEFORE (named difference 1)`)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the menu payload's truck gained `preordering_on`
+    // (canAccess('advance_preordering', feature_overrides) — the order page now refuses on it instead of
+    // hasFeature(plan)). Pizza Kitchen has no override, so it is `true`; checked here, then dropped (with its key
+    // position) before the byte-compare. Everything else, `plan` included, is still byte-identical to BEFORE.
+    ok(A[k].body.truck.preordering_on === true, `${label}: truck.preordering_on is true (no override → allowed; Stage A addition)`, A[k].body.truck.preordering_on)
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the truck also gained `pay_at_hatch_on`
+    // (payAtHatchOn — the plan's pay_at_hatch_allowed folded into the online_ordering_pay_at_hatch switch, enforced now).
+    // Pizza Kitchen is on pro (pay_at_hatch_allowed true, no plan_features row, no override) → `true`; checked, then
+    // dropped with preordering_on. ordering_available is NOT dropped — it must still be byte-identical.
+    ok(A[k].body.truck.pay_at_hatch_on === true, `${label}: truck.pay_at_hatch_on is true (pro allows Pay at Hatch; Stage A2 addition)`, A[k].body.truck.pay_at_hatch_on)
+    const aNoPre = JSON.parse(J(A[k])); delete aNoPre.body.truck.preordering_on; delete aNoPre.body.truck.pay_at_hatch_on
+    ok(J(aNoPre) === J(without(B[k], 'codes')), `${label}: otherwise byte-identical to BEFORE (named difference 1)`)
   }
   const page = read('app/trucks/[slug]/order/page.tsx'), menuSrc = read('app/api/menu/[truckId]/route.ts')
   ok(!/menu\.codes/.test(page) && !/applyCode/.test(page) && !/codes: DiscountCode\[\]/.test(page), 'the order page no longer reads menu.codes (its unused code check is gone)')

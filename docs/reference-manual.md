@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.0
+HatchGrab Engineering Reference Manual · V16.1
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.0**
+**Version 16.1**
 
 October 2026
 
@@ -26,21 +26,98 @@ version of the document they were holding.** ⚠️ **Grep before finishing:** `
 
 **⚠️ STANDING RULE — NO AGENT PRINTS A SECRET, AND "just the names" IS NOT A SAFE SHORTCUT (V15.7).** No
 agent may `print`, `cat`, `grep`, `sed` or otherwise emit the contents of any `.env*` file, or any key,
-token or credential, into a transcript. To establish whether a variable is configured, report **"set" or
-"missing"** — never the value. **Precedent (the reason this rule exists):** on 9 October 2026 an agent ran
+token or credential, into a transcript. ~~To establish whether a variable is configured, report **"set" or
+"missing"** — never the value.~~ ⛔ **Corrected V16.1 — no set/missing checks either (the 18 October decision
+at the end of this rule).** **Precedent (the reason this rule exists):** on 9 October 2026 an agent ran
 `sed 's/=.*//'` over `.env.local` intending to list only variable NAMES. `GOOGLE_SHEETS_CREDENTIALS` holds
 multi-line JSON, so the line-wise strip left every continuation line intact and part of a Google
 service-account **private key** was printed into the transcript. ⛔ **THE COMMAND LOOKED SAFE AND WAS NOT**:
 the mistake was reasoning about a file format rather than refusing the file. The key was treated as
 compromised and rotated (new JSON key → `.env.local` and the Vercel Production environment → redeploy →
-delete the old key). ⚠️ **A FILE IS CHECKED FOR A NAME WITH A PARSER THAT EMITS NOTHING**, or it is not
-checked by an agent at all. **Second precedent (V15.9, 15 October 2026):** a "names only" check —
+delete the old key). ~~⚠️ **A FILE IS CHECKED FOR A NAME WITH A PARSER THAT EMITS NOTHING**, or it is not
+checked by an agent at all.~~ ⛔ **Corrected V16.1 — it is not checked by an agent at all (below).** **Second precedent (V15.9, 15 October 2026):** a "names only" check —
 `cut -d= -f1 .env.local | grep -i …` — printed a continuation line of a multi-line value (the Firebase
 service account's `client_email`). Not a key, and nothing was rotated; but it is the same class, from the
-same reasoning, six days later. Check one name at a time with `grep -q "^NAME=." .env.local` and print only
-`set` / `missing`.
+same reasoning, six days later. ~~Check one name at a time with `grep -q "^NAME=." .env.local` and print only
+`set` / `missing`.~~ **Third precedent (V16.1, 18 October 2026, OBSERVED):** a "key names only" listing of
+`.env.local` through a dotenv-style parser mis-split a multi-line JSON credential, and a Google service-account
+**private key** was printed into Cursor's transcript — the same failure as on 15 October. 🔴 **Open:** rotate
+**both** `FCM_SERVICE_ACCOUNT_JSON` and `GOOGLE_SHEETS_CREDENTIALS` (it is not known which one leaked): store each
+as **one line** of JSON in single quotes, update Vercel and any GitHub Actions secret, delete the old keys (§27).
+🔴 **THE RULE NOW (DECIDED 18 Oct):** an agent never opens, parses, lists, loads or tests any `.env*` file in any
+form — including key names and set/missing checks. It may run the project's own commands that load env
+internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.1 — 17–19 October 2026 — **US LAYOUT FIXED, A HIDDEN US TEST TRUCK RUN END TO END, THREE PUBLIC-KEY FUNCTION HOLES CLOSED FOR GOOD, LINK PREVIEWS AND MONEY FORMATTING POLISHED, ONE SET OF LEGAL DOCUMENTS FOR EVERY COUNTRY, AND A DAILY DATA-RETENTION JOB**
+
+- Applies the delta `reference-manual-delta-us-rehearsal-legal.md` (session 17–19 October 2026), drawn from the
+  reports it lists, all in `docs/` (`us-layout-proposal-report.md` … `pending-card-buttons-report.md`).
+- **US layout:** all 22 audit issues are fixed, plus the UK clipping bugs the audit found. UK kitchens keep 6 tickets
+  on a portrait tablet.
+- **US test truck:** a hidden twin, `test-truck-us`, ran the US customer side end to end. It found and fixed a crash
+  in Billing (NULL US prices) and a "Truck not found" page for every newly signed-up truck in any country.
+- **Security:** the 12 Oct revokes had been undone by a hand-run rollback. They were re-applied, along with eight more
+  functions. A new check now stops any migration from leaving a function callable with the public key.
+- **Polish:**
+  - HatchGrab-branded link previews for truck and order pages;
+  - thousands separators on displayed money;
+  - the US state saved from emailed schedules;
+  - refusal words read from codes.
+- **Legal:**
+  - one Terms of Service and one Privacy Policy for every country, plus a Country-specific terms page;
+  - outreach emails carry the company line;
+  - PostHog is cookieless;
+  - a daily job enforces the privacy policy's retention promises.
+
+| What | Where |
+|---|---|
+| US readiness — layout: the 22 issues marked fixed; how it was done, decisions, what changed (incl. the pending-card buttons) | §76.8 (updated in place; new subsections at its end) |
+| **NEW — US readiness — the hidden US test truck** | §76.9 (new, after §76.8) |
+| Security | **NEW §80** — the manual had no section titled "Security". It holds only the one new rule; everything else in the delta's block was already in §35 ("A FUNCTION'S DEFAULT GRANT IS PUBLIC") or the standing rules, and was corrected there in place |
+| Marketing site and SEO — link previews for truck pages | §48 "The landing page and marketing surfaces" (new subsection, at its end) — the manual has no section titled "Marketing site and SEO"; §48 is the marketing site's section |
+| Money formatting | §76.2 "Client-safe formatting", with the `lib/money-format.ts` note (as the delta asks) |
+| Languages — refusals worded from codes | §77.11 (new) |
+| Legal — one set of documents, the product changes, the retention job, open items | §43 "Legal, email and domain" (new subsection, at its end) |
+| Tooling and workflow | §79 (added at its end) |
+| Deploy posture at V16.1 | §49 (the new current block; V16.0's stays below as dated history) |
+| Backlog | §27, new block; the V15.8 and V16.0 blocks corrected in place |
+| Cross-cutting invariants | §35 (35.ai, after 35.ah) |
+
+**OLDER LINES CORRECTED IN PLACE (not left beside the new ones):**
+- The standing rule on secrets (top of the manual) — "report set or missing", "check with a parser that emits nothing"
+  and "check one name at a time with `grep -q`" are struck: no agent checks `.env*` in any form (DECIDED 18 Oct); the
+  18 October incident is its third precedent.
+- §35 "A FUNCTION'S DEFAULT GRANT IS PUBLIC" — "Verified false / false / true" now says it was undone and re-applied
+  on 19 Oct, and is guarded; "OPEN on 19 October" (the eight functions) is now closed, with the 0-rows verify; the
+  migration record names 15 creating migrations; the guard's allow-list is empty.
+- §43 — the V11.45 PostHog strike ("OPEN — nothing has been changed") and the V11.54 three-defects list (items 1 and
+  the analytics half of 2) are marked resolved.
+- §47 — "persistence defaults to cookie plus local storage" corrected to `persistence: 'memory'`.
+- §48 — the V12.6 "privacy policy still contradicted" line; the Open items on the two tinted bands and on truck-page
+  metadata.
+- §52 and §60 — "nothing is appended" now names the company line; §60's refusals list gains the opt-out refusal.
+- §53.8 item 8 — the opt-out line is enforced again.
+- §27 — four analytics-cookie OPEN lines closed; the V15.8 block (revokes migration, legal text per country with a
+  lawyer, the privacy date mismatch, US plan prices) and the V16.0 block (US layout fixes, screens showing `error`,
+  truck-page metadata, thousands separators) corrected.
+- §49 — the V16.0 and V15.9 postures note that the overnight work and `auto-event-scheduler` were deployed on 19 Oct.
+- §76.8 — the issue lists, the six fix directions and the GB problems marked fixed (the "printed" stamp stays open: the
+  delta does not mention it).
+
+**THE DELTA, CHECKED AGAINST THE MANUAL:**
+- **Already stated, so not repeated:** most of the delta's Security block (the cause, the ACL order, the 24-hour logs,
+  the migration file, the guard, "⛔ DO NOT RUN", undo SQL kept out of chat) was in §35 from 19 Oct; the localhost
+  note (§48) and one SQL-editor quirk (V13.7) are pointed to from §79; the first two of its six invariants are pointed
+  to from 35.ai.
+- **Deploy posture, "REPLACE the current block":** the new block is the current one; the V16.0 block stays below it as
+  dated history, as §49's own heading requires ("earlier postures below, each dated").
+- **Backlog "Close":** "the state on emailed schedules" had no backlog line to close. The WhatsApp allergen check stays
+  open, as the delta says.
+- **The "Truck not found" fix** covers trucks with no discovery row. The older §27/§32 entries about a graduated
+  truck's `excluded` shadow row are a different case and were left as they are.
+- Older changelog entries are history and were not edited.
 
 ## V16.0 — 14–17 October 2026 — **LANGUAGES DONE FOR ENGLISH** (UK BASE, US OVERRIDES), MARKETING ON `/uk` AND `/us` WITH A COUNTRY ROUTER, PRIVATE BOOKINGS KEPT OFF VILLAGE FOODIE, EVENTS THAT RUN PAST MIDNIGHT, AND A US LAYOUT AUDIT
 
@@ -15037,8 +15114,8 @@ diagnosis.
 - 🔴 **OPEN — the availability/authentication conflation, all four sites.** Built, unverified,
   undeployed. (Section 12)
 - 🔴 **OPEN — analytics sanitisation, event purge and token rotation, in that order.** (Section 47)
-- 🔴 **OPEN — analytics cookies are set with no consent gate.** Correcting the privacy copy makes it
-  accurate, not compliant.
+- ~~🔴 **OPEN — analytics cookies are set with no consent gate.** Correcting the privacy copy makes it
+  accurate, not compliant.~~ ✅ **CLOSED V16.1 — PostHog is cookieless (`persistence: 'memory'`) and named in the policy (§43).**
 - 🔴 **OPEN — the seed file's delete instructions miss one generation of seeded rows.** (Section 26)
 - 🔴 **OPEN — the tester truck is the one a store reviewer signs into**, and its data has already
   produced a reproducible fault an operator would read as a product defect.
@@ -15070,8 +15147,8 @@ diagnosis.
   therefore conditional on the cache failing **fast**. If it accepts connections and never answers, **all
   sites hang regardless of which direction their handler chose** — so the convention has never been
   tested against the more likely outage mode. §35.
-- ⚠️ **The analytics-cookie contradiction with the published privacy policy remains open** and is
-  unrelated to this work.
+- ~~⚠️ **The analytics-cookie contradiction with the published privacy policy remains open** and is
+  unrelated to this work.~~ ✅ **Closed V16.1 (§43).**
 
 ### Verification debt
 
@@ -15208,8 +15285,8 @@ the rest show what the workstream thought it owed before detection and the wizar
   apex refused before anything is registered · does the record screen name the right provider with the
   right field labels · does a deliberately broken record get caught by the daily check with a useful
   diagnostic · does an abandoned setup get released while a live one is left alone.
-- ⚠️ **The analytics cookie contradiction with the privacy policy is unresolved** and is not an embed
-  problem. §43.
+- ~~⚠️ **The analytics cookie contradiction with the privacy policy is unresolved** and is not an embed
+  problem. §43.~~ ✅ **Closed V16.1 (§43).**
 - ⚠️ **Health monitoring is not built.** Its schema is not designed, and the fallback-stamps finding
   (§35) is its governing constraint.
 - ✅ **DONE V11.50 — the marketing row rename.** It was renamed, moved above kitchen ticket printing,
@@ -15350,9 +15427,10 @@ back. **The three that stay open were never embed problems** (the analytics cook
 never-rendered-in-a-browser debt, the marketing row), and one of those got worse.
 
 
-- 🔴 **THE POSTHOG COOKIE CONTRADICTION WITH `/privacy` IS UNRESOLVED, AND IT IS NOT AN EMBED PROBLEM.**
+- ~~🔴 **THE POSTHOG COOKIE CONTRADICTION WITH `/privacy` IS UNRESOLVED, AND IT IS NOT AN EMBED PROBLEM.**
   The policy says there are no analytics or tracking cookies; the code sets them on every route of both
-  domains with no consent gate. §43. **Nothing has been changed in either.** Also unread: which pageview
+  domains with no consent gate. §43. **Nothing has been changed in either.**~~ ✅ **Closed V16.1 — PostHog is
+  cookieless and the policy names it (§43).** Also unread: which pageview
   mode `defaults: "unset"` resolves to.
 - ✅ **CLOSED V11.49 — THE MIGRATIONS ARE APPLIED.** All six, not two. 🔴 **And `embed_enabled` STAYS
   and is now written by domain provisioning**, because the custom-domain schedule depends on it. §16.
@@ -17232,14 +17310,14 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   - venue creation;
   - a far-from-base review flag;
   - the scraper, migrated last, with a UK before/after comparison.
-- ~~Re-run `_16` after deploy (§49).~~ ✅ Done (V16.0). Add a migration file for the 12 October function revokes (§35).
+- ~~Re-run `_16` after deploy (§49).~~ ✅ Done (V16.0). ~~Add a migration file for the 12 October function revokes (§35).~~ ✅ Done V16.1 (§35).
 - Country on the `discovery_events` unique key (§33).
 - US plan prices — needed before the US can be switched on, and before a US prospect's plans PDF works
-  (§76.1, §76.7).
+  (§76.1, §76.7). **V16.1 (DECIDED 18 Oct):** with the new **unlimited plan** — the US build first, then plans (§76.9).
 - **Phase 5:** deferred-intent checkout, the credit-only card surcharge, and Manage › Payments "who pays the card fee". Mockups first.
 - **Service fee:** who keeps it (Dominic decides), and a home for a truck's own service fee in tax-inclusive countries.
 - Platform fee charging: `application_fee_amount` at capture, with a food-only clawback (§37).
-- **Legal text per country,** with a lawyer before the first non-UK signup: UK GDPR, the ICO, English law, the £100 cap, the sterling/VAT clause, six-year retention.
+- ~~**Legal text per country,** with a lawyer before the first non-UK signup: UK GDPR, the ICO, English law, the £100 cap, the sterling/VAT clause, six-year retention.~~ ✅ **Done V16.1, best effort:** one set of documents plus a Country-specific terms page; **no lawyers at this stage** (DECIDED 18 Oct; §43).
 - ~~**Language phases 1a onwards (§77.3).**~~ ✅ **Done V16.0 for English** (1a–1e and 2; §77.7). Also:
   - ~~US screenshots and testimonial; US marketing URLs and hreflang; the demo provisioned in the visitor's country;~~ ✅ done V16.0 (US hero screenshots; the testimonial is hidden on US pages; `/uk` and `/us` with hreflang; the demo is built in the visitor's country);
   - from the Phase 0 report: give the Reports 'Other' line an id (1d); store reject and cancel reasons as codes (1b);
@@ -17247,24 +17325,41 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   - switch on next-intl's `precompile` once messages are many.
 - 🔴 The WhatsApp allergen floor made Unicode-aware before any non-English truck (§77.1).
 - Email sender on hatchgrab.com; ~~US App Store link~~ (done V16.0, §77.8); support hours; CAN-SPAM postal address for US outreach.
-- Privacy policy date mismatch: the page says "5 September 2026", `PRIVACY_UPDATED = '6 August 2026'`.
+- ~~Privacy policy date mismatch: the page says "5 September 2026", `PRIVACY_UPDATED = '6 August 2026'`.~~ ✅ Closed V16.1: every legal document reads "Last updated 19 October 2026" (§43).
 
 ## Added V16.0 — languages, marketing, private bookings, overnight events, US layout (17 October 2026)
 
 Still open from the V15.8 block above: the Google Maps key then Part B; US plan prices; Phase 5 and
-platform-fee charging; per-country legal documents; the revokes migration; country on the
+platform-fee charging; ~~per-country legal documents; the revokes migration;~~ (both done V16.1) country on the
 `discovery_events` unique key; reject reasons saved as ids (rule 6); the allergen floor. New:
 
-- **US layout fixes:** mockups first, from the audit's contact sheets (02, 05, 06, 07, 08), then a fix prompt. Include the GB items found by the audit and the two tinted bands on US pages (§76.8, §48).
+- ~~**US layout fixes:** mockups first, from the audit's contact sheets (02, 05, 06, 07, 08), then a fix prompt. Include the GB items found by the audit and the two tinted bands on US pages (§76.8, §48).~~ ✅ Done V16.1 (§76.8).
 - **Re-check after the next import:** the private-event venue fix and the private discovery rows (`docs/private-discovery-rows-report.md` §3; §33).
 - The calculator's US saving examples (with US plan prices; §48).
-- **Screens that still show `error`** instead of wording refusals from `code`: onboarding and some kitchen screens.
+- ~~**Screens that still show `error`** instead of wording refusals from `code`: onboarding and some kitchen screens.~~ ✅ Done V16.1 (§77.11).
 - **Gusto's past private events** (14–16 Oct) are still `unconfirmed` in its Manage. They are the owners' to approve or dismiss.
 - **Village Spice:** add a discovery truck if it should be listed.
 - **Auto-open of an overnight event after midnight** (not built; §15).
-- Truck-page metadata on the HatchGrab host (§48).
-- **Thousands separators on money**, both countries.
+- ~~Truck-page metadata on the HatchGrab host (§48).~~ ✅ Done V16.1 (§48, "Link previews for truck pages").
+- ~~**Thousands separators on money**, both countries.~~ ✅ Done V16.1 (§76.2).
 - **Backup tables on the live database** — drop when happy (§49).
+
+## Added V16.1 — US layout, the US test truck, security, polish, legal and retention (19 October 2026)
+
+Still open from the blocks above: the Google Maps key, then Part B (address look-up and map pins for US trucks);
+US plan prices with the new unlimited plan (the US cannot be switched on until then); the calculator's US saving
+examples; Phase 5 (card surcharge) and platform-fee charging; reject reasons saved as ids; country on the
+`discovery_events` unique key; 🔴 the WhatsApp allergen check, Unicode-aware before any non-English truck (**not**
+closed); auto-open of an overnight event after midnight. New:
+
+- 🔴 **Rotate both Google service-account keys** (`FCM_SERVICE_ACCOUNT_JSON`, `GOOGLE_SHEETS_CREDENTIALS`; the
+  standing rule at the top).
+- **Send Stripe the question:** can a UK platform onboard US connected accounts for direct charges, with USD
+  settlement and Tap to Pay/Terminal? Then **test US card payments** (tips, service fee, card path) with Stripe test
+  keys on localhost (§76.9).
+- **Make the iPad and Android apps available in the US storefronts.**
+- **A US testimonial.**
+- **SMS opt-in wording** and STOP handling before SMS ships (§43).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -20276,7 +20371,8 @@ it.** Check with `has_function_privilege('anon', …)`.
 - `purge_order_drafts()` — SECURITY DEFINER, deletes expired drafts.
 
 **OBSERVED** All three were revoked from public, anon and authenticated, with explicit grants to `service_role` (and `postgres` for the two definer functions).
-- Verified false / false / true.
+- Verified false / false / true on 12 October. ⚠️ **Corrected V16.1: later undone by a hand-run GRANT, re-applied on
+  19 October, and now guarded** (below).
 - A live pay-at-the-truck order on Pizza Kitchen succeeded afterwards, and the stranded-capture cron returned 200.
 
 🔴 **OBSERVED 19 October: THE REVOKES HAD BEEN UNDONE — by a hand-run GRANT, not by a migration.**
@@ -20292,21 +20388,24 @@ it.** Check with `has_function_privilege('anon', …)`.
 - Now **guarded by `scripts/migration-function-grants.cjs`** (in the sweep):
   - every migration that creates or replaces a function must revoke EXECUTE from public, anon and authenticated in
     the same file;
-  - no migration may grant a function back to them, except a short named allow-list with a reason each.
+  - no migration may grant a function back to them, except a short named allow-list with a reason each — **empty
+    today** (V16.1).
 - 🔴 **Undo / rollback SQL is never put in a chat reply**; it lives only in a report, under "Undo (only if Dominic
   asks)".
 
 **SWEEP: CLOSED for SECURITY DEFINER functions** (re-checked 19 October) — a sweep of every SECURITY DEFINER
 function in `public` executable by anon returns **zero rows**.
 - **Recorded in migrations:** `supabase/migrations/20261012_revoke_public_functions.sql` (the dated record, "already
-  applied — file only"), and a same-file revoke in every migration that creates a function, so a rebuilt database is
-  closed (§27).
-- **OPEN on 19 October:** eight SECURITY INVOKER functions were still anon-callable by default grant:
+  applied — file only, do not run"), and a same-file revoke in every migration that creates a function (15 creating
+  migrations), so a rebuilt database is closed (§27).
+- ~~**OPEN on 19 October:**~~ ✅ **CLOSED 19 October (V16.1):** eight SECURITY INVOKER functions were still anon-callable by default grant:
   - `update_updated_at`, `set_orders_updated_at` (triggers);
   - `increment_order_counter`, `increment_event_order_counter`;
   - `populate_event_slots`, `decrement_stock`;
   - `assign_buzzer_atomic`, `claim_order_for_auto_reject`.
-  - Every caller is server code on the service role. Their "run now" revoke is in docs/us-polish-batch-report.md.
+  - Every caller is server code on the service role. **On 19 October all eight were revoked from public, anon and
+    authenticated and granted to service_role (triggers need no grant)**, with the three above.
+  - **Verify: no non-extension function in `public` is executable by anon or authenticated — 0 rows.**
 - A grep of the migrations directory is still not an inventory of the database: three of those eight predate it.
 
 **OBSERVED (audit fixes, same period):**
@@ -20553,6 +20652,18 @@ of this manual).
 - **Words come from messages,** read with `useT` / `translatorFor`. Generated catalogue files are never edited by hand. Plan rows and price words are looked up by id.
 - **A `w-full` child inside a flex row** can shrink its siblings to 0 px. Put full-width blocks in normal flow.
 - **Measure before optimising bundle size.** The lazy-loading saving was 1.5 KB; gzip had already squeezed the near-duplicate US text.
+
+## 35.ai 🔴 SECURITY, LEGAL AND SELF-SERVE INVARIANTS (V16.1)
+
+- *Every function a migration creates is revoked from public, anon and authenticated in the same file, and
+  rollback SQL is never printed where it can be pasted (a printed rollback is what reopened the functions):*
+  recorded with the function-grant class above, which the sweep now enforces, rather than repeated here.
+- 🔴 **A promise in a legal document needs code behind it.** The 12-month retention promise had none until 19 Oct (§43).
+- **A setting with NULL means "not decided", never zero.** Screens must mask it (as `withPlaceholderPlanPrices` does)
+  rather than crash or borrow another country's value (§76.9).
+- **A page built only from discovery data breaks for self-serve trucks.** Every public truck surface must also work
+  from the `trucks` row (§76.9).
+- **A dress rehearsal on a hidden twin truck finds what fixtures can't.** Keep the twin for future country work (§76.9).
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -25149,7 +25260,8 @@ default true as well. The provider is mounted in the ROOT layout, so **PostHog s
 route of both domains, with no consent gate anywhere.**
 🔴 **THE SAME CLAIM IS IN THE PUBLISHED `/privacy`, WHICH IS THE VERSION THAT MATTERS.** This is a LIVE
 LEGAL EXPOSURE on both domains, it is INDEPENDENT of the website-embed workstream that found it, and it
-is **OPEN** — nothing has been changed in the policy or in the code. ⚠️ **An app reviewer visits
+is ~~**OPEN** — nothing has been changed in the policy or in the code~~ ✅ **RESOLVED V16.1 (19 Oct): PostHog is
+cookieless (`persistence: 'memory'`) and the published policy names it — "One set of legal documents" below**. ⚠️ **An app reviewer visits
 `/privacy`**, and Google's data-safety answers (§36) were filled in against the same wrong premise.
 ⚠️ Not determined: which pageview mode the `defaults: "unset"` expression resolves to. **Pageview
 capture is not disabled**; the mode is unread. See §27.
@@ -25159,10 +25271,11 @@ capture is not disabled**; the mode is unread. See §27.
 🔴 **THIS IS NOT ONE ERROR WITH TWO CONSEQUENCES. IT IS THREE SEPARATE DEFECTS ON A PUBLISHED LEGAL
 PAGE**, and **the Play data safety declaration (§36) was filed against the same premises:**
 
-1. **It states there are no analytics or tracking cookies** — while **the analytics client runs on
+1. ✅ **RESOLVED V16.1** (PostHog is cookieless and the policy now describes browser storage and names PostHog). **It states there are no analytics or tracking cookies** — while **the analytics client runs on
    every route with autocapture on and sets a cookie.** (This is the V11.45 strike above; it is
    restated here as one of three, not as the whole of it.)
-2. **Its provider table omits BOTH the analytics provider AND the payment processor.**
+2. **Its provider table omits BOTH the analytics provider AND the payment processor.** ✅ **The analytics half is
+   RESOLVED V16.1** — PostHog is in the table (EU host).
 3. **It describes card processing as a future addition** — **while a live secret key is configured.**
 
 > 🔴 **THEY MUST BE CORRECTED TOGETHER — THE PAGE AND THE DECLARATION — FROM ONE SET OF ESTABLISHED
@@ -25203,6 +25316,71 @@ site regardless**; and they confirm **they are entitled to use that address**. �
 dependencies — write it once covering both, not twice.** §46.
 ⚠️ **`content/legal/*.md` ARE THE SOURCE OF TRUTH AND ALREADY CARRY ONE UNMET PROMISE** (the export
 above), so this wants a **proper pass over the terms**, not a paragraph inserted next to it. §27.
+
+## One set of legal documents for every country, and the data-retention job (V16.1 — 19 October 2026)
+
+*Sources: `docs/us-legal-draft-report.md`, `docs/legal-follow-ups-report.md`.*
+
+### Structure (DECIDED 19 Oct)
+- **One Terms of Service and one Privacy Policy for every country.** Their wording is country-neutral where UK
+  wording was only wording ("VAT, sales tax or similar taxes", "your local currency").
+- **Kept, as genuinely the company's:**
+  - HatchGrab Ltd and its company number (above);
+  - registered office Rosedale, Bury Road, Wickham Street, CB8 8PD;
+  - governing law of England and Wales;
+  - UK GDPR and the ICO, which apply to all processing because HatchGrab is a UK controller;
+  - the £100 liability cap "or its equivalent in your local currency".
+- **The Country-specific terms page** (`/country-terms`, `content/legal/country-specific-terms.md`):
+  - one heading per country; today only the United States;
+  - it forms part of both documents and wins where it differs;
+  - both documents and the legal footer link to it;
+  - adding a country means adding a heading.
+- **The US section covers:**
+  - the truck as seller and merchant of record;
+  - sales tax responsibility;
+  - permits and food rules;
+  - tips are the truck's;
+  - online service fees, shown on the menu and at checkout, with California's all-in pricing named as an example;
+  - USD billing;
+  - service-provider terms for customer data;
+  - no selling or sharing of personal information;
+  - privacy requests within 45 days, honoured for anyone in the US;
+  - children under 13;
+  - marketing email rules;
+  - text-message consent.
+- **Dates:** every legal document reads "Last updated 19 October 2026". `TERMS_VERSION` is `'2026-10-19'`, exported
+  from `lib/legal.ts`. Legal page titles are absolute (no doubled "| HatchGrab").
+- **This is best effort, not legal advice.**
+
+### Product changes made to keep the documents true (OBSERVED 19 Oct)
+- **Outreach emails:**
+  - every one ends with the company line (company name, number, registered office). It is added at send time and
+    shown greyed out under the compose box;
+  - sending is blocked without the opt-out line, except for tests and replies to a message the prospect sent;
+  - retry rebuilds a stored email with today's company line and the same rule.
+- **PostHog:** `persistence: 'memory'`, so no cookies and no local storage. It is named in privacy sections 5 and 6
+  (EU host). **Visitor counts now read higher,** because every full page load is a new visitor.
+- **Online service-fee notice on the menu,** beside the tax notice, wherever a truck's online orders carry a fee:
+  "Online card orders include a service fee of {fee}."
+- **Privacy links:**
+  - under "Place order" and on the confirmation page;
+  - " · Privacy" in every customer email footer.
+- **The data-retention job** (`/api/cron/order-retention`, daily at 04:30 UTC, service role; `lib/order-retention.ts`):
+  - **Orders older than 12 months:** the customer's name becomes `''` (the column is NOT NULL), email, phone and
+    notes become null, per-dish `specialInstructions` become `''`, and deal `slotNotes` become `{}`. Totals and line
+    items are kept.
+  - **Promoted card drafts older than 12 months:** their notes are cleared too.
+  - **`whatsapp_logs` and `messages` rows older than 12 months:** deleted.
+  - **`purge_order_drafts()`:** called daily. It was never scheduled before.
+  - **Limits:** at most 5,000 rows a run, in batches of 500; idempotent.
+  - **Live on 19 Oct it had nothing to touch.** The first orders reach 12 months in June 2027.
+- **Privacy section 7 wording matches the job.** It also says the email provider keeps delivery logs under its own
+  retention policy.
+
+### Open (legal)
+- **Text-message opt-in wording and STOP handling** before SMS ships.
+- **US sales tax on HatchGrab's own subscription:** revisit as US revenue grows.
+- **No all-in pricing mode exists.** The menu notice is the disclosure.
 
 # 44. Commercial model — fees and pricing suppression (V11.4)
 
@@ -26563,8 +26741,9 @@ sanitisation exists anywhere in the codebase.** **OBSERVED by bundle read.**
 - **Session replay is OFF**, and the recorder bundle is therefore never fetched. **REASONED from a bundle
   read: network capture and console capture live in that recorder and are consequently INERT** — enabled
   in project settings, transmitting nothing. ⚠️ **Enabling replay would arm both immediately.**
-- **Cookies are set on every route of both domains with no consent gate.** Persistence defaults to
-  cookie plus local storage.
+- ~~**Cookies are set on every route of both domains with no consent gate.** Persistence defaults to
+  cookie plus local storage.~~ ✅ **Corrected V16.1 (19 Oct):** `persistence: 'memory'` — no cookie and no local
+  storage. **Visitor counts now read higher,** because every full page load is a new visitor (§43).
 - Customer-facing ordering URLs carry no personal data. **OBSERVED.**
 
 🔴 **THE REMEDIATION HAS AN ORDER AND GETTING IT WRONG WASTES A STEP: sanitise first, then purge the
@@ -26822,7 +27001,7 @@ A request to add Vercel Web Analytics came with the premise *"PostHog was REMOVE
 #### 🔴 STILL OPEN AND LIVE
 
 - 🔴 **`realthaifood-23f80551121b` IS UNROTATED AND STILL IN POSTHOG'S STORE.** 🧪 It is still the current `dashboard_token` for `real-thai-food`, an **active** account. **A working bearer credential — refunds, customer PII, menu deletion — sits in a third-party analytics store today.** ⚠️ `test-abc123def456` likewise, on the test truck. **This fix stops NEW leakage and does nothing about what is already there.** The options are rotate, delete the events, shorten retention, or accept — 🔴 **rotate first: deletion without rotation leaves a working credential that merely became harder to look up.** ⚠️ Rotation invalidates saved links, and `app/api/inbound-schedule/route.ts:275` emails `/manage/<token>` links in plaintext.
-- 🔴 **THE PRIVACY POLICY IS STILL CONTRADICTED BY THE RUNNING CODE.** 🔎 `content/legal/privacy-policy.md` publishes *"We do not use advertising, tracking or third-party analytics cookies"* and lists **seven** processors — **naming PostHog nowhere** — while `posthog.init` takes the library default `persistence: "localStorage+cookie"`. **Unchanged and unresolved**, as `:12716` already recorded.
+- ✅ **RESOLVED V16.1 (19 Oct) — PostHog is cookieless and named in privacy sections 5 and 6 (§43).** Was: 🔴 **THE PRIVACY POLICY IS STILL CONTRADICTED BY THE RUNNING CODE.** 🔎 `content/legal/privacy-policy.md` publishes *"We do not use advertising, tracking or third-party analytics cookies"* and lists **seven** processors — **naming PostHog nowhere** — while `posthog.init` takes the library default `persistence: "localStorage+cookie"`. **Unchanged and unresolved**, as `:12716` already recorded.
 - ⚠️ **`/admin`, `/login`, `/setup` and `/order/[id]/manage` were found and NOT scoped off** — deliberately, and reported rather than decided. `/admin` is the strongest follow-up candidate: no token in the path, but autocapture there records operator names, emails and phone numbers as clicked-element text.
 
 ⚠️ **Nothing takes effect until deployed**, and 🔴 **Pizzeria Gusto uses the manage and KDS pages while trading** — after deploy those pages stop sending analytics entirely, which is the intent and 🔎 loses nothing (§43 `:8509`: *"there is not one explicit `posthog.capture()` on any operator route"*).
@@ -27174,11 +27353,44 @@ Recorded so they are not briefed again.
 - **DECIDED 16 Oct:** "Most trucks will type hatchgrab.com. Can't have US trucks going to the UK page, or the reverse." Country addresses plus the root router.
 
 #### Open
-- With the testimonial hidden on US pages, "How it works" and "Pricing" are two tinted bands back to back. This goes with the US layout fixes (mockup first; §76.8).
+- ~~With the testimonial hidden on US pages, "How it works" and "Pricing" are two tinted bands back to back. This goes with the US layout fixes (mockup first; §76.8).~~ ✅ Fixed V16.1: with the testimonial hidden, the tinted bands still alternate (§76.8).
 - The calculator's US saving examples reuse UK figures in dollars ("a year's general liability insurance" at $80–250 is too low). Revisit with US plan prices.
-- Truck page metadata on the HatchGrab host still uses the Village Foodie title template and a villagefoodie.co.uk og:url. Recorded in `docs/share-preview-report.md`.
+- ~~Truck page metadata on the HatchGrab host still uses the Village Foodie title template and a villagefoodie.co.uk og:url. Recorded in `docs/share-preview-report.md`.~~ ✅ Fixed V16.1 — "Link previews for truck pages" below.
 
-# 49. Deploy posture (current at V16.0; earlier postures below, each dated)
+### Link previews for truck pages (V16.1 — 19 October 2026, deployed)
+
+- **OBSERVED** On the HatchGrab host, `/trucks/[slug]` and `/trucks/[slug]/order` previews come from the truck itself
+  (`lib/truck-share-meta.ts`):
+  - its name;
+  - its own cover, else its logo, else the HatchGrab share card;
+  - `og:site_name` "HatchGrab";
+  - its own `www.hatchgrab.com` URL;
+  - the truck's language.
+- **No Google Sheets read on HatchGrab.** The Village Foodie host is unchanged.
+- **The order page** now has its own preview: "Order from {truck}".
+- **Gusto's HatchGrab schedule preview** changed from "… | Village Foodie | HatchGrab" with the sheet's logo to
+  "Pizzeria Gusto | HatchGrab" with its own logo, shown as a small square card because it has no cover.
+
+# 49. Deploy posture (current at V16.1; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.1 — DEPLOYED ON 19 OCTOBER; THE LEGAL WORK AND THE PENDING-CARD BUTTONS BEING PUSHED
+
+*Replaces the V16.0 posture below as the current one; it and the earlier postures stay as dated history.*
+
+- **OBSERVED** Deployed on 19 Oct:
+  - overnight events and follow-ups, the US layout fixes, the Billing fix and the dress-rehearsal fixes;
+  - the `auto-event-scheduler` edge function;
+  - the US polish batch.
+- **Being pushed at the time of writing:**
+  - the legal pages and legal follow-ups (including the retention cron);
+  - the pending-card buttons.
+  - Check `git log origin/main` for the current tip.
+- **Database changes run live on 18–19 Oct:**
+  - the US service-fee maximum;
+  - the US test truck;
+  - `truck_events.region`;
+  - the re-revoke of three functions, plus eight more.
+  - No database change is pending.
 
 ### 🔴 DEPLOY POSTURE AT V16.0 — PUSHED IN SMALL STEPS UP TO `692adb4`; THE OVERNIGHT WORK IS UNCOMMITTED
 
@@ -27192,7 +27404,7 @@ Recorded so they are not briefed again.
 
   Check `git log origin/main` for the current tip.
 - **OBSERVED** `_16` (country-scoped unique keys) was re-run after the deploy, as required. That open item is closed.
-- **Uncommitted at 17 Oct:** the overnight-events work and its follow-ups, on top of `692adb4`. **After pushing:** deploy the `auto-event-scheduler` edge function (command: §79). Until then, the deployed copy closes an overnight event early.
+- **Uncommitted at 17 Oct:** the overnight-events work and its follow-ups, on top of `692adb4`. **After pushing:** deploy the `auto-event-scheduler` edge function (command: §79). Until then, the deployed copy closes an overnight event early. ✅ **V16.1: both deployed on 19 Oct.**
 - **Before pushing,** run the localhost checks in `docs/midnight-and-format-fixes-report.md` ("Localhost check"), on Pizza Kitchen only. To see the after-midnight side by day, add an event dated yesterday that ends later today.
 - **Backup tables kept on the live database** (drop when happy):
   - the junk-venue backups from 16 Oct;
@@ -27209,7 +27421,7 @@ Recorded so they are not briefed again.
   `outreach_messages.refusal` column exists and one `refused` row is recorded.
 - ⚠️ **NOT VERIFIED HERE:** the V15.8 post-deploy steps below (the edge functions, re-running `_16`, its
   verify). Their state is unknown to this entry, not "done". *(V16.0: `_16` was re-run after the deploy —
-  OBSERVED; the edge functions are still not recorded.)*
+  OBSERVED; the edge functions are still not recorded. V16.1: `auto-event-scheduler` was deployed on 19 Oct.)*
 - ~~⚠️ **The manual has no entry yet for Language Phases 1a/1b** (`docs/language-phase-1a-report.md`,
   `docs/language-phase-1b-report.md`); §77 still describes Phase 0. Open.~~ ✅ Closed V16.0 (§77.6–77.10).
 
@@ -27598,7 +27810,7 @@ named `slug_absent` miss for a slug it cannot find. **There is still no delete f
 reason recorded for that was never true, and it is why the question kept being closed early.
 
 🔴 **CORRECTED V13.7 — THE OPT-OUT FOOTER ROW OF THAT TABLE NO LONGER DESCRIBES THE CODE.** Nothing is
-appended to the body any more: `OPT_OUT_FOOTER` and `composeEmail` were deleted. The opt-out sentence is
+appended to the body any more (⚠️ V16.1: except the fixed company line, added at send time — §43): `OPT_OUT_FOOTER` and `composeEmail` were deleted. The opt-out sentence is
 the `{{opt_out}}` token and the signature is `{{signature}}`, both from `outreach_settings`. They are
 expanded into the editor document when a template loads (§60.3), so what is on screen is what is sent, and
 `literalTokenRefusal` stops a document that still carries either token verbatim. The opt-out is in the
@@ -27941,7 +28153,7 @@ geocoded to a town centroid — six sit on `NR1 1AA`.
 | 5 | **Three chained `superseded_by` winners** (§53.5b) | 🔴 **OPEN — a re-run cannot repair them** |
 | 6 | **The run log has no retention rule** — 🧪 348 rows today, one per site per run, ~42,000/year | 🔴 **OPEN** (a prune workflow is written and uncommitted) |
 | 7 | **The Escape defect in the schedule popup's delete dialog** — two `{capture:true}` listeners on `window`; `stopPropagation()` does not stop same-node listeners | 🔴 **OPEN — pre-existing** |
-| 8 | **The opt-out footer and signature left the code** into an Outlook signature (§52) | 🔴 **OPEN as a compliance risk — a human responsibility, no longer enforced** |
+| 8 | **The opt-out footer and signature left the code** into an Outlook signature (§52) | ~~🔴 **OPEN as a compliance risk — a human responsibility, no longer enforced**~~ ✅ **V16.1: the opt-out line is enforced again** — sending is blocked without it, except for tests and replies to a message the prospect sent (§43). The signature is still the operator's |
 | 9 | **`Chai Stall`'s `photo_url`** | ✅ **CLOSED.** 🧪 A sweep of **all 242** `photo_url`/`logo_url` values across 231 trucks finds **0 broken** — every remote URL returns 200 and every local path exists |
 | 10 | **Two days of work were UNCOMMITTED** | ✅ **CLOSED V13.0 — the tree is clean; everything in §53 and §54 is committed and deployed** |
 | 11 | **The ratio assertion** (§54.4) — this run's empty-village share against a 14-day baseline | 🔴 **OPEN — deliberately unbuilt.** It needs a post-change run to calibrate; a guessed threshold fires on noise |
@@ -28606,10 +28818,12 @@ directly from the mailbox, so the message is exactly what a mail client would pr
   - `docToHtml` renders Outlook-style `<div>`s at 12pt Aptos; "small" is 13.333333px.
   - The `text/plain` part carries no HTML.
   - `{{signature}}` and `{{opt_out}}` are **expanded into the document when a template loads**, through
-    `docFromTemplateText`, so what is on screen is what is sent. Nothing is appended automatically, and
+    `docFromTemplateText`, so what is on screen is what is sent. Nothing is appended automatically (⚠️ V16.1:
+    except the fixed company line, at send time — §43), and
     `literalTokenRefusal` stops a document that still contains either token verbatim.
 - **Refusals** (`lib/outreach-send-rules.ts`): no address; a linked (live operator) truck; a test with no
-  test recipient; plus every sequence guard (§62.4).
+  test recipient; plus every sequence guard (§62.4). ⚠️ V16.1: and no opt-out line, except for a test or a reply to a
+  message the prospect sent (§43).
 - A **test send** goes to `OUTREACH_TEST_RECIPIENT`, logs no contact, moves no stage, and is never counted
   by any guard.
 
@@ -31476,6 +31690,11 @@ languages in §77.*
 
 ## 76.2 Client-safe formatting
 - **OBSERVED** `lib/money-format.ts` (Intl, the country's locale). UK strings are byte-identical to the old ones.
+- **OBSERVED 19 Oct (V16.1):** it groups thousands by default ("£1,234.56", "$1,345.09"). `grouping: false` gives the
+  raw figure.
+  - **Stay raw:** the Reports CSVs (`csvMoney`); price inputs; stored values; API numbers.
+  - **The WhatsApp price check** reads grouped figures.
+  - **Printed tickets:** a row prints ungrouped only if the separator would make it wrap.
 - **OBSERVED** `lib/payments/currency.ts`: `ledgerCurrency` is upper-case ('GBP'), `stripeCurrency` lower-case ('gbp').
 - **OBSERVED** `orders.currency` and `orders.country` are stamped by the BEFORE INSERT trigger
   `orders_fill_currency_country` (SECURITY DEFINER, revoked from public/anon/authenticated in its own
@@ -31527,27 +31746,31 @@ languages in §77.*
   to GB. A US prospect's PDF is refused with the existing message until US plan prices are set —
   deliberately, so no £ price list goes to a US prospect.
 
-## 76.8 US readiness — layout (V16.0 — 16 October 2026)
+## 76.8 US readiness — layout (V16.0 — 16 October 2026; fixed V16.1 — 18 October 2026)
 
 *New at V16.0. The manual had no section titled "US readiness"; this sits with the rest of international
 readiness.*
 
 **The audit:** `docs/us-layout-audit-report.md`, 16 Oct. It was rendered from GB and US fixtures of Pizza Kitchen, with contact sheets in `docs/us-layout-audit/`. Every issue is recorded below in its current state.
 
-**BROKEN:**
+✅ **V16.1: ALL 22 ISSUES ARE FIXED, plus the UK clipping bugs the audit found** (`us-layout-proposal-report.md`,
+`us-layout-fixes-report.md`). How, the decisions and what changed are at the end of this section.
+
+**BROKEN (✅ fixed V16.1):**
 - **C-03 · Manage › Add/Edit event on a phone (390 px):** the hour boxes cut off AM/PM, so "12:30 AM" reads "12 : 30", which looks like noon.
 - **B-06 · KDS Cook ticket:** the order number is squeezed to "#…" because the time never shrinks. GB already cuts a Ready number to "#1…".
 - **B-01 · Dashboard order card on a portrait tablet:** the "15m late" pill is clipped once order numbers reach 4 digits.
 
-**UGLY (19), in groups:**
-- **A time range breaks inside a time:** A-02, C-01, C-02, C-04, C-05. Ranges are partly fixed by the no-break space added on 16 Oct.
+**UGLY (19), in groups (✅ fixed V16.1):**
+- **A time range breaks inside a time:** A-02, C-01, C-02, C-04, C-05. ~~Ranges are partly fixed by the no-break space added on 16 Oct.~~ Fixed V16.1: a range breaks only after the dash.
 - **Fixed-width time columns:** B-03 (the capacity sidebar shows 22 → 13 rows), B-04, B-05, and posters D-20 to D-22 (the weekly-post Time column shrinks its font by up to 36%).
 - **Four extra US total lines** grow the basket (85% of a 360 px screen expanded), the checkout sheet ("Place order" at 768 px of scroll), dashboard cards and KDS tickets (KDS grid 6 → 3 tickets): A-04, A-05, B-07.
 - **Other:** A-01 (GB too), A-03, A-06, A-07, B-02.
 
 **FINE:** printed tickets (58 mm and 80 mm), emails, the plans PDF, Payments, Billing, the approval cards, and pickup-time pickers.
 
-**Six fix directions** (not yet built; mockups first):
+**Six fix directions** ~~(not yet built; mockups first)~~ (✅ mockups made and fixes built V16.1; the choices are
+under "Decisions" below):
 1. keep each time whole;
 2. "11:30AM" or "5 PM" on tight surfaces;
 3. time ranges on their own line where they share a row with icons or a badge;
@@ -31556,12 +31779,127 @@ readiness.*
 6. rebuild the phone time picker as one 12-hour select or an AM/PM toggle.
 
 **GB problems found too:**
-- the KDS Full ticket's "Ready" badge sits over the last digit of a 4-digit order number;
-- the minute boxes clip 3–4 px at 390;
-- the pre-order deadline row is 11 px too wide at 390;
-- "Choose time" overruns its ▾ by 5 px at 360;
-- totals have no thousands separator ("£1234.56");
+- ~~the KDS Full ticket's "Ready" badge sits over the last digit of a 4-digit order number;~~ ✅ fixed V16.1;
+- ~~the minute boxes clip 3–4 px at 390;~~ ✅ fixed V16.1;
+- ~~the pre-order deadline row is 11 px too wide at 390;~~ ✅ fixed V16.1;
+- ~~"Choose time" overruns its ▾ by 5 px at 360;~~ ✅ fixed V16.1;
+- ~~totals have no thousands separator ("£1234.56");~~ ✅ fixed V16.1 (§76.2);
 - the ticket's "printed" stamp shows only the time.
+
+### How it was done (OBSERVED, V16.1)
+- **The proposal:** the fixes were built in a separate git worktree and rendered as before/after contact sheets for
+  Dominic. They were then fast-forwarded into `main` with his choices. The proposal branch and worktrees are deleted.
+- **The new layout files:**
+  - the render and sheet scripts are `scripts/us-layout-audit/` and `scripts/us-layout-proposal/`;
+  - their image folders `docs/us-layout-audit/`, `docs/us-layout-proposal/` and `docs/us-layout-final/` are gitignored.
+
+### Decisions (DECIDED 18 Oct)
+- **Phone time picker:** one select per time, showing the whole time ("10:45 PM" / "22:45"), every 5 minutes, below
+  640px. The hour + minute + AM/PM option was rejected.
+- **KDS money lines:** none on a KDS ticket. The total and PAID stay. The dashboard's Cook display counts as the KDS.
+- **KDS "Ready" badge on a 4-digit number:**
+  - fixed with a smaller badge pinned above the total;
+  - UK kitchens keep **6 tickets fully on screen** on an 800×1280 tablet, and no UK ticket grew.
+- **Schedule cards on a phone:** the new layout applies to every truck, UK included. The time range has its own line,
+  the action icons sit in a row beneath, and the van has its own line, but only on cards with icons.
+- **Truck clock decides some layouts:** the Import review heading, the capacity sidebar's time column and the Pickup
+  row are decided by the truck's clock (`timeFormat === '12h'`), not by country.
+- **Folded charge rows:**
+  - one ICU select names the parts present: "Tax, fees & tip", "Tax & fees", "Tax & tip", "Fees & tip", "Fees";
+  - one line beyond the subtotal (e.g. tax only) is shown plainly, with no fold.
+- **Accepted:**
+  - on a narrow KDS Cook layout (1280×800), the time moves to a second line;
+  - a correct, uncut order number matters more.
+
+### What changed (OBSERVED, V16.1)
+- **Times kept whole:** a 12-hour time has a no-break space before AM/PM, and a range breaks only after the dash.
+  Printed tickets fold the no-break space back to a plain space, so ticket bytes are unchanged.
+- **Order header, chooser, public page and embed:** "● Live" sits on the date line, and the range has its own line.
+- **Dashboard card:** the late or countdown pill wraps under the number instead of being clipped.
+- **Capacity sidebar:** the time column is 64px for 12-hour trucks.
+- **Basket and checkout:**
+  - the basket's items scroll inside a capped area;
+  - the checkout sheet has a sticky footer with the Total and "Place order".
+- **Manage my order:** the Pickup row has a gap after the label, and is right-aligned, for 12-hour trucks.
+- **US landing page:** with the testimonial hidden, the tinted bands still alternate.
+- **UK clipping fixes:**
+  - "Choose time" at 360px;
+  - the pre-order deadline row at 390px;
+  - the minute boxes;
+  - the live header's area line at 360px.
+- **Pending approval cards, laptop and tablet** (`pending-card-buttons-report.md`):
+  - from 640px up, Approve, Edit and Reject sit on the Event type chips' row, right-aligned, with the "why Approve
+    is off" line under them;
+  - each card is 42–64px shorter;
+  - phones are pixel-identical to before.
+
+## 76.9 US readiness — the hidden US test truck (V16.1 — 18–19 October 2026)
+
+*New at V16.1. Sources: `us-dress-rehearsal-stage1-report.md`, `us-dress-rehearsal-stage2-report.md`,
+`us-dress-rehearsal-fixes-report.md`.*
+
+### The twin (OBSERVED, created 18 Oct by Dominic's SQL)
+- **Identity:** `trucks.id = 'test-truck-us'`, slug `test-kitchen-us`, "Pizza Kitchen US".
+- **US settings:** country US, USD, America/New_York, base Hoboken, NJ. NJ sales tax 6.625% (`tax_rate_milli` 6625),
+  tips on, service fee 3% + 30¢.
+- **The menu:** a copy of Pizza Kitchen's 30 items, with allergens mapped to the US 9 (Dairy and Lactose → Milk,
+  Gluten → Wheat). There are no photos.
+- **Its van and events:**
+  - one van, "Truck 1";
+  - two New Jersey events: a day event, and an overnight event 20:00–00:30.
+- **Hidden** exactly as Pizza Kitchen is (`show_on_vf`/`show_on_hg` false, not excluded, no discovery row). It is
+  owned by the same account as Pizza Kitchen.
+- **Kept on purpose for future US checks.** A clean-up block exists in `us-dress-rehearsal-stage1-report.md` §3c.
+- **Created with one `DO` block.** New ids are `md5(old id || ':twin-us')::uuid`, so no temporary tables were needed.
+- **Its dashboard and KDS tokens are in Dominic's chat only; never copy them into reports.**
+
+### The country row (OBSERVED, set 18 Oct)
+- The US service-fee maximum is **4% + 50¢**: `service_fee_truck_max_bps` 400, `service_fee_truck_max_fixed_minor` 50.
+- The US is still switched off, and its plan prices are NULL (§76.1).
+
+### Findings and fixes (OBSERVED)
+- **A Billing crash on NULL plan prices — every US truck.**
+  - A trial truck opens Manage on Billing, so Manage crashed.
+  - `planPricesDecided` and `withPlaceholderPlanPrices` (`lib/country-settings-types.ts`) now show the existing
+    masked "TBD" on Billing, FeatureGate, the Settings van add-on and the admin edit modal.
+  - `requirePlanPrice` still throws on any raw read.
+  - Harness: `scripts/us-unpriced-country.cjs`.
+- **"Truck not found" for every newly signed-up truck, in every country.**
+  - **The cause:** `/trucks/[slug]` drew its header only from the discovery list, and signup creates no discovery
+    row. The discovery trucks list was also pinned to GB on both hosts.
+  - **Now, on the HatchGrab host:**
+    - a truck that is public there (`active`, not `excluded`, `show_on_hg`) and has no discovery row is drawn from
+      its own `trucks` row (`lib/truck-header.ts`);
+    - the GB pin applies on the Village Foodie host only.
+  - A truck with a discovery row renders exactly as before.
+- **KDS start banner:**
+  - "Today ·" shows only when the event is on the truck's today; otherwise "{date} · {range}";
+  - starting a future-dated event (KDS or dashboard) asks "This event is on {date}. Start it now?".
+- **Cancel page:** a pay-at-the-truck order no longer mentions card refunds. `/api/orders/cancel` returns
+  `paymentState`.
+- **US address line with the state:**
+  - `truck_events.region` (two-letter, nullable) was added live on 19 Oct;
+  - the US Add/Edit event form has a State box;
+  - the importer, and now emailed schedules (`/api/inbound-schedule`), save it when given, and never infer it;
+  - lines read "Pier A Park, Hoboken, NJ 07030";
+  - `lib/event-address.ts` is the one formatter.
+- **Verified US, no change needed:**
+  - the customer order page, basket (Subtotal + Sales tax 6.625%), checkout, confirmation, manage-my-order and
+    self-cancel;
+  - order rows (USD, tax rounded once);
+  - the KDS, the printed ticket and the rendered emails.
+- **Not yet testable:**
+  - card payments, tips and the service fee. Stripe in `.env.local` is **live**, and the account has no US connected
+    account, so the test used pay-at-the-truck only;
+  - pressing "Connect" on the twin's Payments tab would create a real live US account. **Never press it.**
+
+### Decisions (DECIDED 18 Oct)
+- **Plans:** Dominic will create a new **unlimited plan** for the US, likely rolled out to other countries, and may
+  change the UK plans to align. **The US build is finished first, then plans.**
+- **Legal:** no lawyers at this stage; best-effort drafting (§43).
+- **Translation:** the file of all wording for translation is `messages/en-GB.json` (about 4,900 messages). A
+  spreadsheet export and import for translators is a small job for when it's needed.
+
 
 ---
 
@@ -31777,6 +32115,12 @@ revisit when a non-English language is added.
 - **REASONED** Screens for the auth routes' own emails and pre-sign-in refusals are en-GB by design until signup knows a country.
 - The WhatsApp allergen floor is still English-only (§77.1). It must be made Unicode-aware before any non-English truck.
 
+## 77.11 Refusals worded from codes (V16.1 — 19 October 2026)
+- **OBSERVED 19 Oct:** onboarding and kitchen screens now word refusals from `code` + `params` (`errorText`,
+  `errorTextIn` for several namespaces).
+  - The UK is byte-identical.
+  - One named US change: "Unauthorized".
+
 ---
 
 # 78. Outreach — instant Send, refusals, template formatting and the screenshot match (V15.9 — 15 October 2026)
@@ -31973,6 +32317,28 @@ correction note in its history; the hidden Smash and Grab prospect filled.
   - Every database change goes to Dominic as fenced SQL marked NOT RUN ("run now" or "run after deploy").
 - **Deploying edge functions** (the multi-line key in `.env.local` breaks the CLI's env parser):
   `mv .env.local ~/env.local.bak; supabase functions deploy <name> --project-ref ffphgwonshgxamtvefcv; mv ~/env.local.bak .env.local`
+- **Dry runs (V16.1):** Cursor dry-runs write SQL with `EXPLAIN` through the read-only connection where Postgres
+  allows it (not DDL or GRANT).
+- **Supabase SQL editor quirks seen 18 Oct (V16.1):**
+  - temporary tables did not survive between statements in one run. Use a single `DO` block, or deterministic ids,
+    for multi-step writes;
+  - untyped literals in a `UNION ALL` feeding an `INSERT` resolve to text. Use `VALUES` rows or explicit casts
+    (`'11:30'::time`);
+  - only the last statement's result is shown, so run checks on their own (already recorded at V13.7).
+- **Localhost:** the marketing pages need `hatchgrab.localhost:3000` — recorded in §48 ("Country addresses and the
+  router"), not repeated here.
+
+---
+
+# 80. Security (V16.1 — 19 October 2026)
+
+*New at V16.1: the delta's "Security" block names a section the manual did not have, so it is created here, at the
+end. What the manual already stated was corrected in place where it lives, and is not repeated: the function grants
+(the re-revoke of 19 October, the eight more functions, the migration record, the guard, "⛔ DO NOT RUN", and "undo SQL
+never in a chat reply") in §35, "A FUNCTION'S DEFAULT GRANT IS PUBLIC"; the 18 October secrets incident and the rule
+that followed in the standing rules at the top; the key rotation in §27.*
+
+- **Rule (DECIDED 19 Oct): new functions.** Browser code makes no `.rpc()` calls; every RPC runs on the service role.
 
 ---
 

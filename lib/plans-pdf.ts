@@ -15,25 +15,38 @@
 // 🔴 A Route Handler CANNOT export helpers. Next validates a route file's exports and refuses
 // anything that is not a handler, so "just export buildHtml from the route" is not an option —
 // which is the mechanical reason this is a lib and not a smaller change.
-import {
-  featureSections, transactionRows, footnotes, planAllowances, priceText,
-  type FeatureValue,
-} from '@/lib/plan-features'
+//
+// 🔴 STAGE B OF THE NEW PRICING (docs/pricing-pages-report.md): THE DOCUMENT IS THE NEW PRICING SECTION AND THE NEW
+// PLAN TABLE — the trial banner, one card per public plan, "Which plan is cheapest for me?", then the /features table
+// (WHAT YOU PAY and the three feature groups) and the card-fee footnote — in this file's own styling. Every plan, price,
+// fee, allowance, switch and the trial length come from public.plans / plan_prices / plan_features (lib/plans.ts, read
+// through lib/plan-offer.ts — the module the landing and /features read); every word from the `pricing` / `planTable`
+// messages. ⛔ NO PLAN KEY, NAME OR NUMBER IS WRITTEN HERE. The frozen display copy it used to read is deleted.
 import type { CountrySettings } from '@/lib/country-settings-types'
+import { moneyFormatOf } from '@/lib/country-settings-types'
 import { getCountrySettings } from '@/lib/country-settings'
-import { PLAN_META } from '@/lib/features'
 import { HATCHGRAB_NAVY_HEX, HATCHGRAB_ORANGE_HEX, HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { maskPrice, PRICING_PUBLISHED } from '@/lib/pricing'
+import { maskPrice, maskPriceFor, PRICING_PUBLISHED } from '@/lib/pricing'
+import { priceText } from '@/lib/price-text'
+import { PRICE_WORD } from '@/lib/price-words'
+import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
+import { cardFeeOnlineLabel } from '@/lib/card-fees'
+import type { PlanCatalog } from '@/lib/plans'
+import { getPlanCatalog } from '@/lib/plans-server'
+import {
+  offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands,
+  tableGroups, tableCell, walkUpFree, type OfferPlan,
+} from '@/lib/plan-offer'
+import { noteMarker, planTableNotes } from '@/lib/feature-table'
 // Language Phase 0: the document's words in the country's locale — its first message, the heading.
 import { translatorFor } from '@/lib/i18n/translator'
-import {
-  TABLE_PLANS, type TablePlan, planSubLabels, planPriceLabels,
-  trialFeatureValue, visibleRows, rowName, rowDetail, cellLabel,
-} from '@/lib/landing-table'
 import '@/lib/i18n/catalog/plansPdf'
 import '@/lib/i18n/catalog/planFeatures'
+import '@/lib/i18n/catalog/pricing'
+import '@/lib/i18n/catalog/planTable'
+import '@/lib/i18n/catalog/planPrompt'
 
 // ── 🔴 THE PAGE SIZE IS THE COUNTRY'S (Language Phase 1e). A US reader prints on US Letter; A4 there is clipped or
 // shrunk. The CSS `@page` rule and Chromium's `format` both read this one answer, so they cannot disagree.
@@ -115,65 +128,104 @@ const esc = (s: string) =>
 const tick = (locale: string) => `<svg class="tick" viewBox="0 0 12 12" role="img" aria-label="${esc(translatorFor(locale, 'planFeatures')('cell.included'))}">`
   + '<path d="M2 6.5 L4.6 9 L10 3"/></svg>'
 
-/** 🔴 CELL CONTENT COMES FROM cellLabel(), THE SAME FUNCTION THE PAGE USES — it decides WHICH state
- *  the cell is in, and that stays the single source of truth. Only the tick's RENDERING differs here.
- *  ⚠️ The '—' it returns is an EM DASH and a protected string: escaped for HTML, never normalised, never
- *  written back. It is left as text deliberately — it IS in the production font. */
-function cellHtml(value: FeatureValue, locale: string): string {
-  const cls = value === true ? 'yes' : value === 'coming_soon' ? 'soon' : 'no'   // the state, not the words (Language Phase 0)
-  return `<td class="c ${cls}">${value === true ? tick(locale) : esc(cellLabel(value, locale))}</td>`
+/** A message with markup (`<b>`, `<plan>`) as HTML. Its PARAMETERS are data (plan names) and are escaped here; the
+ *  message text itself is ours. */
+type Markup = { markup: (key: never, values: Record<string, unknown>) => string }
+const html = (t: unknown, key: string, values: Record<string, string | number> = {}): string => {
+  const safe: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(values)) safe[k] = typeof v === 'string' ? esc(v) : v
+  // The tags first, the values last: a message whose `{plan}` is a VALUE (the cheapest bar) keeps it; one whose <plan> is a
+  // TAG (the banner) gets the tag.
+  return (t as Markup).markup(key as never, { b: (c: string) => `<b>${c}</b>`, plan: (c: string) => `<u>${c}</u>`, ...safe })
 }
 
-/** The document's HTML for ONE country's prices. Pure apart from reading the wordmark file. */
-export function buildPlansPdfHtml(s: CountrySettings): string {
+/**
+ * The document's HTML for ONE country's prices. Pure apart from reading the wordmark file.
+ * 🔴 MASKING: the existing rule — prices are real (PRICE_MODE 'always-real', below) EXCEPT for a country that is
+ * switched off, whose every amount is masked to the "TBC" / US "TBD" word, exactly as Manage masks a switched-off
+ * country's truck (components/usePlanPriceLabel.ts) — a prospect in a country not yet open never gets a price list.
+ */
+export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): string {
   const wordmark = wordmarkDataUri()
-  // 🔴 THE DOCUMENT'S WORDS ARE THE COUNTRY'S LOCALE (Language Phase 1e): `plansPdf` for its own, `planFeatures` for
-  // the table's (the same messages /features and Billing read). A price is masked FIRST (on its code), then shown.
+  // 🔴 THE DOCUMENT'S WORDS ARE THE COUNTRY'S LOCALE (Language Phase 1e). A price is masked FIRST (on its code), then shown.
   const locale = s.locale
   const t = translatorFor(locale, 'plansPdf')
-  const tp = translatorFor(locale, 'planFeatures')
-  const show = (v: string) => priceText(px(v), locale)
+  const tp = translatorFor(locale, 'pricing')
+  const tt = translatorFor(locale, 'planTable')
+  const tRow = translatorFor(locale, 'planFeatures')
+  const tPrompt = translatorFor(locale, 'planPrompt')
+  const masked = !s.enabled
+  const show = (v: string) => priceText(masked ? maskPriceFor(v, true) : px(v), locale)
   const paper = pdfPaperOf(s)
-  const priceLabel = planPriceLabels(s)
-  const planSub = planSubLabels(locale)
-  const heads = TABLE_PLANS.map((p: TablePlan) => {
-    const price = PRICE_MODE === 'omit' ? '' : `<div class="th-price">${esc(show(priceLabel[p]))}</div>`
-    const sub = PRICE_MODE === 'omit' || !planSub[p] ? '' : `<div class="th-sub">${esc(planSub[p])}</div>`
-    return `<th class="c"><div class="th-plan">${esc(PLAN_META[p].name)}</div>${price}${sub}</th>`
-  }).join('')
+  const money = moneyFormatOf(s)
+  const plans = offerPlans(catalog, s.countryCode)
+  const months = offerTrialMonths(catalog)
+  const fallback = offerFallback(catalog, s.countryCode)
+  const bands = cheapestBands(plans, s.currency)
+  const fee = (p: OfferPlan) => show(pctLabel(p.feeBps / 100, s))
+  const whole = (minor: number) => show(formatWholeAmount(minor, money))
+  const words = (f: string) => (tp.has(`added.${f}` as never) ? tp(`added.${f}` as never) : tPrompt(`features.${f}.name` as never))
+  const soon = `<span class="soon-chip">${esc(tp('comingSoon'))}</span>`
+  const omit = PRICE_MODE === 'omit'
 
-  const fees = PRICE_MODE === 'omit' ? '' : `
-    <tr class="grp"><td colspan="${TABLE_PLANS.length + 1}">${esc(tp('feesHeading'))}</td></tr>
-    ${transactionRows(s).map(row => `
-      <tr>
-        <td class="f"><span class="f-name">${esc(row.name)}${row.footnote ? `<sup>${esc(row.footnote)}</sup>` : ''}</span></td>
-        ${TABLE_PLANS.map(p => `<td class="c val">${esc(show(row.cells[p]))}</td>`).join('')}
-      </tr>`).join('')}`
+  // ── THE TRIAL BANNER ──
+  const banner = months === null ? '' : `
+    <div class="banner"><b>${esc(tp('banner.title', { months }))}</b>
+      <span>${html(tp, 'banner.body', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no' })}</span></div>`
 
-  const sections = featureSections(locale).map(section => `
-    <tr class="grp"><td colspan="${TABLE_PLANS.length + 1}">${esc(section.title)}</td></tr>
-    ${visibleRows(section).map(row => `
-      <tr>
-        <td class="f">
-          <span class="f-name">${esc(rowName(row, locale))}${row.footnote ? `<sup>${esc(row.footnote)}</sup>` : ''}</span>
-          ${rowDetail(row, locale) ? `<span class="f-desc">${esc(rowDetail(row, locale))}</span>` : ''}
-        </td>
-        ${TABLE_PLANS.map(p => cellHtml(p === 'trial' ? trialFeatureValue(row) : (row[p as 'starter' | 'pro' | 'max'] as FeatureValue), locale)).join('')}
-      </tr>`).join('')}`).join('')
+  // ── THE CARDS — one per public plan, the landing's content ──
+  const feeSentence = (p: OfferPlan) => p.shape === 'feeOnly' ? html(tp, 'fee.feeOnly', { fee: fee(p) })
+    : p.shape === 'included' ? html(tp, 'fee.included', { included: whole(p.includedMinor as number), fee: fee(p) })
+      : html(tp, 'fee.noFee')
+  const cards = `<div class="cards">${plans.map((p, i) => {
+    const prev = i > 0 ? plans[i - 1] : null
+    const items = prev === null
+      ? [`<li class="lead">${esc(tp('card.everything'))}</li>`, ...baseBullets(catalog, p).map(k => `<li>${esc(tp(`base.${k}` as never))}</li>`)]
+      : [`<li class="lead">${esc(tp('card.everythingIn', { plan: prev.plan.name }))}</li>`,
+        ...addedFeatureBullets(catalog, p, prev).map(f => `<li>${esc(words(f.feature))}${f.comingSoon ? soon : ''}${f.sub.map(x => `<span class="sub">${esc(words(x.feature))}${x.comingSoon ? soon : ''}</span>`).join('')}</li>`),
+        ...moneyBullets(p).map(m => `<li>${esc(tp(`money.${m}`))}</li>`)]
+    return `<div class="card${p.highlighted ? ' hl' : ''}">
+      ${p.highlighted ? `<div class="tag">${esc(tp('card.mostTrucks'))}</div>` : ''}
+      <div class="c-name">${esc(p.plan.name)}</div>
+      ${p.plan.subtitle ? `<div class="c-who">${esc(p.plan.subtitle)}</div>` : ''}
+      ${omit ? '' : `<div class="c-price">${esc(show(formatAmount(p.monthlyMinor, money)))} <span>${esc(tp('card.perTruckMonth'))}</span></div>
+      <div class="c-fee">${feeSentence(p)}</div>`}
+      <ul>${items.join('')}</ul>
+    </div>`
+  }).join('')}</div>`
 
-  // 🔴 THE ALLOWANCE LINES AND THE FOOTNOTES TRAVEL WITH THE TABLE, ALWAYS. A comparison table sent
-  // without its footnotes reads as a commitment: footnote 1 is the only place the walk-up card detail
-  // lives, and footnote 4 is what makes the auto-reply rows honest. See the report's §7.
-  const allowances = PRICE_MODE === 'omit' ? '' : `
-    <div class="allow"><h3>${esc(t('allowanceHeading'))}</h3><ul>
-      ${(['starter', 'pro', 'max'] as const).map(p => `<li><b>${esc(PLAN_META[p].name)}</b> — ${esc(show(planAllowances(s)[p]))}</li>`).join('')}
-    </ul></div>`
+  // ── WHICH PLAN IS CHEAPEST ──
+  const bar = omit || bands.length === 0 ? '' : `<div class="cheap"><b>${esc(tp('bar.title'))}</b> ${bands.length === 1
+    ? html(tp, 'bar.only', { plan: bands[0].plan.plan.name })
+    : bands.map((band, i) => i === 0 ? html(tp, 'bar.first', { to: whole(band.toMinor as number), plan: band.plan.plan.name })
+      : band.toMinor === null ? html(tp, 'bar.last', { from: whole(band.fromMinor as number), plan: band.plan.plan.name })
+        : html(tp, 'bar.middle', { from: whole(band.fromMinor as number), to: whole(band.toMinor), plan: band.plan.plan.name })).join(' · ')}</div>`
 
-  const notes = footnotes(s).map(f => `<p><sup>${esc(f.number)}</sup> ${esc(f.text)}</p>`).join('')
+  // ── THE TABLE — the /features table (components/pricing/PlanTable.tsx), as print HTML ──
+  const hlKey = plans.find(p => p.highlighted)?.plan.key
+  const hl = (p: OfferPlan) => (p.plan.key === hlKey ? ' hl' : '')
+  const cols = plans.length + 1
+  const none = `<span class="no">—</span>`
+  const heads = plans.map(p => `<th class="c${hl(p)}"><div class="th-plan">${esc(p.plan.name)}</div>${omit ? '' : `<div class="th-price">${esc(tt('perMonth', { price: show(formatAmount(p.monthlyMinor, money)) }))}</div>`}</th>`).join('')
+  const row = (label: string, cells: string[], marker?: string) => `<tr><td class="f"><span class="f-name">${esc(label)}${marker ? `<sup>${esc(marker)}</sup>` : ''}</span></td>${cells.map((c, i) => `<td class="c${hl(plans[i])}">${c}</td>`).join('')}</tr>`
+  const grp = (label: string) => `<tr class="grp"><td colspan="${cols}">${esc(label)}</td></tr>`
+  const pay = omit ? '' : grp(tt('group.pay'))
+    + row(tt('pay.included'), plans.map(p => p.shape === 'feeOnly' ? none : `<span class="val">${esc(p.includedMinor === null ? tt('cell.unlimited') : whole(p.includedMinor))}</span>`))
+    + row(tt('pay.fee'), plans.map(p => p.shape === 'noFee' ? `<span class="val">${esc(show(pctLabel(0, s)))}</span>`
+      : p.shape === 'included' ? html(tt, 'cell.feeAbove', { fee: fee(p), included: whole(p.includedMinor as number) }) : `<span class="val">${esc(fee(p))}</span>`))
+    + row(tt('pay.walkUp'), plans.map(p => walkUpFree(catalog, p) ? `<span class="val">${esc(tt('cell.free'))}</span>` : none))
+  const sections = tableGroups().map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), plans.map(p => {
+    const c = tableCell(catalog, r, p)
+    return c === 'off' ? none : c === 'soon' ? `<span class="soon">${esc(tt('cell.comingSoon'))}</span>` : `<span class="yes">${tick(locale)}</span>`
+  }), r.note ? noteMarker(r.note) : undefined)).join('')).join('')
 
-  const priceNote = PRICE_MODE === 'follow-flag' && !PRICING_PUBLISHED
+  // pricing-tidy (20 October 2026): the card-fee footnote, then the rows' disclosures (¹ WhatsApp auto-replies, ² Kitchen
+  // ticket printing) — the same notes /features and Billing print (components/pricing/PlanTable.tsx planTableNotes).
+  const footnote = `<p>${esc(tp('footnote', { cardFee: show(cardFeeOnlineLabel(s)), country: s.shortName ?? s.name }))}</p>`
+    + planTableNotes(locale).map(n => `<p><sup>${esc(n.marker)}</sup> ${esc(n.text)}</p>`).join('')
+  const priceNote = (PRICE_MODE === 'follow-flag' && !PRICING_PUBLISHED) || masked
     ? `<p class="tbc">${esc(t('priceNoteMasked'))}</p>` : ''
-  const omitNote = PRICE_MODE === 'omit'
+  const omitNote = omit
     ? `<p class="tbc">${esc(t('omitNote'))}</p>` : ''
 
   return `<!doctype html><html><head><meta charset="utf-8"><style>
@@ -221,8 +273,8 @@ export function buildPlansPdfHtml(s: CountrySettings): string {
      36px out, "Pro" 44.9px). Alignment is now declared per COLUMN CLASS and shared by th and td, so a
      header and its cells cannot disagree. */
   th, td { vertical-align: top; padding: 5px 6px; }
-  th.f, td.f { width: 40%; text-align: left; }
-  th.c, td.c { width: 15%; text-align: center; }
+  th.f, td.f { width: 40%; text-align: left; }   /* Stage B: the plan columns share the other 60% — one per public plan. */
+  th.c, td.c { width: ${(60 / Math.max(1, plans.length)).toFixed(2)}%; text-align: center; }
   thead th { border-bottom: 2px solid var(--navy); }
   /* 🔴 REPEAT THE HEADER ON EVERY PAGE. A comparison table whose plan columns are unlabelled after
      page 1 is unreadable, and this is the one thing print gets wrong by default. */
@@ -230,12 +282,10 @@ export function buildPlansPdfHtml(s: CountrySettings): string {
   tr { break-inside: avoid; page-break-inside: avoid; }
   .th-plan { font-weight: 700; font-size: 11px; }
   .th-price { font-weight: 700; font-size: 10px; }
-  .th-sub { color: #5F7A99; font-size: 8px; font-weight: 400; }
   tbody tr { border-bottom: 1px solid #E6ECF2; }
   tr.grp td { background: #F5F8FB; font-weight: 700; font-size: 9px; letter-spacing: .1em;
               text-transform: uppercase; color: var(--navy); border-top: 1px solid #D8E2EC; }
   .f-name { display: block; font-weight: 600; }
-  .f-desc { display: block; color: #5F7A99; font-size: 8.5px; margin-top: 1px; }
   .yes { color: #1F7A3D; font-weight: 700; }
   /* The drawn tick. "stroke: currentColor" means it inherits .yes's green, so the colour still lives in
      one place. Sized to the 9.5px body text and nudged onto its baseline. */
@@ -245,9 +295,29 @@ export function buildPlansPdfHtml(s: CountrySettings): string {
   .soon { color: #B26B0F; font-size: 8px; }
   .val { font-weight: 600; }
   sup { font-size: 7px; color: #5F7A99; }
-  .allow { margin-top: 12px; }
-  .allow h3, .fn h3 { font-size: 10px; margin: 0 0 3px; color: var(--navy); }
-  .allow ul { margin: 0; padding-left: 14px; } .allow li { margin-bottom: 1px; }
+  .fn h3 { font-size: 10px; margin: 0 0 3px; color: var(--navy); }
+  /* ── Stage B: the pricing section (banner, cards, cheapest bar) above the table, in this document's palette. ── */
+  .banner { border: 1px solid #F3D3AE; background: #FFF7EE; border-radius: 6px; padding: 7px 9px; margin-bottom: 10px; }
+  .banner b { display: block; font-size: 12px; color: var(--navy); margin-bottom: 2px; }
+  .banner span { color: #44566B; }
+  .cards { display: flex; gap: 8px; margin-bottom: 8px; break-inside: avoid; }
+  .card { flex: 1; min-width: 0; border: 1px solid #D8E2EC; border-radius: 6px; padding: 8px 9px; position: relative; }
+  .card.hl { border: 2px solid var(--orange); }
+  .tag { position: absolute; top: -7px; left: 9px; background: var(--orange); color: #fff; font-size: 7px; font-weight: 700;
+         letter-spacing: .1em; padding: 1px 5px; border-radius: 3px; }
+  .c-name { font-size: 12px; font-weight: 700; color: var(--navy); }
+  .c-who { color: #5F7A99; font-size: 8.5px; }
+  .c-price { font-size: 15px; font-weight: 700; margin-top: 4px; }
+  .c-price span { font-size: 8.5px; font-weight: 400; color: #5F7A99; }
+  .c-fee { margin: 3px 0 5px; color: #44566B; }
+  .card ul { margin: 0; padding-left: 12px; } .card li { margin-bottom: 1px; }
+  .card li.lead { list-style: none; margin-left: -12px; font-weight: 700; }
+  .card .sub { display: block; color: #5F7A99; font-size: 8.5px; }
+  .soon-chip { margin-left: 4px; font-size: 7px; text-transform: uppercase; letter-spacing: .05em; color: #93A1B4;
+               border: 1px solid #D8E2EC; border-radius: 3px; padding: 0 3px; }
+  .cheap { margin-bottom: 12px; color: #44566B; }
+  .cheap b { color: #1A2233; }
+  th.hl, td.hl { background: #FFF7EE; }
   .fn { margin-top: 12px; border-top: 1px solid #D8E2EC; padding-top: 8px; break-inside: avoid; }
   .fn p { margin: 0 0 4px; color: #44566B; font-size: 8px; }
   .tbc { font-size: 8px; color: #B26B0F; margin: 6px 0 0; }
@@ -257,12 +327,12 @@ export function buildPlansPdfHtml(s: CountrySettings): string {
       <h1>${esc(translatorFor(s.locale, 'plansPdf')('title'))}</h1>
       <span class="gen">${esc(t('generated', { date: new Date().toISOString().slice(0, 10) }))}</span>
     </div>
+    ${banner}${cards}${bar}
     <table>
       <thead><tr><th class="f"></th>${heads}</tr></thead>
-      <tbody>${fees}${sections}</tbody>
+      <tbody>${pay}${sections}</tbody>
     </table>
-    ${allowances}
-    <div class="fn"><h3>${esc(t('smallPrint'))}</h3>${notes}${priceNote}${omitNote}
+    <div class="fn"><h3>${esc(t('smallPrint'))}</h3>${footnote}${priceNote}${omitNote}
       <p>${esc(t('terms'))}</p>
     </div>
   </body></html>`
@@ -302,15 +372,16 @@ export async function launchPdfBrowser() {
  * A default here would be the silent GB fallback lib/country-settings.ts exists to refuse.
  */
 export async function generatePlansPdf(country: string): Promise<Buffer> {
-  // Read BEFORE the browser launches, so an unknown country fails fast and costs no Chromium.
+  // Read BEFORE the browser launches, so an unknown country (or an unreadable catalogue) fails fast and costs no Chromium.
   const settings = await getCountrySettings(country)
+  const catalog = await getPlanCatalog()
   let browser: unknown = null
   try {
     browser = await launchPdfBrowser()
     const b = browser as { newPage: () => Promise<{ setContent: (h: string, o: object) => Promise<void>; pdf: (o: object) => Promise<Uint8Array> }> }
     const page = await b.newPage()
     // ⚠️ setContent, NOT a navigation to our own URL — the note the route carried, kept with the code.
-    await page.setContent(buildPlansPdfHtml(settings), { waitUntil: 'load' })
+    await page.setContent(buildPlansPdfHtml(settings, catalog), { waitUntil: 'load' })
     const pdf = await page.pdf({ format: pdfPaperOf(settings).format, printBackground: true, preferCSSPageSize: true })
     return Buffer.from(pdf)
   } finally {

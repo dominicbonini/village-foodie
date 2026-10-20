@@ -15,6 +15,8 @@ import { createClient } from '@supabase/supabase-js'
 import { sendOperatorWelcomeEmail, firstNameFrom } from '@/lib/email-signup'
 import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+import { getPlanCatalog } from '@/lib/plans-server'
+import { effectivePlan, trialMonthsOf } from '@/lib/plans'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -98,6 +100,17 @@ export async function GET(req: NextRequest) {
       const { data: op } = await supabase
         .from('operators').select('name, email, first_name').eq('id', row.operator_id).maybeSingle()
       const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL || origin
+      // Stage B (docs/pricing-pages-report.md): "Your {N}-month free trial has started — every feature unlocked." —
+      // only while the truck's effective plan IS a running trial; N is that plan's plans.trial_months.
+      let trialMonths: number | null = null
+      if (truck?.dashboard_token) {
+        const { data: tp } = await supabase
+          .from('trucks').select('plan, trial_expires_at').eq('dashboard_token', truck.dashboard_token).maybeSingle()
+        if (tp?.trial_expires_at) {
+          const eff = effectivePlan(tp, await getPlanCatalog())
+          if (eff.plan.isTrial) trialMonths = trialMonthsOf(eff.plan)
+        }
+      }
       await sendOperatorWelcomeEmail({
         to: op?.email || row.email,
         // V1(e) SAME CHAIN AS THE VERIFICATION EMAIL: typed first_name → first word of name → "there".
@@ -117,6 +130,7 @@ export async function GET(req: NextRequest) {
         manageUrl: `${base}/manage`,
         // Language Phase 1c: the operator's truck's language when they have one; left out (en-GB) otherwise.
         ...(truck ? { locale: await localeForTruck(truck) } : {}),
+        trialMonths,
       })
     } catch (e) {
       console.error('[verify-signup] welcome email failed (verification still succeeded):', e)

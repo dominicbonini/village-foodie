@@ -25,7 +25,6 @@ import { OptionStockBadge } from '@/components/OptionStockBadge';
 import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot, type EngineReservation } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
-import { hasFeature } from '@/lib/features';
 import { formatTime, formatSlot, getNowMinsInTz, getLocalDateInTz, instantOfLocal, addDaysYmd, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
 import { preorderOpenDate, formatPreorderOpenLabel } from '@/lib/preorder';
 // 17 October 2026: an event that runs past midnight — one rule, lib/event-window.ts (its after-midnight times are the next day's).
@@ -34,6 +33,8 @@ import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
 import { clockGridMinutes } from '@/lib/slot-generation'
 import { formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
+import { feePhrase } from '@/lib/fee-phrase'
+import { PRIVACY_PATH } from '@/lib/legal'
 import { MoneyProvider } from '@/components/MoneyContext'
 // Phase 3 screens: tax, a tip and the service fee, SHOWN with the server's own pure engine. The server
 // re-prices on submit; the browser sends only the tip choice.
@@ -68,7 +69,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
 interface ModifierGroup { id: string; name: string; hide_name?: boolean; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null;
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: string; preordering_on?: boolean; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null;
   /** 🔴 The truck's zone and how its times and dates look (Phase 2B) — from /api/menu. */
   time?: TimeSettings | null;
   /** 🔴 The phone box's country, name and example (Phase 2C) — from /api/menu, never the settings row. */
@@ -78,6 +79,9 @@ interface TruckData { id: string; name: string; logo: string | null; mode: 'vill
   /** 🔴 Whether to OFFER a card option, from /api/menu. Absent/false ⇒ Pay-at-Hatch, silently, exactly
    *  as before. A RENDERING HINT ONLY — lib/payments/authorize re-reads readiness server-side. */
   card_payments_ready?: boolean
+  /** 🔴 Whether to OFFER Pay at Hatch, from /api/menu (Stage A2: the truck's plan and its override). Absent ⇒ offered, as
+   *  before. False ⇒ no pay-at-the-truck choice; with no card option either, the menu says ordering is unavailable. */
+  pay_at_hatch_on?: boolean
   /** Phase 3 screens: the checkout rules /api/menu sends ONLY when tax is added at checkout, tips are on or a
    *  service fee applies — never for a UK truck, so every branch that reads it is dead there. */
   checkout?: CheckoutRules }
@@ -480,6 +484,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // not completed Stripe onboarding — all of them today — the choice is never rendered and this value
   // never reaches the submit path, so the page behaves exactly as it did before.
   const [payByCard, setPayByCard] = useState(true)
+  // Stage A2: a plan without Pay at Hatch is never offered it — only the card, so there is no choice to draw.
+  const payAtHatchOffered = truck?.pay_at_hatch_on !== false
   /* ── Phase 3 screens: THE TIP CHOICE — the only money input the browser sends. 'none' by default.
    * A number is a preset in basis points; 'other' reads `tipOther`, typed in major units. */
   const [tipSel, setTipSel] = useState<'none' | number | 'other'>('none')
@@ -1703,6 +1709,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       {tOrder('taxNotice', { tax: checkout.taxLabel.toLowerCase() })}
     </p>
   ) : null
+  // BESIDE IT (legal follow-ups, 19 October 2026): where the truck's online card orders carry a service fee, ONE line says
+  // so before the customer orders — the fee as the engine resolves it ("3% + 30¢", lib/fee-phrase feePhrase, the same
+  // phrase Manage's charges card shows). None for a truck with no fee, so every UK page is unchanged.
+  const feeNoticeEl = checkout?.serviceFee ? (
+    <p className="text-[11px] text-slate-500 mb-2" data-fee-notice>
+      {tOrder('serviceFeeNotice', { fee: feePhrase(checkout.serviceFee.bps, checkout.serviceFee.fixedMinor, truck?.money?.currency ?? '', amountMinor) })}
+    </p>
+  ) : null
+  // UNDER "Place order" (legal follow-ups, 19 October 2026): a small link to the privacy policy, where the customer's
+  // name, email and phone are collected. Opens in a new tab so the basket and form stay as they are.
+  const privacyLinkEl = (
+    <p className="text-center text-slate-400 text-xs mt-1">
+      <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{tOrder('privacyLink')}</a>
+    </p>
+  )
   // UNDER "Pay at the truck": what that choice leaves out — one line, either or both halves.
   const payAtTruckNote = checkout
     ? [checkout.serviceFee ? tOrder('noServiceFee') : null, checkout.tipping ? tOrder('tipInPerson') : null].filter(Boolean).join(' ')
@@ -2431,8 +2452,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   //     a customer who has just paid would sit on "Loading menu..." indefinitely.
   //   - `error && !submitted` fires on any menu-fetch failure with "This truck is not currently taking
   //     orders." A paid customer must not be told the truck is closed.
-  //   - 🔴 THE FEATURE GATE IS THE WORST ONE. `advance_preordering` is NOT held by plan 'starter', so on
-  //     a starter truck this branch would render "Online ordering not available" — to a customer holding
+  //   - 🔴 THE FEATURE GATE IS THE WORST ONE. Where `advance_preordering` is switched off (a feature override
+  //     since plans-data-model, Stage A — it was plan 'starter' before), this branch would render "Online ordering not available" — to a customer holding
   //     a receipt for an order that truck has just taken and been paid for. The gate is correct about
   //     placing NEW orders and has no business judging a completed one.
   // ⚠️ THE COST OF SITTING FIRST is that this branch owns its own loading and error states. That is the
@@ -2533,7 +2554,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     </Shell>
   )
 
-  if (truck && !hasFeature(truck.plan, 'advance_preordering')) {
+  if (truck && truck.preordering_on === false) {
     return (
       <Shell>
         <Hdr slug={slug} truck={truck} scrolled={false} />
@@ -3709,6 +3730,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       large order scrolls WITHIN this 40vh box so the collection-time + name/email
                       fields stay reachable below. The footer peek is uncapped (unchanged). */}
                   {taxNoticeEl}
+                  {feeNoticeEl}
                   {sheetSummaryOpen && <div className="mt-2 max-h-[40vh] overflow-y-auto">{orderBreakdown(false)}</div>}
                 </div>
               )}
@@ -3943,7 +3965,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   then fails, and no explanation of a thing that is not on offer.
                   ⚠️ Stacked rows in the existing radio vocabulary — a filled circle in a ring — not a
                   native <input>, matching the pattern used across Manage. */}
-              {truck?.card_payments_ready && (
+              {truck?.card_payments_ready && payAtHatchOffered && (
                 <div className="mt-4 space-y-1.5">
                   {([
                     { key: true,  label: tOrder('payNowByCard'), hint: tOrder('payNowByCardHint') },
@@ -3993,6 +4015,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   ? tOrder('payByCardLine')
                   : tOrder('payAtTruckLine')}
               </p>
+              {privacyLinkEl}
               </div>
               ) : (<>
                             <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
@@ -4009,6 +4032,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   ? tOrder('payByCardLine')
                   : tOrder('payAtTruckLine')}
               </p>
+              {privacyLinkEl}
               </>)}
 
               </>) : (<>
@@ -4024,7 +4048,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   then fails, and no explanation of a thing that is not on offer.
                   ⚠️ Stacked rows in the existing radio vocabulary — a filled circle in a ring — not a
                   native <input>, matching the pattern used across Manage. */}
-              {truck?.card_payments_ready && (
+              {truck?.card_payments_ready && payAtHatchOffered && (
                 <div className="mt-4 space-y-1.5">
                   {([
                     { key: true,  label: tOrder('payNowByCard'), hint: tOrder('payNowByCardHint') },
@@ -4058,6 +4082,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   ? tOrder('payByCardLine')
                   : tOrder('payAtTruckLine')}
               </p>
+              {privacyLinkEl}
 
               </>)}
               </div>{/* end review, hidden while paying */}
@@ -4098,6 +4123,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </button>
 
               {taxNoticeEl}
+              {feeNoticeEl}
               {/* Expanded breakdown — shared element (see orderBreakdown), also used in the sheet.
                   US layout proposal, fix 10 (A-04): with tax / fee / tip lines (never a UK truck) its item lines are
                   height-capped and scroll inside the footer, as the sheet's summary does, with the totals kept in view
@@ -4563,6 +4589,10 @@ function OrderConfirmation({
           <a href={`/trucks/${slug}/order`} className="block w-full bg-slate-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-800 transition-colors">
             {t('backTo', { truck: truckName })}
           </a>
+          {/* Legal follow-ups (19 October 2026): the privacy policy, small, under the way back. */}
+          <p className="text-slate-400 text-xs mt-4">
+            <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">{t('privacyLink')}</a>
+          </p>
         </div>
       </div>
     </Shell></MoneyProvider>

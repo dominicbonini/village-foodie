@@ -3,7 +3,9 @@
   "loadFailed": "Failed to load",
   "requestFailed": "Failed",
   "invalidToken": "Invalid or expired token",
+  "loadFailedReason": "Could not load this page: {reason}",
   "noCountrySettings": "Couldn’t load this truck’s country settings. Please refresh.",
+  "noPlans": "Couldn’t load this truck’s plan. Please refresh.",
   "stale": "{hasTime, select, yes {Couldn’t refresh. Showing what was saved at {time}. Changes you make are still saved.} other {Couldn’t refresh. Showing what was saved. Changes you make are still saved.}}",
   "verify": {
     "ok": "Email confirmed — thank you.",
@@ -72,10 +74,10 @@
     }
   },
   "trialPopup": {
-    "title": "You’re on a free trial",
+    "title": "{months, select, none {You’re on a free trial} other {You’re on a {months}-month free trial}}",
     "ends": "{hasDate, select, yes {Trial ends <hl>{date}</hl>} other {Trial ends <hl>soon</hl>}}",
-    "offer": "Full Max features + Pay at Hatch ordering — completely free*",
-    "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Every feature free for # month} other {Every feature free for # months}}} other {Every feature free during your trial}}",
+    "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.}}",
     "fees": "*Standard card processing fees apply on online orders",
     "upgrade": "Upgrade here →"
   }

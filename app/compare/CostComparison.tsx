@@ -17,10 +17,11 @@
 // ⚠️ The redirect target is /contact, NEVER '/': proxy.ts rewrites '/' to the landing on hatchgrab.com,
 // so redirecting there loops forever on the domain given to Apple as the Marketing URL.
 //
-// ── 🔴 EVERY PRICE COMES FROM THE STRUCTURED CONSTANTS. NOTHING IS PARSED, NOTHING IS TYPED TWICE. ──
-// The prototype hardcoded £29 / £49 / £1,500 / £2,000 / 0.99% / 1.5% / 20p. All seven now come from
-// lib/features.ts and lib/plan-features.ts. A marketing page with its own copy of the numbers is
-// exactly the gate/marketing drift the parity guard exists to prevent, arriving by another route.
+// ── 🔴 EVERY PRICE COMES FROM THE PLAN DATA. NOTHING IS PARSED, NOTHING IS TYPED TWICE. ──
+// Stage B of the new pricing (docs/pricing-pages-report.md): the plans, their monthly prices, included amounts and
+// fees are public.plans / plan_prices (lib/plans.ts, through lib/plan-offer.ts), passed in by the server page; card
+// processing is the country's (lib/card-fees.ts). The plan the page suggests is the CHEAPEST at the volume entered
+// (lib/plan-offer.ts cheapestAt) — ⛔ no plan key or name is written here, and a fourth plan simply joins the choice.
 //
 // ── ⚠️ MONEY IS POUNDS HERE, AND ONLY HERE ─────────────────────────────────────────────────────────
 // The constants are integer PENCE, which is the codebase's money type. This page converts to pounds at
@@ -30,15 +31,11 @@
 // pence — see §16 on `orders.total_minor`.
 import { useState, useMemo } from 'react'
 import { DemoCta } from '@/components/landing/DemoUpload'
-import { planMonthlyMinor } from '@/lib/features'
-import {
-  platformFeeOverAllowance,
-  allowanceAmountLabel,
-  allowanceMinorFor,
-  cardFees,
-} from '@/lib/plan-features'
+import { cardFees } from '@/lib/card-fees'
+import type { PlanCatalog } from '@/lib/plans'
+import { offerPlans, offerTrialMonths, cheapestAt, type OfferPlan, type FeeShape } from '@/lib/plan-offer'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { toMajor, formatMajor, smallFeeLabel, minorDigits, roundsToZero, feeLabel, pctLabel, minorUnitSuffix, type MoneyFormat } from '@/lib/money-format'
+import { toMajor, formatMajor, formatWholeAmount, smallFeeLabel, minorDigits, roundsToZero, feeLabel, pctLabel, minorUnitSuffix, type MoneyFormat } from '@/lib/money-format'
 import { moneyFormatOf } from '@/lib/country-settings-types'
 import { contactHref } from '@/lib/contact-topics'
 // Language Phase 1e: every word on this page is in messages (`compare`), read in the locale the PAGE passes in — the
@@ -75,36 +72,25 @@ const CREAM = '#FFF7EE'
 const INK = '#1A2233'
 const SLATE = '#334155'
 
-// ── THE REAL NUMBERS, FROM THE MARKETING COUNTRY'S SETTINGS ─────────────────────────────────────────
-// These were module constants until 10 October 2026; they now come from country_settings, which the
-// server page reads (lib/marketing-country.ts) and passes in. 🔴 STILL LOUD: `allowanceMinorFor` and
-// `planMonthlyMinor` THROW on an undecided price or a tier that stops being an amount, and the page is
-// server-rendered, so that failure happens on the server before anything reaches a visitor — not on the
-// third click of a page that has already told someone a number.
-// ⚠️ The allowance union's other two cases ('none' for starter, 'unlimited' for trial) are unreachable
-// because this page only ever offers pro and max, and `allowanceMinorFor` is typed to those two.
+// ── THE REAL NUMBERS, FROM THE PLAN DATA AND THE COUNTRY'S SETTINGS ─────────────────────────────────
+// Stage B: one entry per public plan priced in the country (lib/plan-offer.ts offerPlans), in sort_order, converted to
+// whole units at this boundary. `included` null = unlimited; the fee is the plan's own (plan_prices.fee_bps), charged
+// on online card orders above `included`. Card processing is STRIPE'S, the fee is OURS — two sources, two owners.
 // ⚠️ toMajor, NOT `/ 100` — the manual's "never hardcode ×100" (zero-decimal currencies exist).
-function pricingFrom(s: CountrySettings) {
+interface ComparePlan { offer: OfferPlan; key: string; name: string; monthly: number; included: number | null; feePct: number; shape: FeeShape; includedLabel: string | null }
+function pricingFrom(s: CountrySettings, catalog: PlanCatalog) {
   const cur = s.currency
-  const PLANS = {
-    pro: {
-      name: 'Pro',
-      monthly: toMajor(planMonthlyMinor('pro', s), cur),
-      allowance: toMajor(allowanceMinorFor('pro', s), cur),
-      allowanceLabel: allowanceAmountLabel(allowanceMinorFor('pro', s), s),
-    },
-    max: {
-      name: 'Max',
-      monthly: toMajor(planMonthlyMinor('max', s), cur),
-      allowance: toMajor(allowanceMinorFor('max', s), cur),
-      allowanceLabel: allowanceAmountLabel(allowanceMinorFor('max', s), s),
-    },
-  } as const
-  // Card processing is STRIPE'S, the overage is OURS — two functions, two owners (lib/plan-features.ts).
+  const fmt = moneyFormatOf(s)
+  const PLANS: ComparePlan[] = offerPlans(catalog, s.countryCode).map(o => ({
+    offer: o, key: o.plan.key, name: o.plan.name,
+    monthly: toMajor(o.monthlyMinor, cur),
+    included: o.includedMinor === null ? null : toMajor(o.includedMinor, cur),
+    feePct: o.feeBps / 100, shape: o.shape,
+    includedLabel: o.includedMinor === null ? null : formatWholeAmount(o.includedMinor, fmt),
+  }))
   const CARD_PCT = cardFees(s).online.pct
   const CARD_PENCE = cardFees(s).online.fixedMinor
-  const OVERAGE = platformFeeOverAllowance(s).pct
-  return { PLANS, CARD_PCT, CARD_PENCE, OVERAGE }
+  return { PLANS, CARD_PCT, CARD_PENCE }
 }
 
 // Average order value. ⚠️ THE ONE FIGURE ON THIS PAGE THAT IS OURS RATHER THAN SOURCED — it converts
@@ -260,20 +246,21 @@ function anchor(v: number): AnchorId | null {
 // 🔴 DO NOT ADD A PROVIDER HERE TO "MAKE THIS COMPONENT SELF-CONTAINED". A second provider would give
 // these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
 // the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
-export default function CostComparison({ settings, locale }: {
+export default function CostComparison({ settings, catalog, locale }: {
   /** The marketing country's settings, read server-side by app/compare/page.tsx. */
   settings: CountrySettings
+  /** The plan catalogue (public.plans / plan_prices / plan_features), read server-side by the page. */
+  catalog: PlanCatalog
   /** The page's language — the visitor's country's locale, decided by the server page (never re-resolved here). */
   locale: AppLocale
 }) {
   const t = useMemo(() => compareT(locale), [locale])
-  const { PLANS, CARD_PCT, CARD_PENCE, OVERAGE } = useMemo(() => pricingFrom(settings), [settings])
+  const { PLANS, CARD_PCT, CARD_PENCE } = useMemo(() => pricingFrom(settings, catalog), [settings, catalog])
   // The marketing country's money format, and the page's helpers bound to it (same names, same calls).
   const fmt = moneyFormatOf(settings)
   // Card processing as one phrase ("1.5% + 20p", "2.9% + 30¢") and the overage rate ("0.99%") — lib/money-format's
   // own labels, so the coin ("p" / "¢") comes from its table and is never typed here.
   const cardFee = feeLabel({ pct: CARD_PCT, fixedMinor: CARD_PENCE }, fmt)
-  const overagePct = pctLabel(OVERAGE, fmt)
   const gbp = (n: number, dp = 0) => gbpIn(fmt, n, dp)
   const money = (n: number) => moneyIn(fmt, n)
   const isRealSaving = (n: number) => isRealSavingIn(fmt, n)
@@ -294,12 +281,12 @@ export default function CostComparison({ settings, locale }: {
   const [days, setDays] = useState(4)
   const [trucks, setTrucks] = useState(1)
   const [staff, setStaff] = useState<1 | 2 | null>(null)
-  // ── 🔴 THE OVERRIDE IS `null`-ABLE ON PURPOSE, AND `null` IS NOT "PRO". ──────────────────────────
-  // Three states, not two: no choice made (follow the suggestion), chose Pro, chose Max. A boolean
+  // ── 🔴 THE OVERRIDE IS `null`-ABLE ON PURPOSE, AND `null` IS NOT A PLAN. ──────────────────────────
+  // No choice made (follow the suggestion), or the key of the plan chosen instead. A boolean
   // could not tell "they have not chosen" from "they chose the plan we suggest", and the eyebrow in the
   // panel says something different in each case — "We suggest" vs "Your choice". Collapsing this to a
   // plan key with a default would make the panel claim they had chosen something they never touched.
-  const [planOverride, setPlanOverride] = useState<'pro' | 'max' | null>(null)
+  const [planOverride, setPlanOverride] = useState<string | null>(null)
   const [gmv, setGmv] = useState(2500)
   // ⚠️ RAW STRINGS, NOT NUMBERS, FOR EVERY FREE-ENTRY FIELD. A number-typed state cannot represent "the
   // box is empty while I retype it": `+''` is 0, so clearing the field would snap the value to zero and
@@ -309,7 +296,8 @@ export default function CostComparison({ settings, locale }: {
   // country_settings.competitor_* columns that used to fill these are retired and unread (20261010_10).
   const [feePctRaw, setFeePctRaw] = useState('')
   const [feePenceRaw, setFeePenceRaw] = useState('')
-  const [freeMonthsRaw, setFreeMonthsRaw] = useState('1')
+  // Stage B: prefilled with the trial's length (plans.trial_months) — the offer a new truck actually gets.
+  const [freeMonthsRaw, setFreeMonthsRaw] = useState(() => String(offerTrialMonths(catalog) ?? 0))
   // ── 🔴 IS THE RATE THEY TYPED ALL-IN, OR PLATFORM-ONLY? ──────────────────────────────────────────
   // The page used to assume ALL-IN unconditionally and subtract card processing out of it. That is
   // right for a provider that quotes one all-in rate and WRONG for any
@@ -327,18 +315,22 @@ export default function CostComparison({ settings, locale }: {
   const freeMonths = numOr(freeMonthsRaw, 0)
 
   // ── 🔴 ONE PLACE DECIDES THE ACTIVE PLAN, AND EVERYTHING DOWNSTREAM ALREADY READS IT. ───────────
-  // `isMax` used to BE the answer to question 2. It is now the answer OR the operator's override, and
-  // because `tier`/`plan`/`allowance` below are unchanged, every figure on the page — the memo, the
-  // hero, both year lines, the overage maths — follows the override without a single further edit.
-  // ⚠️ `?? `, NOT `||`. `planOverride` is a non-empty string or null; `||` would behave identically
-  // TODAY and break the day someone adds a falsy member. The nullish operator says what is meant.
-  const suggestedKey: 'pro' | 'max' = staff === 2 ? 'max' : 'pro'
-  const activeKey = planOverride ?? suggestedKey
-  const isMax = activeKey === 'max'
-  const tier = isMax ? PLANS.max : PLANS.pro
+  // Stage B: the suggestion is the CHEAPEST plan at the online volume entered (lib/plan-offer.ts cheapestAt — the
+  // same rule as the landing's "Which plan is cheapest for me?" bar), so it moves with the slider. It used to be the
+  // staff answer (two or more people → the plan with separate logins); every plan has separate logins now.
+  // The override is a plan key; every figure on the page — the memo, the hero, both year lines, the fee maths —
+  // follows `tier` below.
+  // ⚠️ `?? `, NOT `||`: the nullish operator says what is meant.
+  const suggested = cheapestAt(PLANS.map(p => p.offer), Math.round(gmv * 10 ** minorDigits(settings.currency))) ?? PLANS[0].offer
+  const suggestedKey = suggested.plan.key
+  const activeKey = planOverride && PLANS.some(p => p.key === planOverride) ? planOverride : suggestedKey
+  const tier = PLANS.find(p => p.key === activeKey) ?? PLANS[0]
   const plan = tier.monthly
   const planName = tier.name
-  const allowance = tier.allowance
+  const feePctLabel = pctLabel(tier.feePct, fmt)
+  // The memo below reads these two primitives, not `tier` itself (a new object each render).
+  const included = tier.included
+  const planFeePct = tier.feePct
   const free = Math.min(12, Math.max(0, freeMonths))
   const fleet = Math.max(1, trucks || 1)
 
@@ -370,8 +362,10 @@ export default function CostComparison({ settings, locale }: {
     const theirPence = Math.max(0, feeMode === 'ontop' ? feePence : feePence - CARD_PENCE)
 
     const theirsPerTruck = (gmv * theirPct) / 100 + (orders * theirPence) / 100
-    const excess = Math.max(0, gmv - allowance)
-    const overPerTruck = (excess * OVERAGE) / 100
+    // Stage B: the plan's fee on online orders above what it includes — all of them when it includes nothing,
+    // none when it is unlimited (included null) or charges no fee.
+    const excess = included === null ? 0 : Math.max(0, gmv - included)
+    const overPerTruck = (excess * planFeePct) / 100
 
     const theirsMonth = theirsPerTruck * fleet
     const oursMonth = (plan + overPerTruck) * fleet
@@ -407,8 +401,8 @@ export default function CostComparison({ settings, locale }: {
       pctY2: theirsYear > 0 ? ((theirsYear - oursY2) / theirsYear) * 100 : 0,
       twoYear: theirsYear * 2 - (oursY1 + oursY2),
     }
-  // CARD_PCT / CARD_PENCE / OVERAGE are the settings' (memoised above on `settings`), so they are listed.
-  }, [gmv, feePct, feePence, feeMode, plan, free, allowance, fleet, CARD_PCT, CARD_PENCE, OVERAGE])
+  // CARD_PCT / CARD_PENCE are the settings' (memoised above on `settings`), so they are listed; `included` / `planFeePct` the plan's.
+  }, [gmv, feePct, feePence, feeMode, plan, free, included, planFeePct, fleet, CARD_PCT, CARD_PENCE])
 
   // 🔴 EVERY PLACE THAT ANNOUNCES A SAVING AS A FIGURE HANGS OFF THIS, so they cannot disagree: the
   // hero heading, the hero colour, the "that's a new fryer" anchor and the primary CTA label.
@@ -434,6 +428,15 @@ export default function CostComparison({ settings, locale }: {
   // not wrap to two lines. A fixed Tailwind size cannot do this — it is the one inline style that must
   // survive conversion.
   const heroSize = heroSizeFor(gbp(Math.abs(m.saveY1)))
+  // Stage B: the breakdown's fee row, worded by the plan's SHAPE (lib/plan-offer.ts feeShape) — one copy for both paths.
+  const feeRow = tier.shape === 'noFee'
+    ? <BRow label={t('breakdown.noFee')} amount={gbp(0, 2)} />
+    : m.excess > 0
+      ? <BRow label={tier.shape === 'feeOnly'
+          ? t('breakdown.feeOnly', { pct: feePctLabel, excess: gbp(m.excess) })
+          : t('breakdown.over', { pct: feePctLabel, excess: gbp(m.excess), allowance: tier.includedLabel ?? '' })}
+          amount={gbp(m.overPerTruck, 2)} />
+      : <BRow label={tier.shape === 'feeOnly' ? t('breakdown.feeOnly', { pct: feePctLabel, excess: gbp(0) }) : t('breakdown.inside', { allowance: tier.includedLabel ?? '' })} amount={gbp(0, 2)} />
 
   return (
     <div className="min-h-screen px-5 py-10 md:py-14" style={{ backgroundColor: '#FAF8F5', color: INK }}>
@@ -540,9 +543,9 @@ export default function CostComparison({ settings, locale }: {
           <Card n={STEP.people} title={t('people.title', { fleet })}
             disabled={!hasSystem}>
             {/* 🔴 ANSWERING QUESTION 2 CLEARS THE OVERRIDE (the `setPlanOverride(null)` below). Without
-                it, an operator who switched to Pro and then changed their answer to "Two or more" would
-                be shown "Your choice: Pro" with every figure computed on Pro — a stale decision presented
-                as a current one, made from an answer they had just replaced. ⚠️ It resets on EVERY press,
+                it, an operator who switched plan and then changed their answer would be shown "Your
+                choice" from before — a stale decision presented as a current one, made from an answer
+                they had just replaced. ⚠️ It resets on EVERY press,
                 including pressing the answer already selected: that is still the operator asserting it.
                 ⚠️ THIS COMMENT LIVES HERE, NOT NEXT TO THE onClick, BECAUSE A JSX COMMENT PLACED
                 DIRECTLY AFTER `.map(o => (` IS AN EXPRESSION, NOT A CHILD, AND FAILS THE BUILD. */}
@@ -568,48 +571,43 @@ export default function CostComparison({ settings, locale }: {
                 ⚠️ Unlike the hero panel this one is FULL WIDTH — no centring wrapper, no width class. It
                 is a block inside a left-aligned card, not a centred island, so plain block flow is
                 already correct and adding a width would be the exact mistake that broke the hero twice.
-                🔴 EVERY NUMBER IS INTERPOLATED. `gbp(plan)` resolves through `tier.monthly` to
-                `planMonthlyMinor()`; `tier.allowanceLabel` through `allowanceMinorFor` to
-                `planOnlineAllowance()` (country_settings). ⚠️ NO £29, £49, £1,500 OR £2,000 IS WRITTEN IN THIS FILE.
+                🔴 EVERY NUMBER IS INTERPOLATED, from public.plan_prices (Stage B): `tier.monthly`, `tier.includedLabel`,
+                `tier.feePct`. ⚠️ NO PRICE, ALLOWANCE OR FEE IS WRITTEN IN THIS FILE.
                 ⚠️ "on each" IS GATED ON `fleet`, NOT ON `staff` — the allowance is per truck, so it only
                 means anything when there is more than one truck to spread it across. */}
             {staff && (
               <div className="mt-4 rounded-xl px-5 py-4" style={{ backgroundColor: '#F8FAFC' }}>
                 {/* ⚠️ THE EYEBROW TELLS THE TRUTH ABOUT WHOSE DECISION THIS IS. Once someone overrides,
-                    "We suggest Pro" would be a lie — we suggested Max and they declined it. */}
+                    "We suggest" would be a lie — we suggested another plan and they declined it. */}
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   {planOverride ? t('plan.yourChoice') : t('plan.weSuggest')}
                 </p>
                 <p className="mt-1 text-2xl font-black" style={{ color: INK }}>{planName}</p>
                 <p className="mt-1 text-sm text-slate-600">
-                  {t('plan.summary', { price: gbp(plan), allowance: tier.allowanceLabel, fleet })}
-                  {isMax && <>{' '}{t('plan.ownLogin')}</>}
+                  {/* Stage B: worded by the plan's SHAPE; every plan has separate logins, so "Two or more" says so on any. */}
+                  {tier.shape === 'included'
+                    ? t('plan.summary', { price: gbp(plan), allowance: tier.includedLabel ?? '', fleet })
+                    : tier.shape === 'feeOnly'
+                      ? t('plan.summaryFeeOnly', { hasMonthly: plan > 0 ? 'yes' : 'no', price: gbp(plan), pct: feePctLabel })
+                      : t('plan.summaryNoFee', { price: gbp(plan) })}
+                  {staff === 2 && <>{' '}{t('plan.ownLogin')}</>}
                 </p>
-                {/* ── 🔴 THE OVERRIDE MUST NOT SILENTLY MISLEAD. ──────────────────────────────────────
-                    Answered "Two or more" but running the figures on Pro: the numbers below are correct
-                    and the thing they bought is not what was asked for. ⚠️ DELIBERATELY NOT A WARNING
-                    BOX — no border, no icon, no colour. It is one plain sentence at body size, because
-                    the operator made this choice on purpose and does not need to be alarmed out of it;
-                    they need to not be surprised later. */}
-                {staff === 2 && !isMax && (
-                  <p className="mt-2 text-sm text-slate-500">
-                    {t('plan.sharedLogin', { plan: PLANS.pro.name })}
-                  </p>
-                )}
-                {/* ⚠️ A TEXT BUTTON, NOT A SECOND PAIR OF LARGE BUTTONS. Two big choices here would
+                {/* ⚠️ TEXT BUTTONS, NOT A SECOND SET OF LARGE BUTTONS. Big choices here would
                     compete with the answer buttons directly above and turn one question into two.
+                    Stage B: one per OTHER plan (the data's), in sort_order.
                     ⚠️ SWITCHING BACK TO THE SUGGESTED PLAN CLEARS THE OVERRIDE RATHER THAN SETTING IT,
                     so the eyebrow returns to "We suggest" instead of claiming a choice that now happens
                     to agree with us. The underline is correct here — this one IS an affordance. */}
-                <button type="button"
-                  onClick={() => {
-                    const other: 'pro' | 'max' = isMax ? 'pro' : 'max'
-                    setPlanOverride(other === suggestedKey ? null : other)
-                  }}
-                  className="mt-3 text-sm font-semibold underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                  style={{ color: ORANGE }}>
-                  {t('plan.switchTo', { plan: isMax ? PLANS.pro.name : PLANS.max.name })}
-                </button>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                  {PLANS.filter(p => p.key !== activeKey).map(p => (
+                    <button key={p.key} type="button"
+                      onClick={() => setPlanOverride(p.key === suggestedKey ? null : p.key)}
+                      className="text-sm font-semibold underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                      style={{ color: ORANGE }}>
+                      {t('plan.switchTo', { plan: p.name })}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </Card>
@@ -672,13 +670,18 @@ export default function CostComparison({ settings, locale }: {
               aria-label={t('orders.sliderAria')} />
             {staff && (
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                {m.excess > 0 ? (
+                {/* Stage B: worded by the plan's SHAPE — a fee on everything, an included amount, or unlimited. */}
+                {tier.shape === 'noFee' ? (
+                  t('orders.noFee')
+                ) : tier.shape === 'feeOnly' ? (
+                  t.rich('orders.feeOnly', { pct: feePctLabel, over: gbp(m.overPerTruck, 2), b: c => <strong className="tabular-nums">{c}</strong> })
+                ) : m.excess > 0 ? (
                   t.rich('orders.overAllowance', {
-                    allowance: tier.allowanceLabel, excess: gbp(m.excess), pct: overagePct, over: gbp(m.overPerTruck, 2),
+                    allowance: tier.includedLabel ?? '', excess: gbp(m.excess), pct: feePctLabel, over: gbp(m.overPerTruck, 2),
                     b: c => <strong className="tabular-nums">{c}</strong>,
                   })
                 ) : (
-                  t('orders.insideAllowance', { allowance: tier.allowanceLabel })
+                  t('orders.insideAllowance', { allowance: tier.includedLabel ?? '' })
                 )}
                 {fleet > 1 && (
                   <>{' '}{t.rich('orders.acrossFleet', { fleet, amount: gbp(m.fleetGmv), b: c => <strong className="tabular-nums">{c}</strong> })}</>
@@ -967,12 +970,7 @@ export default function CostComparison({ settings, locale }: {
                 <p className="text-xs font-black uppercase tracking-wider text-slate-500">{t('breakdown.title')}</p>
                 <div className="mt-4 space-y-2">
                   <BRow label={t('breakdown.plan', { plan: planName })} amount={gbp(plan, 2)} />
-                  {m.excess > 0 ? (
-                    <BRow label={t('breakdown.over', { pct: overagePct, excess: gbp(m.excess), allowance: tier.allowanceLabel })}
-                      amount={gbp(m.overPerTruck, 2)} />
-                  ) : (
-                    <BRow label={t('breakdown.inside', { allowance: tier.allowanceLabel })} amount={gbp(0, 2)} />
-                  )}
+                  {feeRow}
                   <div className="h-px" style={{ backgroundColor: '#E2E8F0' }} />
                   <BRow label={t('breakdown.total')} amount={money(m.oursPerTruck)} bold orange />
                   {free >= 1 && (
@@ -1336,12 +1334,7 @@ export default function CostComparison({ settings, locale }: {
               <p className="text-xs font-black uppercase tracking-wider text-slate-500">{t('breakdown.titleDearer')}</p>
               <div className="mt-4 space-y-2">
                 <BRow label={t('breakdown.plan', { plan: planName })} amount={gbp(plan, 2)} />
-                {m.excess > 0 ? (
-                  <BRow label={t('breakdown.over', { pct: overagePct, excess: gbp(m.excess), allowance: tier.allowanceLabel })}
-                    amount={gbp(m.overPerTruck, 2)} />
-                ) : (
-                  <BRow label={t('breakdown.inside', { allowance: tier.allowanceLabel })} amount={gbp(0, 2)} />
-                )}
+                {feeRow}
                 <div className="h-px" style={{ backgroundColor: '#E2E8F0' }} />
                 <BRow label={t('breakdown.total')} amount={money(m.oursPerTruck)} bold orange />
                 {/* 🔴 THEIR OWN FEE, AT THE RATE THE COMPARISON ACTUALLY USED. `m.theirPct` is the

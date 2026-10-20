@@ -38,8 +38,14 @@ import {
   hasStoredBody, parseAttachments, isTruncated, capHtml, bodyColumns,
 } from '@/lib/outreach-mail-bodies'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
-import { readFromName } from '@/lib/outreach-settings-read'
-import { validateDoc, docPlainText, literalTokenRefusal } from '@/lib/outreach-doc'
+import { readFromName, readOutreachSettings } from '@/lib/outreach-settings-read'
+import { validateDoc, docPlainText, literalTokenRefusal, optOutBlock, optOutExempt } from '@/lib/outreach-doc'
+import { prepareRetry } from '@/lib/outreach-retry-rebuild'
+// 🔴 LEGAL FOLLOW-UPS (19 October 2026): the opt-out refusal's words, and the prospect's locale for the
+// company line `buildMessage` appends.
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/outreach'
+import { localeForTruck } from '@/lib/i18n/server-locale'
 import {
   resolveAccounts, accountForSend, credentialsFor, accountOfRow, type AccountSet,
 } from '@/lib/outreach-mail-accounts'
@@ -321,6 +327,10 @@ export async function POST(req: NextRequest) {
     if (!row) return refuse('That message is not in the log any more.')
     const stop = retryRefusal(row, body.confirm_uncertain === true)
     if (stop) return refuse(stop.refusal, stop.needsConfirm ? { needsConfirm: true } : {})
+    // 🔴 REBUILT WITH TODAY'S COMPANY LINE, AND THE OPT-OUT RULE APPLIED, BEFORE ANYTHING IS RESENT (19 October 2026,
+    // lib/outreach-retry-rebuild.ts) — the same rule as a send, with its two exemptions (a test; a reply to the prospect).
+    const prep = await prepareRetry(supabase, row)
+    if (!prep.ok) return refuse(prep.refusal, { code: prep.code })
     // 🔴 A RETRY USES THE ROW'S OWN ACCOUNT. The message was composed against one mailbox's thread and
     // its Sent copy belongs beside the rest of that conversation; sending a legacy row's retry from the
     // new mailbox would file the copy in the wrong Sent folder and orphan the thread.
@@ -331,7 +341,7 @@ export async function POST(req: NextRequest) {
     const retryFiles = await attachmentsForRow(row)
     if (!retryFiles.ok) return refuse(retryFiles.refusal)
     const retried = await deliver(supabase,
-      { ...row, from_name: await readFromName(supabase), attachments: retryFiles.attachments },
+      { ...prep.row, from_name: await readFromName(supabase), attachments: retryFiles.attachments },
       { mailUser: rowCreds.user, mailPass: rowCreds.pass, isTest: row.is_test, testRecipient })
     return NextResponse.json(retried.payload)
   }
@@ -540,7 +550,7 @@ export async function POST(req: NextRequest) {
     .from('outreach_prospects')
     // The lead-type inputs come with it: `shouldFreezeLeadType` needs them at rung 1, and reading them
     // here is one round trip rather than a second select after the send.
-    .select('id, stage, do_not_contact, lead_type_at_first_contact, discovery_truck_id, hu_ordering, hu_map, discovery_trucks(name, contact_email, hatchgrab_truck_id, show_on_vf, excluded)')
+    .select('id, stage, do_not_contact, lead_type_at_first_contact, discovery_truck_id, hu_ordering, hu_map, discovery_trucks(name, contact_email, hatchgrab_truck_id, show_on_vf, excluded, country)')
     .eq('id', prospectId).maybeSingle()
   if (pErr || !pRow) return refuse('That prospect could not be read.')
   const p = pRow as unknown as {
@@ -548,7 +558,7 @@ export async function POST(req: NextRequest) {
     hu_ordering: boolean | null; hu_map: boolean | null
     discovery_trucks: {
       name: string | null; contact_email: string | null; hatchgrab_truck_id: string | null
-      show_on_vf: boolean | null; excluded: boolean | null
+      show_on_vf: boolean | null; excluded: boolean | null; country: string | null
     } | null
   }
   const truck = p.discovery_trucks
@@ -654,6 +664,27 @@ export async function POST(req: NextRequest) {
   const literal = literalTokenRefusal(docIn)
   if (literal) return await flagged(literal)
 
+  /* ── 🔴 NO OPT-OUT LINE, NO SEND (legal follow-ups, 19 October 2026, signed off by Dominic) ───────
+   * An email this route sends to a prospect — first contact, every chase, a follow-up on our own email — must
+   * carry the stored opt-out sentence in its own text. `optOutBlock` is the ONE definition; the composer
+   * disables Send with the same function, and this is the guard (a second tab, an older client, a
+   * "Send anyway" re-submit and a curl all land here). It used to be a warning for the four ladder steps.
+   * ⚠️ TWO EXEMPTIONS (Dominic, 19 October 2026), `optOutExempt`: a TEST send (it goes only to his own address)
+   * and a REPLY TO A MESSAGE THE PROSPECT SENT (`replyParent` is their inbound message). Both still get the
+   * company line — `buildMessage` adds it with no exemption at all.
+   * ⚠️ THE SENTENCE IS READ HERE, SERVER-SIDE — the browser's copy of it is never trusted for the check.
+   * An unreadable settings table refuses (nothing can be verified); a missing row refuses too.
+   * ⚠️ BEFORE the row is inserted and before anything is built, and RECORDED through `flagged`. */
+  if (!optOutExempt({ isTest, parent: replyParent })) {
+    const tOut = translatorFor(null, 'outreach')   // admin words: en-GB, as every other sentence here
+    const sendSettings = await readOutreachSettings(supabase)
+    if (sendSettings.error) return await flagged(tOut('optOut.unreadable'), { code: 'opt_out_unreadable' })
+    const optOutStop = optOutBlock(docIn, sendSettings.values.optOut?.text ?? null)
+    if (optOutStop) {
+      return await flagged(tOut(optOutStop === 'no_opt_out_set_up' ? 'optOut.notSetUp' : 'optOut.missing'), { code: optOutStop })
+    }
+  }
+
   // ── REFUSAL 4 · the §58 guards, IMPORTED, not re-implemented ─────────────────────────────────────
   // 🔴 `malformedTokensIn` KEYS OFF THE DELIMITERS, NOT THE TOKEN PATTERN — §58.2 records why: a guard
   // that shares the resolver's regex is blind to exactly the mistakes the resolver cannot consume, and
@@ -674,8 +705,9 @@ export async function POST(req: NextRequest) {
   // send whose template named a row that was missing, and expanded `{{signature}}` / `{{opt_out}}`
   // into the message. None of that is right any more: the signature is expanded into the EDITOR when
   // the template is chosen, so it is visible and editable, and the server appends nothing at all.
-  // The one setting the send still reads is the sender's display name, below — and that one can never
-  // refuse, because its absence is the behaviour that shipped before it existed.
+  // The send reads two settings: the opt-out sentence (above — ONLY to check the message carries it,
+  // never to add it) and the sender's display name, below — and that one can never refuse, because its
+  // absence is the behaviour that shipped before it existed.
 
   // ── THE SENDER'S DISPLAY NAME ───────────────────────────────────────────────────────────────────
   // ⚠️ READ SERVER-SIDE, AND IT NEVER REFUSES. Recipients were seeing
@@ -1040,7 +1072,9 @@ export async function POST(req: NextRequest) {
   timer.mark('attachments')
   // ── THE ROW GOES IN FIRST, WITH ITS Message-ID ───────────────────────────────────────────────────
   const messageId = newMessageId()
-  const built = buildMessage({ doc: docIn, subject: subjectIn, messageId, parent, fromName })
+  // 🔴 THE COMPANY LINE IS IN THE PROSPECT'S LANGUAGE — its truck's country's locale (en-GB when unknown).
+  const footerLocale = await localeForTruck(truck)
+  const built = buildMessage({ doc: docIn, subject: subjectIn, messageId, parent, fromName, locale: footerLocale })
   const recipient = isTest ? testRecipient! : toAddress
 
   // 🔴 `action: 'preview'` WAS HERE AND IS GONE (29 September 2026). It stopped at exactly this point

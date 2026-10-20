@@ -24,8 +24,11 @@ import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes, getLocalDateInTz, getNowMinsInTz, addDaysYmd, instantOfLocal } from '@/lib/time-utils'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
-import { canAccess } from '@/lib/features'
+import { type Feature } from '@/lib/features'
+import { featureRefusal } from '@/lib/plan-refusal'
+import { truckCan } from '@/lib/plans'
 import { countrySettingsForTruck } from '@/lib/country-settings'
+import { getPlanCatalog } from '@/lib/plans-server'
 import { checkTradeArea } from '@/lib/trade-area'
 /* ── 🔴 LANGUAGE PHASE 1d: THE MENU, SCHEDULE AND SETTINGS TABS' REFUSALS CARRY A CODE ─────────────────────────────
  * `{ error: <today's English>, …every field it already carried…, code, params }` from `manageErrorBody`
@@ -40,8 +43,8 @@ import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageApi'
 // Language Phase 1d Part 2: the team invite email's words.
 import '@/lib/i18n/catalog/manageTeam'
-/* ⚠️ THE PLAN SENTENCE FOR SOCIAL MEDIA (the PLACES_TAB_ONLY gate) is `errorsManage.social_media_plan` now (Language
- * Phase 1d Part 2) — the same words as `WEEKLY_POST_PLAN_REFUSAL` in lib/copy/weeklyPost.ts, with a code. */
+/* ⚠️ NO PLAN SENTENCES (plans-data-model, Stage A, 19 October 2026): every plan has every feature, so a gate here refuses
+ * only when a per-truck override switches the feature off — with the neutral `errorsManage.feature_switched_off`. */
 /* ── 🔴 PRIVATE EVENTS (20261014) ─────────────────────────────────────────────────────────────────
  * `applyPrivacy` is the ONLY writer of is_private / private_name / private_token / the private type
  * on an event — see its header. Nothing in this file writes those columns directly, and
@@ -516,6 +519,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'country_settings_failed'), { status: 500 })
   }
 
+  // ── 🔴 THE PLAN CATALOGUE (plans-data-model Stage A, 19 October 2026) — public.plans / public.plan_prices, service-role
+  // only, so it rides here like the country settings. Billing, the van add-on and the trial reminder read the truck's
+  // plan through it (lib/plans.ts). ⚠️ FATAL like the settings: a page that guessed a plan would show the wrong one.
+  let plans
+  try {
+    plans = await getPlanCatalog()
+  } catch (e) {
+    console.error('[manage] plan catalogue read failed', e instanceof Error ? e.message : e)
+    return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'plans_failed'), { status: 500 })
+  }
+
   // 🔴 THE TRUCK'S CLOCK AND HOW ITS TIMES AND DATES LOOK (Phase 2B) — one rule, lib/truck-time.ts. Same
   // fatality as the settings above: they come from the same row.
   const time = await truckTimeSettings(truck as { timezone?: string | null; country?: string | null })
@@ -523,6 +537,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     truck: { ...truck, logo, time },
     countrySettings,
+    plans,
     whatsappConnection,
     whatsappUsage,
     categories: categories || [],
@@ -585,6 +600,13 @@ export async function POST(req: NextRequest) {
   /** A refusal of ours: `{ error, …extra, code, params }` in the truck's language (lib/i18n/manage-errors.ts). */
   const refuse = async (code: ManageErrorCode, status: number, params: ManageErrorParams = {}, extra?: Record<string, unknown>) =>
     NextResponse.json(manageErrorBody(await truckLocale(), code, params, extra), { status })
+  /** 🔴 THE FEATURE GATE (plan-features-config, Stage A2): override → the truck's EFFECTIVE plan's switch → allowed.
+   *  Off by its plan → `feature_not_on_plan` naming the plan that has it; off by its override → `feature_switched_off`.
+   *  The catalogue is read only when an action reaches a gate (lib/plan-refusal.ts). */
+  const gateFeature = async (feature: Feature) => {
+    const r = await featureRefusal(truck, feature, await truckLocale())
+    return r ? refuse(r.code, 403, r.params) : null
+  }
 
   // ── 🔴 DENY BY DEFAULT. Was: `let requestingUserRole = 'owner'` narrowed only on a resolved
   // session. Every write below — including the 24 staff-blocked actions — now runs behind a caller
@@ -1031,9 +1053,8 @@ export async function POST(req: NextRequest) {
     // Server-side plan gate (defense-in-depth): pre-orders is Pro (advance_preordering). The READ
     // effects (menu sold-out / submit force-pending) already gate, so off-plan config is inert — but
     // reject the dedicated bulk WRITE at the source too. (Per-row edits use a 1-element bulk → same gate.)
-    if (!canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return await refuse('preorders_pro', 403)
-    }
+    const featureOff = await gateFeature('advance_preordering')
+    if (featureOff) return featureOff
     // SINGLE-SOURCE (V7.8 global-config): this action sets ONLY the per-item inclusion flag
     // (preorder_enabled). The deadline type/value/action live ONCE on the truck row (update_truck) and
     // are read by both effects — never written per-item. clear:true (or enabled false) = excluded.
@@ -1084,9 +1105,8 @@ export async function POST(req: NextRequest) {
    * ⚠️ THE URL IS BUILT BY `privateLinkUrl`, the one definition the QR, the Copy button and the
    * printed cards all use — three places that would otherwise drift. */
   if (action === 'private_link') {
-    if (!canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return await refuse('private_events_pro', 403, {}, { upgrade: true })
-    }
+    const featureOff = await gateFeature('private_events')
+    if (featureOff) return featureOff
     const eventId = String(body.id ?? '')
     const { data: ev, error } = await supabase
       .from('truck_events')
@@ -1121,9 +1141,8 @@ export async function POST(req: NextRequest) {
    * be undone — the cards already on the tables. The route does not re-ask, but it also cannot be
    * reached by accident: it is its own action with its own name. */
   if (action === 'private_new_link') {
-    if (!canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return await refuse('private_events_pro', 403, {}, { upgrade: true })
-    }
+    const featureOff = await gateFeature('private_events')
+    if (featureOff) return featureOff
     const r = await replacePrivateLink(supabase, truck.id, String(body.id ?? ''))
     // `r.error` is lib/private-events/write.ts's (or the database's) — passed on as it comes; ours only when it has none.
     if (!r.ok) return r.error ? NextResponse.json({ error: r.error }, { status: 400 }) : refuse('new_link_failed', 400)
@@ -1179,9 +1198,9 @@ export async function POST(req: NextRequest) {
        * direction anyway. */
       if (body.is_private !== undefined) {
         const wantPrivate = body.is_private === true
-        if (wantPrivate
-          && !canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-          return await refuse('private_events_pro', 403, {}, { upgrade: true })
+        if (wantPrivate) {
+          const refused = await gateFeature('private_events')
+          if (refused) return refused
         }
         const pr = await applyPrivacy(supabase, targetTruckId, String(id), {
           isPrivate: wantPrivate,
@@ -1264,10 +1283,8 @@ export async function POST(req: NextRequest) {
        * returns without writing for a public event that stays public, so this adds no write to any
        * existing flow. */
       if (body.is_private === true) {
-        const gate = canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)
-        if (!gate) {
-          return await refuse('private_events_pro', 403, {}, { upgrade: true })
-        }
+        const refused = await gateFeature('private_events')
+        if (refused) return refused
         const pr = await applyPrivacy(supabase, targetTruckId, String(data.id), {
           isPrivate: true,
           name: body.private_name,
@@ -1419,9 +1436,8 @@ export async function POST(req: NextRequest) {
     // 🔴 THE PLAN GATE, SERVER-SIDE. The wizard also checks, but a UI check is a courtesy; this is
     // the one a request cannot skip. Note that /embed itself checks AGAIN at render (Stage 1), so
     // even a row that somehow held `embed_enabled = true` off-plan would still show the fallback.
-    if (!canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return refuse('embed_not_on_plan', 403)
-    }
+    const featureOff = await gateFeature('embed_schedule')
+    if (featureOff) return featureOff
 
     const enabled = body.enabled === true
     const patch: { embed_enabled: boolean; website?: string } = { embed_enabled: enabled }
@@ -1468,7 +1484,7 @@ export async function POST(req: NextRequest) {
       // The load stamp was written by the public iframe route, which is deleted, so those two columns
       // can only ever go staler — returning them would be a claim nothing keeps true. `plan_answer`'s
       // writer is gone for the same reason. 🔴 ALL THREE COLUMNS REMAIN ON THE TABLE, UNDROPPED.
-      can_embed: canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at),
+      can_embed: truckCan(truck, await getPlanCatalog(), 'embed_schedule'),
     })
   }
 
@@ -1665,9 +1681,8 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'domain_provision') {
-    if (!canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return refuse('embed_not_on_plan', 403)
-    }
+    const featureOff = await gateFeature('embed_schedule')
+    if (featureOff) return featureOff
     /** A provisioning refusal: `{ ok:false, reason, message }` as before, the message in the truck's language, then
      *  `code` and `params` last (Language Phase 1d Part 2, named difference 1). */
     const provisionNo = async (reason: string, code: ManageErrorCode, status: number, params: ManageErrorParams = {}) => {
@@ -2073,7 +2088,7 @@ export async function POST(req: NextRequest) {
   // ⚠️ GATING STATE IS DELIBERATELY ABSENT — DO NOT RE-ADD `plan`, `trial_expires_at` OR `feature_overrides`.
   // This route authenticates on `dashboard_token` ALONE (no session required — see getTruck above), so
   // EVERY key on this allowlist is writable by any holder of the token. Those three fields ARE the paid-
-  // feature gate — they are the exact inputs to canAccess(plan, feature, featureOverrides, trialExpiresAt)
+  // feature gate — they are the exact inputs to canAccess(feature, featureOverrides)
   // — so putting them here let a token holder grant themselves the product:
   //   • `plan` / `trial_expires_at` — set your own tier and your own trial expiry.
   //   • `feature_overrides` — worse, because canAccess checks it FIRST and it wins over BOTH the plan and
@@ -3379,10 +3394,11 @@ export async function POST(req: NextRequest) {
    * told to wait. ⛔ IT IS THE **SHARED** SENTENCE, from `lib/copy/weeklyPost.ts`, so the screen and the
    * route cannot disagree about which plan this is on. */
   const PLACES_TAB_ONLY = ['sg_place_usual_type']
-  if (PLACES_TAB_ONLY.includes(action)
-      && !canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-    // Language Phase 1d Part 2: `errorsManage.social_media_plan` — the same words as WEEKLY_POST_PLAN_REFUSAL, with a code.
-    return refuse('social_media_plan', 403)
+  if (PLACES_TAB_ONLY.includes(action)) {
+    // Stage A2: off by the truck's plan → feature_not_on_plan (naming the plan that has it); off by an override →
+    // feature_switched_off.
+    const refused = await gateFeature('schedule_graphics')
+    if (refused) return refused
   }
 
   if (action === 'sg_places') {

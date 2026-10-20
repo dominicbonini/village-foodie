@@ -177,11 +177,12 @@ export async function sendSignupVerificationEmail(params: {
  *
  * 🔴 THE TRIAL PARAGRAPH IS DELIBERATELY ABSENT. The brief's copy included "It's completely free to
  * get going, and you choose which event starts your free trial…". As of 3 August 2026 a self-serve
- * operator is not on a trial in any sense the product implements: provisioning writes plan 'demo',
- * canAccess() applies its expiry check only to plan === 'trial' so 'demo' access never expires,
- * trial_expires_at is written as null by lib/provision-truck.ts and by nothing else, no nomination
- * mechanism exists, and nothing downgrades anyone. Writing that sentence would promise a mechanism
- * that is not there. It goes in here, unchanged, once trial nomination ships.
+ * operator is not on a trial in any sense the product implements: provisioning wrote plan 'demo' then (it writes
+ * the signup-default plan from public.plans now — plans-data-model, Stage A), and no nomination mechanism exists.
+ * ⚠️ SINCE STAGE A2 (20 October 2026) THE TRIAL STARTS AT SIGNUP: lib/provision-truck.ts sets trial_expires_at to
+ * signup + plans.trial_months — so "you choose which event starts your free trial" is now FALSE, not merely early.
+ * 🟢 STAGE B (docs/pricing-pages-report.md): the email now says "Your {N}-month free trial has started — every feature
+ * unlocked." after the intro, N the running trial's plans.trial_months (the caller passes it; no line without one).
  */
 export async function sendOperatorWelcomeEmail(params: {
   to: string
@@ -190,6 +191,8 @@ export async function sendOperatorWelcomeEmail(params: {
   manageUrl: string
   /** The operator's truck's locale when they have one, else omitted (en-GB) — see the header. */
   locale?: string | null
+  /** Stage B: the running trial's length (plans.trial_months) — "Your {N}-month free trial has started"; null/omitted = no line. */
+  trialMonths?: number | null
 }): Promise<void> {
   const t = translatorFor(params.locale, 'emailSignup')
   const url = params.manageUrl
@@ -198,6 +201,7 @@ export async function sendOperatorWelcomeEmail(params: {
   const greeting = (name: string) => t('greeting', { hasName, name })
   const intro = (truck: string) => t('welcome.intro', { hasTruck, truck })
   const lookingForward = (truck: string) => t('welcome.lookingForward', { hasTruck, truck })
+  const trial = params.trialMonths ? t('welcome.trial', { months: params.trialMonths }) : null
 
   // Name in the subject only when we have one — "Welcome to HatchGrab, there" reads worse than none.
   const subject = t('welcome.subject', { hasName: params.firstName ? 'yes' : 'no', name: params.firstName ?? '' })
@@ -220,7 +224,8 @@ export async function sendOperatorWelcomeEmail(params: {
   //      the sentence closes its paragraph instead of introducing the button.
   const html = shell(`
       <p>${greeting(esc(params.firstName ?? ''))}</p>
-      <p>${intro(esc(params.truckName ?? ''))}</p>
+      <p>${intro(esc(params.truckName ?? ''))}</p>${trial ? `
+      <p>${trial}</p>` : ''}
       <p style="padding-bottom:14px;">${t('welcome.setup')}</p>
       ${button(url, t('welcome.button'))}
       <p>${url}<br/>${t('welcome.bookmark')}</p>
@@ -231,6 +236,7 @@ export async function sendOperatorWelcomeEmail(params: {
   const text =
     `${greeting(params.firstName ?? '')}\n\n` +
     `${intro(params.truckName ?? '')}\n\n` +
+    (trial ? `${trial}\n\n` : '') +
     `${t('welcome.setup')}\n\n` +
     // D3: the label goes from the plain-text alternative too, so the two versions cannot say
     // different things. There is no button here, so the URL simply stands on its own.

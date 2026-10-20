@@ -1,41 +1,54 @@
-import { canAccess, getPlanFeatures, PLAN_META, type Plan, type Feature } from './features'
+import { featureBlock, type Feature, type FeatureBlock, type PlanFeatureSwitch } from './features'
+import { truckPlanSwitch, upgradePlanFor, promptPlan, type PlanCatalog, type PlanBlocks, type PlanPromptPlan, type TruckPlanFields } from './plans'
+import { useOptionalPlanCatalog } from '@/components/PlanCatalogProvider'
+import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 
-interface TruckPlanContext {
-  plan?: Plan | null
+/**
+ * Which features a truck may use, as a hook (plan-features-config, Stage A2, 20 October 2026).
+ * 🔴 THE ONE RESOLUTION ORDER, lib/features.ts featureBlock: the per-truck override → the truck's EFFECTIVE plan's switch
+ * → allowed. The plan's switches come from either source, whichever the surface has:
+ *   • the plan catalogue (Manage — <PlanCatalogProvider>), resolved here with lib/plans.ts; or
+ *   • `truck.plan_blocks`, which the server computes for surfaces without the catalogue (the kitchen dashboard and KDS,
+ *     /api/dashboard — lib/plans.ts planBlocks).
+ * ⚠️ With neither, only the override decides — every server route enforces the plan regardless.
+ */
+export interface TruckFeatureContext extends TruckPlanFields {
   feature_overrides?: Record<string, boolean> | null
-  trial_expires_at?: string | null
+  /** The features the truck's effective plan switches off, from the server (surfaces without the catalogue). */
+  plan_blocks?: PlanBlocks | null
+  country?: string | null
 }
 
-export function useFeatures(truck: TruckPlanContext | null | undefined) {
-  const plan: Plan = truck?.plan ?? 'starter'
-  const overrides = truck?.feature_overrides ?? {}
-  const trialExpiresAt = truck?.trial_expires_at ?? null
+export interface FeatureAccessView {
+  /** May the truck use it? */
+  can: (feature: Feature) => boolean
+  /** Why not: its override, or its plan (null = allowed). */
+  block: (feature: Feature) => FeatureBlock
+  /** The plan the one upgrade prompt names when the PLAN is why (null otherwise, or when no public plan has it). */
+  upgradeTo: (feature: Feature) => PlanPromptPlan | null
+}
 
-  // 🔴 MADE CONSISTENT WITH canAccess (Y2d). This used to read
-  //   `plan === 'trial' && (!trialExpiresAt || <past>)` — i.e. a NULL expiry counted as EXPIRED, the
-  // exact opposite of what canAccess now means by it. Left alone it would have contradicted the gate
-  // it sits beside: `can()` granting every feature to a self-serve operator while `isTrialExpired`
-  // told the same component their trial was over.
-  // ⚠️ NULL now means NOT STARTED, so it is not expired. A PAST date still is — matching canAccess's
-  // untouched expired branch.
-  // ⚠️ This flag currently has NO consumer (useFeatures is imported once, in the KDS, which
-  // destructures only `can`), so the fix changes no behaviour today. It is made anyway: a shared hook
-  // carrying a definition that contradicts the gate next to it is a trap set for the first thing that
-  // reads it.
-  const isTrialExpired = plan === 'trial'
-    && !!trialExpiresAt && new Date(trialExpiresAt) < new Date()
-
-  const trialDaysRemaining = plan === 'trial' && trialExpiresAt
-    ? Math.max(0, Math.ceil(
-        (new Date(trialExpiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-      ))
-    : null
-
+/** The resolver without React — the same answers the hook gives (harnesses and server renders use it). */
+export function featureAccessView(truck: TruckFeatureContext | null | undefined, catalog: PlanCatalog | null, countryCode: string | null | undefined): FeatureAccessView {
+  const overrides = truck?.feature_overrides ?? null
+  const blocks = truck?.plan_blocks ?? null
+  const allows: PlanFeatureSwitch = catalog
+    ? truckPlanSwitch(truck, catalog)
+    : (f: Feature) => !(blocks && Object.prototype.hasOwnProperty.call(blocks, f))
+  const block = (f: Feature) => featureBlock(f, overrides, allows)
   return {
-    plan,
-    planMeta: PLAN_META[plan],
-    isTrialExpired,
-    trialDaysRemaining,
-    can: (feature: Feature) => canAccess(plan, feature, overrides, trialExpiresAt),
+    can: f => block(f) === null,
+    block,
+    upgradeTo: f => {
+      if (block(f) !== 'plan') return null
+      if (catalog) { const up = upgradePlanFor(catalog, f); return up ? promptPlan(catalog, up, countryCode) : null }
+      return blocks?.[f]?.upgradeTo ?? null
+    },
   }
+}
+
+export function useFeatures(truck: TruckFeatureContext | null | undefined): FeatureAccessView {
+  const catalog = useOptionalPlanCatalog()
+  const country = useOptionalCountrySettings()
+  return featureAccessView(truck, catalog, country?.countryCode ?? truck?.country ?? null)
 }

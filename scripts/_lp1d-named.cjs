@@ -245,7 +245,123 @@ const midnightEntries = (re, agent = 'midnight + format fixes (17 Oct 2026)') =>
     expect: (b, id) => mapStrings(b, s => mnImportLayout(s, countryOf(id) === 'US')) },
 ]
 
+
+// ══ ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026, docs/plans-data-model-report.md) ══════════════════════
+// Every plan gets every feature now (lib/features.ts canAccess: override-only), so a view rendered for a Starter / Pro /
+// trial truck shows EXACTLY what the same view showed the Max fixture truck. PRECISE by substitution: the expected value
+// is BEFORE of the sibling view (same state, the Max truck), and every later named change applies on top as usual.
+// A FACTORY: Part 1 names these on its own views; scripts/_lp1d2-named.cjs re-uses them on its smoke-<area> copies of
+// them (`prefix: 'smoke-'`, BEFORE from its own capture) — one copy of each transform.
+const PLANS_SIBLING_BASE = {
+  'schedule/|tab|starter': 'schedule/|tab|list',
+  'settings/|starter|page': 'settings/|owner|page',
+  'settings/|pro|page': 'settings/|twoVans|page',          // pro: two vans, as twoVans
+  'settings/|trial|page': 'settings/|owner|page',
+  'settings/|vanUpgrade|page': 'settings/|owner|page',      // the van upgrade modal is removed (no van limit by plan)
+}
+const PLANS_BEFORE = {}
+/** BEFORE of a view id (`<area>/<key>`), from a committed capture directory under scripts/fixtures (never recaptured). */
+const plansBefore = (dir, id) => {
+  const area = id.split('/')[0]
+  const key = `${dir}/${area}`
+  if (!(key in PLANS_BEFORE)) {
+    const f = require('path').join(__dirname, 'fixtures', dir, `${area}.json.gz`)
+    PLANS_BEFORE[key] = JSON.parse(require('zlib').gunzipSync(require('fs').readFileSync(f))).views
+  }
+  const v = PLANS_BEFORE[key][id.slice(area.length + 1)]
+  if (v === undefined) throw new Error(`plans re-pin: no BEFORE view ${id} in scripts/fixtures/${dir}`)
+  return v
+}
+/** `<prefix><area>/<GB|US>|…` → the sibling id, or null. */
+const plansSibling = (id, prefix) => {
+  if (!id.startsWith(prefix)) return null
+  const rest = id.slice(prefix.length), m = /^([^/]+)\/(GB|US)(\|.*)$/.exec(rest)
+  if (!m) return null
+  const sib = PLANS_SIBLING_BASE[`${m[1]}/${m[3]}`]
+  return sib ? prefix + sib.replace('/|', `/${m[2]}|`) : null
+}
+/** The API views whose refusal premise was a plan tier; their fixture now switches the feature off by override. */
+const PLANS_REFUSALS = /^api\/(GB|US)\|(manage\|(preorderNotPro|privateLinkNotPro|newLinkNotPro|editPrivateNotPro|createPrivateNotPro)|eventTypes\|(notMax|loadNotEntitled|privateNotPro)|eventsAction\|confirmPrivateNotPro)$/
+// (Part 2's BEFORE, 826471a, words the pre-order refusal "Pre-orders are part of the Pro plan." — a Part 2 GB fix.)
+const PLANS_PLAN_SENTENCES = ['Pre-orders requires the Pro plan', 'Pre-orders are part of the Pro plan.', 'Private events are part of the Pro plan.', 'Event types are part of the Max plan.']
+const SWITCHED_OFF_BODY = JSON.stringify({ error: 'This feature is switched off for your truck.', code: 'feature_switched_off', params: {} })
+/** A refusal body that named a plan → the neutral switched-off refusal (status and writes untouched). */
+const plansRefusal = sentences => b => {
+  if (!b || typeof b !== 'object' || typeof b.body !== 'string') return b
+  let body; try { body = JSON.parse(b.body) } catch { return b }
+  if (!body || !sentences.includes(body.error)) return b
+  return { ...b, body: SWITCHED_OFF_BODY }
+}
+/** GET /api/manage's body with the seeded catalogue as `plans`, right after `countrySettings`. */
+const plansGetCatalogue = b => {
+  if (!b || typeof b !== 'object' || typeof b.body !== 'string') return b
+  let body; try { body = JSON.parse(b.body) } catch { return b }
+  if (!body || !('countrySettings' in body) || 'plans' in body) return b
+  const cat = require('./_plans-catalog-fixture.cjs').seedCatalog(require('path').resolve(__dirname, '..'))
+  const out = {}
+  for (const [k, v] of Object.entries(body)) { out[k] = v; if (k === 'countrySettings') out.plans = cat }
+  return { ...b, body: JSON.stringify(out) }
+}
+const under = (prefix, re) => id => id.startsWith(prefix) && re.test(id.slice(prefix.length))
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the schedule event row's "Make post" shortcut, as BEFORE
+// rendered it (one <button> whose label is "Make post").
+const MAKE_POST_BUTTON = /<button class="[^"]*"><span class="sm:hidden">▣<\/span><span class="hidden sm:inline">Make post<\/span><\/button>/g
+/** The fixture truck's EFFECTIVE plan's extra-van price in the view's country, as Manage words it ("69", "29.50"). */
+function fixtureVanPrice(id) {
+  const cc = /(^|\/)(GB|US)\|/.exec(id)?.[2] || 'GB'
+  const cat = require('./_plans-catalog-fixture.cjs').seedCatalog(require('path').resolve(__dirname, '..'))
+  const key = require('./_lp1d-fixtures.cjs').country(cc).truck.plan
+  const plan = cat.plans.find(p => p.key === key && p.active) || cat.plans.find(p => p.isExpiryFallback)
+  const minor = cat.prices.find(r => r.planKey === plan.key && r.countryCode === cc)?.extraVanMonthlyMinor ?? 0
+  return minor % 100 === 0 ? String(minor / 100) : (minor / 100).toFixed(2)
+}
+const plansEntries = ({ prefix = '', beforeDir = 'language-phase-1d-before', smokeOnly = false } = {}) => [
+  { id: 'plans-every-plan-every-feature', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): no plan gates a feature (canAccess is override-only). A Starter, Pro or trial truck sees exactly what the Max fixture truck saw: Schedule (tab|starter = tab|list) and Settings (starter / trial / vanUpgrade = owner; pro = twoVans — the van upgrade modal is removed). PRECISE: F = BEFORE of that sibling view (+ the later named changes).',
+    views: id => plansSibling(id, prefix) != null,
+    expect: (b, id) => plansBefore(beforeDir, plansSibling(id, prefix)) },
+  { id: 'plans-van-price-from-catalogue', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the extra-van price is the EFFECTIVE plan’s plan_prices.extra_van_monthly_minor (lib/plans.ts extraVanMonthlyMinor). The fixture truck’s plan "max" is no plan any more, so its effective plan is the expiry fallback (Pay as you go: no extra-van price): "£49/month" → "£0/month" in the van billing modal body and "Add truck — £49/mo" → "£0/mo" on its button (the modal is forced open by the fixture; US: the same in $). The modal’s frozen words (legacyVanBillingVariant) are unchanged. PRECISE: those two amounts.',
+    views: under(prefix, /^settings\/(GB|US)\|vanBilling\|page$/),
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the fixture truck is on `unlimited` now (the plan Stage A
+    // mapped "max" to — scripts/_lp1d-fixtures.cjs), so its effective plan HAS an extra-van price: the amount is that plan's
+    // seeded plan_prices.extra_van_monthly_minor in the view's country (GB £69, US $69 as seeded), read from the seed here,
+    // no longer the fallback's 0. Still PRECISE: those two amounts, the modal's frozen words unchanged.
+    expect: (b, id) => { const amt = fixtureVanPrice(id); return mapStrings(b, x => x.replace(/costs <strong>([£$])[\d,.]+\/month<\/strong>/, (_, c) => `costs <strong>${c}${amt}/month</strong>`).replace(/>Add truck — ([£$])[\d,.]+\/mo<\/button>/, (_, c) => `>Add truck — ${c}${amt}/mo</button>`)) } },
+  { id: 'plans-a2-payg-no-make-post', country: 'both', agent: 'plan-features-config Stage A2 (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): plans switch features now (public.plan_features; NO ROW = ON). The `tab|starter` view’s truck has plan "starter", no plan key since Stage A, so it resolves to the expiry fallback Pay as you go — WITH payg’s switches, and payg has schedule_graphics OFF. So the event row’s "Make post" shortcut (behind features.can(\'schedule_graphics\')) is gone from that view; everything else is the Stage A sibling (tab|list). PRECISE: every "Make post" button removed (at least one must be).',
+    views: under(prefix, /^schedule\/(GB|US)\|tab\|starter$/),
+    expect: b => mapStrings(b, x => { const y = x.replace(MAKE_POST_BUTTON, ''); if (typeof x === 'string' && x.includes('Make post') && y === x) throw new Error('plans-a2-payg-no-make-post: no Make post button to remove'); return y }) },
+  { id: 'plans-manage-get-catalogue', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): GET /api/manage answers the plan catalogue — a `plans` field ({ plans, prices }, lib/plans.ts PlanCatalog) right after `countrySettings` — which the Manage page reads into its planCatalog state. PRECISE: that one field, equal to the migration’s seed (scripts/_plans-catalog-fixture.cjs); every other field byte-identical.',
+    views: under(prefix, /^api\/(GB|US)\|manageGET\|/),
+    expect: plansGetCatalogue },
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): CountrySettings lost the plan-price fields (scripts/_lp-stage-b.cjs).
+  { id: 'pricing-b-country-settings-fields', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): GET /api/manage’s `countrySettings` no longer carries starterMonthlyMinor / proMonthlyMinor / maxMonthlyMinor / proAllowanceMinor / maxAllowanceMinor / platformFeePct (lib/country-settings.ts stopped selecting them; plan prices are plan_prices). PRECISE: exactly those keys leave the country-settings object; every other field byte-identical.',
+    views: under(prefix, /^api\/(GB|US)\|manageGET\|/),
+    expect: b => require('./_lp-stage-b.cjs').countrySettingsFieldsGone(b) },
+  { id: 'pricing-b-catalogue-ignored-features', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the plan catalogue GET /api/manage answers (`plans`) ends with `ignoredFeatures` — the plan_features rows naming no code feature, which the loader sets aside for Admin’s warning (lib/plans.ts splitUnknownFeatures); [] on the seed. PRECISE: that one key, last.',
+    views: under(prefix, /^api\/(GB|US)\|manageGET\|/),
+    expect: b => require('./_lp-stage-b.cjs').catalogueIgnoredFeatures(b) },
+  { id: 'plans-refusal-switched-off', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the plan-tier refusals (preorders_pro, private_events_pro, event_types_max) are gone; these views’ fixtures now switch the feature off by OVERRIDE, and the route refuses with refuse(\'feature_switched_off\', 403): body {"error":"<the plan sentence>"(,"upgrade":true)} → {"error":"This feature is switched off for your truck.","code":"feature_switched_off","params":{}}. Status and every write byte-identical. PRECISE.',
+    views: under(prefix, PLANS_REFUSALS),
+    expect: plansRefusal(PLANS_PLAN_SENTENCES) },
+  { id: 'plans-event-types-no-upgrade-message', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): /api/event-types load no longer answers `upgradeMessage` (always null for an entitled truck; the upgrade prompt is gone with the tiers). PRECISE: the one `"upgradeMessage":null,` field removed from the body.',
+    views: under(prefix, /^api\/(GB|US)\|eventTypes\|/),
+    expect: b => (b && typeof b === 'object' && typeof b.body === 'string' ? { ...b, body: b.body.replace('"upgradeMessage":null,', '') } : b) },
+  { id: 'plans-max-badge-gone', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the Private column’s Max badge and its key privateEvents.grid.maxOnly ("Max only") are removed; the copy view records the key’s absence from both message files (scripts/_lp1d-copy.cjs). PRECISE.',
+    views: under(prefix, /^copy\/(GB|US)\|privateEvents\|MAX_ONLY_TITLE$/),
+    expect: b => (b === 'Max only' ? '[removed in Stage A: privateEvents.grid.maxOnly]' : b) },
+].map(e => (smokeOnly ? { ...e, smokeOnly: true } : e))
+
 const NAMED = [
+  // ⚠️ RE-PINNED (plans-data-model, Stage A): FIRST, so the sibling substitution runs before every later transform.
+  ...plansEntries(),
   // ── SCHED-A ─────────────────────────────────────────────────────────────────────────────────────────────────
   { id: '1d-places-sept-sep', country: 'GB', agent: 'SCHED-A',
     what: 'Schedule › places (Add event picker, Tidy up, PlaceList / placeSubLine): a short month is "Sep", never Intl’s en-GB "Sept" — SchedulePlaces.shortDay now uses formatShortDate (Phase 2’s P2-sept-sep rule, reaching the places list). "Last: Sat 26 Sept" → "Last: Sat 26 Sep".',
@@ -323,6 +439,17 @@ const NAMED = [
   { id: 'us-layout-fix-12-deadline-row', country: 'US', agent: 'US layout fixes (18 Oct 2026)',
     what: '⚠️ RE-PINNED (18 October 2026): the pre-order Deadline type select gains `min-w-0` (see the GB entry of this id). LISTED: every US Settings page view.',
     views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
+  // ── ⚠️ RE-PINNED (seo-fixes S7, 20 October 2026, docs/seo-fixes-report.md) ─────────────────────────────────────────
+  //    components/StoreBadges.tsx: both badge <img>s gain loading="lazy", so React no longer emits their two
+  //    <link rel="preload" as="image"> — Manage › Settings shows the badges. GB PRECISE (scripts/_lp-seo-fixes.cjs
+  //    badgesLazy, one copy); the US Settings views are LISTED (above), so the change is LISTED there under the same id.
+  { id: 'seo-s7-badges-lazy', country: 'GB', agent: 'seo-fixes (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): Manage › Settings — the App Store / Google Play badges load lazily: loading="lazy" on both <img>s (after height), their two image preload links gone. PRECISE.',
+    views: id => /^settings\/GB\|[^|]+\|page$/.test(id),
+    expect: b => mapStrings(b, require('./_lp-seo-fixes.cjs').badgesLazy) },
+  { id: 'seo-s7-badges-lazy', country: 'US', agent: 'seo-fixes (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): the store badges load lazily (see the GB entry of this id, PRECISE there). LISTED: every US Settings page view.',
+    views: id => /^settings\/US\|[^|]+\|page$/.test(id) },
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.
@@ -334,4 +461,4 @@ function apply(id, before) {
   return applyNamed(NAMED, countryOf(id) === 'US', id, before)
 }
 
-module.exports = { NAMED, apply, countryOf, mapStrings, mapFields, clock12, midnightEntries, mnEndOptions, uslEntries, uslPhoneTimeSelect, uslScheduleCards, uslDeadlineRow, uslTruckListCard }
+module.exports = { plansEntries, plansBefore, plansRefusal, plansGetCatalogue, SWITCHED_OFF_BODY, NAMED, apply, countryOf, mapStrings, mapFields, clock12, midnightEntries, mnEndOptions, uslEntries, uslPhoneTimeSelect, uslScheduleCards, uslDeadlineRow, uslTruckListCard }

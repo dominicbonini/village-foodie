@@ -28,6 +28,7 @@ import { logOutreachContact } from '@/lib/outreach-contact-log'
 import { deliver, fileSentCopy, type DeliverRow } from '@/lib/outreach-mail-deliver'
 import { composeRaw } from '@/lib/outreach-mail-envelope'
 import { readFromName } from '@/lib/outreach-settings-read'
+import { prepareRetry } from '@/lib/outreach-retry-rebuild'
 import {
   planFetch, advanceWatermark, emptyWatermark, withinFirstLook, classifyIncoming, matchIncoming, matchOutgoing,
   bouncedOriginalId, stripQuotedHistory, isStuckSending, shouldAutoRetry, isOwnAddress,
@@ -996,6 +997,7 @@ async function fillMissingBodies(
 
 // ── HOUSEKEEPING ────────────────────────────────────────────────────────────────────────────────────
 interface HouseRow extends DeliverRow {
+  prospect_id: string | null
   status: string
   is_test: boolean
   last_error: string | null
@@ -1009,7 +1011,7 @@ async function housekeeping(
 ) {
   const { data } = await supabase
     .from('outreach_messages')
-    .select('id, message_id, in_reply_to, "references", subject, to_address, message_date, html_body, text_body, attempts, status, is_test, last_error, created_at, updated_at, sent_copy, account')
+    .select('id, prospect_id, message_id, in_reply_to, "references", subject, to_address, message_date, html_body, text_body, attempts, status, is_test, last_error, created_at, updated_at, sent_copy, account')
     .eq('direction', 'outbound')
     .in('status', ['sending', 'failed', 'sent'])
     .order('created_at', { ascending: false })
@@ -1030,6 +1032,16 @@ async function housekeeping(
     }
     // 2 · a temporary failure, recent, under the attempt ceiling
     if (shouldAutoRetry(row, now)) {
+      /* 🔴 REBUILT WITH TODAY'S COMPANY LINE, AND THE OPT-OUT RULE APPLIED, BEFORE THE CLAIM (19 October 2026,
+       * lib/outreach-retry-rebuild.ts). A refusal resends nothing: its sentence becomes the row's `last_error`, which
+       * is not a temporary failure, so the poll stops retrying it and the history shows why — Retry is Dominic's. */
+      const prep = await prepareRetry(supabase, row)
+      if (!prep.ok) {
+        await supabase.from('outreach_messages').update({ last_error: prep.refusal, updated_at: new Date().toISOString() })
+          .eq('id', row.id).eq('status', 'failed')
+        summary.errors.push({ step: 'retry', error: prep.refusal })
+        continue
+      }
       // 🔴 CLAIM IT FIRST, ATOMICALLY. `failed` → `sending` in one statement filtered on `failed`:
       // whoever's update returns a row owns the retry, and the loser's update matches nothing. Without
       // this, two overlapping polls could each re-send the same email to the same prospect.
@@ -1038,7 +1050,7 @@ async function housekeeping(
       // thread lives in.
       const creds = credentialsFor(accounts, accountOfRow(row))
       if (!creds) { summary.errors.push({ step: 'retry', error: `no credentials for the ${accountOfRow(row)} mailbox` }); continue }
-      const result = await deliver(supabase, { ...row, from_name: fromName }, {
+      const result = await deliver(supabase, { ...prep.row, from_name: fromName }, {
         mailUser: creds.user, mailPass: creds.pass, isTest: row.is_test,
       })
       summary.retried++

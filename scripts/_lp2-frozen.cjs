@@ -105,13 +105,68 @@ function movedTree(env = process.env) {
   return out
 }
 
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026, docs/plans-data-model-report.md): an OPT-IN fourth as-moved
+// overlay — the en-GB keys Stage A REWORDED, at their text before Stage A (scripts/fixtures/plans-stage-a-messages.json,
+// `en-GB.reworded[key].before`). A key new since a frozen commit shows its CURRENT text under that frozen catalogue, so a
+// later rewording (manageSettings.qr.lockedTitle "part of a higher plan" → "switched off for your truck") would leak into
+// every older "F" as if the older phase had made it. With HG_MESSAGES_STAGE_A=before (set by the language-phase harnesses'
+// own F / A runs only, so no other harness's frozen words move) it is applied FIRST — the lowest precedence: every older
+// overlay and the frozen file itself still win. Keys Stage A REMOVED are gone from every catalogue (the overlay only sets
+// back keys the current file has); the key checks read the same file's `removed` list.
+const STAGE_A_FILE = path.join(REPO, 'scripts/fixtures/plans-stage-a-messages.json')
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): Stage A2's message changes are recorded in a SIBLING file
+// (scripts/fixtures/plans-stage-a2-messages.json, same shape: planPrompt.*, errorsManage.feature_not_on_plan,
+// errorsCustomer.pay_at_hatch_unavailable, manageBilling.plan.trialMonths added; manageShell.trialPopup.title reworded).
+// `stageA()` returns the two records MERGED (Stage A, then A2 on top), so every reader of "the plan stages' recorded
+// message changes" — the as-moved overlay and the key checks — reads both. `stageAOnly()` / `stageA2()` are each alone.
+const STAGE_A2_FILE = path.join(REPO, 'scripts/fixtures/plans-stage-a2-messages.json')
+const EMPTY_STAGE = () => ({ 'en-GB': { removed: {}, reworded: {}, added: {} }, 'en-US': { removed: {}, reworded: {}, added: {} } })
+const stageAOnly = () => (fs.existsSync(STAGE_A_FILE) ? readJson(STAGE_A_FILE) : EMPTY_STAGE())
+const stageA2 = () => (fs.existsSync(STAGE_A2_FILE) ? readJson(STAGE_A2_FILE) : EMPTY_STAGE())
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): Stage B's message changes are a THIRD sibling
+// (scripts/fixtures/plans-stage-b-messages.json — planFeatures / featuresPage / planMeta / landing.pricing trimmed or
+// removed, pricing.* and planTable.* added, the van modal body, the trial popup offer / body, Billing's notStarted body,
+// compare's fee-shape lines, the welcome email's trial line, the first-load failure line). `stageA()` is Stage A + A2
+// merged exactly as before, then B applied on top IN ORDER: a key B rewords that A / A2 already reworded keeps A's FIRST
+// `before` (the overlay's job is the text before the plan stages) and takes B's `after`; a key A / A2 added and B rewords
+// stays ADDED, with B's text; a key B removes leaves `reworded` / `added`. `stageB()` is B alone.
+const STAGE_B_FILE = path.join(REPO, 'scripts/fixtures/plans-stage-b-messages.json')
+const stageB = () => (fs.existsSync(STAGE_B_FILE) ? readJson(STAGE_B_FILE) : EMPTY_STAGE())
+// ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): pricing-tidy's message changes are a FOURTH sibling
+// (scripts/fixtures/pricing-tidy-messages.json — Billing's notStarted body deleted, planTable.notes.whatsapp / .printing
+// added), applied after B by the same rule (a key it removes that a stage reworded keeps that stage's FIRST `before`).
+const STAGE_TIDY_FILE = path.join(REPO, 'scripts/fixtures/pricing-tidy-messages.json')
+const stageTidy = () => (fs.existsSync(STAGE_TIDY_FILE) ? readJson(STAGE_TIDY_FILE) : EMPTY_STAGE())
+const stageA = () => {
+  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), out = {}
+  for (const loc of ['en-GB', 'en-US']) {
+    const o = out[loc] = {}
+    for (const part of ['removed', 'reworded', 'added']) o[part] = { ...((a[loc] || {})[part] || {}), ...((b[loc] || {})[part] || {}) }
+    for (const x of [sb[loc] || {}, st[loc] || {}]) {
+      for (const [k, v] of Object.entries(x.removed || {})) { const was = k in o.reworded ? o.reworded[k].before : k in o.added ? undefined : v; delete o.reworded[k]; delete o.added[k]; if (was !== undefined) o.removed[k] = was }
+      for (const [k, v] of Object.entries(x.reworded || {})) { if (k in o.added) o.added[k] = v.after; else o.reworded[k] = k in o.reworded ? { before: o.reworded[k].before, after: v.after } : v }
+      for (const [k, v] of Object.entries(x.added || {})) o.added[k] = v
+    }
+  }
+  return out
+}
+function stageATree() {
+  const out = {}
+  for (const [key, { before }] of Object.entries(stageA()['en-GB'].reworded || {})) {
+    const parts = key.split('.'); let o = out
+    for (const p of parts.slice(0, -1)) { if (!isObj(o[p])) o[p] = {}; o = o[p] }
+    o[parts[parts.length - 1]] = before
+  }
+  return out
+}
+
 /** The switch as the environment sets it: { mode: 'frozen', file, usFile? } | { mode: 'source' } | null. */
 function mode(env = process.env) {
   const f = env.HG_MESSAGES_FROZEN
   if (f && f !== 'off') {
     const file = path.resolve(REPO, f)
     const us = file.endsWith('.en-GB.json') ? file.replace(/\.en-GB\.json$/, '.en-US.json') : null
-    return { mode: 'frozen', file, ...(us && fs.existsSync(us) ? { usFile: us } : {}), moved: env.HG_MESSAGES_MOVED !== 'off' }
+    return { mode: 'frozen', file, ...(us && fs.existsSync(us) ? { usFile: us } : {}), moved: env.HG_MESSAGES_MOVED !== 'off', ...(env.HG_MESSAGES_STAGE_A === 'before' ? { stageA: true } : {}) }
   }
   if (env.HG_MESSAGES_SOURCE === '1') return { mode: 'source' }
   return null
@@ -144,7 +199,8 @@ function catalogues(m = mode()) {
   const us = readJson(path.join(REPO, 'messages/en-US.json'))
   if (m && m.mode === 'frozen') {
     const moved = m.moved === false ? {} : movedTree({})
-    return { 'en-GB': overlay(overlay(gb, moved), withMoves(withInline(readJson(m.file)))), 'en-US': m.usFile ? withMoves(readJson(m.usFile)) : {} }
+    const base = m.stageA ? overlay(gb, stageATree()) : gb   // ⚠️ RE-PINNED (Stage A): the opt-in overlay, lowest precedence
+    return { 'en-GB': overlay(overlay(base, moved), withMoves(withInline(readJson(m.file)))), 'en-US': m.usFile ? withMoves(readJson(m.usFile)) : {} }
   }
   return { 'en-GB': gb, 'en-US': us }
 }
@@ -210,4 +266,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2
   return out
 }
 
-module.exports = { REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

@@ -26,6 +26,12 @@ const SEEDS = require('./_country-settings-gb.cjs')
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
 const { NextRequest } = require(path.join(REPO, 'node_modules/next/server'))
 const AFTER_CODE = fs.existsSync(path.join(REPO, 'lib/allergens.ts'))
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): Stage B is present when the one plan table exists.
+const STAGE_B = fs.existsSync(path.join(REPO, 'lib/plan-offer.ts')) && fs.existsSync(path.join(REPO, 'components/pricing/PlanTable.tsx'))
+const FEATURES_DESC_B = [
+  'Every HatchGrab feature on every plan, side by side — Starter, Pro and Max, with fees and allowances. Your first month includes everything.',
+  'Every HatchGrab feature on every plan, side by side — Pay as you go, Pro and Unlimited, with fees and allowances. Your first 3 months include everything.',
+]
 
 let pass = 0, fail = 0
 const t = (name, ok, detail) => { if (ok) pass++; else { fail++; console.log(`  ✗ ${name}${detail ? `\n      ${String(detail).slice(0, 500)}` : ''}`) } }
@@ -74,10 +80,15 @@ async function menuPrompt(truckArg) {
 }
 
 /* ── 2 · landing and features metadata ── */
+// ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): /features' metadata (and the landing page) read the plan
+// catalogue now, so the fake database also holds public.plans / plan_prices / plan_features AS THE MIGRATIONS SEED THEM
+// (scripts/_lp1c-fixtures.cjs planTables), and the catalogue's cache is cleared with the country cache.
+const PLAN_ROWS = () => require('./_lp1c-fixtures.cjs').planTables()
+const PLAN_CLEAR = fs.existsSync(path.join(REPO, 'lib/plans-server.ts')) ? "\nexport { clearPlanCatalogCache } from '@/lib/plans-server'" : ''
 async function metadataOf(file, query, rows = [GB, US_ON]) {
-  const m = await kit.bundle(`ur-meta-${file.replace(/\W/g, '')}`, `export * from '@/${file}'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'`, { stubs: FONTS })
+  const m = await kit.bundle(`ur-meta-${file.replace(/\W/g, '')}`, `export * from '@/${file}'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'` + PLAN_CLEAR, { stubs: FONTS })
   if (typeof m.generateMetadata === 'function') {
-    globalThis.__harnessDb = kit.fakeDb({ country_settings: rows }); m.clearCountrySettingsCache?.()
+    globalThis.__harnessDb = kit.fakeDb({ country_settings: rows, ...PLAN_ROWS() }); m.clearCountrySettingsCache?.(); m.clearPlanCatalogCache?.()
     try { return JSON.parse(JSON.stringify(await kit.quietAsync(() => m.generateMetadata({ searchParams: Promise.resolve(query ? { country: query } : {}) })))) }
     finally { delete globalThis.__harnessDb }
   }
@@ -156,12 +167,16 @@ async function main() {
   }
   head('1 · GB: every answer this sweep touches is byte-identical to BEFORE')
   const before = JSON.parse(read(BEFORE_FILE)).views
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): THE ONE SEO change of Stage B — /features' description (and its
+  // OG / Twitter copies, which are the same string) names the catalogue's plans and the trial's months. Applied to BEFORE
+  // exactly, leaf by leaf (a leaf holding anything else is left alone); every other tag must still be byte-identical.
+  if (STAGE_B) before.featuresMeta = JSON.parse(JSON.stringify(before.featuresMeta), (k, v) => v === FEATURES_DESC_B[0] ? FEATURES_DESC_B[1] : v)
   for (const [k, b] of Object.entries(before)) {
     if (k === 'placeholders') continue   // compared in §4 against the copy module (the page reads them from it now)
     const d = diffJson(b, got[k])
     t(`${k}: byte-identical to BEFORE`, d === null, d)
   }
-  if (AFTER_CODE) await require('./_us-readiness-us.cjs')({ kit, t, head, read, REPO, before, got, allergenPrompts, menuPrompt, metadataOf, plansCountry, togglesView, PROSPECTS, GB, US_ON, SEEDS, snake })
+  if (AFTER_CODE) await require('./_us-readiness-us.cjs')({ kit, t, head, read, REPO, before, got, allergenPrompts, menuPrompt, metadataOf, plansCountry, togglesView, PROSPECTS, GB, US_ON, SEEDS, snake, PLAN_ROWS, PLAN_CLEAR, STAGE_B })
   console.log(`\n${fail ? '✗' : '✓'} us-readiness: ${pass} passed, ${fail} failed`)
   if (fail) process.exit(1)
 }

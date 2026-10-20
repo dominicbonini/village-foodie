@@ -4,7 +4,7 @@
 const path = require('path')
 
 module.exports = async function us(x) {
-  const { kit, t, head, read, REPO, before, allergenPrompts, menuPrompt, metadataOf, plansCountry, togglesView, PROSPECTS, GB, US_ON, SEEDS } = x
+  const { kit, t, head, read, REPO, before, allergenPrompts, menuPrompt, metadataOf, plansCountry, togglesView, PROSPECTS, GB, US_ON, SEEDS, STAGE_B } = x
   const US_9 = 'Milk, Eggs, Fish, Crustacean shellfish, Tree nuts, Peanuts, Wheat, Soybeans, Sesame'
   const UK_LINE = 'Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Dairy, Tree nuts'
 
@@ -58,19 +58,38 @@ module.exports = async function us(x) {
   t('landing og:locale en_US', lm.openGraph.locale === 'en_US', lm.openGraph.locale)
   t('features title (and OG/Twitter): "— HatchGrab US"', [fm.title.absolute, fm.openGraph.title, fm.twitter.title].every(v => v === 'Plans & features compared — HatchGrab US'), fm.title.absolute)
   t('features og:locale en_US', fm.openGraph.locale === 'en_US', fm.openGraph.locale)
+  // (BEFORE.featuresMeta already carries Stage B's one named SEO change — applied in us-readiness.cjs §1.)
   const strip = o => JSON.stringify(o).replace(/HatchGrab (UK|US)/g, '#').replace(/\b(UK|US) food/g, '#').replace(/en_(GB|US)/g, '#')
   t('nothing else in the landing tags moves (canonical, images, robots) — apart from the named US words', strip(lm) === US_META_WORDS(strip(before.landingMeta)))
-  t('nothing else in the features tags moves', strip(fm) === strip(before.featuresMeta))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the new description lists the catalogue's plan names in the
+  // visitor's locale — en-US writes the serial comma ("Pay as you go, Pro, and Unlimited"), en-GB does not. That one
+  // locale difference is named and applied to BEFORE's (Stage-B-renamed) GB description; everything else must match.
+  const US_FEATURES_WORDS = s => STAGE_B ? s.replace(/side by side — Pay as you go, Pro and Unlimited, with/g, 'side by side — Pay as you go, Pro, and Unlimited, with') : s
+  t('nothing else in the features tags moves', strip(fm) === US_FEATURES_WORDS(strip(before.featuresMeta)), strip(fm).slice(0, 300))
   const usOff = [GB, { ...US_ON, enabled: false }]
   const lmOff = await metadataOf('app/landing/page.tsx', 'US', usOff)
   t('?country=US while the US is switched off → the GB tags, byte-identical', JSON.stringify(lmOff) === JSON.stringify(before.landingMeta))
 
-  const ld = await landingJsonLd({ kit, REPO }, 'US', [GB, US_ON])
+  // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the landing's JSON-LD is now ONE block, { @context, @graph: [Organization,
+  // WebSite, SoftwareApplication] }. The words checked here live on the SoftwareApplication node inside @graph (same
+  // words as before); its `url` is now the page's own country address and it carries `offers` in that country's currency.
+  const appNode = j => (j && Array.isArray(j['@graph']) ? j['@graph'].find(n => n['@type'] === 'SoftwareApplication') : null) || null
+  const graphOk = (j, url, cur) => !!j && j['@context'] === 'https://schema.org' && Array.isArray(j['@graph'])
+    && j['@graph'].map(n => n['@type']).join(',') === 'Organization,WebSite,SoftwareApplication'
+    && appNode(j).url === url && appNode(j).publisher?.['@id'] === 'https://www.hatchgrab.com/#organization'
+    && Array.isArray(appNode(j).offers) && appNode(j).offers.length > 0 && appNode(j).offers.every(o => o['@type'] === 'Offer' && o.priceCurrency === cur)
+  const ldJ = await landingJsonLd(x, 'US', [GB, US_ON])
+  const ld = appNode(ldJ)
   t('landing JSON-LD for US: areaServed United States · inLanguage en-US · "US food trucks"',
     ld && ld.areaServed?.name === 'United States' && ld.inLanguage === 'en-US' && /for US food trucks/.test(ld.description), JSON.stringify(ld))
-  const ldGb = await landingJsonLd({ kit, REPO }, null, [GB, US_ON])
+  t('landing JSON-LD for US: one @graph [Organization, WebSite, SoftwareApplication] · url https://www.hatchgrab.com/us · USD offers',
+    graphOk(ldJ, 'https://www.hatchgrab.com/us', 'USD'), JSON.stringify(ld))
+  const ldGbJ = await landingJsonLd(x, null, [GB, US_ON])
+  const ldGb = appNode(ldGbJ)
   t('landing JSON-LD for GB: United Kingdom · en-GB · "UK food trucks" (the literals it carried)',
     ldGb && ldGb.areaServed?.name === 'United Kingdom' && ldGb.inLanguage === 'en-GB' && ldGb.description === 'Ordering, pre-orders and a kitchen screen for UK food trucks and mobile catering.', JSON.stringify(ldGb))
+  t('landing JSON-LD for GB: one @graph [Organization, WebSite, SoftwareApplication] · url https://www.hatchgrab.com/uk · GBP offers',
+    graphOk(ldGbJ, 'https://www.hatchgrab.com/uk', 'GBP'), JSON.stringify(ldGb))
 
   /* ── 4 · placeholders ── */
   head('4 · Manage placeholders by address style')
@@ -117,7 +136,11 @@ module.exports = async function us(x) {
   t('prospect with no discovery truck → GB', await r({ ...PROSPECTS('US'), outreach_prospects: [{ id: 'pr-1', discovery_truck_id: null }] }) === 'GB')
   t('unknown prospect → GB', await r(PROSPECTS('US'), 'pr-missing') === 'GB')
   const PDF = await kit.bundle('ur-pdf', "export * from '@/lib/plans-pdf'")
-  const usHtml = kit.textOf(PDF.buildPlansPdfHtml({ ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 0, proMonthlyMinor: 3900, maxMonthlyMinor: 6900, proAllowanceMinor: 200000, maxAllowanceMinor: 300000, platformFeePct: 0.99 })).text
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): buildPlansPdfHtml(settings, catalog) — the prices are the
+  // catalogue's US plan_prices rows now (the row's old price fields are no longer read), so the fixture's $39 / $69 go there.
+  const usRow = { ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 0, proMonthlyMinor: 3900, maxMonthlyMinor: 6900, proAllowanceMinor: 200000, maxAllowanceMinor: 300000, platformFeePct: 0.99 }
+  const usCat = (() => { const c = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO); for (const r of c.prices) if (r.countryCode === 'US') r.monthlyMinor = ({ pro: 3900, unlimited: 6900 })[r.planKey] ?? r.monthlyMinor; return c })()
+  const usHtml = kit.textOf(PDF.buildPlansPdfHtml.length >= 2 ? PDF.buildPlansPdfHtml(usRow, usCat) : PDF.buildPlansPdfHtml(usRow)).text
   t('the US plans PDF is in dollars ($39 / $69), with no £', usHtml.includes('$39') && usHtml.includes('$69') && !usHtml.includes('£'), usHtml.slice(0, 400))
   const R = read('app/api/admin/outreach/attachments/route.ts')
   t('no outreach_templates read or write in the route', !R.includes('outreach_templates'))
@@ -128,8 +151,9 @@ module.exports = async function us(x) {
   t('no file holding the Items CSV changed in this sweep', !/items?[-_]?csv|reports?\/items/i.test(out), out)
 }
 
-async function landingJsonLd({ kit, REPO }, query, rows) {
-  const m = await kit.bundle('ur-landing-page', "export { default as Page } from '@/app/landing/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'", {
+async function landingJsonLd(x, query, rows) {
+  const { kit, REPO } = x
+  const m = await kit.bundle('ur-landing-page', "export { default as Page } from '@/app/landing/page'\nexport { clearCountrySettingsCache } from '@/lib/country-settings'" + (x.PLAN_CLEAR || ''), {
     stubs: {
       'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
       'next/headers': `
@@ -137,7 +161,9 @@ async function landingJsonLd({ kit, REPO }, query, rows) {
         export async function cookies() { return { get: () => undefined, has: () => false, getAll: () => [] } }`,
     },
   })
-  globalThis.__harnessDb = kit.fakeDb({ country_settings: rows }); m.clearCountrySettingsCache?.()
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the landing's pricing section reads the plan catalogue — the
+  // seed's plan tables go in the fake database too, and the catalogue's cache is cleared with the country cache.
+  globalThis.__harnessDb = kit.fakeDb({ country_settings: rows, ...x.PLAN_ROWS() }); m.clearCountrySettingsCache?.(); m.clearPlanCatalogCache?.()
   try {
     const { prerenderToNodeStream } = require(path.join(REPO, 'node_modules/react-dom/static'))
     const html = await kit.quietAsync(async () => {

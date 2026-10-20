@@ -36,7 +36,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH } from '@/lib/legal'
 import { isNativeApp } from '@/lib/native/device'
 import { BrandHomeLink } from '@/components/shared/BrandHomeLink'
 import { useT } from '@/lib/i18n/use-t'
@@ -110,6 +110,7 @@ export function LegalChrome({ children, homeHref }: { children: React.ReactNode;
         <div className="max-w-[1140px] mx-auto px-5 sm:px-10 py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-500">
           <Link href={PRIVACY_PATH} className="hover:text-slate-800 underline">{t('privacy')}</Link>
           <Link href={TERMS_PATH} className="hover:text-slate-800 underline">{t('terms')}</Link>
+          <Link href={COUNTRY_TERMS_PATH} className="hover:text-slate-800 underline">{t('countryTerms')}</Link>
           <Link href="/contact" className="hover:text-slate-800 underline">{t('contact')}</Link>
           <span className="text-slate-400">HatchGrab</span>
         </div>

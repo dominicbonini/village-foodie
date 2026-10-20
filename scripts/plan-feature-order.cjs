@@ -24,241 +24,138 @@
 // scripts/whatsapp-golive-parity-harness.cjs uses on the same file. Reading the source with a regex
 // would be checking the shape of the text that produces the list rather than the list.
 
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const { execFileSync } = require('child_process')
+// ══ ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026) — THE WHOLE FILE ════════════════════════════════════════
+// The frozen display copy (lib/legacy-pricing-display.ts, FEATURE_SECTIONS, its Starter/Pro/Max sections and per-tier
+// cells) is DELETED. The ONE list is now `FEATURE_TABLE` in lib/feature-table.ts — capabilities, grouped RUN YOUR
+// SERVICE / ONLINE ORDERS / MARKETING & AUTOMATION in the approved /features mockup's order, with NO plan in it. A cell
+// is ✓ / — / coming soon by each plan's switches (public.plan_features via lib/plan-offer.ts tableCell). Rendered by
+// components/pricing/PlanTable.tsx (/features AND Manage › Billing) and lib/plans-pdf.ts (the plans PDF).
+// The claims are the same in kind: the order is pinned in full (so a reorder is a deliberate edit here), it is ONE list,
+// nobody re-sorts it, and coming-soon has ONE mechanism. The 6 October adjacencies (Private events after Branded QR
+// code; Custom event types after Schedule page) were SUPERSEDED by the approved mockup's order — pinned as it now is.
+// It still LOADS THE REAL MODULES (compiled with the repo's tsc) and computes the cells on the seeded plan catalogue.
 
-const REPO = path.resolve(__dirname, '..')
+const fs = require('fs')
+const path = require('path')
+const { compile, REPO } = require('./_slot-interval-compile.cjs')
+const { seedCatalog } = require('./_plans-catalog-fixture.cjs')
+
 let pass = 0, fail = 0
 const t = (label, ok) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label) } }
 const head = (s) => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 92 - s.length)))
+const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
+/** 🔴 COMMENTS STRIPPED BEFORE EVERY SOURCE ASSERTION — a comment must never decide a claim about code. */
+const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/^\s*\/\/.*$/gm, '')
 
-// ── COMPILE AND LOAD THE REAL MODULE ──────────────────────────────────────────────────────────────
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hg-plan-order-'))
-const cfg = path.join(tmp, 'tsconfig.json')
-fs.writeFileSync(cfg, JSON.stringify({
-  compilerOptions: {
-    module: 'commonjs', target: 'es2020', outDir: tmp, rootDir: REPO, skipLibCheck: true,
-    esModuleInterop: true,
-    // ⚠️ RE-PINNED (Language Phase 1e): lib/plan-features.ts now reads its row words from the message catalogue
-    // (lib/i18n/catalog/planFeatures.ts imports @/messages/ns/<locale>/planFeatures.json), so tsc must resolve JSON.
-    // Nothing asserted below changes.
-    resolveJsonModule: true, moduleResolution: 'node', baseUrl: REPO, paths: { '@/*': ['./*'] },
-    types: ['node'], typeRoots: [path.join(REPO, 'node_modules/@types')],
-  },
-  /* ⚠️ `whatsapp-live.ts` IS COMPILED TOO. One row in 'Pro' is a TERNARY on
-   * `WHATSAPP_LIVE` — with the flag on the list carries 'WhatsApp auto-replies' as its own row, with it
-   * off that row is absent and a merged one is rendered instead. A list pinned without reading the flag
-   * would be pinned to one flag state and fail the moment the other is used. */
-  files: [path.join(REPO, 'lib/plan-features.ts'), path.join(REPO, 'lib/whatsapp-live.ts')],
-}))
-try {
-  execFileSync(path.join(REPO, 'node_modules/.bin/tsc'), ['-p', cfg], { stdio: 'pipe' })
-} catch (e) {
-  console.log('🔴 COMPILE FAILED:\n' + (e.stdout ? e.stdout.toString() : e.message))
-  process.exit(1)
-}
-/* ⚠️ `@/` IS REWRITTEN AT RESOLVE TIME, because tsc emits the alias verbatim into the JavaScript. The
- * same shim the WhatsApp parity harness uses, for the same module. */
-const Module = require('module')
-const realResolve = Module._resolveFilename
-Module._resolveFilename = function (request, ...rest) {
-  if (request.startsWith('@/')) return realResolve.call(this, path.join(tmp, request.slice(2)), ...rest)
-  // ⚠️ RE-PINNED (Language Phase 1e): the rows' words now come through lib/i18n/translator (next-intl), which the temp
-  // tree cannot see — a bare package name falls back to the repo's node_modules.
-  try { return realResolve.call(this, request, ...rest) } catch (e) { if (/^[a-z@]/.test(request)) return require.resolve(request, { paths: [REPO] }); throw e }
-}
-/* ⚠️ `findPlanParityViolations` IS IMPORTED NOW, not merely mentioned. The 'Social media posts' row is
- * mapped at launch, and the claim about it is that the guard REPORTS CLEAN — which can only be said by
- * calling it. ⛔ It is the same function four product surfaces call at module load. */
-const { FEATURE_SECTIONS, findPlanParityViolations } = require(path.join(tmp, 'lib/plan-features.js'))
-const { WHATSAPP_LIVE } = require(path.join(tmp, 'lib/whatsapp-live.js'))
-/* ⛔ `ROW_FEATURE_MAP` IS MODULE-PRIVATE — it is not exported, deliberately, so only
- * `findPlanParityViolations()` inside that file reads it. Its two entries are therefore checked
- * against the SOURCE TEXT below rather than by calling it, and this comment is here so the next reader
- * knows that is a limitation of the module's surface and not laziness. */
-const PLAN_FEATURES_SRC = fs.readFileSync(path.join(REPO, 'lib/plan-features.ts'), 'utf8')
+// ── COMPILE AND LOAD THE REAL MODULES ─────────────────────────────────────────────────────────────
+const c = compile(REPO, ['lib/feature-table.ts', 'lib/plan-offer.ts', 'lib/whatsapp-live.ts'], 'plan-order')
+const { FEATURE_TABLE, FEATURE_GROUPS } = c.req('lib/feature-table.js')
+const O = c.req('lib/plan-offer.js')
+const { WHATSAPP_LIVE, MESSENGER_INSTAGRAM_LIVE } = c.req('lib/whatsapp-live.js')
+const catalog = seedCatalog()
+const GB = JSON.parse(read('messages/en-GB.json'))
+const nameOf = (id) => GB.planFeatures?.row?.[id]?.name
+const FT_SRC = read('lib/feature-table.ts')
 
-/** Every row, flattened, with the section it is in — document order. */
-const flat = FEATURE_SECTIONS.flatMap(s => s.rows.map(r => ({ section: s.title, ...r })))
-const names = flat.map(r => r.name)
-const at = (name) => names.indexOf(name)
-const sectionOf = (name) => flat[at(name)]?.section
+const ids = FEATURE_TABLE.map(r => r.id)
+const at = (id) => ids.indexOf(id)
+const groupOf = (id) => FEATURE_TABLE[at(id)]?.group
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// 1 · THE TWO ADJACENCIES
+// 1 · THE ADJACENCIES OF THE APPROVED MOCKUP
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-head('1 · the two rows sit directly after their anchors')
+head('1 · the event rows sit together, in ONLINE ORDERS')
 
 {
-  /* 🔴 ASSERTED AS `index + 1`, NOT AS "somewhere after". "Directly after" was the instruction, and a
-   * row that drifted one place down would still satisfy a `>` test — which is the version of this
-   * check that would quietly stop meaning anything. */
+  /* 🔴 ASSERTED AS `index + 1`, NOT AS "somewhere after" — a row that drifted one place would satisfy a `>` test. */
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026 — Dominic): 'Custom event types & pricing' moved to the BOTTOM
+  // of Online orders; 'Schedule page on your own website' now follows 'Private events'.
   for (const [row, anchor] of [
-    ['Private events', 'Branded QR code'],
-    ['Custom event types & pricing', 'Schedule page on your own website'],
+    ['private_events', 'auto_accept'],
+    ['embed_schedule', 'private_events'],
+    ['event_types', 'schedule_import'],
   ]) {
-    t(`🔴 '${row}' is directly after '${anchor}'`, at(anchor) >= 0 && at(row) === at(anchor) + 1)
-    /* ⛔ AND IN THE SAME SECTION AS IT. The first of these two moves crossed a section boundary on
-     * purpose, which is why this is worth stating: after the move they are in one section, and a later
-     * edit that split them again would pass the index test for exactly one render. */
-    t(`⛔ …and in the same section ('${sectionOf(row)}')`, sectionOf(row) === sectionOf(anchor))
+    t(`🔴 '${nameOf(row)}' is directly after '${nameOf(anchor)}'`, at(anchor) >= 0 && at(row) === at(anchor) + 1)
+    t(`⛔ …and in the same group ('${groupOf(row)}')`, groupOf(row) === groupOf(anchor))
   }
-  /* ⚠️ AND 'Private events' IS WHERE IT WAS PUT: out of 'Max'. It is `pro: true`, and a Pro row
-   * under a heading that says "Max tier" is the thing the move was for. */
-  /* ⚠️ THE SECTION TITLES LOST THE WORD "tier" ON 7 October 2026 — they are now exactly the plan
-   * names, then gained the word "plan". These two compare against the live titles, so they move with
-   * them. */
-  t("⚠️ 'Private events' is not in the 'Max plan' section", sectionOf('Private events') !== 'Max plan')
-  t("⚠️ …and 'Custom event types & pricing' still is", sectionOf('Custom event types & pricing') === 'Max plan')
+  t("⚠️ 'Private events' and 'Custom event types & pricing' are ONLINE ORDERS rows",
+    groupOf('private_events') === 'online' && groupOf('event_types') === 'online')
+  t("🔴 'Custom event types & pricing' is the LAST Online orders row", (rows => rows[rows.length - 1].id === 'event_types')(FEATURE_TABLE.filter(r => r.group === 'online')))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-// 2 · ORDER ONLY — NOTHING ELSE ABOUT ANY ROW CHANGED
+// 2 · THE FULL LIST — ids, words, gates, coming-soon — AND THE CELLS IT PRODUCES
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-head('2 · order only — the same rows, the same cells, the same keys')
+head('2 · the same rows, the same words, the same gates')
 
 {
-  /* 🔴 THE FULL LIST, PINNED. ⛔ NOT A COUNT: a count is satisfied by swapping two rows for two others.
-   * This is the names, in order, so ANY future reorder is a deliberate edit to this file.
-   * ⚠️ WHICH IS THE POINT — it is not here to forbid reordering, it is here so that reordering cannot
-   * happen by accident while somebody is editing a detail three lines away. */
+  /* 🔴 THE FULL LIST, PINNED BY NAME (en-GB words). ⛔ NOT A COUNT: a count is satisfied by swapping two rows for two others. */
   const EXPECTED = [
-    /* ⚠️ RENAMED 'Core operations' → 'Starter tier' on 7 October 2026 — wording only, and it completes
-     * the set with 'Pro plan' and 'Max plan'. The word "tier" was dropped from all three the same day
-     * and "plan" settled on, so each heading names a plan without colliding with the column headers. All nine rows below are `starter: true`, which is
-     * what makes the heading accurate rather than merely tidier. */
-    ['Starter plan', [
-      'Discovery map listing', 'Universal web dashboard', 'QR code', 'Automatic schedule import',
-      'Meal deals & upsells', 'Walk-up order processing', 'Instant sold-out toggle',   // ⚠️ RE-PINNED (Language Phase 1e): GB fix planFeatures.row.sold_out_toggle.name (was 'Instant sold out toggle')
-      'Online ordering — Pay at Hatch', 'iPhone, iPad and Android kitchen app',
+    ['run', [
+      'Walk-up order processing', 'iPhone, iPad and Android kitchen app', 'Multi-device kitchen sync', 'Multi-user access',
+      'Offline order protection', 'Kitchen ticket printing', 'Universal web dashboard', 'Meal deals & upsells',
+      'Instant sold-out toggle', 'Automated stock countdown', 'Buzzer tracking', 'Advanced reporting',
+      'Take payment on your phone', 'Customer-facing display',
     ]],
-    ['Pro plan', [
-      // ⚠️ RE-PINNED (Language Phase 1e): GB fix planFeatures.row.offline_protection.name (was 'Offline Order Protection')
-      'Offline order protection', 'Online payments', 'Advance pre-ordering', 'Pre-order deadline',
-      'Customer time slot selection', 'Kitchen capacity management', 'Automated stock countdown',
-      'Auto-accept online orders',
-      'Branded QR code',
-      'Private events',                 // ← moved here, 6 October 2026
-      /* ⛔ `true` WITH NO `ROW_FEATURE_MAP` ENTRY, on an explicit instruction — see the long note beside
-       * the row itself. It sits here, immediately after Private events, rather than in the coming-soon
-       * block at the end of this section, BECAUSE it is no longer coming soon. */
-      'Social media posts',
-      /* ⚠️ ONE ROW OR TWO, DEPENDING ON THE FLAG — see the note at the compile step. With the flag on,
-       * WhatsApp has its own row above the Messenger/Instagram one; with it off there is a single
-       * merged row and the Messenger one is hidden by `visibleRows` on the landing. */
-      ...(WHATSAPP_LIVE ? ['WhatsApp auto-replies'] : []),
-      'Messenger & Instagram auto-replies',
-      'Take payment on your phone', 'Advanced reporting',
-      'SMS order alerts',
+    ['online', [
+      // ⚠️ RE-PINNED (Stage B, Dominic, 20 October 2026): no 'Online ordering — Pay at Hatch' row; custom event types last.
+      'Online payments', 'Advance pre-ordering', 'Pre-order deadline',
+      'Customer time slot selection', 'Kitchen capacity management', 'Auto-accept online orders', 'Private events',
+      'Schedule page on your own website', 'QR code', 'Branded QR code',
+      'Discovery map listing', 'Automatic schedule import', 'Custom event types & pricing',
     ]],
-    ['Max plan', [
-      'Multi-device kitchen sync', 'Multi-user access', 'Schedule page on your own website',
-      'Custom event types & pricing',   // ← moved here, 6 October 2026
-      'Buzzer tracking', 'Kitchen ticket printing', 'Customer-facing display',
+    ['marketing', [
+      'Social media posts', 'WhatsApp auto-replies', 'Messenger & Instagram auto-replies', 'SMS order alerts',
       'Digital loyalty stamp cards',
     ]],
   ]
-  const actual = FEATURE_SECTIONS.map(s => [s.title, s.rows.map(r => r.name)])
-  t('🔴 every section, and every row in it, is where it is expected to be',
+  const actual = O.tableGroups().map(g => [g.group, g.rows.map(r => nameOf(r.id))])
+  t('🔴 every group, and every row in it, is where it is expected to be (the approved /features mockup)',
     JSON.stringify(actual) === JSON.stringify(EXPECTED))
   if (JSON.stringify(actual) !== JSON.stringify(EXPECTED)) {
     console.log('      GOT:\n' + actual.map(([s, rs]) => `      ── ${s}\n` + rs.map(r => `         ${r}`).join('\n')).join('\n'))
   }
+  t('⚠️ the groups are RUN / ONLINE / MARKETING, in that order', JSON.stringify(FEATURE_GROUPS) === JSON.stringify(['run', 'online', 'marketing']))
 
-  /* ⛔ AND THE TWO MOVED ROWS CARRY EXACTLY THE CELLS THEY CARRIED. The instruction was "order only";
-   * these are the two values a reorder is most likely to disturb, so they are stated outright. */
-  const row = (n) => flat[at(n)]
-  t("⛔ 'Private events' is still Pro ✓ and Max ✓, Starter ✗",
-    row('Private events').starter === false && row('Private events').pro === true
-    && row('Private events').max === true)
-  t("⛔ 'Custom event types & pricing' is still Max only",
-    row('Custom event types & pricing').starter === false
-    && row('Custom event types & pricing').pro === false
-    && row('Custom event types & pricing').max === true)
-  /* ⚠️ AND BOTH STILL POINT AT THEIR REAL FEATURE KEYS, which is what `findPlanParityViolations()`
-   * walks. A row whose map entry went missing would stop being checked against `canAccess` at all —
-   * the guard `continue`s past an unmapped row rather than failing, which is the quiet way for a table
-   * to start promising Pro a Max feature. ⛔ READ FROM THE SOURCE because the map is not exported. */
-  t('⚠️ …and both still map to their feature keys',
-    /* Language Phase 0 (14 October 2026): keyed on the rows' CODE IDS now, never their names. */
-    /\n  private_events: 'private_events',/.test(PLAN_FEATURES_SRC)
-    && /\n  event_types: 'event_types',/.test(PLAN_FEATURES_SRC))
-  /* ══ 🔴 'Social media posts' SAYS "COMING SOON" THE WAY EVERY OTHER UNBUILT ROW DOES ═════════════
-   * ⛔ `'coming_soon'` CELLS, NOT `true` CELLS WITH A BADGE. The first attempt at this row ticked Pro
-   * and Max and put a new badge beside the name; it was corrected on the grounds that matter here:
-   *   • one table should not describe one state in two languages, and
-   *   • a hard `true` on a row with no `ROW_FEATURE_MAP` entry is SKIPPED by
-   *     `findPlanParityViolations()` — the guard `continue`s past an unmapped row rather than failing —
-   *     so the ticks would have been checked by nothing.
-   * 🔴 THIS IS THE CHECK THAT WOULD CATCH IT COMING BACK. If somebody "promotes" this row to `true`
-   * without also giving it a feature key, that is an unchecked promise and this fails. */
-  /* ══ 🔴 FLIPPED TO `true` ON 6 October 2026, ON AN EXPLICIT INSTRUCTION ═══════════════════════════
-   * Dominic asked for it, was told in terms what it means — `canAccess` is FALSE for every plan on
-   * `places_posts_preview`, which is held only through `trucks.feature_overrides` and granted to one
-   * truck — and chose it over adding the key to PRO_FEATURES/MAX_FEATURES.
-   * ⛔ SO THIS CHECK NO LONGER GUARDS "it is honestly unbuilt". It guards the EXCEPTION, which is the
-   * thing now worth pinning: `true` cells, no map entry, and sitting with the built rows rather than in
-   * the coming-soon block. If any one of those three drifts the row becomes a different claim. */
-  t("🔴 'Social media posts' is Pro ✓ and Max ✓, absent from Starter, and NOT in the coming-soon block", (() => {
-    const r = row('Social media posts')
-    const sec = FEATURE_SECTIONS.find(s => s.rows.some(x => x.name === 'Social media posts'))
-    const i = sec ? sec.rows.findIndex(x => x.name === 'Social media posts') : -1
-    /* ⚠️ AND IT IS BEFORE EVERY `coming_soon` ROW IN ITS SECTION. The data order IS the render order —
-     * §3 proves nobody re-sorts — so a `true` row sitting among the coming-soon ones would read as one. */
-    const firstSoon = sec ? sec.rows.findIndex(x => x.pro === 'coming_soon' || x.max === 'coming_soon') : -1
-    return !!r && r.starter === false && r.pro === true && r.max === true
-      && i >= 0 && firstSoon >= 0 && i < firstSoon
-  })())
-  /* ⛔ AND IT IS DIRECTLY AFTER 'Private events', which is where it was asked to go. */
-  t("⛔ …directly after 'Private events'", (() => {
-    const sec = FEATURE_SECTIONS.find(s => s.rows.some(x => x.name === 'Social media posts'))
-    if (!sec) return false
-    const names = sec.rows.map(x => x.name)
-    return names.indexOf('Social media posts') === names.indexOf('Private events') + 1
-  })())
-  t('⚠️ …so the Trial column follows Max, with no entry of its own', (() => {
-    /* ⚠️ `trialFeatureValue()` RETURNS `row.max` for every row but two, and this is not one of them —
-     * so Trial follows Max here. Asserted by naming the two exceptions rather than trusting the rule. */
-    const src = fs.readFileSync(path.join(REPO, 'lib/landing-table.ts'), 'utf8')
-    /* Language Phase 0 (14 October 2026): the two exceptions are named by row ID now, never by name. */
-    return /return row\.max/.test(src)
-      && /row\.id === PAY_AT_HATCH_ROW/.test(src)
-      && /row\.id === 'sms_order_alerts'/.test(src)
-  })())
-  /* ══ 🔴 THE EXCEPTION IS CLOSED — 10 OCTOBER 2026, AT LAUNCH ════════════════════════════════════
-   * ⛔ **THIS CHECK USED TO ASSERT THE OPPOSITE, AND ITS OWN NOTE SAID WHEN TO DELETE IT**: *"if the
-   * key is ever added to PRO_FEATURES/MAX_FEATURES, the map entry goes in TOO and this check is
-   * deleted."* That is what happened, so it is replaced rather than removed quietly.
-   * 🔴 THE HISTORY, BECAUSE IT IS THE WHOLE POINT OF THE REPLACEMENT. The absence of a
-   * `ROW_FEATURE_MAP` entry was honest while the cells said `coming_soon` — a key would have made an
-   * unbuildable promise enforceable. When the cells were flipped to `true` on 6 October the absence
-   * became the thing STOPPING the guard from checking them: `findPlanParityViolations()` `continue`s
-   * past an unmapped row, so a public, indexed pricing page promised what no plan granted. And adding
-   * the entry alone would have thrown at module load, taking out four surfaces in dev, because
-   * `canAccess('pro', 'places_posts_preview')` was false.
-   * ⚠️ BOTH HALVES MOVED IN ONE EDIT: `schedule_graphics` into `PRO_FEATURES`, and the map entry in. */
-  t('🔴 the row is MAPPED now, and the guard checks the promise it makes', (() => {
-    /* Language Phase 0 (14 October 2026): the map is keyed on row IDS now (`social_media_posts`), never names. */
-    const at = PLAN_FEATURES_SRC.indexOf('const ROW_FEATURE_MAP: Partial<Record<PlanRowId, Feature>> = {')
-    const map = at < 0 ? '' : PLAN_FEATURES_SRC.slice(at)
-    return at > 0
-      && /\n  social_media_posts: 'schedule_graphics',/.test(map)
-      /* ⛔ AND THE GUARD IS **RUN**, not read. It is what the landing, /features, Billing and Admin
-       * depend on at module load, so a violation here is four broken surfaces. */
-      && Array.isArray(findPlanParityViolations()) && findPlanParityViolations().length === 0
-  })())
-  /* ⛔ AND NO ROW CARRIES A SECOND, NAME-SIDE "coming soon" TREATMENT. `'coming_soon'` in a cell is the
-   * ONE way this table says it — which is what makes all four renderers agree with no render-site code
-   * at all. A `comingSoon` flag on a row would be a second mechanism to keep in step. */
-  t('⛔ there is exactly ONE coming-soon mechanism — the cell value',
-    !/comingSoon/.test(PLAN_FEATURES_SRC))
+  /* 🔴 NO ROW WAS LOST OR GAINED — 32 (the old 33 less 'Online ordering — Pay at Hatch', removed on Dominic's request,
+     20 October 2026), whatever the WhatsApp flag (the flag decides "coming soon", not the row). */
+  t('🔴 the list is 32 rows, with no duplicate id and no duplicate name, and every row has its words (en-GB)',
+    FEATURE_TABLE.length === 32 && new Set(ids).size === ids.length && new Set(ids.map(nameOf)).size === ids.length
+    && ids.every(id => typeof nameOf(id) === 'string' && nameOf(id).length > 0))
 
-  /* 🔴 NO ROW WAS LOST OR GAINED, and the count follows the flag for the reason above. */
-  const EXPECTED_ROWS = WHATSAPP_LIVE ? 33 : 32
-  t(`🔴 the list is still ${EXPECTED_ROWS} rows, with no duplicate name`,
-    flat.length === EXPECTED_ROWS && new Set(names).size === names.length)
+  /* ⛔ NO PLAN APPEARS IN THE LIST — no plan key and no per-plan cell. Which plan has a row is data. */
+  const code = codeOf(FT_SRC)
+  t('⛔ lib/feature-table.ts names no plan and carries no per-plan cell',
+    !/\b(starter|pro|max|payg|unlimited|trial|demo)\s*:/.test(code) && !/'(starter|pro|max|payg|unlimited)'/.test(code)
+    // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): a row may also carry `note` (a footnote marker, not a plan cell) —
+    // exactly two rows do: 'Kitchen ticket printing' → 'printing', 'WhatsApp auto-replies' → 'whatsapp'.
+    && FEATURE_TABLE.every(r => Object.keys(r).every(k => ['id', 'group', 'feature', 'comingSoon', 'note'].includes(k)))
+    && JSON.stringify(FEATURE_TABLE.filter(r => 'note' in r).map(r => [r.id, r.note])) === JSON.stringify([['ticket_printing', 'printing'], ['whatsapp_auto_replies', 'whatsapp']]))
+  t('⛔ …and no row → feature parity map or guard is left (the gate IS the row\'s `feature`)', !/findPlanParityViolations|ROW_FEATURE_MAP/.test(code))
+
+  /* 🔴 THE CELLS, COMPUTED BY THE REAL tableCell ON THE SEEDED CATALOGUE (GB). */
+  const plans = O.offerPlans(catalog, 'GB')
+  const row = (id) => FEATURE_TABLE[at(id)]
+  const cells = (id) => plans.map(p => O.tableCell(catalog, row(id), p)).join('/')
+  t(`⚠️ the table's columns are the public plans in sort_order: ${plans.map(p => p.plan.key).join(', ')}`,
+    plans.length >= 2 && plans.every((p, i) => i === 0 || p.plan.sortOrder > plans[i - 1].plan.sortOrder))
+  t(`🔴 'Private events' is ✓ on every plan (${cells('private_events')})`, plans.every(p => O.tableCell(catalog, row('private_events'), p) === 'on'))
+  t(`🔴 'Custom event types & pricing' is — on the first plan and ✓ after (${cells('event_types')}) — payg's event_types is off (Stage B migration)`,
+    cells('event_types') === ['off', ...plans.slice(1).map(() => 'on')].join('/'))
+  t(`🔴 'Social media posts' is gated by schedule_graphics, NOT coming soon, — on the first plan (${cells('social_media_posts')})`,
+    row('social_media_posts').feature === 'schedule_graphics' && !row('social_media_posts').comingSoon
+    && cells('social_media_posts') === ['off', ...plans.slice(1).map(() => 'on')].join('/'))
+  t(`⚠️ 'WhatsApp auto-replies' follows WHATSAPP_LIVE (${WHATSAPP_LIVE}) for coming soon (${cells('whatsapp_auto_replies')})`,
+    row('whatsapp_auto_replies').comingSoon === !WHATSAPP_LIVE)
+  t(`⚠️ 'Messenger & Instagram auto-replies' follows MESSENGER_INSTAGRAM_LIVE (${MESSENGER_INSTAGRAM_LIVE}) (${cells('messenger_instagram_replies')})`,
+    row('messenger_instagram_replies').comingSoon === !MESSENGER_INSTAGRAM_LIVE)
+  t('⚠️ a plan that switches a feature off shows — even on a coming-soon row (off beats soon)',
+    O.tableCell(catalog, row('messenger_instagram_replies'), plans[0]) === 'off')
+
+  /* ⛔ THERE IS EXACTLY ONE COMING-SOON MECHANISM — the row's `comingSoon` flag, turned into 'soon' by tableCell. */
+  const soonRows = FEATURE_TABLE.filter(r => r.comingSoon).map(r => r.id)
+  t(`⛔ exactly ONE coming-soon mechanism — the row flag (${soonRows.join(', ')}) — and no 'coming_soon' cell value anywhere`,
+    !/'coming_soon'/.test(code) && soonRows.every(id => plans.some(p => O.tableCell(catalog, row(id), p) === 'soon')))
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -267,80 +164,31 @@ head('2 · order only — the same rows, the same cells, the same keys')
 head('3 · one source, and nobody re-sorts it on the way to a screen')
 
 {
-  const read = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')
-  /* ══ 🔴 ALL FOUR TABLES AGREE BECAUSE NONE OF THEM WAS TOUCHED (DRY) ═════════════════════════════
-   * Adding this row changed ONE file. Every renderer already understood `'coming_soon'`, so the landing
-   * table, Billing, Admin and the PDF all print it without a line of render-site code — which is the
-   * whole argument for using the existing cell value instead of a new badge. ⚠️ ASSERTED AS "each one
-   * can draw a coming-soon cell", so a renderer that quietly stopped handling it would fail here. */
-  t('🔴 every renderer already knows how to draw a `coming_soon` cell', (() => {
-    // ⚠️ RE-PINNED (Language Phase 1e): the landing's words are the message planFeatures.cell.comingSoon, by locale.
-    const landing = /if \(value === 'coming_soon'\) return translatorFor\(locale, 'planFeatures'\)\('cell\.comingSoon'\)/.test(read('lib/landing-table.ts'))
-    const billing = /val === 'coming_soon' && \(/.test(read('app/manage/[token]/page.tsx'))
-    const admin = /val === 'coming_soon' && <span/.test(read('app/admin/page.tsx'))
-    // Language Phase 0 (14 October 2026): the PDF decides the class by the cell's STATE now, not its words.
-    const pdf = /value === 'coming_soon' \? 'soon'/.test(read('lib/plans-pdf.ts'))
-    return landing && billing && admin && pdf
-  })())
-
-  /* 🔴 THE FOUR RENDERERS, BY NAME. ⛔ A fifth that built its own array would be the thing this
-   * section exists to catch — "shown on Billing and on the landing page" is only true while both are
-   * reading the same export. */
-  /* ══ ⛔ `app/landing/page.tsx` LEFT THIS LIST — 6 October 2026, AND IT WAS PASSING FALSELY ════════
-   * The comparison table moved to /features; the landing has not rendered a row since. **This check
-   * went on passing anyway**, because the tombstone comment left in the landing page names both
-   * `@/lib/plan-features` and `FEATURE_SECTIONS` — so a regex on raw source found the prose, not the
-   * code. Ninth time in this build that a comment has decided a claim about code, and the first to
-   * survive a full green sweep. `codeOf` below is the fix, and the entry is re-aimed at the component
-   * that actually renders it. */
+  t('⛔ the frozen display copy is gone (lib/legacy-pricing-display.ts, lib/landing-table.ts, components/landing/FeatureComparison.tsx)',
+    ['lib/legacy-pricing-display.ts', 'lib/landing-table.ts', 'lib/plan-features.ts', 'components/landing/FeatureComparison.tsx'].every(f => !fs.existsSync(path.join(REPO, f))))
+  /* 🔴 THE RENDERERS, BY NAME — each iterates tableGroups() and asks tableCell for every cell. */
   const RENDERERS = [
-    'components/landing/FeatureComparison.tsx',   // the public comparison table (/features)
-    'app/manage/[token]/page.tsx',   // Billing
-    'app/admin/page.tsx',            // the admin view
-    'lib/plans-pdf.ts',              // the plans PDF
+    'components/pricing/PlanTable.tsx',   // /features AND Manage › Billing
+    'lib/plans-pdf.ts',                   // the plans PDF
   ]
-  /** 🔴 COMMENTS STRIPPED BEFORE EVERY SOURCE ASSERTION BELOW — see the note on RENDERERS. */
-  const codeOf = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
   for (const f of RENDERERS) {
     const code = codeOf(read(f))
-    t(`🔴 ${f} renders FEATURE_SECTIONS from the shared module`,
-      /* ⚠️ `.map` OR `.flatMap` — ADMIN USES `flatMap`, and a bare `/FEATURE_SECTIONS/` is what let the
-       * landing's tombstone comment pass this check in the first place. The claim is that the file
-       * ITERATES the shared list, so the call is what to look for, not the name. */
-      // ⚠️ RE-PINNED (Language Phase 1e): a renderer in a locale iterates `featureSections(locale)` — the SAME list
-      // (FEATURE_SECTIONS is featureSections('en-GB')), with the words in that locale. Either call proves the claim.
-      /from '@\/lib\/plan-features'/.test(code) && (/FEATURE_SECTIONS\.(map|flatMap)\(/.test(code) || /featureSections\([\w.]+\)\.(map|flatMap)\(/.test(code) || /const (\w+) = featureSections\([\w.]+\)[\s\S]*\{\1\.(map|flatMap)\(/.test(code)))
+    t(`🔴 ${f} renders tableGroups() rows with tableCell from lib/plan-offer`,
+      /from '@\/lib\/plan-offer'/.test(code) && /tableGroups\(\)\.map\(/.test(code) && /g\.rows\.map\(/.test(code) && /tableCell\(catalog, r, p\)/.test(code))
+    t(`⚠️ …and draws all three cell states (${f})`, /=== 'off'/.test(code) && /=== 'soon'/.test(code) && /cell\.comingSoon/.test(code))
   }
-  /* ⛔ AND THE LANDING PAGE NO LONGER DOES, asserted as the absence it now is — so the table coming
-   * back to that page without this list being updated fails here rather than passing quietly. */
-  t('⛔ …and app/landing/page.tsx no longer renders the table itself', (() => {
-    const code = codeOf(read('app/landing/page.tsx'))
-    return !/FEATURE_SECTIONS/.test(code)
-      /* ⚠️ BUT IT MUST STILL IMPORT THE MODULE: that import is what fires
-       * `findPlanParityViolations()` on the landing route. A positive claim beside the absence. */
-      && /from '@\/lib\/plan-features'/.test(code)
-  })())
-  /* ⛔ AND NONE OF THEM SORTS IT. A `.sort()` anywhere on the way to a screen would make the order in
-   * lib/plan-features.ts a suggestion rather than the answer — and this file's claim meaningless. */
-  for (const f of RENDERERS.concat(['lib/landing-table.ts'])) {
-    const src = read(f)
-    t(`⛔ …and does not re-sort the rows (${f})`,
-      !/FEATURE_SECTIONS[\s\S]{0,200}?\.sort\(/.test(src)
-      && !/section\.rows[\s\S]{0,80}?\.sort\(/.test(src))
+  t('🔴 /features and Manage › Billing render THE SAME component (<PlanTable …>)',
+    /<PlanTable catalog=\{catalog\}/.test(codeOf(read('app/features/page.tsx'))) && /<PlanTable catalog=\{catalog\}/.test(codeOf(read('app/manage/[token]/page.tsx'))))
+  t('⛔ …and app/landing/page.tsx renders no feature table (the cards are PricingSection)',
+    !/tableGroups|FEATURE_TABLE|<PlanTable/.test(codeOf(read('app/landing/page.tsx'))))
+  t('⛔ …and app/admin/page.tsx draws no feature matrix (it lists public.plans)', !/tableGroups|FEATURE_TABLE|<PlanTable|legacy-pricing-display/.test(codeOf(read('app/admin/page.tsx'))))
+  /* ⛔ AND NONE OF THEM SORTS IT. tableGroups FILTERS by group, which preserves order. */
+  for (const f of RENDERERS.concat(['lib/feature-table.ts', 'lib/plan-offer.ts'])) {
+    const src = codeOf(read(f))
+    t(`⛔ …and does not re-sort the rows (${f})`, !/FEATURE_TABLE[\s\S]{0,200}?\.sort\(/.test(src) && !/\.rows[\s\S]{0,80}?\.sort\(/.test(src))
   }
-  /* ⚠️ THE LANDING FILTERS, AND THAT IS ALL IT DOES. `visibleRows` drops a row while a flag is off; a
-   * filter preserves order, which is why it is allowed where a sort is not. */
-  t('⚠️ the landing\'s `visibleRows` filters and does not reorder',
-    // Language Phase 0 (14 October 2026): the hidden set holds row IDS now, never names.
-    /export function visibleRows\(section: FeatureSection\): FeatureRow\[\] \{\s*\n\s*return section\.rows\.filter\(row => !HIDDEN_ROWS\.has\(row\.id\)\)\s*\n\}/
-      .test(read('lib/landing-table.ts')))
-  /* ⚠️ BILLING DOES NOT EVEN FILTER — it maps `section.rows` straight through, so if the landing page
-   * renders this order (it does; see docs/feature-order-report.md) Billing necessarily does too. */
-  t('⚠️ Billing maps `section.rows` with no filter and no sort',
-    // ⚠️ RE-PINNED (Language Phase 1e): Billing maps `featureSections(cs.locale)` (held in `sections`) — the same list in
-    // the truck's locale; still `section.rows` straight through, no filter, no sort.
-    /\{sections\.map\(section => \([\s\S]{0,900}?\{section\.rows\.map\(row => \(/
-      .test(read('app/manage/[token]/page.tsx')) && /const sections = featureSections\(cs\.locale\)/.test(read('app/manage/[token]/page.tsx')))
+  t('⚠️ tableGroups filters FEATURE_TABLE by group and does not reorder',
+    /return FEATURE_GROUPS\.map\(group => \(\{ group, rows: FEATURE_TABLE\.filter\(r => r\.group === group\) \}\)\)/.test(read('lib/plan-offer.ts')))
 }
 
 // ── SUMMARY ───────────────────────────────────────────────────────────────────────────────────────

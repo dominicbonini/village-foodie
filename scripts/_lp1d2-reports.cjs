@@ -187,6 +187,9 @@ async function views(ctx) {
     v('tab|range|items', () => html(loaded(FULL, { itemView: 'items' }), tab()))
     v('tab|range|expanded', () => html(loaded(FULL, { expandedOrders: new Set(FULL.orders.slice(0, 4).map(o => o.order_key)) }), tab()))
     v('tab|range|starter', () => html(loaded(FULL, { filterMode: 'event', reportEventId: 'ev-a' }), tab(starter)))
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): AFTER-only twin — the same state on the fixture's own truck. BEFORE has no
+    // Max view in this state; the named proof plans-starter-twin requires the Starter view to equal it (no plan gates Reports).
+    v('tab|range|starterAsMax', () => html(loaded(FULL, { filterMode: 'event', reportEventId: 'ev-a' }), tab()))
     v('tab|event|orders', () => html(loaded(EVENT_B, { filterMode: 'event', reportEventId: 'ev-b' }), tab()))
     v('tab|event|items', () => html(loaded(EVENT_B, { filterMode: 'event', reportEventId: 'ev-b', itemView: 'items' }), tab()))
     v('tab|event|noVenue', () => html(loaded(EVENT_D, { filterMode: 'event', reportEventId: 'ev-d' }), tab()))

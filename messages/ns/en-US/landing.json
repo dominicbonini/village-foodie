@@ -24,16 +24,6 @@
     "menuBody": "Photograph your board or paste it in. Items, prices and extras all come through on their own. You just check they’re right.",
     "shareBody": "Post it on Facebook, stick the QR on the truck. Orders land on your screen, in the order you need to cook them."
   },
-  "pricing": {
-    "trialBody": "With {brand}, customers order ahead and pay when they pick up, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. <bold>Adding online payments doesn’t start your subscription</bold>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.",
-    "starter": {
-      "online": "Online ordering, pay at the window",
-      "menu": "Menu, combos & upsells"
-    },
-    "pro": {
-      "preorders": "Pre-orders & pickup times"
-    }
-  },
   "final": {
     "lede": "Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to try out in under 60 seconds. Your items, your prices. No sign-up, no card, nothing to install. Take a look, then decide."
   },

@@ -16,7 +16,7 @@ import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/legalChrome'
 
-export function LegalPage({ title, updated, children }: {
+export function LegalPage({ title, updated, html, children }: {
   /** ⚠️ OPTIONAL SINCE THE REAL DOCUMENTS LANDED. Both carry their own `# Heading` and
    *  `**Last updated:**` line in the source markdown, and legal copy must not be reordered or restated —
    *  so the page renders the document's own, and passes neither of these. They remain for any future
@@ -24,7 +24,10 @@ export function LegalPage({ title, updated, children }: {
   title?: string
   /** Human-readable date, e.g. "6 August 2026". */
   updated?: string
-  children: React.ReactNode
+  /** seo-fixes S7: the document as server-rendered static HTML (lib/legal-markdown-html.ts) — set as the content div's
+   *  innerHTML, so the DOM is the same as passing the elements as children but the RSC payload carries one string. */
+  html?: string
+  children?: React.ReactNode
 }) {
   // Language Phase 1e: `legalChrome`, en-GB — the same rule as app/(legal)/layout.tsx (UK documents; this is a
   // server component, so it asks translatorFor rather than useT).
@@ -39,9 +42,11 @@ export function LegalPage({ title, updated, children }: {
           {updated && <p className="text-xs text-slate-400 mt-1 mb-6">{t('lastUpdated', { date: updated })}</p>}
           {/* `space-y` rather than a prose plugin — the project has no typography plugin and this needs to
               stay readable when someone pastes real legal copy in without reading this file. */}
-          <div className="space-y-4 text-sm text-slate-600 leading-relaxed [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:pt-4 [&_strong]:text-slate-900 [&_a]:text-orange-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2">
-            {children}
-          </div>
+          {html !== undefined
+            ? <div className="space-y-4 text-sm text-slate-600 leading-relaxed [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:pt-4 [&_strong]:text-slate-900 [&_a]:text-orange-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2" dangerouslySetInnerHTML={{ __html: html }} />
+            : <div className="space-y-4 text-sm text-slate-600 leading-relaxed [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:pt-4 [&_strong]:text-slate-900 [&_a]:text-orange-600 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2">
+                {children}
+              </div>}
         </article>
 
       <p className="max-w-2xl mx-auto text-center text-xs text-slate-400 mt-6">

@@ -72,6 +72,7 @@ import { resolveBatchReservations } from '@/lib/features'
 import { WALK_UP_NAME } from '@/lib/walk-up'
 import '@/lib/i18n/catalog/emailCustomer'
 import { readEventRegion } from '@/lib/event-region-read'
+import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // OPERATOR WRITES. Most handlers are fast DB writes, but this route imports captureOnConfirmation
@@ -478,12 +479,12 @@ export async function POST(req: NextRequest) {
             ${refundLine}
             <p>${tCancel('common.sorry')}</p>
             <p>${truck.name}</p>
-            <p style="color:#94a3b8;font-size:12px">${tCancel('common.poweredByDot')}</p>
+            <p style="color:#94a3b8;font-size:12px">${tCancel('common.poweredByDot')}${privacyFooterHtml(tCancel as never)}</p>
           </body>`,
           // THE TEXT TWIN, from the SAME sentence, so the two cannot disagree about money.
           tCancel('cancellation.textLead', { ...named, id: order.id, truck: truck.name })
           + `${cancellationReason ? ' ' + cancellationReason : ''}${cancelMoney.text}`
-          + ` ${tCancel('common.sorry')} ${tCancel('common.poweredByText')}`)
+          + ` ${tCancel('common.sorry')} ${tCancel('common.poweredByText')} ${privacyFooterText(tCancel as never)}`)
       }
       return NextResponse.json({ success: true, status: 'cancelled' })
     }

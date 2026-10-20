@@ -833,7 +833,21 @@ async function eventTypesView() {
     if (k.startsWith('tickets.')) return groupLine(v, '[£$]')
     return groupText(v)
   }
-  const fix2 = (k, v) => grouped(k, fix2core(k, v))
+  // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md) — legal-followups-privacy-link: a
+  // customer email's footer gains "Privacy" (scripts/_legal-followups-named.cjs, PRECISE); the order page gains the
+  // "Privacy" link under Place order and on the confirmation. Not the CSVs, not the ticket bytes.
+  const LFU = require('./_legal-followups-named.cjs')
+  const privacy = (k, v) => (typeof v !== 'string' || /(^|\.)csv\./.test(k) || /^tickets\./.test(k) ? v : LFU.both(v))
+  const fix2 = (k, v) => privacy(k, grouped(k, fix2core(k, v)))
+  // …and on the order page's TEXT and ATTRIBUTE leaves (tag-stripped, so the markup transform cannot reach them): the
+  // AFTER side gives back exactly what the link added — the word " Privacy" (BEFORE never contains it, asserted) and one
+  // trailing `href=/privacy` attribute — and everything else is compared byte for byte as before.
+  const unPrivacy = (k, a) => {
+    if (typeof a !== 'string' || !/^orderPage\.[^.]+\.text$/.test(k)) return a
+    if (B.has(k) && /Privacy/.test(B.get(k))) { fail(`legal-followups-privacy-link: BEFORE ${k} already says "Privacy"`); return a }
+    return a.replace(/ Privacy(?= |$)/g, '')
+  }
+  const privacyAttr = k => /^orderPage\.[^.]+\.attrs\.\d+$/.test(k) && A.get(k) === 'href=/privacy'
   const fix2core = (k, v) => {
     if (k === FIX6.view) {
       if (typeof v !== 'string' || v.split(FIX6.from).length !== 2) { fail(`${FIX6.id}: "${FIX6.from}" is not in BEFORE ${k} exactly once`); return v }
@@ -877,13 +891,14 @@ async function eventTypesView() {
       : v.replace(/Jalapenos/g, 'Jalapeños').replace(/4a616c6170656e6f73/g, '4a616c6170653f6f73')
     for (const [k, v] of B) {
       if (!A.has(k)) fail(`${k} is missing now`)
-      else if (d38(k, A.get(k)) !== fix2(k, v)) fail(`${k} changed${excerpt(fix2(k, v), A.get(k))}`)
+      else if (unPrivacy(k, d38(k, A.get(k))) !== fix2(k, v)) fail(`${k} changed${excerpt(fix2(k, v), A.get(k))}`)
     }
     console.log(`  named: ${FIX2.id} on ${FIX2_VIEWS.length} views (${FIX2_VIEWS.join(', ')}); ${FIX6.id} on ${FIX6.view}; us-polish-thousands-separators on every leaf with an amount ≥ 1,000 except the CSVs`)
     { const raw = [...A].filter(([k, v]) => /(^|\.)csv\./.test(k) && typeof v === 'string' && /£\d{4,}\.\d{2}/.test(v)).length
       if (!raw) fail('us-polish-thousands-separators: no CSV leaf holds a raw four-figure amount — the CSV proof has nothing to check')
       else console.log(`  the Reports CSVs keep raw figures: ${raw} CSV leaf(s) hold an ungrouped amount ≥ £1,000, byte-identical to BEFORE`) }
-    for (const k of A.keys()) if (!B.has(k)) fail(`${k} is new (not in the BEFORE snapshot)`)
+    for (const k of A.keys()) if (!B.has(k) && !privacyAttr(k)) fail(`${k} is new (not in the BEFORE snapshot)`)
+    console.log(`  legal-followups-privacy-link: ${[...A.keys()].filter(privacyAttr).length} order-page views gain the Privacy link (href=/privacy)`)
     console.log(bad ? `🔴 GB: ${bad} difference(s) from ${BEFORE_FILE}` : `✅ GB: all ${B.size} rendered strings and byte streams are identical to ${BEFORE_FILE}`)
     process.exit(bad ? 1 : 0)
   }
@@ -931,7 +946,7 @@ async function eventTypesView() {
   for (const [k, v] of B) {
     if (SKIP.has(k) || k.endsWith('.bytes')) continue
     if (!A.has(k)) { fail(`${k} is missing in the USD render`); continue }
-    if (asGb(d38(k, A.get(k))) !== usAllergens(k, fix2(k, v))) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(usAllergens(k, fix2(k, v)), asGb(A.get(k)))}`)
+    if (asGb(unPrivacy(k, d38(k, A.get(k)))) !== usAllergens(k, fix2(k, v))) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(usAllergens(k, fix2(k, v)), asGb(A.get(k)))}`)
   }
   for (const [k, t] of Object.entries(snap.tickets)) {
     const gb = Buffer.from(grouped(`tickets.${k}.bytes`, before.tickets[k].bytes), 'hex'), us = Buffer.from(d38('tickets.' + k, t.bytes), 'hex')

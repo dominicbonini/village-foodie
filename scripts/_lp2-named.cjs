@@ -11,6 +11,7 @@
 // An entry that claims no view that changed is reported (stale or not landed yet), and a view two entries claim
 // takes the first. View ids: `1a/<section>/<key>`, `1b/<area>/<key>`, `1c/<area>/<key>`, `2/extra/<key>`.
 
+const STAGE_B = require('./_lp-stage-b.cjs')   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026)
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const longDate = (y, m, d, cc) => (cc === 'US' ? `${MONTHS[m - 1]} ${d}, ${y}` : `${d} ${MONTHS[m - 1]} ${y}`)
 /** The US clock after Part 2: "4:30 PM", "12:00 AM" — always minutes, a space, capitals (lib/time-utils.ts clockOf, en-US). */
@@ -62,6 +63,12 @@ const GB_LONG = /\b(\d{1,2}) (January|February|March|April|May|June|July|August|
 //         the card, and no such block left in F; (c) a guessed / no-location box may vanish ONLY when the card shows
 //         the private chip (🔒) — a box still shown must be byte-identical;
 //   (iii) F's card has exactly one Approve button, with BEFORE's `disabled` and `title`.
+// ⚠️ RE-PINNED (pending-card buttons, 19 October 2026, docs/pending-card-buttons-report.md): from 640px up the card's
+// Approve / Edit / Reject sit on the Event type chips' row — the SAME element placed a second time, inside
+// `data-pending-actions-row` (`max-sm:hidden`), with the bottom row `sm:hidden`. Where F's card has that row: (iii) it
+// has exactly TWO Approve buttons, one in each place, both with BEFORE's `disabled` and `title`; the row's words are
+// exactly the bottom row's buttons' words (proven, then expected once more); and the new sentence, when due, is there
+// once in each place.
 const PC_VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'])
 /** A tolerant-free HTML tree of React static markup (throws on an unbalanced tag). */
 function pcParse(s) {
@@ -156,17 +163,29 @@ function pendingCardProof(expected, f) {
       // (iii) the one Approve
       const apB = inB.filter(pcIsApprove), apA = inA.filter(pcIsApprove)
       if (apB.length !== 2) problems.push(`${tag}: BEFORE has ${apB.length} Approve buttons (expected 2: the phone row and the desktop duplicate)`)
-      if (apA.length !== 1) problems.push(`${tag}: F has ${apA.length} Approve buttons (expected 1)`)
+      const rowA = inA.filter(x => pcAttr(x, 'data-pending-actions-row') !== null)
+      if (rowA.length > 1) problems.push(`${tag}: F has ${rowA.length} chips-row button groups (expected at most 1)`)
+      const places = rowA.length ? 2 : 1
+      if (apA.length !== places) problems.push(`${tag}: F has ${apA.length} Approve buttons (expected ${places}${places === 2 ? ': the bottom row and the chips row' : ''})`)
+      if (rowA.length === 1 && apA.filter(x => pcWithin(x, rowA[0])).length !== 1) problems.push(`${tag}: F's chips row does not hold exactly one Approve`)
       const disB = apB.map(x => pcAttr(x, 'disabled') !== null), titleB = apB.map(x => pcAttr(x, 'title'))
       if (new Set(disB).size > 1 || new Set(titleB).size > 1) problems.push(`${tag}: BEFORE's two Approve buttons disagree on disabled/title`)
-      if (apA[0] && ((pcAttr(apA[0], 'disabled') !== null) !== disB[0] || pcAttr(apA[0], 'title') !== titleB[0])) problems.push(`${tag}: F's Approve changed its disabled/title`)
+      for (const a of apA) if ((pcAttr(a, 'disabled') !== null) !== disB[0] || pcAttr(a, 'title') !== titleB[0]) problems.push(`${tag}: F's Approve changed its disabled/title`)
       // (ii)(b) the desktop duplicate
       const desk = inB.filter(x => pcHas(x, 'hidden', 'sm:flex') && inB.some(y => y.tag === 'button' && pcWithin(y, x)))
       if (desk.length !== 1) problems.push(`${tag}: BEFORE has ${desk.length} desktop (hidden sm:flex) button blocks, expected 1`)
       if (inA.some(x => pcHas(x, 'hidden', 'sm:flex') && inA.some(y => y.tag === 'button' && pcWithin(y, x)))) problems.push(`${tag}: F still has a desktop-only button block`)
+      // the chips-row copy: the bottom row's buttons, word for word — and so expected once more
+      const rowRuns = rowA.length === 1 ? pcRuns(A.slice(rowA[0].start, rowA[0].end)) : []
+      if (rowA.length === 1) {
+        const bottom = inA.filter(x => pcAttr(x, 'data-pending-actions') !== null)
+        const bottomBtns = bottom.length === 1 ? inA.filter(x => x.tag === 'button' && pcWithin(x, bottom[0])).flatMap(x => pcRuns(A.slice(x.start, x.end))) : null
+        if (!bottomBtns || JSON.stringify(bottomBtns) !== JSON.stringify(rowRuns)) problems.push(`${tag}: F's chips-row buttons ${JSON.stringify(rowRuns)} are not the bottom row's ${JSON.stringify(bottomBtns)}`)
+      }
       const runsB = pcRuns(B.slice(cb.start, cb.end))
       const deskRuns = desk.flatMap(d => pcRuns(B.slice(d.start, d.end)))
       let { out: expect, missing } = msMinus(runsB, deskRuns)
+      expect.push(...rowRuns)
       if (missing.length) problems.push(`${tag}: internal — desktop words not found on the card: ${missing.join(' | ')}`)
       const notDup = msMinus(expect, deskRuns).missing
       if (notDup.length) problems.push(`${tag}: desktop words that were NOT duplicates (would be lost): ${notDup.join(' | ')}`)
@@ -181,7 +200,7 @@ function pendingCardProof(expected, f) {
       }
       // (ii)(a) the one new sentence
       const promptB = inB.some(x => pcHas(x, 'mt-1.5', 'rounded-lg', 'border-amber-300', 'bg-amber-50'))
-      const want = disB[0] && !promptB ? 1 : 0
+      const want = disB[0] && !promptB ? places : 0
       const reason = inA.filter(x => pcAttr(x, 'data-approve-reason') !== null)
       if (reason.length !== want) problems.push(`${tag}: ${reason.length} approveNeedsTimes sentence(s) in F, expected ${want} (Approve ${disB[0] ? 'disabled' : 'enabled'} BEFORE${promptB ? ', private times prompt shown' : ''})`)
       for (const x of reason) {
@@ -203,14 +222,28 @@ const pendingCardEntry = views => ({ id: 'pending-card-layout', country: 'both',
 /** A named table's `apply`, with the structural entries (`prove`) understood: they never make a view LISTED, they claim
  *  a view only when its BEFORE has a pending card, and they add `matches(f)` — the proof run instead of byte equality
  *  against the transformed BEFORE. Views without a pending card: exactly the old apply. */
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): an entry may carry `proveWith(expected, f, id)` →
+// { ok, problems[] } — a STRUCTURAL proof of its own (Billing's data-driven plan card: the comparison table below it
+// proven byte for byte, the card proven by what it must say). It runs after every `expect`, like the pending-card proof,
+// and both must pass when a view has both. An entry with `proveWith` is never a LISTED one.
 function applyNamed(NAMED, us, id, before) {
   const entries = NAMED.filter(e => (e.country === 'both' || (e.country === 'US') === us) && e.views(id))
-  if (entries.some(e => !e.expect && !e.prove)) return { entries, listed: true, touched: entries.filter(e => !e.expect && !e.prove).map(e => e.id) }
+  const isListed = e => !e.expect && !e.prove && !e.proveWith
+  if (entries.some(isListed)) return { entries, listed: true, touched: entries.filter(isListed).map(e => e.id) }
   let v = before; const touched = []
   for (const e of entries.filter(e => e.expect)) { const w = e.expect(v, id); if (JSON.stringify(w) !== JSON.stringify(v)) touched.push(e.id); v = w }
   const provers = entries.filter(e => e.prove && hasPendingCard(before))
+  const custom = entries.filter(e => e.proveWith)
   const out = { entries, listed: false, expected: v, touched }
-  if (provers.length) { for (const e of provers) touched.push(e.id); const exp = v; out.matches = f => pendingCardProof(exp, f) }
+  if (provers.length || custom.length) {
+    for (const e of [...provers, ...custom]) touched.push(e.id)
+    const exp = v
+    // `all` — the whole capture f belongs to ({ id: value }), for a proof that compares with another view of it.
+    out.matches = (f, all) => {
+      const rs = [...(provers.length ? [pendingCardProof(exp, f)] : []), ...custom.map(e => e.proveWith(exp, f, id, all))]
+      return { ok: rs.every(r => r.ok), problems: rs.flatMap(r => r.problems || []) }
+    }
+  }
   return out
 }
 
@@ -220,6 +253,41 @@ function applyNamed(NAMED, us, id, before) {
 // passes changes the stub's JSON even where nothing rendered changes. These transforms add exactly that prop, with the
 // value it must hold, and refuse (leave BEFORE alone, so the view fails) whenever that value cannot be read exactly.
 /** React's attribute escaping (escapeTextForBrowser) and its inverse, for a stub's data-p. */
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the trial end a provisioned trial truck now carries.
+const A2_TRIAL_MONTHS = () => { const c = require('./_plans-catalog-fixture.cjs').seedCatalog(require('path').resolve(__dirname, '..')); return c && c.plans.some(p => p.trialMonths) ? Object.fromEntries(c.plans.filter(p => p.isTrial && p.trialMonths).map(p => [p.key, p.trialMonths])) : null }
+function a2LocalYmd(instant, tz) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(instant).map(x => [x.type, x.value]))
+  return `${p.year}-${p.month}-${p.day}`
+}
+function a2EndOfLocalDay(ymd, tz) {   // the UTC instant whose wall clock in tz reads `ymd 23:59:59` (two passes settle a DST offset)
+  const [y, m, d] = ymd.split('-').map(Number), wall = Date.UTC(y, m - 1, d, 23, 59, 59)
+  let t = wall
+  for (let i = 0; i < 2; i++) {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(t)).map(x => [x.type, x.value]))
+    t += wall - Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second)
+  }
+  return new Date(t).toISOString()
+}
+function a2PlusMonths(ymd, n) {   // the same day n months on, clamped to the month's last day
+  const [y, m, d] = ymd.split('-').map(Number), mm = m - 1 + n, yy = y + Math.floor(mm / 12), mo = ((mm % 12) + 12) % 12
+  return `${yy}-${String(mo + 1).padStart(2, '0')}-${String(Math.min(d, new Date(Date.UTC(yy, mo + 1, 0)).getUTCDate())).padStart(2, '0')}`
+}
+/** Every truck-shaped object { plan: <a trial key>, timezone, trial_expires_at: null }, at any depth (inside JSON strings too). */
+function a2TrialRows(v, months = A2_TRIAL_MONTHS()) {
+  if (typeof v === 'string') {
+    if ((v[0] === '{' || v[0] === '[') && /[}\]]$/.test(v)) { try { const p = JSON.parse(v); if (JSON.stringify(p) === v) return JSON.stringify(a2TrialRows(p, months)) } catch { /* not JSON */ } }
+    return v
+  }
+  if (Array.isArray(v)) return v.map(x => a2TrialRows(x, months))
+  if (!v || typeof v !== 'object') return v
+  const o = Object.fromEntries(Object.entries(v).map(([k, x]) => [k, a2TrialRows(x, months)]))
+  if (months && typeof o.plan === 'string' && months[o.plan] && 'trial_expires_at' in o && o.trial_expires_at === null && typeof o.timezone === 'string') {
+    o.trial_expires_at = a2EndOfLocalDay(a2PlusMonths(a2LocalYmd(new Date(require('./_lp1b-fixtures.cjs').NOW), o.timezone), months[o.plan]), o.timezone)
+  }
+  return o
+}
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the tree has the A2 feature resolver (PrintingSettings `features`).
+const A2_FEATURES_PROP = require('fs').existsSync(require('path').join(__dirname, '../lib/useFeatures.ts'))
 const mnEsc = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const mnDec = s => s.replace(/&(quot|#x27|lt|gt|amp);/g, (_, e) => ({ quot: '"', '#x27': "'", lt: '<', gt: '>', amp: '&' })[e])
 const mnStubRe = name => new RegExp(`<x-stub data-c="${name}" data-p="([^"]*)"`, 'g')
@@ -446,6 +514,66 @@ const NAMED = [
     what: 'lib/money-format.ts groups every displayed amount: "£1234.56" → "£1,234.56", "$1234.56" → "$1,234.56" (≥ 1,000 only; below, nothing changes). On a printed ticket the right-aligned figure takes its commas out of the label gap, so the line keeps its width; a row with no room keeps the ungrouped figure (lib/printing/ticket.ts `fitted`). PRECISE (scripts/_us-polish-grouping.cjs). The Reports CSVs are excluded — they keep raw figures.',
     views: id => !/csv/i.test(id),
     expect: b => mapStrings(b, require('./_us-polish-grouping.cjs').groupString) },
+
+  // ── ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md) ───────────────────────────────
+  { id: 'legal-followups-privacy-link', part: 'Legal follow-ups (19 Oct 2026)', country: 'both',
+    what: 'A "Privacy" link (https://www.hatchgrab.com/privacy) beside "Powered by HatchGrab" in every customer email footer — " · Privacy" in the HTML, "Privacy: <url>" in the text — and a small "Privacy" link (/privacy) under the order page\'s Place order and under the confirmation\'s "Back to …". PRECISE (scripts/_legal-followups-named.cjs). The Reports CSVs are excluded.',
+    views: id => !/csv/i.test(id),
+    expect: b => mapStrings(b, require('./_legal-followups-named.cjs').both) },
+  { id: 'legal-followups-terms-version', part: 'Legal follow-ups (19 Oct 2026)', country: 'both',
+    what: 'A new account records the terms it accepted as TERMS_VERSION "2026-10-19" (lib/legal.ts, the 19 October 2026 Terms) where it recorded "holding-2026-07-23". The one value in the operators insert; nothing else. PRECISE.',
+    views: id => /^1c\/api\/(GB|US)\|signup\|/.test(id),
+    expect: b => mapStrings(b, x => (x === 'holding-2026-07-23' ? '2026-10-19' : x)) },
+  { id: 'legal-followups-service-fee-notice', part: 'Legal follow-ups (19 Oct 2026)', country: 'US',
+    what: 'Where a truck\'s online card orders carry a service fee, the order page says so beside the tax notice: "Online card orders include a service fee of 3% + 30¢." (the fixture truck\'s 3% + 30¢, lib/fee-phrase feePhrase). A truck with no fee — every UK truck — shows nothing. PRECISE: one <p data-fee-notice> right after each <p data-tax-notice>.',
+    views: id => /^1a\/orderPage\/US\|/.test(id),
+    expect: b => mapStrings(b, x => x.replace(/(<p class="text-\[11px\] text-slate-500 mb-2" data-tax-notice="true">[^<]*<\/p>)/g,
+      '$1<p class="text-[11px] text-slate-500 mb-2" data-fee-notice="true">Online card orders include a service fee of 3% + 30¢.</p>')) },
+
+  // ── ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026, docs/plans-data-model-report.md) ───────────────────────
+  // Plans are data (public.plans / public.plan_prices); provisioning resolves the plan by ROLE through the catalogue.
+  { id: 'plans-demo-batch-override', part: 'plans-data-model Stage A (19 Oct 2026)', country: 'both',
+    what: 'A demo truck is inserted with feature_overrides {"batch_reservations":true} right after "plan":"demo" (lib/provision-truck.ts demo profile): batch reservations used to follow the demo PLAN in resolveBatchReservations, which is override-only now. Operator trucks are byte-identical. PRECISE: one key added to the demo truck row.',
+    // (also Phase 2's own provisioning rows: 2/extra …|rows|demo|… and …|rows|truck|demo)
+    views: id => /^1c\/setup\/(GB|US)\|provision\|demo(\|seeded)?$/.test(id) || /^1c\/demo\/(GB|US)\|rows\|/.test(id) || /^2\/extra\/(GB|US)\|rows\|(demo\||truck\|demo$)/.test(id),
+    // the view is the JSON of { writes, result, error } / { result, error, writes, tables }: the row is an OBJECT inside it,
+    // so the key is added on the serialised text, after exactly the demo plan's value.
+    expect: b => typeof b === 'string' ? b.split('"plan":"demo","country":').join('"plan":"demo","feature_overrides":{"batch_reservations":true},"country":') : b },
+  { id: 'plans-invalid-plan-list', part: 'plans-data-model Stage A (19 Oct 2026)', country: 'both',
+    what: 'provisionTruck\'s refusal of an unknown plan lists the ACTIVE plan keys from the catalogue in sort order ("payg, pro, unlimited, trial, demo, tester") where it listed the old VALID_PLANS ("starter, pro, max, trial, demo, tester"). PRECISE: the one list in the one message.',
+    views: id => /^1c\/setup\/(GB|US)\|provision\|refuse\|plan$/.test(id),
+    expect: b => mapStrings(b, x => x.replace('must be one of starter, pro, max, trial, demo, tester', 'must be one of payg, pro, unlimited, trial, demo, tester')) },
+  { id: 'plans-printing-settings-props', part: 'plans-data-model Stage A (19 Oct 2026); plan-features-config Stage A2 (20 Oct 2026)', country: 'both',
+    what: 'The dashboard hands PrintingSettings only `featureOverrides` for its gate (canAccess(feature, overrides) — no plan, no trial end): the stub’s props lose "plan" and "trialExpiresAt", every other prop in place. ⚠️ RE-PINNED (Stage A2): and `featureOverrides` is renamed `features` (the FeatureAccessView, recorded as {}), in place. PRECISE (scripts/_lp1b-dashboard.cjs renders components as <x-stub data-p="{props}">).',
+    views: id => /^1b\/dashboard\/(GB|US)\|/.test(id),
+    expect: b => mapStrings(b, x => x.replace(/<x-stub data-c="PrintingSettings" data-p="([^"]*)"/g, (whole, raw) => {
+      const p = JSON.parse(mnDec(raw)); if (mnEsc(JSON.stringify(p)) !== raw) return whole
+      const o = { ...p }; delete o.plan; delete o.trialExpiresAt
+      // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the gate prop is now `features` (lib/useFeatures.ts
+      // FeatureAccessView — override → the effective plan's switch, from the server's plan_blocks) in featureOverrides'
+      // place. The view is three functions, which the stub's JSON drops: it records as {}. PRECISE: the key renamed in
+      // place, its value {}.
+      const o2 = A2_FEATURES_PROP ? Object.fromEntries(Object.entries(o).map(([k, v]) => (k === 'featureOverrides' ? ['features', {}] : [k, v]))) : o
+      return `<x-stub data-c="PrintingSettings" data-p="${mnEsc(JSON.stringify(o2))}"`
+    })) },
+  { id: 'plans-a2-trial-expires-at', part: 'plan-features-config Stage A2 (20 Oct 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): a truck provisioned on a TRIAL plan gets a dated trial_expires_at (was NULL): plans.trial_months (4, 20261025_plan_features.sql) after the provisioning day, at 23:59:59 in the truck’s own time zone (lib/provision-truck.ts → lib/plans.ts trialEndFor). Every truck row in the view (the insert, the row handed back, the stored table) whose plan the seed marks as a trial: null → that instant, computed HERE independently (Intl, the fixture clock scripts/_lp1b-fixtures.cjs NOW). Other plans (pro, demo) stay NULL. PRECISE.',
+    views: id => A2_TRIAL_MONTHS() != null && /^(1c\/setup\/(GB|US)\|provision\||2\/extra\/(GB|US)\|rows\|truck\|)/.test(id),
+    expect: b => a2TrialRows(b) },
+
+  // ── ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026, docs/pricing-pages-report.md; scripts/_lp-stage-b.cjs) ─────────
+  // (Stage B's welcome-email trial line adds nothing when no trial runs — the HTML is byte-identical for these fixtures,
+  // which pass none; no named change. The coordinator's fix of 20 October 2026 removed the blank line the empty slot left.)
+  { id: 'pricing-b-verify-signup-trial-months', part: 'pricing-pages Stage B (20 Oct 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): verify-signup hands the welcome email `trialMonths` — the running trial’s plans.trial_months, null when the truck’s effective plan is not a running trial — as the LAST argument. The fixture trucks carry no trial_expires_at (and okNoTruck has no truck), so it is null. PRECISE: one key added to the recorded call.',
+    views: id => STAGE_B.LANDED && /^1c\/api\/(GB|US)\|verify-signup\|/.test(id),
+    expect: b => STAGE_B.welcomeTrialArg(b) },
+
+  // ── ⚠️ RE-PINNED (pricing-tidy, 20 October 2026; scripts/_lp-pricing-tidy.cjs) ─────────────────────────────────────────
+  { id: 'pricing-tidy-terms-version', part: 'pricing-tidy (20 Oct 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms were re-dated 20 October 2026 (§4 edited), so a new account records TERMS_VERSION "2026-10-20" (lib/legal.ts) where it recorded "2026-10-19". PRECISE: the operators insert’s `terms_version` only.',
+    views: id => require('./_lp-pricing-tidy.cjs').LANDED && /^1c\/api\/(GB|US)\|signup\|/.test(id),
+    expect: b => require('./_lp-pricing-tidy.cjs').termsVersion(b) },
 ]
 
 /** The named entries that apply to a view, and what they make of its BEFORE value: { listed: true, entries } when an

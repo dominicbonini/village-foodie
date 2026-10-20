@@ -1,0 +1,36 @@
+/* components/pricing/plan-table.css — the one plan table (components/pricing/PlanTable.tsx): /features, Manage › Billing.
+   🔴 EVERY RULE IS TWO CLASSES DEEP (0,2,0). On /features the table sits inside `.hg-landing`, whose reset
+   `.hg-landing * { margin: 0; padding: 0 }` (0,1,0) would otherwise win on source order — the reason this is a stylesheet
+   and not Tailwind utilities (see app/landing/landing.css). Inside Manage there is no reset and the rules read the same.
+   The sticky header pins at `--pt-top` (/features: below the nav; Billing: the top of the scrolling <main>). */
+.pt.pt-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; font-size: 14px; color: #334155; line-height: 1.35; }
+.pt .pt-row { display: grid; grid-template-columns: var(--pt-cols); border-top: 1px solid #f1f5f9; }
+.pt .pt-head { position: sticky; top: var(--pt-top, 0); z-index: 20; background: #fff; border-top: 0; border-radius: 1rem 1rem 0 0; }
+.pt .pt-label { padding: .75rem .6rem .75rem .9rem; display: flex; align-items: center; min-width: 0; overflow-wrap: anywhere; }
+.pt .pt-cell { padding: .75rem .3rem; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 13px; }
+.pt .pt-col { padding: 1rem .3rem .85rem; text-align: center; border-bottom: 2px solid #e2e8f0; }
+.pt .pt-col-name { display: block; font-weight: 800; font-size: 15px; color: #0f172a; line-height: 1.15; }
+.pt .pt-col-price { display: block; margin-top: .2rem; font-size: 12px; color: #64748b; }
+.pt .pt-hl { background: #fff7ed; }
+.pt .pt-col.pt-hl { border-bottom-color: #f97316; }
+.pt .pt-col.pt-hl .pt-col-name { color: #ea580c; }
+.pt .pt-group { background: #f8fafc; }
+.pt .pt-group .pt-label { padding-top: .55rem; padding-bottom: .55rem; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #64748b; }
+.pt .pt-group .pt-hl { background: #ffedd5; }
+.pt .pt-b { font-weight: 700; color: #0f172a; }
+/* pricing-tidy: a row's footnote marker (WhatsApp auto-replies ¹, Kitchen ticket printing ²). */
+.pt .pt-sup { font-size: .7em; line-height: 0; vertical-align: super; margin-left: 1px; color: #64748b; }
+.pt .pt-yes { color: #f97316; display: inline-flex; }
+.pt .pt-yes svg { width: 15px; height: 15px; }
+.pt .pt-no { color: #cbd5e1; }
+.pt .pt-soon { display: inline-block; border: 1px solid #e2e8f0; border-radius: .3rem; padding: .1rem .3rem; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #94a3b8; line-height: 1.3; }
+.pt .pt-rowgroup:last-child .pt-row:last-child { border-radius: 0 0 1rem 1rem; }
+@media (min-width: 640px) {
+  .pt.pt-card { font-size: 15px; }
+  .pt .pt-label { padding-left: 1.25rem; }
+  .pt .pt-cell { padding-inline: .75rem; font-size: 14px; }
+  .pt .pt-col-name { font-size: 18px; }
+  .pt .pt-col-price { font-size: 14px; }
+  .pt .pt-group .pt-label { font-size: 12px; padding-left: 1.25rem; }
+  .pt .pt-soon { font-size: 10px; padding: .15rem .4rem; }
+}

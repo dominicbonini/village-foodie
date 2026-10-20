@@ -17,6 +17,8 @@
     "total": "Total",
     "taxNotice": "Menu prices don’t include {tax}. It’s added below.",
     "noServiceFee": "No service fee.",
+    "serviceFeeNotice": "Online card orders include a service fee of {fee}.",
+    "privacyLink": "Privacy",
     "tipInPerson": "Tip the truck in person if you like.",
     "noTip": "No tip",
     "otherTip": "Other",
@@ -618,7 +620,8 @@
     "event_not_confirmed": "This event is not yet confirmed",
     "order_not_placed": "Sorry — we could not place your order. No money has been taken.",
     "truck_not_taking_orders": "This truck is no longer taking orders. No money has been taken.",
-    "category_closed_paying": "Sorry — {category} closed while you were paying, so we could not place your order. No money has been taken."
+    "category_closed_paying": "Sorry — {category} closed while you were paying, so we could not place your order. No money has been taken.",
+    "pay_at_hatch_unavailable": "This truck isn’t taking pay-at-the-truck orders online right now. Please pay by card."
   },
   "deals": {
     "back": "← Back",
@@ -799,7 +802,9 @@
       "hi": "Hi {withName, select, yes {{name}} other {there}},",
       "sorry": "We’re sorry for any inconvenience.",
       "poweredByDot": "Powered by HatchGrab · hatchgrab.com",
-      "poweredByText": "Powered by HatchGrab — hatchgrab.com"
+      "poweredByText": "Powered by HatchGrab — hatchgrab.com",
+      "privacyLink": "Privacy",
+      "privacyText": "Privacy: {url}"
     },
     "refund": {
       "subjectFull": "Your order #{id} has been refunded — {truck}",
@@ -1852,6 +1857,7 @@
     "welcome": {
       "subject": "{hasName, select, yes {Welcome to HatchGrab, {name}} other {Welcome to HatchGrab}}",
       "intro": "{hasTruck, select, yes {I’m really pleased to welcome {truck} to HatchGrab.} other {I’m really pleased to welcome your truck to HatchGrab.}}",
+      "trial": "{months, plural, one {Your one-month free trial has started — every feature unlocked.} other {Your #-month free trial has started — every feature unlocked.}}",
       "setup": "If you haven’t already, setting up is straightforward and takes about fifteen minutes.",
       "button": "Open your dashboard",
       "bookmark": "Worth bookmarking. It works on any device.",
@@ -2447,8 +2453,6 @@
     "loading": "Loading…",
     "missingTitle": "Event types aren’t switched on yet.",
     "missingBody": "The database update for this feature hasn’t been applied. Nothing is broken — every event is using your normal setup.",
-    "maxPlanFallback": "Event types are part of the Max plan.",
-    "maxPlanBody": "Events that already have a type keep using it. To add, change or assign types, move to Max.",
     "column": "Column",
     "vanGone": "That van has gone.",
     "typeGone": "That type has gone.",
@@ -2531,8 +2535,7 @@
     "grid": {
       "orderingSection": "ORDERING",
       "linkRowLabel": "Take orders by private link and QR code",
-      "columnTitle": "The built-in Private type. It cannot be renamed, moved or deleted.",
-      "maxOnly": "Max only"
+      "columnTitle": "The built-in Private type. It cannot be renamed, moved or deleted."
     },
     "form": {
       "help": "Shows on your schedule as “Private event” with the date and times only — never the address, the map or Village Foodie.",
@@ -2959,7 +2962,6 @@
     "menu_failed": "Failed to process menu",
     "allergens_parse_failed": "Failed to parse allergen data",
     "clear_failed": "Could not clear the previous attempt: {reason}",
-    "private_events_pro": "Private events are part of the Pro plan.",
     "event_not_found": "Event not found",
     "event_not_private": "This event is not private.",
     "new_link_failed": "Could not make a new link.",
@@ -2973,7 +2975,6 @@
     "place_name_required": "A place needs a name.",
     "place_name_no_letters": "That name has no letters or numbers in it.",
     "empty_term": "Empty term",
-    "event_types_max": "Event types are part of the Max plan.",
     "private_not_ready": "Private events are not available yet — the database migration has not been applied.",
     "type_name_required": "Give the type a name.",
     "type_name_taken": "You already have a type called “{name}”.",
@@ -2993,7 +2994,7 @@
     "missing_params": "Something went wrong — refresh the page and try again.",
     "truck_param_required": "Something went wrong — refresh the page and try again.",
     "upsell_categories_required": "Something went wrong — refresh the page and try again.",
-    "preorders_pro": "Pre-orders are part of the Pro plan.",
+    "feature_switched_off": "This feature is switched off for your truck.",
     "clear_first_setup_only": "Something went wrong — refresh the page and try again.",
     "schedule_read_failed": "Couldn’t read your schedule, so places could not be worked out.",
     "places_load_failed_migration": "Couldn’t load places. If this is new, the schedule-places migration may not be applied yet.",
@@ -3027,8 +3028,8 @@
     "charges_choose_on_off": "Choose on or off.",
     "charges_nothing_to_save": "Nothing to save.",
     "country_settings_failed": "Could not load this truck’s country settings. Try again in a moment.",
+    "plans_failed": "Could not load this truck’s plan. Try again in a moment.",
     "demo_not_available": "Not available on a demo truck",
-    "social_media_plan": "Social media posts are on Pro and Max",
     "email_required": "Email required",
     "managers_edit_staff_only": "Managers can only edit staff members",
     "managers_invite_staff_only": "Managers can only invite staff",
@@ -3051,7 +3052,6 @@
     "wa_preview_rate_limited": "You have run quite a few previews. Try again in a little while.",
     "wa_preview_failed": "Could not build a preview just now. Try again in a moment.",
     "wa_monthly_limit_choices": "Monthly reply limit must be one of {choices}.",
-    "embed_not_on_plan": "Not available on this plan",
     "embed_website_invalid": "That does not look like a web address",
     "domain_save_failed": "Could not save",
     "domain_too_many_checks": "Too many checks just now. Try again in a few minutes.",
@@ -3150,7 +3150,8 @@
     "sg_merge_cycle": "Those two are already merged the other way round.",
     "sg_merge_impossible": "Those places can’t be merged.",
     "sg_merge_write_failed": "Couldn’t merge those places.",
-    "event_times_same": "The finish time can’t be the same as the start time."
+    "event_times_same": "The finish time can’t be the same as the start time.",
+    "feature_not_on_plan": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}"
   },
   "tradeArea": {
     "country_missing": "Choose the country your truck is based in.",
@@ -3775,16 +3776,10 @@
     },
     "vanBilling": {
       "title": "Add another truck",
-      "body": "Your {plan, select, pro {Pro plan includes 2 trucks} other {Max plan includes unlimited trucks}}. Adding an additional truck costs <b>{price}</b> and will be added to your next billing cycle.",
+      "body": "Your {plan} plan includes {vans, plural, one {# truck} other {# trucks}}. Adding an additional truck costs <b>{price}</b> and will be added to your next billing cycle.",
       "note": "⚠️ Note: Billing adjustment is processed manually during early access. You will receive a confirmation email within 24 hours.",
       "cancel": "Cancel",
       "add": "Add truck — {price}"
-    },
-    "vanUpgrade": {
-      "title": "Upgrade to add more vans",
-      "body": "The Starter plan includes 1 van. Upgrade to Pro or Max to add additional vans.",
-      "cancel": "Cancel",
-      "viewPlans": "View plans"
     },
     "changesSave": "Changes save automatically",
     "schedule": {
@@ -3821,8 +3816,8 @@
       "brandedAlt": "Branded QR code preview",
       "opening": "Opening…",
       "view": "View QR code",
-      "lockedTitle": "Branded codes are part of a higher plan",
-      "lockedBody": "Branded codes are part of a higher plan. Your standard QR code works exactly the same for customers — the difference is your logo in the middle.",
+      "lockedTitle": "Branded codes are switched off for your truck",
+      "lockedBody": "Branded codes are switched off for your truck. Your standard QR code works exactly the same for customers — the difference is your logo in the middle.",
       "imageAlt": "Order QR code",
       "download": "Download PNG",
       "buildFailed": "That could not be built just now. Try again shortly.",
@@ -3893,11 +3888,6 @@
     "channel": {
       "online": "Online",
       "walkUp": "Walk-up"
-    },
-    "upsell": {
-      "title": "Revenue breakdown & analytics",
-      "badge": "Pro feature",
-      "body": "Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max."
     },
     "csv": {
       "orderId": "Order ID",
@@ -4560,7 +4550,6 @@
     }
   },
   "weeklyPost": {
-    "planRefusal": "Social media posts are on Pro and Max",
     "error": {
       "generic": "Something went wrong",
       "previewFailed": "The preview could not be made",
@@ -4635,7 +4624,9 @@
     "loadFailed": "Failed to load",
     "requestFailed": "Failed",
     "invalidToken": "Invalid or expired token",
+    "loadFailedReason": "Could not load this page: {reason}",
     "noCountrySettings": "Couldn’t load this truck’s country settings. Please refresh.",
+    "noPlans": "Couldn’t load this truck’s plan. Please refresh.",
     "stale": "{hasTime, select, yes {Couldn’t refresh. Showing what was saved at {time}. Changes you make are still saved.} other {Couldn’t refresh. Showing what was saved. Changes you make are still saved.}}",
     "verify": {
       "ok": "Email confirmed — thank you.",
@@ -4704,10 +4695,10 @@
       }
     },
     "trialPopup": {
-      "title": "You’re on a free trial",
+      "title": "{months, select, none {You’re on a free trial} other {You’re on a {months}-month free trial}}",
       "ends": "{hasDate, select, yes {Trial ends <hl>{date}</hl>} other {Trial ends <hl>soon</hl>}}",
-      "offer": "Full Max features + Pay at Hatch ordering — completely free*",
-      "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, access will revert to the free Starter tier and some features will stop working.}}",
+      "offer": "{hasMonths, select, yes {{months, plural, one {Every feature free for # month} other {Every feature free for # months}}} other {Every feature free during your trial}}",
+      "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.}}",
       "fees": "*Standard card processing fees apply on online orders",
       "upgrade": "Upgrade here →"
     }
@@ -4724,31 +4715,33 @@
       "planLine": "{trial, select, yes {{truck} · {plan} plan (trial)} other {{truck} · {plan} plan}}"
     },
     "currentPlan": "Current plan",
+    "plan": {
+      "included": "Includes {amount} of online orders a month.",
+      "includedUnlimited": "Unlimited online orders included.",
+      "promo": "Special price.",
+      "promoUntil": "Special price until {date}.",
+      "ended": "Your {plan} plan ended on {date}. You’re now on {now}.",
+      "trialMonths": "A {months}-month free trial."
+    },
     "trialEnds": "Trial ends {date}",
     "yourTrialEnds": "Your trial ends {date}",
     "notStarted": {
-      "heading": "Your free trial has not started yet",
-      "body": "You have every Max feature while you set up. You choose which event starts your free trial — until then, nothing is counting down."
+      "heading": "Your free trial has not started yet"
     },
-    "onMax": "You’re on Max features. Choose a plan before your trial ends to keep access.",
-    "onMaxNoCta": "You’re on Max features.",
-    "upgradeToMax": "Upgrade to Max — {price}",
-    "choosePro": "Choose Pro — {price}",
+    "onTrial": "You have every feature. Choose a plan before your trial ends.",
+    "onTrialNoCta": "You have every feature.",
     "noCharge": "🔒 You won’t be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay.",
     "fees": "*Standard card processing fees apply on online orders",
-    "setUpPayment": "⏱ Set up payment before your trial ends to keep access",
-    "upgradeYourPlan": "Upgrade your plan",
+    "setUpPayment": "⏱ Choose a plan before your trial ends",
+    "changeYourPlan": "Change your plan",
     "planButton": "{plan} — {price}",
-    "perTruckRenews": "{price} per truck · renews automatically",
-    "hideMatrix": "▲ Hide",
-    "compareAll": "▼ Compare all plans",
     "upgradeModal": {
-      "title": "Upgrade to {plan}",
+      "title": "Switch to {plan}",
       "tagline": "{price} — {description}",
-      "body": "We’re setting up automated billing. To upgrade now, drop us a message and we’ll get you set up within 24 hours.",
-      "mailSubject": "Upgrade to {plan} — {truck}",
-      "mailBody": "Hi, I’d like to upgrade {truck} to the {plan} ({price}) plan.",
-      "email": "Email us to upgrade",
+      "body": "We’re setting up automated billing. To switch now, drop us a message and we’ll get you set up within 24 hours.",
+      "mailSubject": "Switch to {plan} — {truck}",
+      "mailBody": "Hi, I’d like to switch {truck} to the {plan} ({price}) plan.",
+      "email": "Email us to switch",
       "cancel": "Cancel"
     }
   },
@@ -4868,8 +4861,7 @@
       "requiresAccount": "Requires a WhatsApp Business account.",
       "connected": "Connected",
       "popupInstruction": "A Facebook window will open to connect your WhatsApp Business account. If nothing appears, allow pop-ups for hatchgrab.com in your browser, then press Set up again.",
-      "notOnPlan": "WhatsApp auto-replies are included on Pro and Max.",
-      "upgrade": "Upgrade →",
+      "switchedOff": "WhatsApp auto-replies are switched off for your truck.",
       "expiring": "Your WhatsApp connection needs renewing soon. Press Reconnect to keep auto-replies running.",
       "comingSoon": "Coming soon",
       "instagram": "Auto-replies to Instagram direct messages. Will require an Instagram professional account.",
@@ -5334,7 +5326,7 @@
       "phoneAlt": "Ordering from a food truck on HatchGrab: the menu with photos and prices, and a running basket total"
     },
     "trust": {
-      "freeMonth": "First month 100% free, everything unlocked",
+      "freeMonth": "{months, plural, one {First month completely free, everything unlocked} other {First # months completely free, everything unlocked}}",
       "noCard": "No card needed",
       "cancel": "Cancel anytime, no contract"
     },
@@ -5378,49 +5370,9 @@
     "pricing": {
       "eyebrow": "Pricing",
       "title": "Start free. Upgrade when you need to.",
-      "trialTitle": "Your first month is completely free — every feature unlocked.",
-      "trialBody": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. <bold>Adding online payments doesn’t start your subscription</bold>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.",
-      "mostTrucks": "Most trucks",
-      "planFee": "{allowance}<star>*</star>. No fee on walk-ups.",
-      "tryFree": "Try Free",
-      "starter": {
-        "lead": "Everything to run a service",
-        "walkUp": "Walk-up orders & kitchen screen",
-        "online": "Online ordering, pay at the hatch",
-        "menu": "Menu, meal deals & upsells",
-        "qr": "QR code",
-        "map": "Discovery map listing",
-        "app": "iPhone, iPad and Android kitchen app"
-      },
-      "pro": {
-        "lead": "{starterIsFree, select, yes {Everything in Free, plus} other {Everything in {starterName}, plus}}",
-        "offline": "Offline order protection",
-        "payOnline": "Take payment online",
-        "preorders": "Pre-orders & collection times",
-        "capacity": "Kitchen capacity management",
-        "privateEvents": "Private events",
-        "social": "Social media posts",
-        "whatsapp": "WhatsApp auto-replies (Messenger & Instagram coming soon)",
-        "whatsappSoon": "WhatsApp, Messenger & Instagram auto-replies <soon>Coming soon</soon>",
-        "payOnPhone": "Take payment on your phone <soon>Coming soon</soon>"
-      },
-      "max": {
-        "lead": "Everything in Pro, plus",
-        "sync": "Multi-device kitchen sync",
-        "staff": "Multi-staff logins",
-        "schedulePage": "Schedule page on your own website",
-        "printing": "Kitchen ticket printing",
-        "eventTypes": "Custom event types & pricing",
-        "loyalty": "Digital loyalty stamp cards <soon>Coming soon</soon>"
-      },
-      "compareLead": "Not sure which plan? See exactly what each one includes.",
-      "compareCta": "Compare all features →",
       "switchHead": "Switching from another platform?",
       "switchBody": "See what you’d be paying on HatchGrab for the same orders. Takes about a minute.",
-      "switchCta": "Compare what you’re paying",
-      "footCardFees": "*Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance.",
-      "footCancel": "Cancel by doing nothing. Even if you’ve added a card for payments, we’ll never charge it for a plan unless you actively choose one.",
-      "summary": "Pro is {proPrice} a month with {proAllowance} of online orders included. Max is {maxPrice} with {maxAllowance}. Anything above that is {platformFee}. Standard card processing fees apply to all online orders (currently {cardFee} on standard {region}), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal’s own fees still apply."
+      "switchCta": "Compare what you’re paying"
     },
     "final": {
       "truckLabel": "Food truck",
@@ -5490,11 +5442,14 @@
       "privacyTitle": "Privacy Policy — HatchGrab",
       "privacyDescription": "How HatchGrab Ltd collects and uses personal data.",
       "termsTitle": "Terms of Service — HatchGrab",
-      "termsDescription": "The terms of using HatchGrab."
+      "termsDescription": "The terms of using HatchGrab.",
+      "countryTermsTitle": "Country-specific terms — HatchGrab",
+      "countryTermsDescription": "The extra rules that apply to HatchGrab in some countries."
     },
     "homeLabel": "HatchGrab home",
     "privacy": "Privacy",
     "terms": "Terms",
+    "countryTerms": "Country terms",
     "contact": "Contact",
     "lastUpdated": "Last updated {date}",
     "questions": "Questions? <link>Get in touch</link> — we’re real people."
@@ -5547,170 +5502,105 @@
     "weeklySchedule": "Get Weekly Schedule 🍕"
   },
   "planFeatures": {
-    "section": {
-      "starter": "Starter plan",
-      "pro": "Pro plan",
-      "max": "Max plan"
-    },
     "row": {
       "discovery_map_listing": {
-        "name": "Discovery map listing",
-        "detail": "Your truck appears on the public HatchGrab map so nearby customers can find you."
+        "name": "Discovery map listing"
       },
       "web_dashboard": {
-        "name": "Universal web dashboard",
-        "detail": "Run your service from any phone, tablet or laptop browser."
+        "name": "Universal web dashboard"
       },
       "qr_code": {
-        "name": "QR code",
-        "detail": "A printable QR code that opens your menu and ordering page."
+        "name": "QR code"
       },
       "schedule_import": {
-        "name": "Automatic schedule import",
-        "detail": "We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm."
+        "name": "Automatic schedule import"
       },
       "meal_deals_upsells": {
-        "name": "Meal deals & upsells",
-        "detail": "Bundle items into deals and offer add-ons at checkout to lift the average order."
+        "name": "Meal deals & upsells"
       },
       "walkup_orders": {
-        "name": "Walk-up order processing",
-        "detail": "Take and manage orders at the hatch, paid on your own card terminal."
+        "name": "Walk-up order processing"
       },
       "sold_out_toggle": {
-        "name": "Instant sold-out toggle",
-        "detail": "Mark any item sold out in one tap — it greys out for customers straight away."
-      },
-      "online_ordering_pay_at_hatch": {
-        "name": "Online ordering — Pay at Hatch",
-        "detail": "Customers order ahead online and pay in person when they collect."
+        "name": "Instant sold-out toggle"
       },
       "kitchen_app": {
-        "name": "iPhone, iPad and Android kitchen app",
-        "detail": "The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal."
+        "name": "iPhone, iPad and Android kitchen app"
       },
       "offline_protection": {
-        "name": "Offline order protection",
-        "detail": "If your internet drops mid-service, orders are held safely and sync when you’re back — you never lose one."
+        "name": "Offline order protection"
       },
       "online_payments": {
-        "name": "Online payments",
-        "detail": "Take card payment upfront when customers order online, via Stripe."
+        "name": "Online payments"
       },
       "advance_preordering": {
-        "name": "Advance pre-ordering",
-        "detail": "Let customers order for a future date or time before the event."
+        "name": "Advance pre-ordering"
       },
       "preorder_deadline": {
-        "name": "Pre-order deadline",
-        "detail": "Set a cut-off time for items that need notice."
+        "name": "Pre-order deadline"
       },
       "time_slot_selection": {
-        "name": "Customer time slot selection",
-        "detail": "Customers pick a collection time slot, spreading demand across your service."
+        "name": "Customer time slot selection"
       },
       "kitchen_capacity": {
-        "name": "Kitchen capacity management",
-        "detail": "Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it."
+        "name": "Kitchen capacity management"
       },
       "stock_countdown": {
-        "name": "Automated stock countdown",
-        "detail": "Set a stock count and it counts down as orders come in, then sells out automatically."
+        "name": "Automated stock countdown"
       },
       "auto_accept": {
-        "name": "Auto-accept online orders",
-        "detail": "Online orders are accepted automatically — no need to confirm each one."
+        "name": "Auto-accept online orders"
       },
       "branded_qr_code": {
-        "name": "Branded QR code",
-        "detail": "Add your logo to your QR code."
+        "name": "Branded QR code"
       },
       "private_events": {
-        "name": "Private events",
-        "detail": "Add private events that don’t show on the map, with their own private ordering link and QR code."
+        "name": "Private events"
       },
       "social_media_posts": {
-        "name": "Social media posts",
-        "detail": "Upload your designs — we add your dates, places and times for each week and event automatically."
+        "name": "Social media posts"
       },
       "whatsapp_auto_replies": {
-        "name": "WhatsApp auto-replies",
-        "detail": "Auto-reply to WhatsApp enquiries about your menu and schedule."
+        "name": "WhatsApp auto-replies"
       },
       "messenger_instagram_replies": {
-        "name": "Messenger & Instagram auto-replies",
-        "detail": "Same as WhatsApp auto-replies, for Messenger and Instagram enquiries."
+        "name": "Messenger & Instagram auto-replies"
       },
       "tap_to_pay": {
-        "name": "Take payment on your phone",
-        "detail": "Take card payments on a supported phone, so you don’t need a separate card machine."
+        "name": "Take payment on your phone"
       },
       "advanced_reporting": {
-        "name": "Advanced reporting",
-        "detail": "Break sales down by date range, item and event to see what’s really selling."
+        "name": "Advanced reporting"
       },
       "sms_order_alerts": {
-        "name": "SMS order alerts",
-        "detail": "Text customers automatically when their order’s ready. Will carry an additional charge (price to be confirmed)."
+        "name": "SMS order alerts"
       },
       "multi_device_kitchen": {
-        "name": "Multi-device kitchen sync",
-        "detail": "Run several screens — front counter and kitchen — all showing the same live orders."
+        "name": "Multi-device kitchen sync"
       },
       "multi_user_access": {
-        "name": "Multi-user access",
-        "detail": "Give staff their own logins with the right level of access."
+        "name": "Multi-user access"
       },
       "embed_schedule": {
-        "name": "Schedule page on your own website",
-        "detail": "Show your upcoming dates on your own website. Each one links straight through to its order page."
+        "name": "Schedule page on your own website"
       },
       "event_types": {
-        "name": "Custom event types & pricing",
-        "detail": "Create your own event types, with custom prices and settings for events and festivals."
+        "name": "Custom event types & pricing"
       },
       "buzzer_tracking": {
-        "name": "Buzzer tracking",
-        "detail": "Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order."
+        "name": "Buzzer tracking"
       },
       "ticket_printing": {
-        "name": "Kitchen ticket printing",
-        "detail": "Print order tickets to a Bluetooth or wired printer in the kitchen."
+        "name": "Kitchen ticket printing"
       },
       "customer_display": {
-        "name": "Customer-facing display",
-        "detail": "A screen customers can see showing order numbers and when they’re ready."
+        "name": "Customer-facing display"
       },
       "loyalty_stamp_cards": {
-        "name": "Digital loyalty stamp cards",
-        "detail": "Reward repeat customers with digital stamp cards — collected and redeemed automatically."
+        "name": "Digital loyalty stamp cards"
       }
     },
-    "landing": {
-      "offlineProtectionDetail": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
-      "mergedAutoRepliesName": "WhatsApp, Messenger & Instagram auto-replies",
-      "mergedAutoRepliesDetail": "Auto-reply to enquiries about your menu and schedule on WhatsApp, Messenger and Instagram."
-    },
-    "feesHeading": "Fees",
-    "fee": {
-      "walkup": "Walk-up orders",
-      "onlineIncluded": "Online orders included",
-      "feeAfter": "Fee after that"
-    },
-    "allowance": "First {amount} of online orders included, then {fee}",
     "cardRegionOnline": "standard {region}",
-    "footnote": {
-      "n1": "Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your provider’s standard fees apply. Card payments through HatchGrab via Stripe are coming soon — Stripe’s own charge, currently around {inPersonFee} on {region}, plus {tapFee} per authorisation if you take the payment on a supported phone instead of a separate card machine.",
-      "n2": "Online payments powered by Stripe Connect. Subject to a {platformFee} HatchGrab platform fee plus Stripe card processing fees (~{onlineFee} per transaction on standard {region}).",
-      "n3": "Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.",
-      "n4Live": "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {count} a month are free. Correct at {checked}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.",
-      "n4Off": "Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.",
-      "n5": "Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Get in touch for the list of compatible printers."
-    },
-    "planSub": {
-      "free": "free forever",
-      "perTruckMonth": "per truck / month"
-    },
     "priceWord": {
       "free": "Free",
       "freeTrial": "Free trial",
@@ -5722,25 +5612,209 @@
       "masked": "TBC"
     },
     "cell": {
-      "comingSoon": "Coming soon",
       "included": "Included"
     }
   },
-  "planMeta": {
-    "description": {
-      "starter": "Weekend traders & walk-up pitches",
-      "pro": "Busy trucks scaling pre-orders",
-      "max": "High-volume operations & festivals",
-      "trial": "All features included — Max plan + Pay at Hatch ordering",
-      "tester": "Pre-launch tester — full feature access, lifetime discount",
-      "demo": "Prospect sandbox — full trial before signup (never public)"
+  "planPrompt": {
+    "includedOn": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}",
+    "notOnPlan": "{many, select, yes {{feature} are not on your plan.} other {{feature} is not on your plan.}}",
+    "switchedOff": "{many, select, yes {{feature} are switched off for your truck.} other {{feature} is switched off for your truck.}}",
+    "planLine": "{plan} · {price} · {description}",
+    "planLineNoPrice": "{plan} · {description}",
+    "upgrade": "Upgrade →",
+    "features": {
+      "discovery_map": {
+        "name": "Discovery map listing",
+        "many": "no"
+      },
+      "web_dashboard": {
+        "name": "The web dashboard",
+        "many": "no"
+      },
+      "ipad_kds": {
+        "name": "The kitchen app",
+        "many": "no"
+      },
+      "qr_menu": {
+        "name": "The QR code menu",
+        "many": "no"
+      },
+      "meal_deals": {
+        "name": "Meal deals",
+        "many": "yes"
+      },
+      "upsells": {
+        "name": "Upsells",
+        "many": "yes"
+      },
+      "walkup_orders": {
+        "name": "Walk-up orders",
+        "many": "yes"
+      },
+      "online_ordering_pay_at_hatch": {
+        "name": "Pay at Hatch ordering",
+        "many": "no"
+      },
+      "sold_out_toggle": {
+        "name": "The sold-out toggle",
+        "many": "no"
+      },
+      "stock_countdown": {
+        "name": "Stock countdown",
+        "many": "no"
+      },
+      "offline_protection": {
+        "name": "Offline order protection",
+        "many": "no"
+      },
+      "online_payments": {
+        "name": "Online payments",
+        "many": "yes"
+      },
+      "advance_preordering": {
+        "name": "Advance pre-ordering",
+        "many": "no"
+      },
+      "time_slot_selection": {
+        "name": "Customer time slots",
+        "many": "yes"
+      },
+      "smart_batch_pacing": {
+        "name": "Kitchen capacity management",
+        "many": "no"
+      },
+      "auto_accept": {
+        "name": "Auto-accept",
+        "many": "no"
+      },
+      "instagram_messenger_replies": {
+        "name": "Messenger & Instagram auto-replies",
+        "many": "yes"
+      },
+      "branded_qr_code": {
+        "name": "Branded QR codes",
+        "many": "yes"
+      },
+      "advanced_reporting": {
+        "name": "Advanced reporting",
+        "many": "no"
+      },
+      "ticket_printing": {
+        "name": "Kitchen ticket printing",
+        "many": "no"
+      },
+      "multi_device_kds": {
+        "name": "Multi-device kitchen sync",
+        "many": "no"
+      },
+      "cook_screen": {
+        "name": "The cook screen",
+        "many": "no"
+      },
+      "whatsapp_replies": {
+        "name": "WhatsApp auto-replies",
+        "many": "yes"
+      },
+      "embed_schedule": {
+        "name": "Your schedule on your own website",
+        "many": "no"
+      },
+      "schedule_graphics": {
+        "name": "Social media posts",
+        "many": "yes"
+      },
+      "event_types": {
+        "name": "Custom event types",
+        "many": "yes"
+      },
+      "private_events": {
+        "name": "Private events",
+        "many": "yes"
+      }
     }
   },
-  "featuresPage": {
-    "eyebrow": "Compare",
-    "heading": "Every feature, side by side.",
-    "lede": "Your free month includes everything — try the lot before you pick.",
-    "footnote2": "Standard card processing fees apply to all online orders (currently {fee} on standard {region}), including those within your allowance."
+  "pricing": {
+    "banner": {
+      "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
+      "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime."
+    },
+    "card": {
+      "perTruckMonth": "per truck / month",
+      "mostTrucks": "Most trucks",
+      "tryFree": "Try free",
+      "seeEvery": "See every feature →",
+      "everything": "Everything to run a service",
+      "everythingIn": "Everything in {plan}, plus"
+    },
+    "fee": {
+      "feeOnly": "<b>{fee}*</b> on online card orders only. Walk-up orders are always free.",
+      "included": "First <b>{included}</b> of online orders included each month, then <b>{fee}*</b>. Walk-up orders are always free.",
+      "noFee": "<b>No HatchGrab fees</b> on online orders, however busy you get. One predictable monthly cost."
+    },
+    "base": {
+      "walkUp": "Walk-up orders & kitchen screen",
+      "online": "Online ordering",
+      "preorders": "Pre-orders & collection times",
+      "capacity": "Kitchen capacity management",
+      "privateEvents": "Private events",
+      "printing": "Kitchen ticket printing",
+      "app": "iPhone, iPad and Android kitchen app"
+    },
+    "added": {
+      "whatsapp_replies": "WhatsApp auto-replies",
+      "schedule_graphics": "Social media posts — your Facebook and Instagram schedule — ready to post",
+      "event_types": "Custom event types & pricing"
+    },
+    "money": {
+      "unlimitedOrders": "Unlimited online orders, 0% HatchGrab fee",
+      "samePrice": "Same price in your busiest month"
+    },
+    "comingSoon": "Coming soon",
+    "bar": {
+      "title": "Which plan is cheapest for me?",
+      "first": "Under {to} of online orders a month → <b>{plan}</b>",
+      "middle": "{from} – {to} → <b>{plan}</b>",
+      "last": "Over {from} → <b>{plan}</b>",
+      "only": "Any volume → <b>{plan}</b>"
+    },
+    "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+  },
+  "planTable": {
+    "h1": "Everything to run your service, on every plan.",
+    "lede": "Ordering, pre-orders, capacity and the kitchen screen are included on every plan.{hasUpgrades, select, yes { {plans} add {features}, and lower fees.} other {}}",
+    "callout": "{months, plural, one {<b>One month free with every feature unlocked.</b>} other {<b># months free with every feature unlocked.</b>}} Then {fallback} automatically, unless you choose a plan.",
+    "perMonth": "{price} / month",
+    "group": {
+      "pay": "What you pay",
+      "run": "Run your service",
+      "online": "Online orders",
+      "marketing": "Marketing & automation"
+    },
+    "pay": {
+      "included": "Online orders included each month",
+      "fee": "HatchGrab fee on online card orders*",
+      "walkUp": "Walk-up orders"
+    },
+    "cell": {
+      "unlimited": "Unlimited",
+      "free": "Free",
+      "feeAbove": "<b>{fee}</b> above {included}",
+      "yes": "Included",
+      "none": "Not included",
+      "comingSoon": "Coming soon"
+    },
+    "short": {
+      "whatsapp_replies": "WhatsApp",
+      "schedule_graphics": "social media",
+      "event_types": "custom event pricing"
+    },
+    "meta": {
+      "description": "Every HatchGrab feature on every plan, side by side — {plans}, with fees and allowances.{months, plural, =0 {} one { Your first month includes everything.} other { Your first # months include everything.}}"
+    },
+    "notes": {
+      "whatsapp": "WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.",
+      "printing": "Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied)."
+    }
   },
   "compare": {
     "eyebrow": "Cost comparison",
@@ -5764,8 +5838,9 @@
       "weSuggest": "We suggest",
       "summary": "{price} per truck per month, with {allowance} of online orders included{fleet, plural, one {} other { on each}}.",
       "ownLogin": "Everyone gets their own login.",
-      "sharedLogin": "{plan} does not include separate logins — everyone shares one account.",
-      "switchTo": "Use {plan} instead"
+      "switchTo": "Use {plan} instead",
+      "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truck per month, plus {pct} on online card orders.} other {No monthly fee — {pct} on online card orders only.}}",
+      "summaryNoFee": "{price} per truck per month, with unlimited online orders and no HatchGrab fee."
     },
     "orders": {
       "titleYes": "Online orders per month, per truck",
@@ -5776,7 +5851,9 @@
       "overAllowance": "{allowance} of online orders included per truck. The {excess} above is charged at {pct} — <b>{over}</b> a month each.",
       "insideAllowance": "Inside the {allowance} of online orders included — nothing on top of the plan.",
       "acrossFleet": "Across {fleet, plural, one {# truck} other {# trucks}}: <b>{amount}</b> a month.",
-      "titleNo": "How much do you think you’d take online, per month, per truck?"
+      "titleNo": "How much do you think you’d take online, per month, per truck?",
+      "feeOnly": "{pct} on every online card order — <b>{over}</b> a month per truck.",
+      "noFee": "Unlimited online orders included — nothing on top of the plan."
     },
     "fee": {
       "title": "What do you pay per order now?",
@@ -5830,7 +5907,9 @@
       "acrossFleet": "Across {fleet, plural, one {# van} other {# vans}}",
       "perMonth": "{amount} a month",
       "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a card machine at the window.",
-      "provider": "Your current provider’s own fee ({pct})"
+      "provider": "Your current provider’s own fee ({pct})",
+      "feeOnly": "{pct} on {excess} of online orders",
+      "noFee": "Online orders — unlimited, no HatchGrab fee"
     },
     "enterRate": "Enter what you pay now to see your saving.",
     "panel": {
@@ -5870,6 +5949,22 @@
       "check": "Check your current provider’s rates before deciding."
     },
     "intro": "Takes about a minute. Already using a system? We’ll compare it. Not yet? We’ll show you exactly what it costs.",
-    "twoYear": "Over two years that’s <b>{amount}</b> saved."
+    "twoYear": "Over two years that’s <b>{amount}</b> saved.",
+    "meta": {
+      "title": "Cost calculator — HatchGrab {country}",
+      "description": "Compare what your online orders cost you now with a year on HatchGrab — an estimate in a minute."
+    }
+  },
+  "outreach": {
+    "companyFooter": "{company} · Company no. {number} · Registered office: {address}",
+    "optOut": {
+      "missing": "This email has no opt-out line, so it cannot be sent. Use Insert opt-out to add it.",
+      "notSetUp": "No opt-out sentence is set up, so no outreach email can be sent. Add one on the Templates tab’s Signature panel.",
+      "notLoaded": "The opt-out sentence has not loaded yet, so this cannot be sent.",
+      "unreadable": "The opt-out sentence could not be read, so nothing was sent."
+    },
+    "retry": {
+      "notRebuilt": "That message could not be rebuilt with the company line, so nothing was sent."
+    }
   }
 }

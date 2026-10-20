@@ -10,7 +10,7 @@
 // ── 🔴 THE PLAN GATE IS SERVER-SIDE ON EVERY ACTION ───────────────────────────────────────────────
 // `FeatureGate` in the panel decides what is DRAWN; this decides what is DONE. Without the check here
 // the whole feature is reachable by anyone holding a dashboard token and posting to this URL, and the
-// UI gate would be decoration. `canAccess` is the same function the UI gate uses.
+// UI gate would be decoration. `canAccess` (through lib/plans.ts truckCan) is the same function the UI gate uses.
 //
 // ── 🔴 WHAT HAPPENS WHEN A TRUCK LOSES ACCESS (decision 4) ────────────────────────────────────────
 // Reads still answer and every existing type keeps resolving, because `load` is NOT gated: an event
@@ -20,7 +20,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { canAccess } from '@/lib/features'
+import { featureRefusal } from '@/lib/plan-refusal'
+import { getPlanCatalog } from '@/lib/plans-server'
+import type { PlanCatalog } from '@/lib/plans'
+import { truckCan } from '@/lib/plans'
 /* 🔴 MAIN'S OWN VENUE NORMALISER, NOT A NEW ONE. `normalizeVenue` (lib/venue-signature.ts) is already
  * the matching function the scraped-event bridge dedups with, so "the same place" means here exactly
  * what it means there, and this build adds no second normaliser to main.
@@ -105,11 +108,11 @@ async function getTruck(token: string): Promise<TruckRow | null> {
   return (data as TruckRow | null) ?? null
 }
 
-/** The gate. ⚠️ Returns the same message the panel shows, so a blocked call and a blocked screen agree.
- *  Language Phase 1d: a code — its words are `errorsManage.event_types_max`, in the truck's language. */
-const UPGRADE_MESSAGE: ManageErrorCode = 'event_types_max'
-const allowed = (truck: TruckRow): boolean =>
-  canAccess(truck.plan as never, 'event_types', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+/** The gate. 🔴 Stage A2 (plan-features-config, 20 October 2026): override → the truck's EFFECTIVE plan's switch → allowed
+ *  (lib/plans.ts truckCan). A refusal is `featureRefusal`'s: `feature_not_on_plan` naming the plan that has the feature
+ *  when the PLAN is why, `feature_switched_off` when an override is. (Every plan has both keys as seeded.) */
+const allowed = (truck: TruckRow, catalog: PlanCatalog): boolean =>
+  truckCan(truck, catalog, 'event_types')
 
 /* ══ 🔴 THE SECOND GATE: PRIVATE EVENTS ARE **PRO**, AND THIS SCREEN NOW SERVES BOTH (20261014) ═════
  * `event_types` is Max — making your own named presets, and the PRICES rows. `private_events` is Pro —
@@ -124,9 +127,8 @@ const allowed = (truck: TruckRow): boolean =>
  * checked only `privateAllowed` would hand Pro the whole Max screen. Both, each on what it guards.
  * ⚠️ THE MESSAGES DIFFER ON PURPOSE — a Pro truck told "Event types are part of the Max plan" while
  * looking at a screen they are entitled to would have no idea what to do. */
-const PRIVATE_UPGRADE_MESSAGE: ManageErrorCode = 'private_events_pro'
-const privateAllowed = (truck: TruckRow): boolean =>
-  canAccess(truck.plan as never, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+const privateAllowed = (truck: TruckRow, catalog: PlanCatalog): boolean =>
+  truckCan(truck, catalog, 'private_events')
 
 /**
  * One setting from a request body, validated.
@@ -358,7 +360,13 @@ export async function POST(req: NextRequest) {
     NextResponse.json(manageErrorBody(await truckLocale(), code, params, extra), { status })
 
   const action = String(body.action ?? '')
-  const canWrite = allowed(truck)
+  const planCatalog = await getPlanCatalog()
+  const canWrite = allowed(truck, planCatalog)
+  /** The refusal for a gated feature (lib/plan-refusal.ts) — worded by why it is off. */
+  const refuseFeature = async (feature: 'event_types' | 'private_events') => {
+    const r = await featureRefusal(truck, feature, await truckLocale(), planCatalog)
+    return refuse(r?.code ?? 'feature_switched_off', 403, r?.params ?? {})
+  }
 
   /* 🔴 ONE GUARD, APPLIED TO EVERY ACTION BUT `load`. Listing the write actions rather than the read
    * one means a NEW action added later is refused by default instead of being accidentally open. */
@@ -389,17 +397,17 @@ export async function POST(req: NextRequest) {
    * for pro, max, trial, tester and demo. It is a FLOOR, not an alternative tier. */
   const PRIVATE_ACTIONS = new Set(['set_private_link_ordering'])
   if (PRIVATE_ACTIONS.has(action)) {
-    if (!privateAllowed(truck)) {
-      return refuse(PRIVATE_UPGRADE_MESSAGE, 403, {}, { upgrade: true })
+    if (!privateAllowed(truck, planCatalog)) {
+      return refuseFeature('private_events')
     }
   } else if (!ALL_PLAN_ACTIONS.has(action) && !READ_ACTIONS.has(action) && !canWrite) {
-    return refuse(UPGRADE_MESSAGE, 403, {}, { upgrade: true })
+    return refuseFeature('event_types')
   }
 
   /* ⛔ AND `load` IS OPEN TO EITHER KEY. A Pro truck must be able to SEE Standard + Private; without
    * this it would reach a screen it is entitled to and be told to upgrade. */
-  if (READ_ACTIONS.has(action) && !canWrite && !privateAllowed(truck)) {
-    return refuse(UPGRADE_MESSAGE, 403, {}, { upgrade: true })
+  if (READ_ACTIONS.has(action) && !canWrite && !privateAllowed(truck, planCatalog)) {
+    return refuseFeature('event_types')
   }
 
   /* ══ 🔴 THE PRICE CUSTOMERS PAY AT THIS EVENT, PER ITEM — EVERY PLAN ══════════════════════════════
@@ -566,7 +574,7 @@ export async function POST(req: NextRequest) {
      * "never write on another truck's behalf" true while testing on Pizza Kitchen.
      * ⚠️ IT IS NOT AN ERROR IF IT FAILS. A missing 20261014 returns null and the grid simply draws no
      * Private column; the feature is not available yet, which is true. */
-    if (privateAllowed(truck)) {
+    if (privateAllowed(truck, planCatalog)) {
       const seed = await vanOneServiceValues(truck.id, truck.takes_cash ?? null)
       await ensurePrivateType(supabase, truck.id, {
         buzzer_prompt: seed.buzzer_prompt as boolean | null,
@@ -651,7 +659,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       missingTable: !ok,
       readOnly: !canWrite,
-      upgradeMessage: canWrite ? null : translatorFor(await truckLocale(), 'errorsManage')(UPGRADE_MESSAGE),
       /* ══ 🔴 PRIVATE IS **FIRST** AMONG THE TYPES — STRAIGHT AFTER STANDARD (5 October 2026) ══════
        * It was last. Dominic reversed it, and the reason is that Private is the one column every
        * truck has: putting it after however many custom types a truck happens to have made meant its
@@ -679,7 +686,7 @@ export async function POST(req: NextRequest) {
           return (a.sort_order ?? 0) - (b.sort_order ?? 0)
         }),
       /* So the grid knows whether to draw the ORDERING section and the Max badges. */
-      canPrivate: privateAllowed(truck),
+      canPrivate: privateAllowed(truck, planCatalog),
       canTypes: canWrite,
       /* ── 🔴 THE ACTIVE VANS' IDS, BECAUSE STANDARD IS NOW EDITABLE ─────────────────────────
        * Changing a Standard row writes to EVERY active van, and it does so by calling the SAME

@@ -7,55 +7,28 @@ import { CSPostHogProvider } from "./providers";
 // renders the involuntary-sign-out banner. Harmless on customer pages: with no session, no SIGNED_OUT
 // can fire, so it renders null and costs one client construction.
 import { SessionAlertBanner } from "@/components/auth/SessionAlertBanner";
+import { siteMetaFor, siteOpenGraph } from "@/lib/site-metadata";
+import { PAGE_LANG_HEADER, htmlLangOf } from "@/lib/page-lang";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
+// seo-fixes S7 (20 October 2026): loaded wherever it is used (`font-mono` — operator screens: Manage, admin, KDS
+// tickets), but NOT preloaded on every page: no public page uses it above the fold.
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  preload: false,
 });
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers()
   const host = headersList.get('host') || ''
-  const isHG = host.includes('hatchgrab')
-
-  const siteName = isHG ? 'HatchGrab' : 'Village Foodie'
-  const description = isHG
-    ? 'The food truck management platform'
-    : 'Find local food trucks and pop-ups visiting villages near you.'
-  // 🔴 Language Phase 1e (16 October 2026): the HatchGrab base is the WWW host — the one every canonical, og:url,
-  // hreflang and sitemap URL names (lib/marketing-country.ts HATCHGRAB_ORIGIN). It was the apex, which 307s to www,
-  // so the inherited og:url and every relative metadata URL resolved against a redirect. Village Foodie: unchanged.
-  const baseUrl = isHG ? 'https://www.hatchgrab.com' : 'https://villagefoodie.co.uk'
-
-  // ── 🔴 THE SHARE IMAGE IS NOW ON THE SAME BRANCH AS EVERYTHING ELSE (3 September 2026) ──────────
-  // It was the ONE value on this object that was not. `siteName`, `description`, `baseUrl` and the
-  // image's own `alt` all branched on `isHG` correctly, while `openGraph.images[0].url` and
-  // `twitter.images[0]` were string literals pointing at `/logos/village-foodie logo-sharing.png`.
-  // 🔴 SO A HATCHGRAB LINK PREVIEW SHOWED THE CONSUMER BRAND'S LOGO, LABELLED "HatchGrab Logo" —
-  // because the alt text was derived from the branched `siteName` while the image was not.
-  // ⚠️ THAT IS WHY IT SURVIVED REVIEW: every value a reader checks to confirm the branding is
-  // host-aware WAS host-aware. A wrong value derived from a correct variable reads as correct.
-  // Measured on production before the fix, not inferred — see docs/share-preview-report.md.
-  //
-  // ⚠️ ABSOLUTE, AND BUILT FROM THE REQUEST HOST — NOT A RELATIVE PATH.
-  // A relative URL resolves against `metadataBase`, which WAS the APEX (`https://hatchgrab.com`), and
-  // the apex 307s to `www` for static assets — so the declared og:image was a REDIRECT rather than an
-  // image. Crawlers are not obliged to follow one. `host` is whatever actually served this response,
-  // so this URL cannot redirect by construction, on production or on a preview deployment.
-  // 🔴 `baseUrl` WAS DELIBERATELY UNTOUCHED BY THAT CHANGE (og:url and metadataBase read the apex). That separate
-  // decision was taken on 16 October 2026 (Language Phase 1e): both now read the www host — see `baseUrl` above.
-  //
-  // 🔴 THE DIMENSIONS BELOW ARE MEASURED FROM THE FILE, NOT INTENDED. The previous pair said
-  // 1200x630 over a file that was actually 2397x1270 — the tags did not describe the resource they
-  // pointed at. If the card is ever re-rendered, re-read its PNG header and update these two numbers.
-  const shareImage = isHG
-    ? { url: `https://${host}/logos/hatchgrab-share-card.png`, width: 1200, height: 630 }
-    : { url: '/logos/village-foodie logo-sharing.png', width: 1200, height: 630 }
+  // seo-fixes S1/N6: the per-host defaults live in lib/site-metadata.ts, shared with the pages that set their own og:url.
+  const site = siteMetaFor(host)
+  const { isHG, siteName, description, baseUrl, shareImage } = site
 
   return {
     metadataBase: new URL(baseUrl),
@@ -65,22 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${siteName}`,
     },
     description,
-    openGraph: {
-      title: siteName,
-      description,
-      url: baseUrl,
-      siteName,
-      images: [
-        {
-          url: shareImage.url,
-          width: shareImage.width,
-          height: shareImage.height,
-          alt: `${siteName} Logo`,
-        },
-      ],
-      locale: "en_GB",
-      type: "website",
-    },
+    openGraph: siteOpenGraph(site),
     twitter: {
       card: "summary_large_image",
       title: siteName,
@@ -135,7 +93,11 @@ export default async function RootLayout({
 }>) {
   // 🔴 READ ONCE, HERE. `generateMetadata` above reads the same header for its own branding; this is
   // the same value handed to the analytics provider so its server and client renders agree.
-  const host = (await headers()).get('host') ?? undefined
+  const requestHeaders = await headers()
+  const host = requestHeaders.get('host') ?? undefined
+  // seo-fixes S4: the page's language — en-GB / en-US on a country page, en-GB on a legal document (proxy.ts sets the
+  // header); "en" everywhere else, as before.
+  const lang = htmlLangOf(requestHeaders.get(PAGE_LANG_HEADER))
   // 🔴 THE BRAND, RESOLVED SERVER-SIDE AND PUT ON <html> SO CSS CAN SWITCH ON IT WITH NO FLICKER.
   // The customer ordering page and the truck schedule page are both client components, and
   // lib/domain.ts's isHatchGrab() returns FALSE on the server — so branching on it there would render
@@ -146,7 +108,7 @@ export default async function RootLayout({
   // docs/brand-consolidation-report.md; no operator surface changes appearance because of it.
   const brand = host?.includes('hatchgrab') ? 'hatchgrab' : 'villagefoodie'
   return (
-    <html lang="en" data-brand={brand}>
+    <html lang={lang} data-brand={brand}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

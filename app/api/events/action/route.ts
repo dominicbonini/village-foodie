@@ -8,7 +8,7 @@ import { hasValidEventTimes, clockMins } from '@/lib/time-utils'
 /* ── 🔴 PRIVATE EVENTS (20261014) ──────────────────────────────────────────────────────────────── */
 import { applyPrivacy } from '@/lib/private-events/write'
 import { isEventPrivate } from '@/lib/private-events/read'
-import { canAccess } from '@/lib/features'
+import { featureRefusal } from '@/lib/plan-refusal'
 // Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
 // truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
 import { manageErrorBody, type ManageErrorCode, type ManageErrorParams } from '@/lib/i18n/manage-errors'
@@ -146,9 +146,10 @@ export async function POST(req: NextRequest) {
      * make an event public. */
     if (payload.is_private !== undefined) {
       const wantPrivate = payload.is_private === true
-      if (wantPrivate
-        && !canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-        return refuse('private_events_pro', 403, {}, { upgrade: true })
+      if (wantPrivate) {
+        // Stage A2: override → the effective plan's switch → allowed; worded by why it is off (lib/plan-refusal.ts).
+        const off = await featureRefusal(truck, 'private_events', await localeForTruck(truck))
+        if (off) return refuse(off.code, 403, off.params)
       }
       const pr = await applyPrivacy(supabase, truck.id, eventId, {
         isPrivate: wantPrivate,

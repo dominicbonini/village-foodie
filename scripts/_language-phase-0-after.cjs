@@ -90,25 +90,51 @@ module.exports = async function after(x) {
 
   /* ── 4 · keys separated from labels, beyond byte-identity ── */
   head('4 · display text is never a key: every lookup compares ids')
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): lib/legacy-pricing-display.ts is DELETED. The plan table's rows
+  // are lib/feature-table.ts FEATURE_TABLE (id = the message key, `feature` = the gate), rendered by the one plan table
+  // (components/pricing/PlanTable.tsx) on /features, Manage › Billing and the plans PDF.
+  const LEGACY = fs.existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts'))
   const K = await kit.bundle('lp0-keys-after', [
-    "export * as PF from '@/lib/plan-features'", "export * as PW from '@/lib/price-words'", "export * as CT from '@/lib/contact-topics'",
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/plan-features.ts is deleted; its content (and the plan price display that
+    // lived in lib/features.ts) moved, frozen, into lib/legacy-pricing-display.ts.
+    LEGACY ? "export * as PF from '@/lib/legacy-pricing-display'" : "export * as FT from '@/lib/feature-table'", "export * as PW from '@/lib/price-words'", "export * as CT from '@/lib/contact-topics'",
     "export * as MF from '@/lib/money-format'", "export * as FE from '@/lib/features'", "export * as WU from '@/lib/walk-up'",
   ].join('\n'), { stubs: STUBS })
-  const rows = K.PF.FEATURE_SECTIONS.flatMap(s => s.rows)
-  t(`every plan-table row has a unique id (${rows.length} rows)`, rows.every(r => typeof r.id === 'string' && r.id) && new Set(rows.map(r => r.id)).size === rows.length)
-  t('the feature-gate parity check still finds nothing', JSON.stringify(K.PF.findPlanParityViolations()) === '[]')
-  const PF_SRC = stripComments(src('lib/plan-features.ts')), LT_SRC = stripComments(src('lib/landing-table.ts'))
+  const tableRows = LEGACY ? K.PF.FEATURE_SECTIONS.flatMap(s => s.rows) : K.FT.FEATURE_TABLE
+  t(`every plan-table row has a unique id (${tableRows.length} rows)`, tableRows.every(r => typeof r.id === 'string' && r.id) && new Set(tableRows.map(r => r.id)).size === tableRows.length)
+  // ⚠️ RE-PINNED (pricing-pages, Stage B): access is asked of each row's GATE (its `feature`), once per Feature.
+  const rows = LEGACY ? tableRows : [...new Set(tableRows.map(r => r.feature).filter(Boolean))].map(id => ({ id }))
+  if (!LEGACY) t(`Stage B: every row's gate is a Feature (lib/features.ts FEATURES) — ${rows.length} gates`, rows.length > 20 && rows.every(r => K.FE.isFeature(r.id)))
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the parity check compared the tier cells with tiered gates; both the guard and
+  // the tiers are gone. Replaced by the new state: no drift guard in the frozen display, and no plan decides access.
+  t('the feature-gate parity check is gone with the tiered gates (no findPlanParityViolations / ROW_FEATURE_MAP)', (LEGACY ? !('findPlanParityViolations' in K.PF) && !('ROW_FEATURE_MAP' in K.PF) : !fs.existsSync(path.join(REPO, 'lib/legacy-pricing-display.ts'))) && !/PLAN_FEATURES|hasFeature/.test(stripComments(src('lib/features.ts'))))
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): canAccess takes a REQUIRED third argument, the effective
+  // plan's switch. Under a plan with every feature on, the override answers are unchanged; under a plan with the feature
+  // off, no override → denied and an override true → allowed (the override wins).
+  const planOn = () => true, planOff = () => false
+  t('access under a plan with the feature on: no override → allowed, false → denied, true → allowed (every plan-table row)', rows.every(r => K.FE.canAccess(r.id, null, planOn) === true && K.FE.canAccess(r.id, { [r.id]: false }, planOn) === false && K.FE.canAccess(r.id, { [r.id]: true }, planOn) === true))
+  t('Stage A2: under a plan with the feature off: no override → denied, true → allowed, false → denied (every plan-table row)', rows.every(r => K.FE.canAccess(r.id, null, planOff) === false && K.FE.canAccess(r.id, { [r.id]: true }, planOff) === true && K.FE.canAccess(r.id, { [r.id]: false }, planOff) === false))
+  // ⚠️ RE-PINNED (same): both sources are now the one frozen file.
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the frozen file is deleted — the table's code is lib/feature-table.ts,
+  // lib/plan-offer.ts and components/pricing/PlanTable.tsx; the same "no lookup on a row NAME" rule is asserted of them.
+  const PF_SRC = stripComments(LEGACY ? src('lib/legacy-pricing-display.ts') : ['lib/feature-table.ts', 'lib/plan-offer.ts', 'components/pricing/PlanTable.tsx'].map(src).join('\n')), LT_SRC = PF_SRC
   t('no lookup keys on a row NAME any more (feature map, trial column, overrides, Billing, Admin)',
     !/ROW_FEATURE_MAP\[row\.name\]|row\.name !== WHATSAPP_ROW_NAME/.test(PF_SRC) && !/row\.name ===|\.has\(row\.name\)|_OVERRIDES\[row\.name\]/.test(LT_SRC)
     && !/row\.name === 'Online ordering — Pay at Hatch'/.test(src('app/manage/[token]/page.tsx') + src('app/admin/page.tsx')) && !/r\.name === rowName/.test(src('app/manage/[token]/page.tsx')))
-  t('"Coming soon" is decided by the cell\'s state, not its words (comparison table, PDF)', !/label === 'Coming soon'/.test(src('components/landing/FeatureComparison.tsx') + src('lib/plans-pdf.ts')))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B): the comparison table is components/pricing/PlanTable.tsx (FeatureComparison is deleted).
+  t('"Coming soon" is decided by the cell\'s state, not its words (plan table, PDF)', !/label === 'Coming soon'/.test(src(LEGACY ? 'components/landing/FeatureComparison.tsx' : 'components/pricing/PlanTable.tsx') + src('lib/plans-pdf.ts')) && (LEGACY || /tableCell\(/.test(src('components/pricing/PlanTable.tsx'))))
   t('price words: one definition, the same seven words the mask always exempted', JSON.stringify(Object.values(K.PW.PRICE_WORD).sort()) === JSON.stringify(['Free', 'Free trial', 'Lifetime', '0%', 'Pay at Hatch', 'Unlimited', '—'].sort()) && !/NON_SECRET_PRICE = new Set\(/.test(src('lib/pricing.ts')))
   t('"Pay at Hatch" stays a brand name in every country (one word, no US variant)', K.PW.PRICE_WORD.payAtHatch === 'Pay at Hatch' && !/Pay at Hatch/.test(src('messages/en-US.json')))
-  for (const [k, s] of [['GB', GB], ['US', US_ON]]) for (const plan of ['trial', 'starter', 'pro', 'max', 'tester', 'demo']) {
-    const p = K.FE.planPriceParts(plan, s)
-    t(`${k} ${plan}: the card's parts rebuild the price exactly`, (p.perMonth ? `${p.amount}/mo` : p.amount) === K.FE.planPrice(plan, s), JSON.stringify(p))
+  if (LEGACY) for (const [k, s] of [['GB', GB], ['US', US_ON]]) for (const plan of ['trial', 'starter', 'pro', 'max', 'tester', 'demo']) {
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): planPriceParts / planPrice moved from lib/features.ts to the frozen display.
+    const p = K.PF.planPriceParts(plan, s)
+    t(`${k} ${plan}: the card's parts rebuild the price exactly`, (p.perMonth ? `${p.amount}/mo` : p.amount) === K.PF.planPrice(plan, s), JSON.stringify(p))
   }
-  t('the pricing card no longer splits a display string on "/mo"', !/endsWith\('\/mo'\)/.test(src('app/landing/page.tsx')))
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): planPriceParts / planPrice are deleted with the frozen display. The
+  // landing card (components/pricing/PricingSection.tsx) formats the amount from data (plan_prices.monthly_minor) and puts
+  // the per-month words in their own span — there is no display string to split.
+  else t('Stage B: the pricing card formats the amount from data and adds the per-month words beside it (no display string)', /formatAmount\(p\.monthlyMinor, money\)\}<span>\{t\('card\.perTruckMonth'\)\}<\/span>/.test(src('components/pricing/PricingSection.tsx')))
+  t('the pricing card no longer splits a display string on "/mo"', !/endsWith\('\/mo'\)/.test(src('app/landing/page.tsx') + (LEGACY ? '' : src('components/pricing/PricingSection.tsx'))))
   // roundsToZero ≡ the old string comparison, for both countries, over a wide range (incl. -0.4, NaN-guarded).
   const ns = [0, 0.1, 0.49, 0.5, 0.51, 0.999, 1, 1.5, -0.4, -0.5, -0.6, 2.4999, 1e-9, 12345.5, -1e-9, 0.0049]
   let same = true; const bad = []

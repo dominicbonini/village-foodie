@@ -81,6 +81,13 @@ async function run(ctx) {
       const b = BEFORE[id], f = F[id]
       if (same(b, f)) { identical++; continue }
       const n = N.apply(id, b)
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a STRUCTURAL named item (`matches`, e.g. Billing's
+      // data-driven plan card) is proven by its own proof instead of byte equality.
+      if (n.matches) {
+        const pr = n.matches(f)
+        if (pr.ok) { named++; for (const e of n.touched) claimed.get(e).push(id); continue }
+        if (!listUS) { t(`${cc} · ${id}: F === BEFORE + ${n.touched.join(' + ')} (structural)`, false, pr.problems.join('\n      ')); continue }
+      }
       if (same(n.expected, f)) { named++; for (const e of n.touched) claimed.get(e).push(id); continue }
       if (typeof f === 'string' && N.normalize(n.expected) === N.normalize(f)) {
         named++; for (const e of [...n.touched, 'html-text-separators']) claimed.get(e).push(id); continue
@@ -169,9 +176,22 @@ async function run(ctx) {
     head('GB · the en-GB keys whose text differs between F and A are exactly scripts/fixtures/language-phase-1e-gb-named.json')
     const named = fs.existsSync(GB_NAMED_FILE) ? JSON.parse(fs.readFileSync(GB_NAMED_FILE, 'utf8')) : null
     t('the named list exists (node scripts/language-phase-1e.cjs --write-gb-named)', !!named)
+    // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the keys Stage A reworded or removed are Stage A's, not
+    // Phase 1e's — exempt from the 1e list, but each must be EXACTLY what scripts/fixtures/plans-stage-a-messages.json
+    // records (W.gbKeyDiff marks a key only on an exact match), and every key that file names that eb7ed44 had must show.
+    const stageA = Object.keys(gbDiff).filter(k => W.isStageA(gbDiff[k]))
+    const sa = W.LP2.stageA()['en-GB'], at0 = W.flat(W.LP2.readJson(W.FROZEN_GB))
+    const saMissing = [...Object.keys(sa.reworded || {}), ...Object.keys(sa.removed || {})].filter(k => k in at0 && !stageA.includes(k))
+    t(`the en-GB keys Stage A reworded / removed differ exactly as recorded (${stageA.length}: ${stageA.filter(k => gbDiff[k].after != null).length} reworded, ${stageA.filter(k => gbDiff[k].after == null).length} removed)`, saMissing.length === 0, `not as recorded: ${saMissing.join(', ')}`)
     if (named) {
-      const extra = Object.keys(gbDiff).filter(k => !(k in named))
-      const gone = Object.keys(named).filter(k => !(k in gbDiff))
+      const extra = Object.keys(gbDiff).filter(k => !(k in named) && !W.isStageA(gbDiff[k]))
+      // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): a named key a plan stage REMOVED (W.LP2.stageA().removed —
+      // Stage B deleted e.g. landing.pricing.summary, planFeatures.footnote.n1, planMeta.description.trial) has no text left
+      // to differ: it must be absent from messages/en-GB.json instead (as scripts/_lp1d-checks.cjs does for Stage A).
+      const aNow = W.flat(W.catalogues('A')['en-GB'])
+      const removedNamed = Object.keys(named).filter(k => !(k in gbDiff) && k in (sa.removed || {}))
+      t(`the named keys a plan stage removed are absent from messages/en-GB.json (${removedNamed.length})`, removedNamed.every(k => !(k in aNow)), removedNamed.filter(k => k in aNow).join(', '))
+      const gone = Object.keys(named).filter(k => !(k in gbDiff) && !removedNamed.includes(k))
       const moved = Object.keys(gbDiff).filter(k => k in named && (named[k].before !== gbDiff[k].before || named[k].after !== gbDiff[k].after))
       t(`every changed en-GB key is named (${Object.keys(gbDiff).length} changed)`, extra.length === 0, `not in the list: ${extra.join(', ')}`)
       t('every named key changed, as named', gone.length === 0 && moved.length === 0, `named but unchanged: ${gone.join(', ')} · different text: ${moved.join(', ')}`)

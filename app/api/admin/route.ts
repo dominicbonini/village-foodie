@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'   // canonical admin check (shared with the /landing gate)
-import { PLAN_META, type Plan } from '@/lib/features'
+import { getPlanCatalog } from '@/lib/plans-server'
+import { isPlanKey, type PlanCatalog } from '@/lib/plans'
 import { getCountrySettingsMany } from '@/lib/country-settings'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
 
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,slug,country,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,hide_pricing,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded,custom_domain,custom_domain_verified_at,custom_domain_confirmed_at,custom_domain_setup_state,custom_domain_setup_started_at,custom_domain_last_checked_at,custom_domain_last_ok_at,custom_domain_last_seen_value')
+    .select('id,name,slug,country,timezone,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,hide_pricing,plan_price_override_minor,plan_price_override_until,plan_price_override_note,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded,custom_domain,custom_domain_verified_at,custom_domain_confirmed_at,custom_domain_setup_state,custom_domain_setup_started_at,custom_domain_last_checked_at,custom_domain_last_ok_at,custom_domain_last_seen_value')
     .order('name')
 
   // ── J3: THE SIGNUP PROMO CODE, KEYED BY OPERATOR ────────────────────────────────────────────────
@@ -80,7 +81,48 @@ export async function GET(req: NextRequest) {
     console.error('[admin] country settings read failed', e instanceof Error ? e.message : e)
     return NextResponse.json({ error: 'Could not load country settings.' }, { status: 500 })
   }
-  return NextResponse.json({ trucks: trucks || [], operators, countrySettings })
+  // ── THE PLAN CATALOGUE (plans-data-model Stage A): the plan buttons, names and prices this screen shows come from
+  // public.plans / public.plan_prices — service-role only, so it rides here behind verifyAdmin. ⚠️ FATAL, like the
+  // country settings: an admin screen that guessed the plan list would offer plans that do not exist.
+  let plans: PlanCatalog
+  try {
+    plans = await getPlanCatalog()
+  } catch (e) {
+    console.error('[admin] plan catalogue read failed', e instanceof Error ? e.message : e)
+    return NextResponse.json({ error: 'Could not load the plans.' }, { status: 500 })
+  }
+  return NextResponse.json({ trucks: trucks || [], operators, countrySettings, plans })
+}
+
+/* ══ 🔴 THE TRUCK FIELDS ADMIN MAY WRITE — AN ALLOWLIST, EACH VALIDATED (plans-data-model Stage A, 19 October 2026) ══
+ * ⛔ THIS ROUTE USED TO WRITE THE REQUEST BODY STRAIGHT INTO `trucks` (`update(updates)`): any column, any value, from
+ * one admin request. It now accepts exactly the fields the admin screen edits, each checked; anything else is refused
+ * by name. The plan is checked against public.plans (active plans only) — the database's foreign key is the second
+ * line, not the first. */
+type Check = (v: unknown, plans: PlanCatalog) => boolean
+const isBool: Check = v => typeof v === 'boolean'
+const nullOr = (c: Check): Check => (v, p) => v === null || c(v, p)
+const isText: Check = v => typeof v === 'string' && v.length <= 2000
+const isIsoInstant: Check = v => typeof v === 'string' && !Number.isNaN(Date.parse(v))
+const isYmd: Check = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(`${v}T00:00:00Z`))
+const isNonNegInt: Check = v => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 100_000_000
+const ADMIN_TRUCK_FIELDS: Record<string, Check> = {
+  plan: (v, plans) => isPlanKey(plans, v, { activeOnly: true }),
+  trial_expires_at: nullOr(isIsoInstant),            // the plan's END DATE (lib/plans.ts planEndDate)
+  plan_price_override_minor: nullOr(isNonNegInt),
+  plan_price_override_until: nullOr(isYmd),
+  plan_price_override_note: nullOr(isText),
+  active: isBool,
+  hide_pricing: isBool,
+  show_on_vf: isBool,
+  show_on_hg: isBool,
+  order_link_vf: isBool,
+  order_link_hg: isBool,
+  excluded: isBool,
+  feature_overrides: v => !!v && typeof v === 'object' && !Array.isArray(v) && Object.values(v as Record<string, unknown>).every(x => typeof x === 'boolean'),
+  lifetime_discount_pct: nullOr(v => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 100),
+  lifetime_discount_note: nullOr(isText),
+  scraper_rule: nullOr(v => v === 'scroll_lazy' || v === 'scroll_next'),
 }
 
 export async function POST(req: NextRequest) {
@@ -104,7 +146,26 @@ export async function POST(req: NextRequest) {
 
   if (!truckId) return NextResponse.json({ error: 'Missing truckId' }, { status: 400 })
 
-  const { error } = await supabase.from('trucks').update(updates).eq('id', truckId)
+  let plans: PlanCatalog
+  try {
+    plans = await getPlanCatalog()
+  } catch (e) {
+    console.error('[admin] plan catalogue read failed', e instanceof Error ? e.message : e)
+    return NextResponse.json({ error: 'Could not load the plans.' }, { status: 500 })
+  }
+  const patch: Record<string, unknown> = {}
+  const unknown: string[] = [], invalid: string[] = []
+  for (const [k, v] of Object.entries(updates as Record<string, unknown>)) {
+    const check = ADMIN_TRUCK_FIELDS[k]
+    if (!check) unknown.push(k)
+    else if (!check(v, plans)) invalid.push(k)
+    else patch[k] = v
+  }
+  if (unknown.length) return NextResponse.json({ error: `These fields cannot be changed here: ${unknown.join(', ')}` }, { status: 400 })
+  if (invalid.length) return NextResponse.json({ error: `Invalid value for: ${invalid.join(', ')}` }, { status: 400 })
+  if (!Object.keys(patch).length) return NextResponse.json({ error: 'Nothing to change' }, { status: 400 })
+
+  const { error } = await supabase.from('trucks').update(patch).eq('id', truckId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })
 }

@@ -30,10 +30,6 @@
     "keep": "Keep truck",
     "remove": "Remove truck"
   },
-  "vanUpgrade": {
-    "title": "Upgrade to add more trucks",
-    "body": "The Starter plan includes 1 truck. Upgrade to Pro or Max to add additional trucks."
-  },
   "schedule": {
     "urlPlaceholder": "https://yourtruck.com/events"
   },

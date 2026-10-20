@@ -163,16 +163,10 @@
   },
   "vanBilling": {
     "title": "Add another truck",
-    "body": "Your {plan, select, pro {Pro plan includes 2 trucks} other {Max plan includes unlimited trucks}}. Adding an additional truck costs <b>{price}</b> and will be added to your next billing cycle.",
+    "body": "Your {plan} plan includes {vans, plural, one {# truck} other {# trucks}}. Adding an additional truck costs <b>{price}</b> and will be added to your next billing cycle.",
     "note": "⚠️ Note: Billing adjustment is processed manually during early access. You will receive a confirmation email within 24 hours.",
     "cancel": "Cancel",
     "add": "Add truck — {price}"
-  },
-  "vanUpgrade": {
-    "title": "Upgrade to add more vans",
-    "body": "The Starter plan includes 1 van. Upgrade to Pro or Max to add additional vans.",
-    "cancel": "Cancel",
-    "viewPlans": "View plans"
   },
   "changesSave": "Changes save automatically",
   "schedule": {
@@ -209,8 +203,8 @@
     "brandedAlt": "Branded QR code preview",
     "opening": "Opening…",
     "view": "View QR code",
-    "lockedTitle": "Branded codes are part of a higher plan",
-    "lockedBody": "Branded codes are part of a higher plan. Your standard QR code works exactly the same for customers — the difference is your logo in the middle.",
+    "lockedTitle": "Branded codes are switched off for your truck",
+    "lockedBody": "Branded codes are switched off for your truck. Your standard QR code works exactly the same for customers — the difference is your logo in the middle.",
     "imageAlt": "Order QR code",
     "download": "Download PNG",
     "buildFailed": "That could not be built just now. Try again shortly.",

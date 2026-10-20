@@ -483,6 +483,11 @@ const TABLES = (cc, over = {}) => ({
   modifier_groups: [], modifier_options: [], item_modifier_groups: [], bundles_db: [], discount_codes_db: [],
   truck_events: [{ id: 'ev1', truck_id: 'test-truck', event_date: '2026-10-09', status: 'open', start_time: '11:00', end_time: '20:00', venue_name: 'The Green', van_id: null, ...(over.event || {}) }],
   orders: (over.orders || []).map(o => ({ ...o })), order_drafts: [], order_payments: [], booking_locks: [],
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the submit and menu routes now read the plan catalogue
+  // (getPlanCatalog — public.plans / plan_prices / plan_features) to decide Pay at Hatch, pre-ordering and auto-accept by
+  // the truck's plan. The catalogue AS THE MIGRATIONS SEED IT rides along as fixture input (every plan has every feature
+  // these fixtures reach on, so each recorded answer is unchanged).
+  ...require('./_lp1c-fixtures.cjs').planTables(),
 })
 async function apiResponses() {
   const M = {

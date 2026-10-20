@@ -90,7 +90,266 @@ const reuseLp2 = (id, views) => {
   return { ...e, views, smokeOnly: true, agent: `reused from scripts/_lp2-named.cjs ${id} (17 Oct 2026)` }
 }
 
+
+// ══ ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026, docs/plans-data-model-report.md) ══════════════════════
+// Every plan gets every feature (lib/features.ts canAccess is override-only). Helpers and the entries are below; the
+// entries sit FIRST in NAMED so a substitution runs before every later transform.
+const P1 = require('./_lp1d-named.cjs')
+const PLANS_BEFORE_DIR = 'language-phase-1d2-before'
+/** Part 2's own views shown for a Starter / tester truck → the Max fixture truck's view in the same state (BEFORE). */
+const PLANS_SIBLING_2 = {
+  'shell/|shell|plan|starter': 'shell/|shell|tab|reports',          // Social media tab shown (every plan has it)
+  'shell/|shell|plan|tester': 'shell/|shell|tab|reports',           // Billing tab shown to the owner on every plan
+  'reports/|tab|initialStarter': 'reports/|tab|initial',            // the Reports "Pro feature" upsell is removed
+  'social/|posts|create|starter': 'social/|posts|create|ready',     // Social media for every plan
+  'social/|posts|designs|starter': 'social/|posts|designs|ready',
+  'wada/|settings|starter|auto-replies': 'wada/|settings|notConnected|auto-replies',   // WhatsApp card: no "on Pro and Max"
+  'wada/|domain|starter': 'wada/|domain|card|website',              // the custom-domain card for every plan
+}
+const plansSibling2 = id => { const m = /^([^/]+)\/(GB|US)(\|.*)$/.exec(id); const s = m && PLANS_SIBLING_2[`${m[1]}/${m[3]}`]; return s ? s.replace('/|', `/${m[2]}|`) : null }
+/** Starter views with NO Max view in the same state in BEFORE → an AFTER-only twin rendered on the fixture truck. */
+const PLANS_TWIN = { 'reports/|tab|range|starter': 'reports/|tab|range|starterAsMax', 'social/|posts|locations|starter': 'social/|posts|locations|starterAsMax' }
+// ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): a "starter" truck resolves to Pay as you go, which has
+// schedule_graphics OFF — so Social › Locations for it is NOT its twin any more; plans-a2-payg-social-prompt proves it
+// (against the same twin's frame). The twin entry keeps Reports › range (Reports is on for every plan).
+const A2_PLAN_SWITCHES = !!(BILL_CAT_A2() && BILL_CAT_A2().features && BILL_CAT_A2().features.length)
+function BILL_CAT_A2() { return require('./_plans-catalog-fixture.cjs').seedCatalog(require('path').resolve(__dirname, '..')) }
+const plansTwin = id => { const m = /^([^/]+)\/(GB|US)(\|.*)$/.exec(id); if (m && A2_PLAN_SWITCHES && m[1] === 'social') return null; const s = m && PLANS_TWIN[`${m[1]}/${m[3]}`]; return s ? s.replace('/|', `/${m[2]}|`) : null }
+const plansTwinRaw = id => { const m = /^([^/]+)\/(GB|US)(\|.*)$/.exec(id); const s = m && PLANS_TWIN[`${m[1]}/${m[3]}`]; return s ? s.replace('/|', `/${m[2]}|`) : null }
+// React's attribute escaping and its inverse, for a <x-stub data-p="…"> (scripts/_lp1b-dashboard.cjs's stubs).
+const stEsc = x => x.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const stDec = x => x.replace(/&(quot|#x27|lt|gt|amp);/g, (_, e) => ({ quot: '"', '#x27': "'", lt: '<', gt: '>', amp: '&' })[e])
+/** Every `name` stub's props through fn(props) → props (key order kept by fn); a stub that does not round-trip is left. */
+const stProps = (s, name, fn) => s.replace(new RegExp(`<x-stub data-c="${name}" data-p="([^"]*)"`, 'g'), (whole, raw) => {
+  const p = JSON.parse(stDec(raw)); if (stEsc(JSON.stringify(p)) !== raw) return whole
+  return `<x-stub data-c="${name}" data-p="${stEsc(JSON.stringify(fn(p)))}"`
+})
+const renameKey = (o, from, to, value) => Object.fromEntries(Object.entries(o).map(([k, v]) => (k === from ? [to, value(v)] : [k, v])))
+const PLANS_SENTENCES_2 = ['Not available on this plan', 'Social media posts are on Pro and Max']
+
+// ── Billing: ONE data-driven plan card (plans-data-model, Stage A). STRUCTURAL (proveWith), because the card is new:
+//   • the card names the truck's EFFECTIVE plan, from the seeded catalogue (lib/plans.ts effectivePlan: an unknown key —
+//     the fixture's old 'starter' / 'max' — or a past end date resolves to the expiry fallback, Pay as you go);
+//   • the comparison table below it (header, fee and feature rows, footnotes — scripts/plans-data-model.cjs's own
+//     cut) is BYTE-IDENTICAL to BEFORE's (+ the named changes): exactly, where the highlighted column is still the
+//     truck's (trial, pro); with no column highlighted where the old key is gone (starter, max → payg); and where BEFORE
+//     showed no table (collapsed — pro, max — or tester's empty tab) it is BEFORE pro|matrix's table (pro) or that table
+//     with no column highlighted (the rest);
+//   • the "Billing & payments" line names the same plan; the switch modal is data-driven (the catalogue's name, price
+//     and description; a URL-encoded mailto) and opens only for a real plan ('max' is none); iOS shows no purchase panel.
+const BILL_CAT = require('./_plans-catalog-fixture.cjs').seedCatalog(require('path').resolve(__dirname, '..'))
+const BILL_TABLE_START = '<div class="flex items-start justify-between mb-2 sticky top-0 z-30 bg-white pt-2">'
+const BILL_NOTES_START = '<div class="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">'
+/** The comparison table as scripts/plans-data-model.cjs cuts it (rows balanced from the header, then the footnotes). */
+const billTable = html => {
+  if (typeof html !== 'string') return null
+  const st = html.indexOf(BILL_TABLE_START); if (st < 0) return null
+  const n = html.indexOf(BILL_NOTES_START, st); if (n < 0) return null
+  let depth = 0, i = n
+  const re = /<div\b|<\/div>/g; re.lastIndex = n
+  for (let m; (m = re.exec(html));) { depth += m[0] === '</div>' ? -1 : 1; if (depth === 0) { i = m.index + 6; break } }
+  let d = 0, keep = ''
+  for (const part of html.slice(st, n).split(/(<div\b[^>]*>|<\/div>)/)) { if (part === '</div>') { if (d === 0) continue; d-- } else if (part.startsWith('<div')) d++; keep += part }
+  return keep + '\n' + html.slice(n, i)
+}
+/** The highlighted ("current plan") column made neutral (scripts/plans-data-model.cjs `neutral`). */
+const billNeutral = x => x && x.replace(/text-sm font-semibold text-orange-500">✓/g, 'text-sm font-semibold text-slate-500">✓')
+  .replace(/border-b-2 border-orange-500/g, 'border-b-2 border-slate-100').replace(/tracking-widest text-orange-500/g, 'tracking-widest text-slate-400')
+  .replace(/whitespace-nowrap text-orange-600/g, 'whitespace-nowrap text-slate-900').replace(/leading-snug text-orange-600/g, 'leading-snug text-slate-600')
+/** The fixture's plan key and whether its end date is past (scripts/_lp1d2-shell.cjs BILLING: trial|expired, starter|withTrialDate). */
+// `id` in either harness's shape: 'shell/<CC>|billing|<state>' (Part 2) or 'billing/billing|<CC>|<state>' (Phase 1e).
+const billKey = id => { const m = /^shell\/(GB|US)\|billing\|(.*)$/.exec(id) || /^billing\/billing\|(GB|US)\|(.*)$/.exec(id); return m ? `${m[1]}|${m[2]}` : null }
+const billEffective = id => {
+  const m = /^(GB|US)\|([a-z]+)(\|.*)?$/.exec(billKey(id))
+  const key = m[2], ended = /^\|(expired|withTrialDate)\b/.test(m[3] || '')
+  const fallback = BILL_CAT.plans.find(p => p.isExpiryFallback)
+  const assigned = BILL_CAT.plans.find(p => p.key === key && p.active)
+  return { cc: m[1], key, plan: !assigned || ended ? fallback : assigned }
+}
+/** The proof, given how to read BEFORE pro|matrix (+ that harness's named changes) for a country — the table a view
+ *  that showed none in BEFORE must now show. */
+const makeBillingProof = siblingExpected => function billingProof(exp, f, id) {
+  const problems = []
+  if (typeof f !== 'string' || typeof exp !== 'string') return { ok: false, problems: [`${id}: not HTML`] }
+  const { cc, key, plan } = billEffective(id)
+  if (!f.includes(`Current plan</p><p class="text-2xl font-bold text-slate-900 mt-1">${plan.name}</p>`)) problems.push(`the plan card does not name the effective plan "${plan.name}"`)
+  const foot = /Pizza Kitchen · ([^<]*) plan</.exec(f)
+  if (foot && foot[1] !== plan.name) problems.push(`"Billing & payments" names "${foot[1]}", not "${plan.name}"`)
+  // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the frozen comparison table (and its numbered footnotes) is
+  // REPLACED by THE one plan table (components/pricing/PlanTable.tsx — the same as /features) with the truck's effective
+  // plan's column highlighted (none for a plan that is no column: a trial, a tester), its amounts under the card's price
+  // mask, and the pricing footnote below it (scripts/_lp-stage-b.cjs billingTableProblems). scripts/pricing-pages.cjs
+  // proves the table itself. On a tree without Stage B, the frozen table's byte proof as before.
+  const STAGE_B = require('./_lp-stage-b.cjs')
+  if (STAGE_B.LANDED) problems.push(...STAGE_B.billingTableProblems(f, plan.key, /\|hidePricing$/.test(id)))
+  else {
+    const tf = billTable(f), te = billTable(exp)
+    let want
+    if (te) want = ['starter', 'max'].includes(key) ? billNeutral(te) : te
+    else {
+      const ts = billTable(siblingExpected(cc))
+      want = key === 'pro' ? ts : billNeutral(ts)
+    }
+    if (!tf) problems.push('no comparison table below the plan card')
+    else if (tf !== want) problems.push(`the comparison table is not BEFORE's (${te ? (want === te ? 'exact' : 'no column highlighted') : 'BEFORE pro|matrix'}) byte for byte`)
+  }
+  const modal = f.includes('fixed inset-0 bg-black/50 z-50')
+  if (/\|upgradePro$/.test(id)) {
+    const pro = BILL_CAT.plans.find(p => p.key === 'pro'), price = BILL_CAT.prices.find(p => p.planKey === 'pro' && p.countryCode === cc)
+    const sym = cc === 'US' ? '$' : '£'
+    if (!modal || !f.includes(`${sym}${price.monthlyMinor / 100}/month — ${pro.description}`) || !/mailto:[^"]*\?subject=[^"&]*%20Pro%20%E2%80%94%20Pizza%20Kitchen/.test(f)) problems.push('the switch modal is not the catalogue’s Pro (name, price, description, URL-encoded mailto)')
+  }
+  // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): a TRIAL plan card states its length from the catalogue
+  // (plans.trial_months, manageBilling.plan.trialMonths "A {months}-month free trial."); no other plan's card does.
+  if (plan.trialMonths != null || BILL_CAT.plans.some(p => p.trialMonths)) {
+    const line = /A \d+-month free trial\./.exec(f)
+    const want = plan.isTrial && plan.trialMonths ? `A ${plan.trialMonths}-month free trial.` : null
+    if ((line ? line[0] : null) !== want) problems.push(`the plan card's trial length is ${JSON.stringify(line ? line[0] : null)}, not ${JSON.stringify(want)}`)
+  }
+  // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): "not started" (a trial with no end date) shows its heading alone — the body
+  // <p> ("Your free trial hasn’t started yet.", manageBilling.notStarted.body) is deleted. PRECISE (scripts/_lp-pricing-tidy.cjs).
+  if (/\|notStarted(\||$)/.test(id) && require('./_lp-pricing-tidy.cjs').LANDED) problems.push(...require('./_lp-pricing-tidy.cjs').notStartedProblems(f))
+  if (/\|upgradeMax(\||$)/.test(id) && modal) problems.push('a switch modal opened for "max", which is no plan')
+  if (/\|ios$/.test(id) && f.includes('Change your plan')) problems.push('iOS shows a purchase panel')
+  return { ok: !problems.length, problems: problems.map(x => `${id}: ${x}`) }
+}
+const billingProof = makeBillingProof(cc => { const sibId = `shell/${cc}|billing|pro|matrix`; return apply(sibId, P1.plansBefore(PLANS_BEFORE_DIR, sibId)).expected })
+
+// ══ ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026) ══════════════════════════════════════════════
+// Plans switch features (public.plan_features; NO ROW = ON). The seed switches whatsapp_replies, schedule_graphics and
+// instagram_messenger_replies OFF for Pay as you go — the plan an unknown key ("starter") resolves to. Where the PLAN is
+// why, Manage shows the ONE upgrade prompt (components/PlanPrompt.tsx), naming the first public plan with the feature.
+/** The prompt's exact HTML for `feature` in country `cc`, every word and number from the seed and the A2 message. */
+const A2_SENTENCE = { schedule_graphics: 'Social media posts are included on', whatsapp_replies: 'WhatsApp auto-replies are included on' }
+function a2Prompt(feature, cc) {
+  const cat = BILL_CAT_A2()
+  const off = new Set(cat.features.filter(f => f.feature === feature && f.enabled === false).map(f => f.planKey))
+  const up = cat.plans.filter(p => p.active && p.isPublic && !off.has(p.key)).sort((a, b) => a.sortOrder - b.sortOrder)[0]
+  const price = cat.prices.find(r => r.planKey === up.key && r.countryCode === cc)
+  const amt = price.monthlyMinor % 100 === 0 ? String(price.monthlyMinor / 100) : (price.monthlyMinor / 100).toFixed(2)
+  const sym = cc === 'US' ? '$' : '£'
+  return `<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 flex items-center justify-between gap-4"><div><div class="text-sm font-medium text-slate-700">${A2_SENTENCE[feature]} ${up.name}.</div><div class="text-xs text-slate-400 mt-0.5">${up.name} · ${sym}${amt}/mo · ${up.description}</div></div><a href="?tab=billing" class="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">Upgrade →</a></div>`
+}
+/** The balanced <div …>…</div> starting at `start` (the index of its "<div"), or null. */
+function a2DivAt(html, start) {
+  const re = /<div\b|<\/div>/g; re.lastIndex = start; let d = 0
+  for (let m; (m = re.exec(html));) { d += m[0] === '</div>' ? -1 : 1; if (d === 0) return html.slice(start, m.index + 6) }
+  return null
+}
+const a2Head = html => { const i = typeof html === 'string' ? html.indexOf('<div class="min-w-0" data-tab-head="true">') : -1; return i < 0 ? null : a2DivAt(html, i) }
+const a2Titles = html => (html.match(/<p class="text-\[17px\] font-bold leading-tight text-slate-900">[^<]*<\/p>/g) || [])
+/** Social › a tab for a Pay-as-you-go truck: STRUCTURAL (the tab is the old frame with every working body replaced by the prompt). */
+function a2SocialProof(exp, f, id, all) {
+  const problems = []
+  const cc = /^social\/(GB|US)\|/.exec(id)[1]
+  const twin = plansTwinRaw(id)
+  const ref = twin ? all && all[twin] : exp
+  if (typeof f !== 'string' || typeof ref !== 'string') return { ok: false, problems: [`${id}: no HTML to compare (reference ${twin || 'BEFORE sibling'})`] }
+  const P = a2Prompt('schedule_graphics', cc)
+  const n = f.split(P).length - 1
+  const rest = f.split(P).join('')
+  if (n < 1) problems.push('no upgrade prompt naming the first public plan with social media posts (seed: Pro), with its price and description')
+  if (rest.includes('rounded-lg border border-slate-200 bg-slate-50 px-4 py-3')) problems.push('a prompt that is not the exact catalogue prompt')
+  if (a2Head(f) === null || a2Head(f) !== a2Head(ref)) problems.push(`the tab head differs from ${twin ? 'the twin' : 'BEFORE’s sibling'} (${twin || 'plans-every-plan-every-feature-2'})`)
+  const tf = a2Titles(f), tr = a2Titles(ref)
+  let j = 0; for (const x of tr) if (x === tf[j]) j++
+  if (j !== tf.length) problems.push(`the card titles ${JSON.stringify(tf)} are not, in order, the reference’s ${JSON.stringify(tr)}`)
+  const working = rest.replace(/<button type="button" data-loc-back="true"[^>]*>[^<]*<\/button>/g, '').match(/<(img|input|select|textarea|canvas|button|link)\b/g)
+  if (working) problems.push(`working content is still rendered for a plan without social media posts: ${[...new Set(working)].join(', ')}`)
+  return { ok: !problems.length, problems: problems.map(x => `${id}: ${x}`) }
+}
+/** Every object field `plan: "max"` → "unlimited", at any depth, inside JSON-encoded strings too (each re-encoded as it was). */
+function a2PlanMaxToUnlimited(v) {
+  if (typeof v === 'string') {
+    if ((v[0] === '{' || v[0] === '[') && /[}\]]$/.test(v)) { try { const p = JSON.parse(v); if (JSON.stringify(p) === v) return JSON.stringify(a2PlanMaxToUnlimited(p)) } catch { /* not JSON */ } }
+    return v
+  }
+  if (Array.isArray(v)) return v.map(a2PlanMaxToUnlimited)
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, k === 'plan' && x === 'max' ? 'unlimited' : a2PlanMaxToUnlimited(x)]))
+  return v
+}
+/** The WhatsApp channel card in Settings › auto-replies, as the sibling (BEFORE) rendered it. */
+const A2_WA_CARD = '<div class="rounded-xl border border-slate-200 p-3"><div class="flex flex-wrap items-start justify-between gap-2"><div class="min-w-0"><p class="text-sm font-bold text-slate-800">WhatsApp</p>'
+
+const plansEntries2 = () => [
+  { id: 'plans-billing-plan-card', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card for every plan (the effective plan’s name, price, promo, included amount, description and ended note; the trial box; "Change your plan" with the other public plans; a data-driven switch modal) above the FROZEN comparison table (lib/legacy-pricing-display.ts). STRUCTURAL (billingProof): the card names the effective plan; the table is BEFORE’s byte for byte (exact for trial / pro; no column highlighted for the gone starter / max keys; BEFORE pro|matrix’s where BEFORE showed none); the modal is the catalogue’s; iOS has no purchase panel. scripts/plans-data-model.cjs proves the same table claims on its own captures.',
+    views: id => /^shell\/(GB|US)\|billing\|(trial|starter|pro|max|tester)(\||$)/.test(id),
+    proveWith: billingProof },
+  // Part 1's views, re-rendered here as smoke: Part 1's own entries (one copy), over this harness's BEFORE.
+  ...P1.plansEntries({ prefix: 'smoke-', beforeDir: PLANS_BEFORE_DIR, smokeOnly: true }),
+  { id: 'plans-every-plan-every-feature-2', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): no plan gates a feature. A Starter / tester truck sees exactly what the Max fixture truck saw in the same state: the shell (Social media tab; Billing tab for the owner on every plan), Reports (no "Pro feature" upsell), Social media posts, the WhatsApp card (no "on Pro and Max") and the custom-domain card. PRECISE: F = BEFORE of that sibling view (+ the later named changes).',
+    views: id => plansSibling2(id) != null,
+    expect: (b, id) => P1.plansBefore(PLANS_BEFORE_DIR, plansSibling2(id)) },
+  { id: 'plans-starter-twin', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Reports › range (event filter) and Social › Locations (a place selected) for a Starter truck — BEFORE has no Max view in these states, so each capture renders an AFTER-only TWIN, the same state on the fixture truck (`…|starterAsMax`). STRUCTURAL: the Starter view must equal its twin byte for byte (the plan changes nothing).',
+    views: id => plansTwin(id) != null,
+    proveWith: (exp, f, id, all) => {
+      const tw = plansTwin(id)
+      if (!all || !(tw in all)) return { ok: false, problems: [`the twin ${tw} is not in this capture`] }
+      return JSON.stringify(all[tw]) === JSON.stringify(f) ? { ok: true, problems: [] } : { ok: false, problems: [`${id} differs from its twin ${tw}`] }
+    } },
+  { id: 'plans-payments-on-trial-prop', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage hands PaymentsTab `onTrial` (the effective plan’s isTrial) where it handed `plan`: the stub’s prop "plan":"max" → "onTrial":false, in the same place. PRECISE.',
+    views: id => /^shell\/(GB|US)\|/.test(id),
+    expect: b => mapStrings(b, x => stProps(x, 'PaymentsTab', p => ('plan' in p ? renameKey(p, 'plan', 'onTrial', v => v === 'trial') : p))) },
+  // The dashboard's PrintingSettings props — Phase 2's precise entry (scripts/_lp2-named.cjs), REUSED on the smoke-dash views.
+  reuseLp2('plans-printing-settings-props', id => /^smoke-dash\/(GB|US)\|/.test(id)),
+  { id: 'plans-weekly-post-copy-gone', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/copy/weeklyPost.ts (WEEKLY_POST_PLAN_REFUSAL, `weeklyPost.planRefusal`) is DELETED — the gate is override-only and refuses with errorsManage.feature_switched_off. The copy view records the export’s absence (scripts/_lp1d2-poster.cjs ADAPT). PRECISE.',
+    views: id => /^poster\/(GB|US)\|copy\|weeklyPost\|W$/.test(id),
+    expect: b => (b && typeof b === 'object' && typeof b.WEEKLY_POST_PLAN_REFUSAL === 'string' ? { ...b, WEEKLY_POST_PLAN_REFUSAL: '[removed in Stage A: lib/copy/weeklyPost.ts and weeklyPost.planRefusal]' } : b) },
+  { id: 'plans-refusal-switched-off-2', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the plan refusals of Part 2’s routes ("Not available on this plan" — embed, domain provisioning; "Social media posts are on Pro and Max" — the weekly post, a place’s usual type) are gone; the fixtures switch the feature off by OVERRIDE (embed_schedule / schedule_graphics) and the route refuses with feature_switched_off: body → {"error":"This feature is switched off for your truck.","code":"feature_switched_off","params":{}}. Status and every write byte-identical. PRECISE.',
+    views: id => /^api\/(GB|US)\|(manage\|(embed|provision|usualType)\.notOnPlan|weeklyPost\|plan\.(load|font_confirm)|weeklyPostGET\|plan)$/.test(id),
+    expect: P1.plansRefusal(PLANS_SENTENCES_2) },
+  { id: 'plans-manage-get-catalogue-2', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
+    what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): GET /api/manage answers the plan catalogue (`plans`, right after `countrySettings`) — the same change Part 1 names (plans-manage-get-catalogue). PRECISE.',
+    views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
+    expect: P1.plansGetCatalogue },
+  // ── ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026) ──
+  { id: 'plans-a2-fixture-plan-unlimited', country: 'both', agent: 'plan-features-config Stage A2 (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the API fixture truck (scripts/_lp1d2-api.cjs) is on `unlimited`, the plan Stage A mapped "max" to — "max" now resolves to Pay as you go WITH its switches (social media posts off → every weekly-post call refused). The truck row the routes answer records "plan":"max" → "plan":"unlimited" (at any JSON nesting). PRECISE: that one value.',
+    views: id => A2_PLAN_SWITCHES && /^api\/(GB|US)\|/.test(id),
+    expect: b => a2PlanMaxToUnlimited(b) },
+  { id: 'plans-a2-payments-features-prop', country: 'both', agent: 'plan-features-config Stage A2 (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): Manage hands PaymentsTab a `features` prop (the truck’s FeatureAccessView — Pay at Hatch’s plan prompt reads it), right after `onTrial`. The view is three functions, which the stub’s JSON drops: it records as {}. PRECISE.',
+    views: id => A2_PLAN_SWITCHES && /^shell\/(GB|US)\|/.test(id),
+    expect: b => mapStrings(b, x => stProps(x, 'PaymentsTab', p => ('onTrial' in p && !('features' in p) ? Object.fromEntries(Object.entries(p).flatMap(([k, v]) => (k === 'onTrial' ? [[k, v], ['features', {}]] : [[k, v]]))) : p))) },
+  { id: 'plans-a2-payg-social-prompt', country: 'both', agent: 'plan-features-config Stage A2 (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): Social media for a "starter" truck (→ Pay as you go, schedule_graphics OFF) — the tab still shows (the plan, not an override, is why) with its head and card frames, and every working body is the ONE upgrade prompt ("Social media posts are included on Pro." + Pro’s seeded price and description + "Upgrade →" to Billing). STRUCTURAL (a2SocialProof): the exact catalogue prompt at least once; the tab head byte-identical to BEFORE’s sibling (create, designs) or the AFTER twin (locations); the card titles a subsequence of the reference’s; no image, input, button or preload left but the phone’s "All locations" back button.',
+    views: id => A2_PLAN_SWITCHES && /^social\/(GB|US)\|posts\|(create|designs|locations)\|starter$/.test(id),
+    proveWith: a2SocialProof },
+  { id: 'plans-a2-payg-whatsapp-prompt', country: 'both', agent: 'plan-features-config Stage A2 (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): Settings › auto-replies for a "starter" truck (→ Pay as you go, whatsapp_replies OFF): the WhatsApp card keeps its title and shows the ONE upgrade prompt ("WhatsApp auto-replies are included on Pro." + Pro’s seeded price and description) in place of its subtitle and live controls. PRECISE: in BEFORE’s sibling (notConnected), that one card replaced by <title row><div class="mt-2">PROMPT</div>; every other byte unchanged.',
+    views: id => A2_PLAN_SWITCHES && /^wada\/(GB|US)\|settings\|starter\|auto-replies$/.test(id),
+    expect: (b, id) => mapStrings(b, x => {
+      const i = x.indexOf(A2_WA_CARD); if (i < 0) return x
+      const card = a2DivAt(x, i); if (!card) return x
+      const cc = /^wada\/(GB|US)\|/.exec(id)[1]
+      return x.replace(card, `<div class="rounded-xl border border-slate-200 p-3"><div class="flex flex-wrap items-start justify-between gap-2"><p class="text-sm font-bold text-slate-800">WhatsApp</p></div><div class="mt-2">${a2Prompt('whatsapp_replies', cc)}</div></div>`)
+    }) },
+  // ── ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026, docs/pricing-pages-report.md; scripts/_lp-stage-b.cjs) ──
+  { id: 'pricing-b-country-settings-fields-2', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): GET /api/manage’s `countrySettings` no longer carries the six plan-price fields (lib/country-settings.ts stopped selecting them) — the same change Part 1 names (pricing-b-country-settings-fields). PRECISE.',
+    views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
+    expect: b => require('./_lp-stage-b.cjs').countrySettingsFieldsGone(b) },
+  { id: 'pricing-b-catalogue-ignored-features-2', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the catalogue GET /api/manage answers ends with `ignoredFeatures` ([] on the seed) — the same change Part 1 names (pricing-b-catalogue-ignored-features). PRECISE.',
+    views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
+    expect: b => require('./_lp-stage-b.cjs').catalogueIgnoredFeatures(b) },
+  { id: 'pricing-b-first-load-line', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
+    what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the first-load failure line — "Invalid or expired token" for an auth refusal, the reason otherwise (manageShell.loadFailedReason) — is centred with a side gutter for the longer sentence: its <p> gains `text-center px-4`. Same words here (no load ran). PRECISE.',
+    views: id => /^shell\/(GB|US)\|shell\|invalidToken$/.test(id),
+    expect: b => mapStrings(b, require('./_lp-stage-b.cjs').INVALID_TOKEN_P) },
+  // (A not-ok load answer with no `error` still toasts "Failed to load", as before Stage B — no named change for the
+  // handler|load views; the coordinator's fix of 20 October 2026 removed the "HTTP <status>" message.)
+]
+
 const NAMED = [
+  // ⚠️ RE-PINNED (plans-data-model, Stage A): FIRST, so a substitution runs before every later transform.
+  ...plansEntries2(),
   // ── SHELL ─────────────────────────────────────────────────────────────────────────────────────────────────
   { id: '1d2-billing-plan-header', country: 'both', agent: 'SHELL',
     what: 'Billing › the plan comparison’s column headers: the DOM text is the plan’s NAME from PLAN_META ("Trial", "Starter", "Pro", "Max") instead of the raw plan id ("trial", "starter", …). The header is CSS `uppercase`, so what a person sees is unchanged ("STARTER").',
@@ -193,6 +452,14 @@ const NAMED = [
     what: 'lib/money-format.ts groups every displayed amount ≥ 1,000 ("£1,234.56", "$1,234.56"); a printed ticket keeps its line width (scripts/_us-polish-grouping.cjs). PRECISE. The Reports CSVs are excluded — they keep raw figures.',
     views: id => !/csv/i.test(id),
     expect: b => mapStrings(b, require('./_us-polish-grouping.cjs').groupString) },
+  // ── ⚠️ RE-PINNED (seo-fixes S7, 20 October 2026, docs/seo-fixes-report.md) ─────────────────────────────────────────
+  //    OUT OF SCOPE (smoke): components/StoreBadges.tsx — both badge <img>s gain loading="lazy", so React no longer emits
+  //    their two image preload links. Manage › Settings shows the badges (GB and US). PRECISE, one copy
+  //    (scripts/_lp-seo-fixes.cjs badgesLazy, also named by Part 1 and Phase 1e).
+  { id: 'seo-s7-badges-lazy', country: 'both', agent: 'seo-fixes (20 Oct 2026)', smokeOnly: true,
+    what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): Manage › Settings — the App Store / Google Play badges load lazily: loading="lazy" on both <img>s (after height), their two <link rel="preload" as="image"> gone. PRECISE, GB and US.',
+    views: id => /^smoke-settings\/(GB|US)\|[^|]+\|page$/.test(id),
+    expect: b => mapStrings(b, require('./_lp-seo-fixes.cjs').badgesLazy) },
 ]
 
 const SMOKE_SHARED = [
@@ -207,4 +474,4 @@ function apply(id, before) {
   return applyNamed(NAMED, countryOf(id) === 'US', id, before)
 }
 
-module.exports = { NAMED, SMOKE_SHARED, apply, countryOf, mapStrings, mapFields, clock12 }
+module.exports = { makeBillingProof, billTable, billNeutral, NAMED, SMOKE_SHARED, apply, countryOf, mapStrings, mapFields, clock12 }

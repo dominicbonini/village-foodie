@@ -33,13 +33,17 @@ export const NAMESPACES = {
     'completionSettings',
     // US polish batch (19 Oct 2026): refusals worded from their codes — /api/dashboard/action, /api/events/action and
     // /api/manage (custom domain), and the demo flow's.
-    'errorsKitchen', 'errorsManage', 'errorsOnboarding'],
+    'errorsKitchen', 'errorsManage', 'errorsOnboarding',
+    // plan-features-config (Stage A2): the one upgrade prompt (Printing settings) and the features' names.
+    'planPrompt'],
   kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',
     'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',   // Language Phase 1c
     // Language Phase 1d (Settings): copy modules the KDS imports, whose en-GB exports read these namespaces.
     'offlineProtection', 'serviceSettings',
     // US polish batch (19 Oct 2026): refusals worded from their codes.
-    'errorsKitchen', 'errorsManage', 'errorsOnboarding'],
+    'errorsKitchen', 'errorsManage', 'errorsOnboarding',
+    // plan-features-config (Stage A2): the one upgrade prompt and the features' names.
+    'planPrompt'],
   manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
     // Language Phase 1c: the cuisine and price controls, the walkthrough, and the where-based step.
     'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased', 'tradeArea',
@@ -71,7 +75,11 @@ export const NAMESPACES = {
     // Language Phase 1d Part 2 (shell): the page's own words (tab bar, header, banners, toasts, trial popup), Billing, Team.
     'manageShell', 'manageBilling', 'manageTeam',
     // US polish batch (19 Oct 2026): the base-town step's and demo flow's refusals, worded from their codes.
-    'errorsOnboarding'],
+    'errorsOnboarding',
+    // plan-features-config (Stage A2): the one upgrade prompt and the features' names (components/PlanPrompt.tsx).
+    'planPrompt',
+    // pricing-pages (Stage B): Billing's plan table (components/pricing/PlanTable.tsx).
+    'planTable'],
   // Language Phase 1c: the setup wizard.
   setup: ['setup', 'whereBased', 'tradeArea', 'errorsOnboarding'],
 } as const satisfies Record<string, readonly AppNamespace[]>

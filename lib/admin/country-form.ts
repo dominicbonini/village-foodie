@@ -14,10 +14,12 @@
 //
 // ── THE RULES ─────────────────────────────────────────────────────────────────────────────────────────
 // Every CHECK on public.country_settings (20261010_02) is mirrored here, so an admin sees a plain sentence
-// and never a database error, plus the page's own rules: a country cannot be switched on with a plan price
-// missing, and its currency cannot change while trucks use it. No message names a column.
+// and never a database error, plus the page's own rule: its currency cannot change while trucks use it.
+// "Switched on only when every public plan is priced here" is the DATABASE TRIGGER's rule since plans-data-model
+// Stage A (20261024_plans.sql); lib/admin/country-actions.ts turns its refusal into ENABLE_NEEDS_PRICES.
+// No message names a column.
 
-import { PHONE_CHECKS, type CountrySettings, type PlanPriceField, type PhoneCheck } from '@/lib/country-settings-types'
+import { PHONE_CHECKS, type CountrySettings, type PhoneCheck } from '@/lib/country-settings-types'
 import { isPlausiblePhone } from '@/lib/phone'
 import { minorDigits } from '@/lib/money-format'
 
@@ -25,12 +27,6 @@ import { minorDigits } from '@/lib/money-format'
 export interface CountryForm {
   enabled: boolean
   name: string
-  starterMonthly: string
-  proMonthly: string
-  maxMonthly: string
-  proAllowance: string
-  maxAllowance: string
-  platformFeePct: string
   cardFeeOnlinePct: string
   cardFeeOnlineFixed: string
   cardFeeInPersonPct: string
@@ -75,17 +71,13 @@ export type CountryValues = Omit<CountrySettings, 'countryCode' | 'updatedAt' | 
 
 export interface FieldError { field: keyof CountryForm | 'countryCode' | 'copyFrom' | 'form'; message: string }
 
-/** The six plan price boxes, in the order the page shows them — the six the enabled rule names. */
-export const PLAN_PRICE_FORM_FIELDS = ['starterMonthly', 'proMonthly', 'maxMonthly', 'proAllowance', 'maxAllowance', 'platformFeePct'] as const
-/** The same six, as stored. */
-export const PLAN_PRICE_FIELDS_STORED: PlanPriceField[] = ['starterMonthlyMinor', 'proMonthlyMinor', 'maxMonthlyMinor', 'proAllowanceMinor', 'maxAllowanceMinor', 'platformFeePct']
+// ⛔ NO PLAN PRICE BOXES (plans-data-model, Stage A). The six old plan price columns are RETIRED: plans and their
+// prices are public.plans / public.plan_prices. This form neither shows nor writes them, and a save leaves their
+// stored values untouched (nothing reads them since Stage B, docs/pricing-pages-report.md).
 
 /** The plain name of each box, as the page labels it — used in every message, so no column name shows. */
 export const FIELD_LABELS: Record<keyof CountryForm, string> = {
   enabled: 'Switched on', name: 'Country name',
-  starterMonthly: 'Starter, per month', proMonthly: 'Pro, per month', maxMonthly: 'Max, per month',
-  proAllowance: 'Pro, online orders included', maxAllowance: 'Max, online orders included',
-  platformFeePct: 'Our fee above that',
   cardFeeOnlinePct: 'Online card payments (%)', cardFeeOnlineFixed: 'Online card payments (fixed part)',
   cardFeeInPersonPct: 'In-person card payments (%)', cardFeeInPersonFixed: 'In-person card payments (fixed part)',
   tapToPayFixed: 'Extra for Tap to Pay', cardFeeRegionLabel: 'Which cards these rates are for',
@@ -103,7 +95,9 @@ export const FIELD_LABELS: Record<keyof CountryForm, string> = {
   defaultTimezone: 'Default time zone', allergenSet: 'Allergen list', supportHours: 'Support hours',
 }
 
-export const ENABLE_NEEDS_PRICES = "Can't switch on until the 6 plan prices are filled in"
+/** 🔴 THE ENABLED RULE IS THE DATABASE'S (the country_settings trigger, 20261024_plans.sql): a country can be switched
+ *  on only when every active public plan has a plan_prices row for it. The page shows this sentence when it refuses. */
+export const ENABLE_NEEDS_PRICES = "Can't switch on until every public plan has a price for this country (see Plans)"
 export const STALE_SAVE = 'This country was changed elsewhere. Reload to see the latest.'
 
 const INT_MAX = 2147483647
@@ -145,12 +139,6 @@ export function boxToBps(text: string): number | null | 'bad' {
 export function rowToForm(r: CountrySettings): CountryForm {
   return {
     enabled: r.enabled, name: r.name,
-    starterMonthly: minorToBox(r.starterMonthlyMinor, r.currency, 'price'),
-    proMonthly: minorToBox(r.proMonthlyMinor, r.currency, 'price'),
-    maxMonthly: minorToBox(r.maxMonthlyMinor, r.currency, 'price'),
-    proAllowance: minorToBox(r.proAllowanceMinor, r.currency, 'allowance'),
-    maxAllowance: minorToBox(r.maxAllowanceMinor, r.currency, 'allowance'),
-    platformFeePct: pctToBox(r.platformFeePct),
     cardFeeOnlinePct: pctToBox(r.cardFeeOnlinePct), cardFeeOnlineFixed: String(r.cardFeeOnlineFixedMinor),
     cardFeeInPersonPct: pctToBox(r.cardFeeInPersonPct), cardFeeInPersonFixed: String(r.cardFeeInPersonFixedMinor),
     tapToPayFixed: String(r.tapToPayFixedMinor), cardFeeRegionLabel: r.cardFeeRegionLabel,
@@ -254,34 +242,14 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
     err('currency', `The currency can't change while ${ctx.truckCount} ${ctx.truckCount === 1 ? 'truck uses' : 'trucks use'} this country.`)
   }
 
-  // ── the six plan prices ──
-  const priceMinor = (field: 'starterMonthly' | 'proMonthly' | 'maxMonthly' | 'proAllowance' | 'maxAllowance'): number | null => {
-    if (!currencyOk) return null
-    const v = boxToMinor(f[field], currency)
-    const label = FIELD_LABELS[field]
-    if (v === 'bad') { err(field, `${label} must be an amount, like ${field.endsWith('Allowance') ? '1,500' : '29.00'}.`); return null }
-    if (v === 'too_many_decimals') { err(field, `${label} has more decimal places than ${currency} allows.`); return null }
-    if (v !== null && v > INT_MAX) { err(field, `${label} is too large.`); return null }
-    return v
-  }
-  const starterMonthlyMinor = priceMinor('starterMonthly')
-  const proMonthlyMinor = priceMinor('proMonthly')
-  const maxMonthlyMinor = priceMinor('maxMonthly')
-  const proAllowanceMinor = priceMinor('proAllowance')
-  const maxAllowanceMinor = priceMinor('maxAllowance')
-  const pct = (field: 'platformFeePct' | 'cardFeeOnlinePct' | 'cardFeeInPersonPct' | 'cardSurchargeCapPct', required: boolean): number | null => {
+  const pct = (field: 'cardFeeOnlinePct' | 'cardFeeInPersonPct' | 'cardSurchargeCapPct', required: boolean): number | null => {
     const v = boxToPct(f[field])
     if (v === 'bad') { err(field, `${FIELD_LABELS[field]} must be a percentage between 0 and 100, with at most 2 decimal places.`); return null }
     if (v === null && required) { err(field, `${FIELD_LABELS[field]} can't be empty.`); return null }
     return v
   }
-  const platformFeePct = pct('platformFeePct', false)
 
-  // 🔴 THE ENABLED RULE — the database CHECK, asked here first so it reads as a sentence.
-  if (f.enabled) {
-    const missing = PLAN_PRICE_FORM_FIELDS.filter(k => f[k].trim() === '')
-    if (missing.length) err('enabled', `${ENABLE_NEEDS_PRICES}.`)
-  }
+  // 🔴 THE ENABLED RULE is the database trigger's (every active public plan priced here) — see ENABLE_NEEDS_PRICES.
 
   // ── Stripe's card fees ──
   const cardFeeOnlinePct = pct('cardFeeOnlinePct', true)
@@ -327,7 +295,6 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
   const serviceFeeHatchgrabFixedMinor = optionalWhole('serviceFeeHatchgrabFixed')
   const serviceFeeTruckMaxBps = bps('serviceFeeTruckMaxPct')
   const serviceFeeTruckMaxFixedMinor = optionalWhole('serviceFeeTruckMaxFixed')
-  if (f.platformFeeEnabled && f.platformFeePct.trim() === '') err('platformFeeEnabled', "Our fee can't be switched on until 'Our fee above that' is filled in.")
 
   // ── formats ──
   const locale = f.locale.trim()
@@ -375,7 +342,6 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
       cardSurchargeCreditOnly: f.cardSurchargeCreditOnly, cardSurchargeExcludedRegions: regions,
       serviceFeeAllowed: f.serviceFeeAllowed, tippingEnabledDefault: f.tippingEnabledDefault, tipPresetsPct: tips,
       allergenSet: f.allergenSet,
-      starterMonthlyMinor, proMonthlyMinor, maxMonthlyMinor, proAllowanceMinor, maxAllowanceMinor, platformFeePct,
       cardFeeOnlinePct: cardFeeOnlinePct as number, cardFeeOnlineFixedMinor: cardFeeOnlineFixedMinor as number,
       cardFeeInPersonPct: cardFeeInPersonPct as number, cardFeeInPersonFixedMinor: cardFeeInPersonFixedMinor as number,
       tapToPayFixedMinor: tapToPayFixedMinor as number, cardFeeRegionLabel,
@@ -386,9 +352,6 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
     },
   }
 }
-
-/** Which plan price boxes are empty — the page shows them amber and the header note while any are. */
-export const emptyPlanPrices = (f: CountryForm): string[] => PLAN_PRICE_FORM_FIELDS.filter(k => f[k].trim() === '')
 
 /** The add-country form's three answers, checked. */
 export function checkNewCountry(input: { code: string; name: string; copyFrom: string }, existing: string[]): FieldError[] {
@@ -406,7 +369,7 @@ export function checkNewCountry(input: { code: string; name: string; copyFrom: s
 export function asCountryForm(x: unknown): CountryForm | null {
   if (!x || typeof x !== 'object') return null
   const o = x as Record<string, unknown>
-  const strs = ['name', 'starterMonthly', 'proMonthly', 'maxMonthly', 'proAllowance', 'maxAllowance', 'platformFeePct',
+  const strs = ['name',
     'cardFeeOnlinePct', 'cardFeeOnlineFixed', 'cardFeeInPersonPct', 'cardFeeInPersonFixed', 'tapToPayFixed',
     'cardFeeRegionLabel', 'taxLabel', 'cardSurchargeCapPct', 'currency', 'locale', 'timeFormat', 'dateOrder', 'weekStart',
     'phoneCountryCode', 'shortName', 'phoneExample', 'phoneCheck', 'addressFormat', 'defaultTimezone', 'allergenSet', 'supportHours',

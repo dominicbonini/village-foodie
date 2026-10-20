@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { canAccess, type Plan } from '@/lib/features'
+import { useFeatures, type TruckFeatureContext } from '@/lib/useFeatures'
+import { PlanPrompt } from '@/components/PlanPrompt'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { checkSubdomain, domainFromWebsite } from '@/lib/custom-domain/apex'
 import { CopyButton } from '@/components/dashboard/CopyButton'
@@ -29,9 +30,8 @@ import type { TimeSettings } from '@/lib/time-utils'
 
 type Props = {
   token: string
-  plan: Plan
-  featureOverrides: Record<string, boolean> | null
-  trialExpiresAt: string | null
+  /** The truck's plan and overrides — the gate is lib/useFeatures.ts (override → effective plan → allowed). */
+  truck: TruckFeatureContext
   truckName: string
   /** `trucks.slug` — the ORDERING page resolves in the column's slug space, not the name-derived one. */
   slug: string | null
@@ -89,8 +89,9 @@ function domainOf(full: string | null | undefined): string {
 }
 
 export default function CustomDomainSetup(props: Props) {
-  const { token, plan, featureOverrides, trialExpiresAt, truckName } = props
-  const allowed = canAccess(plan, 'embed_schedule', featureOverrides ?? {}, trialExpiresAt)
+  const { token, truck, truckName } = props
+  const features = useFeatures(truck)
+  const embedBlock = features.block('embed_schedule')
   const t = useT('customDomain')
   // /api/manage's domain_* refusals, worded from their code (errorsManage) — US polish batch, 19 October 2026.
   const tErr = useT('errorsManage')
@@ -279,7 +280,9 @@ export default function CustomDomainSetup(props: Props) {
     return () => document.removeEventListener('keydown', swallow, true)
   }, [open])
 
-  if (!allowed) return null
+  // Stage A2: off because of the truck's PLAN → the one upgrade prompt; off because of an override → nothing, as before.
+  if (embedBlock === 'plan') return <PlanPrompt feature="embed_schedule" upgradeTo={features.upgradeTo('embed_schedule')} />
+  if (embedBlock !== null) return null
 
   /**
    * ── 🔴 ONE ACTION: CHECK, THEN SET UP, THEN THE RECORD SCREEN. ──────────────────────────────────

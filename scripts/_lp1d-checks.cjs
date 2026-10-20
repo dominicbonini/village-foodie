@@ -222,7 +222,13 @@ async function run(ctx) {
     t('the named list exists (node scripts/language-phase-1d.cjs --write-gb-named)', !!named)
     if (named) {
       const extra = Object.keys(gbDiff).filter(k => !(k in named))
-      const gone = Object.keys(named).filter(k => !(k in gbDiff))
+      // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a named key Stage A REMOVED from the catalogue (the plan refusals,
+      // e.g. errorsManage.preorders_pro) has no text left to differ — it must be absent from messages/en-GB.json instead.
+      const stageARemoved = W.LP2.stageA()['en-GB'].removed
+      const enGB = Object.fromEntries(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'messages/en-GB.json'))))
+      const removedNamed = Object.keys(named).filter(k => !(k in gbDiff) && k in stageARemoved)
+      t(`the named keys Stage A removed are absent from messages/en-GB.json (${removedNamed.join(', ') || 'none'})`, removedNamed.every(k => !(k in enGB)))
+      const gone = Object.keys(named).filter(k => !(k in gbDiff) && !removedNamed.includes(k))
       const moved = Object.keys(gbDiff).filter(k => k in named && (named[k].before !== gbDiff[k].before || named[k].after !== gbDiff[k].after))
       t(`every changed en-GB key is named (${Object.keys(gbDiff).length} changed)`, extra.length === 0, `not in the list: ${extra.join(', ')}`)
       t('every named key changed, as named', gone.length === 0 && moved.length === 0, `named but unchanged: ${gone.join(', ')} · different text: ${moved.join(', ')}`)

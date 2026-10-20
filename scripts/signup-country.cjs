@@ -36,6 +36,13 @@ const STUBS = {
   '@/lib/ratelimit': `export const placesRatelimit = { limit: async () => ({ success: true }) }`,
 }
 const GB = () => SEEDS.gbFromSeed()
+// ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): provisioning resolves the plan through getPlanCatalog()
+// (lib/plans-server.ts — public.plans / public.plan_prices; it THROWS on an empty or unsound catalogue, never inventing a
+// plan). Every in-memory store therefore also holds the SEEDED catalogue (scripts/_plans-catalog-fixture.cjs, parsed
+// from supabase/migrations/20261024_plans.sql), as the database does.
+const CATALOG = require('./_plans-catalog-fixture.cjs').seedCatalog(REPO)
+const PLAN_TABLES = () => ({ plans: CATALOG.plans.map(snake), plan_prices: CATALOG.prices.map(snake) })
+const SIGNUP_DEFAULT = CATALOG.plans.find(p => p.isSignupDefault).key
 const US_OFF = () => SEEDS.usFromSeed()
 const US_ON = () => ({ ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 3900, proMonthlyMinor: 5900, maxMonthlyMinor: 9900, proAllowanceMinor: 30000, maxAllowanceMinor: 100000, platformFeePct: 1.5 })
 
@@ -58,7 +65,7 @@ const post = (url, body) => new NextRequest(url, { method: 'POST', body: JSON.st
 async function createTruck(rows, body) {
   const m = await mods()
   const writes = []
-  globalThis.__harnessDb = kit.fakeDb({
+  globalThis.__harnessDb = kit.fakeDb({ ...PLAN_TABLES(),
     operators: [{ id: 'op-harness', email: 'harness@example.test', auth_user_id: 'auth-harness' }],
     country_settings: rows.map(snake), trucks: [], truck_vans: [], demo_sessions: [], discovery_trucks: [],
   }, writes)
@@ -86,6 +93,8 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
     'GB · base place, region and point stored', { id: t.base_place_id, n: t.base_place_name, r: t.base_region, lat: t.base_lat, lng: t.base_lng })
   ok(!('travel_radius_km' in t), 'GB · no travel distance on the truck row')
   ok(t.contact_phone === '07700 900123', 'GB · phone stored verbatim')
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): new — the plan is the catalogue's signup-default plan.
+  ok(t.plan === SIGNUP_DEFAULT && SIGNUP_DEFAULT === 'trial', 'GB · plan is the catalogue\'s signup-default plan (trial)', t.plan)
 
   console.log('2. US signup (US switched on) — USD and the CHOSEN zone')
   const us = await createTruck([GB(), US_ON()], { ...BASE_GB, country: 'US', timezone: 'America/Chicago', contact_phone: '(201) 555-0123',
@@ -124,7 +133,7 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   ok(noKey.state === 'none' && called === 0, 'suggestTowns without a key → none, Google never called', noKey)
   const noKeyD = await m.places.P.townDetails('ChIJharnessSudbury01', 'tok-12345678', 'postcode', spy)
   ok(noKeyD.state === 'none' && called === 0, 'townDetails without a key → none', noKeyD)
-  globalThis.__harnessDb = kit.fakeDb({ country_settings: [GB(), US_OFF()].map(snake) }); m.places.clearCountrySettingsCache()
+  globalThis.__harnessDb = kit.fakeDb({ ...PLAN_TABLES(), country_settings: [GB(), US_OFF()].map(snake) }); m.places.clearCountrySettingsCache()
   const sRes = await m.places.SUGGEST(new NextRequest('http://localhost/api/places/suggest?q=Sud&country=GB&session=tok-12345678'))
   const sJson = await sRes.json()
   ok(sRes.status === 200 && sJson.state === 'none' && sRes.headers.get('cache-control') === 'no-store', 'the suggest route answers 200 { state: none }, no-store', { s: sRes.status, sJson })
@@ -160,7 +169,7 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   const broken = await m.places.P.suggestTowns('Sud', 'GB', 'tok-12345678', async () => ({ ok: false, status: 500, json: async () => ({}) }))
   const thrown = await m.places.P.suggestTowns('Sud', 'GB', 'tok-12345678', async () => { throw new Error('network') })
   ok(broken.state === 'none' && thrown.state === 'none', 'a Google error or a network failure → none (the box takes free text)')
-  globalThis.__harnessDb = kit.fakeDb({ country_settings: [GB(), US_OFF()].map(snake) }); m.places.clearCountrySettingsCache()
+  globalThis.__harnessDb = kit.fakeDb({ ...PLAN_TABLES(), country_settings: [GB(), US_OFF()].map(snake) }); m.places.clearCountrySettingsCache()
   const offRes = await m.places.SUGGEST(new NextRequest('http://localhost/api/places/suggest?q=Aus&country=US&session=tok-12345678'))
   ok((await offRes.json()).state === 'none', 'suggest for a switched-off country → none, Google not asked')
   delete globalThis.__harnessDb
@@ -207,7 +216,7 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   ok(vals.ok && JSON.stringify(Object.keys(vals.values).sort()) === JSON.stringify(['base_lat', 'base_lng', 'base_place_id', 'base_place_name', 'base_region', 'timezone']), 'the written values are exactly the zone and the five base columns', vals)
 
   console.log('9. provisionTruck itself — refuses a switched-off country in the same words')
-  globalThis.__harnessDb = kit.fakeDb({ country_settings: [GB(), US_OFF()].map(snake), trucks: [] }); m.lib.clearCountrySettingsCache()
+  globalThis.__harnessDb = kit.fakeDb({ ...PLAN_TABLES(), country_settings: [GB(), US_OFF()].map(snake), trucks: [] }); m.lib.clearCountrySettingsCache()
   let pe = null
   try { await kit.quietAsync(() => m.lib.provisionTruck(globalThis.__harnessDb, { kind: 'operator', country: 'US', name: 'Harness Kitchen', van: { kitchen_capacity: null } })) } catch (e) { pe = e }
   // ⚠️ RE-PINNED (Language Phase 1d): provisionTruck renders the tradeArea code in the country's language — the named GB fix ’.
@@ -221,7 +230,7 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   console.log('10. Admin create-truck — the Country select, no hard-coded GB')
   const adminCreate = async (rows, body) => {
     const writes = []
-    globalThis.__harnessDb = kit.fakeDb({ country_settings: rows.map(snake), trucks: [], truck_vans: [], discovery_trucks: [] }, writes)
+    globalThis.__harnessDb = kit.fakeDb({ ...PLAN_TABLES(), country_settings: rows.map(snake), trucks: [], truck_vans: [], discovery_trucks: [] }, writes)
     m.admin.clearCountrySettingsCache()
     try {
       const res = await kit.quietAsync(() => m.admin.POST(post('http://localhost/api/admin/create-truck', { kind: 'operator', name: 'Harness Admin Truck', visibility: 'hidden', ...body })))

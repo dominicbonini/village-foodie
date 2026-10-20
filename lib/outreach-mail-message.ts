@@ -13,11 +13,82 @@
 // Pure: no network, no database, no nodemailer. `scripts/outreach-mail-send.cjs` proves every rule here.
 import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME, OUTREACH_TZ } from '@/lib/outreach-mail-config'
 import { docToHtml, docToText, type EmailDoc } from '@/lib/outreach-doc'
+import { COMPANY } from '@/lib/company'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/outreach'
 
 /** The paragraph style, exactly as captured. Used for body paragraphs, spacers and the signature lines. */
 const P_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);'
 /* The 10pt opt-out style moved to `lib/outreach-signature.ts#SIG_OPTOUT_STYLE` with the line it
  * styles — the opt-out sentence is stored data now, and its style belongs beside its renderer. */
+/**
+ * 🔴 THE COMPANY LINE'S STYLE (legal follow-ups, 19 October 2026): the opt-out line's 10pt
+ * (`SIG_OPTOUT_STYLE`, 13.333333px — the captured Outlook value) in grey, so it reads as small print
+ * under the sign-off rather than as part of the message. rgb(118,118,118) is #767676, the lightest grey
+ * that still meets 4.5:1 on white.
+ */
+export const FOOTER_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 13.333333px; color: rgb(118, 118, 118);'
+
+/**
+ * 🔴 THE FIXED COMPANY LINE — "HatchGrab Ltd · Company no. … · Registered office: …" — in the email's
+ * locale. The WORDS are `outreach.companyFooter` in messages/; the FACTS are `COMPANY` (lib/company.ts),
+ * passed in as ICU args, so the registered details are named once in code.
+ */
+export function companyFooterLine(locale: string | null | undefined): string {
+  const t = translatorFor(locale, 'outreach')
+  return t('companyFooter', { company: COMPANY.name, number: COMPANY.number, address: COMPANY.address })
+}
+
+/**
+ * 🔴 A STORED MESSAGE, REBUILT WITH TODAY'S COMPANY LINE — for a RETRY (Dominic, 19 October 2026). A retry resends a
+ * row that already exists, and the row holds the built bodies, not the document. So the rebuild works on what
+ * `buildMessage` made, part by part, and puts back exactly what `buildMessage` would make today:
+ *   • the NEW part (the document's HTML and text) is kept byte for byte;
+ *   • any company line it already carries is taken out — found by its markup (the spacer, then the `FOOTER_STYLE`
+ *     div) in the HTML, and as the text part's last paragraph only when the HTML had one;
+ *   • the CURRENT line goes back in, where `buildMessage` puts it: after the new part, above any quote;
+ *   • the quote (on a reply or a chase) is kept byte for byte.
+ * So a row built before the company line existed gains it, and a row built with it is unchanged (idempotent) —
+ * scripts/outreach-legal-footer.cjs proves both against `buildMessage` itself.
+ * `newText` is the new part's text WITHOUT the company line or the quote — what the opt-out rule reads
+ * (`lib/outreach-doc.ts#optOutBlockForText`). Null when the stored message is not one `buildMessage` made.
+ */
+export function rebuildStored(
+  stored: { html_body: string | null; text_body: string | null }, locale: string | null | undefined,
+): { html: string; text: string; newText: string } | null {
+  const html = stored.html_body ?? '', text = stored.text_body ?? ''
+  if (!html || !text.endsWith('\n')) return null
+  const spacer = div(P_STYLE, '<br>')
+  // ── the quote: the spacer, then Outlook's reference container — the first one is ours (the quote's own come later)
+  const qAt = html.indexOf('<div id="mail-editor-reference-message-container">')
+  if (qAt >= 0 && html.slice(qAt - spacer.length, qAt) !== spacer) return null
+  const newH0 = qAt >= 0 ? html.slice(0, qAt - spacer.length) : html
+  const quoteH = qAt >= 0 ? html.slice(qAt - spacer.length) : ''
+  // ── the old company line, by its markup
+  const esc = (x: string) => x.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&')
+  const fm = new RegExp(esc(spacer + `<div style="${FOOTER_STYLE}">`) + '[^<]*</div>$').exec(newH0)
+  const docH = fm ? newH0.slice(0, fm.index) : newH0
+  // ── the text part: `${bodyT}\n${referenceBlockText}\n` on a quote, `${bodyT}\n` without
+  let bodyT: string, restT: string
+  if (quoteH) {
+    const m = /\n\nFrom: [^\n]*\nDate: [^\n]*\nTo: [^\n]*\nSubject: [^\n]*\n/.exec(text)
+    if (!m) return null
+    bodyT = text.slice(0, m.index); restT = text.slice(m.index)
+  } else { bodyT = text.slice(0, -1); restT = '\n' }
+  let docT = bodyT
+  if (fm) {
+    const i = bodyT.lastIndexOf('\n\n')
+    if (i < 0 || bodyT.slice(i + 2).includes('\n')) return null
+    docT = bodyT.slice(0, i)
+  }
+  const footer = companyFooterLine(locale)
+  return {
+    html: docH + spacer + div(FOOTER_STYLE, escapeHtml(footer)) + quoteH,
+    text: `${docT}\n\n${footer}${restT}`,
+    newText: docT,
+  }
+}
+
 /** The rule above a quoted message. Captured verbatim, `currentcolor` and all. */
 const QUOTE_RULE_STYLE = 'padding: 3pt 0in 0in; border-width: 1pt medium medium; border-style: solid none none; border-color: rgb(181, 196, 223) currentcolor currentcolor;'
 
@@ -40,11 +111,11 @@ const div = (style: string, inner: string) => `<div style="${style}">${inner}</d
 // 🔎 `lib/outreach-signature.ts` holds both the reasoning and the rendering.
 //
 // ⚠️ WHAT THIS COSTS, STATED PLAINLY: nothing appends a signature or an opt-out line any more. A
-// template without the tokens sends without them, and no code path refuses it — the compose window
-// warns, and the Send confirm repeats the warning. That is deliberate (an operator is allowed to mean
-// "send exactly this"), but it is a real loss of a guarantee and it is written down rather than
-// implied. The same note stands at the top of `lib/outreach-template-render.ts` about the footer that
-// preceded it.
+// template without the tokens sends without them. ⚠️ UPDATED 19 October 2026 (legal follow-ups): the
+// OPT-OUT half of that is no longer allowed through — a message whose document lacks the stored opt-out
+// sentence is BLOCKED in the composer and REFUSED by the send route, for every email to a prospect
+// (`lib/outreach-doc.ts#optOutBlock`). A missing signature is still the operator's call. The same note
+// stands at the top of `lib/outreach-template-render.ts` about the footer that preceded it.
 //
 // 🔴 ONE BUG DIED WITH THE OLD BLOCK. It emitted `<div><b>Dominic Bonini</b></div>` — a div with NO
 // font style — so that one line inherited the mail client's default size and arrived visibly smaller
@@ -169,8 +240,13 @@ export interface BuildInput {
   /** The template's subject — used only when this is NOT a reply. */
   subject: string
   messageId: string
-  /** 🔴 THE MESSAGE ITSELF, as the compose box holds it. Nothing is appended to it. */
+  /** 🔴 THE MESSAGE ITSELF, as the compose box holds it. Only the fixed company line is appended to it. */
   doc: EmailDoc
+  /**
+   * The recipient's locale (the prospect truck's country's `country_settings.locale`), for the company
+   * line's words. Absent or unknown ⇒ en-GB, the agreed fallback.
+   */
+  locale?: string | null
   /** The sender's display name, or null for the bare address. Used in the quote header on a reply. */
   fromName?: string | null
   /** Absent ⇒ a first contact: a new thread with the template's own subject. */
@@ -191,11 +267,24 @@ export interface BuildInput {
  */
 export function buildMessage(input: BuildInput): BuiltMessage {
   // 🔴 THE DOCUMENT IS THE MESSAGE. `docToHtml` generates the captured Outlook markup from it and
-  // `docToText` the plain part; NOTHING is appended. The only thing this function adds to what the
-  // operator wrote is the quoted parent on a reply, which is below and is visible in the box's Show
-  // toggle before it is sent.
-  const bodyH = docToHtml(input.doc)
-  const bodyT = docToText(input.doc)
+  // `docToText` the plain part. This function adds two things to what the operator wrote: the fixed
+  // company line, and the quoted parent on a reply (below, visible in the box's Show toggle).
+  /* ── 🔴 THE COMPANY LINE: LAST IN THE NEW MESSAGE, ABOVE ANY QUOTE (legal follow-ups, 19 October 2026,
+   * signed off by Dominic) ─────────────────────────────────────────────────────────────────────────────
+   * Every outreach email, both parts, no exceptions and no parameter that turns it off. WHERE, AND WHY:
+   *   • AFTER the whole document — the body, the signature and the opt-out line are all document text
+   *     (expanded into the box when the template is chosen), so "after the document" is after all three.
+   *   • BEFORE the quoted earlier email. A reply's quote is somebody else's message (or ours from an earlier
+   *     day); a line below it reads as part of THAT message. Above it, it is the last line of THIS one —
+   *     and an earlier email this system sent carries its own line inside the quote, as it should.
+   *   • A blank 12pt line first, the same spacer div the quote block opens with, so it sits apart from the
+   *     opt-out line instead of running into it.
+   * ⚠️ NOT IN THE DOCUMENT. It is not the operator's to edit or delete, and putting it in the box would make
+   * every template-render, Copy and Log carry it. The send-time guards read the document; this line has no
+   * token, no link and nothing they need to see. */
+  const footer = companyFooterLine(input.locale)
+  const bodyH = docToHtml(input.doc) + div(P_STYLE, '<br>') + div(FOOTER_STYLE, escapeHtml(footer))
+  const bodyT = `${docToText(input.doc)}\n\n${footer}`
   if (!input.parent) {
     return {
       subject: input.subject,

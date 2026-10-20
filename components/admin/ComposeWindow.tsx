@@ -24,9 +24,13 @@ import { parseSignature, parseOptOut } from '@/lib/outreach-signature'
 // this same document into the two MIME parts — see lib/outreach-doc.ts for why it is a document and
 // not HTML on the wire.
 import {
-  docFromTemplateText, docToText, docPlainText, literalTokenRefusal, optOutWarning, templateWantsPlansPdf,
+  docFromTemplateText, docToText, docPlainText, literalTokenRefusal, optOutBlock, optOutExempt, templateWantsPlansPdf,
   EMPTY_DOC, type EmailDoc, type DocLine,
 } from '@/lib/outreach-doc'
+// 🔴 LEGAL FOLLOW-UPS (19 October 2026): the opt-out block's sentences come from messages/.
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/outreach'
+import { COMPANY } from '@/lib/company'
 import RichEmailEditor, { type EditorApi } from '@/components/admin/RichEmailEditor'
 // 🔴 THE TAB'S OUTBOX — Send hands the message here and the window closes (instant Send, with Undo).
 import { getOutbox } from '@/components/admin/OutboxToasts'
@@ -87,6 +91,9 @@ export interface ReplyTarget {
   /** Who wrote it. Becomes the To, and the route checks it against what it holds. */
   fromAddress: string | null
   date: string | null
+  /** 🔴 THE PROSPECT WROTE IT (an inbound message). A reply to it needs no opt-out line (`optOutExempt`, Dominic,
+   *  19 October 2026); the route decides the same from the row it re-reads. Absent (an older snapshot) ⇒ not exempt. */
+  inbound?: boolean
 }
 
 const DEFAULT_STALE_DAYS = 60
@@ -284,6 +291,7 @@ export default function ComposeWindow({
   // layer it replaces lived in localStorage and was therefore per-browser; a library has to be the
   // same for every window that opens, so it comes from the table through the parent.
   const globalsSeed = useMemo(() => snippetMapOf(snippets ?? []), [snippets])
+  const tOut = useT('outreach')
   const [seed] = useState(() => seedFrom(initialTemplateId, offerable, ctx, globalsSeed))
   const [templateId, setTemplateId] = useState(restore ? restore.templateId : seed.id)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -735,24 +743,42 @@ export default function ComposeWindow({
    * warn about a date the list thought was fine.
    * ⚠️ IT IS A WARNING, NOT A REFUSAL — see `askSend`. Catching up on a missed step is legitimate. */
   const followUpInPast = useMemo(() => isOverdue(followUpDate ?? null), [followUpDate])
+
+  /* ══ 🔴 NO OPT-OUT LINE, NO SEND (legal follow-ups, 19 October 2026, signed off by Dominic) ════════
+   * This was a WARNING, and only for the four ladder steps (`optOutWarning`). It is now a BLOCK on Send for
+   * every email to a prospect — first contact, every chase, a follow-up on our own email. `optOutBlock` is the
+   * ONE definition and the send route refuses with the same function, so the button and the server cannot
+   * disagree about whether the line is there. ⚠️ Until the settings have loaded there is no sentence to look
+   * for, so it says so rather than calling the line missing.
+   * ⚠️ TWO EXEMPTIONS (Dominic, 19 October 2026), `optOutExempt` — the route applies the same one:
+   *   • Send test to me — it goes only to his own address, so it is not in `testBlock`;
+   *   • a reply to a message the PROSPECT sent (`replyTo.inbound`) — `optOutShown` is null for it.
+   * Both still carry the company line (the grey line under the box says so). */
+  const optOutStop: string | null = useMemo(() => {
+    if (!isEmail) return null
+    if (!settingsLoaded) return tOut('optOut.notLoaded')
+    const code = optOutBlock(doc, settings.optOut)
+    return code === 'no_opt_out_set_up' ? tOut('optOut.notSetUp')
+      : code === 'no_opt_out_line' ? tOut('optOut.missing')
+      : null
+  }, [isEmail, settingsLoaded, doc, settings.optOut, tOut])
+  const replyExempt = optOutExempt({ isTest: false, parent: replyTo ? { direction: replyTo.inbound ? 'inbound' : null } : null })
+  const optOutShown: string | null = replyExempt ? null : optOutStop
   const testBlock: string | null =
     sendingOff ? sendingOff
     : !isEmail ? 'This is a WhatsApp message — log it from the WhatsApp tab'
     : !hasText ? 'Write something, or pick a template, first'
     : null
   const sendBlock: string | null =
-    testBlock ?? (!toEmail ? 'This prospect has no email address' : null)
+    testBlock ?? optOutShown ?? (!toEmail ? 'This prospect has no email address' : null)
+  /** 🔴 THE COMPANY LINE, SHOWN READ-ONLY UNDER THE BOX (Dominic, 19 October 2026). `buildMessage` adds it to every
+   *  outreach email at send time; it is not in the document, so it cannot be edited or deleted — this only shows
+   *  it. Same message and same facts as the email (`outreach.companyFooter`, lib/company.ts); its words have no
+   *  en-US override, so what is shown is what every prospect gets. */
+  const companyLine = tOut('companyFooter', { company: COMPANY.name, number: COMPANY.number, address: COMPANY.address })
 
-  /**
-   * ⚠️ ONE WARNING NOW, AND IT IS A WARNING. The "no {{signature}}" warning is gone — he can SEE the
-   * signature in the box, so telling him it is missing would be telling him what he is looking at.
-   * The opt-out warning stays, because its absence is the thing that is easy not to notice.
-   */
-  const warnings = useMemo(() => {
-    if (!isEmail) return []
-    const w = optOutWarning(doc, selected?.servesKind ?? logFormKind, settings.optOut)
-    return w ? [w] : []
-  }, [isEmail, doc, selected?.servesKind, logFormKind, settings.optOut])
+  /* ⚠️ THE `warnings` LIST WAS HERE (the opt-out WARNING for ladder steps). It is gone: the opt-out line
+   * is a block now (`optOutStop`, above), and there is no other warning left for it to hold. */
 
   // ── THE SERVER SEND ─────────────────────────────────────────────────────────────────────────────
   // 🔴 THE mailto: PATH IS GONE, AND WITH IT EVERY REASON IT EXISTED. A mailto could report one thing
@@ -777,9 +803,8 @@ export default function ComposeWindow({
    * The rung the server should log. A tagged template states its own; otherwise the log form's.
    * 🔴 A REPLY OVERRIDES BOTH, AND THE SERVER DECIDES THE SAME THING INDEPENDENTLY. `reply` is not
    * one of `CONTACT_KINDS`, so §57 counts no rung for it: answering somebody neither advances the
-   * chase sequence nor restarts it. It also means `optOutWarning` is silent here, because that
-   * warning is for ladder rungs — a reply to a person who just wrote to you does not carry an
-   * opt-out sentence.
+   * chase sequence nor restarts it. ⚠️ THE OPT-OUT EXEMPTION IS NOT DECIDED HERE: it is `optOutExempt` (a reply
+   * to a message the prospect sent — `replyTo.inbound` — or a test), the same rule the route applies.
    */
   // 🔴 THE STEP, NOT THE TEMPLATE'S TAG (3h). `selected?.servesKind ?? logFormKind` meant the WORDS
   // chosen decided which rung was recorded: picking the chase-1 template for a first contact logged
@@ -1523,6 +1548,7 @@ export default function ComposeWindow({
             {/* 🔴 THE EMAIL BOX IS THE EMAIL. WhatsApp keeps the textarea — there is no formatting in
                 a WhatsApp message and a rich editor would invite some. */}
             {isEmailChannel ? (
+              <>
               <RichEmailEditor
                 value={doc}
                 /* 🔴 AN EDIT IS A DIFFERENCE, NOT AN EVENT. This was `setEdited(true)` on every
@@ -1596,6 +1622,8 @@ export default function ComposeWindow({
                   </div>
                 ) : undefined}
               />
+              <p className="mt-1 text-[11px] text-slate-400 select-text" data-company-line>{companyLine}</p>
+              </>
             ) : (
               /* ⚠️ THE WHATSAPP BOX, AND ONLY THAT. It is reached when a WhatsApp template is
                  selected; an email — including Blank — takes the editor above. Eight rows inline
@@ -1817,11 +1845,8 @@ export default function ComposeWindow({
                   : <>Send this email to <span className="font-bold">{toEmail}</span>
                       {' '}({truckName})? It goes from your mailbox now, and the contact is logged.</>}
               </p>
-              {/* ⚠️ THE WARNING IS REPEATED HERE. The footnote is easy to read past; the confirm is the
-                  last moment at which "this has no opt-out line" can still change the answer. */}
-              {warnings.length > 0 && (
-                <p className="mt-1 text-[12px] font-bold text-amber-900">{warnings.join(' ')}</p>
-              )}
+              {/* ⚠️ THE OPT-OUT WARNING THAT WAS REPEATED HERE IS GONE: a message without the line can
+                  no longer reach this confirm as a Send (`optOutShown` disables Send; a test is exempt). */}
               <div className="mt-2 flex justify-end gap-2">
                 <button onClick={() => setConfirmSend(null)}
                   className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-400">
@@ -1839,9 +1864,10 @@ export default function ComposeWindow({
             {/* 🔴 THE WARNINGS LIVE IN THE FOOTNOTE, NOT IN A PANEL OF THEIR OWN. A panel would be a
                 fourth block competing with the message for attention, and these are not refusals —
                 they are two sentences that belong next to the button they are about. */}
-            <span className={`text-[11px] ${warnings.length ? 'text-amber-800 font-semibold' : 'text-slate-400'}`}>
-              {warnings.length
-                ? warnings.join(' ')
+            {/* 🔴 THE OPT-OUT BLOCK IS SAID HERE, BESIDE THE DISABLED BUTTON — not only on hover. */}
+            <span className={`text-[11px] ${optOutShown ? 'text-amber-800 font-semibold' : 'text-slate-400'}`}>
+              {optOutShown
+                ? optOutShown
                 : 'Send test to me goes only to you and changes nothing. Send goes to the prospect, logs it and updates the stage.'}
             </span>
             <div className="ml-auto flex items-center gap-2">

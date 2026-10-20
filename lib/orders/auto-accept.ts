@@ -21,7 +21,7 @@
 // operator entering an order IS the confirmation — there is no decision to share. Nor for the demo
 // seeder, which fabricates rows and evaluates no rule.
 import { isPreorderDeadlinePassed, type PreorderConfig } from '@/lib/preorder'
-import { canAccess } from '@/lib/features'
+import { canAccess, type PlanFeatureSwitch } from '@/lib/features'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 
 export interface AutoAcceptTruck {
@@ -63,6 +63,8 @@ export function decideAutoAccept(args: {
   deals: unknown
   /** The TRUCK's zone (lib/truck-time.ts) — "now" and "today" for the pre-order deadline. */
   timeZone: string
+  /** The truck's EFFECTIVE plan's feature switches (lib/plans.ts truckPlanSwitch) — Stage A2. */
+  planAllows: PlanFeatureSwitch
 }): boolean {
   const { truck, orderLines, autoAcceptByName, preorderByName, eventDate, eventStartMins, offlineNoAutoAcceptUntil, notes, items, deals } = args
 
@@ -77,9 +79,7 @@ export function decideAutoAccept(args: {
   // now (NEVER device-local); plan-gated server-side (a downgraded truck's config is inert).
   // The TRUCK's zone, resolved by the caller from trucks.timezone else its country's default (Phase 2B).
   const preorderTz = args.timeZone
-  const preorderFeatureOn = canAccess(
-    truck.plan as never, 'advance_preordering', (truck.feature_overrides ?? {}) as never, truck.trial_expires_at ?? null
-  )
+  const preorderFeatureOn = canAccess('advance_preordering', (truck.feature_overrides ?? null) as Record<string, boolean> | null, args.planAllows)
   // MASTER toggle (V7.8): truck-level preorders_enabled gates ALL pre-order effects. !== false
   // so null/pre-migration reads as ENABLED. Read-time gate only — per-item config persists.
   const preorderActive = preorderFeatureOn && eventStartMins != null

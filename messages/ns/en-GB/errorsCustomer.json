@@ -33,5 +33,6 @@
   "event_not_confirmed": "This event is not yet confirmed",
   "order_not_placed": "Sorry — we could not place your order. No money has been taken.",
   "truck_not_taking_orders": "This truck is no longer taking orders. No money has been taken.",
-  "category_closed_paying": "Sorry — {category} closed while you were paying, so we could not place your order. No money has been taken."
+  "category_closed_paying": "Sorry — {category} closed while you were paying, so we could not place your order. No money has been taken.",
+  "pay_at_hatch_unavailable": "This truck isn’t taking pay-at-the-truck orders online right now. Please pay by card."
 }

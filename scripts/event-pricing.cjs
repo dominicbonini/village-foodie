@@ -738,9 +738,28 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       ['const { data: unconfirmedEvent } = await supabase', 1], [".select('id')", 1], [".gte('event_date', today)", 1], ['.limit(1)', 1], ['.maybeSingle()', 1]])
     t('⚠️ …the auto-detect reads from yesterday and filters to upcoming-or-running, both queries',
       (now.match(/\.gte\('event_date', upcomingQueryFloor\(detectTz\)\)/g) || []).length === 2 && (now.match(/upcomingFirst\((openEvents|unconfirmedEvents)\)/g) || []).length === 2)
+    /* ⚠️ PLANS-DATA-MODEL, STAGE A (19 October 2026, docs/plans-data-model-report.md): the pre-order gate reads the truck's
+     * OVERRIDES only (no plan, no end date), and the payload's `plan` is the stored key (any plan in public.plans, no
+     * 'starter' default) with a `preordering_on` flag beside it. Excused BY COUNT; the companion check requires both
+     * replacements — none of them is on the price leg. */
+    const PLANS_A_REMOVED = new Map([['const preorderFeatureOn = canAccess(', 1],
+      ["truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null", 1], [')', 1],
+      ["plan: (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max',", 1]])
+    /* ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the pre-order gate is no longer "overrides only" —
+     * it is the override, else the truck's EFFECTIVE plan's switch (public.plan_features), through
+     * `truckCan(truck, planCatalog, 'advance_preordering')` on the cached catalogue. So the import of canAccess left the
+     * route (replaced by `truckCan, payAtHatchOn` from lib/plans and `getPlanCatalog` from lib/plans-server). Excused BY
+     * COUNT; the companion check requires the replacement. None of it is on the price leg. */
+    const PLANS_A2_REMOVED = new Map([["import { canAccess } from '@/lib/features'", 1]])
+    t('⚠️ …Stage A/A2: the pre-order gate is the override, else the effective plan\'s switch, and the payload carries the stored plan key, preordering_on and pay_at_hatch_on',
+      /import \{ truckCan, payAtHatchOn \} from '@\/lib\/plans'/.test(now) && /import \{ getPlanCatalog \} from '@\/lib\/plans-server'/.test(now)
+      && /const planCatalog = await getPlanCatalog\(\)\n\s*const preorderFeatureOn = truckCan\(truck, planCatalog, 'advance_preordering'\)/.test(now)
+      && !/canAccess\(/.test(now)
+      && /plan: String\(truck\.plan \?\? ''\),/.test(now) && /preordering_on: preorderFeatureOn,/.test(now)
+      && /pay_at_hatch_on: payAtHatchOffered,/.test(now))
     const removed = []
     for (const [l, n] of mb) {
-      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0) - (PHASE_2_REMOVED.get(l.trim()) || 0) - (MIDNIGHT_REMOVED.get(l.trim()) || 0)
+      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0) - (PHASE_2_REMOVED.get(l.trim()) || 0) - (MIDNIGHT_REMOVED.get(l.trim()) || 0) - (PLANS_A_REMOVED.get(l.trim()) || 0) - (PLANS_A2_REMOVED.get(l.trim()) || 0)
       if (k > 0 && l.trim() && !PHASE_2B_REMOVED.has(l.trim())) removed.push([l.trim(), k])
     }
     t('⚠️ audit D31: the public menu neither reads nor sends discount codes', !/discount_codes_db/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')) && !/codes: \(codes/.test(now))

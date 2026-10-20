@@ -165,7 +165,13 @@ module.exports = function area({ t, head }) {
     t(`every en-GB key whose text differs from ${BEFORE_REF}'s (as moved) is named, as it changed (${Object.keys(diff).length})`, unnamed.length === 0, unnamed.join(', '))
     t('every named key did change', stale.length === 0, stale.join(', '))
   }
-  const mp = W.movedProblems()
+  // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Stage A REMOVED manageBilling.onMax / onMaxNoCta (now
+  // onTrial / onTrialNoCta: no Max plan any more), recorded in scripts/fixtures/plans-stage-a-messages.json. Their leftover
+  // as-moved entries are history and inert (the overlay only covers current keys); only THAT problem, for a key the fixture
+  // lists as removed and only while it is absent from the authored en-GB, is excused.
+  const removedA = W.LP2.stageA()['en-GB'].removed || {}
+  const gbNow = new Set(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'messages/en-GB.json'))).map(([k]) => k))
+  const mp = W.movedProblems().filter(p => !Object.keys(removedA).some(k => p === `${k}: in the as-moved list but not in messages/en-GB.json` && !gbNow.has(k)))
   t('the as-moved list (scripts/fixtures/language-phase-1d2-gb-moved.json) is consistent with the catalogue', mp.length === 0, mp.join(' · '))
 
   // ── 5 · legal wording keeps GB words in the US ──

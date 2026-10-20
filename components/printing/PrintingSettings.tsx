@@ -1,9 +1,8 @@
 'use client'
 // Kitchen ticket printing — lives in the dashboard "Settings" tab. THREE gates:
 //   1. iPad NATIVE only (renders null on web / in a browser) — printing is an app feature.
-//   2. MAX plan ('ticket_printing' Feature via canAccess) — FUNCTIONALLY gated: the card renders null when
-//      the plan isn't entitled (trial/test trucks include ticket_printing). The gate is SILENT — no MAX
-//      badge and no "upgrade" copy in the UI.
+//   2. the 'ticket_printing' Feature via canAccess — every plan has it since plans-data-model Stage A (19 October
+//      2026); only a per-truck override can switch it off, and then the card renders null. SILENT — no badge, no copy.
 //   3. PER-DEVICE — the printer is paired to THIS iPad (BT is device-bound), so the connect/settings state is
 //      keyed on this device. A second device shows its OWN state (it can't drive the first's printer).
 // An On/Off master toggle (hg_print_enabled) enables the feature per device; when off the card collapses to
@@ -40,7 +39,8 @@ import { renderTestTicket } from '@/lib/printing/testTicket'
 import { PrinterTypeChoice } from '@/components/printing/PrinterTypeChoice'
 import { getDeviceId } from '@/lib/native/device'
 import { isNativeApp } from '@/lib/native/device'
-import { canAccess, type Plan } from '@/lib/features'
+import type { FeatureAccessView } from '@/lib/useFeatures'
+import { PlanPrompt } from '@/components/PlanPrompt'
 import { Toggle } from '@/components/dashboard/OrderCard'
 import type { PaperWidth } from '@/lib/printing/ticket'
 import type { PrintTriggerMode } from '@/lib/printing/printWatcher'
@@ -49,12 +49,11 @@ import type { PrintTriggerMode } from '@/lib/printing/printWatcher'
 // trucks.print_trigger_mode and arrives as a prop. Adding one back would recreate the drift this removed.
 const K = { printer: 'hg_printer_name', lead: 'hg_print_lead_mins', paper: 'hg_paper_width', enabled: 'hg_print_enabled' } as const
 
-export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode, onChangeMode, connected = false, statusDetail, waitingCount = 0, time }: {
+export function PrintingSettings({ features, mode, onChangeMode, connected = false, statusDetail, waitingCount = 0, time }: {
   /** 🔴 The truck's time settings (Phase 2B) — the test ticket's stamp is the truck's clock. */
   time?: TimeSettings | null
-  plan: Plan
-  featureOverrides: Record<string, boolean> | null
-  trialExpiresAt: string | null
+  /** The truck's feature access (lib/useFeatures.ts) — override → its effective plan's switch → allowed. */
+  features: FeatureAccessView
   /** 🔴 trucks.print_trigger_mode, resolved by the caller. The single source of truth. */
   mode: PrintTriggerMode
   /** Persists to the truck column via /api/dashboard/action set_print_trigger_mode. */
@@ -150,10 +149,11 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
 
   if (!isNativeApp() || !ready) return null
 
-  // MAX-plan gate — FUNCTIONAL: printing is a Max feature, so render nothing when the plan isn't entitled.
-  // Silent (no badge / no upgrade copy).
-  const canPrint = canAccess(plan, 'ticket_printing', featureOverrides ?? {}, trialExpiresAt)
-  if (!canPrint) return null
+  // The feature gate (Stage A2): off because of the truck's PLAN → the one upgrade prompt; off because of an override →
+  // nothing (silent), as before.
+  const printBlock = features.block('ticket_printing')
+  if (printBlock === 'plan') return <PlanPrompt feature="ticket_printing" upgradeTo={features.upgradeTo('ticket_printing')} />
+  if (printBlock !== null) return null
 
   const setEnabledPref = async (v: boolean) => { setEnabled(v); if (!v) setExpanded(false); await Preferences.set({ key: K.enabled, value: String(v) }) }
   const setLeadMins = async (n: number) => { setLead(n); await Preferences.set({ key: K.lead, value: String(n) }) }

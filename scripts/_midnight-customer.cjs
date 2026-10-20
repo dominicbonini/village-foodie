@@ -126,7 +126,10 @@ async function views({ kit, REPO, FIX }) {
     truck_events: [FIX.eventRow('ev-1', ev), FIX.eventRow(LATER.id, { start_time: LATER.start_time, end_time: LATER.end_time }, { event_date: LATER.date, venue_name: LATER.venue })],
     menu_items_db: [{ id: 'i1', truck_id: 'test-truck', name: 'Margherita', price: 10, category_id: 'c1', category: 'Pizza', available: true, is_active: true }],
     menu_categories: [{ id: 'c1', truck_id: 'test-truck', name: 'Pizza', prep_secs: 600, batch_size: 4 }],
-    modifier_groups: [], modifier_options: [], item_modifier_groups: [], bundles_db: [], event_deals: [], orders: [], ...over,
+    modifier_groups: [], modifier_options: [], item_modifier_groups: [], bundles_db: [], event_deals: [], orders: [],
+    // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): the plan catalogue (FIX.planTables — the seeded
+    // plans / plan_prices / plan_features), which /api/menu (truckCan / payAtHatchOn) now reads; fixture input, never recorded.
+    ...FIX.planTables(path.resolve(__dirname, '..')), ...over,
   })
   const route = async (db, fn) => {
     globalThis.__harnessDb = db

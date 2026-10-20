@@ -20,8 +20,9 @@
     "weSuggest": "We suggest",
     "summary": "{price} per truck per month, with {allowance} of online orders included{fleet, plural, one {} other { on each}}.",
     "ownLogin": "Everyone gets their own login.",
-    "sharedLogin": "{plan} does not include separate logins — everyone shares one account.",
-    "switchTo": "Use {plan} instead"
+    "switchTo": "Use {plan} instead",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truck per month, plus {pct} on online card orders.} other {No monthly fee — {pct} on online card orders only.}}",
+    "summaryNoFee": "{price} per truck per month, with unlimited online orders and no HatchGrab fee."
   },
   "orders": {
     "titleYes": "Online orders per month, per truck",
@@ -32,7 +33,9 @@
     "overAllowance": "{allowance} of online orders included per truck. The {excess} above is charged at {pct} — <b>{over}</b> a month each.",
     "insideAllowance": "Inside the {allowance} of online orders included — nothing on top of the plan.",
     "acrossFleet": "Across {fleet, plural, one {# truck} other {# trucks}}: <b>{amount}</b> a month.",
-    "titleNo": "How much do you think you’d take online, per month, per truck?"
+    "titleNo": "How much do you think you’d take online, per month, per truck?",
+    "feeOnly": "{pct} on every online card order — <b>{over}</b> a month per truck.",
+    "noFee": "Unlimited online orders included — nothing on top of the plan."
   },
   "fee": {
     "title": "What do you pay per order now?",
@@ -86,7 +89,9 @@
     "acrossFleet": "Across {fleet, plural, one {# van} other {# vans}}",
     "perMonth": "{amount} a month",
     "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a card machine at the window.",
-    "provider": "Your current provider’s own fee ({pct})"
+    "provider": "Your current provider’s own fee ({pct})",
+    "feeOnly": "{pct} on {excess} of online orders",
+    "noFee": "Online orders — unlimited, no HatchGrab fee"
   },
   "enterRate": "Enter what you pay now to see your saving.",
   "panel": {
@@ -126,5 +131,9 @@
     "check": "Check your current provider’s rates before deciding."
   },
   "intro": "Takes about a minute. Already using a system? We’ll compare it. Not yet? We’ll show you exactly what it costs.",
-  "twoYear": "Over two years that’s <b>{amount}</b> saved."
+  "twoYear": "Over two years that’s <b>{amount}</b> saved.",
+  "meta": {
+    "title": "Cost calculator — HatchGrab {country}",
+    "description": "Compare what your online orders cost you now with a year on HatchGrab — an estimate in a minute."
+  }
 }

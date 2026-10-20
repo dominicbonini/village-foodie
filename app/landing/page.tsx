@@ -37,26 +37,24 @@ import { LandingFooter } from '@/components/landing/LandingFooter'
 // FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS and `type FeatureValue` went to
 // components/landing/FeatureComparison.tsx with the comparison table, and the whole
 // `@/lib/landing-table` import went with them — this page no longer renders a table row.
-// ⛔ WHAT IS LEFT IS STILL LOAD-BEARING BEYOND THE FOUR NAMES. `lib/plan-features.ts` runs
-// `findPlanParityViolations()` at module load, so importing it is what fires the presentation↔gate
-// guard on this route. The four below are all genuinely used by the pricing cards — but if a later
-// change removes the last of them, THE GUARD STOPS RUNNING HERE AND NOTHING WILL SAY SO.
-// ⚠️ 10 October 2026: the price names became functions of the country's settings (planPrices,
-// planAllowances, cardFeeOnlineLabel, …) — the import is still from lib/plan-features.ts, so the guard
-// still fires on this route.
-import {
-  planDescriptions, planAllowances, platformFeeLabel, allowanceAmountLabel, allowanceMinorFor,
-  cardFeeOnlineLabel, priceText,
-} from '@/lib/plan-features'
-import { planSubLabels } from '@/lib/landing-table'
+// 🔴 STAGE B (docs/pricing-pages-report.md): the pricing section is components/pricing/PricingSection.tsx, built from the
+// plan data (lib/plans.ts through lib/plan-offer.ts). The frozen Starter / Pro / Max copy (lib/legacy-pricing-display.ts)
+// is deleted; nothing on this page names a plan, a price or an allowance.
+import { PricingSection } from '@/components/pricing/PricingSection'
+import { getPlanCatalog } from '@/lib/plans-server'
+import { offerTrialMonths } from '@/lib/plan-offer'
+import { priceText } from '@/lib/price-text'
 import { PRICE_WORD } from '@/lib/price-words'   // "Pay at Hatch" is a brand: the trial banner names it through its PRICE_WORD, never inside a message
-import { PLAN_META, planMonthlyMinor, planPriceParts } from '@/lib/features'
-import { formatAmount } from '@/lib/money-format'
-import { moneyFormatOf } from '@/lib/country-settings-types'
+import '@/lib/i18n/catalog/pricing'
+import '@/lib/i18n/catalog/planPrompt'
 import { landingScreenshot } from '@/lib/landing-screens'   // the hero fan's screenshots, per country (Language Phase 1e)
 // 🔴 THE VISITOR'S COUNTRY (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
+// seo-fixes M5 + S9: the JSON-LD graph (Organization, WebSite, SoftwareApplication + Offers), built from data.
+import { landingGraph } from '@/lib/structured-data'
+import { HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
+import { BRANDS } from '@/lib/brand'
 // 🔴 THE SINGLE WHATSAPP SWITCH — one value governs every surface. See lib/whatsapp-live.ts.
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 // Language Phase 1e: every word on this page is a `landing` message, read in the visitor's country's locale.
@@ -78,7 +76,8 @@ import './landing.css'
 // to --display / --body / --ticket.
 const archivo = Archivo({ subsets: ['latin'], style: ['normal', 'italic'], variable: '--font-archivo', display: 'swap' })
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', display: 'swap' })
-const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap' })
+// seo-fixes S7 (20 October 2026): declared and loaded when used (--ticket), but NOT preloaded — nothing above the fold uses it.
+const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap', preload: false })
 
 // 🔴 US readiness (D37): the tags name the visitor's country — lib/marketing-meta.ts. For GB every value is the
 // literal this page carried before ("UK", en_GB), byte-identical.
@@ -164,36 +163,9 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   }
 }
 
-// Compare-table columns: Trial | Starter | Pro | Max — mirrors Manage → Billing (the point is that Trial
-// visibly includes everything). Names come straight from the source (PLAN_META); the first tier is "Starter"
-// (it's £0, but it's called Starter). The pricing CARDS below stay the three purchasable tiers.
-// ── 🔴 THE FEE ROWS ARE NO LONGER DEFINED HERE. ────────────────────────────────────────────────────
-// This was `LANDING_FEE_ROWS`, a landing-only literal, and its own comment admitted the duplication:
-// "RENDER-ONLY. The shared TRANSACTION_ROWS is NOT modified; Manage → Billing / Admin keep their own
-// version." Those two copies then disagreed about what a trial truck gets, which is the one thing a
-// second copy of a price table is guaranteed to do eventually.
-// The values below moved VERBATIM into TRANSACTION_ROWS (lib/plan-features.ts) — same three rows, same
-// four columns, same strings — so this page renders exactly what it rendered before, and Billing now
-// reads the same constant instead of a two-row one with no trial column.
-// Footnotes still reuse the shared FOOTNOTES: 1 = walk-up terminal fees, 2 = Stripe/online-payment fees.
-
-// ⛔ `FOOTNOTE_TEXT_OVERRIDES` AND `Cell` MOVED WITH THE TABLE — both are in
-// components/landing/FeatureComparison.tsx now. Each had exactly one reader, which was the comparison
-// table; leaving either behind would have left this page holding a renderer for markup it no longer
-// has, and lint would have called them unused rather than wrong.
-
 const Check = () => (
   <span className="tick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 L4.6 9 L10 3" /></svg></span>
 )
-
-// Pricing-card price: the big amount + a "per truck / month" sub-line (matches the compare header wording).
-// Free/other plans show no sub. Render-only — the parts arrive already formatted from the marketing country's
-// settings (lib/features.ts planPriceParts). 🔴 It no longer splits "£29/mo" on its "/mo" (Language Phase 0).
-// Language Phase 1e: a price WORD arrives as its code ('Free') and is shown through priceText() in the page's locale;
-// an amount passes through unchanged. The sub-line is planSubLabels(locale) (lib/landing-table.ts).
-function PlanPrice({ price, perMonthLabel, locale }: { price: { amount: string; perMonth: boolean }; perMonthLabel: string; locale: string }) {
-  return <div className="plan-price">{priceText(price.amount, locale)}{price.perMonth && <span>{perMonthLabel}</span>}</div>
-}
 
 /**
  * One tile icon: a lucide glyph, orange, on the heading's own line.
@@ -227,19 +199,18 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'landing' })
   const seo = marketingCountry(visitor.settings)   // 🔴 D37: the JSON-LD's country (GB: UK, United Kingdom, en-GB)
   const s = visitor.settings
-  const allowances = planAllowances(s)
-  const money = moneyFormatOf(s)
+  // 🔴 STAGE B: the plan catalogue the pricing section is built from (60-second cache, lib/plans-server.ts).
+  const catalog = await getPlanCatalog()
+  // The trial's length (plans.trial_months) for the "First 3 months completely free" trust lines — data, never typed
+  // (Dominic, 20 October 2026: it read "First month 100% free"). No trial plan → no line rather than a wrong one.
+  const trialMonths = offerTrialMonths(catalog)
   // Language Phase 1e: the words, in the visitor's country's locale (GB → en-GB, byte-identical to before).
   const t = translatorFor(s.locale, 'landing')
-  // The plan cards' descriptions and sub-lines, in the same locale (FEATURES' locale-aware helpers).
-  const descriptions = planDescriptions(s.locale)
-  // ⚠️ The card's sub-line is ALWAYS "per truck / month" (shown only for a priced plan) — NOT planSubLabels().starter,
-  // which is the comparison table's "free forever" and would sit under a priced Starter.
-  const perTruckMonth = planSubLabels(s.locale).pro
+  const tPricing = translatorFor(s.locale, 'pricing')
+  const tPrompt = translatorFor(s.locale, 'planPrompt')
   const br = () => <br />
   const lean = (c: React.ReactNode) => <span className="lean">{c}</span>
   const soon = (c: React.ReactNode) => <span className="soon-inline">{c}</span>
-  const feeStar = (c: React.ReactNode) => <sup className="fee-star">{c}</sup>
   // 🔴 THE PIZZERIA GUSTO TESTIMONIAL AND AWARD ARE A UK TRUCK'S WORDS ABOUT UK VILLAGES — shown to GB visitors
   // only (Language Phase 1e). Decided by the page's country code, never by a word.
   const showTestimonial = s.countryCode === 'GB'
@@ -274,27 +245,33 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 🔴 WHAT IS DELIBERATELY ABSENT, AND WHY:
                   • aggregateRating / review — there are NO reviews. A rating in schema that no page
                     supports is the kind of claim §44 exists to stop, and Google penalises it.
-                  • offers / price — the page DOES show £29 and £49, so a price would be "true", but
-                    §4 of the reference manual records £29/£49 already having THIRTEEN literal copies
-                    and drifting. A fourteenth, in a file nobody reads, that search engines cache and
-                    show in results, is the worst possible place for that copy to go stale.
+                  • (offers WERE absent while prices were literal copies that drifted. Since Stage B they are
+                    data — public.plan_prices — so seo-fixes S9 emits them from the SAME rows the cards render;
+                    a fourteenth hand-typed copy is still impossible.)
                   • operatingSystem / device claims beyond what the page states.
                 What IS here is only what the page already says in its own words. */}
+            {/* 🔴 seo-fixes M5 + S9 (lib/structured-data.ts): Organization + WebSite + this SoftwareApplication, whose
+                `url` is now THIS page's country address. Offers: one per public plan, in the country's currency, from
+                plan_prices — the same rows the pricing cards below render, and only because they render real prices
+                (a switched-off country's address never renders: it redirects). */}
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify({
-                '@context': 'https://schema.org',
-                '@type': 'SoftwareApplication',
-                name: 'HatchGrab',
-                applicationCategory: 'BusinessApplication',
-                applicationSubCategory: t('jsonLd.subCategory'),
-                url: 'https://www.hatchgrab.com/',
-                description: t('jsonLd.description', { country: seo.short }),
-                inLanguage: seo.lang,
-                areaServed: { '@type': 'Country', name: seo.name },
-                audience: { '@type': 'BusinessAudience', audienceType: t('jsonLd.audience') },
-                publisher: { '@type': 'Organization', name: 'HatchGrab', url: 'https://www.hatchgrab.com/' },
-              }) }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(landingGraph({
+                countryCode: s.countryCode,
+                currency: s.currency,
+                pageUrl: HATCHGRAB_ORIGIN + (countryPagePath(s.countryCode, 'landing') ?? ''),
+                catalog,
+                pricesShown: s.enabled,
+                app: {
+                  name: BRANDS.HATCHGRAB.name,
+                  applicationCategory: 'BusinessApplication',
+                  applicationSubCategory: t('jsonLd.subCategory'),
+                  description: t('jsonLd.description', { country: seo.short }),
+                  inLanguage: seo.lang,
+                  areaServed: { '@type': 'Country', name: seo.name },
+                  audience: { '@type': 'BusinessAudience', audienceType: t('jsonLd.audience') },
+                },
+              })) }}
             />
             <h1>{t.rich('hero.title', { lean })}</h1>
             {/* 🔴 MOBILE-ONLY (<640px), AND IT IS `display:none` BY DEFAULT — see landing.css. A block
@@ -348,12 +325,14 @@ export default async function LandingPage({ params, searchParams }: { params?: P
               below is **what is live on www.hatchgrab.com**, restored from git HEAD.
               🔴 CONFIRMED AGAINST THE SERVED PAGE, NOT ASSUMED: live carries `class="shot shot-kds"`,
               `shot-dash` and `shot-phone`, the three `sizes` values below byte-for-byte, and `priority`
-              on all three. ⛔ THE `.fan-group` WRAPPER IS GONE with the shared tilt it existed for —
+              on all three (seo-fixes S7, 20 October 2026: now on the DASHBOARD ALONE — the LCP — and the kitchen
+              and phone shots `loading="eager" fetchPriority="low"`: still fetched at once, but React no longer emits a preload
+              for them — it preloads every non-lazy, non-low image — so they no longer compete with the LCP). ⛔ THE `.fan-group` WRAPPER IS GONE with the shared tilt it existed for —
               each screen carries its own `rotate()` again, in landing.css.
               ⚠️ `kitchen.png` IS BACK IN THE HERO and is no longer an unreferenced asset. */}
           <div className="fan">
             <div className="shot shot-kds">
-              <Image src={landingScreenshot('kitchen', s.countryCode)} alt={t('shots.kitchenAlt')} width={320} height={240} sizes="(max-width: 939px) 58vw, 320px" priority />
+              <Image src={landingScreenshot('kitchen', s.countryCode)} alt={t('shots.kitchenAlt')} width={320} height={240} sizes="(max-width: 939px) 58vw, 320px" loading="eager" fetchPriority="low" />
             </div>
             <div className="shot shot-dash">
               <Image src={landingScreenshot('dashboard', s.countryCode)} alt={t('shots.dashboardAlt')} width={800} height={551} sizes="(max-width: 939px) 72vw, 400px" priority />
@@ -367,7 +346,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 the `object-fit: contain` on `.shot img` would have letterboxed the shot inside its own
                 frame, with a band of frame showing above and below. */}
             <div className="shot shot-phone">
-              <Image src={landingScreenshot('phone', s.countryCode)} alt={t('shots.phoneAlt')} width={1284} height={2778} sizes="(max-width: 939px) 26vw, 140px" priority />
+              <Image src={landingScreenshot('phone', s.countryCode)} alt={t('shots.phoneAlt')} width={1284} height={2778} sizes="(max-width: 939px) 26vw, 140px" loading="eager" fetchPriority="low" />
             </div>
           </div>
         </div>
@@ -377,7 +356,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
           wash tint. Three bullets (orange ticks): row on desktop, left-aligned stack on mobile. */}
       <div className="trust-strip">
         <ul className="trust-in wrap">
-          <li><Check />{' ' + t('trust.freeMonth')}</li>
+          {trialMonths !== null && <li><Check />{' ' + t('trust.freeMonth', { months: trialMonths })}</li>}
           <li><Check />{' ' + t('trust.noCard')}</li>
           <li><Check />{' ' + t('trust.cancel')}</li>
         </ul>
@@ -609,315 +588,39 @@ export default async function LandingPage({ params, searchParams }: { params?: P
         <div className="wrap">
           <div className="price-head">
             <p className="eyebrow">{t('pricing.eyebrow')}</p>
-            {/* ⚠️ "Start free. Stay free, if that's all you need." UNTIL 6 October 2026. The old line
-                sold staying on the free tier; this one names the move the page is actually asking for.
-                ⛔ NOTHING ELSE IN THIS SECTION CHANGED — the fee paragraph, the orange trial banner, the
-                three cards, the button, the switching block and the small print are all untouched. */}
             <h2>{t('pricing.title')}</h2>
-            {/* 🔴 THE LEDE STATES THE HEADLINE AND STOPS. The walk-up detail — the in-person rate, the
-                UK/EEA limit, the tap surcharge, "coming soon" — lives ONCE, in footnote 1, which renders
-                further down this same page. Restating any of it here is what made this section read three
-                times over. Figures come from cardFees() (country_settings); never write one as a literal.
-                🔴 THE TRAILING CLAUSE IS LOAD-BEARING AND IS NOT PADDING. Without it, "no platform fee"
-                reads as "free", which is untrue for anyone taking cards. And it is worded as "your card
-                terminal's own fees" DELIBERATELY: "card processing still applies" would read as a second,
-                NEW charge, when in fact most trucks already pay their own terminal provider and nothing
-                about that changes. It says whose fee it is and that nothing changes. Do not shorten it to
-                "fees still apply", and do not add a figure — there is deliberately no number here. */}
-            {/* Language Phase 1e: ONE message with its seven values (rule 2) — every amount still formatted by
-                lib/money-format.ts / lib/plan-features.ts from the country's settings, never typed. */}
-            <p className="lede">{t('pricing.summary', {
-              proPrice: formatAmount(planMonthlyMinor('pro', s), money),
-              proAllowance: allowanceAmountLabel(allowanceMinorFor('pro', s), s),
-              maxPrice: formatAmount(planMonthlyMinor('max', s), money),
-              maxAllowance: allowanceAmountLabel(allowanceMinorFor('max', s), s),
-              platformFee: platformFeeLabel(s),
-              cardFee: cardFeeOnlineLabel(s),
-              region: s.cardFeeRegionLabel,
-            })}</p>
           </div>
 
-          <div className="trial-banner">
-            <strong>{t('pricing.trialTitle')}</strong>
-            <span>{t.rich('pricing.trialBody', { brand: priceText(PRICE_WORD.payAtHatch, s.locale), bold: c => <b><u>{c}</u></b> })}</span>
-          </div>
+          {/* ══ 🔴 THE PRICING SECTION IS BUILT FROM THE PLAN DATA — Stage B (docs/pricing-pages-report.md) ══════════════
+              The approved mockup: the trial banner, one card per public plan (public.plans, sort_order), the "Which plan
+              is cheapest for me?" bar (solved from public.plan_prices) and the card-fee footnote (country_settings).
+              ⛔ THE OLD HAND-WRITTEN STARTER / PRO / MAX CARDS, THE FEE LEDE, THE NAVY "Compare all features" BUTTON AND
+              THE SMALL PRINT ARE GONE: the first card's "See every feature →" is the route to /features now, and the
+              footnote and banner carry what the small print said. The heading above and the switching block below stay. */}
+          <PricingSection
+            catalog={catalog}
+            settings={s}
+            t={tPricing}
+            tPrompt={tPrompt}
+            brand={priceText(PRICE_WORD.payAtHatch, s.locale)}
+            featuresHref={visitor.paths.features}
+            cta={(className, label) => <DemoCta className={className}>{label}</DemoCta>}
+          />
 
-          <div className="plans">
-            {/* Starter */}
-            <div className="plan">
-              <div className="plan-name">{PLAN_META.starter.name}</div>
-              <div className="plan-who">{descriptions.starter}</div>
-              <PlanPrice price={planPriceParts('starter', s)} perMonthLabel={perTruckMonth} locale={s.locale} />
-              <div className="plan-fee">{priceText(allowances.starter, s.locale)}</div>
-              <ul>
-                <li className="lead">{t('pricing.starter.lead')}</li>
-                <li>{t('pricing.starter.walkUp')}</li>
-                <li>{t('pricing.starter.online')}</li>
-                <li>{t('pricing.starter.menu')}</li>
-                {/* 🔴 THE "Sold-out toggle & stock countdown" BULLET WAS REMOVED HERE — 2 September 2026,
-                    on request, in two steps: "& stock countdown" went with the matrix change that moved
-                    'Automated stock countdown' off Starter, then the whole bullet went.
-                    🟢 THE FEATURE TABLE IS UNCHANGED AND THAT IS DELIBERATE. 'Instant sold out toggle'
-                    is still a row at starter:true, so a Starter truck still HAS the toggle and the
-                    comparison table still says so — this card simply no longer spends a line on it.
-                    🔴 DO NOT "RESTORE FOR CONSISTENCY" BY READING THE MATRIX. These bullets are
-                    HAND-WRITTEN (see the note below) and are a shorter, chosen selection — not a
-                    rendering of every starter:true row. A bullet missing here is not drift. */}
-                {/* ══ 🔴 SPLIT INTO TWO BULLETS — 6 October 2026, on request ═══════════════════════
-                    It was one welded line, "QR code & discovery map listing", for two features that
-                    are separate rows in the matrix (`qr_menu` and `discovery_map`) and are separate
-                    things an operator gets. 🟢 EACH HALF IS NOW BYTE-IDENTICAL TO ITS ROW's `name` in
-                    lib/plan-features.ts — 'QR code' and 'Discovery map listing' — which is the rule
-                    the Max card's bullets already follow, so the card and the /features table say the
-                    same words for the same thing.
-                    ⚠️ THESE BULLETS ARE HAND-WRITTEN AND NOTHING CHECKS THEM AGAINST THE MATRIX. The
-                    match above is deliberate, not automatic; if a row is ever renamed, this is one of
-                    the places that will not follow on its own. */}
-                <li>{t('pricing.starter.qr')}</li>
-                <li>{t('pricing.starter.map')}</li>
-                {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
-                    matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
-                    must be changed in the SAME commit or the same page shows two different claims. */}
-                {/* 🟢 ONE BULLET, NOT TWO (5 September 2026). The Android app is live on Google Play, so
-                    its own coming-soon line was DELETED rather than un-marked — the two were split only
-                    while the platforms shipped at different times. This bullet is a literal twin of the
-                    matrix row and nothing checks the two against each other, so both moved in one edit. */}
-                <li>{t('pricing.starter.app')}</li>
-              </ul>
-              <DemoCta className="btn btn-ghost">{t('pricing.tryFree')}</DemoCta>
-            </div>
-
-            {/* Pro */}
-            <div className="plan hero-plan">
-              <span className="plan-tag">{t('pricing.mostTrucks')}</span>
-              <div className="plan-name">{PLAN_META.pro.name}</div>
-              <div className="plan-who">{descriptions.pro}</div>
-              <PlanPrice price={planPriceParts('pro', s)} perMonthLabel={perTruckMonth} locale={s.locale} />
-              {/* ══ 🔴 "No fee on walk-ups." — ADDED 10 October 2026, ON PRO AND MAX ONLY ═══════════════
-                  ⚠️ IT IS APPENDED **HERE**, NOT IN `planAllowances()`. That constant is read by the
-                  features PDF and by the comparison table as well as by this card, and the brief asks for
-                  the two cards — changing the source string would have changed three surfaces.
-                  ⛔ THE STAR STAYS WHERE IT IS, on the percentage it footnotes: the new sentence follows
-                  it, so the line reads "…then 0.99%*. No fee on walk-ups." and the footnote still points
-                  at the fee it is about. ⚠️ PLAIN TEXT IN THE SAME `.plan-fee`, so it takes the same size,
-                  colour and weight as the rest of the line with no second rule to keep in step.
-                  🔴 IT IS NOT A NEW CLAIM — the section's own lede has said "Walk-ups carry no HatchGrab
-                  platform fee on any plan" all along. This puts it where a reader comparing two cards is
-                  actually looking. ⚠️ STARTER IS DELIBERATELY UNTOUCHED: its fee line is "Pay at Hatch",
-                  which is a model and not an allowance, and the brief names Pro and Max. */}
-              <div className="plan-fee">{t.rich('pricing.planFee', { allowance: allowances.pro, star: feeStar })}</div>
-              <ul>
-                {/* Language Phase 1e: "Free" is the Starter card's PRICE word, so it is only said where Starter costs nothing;
-                    a country whose Starter is priced names the plan instead. GB (Starter free) is unchanged. */}
-                <li className="lead">{t('pricing.pro.lead', { starterIsFree: planMonthlyMinor('starter', s) === 0 ? 'yes' : 'other', starterName: PLAN_META.starter.name })}</li>
-                <li>{t('pricing.pro.offline')}</li>
-                <li>{t('pricing.pro.payOnline')}</li>
-                <li>{t('pricing.pro.preorders')}</li>
-                {/* ⚠️ "Kitchen capacity management", NOT "Smart slot management" (10 October 2026).
-                    "Smart" is a claim and "slot" is our word; the thing a truck sets is their kitchen's
-                    capacity. ⛔ IT MATCHES THE MATRIX ROW'S OWN `name` in lib/plan-features.ts, which
-                    was renamed in the same edit — the card and the matrix naming one feature two ways
-                    is the gap this product has closed twice before.
-                    ⛔ "Auto-accept orders" IS OFF THE CARD, on instruction. It is STILL A PRO FEATURE
-                    and still in the matrix ('Auto-accept online orders', pro: true) — this card is the
-                    short list, not the full one. */}
-                <li>{t('pricing.pro.capacity')}</li>
-                {/* 🔴 PRIVATE EVENTS IS A **PRO** FEATURE (5 October 2026), the other half of the row
-                    that was "Event & festival pricing · Coming soon" on the Max card. Built, so no
-                    badge — and it twins the `pro: true` cell in lib/plan-features.ts.
-                    ⚠️ SHORTENED TO "Private events" ON 6 OCTOBER 2026. It read "Private events with
-                    their own ordering link" — the longest bullet in the list, for a detail the matrix
-                    row's own `detail` already carries. 🟢 IT IS NOW BYTE-IDENTICAL TO THE ROW'S `name`
-                    in lib/plan-features.ts, which already said "Private events": the card was the one
-                    out of step, so this closes a gap rather than opening one. */}
-                <li>{t('pricing.pro.privateEvents')}</li>
-                {/* ⚠️ SPLIT 4 September 2026 — was one welded bullet: "WhatsApp, Messenger & Instagram
-                    auto-replies — Coming soon". WhatsApp now ships and carries NO badge; the other two
-                    keep theirs. Third surface of the same fact as the does-item block above and the
-                    matrix row in lib/plan-features.ts.
-                    ══ ⛔ THE ⁴ FOOTNOTE MARKER WAS REMOVED — 6 October 2026 ════════════════════════
-                    🔴 BECAUSE THE NOTE IT POINTED AT IS NO LONGER ON THIS PAGE. `.f-note` resolved to
-                    the numbered list under the comparison table, and that table is /features now — so
-                    the superscript became a reference to nothing, on the one surface where a reader
-                    cannot tell a dangling marker from a missing footnote. The footnotes themselves are
-                    untouched and footnote 4 still renders beneath the table on /features, where the
-                    matrix row still carries its marker.
-                    ⚠️ THE OLD WARNING HERE IS KEPT BELOW BECAUSE IT IS STILL THE RULE for the row:
-                    "if footnote 4 is ever renumbered or retired, the marker must move with it; it will
-                    not error, it will just point at the wrong note." That is exactly what happened to
-                    this one — the note did not move, the PAGE did. */}
-                {/* 🔴 SOCIAL MEDIA POSTS — a normal live bullet, no badge (6 October 2026, on request).
-                    ⚠️ IT TWINS THE MATRIX ROW (`pro: true, max: true`).
-                    🟢 **AND THE GATE NOW BACKS IT — 10 October 2026.** This bullet and that row used to
-                    be claims nothing enforced: the gate was a Feature in NO plan, held only through
-                    `trucks.feature_overrides` and granted to one truck, so a public, indexed page
-                    promised something no plan sold. The plan key is in PRO_FEATURES now — Pro, Max and
-                    trial — and the row is mapped in ROW_FEATURE_MAP, which makes
-                    findPlanParityViolations() compare this promise against the gate on every module
-                    load. ⛔ THE RECORDED EXCEPTION IS CLOSED; there is nothing left to read before
-                    changing this bullet except lib/features.ts itself.
-                    ⚠️ THE KEY IS DELIBERATELY NOT NAMED IN THIS COMMENT. `scripts/schedule-graphics-places.cjs`
-                    pins an EXACT list of the files that name it, over code lines only — and this file's
-                    JSX comments have no leading `*`, so its line-based stripper cannot tell this prose
-                    from a gate. Naming it here would have added a seventh "consumer" that gates
-                    nothing. See lib/features.ts for the key and its tiers. */}
-                <li>{t('pricing.pro.social')}</li>
-                {/* ══ 🔴 ONE BULLET FOR ALL THREE CHANNELS AGAIN — 6 October 2026 ════════════════════
-                    ⛔ THE SEPARATE "Messenger & Instagram auto-replies" BULLET IS GONE. It carried the
-                    COMING SOON badge, which put a badge on the card for a channel nobody buys the plan
-                    for, directly under the one that is live — so the card read as half-finished.
-                    🔴 AND THE PARENTHETICAL IS **NOT** A BADGE, WHICH IS THE POINT: WhatsApp itself
-                    ships, so `soon-inline` here would have said "coming soon" about the live half of
-                    the sentence.
-                    ⚠️ NOR IS IT SMALLER OR MUTED — Dominic, 6 October 2026: *"'(Messenger & Instagram
-                    coming soon)' needs to be same size and format as 'WhatsApp auto-replies'."* It was
-                    briefly a `.li-note` span at .68rem in `--ink-faint`; it is now PLAIN BULLET TEXT in
-                    the same run as the rest of the line, so there is no span and no second style to
-                    keep in step. ⛔ THE `.li-note` RULE WAS DELETED FROM landing.css IN THE SAME EDIT
-                    rather than left behind styling nothing.
-                    ⚠️ THE FLAG STILL DECIDES. With WHATSAPP_LIVE off there is nothing live to separate,
-                    so the OFF branch keeps the welded badge line it has always had, verbatim. */}
-                {WHATSAPP_LIVE ? (
-                <li>{t('pricing.pro.whatsapp')}</li>
-                ) : (
-                <li>{t.rich('pricing.pro.whatsappSoon', { soon })}</li>
-                )}
-                {/* ══ 🔴 "Coming soon" SITS AT THE BOTTOM, GROUPED — 6 October 2026 ═══════════════════
-                    ⛔ THIS BULLET DID NOT MOVE; THE TWO ABOVE IT DID NOT EITHER. What moved is
-                    "Private events", which was BETWEEN the badged Messenger/Instagram line and this
-                    one — so the card read built, coming-soon, built, coming-soon. A reader scanning for
-                    what they get today had to read every line to know which half it was in.
-                    ⚠️ THE RULE IS APPLIED TO ALL THREE CARDS, and Max already satisfied it. */}
-                <li>{t.rich('pricing.pro.payOnPhone', { soon })}</li>
-              </ul>
-              <DemoCta className="btn btn-primary">{t('pricing.tryFree')}</DemoCta>
-            </div>
-
-            {/* Max */}
-            <div className="plan">
-              <div className="plan-name">{PLAN_META.max.name}</div>
-              <div className="plan-who">{descriptions.max}</div>
-              <PlanPrice price={planPriceParts('max', s)} perMonthLabel={perTruckMonth} locale={s.locale} />
-              {/* ⚠️ THE SAME SENTENCE AS PRO'S, FOR THE SAME REASON — see the note on the Pro card. */}
-              <div className="plan-fee">{t.rich('pricing.planFee', { allowance: allowances.max, star: feeStar })}</div>
-              <ul>
-                <li className="lead">{t('pricing.max.lead')}</li>
-                <li>{t('pricing.max.sync')}</li>
-                <li>{t('pricing.max.staff')}</li>
-                {/* ⚠️ RENAMED, MOVED AND UN-BADGED 29 August 2026, to match the matrix row it twins
-                    (lib/plan-features.ts, now 'Schedule page on your own website'), which moved above
-                    'Kitchen ticket printing' in the same change.
-                    ✅ THE CARD AND THE TABLE AGREE. Removing the badge here first left this card claiming
-                    the feature while the comparison table lower down the SAME page still said "Coming
-                    soon"; the matrix row was then flipped to `true` (with its ROW_FEATURE_MAP entry, in
-                    the same change) and both now read as included. Un-badge here and flip there together,
-                    or the page argues with itself — this bullet is hand-written and nothing checks it.
-                    🔴 RE-WORDED AGAIN 3 September 2026, IN THE SAME EDIT AS THE ROW, for that reason.
-                    Was 'Your schedule at your own website'. This card and the comparison table sit on
-                    ONE page, so two names for one feature is the page arguing with itself in the exact
-                    way this comment already warned about. THE BULLET IS NOT A KEY — nothing joins on it;
-                    it is display copy that must simply agree with the row. Change both or neither. */}
-                <li>{t('pricing.max.schedulePage')}</li>
-                {/* 🔴 NO "(Bluetooth or wired printer)" HERE — 19 September 2026. The card lists WHAT
-                    you get; which printers it works with is a detail, and the comparison table lower down
-                    this page already carries it in the row's own `detail` and footnote 5. Saying it twice
-                    made the card the longest bullet in the list for the least useful reason. The bullet is
-                    now byte-identical to the row's `name`, which is what the rule above asks for. */}
-                <li>{t('pricing.max.printing')}</li>
-                {/* ══ 🔴 "Event & festival pricing · Coming soon" BECAME TWO BUILT ROWS (5 October 2026)
-                    ⛔ ONE BULLET COULD NOT CARRY BOTH, because they are on different tiers: private
-                    events are Pro (`private_events`) and custom types with their prices are Max
-                    (`event_types`). This card is Max, so it carries the Max one; the Pro bullet is in
-                    the Pro card above.
-                    ⚠️ AND THE BADGE IS GONE — both are built. These bullets are hand-written twins of
-                    the matrix rows in lib/plan-features.ts and nothing checks them against each other,
-                    so a "Coming soon" left here would contradict a `true` cell in the table on the same
-                    page. Change both or neither; this is the "both". */}
-                <li>{t('pricing.max.eventTypes')}</li>
-                <li>{t.rich('pricing.max.loyalty', { soon })}</li>
-              </ul>
-              <DemoCta className="btn btn-ghost">{t('pricing.tryFree')}</DemoCta>
-            </div>
-          </div>
-
-          {/* ══ 🔴 THE LINK THAT REPLACED THE TABLE — 6 October 2026 ════════════════════════════════
-              The full comparison used to be the next section down this page. It is /features now, and
-              this is how a reader gets to it: directly under the cards, while they are still choosing.
-              ⚠️ BEFORE THE SWITCHING BLOCK, DELIBERATELY. "Switching from another platform?" filters
-              itself out for most readers (see its own note below), so a link placed after it would sit
-              behind a heading that tells half the audience the paragraph is not for them.
-              🔴 A PLAIN <a>, LIKE EVERY OTHER LINK ON THIS PAGE. next/link is not imported here, and
-              /features is a different route under a different `.hg-landing` wrapper with its own font
-              instances, so a client-side transition would buy nothing.
-
-              ══ 🔴 A LEAD-IN AND A **NAVY** BUTTON — 7 October 2026 ═══════════════════════════════════
-              It has been a text link, then an outlined `btn-ghost`, and it was still being missed.
-              ⛔ THE REASON IT WAS OUTLINED NO LONGER APPLIES THE WAY IT DID. The old note said a filled
-              button "must not compete with the three sitting in the cards immediately above it" — and
-              that is still true of an ORANGE one, because every orange control on this page opens the
-              demo modal. It is NOT true of a navy one: navy is the heading colour, it is not a CTA
-              colour anywhere on this page, and a reader cannot mistake it for the same action.
-              🔴 THE LEAD-IN IS WHAT MAKES THE BUTTON WORTH PRESSING. "Compare all features →" on its
-              own is a label; "Not sure which plan?" is the question a reader standing in front of three
-              cards is actually holding, and the line answers it before the button asks for a click.
-              ⚠️ TWO ELEMENTS, TWO RULES. `.feat-cta` carries the lead-in and the centring; `.feat-btn`
-              carries the button. One wrapper with both inside would have made the 10–12px gap between
-              them a margin on a `<p>` inside a `<p>`, which is not legal markup. */}
-          <p className="feat-cta feat-lead">{t('pricing.compareLead')}</p>
-          <p className="feat-btn"><a href={visitor.paths.features} className="btn btn-navy">{t('pricing.compareCta')}</a></p>
-
-          {/* ── 🔴 THE SWITCHING BLOCK — A SIDE DOOR, AND IT SELF-SELECTS ON ITS FIRST WORD ──────────
-              Added 3 September 2026. Copy supplied and approved; it is not editorial and must not be
-              "tightened".
-              🔴 IT REPLACED THE BARE "Work out what you would pay →" LINK THAT STOOD IN .price-foot.
-              Two links to /compare in one section was one too many, and this one does the same job with
-              the framing that makes it safe. The old link is gone, not hidden.
-              🟢 THE HEADING IS THE FILTER, AND THAT IS THE WHOLE DESIGN. "Switching from another
-              platform?" tells an operator paying nobody that this is not about them, so they read the
-              plan cards above and move on. That matters because the calculator answers "what would I pay
-              instead" — and for someone paying nothing today the honest answer is "more than nothing".
-              Putting that in front of them would argue against us with our own tool.
-              🟢 AFTER the plan cards on purpose: the cards are the main argument and everyone gets
-              them; this is the extra step only the paying subset needs.
-              ⚠️ SECONDARY BY CONSTRUCTION, NOT BY RESTRAINT. It is not an <h2> — the section already has
-              one and a second would read as a new section. The heading is 1rem against the section h2's
-              clamp(1.6rem, 3.2vw, 2.15rem), and smaller than a plan name at 1.15rem. No button: every
-              primary control here is an orange DemoCta and a filled button would compete with it.
-              ⚠️ NO COMPETITOR IS NAMED and no comparative claim is made about any named business —
-              "another platform" is deliberately unnamed. Keep it that way.
-              🔴 /compare HAS ITS OWN GATE AND IT IS NOT THIS ONE. It refuses unless
-              NEXT_PUBLIC_PRICING_PUBLISHED is 'true'; while that is unset this link lands on a redirect
-              to /contact. See docs/landing-switching-block-report.md 7. */}
+          {/* ── 🔴 THE SWITCHING BLOCK — A SIDE DOOR TO /compare, AND IT SELF-SELECTS ON ITS FIRST WORD (3 September 2026;
+              copy approved, not editorial). "Switching from another platform?" tells an operator paying nobody that this is
+              not about them; the calculator answers "what would I pay instead". It is not an <h2> and has no button: every
+              primary control here is an orange DemoCta. No competitor is named. */}
           <div className="switch-block" style={showTestimonial ? undefined : { background: 'var(--wash)' }}>
             <p className="switch-head">{t('pricing.switchHead')}</p>
             <p className="switch-body">{t('pricing.switchBody')}</p>
             <p className="switch-cta"><a href={visitor.paths.compare}>{t('pricing.switchCta')}</a></p>
           </div>
-
-          <div className="price-foot">
-            {/* ⚠️ THE WALK-UP PARAGRAPH THAT STOOD HERE WAS REMOVED, NOT SHORTENED. Footnote 1 covers it
-                and renders on this same screen, so this restated it a third time. */}
-            <p>{t('pricing.footCardFees', { cardFee: cardFeeOnlineLabel(s), region: s.cardFeeRegionLabel })}</p>
-            <p>{t('pricing.footCancel')}</p>
-          </div>
         </div>
       </section>
 
-      {/* ══ ⛔ THE FULL COMPARISON TABLE LEFT THIS PAGE — 6 October 2026 ═══════════════════════════
-          It was 31 rows across four columns plus five footnotes, below the plan cards most visitors
-          came for, and it was the single longest thing on a page that was too long.
-          🔴 MOVED, NOT DELETED, AND NOT REWRITTEN: components/landing/FeatureComparison.tsx holds the
-          same markup verbatim and app/features/page.tsx renders it inside this same chrome. Same rows,
-          same order, same wording, same source (lib/plan-features.ts). The link to it is under the
-          plan cards above, before the switching block.
-          ⚠️ THE SECTION HAD NO `id`, SO THERE IS NO ANCHOR TO PRESERVE. Checked in git HEAD and
-          checked the other way round, by sweeping every `#fragment` in the repository: the only
-          landing anchors that have ever existed are `#pricing` and `#try`, and nothing in the codebase
-          — no email, no template, no document — ever linked to where this table was.
-          🔴 `lib/plan-features.ts` IS STILL IMPORTED BY THIS FILE (PLAN_DESCRIPTIONS,
-          planAllowances, cardFeeOnlineLabel and friends), WHICH IS LOAD-BEARING: that module runs
-          `findPlanParityViolations()` at module load, so the guard still fires when this route renders.
-          If those imports ever go too, the guard goes with them silently. */}
+      {/* ⛔ THE FULL COMPARISON TABLE LEFT THIS PAGE on 6 October 2026 — it is /features (components/pricing/PlanTable.tsx since
+          Stage B). The section had no `id`, so there was no anchor to keep. */}
 
       {/* ============ FINAL CTA ============ */}
       <section id="try" className={showTestimonial ? undefined : 'band'}>
@@ -953,7 +656,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
               MODAL's cue (mirroring Manage's "✨ Import menu"), not the landing page's. */}
           <DemoCta className="btn btn-primary btn-lg">{t('final.cta')}</DemoCta>
           <ul className="proof">
-            <li><Check />{' ' + t('trust.freeMonth')}</li>
+            {trialMonths !== null && <li><Check />{' ' + t('trust.freeMonth', { months: trialMonths })}</li>}
             <li><Check />{' ' + t('trust.noCard')}</li>
             <li><Check />{' ' + t('trust.cancel')}</li>
           </ul>

@@ -6,7 +6,6 @@ import { useState, useEffect, useLayoutEffect, useCallback, useMemo, use, useRef
 import { createPortal } from 'react-dom'
 import { attachSubTabScroller } from '@/lib/subtab-scroll'
 import { useRouter } from 'next/navigation'
-import { PLAN_META, canAccess, maxVans, planMonthlyMinor } from '@/lib/features'
 import { OFFLINE_PROTECTION_MODES, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS } from '@/lib/copy/offlineProtection'   // the words: messages `offlineProtection`
 import { minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
 import { useToasts, type ShowToast } from '@/lib/useToasts'
@@ -14,15 +13,15 @@ import { ToastStack } from '@/components/ToastStack'
 import { isValidEmail } from '@/lib/contact-validation'
 import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
 import { phoneErrorMessage } from '@/lib/phone-message'
-import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
+import { PricingPolicyProvider, usePriceMask } from '@/components/PricingPolicy'
 import { CountrySettingsProvider, useCountrySettings, useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { allergenVocab, genericReplacements } from '@/lib/allergens'
 import { normaliseRegion } from '@/lib/event-address'   // the event's state (US), lib/event-address.ts
 import { addressStyleOf, upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's address words by address style (the words are in messages, Language Phase 1d)
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
-import { moneyFormatOf, planPricesDecided, withPlaceholderPlanPrices, type CountrySettings } from '@/lib/country-settings-types'
+import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
-import { perMonthLabel, formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
+import { perMonthLabel, formatMajor, formatWholeAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
 import { WhereYouTrade } from '@/components/manage/WhereYouTrade'
@@ -45,10 +44,25 @@ import { PaymentsTab } from '@/components/manage/PaymentsTab'
 //  dropdown, components/dashboard/UserMenu.tsx, which every role reaches. See the note at the foot of
 //  SettingsTab, and lib/legal.ts for the surface list. If a link is ever added to this page, import the
 //  routes from lib/legal.ts — never type them inline.)
-import type { Plan, Feature } from '@/lib/features'
+import type { Feature } from '@/lib/features'
+// 🔴 THE PLAN, ITS PRICE, ITS INCLUDED AMOUNT, THE EXTRA-VAN PRICE AND "IS IT A TRIAL": lib/plans.ts, over the catalogue the
+// Manage GET sends (plans-data-model Stage A). Nothing on this page names a plan.
+import { effectivePlan, expiryFallbackPlan, truckPlanPrice, extraVanMonthlyMinor, includedVans, trialMonthsOf, publicPlans, planPriceFor, type PlanCatalog, type PlanKey, type PlanRow } from '@/lib/plans'
+import { PlanCatalogProvider, usePlanCatalog } from '@/components/PlanCatalogProvider'
+import { useFeatures, featureAccessView } from '@/lib/useFeatures'
+import { PlanPrompt } from '@/components/PlanPrompt'
+import { usePlanPriceMask } from '@/components/usePlanPriceLabel'
 import { PRICE_WORD } from '@/lib/price-words'
-import { planPrices, planDescriptions, transactionRows, FEATURE_SECTIONS, featureSections, footnotes, priceText, vanAddonMonthlyMinor, PAY_AT_HATCH_ROW, type PlanRowId } from '@/lib/plan-features'
-import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+// ⚠️ THE FROZEN PRICING DISPLAY (Stage B — awaiting mockup; display only, nothing may gate on it), for exactly two things on
+// this page: Billing's comparison table and the van billing modal's words. Nothing else here reads it.
+// Stage B (docs/pricing-pages-report.md): Billing's plan table is the one /features renders; the frozen display copy
+// (lib/legacy-pricing-display.ts) is deleted.
+import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'
+import { cardFeeOnlineLabel } from '@/lib/card-fees'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/pricing'
+import { priceText } from '@/lib/price-text'
+import { WHATSAPP_LIVE, MESSENGER_INSTAGRAM_LIVE } from '@/lib/whatsapp-live'
 import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 // 🔴 THE REPLY CAP'S PER-CUSTOMER LIMIT, READ FROM THE MODULE THAT DECIDES IT rather than typed into the
 // copy. lib/whatsapp/reply-cap.ts is a PURE module — "NO DATABASE, NO IMPORTS" by its own header — so a
@@ -205,7 +219,7 @@ import { useAppLocale } from '@/lib/i18n/use-t'
 import { resolveLocale } from '@/lib/i18n/locales'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
+interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: PlanKey; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -642,6 +656,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // The truck's own country settings, from the same authenticated /api/manage response (never read by the
   // browser directly). Every price below the CountrySettingsProvider reads them. See the provider's header.
   const [countrySettings, setCountrySettings] = useState<CountrySettings | null>(null)
+  // The plan catalogue (public.plans / public.plan_prices), from the same response (plans-data-model Stage A). Every plan
+  // fact below — the effective plan, its price, the extra-van price, "is this a trial" — is read through lib/plans.ts.
+  const [planCatalog, setPlanCatalog] = useState<PlanCatalog | null>(null)
   useTruckLocale(countrySettings?.locale)   // Language Phase 0: Manage's words in the truck's country's locale
   const [whatsappConnection, setWhatsappConnection] = useState<WhatsAppConnectionView | null>(null)
   const [whatsappUsage, setWhatsappUsage] = useState<{ used: number; limit: number; resetsOn: string; atLimit: boolean } | null>(null)
@@ -659,6 +676,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // When the last SILENT refresh failed, and when the last good payload arrived. Together they drive the
   // standing staleness bar — see the load() catch.
   const [refreshFailedAt, setRefreshFailedAt] = useState<Date | null>(null)
+  // Stage B: why the FIRST load failed, when it was not an auth refusal (401/403) — a server error or a network failure
+  // shows its real reason instead of "Invalid or expired token" (which sent Dominic chasing a token that was fine).
+  const [firstLoadError, setFirstLoadError] = useState<string | null>(null)
   const [lastLoadedAt, setLastLoadedAt] = useState<Date | null>(null)
   // Shared stacked, action-capable toast system (lib/useToasts) — replaces the old single Toast. The
   // showToast signature (msg,type,opts?) is back-compatible with every existing (msg)/(msg,type) caller
@@ -799,10 +819,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       // cookie — its session is in @capacitor/preferences. Without this header the app would be
       // refused by the very inversion that closed the hole. Returns {} on web; cookie path unchanged.
       const res = await fetch(`/api/manage?token=${token}`, { headers: await nativeAuthHeader() })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      const data = await res.json().catch(() => ({}))
+      // An answer with no `error` throws an empty message, so the toast (and the first-load line) fall back to "Failed to load".
+      if (!res.ok) throw Object.assign(new Error(data.error), { auth: res.status === 401 || res.status === 403 })
       setTruck(data.truck)
       setCountrySettings(data.countrySettings ?? null)
+      setPlanCatalog(data.plans ?? null)
       // 🔴 FAIL TOWARD 'not_connected'. An older deployment (or a payload without the field) must offer
       // setup rather than imply a connection. Never default to anything that reads as connected.
       setWhatsappConnection(data.whatsappConnection ?? null)
@@ -823,6 +845,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setPendingEmailChange(data.pendingEmailChange || null)
       // A good load clears any standing staleness.
       setRefreshFailedAt(null)
+      setFirstLoadError(null)
       setLastLoadedAt(new Date())
     } catch (e: any) {
       // 🔴 A FAILED REFRESH LEAVES THE PREVIOUS PAYLOAD ON SCREEN. That was ALREADY true before this
@@ -830,6 +853,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       // Silent refreshes remove even that, so the staleness has to become a STANDING statement rather
       // than a toast that fades. This is the condition on which the split ships.
       if (silent) setRefreshFailedAt(new Date())
+      else setFirstLoadError(e?.auth ? null : (e?.message || tRef.current('loadFailed')))
       showToast(e.message || tRef.current('loadFailed'), 'error')
     }
     finally { if (!silent) setLoading(false) }
@@ -1054,10 +1078,15 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
    * no query still lands on Billing, which is the behaviour this effect exists for and is unchanged.
    * ⛔ WHAT IT MAY NO LONGER DO IS BEAT A URL. Asking for a tab is not a preference to be weighed
    * against a default; it is an instruction. */
+  // 🔴 "ON A TRIAL" IS THE EFFECTIVE PLAN'S FLAG (plans-data-model Stage A), not the string 'trial': a trial whose end
+  // date has passed resolves to the expiry-fallback plan and is no longer a trial.
+  const onTrialPlan = !!(truck && planCatalog && effectivePlan(truck, planCatalog).plan.isTrial)
+  // The trial popup's "{N}-month" and "Every feature free for {N} months": the truck's trial plan's plans.trial_months.
+  const trialPopupMonths = truck && planCatalog ? trialMonthsOf(effectivePlan(truck, planCatalog).plan) : null
   useEffect(() => {
     if (urlAskedForTab.current) return
-    if (truck?.plan === 'trial' && purchaseCtaAllowed()) setActiveTab('billing')
-  }, [truck?.id])
+    if (onTrialPlan && purchaseCtaAllowed()) setActiveTab('billing')
+  }, [truck?.id, onTrialPlan])
 
   // Trial reminder popup — only within the final 2 months of the trial, then once per day.
   // Previously it appeared on every login regardless of how far out the trial end was (no
@@ -1070,8 +1099,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // stay silent. A suppressed prompt must not consume its own once-per-day budget.
   useEffect(() => {
     if (!purchaseCtaAllowed()) return
-    if (truck?.plan !== 'trial') return
-    if (!truck.trial_expires_at) return
+    if (!onTrialPlan) return
+    if (!truck?.trial_expires_at) return
     const windowStart = new Date(truck.trial_expires_at)
     windowStart.setMonth(windowStart.getMonth() - 2)   // 2 months before trial end
     if (new Date() < windowStart) return                // too early — don't nag yet
@@ -1082,7 +1111,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setShowTrialReminder(true)
       localStorage.setItem(key, today)
     }
-  }, [truck?.plan, truck?.trial_expires_at])
+  }, [onTrialPlan, truck?.trial_expires_at])
 
   // Staff have no business on the manage page — send them to the dashboard
   useEffect(() => {
@@ -1167,7 +1196,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
   if (!truck) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <p className="text-red-500 font-bold">{t('invalidToken')}</p>
+      {/* Stage B: "Invalid or expired token" only for an auth refusal; any other first-load failure says what it was. */}
+      <p className="text-red-500 font-bold text-center px-4">{firstLoadError ? t('loadFailedReason', { reason: firstLoadError }) : t('invalidToken')}</p>
     </div>
   )
 
@@ -1177,6 +1207,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   if (!countrySettings) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <p className="text-red-500 font-bold">{t('noCountrySettings')}</p>
+    </div>
+  )
+  // The same deploy-skew guard for the plan catalogue (Stage A): no catalogue, no console — never a guessed plan.
+  if (!planCatalog) return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <p className="text-red-500 font-bold">{t('noPlans')}</p>
     </div>
   )
 
@@ -1215,11 +1251,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'reports',   label: t('tabs.reports'),   icon: '📊', roles: ['owner', 'manager'] },
     { id: 'team',      label: t('tabs.team'),      icon: '👥', roles: ['owner', 'manager'] },
     { id: 'settings',  label: t('tabs.settings'),  icon: '🔧', roles: ['owner', 'manager'] },
-    // 🔴 PAYMENTS — OWNER ONLY, AND IT MUST NOT INHERIT BILLING'S EXCLUSION.
-    // The filter below carries `if (t.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'`.
-    // That rule is keyed on the ID `'billing'`, so this tab does NOT get the `plan !== 'tester'` test and
-    // falls through to the generic `t.roles.includes(userRole)` arm — owner-only, every plan, tester
-    // included. That is intended: a tester truck still needs to reach Connect onboarding.
+    // 🔴 PAYMENTS — OWNER ONLY, every plan. (Billing used to be hidden from the 'tester' plan by name; since plans-data-model
+    // Stage A Billing renders a card for any plan, so both tabs are simply owner-only.)
     // 💷 in GB, 💵 in the US (`tabs.paymentsIcon`).
     { id: 'payments',  label: t('tabs.payments'),  icon: t('tabs.paymentsIcon'), roles: ['owner'] },
     { id: 'billing',   label: t('tabs.billing'),   icon: '💳', roles: ['owner'] },
@@ -1230,19 +1263,19 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const wideContent = socialWide && activeTab === 'social'
 
   const tabs = allTabs.filter(tab => {
-    if (tab.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'
+    if (tab.id === 'billing') return userRole === 'owner'
     /* ══ 🔴 THE SOCIAL TAB FOLLOWS THE PLAN (10 October 2026 · launch) ═══════════════════════════════
      * ⛔ IT WAS `places_posts_preview` — a Feature in no plan, held through `trucks.feature_overrides`
      * and granted to one truck while this was being built. **It is `schedule_graphics` now**: Pro, Max
      * and trial, the same key the routes enforce and the same key the comparison table's 'Social media
      * posts' row is mapped to.
-     * ⚠️ A truck without it sees NO Social tab at all — not a greyed one — so nothing about the top bar
-     * changes for them. 🔴 THAT IS THE EXISTING PATTERN FOR THIS BAR and it is the right one here: a tab
-     * that opens a refusal is worse than no tab, and Billing is where a plan is changed. */
+     * ⚠️ A truck whose OVERRIDE switches it off sees NO Social tab at all — not a greyed one: no plan change would turn
+     * it back on, so a tab that opens a refusal would be worse than no tab.
+     * 🔴 A truck whose PLAN switches it off (Stage A2, e.g. Pay as you go) DOES see the tab, and it opens on the one
+     * upgrade prompt (<FeatureGate> in SocialPosts) naming the plan that has social media posts. */
     if (tab.id === 'social') {
       return tab.roles.includes(userRole)
-        && canAccess(truck?.plan ?? 'starter', 'schedule_graphics',
-          truck?.feature_overrides ?? {}, truck?.trial_expires_at ?? null)
+        && featureAccessView(truck, planCatalog, truck?.country ?? null).block('schedule_graphics') !== 'override'
     }
     return tab.roles.includes(userRole)
   })
@@ -1374,6 +1407,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // behaviour. Not `?? true`; that default belongs to the context, for a different question.
   return (
     <CountrySettingsProvider settings={countrySettings}>
+    <PlanCatalogProvider catalog={planCatalog}>
     <TruckTimeContext.Provider value={truck.time ?? null}>
     <PricingPolicyProvider hidePricing={truck.hide_pricing ?? false}>
     <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern): fixed-viewport column, bars are shrink-0, only <main> scrolls — keeps the header+tabs locked in the iPad WKWebView where stacked position:sticky-against-body-scroll was unreliable. Matches the dashboard. */}
@@ -1583,7 +1617,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           }}
         />}
         {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} notices={notices} />}
-        {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast}
+        {activeTab === 'payments'  && <PaymentsTab  token={token} onTrial={onTrialPlan} features={featureAccessView(truck, planCatalog, truck?.country ?? null)} showToast={showToast}
           /* Phase 3 screens: after the online payments section and before "Walk-up payments" — the new
            * "Tax, tips and fees" card (only where tax is added at checkout), then "Taking payment", moved
            * here from Settings unchanged (named difference 1). */
@@ -1618,7 +1652,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </button>
             <div className="text-center mb-4">
               <div className="text-3xl mb-2">🎉</div>
-              <h2 className="text-xl font-black text-slate-900">{t('trialPopup.title')}</h2>
+              {/* Stage A2: the trial's length is data (plans.trial_months of the truck's effective plan). */}
+              <h2 className="text-xl font-black text-slate-900">{t('trialPopup.title', { months: String(trialPopupMonths ?? 'none') })}</h2>
               <p className="text-sm text-slate-500 mt-1">
                 {t.rich('trialPopup.ends', {
                   hasDate: truck.trial_expires_at ? 'yes' : 'no',
@@ -1629,7 +1664,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
             <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4 text-center">
               <p className="text-sm font-semibold text-orange-800">
-                {t('trialPopup.offer')}
+                {/* Stage B: "Every feature free for {N} months" — N is the trial plan's plans.trial_months. */}
+                {t('trialPopup.offer', { hasMonths: trialPopupMonths ? 'yes' : 'no', months: trialPopupMonths ?? 0 })}
               </p>
               {/* 🔴 SAME CORRECTION AS THE BILLING TAB, 14 August 2026 — one false sentence, two copies.
                   This read "You won't be charged anything until your trial ends on {date}." Nothing
@@ -1640,13 +1676,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                   not-started trial — but the old code carried a `: 'soon'` fallback that would have
                   produced "your trial ends on soon", and replacing it with a sentence that reads
                   correctly costs nothing and removes the trap if the guard ever moves.
-                  🔴 THE SENTENCE BELOW IS NOT MINE AND IS NOT CORRECTED — see the report. It promises a
-                  Starter-tier fallback at expiry that IS NOT BUILT. It is left exactly as found because
-                  rewriting it was outside this task's brief, not because it is true. */}
+                  🟢 STAGE B: its fallback is no longer the retired "free Starter tier" — it names the plan a trial
+                  moves to when it ends (public.plans' expiry fallback), from the data. */}
               <p className="text-sm text-orange-700 mt-1">
                 {t.rich('trialPopup.body', {
                   hasDate: truck.trial_expires_at ? 'yes' : 'no',
                   date: truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at, mgTime!) : '',
+                  fallback: planCatalog ? expiryFallbackPlan(planCatalog).name : '',
                   b: chunks => <strong>{chunks}</strong>,
                 })}
               </p>
@@ -1711,6 +1747,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     </div>
     </PricingPolicyProvider>
     </TruckTimeContext.Provider>
+    </PlanCatalogProvider>
     </CountrySettingsProvider>
   )
 }
@@ -2767,6 +2804,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
    *  completion callback so the wizard can advance itself once they are saved. */
   onVerifySuccess: (events: unknown[], onSaved?: () => void) => void
 }) {
+  // Stage A2: override → the truck's EFFECTIVE plan's switch → allowed (lib/useFeatures.ts, the plan catalogue).
+  const features = useFeatures(truck)
   // Language Phase 1d: the editor's words and the import wizard's words, in the truck's locale.
   const t = useT('manageMenu')
   const ti = useT('manageMenuImport')
@@ -2797,7 +2836,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const [uploadingItemPhoto, setUploadingItemPhoto] = useState(false)
   // PRE-ORDER (V7.8 global-config): the item editor now has ONLY an include toggle (preorder_enabled);
   // timing/action live globally in Settings → Pre-orders. No per-item bulk picker here anymore.
-  const preorderCan = canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  const preorderCan = features.can('advance_preordering')
 
   // Optimistic local item state — mirrors `items` prop but updates instantly on toggle/delete
   const [localItems, setLocalItems] = useState<Item[]>(items)
@@ -7688,6 +7727,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   onClearPendingVerify?: () => void
   onPendingCount?: (n: number) => void
 }) {
+  // Stage A2: override → the truck's EFFECTIVE plan's switch → allowed (lib/useFeatures.ts, the plan catalogue).
+  const features = useFeatures(truck)
   // 🔴 THE TRUCK'S CLOCK AND STYLE (Phase 2B) — every "today", "past" and date or time on this tab.
   const ts = useTruckTime()
   const tz = ts.timeZone
@@ -7709,7 +7750,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * lib/features.ts. It gates the tick in the Add/Edit form and the "Link & QR" button on a row.
    * ⚠️ THE SERVER CHECKS IT TOO, on `upsert_event`, `private_link` and `private_new_link`. This
    * decides what is DRAWN. */
-  const canPrivateEvents = canAccess(truck.plan, 'private_events', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  const canPrivateEvents = features.can('private_events')
   /* ── 🔴 SOCIAL MEDIA — THE PLAN KEY (10 October 2026 · launch) ───────────────────────────────────
    * ⛔ IT WAS `places_posts_preview`, a Feature in NO PLAN that `canAccess` could only grant from
    * `trucks.feature_overrides` — one truck held it while the surfaces were being built.
@@ -7720,7 +7761,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * usual-type pre-selection, event types, private events or pricing. Those are not part of this
    * feature and never were — and switching one of them off to tidy a gate is the mistake the "no plan
    * gate on Places" note in `/api/manage` was written to prevent. */
-  const canPlacesPosts = canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  const canPlacesPosts = features.can('schedule_graphics')
   /* ══ ⛔ THE GATE MOVED UP A LEVEL ON 7 October 2026 ════════════════════════════════════════════════
    * The key used to decide whether Schedule showed a third pill. Social media is its own TOP TAB now
    * and the gate is on the tab itself (see `tabs` in the page body), so Schedule's two pills are the
@@ -8693,6 +8734,22 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
      * row, not two: a second, empty row would still add the 10px row gap. Every truck (Dominic, 18 October).
      * From 640px up nothing changes. */
     const vanName = vans.length > 1 && event.van_id ? (vans.find(v => v.id === event.van_id)?.name || '') : null
+    /* ── 🔴 APPROVE / EDIT / REJECT — BUILT ONCE, SHOWN IN ONE PLACE PER WIDTH (19 October 2026, docs/pending-card-buttons-report.md)
+     * From 640px up they sit on the Event type chips' row (EventTypeSelect `actions`), right-aligned — the row of their
+     * own at the bottom was a wasted row. Below 640px nothing changed: the full-width row at the bottom, after the
+     * warnings. The SAME element is placed twice and each place is hidden at the other's widths (`max-sm:hidden` /
+     * `sm:hidden`), so exactly one Approve is ever visible. A pending card with no chooser (a past one) keeps the bottom
+     * row at every width. */
+    const chooserShown = pending && !isPast
+    const pendingButtons = (
+              <div className="flex gap-2 sm:justify-end">
+                <button disabled={needsTimes} title={needsTimes ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS('card.approve')}</button>
+                {!isPast && (
+                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">{tS('card.edit')}</button>
+                )}
+                <button onClick={() => handleRejectScrapedEvent(event)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">{tS('card.reject')}</button>
+              </div>
+    )
 
     return (
       <Card key={event.id}>
@@ -8876,7 +8933,11 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 value={pendingTypeFor(event)}
                 onChange={v => setPendingTypes(m => ({ ...m, [event.id]: v }))}
                 privateName={pendingNames[event.id] ?? event.private_name ?? ''}
-                onPrivateName={v => setPendingNames(m => ({ ...m, [event.id]: v }))} />
+                onPrivateName={v => setPendingNames(m => ({ ...m, [event.id]: v }))}
+                actions={<div className="max-sm:hidden" data-pending-actions-row>{pendingButtons}</div>}
+                actionsNote={needsTimes && !privateTimesPrompt
+                  ? <p className="max-sm:hidden text-xs text-slate-500 text-right" data-approve-reason>{tS('card.approveNeedsTimes')}</p>
+                  : null} />
               {/* ⛔ THE MISSING-TIMES PROMPT, WHEN PRIVATE IS SELECTED. A private event taking orders
                 * by link needs times: the guest's page shows a closing time and the ordering window
                 * derives from them. The scraper never captures times for these rows, so this is the
@@ -8963,24 +9024,21 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             </div>
           )}
 
-          {/* ══ 🔴 PENDING ACTIONS — ONE ROW, LAST, AT EVERY WIDTH (16 October 2026) ═══════════════════════
-              It was two copies: this row on phones (`sm:hidden`) and a compact one inside the main row from 640px
-              up, which sat beside the type chooser and helped squeeze the details to nothing. One row now, after
-              the chooser and the warnings — full-width buttons on a phone, compact from 640px.
+          {/* ══ 🔴 PENDING ACTIONS — LAST, ON A PHONE (16 October 2026; from 640px up on the chips' row since 19 October —
+              see `pendingButtons` above) ════════════════════════════════════════════════════════════════════════
+              Until 16 October it was two copies: this row on phones (`sm:hidden`) and a compact one inside the MAIN row
+              from 640px up, which sat beside the details and helped squeeze them to nothing. Then one row, after the
+              chooser and the warnings, at every width. Since 19 October, from 640px up, the same buttons (one element,
+              `pendingButtons`) sit on the chips' row instead — BELOW the details, so they cannot squeeze them — and
+              this row is `sm:hidden` wherever the chooser shows. A phone is unchanged: full-width buttons, last.
               Approve: with a conflict, the FIRST click reveals the acknowledge in the banner above
               (warn-with-friction); the explicit "approve anyway" there confirms. No conflict → confirms.
               ⚠️ IT IS OFF UNTIL THE EVENT HAS TIMES (the server refuses a confirm without them), and a disabled
               button with only a hover title said nothing on a phone — Dominic read it as "greyed out". So the
               card now SAYS why, in words, unless the private event's own times prompt above already does. */}
           {pending && (
-            <div className="mt-3" data-pending-actions>
-              <div className="flex gap-2 sm:justify-end">
-                <button disabled={needsTimes} title={needsTimes ? tS('card.setTimeFirst') : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">{tS('card.approve')}</button>
-                {!isPast && (
-                  <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent(editFormFor(event)); seedTypePill(event) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">{tS('card.edit')}</button>
-                )}
-                <button onClick={() => handleRejectScrapedEvent(event)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">{tS('card.reject')}</button>
-              </div>
+            <div className={chooserShown ? 'mt-3 sm:hidden' : 'mt-3'} data-pending-actions>
+              {pendingButtons}
               {needsTimes && !privateTimesPrompt && (
                 <p className="mt-1.5 text-xs text-slate-500 sm:text-right" data-approve-reason>{tS('card.approveNeedsTimes')}</p>
               )}
@@ -10597,15 +10655,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 // 🔴 A NULL REPLY IS A CORRECT ANSWER, NOT AN ERROR. It is the IGNORE bucket — spam, gibberish, catering
 // requests — behaving exactly as it does live, where nothing is sent. Rendering it as a blank box or a
 // failure would misrepresent the one bucket an operator is most curious about.
-// ── COMING-SOON STATE, READ FROM THE PRICING MATRIX RATHER THAN HARDCODED ──────────────────────────
-// FEATURE_SECTIONS is already imported by this file for the Billing tab, so no change to
-// lib/plan-features.ts was needed to reach these flags.
-// ⚠️ THERE IS ONE ROW FOR BOTH CHANNELS, NOT TWO. The matrix carries "Messenger & Instagram
-// auto-replies" as a single row with a comment forbidding a re-merge with WhatsApp. So one lookup
-// drives both rows below; there is no per-channel flag to read and inventing one here would be a
-// second source of truth.
-const MESSENGER_INSTAGRAM_ROW: PlanRowId = 'messenger_instagram_replies'   // the row's code id (Language Phase 0), not its name
-
+// ── COMING-SOON STATE FOR MESSENGER & INSTAGRAM — ONE FLAG (plans-data-model Stage A, 19 October 2026) ───────────────
+// ⛔ IT WAS READ OUT OF THE OLD PRICING MATRIX (deleted, Stage B); the state is `MESSENGER_INSTAGRAM_LIVE` in
+// lib/whatsapp-live.ts, and the plan table's row (lib/feature-table.ts) derives its "Coming soon" from the same flag.
 // ── 🔴 THE ONE SWITCH FOR WHATSAPP. FLIP IT TO true WHEN META APPROVES. ────────────────────────────
 // Operator decision, 21 August 2026: WhatsApp auto-replies are shown as "Coming soon" and greyed out
 // until Meta approves the integration. The feature IS built and IS shipped at Pro — this is about
@@ -10620,19 +10672,6 @@ const MESSENGER_INSTAGRAM_ROW: PlanRowId = 'messenger_instagram_replies'   // th
 // cycle. Same flag, same name, one definition — do NOT reintroduce a local copy.
 // ⚠️ The `boolean` annotation stays where it is declared, for the reason the note above gives:
 // it keeps both JSX branches type-checked while the switch is off.
-
-function isRowComingSoon(rowId: PlanRowId): boolean {
-  for (const section of FEATURE_SECTIONS) {
-    const row = section.rows.find(r => r.id === rowId)
-    if (row) return row.pro === 'coming_soon' || row.max === 'coming_soon'
-  }
-  // 🔴 ROW NOT FOUND => TREAT AS COMING SOON, AND THE DIRECTION IS DELIBERATE. This is keyed on a row
-  // NAME STRING, and the manual already records that renaming a row silently disarms
-  // findPlanParityViolations(), which reads the same names. The same fragility applies here. An
-  // unfound row therefore renders as "coming soon" — promising nothing — rather than as live, which
-  // would be a control that does nothing. Fail toward the smaller claim.
-  return true
-}
 
 function WhatsAppReplyPreview({ token }: { token: string }) {
   // Language Phase 1d Part 2: every word is `manageWhatsApp.preview`.
@@ -10870,8 +10909,8 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
  * broken image or a spinner — this is a preview nobody is waiting for, and a spinner on a card the
  * operator has not interacted with invents urgency that is not there.
  *
- * ⚠️ `locked` only changes the CURSOR AND THE TOOLTIP. It does NOT withhold the image: below the plan
- * the operator is meant to see the branded code with their own logo. What the lock governs is the
+ * ⚠️ `locked` only changes the CURSOR AND THE TOOLTIP. It does NOT withhold the image: when the feature
+ * is switched off the operator still sees the branded code with their own logo. What the lock governs is the
  * ENLARGED view and the download, and that decision is taken in `openQrView`, not here.
  */
 function QrPreview({ src, alt, onOpen, locked }: {
@@ -10902,9 +10941,9 @@ function QrPreview({ src, alt, onOpen, locked }: {
 // 🔴 CHANGED 16 September 2026 — READ THIS BEFORE ASSUMING THE SDK IS NEVER LOADED. This used to say
 // "Pizzeria Gusto renders the ELSE branch, so this never mounts for it and connect.facebook.net is never
 // contacted from its page." That is NO LONGER TRUE. With WHATSAPP_LIVE true, every truck whose plan
-// grants whatsapp_replies renders the LIVE branch — Pizzeria Gusto included (plan 'trial', and
-// TRIAL_FEATURES spreads MAX_FEATURES) — so this component mounts and Meta's SDK IS fetched on their
-// Settings tab. ⚠️ Only a STARTER truck now renders the else branch, because canAccess denies it there.
+// grants whatsapp_replies renders the LIVE branch — Pizzeria Gusto included (its trial plan has every feature) — so
+// this component mounts and Meta's SDK IS fetched on their Settings tab. ⚠️ Only a truck whose PLAN switches
+// whatsapp_replies off (Stage A2: Pay as you go, and an ended trial) or whose override does renders the else branch.
 // The mechanism above is unchanged; only which trucks reach it has.
 //
 // ── WHAT WAS WRONG, AND WHY BOTH HALVES HAD TO MOVE ─────────────────────────────────────────────────
@@ -11277,6 +11316,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   onOpenWalkthrough: () => void
   /** Opens Schedule › Events with the Schedule settings modal already up — one press. */
 }) {
+  // Stage A2: override → the truck's EFFECTIVE plan's switch → allowed (lib/useFeatures.ts, the plan catalogue).
+  const features = useFeatures(truck)
   /* ── Language Phase 1d: every word on this tab is in messages/ — `manageSettings`, and the shared copy modules'
    * own namespaces (settingsCopy, serviceSettings, offlineProtection; the verify sentences are Schedule's
    * `manageScheduleVerify`). The truck's language decides, so a US truck reads "Your trucks", "Pickup times". */
@@ -11332,7 +11373,6 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   const [renameVanName, setRenameVanName] = useState('')
   const [deletingVan, setDeletingVan] = useState<Van | null>(null)
   const [showVanBillingModal, setShowVanBillingModal] = useState(false)
-  const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)
   const [generatingQR, setGeneratingQR] = useState(false)
   // ── QR PREVIEWS — SMALL, LAZY, CACHED ──────────────────────────────────────────────────────────
   // 🔴 THE CACHE IS THIS STATE OBJECT, keyed by style, and it is written once. Compositing a logo onto
@@ -11343,7 +11383,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // frame would otherwise both see an empty cache and both generate.
   const qrPreviewsRequested = useRef(false)
   const qrSelectorRef = useRef<HTMLDivElement | null>(null)
-  // The enlarged view. `locked` is the below-plan branded case: the modal opens and explains, and the
+  // The enlarged view. `locked` is the switched-off branded case: the modal opens and explains, and the
   // full-size image is never put in the DOM at all.
   const [qrModal, setQrModal] = useState<{ style: 'standard' | 'branded'; dataUrl: string | null; displayUrl?: string | null; showsPlaceholder?: boolean; locked?: boolean } | null>(null)
   const [copiedOrderLink, setCopiedOrderLink] = useState(false)
@@ -11369,7 +11409,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   const [qrCodeStyle, setQrCodeStyle] = useState<'standard' | 'branded'>(() => {
     const stored = truck.qr_code_style ?? 'standard'
     const stillInSetup = truck.setup_step != null && truck.setup_step !== 'done'
-    const canBrand = canAccess(truck.plan, 'branded_qr_code', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+    const canBrand = features.can('branded_qr_code')
     if (stored === 'standard' && stillInSetup && canBrand && truck.logo_storage_path) return 'branded'
     return stored
   })
@@ -11379,7 +11419,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // PRE-ORDERS (V7.8 global-config): single-source — the deadline rule lives ONCE on the truck row
   // (gType/gVal/gAction → update_truck); per-item stores ONLY inclusion (preorder_enabled → the trimmed
   // set_item_preorder_bulk). The popup is a pure inclusion picker.
-  const preorderCan = canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  const preorderCan = features.can('advance_preordering')
   const [poSel, setPoSel] = useState<Set<string>>(new Set())
   const [poModalOpen, setPoModalOpen] = useState(false)
   // MASTER toggle (§47): local mirror of truck.preorders_enabled, written via the update_truck path.
@@ -11541,7 +11581,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
    * 🔴 SO THE PREVIEW IS RE-DRAWN ONTO A 128x128 CANVAS AND THAT COPY IS WHAT REACHES THE PAGE. Saving
    * it yields 128px, which prints as a blurred square at any usable size.
    * ⚠️ IT IS A DETERRENT, NOT THE CONTROL. The control is that the enlarged view and the download are
-   * refused for branded below the plan — see the modal. This only removes the easy route.
+   * refused for branded when it is switched off — see the modal. This only removes the easy route.
    */
   /**
    * ── 🔴 THE NO-LOGO BRANDED PREVIEW SHOWS THE RESERVED CENTRE, LABELLED. ─────────────────────────
@@ -11635,7 +11675,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
    * `qrPreviewsRequested` guards a second pass, so the two composites happen ONCE per mount and are then
    * served from `qrPreviews`.
    * ⚠️ BOTH STYLES ARE BUILT, INCLUDING BRANDED BELOW THE PLAN — that is deliberate and is the point of
-   * item 5: a truck below the plan SEES what they would get, with their own logo, and cannot take it.
+   * item 5: a truck with branded codes switched off SEES what they would get, with their own logo, and cannot take it.
    */
   useEffect(() => {
     const el = qrSelectorRef.current
@@ -11664,8 +11704,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
 
   /**
    * ── THE ENLARGED VIEW. ───────────────────────────────────────────────────────────────────────────
-   * 🔴 THE PLAN GATE IS THE EXISTING ONE — `can('branded_qr_code')`, the same call the option cards
-   * already use. No second mechanism, no new predicate.
+   * 🔴 THE GATE IS THE EXISTING ONE — `can('branded_qr_code')`, the same call the option cards already
+   * use. Since plans-data-model (Stage A) it refuses only when an override switches the feature off.
    * ⚠️ WHEN IT REFUSES, NO FULL-SIZE IMAGE IS BUILT AT ALL. The modal opens carrying `locked: true` and
    * a null dataUrl, so there is nothing in the DOM to save and nothing to download — the refusal is the
    * absence of the artefact, not a hidden button.
@@ -11693,12 +11733,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     setGeneratingQR(false)
   }
 
-  const can = (feature: Feature) => canAccess(
-    truck.plan,
-    feature,
-    truck.feature_overrides ?? {},
-    truck.trial_expires_at ?? null
-  )
+  const can = (feature: Feature) => features.can(feature)
 
   // ── 🔴 THE WHATSAPP SETUP PREVIEW — NOW REDUNDANT, DELIBERATELY KEPT ────────────────────────────
   // ⚠️ SUPERSEDED 16 September 2026. `WHATSAPP_LIVE` is TRUE, so this expression short-circuits to true
@@ -11708,10 +11743,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // 🔴 IT IS KEPT RATHER THAN DELETED so the flag can be switched back to false without also having to
   // rebuild the preview path: flip the flag and the override is load-bearing again, unchanged. Deleting
   // it would make a revert a two-file job under time pressure.
-  // 🔴 IT IS DELIBERATELY NOT A `can()` CALL. `canAccess` consults PLAN_FEATURES, and
-  // `TRIAL_FEATURES = [...MAX_FEATURES]` — so a key in any plan list would switch this on for EVERY
-  // trial truck, Pizzeria Gusto included. hasWhatsAppSetupPreview reads the per-truck override map and
-  // nothing else. See lib/whatsapp/setup-preview.ts.
+  // 🔴 IT IS DELIBERATELY NOT A `can()` CALL. `canAccess` allows every feature that neither an override nor the truck's
+  // plan switches off (Stage A2), so it would switch this on for nearly every truck, Pizzeria Gusto included.
+  // hasWhatsAppSetupPreview reads the per-truck override map and nothing else. See lib/whatsapp/setup-preview.ts.
   // ⚠️ For every truck WITHOUT the key this is `false || false` — byte-identical to the previous
   // expression, so nothing any other truck sees changes.
   const whatsAppSetupVisible = WHATSAPP_LIVE || hasWhatsAppSetupPreview(truck.feature_overrides)
@@ -11766,37 +11800,31 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // truck context and would have shown a suppressed operator a real add-on price the moment the global
   // flag flipped.
   const vanMask = usePriceMask()
-  // ── THE PRICE OF EACH ADDITIONAL VAN BEYOND THE INCLUDED COUNT ──────────────────────────────────────
-  // 🔴 `VAN_ADDON_PRICE` — a map of RAW POUNDS ({ pro: 29, max: 49 }) invisible to a "£29" grep and read
-  // for logic, not only display — IS GONE (10 October 2026). An extra van costs the plan's own monthly
-  // price from the truck's country settings, which is what that map held. Minor units, like every price.
+  // ── THE PRICE OF EACH ADDITIONAL VAN (plans-data-model Stage A, 19 October 2026) ─────────────────────────────────
+  // 🔴 IT IS THE EFFECTIVE PLAN'S `extra_van_monthly_minor` IN THE TRUCK'S COUNTRY (public.plan_prices, lib/plans.ts),
+  // not the plan's monthly price from the retired country_settings columns. ⛔ `INCLUDED_VANS` ({ starter: 1, pro: 2,
+  // max: 999, trial: 999 }) IS GONE with the plan names it keyed on: the plan's `included_vans` (Stage A2, public.plans)
+  // are included, and each further van costs the extra-van price — a plan with none (the internal plans, Pay as you go)
+  // adds vans free, exactly as trial and demo did.
   // TODO: Wire to Stripe billing API when payments are integrated.
   const vanSettings = useCountrySettings()
+  const vanCatalog = usePlanCatalog()
   // Language Phase 1e: the masked word ('TBC') is shown in the truck's locale — US trucks read 'TBD'. GB identical.
-  // A switched-off country's truck has no plan prices yet: the add-on is built from a placeholder row and always
-  // masked ("TBD"), rather than throwing (see BillingTab). GB unchanged.
-  const vanPricesDecided = planPricesDecided(vanSettings)
-  const vanPx = (val: string) => priceText(vanPricesDecided ? vanMask(val) : maskPriceFor(val, true), vanSettings.locale)
-  const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, withPlaceholderPlanPrices(vanSettings))
+  // 🔴 A SWITCHED-OFF COUNTRY'S TRUCK ALWAYS SEES IT MASKED, as before Stage A (then: "its plan prices are undecided").
+  // plan_prices now has US rows, so without this a US truck would see a real add-on price the moment pricing is
+  // published — before the US is switched on. `enabled` is the country's own switch, not a plan fact.
+  const vanPx = (val: string) => priceText(vanSettings.enabled ? vanMask(val) : maskPriceFor(val, true), vanSettings.locale)
+  const vanAddonMinor = extraVanMonthlyMinor(truck, vanCatalog, vanSettings.countryCode)
+  // Stage A2: the vans the effective plan includes (plans.included_vans, 1 for every plan as seeded); each van above it
+  // costs the extra-van price.
+  const vansIncluded = includedVans(truck, vanCatalog)
   const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, moneyFormatOf(vanSettings), unit)
-  const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
 
   const handleAddVanClick = () => {
     const confirmed = window.confirm(t('vans.addConfirm'))
     if (!confirmed) return
-    const included = INCLUDED_VANS[truck.plan] ?? 1
-    const addonPrice = vanAddonMinor
-    if (vans.length >= included) {
-      if (addonPrice > 0) {
-        setShowVanBillingModal(true)
-      } else if (truck.plan === 'starter') {
-        setShowVanUpgradeModal(true)
-      } else {
-        setAddingVan(true)
-      }
-    } else {
-      setAddingVan(true)
-    }
+    if (vans.length >= vansIncluded && vanAddonMinor > 0) setShowVanBillingModal(true)
+    else setAddingVan(true)
   }
 
   const saveSetting = async (key: string, value: string | boolean | number | null) => {
@@ -13458,7 +13486,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           scan time, so once this card's setup is finished the SAME PRINTED CODE starts sending customers
           to the operator's own address. Reading them in this order is what makes that obvious; separated,
           the two read as unrelated features and the operator assumes a new code is needed. */}
-      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} setupStartedAt={truck.custom_domain_setup_started_at ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} time={truck.time ?? null} />}
+      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} truck={truck} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} setupStartedAt={truck.custom_domain_setup_started_at ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} time={truck.time ?? null} />}
       </section>
       {/* ══ SECTION: QR code ══ */}
       <section
@@ -13595,21 +13623,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 <p className="text-sm font-semibold text-slate-800">{t('qr.branded')}</p>
                 <p className="text-xs text-slate-400">{t('qr.brandedHelp')}</p>
               </div>
-              {/* 🔴 BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO, AND THAT IS THE POINT — a
-                  locked feature you cannot picture is not a feature anybody upgrades for. What they
-                  cannot do is enlarge it or download it: clicking explains the lock instead. */}
+              {/* 🔴 SWITCHED OFF FOR THIS TRUCK (a feature override — no plan gates this since plans-data-model,
+                  Stage A). They still see it, with their own logo; what they cannot do is enlarge it or
+                  download it: clicking says it is switched off instead. */}
               <QrPreview
                 src={qrPreviews.branded}
                 alt={t('qr.brandedAlt')}
                 locked
                 onOpen={() => openQrView('branded')}
-              />
-              <FeatureGate
-                feature="branded_qr_code"
-                plan={truck.plan}
-                overrides={truck.feature_overrides}
-                trialExpiresAt={truck.trial_expires_at}
-                showUpgrade={true}
               />
             </div>
           )}
@@ -13622,7 +13643,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             are waiting for — it opens the bigger view of the style they have chosen, and the download
             lives in there.
             ⚠️ It follows the SELECTED style, and the selected style can be `branded` on a truck that has
-            since dropped below the plan — `openQrView` refuses that case exactly as a click on the
+            since had it switched off — `openQrView` refuses that case exactly as a click on the
             locked preview does, through the same call. One gate, two doors.
             ⚠️ RIGHT-ALIGNED AND SIZED TO ITS TEXT, unchanged from the previous pass. */}
         {orderUrl && (
@@ -13653,15 +13674,6 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <p className="text-sm text-slate-600">
                     {t('qr.lockedBody')}
                   </p>
-                  <div className="mt-3">
-                    <FeatureGate
-                      feature="branded_qr_code"
-                      plan={truck.plan}
-                      overrides={truck.feature_overrides}
-                      trialExpiresAt={truck.trial_expires_at}
-                      showUpgrade={true}
-                    />
-                  </div>
                 </>
               ) : qrModal.dataUrl ? (
                 <div className="flex flex-col items-center gap-4">
@@ -14157,47 +14169,20 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               ) : (
                 <>
                   {/* ── 🔴 THE ELSE BRANCH — WHAT A TRUCK WITHOUT THE FEATURE SEES. ───────────────────
-                      🔴 WHO REACHES IT CHANGED ON 16 September 2026. It used to be every truck without the
-                      preview override, Pizzeria Gusto included. With WHATSAPP_LIVE true it is now ONLY
-                      trucks whose plan does not grant `whatsapp_replies` — i.e. STARTER. Pizzeria Gusto
-                      (plan 'trial') renders the live branch above.
-                      🔴 THE DISABLED NUMBER FIELD IS GONE (16 September 2026). It showed `whatsapp_sender`
-                      in a greyed `<input>` with no badge and no sentence saying why it could not be typed
-                      in — so the one thing starter saw was a control that looked broken. A disabled input
-                      is not an explanation; it is a question the page refuses to answer. Nothing was lost
-                      with it: the value was read-only here, and the operator's public WhatsApp number is
-                      edited in its own field elsewhere on this tab.
-                      ⚠️ "Requires a WhatsApp Business account." WENT WITH IT, deliberately. It is a
-                      prerequisite for setting the feature up, and this truck cannot set it up at any
-                      price without changing plan first — leading with Meta's requirement answered a
-                      question starter has not reached yet. The plan sentence is the one that applies.
-                      🔴 THE UPGRADE LINK IS THE PAGE'S EXISTING PATTERN, NOT A NEW ONE: the same
-                      `?tab=billing` / "Upgrade →" anchor components/FeatureGate.tsx renders, wrapped in
-                      the SAME `purchaseCtaAllowed()` guard. That guard is App Store 3.1.1/3.1.3
-                      compliance (lib/commerce-policy.ts) and is NOT optional decoration — a purchase CTA
-                      must not render inside the native iOS shell. It is belt and braces here, because the
-                      whole card already sits inside `!isNativeApp()`, and it stays because the predicate
-                      is how this codebase states the rule and a future change to that wrapper must not
-                      silently ship an iOS violation.
-                      ⚠️ FeatureGate ITSELF WAS NOT USED. It renders its own panel with its own sentence
-                      ("This feature requires the Pro plan"), its own price line and its own border — which
-                      would put a second, different message beside the exact wording this box is required
-                      to show, inside a box whose layout is fixed. The LINK is the reusable part; the copy
-                      is not.
+                      🔴 WHO REACHES IT CHANGED AGAIN with plans-data-model (Stage A, docs/plans-data-model-report.md):
+                      no plan gates `whatsapp_replies` any more, so this is ONLY a truck whose feature
+                      override switches it off. The plan sentence and the "Upgrade →" link that stood here
+                      are gone — there is no plan to upgrade to that would change the answer.
                       ⚠️ If `WHATSAPP_LIVE` is ever flipped back to false, EVERY truck lands here and this
-                      plan sentence becomes wrong for Pro and Max trucks. Restore a coming-soon branch in
-                      that change — do not leave this one to cover both states. */}
+                      sentence becomes wrong. Restore a coming-soon branch in that change. */}
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <p className="text-sm font-bold text-slate-800">WhatsApp</p>
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">{tW('card.notOnPlan')}</p>
-                  {purchaseCtaAllowed() && (
-                    <p className="mt-1">
-                      <a href={manageTabHref('billing')} className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">
-                        {tW('card.upgrade')}
-                      </a>
-                    </p>
-                  )}
+                  {/* Stage A2: off because of the PLAN → the one upgrade prompt naming the plan that has auto-replies;
+                      off because of an OVERRIDE → "switched off for your truck", as before. */}
+                  {features.block('whatsapp_replies') === 'plan'
+                    ? <div className="mt-2"><PlanPrompt feature="whatsapp_replies" upgradeTo={features.upgradeTo('whatsapp_replies')} /></div>
+                    : <p className="text-xs text-slate-500 mt-1">{tW('card.switchedOff')}</p>}
                 </>
               )}
 
@@ -14256,7 +14241,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 🔴 RE-ADDED 21 August 2026 AND ONLY BECAUSE THE NATIVE HIDE COVERS THEM. Apple rejects
                 non-functional controls under Guideline 2.1; these carry no input and no button, so there
                 is no control to operate — but they stay inside the `!isNativeApp()` wrapper regardless. */}
-            {isRowComingSoon(MESSENGER_INSTAGRAM_ROW) && (
+            {!MESSENGER_INSTAGRAM_LIVE && (
               <>
                 <div className="rounded-xl border border-slate-200 p-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
@@ -14343,7 +14328,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             <div>
               <h3 className="text-lg font-semibold text-slate-900">{t('vanBilling.title')}</h3>
               <p className="text-sm text-slate-500 mt-2">
-                {t.rich('vanBilling.body', { plan: truck.plan === 'pro' ? 'pro' : 'other', price: vanPx(vanAddonLabel('month')), b: chunks => <strong>{chunks}</strong> })}
+                {/* Stage B: the plan's name, the vans it includes (plans.included_vans) and the extra-van price, all data. */}
+                {t.rich('vanBilling.body', { plan: effectivePlan(truck, vanCatalog).plan.name, vans: vansIncluded, price: vanPx(vanAddonLabel('month')), b: chunks => <strong>{chunks}</strong> })}
               </p>
               <div className="mt-3 bg-slate-50 rounded-xl px-4 py-3">
                 <p className="text-xs text-slate-500">
@@ -14369,39 +14355,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         </div>
       )}
 
-      {/* Van upgrade modal (starter plan) */}
-      {showVanUpgradeModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
-            <h3 className="text-lg font-semibold text-slate-900">{t('vanUpgrade.title')}</h3>
-            <p className="text-sm text-slate-500">
-              {t('vanUpgrade.body')}
-            </p>
-            {/* 🔴 iOS (App Store 3.1.1/3.1.3): the "View plans" CTA is suppressed, the EXPLANATION is not.
-                An operator who hits the van limit still has to be told why the button did nothing — a
-                silent no-op is a worse product than a limit with a reason. Cancel keeps `flex-1`, so as
-                the only child it fills the row and no empty half is left behind.
-                ⚠️ href repointed /pricing → ?tab=billing on ALL platforms: /pricing has never existed and
-                this link has been a 404 for every operator since it shipped. See the report. */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowVanUpgradeModal(false)}
-                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
-              >
-                {t('vanUpgrade.cancel')}
-              </button>
-              {purchaseCtaAllowed() && (
-                <a
-                  href={manageTabHref('billing')}
-                  className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm text-center hover:bg-orange-700"
-                >
-                  {t('vanUpgrade.viewPlans')}
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ⛔ THE VAN UPGRADE MODAL ("The Starter plan includes 1 van…") WAS HERE. It was a plan-based upgrade prompt for a plan
+          that no longer exists; every plan can add vans now (Stage A). */}
 
       <p className="text-xs text-slate-400 text-center pb-2">{t('changesSave')}</p>
 
@@ -14524,74 +14479,53 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   // down are BELOW that guard and are a PRE-EXISTING rules-of-hooks violation; they are left exactly as
   // they are rather than moved, because relocating live billing state is not this task. Do not "tidy" these
   // two down to join them.
-  const publishedMask = usePriceMask()
-  // Language Phase 1d Part 2: Billing's own words (messages `manageBilling`). Language Phase 1e: the comparison's rows,
-  // fees, footnotes, plan descriptions and price words are the shared `planFeatures` / `planMeta` messages (the same
-  // ones /features and the plans PDF read), in the truck's country's locale — see `cs` below.
+  // Language Phase 1d Part 2: Billing's own words (messages `manageBilling`). The plan table's words are its own
+  // (components/pricing/PlanTable.tsx — `planTable` / `planFeatures`, in the truck's country's locale).
   const t = useT('manageBilling')
   const billingTime = useTruckTime()
-  // Footnote 2 does not MASK a value, it substitutes a whole different sentence, so it needs the raw
-  // question rather than the masking function.
-  const pricesPublished = usePricesVisible()
-  // 🔴 THE TRUCK'S OWN COUNTRY'S PRICES (10 October 2026). Every price in this tab reads from here — there
-  // is no '£29/mo' literal left in it. Above the `!truck` guard for the same hooks-order reason as above.
+  // 🔴 THE TRUCK'S OWN COUNTRY'S PRICES. Above the `!truck` guard for the hooks-order reason above.
   const countryRow = useCountrySettings()
-  // 🔴 A SWITCHED-OFF COUNTRY'S TRUCK HAS NO PLAN PRICES YET (US dress rehearsal, 18 October 2026): the price
-  // helpers below throw on a NULL price (requirePlanPrice), which took the whole Manage page down — and a trial
-  // truck OPENS on this tab. Undecided ⇒ the helpers read a placeholder row and EVERY amount is masked to the
-  // existing "TBC" / US "TBD" word, exactly as when pricing is unpublished; footnote 2 takes its masked sentence.
-  // A country with prices (GB) gets the same row, the same mask and the same footnote as before.
-  const pricesDecided = planPricesDecided(countryRow)
-  const cs = pricesDecided ? countryRow : withPlaceholderPlanPrices(countryRow)
-  const mask = pricesDecided ? publishedMask : (val: string) => maskPriceFor(val, true)
-  const pricesVisible = pricesPublished && pricesDecided
-  const prices = planPrices(cs)
-  const money = moneyFormatOf(cs)
-  const proMo = perMonthLabel(planMonthlyMinor('pro', cs), money)
-  const maxMo = perMonthLabel(planMonthlyMinor('max', cs), money)
-  const proMonth = perMonthLabel(planMonthlyMinor('pro', cs), money, 'month')
-  const maxMonth = perMonthLabel(planMonthlyMinor('max', cs), money, 'month')
-  const feeRows = transactionRows(cs)
-  const notes = footnotes(cs)
-  // 🔴 MASK FIRST, ON THE CODE, THEN SHOW IT IN THE TRUCK'S WORDS (Language Phase 1e): a price word or the mask's
-  // stand-in becomes its `planFeatures.priceWord` message ("TBC" / US "TBD"); an amount passes through. GB unchanged.
-  const px = (val: string) => priceText(mask(val), cs.locale)
-  const sections = featureSections(cs.locale)
-  const descriptions = planDescriptions(cs.locale)
+  // 🔴 THE PLAN CARD READS THE CATALOGUE (plans-data-model, Stage A — docs/plans-data-model-report.md). Above the
+  // `!truck` guard for the hooks-order reason given above.
+  const catalog = usePlanCatalog()
+  // 🔴 THE PLAN CARD'S MASK (Stage A2): its amounts come from public.plan_prices and are hidden only under the van modal's
+  // rule — the truck's country switched off, or pricing unpublished, or trucks.hide_pricing (components/usePlanPriceLabel).
+  // Stage B: the plan table below reads the same mask.
+  const cardPx = usePlanPriceMask()
   if (!truck) return null
-  const currentPlan = truck.plan
-  // ── Z1: WHICH COLUMNS THE MATRIX SHOWS ──────────────────────────────────────────────────────────
-  // 🔴 `showTrialColumn` REPLACES `trialActive` HERE, and the difference is the NULL case.
-  // `trialActive` meant "a trial that is running NOW" — non-null AND future. Self-serve signup
-  // provisions plan 'trial' with a NULL expiry (the trial has not STARTED), so under the old
-  // condition the Trial column was hidden from the one operator with the most reason to look at it:
-  // the person deciding whether what they have is worth paying for.
-  //
-  // The rule is "has the trial not ENDED", which is a different question from "is it running":
-  //   NULL   → not started → SHOW   (the fix)
-  //   future → running     → SHOW   (unchanged)
-  //   past   → ended       → HIDE   (unchanged)
-  //
-  // ⚠️ `trialActive` WAS REMOVED, NOT LEFT BESIDE THIS. Its only three readers were this literal and
-  // the two spacer rows below, all of which are the same layout decision — so a second condition
-  // would have been dead code, and worse, the spacers MUST agree with the column count or every
-  // section-header row misaligns by one cell. One condition, three readers, no way for them to
-  // disagree.
-  // ⚠️ NO TYPE WIDENING NEEDED: this changes WHEN 'trial' is included, never WHICH values can appear.
-  // The union stays exactly as it was, and still cannot express 'demo' or 'tester' — deliberately.
-  const showTrialColumn = truck.plan === 'trial' &&
-    (truck.trial_expires_at === null || new Date(truck.trial_expires_at) > new Date())
-  const billingPlans: readonly ('trial' | 'starter' | 'pro' | 'max')[] = showTrialColumn
-    ? (['trial', 'starter', 'pro', 'max'] as const)
-    : (['starter', 'pro', 'max'] as const)
-  const isCurrent = (p: 'trial' | 'starter' | 'pro' | 'max') =>
-    p === truck.plan
+  // The table's footnote, in the same locale as the table (the truck's country's).
+  const tPricing = translatorFor(countryRow.locale, 'pricing')
+  // ── THE TRUCK'S PLAN, AS IT APPLIES TODAY ─────────────────────────────────────────────────────────
+  // 🔴 ONE BRANCH FOR EVERY PLAN. The trial / starter / pro-max branches that keyed on the plan string are gone, and
+  // so is the empty tab a demo or tester truck used to get: the card shows whatever plan `effectivePlan` resolves —
+  // its name and description from public.plans, its price from public.plan_prices in the truck's country (the promo
+  // override while it applies, `truckPlanPrice`), and its included online amount. A plan whose end date has passed
+  // shows the expiry-fallback plan, with a line saying so.
+  // ⚠️ "today" for the promo override is the TRUCK's date, not the device's.
+  const planNow = truckPlanPrice(truck, catalog, countryRow.countryCode, { today: getLocalDateInTz(billingTime.timeZone) })
+  const eff = planNow.effective
+  const onTrial = eff.plan.isTrial
   const formatDate = (iso: string) => formatTrialEndDate(iso, billingTime)
+  const formatDay = (ymd: string) => formatYmd(ymd.slice(0, 10), billingTime, { day: 'numeric', month: 'long', year: 'numeric' })
+  // A plan's monthly price as the tab writes it: "Free" at 0 (and for a trial with no price row), "£29/mo" otherwise,
+  // null when there is nothing to say (an internal plan with no price row). Always shown through `cardPx`, the card's mask.
+  const cardMoney = moneyFormatOf(countryRow)
+  const monthlyLabel = (minor: number | null | undefined, isTrial: boolean, unit: 'mo' | 'month' = 'mo') =>
+    minor === null || minor === undefined
+      ? (isTrial ? PRICE_WORD.free : null)
+      : minor === 0 ? PRICE_WORD.free : perMonthLabel(minor, cardMoney, unit)
+  const planMonthly = (row: PlanRow, unit: 'mo' | 'month' = 'mo') =>
+    monthlyLabel(planPriceFor(catalog, row.key, countryRow.countryCode)?.monthlyMinor, row.isTrial, unit)
+  const currentPriceLabel = monthlyLabel(planNow.monthlyMinor, onTrial)
+  // The other public plans, in the table's order — what the purchase buttons offer. An internal plan (demo, tester)
+  // is not offered a purchase: it was given, not bought.
+  const otherPlans = publicPlans(catalog).filter(p => p.key !== eff.plan.key)
+  const offersPlans = (onTrial || eff.plan.isPublic) && otherPlans.length > 0
+  // ⚠️ PRE-EXISTING: these two `useState` calls sit below the `!truck` guard (see the note at the top).
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
-  const [upgradeTarget, setUpgradeTarget] = useState<'pro' | 'max'>('max')
-  const [showMatrix, setShowMatrix] = useState(false)
-  const openUpgrade = (target: 'pro' | 'max') => { setUpgradeTarget(target); setShowUpgradeModal(true) }
-  const plan = truck.plan
+  const [upgradeTarget, setUpgradeTarget] = useState<string>('')
+  const openUpgrade = (target: string) => { setUpgradeTarget(target); setShowUpgradeModal(true) }
+  const upgradePlan = otherPlans.find(p => p.key === upgradeTarget) ?? null
 
   // Pricing gate (shared with FeatureGate + the van add-on) — concrete prices show as "TBC" unless the
   // GLOBAL flag NEXT_PUBLIC_PRICING_PUBLISHED is 'true' AND this truck is not individually suppressed
@@ -14599,165 +14533,6 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   // feature rows are unaffected. See lib/pricing.ts and components/PricingPolicy.tsx.
   // 🔴 The truck reaches this via context, not a prop — every price below is masked correctly without any
   // of the 17 call sites knowing which truck is on screen.
-
-  const matrixContent = (
-    <>
-      {/* Plan columns header with prices — sticks to the TOP of the scrolling <main> (top-0) so the
-          plan/price columns stay visible while scrolling the feature rows. <main> is the app-shell's
-          scroll container and already sits directly under the fixed header+tabs, so the OLD top-[95px]
-          body-scroll offset is wrong here (it stuck the header mid-screen in the iPad WKWebView). z-30
-          keeps it above the rows; bg-white hides rows scrolling beneath. */}
-      {/* Columns are equal height (so their bottom border-b-2 lines align) by matching per-column CONTENT
-          height with items-START — NOT items-stretch, which just padded the shorter columns with empty
-          space below their border, dropping every line down to the tallest column. */}
-      <div className="flex items-start justify-between mb-2 sticky top-0 z-30 bg-white pt-2">
-        <div className="flex-1" />
-        {billingPlans.map(p => (
-          <div key={p} className={`w-14 sm:w-28 text-center pb-3 border-b-2 ${
-            isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
-          }`}>
-            <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
-              isCurrent(p) ? 'text-orange-500' : 'text-slate-400'
-            }`}>{/* The plan's NAME, not its id (Language Phase 1d Part 2) — the column still shows it in capitals. */}{PLAN_META[p].name}</p>
-            {/* ── 🔴 text-[13px] AND whitespace-nowrap ON MOBILE. THIS IS THE "£29/mo£49/mo" FIX. ─────
-                The column is `w-14` (56px) and the price was `text-base` (16px) bold, at which "£29/mo"
-                measures about 56.5px — wider than the column it sits in, with no space character to
-                wrap on. So it overflowed into its neighbour and the two prices ran together. 13px puts
-                it at about 46px with ~5px clear either side; `whitespace-nowrap` makes the no-wrap
-                explicit rather than accidental.
-                ⚠️ ADAPTED, NOT COPIED. The landing table solves the same problem with `--cmp-col:
-                3.6rem` and a `.78rem` price in its own stylesheet; that is its typography, not this
-                page's. What is shared here is the DIAGNOSIS — a price must fit its column and must not
-                wrap — not the numbers. `sm:text-xl` is untouched, so nothing changes from 640px up. */}
-            <p className={`text-[13px] sm:text-xl font-bold mt-1 whitespace-nowrap ${
-              isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
-            }`}>{px(p === 'trial' ? PRICE_WORD.free : prices[p])}</p>
-            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
-              {/* ── 🔴 THE TRIAL COLUMN'S RULE LINES UP NOW, AND THE COMPENSATION DANCE IS GONE. ──────
-                  This read `{p === 'trial' ? <span className="invisible">&nbsp;</span> : …}` — ONE
-                  invisible line against the others' two, chosen to offset the fact that "Free trial"
-                  wrapped to two lines at 56px while "£29/mo" did not. Two variables cancelling each
-                  other is why the border-b-2 under Free trial still sat off the others' line: it only
-                  balances if both wrap exactly as predicted, at every width and every font metric.
-                  🔴 BOTH VARIABLES ARE REMOVED INSTEAD OF BALANCED. The price is now one line in EVERY
-                  column ("Free" for trial, matching the landing table's own planPriceLabels(), which
-                  shows "Free" rather than "Free trial" for the same reason), and the placeholder is now
-                  the SAME STRING as the real subtitle, merely invisible — so it wraps identically, at
-                  any width, under any font. The four columns cannot disagree in height.
-                  ⚠️ The trial END DATE is unaffected and still shown by the reminder banner and the
-                  "won't be charged until" line — this is the column header, not the trial's terms. */}
-              {p === 'trial'
-                ? <span className="invisible" aria-hidden="true">{t('perTruckMonth')}</span>
-                : <span>{t('perTruckMonth')}</span>}
-            </p>
-          </div>
-        ))}
-      </div>
-      {/* Transaction fees */}
-      <div className="mb-2">
-        <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
-          <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">{t('transactionFees')}</span>
-          {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
-        </div>
-        {feeRows.map(row => (
-          <div key={row.id} className="flex items-start py-2.5 border-t border-slate-100">
-            <div className="flex-1 pr-4">
-              {/* ⚠️ NO pl-3 HERE EITHER. This carried the same `pl-3 sm:pl-0` the feature titles did —
-                  12px of left padding on mobile only — and it is removed the same way: deleted, not
-                  cancelled by an offset somewhere else. Every label in this table, fee and feature
-                  alike, now starts at its row's content edge, which is where the feature descriptions
-                  have always started. */}
-              <div className="text-sm font-medium text-slate-800">
-                {row.name}
-                {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
-              </div>
-            </div>
-            {billingPlans.map(p => (
-              <div key={p} className={`w-14 sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
-                isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
-              }`}>
-                {/* 🔴 `row.cells[p]` — THE TRIAL COLUMN NOW READS TRIAL DATA. This line used to read
-                    `p === 'trial' ? row.values.starter : …`, borrowing STARTER's cells because the
-                    shared constant had no trial column to read. That is why Billing told a trial
-                    operator their online orders were "Pay at Hatch" while the landing page said
-                    "Unlimited / Free" — a trial carries MAX's feature set (lib/features.ts:
-                    `TRIAL_FEATURES = [...MAX_FEATURES]`), so online payments are included, and this
-                    page's own trial banner already said "completely free*". The landing page was right;
-                    the fallback was never a claim anyone made. */}
-                {px(row.cells[p])}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-      {/* Feature sections */}
-      {sections.map(section => (
-        <div key={section.id} className="mb-2">
-          <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
-            <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
-              {section.title}
-            </span>
-            {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
-          </div>
-          {section.rows.map(row => (
-            <div key={row.id} className="flex items-center py-2 border-t border-slate-100">
-              <div className="flex-1 pr-4">
-                {/* ── 🔴 NO pl-3 HERE. THE INDENT WAS REMOVED, NOT CANCELLED. ────────────────────────
-                    This read `text-sm text-slate-800 pl-3 sm:pl-0`. That `pl-3` put 12px of left
-                    padding on the TITLE ONLY, on mobile only — the description `<p>` below is its
-                    sibling inside the same `flex-1 pr-4` wrapper and has never had any left padding, so
-                    the two did not share a left edge at any width below sm:. Nothing compensating was
-                    added; the padding that produced the offset is simply gone, and both elements now
-                    start at the wrapper's content edge, as they do at sm: and above and as they always
-                    do on the landing page (`.cmp2-label` sets `padding-right` only, and `.f-name` /
-                    `.f-desc` are plain blocks with no inset of their own).
-                    ── ⚠️ font-semibold ADDED TO MATCH THE LANDING PAGE'S WEIGHT, NOT ITS SIZE. ───────
-                    This div carried NO font-weight class at all, so it rendered at 400 while the
-                    landing page's `.f-name` is `font-weight: 600`. `font-semibold` is 600 — the same
-                    weight, reached through Manage's own scale. `text-sm` and `text-slate-800` are
-                    deliberately UNCHANGED: the two pages size and colour text differently on purpose. */}
-                <div className="text-sm font-semibold text-slate-800">
-                  {row.name}
-                  {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
-                </div>
-                {row.detail && <p className="text-xs text-slate-600 mt-0.5">{row.detail}</p>}
-              </div>
-              {billingPlans.map(p => {
-                const val = p === 'trial'
-                  ? (row.id === PAY_AT_HATCH_ROW ? true : row.max)
-                  : row[p as 'starter' | 'pro' | 'max']
-                return (
-                  <div key={p} className="w-14 sm:w-28 text-center">
-                    {val === true && (
-                      <span className={`text-sm font-semibold ${isCurrent(p) ? 'text-orange-500' : 'text-slate-500'}`}>✓</span>
-                    )}
-                    {val === false && (
-                      <span className="text-slate-300 text-sm">—</span>
-                    )}
-                    {val === 'coming_soon' && (
-                      <span className="text-xs text-slate-400 italic leading-tight">{t('comingSoon')}</span>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          ))}
-        </div>
-      ))}
-    </>
-  )
-
-  const footnotesContent = (
-    <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">
-      {notes.map(f => (
-        <p key={f.number} className="text-xs text-slate-700">
-          <sup>{f.number}</sup> {pricesVisible || f.number !== '2'
-            ? f.text
-            : t('footnote2Masked')}
-        </p>
-      ))}
-    </div>
-  )
 
   const billingCard = (
     <div className="bg-white border border-slate-200 rounded-2xl p-6">
@@ -14796,7 +14571,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       </div>
       <div className="mt-4 pt-4 border-t border-slate-100">
         <p className="text-xs text-slate-400">
-          {t('card.planLine', { truck: truck.name, plan: PLAN_META[currentPlan]?.name ?? currentPlan, trial: truck.trial_expires_at ? 'yes' : 'no' })}
+          {t('card.planLine', { truck: truck.name, plan: eff.plan.name, trial: onTrial && truck.trial_expires_at ? 'yes' : 'no' })}
         </p>
       </div>
     </div>
@@ -14805,246 +14580,208 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   return (
     <div className="flex flex-col gap-6">
 
-      {/* TRIAL: payment capture is urgent — show ABOVE the matrix */}
-      {plan === 'trial' && (
-        <>
-          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
-            <div className="mb-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">{t('currentPlan')}</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">
-                {PLAN_META[currentPlan]?.name ?? currentPlan}
-              </p>
-              <p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>
-              <p className="text-sm text-slate-700 mt-0.5">{descriptions[currentPlan]}</p>
-              {truck.trial_expires_at && (
-                <p className="text-xs text-amber-600 mt-1">
-                  {t('trialEnds', { date: formatDate(truck.trial_expires_at) })}
-                </p>
-              )}
-            </div>
-            <div className="rounded-xl p-4 bg-orange-50 border border-orange-200">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
-                <div>
-                  {/* ── Y3: NOT-STARTED vs RUNNING ────────────────────────────────────────────
-                      🔴 The null fallback used to read "Your trial ends soon" — false and alarming for
-                      a self-serve operator whose trial has NOT STARTED, and the state every one of
-                      them is now provisioned into (plan 'trial', trial_expires_at null).
-                      The second line was ALSO wrong in that state, though only half: "You're on Max
-                      features" is TRUE (canAccess grants the trial set on a null expiry), but "choose
-                      a plan before your trial ends" points at an ending that has not begun.
-                      ⚠️ THE DATED BRANCH IS BYTE-IDENTICAL to what Gusto and RTF read today. */}
-                  <p className="text-sm font-bold text-slate-900">
-                    {truck.trial_expires_at
-                      ? t('yourTrialEnds', { date: formatDate(truck.trial_expires_at) })
-                      : t('notStarted.heading')}
-                  </p>
-                  {/* 🔴 iOS (App Store 3.1.1/3.1.3) — the dated branch is SPLIT, not gated whole.
-                      "You're on Max features." is a FACT about the account and must survive; "Choose a plan
-                      before your trial ends to keep access." is an instruction to buy, on a screen where iOS
-                      has no way to buy, so it goes.
-                      ⚠️ THE WEB STRING IS ONE UNTOUCHED LITERAL, not two halves concatenated. Assembling it
-                      from pieces would put a space boundary between them that nothing tests, and this is the
-                      sentence the manual records as byte-identical to what Gusto and RTF read today. The
-                      shorter iOS-only string is the second literal; web and Android never evaluate it.
-                      ⚠️ NOT-STARTED branch untouched — TRIAL_NOT_STARTED_BILLING already contains no
-                      instruction to buy, so it needs no gate on either platform. */}
-                  <p className="text-xs text-slate-600 mt-0.5">
-                    {truck.trial_expires_at
-                      ? (purchaseCtaAllowed()
-                          ? t('onMax')
-                          : t('onMaxNoCta'))
-                      : t('notStarted.body')}
-                  </p>
-                </div>
-                {/* 🔴 iOS (App Store 3.1.1/3.1.3): the two upgrade buttons are suppressed. The whole
-                    BUTTON COLUMN is gated rather than each button, so nothing is left holding an empty
-                    flex child — the text block beside it becomes the sole child of the row and fills it. */}
-                {purchaseCtaAllowed() && (
-                  <div className="flex flex-col gap-2 sm:flex-shrink-0">
-                    <button
-                      onClick={() => openUpgrade('max')}
-                      className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
-                    >
-                      {t('upgradeToMax', { price: px(maxMo) })}
-                    </button>
-                    <button
-                      onClick={() => openUpgrade('pro')}
-                      className="w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
-                    >
-                      {t('choosePro', { price: px(proMo) })}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-            {/* 🔴 iOS (App Store 3.1.1/3.1.3): the WHOLE reassurance block goes, container and all.
-                On iOS there is no charging mechanism reachable at all, so a promise about WHEN charging
-                begins describes something the operator cannot see, act on or verify. Half of it would read
-                stranger than none.
-                ⚠️ THE CONTAINER IS GATED, NOT JUST THE CHARGING PARAGRAPH — and that deliberately takes the
-                "*Standard card processing fees" footnote with it. That line is an asterisk with no
-                antecedent once the sentence above it is gone: left behind it would be a lone centred grey
-                footnote marking nothing, which is exactly the orphan the no-empty-shells rule exists for.
-                Gating the fragment also takes its `mt-3` / `mt-1` spacing, so no dangling vertical gap is
-                left between the trial card and billingCard.
-                ✅ The trial END DATE survives — it renders twice above, in the "Trial ends {date}" line and
-                the "Your trial ends {date}" heading, neither of which is touched here. An iOS operator is
-                never left without knowing when access lapses.
-                🔴 NO REPLACEMENT COPY IS ADDED. Pointing at hatchgrab.com to manage a plan is the precise
-                thing 3.1.3 prohibits outside the US storefront — it would be worse than what is removed. */}
-            {truck.trial_expires_at && purchaseCtaAllowed() && (
-              <>
-                <p className="text-xs text-center text-slate-500 mt-3">
-                  {/* 🔴 CORRECTED 14 August 2026 — THE OLD SENTENCE WAS FACTUALLY FALSE ON A MONEY CLAIM.
-                      It read: "You won't be charged anything until your trial ends on {date}. Automated
-                      billing activates at the end of your trial — cancel anytime before then at no cost."
-                      NOTHING activates. No operator has a payment method on file and there is no
-                      subscription object anywhere; billing can only ever begin after an operator actively
-                      picks a plan AND enters payment details. "Cancel anytime" implied something was
-                      already running that needed cancelling, which would frighten an operator into
-                      cancelling a trial that costs nothing.
-                      ⚠️ IT DELIBERATELY DOES NOT SAY WHAT HAPPENS AT EXPIRY. The Starter-plan fallback is
-                      not built (see the trial-reminder popup's own copy, which DOES promise it and is
-                      flagged in docs/trial-billing-copy-report.md). Copy must not run ahead of the build
-                      in the direction that costs an operator money or access. */}
-                  {t('noCharge', { date: formatTrialEndDate(truck.trial_expires_at, billingTime) })}
-                </p>
-                <p className="text-xs text-center text-slate-400 mt-1">
-                  {t('fees')}
-                </p>
-              </>
-            )}
-          </div>
-          {/* 🔴 iOS (App Store 3.1.1/3.1.3): "set up payment" is an instruction to buy, so it is suppressed.
-              ⚠️ The `-mt-3` that pulls this line up to the card above it goes WITH the line — leaving the
-              paragraph out but its negative margin behind would collapse the gap between the trial card and
-              billingCard on iOS only. */}
-          {purchaseCtaAllowed() && (
-            <p className="text-xs text-amber-600 font-medium -mt-3">
-              {t('setUpPayment')}
+      {/* ── THE PLAN CARD — ONE BRANCH, EVERY PLAN (plans-data-model, Stage A). ─────────────────────────
+          The trial branch's layout, kept: the plan, then (for a trial) the orange trial box, or (for any other
+          public plan) the plan buttons, then the billing card, then the comparison table. */}
+      <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
+        <div className="mb-4">
+          <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">{t('currentPlan')}</p>
+          <p className="text-2xl font-bold text-slate-900 mt-1">
+            {eff.plan.name}
+          </p>
+          {currentPriceLabel !== null && (
+            <p className="text-sm text-slate-700 mt-0.5">{cardPx(currentPriceLabel)}</p>
+          )}
+          {/* The promotional price, while it applies. The amount above is already the promo price. */}
+          {planNow.override && (
+            <p className="text-xs text-slate-500 mt-0.5">
+              {planNow.override.until
+                ? t('plan.promoUntil', { date: formatDay(planNow.override.until) })
+                : t('plan.promo')}
             </p>
           )}
-          {billingCard}
-          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
-            {matrixContent}
-            {footnotesContent}
-          </div>
-        </>
-      )}
-
-      {/* STARTER: upgrade prompt + payment ready below */}
-      {plan === 'starter' && (
-        <>
-          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
-            <div className="mb-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">{t('currentPlan')}</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">
-                {PLAN_META[currentPlan]?.name ?? currentPlan}
-              </p>
-              <p className="text-sm text-slate-700 mt-0.5">{px(prices[currentPlan])}</p>
-              <p className="text-sm text-slate-700 mt-0.5">{descriptions[currentPlan]}</p>
-            </div>
-            {/* 🔴 iOS (App Store 3.1.1/3.1.3): the ENTIRE panel is gated, heading included. Gating only the
-                two buttons would leave a bordered grey box containing the words "Upgrade your plan" and
-                nothing else — an empty shell that reads as a broken screen and still says "upgrade".
-                What a Starter operator keeps on iOS: their current plan above, and the full feature matrix
-                below, which shows exactly what each tier includes. */}
-            {purchaseCtaAllowed() && (
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                <p className="text-sm font-bold text-slate-900 mb-3">{t('upgradeYourPlan')}</p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => openUpgrade('pro')}
-                    className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
-                  >
-                    {t('planButton', { plan: 'Pro', price: px(proMo) })}
-                  </button>
-                  <button
-                    onClick={() => openUpgrade('max')}
-                    className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
-                  >
-                    {t('planButton', { plan: 'Max', price: px(maxMo) })}
-                  </button>
-                </div>
+          {planNow.includedOnlineMinor === null && (
+            <p className="text-sm text-slate-700 mt-0.5">{t('plan.includedUnlimited')}</p>
+          )}
+          {typeof planNow.includedOnlineMinor === 'number' && planNow.includedOnlineMinor > 0 && (
+            <p className="text-sm text-slate-700 mt-0.5">
+              {t('plan.included', { amount: cardPx(formatWholeAmount(planNow.includedOnlineMinor, cardMoney)) })}
+            </p>
+          )}
+          {eff.plan.description && (
+            <p className="text-sm text-slate-700 mt-0.5">{eff.plan.description}</p>
+          )}
+          {/* 🔴 A PLAN WHOSE END DATE HAS PASSED: the truck is on the expiry-fallback plan now, with every feature. */}
+          {eff.ended && eff.assigned && eff.endedAt && (
+            <p className="text-xs text-amber-600 mt-1">
+              {t('plan.ended', { plan: eff.assigned.name, date: formatDate(eff.endedAt), now: eff.plan.name })}
+            </p>
+          )}
+          {/* Stage A2: the trial's length is data (plans.trial_months). */}
+          {onTrial && trialMonthsOf(eff.plan) !== null && (
+            <p className="text-sm text-slate-700 mt-0.5">{t('plan.trialMonths', { months: trialMonthsOf(eff.plan) as number })}</p>
+          )}
+          {onTrial && truck.trial_expires_at && (
+            <p className="text-xs text-amber-600 mt-1">
+              {t('trialEnds', { date: formatDate(truck.trial_expires_at) })}
+            </p>
+          )}
+        </div>
+        {onTrial ? (
+          <div className="rounded-xl p-4 bg-orange-50 border border-orange-200">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+              <div>
+                {/* ── Y3: NOT-STARTED vs RUNNING ────────────────────────────────────────────
+                    A NULL end date is a trial that has not started (self-serve signup provisions the signup-
+                    default plan with no end date); a dated one is running. */}
+                <p className="text-sm font-bold text-slate-900">
+                  {truck.trial_expires_at
+                    ? t('yourTrialEnds', { date: formatDate(truck.trial_expires_at) })
+                    : t('notStarted.heading')}
+                </p>
+                {/* 🔴 iOS (App Store 3.1.1/3.1.3) — the dated branch is SPLIT, not gated whole: the fact about the
+                    account survives, the instruction to choose a plan goes. Two whole literals, never assembled.
+                    pricing-tidy (20 October 2026): a NOT-STARTED trial shows the heading alone — its body only repeated it. */}
+                {truck.trial_expires_at && (
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    {purchaseCtaAllowed()
+                      ? t('onTrial')
+                      : t('onTrialNoCta')}
+                  </p>
+                )}
               </div>
-            )}
-          </div>
-          {billingCard}
-          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
-            {matrixContent}
-            {footnotesContent}
-          </div>
-        </>
-      )}
-
-      {/* PRO / MAX: already paying — minimal friction */}
-      {(plan === 'pro' || plan === 'max') && (
-        <>
-          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
-            <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">{t('currentPlan')}</p>
-              <p className="text-2xl font-black text-slate-900">
-                {plan === 'pro' ? 'Pro' : 'Max'}
-              </p>
-              <p className="text-sm text-slate-500 mt-0.5">
-                {t('perTruckRenews', { price: px(plan === 'pro' ? proMo : maxMo) })}
-              </p>
+              {/* 🔴 iOS (App Store 3.1.1/3.1.3): the BUTTON COLUMN is gated whole, so nothing is left holding an
+                  empty flex child. */}
+              {purchaseCtaAllowed() && offersPlans && (
+                <div className="flex flex-col gap-2 sm:flex-shrink-0">
+                  {otherPlans.map((p, i) => {
+                    const price = planMonthly(p)
+                    const primary = i === otherPlans.length - 1
+                    return (
+                      <button
+                        key={p.key}
+                        onClick={() => openUpgrade(p.key)}
+                        className={primary
+                          ? 'w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors'
+                          : 'w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors'}
+                      >
+                        {price === null ? p.name : t('planButton', { plan: p.name, price: cardPx(price) })}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
-            <div className="mb-6">
-              <button
-                onClick={() => setShowMatrix(!showMatrix)}
-                className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
-              >
-                {showMatrix ? t('hideMatrix') : t('compareAll')}
-              </button>
-              {showMatrix && matrixContent}
-            </div>
-            {footnotesContent}
           </div>
-          {billingCard}
-        </>
+        ) : (
+          /* 🔴 iOS (App Store 3.1.1/3.1.3): the ENTIRE panel is gated, heading included — a bordered box holding
+             only "Change your plan" would be an empty shell that still invites a purchase. */
+          purchaseCtaAllowed() && offersPlans && (
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <p className="text-sm font-bold text-slate-900 mb-3">{t('changeYourPlan')}</p>
+              <div className="flex flex-wrap gap-3">
+                {otherPlans.map((p, i) => {
+                  const price = planMonthly(p)
+                  const primary = i === otherPlans.length - 1
+                  return (
+                    <button
+                      key={p.key}
+                      onClick={() => openUpgrade(p.key)}
+                      className={primary
+                        ? 'flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors'
+                        : 'flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors'}
+                    >
+                      {price === null ? p.name : t('planButton', { plan: p.name, price: cardPx(price) })}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        )}
+        {/* 🔴 iOS (App Store 3.1.1/3.1.3): the WHOLE reassurance block goes, container and all — a promise about
+            when charging begins describes something an iOS operator cannot see or act on, and the "*" footnote
+            would be left marking nothing. */}
+        {onTrial && truck.trial_expires_at && purchaseCtaAllowed() && (
+          <>
+            <p className="text-xs text-center text-slate-500 mt-3">
+              {/* 🔴 CORRECTED 14 August 2026 — billing only ever begins after an operator picks a plan AND enters
+                  payment details; nothing "activates" at the end of a trial. */}
+              {t('noCharge', { date: formatTrialEndDate(truck.trial_expires_at, billingTime) })}
+            </p>
+            <p className="text-xs text-center text-slate-400 mt-1">
+              {t('fees')}
+            </p>
+          </>
+        )}
+      </div>
+      {/* 🔴 iOS (App Store 3.1.1/3.1.3): an instruction to choose a plan, so it is suppressed — and its `-mt-3`
+          goes with it. */}
+      {onTrial && purchaseCtaAllowed() && (
+        <p className="text-xs text-amber-600 font-medium -mt-3">
+          {t('setUpPayment')}
+        </p>
       )}
+      {billingCard}
+      {/* 🔴 STAGE B (docs/pricing-pages-report.md): THE SAME PLAN TABLE AS /features (components/pricing/PlanTable.tsx),
+          the truck's EFFECTIVE plan's column highlighted (none while on a trial — a trial is not a column), its amounts
+          under the plan card's mask. Its header pins to the top of the scrolling <main>. Then the landing's footnote. */}
+      <div>
+        <PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />
+        <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>
+        {/* pricing-tidy: the table rows' disclosures (¹ WhatsApp auto-replies, ² Kitchen ticket printing), same style. */}
+        {planTableNotes(countryRow.locale).map(n => <p key={n.marker} className="text-xs text-slate-500 mt-1 px-1"><sup>{n.marker}</sup> {n.text}</p>)}
+      </div>
 
       {/* Upgrade interest modal.
           🔴 SUPPRESSED ENTIRELY ON iOS (App Store 3.1.1/3.1.3) — this modal IS the external purchase
           mechanism the guideline names: its primary action is a `mailto:` that leaves the app with a
           pre-filled upgrade request. Nothing in it is informational, so nothing survives the gate.
-          ⚠️ SECOND GUARD, deliberately. All four `openUpgrade()` callers are already suppressed above, so
+          ⚠️ SECOND GUARD, deliberately. Every `openUpgrade()` caller is already suppressed above, so
           `showUpgradeModal` cannot become true on iOS today. It is gated here as well because this is the
           single highest-risk element in the app for review, and a future fifth caller must not be able to
           surface it by omission. */}
-      {showUpgradeModal && purchaseCtaAllowed() && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">
-                {t('upgradeModal.title', { plan: upgradeTarget === 'max' ? 'Max' : 'Pro' })}
-              </h3>
-              <p className="text-sm text-slate-500 mt-1">
-                {/* The plan's one-line description is the shared plan data (planDescriptions — the same messages). */}
-                {t('upgradeModal.tagline', { price: px(upgradeTarget === 'max' ? maxMonth : proMonth), description: descriptions[upgradeTarget] })}
-              </p>
+      {showUpgradeModal && purchaseCtaAllowed() && upgradePlan && (() => {
+        const shortPrice = planMonthly(upgradePlan)
+        const longPrice = planMonthly(upgradePlan, 'month')
+        // ⚠️ A public plan always has a price row in a switched-on country (the country_settings trigger); '—' covers the rest.
+        const mailPrice = cardPx(shortPrice === null ? PRICE_WORD.none : shortPrice)
+        return (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {t('upgradeModal.title', { plan: upgradePlan.name })}
+                </h3>
+                <p className="text-sm text-slate-500 mt-1">
+                  {/* The plan's price and description are the catalogue's (public.plans / public.plan_prices). */}
+                  {longPrice === null
+                    ? upgradePlan.description
+                    : t('upgradeModal.tagline', { price: cardPx(longPrice), description: upgradePlan.description })}
+                </p>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <p className="text-sm text-slate-700">
+                  {t('upgradeModal.body')}
+                </p>
+              </div>
+              {/* 🔴 THE SUBJECT AND BODY ARE URL-ENCODED — a plan name or truck name with "&" or "#" broke the link. */}
+              <a
+                href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(t('upgradeModal.mailSubject', { plan: upgradePlan.name, truck: truck.name }))}&body=${encodeURIComponent(t('upgradeModal.mailBody', { truck: truck.name, plan: upgradePlan.name, price: mailPrice }))}`}
+                className="w-full py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl text-center hover:bg-orange-700 transition-colors"
+              >
+                {t('upgradeModal.email')}
+              </a>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="w-full py-3 border border-slate-200 text-slate-600 text-sm rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                {t('upgradeModal.cancel')}
+              </button>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <p className="text-sm text-slate-700">
-                {t('upgradeModal.body')}
-              </p>
-            </div>
-            <a
-              href={`mailto:${SUPPORT_EMAIL}?subject=${t('upgradeModal.mailSubject', { plan: upgradeTarget === 'max' ? 'Max' : 'Pro', truck: truck.name })}&body=${t('upgradeModal.mailBody', { truck: truck.name, plan: upgradeTarget === 'max' ? 'Max' : 'Pro', price: px(upgradeTarget === 'max' ? maxMo : proMo) })}`}
-              className="w-full py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl text-center hover:bg-orange-700 transition-colors"
-            >
-              {t('upgradeModal.email')}
-            </a>
-            <button
-              onClick={() => setShowUpgradeModal(false)}
-              className="w-full py-3 border border-slate-200 text-slate-600 text-sm rounded-xl hover:bg-slate-50 transition-colors"
-            >
-              {t('upgradeModal.cancel')}
-            </button>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </div>
   )
 }
@@ -15146,9 +14883,9 @@ function explodeOrderItems(
 const OTHER_REVENUE_BUCKET = 'Other'
 
 function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: any) => Promise<any> }) {
-  const hasAdvanced = truck
-    ? canAccess(truck.plan, 'advanced_reporting', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
-    : false
+  // Stage A2: override → the truck's EFFECTIVE plan's switch → allowed (lib/useFeatures.ts, the plan catalogue).
+  const features = useFeatures(truck)
+  const hasAdvanced = truck ? features.can('advanced_reporting') : false
   // 🔴 THE TRUCK'S CLOCK AND STYLE (Phase 2B). Its zone is the one rule's (trucks.timezone, else its
   // country's default) — this read `trucks.timezone ?? 'Europe/London'` before.
   const ts = useTruckTime()
@@ -15881,18 +15618,8 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             })()}
           </div>
 
-          {/* ── Pro feature placeholder (Starter only) ── */}
-          {!hasAdvanced && (
-            <div className="rounded-xl border border-slate-200 p-6 opacity-60">
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-semibold text-slate-700">{t('upsell.title')}</span>
-                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">{t('upsell.badge')}</span>
-              </div>
-              <p className="text-sm text-slate-400">
-                {t('upsell.body')}
-              </p>
-            </div>
-          )}
+          {/* The "Pro feature" placeholder that stood here was a plan upsell; plans-data-model (Stage A) removed it.
+              With `advanced_reporting` switched off by an override the tab shows the per-event view only. */}
         </>
       )}
     </div>

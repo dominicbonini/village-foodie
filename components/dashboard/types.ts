@@ -2,7 +2,7 @@
 // Shared types for the truck dashboard
 
 import type { PhoneCopy } from '@/lib/phone'
-import type { Plan } from '@/lib/features'
+import type { PlanKey, PlanBlocks } from '@/lib/plans'
 import type { TruckMoney } from '@/lib/money-format'
 import type { TimeSettings } from '@/lib/time-utils'
 
@@ -200,9 +200,11 @@ export interface TruckData {
    *  mean today's behaviour. NOT display_mode — that is the KDS list/grid switcher. */
   add_order_layout?: 'tabs' | 'scroll'
   keep_screen_on: boolean
-  plan: Plan
+  plan: PlanKey
   trial_expires_at: string | null
   feature_overrides: Record<string, boolean> | null
+  /** Stage A2: the features the truck's effective plan switches off, with the plan to name (lib/plans.ts planBlocks). */
+  plan_blocks?: PlanBlocks | null
   // ── Website embed (Stage 2). OPTIONAL because the payload is spread-and-redact: the values arrive
   // the moment the columns exist, and are `undefined` until the two 26-August migrations are applied.
   // Declaring them required would make the type lie about a database that does not have them yet.
