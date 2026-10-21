@@ -33,6 +33,7 @@ import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
 import { clockGridMinutes } from '@/lib/slot-generation'
 import { formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
+import { currencyInfo } from '@/lib/currencies'
 import { feePhrase } from '@/lib/fee-phrase'
 import { PRIVACY_PATH } from '@/lib/legal'
 import { MoneyProvider } from '@/components/MoneyContext'
@@ -96,6 +97,7 @@ interface EventData {
   village: string
   postcode?: string
   region?: string        // the event's two-letter state, only when one is known (lib/event-address.ts)
+  addressFormat?: string // address-formats-1: the truck's address format key (lib/address-formats.ts)
   notes: string
   status?: string       // 'open' = operator-started/auto-opened = LIVE; else Pre-order. From /api/events.
   /** This event's van's CUSTOMER collection interval, from /api/events. The fallback picker's grid. */
@@ -233,6 +235,7 @@ function eventToVillage(e: EventData, truckName: string): VillageEvent {
     village: e.village || undefined,
     postcode: e.postcode || undefined,   // "village · POSTCODE" line — matches the profile card
     ...(e.region ? { region: e.region } : {}),
+    ...(e.addressFormat ? { addressFormat: e.addressFormat } : {}),   // address-formats-1
     status: e.status,             // 'open' ⇒ the "● Live" badge
     notes: e.notes || undefined,
     source: 'operator',           // /api/events returns confirmed/open OPERATOR events
@@ -3701,8 +3704,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       customer "must" be told — before checkout completes — that a dual-network debit card may be processed through
                       either network. (A held payment, which every card order here is, is always sent over Visa / Mastercard; the
                       notice is still required.) Stripe's suggested wording, without its clause about recurring payments, which we do
-                      not take. Every other currency renders nothing new. */}
-                  {truck?.money?.currency === 'AUD' && (
+                      not take. Every other currency renders nothing new. currency-registry: which currency shows it is the
+                      registry's `eftposNotice` (lib/currencies.ts — AUD), not a code written here. */}
+                  {currencyInfo(truck?.money?.currency)?.eftposNotice && (
                     <p className="text-[11px] text-slate-400 text-center mt-2 leading-relaxed" data-network-notice>
                       {tOrder('dualNetworkNotice')}
                     </p>

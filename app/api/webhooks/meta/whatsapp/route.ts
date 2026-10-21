@@ -6,7 +6,7 @@ import { getPlanCatalog } from '@/lib/plans-server'
 import type { PlanKey } from '@/lib/plans'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { moneyFormatForTruck } from '@/lib/money-server'
-import { allergenSetForTruck } from '@/lib/country-settings'
+import { allergenSetForTruck, addressFormatForTruck } from '@/lib/country-settings'
 import { truckTimeSettings, truckTimeZone } from '@/lib/truck-time'
 import { sendMetaWhatsApp } from '@/lib/meta-whatsapp'
 import { getLocalDateInTz, localDateOfInstant } from '@/lib/time-utils'
@@ -763,6 +763,7 @@ export async function POST(req: NextRequest) {
       money:           await moneyFormatForTruck(truck),
       time:            truckTime,
       allergenSet:     await allergenSetForTruck(truck),   // anz-1: Australian/NZ phrasing in the allergen guard (anz only)
+      addressFormat:   await addressFormatForTruck(truck),   // address-formats-1: how each event's place is written
       truckName:       truck.name,
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,

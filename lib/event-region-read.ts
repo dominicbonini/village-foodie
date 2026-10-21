@@ -6,7 +6,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { normaliseRegion } from '@/lib/event-address'
 
-export async function readEventRegions(supabase: SupabaseClient, eventIds: (string | null | undefined)[]): Promise<Map<string, string>> {
+// address-formats-1 (21 October 2026): with the truck's address format (one for every event, or one per event), a
+// region is kept when it is in THAT format's region list, as its code ("nsw" → "NSW", "Kerry" → "KY") — so Australian
+// states and Irish counties reach the line. With no format, the old rule (two letters, upper-cased), unchanged.
+export async function readEventRegions(supabase: SupabaseClient, eventIds: (string | null | undefined)[], format?: unknown): Promise<Map<string, string>> {
   const out = new Map<string, string>()
   const ids = Array.from(new Set(eventIds.filter((x): x is string => !!x)))
   if (!ids.length) return out
@@ -14,7 +17,7 @@ export async function readEventRegions(supabase: SupabaseClient, eventIds: (stri
     const { data, error } = await supabase.from('truck_events').select('id, region').in('id', ids)
     if (error) return out
     for (const r of (data || []) as { id: string; region?: unknown }[]) {
-      const region = normaliseRegion(r.region)
+      const region = normaliseRegion(r.region, typeof format === 'function' ? (format as (id: string) => unknown)(r.id) : format)
       if (region) out.set(r.id, region)
     }
   } catch {
@@ -23,6 +26,6 @@ export async function readEventRegions(supabase: SupabaseClient, eventIds: (stri
   return out
 }
 
-export async function readEventRegion(supabase: SupabaseClient, eventId: string | null | undefined): Promise<string | null> {
-  return eventId ? (await readEventRegions(supabase, [eventId])).get(eventId) ?? null : null
+export async function readEventRegion(supabase: SupabaseClient, eventId: string | null | undefined, format?: unknown): Promise<string | null> {
+  return eventId ? (await readEventRegions(supabase, [eventId], format)).get(eventId) ?? null : null
 }

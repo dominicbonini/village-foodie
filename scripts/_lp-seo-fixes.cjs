@@ -79,16 +79,25 @@ function offers(cc, pageUrl) {
     return { '@type': 'Offer', name: p.name, url: `${pageUrl}#pricing`, price, priceCurrency: cur, priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: cur, unitCode: 'MON' } }
   })
 }
-/** BEFORE's single SoftwareApplication block → seo-fixes's graph for the page of country `cc`. */
-function landingGraph(app0, cc, { pricesShown = true } = {}) {
+// ⚠️ RE-PINNED (ai-search-1, 21 October 2026, docs/ai-search-1-report.md): on a tree with ai-search-1 the graph also carries
+// the entity facts — Organization legalName "HatchGrab Ltd" and address { addressCountry: 'GB' } (lib/company.ts), the
+// SoftwareApplication's operatingSystem "Web, iOS, Android", and `countriesSupported` (the switched-on countries, the
+// country menu's list) IN PLACE OF `areaServed`, which schema.org does not allow on a SoftwareApplication.
+const AI_SEARCH_1 = require('fs').existsSync(path.join(REPO, 'lib/robots-policy.ts'))
+/** BEFORE's single SoftwareApplication block → seo-fixes's graph for the page of country `cc`. `countries`: the
+ *  switched-on countries of the view (ai-search-1's countriesSupported). */
+function landingGraph(app0, cc, { pricesShown = true, countries = ['GB', 'US'] } = {}) {
   const pageUrl = `${ORIGIN}/${SEG[cc]}`, ORG = `${ORIGIN}/#organization`
-  const { '@context': ctx, url: _u, publisher, ...app } = app0
-  if (ctx !== 'https://schema.org' || app['@type'] !== 'SoftwareApplication' || !publisher) throw new Error('seo-m5-s9-json-ld: BEFORE is not the single SoftwareApplication block')
+  const { '@context': ctx, url: _u, publisher, ...app0rest } = app0
+  if (ctx !== 'https://schema.org' || app0rest['@type'] !== 'SoftwareApplication' || !publisher) throw new Error('seo-m5-s9-json-ld: BEFORE is not the single SoftwareApplication block')
+  const app = AI_SEARCH_1
+    ? { ...Object.fromEntries(Object.entries(app0rest).map(([k, v]) => (k === 'areaServed' ? ['countriesSupported', countries] : [k, v]))), operatingSystem: 'Web, iOS, Android' }
+    : app0rest
   const o = pricesShown ? offers(cc, pageUrl) : []
   return {
     '@context': ctx,
     '@graph': [
-      { '@type': 'Organization', '@id': ORG, name: publisher.name, url: publisher.url, logo: `${ORIGIN}/logos/hatchgrab-logo.png`, sameAs: [APP_STORE[cc], GOOGLE_PLAY] },
+      { '@type': 'Organization', '@id': ORG, name: publisher.name, ...(AI_SEARCH_1 ? { legalName: 'HatchGrab Ltd', address: { '@type': 'PostalAddress', addressCountry: 'GB' } } : {}), url: publisher.url, logo: `${ORIGIN}/logos/hatchgrab-logo.png`, sameAs: [APP_STORE[cc], GOOGLE_PLAY] },
       { '@type': 'WebSite', '@id': `${ORIGIN}/#website`, name: publisher.name, url: publisher.url, publisher: { '@id': ORG } },
       { ...app, url: pageUrl, publisher: { '@id': ORG }, ...(o.length ? { offers: o } : {}) },
     ],
@@ -163,7 +172,7 @@ const ITEMS = [
     views: id => /^pages\/(landing|features|compare)\|(GB|US)\|html(?!-usOff)/.test(id), apply: (id, v) => badgesLazy(v) },
   { id: 'seo-m5-s9-json-ld', what: '⚠️ RE-PINNED (seo-fixes M5 + S9, 20 October 2026): the landing’s JSON-LD is one @graph — Organization, WebSite, and BEFORE’s SoftwareApplication with url = the page’s country address, publisher by @id, and an Offer per public plan priced in the country',
     views: id => /^pages\/landing\|(GB|US)\|(html|meta)(?!-usOff)/.test(id),
-    apply: (id, v) => { const p = parseId(id); return typeof v === 'string' ? jsonLdHtml(v, p.cc) : jsonLdMeta(v, p.cc) } },
+    apply: (id, v) => { const p = parseId(id); const opts = { countries: optionsOf(id) }; return typeof v === 'string' ? jsonLdHtml(v, p.cc, opts) : jsonLdMeta(v, p.cc, opts) } },
   { id: 'seo-n1-compare-meta', what: '⚠️ RE-PINNED (seo-fixes N1, 20 October 2026): /compare’s title is “Cost calculator — HatchGrab UK” (US: “… US”) with the compare.meta description, in og and twitter too (still noindex)',
     views: id => /^pages\/compare\|(GB|US)\|meta(?!-usOff)/.test(id), apply: (id, v) => compareMeta(v, parseId(id).cc) },
   { id: 'seo-s1-canonical', what: '⚠️ RE-PINNED (seo-fixes S1, 20 October 2026): /contact, /privacy, /terms carry their own canonical, and og:url names the page (https://www.hatchgrab.com<path>, was the host default)',

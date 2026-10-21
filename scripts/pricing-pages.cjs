@@ -499,8 +499,14 @@ const withFourth = () => {
     const ORG = 'https://www.hatchgrab.com/#organization'
     if (org['@id'] !== ORG || org.name !== 'HatchGrab' || org.url !== 'https://www.hatchgrab.com/') return false
     if (site['@id'] !== 'https://www.hatchgrab.com/#website' || site.publisher?.['@id'] !== ORG) return false
-    for (const f of ['name', 'applicationCategory', 'applicationSubCategory', 'description', 'inLanguage', 'areaServed', 'audience'])
+    // ⚠️ RE-PINNED (ai-search-1, 21 October 2026): areaServed (not a SoftwareApplication property) became countriesSupported
+    // — the switched-on countries' ISO codes — and the graph gained legalName / address / operatingSystem.
+    for (const f of ['name', 'applicationCategory', 'applicationSubCategory', 'description', 'inLanguage', 'audience'])
       if (JSON.stringify(app[f]) !== JSON.stringify(old[f])) return false
+    if (!(!require('fs').existsSync(require('path').join(REPO, 'lib/robots-policy.ts'))
+      ? JSON.stringify(app.areaServed) === JSON.stringify(old.areaServed)
+      : (!('areaServed' in app) && Array.isArray(app.countriesSupported) && app.countriesSupported.includes(cc) && app.countriesSupported.every(c => /^[A-Z]{2}$/.test(c))
+        && app.operatingSystem === 'Web, iOS, Android' && org.legalName === 'HatchGrab Ltd' && org.address?.addressCountry === 'GB'))) return false
     if (app.url !== `https://www.hatchgrab.com/${slug}` || JSON.stringify(app.publisher) !== JSON.stringify({ '@id': ORG })) return false
     return Array.isArray(app.offers) && app.offers.map(o => o.name).join(',') === 'Pay as you go,Pro,Unlimited'
       && app.offers.every(o => o['@type'] === 'Offer' && o.priceCurrency === cur && o.url === `https://www.hatchgrab.com/${slug}#pricing`)

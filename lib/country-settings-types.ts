@@ -1,6 +1,6 @@
 // lib/country-settings-types.ts — the SHAPE of one public.country_settings row, as the app uses it.
 //
-// ✅ CLIENT-SAFE: types and pure helpers only, no imports. A client component may import this module;
+// ✅ CLIENT-SAFE: types and pure helpers only; the one import is the pure currency registry (lib/currencies.ts). A client component may import this module;
 // it carries no data. The data itself is read ONLY by lib/country-settings.ts (server-only, service role)
 // and reaches a client component as a prop from a server component, or inside an existing authenticated
 // API response (/api/manage, /api/admin). The table is never fetched from a browser — see the table
@@ -9,6 +9,9 @@
 // ⚠️ camelCase here, snake_case in the database. The mapping is done once, in the loader. Client code
 // therefore never names a column, which is also how the build check finds no column name in a client
 // chunk.
+
+import type { AddressFormatKey } from '@/lib/address-formats'   // address-formats-1: the pure address-format config
+import { currencyInfo } from '@/lib/currencies'
 
 /** How a country's phone numbers are checked: 'length' — a plausible length (libphonenumber "possible",
  *  the default); 'strict' — real numbers only (libphonenumber "valid"); 'off' — anything not empty. */
@@ -33,7 +36,9 @@ export interface CountrySettings {
   phoneExample: string | null
   /** How strictly this country's phone numbers are checked (20261010_12; lib/phone.ts isPlausiblePhone). */
   phoneCheck: PhoneCheck
-  addressFormat: 'postcode' | 'zip_state'
+  /** address-formats-1 (21 October 2026): a key of lib/address-formats.ts (gb, us, ie, au, nz, ca). The loader maps the
+   *  legacy column values ('postcode' → gb, 'zip_state' → us) until the "run after deploy" SQL rewrites them. */
+  addressFormat: AddressFormatKey
   timezones: string[]
   defaultTimezone: string
 
@@ -91,15 +96,14 @@ export function moneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): 
  * anz-1 (21 October 2026): HATCHGRAB'S OWN PLAN PRICES NAME THEIR DOLLAR. The pricing pages, /features, /compare, the plans
  * PDF and Billing quote our prices on a site with a country menu, so "$39" must say WHICH dollar: A$39, NZ$49. A truck's
  * own prices (its menu, orders, receipts) keep its country's everyday symbol (moneyFormatOf: "$12.00" in Australia).
- * The rule is generic, not a country list: when the country's own symbol for its currency is a bare "$" and the currency
- * is not the US dollar, the plan prices are written in international English ("A$", "NZ$", "CA$"). Every other country —
- * GB "£", the US "$", Ireland "€" — gets exactly moneyFormatOf, so its pages are byte-identical.
+ * currency-registry (21 October 2026): the rule is now DATA — the registry's `planLocale` (lib/currencies.ts). A currency
+ * whose everyday symbol another listed currency shares ("$" for CAD / AUD / NZD; "kr" for SEK / NOK / DKK) has its plan
+ * prices written in international English ("CA$", "A$", "NZ$", "SEK"); it was "a bare '$' that is not USD", which gives
+ * the same three dollars. Every other currency — GBP "£", USD "$", EUR "€" — gets exactly moneyFormatOf, so GB, US and IE
+ * pages are byte-identical. scripts/currency-registry.cjs checks that the result carries the registry's `symbol`.
  */
 export function planMoneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): { currency: string; locale: string } {
   const own = moneyFormatOf(s)
-  if (own.currency.toUpperCase() === 'USD') return own
-  try {
-    const sym = new Intl.NumberFormat(own.locale, { style: 'currency', currency: own.currency }).formatToParts(0).find(p => p.type === 'currency')?.value
-    return sym === '$' ? { currency: own.currency, locale: 'en' } : own
-  } catch { return own }
+  const planLocale = currencyInfo(own.currency)?.planLocale
+  return planLocale ? { currency: own.currency, locale: planLocale } : own
 }

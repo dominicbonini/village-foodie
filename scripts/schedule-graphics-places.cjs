@@ -2223,6 +2223,10 @@ function runWiringSuite(lib) {
       '<div className="py-3 pl-4">',
       '<div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">',
       '<p className="text-xs text-slate-400 mt-0.5">',
+      /* ⚠️ RE-PINNED (address-formats-1, 21 October 2026, docs/address-formats-1-report.md): the schedule card's line 2 is
+       * written by the truck's address format (lib/event-address.ts eventAreaLine, no state passed) — GB/US read exactly
+       * `[town, postcode].join(' · ')` as before (scripts/address-formats-1.cjs §3 proves it); the old literal line goes. */
+      "<p className=\"text-xs text-slate-500 mt-0.5\">{[event.town, event.postcode].filter(Boolean).join(' · ')}</p>",
     ]
     /* ── 🔴 THE CAPACITY CARD MOVED FILE, AND "MOVED" IS PROVED LINE BY LINE ──────────────────────
      * This build took ~50 lines out of page.tsx and put them, unchanged, in
@@ -2916,7 +2920,7 @@ function runWiringSuite(lib) {
         now: "const [importModalTitle, setImportModalTitle] = useState<'import' | 'found'>('import')", reason: 'the title is a code set in an effect; the render supplies the words' },
       { was: "setImportModalTitle('Import schedule')", nowIn: 'app/manage/[token]/page.tsx', now: "setImportModalTitle('import')", reason: 'the same code' },
       { was: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName })', nowIn: 'app/manage/[token]/page.tsx',
-        now: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName, words: previewWords })', reason: "the preview's placeholder words from manageScheduleEvent" },
+        /* ⚠️ RE-PINNED (address-formats-1, 21 Oct 2026): + the truck's address format, so the preview card writes its area line the saved card's way (GB/US identical, scripts/address-formats-1.cjs §3) */ now: '? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName, words: previewWords, addressFormat: tabSettings.addressFormat })', reason: "the preview's placeholder words from manageScheduleEvent" },
       { was: 'form: editingEvent, vanName: previewVanName,', nowIn: 'app/manage/[token]/page.tsx', now: 'form: editingEvent, vanName: previewVanName, words: previewWords,',
         reason: "the one-line preview's placeholder words likewise" },
       /* `getMissingLabel` had no caller — removed, not moved; the page records it where it stood. */

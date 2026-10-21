@@ -838,11 +838,13 @@ export default function AdminPage() {
   const modalExpiryYMD = modalTrialExpiry ? modalTrialExpiry.toISOString().slice(0, 10) : null
 
   // ── THE PLANS TABLE: the catalogue, priced per country (Stage A — it replaced the old Starter / Pro / Max matrix).
-  // A country's amounts are formatted with its own settings when /api/admin sent them, else shown as raw minor units.
+  // A country's amounts are formatted with its own settings. currency-registry (21 October 2026): /api/admin now sends the
+  // settings of EVERY country the catalogue prices (Ireland has prices and no trucks, so it printed "2900 (minor units)").
+  // A country whose row could not be read shows "—" — never a raw minor-unit figure.
   const priceCountries = [...new Set(plans.prices.map(p => p.countryCode))].sort()
   const money = (minor: number, cc: string) => {
     const cs = countrySettings[cc] as CountrySettings | undefined
-    return cs ? formatAmount(minor, moneyFormatOf(cs)) : `${minor} (minor units)`
+    return cs ? formatAmount(minor, moneyFormatOf(cs)) : '—'
   }
   const bpsLabel = (bps: number, cc: string) => {
     const cs = countrySettings[cc] as CountrySettings | undefined

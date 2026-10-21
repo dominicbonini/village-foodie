@@ -72,6 +72,7 @@ import { resolveBatchReservations } from '@/lib/features'
 import { WALK_UP_NAME } from '@/lib/walk-up'
 import '@/lib/i18n/catalog/emailCustomer'
 import { readEventRegion } from '@/lib/event-region-read'
+import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
@@ -230,7 +231,8 @@ async function deliverReadyEmail(order: any, truck: any) {
     venueName: eventRow?.venue_name ?? null,
     venueTown: eventRow?.town ?? null,
     venuePostcode: eventRow?.postcode ?? null,
-    venueRegion: await readEventRegion(supabase, eventRow?.id),
+    venueRegion: await readEventRegion(supabase, eventRow?.id, await addressFormatForTruck(truck)),
+    addressFormat: await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
     preferredContactMethod: truck.preferred_contact_method ?? null,
     contactPhone: truck.contact_phone ?? null,
     whatsappSender: truck.whatsapp_sender ?? null,
@@ -379,7 +381,8 @@ export async function POST(req: NextRequest) {
           venueName: eventRow?.venue_name ?? null,
           venueTown: eventRow?.town ?? null,
           venuePostcode: eventRow?.postcode ?? null,
-          venueRegion: await readEventRegion(supabase, eventRow?.id),
+          venueRegion: await readEventRegion(supabase, eventRow?.id, await addressFormatForTruck(truck)),
+          addressFormat: await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone: truck.contact_phone ?? null,
           whatsappSender: truck.whatsapp_sender ?? null,
@@ -1931,7 +1934,8 @@ export async function POST(req: NextRequest) {
           venueName:              manualEventRow?.venue_name ?? null,
           venueTown:              manualEventRow?.town ?? null,
           venuePostcode:          manualEventRow?.postcode ?? null,
-          venueRegion:            await readEventRegion(supabase, manualEventRow?.id),
+          venueRegion:            await readEventRegion(supabase, manualEventRow?.id, await addressFormatForTruck(truck)),
+          addressFormat:          await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone:           truck.contact_phone ?? null,
           whatsappSender:         truck.whatsapp_sender ?? null,
@@ -1966,7 +1970,8 @@ export async function POST(req: NextRequest) {
           venueName:     manualEventRow?.venue_name ?? null,
           venueTown:     manualEventRow?.town ?? null,
           venuePostcode: manualEventRow?.postcode ?? null,
-          venueRegion: await readEventRegion(supabase, manualEventRow?.id),
+          venueRegion: await readEventRegion(supabase, manualEventRow?.id, await addressFormatForTruck(truck)),
+          addressFormat: await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
           autoAccepted: true,
         })
         await sendEmailUnlessDemo(truck, {
@@ -2317,7 +2322,8 @@ export async function POST(req: NextRequest) {
           venueName: slotEventRow?.venue_name ?? null,
           venueTown: slotEventRow?.town ?? null,
           venuePostcode: slotEventRow?.postcode ?? null,
-          venueRegion: await readEventRegion(supabase, slotEventRow?.id),
+          venueRegion: await readEventRegion(supabase, slotEventRow?.id, await addressFormatForTruck(truck)),
+          addressFormat: await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone: truck.contact_phone ?? null,
           whatsappSender: truck.whatsapp_sender ?? null,

@@ -72,7 +72,9 @@ const ADAPT = {
   ...Object.fromEntries(STYLES.flatMap((st, i) => [
     [`addressPlaceholders.pastePlaceholder|${i}`, (M, x) => x.tr('manageScheduleImport')('pastePlaceholder', M.pasteExampleValues(st, x.ts))],
     [`addressPlaceholders.addressPlaceholders|${i}`, (M, x) => {
-      const style = M.addressStyleOf(st), ev = x.tr('manageScheduleEvent')
+      // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): addressStyleOf is retired (lib/address-formats.ts messagesStyleOf
+      // replaces it); its rule, kept here for these three inputs: 'zip_state' stays, anything else is 'postcode'.
+      const style = st === 'zip_state' ? 'zip_state' : 'postcode', ev = x.tr('manageScheduleEvent')
       const paste = x.tr('manageScheduleImport')('pastePlaceholder', { ...M.pasteExampleValues(st, x.ts), date: '\u0000' })
       return { address: ev('addressPlaceholder', { style }), area: ev('areaPlaceholder', { style }), pasteVenue: paste.slice(paste.indexOf('\u0000, ') + 3) }
     }],

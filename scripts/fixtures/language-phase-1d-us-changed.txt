@@ -1,4 +1,4 @@
-# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 319 changed). Written by scripts/language-phase-1d.cjs.
+# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 320 changed). Written by scripts/language-phase-1d.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 menu/US|menuTab|list	words
 menu/US|menuTab|list|open	words
@@ -257,7 +257,7 @@ api/US|manage|addVanNoName	code: named difference 1 (name_required)
 api/US|manage|renameVanNoName	code: named difference 1 (name_required)
 api/US|manage|deleteLastVan	code: named difference 1 (last_van) + words
 api/US|manage|unknownAction	code: named difference 1 (unknown_action)
-api/US|manageGET|stockWarning	code: plans-manage-get-catalogue+pricing-b-country-settings-fields+pricing-b-catalogue-ignored-features + words
+api/US|manageGET|stockWarning	code: plans-manage-get-catalogue+pricing-b-country-settings-fields+address-formats-1-country-key+pricing-b-catalogue-ignored-features + words
 api/US|eventTypes|badJson	code: named difference 1 (bad_request)
 api/US|eventTypes|noToken	code: named difference 1 (token_required)
 api/US|eventTypes|badToken	code: named difference 1 (invalid_token)
@@ -298,6 +298,7 @@ api/US|eventsAction|cancelNotMine	code: named difference 1 (event_not_found)
 api/US|eventsAction|restoreNotMine	code: named difference 1 (event_not_found)
 api/US|eventsAction|unknownAction	code: named difference 1 (unknown_action)
 api/US|events|noTruck	code: named difference 1 (truck_param_required) + words
+api/US|events|ok	code: address-formats-1-events-format-us
 api/US|eventsManage|noToken	code: named difference 1 (token_required)
 api/US|eventsManage|badToken	code: named difference 1 (truck_not_found)
 api/US|affected|missing	code: named difference 1 (missing_params) + words

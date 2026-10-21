@@ -19,6 +19,7 @@ import { crossesMidnight, isUpcomingOrRunning } from '@/lib/event-window'
 import { getLocalDateInTz, getNowMinsInTz, addDaysYmd, DISCOVERY_TIME_SETTINGS } from '@/lib/time-utils'
 import { truckTimeZone } from '@/lib/truck-time'
 import { readEventRegions } from '@/lib/event-region-read'
+import { listCountrySettingsCached } from '@/lib/country-settings'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -208,6 +209,17 @@ export async function GET(req: NextRequest) {
     console.error('[Discovery] orphaned-event fallback map build failed:', err)
   }
 
+  // directions-link-fix (21 October 2026): each event carries its country's short name ("UK", "Ireland" —
+  // country_settings.short_name) so the card's Google directions link resolves a foreign address
+  // (lib/maps-links.ts). A failed read leaves the key out; the link works without it.
+  const countryRows = await listCountrySettingsCached().catch(() => [])
+  const countryNames = new Map(countryRows.map(c => [c.countryCode, c.shortName]))
+  const countryNameOf = (code: string) => (countryNames.get(code) ? { countryName: countryNames.get(code) as string } : {})
+  // address-formats-1 (21 October 2026): each event also carries its country's address format (lib/address-formats.ts),
+  // so the card and the calendar write its area line that country's way. A failed read leaves it out: the old line.
+  const addressFormats = new Map(countryRows.map(c => [c.countryCode, c.addressFormat]))
+  const addressFormatOf = (code: string) => (addressFormats.get(code) ? { addressFormat: addressFormats.get(code) as string } : {})
+
   // ── Map discovery events ───────────────────────────────────────
   const mappedDiscoveryEvents = evData.map((e: any, idx: number) => {
     // Join first; if the event has a null FK (orphaned), fall back to the name-matched static truck. `{}` if
@@ -245,6 +257,9 @@ export async function GET(req: NextRequest) {
       postcode: venue.postcode || '',
       venueLat: venue.latitude ? parseFloat(String(venue.latitude)) : undefined,
       venueLong: venue.longitude ? parseFloat(String(venue.longitude)) : undefined,
+      // Scraped rows are read for Village Foodie's country only (the query above).
+      ...countryNameOf(VILLAGE_FOODIE_COUNTRY),
+      ...addressFormatOf(VILLAGE_FOODIE_COUNTRY),
       venuePhone: venue.phone || '',
       venueWebsite: venue.website || '',
       venuePhoto: formatImageUrl(venue.photo_url || null, 'photos'),
@@ -352,7 +367,9 @@ export async function GET(req: NextRequest) {
       const privacy = await readPrivateEventIds(
         supabase, opRows.map((e: any) => e.id), '/api/discovery/events')
       // The events' states (lib/event-region-read.ts): a separate best-effort read; a key only when one is known.
-      const regions = await readEventRegions(supabase, opRows.map((e: { id: string }) => e.id))
+      // address-formats-1: each event's region is read in ITS truck's address format (NSW, "Co. Kerry" kept; junk dropped).
+      const formatByEvent = new Map(opRows.map((e: { id: string; trucks?: unknown }) => [e.id, addressFormats.get(countryOf(e.trucks as { country?: string | null } | null))]))
+      const regions = await readEventRegions(supabase, opRows.map((e: { id: string }) => e.id), (id: string) => formatByEvent.get(id))
 
       mappedOperatorEvents = opRows
         .filter((e: any) => {
@@ -395,6 +412,8 @@ export async function GET(req: NextRequest) {
             ...(regions.get(e.id) ? { region: regions.get(e.id) } : {}),
             venueLat: e.latitude ? parseFloat(String(e.latitude)) : undefined,
             venueLong: e.longitude ? parseFloat(String(e.longitude)) : undefined,
+            ...countryNameOf(countryOf(truck)),
+            ...addressFormatOf(countryOf(truck)),
             venuePhone: null,
             venueWebsite: null,
             venuePhoto: null,

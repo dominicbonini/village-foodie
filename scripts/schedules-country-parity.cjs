@@ -304,7 +304,14 @@ async function compare() {
   ok(J(A.bridge.emails) === J(B.bridge.emails), 'bridge: the same one email to the same operator')
   const iw = withoutCountry(A.ingest.writes)
   ok(A.ingest.status === B.ingest.status && J(A.ingest.body) === J(B.ingest.body).replace('created on (name, village)', 'created on (country, name, village)') && J(iw.out) === J(B.ingest.writes) && iw.allGB, 'ingest: identical (country GB)', firstDiff(J(A.ingest.body), J(B.ingest.body)))
-  for (const h of Object.keys(B.feed)) ok(J(A.feed[h]) === J(B.feed[h]), `Village Foodie feed on ${h}: identical`, firstDiff(J(A.feed[h]), J(B.feed[h])))
+  // ⚠️ RE-PINNED (directions-link-fix, 21 October 2026): the feed now gives each event its country's short name
+  // (`countryName`, for the card's Google directions link — lib/maps-links.ts). That ONE key is the named difference: it
+  // is required on every event ("UK" here: every row is GB) and set aside; everything else must still be identical.
+  // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): …and `addressFormat` (each event's address format key; "gb" here —
+  // the GB row's legacy 'postcode' read as gb), required on every event and set aside the same way.
+  const withoutCountryName = j => ({ ...j, events: (j?.events || []).map(({ countryName, addressFormat, ...e }) => e) })
+  for (const h of Object.keys(B.feed)) ok(J(withoutCountryName(A.feed[h])) === J(B.feed[h]) && (A.feed[h]?.events || []).every(e => e.countryName === 'UK' && e.addressFormat === 'gb'),
+    `Village Foodie feed on ${h}: identical, plus countryName "UK" and addressFormat "gb" on every event`, firstDiff(J(withoutCountryName(A.feed[h])), J(B.feed[h])))
   const sw = withoutCountry(A.screenshot.writes)
   ok(A.screenshot.status === B.screenshot.status && J(A.screenshot.body) === J(B.screenshot.body), 'screenshot route, GB: the response is identical', firstDiff(J(A.screenshot.body), J(B.screenshot.body)))
   ok(J(sw.out) === J(B.screenshot.writes) && sw.allGB, 'screenshot route, GB: the same writes (country GB)', firstDiff(J(sw.out), J(B.screenshot.writes)))

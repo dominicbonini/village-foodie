@@ -94,6 +94,9 @@ export function previewEventFromForm(input: {
   /** The van's display name, when the truck has more than one and one is chosen. */
   vanName?: string | null
   words?: PreviewWords
+  /** address-formats-1 (21 October 2026): the truck's address format key — the preview card writes its area line the way
+   *  the saved card will. The form's state is not passed yet (stage 2 moves the entry form). */
+  addressFormat?: string | null
 }): VillageEvent {
   const { form, truckName } = input
   const venueWord = input.words?.venue ?? PREVIEW_PLACEHOLDERS.venue
@@ -129,6 +132,7 @@ export function previewEventFromForm(input: {
     town: txt(form.town) || undefined,
     postcode: txt(form.postcode) || undefined,
     eventNotes: txt(form.notes) || undefined,
+    ...(input.addressFormat ? { addressFormat: input.addressFormat } : {}),
   }
 }
 

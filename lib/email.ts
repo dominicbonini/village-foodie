@@ -304,6 +304,9 @@ export function formatConfirmationEmail(params: {
   venuePostcode?: string | null
   /** The event's two-letter state (truck_events.region) — only a US event saved with one; lib/event-address.ts. */
   venueRegion?: string | null
+  /** address-formats-1 (21 October 2026): the truck's address format key (lib/address-formats.ts) — how the venue line is
+   *  written. Absent: the line is written exactly as before (lib/event-address.ts). */
+  addressFormat?: string | null
   preferredContactMethod?: string | null
   contactPhone?: string | null
   whatsappSender?: string | null
@@ -379,7 +382,7 @@ export function formatConfirmationEmail(params: {
 
   // Collection venue — single line (matches the truck "new order" email format)
   // "Pier A Park, Hoboken, NJ 07030" when the event has a state; otherwise the same join as before (lib/event-address).
-  const venueOneLine = eventAddressLine({ venueName: params.venueName, town: params.venueTown, region: params.venueRegion, postcode: params.venuePostcode })
+  const venueOneLine = eventAddressLine({ venueName: params.venueName, town: params.venueTown, region: params.venueRegion, postcode: params.venuePostcode }, params.addressFormat)
   const collectionSection = venueOneLine
     ? `<p style="margin:12px 0 0;font-size:14px;color:#475569">📍 ${venueOneLine}</p>`
     : ''
@@ -575,6 +578,9 @@ export function formatNewOrderEmail(params: {
   venuePostcode?: string | null
   /** The event's two-letter state (truck_events.region) — only a US event saved with one; lib/event-address.ts. */
   venueRegion?: string | null
+  /** address-formats-1 (21 October 2026): the truck's address format key (lib/address-formats.ts) — how the venue line is
+   *  written. Absent: the line is written exactly as before (lib/event-address.ts). */
+  addressFormat?: string | null
   autoAccepted?: boolean
   /** The ORDER's currency and its country's locale (lib/money-server.ts). */
   money: MoneyFormat
@@ -582,7 +588,7 @@ export function formatNewOrderEmail(params: {
   time: TimeSettings
 }): { subject: string; html: string; text: string } {
   const { orderId, customerName, customerPhone, items, deals, total, notes,
-          venueName, venueTown, venuePostcode, venueRegion, autoAccepted, money } = params
+          venueName, venueTown, venuePostcode, venueRegion, addressFormat, autoAccepted, money } = params
   const slot = formatSlot(params.slot, params.time)
 
   // Single-sourced line rendering (now shows deal bundle price + slot-modifier prices too).
@@ -594,7 +600,7 @@ export function formatNewOrderEmail(params: {
             <h2 style="color:#ea580c;margin:0 0 12px">🔔 ${t('heading')}</h2>
             <p>${t.markup('from', { id: orderId, name: customerName, b: strong })}</p>
             ${slot ? `<p style="font-size:16px"><strong>⏰ ${t('collection', { time: slot })}</strong></p>` : `<p>${t('asap')}</p>`}
-            ${(venueName || venueTown) ? `<p>📍 ${eventAddressLine({ venueName, town: venueTown, region: venueRegion, postcode: venuePostcode })}</p>` : ''}
+            ${(venueName || venueTown) ? `<p>📍 ${eventAddressLine({ venueName, town: venueTown, region: venueRegion, postcode: venuePostcode }, addressFormat)}</p>` : ''}
             ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
               ${orderLinesHtml}${chargeRowsHtml(params.charges, money)}
@@ -614,7 +620,7 @@ export function formatNewOrderEmail(params: {
   const text = t('text', {
     id: orderId, name: customerName,
     withSlot: slot ? 'yes' : 'no', slot: slot ?? '',
-    withVenue: (venueName || venueTown) ? 'yes' : 'no', venue: eventAddressLine({ venueName, town: venueTown, region: venueRegion }),
+    withVenue: (venueName || venueTown) ? 'yes' : 'no', venue: eventAddressLine({ venueName, town: venueTown, region: venueRegion }, addressFormat),
     withCharges: chargeText.length ? 'yes' : 'no', charges: chargeText.join('. '),
     total: formatMajor(total, money),
     withNotes: notes ? 'yes' : 'no', notes: notes ?? '',
@@ -929,7 +935,7 @@ export async function sendCancellationEmail({
 }
 
 export async function sendEventCancellationEmail({
-  to, customerName, orderId, truckName, venueName, village, region, eventDate, note, paymentStatus, time,
+  to, customerName, orderId, truckName, venueName, village, region, addressFormat, eventDate, note, paymentStatus, time,
 }: {
   to: string
   customerName: string
@@ -939,13 +945,16 @@ export async function sendEventCancellationEmail({
   village: string | null
   /** The event's two-letter state, when it has one (lib/event-address.ts). */
   region?: string | null
+  /** address-formats-1 (21 October 2026): the truck's address format key (lib/address-formats.ts) — how the venue line is
+   *  written. Absent: the line is written exactly as before (lib/event-address.ts). */
+  addressFormat?: string | null
   eventDate: string | null
   note: string | null
   paymentStatus: string | null
   /** The truck's time settings (lib/truck-time.ts) — the date in its country's words and order. */
   time: TimeSettings
 }): Promise<void> {
-  const location = eventAddressLine({ venueName, town: village, region })
+  const location = eventAddressLine({ venueName, town: village, region }, addressFormat)
   const dateFormatted = eventDate
     ? formatYmd(eventDate, time, { weekday: 'long', day: 'numeric', month: 'long' })
     : null

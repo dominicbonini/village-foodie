@@ -31,8 +31,11 @@ const MSG = JSON.parse(read('messages/en-GB.json'))
 // The pre-fix TruckListCard: this tree's file without the one address-line change (it carried earlier uncommitted work).
 const cardBefore = () => {
   let s = read('components/TruckListCard.tsx')
-  const imp = "import { eventAreaLineWithRegion } from '@/lib/event-address';\n"
-  const now = "  // 19 October 2026: an event with a state reads \"Hoboken, NJ 07030\" (lib/event-address.ts); without one, as before.\n  const areaLine = eventAreaLineWithRegion({ town: showVillage ? event.village : null, region: event.region, postcode: event.postcode })\n    ?? [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');\n"
+  // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): the card's area line now comes from the event's address format
+  // (lib/event-address.ts eventAreaLine — with no format, the 19 October rule exactly). The anchors are the new lines; the
+  // pre-fix card this builds is unchanged.
+  const imp = "import { eventAreaLine } from '@/lib/event-address';\n"
+  const now = "  // 19 October 2026: an event with a state reads \"Hoboken, NJ 07030\" (lib/event-address.ts); without one, as before.\n  // address-formats-1 (21 October 2026): written by the event's address format (\"Bondi Beach NSW 2026\"); an event with no\n  // format (an older payload) keeps exactly the old rule — eventAreaLine's legacy path.\n  const areaLine = eventAreaLine({ town: showVillage ? event.village : null, region: event.region, postcode: event.postcode }, event.addressFormat);\n"
   if (!s.includes(imp) || !s.includes(now)) throw new Error('TruckListCard: the fix is not where this harness expects it')
   return s.replace(imp, '').replace(now, "  const areaLine = [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');\n")
 }
@@ -112,11 +115,20 @@ const cardBefore = () => {
   {
     useDb(world())
     const vfA = await feed('A', HOSTS.vf), vfB = await feed('B', HOSTS.vf)
-    t('Village Foodie feed: byte-identical to BEFORE (no truckSlug, no new truck, no US row)', JSON.stringify(vfA) === JSON.stringify(vfB), { a: JSON.stringify(vfA).slice(0, 300), b: JSON.stringify(vfB).slice(0, 300) })
+    // ⚠️ RE-PINNED (directions-link-fix, 21 October 2026): the feed now gives each event its country's short name
+    // (`countryName`, for the card's Google directions link — lib/maps-links.ts). That ONE key is set aside here and
+    // required on its own check below; everything else is still compared byte for byte.
+    // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): …and `addressFormat`, each event's address format key, the same way.
+    const noCn = j => ({ ...j, events: j.events.map(({ countryName, addressFormat, ...e }) => e) })
+    t('Village Foodie feed: byte-identical to BEFORE (no truckSlug, no new truck, no US row) apart from countryName', JSON.stringify(noCn(vfA)) === JSON.stringify(vfB), { a: JSON.stringify(noCn(vfA)).slice(0, 300), b: JSON.stringify(vfB).slice(0, 300) })
     const hgA = await feed('A', HOSTS.hg), hgB = await feed('B', HOSTS.hg)
-    const strip = j => ({ ...j, events: j.events.map(({ truckSlug, region, ...e }) => e) })
+    const strip = j => ({ ...j, events: j.events.map(({ truckSlug, region, countryName, addressFormat, ...e }) => e) })   // ⚠️ RE-PINNED (directions-link-fix): + countryName; (address-formats-1): + addressFormat
     t('HatchGrab feed: BEFORE plus only `truckSlug` on operator events (and `region` where a state is known)', JSON.stringify(strip(hgA)) === JSON.stringify(hgB) && hgA.events.filter(e => e.source === 'operator').every(e => e.truckSlug),
       { a: JSON.stringify(strip(hgA)).slice(0, 400), b: JSON.stringify(hgB).slice(0, 400) })
+    t('addressFormat (address-formats-1): every Village Foodie event "gb"; on HatchGrab the US event "us", every GB event "gb"',
+      vfA.events.every(e => e.addressFormat === 'gb') && hgA.events.every(e => e.addressFormat === (e.id === 'ev-us' ? 'us' : 'gb')), hgA.events.map(e => [e.id, e.addressFormat]))
+    t('countryName (directions-link-fix): every Village Foodie event "UK"; on HatchGrab the US event "US", every GB event "UK"',
+      vfA.events.every(e => e.countryName === 'UK') && hgA.events.every(e => e.countryName === (e.id === 'ev-us' ? 'US' : 'UK')), hgA.events.map(e => [e.id, e.countryName]))
     t('HatchGrab feed: the US event carries region "NJ"; no GB event carries a region', hgA.events.find(e => e.id === 'ev-us')?.region === 'NJ' && hgA.events.filter(e => e.id !== 'ev-us').every(e => !('region' in e)))
 
     for (const [label, slug] of [['Gusto-shaped (operator truck + linked discovery row)', 'pizzeria-gusto'], ['Pizza Kitchen-shaped, by its discovery name', 'pizza-kitchen'], ['Pizza Kitchen-shaped, by its hidden operator slug', 'test-kitchen'],
@@ -274,11 +286,14 @@ const cardBefore = () => {
     await EMAIL.A.sendEventCancellationEmail({ ...cancelArgs, venueName: 'Pier A Park', village: 'Hoboken', region: 'NJ', time: UST })
     t('US event-cancellation email with a state: "Pier A Park, Hoboken, NJ"', JSON.stringify(sent[0] || {}).includes('Pier A Park, Hoboken, NJ'))
     const src = f => read(f)
+    // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): each read now also passes the truck's address format, so the state
+    // is kept when it is in THAT format's list (lib/event-region-read.ts) — the same read, one more argument.
+    const FMT = ', await addressFormatForTruck\\(truck\\)'
     t('every email caller passes the state from the separate best-effort read (no named select gains a column)',
-      (src('app/api/orders/submit/route.ts').match(/readEventRegion\(supabase, eventRow\?\.id\)/g) || []).length === 2
-      && (src('lib/payments/promote-draft.ts').match(/readEventRegion\(supabase, eventRow\?\.id\)/g) || []).length === 2
-      && (src('app/api/dashboard/action/route.ts').match(/readEventRegion\(supabase, \w+\?\.id\)/g) || []).length === 5
-      && src('app/api/events/action/route.ts').includes('region: await readEventRegion(supabase, eventId)')
+      (src('app/api/orders/submit/route.ts').match(new RegExp(`readEventRegion\\(supabase, eventRow\\?\\.id${FMT}\\)`, 'g')) || []).length === 2
+      && (src('lib/payments/promote-draft.ts').match(new RegExp(`readEventRegion\\(supabase, eventRow\\?\\.id${FMT}\\)`, 'g')) || []).length === 2
+      && (src('app/api/dashboard/action/route.ts').match(new RegExp(`readEventRegion\\(supabase, \\w+\\?\\.id${FMT}\\)`, 'g')) || []).length === 5
+      && src('app/api/events/action/route.ts').includes('region: await readEventRegion(supabase, eventId, await addressFormatForTruck(truck))')
       && !/select\([^)]*\bregion\b/.test(src('app/api/orders/submit/route.ts') + src('lib/payments/promote-draft.ts') + src('app/api/dashboard/action/route.ts')))
     const m = src('app/api/manage/route.ts'), mp = src('app/manage/[token]/page.tsx')
     t('Manage saves the state only when the client sent it, in its own update after the save (never in the insert/update)',

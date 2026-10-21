@@ -28,7 +28,7 @@ import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { moneyFormatForTruck } from '@/lib/money-server'
-import { allergenSetForTruck } from '@/lib/country-settings'
+import { allergenSetForTruck, addressFormatForTruck } from '@/lib/country-settings'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { fetchUpcomingTruckEvents } from '@/lib/whatsapp/upcoming-events'
 // Language Phase 1d Part 2: refusals are `{ ok:false, kind, error, code, params }` — `errorsManage` words in the truck's
@@ -172,6 +172,7 @@ export async function POST(req: NextRequest) {
       money:           await moneyFormatForTruck(truck),
       time:            truckTime,
       allergenSet:     await allergenSetForTruck(truck),   // anz-1: Australian/NZ phrasing in the allergen guard (anz only)
+      addressFormat:   await addressFormatForTruck(truck),   // address-formats-1: how each event's place is written
       truckName:       truck.name,
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,

@@ -9,4 +9,6 @@ export const COMPANY = {
   name: 'HatchGrab Ltd',
   number: '17381557',
   address: 'Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom',
+  /** ai-search-1 (21 October 2026): the country of registration as an ISO code — the JSON-LD Organization's addressCountry. */
+  countryCode: 'GB',
 } as const

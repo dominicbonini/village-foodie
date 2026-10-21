@@ -35,7 +35,7 @@ import { cardFees } from '@/lib/card-fees'
 import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, cheapestAt, type OfferPlan, type FeeShape } from '@/lib/plan-offer'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { toMajor, formatMajor, formatWholeAmount, smallFeeLabel, minorDigits, roundsToZero, feeLabel, pctLabel, minorUnitSuffix, type MoneyFormat } from '@/lib/money-format'
+import { toMajor, formatMajor, formatWholeAmount, smallFeeLabel, minorDigits, roundsToZero, feeLabel, pctLabel, minorUnitSign, type MoneyFormat } from '@/lib/money-format'
 import { planMoneyFormatOf } from '@/lib/country-settings-types'
 import { contactHref } from '@/lib/contact-topics'
 // Language Phase 1e: every word on this page is in messages (`compare`), read in the locale the PAGE passes in — the
@@ -702,8 +702,9 @@ export default function CostComparison({ settings, catalog, locale, freeMonthsOv
                     className="w-full min-w-0 py-2 text-xl font-black tabular-nums placeholder:text-base placeholder:font-semibold placeholder:text-slate-400 focus:outline-none focus-visible:ring-2"
                     aria-label={t('fee.fixedAria')} />
                   {/* The box takes MINOR units, so its unit is the currency's coin — "p", "¢" — from lib/money-format's
-                      table (Language Phase 1e; it was a typed "p"). */}
-                  <span className="pl-1 text-lg font-bold text-slate-400">{minorUnitSuffix(fmt.currency) ?? ''}</span>
+                      table (Language Phase 1e; it was a typed "p"). ireland-2 (21 October 2026): the registry's
+                      minorUnitSign, so EUR shows "c" here too (a sentence still writes "€0.25"); GB and US unchanged. */}
+                  <span className="pl-1 text-lg font-bold text-slate-400">{minorUnitSign(fmt.currency) ?? ''}</span>
                 </div>
               </label>
             </div>

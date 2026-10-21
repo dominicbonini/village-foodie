@@ -20,6 +20,7 @@ import { localeForTruck } from '@/lib/i18n/server-locale'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageApi'
 import { readEventRegions } from '@/lib/event-region-read'
+import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 
 export const revalidate = 0
 
@@ -137,7 +138,9 @@ export async function GET(req: NextRequest) {
    * leaky. */
   const privacy = await readPrivateEventIds(supabase, (rows || []).map(e => e.id), '/api/events')
   // The events' states (lib/event-region-read.ts): a separate best-effort read; a key only when one is known.
-  const regions = await readEventRegions(supabase, (rows || []).map(e => e.id))
+  // address-formats-1 (21 October 2026): the truck's address format — each event carries it, and its region is read in it.
+  const addressFormat = await addressFormatForTruck(truck)
+  const regions = await readEventRegions(supabase, (rows || []).map(e => e.id), addressFormat)
 
   const tFeed = translatorFor(await localeForTruck(truck), 'manageApi')
   const seen = new Set<string>()
@@ -165,6 +168,7 @@ export async function GET(req: NextRequest) {
       village:       isPrivate ? '' : (e.town || ''),
       postcode:      isPrivate ? '' : (e.postcode || ''),
       ...(!isPrivate && regions.get(e.id) ? { region: regions.get(e.id) } : {}),
+      ...(addressFormat ? { addressFormat } : {}),
       notes:         isPrivate ? '' : (e.notes || ''),
       /* So the order page can show it without an Order button. */
       is_private:    isPrivate,

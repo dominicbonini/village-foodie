@@ -17,6 +17,7 @@ import { formatTime, formatTimeRange, DISCOVERY_TIME_SETTINGS } from '@/lib/time
 import { isHatchGrab } from '@/lib/domain';
 import { phoneWhatsApp } from '@/lib/whatsapp-hint';   // the SHARED derivation — same source the outreach page reads
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
+import { googleDirectionsUrl } from '@/lib/maps-links'
 
 interface EventListCardProps {
   events: VillageEvent[]; 
@@ -255,7 +256,10 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
                         const venuePostcode = ev.postcode || ''; 
                         const addressQuery = [venueDisplay, venuePostcode].filter(Boolean).join(', ');
                         const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
-                        const mapLink = isApple ? `http://maps.apple.com/?daddr=${safeQuery}&dirflg=d` : `https://www.google.com/maps/dir/?api=1&destination=$?q=${safeQuery}`; 
+                        // directions-link-fix (21 October 2026): the Google link carried a stray "$?q=" inside its destination. It is
+                        // now built by lib/maps-links.ts: the event's coordinates when it has them, else this address text plus its
+                        // country. The Apple link is unchanged.
+                        const mapLink = isApple ? `http://maps.apple.com/?daddr=${safeQuery}&dirflg=d` : googleDirectionsUrl({ lat: ev.venueLat, lng: ev.venueLong, query: addressQuery, countryName: ev.countryName });
                         
                         let distanceMiles: number | null = null;
                         if (userLocation && ev.venueLat && ev.venueLong) {

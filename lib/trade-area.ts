@@ -6,6 +6,7 @@
 // 🔴 A REFUSAL IS A CODE AND ITS VALUES (Language Phase 1d), never words: `{ code, params }`, whose sentence is the
 // `tradeArea` namespace's message (messages/en-GB.json) — read by each caller in its own language: the routes through
 // `tradeAreaErrorBody` (lib/i18n/manage-errors.ts), provisioning through `translatorFor`, the signup step through `useT`.
+import { messagesStyleOf } from '@/lib/address-formats'
 import type { CountrySettings } from '@/lib/country-settings-types'
 
 type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | 'timezones' | 'defaultTimezone'>
@@ -69,7 +70,7 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
       base_region: pointed ? str(input.base_region, 120) : null,
       base_lat: pointed ? lat : null,
       base_lng: pointed ? lng : null,
-      ...(c.addressFormat === 'zip_state' ? {
+      ...(messagesStyleOf(c.addressFormat) === 'zip_state' ? {   // address-formats-1: unchanged until stage 2
         base_region_code: pointed && typeof input.base_region_code === 'string' && /^[A-Z]{2}$/.test(input.base_region_code)
           ? input.base_region_code : null,
       } : {}),

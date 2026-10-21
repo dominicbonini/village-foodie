@@ -1,3 +1,4 @@
+import { eventAddressLine } from '@/lib/event-address'   // address-formats-1
 import { createClient } from '@supabase/supabase-js'
 import { formatTime, formatYmd, getLocalDateInTz, addDaysYmd, type TimeSettings } from '@/lib/time-utils'
 import { formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-format'
@@ -67,9 +68,12 @@ interface ClassifierParams {
    *  adds Australian/New Zealand phrasing to the allergen guard and the label families to the caveat check. Absent, 'uk14'
    *  or 'us9' → exactly the behaviour before. */
   allergenSet?: AllergenSet | null
+  /** address-formats-1 (21 October 2026): the truck's address format key — how each event's place is written in the
+   *  prompt. Absent: exactly the old line. */
+  addressFormat?: string | null
 }
 
-function formatEventForPrompt(event: TruckEvent, todayStr: string, ts: TimeSettings): string {
+function formatEventForPrompt(event: TruckEvent, todayStr: string, ts: TimeSettings, addressFormat?: string | null): string {
   const eventDate = new Date(event.event_date + 'T12:00:00')
   const today = new Date(todayStr + 'T12:00:00')
   const diffDays = Math.round((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
@@ -88,7 +92,8 @@ function formatEventForPrompt(event: TruckEvent, todayStr: string, ts: TimeSetti
   // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): "20:00–00:30" is said to end the NEXT morning, so the
   // model never reads it as finishing before it starts. Prompt text only; any other event's line is unchanged.
   const time = start && end ? `${start}–${end}${crossesMidnight(event.start_time, event.end_time) ? ' (ends after midnight, the next morning)' : ''}` : start || 'time TBC'
-  const location = [event.venue_name, event.town, event.postcode].filter(Boolean).join(', ')
+  // address-formats-1: the format's line (no state: the prompt's select has no region); with no format, the old join.
+  const location = eventAddressLine({ venueName: event.venue_name, town: event.town, postcode: event.postcode }, addressFormat)
   const confirmed = event.status === 'confirmed' || event.status === 'open'
   return `- ${friendlyDate}${relativeLabel}: ${location} ${time} [${confirmed ? 'CONFIRMED' : 'UNCONFIRMED'}]`
 }
@@ -428,7 +433,7 @@ Rules (follow exactly — same discipline as "never make up events"):
     return `${label} = ${dateStr} (${friendly})`
   }).join('\n')
 
-  const formattedEvents = events.map(e => formatEventForPrompt(e, todayStr, params.time))
+  const formattedEvents = events.map(e => formatEventForPrompt(e, todayStr, params.time, params.addressFormat))
 
   const replyPrompt = `You are the owner of ${truckName} ${truckEmoji}, a food truck. Reply warmly to this WhatsApp message.
 

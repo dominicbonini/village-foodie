@@ -268,7 +268,10 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                   applicationSubCategory: t('jsonLd.subCategory'),
                   description: t('jsonLd.description', { country: seo.short }),
                   inLanguage: seo.lang,
-                  areaServed: { '@type': 'Country', name: seo.name },
+                  // ai-search-1: `areaServed` is not a SoftwareApplication property (schema.org gives it to Organization,
+                  // Service, Offer…), so validators dropped it. `countriesSupported` is the app's own property: every
+                  // switched-on country with a page (the country menu's list), as ISO codes — schema.org's advice.
+                  countriesSupported: visitor.menu.options.map(o => o.code),
                   audience: { '@type': 'BusinessAudience', audienceType: t('jsonLd.audience') },
                 },
               })) }}

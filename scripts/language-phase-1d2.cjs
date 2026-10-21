@@ -189,6 +189,12 @@ function filesIn(dir) { return fs.readdirSync(dir).filter(f => f.endsWith('.json
     for (const l of [...f.map(x => `[F] ${x}`), ...a.map(x => `[A] ${x}`)].join('\n').split('\n').filter(l => /render errors|skipped/.test(l))) console.log(`  ⚠️ ${l}`)
   } else console.log('--reuse: the last F and A captures (node_modules/.cache/lp1d2-runs)')
   const BEFORE = load(BEFORE_DIR), F = load(path.join(RUNS, 'F')), A = load(path.join(RUNS, 'A'))
+  // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): lib/copy/addressPlaceholders.ts no longer exports addressStyleOf —
+  // retired by name; a country's address FORMAT gives the {style} (lib/address-formats.ts messagesStyleOf). Its smoke
+  // views are named removals: they must be ABSENT now (the export must not come back), and leave the comparison.
+  const RETIRED_VIEWS = ['smoke-copy/GB|addressPlaceholders|addressStyleOf', 'smoke-copy/US|addressPlaceholders|addressStyleOf']
+  const retiredAbsent = RETIRED_VIEWS.filter(id => id in BEFORE).map(id => [id, !(id in F) && !(id in A)])
+  for (const id of RETIRED_VIEWS) delete BEFORE[id]
   const ids = Object.keys(BEFORE)
   const isUS = id => id.split('/').slice(1).join('/').split('|')[0] === 'US'
   const area = id => id.split('/')[0]
@@ -201,6 +207,7 @@ function filesIn(dir) { return fs.readdirSync(dir).filter(f => f.endsWith('.json
   head(`views: BEFORE ${ids.length} · F ${Object.keys(F).length} · A ${Object.keys(A).length} (GB ${ids.filter(i => !isUS(i)).length}, US ${ids.filter(isUS).length}) · areas ${AREAS.join(', ')}`)
   const errs = ids.filter(id => typeof BEFORE[id] === 'string' && BEFORE[id].startsWith('ERROR'))
   t(`every BEFORE view rendered (no ERROR)`, errs.length === 0, errs.slice(0, 10).join(', '))
+  for (const [id, gone] of retiredAbsent) t(`${id}: retired by name (address-formats-1) — absent from F and A`, gone)
   for (const id of ids) { if (!(id in F)) t(`${id}: still rendered (F)`, false); if (!(id in A)) t(`${id}: still rendered (A)`, false) }
   const newViews = Object.keys(A).filter(id => !(id in BEFORE))
   if (newViews.length) console.log(`  ${newViews.length} view(s) exist only AFTER (not compared with BEFORE; the US-words check still reads them): ${newViews.slice(0, 10).join(', ')}${newViews.length > 10 ? ' …' : ''}`)

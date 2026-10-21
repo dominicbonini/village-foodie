@@ -9,7 +9,7 @@ import { isHatchGrab } from '@/lib/domain';
 import { formatTimeRange, formatYmdShortMonth, DISCOVERY_TIME_SETTINGS, type TimeSettings } from '@/lib/time-utils';
 import { useT } from '@/lib/i18n/use-t';
 import '@/lib/i18n/catalog/eventCard'
-import { eventAreaLineWithRegion } from '@/lib/event-address';
+import { eventAreaLine } from '@/lib/event-address';
 
 interface TruckListCardProps {
   event: VillageEvent;
@@ -144,8 +144,9 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
   // shows the area alone with NO trailing separator, and both-null → '' → line 2 not rendered.
   const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
   // 19 October 2026: an event with a state reads "Hoboken, NJ 07030" (lib/event-address.ts); without one, as before.
-  const areaLine = eventAreaLineWithRegion({ town: showVillage ? event.village : null, region: event.region, postcode: event.postcode })
-    ?? [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');
+  // address-formats-1 (21 October 2026): written by the event's address format ("Bondi Beach NSW 2026"); an event with no
+  // format (an older payload) keeps exactly the old rule — eventAreaLine's legacy path.
+  const areaLine = eventAreaLine({ town: showVillage ? event.village : null, region: event.region, postcode: event.postcode }, event.addressFormat);
 
   // Lifted out of the markup so the linked and the plain rendering below cannot drift apart — the two
   // differ ONLY in their wrapper element. `group-hover:text-orange-600` stays on the h3 in both: with

@@ -331,6 +331,10 @@ const plansEntries2 = () => [
       return x.replace(card, `<div class="rounded-xl border border-slate-200 p-3"><div class="flex flex-wrap items-start justify-between gap-2"><p class="text-sm font-bold text-slate-800">WhatsApp</p></div><div class="mt-2">${a2Prompt('whatsapp_replies', cc)}</div></div>`)
     }) },
   // ── ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026, docs/pricing-pages-report.md; scripts/_lp-stage-b.cjs) ──
+  { id: 'address-formats-1-country-key-2', country: 'both', agent: 'address-formats-1 (21 Oct 2026)',
+    what: '⚠️ RE-PINNED (address-formats-1, 21 October 2026): GET /api/manage’s `countrySettings.addressFormat` is the address FORMAT KEY ("postcode" → "gb", "zip_state" → "us") — the same change Part 1 names (address-formats-1-country-key). PRECISE.',
+    views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
+    expect: b => require('./_lp-address-formats-1.cjs').countrySettingsAddressKey(b) },
   { id: 'pricing-b-country-settings-fields-2', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
     what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): GET /api/manage’s `countrySettings` no longer carries the six plan-price fields (lib/country-settings.ts stopped selecting them) — the same change Part 1 names (pricing-b-country-settings-fields). PRECISE.',
     views: id => /^api\/(GB|US)\|manageGET\|/.test(id),

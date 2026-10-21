@@ -173,7 +173,16 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   for (const [host, sm] of [[HG, 'https://www.hatchgrab.com/sitemap.xml'], [VF, 'https://www.villagefoodie.co.uk/sitemap.xml']]) {
     const r = await ctx.withReq({ host }, async () => RB.default())
     const now = r.rules.flatMap(x => [].concat(x.disallow).map(d => `${x.userAgent}|Disallow|${d}`))
-    t(`${host}: every old rule except Crawl-delay is kept, nothing added`, JSON.stringify(now) === JSON.stringify(oldRules.filter(x => !/Crawl-delay/.test(x))), { now, old: oldRules })
+    // ⚠️ RE-PINNED (ai-search-1, 21 October 2026, docs/ai-search-1-report.md): the HatchGrab host now ALLOWS the answer /
+    // search bots and the training bots (Dominic's decision) — scripts/ai-search-1.cjs proves that policy exactly. Here:
+    // every old rule it did not decide is still there (Bytespider, FacebookBot, anthropic-ai blocked; `*` keeps /api/ and
+    // /trucks/), and the five training bots' old `Disallow: /` is gone. The Village Foodie host is checked as before.
+    const AI1 = host === HG && fs.existsSync(path.join(REPO, 'lib/robots-policy.ts'))
+    const nowFlat = r.rules.flatMap(x => [].concat(x.userAgent).flatMap(u => [].concat(x.disallow).map(d => `${u}|Disallow|${d}`)))
+    const TRAIN = ['GPTBot', 'ClaudeBot', 'CCBot', 'Applebot-Extended', 'Google-Extended']
+    if (AI1) t(`${host}: ai-search-1's named change — the old rules it did not decide are kept; the training bots are no longer blocked`,
+      oldRules.filter(x => !/Crawl-delay/.test(x) && !TRAIN.some(b => x.startsWith(b + '|'))).every(x => nowFlat.includes(x)) && TRAIN.every(b => !nowFlat.includes(`${b}|Disallow|/`)), { now: nowFlat, old: oldRules })
+    else t(`${host}: every old rule except Crawl-delay is kept, nothing added`, JSON.stringify(now) === JSON.stringify(oldRules.filter(x => !/Crawl-delay/.test(x))), { now, old: oldRules })
     t(`${host}: no Crawl-delay; Sitemap: ${sm}`, !JSON.stringify(r).includes('crawlDelay') && r.sitemap === sm)
   }
   t('public/robots.txt is gone (it would shadow app/robots.ts)', !fs.existsSync(path.join(REPO, 'public/robots.txt')))

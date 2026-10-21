@@ -7,19 +7,18 @@
 // `manageScheduleImport` and `schedulePlaces` — 'postcode' (the `other` branch) is the UK text the Schedule tab
 // carried before, character for character; 'zip_state' is the US one. This file holds what is NOT a word:
 // which style a country has, whether its postcodes are forced upper-case, and the paste example's date and times.
-import type { CountrySettings } from '@/lib/country-settings-types'
+import type { LegacyAddressStyle } from '@/lib/address-formats'
 import { clockOf, formatOrdinalDate, formatYmd, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 
-export type AddressStyle = CountrySettings['addressFormat']
+// address-formats-1 (21 October 2026): the STYLE a message selects on is now the address format's `messagesStyle`
+// (lib/address-formats.ts, `messagesStyleOf`) — `addressStyleOf` is retired. The GB/US words are unchanged until stage 2
+// moves the labels onto each format's own field types and variants.
+export type AddressStyle = LegacyAddressStyle
 
-/** The style to pass a message as `{style}`. Anything unrecognised is 'postcode' — what every truck had before. */
-export function addressStyleOf(style: AddressStyle | null | undefined): AddressStyle {
-  return style === 'zip_state' ? 'zip_state' : 'postcode'
-}
 
 /** UK postcodes are typed and shown upper-case ("CB8 8PD"); a US ZIP code is digits and is left as typed. */
 export function upperCasesPostcode(style: AddressStyle | null | undefined): boolean {
-  return addressStyleOf(style) === 'postcode'
+  return style !== 'zip_state'
 }
 
 /** The paste example's day — a Saturday (14 June 2025), as the UK example has always read "Saturday 14th June". */
@@ -36,5 +35,5 @@ export function pasteExampleValues(style: AddressStyle | null | undefined, ts: T
   const date = s.dateOrder === 'mdy'
     ? formatYmd(PASTE_EXAMPLE_DAY, s, { weekday: 'long', month: 'long', day: 'numeric' })
     : formatOrdinalDate(PASTE_EXAMPLE_DAY, s)
-  return { style: addressStyleOf(style), date, start: clockOf('17:00', '12h', s.locale), end: clockOf('21:00', '12h', s.locale) }
+  return { style: style === 'zip_state' ? 'zip_state' as const : 'postcode' as const, date, start: clockOf('17:00', '12h', s.locale), end: clockOf('21:00', '12h', s.locale) }
 }

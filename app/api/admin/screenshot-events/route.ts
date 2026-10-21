@@ -24,6 +24,7 @@
 // ⚠️ THE BROWSER STILL HOLDS THE FILE, which is what makes a failed row re-runnable; the log is a record,
 // not the queue.
 
+import { messagesStyleOf } from '@/lib/address-formats'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
@@ -326,7 +327,7 @@ async function chosenCountry(code: unknown): Promise<ScreenshotCountry | null> {
   if (!/^[A-Z]{2}$/.test(c)) return null
   try {
     const s = await getCountrySettings(c)
-    return { code: s.countryCode, name: s.name, addressFormat: s.addressFormat, dateOrder: s.dateOrder }
+    return { code: s.countryCode, name: s.name, addressFormat: messagesStyleOf(s.addressFormat), dateOrder: s.dateOrder }   // address-formats-1: the prompt's style, unchanged until stage 2
   } catch { return null }
 }
 

@@ -81,7 +81,9 @@ function dbChecks(r) {
   if (!['24h', '12h'].includes(r.timeFormat)) v.push('time_format_chk')
   if (!['dmy', 'mdy'].includes(r.dateOrder)) v.push('date_order_chk')
   if (!['monday', 'sunday'].includes(r.weekStart)) v.push('week_start_chk')
-  if (!['postcode', 'zip_state'].includes(r.addressFormat)) v.push('address_format_chk')
+  // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): the CHECK of supabase/migrations/20261028_address_formats.sql — the
+  // keys of lib/address-formats.ts (was 'postcode' | 'zip_state'). A save now writes the format KEY the form picked.
+  if (!['gb', 'us', 'ie', 'au', 'nz', 'ca'].includes(r.addressFormat)) v.push('address_format_chk')
   if (!['uk14', 'us9'].includes(r.allergenSet)) v.push('allergen_set_chk')
   if (!['length', 'strict', 'off'].includes(r.phoneCheck)) v.push('phone_check_chk')   // 20261010_12
   if (!r.timezones.includes(r.defaultTimezone)) v.push('default_tz_chk')
@@ -146,7 +148,10 @@ function makeStore(seed, trucks, opts = {}) {
   fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, out.outputFiles[0].text)
   const { A, F } = require(file)
 
-  const GB = gbFromSeed(), US = usFromSeed()
+  // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): the store holds rows AS THE LOADER RETURNS THEM, and the loader now
+  // reads the seeds' legacy address_format as its format key ('postcode' → gb, 'zip_state' → us; lib/country-settings.ts).
+  const asLoaded = r => ({ ...r, addressFormat: ({ postcode: 'gb', zip_state: 'us' })[r.addressFormat] ?? r.addressFormat })
+  const GB = asLoaded(gbFromSeed()), US = asLoaded(usFromSeed())
   GB.updatedAt = '2026-10-10T08:00:00.000000+00:00'; US.updatedAt = '2026-10-10T08:00:00.000000+00:00'
   let n = 0
   const stamp = () => ({ by: 'admin@example.test', at: `2026-10-10T09:00:${String(n++).padStart(2, '0')}.000Z` })
@@ -210,9 +215,15 @@ function makeStore(seed, trucks, opts = {}) {
     // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): was "the decimals come from the column's currency —
     // 2900 typed in JPY is 2900 stored; 29.5 in JPY refused". No box is typed in major units any more, so a JPY
     // country saves with its retired prices untouched, and a smuggled '29.5' is neither refused nor stored.
+    // ⚠️ RE-PINNED (currency-registry, 21 October 2026): a country may only hold a currency lib/currencies.ts lists, so
+    // the JPY country is REFUSED now (the registry has no JPY); the smuggled-price rule is proven on a registry currency
+    // (CHF) instead — it saves, and a smuggled '29.5' is neither refused nor stored.
     const s2 = makeStore([GB, US, { ...US, countryCode: 'JP', name: 'Japan', currency: 'JPY', locale: 'ja-JP' }], { GB: 14 })
     const rj = await save(s2, 'JP', f => Object.assign(f, { proMonthly: '29.5' }))
-    t('🔴 a JPY country saves; a smuggled 29.5 plan price is neither refused nor stored', rj.ok && rj.data.country.proMonthlyMinor === US.proMonthlyMinor)
+    t('🔴 a JPY country is refused — JPY is not a currency we support', !rj.ok && JSON.stringify(rj.errors ?? rj).includes('Currency must be one we support'), rj)
+    const s3 = makeStore([GB, US, { ...US, countryCode: 'CH', name: 'Switzerland', currency: 'CHF', locale: 'de-CH', phoneCountryCode: '41', phoneExample: '044 668 18 00' }], { GB: 14 })
+    const rc = await save(s3, 'CH', f => Object.assign(f, { proMonthly: '29.5' }))
+    t('🔴 a CHF country saves; a smuggled 29.5 plan price is neither refused nor stored', rc.ok && rc.data.country.proMonthlyMinor === US.proMonthlyMinor)
   }
 
   console.log('── 3 · EVERY RULE REFUSES WITH ITS PLAIN MESSAGE, BEFORE ANY CHECK ───────────────────────')
@@ -220,8 +231,10 @@ function makeStore(seed, trucks, opts = {}) {
     // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): 'switching on with a plan price missing' is no longer
     // a form rule refused BEFORE the database — it IS the database trigger's rule now; see section 3b.
     ['changing the currency while trucks use the country', 'GB', f => { f.currency = 'USD' }, "The currency can't change while 14 trucks use this country."],
-    ['a currency that is not a code', 'US', f => { f.currency = 'Dollars' }, 'Currency must be a three-letter code, like GBP or USD.'],
-    ['a currency code that does not exist', 'US', f => { f.currency = 'QQQ' }, 'Currency must be a three-letter code, like GBP or USD.'],
+    // ⚠️ RE-PINNED (currency-registry, 21 October 2026): the message names the registry's currencies (lib/currencies.ts).
+    ['a currency that is not a code', 'US', f => { f.currency = 'Dollars' }, 'Currency must be one we support: GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON.'],
+    ['a currency code that does not exist', 'US', f => { f.currency = 'QQQ' }, 'Currency must be one we support: GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON.'],
+    ['a real currency we do not support', 'US', f => { f.currency = 'JPY' }, 'Currency must be one we support: GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON.'],
     ['an empty country name', 'US', f => { f.name = '  ' }, 'Give the country a name.'],
     // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the three plan price box rules (not an amount, three
     // decimals, our fee above 100) are gone with the boxes — section 2 asserts such values are ignored, never written.

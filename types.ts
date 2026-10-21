@@ -19,8 +19,12 @@ export interface VillageEvent {
   postcode?: string;
   /** The event's two-letter state — only a US event saved with one (lib/event-address.ts). */
   region?: string;
+  /** address-formats-1: the truck's address format key (lib/address-formats.ts) — how the card writes the area line. */
+  addressFormat?: string;
   venueLat?: number;
   venueLong?: number;
+  /** The event's country as `country_settings.short_name` ("UK", "Ireland") — for the directions link (lib/maps-links.ts). */
+  countryName?: string;
   venuePhone?: string;
   venueWebsite?: string; 
   venuePhoto?: string; 

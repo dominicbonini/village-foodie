@@ -17,6 +17,7 @@ import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageApi'
 import { readEventRegion } from '@/lib/event-region-read'
+import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -347,7 +348,8 @@ export async function POST(req: NextRequest) {
             // `[venueName, village].filter(Boolean).join(', ')` — a locality string. Fed from `town`,
             // this table's actual locality column. Parameter name, copy and template are unchanged.
             village: eventRow?.town ?? null,
-            region: await readEventRegion(supabase, eventId),
+            region: await readEventRegion(supabase, eventId, await addressFormatForTruck(truck)),
+            addressFormat: await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
             eventDate: eventRow?.event_date ?? null,
             note: fullNote || null,
             paymentStatus: order.paid_at ? 'paid' : null,

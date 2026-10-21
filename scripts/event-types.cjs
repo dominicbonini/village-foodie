@@ -60,6 +60,11 @@ const LIB_NOW = [
   'lib/plans.ts',
   // lib/features.ts imports these two since 10 October 2026 (plan prices come from country_settings).
   'lib/country-settings-types.ts', 'lib/money-format.ts',
+  // ⚠️ RE-PINNED (currency-registry, 21 October 2026): both of those import the currency registry (a leaf, no imports).
+  'lib/currencies.ts',
+  // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): lib/country-settings-types.ts imports the address-format config's
+  // key type (lib/address-formats.ts, a leaf with no imports).
+  'lib/address-formats.ts',
   // …and this one since Language Phase 0 (14 October 2026): its price words have one definition.
   'lib/price-words.ts',
   /* The offline vocabulary. A leaf with no imports, and the OWNER of the two mode values — so a

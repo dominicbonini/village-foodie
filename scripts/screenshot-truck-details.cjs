@@ -541,7 +541,13 @@ function fakeDb(opts = {}) {
       "import { normaliseRegion } from '@/lib/event-address'",
       "import { getCountrySettings } from '@/lib/country-settings'",
       "let zipState = false",
-      "try { zipState = (await getCountrySettings(country)).addressFormat === 'zip_state' } catch { zipState = false }",
+      /* ══ ⚠️ RE-PINNED (address-formats-1, 21 October 2026, docs/address-formats-1-report.md) — THE SEVENTH BUILD ══
+       * country_settings.address_format now holds a FORMAT KEY (lib/address-formats.ts; legacy values still read), so the
+       * sixth build's `=== 'zip_state'` reads the format's message style instead — the same answer for GB ('postcode' →
+       * gb → 'postcode') and the US ('zip_state' → us → 'zip_state'). ⛔ No filter, admission rule or column moved. Named:
+       * the import and the one replaced line (its old form is in TOLERATED_REMOVED). */
+      "import { messagesStyleOf } from '@/lib/address-formats'",
+      "try { zipState = messagesStyleOf((await getCountrySettings(country)).addressFormat) === 'zip_state' } catch { zipState = false }   // address-formats-1: unchanged until stage 2",
       "const eventRegionOf = (r: { region?: unknown }) => (zipState ? normaliseRegion(r.region) : null)",
       "...(eventRegionOf(row) ? { region: eventRegionOf(row) } : {}),",
       "/* ── THE EVENT'S STATE (US Polish batch, 19 October 2026; docs/us-polish-batch-report.md) ──────────────────────",
@@ -574,6 +580,8 @@ function fakeDb(opts = {}) {
       "const fmtDate = (iso: string) => formatYmd(iso, ts, { weekday: 'short', day: 'numeric', month: 'short' })",
       // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026): the line the fifth build replaced (a private event's guess is dropped).
       "const matchedVenue = match.venue",
+      // ⚠️ RE-PINNED (address-formats-1, 21 Oct 2026): the line the seventh build replaced (the format's message style).
+      "try { zipState = (await getCountrySettings(country)).addressFormat === 'zip_state' } catch { zipState = false }",
     ]
     if (gitClean(f)) return true
     let diff = ''

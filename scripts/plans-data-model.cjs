@@ -514,7 +514,14 @@ if (RENDER) {
     if (!g || !old || g['@context'] !== 'https://schema.org' || !Array.isArray(g['@graph']) || g['@graph'].map(n => n['@type']).join(',') !== 'Organization,WebSite,SoftwareApplication') return false
     const [org, site, app] = g['@graph']
     if (org['@id'] !== ORG_ID || org.name !== 'HatchGrab' || site['@id'] !== 'https://www.hatchgrab.com/#website' || site.publisher?.['@id'] !== ORG_ID) return false
-    if (['name', 'applicationCategory', 'applicationSubCategory', 'description', 'inLanguage', 'areaServed', 'audience'].some(f => JSON.stringify(app[f]) !== JSON.stringify(old[f]))) return false
+    // ⚠️ RE-PINNED (ai-search-1, 21 October 2026): areaServed (not a SoftwareApplication property) became countriesSupported
+    // — the switched-on countries' ISO codes — and the graph gained legalName / address / operatingSystem (lib/company.ts,
+    // lib/structured-data.ts). The other words are BEFORE's, unchanged.
+    if (['name', 'applicationCategory', 'applicationSubCategory', 'description', 'inLanguage', 'audience'].some(f => JSON.stringify(app[f]) !== JSON.stringify(old[f]))) return false
+    if (!(!require('fs').existsSync(require('path').join(REPO, 'lib/robots-policy.ts'))
+      ? JSON.stringify(app.areaServed) === JSON.stringify(old.areaServed)
+      : (!('areaServed' in app) && Array.isArray(app.countriesSupported) && app.countriesSupported.includes(cc) && app.countriesSupported.every(c => /^[A-Z]{2}$/.test(c))
+        && app.operatingSystem === 'Web, iOS, Android' && org.legalName === 'HatchGrab Ltd' && org.address?.addressCountry === 'GB'))) return false
     const pub = CATALOG.plans.filter(p => p.isPublic && p.active).sort((x, y) => x.sortOrder - y.sortOrder).map(p => p.name).join(',')
     return app.url === `https://www.hatchgrab.com/${slug}` && JSON.stringify(app.publisher) === JSON.stringify({ '@id': ORG_ID })
       && Array.isArray(app.offers) && app.offers.map(o => o.name).join(',') === pub

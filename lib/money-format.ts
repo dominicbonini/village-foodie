@@ -1,7 +1,9 @@
-// lib/money-format.ts — THE formatter for price and fee labels. Pure, client-safe, no imports.
+// lib/money-format.ts — THE formatter for price and fee labels. Pure, client-safe; its one import is the currency
+// registry (lib/currencies.ts, itself pure).
 //
 // Every label takes its currency and locale from a country_settings row (moneyFormatOf in
-// lib/country-settings-types.ts). Nothing here knows a country.
+// lib/country-settings-types.ts). Nothing here knows a country — and since currency-registry (21 October 2026) nothing
+// here knows a currency either: decimals and minor-unit signs are read from lib/currencies.ts.
 //
 // ── 🔴 THE GB OUTPUT IS BYTE-IDENTICAL TO THE HELPERS IT REPLACES ─────────────────────────────────────
 //   planPriceLabel(2900)            "£29/mo"       → perMonthLabel(2900, gb)
@@ -22,6 +24,8 @@
 // labels in Node AND in Chromium and WebKit and fails if any engine disagrees — so the risk the manual
 // names is now measured rather than avoided by hand-rolling.
 
+import { currencyInfo } from '@/lib/currencies'
+
 export interface MoneyFormat { currency: string; locale: string }
 
 const cache = new Map<string, Intl.NumberFormat>()
@@ -32,9 +36,13 @@ function nf(locale: string, opts: Intl.NumberFormatOptions): Intl.NumberFormat {
   return f
 }
 
-/** How many minor units make one major unit's decimal places: 2 for GBP and USD, 0 for JPY. Read from
- *  Intl rather than assumed, because "never hardcode ×100" (manual §16) — zero-decimal currencies exist. */
+/** How many minor units make one major unit's decimal places: 2 for GBP and USD, 0 for JPY — never assumed, because
+ *  "never hardcode ×100" (manual §16). currency-registry: a REGISTRY currency's decimals are Stripe's (lib/currencies.ts),
+ *  which is not always Intl's — Intl gives HUF 0, Stripe takes HUF in two-decimal minor units. Any other code falls back
+ *  to Intl, as before. GBP / USD / EUR are 2 either way. */
 export function minorDigits(currency: string): number {
+  const known = currencyInfo(currency)
+  if (known) return known.decimals
   return nf('en', { style: 'currency', currency }).resolvedOptions().maximumFractionDigits ?? 2
 }
 
@@ -70,21 +78,29 @@ export function pctLabel(pct: number, f: Pick<MoneyFormat, 'locale'>): string {
   return nf(f.locale, { style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(pct / 100)
 }
 
-// The minor unit's own symbol, where a small fee is written in it ("20p", "30¢"). A currency missing from
-// this list writes a small fee as an ordinary amount ("€0.20"), which is correct if less idiomatic.
-// ireland-1 (20 October 2026): EUR is NOT listed — the euro pages quote Stripe's fee as "1.5% + €0.25" (decided), not
-// "25c", which also reads wrongly in every eurozone language. No live country used EUR when it was taken out.
-const MINOR_SUFFIX: Record<string, string> = { GBP: 'p', USD: '¢', CAD: '¢', AUD: 'c', NZD: 'c' }
+// The minor unit's own symbol, where a small fee is written in it ("20p", "30¢"). currency-registry: read from
+// lib/currencies.ts (it was MINOR_SUFFIX here: GBP p, USD ¢, CAD ¢, AUD c, NZD c — the registry's `shortFee: 'minor'`
+// entries, unchanged). A currency whose `shortFee` is 'amount' writes a small fee as an ordinary amount ("€0.25").
+// ireland-1 (20 October 2026): EUR is 'amount' — the euro pages quote Stripe's fee as "1.5% + €0.25" (decided), not
+// "25c", which also reads wrongly in every eurozone language.
 
-/** The minor unit's own symbol — "p" for GBP, "¢" for USD — or null where a currency has none listed here.
- *  The admin Countries page shows it beside a fixed-fee box. */
+/** The minor unit's own symbol IN A SENTENCE — "p" for GBP, "¢" for USD — or null where the currency writes a small
+ *  fee as an amount (EUR) or is not in the registry. */
 export function minorUnitSuffix(currency: string): string | null {
-  return MINOR_SUFFIX[currency] ?? null
+  const c = currencyInfo(currency)
+  return c && c.shortFee === 'minor' ? c.minorSign : null
+}
+
+/** The minor unit's sign BESIDE A BOX typed in minor units — "p", "¢", and "c" for EUR too (the box holds cents even
+ *  where a sentence writes "€0.25"). Admin › Countries' fee boxes and /compare's "per order" fee box (ireland-2).
+ *  Null only for a currency the registry does not list. */
+export function minorUnitSign(currency: string): string | null {
+  return currencyInfo(currency)?.minorSign ?? null
 }
 
 /** "20p", "30¢" — a small fixed fee in minor units. A whole unit or more is written as an amount. */
 export function smallFeeLabel(minor: number, f: MoneyFormat): string {
-  const suffix = MINOR_SUFFIX[f.currency]
+  const suffix = minorUnitSuffix(f.currency)
   if (suffix && Math.abs(minor) < 10 ** minorDigits(f.currency)) {
     return nf(f.locale, { maximumFractionDigits: 0 }).format(minor) + suffix
   }

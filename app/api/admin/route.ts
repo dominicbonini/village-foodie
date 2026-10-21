@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'   // canonical admin check (shared with the /landing gate)
 import { getPlanCatalog } from '@/lib/plans-server'
 import { isPlanKey, type PlanCatalog } from '@/lib/plans'
-import { getCountrySettingsMany } from '@/lib/country-settings'
+import { getCountrySettings, getCountrySettingsMany } from '@/lib/country-settings'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { MARKETING_COUNTRY } from '@/lib/marketing-country'
 
@@ -90,6 +90,14 @@ export async function GET(req: NextRequest) {
   } catch (e) {
     console.error('[admin] plan catalogue read failed', e instanceof Error ? e.message : e)
     return NextResponse.json({ error: 'Could not load the plans.' }, { status: 500 })
+  }
+  // currency-registry (21 October 2026): + every country the catalogue PRICES, so the plans table formats each price in
+  // its own currency (Ireland has prices and no trucks — it printed "2900 (minor units)"). BEST EFFORT, one by one: these
+  // rows are only quoted in the table, so one that cannot be read shows "—" there instead of failing the console.
+  for (const cc of new Set(plans.prices.map(p => p.countryCode))) {
+    if (countrySettings[cc]) continue
+    try { countrySettings[cc] = await getCountrySettings(cc) }
+    catch (e) { console.warn(`[admin] ${cc} settings unreadable for the plans table:`, e instanceof Error ? e.message : e) }
   }
   return NextResponse.json({ trucks: trucks || [], operators, countrySettings, plans })
 }

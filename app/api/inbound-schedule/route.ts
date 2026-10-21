@@ -1,3 +1,4 @@
+import { messagesStyleOf } from '@/lib/address-formats'
 import { NextRequest, NextResponse } from 'next/server'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz, formatYmdShortMonth, formatTime } from '@/lib/time-utils'
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
    * a two-letter code, NEVER inferred (not from the truck's base town, not from the venue). Every other row — every GB
    * row — inserts exactly the columns it always did: the key is absent, not null. */
   let zipState = false
-  try { zipState = (await getCountrySettings(country)).addressFormat === 'zip_state' } catch { zipState = false }
+  try { zipState = messagesStyleOf((await getCountrySettings(country)).addressFormat) === 'zip_state' } catch { zipState = false }   // address-formats-1: unchanged until stage 2
   const eventRegionOf = (r: { region?: unknown }) => (zipState ? normaliseRegion(r.region) : null)
 
   let bridgedCount = 0

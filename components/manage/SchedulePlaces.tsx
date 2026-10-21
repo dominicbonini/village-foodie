@@ -23,7 +23,8 @@ import { placeWhenLine, timeRangeLabel, type PlaceWhenWords } from '@/lib/schedu
 import { formatShortDate, type TimeSettings } from '@/lib/time-utils'
 import { useTruckTime } from '@/components/TruckTimeContext'
 import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
-import { addressStyleOf, upperCasesPostcode } from '@/lib/copy/addressPlaceholders'
+import { upperCasesPostcode } from '@/lib/copy/addressPlaceholders'
+import { messagesStyleOf } from '@/lib/address-formats'   // address-formats-1: the format's message style (labels move in stage 2)
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/schedulePlaces'
 
@@ -285,7 +286,7 @@ export function PlaceList({
 }) {
   const ts = useTruckTime() // the truck's words for the Last/Next line (Phase 2B)
   const t = useT('schedulePlaces')
-  const addrStyle = addressStyleOf(useOptionalCountrySettings()?.addressFormat)
+  const addrStyle = messagesStyleOf(useOptionalCountrySettings()?.addressFormat)
   const whenWords: PlaceWhenWords = {
     last: (day, times) => times ? t('lastLineTimes', { day, times }) : t('lastLine', { day }),
     next: (day, times) => times ? t('nextLineTimes', { day, times }) : t('nextLine', { day }),
@@ -423,7 +424,7 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
   onChanged: (keepId?: string | null) => void
 }) {
   const t = useT('schedulePlaces')
-  const addrStyle = addressStyleOf(useOptionalCountrySettings()?.addressFormat)
+  const addrStyle = messagesStyleOf(useOptionalCountrySettings()?.addressFormat)
   // ⚠️ LOCAL DRAFT STATE, SAVED ON BLUR. The caller gives this a `key` of the place id, so it remounts
   // when the selection changes and a draft can never leak from one place onto another.
   const [name, setName] = useState(place.name)

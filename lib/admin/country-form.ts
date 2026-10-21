@@ -22,6 +22,8 @@
 import { PHONE_CHECKS, type CountrySettings, type PhoneCheck } from '@/lib/country-settings-types'
 import { isPlausiblePhone } from '@/lib/phone'
 import { minorDigits } from '@/lib/money-format'
+import { CURRENCY_CODES, isSupportedCurrency } from '@/lib/currencies'
+import { addressFormatKeyOf, isAddressFormatKey, type AddressFormatKey } from '@/lib/address-formats'
 
 /** What every box on one country's column holds. Numbers are STRINGS — exactly what was typed. */
 export interface CountryForm {
@@ -59,7 +61,8 @@ export interface CountryForm {
   shortName: string
   phoneExample: string
   phoneCheck: PhoneCheck
-  addressFormat: 'postcode' | 'zip_state'
+  /** address-formats-1 (21 October 2026): a key of lib/address-formats.ts, picked from a dropdown. */
+  addressFormat: AddressFormatKey
   timezones: string[]
   defaultTimezone: string
   allergenSet: 'uk14' | 'us9' | 'anz'
@@ -154,7 +157,7 @@ export function rowToForm(r: CountrySettings): CountryForm {
     serviceFeeTruckMaxFixed: r.serviceFeeTruckMaxFixedMinor === null ? '' : String(r.serviceFeeTruckMaxFixedMinor),
     platformFeeEnabled: r.platformFeeEnabled, feesTaxed: r.feesTaxed,
     currency: r.currency, locale: r.locale, timeFormat: r.timeFormat, dateOrder: r.dateOrder, weekStart: r.weekStart,
-    phoneCountryCode: r.phoneCountryCode, shortName: r.shortName ?? '', phoneExample: r.phoneExample ?? '', phoneCheck: r.phoneCheck, addressFormat: r.addressFormat,
+    phoneCountryCode: r.phoneCountryCode, shortName: r.shortName ?? '', phoneExample: r.phoneExample ?? '', phoneCheck: r.phoneCheck, addressFormat: addressFormatKeyOf(r.addressFormat) ?? r.addressFormat,   /* address-formats-1: a legacy value read as its format, as the loader does */
     timezones: [...r.timezones], defaultTimezone: r.defaultTimezone,
     allergenSet: r.allergenSet, supportHours: r.supportHours ?? '',
   }
@@ -195,11 +198,9 @@ function boxToWholeMinor(text: string): number | 'bad' | 'empty' {
   return n <= INT_MAX ? n : 'bad'
 }
 
-const isCurrencyCode = (c: string): boolean => {
-  if (!/^[A-Z]{3}$/.test(c)) return false
-  const known = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('currency') : null
-  return known ? known.includes(c) : true
-}
+// currency-registry (21 October 2026): only a currency the registry lists (lib/currencies.ts) — the same list the
+// database CHECK holds. It was "any ISO code Intl knows", which let a row hold a currency nothing had a sign for.
+const isCurrencyCode = (c: string): boolean => isSupportedCurrency(c)
 const isLocale = (l: string): boolean => {
   if (!/^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$/.test(l)) return false
   try { return Intl.getCanonicalLocales(l).length === 1 } catch { return false }
@@ -237,7 +238,7 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
   // ── the currency first: every money box is read in it ──
   const currency = f.currency.trim().toUpperCase()
   const currencyOk = isCurrencyCode(currency)
-  if (!currencyOk) err('currency', 'Currency must be a three-letter code, like GBP or USD.')
+  if (!currencyOk) err('currency', `Currency must be one we support: ${CURRENCY_CODES.join(', ')}.`)
   else if (ctx.storedCurrency && currency !== ctx.storedCurrency && ctx.truckCount > 0) {
     err('currency', `The currency can't change while ${ctx.truckCount} ${ctx.truckCount === 1 ? 'truck uses' : 'trucks use'} this country.`)
   }
@@ -320,7 +321,7 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
       ? "The example number isn't accepted by the strict check — change the example first"
       : `“${phoneExample}” isn't a phone number this country would accept.`)
   }
-  if (f.addressFormat !== 'postcode' && f.addressFormat !== 'zip_state') err('addressFormat', 'Choose how addresses are written.')
+  if (!isAddressFormatKey(f.addressFormat)) err('addressFormat', 'Choose how addresses are written.')   // address-formats-1: the config's keys only
   const timezones = f.timezones.map(z => z.trim()).filter(Boolean)
   if (timezones.length === 0) err('timezones', 'Offer at least one time zone.')
   const badZone = timezones.find(z => !isTimeZone(z))

@@ -7,13 +7,14 @@
 
 import 'server-only'
 import type { CountryStore } from '@/lib/admin/country-actions'
-import { COUNTRY_SETTINGS_COLUMNS, mapCountryRow, listCountrySettings } from '@/lib/country-settings'
+import { COUNTRY_SETTINGS_COLUMNS, mapCountryRow, listCountrySettings, readAllCountryRows } from '@/lib/country-settings'
 
 type Row = Record<string, unknown>
 const db = async () => (await import('@/lib/supabase')).supabase
 
 export const serviceCountryStore: CountryStore = {
   list: () => listCountrySettings(),
+  unreadable: async () => (await readAllCountryRows()).unreadable,
 
   async get(code) {
     const { data, error } = await (await db()).from('country_settings').select(COUNTRY_SETTINGS_COLUMNS).eq('country_code', code).maybeSingle()

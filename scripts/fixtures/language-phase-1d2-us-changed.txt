@@ -422,8 +422,8 @@ api/US|manageGET|noToken	code: named difference 1 (token_required)
 api/US|manageGET|badToken	code: named difference 1 (invalid_token)
 api/US|manageGET|noUser	code: named difference 1 (sign_in_required)
 api/US|manageGET|notThisTruck	code: named difference 1 (no_truck_access)
-api/US|manageGET|ok	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+pricing-b-country-settings-fields-2+pricing-b-catalogue-ignored-features-2
-api/US|manageGET|ok.staff	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+pricing-b-country-settings-fields-2+pricing-b-catalogue-ignored-features-2
+api/US|manageGET|ok	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+address-formats-1-country-key-2+pricing-b-country-settings-fields-2+pricing-b-catalogue-ignored-features-2
+api/US|manageGET|ok.staff	code: plans-manage-get-catalogue-2+plans-a2-fixture-plan-unlimited+address-formats-1-country-key-2+pricing-b-country-settings-fields-2+pricing-b-catalogue-ignored-features-2
 api/US|weeklyPost|badJson	code: named difference 1 (bad_request)
 api/US|weeklyPost|noToken	code: named difference 1 (token_required)
 api/US|weeklyPost|badToken	code: named difference 1 (invalid_token)

@@ -60,6 +60,7 @@ import { authorizeDraft, cancelAuthorization, stripeAccountForTruck } from '@/li
 import { captureOnConfirmation } from '@/lib/payments/capture'
 import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/cooking-reservation'
 import { readEventRegion } from '@/lib/event-region-read'
+import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // CUSTOMER CHECKOUT. Calls authorizeDraft (:806) -> Stripe PaymentIntent creation. This one is NOT, and the reason is measured rather than assumed.
@@ -1456,7 +1457,8 @@ export async function POST(req: NextRequest) {
           venueName:     eventRow?.venue_name ?? null,
           venueTown:     eventRow?.town ?? null,
           venuePostcode: eventRow?.postcode ?? null,
-          venueRegion:   await readEventRegion(supabase, eventRow?.id),
+          venueRegion:   await readEventRegion(supabase, eventRow?.id, await addressFormatForTruck(truck)),
+          addressFormat: await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
           autoAccepted,
         })
         await sendConfirmationEmail({ to: truckEmail, subject, html, text, senderName: 'HatchGrab' })
@@ -1505,7 +1507,8 @@ export async function POST(req: NextRequest) {
         venueName:              eventRow?.venue_name ?? null,
         venueTown:              eventRow?.town ?? null,
         venuePostcode:          eventRow?.postcode ?? null,
-        venueRegion:            await readEventRegion(supabase, eventRow?.id),
+        venueRegion:            await readEventRegion(supabase, eventRow?.id, await addressFormatForTruck(truck)),
+        addressFormat:          await addressFormatForTruck(truck),   // address-formats-1: the truck's address format
         preferredContactMethod: truck.preferred_contact_method ?? null,
         contactPhone:           truck.contact_phone ?? null,
         whatsappSender:         truck.whatsapp_sender ?? null,

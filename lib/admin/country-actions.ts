@@ -60,6 +60,9 @@ export function newCountryValues(code: string, name: string, from: CountrySettin
 
 export interface CountryStore {
   list(): Promise<CountrySettings[]>
+  /** currency-registry: rows the loader cannot read (an unsupported currency, an unknown allergen set…), left out of
+   *  `list` — the page names them so they can be fixed. Optional: a store without it reports none. */
+  unreadable?(): Promise<{ code: string; reason: string }[]>
   get(code: string): Promise<CountrySettings | null>
   /** Trucks per country code, for every code asked about (0 where none). */
   truckCounts(codes: string[]): Promise<Record<string, number>>
@@ -77,11 +80,12 @@ const refuse = <T>(status: number, error: string, errors?: FieldError[]): Action
 
 /** The page's first read: every country, the marketing one first then by name, with its truck count. */
 export async function listCountries(store: CountryStore, firstCode: string):
-  Promise<ActionResult<{ countries: CountrySettings[]; truckCounts: Record<string, number> }>> {
+  Promise<ActionResult<{ countries: CountrySettings[]; truckCounts: Record<string, number>; unreadable?: { code: string; reason: string }[] }>> {
   const rows = await store.list()
   rows.sort((a, b) => (a.countryCode === firstCode ? -1 : b.countryCode === firstCode ? 1 : a.name.localeCompare(b.name)))
   const truckCounts = await store.truckCounts(rows.map(r => r.countryCode))
-  return { ok: true, data: { countries: rows, truckCounts } }
+  const unreadable = store.unreadable ? await store.unreadable() : []
+  return { ok: true, data: { countries: rows, truckCounts, ...(unreadable.length ? { unreadable } : {}) } }
 }
 
 /** Save one country's column. */

@@ -64,6 +64,9 @@ const LIB = [
   // Phase 2A: the rule labels and formatModifiers print through the one money formatter, which itself
   // imports nothing — so it is compiled alongside, and nothing can cycle through it.
   'lib/money-format.ts',
+  // ⚠️ RE-PINNED (currency-registry, 21 October 2026): the money formatter reads the currency registry (decimals, minor
+  // signs), a leaf that imports nothing — compiled alongside, so the no-cycle guarantee below still holds.
+  'lib/currencies.ts',
 ]
 
 function build(root, files, tag) {
@@ -659,9 +662,13 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
     // Phase 2A: ONE import is allowed — the money formatter, for the rule labels' currency — and only
     // because that module imports nothing itself, so the no-cycle guarantee this check exists for holds.
     const priceImports = priceSrc.match(/^import .*$/gm) || []
-    t('⚠️ …and it imports nothing but the import-free money formatter, which is why nothing can cycle through it',
+    // ⚠️ RE-PINNED (currency-registry, 21 October 2026): the money formatter has ONE import now — the currency registry,
+    // which itself imports nothing — so nothing can still cycle through it.
+    const mfImports = fs.readFileSync(path.join(REPO, 'lib/money-format.ts'), 'utf8').match(/^import .*$/gm) || []
+    t('⚠️ …and it imports nothing but the money formatter, whose one import is the import-free currency registry, which is why nothing can cycle through it',
       priceImports.every(l => /from '@\/lib\/money-format'$/.test(l))
-      && !/^import /m.test(fs.readFileSync(path.join(REPO, 'lib/money-format.ts'), 'utf8')))
+      && mfImports.length === 1 && /from '@\/lib\/currencies'$/.test(mfImports[0])
+      && !/^import /m.test(fs.readFileSync(path.join(REPO, 'lib/currencies.ts'), 'utf8')))
   }
 
   // ════════════════════════════════════════════════════════════════════════════════════════════════

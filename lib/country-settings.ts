@@ -15,6 +15,8 @@
 
 import 'server-only'
 import type { CountrySettings } from '@/lib/country-settings-types'
+import { CURRENCY_CODES } from '@/lib/currencies'
+import { ACCEPTED_ADDRESS_FORMAT_VALUES, addressFormatKeyOf, type AddressFormatKey } from '@/lib/address-formats'
 
 const TTL_MS = 60_000
 const cache = new Map<string, { at: number; value: CountrySettings }>()
@@ -100,7 +102,9 @@ export function mapCountryRow(r: Row): CountrySettings {
     countryCode: c,
     name: str(c, r, 'name'),
     enabled: bool(c, r, 'enabled'),
-    currency: str(c, r, 'currency'),
+    // currency-registry (21 October 2026): only a currency lib/currencies.ts lists (the database CHECK holds the same
+    // codes) — refused like an unknown allergen set; a list skips the row (readAllCountryRows below).
+    currency: oneOf(c, r, 'currency', CURRENCY_CODES),
     locale: str(c, r, 'locale'),
     timeFormat: oneOf(c, r, 'time_format', ['24h', '12h'] as const),
     dateOrder: oneOf(c, r, 'date_order', ['dmy', 'mdy'] as const),
@@ -109,7 +113,10 @@ export function mapCountryRow(r: Row): CountrySettings {
     shortName: strOrNull(c, r, 'short_name'),
     phoneExample: strOrNull(c, r, 'phone_example'),
     phoneCheck: oneOf(c, r, 'phone_check', ['length', 'strict', 'off'] as const),
-    addressFormat: oneOf(c, r, 'address_format', ['postcode', 'zip_state'] as const),
+    // address-formats-1 (21 October 2026): a key of lib/address-formats.ts, or a legacy value ('postcode' → gb,
+    // 'zip_state' → us) until the "run after deploy" SQL maps them. Anything else is refused like an unknown currency:
+    // a list skips the row (readAllCountryRows) and Admin › Countries names it; a direct read throws.
+    addressFormat: addressFormatKeyOf(oneOf(c, r, 'address_format', ACCEPTED_ADDRESS_FORMAT_VALUES)) as AddressFormatKey,
     timezones: strArr(c, r, 'timezones'),
     defaultTimezone: str(c, r, 'default_timezone'),
     pricesIncludeTax: bool(c, r, 'prices_include_tax'),
@@ -172,6 +179,12 @@ export async function allergenSetForTruck(truck: { country?: string | null } | n
   try { return (await countrySettingsForTruck(truck)).allergenSet } catch { return null }
 }
 
+/** address-formats-1 (21 October 2026): the truck's address format key, or undefined when its country cannot be read —
+ *  NEVER THROWS (an email or a WhatsApp reply must not fail over it; undefined keeps every line as it was before). */
+export async function addressFormatForTruck(truck: { country?: string | null } | null | undefined): Promise<AddressFormatKey | undefined> {
+  try { return (await countrySettingsForTruck(truck)).addressFormat } catch { return undefined }
+}
+
 export async function countrySettingsForTruck(truck: { country?: string | null } | null | undefined): Promise<CountrySettings> {
   const code = truck?.country
   if (typeof code !== 'string' || !code) {
@@ -193,10 +206,33 @@ export async function getCountrySettingsMany(codes: Iterable<string>): Promise<R
  * first itself).
  */
 export async function listCountrySettings(): Promise<CountrySettings[]> {
+  return (await readAllCountryRows()).countries
+}
+
+/**
+ * 🔴 ONE UNREADABLE ROW NEVER TAKES THE OTHERS DOWN (currency-registry, 21 October 2026). A row mapCountryRow refuses — a
+ * currency the registry does not list, an allergen set it does not know, any unusable value — is LEFT OUT of every list
+ * (the marketing pages' country menu and router, the signup list, the admin Countries page) and reported here and in
+ * the server log. Until then one such row made every list throw, so the menu, the router and signup failed for everyone.
+ * A direct read of THAT country (getCountrySettings) still throws, loudly, as before: its own pages and trucks fail
+ * rather than run on a guessed currency. The read itself failing still throws.
+ */
+export async function readAllCountryRows(): Promise<{ countries: CountrySettings[]; unreadable: { code: string; reason: string }[] }> {
   const { supabase } = await import('@/lib/supabase')
   const { data, error } = await supabase.from('country_settings').select(COLUMNS).order('name')
   if (error) throw new Error(`[country-settings] could not list countries: ${error.message}`)
-  return ((data ?? []) as unknown as Row[]).map(mapCountryRow)
+  const countries: CountrySettings[] = []
+  const unreadable: { code: string; reason: string }[] = []
+  for (const r of (data ?? []) as unknown as Row[]) {
+    try { countries.push(mapCountryRow(r)) }
+    catch (e) {
+      const code = typeof r.country_code === 'string' ? r.country_code : '?'
+      const reason = e instanceof Error ? e.message : String(e)
+      console.error(`[country-settings] ${code} is left out of every country list: ${reason}`)
+      unreadable.push({ code, reason })
+    }
+  }
+  return { countries, unreadable }
 }
 
 /**

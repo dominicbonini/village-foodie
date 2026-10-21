@@ -16,8 +16,9 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 import { PricingPolicyProvider, usePriceMask } from '@/components/PricingPolicy'
 import { CountrySettingsProvider, useCountrySettings, useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { allergenVocab, genericReplacements } from '@/lib/allergens'
-import { normaliseRegion } from '@/lib/event-address'   // the event's state (US), lib/event-address.ts
-import { addressStyleOf, upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's address words by address style (the words are in messages, Language Phase 1d)
+import { normaliseRegion, eventAreaLine } from '@/lib/event-address'   // the event's state (US), lib/event-address.ts
+import { upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's address words by address style (the words are in messages, Language Phase 1d)
+import { messagesStyleOf } from '@/lib/address-formats'   // address-formats-1: an address format → the {style} its messages select on
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
 import { moneyFormatOf, planMoneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
@@ -7742,7 +7743,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const tE = useT('manageScheduleEvent')
   const tI = useT('manageScheduleImport')
   const tP = useT('privateEvents')
-  const addrStyle = addressStyleOf(tabSettings.addressFormat)
+  const addrStyle = messagesStyleOf(tabSettings.addressFormat)   // address-formats-1: the format's message style (labels move in stage 2)
   const pcUpper = upperCasesPostcode(addrStyle)
   const [events, setEvents] = useState<TruckEvent[]>([])
   /* ── 🔴 PRIVATE EVENTS (20261014) ───────────────────────────────────────────────────────────────
@@ -8274,7 +8275,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   /** The preview's placeholder words, in the truck's language (Language Phase 1d). */
   const previewWords = { venue: tE('whereTrading'), date: tE('previewDate'), truck: tE('previewTruck') }
   const previewEvent = editingEvent
-    ? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName, words: previewWords })
+    ? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName, words: previewWords, addressFormat: tabSettings.addressFormat })
     : null
   const previewOneLine = editingEvent
     ? previewLine({
@@ -8801,7 +8802,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               )}
               {/* Line 2: area & postcode */}
               {(event.town || event.postcode) && (
-                <p className="text-xs text-slate-500 mt-0.5">{[event.town, event.postcode].filter(Boolean).join(' · ')}</p>
+                // address-formats-1: the format's area line ("Bondi Beach 2026"; GB/US exactly as before). The state is not
+                // passed yet — stage 2 moves the entry form that saves it, and GB/US cards must not change in this stage.
+                <p className="text-xs text-slate-500 mt-0.5">{eventAreaLine({ town: event.town, postcode: event.postcode }, tabSettings.addressFormat)}</p>
               )}
               {/* Line 3: time (+ van / truck) */}
               <p className="text-sm font-semibold text-slate-700 mt-0.5">

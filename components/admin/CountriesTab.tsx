@@ -25,7 +25,9 @@ import {
   rowToForm, formToValues, isTimeZone,
   type CountryForm, type FieldError,
 } from '@/lib/admin/country-form'
-import { currencySymbol, minorUnitSuffix } from '@/lib/money-format'
+import { currencySymbol, minorUnitSign } from '@/lib/money-format'
+import { CURRENCIES } from '@/lib/currencies'
+import { ADDRESS_FORMATS, ADDRESS_FORMAT_KEYS } from '@/lib/address-formats'
 
 type Field = keyof CountryForm
 interface ColumnState { saving: boolean; error: string | null; errors: FieldError[]; saved: boolean; confirmRemove: boolean; removing: boolean }
@@ -62,6 +64,8 @@ export default function CountriesTab() {
   const [cols, setCols] = useState<Record<string, ColumnState>>({})
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(false)
+  // currency-registry: rows the loader could not read (left out of the grid and of every public list) — named here.
+  const [unreadable, setUnreadable] = useState<{ code: string; reason: string }[]>([])
   const [adding, setAdding] = useState(false)
   const [addForm, setAddForm] = useState({ code: '', name: '', copyFrom: '' })
   const [addErrors, setAddErrors] = useState<FieldError[]>([])
@@ -76,6 +80,7 @@ export default function CountriesTab() {
       const list = r.data.countries as CountrySettings[]
       setRows(list)
       setCounts(r.data.truckCounts as Record<string, number>)
+      setUnreadable(Array.isArray(r.data.unreadable) ? r.data.unreadable as { code: string; reason: string }[] : [])
       setForms(Object.fromEntries(list.map(c => [c.countryCode, rowToForm(c)])))
       setCols(Object.fromEntries(list.map(c => [c.countryCode, IDLE])))
       setLoaded(true)
@@ -155,7 +160,10 @@ export default function CountriesTab() {
     const cur = /^[A-Z]{3}$/.test(f.currency.trim().toUpperCase()) ? f.currency.trim().toUpperCase() : row.currency
     let sym = cur
     try { sym = currencySymbol({ currency: cur, locale: f.locale || row.locale }) } catch { /* unknown locale → the code */ }
-    return { sym, small: minorUnitSuffix(cur) ?? `${cur} minor units` }
+    // currency-registry (21 October 2026): the minor unit's sign from lib/currencies.ts — "p", "¢", "c" (Ireland's euro
+    // too). It was the short-fee suffix, which EUR deliberately lacks, so Ireland's boxes read "25 EUR minor units". The
+    // dropdown below offers registry currencies only, so there is always a sign; '' is never reached in practice.
+    return { sym, small: minorUnitSign(cur) ?? '' }
   }
 
   const toggle = (code: string, field: Field, label: string, disabled?: boolean) => {
@@ -200,7 +208,7 @@ export default function CountriesTab() {
       <span className="pl-1 text-sm font-semibold text-slate-500">{moneyOf(code).small}</span>
     </div>
   )
-  const text = (code: string, field: 'name' | 'taxLabel' | 'cardFeeRegionLabel' | 'supportHours' | 'locale' | 'currency' | 'shortName' | 'phoneExample', placeholder?: string, max?: string) => (
+  const text = (code: string, field: 'name' | 'taxLabel' | 'cardFeeRegionLabel' | 'supportHours' | 'locale' | 'shortName' | 'phoneExample', placeholder?: string, max?: string) => (
     <>
       <input className={`${BOX} ${border(code, field)} ${max ?? ''}`} aria-label={`${field} for ${code}`} value={forms[code][field]}
         placeholder={placeholder} onChange={e => setField(code, field, e.target.value)} />
@@ -375,7 +383,18 @@ export default function CountriesTab() {
       return trucks > 0 ? (
         <div className="flex items-center gap-2"><span className="rounded-lg bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-700">{forms[code].currency}</span>
           <span className="text-xs text-slate-500">🔒 {trucks} {trucks === 1 ? 'truck uses' : 'trucks use'} it</span></div>
-      ) : text(code, 'currency', undefined, 'max-w-[6rem] uppercase')
+      ) : (
+        // currency-registry: a dropdown of the registry's currencies (lib/currencies.ts), the same width the text box had —
+        // never free text. The database CHECK holds the same list.
+        <>
+          <select className={`${BOX} ${border(code, 'currency')} max-w-[6rem]`} aria-label={`currency for ${code}`} value={forms[code].currency}
+            onChange={e => setField(code, 'currency', e.target.value)}>
+            {!CURRENCIES.some(c => c.code === forms[code].currency) && <option value={forms[code].currency}>{forms[code].currency || '—'}</option>}
+            {CURRENCIES.map(c => <option key={c.code} value={c.code} title={c.name}>{c.code}</option>)}
+          </select>
+          {msg(code, 'currency')}
+        </>
+      )
     } },
     { label: 'Language style', hint: 'How dates and numbers are written', cell: code => text(code, 'locale', 'en-GB', 'max-w-[8rem]') },
     { label: 'Times', cell: code => choice(code, 'timeFormat', [['24h', `24-hour (${timeExample(forms[code].locale, false)})`], ['12h', `12-hour (${timeExample(forms[code].locale, true)})`]]) },
@@ -390,7 +409,8 @@ export default function CountriesTab() {
     { label: 'Short name', hint: 'As in "a valid UK mobile"', cell: code => text(code, 'shortName', 'UK', 'max-w-[8rem]') },
     { label: 'Example phone number', hint: 'Shown in phone boxes and errors', cell: code => text(code, 'phoneExample', '07700 900123', 'max-w-[12rem]') },
     { label: 'Phone number check', cell: code => choice(code, 'phoneCheck', [['length', 'Standard — right length for the country'], ['strict', 'Strict — real numbers only'], ['off', 'Off — accept anything']]) },
-    { label: 'Addresses', cell: code => choice(code, 'addressFormat', [['postcode', 'Town and postcode'], ['zip_state', 'City, state and ZIP']]) },
+    // address-formats-1 (21 October 2026): the formats of lib/address-formats.ts — a country only PICKS one here.
+    { label: 'Addresses', cell: code => choice(code, 'addressFormat', ADDRESS_FORMAT_KEYS.map(k => [k, ADDRESS_FORMATS[k].adminLabel])) },
     { label: 'Time zones offered at signup', cell: code => chips(code, 'timezones', 'Add a zone', undefined, ALL_ZONES.filter(z => !forms[code].timezones.includes(z))) },
     { label: 'Default time zone', hint: 'Only the zones offered', cell: code => {
       const zones = forms[code].timezones.filter(isTimeZone)
@@ -421,6 +441,14 @@ export default function CountriesTab() {
           + Add country
         </button>
       </div>
+
+      {unreadable.length > 0 && (
+        <div data-unreadable-countries className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          <p className="font-bold">{unreadable.length === 1 ? 'One country row can’t be read' : `${unreadable.length} country rows can’t be read`}, so {unreadable.length === 1 ? 'it is' : 'they are'} hidden here and from every country list on the site:</p>
+          <ul className="mt-1 list-disc pl-5">{unreadable.map(u => <li key={u.code}><b>{u.code}</b> — {u.reason}</li>)}</ul>
+          <p className="mt-1 text-xs">Fix the row in the database (its pages and trucks stay unavailable until then).</p>
+        </div>
+      )}
 
       {adding && (
         <form data-add-country className="rounded-2xl border border-slate-200 bg-white p-4" onSubmit={e => { e.preventDefault(); void add() }}>

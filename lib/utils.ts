@@ -3,6 +3,7 @@
 import { VillageEvent } from '@/types';
 import { ordinalDay, addDaysYmd } from '@/lib/time-utils';
 import { crossesMidnight } from '@/lib/event-window';
+import { eventCalendarLine } from '@/lib/event-address';   // address-formats-1
 
 // ==========================================
 // --- GEOGRAPHY UTILITIES ---
@@ -121,7 +122,9 @@ export function getFullLocation(event: VillageEvent): string {
   const settlement = (event as any).village || (event as any).town || '';
   
   // This array filters out missing data so you don't end up with weird floating commas
-  return [event.venueName, settlement, postcode].filter(Boolean).join(', ');
+  // address-formats-1 (21 October 2026): written by the event's address format's `calendar` template; with no format,
+  // exactly the old join (lib/event-address.ts).
+  return eventCalendarLine({ venueName: event.venueName, town: settlement, region: event.region, postcode }, event.addressFormat);
 }
 
 /** The 'DD/MM/YYYY' the event ENDS on: its own date, or the NEXT day for an event that runs past midnight
