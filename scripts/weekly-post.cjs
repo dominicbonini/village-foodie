@@ -81,8 +81,10 @@ const LIB = [
 // type import). COPIED into a variant tree, never handed to tsc as an entry — tsc copies a JSON it resolves.
 const LIB_DATA = [
   'messages/en-GB.json',
+  // ⚠️ RE-PINNED (anz-1, 21 October 2026): every locale that has the namespace (en-AU overrides some of these; a sparse
+  // locale's catalog imports only the files it has).
   ...['posterWords', 'captions', 'weeklyPostApi', 'errorsManage'].flatMap(ns =>
-    ['en-GB', 'en-US'].map(loc => `messages/ns/${loc}/${ns}.json`)),
+    fs.readdirSync(path.join(REPO, 'messages/ns')).map(loc => `messages/ns/${loc}/${ns}.json`).filter(f => fs.existsSync(path.join(REPO, f)))),
 ]
 
 /** Compile the library (optionally with one file patched) and bind a require to it. */

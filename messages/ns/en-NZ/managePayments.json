@@ -1,0 +1,6 @@
+{
+  "walkUp": {
+    "hatchgrabHelp": "Uses the same Stripe connection as your online payments — an EFTPOS reader, or contactless straight from your phone or tablet.",
+    "ownTerminal": "Your own EFTPOS terminal"
+  }
+}

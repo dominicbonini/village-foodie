@@ -119,6 +119,9 @@ export function buildScreenshotPrompt(now: Date = new Date(), country?: Screensh
   // country swaps the location lines for city / state / ZIP ones; an mdy country adds one line saying how a
   // numbers-only date reads. Output stays DD/MM/YYYY in every country — it is the data contract.
   const zip = country?.addressFormat === 'zip_state'
+  // ireland-1 (20 October 2026): a 'postcode' country that is not the UK (Ireland) names its own postal codes instead of
+  // the UK's — no UK examples. No country, or GB, keeps the UK lines byte for byte.
+  const otherPostcode = !zip && !!country && country.code.toUpperCase() !== 'GB'
   const countryLine = country
     ? `These screenshots are from ${country.name} (${country.code}), as the person uploading them says. In "Country" give the two-letter code of the country this screenshot itself shows — from its prices, place names, phone numbers and the way dates are written — with "CountryConfidence" high, medium or low, and "CountryReasons" in a few short words (e.g. "prices in $, 'Austin, TX', dates like 10/12").
 `
@@ -131,12 +134,18 @@ export function buildScreenshotPrompt(now: Date = new Date(), country?: Screensh
     ? `- Extract ONLY the venue name into "Venue Name" — never include the city, state or ZIP code in it.
 - Put the city or town in "Village", the two-letter state in "State" (e.g. "TX"), and the ZIP code, if one is shown, in "Postcode".
 - ZIP codes look like "78701". If no ZIP code is shown, use "".`
-    : `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postcode in it.
+    : otherPostcode
+      ? `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postal code in it.
+- Put the town or village in "Village", and the postal code, if one is shown, in "Postcode".
+- "Postcode" is a postal code of ${country!.name}, copied exactly as shown — never a UK postcode. If none is shown, use "".`
+      : `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postcode in it.
 - Put the town or village in "Village", and the postcode, if one is shown, in "Postcode".
 - UK postcodes look like "CB25 0BA", "CO10 7BQ", "PE28 2SB". If no postcode is shown, use "".`
   const eventShape = zip
     ? `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "City", "State": "TX", "Postcode": "78701" }`
-    : `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "CB25 0BA" }`
+    : otherPostcode
+      ? `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "POSTAL CODE" }`
+      : `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "CB25 0BA" }`
   const countryFields = country ? `  "Country": "${country.code}", "CountryConfidence": "high|medium|low", "CountryReasons": "short words",
 ` : ''
 
@@ -158,6 +167,8 @@ TRUCK AND VENUE RULES:
 ${locationLines}
 
 Date format MUST be "DD/MM/YYYY". Times MUST be "HH:MM".
+
+OUTPUT LANGUAGE: copy truck names, venue names and towns exactly as the screenshot writes them — never translate them. Write anything else (e.g. "CountryReasons") in English.
 
 JSON FORMAT ONLY — no markdown, no explanation:
 {

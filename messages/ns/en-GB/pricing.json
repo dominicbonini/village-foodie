@@ -37,7 +37,8 @@
   "comingSoon": "Coming soon",
   "bar": {
     "title": "Which plan is cheapest for me?",
-    "first": "Under {to} of online orders a month → <b>{plan}</b>",
+    "subtitle": "Your online orders each month",
+    "first": "Under {to} → <b>{plan}</b>",
     "middle": "{from} – {to} → <b>{plan}</b>",
     "last": "Over {from} → <b>{plan}</b>",
     "only": "Any volume → <b>{plan}</b>"

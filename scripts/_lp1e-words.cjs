@@ -38,9 +38,21 @@ function gbKeyDiff() {
   for (const [k, d] of Object.entries(out)) {
     if (k in (sa.reworded || {}) && d.before === sa.reworded[k].before && d.after === sa.reworded[k].after) d.kind = STAGE_A_REWORDED
     else if (k in (sa.removed || {}) && d.after === null && d.before === sa.removed[k]) d.kind = STAGE_A_REMOVED
+    // ⚠️ RE-PINNED (ireland-1, 20 October 2026): ireland-1's two tradeArea rewordings, marked only on an EXACT match.
+    else if (k in IE1_REWORDED && d.before === IE1_REWORDED[k].before && d.after === IE1_REWORDED[k].after) d.kind = IE1_KIND
   }
   return out
 }
+/* ⚠️ RE-PINNED (ireland-1, 20 October 2026): a third country can be switched off, and en-GB's two trade-area refusals
+ * named it ("…sign up in {country} yet" / "…we offer in {country}") — ireland-1 reworded them to not name it ({country}
+ * is still passed, now unused). Not a Phase 1e fix and not in the 1e named list: each is exempt ONLY while its eb7ed44
+ * (as moved) text → today's text is EXACTLY this, and the checks that use isIE1 also require both to show. */
+const IE1_KIND = 'ireland-1: tradeArea reworded to not name the country (scripts/_lp1e-words.cjs IE1_REWORDED)'
+const IE1_REWORDED = {
+  'tradeArea.country_off': { before: 'Trucks can’t sign up in {country} yet. Choose another country.', after: 'Trucks in that country can’t sign up yet. Choose another country.' },
+  'tradeArea.zone_unknown': { before: 'That time zone isn’t one we offer in {country}. Choose one from the list.', after: 'That time zone isn’t one we offer for that country. Choose one from the list.' },
+}
+const isIE1 = d => !!d && d.kind === IE1_KIND
 const STAGE_A_REWORDED = 'plans-data-model Stage A: reworded (scripts/fixtures/plans-stage-a-messages.json)'
 const STAGE_A_REMOVED = 'plans-data-model Stage A: removed (scripts/fixtures/plans-stage-a-messages.json)'
 const isStageA = d => d.kind === STAGE_A_REWORDED || d.kind === STAGE_A_REMOVED
@@ -82,4 +94,4 @@ function usDiff() {
   for (const k of Object.keys(b).sort()) if (!(k in a)) out.removed[k] = { before: b[k] }
   return out
 }
-module.exports = { isStageA, STAGE_A_REWORDED, STAGE_A_REMOVED, REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, MOVED, catalogues, moved, moves1e, gbKeyDiff, movedProblems, keyMoveProblems, newKeys, usDiff, flat, LP2 }
+module.exports = { isIE1, IE1_KIND, IE1_REWORDED, isStageA, STAGE_A_REWORDED, STAGE_A_REMOVED, REPO, BEFORE_REF, FROZEN_GB, FROZEN_US, F_MODE, MOVED, catalogues, moved, moves1e, gbKeyDiff, movedProblems, keyMoveProblems, newKeys, usDiff, flat, LP2 }

@@ -336,7 +336,8 @@ const CASES = [
     // 🔴 LEGAL FOLLOW-UPS (19 October 2026, signed off by Dominic): the opt-out line is a BLOCK, and the company line
     // ends every email that does go. ⚠️ RE-PINNED (Dominic's answer 2, 19 October 2026): a TEST without it now GOES —
     // to his own address only — still ending with the company line.
-    name: 'an email with no opt-out line is refused (recorded, nothing sent) for a first contact; a TEST without it goes (with the company line); with the line it goes, ending with the company line',
+    // ⚠️ RE-PINNED (Dominic, 20 October 2026): the company line is REMOVED — what goes carries none.
+    name: 'an email with no opt-out line is refused (recorded, nothing sent) for a first contact; a TEST without it goes; with the line it goes — and no email carries the company line',
     broken: ['send', 'noOptOutBlock'],
     async run(v) {
       const M = await sendRoute(v); const pg = world()
@@ -348,7 +349,7 @@ const CASES = [
       const t = await post(M, req('p-ok', { document: BARE('A test with no opt-out line.'), is_test: true }))
       const tRow = rows(pg, 'p-ok').find(r => r.is_test && r.status === 'sent') ?? {}
       const testSent = t.ok === true && globalThis.__smtp.sent.length === 1 && tRow.to_address === 'me@hatchgrab.example'
-        && String(tRow.text_body ?? '').replace(/\n+$/, '').split('\n').pop() === FOOTER
+        && !String(tRow.text_body ?? '').includes('Company no.') && !String(tRow.html_body ?? '').includes('Company no.')
       const ok = await post(M, req('p-ok'))
       // The row holds the built parts — exactly what `composeRaw` turns into the bytes handed to SMTP.
       const m = rows(pg, 'p-ok').find(r => r.status === 'sent' && !r.is_test) ?? {}
@@ -358,15 +359,16 @@ const CASES = [
         recorded: refusedRows.length === 1 && refusedRows.every(r => r.last_error === MISSING),
         nothingSent,
         withLineSent: ok.ok === true && ok.status === 'sent' && globalThis.__smtp.sent.length === 2,
-        footerLastInHtml: String(m.html_body ?? '').endsWith(`${FOOTER}</div>`),
-        footerLastInText: String(m.text_body ?? '').replace(/\n+$/, '').split('\n').pop() === FOOTER,
+        noFooterInHtml: !String(m.html_body ?? '').includes(FOOTER) && !String(m.html_body ?? '').includes('Company no.'),
+        noFooterInText: !String(m.text_body ?? '').includes(FOOTER) && String(m.text_body ?? '').replace(/\n+$/, '').split('\n').pop() === OPT_OUT,
       }
     },
   },
   {
     // ⚠️ ADDED (Dominic's answer 1, 19 October 2026): a reply to a message the PROSPECT sent needs no opt-out line —
     // and still ends with the company line, above the quote; a follow-up on OUR OWN email does need it.
-    name: 'a REPLY to the prospect\'s message with no opt-out line goes (company line above the quote); a follow-up on our own email without it is refused',
+    // ⚠️ RE-PINNED (Dominic, 20 October 2026): no company line any more, above the quote or anywhere.
+    name: 'a REPLY to the prospect\'s message with no opt-out line goes (no company line, the quote follows the message); a follow-up on our own email without it is refused',
     broken: ['send', 'noExemption'],
     async run(v) {
       const M = await sendRoute(v); const pg = world()
@@ -380,14 +382,16 @@ const CASES = [
       return {
         ownRefused: own.ok === false && own.refusal === MISSING && ownSent === 0,
         replySent: r.ok === true && globalThis.__smtp.sent.length === 1,
-        footerAboveQuote: html.includes(FOOTER) && html.indexOf(FOOTER) < html.indexOf('mail-editor-reference-message-container'),
+        noFooterQuoteKept: !html.includes(FOOTER) && !html.includes('Company no.') && html.indexOf('mail-editor-reference-message-container') > 0,
       }
     },
   },
   {
     // ⚠️ ADDED (Dominic's answer 3, 19 October 2026): a manual RETRY rebuilds the stored message with today's company
     // line and applies the same opt-out rule (with the reply and test exemptions) before resending; a refusal sends nothing.
-    name: 'Retry rebuilds with today\'s company line and applies the opt-out rule: an old row with the line goes (rebuilt); one without it is refused; a test and a reply to the prospect go',
+    // ⚠️ RE-PINNED (Dominic, 20 October 2026): a retry rebuilds to what `buildMessage` makes TODAY — no company line. The
+    // r-with row is built as the builder made it on 19–20 October (WITH the old line), so the retry must STRIP it.
+    name: 'Retry rebuilds to today\'s message (an old company line is dropped) and applies the opt-out rule: an old row with the opt-out line goes (rebuilt); one without it is refused; a test and a reply to the prospect go',
     broken: ['send', 'noRetryRebuild'],
     async run(v) {
       const M = await sendRoute(v); const pg = world()
@@ -400,7 +404,11 @@ const CASES = [
         message_date: YESTERDAY, created_at: YESTERDAY, html_body: `<div style="${P}">${text}</div>`, text_body: `${text}\n`, attempts: 1, attachments: [],
         last_error: 'ETIMEDOUT: connection timed out', sent_copy: null, contact_id: null, idempotency_key: null, handled_at: null, ...extra })
       pg.tables.outreach_messages.push(
-        failed('r-with', `Hello there. ${OPT_OUT}`),
+        // built on 19–20 October 2026: the document, the spacer, then the old grey company line — in both parts
+        failed('r-with', `Hello there. ${OPT_OUT}`, {
+          html_body: `<div style="${P}">Hello there. ${OPT_OUT}</div><div style="${P}"><br></div><div style="font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 13.333333px; color: rgb(118, 118, 118);">${FOOTER}</div>`,
+          text_body: `Hello there. ${OPT_OUT}\n\n${FOOTER}\n`,
+        }),
         failed('r-without', 'Hello there, no opt-out.'),
         failed('r-test', 'A test, no opt-out.', { is_test: true, to_address: 'me@hatchgrab.example' }),
         failed('r-reply', 'Thanks, no opt-out.', { prospect_id: 'p-talk', in_reply_to: '<in1@fixture>', references: '<t1@fixture> <in1@fixture>', to_address: 'owner@talk.example' }),
@@ -412,12 +420,13 @@ const CASES = [
       const wo = await retry('r-without')
       const afterWithout = globalThis.__smtp.sent.length
       const te = await retry('r-test'), re = await retry('r-reply')
-      const endsWithFooter = id => String(get(id).text_body).replace(/\n+$/, '').split('\n').pop() === FOOTER && String(get(id).html_body).endsWith(`${FOOTER}</div>`)
+      const noFooter = id => !String(get(id).text_body).includes(FOOTER) && !String(get(id).html_body).includes(FOOTER) && !String(get(id).html_body).includes('Company no.')
       return {
-        withRebuiltAndSent: w.ok === true && afterWith === 1 && endsWithFooter('r-with') && String(get('r-with').text_body).startsWith(`Hello there. ${OPT_OUT}\n\n`),
+        withRebuiltAndSent: w.ok === true && afterWith === 1 && noFooter('r-with') && String(get('r-with').text_body) === `Hello there. ${OPT_OUT}\n`
+          && String(get('r-with').html_body) === `<div style="${P}">Hello there. ${OPT_OUT}</div>`,
         withoutRefused: wo.ok === false && wo.refusal === MISSING && afterWithout === 1 && get('r-without').status === 'failed' && !String(get('r-without').text_body).includes(FOOTER),
-        testSent: te.ok === true && endsWithFooter('r-test'),
-        replySent: re.ok === true && endsWithFooter('r-reply') && globalThis.__smtp.sent.length === 3,
+        testSent: te.ok === true && noFooter('r-test'),
+        replySent: re.ok === true && noFooter('r-reply') && globalThis.__smtp.sent.length === 3,
       }
     },
   },

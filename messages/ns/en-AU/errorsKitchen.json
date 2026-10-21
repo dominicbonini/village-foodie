@@ -1,0 +1,5 @@
+{
+  "intervals_choices": "Pickup times must be every {choices} minutes.",
+  "intervals_customer_first": "Set the customer pickup times before setting your own.",
+  "intervals_save_failed": "Pickup times could not be saved right now."
+}

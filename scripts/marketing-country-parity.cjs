@@ -178,8 +178,17 @@ function stageBChecks(views, pdf) {
   ok(FOOTNOTE_GB_B.test(L), 'B-landing · the pricing footnote (GB card processing)')
   ok(L.includes('Switching from another platform? See what you’d be paying on HatchGrab for the same orders. Takes about a minute. Compare what you’re paying'), 'B-landing · the /compare block is kept, word for word')
   ok(!/Compare all features|Pro is £29 a month with|Starter/.test(L), 'B-landing · the old lede, "Compare all features" and Starter are gone')
-  ok(F.startsWith('Everything to run your service, on every plan.'), 'B-features · the new h1', F.slice(0, 80))
-  ok(F.includes(`${n} months free with every feature unlocked.`), 'B-features · the callout names the trial months')
+  // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): the old eyebrow ("Compare", featuresPage.eyebrow) now comes first,
+  // right before the same h1; and each capability row reads its description (featuresPage.detail, en-GB), in table order.
+  // The exact markup is proven by scripts/_lp-features-restore.cjs (language-phase-1e / 1e-tidy, plans-data-model).
+  if (FR.LANDED) {
+    const W = FR.wordSet('en-GB')
+    ok(F.startsWith(`${W.eyebrow} Everything to run your service, on every plan.`), 'B-features · the eyebrow, then the new h1 (features-page-restore)', F.slice(0, 80))
+    { let i = 0; const miss = FR.tableIds().filter(id => { const j = F.indexOf(W.detail[id], i); if (j < 0) return true; i = j; return false })
+      ok(miss.length === 0, 'B-features · every capability row\'s description, in table order (features-page-restore)', miss.join(', ')) }
+  } else ok(F.startsWith('Everything to run your service, on every plan.'), 'B-features · the new h1', F.slice(0, 80))
+  // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026, Dominic): the trial callout is removed from /features.
+  ok(!F.includes('free with every feature unlocked'), 'B-features · no trial callout (removed)')
   ok(F.includes(tableHeadB()), 'B-features · THE plan table, its header from the catalogue', tableHeadB())
   ok(FOOTNOTE_GB_B.test(F), 'B-features · the pricing footnote')
   ok(views.features.attrs.filter(x => B_TABLE_ATTRS.test(x)).length > 0, 'B-features · the table cells are labelled (the excused attrs are present)')
@@ -208,6 +217,8 @@ function stageBChecks(views, pdf) {
 //               asserted on the HTML in tidyChecks.
 const COMPARE_TIDY = !/const \[staff, setStaff\]/.test(read('app/compare/CostComparison.tsx'))
 const COMPARE_TIDY_2 = /freeMonthsOverride/.test(read('app/compare/CostComparison.tsx'))
+// ⚠️ RE-PINNED (features-page-restore, 20 October 2026): /features in the pre-Stage-B look — the named change's words.
+const FR = require('./_lp-features-restore.cjs')
 const TIDY_FREE_TEXT = ' 5 Your introductory offer — how many months free? No plan fee, no service fee'
 const TIDY_STEPS = [[' 3 How many people work the van? One Two or more', ''],
   [' 4 Online orders per month, per truck ', ' 3 Online orders per month, per truck '],
@@ -300,6 +311,14 @@ async function compare() {
     const from = 'Nadia & Bogdan Owners, Pizzeria Gusto Mobile Pizzeria of the Year Regional winner'
     const to = 'Nadia & Bogdan Mobile Pizzeria of the Year Regional winner Owners, Pizzeria Gusto'
     if (!BEFORE.landing.text.includes(from)) throw new Error('testimonial re-pin: the stored landing text no longer holds the old order')
+    BEFORE.landing.text = BEFORE.landing.text.replace(from, to)
+  }
+  /* ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the approved hero line under "Upload my menu" (Dominic's mockup).
+   * The one named difference, applied to the stored text exactly; a stored text without the old line throws. */
+  {
+    const from = 'No signup, no card. See it working in under 60 seconds.'
+    const to = 'Upload a photo of your menu and see it working in under 60 seconds. No signup. No card.'
+    if (!BEFORE.landing.text.includes(from)) throw new Error('hero-note re-pin: the stored landing text no longer holds the old line')
     BEFORE.landing.text = BEFORE.landing.text.replace(from, to)
   }
   const GB = SEEDS.gbFromSeed(), US_OFF = SEEDS.usFromSeed()

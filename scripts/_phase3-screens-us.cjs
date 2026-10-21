@@ -524,6 +524,12 @@ module.exports = async function us(h) {
         ["`VAN_ADDON_PRICE` — a map of RAW POUNDS", 5, /^  \/\/ ── THE PRICE OF EACH ADDITIONAL VAN \(plans-data-model Stage A, 19 October 2026\)/, null],
         ['const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)', 1, /^  const vanAddonMinor = extraVanMonthlyMinor\(truck, vanCatalog, vanSettings\.countryCode\)$/, null],
         ['const INCLUDED_VANS: Record<string, number>', 1, null, /INCLUDED_VANS: Record/],
+        // ⚠️ RE-PINNED (anz-1, 21 October 2026): the extra-van price is a plan price, so its label now formats through
+        // planMoneyFormatOf ("A$39/mo"; GB / US / IE byte-identical). That line sat BETWEEN the two hunks above, so the diff
+        // now joins them into one hunk of three removed lines (vanAddonMinor, vanAddonLabel, INCLUDED_VANS) — excused whole
+        // only with both Stage A's replacement and the planMoneyFormatOf line in it.
+        ['const vanAddonLabel = (unit: \'mo\' | \'month\') => perMonthLabel(vanAddonMinor, moneyFormatOf(vanSettings), unit)', 3,
+          /^  const vanAddonLabel = \(unit: 'mo' \| 'month'\) => perMonthLabel\(vanAddonMinor, planMoneyFormatOf\(vanSettings\), unit\)/, /INCLUDED_VANS: Record/],
         // ⚠️ RE-PINNED (Stage A2): the van flow uses the plan's `includedVans` (plans.included_vans) instead of a literal 1.
         ['const included = INCLUDED_VANS[truck.plan] ?? 1', 13, /^    if \(vans\.length >= vansIncluded && vanAddonMinor > 0\) setShowVanBillingModal\(true\)$/, null],
         ['BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO', 3, /SWITCHED OFF FOR THIS TRUCK \(a feature override — no plan gates this since plans-data-model,$/, null],

@@ -52,14 +52,14 @@ Return ONLY valid JSON, no markdown:
   "summary": "Brief one-line summary e.g. 'Our kitchen handles nuts, dairy and gluten'",
   "contains": ${ex.contains},
   "may_contain": ${ex.mayContain},
-  "free_from": ["Shellfish", "Fish"],
+  "free_from": ${ex.freeFrom},
   "dietary_options": ["Vegetarian options available", "Vegan options available"],
   "additional_notes": "Any other relevant allergen information",
   "formatted_text": "The full allergen information formatted as clear readable text for customers",
   "entries": [
     { "name": "Pad Thai", "allergens": ${ex.entry}, "confidence": "high" }
   ],
-  "blanket": ["Tree nuts"],
+  "blanket": ${ex.blanket},
   "cross_contamination": ["Fryer shared with gluten-containing items"]
 }
 

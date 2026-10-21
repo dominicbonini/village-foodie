@@ -19,7 +19,7 @@ import { allergenVocab, genericReplacements } from '@/lib/allergens'
 import { normaliseRegion } from '@/lib/event-address'   // the event's state (US), lib/event-address.ts
 import { addressStyleOf, upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's address words by address style (the words are in messages, Language Phase 1d)
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
-import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { moneyFormatOf, planMoneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
 import { perMonthLabel, formatMajor, formatWholeAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
@@ -11818,7 +11818,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // Stage A2: the vans the effective plan includes (plans.included_vans, 1 for every plan as seeded); each van above it
   // costs the extra-van price.
   const vansIncluded = includedVans(truck, vanCatalog)
-  const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, moneyFormatOf(vanSettings), unit)
+  const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, planMoneyFormatOf(vanSettings), unit)   // anz-1: a plan price
 
   const handleAddVanClick = () => {
     const confirmed = window.confirm(t('vans.addConfirm'))
@@ -14509,7 +14509,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const formatDay = (ymd: string) => formatYmd(ymd.slice(0, 10), billingTime, { day: 'numeric', month: 'long', year: 'numeric' })
   // A plan's monthly price as the tab writes it: "Free" at 0 (and for a trial with no price row), "£29/mo" otherwise,
   // null when there is nothing to say (an internal plan with no price row). Always shown through `cardPx`, the card's mask.
-  const cardMoney = moneyFormatOf(countryRow)
+  const cardMoney = planMoneyFormatOf(countryRow)   // anz-1: our plan prices name their dollar (A$, NZ$)
   const monthlyLabel = (minor: number | null | undefined, isTrial: boolean, unit: 'mo' | 'month' = 'mo') =>
     minor === null || minor === undefined
       ? (isTrial ? PRICE_WORD.free : null)

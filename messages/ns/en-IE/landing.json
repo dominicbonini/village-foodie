@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "description": "Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen software for food trucks and mobile catering in {country} — not a POS."
+  },
+  "jsonLd": {
+    "description": "Ordering, pre-orders and a kitchen screen for food trucks and mobile catering in {country}."
+  }
+}

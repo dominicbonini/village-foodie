@@ -473,14 +473,10 @@ const SIGNATURE =
     check(!html.includes('Kind regards,'), '🔴 a document with no signature produces no signature')
     check(!html.includes('rather not hear'), '…and no opt-out line appears from nowhere')
     const built = M.buildMessage({ doc, subject: 'S', messageId: '<x@hatchgrab.com>' })
-    /* ⚠️ RE-PINNED (legal follow-ups, 19 October 2026): this asserted `built.html === html` — "buildMessage
-     * adds NOTHING". Dominic signed off ONE fixed addition: the company line (name, number, registered
-     * office), after the document. Pinned exactly: the document's HTML byte for byte, then the blank 12pt
-     * spacer div, then the grey 10pt company line — and nothing else. Still no signature, no opt-out. */
-    const COMPANY_LINE = 'HatchGrab Ltd · Company no. 17381557 · Registered office: Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom'
-    eq(built.html, `${html}<div style="${P12}"><br></div><div style="${M.FOOTER_STYLE}">${COMPANY_LINE}</div>`,
-      '🔴 buildMessage adds NOTHING to the document on a first contact except the fixed company line')
-    eq(built.text, `${D.docToText(doc)}\n\n${COMPANY_LINE}\n`, '…and the same one line in the text part')
+    /* ⚠️ RE-PINNED (Dominic, 20 October 2026): the fixed company line added on 19 October 2026 is REMOVED, so this is
+     * back to its original pin — buildMessage adds NOTHING to the document on a first contact. */
+    eq(built.html, html, '🔴 buildMessage adds NOTHING to the document on a first contact (no company line since 20 October 2026)')
+    eq(built.text, `${D.docToText(doc)}\n`, '…and nothing in the text part either')
     // 🔴 A LITERAL TOKEN IS A REFUSAL. Nothing expands it any more, so it would be emailed verbatim.
     const typed = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '{{signature}}' }] }] }
     eq(D.literalTokenRefusal(typed),

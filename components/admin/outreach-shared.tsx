@@ -57,6 +57,9 @@ export type Contact = {
 
 export type Prospect = {
   id: string; discovery_truck_id: string; name: string
+  /** ireland-1 (20 October 2026): discovery_trucks.country (ISO, upper case; 'GB' when the row has none) — the country
+   *  the prospect's phone numbers are read in (lib/outreach-country.ts prospectPhoneCountry). */
+  country?: string
   /** The NEWEST live demo built for this prospect (/api/admin/outreach), or null when there is none —
    *  and null too when the demo_sessions migration is not applied yet (the route degrades rather than
    *  500ing the page). `liveCount` > 1 means older live demos exist behind this one. */

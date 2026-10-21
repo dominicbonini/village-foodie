@@ -1,0 +1,8 @@
+{
+  "collectionTime": "Pickup time: {time}",
+  "collectionTimeChosen": "✓ Pickup time: {time}",
+  "collectionTimeTitle": "Pickup time",
+  "payAtTruckLine": "Pay at the truck at pickup · No card details needed",
+  "preferredCollection": "Preferred pickup: {time}",
+  "willConfirmTime": "{truck} will confirm your pickup time when they accept your order."
+}

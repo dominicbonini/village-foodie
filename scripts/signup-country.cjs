@@ -21,8 +21,11 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 // named fixes (scripts/fixtures/language-phase-1d-gb-named.json: tradeArea.country_off / zone_unknown, ' → ’).
 const tTA = (() => { const { createTranslator } = require(path.join(REPO, 'node_modules/next-intl'))
   return createTranslator({ locale: 'en-GB', messages: JSON.parse(read('messages/en-GB.json')), namespace: 'tradeArea' }) })()
-const COUNTRY_OFF_US = 'Trucks can’t sign up in United States yet. Choose another country.'
-const ZONE_GB = 'That time zone isn’t one we offer in United Kingdom. Choose one from the list.'
+// ⚠️ RE-PINNED (ireland-1, 20 October 2026): en-GB tradeArea.country_off / zone_unknown no longer interpolate the
+// country name ("Trucks in that country can’t sign up yet…" / "…isn’t one we offer for that country…"). The code and
+// the {country} param are unchanged and still checked (refusedAs below); only the rendered sentence moved.
+const COUNTRY_OFF_US = 'Trucks in that country can’t sign up yet. Choose another country.'
+const ZONE_GB = 'That time zone isn’t one we offer for that country. Choose one from the list.'
 const refusedAs = (j, code, params, words) => j && j.code === code && JSON.stringify(j.params) === JSON.stringify(params)
   && tTA(code, params) === words && (!('error' in j) || j.error === words)
 const snake = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v]))
@@ -246,7 +249,8 @@ const BASE_GB = { country: 'GB', timezone: 'Europe/London', contact_phone: '0770
   ok(aNone.status === 400 && aNone.json.error === 'Choose the country the truck is based in.' && !aNone.truck, 'admin · no country refused', aNone.json)
   const aOff = await adminCreate([GB(), US_OFF()], { country: 'US' })
   // ⚠️ RE-PINNED (Language Phase 1d): the same sentence with the named GB fix (can't → can’t).
-  ok(aOff.status === 400 && !aOff.truck && /Trucks can’t sign up in United States yet/.test(aOff.json.error || ''), 'admin · switched-off US refused', aOff.json)
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): the en-GB sentence no longer names the country (see COUNTRY_OFF_US).
+  ok(aOff.status === 400 && !aOff.truck && /Trucks in that country can’t sign up yet/.test(aOff.json.error || ''), 'admin · switched-off US refused', aOff.json)
   ok(!/country: 'GB'/.test(read('app/api/admin/create-truck/route.ts')), "admin route · no hard-coded 'GB'")
   ok(/useSignupCountries\(showNewTruck\)/.test(read('app/admin/page.tsx')) && /country: newTruckCountry/.test(read('app/admin/page.tsx')), 'admin form · Country select of switched-on countries, sent with the create')
 

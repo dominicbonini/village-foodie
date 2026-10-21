@@ -5,6 +5,7 @@
     }
   },
   "priceWord": {
-    "masked": "TBD"
+    "masked": "TBD",
+    "payAtHatch": "Pay at the truck"
   }
 }

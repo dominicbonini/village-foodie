@@ -184,7 +184,10 @@ async function run(ctx) {
     const saMissing = [...Object.keys(sa.reworded || {}), ...Object.keys(sa.removed || {})].filter(k => k in at0 && !stageA.includes(k))
     t(`the en-GB keys Stage A reworded / removed differ exactly as recorded (${stageA.length}: ${stageA.filter(k => gbDiff[k].after != null).length} reworded, ${stageA.filter(k => gbDiff[k].after == null).length} removed)`, saMissing.length === 0, `not as recorded: ${saMissing.join(', ')}`)
     if (named) {
-      const extra = Object.keys(gbDiff).filter(k => !(k in named) && !W.isStageA(gbDiff[k]))
+      // ⚠️ RE-PINNED (ireland-1, 20 October 2026): ireland-1's two exact tradeArea rewordings (W.isIE1) are not 1e's.
+      const extra = Object.keys(gbDiff).filter(k => !(k in named) && !W.isStageA(gbDiff[k]) && !W.isIE1(gbDiff[k]))
+      const ie1 = Object.keys(W.IE1_REWORDED)
+      t(`ireland-1's tradeArea rewordings differ exactly as recorded (${ie1.length})`, ie1.every(k => W.isIE1(gbDiff[k])), ie1.filter(k => !W.isIE1(gbDiff[k])).map(k => `${k}: ${JSON.stringify(gbDiff[k] || null)}`).join(' · '))
       // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): a named key a plan stage REMOVED (W.LP2.stageA().removed —
       // Stage B deleted e.g. landing.pricing.summary, planFeatures.footnote.n1, planMeta.description.trial) has no text left
       // to differ: it must be absent from messages/en-GB.json instead (as scripts/_lp1d-checks.cjs does for Stage A).

@@ -6,6 +6,9 @@
 // exact string in a sixth — a reworded or translated word would have been masked as "TBC" with nothing failing.
 // Now every producer writes `PRICE_WORD.<id>` and the mask asks `isPriceWord`, so the words and the mask's list
 // are one definition. "Pay at Hatch" is a brand name in every country (Dominic, 13 October 2026).
+// anz-1 (21 October 2026, approved in the anz-1 brief): its DISPLAY word is "Pay at the truck" in en-US, en-IE, en-AU and
+// en-NZ (planFeatures.priceWord.payAtHatch); en-GB keeps "Pay at Hatch". The id and this English value are unchanged — it is
+// only ever shown through priceText() in a banner sentence, never as a masked price cell.
 // ⚠️ The em dash '—' is a protected string (lib/landing-table.ts header): never normalised to a hyphen.
 
 export const PRICE_WORD = {

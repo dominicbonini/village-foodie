@@ -133,7 +133,9 @@ module.exports = async function after(x) {
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): planPriceParts / planPrice are deleted with the frozen display. The
   // landing card (components/pricing/PricingSection.tsx) formats the amount from data (plan_prices.monthly_minor) and puts
   // the per-month words in their own span — there is no display string to split.
-  else t('Stage B: the pricing card formats the amount from data and adds the per-month words beside it (no display string)', /formatAmount\(p\.monthlyMinor, money\)\}<span>\{t\('card\.perTruckMonth'\)\}<\/span>/.test(src('components/pricing/PricingSection.tsx')))
+  // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the amount and the per-month words are each their own span now
+  // (`plan-amount` / `plan-per`), so a phone can lay them out as two grid cells — still from data, still no display string.
+  else t('Stage B: the pricing card formats the amount from data and adds the per-month words beside it (no display string)', /<span className="plan-amount">\{formatAmount\(p\.monthlyMinor, money\)\}<\/span><span className="plan-per">\{t\('card\.perTruckMonth'\)\}<\/span>/.test(src('components/pricing/PricingSection.tsx')))
   t('the pricing card no longer splits a display string on "/mo"', !/endsWith\('\/mo'\)/.test(src('app/landing/page.tsx') + (LEGACY ? '' : src('components/pricing/PricingSection.tsx'))))
   // roundsToZero ≡ the old string comparison, for both countries, over a wide range (incl. -0.4, NaN-guarded).
   const ns = [0, 0.1, 0.49, 0.5, 0.51, 0.999, 1, 1.5, -0.4, -0.5, -0.6, 2.4999, 1e-9, 12345.5, -1e-9, 0.0049]

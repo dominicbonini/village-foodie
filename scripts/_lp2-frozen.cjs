@@ -215,7 +215,11 @@ function generated() {
   if (!m) return null
   if (GEN && GEN.key === JSON.stringify(m)) return GEN
   const cat = catalogues(m)
-  const body = JSON.stringify(cat)
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): en-IE, see below. In the hash only when it has words (SOURCE), so a frozen
+  // run's directory is the one it always was.
+  const ieFile = path.join(REPO, 'messages/en-IE.json')
+  const ie = m.mode === 'frozen' || !fs.existsSync(ieFile) ? {} : readJson(ieFile)
+  const body = JSON.stringify(cat) + (Object.keys(ie).length ? JSON.stringify({ 'en-IE': ie }) : '')
   const dir = path.join(REPO, 'node_modules/.cache/lp2-messages', crypto.createHash('sha1').update(body).digest('hex').slice(0, 16))
   const put = (rel, obj) => {
     const abs = path.join(dir, rel)
@@ -226,13 +230,21 @@ function generated() {
   }
   put('en-GB.json', cat['en-GB']); put('en-US.json', cat['en-US'])
   for (const ns of Object.keys(cat['en-GB'])) { put(`ns/en-GB/${ns}.json`, cat['en-GB'][ns]); put(`ns/en-US/${ns}.json`, cat['en-US'][ns] ?? {}) }
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): a THIRD locale, en-IE (lib/i18n/locales.ts; messages/en-IE.json, written
+  // sparsely by scripts/split-messages.cjs to messages/ns/en-IE/{landing,pricing,compare}.json). Under the switch its
+  // imports resolve here too, never to the files on disk: FROZEN → {} (en-IE did not exist at any frozen commit — the
+  // en-US rule when there is no frozen pair); SOURCE → the authored messages/en-IE.json, split by namespace as the
+  // split writes it. Kept out of catalogues() (whose callers read en-GB / en-US).
+  put('en-IE.json', ie)
+  for (const ns of Object.keys(cat['en-GB'])) put(`ns/en-IE/${ns}.json`, ie[ns] ?? {})
   // A namespace the code imports but the authored file lacks (never valid — messages-split fails it) stays on disk's.
   GEN = { key: JSON.stringify(m), dir, m }
   return GEN
 }
 
 /** The esbuild hook: a message import → the generated file, or null when the switch is off. */
-const SPEC = /(?:^|\/)messages\/(?:(ns)\/)?(en-GB|en-US)(?:\/([A-Za-z0-9]+))?\.json$/
+// ⚠️ RE-PINNED (ireland-1, 20 October 2026): en-IE is matched as well (see generated()).
+const SPEC = /(?:^|\/)messages\/(?:(ns)\/)?(en-GB|en-US|en-IE)(?:\/([A-Za-z0-9]+))?\.json$/
 function resolveMessages(spec) {
   const g = generated()
   if (!g) return null

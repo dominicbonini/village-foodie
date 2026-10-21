@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.1
+HatchGrab Engineering Reference Manual · V16.2
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.1**
+**Version 16.2**
 
 October 2026
 
@@ -49,6 +49,71 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.2 — 19–20 October 2026 — **PLANS BECOME DATA: PAY AS YOU GO / PRO / UNLIMITED IN EVERY COUNTRY, PER-PLAN FEATURE SWITCHES, A DATA-DRIVEN TRIAL, NEW PRICING PAGES BUILT FROM THE TABLES, THE SEO AUDIT'S FIXES, AND A NEW TERMS §4**
+
+- Applies the delta `reference-manual-delta-pricing-plans.md` (session 19–20 October 2026), drawn from the nine
+  reports it lists, all in `docs/` (`pricing-plans-diagnosis-report.md` … `compare-tidy-2-report.md`).
+- **Commercial decision (Dominic, 19–20 Oct):** three public plans, the same in every country, priced per country:
+  **Pay as you go** (0 a month, **0.99%** on online card orders), **Pro** (29 a month, first **4,000** of online
+  orders included, then 0.99%), **Unlimited** (69 a month, 0%). Walk-up orders always 0%. GB £0/£29/£69, US
+  $0/$29/$69. Starter and Max are retired. WhatsApp auto-replies, social media posts and custom event types are on
+  Pro and Unlimited only. **3-month** free trial with every feature, starting at signup; when any plan ends the
+  truck drops to Pay as you go automatically.
+- **Plans are data:** `plans`, `plan_prices`, `plan_features` (+ per-truck promo price columns), read only through
+  `lib/plans.ts`. No plan name, price, allowance, fee, trial length or tier is in code. The frozen Starter/Pro/Max
+  display copy and every read of the six retired `country_settings` plan columns are gone.
+- **Public surfaces rebuilt from the data:** landing pricing section, `/features`, `/compare`, the plans PDF, Manage
+  › Billing, the van modal, the trial popup, the welcome email.
+- **SEO:** crawlable country switcher, proxy matcher typo fixed (static assets no longer run the session check),
+  JSON-LD graph with Offers from `plan_prices`, per-country `<html lang>`, host-aware robots, real sitemap dates,
+  canonicals on legal/contact/signup/login, `/signup` and `/login` noindex.
+- **Legal:** Terms §4 "Plans, fees and trials" rewritten to name no plan, price or trial length (all data);
+  documents dated 20 October 2026.
+- **Nothing charges a platform fee yet** (`platform_fee_enabled` is false in every country) and **monthly plan fees
+  are not collected by the product yet** (no subscription billing) — both remain open (§27).
+
+| What | Where |
+|---|---|
+| **NEW — plans and pricing as data: tables, rules, module map, surfaces, decisions** | **§81** (new, after §80) |
+| Plan tiers and feature gating — the tier model is superseded | §4 (banner at its top; false statements struck in place) |
+| Competitive positioning — new plans, competitor research | §21 (corrected in place; new subsection at its end) |
+| Commercial model — fees, card fees, literal price copies | §44 (corrected in place) |
+| Country table — plan values, the switch-on rule | §76.1 (corrected in place) |
+| Legal — Terms §4, `TERMS_VERSION` is write-only | §43 (new subsection at its end) |
+| Marketing site and SEO — pricing section, /features, /compare, the SEO fixes | §48 (new subsections at its end) |
+| Deploy posture at V16.2 | §49 (new current block; V16.1's stays below as dated history) |
+| Backlog | §27 (new V16.2 block; older lines corrected in place) |
+| Cross-cutting invariants | §35 (**35.aj**, after 35.ai) |
+| Tooling and workflow — harness notes | §79 (added at its end) |
+
+**SWEEP STATUS:** _stale plan-model references found: 134; corrected in place: 105; left as history (changelog only):
+29; outstanding: 0._ (Lines matched by the delta's three greps over the V16.1 text; the second grep, the retired
+column names, matched nothing. Of the 105 outside the Changelog, 61 lines were struck or edited and 44 sit in a
+paragraph or subsection that now carries a `⛔ Corrected V16.2` note or banner.) ⚠️ **A wider check found 41 more
+lines that still name Starter or Max** and are outside the delta's patterns — §5, §9, §11, §16, §18, §19, §20, §21,
+§27, §35, §37, §38, §40, §46, §64, §67, §68, §70, §73, §74. **Not corrected** (the delta does not cover them); listed
+in `docs/manual-v16-2-report.md` and carried in §27.
+
+**OBSERVED WHEN APPLYING (20 October 2026), where the delta and reality differ — the manual follows reality:**
+- **Deploy posture:** the delta says nothing is deployed. HEAD and `origin/main` are both `4633801c "compare page"`,
+  and the live site serves the new pricing pages and the Village Foodie sitemap's `/contact` from that commit (§49).
+- **real-thai-food:** the statement has not been run — `plan = 'trial'`, `is_customer = true`,
+  `trial_expires_at = 2026-09-30` (§81.1, §49, §27).
+- **Triggers:** the reverse guard is two triggers, `plans_keep_enabled_countries_priced` on `plans` and
+  `plan_prices_keep_enabled_countries_priced` on `plan_prices` (§81.2).
+- **Pay at Hatch:** no `plan_features` row for `online_ordering_pay_at_hatch` exists live; the "second switch" is a row
+  that could be added (§81.3, §27).
+- **Competitor research:** no report in `docs/` holds it, though the delta says to point to one (§21).
+- **Not in the delta, found and corrected:** the outreach company line was removed on 20 Oct (§43, §52, §60); a US
+  prospect's plans PDF is now built with masked prices, not refused (§76.7); `withPlaceholderPlanPrices`,
+  `planPricesDecided` and `requirePlanPrice` are gone (§35.ai, §76.9); trial nomination is resolved by the
+  signup-dated trial (§27); `public/robots.txt` is deleted in favour of `app/robots.ts` (§28, §48).
+- **Verified as the delta states:** the four migration files, the six plans and their flags, the GB and US
+  `plan_prices` rows, the four payg `plan_features` rows, `country_settings_enabled_needs_prices_chk` dropped,
+  `country_settings_minor_nonneg_chk` passing NULL, RLS and grants, the `trucks.plan` FK with no default,
+  `platform_fee_enabled` false in GB and US, the deleted files absent, `TERMS_VERSION` write-only, Gusto's end date
+  31 December 2026, the apex 307.
 
 ## V16.1 — 17–19 October 2026 — **US LAYOUT FIXED, A HIDDEN US TEST TRUCK RUN END TO END, THREE PUBLIC-KEY FUNCTION HOLES CLOSED FOR GOOD, LINK PREVIEWS AND MONEY FORMATTING POLISHED, ONE SET OF LEGAL DOCUMENTS FOR EVERY COUNTRY, AND A DAILY DATA-RETENTION JOB**
 
@@ -7684,7 +7749,7 @@ here, because Key surfaces is a catalogue of routes and that is what it is; the 
 This move is what the block's own placement note asked for.
 
 
-- **Customer order page (/trucks/[slug]/order)** — pre-orders or pay-at-hatch orders. No login. This is the canonical customer-facing order URL. Online card pre-orders are a Pro/Max feature; Starter is Pay-at-Hatch only. Resolves via /api/events with a slug-then-id fallback (no is_test filter), so it loads by direct URL even for an hg_only truck.
+- **Customer order page (/trucks/[slug]/order)** — pre-orders or pay-at-hatch orders. No login. This is the canonical customer-facing order URL. ~~Online card pre-orders are a Pro/Max feature; Starter is Pay-at-Hatch only.~~ ⛔ *Corrected V16.2: online ordering and pre-orders are on every plan; Pay at Hatch is allowed on every plan today (`plans.pay_at_hatch_allowed`) — §81.1.* Resolves via /api/events with a slug-then-id fallback (no is_test filter), so it loads by direct URL even for an hg_only truck.
 
 - **Truck dashboard (/dashboard/[token])** — operator order management. Token + auth. Tabs: Orders, + Add order, Menu & Stock. Uses the shared AppHeader (see Section 3): Village Foodie logo left, truck logo and name centre, avatar dropdown right carrying identity, screen-on toggle, order link, QR code, kitchen screen, Manage, and Sign out. Below the tabs, a slim event bar (Orders and Add Order tabs only) shows the active event with a Change button and a ··· menu. Header, tabs, and event bar stay locked at the top as non-scrolling `shrink-0` children of the KDS flex app-shell (only `<main>` scrolls) — see the sticky-layout contract in Section 3.
 
@@ -7766,9 +7831,9 @@ All business calculations live in lib/. These are the only places these calculat
 
 - **lib/prep-utils.ts** — prep time, category configs, queue-aware ready time, buildCatConfigs, calcQueuePushSecs (V6.3 — the single ASAP queue-push helper shared by client and server), and the per-category projection helpers calcReadySecsByCat / calcQueuePushSecsByCat (V6.4). See Section 6.
 
-- **lib/plan-features.ts** — SINGLE SOURCE OF TRUTH for plan pricing, the feature matrix (FEATURE_SECTIONS), footnotes (PLAN_FOOTNOTES), plan prices, and descriptions. Imported by both the Billing tab and the admin console.
+- ~~**lib/plan-features.ts** — SINGLE SOURCE OF TRUTH for plan pricing, the feature matrix (FEATURE_SECTIONS), footnotes (PLAN_FOOTNOTES), plan prices, and descriptions. Imported by both the Billing tab and the admin console.~~ ⛔ **Corrected V16.2 — see §81.** `lib/plan-features.ts` is deleted. Plans, prices and per-plan feature switches are data (`plans`, `plan_prices`, `plan_features`), read through `lib/plans.ts`; what the pricing surfaces say is `lib/plan-offer.ts`; the capability rows and footnotes are `lib/feature-table.ts`.
 
-- **lib/features.ts / lib/useFeatures.ts** — plan tier feature map, PLAN_META, and canAccess()/useFeatures() for gating. **PLAN_ORDER is NOT here** — it is admin-console display order and lives in `app/admin/page.tsx:159` (CORRECTED V11).
+- **lib/features.ts / lib/useFeatures.ts** — ~~plan tier feature map, PLAN_META, and canAccess()/useFeatures() for gating. **PLAN_ORDER is NOT here** — it is admin-console display order and lives in `app/admin/page.tsx:159` (CORRECTED V11).~~ ⛔ **Corrected V16.2 — see §81.** `lib/features.ts` holds the `Feature` keys and `canAccess(feature, overrides, planAllows)`; there is no tier map and no `PLAN_META`; `PLAN_ORDER` is deleted (order is `plans.sort_order`). `lib/useFeatures.ts` exports `featureAccessView` (OBSERVED 20 Oct 2026).
 
 - **lib/whatsapp-classifier.ts** — message classification (four buckets as of V6.3) and schedule-response prompt building.
 
@@ -7904,20 +7969,20 @@ When rendering multi-column list views (Reports Orders/Items, future surfaces), 
 
 ### Feature gating
 
-All feature access goes through canAccess() from lib/features.ts — the single source of truth handling per-truck overrides, trial expiry, and plan tier resolution in the correct order. Forbidden: if (plan === "pro"), if (truck.plan !== "starter"), or hardcoded feature lists outside lib/features.ts.
+All feature access goes through canAccess() from lib/features.ts — ~~the single source of truth handling per-truck overrides, trial expiry, and plan tier resolution in the correct order.~~ ⛔ **Corrected V16.2 — see §81.3:** the order is per-truck override → the **effective** plan's `plan_features` switch → allowed; an ended plan resolves to the expiry-fallback plan with its switches. Forbidden: if (plan === "pro"), if (truck.plan !== "starter"), or hardcoded feature lists outside lib/features.ts — ⛔ **and, V16.2, any list of which plans have a feature anywhere in code** (that is `plan_features` data).
 
 ### canAccess vs hasFeature (V4)
 
-- **canAccess(plan, feature, featureOverrides, trialExpiresAt)** — use this for ALL UI gates. Respects per-truck overrides and trial expiry.
-- **hasFeature(plan, feature)** — plan-only check, no overrides. Use only where override/trial logic is irrelevant.
+- ~~**canAccess(plan, feature, featureOverrides, trialExpiresAt)** — use this for ALL UI gates. Respects per-truck overrides and trial expiry.~~
+- ~~**hasFeature(plan, feature)** — plan-only check, no overrides. Use only where override/trial logic is irrelevant.~~
 
-When in doubt, use canAccess().
+~~When in doubt, use canAccess().~~ ⛔ **Corrected V16.2 — see §81.3.** One function: `canAccess(feature, overrides, planAllows)` requires the plan switch argument, so tsc finds every call site; `featureAccess()` in `lib/plans.ts` supplies it from the effective plan. `hasFeature` is gone (no occurrence in `app/`, `lib/`, `components/`, OBSERVED 20 Oct 2026).
 
 ### Plan pricing and feature matrix
 
-lib/plan-features.ts is the single source of truth for the pricing matrix, feature sections, footnotes, plan prices, and descriptions. Both the Billing tab and the admin console import it. Never hardcode pricing or feature rows in a component.
+~~lib/plan-features.ts is the single source of truth for the pricing matrix, feature sections, footnotes, plan prices, and descriptions. Both the Billing tab and the admin console import it. Never hardcode pricing or feature rows in a component.~~ ⛔ **Corrected V16.2 — see §81.** Plans and prices are data; `lib/plan-offer.ts` says what every pricing surface says, `lib/feature-table.ts` holds the capability rows. Never hardcode pricing or feature rows in a component — still true.
 
-FEATURE_SECTIONS (V6) is the canonical structure: three sections — Core operations, Pro tier (renamed from 'Online sales & automation' on 6 October 2026, so all three headings name a PLAN) and Max tier — each a list of FeatureRow objects carrying a human-readable label and starter/pro/max values. Trial and Tester always take the same value as Max. Coming-soon rows (FeatureValue 'coming_soon') are ordered last within their section in the data itself, so both surfaces render them last without any render-time sorting. PLAN_FOOTNOTES is exported and rendered by both surfaces.
+~~FEATURE_SECTIONS (V6) is the canonical structure: three sections — Core operations, Pro tier (renamed from 'Online sales & automation' on 6 October 2026, so all three headings name a PLAN) and Max tier — each a list of FeatureRow objects carrying a human-readable label and starter/pro/max values. Trial and Tester always take the same value as Max. Coming-soon rows (FeatureValue 'coming_soon') are ordered last within their section in the data itself, so both surfaces render them last without any render-time sorting. PLAN_FOOTNOTES is exported and rendered by both surfaces.~~ ⛔ **Corrected V16.2 — see §81.4.** `FEATURE_TABLE` in `lib/feature-table.ts`: 32 capability rows in RUN YOUR SERVICE / ONLINE ORDERS / MARKETING & AUTOMATION; a column per public plan; footnotes are row notes numbered by row order.
 
 ### Schedule extraction via Gemini — mostly consolidated (V6.2)
 
@@ -7986,24 +8051,30 @@ timezone change cannot land in one and miss the other.
 
 # 4. Plan tiers and feature gating
 
+⛔ **SUPERSEDED V16.2 (20 October 2026).** Plans are data (§81). There are no feature tiers in code; Starter and Max are retired; the plans are Pay as you go / Pro / Unlimited, plus internal trial / demo / tester. The subsections below describe the pre-V16.2 tier model and are kept as history where marked; every statement in them that a reader could act on today is corrected in place.
+
 ## Six plans (was "Five" — CORRECTED V11)
 
 > ⚠️ **CORRECTED 4 August 2026.** A sixth plan value, **`demo`**, has existed since demo provisioning shipped and was never recorded here. Self-serve signup provisions it (§13), so it is not a fringe case.
 
-- **Starter (Free)** — Walk-up orders, KDS, dashboard, menu, deals, sold-out toggle, stock countdown, and Pay-at-Hatch online ordering. 0% platform fee. No online card pre-orders.
+⛔ **Corrected V16.2 — see §81.** ~~Six plans~~ — `trucks.plan` is a string key, a FK to `plans.key`, validated against the `plans` table; there is no `Plan` union of fixed values. Live rows (OBSERVED 20 Oct 2026): `payg`, `pro`, `unlimited` (public), `trial` (signup default, 3 months), `demo`, `tester` (internal). The list below is the retired tier model, kept as history.
 
-- **Pro (£29/mo)** — Everything in Starter, plus online payments (Stripe Connect), advance pre-ordering, time slot selection, smart batch pacing, auto-accept, advanced reporting, branded QR code, Messenger/Instagram auto-replies, offline sync protection, dynamic fee splitting. 0.99% platform fee plus card processing on online orders.
+- ~~**Starter (Free)** — Walk-up orders, KDS, dashboard, menu, deals, sold-out toggle, stock countdown, and Pay-at-Hatch online ordering. 0% platform fee. No online card pre-orders.~~
 
-- **Max (£49/mo)** — Everything in Pro, plus unlimited WhatsApp auto-replies, kitchen ticket printing, multi-device kitchen sync, multi-user access, customer-facing display (coming soon), festival pricing (coming soon), digital loyalty stamp cards (coming soon).
+- ~~**Pro (£29/mo)** — Everything in Starter, plus online payments (Stripe Connect), advance pre-ordering, time slot selection, smart batch pacing, auto-accept, advanced reporting, branded QR code, Messenger/Instagram auto-replies, offline sync protection, dynamic fee splitting. 0.99% platform fee plus card processing on online orders.~~
 
-- **Trial** — All MAX features, PLUS Pay-at-Hatch online ordering, so trial trucks can operate without entering billing details at signup. Default 3 months for hand-picked Pro/Max early signups, **set by hand in the admin console** (`app/admin/page.tsx` is the only writer of `trial_expires_at`).
+- ~~**Max (£49/mo)** — Everything in Pro, plus unlimited WhatsApp auto-replies, kitchen ticket printing, multi-device kitchen sync, multi-user access, customer-facing display (coming soon), festival pricing (coming soon), digital loyalty stamp cards (coming soon).~~
+
+  ⛔ **Corrected V16.2 — see §81.1:** Pay as you go (£0, 0.99% on online card orders), Pro (£29, first £4,000 of online orders included, then 0.99%), Unlimited (£69, 0%); US the same in $. Only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go; everything else is on every plan.
+
+- **Trial** — ~~All MAX features, PLUS Pay-at-Hatch online ordering, so trial trucks can operate without entering billing details at signup. Default 3 months for hand-picked Pro/Max early signups, **set by hand in the admin console** (`app/admin/page.tsx` is the only writer of `trial_expires_at`).~~ ⛔ **Corrected V16.2 — see §81.1:** every feature (the `trial` plan has no `plan_features` rows, and a missing row means ON); `plans.trial_months` (3) long, set **at signup** (end = signup + N months, 23:59:59 in the truck's timezone); admin can start or extend it.
 
   > ⚠️ **CORRECTED V11 — it does NOT "expire automatically to Starter".** Nothing changes the `plan` value, ever: there is no cron, no job and no downgrade path (the only scheduled task is `demo-cleanup`). What expiry actually does is stricter than a downgrade — `canAccess()` returns **`false` for EVERY feature** once `trial_expires_at` has passed (`lib/features.ts`: `if (plan === 'trial') { if (!trialExpiresAt) return false; if (expired) return false; … }`). An expired trial therefore has **less** access than Starter, not Starter's set, and the row still says `trial`.
   >
-  > ⚠️ **SUPERSEDED IN PART, V11.1 — the NULL case has been reversed.** This entry used to close *"a trial row with `trial_expires_at` NULL is in the same state — every feature off"*. **That is no longer true.** A NULL expiry now means **the trial has not started**, and `canAccess` grants the full trial set. The **expired** half above is unchanged and remains accurate. See *The three trial states* below.
+  > ⚠️ **SUPERSEDED IN PART, V11.1 — the NULL case has been reversed.** This entry used to close *"a trial row with `trial_expires_at` NULL is in the same state — every feature off"*. **That is no longer true.** A NULL expiry now means **the trial has not started**, and `canAccess` grants the full trial set. ~~The **expired** half above is unchanged and remains accurate.~~ ⛔ **Corrected V16.2 — see §81.1:** an ended plan (any plan with `trial_expires_at` in the past) now resolves at read time to the expiry-fallback plan (Pay as you go) **with that plan's switches** — not "false for every feature". The `plan` value is still not rewritten (no job). See *The three trial states* below.
 
-- **Demo (V11, CORRECTED V11.1)** — the prospect sandbox, **and no longer what self-serve signup provisions**. `PLAN_FEATURES.demo` is `new Set(TRIAL_FEATURES)`, so it carries the full trial feature set — and `canAccess()` applies its expiry check **only** when `plan === 'trial'`, so **demo access never expires**. That is correct for a sandbox and was wrong for a signup, which is what V11.1 changed. `lib/provision-truck.ts` holds two profiles: the **operator** profile now writes `trial`, the **demo** profile still writes `demo`. See §13.
-  > 🔴 **`demo` has no Billing branch.** BillingTab tests the plan string against `trial`, `starter`, `pro` and `max` with **no fallback**, so a `demo` truck rendered a completely empty Billing tab — a whole tab of nothing, with no error. The plan change fixed the symptom; **the missing fallback is still there** and will do the same for any seventh plan value.
+- **Demo (V11, CORRECTED V11.1)** — the prospect sandbox, **and no longer what self-serve signup provisions**. ~~`PLAN_FEATURES.demo` is `new Set(TRIAL_FEATURES)`, so it carries the full trial feature set — and `canAccess()` applies its expiry check **only** when `plan === 'trial'`, so **demo access never expires**.~~ ⛔ **Corrected V16.2 — see §81.2:** `demo` is the `is_demo` row of `plans`; it has no `plan_features` rows, so every feature is on; it ends only if its truck has a `trial_expires_at`. That is correct for a sandbox and was wrong for a signup, which is what V11.1 changed. `lib/provision-truck.ts` holds two profiles: the **operator** profile ~~now writes `trial`~~ ⛔ **Corrected V16.2: writes the signup-default plan from the table (today `trial`)**, the **demo** profile ~~still writes `demo`~~ **the demo plan from the table**. See §13.
+  > ~~🔴 **`demo` has no Billing branch.** BillingTab tests the plan string against `trial`, `starter`, `pro` and `max` with **no fallback**, so a `demo` truck rendered a completely empty Billing tab — a whole tab of nothing, with no error. The plan change fixed the symptom; **the missing fallback is still there** and will do the same for any seventh plan value.~~ ⛔ **Corrected V16.2 — see §81.4:** Billing is one data-driven plan card with a fallback for every plan; there are no per-plan branches.
 
 - **Tester (V6)** — All MAX features plus Pay-at-Hatch online ordering. The billing tab is hidden and the trial-conversion popup is suppressed. A lifetime subscription discount is tracked on trucks.lifetime_discount_pct (integer) and trucks.lifetime_discount_note (text). Intended for hand-picked pre-launch testers who keep a permanent discount; can later convert to a paid plan.
 
@@ -8015,7 +8086,9 @@ timezone change cannot land in one and miss the other.
 | --- | --- | --- |
 | **NULL** | **NOT STARTED** — the operator has not nominated an event yet | the full trial set (= `MAX_FEATURES`) |
 | **future date** | running | the full trial set |
-| **past date** | **EXPIRED** | **`false` for EVERY feature** |
+| **past date** | **EXPIRED** | ~~**`false` for EVERY feature**~~ ⛔ **Corrected V16.2:** the expiry-fallback plan (Pay as you go) **with its switches** |
+
+⛔ **Corrected V16.2 — see §81.1 and §81.3.** The table above is the pre-V16.2 rule. Today: the end date applies to **any** plan, not only `trial`; NULL = no end; a past date resolves at read time (`effectivePlan` in `lib/plans.ts`) to the expiry-fallback plan with that plan's switches. **New signups get a dated trial** (end set at signup), so "not started" no longer arises for them; existing NULL rows still mean no end.
 
 > 🔴 **V11.19 — `TRIAL_FEATURES = [...MAX_FEATURES]`, AND THIS IS A BLAST-RADIUS TRAP, NOT A TRIVIA
 > ITEM.** LIVE-VERIFIED 15 August: **`pizzeria-gusto` and `tikka-tonic` are BOTH `plan = 'trial'`**
@@ -8025,13 +8098,19 @@ timezone change cannot land in one and miss the other.
 > half-built feature loose on a truck trading with real money. **Any blast-radius assessment for a
 > plan-gated change must check `TRIAL_FEATURES` FIRST**, and the only thing that actually protected the
 > live trucks was an unrelated per-device toggle defaulting to off. §42.
+> ⛔ **Corrected V16.2 — see §81.** `TRIAL_FEATURES`/`MAX_FEATURES` no longer exist and there is no Max. The
+> lesson stands in its new form: the `trial` plan has no `plan_features` rows, so **a trial truck sees every
+> feature**; a blast-radius check for a plan-gated change starts from the trial and the per-truck overrides.
 >
-> ⚠️ **AND THE CLIFF HAS NO RECORDED HANDLING.** When `trial_expires_at` passes, a truck drops from
-> **every Max feature** to `false` for **everything** — not to Starter, per the rows above. ~~**Gusto's
+> ~~⚠️ **AND THE CLIFF HAS NO RECORDED HANDLING.** When `trial_expires_at` passes, a truck drops from
+> **every Max feature** to `false` for **everything** — not to Starter, per the rows above.~~ ~~**Gusto's
 > expiry is 17 October 2026.**~~ 🔴 **CORRECTED V13.3 — it is 31 December 2026** (read from the database
-> 16 September 2026); `real-thai-food` is 30 September 2026 and `village-spice` is null. There is no cron,
+> 16 September 2026); `real-thai-food` is 30 September 2026 and `village-spice` is null. ~~There is no cron,
 > no warning path and no downgrade; **nothing in the
-> product prepares an operator for that cliff or tells them it has happened.** BACKLOG.
+> product prepares an operator for that cliff or tells them it has happened.** BACKLOG.~~
+> ⛔ **Corrected V16.2 — see §81.1:** there is no cliff; an ended plan resolves to Pay as you go with its switches
+> (read time, no job), Billing shows an "ended" line, and the Terms say "we will remind you in the app before your
+> trial ends". Gusto's end date is still 31 December 2026 (decided 20 Oct: treated like any customer).
 
 > ⛔ **STRUCK V11.44 — THE PLAN GATE IS NOT A SECURITY CONTROL, AND ANY ENTRY IN THIS MANUAL THAT
 > READS AS THOUGH IT WERE IS WITHDRAWN.** It is a **commercial** gate, and it has two properties that
@@ -8042,7 +8121,8 @@ timezone change cannot land in one and miss the other.
 >   webhook, a wrong callback or a network fault is not a control you can audit, and it is not one you
 >   can rely on either.
 > - 🔴 **A `trial` TRUCK CARRIES THE FULL MAX SET**, so "Max-only, therefore no live truck can see it"
->   was false for both live trucks — the paragraph above. **The one thing that actually protected them
+>   was false for both live trucks — the paragraph above. ⛔ *Corrected V16.2: there is no Max; a trial truck
+>   carries every feature (§81.2).* **The one thing that actually protected them
 >   was an unrelated per-device toggle defaulting to off**, which is luck, not design.
 >
 > ⚠️ **AND THE FOUR DECLARED-BUT-UNENFORCED FEATURES ARE THE SAME POINT IN ITS PUREST FORM** —
@@ -8051,6 +8131,12 @@ timezone change cannot land in one and miss the other.
 > a gate; a gate that logs nothing is not evidence.** This is the plan-gate member of the §35 class
 > *four guards read as protection and were wired to nothing*.
 
+> ⛔ **Corrected V16.2 — the three entries below (V11.45 `embed_schedule`, the marketing row, and V11.50) are
+> history.** There is no Max tier: `embed_schedule` has no `plan_features` row, so it is on for every plan, and
+> `trucks.embed_enabled` remains the condition that bites. `lib/plan-features.ts`, `findPlanParityViolations()`
+> and `ROW_FEATURE_MAP` are deleted; the marketing table is `lib/feature-table.ts`, whose rows name their `Feature`
+> and whose cells are read from `plan_features`, so marketing and gate cannot disagree by construction (§81.3).
+>
 > 🔴 **V11.45 — `embed_schedule` ADDED AT MAX, AND IT IS A WORKED EXAMPLE OF THE ENTRY ABOVE.**
 > The website-embed route is gated on **BOTH** `trucks.embed_enabled` AND
 > `canAccess(plan, 'embed_schedule', overrides, trial_expires_at)`. **The plan half is porous by
@@ -8097,6 +8183,8 @@ timezone change cannot land in one and miss the other.
 > included with nothing verifying that it is.
 
 ### ✅ RESOLVED V11.50 — RENAMED, MOVED, AND TICKED, AND THE TRAP WAS SPRUNG DELIBERATELY
+
+⛔ **Corrected V16.2 — history (see the note above the V11.45 entry):** the matrix, `ROW_FEATURE_MAP` and the parity checker are deleted; the row is `embed_schedule` in `lib/feature-table.ts`, on every plan (§81.3, §81.4).
 
 ⛔ **THIS SUPERSEDES "deliberately not renamed" (V11.45), "rewording is the intended resolution and is
 NOT DONE" (V11.49), AND "it stays `'coming_soon'`" ABOVE.** All three were true when written; none is
@@ -8146,18 +8234,24 @@ if (plan === 'trial') {
 }
 ```
 
+⛔ **Corrected V16.2 — the snippet above is deleted code (history).** The resolver is `effectivePlan()` in
+`lib/plans.ts`, and access is `canAccess(feature, overrides, planAllows)` with the effective plan's switch (§81.3).
+
 > **Why NULL grants rather than denies.** A self-serve operator is provisioned with no expiry and has to build a menu, a schedule and their settings before they ever trade. Denying on NULL meant the product was locked during setup and the operator had nothing to evaluate. **The failure direction is one-way and deliberate:** the worst outcome of granting on NULL is that somebody is not charged when they might have been. Denying on NULL took the product away from people who had not started using it.
 
-> 🔴 **THE EXPIRY CLIFF IS UNRESOLVED, AND IT HAS DATES ATTACHED.** Nothing anywhere writes the `plan` value at expiry — there is no cron, no job, no downgrade path. So the day a trial lapses the row still reads `trial` while behaving as **nothing at all**: less access than Starter, no upgrade prompt tied to it, and a plan value that names a state the truck is no longer in. **Live dates (verified by Dominic, 4 August 2026): Test Kitchen 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October.** Two separate decisions are outstanding — **what feature set an expired trial gets**, and **what the `plan` value becomes**. Answering one does not answer the other. §27.
+> ~~🔴 **THE EXPIRY CLIFF IS UNRESOLVED, AND IT HAS DATES ATTACHED.** Nothing anywhere writes the `plan` value at expiry — there is no cron, no job, no downgrade path. So the day a trial lapses the row still reads `trial` while behaving as **nothing at all**: less access than Starter, no upgrade prompt tied to it, and a plan value that names a state the truck is no longer in.~~ **Live dates (verified by Dominic, 4 August 2026): Test Kitchen 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October.** ~~Two separate decisions are outstanding — **what feature set an expired trial gets**, and **what the `plan` value becomes**. Answering one does not answer the other. §27.~~
+> ⛔ **Corrected V16.2 — see §81.1.** Decided: an ended plan gets the expiry-fallback plan's set (Pay as you go), resolved at read time; the `plan` value is not rewritten (no job). Both decisions are made.
 
 ### 🔴 THE STARTER FALLBACK IS PROMISED IN THE TERMS AND DOES NOT EXIST (V11.15)
 
-**`content/legal/terms-and-conditions.md` states that a truck which does not choose a plan moves to the
-free Starter tier at trial end.** A second copy of the same promise sits in the Manage UI.
+⛔ **Corrected V16.2 — resolved; see §81.1 and §43 "Terms §4 and the terms dates".** Terms §4 now says a truck moves to the no-fee plan when a trial or plan ends, and the read-path resolver delivers exactly that (Pay as you go with its switches). The entry below is history.
 
-**Nothing in the code delivers it.** Nothing writes `trucks.plan` at expiry — the column stays `'trial'`
+~~**`content/legal/terms-and-conditions.md` states that a truck which does not choose a plan moves to the
+free Starter tier at trial end.** A second copy of the same promise sits in the Manage UI.~~
+
+~~**Nothing in the code delivers it.** Nothing writes `trucks.plan` at expiry — the column stays `'trial'`
 indefinitely — and an expired trial resolves to **less** than Starter, not equal to it. `hasFeature`
-skips the expiry check entirely, so some surfaces still behave as though the trial were live.
+skips the expiry check entirely, so some surfaces still behave as though the trial were live.~~
 
 > 🔴 **This is a live contractual gap, not a backlog nicety.** Four trials now have dates: Test Kitchen
 > 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October, Tikka Tonic 31 December.
@@ -8189,6 +8283,8 @@ withheld** until the behaviour exists — see above.
 
 ## Two gating entry points, and only one checks expiry (V11.1)
 
+⛔ **Corrected V16.2 — see §81.3.** This subsection is history: there is **one** entry point, `canAccess(feature, overrides, planAllows)`, fed by the effective plan's switch (which already accounts for an ended plan). `hasFeature` is gone, so the customer order page and the QR code read the same rule as Manage. The "expired trial gets false for every feature" rule below is false today.
+
 `lib/features.ts` exports **two** feature tests, and they do not agree about trials.
 
 | Function | Signature | Expiry |
@@ -8207,49 +8303,51 @@ withheld** until the behaviour exists — see above.
 
 ## PLAN_ORDER (V6, CORRECTED V11)
 
-> ⚠️ **CORRECTED 4 August 2026.** This entry previously read *"PLAN_ORDER in lib/features.ts is ['starter', 'trial', 'tester', 'pro', 'max']"*. **Both halves were wrong** — the location and the contents — and the error survived from V6 to V10.
+> ⚠️ **CORRECTED 4 August 2026.** This entry previously read *"PLAN_ORDER in lib/features.ts is ['starter', 'trial', 'tester', 'pro', 'max']"*. **Both halves were wrong** — the location and the contents — and the error survived from V6 to V10. ⛔ *Corrected V16.2 — `PLAN_ORDER` is deleted; order is `plans.sort_order` (§81.3).*
 
-**PLAN_ORDER lives in `app/admin/page.tsx:159`, not `lib/features.ts`,** and reads `['starter', 'trial', 'tester', 'demo', 'pro', 'max']`. It is the **admin console's column order** for the plan/feature matrix — a display concern, which is why it is not in the gating module. `lib/features.ts` owns the `Plan` union, `PLAN_FEATURES`, `PLAN_META` and `canAccess()`; `PLAN_PRICES` and `PLAN_DESCRIPTIONS` are DERIVED from `PLAN_META` in `lib/plan-features.ts`.
+~~**PLAN_ORDER lives in `app/admin/page.tsx:159`, not `lib/features.ts`,** and reads `['starter', 'trial', 'tester', 'demo', 'pro', 'max']`. It is the **admin console's column order** for the plan/feature matrix — a display concern, which is why it is not in the gating module. `lib/features.ts` owns the `Plan` union, `PLAN_FEATURES`, `PLAN_META` and `canAccess()`; `PLAN_PRICES` and `PLAN_DESCRIPTIONS` are DERIVED from `PLAN_META` in `lib/plan-features.ts`.~~ ⛔ **Corrected V16.2 — see §81.3.** `PLAN_ORDER`, `PLAN_BADGE` and `FEE_COLUMN_FOR` are deleted; the admin console's plan buttons and order come from `plans.sort_order`. `Plan` is a string key validated against `plans`; `PLAN_FEATURES`, `PLAN_META`, `PLAN_PRICES`, `PLAN_DESCRIPTIONS` and `lib/plan-features.ts` no longer exist.
 
 ## Pricing matrix
 
-| **Feature** | **Starter (Free)** | **Pro (£29)** | **Max (£49)** |
+⛔ **Corrected V16.2 — the matrix below, its notes, footnotes 1–5 and the "NUMBERING STOPS AT 5" warning are the retired Starter/Pro/Max model (history).** Replaced by §81.1 (the plans) and §81.4 (the surfaces). The capability rows are `FEATURE_TABLE` in `lib/feature-table.ts`; its footnotes are row notes numbered by row order (today * card fees, ¹ printing, ² WhatsApp); masks are keyed by id, and there is no magic string.
+
+| ~~**Feature**~~ | ~~**Starter (Free)**~~ | ~~**Pro (£29)**~~ | ~~**Max (£49)**~~ |
 | --- | --- | --- | --- |
-| **Walk-up orders — platform fee** | 0% | 0% | 0% |
-| **Online orders — platform fee** | Pay at Hatch | 0.99% + card fee | 0.99% + card fee |
-| **Discovery map listing** | ✓ | ✓ | ✓ |
-| **Universal web dashboard** | ✓ | ✓ | ✓ |
-| **iPad kitchen app** | Coming soon | Coming soon | Coming soon |
-| **QR code menu & ordering** | ✓ | ✓ | ✓ |
-| **Meal deals & upsells** | ✓ | ✓ | ✓ |
-| **Walk-up order processing** | ✓ | ✓ | ✓ |
-| **Online ordering — Pay at Hatch** | ✓ | — | — |
-| **Instant sold-out toggle** | ✓ | ✓ | ✓ |
-| **Automated stock countdown** | ✓ | ✓ | ✓ |
-| **Offline sync protection** | — | ✓ | ✓ |
-| **Online payments (Stripe Connect)** | — | ✓ | ✓ |
-| **Advance pre-ordering** | — | ✓ | ✓ |
-| **Customer time slot selection** | — | ✓ | ✓ |
-| **Smart batch pacing** | — | ✓ | ✓ |
-| **Auto-accept online orders** | — | ✓ | ✓ |
-| **Advanced reporting (date range, breakdowns)** | — | Coming soon | Coming soon |
-| **Branded QR code** | — | ✓ | ✓ |
-| **Messenger & Instagram auto-replies** | — | Coming soon | Coming soon |
-| **Unlimited WhatsApp auto-replies** | — | — | ✓ |
-| **Kitchen ticket printing** | — | — | Coming soon |
-| **Multi-device kitchen sync** | — | — | ✓ |
-| **Multi-user access** | — | — | ✓ |
-| **Digital loyalty stamp cards** | — | — | Coming soon |
-| **Customer-facing display** | — | — | Coming soon |
-| **Event & festival pricing** | — | — | Coming soon |
+| ~~**Walk-up orders — platform fee**~~ | ~~0%~~ | ~~0%~~ | ~~0%~~ |
+| ~~**Online orders — platform fee**~~ | ~~Pay at Hatch~~ | ~~0.99% + card fee~~ | ~~0.99% + card fee~~ |
+| ~~**Discovery map listing**~~ | ~~✓~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Universal web dashboard**~~ | ~~✓~~ | ~~✓~~ | ~~✓~~ |
+| ~~**iPad kitchen app**~~ | ~~Coming soon~~ | ~~Coming soon~~ | ~~Coming soon~~ |
+| ~~**QR code menu & ordering**~~ | ~~✓~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Meal deals & upsells**~~ | ~~✓~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Walk-up order processing**~~ | ~~✓~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Online ordering — Pay at Hatch**~~ | ~~✓~~ | ~~—~~ | ~~—~~ |
+| ~~**Instant sold-out toggle**~~ | ~~✓~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Automated stock countdown**~~ | ~~✓~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Offline sync protection**~~ | ~~—~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Online payments (Stripe Connect)**~~ | ~~—~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Advance pre-ordering**~~ | ~~—~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Customer time slot selection**~~ | ~~—~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Smart batch pacing**~~ | ~~—~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Auto-accept online orders**~~ | ~~—~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Advanced reporting (date range, breakdowns)**~~ | ~~—~~ | ~~Coming soon~~ | ~~Coming soon~~ |
+| ~~**Branded QR code**~~ | ~~—~~ | ~~✓~~ | ~~✓~~ |
+| ~~**Messenger & Instagram auto-replies**~~ | ~~—~~ | ~~Coming soon~~ | ~~Coming soon~~ |
+| ~~**Unlimited WhatsApp auto-replies**~~ | ~~—~~ | ~~—~~ | ~~✓~~ |
+| ~~**Kitchen ticket printing**~~ | ~~—~~ | ~~—~~ | ~~Coming soon~~ |
+| ~~**Multi-device kitchen sync**~~ | ~~—~~ | ~~—~~ | ~~✓~~ |
+| ~~**Multi-user access**~~ | ~~—~~ | ~~—~~ | ~~✓~~ |
+| ~~**Digital loyalty stamp cards**~~ | ~~—~~ | ~~—~~ | ~~Coming soon~~ |
+| ~~**Customer-facing display**~~ | ~~—~~ | ~~—~~ | ~~Coming soon~~ |
+| ~~**Event & festival pricing**~~ | ~~—~~ | ~~—~~ | ~~Coming soon~~ |
 
-> **COMING-SOON STATUS (V6.5)** — iPad kitchen app, advanced reporting, kitchen ticket printing, and Messenger & Instagram auto-replies are shown as "Coming soon" (FeatureValue 'coming_soon') because trial/test operators do not have these yet. Set the relevant plan column to 'coming_soon' in lib/plan-features.ts; the Billing tab and admin Features tab render the badge and order the row last within its section automatically. (The capability of some of these — e.g. the iPad app running in any tablet browser — still exists; "Coming soon" reflects what the current testers are given, and can be flipped back to ✓ when ready. V6.6: the iPad/native app is explicitly post-trial — Section 11.)
+> ~~**COMING-SOON STATUS (V6.5)** — iPad kitchen app, advanced reporting, kitchen ticket printing, and Messenger & Instagram auto-replies are shown as "Coming soon" (FeatureValue 'coming_soon') because trial/test operators do not have these yet. Set the relevant plan column to 'coming_soon' in lib/plan-features.ts; the Billing tab and admin Features tab render the badge and order the row last within its section automatically. (The capability of some of these — e.g. the iPad app running in any tablet browser — still exists; "Coming soon" reflects what the current testers are given, and can be flipped back to ✓ when ready. V6.6: the iPad/native app is explicitly post-trial — Section 11.)~~ ⛔ **Corrected V16.2:** coming-soon is a row state (`comingSoon`) in `lib/feature-table.ts`, rendered on /features, Billing and the PDF (§81.4).
 
-Trial and Tester columns take the same feature values as Max, with Pay-at-Hatch online ordering and a 0% walk-up fee. Their online-order fee shows Pay at Hatch, not 0.99% + card fee. The Trial column auto-follows Max (a 'trial' column value is derived as row.max), so any 'coming_soon' set on Max shows on Trial without extra work.
+~~Trial and Tester columns take the same feature values as Max, with Pay-at-Hatch online ordering and a 0% walk-up fee. Their online-order fee shows Pay at Hatch, not 0.99% + card fee. The Trial column auto-follows Max (a 'trial' column value is derived as row.max), so any 'coming_soon' set on Max shows on Trial without extra work.~~ ⛔ **Corrected V16.2:** the table has a column per **public** plan only; internal plans (trial, demo, tester) have no column and no `plan_features` rows (every feature on).
 
-Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders use the truck's own card terminal — HatchGrab charges 0%, terminal provider fees apply. (2) Online payments via Stripe Connect: 0.99% platform fee plus Stripe card processing ~1.5% + 20p in the UK. (3) Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer, neither supplied. (4) iPad not supplied; the kitchen app runs on any modern tablet browser. (5) Auto-replies require a Business account on each platform and respond with schedule and order link only.
+~~Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders use the truck's own card terminal — HatchGrab charges 0%, terminal provider fees apply. (2) Online payments via Stripe Connect: 0.99% platform fee plus Stripe card processing ~1.5% + 20p in the UK. (3) Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer, neither supplied. (4) iPad not supplied; the kitchen app runs on any modern tablet browser. (5) Auto-replies require a Business account on each platform and respond with schedule and order link only.~~ ⛔ **Corrected V16.2 — see §81.4:** footnotes are * card fees (the country's, from `country_settings`), ¹ printing (printer not supplied), ² WhatsApp (Meta may charge; replies automated), numbered by row order.
 
-⚠️ **[CORRECTED V11.5]** Footnote 4 previously ended *"Apple iPad recommended"*, and footnote 3 carried a matching recommendation. **Both removed** — it was **a preference stated as a finding**. The full order flow has **never been run on hardware on either platform**, and on current evidence **Android is the better-validated of the two** (§36). See §44 for the standing landing-copy rules. ⚠️ The footnote **numbering above is load-bearing**: `hide_pricing` masks footnote **2** by the magic string `f.number !== '2'`, so renumbering this list silently unmasks the suppressed figures (§44, §27).
+⚠️ **[CORRECTED V11.5]** Footnote 4 previously ended *"Apple iPad recommended"*, and footnote 3 carried a matching recommendation. **Both removed** — it was **a preference stated as a finding**. The full order flow has **never been run on hardware on either platform**, and on current evidence **Android is the better-validated of the two** (§36). See §44 for the standing landing-copy rules. ~~⚠️ The footnote **numbering above is load-bearing**: `hide_pricing` masks footnote **2** by the magic string `f.number !== '2'`, so renumbering this list silently unmasks the suppressed figures (§44, §27).~~ ⛔ **Corrected V16.2 — see §81.5:** the magic-string mask is gone; masks are keyed by id, so numbering is free to change.
 
 > **NOTE (V6.5)** — footnote 6 ("Branded QR code composites your truck logo into the centre of the QR code at high error-correction level. Requires a logo to be uploaded in Settings.") was REMOVED. Footnotes 1–5 are unchanged and still referenced.
 >
@@ -8258,14 +8356,15 @@ Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders u
 > row carries exactly one footnote and the shared footnote 4 could not name Meta's charges without
 > claiming them for the unbuilt Messenger & Instagram row. That was resolved by making **footnote 4's
 > text conditional on `WHATSAPP_LIVE`** instead, and **both auto-reply rows now point at footnote 4**.
-> 🔴 **NUMBERING STOPS AT 5. APPEND NEW FOOTNOTES, NEVER INSERT** — the manage page masks the pricing
-> footnote by the literal `'2'`, so renumbering silently unmasks a hidden price with no error and no test.
+> ~~🔴 **NUMBERING STOPS AT 5. APPEND NEW FOOTNOTES, NEVER INSERT** — the manage page masks the pricing
+> footnote by the literal `'2'`, so renumbering silently unmasks a hidden price with no error and no test.~~
+> ⛔ **Corrected V16.2 — see §81.4/§81.5:** footnote numbers are derived from row order and masks are keyed by id.
 
 ## Per-truck pricing suppression — `trucks.hide_pricing` (V11.3)
 
 > 🔴 **[V12.4 — READ THIS BEFORE THE SECTION.] THE MECHANISM BELOW IS CORRECT AND WAS RE-VERIFIED. THE TWO FACTS THIS MANUAL ATTACHED TO IT WERE BOTH FALSE BY 8 SEPTEMBER 2026.**
 > 🧪 **ZERO trucks now hold `hide_pricing = true`** (all 10 read live, 8 Sep 2026). Gusto is `false` — see the correction at §44. 🧪 `NEXT_PUBLIC_PRICING_PUBLISHED` was **not** the string `'true'` in production when `docs/pricing-suppression-report.md` was written, despite this manual asserting it was; it has **since been corrected, and Gusto now renders real prices**.
-> 🔴 **THE FEATURE IS THEREFORE DORMANT, NOT REMOVED.** The column, the context, the mask and the footnote key are all still in the code and all still work. **The next truck set to `true` re-arms every behaviour described below, including the open footnote defect.**
+> 🔴 **THE FEATURE IS THEREFORE DORMANT, NOT REMOVED.** The column, the context, ~~the mask and the footnote key~~ and the mask are all still in the code and all still work. **The next truck set to `true` re-arms every behaviour described below~~, including the open footnote defect~~.** ⛔ *Corrected V16.2 — see §81.5: the footnote "2" key is gone (masks keyed by id); Billing masks through the plan card's mask.*
 
 **The rule: prices are visible when `PRICING_PUBLISHED` is true AND the truck is not individually suppressed.** 🔴 **ANDed, never overridden** — flipping the global env flag to `'true'` **cannot** reveal prices to a suppressed truck. That is the entire point; `hide_pricing` must never sit on the permissive side of an OR.
 
@@ -8286,7 +8385,7 @@ Non-sensitive values (`Free`, `Free trial`, `Lifetime`, `0%`, `Pay at Hatch`) ar
 
 ✅ **[RE-VERIFIED V12.4 — the mechanism, as distinct from the facts about it.]** 🔎 The AND is `lib/pricing.ts:34`, `return PRICING_PUBLISHED && !hidePricing` — `hidePricing` is on the restrictive side, as documented. 🔎 The context default is `true` (hide) at `components/PricingPolicy.tsx:27`; the column default is `false`. 🔎 The provider is mounted once at `app/manage/[token]/page.tsx:659` with `truck.hide_pricing ?? false`, and **every price consumer is inside its subtree** — `BillingTab` (rendered `:849`) and `SettingsTab` (rendered `:847`), which between them hold all 13 masked call sites plus `FeatureGate`. 🧪 Executed against the real module: with the flag unset every monetary value returns `"TBC"` and the non-sensitive set passes through unchanged; with the flag exactly `'true'` and `hidePricing false`, real prices return. **No surface renders a price through the mask without the provider.**
 
-⚠️ **`maskPrice` (the global-only primitive) still cannot honour `hide_pricing`**, and `app/landing/features-pdf/route.ts:73` is its only consumer. 🔎 Admin (`app/admin/page.tsx:943`), the landing page (`app/landing/page.tsx:94`) and `/compare` render prices **unmasked and call no mask at all** — the first two as this manual already recorded, and **`/compare` is publicly reachable (HTTP 200 unauthenticated) with the real £29/£49 figures in its public JS chunk.** ⚠️ Recorded as a fact, not as a decision anyone made.
+⚠️ **`maskPrice` (the global-only primitive) still cannot honour `hide_pricing`**, ~~and `app/landing/features-pdf/route.ts:73` is its only consumer.~~ ⛔ **Corrected V16.2 — see §81.5 (OBSERVED 20 Oct 2026):** its one consumer is `lib/plans-pdf.ts`, which runs `'always-real'` and masks only a switched-off country; Billing masks through the plan card's mask (`maskPriceFor` / `PricingPolicy`, zero never masked); `/compare` and the landing are unmasked **by design** (a switched-off country's marketing pages redirect). 🔎 Admin (`app/admin/page.tsx:943`), the landing page (`app/landing/page.tsx:94`) and `/compare` render prices **unmasked and call no mask at all** — the first two as this manual already recorded, and **`/compare` is publicly reachable (HTTP 200 unauthenticated) with the real £29/£49 figures in its public JS chunk.** ⚠️ Recorded as a fact, not as a decision anyone made.
 
 🔴 **AND A STANDING RULE THIS SECTION EARNED.** Two claims here were written as **"verified live"** and both aged into falsehood inside a month, because a verified-live claim is **a claim about a moment, not a standing fact**. ⚠️ **Date every live verification, and re-read it before relying on it.** ⚠️ A further trap found the same day: `NEXT_PUBLIC_PRICING_PUBLISHED` is stored on Vercel as **type `sensitive`**, which is write-only — **its value cannot be read back by the API, by `vercel env pull`, or in the dashboard, by anyone.** The only ways to know it are to observe rendered behaviour or to overwrite it. **Do not write "the flag is set to X" in this manual again without saying how that was established and when.**
 
@@ -8300,31 +8399,35 @@ Non-sensitive values (`Free`, `Free trial`, `Lifetime`, `0%`, `Pay at Hatch`) ar
 
 ## 🔴 PRICING FIGURES — KNOWN DRIFT RISK, AUDITED AND NOT FIXED (V11.3)
 
+⛔ **Corrected V16.2 — CLOSED; see §81 and §44.** No plan price, allowance or fee is written in code any more; `PLAN_META`, `PLAN_PRICES`, `PLAN_DESCRIPTIONS`, `VAN_ADDON_PRICE`, `PLAN_ONLINE_ALLOWANCE`, `PLATFORM_FEE_OVER_ALLOWANCE`, `PLAN_MONTHLY_PENCE` and `findPlanParityViolations()` are deleted. The list below is history.
+
 Recorded so it is not rediscovered. **Nothing here is broken today; all of it is one careless edit from being wrong.**
 
-- **£29 / £49 are genuinely single-sourced in `PLAN_META`** — `PLAN_PRICES` and `PLAN_DESCRIPTIONS` derive from it with no literals. ✅ That part is right.
-- ⚠️ **But there are 13 literal copies elsewhere**, and the worst is **`VAN_ADDON_PRICE`**, which holds them as **RAW NUMBERS** (`pro: 29, max: 49`) — **invisible to a `£29` grep**, and **read for logic, not only display**.
-- ✅ **CORRECTED V11.38 — THE ALLOWANCES NOW HAVE AN OWNER, AND IT IS A NUMBER.** These two lines read *"the £1,500 / £2,000 allowances appear 6 times with no owner"* and *"the allowances exist ONLY inside display strings — no numeric value exists anywhere in the codebase, so payments code cannot apply an allowance"*. **Both were true and both are now false.** `PLAN_ONLINE_ALLOWANCE` holds them as integer pence, `PLATFORM_FEE_OVER_ALLOWANCE` holds the 0.99%, `PLAN_MONTHLY_PENCE` holds £29/£49, and **every display string — `PLAN_ALLOWANCES`, the `TRANSACTION_ROWS` cells and the footnote — is DERIVED from those numbers.** 🔴 **Proven to move no rendered output: 225 exported leaf values compared before and after, byte-identical.** ⚠️ **The restatement problem is solved at the definition, not by discipline** — there is nowhere left to restate them.
-- `0.99%` appears **9 times**; card processing **4 times in two different wordings** (`~1.5%` vs `currently 1.5%`) — a prospect and an operator are told slightly different things about the same fee.
-- ⚠️ **`findPlanParityViolations()` guards FEATURE ROWS ONLY. Nothing guards any figure.**
-- ⚠️ **Admin and the landing page render prices UNMASKED** — neither has ever called `maskPrice`. Both are access-gated, but it is not recorded anywhere as a decision, and after the global flip an admin sees real prices for every truck including a suppressed one.
+- ~~**£29 / £49 are genuinely single-sourced in `PLAN_META`** — `PLAN_PRICES` and `PLAN_DESCRIPTIONS` derive from it with no literals. ✅ That part is right.~~
+- ~~⚠️ **But there are 13 literal copies elsewhere**, and the worst is **`VAN_ADDON_PRICE`**, which holds them as **RAW NUMBERS** (`pro: 29, max: 49`) — **invisible to a `£29` grep**, and **read for logic, not only display**.~~ ⛔ *Corrected V16.2: extra vans cost `plan_prices.extra_van_monthly_minor` (§81.3).*
+- ✅ **CORRECTED V11.38 — THE ALLOWANCES NOW HAVE AN OWNER, AND IT IS A NUMBER.** These two lines read *"the £1,500 / £2,000 allowances appear 6 times with no owner"* and *"the allowances exist ONLY inside display strings — no numeric value exists anywhere in the codebase, so payments code cannot apply an allowance"*. **Both were true and both are now false.** `PLAN_ONLINE_ALLOWANCE` holds them as integer pence, `PLATFORM_FEE_OVER_ALLOWANCE` holds the 0.99%, `PLAN_MONTHLY_PENCE` holds £29/£49, and **every display string — `PLAN_ALLOWANCES`, the `TRANSACTION_ROWS` cells and the footnote — is DERIVED from those numbers.** 🔴 **Proven to move no rendered output: 225 exported leaf values compared before and after, byte-identical.** ⚠️ **The restatement problem is solved at the definition, not by discipline** — there is nowhere left to restate them. ⛔ *Corrected V16.2: those constants are deleted; the numbers are `plan_prices` rows (§81.2).*
+- ~~`0.99%` appears **9 times**; card processing **4 times in two different wordings** (`~1.5%` vs `currently 1.5%`) — a prospect and an operator are told slightly different things about the same fee.~~ ⛔ *Corrected V16.2: the fee is `fee_bps` and card fees are `country_settings` `card_fee_*`, both rendered by `lib/plan-offer.ts` / `lib/card-fees.ts`.*
+- ~~⚠️ **`findPlanParityViolations()` guards FEATURE ROWS ONLY. Nothing guards any figure.**~~ ⛔ *Corrected V16.2: deleted; `legacy-pricing-imports.cjs` and the grep proof guard figures (§35.aj).*
+- ⚠️ **Admin and the landing page render prices UNMASKED** — neither has ever called `maskPrice`. Both are access-gated, but it is not recorded anywhere as a decision, and after the global flip an admin sees real prices for every truck including a suppressed one. ⛔ *Corrected V16.2: the landing is unmasked by decision (§81.5).*
 
 ## Pricing rationale
 
-- Starter free reduces signup friction. £29 Pro sits below the £30 psychological threshold. £20 gap between Pro and Max is deliberately small to encourage upgrades. All platform fees on online orders apply on top of card processing (~1.5% + 20p with Stripe). Walk-up orders have 0% platform fee on all tiers.
+- ~~Starter free reduces signup friction. £29 Pro sits below the £30 psychological threshold. £20 gap between Pro and Max is deliberately small to encourage upgrades.~~ ⛔ **Corrected V16.2 — see §81.1** (Pay as you go £0 + 0.99%, Pro £29 with £4,000 included, Unlimited £69; the cheapest plan by volume is computed). All platform fees on online orders apply on top of card processing (~1.5% + 20p with Stripe). Walk-up orders have 0% platform fee on all tiers.
 
 ## Feature gating rules
 
-- Static feature map lives in lib/features.ts; pricing/matrix in lib/plan-features.ts.
-- Resolution order in canAccess(): per-truck override → trial expiry check → plan tier.
+- ~~Static feature map lives in lib/features.ts; pricing/matrix in lib/plan-features.ts.~~ ⛔ *Corrected V16.2 — see §81.3: which plans have a feature is `plan_features` data; `lib/features.ts` holds only the `Feature` keys and `canAccess`.*
+- ~~Resolution order in canAccess(): per-truck override → trial expiry check → plan tier.~~ ⛔ *Corrected V16.2: per-truck override → the effective plan's `plan_features` switch → allowed (§81.3).*
 - Per-truck overrides stored in trucks.feature_overrides (JSONB), edited in admin.
-- Trial expiry checked against trucks.trial_expires_at. ⚠️ **CORRECTED V11.1 — this line used to read "expired trials silently drop to Starter". They do not, and never did:** an expired trial gets `false` for every feature, which is *less* than Starter. The error survived from V6 to V11; see *The three trial states* above.
-- UI uses useFeatures(truck); non-React code uses canAccess() directly. ⚠️ **`lib/useFeatures.ts` has NO consumer today** — it is imported once (the KDS page) and only `can` is destructured from it. It carried its own copy of the expiry rule which treated NULL as expired, contradicting `canAccess` in the same render; corrected V11.1. **A second implementation of a rule is a second thing to keep right, and this one was wrong while nothing read it.**
+- Trial expiry checked against trucks.trial_expires_at. ⚠️ **CORRECTED V11.1 — this line used to read "expired trials silently drop to Starter". They do not, and never did:** ~~an expired trial gets `false` for every feature, which is *less* than Starter.~~ The error survived from V6 to V11; see *The three trial states* above. ⛔ *Corrected V16.2: an ended plan resolves to Pay as you go with its switches (§81.1).*
+- ~~UI uses useFeatures(truck); non-React code uses canAccess() directly. ⚠️ **`lib/useFeatures.ts` has NO consumer today** — it is imported once (the KDS page) and only `can` is destructured from it. It carried its own copy of the expiry rule which treated NULL as expired, contradicting `canAccess` in the same render; corrected V11.1. **A second implementation of a rule is a second thing to keep right, and this one was wrong while nothing read it.**~~ ⛔ *Corrected V16.2: `lib/useFeatures.ts` now exports `featureAccessView` over the catalogue; the rule lives once, in `lib/plans.ts` `featureAccess()` (§81.3).*
 - Gating happens both UI-side and API-side.
-- 🔴 **WhatsApp auto-replies are PRO+MAX.** `whatsapp_replies` is a member of `PRO_FEATURES` in `lib/features.ts`, and Max inherits it through the `[...PRO_FEATURES]` spread. ✅ **Verified by execution 20 August 2026:** `canAccess('pro','whatsapp_replies')` is **true**, `requiredPlan('whatsapp_replies')` returns **`'pro'`**, and `findPlanParityViolations()` returns **`[]`**. ⚠️ **CORRECTED 20 August 2026 — this line read *"WhatsApp auto-replies are MAX only (cost-incurring). Instagram/Messenger are Pro."* and was wrong on BOTH halves.** It went stale at the V8.9 fix that moved the feature into `PRO_FEATURES`, and survived here for months afterwards. 🔴 **This is the list people check before writing a gate, which is why it is the worst of the five places this claim was stale** — a session was commissioned on 20 August to make a change that had already been made, on the strength of it.
-- **Messenger and Instagram auto-replies are `coming_soon`, not shipping.** The matrix row carries `pro: 'coming_soon', max: 'coming_soon'`, and no integration exists — the webhooks are verify-handshake stubs (§20). ⚠️ **`instagram_messenger_replies` IS nonetheless granted at Pro in the gate**, which is harmless only because nothing consumes it; the marketing cell, not the gate, is what an operator sees.
+- ~~🔴 **WhatsApp auto-replies are PRO+MAX.** `whatsapp_replies` is a member of `PRO_FEATURES` in `lib/features.ts`, and Max inherits it through the `[...PRO_FEATURES]` spread. ✅ **Verified by execution 20 August 2026:** `canAccess('pro','whatsapp_replies')` is **true**, `requiredPlan('whatsapp_replies')` returns **`'pro'`**, and `findPlanParityViolations()` returns **`[]`**. ⚠️ **CORRECTED 20 August 2026 — this line read *"WhatsApp auto-replies are MAX only (cost-incurring). Instagram/Messenger are Pro."* and was wrong on BOTH halves.** It went stale at the V8.9 fix that moved the feature into `PRO_FEATURES`, and survived here for months afterwards. 🔴 **This is the list people check before writing a gate, which is why it is the worst of the five places this claim was stale** — a session was commissioned on 20 August to make a change that had already been made, on the strength of it.~~ ⛔ **Corrected V16.2 — see §81.1:** WhatsApp auto-replies are on **Pro and Unlimited** (off on Pay as you go by a `plan_features` row); `PRO_FEATURES` and `requiredPlan` are gone.
+- **Messenger and Instagram auto-replies are `coming_soon`, not shipping.** ~~The matrix row carries `pro: 'coming_soon', max: 'coming_soon'`, and no integration exists — the webhooks are verify-handshake stubs (§20). ⚠️ **`instagram_messenger_replies` IS nonetheless granted at Pro in the gate**, which is harmless only because nothing consumes it; the marketing cell, not the gate, is what an operator sees.~~ ⛔ *Corrected V16.2: a coming-soon row in `lib/feature-table.ts`; `instagram_messenger_replies` is switched off on Pay as you go (stored; nothing gates on it until it ships — §81.2).*
 
 ### 🔴 THE PLAN-PARITY GUARD IS ONE-DIRECTIONAL (recorded 20 August 2026)
+
+⛔ **Corrected V16.2 — the guard no longer exists (history below).** `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted with `lib/plan-features.ts`. The marketing table's cells are computed from the same `plan_features` switches the gate reads (`tableCell()` in `lib/plan-offer.ts`), so marketing and gate cannot disagree in either direction (§81.3).
 
 `findPlanParityViolations()` in `lib/plan-features.ts` cross-checks the MARKETING matrix against the
 GATE, and runs at module load on every pricing surface — throwing in dev, `console.error` in production.
@@ -8358,6 +8461,8 @@ this guard is the only thing that would ever notice.**
 
 ### The features matrix — a row added, a tier moved (V11.58)
 
+⛔ **Corrected V16.2 — this and the next two subsections are history (the Starter/Pro/Max matrix and its parity checker are gone; §81).** Buzzer tracking and automated stock countdown are on every plan (no `plan_features` row); the "exclusion nothing enforces" gap is closed because the table is read from the switches.
+
 - ✅ **A row was added for pre-order deadlines**, and **the feature was confirmed built on both halves
   before the row went in** — a pure engine shared by the customer-facing read and the submission check,
   so display and enforcement cannot diverge, plus operator configuration in Manage.
@@ -8378,7 +8483,7 @@ this guard is the only thing that would ever notice.**
 
 - ✅ **Pre-order deadlines** added — Trial, Pro, Max. **Confirmed built on both halves before the row went
   in**, with one shared engine so display and enforcement cannot diverge.
-- ✅ **Buzzer tracking** added — **Max only**, sitting with kitchen ticket printing, since the same truck
+- ✅ **Buzzer tracking** added — ~~**Max only**~~ ⛔ *(V16.2: every plan)*, sitting with kitchen ticket printing, since the same truck
   prints tickets carrying the buzzer number. ⚠️ **Confirmed built end to end**, and **the customer never
   sees the number** — the audience is the operator alone.
 - ⚠️ **The lost-buzzer column is a DATA-CONFLICT marker, not a record of hardware loss.** It is set when
@@ -8396,6 +8501,8 @@ PLAN-PARITY GUARD IS ONE-DIRECTIONAL"*: it inspects only literally-true cells, a
 map entry. One of these two rows is in that state. **A clean run says nothing about either.**
 
 ### V11.38 — 🔴 THE PRICING VALUES WERE ALL DISPLAY STRINGS: the finding that blocked two consumers
+
+⛔ **Corrected V16.2 — this V11.38 entry and its subsections ("What now exists" to "A LOCALE HELPER…") are history.** The constants it describes are deleted; prices, allowances and fees are integer minor units and basis points in `plan_prices` (`monthly_minor`, `included_online_minor` with NULL = unlimited, `fee_bps`), read through `lib/plans.ts` (§81.2). The lessons (integer minor units; no-allowance vs no-ceiling kept distinct) carry over to the columns.
 
 **The state before this session:** the monthly plan price existed as `'£29/mo'`. The online-order
 allowance existed as `'First £1,500 of online orders included, then 0.99%'`. **The 0.99% platform
@@ -8473,30 +8580,38 @@ numbers. **It is not wired — that is a separate change with money on the end o
 
 ### FeatureValue type (V4)
 
-The FeatureValue type in lib/plan-features.ts is boolean | 'coming_soon'. Set the plan column to 'coming_soon' directly — the Billing tab renders this as a "Coming soon" badge (muted-italic) automatically. No separate flag is needed.
+~~The FeatureValue type in lib/plan-features.ts is boolean | 'coming_soon'. Set the plan column to 'coming_soon' directly — the Billing tab renders this as a "Coming soon" badge (muted-italic) automatically. No separate flag is needed.~~ ⛔ **Corrected V16.2 — see §81.4:** a row in `lib/feature-table.ts` carries `comingSoon: true`; cells are `'on' | 'off' | 'soon'` from `tableCell()`.
 
 ## Billing tab
+
+⛔ **Corrected V16.2 — see §81.4.** Billing is one data-driven plan card (the effective plan, its price with promo and mask, the included amount, an "ended" line) plus the same `PlanTable` as /features (highlight = the effective plan; a trial highlights none); "not started" shows its heading only. There are no per-plan branches, no Trial→Max column mapping and no sticky TRIAL/STARTER/PRO/MAX header; every plan, `demo` included, has a fallback. Upgrades are still an email (mailto) — no subscription billing exists (§27). The bullets and subsections below are the pre-V16.2 tab, kept as history except where noted.
 
 - Billing lives inside the Manage page as an owner-only tab. Removed the standalone /account page.
 - Visible to all operators including trial AND test accounts (corrected in V5).
 - **Hidden for Tester plan (V6)** — the tab visibility guard is userRole === 'owner' && truck?.plan !== 'tester'.
-- Trial maps to the MAX column; header shows "Free trial (Max features)" with trial end date.
-- Transaction fees show actual values (0%, 0.99% + card fee, Pay at Hatch), not checkmarks.
+- ~~Trial maps to the MAX column; header shows "Free trial (Max features)" with trial end date.~~
+- ~~Transaction fees show actual values (0%, 0.99% + card fee, Pay at Hatch), not checkmarks.~~ ⛔ *Corrected V16.2 — §81.4.*
 - Upgrade buttons open an email-to-upgrade modal until Stripe Connect billing is built.
 
 ### 🔴 BillingTab gates on the RAW PLAN STRING and has NO fallback (V11.1)
 
-Its entire body is **four sibling conditionals and nothing else** — `plan === 'trial'`, `plan === 'starter'`, `(plan === 'pro' || plan === 'max')`, and the upgrade modal. There is no `else`, no default branch and no unknown-plan case, so **any plan value outside those four renders an empty `<div>`**: no error, no console message, no empty state, no "contact us". A whole tab of nothing.
+⛔ **Corrected V16.2 — resolved (history below):** one data-driven card with a fallback for every plan (§81.4).
 
-`demo` was that value, which is how a self-serve truck reached a blank Billing tab. **The V11.1 plan change removed the only truck that hit it; it did not fix the tab.** `tester` never hits it either, but for a different and deliberate reason — the tab itself is hidden by `userRole === 'owner' && truck?.plan !== 'tester'`, which is a real guard rather than a coincidence.
+~~Its entire body is **four sibling conditionals and nothing else** — `plan === 'trial'`, `plan === 'starter'`, `(plan === 'pro' || plan === 'max')`, and the upgrade modal. There is no `else`, no default branch and no unknown-plan case, so **any plan value outside those four renders an empty `<div>`**: no error, no console message, no empty state, no "contact us". A whole tab of nothing.~~
+
+~~`demo` was that value, which is how a self-serve truck reached a blank Billing tab. **The V11.1 plan change removed the only truck that hit it; it did not fix the tab.** `tester` never hits it either, but for a different and deliberate reason — the tab itself is hidden by `userRole === 'owner' && truck?.plan !== 'tester'`, which is a real guard rather than a coincidence.~~
 
 > ⚠️ **Billing does NOT call `canAccess`.** It compares the plan string directly, so it is the one operator surface unaffected by feature gating and the one most affected by the plan **value**. That is why changing what provisioning writes was visible here and invisible everywhere else — and why a plan-value change must always be checked against Billing specifically. **Distinguish "which features do you get" (`canAccess`) from "what are you being sold" (the raw string); they are different questions and Billing only ever asks the second.**
 
 ### Sticky pricing header (V6.5)
 
+> ⛔ *Corrected V16.2: the Starter/Pro/Max matrix and its header row are gone; Billing renders `PlanTable` (§81.4). The sticky-in-`<main>` rule below still holds for any sticky row.*
+>
 > **RULE (UPDATED V8.7 — app-shell)** — the billing plan/price header row (TRIAL / STARTER / PRO / MAX + prices) is `position: sticky; top: 0; z-index: 30; background: white`. It pins to the top of the scrolling `<main>` — which already sits directly under the fixed header+tabs of the app-shell — so it stays flush under the tabs with NO hardcoded offset. The OLD `top: 95px` (V6.5, body-scroll era) is WRONG here: with `<main>` as the scroll container it pinned the header 95px into the content = mid-screen (and it desynced whenever the nav/tabs heights changed — the exact recurring bug). The flush pin depends on `<main>` having no top padding (see the sticky-layout contract, Section 3); z-30 keeps it above the feature rows; bg-white hides rows scrolling beneath.
 
 ### Trial column in the billing matrix (V6, CORRECTED V11.1)
+
+⛔ **Corrected V16.2 — history:** the table has a column per public plan only; there is no Trial column (a trial highlights none) (§81.4).
 
 The Trial column is prepended when the trial has not **ENDED** — `trial_expires_at` NULL **or** in the future — and disappears once it is past. Header: TRIAL / Free trial; `isCurrent` is `p === truck.plan`. Trial cells: walk-up 0%, online orders Pay at Hatch, all features same as Max.
 
@@ -8506,8 +8621,8 @@ The Trial column is prepended when the trial has not **ENDED** — `trial_expire
 
 ### Billing tab layout by plan (V5)
 
-- **Trial / Starter** — upgrade card first, then billing & payments, then the full pricing matrix.
-- **Pro / Max** — a quiet current-plan summary, then a collapsible "Compare all plans" section (collapsed by default), then billing & payments.
+- ~~**Trial / Starter** — upgrade card first, then billing & payments, then the full pricing matrix.~~
+- ~~**Pro / Max** — a quiet current-plan summary, then a collapsible "Compare all plans" section (collapsed by default), then billing & payments.~~ ⛔ *Corrected V16.2 — §81.4: one layout for every plan.*
 
 ### Trial conversion prompts (V5)
 
@@ -8517,13 +8632,13 @@ When plan is trial, the Manage page defaults to the Billing tab on load. A once-
 
 > **RULE (updated V6.5)** — There is NO `trucks.is_test` COLUMN in prod (verified). The intended effect — "test trucks don't appear on the public Village Foodie discovery map" — is achieved via the discovery row `visibility` enum (set a test truck's discovery_trucks + discovery_events rows to 'hg_only', so villagefoodie's allowedVisibility ['public'] excludes them while hatchgrab's ['public','hg_only'] includes them). Code NO LONGER references `is_test` anywhere — the /api/discovery/events operator-branch refs were removed V6.5, and the remaining admin/manage refs were all removed V7.8 §12 (changelog). is_test must NEVER gate an operator-facing feature; test accounts see the full operator product, Billing tab included. NEVER re-add a `trucks.is_test` column or a substitute boolean — "mark/hide a test truck" is owned solely by discovery `visibility='hg_only'`.
 
-## Loyalty stamp cards (Max, coming soon) — V4
+## Loyalty stamp cards (~~Max,~~ coming soon) — V4
 
-V1 spec frozen in code comments in lib/plan-features.ts. Schema is loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at). V1 rule: 1 stamp per order. Do NOT build flexible stamp criteria until V1 is live and operators request it.
+⛔ **Corrected V16.2:** loyalty stamp cards are coming soon on **every** plan (a `comingSoon` row in `lib/feature-table.ts`, no feature key). ~~V1 spec frozen in code comments in lib/plan-features.ts.~~ (That file is deleted; the V1 spec below is what survives.) Schema is loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at). V1 rule: 1 stamp per order. Do NOT build flexible stamp criteria until V1 is live and operators request it.
 
-## Branded QR code (Pro+) — V4
+## Branded QR code (~~Pro+~~) — V4
 
-trucks.qr_code_style column ('standard'|'branded' default 'standard') controls whether the public QR composites the truck logo into the centre (error-correction level H). The Pro feature row in lib/plan-features.ts is "Branded QR code".
+⛔ **Corrected V16.2:** branded QR is on **every** plan (`branded_qr_code` has no `plan_features` row). trucks.qr_code_style column ('standard'|'branded' default 'standard') controls whether the public QR composites the truck logo into the centre (error-correction level H). ~~The Pro feature row in lib/plan-features.ts is "Branded QR code".~~ The row is `branded_qr_code` in `lib/feature-table.ts`.
 
 ## No premium badges on customer surfaces
 
@@ -10584,7 +10699,7 @@ separately*. **Two instances with an automated guard that cannot see either is a
 two bugs.** One counterfactual proves it: assert the reverse direction and confirm it fires on
 `cook_screen` and `ticket_printing` today. ⚠️ The file's own comment calls `coming_soon` *"a legitimate
 divergence"*, so the reverse direction is a **WARN class** — over-delivering is not a breach, but an
-unadvertised grant is a pricing-integrity and support problem.
+unadvertised grant is a pricing-integrity and support problem. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 
 🔴 **THE COOK CARD HAS NO HOME.** Non-interactive header, category-grouped items, the "To make" bar.
 ⚠️ **"AT LARGER TYPE, WIDER PADDING" WAS WRONG AND IS CORRECTED (V11.24)** — Cook was actually
@@ -11302,7 +11417,7 @@ with `'🍽️'`.
 
 > 🔴 **`lib/go-live-checks.ts` has ZERO call sites and is imported by no file.** `checkGoLive` defines an `email_unverified` issue that nothing evaluates, so **email verification currently gates NOTHING** — not access, not ordering, not go-live, not any UI state. The module is kept for the intent; do not cite it as a live control. (Verified 3 August; two signups with `verified_at` NULL produced fully working trucks.)
 
-> 🔴 **Four features are DECLARED in `lib/features.ts` and enforced NOWHERE.** `auto_accept`, `meal_deals`, `upsells` and `offline_protection` appear in the `Feature` union and in the plan sets, and a `grep` for `canAccess(..., '<feature>', ...)` finds no call site for any of them. A Starter truck can use all four today. **Membership of `PLAN_FEATURES` is not a gate** — only a `canAccess` call is. §27.
+> 🔴 **Four features are DECLARED in `lib/features.ts` and enforced NOWHERE.** `auto_accept`, `meal_deals`, `upsells` and `offline_protection` appear in the `Feature` union and in the plan sets, and a `grep` for `canAccess(..., '<feature>', ...)` finds no call site for any of them. A Starter truck can use all four today. **Membership of `PLAN_FEATURES` is not a gate** — only a `canAccess` call is. §27. ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 # 14. Vehicles (trucks under a brand)
 
@@ -13091,9 +13206,9 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 
 > **RULE (V7.6) — sender-routing is a testing convenience; go-live needs recipient-routing.** The auto-reply binding is `trucks.whatsapp_sender` (a single TEXT column, ONE number at a time, stored bare `447…`). The webhook (`app/api/webhooks/meta/whatsapp/route.ts`) matches the inbound SENDER's number against `whatsapp_sender` and replies to that sender. This works ONLY because there is ONE shared US Meta test number during testing — swapping which test phone is "live" means re-pointing `whatsapp_sender` (one number at a time). GO-LIVE MODEL (banked, blocker): customers message the truck's OWN WhatsApp Business number → route by RECIPIENT (`phone_number_id` → truck), reply to sender. Requires per-truck WhatsApp Business number provisioning (not done — the truck-page number is an unconnected US placeholder) + a webhook change from sender-match to recipient-match (Section 27). NOTE: `trucks.whatsapp_sender` (the auto-reply binding) is DISTINCT from `trucks.whatsapp` (the customer-contact number). In Meta dev mode every test sender number must be on the recipient allowlist or delivery silently fails.
 
-> **✅ `whatsapp_replies` IS A PRO FEATURE, AND THE CODE HAS SAID SO SINCE V8.9. THERE IS NOTHING TO RECONCILE.** `lib/features.ts` lists it in `PRO_FEATURES` (Max inherits via the spread) and `lib/plan-features.ts` markets it `pro: true, max: true`. **The two agree on all three tiers**, `findPlanParityViolations()` returns `[]`, and `requiredPlan('whatsapp_replies')` returns `'pro'` — so `<FeatureGate>` already renders *"requires the Pro plan"*, generated rather than hand-written.
+> **✅ `whatsapp_replies` IS A PRO FEATURE, AND THE CODE HAS SAID SO SINCE V8.9. THERE IS NOTHING TO RECONCILE.** `lib/features.ts` lists it in `PRO_FEATURES` (Max inherits via the spread) and `lib/plan-features.ts` markets it `pro: true, max: true`. **The two agree on all three tiers**, `findPlanParityViolations()` returns `[]`, and `requiredPlan('whatsapp_replies')` returns `'pro'` — so `<FeatureGate>` already renders *"requires the Pro plan"*, generated rather than hand-written. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4); there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 >
-> 🔴 **CORRECTED 20 August 2026. THIS ENTRY PREVIOUSLY CLAIMED THE OPPOSITE** — that the gate granted the feature at *"max/trial/tester/override only — NOT Pro/Starter"* and that `lib/features.ts` *"is the file that is wrong"*. **Both were false when written.** ⚠️ **THE FAILURE IS THE INTERESTING PART AND IS RECORDED AS A CLASS, NOT AN ANECDOTE:** the claim came from a session delta that was integrated into this manual **without re-reading `lib/features.ts`**, by someone who had personally grepped that exact line hours earlier and seen the comment *"Pro+Max — moved from Max-only"*. **A summary of a source is not the source, and having read the source once does not survive summarising it.** A build session was then commissioned on the strength of this entry to make a change that already existed.
+> 🔴 **CORRECTED 20 August 2026. THIS ENTRY PREVIOUSLY CLAIMED THE OPPOSITE** — that the gate granted the feature at *"max/trial/tester/override only — NOT Pro/Starter"* and that `lib/features.ts` *"is the file that is wrong"*. **Both were false when written.** ⚠️ **THE FAILURE IS THE INTERESTING PART AND IS RECORDED AS A CLASS, NOT AN ANECDOTE:** the claim came from a session delta that was integrated into this manual **without re-reading `lib/features.ts`**, by someone who had personally grepped that exact line hours earlier and seen the comment *"Pro+Max — moved from Max-only"*. **A summary of a source is not the source, and having read the source once does not survive summarising it.** A build session was then commissioned on the strength of this entry to make a change that already existed. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 > **ALLERGEN ROUTING — presence-confirm vs absence-redirect, with a bucket-independent floor (V7.7, LIVE-VERIFIED V7.8). SAFETY-CRITICAL.** Two layers were realigned so they agree. (1) The deterministic `mentionsAllergen` guard was HOISTED to run immediately after classification, before ANY branch and before all three callGemini sites (between the IGNORE return and the MENU_QUERY branch in `generateWhatsAppReply`). It redirects on any absence/safety token, regardless of which bucket Gemini chose — so the probabilistic classifier can NEVER be the safety boundary; the deterministic guard is the floor on every path. The pre-existing in-branch check is left as belt-and-braces. (2) The classifier's ALLERGEN_QUERY trigger list was realigned: PRESENCE tokens (gluten, nuts, peanut, dairy, milk, egg, soy, wheat, ingredient) MOVED to MENU_QUERY (→ the presence-confirm path, which CONFIRMS a tagged allergen via the HAS/CONTAINS rule + the deterministic caveat-append, and DEFERS-never-DENIES for an untagged one); SAFETY tokens (allerg, celiac, coeliac, intoleran, free from, gluten free, safe for, suitable for) and `contain` stay ALLERGEN_QUERY → fixed redirect. `contain` deliberately KEPT as ALLERGEN_QUERY (resolves the ambiguous "does it contain any nuts" toward safety — a wrongly-redirected presence question is a mild helpfulness miss; an absence question reaching the LLM is the dangerous error). NET: "does the tiramisu have gluten" → MENU_QUERY → confirms (tiramisu is tagged Gluten) + caveat; "is the tiramisu gluten free" → guard redirect, no LLM; "does it have sesame" (untagged) → defers, never "no". RESIDUAL RISK: the untagged-defer ("never says no") is a PROMPT-STRENGTH guarantee (DEFER-never-DENY), not deterministic — the floor and the caveat-append ARE code-guaranteed. If an untagged item ever returns "no/free of", tighten the prompt; it is not a floor failure.
 
@@ -13123,9 +13238,9 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 > tree, and the "whatsapp-landing-revert" was an **investigation** whose outcome was a decision not to
 > stage it — there is no revert commit. **It is `true` from 16 September 2026** (V13.3), and the flag and
 > the plan-features row are still two halves of one statement, now enforced by
-> `findPlanParityViolations` in both directions rather than by a comment.
+> `findPlanParityViolations` in both directions rather than by a comment. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
-Official Meta Graph/Cloud API; stay within the 24-hour window; customer initiates. Full URLs, no shorteners. Responses sound like the owner ("Hey! 👋 … — {truckName} {emoji}"). 🔴 **WhatsApp auto-replies are PRO+MAX; Messenger and Instagram are `coming_soon` and unbuilt.** ⚠️ **CORRECTED 20 August 2026 — this sentence read *"Instagram/Messenger are Pro; WhatsApp is Max only."*, which was wrong on both halves from the V8.9 fix onwards.** See §4 for the executed verification.
+Official Meta Graph/Cloud API; stay within the 24-hour window; customer initiates. Full URLs, no shorteners. Responses sound like the owner ("Hey! 👋 … — {truckName} {emoji}"). 🔴 **WhatsApp auto-replies are PRO+MAX; Messenger and Instagram are `coming_soon` and unbuilt.** ⚠️ **CORRECTED 20 August 2026 — this sentence read *"Instagram/Messenger are Pro; WhatsApp is Max only."*, which was wrong on both halves from the V8.9 fix onwards.** See §4 for the executed verification. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 ### Meta webhook endpoints (V5 scaffolded, WhatsApp wired V6.3)
 
@@ -13987,7 +14102,7 @@ to keep. **It is the entire reason the `or` exists.**
 ## V11.41 — LIVE SCHEMA AND DATA FACTS READ THIS SESSION
 
 **`trucks` column list read from `information_schema` — 97 columns.** Confirms `phone_number_id` (text,
-nullable), `whatsapp_sender`, `whatsapp`, `plan` (text NOT NULL, default `'starter'`), `trial_expires_at`,
+nullable), `whatsapp_sender`, `whatsapp`, `plan` (text NOT NULL, ~~default `'starter'`~~ ⛔ *Corrected V16.2: no column default; a FK to `plans.key` — OBSERVED 20 Oct 2026, §81.2*), `trial_expires_at`,
 `timezone`, `slug`, `messenger_page_id`, `messenger_page_token`, `kds_pin`. **`name` is text NOT NULL** —
 it is on the table and was absent from this manual's column list.
 
@@ -14422,15 +14537,25 @@ weight rather than a feature to preserve.
 
 ## Real differentiators
 
-Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ticket printing (Max); multi-device sync (Max); time slot selection; auto-accept; village-specific hyperlocal discovery. Digital loyalty stamp cards (Max, coming soon).
+Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ticket printing ~~(Max)~~; multi-device sync ~~(Max)~~; time slot selection; auto-accept; village-specific hyperlocal discovery. Digital loyalty stamp cards (~~Max,~~ coming soon). ⛔ **Corrected V16.2 — see §81.1:** ticket printing, multi-device sync and loyalty (coming soon) are on every plan; only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are Pro and Unlimited only.
 
 ## Honest comparison rule
 
-> **RULE** — Be transparent about all costs. "Hatches Up is 4.5% all in. We are £29/month plus 0.99% plus card processing. Above ~£1,750/month online orders we are cheaper, and you get features they do not have." Lead with features; price closes. Migration pitch: "Currently on Hatches Up? Switch and get 3 months free on any tier."
+> **RULE** — Be transparent about all costs. ~~"Hatches Up is 4.5% all in. We are £29/month plus 0.99% plus card processing. Above ~£1,750/month online orders we are cheaper, and you get features they do not have." Lead with features; price closes. Migration pitch: "Currently on Hatches Up? Switch and get 3 months free on any tier."~~
+>
+> ⛔ **Corrected V16.2 — see §81.1:** Pay as you go is £0 + 0.99% on online card orders; card fees are Stripe's (1.5% + 20p UK). Against Hatches Up's 4.5% + 20p a truck saves 32–37% all-in at every volume. Lead with features; price closes.
 
 ## Gemini / API cost — negligible (V6.9)
 
 > **FINDING (V6.9)** — `gemini-2.5-flash` WhatsApp replies cost ~$0.0007/message (~300–500 input + ~200 output tokens at $0.30/$2.50 per 1M). Do NOT re-tier features (e.g. moving Messenger/Insta to Max) for API cost — the cost is rounding-error. Deterministic-first routing for simple queries (e.g. schedule) is worth doing for LATENCY/SAFETY, not cost.
+
+## Competitor research (V16.2 — 19–20 October 2026)
+
+- **UK:** Hatches Up (4.5% + 20p online, 1.5% + 10p in person, no monthly); Eventifood (software only, own processor, 1/2/3% or £30/£60/£75 a month); SumUp; Square; Food Engine.
+- **US:** EasyEats (0.95% of all card sales or $90/month annual; own partner processors); Food Truck Pub ($0/$29, diner pays $0.60–$1.25 per order, no KDS); Goodfynd; RapidOrderz ($59, unverified); Toast; Square.
+- **Eurozone:** no Hatches Up-style specialist; Vev (NL, Stripe, ~€10–40/month, no platform fee) is the nearest; SumUp/Square are cheaper all-in on small tickets because of Stripe's €0.25.
+- **US card surcharges:** banned in CT, MA, ME, PR; Visa cap 3%; never on debit; more states require fees shown in the price.
+- **Sources:** ⚠️ **none in `docs/` (OBSERVED 20 Oct 2026)** — the delta says to point to `docs/` reports, but a grep of `docs/*.md` for "EasyEats" or "Eventifood" finds only this manual. The figures above are as the delta states them; their sources are unrecorded until a research report is saved.
 
 # 22. Development process
 
@@ -15293,7 +15418,7 @@ the rest show what the workstream thought it owed before detection and the wizar
   **and flipped to a tick** — so the trap it was waiting on was walked into deliberately, with the
   `ROW_FEATURE_MAP` entry in the same change and two probes proving the row is now actually inspected.
   ⚠️ **The tick does not mean it works** — no domain has served a page in production, and a second gate
-  the matrix cannot see still decides what an operator gets. §4, §46.
+  the matrix cannot see still decides what an operator gets. §4, §46. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 
 ## 🔴 STILL OPEN AFTER V11.49 — CUSTOM DOMAINS
 
@@ -15458,7 +15583,7 @@ never-rendered-in-a-browser debt, the marketing row), and one of those got worse
   domain has served a page in production**, and a second gate the matrix cannot see
   (`trucks.embed_enabled`, default false) still decides what an operator actually gets. **So the row is
   still ticked for something never proven end to end**, just no longer for something structurally
-  unable to complete.
+  unable to complete. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 - ⛔ **RETIRED V11.49 — nothing frames us any more.** ⚠️ **But nothing STOPS anyone framing us
   either**: `X-Frame-Options` and `frame-ancestors` are still unset everywhere (§2), so the sandbox
   case is unreachable through our own product and reachable through anyone else's page.
@@ -15592,7 +15717,7 @@ cases are **decided** rather than re-argued.
 "Coming soon".** That is why `lib/plan-features.ts:161` changed kitchen ticket printing from
 `max: true` to `max: 'coming_soon'` (the reasoning is recorded in the comment block at `:149-160`) — the
 settings card at `components/printing/PrintingSettings.tsx:99` **already told the operator pairing was
-unavailable**, so the matrix was asserting `true` for a capability the product itself called unbuilt.
+unavailable**, so the matrix was asserting `true` for a capability the product itself called unbuilt. ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 ### ✅ GUIDELINE 2.1 COMPLETENESS SWEEP — repo-wide, ZERO dead controls
 
@@ -15619,7 +15744,7 @@ unavailable**, so the matrix was asserting `true` for a capability the product i
 `lib/plan-features.ts` (**DISPLAY**) says `coming_soon` on every plan.
 `lib/features.ts` → `canAccess('ticket_printing')` (**GATE**, used at
 `components/printing/PrintingSettings.tsx:75`) was
-**not** touched — **the two files are unconnected, VERIFIED.**
+**not** touched — **the two files are unconnected, VERIFIED.** ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 🔴 **So the matrix may advertise "coming soon" while the gate still grants the card to Max operators.**
 Not an App Store issue; **a support-ticket generator.** Unresolved, and it is the general hazard of a
@@ -15738,14 +15863,14 @@ and markup**.
 - The Auto-replies section with **one** row instead of three.
 - The plan matrix rendering `coming_soon` for ticket printing.
 - **The native logo branches, which have never been executed.**
-- `findPlanParityViolations()`, which throws in dev on violation and which a coding agent cannot run.
+- `findPlanParityViolations()`, which throws in dev on violation and which a coding agent cannot run. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 
 ## 🔴 V11.15 — added 14 August 2026
 
-- 🔴 **Build the trial-expiry Starter fallback.** Promised in the terms, absent from the code. Read-path
-  resolver, not a sweeper. **Test Kitchen expires 23 August — a free rehearsal on test infrastructure.**
-- 🔴 **Decide whether `canAccess` or `hasFeature` is canonical**, and retire the other. Still three known
-  divergent surfaces.
+- ~~🔴 **Build the trial-expiry Starter fallback.** Promised in the terms, absent from the code. Read-path
+  resolver, not a sweeper. **Test Kitchen expires 23 August — a free rehearsal on test infrastructure.**~~ ✅ **Resolved V16.2** — the read-path resolver `effectivePlan()` drops an ended plan to Pay as you go with its switches (§81.1).
+- ~~🔴 **Decide whether `canAccess` or `hasFeature` is canonical**, and retire the other. Still three known
+  divergent surfaces.~~ ✅ **Resolved V16.2** — `hasFeature` is gone; one `canAccess(feature, overrides, planAllows)` (§81.3).
 - **Widen the non-ASCII census to flag control bytes below 0x09 other than newline.** Would have caught
   the first NUL on the first pass.
 - **Re-check any conclusion drawn from a `lib/` grep before 14 August.** `lib/menu-commit.ts` was
@@ -15806,7 +15931,7 @@ customer-cancels-a-paid-order notification, the third cancel-only sweep, and the
   missing cue, two pages. ⚠️ **The clip is currently the only affordance**, so widening without adding one
   makes it worse.
 - **`findPlanParityViolations`** — whether it should have caught the fee-row divergence, given it exists
-  to bind marketing to gates. It ran clean throughout while the landing page and Billing disagreed.
+  to bind marketing to gates. It ran clean throughout while the landing page and Billing disagreed. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 - **Two prose restatements of the fee figures** remain outside `TRANSACTION_ROWS` — a marketing paragraph
   on the landing page and one line on the admin page. Both will drift.
 - **Two card titles still say "Connected"** against a *Not set up → Ready* pill progression (§37).
@@ -15926,7 +16051,7 @@ Test and live mode are almost entirely separate in Stripe. **Before a real truck
 
 - 🔴 **SITE LINKS ARE UNCONFIGURED — THIS BLOCKS LIVE-MODE ACCOUNT SESSIONS ENTIRELY.** Stripe: *"Before you can create a live mode Account Session, you must provide the URLs where you have integrated the embedded components"* — Notification banner, Account management, Payments, Payouts, Balances, Documents. **No truck can onboard for real until this form is filled** in Connect settings → Site links. **It is a form, not a build.**
 - ~~🔴 **Authorize-then-capture** — proven, not built. Needs a **server-side draft table + migration**~~ 🔴 **STRUCK V11.18 — BUILT IN V11.10. This backlog item is CLOSED**; the draft table and the extraction both landed. Original text kept struck so the estimate below is not re-quoted as outstanding: **server-side draft table + migration** (the basket cannot survive a hosted-Checkout page navigation) and **extraction of `/api/orders/submit`'s core** from a 1,139-line route handler, on the money path. **~a week.** See §37.
-- 🔴 **The platform fee** — blocked behind **subscription billing**, not just a counter. ✅ **TWO OF THE FOUR BLOCKERS CLEARED V11.38:** this line read *"allowances are display strings, 0.99% is hardcoded in five places"* — both are now structured numbers (`PLAN_ONLINE_ALLOWANCE`, `PLATFORM_FEE_OVER_ALLOWANCE`). ⚠️ **Structured is not wired**; nothing in `lib/payments` reads them yet. 🔴 **STILL BLOCKING, and neither was ever about representation:** nothing tracks online value per truck, and "period" is undefined. **The ledger preserves the history meanwhile.**
+- 🔴 **The platform fee** — blocked behind **subscription billing**, not just a counter. ✅ **TWO OF THE FOUR BLOCKERS CLEARED V11.38:** this line read *"allowances are display strings, 0.99% is hardcoded in five places"* — both are now structured numbers (`PLAN_ONLINE_ALLOWANCE`, `PLATFORM_FEE_OVER_ALLOWANCE`). ⚠️ **Structured is not wired**; nothing in `lib/payments` reads them yet. 🔴 **STILL BLOCKING, and neither was ever about representation:** nothing tracks online value per truck, and "period" is undefined. **The ledger preserves the history meanwhile.** ⛔ *Corrected V16.2 — Pro now includes £4,000 of online orders a month and Unlimited has no limit (`plan_prices.included_online_minor`); the fee is `fee_bps`; extra vans cost `extra_van_monthly_minor`; the old constants are deleted (§81.2).*
 - **Radar** — guidance copy telling a truck how to change their own tier, plus **two Dashboard reads** (our own Radar tier; any Radar line on our invoices) to settle whether HatchGrab carries a per-connected-account cost.
 - **The onboarding confirmation email** — Stripe sends nothing when an account becomes ready. The trigger already exists: the `account.updated` handler already detects `charges_enabled` flipping false → true. **Small.**
 - **The printed ticket shows NOTHING for a pre-paid order when `show_paid_step` is off** — `mapOrderToTicket` gates all payment fields on that setting, which is about collecting at the hatch, not about an order already paid online. **The ticket is what the hatch works from.**
@@ -15983,11 +16108,13 @@ Still `min-h-screen` with **no inner scroller anywhere in ~2,000 lines** (`grep`
 
 All three V11 blockers below are **still open**. Re-stated here only where V11.1 changed something about them:
 
-- **🔴 TRIAL NOMINATION.** Still no UI, no route, nothing writing `trial_expires_at`. Provisioning now writes plan `trial` rather than `demo`, which makes the eventual fix smaller; **it does not make this any less blocking**, because a NULL expiry grants the full trial set indefinitely. See the V11 entry below.
+- ~~**🔴 TRIAL NOMINATION.** Still no UI, no route, nothing writing `trial_expires_at`. Provisioning now writes plan `trial` rather than `demo`, which makes the eventual fix smaller; **it does not make this any less blocking**, because a NULL expiry grants the full trial set indefinitely. See the V11 entry below.~~ ✅ **Resolved V16.2 — the trial starts at signup:** `lib/provision-truck.ts` writes `trial_expires_at` = signup + `plans.trial_months`, end of day in the truck's zone (§81.1); admin can start or extend it. There is no nomination step by design.
 - **🔴 THE FOUR UNENFORCED FEATURE GATES.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — declared in `lib/features.ts`, no `canAccess` call anywhere. **Unchanged.** *(⚠️ **CORRECTED V11.16 — "four" is a substantial understatement. The live count is 23 declared, 6 gated, 17 UNGATED**, and these four are a subset. See the V11.16 block at the top of §27 for the counting method, which changes the answer.)*
 - **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side gate and the build-time client flag must flip together. **Unchanged.**
 
 ### 🔴 THE EXPIRY CLIFF — new, and it has dates
+
+✅ **Resolved V16.2** — the two bullets below are history: an ended plan resolves to Pay as you go with its switches (decision 1), the `plan` value is not rewritten (decision 2: nothing writes it; read time), and `hasFeature` is gone (§81.1, §81.3).
 
 - **🔴 AN EXPIRED TRIAL BECOMES NOTHING, ON A DATE ALREADY IN THE CALENDAR.** `canAccess` returns `false` for **every** feature once `trial_expires_at` passes — less access than Starter — and nothing writes the `plan` value, so the row still reads `trial`. **Test Kitchen 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October** (live-verified 4 August 2026). **Two decisions, and they are separate:** (1) what feature set an expired trial should fall back to — Starter is the obvious answer and is not what the code does; (2) what the `plan` value should become, and what writes it. Answering one does not answer the other, and shipping (1) without (2) leaves a row permanently mislabelled. §4.
 - ⚠️ **`hasFeature` bypasses the expiry check entirely**, and one of its two consumers is the customer order page's `advance_preordering` gate — so **an expired trial's customers keep pre-ordering** while the operator's own surfaces are dark. Decide whether that is a gap to close or a soft-landing to keep, but decide it *with* the cliff, not after. §4.
@@ -16004,7 +16131,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 
 ### 🔴 BLOCKING SELF-SERVE LAUNCH
 
-- **🔴 TRIAL NOMINATION DOES NOT EXIST.** No UI, no route, and nothing in application code writes `trial_expires_at` except `lib/provision-truck.ts` setting it to `null` and an admin editing it by hand in the console. There is no nomination screen, no "start my trial" action and no downgrade automation (the only scheduled task is `demo-cleanup`). **Consequence: every self-serve operator is provisioned on plan `demo`, which carries the full TRIAL feature set and never expires — so they have the entire paid product, permanently, for nothing.** The failure mode is one-directional (nobody is over-charged), which is why the wizard already carries copy promising the operator chooses which event starts their trial. That copy is knowingly ahead of the build and is marked as such at its definition in `lib/settings-copy.ts`. **Until nomination ships, opening signup gives the product away.**
+- ~~**🔴 TRIAL NOMINATION DOES NOT EXIST.** No UI, no route, and nothing in application code writes `trial_expires_at` except `lib/provision-truck.ts` setting it to `null` and an admin editing it by hand in the console. There is no nomination screen, no "start my trial" action and no downgrade automation (the only scheduled task is `demo-cleanup`). **Consequence: every self-serve operator is provisioned on plan `demo`, which carries the full TRIAL feature set and never expires — so they have the entire paid product, permanently, for nothing.** The failure mode is one-directional (nobody is over-charged), which is why the wizard already carries copy promising the operator chooses which event starts their trial. That copy is knowingly ahead of the build and is marked as such at its definition in `lib/settings-copy.ts`. **Until nomination ships, opening signup gives the product away.**~~ ✅ **Resolved V16.2 — the trial starts at signup:** `lib/provision-truck.ts` writes `trial_expires_at` = signup + `plans.trial_months`, end of day in the truck's zone (§81.1); admin can start or extend it. There is no nomination step by design.
   > ⚠️ **UPDATED V11.1 — STILL BLOCKING, for a narrower reason.** Provisioning now writes **`trial`**, not `demo` (§13), so the plan value is one a nomination step could act on and the truck is no longer parked on a plan nothing will ever expire. **Everything else in this item stands unchanged: there is still no nomination UI, no route, and nothing that writes `trial_expires_at`.** A NULL expiry grants the full trial set indefinitely (§4), so the practical consequence — an operator holding the whole paid product for nothing, forever — **has not changed at all.** What changed is that the fix is now a nomination screen rather than a nomination screen plus a plan migration.
 - **🔴 FOUR FEATURE GATES ARE DECLARED AND ENFORCED NOWHERE.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — in the `Feature` union and the plan sets, with no `canAccess` call anywhere. A Starter truck can use all four today, and provisioning now turns `auto_accept` ON for every new truck. §13.
 - **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side one is the real gate on `/api/signup`; `NEXT_PUBLIC_SIGNUP_PUBLIC` only chooses the client path and is baked at BUILD time. Flipping one without the other either opens the API with no UI or shows a UI the API refuses. ⚠️ An admin session already bypasses the client flag. §13.
@@ -16171,7 +16298,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 `trial_expires_at` suppresses the platform fee under §37, so **the free month stops being an admin convenience and becomes an input to a revenue calculation**. It is null at provision and the ONLY writer is the admin panel by hand. **The fee logic needs an explicit, LOUD answer for null** — a truck with a null `trial_expires_at` and a live Connect account is either permanently free or immediately billed, and neither may happen silently.
 
 ### Smaller, carried forward
-- **`makeCartKey` is triplicated byte-identically across three files**, and `lineIdentity` (V9.4) is a fourth near-copy that deliberately differs. Four string-keyed identity functions, two semantics, nothing type-checking the relationship — the `ROW_FEATURE_MAP` drift class.
+- **`makeCartKey` is triplicated byte-identically across three files**, and `lineIdentity` (V9.4) is a fourth near-copy that deliberately differs. Four string-keyed identity functions, two semantics, nothing type-checking the relationship — the `ROW_FEATURE_MAP` drift class. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 - **The stricter modifier-change rule.** Stored per-modifier prices make `lockedBase = unit_price − Σ modifiers[].price` exact, so an existing item whose modifiers change could keep its locked base and price only the delta. Today the whole line re-prices, which charges a base increase on something already ordered — contradicting the price-lock rule. Contained: one branch of `repriceOrder` plus the modal preview.
 - **Nothing records an operator override of the walk-up capacity prompt** beyond `capacity_ack_at` (V9.4, written but **not yet read**). Narrowing the banner to unacknowledged breaches is the follow-up.
 - **The `❗` inside a native `<select>` `<option>`** is unverified on a real iPad; emoji rendering in option labels varies by platform.
@@ -16483,7 +16610,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 ## Important — before public launch
 
 - **WhatsApp recipient-routing for go-live (V7.6)** — replace sender-match with recipient-match (`phone_number_id` → truck), and provision per-truck WhatsApp Business numbers. Sender-routing works only with one shared test number (Section 20).
-- ~~**whatsapp_replies plan-gate discrepancy (V7.6)** — `plan-features.ts` markets it as Pro+Max; `features.ts` grants Max/trial/tester/override only; the webhook obeys `features.ts` → silent no-reply on Pro. Reconcile (Section 20).~~ ✅ **CLOSED — and it was closed at V8.9, not on 20 August 2026.** `whatsapp_replies` was moved into `PRO_FEATURES` by that fix and the two files have agreed ever since; `findPlanParityViolations()` returns `[]`. 🔴 **THE ITEM STAYED ON THIS LIST FOR THE WHOLE INTERVAL**, which is what made a resolved problem look open to two later sessions. **Struck rather than deleted, because the false-open history is the point.** See §4 and §20.
+- ~~**whatsapp_replies plan-gate discrepancy (V7.6)** — `plan-features.ts` markets it as Pro+Max; `features.ts` grants Max/trial/tester/override only; the webhook obeys `features.ts` → silent no-reply on Pro. Reconcile (Section 20).~~ ✅ **CLOSED — and it was closed at V8.9, not on 20 August 2026.** `whatsapp_replies` was moved into `PRO_FEATURES` by that fix and the two files have agreed ever since; `findPlanParityViolations()` returns `[]`. 🔴 **THE ITEM STAYED ON THIS LIST FOR THE WHOLE INTERVAL**, which is what made a resolved problem look open to two later sessions. **Struck rather than deleted, because the false-open history is the point.** See §4 and §20. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 - **Standardise all price inputs on the string-buffer pattern (V7.6)** — the menu/deal/original price inputs still use the milder `|| ''` pattern; move them onto the dedicated-string-state pattern used for the Extras price adjustment (Section 23).
 - **Customer basket-peek remove affordance (V7.6)** — the inline menu-card stepper now restores removal-to-zero, but the footer basket PEEK is display-only; decide whether the peek itself needs a remove control (Section 7).
 - **Nested sticky subcategory headers (V7.6, post-trial)** — a Deliveroo-style swap of subcategory headers within a sticky category band; lower value at truck menu scale and a third sticky layer is fragile. The simple per-subcategory sticky header WAS built (Section 7); this is the richer nested version only.
@@ -16522,9 +16649,9 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 
 - **Messenger + Instagram per-truck OAuth (parked, V6.3)** — page-id / account-id / encrypted-token columns, OAuth callback routes, ENCRYPTION_KEY (AES-256, lib/crypto.ts), send API, classifier wiring, then Meta app review (needs privacy policy + terms first).
 
-- **STRIPE CONNECT + ONLINE PAYMENTS (V9.1) — ONE ITEM, BUILT TOGETHER.** *(Replaces the old one-line "Stripe Connect integration" stub.)* **Connect is NOT shippable alone, and online customer payments CANNOT exist without it** — split them and you get either an onboarding flow that leads nowhere or a pay button with nowhere to settle. **SCOPE (one pass):** (1) **Connect onboarding for operators** — ⚠️ funds settle to the **OPERATOR's** account, **not ours**; (2) **customer card payment on the order page**; (3) the **payout and refund paths** that follow from (1) and (2). ⚠️ **Card processing is PASSED THROUGH AT COST (1.49%) per the pricing model — the PLATFORM FEE (0.99%) is a SEPARATE number and must not be conflated with it in the implementation.** One is Stripe's, one is ours; merging them anywhere (a total, a receipt line, a payout calculation) misprices the product and misreports the operator's costs. The marketing side already exists in `lib/plan-features.ts` (plan matrix + footnote 2) — building this makes the advertised feature real (see the V9.0 rule: `canAccess` allowing a feature is not evidence it is BUILT).
+- **STRIPE CONNECT + ONLINE PAYMENTS (V9.1) — ONE ITEM, BUILT TOGETHER.** *(Replaces the old one-line "Stripe Connect integration" stub.)* **Connect is NOT shippable alone, and online customer payments CANNOT exist without it** — split them and you get either an onboarding flow that leads nowhere or a pay button with nowhere to settle. **SCOPE (one pass):** (1) **Connect onboarding for operators** — ⚠️ funds settle to the **OPERATOR's** account, **not ours**; (2) **customer card payment on the order page**; (3) the **payout and refund paths** that follow from (1) and (2). ⚠️ **Card processing is PASSED THROUGH AT COST (1.49%) per the pricing model — the PLATFORM FEE (0.99%) is a SEPARATE number and must not be conflated with it in the implementation.** One is Stripe's, one is ours; merging them anywhere (a total, a receipt line, a payout calculation) misprices the product and misreports the operator's costs. The marketing side already exists in `lib/plan-features.ts` (plan matrix + footnote 2) — building this makes the advertised feature real (see the V9.0 rule: `canAccess` allowing a feature is not evidence it is BUILT). ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
   - **DEPENDENT — NOT to be built in the same pass: STRIPE TERMINAL** (in-person card reader at the hatch). **Genuinely separable; follows Connect.**
-  - **DEPENDENT — NOT to be built in the same pass: SUBSCRIPTION BILLING (Pro £29 / Max £49).** A **different Stripe product**. Today the upgrade buttons **email hello@hatchgrab.com**. **Account setup overlaps with Connect; the code does not** — a shared Stripe account does not imply a shared implementation, and treating them as one job is how the payments pass grows until it never ships.
+  - **DEPENDENT — NOT to be built in the same pass: SUBSCRIPTION BILLING (~~Pro £29 / Max £49~~ ⛔ *V16.2: Pro and Unlimited, prices from `plan_prices`; still unbuilt — see the V16.2 block*).** A **different Stripe product**. Today the upgrade buttons **email hello@hatchgrab.com**. **Account setup overlaps with Connect; the code does not** — a shared Stripe account does not imply a shared implementation, and treating them as one job is how the payments pass grows until it never ships.
   - **COUPLED TO THE REFUNDS ITEM BELOW** — refunds are only reachable once Connect exists, so the refund path is scoped INTO (3) above rather than left as an orphan.
   - ⚠️ **A PROMISE ALREADY IN THE PRODUCT.** The customer cancel page tells a cancelling customer *"If you paid online, a refund will be processed within 5–10 business days"* (`app/order/[id]/manage/page.tsx:85`). It is **vacuous today** (nobody can pay online), but it becomes a **live commitment the moment card payment ships** — so **refunds must land WITH payments, not after.** Same class as the V9.0 COPY PRINCIPLE: a claim the product cannot keep is a defect, not a wording issue.
 
@@ -16548,7 +16675,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 
 - Allergen onboarding flow: prompt operator per-category allow_notes toggle at signup.
 
-- Loyalty stamp cards V1 build (Max only) — when instructed.
+- Loyalty stamp cards V1 build (Max only) — when instructed. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 - Branded QR code implementation.
 
@@ -16576,7 +16703,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 
 ## Later
 
-- Stage C full offline; customer-facing display (Max); advanced reporting visualisations; festival pricing; personalised schedule generator.
+- Stage C full offline; customer-facing display (Max); advanced reporting visualisations; festival pricing; personalised schedule generator. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 - Truck-facing WhatsApp "Recent messages" review panel with flagging.
 
@@ -16638,7 +16765,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 
 - 🔴 **iOS BILLING / APP STORE COMPLIANCE — DECISION OPEN, and it GOVERNS the other items here.** Apple restricts in-app links to external purchase mechanisms outside the US storefront; HatchGrab is UK, so the **May-2025 US carve-out does NOT apply**. Three options weighed: **(a) keep manage in-app and hide the upgrade/billing UI on iOS at runtime** — one platform check, one surface, no link and no signpost to one; web and Android untouched — **CURRENT PREFERRED**; **(b) remove manage, link out to the web portal — REJECTED as a compliance answer**, because the link *is* the restricted mechanism and making it the only path makes it MORE prominent, not less (it also costs functionality); **(c) remove manage entirely — compliant but a real degradation**, since operators commonly run on ONE device.
   - ⚠️ **THE UNVERIFIED QUESTION THAT DECIDES ALL THREE: does HatchGrab incur an IAP obligation at all?** It is B2B operator software; the subscription buys a truck the ability to run its business, a service consumed **outside** the app, and Apple carves out outside-app delivery with separate allowances for multiplatform and business services. **If that reading holds, the answer is "change nothing".** NOT VERIFIED — needs the **current text of 3.1.1, 3.1.3(b) and 3.1.3(e) read directly from Apple**, and is worth professional compliance advice before submission. **Do not restructure the app on an unverified premise:** (a) is cheap and reversible; (b) and (c) both destroy functionality to satisfy a rule we have not confirmed applies.
-  - **Any gate is a WEB-BUNDLE change** — the Billing tab renders from `lib/plan-features.ts` — so it must key off the **platform at runtime** (`getPlatform() === 'ios'`), **not** `isNativePlatform()`. Android has no such restriction and a native-vs-web check would strip billing from it for no reason.
+  - **Any gate is a WEB-BUNDLE change** — the Billing tab renders from ~~`lib/plan-features.ts`~~ ⛔ *(V16.2: the plan catalogue, `lib/plan-offer.ts`)* — so it must key off the **platform at runtime** (`getPlatform() === 'ios'`), **not** `isNativePlatform()`. Android has no such restriction and a native-vs-web check would strip billing from it for no reason.
   - **If manage is ever scoped down** (not yet investigated): some settings live in manage but govern DASHBOARD behaviour — kitchen capacity is editable from both surfaces, order-ready is a Settings master switch, offline protection has a per-event dashboard override but its default on the van. **An operator must be able to fix capacity mid-service without a laptop.** And `/api/manage` is token-based and authorises as owner, so **removing UI removes the surface, not the route** — hiding a tab is presentation, never access control.
 - 🔴 **NOTIFICATION HONESTY PASS — carries a BLOCKING coupling.** The Settings card must read/write `device_notification_prefs` (§16) instead of the device-local keys. **The one-time migration of `hg_notify_master` / `hg_notify_offline` / `hg_notify_neworder` into that table MUST ship in the SAME RELEASE as the card.** The backfill seeded `offline_protection = false` for all nine devices, so any operator who had enabled offline alerts locally **goes silent** the moment the card ships without it — and silently: no error, and their toggle will show the new server value as though they had chosen it. It is also precondition 4 of the retire/sweep migration.
 - ~~**FCM sender** — the server half of Android push. `sendOrderPendingPush` is APNs-only, and `app/api/orders/submit/route.ts:1077` still carries `.or('platform.eq.ios,platform.is.null')`, which **excludes Android from order push entirely**. The client half is verified end to end, so today the only device in the fleet with a working token is the one the send path filters out.~~ ⛔ **STRUCK V11.43 — THE FCM SENDER IS COMPLETE.** `lib/fcm.ts` sends via FCM HTTP v1 and the send path splits into `iosTokens`/`androidTokens` with a live FCM call; the `.or(...)` predicate is gone. **It was BUILT IN V11.21 and this line survived beside its own correction for two versions** — §36 has carried "🔴 THE FCM SENDER — ANDROID WAS THE EXACT MIRROR OF iOS (V11.21)" the entire time. **This manual carried it as outstanding backlog since V9.2; it is the THIRD stale-entry incident in two days** (see the V11.18 refunds and authorize-then-capture strikes for the same shape). ⚠️ **What remains true and is a DIFFERENT statement:** the sender was proven by a `validate_only` probe with a deliberately fake token — **built and validated, never observed delivering a message to an Android device.**
@@ -16657,7 +16784,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **The operator stock badge discards `bound`** (§30) — a pooled category ceiling renders as *"(1 left)"* against every item in the category. The customer page already uses the field.
 - **`"Only 1 pizzas left!"` — pluralisation bug on the CUSTOMER page** (§30). The noun is the raw category name lowercased.
 - **No urgency tier on the operator stock threshold** (§30) — flat `<= 10`, so 10 and 1 render identically. The customer page and the shared option badge redden at 3.
-- 🔴 **`hide_pricing` masks footnote 2 ONLY, keyed on the magic string `f.number !== '2'`** (§44). **Gusto sees footnote 1's real card figures unmasked on their Billing tab**, and **renumbering the footnotes would silently unmask everything**.
+- ~~🔴 **`hide_pricing` masks footnote 2 ONLY, keyed on the magic string `f.number !== '2'`** (§44). **Gusto sees footnote 1's real card figures unmasked on their Billing tab**, and **renumbering the footnotes would silently unmask everything**.~~ ✅ **Resolved V16.2** — masks keyed by id; no magic string (§44, §81.5).
 - ~~**Stripe Connect — onboarding, PaymentIntents, refunds, Terminal, Locations and subscription billing are ALL UNBUILT** (§37). Only the webhook endpoint exists.~~ 🔴 **STRUCK V11.18 — ONBOARDING, PAYMENTINTENTS AND REFUNDS ARE ALL BUILT.** Terminal, Locations and subscription billing remain unbuilt. See §37. The model and the controller properties are decided; nothing else is.
 - **The collect idempotency key still swallows a legitimate second charge of the same amount.** `collect:{order_key}:{paidBefore}:{balance}` collides when the ledger returns to a previous position and the same amount is settled again — **true today with cash**, not merely a future Stripe concern. The complete answer is a client-minted per-tap key; a Stripe object id is one.
 - 🔴 **Apple Developer enrolment requested 7 Aug, awaiting confirmation.** ⚠️ **Xcode CANNOT BUILD until it completes** — a personal team cannot sign the Push Notifications capability.
@@ -16711,10 +16838,10 @@ and nothing in the build can substitute for them. Everything else below is work,
 
 - 🔴 **The print lead time is measured from COLLECTION, not from cook time** (§42, §6).
   `calcQueueAwareReadySecs` already exists and is simply not consulted. **Design gap, not a bug.**
-- 🔴 **The trial-expiry cliff has no recorded handling** (§4). Both live trucks are on `trial`, which
-  grants every Max feature; Gusto's expiry is ~~**17 October 2026**~~ **31 December 2026**
-  (corrected V13.3, read from the database 16 September), after which `canAccess` returns
-  `false` for **everything**. No cron, no warning, no downgrade path.
+- ~~🔴 **The trial-expiry cliff has no recorded handling** (§4). Both live trucks are on `trial`, which
+  grants every Max feature;~~ Gusto's expiry is ~~**17 October 2026**~~ **31 December 2026**
+  (corrected V13.3, read from the database 16 September), ~~after which `canAccess` returns
+  `false` for **everything**. No cron, no warning, no downgrade path.~~ ✅ **Resolved V16.2** — an ended plan drops to Pay as you go with its switches; Gusto's end date is still 31 December 2026 (§81.1).
 - **`All {n} changes synced.`** — the offline consolidation replaced `Synced {n} ✓` with
   `All changes synced.` and **the count went with it. The number is the load-bearing part**; restore it
   with the count. ⚠️ **And four `Stock saved` toasts still do not name their subject**, where one call
@@ -16788,7 +16915,7 @@ and nothing in the build can substitute for them. Everything else below is work,
   already the current state and stopped without editing anything.
   ⚠️ **CORRECTED 20 August 2026, same day it was added**, from a delta integrated without re-reading
   `lib/features.ts`. **Struck rather than deleted: an item that was never open is a different kind of
-  record from one that was closed, and both are worth being able to find.**
+  record from one that was closed, and both are worth being able to find.** ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 - **An admin-gated writer for `phone_number_id`** — small, no operator surface, no money path,
   fork-independent of Meta's token answer.
 - ~~**The three small fixes** identified and deliberately left unmade: the environment-variable name in
@@ -17312,8 +17439,9 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   - the scraper, migrated last, with a UK before/after comparison.
 - ~~Re-run `_16` after deploy (§49).~~ ✅ Done (V16.0). ~~Add a migration file for the 12 October function revokes (§35).~~ ✅ Done V16.1 (§35).
 - Country on the `discovery_events` unique key (§33).
-- US plan prices — needed before the US can be switched on, and before a US prospect's plans PDF works
-  (§76.1, §76.7). **V16.1 (DECIDED 18 Oct):** with the new **unlimited plan** — the US build first, then plans (§76.9).
+- ~~US plan prices — needed before the US can be switched on, and before a US prospect's plans PDF works
+  (§76.1, §76.7). **V16.1 (DECIDED 18 Oct):** with the new **unlimited plan** — the US build first, then plans (§76.9).~~
+  ✅ **Resolved V16.2** — US `plan_prices` rows are $0 / $29 / $69 (Pay as you go / Pro / Unlimited, OBSERVED 20 Oct 2026); the US can be switched on with the current data (§81.2).
 - **Phase 5:** deferred-intent checkout, the credit-only card surcharge, and Manage › Payments "who pays the card fee". Mockups first.
 - **Service fee:** who keeps it (Dominic decides), and a home for a truck's own service fee in tax-inclusive countries.
 - Platform fee charging: `application_fee_amount` at capture, with a food-only clawback (§37).
@@ -17329,7 +17457,7 @@ verification, and a fix in the repository is not a fix in production.** §36, §
 
 ## Added V16.0 — languages, marketing, private bookings, overnight events, US layout (17 October 2026)
 
-Still open from the V15.8 block above: the Google Maps key then Part B; US plan prices; Phase 5 and
+Still open from the V15.8 block above: the Google Maps key then Part B; ~~US plan prices;~~ (resolved V16.2) Phase 5 and
 platform-fee charging; ~~per-country legal documents; the revokes migration;~~ (both done V16.1) country on the
 `discovery_events` unique key; reject reasons saved as ids (rule 6); the allergen floor. New:
 
@@ -17347,7 +17475,7 @@ platform-fee charging; ~~per-country legal documents; the revokes migration;~~ (
 ## Added V16.1 — US layout, the US test truck, security, polish, legal and retention (19 October 2026)
 
 Still open from the blocks above: the Google Maps key, then Part B (address look-up and map pins for US trucks);
-US plan prices with the new unlimited plan (the US cannot be switched on until then); the calculator's US saving
+~~US plan prices with the new unlimited plan (the US cannot be switched on until then);~~ (resolved V16.2, §81.2) the calculator's US saving
 examples; Phase 5 (card surcharge) and platform-fee charging; reject reasons saved as ids; country on the
 `discovery_events` unique key; 🔴 the WhatsApp allergen check, Unicode-aware before any non-English truck (**not**
 closed); auto-open of an overnight event after midnight. New:
@@ -17361,6 +17489,50 @@ closed); auto-open of an overnight event after midnight. New:
 - **A US testimonial.**
 - **SMS opt-in wording** and STOP handling before SMS ships (§43).
 
+## Added V16.2 — plans and pricing as data, the pricing pages, SEO fixes, Terms §4 (20 October 2026)
+
+Still open from the blocks above: the Google Maps key, then Part B; the calculator's US saving examples; Phase 5
+(card surcharge); reject reasons saved as ids; country on the `discovery_events` unique key; the WhatsApp allergen
+check; auto-open of an overnight event after midnight; rotating both Google service-account keys; the Stripe US
+question; the US storefronts; a US testimonial; SMS opt-in. New:
+
+- **Monthly plan billing** — nothing collects Pro/Unlimited fees (upgrades are a mailto); build Stripe Checkout +
+  subscriptions + a billing portal; until then manual invoices. Terms §4 already describes billing in advance and
+  the 7-day payment path.
+- **Platform fee switch-on** — application fee at capture, the month-to-date allowance meter (ledger needs a food
+  amount column and an index on `order_payments (truck_id, created_at)`), concurrency at the allowance edge,
+  `refund_application_fee` with proportional fee refunds — all in one change; then terms/pricing already disclose it.
+- **US online ordering fee** — cap 3% (today's max is 4% + 50¢), truck keeps 100%, off in CT, MA, ME, PR by the
+  truck's base state (`base_region_code`); `card_surcharge_excluded_regions` exists but is never applied
+  (OBSERVED 20 Oct 2026: it is read into `CountrySettings` and edited in Admin › Countries, and no order or charge
+  path reads it).
+- **US switch-on** — data only (`country_settings.enabled`), when Dominic launches.
+- **Pizzeria Gusto** — trial ends 31 Dec 2026; drops to Pay as you go unless it chooses a plan.
+- **Messenger & Instagram** — when built, its surfaces must read `instagram_messenger_replies`.
+- **Two Pay at Hatch switches** (`plans.pay_at_hatch_allowed` and a possible `plan_features` row for
+  `online_ordering_pay_at_hatch`; OBSERVED 20 Oct 2026: no such row exists live) — retire one.
+- **Plans editing in admin** — SQL only today.
+- **SEO leftovers** — apex 308 (Vercel), caching country pages, flags as files, the 699 KB screenshot.
+- **Eurozone launch** (€0/€29/€69, translations, iDEAL in NL) — check EU VAT for selling to small trucks without
+  VAT numbers before launch; Stripe interchange-plus pricing as the later lever.
+- **Starter/Max wording outside the V16.2 sweep's patterns** — 41 lines (§5, §9, §11, §16, §18, §19, §20, §21, §27,
+  §35, §37, §38, §40, §46, §64, §67, §68, §70, §73, §74) still describe the retired tiers (e.g. Reports' "Starter
+  view", "WhatsApp on Max", event types "Max + trial only"). Correct in place against the code
+  (`docs/manual-v16-2-report.md` lists them).
+- **Outreach email company details** — the company line was removed from outreach emails on 20 Oct (§43); decide
+  whether the signature should carry the registered name, number and office (UK trading-disclosure rules).
+- **Harness date flake** — `demo-rebuild-replace` fails one check on 20 Oct 2026 because its fixture is dated
+  "today"; re-date the fixture or pin the clock.
+- **real-thai-food** — the 20 Oct statement (`plan = 'payg'`, `is_customer = false`, no end date) has **not been
+  run** (OBSERVED 20 Oct 2026: `plan = 'trial'`, `is_customer = true`, `trial_expires_at = 2026-09-30`; it already
+  resolves to Pay as you go because its end date has passed). Optional; Dominic's to run.
+- **Corrected in place (resolved V16.2):** the US plan prices lines (V15.8, V16.0, V16.1 blocks); the literal price
+  copies (§4, §44); the footnote "2" mask (V11.5 list; §44); the Billing empty `demo` tab (§4); the expired-trial
+  "every feature denied" rule and the expiry cliff (V11.1, V11.15, V11.19 lists; §4); trial nomination (V11, V11.1);
+  `trucks.plan` defaulting to `'starter'` (§16). ⚠️ **Not found in §27 as backlog lines:** the trial popup's "free
+  Starter tier" promise and the welcome email's trial sentence (the only "free Starter tier" text is §4's struck
+  V11.15 entry).
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -17369,7 +17541,7 @@ Layered protection against bulk scraping of the public discovery and event data,
 
 - **lib/ratelimit.ts** — Upstash Redis sliding-window limiters. Redis DB "HatchGrab", London (eu-west-2). Env: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN (in .env.local and Vercel).
 - **proxy.ts** (repo root — Next 16's renamed `middleware.ts`; exports `proxy` + `config.matcher`) — Vercel Edge Middleware applying the limiter by route tier, keyed on the client IP (`x-forwarded-for` first hop).
-- **public/robots.txt** — blocks AI crawlers (GPTBot, ClaudeBot, CCBot, etc.).
+- **public/robots.txt** — blocks AI crawlers (GPTBot, ClaudeBot, CCBot, etc.). ⛔ *Corrected V16.2 — `public/robots.txt` is deleted; `app/robots.ts` serves the same rules per host (§48, V16.2).*
 - **vercel.json** — X-Robots-Tag headers.
 
 ## Tiering — the rule that must not drift
@@ -18462,7 +18634,7 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **A DOM API scoped to the wrong element fails silently.** `scrollend` was listened for on `window`, where it never fires: the board scrolls inside `<main overflow-y-auto>`, not the document. No error, no warning — the handler simply never ran. Same family as `next/image` shadowing the global `Image`: an API that looks global but is scoped to something else. Where a scroll container is not the window, the listener belongs on that container (or capturing on `document`).
 
-**Renaming a string-keyed map entry can silently disable a guard.** `ROW_FEATURE_MAP` is keyed on the compare table's row NAME, and feeds `findPlanParityViolations()`, which cross-checks the marketing table against the enforcement gate in `lib/features.ts`. Rows absent from the map are skipped as "marketing-only". So renaming the row without renaming the KEY would have dropped the KDS row from the guard — **it would have reported clean while no longer checking anything.** Type-checking cannot see string-keyed lookups; when renaming anything that a map keys on, grep for the old string.
+**Renaming a string-keyed map entry can silently disable a guard.** `ROW_FEATURE_MAP` is keyed on the compare table's row NAME, and feeds `findPlanParityViolations()`, which cross-checks the marketing table against the enforcement gate in `lib/features.ts`. Rows absent from the map are skipped as "marketing-only". So renaming the row without renaming the KEY would have dropped the KDS row from the guard — **it would have reported clean while no longer checking anything.** Type-checking cannot see string-keyed lookups; when renaming anything that a map keys on, grep for the old string. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 
 **Deletion order is load-bearing wherever a foreign key is SET NULL rather than CASCADE.** `orders.event_id` is `ON DELETE SET NULL`, so order rows outlive their event. Deleting events before orders leaves every order dangling with a null `event_id` — still counted by the capacity engine, which reads by **date**, not by event. The same shape as `clearMenu`, where `menu_items_db.category_id → menu_categories` is SET NULL and items must therefore be deleted before categories (see "Verify the cascade you actually depend on" above, which found that relationship; this is the rule it generalises to). **Check the delete rule, not just the relationship**, and where the correct order is non-obvious, say so in a comment: a later "tidy" that reorders the statements will otherwise look harmless.
 
@@ -18605,7 +18777,7 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **🔴 A condition with several readers must be ONE condition.** The Billing matrix decides whether a Trial column exists, and that decision is read in **three** places: the plan array, and two section-header spacer rows that reserve the column's width. Splitting them — switching the array while the spacers still asked the old condition — would have produced four columns against three reserved cells and **misaligned every section header by one cell**, with both halves reading as correct in isolation. ⚠️ **The tell is a variable whose name describes a QUESTION rather than a fact:** `trialActive` ("is it running now") and `showTrialColumn` ("has it ended") agree on every input but one, so two readers using different names look interchangeable right up to the case that separates them. Where several pieces of layout must agree, they must **evaluate the same expression**, not two expressions believed to be equivalent — and leaving the superseded one defined "in case something needs it" is how the second reader gets written against the wrong one.
 
-**One source with a divergent presentation layer is a lesser version of duplication, not immunity from it.** The landing page and the Billing tab both render `FEATURE_SECTIONS` from `lib/plan-features.ts` — genuinely one source, and the feared failure of two hand-maintained records of a commercial promise does **not** exist. But the landing page applies **render-time overrides** on top of it, each labelled `RENDER-ONLY` in its own comment, and one of them adds an exception Billing does not have: `SMS order alerts` renders as **not included** to a prospect and **"Coming soon"** to an operator, off the same row. **A shared source guarantees the DATA agrees; it guarantees nothing about what each surface then does with it.** When auditing for drift, the question is not "how many definitions are there" but "how many transformations sit between the definition and each render".
+**One source with a divergent presentation layer is a lesser version of duplication, not immunity from it.** The landing page and the Billing tab both render `FEATURE_SECTIONS` from `lib/plan-features.ts` — genuinely one source, and the feared failure of two hand-maintained records of a commercial promise does **not** exist. But the landing page applies **render-time overrides** on top of it, each labelled `RENDER-ONLY` in its own comment, and one of them adds an exception Billing does not have: `SMS order alerts` renders as **not included** to a prospect and **"Coming soon"** to an operator, off the same row. **A shared source guarantees the DATA agrees; it guarantees nothing about what each surface then does with it.** When auditing for drift, the question is not "how many definitions are there" but "how many transformations sit between the definition and each render". ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 **🔴 A JUSTIFICATION COMMENT CAN BE TRUE ON ONE PLATFORM AND FALSE ON ANOTHER.** A note asserting that `FLAG_KEEP_SCREEN_ON` is a window flag which dies with its Window — *"there is no OS path where a missing release strands the screen on"* — was **correct for Android and wrong for iOS**, where `UIApplication.shared.isIdleTimerDisabled` is process-wide. It was read as authoritative and it **licensed removing the release path** on both surfaces, which is what left an operator's screen on with the setting off. **In shared JS driving a native plugin, any comment asserting OS behaviour MUST NAME THE PLATFORM.** ⚠️ **SWEEP: OPEN — two live instances of this exact class found in one session.** The keep-awake note (now corrected, §11) and `lib/native/statusBar.ts`'s claim that `setOverlaysWebView` is *"LOAD-BEARING ON iOS"* when it is **inert on the installed 8.0.2** (§27). No wider sweep has been done. Same family as *"a flag named for a behaviour is not proof of that behaviour"*, one layer down: here the flag is a **comment**.
 
@@ -18979,7 +19151,7 @@ verified:**
 
 | The brief said | What was true |
 |---|---|
-| *"printing is Max-only, so no live truck is affected"* | 🔴 **false** — `TRIAL_FEATURES = [...MAX_FEATURES]` and **both live trucks are on trial** |
+| *"printing is Max-only, so no live truck is affected"* | 🔴 **false** — `TRIAL_FEATURES = [...MAX_FEATURES]` and **both live trucks are on trial** ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).* |
 | *"the transport is untested"* | 🔴 **it was not connected at all** — zero call sites, and a stub whose `sendBytes` always returned `ok: true` |
 
 ✅ **In both cases the executor established the truth and said so before building.** **The pattern is
@@ -20659,11 +20831,25 @@ of this manual).
   rollback SQL is never printed where it can be pasted (a printed rollback is what reopened the functions):*
   recorded with the function-grant class above, which the sweep now enforces, rather than repeated here.
 - 🔴 **A promise in a legal document needs code behind it.** The 12-month retention promise had none until 19 Oct (§43).
-- **A setting with NULL means "not decided", never zero.** Screens must mask it (as `withPlaceholderPlanPrices` does)
+- **A setting with NULL means "not decided", never zero.** Screens must mask it (as ~~`withPlaceholderPlanPrices` does~~ ⛔ *V16.2: the plan card's mask does — that helper is deleted with the retired price columns, OBSERVED 20 Oct 2026*)
   rather than crash or borrow another country's value (§76.9).
 - **A page built only from discovery data breaks for self-serve trucks.** Every public truck surface must also work
   from the `trucks` row (§76.9).
 - **A dress rehearsal on a hidden twin truck finds what fixtures can't.** Keep the twin for future country work (§76.9).
+
+## 35.aj 🔴 PLAN AND PRICING INVARIANTS (V16.2)
+
+1. No plan name, price, allowance, fee, trial length, tier, highlight or subtitle in code — data through
+   `lib/plans.ts`; a grep proof and `legacy-pricing-imports.cjs` guard it.
+2. A missing `plan_features` row means ON; an unknown feature key is ignored and flagged, never fatal.
+3. Access order is override → effective plan switch → allowed; an ended plan resolves to the expiry-fallback plan
+   **with its switches**.
+4. `trial_expires_at` is the end date of any plan; NULL = no end.
+5. A country is switched on only when every active public plan is priced there (trigger, not CHECK).
+6. Prices shown anywhere are computed from `plan_prices` and `country_settings`; thresholds and "cheapest plan" are
+   solved, never typed.
+7. The platform fee never switches on without the allowance meter and the fee refund in the same change.
+8. Moving `MARKETING_COPY_UPDATED` (marketing copy) and the three terms dates (legal) is part of any copy change.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -22576,8 +22762,8 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 
 | Input | State |
 |---|---|
-| The allowances (£1,500 / £2,000) | ✅ **UNBLOCKED V11.38** — `PLAN_ONLINE_ALLOWANCE`, integer pence, a discriminated union. Was *"DISPLAY STRINGS ONLY, in four places — `lib/payments` cannot read a number"* |
-| The 0.99% rate | ✅ **UNBLOCKED V11.38** — `PLATFORM_FEE_OVER_ALLOWANCE`. Was *"hardcoded in five places, all strings"* |
+| The allowances (£1,500 / £2,000) | ✅ **UNBLOCKED V11.38** — `PLAN_ONLINE_ALLOWANCE`, integer pence, a discriminated union. Was *"DISPLAY STRINGS ONLY, in four places — `lib/payments` cannot read a number"* ⛔ *Corrected V16.2 — Pro now includes £4,000 of online orders a month and Unlimited has no limit (`plan_prices.included_online_minor`); the fee is `fee_bps`; extra vans cost `extra_van_monthly_minor`; the old constants are deleted (§81.2).* |
+| The 0.99% rate | ✅ **UNBLOCKED V11.38** — `PLATFORM_FEE_OVER_ALLOWANCE`. Was *"hardcoded in five places, all strings"* ⛔ *Corrected V16.2 — Pro now includes £4,000 of online orders a month and Unlimited has no limit (`plan_prices.included_online_minor`); the fee is `fee_bps`; extra vans cost `extra_van_monthly_minor`; the old constants are deleted (§81.2).* |
 | Online value per truck per period | 🔴 **nothing tracks it** — no column, no table, no query |
 | "Period" | 🔴 **not merely untracked but UNDEFINED** — no `stripe_customer_id`, no subscription, no billing anniversary anywhere |
 
@@ -22783,7 +22969,7 @@ That is the **EXACT INVERSE** of our model. It makes **HatchGrab** pay Stripe's 
 - **We quote only our own numbers.** £29/mo Pro, £49/mo Max, plus **0.99% above a monthly allowance**. Card processing is a **third, separate line** — Stripe's, at their rates, charged by them.
 - **🔴 Card processing and the platform fee must NEVER be conflated in the implementation.** The public promise — *"guaranteed 50% saving on platform fees in year 1"* — is scoped deliberately to platform fees, not the blended bill, so that it stays true at every realistic volume. If the code merges the two numbers the promise becomes unverifiable.
 - **Drop "1.49%".** It appears nowhere in the codebase and was never ours to quote. On **direct charges with `fees.payer = account`** (the Standard-account default) the connected account pays Stripe directly and **the platform never touches the card fee at all** — so the separation is structural, not arithmetic. The defensible copy is *"plus Stripe's card processing fees, charged by Stripe directly at their standard rates — we never touch them"*, with any figure in a footnote as *"from 1.5% + 20p for UK cards"*. A single quoted rate is false for anyone with negotiated pricing, non-UK cards, or Amex.
-- **Allowance:** £1,500/month online orders (Pro), £2,000 (Max). Below it, zero platform fee.
+- **Allowance:** £1,500/month online orders (Pro), £2,000 (Max). Below it, zero platform fee. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1); Pro now includes £4,000 of online orders a month and Unlimited has no limit (`plan_prices.included_online_minor`); the fee is `fee_bps`; extra vans cost `extra_van_monthly_minor`; the old constants are deleted (§81.2).*
 - **In-person payments NEVER incur the 0.99% and NEVER count toward the allowance.** Consistent with the existing "walk-up orders are 0% on all tiers" rule.
 - **Platform fee is ZERO during trial**, whatever the trial length. Trial length is **per-truck and negotiated** (1 month, 3 months, or as agreed).
 - **First 15 trucks:** 3 months free + 3 months half price + 50% platform-fee guarantee.
@@ -22833,8 +23019,8 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 
 - **Ledger amounts are integer minor units with a currency code on every row.** Not decimals. Conversion goes through a helper, **never a hardcoded ×100** — zero-decimal currencies exist.
 - **Snapshot currency AND country onto the order at creation.** Read live from the truck and changing a truck's currency retroactively reprices every historical order and every past fee calculation. `trucks.currency` (NOT NULL, default `GBP`) and `trucks.country` (NOT NULL, default `GB`) already exist.
-- **A truck trades in exactly ONE currency.** Multi-currency means multiple trucks. £1,500 cannot be compared against a mixed GBP/EUR total.
-- **The allowance is a lookup keyed on `(country, plan)`**, holding `{amount_minor, currency, rate}` — not a bare constant, and not a display string. ⚠️ `PLAN_ALLOWANCES` today holds **display strings** (`'First £1,500 of online orders included, then 0.99%'`); the marketing string must be **generated from** the enforcement value, not maintained alongside it. An unknown `(country, plan)` is a **loud failure**, never a silent fallback to the UK number.
+- **A truck trades in exactly ONE currency.** Multi-currency means multiple trucks. £1,500 cannot be compared against a mixed GBP/EUR total. ⛔ *Corrected V16.2 — Pro now includes £4,000 of online orders a month and Unlimited has no limit (`plan_prices.included_online_minor`); the fee is `fee_bps`; extra vans cost `extra_van_monthly_minor`; the old constants are deleted (§81.2).*
+- **The allowance is a lookup keyed on `(country, plan)`**, holding `{amount_minor, currency, rate}` — not a bare constant, and not a display string. ⚠️ `PLAN_ALLOWANCES` today holds **display strings** (`'First £1,500 of online orders included, then 0.99%'`); the marketing string must be **generated from** the enforcement value, not maintained alongside it. An unknown `(country, plan)` is a **loud failure**, never a silent fallback to the UK number. ⛔ *Corrected V16.2 — Pro now includes £4,000 of online orders a month and Unlimited has no limit (`plan_prices.included_online_minor`); the fee is `fee_bps`; extra vans cost `extra_van_monthly_minor`; the old constants are deleted (§81.2).*
 
 ## Fee mechanics
 
@@ -24013,7 +24199,7 @@ and real screenshots are in place. **The contact page contains no prose dash at 
 ### Kitchen-app claims now name iPhone
 
 All four read **"iPhone, iPad and Android kitchen app"** — the matrix row, its `ROW_FEATURE_MAP` twin,
-the hand-written Starter bullet, and footnote 3.
+the hand-written Starter bullet, and footnote 3. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 
 > ⚠️ **THIS SENTENCE WAS FALSE BETWEEN 1 AND 5 SEPTEMBER 2026 AND IS TRUE AGAIN — READ THE ROUND TRIP, NOT
 > THE ENDPOINT (V12.3).** On 1 September the row was **split in two** (`iPhone and iPad kitchen app`, ✓✓✓,
@@ -24566,7 +24752,7 @@ outward sweep because it was never connected to it.**
 **Blast radius, live-read:** reachable only on plan `pro` with two or more vans
 (`VAN_ADDON_PRICE.pro = 29`). Effectively unreachable on `max` (needs ≥999 vans), unreachable on `demo`,
 `tester` and `trial` — whose keys are absent from both maps and fall through `?? 1` / `?? 0`. **No truck
-in the database is on `pro`**, so no reviewer and no operator can currently reach it.
+in the database is on `pro`**, so no reviewer and no operator can currently reach it. ⛔ *Corrected V16.2 — Pro now includes £4,000 of online orders a month and Unlimited has no limit (`plan_prices.included_online_minor`); the fee is `fee_bps`; extra vans cost `extra_van_monthly_minor`; the old constants are deleted (§81.2).*
 
 ⚠️ **DEFERRED DELIBERATELY, AND THE FIX IS NOT A GATE.** Wrapping it in the predicate leaves either a
 modal with only a Cancel button, or a path that adds a billable van without ever showing the charge. **The
@@ -25162,15 +25348,15 @@ path, the `ESC @` probe, the leading feed and the resume-reconnect are **all ari
 `'coming_soon'` at Dominic's explicit decision with the risk stated and accepted. ✅ **Restoring `true`
 also restored `findPlanParityViolations()` coverage on that row** — **the guard short-circuits on
 `row[tier] === true`, so `'coming_soon'` had silently removed the automated check.** 🔴 **Record the
-class: any `coming_soon` cell is INVISIBLE to the parity guard.**
+class: any `coming_soon` cell is INVISIBLE to the parity guard.** ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 🔴 **AND BOTH LIVE TRUCKS ARE ENTITLED TO IT.** `TRIAL_FEATURES = [...MAX_FEATURES]` and both are on
 `plan = 'trial'`, so *"printing is Max-only, so no live truck is affected"* is false. **Only the
-per-device toggle — `hg_print_enabled`, default off — stands between a live truck and this code.** §4.
+per-device toggle — `hg_print_enabled`, default off — stands between a live truck and this code.** §4. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 The Settings card **no longer manufactures a connection**. ⚠️ The settings were previously gated behind a paired printer, **which is WHY the stub existed** — the only way to reach real settings was to fake a connection.
 
-⚠️ **`lib/plan-features.ts` still marks Kitchen ticket printing as `max: true`** — a live claim for an unbuilt feature, **on Gusto's Billing tab today**. Same class as Online payments (Stripe Connect) marked with a plain check.
+⚠️ **`lib/plan-features.ts` still marks Kitchen ticket printing as `max: true`** — a live claim for an unbuilt feature, **on Gusto's Billing tab today**. Same class as Online payments (Stripe Connect) marked with a plain check. ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 > ⚠️ **UPDATED V11.19 — the claim is no longer for an *unbuilt* feature, but it is still for an
 > *unexercised* one.** The row is deliberately `true` (see the Phase B block above), which also
@@ -25204,7 +25390,7 @@ sending ESC/POS to `host[:port]`, default **9100**, one socket per ticket.
   and moves dedupe server-side.
 
 Marketing copy (landing page, `lib/plan-features.ts`, store listing) says **"Bluetooth or wired printer"** and
-the word "thermal" is gone. ⚠️ **HOLD those files until both app store updates are live.**
+the word "thermal" is gone. ⚠️ **HOLD those files until both app store updates are live.** ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 **Still true: nothing has ever printed on paper.**
 
@@ -25354,10 +25540,16 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 
 ### Product changes made to keep the documents true (OBSERVED 19 Oct)
 - **Outreach emails:**
-  - every one ends with the company line (company name, number, registered office). It is added at send time and
-    shown greyed out under the compose box;
+  - ~~every one ends with the company line (company name, number, registered office). It is added at send time and
+    shown greyed out under the compose box;~~ ⛔ **Corrected V16.2 (OBSERVED 20 Oct 2026; removed at Dominic's request
+    on 20 Oct, committed in `4633801c`):** nothing is appended — `buildMessage` adds no company line and the compose
+    box shows none (`lib/outreach-mail-message.ts`, `components/admin/ComposeWindow.tsx`);
   - sending is blocked without the opt-out line, except for tests and replies to a message the prospect sent;
-  - retry rebuilds a stored email with today's company line and the same rule.
+  - retry rebuilds a stored email with ~~today's company line and~~ the same rule ⛔ *(V16.2: and strips a company line
+    an older stored email carried; `scripts/outreach-legal-footer.cjs` asserts both)*.
+  - ⚠️ **V16.2:** the UK Companies (Trading Disclosures) Regulations 2008 expect a company's business emails to show
+    its registered name, number and office; with the line removed, outreach emails rely on the signature for that.
+    Not legal advice — Dominic's call (§27).
 - **PostHog:** `persistence: 'memory'`, so no cookies and no local storage. It is named in privacy sections 5 and 6
   (EU host). **Visitor counts now read higher,** because every full page load is a new visitor.
 - **Online service-fee notice on the menu,** beside the tax notice, wherever a truck's online orders carry a fee:
@@ -25382,11 +25574,30 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 - **US sales tax on HatchGrab's own subscription:** revisit as US revenue grows.
 - **No all-in pricing mode exists.** The menu notice is the disclosure.
 
+## Terms §4 and the terms dates (V16.2 — 20 October 2026)
+
+- **§4 "Plans, fees and trials" rewritten:**
+  - names no plan, price or trial length (all data); one plan has no monthly fee; the trial length is shown on the site;
+  - a truck moves to the no-fee plan when a trial or plan ends or a payment is 7 days late;
+  - cancel by contacting us or in the service;
+  - "We are not registered for VAT";
+  - "we will remind you in the app before your trial ends";
+  - the HatchGrab fee applies only to online card orders; Stripe's card fees are separate;
+  - 30 days' notice of price changes.
+- **Dates moved together to 20 October 2026:** the document's "Last updated", `TERMS_UPDATED` (`'20 October 2026'`)
+  and `TERMS_VERSION` (`'2026-10-20'`) in `lib/legal.ts` (OBSERVED 20 Oct 2026). ⚠️ `COUNTRY_TERMS_UPDATED` stays
+  `'19 October 2026'` — the Country-specific terms page did not change.
+- 🔴 **`TERMS_VERSION` is write-only** — stored on `operators.terms_version` at signup (`app/api/signup/route.ts`);
+  nothing reads it; no re-accept prompt exists. Verified 20 Oct (re-checked 20 Oct: the only code uses are the
+  signup write and comments).
+- ⚠️ The terms describe monthly billing in advance and a payment-failure path that the product cannot perform yet
+  (§27).
+
 # 44. Commercial model — fees and pricing suppression (V11.4)
 
 🔴 **Walk-up card payments taken through HatchGrab via Stripe carry 0% PLATFORM FEE on every tier** — the same as the truck's own terminal. **Only Stripe's card fee applies.** The **"Walk-up orders 0%"** claim therefore **stays true and covers both routes**.
 
-**`CARD_FEES` in `lib/plan-features.ts` is the single structured source** — `{pct, pence}`, **not display strings, so payments code can read the numbers**: online **1.5% + 20p** standard UK cards; in-person **1.4% + 10p** UK/EEA cards; **phone/tablet contactless carries an ADDITIONAL 10p per authorisation**; non-UK/EEA costs more. ⚠️ **Figures are from secondary sources, NOT `stripe.com`** — the copy is hedged accordingly.
+~~**`CARD_FEES` in `lib/plan-features.ts` is the single structured source** — `{pct, pence}`, **not display strings, so payments code can read the numbers**:~~ ⛔ **Corrected V16.2 — card fees are per country in `country_settings` (`card_fee_*` columns), with helpers in `lib/card-fees.ts`; the UK values below are the GB row's.** online **1.5% + 20p** standard UK cards; in-person **1.4% + 10p** UK/EEA cards; **phone/tablet contactless carries an ADDITIONAL 10p per authorisation**; non-UK/EEA costs more. ⚠️ **Figures are from secondary sources, NOT `stripe.com`** — the copy is hedged accordingly.
 
 **`trucks.hide_pricing` is ANDed with `PRICING_PUBLISHED`**, wired via a React context **so a NEW price added later is masked without its author knowing the truck exists**. 🔴 **The defaults are asymmetric on purpose:** the column defaults **false** (visible), the context defaults **TRUE** (hide) — **because over-masking announces itself and under-masking does not**.
 
@@ -25396,19 +25607,21 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 > - 🔴 **Both were recorded as verified live, and both aged into falsehood.** Neither was wrong when written; both were wrong when read. **See the standing rule at §4.**
 > - ⚠️ **The value cannot simply be re-checked**: the variable is stored on Vercel as type **`sensitive`**, i.e. write-only — unreadable by API, CLI or dashboard. **Behaviour is the only evidence available.**
 
-⚠️ **OPEN — literal price copies outside `PLAN_META`:** **13** copies of £29/£49 including `VAN_ADDON_PRICE` **as raw NUMBERS invisible to a grep**; **£1,500/£2,000 six times with no owner**; **0.99% nine times**. `findPlanParityViolations` guards **feature rows only**.
+~~⚠️ **OPEN — literal price copies outside `PLAN_META`:** **13** copies of £29/£49 including `VAN_ADDON_PRICE` **as raw NUMBERS invisible to a grep**; **£1,500/£2,000 six times with no owner**; **0.99% nine times**. `findPlanParityViolations` guards **feature rows only**.~~ ✅ **CLOSED V16.2 — no plan price, allowance or fee is written in code; the grep proof and `scripts/legacy-pricing-imports.cjs` guard it (§81, §35.aj).**
 
-## 🔴 hide_pricing masks footnote 2 ONLY — and it is keyed on a magic string (V11.5, OPEN)
+## 🔴 hide_pricing masks footnote 2 ONLY — and it is keyed on a magic string (V11.5, ~~OPEN~~ ✅ CLOSED V16.2)
 
-**The suppression is `f.number !== '2'`.** So `hide_pricing` hides the **online-payments** footnote and **nothing else**.
+⛔ **Corrected V16.2 — see §81.5.** The footnote list and its `'2'` key are gone with `lib/plan-features.ts`; footnotes are row notes in `lib/feature-table.ts` and masks are keyed by id. Billing masks through the plan card's mask (zero never masked). The entry below is history.
 
-🔴 **[V12.4 — STILL OPEN, BUT NOW DORMANT. NOT FIXED.]** 🔎 The key is still there, at **`app/manage/[token]/page.tsx:11721`** — the single occurrence, and note that **the guard and the array it keys into live in different files** (the "DO NOT RENUMBER" warning is at `lib/plan-features.ts:529-531`), which is the coupling itself. 🧪 Executed against the real `FOOTNOTES` module: **6 footnotes, numbers 1–6**; footnote **1** carries `0%`, **`1.4%`** and **`10p`**; footnote **2** carries `0.99%`, `1.5%`, `20p` **and is the only one masked**. **So the defect is exactly as described and unrepaired.**
+~~**The suppression is `f.number !== '2'`.** So `hide_pricing` hides the **online-payments** footnote and **nothing else**.~~
+
+~~🔴 **[V12.4 — STILL OPEN, BUT NOW DORMANT. NOT FIXED.]** 🔎 The key is still there, at **`app/manage/[token]/page.tsx:11721`** — the single occurrence, and note that **the guard and the array it keys into live in different files** (the "DO NOT RENUMBER" warning is at `lib/plan-features.ts:529-531`), which is the coupling itself. 🧪 Executed against the real `FOOTNOTES` module: **6 footnotes, numbers 1–6**; footnote **1** carries `0%`, **`1.4%`** and **`10p`**; footnote **2** carries `0.99%`, `1.5%`, `20p` **and is the only one masked**. **So the defect is exactly as described and unrepaired.**~~ ⛔ *Corrected V16.2: the key and the footnote module are deleted (above).*
 
 ⚠️ **It bites nobody today only because 🧪 no truck has `hide_pricing = true`.** **Dormant is not fixed.** The moment one truck is suppressed, that operator reads TBC for plan prices while footnote 1's real card figures render in full on the same tab.
 
 ⚠️ **AND THE NAMED VICTIM WAS WRONG.** This entry said *"Gusto has `hide_pricing = true`"*. 🧪 Gusto is `false`; the only truck that ever held the flag was **`tikka-tonic`**, which no longer does.
 
-⚠️ **And the key is the footnote's NUMBER, as a string.** **Renumbering or reordering the footnotes would silently unmask everything** — no error, no type failure, no test. Same family as every other magic-string coupling in this manual: the guard names a position, not a meaning. **OPEN**, recorded in §27.
+⚠️ **And the key is the footnote's NUMBER, as a string.** **Renumbering or reordering the footnotes would silently unmask everything** — no error, no type failure, no test. Same family as every other magic-string coupling in this manual: the guard names a position, not a meaning. ~~**OPEN**, recorded in §27.~~ ✅ **Resolved V16.2.**
 
 ## Landing copy — the repetition pass and the editorial rules (V11.5)
 
@@ -25969,7 +26182,7 @@ columns on that row were cleared before the deploy.
 🔴 **THE THREE VERCEL API VARIABLES WERE SET IN PRODUCTION, SO OPERATOR DOMAIN PROVISIONING IS LIVE.**
 ⚠️ **ALL SIX TRIAL TRUCKS CAN NOW SEE AND COMPLETE THE CUSTOM-DOMAIN WIZARD**, because trial carries the
 full Max feature set. **The gate on that wizard is FEATURE ACCESS, not customer status** — "it is
-Max-only" was never a defence, and on trial it is not even a restriction.
+Max-only" was never a defence, and on trial it is not even a restriction. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 ~~**A daily DNS lookup writes state. No email is sent on a failure**; the admin view is how this is read.
 ⚠️ **Deliberate, and the trade is stated: a table only works when someone opens it**, so the first anyone
@@ -26778,7 +26991,7 @@ it is a conversation with the operator, not a silent change.**
     **renamed with its map key moved in the same edit**. ⚠️ **The round trip is the lesson, not the
     endpoint: this row has been merged, split and merged again in eleven days, each time correctly,
     because the fact underneath it moved twice.** A decision recorded with its condition survives that; a
-    decision recorded as a preference would have been argued about twice.
+    decision recorded as a preference would have been argued about twice. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 - 🔴 **THE SCREENSHOT DIRECTORY IS UNTRACKED AND HAS NEVER BEEN COMMITTED.** **OBSERVED.** The hero
   images exist only on one machine. **A deploy would ship a hero whose images 404.** Check this before
   the gate lifts.
@@ -26933,7 +27146,7 @@ seen in a WhatsApp bubble.**
 
 🔴 **A DEFECT THE SOURCE COULD NOT SHOW: the root layout's `title: { template: '%s | HatchGrab' }` DOUBLE-APPENDED THE BRAND** — a **75-character** title carrying "HatchGrab" **twice**. ⚠️ **The PREVIOUS title had the identical flaw and had never once been looked at rendered.** Fixed with `title: { absolute: … }` → **59 characters**. **A page-level `title` string is an input to a template, not the output. Read the served `<head>`.**
 
-⚠️ **CORRECTION — `public/robots.txt` HAS EXISTED SINCE JUNE.** An earlier report in the same session claimed **no robots.txt existed**. 🔴 **The cause was a zsh unmatched-glob aborting the compound command that checked — a failed check and a genuine negative printed the same line.** ⚠️ **A check that cannot fail loudly is not a check.** Only a `Sitemap:` line was appended (+5 lines, **0 changed**) — replacing the file would have **silently dropped the AI-crawler blocklist**.
+⚠️ **CORRECTION — `public/robots.txt` HAS EXISTED SINCE JUNE.** An earlier report in the same session claimed **no robots.txt existed**. 🔴 **The cause was a zsh unmatched-glob aborting the compound command that checked — a failed check and a genuine negative printed the same line.** ⚠️ **A check that cannot fail loudly is not a check.** Only a `Sitemap:` line was appended (+5 lines, **0 changed**) — replacing the file would have **silently dropped the AI-crawler blocklist**. ⛔ *Corrected V16.2 — `public/robots.txt` is deleted; `app/robots.ts` serves the same rules per host (§48, V16.2).*
 
 **What that file actually does, recorded because it was nearly deleted by accident:** blocks **GPTBot, ClaudeBot, CCBot, Bytespider, FacebookBot, Applebot-Extended, Google-Extended, anthropic-ai**, plus `Disallow: /api/` and `Disallow: /trucks/`, `Crawl-delay: 10`.
 
@@ -26941,7 +27154,7 @@ seen in a WhatsApp bubble.**
 
 ⚠️ **Sitemap scope, and why it is one URL:** 🔎 `/pricing` **is not a route** (it is a section id on the landing page) and 🔎 `/landing` **308-redirects to `/`**. `/compare` **stays `noindex` by decision.** `app/sitemap.ts` is host-aware and emits one URL per host. ⛔ **Superseded V16.0:** `/landing` now 302s to the visitor's country page and the sitemap lists only the country URLs (§48, "Country addresses and the router").
 
-⚠️ **A route that used to exist as a `robots.ts` was removed, not merged:** it returned **HTTP 500** — Next.js refuses a conflicting public file and route file. **`public/robots.txt` won because it carries the blocklist.**
+⚠️ **A route that used to exist as a `robots.ts` was removed, not merged:** it returned **HTTP 500** — Next.js refuses a conflicting public file and route file. **`public/robots.txt` won because it carries the blocklist.** ⛔ *Corrected V16.2 — `public/robots.txt` is deleted; `app/robots.ts` serves the same rules per host (§48, V16.2).*
 
 **SEO SCOPING — DECIDED, so it is not re-litigated each time:**
 - 🔴 **"food truck POS" WILL NOT BE CONTESTED.** It is dominated by **Toast, Epos Now, POSApt, Grafterr** and directory sites, **and the product is not a till.** Ranking for it would bring the wrong visitor.
@@ -26961,7 +27174,7 @@ seen in a WhatsApp bubble.**
 
 🔴 **IT IS THE FIRST HEADING ON THE PAGE TO CARRY THAT BADGE — a precedent.** The badge was previously a body-level idiom only. **Recorded because the next person will copy it without knowing it was new here.**
 
-⚠️ **The flag lives in its own file rather than in `lib/plan-features.ts` for a specific reason: an import cycle.** 🔎 `app/manage/[token]/page.tsx:36` already imports from `lib/plan-features.ts`; the header of `lib/whatsapp-live.ts` records that reason **in the file**, where the next person moving it will read it.
+⚠️ **The flag lives in its own file rather than in `lib/plan-features.ts` for a specific reason: an import cycle.** 🔎 `app/manage/[token]/page.tsx:36` already imports from `lib/plan-features.ts`; the header of `lib/whatsapp-live.ts` records that reason **in the file**, where the next person moving it will read it. ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 
 ---
 
@@ -27018,9 +27231,9 @@ Recorded so they are not briefed again.
   cards at all**.
   - **CONSEQUENCE, STANDING:** changing `lib/plan-features.ts` — marking a feature live, renaming a row —
     does **not** update the landing cards. **Any plan-feature change that should show on the landing must
-    be made in both places.**
+    be made in both places.** ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
   - The matrix, Billing, Admin and the plans PDF all read `lib/plan-features.ts` + `lib/landing-table.ts`.
-    The landing cards read neither. ⚠️ See §48's parity note and §73.10 for the row-level rules.
+    The landing cards read neither. ⚠️ See §48's parity note and §73.10 for the row-level rules. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 - 🔴 **OBSERVED — THE HERO SCREENSHOTS NEVER REQUESTED 3840px IMAGES.** A brief said they did. Measurement
   across three viewports × three device pixel ratios showed **384 / 640 / 256** at DPR 1, rising with DPR,
   **never 3840**.
@@ -27033,11 +27246,11 @@ Recorded so they are not briefed again.
 - **OBSERVED** — new route `app/features/page.tsx`, a server component with `dynamic = 'force-dynamic'`
   (it reads the Host header). It carries the "Every feature, side by side" section — heading, subline,
   table, footnotes 1–5 — moved **verbatim** into `components/landing/FeatureComparison.tsx`. The old and
-  new JSX were compared line for line: **61 lines, identical apart from indentation.**
+  new JSX were compared line for line: **61 lines, identical apart from indentation.** ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 - **OBSERVED** — two helpers moved with it, because the table was their only reader:
   - `FOOTNOTE_TEXT_OVERRIDES`, the landing-only footnote-2 wording. ⚠️ The shared `FOOTNOTES` are
     **unmodified**, so Billing and Admin keep the original text.
-  - `Cell`, the ✓ / — / "Coming soon" renderer, which still takes its glyphs from `lib/landing-table.ts`.
+  - `Cell`, the ✓ / — / "Coming soon" renderer, which still takes its glyphs from `lib/landing-table.ts`. ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 - **OBSERVED** — host handling uses the **same shape as `/compare`**: `isHatchGrabHost(...)`, else
   `notFound()`.
   - On the Village Foodie host it is a **404 in Village Foodie's own chrome**.
@@ -27101,7 +27314,7 @@ Recorded so they are not briefed again.
   `findPlanParityViolations()` runs **at module load**, so it fires only on routes that import that
   module. 🔴 **A comment above the import now warns that removing the last of those four silently stops
   the guard running on the landing.** ⚠️ This supersedes the parenthetical in §16's parity entry, which
-  said the guard fires "when the landing table renders" — the landing renders no table now.
+  said the guard fires "when the landing table renders" — the landing renders no table now. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
   - The guard returned **0 violations throughout**.
 
 ### Plan cards — landing literals only (V14.9)
@@ -27138,7 +27351,7 @@ Recorded so they are not briefed again.
   each byte-identical to its matrix row's `name` (`QR code` / `Discovery map listing`).
 - **OBSERVED** — **Social media posts was marked live** in `lib/plan-features.ts` (`pro: true, max: true`,
   and trial follows Max) **on Dominic's explicit instruction**, after the consequence was put to him and
-  he chose it over the two alternatives.
+  he chose it over the two alternatives. ⛔ *Corrected V16.2 — `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
   - 🔴 **[SUPERSEDED BY V15.7 — THE ROW IS MAPPED AND ENFORCED NOW.]** It read: *"it is a `true` cell
     with no `ROW_FEATURE_MAP` entry, and that is why it builds — `canAccess(p, 'places_posts_preview')`
     is false for every plan, the key is in no plan set and is held only through `trucks.feature_overrides`
@@ -27148,7 +27361,7 @@ Recorded so they are not briefed again.
     and starter does not. The "Social media posts" row is `pro: true, max: true` **and is mapped in
     `ROW_FEATURE_MAP`**, so `findPlanParityViolations()` enforces it rather than skipping it. ⚠️ `places_posts_preview`
     **is gone from the code entirely**; the `trucks.feature_overrides` row on test-truck is left in place
-    and is inert — removing it would change nothing, so it is not worth a write. §64.12a.
+    and is inert — removing it would change nothing, so it is not worth a write. §64.12a. ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
   - ⚠️ **So the public pricing table advertises a feature no plan grants.** A recorded decision, not an
     oversight. The two ways to make it honest are written beside the row.
 
@@ -27371,7 +27584,69 @@ Recorded so they are not briefed again.
 - **Gusto's HatchGrab schedule preview** changed from "… | Village Foodie | HatchGrab" with the sheet's logo to
   "Pizzeria Gusto | HatchGrab" with its own logo, shown as a small square card because it has no cover.
 
-# 49. Deploy posture (current at V16.1; earlier postures below, each dated)
+## Pricing section, /features and /compare (V16.2)
+
+- **What they say, and where it comes from:** §81.4. Every figure, plan name, subtitle, highlight and trial length is
+  read from the plan tables; the wording is in `messages/`.
+- **The landing lost** its old lede and the "Compare all features" button. **It keeps** the eyebrow/h2 and the
+  "Switching from another platform?" block.
+
+## International SEO and the audit fixes (V16.2 — 20 October 2026)
+
+- **Country folders `/uk` and `/us`.** The slug is `uk`, not `gb`, **deliberately**: hreflang carries `en-GB`;
+  Google ignores "UK" in hreflang, not in URLs.
+- **The root is a 302 router** (query → `hg_country` cookie → IP → GB) and the hreflang x-default. Switched-on
+  country pages never redirect; a switched-off country's pages 302 to the UK until it is switched on.
+- **hreflang** is self-referencing and reciprocal, in `<head>` and the sitemap. **Self-canonicals** on one host (www).
+- **Fixes made:**
+  - the country switcher's options are real `<a href>` in the server HTML (hidden by CSS when closed);
+  - the proxy matcher typo `_next_next/image` → `_next/static|_next/image` (present since 24 May 2026);
+    `proxy.ts` (OBSERVED 20 Oct 2026);
+  - a JSON-LD `@graph`: Organization (logo, store `sameAs`), WebSite, SoftwareApplication with the page's own url and
+    an Offer per public plan from `plan_prices`;
+  - `<html lang>` en-GB/en-US on country pages and the legal pages, set by a proxy request header (client copies
+    stripped);
+  - `app/robots.ts` per host, no Crawl-delay; ⛔ `public/robots.txt` is deleted (OBSERVED 20 Oct 2026) and its
+    AI-crawler blocklist and `/api/` + `/trucks/` disallows live in `app/robots.ts` unchanged;
+  - the sitemap's lastmod from real dates (`MARKETING_COPY_UPDATED` in `lib/marketing-meta.ts` — 🔴 **move it when
+    landing or /features copy changes**; `'2026-10-20'` today), legal and contact pages listed, `xhtml:link`
+    alternates;
+  - canonical + og:url on legal/contact/signup/login (HatchGrab URLs on both hosts, except VF `/contact`, which is
+    self-canonical and in the VF sitemap);
+  - `/signup` and `/login` `noindex, follow`;
+  - one priority hero image; 4 font preloads instead of 7; legal markdown sent as a server-built HTML string
+    (`lib/static-markup.ts`).
+- **Open:**
+  - apex `hatchgrab.com` → www is a **307** (should be 308 — a Vercel domain setting, Dominic). Still 307, OBSERVED
+    by curl 20 Oct 2026;
+  - caching country pages (N5); flags as files; a 699 KB screenshot source.
+
+# 49. Deploy posture (current at V16.2; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.2 — PRICING PLANS, PAGES AND SEO FIXES ON main (20 October 2026)
+
+*Replaces the V16.1 posture below as the current one; it and the earlier postures stay as dated history.*
+
+- **The delta said** the work of all nine reports was on `main`, partly committed and partly uncommitted, and
+  **nothing deployed**. ⚠️ **OBSERVED 20 Oct 2026 (about 17:30 BST), and it differs:**
+  - `git log`: HEAD is `4633801c "compare page"` (Dominic, 20 Oct 17:10), on top of `755c284c "landing new
+    prices"`. Every product change of the nine reports, and the outreach company-line removal, is committed.
+  - `git status`: only two harness files are uncommitted — `scripts/outreach-instant-send.cjs` and
+    `scripts/outreach-mail-send.cjs` (the company-line re-pins). This manual's V16.2 edit and
+    `docs/manual-v16-2-report.md` are new on top.
+  - `origin/main` is also `4633801c` (local ref; no fetch was run), so the commits are **pushed**.
+  - **The live site serves it** (curl, 20 Oct): `www.hatchgrab.com/uk` shows Pay as you go / Pro / Unlimited and
+    "First 3 months completely free, everything unlocked"; `/uk/features` has "Everything to run your service, on
+    every plan."; `www.villagefoodie.co.uk/sitemap.xml` lists `/contact` (a change from `4633801c` itself). So the
+    deployed build includes the last commit. Who deployed it and when was not observed.
+- **Database changes run live 20 Oct:** `20261024_plans.sql`, `20261025_plan_features.sql`,
+  `20261026_pricing_pages.sql` (`20261023_trucks_plan_check_live.sql` is a record only). OBSERVED 20 Oct 2026: the
+  tables, the six plans, the GB and US `plan_prices` rows, the four payg `plan_features` rows, `is_highlighted` /
+  `subtitle`, the two switch-on triggers and the `trucks.plan` FK are all live. Running them before the code was
+  safe because the older code did not read the new tables. **No database change runs at deploy.**
+- **Pending and optional:** the real-thai-food statement — **not run** (OBSERVED 20 Oct 2026: `plan = 'trial'`,
+  `is_customer = true`, `trial_expires_at = 2026-09-30`).
+- Dominic tests on localhost and deploys himself.
 
 ### 🔴 DEPLOY POSTURE AT V16.1 — DEPLOYED ON 19 OCTOBER; THE LEGAL WORK AND THE PENDING-CARD BUTTONS BEING PUSHED
 
@@ -27810,7 +28085,7 @@ named `slug_absent` miss for a slug it cannot find. **There is still no delete f
 reason recorded for that was never true, and it is why the question kept being closed early.
 
 🔴 **CORRECTED V13.7 — THE OPT-OUT FOOTER ROW OF THAT TABLE NO LONGER DESCRIBES THE CODE.** Nothing is
-appended to the body any more (⚠️ V16.1: except the fixed company line, added at send time — §43): `OPT_OUT_FOOTER` and `composeEmail` were deleted. The opt-out sentence is
+appended to the body any more ~~(⚠️ V16.1: except the fixed company line, added at send time — §43)~~ ⛔ *(Corrected V16.2: the company line was removed on 20 Oct — nothing at all is appended; §43)*: `OPT_OUT_FOOTER` and `composeEmail` were deleted. The opt-out sentence is
 the `{{opt_out}}` token and the signature is `{{signature}}`, both from `outreach_settings`. They are
 expanded into the editor document when a template loads (§60.3), so what is on screen is what is sent, and
 `literalTokenRefusal` stops a document that still carries either token verbatim. The opt-out is in the
@@ -28818,8 +29093,9 @@ directly from the mailbox, so the message is exactly what a mail client would pr
   - `docToHtml` renders Outlook-style `<div>`s at 12pt Aptos; "small" is 13.333333px.
   - The `text/plain` part carries no HTML.
   - `{{signature}}` and `{{opt_out}}` are **expanded into the document when a template loads**, through
-    `docFromTemplateText`, so what is on screen is what is sent. Nothing is appended automatically (⚠️ V16.1:
-    except the fixed company line, at send time — §43), and
+    `docFromTemplateText`, so what is on screen is what is sent. Nothing is appended automatically ~~(⚠️ V16.1:
+    except the fixed company line, at send time — §43)~~ ⛔ *(Corrected V16.2: no exception — the company line was
+    removed on 20 Oct; §43)*, and
     `literalTokenRefusal` stops a document that still contains either token verbatim.
 - **Refusals** (`lib/outreach-send-rules.ts`): no address; a linked (live operator) truck; a test with no
   test recipient; plus every sequence guard (§62.4). ⚠️ V16.1: and no opt-out line, except for a test or a reply to a
@@ -29387,7 +29663,7 @@ private pre-selects Private — so the pin only makes it deliberate.
 one column and `null` already means Automatic, so "pinned to Standard" is not expressible without a
 second column. Named here rather than faked; it is a schema decision, not one to take inside a select.
 ⚠️ **A PRO TRUCK SEES STANDARD AND PRIVATE ONLY** — custom types are `event_types` (Max), the Private
-type is `private_events` (Pro). Filtered on the keys, never on the plan name.
+type is `private_events` (Pro). Filtered on the keys, never on the plan name. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 ### ⛔ V14.2 — THE SELECT IS A PILL ROW, AND "Automatic" IS NOT A CHOICE ANY MORE
 
@@ -29481,7 +29757,7 @@ choosing a file is not a drag surface.**
 | **The flow** | the EXISTING one: `upload_url` → direct PUT → `confirm_upload` with `which: 'place'`, on /api/weekly-post. Same three calls `EventPost.tsx` makes, so the shape check against the standard design, the 10MB cap, the PNG/JPG rule and the storage path are all the server's existing ones |
 | ⛔ **The shape check is the SERVER's** | the only honest source for an aspect ratio is the real pixels of the stored object. The client's size and type tests are a courtesy that saves a doomed upload |
 | ⚠️ **The thumbnail needs a SIGNED url** | `sg_places` returns `event_bg_path`, a path — the bucket is private. The one action that already signs it is `event_load`, so that is what is called: once, only when the place HAS a picture, and again after an upload. The url is stored WITH its path and the shown url is derived by comparing the two, so removing the picture clears the thumbnail with no second `setState` |
-| ⚠️ **The route is gated on `schedule_graphics`** | ⚠️ **[V15.7: THE PARENTHETICAL "(Max)" IS NO LONGER TRUE.]** `schedule_graphics` moved to `PRO_FEATURES` at launch prep, so **Pro and Max both hold it** and the refusal a Pro truck used to meet is gone. The gate itself is unchanged and is still the route's, not the screen's. §64.12a |
+| ⚠️ **The route is gated on `schedule_graphics`** | ⚠️ **[V15.7: THE PARENTHETICAL "(Max)" IS NO LONGER TRUE.]** `schedule_graphics` moved to `PRO_FEATURES` at launch prep, so **Pro and Max both hold it** and the refusal a Pro truck used to meet is gone. The gate itself is unchanged and is still the route's, not the screen's. §64.12a ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).* |
 
 ### Events here
 
@@ -29834,7 +30110,7 @@ review and is a future "Auto-posting" piece.
 | **Gate sites** | the Social media tab and Schedule › Events' "Make post" button (`app/manage/[token]/page.tsx`); the `FeatureGate` in `SocialPosts.tsx`; `/api/weekly-post`; and `sg_place_usual_type` in `/api/manage` |
 | ⚠️ **Deliberately UNGATED** | the Add event place picker, Tidy up places, usual-type pre-selection, event types, private events and pricing. None of them is a post |
 | **The refusal copy** | one constant: "Social media posts are on Pro and Max" |
-| **Plan parity** | the features-table row "Social media posts" is `pro: true, max: true` **and mapped in `ROW_FEATURE_MAP`**, so `findPlanParityViolations()` enforces it. ⚠️ This is the change that closed the "`true` cell nothing checks" hole recorded in the V14.x entry above |
+| **Plan parity** | the features-table row "Social media posts" is `pro: true, max: true` **and mapped in `ROW_FEATURE_MAP`**, so `findPlanParityViolations()` enforces it. ⚠️ This is the change that closed the "`true` cell nothing checks" hole recorded in the V14.x entry above ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).* |
 
 ⚠️ **WHO COULD SEE IT AT LAUNCH:** the 6 trial trucks (App Tester, Pizza Kitchen, Pizzeria Gusto, Real
 Thai Food, Tikka Tonic, Village Spice) plus the 8 demo-plan trucks. Only **Pizza Kitchen** had a saved
@@ -31322,11 +31598,11 @@ show Pro as `false` (hiding a feature a Pro truck pays for) or `true` (promising
 `findPlanParityViolations()` inspects cells that are hard `true` and fails when `canAccess` disagrees; a
 'coming_soon' cell is explicitly exempt. Both pass because `ROW_FEATURE_MAP` points each row at its real
 key — **without those two entries the guard would `continue` past the rows and the table could promise
-Pro a Max feature with nothing failing.**
+Pro a Max feature with nothing failing.** ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3).*
 
 **Changed in three places** (the pricing-card bullets are hand-written twins of the matrix rows and
 nothing checks them against each other — change both or neither):
-1. `lib/plan-features.ts` — the two rows and the two `ROW_FEATURE_MAP` entries;
+1. `lib/plan-features.ts` — the two rows and the two `ROW_FEATURE_MAP` entries; ⛔ *Corrected V16.2 — `findPlanParityViolations()` and `ROW_FEATURE_MAP` are deleted; the table's cells are read from the same `plan_features` switches as the gate (§81.3); `lib/plan-features.ts`, `lib/landing-table.ts` and `components/landing/FeatureComparison.tsx` are deleted; plans and prices are data and the table is `lib/feature-table.ts` (§81.3, §81.4).*
 2. `app/landing/page.tsx` Max card — the bullet, **un-badged**;
 3. `app/landing/page.tsx` Pro card — a new bullet, "Private events with their own ordering link".
 
@@ -31454,7 +31730,7 @@ See `docs/release-prep-report.md` §5 for the item-by-item list. The two rules b
 ⚠️ **AND A PLAN SENTENCE IS A CLAIM THAT NEEDS A TEST.** "The weekly post is on Pro and Max" was false —
 `schedule_graphics` is Max-only — and it was written out twice, both copies wrong the same way. The fix
 is one constant plus a harness that **calls `canAccess` for all four plans** and asserts the key's tier
-*alongside* the wording. A comment about a plan is not a plan.
+*alongside* the wording. A comment about a plan is not a plan. ⛔ *Corrected V16.2 — there is no Max tier: a trial has every feature, and only WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon) and custom event types are off on Pay as you go (§81.1).*
 
 ## 74.6 Deploy
 
@@ -31651,9 +31927,9 @@ languages in §77.*
 
   | Setting | Value |
   |---|---|
-  | Plans | £0 / £29 / £49 |
-  | Included online orders | £1,500 / £2,000 |
-  | Platform fee | 0.99% |
+  | ~~Plans~~ | ~~£0 / £29 / £49~~ ⛔ Corrected V16.2 — plan prices live in `plan_prices` (§81.2); these columns are retired |
+  | ~~Included online orders~~ | ~~£1,500 / £2,000~~ ⛔ Corrected V16.2 — `plan_prices.included_online_minor` (§81.2) |
+  | ~~Platform fee~~ | ~~0.99%~~ ⛔ Corrected V16.2 — `plan_prices.fee_bps` (§81.2); `platform_fee_pct` retired |
   | Card fees | online 1.50% + 20p; in-person 1.40% + 10p; Tap to Pay +10p |
   | Card label | "UK cards" |
   | Tax | prices include tax, label "VAT" |
@@ -31664,7 +31940,7 @@ languages in §77.*
 
   | Setting | Value |
   |---|---|
-  | Plan prices | **NULL** |
+  | Plan prices | ~~**NULL**~~ ⛔ Corrected V16.2 — US prices are in `plan_prices` ($0 / $29 / $69, OBSERVED 20 Oct 2026); the retired columns are still NULL |
   | Card fees | online 2.90% + 30¢; in-person 2.70% + 5¢; Tap to Pay +10¢ |
   | Tax | prices exclude tax, label "Sales tax" |
   | Surcharge | allowed, cap 3%, credit only, excluded regions {CT, MA, PR} |
@@ -31672,8 +31948,12 @@ languages in §77.*
   | Allergen set | `us9` |
   | Service fee | allowed |
 
-- **OBSERVED** A CHECK refuses switching a country on while any plan price is NULL. **The US cannot be
-  switched on until US plan prices are set** (§27).
+- ~~**OBSERVED** A CHECK refuses switching a country on while any plan price is NULL. **The US cannot be
+  switched on until US plan prices are set** (§27).~~ ⛔ **Corrected V16.2 — see §81.2:** the CHECK
+  (`country_settings_enabled_needs_prices_chk`) was dropped; the trigger `country_settings_require_plan_prices`
+  refuses `enabled = true` unless every active public plan has a `plan_prices` row for that country. **The US can
+  be switched on with the current data** (OBSERVED 20 Oct 2026: all three public plans have US rows;
+  `country_settings_minor_nonneg_chk` still names the retired columns, but NULL passes a CHECK).
 - **OBSERVED** **Columns added later:**
   - `short_name`, `phone_example`, `phone_check` ('length' | 'strict' | 'off');
   - `service_fee_recipient` ('truck' | 'hatchgrab', default 'truck'), `service_fee_hatchgrab_bps`, `service_fee_hatchgrab_fixed_minor`, `service_fee_truck_max_bps`, `service_fee_truck_max_fixed_minor`;
@@ -31682,7 +31962,11 @@ languages in §77.*
   - the competitor columns;
   - `distance_unit`;
   - `trucks.travel_radius_km`;
-  - every `tax_rate_bps` (trucks, orders, order_drafts, truck_events) — replaced by `tax_rate_milli` (§37).
+  - every `tax_rate_bps` (trucks, orders, order_drafts, truck_events) — replaced by `tax_rate_milli` (§37);
+  - ⛔ **V16.2:** the six plan columns `starter_monthly_minor`, `pro_monthly_minor`, `max_monthly_minor`,
+    `pro_allowance_minor`, `max_allowance_minor`, `platform_fee_pct` — commented RETIRED; no code reads them
+    (`scripts/legacy-pricing-imports.cjs` asserts it) (§81.2). OBSERVED 20 Oct 2026: GB still holds the old values
+    (0 / 2900 / 4900 / 150000 / 200000 / 0.99), US holds NULL.
 - **OBSERVED** `trucks.country` is an FK to `country_settings`. Every truck today is GB.
 - **Admin › Countries** (`components/admin/CountriesTab.tsx`): one column per country, Save per country.
   Testing rule: touch only the US column, add and remove a throwaway country; 🔴 **never press Save on
@@ -31743,8 +32027,13 @@ languages in §77.*
 
 ## 76.7 Plans PDF by prospect country
 - **OBSERVED** The outreach plans-PDF attachment uses the prospect's `discovery_trucks.country`, falling back
-  to GB. A US prospect's PDF is refused with the existing message until US plan prices are set —
-  deliberately, so no £ price list goes to a US prospect.
+  to GB. ~~A US prospect's PDF is refused with the existing message until US plan prices are set —
+  deliberately, so no £ price list goes to a US prospect.~~ ⛔ **Corrected V16.2 (OBSERVED 20 Oct 2026,
+  `lib/plans-pdf.ts` `buildPlansPdfHtml`, `app/api/admin/outreach/attachments/route.ts`):** it is no longer
+  refused. The PDF is built for the prospect's country and every amount is masked ("TBC" / US "TBD") while that
+  country is switched off, so a US prospect still never gets a price list (or a £ one).
+- ⛔ **V16.2:** the PDF's content is built from the plan tables for that country — `offerPlans`, the cheapest bands,
+  the trial length, the fallback plan and the same `FEATURE_TABLE` rows and footnotes as /features (§81.4).
 
 ## 76.8 US readiness — layout (V16.0 — 16 October 2026; fixed V16.1 — 18 October 2026)
 
@@ -31855,14 +32144,17 @@ under "Decisions" below):
 
 ### The country row (OBSERVED, set 18 Oct)
 - The US service-fee maximum is **4% + 50¢**: `service_fee_truck_max_bps` 400, `service_fee_truck_max_fixed_minor` 50.
-- The US is still switched off, and its plan prices are NULL (§76.1).
+- The US is still switched off, and its plan prices are NULL (§76.1). ⛔ *Corrected V16.2: still switched off; US prices are now `plan_prices` rows, $0 / $29 / $69 (§81.2).*
 
 ### Findings and fixes (OBSERVED)
 - **A Billing crash on NULL plan prices — every US truck.**
   - A trial truck opens Manage on Billing, so Manage crashed.
-  - `planPricesDecided` and `withPlaceholderPlanPrices` (`lib/country-settings-types.ts`) now show the existing
-    masked "TBD" on Billing, FeatureGate, the Settings van add-on and the admin edit modal.
-  - `requirePlanPrice` still throws on any raw read.
+  - ~~`planPricesDecided` and `withPlaceholderPlanPrices` (`lib/country-settings-types.ts`) now show the existing
+    masked "TBD" on Billing, FeatureGate, the Settings van add-on and the admin edit modal.~~
+  - ~~`requirePlanPrice` still throws on any raw read.~~
+  - ⛔ **Corrected V16.2 (OBSERVED 20 Oct 2026):** those three helpers are gone from code (only a comment names
+    `requirePlanPrice`); prices come from `plan_prices` through `lib/plans.ts`, and Billing masks a switched-off
+    country through the plan card's mask (§81.5).
   - Harness: `scripts/us-unpriced-country.cjs`.
 - **"Truck not found" for every newly signed-up truck, in every country.**
   - **The cause:** `/trucks/[slug]` drew its header only from the discovery list, and signup creates no discovery
@@ -32327,6 +32619,13 @@ correction note in its history; the hidden Smash and Grab prospect filled.
   - only the last statement's result is shown, so run checks on their own (already recorded at V13.7).
 - **Localhost:** the marketing pages need `hatchgrab.localhost:3000` — recorded in §48 ("Country addresses and the
   router"), not repeated here.
+- **Harness kit (V16.2):** `scripts/_render-kit.cjs`'s `next/navigation` stub takes `globalThis.__kitPathname`.
+- **New harnesses (V16.2):** `plans-data-model.cjs`, `plan-features-config.cjs`, `pricing-pages.cjs`, `seo-fixes.cjs`,
+  `legacy-pricing-imports.cjs`; shared modules `_plans-catalog-fixture.cjs`, `_lp-stage-b.cjs`, `_lp-seo-fixes.cjs`,
+  `_lp-pricing-tidy.cjs`, `_lp-compare-tidy.cjs` (all present and listed in `scripts/harnesses.json`, OBSERVED 20 Oct
+  2026). Re-pins are marked `⚠️ RE-PINNED (<workstream>, <date>)`.
+- **Screenshot proofs (V16.2)** are taken from production builds (`next build` + `next start` on :3100); one known
+  capture timing band on `/uk` at 375px (the mobile header button).
 
 ---
 
@@ -32339,6 +32638,156 @@ never in a chat reply") in §35, "A FUNCTION'S DEFAULT GRANT IS PUBLIC"; the 18 
 that followed in the standing rules at the top; the key rotation in §27.*
 
 - **Rule (DECIDED 19 Oct): new functions.** Browser code makes no `.rpc()` calls; every RPC runs on the service role.
+
+---
+
+# 81. Plans and pricing as data (V16.2 — 19–20 October 2026)
+
+🔴 **THE RULE: no plan name, price, allowance, fee, trial length, feature tier, highlighted plan or plan subtitle is
+written in code.** All of it lives in the database and is read through `lib/plans.ts`. A new plan, a price change or
+moving a feature between plans is a **data change, not a build**. A capability (a `Feature` key) may live in code;
+which plans have it may not. Wording lives in `messages/` (en-GB base, en-US overrides).
+
+## 81.1 The commercial model (decided by Dominic, 19–20 October 2026)
+
+| | Pay as you go | Pro (highlighted, "MOST TRUCKS") | Unlimited |
+|---|---|---|---|
+| Monthly (GB / US) | £0 / $0 | £29 / $29 | £69 / $69 |
+| Online orders included each month | 0 | 4,000 | unlimited |
+| HatchGrab fee on online card orders (food subtotal) | 0.99% | 0.99% above 4,000 | 0% |
+| Walk-up orders | 0% | 0% | 0% |
+| Pay at Hatch | allowed | allowed | allowed |
+| WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon), custom event types & pricing | — | ✓ | ✓ |
+| Everything else (ordering, pre-orders, slots, capacity, KDS, private events, printing, multi-device, multi-staff, schedule page…) | ✓ | ✓ | ✓ |
+| Subtitle (data) | Seasonal & part-time traders | Trucks taking regular pre-orders | Busy trucks & festivals |
+
+- **Cheapest plan by monthly online sales (computed, never typed):** GB under 2,900 → Pay as you go; 2,900–8,000 →
+  Pro; over 8,000 → Unlimited (US the same in $). Rounded to the nearest 100.
+- **Trial:** 3 months (`plans.trial_months`), every feature, starts **at signup** (end = signup + N months, 23:59:59
+  in the truck's timezone). Existing trucks' end dates were not moved.
+- **When any plan ends** (`trucks.trial_expires_at` in the past) the truck resolves to the **expiry-fallback plan
+  (Pay as you go) with that plan's feature switches**. Read time, no job.
+- **Founder / outreach offers (no build):** Unlimited at £49 via the per-truck promo price
+  (`plan_price_override_minor = 4900` + an until date); a 4-month trial via admin "Extend trial by 1 month" after
+  signup; prospects linked to `/compare?free=4`.
+- **Pizzeria Gusto** (decided 20 Oct): treated like any customer. Its trial ends 31 Dec 2026; if it has not chosen
+  a plan it drops to Pay as you go (and loses WhatsApp, social media posts and custom event types).
+- **real-thai-food** is not a customer: `plan = 'payg'`, `is_customer = false`, no end date (the statement was
+  given on 20 Oct — **verify whether it was run** and record the observed row). ⚠️ **OBSERVED 20 Oct 2026: NOT run.**
+  The row reads `plan = 'trial'`, `is_customer = true`, `trial_expires_at = 2026-09-30`. Because that date has
+  passed, it already resolves to Pay as you go with its switches; the statement is still pending (§49, §27).
+- **HatchGrab Ltd is not VAT-registered** (stated 20 Oct); Terms §4 says so.
+- **Price positioning (research 19–20 Oct, see §21):** UK all-in (card fees included) 32–37% cheaper than Hatches Up
+  at every volume; US software fee 23–66% under EasyEats, but all-in Stripe's 30¢ makes EasyEats cheaper for some
+  trucks unless the diner pays an online ordering fee; eurozone pricing (€0/€29/€69) planned later.
+
+## 81.2 The tables (OBSERVED live, 20 October 2026)
+
+- **`public.plans`** — one row per plan: `key` PK (`^[a-z][a-z0-9_]*$`), `name`, `description` (no numbers in it),
+  `subtitle`, `sort_order`, flags `is_public`, `is_internal`, `is_trial`, `is_signup_default` (exactly one),
+  `is_expiry_fallback` (exactly one; public, active, not a trial), `is_demo` (exactly one), `is_highlighted` (at
+  most one; public and active), `pay_at_hatch_allowed` (**enforced**), `included_vans` (≥1), `trial_months` (only on
+  a trial plan), `active`. Rows: `payg`, `pro`, `unlimited` (public); `trial` (signup default, 3 months), `demo`,
+  `tester` (internal). Every plan: `included_vans = 1`, `pay_at_hatch_allowed = true`.
+- **`public.plan_prices`** — PK (`plan_key`, `country_code`): `monthly_minor`, `included_online_minor` (NULL =
+  unlimited), `fee_bps` (on online food above the included amount), `extra_van_monthly_minor`. GB and US rows:
+  payg 0 / 0 / 99 / 0; pro 2900 / 400000 / 99 / 2900; unlimited 6900 / NULL / 0 / 6900. Internal plans have no
+  rows (they charge nothing).
+- **`public.plan_features`** — PK (`plan_key`, `feature`): `enabled`. **A missing row means ON.** Live rows (all
+  payg, all false): `whatsapp_replies`, `schedule_graphics` (the whole social-media area: weekly and single-event
+  posts, graphics, places posts), `instagram_messenger_replies` (stored; nothing gates on it until it ships),
+  `event_types`. An unknown feature key is **ignored, logged and shown as an admin warning** — it never breaks the
+  catalogue.
+- **`trucks`:** `plan` is a **FK to `plans.key`** (the old `trucks_plan_check` is gone; **no column default** —
+  provisioning always writes the plan). `trial_expires_at` is **the end date of any plan** (name historical; NULL =
+  no end). Promo price: `plan_price_override_minor`, `plan_price_override_until` (inclusive, truck's local date),
+  `plan_price_override_note` (admin only); applies only while the truck stays on that plan.
+- **Security:** all three tables mirror `country_settings` — RLS on, no policies, grants revoked from anon,
+  authenticated and public, service role only.
+- **Switch-on rule:** `country_settings_enabled_needs_prices_chk` was **dropped**. Trigger
+  `country_settings_require_plan_prices` refuses `enabled = true` unless every active public plan has a
+  `plan_prices` row for that country; `plans_keep_enabled_countries_priced` (on `plans` and `plan_prices`) refuses
+  the reverse. ⚠️ **OBSERVED 20 Oct 2026:** these are **two** triggers — `plans_keep_enabled_countries_priced` on
+  `plans` and `plan_prices_keep_enabled_countries_priced` on `plan_prices` — plus
+  `country_settings_require_plan_prices` on `country_settings`; `country_settings_enabled_needs_prices_chk` is gone. ⚠️ `country_settings_minor_nonneg_chk` still names the retired columns, but **NULL passes it** —
+  verified 20 Oct that it does **not** block switching the US on (the Stage B report's claim otherwise was wrong).
+  Re-checked 20 Oct (read-only): its definition is `CHECK (starter_monthly_minor >= 0 AND … AND competitor_fixed_minor
+  >= 0)`, and a NULL makes a CHECK pass; the US row's six retired columns are NULL.
+- **Retired, kept not dropped:** `country_settings.starter_monthly_minor`, `pro_monthly_minor`,
+  `max_monthly_minor`, `pro_allowance_minor`, `max_allowance_minor`, `platform_fee_pct` — commented RETIRED; **no
+  code reads them** (`scripts/legacy-pricing-imports.cjs` asserts it).
+- **Migrations:** `20261023_trucks_plan_check_live.sql` (records the hand-widened CHECK; file only),
+  `20261024_plans.sql`, `20261025_plan_features.sql`, `20261026_pricing_pages.sql` — **all run live 20 Oct 2026**.
+  OBSERVED 20 Oct 2026 (read-only): the four files exist; the tables, rows, flags (`is_highlighted` on `pro`,
+  `subtitle`s, `trial_months = 3`), the partial unique indexes (one signup default, one expiry fallback, one demo, at
+  most one highlighted), the `trucks_plan_fkey` FK (no column default), RLS on with no policies, and no SELECT or
+  INSERT for `anon` / `authenticated` all match this section.
+
+## 81.3 The rules in code
+
+- **Module map:** `lib/plans.ts` (pure, client-safe: catalogue, `effectivePlan`, prices, promo, switches, trial
+  end, vans, `featureAccess`, `upgradePlanFor`) · `lib/plans-server.ts` (`getPlanCatalog()`, service role, 60 s
+  cache; throws on an unsound catalogue) · `components/PlanCatalogProvider.tsx` · `lib/plan-offer.ts` (what every
+  pricing surface says: cards, fee sentence by data shape, bullets, cheapest bands `cheapestAt()`, table cells) ·
+  `lib/feature-table.ts` (capability rows, groups, coming-soon states, footnote notes numbered by row order) ·
+  `lib/plan-refusal.ts` · `components/PlanPrompt.tsx` · `components/FeatureGate.tsx` ·
+  `components/pricing/{PricingSection,PlanTable}.tsx` · `lib/card-fees.ts` · `lib/price-text.ts`.
+  **Deleted:** `lib/plan-features.ts`, `lib/landing-table.ts`, `lib/legacy-pricing-display.ts`,
+  `components/landing/FeatureComparison.tsx`, `lib/copy/weeklyPost.ts`. (OBSERVED 20 Oct 2026: every listed module
+  exists and every deleted one is absent. `canAccess` itself lives in `lib/features.ts`; `featureAccessView` in
+  `lib/useFeatures.ts`.)
+- **Access, in this order:** per-truck `feature_overrides` → the **effective** plan's `plan_features` switch →
+  allowed. `canAccess(feature, overrides, planAllows)` requires the plan switch argument, so tsc finds every call
+  site. One function; the old `hasFeature`/`canAccess` split is gone.
+- **Refusals:** a plan-off feature → server `feature_not_on_plan` naming the first public active plan (sort_order)
+  that has it ("… are included on Pro."); the UI shows one `PlanPrompt` (old FeatureGate styling, "Upgrade →" to
+  Billing; text only on iOS). An override-off feature → `feature_switched_off` / "switched off for your truck".
+- **Pay at Hatch:** `pay_at_hatch_allowed = false` hides it from customers (`/api/menu` `pay_at_hatch_on`) and
+  refuses it at submit (`pay_at_hatch_unavailable`, before any booking or money path). True on every plan today.
+  ⚠️ Two switches mean the same thing (the column and a `plan_features` row for `online_ordering_pay_at_hatch`) —
+  consolidate later (§27). OBSERVED 20 Oct 2026: no such `plan_features` row exists live; the key is a `Feature`
+  (`PAY_AT_HATCH_FEATURE` in `lib/plans.ts`), so a row could be added.
+- **Vans:** each van above `included_vans` costs `extra_van_monthly_minor`.
+- **Provisioning:** the signup-default plan (or the demo plan) from the table; trial end set at signup.
+- **Admin:** plan buttons from the table (sort_order); `POST /api/admin` has a field allowlist and validates the
+  plan against the table; promo fields in the truck modal; "Start trial: N months" and "Extend trial by 1 month"
+  (adds a calendar month to the end date in the modal, end of day, truck's zone); a read-only plans table (prices,
+  vans, trial, features off, ignored rows warning). **Editing plans is SQL for now.**
+- **Platform fee engine:** `lib/order-charge-rules.ts` takes the effective plan's `fee_bps` **only while
+  `platform_fee_enabled` is on (off everywhere)**; fee on food after discount (never tax, tips, service fee or
+  surcharge). ⚠️ **The included allowance is not modelled in the engine yet, there is no month-to-date meter, and
+  refunds do not pass `refund_application_fee`** — all three must land together before the switch is turned on
+  (§27). The application fee belongs at capture (`lib/payments/capture.ts`), the one point all capture paths meet.
+- **Manage first-load failure:** "Invalid or expired token" only for 401/403; anything else shows "Could not load
+  this page: {reason}".
+
+## 81.4 The surfaces (all from the data)
+
+- **Landing pricing section:** banner ("Your first {N} months are completely free — every feature unlocked", Pay at
+  Hatch body, fallback plan named); one card per public plan; first card "Everything to run a service" + 7 bullets
+  (no multi-staff logins) + "See every feature →"; later cards "Everything in {previous}, plus" the features the
+  plan switches on; "Try free" (orange on the highlighted card); the computed "Which plan is cheapest for me?" bar;
+  footnote with the country's card fees. Hero trust line "First {N} months completely free, everything unlocked".
+- **`/features`:** h1 "Everything to run your service, on every plan."; one table (a column per public plan,
+  highlighted column from the flag): WHAT YOU PAY rows, then 32 capability rows in RUN YOUR SERVICE / ONLINE ORDERS
+  / MARKETING & AUTOMATION; footnotes * card fees, ¹ printing (printer not supplied), ² WhatsApp (Meta may charge;
+  replies automated) — numbers derived from row order.
+- **Manage › Billing:** a data-driven plan card (effective plan, price with promo and mask, included amount, ended
+  line) + the same `PlanTable` (highlight = effective plan; a trial highlights none); "not started" shows its
+  heading only. **Plans PDF:** the same content in its existing styling, built for the prospect's country, masked
+  only when that country is switched off. **Van modal, trial popup ("Every feature free for {N} months"), welcome
+  email ("Your {N}-month free trial has started — every feature unlocked", only while a trial runs)** from data.
+- **`/compare`:** four questions — 1 "Do you take online orders now?", 2 trucks, 3 online orders per month (the
+  "We suggest {plan}" panel sits under its slider, `cheapestAt()`), 4 current fee (Yes path) / trading days (No
+  path, kept for the "a trading day" framing). Free months = `trial_months`, or `?free=N` (whole number 1–12) for
+  that visit (the root router keeps the query). Dimmed cards are `inert` until question 1. Noindex; title "Cost
+  calculator — HatchGrab {country}". The staff question and the months question are removed.
+
+## 81.5 Masking
+
+- Marketing prices are not masked (a switched-off country's pages redirect instead). Billing's card and table mask
+  under the van-modal rule (country switched off, pricing unpublished, or `hide_pricing`); **zero is never masked**.
+  The plans PDF masks only a switched-off country. The old footnote "2" magic-string mask is gone (masks keyed by id).
 
 ---
 

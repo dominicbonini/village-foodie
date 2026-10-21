@@ -1,0 +1,26 @@
+{
+  "confirmation": {
+    "collectionTime": "Pickup time: {time}",
+    "leadReady": "Your order is ready for pickup — come and pick it up from {truck}.",
+    "preferredTime": "Preferred pickup time: {time}",
+    "slotUpdated": "Your pickup time has been updated",
+    "textCollection": "Pickup time: {time}. See you at the hatch!",
+    "textPreferred": "Preferred pickup: {time} — we’ll confirm when we accept your order.",
+    "textReady": "Your order is ready for pickup — come and pick it up.",
+    "textSlotUpdated": "Pickup time updated to {time} (was {previous}).",
+    "textTitleReady": "Order #{id} is ready to pick up — {truck}",
+    "weWillConfirm": "We’ll confirm your pickup time when we accept your order."
+  },
+  "payNote": {
+    "hatchText": "Pay at the truck at pickup.",
+    "hatchTitle": "Pay at the truck at pickup",
+    "heldShortBody": "{truck} takes the amount held when they confirm your order. The rest is due when you pick up.",
+    "heldShortBodyFigures": "{truck} takes the {held} held when they confirm your order. The remaining {owing} is due when you pick up.",
+    "heldShortText": "Your card is held for part of this order. {truck} takes the amount held when they confirm your order, and the rest is due when you pick up.",
+    "heldShortTextFigures": "Your card is held for {held}, which {truck} takes when they confirm your order. {owing} of this order is still to pay when you pick up.",
+    "partPaidBody": "The rest is due when you pick up.",
+    "partPaidBodyFigures": "{paid} of this order is paid. The remaining {balance} is due when you pick up.",
+    "partPaidText": "Part paid. Some of this order is still to pay when you pick up.",
+    "partPaidTextFigures": "Part paid: {paid} received, {balance} still to pay when you pick up."
+  }
+}

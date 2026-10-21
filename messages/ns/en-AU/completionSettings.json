@@ -1,0 +1,6 @@
+{
+  "pressesOne": "One press (“Mark paid & picked up”)",
+  "pressesOneHelp": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & picked up”, which records the payment and clears the order together.",
+  "pressesTwo": "Two presses (“Mark paid” & “Picked up”)",
+  "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the hatch, then picks up when it’s ready. You get two buttons: “Mark paid” first, then “Picked up” when they take the food."
+}

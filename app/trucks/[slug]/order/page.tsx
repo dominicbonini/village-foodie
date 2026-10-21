@@ -3696,6 +3696,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   <p className="text-[11px] text-slate-400 text-center mt-3 leading-relaxed">
                     {tOrder('cardHeldUntil', { withTruck: truck?.name != null ? 'yes' : 'no', truck: truck?.name ?? '' })}
                   </p>
+                  {/* anz-1 (21 October 2026): STRIPE'S DUAL-NETWORK DEBIT NOTICE, Australian (AUD) checkouts only. Stripe's docs
+                      (docs.stripe.com/payments/eftpos-australia): eftpos is the default network for an Australian merchant, so the
+                      customer "must" be told — before checkout completes — that a dual-network debit card may be processed through
+                      either network. (A held payment, which every card order here is, is always sent over Visa / Mastercard; the
+                      notice is still required.) Stripe's suggested wording, without its clause about recurring payments, which we do
+                      not take. Every other currency renders nothing new. */}
+                  {truck?.money?.currency === 'AUD' && (
+                    <p className="text-[11px] text-slate-400 text-center mt-2 leading-relaxed" data-network-notice>
+                      {tOrder('dualNetworkNotice')}
+                    </p>
+                  )}
                 </div>
               )}
 

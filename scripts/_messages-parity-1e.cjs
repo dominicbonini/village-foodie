@@ -89,6 +89,19 @@ const NEW_WORDING = {
   // on a plan without Pay at Hatch (app/api/orders/submit/route.ts) — a new message (scripts/fixtures/plans-stage-a2-messages.json
   // `added`), so no eb7ed44 string carries "isn’t taking pay-at-the-truck orders".
   'errorsCustomer.pay_at_hatch_unavailable': 'plan-features-config Stage A2: a pay-at-the-truck order refused on a plan without Pay at Hatch ("isn’t taking pay-at-the-truck orders online")',
+  // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): /features' row descriptions are the pre-Stage-B
+  // planFeatures.row.<id>.detail texts (c6c44c9e) restored verbatim — all rendered by eb7ed44's /features, so they pass as
+  // moved — EXCEPT this one, EDITED on purpose: the first sentence only ("Will carry an additional charge (price to be
+  // confirmed)." removed). Its text is held to exactly that below (RESTORED_EDITED), not just excused.
+  'featuresPage.detail.sms_order_alerts': 'features-page-restore: the SMS row\'s pre-Stage-B description (c6c44c9e) cut to its first sentence ("Text customers automatically when their order’s ready.")',
+  // ⚠️ RE-PINNED (anz-1, 21 October 2026): a NEW message — the card processor's dual-network debit notice, shown on an
+  // Australian (AUD) checkout only (app/trucks/[slug]/order/page.tsx); its exact text is held by scripts/anz-1.cjs §7.
+  'order.dualNetworkNotice': 'anz-1: the eftpos dual-network debit notice on Australian checkouts ("Notwithstanding the payment brand logo displayed …")',
+}
+/** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
+ *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
+const RESTORED_EDITED = {
+  'featuresPage.detail.sms_order_alerts': ['c6c44c9e', 'planFeatures.row.sms_order_alerts.detail', old => old.slice(0, old.indexOf('. ') + 1)],
 }
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): plans are data and every plan has every
 // feature, so the plan-upsell words are REMOVED (plan refusals are errorsManage.feature_switched_off now; the van-upgrade
@@ -154,6 +167,13 @@ module.exports = function area({ t, head }) {
       }
     }
   }
+  // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): each restored-and-edited message is exactly its named edit.
+  for (const [key, [ref, oldKey, edit]] of Object.entries(RESTORED_EDITED)) {
+    let old = null; try { old = oldKey.split('.').reduce((o, k) => (o ? o[k] : undefined), JSON.parse(execSync(`git show ${ref}:messages/en-GB.json`, { cwd: REPO, encoding: 'utf8', maxBuffer: 64 << 20 }))) } catch { /* unreadable */ }
+    const now = Object.fromEntries(W.LP2.leaves(W.LP2.readJson(path.join(REPO, 'messages/en-GB.json'))))[key]
+    const want = typeof old === 'string' ? edit(old) : null
+    t(`${key}: exactly ${ref}'s ${oldKey}, as named (${NEW_WORDING[key] || 'features-page-restore'})`, !!want && want !== old && now === want, JSON.stringify({ now, want }))
+  }
   console.log(`  ${added.length} Phase 1e messages · ${plainRendered} plain ones rendered by the BEFORE surfaces · ${plainSource} matched in the source`)
   if (composedPlain.length) console.log(`  ${composedPlain.length} plain message(s) on paths no fixture reaches were BUILT from pieces at ${BEFORE_REF}: ${composedPlain.join(', ')}`)
   if (elsewherePieces.length) console.log(`  ${new Set(elsewherePieces).size} message(s) with a run found verbatim in a ${BEFORE_REF} file this phase left alone: ${[...new Set(elsewherePieces)].slice(0, 20).join(', ')}`)
@@ -184,7 +204,11 @@ module.exports = function area({ t, head }) {
     const diff = W.gbKeyDiff()
     // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): a key Stage A changed is named by its fixture (exactly).
     const isStageA = k => { const c = stageAChange(k); return !!c && c.before === diff[k].before && c.after === diff[k].after }
-    const unnamed = Object.keys(diff).filter(k => !isStageA(k) && (!named[k] || named[k].before !== diff[k].before || named[k].after !== diff[k].after))
+    // ⚠️ RE-PINNED (ireland-1, 20 October 2026): ireland-1's two tradeArea rewordings (W.isIE1 — exact before / after) are
+    // not Phase 1e's; both must show exactly as recorded.
+    const unnamed = Object.keys(diff).filter(k => !isStageA(k) && !W.isIE1(diff[k]) && (!named[k] || named[k].before !== diff[k].before || named[k].after !== diff[k].after))
+    const ie1 = Object.keys(W.IE1_REWORDED)
+    t(`ireland-1's tradeArea rewordings differ exactly as recorded (${ie1.length})`, ie1.every(k => W.isIE1(diff[k])), ie1.filter(k => !W.isIE1(diff[k])).join(', '))
     // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): a named key a plan stage REMOVED (W.LP2.stageA().removed — Stage B
     // deleted landing.pricing.summary, planFeatures.footnote.*, planMeta.*, …) has no text left to differ; it is not stale
     // while it is absent from messages/en-GB.json (checked here).

@@ -24,6 +24,14 @@ const head = s => console.log(`\n── ${s}`)
 
 const TRUCK = 'demo-tacoman'
 const NOW = new Date('2026-10-14T10:00:00Z')
+// ⚠️ RE-PINNED (features-followups, 20 October 2026): THE WHOLE PROCESS RUNS AT `NOW`, NOT AT THE REAL DATE.
+// `provisionDemo` is handed `now: NOW`, but the demo event's DATE comes from `demoEventWindow` → `getLocalDateInTz(tz)`
+// (lib/provision-demo-event.ts:87), which reads the clock, not `now`. So on the real 20 October the new event landed on
+// 2026-10-20 — the date of this fixture's "another date" event (ev-old-b) — and §5's "an event on ANOTHER date is kept"
+// failed every time the real date matched a fixture date. Pinning the render kit's clock to NOW makes the new event
+// 2026-10-14 on any day the harness runs, so it can never collide with ev-old-a (10-01) or ev-old-b (10-20).
+// (The time/date split inside demoEventWindow is reported in docs/features-followups-report.md; not changed here.)
+kit.setNow(NOW.toISOString())
 function seed({ session = true } = {}) {
   return {
     country_settings: [snake(SEEDS.gbFromSeed())],

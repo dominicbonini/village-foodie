@@ -154,8 +154,10 @@ const withFourth = () => {
   t('Unlimited card: "Everything in Pro, plus" "Unlimited online orders, 0% HatchGrab fee", "Same price in your busiest month" (no feature it adds)',
     inOrder(pt, ['Everything in Pro, plus', 'Unlimited online orders, 0% HatchGrab fee', 'Same price in your busiest month']))
   t('every card\'s button reads "Try free" (3)', count(pt, 'Try free') === 3)
-  t('the cheapest bar: "Under £2,900 … → Pay as you go · £2,900 – £8,000 → Pro · Over £8,000 → Unlimited"',
-    pt.includes('Which plan is cheapest for me? Under £2,900 of online orders a month → Pay as you go £2,900 – £8,000 → Pro Over £8,000 → Unlimited'), pt.slice(pt.indexOf('Which plan'), pt.indexOf('Which plan') + 200))
+  // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the approved wording — "Your online orders each month" under the
+  // heading, and the first band without "of online orders a month".
+  t('the cheapest bar: "Your online orders each month" · "Under £2,900 → Pay as you go · £2,900 – £8,000 → Pro · Over £8,000 → Unlimited"',
+    pt.includes('Which plan is cheapest for me? Your online orders each month Under £2,900 → Pay as you go £2,900 – £8,000 → Pro Over £8,000 → Unlimited'), pt.slice(pt.indexOf('Which plan'), pt.indexOf('Which plan') + 200))
   t('the footnote: "* Plus <processor>’s card processing … (currently 1.5% + 20p in the UK), paid to <processor>, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."',
     FOOTNOTE_GB.test(pt))
   t('the old copy is gone: no Starter / Max, no "first month", no "Compare all features" button', !/\bStarter\b|\bMax\b|first month|Compare all features/.test(pt))
@@ -168,14 +170,18 @@ const withFourth = () => {
   t('h1 "Everything to run your service, on every plan."', /<h1>Everything to run your service, on every plan\.<\/h1>/.test(featGB))
   t('lede: "… kitchen screen are included on every plan. Pro and Unlimited add WhatsApp, social media and custom event pricing, and lower fees."',
     ft.includes('Ordering, pre-orders, capacity and the kitchen screen are included on every plan. Pro and Unlimited add WhatsApp, social media and custom event pricing, and lower fees.'), ft.slice(0, 300))
-  t('callout: "3 months free with every feature unlocked. Then Pay as you go automatically, unless you choose a plan."', ft.includes('3 months free with every feature unlocked. Then Pay as you go automatically, unless you choose a plan.'))
-  const tbl = featGB.slice(featGB.indexOf('class="pt pt-card"'), featGB.indexOf('class="price-note"'))
+  // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026, Dominic): the trial callout is REMOVED from /features.
+  t('no trial callout ("3 months free with every feature unlocked…" is gone; the landing banner keeps the trial)', !/months? free with every feature unlocked|features-callout/.test(ft + featGB))
+  // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): /features renders the table's "features" variant (the pre-Stage-B look:
+  // `pt pt-features`, a `.pt-name` + `.pt-desc` per row) and its footnotes in the old `.fn` block; Billing keeps `pt pt-card`.
+  const tbl = featGB.slice(featGB.indexOf('class="pt pt-features"'), featGB.indexOf('class="fn"'))
   const tt = text(tbl)
-  t('ONE table, columns = the public plans with "{price} / month"', count(featGB, 'class="pt pt-card"') === 1 && inOrder(tt, ['Pay as you go £0 / month', 'Pro £29 / month', 'Unlimited £69 / month']))
+  const tblNames = text(tbl.replace(/<span class="pt-desc">.*?<\/span>/g, ''))   // the table without its descriptions
+  t('ONE table, columns = the public plans with "{price} / month"', count(featGB, 'class="pt pt-features"') === 1 && !featGB.includes('pt-card') && inOrder(tt, ['Pay as you go £0 / month', 'Pro £29 / month', 'Unlimited £69 / month']))
   t('the highlighted column is Pro (the data flag)', /<div class="pt-col pt-hl" role="columnheader"><span class="pt-col-name">Pro</.test(tbl) && count(tbl, 'pt-col pt-hl') === 1)
   // Dominic, 20 October 2026: no "Pay at Hatch orders" money row and no "Online ordering — Pay at Hatch" feature row.
   t('WHAT YOU PAY: included — / £4,000 / Unlimited; fee 0.99% / 0.99% above £4,000 / 0%; Walk-up Free ×3 (no Pay at Hatch row)',
-    tt.includes('What you pay Online orders included each month — £4,000 Unlimited HatchGrab fee on online card orders* 0.99% 0.99% above £4,000 0% Walk-up orders Free Free Free Run your service') && !/Pay at Hatch/.test(tt), tt.slice(0, 400))
+    tblNames.includes('What you pay Online orders included each month — £4,000 Unlimited HatchGrab fee on online card orders* 0.99% 0.99% above £4,000 0% Walk-up orders Free Free Free Run your service') && !/Pay at Hatch/.test(tblNames), tblNames.slice(0, 400))
   t('three groups in order: Run your service, Online orders, Marketing & automation', inOrder(tt, ['Run your service', 'Online orders', 'Marketing & automation']))
   const rowsIn = count(tbl, 'role="rowheader"')
   t('every feature row (32) + 3 money rows + 4 group rows', rowsIn === 32 + 3 + 4, rowsIn)
@@ -185,14 +191,16 @@ const withFourth = () => {
   t('"Kitchen ticket printing" carries marker ¹ and "WhatsApp auto-replies" marker ² — numbered by table position (and no other row a marker)',
     /<span>Kitchen ticket printing<sup class="pt-sup">1<\/sup><\/span>/.test(tbl) && /<span>WhatsApp auto-replies<sup class="pt-sup">2<\/sup><\/span>/.test(tbl) && count(tbl, 'class="pt-sup"') === 2)
   t('/features footnotes, in order, same style as the card-fee one: *, ¹ printing, ² WhatsApp',
-    inOrder(text(featGB), ['* Plus', '1 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).', '2 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.']) && count(featGB, 'class="price-note"') === 3)
+    inOrder(text(featGB), ['* Plus', '1 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).', '2 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.'])
+      && (() => { const fn = featGB.slice(featGB.indexOf('<div class="fn">')); return count(fn.slice(0, fn.indexOf('</div>')), '<p>') === 3 })())   // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): the three footnotes are the old `.fn` block's three <p>
   {
-    const heads = [...tbl.matchAll(/role="rowheader">(.*?)<\/div>/g)].map(m => text(m[1]))
+    const heads = [...tbl.matchAll(/role="rowheader">(.*?)<\/div>/g)].map(m => text(m[1].replace(/<span class="pt-desc">.*?<\/span>/, '')))   // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): the name only
     const online = heads.slice(heads.indexOf('Online orders') + 1, heads.indexOf('Marketing & automation'))
     t('"Custom event types & pricing" is the LAST row of Online orders', online[online.length - 1] === 'Custom event types & pricing', online)
   }
   // pricing-tidy: a row with a note renders <span>Name<sup class="pt-sup">n</sup></span> — matched either way.
-  const rowOf = name => { let i = tbl.indexOf(`>${name}</div>`); if (i < 0) i = tbl.indexOf(`<span>${name}<sup class="pt-sup">`); return i < 0 ? '' : tbl.slice(i, tbl.indexOf('role="row"', i + 1)) }
+  // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a row's name is `<span class="pt-name">Name</span>` (+ its description).
+  const rowOf = name => { let i = tbl.indexOf(`<span class="pt-name">${name}</span>`); if (i < 0) i = tbl.indexOf(`<span>${name}<sup class="pt-sup">`); return i < 0 ? '' : tbl.slice(i, tbl.indexOf('role="row"', i + 1)) }
   const cells = r => [...r.matchAll(/role="cell">(.*?)<\/div>/g)].map(m => (/pt-yes/.test(m[1]) ? '✓' : /pt-no/.test(m[1]) ? '—' : /pt-soon/.test(m[1]) ? 'soon' : m[1]))
   const pe = cells(rowOf('Private events')), et = cells(rowOf('Custom event types &amp; pricing'))
   t('Private events: ✓ on every plan; Custom event types & pricing: — / ✓ / ✓ (separate rows)', JSON.stringify(pe) === '["✓","✓","✓"]' && JSON.stringify(et) === '["—","✓","✓"]', { pe, et })
@@ -200,6 +208,22 @@ const withFourth = () => {
   t('WhatsApp auto-replies: — on payg, Coming soon/✓ on the rest; SMS / loyalty "Coming soon" everywhere (the existing states)',
     cells(rowOf('WhatsApp auto-replies'))[0] === '—' && JSON.stringify(cells(rowOf('SMS order alerts'))) === '["soon","soon","soon"]', { wa: cells(rowOf('WhatsApp auto-replies')), sms: cells(rowOf('SMS order alerts')) })
   t('the same footnote as the landing', FOOTNOTE_GB.test(text(featGB)))
+  // ── features-page-restore (20 October 2026): the old page's look and descriptions, on the new table ──
+  {
+    const msgs = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')).featuresPage
+    const usMsgs = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-US.json'), 'utf8')).featuresPage
+    const FT = (await ctx.bundle('pp-ft', "export { FEATURE_TABLE } from '@/lib/feature-table'")).FEATURE_TABLE
+    t('restore: the old eyebrow "Compare" above the one h1', /<section class="band features-page"><div class="wrap"><p class="eyebrow">Compare<\/p><h1>Everything to run your service, on every plan\.<\/h1>/.test(featGB) && count(featGB, '<h1') === 1)
+    const descs = [...tbl.matchAll(/<span class="pt-desc">(.*?)<\/span>/g)].map(m => text(m[1]))
+    t('restore: every capability row (32) has its description, in table order, from featuresPage.detail; the money rows have none',
+      descs.length === 32 && FT.length === 32 && JSON.stringify(descs) === JSON.stringify(FT.map(r => text(msgs.detail[r.id]))), { n: descs.length, first: descs.slice(0, 2) })
+    const PLANISH = /\b(Starter|Max|Pro|Unlimited|Pay as you go|trial|plan|plans|tier)\b|[0-9£$€%]|first month|allowance|\bfee\b/i
+    const bad = [...Object.entries(msgs.detail), ...Object.entries(usMsgs.detail)].filter(([, v]) => PLANISH.test(v))
+    t('restore: no description names a plan, a number, a price, an allowance or a fee (en-GB and en-US)', bad.length === 0 && Object.keys(msgs.detail).length === 32, bad)
+    t('restore: the old cell glyphs — a text ✓ (no drawn tick), the faint —, an italic "Coming soon"', tbl.includes('<span class="pt-yes" aria-label="Included">✓</span>') && !tbl.includes('<svg') && tbl.includes('class="pt-soon"'))
+    const featUS = await page('features', 'US')
+    t('restore: US — the en-US descriptions ("grays out", "pickup time slot", "inquiries")', /grays out for customers right away/.test(featUS) && /Customers choose a pickup time slot/.test(featUS) && /WhatsApp inquiries/.test(featUS) && !/greys out/.test(featUS))
+  }
 
   // ══ 4 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · /compare — the cheapest plan for the volume, from data')
@@ -266,7 +290,8 @@ const withFourth = () => {
   t('banner, then the Pro card (badge, name, subtitle, £29, its fee sentence)', inOrder(dt, ['Your first 3 months are completely free — every feature unlocked.', 'Most trucks', 'Pro', 'Trucks taking regular pre-orders', '£29 per truck / month', 'First £4,000 of online orders included each month, then 0.99%*']))
   t('the payg card: name, subtitle, £0, its fee sentence', dt.includes('Pay as you go Seasonal & part-time traders £0 per truck / month 0.99%* on online card orders only.'))
   t('the Pro card\'s bullets, as on the landing (no Messenger & Instagram, no included-amount bullet)', dt.includes('Everything in Pay as you go, plus WhatsApp auto-replies Social media posts — your Facebook and Instagram schedule — ready to post Custom event types & pricing Most') || dt.includes('Everything in Pay as you go, plus WhatsApp auto-replies Social media posts — your Facebook and Instagram schedule — ready to post Custom event types & pricing Unlimited'), dt.match(/Everything in Pay as you go.{0,220}/))
-  t('the cheapest bar', dt.includes('Which plan is cheapest for me? Under £2,900 of online orders a month → Pay as you go · £2,900 – £8,000 → Pro · Over £8,000 → Unlimited'), dt.match(/Which plan.{0,200}/))
+  // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the PDF's bar carries the same approved wording as the page.
+  t('the cheapest bar', dt.includes('Which plan is cheapest for me? Your online orders each month Under £2,900 → Pay as you go · £2,900 – £8,000 → Pro · Over £8,000 → Unlimited'), dt.match(/Which plan.{0,200}/))
   t('the table: plan columns with "/ month", WHAT YOU PAY, the three groups, every row', inOrder(dt, ['Pay as you go £0 / month', 'Pro £29 / month', 'Unlimited £69 / month', 'What you pay', 'Online orders included each month', '£4,000', 'Unlimited', '0.99% above £4,000', 'Run your service', 'Online orders', 'Marketing & automation'])
     && count(pdfGB, '<tr><td class="f">') === 32 + 3 && !/Pay at Hatch orders|Online ordering — Pay at Hatch/.test(dt))
   t('the Pro column is highlighted', count(pdfGB, '<th class="c hl">') === 1 && /<th class="c hl"><div class="th-plan">Pro</.test(pdfGB))
@@ -325,8 +350,9 @@ const withFourth = () => {
     t('Pro £29 → £35: landing, /features, PDF and Billing\'s table', lg.includes('£35 per truck / month') && text(fg).includes('Pro £35 / month') && pd.includes('£35 per truck / month') && bt.includes('Pro £35 / month') && !lg.includes('£29 per truck'))
     t('payg fee 0.99% → 1.2%: everywhere', lg.includes('1.2%* on online card orders only') && text(fg).includes('1.2%') && pd.includes('1.2%* on online card orders only') && bt.includes('1.2%'))
     t('Pro included £4,000 → £3,000: everywhere', lg.includes('First £3,000 of online orders included') && text(fg).includes('0.99% above £3,000') && pd.includes('First £3,000') && bt.includes('£3,000'))
-    t('the trial 3 → 2 months: landing banner, /features callout, PDF', lg.includes('Your first 2 months are completely free') && text(fg).includes('2 months free with every feature unlocked') && pd.includes('Your first 2 months are completely free'))
-    t('a switch (payg private_events off): the card bullet goes, the table row reads —', !lg.slice(lg.indexOf('Everything to run a service'), lg.indexOf('See every feature')).includes('Private events') && /Private events — ✓|Private events —/.test(text(fg).replace(/\s+/g, ' ')))
+    // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): /features has no trial callout any more — the landing banner and PDF carry it.
+    t('the trial 3 → 2 months: landing banner and PDF (/features has no callout)', lg.includes('Your first 2 months are completely free') && !/months? free with every feature unlocked/.test(text(fg)) && pd.includes('Your first 2 months are completely free'))
+    t('a switch (payg private_events off): the card bullet goes, the table row reads —', !lg.slice(lg.indexOf('Everything to run a service'), lg.indexOf('See every feature')).includes('Private events') && /Private events — ✓|Private events —/.test(text(fg.replace(/<span class="pt-desc">.*?<\/span>/g, '')).replace(/\s+/g, ' ')))   // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): read without the row's description
     t('the cheapest bar re-solves (Pro £35 incl. £3,000 → Pro up to £6,400, not £8,000)', lg.includes('£2,900 – £6,400 → Pro Over £6,400 → Unlimited') && !lg.includes('£8,000'), lg.match(/Which plan is cheapest.{0,160}/))
 
     const f4 = withFourth()

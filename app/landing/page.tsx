@@ -299,7 +299,13 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                   no duplicate markup.
                   🔴 THE BREAK IS THE COPY, NOT A WRAP. Two deliberate lines, as specified; `<br />`
                   rather than two blocks so the pair stays one paragraph to a screen reader. */}
-              <p className="hero-cta-note">{t.rich('hero.ctaNote', { br })}</p>
+              {/* landing-mobile-tidy (21 October 2026, Dominic's approved mockup): two lines — a semi-bold dark lead and a
+                  smaller grey line under it — as two spans of one paragraph, so the pair stays one sentence group to a
+                  screen reader. Their sizes and colours are landing.css `.hero-cta-lead` / `.hero-cta-small`. */}
+              <p className="hero-cta-note">{t.rich('hero.ctaNote', {
+                lead: (c: React.ReactNode) => <span className="hero-cta-lead">{c}</span>,
+                small: (c: React.ReactNode) => <span className="hero-cta-small">{c}</span>,
+              })}</p>
             </div>
             {/* Renders nothing. Mounts the IntersectionObserver that reveals the header CTA on mobile. */}
             <HeroCtaWatcher targetId="hero-cta" />

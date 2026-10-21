@@ -1,7 +1,6 @@
 {
   "h1": "Everything to run your service, on every plan.",
   "lede": "Ordering, pre-orders, capacity and the kitchen screen are included on every plan.{hasUpgrades, select, yes { {plans} add {features}, and lower fees.} other {}}",
-  "callout": "{months, plural, one {<b>One month free with every feature unlocked.</b>} other {<b># months free with every feature unlocked.</b>}} Then {fallback} automatically, unless you choose a plan.",
   "perMonth": "{price} / month",
   "group": {
     "pay": "What you pay",

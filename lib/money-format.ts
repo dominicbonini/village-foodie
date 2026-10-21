@@ -72,7 +72,9 @@ export function pctLabel(pct: number, f: Pick<MoneyFormat, 'locale'>): string {
 
 // The minor unit's own symbol, where a small fee is written in it ("20p", "30¢"). A currency missing from
 // this list writes a small fee as an ordinary amount ("€0.20"), which is correct if less idiomatic.
-const MINOR_SUFFIX: Record<string, string> = { GBP: 'p', USD: '¢', CAD: '¢', AUD: 'c', NZD: 'c', EUR: 'c' }
+// ireland-1 (20 October 2026): EUR is NOT listed — the euro pages quote Stripe's fee as "1.5% + €0.25" (decided), not
+// "25c", which also reads wrongly in every eurozone language. No live country used EUR when it was taken out.
+const MINOR_SUFFIX: Record<string, string> = { GBP: 'p', USD: '¢', CAD: '¢', AUD: 'c', NZD: 'c' }
 
 /** The minor unit's own symbol — "p" for GBP, "¢" for USD — or null where a currency has none listed here.
  *  The admin Countries page shows it beside a fixed-fee box. */

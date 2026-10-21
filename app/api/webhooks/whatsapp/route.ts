@@ -5,6 +5,7 @@ import { getPlanCatalog } from '@/lib/plans-server'
 import { sendWhatsApp, logMessage } from '@/lib/twilio'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { moneyFormatForTruck } from '@/lib/money-server'
+import { allergenSetForTruck } from '@/lib/country-settings'
 import { truckTimeSettings } from '@/lib/truck-time'
 /* 🔴 THE UPCOMING-EVENTS READ (private events redacted, overnight events kept until they end) — the shared one. */
 import { fetchUpcomingTruckEvents } from '@/lib/whatsapp/upcoming-events'
@@ -82,6 +83,7 @@ export async function POST(req: NextRequest) {
       // The TRUCK's currency — a reply quotes menu prices, which are not an order yet.
       money:           await moneyFormatForTruck(truck),
       time:            truckTime,
+      allergenSet:     await allergenSetForTruck(truck),   // anz-1: Australian/NZ phrasing in the allergen guard (anz only)
       truckName:       truck.name,
       truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,

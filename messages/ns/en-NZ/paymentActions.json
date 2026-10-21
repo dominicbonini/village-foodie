@@ -1,0 +1,4 @@
+{
+  "inPersonHint": "Cash or your EFTPOS machine — not recorded",
+  "paidCardMachine": "Paid on your EFTPOS machine{mixed, select, yes { — {amount}} other {}}"
+}

@@ -20,10 +20,12 @@ export async function scheduleContextForTruck(
   truck: { id: string; name?: string | null; country?: string | null; base_place_name?: string | null; base_region?: string | null },
 ): Promise<ScheduleContext> {
   let countryName: string | null = null
+  let countryCode: string | null = null
   let addressFormat: ScheduleContext['addressFormat'] = 'postcode'
   try {
     const s = await getCountrySettings(truck.country || 'GB')
     countryName = s.name
+    countryCode = s.countryCode
     addressFormat = s.addressFormat
   } catch (e) {
     console.warn('[schedule-context] country settings unavailable:', e instanceof Error ? e.message : String(e))
@@ -51,6 +53,7 @@ export async function scheduleContextForTruck(
     baseTown: truck.base_place_name ?? null,
     baseRegion: truck.base_region ?? null,
     countryName,
+    countryCode,
     addressFormat,
     recentTowns,
   }

@@ -36,7 +36,7 @@ import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, cheapestAt, type OfferPlan, type FeeShape } from '@/lib/plan-offer'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import { toMajor, formatMajor, formatWholeAmount, smallFeeLabel, minorDigits, roundsToZero, feeLabel, pctLabel, minorUnitSuffix, type MoneyFormat } from '@/lib/money-format'
-import { moneyFormatOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf } from '@/lib/country-settings-types'
 import { contactHref } from '@/lib/contact-topics'
 // Language Phase 1e: every word on this page is in messages (`compare`), read in the locale the PAGE passes in — the
 // visitor's country (app/compare/page.tsx, or the /uk and /us routes). Nothing here resolves a country itself.
@@ -80,7 +80,7 @@ const SLATE = '#334155'
 interface ComparePlan { offer: OfferPlan; key: string; name: string; monthly: number; included: number | null; feePct: number; shape: FeeShape; includedLabel: string | null }
 function pricingFrom(s: CountrySettings, catalog: PlanCatalog) {
   const cur = s.currency
-  const fmt = moneyFormatOf(s)
+  const fmt = planMoneyFormatOf(s)   // anz-1: a marketing page quotes our prices with their dollar named (A$, NZ$)
   const PLANS: ComparePlan[] = offerPlans(catalog, s.countryCode).map(o => ({
     offer: o, key: o.plan.key, name: o.plan.name,
     monthly: toMajor(o.monthlyMinor, cur),
@@ -260,7 +260,7 @@ export default function CostComparison({ settings, catalog, locale, freeMonthsOv
   const t = useMemo(() => compareT(locale), [locale])
   const { PLANS, CARD_PCT, CARD_PENCE } = useMemo(() => pricingFrom(settings, catalog), [settings, catalog])
   // The marketing country's money format, and the page's helpers bound to it (same names, same calls).
-  const fmt = moneyFormatOf(settings)
+  const fmt = planMoneyFormatOf(settings)   // anz-1: as pricingFrom above
   // Card processing as one phrase ("1.5% + 20p", "2.9% + 30¢") and the overage rate ("0.99%") — lib/money-format's
   // own labels, so the coin ("p" / "¢") comes from its table and is never typed here.
   const cardFee = feeLabel({ pct: CARD_PCT, fixedMinor: CARD_PENCE }, fmt)

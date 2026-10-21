@@ -390,8 +390,10 @@ function runCensus(over = {}) {
 
   // ── 🔴 THE COUNTS COME FROM THE GRID'S OWN DERIVATIONS ───────────────────────────────────────
   t('🔴 contactable is `channelFor` — the predicate that gates the work queue, not a copy',
-    // Phase 2C: phoneWhatsApp now names the country a national number is read in (the marketing country here)
-    /channelFor\(\{ \.\.\.p, waPhone: phoneWhatsApp\(p\.phone \?\? null, null, MARKETING_COUNTRY\)\.waPhone \}\)/.test(TAB)
+    // Phase 2C: phoneWhatsApp now names the country a national number is read in
+    // ⚠️ RE-PINNED (ireland-1, 20 October 2026): that country is now the prospect's own
+    // (`prospectPhoneCountry(p)`), not the fixed marketing country — the channelFor call is unchanged
+    /channelFor\(\{ \.\.\.p, waPhone: phoneWhatsApp\(p\.phone \?\? null, null, prospectPhoneCountry\(p\)\)\.waPhone \}\)/.test(TAB)
     && /\.filter\(x => x\.ch !== null\)/.test(TAB))
   t('🔴 …a truck\'s type is `effectiveLeadType` — the grid\'s own call, frozen value first',
     /b\.lead_type === effectiveLeadType\(x\.p\)/.test(TAB)
@@ -603,7 +605,9 @@ function runCensus(over = {}) {
     ['V19 🔴 "contactable" is re-implemented in the panel instead of asking `channelFor`',
       { TAB: changed(TAB_SRC, TAB_SRC.replace(
         // re-anchored (Phase 2C): phoneWhatsApp now names the country a national number is read in
-        'channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, MARKETING_COUNTRY).waPhone })',
+        // ⚠️ RE-PINNED (ireland-1, 20 October 2026): the anchor now reads the prospect's own phone
+        // country (`prospectPhoneCountry(p)`); the mutation still swaps channelFor for a hand-rolled test
+        'channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, prospectPhoneCountry(p)).waPhone })',
         "(p.contact_email ? 'email' : null)"), 'V19') }],
     ['V20 🔴 the count stops asking the resolver and tests the date itself',
       { TAB: changed(TAB_SRC, TAB_SRC.replace('conditionHolds(l.cond, x.ctx)', '!!x.ctx.nextEventDate'), 'V20') }],

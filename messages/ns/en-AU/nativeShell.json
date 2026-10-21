@@ -1,0 +1,7 @@
+{
+  "gate": {
+    "collected": "Order #{id} {paidToo, select, yes {paid and picked up} other {picked up}}",
+    "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {picked up} undo_collected {restored} cancel {cancelled} other {updated}}",
+    "undoneCollected": "Undone — order not picked up"
+  }
+}

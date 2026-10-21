@@ -8,13 +8,16 @@
 // raw key. A later language is a full file of its own, checked for completeness by scripts/messages-parity.cjs.
 import enGB from '@/messages/en-GB.json'
 import enUS from '@/messages/en-US.json'
+import enIE from '@/messages/en-IE.json'
+import enAU from '@/messages/en-AU.json'
+import enNZ from '@/messages/en-NZ.json'
 import type { Messages } from 'next-intl'
 import { DEFAULT_LOCALE, resolveLocale, type AppLocale } from './locales'
 import { deepMerge, type Tree } from './merge'
 
 export { deepMerge }
 
-const OVERRIDES: Record<AppLocale, Tree | null> = { 'en-GB': null, 'en-US': enUS as Tree }
+const OVERRIDES: Record<AppLocale, Tree | null> = { 'en-GB': null, 'en-US': enUS as Tree, 'en-IE': enIE as Tree, 'en-AU': enAU as Tree, 'en-NZ': enNZ as Tree }
 const CACHE = new Map<AppLocale, Messages>()
 
 /** Every message for a locale: en-GB itself, or en-GB with that locale's file merged over it. */

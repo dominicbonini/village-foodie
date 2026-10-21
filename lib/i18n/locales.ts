@@ -6,9 +6,13 @@
 //   • marketing pages → the visitor's resolved country (lib/visitor-country.ts) → its locale;
 //   • anything unknown, missing or not yet supported → en-GB.
 // There is no language column and no truck-level override yet (docs/language-readiness-audit-report.md §3).
-// ⚠️ ONLY en-GB AND en-US ARE VALID TODAY. A third language is added here, in messages/, and nowhere else.
+// ⚠️ en-GB, en-US, en-IE, en-AU AND en-NZ ARE VALID TODAY. A new locale is added here, in lib/i18n/messages.ts (OVERRIDES), in
+// scripts/split-messages.cjs (OVERRIDE_FILES) and as messages/<locale>.json — each an override merged over en-GB.
+// ireland-1 (20 October 2026): en-IE is a SPARSE override — only the few sentences whose English frame needs another
+// shape for Ireland ("in Ireland", not "in the Ireland"); everything else is en-GB.
 
-export const LOCALES = ['en-GB', 'en-US'] as const
+// anz-1 (21 October 2026): en-AU and en-NZ, sparse overrides on en-GB like en-IE.
+export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ'] as const
 export type AppLocale = (typeof LOCALES)[number]
 export const DEFAULT_LOCALE: AppLocale = 'en-GB'
 

@@ -19,7 +19,7 @@ import {
   type OutreachStage,
 } from '@/lib/outreach'
 import { phoneWhatsApp, type WhatsAppHint } from '@/lib/whatsapp-hint'
-import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
+import { prospectPhoneCountry } from '@/lib/outreach-country'   // ireland-1: a prospect's phone is read in its own country
 // 🔴 OPTION A: which row owns a prospect's logo. Pure, shared, and the ONLY place that decision is made.
 import { resolveLogoTarget, needsTruckConfirmation, type LogoTruckRow } from '@/lib/outreach-logo-target'
 /** The truck columns this route needs: the decision fields plus the logo it is going to read or write. */
@@ -384,6 +384,8 @@ export async function GET(req: NextRequest) {
         contact_email: truck?.contact_email ?? null,
         phone: truck?.phone ?? null,
         mobile: truck?.mobile ?? null,
+        // ireland-1 (20 October 2026): the prospect's country — its phone numbers are read in it (prospectPhoneCountry).
+        country: prospectPhoneCountry(truck),
         website: truck?.website ?? null,
         schedule_url: truck?.schedule_url ?? null,
         order_url: truck?.order_url ?? null,
@@ -401,7 +403,7 @@ export async function GET(req: NextRequest) {
         // button uses (lib/whatsapp-hint.ts), so the two can never disagree. Three states, never two: an
         // absent tag on a mobile is 'mobile_not_advertised', not 'no WhatsApp'. `phone` (not `mobile`) per
         // the diagnosis. NOTHING is written back — this is display only.
-        whatsappHint: phoneWhatsApp(truck?.phone ?? null, truck?.accepted_methods ?? null, MARKETING_COUNTRY).hint as WhatsAppHint,
+        whatsappHint: phoneWhatsApp(truck?.phone ?? null, truck?.accepted_methods ?? null, prospectPhoneCountry(truck)).hint as WhatsAppHint,
         stage: p.stage as OutreachStage,
         platform: p.platform,
         hu_map: p.hu_map,

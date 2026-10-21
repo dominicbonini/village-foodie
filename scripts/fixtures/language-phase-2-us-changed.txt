@@ -1274,8 +1274,8 @@
 1c/demo/US|loop|sample	words
 1c/demo/US|loop|ambiguous	words
 1c/demo/US|rows|return|build	code: plans-demo-batch-override
-1c/demo/US|rows|return|visit	code: plans-demo-batch-override
-1c/demo/US|rows|return|restart	code: plans-demo-batch-override
+1c/demo/US|rows|return|visit	code: plans-demo-batch-override+ie1-demo-visit-next-day
+1c/demo/US|rows|return|restart	code: plans-demo-batch-override+ie1-demo-date-from-now
 1c/goLive/US|check|unverifiedOne	words
 1c/goLive/US|check|unverifiedOneOfOne	words
 1c/goLive/US|check|noVan	words

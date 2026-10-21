@@ -102,6 +102,7 @@
   "tryAgainAmount": "Try again · {amount}",
   "payAmount": "Pay {amount}",
   "cardHeldUntil": "Your card is held, not charged, until {withTruck, select, yes {{truck}} other {the truck}} confirms your order.",
+  "dualNetworkNotice": "Notwithstanding the payment brand logo displayed when you enter your payment information, whenever you use a dual-network debit card displaying eftpos and another payment brand, your payment might be processed through either network.",
   "itemCount": "{n, plural, one {{count} item} other {{count} items}}",
   "collectionTimeTitle": "Collection time",
   "loadingTimes": "Loading available times…",

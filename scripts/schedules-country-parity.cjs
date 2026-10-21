@@ -245,6 +245,18 @@ const GB_C = { code: 'GB', name: 'United Kingdom', addressFormat: 'postcode', da
 const US_C = { code: 'US', name: 'United States', addressFormat: 'zip_state', dateOrder: 'mdy' }
 const gbLine = 'These screenshots are from United Kingdom (GB), as the person uploading them says. In "Country" give the two-letter code of the country this screenshot itself shows — from its prices, place names, phone numbers and the way dates are written — with "CountryConfidence" high, medium or low, and "CountryReasons" in a few short words (e.g. "prices in $, \'Austin, TX\', dates like 10/12").\n'
 const gbFields = '  "Country": "GB", "CountryConfidence": "high|medium|low", "CountryReasons": "short words",\n'
+/* ⚠️ RE-PINNED (ireland-1, 20 October 2026): NAMED DIFFERENCE 4 — every screenshot and import prompt names its OUTPUT
+ * LANGUAGE (English for a GB truck). The screenshot prompt gains ONE paragraph between the "Times MUST be" line and
+ * "JSON FORMAT ONLY"; the importer gains ONE block right after the truck-context block (no context → straight after
+ * "Current year is …."). Each is taken out ONLY at that exact place and only if it is there exactly once (else null,
+ * which fails the check); the rest must still be byte-identical to BEFORE. */
+const ie1ShotLang = 'OUTPUT LANGUAGE: copy truck names, venue names and towns exactly as the screenshot writes them — never translate them. Write anything else (e.g. "CountryReasons") in English.\n\n'
+const ie1ImpLang = '\n\nOUTPUT LANGUAGE: copy venue names, towns and addresses exactly as the source writes them — never translate them. Write anything else in English.'
+const onlyOnce = (p, x) => typeof p === 'string' && p.indexOf(x) !== -1 && p.indexOf(x) === p.lastIndexOf(x)
+const unShotLang = p => { const at = 'Times MUST be "HH:MM".\n\n' + ie1ShotLang + 'JSON FORMAT ONLY'
+  return onlyOnce(p, ie1ShotLang) && onlyOnce(p, at) ? p.replace(at, 'Times MUST be "HH:MM".\n\nJSON FORMAT ONLY') : null }
+const unImpLang = (p, block = '') => { const at = 'Current year is 2026.' + block + ie1ImpLang + '\n\nYou are extracting a food truck'
+  return onlyOnce(p, ie1ImpLang) && onlyOnce(p, at) ? p.replace(ie1ImpLang + '\n\nYou are extracting a food truck', '\n\nYou are extracting a food truck') : null }
 
 async function compare() {
   const B = JSON.parse(read(BEFORE_FILE))
@@ -252,19 +264,21 @@ async function compare() {
   const { SE, TD, SX, truckTimeSettings } = M.lib
 
   console.log('1. GB prompts — byte-identical, except the two named additions')
-  ok(SE.buildScreenshotPrompt(new Date(NOW)) === B.screenshotPrompt, 'screenshot prompt with no country: identical', firstDiff(SE.buildScreenshotPrompt(new Date(NOW)), B.screenshotPrompt))
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): …with named difference 4 (the OUTPUT LANGUAGE paragraph) taken out.
+  ok(unShotLang(SE.buildScreenshotPrompt(new Date(NOW))) === B.screenshotPrompt, 'screenshot prompt with no country: identical apart from the OUTPUT LANGUAGE paragraph (named difference 4)', firstDiff(unShotLang(SE.buildScreenshotPrompt(new Date(NOW))), B.screenshotPrompt))
   const gbShot = SE.buildScreenshotPrompt(new Date(NOW), GB_C)
   ok(gbShot.includes(gbLine) && gbShot.includes(gbFields), 'screenshot prompt, GB: the ONE country line and the three Country fields are there (named difference 1)')
-  ok(gbShot.replace(gbLine, '').replace(gbFields, '') === B.screenshotPrompt, 'screenshot prompt, GB: with those two removed, byte-identical — every location line unchanged', firstDiff(gbShot.replace(gbLine, '').replace(gbFields, ''), B.screenshotPrompt))
+  ok(unShotLang(gbShot.replace(gbLine, '').replace(gbFields, '')) === B.screenshotPrompt, 'screenshot prompt, GB: with those two and the OUTPUT LANGUAGE paragraph (named difference 4) removed, byte-identical — every location line unchanged', firstDiff(unShotLang(gbShot.replace(gbLine, '').replace(gbFields, '')), B.screenshotPrompt))
   ok(A.classifyPrompt === B.classifyPrompt && A.detailsPrompt === B.detailsPrompt, 'classifier and truck-details prompts identical')
-  ok(A.importerPrompt === B.importerPrompt && A.importerPromptImage === B.importerPromptImage, 'operator importer with no truck context: identical')
+  ok(unImpLang(A.importerPrompt) === B.importerPrompt && unImpLang(A.importerPromptImage) === B.importerPromptImage, 'operator importer with no truck context: identical apart from the OUTPUT LANGUAGE block (named difference 4)', firstDiff(unImpLang(A.importerPrompt), B.importerPrompt))
   db({ after: true }); clearAll()
   const ts = await truckTimeSettings({ timezone: 'Europe/London', country: 'GB' })
   const ctx = { truckName: 'Pizzeria Gusto', baseTown: 'Sudbury', baseRegion: 'Suffolk', countryName: 'United Kingdom', addressFormat: 'postcode', recentTowns: ['Burwell', 'Lidgate'] }
   const gbImp = SX.buildScheduleExtractionPrompt('Friday 10th October The Fox Burwell 5pm-9pm', ts, ctx)
   const block = SX.truckContextBlock(ctx)
   ok(block === "\n\nTRUCK CONTEXT — this truck's own area. Use it to place venues and towns; a venue name that exists in several places is most likely the one near these:\n- Truck: Pizzeria Gusto\n- Based in: Sudbury, Suffolk\n- Country: United Kingdom\n- Towns of its recent confirmed events: Burwell, Lidgate", 'importer, GB: the truck-context lines name the truck, base, country and recent towns (named difference 2)', block)
-  ok(gbImp.replace(block, '') === B.importerPrompt, 'importer, GB: with the context lines removed, byte-identical — every UK location line unchanged', firstDiff(gbImp.replace(block, ''), B.importerPrompt))
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): the OUTPUT LANGUAGE block sits right after the context block (named difference 4).
+  ok(unImpLang(gbImp, block)?.replace(block, '') === B.importerPrompt, 'importer, GB: with the context lines and the OUTPUT LANGUAGE block (named difference 4) removed, byte-identical — every UK location line unchanged', firstDiff(unImpLang(gbImp, block)?.replace(block, ''), B.importerPrompt))
   const { buildPassARulePrompt, buildPassAEventPrompt, buildHgPrompt } = await import(path.join(REPO, 'scripts/scraper-prompts.js'))
   const site = { name: 'Harness Kitchen', instructions: 'Weekly on Fridays' }, cleanText = 'Friday 10th October — The Fox, Burwell 5pm-9pm'
   ok(buildPassARulePrompt({ site, cleanText, country: 'GB' }) === B.scraper.rule, 'scraper Pass A (rules), GB: identical')
@@ -295,7 +309,8 @@ async function compare() {
   ok(A.screenshot.status === B.screenshot.status && J(A.screenshot.body) === J(B.screenshot.body), 'screenshot route, GB: the response is identical', firstDiff(J(A.screenshot.body), J(B.screenshot.body)))
   ok(J(sw.out) === J(B.screenshot.writes) && sw.allGB, 'screenshot route, GB: the same writes (country GB)', firstDiff(J(sw.out), J(B.screenshot.writes)))
   ok(J(A.screenshot.emails) === J(B.screenshot.emails), 'screenshot route, GB: the same email')
-  ok(A.screenshot.prompts[0] === B.screenshot.prompts[0] && A.screenshot.prompts[1].includes(gbLine) && A.screenshot.prompts[1].replace(gbLine, '').replace(gbFields, '') === B.screenshot.prompts[1], 'screenshot route, GB: the prompts sent are the BEFORE prompts plus named difference 1', firstDiff(A.screenshot.prompts[1].replace(gbLine, '').replace(gbFields, ''), B.screenshot.prompts[1]))
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): …plus named difference 4 (the OUTPUT LANGUAGE paragraph) in the extraction prompt.
+  ok(A.screenshot.prompts[0] === B.screenshot.prompts[0] && A.screenshot.prompts[1].includes(gbLine) && unShotLang(A.screenshot.prompts[1].replace(gbLine, '').replace(gbFields, '')) === B.screenshot.prompts[1], 'screenshot route, GB: the prompts sent are the BEFORE prompts plus named differences 1 and 4', firstDiff(unShotLang(A.screenshot.prompts[1].replace(gbLine, '').replace(gbFields, '')), B.screenshot.prompts[1]))
   ok(J(A.details) === J(B.details), 'truck details, GB: parsed and matched identically (a +1 number is still not a UK number)')
 
   console.log('3. Cross-country')

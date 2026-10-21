@@ -1,0 +1,16 @@
+{
+  "does": {
+    "capacityBody": "Set how much you can cook at once, and how long it takes. Once a pickup time is full, customers can’t pick it.",
+    "devicesBody": "Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the EFTPOS machine you already take payment on.",
+    "slotsBody": "Customers order ahead and choose a pickup time. Fewer queues, and food ready when they arrive.",
+    "slotsTitle": "Customers choose pickup times",
+    "whatsappBody": "“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to the site or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.",
+    "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the site or at the grill. Messenger and Instagram to follow."
+  },
+  "jsonLd": {
+    "description": "Ordering, pre-orders and a kitchen screen for food trucks and mobile catering in {country}."
+  },
+  "meta": {
+    "description": "Take orders and pre-orders from your site without the queue. Ordering and kitchen-screen software for food trucks and mobile catering in {country} — not a POS."
+  }
+}

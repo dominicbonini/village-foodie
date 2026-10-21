@@ -16,7 +16,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { generateSlots } from '@/lib/slots'
-import { getLocalDateInTz } from '@/lib/time-utils'
+import { localDateOfInstant } from '@/lib/time-utils'
 
 /** Slot interval, matching upsert_event's hard-coded 5 (NOT capacity_window_mins — a different axis). */
 const SLOT_INTERVAL_MINS = 5
@@ -84,7 +84,10 @@ export function demoEventWindow(now: Date, tz: string): { date: string; start: s
   const rawEndMins = startMins + DEMO_WINDOW_HOURS * 60
   const end = rawEndMins >= 24 * 60 ? '23:59' : toHHMM(rawEndMins)
 
-  return { date: getLocalDateInTz(tz), start, end }
+  // ireland-1 (20 October 2026; docs/features-followups-report.md §3): the DATE comes from `now` too, like the start and
+  // end. It read the real clock (getLocalDateInTz), so a caller passing any other `now` got a date and a time from two
+  // different instants. Every production caller passes the current time (or none), for which the two are the same date.
+  return { date: localDateOfInstant(now, tz), start, end }
 }
 
 /** A demo truck's zone — trucks.timezone, else its country's default (lib/truck-time.ts). */

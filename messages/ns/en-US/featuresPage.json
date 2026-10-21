@@ -1,0 +1,10 @@
+{
+  "detail": {
+    "walkup_orders": "Take and manage orders at the window, paid on your own card terminal.",
+    "sold_out_toggle": "Mark any item sold out in one tap — it grays out for customers right away.",
+    "time_slot_selection": "Customers choose a pickup time slot, spreading demand across your service.",
+    "whatsapp_auto_replies": "Auto-reply to WhatsApp inquiries about your menu and schedule.",
+    "messenger_instagram_replies": "Same as WhatsApp auto-replies, for Messenger and Instagram inquiries.",
+    "tap_to_pay": "Take card payments on a supported phone, so you don’t need a separate card reader."
+  }
+}

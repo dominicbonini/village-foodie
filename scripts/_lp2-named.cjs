@@ -574,7 +574,61 @@ const NAMED = [
     what: '⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms were re-dated 20 October 2026 (§4 edited), so a new account records TERMS_VERSION "2026-10-20" (lib/legal.ts) where it recorded "2026-10-19". PRECISE: the operators insert’s `terms_version` only.',
     views: id => require('./_lp-pricing-tidy.cjs').LANDED && /^1c\/api\/(GB|US)\|signup\|/.test(id),
     expect: b => require('./_lp-pricing-tidy.cjs').termsVersion(b) },
+
+  // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026; lib/provision-demo-event.ts demoEventWindow) ─────────────────────────────
+  { id: 'ie1-demo-date-from-now', part: 'ireland-1 (20 Oct 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (ireland-1, 20 October 2026): demoEventWindow takes the demo event’s DATE from `now` (localDateOfInstant(now, tz)) where it read the real clock (getLocalDateInTz). The return-visit restart passes now = LATER (2026-10-10T11:00Z) while the kit clock is the fixture NOW (2026-10-09), so its event — and every row dated by it — moves from the clock’s date to LATER’s date in the truck’s zone. PRECISE: `"event_date":"<clock date>"` → `"event_date":"<LATER date>"`, nothing else.',
+    views: id => /^1c\/demo\/(GB|US)\|rows\|return\|restart$/.test(id),
+    expect: (b, id) => ie1ShiftDate(b, id) },
+  { id: 'ie1-demo-visit-next-day', part: 'ireland-1 (20 Oct 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (ireland-1, 20 October 2026): the same date change on the return VISIT, which clears the demo day it is about to build BY DATE (provisionDemoEvent replaceExisting). The clock’s date used to be the build’s day, so the visit deleted the build’s event, its orders and its production_slot_usage; LATER’s date has none of them, so they now STAY (as on any real next-day return visit, where `now` and the clock already agreed). PRECISE, from the BEFORE visit and the BEFORE build (scripts/fixtures/language-phase-1c-before/demo.json.gz, through the named changes above): the dates shifted as in ie1-demo-date-from-now; the build-day deletes gone (orders and truck_events) or empty (production_slot_usage); the build’s event, orders and slot usage kept ahead of the new ones. ⚠️ FIXTURE ARTEFACT, not product: the harness’s randomUUID stub restarts per run, so the visit’s order_keys repeat the build’s and each reservation update (…eq(\'order_key\').eq(\'truck_id\')) also lands on the build’s order with that key — its ids list that order first and the kept order carries the patch. Real order_keys are random UUIDs.',
+    views: id => /^1c\/demo\/(GB|US)\|rows\|return\|visit$/.test(id),
+    expect: (b, id) => ie1Visit(b, id) },
 ]
+
+// ── ⚠️ RE-PINNED (ireland-1, 20 October 2026): helpers for the ie1-demo-* entries ─────────────────────────────────────────
+const IE1_LATER = '2026-10-10T11:00:00.000Z'                 // scripts/_lp1c-demo.cjs LATER — the `now` both views pass
+const IE1_CLOCK = require('./_lp1b-fixtures.cjs').NOW         // the kit clock they run under (the old date's source)
+const ie1Zone = id => (countryOf(id) === 'US' ? 'America/Chicago' : 'Europe/London')   // the demo truck's zone in each
+const ie1Ymd = (iso, tz) => new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso))
+/** Every `"event_date":"<clock date>"` → `"event_date":"<LATER date>"`; refuses (BEFORE unchanged → the view fails) when
+ *  the two dates are the same or the old date is absent. */
+function ie1ShiftDate(b, id) {
+  if (typeof b !== 'string') return b
+  const z = ie1Zone(id), from = `"event_date":"${ie1Ymd(IE1_CLOCK, z)}"`, to = `"event_date":"${ie1Ymd(IE1_LATER, z)}"`
+  return from !== to && b.includes(from) ? b.split(from).join(to) : b
+}
+let IE1_1C_BEFORE = null
+function ie1Visit(b, id) {
+  if (typeof b !== 'string') return b
+  const buildId = id.replace(/\|visit$/, '|build')
+  IE1_1C_BEFORE ??= JSON.parse(require('zlib').gunzipSync(require('fs').readFileSync(require('path').join(__dirname, 'fixtures/language-phase-1c-before/demo.json.gz')))).views
+  const raw = IE1_1C_BEFORE[buildId.replace(/^1c\/demo\//, '')]
+  const shifted = ie1ShiftDate(b, id)
+  if (typeof raw !== 'string' || shifted === b) return b
+  const build = JSON.parse(apply(buildId, raw).expected).tables
+  const v = JSON.parse(shifted)
+  const same = (w, rows) => JSON.stringify(w.ids) === JSON.stringify((rows || []).map(r => r.id))
+  // 1 · the clear by date finds nothing of the build's day: its orders / event deletes go, its slot-usage delete is empty
+  v.writes = v.writes
+    .filter(w => !(w.op === 'delete' && ((w.table === 'orders' && same(w, build.orders)) || (w.table === 'truck_events' && same(w, build.truck_events)))))
+    .map(w => (w.op === 'delete' && w.table === 'production_slot_usage' && same(w, build.production_slot_usage) ? { ...w, ids: [] } : w))
+  // 2 · the build's rows stay, ahead of the visit's; a reservation update also lands on the build's order with the same
+  //     order_key and truck (the fixture's repeating UUID stub — see the entry), in write order, as the fake applies it
+  const kept = build.orders.map(o => ({ ...o }))
+  for (const w of v.writes) {
+    if (w.table !== 'orders' || w.op !== 'update' || !Array.isArray(w.ids) || w.ids.length !== 1) continue
+    const mine = v.tables.orders.find(o => o.id === w.ids[0])
+    if (!mine) continue
+    const hit = kept.filter(o => o.order_key === mine.order_key && o.truck_id === mine.truck_id)
+    for (const o of hit) Object.assign(o, w.patch)
+    w.ids = [...hit.map(o => o.id), ...w.ids]
+  }
+  v.tables.truck_events = [...build.truck_events, ...v.tables.truck_events]
+  v.tables.orders = [...kept, ...v.tables.orders]
+  v.tables.production_slot_usage = [...build.production_slot_usage, ...v.tables.production_slot_usage]
+  return JSON.stringify(v)
+}
 
 /** The named entries that apply to a view, and what they make of its BEFORE value: { listed: true, entries } when an
  *  entry only LISTS the view; else { expected, touched: [ids of entries whose transform changed something] }. Used by

@@ -63,7 +63,7 @@ export const usePathname = () => globalThis.__kitPathname ?? '/'   // seo-fixes:
 export const useSearchParams = () => new URLSearchParams(globalThis.__msSearch || '')
 export const useParams = () => (globalThis.__msParams || { id: 'harness-order', slug: 'test-kitchen', token: 'harness' })
 export const notFound = () => { throw new Error('notFound') }
-export const redirect = () => { throw new Error('redirect') }`
+export const redirect = (to) => { const e = new Error('redirect'); e.redirectTo = to; throw e }   // ireland-1: the target rides on the error (message unchanged)`
   const DB_STUB = "export const supabase = new Proxy({}, { get(_, k) { const db = globalThis.__harnessDb; if (db) return db[k]; throw new Error('no database in this harness') } })"
   // Every export of the database library is a function returning a client that resolves the fixture database
   // AT USE TIME — a module that builds its client at load (most routes do) still reads the run's tables.

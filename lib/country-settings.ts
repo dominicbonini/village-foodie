@@ -121,7 +121,7 @@ export function mapCountryRow(r: Row): CountrySettings {
     serviceFeeAllowed: bool(c, r, 'service_fee_allowed'),
     tippingEnabledDefault: bool(c, r, 'tipping_enabled_default'),
     tipPresetsPct: numArr(c, r, 'tip_presets_pct'),
-    allergenSet: oneOf(c, r, 'allergen_set', ['uk14', 'us9'] as const),
+    allergenSet: oneOf(c, r, 'allergen_set', ['uk14', 'us9', 'anz'] as const),
     cardFeeOnlinePct: num(c, r, 'card_fee_online_pct'),
     cardFeeOnlineFixedMinor: num(c, r, 'card_fee_online_fixed_minor'),
     cardFeeInPersonPct: num(c, r, 'card_fee_in_person_pct'),
@@ -166,6 +166,12 @@ export async function getCountrySettings(code: string): Promise<CountrySettings>
  * almost always a select that left the column out, and reading the truck's country as "GB" because a
  * projection dropped it is exactly the silent fallback this module refuses.
  */
+/** anz-1 (21 October 2026): the truck's allergen list, or null when its country cannot be read — NEVER THROWS (a WhatsApp
+ *  reply must not fail over it; null keeps the guard's base behaviour). */
+export async function allergenSetForTruck(truck: { country?: string | null } | null | undefined): Promise<CountrySettings['allergenSet'] | null> {
+  try { return (await countrySettingsForTruck(truck)).allergenSet } catch { return null }
+}
+
 export async function countrySettingsForTruck(truck: { country?: string | null } | null | undefined): Promise<CountrySettings> {
   const code = truck?.country
   if (typeof code !== 'string' || !code) {

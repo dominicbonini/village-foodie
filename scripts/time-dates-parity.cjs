@@ -736,6 +736,17 @@ const ALLOWED = [
     expect: (v, D, after, p, before) => { const re = /(#43) (Ready) (£\d+\.\d\d) (Sam Harness)/g; return typeof before === 'string' && (before.match(re) || []).length === 1 && v === before.replace(re, '$1 $3 $2 $4') } },
 ]
 const LFU = require('./_legal-followups-named.cjs')
+// ⚠️ RE-PINNED (ireland-1, 20 October 2026) — NOT A TIME CHANGE: every schedule-import prompt names its OUTPUT LANGUAGE
+// (lib/schedule-extract.ts outputLanguageBlock), appended right after the truck-context block on the "CRITICAL CONTEXT"
+// line. For this no-context GB prompt that is exactly the two lines below inserted after line 1, at every instant. The
+// snapshot keeps the first 24 lines, so the AFTER value with those two lines taken out must equal the BEFORE value's
+// first 22 lines EXACTLY (and the block must be found exactly once, in that place). Anything else still goes to A3.
+const IE1_OUTPUT_LANGUAGE = '\n\nOUTPUT LANGUAGE: copy venue names, towns and addresses exactly as the source writes them — never translate them. Write anything else in English.'
+const unOutputLanguage = v => {
+  const i = v.indexOf('\n'), at = v.indexOf(IE1_OUTPUT_LANGUAGE)
+  if (i < 0 || at !== i || v.indexOf(IE1_OUTPUT_LANGUAGE, at + 1) !== -1) return null
+  return v.slice(0, at) + v.slice(at + IE1_OUTPUT_LANGUAGE.length)
+}
 function addDays(ymd, n) { const [y, m, d] = ymd.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10) }
 function leaves(o, p = '', out = {}) {
   if (o && typeof o === 'object') { const ks = Object.keys(o); if (!ks.length) out[p] = JSON.stringify(o); for (const k of ks) leaves(o[k], p ? `${p}/${k}` : k, out) } else out[p] = o === undefined ? '«undefined»' : JSON.stringify(o)
@@ -758,6 +769,15 @@ function compare(before, after) {
       if (typeof A[k] === 'string' && !A[k].includes('Privacy') && typeof Bk === 'string' && Bk !== '«undefined»') {
         const raw = JSON.parse(Bk), un = typeof raw === 'string' ? JSON.stringify(LFU.unPrivacy(raw)) : Bk
         if (un !== Bk) { Bk = un; (allowed.P ??= []).push(`${mk} ${k}`); if (A[k] === Bk) continue }
+      }
+      // ⚠️ RE-PINNED (ireland-1, 20 October 2026): the OUTPUT LANGUAGE line (IE1_OUTPUT_LANGUAGE above), schedulePrompt only.
+      if (k === 'prompts/schedulePrompt' && typeof A[k] === 'string' && !A[k].includes('OUTPUT LANGUAGE') && typeof Bk === 'string' && Bk !== '«undefined»') {
+        const was = JSON.parse(A[k]), un = unOutputLanguage(JSON.parse(Bk))
+        if (un !== null) {
+          const n = un.split('\n').length
+          Bk = JSON.stringify(un); (allowed.IE1 ??= []).push(`${mk} ${k}`)
+          if (n === 22 && un === was.split('\n').slice(0, n).join('\n')) continue
+        }
       }
       const rule = ALLOWED.find(r => r.path.test(k))
       const v = Bk === undefined ? undefined : JSON.parse(Bk === '«undefined»' ? 'null' : Bk)
@@ -939,6 +959,7 @@ if (require.main === module) {
     fails.push(...c.fails)
     console.log(`GB: ${c.total} leaves at 4 instants compared with the BEFORE snapshot (${BEFORE_FILE})`)
     console.log(`  allowed P   ${String((c.allowed.P || []).length).padStart(2)} leaf/leaves — legal-followups-privacy-link (customer email footers; order page under Place order / Back to)`)
+    console.log(`  allowed IE1 ${String((c.allowed.IE1 || []).length).padStart(2)} leaf/leaves — ireland-1: the schedule-import prompt's OUTPUT LANGUAGE line (⚠️ RE-PINNED, 20 October 2026)`)
     for (const r of ALLOWED) console.log(`  allowed ${r.id.padEnd(3)} ${String((c.allowed[r.id] || []).length).padStart(2)} leaf/leaves — ${r.site}${(c.allowed[r.id] || []).length ? '\n            ' + c.allowed[r.id].join('\n            ') : ''}`)
     // 2 · B1 — the dashboard API's "now": identical in GMT; in BST only `is_past` moves, and to London's clock
     const B1_MOMENTS = ['bstAfternoon', 'late2330', 'after0030'] // every instant in BST

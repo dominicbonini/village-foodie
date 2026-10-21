@@ -3043,7 +3043,10 @@ function variants() {
     const I18N_CLOSURE = [
       'lib/i18n/translator.ts', 'lib/i18n/locales.ts', 'lib/i18n/registry.ts', 'lib/i18n/merge.ts',
       ...I18N_NAMESPACES.map(ns => `lib/i18n/catalog/${ns}.ts`),
-      ...I18N_NAMESPACES.flatMap(ns => [`messages/ns/en-GB/${ns}.json`, `messages/ns/en-US/${ns}.json`]),
+      // ⚠️ RE-PINNED (anz-1, 21 October 2026): every locale's file for the namespace, not just en-GB / en-US — en-AU overrides
+      // serviceSettings and settingsCopy ("pick up"), and a sparse locale's catalog imports only the files it has.
+      ...I18N_NAMESPACES.flatMap(ns => fs.readdirSync(path.join(REPO, 'messages/ns')).map(loc => `messages/ns/${loc}/${ns}.json`)
+        .filter(f => fs.existsSync(path.join(REPO, f)))),
     ]
     for (const f of I18N_CLOSURE) {
       const dest = path.join(root, f)

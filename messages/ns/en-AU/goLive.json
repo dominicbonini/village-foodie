@@ -1,0 +1,8 @@
+{
+  "kitchenCapacityUnset": {
+    "detail": "No capacity is set for {vans}. Without it we will keep promising customers pickup times your kitchen has no way to hit."
+  },
+  "noPrepBearingCategory": {
+    "detail": "{categories, select, none {You have no menu categories yet, so we have no way to work out how long an order takes.} other {None of your categories has a cooking time set, so every order looks instant to us. We would keep giving customers pickup times your kitchen has no chance of hitting, and the busier you get the further out they would be.}}"
+  }
+}

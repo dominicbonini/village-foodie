@@ -1,0 +1,3 @@
+{
+  "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own EFTPOS machine — HatchGrab charges 0%."
+}

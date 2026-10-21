@@ -13,7 +13,7 @@
 // only surfaces as a worse import weeks later.
 
 // US readiness (D35): the truck's country's allergen list (absent ⇒ the UK 14, byte-identical).
-import { menuExtractAllergenLines, menuExtractAllergenExample, type AllergenSet } from '@/lib/allergens'
+import { menuExtractAllergenLines, menuExtractAllergenExample, localiseExampleAllergens, type AllergenSet } from '@/lib/allergens'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { currencySymbol, type MoneyFormat } from '@/lib/money-format'
 
@@ -236,12 +236,12 @@ Response format:
     const bytes = await file.arrayBuffer()
     const base64 = Buffer.from(bytes).toString('base64')
     geminiBody = {
-      contents: [{ parts: [{ text: prompt }, { inlineData: { mimeType: file.type, data: base64 } }] }],
+      contents: [{ parts: [{ text: localiseExampleAllergens(prompt, truck.allergenSet) }, { inlineData: { mimeType: file.type, data: base64 } }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json' },
     }
   } else {
     geminiBody = {
-      contents: [{ parts: [{ text: `${prompt}\n\nMenu content:\n${text}` }] }],
+      contents: [{ parts: [{ text: `${localiseExampleAllergens(prompt, truck.allergenSet)}\n\nMenu content:\n${text}` }] }],
       generationConfig: { temperature: 0, responseMimeType: 'application/json' },
     }
   }

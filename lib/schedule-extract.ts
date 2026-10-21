@@ -1,4 +1,5 @@
 import { getLocalDateInTz, addDaysYmd, formatYmd, clockMins, type TimeSettings } from '@/lib/time-utils'
+import { outputLanguageName } from '@/lib/ai-language'
 export type ExtractedEvent = {
   event_date: string
   start_time: string
@@ -22,6 +23,9 @@ export type ScheduleContext = {
   baseTown?: string | null
   baseRegion?: string | null
   countryName?: string | null
+  /** ireland-1 (20 October 2026): the truck's country (ISO). A 'postcode' country other than GB (Ireland) gets its own
+   *  location lines — its own country's postal codes and venues, no UK examples. Absent or GB → the UK lines, as before. */
+  countryCode?: string | null
   /** country_settings.address_format — 'postcode' keeps today's UK location lines byte for byte. */
   addressFormat?: 'postcode' | 'zip_state'
   /** The distinct towns of its last 15 confirmed events, most recent first. */
@@ -39,6 +43,12 @@ export function truckContextBlock(ctx?: ScheduleContext): string {
   if (ctx.recentTowns?.length) lines.push(`- Towns of its recent confirmed events: ${ctx.recentTowns.join(', ')}`)
   if (!lines.length) return ''
   return `\n\nTRUCK CONTEXT — this truck's own area. Use it to place venues and towns; a venue name that exists in several places is most likely the one near these:\n${lines.join('\n')}`
+}
+
+/** ireland-1 (20 October 2026): the prompt's OUTPUT LANGUAGE line — the truck's locale's language. Names and places are
+ *  copied exactly as the source writes them (a venue is never translated); anything else the model writes is in it. */
+export function outputLanguageBlock(locale: string | null | undefined): string {
+  return `\n\nOUTPUT LANGUAGE: copy venue names, towns and addresses exactly as the source writes them — never translate them. Write anything else in ${outputLanguageName(locale)}.`
 }
 
 export const INVALID_VENUES = ['Closed', 'N/A', 'TBC', 'Unavailable', 'Cancelled']
@@ -75,14 +85,22 @@ export function buildScheduleExtractionPrompt(inputText: string, ts: TimeSetting
   // 🔴 PHASE 2D-2. The truck-context block is the ONE addition a UK truck sees (named in
   // scripts/schedules-country-parity.cjs); every UK location line below is byte for byte what it was. A
   // zip_state country (the US) gets its own location lines — city, two-letter state, ZIP — in zipStatePrompt.
-  const contextBlock = truckContextBlock(ctx)
+  // ireland-1 (20 October 2026): EVERY BRANCH NAMES ITS OUTPUT LANGUAGE (.cursor/rules/language.mdc rule 10) — the truck's
+  // locale's language. Names and places are copied as written, never translated. This line is the only change a UK or
+  // US prompt sees; a UK prompt's location lines below are byte for byte what they were.
+  const contextBlock = truckContextBlock(ctx) + outputLanguageBlock(ts.locale)
   if (ctx?.addressFormat === 'zip_state') return zipStatePrompt(inputText, todayStr, currentYear, nextYear, dateRef, contextBlock, ctx.countryName || 'the United States')
+  // A 'postcode' country that is not the UK (Ireland): the same rules with the country's own name, its own postal codes
+  // and examples that assert no UK postcode. Absent or GB → the UK wording, unchanged.
+  const code = (ctx?.countryCode ?? '').trim().toUpperCase()
+  const place = code && code !== 'GB' ? (ctx?.countryName || null) : null
+  const uk = place === null
 
   return `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.${contextBlock}
 
 You are extracting a food truck's schedule from messy, unstructured text or an image. Your job has two steps:
 1. EXTRACT what you can see
-2. ENRICH missing fields using your knowledge of UK venues and locations
+2. ENRICH missing fields using your knowledge of ${uk ? 'UK venues and locations' : `venues and locations in ${place}`}
 
 14-DAY DATE REFERENCE — use this exact table when converting day names to dates. Do not calculate independently:
 ${dateRef}
@@ -102,18 +120,25 @@ TIME RULES:
 - Never use "00:00" — use "" if unknown
 
 VENUE NAME RULES:
-- Extract ONLY the pub/venue name — never include village, town, or postcode in venue_name
+${uk ? `- Extract ONLY the pub/venue name — never include village, town, or postcode in venue_name
 - "The Fox Burwell" → venue_name="The Fox", town="Burwell"
 - "The Red Lion Belchamp Otten CO10 7BQ" → venue_name="The Red Lion", town="Belchamp Otten", postcode="CO10 7BQ"
-- "Five Bells, Burwell, CB25 0EJ, 5pm-9pm" → venue_name="The Five Bells", town="Burwell", postcode="CB25 0EJ"
+- "Five Bells, Burwell, CB25 0EJ, 5pm-9pm" → venue_name="The Five Bells", town="Burwell", postcode="CB25 0EJ"` : `- Extract ONLY the pub/venue name — never include village, town, or postal code in venue_name
+- "The Old Mill Riverside" → venue_name="The Old Mill", town="Riverside"
+- "Market Square, Riverside, 5pm-9pm" → venue_name="Market Square", town="Riverside"`}
 - If a venue name is one of: Closed, N/A, TBC, Unavailable, Cancelled — omit that event entirely from the output
 
-POSTCODE RULES:
+${uk ? `POSTCODE RULES:
 - UK postcodes follow the format: letters+numbers SPACE number+letters (e.g. "CB25 0BA", "CO10 7BQ", "PE28 2SB")
 - Always extract the FULL postcode as one unit — if "CB25" is on one line and "0BA" on the next, postcode="CB25 0BA"
 - A postcode fragment alone (like "0BA" or "OBA") is never a town — combine it with the preceding partial postcode
 - If you see a full valid UK postcode anywhere in the text for that event, extract it
-- Return postcodes in uppercase
+- Return postcodes in uppercase` : `POSTAL CODE RULES:
+- "postcode" holds the postal code used in ${place}, exactly as the text writes it — never a UK postcode
+- Always extract the FULL postal code as one unit, even when it is split across two lines
+- A postal code fragment alone is never a town
+- If no postal code is shown for an event, leave postcode as "" unless you are certain of it (see STEP 2)
+- Return postal codes in uppercase`}
 
 ADDRESS RULES:
 - address is for street-level detail only — house number + street name (e.g. "12 High Street")
@@ -122,14 +147,14 @@ ADDRESS RULES:
 
 STEP 2 — ENRICHMENT RULES:
 After extracting what you can see, fill in any missing fields using your knowledge:
-- If you have a venue name and town but no postcode → look up the UK postcode for that venue and provide it
-- If you have a venue name but no town → determine the town/village from your knowledge of that UK venue
+- If you have a venue name and town but no postcode → ${uk ? 'look up the UK postcode for that venue and provide it' : `look up the postal code for that venue in ${place} and provide it`}
+- If you have a venue name but no town → determine the town/village from your knowledge of that ${uk ? 'UK venue' : `venue in ${place}`}
 - If the venue name is ambiguous (e.g. "The Fox") and you have a postcode or town → use that to identify the correct venue
 - Only enrich with high confidence — if uncertain, leave the field as ""
 
 EXAMPLES:
 
-Input: "Wednesday 3/6 The Red Lion Belchamp Otten CO10 7BQ"
+${uk ? `Input: "Wednesday 3/6 The Red Lion Belchamp Otten CO10 7BQ"
 Output: {"event_date":"03/06/${currentYear}","start_time":"","end_time":"","venue_name":"The Red Lion","town":"Belchamp Otten","postcode":"CO10 7BQ"}
 
 Input: "Friday 5/6 The Fox Burwell CB25 0BA"
@@ -139,7 +164,11 @@ Input: "Sunday 7/6 The Five Bells Burwell Birthday Party from 5pm"
 Output: {"event_date":"07/06/${currentYear}","start_time":"17:00","end_time":"","venue_name":"The Five Bells","town":"Burwell","postcode":"CB25 0EJ"}
 
 Input: "Sat 14th June The Crown Wickhambrook 5pm-9pm"
-Output: {"event_date":"14/06/${currentYear}","start_time":"17:00","end_time":"21:00","venue_name":"The Crown","town":"Wickhambrook","postcode":"CB8 8PD"}
+Output: {"event_date":"14/06/${currentYear}","start_time":"17:00","end_time":"21:00","venue_name":"The Crown","town":"Wickhambrook","postcode":"CB8 8PD"}` : `Input: "Wednesday 3/6 The Old Mill Riverside"
+Output: {"event_date":"03/06/${currentYear}","start_time":"","end_time":"","venue_name":"The Old Mill","town":"Riverside","postcode":""}
+
+Input: "Sat 14th June Market Square Riverside 5pm-9pm"
+Output: {"event_date":"14/06/${currentYear}","start_time":"17:00","end_time":"21:00","venue_name":"Market Square","town":"Riverside","postcode":""}`}
 
 Return ONLY a valid JSON array, no markdown, no backticks, no explanation:
 [{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"Town","postcode":"POSTCODE","address":"street address only or empty string"}]${inputText ? `\n\nSCHEDULE TEXT TO EXTRACT:\n${inputText}` : ''}`

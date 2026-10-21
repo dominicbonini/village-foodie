@@ -1,0 +1,5 @@
+{
+  "inPersonHint": "Cash or your EFTPOS machine — not recorded",
+  "paidCardMachine": "Paid on your EFTPOS machine{mixed, select, yes { — {amount}} other {}}",
+  "reason": "{reason, select, item_unavailable {Item unavailable} not_collected {Order not picked up} wrong_or_missing_item {Wrong or missing item} quality_issue {Quality issue} duplicate_payment {Duplicate payment} customer_cancelled {Customer cancelled} other {Other}}"
+}

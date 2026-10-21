@@ -1,7 +1,7 @@
 {
   "country_missing": "Choose the country your truck is based in.",
-  "country_off": "Trucks can’t sign up in {country} yet. Choose another country.",
-  "zone_unknown": "That time zone isn’t one we offer in {country}. Choose one from the list.",
+  "country_off": "Trucks in that country can’t sign up yet. Choose another country.",
+  "zone_unknown": "That time zone isn’t one we offer for that country. Choose one from the list.",
   "town_missing": "Tell us the town or city you’re based in.",
   "town_too_long": "That town name is too long — 120 characters at most."
 }

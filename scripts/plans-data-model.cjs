@@ -298,6 +298,8 @@ if (RENDER) {
   // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): Billing's table is components/pricing/PlanTable.tsx — present,
   // and the frozen matrix's header gone.
   const planTable = html => typeof html === 'string' && html.includes('<div class="pt pt-card" role="table"') && !html.includes(TABLE_START)
+  // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): /features' table is PlanTable's "features" variant — its named change.
+  const FR = require('./_lp-features-restore.cjs')
 
   head('7 · RENDERED — Billing for every plan, with and without a promo override')
   for (const cc of ['GB', 'US']) {
@@ -435,11 +437,23 @@ if (RENDER) {
   /** The named Stage B change a view key falls under, as [name, (after, before) → ok]; null = must be byte-identical.
    *  Scoped to the exact views Stage B changes: every metadata view but /features', and every US-switched-off view
    *  (`-usOff`, where the US pricing is not shown), stay byte-identical. */
+  // landing-mobile-tidy (21 October 2026): the hero note, new (two spans) → old (one paragraph); null if the new note is not
+  // there exactly once.
+  const LMT_NOTE = ['<p class="hero-cta-note"><span class="hero-cta-lead">Upload a photo of your menu and see it working in under 60 seconds.</span><span class="hero-cta-small">No signup. No card.</span></p>',
+    '<p class="hero-cta-note">No signup, no card.<br/>See it working in under 60 seconds.</p>']
+  const lmtNote = a => (a.split(LMT_NOTE[0]).length === 2 ? a.replace(LMT_NOTE[0], LMT_NOTE[1]) : null)
   const stageB = (k) => {
-    if (/^landing\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['landing: only <section id="pricing"> differs (banner → cards → cheapest bar → footnote)',
-      (a, b) => !!cutSection(a, '<section id="pricing"') && cutSection(a, '<section id="pricing"') === cutSection(b, '<section id="pricing"') && a.includes('<div class="trial-banner">')]
-    if (/^features\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['/features: only its content section differs (h1 / lede / callout / PlanTable / footnote)',
-      (a, b) => !!cutSection(a, '<section', '</nav>') && cutSection(a, '<section', '</nav>') === cutSection(b, '<section', '</nav>') && planTable(a)]
+    // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): + the approved hero line under "Upload my menu" — exactly one new
+    // two-span note (LMT_NOTE), mapped back to the old one-paragraph note before the rest is compared byte for byte.
+    if (/^landing\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['landing: only <section id="pricing"> differs (banner → cards → cheapest bar → footnote), and the approved hero note',
+      (a0, b) => { const a = lmtNote(a0); return !!a && !!cutSection(a, '<section id="pricing"') && cutSection(a, '<section id="pricing"') === cutSection(b, '<section id="pricing"') && a.includes('<div class="trial-banner">') }]
+    // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): on a tree with features-page-restore, /features' section must be
+    // EXACTLY that named change (scripts/_lp-features-restore.cjs proven(): eyebrow, `pt pt-features` + hidden span +
+    // var(--cmp-col), `.pt-name` / `.pt-desc` from featuresPage.detail, the text ✓, `.pt-val`, the `.fn` footnotes) of a
+    // Stage-B-shaped section, byte for byte — and that Stage B shape carries the one `pt pt-card` table, as before.
+    if (/^features\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return [FR.LANDED ? '/features: only its content section differs (h1 / lede / callout / PlanTable / footnote), in features-page-restore\'s look (eyebrow, the "features" table with descriptions, the .fn footnotes)' : '/features: only its content section differs (h1 / lede / callout / PlanTable / footnote)',
+      (a, b) => !!cutSection(a, '<section', '</nav>') && cutSection(a, '<section', '</nav>') === cutSection(b, '<section', '</nav>')
+        && (FR.LANDED ? (pr => !pr.problems && planTable(pr.stageB))(FR.proven(a)) : planTable(a))]
     if (/^features\|[A-Z]+\|meta(-usOn)?$/.test(k)) return ['/features metadata: only the description (THE one SEO change; title / canonical / hreflang / robots / og:url unchanged)',
       (a, b) => JSON.stringify(dropDescriptions(a)) === JSON.stringify(dropDescriptions(b))
         && descriptions(a).length === 3 && descriptions(a).every(d => d === NEW_DESC[/\|US\|/.test(k) ? 'en-US' : 'en-GB'])]

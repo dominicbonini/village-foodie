@@ -32,7 +32,7 @@ export interface PhoneWhatsApp {
   /** The wa.me number: country code + number as digits (lib/phone.ts), or '' when not a plausible number. */
   waPhone: string
   hasPhone: boolean
-  /** True when waPhone starts with '447' (a UK mobile). */
+  /** True when waPhone is a mobile: '447…' (UK) or '3538[3-9]…' (Ireland, 083–089). */
   isMobileNumber: boolean
   /** accepted_methods, lower-cased, contains the substring 'whatsapp'. */
   acceptsWhatsApp: boolean
@@ -49,7 +49,8 @@ export function phoneWhatsApp(
   const cleanPhone = phoneNumber ? phoneNumber.replace(/[^\d+]/g, '') : ''
   const waPhone = phoneLinkDigits(phoneNumber, country) ?? ''
   const hasPhone = cleanPhone !== ''
-  const isMobileNumber = waPhone.startsWith('447')
+  // ireland-1 (20 October 2026): an Irish mobile (+353 83–89) is a mobile too. A UK number answers exactly as before.
+  const isMobileNumber = waPhone.startsWith('447') || /^3538[3-9]/.test(waPhone)
   const acceptsWhatsApp = methodsStr.includes('whatsapp')
 
   const hint: WhatsAppHint =

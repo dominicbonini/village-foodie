@@ -400,7 +400,7 @@ export default function CountriesTab() {
     } },
 
     { group: 'Allergens and support' },
-    { label: 'Allergen list', cell: code => choice(code, 'allergenSet', [['uk14', 'UK 14'], ['us9', 'US 9']]) },
+    { label: 'Allergen list', cell: code => choice(code, 'allergenSet', [['uk14', 'UK 14'], ['us9', 'US 9'], ['anz', 'ANZ 23']]) },
     { label: 'Support hours', cell: code => text(code, 'supportHours', 'Not shown', 'max-w-[18rem]') },
   ]
 

@@ -1,0 +1,8 @@
+{
+  "collection": {
+    "customerTimes": "Customer pickup times",
+    "help": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+    "unavailable": "Pickup times are unavailable right now.",
+    "yourTimes": "Your pickup times"
+  }
+}

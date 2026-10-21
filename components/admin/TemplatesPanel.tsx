@@ -25,7 +25,7 @@ import {
 // task. It is imported for one reason: `nextStep` needs `waPhone` to decide a prospect's channel, and
 // OutreachPanel already builds it exactly this way. A second derivation here would be a second answer.
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
-import { MARKETING_COUNTRY } from '@/lib/marketing-country'   // discovery and outreach are the marketing country's (Phase 2C)
+import { prospectPhoneCountry } from '@/lib/outreach-country'   // ireland-1: a prospect's phone is read in its own country (was always GB)
 import SequenceGrid from '@/components/admin/SequenceGrid'
 import { TEMPLATES_VIEW_KEY } from '@/lib/outreach-queue'
 import {
@@ -67,6 +67,8 @@ type Row = {
 }
 type Prospect = {
   id: string; name: string; website: string | null
+  /** ireland-1 (20 October 2026): the prospect's country from the outreach route — its phone is read in it. */
+  country?: string
   /** The two name columns the substitution reads. `contact_name` is deliberately NOT here: the preview
    *  must render what a real send renders, and nothing reads that column any more. */
   contact_first_name: string | null; contact_last_name: string | null
@@ -452,7 +454,7 @@ export default function TemplatesPanel() {
     for (const p of prospects) {
       // ⚠️ `waPhone` from the SHARED `phoneWhatsApp`, built exactly as OutreachPanel builds it — the
       // same call, so the two cannot disagree about who is reachable on WhatsApp.
-      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, MARKETING_COUNTRY).waPhone }, p.contacts ?? []))
+      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, prospectPhoneCountry(p)).waPhone }, p.contacts ?? []))
     }
     return m
   }, [prospects])
@@ -902,7 +904,7 @@ export default function TemplatesPanel() {
         // about a truck. It is also where `effectiveLeadType` reaches the `?lead_*` conditions.
         ctx: contextFromProspect(p),
         // ⚠️ `waPhone` BUILT EXACTLY AS `steps` BUILDS IT, from the shared `phoneWhatsApp`.
-        ch: channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, MARKETING_COUNTRY).waPhone }),
+        ch: channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null, prospectPhoneCountry(p)).waPhone }),
       }))
       .filter(x => x.ch !== null),
     [prospects])

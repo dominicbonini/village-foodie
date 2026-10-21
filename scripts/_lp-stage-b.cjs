@@ -30,6 +30,9 @@ const PT = () => require('./_lp-pricing-tidy.cjs')
 // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): the calculator without the staff question (scripts/_lp-compare-tidy.cjs),
 // applied to BEFORE inside calcProof on a tree with compare-tidy. Lazy, like PT.
 const CT = () => require('./_lp-compare-tidy.cjs')
+// ⚠️ RE-PINNED (features-page-restore, 20 October 2026): /features in the pre-Stage-B look (scripts/_lp-features-restore.cjs),
+// proven exact and mapped back to Stage B's shape inside featuresCheck on a tree with features-page-restore. Lazy, like PT.
+const FR = () => require('./_lp-features-restore.cjs')
 const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;')
 
 /** The end (index after the closing tag) of the balanced <tag …>…</tag> that opens at `start`, or -1. */
@@ -89,7 +92,18 @@ function pricingCheck(R) {
   if (tm && !r.includes(`Your first ${tm} months are completely free`)) p.push(`F's banner does not offer the trial's ${tm} months`)
   return p
 }
-const landingPricing = scoped('pricing-b-landing-pricing', [PRICING_CUT], pricingCheck)
+// ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): + the approved hero line under "Upload my menu" — the note is cut from
+// both sides as its own region; F's must be EXACTLY the two-span note, BEFORE's the old one-paragraph line.
+const HERO_NOTE_CUT = ['landing hero note', html => { const s = html.indexOf('<p class="hero-cta-note">'); if (s < 0) return null; const e = html.indexOf('</p>', s); return e < 0 ? null : [s, e + 4] }]
+const HERO_NOTE = {
+  before: '<p class="hero-cta-note">No signup, no card.<br/>See it working in under 60 seconds.</p>',
+  after: '<p class="hero-cta-note"><span class="hero-cta-lead">Upload a photo of your menu and see it working in under 60 seconds.</span><span class="hero-cta-small">No signup. No card.</span></p>',
+}
+const heroNoteCheck = (R, E) => [
+  ...(R['landing hero note'] === HERO_NOTE.after ? [] : [`F's hero note is not the approved two lines: ${JSON.stringify(R['landing hero note'])}`]),
+  ...(E && E['landing hero note'] !== HERO_NOTE.before ? [`BEFORE's hero note is not the old line: ${JSON.stringify(E['landing hero note'])}`] : []),
+]
+const landingPricing = scoped('pricing-b-landing-pricing', [HERO_NOTE_CUT, PRICING_CUT], (R, E) => [...pricingCheck(R), ...heroNoteCheck(R, E)])
 
 // ── 2 · /features ──────────────────────────────────────────────────────────────────────────────────────────────────
 // Kept: the head, the nav, the footer (byte-identical). Cut: the page body between </nav> and <footer.
@@ -102,7 +116,12 @@ function planTableHead(html) {
   return { html: t, end: e, names: head.map(m => m[2]), hl: (head.find(m => m[1]) || [])[2] ?? null, count: (html.match(/<div class="pt pt-card"/g) || []).length }
 }
 function featuresCheck(R) {
-  const r = R['/features body']; const p = []
+  let r = R['/features body']; const p = []
+  // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): on a tree with features-page-restore, F's body must be EXACTLY
+  // the named change (scripts/_lp-features-restore.cjs: R1 eyebrow "Compare" before the h1, R2 `pt pt-features` + the hidden
+  // span + var(--cmp-col), R3 `.pt-name` + `.pt-desc` from featuresPage.detail, R4 the text ✓, R5 `.pt-val`, R6 the `.fn`
+  // footnotes) of a Stage-B-shaped body — byte for byte; then Stage B's checks below run, unchanged, on that Stage B shape.
+  if (FR().LANDED) { const pr = FR().proven(r); if (pr.problems) return pr.problems; r = pr.stageB }
   const o = inOrder(r, ['<h1>', '<p class="lede">', '<div class="pt pt-card"', '<p class="price-note">']); if (o) p.push(`F's /features: ${o} (h1 → lede → plan table → footnote)`)
   const t = planTableHead(r)
   if (!t || t.count !== 1) p.push(`F's /features has ${t ? t.count : 0} plan tables, not 1`)

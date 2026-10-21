@@ -21,6 +21,27 @@ const BY_COUNTRY: Record<string, Record<LandingScreen, string>> = {
     dashboard: '/screenshots/dashboard-v4-us.png',
     phone: '/screenshots/customer-order-us.png',
   },
+  // ireland-1 (20 October 2026): the same three screens for an Irish fixture truck (€, en-IE, Europe/Dublin, 24-hour,
+  // day-month dates, Irish names) — scripts/screenshots/ie-screens.cjs (README-ie.md). The GB captures already show a
+  // 24-hour clock, so their status bars are kept exactly as captured. Shown only on IE pages (/ie, while Ireland is on).
+  IE: {
+    kitchen: '/screenshots/kitchen-ie.png',
+    dashboard: '/screenshots/dashboard-v4-ie.png',
+    phone: '/screenshots/customer-order-ie.png',
+  },
+  // anz-1 (21 October 2026): Australian and New Zealand fixture trucks ($ on the menu, en-AU / en-NZ, Australia/Sydney and
+  // Pacific/Auckland, 12-hour clock, day-month dates) — scripts/screenshots/anz-screens.cjs (README-anz.md). Never Gusto.
+  // Shown only on AU / NZ pages (/au, /nz, while each is on).
+  AU: {
+    kitchen: '/screenshots/kitchen-au.png',
+    dashboard: '/screenshots/dashboard-v4-au.png',
+    phone: '/screenshots/customer-order-au.png',
+  },
+  NZ: {
+    kitchen: '/screenshots/kitchen-nz.png',
+    dashboard: '/screenshots/dashboard-v4-nz.png',
+    phone: '/screenshots/customer-order-nz.png',
+  },
 }
 
 /** The public path of a hero screenshot for the visitor's marketing country (its ISO code, e.g. 'GB', 'US'). */

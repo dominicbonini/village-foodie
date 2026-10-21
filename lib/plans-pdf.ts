@@ -23,7 +23,7 @@
 // through lib/plan-offer.ts — the module the landing and /features read); every word from the `pricing` / `planTable`
 // messages. ⛔ NO PLAN KEY, NAME OR NUMBER IS WRITTEN HERE. The frozen display copy it used to read is deleted.
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { moneyFormatOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf } from '@/lib/country-settings-types'
 import { getCountrySettings } from '@/lib/country-settings'
 import { HATCHGRAB_NAVY_HEX, HATCHGRAB_ORANGE_HEX, HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 import { readFileSync } from 'node:fs'
@@ -157,7 +157,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const masked = !s.enabled
   const show = (v: string) => priceText(masked ? maskPriceFor(v, true) : px(v), locale)
   const paper = pdfPaperOf(s)
-  const money = moneyFormatOf(s)
+  const money = planMoneyFormatOf(s)   // anz-1: our prices name their dollar (A$, NZ$)
   const plans = offerPlans(catalog, s.countryCode)
   const months = offerTrialMonths(catalog)
   const fallback = offerFallback(catalog, s.countryCode)
@@ -195,7 +195,8 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   }).join('')}</div>`
 
   // ── WHICH PLAN IS CHEAPEST ──
-  const bar = omit || bands.length === 0 ? '' : `<div class="cheap"><b>${esc(tp('bar.title'))}</b> ${bands.length === 1
+  // landing-mobile-tidy (21 October 2026): the bands no longer say "of online orders a month"; the heading's small line does.
+  const bar = omit || bands.length === 0 ? '' : `<div class="cheap"><b>${esc(tp('bar.title'))}</b> <span class="cheap-sub">${esc(tp('bar.subtitle'))}</span> ${bands.length === 1
     ? html(tp, 'bar.only', { plan: bands[0].plan.plan.name })
     : bands.map((band, i) => i === 0 ? html(tp, 'bar.first', { to: whole(band.toMinor as number), plan: band.plan.plan.name })
       : band.toMinor === null ? html(tp, 'bar.last', { from: whole(band.fromMinor as number), plan: band.plan.plan.name })
@@ -317,6 +318,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
                border: 1px solid #D8E2EC; border-radius: 3px; padding: 0 3px; }
   .cheap { margin-bottom: 12px; color: #44566B; }
   .cheap b { color: #1A2233; }
+  .cheap-sub { color: #8A97A8; font-size: 0.92em; margin-right: 6px; }
   th.hl, td.hl { background: #FFF7EE; }
   .fn { margin-top: 12px; border-top: 1px solid #D8E2EC; padding-top: 8px; break-inside: avoid; }
   .fn p { margin: 0 0 4px; color: #44566B; font-size: 8px; }

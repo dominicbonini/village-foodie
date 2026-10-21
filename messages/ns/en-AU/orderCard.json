@@ -1,0 +1,7 @@
+{
+  "cardAndCollected": "Card & picked up",
+  "cashAndCollected": "Cash & picked up",
+  "collected": "Picked up",
+  "markPaidAndCollected": "Mark paid & picked up",
+  "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Picked up} other {New}}"
+}

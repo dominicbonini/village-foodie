@@ -1,0 +1,15 @@
+{
+  "anchor": {
+    "festivalPitches": "That’s a couple of festival sites.",
+    "weekendPitch": "That’s a weekend site at a food festival."
+  },
+  "breakdown": {
+    "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on an EFTPOS machine at the window."
+  },
+  "days": {
+    "help": "Events, markets, sites — any day the van’s out."
+  },
+  "fee": {
+    "fixedAria": "Cents per order"
+  }
+}

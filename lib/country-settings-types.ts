@@ -62,7 +62,7 @@ export interface CountrySettings {
   platformFeeEnabled: boolean
   /** Whether the service fee and card surcharge are taxed (D8). Default false. */
   feesTaxed: boolean
-  allergenSet: 'uk14' | 'us9'
+  allergenSet: 'uk14' | 'us9' | 'anz'   // anz-1: Australia / New Zealand (lib/allergens.ts ANZ)
 
   // ⛔ THE SIX OLD PLAN PRICE COLUMNS ARE NOT ON THIS TYPE (pricing-pages, Stage B): retired by plans-data-model Stage A
   // and no longer read anywhere. Plans and their prices are public.plans / public.plan_prices, read through lib/plans.ts.
@@ -85,4 +85,21 @@ export interface CountrySettings {
 /** The two things a money formatter needs, taken from a settings row. */
 export function moneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): { currency: string; locale: string } {
   return { currency: s.currency, locale: s.locale }
+}
+
+/**
+ * anz-1 (21 October 2026): HATCHGRAB'S OWN PLAN PRICES NAME THEIR DOLLAR. The pricing pages, /features, /compare, the plans
+ * PDF and Billing quote our prices on a site with a country menu, so "$39" must say WHICH dollar: A$39, NZ$49. A truck's
+ * own prices (its menu, orders, receipts) keep its country's everyday symbol (moneyFormatOf: "$12.00" in Australia).
+ * The rule is generic, not a country list: when the country's own symbol for its currency is a bare "$" and the currency
+ * is not the US dollar, the plan prices are written in international English ("A$", "NZ$", "CA$"). Every other country —
+ * GB "£", the US "$", Ireland "€" — gets exactly moneyFormatOf, so its pages are byte-identical.
+ */
+export function planMoneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): { currency: string; locale: string } {
+  const own = moneyFormatOf(s)
+  if (own.currency.toUpperCase() === 'USD') return own
+  try {
+    const sym = new Intl.NumberFormat(own.locale, { style: 'currency', currency: own.currency }).formatToParts(0).find(p => p.type === 'currency')?.value
+    return sym === '$' ? { currency: own.currency, locale: 'en' } : own
+  } catch { return own }
 }

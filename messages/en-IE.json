@@ -1,0 +1,30 @@
+{
+  "landing": {
+    "meta": {
+      "description": "Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen software for food trucks and mobile catering in {country} — not a POS."
+    },
+    "jsonLd": {
+      "description": "Ordering, pre-orders and a kitchen screen for food trucks and mobile catering in {country}."
+    }
+  },
+  "pricing": {
+    "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+  },
+  "compare": {
+    "fee": {
+      "fixedAria": "Cents per order"
+    }
+  },
+  "planFeatures": {
+    "priceWord": {
+      "payAtHatch": "Pay at the truck"
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "online_ordering_pay_at_hatch": {
+        "name": "Pay-at-the-truck ordering"
+      }
+    }
+  }
+}

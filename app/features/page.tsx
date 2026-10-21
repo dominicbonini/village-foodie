@@ -10,7 +10,7 @@
 // carries a text link to it under the plan cards.
 //
 // ── 🔴 STAGE B OF THE NEW PRICING (docs/pricing-pages-report.md; the approved mockup "/features") ─────────
-// h1, lede, the trial callout, THE ONE PLAN TABLE (components/pricing/PlanTable.tsx — the same component Manage ›
+// h1, lede, THE ONE PLAN TABLE (components/pricing/PlanTable.tsx — the same component Manage ›
 // Billing renders) and the landing's card-fee footnote. Every plan, price, fee, allowance, switch and the trial
 // length come from public.plans / plan_prices / plan_features (lib/plans.ts); every word from the `planTable` /
 // `pricing` messages. ⚠️ STILL NOT A SECOND PRICING PAGE: no plan cards and no CTA beyond the chrome's.
@@ -31,7 +31,6 @@
 // the landing and NOT indexing it here would have made a public page private by accident.
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
@@ -43,13 +42,15 @@ import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'  
 import { PageLocale } from '@/lib/i18n/page-locale'
 import { localeOfCountry } from '@/lib/i18n/locales'
 import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'
+import { FEATURE_TABLE } from '@/lib/feature-table'
 import { getPlanCatalog } from '@/lib/plans-server'
-import { offerPlans, offerTrialMonths, offerFallback, upgradeSummary } from '@/lib/plan-offer'
+import { offerPlans, offerTrialMonths, upgradeSummary } from '@/lib/plan-offer'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/planTable'
 import '@/lib/i18n/catalog/pricing'
 import '@/lib/i18n/catalog/planPrompt'
+import '@/lib/i18n/catalog/featuresPage'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
@@ -153,8 +154,6 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   // 🔴 STAGE B: everything below the nav is the plan data, in the country's words.
   const catalog = await getPlanCatalog()
   const plans = offerPlans(catalog, settings.countryCode)
-  const months = offerTrialMonths(catalog)
-  const fallback = offerFallback(catalog, settings.countryCode)
   const ups = upgradeSummary(catalog, plans)
   const t = translatorFor(settings.locale, 'planTable')
   const tPricing = translatorFor(settings.locale, 'pricing')
@@ -162,7 +161,10 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   const list = (xs: string[]) => new Intl.ListFormat(settings.locale, { type: 'conjunction' }).format(xs)
   // A feature's short word in the lede ("WhatsApp", "social media"), else its generic name.
   const short = (f: string) => (t.has(`short.${f}` as never) ? t(`short.${f}` as never) : tPrompt(`features.${f}.name` as never))
-  const b = (c: ReactNode) => <b>{c}</b>
+  // features-page-restore: the eyebrow and each capability row's description — the pre-Stage-B page's words, restored
+  // as `featuresPage` (en-GB base, en-US overrides). They name no plan and no number: the table says who has what.
+  const tPage = translatorFor(settings.locale, 'featuresPage')
+  const details = Object.fromEntries(FEATURE_TABLE.map(r => [r.id, tPage(`detail.${r.id}` as never)]))
 
   return (
     <PageLocale locale={localeOfCountry(settings)}>
@@ -177,25 +179,30 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             `/landing#pricing`. One prop, both behaviours, no second nav. */}
         <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
 
-        {/* The approved mockup: h1, lede, the trial callout, the one plan table, the card-fee footnote. */}
+        {/* The approved mockup's content in the pre-Stage-B page's look (features-page-restore, 20 October 2026): the
+            centred eyebrow + heading + lede (the h1 keeps the old h2's look — still the page's one h1), the plan table in its "features" variant with a description per row, and the
+            footnotes in the old `.fn` style. */}
         <section className="band features-page">
           <div className="wrap">
+            <p className="eyebrow">{tPage('eyebrow')}</p>
             <h1>{t('h1')}</h1>
             <p className="lede">{t('lede', {
               hasUpgrades: ups.plans.length && ups.features.length ? 'yes' : 'no',
               plans: list(ups.plans.map(p => p.plan.name)),
               features: list(ups.features.map(short)),
             })}</p>
-            {months !== null && (
-              <p className="features-callout">{t.rich('callout', { months, fallback: fallback.plan.name, b })}</p>
-            )}
+            {/* ⛔ THE TRIAL CALLOUT ("3 months free with every feature unlocked. Then Pay as you go automatically…") IS
+                REMOVED — Dominic, 21 October 2026 (landing-mobile-tidy). The landing's pricing banner still says it. */}
             {/* seo-fixes S7 (measured, 20 October 2026): rendered as the component, NOT as a static-HTML string — the
                 string, JSON-escaped into the RSC payload, made this page LARGER (89.5 → 102 KB); React's element tree
                 de-duplicates the repeated cells. The payload is already only what the page renders. */}
-            <PlanTable catalog={catalog} settings={settings} highlight={plans.find(p => p.highlighted)?.plan.key ?? null} />
-            <p className="price-note">{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>
-            {/* pricing-tidy: the rows' disclosures, marked ¹ ² in the table — same style as the card-fee footnote. */}
-            {planTableNotes(settings.locale).map(n => <p key={n.marker} className="price-note"><sup>{n.marker}</sup> {n.text}</p>)}
+            <PlanTable catalog={catalog} settings={settings} highlight={plans.find(p => p.highlighted)?.plan.key ?? null}
+              variant="features" details={details} />
+            {/* The card-fee footnote (*) and the rows' disclosures (¹ ², pricing-tidy), in the old table's footnote style. */}
+            <div className="fn">
+              <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>
+              {planTableNotes(settings.locale).map(n => <p key={n.marker}><sup>{n.marker}</sup> {n.text}</p>)}
+            </div>
           </div>
         </section>
 

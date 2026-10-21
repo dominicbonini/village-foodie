@@ -103,6 +103,7 @@
     "tryAgainAmount": "Try again · {amount}",
     "payAmount": "Pay {amount}",
     "cardHeldUntil": "Your card is held, not charged, until {withTruck, select, yes {{truck}} other {the truck}} confirms your order.",
+    "dualNetworkNotice": "Notwithstanding the payment brand logo displayed when you enter your payment information, whenever you use a dual-network debit card displaying eftpos and another payment brand, your payment might be processed through either network.",
     "itemCount": "{n, plural, one {{count} item} other {{count} items}}",
     "collectionTimeTitle": "Collection time",
     "loadingTimes": "Loading available times…",
@@ -3155,8 +3156,8 @@
   },
   "tradeArea": {
     "country_missing": "Choose the country your truck is based in.",
-    "country_off": "Trucks can’t sign up in {country} yet. Choose another country.",
-    "zone_unknown": "That time zone isn’t one we offer in {country}. Choose one from the list.",
+    "country_off": "Trucks in that country can’t sign up yet. Choose another country.",
+    "zone_unknown": "That time zone isn’t one we offer for that country. Choose one from the list.",
     "town_missing": "Tell us the town or city you’re based in.",
     "town_too_long": "That town name is too long — 120 characters at most."
   },
@@ -5318,7 +5319,7 @@
       "subSmall": "Upload your menu, no signup needed.<br></br>See a working demo in under 60 seconds.",
       "tagline": "Less time booking.<br></br>More time <lean>cooking.</lean>",
       "cta": "Upload my menu →",
-      "ctaNote": "No signup, no card.<br></br>See it working in under 60 seconds."
+      "ctaNote": "<lead>Upload a photo of your menu and see it working in under 60 seconds.</lead><small>No signup. No card.</small>"
     },
     "shots": {
       "kitchenAlt": "The HatchGrab kitchen screen, showing order tickets in cook order",
@@ -5772,7 +5773,8 @@
     "comingSoon": "Coming soon",
     "bar": {
       "title": "Which plan is cheapest for me?",
-      "first": "Under {to} of online orders a month → <b>{plan}</b>",
+      "subtitle": "Your online orders each month",
+      "first": "Under {to} → <b>{plan}</b>",
       "middle": "{from} – {to} → <b>{plan}</b>",
       "last": "Over {from} → <b>{plan}</b>",
       "only": "Any volume → <b>{plan}</b>"
@@ -5782,7 +5784,6 @@
   "planTable": {
     "h1": "Everything to run your service, on every plan.",
     "lede": "Ordering, pre-orders, capacity and the kitchen screen are included on every plan.{hasUpgrades, select, yes { {plans} add {features}, and lower fees.} other {}}",
-    "callout": "{months, plural, one {<b>One month free with every feature unlocked.</b>} other {<b># months free with every feature unlocked.</b>}} Then {fallback} automatically, unless you choose a plan.",
     "perMonth": "{price} / month",
     "group": {
       "pay": "What you pay",
@@ -5814,6 +5815,43 @@
     "notes": {
       "whatsapp": "WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.",
       "printing": "Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied)."
+    }
+  },
+  "featuresPage": {
+    "eyebrow": "Compare",
+    "detail": {
+      "walkup_orders": "Take and manage orders at the hatch, paid on your own card terminal.",
+      "kitchen_app": "The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.",
+      "multi_device_kitchen": "Run several screens — front counter and kitchen — all showing the same live orders.",
+      "multi_user_access": "Give staff their own logins with the right level of access.",
+      "offline_protection": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+      "ticket_printing": "Print order tickets to a Bluetooth or wired printer in the kitchen.",
+      "web_dashboard": "Run your service from any phone, tablet or laptop browser.",
+      "meal_deals_upsells": "Bundle items into deals and offer add-ons at checkout to lift the average order.",
+      "sold_out_toggle": "Mark any item sold out in one tap — it greys out for customers straight away.",
+      "stock_countdown": "Set a stock count and it counts down as orders come in, then sells out automatically.",
+      "buzzer_tracking": "Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order.",
+      "advanced_reporting": "Break sales down by date range, item and event to see what’s really selling.",
+      "tap_to_pay": "Take card payments on a supported phone, so you don’t need a separate card machine.",
+      "customer_display": "A screen customers can see showing order numbers and when they’re ready.",
+      "online_payments": "Take card payment upfront when customers order online, via Stripe.",
+      "advance_preordering": "Let customers order for a future date or time before the event.",
+      "preorder_deadline": "Set a cut-off time for items that need notice.",
+      "time_slot_selection": "Customers pick a collection time slot, spreading demand across your service.",
+      "kitchen_capacity": "Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it.",
+      "auto_accept": "Online orders are accepted automatically — no need to confirm each one.",
+      "private_events": "Add private events that don’t show on the map, with their own private ordering link and QR code.",
+      "embed_schedule": "Show your upcoming dates on your own website. Each one links straight through to its order page.",
+      "qr_code": "A printable QR code that opens your menu and ordering page.",
+      "branded_qr_code": "Add your logo to your QR code.",
+      "discovery_map_listing": "Your truck appears on the public HatchGrab map so nearby customers can find you.",
+      "schedule_import": "We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm.",
+      "event_types": "Create your own event types, with custom prices and settings for events and festivals.",
+      "social_media_posts": "Upload your designs — we add your dates, places and times for each week and event automatically.",
+      "whatsapp_auto_replies": "Auto-reply to WhatsApp enquiries about your menu and schedule.",
+      "messenger_instagram_replies": "Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.",
+      "sms_order_alerts": "Text customers automatically when their order’s ready.",
+      "loyalty_stamp_cards": "Reward repeat customers with digital stamp cards — collected and redeemed automatically."
     }
   },
   "compare": {

@@ -1,0 +1,23 @@
+{
+  "cancelReasons": {
+    "not_collected": "Order not picked up"
+  },
+  "edit": {
+    "collectionTime": "Pickup time"
+  },
+  "orders": {
+    "status": "{status, select, pending {New} confirmed {Confirmed} rejected {Rejected} modified {Modified} cancelled {Cancelled} cooking {Cooking} ready {Ready} collected {Picked up} other {{status}}}"
+  },
+  "settings": {
+    "customerTimes": "Customer Pickup Times",
+    "intervalsHelp": "How far apart pickup times are. This doesn’t change kitchen capacity or prep times.",
+    "intervalsTitle": "Pickup times",
+    "intervalsUnavailable": "Pickup times are unavailable right now.",
+    "yourTimes": "Your Pickup Times"
+  },
+  "toast": {
+    "intervalsFailed": "Pickup times could not be saved right now.",
+    "intervalsSaved": "Pickup times saved for this event",
+    "printMode": "{mode, select, onConfirmed {Tickets will print when you accept an order} other {Tickets will print shortly before pickup}}"
+  }
+}

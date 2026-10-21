@@ -244,6 +244,11 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    ⚠️ `--hero-grey` (#3E5472, 7.73:1 on white) RATHER THAN `--ink-soft` (#5F7A99, 4.44:1): this is small
    secondary text and `--ink-soft` MISSES the 4.5:1 floor. The token is already declared on `.hero`. */
 .hg-landing .hero-cta-note { font-size: .85rem; line-height: 1.35; color: var(--hero-grey); text-align: center; margin-top: .85rem; }
+/* landing-mobile-tidy (21 October 2026, Dominic's approved mockup): two lines. The LEAD is semi-bold in the headline's navy,
+   .94rem (15px — about 1.5px above the old .85rem line, and far below the headline); the SMALL line keeps the old size and
+   the muted --hero-grey, semi-bold, close under it. The same sizes at every width. */
+.hg-landing .hero-cta-lead { display: block; font-size: .94rem; font-weight: 600; color: var(--head); text-wrap: balance; }
+.hg-landing .hero-cta-small { display: block; font-weight: 600; margin-top: .15rem; }
 /* MOBILE (≤939px): centre the whole left column — title, tagline, and CTA (CTA centring is in its base rule). */
 @media(max-width:939px){
   .hg-landing .hero h1 { text-align: center; }
@@ -256,6 +261,11 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing .hero-cta-row { align-items: flex-start; text-align: left; }
   .hg-landing .hero-cta-row .btn-lg { width: auto; flex: none; }
   .hg-landing .hero-cta-note { text-align: left; margin-inline: 0; }
+  /* landing-mobile-tidy (21 October 2026, Dominic: option A): the two lines sit UNDER the button, left-aligned with it and
+     the headline, and NOTHING ELSE IN THE HERO MOVES. The hero's columns are vertically centred against the screenshots,
+     so a taller left column would shift the headline; the note's BOX therefore keeps the old note's height (two .85rem
+     lines at 1.35) and its three lines simply run on below it, inside the hero's own bottom space. */
+  .hg-landing .hero-cta-note { height: calc(2 * 1.35em); max-width: 28rem; }
 }
 
 /* ══ 🔴 THE TWO LINES MOVE BESIDE THE BUTTON AT 1140px — AND THAT NUMBER IS MEASURED ═══════════════
@@ -277,8 +287,15 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
      exists to restore. `min-width: 0` lets the `.9fr 1.1fr` split hold and the row overflow instead. */
   .hg-landing .hero-grid > :first-child { min-width: 0; }
   .hg-landing .hero-cta-row { width: max-content; max-width: none; }
-  /* ⚠️ `nowrap` IS WHAT MAKES IT EXACTLY TWO LINES — the `<br />` in the markup is then the only break. */
-  .hg-landing .hero-cta-note { margin-top: 0; white-space: nowrap; }
+  /* landing-mobile-tidy (Dominic, 21 October 2026): THE TWO LINES SIT BESIDE THE BUTTON from here, as the old note did —
+     but CONFINED TO THE LEFT COLUMN: the row is the column's width (not max-content) and the note takes what the button
+     leaves (`flex: 1; min-width: 0`), so it wraps inside the column and can never reach the screenshots. It is centred
+     against the button and adds no height: a zero-height flex column at the button's mid-line, its lines overflowing
+     equally above and below, so the row stays the button's height and nothing else in the hero moves. Below 1140px the
+     column is too narrow for this (line 1 would need four or more lines), so there it sits under the button (above). */
+  .hg-landing .hero-cta-row { width: auto; }
+  .hg-landing .hero-cta-note { flex: 1 1 0; min-width: 0; margin-top: 0; height: 0; white-space: normal;
+                               display: flex; flex-direction: column; justify-content: center; }
 }
 
 /* ══════════════ MOBILE HERO — BELOW 640px ONLY ══════════════════════════════════════════════════════
@@ -407,7 +424,11 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 }
 
 .hg-landing .proof { list-style: none; display: grid; gap: .6rem; }
-.hg-landing .proof li { display: flex; align-items: center; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: 1.02rem; color: var(--head); letter-spacing: -.01em; }
+/* landing-mobile-tidy (Dominic, 21 October 2026): the same fix as the trust strip (.trust-in, below) — the tick is part of
+   the line, not a flex item beside it, so when "First 3 months completely free, everything unlocked" wraps on a phone the
+   tick stays beside its first word and the wrapped lines stay centred. */
+.hg-landing .proof li { display: block; font-family: var(--display); font-weight: 700; font-size: 1.02rem; color: var(--head); letter-spacing: -.01em; }
+.hg-landing .proof .tick { display: inline-flex; vertical-align: baseline; margin-right: .55rem; margin-block: -.2rem; }
 .hg-landing .tick { width: 21px; height: 21px; border-radius: 50%; background: var(--orange); flex: none; display: flex; align-items: center; justify-content: center; }
 .hg-landing .tick svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
 /* ---------- screenshot fan (real screenshots; three absolutely-positioned, rotated frames) ---------- */
@@ -492,7 +513,15 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    as centred. That is the reported defect: wrapping revealed a default the centred layout was hiding.
    UNGATED BY BREAKPOINT, deliberately — an item can wrap at any width, so the fix has to hold at any
    width. It is inert wherever the text does not wrap. */
-.hg-landing .trust-in li { display: flex; align-items: flex-start; gap: .6rem; text-align: center; font-family: var(--display); font-weight: 700; font-size: .98rem; color: var(--head); letter-spacing: -.01em; }
+.hg-landing .trust-in li { text-align: center; font-family: var(--display); font-weight: 700; font-size: .98rem; color: var(--head); letter-spacing: -.01em; }
+/* landing-mobile-tidy (21 October 2026): THE TICK IS PART OF THE LINE, NOT A FLEX ITEM BESIDE IT. As a flex row (tick | text)
+   a WRAPPED item's text became a block as wide as the column, centred inside itself, so the tick sat at the block's left
+   edge — apart from the first word. Inline, the tick is the first thing on the first line and moves with it, and the
+   wrapped lines stay centred. Its right margin plus the space before the text ≈ the old .6rem gap.
+   `vertical-align: baseline` CENTRES IT ON THE CAPITALS: an inline-flex box's baseline is its icon's bottom edge, which
+   sits 5.5px below the tick's middle — the height of half a capital at this size (measured: 0px off in WebKit and
+   Chromium; a lowering `-.3em` left it 5px low). */
+.hg-landing .trust-in .tick { display: inline-flex; vertical-align: baseline; margin-right: .55rem; margin-block: -.2rem; }   /* the negative block margin keeps the 21px tick from heightening its line */
 /* Mobile: stack, each bullet centred on its own line (tick + text as one centred unit). */
 @media(max-width:720px){
   .hg-landing .trust-in { flex-direction: column; align-items: center; gap: .8rem; }
@@ -674,9 +703,28 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .plan.hero-plan { border-color: var(--head); border-width: 2px; position: relative; }
 .hg-landing .plan-tag { position: absolute; top: -.72rem; left: 1.4rem; background: var(--head); color: #fff; font-family: var(--display); font-weight: 700; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; padding: .25rem .6rem; border-radius: 4px; }
 .hg-landing .plan-name { font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--head); letter-spacing: -.02em; margin-bottom: .2rem; }
-.hg-landing .plan-who { font-size: .85rem; color: var(--ink-soft); margin-bottom: .9rem; min-height: 2.4em; }
-.hg-landing .plan-price { font-family: var(--display); font-weight: 800; font-size: 2.3rem; color: var(--head); letter-spacing: -.04em; line-height: 1; margin-bottom: .15rem; }
-.hg-landing .plan-price span { display: block; font-size: .9rem; font-weight: 600; color: var(--ink-soft); letter-spacing: 0; margin-top: .3rem; }
+.hg-landing .plan-who { font-size: .85rem; color: var(--ink-soft); margin-bottom: .9rem; }
+/* landing-mobile-tidy (21 October 2026): THE GAP ABOVE THE PRICE WAS `.plan-who { min-height: 2.4em }` — two lines reserved
+   for a subtitle so the prices lined up across the cards. Every subtitle is one line, so each card carried a blank second
+   line (≈13px) between its subtitle and its price, and on a phone, where the cards stack and nothing needs lining up, it
+   bought nothing at all. The reserve is gone. ON A LAPTOP the cards share their name and subtitle ROWS instead (subgrid,
+   below): each row is as tall as the tallest name / subtitle actually shown, so the prices still start on one line. */
+.hg-landing .plan-body { display: flex; flex-direction: column; flex: 1; }
+@media(min-width:880px){
+  .hg-landing .plans { grid-auto-rows: auto; }
+  .hg-landing .plan { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
+  .hg-landing .plan-name { grid-row: 1; }
+  .hg-landing .plan-who { grid-row: 2; }
+  .hg-landing .plan-body { grid-row: 3; }
+  /* Side by side, the cards are equal height (the grid stretches them) and each card's body is a column whose button is
+     pushed to the bottom (`.plan .btn { margin-top: auto }`), so the three "Try free" buttons sit level. Pro's border is
+     2px against 1px; one pixel less padding all round puts its price and its button on exactly the same lines. */
+  .hg-landing .plan.hero-plan { padding: calc(1.6rem - 1px) calc(1.4rem - 1px); }
+}
+/* landing-mobile-tidy (21 October 2026, Dominic): a small space (.7rem ≈ 11px) between "per truck / month" and the fee line
+   under it — it was .15rem — on every card, at every width. */
+.hg-landing .plan-price { font-family: var(--display); font-weight: 800; font-size: 2.3rem; color: var(--head); letter-spacing: -.04em; line-height: 1; margin-bottom: .7rem; }
+.hg-landing .plan-price .plan-per { display: block; font-size: .9rem; font-weight: 600; color: var(--ink-soft); letter-spacing: 0; margin-top: .3rem; }
 .hg-landing .plan-fee { font-size: .85rem; color: var(--ink-soft); margin-bottom: 1.2rem; min-height: 2.6em; }
 .hg-landing .plan-fee b { color: var(--head); font-weight: 600; }
 .hg-landing .plan ul { list-style: none; margin-bottom: 1.5rem; display: grid; gap: .5rem; }
@@ -698,6 +746,15 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .cheap-bar { margin-top: 1.6rem; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: .95rem 1.3rem;
                          display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem 1.6rem; font-size: .92rem; color: var(--ink-soft); }
 .hg-landing .cheap-title { font-weight: 700; color: var(--head); }
+/* landing-mobile-tidy: the heading and its small muted line ("Your online orders each month") are one block; the bands
+   carry no "of online orders a month" any more. A plan name never wraps. */
+.hg-landing .cheap-head { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
+.hg-landing .cheap-sub { font-size: .8rem; color: var(--ink-faint); }
+.hg-landing .cheap-band { white-space: nowrap; }
+/* Dominic, 21 October: centred on EVERY screen — the title on its own line, the small line under it, then the bands on one
+   centred, evenly spaced row (stacked one per line on a phone, below). */
+.hg-landing .cheap-bar { flex-direction: column; align-items: center; text-align: center; gap: .55rem; }
+.hg-landing .cheap-bands { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem 2.4rem; }
 .hg-landing .cheap-band b { color: var(--head); font-weight: 700; }
 .hg-landing .price-note { margin-top: .8rem; font-size: .8rem; color: var(--ink-faint); line-height: 1.5; }
 /* The cost-comparison link under the plan cards. Sized ABOVE the small print around it and given the
@@ -762,7 +819,39 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing #pricing .switch-block { order: 5; }
   .hg-landing #pricing .price-note { order: 6; }
   .hg-landing .cheap-bar { flex-direction: column; gap: .35rem; }
+  /* landing-mobile-tidy (21 October 2026): ALL THREE CARDS CARRY PRO'S BORDER ON A PHONE (Pro keeps its badge and its orange
+     button, so it still stands out); the cheapest box's bands stack, one per line. */
+  .hg-landing .plan { border-color: var(--head); border-width: 2px; }
+  .hg-landing .cheap-bands { flex-direction: column; align-items: center; }
+  /* landing-mobile-tidy (Dominic, 21 October 2026): THE PRICE SITS TOP RIGHT ON A PHONE, ON A 2×2 GRID THAT LINES UP ACROSS.
+     Columns "minmax(0, 1fr) max-content", every cell aligned on its BASELINE:
+        row 1   plan name            |  price (34px)
+        row 2   subtitle             |  "per truck / month"   (one line; if the subtitle wraps, this stays on its first line)
+     then the fee line, bullets, link and button full width below, .9rem under the subtitle as before. `.plan-body` and
+     `.plan-price` are `display: contents` here only, so the amount and its label are grid cells of the card; above 639px
+     they are the boxes (and, from 880px, the subgrid row) they always are. The subtitle wraps at a space only (each word is
+     a nowrap `.plan-word`). */
+  .hg-landing .plan { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: .6rem; align-items: baseline; }
+  /* the left cells take every pixel the price doesn't need: no min-content floor (min-width: 0), no fixed width */
+  .hg-landing .plan-name, .hg-landing .plan-who { min-width: 0; }
+  /* "per truck / month" sits a few pixels under the price (Dominic: about 4–6px). With the rows sharing baselines, that gap
+     is the name's space below its baseline plus the label's space above its letters, so both lines are set tight here. */
+  .hg-landing .plan-name { line-height: 1; margin-bottom: 0; }
+  .hg-landing .plan-who { line-height: 1.35; }
+  /* the second row tucks up under the first (both of its cells, so they keep their shared baseline): price → label ≈ 5px */
+  .hg-landing .plan-who { margin-top: -.3rem; }   /* and `.plan-per` (its own rule below) */
+  /* Dominic, 21 October: on a phone the plan name is bigger — 1.4375rem (23px), with "per truck / month" a little smaller
+     (13px, never less) and a tighter column gap, so every plan name stays on one line at 360px in every country.
+     Laptop and desktop keep the 1.15rem name and the .9rem label. */
+  .hg-landing .plan-name { font-size: 1.4375rem; letter-spacing: -.03em; }
+  .hg-landing .plan-body, .hg-landing .plan-price { display: contents; }
+  .hg-landing .plan-name { grid-area: 1 / 1; }
+  .hg-landing .plan-amount { grid-area: 1 / 2; font-size: 2.125rem; text-align: right; white-space: nowrap; }
+  .hg-landing .plan-who { grid-area: 2 / 1; }
+  .hg-landing .plan-price .plan-per { grid-area: 2 / 2; margin-top: -.3rem; text-align: right; white-space: nowrap; line-height: 1.2; font-size: .8125rem; }
+  .hg-landing .plan-fee, .hg-landing .plan ul, .hg-landing .plan-more, .hg-landing .plan .btn { grid-column: 1 / -1; }
 }
+.hg-landing .plan-word { white-space: nowrap; }
 
 /* ⛔ `.li-note` WAS HERE AND IS DELETED — 6 October 2026. It made the WhatsApp bullet's
    "(Messenger & Instagram coming soon)" smaller and `--ink-faint`; Dominic asked for it at the same
@@ -776,11 +865,77 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    plan-table.css (shared with Manage › Billing); only the page around it is styled here. Its sticky header
    pins under the nav (`--pt-top: var(--nav-h)`, set on the wrapper below). */
 .hg-landing .features-page { --pt-top: var(--nav-h); }
-.hg-landing .features-page h1 { max-width: 22ch; }
-.hg-landing .features-page .lede { max-width: 60ch; margin-bottom: 1.4rem; }
-.hg-landing .features-callout { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 12px; padding: .9rem 1.1rem; color: var(--ink); margin-bottom: 1.8rem; max-width: 60ch; }
-.hg-landing .features-callout b { color: var(--head); }
-.hg-landing .features-page .price-note { margin-top: 1.2rem; }
+/* ── features-page-restore (20 October 2026): THE PRE-STAGE-B LOOK, ON TOP OF THE PLAN DATA ───────────────────────────
+   The values below are the old page's (app/landing/landing.css + components/landing/FeatureComparison.tsx at c6c44c9e,
+   the commit before Stage B deleted them), restored for the same markup roles. What differs from the old page is only
+   what the data drives: the plan columns, the WHAT YOU PAY rows, the three groups and the footnotes.
+   HEADER: the old eyebrow + h2 + lede, CENTRED at every width (the old page centred them only ≤720px). The heading is
+   the page's ONE h1 (seo-fixes), in the old h2's type — the hero h1's clamp(2rem…3rem) would be a different page. The
+   trial callout is centred and as wide as the old lede (50ch). */
+.hg-landing .features-page .eyebrow,
+.hg-landing .features-page h1,
+.hg-landing .features-page .lede { text-align: center; margin-inline: auto; }
+.hg-landing .features-page h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(1.6rem,3.2vw,2.15rem); letter-spacing: -.03em; line-height: 1.12; margin-bottom: .7rem; }
+.hg-landing .features-page .lede { max-width: 50ch; margin-bottom: 2.6rem; }
+/* ⛔ `.features-callout` (the orange trial box) IS DELETED with its markup — Dominic, 21 October 2026. The lede now takes
+   the 2.6rem the box left above the table (it was 1.4rem to the box). */
+/* THE TABLE (components/pricing/PlanTable.tsx variant="features"). Every rule is three classes deep (0,3,0), so it beats
+   plan-table.css's two-class rules (Manage › Billing's card, which is untouched) wherever both style the same thing.
+   Columns: the old `--cmp-col`, shared by the header cells and the body cells so a plan name never drifts off its ticks
+   — EXCEPT the phone width is 4.75rem, not the old 3.6rem: with three plans there is room (the name column is still
+   wider than the old page's), and the data's header text does not fit 3.6rem ("£69 / month" measures 70px at 375). */
+.hg-landing .pt-features { --cmp-col: 4.75rem; --pt-head-h: 84px; font-size: .9rem; color: var(--ink); line-height: 1.55; }
+@media(min-width:620px){ .hg-landing .pt-features { --cmp-col: 6rem; --pt-head-h: 90px; } }
+@media(min-width:900px){ .hg-landing .pt-features { --cmp-col: 7rem; --pt-head-h: 69px; } }
+.hg-landing .pt-features .pt-row { border-top: 1px solid var(--line); }   /* cells stretch (the tint fills the row); their content sits at the top */
+.hg-landing .pt-features .pt-label { display: block; padding: .7rem .6rem .7rem 0; overflow-wrap: normal; }
+.hg-landing .pt-features .pt-cell { display: block; padding: .7rem .1rem; font-size: inherit; text-align: center; }
+/* The priced header: sticky under the nav, the band's wash behind it, the old 2px navy rule under it. The highlighted
+   column looks like every other column on /features — no tinted band, no orange name (both removed on Dominic's
+   request, 20 October 2026). plan-table.css's `.pt .pt-hl` tint and orange name are cancelled here, so Manage › Billing
+   keeps its own highlight. The `pt-hl` class stays in the markup (the data's highlighted plan), unstyled. */
+.hg-landing .pt-features .pt-head { position: sticky; top: var(--nav-h); z-index: 40; background: var(--wash); border-top: 0; border-bottom: 2px solid var(--head); border-radius: 0; }
+.hg-landing .pt-features .pt-col { padding: .5rem .1rem .7rem; border-bottom: 0; }
+.hg-landing .pt-features .pt-col-name { font-family: var(--display); font-weight: 800; color: var(--head); font-size: .85rem; letter-spacing: -.02em; line-height: 1.55; }
+.hg-landing .pt-features .pt-col-price { font-family: var(--display); font-weight: 800; color: var(--orange); font-size: .78rem; letter-spacing: -.02em; line-height: 1.55; margin-top: .1rem; white-space: nowrap; }
+/* landing-mobile-tidy (Dominic, 21 October 2026): THE PRICES LINE UP even when one plan name wraps ("Pay as you go" takes two
+   lines in a phone's narrow column). The header cells already stretch to the row's height; each is now a column with its
+   price pushed to the bottom, so every price sits on the same line and the names keep their tops level. /features only —
+   Manage › Billing's table (plan-table.css) is untouched. */
+.hg-landing .pt-features .pt-col { display: flex; flex-direction: column; }
+.hg-landing .pt-features .pt-col-price { margin-top: auto; padding-top: .1rem; }
+@media(min-width:620px){
+  .hg-landing .pt-features .pt-col-name { font-size: .95rem; }
+  .hg-landing .pt-features .pt-col-price { font-size: .9rem; }
+}
+.hg-landing .pt-features .pt-hl { background: transparent; }
+.hg-landing .pt-features .pt-col.pt-hl .pt-col-name { color: var(--head); }
+/* GROUP HEADINGS: the old orange, letter-spaced display caps, sticky directly under the priced header (its MEASURED
+   height, `--pt-head-h`, set by PlanTableHeadHeight; the values above are the first-paint fallback). No rule above a
+   heading — the rows carry the lines. */
+.hg-landing .pt-features .pt-group { position: sticky; top: calc(var(--nav-h) + var(--pt-head-h)); z-index: 30; background: var(--wash); border-top: 0; }
+.hg-landing .pt-features .pt-group .pt-label { font-family: var(--display); font-weight: 700; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); padding: .8rem 0 .5rem; line-height: 1.55; white-space: nowrap; }   /* one line, running over the (empty) plan cells as the old full-width heading did */
+.hg-landing .pt-features .pt-group .pt-hl { background: transparent; }
+/* A ROW: the name over its description (phones and tablets); from 900px the description takes its own column. */
+.hg-landing .pt-features .pt-name { color: var(--head); font-weight: 600; display: block; overflow-wrap: break-word; }   /* a long word breaks only on the narrowest phones (≤360px) */
+.hg-landing .pt-features .pt-desc { color: var(--ink-soft); font-size: .8rem; line-height: 1.4; display: block; margin-top: .15rem; max-width: 44ch; }
+@media(min-width:900px){
+  .hg-landing .pt-features .pt-label { display: flex; align-items: baseline; gap: 1.2rem; }
+  .hg-landing .pt-features .pt-label .pt-name:not(:only-child) { width: 12rem; flex: none; }   /* a row with no description (WHAT YOU PAY) keeps its whole line */
+  .hg-landing .pt-features .pt-label .pt-desc { flex: 1; margin-top: 0; max-width: none; }
+}
+.hg-landing .pt-features .pt-sup { color: var(--ink-faint); font-size: .7rem; line-height: 1; vertical-align: .3em; margin-left: .15rem; }
+/* CELLS: the old text tick, faint dash, italic "Coming soon" (no pill) and money values. */
+.hg-landing .pt-features .pt-yes { display: inline; color: var(--orange); font-weight: 700; font-size: 1.05rem; }
+.hg-landing .pt-features .pt-no { color: var(--ink-faint); }
+.hg-landing .pt-features .pt-soon { display: inline-block; border: 0; border-radius: 0; padding: 0; font-size: .7rem; font-weight: 600; font-style: italic; letter-spacing: normal; text-transform: none; line-height: 1.15; color: var(--ink-faint); }
+.hg-landing .pt-features .pt-val { font-size: .78rem; color: var(--ink); font-weight: 600; line-height: 1.3; display: inline-block; }
+.hg-landing .pt-features .pt-val .pt-b { font-weight: inherit; color: inherit; }
+@media(max-width:619px){ .hg-landing .pt-features .pt-val { font-size: .7rem; letter-spacing: -.01em; } }
+/* FOOTNOTES: the old `.fn` block — the card-fee footnote (*) and the rows' ¹ ². */
+.hg-landing .features-page .fn { margin-top: 1.4rem; display: grid; gap: .3rem; }
+.hg-landing .features-page .fn p { font-size: .8rem; color: var(--ink-faint); }
+.hg-landing .features-page .fn sup { color: var(--ink-soft); }
 
 /* ---------- final cta ---------- */
 .hg-landing .final { text-align: center; }

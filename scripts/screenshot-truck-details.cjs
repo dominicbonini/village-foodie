@@ -420,11 +420,29 @@ function fakeDb(opts = {}) {
    * byte-identical by scripts/schedules-country-parity.cjs. Every OTHER difference still fails. A line both
    * removed and added is a re-indent (a block moved inside an `else`), not a change. */
   const T2D2 = JSON.parse(read('scripts/fixtures/screenshot-truck-details-2d2-lines.json'))
+  /* ⚠️ RE-PINNED (ireland-1, 20 October 2026): ireland-1 is the SIXTH NAMED BUILD. It changed two of the
+   * files guarded here — every screenshot/import prompt gains its OUTPUT LANGUAGE line, ScheduleContext gains
+   * `countryCode`, and a non-GB 'postcode' country (Ireland) gets its own location lines behind a `uk` /
+   * `otherPostcode` switch whose GB side is the old wording. Its lines are listed in
+   * scripts/fixtures/screenshot-truck-details-ie1-lines.json, held to the same rule as Phase 2D-2's (ADDED
+   * present as a whole line, REMOVED gone), and its SUPERSEDED entries are 2D-2 lines it has since changed —
+   * they must be gone, and only they are excused from 2D-2's "still present" test. Every OTHER difference
+   * still fails. GB/US prompt wording is proven byte-identical apart from the language line by
+   * scripts/schedules-country-parity.cjs and scripts/time-dates-parity.cjs. */
+  const TIE1 = JSON.parse(read('scripts/fixtures/screenshot-truck-details-ie1-lines.json'))
+  const namedIE1 = (f, l) => { const e = TIE1[f] || { added: [], removed: [] }; return e.added.includes(l) || e.removed.includes(l) }
+  const expiredIE1 = f => {
+    const have = new Set(read(f).split('\n').map(l => l.trim())), e = TIE1[f] || { added: [], removed: [], superseded: [] }
+    const missing = e.added.filter(l => !have.has(l)), back = [...e.removed, ...(e.superseded || [])].filter(l => have.has(l))
+    if (missing.length || back.length) console.log('      ⛔ IRELAND-1 LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0]).slice(0, 160))
+    return !missing.length && !back.length
+  }
   const expired2d2 = f => {
     const have = new Set(read(f).split('\n').map(l => l.trim())), e = T2D2[f] || { added: [], removed: [] }
-    const missing = e.added.filter(l => !have.has(l)), back = e.removed.filter(l => have.has(l))
+    const supersededIE1 = (TIE1[f] && TIE1[f].superseded) || []   // ⚠️ RE-PINNED (ireland-1): see above
+    const missing = e.added.filter(l => !have.has(l) && !supersededIE1.includes(l)), back = e.removed.filter(l => have.has(l))
     if (missing.length || back.length) console.log('      ⛔ PHASE 2D-2 LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0]).slice(0, 160))
-    return !missing.length && !back.length
+    return !missing.length && !back.length && expiredIE1(f)
   }
   const lines2d2 = f => new Set(read(f).split('\n').map(l => l.trim()))
   const named2d2 = (f, l) => { const e = T2D2[f] || { added: [], removed: [] }; return e.added.includes(l) || e.removed.includes(l) }
@@ -435,11 +453,12 @@ function fakeDb(opts = {}) {
       .filter(l => l && !/^(\/\*|\*|\/\/)/.test(l) && /[A-Za-z0-9'"`]/.test(l))
     return { plus: side('+'), minus: side('-') }
   }
-  t('🔴 the schedule extraction module is unchanged apart from Phase 2D-2\'s named lines', (() => {
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): …and ireland-1's named lines (TIE1 above)
+  t('🔴 the schedule extraction module is unchanged apart from Phase 2D-2\'s and ireland-1\'s named lines', (() => {
     const f = 'lib/admin/screenshot-events.ts'
     if (gitClean(f)) return true
     const { plus, minus } = diffSides(f)
-    const bad = [...plus, ...minus].filter(l => !named2d2(f, l) && !(plus.includes(l) && minus.includes(l)))
+    const bad = [...plus, ...minus].filter(l => !named2d2(f, l) && !namedIE1(f, l) && !(plus.includes(l) && minus.includes(l)))
     if (bad.length) { console.log('      LINES CHANGED AND NOT ALLOWED: ' + bad.length); for (const l of bad.slice(0, 10)) console.log('        • ' + l.slice(0, 140)); return false }
     return expired2d2(f)
   })())
@@ -599,7 +618,8 @@ function fakeDb(opts = {}) {
    * on a Saturday) in its words, and the function is handed the truck's settings. Every other difference
    * still fails; each named line must be present (added) or gone (removed). The DD/MM/YYYY contract the
    * model answers in is unchanged — it is one of the named lines. */
-  t('🔴 lib/schedule-extract.ts (the operator path) is unchanged apart from Phase 2B\'s named lines', (() => {
+  // ⚠️ RE-PINNED (ireland-1, 20 October 2026): …and ireland-1's named lines (TIE1 above)
+  t('🔴 lib/schedule-extract.ts (the operator path) is unchanged apart from Phase 2B\'s, 2D-2\'s and ireland-1\'s named lines', (() => {
     const f = 'lib/schedule-extract.ts'
     if (gitClean(f)) return true
     const ADDED = [
@@ -645,7 +665,7 @@ function fakeDb(opts = {}) {
     }
     const now = read(f)
     const bad = [...plus.filter(x => !ADDED.includes(x)), ...minus.filter(x => !REMOVED.includes(x))]
-      .filter(x => /[A-Za-z0-9'"`]/.test(x) && !named2d2(f, x) && !(plus.includes(x) && minus.includes(x)))
+      .filter(x => /[A-Za-z0-9'"`]/.test(x) && !named2d2(f, x) && !namedIE1(f, x) && !(plus.includes(x) && minus.includes(x)))
     if (bad.length) { console.log('      LINES CHANGED AND NOT ALLOWED: ' + bad.length); for (const l of bad.slice(0, 10)) console.log('        • ' + l.slice(0, 140)); return false }
     // A Phase 2B line that Phase 2D-2 has since changed is SUPERSEDED (named in the 2D-2 fixture) — it must be gone.
     const superseded = T2D2[f]?.superseded ?? []

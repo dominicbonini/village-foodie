@@ -4,6 +4,7 @@ import { formatMajor, currencySymbol, type MoneyFormat } from '@/lib/money-forma
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/whatsappCustomer'
 import { crossesMidnight } from '@/lib/event-window'
+import type { AllergenSet } from '@/lib/allergens'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -62,6 +63,10 @@ interface ClassifierParams {
    *  the server's UTC date: from 00:00 to 01:00 BST it told the AI today was yesterday) and how dates and
    *  times read in the reply. Required. */
   time: TimeSettings
+  /** anz-1 (21 October 2026): the truck's allergen list (country_settings.allergen_set). Only 'anz' changes anything — it
+   *  adds Australian/New Zealand phrasing to the allergen guard and the label families to the caveat check. Absent, 'uk14'
+   *  or 'us9' → exactly the behaviour before. */
+  allergenSet?: AllergenSet | null
 }
 
 function formatEventForPrompt(event: TruckEvent, todayStr: string, ts: TimeSettings): string {
@@ -147,12 +152,30 @@ const ALLERGEN_STEMS = [
   'free from', 'safe for', 'suitable for',
 ]
 const ALLERGEN_TOKENS = ['gf', 'df', 'free']
+// anz-1 (21 October 2026): AUSTRALIAN / NEW ZEALAND PHRASING, for an 'anz' truck only (a UK or US truck's guard is exactly
+// as above). Option B holds: bare allergen names stay OUT (a presence question still reaches the LLM). "gluten free", "nut
+// free", "dairy free", "GF", "coeliac" are already caught above. These add the SAFETY words an Australian or New Zealand
+// customer uses — anaphylaxis / anaphylactic, EpiPen (and "epi pen", "epi-pen") — and the "NF" (nut free) / "LF" (lactose
+// free) menu marks.
+const ANZ_ALLERGEN_STEMS = ['anaphyla', 'epipen', 'epi pen']
+const ANZ_ALLERGEN_TOKENS = ['nf', 'lf']
 
-function mentionsAllergen(message: string): boolean {
+function mentionsAllergen(message: string, set?: AllergenSet | null): boolean {
   const normalised = ` ${message.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
   if (ALLERGEN_STEMS.some(stem => normalised.includes(stem))) return true
   const tokens = normalised.trim().split(' ')
-  return ALLERGEN_TOKENS.some(tok => tokens.includes(tok))
+  if (ALLERGEN_TOKENS.some(tok => tokens.includes(tok))) return true
+  if (set !== 'anz') return false
+  return ANZ_ALLERGEN_STEMS.some(stem => normalised.includes(stem)) || ANZ_ALLERGEN_TOKENS.some(tok => tokens.includes(tok))
+}
+
+/** anz-1: the words a reply may use for an ANZ label — the label itself plus its everyday family word, so a reply that says
+ *  "has dairy" for an item tagged Milk, or "sulphites" for "Added sulphites", still carries the caveat. ANZ only. */
+const ANZ_CAVEAT_WORDS: Record<string, string[]> = {
+  milk: ['dairy', 'lactose'], egg: ['eggs'], peanut: ['peanuts', 'nuts'], soy: ['soya'],
+  crustacean: ['crustaceans', 'shellfish', 'prawn'], mollusc: ['molluscs', 'shellfish'], 'added sulphites': ['sulphite', 'sulfite'],
+  wheat: ['gluten'], barley: ['gluten'], rye: ['gluten'], oats: ['gluten'],
+  almond: ['nuts'], 'brazil nut': ['nuts'], cashew: ['nuts'], hazelnut: ['nuts'], macadamia: ['nuts'], pecan: ['nuts'], 'pine nut': ['nuts'], pistachio: ['nuts'], walnut: ['nuts'],
 }
 
 export interface WhatsAppReplyResult {
@@ -222,7 +245,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
   // page, so the LLM classifier can NEVER be the safety boundary. The in-branch MENU_QUERY check
   // (below) is intentionally LEFT in place as belt-and-braces. The ALLERGEN_QUERY branch redirects
   // unconditionally anyway, so this floor only changes MENU/SPECIFIC mis-classifications.
-  if (mentionsAllergen(customerMessage)) {
+  if (mentionsAllergen(customerMessage, params.allergenSet)) {
     return { reply: allergenRedirect(t, truckName, truckEmoji, orderUrl, greetingPrefix), classification }
   }
 
@@ -290,7 +313,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
         //    own ALLERGEN bucket: catches allergen-adjacent messages that still classified as
         //    MENU (e.g. "is the pepperoni pizza gluten free?"). If it matches we redirect with
         //    the SAME fixed allergen string and never call the LLM.
-        if (mentionsAllergen(customerMessage)) {
+        if (mentionsAllergen(customerMessage, params.allergenSet)) {
           return { reply: allergenRedirect(t, truckName, truckEmoji, orderUrl, greetingPrefix), classification: 'MENU_QUERY' }
         }
 
@@ -358,6 +381,7 @@ Rules (follow exactly — same discipline as "never make up events"):
         for (const i of items) for (const a of ((i.allergens as string[]) || [])) {
           const w = String(a).trim().toLowerCase()
           if (w) allergenTagWords.add(w)
+          if (w && params.allergenSet === 'anz') for (const x of ANZ_CAVEAT_WORDS[w] ?? []) allergenTagWords.add(x)   // anz-1
         }
         const replyLower = llmReply.toLowerCase()
         const statesAllergen = [...allergenTagWords].some(w => replyLower.includes(w))
