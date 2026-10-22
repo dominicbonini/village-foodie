@@ -66,6 +66,8 @@ export interface CountryForm {
   timezones: string[]
   defaultTimezone: string
   allergenSet: 'uk14' | 'us9' | 'anz'
+  /** allergen-card-country (21 October 2026): may trucks here show allergens as one card for the whole menu? */
+  allergenCardOnlyAllowed: boolean
   supportHours: string
 }
 
@@ -95,7 +97,7 @@ export const FIELD_LABELS: Record<keyof CountryForm, string> = {
   platformFeeEnabled: 'Our fee switched on', feesTaxed: 'Service fee and card fee are taxed',
   currency: 'Currency', locale: 'Language style', timeFormat: 'Times', dateOrder: 'Dates', weekStart: 'Week starts',
   phoneCountryCode: 'Phone country code', shortName: 'Short name', phoneExample: 'Example phone number', phoneCheck: 'Phone number check', addressFormat: 'Addresses', timezones: 'Time zones offered at signup',
-  defaultTimezone: 'Default time zone', allergenSet: 'Allergen list', supportHours: 'Support hours',
+  defaultTimezone: 'Default time zone', allergenSet: 'Allergen list', allergenCardOnlyAllowed: 'Allergen card on its own', supportHours: 'Support hours',
 }
 
 /** 🔴 THE ENABLED RULE IS THE DATABASE'S (the country_settings trigger, 20261024_plans.sql): a country can be switched
@@ -159,7 +161,7 @@ export function rowToForm(r: CountrySettings): CountryForm {
     currency: r.currency, locale: r.locale, timeFormat: r.timeFormat, dateOrder: r.dateOrder, weekStart: r.weekStart,
     phoneCountryCode: r.phoneCountryCode, shortName: r.shortName ?? '', phoneExample: r.phoneExample ?? '', phoneCheck: r.phoneCheck, addressFormat: addressFormatKeyOf(r.addressFormat) ?? r.addressFormat,   /* address-formats-1: a legacy value read as its format, as the loader does */
     timezones: [...r.timezones], defaultTimezone: r.defaultTimezone,
-    allergenSet: r.allergenSet, supportHours: r.supportHours ?? '',
+    allergenSet: r.allergenSet, allergenCardOnlyAllowed: r.allergenCardOnlyAllowed, supportHours: r.supportHours ?? '',
   }
 }
 
@@ -342,7 +344,7 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
       cardSurchargeAllowed: f.cardSurchargeAllowed, cardSurchargeCapPct,
       cardSurchargeCreditOnly: f.cardSurchargeCreditOnly, cardSurchargeExcludedRegions: regions,
       serviceFeeAllowed: f.serviceFeeAllowed, tippingEnabledDefault: f.tippingEnabledDefault, tipPresetsPct: tips,
-      allergenSet: f.allergenSet,
+      allergenSet: f.allergenSet, allergenCardOnlyAllowed: f.allergenCardOnlyAllowed,
       cardFeeOnlinePct: cardFeeOnlinePct as number, cardFeeOnlineFixedMinor: cardFeeOnlineFixedMinor as number,
       cardFeeInPersonPct: cardFeeInPersonPct as number, cardFeeInPersonFixedMinor: cardFeeInPersonFixedMinor as number,
       tapToPayFixedMinor: tapToPayFixedMinor as number, cardFeeRegionLabel,
@@ -376,7 +378,7 @@ export function asCountryForm(x: unknown): CountryForm | null {
     'phoneCountryCode', 'shortName', 'phoneExample', 'phoneCheck', 'addressFormat', 'defaultTimezone', 'allergenSet', 'supportHours',
     'serviceFeeRecipient', 'serviceFeeHatchgrabPct', 'serviceFeeHatchgrabFixed', 'serviceFeeTruckMaxPct', 'serviceFeeTruckMaxFixed']
   const bools = ['enabled', 'pricesIncludeTax', 'cardSurchargeAllowed', 'cardSurchargeCreditOnly', 'serviceFeeAllowed', 'tippingEnabledDefault',
-    'platformFeeEnabled', 'feesTaxed']
+    'platformFeeEnabled', 'feesTaxed', 'allergenCardOnlyAllowed']   // allergen-card-country: on or off, nothing else
   const lists = ['cardSurchargeExcludedRegions', 'tipPresetsPct', 'timezones']
   if (strs.some(k => typeof o[k] !== 'string')) return null
   if (bools.some(k => typeof o[k] !== 'boolean')) return null

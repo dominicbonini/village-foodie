@@ -9,7 +9,7 @@
 // Server-rendered (no hooks): the landing page passes the translators. `cta` is the page's own "Try free" control.
 import { Fragment, type ReactNode } from 'react'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, currencyLineOf } from '@/lib/country-settings-types'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import type { PlanCatalog } from '@/lib/plans'
@@ -40,7 +40,10 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
   /** The page's "Try free" control (the demo/signup entry point), given the button's class. */
   cta: (className: string, label: string) => ReactNode
 }) {
-  const money = planMoneyFormatOf(settings)   // anz-1: our prices name their dollar (A$, NZ$)
+  // native-prices (22 October 2026): our prices in the country's own form ("$49" in New Zealand); where that symbol is shared,
+  // one line above the cards names the currency (lib/currencies.ts symbolShared). GB, US and IE: no line, as before.
+  const money = planMoneyFormatOf(settings)
+  const currencyLine = currencyLineOf(settings)
   const plans = offerPlans(catalog, settings.countryCode)
   const months = offerTrialMonths(catalog)
   const fallback = offerFallback(catalog, settings.countryCode)
@@ -67,6 +70,7 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
         </div>
       )}
 
+      {currencyLine && <p className="price-currency">{t('currencyLine', currencyLine)}</p>}
       <div className="plans">
         {plans.map((p, i) => {
           const prev = i > 0 ? plans[i - 1] : null

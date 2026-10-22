@@ -16,8 +16,9 @@
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 
-/** True on a tree with pricing-tidy (lib/legal.ts's Terms version 2026-10-20). */
-const LANDED = (() => { try { return /TERMS_VERSION\s*=\s*'2026-10-20'/.test(fs.readFileSync(path.join(REPO, 'lib/legal.ts'), 'utf8')) } catch { return false } })()
+/** True on a tree with pricing-tidy (lib/legal.ts's Terms version 2026-10-20 — ⚠️ RE-PINNED (ireland-3, 21 October 2026):
+ *  or later; ireland-3 moved it on to 2026-10-21, a step scripts/_lp-ireland-3.cjs names AFTER this one). */
+const LANDED = (() => { try { const m = /TERMS_VERSION\s*=\s*'(\d{4}-\d{2}-\d{2})'/.exec(fs.readFileSync(path.join(REPO, 'lib/legal.ts'), 'utf8')); return !!m && m[1] >= '2026-10-20' } catch { return false } })()
 const must = (id, f) => (v, ...a) => { const out = f(v, ...a); if (JSON.stringify(out) === JSON.stringify(v)) throw new Error(`${id}: nothing to change in the BEFORE value (stale anchor)`); return out }
 
 // ── 1 · the Terms' version and date ───────────────────────────────────────────────────────────────────────────────────

@@ -10,17 +10,20 @@
 // list, how a postal code looks and is tidied, how a line is written, how Places and the AI read it. A new country picks
 // an existing format or adds one entry here.
 //
-// ── WHAT READS IT TODAY (stage 1) ──────────────────────────────────────────────────────────────────────────────────
-// Every DISPLAY: lib/event-address.ts (emails, event cards, the calendar line, WhatsApp prompts, the Add-event preview).
-// Entry forms, geocoding, Places, the AI prompts and event-conflicts still read `messagesStyle` / their own rules until
-// stage 2 moves them onto `fields`, `places`, `ai` and `postalCode.identifiesPremises`.
+// ── WHAT READS IT ──────────────────────────────────────────────────────────────────────────────────────────────────
+// Stage 1: every DISPLAY (lib/event-address.ts — emails, event cards, the calendar line, WhatsApp prompts).
+// Stage 2 (address-formats-2, 21 October 2026, docs/address-formats-2-report.md): the ENTRY FORMS (`fields`, `entry`,
+// `examples`, the region list), GEOCODING (`templates.geocode`), GOOGLE PLACES (`places`), the AI PROMPTS (`ai`) and EVENT
+// CONFLICTS (`postalCode.identifiesPremises`). GB and US read it too and come out byte-identical to the code it replaced
+// (scripts/address-formats-2.cjs compares them against a capture of that code).
+// Its follow-up (22 October 2026): the SCRAPER's Pass B prompt (`ai.scraper`, scripts/scraper-prompts.js), which imports
+// this file directly — so keep it plain TypeScript Node can strip (no imports, no enums), as it is today.
 //
 // ── WORDS ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-// Field LABELS are not here: the words live in messages/, keyed by field type and the variant named below (postcode /
-// eircode / zip / postalCode; state / stateTerritory / province / county; townOrArea / city / suburb / townOrCity), so
-// they translate. Until stage 2 moves the labels, the existing `{style, select, zip_state {…} other {…}}` messages are
-// fed `messagesStyle`. Examples, patterns, region names and templates ARE here: they are facts about a country's
-// addresses ("CB8 8PD" is the same in every language), not words to translate.
+// Field LABELS are not here: the words live in messages/ under `address.*`, keyed by field type and the variant named
+// below (postcode / eircode / zip / postalCode; state / stateTerritory / province / county; area / townOrArea / city /
+// suburb / townOrCity), so they translate. Examples, patterns, region names, templates and the AI rules ARE here: they
+// are facts about a country's addresses ("CB8 8PD" is the same in every language), not words to translate.
 
 export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca'
 /** The two values `country_settings.address_format` held before this stage. Still accepted (see `addressFormatKeyOf`)
@@ -30,7 +33,8 @@ export type LegacyAddressStyle = 'postcode' | 'zip_state'
 export type AddressFieldKey = 'street' | 'suburb' | 'locality' | 'region' | 'postalCode'
 export type PostalLabel = 'postcode' | 'eircode' | 'zip' | 'postalCode'
 export type RegionLabel = 'state' | 'stateTerritory' | 'province' | 'county'
-export type LocalityLabel = 'townOrArea' | 'city' | 'suburb' | 'townOrCity'
+/** 'area' is GB/US's "Area (village, town or city)" (en-US "City or town"); 'townOrArea' is Ireland's "Town or area". */
+export type LocalityLabel = 'area' | 'townOrArea' | 'city' | 'suburb' | 'townOrCity'
 export type FieldLabel = PostalLabel | RegionLabel | LocalityLabel | 'street'
 export type PostalNormaliser = 'gb' | 'eircode' | 'digits' | 'zip' | 'ca' | 'none'
 
@@ -42,40 +46,107 @@ export interface AddressTemplate { sep: string; parts: readonly string[]; requir
 export type TemplateToken = 'venue' | 'street' | 'suburb' | 'locality' | 'region' | 'postalCode' | 'country'
 export const TEMPLATE_TOKENS: readonly TemplateToken[] = ['venue', 'street', 'suburb', 'locality', 'region', 'postalCode', 'country']
 
+/** How a form asks for an address beyond the fields themselves. GB and US have every flag off: their forms are exactly
+ *  what they were (no asterisks, no live check, a free text State box for the US). */
+export interface AddressEntry {
+  /** A "Customers see:" line under the form: the `line` template filled with what has been typed (the examples until
+   *  something is). */
+  customersSee: boolean
+  /** The postal code is checked against `postalCode.pattern` as it is typed (a warning, never a block) and tidied with
+   *  the normaliser when the box is left and when the event is saved. */
+  postalCheck: boolean
+  /** Required fields carry the red asterisk. */
+  requiredMarks: boolean
+  /** The region box: a dropdown of the format's list, or a text box no longer than its longest code (the US box). */
+  regionInput: 'select' | 'text'
+  /** The line under a venue in the pickers and on a conflict: the format's `area` template ('area': "Bondi Beach NSW
+   *  2026"), or the line those places always showed ('legacy': the area or else the postal code; town · postal code). */
+  sublines: 'area' | 'legacy'
+  /** The import review (as columns) and the Places editor show the format's region and suburb. Off for GB and the US,
+   *  whose review and Places editor are what they were (the US state is saved from the importer and the event form). */
+  reviewAndPlaces: boolean
+}
+
+/** The AI prompt rules (lib/schedule-extract.ts, lib/admin/screenshot-events.ts, scripts/scraper-prompts.js). `{country}`
+ *  is the truck's or the chosen country's name and `{year}` the current year; nothing else is substituted (the scraper's
+ *  rules use neither). GB's and US's are the prompts' own lines, verbatim (scripts/address-formats-2.cjs compares the
+ *  importer and screenshot prompts, scripts/scraper-prompts-format.cjs the scraper's). */
+export interface AddressAi {
+  importer: {
+    /** "2. ENRICH missing fields using your knowledge of …" */
+    knowledge: string
+    /** Under VENUE NAME RULES:, before the invalid-venue line. */
+    venueRules: string
+    /** The whole postal / region block, its heading included. */
+    postalRules: string
+    /** The whole ADDRESS RULES block. */
+    addressRules: string
+    /** The STEP 2 lines. */
+    enrichRules: string
+    examples: string
+    /** The JSON keys between "venue_name" and "address" in the output line. */
+    outputShape: string
+  }
+  screenshot: {
+    /** Under TRUCK AND VENUE RULES:. */
+    locationLines: string
+    /** One event in the JSON the model returns. */
+    eventShape: string
+  }
+  /** The scraper's Pass B prompt for HatchGrab-linked trucks (scripts/scraper-prompts.js buildHgPrompt). It asks only for
+   *  the keys the scraper sends on to the bridge: "town", "state" (as the event's region) and "postcode". */
+  scraper: {
+    /** The VENUE RULES: line, its heading included. */
+    venueRules: string
+    /** The TOWN RULES (IMPORTANT): block, its heading included. */
+    townRules: string
+    /** The lines under "EXAMPLES (embedded-town split):". */
+    examples: string
+    /** The JSON keys after "venue_name":"Name", in the output line. */
+    outputShape: string
+  }
+}
+
+export type PlacesAdminLevel = 'administrative_area_level_1' | 'administrative_area_level_2'
+
 export interface AddressFormat {
   key: AddressFormatKey
   /** Admin › Countries' dropdown. Admin-only English, like the registry's currency names. */
   adminLabel: string
-  /** The ordered fields, as a form shows them (stage 2). */
+  /** The ordered fields, as a form shows them. */
   fields: readonly AddressField[]
   regions: { list: readonly Region[]; shownAs: 'code' | 'name' } | null
   postalCode: {
-    /** Checked after normalising. Warn-only on entry at first (stage 2). */
+    /** Checked after normalising. Warn-only on entry. */
     pattern: string
     normaliser: PostalNormaliser
     example: string
     /** True when one postal code is one address (GB, Eircode). False when it covers a whole area — a ZIP, an AU/NZ
-     *  4-digit code — so "same postcode" must never mean "same venue" (lib/event-conflicts.ts, stage 2). */
+     *  4-digit code — so "same postcode" must never mean "same venue" (lib/event-conflicts.ts). */
     identifiesPremises: boolean
   }
-  /** Placeholders for the entry forms (stage 2). */
-  examples: { venue: string; street: string; locality: string; suburb?: string; region?: string }
+  entry: AddressEntry
+  /** Placeholders for the entry forms ("e.g. …" around them is a message). `addressLine` is the Address box's example
+   *  (GB's includes the town, as it always has); `importPostalCode` is the import review's postal column;
+   *  `paste` is the venue-and-town part of the paste box's example. */
+  examples: { venue: string; addressLine: string; locality: string; suburb?: string; region?: string; importPostalCode: string; paste: string }
   templates: {
-    /** One line: emails, WhatsApp prompts. Callers leave out the postal code where a line never had one. */
+    /** One line: emails, WhatsApp prompts, the "Customers see:" line. Callers leave out the postal code where a line
+     *  never had one. */
     line: AddressTemplate
     /** Under the venue on an event card. Alternatives, first that qualifies. */
     area: readonly AddressTemplate[]
     /** The calendar invite's location. */
     calendar: AddressTemplate
-    /** What the geocoder is asked (stage 2). */
+    /** What the geocoder is asked. */
     geocode: AddressTemplate
   }
-  /** Google Places mapping (stage 2): which result types are a town, and where the region comes from. */
-  places: { localityTypes: readonly string[]; regionFrom: 'administrative_area_level_1' | 'administrative_area_level_2' | null; regionAs: 'long' | 'short' }
-  /** The AI prompt rules (stage 2). GB's are TODAY'S prompt lines, verbatim (scripts/address-formats-1.cjs checks). */
-  ai: { importerPostalRules: string; screenshotLocationLines: string }
-  /** The ICU `{style}` branch the existing messages use until stage 2 moves the labels: GB/US words are unchanged. */
-  messagesStyle: LegacyAddressStyle
+  /** Google Places: which result types a town search asks for, where the region comes from (the first level present),
+   *  and whether a region CODE is kept for the truck (`trucks.base_region_code`): 'exact' keeps Places' short text only
+   *  when it is, exactly, a code in the list ("NJ", "NSW"); 'match' looks the long or short text up in the list ("County
+   *  Kerry" → "KY"); null keeps none, and the key is absent from the answer (GB's answer is what it was). */
+  places: { localityTypes: readonly string[]; regionFrom: readonly PlacesAdminLevel[]; regionCode: 'exact' | 'match' | null }
+  ai: AddressAi
 }
 
 // ── Region lists ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -110,16 +181,274 @@ const CA_PROVINCES: readonly Region[] = [
   ['QC', 'Quebec'], ['SK', 'Saskatchewan'], ['YT', 'Yukon'],
 ].map(([code, name]) => ({ code, name }))
 
-// ── GB's AI lines — TODAY'S PROMPTS, VERBATIM (lib/schedule-extract.ts, lib/admin/screenshot-events.ts) ──────────────
-const GB_IMPORTER_POSTAL_RULES = `POSTCODE RULES:
+// ── GB's and US's AI rules — THE PROMPTS' OWN LINES, VERBATIM (lib/schedule-extract.ts, lib/admin/screenshot-events.ts;
+// the scraper's from scripts/scraper-prompts.js, its UK and zip_state branches — address-formats-2 follow-up, 22 Oct 2026) ──
+const GB_AI: AddressAi = {
+  importer: {
+    knowledge: `UK venues and locations`,
+    venueRules: `- Extract ONLY the pub/venue name — never include village, town, or postcode in venue_name
+- "The Fox Burwell" → venue_name="The Fox", town="Burwell"
+- "The Red Lion Belchamp Otten CO10 7BQ" → venue_name="The Red Lion", town="Belchamp Otten", postcode="CO10 7BQ"
+- "Five Bells, Burwell, CB25 0EJ, 5pm-9pm" → venue_name="The Five Bells", town="Burwell", postcode="CB25 0EJ"`,
+    postalRules: `POSTCODE RULES:
 - UK postcodes follow the format: letters+numbers SPACE number+letters (e.g. "CB25 0BA", "CO10 7BQ", "PE28 2SB")
 - Always extract the FULL postcode as one unit — if "CB25" is on one line and "0BA" on the next, postcode="CB25 0BA"
 - A postcode fragment alone (like "0BA" or "OBA") is never a town — combine it with the preceding partial postcode
 - If you see a full valid UK postcode anywhere in the text for that event, extract it
-- Return postcodes in uppercase`
-const GB_SCREENSHOT_LOCATION_LINES = `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postcode in it.
+- Return postcodes in uppercase`,
+    addressRules: `ADDRESS RULES:
+- address is for street-level detail only — house number + street name (e.g. "12 High Street")
+- NEVER populate address with the town name, village name, or postcode — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+    enrichRules: `- If you have a venue name and town but no postcode → look up the UK postcode for that venue and provide it
+- If you have a venue name but no town → determine the town/village from your knowledge of that UK venue
+- If the venue name is ambiguous (e.g. "The Fox") and you have a postcode or town → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""`,
+    examples: `Input: "Wednesday 3/6 The Red Lion Belchamp Otten CO10 7BQ"
+Output: {"event_date":"03/06/{year}","start_time":"","end_time":"","venue_name":"The Red Lion","town":"Belchamp Otten","postcode":"CO10 7BQ"}
+
+Input: "Friday 5/6 The Fox Burwell CB25 0BA"
+Output: {"event_date":"05/06/{year}","start_time":"","end_time":"","venue_name":"The Fox","town":"Burwell","postcode":"CB25 0BA"}
+
+Input: "Sunday 7/6 The Five Bells Burwell Birthday Party from 5pm"
+Output: {"event_date":"07/06/{year}","start_time":"17:00","end_time":"","venue_name":"The Five Bells","town":"Burwell","postcode":"CB25 0EJ"}
+
+Input: "Sat 14th June The Crown Wickhambrook 5pm-9pm"
+Output: {"event_date":"14/06/{year}","start_time":"17:00","end_time":"21:00","venue_name":"The Crown","town":"Wickhambrook","postcode":"CB8 8PD"}`,
+    outputShape: `"town":"Town","postcode":"POSTCODE"`,
+  },
+  screenshot: {
+    locationLines: `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postcode in it.
 - Put the town or village in "Village", and the postcode, if one is shown, in "Postcode".
-- UK postcodes look like "CB25 0BA", "CO10 7BQ", "PE28 2SB". If no postcode is shown, use "".`
+- UK postcodes look like "CB25 0BA", "CO10 7BQ", "PE28 2SB". If no postcode is shown, use "".`,
+    eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "CB25 0BA" }`,
+  },
+  scraper: {
+    venueRules: `VENUE RULES: "venue_name" = ONLY the pub/venue name. "town" = the village/town/city it is in.`,
+    townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town/village is EMBEDDED inside the venue name,
+SPLIT it out — put the place-name in "town" and keep "venue_name" as just the pub/venue name. A UK
+place-name sitting next to a generic pub name (Bells/Star/Bell/Lion/Swan/Arms/Crown/Anchor, etc.) is the
+town, not part of the venue name. Never leave a town buried in venue_name. If the town truly cannot be
+determined, use "".`,
+    examples: `  "The Cavendish Five Bells"      -> {"venue_name":"Five Bells","town":"Cavendish"}
+  "The Star Pub, Lidgate"         -> {"venue_name":"The Star","town":"Lidgate"}
+  "Nethergate Brewery, Long Melford" -> {"venue_name":"Nethergate Brewery","town":"Long Melford"}`,
+    outputShape: `"town":"Town","postcode":"Postcode or empty"`,
+  },
+}
+const US_AI: AddressAi = {
+  importer: {
+    knowledge: `venues and locations in {country}`,
+    venueRules: `- Extract ONLY the venue name — never include the city, state or ZIP code in venue_name
+- "Joe's Tavern Austin TX 78701" → venue_name="Joe's Tavern", town="Austin", state="TX", postcode="78701"
+- "Sunset Brewery, Boulder, CO" → venue_name="Sunset Brewery", town="Boulder", state="CO"`,
+    postalRules: `ZIP CODE AND STATE RULES:
+- "town" is the city or town; "state" is the two-letter state code (e.g. "TX", "CA")
+- ZIP codes are five digits (e.g. "78701"); put the ZIP code in "postcode"
+- If you see a ZIP code anywhere in the text for that event, extract it`,
+    addressRules: `ADDRESS RULES:
+- address is for street-level detail only — house number + street name (e.g. "1200 Main Street")
+- NEVER populate address with the city, state or ZIP code — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+    enrichRules: `- If you have a venue name and town but no state → determine the state from your knowledge of that venue
+- If you have a venue name but no town → determine the city or town from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have a town or ZIP code → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""`,
+    examples: `Input: "Sat June 14 Joe's Tavern Austin TX 5pm-9pm"
+Output: {"event_date":"14/06/{year}","start_time":"17:00","end_time":"21:00","venue_name":"Joe's Tavern","town":"Austin","state":"TX","postcode":""}
+
+Input: "6/7 Sunset Brewery, Boulder CO 80302 from 4pm"
+Output: {"event_date":"07/06/{year}","start_time":"16:00","end_time":"","venue_name":"Sunset Brewery","town":"Boulder","state":"CO","postcode":"80302"}`,
+    outputShape: `"town":"City","state":"ST","postcode":"ZIP"`,
+  },
+  screenshot: {
+    locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the city, state or ZIP code in it.
+- Put the city or town in "Village", the two-letter state in "State" (e.g. "TX"), and the ZIP code, if one is shown, in "Postcode".
+- ZIP codes look like "78701". If no ZIP code is shown, use "".`,
+    eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "City", "State": "TX", "Postcode": "78701" }`,
+  },
+  scraper: {
+    venueRules: `VENUE RULES: "venue_name" = ONLY the venue name. "town" = the city or town it is in. "state" = its two-letter state (e.g. "TX").`,
+    townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the city or town is EMBEDDED inside the venue name, SPLIT it out —
+put the place-name in "town", the state in "state", and keep "venue_name" as just the venue name. If the town truly
+cannot be determined, use "".`,
+    examples: `  "Joe's Tavern Austin TX"        -> {"venue_name":"Joe's Tavern","town":"Austin","state":"TX"}
+  "Sunset Brewery, Boulder, CO"    -> {"venue_name":"Sunset Brewery","town":"Boulder","state":"CO"}`,
+    outputShape: `"town":"City","state":"ST","postcode":"ZIP code or empty"`,
+  },
+}
+
+// ── The other formats' AI rules (address-formats-2). Written for this stage: each names its own postal code and region,
+// never a UK postcode, and asks for the region / suburb only where the format has that field.
+const IE_AI: AddressAi = {
+  importer: {
+    knowledge: `venues and locations in {country}`,
+    venueRules: `- Extract ONLY the pub/venue name — never include the town, county or Eircode in venue_name
+- "People's Park Limerick V94 X2T6" → venue_name="People's Park", town="Limerick", postcode="V94 X2T6"
+- "Market Square, Listowel, Co. Kerry, 5pm-9pm" → venue_name="Market Square", town="Listowel", state="Co. Kerry"`,
+    postalRules: `EIRCODE AND COUNTY RULES:
+- "postcode" holds the Eircode: 7 characters, a 3-character routing key, a space, then 4 characters (e.g. "D02 X963", "V94 X2T6") — never a UK postcode
+- Always extract the FULL Eircode as one unit, even when it is split across two lines
+- An Eircode fragment alone is never a town
+- "state" holds the county when one is written (e.g. "Co. Kerry"); otherwise leave it ""
+- Return Eircodes in uppercase`,
+    addressRules: `ADDRESS RULES:
+- address is for street-level detail only — house number + street name (e.g. "12 Main Street")
+- NEVER populate address with the town, county or Eircode — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+    enrichRules: `- If you have a venue name and town but no Eircode → give the venue's Eircode only if you are certain of it
+- If you have a venue name but no town → determine the town from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have an Eircode or town → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""`,
+    examples: `Input: "Wednesday 3/6 People's Park Limerick V94 X2T6"
+Output: {"event_date":"03/06/{year}","start_time":"","end_time":"","venue_name":"People's Park","town":"Limerick","state":"","postcode":"V94 X2T6"}
+
+Input: "Sat 14th June Market Square Listowel Co. Kerry 5pm-9pm"
+Output: {"event_date":"14/06/{year}","start_time":"17:00","end_time":"21:00","venue_name":"Market Square","town":"Listowel","state":"Co. Kerry","postcode":""}`,
+    outputShape: `"town":"Town","state":"Co. County","postcode":"EIRCODE"`,
+  },
+  screenshot: {
+    locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the town, county or Eircode in it.
+- Put the town in "Village", the county, if one is shown, in "State" (e.g. "Co. Kerry"), and the Eircode, if one is shown, in "Postcode".
+- Eircodes look like "D02 X963", "V94 X2T6" — never a UK postcode. If no Eircode is shown, use "".`,
+    eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "State": "Co. Kerry", "Postcode": "D02 X963" }`,
+  },
+  scraper: {
+    venueRules: `VENUE RULES: "venue_name" = ONLY the pub/venue name. "town" = the town or village it is in. "state" = its county when one is written (e.g. "Co. Kerry"), otherwise "". "postcode" = the Eircode (e.g. "D02 X963") — never a UK postcode.`,
+    townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town or village is EMBEDDED inside the venue name, SPLIT it out —
+put the place-name in "town", the county in "state", and keep "venue_name" as just the venue name. Never leave a town
+buried in venue_name. If the town truly cannot be determined, use "".`,
+    examples: `  "Market Square Listowel Co. Kerry" -> {"venue_name":"Market Square","town":"Listowel","state":"Co. Kerry"}
+  "People's Park, Limerick"          -> {"venue_name":"People's Park","town":"Limerick"}`,
+    outputShape: `"town":"Town","state":"Co. County or empty","postcode":"Eircode or empty"`,
+  },
+}
+const AU_AI: AddressAi = {
+  importer: {
+    knowledge: `venues and locations in {country}`,
+    venueRules: `- Extract ONLY the venue name — never include the suburb, state or postcode in venue_name
+- "Bondi Pavilion Bondi Beach NSW 2026" → venue_name="Bondi Pavilion", town="Bondi Beach", state="NSW", postcode="2026"
+- "Fed Square, Melbourne, 5pm-9pm" → venue_name="Fed Square", town="Melbourne"`,
+    postalRules: `SUBURB, STATE AND POSTCODE RULES:
+- "town" is the suburb (e.g. "Bondi Beach") — not the council
+- "state" is the state or territory as its abbreviation: NSW, VIC, QLD, SA, WA, TAS, NT or ACT
+- "postcode" holds the 4-digit Australian postcode (e.g. "2026")
+- If you see a postcode anywhere in the text for that event, extract it`,
+    addressRules: `ADDRESS RULES:
+- address is for street-level detail only — house number + street name (e.g. "1 Queen Elizabeth Drive")
+- NEVER populate address with the suburb, state or postcode — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+    enrichRules: `- If you have a venue name and suburb but no state → determine the state from your knowledge of that venue
+- If you have a venue name and suburb but no postcode → give the suburb's postcode only if you are certain of it
+- If you have a venue name but no suburb → determine the suburb from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have a suburb or postcode → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""`,
+    examples: `Input: "Sat 14th June Bondi Pavilion Bondi Beach NSW 5pm-9pm"
+Output: {"event_date":"14/06/{year}","start_time":"17:00","end_time":"21:00","venue_name":"Bondi Pavilion","town":"Bondi Beach","state":"NSW","postcode":"2026"}
+
+Input: "Friday 6/6 Fed Square Melbourne VIC 3000 from 4pm"
+Output: {"event_date":"06/06/{year}","start_time":"16:00","end_time":"","venue_name":"Fed Square","town":"Melbourne","state":"VIC","postcode":"3000"}`,
+    outputShape: `"town":"Suburb","state":"NSW","postcode":"POSTCODE"`,
+  },
+  screenshot: {
+    locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the suburb, state or postcode in it.
+- Put the suburb in "Village", the state or territory in "State" (NSW, VIC, QLD, SA, WA, TAS, NT or ACT), and the postcode, if one is shown, in "Postcode".
+- Australian postcodes are 4 digits, like "2026". If no postcode is shown, use "".`,
+    eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Suburb", "State": "NSW", "Postcode": "2026" }`,
+  },
+  scraper: {
+    venueRules: `VENUE RULES: "venue_name" = ONLY the venue name. "town" = the suburb it is in (not the council). "state" = its state or territory as NSW, VIC, QLD, SA, WA, TAS, NT or ACT. "postcode" = the 4-digit postcode.`,
+    townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the suburb is EMBEDDED inside the venue name, SPLIT it out —
+put the suburb in "town", the state in "state", and keep "venue_name" as just the venue name. If the suburb truly
+cannot be determined, use "".`,
+    examples: `  "Bondi Pavilion Bondi Beach NSW" -> {"venue_name":"Bondi Pavilion","town":"Bondi Beach","state":"NSW"}
+  "Fed Square, Melbourne, VIC"     -> {"venue_name":"Fed Square","town":"Melbourne","state":"VIC"}`,
+    outputShape: `"town":"Suburb","state":"NSW","postcode":"Postcode or empty"`,
+  },
+}
+const NZ_AI: AddressAi = {
+  importer: {
+    knowledge: `venues and locations in {country}`,
+    venueRules: `- Extract ONLY the venue name — never include the suburb, town or city, or postcode in venue_name
+- "Western Park Ponsonby Auckland 1011" → venue_name="Western Park", suburb="Ponsonby", town="Auckland", postcode="1011"
+- "Cuba Street Market, Wellington, 5pm-9pm" → venue_name="Cuba Street Market", town="Wellington"`,
+    postalRules: `SUBURB, TOWN AND POSTCODE RULES:
+- "town" is the town or city (e.g. "Auckland"); "suburb" is the suburb within it when one is written (e.g. "Ponsonby"), otherwise ""
+- "postcode" holds the 4-digit New Zealand postcode (e.g. "1011")
+- If you see a postcode anywhere in the text for that event, extract it`,
+    addressRules: `ADDRESS RULES:
+- address is for street-level detail only — house number + street name (e.g. "1 Ponsonby Road")
+- NEVER populate address with the suburb, town or city, or postcode — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+    enrichRules: `- If you have a venue name and town but no postcode → give the venue's postcode only if you are certain of it
+- If you have a venue name but no town → determine the town or city from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have a suburb, town or postcode → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""`,
+    examples: `Input: "Sat 14th June Western Park Ponsonby Auckland 5pm-9pm"
+Output: {"event_date":"14/06/{year}","start_time":"17:00","end_time":"21:00","venue_name":"Western Park","suburb":"Ponsonby","town":"Auckland","postcode":"1011"}
+
+Input: "Friday 6/6 Cuba Street Market Wellington from 4pm"
+Output: {"event_date":"06/06/{year}","start_time":"16:00","end_time":"","venue_name":"Cuba Street Market","suburb":"","town":"Wellington","postcode":""}`,
+    outputShape: `"suburb":"Suburb","town":"Town or city","postcode":"POSTCODE"`,
+  },
+  screenshot: {
+    locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the suburb, town or city, or postcode in it.
+- Put the town or city in "Village" (e.g. "Auckland" — not the suburb), and the postcode, if one is shown, in "Postcode".
+- New Zealand postcodes are 4 digits, like "1011". If no postcode is shown, use "".`,
+    eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town or city", "Postcode": "1011" }`,
+  },
+  scraper: {
+    venueRules: `VENUE RULES: "venue_name" = ONLY the venue name. "town" = the town or city it is in (not the suburb). "postcode" = the 4-digit postcode.`,
+    townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town or city is EMBEDDED inside the venue name, SPLIT it out —
+put the place-name in "town" and keep "venue_name" as just the venue name. If the town truly cannot be determined,
+use "".`,
+    examples: `  "Western Park Ponsonby Auckland" -> {"venue_name":"Western Park","town":"Auckland"}
+  "Cuba Street Market, Wellington"  -> {"venue_name":"Cuba Street Market","town":"Wellington"}`,
+    outputShape: `"town":"Town or city","postcode":"Postcode or empty"`,
+  },
+}
+const CA_AI: AddressAi = {
+  importer: {
+    knowledge: `venues and locations in {country}`,
+    venueRules: `- Extract ONLY the venue name — never include the city, province or postal code in venue_name
+- "Market Square Toronto ON M5V 3L9" → venue_name="Market Square", town="Toronto", state="ON", postcode="M5V 3L9"
+- "Granville Island, Vancouver, BC" → venue_name="Granville Island", town="Vancouver", state="BC"`,
+    postalRules: `POSTAL CODE AND PROVINCE RULES:
+- "town" is the city or town; "state" is the two-letter province or territory code (e.g. "ON", "BC")
+- Postal codes are letter-digit-letter, a space, then digit-letter-digit (e.g. "M5V 3L9"); put the postal code in "postcode"
+- Always extract the FULL postal code as one unit, even when it is split across two lines
+- Return postal codes in uppercase`,
+    addressRules: `ADDRESS RULES:
+- address is for street-level detail only — house number + street name (e.g. "790 Queen Street West")
+- NEVER populate address with the city, province or postal code — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+    enrichRules: `- If you have a venue name and town but no province → determine the province from your knowledge of that venue
+- If you have a venue name but no town → determine the city or town from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have a town or postal code → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""`,
+    examples: `Input: "Sat 14th June Market Square Toronto ON M5V 3L9 5pm-9pm"
+Output: {"event_date":"14/06/{year}","start_time":"17:00","end_time":"21:00","venue_name":"Market Square","town":"Toronto","state":"ON","postcode":"M5V 3L9"}
+
+Input: "Friday 6/6 Granville Island Vancouver BC from 4pm"
+Output: {"event_date":"06/06/{year}","start_time":"16:00","end_time":"","venue_name":"Granville Island","town":"Vancouver","state":"BC","postcode":""}`,
+    outputShape: `"town":"City","state":"ON","postcode":"POSTAL CODE"`,
+  },
+  screenshot: {
+    locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the city, province or postal code in it.
+- Put the city or town in "Village", the two-letter province in "State" (e.g. "ON"), and the postal code, if one is shown, in "Postcode".
+- Postal codes look like "M5V 3L9". If no postal code is shown, use "".`,
+    eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "City", "State": "ON", "Postcode": "M5V 3L9" }`,
+  },
+  scraper: {
+    venueRules: `VENUE RULES: "venue_name" = ONLY the venue name. "town" = the city or town it is in. "state" = its two-letter province or territory (e.g. "ON"). "postcode" = the postal code (e.g. "M5V 3L9").`,
+    townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the city or town is EMBEDDED inside the venue name, SPLIT it out —
+put the place-name in "town", the province in "state", and keep "venue_name" as just the venue name. If the town truly
+cannot be determined, use "".`,
+    examples: `  "Market Square Toronto ON"        -> {"venue_name":"Market Square","town":"Toronto","state":"ON"}
+  "Granville Island, Vancouver, BC" -> {"venue_name":"Granville Island","town":"Vancouver","state":"BC"}`,
+    outputShape: `"town":"City","state":"ON","postcode":"Postal code or empty"`,
+  },
+}
 
 // ── The templates the GB/US displays already wrote, as data (each one byte-identical to the code it replaced) ───────
 const COMMA_VENUE_LOCALITY_POSTAL: AddressTemplate = { sep: ', ', parts: ['{venue}', '{locality}', '{postalCode}'] }
@@ -131,34 +460,35 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
     adminLabel: 'United Kingdom — postcode',
     fields: [
       { key: 'street', required: false, label: 'street' },
-      { key: 'locality', required: true, label: 'townOrArea' },
+      { key: 'locality', required: true, label: 'area' },
       { key: 'postalCode', required: false, label: 'postcode' },
     ],
     regions: null,
     postalCode: { pattern: '^([A-Z]{1,2}\\d[A-Z\\d]? \\d[A-Z]{2}|GIR 0AA)$', normaliser: 'gb', example: 'CB8 8PD', identifiesPremises: true },
-    examples: { venue: 'The Red Lion', street: '123 High St', locality: 'Wickhambrook' },
+    entry: { customersSee: false, postalCheck: false, requiredMarks: false, regionInput: 'text', sublines: 'legacy', reviewAndPlaces: false },
+    examples: { venue: 'The Crown', addressLine: '123 High St, Wickhambrook', locality: 'Wickhambrook', importPostalCode: 'CB22 5EJ', paste: 'The Crown, Wickhambrook' },
     templates: {
       line: COMMA_VENUE_LOCALITY_POSTAL,
       area: [DOT_LOCALITY_POSTAL],
       calendar: COMMA_VENUE_LOCALITY_POSTAL,
       geocode: { sep: ', ', parts: ['{venue}', '{locality}', '{postalCode}', '{country}'] },
     },
-    places: { localityTypes: ['locality', 'postal_town'], regionFrom: 'administrative_area_level_2', regionAs: 'long' },
-    ai: { importerPostalRules: GB_IMPORTER_POSTAL_RULES, screenshotLocationLines: GB_SCREENSHOT_LOCATION_LINES },
-    messagesStyle: 'postcode',
+    places: { localityTypes: ['locality', 'postal_town'], regionFrom: ['administrative_area_level_2', 'administrative_area_level_1'], regionCode: null },
+    ai: GB_AI,
   },
   us: {
     key: 'us',
     adminLabel: 'United States — city, state, ZIP code',
     fields: [
       { key: 'street', required: false, label: 'street' },
-      { key: 'locality', required: true, label: 'townOrArea' },
+      { key: 'locality', required: true, label: 'area' },
       { key: 'region', required: false, label: 'state' },
       { key: 'postalCode', required: false, label: 'zip' },
     ],
     regions: { list: US_STATES, shownAs: 'code' },
     postalCode: { pattern: '^\\d{5}(-\\d{4})?$', normaliser: 'zip', example: '78701', identifiesPremises: false },
-    examples: { venue: 'Zilker Park', street: '123 Main St', locality: 'Austin', region: 'TX' },
+    entry: { customersSee: false, postalCheck: false, requiredMarks: false, regionInput: 'text', sublines: 'legacy', reviewAndPlaces: false },
+    examples: { venue: 'Main Street Brewery', addressLine: '123 Main St, Austin, TX 78701', locality: 'Austin', region: 'NJ', importPostalCode: '78701', paste: 'Zilker Park, Austin' },
     templates: {
       line: { sep: ', ', parts: ['{venue}', '{locality}', '{region} {postalCode}'] },
       // With a state: "Hoboken, NJ 07030"; without one, the GB-style line every card had before.
@@ -166,14 +496,12 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
       // ⚠️ TODAY'S US CALENDAR LINE HAS NO STATE (lib/utils.ts getFullLocation never passed one). Kept exactly; add
       // '{region} {postalCode}' here to show it — a deliberate change, not a side effect.
       calendar: COMMA_VENUE_LOCALITY_POSTAL,
-      geocode: { sep: ', ', parts: ['{venue}', '{locality}', '{region} {postalCode}', '{country}'] },
+      // ⚠️ TODAY'S US GEOCODE QUERY HAS NO STATE (app/api/manage/geocode/route.ts never sent one). Kept exactly, like the
+      // calendar line; add '{region} {postalCode}' to send it — a deliberate change, not a side effect.
+      geocode: { sep: ', ', parts: ['{venue}', '{locality}', '{postalCode}', '{country}'] },
     },
-    places: { localityTypes: ['locality', 'postal_town'], regionFrom: 'administrative_area_level_1', regionAs: 'short' },
-    ai: {
-      importerPostalRules: 'ZIP RULES:\n- "postcode" holds the five-digit ZIP code (e.g. "78701"); "state" holds the two-letter state (e.g. "TX")',
-      screenshotLocationLines: '- Put the city or town in "Village", the two-letter state in "State" (e.g. "TX"), and the ZIP code, if one is shown, in "Postcode".',
-    },
-    messagesStyle: 'zip_state',
+    places: { localityTypes: ['locality', 'postal_town'], regionFrom: ['administrative_area_level_1'], regionCode: 'exact' },
+    ai: US_AI,
   },
   ie: {
     key: 'ie',
@@ -186,7 +514,8 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
     ],
     regions: { list: IE_COUNTIES, shownAs: 'name' },
     postalCode: { pattern: '^([AC-FHKNPRTV-Y]\\d{2}|D6W) [0-9AC-FHKNPRTV-Y]{4}$', normaliser: 'eircode', example: 'D02 X963', identifiesPremises: true },
-    examples: { venue: "People's Park", street: '12 Main Street', locality: 'Limerick', region: 'Co. Limerick' },
+    entry: { customersSee: true, postalCheck: true, requiredMarks: true, regionInput: 'select', sublines: 'area', reviewAndPlaces: true },
+    examples: { venue: "People's Park", addressLine: '12 Main Street, Limerick', locality: 'Limerick', region: 'Co. Limerick', importPostalCode: 'V94 X2T6', paste: "People's Park, Limerick" },
     templates: {
       // The county only when one was given: "People's Park, Limerick, V94 X2T6" / "…, Listowel, Co. Kerry, V31 …".
       line: { sep: ', ', parts: ['{venue}', '{locality}', '{region}', '{postalCode}'] },
@@ -194,12 +523,8 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
       calendar: { sep: ', ', parts: ['{venue}', '{locality}', '{region}', '{postalCode}'] },
       geocode: { sep: ', ', parts: ['{venue}', '{locality}', '{region}', '{postalCode}', '{country}'] },
     },
-    places: { localityTypes: ['locality', 'postal_town'], regionFrom: 'administrative_area_level_1', regionAs: 'long' },
-    ai: {
-      importerPostalRules: 'EIRCODE RULES:\n- "postcode" holds the Eircode: 7 characters, a 3-character routing key, a space, then 4 characters (e.g. "D02 X963") — never a UK postcode\n- Return Eircodes in uppercase',
-      screenshotLocationLines: '- Put the town in "Village", and the Eircode, if one is shown, in "Postcode" (e.g. "D02 X963"). If none is shown, use "".',
-    },
-    messagesStyle: 'postcode',
+    places: { localityTypes: ['locality', 'postal_town'], regionFrom: ['administrative_area_level_1'], regionCode: 'match' },
+    ai: IE_AI,
   },
   au: {
     key: 'au',
@@ -212,19 +537,16 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
     ],
     regions: { list: AU_STATES, shownAs: 'code' },
     postalCode: { pattern: '^\\d{4}$', normaliser: 'digits', example: '2026', identifiesPremises: false },
-    examples: { venue: 'Bondi Pavilion', street: '1 Queen Elizabeth Dr', locality: 'Bondi Beach', region: 'NSW' },
+    entry: { customersSee: true, postalCheck: true, requiredMarks: true, regionInput: 'select', sublines: 'area', reviewAndPlaces: true },
+    examples: { venue: 'Bondi Pavilion', addressLine: '1 Queen Elizabeth Dr, Bondi Beach', locality: 'Bondi Beach', region: 'NSW', importPostalCode: '2026', paste: 'Bondi Pavilion, Bondi Beach' },
     templates: {
       line: { sep: ', ', parts: ['{venue}', '{locality} {region} {postalCode}'] },
       area: [{ sep: ' ', parts: ['{locality}', '{region}', '{postalCode}'] }],
       calendar: { sep: ', ', parts: ['{venue}', '{locality} {region} {postalCode}'] },
       geocode: { sep: ', ', parts: ['{venue}', '{locality} {region} {postalCode}', '{country}'] },
     },
-    places: { localityTypes: ['locality'], regionFrom: 'administrative_area_level_1', regionAs: 'short' },
-    ai: {
-      importerPostalRules: 'POSTCODE RULES:\n- "postcode" holds the 4-digit Australian postcode (e.g. "2026"); "state" holds the state or territory (NSW, VIC, QLD, SA, WA, TAS, NT, ACT)\n- The suburb goes in "town"',
-      screenshotLocationLines: '- Put the suburb in "Village", the state or territory in "State" (e.g. "NSW"), and the 4-digit postcode, if one is shown, in "Postcode".',
-    },
-    messagesStyle: 'postcode',
+    places: { localityTypes: ['locality'], regionFrom: ['administrative_area_level_1'], regionCode: 'exact' },
+    ai: AU_AI,
   },
   nz: {
     key: 'nz',
@@ -237,19 +559,16 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
     ],
     regions: null,
     postalCode: { pattern: '^\\d{4}$', normaliser: 'digits', example: '1011', identifiesPremises: false },
-    examples: { venue: 'Western Park', street: '1 Ponsonby Rd', locality: 'Auckland', suburb: 'Ponsonby' },
+    entry: { customersSee: true, postalCheck: true, requiredMarks: true, regionInput: 'select', sublines: 'area', reviewAndPlaces: true },
+    examples: { venue: 'Western Park', addressLine: '1 Ponsonby Rd, Ponsonby', locality: 'Auckland', suburb: 'Ponsonby', importPostalCode: '1011', paste: 'Western Park, Auckland' },
     templates: {
       line: { sep: ', ', parts: ['{venue}', '{suburb}', '{locality} {postalCode}'] },
       area: [{ sep: ', ', parts: ['{suburb}', '{locality} {postalCode}'] }],
       calendar: { sep: ', ', parts: ['{venue}', '{suburb}', '{locality} {postalCode}'] },
       geocode: { sep: ', ', parts: ['{venue}', '{suburb}', '{locality} {postalCode}', '{country}'] },
     },
-    places: { localityTypes: ['locality', 'sublocality_level_1'], regionFrom: null, regionAs: 'long' },
-    ai: {
-      importerPostalRules: 'POSTCODE RULES:\n- "postcode" holds the 4-digit New Zealand postcode (e.g. "1011"); the suburb and the city both go in "town" ("Ponsonby, Auckland")',
-      screenshotLocationLines: '- Put the suburb and city in "Village" (e.g. "Ponsonby, Auckland"), and the 4-digit postcode, if one is shown, in "Postcode".',
-    },
-    messagesStyle: 'postcode',
+    places: { localityTypes: ['locality', 'sublocality_level_1'], regionFrom: [], regionCode: null },
+    ai: NZ_AI,
   },
   ca: {
     key: 'ca',
@@ -262,21 +581,16 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
     ],
     regions: { list: CA_PROVINCES, shownAs: 'code' },
     postalCode: { pattern: '^[ABCEGHJ-NPRSTVXY]\\d[ABCEGHJ-NPRSTV-Z] \\d[ABCEGHJ-NPRSTV-Z]\\d$', normaliser: 'ca', example: 'M5V 3L9', identifiesPremises: false },
-    examples: { venue: 'Trinity Bellwoods Park', street: '790 Queen St W', locality: 'Toronto', region: 'ON' },
+    entry: { customersSee: true, postalCheck: true, requiredMarks: true, regionInput: 'select', sublines: 'area', reviewAndPlaces: true },
+    examples: { venue: 'Trinity Bellwoods Park', addressLine: '790 Queen St W, Toronto', locality: 'Toronto', region: 'ON', importPostalCode: 'M5V 3L9', paste: 'Trinity Bellwoods Park, Toronto' },
     templates: {
       line: { sep: ', ', parts: ['{venue}', '{locality}', '{region} {postalCode}'] },
       area: [{ sep: ', ', parts: ['{locality}', '{region} {postalCode}'] }],
       calendar: { sep: ', ', parts: ['{venue}', '{locality}', '{region} {postalCode}'] },
       geocode: { sep: ', ', parts: ['{venue}', '{locality}', '{region} {postalCode}', '{country}'] },
     },
-    places: { localityTypes: ['locality'], regionFrom: 'administrative_area_level_1', regionAs: 'short' },
-    ai: {
-      importerPostalRules: 'POSTAL CODE RULES:\n- "postcode" holds the Canadian postal code, letter-digit-letter space digit-letter-digit (e.g. "M5V 3L9"); "state" holds the two-letter province (e.g. "ON")\n- Return postal codes in uppercase',
-      screenshotLocationLines: '- Put the city in "Village", the two-letter province in "State" (e.g. "ON"), and the postal code, if one is shown, in "Postcode" (e.g. "M5V 3L9").',
-    },
-    // ⚠️ Until stage 2 moves the labels, Canada's forms take the city/state/ZIP words ("State", "ZIP code"): the closer
-    // of the two shapes (it has a province field). Canada has no country row yet, so nothing shows this.
-    messagesStyle: 'zip_state',
+    places: { localityTypes: ['locality'], regionFrom: ['administrative_area_level_1'], regionCode: 'exact' },
+    ai: CA_AI,
   },
 }
 
@@ -302,9 +616,27 @@ export function addressFormatOf(v: unknown): AddressFormat | undefined {
   return k ? ADDRESS_FORMATS[k] : undefined
 }
 
-/** The `{style}` the existing messages select on, for a format (stage 1: labels unchanged). Unknown → 'postcode'. */
-export function messagesStyleOf(v: unknown): LegacyAddressStyle {
-  return addressFormatOf(v)?.messagesStyle ?? 'postcode'
+/** The format a caller with no (or an unreadable) value falls back to: GB, as every such caller did before. */
+export const DEFAULT_ADDRESS_FORMAT: AddressFormatKey = 'gb'
+
+/** The format for a stored value, or the default (GB). For callers that must always have one: forms, prompts, Places. */
+export function addressFormatOrDefault(v: unknown): AddressFormat {
+  return addressFormatOf(v) ?? ADDRESS_FORMATS[DEFAULT_ADDRESS_FORMAT]
+}
+
+/** The field a format has for a key, or undefined (GB has no region, NZ has a suburb). */
+export function fieldOf(format: AddressFormat, key: AddressFieldKey): AddressField | undefined {
+  return format.fields.find(f => f.key === key)
+}
+
+/** The postal field's label variant — the key the `address.*` messages are written under. */
+export function postalLabelOf(format: AddressFormat): PostalLabel {
+  return (fieldOf(format, 'postalCode')?.label ?? 'postcode') as PostalLabel
+}
+
+/** An AI rule with its `{country}` and `{year}` filled in. */
+export function fillAiText(text: string, v: { country: string; year: number }): string {
+  return text.replace(/\{country\}/g, v.country).replace(/\{year\}/g, String(v.year))
 }
 
 // ── Regions ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -399,7 +731,19 @@ export function validateAddressFormats(formats: Readonly<Record<string, AddressF
       if (new Set(codes).size !== codes.length) at('a region code appears twice')
       for (const r of f.regions.list) if (!r.code.trim() || !r.name.trim() || r.code !== r.code.toUpperCase()) at(`malformed region ${JSON.stringify(r)}`)
     }
-    if (!['postcode', 'zip_state'].includes(f.messagesStyle)) at(`unknown messages style ${f.messagesStyle}`)
+    for (const [k, v] of Object.entries(f.examples)) if (typeof v !== 'string' || !v.trim()) at(`an empty example ${k}`)
+    if (keys.includes('region') !== !!f.examples.region) at('a region field needs a region example, and an example needs the field')
+    if (keys.includes('suburb') !== !!f.examples.suburb) at('a suburb field needs a suburb example, and an example needs the field')
+    if (f.regions && f.examples.region && !regionOf(f, f.examples.region)) at(`the region example "${f.examples.region}" is not in its list`)
+    if (f.places.regionCode && !f.regions) at('a Places region code needs a region list')
+    if (f.places.regionCode && !f.places.regionFrom.length) at('a Places region code needs a level to read it from')
+    if (!f.places.localityTypes.length) at('no Places locality types')
+    for (const [part, slots] of [['importer', f.ai.importer], ['screenshot', f.ai.screenshot], ['scraper', f.ai.scraper]] as const) {
+      for (const [k, v] of Object.entries(slots)) {
+        if (typeof v !== 'string' || !v.trim()) at(`an empty AI rule ${part}.${k}`)
+        else for (const m of v.matchAll(/\$\{|`/g)) at(`AI rule ${part}.${k} holds ${m[0]}`)
+      }
+    }
   }
   return problems
 }

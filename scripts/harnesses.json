@@ -51,10 +51,14 @@
     "ireland-1.cjs",
     "anz-1.cjs",
     "currency-registry.cjs",
+    "native-prices.cjs",
     "ai-search-1.cjs",
     "ireland-2.cjs",
     "directions-link.cjs",
     "address-formats-1.cjs",
+    "allergen-card-country.cjs",
+    "address-formats-2.cjs",
+    "scraper-prompts-format.cjs",
     "seo-fixes.cjs",
     "private-events.cjs",
     "event-types-render.cjs",
@@ -142,6 +146,8 @@
     "us-legal-draft.cjs",
     "legal-follow-ups.cjs",
     "outreach-legal-footer.cjs",
+    "ireland-3.cjs",
+    "anz-terms.cjs",
     "language-phase-0.cjs",
     "messages-parity.cjs",
     "ui-literals.cjs",
@@ -194,6 +200,9 @@
         "_lp-seo-fixes.cjs",
         "_lp-pricing-tidy.cjs",
         "_lp-compare-tidy.cjs",
+        "_lp-ireland-3.cjs",
+        "_lp-anz-terms.cjs",
+        "_native-prices-fixtures.cjs",
         "_lp-features-restore.cjs",
         "_outreach-schema-census.cjs",
         "_png-decode.cjs",
@@ -255,22 +264,24 @@
         "_lp1d2-named.cjs",
         "_lp1d2-checks.cjs",
         "_messages-parity-1d2.cjs",
-   "_lp1e-fixtures.cjs",
-   "_lp1e-pages.cjs",
-   "_lp1e-parts.cjs",
-   "_lp1e-billing.cjs",
-   "_lp1e-router.cjs",
-   "_lp1e-named.cjs",
-   "_lp1e-words.cjs",
-   "_lp1e-checks.cjs",
-   "_messages-parity-1e.cjs",
-   "_lp-stage-b.cjs"
+        "_lp1e-fixtures.cjs",
+        "_lp1e-pages.cjs",
+        "_lp1e-parts.cjs",
+        "_lp1e-billing.cjs",
+        "_lp1e-router.cjs",
+        "_lp1e-named.cjs",
+        "_lp1e-words.cjs",
+        "_lp1e-checks.cjs",
+        "_messages-parity-1e.cjs",
+        "_lp-stage-b.cjs",
+        "_address-formats-2-after.cjs"
       ]
     },
     "fixture_generators": {
       "$why": "🔴 THESE REWRITE THE COMMITTED GOLDEN FIXTURES. Running them in a sweep would silently regenerate the baseline that batch-rolling-identity.cjs and batch-reservation-golden-on.cjs check AGAINST, turning both proofs into tautologies. Run by hand, deliberately, only from a build whose harnesses already pass. `split-messages.cjs` (Language Phase 1b) writes the per-namespace catalogue from messages/*.json; `messages-split.cjs` checks it.",
       "files": [
         "_batch-reservation-golden-on-generate.cjs",
+        "_scraper-prompts-capture.mjs",
         "_batch-rolling-golden-generate.cjs",
         "split-messages.cjs"
       ]
@@ -303,7 +314,9 @@
         "subtab-row.cjs",
         "signup-landing-screenshots.cjs",
         "schedules-country-screenshots.cjs",
-        "phase3-screens-shots.cjs"
+        "phase3-screens-shots.cjs",
+        "address-formats-2-screens.cjs",
+        "native-prices-screens.cjs"
       ]
     }
   }

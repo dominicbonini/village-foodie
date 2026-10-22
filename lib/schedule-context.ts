@@ -6,7 +6,7 @@
 // events — the Apps Script vendor-email prompt's pattern of showing the model where a truck already trades.
 // Its location lines follow the country's address_format. A read that fails leaves its line out; it never
 // blocks an import.
-import { messagesStyleOf } from '@/lib/address-formats'
+import { addressFormatKeyOf } from '@/lib/address-formats'
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { getCountrySettings } from '@/lib/country-settings'
@@ -22,12 +22,12 @@ export async function scheduleContextForTruck(
 ): Promise<ScheduleContext> {
   let countryName: string | null = null
   let countryCode: string | null = null
-  let addressFormat: ScheduleContext['addressFormat'] = 'postcode'
+  let addressFormat: ScheduleContext['addressFormat'] = null   // unreadable settings → GB's lines, as before
   try {
     const s = await getCountrySettings(truck.country || 'GB')
     countryName = s.name
     countryCode = s.countryCode
-    addressFormat = messagesStyleOf(s.addressFormat)   // address-formats-1: the prompt's style, unchanged until stage 2
+    addressFormat = addressFormatKeyOf(s.addressFormat)   // address-formats-2: the format's key — its AI rules (lib/address-formats.ts)
   } catch (e) {
     console.warn('[schedule-context] country settings unavailable:', e instanceof Error ? e.message : String(e))
   }

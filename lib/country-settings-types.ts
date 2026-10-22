@@ -12,6 +12,7 @@
 
 import type { AddressFormatKey } from '@/lib/address-formats'   // address-formats-1: the pure address-format config
 import { currencyInfo } from '@/lib/currencies'
+import type { MoneyFormat } from '@/lib/money-format'
 
 /** How a country's phone numbers are checked: 'length' — a plausible length (libphonenumber "possible",
  *  the default); 'strict' — real numbers only (libphonenumber "valid"); 'off' — anything not empty. */
@@ -68,6 +69,9 @@ export interface CountrySettings {
   /** Whether the service fee and card surcharge are taxed (D8). Default false. */
   feesTaxed: boolean
   allergenSet: 'uk14' | 'us9' | 'anz'   // anz-1: Australia / New Zealand (lib/allergens.ts ANZ)
+  /** allergen-card-country (21 October 2026): may a truck here show its allergens as ONE card for the whole menu
+   *  (allergen_display_mode 'card')? True everywhere except where the law requires allergens per dish (Ireland, FSAI). */
+  allergenCardOnlyAllowed: boolean
 
   // ⛔ THE SIX OLD PLAN PRICE COLUMNS ARE NOT ON THIS TYPE (pricing-pages, Stage B): retired by plans-data-model Stage A
   // and no longer read anywhere. Plans and their prices are public.plans / public.plan_prices, read through lib/plans.ts.
@@ -93,17 +97,35 @@ export function moneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): 
 }
 
 /**
- * anz-1 (21 October 2026): HATCHGRAB'S OWN PLAN PRICES NAME THEIR DOLLAR. The pricing pages, /features, /compare, the plans
- * PDF and Billing quote our prices on a site with a country menu, so "$39" must say WHICH dollar: A$39, NZ$49. A truck's
- * own prices (its menu, orders, receipts) keep its country's everyday symbol (moneyFormatOf: "$12.00" in Australia).
- * currency-registry (21 October 2026): the rule is now DATA — the registry's `planLocale` (lib/currencies.ts). A currency
- * whose everyday symbol another listed currency shares ("$" for CAD / AUD / NZD; "kr" for SEK / NOK / DKK) has its plan
- * prices written in international English ("CA$", "A$", "NZ$", "SEK"); it was "a bare '$' that is not USD", which gives
- * the same three dollars. Every other currency — GBP "£", USD "$", EUR "€" — gets exactly moneyFormatOf, so GB, US and IE
- * pages are byte-identical. scripts/currency-registry.cjs checks that the result carries the registry's `symbol`.
+ * native-prices (22 October 2026, docs/native-prices-report.md; decided by Dominic, 21 Oct): HATCHGRAB'S PLAN PRICES ON A
+ * COUNTRY'S OWN PAGES ARE WRITTEN THE WAY LOCALS WRITE THEM — the pricing section, /features, /compare, the plans PDF,
+ * Manage › Billing, the van modal and the plan prompts: "$49" in New Zealand, "$39" in Australia, "29 kr" in Sweden, "£29",
+ * "$29", "€29". That is Intl in the country's own locale (moneyFormatOf, the form a truck's menu already uses), plus the
+ * currency registry's override where Intl's home form is not the native one (lib/currencies.ts `homeDisplay`: RON).
+ * GB, US and IE get exactly moneyFormatOf, as before. Where the home symbol is shared ("$", "kr"), the page names the
+ * currency once instead (currencyLineOf).
+ * ⛔ It was anz-1's "name the dollar" rule (A$39, NZ$49 on Australia's and New Zealand's own pages; the registry's
+ * `planLocale` from currency-registry). That form now lives only where currencies sit side by side: intlMoneyFormatOf.
  */
-export function planMoneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): { currency: string; locale: string } {
+export function planMoneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): MoneyFormat {
   const own = moneyFormatOf(s)
-  const planLocale = currencyInfo(own.currency)?.planLocale
-  return planLocale ? { currency: own.currency, locale: planLocale } : own
+  const display = currencyInfo(own.currency)?.homeDisplay
+  return display ? { ...own, currencyDisplay: display } : own
+}
+
+/**
+ * native-prices: THE INTERNATIONAL FORM — for the places several countries' prices can sit side by side (Admin, /llms.txt).
+ * A currency whose home symbol is shared (lib/currencies.ts `symbolShared`: CAD, AUD, NZD, SEK, NOK, DKK) is written in
+ * international English, so it names itself: "NZ$49", "A$39", "SEK 29". Every other currency is its home form
+ * (planMoneyFormatOf) — "£29", "$29", "€29". Machine-readable data keeps ISO codes (JSON-LD priceCurrency) and needs neither.
+ */
+export function intlMoneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): MoneyFormat {
+  return currencyInfo(s.currency)?.symbolShared ? { currency: s.currency, locale: 'en' } : planMoneyFormatOf(s)
+}
+
+/** The currency line a country's pricing carries when its home symbol is shared — the registry's plural name and code
+ *  for `pricing.currencyLine` ("Prices in New Zealand dollars (NZD)") — or null (GB, US, IE: no line). */
+export function currencyLineOf(s: Pick<CountrySettings, 'currency'>): { currency: string; code: string } | null {
+  const c = currencyInfo(s.currency)
+  return c?.symbolShared ? { currency: c.namePlural, code: c.code } : null
 }

@@ -33,6 +33,9 @@ import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'  
 import CostComparison from './CostComparison'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/compare'
+// native-prices: the currency line's words (`pricing.currencyLine`)
+import '@/lib/i18n/catalog/pricing'
+import { currencyLineOf } from '@/lib/country-settings-types'
 import { getPlanCatalog } from '@/lib/plans-server'   // Stage B: the calculator's plans are the data's
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
@@ -213,7 +216,11 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
         <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
       </div>
 
-      <CostComparison settings={settings} catalog={catalog} locale={localeOfCountry(settings)} freeMonthsOverride={freeMonthsOverride} />
+      {/* native-prices (22 October 2026): where the country's currency symbol is shared, the line naming it — written here, on
+          the server, so the calculator loads no second message catalogue. Passed ONLY when there is one, so a GB, US or IE
+          page's props are exactly what they were. */}
+      <CostComparison settings={settings} catalog={catalog} locale={localeOfCountry(settings)} freeMonthsOverride={freeMonthsOverride}
+        {...(currencyLineOf(settings) ? { currencyLine: translatorFor(settings.locale, 'pricing')('currencyLine', currencyLineOf(settings)!) } : {})} />
 
       <div className={CHROME}>
         <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />

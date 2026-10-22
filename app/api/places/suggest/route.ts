@@ -12,6 +12,6 @@ export async function GET(req: NextRequest) {
   const country = (req.nextUrl.searchParams.get('country') ?? '').toUpperCase()
   const guard = await placesGuard(req, country)
   if (!guard.ok) return NextResponse.json({ state: 'none' }, { headers: { 'Cache-Control': 'no-store' } })
-  const r = await suggestTowns(q, country, sessionTokenOf(req.nextUrl.searchParams.get('session')))
+  const r = await suggestTowns(q, country, sessionTokenOf(req.nextUrl.searchParams.get('session')), fetch, guard.settings.addressFormat)   // address-formats-2: the format's town types
   return NextResponse.json(r.state === 'ok' ? r : { state: 'none' }, { headers: { 'Cache-Control': 'no-store' } })
 }

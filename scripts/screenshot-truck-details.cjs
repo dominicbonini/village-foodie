@@ -430,17 +430,32 @@ function fakeDb(opts = {}) {
    * still fails. GB/US prompt wording is proven byte-identical apart from the language line by
    * scripts/schedules-country-parity.cjs and scripts/time-dates-parity.cjs. */
   const TIE1 = JSON.parse(read('scripts/fixtures/screenshot-truck-details-ie1-lines.json'))
-  const namedIE1 = (f, l) => { const e = TIE1[f] || { added: [], removed: [] }; return e.added.includes(l) || e.removed.includes(l) }
+  /* ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the prompts read their location rules from lib/address-formats.ts and
+   * the parser / the bridge keep a region as the truck's format's code. Those lines are named in
+   * scripts/fixtures/address-formats-2-named-lines.json (ADDED present, REMOVED gone — the excuse expires otherwise), and
+   * an earlier build's named line that this stage REMOVED is excused from that build's "still present" test. GB and US
+   * prompts are proven byte-identical by scripts/address-formats-2.cjs (against a capture of the code before). */
+  const TAF2 = JSON.parse(read('scripts/fixtures/address-formats-2-named-lines.json'))
+  const goneByAF2 = (f, l) => !!TAF2[f] && TAF2[f].removed.includes(l)
+  const namedAF2 = (f, l) => !!TAF2[f] && (TAF2[f].added.includes(l) || TAF2[f].removed.includes(l))
+  const namedIE1 = (f, l) => { const e = TIE1[f] || { added: [], removed: [] }; return e.added.includes(l) || e.removed.includes(l) || namedAF2(f, l) }
+  const expiredAF2 = f => {
+    if (!TAF2[f]) return true
+    const have = new Set(read(f).split('\n').map(l => l.trim()))
+    const missing = TAF2[f].added.filter(l => !have.has(l)), back = TAF2[f].removed.filter(l => have.has(l))
+    if (missing.length || back.length) console.log('      ⛔ ADDRESS-FORMATS-2 LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0]).slice(0, 160))
+    return !missing.length && !back.length
+  }
   const expiredIE1 = f => {
     const have = new Set(read(f).split('\n').map(l => l.trim())), e = TIE1[f] || { added: [], removed: [], superseded: [] }
-    const missing = e.added.filter(l => !have.has(l)), back = [...e.removed, ...(e.superseded || [])].filter(l => have.has(l))
+    const missing = e.added.filter(l => !have.has(l) && !goneByAF2(f, l)), back = [...e.removed, ...(e.superseded || [])].filter(l => have.has(l))
     if (missing.length || back.length) console.log('      ⛔ IRELAND-1 LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0]).slice(0, 160))
-    return !missing.length && !back.length
+    return !missing.length && !back.length && expiredAF2(f)
   }
   const expired2d2 = f => {
     const have = new Set(read(f).split('\n').map(l => l.trim())), e = T2D2[f] || { added: [], removed: [] }
     const supersededIE1 = (TIE1[f] && TIE1[f].superseded) || []   // ⚠️ RE-PINNED (ireland-1): see above
-    const missing = e.added.filter(l => !have.has(l) && !supersededIE1.includes(l)), back = e.removed.filter(l => have.has(l))
+    const missing = e.added.filter(l => !have.has(l) && !supersededIE1.includes(l) && !goneByAF2(f, l)), back = e.removed.filter(l => have.has(l))
     if (missing.length || back.length) console.log('      ⛔ PHASE 2D-2 LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0]).slice(0, 160))
     return !missing.length && !back.length && expiredIE1(f)
   }
@@ -598,7 +613,7 @@ function fakeDb(opts = {}) {
      * nor proves anything about the bridge. Anything with a letter, digit or quote is still checked. */
     const sides = diffSides(f)
     const unexplained = changed.filter(l => /[A-Za-z0-9'"`]/.test(l)).filter(l => !TOLERATED.includes(l) && !TOLERATED_REMOVED.includes(l))
-      .filter(l => !named2d2(f, l) && !(sides.plus.includes(l) && sides.minus.includes(l)))
+      .filter(l => !named2d2(f, l) && !namedAF2(f, l) && !(sides.plus.includes(l) && sides.minus.includes(l)))
     if (unexplained.length) {
       console.log('      LINES CHANGED AND NOT ALLOWED: ' + unexplained.length)
       for (const l of unexplained.slice(0, 10)) console.log('        • ' + l.slice(0, 140))
@@ -607,7 +622,7 @@ function fakeDb(opts = {}) {
     /* ⛔ AND THE EXCUSE EXPIRES IF THE LINE GOES. A tolerated change that is no longer in the file is
      * not a tolerated change; it is a revert nobody noticed. */
     const now = read(f)
-    const missing = TOLERATED.filter(l => !now.includes(l))
+    const missing = TOLERATED.filter(l => !now.includes(l) && !goneByAF2(f, l))   // ⚠️ RE-PINNED (address-formats-2): a line it replaced
     if (missing.length) {
       console.log('      ⛔ TOLERATED LINE CLAIMED BUT NOT PRESENT: ' + missing.join(' | ').slice(0, 160))
       return false
@@ -677,7 +692,7 @@ function fakeDb(opts = {}) {
     if (bad.length) { console.log('      LINES CHANGED AND NOT ALLOWED: ' + bad.length); for (const l of bad.slice(0, 10)) console.log('        • ' + l.slice(0, 140)); return false }
     // A Phase 2B line that Phase 2D-2 has since changed is SUPERSEDED (named in the 2D-2 fixture) — it must be gone.
     const superseded = T2D2[f]?.superseded ?? []
-    const missing = ADDED.filter(l => !now.includes(l) && !superseded.includes(l)), back = REMOVED.filter(l => now.includes(l) && !ADDED.includes(l))
+    const missing = ADDED.filter(l => !now.includes(l) && !superseded.includes(l) && !goneByAF2(f, l)), back = REMOVED.filter(l => now.includes(l) && !ADDED.includes(l))
     if (superseded.some(l => lines2d2(f).has(l))) { console.log('      ⛔ A SUPERSEDED PHASE 2B LINE IS STILL PRESENT'); return false }
     if (missing.length || back.length) { console.log('      ⛔ NAMED LINE ' + (missing.length ? 'MISSING: ' + missing[0] : 'RESURRECTED: ' + back[0])); return false }
     return expired2d2(f)

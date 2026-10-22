@@ -93,6 +93,14 @@ const NAMED = [
   // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): F2 — the Village Foodie sitemap: the root, then /contact. PRECISE, after
   // seo-s5-sitemap, one copy in scripts/_lp-compare-tidy.cjs.
   ...require('./_lp-compare-tidy.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Ireland section — the HatchGrab sitemap's /country-terms lastmod
+  // 2026-10-21. PRECISE, after pricing-tidy's item, one copy in scripts/_lp-ireland-3.cjs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (ireland-3)
+  ...require('./_lp-ireland-3.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (anz-terms, 22 October 2026): the Australia and New Zealand sections — the sitemap's /country-terms lastmod
+  // 2026-10-22. PRECISE, after ireland-3's item, one copy in scripts/_lp-anz-terms.cjs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
+  ...require('./_lp-anz-terms.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):

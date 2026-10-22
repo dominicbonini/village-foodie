@@ -80,7 +80,7 @@ const SLATE = '#334155'
 interface ComparePlan { offer: OfferPlan; key: string; name: string; monthly: number; included: number | null; feePct: number; shape: FeeShape; includedLabel: string | null }
 function pricingFrom(s: CountrySettings, catalog: PlanCatalog) {
   const cur = s.currency
-  const fmt = planMoneyFormatOf(s)   // anz-1: a marketing page quotes our prices with their dollar named (A$, NZ$)
+  const fmt = planMoneyFormatOf(s)   // native-prices: our prices in the country's own form ("$49" in New Zealand)
   const PLANS: ComparePlan[] = offerPlans(catalog, s.countryCode).map(o => ({
     offer: o, key: o.plan.key, name: o.plan.name,
     monthly: toMajor(o.monthlyMinor, cur),
@@ -246,7 +246,7 @@ function anchor(v: number): AnchorId | null {
 // 🔴 DO NOT ADD A PROVIDER HERE TO "MAKE THIS COMPONENT SELF-CONTAINED". A second provider would give
 // these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
 // the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
-export default function CostComparison({ settings, catalog, locale, freeMonthsOverride = null }: {
+export default function CostComparison({ settings, catalog, locale, freeMonthsOverride = null, currencyLine = null }: {
   /** The marketing country's settings, read server-side by app/compare/page.tsx. */
   settings: CountrySettings
   /** The plan catalogue (public.plans / plan_prices / plan_features), read server-side by the page. */
@@ -256,11 +256,13 @@ export default function CostComparison({ settings, catalog, locale, freeMonthsOv
   freeMonthsOverride?: number | null
   /** The page's language — the visitor's country's locale, decided by the server page (never re-resolved here). */
   locale: AppLocale
+  /** native-prices: "Prices in New Zealand dollars (NZD)" where the country's currency symbol is shared; written by the page. */
+  currencyLine?: string | null
 }) {
   const t = useMemo(() => compareT(locale), [locale])
   const { PLANS, CARD_PCT, CARD_PENCE } = useMemo(() => pricingFrom(settings, catalog), [settings, catalog])
   // The marketing country's money format, and the page's helpers bound to it (same names, same calls).
-  const fmt = planMoneyFormatOf(settings)   // anz-1: as pricingFrom above
+  const fmt = planMoneyFormatOf(settings)   // native-prices: as pricingFrom above
   // Card processing as one phrase ("1.5% + 20p", "2.9% + 30¢") and the overage rate ("0.99%") — lib/money-format's
   // own labels, so the coin ("p" / "¢") comes from its table and is never typed here.
   const cardFee = feeLabel({ pct: CARD_PCT, fixedMinor: CARD_PENCE }, fmt)
@@ -477,6 +479,8 @@ export default function CostComparison({ settings, catalog, locale, freeMonthsOv
         <p className="mt-4 max-w-lg text-base leading-relaxed text-slate-600">
           {t('intro')}
         </p>
+        {/* native-prices (22 October 2026): the currency line, small and muted, before the first amount on the page. */}
+        {currencyLine && <p className="mt-3 text-sm text-slate-500">{currencyLine}</p>}
 
         <div className="mt-8 space-y-4">
           {/* ── 🔴 THE QUESTION THE PAGE USED TO ANSWER FOR ITSELF ──────────────────────────────────

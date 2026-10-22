@@ -26,7 +26,13 @@
 
 import { currencyInfo } from '@/lib/currencies'
 
-export interface MoneyFormat { currency: string; locale: string }
+/** `currencyDisplay` (native-prices, 22 October 2026): set only where the currency registry overrides how Intl prints a
+ *  currency in its home locale (lib/currencies.ts `homeDisplay` — RON's "lei"). Absent everywhere else, so every other
+ *  format's Intl options, and its output, are exactly what they were. */
+export interface MoneyFormat { currency: string; locale: string; currencyDisplay?: 'narrowSymbol' }
+
+/** The Intl currency options for a format: its currency, plus its display override when it has one. */
+const currencyOpts = (f: MoneyFormat) => (f.currencyDisplay ? { style: 'currency' as const, currency: f.currency, currencyDisplay: f.currencyDisplay } : { style: 'currency' as const, currency: f.currency })
 
 const cache = new Map<string, Intl.NumberFormat>()
 function nf(locale: string, opts: Intl.NumberFormatOptions): Intl.NumberFormat {
@@ -53,7 +59,7 @@ export function toMajor(minor: number, currency: string): number {
 
 /** "£1,500" — whole major units, rounded. For allowances and headline figures. */
 export function formatWholeAmount(minor: number, f: MoneyFormat): string {
-  return nf(f.locale, { style: 'currency', currency: f.currency, minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  return nf(f.locale, { ...currencyOpts(f), minimumFractionDigits: 0, maximumFractionDigits: 0 })
     .format(Math.round(toMajor(minor, f.currency)))
 }
 
@@ -63,7 +69,7 @@ export function formatAmount(minor: number, f: MoneyFormat): string {
   const digits = minorDigits(f.currency)
   const whole = Math.round(minor) % 10 ** digits === 0
   return nf(f.locale, {
-    style: 'currency', currency: f.currency,
+    ...currencyOpts(f),
     minimumFractionDigits: whole ? 0 : digits, maximumFractionDigits: whole ? 0 : digits,
   }).format(toMajor(minor, f.currency))
 }
@@ -114,7 +120,7 @@ export function feeLabel(fee: { pct: number; fixedMinor: number }, f: MoneyForma
 
 /** "£" for GBP in en-GB, "$" for USD in en-US — the symbol a price-rule label puts beside its box. */
 export function currencySymbol(f: MoneyFormat): string {
-  const part = nf(f.locale, { style: 'currency', currency: f.currency, minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  const part = nf(f.locale, { ...currencyOpts(f), minimumFractionDigits: 0, maximumFractionDigits: 0 })
     .formatToParts(0).find(p => p.type === 'currency')
   return part?.value ?? f.currency
 }
@@ -178,7 +184,7 @@ export function formatMajor(major: number, f: MoneyFormat, opts: AmountOptions =
   const n = rounded(major, digits)
   const whole = opts.trimWhole === true && Number.isInteger(n)
   const parts = nf(f.locale, {
-    style: 'currency', currency: f.currency, useGrouping: opts.grouping !== false,
+    ...currencyOpts(f), useGrouping: opts.grouping !== false,
     minimumFractionDigits: whole ? 0 : digits, maximumFractionDigits: whole ? 0 : digits,
   }).formatToParts(Math.abs(n))
   if (opts.minusBeforeSymbol) return (n < 0 ? '-' : '') + parts.map(p => p.value).join('')

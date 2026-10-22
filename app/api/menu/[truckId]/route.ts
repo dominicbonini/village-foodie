@@ -22,6 +22,7 @@ import { readEventType } from '@/lib/event-types/read'
  * to "menu prices", which is what this route served before this build. See lib/event-pricing/read.ts. */
 import { readEventPricing } from '@/lib/event-pricing/read'
 import { moneyFormatForTruck } from '@/lib/money-server'
+import { countrySettingsForTruck } from '@/lib/country-settings'   // allergen-card-country
 // Phase 3 screens: what the order page needs to SHOW tax, a tip and a service fee (never to decide them).
 import { loadChargeRules } from '@/lib/order-charge-rules'
 import { checkoutRulesFrom } from '@/lib/order-charges'
@@ -85,6 +86,17 @@ export async function GET(
     // A refusal carries a code and its values (Language Phase 1a); en-GB, as no truck is known.
     return NextResponse.json(customerErrorBody(DEFAULT_LOCALE, 'truck_not_found'), { status: 404 })
   }
+
+  // ── allergen-card-country (21 October 2026) ──────────────────────────────────────────────────────────────────────
+  // Where the truck's country does not allow an allergen card ON ITS OWN (country_settings.allergen_card_only_allowed —
+  // off for Ireland, whose law needs allergens per dish), a truck still saved as 'card' is shown PER DISH: its
+  // confirmed dishes' allergens show, an unconfirmed dish is hidden as in per-dish mode, and Manage asks it to confirm
+  // its dishes. Every other truck's mode is exactly what is stored. A country that cannot be read changes nothing.
+  let cardOnlyAllowed = true
+  if ((truck.allergen_display_mode ?? null) === 'card') {
+    try { cardOnlyAllowed = (await countrySettingsForTruck(truck)).allergenCardOnlyAllowed !== false } catch { cardOnlyAllowed = true }
+  }
+  const allergenDisplayMode = ((truck.allergen_display_mode ?? null) === 'card' && !cardOnlyAllowed ? 'per_dish' : (truck.allergen_display_mode ?? null)) as 'per_dish' | 'card' | 'both' | null
 
   // Fetch all menu data from Supabase
   const [
@@ -627,7 +639,7 @@ export async function GET(
         // so the customer's tab disappears. The OPERATOR (dashboard=1) keeps them — to re-enable and to
         // override-add for the hatch (AddOrderPanel reads categoryStocks.available for the "closed" state).
         if (!isDashboard && disabledCategories.has(((i.menu_categories as any)?.name || '').toLowerCase())) return false
-        const perDish = ((truck.allergen_display_mode ?? null) as string) !== 'card'
+        const perDish = (allergenDisplayMode as string | null) !== 'card'   // allergen-card-country: the effective mode
         if (isDashboard || !perDish) return true                 // operator OR card mode → show everything
         return (i as any).allergens_verified !== false           // customer + per-dish → hide explicit-unconfirmed
       })
@@ -875,7 +887,7 @@ export async function GET(
       allergen_info_text: truck.allergen_info_text ?? null,
       // Allergen display mode (Slice 4): 'per_dish' | 'card' | 'both' | null. null = unset/legacy →
       // the customer page treats it as 'both' (show whatever exists) for backward compatibility.
-      allergen_display_mode: (truck.allergen_display_mode ?? null) as 'per_dish' | 'card' | 'both' | null,
+      allergen_display_mode: allergenDisplayMode,   // allergen-card-country: 'card' read as 'per_dish' where the country does not allow it
       preorder_open_rule: ((truck as any).preorder_open_rule ?? null) as string | null,   // V8.3 calendar "opens [date]"
       ordering_available: orderingAvailable,
       /** 🔴 Whether to OFFER a card option. `false` for every truck whose operator has not completed
@@ -889,7 +901,7 @@ export async function GET(
       // mode-aware, mirrors the per-dish gate above :438). Else the per-dish computation. No live consumer
       // today (the customer "ask staff" banner was removed); gated for consistency so a future re-consumer
       // isn't misled in card mode.
-      allergensVerified: ((truck.allergen_display_mode ?? null) === 'card' && !!(truck.allergen_info_url || truck.allergen_info_text))
+      allergensVerified: (allergenDisplayMode === 'card' && !!(truck.allergen_info_url || truck.allergen_info_text))
         ? true
         : !(items || []).some((i: any) => i.allergens_verified === false),
       ...(checkout ? { checkout } : {}),

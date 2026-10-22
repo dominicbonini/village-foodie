@@ -4,7 +4,7 @@
 // ⛔ NO CLAIM THE SITE DOES NOT ALREADY MAKE: every sentence is the pricing section's or the landing's own, in plain text,
 // and every figure is read from the data the pricing cards render.
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf } from '@/lib/country-settings-types'
+import { intlMoneyFormatOf } from '@/lib/country-settings-types'
 import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, offerFallback, type OfferPlan } from '@/lib/plan-offer'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
@@ -28,7 +28,8 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog): st
 
   L.push('## Plans and prices', '')
   for (const c of countries) {
-    const money = planMoneyFormatOf(c)
+    // native-prices: one document, every switched-on country — the INTERNATIONAL form, so each price names its currency (A$39, NZ$49).
+    const money = intlMoneyFormatOf(c)
     const plans = offerPlans(catalog, c.countryCode)
     if (!plans.length) continue
     L.push(`### ${c.name} (${c.currency})`, '')

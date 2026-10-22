@@ -6,12 +6,13 @@
 // 🔴 A REFUSAL IS A CODE AND ITS VALUES (Language Phase 1d), never words: `{ code, params }`, whose sentence is the
 // `tradeArea` namespace's message (messages/en-GB.json) — read by each caller in its own language: the routes through
 // `tradeAreaErrorBody` (lib/i18n/manage-errors.ts), provisioning through `translatorFor`, the signup step through `useT`.
-import { messagesStyleOf } from '@/lib/address-formats'
+import { addressFormatOf, regionOf } from '@/lib/address-formats'
 import type { CountrySettings } from '@/lib/country-settings-types'
 
 type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | 'timezones' | 'defaultTimezone'>
-  // D22 (Phase 3): a 'zip_state' country also stores the state's code. Optional so the browser's own check
-  // (which has no address format) runs unchanged.
+  // D22 (Phase 3): a country whose address format keeps a Places region code (the US, Australia, Ireland, Canada —
+  // lib/address-formats.ts `places.regionCode`) also stores it. Optional so the browser's own check (which has no
+  // address format) runs unchanged.
   & Partial<Pick<CountrySettings, 'addressFormat'>>
 
 /** A refusal: a `tradeArea` message key and its values (the country's name, already as the settings row writes it). */
@@ -34,7 +35,7 @@ export interface TradeAreaValues {
   base_region: string | null
   base_lat: number | null
   base_lng: number | null
-  /** D22 (Phase 3): the state's two-letter code. PRESENT ONLY for a 'zip_state' country, so a GB save
+  /** D22 (Phase 3): the region's code ("NJ", "NSW", "KY"). PRESENT ONLY for a format that keeps one, so a GB save
    *  writes exactly the columns it wrote before. Nothing displays it. */
   base_region_code?: string | null
 }
@@ -61,6 +62,11 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
   const placeId = str(input.base_place_id, 300)
   const lat = num(input.base_lat, -90, 90), lng = num(input.base_lng, -180, 180)
   const pointed = placeId && lat !== null && lng !== null
+  // 🔴 address-formats-2 (21 October 2026): THE CODE IS CHECKED HERE, AGAINST THE FORMAT'S OWN LIST, EXACTLY ("NJ", "NSW";
+  // never "nj") — this replaces the database's two-letter CHECK (trucks_base_region_code_chk, dropped by
+  // 20261030_address_suburb_region.sql), which could not hold Australia's "NSW" or Ireland's "D".
+  const fmt = addressFormatOf(c.addressFormat)
+  const regionCodeFormat = fmt?.places.regionCode && fmt.regions ? fmt : null
   return {
     ok: true,
     values: {
@@ -70,12 +76,22 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
       base_region: pointed ? str(input.base_region, 120) : null,
       base_lat: pointed ? lat : null,
       base_lng: pointed ? lng : null,
-      ...(messagesStyleOf(c.addressFormat) === 'zip_state' ? {   // address-formats-1: unchanged until stage 2
-        base_region_code: pointed && typeof input.base_region_code === 'string' && /^[A-Z]{2}$/.test(input.base_region_code)
+      ...(regionCodeFormat ? {
+        base_region_code: pointed && typeof input.base_region_code === 'string' && regionOf(regionCodeFormat, input.base_region_code)?.code === input.base_region_code
           ? input.base_region_code : null,
       } : {}),
     },
   }
+}
+
+/** ⚠️ UNTIL 20261030_address_suburb_region.sql IS RUN, the database's CHECK (trucks_base_region_code_chk) holds
+ *  base_region_code to two capital letters. A code from the format's list that it would refuse — Australia's "NSW",
+ *  Ireland's "D" — is therefore written AFTER the main write, in its own update that fails alone (logged), so a save or
+ *  a signup never fails on it. Every US code is two letters, so a US write is exactly what it was (no second update). */
+export const LEGACY_REGION_CODE = /^[A-Z]{2}$/
+export function splitRegionCodeWrite<T extends { base_region_code?: string | null }>(v: T): { main: T; after: string | null } {
+  if (typeof v.base_region_code === 'string' && !LEGACY_REGION_CODE.test(v.base_region_code)) return { main: { ...v, base_region_code: null }, after: v.base_region_code }
+  return { main: v, after: null }
 }
 
 /** The country check alone — for a signup, before anything else is looked at. */

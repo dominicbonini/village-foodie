@@ -46,6 +46,7 @@ import { FEATURE_TABLE } from '@/lib/feature-table'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { offerPlans, offerTrialMonths, upgradeSummary } from '@/lib/plan-offer'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
+import { currencyLineOf } from '@/lib/country-settings-types'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/planTable'
 import '@/lib/i18n/catalog/pricing'
@@ -196,6 +197,9 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             {/* seo-fixes S7 (measured, 20 October 2026): rendered as the component, NOT as a static-HTML string — the
                 string, JSON-escaped into the RSC payload, made this page LARGER (89.5 → 102 KB); React's element tree
                 de-duplicates the repeated cells. The payload is already only what the page renders. */}
+            {/* native-prices (22 October 2026): where the country's currency symbol is shared, the line naming it, above the
+                table (the pricing section's `.price-currency`). Billing, which reuses the table, carries it in its footnote. */}
+            {currencyLineOf(settings) && <p className="price-currency">{tPricing('currencyLine', currencyLineOf(settings)!)}</p>}
             <PlanTable catalog={catalog} settings={settings} highlight={plans.find(p => p.highlighted)?.plan.key ?? null}
               variant="features" details={details} />
             {/* The card-fee footnote (*) and the rows' disclosures (¹ ², pricing-tidy), in the old table's footnote style. */}

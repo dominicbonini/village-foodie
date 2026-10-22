@@ -15,6 +15,8 @@
 // reached into.
 
 import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
+import { addressFormatOrDefault, fillAiText } from '@/lib/address-formats'
+import { normaliseRegion } from '@/lib/event-address'
 
 /**
  * 🔴 THE RECONCILED INVALID-VENUE LIST — the APPS SCRIPT'S NINE, not the app's five.
@@ -76,7 +78,8 @@ export type ScreenshotEvent = {
   venue_name: string
   village: string
   postcode: string
-  /** Two-letter state, for a zip_state country (Phase 2D-2). Present only when the model gave one. */
+  /** The region's code in the country's format's list ("TX", "NSW") — Phase 2D-2, address-formats-2. Present only when
+   *  the model gave one. */
   state?: string
 }
 
@@ -84,7 +87,8 @@ export type ScreenshotEvent = {
 export type ScreenshotCountry = {
   code: string
   name: string
-  addressFormat: 'postcode' | 'zip_state'
+  /** country_settings.address_format — a format key (or a legacy value) of lib/address-formats.ts. */
+  addressFormat: string
   dateOrder: 'dmy' | 'mdy'
 }
 
@@ -115,13 +119,13 @@ export function buildScreenshotPrompt(now: Date = new Date(), country?: Screensh
 
   // ── 🔴 PHASE 2D-2: THE CHOSEN COUNTRY. With no country the prompt is exactly what it always was. ──────────
   // GB keeps every line below byte for byte and gains only TWO things (Dominic, Q1 option A): the one line
-  // naming the chosen country, and Country / CountryConfidence / CountryReasons in the JSON. A zip_state
-  // country swaps the location lines for city / state / ZIP ones; an mdy country adds one line saying how a
+  // naming the chosen country, and Country / CountryConfidence / CountryReasons in the JSON. The location
+  // lines follow the country's address format (below); an mdy country adds one line saying how a
   // numbers-only date reads. Output stays DD/MM/YYYY in every country — it is the data contract.
-  const zip = country?.addressFormat === 'zip_state'
-  // ireland-1 (20 October 2026): a 'postcode' country that is not the UK (Ireland) names its own postal codes instead of
-  // the UK's — no UK examples. No country, or GB, keeps the UK lines byte for byte.
-  const otherPostcode = !zip && !!country && country.code.toUpperCase() !== 'GB'
+  // 🔴 address-formats-2 (21 October 2026): THE LOCATION LINES AND THE EVENT'S JSON SHAPE COME FROM THE CHOSEN COUNTRY'S
+  // ADDRESS FORMAT (lib/address-formats.ts `ai.screenshot`) — no country-code branch. GB's and US's are the lines this
+  // prompt had, verbatim. No country → GB's, exactly what the prompt always was.
+  const ai = addressFormatOrDefault(country?.addressFormat).ai.screenshot
   const countryLine = country
     ? `These screenshots are from ${country.name} (${country.code}), as the person uploading them says. In "Country" give the two-letter code of the country this screenshot itself shows — from its prices, place names, phone numbers and the way dates are written — with "CountryConfidence" high, medium or low, and "CountryReasons" in a few short words (e.g. "prices in $, 'Austin, TX', dates like 10/12").
 `
@@ -130,22 +134,9 @@ export function buildScreenshotPrompt(now: Date = new Date(), country?: Screensh
     ? `- Dates written with numbers only are MONTH first in ${country.name}: "10/12" is 12 October, never 10 December.
 `
     : ''
-  const locationLines = zip
-    ? `- Extract ONLY the venue name into "Venue Name" — never include the city, state or ZIP code in it.
-- Put the city or town in "Village", the two-letter state in "State" (e.g. "TX"), and the ZIP code, if one is shown, in "Postcode".
-- ZIP codes look like "78701". If no ZIP code is shown, use "".`
-    : otherPostcode
-      ? `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postal code in it.
-- Put the town or village in "Village", and the postal code, if one is shown, in "Postcode".
-- "Postcode" is a postal code of ${country!.name}, copied exactly as shown — never a UK postcode. If none is shown, use "".`
-      : `- Extract ONLY the pub/venue name into "Venue Name" — never include the village, town or postcode in it.
-- Put the town or village in "Village", and the postcode, if one is shown, in "Postcode".
-- UK postcodes look like "CB25 0BA", "CO10 7BQ", "PE28 2SB". If no postcode is shown, use "".`
-  const eventShape = zip
-    ? `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "City", "State": "TX", "Postcode": "78701" }`
-    : otherPostcode
-      ? `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "POSTAL CODE" }`
-      : `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town", "Postcode": "CB25 0BA" }`
+  const fill = (text: string) => fillAiText(text, { country: country?.name ?? 'this country', year: currentYear })
+  const locationLines = fill(ai.locationLines)
+  const eventShape = ai.eventShape
   const countryFields = country ? `  "Country": "${country.code}", "CountryConfidence": "high|medium|low", "CountryReasons": "short words",
 ` : ''
 
@@ -183,7 +174,9 @@ export function cleanModelJson(raw: string): string {
 }
 
 /** Parse the model's reply. Returns [] rather than throwing on unparseable JSON — the caller decides. */
-export function parseScreenshotEvents(raw: string): Partial<ScreenshotEvent>[] {
+/** `addressFormat`: the chosen country's format — a state is kept as its code in that format's list ("nsw" → "NSW",
+ *  "Co. Kerry" → "KY"). Without one, the old rule: two letters (address-formats-2). */
+export function parseScreenshotEvents(raw: string, addressFormat?: string): Partial<ScreenshotEvent>[] {
   let parsed: any
   try { parsed = JSON.parse(cleanModelJson(raw)) } catch { return [] }
   const arr = Array.isArray(parsed) ? parsed : (parsed?.events ?? [])
@@ -197,7 +190,7 @@ export function parseScreenshotEvents(raw: string): Partial<ScreenshotEvent>[] {
     village: String(e?.['Village'] ?? e?.village ?? '').trim(),
     postcode: String(e?.['Postcode'] ?? e?.postcode ?? '').toUpperCase().trim(),
     // Only when the model gave one, so a GB row's shape is exactly what it was.
-    ...(() => { const st = String(e?.['State'] ?? e?.state ?? '').toUpperCase().trim(); return /^[A-Z]{2}$/.test(st) ? { state: st } : {} })(),
+    ...(() => { const st = normaliseRegion(String(e?.['State'] ?? e?.state ?? '').trim(), addressFormat); return st ? { state: st } : {} })(),
   }))
 }
 

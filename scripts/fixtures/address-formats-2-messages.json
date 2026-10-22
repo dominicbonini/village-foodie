@@ -1,0 +1,95 @@
+{
+ "$comment": "address-formats-2 (21 October 2026, docs/address-formats-2-report.md): the message changes of this stage — the `{style, select, zip_state …}` address words moved to the `address` namespace, keyed by field type and variant (GB/US text identical), the four sentences that held a style select now take the word as a value, and the new variants' words (Eircode, County, Suburb, …). A FIFTH sibling of the plan-stage records, applied after pricing-tidy by the same rule (scripts/_lp2-frozen.cjs stageA()).",
+ "en-GB": {
+  "removed": {
+   "manageScheduleEvent.venuePlaceholder": "{style, select, zip_state {e.g. Main Street Brewery} other {e.g. The Crown}}",
+   "manageScheduleEvent.addressPlaceholder": "{style, select, zip_state {e.g. 123 Main St, Austin, TX 78701} other {e.g. 123 High St, Wickhambrook}}",
+   "manageScheduleEvent.area": "Area (village, town or city)",
+   "manageScheduleEvent.areaPlaceholder": "{style, select, zip_state {e.g. Austin} other {e.g. Wickhambrook}}",
+   "manageScheduleEvent.postcode": "{style, select, zip_state {ZIP code} other {Postcode}}",
+   "manageScheduleEvent.postcodePlaceholder": "{style, select, zip_state {e.g. 78701} other {e.g. CB8 8PD}}",
+   "manageScheduleEvent.state": "State",
+   "manageScheduleEvent.statePlaceholder": "e.g. NJ",
+   "manageScheduleImport.review.area": "Area",
+   "manageScheduleImport.review.postcode": "{style, select, zip_state {ZIP code} other {Postcode}}",
+   "manageScheduleImport.review.postcodeExample": "{style, select, zip_state {78701} other {CB22 5EJ}}",
+   "schedulePlaces.area": "Area",
+   "schedulePlaces.postcode": "{style, select, zip_state {ZIP code} other {Postcode}}"
+  },
+  "reworded": {
+   "manageSchedule.guessed.body": {
+    "before": "More than one venue matched <b>{venue}</b>, so we picked the closest fit{hasTown, select, yes { in <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Check it is the right one before approving — if it is wrong, use <b>Edit</b> to correct the area or {style, select, zip_state {ZIP code} other {postcode}}, otherwise customers will be sent to the wrong place.",
+    "after": "More than one venue matched <b>{venue}</b>, so we picked the closest fit{hasTown, select, yes { in <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Check it is the right one before approving — if it is wrong, use <b>Edit</b> to correct the area or {postal}, otherwise customers will be sent to the wrong place."
+   },
+   "manageSchedule.noLocation.body": {
+    "before": "We could not place this venue on the map, so it will be listed but will not show a map pin. Add a {style, select, zip_state {ZIP code} other {postcode}} with <b>Edit</b> to put it on the map.",
+    "after": "We could not place this venue on the map, so it will be listed but will not show a map pin. Add {postal} with <b>Edit</b> to put it on the map."
+   },
+   "manageScheduleImport.pastePlaceholder": {
+    "before": "Paste your schedule here e.g. {date}, {style, select, zip_state {Zilker Park, Austin} other {The Crown, Wickhambrook}}, {start}-{end}",
+    "after": "Paste your schedule here e.g. {date}, {place}, {start}-{end}"
+   },
+   "schedulePlaces.searchPlaceholder": {
+    "before": "Name, area or {style, select, zip_state {ZIP code} other {postcode}}",
+    "after": "Name, area or {postal}"
+   }
+  },
+  "added": {
+   "address.label.street": "Address",
+   "address.label.postcode": "Postcode",
+   "address.label.zip": "ZIP code",
+   "address.label.eircode": "Eircode",
+   "address.label.postalCode": "Postal code",
+   "address.label.state": "State",
+   "address.label.stateTerritory": "State or territory",
+   "address.label.province": "Province",
+   "address.label.county": "County",
+   "address.label.area": "Area (village, town or city)",
+   "address.label.townOrArea": "Town or area",
+   "address.label.city": "City",
+   "address.label.suburb": "Suburb",
+   "address.label.townOrCity": "Town or city",
+   "address.short.area": "Area",
+   "address.short.townOrArea": "Town or area",
+   "address.short.city": "City",
+   "address.short.suburb": "Suburb",
+   "address.short.townOrCity": "Town or city",
+   "address.inSentence.postcode": "postcode",
+   "address.inSentence.zip": "ZIP code",
+   "address.inSentence.eircode": "Eircode",
+   "address.inSentence.postalCode": "postal code",
+   "address.withArticle.postcode": "a postcode",
+   "address.withArticle.zip": "a ZIP code",
+   "address.withArticle.eircode": "an Eircode",
+   "address.withArticle.postalCode": "a postal code",
+   "address.tradeLabel.area": "Town or city",
+   "address.tradeLabel.townOrArea": "Town or area",
+   "address.tradeLabel.city": "City",
+   "address.tradeLabel.suburb": "Suburb",
+   "address.tradeLabel.townOrCity": "Town or city",
+   "address.basedIn.area": "Town or city you’re based in",
+   "address.basedIn.townOrArea": "Town or area you’re based in",
+   "address.basedIn.city": "City you’re based in",
+   "address.basedIn.suburb": "Suburb you’re based in",
+   "address.basedIn.townOrCity": "Town or city you’re based in",
+   "address.example": "e.g. {example}",
+   "address.customersSee": "Customers see:",
+   "address.postalWarning": "That doesn’t look like {article} — for example {example}. You can still save it.",
+   "address.regionChoose": "Choose…"
+  }
+ },
+ "en-US": {
+  "removed": {
+   "manageScheduleEvent.area": "City or town"
+  },
+  "reworded": {
+   "manageScheduleImport.pastePlaceholder": {
+    "before": "Paste your schedule here e.g. {date}, {style, select, zip_state {Zilker Park, Austin} other {The Crown, Wickhambrook}}, {start} – {end}",
+    "after": "Paste your schedule here e.g. {date}, {place}, {start} – {end}"
+   }
+  },
+  "added": {
+   "address.label.area": "City or town"
+  }
+ }
+}

@@ -1,7 +1,7 @@
 // Event-conflict detection for the approval flow. READ-TIME only (no schema change): given a
 // candidate event and the full events list, returns the conflicts against existing confirmed/open
 // events. Two complementary checks:
-//   A — DUPLICATE (postcode-anchored, NAME EXCLUDED): same postcode + date, time same (Tier 1
+//   A — DUPLICATE (postcode-anchored; the NAME too where a postcode is an area — below): same postcode + date, time same (Tier 1
 //       'duplicate') or different (Tier 2 'review').
 //   B — OVERLAP (time-only, postcode-agnostic): time-windows overlap on the same date → a single
 //       van can't be in two places ('overlap').
@@ -12,7 +12,14 @@
 // compares the two windows on ONE timeline (minutes after 00:00 of the candidate's date) across neighbouring dates: a
 // 20:00–00:30 event overlaps a 21:00–23:00 event that date AND a 00:00–01:00 event the next. Two events that do not
 // cross midnight can only overlap on the same date, so for them nothing changes.
+// 🔴 address-formats-2 (21 October 2026): "SAME POSTCODE" MEANS "SAME VENUE" ONLY WHERE ONE POSTAL CODE IS ONE ADDRESS —
+// the format's `postalCode.identifiesPremises` (GB, Ireland's Eircode). A ZIP or an Australian/NZ/Canadian code covers a
+// whole area, so there Check A also needs the venue name to match (lib/venue-signature.ts, the scraper's comparison):
+// two different US venues in one ZIP are no longer "the same event", only an overlap if their times overlap. No format →
+// GB's rule, as before.
 import { crossesMidnight, daysBetween } from '@/lib/event-window'
+import { addressFormatOrDefault } from '@/lib/address-formats'
+import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
 
 export type ConflictKind = 'duplicate' | 'review' | 'overlap'
 
@@ -81,8 +88,12 @@ function normPostcode(pc: string | null | undefined): string | null {
  */
 export function detectEventConflicts(
   candidate: ConflictEvent,
-  allEvents: ConflictEvent[]
+  allEvents: ConflictEvent[],
+  /** The truck's address format (a key or a legacy value). Absent → GB. */
+  addressFormat?: string | null
 ): EventConflict[] {
+  const postcodeIsPremises = addressFormatOrDefault(addressFormat).postalCode.identifiesPremises
+  const cVenue = normalizeVenue(candidate.venue_name ?? '')
   const cStart = toMins(candidate.start_time)
   // The end on the candidate's timeline (+1440 when it crosses midnight — lib/event-window.ts).
   const cEnd = onTimeline(candidate, 'end_time', 0)
@@ -110,6 +121,7 @@ export function detectEventConflicts(
     const haveBothTimes = cStart !== null && cEnd !== null && exStart !== null && exEnd !== null
     // The postcode checks (A) are same-date only, as before; across dates only an overlap is a conflict.
     const pcMatch = sameDate && cPc !== null && exPc !== null && cPc === exPc
+      && (postcodeIsPremises || venuesFuzzyMatch(cVenue, normalizeVenue(ex.venue_name ?? '')))
     const timeEqual = haveBothTimes && cStart === exStart && cEnd === exEnd
     // Half-open overlap: candStart < existEnd AND existStart < candEnd.
     const overlap = haveBothTimes && (cStart as number) < (exEnd as number) && (exStart as number) < (cEnd as number)

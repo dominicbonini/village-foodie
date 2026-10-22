@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Address",
+    "postcode": "Postcode",
+    "zip": "ZIP code",
+    "eircode": "Eircode",
+    "postalCode": "Postal code",
+    "state": "State",
+    "stateTerritory": "State or territory",
+    "province": "Province",
+    "county": "County",
+    "area": "Area (village, town or city)",
+    "townOrArea": "Town or area",
+    "city": "City",
+    "suburb": "Suburb",
+    "townOrCity": "Town or city"
+  },
+  "short": {
+    "area": "Area",
+    "townOrArea": "Town or area",
+    "city": "City",
+    "suburb": "Suburb",
+    "townOrCity": "Town or city"
+  },
+  "inSentence": {
+    "postcode": "postcode",
+    "zip": "ZIP code",
+    "eircode": "Eircode",
+    "postalCode": "postal code"
+  },
+  "withArticle": {
+    "postcode": "a postcode",
+    "zip": "a ZIP code",
+    "eircode": "an Eircode",
+    "postalCode": "a postal code"
+  },
+  "tradeLabel": {
+    "area": "Town or city",
+    "townOrArea": "Town or area",
+    "city": "City",
+    "suburb": "Suburb",
+    "townOrCity": "Town or city"
+  },
+  "basedIn": {
+    "area": "Town or city you’re based in",
+    "townOrArea": "Town or area you’re based in",
+    "city": "City you’re based in",
+    "suburb": "Suburb you’re based in",
+    "townOrCity": "Town or city you’re based in"
+  },
+  "example": "e.g. {example}",
+  "customersSee": "Customers see:",
+  "postalWarning": "That doesn’t look like {article} — for example {example}. You can still save it.",
+  "regionChoose": "Choose…"
+}

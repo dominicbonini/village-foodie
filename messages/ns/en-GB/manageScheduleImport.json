@@ -6,7 +6,7 @@
   "dragOrTap": "Drag and drop or tap to choose",
   "imageOrPdf": "Image or PDF",
   "orPaste": "Or paste schedule text",
-  "pastePlaceholder": "Paste your schedule here e.g. {date}, {style, select, zip_state {Zilker Park, Austin} other {The Crown, Wickhambrook}}, {start}-{end}",
+  "pastePlaceholder": "Paste your schedule here e.g. {date}, {place}, {start}-{end}",
   "process": "Process schedule",
   "cancel": "Cancel",
   "review": {
@@ -24,9 +24,6 @@
     "van": "Van",
     "selectVan": "Select a van",
     "select": "Select",
-    "area": "Area",
-    "postcode": "{style, select, zip_state {ZIP code} other {Postcode}}",
-    "postcodeExample": "{style, select, zip_state {78701} other {CB22 5EJ}}",
     "startTime": "Start time",
     "endTime": "End time",
     "start": "Start",

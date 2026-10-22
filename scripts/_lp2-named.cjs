@@ -575,6 +575,22 @@ const NAMED = [
     views: id => require('./_lp-pricing-tidy.cjs').LANDED && /^1c\/api\/(GB|US)\|signup\|/.test(id),
     expect: b => require('./_lp-pricing-tidy.cjs').termsVersion(b) },
 
+  // ── ⚠️ RE-PINNED (ireland-3, 21 October 2026; scripts/_lp-ireland-3.cjs) ──────────────────────────────────────────────
+  { id: 'ireland-3-terms-version', part: 'ireland-3 (21 Oct 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms gained the Ireland section and were re-dated 21 October 2026, the latest of the three documents, so a new account records TERMS_VERSION "2026-10-21" (lib/legal.ts) where it recorded "2026-10-20". PRECISE: the operators insert’s `terms_version` only, after pricing-tidy-terms-version.',
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (ireland-3)
+    views: id => require('./_lp-ireland-3.cjs').LANDED && /^1c\/api\/(GB|US)\|signup\|/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (ireland-3)
+    expect: b => require('./_lp-ireland-3.cjs').termsVersion(b) },
+
+  // ── ⚠️ RE-PINNED (anz-terms, 22 October 2026; scripts/_lp-anz-terms.cjs) ───────────────────────────────────────────────
+  { id: 'anz-terms-terms-version', part: 'anz-terms (22 Oct 2026)', country: 'both',
+    what: '⚠️ RE-PINNED (anz-terms, 22 October 2026): the Country-specific terms gained the Australia and New Zealand sections and were re-dated 22 October 2026, the latest of the three documents, so a new account records TERMS_VERSION "2026-10-22" (lib/legal.ts) where it recorded "2026-10-21". PRECISE: the operators insert’s `terms_version` only, after ireland-3-terms-version.',
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
+    views: id => require('./_lp-anz-terms.cjs').LANDED && /^1c\/api\/(GB|US)\|signup\|/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
+    expect: b => require('./_lp-anz-terms.cjs').termsVersion(b) },
+
   // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026; lib/provision-demo-event.ts demoEventWindow) ─────────────────────────────
   { id: 'ie1-demo-date-from-now', part: 'ireland-1 (20 Oct 2026)', country: 'both',
     what: '⚠️ RE-PINNED (ireland-1, 20 October 2026): demoEventWindow takes the demo event’s DATE from `now` (localDateOfInstant(now, tz)) where it read the real clock (getLocalDateInTz). The return-visit restart passes now = LATER (2026-10-10T11:00Z) while the kit clock is the fixture NOW (2026-10-09), so its event — and every row dated by it — moves from the clock’s date to LATER’s date in the truck’s zone. PRECISE: `"event_date":"<clock date>"` → `"event_date":"<LATER date>"`, nothing else.',

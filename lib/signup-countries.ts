@@ -20,6 +20,7 @@ export async function signupCountries(): Promise<SignupCountry[]> {
     locale: c.locale,
     phone: phoneCopyOf(c),
     flag: flagDataUri(c.countryCode),
+    addressFormat: c.addressFormat,
   }))
 }
 

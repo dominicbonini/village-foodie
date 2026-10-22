@@ -75,7 +75,14 @@ function chargeDefaultsFromMigration() {
   if (Object.keys(out).length !== 7) throw new Error(`20261010_17 no longer has the shape this parser reads (${Object.keys(out).length} columns)`)
   return out
 }
-const withPhoneCopy = (row) => ({ ...row, shortName: null, phoneExample: null, ...(phoneCopyFromMigration()[row.countryCode] || {}), phoneCheck: phoneCheckDefault(), ...chargeDefaultsFromMigration() })
+// ⚠️ RE-PINNED (allergen-card-country, 21 October 2026): allergen_card_only_allowed is added by 20261029 as NOT NULL with a
+// default every existing row takes (true; only Ireland is set false, and the seeds are GB and US). Read from that file.
+function allergenCardOnlyDefault() {
+  const m = read('supabase/migrations/20261029_allergen_card_only.sql').match(/add column if not exists allergen_card_only_allowed boolean not null default (true|false)/)
+  if (!m) throw new Error('20261029 no longer has the shape this parser reads')
+  return m[1] === 'true'
+}
+const withPhoneCopy = (row) => ({ ...row, shortName: null, phoneExample: null, ...(phoneCopyFromMigration()[row.countryCode] || {}), phoneCheck: phoneCheckDefault(), ...chargeDefaultsFromMigration(), allergenCardOnlyAllowed: allergenCardOnlyDefault() })
 const gbFromSeed = () => withPhoneCopy(rowFromSeed('supabase/migrations/20261010_03_country_settings_seed_gb.sql'))
 const usFromSeed = () => withPhoneCopy(rowFromSeed('supabase/migrations/20261010_04_country_settings_seed_us.sql'))
-module.exports = { gbFromSeed, usFromSeed, phoneCopyFromMigration, phoneCheckDefault, chargeDefaultsFromMigration }
+module.exports = { gbFromSeed, usFromSeed, phoneCopyFromMigration, phoneCheckDefault, chargeDefaultsFromMigration, allergenCardOnlyDefault }

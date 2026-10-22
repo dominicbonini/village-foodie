@@ -133,7 +133,9 @@ const J = x => JSON.stringify(x)
   {
     // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms of Service were re-dated 20 October 2026 (§4 edited), so
     // TERMS_VERSION is now '2026-10-20' — signup records the terms the operator actually accepted.
-    t("TERMS_VERSION is the Terms' own: '2026-10-20', exported from lib/legal.ts and imported by the signup route", /export const TERMS_VERSION = '2026-10-20'/.test(read('lib/legal.ts')) && /import \{ TERMS_VERSION \} from '@\/lib\/legal'/.test(read('app/api/signup/route.ts')) && !/const TERMS_VERSION =/.test(read('app/api/signup/route.ts')))
+    // ⚠️ RE-PINNED (ireland-3, 21 October 2026): '2026-10-21', the Country-specific terms' new date (the latest of the three).
+    // ⚠️ RE-PINNED (anz-terms, 22 October 2026): '2026-10-22', the Country-specific terms' new date (Australia and New Zealand).
+    t("TERMS_VERSION is the documents' own: '2026-10-22', exported from lib/legal.ts and imported by the signup route", /export const TERMS_VERSION = '2026-10-22'/.test(read('lib/legal.ts')) && /import \{ TERMS_VERSION \} from '@\/lib\/legal'/.test(read('app/api/signup/route.ts')) && !/const TERMS_VERSION =/.test(read('app/api/signup/route.ts')))
     for (const [doc, title] of [['terms', 'Terms of Service — HatchGrab'], ['privacy', 'Privacy Policy — HatchGrab'], ['country-terms', 'Country-specific terms — HatchGrab']]) {
       // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the legal pages now export an async generateMetadata() (it adds the
       // canonical + og:url via lib/site-metadata.ts, which reads the request host) instead of a static `metadata`

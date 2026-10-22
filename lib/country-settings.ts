@@ -43,6 +43,8 @@ export const COUNTRY_SETTINGS_COLUMNS = [
   'prices_include_tax', 'tax_label',
   'card_surcharge_allowed', 'card_surcharge_cap_pct', 'card_surcharge_credit_only', 'card_surcharge_excluded_regions',
   'service_fee_allowed', 'tipping_enabled_default', 'tip_presets_pct', 'allergen_set',
+  // allergen-card-country (21 October 2026, 20261029_allergen_card_only.sql — must run BEFORE this code: a named select).
+  'allergen_card_only_allowed',
   'card_fee_online_pct', 'card_fee_online_fixed_minor',
   'card_fee_in_person_pct', 'card_fee_in_person_fixed_minor',
   'tap_to_pay_fixed_minor', 'card_fee_region_label',
@@ -129,6 +131,7 @@ export function mapCountryRow(r: Row): CountrySettings {
     tippingEnabledDefault: bool(c, r, 'tipping_enabled_default'),
     tipPresetsPct: numArr(c, r, 'tip_presets_pct'),
     allergenSet: oneOf(c, r, 'allergen_set', ['uk14', 'us9', 'anz'] as const),
+    allergenCardOnlyAllowed: bool(c, r, 'allergen_card_only_allowed'),
     cardFeeOnlinePct: num(c, r, 'card_fee_online_pct'),
     cardFeeOnlineFixedMinor: num(c, r, 'card_fee_online_fixed_minor'),
     cardFeeInPersonPct: num(c, r, 'card_fee_in_person_pct'),

@@ -27,7 +27,9 @@ module.exports = async function us(x) {
   // ⚠️ RE-PINNED (Language Phase 1d): the review screen's words moved to messages `manageAllergens`, so its
   // translator (`const t = useT('manageAllergens')`) now sits between the set and the two derived lists.
   t('the review screen and table read the truck\'s list (allergenVocab / genericReplacements by the provider\'s set)',
-    /const allergenSet = useOptionalCountrySettings\(\)\?\.allergenSet\n\s+const t = useT\('manageAllergens'\)\n\s+const ALLERGEN_VOCAB = allergenVocab\(allergenSet\)\n\s+const GENERIC_REPLACEMENTS = genericReplacements\(allergenSet\)/.test(P)
+    // ⚠️ RE-PINNED (allergen-card-country, 21 October 2026): the wizard also reads the country's allergenCardOnlyAllowed
+    // (a commented `const cardOnlyAllowed` line) between the set and `t` — named; nothing else may sit there.
+    /const allergenSet = useOptionalCountrySettings\(\)\?\.allergenSet\n(?:\s+\/\/[^\n]*\n)*\s+const cardOnlyAllowed = useOptionalCountrySettings\(\)\?\.allergenCardOnlyAllowed !== false\n\s+const t = useT\('manageAllergens'\)\n\s+const ALLERGEN_VOCAB = allergenVocab\(allergenSet\)\n\s+const GENERIC_REPLACEMENTS = genericReplacements\(allergenSet\)/.test(P)
     && !/^const (GENERIC_REPLACEMENTS|isVocab)\b/m.test(P))
 
   const US_TRUCK = { id: 'us-truck', name: 'Austin Eats', dashboard_token: 'tok-test', country: 'US', currency: 'USD' }
@@ -104,12 +106,16 @@ module.exports = async function us(x) {
   // "Saturday 14th June … 5pm-9pm" (the gap docs/us-readiness-sweep-report.md recommended closing).
   // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): addressStyleOf is retired — a country's address FORMAT gives the
   // {style} its messages select on (lib/address-formats.ts messagesStyleOf; the same answer for every input below).
-  const C = await kit.bundle('ur-placeholders', "export * from '@/lib/copy/addressPlaceholders'\nexport { messagesStyleOf } from '@/lib/address-formats'\nexport { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/manageScheduleEvent'\nimport '@/lib/i18n/catalog/manageScheduleImport'")
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the `{style}` selects are gone — the examples are each FORMAT's
+  // (lib/address-formats.ts `examples`), worded by `address.example` ("e.g. {example}"), and the paste example's place comes
+  // from the format (pasteExampleValues(format, ts) → `{place}`). Rendered as the Schedule tab does and held to the SAME
+  // answers: GB = BEFORE, US = the US examples (scripts/address-formats-2.cjs proves the forms byte-identical).
+  const C = await kit.bundle('ur-placeholders', "export * from '@/lib/copy/addressPlaceholders'\nexport { addressFormatOrDefault } from '@/lib/address-formats'\nexport { translatorFor } from '@/lib/i18n/translator'\nimport '@/lib/i18n/catalog/address'\nimport '@/lib/i18n/catalog/manageScheduleImport'")
   const tsOf = c => ({ timeZone: c.defaultTimezone, locale: c.locale, timeFormat: c.timeFormat === '12h' ? '12h' : '24h', dateOrder: c.dateOrder === 'mdy' ? 'mdy' : 'dmy', weekStart: c.weekStart === 'sunday' ? 'sunday' : 'monday' })
-  const holders = (style, c) => {
-    const ts = tsOf(c), tE = C.translatorFor(ts.locale, 'manageScheduleEvent'), tI = C.translatorFor(ts.locale, 'manageScheduleImport')
-    const st = C.messagesStyleOf(style)
-    return { address: tE('addressPlaceholder', { style: st }), area: tE('areaPlaceholder', { style: st }), paste: tI('pastePlaceholder', C.pasteExampleValues(style, ts)) }
+  const holders = (stored, c) => {
+    const ts = tsOf(c), tA = C.translatorFor(ts.locale, 'address'), tI = C.translatorFor(ts.locale, 'manageScheduleImport')
+    const f = C.addressFormatOrDefault(stored)
+    return { address: tA('example', { example: f.examples.addressLine }), area: tA('example', { example: f.examples.locality }), paste: tI('pastePlaceholder', C.pasteExampleValues(f, ts)) }
   }
   const gb = holders('postcode', SEEDS.gbFromSeed())
   t('GB address = BEFORE', gb.address === before.placeholders.address, gb.address)
@@ -122,11 +128,11 @@ module.exports = async function us(x) {
   // each 12-hour time carries a NO-BREAK SPACE (U+00A0) before PM. The " – " between them is the message's own literal
   // ({start} – {end} in messages/en-US.json, not formatTimeRange), so it keeps its ASCII spaces.
   t('US paste names Zilker Park, Austin, in the US truck\'s date and clock (named Language Phase 1d change; us-layout-fix-1-nbsp)', us.paste === 'Paste your schedule here e.g. Saturday, June 14, Zilker Park, Austin, 5:00\u00A0PM – 9:00\u00A0PM', us.paste)
-  t('no style → the UK examples', JSON.stringify(holders(undefined, SEEDS.gbFromSeed())) === JSON.stringify(gb) && C.messagesStyleOf(undefined) === 'postcode' && C.messagesStyleOf('xx') === 'postcode' && C.messagesStyleOf('us') === 'zip_state')
-  t('the Schedule tab reads all three from the messages by the truck\'s style (no literal left)',
-    P.includes('const addrStyle = messagesStyleOf(tabSettings.addressFormat)')
-    && P.includes("placeholder={tE('addressPlaceholder', { style: addrStyle })}") && P.includes("placeholder={tE('areaPlaceholder', { style: addrStyle })}")
-    && P.includes("placeholder={tI('pastePlaceholder', pasteExampleValues(addrStyle, ts))}") && !P.includes('e.g. 123 High St') && !P.includes('5pm-9pm"'))
+  t('no format → the UK examples', JSON.stringify(holders(undefined, SEEDS.gbFromSeed())) === JSON.stringify(gb) && JSON.stringify(holders('us', SEEDS.usFromSeed())) === JSON.stringify(us))
+  t('the Schedule tab reads all three by the truck\'s format (no literal left)',
+    P.includes('const addrFormat = addressFormatOrDefault(tabSettings.addressFormat)')
+    && read('components/manage/AddressFields.tsx').includes('placeholder={w.example(format.examples.addressLine)}') && read('components/manage/AddressFields.tsx').includes('placeholder={w.example(format.examples.locality)}')
+    && P.includes("placeholder={tI('pastePlaceholder', pasteExampleValues(addrFormat, ts))}") && !P.includes('e.g. 123 High St') && !P.includes('5pm-9pm"'))
   t('the seeds: GB postcode · US zip_state', SEEDS.gbFromSeed().addressFormat === 'postcode' && SEEDS.usFromSeed().addressFormat === 'zip_state')
 
   /* ── 5 · the plans PDF ── */

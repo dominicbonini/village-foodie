@@ -194,16 +194,20 @@ const ROWS = { ieOn: () => [LP1E.GB(), LP1E.US_ON(), IE(true)], ieOff: () => [LP
   const ts = (tz, loc) => ({ timeZone: tz, locale: loc, timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' })
   const ctxOf = (code, name, fmt) => ({ truckName: 'Pizza Kitchen', countryName: name, countryCode: code, addressFormat: fmt })
   const pGB = L.buildScheduleExtractionPrompt('x', ts('Europe/London', 'en-GB'), ctxOf('GB', 'United Kingdom', 'postcode'))
-  const pIE = L.buildScheduleExtractionPrompt('x', ts('Europe/Dublin', 'en-IE'), ctxOf('IE', 'Ireland', 'postcode'))
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the location lines come from the truck's ADDRESS FORMAT now, not a
+  // `code !== 'GB'` branch — Ireland's row holds 'ie' (address-formats-1's SQL), so the prompt is asked with it; Ireland's
+  // lines are its own Eircode rules (lib/address-formats.ts IE_AI), still no UK postcode or UK example.
+  const pIE = L.buildScheduleExtractionPrompt('x', ts('Europe/Dublin', 'en-IE'), ctxOf('IE', 'Ireland', 'ie'))
   const pUS = L.buildScheduleExtractionPrompt('x', { ...ts('America/Chicago', 'en-US'), timeFormat: '12h', dateOrder: 'mdy' }, ctxOf('US', 'United States', 'zip_state'))
   t('GB import prompt keeps its UK lines (UK venues, UK postcodes, the Burwell examples)', /knowledge of UK venues and locations/.test(pGB) && /UK postcodes follow the format/.test(pGB) && /The Fox Burwell/.test(pGB))
-  t('IE import prompt: venues in Ireland, its own postal codes, no UK postcode, no UK example', /knowledge of venues and locations in Ireland/.test(pIE) && /postal code used in Ireland/.test(pIE) && !/UK postcodes follow|Burwell|CB25|UK venue|valid UK postcode/.test(pIE))
+  t('IE import prompt: venues in Ireland, its own postal codes, no UK postcode, no UK example', /knowledge of venues and locations in Ireland/.test(pIE) && /"postcode" holds the Eircode/.test(pIE) && !/UK postcodes follow|Burwell|CB25|UK venue|valid UK postcode/.test(pIE))
   t('every import prompt names its output language ("Write anything else in English.")', [pGB, pIE, pUS].every(p => /OUTPUT LANGUAGE: copy venue names, towns and addresses exactly as the source writes them — never translate them\. Write anything else in English\./.test(p)))
   t('outputLanguageName: en-* → English; de-AT → German; nl-BE → Dutch; nonsense → English', L.outputLanguageName('en-IE') === 'English' && L.outputLanguageName('de-AT') === 'German' && L.outputLanguageName('nl-BE') === 'Dutch' && L.outputLanguageName('??') === 'English' && L.outputLanguageName(null) === 'English')
   const now = new Date('2026-10-20T10:00:00Z')
   const sGB = L.buildScreenshotPrompt(now, { code: 'GB', name: 'United Kingdom', addressFormat: 'postcode', dateOrder: 'dmy' })
-  const sIE = L.buildScreenshotPrompt(now, { code: 'IE', name: 'Ireland', addressFormat: 'postcode', dateOrder: 'dmy' })
-  t('screenshot prompt: GB keeps "UK postcodes look like…"; IE names "a postal code of Ireland" and no UK postcode', /UK postcodes look like "CB25 0BA"/.test(sGB) && /a postal code of Ireland, copied exactly as shown — never a UK postcode/.test(sIE) && !/CB25/.test(sIE))
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): as above — Ireland's format, and its own Eircode lines.
+  const sIE = L.buildScreenshotPrompt(now, { code: 'IE', name: 'Ireland', addressFormat: 'ie', dateOrder: 'dmy' })
+  t('screenshot prompt: GB keeps "UK postcodes look like…"; IE names its Eircodes and no UK postcode', /UK postcodes look like "CB25 0BA"/.test(sGB) && /Eircodes look like "D02 X963", "V94 X2T6" — never a UK postcode/.test(sIE) && !/CB25/.test(sIE))
   t('screenshot prompts name their output language', [sGB, sIE, L.buildScreenshotPrompt(now)].every(p => /OUTPUT LANGUAGE: copy truck names, venue names and towns exactly as the screenshot writes them — never translate them\./.test(p)))
 
   // ══ 7 ════════════════════════════════════════════════════════════════════════════════════════════════════════════

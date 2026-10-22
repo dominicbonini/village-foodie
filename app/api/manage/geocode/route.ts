@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { addressFormatOrDefault, regionDisplay, renderTemplate } from '@/lib/address-formats'
 
 export async function POST(req: NextRequest) {
-  const { venueName, town, postcode, country } = await req.json()
+  const { venueName, town, postcode, country, addressFormat, region, suburb } = await req.json()
 
   if (!town && !postcode) {
     return NextResponse.json({ lat: null, lng: null })
   }
 
-  const locationString = [venueName, town, postcode, country || 'UK']
-    .filter(Boolean)
-    .join(', ')
+  // 🔴 address-formats-2 (21 October 2026): THE QUERY IS THE TRUCK'S ADDRESS FORMAT'S GEOCODE TEMPLATE (lib/address-formats.ts
+  // `templates.geocode`) — the region and suburb where it has them ("Bondi Pavilion, Bondi Beach NSW 2026, Australia").
+  // GB's and the US's templates are the join this route always made ([venue, town, postcode, country]), so their
+  // queries are unchanged; no format → GB's. 'UK' stays the country when none is sent, as before.
+  const format = addressFormatOrDefault(addressFormat)
+  const locationString = renderTemplate(format.templates.geocode, {
+    venue: venueName, locality: town, suburb, region: regionDisplay(format, region), postalCode: postcode, country: country || 'UK',
+  })
 
   const prompt = `You are a geocoding service. Return ONLY a JSON object with the latitude and longitude for this location. Be as precise as possible using the venue name, town, and postcode.
 

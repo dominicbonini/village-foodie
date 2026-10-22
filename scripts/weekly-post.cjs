@@ -2114,7 +2114,11 @@ head('9c · THE WIRING')
     const { createTranslator } = require(require.resolve('next-intl', { paths: [REPO] }))
     const spT = createTranslator({ locale: 'en-GB', messages: JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8')), namespace: 'schedulePlaces' })
     for (let i = 1; i < seg.length; i++) {
+      // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): Area and Postcode are the truck's address format's labels
+      // (`useAddressWords`: w.localityShort / w.postal) — for a UK truck "Area" and "Postcode" (messages `address.*`).
+      const AF2_GB = { 'w.localityShort': 'Area', 'w.postal': 'Postcode' }
       const m = /^\s*label="([^"]+)"/.exec(seg[i]) || (() => { const k = /^\s*label=\{t\('([^']+)'/.exec(seg[i]); return k ? [k[0], spT(k[1], { style: 'postcode' })] : null })()
+        || (() => { const k = /^\s*label=\{(w\.localityShort|w\.postal)\}/.exec(seg[i]); return k ? [k[0], AF2_GB[k[1]]] : null })()
       if (m) widths[m[1]] = seg[i - 1].includes('sm:col-span-2')
     }
     /* ⚠️ "Full name" IS THE LONG ONE NOW (6 October 2026). The two name labels were swapped: `name` is

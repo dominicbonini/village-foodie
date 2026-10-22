@@ -43,5 +43,6 @@
     "last": "Over {from} → <b>{plan}</b>",
     "only": "Any volume → <b>{plan}</b>"
   },
-  "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%."
+  "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%.",
+  "currencyLine": "Prices in {currency} ({code})"
 }

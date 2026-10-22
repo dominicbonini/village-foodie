@@ -502,14 +502,13 @@
     "titleTidy": "Clean up places",
     "tidyUp": "Clean up places",
     "whereTrading": "Where are you serving?",
-    "area": "City or town",
     "van": "Truck",
     "selectVan": "Select a truck",
     "notesPlaceholder": "e.g. Park in the main parking lot"
   },
   "manageScheduleImport": {
     "analysing": "Analyzing…",
-    "pastePlaceholder": "Paste your schedule here e.g. {date}, {style, select, zip_state {Zilker Park, Austin} other {The Crown, Wickhambrook}}, {start} – {end}",
+    "pastePlaceholder": "Paste your schedule here e.g. {date}, {place}, {start} – {end}",
     "review": {
       "van": "Truck",
       "selectVan": "Select a truck"
@@ -931,6 +930,11 @@
       "online_ordering_pay_at_hatch": {
         "name": "Pay-at-the-truck ordering"
       }
+    }
+  },
+  "address": {
+    "label": {
+      "area": "City or town"
     }
   }
 }

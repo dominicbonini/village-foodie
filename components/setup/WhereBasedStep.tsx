@@ -15,6 +15,8 @@ import type { SignupCountry } from '@/lib/signup-country-types'
 import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaRefusal } from '@/lib/trade-area'
 import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
 import { useT } from '@/lib/i18n/use-t'
+import { addressFormatOrDefault, fieldOf, type LocalityLabel } from '@/lib/address-formats'
+import '@/lib/i18n/catalog/address'
 import '@/lib/i18n/catalog/whereBased'
 import '@/lib/i18n/catalog/tradeArea'
 import { errorText } from '@/lib/i18n/customer-errors'
@@ -200,6 +202,7 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
 }) {
   const c = countries.find(x => x.code === value.country) ?? countries[0]
   const tTrade = useT('tradeArea')
+  const tAddr = useT('address')
   const say = (r: TradeAreaRefusal) => tTrade(r.code, r.params)
   const setCountry = (code: string) => {
     const next = countries.find(x => x.code === code)
@@ -225,7 +228,8 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
         {errors.country && <p className="text-xs text-red-600 mt-1">{say(errors.country)}</p>}
       </div>
       <div>
-        <label htmlFor="base-town" className={LABEL}>{COPY.townQuestion}</label>
+        {/* address-formats-2: the chosen country's word for where a truck is based (GB/US: "Town or city you’re based in"). */}
+        <label htmlFor="base-town" className={LABEL}>{tAddr(`basedIn.${(fieldOf(addressFormatOrDefault(c?.addressFormat), 'locality')?.label ?? 'area') as LocalityLabel}`)}</label>
         <TownInput id="base-town" country={value.country} value={value.place} invalid={!!errors.town}
           onChange={place => onChange({ ...value, place })} />
         {errors.town && <p className="text-xs text-red-600 mt-1">{say(errors.town)}</p>}

@@ -291,8 +291,12 @@ async function compare() {
   await M.geocode.POST(json('http://127.0.0.1:3999/api/manage/geocode', { venueName: 'The Fox', town: 'Burwell', postcode: 'CB25 0BA', country: 'UK' }))
   ok(globalThis.__prompts[0] === B.geocodePrompt, 'geocoder: a UK truck now sends "UK" — its prompt is byte-identical', firstDiff(globalThis.__prompts[0], B.geocodePrompt))
   const page = read('app/manage/[token]/page.tsx')
-  ok((page.match(/tabSettings\.shortName \|\| tabSettings\.name/g) || []).length === 3 && /body: JSON\.stringify\(\{ venueName, town, postcode, country \}\)/.test(page), 'geocoder client sends the truck\'s country at all three calls; the route is unchanged')
-  ok(!/country/.test(read('app/api/manage/geocode/route.ts').split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n').replace("const { venueName, town, postcode, country } = await req.json()", '').replace("country || 'UK'", '')), 'the geocoder route itself is untouched (Part B)')
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the client also sends the truck's ADDRESS FORMAT (and a region or
+  // suburb only where the format has one and it holds a value), and the route builds the query from the format's geocode
+  // template — GB's is the old join, so the UK prompt above is still byte-identical (and scripts/address-formats-2.cjs
+  // compares GB and US queries against a capture of the code before). The country is still sent at all three calls.
+  ok((page.match(/tabSettings\.shortName \|\| tabSettings\.name/g) || []).length === 3 && page.includes("body: JSON.stringify({ venueName, town, postcode, country, addressFormat: where.addressFormat, ...(where.region ? { region: where.region } : {}), ...(where.suburb ? { suburb: where.suburb } : {}) }),"), 'geocoder client sends the truck\'s country (and its address format) at all three calls')
+  ok(/renderTemplate\(format\.templates\.geocode, \{/.test(read('app/api/manage/geocode/route.ts')) && read('app/api/manage/geocode/route.ts').includes("country: country || 'UK'"), 'the geocoder route builds its query from the format\'s template, "UK" still the country when none is sent')
 
   console.log('2. GB behaviour — gate, bridge, ingest, feed, screenshot route: identical outputs')
   const gw = withoutCountry(A.gate.writes)

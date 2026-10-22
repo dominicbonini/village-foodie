@@ -676,10 +676,13 @@ head('4 · hiding a place is in Add event now, and there is still only one list'
     // each is asserted as that call in PlaceDetail AND the GB words at schedulePlaces.<key>.
     // (Postcode is an ICU select whose `other` branch is the GB word.)
     const five = detail.includes("useT('schedulePlaces')")
-      && [['Full name', 'fullName'], ['Venue name', 'venueName'], ['Address', 'address'], ['Area', 'area']]
+      && [['Full name', 'fullName'], ['Venue name', 'venueName'], ['Address', 'address']]
         .every(([f, k]) => detail.includes(`label={t('${k}')}`) && msgGB(`schedulePlaces.${k}`) === f)
-      && detail.includes("label={t('postcode', { style: addrStyle })}")
-      && /other \{Postcode\}/.test(msgGB('schedulePlaces.postcode'))
+      // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): Area and Postcode are the truck's ADDRESS FORMAT's labels now
+      // (components/manage/AddressFields.tsx useAddressWords → messages `address.*`, keyed by the format's variant); the
+      // GB words are the same — "Area" (address.short.area) and "Postcode" (address.label.postcode).
+      && detail.includes('label={w.localityShort}') && msgGB('address.short.area') === 'Area'
+      && detail.includes('label={w.postal}') && msgGB('address.label.postcode') === 'Postcode'
     /* ⛔ THE `key` IS NOT DECORATION. `PlaceDetail` holds the five fields as LOCAL DRAFT STATE and
      * saves them ON BLUR, so without a remount per place the pane shows the previous place's values
      * and blurring writes them onto the current one. That was a real defect on the deleted tab. */

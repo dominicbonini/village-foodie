@@ -764,9 +764,20 @@ head('2 · ZERO CHANGE FOR A TRUCK WITH NO TYPES AND NO OWN PRICES')
       && !/canAccess\(/.test(now)
       && /plan: String\(truck\.plan \?\? ''\),/.test(now) && /preordering_on: preorderFeatureOn,/.test(now)
       && /pay_at_hatch_on: payAtHatchOffered,/.test(now))
+    /* ⚠️ RE-PINNED (allergen-card-country, 21 October 2026, docs/allergen-card-country-report.md): the allergen display
+     * mode the route uses is the EFFECTIVE one — 'card' read as 'per_dish' where the truck's country does not allow an
+     * allergen card on its own (country_settings.allergen_card_only_allowed). Three lines that read the stored mode now read
+     * `allergenDisplayMode`. Excused BY COUNT; the companion check requires the replacements. None is on the price leg. */
+    const ACC_REMOVED = new Map([["const perDish = ((truck.allergen_display_mode ?? null) as string) !== 'card'", 1],
+      ["allergen_display_mode: (truck.allergen_display_mode ?? null) as 'per_dish' | 'card' | 'both' | null,", 1],
+      ["allergensVerified: ((truck.allergen_display_mode ?? null) === 'card' && !!(truck.allergen_info_url || truck.allergen_info_text))", 1]])
+    t('⚠️ …allergen-card-country: the route reads the effective display mode in all three places',
+      /const allergenDisplayMode = \(\(truck\.allergen_display_mode \?\? null\) === 'card' && !cardOnlyAllowed \? 'per_dish'/.test(now)
+      && /const perDish = \(allergenDisplayMode as string \| null\) !== 'card'/.test(now) && /allergen_display_mode: allergenDisplayMode,/.test(now)
+      && /allergensVerified: \(allergenDisplayMode === 'card'/.test(now))
     const removed = []
     for (const [l, n] of mb) {
-      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0) - (PHASE_2_REMOVED.get(l.trim()) || 0) - (MIDNIGHT_REMOVED.get(l.trim()) || 0) - (PLANS_A_REMOVED.get(l.trim()) || 0) - (PLANS_A2_REMOVED.get(l.trim()) || 0)
+      const k = n - (mn.get(l) || 0) - (D31_REMOVED.get(l.trim()) || 0) - (PHASE_1A_REMOVED.get(l.trim()) || 0) - (PHASE_2_REMOVED.get(l.trim()) || 0) - (MIDNIGHT_REMOVED.get(l.trim()) || 0) - (PLANS_A_REMOVED.get(l.trim()) || 0) - (PLANS_A2_REMOVED.get(l.trim()) || 0) - (ACC_REMOVED.get(l.trim()) || 0)
       if (k > 0 && l.trim() && !PHASE_2B_REMOVED.has(l.trim())) removed.push([l.trim(), k])
     }
     t('⚠️ audit D31: the public menu neither reads nor sends discount codes', !/discount_codes_db/.test(now.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n')) && !/codes: \(codes/.test(now))

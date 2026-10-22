@@ -2,10 +2,16 @@
 // docs/schedules-country-report.md). Moved out of scripts/run-scraper.js UNCHANGED, so a harness can build them
 // and compare them byte for byte with what the scraper sent before (scripts/schedules-country-parity.cjs).
 //
-// 🔴 EACH TAKES THE SOURCE'S COUNTRY. Every current source is British (the Sheet and the HatchGrab trucks are
-// GB), and for GB every prompt is exactly what it was. Pass A's two prompts carry no UK-only line, so their text
-// is the same in every country. Pass B's prompt (buildHgPrompt) has UK place-name lines; a zip_state truck
-// (the US) gets city / two-letter state / ZIP lines instead, and an mdy country one line on month-first dates.
+// 🔴 EACH TAKES THE SOURCE'S COUNTRY. Pass A's two prompts carry no UK-only line, so their text is the same in every
+// country. Pass B's prompt (buildHgPrompt) takes its location lines from the truck's ADDRESS FORMAT
+// (lib/address-formats.ts `ai.scraper`: the VENUE RULES line, the TOWN RULES block, the examples and the output's
+// location keys), and an mdy country gets one line on month-first dates.
+// address-formats-2 follow-up (22 October 2026, docs/address-formats-2-report.md): it branched on `zip_state` here, so
+// once address-formats-1's SQL stored the US as `us`, US trucks got the UK lines. No format value is named in this file
+// now; GB's and US's lines moved to the config verbatim (scripts/scraper-prompts-format.cjs proves both prompts).
+// 🔴 Node imports the config's TypeScript directly (type stripping: on by default from Node 22.18; the scrape workflows
+// run Node 24), so there is no second copy of any rule here.
+import { addressFormatOrDefault, DEFAULT_ADDRESS_FORMAT } from '../lib/address-formats.ts';
 
 /** Pass A, rule branch (manual / scrape_rules / weekly). Callers pass `country` too; no line depends on it. */
 function buildPassARulePrompt({ site, cleanText }) {
@@ -80,49 +86,24 @@ function buildPassAEventPrompt({ site, cleanText }) {
 }
 
 /**
- * Pass B (HatchGrab-linked trucks). `addressFormat` is the truck's country_settings.address_format and
- * `dateOrder` its date_order; 'postcode' (the UK) is the prompt exactly as it always was.
+ * Pass B (HatchGrab-linked trucks). `addressFormat` is the truck's country_settings.address_format (a format key, or a
+ * legacy value the config still maps; anything else is GB, as before) and `dateOrder` its date_order.
  */
-function buildHgPrompt({ todayStr, currentYear, pageText, addressFormat = 'postcode', dateOrder = 'dmy' }) {
-  if (addressFormat === 'zip_state') {
-    const mdyLine = dateOrder === 'mdy' ? '\nDates written with numbers only are MONTH first: "10/12" is 12 October, so output "12/10".' : '';
-    return `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
+function buildHgPrompt({ todayStr, currentYear, pageText, addressFormat = DEFAULT_ADDRESS_FORMAT, dateOrder = 'dmy' }) {
+  const rules = addressFormatOrDefault(addressFormat).ai.scraper;
+  const mdyLine = dateOrder === 'mdy' ? '\nDates written with numbers only are MONTH first: "10/12" is 12 October, so output "12/10".' : '';
+  return `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
 You are extracting a food truck's schedule from website text. Extract events from TODAY ONWARDS — you MUST
 INCLUDE today's event (a truck trading today is the most important to capture). Exclude ONLY events dated
 BEFORE today.
 DATE RULES: Format "DD/MM/YYYY". Always append /${currentYear}. Map day names to exact dates based on today.${mdyLine}
 TIME RULES: "HH:MM" 24-hour. "5pm" → "17:00". If unknown, use "".
-VENUE RULES: "venue_name" = ONLY the venue name. "town" = the city or town it is in. "state" = its two-letter state (e.g. "TX").
-TOWN RULES (IMPORTANT): ALWAYS populate "town". If the city or town is EMBEDDED inside the venue name, SPLIT it out —
-put the place-name in "town", the state in "state", and keep "venue_name" as just the venue name. If the town truly
-cannot be determined, use "".
+${rules.venueRules}
+${rules.townRules}
 EXAMPLES (embedded-town split):
-  "Joe's Tavern Austin TX"        -> {"venue_name":"Joe's Tavern","town":"Austin","state":"TX"}
-  "Sunset Brewery, Boulder, CO"    -> {"venue_name":"Sunset Brewery","town":"Boulder","state":"CO"}
+${rules.examples}
 Return ONLY valid JSON:
-{"events":[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"City","state":"ST","postcode":"ZIP code or empty"}]}
-
-WEBSITE TEXT:
-${pageText.slice(0, 100000)}`;
-  }
-  return `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
-You are extracting a food truck's schedule from website text. Extract events from TODAY ONWARDS — you MUST
-INCLUDE today's event (a truck trading today is the most important to capture). Exclude ONLY events dated
-BEFORE today.
-DATE RULES: Format "DD/MM/YYYY". Always append /${currentYear}. Map day names to exact dates based on today.
-TIME RULES: "HH:MM" 24-hour. "5pm" → "17:00". If unknown, use "".
-VENUE RULES: "venue_name" = ONLY the pub/venue name. "town" = the village/town/city it is in.
-TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town/village is EMBEDDED inside the venue name,
-SPLIT it out — put the place-name in "town" and keep "venue_name" as just the pub/venue name. A UK
-place-name sitting next to a generic pub name (Bells/Star/Bell/Lion/Swan/Arms/Crown/Anchor, etc.) is the
-town, not part of the venue name. Never leave a town buried in venue_name. If the town truly cannot be
-determined, use "".
-EXAMPLES (embedded-town split):
-  "The Cavendish Five Bells"      -> {"venue_name":"Five Bells","town":"Cavendish"}
-  "The Star Pub, Lidgate"         -> {"venue_name":"The Star","town":"Lidgate"}
-  "Nethergate Brewery, Long Melford" -> {"venue_name":"Nethergate Brewery","town":"Long Melford"}
-Return ONLY valid JSON:
-{"events":[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"Town","postcode":"Postcode or empty"}]}
+{"events":[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name",${rules.outputShape}}]}
 
 WEBSITE TEXT:
 ${pageText.slice(0, 100000)}`;

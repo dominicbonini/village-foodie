@@ -415,8 +415,11 @@ function runTreeSuite() {
      * EXISTS, and a dead column that still exists is a thing a `select *` will still return.
      * ⚠️ THE COUNT HAS MOVED FOUR TIMES IN FOUR DAYS and the pin is still worth its cost for exactly
      * that reason: a rename would read as a drop here, and four model changes in four days is precisely
-     * when somebody would reach for one. */
-    && r.declared.get('truck_places').size === 26
+     * when somebody would reach for one.
+     * ⚠️ RE-PINNED (address-formats-2, 21 October 2026): **28** — `20261030_address_suburb_region.sql` adds `suburb` and
+     * `region` (a place's dependent locality and its region's code in the truck's address format), asserted by name too. */
+    && r.declared.get('truck_places').size === 28
+    && r.declared.get('truck_places').has('suburb') && r.declared.get('truck_places').has('region')
     && ['event_picture_id', 'weekly_picture_id', 'event_photo_picture_id',
         'weekly_only_picture_id', 'picture_use', 'social_tag']
       .every(c => r.declared.get('truck_places').has(c))

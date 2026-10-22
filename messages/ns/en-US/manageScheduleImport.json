@@ -1,6 +1,6 @@
 {
   "analysing": "Analyzing…",
-  "pastePlaceholder": "Paste your schedule here e.g. {date}, {style, select, zip_state {Zilker Park, Austin} other {The Crown, Wickhambrook}}, {start} – {end}",
+  "pastePlaceholder": "Paste your schedule here e.g. {date}, {place}, {start} – {end}",
   "review": {
     "van": "Truck",
     "selectVan": "Select a truck"

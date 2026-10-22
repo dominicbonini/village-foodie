@@ -42,6 +42,7 @@ const COL = { // column → field, exactly lib/admin/country-form.ts valuesToCol
   card_surcharge_cap_pct: 'cardSurchargeCapPct', card_surcharge_credit_only: 'cardSurchargeCreditOnly',
   card_surcharge_excluded_regions: 'cardSurchargeExcludedRegions', service_fee_allowed: 'serviceFeeAllowed',
   tipping_enabled_default: 'tippingEnabledDefault', tip_presets_pct: 'tipPresetsPct', allergen_set: 'allergenSet',
+  allergen_card_only_allowed: 'allergenCardOnlyAllowed', // ⚠️ RE-PINNED (allergen-card-country, 21 October 2026): 20261029
   starter_monthly_minor: 'starterMonthlyMinor', pro_monthly_minor: 'proMonthlyMinor', max_monthly_minor: 'maxMonthlyMinor',
   pro_allowance_minor: 'proAllowanceMinor', max_allowance_minor: 'maxAllowanceMinor', platform_fee_pct: 'platformFeePct',
   card_fee_online_pct: 'cardFeeOnlinePct', card_fee_online_fixed_minor: 'cardFeeOnlineFixedMinor',

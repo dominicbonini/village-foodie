@@ -757,6 +757,14 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .cheap-bands { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem 2.4rem; }
 .hg-landing .cheap-band b { color: var(--head); font-weight: 700; }
 .hg-landing .price-note { margin-top: .8rem; font-size: .8rem; color: var(--ink-faint); line-height: 1.5; }
+/* native-prices (22 October 2026, the approved mockup): where the country's currency symbol is shared ("$", "kr"), one small
+   muted line centred above the cards names the currency ("Prices in New Zealand dollars (NZD)"). On a phone it keeps its
+   place above the cards (`order: 2`, below, with the cards; DOM order decides between the two).
+   ⚠️ `--hero-grey` (#3E5472), Dominic, 22 October 2026, so the line passes AA: 7.73:1 on white, 7.25:1 on the pricing
+   band's `--wash`. It was `--ink-soft` (4.44:1 / 4.17:1, under the 4.5:1 floor for small text). The token is declared on
+   `.hero` only and must not join `:root` (its note above), so this rule declares it for itself, at the SAME value —
+   scripts/native-prices.cjs fails if the two ever differ. */
+.hg-landing .price-currency { --hero-grey: #3E5472; text-align: center; font-size: .85rem; color: var(--hero-grey); margin-bottom: .9rem; }
 /* The cost-comparison link under the plan cards. Sized ABOVE the small print around it and given the
    brand orange, so it reads as a route rather than another line of caveat — but it stays a link, not a
    button, so it never competes with the section's DemoCta. */
@@ -813,7 +821,7 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   /* Stage B: the heading, then the cards (in plan order), then the cheapest-plan bar, the trial banner, the switching
      block and the footnote. The cards still come straight after the heading on a phone, as before. */
   .hg-landing #pricing .price-head { order: 1; }
-  .hg-landing #pricing .plans { order: 2; }
+  .hg-landing #pricing .price-currency, .hg-landing #pricing .plans { order: 2; }
   .hg-landing #pricing .cheap-bar { order: 3; }
   .hg-landing #pricing .trial-banner { order: 4; margin-top: 2rem; margin-bottom: 0; }
   .hg-landing #pricing .switch-block { order: 5; }

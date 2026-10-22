@@ -32,7 +32,7 @@ export function valuesToColumns(v: CountryValues): Record<string, unknown> {
     card_surcharge_allowed: v.cardSurchargeAllowed, card_surcharge_cap_pct: v.cardSurchargeCapPct,
     card_surcharge_credit_only: v.cardSurchargeCreditOnly, card_surcharge_excluded_regions: v.cardSurchargeExcludedRegions,
     service_fee_allowed: v.serviceFeeAllowed, tipping_enabled_default: v.tippingEnabledDefault, tip_presets_pct: v.tipPresetsPct,
-    allergen_set: v.allergenSet,
+    allergen_set: v.allergenSet, allergen_card_only_allowed: v.allergenCardOnlyAllowed,
     // ⛔ The retired plan price columns (starter/pro/max monthly, allowances, platform_fee_pct) are NOT written here
     // (plans-data-model, Stage A): plans and their prices are public.plans / public.plan_prices.
     card_fee_online_pct: v.cardFeeOnlinePct, card_fee_online_fixed_minor: v.cardFeeOnlineFixedMinor,

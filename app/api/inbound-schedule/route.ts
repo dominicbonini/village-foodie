@@ -1,4 +1,4 @@
-import { messagesStyleOf } from '@/lib/address-formats'
+import { addressFormatOf, type AddressFormatKey } from '@/lib/address-formats'
 import { NextRequest, NextResponse } from 'next/server'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz, formatYmdShortMonth, formatTime } from '@/lib/time-utils'
@@ -130,12 +130,13 @@ export async function POST(req: NextRequest) {
 
   /* ── THE EVENT'S STATE (US Polish batch, 19 October 2026; docs/us-polish-batch-report.md) ──────────────────────
    * A row's `region` (the payload's own, or the model's `state` that lib/admin/screenshot-events.ts sends as `region`)
-   * is written to truck_events.region exactly as Manage's importer saves it: only in a zip_state country (the US), only
-   * a two-letter code, NEVER inferred (not from the truck's base town, not from the venue). Every other row — every GB
+   * is written to truck_events.region exactly as Manage's importer saves it: only in a country whose address format has
+   * a region list (address-formats-2: the US's states, Australia's, Ireland's counties, Canada's provinces), only as a
+   * code in THAT list, NEVER inferred (not from the truck's base town, not from the venue). Every other row — every GB
    * row — inserts exactly the columns it always did: the key is absent, not null. */
-  let zipState = false
-  try { zipState = messagesStyleOf((await getCountrySettings(country)).addressFormat) === 'zip_state' } catch { zipState = false }   // address-formats-1: unchanged until stage 2
-  const eventRegionOf = (r: { region?: unknown }) => (zipState ? normaliseRegion(r.region) : null)
+  let regionFormat: AddressFormatKey | null = null
+  try { const f = addressFormatOf((await getCountrySettings(country)).addressFormat); regionFormat = f?.regions ? f.key : null } catch { regionFormat = null }
+  const eventRegionOf = (r: { region?: unknown }) => (regionFormat ? normaliseRegion(r.region, regionFormat) : null)
 
   let bridgedCount = 0
   const notifiedTruckIds = new Set<string>()

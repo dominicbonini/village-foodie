@@ -86,6 +86,7 @@
     "buildFirst": "Build your menu first — add dishes, then set up their allergens",
     "displayMode": "Display mode: <b>{mode}</b>",
     "cardSaved": "allergen card saved",
+    "cardNotAllowed": "An allergen card on its own can’t be used where your truck trades, so customers see allergens against each dish. Please confirm each dish’s allergens.",
     "addCard": "add an allergen card so customers can see allergen info",
     "allConfirmed": "all dishes confirmed",
     "setUpReview": "Set up / review allergens",

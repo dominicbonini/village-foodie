@@ -21,10 +21,18 @@ const legacyRegion = (v: unknown): string | null => {
 }
 
 /** A stored or typed region, as its code in the format's own region list ("nsw" → "NSW", "Kerry" → "KY"); null when
- *  the format has no list or the value is not in it. With no format: the old rule (two letters, upper-cased). */
+ *  the format has no list or the value is not in it (a code format: not one of its codes). With no format: the old rule
+ *  (two letters, upper-cased). */
 export const normaliseRegion = (v: unknown, format?: unknown): string | null => {
   const f = addressFormatOf(format)
-  return f ? (regionOf(f, v)?.code ?? null) : legacyRegion(v)
+  if (!f) return legacyRegion(v)
+  const r = regionOf(f, v)
+  if (!r) return null
+  // address-formats-2 (21 October 2026): a format WRITTEN AS CODES (the US, Australia, Canada) keeps only a code, any case
+  // ("nsw" → "NSW") — a written-out name ("New Jersey") is not saved, exactly as the US's two-letter rule never saved one.
+  // A format written as NAMES (Ireland's counties) also takes the name and its aliases ("Kerry" → "KY").
+  if (f.regions!.shownAs === 'code' && String(v).trim().replace(/\.$/, '').toUpperCase() !== r.code) return null
+  return r.code
 }
 
 export interface EventAddressParts {

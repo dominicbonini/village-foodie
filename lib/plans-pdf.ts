@@ -23,7 +23,7 @@
 // through lib/plan-offer.ts — the module the landing and /features read); every word from the `pricing` / `planTable`
 // messages. ⛔ NO PLAN KEY, NAME OR NUMBER IS WRITTEN HERE. The frozen display copy it used to read is deleted.
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, currencyLineOf } from '@/lib/country-settings-types'
 import { getCountrySettings } from '@/lib/country-settings'
 import { HATCHGRAB_NAVY_HEX, HATCHGRAB_ORANGE_HEX, HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 import { readFileSync } from 'node:fs'
@@ -157,7 +157,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const masked = !s.enabled
   const show = (v: string) => priceText(masked ? maskPriceFor(v, true) : px(v), locale)
   const paper = pdfPaperOf(s)
-  const money = planMoneyFormatOf(s)   // anz-1: our prices name their dollar (A$, NZ$)
+  const money = planMoneyFormatOf(s)   // native-prices: our prices in the country's own form ("$49" in New Zealand)
   const plans = offerPlans(catalog, s.countryCode)
   const months = offerTrialMonths(catalog)
   const fallback = offerFallback(catalog, s.countryCode)
@@ -222,7 +222,11 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
 
   // pricing-tidy (20 October 2026): the card-fee footnote, then the rows' disclosures (¹ WhatsApp auto-replies, ² Kitchen
   // ticket printing) — the same notes /features and Billing print (components/pricing/PlanTable.tsx planTableNotes).
-  const footnote = `<p>${esc(tp('footnote', { cardFee: show(cardFeeOnlineLabel(s)), country: s.shortName ?? s.name }))}</p>`
+  // native-prices (22 October 2026): where the country's currency symbol is shared, the line naming it opens the small print —
+  // once, as on Billing. GB, US and IE: no line.
+  const currencyLine = currencyLineOf(s)
+  const footnote = (currencyLine ? `<p>${esc(tp('currencyLine', currencyLine))}</p>` : '')
+    + `<p>${esc(tp('footnote', { cardFee: show(cardFeeOnlineLabel(s)), country: s.shortName ?? s.name }))}</p>`
     + planTableNotes(locale).map(n => `<p><sup>${esc(n.marker)}</sup> ${esc(n.text)}</p>`).join('')
   const priceNote = (PRICE_MODE === 'follow-flag' && !PRICING_PUBLISHED) || masked
     ? `<p class="tbc">${esc(t('priceNoteMasked'))}</p>` : ''

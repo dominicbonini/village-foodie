@@ -2,8 +2,8 @@
 //
 // 🔴 GOOGLE PLACES API (NEW), CALLED FROM THE SERVER ONLY, WITH GOOGLE_MAPS_API_KEY. The key never reaches a
 // browser: the browser asks /api/places/suggest and /api/places/details, which call these functions.
-//   • autocomplete: restricted to ONE country (the chosen one) and to towns, cities and postal towns
-//     (includedPrimaryTypes: locality, postal_town).
+//   • autocomplete: restricted to ONE country (the chosen one) and to the place types its ADDRESS FORMAT calls a town
+//     (lib/address-formats.ts `places.localityTypes` — GB and the US: locality, postal_town, as before).
 //   • session tokens: the browser makes one per search; the suggestions and the pick that ends the search
 //     carry the same token, so Google bills them as one session.
 //   • details: just what is stored — the name, the county or state, the point, the place id.
@@ -11,12 +11,14 @@
 // The box then accepts free text, which is saved as base_place_name with no coordinates. Signup is never
 // stopped by a lookup.
 import 'server-only'
+import { addressFormatOrDefault, regionOf } from '@/lib/address-formats'
 
 export type Suggestion = { placeId: string; name: string; detail: string }
 export type PlaceDetails = {
   placeId: string; name: string; region: string | null; lat: number; lng: number
-  /** D22 (Phase 3): the state's two-letter code ('TX'), 'zip_state' countries ONLY — the key is absent for a
-   *  'postcode' country, so a GB answer is unchanged. Null when Places gives none, or not two letters. */
+  /** D22 (Phase 3): the region's code in the format's list ('TX', 'NSW', 'KY') — only for a format whose
+   *  `places.regionCode` is set (address-formats-2); the key is absent otherwise, so a GB answer is unchanged. Null
+   *  when Places gives none, or one that is not in the list. */
   regionCode?: string | null
 }
 export type SuggestResult = { state: 'ok'; suggestions: Suggestion[] } | { state: 'none'; reason: string }
@@ -42,7 +44,7 @@ async function call(f: Fetch, url: string, init: RequestInit): Promise<unknown> 
 }
 
 /** Towns and cities in one country matching what has been typed. */
-export async function suggestTowns(input: string, country: string, sessionToken: string, f: Fetch = fetch): Promise<SuggestResult> {
+export async function suggestTowns(input: string, country: string, sessionToken: string, f: Fetch = fetch, addressFormat?: unknown): Promise<SuggestResult> {
   const k = key()
   if (!k) return { state: 'none', reason: 'no key' }
   const q = input.trim()
@@ -55,7 +57,7 @@ export async function suggestTowns(input: string, country: string, sessionToken:
         input: q.slice(0, 100),
         sessionToken,
         includedRegionCodes: [country.toLowerCase()],
-        includedPrimaryTypes: ['locality', 'postal_town'],
+        includedPrimaryTypes: [...addressFormatOrDefault(addressFormat).places.localityTypes],
       }),
     }) as { suggestions?: { placePrediction?: { placeId?: string; text?: { text?: string }; structuredFormat?: { mainText?: { text?: string }; secondaryText?: { text?: string } } } }[] }
     const suggestions = (data.suggestions ?? []).flatMap(s => {
@@ -71,9 +73,11 @@ export async function suggestTowns(input: string, country: string, sessionToken:
   }
 }
 
-/** The details stored for a picked town. The region is the county ('postcode' countries) or the state
- *  ('zip_state' countries) — country_settings.address_format says which a country uses. */
-export async function townDetails(placeId: string, sessionToken: string, addressFormat: 'postcode' | 'zip_state', f: Fetch = fetch): Promise<DetailsResult> {
+/** The details stored for a picked town. The region and its code come from the country's ADDRESS FORMAT
+ *  (country_settings.address_format → lib/address-formats.ts `places`): GB the county, the US and Australia the state,
+ *  Ireland the county. A key or a legacy value ('postcode' → GB, 'zip_state' → US); anything else → GB. */
+export async function townDetails(placeId: string, sessionToken: string, addressFormat: unknown, f: Fetch = fetch): Promise<DetailsResult> {
+  const format = addressFormatOrDefault(addressFormat)
   const k = key()
   if (!k) return { state: 'none', reason: 'no key' }
   if (!/^[A-Za-z0-9_-]{10,300}$/.test(placeId)) return { state: 'none', reason: 'bad place id' }
@@ -83,18 +87,21 @@ export async function townDetails(placeId: string, sessionToken: string, address
     }) as { id?: string; displayName?: { text?: string }; location?: { latitude?: number; longitude?: number }; addressComponents?: { longText?: string; shortText?: string; types?: string[] }[] }
     const lat = data.location?.latitude, lng = data.location?.longitude
     if (typeof lat !== 'number' || typeof lng !== 'number' || !data.displayName?.text) return { state: 'none', reason: 'incomplete answer' }
-    const comp = (t: string) => data.addressComponents?.find(c => c.types?.includes(t))?.longText ?? null
-    const region = addressFormat === 'zip_state'
-      ? comp('administrative_area_level_1')
-      : (comp('administrative_area_level_2') ?? comp('administrative_area_level_1'))
-    // D22: the state's short code, kept only when it IS a two-letter code — an unknown state stores nothing.
-    const short = addressFormat === 'zip_state'
-      ? (data.addressComponents?.find(c => c.types?.includes('administrative_area_level_1'))?.shortText ?? null)
-      : null
-    const regionCode = typeof short === 'string' && /^[A-Z]{2}$/.test(short) ? short : null
+    const compOf = (t: string) => data.addressComponents?.find(c => c.types?.includes(t))
+    // The region: the first of the format's levels that Places gave (GB: the county, else the nation).
+    const level = format.places.regionFrom.find(t => compOf(t)?.longText)
+    const region = level ? (compOf(level)?.longText ?? null) : null
+    // D22: the region's code, kept only when it IS one of the format's list — an unknown region stores nothing.
+    // 'exact': Places' short text, exactly a code ("NJ", "NSW"; "nj" is not). 'match': the long or short text looked up.
+    const short = level ? (compOf(level)?.shortText ?? null) : null
+    const regionCode = format.places.regionCode === 'exact'
+      ? (typeof short === 'string' && regionOf(format, short)?.code === short ? short : null)
+      : format.places.regionCode === 'match'
+        ? (regionOf(format, region)?.code ?? regionOf(format, short)?.code ?? null)
+        : null
     return { state: 'ok', place: {
       placeId: data.id ?? placeId, name: data.displayName.text, region, lat: round6(lat), lng: round6(lng),
-      ...(addressFormat === 'zip_state' ? { regionCode } : {}),
+      ...(format.places.regionCode ? { regionCode } : {}),
     } }
   } catch (e) {
     console.error('[places] details failed — the town is kept as typed:', e instanceof Error ? e.message : e)

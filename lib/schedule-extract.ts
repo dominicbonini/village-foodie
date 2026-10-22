@@ -1,5 +1,7 @@
 import { getLocalDateInTz, addDaysYmd, formatYmd, clockMins, type TimeSettings } from '@/lib/time-utils'
 import { outputLanguageName } from '@/lib/ai-language'
+import { addressFormatOrDefault, addressFormatOf, fillAiText } from '@/lib/address-formats'
+import { normaliseRegion } from '@/lib/event-address'
 export type ExtractedEvent = {
   event_date: string
   start_time: string
@@ -8,8 +10,11 @@ export type ExtractedEvent = {
   town: string
   postcode: string
   address?: string
-  /** Two-letter state, for a zip_state country (Phase 2D-2). Present only when the model gave one. */
+  /** The region's code in the truck's format's list ("TX", "NSW", "KY") — Phase 2D-2, address-formats-2. Present only
+   *  when the model gave one that is in the list. */
   state?: string
+  /** A dependent locality (NZ "Ponsonby"), for a format with a suburb field. Present only when the model gave one. */
+  suburb?: string
 }
 
 /**
@@ -23,11 +28,12 @@ export type ScheduleContext = {
   baseTown?: string | null
   baseRegion?: string | null
   countryName?: string | null
-  /** ireland-1 (20 October 2026): the truck's country (ISO). A 'postcode' country other than GB (Ireland) gets its own
-   *  location lines — its own country's postal codes and venues, no UK examples. Absent or GB → the UK lines, as before. */
+  /** ireland-1 (20 October 2026): the truck's country (ISO). Context only — address-formats-2 took the location lines off
+   *  it: they come from `addressFormat`. */
   countryCode?: string | null
-  /** country_settings.address_format — 'postcode' keeps today's UK location lines byte for byte. */
-  addressFormat?: 'postcode' | 'zip_state'
+  /** country_settings.address_format — a format key (or a legacy value) of lib/address-formats.ts. The prompt's location
+   *  lines and the parsed state follow it; absent → GB's. */
+  addressFormat?: string | null
   /** The distinct towns of its last 15 confirmed events, most recent first. */
   recentTowns?: string[]
 }
@@ -83,24 +89,26 @@ export function buildScheduleExtractionPrompt(inputText: string, ts: TimeSetting
   }).join('\n')
 
   // 🔴 PHASE 2D-2. The truck-context block is the ONE addition a UK truck sees (named in
-  // scripts/schedules-country-parity.cjs); every UK location line below is byte for byte what it was. A
-  // zip_state country (the US) gets its own location lines — city, two-letter state, ZIP — in zipStatePrompt.
-  // ireland-1 (20 October 2026): EVERY BRANCH NAMES ITS OUTPUT LANGUAGE (.cursor/rules/language.mdc rule 10) — the truck's
-  // locale's language. Names and places are copied as written, never translated. This line is the only change a UK or
-  // US prompt sees; a UK prompt's location lines below are byte for byte what they were.
+  // scripts/schedules-country-parity.cjs). ireland-1 (20 October 2026): EVERY PROMPT NAMES ITS OUTPUT LANGUAGE
+  // (.cursor/rules/language.mdc rule 10) — the truck's locale's language. Names and places are copied as written.
   const contextBlock = truckContextBlock(ctx) + outputLanguageBlock(ts.locale)
-  if (ctx?.addressFormat === 'zip_state') return zipStatePrompt(inputText, todayStr, currentYear, nextYear, dateRef, contextBlock, ctx.countryName || 'the United States')
-  // A 'postcode' country that is not the UK (Ireland): the same rules with the country's own name, its own postal codes
-  // and examples that assert no UK postcode. Absent or GB → the UK wording, unchanged.
-  const code = (ctx?.countryCode ?? '').trim().toUpperCase()
-  const place = code && code !== 'GB' ? (ctx?.countryName || null) : null
-  const uk = place === null
+  // 🔴 address-formats-2 (21 October 2026): THE LOCATION RULES COME FROM THE TRUCK'S ADDRESS FORMAT (lib/address-formats.ts
+  // `ai.importer`) — no country-code branch. GB's and US's are the lines this prompt had, verbatim, so a UK and a US
+  // prompt are byte for byte what they were (scripts/address-formats-2.cjs). No format → GB, as before.
+  // The DATE lines follow the truck's date order: a month-first country is told how a numbers-only date reads. Output
+  // stays DD/MM/YYYY in every country — the importer's data contract (parseDDMMYYYY).
+  const ai = addressFormatOrDefault(ctx?.addressFormat).ai.importer
+  const fill = (text: string) => fillAiText(text, { country: ctx?.countryName || 'this country', year: currentYear })
+  const dateFormatLines = ts.dateOrder === 'mdy'
+    ? `- Date format MUST be "DD/MM/YYYY" (day first) in your output
+- Dates written with numbers only in the text are MONTH first: "10/12" is 12 October, so output "12/10/${currentYear}"`
+    : `- Date format MUST be "DD/MM/YYYY"`
 
   return `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.${contextBlock}
 
 You are extracting a food truck's schedule from messy, unstructured text or an image. Your job has two steps:
 1. EXTRACT what you can see
-2. ENRICH missing fields using your knowledge of ${uk ? 'UK venues and locations' : `venues and locations in ${place}`}
+2. ENRICH missing fields using your knowledge of ${fill(ai.knowledge)}
 
 14-DAY DATE REFERENCE — use this exact table when converting day names to dates. Do not calculate independently:
 ${dateRef}
@@ -108,7 +116,7 @@ ${dateRef}
 STEP 1 — EXTRACTION RULES:
 
 DATE RULES:
-- Date format MUST be "DD/MM/YYYY"
+${dateFormatLines}
 - Always append /${currentYear} to dates without a year
 - If December and event is in January, use ${nextYear}
 - For day names (Monday, Tuesday etc), look them up in the 14-DAY DATE REFERENCE above — do not calculate
@@ -120,120 +128,23 @@ TIME RULES:
 - Never use "00:00" — use "" if unknown
 
 VENUE NAME RULES:
-${uk ? `- Extract ONLY the pub/venue name — never include village, town, or postcode in venue_name
-- "The Fox Burwell" → venue_name="The Fox", town="Burwell"
-- "The Red Lion Belchamp Otten CO10 7BQ" → venue_name="The Red Lion", town="Belchamp Otten", postcode="CO10 7BQ"
-- "Five Bells, Burwell, CB25 0EJ, 5pm-9pm" → venue_name="The Five Bells", town="Burwell", postcode="CB25 0EJ"` : `- Extract ONLY the pub/venue name — never include village, town, or postal code in venue_name
-- "The Old Mill Riverside" → venue_name="The Old Mill", town="Riverside"
-- "Market Square, Riverside, 5pm-9pm" → venue_name="Market Square", town="Riverside"`}
+${fill(ai.venueRules)}
 - If a venue name is one of: Closed, N/A, TBC, Unavailable, Cancelled — omit that event entirely from the output
 
-${uk ? `POSTCODE RULES:
-- UK postcodes follow the format: letters+numbers SPACE number+letters (e.g. "CB25 0BA", "CO10 7BQ", "PE28 2SB")
-- Always extract the FULL postcode as one unit — if "CB25" is on one line and "0BA" on the next, postcode="CB25 0BA"
-- A postcode fragment alone (like "0BA" or "OBA") is never a town — combine it with the preceding partial postcode
-- If you see a full valid UK postcode anywhere in the text for that event, extract it
-- Return postcodes in uppercase` : `POSTAL CODE RULES:
-- "postcode" holds the postal code used in ${place}, exactly as the text writes it — never a UK postcode
-- Always extract the FULL postal code as one unit, even when it is split across two lines
-- A postal code fragment alone is never a town
-- If no postal code is shown for an event, leave postcode as "" unless you are certain of it (see STEP 2)
-- Return postal codes in uppercase`}
+${fill(ai.postalRules)}
 
-ADDRESS RULES:
-- address is for street-level detail only — house number + street name (e.g. "12 High Street")
-- NEVER populate address with the town name, village name, or postcode — leave it blank if no street address is available
-- Most schedules will not have a street address — leave address as "" in those cases
+${fill(ai.addressRules)}
 
 STEP 2 — ENRICHMENT RULES:
 After extracting what you can see, fill in any missing fields using your knowledge:
-- If you have a venue name and town but no postcode → ${uk ? 'look up the UK postcode for that venue and provide it' : `look up the postal code for that venue in ${place} and provide it`}
-- If you have a venue name but no town → determine the town/village from your knowledge of that ${uk ? 'UK venue' : `venue in ${place}`}
-- If the venue name is ambiguous (e.g. "The Fox") and you have a postcode or town → use that to identify the correct venue
-- Only enrich with high confidence — if uncertain, leave the field as ""
+${fill(ai.enrichRules)}
 
 EXAMPLES:
 
-${uk ? `Input: "Wednesday 3/6 The Red Lion Belchamp Otten CO10 7BQ"
-Output: {"event_date":"03/06/${currentYear}","start_time":"","end_time":"","venue_name":"The Red Lion","town":"Belchamp Otten","postcode":"CO10 7BQ"}
-
-Input: "Friday 5/6 The Fox Burwell CB25 0BA"
-Output: {"event_date":"05/06/${currentYear}","start_time":"","end_time":"","venue_name":"The Fox","town":"Burwell","postcode":"CB25 0BA"}
-
-Input: "Sunday 7/6 The Five Bells Burwell Birthday Party from 5pm"
-Output: {"event_date":"07/06/${currentYear}","start_time":"17:00","end_time":"","venue_name":"The Five Bells","town":"Burwell","postcode":"CB25 0EJ"}
-
-Input: "Sat 14th June The Crown Wickhambrook 5pm-9pm"
-Output: {"event_date":"14/06/${currentYear}","start_time":"17:00","end_time":"21:00","venue_name":"The Crown","town":"Wickhambrook","postcode":"CB8 8PD"}` : `Input: "Wednesday 3/6 The Old Mill Riverside"
-Output: {"event_date":"03/06/${currentYear}","start_time":"","end_time":"","venue_name":"The Old Mill","town":"Riverside","postcode":""}
-
-Input: "Sat 14th June Market Square Riverside 5pm-9pm"
-Output: {"event_date":"14/06/${currentYear}","start_time":"17:00","end_time":"21:00","venue_name":"Market Square","town":"Riverside","postcode":""}`}
+${fill(ai.examples)}
 
 Return ONLY a valid JSON array, no markdown, no backticks, no explanation:
-[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"Town","postcode":"POSTCODE","address":"street address only or empty string"}]${inputText ? `\n\nSCHEDULE TEXT TO EXTRACT:\n${inputText}` : ''}`
-}
-
-/** The importer prompt for a zip_state country (city · two-letter state · ZIP). Output stays DD/MM/YYYY — the
- *  importer's data contract — and a numbers-only date in the text is read MONTH first. */
-function zipStatePrompt(inputText: string, todayStr: string, currentYear: number, nextYear: number, dateRef: string, contextBlock: string, countryName: string): string {
-  return `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.${contextBlock}
-
-You are extracting a food truck's schedule from messy, unstructured text or an image. Your job has two steps:
-1. EXTRACT what you can see
-2. ENRICH missing fields using your knowledge of venues and locations in ${countryName}
-
-14-DAY DATE REFERENCE — use this exact table when converting day names to dates. Do not calculate independently:
-${dateRef}
-
-STEP 1 — EXTRACTION RULES:
-
-DATE RULES:
-- Date format MUST be "DD/MM/YYYY" (day first) in your output
-- Dates written with numbers only in the text are MONTH first: "10/12" is 12 October, so output "12/10/${currentYear}"
-- Always append /${currentYear} to dates without a year
-- If December and event is in January, use ${nextYear}
-- For day names (Monday, Tuesday etc), look them up in the 14-DAY DATE REFERENCE above — do not calculate
-
-TIME RULES:
-- Times MUST be "HH:MM" in 24-hour format
-- "5pm" → "17:00", "5:30pm" → "17:30"
-- If only start time given (e.g. "from 5pm"), set start_time to that value, leave end_time as ""
-- Never use "00:00" — use "" if unknown
-
-VENUE NAME RULES:
-- Extract ONLY the venue name — never include the city, state or ZIP code in venue_name
-- "Joe's Tavern Austin TX 78701" → venue_name="Joe's Tavern", town="Austin", state="TX", postcode="78701"
-- "Sunset Brewery, Boulder, CO" → venue_name="Sunset Brewery", town="Boulder", state="CO"
-- If a venue name is one of: Closed, N/A, TBC, Unavailable, Cancelled — omit that event entirely from the output
-
-ZIP CODE AND STATE RULES:
-- "town" is the city or town; "state" is the two-letter state code (e.g. "TX", "CA")
-- ZIP codes are five digits (e.g. "78701"); put the ZIP code in "postcode"
-- If you see a ZIP code anywhere in the text for that event, extract it
-
-ADDRESS RULES:
-- address is for street-level detail only — house number + street name (e.g. "1200 Main Street")
-- NEVER populate address with the city, state or ZIP code — leave it blank if no street address is available
-- Most schedules will not have a street address — leave address as "" in those cases
-
-STEP 2 — ENRICHMENT RULES:
-After extracting what you can see, fill in any missing fields using your knowledge:
-- If you have a venue name and town but no state → determine the state from your knowledge of that venue
-- If you have a venue name but no town → determine the city or town from your knowledge of that venue in ${countryName}
-- If the venue name is ambiguous and you have a town or ZIP code → use that to identify the correct venue
-- Only enrich with high confidence — if uncertain, leave the field as ""
-
-EXAMPLES:
-
-Input: "Sat June 14 Joe's Tavern Austin TX 5pm-9pm"
-Output: {"event_date":"14/06/${currentYear}","start_time":"17:00","end_time":"21:00","venue_name":"Joe's Tavern","town":"Austin","state":"TX","postcode":""}
-
-Input: "6/7 Sunset Brewery, Boulder CO 80302 from 4pm"
-Output: {"event_date":"07/06/${currentYear}","start_time":"16:00","end_time":"","venue_name":"Sunset Brewery","town":"Boulder","state":"CO","postcode":"80302"}
-
-Return ONLY a valid JSON array, no markdown, no backticks, no explanation:
-[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"City","state":"ST","postcode":"ZIP","address":"street address only or empty string"}]${inputText ? `\n\nSCHEDULE TEXT TO EXTRACT:\n${inputText}` : ''}`
+[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name",${ai.outputShape},"address":"street address only or empty string"}]${inputText ? `\n\nSCHEDULE TEXT TO EXTRACT:\n${inputText}` : ''}`
 }
 
 async function callGeminiWithRetry(
@@ -327,7 +238,10 @@ export async function extractScheduleEvents(
       town: ev.town ?? '',
       postcode: (ev.postcode ?? '').toUpperCase().trim(),
       address: ev.address ?? '',
-      ...(/^[A-Za-z]{2}$/.test(String(ev.state ?? '').trim()) ? { state: String(ev.state).trim().toUpperCase() } : {}),
+      // address-formats-2: the state checked against the truck's format's list ("nsw" → "NSW"); with no format, the old
+      // rule (two letters, upper-cased). A suburb only for a format that has the field.
+      ...(() => { const st = normaliseRegion(String(ev.state ?? '').trim(), options.context?.addressFormat ?? undefined); return st ? { state: st } : {} })(),
+      ...(typeof ev.suburb === 'string' && ev.suburb.trim() && addressFormatOf(options.context?.addressFormat)?.fields.some(f => f.key === 'suburb') ? { suburb: ev.suburb.trim() } : {}),
       start_time: ev.start_time ?? '',
       end_time: (() => {
         const end = ev.end_time ?? ''

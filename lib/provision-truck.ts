@@ -22,7 +22,7 @@ import { DEMO_PREFIX } from '@/lib/demo'
 // surfaces cannot disagree about what an "Indian" truck's emoji is.
 import { emojiForCuisine } from '@/lib/cuisines'
 import { getCountrySettings } from '@/lib/country-settings'
-import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaValues, type TradeAreaRefusal } from '@/lib/trade-area'
+import { checkTradeArea, splitRegionCodeWrite, TRADE_AREA_ERRORS, type TradeAreaValues, type TradeAreaRefusal } from '@/lib/trade-area'
 // Language Phase 1d: lib/trade-area.ts refuses with a code; its words are the `tradeArea` namespace's, in the country's language.
 import '@/lib/i18n/catalog/tradeArea'
 // Language Phase 2: the first van's name is stored in the truck's country's words ("Van 1" / "Truck 1").
@@ -513,7 +513,8 @@ export async function provisionTruck(
           base_place_id: tradeArea.base_place_id, base_place_name: tradeArea.base_place_name, base_region: tradeArea.base_region,
           base_lat: tradeArea.base_lat, base_lng: tradeArea.base_lng,
           // D22 (Phase 3): a 'zip_state' country's state code — the key exists only for one.
-          ...('base_region_code' in tradeArea ? { base_region_code: tradeArea.base_region_code ?? null } : {}),
+          // address-formats-2: a code the pre-migration CHECK would refuse ("NSW") is written after the insert (below).
+          ...('base_region_code' in tradeArea ? { base_region_code: splitRegionCodeWrite(tradeArea).main.base_region_code ?? null } : {}),
         } : {}),
         // 🔴 THE PLAN'S END DATE (the column name is historical — lib/plans.ts planEndDate): signup + the trial plan's
         // trial_months, at the end of that day in the truck's zone; NULL for a plan with no trial length. A past date
@@ -602,6 +603,13 @@ export async function provisionTruck(
   }
 
   const truckId = created.id as string
+
+  // address-formats-2: the region code the old two-letter CHECK would refuse, in its own update that fails alone.
+  const regionCodeAfter = tradeArea ? splitRegionCodeWrite(tradeArea).after : null
+  if (regionCodeAfter) {
+    const { error: rcErr } = await supabase.from('trucks').update({ base_region_code: regionCodeAfter }).eq('id', truckId)
+    if (rcErr) console.warn('[provision-truck] base_region_code not saved (migration 20261030_address_suburb_region not applied?):', rcErr.message)
+  }
 
   // ── Van ────────────────────────────────────────────────────────────────────────────────────────────
   // Default-on, because a truck without a van is not "working": upsert_event only writes slot_capacity

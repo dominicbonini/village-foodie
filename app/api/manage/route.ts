@@ -27,9 +27,9 @@ import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { type Feature } from '@/lib/features'
 import { featureRefusal } from '@/lib/plan-refusal'
 import { truckCan } from '@/lib/plans'
-import { countrySettingsForTruck } from '@/lib/country-settings'
+import { countrySettingsForTruck, addressFormatForTruck } from '@/lib/country-settings'
 import { getPlanCatalog } from '@/lib/plans-server'
-import { checkTradeArea } from '@/lib/trade-area'
+import { checkTradeArea, splitRegionCodeWrite } from '@/lib/trade-area'
 /* ── 🔴 LANGUAGE PHASE 1d: THE MENU, SCHEDULE AND SETTINGS TABS' REFUSALS CARRY A CODE ─────────────────────────────
  * `{ error: <today's English>, …every field it already carried…, code, params }` from `manageErrorBody`
  * (lib/i18n/manage-errors.ts), in the truck's language (`localeForTruck`; en-GB before the truck is known). Only the
@@ -1319,11 +1319,23 @@ export async function POST(req: NextRequest) {
      * does, so every GB save is the same writes as before. A SEPARATE, BEST-EFFORT WRITE, never a column in the
      * insert/update above: until 20261019_truck_events_region.sql is applied the column does not exist, and a
      * named column there would fail the whole save (PGRST204). Here a failure is logged and the event stands. */
+    // address-formats-2 (21 October 2026): the region is checked against THE TRUCK'S FORMAT's list ("nsw" → "NSW",
+    // "Kerry" → "KY"; a US state as before). Unreadable settings → the old two-letter rule.
+    const eventFormat = (body.region !== undefined || body.suburb !== undefined) ? await addressFormatForTruck(truck) : undefined
     if (body.region !== undefined && savedEvent?.id) {
-      const region = normaliseRegion(body.region)
+      const region = normaliseRegion(body.region, eventFormat)
       const { error: regionErr } = await supabase.from('truck_events').update({ region }).eq('id', savedEvent.id as string).eq('truck_id', targetTruckId)
       if (regionErr) console.warn('[upsert_event] region not saved (migration 20261019_truck_events_region not applied?):', regionErr.message)
       else savedEvent = { ...savedEvent, region }
+    }
+    /* ── THE EVENT'S SUBURB (address-formats-2; NZ "Ponsonby") — the region's pattern exactly: ONLY WHEN THE CLIENT SENT
+     * THE KEY (a form whose format has a suburb field; GB and US never do), and a SEPARATE, BEST-EFFORT WRITE, so until
+     * 20261030_address_suburb_region.sql is applied the event still saves and only the suburb is lost (logged). */
+    if (body.suburb !== undefined && savedEvent?.id) {
+      const suburb = typeof body.suburb === 'string' && body.suburb.trim() ? body.suburb.trim().slice(0, 120) : null
+      const { error: suburbErr } = await supabase.from('truck_events').update({ suburb }).eq('id', savedEvent.id as string).eq('truck_id', targetTruckId)
+      if (suburbErr) console.warn('[upsert_event] suburb not saved (migration 20261030_address_suburb_region not applied?):', suburbErr.message)
+      else savedEvent = { ...savedEvent, suburb }
     }
 
     // Write slot_capacity rows from van kitchen_capacity if a van is assigned
@@ -2024,10 +2036,18 @@ export async function POST(req: NextRequest) {
     const cs = await countrySettingsForTruck(truck)
     const r = checkTradeArea(body, cs)
     if (!r.ok) return NextResponse.json(tradeAreaErrorBody(await truckLocale(), r), { status: 400 })
-    const { data, error } = await supabase.from('trucks').update(r.values).eq('id', truck.id).select().single()
-    if (error) {
-      console.error('[update_trade_area] write failed:', error.message)
+    // address-formats-2: a region code the pre-migration two-letter CHECK would refuse ("NSW") goes in its own update.
+    const split = splitRegionCodeWrite(r.values)
+    const written = await supabase.from('trucks').update(split.main).eq('id', truck.id).select().single()
+    let data = written.data
+    if (written.error) {
+      console.error('[update_trade_area] write failed:', written.error.message)
       return await refuse('settings_save_failed', 400)
+    }
+    if (split.after) {
+      const rc = await supabase.from('trucks').update({ base_region_code: split.after }).eq('id', truck.id).select().single()
+      if (rc.error) console.warn('[update_trade_area] base_region_code not saved (migration 20261030_address_suburb_region not applied?):', rc.error.message)
+      else data = rc.data
     }
     // The zone may have moved, so the truck's clock settings go back with it (as the GET builds them).
     return NextResponse.json({ truck: { ...data, time: await truckTimeSettings(data as { timezone?: string | null; country?: string | null }) } })
@@ -2061,6 +2081,16 @@ export async function POST(req: NextRequest) {
     const ALLERGEN_SETTING_KEYS = ['allergen_info_url', 'allergen_info_text', 'allergen_display_mode']
     const touchedAllergenKeys = ALLERGEN_SETTING_KEYS.filter(k => k in safeData && (safeData as any)[k] !== (truck as any)[k])
     if (touchedAllergenKeys.length && !canEditAllergens) return allergenForbidden()
+    // allergen-card-country (21 October 2026): an allergen card ON ITS OWN is refused where the truck's country does not
+    // allow it (country_settings.allergen_card_only_allowed — off for Ireland, whose law needs allergens per dish). Only a
+    // CHANGE to 'card' is refused: Manage's settings save sends the whole form, and a truck already on 'card' must still
+    // save its other settings (it is shown per dish on its order page — /api/menu). A country that cannot be read refuses
+    // nothing new (the save behaves as it always did).
+    if (touchedAllergenKeys.includes('allergen_display_mode') && (safeData as Record<string, unknown>).allergen_display_mode === 'card') {
+      let cardAllowed = true
+      try { cardAllowed = (await countrySettingsForTruck(truck)).allergenCardOnlyAllowed !== false } catch { cardAllowed = true }
+      if (!cardAllowed) return await refuse('allergen_card_not_allowed', 400)
+    }
     const { data, error } = await supabase.from('trucks').update(safeData).eq('id', truck.id).select().single()
     if (error) {
       // Log the real cause server-side (schema drift, constraint, etc.); show the operator a clear,
@@ -3579,6 +3609,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    /* ── THE PLACE'S SUBURB AND REGION (address-formats-2) — A SEPARATE, PROBED READ, like the usual type above: until
+     * 20261030_address_suburb_region.sql is applied the columns do not exist and naming them in PLACE_COLS would fail
+     * the whole list. Here a failure is "none". A key is added to a place only when it holds a value, so a GB or US
+     * place (whose forms never write them) answers exactly as before. */
+    const placeExtras = new Map<string, { suburb?: string; region?: string }>()
+    try {
+      const { data: ex, error: exErr } = await supabase.from('truck_places').select('id, suburb, region').eq('truck_id', truck.id)
+      if (!exErr) for (const r of (ex ?? []) as { id: string; suburb?: string | null; region?: string | null }[]) {
+        const o: { suburb?: string; region?: string } = {}
+        if (r.suburb) o.suburb = r.suburb
+        if (r.region) o.region = r.region
+        if (o.suburb || o.region) placeExtras.set(r.id, o)
+      }
+    } catch { /* no suburbs or regions — the list reads as before */ }
+
     return NextResponse.json({
       ok: true,
       places: places.map(p => {
@@ -3631,6 +3676,7 @@ export async function POST(req: NextRequest) {
            * already shows "N times in the last year"; the detail pane's heading is the lifetime
            * figure, which is the one that answers "is this a regular pitch?". */
           used_count: mine.filter(e => countsAsTraded(e.status)).length,
+          ...placeExtras.get(p.id),
         }
       }),
     })
@@ -3693,13 +3739,27 @@ export async function POST(req: NextRequest) {
        * the target. One control, one coherent outcome. */
       if (body.is_hidden === false) patch.merged_into_id = null
     }
-    if (Object.keys(patch).length === 0) return NextResponse.json({ ok: true })
-    patch.updated_at = new Date().toISOString()
-    const { error } = await supabase.from('truck_places')
-      .update(patch).eq('id', id).eq('truck_id', truck.id)
-    if (error) {
-      console.error('[sg_upsert_place] update failed:', error.code, error.message)
-      return await refuse('place_save_failed', 400)
+    /* ── SUBURB AND REGION (address-formats-2) — ONLY WHEN THE BODY NAMES THEM (a Places editor whose format has the
+     * field; GB and US never send them), and IN THEIR OWN UPDATE, so until 20261030_address_suburb_region.sql is
+     * applied the other fields still save and only these are lost (logged). The region is stored as its code in the
+     * truck's format's list — an Australian place stores its STATE ("NSW"). */
+    const extra: Record<string, unknown> = {}
+    if ('suburb' in body) { const v = String(body.suburb ?? '').trim(); extra.suburb = v === '' ? null : v.slice(0, 120) }
+    if ('region' in body) extra.region = normaliseRegion(body.region, await addressFormatForTruck(truck))
+    if (Object.keys(patch).length === 0 && Object.keys(extra).length === 0) return NextResponse.json({ ok: true })
+    if (Object.keys(patch).length > 0) {
+      patch.updated_at = new Date().toISOString()
+      const { error } = await supabase.from('truck_places')
+        .update(patch).eq('id', id).eq('truck_id', truck.id)
+      if (error) {
+        console.error('[sg_upsert_place] update failed:', error.code, error.message)
+        return await refuse('place_save_failed', 400)
+      }
+    }
+    if (Object.keys(extra).length > 0) {
+      const { error: exErr } = await supabase.from('truck_places')
+        .update({ ...extra, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', truck.id)
+      if (exErr) console.warn('[sg_upsert_place] suburb/region not saved (migration 20261030_address_suburb_region not applied?):', exErr.message)
     }
     return NextResponse.json({ ok: true, id })
   }

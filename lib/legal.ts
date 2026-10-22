@@ -87,7 +87,7 @@ export const COUNTRY_TERMS_PATH = '/country-terms'
  *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */
 export const PRIVACY_UPDATED = '19 October 2026'
 export const TERMS_UPDATED = '20 October 2026'
-export const COUNTRY_TERMS_UPDATED = '19 October 2026'
+export const COUNTRY_TERMS_UPDATED = '22 October 2026'
 
 /** One of the dates above ("19 October 2026") as a Date (UTC midnight), for the sitemap's lastmod (seo-fixes S5). */
 export function legalUpdatedDate(written: string): Date {
@@ -99,11 +99,13 @@ export function legalUpdatedDate(written: string): Date {
 
 /** The version of the terms a signup accepts, recorded as `operators.terms_version` beside `terms_accepted_at`
  *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific
- *  terms dated above — the latest of them; 20 October 2026 since the Terms' §4 rewrite (pricing-tidy). It was
+ *  terms dated above — the latest of them; 22 October 2026 since the Country-specific terms' Australia and New Zealand
+ *  sections (anz-terms), 21 October 2026 for the Ireland section (ireland-3) before that,
+ *  20 October 2026 for the Terms' §4 rewrite (pricing-tidy) before that. It was
  *  'holding-2026-07-23', typed in the route, and stayed there while the documents moved twice (legal follow-ups,
  *  19 October 2026). ⚠️ It is only WRITTEN, at signup: nothing reads or compares it, so moving it asks no existing truck
  *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */
-export const TERMS_VERSION = '2026-10-20'
+export const TERMS_VERSION = '2026-10-22'
 
 /** Both documents, for anywhere that renders the pair (footers, consent lines). */
 export const LEGAL_LINKS = [

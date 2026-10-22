@@ -14,6 +14,8 @@ import { Card } from '@/components/manage/primitives'
 import { TownInput, ZoneSelect, type BasePlace } from '@/components/setup/WhereBasedStep'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/whereYouTrade'
+import { addressFormatOrDefault } from '@/lib/address-formats'
+import { useAddressWords } from '@/components/manage/AddressFields'
 
 export interface TradeAreaTruck {
   timezone?: string | null
@@ -32,6 +34,7 @@ export function WhereYouTrade<T extends TradeAreaTruck>({ truck, api, showToast,
 }) {
   const cs = useCountrySettings()
   const t = useT('whereYouTrade')
+  const addrWords = useAddressWords(addressFormatOrDefault(cs.addressFormat))
   const [place, setPlace] = useState<BasePlace>({
     placeId: truck.base_place_id ?? null, name: truck.base_place_name ?? '', region: truck.base_region ?? null,
     lat: numOrNull(truck.base_lat), lng: numOrNull(truck.base_lng),
@@ -49,7 +52,7 @@ export function WhereYouTrade<T extends TradeAreaTruck>({ truck, api, showToast,
       const res = await api('update_trade_area', {
         timezone: z, base_place_id: p.placeId, base_place_name: p.name.trim(), base_region: p.region,
         base_lat: p.lat, base_lng: p.lng,
-        // D22: only when the picked place carries one ('zip_state' countries) — a GB save is unchanged.
+        // D22: only when the picked place carries one (a format that keeps a region code) — a GB save is unchanged.
         ...(p.regionCode !== undefined ? { base_region_code: p.regionCode } : {}),
       })
       setError(null)
@@ -70,7 +73,8 @@ export function WhereYouTrade<T extends TradeAreaTruck>({ truck, api, showToast,
         <p className="text-slate-400 text-xs mt-0.5">{t('countryLocked')}</p>
       </div>
       <div>
-        <label htmlFor="trade-town" className="block text-xs font-bold text-slate-600 mb-1">{t('townLabel')}</label>
+        {/* address-formats-2: the format's word for where a truck is based ("Town or city"; Australia "Suburb"). */}
+        <label htmlFor="trade-town" className="block text-xs font-bold text-slate-600 mb-1">{addrWords.tradeLabel}</label>
         {readOnly ? <p className="text-sm text-slate-900">{place.name || '—'}</p> : (
           <TownInput id="trade-town" country={cs.countryCode} value={place} onChange={setPlace} onCommit={p => save({ place: p })} />
         )}

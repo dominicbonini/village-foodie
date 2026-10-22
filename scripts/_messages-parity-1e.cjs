@@ -97,6 +97,25 @@ const NEW_WORDING = {
   // ⚠️ RE-PINNED (anz-1, 21 October 2026): a NEW message — the card processor's dual-network debit notice, shown on an
   // Australian (AUD) checkout only (app/trucks/[slug]/order/page.tsx); its exact text is held by scripts/anz-1.cjs §7.
   'order.dualNetworkNotice': 'anz-1: the eftpos dual-network debit notice on Australian checkouts ("Notwithstanding the payment brand logo displayed …")',
+  // ⚠️ RE-PINNED (allergen-card-country, 21 October 2026): two NEW messages — Manage's notice for a truck still saved as
+  // "allergen card only" where its country does not allow it, and /api/manage's refusal of a change to it. Their exact
+  // text and where they show are held by scripts/allergen-card-country.cjs §4 and §6.
+  'manageMenu.allergens.cardNotAllowed': 'allergen-card-country: the Allergens card notice when card-only is not allowed in the truck\'s country ("An allergen card on its own can’t be used …")',
+  'errorsManage.allergen_card_not_allowed': 'allergen-card-country: the refusal of a change to card-only where the country does not allow it ("Allergens must be shown against each dish …")',
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the address forms' labels by field variant (messages `address.*`).
+  // The GB/US words moved from the `{style}` selects unchanged; THESE are the new variants' words — Ireland's Eircode, the
+  // Australian/NZ suburb, Australia's "State or territory", Canada's province. Where each shows is held by
+  // scripts/address-formats-2.cjs §3 (the IE / AU / NZ / CA forms) and the stage's record
+  // (scripts/fixtures/address-formats-2-messages.json).
+  'address.label.eircode': 'address-formats-2: the Eircode field label (Ireland)',
+  'address.inSentence.eircode': 'address-formats-2: "Eircode" inside a sentence (the Places search box, the guessed-venue banner)',
+  'address.withArticle.eircode': 'address-formats-2: "an Eircode" (the no-location banner, the postal-code warning)',
+  'address.label.stateTerritory': 'address-formats-2: Australia\'s region label ("State or territory")',
+  'address.label.province': 'address-formats-2: Canada\'s region label ("Province")',
+  'address.label.suburb': 'address-formats-2: the suburb field label (Australia\'s locality, New Zealand\'s dependent locality)',
+  'address.short.suburb': 'address-formats-2: "Suburb" in the import review and the Places editor',
+  'address.tradeLabel.suburb': 'address-formats-2: "Suburb" on Where you trade (Australia)',
+  'address.basedIn.suburb': 'address-formats-2: "Suburb you’re based in" at signup (Australia)',
 }
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */

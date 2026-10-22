@@ -18,9 +18,10 @@ import { CountrySettingsProvider, useCountrySettings, useOptionalCountrySettings
 import { allergenVocab, genericReplacements } from '@/lib/allergens'
 import { normaliseRegion, eventAreaLine } from '@/lib/event-address'   // the event's state (US), lib/event-address.ts
 import { upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceholders'   // 🔴 US readiness: Schedule's address words by address style (the words are in messages, Language Phase 1d)
-import { messagesStyleOf } from '@/lib/address-formats'   // address-formats-1: an address format → the {style} its messages select on
+import { addressFormatOrDefault, fieldOf } from '@/lib/address-formats'   // address-formats-2: the truck's address format
+import { EventAddressFields, RegionInput, placeSubline, postalCodeForSave, useAddressWords } from '@/components/manage/AddressFields'
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
-import { moneyFormatOf, planMoneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
 import { perMonthLabel, formatMajor, formatWholeAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
@@ -777,7 +778,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // REGARDLESS of whether a card is saved yet. The "Review each dish's allergens" CTA is wrong for card
   // mode; the Menu-tab box owns the correct card-mode CTA ("add an allergen card" when none is saved).
   // Mirrors the customer per-dish gate (menu route :438, plain `!== 'card'`). PER-DISH mode is unchanged.
-  const cardModeSetUp = (truck as any)?.allergen_display_mode === 'card'
+  // allergen-card-country: a 'card' truck in a country that does not allow a card on its own is treated as per dish.
+  const cardModeSetUp = (truck as any)?.allergen_display_mode === 'card' && countrySettings?.allergenCardOnlyAllowed !== false
   const allergensUnverified = !cardModeSetUp && items.some(i => (i as any).allergens_verified === false)
 
   // ── 🔴 THE BANNER IS A CONFIRMATION. IT NO LONGER CARRIES IN-PROGRESS CHATTER (5 September 2026). ──
@@ -2128,12 +2130,17 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   // 🔴 US readiness (D35): the truck's country list and its generic families (lib/allergens.ts). A UK truck
   // reads exactly the UK list and families it always did; outside a provider it is the UK list too.
   const allergenSet = useOptionalCountrySettings()?.allergenSet
+  // allergen-card-country (21 October 2026): where the truck's country does not allow an allergen card on its own
+  // (country_settings.allergen_card_only_allowed — off for Ireland), there is no page 1 (the card-or-per-dish
+  // question): the wizard opens on page 2, "Do you have an allergen card to upload?", and nothing leads back to page 1.
+  // On everywhere else, and outside a provider: exactly as before.
+  const cardOnlyAllowed = useOptionalCountrySettings()?.allergenCardOnlyAllowed !== false
   const t = useT('manageAllergens')
   const ALLERGEN_VOCAB = allergenVocab(allergenSet)
   const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)
   const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)
   // mode 0 = chooser; 1 = per-dish review; 2 = card; 3 = per-dish CARD-UPLOAD page (#6, standalone only)
-  const [mode, setMode] = useState<0 | 1 | 2 | 3>(initialMode)
+  const [mode, setMode] = useState<0 | 1 | 2 | 3>(initialMode === 0 && !cardOnlyAllowed ? (onProcessCard ? 3 : 1) : initialMode)
   // #4: the chooser is SELECT-then-Next (no auto-advance). Holds the operator's pick until they press Next.
   const [chooserMode, setChooserMode] = useState<'per_dish' | 'card' | null>(null)
   // #6 STANDALONE card→dish state (only used when onProcessCard/onCardMerge are provided). Matches the
@@ -2732,7 +2739,8 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
               />
             </div>
             <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
-              <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => setMode(0)} />
+              {/* allergen-card-country: no page 1 to go back to where an allergen card on its own is not allowed. */}
+              {cardOnlyAllowed && <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => setMode(0)} />}
               <div className="flex-1" />
               <Btn label={t('wizard.nav.next')} onClick={() => setMode(1)} />
             </div>
@@ -2745,7 +2753,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
             {reviewTable}
             {canEdit ? (
               <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
-                <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />
+                {(onBack || onProcessCard || cardOnlyAllowed) && <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />}
                 <div className="flex-1" />
                 {/* Skip = defer, save AS-IS (per-row confirms already persisted; this doesn't confirm anything).
                     ALWAYS available (the escape hatch) — never disabled, so the operator is never trapped when
@@ -2818,6 +2826,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every price on this tab.
   const tabSettings = useCountrySettings()
   const tabFmt = moneyFormatOf(tabSettings)
+  const setupAddrFormat = addressFormatOrDefault(tabSettings.addressFormat)   // address-formats-2: the schedule step's saves
   const tabAmount = (major: number) => formatMajor(major, tabFmt)
   // §54: an item's attached option groups, split required vs optional via the source-of-truth
   // minRequiredForGroup (is_required OR min_choices>=1). The manage-local ModifierGroup has no
@@ -2950,6 +2959,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // The chosen DISPLAY mode, applied at commit (update_settings). null = operator skipped (no mode change;
   // detected data stays verified=false / retained-but-hidden, reviewable later from the Menu allergen card).
   const [pendingDisplayMode, setPendingDisplayMode] = useState<'per_dish' | 'card' | null>(null)
+  // allergen-card-country (21 October 2026): where the truck's country does not allow an allergen card on its own
+  // (country_settings.allergen_card_only_allowed — off for Ireland), the import's Allergens step has no 'chooser':
+  // it opens on the card page, per dish, and its Back leaves the step; and a truck still saved as 'card' is treated
+  // as per dish below (the hidden-dishes notice, the Allergens card), with a notice. On everywhere else: as before.
+  const menuCardOnlyAllowed = useOptionalCountrySettings()?.allergenCardOnlyAllowed !== false
   // ── H2: EVERY WIZARD STEP OPENS AT THE TOP ────────────────────────────────────────────────────────
   // 🔴 THE SCROLL CONTAINER IS THE MODAL'S OWN BODY, NOT `<main>` AND NOT THE WINDOW. Every wizard step
   // is a `fixed inset-0` overlay, so it sits OUTSIDE the app-shell's scrolling `<main>` entirely — the
@@ -3808,7 +3822,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     })
     setImportStep('prep')
   }
-  const goToAllergens = () => { if (importResult) { setAllergenSubStep('chooser'); setImportStep('allergens') } }
+  const goToAllergens = () => {
+    if (!importResult) return
+    if (menuCardOnlyAllowed) setAllergenSubStep('chooser')
+    else { setPendingDisplayMode('per_dish'); setAllergenSubStep('card') }   // allergen-card-country: no card-only choice
+    setImportStep('allergens')
+  }
   // STRUCTURE choice → the shared card-upload page (both branches). Nothing commits — the menu commits ONCE
   // at Kitchen "Save". per-dish → the staged review (on importResult); card → straight to Kitchen.
   const chooseDisplayMode = (mode: 'per_dish' | 'card') => { setPendingDisplayMode(mode); setAllergenSubStep('card') }
@@ -4193,13 +4212,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         const parts = (ev.event_date || '').split('/')
         const isoDate = parts.length === 3 ? `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : ev.event_date
         const { lat, lng } = (ev.town || ev.postcode)
-          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '', tabSettings.shortName || tabSettings.name)
+          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '', tabSettings.shortName || tabSettings.name, { addressFormat: setupAddrFormat.key, region: ev.state, suburb: ev.suburb })
           : { lat: null, lng: null }
         await api('upsert_event', {
           venue_name: ev.venue_name || '', town: ev.town || '', postcode: ev.postcode || '', address: ev.address || '',
           event_date: isoDate, start_time: ev.start_time || '', end_time: ev.end_time || '', notes: ev.notes || '',
           latitude: lat, longitude: lng, truck_id: truck.id,
-          ...(normaliseRegion(ev.state) ? { region: normaliseRegion(ev.state) } : {}),
+          // address-formats-2: the state checked against the truck's format's list; the suburb only for a format with one.
+          ...(normaliseRegion(ev.state, setupAddrFormat.key) ? { region: normaliseRegion(ev.state, setupAddrFormat.key) } : {}),
+          ...(fieldOf(setupAddrFormat, 'suburb') && ev.suburb ? { suburb: ev.suburb } : {}),
         })
       }
       goToSettingsReview()   // K1 — was finishSetup(); the review screen now owns that call
@@ -4748,7 +4769,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           describes the consequence. Reusing it would replace the one fact the operator is missing with
           the one they can already see — see the report. */}
       {(() => {
-        const hiddenCount = (truck.allergen_display_mode ?? null) !== 'card'
+        const hiddenCount = ((truck.allergen_display_mode ?? null) !== 'card' || !menuCardOnlyAllowed)   // allergen-card-country
           ? items.filter(i => i.allergens_verified === false).length
           : 0
         if (hiddenCount === 0) return null
@@ -5217,7 +5238,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         // Show neutral build-menu copy instead — and don't nag (needsReview stays false until a dish exists).
         const noMenu = localItems.length === 0
         // Display mode collapsed to 2 (per-dish / card): 'both' + NULL legacy read as per-dish.
-        const mode = (truck as any).allergen_display_mode as 'per_dish' | 'card' | 'both' | null
+        const storedMode = (truck as any).allergen_display_mode as 'per_dish' | 'card' | 'both' | null
+        // allergen-card-country (21 October 2026): a truck saved as 'card' where the country does not allow a card on its
+        // own is shown per dish to customers (/api/menu) — so here too, with a notice asking it to confirm its dishes.
+        const cardNotAllowed = storedMode === 'card' && !menuCardOnlyAllowed
+        const mode = cardNotAllowed ? 'per_dish' : storedMode
         const modeLabel = mode === 'card' ? t('allergens.modeCard') : mode === 'per_dish' || mode === 'both' ? t('allergens.modePerDish') : t('allergens.modeNotSet')
         // CARD mode: the card IS the allergen info → the per-dish unverified count is irrelevant and must
         // NOT drive "N dishes need review" (mirrors the customer per-dish gate, menu route :438). Card mode
@@ -5253,6 +5278,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           {!cardMode && allergenInfoText ? ` · ${t('allergens.cardSaved')}` : ''}
                         </>}
                   </p>
+                  {/* allergen-card-country: the stored card-only mode is not allowed where this truck trades — say so. */}
+                  {cardNotAllowed && <p className="text-xs text-amber-800 font-semibold mt-1">{t('allergens.cardNotAllowed')}</p>}
                 </div>
               </div>
               {canEditAllergens
@@ -6387,7 +6414,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               )}
             </div>
             <div className="p-5 border-t border-slate-100 flex items-center gap-2 shrink-0">
-              <Btn label={ti('back')} colour="slate" onClick={() => allergenSubStep === 'card' ? setAllergenSubStep('chooser') : (hasExtras ? (setImportStep('review'), setReviewStep(2)) : (setImportStep('review'), setReviewStep(1)))} />
+              <Btn label={ti('back')} colour="slate" onClick={() => allergenSubStep === 'card' && menuCardOnlyAllowed ? setAllergenSubStep('chooser') : (hasExtras ? (setImportStep('review'), setReviewStep(2)) : (setImportStep('review'), setReviewStep(1)))} />
               <div className="flex-1" />
               {/* Skip the WHOLE allergen setup → Kitchen. NOTHING commits here (Kitchen "Save" is the commit). */}
               <Btn label={ti('allergens.skip')} colour="ghost" onClick={goToKitchen} />
@@ -7392,12 +7419,15 @@ async function geocodeLocation(
   /** 🔴 Phase 2D-2: the truck's country, as its short name ("UK", "US") — the route used to append 'UK' to
    *  every lookup because this was never sent. A UK truck sends "UK", so its lookup is exactly as before. */
   country: string | null,
+  /** address-formats-2: the truck's address format (its geocode query, lib/address-formats.ts) and the region and suburb
+   *  where the format has them — sent only when they hold a value, so a GB body gains only the format's key. */
+  where: { addressFormat: string; region?: string | null; suburb?: string | null } = { addressFormat: 'gb' },
 ): Promise<{ lat: number | null; lng: number | null }> {
   try {
     const res = await fetch('/api/manage/geocode', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ venueName, town, postcode, country }),
+      body: JSON.stringify({ venueName, town, postcode, country, addressFormat: where.addressFormat, ...(where.region ? { region: where.region } : {}), ...(where.suburb ? { suburb: where.suburb } : {}) }),
     })
     const data = await res.json()
     return { lat: data.lat, lng: data.lng }
@@ -7445,7 +7475,7 @@ function EventStatusBadge({ status, event_date, start_time, end_time }: { status
  * this form — `upsert_event` treats an ABSENT `is_private` as "this caller did not ask about privacy"
  * and leaves the flag alone, which is what stops every other editor of an event publishing a private
  * one. See the note at the save call. */
-type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null; truck_place_id?: string | null; is_private?: boolean; private_name?: string; region?: string | null }
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null; truck_place_id?: string | null; is_private?: boolean; private_name?: string; region?: string | null; suburb?: string | null }
 
 // ── EVENT TIME CONTROL (V11.15) ──────────────────────────────────────────────────────────────────
 // 🔴 REPLACES `SCHEDULE_TIME_OPTIONS`, which was `Array.from({length: 33}, i => 07:00 + i*30)` — a flat
@@ -7743,8 +7773,13 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const tE = useT('manageScheduleEvent')
   const tI = useT('manageScheduleImport')
   const tP = useT('privateEvents')
-  const addrStyle = messagesStyleOf(tabSettings.addressFormat)   // address-formats-1: the format's message style (labels move in stage 2)
-  const pcUpper = upperCasesPostcode(addrStyle)
+  const addrFormat = addressFormatOrDefault(tabSettings.addressFormat)   // address-formats-2: the truck's address format — every form below reads it
+  const addrWords = useAddressWords(addrFormat)
+  const pcUpper = upperCasesPostcode(addrFormat)
+  // The import review's extra columns (address-formats-2): the region and the suburb, where the format has them and
+  // shows them there (`entry.reviewAndPlaces` — off for GB and the US, whose review is unchanged).
+  const revRegion = addrFormat.entry.reviewAndPlaces && !!fieldOf(addrFormat, 'region')
+  const revSuburb = addrFormat.entry.reviewAndPlaces && !!fieldOf(addrFormat, 'suburb')
   const [events, setEvents] = useState<TruckEvent[]>([])
   /* ── 🔴 PRIVATE EVENTS (20261014) ───────────────────────────────────────────────────────────────
    * `private_events` is a **Pro** key, deliberately split from `event_types` (Max) — see
@@ -8137,6 +8172,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     is_private: event.is_private === true,
     private_name: event.private_name || '',
     ...(event.region ? { region: event.region } : {}),
+    ...((event as { suburb?: string | null }).suburb ? { suburb: (event as { suburb?: string | null }).suburb } : {}),   // address-formats-2 (NZ)
   })
 
   /**
@@ -8195,6 +8231,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       ...p,
       truck_place_id: pl.id,
       ...fillFromPlace(pl, p),
+      // address-formats-2: the place's region and suburb, where the format has them and the place holds one.
+      ...(fieldOf(addrFormat, 'region') && pl.region ? { region: pl.region } : {}),
+      ...(fieldOf(addrFormat, 'suburb') && pl.suburb ? { suburb: pl.suburb } : {}),
       van_id: p.van_id ?? vanDefault,
     }) : p)
     setFormErrors({})
@@ -8362,8 +8401,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const { lat, lng } = await geocodeLocation(
         editingEvent.venue_name,
         editingEvent.town,
-        editingEvent.postcode,
+        postalCodeForSave(addrFormat, editingEvent.postcode),
         tabSettings.shortName || tabSettings.name,
+        { addressFormat: addrFormat.key, region: fieldOf(addrFormat, 'region') ? editingEvent.region : null, suburb: fieldOf(addrFormat, 'suburb') ? editingEvent.suburb : null },
       )
       if (lat === null || lng === null) {
         console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
@@ -8392,8 +8432,13 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       const chosenPrivate = !!privateTypeId && eventTypeId === privateTypeId
       await api('upsert_event', {
         ...editingEvent, latitude: lat, longitude: lng,
-        // The state (19 October 2026): sent only by the US (zip_state) form — the key is absent on every GB save.
-        region: addrStyle === 'zip_state' ? normaliseRegion(editingEvent.region) : undefined,
+        // The region (19 October 2026; address-formats-2): sent only by a form whose format has the field (the US state,
+        // an Australian state, an Irish county) — the key is absent on every GB save. Checked against the format's list.
+        region: fieldOf(addrFormat, 'region') ? normaliseRegion(editingEvent.region, addrFormat.key) : undefined,
+        // The suburb (address-formats-2): only a format with the field (NZ) sends it; GB and US never do.
+        suburb: fieldOf(addrFormat, 'suburb') ? (editingEvent.suburb ?? '') : undefined,
+        // Tidied the format's way where it checks postal codes ("d02x963" → "D02 X963"); GB and US as typed (no key).
+        ...(addrFormat.entry.postalCheck ? { postcode: postalCodeForSave(addrFormat, editingEvent.postcode) } : {}),
         is_private: chosenPrivate,
         private_name: chosenPrivate ? (editingEvent.private_name ?? '') : '',
         ...(editingEvent.id ? {} : { event_type_id: chosenPrivate ? null : eventTypeId }),
@@ -8495,7 +8540,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           : ev.event_date
 
         const { lat, lng } = (ev.town || ev.postcode)
-          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '', tabSettings.shortName || tabSettings.name)
+          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '', tabSettings.shortName || tabSettings.name, { addressFormat: addrFormat.key, region: ev.state, suburb: ev.suburb })
           : { lat: null, lng: null }
 
         if (lat === null || lng === null) {
@@ -8514,8 +8559,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
           latitude: lat,
           longitude: lng,
           truck_id: editingEvent?.truck_id || truck.id,
-          // The importer's `state` (zip_state prompt only, lib/schedule-extract.ts) — the key only when it read one.
-          ...(normaliseRegion(ev.state) ? { region: normaliseRegion(ev.state) } : {}),
+          // The importer's `state` (lib/schedule-extract.ts; the review's region column) — the key only when there is one,
+          // checked against the truck's format's list (address-formats-2). And the suburb, only for a format with one.
+          ...(normaliseRegion(ev.state, addrFormat.key) ? { region: normaliseRegion(ev.state, addrFormat.key) } : {}),
+          ...(fieldOf(addrFormat, 'suburb') && ev.suburb ? { suburb: ev.suburb } : {}),
         })
       }
       const count = toSave.length
@@ -8712,7 +8759,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     // Confirm button). Both are status 'unconfirmed' candidates; the helper compares them against
     // existing same-date confirmed/open events and is source-agnostic. See lib/event-conflicts.ts.
     // Complementary to the inbound-schedule scrape dedup (untouched).
-    const conflicts = event.status === 'unconfirmed' ? detectEventConflicts(event, events) : []
+    const conflicts = event.status === 'unconfirmed' ? detectEventConflicts(event, events, tabSettings.addressFormat) : []   // address-formats-2: a ZIP is an area
     // A calendar date in the truck's words (Phase 2B) — GB "FRI 9 OCT", US the same words in en-US.
     const dayName = formatYmd(event.event_date, ts, { weekday: 'short' }).toUpperCase()
     const dayNum = Number(event.event_date.slice(8, 10))
@@ -8804,7 +8851,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               {(event.town || event.postcode) && (
                 // address-formats-1: the format's area line ("Bondi Beach 2026"; GB/US exactly as before). The state is not
                 // passed yet — stage 2 moves the entry form that saves it, and GB/US cards must not change in this stage.
-                <p className="text-xs text-slate-500 mt-0.5">{eventAreaLine({ town: event.town, postcode: event.postcode }, tabSettings.addressFormat)}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{placeSubline(addrFormat, { town: event.town, suburb: (event as { suburb?: string | null }).suburb, region: event.region, postcode: event.postcode }, eventAreaLine({ town: event.town, postcode: event.postcode }, tabSettings.addressFormat))}</p>
               )}
               {/* Line 3: time (+ van / truck) */}
               <p className="text-sm font-semibold text-slate-700 mt-0.5">
@@ -8972,7 +9019,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   venue: event.venue_name || tS('guessed.thisVenue'),
                   hasTown: event.town ? 'yes' : 'no', town: event.town ?? '',
                   hasPostcode: event.postcode ? 'yes' : 'no', postcode: event.postcode ?? '',
-                  style: addrStyle,
+                  postal: addrWords.postalInSentence,
                   b: chunks => <strong>{chunks}</strong>,
                 })}
               </p>
@@ -8984,7 +9031,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
             <div className="mt-3 px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
               <p className="font-bold text-slate-700 mb-1">{tS('noLocation.title')}</p>
               <p className="text-slate-600 text-xs leading-relaxed">
-                {tS.rich('noLocation.body', { style: addrStyle, b: chunks => <strong>{chunks}</strong> })}
+                {tS.rich('noLocation.body', { postal: addrWords.postalWithArticle, b: chunks => <strong>{chunks}</strong> })}
               </p>
             </div>
           )}
@@ -9010,7 +9057,8 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         venue: c.event.venue_name || tS('conflict.unnamedVenue'),
                         details: ` · ${formatYmdShortMonth(c.event.event_date, ts, { day: 'numeric', month: 'short' })}`
                           + ((c.event.start_time || c.event.end_time) ? ` · ${formatSlot((c.event.start_time || '').slice(0, 5), ts)}–${formatSlot((c.event.end_time || '').slice(0, 5), ts)}` : '')
-                          + (c.event.postcode ? ` · ${c.event.postcode}` : ''),
+                          // address-formats-2: the format's area line where a postal code alone is an area ("Bondi Beach NSW 2026").
+                          + ((line => line ? ` · ${line}` : '')(placeSubline(addrFormat, c.event as { town?: string | null; suburb?: string | null; region?: string | null; postcode?: string | null }, c.event.postcode ?? ''))),
                         status: c.event.status,
                         b: chunks => <strong>{chunks}</strong>,
                       })}
@@ -9505,14 +9553,26 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                       <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.venue')}</label>
                       <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder={tI('review.venueName')} className={fieldCls(!ev.venue_name)} />
                     </div>
+                    {revSuburb && (
+                      <div>
+                        <label className="text-xs font-medium text-slate-500 mb-1 block">{addrWords.suburb}</label>
+                        <input type="text" value={ev.suburb || ''} onChange={e => updateEvent(ev.id, { suburb: e.target.value })} placeholder={addrWords.suburb ?? ''} className={fieldCls(false)} />
+                      </div>
+                    )}
                     <div>
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.area')}</label>
-                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={tI('review.area')} className={fieldCls(false)} />
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">{addrWords.localityShort}</label>
+                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={addrWords.localityShort} className={fieldCls(false)} />
                     </div>
+                    {revRegion && (
+                      <div>
+                        <label className="text-xs font-medium text-slate-500 mb-1 block">{addrWords.region}</label>
+                        <RegionInput compact format={addrFormat} label={addrWords.region ?? ''} value={ev.state || ''} onChange={v => updateEvent(ev.id, { state: v })} className={fieldCls(false)} />
+                      </div>
+                    )}
                     <div>
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">{tI('review.postcode', { style: addrStyle })}</label>
-                      {/* ⚠️ A UK POSTCODE IS FORCED UPPER-CASE; A US ZIP CODE IS LEFT AS TYPED (address style). */}
-                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={tI('review.postcode', { style: addrStyle })} className={pcUpper ? `${fieldCls(false)} uppercase` : fieldCls(false)} />
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">{addrWords.postal}</label>
+                      {/* ⚠️ A POSTAL CODE WITH LETTERS IS FORCED UPPER-CASE; A DIGITS-ONLY ONE IS LEFT AS TYPED (the format). */}
+                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={addrWords.postal} className={pcUpper ? `${fieldCls(false)} uppercase` : fieldCls(false)} />
                     </div>
                     {timePair}
                     {vans.length > 1 && (
@@ -9574,7 +9634,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               <col style={{ width: '32px' }} />
               <col style={{ width: '120px' }} />
               <col />
+              {revSuburb && <col style={{ width: '100px' }} />}
               <col style={{ width: '100px' }} />
+              {revRegion && <col style={{ width: addrFormat.regions?.shownAs === 'name' ? '120px' : '72px' }} />}
               <col style={{ width: '84px' }} />
               <col style={{ width: `${timeColW}px` }} />
               <col style={{ width: `${timeColW}px` }} />
@@ -9586,8 +9648,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 <th className="pb-2" />
                 <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.date')}</th>
                 <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.venue')}</th>
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.area')}</th>
-                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.postcode', { style: addrStyle })}</th>
+                {revSuburb && <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{addrWords.suburb}</th>}
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{addrWords.localityShort}</th>
+                {revRegion && <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{addrWords.region}</th>}
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{addrWords.postal}</th>
                 <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.start')}</th>
                 <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.end')}</th>
                 {vans.length > 1 && <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">{tI('review.van')}</th>}
@@ -9626,11 +9690,21 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
                       <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder={tI('review.venueName')} className={ci(missingVenue)} style={{ minHeight: '48px' }} />
                     </td>
+                    {revSuburb && (
+                      <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                        <input type="text" value={ev.suburb || ''} onChange={e => updateEvent(ev.id, { suburb: e.target.value })} placeholder={addrWords.suburb ?? ''} className={ci(false)} style={{ minHeight: '48px' }} />
+                      </td>
+                    )}
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
-                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={tI('review.area')} className={ci(false)} style={{ minHeight: '48px' }} />
+                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={addrWords.localityShort} className={ci(false)} style={{ minHeight: '48px' }} />
                     </td>
+                    {revRegion && (
+                      <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                        <RegionInput compact format={addrFormat} label={addrWords.region ?? ''} value={ev.state || ''} onChange={v => updateEvent(ev.id, { state: v })} className={ci(false)} />
+                      </td>
+                    )}
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
-                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={tI('review.postcodeExample', { style: addrStyle })} className={pcUpper ? `${ci(false)} uppercase` : ci(false)} style={{ minHeight: '48px' }} />
+                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={addrFormat.examples.importPostalCode} className={pcUpper ? `${ci(false)} uppercase` : ci(false)} style={{ minHeight: '48px' }} />
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
                       <EventTimeSelect
@@ -9717,8 +9791,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                           </div>
                         </td>
                         <td className="px-0 py-0 align-middle"><input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder={tI('review.venueName')} className={ci(missingVenue)} style={{ minHeight: '48px' }} /></td>
-                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={tI('review.area')} className={ci(false)} style={{ minHeight: '48px' }} /></td>
-                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={tI('review.postcodeExample', { style: addrStyle })} className={pcUpper ? `${ci(false)} uppercase` : ci(false)} style={{ minHeight: '48px' }} /></td>
+                        {revSuburb && <td className="px-0 py-0 align-middle"><input type="text" value={ev.suburb || ''} onChange={e => updateEvent(ev.id, { suburb: e.target.value })} placeholder={addrWords.suburb ?? ''} className={ci(false)} style={{ minHeight: '48px' }} /></td>}
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder={addrWords.localityShort} className={ci(false)} style={{ minHeight: '48px' }} /></td>
+                        {revRegion && <td className="px-0 py-0 align-middle"><RegionInput compact format={addrFormat} label={addrWords.region ?? ''} value={ev.state || ''} onChange={v => updateEvent(ev.id, { state: v })} className={ci(false)} /></td>}
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: pcUpper ? e.target.value.toUpperCase() : e.target.value })} placeholder={addrFormat.examples.importPostalCode} className={pcUpper ? `${ci(false)} uppercase` : ci(false)} style={{ minHeight: '48px' }} /></td>
                         <td className="px-0 py-0 align-middle">
                           <EventTimeSelect
                             label={tI('review.startTime')}
@@ -10189,7 +10265,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     onChange={e => { setEditingEvent(p => ({ ...p!, venue_name: e.target.value })); setShowVenueSuggestions(true); if (formErrors.venue_name) setFormErrors(p => ({ ...p, venue_name: '' })) }}
                     onFocus={() => setShowVenueSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowVenueSuggestions(false), 150)}
-                    placeholder={tE('venuePlaceholder', { style: addrStyle })}
+                    placeholder={addrWords.example(addrFormat.examples.venue)}
                     className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.venue_name ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
                   {/* ══ 🔴 THE SUGGESTIONS ARE PLACES NOW, AND THEY CARRY THE TWO CONTROLS THE PLACES
@@ -10221,7 +10297,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                                   <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">{pl.name}</span>
                                   {placeTypeLabel(pl)}
                                 </span>
-                                <span className="block truncate text-xs text-slate-400">{pl.area || pl.postcode || ''}</span>
+                                <span className="block truncate text-xs text-slate-400">{placeSubline(addrFormat, { town: pl.area, suburb: pl.suburb, region: pl.region, postcode: pl.postcode }, pl.area || pl.postcode || '')}</span>
                               </button>
                               <button type="button" aria-label={tE('hidePlace')}
                                 onMouseDown={e => e.preventDefault()}
@@ -10249,7 +10325,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                             <div key={pl.id} className="flex items-center gap-2 border-b border-slate-100 px-4 py-2 opacity-55 last:border-0">
                               <span className="min-w-0 flex-1">
                                 <span className="block truncate text-sm font-medium text-slate-800">{pl.name}</span>
-                                <span className="block truncate text-xs text-slate-400">{pl.area || pl.postcode || ''}</span>
+                                <span className="block truncate text-xs text-slate-400">{placeSubline(addrFormat, { town: pl.area, suburb: pl.suburb, region: pl.region, postcode: pl.postcode }, pl.area || pl.postcode || '')}</span>
                               </span>
                               <button type="button" onMouseDown={e => e.preventDefault()}
                                 onClick={e => { e.preventDefault(); e.stopPropagation(); void hidePlace(pl, false) }}
@@ -10271,7 +10347,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                           type="button"
                           onMouseDown={e => e.preventDefault()}
                           onClick={() => {
-                            setEditingEvent(p => ({ ...p!, venue_name: venue.venue_name, town: venue.town || p!.town, postcode: venue.postcode || p!.postcode, address: venue.address || p!.address, start_time: venue.start_time?.substring(0, 5) || p!.start_time, end_time: venue.end_time?.substring(0, 5) || p!.end_time }))
+                            setEditingEvent(p => ({ ...p!, venue_name: venue.venue_name, town: venue.town || p!.town, postcode: venue.postcode || p!.postcode, address: venue.address || p!.address, start_time: venue.start_time?.substring(0, 5) || p!.start_time, end_time: venue.end_time?.substring(0, 5) || p!.end_time,
+                              // address-formats-2: the past event's region and suburb, where the format has them.
+                              ...(fieldOf(addrFormat, 'region') && (venue as { region?: string | null }).region ? { region: (venue as { region?: string | null }).region } : {}),
+                              ...(fieldOf(addrFormat, 'suburb') && (venue as { suburb?: string | null }).suburb ? { suburb: (venue as { suburb?: string | null }).suburb } : {}) }))
                             setShowVenueSuggestions(false)
                             if (formErrors.venue_name) setFormErrors(p => ({ ...p, venue_name: '' }))
                           }}
@@ -10279,7 +10358,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                         >
                           <p className="text-sm font-medium text-slate-800">{venue.venue_name}</p>
                           <p className="text-xs text-slate-400">
-                            {[venue.town, venue.postcode].filter(Boolean).join(' · ')}
+                            {placeSubline(addrFormat, venue as { town?: string | null; suburb?: string | null; region?: string | null; postcode?: string | null }, [venue.town, venue.postcode].filter(Boolean).join(' · '))}
                             {venue.start_time ? ` · ${formatTime(venue.start_time, ts)}–${formatTime(venue.end_time || '', ts)}` : ''}
                           </p>
                         </button>
@@ -10290,24 +10369,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   )}
                   {formErrors.venue_name && <p className="text-xs text-red-500 mt-1">{formErrors.venue_name}</p>}
                 </div>
-                {/* ADDRESS FIELDS — order and labels are locale-specific.
-                    UK format: street address → village/town + postcode
-                    Future: extract to addressFieldConfig(locale) to support US/EU formats */}
-                <div className="sm:col-span-2">
-                  <Input label={tE('address')} value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder={tE('addressPlaceholder', { style: addrStyle })} />
-                </div>
-                <div>
-                  <Input label={tE('area')} value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder={tE('areaPlaceholder', { style: addrStyle })} />
-                </div>
-                {addrStyle === 'zip_state' ? (
-                  // The US form: State beside the ZIP (19 October 2026) — "Hoboken, NJ 07030" on every address line.
-                  <div className="grid grid-cols-[5.5rem_1fr] gap-2">
-                    <Input label={tE('state')} value={editingEvent.region ?? ''} onChange={v => setEditingEvent(p => ({...p!, region: v.toUpperCase().slice(0, 2)}))} placeholder={tE('statePlaceholder')} />
-                    <Input label={tE('postcode', { style: addrStyle })} value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder={tE('postcodePlaceholder', { style: addrStyle })} />
-                  </div>
-                ) : (
-                <Input label={tE('postcode', { style: addrStyle })} value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder={tE('postcodePlaceholder', { style: addrStyle })} />
-                )}
+                {/* ADDRESS FIELDS — address-formats-2 (21 October 2026): THE TRUCK'S ADDRESS FORMAT decides them
+                    (components/manage/AddressFields.tsx, lib/address-formats.ts) — fields, order, labels, examples, the
+                    region dropdown, the postal-code check and "Customers see:". GB and US render what they always did. */}
+                <EventAddressFields format={addrFormat} venueName={editingEvent.venue_name} addressLabel={tE('address')}
+                  value={{ address: editingEvent.address, town: editingEvent.town, suburb: editingEvent.suburb, region: editingEvent.region, postcode: editingEvent.postcode }}
+                  onChange={patch => setEditingEvent(p => ({ ...p!, ...patch }))} />
                   </div>
                 </div>
                 <div className="sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2">
@@ -10601,7 +10668,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   <textarea
                     value={uploadText}
                     onChange={e => setUploadText(e.target.value)}
-                    placeholder={tI('pastePlaceholder', pasteExampleValues(addrStyle, ts))}
+                    placeholder={tI('pastePlaceholder', pasteExampleValues(addrFormat, ts))}
                     rows={4}
                     className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
@@ -11821,7 +11888,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // Stage A2: the vans the effective plan includes (plans.included_vans, 1 for every plan as seeded); each van above it
   // costs the extra-van price.
   const vansIncluded = includedVans(truck, vanCatalog)
-  const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, planMoneyFormatOf(vanSettings), unit)   // anz-1: a plan price
+  const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, planMoneyFormatOf(vanSettings), unit)   // native-prices: a plan price, in the country's own form
 
   const handleAddVanClick = () => {
     const confirmed = window.confirm(t('vans.addConfirm'))
@@ -14512,7 +14579,8 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const formatDay = (ymd: string) => formatYmd(ymd.slice(0, 10), billingTime, { day: 'numeric', month: 'long', year: 'numeric' })
   // A plan's monthly price as the tab writes it: "Free" at 0 (and for a trial with no price row), "£29/mo" otherwise,
   // null when there is nothing to say (an internal plan with no price row). Always shown through `cardPx`, the card's mask.
-  const cardMoney = planMoneyFormatOf(countryRow)   // anz-1: our plan prices name their dollar (A$, NZ$)
+  const cardMoney = planMoneyFormatOf(countryRow)   // native-prices: our plan prices in the country's own form ("$49" in New Zealand)
+  const billingCurrencyLine = currencyLineOf(countryRow)
   const monthlyLabel = (minor: number | null | undefined, isTrial: boolean, unit: 'mo' | 'month' = 'mo') =>
     minor === null || minor === undefined
       ? (isTrial ? PRICE_WORD.free : null)
@@ -14731,6 +14799,9 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           under the plan card's mask. Its header pins to the top of the scrolling <main>. Then the landing's footnote. */}
       <div>
         <PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />
+        {/* native-prices (22 October 2026): where the country's currency symbol is shared ("$", "kr"), the line naming it —
+            once on this tab, opening the footnotes. GB, US and IE: no line. */}
+        {billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('currencyLine', billingCurrencyLine)}</p>}
         <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>
         {/* pricing-tidy: the table rows' disclosures (¹ WhatsApp auto-replies, ² Kitchen ticket printing), same style. */}
         {planTableNotes(countryRow.locale).map(n => <p key={n.marker} className="text-xs text-slate-500 mt-1 px-1"><sup>{n.marker}</sup> {n.text}</p>)}

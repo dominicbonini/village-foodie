@@ -298,8 +298,13 @@ const cardBefore = () => {
     const m = src('app/api/manage/route.ts'), mp = src('app/manage/[token]/page.tsx')
     t('Manage saves the state only when the client sent it, in its own update after the save (never in the insert/update)',
       m.includes("if (body.region !== undefined && savedEvent?.id) {") && !/insert\(\{[^\n]*region/.test(m) && !/update\(\{ venue_name[^\n]*region/.test(m))
-    t('the Edit event form sends `region` only in the US (zip_state) style; the importer only when it read a state',
-      mp.includes("region: addrStyle === 'zip_state' ? normaliseRegion(editingEvent.region) : undefined,") && (mp.match(/\.\.\.\(normaliseRegion\(ev\.state\) \? \{ region: normaliseRegion\(ev\.state\) \} : \{\}\)/g) || []).length === 2)
+    // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): "the US (zip_state) style" is now "a format with a region field"
+    // (the US, Australia, Ireland, Canada — GB has none, so a GB save still never sends the key), and the region is checked
+    // against the truck's format's list; the importer's two saves likewise.
+    t('the Edit event form sends `region` only where the format has a region field; the importer only when it read a state',
+      mp.includes("region: fieldOf(addrFormat, 'region') ? normaliseRegion(editingEvent.region, addrFormat.key) : undefined,")
+      && mp.includes("...(normaliseRegion(ev.state, addrFormat.key) ? { region: normaliseRegion(ev.state, addrFormat.key) } : {}),")
+      && mp.includes("...(normaliseRegion(ev.state, setupAddrFormat.key) ? { region: normaliseRegion(ev.state, setupAddrFormat.key) } : {}),"))
     t('the migration is additive: nullable, no default, NOT APPLIED', /add column if not exists region text;/.test(src('supabase/migrations/20261019_truck_events_region.sql')) && !/default/i.test(src('supabase/migrations/20261019_truck_events_region.sql').split('begin;')[1]))
   }
 

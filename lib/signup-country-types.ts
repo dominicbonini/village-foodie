@@ -13,4 +13,6 @@ export interface SignupCountry {
   phone: PhoneCopy
   /** data: URI of the flag (lib/flags.ts), or null when the flag package has none. */
   flag: string | null
+  /** address-formats-2: country_settings.address_format — the step's word for the town ("Suburb you’re based in"). */
+  addressFormat?: string
 }

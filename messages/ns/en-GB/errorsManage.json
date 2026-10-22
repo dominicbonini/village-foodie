@@ -5,6 +5,7 @@
   "no_truck_access": "You do not have access to this truck",
   "insufficient_permissions": "Insufficient permissions",
   "allergen_owner_only": "Only the owner can change allergen information",
+  "allergen_card_not_allowed": "Allergens must be shown against each dish where your truck trades, so an allergen card on its own can’t be chosen.",
   "unauthorised": "Unauthorised",
   "truck_not_found": "Truck not found",
   "unknown_action": "Unknown action",

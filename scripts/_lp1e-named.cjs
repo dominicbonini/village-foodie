@@ -291,6 +291,14 @@ for (const e of require('./_lp-pricing-tidy.cjs').ITEMS) NAMED.push({ id: e.id, 
 // ⚠️ RE-PINNED (compare-tidy, 20 October 2026): F2 — the Village Foodie sitemap gains /contact. PRECISE, after seo-s5-sitemap,
 // one copy in scripts/_lp-compare-tidy.cjs (the calculator and F1's footnote order sit inside Stage B's structural proofs).
 for (const e of require('./_lp-compare-tidy.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms' Ireland section — the sitemap's /country-terms
+// lastmod 2026-10-21. PRECISE, after pricing-tidy's /terms item, GB and US; one copy in scripts/_lp-ireland-3.cjs.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (ireland-3)
+for (const e of require('./_lp-ireland-3.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (anz-terms, 22 October 2026): the Australia and New Zealand sections — the sitemap's /country-terms lastmod
+// 2026-10-22. PRECISE, after ireland-3's item, GB and US; one copy in scripts/_lp-anz-terms.cjs.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
+for (const e of require('./_lp-anz-terms.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

@@ -1103,11 +1103,11 @@
 1c/api/US|setup|zoneBad	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townMissing	code: 1d-setup-trade-area-codes
 1c/api/US|setup|townLong	code: 1d-setup-trade-area-codes
-1c/api/US|signup|gateAdmin	code: legal-followups-terms-version+pricing-tidy-terms-version
-1c/api/US|signup|limiterDown	code: legal-followups-terms-version+pricing-tidy-terms-version
-1c/api/US|signup|verifyRowFails	code: legal-followups-terms-version+pricing-tidy-terms-version
-1c/api/US|signup|ok	code: legal-followups-terms-version+pricing-tidy-terms-version
-1c/api/US|signup|okPlain	code: legal-followups-terms-version+pricing-tidy-terms-version
+1c/api/US|signup|gateAdmin	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
+1c/api/US|signup|limiterDown	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
+1c/api/US|signup|verifyRowFails	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
+1c/api/US|signup|ok	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
+1c/api/US|signup|okPlain	code: legal-followups-terms-version+pricing-tidy-terms-version+ireland-3-terms-version+anz-terms-terms-version
 1c/api/US|cancel-email-change|noChangeId	words
 1c/api/US|change-email|brevoFails	words
 1c/api/US|change-email|ok	words

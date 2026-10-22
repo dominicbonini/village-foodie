@@ -137,12 +137,18 @@ const stageB = () => (fs.existsSync(STAGE_B_FILE) ? readJson(STAGE_B_FILE) : EMP
 // added), applied after B by the same rule (a key it removes that a stage reworded keeps that stage's FIRST `before`).
 const STAGE_TIDY_FILE = path.join(REPO, 'scripts/fixtures/pricing-tidy-messages.json')
 const stageTidy = () => (fs.existsSync(STAGE_TIDY_FILE) ? readJson(STAGE_TIDY_FILE) : EMPTY_STAGE())
+// ⚠️ RE-PINNED (address-formats-2, 21 October 2026): address-formats-2's message changes are a FIFTH sibling
+// (scripts/fixtures/address-formats-2-messages.json — the `{style}` address words moved to the `address` namespace by field
+// variant, GB/US text identical; four sentences take the word as a value; the new variants' words added), applied after
+// pricing-tidy by the same rule.
+const STAGE_AF2_FILE = path.join(REPO, 'scripts/fixtures/address-formats-2-messages.json')
+const stageAF2 = () => (fs.existsSync(STAGE_AF2_FILE) ? readJson(STAGE_AF2_FILE) : EMPTY_STAGE())
 const stageA = () => {
-  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), out = {}
+  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), af2 = stageAF2(), out = {}
   for (const loc of ['en-GB', 'en-US']) {
     const o = out[loc] = {}
     for (const part of ['removed', 'reworded', 'added']) o[part] = { ...((a[loc] || {})[part] || {}), ...((b[loc] || {})[part] || {}) }
-    for (const x of [sb[loc] || {}, st[loc] || {}]) {
+    for (const x of [sb[loc] || {}, st[loc] || {}, af2[loc] || {}]) {
       for (const [k, v] of Object.entries(x.removed || {})) { const was = k in o.reworded ? o.reworded[k].before : k in o.added ? undefined : v; delete o.reworded[k]; delete o.added[k]; if (was !== undefined) o.removed[k] = was }
       for (const [k, v] of Object.entries(x.reworded || {})) { if (k in o.added) o.added[k] = v.after; else o.reworded[k] = k in o.reworded ? { before: o.reworded[k].before, after: v.after } : v }
       for (const [k, v] of Object.entries(x.added || {})) o.added[k] = v
@@ -193,6 +199,27 @@ function withMoves(tree) {
   return out
 }
 
+/* ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the stage's REWORDED messages (four sentences that took the address word
+ * as a `{style}` select now take it as a value — the code passes the new argument) and its ADDED ones in en-US (the US's
+ * "City or town" under `address.label.area`) are shown at their NEW text in a frozen catalogue, with the HIGHEST
+ * precedence: a frozen text would be rendered with arguments the code no longer passes. The words a reader sees are the
+ * same (scripts/address-formats-2.cjs and the language harnesses compare them); the record is
+ * scripts/fixtures/address-formats-2-messages.json. */
+function af2AfterTree(loc) {
+  const r = stageAF2()[loc] || {}, out = {}
+  const put = (key, v) => { const parts = key.split('.'); let o = out; for (const p of parts.slice(0, -1)) { if (!isObj(o[p])) o[p] = {}; o = o[p] } o[parts[parts.length - 1]] = v }
+  for (const [k, v] of Object.entries(r.reworded || {})) put(k, v.after)
+  if (loc === 'en-US') for (const [k, v] of Object.entries(r.added || {})) put(k, v)
+  return out
+}
+/** `base` with every string of `top` set on it — keys `base` lacks are ADDED (unlike `overlay`, which only replaces). */
+function mergeOver(base, top) {
+  const out = JSON.parse(JSON.stringify(base || {}))
+  const walk = (o, t) => { for (const [k, v] of Object.entries(t)) { if (isObj(v)) { if (!isObj(o[k])) o[k] = {}; walk(o[k], v) } else o[k] = v } }
+  walk(out, top)
+  return out
+}
+
 /** The two whole catalogues a run sees under the switch (or as authored, when it is off). */
 function catalogues(m = mode()) {
   const gb = readJson(path.join(REPO, 'messages/en-GB.json'))
@@ -200,7 +227,11 @@ function catalogues(m = mode()) {
   if (m && m.mode === 'frozen') {
     const moved = m.moved === false ? {} : movedTree({})
     const base = m.stageA ? overlay(gb, stageATree()) : gb   // ⚠️ RE-PINNED (Stage A): the opt-in overlay, lowest precedence
-    return { 'en-GB': overlay(overlay(base, moved), withMoves(withInline(readJson(m.file)))), 'en-US': m.usFile ? withMoves(readJson(m.usFile)) : {} }
+    return {
+      'en-GB': mergeOver(overlay(overlay(base, moved), withMoves(withInline(readJson(m.file)))), af2AfterTree('en-GB')),
+      // A run with no frozen en-US file renders en-US as {} on purpose (Phase 0 / 1a: "the US file overrides nothing").
+      'en-US': m.usFile ? mergeOver(withMoves(readJson(m.usFile)), af2AfterTree('en-US')) : {},
+    }
   }
   return { 'en-GB': gb, 'en-US': us }
 }
@@ -278,4 +309,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2
   return out
 }
 
-module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, stageAF2, STAGE_AF2_FILE, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

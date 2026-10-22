@@ -5,7 +5,8 @@
 // render kit stubs everything else. Checks:
 //   1  ADDRESS — /au and /nz are addresses; switched off (or no row) they 302 to the UK page and are in no router pick,
 //      hreflang set, sitemap or menu; once on, the router sends an Australian visitor to /au and a New Zealander to /nz.
-//   2  AU / NZ ON — landing, /features, /compare in A$ / NZ$ (A$39 / A$99, NZ$49 / NZ$119), no GST claim, the cheapest bands
+//   2  AU / NZ ON — landing, /features, /compare in the home form ($39 / $99, $49 / $119) with the currency line (⚠️ RE-PINNED,
+//      native-prices, 22 October 2026: it was A$ / NZ$ — now only Admin and /llms.txt), no GST claim, the cheapest bands
 //      from the data, the footnote's card-processing rate, hreflang en-AU / en-NZ reciprocal, the sitemap, JSON-LD Offers in AUD /
 //      NZD, the hero screenshots.
 //   3  AU / NZ OFF — /uk and /us carry no trace of either.
@@ -14,7 +15,8 @@
 //      Manage's toggles and the order page on an AU and an NZ fixture truck.
 //   6  WHATSAPP — the guard catches AU / NZ safety phrasing for an anz truck only; uk14 / us9 unchanged.
 //   7  EFTPOS — the card processor's dual-network notice on an AUD checkout only.
-//   8  MONEY AND PHONES — planMoneyFormatOf (GB / US / IE unchanged, A$ / NZ$); the AU / NZ example numbers are plausible.
+//   8  MONEY AND PHONES — planMoneyFormatOf (GB / US / IE unchanged; AU / NZ "$", their international form A$ / NZ$); the
+//      AU / NZ example numbers are plausible.
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
@@ -89,7 +91,7 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
     "export { resolveLocale, LOCALES } from '@/lib/i18n/locales'",
     "export { landingScreenshot } from '@/lib/landing-screens'",
     "export * as A from '@/lib/allergens'",
-    "export { moneyFormatOf, planMoneyFormatOf } from '@/lib/country-settings-types'",
+    "export { moneyFormatOf, planMoneyFormatOf, intlMoneyFormatOf } from '@/lib/country-settings-types'",
     "export { formatWholeAmount } from '@/lib/money-format'",
     "export { offerPlans, cheapestBands } from '@/lib/plan-offer'",
     "export { isPlausiblePhone } from '@/lib/phone'",
@@ -124,13 +126,17 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
     fs.mkdirSync(process.env.ANZ1_HTML_OUT, { recursive: true })
     for (const cc of ['AU', 'NZ']) for (const [k, r] of Object.entries(P[cc])) fs.writeFileSync(path.join(process.env.ANZ1_HTML_OUT, `${cc.toLowerCase()}-${k}.html`), r.html || '')
   }
-  const SYM = { AU: 'A$', NZ: 'NZ$' }, PRO = { AU: 'A$39', NZ: 'NZ$49' }, UNL = { AU: 'A$99', NZ: 'NZ$119' }
+  // ⚠️ RE-PINNED (native-prices, 22 October 2026, docs/native-prices-report.md; decided by Dominic, 21 Oct): a country's OWN
+  // pages write our prices the way locals do — "$39", "$49" — and, because "$" is shared, carry ONE line naming the currency
+  // ("Prices in Australian dollars (AUD)"). A$ / NZ$ is now only for the side-by-side places (Admin, /llms.txt).
+  const SYM = { AU: '$', NZ: '$' }, PRO = { AU: '$39', NZ: '$49' }, UNL = { AU: '$99', NZ: '$119' }
+  const LINE = { AU: 'Prices in Australian dollars (AUD)', NZ: 'Prices in New Zealand dollars (NZD)' }
   for (const cc of ['AU', 'NZ']) for (const [k, r] of Object.entries(P[cc])) {
     const tx = text(r.html || '')
-    const bare = (tx.match(/(?<![A-Z])\$\d[\d.,]*/g) || [])
-    const named = k === 'compare' ? tx.includes(`${SYM[cc]}2,500`) : tx.includes(PRO[cc]) && tx.includes(UNL[cc])
-    t(`${cc} /${k}: renders; amounts name their dollar (${k === 'compare' ? `${SYM[cc]}2,500 of orders` : `${PRO[cc]}, ${UNL[cc]}`}); no £, € or bare "$" amount`,
-      !!r.html && named && !/£\d|€\d/.test(tx) && bare.length === 0, { bare: bare.slice(0, 6), seen: tx.match(/[A-Z]*\$\d[\d.,]*/g)?.slice(0, 10) })
+    const intl = (tx.match(/\b[A-Z]{1,2}\$\d[\d.,]*/g) || [])
+    const home = k === 'compare' ? tx.includes(`${SYM[cc]}2,500`) : tx.includes(PRO[cc]) && tx.includes(UNL[cc])
+    t(`${cc} /${k}: renders; amounts in the home form (${k === 'compare' ? `${SYM[cc]}2,500 of orders` : `${PRO[cc]}, ${UNL[cc]}`}) under "${LINE[cc]}"; no £, € or A$ / NZ$ amount`,
+      !!r.html && home && tx.split(LINE[cc]).length === 2 && !/£\d|€\d/.test(tx) && intl.length === 0, { intl: intl.slice(0, 6), seen: tx.match(/[A-Z]*\$\d[\d.,]*/g)?.slice(0, 10) })
   }
   // /compare at a volume where Pro, then Unlimited, is the suggestion (the calculator's own state, patched — the real module)
   const CMP = await ctx.bundle('anz1-compare-vol', `export { default } from '@/app/[country]/compare/page'\nexport { clearPlanCatalogCache as __clearPlans } from '@/lib/plans-server'`,
@@ -143,8 +149,9 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
     const a = await compareAt(seg, mid), b = await compareAt(seg, high)
     // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026, Dominic): HatchGrab is not GST-registered in AU / NZ, so no plan
     // price says "incl. GST" — the en-AU / en-NZ overrides of these lines are removed (en-GB wording).
+    // ⚠️ RE-PINNED (native-prices, 22 October 2026): the home form ("$39"), no A$ / NZ$.
     t(`${cc} /compare: Pro suggested at ${SYM[cc]}${mid.toLocaleString('en')} — "${PRO[cc]} per truck per month, …" (no GST claim); Unlimited at ${SYM[cc]}${high.toLocaleString('en')} — "${UNL[cc]} …"`,
-      a.includes(`${PRO[cc]} per truck per month, with`) && b.includes(`${UNL[cc]} per truck per month, with`) && !/GST/.test(a + b) && !/(?<![A-Z])\$\d/.test(a + b),
+      a.includes(`${PRO[cc]} per truck per month, with`) && b.includes(`${UNL[cc]} per truck per month, with`) && !/GST/.test(a + b) && !/\b[A-Z]{1,2}\$\d/.test(a + b),
       [a.match(/.{0,40}per truck per month.{0,40}/)?.[0], b.match(/.{0,40}per truck per month.{0,40}/)?.[0]])
   }
   for (const cc of ['AU', 'NZ']) {
@@ -163,8 +170,9 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
   for (const [cc, k] of [['AU', 'landing'], ['NZ', 'landing']]) {   // the cheapest bar is the landing pricing section's (and the PDF's)
     // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): the approved wording — a small "Your online orders each month" line
     // under the heading, and the first band without "of online orders a month".
-    const want = cc === 'AU' ? 'Which plan is cheapest for me? Your online orders each month Under A$3,900 → Pay as you go A$3,900 – A$11,600 → Pro Over A$11,600 → Unlimited'
-      : 'Which plan is cheapest for me? Your online orders each month Under NZ$4,900 → Pay as you go NZ$4,900 – NZ$14,100 → Pro Over NZ$14,100 → Unlimited'
+    // ⚠️ RE-PINNED (native-prices, 22 October 2026): the home form ("$3,900").
+    const want = cc === 'AU' ? 'Which plan is cheapest for me? Your online orders each month Under $3,900 → Pay as you go $3,900 – $11,600 → Pro Over $11,600 → Unlimited'
+      : 'Which plan is cheapest for me? Your online orders each month Under $4,900 → Pay as you go $4,900 – $14,100 → Pro Over $14,100 → Unlimited'
     t(`${cc} /${k}: "Which plan is cheapest for me?" shows those bands`, text(P[cc][k].html).includes(want), text(P[cc][k].html).match(/Which plan is cheapest.{0,160}/)?.[0])
   }
   t('times on the AU / NZ pages are 12-hour (no "18:00"-style time)', ['AU', 'NZ'].every(cc => !/\b(1[3-9]|2[0-3]):[0-5]\d\b/.test(text(P[cc].landing.html))))
@@ -359,9 +367,14 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
   const pm = row => L.planMoneyFormatOf(row)
   t('planMoneyFormatOf: GB, US, IE are exactly moneyFormatOf (byte-identical pages)', [{ currency: 'GBP', locale: 'en-GB' }, { currency: 'USD', locale: 'en-US' }, { currency: 'EUR', locale: 'en-IE' }]
     .every(r => JSON.stringify(pm(r)) === JSON.stringify(L.moneyFormatOf(r))))
-  t('planMoneyFormatOf: AU → "A$39", NZ → "NZ$49"; the truck\'s own format stays "$"',
-    L.formatWholeAmount(3900, pm({ currency: 'AUD', locale: 'en-AU' })) === 'A$39' && L.formatWholeAmount(4900, pm({ currency: 'NZD', locale: 'en-NZ' })) === 'NZ$49'
-    && L.formatWholeAmount(3900, L.moneyFormatOf({ currency: 'AUD', locale: 'en-AU' })) === '$39', [L.formatWholeAmount(3900, pm({ currency: 'AUD', locale: 'en-AU' })), L.formatWholeAmount(4900, pm({ currency: 'NZD', locale: 'en-NZ' }))])
+  // ⚠️ RE-PINNED (native-prices, 22 October 2026): the home form on the country's own pages ("$39", "$49" — the truck's own
+  // format too); the international form (A$39, NZ$49) is intlMoneyFormatOf, for Admin and /llms.txt.
+  const im = row => L.intlMoneyFormatOf(row)
+  t('planMoneyFormatOf: AU → "$39", NZ → "$49" (the truck\'s own format, "$"); intlMoneyFormatOf: AU → "A$39", NZ → "NZ$49"',
+    L.formatWholeAmount(3900, pm({ currency: 'AUD', locale: 'en-AU' })) === '$39' && L.formatWholeAmount(4900, pm({ currency: 'NZD', locale: 'en-NZ' })) === '$49'
+    && L.formatWholeAmount(3900, L.moneyFormatOf({ currency: 'AUD', locale: 'en-AU' })) === '$39'
+    && L.formatWholeAmount(3900, im({ currency: 'AUD', locale: 'en-AU' })) === 'A$39' && L.formatWholeAmount(4900, im({ currency: 'NZD', locale: 'en-NZ' })) === 'NZ$49',
+    [L.formatWholeAmount(3900, pm({ currency: 'AUD', locale: 'en-AU' })), L.formatWholeAmount(4900, im({ currency: 'NZD', locale: 'en-NZ' }))])
   t('the example numbers are plausible: 0412 345 678 (AU), 021 123 4567 (NZ)', L.isPlausiblePhone('0412 345 678', 'AU', 'length') && L.isPlausiblePhone('021 123 4567', 'NZ', 'length') && !L.isPlausiblePhone('0412', 'AU', 'length'))
 
   console.log(`\n${fail ? '🔴' : '✅'} anz-1: ${pass} passed, ${fail} failed`)

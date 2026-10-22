@@ -200,7 +200,10 @@ async function views(ctx) {
     ti('invalid', { invalid: true })
     ti('unavailable', {}, { unavailable: true })
     for (const c of COUNTRIES) put(`zones|${c.code}`, h(M.ZoneSelect, { id: 'base-zone', zones: c.timezones, value: c.defaultTimezone, onChange() {} }))
-    out[`${cc}|countries`] = JSON.stringify(COUNTRIES)
+    // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): each signup country also carries its `addressFormat` (the step's town
+    // label follows it — "Suburb you’re based in" in Australia; GB/US "Town or city you’re based in", as before, which the
+    // step views above prove). That one key is the named difference and is set aside here; every other value must match.
+    out[`${cc}|countries`] = JSON.stringify(COUNTRIES.map(({ addressFormat, ...c }) => c))
 
     // ══ CuisinePicker ════════════════════════════════════════════════════════════════════════════════
     const cp = (key, slots, over = {}) => put(`cuisine|${key}`, h(M.CuisinePicker, { slots, onChange() {}, idPrefix: 'setup', ...over }))

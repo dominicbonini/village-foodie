@@ -22,9 +22,9 @@ import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
 import { placeWhenLine, timeRangeLabel, type PlaceWhenWords } from '@/lib/schedule-graphics/places'
 import { formatShortDate, type TimeSettings } from '@/lib/time-utils'
 import { useTruckTime } from '@/components/TruckTimeContext'
-import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { upperCasesPostcode } from '@/lib/copy/addressPlaceholders'
-import { messagesStyleOf } from '@/lib/address-formats'   // address-formats-1: the format's message style (labels move in stage 2)
+import { fieldOf } from '@/lib/address-formats'
+import { CustomersSee, RegionInput, postalCodeForSave, useAddressFormat, useAddressWords, usePostalWarning } from '@/components/manage/AddressFields'   // address-formats-2
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/schedulePlaces'
 
@@ -39,6 +39,10 @@ export interface Place {
   address: string | null
   area: string | null
   postcode: string | null
+  /** address-formats-2: a dependent locality (NZ) and the region's code ("NSW", "KY") — present only when the place
+   *  holds one (`sg_places` adds the keys only then). */
+  suburb?: string | null
+  region?: string | null
   is_favourite: boolean
   is_hidden: boolean
   merged_into_id: string | null
@@ -286,7 +290,7 @@ export function PlaceList({
 }) {
   const ts = useTruckTime() // the truck's words for the Last/Next line (Phase 2B)
   const t = useT('schedulePlaces')
-  const addrStyle = messagesStyleOf(useOptionalCountrySettings()?.addressFormat)
+  const addrWords = useAddressWords(useAddressFormat())   // address-formats-2: "postcode" / "ZIP code" / "Eircode" in the search box
   const whenWords: PlaceWhenWords = {
     last: (day, times) => times ? t('lastLineTimes', { day, times }) : t('lastLine', { day }),
     next: (day, times) => times ? t('nextLineTimes', { day, times }) : t('nextLine', { day }),
@@ -354,7 +358,7 @@ export function PlaceList({
     <div className="flex flex-col min-h-0 h-full">
       <div className="p-3 pb-2 shrink-0">
         <Input label={t('searchLabel')} value={search} onChange={onSearch}
-          placeholder={t('searchPlaceholder', { style: addrStyle })} autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+          placeholder={t('searchPlaceholder', { postal: addrWords.postalInSentence })} autoCapitalize="none" autoCorrect="off" spellCheck={false} />
         {/* 🔴 ONE SHORT LINE, NOT A TOAST — see `setFavourite`. */}
         {starError && <p className="text-xs text-red-500 mt-1">{starError}</p>}
       </div>
@@ -424,7 +428,10 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
   onChanged: (keepId?: string | null) => void
 }) {
   const t = useT('schedulePlaces')
-  const addrStyle = messagesStyleOf(useOptionalCountrySettings()?.addressFormat)
+  // address-formats-2 (21 October 2026): the address fields are the truck's format's — labels, the suburb and region
+  // where it has them, the region dropdown, the postal-code check. GB and US render exactly what they did.
+  const format = useAddressFormat()
+  const w = useAddressWords(format)
   // ⚠️ LOCAL DRAFT STATE, SAVED ON BLUR. The caller gives this a `key` of the place id, so it remounts
   // when the selection changes and a draft can never leak from one place onto another.
   const [name, setName] = useState(place.name)
@@ -432,6 +439,10 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
   const [address, setAddress] = useState(place.address ?? '')
   const [area, setArea] = useState(place.area ?? '')
   const [postcode, setPostcode] = useState(place.postcode ?? '')
+  const [suburb, setSuburb] = useState(place.suburb ?? '')
+  const [region, setRegion] = useState(place.region ?? '')
+  const postalWarning = usePostalWarning(format, postcode)
+  const marks = format.entry.requiredMarks
   const [busy, setBusy] = useState(false)
 
   const saveField = async (field: string, value: string, was: string | null) => {
@@ -499,12 +510,28 @@ export function PlaceDetail({ place, api, showToast, onChanged }: {
         <Input label={t('venueName')} value={shortName} onChange={setShortName}
           onBlur={() => saveField('short_name', shortName, place.short_name)}
           hint={t('venueHint')} />
-        <Input label={t('area')} value={area} onChange={setArea}
+        {format.entry.reviewAndPlaces && fieldOf(format, 'suburb') && (
+          <Input label={w.suburb!} value={suburb} onChange={setSuburb}
+            onBlur={() => saveField('suburb', suburb, place.suburb ?? null)} />
+        )}
+        <Input label={w.localityShort} value={area} onChange={setArea} required={(marks && fieldOf(format, 'locality')?.required) || undefined}
           onBlur={() => saveField('area', area, place.area)} />
-        {/* ⚠️ A UK POSTCODE CAPITALISES AS IT IS TYPED; A US ZIP CODE IS DIGITS (address style, Language Phase 1d). */}
-        <Input label={t('postcode', { style: addrStyle })} value={postcode} onChange={setPostcode}
-          onBlur={() => saveField('postcode', postcode, place.postcode)}
-          autoCapitalize={upperCasesPostcode(addrStyle) ? 'characters' : 'none'} autoCorrect="off" spellCheck={false} />
+        {format.entry.reviewAndPlaces && fieldOf(format, 'region') && (
+          <RegionInput format={format} label={w.region!} value={region} required={(marks && fieldOf(format, 'region')?.required) || undefined}
+            onChange={setRegion} onBlur={v => saveField('region', v, place.region ?? null)} />
+        )}
+        {/* ⚠️ A POSTAL CODE WITH LETTERS CAPITALISES AS IT IS TYPED; A DIGITS-ONLY ONE IS LEFT ALONE (the format). */}
+        {(postal => format.entry.postalCheck
+          // A checking format keeps the box and its warning in one grid item (always wrapped, so typing never remounts it).
+          ? <div className="min-w-0">{postal}{postalWarning && <p className="text-xs text-amber-700 mt-1" data-postal-warning>{postalWarning}</p>}</div>
+          : postal)(
+          <Input label={w.postal} value={postcode} onChange={setPostcode} required={(marks && fieldOf(format, 'postalCode')?.required) || undefined}
+            onBlur={() => { const v = postalCodeForSave(format, postcode); if (v !== postcode) setPostcode(v); saveField('postcode', v, place.postcode) }}
+            autoCapitalize={upperCasesPostcode(format) ? 'characters' : 'none'} autoCorrect="off" spellCheck={false} />,
+        )}
+        {format.entry.customersSee && (
+          <CustomersSee format={format} className="sm:col-span-2" venue={shortName || name} town={area} suburb={suburb} region={region} postcode={postcode} />
+        )}
       </Card>
 
       {/* ══ ⛔ THE "Events here" CARD AND THE "Favourite" BUTTON ARE DELETED (5 October 2026) ═══════

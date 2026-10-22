@@ -539,7 +539,15 @@ if (RENDER) {
   const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = '2026-10-20T00:00:00.000Z'
   // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms of Service were re-dated 20 October 2026 (§4 edited), so
   // /terms's lastmod is 2026-10-20; /privacy and /country-terms stay 2026-10-19.
-  const LEGAL_LASTMOD_OF = { privacy: LEGAL_LASTMOD, terms: '2026-10-20T00:00:00.000Z', 'country-terms': LEGAL_LASTMOD }
+  // ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms gained the Ireland section and were re-dated
+  // 21 October 2026, so /country-terms's lastmod is 2026-10-21 (scripts/_lp-ireland-3.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (ireland-3)
+  const IE3 = require('./_lp-ireland-3.cjs')
+  // ⚠️ RE-PINNED (anz-terms, 22 October 2026): …and re-dated 22 October 2026 with the Australia and New Zealand sections
+  // (scripts/_lp-anz-terms.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
+  const ANZT = require('./_lp-anz-terms.cjs')
+  const LEGAL_LASTMOD_OF = { privacy: LEGAL_LASTMOD, terms: '2026-10-20T00:00:00.000Z', 'country-terms': ANZT.LANDED ? ANZT.COUNTRY_TERMS_LASTMOD_NEW : IE3.LANDED ? IE3.COUNTRY_TERMS_LASTMOD_NEW : LEGAL_LASTMOD }
   /** The seo-fixes named change a view key falls under, as [name, (after, before) → [after', before'] | null]. */
   const seoFixes = (k) => {
     if (/^(landing|features|compare)\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['SEO-menu + SEO-badges' + (/^landing/.test(k) ? ' + SEO-ld' : '') + ': the country menus\' <ul> + <a role="menuitemradio"> options, the badges\' loading="lazy" (no image preload hints)' + (/^landing/.test(k) ? ', the one @graph JSON-LD' : ''),

@@ -27,9 +27,12 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
     && !F.isValidPostalCode(F.ADDRESS_FORMATS.ie, 'CB8 8PD') && F.isValidPostalCode(F.ADDRESS_FORMATS.au, '2026') && !F.isValidPostalCode(F.ADDRESS_FORMATS.au, '20261')
     && F.isValidPostalCode(F.ADDRESS_FORMATS.ca, 'K1A 0B1') && !F.isValidPostalCode(F.ADDRESS_FORMATS.ca, 'D02 X963') && F.isValidPostalCode(F.ADDRESS_FORMATS.us, '07030'))
   t('a postal code identifies one premises only in GB and Ireland', F.ADDRESS_FORMAT_KEYS.filter(k => F.ADDRESS_FORMATS[k].postalCode.identifiesPremises).join() === 'gb,ie')
-  const extract = read('lib/schedule-extract.ts'), shots = read('lib/admin/screenshot-events.ts')
-  t("GB's AI lines are TODAY'S prompt lines, verbatim (lib/schedule-extract.ts, lib/admin/screenshot-events.ts)",
-    extract.includes(F.ADDRESS_FORMATS.gb.ai.importerPostalRules) && shots.includes(F.ADDRESS_FORMATS.gb.ai.screenshotLocationLines))
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the prompts READ these lines from the config now, so they are no
+  // longer in the prompt files' source; scripts/address-formats-2.cjs compares the whole GB and US prompts, byte for byte,
+  // against a capture of the code before. Here: GB's postcode rules and screenshot lines are still the old text.
+  t("GB's AI lines are TODAY'S prompt lines, verbatim (now in the config's `ai` slots)",
+    F.ADDRESS_FORMATS.gb.ai.importer.postalRules.startsWith('POSTCODE RULES:\n- UK postcodes follow the format: letters+numbers SPACE number+letters (e.g. "CB25 0BA", "CO10 7BQ", "PE28 2SB")')
+    && F.ADDRESS_FORMATS.gb.ai.screenshot.locationLines.endsWith('- UK postcodes look like "CB25 0BA", "CO10 7BQ", "PE28 2SB". If no postcode is shown, use "".'))
   t('no country code decides an address anywhere in the config: no "GB"/"US"/… comparisons', !/===\s*'(GB|US|IE|AU|NZ|CA)'|countryCode/.test(read('lib/address-formats.ts').replace(/\/\/[^\n]*/g, '')))
 
   // ══ 2 ══════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -49,8 +52,11 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   t('the seed rows are legacy values today (GB postcode, US zip_state) and still load', gbRow.address_format === 'postcode' && usRow.address_format === 'zip_state' && F.mapCountryRow(usRow).addressFormat === 'us')
   t('the stored → format lookup maps keys and legacy values, and nothing else', F.addressFormatKeyOf('postcode') === 'gb' && F.addressFormatKeyOf('zip_state') === 'us'
     && F.addressFormatKeyOf('au') === 'au' && F.addressFormatKeyOf('AU') === null && F.addressFormatKeyOf(null) === null)
-  t("the messages' {style} per format: GB/IE/AU/NZ 'postcode', US/CA 'zip_state' (GB/US words unchanged until stage 2)",
-    F.ADDRESS_FORMAT_KEYS.map(k => F.messagesStyleOf(k)).join() === 'postcode,zip_state,postcode,postcode,postcode,zip_state' && F.messagesStyleOf('postcode') === 'postcode' && F.messagesStyleOf('zip_state') === 'zip_state')
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): stage 2 moved the labels onto each format's field types and variants
+  // (messages `address.*`), so `messagesStyle` / `messagesStyleOf` are gone. What this pinned — GB and US words unchanged —
+  // is now each format's postal label variant, and the GB/US words are byte-identical (scripts/address-formats-2.cjs).
+  t("each format's postal label variant: GB/AU/NZ 'postcode', US 'zip', IE 'eircode', CA 'postalCode'",
+    F.ADDRESS_FORMAT_KEYS.map(k => F.postalLabelOf(F.ADDRESS_FORMATS[k])).join() === 'postcode,zip,eircode,postcode,postcode,postalCode' && typeof F.messagesStyleOf === 'undefined')
   const tab = read('components/admin/CountriesTab.tsx'), form = read('lib/admin/country-form.ts')
   t('Admin › Countries: the address field is a dropdown of the config\'s formats ("United Kingdom — postcode", "Ireland — Eircode", …)',
     /choice\(code, 'addressFormat', ADDRESS_FORMAT_KEYS\.map\(k => \[k, ADDRESS_FORMATS\[k\]\.adminLabel\]\)\)/.test(tab) && F.ADDRESS_FORMATS.ie.adminLabel === 'Ireland — Eircode' && F.ADDRESS_FORMATS.au.adminLabel === 'Australia — suburb, state, postcode')

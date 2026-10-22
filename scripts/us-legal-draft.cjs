@@ -21,7 +21,12 @@ const NEW_DATE = '19 October 2026'
 // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms of Service were re-dated 20 October 2026 when §4 was edited
 // (below); the Privacy Policy and the Country-specific terms stay 19 October 2026.
 const TERMS_DATE = '20 October 2026'
-const DOC_DATE = { terms: TERMS_DATE, privacy: NEW_DATE, 'country-terms': NEW_DATE }
+// ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms were re-dated 21 October 2026 when the Ireland
+// section was added (docs/ireland-3-report.md; scripts/ireland-3.cjs proves that section and that the rest is unchanged).
+// ⚠️ RE-PINNED (anz-terms, 22 October 2026): re-dated 22 October 2026 with the Australia and New Zealand sections
+// (docs/anz-terms-report.md; scripts/anz-terms.cjs proves them and that the rest is unchanged).
+const COUNTRY_TERMS_DATE = '22 October 2026'
+const DOC_DATE = { terms: TERMS_DATE, privacy: NEW_DATE, 'country-terms': COUNTRY_TERMS_DATE }
 const CT = '[Country-specific terms](/country-terms)'
 
 // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the card processor's name, as BEFORE's own terms spell it
@@ -95,10 +100,12 @@ const NAMED = {
   // ── 2 · the Country-specific terms page ──
   console.log('\n── content/legal/country-specific-terms.md')
   const C = read('content/legal/country-specific-terms.md')
-  t(`it reads "Last updated: ${NEW_DATE}"`, C.includes(`**Last updated:** ${NEW_DATE}`))
+  t(`it reads "Last updated: ${COUNTRY_TERMS_DATE}"`, C.includes(`**Last updated:** ${COUNTRY_TERMS_DATE}`))   // ⚠️ RE-PINNED (ireland-3)
   const countries = [...C.matchAll(/^## (.+)$/gm)].map(m => m[1])
-  t('one `## <Country>` heading per country — today only "United States" (adding a country is adding a heading)', JSON.stringify(countries) === JSON.stringify(['United States']), countries)
-  const us = C.slice(C.indexOf('## United States'))
+  // ⚠️ RE-PINNED (ireland-3, 21 October 2026): Ireland follows the United States.
+  // ⚠️ RE-PINNED (anz-terms, 22 October 2026): Australia and New Zealand follow Ireland.
+  t('one `## <Country>` heading per country — today "United States", "Ireland", "Australia", "New Zealand" (adding a country is adding a heading)', JSON.stringify(countries) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand']), countries)
+  const us = C.slice(C.indexOf('## United States'), C.indexOf('\n## Ireland'))
   t('US spelling inside the US section (no licence / behavioural / honour / organis- / authoris-)', !/licence|behavioural|honour|organis|authoris/.test(us))
   for (const [label, re] of [['the truck is the seller and merchant of record', /merchant of record/], ['sales tax is the truck\'s responsibility', /\*\*Sales tax\.\*\*/], ['all-in fee pricing where required (California)', /California's law on all-in pricing/],
     ['tips are the truck\'s', /\*\*Tips\.\*\*/], ['billing in US dollars', /billed in US dollars/], ['US privacy requests (access, correct, delete; 45 days)', /correct it or delete it[\s\S]*45 days/], ['no sale or sharing of personal information', /do not sell personal information, and we do not share it for cross-context behavioral advertising/],

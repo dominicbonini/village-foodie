@@ -1301,9 +1301,11 @@ function runWiringSuite(lib) {
     && gbWords('manageScheduleEvent.filledFrom') === 'Filled from {place}')
   /* ⚠️ RE-POINTED: "Upload schedule" is no longer a label in this modal — the flow lives behind the
    * Schedule header's own "✨ Import schedule" button. The FORM's fields are unchanged. */
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the address fields are rendered by components/manage/AddressFields.tsx
+  // from the truck's format; GB's labels are the `address` words "Area (village, town or city)" and "Postcode".
   t('⚠️ every existing form field is still there, and the upload flow still exists',
-    ['Venue name', 'Full address (optional)', 'Area (village, town or city)', 'Postcode', 'Start time', 'End time', 'Notes']
-      .every(f => P.includes(f))
+    ['Venue name', 'Full address (optional)', 'Start time', 'End time', 'Notes'].every(f => P.includes(f))
+    && P.includes('<EventAddressFields format={addrFormat}') && gbWords('address.label.area') === 'Area (village, town or city)' && gbWords('address.label.postcode') === 'Postcode'
     && /✨ Import schedule/.test(P) && /process-schedule/.test(P))
   t('⚠️ …and the form\'s validation is untouched',
     /const errors = validateEventForm\(editingEvent\)/.test(P) && /hasValidEventTimes/.test(R))
@@ -1351,10 +1353,10 @@ function runWiringSuite(lib) {
      * the value GOES rather than what it IS — and with the social screen's own copy of the field
      * removed, this card is the one editor again, so it has to name the thing. "Venue" is the poster's
      * own item name and "Area" is the field below it, which is where the word comes from. */
-    && ['Full name', 'Venue name', 'Address', 'Area'].every(f => U.includes(`label="${f}"`))
-    // ⚠️ RE-PINNED (Language Phase 1d): "Postcode" is `t('postcode', { style: addrStyle })` now — a select on the
-    // address style whose `other` (every UK truck) is still "Postcode" — so the fifth field is asserted as that call.
-    && /label=\{t\('postcode', \{ style: addrStyle \}\)\}/.test(U) && /\bother \{Postcode\}/.test(gbWords('schedulePlaces.postcode'))
+    && ['Full name', 'Venue name', 'Address'].every(f => U.includes(`label="${f}"`))
+    // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): Area and Postcode are the truck's address format's labels now
+    // (`useAddressWords` → `address.short.<variant>` / `address.label.<variant>`); a UK truck's are still "Area" and "Postcode".
+    && U.includes('label={w.localityShort}') && U.includes('label={w.postal}') && gbWords('address.short.area') === 'Area' && gbWords('address.label.postcode') === 'Postcode'
     /* ⛔ AND THE OLD LABEL IS GONE, so "renamed" cannot pass while both exist. */
     && !U.includes('label="Name on posts"'))
   /* ══ ⛔ CARD 2 — "Events here" — IS DELETED, AND SO IS THIS CHECK'S CLAIM (5 October 2026) ════════
@@ -2227,6 +2229,22 @@ function runWiringSuite(lib) {
        * written by the truck's address format (lib/event-address.ts eventAreaLine, no state passed) — GB/US read exactly
        * `[town, postcode].join(' · ')` as before (scripts/address-formats-1.cjs §3 proves it); the old literal line goes. */
       "<p className=\"text-xs text-slate-500 mt-0.5\">{[event.town, event.postcode].filter(Boolean).join(' · ')}</p>",
+      /* ⚠️ RE-PINNED (allergen-card-country, 21 October 2026, docs/allergen-card-country-report.md): where the truck's country
+       * does not allow an allergen card on its own (country_settings.allergen_card_only_allowed), the allergen wizard opens on
+       * page 2, the import's Allergens step skips its chooser, and a stored 'card' is read as per dish. These four lines now
+       * carry that rule; scripts/allergen-card-country.cjs §7 proves GB and US render byte-identically. */
+      "const cardModeSetUp = (truck as any)?.allergen_display_mode === 'card'",
+      "const [mode, setMode] = useState<0 | 1 | 2 | 3>(initialMode)",
+      "const goToAllergens = () => { if (importResult) { setAllergenSubStep('chooser'); setImportStep('allergens') } }",
+      "const hiddenCount = (truck.allergen_display_mode ?? null) !== 'card'",
+      /* ⚠️ RE-PINNED (address-formats-2, 21 October 2026, docs/address-formats-2-report.md): the conflict check takes the truck's
+       * address format (a ZIP code is an area, not a venue); the import review's postal box reads the format's example and
+       * upper-cases by the format; the past-venue pick carries a region / suburb where the format has one; its subline is
+       * the format's (GB/US: the same "town · postcode"). scripts/address-formats-2.cjs proves GB/US identical. */
+      "const conflicts = event.status === 'unconfirmed' ? detectEventConflicts(event, events) : []",
+      "{[venue.town, venue.postcode].filter(Boolean).join(' · ')}",
+      "<input type=\"text\" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder=\"CB22 5EJ\" className={`${ci(false)} uppercase`} style={{ minHeight: '48px' }} />",
+      "setEditingEvent(p => ({ ...p!, venue_name: venue.venue_name, town: venue.town || p!.town, postcode: venue.postcode || p!.postcode, address: venue.address || p!.address, start_time: venue.start_time?.substring(0, 5) || p!.start_time, end_time: venue.end_time?.substring(0, 5) || p!.end_time }))",
     ]
     /* ── 🔴 THE CAPACITY CARD MOVED FILE, AND "MOVED" IS PROVED LINE BY LINE ──────────────────────
      * This build took ~50 lines out of page.tsx and put them, unchanged, in
@@ -3050,8 +3068,10 @@ function runWiringSuite(lib) {
     /* ⚠️ RE-PINNED (Language Phase 1d): CLAIMS WHOSE NEW FORM PHASE 1d REWROTE. Each entry above still names the line it
      * replaced; its `now` moved on with 1d's word move, so the claim is re-pointed to the form that stands today. */
     const P1D_NOW = {
-      'placeholder={addressPlaceholders(tabSettings.addressFormat).address} />': "placeholder={tE('addressPlaceholder', { style: addrStyle })} />",
-      'placeholder={addressPlaceholders(tabSettings.addressFormat).area} />': "placeholder={tE('areaPlaceholder', { style: addrStyle })} />",
+      // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the address fields moved to components/manage/AddressFields.tsx and
+      // read the truck's format's examples ("e.g. 123 High St, Wickhambrook" / "e.g. Wickhambrook" for a UK truck, as before).
+      'placeholder={addressPlaceholders(tabSettings.addressFormat).address} />': ['components/manage/AddressFields.tsx', 'placeholder={w.example(format.examples.addressLine)} />'],
+      'placeholder={addressPlaceholders(tabSettings.addressFormat).area} />': ['components/manage/AddressFields.tsx', 'placeholder={w.example(format.examples.locality)} />'],
       'export const URL_MALFORMED_MSG = "That doesn\'t look like a web address.': ['messages/en-GB.json', '"malformed": "That doesn’t look like a web address.'],
       'export const VERIFY_MESSAGES: Record<string, string> = {': ['lib/copy/scheduleVerify.ts', 'export function verifyCode(reason: unknown): VerifyCode {'],
       '{SERVICE_SETTING_LABELS.takes_cash}</p>': "{tSvc('labels.takes_cash')}</p>",
@@ -3097,7 +3117,8 @@ function runWiringSuite(lib) {
     /* ⚠️ RE-PINNED (us-rehearsal-fix-event-state, 19 October 2026, docs/us-dress-rehearsal-fixes-report.md): the edit
      * form's shape gained the event's two-letter state (`region`), sent only by the US (zip_state) form; the two privacy
      * fields it was claimed for are unchanged, so the claim is re-pointed to the line as it reads now. */
-    const USRF_NOW = { 'is_private?: boolean; private_name?: string }': 'is_private?: boolean; private_name?: string; region?: string | null }' }
+    // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): + `suburb` (NZ's dependent locality), after the region.
+    const USRF_NOW = { 'is_private?: boolean; private_name?: string }': 'is_private?: boolean; private_name?: string; region?: string | null; suburb?: string | null }' }
     for (const m of movedEdits) if (USRF_NOW[m.now]) m.now = USRF_NOW[m.now]
     /* ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026, docs/plans-data-model-report.md): plans are data and every
      * plan has every feature, so the lines earlier builds claimed as the replacements of 719ac91's plan code were
@@ -3246,8 +3267,11 @@ function runWiringSuite(lib) {
     /* …and the words those re-pointed claims carried, asserted where they live now (as moved; GB-fixed spellings are
      * proven by language-phase-1d): the address examples' UK branch, the van picker's placeholder, the time boxes'
      * labels, and the extra-truck button. */
-    const p1dWordsHold = /other \{e\.g\. 123 High St, Wickhambrook\}/.test(gbWords('manageScheduleEvent.addressPlaceholder'))
-      && /other \{e\.g\. Wickhambrook\}/.test(gbWords('manageScheduleEvent.areaPlaceholder'))
+    // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the address examples are the GB format's (lib/address-formats.ts
+    // `examples`), worded by `address.example` ("e.g. {example}") — the same "e.g. 123 High St, Wickhambrook" / "e.g. Wickhambrook".
+    const AF = read('lib/address-formats.ts')
+    const p1dWordsHold = gbWords('address.example') === 'e.g. {example}'
+      && AF.includes("examples: { venue: 'The Crown', addressLine: '123 High St, Wickhambrook', locality: 'Wickhambrook',")
       && gbWords('manageScheduleEvent.selectVan') === 'Select a van'
       && gbWords('manageScheduleEvent.time.hourOf') === '{label} hour' && gbWords('manageScheduleEvent.time.hour') === 'Hour'
       && gbWords('manageScheduleEvent.time.minuteOf') === '{label} minute' && gbWords('manageScheduleEvent.time.minute') === 'Minute'
@@ -3521,7 +3545,9 @@ function runWiringSuite(lib) {
     }
     // Phase 2D-2's companion: the three geocoder calls send the truck's country, and the client sends it on.
     if ((RAWP.match(/tabSettings\.shortName \|\| tabSettings\.name/g) || []).length !== 3
-      || !RAWP.includes('body: JSON.stringify({ venueName, town, postcode, country }),')) {
+      // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the body also carries the truck's address format (and a region /
+      // suburb only where the format has one with a value) — the geocode query is the format's template (GB's is the old join).
+      || !RAWP.includes('body: JSON.stringify({ venueName, town, postcode, country, addressFormat: where.addressFormat, ...(where.region ? { region: where.region } : {}), ...(where.suburb ? { suburb: where.suburb } : {}) }),')) {
       console.log('      \u26d4 PHASE 2D-2 IS CLAIMED ABOVE BUT THE GEOCODER CALLS DO NOT ALL SEND THE COUNTRY')
       return false
     }

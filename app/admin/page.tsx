@@ -13,7 +13,7 @@ import { activePlans, planByKey, planPriceFor, effectivePlan, expiryFallbackPlan
 import { safeHref } from '@/lib/safe-href'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
 import { formatAmount, pctLabel } from '@/lib/money-format'
-import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { moneyFormatOf, intlMoneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 // 🔴 The plan matrix shows the PUBLIC pages' country (named once — the visitor picker comes later); one
 // truck's modal shows THAT truck's country. Both arrive in the authenticated /api/admin response.
 import AppHeader from '@/components/shared/AppHeader'
@@ -842,9 +842,12 @@ export default function AdminPage() {
   // settings of EVERY country the catalogue prices (Ireland has prices and no trucks, so it printed "2900 (minor units)").
   // A country whose row could not be read shows "—" — never a raw minor-unit figure.
   const priceCountries = [...new Set(plans.prices.map(p => p.countryCode))].sort()
+  // native-prices (22 October 2026): the table sets every country's prices side by side, so each is written in the
+  // INTERNATIONAL form (lib/country-settings-types intlMoneyFormatOf): "A$39" and "NZ$49" beside "$29". It was the country's
+  // own format, which printed all three as a bare "$". GB, US and IE are exactly as before.
   const money = (minor: number, cc: string) => {
     const cs = countrySettings[cc] as CountrySettings | undefined
-    return cs ? formatAmount(minor, moneyFormatOf(cs)) : '—'
+    return cs ? formatAmount(minor, intlMoneyFormatOf(cs)) : '—'
   }
   const bpsLabel = (bps: number, cc: string) => {
     const cs = countrySettings[cc] as CountrySettings | undefined
@@ -1584,7 +1587,7 @@ export default function AdminPage() {
               <p className="text-[10px] text-slate-400">{(() => {
                 const pr = currentModalPlan && editingTruck.country ? planPriceFor(plans, currentModalPlan, editingTruck.country) : null
                 return pr && editingSettings
-                  ? `Standard price on ${currentModalPlanRow?.name ?? currentModalPlan}: ${formatAmount(pr.monthlyMinor, moneyFormatOf(editingSettings))} a month. Leave empty for the standard price.`
+                  ? `Standard price on ${currentModalPlanRow?.name ?? currentModalPlan}: ${formatAmount(pr.monthlyMinor, intlMoneyFormatOf(editingSettings))} a month. Leave empty for the standard price.`
                   : 'This plan has no price in this country, so a promotional price has nothing to replace.'
               })()}</p>
             </div>

@@ -69,14 +69,15 @@ const ADAPT = {
   'scheduleVerify.VERIFY_MESSAGES': (M, x) => Object.fromEntries(M.VERIFY_CODES.map(c => [c, x.tr('manageScheduleVerify')(c)])),
   // lib/copy/addressPlaceholders.ts → `manageScheduleEvent.{address,area}Placeholder` and `manageScheduleImport.pastePlaceholder`,
   // ICU selects on {style}; the paste example's date and times from pasteExampleValues (SCHED-A)
+  // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the `{style}` selects are gone — the examples are the address FORMAT's
+  // (lib/address-formats.ts `examples`; a legacy style reads as its format, anything else as GB), worded by `address.example`
+  // ("e.g. {example}"); the paste example's place is the format's (pasteExampleValues(format, ts) → `{place}`).
   ...Object.fromEntries(STYLES.flatMap((st, i) => [
-    [`addressPlaceholders.pastePlaceholder|${i}`, (M, x) => x.tr('manageScheduleImport')('pastePlaceholder', M.pasteExampleValues(st, x.ts))],
+    [`addressPlaceholders.pastePlaceholder|${i}`, (M, x) => x.tr('manageScheduleImport')('pastePlaceholder', M.pasteExampleValues(x.B.AF.addressFormatOrDefault(st), x.ts))],
     [`addressPlaceholders.addressPlaceholders|${i}`, (M, x) => {
-      // ⚠️ RE-PINNED (address-formats-1, 21 October 2026): addressStyleOf is retired (lib/address-formats.ts messagesStyleOf
-      // replaces it); its rule, kept here for these three inputs: 'zip_state' stays, anything else is 'postcode'.
-      const style = st === 'zip_state' ? 'zip_state' : 'postcode', ev = x.tr('manageScheduleEvent')
-      const paste = x.tr('manageScheduleImport')('pastePlaceholder', { ...M.pasteExampleValues(st, x.ts), date: '\u0000' })
-      return { address: ev('addressPlaceholder', { style }), area: ev('areaPlaceholder', { style }), pasteVenue: paste.slice(paste.indexOf('\u0000, ') + 3) }
+      const f = x.B.AF.addressFormatOrDefault(st), tA = x.tr('address')
+      const paste = x.tr('manageScheduleImport')('pastePlaceholder', { ...M.pasteExampleValues(f, x.ts), date: '\u0000' })
+      return { address: tA('example', { example: f.examples.addressLine }), area: tA('example', { example: f.examples.locality }), pasteVenue: paste.slice(paste.indexOf('\u0000, ') + 3) }
     }],
   ])),
 }
@@ -95,7 +96,7 @@ const READ_AS_WORDS = {
   // lib/event-types/types.ts: the name chips are ids now; their words are `eventTypes.newType.chips.<id>` (SCHED-B).
   'eventTypes.TYPE_NAME_CHIPS': (v, x) => (Array.isArray(v) && v.every(c => /^[a-z][A-Za-z]*$/.test(c)) ? v.map(id => x.tr('eventTypes')(`newType.chips.${id}`)) : v),
 }
-const ADAPT_NS = ['settingsCopy', 'eventTypes', 'privateEvents', 'manageScheduleVerify', 'manageScheduleEvent', 'manageScheduleImport', 'tradeArea', 'managePayments']
+const ADAPT_NS = ['settingsCopy', 'eventTypes', 'privateEvents', 'manageScheduleVerify', 'manageScheduleEvent', 'manageScheduleImport', 'tradeArea', 'managePayments', 'address']   // ⚠️ RE-PINNED (address-formats-2): + address
 
 const show = v => {
   if (typeof v === 'string') return v
@@ -109,7 +110,9 @@ async function views(ctx) {
   const fs = require('fs'), path = require('path')
   const catalogs = ADAPT_NS.filter(ns => fs.existsSync(path.join(ctx.REPO, `lib/i18n/catalog/${ns}.ts`)))
   const B = await kit.bundle('lp1d-copy', Object.entries(MODULES).map(([k, m]) => `export * as ${k} from '@/${m}'`).join('\n') + "\nexport * as TA from '@/lib/trade-area'"
-    + "\nexport { translatorFor } from '@/lib/i18n/translator'" + catalogs.map(ns => `\nimport '@/lib/i18n/catalog/${ns}'`).join(''))
+    + "\nexport { translatorFor } from '@/lib/i18n/translator'" + catalogs.map(ns => `\nimport '@/lib/i18n/catalog/${ns}'`).join('')
+    // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): the address examples are each FORMAT's (lib/address-formats.ts).
+    + (fs.existsSync(path.join(ctx.REPO, 'lib/address-formats.ts')) ? "\nexport * as AF from '@/lib/address-formats'" : ''))
   for (const C of [GB, US]) {
     const cc = C.cc
     const x = { locale: C.locale, cc, ts: C.time, B, tr: ns => B.translatorFor(C.locale, ns), REPO: ctx.REPO }

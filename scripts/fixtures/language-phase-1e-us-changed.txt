@@ -27,7 +27,7 @@ parts/footer|US|html	code: US behaviour — TIDY: Village Foodie’s discovery p
 parts/truck|US|meta	code: metadataBase-www + us-polish-hg-truck-preview
 parts/truck|US|html	code: US behaviour — TIDY: Village Foodie’s discovery prompts are hidden for a truck outside GB (the newsletter, the weekly-schedule button, Hire / Add my Business / Truck Directory, the claim links) + words
 parts/truck|US|share	words
-parts/sitemap|US|hatchgrab-usOn	code: sitemap-country + seo-s5-sitemap + pricing-tidy-terms-lastmod
+parts/sitemap|US|hatchgrab-usOn	code: sitemap-country + seo-s5-sitemap + pricing-tidy-terms-lastmod + ireland-3-country-terms-lastmod + anz-terms-country-terms-lastmod
 parts/pdf|US|html	code: US behaviour — FEATURES: US Letter page (@page size letter, format Letter), US footnote dates + words
 parts/pdf|US|print	code: US behaviour — FEATURES: US Letter page (@page size letter, format Letter), US footnote dates
 billing/billing|US|trial	code: US behaviour — FEATURES: footnote 4’s dates via formatLongDate (“October 1, 2026”), the US price mask “TBD” + words

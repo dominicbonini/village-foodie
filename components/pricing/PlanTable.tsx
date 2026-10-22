@@ -49,7 +49,7 @@ export function PlanTable({ catalog, settings, highlight, px = v => v, stickyTop
   const f = variant === 'features'
   const t = translatorFor(settings.locale, 'planTable')
   const tRow = translatorFor(settings.locale, 'planFeatures')
-  const money = planMoneyFormatOf(settings)   // anz-1: our prices name their dollar (A$, NZ$)
+  const money = planMoneyFormatOf(settings)   // native-prices: our prices in the country's own form ("$49" in New Zealand)
   const plans = offerPlans(catalog, settings.countryCode)
   // A ZERO is never masked (it is no secret — the plan card above Billing's table already says "Free"); every other
   // amount goes through the caller's mask.

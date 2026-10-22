@@ -331,6 +331,10 @@ const plansEntries2 = () => [
       return x.replace(card, `<div class="rounded-xl border border-slate-200 p-3"><div class="flex flex-wrap items-start justify-between gap-2"><p class="text-sm font-bold text-slate-800">WhatsApp</p></div><div class="mt-2">${a2Prompt('whatsapp_replies', cc)}</div></div>`)
     }) },
   // ── ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026, docs/pricing-pages-report.md; scripts/_lp-stage-b.cjs) ──
+  { id: 'allergen-card-country-field-2', country: 'both', agent: 'allergen-card-country (21 Oct 2026)',
+    what: '⚠️ RE-PINNED (allergen-card-country, 21 October 2026): GET /api/manage’s `countrySettings` gains `allergenCardOnlyAllowed` (the new country_settings column; true in GB and the US) right after `allergenSet`. PRECISE: that one field.',
+    views: id => /^api\/(GB|US)\|manageGET\|/.test(id),
+    expect: b => require('./_lp-allergen-card-country.cjs').countrySettingsCardOnlyField(b) },
   { id: 'address-formats-1-country-key-2', country: 'both', agent: 'address-formats-1 (21 Oct 2026)',
     what: '⚠️ RE-PINNED (address-formats-1, 21 October 2026): GET /api/manage’s `countrySettings.addressFormat` is the address FORMAT KEY ("postcode" → "gb", "zip_state" → "us") — the same change Part 1 names (address-formats-1-country-key). PRECISE.',
     views: id => /^api\/(GB|US)\|manageGET\|/.test(id),

@@ -181,7 +181,12 @@ async function run(ctx) {
     // records (W.gbKeyDiff marks a key only on an exact match), and every key that file names that eb7ed44 had must show.
     const stageA = Object.keys(gbDiff).filter(k => W.isStageA(gbDiff[k]))
     const sa = W.LP2.stageA()['en-GB'], at0 = W.flat(W.LP2.readJson(W.FROZEN_GB))
-    const saMissing = [...Object.keys(sa.reworded || {}), ...Object.keys(sa.removed || {})].filter(k => k in at0 && !stageA.includes(k))
+    // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): address-formats-2's rewordings are shown at their NEW text in every
+    // frozen catalogue (scripts/_lp2-frozen.cjs af2AfterTree — their arguments changed with the code), so they do not differ
+    // between F and A; each must then be exactly its recorded `after` in both.
+    const af2 = W.LP2.stageAF2()['en-GB'].reworded || {}
+    const af2Ok = k => k in af2 && !(k in gbDiff) && W.flat(W.LP2.readJson(require('path').join(W.LP2.REPO, 'messages/en-GB.json')))[k] === af2[k].after
+    const saMissing = [...Object.keys(sa.reworded || {}), ...Object.keys(sa.removed || {})].filter(k => k in at0 && !stageA.includes(k) && !af2Ok(k))
     t(`the en-GB keys Stage A reworded / removed differ exactly as recorded (${stageA.length}: ${stageA.filter(k => gbDiff[k].after != null).length} reworded, ${stageA.filter(k => gbDiff[k].after == null).length} removed)`, saMissing.length === 0, `not as recorded: ${saMissing.join(', ')}`)
     if (named) {
       // ⚠️ RE-PINNED (ireland-1, 20 October 2026): ireland-1's two exact tradeArea rewordings (W.isIE1) are not 1e's.

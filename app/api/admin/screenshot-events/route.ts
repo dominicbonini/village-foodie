@@ -24,7 +24,7 @@
 // ⚠️ THE BROWSER STILL HOLDS THE FILE, which is what makes a failed row re-runnable; the log is a record,
 // not the queue.
 
-import { messagesStyleOf } from '@/lib/address-formats'
+import { addressFormatKeyOf } from '@/lib/address-formats'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
@@ -327,7 +327,7 @@ async function chosenCountry(code: unknown): Promise<ScreenshotCountry | null> {
   if (!/^[A-Z]{2}$/.test(c)) return null
   try {
     const s = await getCountrySettings(c)
-    return { code: s.countryCode, name: s.name, addressFormat: messagesStyleOf(s.addressFormat), dateOrder: s.dateOrder }   // address-formats-1: the prompt's style, unchanged until stage 2
+    return { code: s.countryCode, name: s.name, addressFormat: addressFormatKeyOf(s.addressFormat) ?? s.addressFormat, dateOrder: s.dateOrder }   // address-formats-2: the format's key — its AI rules
   } catch { return null }
 }
 
@@ -443,7 +443,7 @@ export async function POST(req: NextRequest) {
       let held = false
       if (shouldRunSchedule(kind)) {
         const raw = await callGemini(base64, mime, schedulePrompt)
-        const parsed = parseScreenshotEvents(raw)
+        const parsed = parseScreenshotEvents(raw, country.addressFormat)
         result.extracted = parsed.length
         // 🔴 PHASE 2D-2 — A CONFIDENT "THIS IS ANOTHER COUNTRY" HOLDS THE SCREENSHOT AND WRITES NOTHING:
         // no gate, no bridge, no prospect. The extracted events go back to the browser, which re-submits them
@@ -664,7 +664,7 @@ async function decide(req: NextRequest) {
 async function confirmCountry(req: NextRequest, body: { country?: string; events?: unknown; fileName?: string; fileSize?: number }) {
   const country = await chosenCountry(body.country)
   if (!country) return NextResponse.json({ error: 'That country is not one of ours, so these events cannot be added as it.' }, { status: 400 })
-  const events = parseScreenshotEvents(JSON.stringify({ events: Array.isArray(body.events) ? body.events : [] }))
+  const events = parseScreenshotEvents(JSON.stringify({ events: Array.isArray(body.events) ? body.events : [] }), country.addressFormat)
   const { keys, error: termErr } = await exclusionTermKeys(country.code)
   if (termErr) return NextResponse.json({ error: `The exclusion list could not be read, so nothing was added: ${termErr}` }, { status: 500 })
   const { kept, dropped } = filterScreenshotEvents(events, keys)
