@@ -12,6 +12,8 @@ import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import { HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
 import { TERMS_PATH, PRIVACY_PATH } from '@/lib/legal'
 import { BRANDS } from '@/lib/brand'
+import { COMPANY } from '@/lib/company'
+import { ABOUT_PATH } from '@/lib/about'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/pricing'
 
@@ -55,6 +57,9 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog): st
   L.push('## Countries', '')
   for (const c of countries) L.push(`- ${c.name}: ${url(c.countryCode, 'landing')}`)
   L.push('')
+  // about-page (22 October 2026): who runs it — the About page's own fact (lib/company.ts COMPANY.founder).
+  L.push('## About', '')
+  L.push(`${name} is run by its founder, ${COMPANY.founder.name}, from the UK.`, '')
   L.push('## Links', '')
   for (const c of countries) {
     L.push(`- ${c.name} — features and plans compared: ${url(c.countryCode, 'features')}`)
@@ -62,6 +67,7 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog): st
   }
   L.push(`- Terms: ${HATCHGRAB_ORIGIN}${TERMS_PATH}`)
   L.push(`- Privacy: ${HATCHGRAB_ORIGIN}${PRIVACY_PATH}`)
+  L.push(`- About: ${HATCHGRAB_ORIGIN}${ABOUT_PATH}`)
   return L.join('\n') + '\n'
 }
 

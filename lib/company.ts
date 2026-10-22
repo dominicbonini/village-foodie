@@ -11,4 +11,7 @@ export const COMPANY = {
   address: 'Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom',
   /** ai-search-1 (21 October 2026): the country of registration as an ISO code — the JSON-LD Organization's addressCountry. */
   countryCode: 'GB',
+  /** about-page (22 October 2026): the founder, as the About page, /llms.txt and the Organization JSON-LD name him. A fact,
+   *  not copy — no role or date beyond what the page says ("Founder"). */
+  founder: { name: 'Dominic Bonini' },
 } as const

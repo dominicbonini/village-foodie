@@ -276,6 +276,12 @@ async function main() {
   const SEO = require('./_lp-seo-fixes.cjs')
   const seoFooter = SEO.must('seo-s7-badges-lazy', SEO.badgesLazy)
   // ⚠️ RE-PINNED (copy, Dominic, 20 October 2026): + copy-trust-line — the landing trust line names the trial length.
+  // ⚠️ RE-PINNED (about-page, 22 October 2026, docs/about-page-report.md): the footer's About link, the Organization's founder and
+  // the country menu leaving the nav (Dominic) — verified on AFTER and mapped back (scripts/_lp-about-page.cjs viewBack); a view
+  // that does not carry EXACTLY those changes is compared as it is, and fails.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
+  const AP = require('./_lp-about-page.cjs')
+  const aboutBack = (got, exp) => { if (!AP.LANDED) return [got, exp]; const r = AP.viewBack(got, exp); return r ? [r[0], r[1]] : [got, exp] }
   const seoLanding = (cc, v) => SEO.must('copy-trust-line', SEO.trustLine)(SEO.must('seo-m5-s9-json-ld', x => SEO.jsonLdHtml(x, cc))(SEO.must('seo-m1-country-menu', x => SEO.countryMenu(x, { options: ['GB', 'US'] }))(seoFooter(v))))
 
   head('2 · keys separated from labels — every output byte-identical to BEFORE (GB and US), apart from Phase 1e’s named changes')
@@ -304,14 +310,14 @@ async function main() {
       // a plan with the feature off denies it, and an override `true` still wins over that plan.
       const badPlan = p.overrideOnly.filter(([, , , , planOff, planOffGrant]) => !(planOff === false && planOffGrant === true))
       t(`parity → Stage A2: with no override the plan's switch decides (off → denied); an override true wins over it (${p.overrideOnly.length} rows)`, p.overrideOnly.length > 20 && badPlan.length === 0, JSON.stringify(badPlan))
-    } else if (k === 'landingFooter') { const d = diffJson(seoFooter(before.keys[k]), got.keys[k]); t(`${k} (+ seo-s7-badges-lazy)`, d === null, d) }   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026)
+    } else if (k === 'landingFooter') { const [g, e] = aboutBack(got.keys[k], seoFooter(before.keys[k])); const d = diffJson(e, g); t(`${k} (+ seo-s7-badges-lazy${AP.LANDED ? ', about-page ABOUT-link' : ''})`, d === null, d) }   // ⚠️ RE-PINNED (seo-fixes, 20 October 2026; about-page, 22 October 2026)
     else { const d = diffJson(before.keys[k], got.keys[k]); t(k, d === null, d) }
   }
   for (const k of Object.keys(before.landing)) {
     // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): #pricing is Stage B's (banner → cards → cheapest bar → footnote)
     // — scripts/_lp-stage-b.cjs landingPricing: the section's region cut from both, the rest byte-identical.
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): + seo-fixes's named items (seoLanding, above), outside #pricing.
-    if (!LEGACY_DISPLAY) { const r = STAGE_B.landingPricing(seoLanding(k, landing1e(k, before.landing[k])), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing) and seo-fixes's named items`, r.ok, r.problems.join(' · ')); continue }
+    if (!LEGACY_DISPLAY) { const [g, e] = aboutBack(got.landing[k].replace(SEP, ''), seoLanding(k, landing1e(k, before.landing[k]))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing) and seo-fixes's named items`, r.ok, r.problems.join(' · ')); continue }
     const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d)
   }
 

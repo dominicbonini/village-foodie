@@ -5396,6 +5396,7 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "contact": "Contact",
+    "about": "About",
     "copyright": "© {year} HatchGrab",
     "credit": "From the people behind <b>Village Foodie</b>"
   },
@@ -5414,7 +5415,26 @@
     "formTitle": "Contact HatchGrab support",
     "privacy": "Privacy",
     "terms": "Terms",
+    "about": "About",
     "copyright": "© {year} HatchGrab"
+  },
+  "aboutPage": {
+    "meta": {
+      "title": "About — HatchGrab",
+      "description": "HatchGrab was started by Dominic Bonini, who built Village Foodie to find out which food trucks were coming to his village. It’s a small company, and he runs it himself."
+    },
+    "eyebrow": "About",
+    "title": "Hi, I’m Dominic.",
+    "photoAlt": "{name}, founder of HatchGrab",
+    "story": {
+      "village": "I live in a village. Food trucks visit, but I never knew which one was coming, or when, without digging through Facebook.",
+      "villageFoodie": "So I built Village Foodie, a simple way to see which trucks are coming to villages near you.",
+      "hatchgrab": "The more trucks I looked at, the more I thought they deserved better tools: something built for a business that’s somewhere different every day, not a restaurant with a fixed address. That’s why I started HatchGrab.",
+      "small": "It’s a small company and I run it myself. If you get in touch, you’ll hear back from me, not a support queue."
+    },
+    "signature": "<b>{name}</b> · Founder",
+    "company": "{company} · registered in England and Wales · company number {number} · registered office: {address}",
+    "contact": "Contact us"
   },
   "siteFooter": {
     "title": "Never miss a slice 🍕",

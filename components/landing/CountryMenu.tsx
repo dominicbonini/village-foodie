@@ -1,9 +1,8 @@
 'use client'
 // components/landing/CountryMenu.tsx — the marketing pages' country button and its menu (Phase 2D-1).
 //
-// 🔴 TWO PLACES, ONE COMPONENT. In the header (laptop and up only — `.cc-head` is display:none below 1024px)
-// it shows flag + short name + chevron; in the footer (every width) flag + full name + chevron. Each opens a
-// small menu of the switched-on countries, the current one ticked.
+// 🔴 THE FOOTER ONLY (Dominic, 22 October 2026 — it was in the header too, laptop and up, from Phase 2D-1): flag + full
+// name + chevron, at every width. It opens a small menu of the switched-on countries, the current one ticked.
 // 🔴 THE PAGE ALREADY RENDERED IN THE RIGHT COUNTRY — on the server (lib/visitor-country.ts). Choosing one here
 // keeps it in the hg_country cookie and asks the server for the page again; nothing is priced in the browser.
 // Flags are small images (country-flag-icons SVGs as data URIs, from the server), never emoji.
@@ -38,7 +37,7 @@ const Flag = ({ src }: { src: string | null }) => (src
   ? <img className="cc-flag" src={src} alt="" width={21} height={14} />
   : <span className="cc-flag cc-flag-none" aria-hidden="true" />)
 
-export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; variant: 'header' | 'footer' }) {
+export function CountryMenu({ menu }: { menu: VisitorCountryMenu }) {
   const router = useRouter()
   // The page's own path — known on the server too, so every option's href is in the server-rendered HTML.
   const pathname = usePathname() ?? '/'
@@ -87,11 +86,11 @@ export function CountryMenu({ menu, variant }: { menu: VisitorCountryMenu; varia
   }
 
   return (
-    <div ref={wrap} className={`cc ${variant === 'header' ? 'cc-head' : 'cc-foot'}`}>
+    <div ref={wrap} className="cc cc-foot">
       <button ref={button} type="button" className="cc-btn" aria-haspopup="menu" aria-expanded={open} aria-controls={listId}
         aria-label={t('country.button', { name: current.name })} onClick={() => setOpen(o => !o)}>
         <Flag src={current.flag} />
-        <span className="cc-name">{variant === 'header' ? current.shortName : current.name}</span>
+        <span className="cc-name">{current.name}</span>
         <Chevron />
       </button>
       {/* Always rendered (crawlable); closed = `.cc-menu-closed` (display:none — out of the layout, the tab order and the

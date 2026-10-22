@@ -4,8 +4,10 @@
 //
 // ── WHAT IS PHOTOGRAPHED ──────────────────────────────────────────────────────────────────────────────────
 // • The LANDING page, server-rendered by the REAL page module exactly as marketing-country-parity.cjs renders it
-//   (fixture country rows from the seed migrations, GB and a switched-on US), then its two country menus brought
+//   (fixture country rows from the seed migrations, GB and a switched-on US), then its country menu brought
 //   to life in the browser with the REAL components/landing/CountryMenu.tsx so the menu can be opened.
+//   ⚠️ RE-PINNED (22 October 2026, docs/about-page-report.md): the menu is in the FOOTER only — Dominic took it out of the
+//   nav. The header checks now prove its ABSENCE at every width; the header-menu photo is gone.
 // • The SETUP step, "Where's your truck based?" — the REAL app/setup/page.tsx and the REAL demo modal
 //   (components/DemoGetStarted.tsx), bundled for a browser. Every /api/* call is answered by Playwright with
 //   fixtures (the countries list is built by the REAL lib/signup-countries.ts from the seed rows).
@@ -16,11 +18,9 @@
 //   signup-country-<w>-setup-suggestions.png the town box with suggestions open
 //   signup-country-<w>-setup-us-zone.png     United States chosen: the time zone select appears
 //   signup-country-<w>-demo-modal-step.png   the demo modal's wizard on the same step
-//   landing-country-1440-header.png          the header: nav links, the country button, the CTA
-//   landing-country-1440-header-menu.png     the header menu open
+//   landing-country-<w>-header.png           the header: nav links and the CTA — no country button
 //   landing-country-<w>-footer.png           the footer with its country button
 //   landing-country-390-footer-menu.png      the footer menu open on a phone
-//   landing-country-390-header.png           the phone header — no country button
 // …and FAILS on overlap or cut-off: a sideways-scrolling page, header items overlapping or wrapping, a button
 // or menu item under 44px, a menu running off the screen.
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
@@ -90,7 +90,7 @@ import { CountryMenu } from '@/components/landing/CountryMenu'
 const menu = (window as any).__MENU
 for (const el of Array.from(document.querySelectorAll('div.cc'))) {
   const host = document.createElement('span'); host.style.display = 'contents'; el.replaceWith(host)
-  createRoot(host).render(<CountryMenu menu={menu} variant={el.classList.contains('cc-head') ? 'header' : 'footer'} />)
+  createRoot(host).render(<CountryMenu menu={menu} />)
 }
 document.documentElement.setAttribute('data-ready', '1')`)
   const setupJs = await browserBundle(dir, 'setup', `import { createRoot } from 'react-dom/client'
@@ -236,7 +236,8 @@ createRoot(document.getElementById('root')!).render(<div style={{ padding: 24 }}
       await page.waitForTimeout(300)
       t(`landing ${w}: no page errors`, errors.length === 0, errors.slice(0, 3))
       t(`landing ${w}: no sideways scroll`, !(await sideways(page)))
-      const head = await box(page, '.cc-head'), headBtn = await box(page, '.cc-head .cc-btn')
+      // ⚠️ RE-PINNED (22 October 2026): NO country button in the nav at any width — the footer carries the menu.
+      t(`landing ${w}: no country button in the header`, (await page.$$('nav .cc, nav .cc-btn')).length === 0)
       if (w >= 1024) {
         const row = await page.evaluate(() => {
           const kids = [...document.querySelector('nav .nav-r').children].map(e => (getComputedStyle(e).display === 'contents' ? e.firstElementChild : e)).filter(e => e && getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().width > 0)
@@ -246,32 +247,11 @@ createRoot(document.getElementById('root')!).render(<div style={{ padding: 24 }}
           return { rs, overlap, oneLine: new Set(rs.map(x => Math.round((x.t + x.b) / 2))).size === 1, navH: nav.height, inside: rs.every(x => x.r <= window.innerWidth && x.b <= nav.bottom) }
         })
         const texts = row.rs.map(x => x.text)
-        const cc = texts.findIndex(x => /^UK/.test(x)), login = texts.indexOf('Log in'), cta = row.rs.findIndex(x => /nav-cta/.test(x.cls))
-        t(`landing ${w}: the header country button is shown, between the nav links and the CTA`, head?.display === 'flex' || head?.display === 'inline-flex' ? (login >= 0 && cc > login && cta > cc) : false, texts)
+        const login = texts.indexOf('Log in'), cta = row.rs.findIndex(x => /nav-cta/.test(x.cls))
+        t(`landing ${w}: the header reads nav links, Log in, then the CTA`, login >= 0 && cta === login + 1, texts)
         t(`landing ${w}: header items on one line, none overlapping, inside the bar`, row.oneLine && !row.overlap && row.inside, row)
-        t(`landing ${w}: header button at least 44px tall`, headBtn && headBtn.h >= 44, headBtn)
-        const label = await page.getAttribute('.cc-head .cc-btn', 'aria-label')
-        t(`landing ${w}: aria-label "Country: United Kingdom. Change country"`, label === 'Country: United Kingdom. Change country', label)
-        if (w === 1440) {
-          await page.locator('nav').screenshot({ path: path.join(OUT, 'landing-country-1440-header.png') })
-          await page.click('.cc-head .cc-btn')
-          await page.waitForSelector('.cc-head .cc-menu')
-          const mm = await page.evaluate(() => {
-            const m = document.querySelector('.cc-head .cc-menu').getBoundingClientRect()
-            const items = [...document.querySelectorAll('.cc-head .cc-item')].map(i => ({ h: i.getBoundingClientRect().height, text: i.textContent, checked: i.getAttribute('aria-checked'), tick: !!i.querySelector('.cc-tick'), flag: !!i.querySelector('img.cc-flag') }))
-            return { inView: m.left >= 0 && m.right <= window.innerWidth && m.top >= 0 && m.bottom <= window.innerHeight, items, expanded: document.querySelector('.cc-head .cc-btn').getAttribute('aria-expanded') }
-          })
-          t('landing 1440: the menu opens in view, lists the switched-on countries with flags, UK ticked', mm.inView && mm.expanded === 'true' && mm.items.map(i => i.text).join('|') === 'United Kingdom|United States' && mm.items[0].checked === 'true' && mm.items[0].tick && !mm.items[1].tick && mm.items.every(i => i.flag), mm)
-          t('landing 1440: menu items at least 44px tall', mm.items.every(i => i.h >= 44), mm.items)
-          const clip = await page.evaluate(() => { const n = document.querySelector('nav').getBoundingClientRect(); const m = document.querySelector('.cc-head .cc-menu').getBoundingClientRect(); const x = Math.max(0, Math.min(n.right - 560, m.left - 24)); return { x, y: 0, width: Math.min(n.right, window.innerWidth) - x, height: m.bottom + 16 } })
-          await page.screenshot({ path: path.join(OUT, 'landing-country-1440-header-menu.png'), clip })
-          await page.keyboard.press('Escape')
-          t('landing 1440: Escape closes it', !(await page.$('.cc-head .cc-menu')))
-        }
-      } else {
-        t(`landing ${w}: no country button in the phone header`, head?.display === 'none', head)
-        await page.locator('nav').screenshot({ path: path.join(OUT, `landing-country-${w}-header.png`) })
       }
+      if (w !== 1024) await page.locator('nav').screenshot({ path: path.join(OUT, `landing-country-${w}-header.png`) })
       // footer, every width
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
       await page.waitForTimeout(150)

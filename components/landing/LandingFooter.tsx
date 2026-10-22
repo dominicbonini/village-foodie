@@ -50,6 +50,7 @@ import '@/lib/i18n/catalog/landingFooter'
 export { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_SRC } from '@/lib/app-badges'
 import { StoreBadges } from '@/components/StoreBadges'
 import { contactHref } from '@/lib/contact-topics'
+import { ABOUT_PATH } from '@/lib/about'
 
 export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string } = {}) {
   const t = translatorFor(locale, 'landingFooter')
@@ -100,6 +101,8 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
                 it is the same parameter Village Foodie's own footer Contact link sends
                 (components/Footer.tsx). Carried across so this link opens the form where it always
                 did rather than on an empty topic. */}
+            {/* about-page (22 October 2026): the founder's page — HatchGrab only, like every page this footer is on. */}
+            <a href={ABOUT_PATH}>{t('about')}</a>
             <a href={contactHref('general')}>{t('contact')}</a>
           </div>
             {/* ── 🔴 APP STORE BADGE ─────────────────────────────────────────────────────
@@ -127,7 +130,7 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
                 exactly one rule owns the gap. */}
             <StoreBadges className="foot-apps" linkClassName="foot-badge" countryCode={country?.current.code} />
             {/* Phase 2D-1: the country button, at every width — flag, full name, chevron. */}
-            {country && <CountryMenu menu={country} variant="footer" />}
+            {country && <CountryMenu menu={country} />}
         </div>
       </div>
       {/* 🔴 REVERSED ON 2 SEPTEMBER 2026, ON REQUEST — THE ORIGINAL REASONING IS KEPT BELOW ON PURPOSE.

@@ -122,6 +122,17 @@ const NEW_WORDING = {
   // ⚠️ RE-PINNED (canada-2, 22 October 2026): the reason is now a select — 'language' (Quebec) or 'taxLines' (Saskatchewan and
   // Manitoba: "we’re adding separate GST and PST lines first", Dominic's words); scripts/canada-2.cjs §1 holds both sentences.
   'tradeArea.region_closed': 'canada-1 / canada-2: "Trucks based in {region} can’t sign up yet: HatchGrab isn’t available in {language} yet…" (Quebec) / "…: we’re adding separate GST and PST lines first…" (Saskatchewan, Manitoba)',
+  // ⚠️ RE-PINNED (about-page, 22 October 2026, docs/about-page-report.md): the About page's words — new, Dominic's own (the brief,
+  // verbatim); scripts/about-page.cjs holds each one's exact text and where it renders.
+  'aboutPage.meta.description': 'about-page: the About page meta description (a plain founder-story sentence)',
+  'aboutPage.title': 'about-page: the About h1 ("Hi, I’m Dominic.")',
+  'aboutPage.photoAlt': 'about-page: the founder photo alt ("{name}, founder of HatchGrab")',
+  'aboutPage.story.village': 'about-page: story paragraph 1 ("I live in a village…")',
+  'aboutPage.story.villageFoodie': 'about-page: story paragraph 2 ("So I built Village Foodie…", plain text)',
+  'aboutPage.story.hatchgrab': 'about-page: story paragraph 3 ("…That’s why I started HatchGrab.")',
+  'aboutPage.story.small': 'about-page: story paragraph 4 ("It’s a small company and I run it myself…")',
+  'aboutPage.signature': 'about-page: the signature ("<b>{name}</b> · Founder")',
+  'aboutPage.company': 'about-page: the company line ("{company} · registered in England and Wales · company number {number} · registered office: {address}")',
 }
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */

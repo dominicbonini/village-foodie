@@ -299,6 +299,11 @@ for (const e of require('./_lp-ireland-3.cjs').ITEMS) NAMED.push({ id: e.id, wha
 // 2026-10-22. PRECISE, after ireland-3's item, GB and US; one copy in scripts/_lp-anz-terms.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
 for (const e of require('./_lp-anz-terms.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
+// ⚠️ RE-PINNED (about-page, 22 October 2026): the country menu out of the nav (Dominic), the footers' About link, the
+// Organization's founder and the sitemap's /about. PRECISE, after every earlier item, GB and US; one copy in
+// scripts/_lp-about-page.cjs.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
+for (const e of require('./_lp-about-page.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 
 /** BEFORE value of view `id` → { expected, touched: [named ids whose transform changed it] }. */
 // ⚠️ RE-PINNED (plans-data-model, Stage A): an entry with `proveWith` adds `matches(f)` → { ok, problems } — its own

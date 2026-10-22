@@ -32,7 +32,9 @@ export function schemaPrice(minor: number, currency: string): string {
   return (minor / 10 ** d).toFixed(d)
 }
 
-export function organizationLd(countryCode: string | null | undefined) {
+/** about-page (22 October 2026): `founderImage` is the About page's photo URL (lib/about-server.ts aboutPhotoUrl), or null while
+ *  there is no photo — the founder is then named without an image. ⛔ No dates or roles: only the name. */
+export function organizationLd(countryCode: string | null | undefined, founderImage: string | null = null) {
   return {
     '@type': 'Organization',
     '@id': ORG_ID,
@@ -42,6 +44,7 @@ export function organizationLd(countryCode: string | null | undefined) {
     url: `${HATCHGRAB_ORIGIN}/`,
     logo: `${HATCHGRAB_ORIGIN}${HATCHGRAB_LOGO_PNG}`,
     sameAs: [appStoreUrlFor(countryCode), GOOGLE_PLAY_URL],
+    founder: { '@type': 'Person', name: COMPANY.founder.name, ...(founderImage ? { image: founderImage } : {}) },
   }
 }
 
@@ -77,12 +80,14 @@ export function landingGraph(opts: {
   catalog: PlanCatalog
   pricesShown: boolean
   app: Record<string, unknown>
+  /** about-page: the founder's photo URL, or null (organizationLd). */
+  founderImage?: string | null
 }) {
   const offers = planOffersLd(opts.catalog, opts.countryCode, opts.currency, opts.pageUrl, opts.pricesShown)
   return {
     '@context': 'https://schema.org',
     '@graph': [
-      organizationLd(opts.countryCode),
+      organizationLd(opts.countryCode, opts.founderImage ?? null),
       websiteLd(),
       {
         '@type': 'SoftwareApplication',
@@ -91,6 +96,26 @@ export function landingGraph(opts: {
         url: opts.pageUrl,
         publisher: { '@id': ORG_ID },
         ...(offers.length ? { offers } : {}),
+      },
+    ],
+  }
+}
+
+/** about-page (22 October 2026): the About page's graph — the Organization (with its founder) and an AboutPage about it.
+ *  `pageUrl` is the page's canonical address; `name` and `description` are its own title and meta description. */
+export function aboutGraph(opts: { countryCode: string; pageUrl: string; name: string; description: string; inLanguage: string; founderImage: string | null }) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      organizationLd(opts.countryCode, opts.founderImage),
+      {
+        '@type': 'AboutPage',
+        '@id': `${opts.pageUrl}#page`,
+        url: opts.pageUrl,
+        name: opts.name,
+        description: opts.description,
+        inLanguage: opts.inLanguage,
+        about: { '@id': ORG_ID },
       },
     ],
   }

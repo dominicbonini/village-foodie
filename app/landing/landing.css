@@ -1039,7 +1039,10 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
      .foot-grid to one column. Above 720px there is NO rule, so the wordmark keeps margin:0 from the reset
      and stays left-aligned in its space-between column, exactly as it ships today. */
   .hg-landing .foot-logo { margin-inline: auto; }
-  .hg-landing .foot-links { justify-content: center; }
+  /* about-page follow-up (22 October 2026, Dominic): six links wrapped 5 + 1, leaving Contact alone on its row. Three
+     content-sized columns make it an even 3 + 3, each link centred in its column; a footer with three links (/contact's)
+     is still one centred row, exactly as before. */
+  .hg-landing .foot-links { display: grid; grid-template-columns: repeat(3, auto); justify-content: center; justify-items: center; }
   /* The right column centres its own children here, so the stack reads brand -> links -> badge down
      the middle of the phone. Same one-line mechanism as .foot-links directly above. */
   .hg-landing .foot-right { align-items: center; }
@@ -1064,14 +1067,10 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    the trigger, so it matches every other CTA on the page. */
 
 /* ---------- COUNTRY MENU (Phase 2D-1, components/landing/CountryMenu.tsx) ----------
-   🔴 HEADER: laptop and up only (≥1024px), between the nav links and the CTA — below that the header row is
-   already at its measured limit (see .nav-hide-md), and the footer carries the same menu at every width.
+   ⛔ NOT IN THE HEADER ANY MORE (Dominic, 22 October 2026): the `.cc-head` rules went with the nav's button.
    FOOTER: under the store badges, right-aligned; centred with the rest of the footer on a phone.
-   Button and every item are at least 44px tall (touch target). The menu opens DOWN from the header and UP from
-   the footer, so neither runs off the page. */
+   Button and every item are at least 44px tall (touch target). The menu opens UP, so it never runs off the page. */
 .hg-landing .cc { position: relative; display: inline-flex; }
-.hg-landing .cc-head { display: none; }
-@media(min-width:1024px){ .hg-landing .cc-head { display: inline-flex; } }
 .hg-landing .cc-btn { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 .6rem; border-radius: 7px; border: 1px solid transparent; background: transparent; color: #C3CAD8; font-family: var(--body); font-weight: 600; font-size: .9rem; cursor: pointer; white-space: nowrap; }
 .hg-landing .cc-btn:hover, .hg-landing .cc-btn[aria-expanded="true"] { color: #fff; border-color: rgba(255,255,255,.18); }
 .hg-landing .cc-btn:focus-visible, .hg-landing .cc-item:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
@@ -1083,7 +1082,6 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .cc-flag-none { background: rgba(255,255,255,.2); }
 .hg-landing .cc-chev { flex-shrink: 0; opacity: .8; }
 .hg-landing .cc-menu { position: absolute; right: 0; z-index: 60; min-width: 13rem; list-style: none; padding: .35rem; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px rgba(15,34,56,.22); }
-.hg-landing .cc-head .cc-menu { top: calc(100% + .35rem); }
 .hg-landing .cc-foot .cc-menu { bottom: calc(100% + .35rem); }
 .hg-landing .cc-item { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 44px; padding: 0 .7rem; border: 0; border-radius: 7px; background: transparent; color: var(--ink); font-family: var(--body); font-size: .92rem; font-weight: 500; text-align: left; cursor: pointer; }
 .hg-landing .cc-item:hover { background: var(--wash); }
@@ -1098,4 +1096,29 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .cc-tick { color: var(--orange-deep); flex-shrink: 0; }
 @media(max-width:720px){
   .hg-landing .cc-foot .cc-menu { right: auto; left: 50%; transform: translateX(-50%); }
+}
+
+/* ── about-page (22 October 2026, docs/about-page-report.md; the approved mockup "about-mockup-2") ─────────────────────────
+   app/about/page.tsx: ONE CENTRED COLUMN in the landing's type — the eyebrow and h1 centred (the /features header's look),
+   then the story, left-aligned for reading, filling the column (40rem, a ~72ch measure). The photo, WHEN public/about/dominic.jpg EXISTS, sits beside
+   the story from 760px and above it on phones; without it the markup has no photo element at all and the story takes the
+   column's full width (no placeholder box). The company line is small and muted, above a thin rule — `--hero-grey`
+   (#3E5472, 7.73:1 on white) rather than `--ink-soft` (4.44:1), so small text passes AA, as for the currency line. */
+.hg-landing .about-page { --hero-grey: #3E5472; padding-top: clamp(2.5rem,5vw,4rem); }
+.hg-landing .about-col { max-width: 40rem; margin-inline: auto; }
+.hg-landing .about-page .eyebrow,
+.hg-landing .about-page h1 { text-align: center; }
+.hg-landing .about-page h1 { font-size: clamp(1.9rem,4vw,2.6rem); margin-bottom: clamp(1.6rem,3.5vw,2.4rem); }
+.hg-landing .about-body { display: flex; flex-direction: column; gap: 1.5rem; }
+.hg-landing .about-photo { width: 11rem; height: 11rem; border-radius: 50%; object-fit: cover; align-self: center; background: var(--wash); }
+.hg-landing .about-story { flex: 1; min-width: 0; }
+.hg-landing .about-story p { font-size: 1.075rem; line-height: 1.65; color: var(--ink); }
+.hg-landing .about-story p + p { margin-top: 1.05rem; }
+.hg-landing .about-sign { margin-top: 1.6rem !important; color: var(--head); }
+.hg-landing .about-sign b { font-weight: 700; }
+.hg-landing .about-legal { margin-top: clamp(2.5rem,5vw,3.5rem); padding-top: 1.1rem; border-top: 1px solid var(--line); font-size: .8rem; line-height: 1.55; color: var(--hero-grey); }
+.hg-landing .about-legal a { color: var(--hero-grey); text-decoration: underline; text-underline-offset: 2px; }
+@media(min-width:760px){
+  .hg-landing .about-body { flex-direction: row; align-items: flex-start; gap: 2.4rem; }
+  .hg-landing .about-photo { width: 12.5rem; height: 12.5rem; flex-shrink: 0; border-radius: 14px; align-self: flex-start; }
 }

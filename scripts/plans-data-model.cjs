@@ -271,6 +271,16 @@ if (RENDER) {
   const BEFORE_DIR = path.join(REPO, 'scripts/fixtures/plans-data-model-before')
   const B = { pages: load(BEFORE_DIR, 'pages'), parts: load(BEFORE_DIR, 'parts'), billing: load(BEFORE_DIR, 'billing') }
   const A = { pages: load(out, 'pages'), parts: load(out, 'parts'), billing: load(out, 'billing') }
+  // ⚠️ RE-PINNED (about-page, 22 October 2026, docs/about-page-report.md): the footers' About link, the Organization's founder,
+  // the sitemap's /about and the country menu leaving the nav (Dominic) — each verified and mapped back on every view first
+  // (scripts/_lp-about-page.cjs), so every check below still reads every other byte.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
+  const AP = require('./_lp-about-page.cjs')
+  if (AP.LANDED) {
+    const ab = AP.applyViews(A, B, ['pages', 'parts'])
+    console.log(`    about-page named changes: ${AP.summary(ab)}`)
+    t('about-page: every view carrying an about-page change carries EXACTLY the named one (ABOUT-link / ABOUT-founder / ABOUT-sitemap / NAV-menu)', ab.bad.length === 0 && ab.byName.size > 0, ab.bad.join(', '))
+  }
 
   // The comparison table: its plan header, fee and feature rows (up to the footnotes, less any closing wrapper — Pro's
   // old collapsible matrix sat inside its own <div>), then the footnotes block.
@@ -494,7 +504,7 @@ if (RENDER) {
   /** SEO-menu: the AFTER html with its two menus verified and removed; null if they are not exactly the named markup. */
   const seoMenus = a => {
     const uls = [...a.matchAll(MENU_UL)]
-    if (uls.length !== 2) return null
+    if (uls.length !== (AP.LANDED ? 1 : 2)) return null   // ⚠️ RE-PINNED (about-page): the footer's menu only — the nav has none
     for (const m of uls) {
       if (!a.slice(0, m.index).endsWith('</button>') || !a.slice(Math.max(0, m.index - 3000), m.index).includes(`aria-controls="${m[1]}"`)) return null
       const lis = [...m[2].matchAll(MENU_LI)]

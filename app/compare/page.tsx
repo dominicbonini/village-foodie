@@ -213,7 +213,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
             its Pricing link are bare fragments that resolve against THIS page and silently do nothing —
             see the table in LandingNav.tsx. '/landing' is used rather than '/' because '/' is only the
             landing on a hatchgrab host. */}
-        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
+        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} locale={settings.locale} />
       </div>
 
       {/* native-prices (22 October 2026): where the country's currency symbol is shared, the line naming it — written here, on

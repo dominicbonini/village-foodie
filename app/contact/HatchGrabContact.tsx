@@ -24,6 +24,7 @@ import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH, copyrightYear } from '@/lib/legal'
+import { ABOUT_PATH } from '@/lib/about'
 import { ContactForm } from './ContactForm'
 import { translatorFor } from '@/lib/i18n/translator'
 import type { AppLocale } from '@/lib/i18n/locales'
@@ -185,6 +186,8 @@ export function HatchGrabContact({ locale }: { locale: AppLocale }) {
           <div className="foot-links">
             <a href={PRIVACY_PATH}>{t('privacy')}</a>
             <a href={TERMS_PATH}>{t('terms')}</a>
+            {/* about-page (22 October 2026): this footer is HatchGrab's only (Village Foodie's /contact has its own). */}
+            <a href={ABOUT_PATH}>{t('about')}</a>
           </div>
           <div className="foot-base">
             <span>{t('copyright', { year: copyrightYear() })}</span>

@@ -44,8 +44,18 @@ const STUBS = {
 const MARKED = {
   ...STUBS,
   '@/components/landing/CountryMenu': `import { createElement } from 'react'
-    export function CountryMenu(p) { (globalThis.__ccSeen = globalThis.__ccSeen || []).push(p); return createElement('i', { 'data-cc': p.variant }) }`,
+    export function CountryMenu(p) { (globalThis.__ccSeen = globalThis.__ccSeen || []).push(p); return createElement('i', { 'data-cc': p.variant ?? 'footer' }) }`,
 }
+// ⚠️ RE-PINNED (about-page, 22 October 2026, docs/about-page-report.md): Dominic took the country menu out of the NAV — it is
+// in the footer only, so CountryMenu has no `variant` (the marker records 'footer', the one place it is). Every check below
+// that asserted a header button asserts its ABSENCE on such a tree, and the footers' new About link is a named change
+// (scripts/_lp-about-page.cjs dropLinkText: verified exactly once, then mapped back) — every other word still compares.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
+const AP = require('./_lp-about-page.cjs')
+/** The about-page named change on AFTER's text and attributes (a no-op on an older tree); null = not exactly that change. */
+const aboutSide = A => (AP.LANDED ? AP.dropLinkText(A) : A)
+/** The country buttons a page should carry: the footer's only, from about-page; header + footer before. */
+const WANT_MENUS = AP.LANDED ? 'footer' : 'header,footer'
 const PAGES = { landing: 'app/landing/page.tsx', features: 'app/features/page.tsx', compare: 'app/compare/page.tsx' }
 const modsBy = {}
 async function pages(build = 'real') {
@@ -329,11 +339,13 @@ async function compare() {
     for (const [label, req] of [['no country header', {}], ['GB visitor', { ip: 'GB' }], ['US visitor, US switched off', { ip: 'US', cookie: 'US', query: { country: 'US' } }], ['a country with no row', { ip: 'FR' }]]) {
       const v = await visit(p, { rows: [GB, US_OFF], build: 'marked', ...req })
       // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): compared with Stage B's named regions cut out of both sides.
-      const [B, A] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], v)), v)   // ⚠️ RE-PINNED (seo-fixes): the badge preload hints named; (compare-tidy): T-staff / T-renumber / T-panel
+      const [B, A0] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], v)), v)   // ⚠️ RE-PINNED (seo-fixes): the badge preload hints named; (compare-tidy): T-staff / T-renumber / T-panel
+      const A = aboutSide(A0) || A0   // ⚠️ RE-PINNED (about-page): the footer's About link named (null → compared as it is, and fails)
       if (label === 'GB visitor') viewsB[p] = v
       ok(A.text === B.text, `${p} · ${label} · text identical`, firstDiff(A.text, B.text))
       ok(JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · ${label} · attributes identical`)
-      ok(v.menus.length === 2 && v.menus.map(m => m.variant).join() === 'header,footer', `${p} · ${label} · one header and one footer button`, JSON.stringify(v.menus.map(m => m.variant)))
+      ok(v.menus.map(m => m.variant ?? 'footer').join() === WANT_MENUS && (!AP.LANDED || (/<footer[\s\S]*<i data-cc="footer"><\/i>[\s\S]*<\/footer>/.test(v.html) && AP.navHasNoMenu(v.html.replace(/<i data-cc="footer"><\/i>/, '')) && !/<nav[\s\S]*data-cc[\s\S]*<\/nav>/.test(v.html))),
+        `${p} · ${label} · ${AP.LANDED ? 'one footer button and none in the nav' : 'one header and one footer button'}`, JSON.stringify(v.menus.map(m => m.variant)))
       const menu = v.menus[0]?.menu
       ok(menu?.current.code === 'GB' && menu.options.map(o => o.code).join() === 'GB', `${p} · ${label} · UK current, only the UK in the menu`, JSON.stringify(menu && { cur: menu.current.code, opts: menu.options.map(o => o.code) }))
       ok(menu?.remember === null, `${p} · ${label} · no cookie written (the URL's US is switched off)`)
@@ -356,19 +368,22 @@ async function compare() {
     const real = await visit(p, { rows: [GB, US_OFF] })
     const marked = await visit(p, { rows: [GB, US_OFF], build: 'marked' })
     const found = [...real.html.matchAll(MENU_RE)].map(m => m[0])
-    ok(found.length === 2, `${p} · two country buttons rendered`, String(found.length))
+    ok(found.length === (AP.LANDED ? 1 : 2) && (!AP.LANDED || /cc-foot/.test(found[0])), `${p} · ${AP.LANDED ? 'one country button rendered, the footer\'s' : 'two country buttons rendered'}`, String(found.length))
     const stripped = real.html.replace(MENU_RE, '<i data-cc></i>')
     const markedNorm = marked.html.replace(/<i data-cc="(header|footer)"><\/i>/g, '<i data-cc></i>')
     ok(stripped === markedNorm, `${p} · removing the two buttons leaves the marked page exactly`, firstDiff(stripped, markedNorm))
-    const [head, foot] = found
-    ok(/aria-label="Country: United Kingdom. Change country"/.test(head || '') && /aria-label="Country: United Kingdom. Change country"/.test(foot || ''), `${p} · aria-label names the country`)
-    ok(/<span class="cc-name">UK<\/span>/.test(head || '') && /<span class="cc-name">United Kingdom<\/span>/.test(foot || ''), `${p} · header shows the short name, footer the full name`)
-    ok(/<img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/>/.test(head || ''), `${p} · the flag is a small SVG image, not text`)
+    // ⚠️ RE-PINNED (about-page): with no header button, the button checks read the footer's (the same component).
+    const [head, foot] = AP.LANDED ? [null, found[0]] : found
+    const first = head ?? foot
+    ok(AP.LANDED ? !head && AP.navHasNoMenu(real.html) : true, `${p} · no country button in the nav`)
+    ok((AP.LANDED || /aria-label="Country: United Kingdom. Change country"/.test(head || '')) && /aria-label="Country: United Kingdom. Change country"/.test(foot || ''), `${p} · aria-label names the country`)
+    ok((AP.LANDED || /<span class="cc-name">UK<\/span>/.test(head || '')) && /<span class="cc-name">United Kingdom<\/span>/.test(foot || ''), `${p} · ${AP.LANDED ? 'the footer shows the full name' : 'header shows the short name, footer the full name'}`)
+    ok(/<img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/>/.test(first || ''), `${p} · the flag is a small SVG image, not text`)
     ok(!/[\u{1F1E6}-\u{1F1FF}]/u.test(real.html), `${p} · no flag emoji anywhere`)
-    ok(/aria-haspopup="menu"/.test(head || '') && /aria-expanded="false"/.test(head || ''), `${p} · a closed menu button`)
+    ok(/aria-haspopup="menu"/.test(first || '') && /aria-expanded="false"/.test(first || ''), `${p} · a closed menu button`)
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): each button is followed by its always-rendered, closed list — the UK only
     // (US switched off), a real link to /uk, checked, with the tick; the list's id is the button's aria-controls.
-    for (const [w, html] of [['header', head], ['footer', foot]]) {
+    for (const [w, html] of AP.LANDED ? [['footer', foot]] : [['header', head], ['footer', foot]]) {
       const ul = (html || '').match(MENU_UL_RE)
       const ctl = ((html || '').match(/aria-controls="([^"]+)"/) || [])[1]
       ok(!!ul && ul[1] === ctl && /^<li role="none"><a href="\/uk" role="menuitemradio" aria-checked="true" class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/><span class="cc-item-name">United Kingdom<\/span><svg class="cc-tick"[^>]*>.*?<\/svg><\/a><\/li>$/.test(ul[2]) && !/<button[^>]*cc-item/.test(html),
@@ -382,7 +397,7 @@ async function compare() {
   const tables = STAGE_B ? usTables() : {}
   const us = await visit('landing', { rows, ip: 'US', tables })
   ok(us.text.includes('$39') && us.text.includes('$59') && !us.text.includes('£29'), 'landing · US visitor · $ prices, no £', us.text.match(/[£$][0-9]+/g)?.slice(0, 6).join(' '))
-  ok(us.menus.length === 0 && /<span class="cc-name">US<\/span>/.test(us.html) && /Country: United States\. Change country/.test(us.html), 'landing · the header button says US')
+  ok(us.menus.length === 0 && (AP.LANDED ? /<span class="cc-name">United States<\/span>/.test(us.html) && AP.navHasNoMenu(us.html) : /<span class="cc-name">US<\/span>/.test(us.html)) && /Country: United States\. Change country/.test(us.html), AP.LANDED ? 'landing · the footer button says United States (none in the nav)' : 'landing · the header button says US')
   const usMarked = await visit('landing', { rows, ip: 'US', build: 'marked', tables })
   ok(usMarked.menus[0].menu.options.map(o => o.code).join() === 'GB,US' && usMarked.menus[0].menu.remember === null, 'landing · both switched-on countries in the menu; nothing to write (no ?country)')
   for (const p of ['features', 'compare']) {
@@ -391,7 +406,8 @@ async function compare() {
   }
   for (const p of Object.keys(PAGES)) {
     const ukWithUsOn = await visit(p, { rows, ip: 'GB', build: 'marked', tables })
-    const [B, A] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], ukWithUsOn)), ukWithUsOn)   // ⚠️ RE-PINNED (pricing-pages, Stage B): the named regions cut out; (seo-fixes): the badge preload hints named
+    const [B, A0] = seoSides(tidySides(p, stageBSides(p, BEFORE[p], ukWithUsOn)), ukWithUsOn)   // ⚠️ RE-PINNED (pricing-pages, Stage B): the named regions cut out; (seo-fixes): the badge preload hints named
+    const A = aboutSide(A0) || A0   // ⚠️ RE-PINNED (about-page): the footer's About link named
     ok(A.text === B.text && JSON.stringify(A.attrs) === JSON.stringify(B.attrs), `${p} · a UK visitor with US switched on · still identical to BEFORE`, firstDiff(A.text, B.text))
   }
   const toGB = await visit('landing', { rows, ip: 'US', query: { country: 'gb' }, build: 'marked', tables })

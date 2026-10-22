@@ -29,6 +29,12 @@ const kit = require('./_render-kit.cjs')({ cacheTag: 'seo-fixes' })
 const { REPO, h } = kit
 const LP1E = require('./_lp1e-fixtures.cjs')
 const { seedCatalog } = require('./_plans-catalog-fixture.cjs')
+// ⚠️ RE-PINNED (about-page, 22 October 2026, docs/about-page-report.md): the country menu is in the FOOTER only (Dominic took it
+// out of the nav), so each page carries ONE menu list, not two; and the HatchGrab sitemap ends with /about.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
+const AP = require('./_lp-about-page.cjs')
+const MENUS = AP.LANDED ? 1 : 2
+const twice = xs => (MENUS === 2 ? [...xs, ...xs] : xs)
 
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 900) : JSON.stringify(detail).slice(0, 900)}` : '')) } }
@@ -80,10 +86,10 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   const ukOff = await page('landing', 'GB', false)
   const featUkOn = await page('features', 'GB', true)
   const items = html => [...String(html).matchAll(/<a href="([^"]*)" role="menuitemradio"[^>]*class="cc-item"/g)].map(m => m[1])
-  t('US on: /uk carries <a href="/us"> (and /uk) as menu options, in the server HTML, in header AND footer', JSON.stringify(items(ukOn)) === JSON.stringify(['/uk', '/us', '/uk', '/us']), items(ukOn))
-  t('…on /uk/features the options point at the EQUIVALENT page (/us/features)', JSON.stringify(items(featUkOn)) === JSON.stringify(['/uk/features', '/us/features', '/uk/features', '/us/features']), items(featUkOn))
-  t('…the closed menu is hidden by CSS (`cc-menu-closed`), not absent', (String(ukOn).match(/class="cc-menu cc-menu-closed"/g) || []).length === 2 && /\.hg-landing \.cc-menu-closed \{ display: none; \}/.test(read('app/landing/landing.css')))
-  t('US off: no /us link anywhere on /uk', JSON.stringify(items(ukOff)) === JSON.stringify(['/uk', '/uk']) && !/href="\/us/.test(String(ukOff)), items(ukOff))
+  t(`US on: /uk carries <a href="/us"> (and /uk) as menu options, in the server HTML, ${MENUS === 2 ? 'in header AND footer' : 'in the footer (the nav has none)'}`, JSON.stringify(items(ukOn)) === JSON.stringify(twice(['/uk', '/us'])) && (!AP.LANDED || AP.navHasNoMenu(ukOn)), items(ukOn))
+  t('…on /uk/features the options point at the EQUIVALENT page (/us/features)', JSON.stringify(items(featUkOn)) === JSON.stringify(twice(['/uk/features', '/us/features'])), items(featUkOn))
+  t('…the closed menu is hidden by CSS (`cc-menu-closed`), not absent', (String(ukOn).match(/class="cc-menu cc-menu-closed"/g) || []).length === MENUS && /\.hg-landing \.cc-menu-closed \{ display: none; \}/.test(read('app/landing/landing.css')))
+  t('US off: no /us link anywhere on /uk', JSON.stringify(items(ukOff)) === JSON.stringify(twice(['/uk'])) && !/href="\/us/.test(String(ukOff)), items(ukOff))
   const cm = read('components/landing/CountryMenu.tsx')
   t('the click is unchanged: it prevents the default navigation and runs the same `choose` (cookie + router)', /e\.preventDefault\(\); choose\(o\.code\)/.test(cm) && /keepCountry\(code\)/.test(cm) && /router\.push\(there \+ url\.search \+ url\.hash, \{ scroll: false \}\)/.test(cm))
 
@@ -194,7 +200,7 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   const smOff = await ctx.withReq({ host: HG, rows: ctx.ROWS.off(), tables: tablesAt() }, async () => SM.default())
   const smVf = await ctx.withReq({ host: VF, rows: ctx.ROWS.off(), tables: tablesAt() }, async () => SM.default())
   const urls = s => s.map(e => e.url)
-  t('HatchGrab (US off): /uk, /uk/features, /privacy, /terms, /country-terms, /contact', JSON.stringify(urls(smOff)) === JSON.stringify(['/uk', '/uk/features', '/privacy', '/terms', '/country-terms', '/contact'].map(p => 'https://www.hatchgrab.com' + p)), urls(smOff))
+  t(`HatchGrab (US off): /uk, /uk/features, /privacy, /terms, /country-terms, /contact${AP.LANDED ? ', /about (about-page)' : ''}`, JSON.stringify(urls(smOff)) === JSON.stringify(['/uk', '/uk/features', '/privacy', '/terms', '/country-terms', '/contact', ...(AP.LANDED ? ['/about'] : [])].map(p => 'https://www.hatchgrab.com' + p)), urls(smOff))
   t('US on: /us and /us/features join', urls(smOn).includes('https://www.hatchgrab.com/us') && urls(smOn).includes('https://www.hatchgrab.com/us/features'))
   const iso = d => (d instanceof Date ? d.toISOString() : d)
   const ukE = smOn.find(e => e.url.endsWith('/uk')), usE = smOn.find(e => e.url.endsWith('/us'))

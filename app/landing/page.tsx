@@ -53,6 +53,7 @@ import { resolveVisitorCountry } from '@/lib/visitor-country'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 // seo-fixes M5 + S9: the JSON-LD graph (Organization, WebSite, SoftwareApplication + Offers), built from data.
 import { landingGraph } from '@/lib/structured-data'
+import { aboutPhotoUrl } from '@/lib/about-server'
 import { HATCHGRAB_ORIGIN, countryPagePath } from '@/lib/marketing-country'
 import { BRANDS } from '@/lib/brand'
 // 🔴 THE SINGLE WHATSAPP SWITCH — one value governs every surface. See lib/whatsapp-live.ts.
@@ -233,7 +234,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
           would have left the DOM reading "Log in, Upload menu" while the eye reads "Upload menu, Log in".
           Keeping those two in step is the requirement, so the ELEMENTS move, not their painted order.
           ⚠️ /compare renders the same <LandingNav /> WITHOUT this prop and is byte-identical. */}
-      <LandingNav ctaFirst featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} />
+      <LandingNav ctaFirst featuresHref={visitor.paths.features} locale={s.locale} />
 
       {/* ============ HERO ============ */}
       <header className="hero">
@@ -261,6 +262,8 @@ export default async function LandingPage({ params, searchParams }: { params?: P
                 currency: s.currency,
                 pageUrl: HATCHGRAB_ORIGIN + (countryPagePath(s.countryCode, 'landing') ?? ''),
                 catalog,
+                // about-page: the Organization names its founder, with the About page's photo when there is one.
+                founderImage: aboutPhotoUrl(),
                 pricesShown: s.enabled,
                 app: {
                   name: BRANDS.HATCHGRAB.name,

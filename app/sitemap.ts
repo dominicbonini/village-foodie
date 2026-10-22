@@ -6,6 +6,7 @@ import { countryPageAlternates, MARKETING_COPY_UPDATED } from '@/lib/marketing-m
 import { planDataUpdatedAt } from '@/lib/plans-server'
 import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH, PRIVACY_UPDATED, TERMS_UPDATED, COUNTRY_TERMS_UPDATED, legalUpdatedDate } from '@/lib/legal'
 import { BRANDS } from '@/lib/brand'
+import { ABOUT_PATH, ABOUT_UPDATED } from '@/lib/about'
 
 // app/sitemap.ts — serves /sitemap.xml. There was none before.
 //
@@ -82,6 +83,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { url: HATCHGRAB_ORIGIN + TERMS_PATH, lastModified: legalUpdatedDate(TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
       { url: HATCHGRAB_ORIGIN + COUNTRY_TERMS_PATH, lastModified: legalUpdatedDate(COUNTRY_TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
       { url: HATCHGRAB_ORIGIN + '/contact', changeFrequency: 'yearly', priority: 0.3 },
+      // about-page (22 October 2026): HatchGrab only; lastmod is the page's own words' date (lib/about.ts ABOUT_UPDATED).
+      { url: HATCHGRAB_ORIGIN + ABOUT_PATH, lastModified: legalUpdatedDate(ABOUT_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
     ]
   }
   // Village Foodie: the discovery root, and /contact — self-canonical on this host since pricing-tidy, so listed here

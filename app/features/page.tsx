@@ -178,7 +178,7 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             hatchgrab host, and /landing is a real route that 308s to the root on this one.
             🔴 THIS IS WHAT STEP 2c ASKS FOR: on the landing, Pricing stays `#pricing`; here it becomes
             `/landing#pricing`. One prop, both behaviours, no second nav. */}
-        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
+        <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} locale={settings.locale} />
 
         {/* The approved mockup's content in the pre-Stage-B page's look (features-page-restore, 20 October 2026): the
             centred eyebrow + heading + lede (the h1 keeps the old h2's look — still the page's one h1), the plan table in its "features" variant with a description per row, and the

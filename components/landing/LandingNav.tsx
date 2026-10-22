@@ -14,8 +14,6 @@
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { DemoCta } from '@/components/landing/DemoUpload'
-import { CountryMenu } from '@/components/landing/CountryMenu'
-import type { VisitorCountryMenu } from '@/lib/visitor-country-types'
 // Language Phase 1e: the nav's words are `landingNav` messages, in the page's locale (`locale` — the visitor's
 // country's; omitted = en-GB, which is today's text exactly).
 import { translatorFor } from '@/lib/i18n/translator'
@@ -79,7 +77,7 @@ export interface NavCta {
  * ✅ SO: the landing passes nothing and keeps bare fragments — byte-identical, no behaviour change — and
  * a child route passes '/landing', which is a real route on every host.
  */
-export function LandingNav({ cta, landingHref = '', featuresHref = '/features', ctaFirst = false, country, locale }: { cta?: NavCta; landingHref?: string; featuresHref?: string; ctaFirst?: boolean; country?: VisitorCountryMenu; locale?: string } = {}) {
+export function LandingNav({ cta, landingHref = '', featuresHref = '/features', ctaFirst = false, locale }: { cta?: NavCta; landingHref?: string; featuresHref?: string; ctaFirst?: boolean; locale?: string } = {}) {
   const t = translatorFor(locale, 'landingNav')
   // ONE definition, rendered by whichever branch `ctaFirst` selects — the two orders cannot drift apart.
   const navCta = cta ? (
@@ -146,9 +144,8 @@ export function LandingNav({ cta, landingHref = '', featuresHref = '/features', 
         <a href={featuresHref} className="btn btn-quiet nav-hide-md">{t('features')}</a>
         <a href={`${landingHref}#pricing`} className="btn btn-quiet nav-hide-sm">{t('pricing')}</a>
         <a href="/login" className="btn btn-ghost nav-hide-sm">{t('logIn')}</a>
-        {/* Phase 2D-1: the country button — between the nav links and the CTA, laptop and up only
-            (`.cc-head`, landing.css). Below 1024px it is in the footer only. */}
-        {country && <CountryMenu menu={country} variant="header" />}
+        {/* ⛔ THE COUNTRY BUTTON IS NOT IN THE NAV (Dominic, 22 October 2026): it was here from Phase 2D-1, laptop and up only;
+            the country menu is now in the FOOTER only (LandingFooter), on every page this nav is on. */}
         {/* ── 🔴 `ctaFirst` SWAPS TWO ELEMENTS, AND ONLY BELOW 640px DOES IT SHOW ──────────────────
             The mobile-only Log in and the CTA are the same two nodes in both branches; `ctaFirst`
             decides which is written first. The landing passes it so that, on a phone, "Log in" is the

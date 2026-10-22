@@ -101,6 +101,10 @@ const NAMED = [
   // 2026-10-22. PRECISE, after ireland-3's item, one copy in scripts/_lp-anz-terms.cjs.
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (anz-terms)
   ...require('./_lp-anz-terms.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (about-page, 22 October 2026): the country menu out of the nav (Dominic), the footers' About link, the
+  // Organization's founder and the sitemap's /about. PRECISE, after every earlier item, one copy in scripts/_lp-about-page.cjs.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
+  ...require('./_lp-about-page.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
 ]
 // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Manage › Billing is ONE data-driven plan card above the frozen comparison
 // table — STRUCTURAL, by the same proof Part 2 and Phase 1e name (scripts/_lp1d2-named.cjs makeBillingProof, one copy):
@@ -132,7 +136,7 @@ function expect(id, before) {
   for (const n of NAMED) {
     if (!n.applies(id)) continue
     const prev = JSON.stringify(v)
-    v = n.apply(v, id)
+    try { v = n.apply(v, id) } catch (e) { throw new Error(`${id}: ${e.message}`) }
     if (JSON.stringify(v) !== prev) touched.push(n.id)
   }
   const out = { expected: v, touched }
@@ -253,10 +257,12 @@ const DISCOVERY = ['parts/footer|US|html', 'parts/truck|US|html']
   const smA = AFTER['parts/sitemap|GB|hatchgrab'] || []
   // ⚠️ RE-PINNED (seo-fixes S5, 20 October 2026): after the country addresses the HatchGrab sitemap lists the indexable legal
   // pages and /contact (seo-s5-sitemap); the country addresses are still exactly these, and / and /features still absent.
-  const SEO_TAIL = [`${ORIGIN}/privacy`, `${ORIGIN}/terms`, `${ORIGIN}/country-terms`, `${ORIGIN}/contact`]
-  t('the GB sitemap is exactly /uk and /uk/features (+ seo-fixes: /privacy, /terms, /country-terms, /contact)', same(smA.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, ...SEO_TAIL]), JSON.stringify(smA.map(e => e.url)))
+  // ⚠️ RE-PINNED (about-page, 22 October 2026): + /about, last (scripts/_lp-about-page.cjs about-page-sitemap).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
+  const SEO_TAIL = [`${ORIGIN}/privacy`, `${ORIGIN}/terms`, `${ORIGIN}/country-terms`, `${ORIGIN}/contact`, ...(require('./_lp-about-page.cjs').LANDED ? [`${ORIGIN}/about`] : [])]
+  t('the GB sitemap is exactly /uk and /uk/features (+ seo-fixes: /privacy, /terms, /country-terms, /contact; + about-page: /about)', same(smA.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, ...SEO_TAIL]), JSON.stringify(smA.map(e => e.url)))
   const smUS = AFTER['parts/sitemap|US|hatchgrab-usOn'] || []
-  t('with the US on: /uk, /uk/features, /us, /us/features (+ seo-fixes: the legal pages and /contact)', same(smUS.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, `${ORIGIN}/us`, `${ORIGIN}/us/features`, ...SEO_TAIL]), JSON.stringify(smUS.map(e => e.url)))
+  t('with the US on: /uk, /uk/features, /us, /us/features (+ seo-fixes: the legal pages and /contact; + about-page: /about)', same(smUS.map(e => e.url), [`${ORIGIN}/uk`, `${ORIGIN}/uk/features`, `${ORIGIN}/us`, `${ORIGIN}/us/features`, ...SEO_TAIL]), JSON.stringify(smUS.map(e => e.url)))
   // ⚠️ RE-PINNED (seo-fixes S5, 20 October 2026): Village Foodie's one entry loses its request-time lastmod — nothing else.
   // ⚠️ RE-PINNED (compare-tidy F2, 20 October 2026): …and /contact follows it (yearly, 0.3, no lastmod) — exactly that.
   const CT = require('./_lp-compare-tidy.cjs')
