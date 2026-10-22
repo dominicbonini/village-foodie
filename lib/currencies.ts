@@ -22,6 +22,11 @@
 //   namePlural    the currency's name as the currency line says it ("New Zealand dollars"). English, like `name`.
 //   homeDisplay   the ONE override, for a currency whose home locale Intl does not print the way locals write it:
 //                 'narrowSymbol' (RON: ro-RO gives "29 RON", Romanians write "29 lei"). Absent = Intl's own form.
+//   narrowIn      the locales where Intl writes the currency as a FOREIGN one but locals write its narrow symbol
+//                 (europe-settings, 22 October 2026): en-GI gives "GB£29" because Gibraltar's own pound is GIP, but
+//                 Gibraltar prices in sterling written "£29"; ro-RO's "29 RON" is "29 lei". lib/money-format.ts applies it
+//                 to EVERY amount in that locale (menus, orders, emails), not only plan prices. Only those locales: a pound
+//                 or a leu in any other locale is written exactly as before.
 //   decimals      the minor unit's decimal places AS STRIPE TAKES AMOUNTS (docs.stripe.com/currencies: "Currencies are
 //                 two-decimal currencies unless otherwise specified"). ⚠️ NOT Intl's: Intl gives HUF 0 decimals, but
 //                 Stripe charges HUF in two-decimal minor units (its "special cases": only HUF PAYOUTS are whole forints),
@@ -43,6 +48,7 @@ export interface CurrencyInfo {
   intlSymbol: string
   symbolShared: boolean
   homeDisplay?: 'narrowSymbol'
+  narrowIn?: readonly string[]
   decimals: number
   minorSign: string
   shortFee: 'minor' | 'amount'
@@ -53,7 +59,7 @@ export interface CurrencyInfo {
 export const CURRENCIES: readonly CurrencyInfo[] = [
   // £: the pound sterling's. The other "£" pounds (Gibraltar, Falklands, St Helena) are local issues at par with it, and
   // the Egyptian, Lebanese and Syrian pounds write their own signs — so "£29" names one currency.
-  { code: 'GBP', name: 'British pound', namePlural: 'British pounds', symbol: '£', intlSymbol: '£', symbolShared: false, decimals: 2, minorSign: 'p', shortFee: 'minor', locale: 'en-GB' },
+  { code: 'GBP', name: 'British pound', namePlural: 'British pounds', symbol: '£', intlSymbol: '£', symbolShared: false, narrowIn: ['en-GI'], decimals: 2, minorSign: 'p', shortFee: 'minor', locale: 'en-GB' },
   // $: shared in principle, but the bare "$" IS the US dollar wherever currencies are compared — every other dollar
   // qualifies itself against it (CA$, A$, NZ$: CLDR's international English), and the site's own "$" is the US one.
   { code: 'USD', name: 'US dollar', namePlural: 'US dollars', symbol: '$', intlSymbol: '$', symbolShared: false, decimals: 2, minorSign: '¢', shortFee: 'minor', locale: 'en-US' },
@@ -83,7 +89,7 @@ export const CURRENCIES: readonly CurrencyInfo[] = [
   { code: 'HUF', name: 'Hungarian forint', namePlural: 'Hungarian forints', symbol: 'Ft', intlSymbol: 'Ft', symbolShared: false, decimals: 2, minorSign: 'f', shortFee: 'amount', locale: 'hu-HU' },
   // lei: Romania's. The Moldovan leu is also "lei" in Romanian speech, but writes "L" / "MDL" (CLDR) and is not one of ours,
   // so a Romanian page's "29 lei" is unambiguous. homeDisplay: ro-RO's standard symbol is the code ("29 RON").
-  { code: 'RON', name: 'Romanian leu', namePlural: 'Romanian lei', symbol: 'lei', intlSymbol: 'lei', symbolShared: false, homeDisplay: 'narrowSymbol', decimals: 2, minorSign: 'bani', shortFee: 'amount', locale: 'ro-RO' },
+  { code: 'RON', name: 'Romanian leu', namePlural: 'Romanian lei', symbol: 'lei', intlSymbol: 'lei', symbolShared: false, homeDisplay: 'narrowSymbol', narrowIn: ['ro-RO'], decimals: 2, minorSign: 'bani', shortFee: 'amount', locale: 'ro-RO' },
 ]
 
 /** Every supported ISO 4217 code, in the list's order — what the database CHECK allows. */

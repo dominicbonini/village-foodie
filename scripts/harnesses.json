@@ -153,6 +153,7 @@
     "about-page.cjs",
     "languages-1.cjs",
     "france-1.cjs",
+    "europe-settings.cjs",
     "language-phase-0.cjs",
     "messages-parity.cjs",
     "ui-literals.cjs",
@@ -286,7 +287,8 @@
         "_messages-parity-1e.cjs",
         "_lp-stage-b.cjs",
         "_address-formats-2-after.cjs",
-        "_france-1-fixtures.cjs"
+        "_france-1-fixtures.cjs",
+        "_europe-settings-fixtures.cjs"
       ]
     },
     "fixture_generators": {

@@ -16,6 +16,38 @@ part of the country.
 **One language per country** (decided 22 October 2026). There is no per-truck or per-customer language yet. A multilingual
 country (BE, CH) is a separate decision with a mockup (europe-readiness §B.4).
 
+## Europe: the country is already there, so a prompt is just the language
+
+*europe-settings, 22 October 2026 (docs/europe-settings-report.md).* Every Stripe-supported European country already has
+its data and code, switched off: AT BE BG HR CY CZ DK EE FI DE GI GR HU IT LV LI LT LU MT NL NO PL PT RO SK SI ES SE CH.
+That covers:
+
+- the `country_settings` row and `plan_prices`, NOT RUN SQL in `supabase/migrations/20261036_europe_rows.sql`, after block A
+  `20261035`. The non-euro prices await Dominic's approval;
+- the address format with its takeaway VAT as data (`lib/address-formats.ts` EUROPE_ROWS);
+- the URL (`COUNTRY_PATH_SEGMENTS`, the ISO code);
+- the currency (all in the registry);
+- the terms (one "European Economic Area and Switzerland" section, plus Gibraltar's own).
+
+**Steps 1–3 and 5–7 below are therefore done.** A later language prompt for one of these countries is ONLY:
+
+1. **The language file:** `messages/<locale>.json` (§4), its back-translation (§5), and the locale in `lib/i18n/locales.ts`:
+   `LOCALES` + `LANGUAGE_BASES`, or `LOCALE_PARENT` for a regional variant. Then `node scripts/split-messages.cjs`.
+   Use the locale the row already names: de-DE, de-AT, de-CH, de-LI, nl-NL, nl-BE, it-IT, es-ES, pt-PT, pl-PL, sv-SE,
+   da-DK, nb-NO, fi-FI, cs-CZ, sk-SK, hu-HU, ro-RO, bg-BG, hr-HR, sl-SI, el-GR, el-CY, et-EE, lv-LV, lt-LT, fr-LU.
+   - fr-LU is a sparse override of fr-FR.
+   - de-AT, de-CH and de-LI are sparse overrides of de-DE, once German lands (CH and LI write "ss" for "ß").
+   - nl-BE is a sparse override of nl-NL.
+   - el-CY is a sparse override of el-GR.
+2. **The allergen-guard words:** `lib/allergen-guard/<lang>.json` and its one import (§6).
+3. **translation-check** at 0 structural, then the e2e and screenshots (§7–§8).
+4. **Switch on:** NOT RUN SQL `update country_settings set enabled = true where country_code = '<CC>'`, for Dominic. It needs
+   the prices approved and blocks A and B run, and is a separate decision after Connect and an end-to-end test (§9).
+
+Malta (en-MT) and Gibraltar (en-GI) need no language: they are sparse English overrides of en-IE and can be switched on
+once their rows are in. Until a country's language lands, its pages would show English words under a non-English
+`hreflang`, so **do not switch on a non-English country before its language.**
+
 ---
 
 ## 0 · Read first

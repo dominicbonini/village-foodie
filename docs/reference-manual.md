@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.3
+HatchGrab Engineering Reference Manual · V16.4
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.3**
+**Version 16.4**
 
 October 2026
 
@@ -49,6 +49,60 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.4 — 21–22 October 2026 — **ADDRESS FORMATS AS A CONFIG, NATIVE PRICES PER COUNTRY, ALLERGEN CARD AS A COUNTRY SETTING, CANADA LIVE, ENGLISH-SPEAKING TERMS SECTIONS, AN ABOUT PAGE, THE LANGUAGE ENGINE, FRANCE (FRENCH) AND THE REST OF EUROPE AS DATA**
+
+- Applies `reference-manual-delta-v16-4.md`, drawn from the reports it lists (all in `docs/`).
+- **Live countries (Dominic switched them on, 21–22 Oct, so search engines can index):** GB, US, IE, AU, NZ, CA. France
+  and 29 other European countries exist as data, switched off.
+- **Address formats** live in one backend config (`lib/address-formats.ts`), like the currency registry. Every display,
+  entry form, geocode query, Places mapping, AI prompt (importer, screenshot, scraper) and event-conflict rule reads it.
+  Admin › Countries only picks a format. No country-code branches.
+- **Native prices:** each country's own pages show HatchGrab's prices as locals write them ($49 in NZ, 29 kr in SE). A
+  muted "Prices in New Zealand dollars (NZD)" line appears where the symbol is shared. Admin and /llms.txt keep the
+  international form (NZ$49).
+- **Allergen card on its own** is a per-country setting (`allergen_card_only_allowed`): off in IE, LV, PL, RO, SK.
+- **Order page decision (Dominic, 21 Oct): the order page does not change.** No "Sold by" block, no extra trader
+  details, no checkout notices. Each country's trader-information and withdrawal duties are the truck's, as the seller;
+  the country terms say so.
+- **Canada** is live, with province tax lines, Health Canada allergens, en-CA over en-US; QC, SK and MB are closed to
+  signup (data, with reasons); the CA service fee is off (drip pricing).
+- **Terms sections** for Ireland, Australia, New Zealand, Canada, France, the EEA and Switzerland, and Gibraltar. No lawyer;
+  open questions are in each report.
+- **About page** at /about (HatchGrab host only). The country picker is in the footer only.
+- **Language engine (languages-1):** non-English locales are their own base; only the visitor's language goes to the
+  browser; Intl for dates and money; plan names in the language file; the allergen guard's words are data per language and
+  fail safe; an automatic translation check with back-translation; the one-prompt country recipe.
+- **France** is built in French, switched off.
+- **Europe:** 29 countries' settings as data, switched off. Each later language is one prompt.
+- **Still not charged:** no platform fee, no subscription billing.
+
+| What | Where |
+|---|---|
+| **NEW — addresses, native prices, allergen-card setting, Canada, terms, About, languages, France, Europe, the recipe** | **§83** (new, after §82) |
+| Countries, recipe, live state | §82 (corrected in place; §82.2 and §82.10 updated) |
+| International readiness | §76 (corrected in place) |
+| Languages | §77 (corrected in place) |
+| Marketing site | §48 (new subsection) |
+| Legal | §43 (new subsection) |
+| Deploy posture | §49 (new current block) |
+| Backlog | §27 (new V16.4 block) |
+| Invariants | §35 (**35.al**, after 35.ak) |
+| Tooling | §79 (added at its end) |
+
+**SWEEP STATUS:** _stale references found: 38; corrected in place: 38; left as history (changelog only): 2;
+outstanding: 0._ (The delta's six Part D patterns over the V16.3 text, plus their wider forms: "switched off" beside IE,
+AU, NZ or CA; "not run" beside the allergen CHECK; "English only" for the WhatsApp guard; "five locales"; "statically";
+the header flag selector; `base_region_code` "US only".
+- **Outside the Changelog, 38 statements were false** and are struck in place with "⛔ Corrected V16.4": §20 ×1, §27 ×4,
+  §43 ×1, §76 ×6, §77 ×6, §81 ×2, §82 ×18. Three more pointer notes (§82.2, §82.3, §82.10) send readers to §83, and the
+  §49 heading now says "current at V16.4".
+- **Pattern 1** (`postcode | zip_state`, `zip_state` as current, `addressStyleOf`, `messagesStyle`) and **pattern 6**
+  (`trucks_base_region_code_chk` as current) matched nothing outside the Changelog.
+- **Inside the Changelog,** 2 lines matched (the AU A$39 and NZ NZ$49 prices in V16.3). Both are still true, and neither
+  was edited.
+- **The dated V16.3 deploy posture in §49** ("AU/NZ rows … not inserted") is left as dated history under the new V16.4
+  block.)
 
 ## V16.3 — 20–21 October 2026 — **ENGLISH-SPEAKING COUNTRIES FIRST: IRELAND, AUSTRALIA AND NEW ZEALAND BUILT SWITCHED OFF; ONE CURRENCY REGISTRY; THE ANZ ALLERGEN SET; "PAY AT THE TRUCK" OUTSIDE THE UK; THE LANDING PAGE TIDY; /features RESTORED; AI SEARCH (ROBOTS, llms.txt, JSON-LD)**
 
@@ -13312,7 +13366,8 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 > (`lib/country-settings.ts`). For `anz` only, the guard also catches EpiPen / epi-pen, anaphyla* and the NF/LF menu
 > marks, and the caveat maps everyday words ("dairy", "nuts", "gluten", "prawn") to anz entries. uk14 and us9
 > behave exactly as before. Option B is kept: presence questions still reach the AI. The anz set itself: §82.5.
-> 🔴 Still English-only (§77.1, §82.4).
+> 🔴 ~~Still English-only (§77.1, §82.4).~~ ⛔ Corrected V16.4 — the guard's words are data per language (`lib/allergen-guard/<lang>.json`:
+> `en.json`, `fr.json`); a language with no file fails safe — every menu question gets the allergen reply (§83.4).
 
 > **GREETING — once per calendar day per sender (V7.7, LIVE-VERIFIED V7.8).** Previously isFollowUp was hardcoded false → "Hey there 👋" fired on every message. Now the webhook reads whatsapp_logs for the most recent prior REPLIED row (`response_sent is not null`) for this sender (`customer_number`, digits-only exact) + truck, and sets `isFollowUp = prior exists && localDateOfInstant(prior.created_at, truckTz) === getLocalDateInTz(truckTz)` — i.e. greet on the first replied message of the local day, suppress for the rest of that day. The `response_sent is not null` filter means an IGNORE/gibberish message (logged, unreplied) does NOT suppress the greeting on a later real question the same day. The day boundary is computed in `truckTz` — a single const = 'Europe/London' today. ⛔ **SUPERSEDED V11.41 — THIS READ "swappable to `truck.timezone ?? 'Europe/London'` in one line WHEN THAT COLUMN EXISTS (the multi-country requirement)", AND IT IS NOW HALF FALSE IN THE DIRECTION THAT INVITES A WRONG FIX. The column EXISTS. It is NULL on all twelve trucks and nothing populates it**, so `truck.timezone ?? 'Europe/London'` would not be a fallback — **the right-hand side is the only branch that ever runs.** 🔴 **IT IS A UK-ONLY ASSUMPTION, NOT A DEFENSIVE DEFAULT.** ⚠️ **A comment in the route still carries the old premise; it was out of the cap's scope and deliberately left, and it will mislead exactly once, expensively.** DST-safe (both date strings go through Intl tz formatting; no manual UTC-offset math). The read runs BEFORE the message's own log insert (no self-suppression) and is FAIL-OPEN (a read error → greet, never block the reply). The downstream greeting machinery (greetingPrefix/greetingInstruction) was already correct and unchanged. (Supersedes the earlier "greeting follow-up detection gated on the whatsapp_logs migration" note — the migration is applied and detection is wired.)
 
@@ -17594,8 +17649,8 @@ closed); auto-open of an overnight event after midnight. New:
 ## Added V16.2 — plans and pricing as data, the pricing pages, SEO fixes, Terms §4 (20 October 2026)
 
 Still open from the blocks above: the Google Maps key, then Part B; the calculator's US saving examples; Phase 5
-(card surcharge); reject reasons saved as ids; country on the `discovery_events` unique key; the WhatsApp allergen
-check; auto-open of an overnight event after midnight; rotating both Google service-account keys; the Stripe US
+(card surcharge); reject reasons saved as ids; country on the `discovery_events` unique key; ~~the WhatsApp allergen
+check~~ (⛔ Corrected V16.4 — the guard's words are data per language and fail safe, §83.4); auto-open of an overnight event after midnight; rotating both Google service-account keys; the Stripe US
 question; the US storefronts; a US testimonial; SMS opt-in. New:
 
 - **Monthly plan billing** — nothing collects Pro/Unlimited fees (upgrades are a mailto); build Stripe Checkout +
@@ -17639,13 +17694,16 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 
 ## Added V16.3 — countries beyond GB and US, currencies, the landing tidy and AI search (21 October 2026)
 
-- **Per-country launch lists** (§82.10): Ireland, Australia (anz-1 block A, then block B), New Zealand, Canada.
+- ~~**Per-country launch lists** (§82.10): Ireland, Australia (anz-1 block A, then block B), New Zealand, Canada.~~
+  ⛔ Corrected V16.4 — all four are switched on (OBSERVED 22 Oct); what remains is in §82.10 and the V16.4 block below.
 - **Subscription billing** (Stripe Checkout and subscriptions); **the fee engine** (the allowance meter,
   `refund_application_fee`).
 - **The US online ordering fee:** a 3% cap, the excluded states (CT, MA, ME, PR), never on debit.
 - **Collect tax numbers at signup** (GST/ABN/VAT); an EU VAT check.
-- **Language stages L-1 to L-7;** 🔴 a multilingual allergen guard; a `plan_translations` table; Dominic's European
-  word choices.
+- ~~**Language stages L-1 to L-7;** 🔴 a multilingual allergen guard; a `plan_translations` table; Dominic's European
+  word choices.~~ ⛔ Corrected V16.4 — languages-1 built the engine and the per-language guard (§83.8, §83.4); plan names are in each
+  language file (`planNames.*`), not a table; French used the glossary's recommendations row (france-1). The languages
+  still to add are in the V16.4 block below.
 - **The FAQ workstream** (§82.9).
 - **The apex domain redirect is 307** and should be 308 (a Vercel setting). Still 307, OBSERVED by curl 21 Oct.
 - **The real-thai-food SQL:** still not run (OBSERVED 21 Oct: `plan = 'trial'`, `is_customer = true`,
@@ -17653,9 +17711,38 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - **41 manual lines still describe Starter/Max** (carried from V16.2).
 - **The landing phone cards:** the descenders under "Pay as you go" sit close to the subtitle. Optional 7–8px gap.
 - **`add-order-refresh-inputs`** fails under heavy load and passes alone. Flake; watch.
-- **Not in the delta, found when applying (21 Oct):** the anz allergen CHECK (block A) is not run (§82.2); Connect
+- **Not in the delta, found when applying (21 Oct):** ~~the anz allergen CHECK (block A) is not run (§82.2);~~ (⛔ Corrected V16.4 — run;
+  the CHECK allows uk14, us9, anz, ca, OBSERVED 22 Oct) Connect
   `defaults.currency` for AU/NZ is unverified (§82.7); ~~the Admin › Countries testing rule still says "touch only
   the US column", and the US is now live (§76.1).~~ ✅ resolved 21 Oct: Ireland column only (§76.1).
+
+## Added V16.4 — addresses, native prices, Canada, languages, France and Europe (22 October 2026)
+
+- **Two-part tax lines** (opens SK and MB). Ontario's $4 rebate.
+- **Per-item VAT/TVA rates.**
+- **The Tap to Pay CB brand choice** (when Tap to Pay on iPhone is built).
+- **Tax numbers at signup** (ABN/GST/NZBN/GST-HST/VAT) before billing.
+- **Second languages for BE, CH and LU** (per-truck or per-visitor language; needs a mockup).
+- **Tickets and fonts:**
+  - ticket printing beyond ASCII;
+  - decimal-comma checks for other locales;
+  - a Latin-extended font check (PL, CZ…).
+- **Languages to add:** de (DE, AT, CH, LI), es, it, nl (NL, BE), pt, pl, cs, sk, hu, ro, bg, hr, sl, el (GR, CY), da,
+  sv, nb, fi, et, lv, lt.
+- **Facts to verify** (europe-settings §14): Latvia's allergen rule, Poland's takeaway VAT, Slovakia's 19 %, Hungary's
+  Tap to Pay fee, Gibraltar's UK-card fee, tipping in ES/SE.
+- **The FAQ workstream** (parked).
+- **Browser harnesses failing before languages-1:** live-text-place, phone-editor, social-posts-render,
+  social-tab-6-local.
+- **Not in the delta, found when applying (22 Oct):**
+  - 🔴 **Canada's time zones:** a local build on Node 22.22.3 reports the 2026 Canadian tz changes MISSING. Check the
+    Vercel build log, or move Vercel to Node 24.x, before 1 Nov 2026 (§83.1).
+  - **The non-euro European prices** are in the live table as proposed; approval isn't recorded (§83.10).
+  - **France has no row:** france-1 block B is not run (§83.1).
+  - **The Admin › Countries testing rule** still names the Ireland column, and Ireland is now switched on (§76.1). The
+    rule is Dominic's to change.
+  - **The other languages' "Private event" glossary rows** (DE, NL, ES, IT) also name hiring a truck; split each in its
+    language prompt (france-1 Follow-up).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -20989,6 +21076,16 @@ of this manual).
 - **35.ak-7** Machine-readable copy (`/llms.txt`, JSON-LD, the future FAQ) states only facts read from data or the
   site's own words. Nothing invented: no ratings, no statistics.
 - **35.ak-8** A named robots.txt group repeats every private disallow, because a named group replaces `*`.
+
+## 35.al 🔴 ADDRESS, PRICE-FORM, ORDER-PAGE AND LANGUAGE INVARIANTS (V16.4)
+
+- **35.al-1** Address behaviour comes only from `lib/address-formats.ts`; the DB CHECK lists exactly its keys.
+- **35.al-2** A country's own pages show prices in the home form; side-by-side surfaces (Admin, /llms.txt) the international
+  form.
+- **35.al-3** The order page is not extended with trader details or legal notices (Dominic, 21 Oct).
+- **35.al-4** A language with no allergen-guard words fails safe; adding a language never changes English output (hash and
+  capture pins).
+- **35.al-5** Each country prompt proves every live country byte-identical.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -25734,10 +25831,25 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 
 ## Country terms and company details in emails (V16.3 — 21 October 2026)
 
-- The country-specific terms need best-effort sections for IE, AU and NZ (and CA later) before each switches on.
-  Australia and New Zealand also need a decision on wording about tax.
+- ~~The country-specific terms need best-effort sections for IE, AU and NZ (and CA later) before each switches on.
+  Australia and New Zealand also need a decision on wording about tax.~~ ⛔ Corrected V16.4 — written: Ireland, Australia, New Zealand
+  and Canada (live), France, then the EEA and Switzerland and Gibraltar (uncommitted) (§83.6).
 - Outreach emails: UK company disclosure rules expect the company's details, so they go in the email signature (the
   company line was removed from the template body).
+
+## Country terms sections and the order page (V16.4 — 21–22 October 2026)
+
+- **`content/legal/country-specific-terms.md` has these sections, in this order** (OBSERVED in the working tree, 22 Oct):
+  United States, Ireland, Australia, New Zealand, Canada, France, "European Economic Area and Switzerland", Gibraltar.
+  - The last two are uncommitted (europe-settings). The live page ends at France (curl, 22 Oct).
+  - Best-effort, no lawyer; the open questions are in each report (§83.6).
+- **`COUNTRY_TERMS_UPDATED`** '22 October 2026' and **`TERMS_VERSION`** '2026-10-22' (OBSERVED in `lib/legal.ts`) move
+  together with each change.
+- **The order page does not change (Dominic, 21 Oct):**
+  - no "Sold by" block, no extra trader details, no checkout notices;
+  - each country's trader-information and withdrawal duties are the truck's, as the seller, and the country terms say
+    so;
+  - for France, confirmed 22 Oct: no withdrawal line, no mediator field (france-1 Follow-up).
 
 # 44. Commercial model — fees and pricing suppression (V11.4)
 
@@ -27787,7 +27899,61 @@ Recorded so they are not briefed again.
   the live robots.txt still blocks GPTBot and ClaudeBot, `/llms.txt` is 404, the JSON-LD still has `areaServed`).
 - **Still open:** the apex `hatchgrab.com` → www is still a **307** (OBSERVED by curl 21 Oct 2026).
 
-# 49. Deploy posture (current at V16.3; earlier postures below, each dated)
+## Native prices, /about, the footer country picker and the new country pages (V16.4 — 21–22 October 2026)
+
+- **Native prices (§83.3):**
+  - a country's own pages, the plans PDF and Billing show HatchGrab's prices in the home form ("$49" on `/nz`, "29 kr"
+    in Sweden);
+  - where the symbol is shared, one muted line names the currency: "Prices in New Zealand dollars (NZD)", in
+    `--hero-grey`, which passes AA;
+  - Admin and `/llms.txt` keep the international form (NZ$49); JSON-LD keeps ISO codes;
+  - live on `/nz` (curl, 22 Oct).
+- **/about** (§83.7): HatchGrab host only; live, 200 (curl, 22 Oct).
+- **The country picker** is in the footer only, on every HatchGrab marketing page (`components/landing/CountryMenu.tsx`).
+- **Country pages:**
+  - `/ca` is live (200, 22 Oct);
+  - `/fr` is in `COUNTRY_PATH_SEGMENTS` (committed) and 302s to `/uk` while France has no row;
+  - the 29 European segments (`/at` … `/ch`, `/gi`, `/mt`) are uncommitted. Live they are 404 (curl, 22 Oct:
+    `/de`, `/mt`); once deployed, each 302s to `/uk` while switched off.
+- **hreflang:** each switched-on country is listed under its locale; when a non-English country is on, its language tag
+  (fr-FR, de-DE …) is listed too. While a country is off, its tag appears nowhere.
+
+# 49. Deploy posture (current at V16.4; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.4 — EVERYTHING TO FRANCE-1 PUSHED; EUROPE-SETTINGS UNCOMMITTED, ITS SQL ALREADY RUN (22 October 2026)
+
+*Replaces the V16.3 posture below as the current one; it and the earlier postures stay as dated history.*
+
+- **OBSERVED 22 Oct 2026:** `git log origin/main -1` is `2d725e3e "france"` (22 Oct 19:57 BST; local ref, no fetch),
+  and HEAD is the same commit.
+  - **Committed and pushed:**
+    - ireland-2, address-formats-diagnosis, directions-link-fix, address-formats-1 (`7fcd4fc9`);
+    - allergen-card-country, address-formats-2, ireland-3, native-prices, anz-terms (`fadb352f`);
+    - canada-1 (`7f905934`), canada-2 (`fc33b3d9`), the About page (`ae871119`);
+    - languages-1 and france-1 (`2d725e3e`).
+  - **The live site serves them** (curl, 22 Oct): `/about` and `/ca` 200, `/fr` 302 → `/uk`, `/llms.txt` 200, the `/nz`
+    currency line, France in `/country-terms`.
+  - **Uncommitted on `main`** (`git status`): europe-settings (the 29 formats, `narrowIn`, en-MT / en-GI, the European
+    segments, the EEA and Gibraltar terms, its harness, SQL and report) and the france-1 Follow-up (the glossary split).
+- **Database (OBSERVED by read-only SQL, 22 Oct; §83.1):**
+  - GB, US, IE, AU, NZ and CA are switched on; FR has no row.
+  - The 29 European rows and their 87 prices are **already in** (22 Oct 19:34 UTC, switched off), before this deploy and
+    before the non-euro prices were approved (europe-settings §0).
+    - The deployed code leaves them out of every country list, with a log line per row per read, until europe-settings
+      ships.
+    - Their CHECK keys (block A) are in.
+  - france-1's block B (the FR row) is **not run**; its block A is superseded by europe-settings' block A, which
+    includes `fr`.
+- **Vercel Node 24.x / tz:**
+  - 🔴 **Before 1 Nov 2026,** the build must print `check-tzdata: … present` for Canada (BC, AB, NT, MB).
+  - A local build on Node v22.22.3 printed "MISSING" (22 Oct). The Vercel build log was not visible: **UNVERIFIED**.
+  - Canada is switched on.
+- **The order for the next deploy:**
+  1. commit and push europe-settings and the france-1 Follow-up;
+  2. no SQL is needed unless Dominic changes a non-euro price (europe-settings §9.3);
+  3. france-1 block B when Dominic decides to add the FR row (switched off).
+- Dominic tests on localhost (port 3000) and deploys himself.
+
 
 ### 🔴 DEPLOY POSTURE AT V16.3 — SIX WORKSTREAMS LIVE; CURRENCY-REGISTRY AND AI-SEARCH-1 UNCOMMITTED (21 October 2026)
 
@@ -32145,7 +32311,9 @@ languages in §77.*
   | Allergen set | `us9` |
   | Service fee | allowed |
 
-- ⛔ **V16.3:** an **IE** row exists, switched off (EUR, uk14, inserted 21 Oct); AU and NZ have no rows yet (§82.2).
+- ⛔ **V16.3:** an **IE** row exists, ~~switched off (EUR, uk14, inserted 21 Oct); AU and NZ have no rows yet (§82.2).~~
+  ⛔ Corrected V16.4 — IE, AU, NZ and CA rows exist and are switched on; France has no row; 29 more European rows are switched off
+  (OBSERVED 22 Oct, §83.1).
 
 - ~~**OBSERVED** A CHECK refuses switching a country on while any plan price is NULL. **The US cannot be
   switched on until US plan prices are set** (§27).~~ ⛔ **Corrected V16.2 — see §81.2:** the CHECK
@@ -32171,7 +32339,8 @@ languages in §77.*
 - **Admin › Countries** (`components/admin/CountriesTab.tsx`): one column per country, Save per country.
   ~~Testing rule: touch only the US column, add and remove a throwaway country; 🔴 **never press Save on
   GB**.~~ ⛔ Corrected V16.3 — **testing rule (Dominic, 21 Oct 2026): Admin › Countries testing uses the IRELAND
-  column only** (switched off, no trucks). The US is live: 🔴 **never change the US, GB, AU or NZ columns.**
+  column only** ~~(switched off, no trucks)~~ (⚠️ ⛔ Corrected V16.4 — OBSERVED 22 Oct: Ireland is now **switched on**, still with no
+  trucks; the rule is Dominic's to change). The US is live: 🔴 **never change the US, GB, AU or NZ columns.**
   - ⛔ **V16.3 (currency-registry; uncommitted at 21 Oct):** the currency field is a dropdown from the registry,
     each fee box shows the currency's minor-unit sign, and an unreadable row is named in a red notice (§82.6).
   - ~~⚠️ **V16.3:** the US is now switched on (20 Oct), so "touch only the US column" touches a live country. The
@@ -32211,13 +32380,16 @@ languages in §77.*
 - **DECIDED 10 Oct** Each truck trades in one country.
   - Country, base town (and zone, where the country has several) are captured at signup and on Manage › Settings › Where you trade.
   - **No travel-distance question.**
-- **OBSERVED** **Base columns:** `trucks.base_place_id`, `base_place_name`, `base_region`, `base_lat`, `base_lng` (all nullable; typed free text keeps only the name). `trucks.base_region_code` holds a two-letter state code where Places gives one (US only).
+- **OBSERVED** **Base columns:** `trucks.base_place_id`, `base_place_name`, `base_region`, `base_lat`, `base_lng` (all nullable; typed free text keeps only the name). `trucks.base_region_code` holds ~~a two-letter state code where Places gives one (US only)~~ ⛔ Corrected V16.4 — the code from the
+  country's address format where Places gives one ("NJ", "NSW", Ireland's "D", "ON"); `trucks_base_region_code_chk` is
+  dropped and `lib/trade-area.ts` checks the code against the format's list (§83.2).
 - **OBSERVED** **Place lookup** is Google Places API (New), server-side only (`lib/places.ts`, `/api/places/suggest`, `/api/places/details`).
   - Key: `GOOGLE_MAPS_API_KEY`, never `NEXT_PUBLIC_`.
   - With the key missing, the town box takes free text.
   - **The key is not set up yet** (§27).
 - **OBSERVED** **Landing country:** `lib/visitor-country.ts` resolves `?country=` → cookie `hg_country` → `x-vercel-ip-country` → `MARKETING_COUNTRY` ('GB'), switched-on countries only.
-  - A flag selector sits in the header (laptop) and footer (all widths), never a pop-up. Flags come from country-flag-icons 1.6.20.
+  - A flag selector sits ~~in the header (laptop) and~~ in the footer ~~(all widths)~~, never a pop-up. Flags come from country-flag-icons 1.6.20.
+    ⛔ Corrected V16.4 — the picker is in the footer only, on every HatchGrab marketing page (`components/landing/CountryMenu.tsx`; §83.7).
   - The pricing section's copy never changes; only its values follow the country.
 - **OBSERVED** Landing and `/features` titles, OG/Twitter tags, and JSON-LD ~~`areaServed`~~ / `inLanguage` follow
   the ~~resolved~~ **page's** country (`lib/marketing-meta.ts`; since V16.0 the page is `/uk…` or `/us…` and the
@@ -32226,11 +32398,13 @@ languages in §77.*
   `countriesSupported` (the switched-on countries) (§82.9). Uncommitted at 21 Oct: the live page still has it.*
 
 ## 76.6 Allergens by country
-- **OBSERVED** `lib/allergens.ts` holds ~~two lists~~ ⛔ Corrected V16.3 — three lists (the third is `anz`):
+- **OBSERVED** `lib/allergens.ts` holds ~~two lists~~ ⛔ Corrected V16.3 — ~~three lists (the third is `anz`)~~ ⛔ Corrected V16.4 —
+  four lists (uk14, us9, anz, ca — Health Canada's 13); the DB CHECK allows all four (OBSERVED 22 Oct). Whether the
+  allergen card may stand alone is a per-country setting, `allergen_card_only_allowed` (§83.4):
   - **UK 14:** verbatim, in order;
   - **US 9:** Milk, Eggs, Fish, Crustacean shellfish, Tree nuts, Peanuts, Wheat, Soybeans, Sesame.
-  - **anz (V16.3):** 23 entries (§82.5). In code `allergen_set` is `uk14 | us9 | anz`; ⚠️ the DB CHECK still allows
-    only uk14 / us9 (OBSERVED 21 Oct: anz-1 block A not run, §82.2).
+  - **anz (V16.3):** 23 entries (§82.5). In code `allergen_set` is `uk14 | us9 | anz`; ~~⚠️ the DB CHECK still allows
+    only uk14 / us9 (OBSERVED 21 Oct: anz-1 block A not run, §82.2).~~ ⛔ Corrected V16.4 — the CHECK allows uk14, us9, anz and ca (§83.1).
 
   Every place that offers, checks or prompts for allergens uses the truck's `allergen_set`. Stored values are label strings, so US labels are their own keys; no data change was needed.
 - **US generic families:**
@@ -32433,7 +32607,9 @@ under "Decisions" below):
   - text in images;
   - posters and tickets that cannot draw non-Latin scripts.
 - 🔴 **Safety, before any non-English truck goes live:** the WhatsApp allergen safety floor
-  (`mentionsAllergen`) only recognises English words and strips non a–z characters (§27).
+  (`mentionsAllergen`) ~~only recognises English words and strips non a–z characters (§27).~~ ⛔ Corrected V16.4 — its words are
+  data per language (`lib/allergen-guard/<lang>.json`, English and French), matched with a Unicode normaliser; a language
+  with no file fails safe (§83.4).
 - **SEO:** once US marketing is on, Google (crawling mostly from US addresses) would index the US landing
   page for UK searchers. US marketing needs its own URLs (e.g. `/us/`) with hreflang, or noindex, before it is
   switched on. ✅ **Done V16.0:** `/uk…` and `/us…` with hreflang (§48, "Country addresses and the router").
@@ -32445,13 +32621,16 @@ under "Decisions" below):
   - `messages/en-GB.json` is the full base.
   - `messages/en-US.json` holds only the differences and is deep-merged over it.
   - Later languages are full files.
-  - ⛔ *Corrected V16.3 — en-IE, en-AU and en-NZ are sparse overrides of en-GB too, five locales in all (§82.4).
-    Non-English languages are still planned as full files (stages L-1 to L-7).*
+  - ⛔ *Corrected V16.3 — en-IE, en-AU and en-NZ are sparse overrides of en-GB too, ~~five locales in all (§82.4).
+    Non-English languages are still planned as full files (stages L-1 to L-7).~~* ⛔ Corrected V16.4 — nine locales (en-GB, en-US,
+    en-IE, en-AU, en-NZ, en-CA, fr-FR, en-MT, en-GI; the last two uncommitted). en-CA is a sparse override of en-US,
+    en-MT and en-GI of en-IE. fr-FR is a full base, built by languages-1 and france-1 (§83.8).
 - **Who sees which language:**
   - a truck's screens, tickets, kitchen and emails use its country's locale, falling back to en-GB;
   - customers see the truck's language for now;
   - marketing follows the **page's** country (`/uk` en-GB, `/us` en-US) — corrected V16.0; see §77.6. ⛔ *V16.3:
-    also `/ie` en-IE, `/au` en-AU, `/nz` en-NZ, all switched off (§82.4).*
+    also `/ie` en-IE, `/au` en-AU, `/nz` en-NZ, ~~all switched off (§82.4).~~* ⛔ Corrected V16.4 — all switched on, with `/ca`
+    en-CA; `/fr` fr-FR is built, switched off (§83.1).
 - ~~"Pay at Hatch" stays a brand name in every country.~~ ⛔ Corrected V16.3 — "Pay at Hatch" is the UK's wording
   only; en-US, en-IE, en-AU and en-NZ display "Pay at the truck". The id and the mask list are unchanged
   (`lib/price-words.ts`) (§82.4).
@@ -32473,7 +32652,8 @@ later language. Each phase proves UK output byte-identical. **Before the first U
 the matching parts of 2.
 
 ✅ **Status at V16.0:** 0, 1a–1e and 2 are done for English (2 ran after 1c and US words were then added in
-each later phase). Phase 3 (each later language) has not started. What each phase moved: §77.7.
+each later phase). ~~Phase 3 (each later language) has not started.~~ ⛔ Corrected V16.4 — languages-1 built the engine for other
+languages, and france-1 the first (French, switched off) (§83.8, §83.9). What each phase moved: §77.7.
 
 ## 77.4 Phase 0 — built (OBSERVED, `docs/language-phase-0-report.md`; uncommitted on top of `234b6a2`)
 - **next-intl 4.14.8**, exact version, in no-URL-routing mode:
@@ -32484,8 +32664,8 @@ each later phase). Phase 3 (each later language) has not started. What each phas
   - `messages/en-GB.json` is the full base. Phase 0 holds two keys: `order.tipHeading` and `plansPdf.title`.
   - `messages/en-US.json` is `{}`.
   - The deep merge in `lib/i18n/messages.ts` means **a missing US key shows the UK text, never a raw key**.
-- **One resolver,** `lib/i18n/locales.ts`: ~~en-GB or en-US~~ ⛔ Corrected V16.3 — any of the five `LOCALES` (en-GB,
-  en-US, en-IE, en-AU, en-NZ) on an exact match, anything else en-GB.
+- **One resolver,** `lib/i18n/locales.ts`: ~~en-GB or en-US~~ ⛔ Corrected V16.3 — any of the ~~five `LOCALES` (en-GB,
+  en-US, en-IE, en-AU, en-NZ)~~ ⛔ Corrected V16.4 — nine `LOCALES` (§83.8) on an exact match, anything else en-GB.
 - **Typed keys:**
   - `lib/i18n/app-config.d.ts` sets the types;
   - `lib/i18n/typecheck.ts` holds a missing key and a missing namespace under `@ts-expect-error`, so `tsc` fails if keys ever stop being checked.
@@ -32565,7 +32745,8 @@ revisit when a non-English language is added.
 - **The catalogue split is generated:**
   - `scripts/split-messages.cjs` writes `messages/ns/<locale>/<ns>.json` and `lib/i18n/catalog/<ns>.ts`. Each catalog file calls ~~`registerNamespace(ns, base, { 'en-US': enUS })`~~ ⛔ Corrected V16.3 — `registerNamespace(ns, base, { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ })`, listing only the locales that override that namespace (the split is sparse: a namespace file is written only where something is overridden).
   - Both are marked "generated — do not edit". The script runs from `predev` and `prebuild`.
-  - Every locale is imported **statically**. Per-locale lazy loading was built in Phase 1e and reverted the same day: it saved about 1.5 KB gz and made a US truck's Manage fetch 37 chunks (DECIDED 16 Oct).
+  - ~~Every locale is imported **statically**.~~ ⛔ Corrected V16.4 — every **English** locale is imported statically; a language base
+    (fr-FR) is loaded only for its own visitors (`registerLanguage` / `ensureLanguage`, languages-1; §83.8). Per-locale lazy loading was built in Phase 1e and reverted the same day: it saved about 1.5 KB gz and made a US truck's Manage fetch 37 chunks (DECIDED 16 Oct).
 - **Client code:**
   - Client components use `useT(namespace)` from `lib/i18n/use-t.ts`, which reads the registry. With no provider it falls back to en-GB, and it never shows a raw key.
   - Every file that reads a namespace must import `@/lib/i18n/catalog/<ns>`. The check `scripts/messages-split.cjs` enforces this; `--fix` adds a missing import.
@@ -32861,6 +33042,18 @@ correction note in its history; the hidden Smash and Grab prospect filled.
 - **The en-* screenshot recipes** live in `scripts/screenshots/` (`*-ie.cjs`, `*-anz.cjs`, `README-ie.md`,
   `README-anz.md`), and use fixture trucks only.
 
+- **The harness sweep (V16.4):** 164 registered harnesses (OBSERVED 22 Oct, `scripts/harnesses.json`; the last full run,
+  22 Oct: 164 run · 164 passed · 0 failed).
+  - **New:** `address-formats-1`, `address-formats-2`, `allergen-card-country`, `directions-link`, `native-prices`,
+    `anz-terms`, `canada-1`, `canada-2`, `about-page`, `languages-1`, `france-1`, `europe-settings`,
+    `scraper-prompts-format` (all listed).
+  - `languages-1-e2e` is excluded from the sweep as "needs a browser" (run by hand with `--shots`).
+- **Tools:** `scripts/translation-check.cjs`, `scripts/glossary-build.cjs`, `scripts/check-tzdata.cjs` (in `prebuild`).
+- **Database writes not made by the session:** europe-settings §0 recorded rows appearing in the live database outside
+  Cursor's run.
+  - **Outcome (OBSERVED 22 Oct):** the 29 rows and 87 prices are byte-identical to the NOT RUN file; nothing else
+    changed.
+  - Who ran them isn't recorded. Every SQL call that session made was a read-only `select`.
 ---
 
 # 80. Security (V16.1 — 19 October 2026)
@@ -32895,9 +33088,10 @@ which plans have it may not. Wording lives in `messages/` (en-GB base, ~~en-US o
 | Everything else (ordering, pre-orders, slots, capacity, KDS, private events, printing, multi-device, multi-staff, schedule page…) | ✓ | ✓ | ✓ |
 | Subtitle (data) | Seasonal & part-time traders | Trucks taking regular pre-orders | Busy trucks & festivals |
 
-⛔ *V16.3 — other countries: IE €0 / €29 / €69, incl. €4,000 (`plan_prices` rows, country switched off); AU A$0 /
-A$39 / A$99, incl. A$5,500 and NZ NZ$0 / NZ$49 / NZ$119, incl. NZ$7,000 (decided; rows not inserted yet). The
-prices are data; this is a record, not a source (§82.1–82.2).*
+⛔ *V16.3 — other countries: IE €0 / €29 / €69, incl. €4,000 (`plan_prices` rows, ~~country switched off~~); AU A$0 /
+A$39 / A$99, incl. A$5,500 and NZ NZ$0 / NZ$49 / NZ$119, incl. NZ$7,000 (~~decided; rows not inserted yet~~). The
+prices are data; this is a record, not a source (§82.1–82.2).* ⛔ Corrected V16.4 — IE, AU, NZ and CA have their rows and are
+switched on; the 29 European rows are switched off (§83.1).
 
 - **Cheapest plan by monthly online sales (computed, never typed):** GB under 2,900 → Pay as you go; 2,900–8,000 →
   Pro; over 8,000 → Unlimited (US the same in $). Rounded to the nearest 100. ⛔ *V16.3: IE the same in €; AU 3,900 / 11,600; NZ 4,900 / 14,100
@@ -32919,7 +33113,7 @@ prices are data; this is a record, not a source (§82.1–82.2).*
 - **HatchGrab Ltd is not VAT-registered** (stated 20 Oct); Terms §4 says so.
 - **Price positioning (research 19–20 Oct, see §21):** UK all-in (card fees included) 32–37% cheaper than Hatches Up
   at every volume; US software fee 23–66% under EasyEats, but all-in Stripe's 30¢ makes EasyEats cheaper for some
-  trucks unless the diner pays an online ordering fee; eurozone pricing (€0/€29/€69) planned later. ⛔ *V16.3: the IE rows are in, switched off (§82.2).*
+  trucks unless the diner pays an online ordering fee; eurozone pricing (€0/€29/€69) planned later. ⛔ *V16.3: the IE rows are in, ~~switched off~~ (§82.2).* ⛔ Corrected V16.4 — switched on (§83.1).
 
 ## 81.2 The tables (OBSERVED live, 20 October 2026)
 
@@ -33063,8 +33257,9 @@ pick, hreflang set, sitemap, country menu, `/llms.txt` or JSON-LD.
 
 ⚠️ **OBSERVED 21 Oct 2026 (read-only), where the table above came from the delta:** the US row has
 `card_surcharge_allowed = true`, `service_fee_allowed = true`, `tipping_enabled_default = true` (as in §76.1's US
-table: surcharge allowed, cap 3%, credit only). GB and IE have all three false. The AU, NZ and CA columns are
-decisions, not rows: no AU, NZ or CA row exists.
+table: surcharge allowed, cap 3%, credit only). GB and IE have all three false. ~~The AU, NZ and CA columns are
+decisions, not rows: no AU, NZ or CA row exists.~~ ⛔ Corrected V16.4 — AU, NZ and CA rows exist and are switched on (OBSERVED
+22 Oct; CA as built: en-CA, the `ca` allergen set, mdy, tips on 10/15/20, service fee off — §83.5).
 
 - **The cheapest-plan bands** are computed from the data, never typed:
   - GB, US and IE: 2,900 / 8,000;
@@ -33084,18 +33279,23 @@ decisions, not rows: no AU, NZ or CA row exists.
 
 ## 82.2 Live state (OBSERVED by read-only SQL, 21 October 2026)
 
+⛔ Corrected V16.4 — **the live state is in §83.1 (OBSERVED 22 Oct).** The lines below are 21 October's; those now false are struck.
+
 - `country_settings`:
   - GB enabled;
   - US enabled (switched on deliberately, 20 Oct);
-  - IE present, **disabled** (inserted 21 Oct, `updated_by` "europe-readiness draft");
-  - AU and NZ **not inserted yet**: their rows are anz-1 "block B". ~~to run **after** the anz-1 code is deployed (the
+  - IE present, ~~**disabled**~~ (inserted 21 Oct, `updated_by` "europe-readiness draft"); ⛔ Corrected V16.4 — switched on;
+  - AU and NZ ~~**not inserted yet**: their rows are anz-1 "block B".~~ ⛔ Corrected V16.4 — inserted and switched on (blocks A and B
+    ran 21 Oct); CA too (§83.1). ~~to run **after** the anz-1 code is deployed (the
     deployed loader rejects `anz` and would break every country list).~~ ⛔ Corrected V16.3 — OBSERVED 21 Oct: the
     anz-1 code is already deployed (`fcde8b09`, §49), so block B can run now, **after block A** (the CHECK below).
 - `plan_prices`: 3 rows each for GB, US and IE (and AU/NZ once block B runs). OBSERVED: GB, IE and US each payg 0 / 0
-  / 99 / 0, pro 2900 / 400000 / 99 / 2900, unlimited 6900 / NULL / 0 / 6900; no AU or NZ rows.
+  / 99 / 0, pro 2900 / 400000 / 99 / 2900, unlimited 6900 / NULL / 0 / 6900; ~~no AU or NZ rows.~~ ⛔ Corrected V16.4 — AU, NZ and CA
+  have their rows, and the 29 European countries 87 (§83.1).
 - Constraints:
-  - `country_settings_allergen_set_chk` ∈ (uk14, us9, anz) — anz-1 block A, "run now". ⚠️ **OBSERVED 21 Oct: NOT
-    RUN.** The definition is still `CHECK (allergen_set = ANY (ARRAY['uk14', 'us9']))`. Block A is in
+  - `country_settings_allergen_set_chk` ∈ (uk14, us9, anz) — anz-1 block A, "run now". ~~⚠️ **OBSERVED 21 Oct: NOT
+    RUN.** The definition is still `CHECK (allergen_set = ANY (ARRAY['uk14', 'us9']))`.~~ ⛔ Corrected V16.4 — run; it allows uk14,
+    us9, anz and ca (OBSERVED 22 Oct). Block A is in
     `docs/anz-1-report.md`; it must run before block B, or the AU/NZ inserts fail;
   - `country_settings_currency_chk` = the registry's 14 codes (run by Dominic, 21 Oct). OBSERVED: GBP, USD, EUR, CAD,
     AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON — the registry's list exactly;
@@ -33106,6 +33306,9 @@ decisions, not rows: no AU, NZ or CA row exists.
 
 ## 82.3 Adding a country: the recipe
 
+⛔ Corrected V16.4 — **the recipe is `docs/i18n/add-a-country.md` (§83.11).** The address format is a step of its own, in
+`lib/address-formats.ts` (§83.2), with its key in the DB CHECK. Lines below that are now false are struck.
+
 **Data (NOT RUN SQL, switched off):**
 - the `country_settings` row: currency, locale, `short_name` (required: a null breaks geocoding and sentence frames),
   phone code and a `phone_example` that passes `isPlausiblePhone`, time zones with the default first, time and date
@@ -33114,9 +33317,11 @@ decisions, not rows: no AU, NZ or CA row exists.
 - then the `plan_prices` rows (FK order: country first).
 
 **Code (the known list):**
-1. **The address:** `COUNTRY_PATH_SEGMENTS` in `lib/marketing-country.ts`. Today: GB 'uk', US 'us', IE 'ie', AU 'au',
-   NZ 'nz'.
-2. **The locale:** add it to `LOCALES` (`lib/i18n/locales.ts`) and `lib/i18n/messages.ts`, with a **sparse** override
+1. **The address:** `COUNTRY_PATH_SEGMENTS` in `lib/marketing-country.ts`. ~~Today: GB 'uk', US 'us', IE 'ie', AU 'au',
+   NZ 'nz'.~~ ⛔ Corrected V16.4 — also CA 'ca' and FR 'fr' (committed), and the 29 European countries at their ISO codes
+   (uncommitted, §83.1).
+2. **The locale:** add it to `LOCALES` (`lib/i18n/locales.ts`) ~~and `lib/i18n/messages.ts`~~ (⛔ Corrected V16.4 — `locales.ts` is the
+   only list; `messages.ts` reads the generated `locale-files.ts`), with a **sparse** override
    file `messages/<locale>.json`. `scripts/split-messages.cjs` writes namespace files only where something is
    overridden. Run `split-messages --check`.
 3. **The currency:** it must be in `lib/currencies.ts` (§82.6), and the DB CHECK must list it.
@@ -33137,7 +33342,9 @@ with a hidden test truck; then switch on in Admin › Countries.
 
 ## 82.4 Locales and wording
 
-- `LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ']`. en-GB is the base; the others are sparse overrides.
+- ~~`LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ']`. en-GB is the base; the others are sparse overrides.~~
+  ⛔ Corrected V16.4 — nine locales: en-CA (over en-US), en-MT and en-GI (over en-IE; uncommitted) are added, and fr-FR is a full
+  language base (`LANGUAGE_BASES`) (§83.8).
   (OBSERVED 21 Oct in `lib/i18n/locales.ts`.)
 - **en-IE:** 6 keys:
   - the footnote's "in Ireland";
@@ -33158,12 +33365,15 @@ with a hidden test truck; then switch on in Admin › Countries.
 - **The sign-up refusals were made country-neutral for everyone** ("Trucks in that country can't sign up yet"), which
   fixed "in United Kingdom".
 - **The European SEO glossary** (DE/NL/FR/ES/IT terms, "Pay at Hatch" options and the traps) is in
-  `docs/i18n/seo-glossary-eu.md`. Dominic's choices for the European "Pay at Hatch" wording and plan names are still
-  pending.
-- **The language build plan** (europe-readiness §B and §G) has not started: stages L-1 to L-7.
+  `docs/i18n/seo-glossary-eu.md`. ~~Dominic's choices for the European "Pay at Hatch" wording and plan names are still
+  pending.~~ ⛔ Corrected V16.4 — French uses the glossary's recommendations row (« Paiement sur place », « Sans abonnement »,
+  « Illimité »; france-1); each later language takes its own row.
+- **The language build plan** (europe-readiness §B and §G) ~~has not started: stages L-1 to L-7.~~ ⛔ Corrected V16.4 — built as
+  languages-1 (§83.8), with France first (§83.9).
   - Locale fallback chain, per-truck language, formats, posters, `plan_translations`.
   - 4,844 strings, plus about 270 hardcoded.
-  - 🔴 **The WhatsApp allergen guard matches English only. That must be fixed before any non-English truck goes live.**
+  - 🔴 ~~**The WhatsApp allergen guard matches English only. That must be fixed before any non-English truck goes live.**~~
+    ⛔ Corrected V16.4 — the guard's words are data per language and fail safe (§83.4).
 
 ## 82.5 The anz allergen set (Food Standards Code, PEAL)
 
@@ -33181,13 +33391,14 @@ with a hidden test truck; then switch on in Admin › Countries.
 - **WhatsApp guard (anz only):** adds EpiPen / epi-pen, anaphyla*, and the NF/LF menu marks.
   - **Option B is kept:** presence questions ("does the satay have peanuts?") reach the AI.
   - The caveat maps everyday words ("dairy", "nuts", "gluten", "prawn") to anz entries.
-- ⚠️ **The database does not accept `anz` yet** (OBSERVED 21 Oct: block A not run, §82.2).
+- ~~⚠️ **The database does not accept `anz` yet** (OBSERVED 21 Oct: block A not run, §82.2).~~ ⛔ Corrected V16.4 — it does (§83.1).
 
 ## 82.6 The currency registry (`lib/currencies.ts`)
 
 - **The one list:** 14 currencies — GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON. Each has:
   - its code and name;
-  - the plan-price symbol (£, $, €, CA$, A$, NZ$, CHF, SEK, NOK, DKK, zł, Kč, Ft, RON);
+  - ~~the plan-price symbol (£, $, €, CA$, A$, NZ$, CHF, SEK, NOK, DKK, zł, Kč, Ft, RON);~~ ⛔ Corrected V16.4 — the home `symbol`
+    and the side-by-side `intlSymbol`, with `symbolShared`, `namePlural` and the `homeDisplay` / `narrowIn` overrides (§83.3);
   - **Stripe's decimals** (all 2, including HUF);
   - the minor-unit sign (p, ¢, c, ¢, c, c, Rp, öre, øre, øre, gr, h, f, bani);
   - the short-fee style (EUR writes "€0.25"; GBP/USD/CAD/AUD/NZD write 20p / 30¢ / 30c);
@@ -33204,8 +33415,9 @@ with a hidden test truck; then switch on in Admin › Countries.
   - Admin › Plans showed "2900 (minor units)" for Ireland, live;
   - HUF decimals came from Intl (0) and would have charged 100× too little.
 - **Printed tickets keep "EUR 12.00",** because thermal printers can't print €.
-- ⚠️ **OBSERVED 21 Oct: the registry code is uncommitted** (the currency-registry workstream, §49). The DB CHECK is
-  already live; the deployed code still validates and formats the old way until it ships.
+- ~~⚠️ **OBSERVED 21 Oct: the registry code is uncommitted** (the currency-registry workstream, §49). The DB CHECK is
+  already live; the deployed code still validates and formats the old way until it ships.~~ ⛔ Corrected V16.4 — committed and pushed
+  (OBSERVED 22 Oct: `lib/currencies.ts` is on origin/main); only `narrowIn` is uncommitted (§83.3).
 
 ## 82.7 Payments in Australia and New Zealand
 
@@ -33254,10 +33466,12 @@ with a hidden test truck; then switch on in Admin › Countries.
 - **Billing at phone width:** the PlanTable card columns are ~~`minmax(6.5rem,1fr) repeat(3, minmax(4rem, 9.5rem))`~~
   ⛔ OBSERVED 21 Oct in `components/pricing/PlanTable.tsx`: `minmax(6.5rem,1fr) repeat(${plans.length}, minmax(4rem,
   9.5rem))` — one column per public plan (3 today), not a literal 3.
-- **Plan money format:** a bare "$" that isn't USD gets its country letters on HatchGrab's own prices (A$39, NZ$49,
-  CA$39), via the registry's `planLocale`. A truck's own menu keeps "$".
+- ~~**Plan money format:** a bare "$" that isn't USD gets its country letters on HatchGrab's own prices (A$39, NZ$49,
+  CA$39), via the registry's `planLocale`.~~ A truck's own menu keeps "$". ⛔ Corrected V16.4 — native prices: a country's own pages
+  show the home form ($39, $49) with a "Prices in …" line where the symbol is shared; "A$39" appears only in Admin and
+  /llms.txt; `planLocale` is gone (§83.3).
 - **Live at 21 Oct:** all of the above except the plan money format via the registry (uncommitted with
-  currency-registry; §49).
+  currency-registry; §49). ⛔ Corrected V16.4 — all live, with native prices (OBSERVED 22 Oct on `/nz`).
 
 ## 82.9 AI search
 
@@ -33276,9 +33490,10 @@ with a hidden test truck; then switch on in Admin › Countries.
   - SoftwareApplication `operatingSystem` "Web, iOS, Android" and `countriesSupported` (the switched-on countries),
     replacing the invalid `areaServed`;
   - no rich result until real reviews exist (none invented).
-- ⚠️ **NOT LIVE at 21 Oct (OBSERVED by curl):** ai-search-1 is uncommitted. The live `www.hatchgrab.com/robots.txt`
+- ~~⚠️ **NOT LIVE at 21 Oct (OBSERVED by curl):** ai-search-1 is uncommitted. The live `www.hatchgrab.com/robots.txt`
   still disallows GPTBot, ClaudeBot and CCBot; `/llms.txt` is 404; the live JSON-LD still has `areaServed`. All three
-  change at the next deploy (§49).
+  change at the next deploy (§49).~~ ⛔ Corrected V16.4 — live (curl, 22 Oct): robots.txt names GPTBot and ClaudeBot in its allow group, `/llms.txt`
+  is 200, and the JSON-LD has `countriesSupported` (AU, CA, IE, NZ, GB, US).
 - **Off-site work (Dominic):**
   - Bing Webmaster Tools plus the sitemap;
   - Google Search Console resubmit and the Rich Results Test;
@@ -33290,6 +33505,11 @@ with a hidden test truck; then switch on in Admin › Countries.
     "Copy feedback for Claude".
 
 ## 82.10 Per-country launch lists (open)
+
+⛔ Corrected V16.4 — **Ireland, Australia, New Zealand and Canada are switched on** (OBSERVED 22 Oct). Done: the IE terms, the
+AU/NZ terms, the AU address state fix, Canada. **Remaining:** the Stripe Connect checks per country
+(`defaults.currency`), the Apple Pay eftpos test (AU), and Vercel Node 24.x (Canada; §83.1). The lists below are
+21 October's.
 
 **Ireland:**
 - Stripe allows IE accounts (test account);
@@ -33315,7 +33535,7 @@ with a hidden test truck; then switch on in Admin › Countries.
 - a test truck;
 - switch on.
 
-**Canada (not started):**
+**Canada ~~(not started)~~:** ⛔ Corrected V16.4 — built and switched on (canada-1, canada-2; §83.5).
 - CA$ prices (§82.1);
 - a province field with split tax labels and 0% allowed;
 - the Canadian allergen list (no celery or lupin; adds mustard);
@@ -33324,6 +33544,227 @@ with a hidden test truck; then switch on in Admin › Countries.
 - tips;
 - "Pay at the truck";
 - outside Quebec.
+
+# 83. Addresses, native prices, languages and Europe (V16.4 — 21–22 October 2026)
+
+🔴 **THE RULE (unchanged from §82, extended):** a country is data plus config. Its row and prices are data; its address
+format, currency and allergen-guard words are config files; its words are one messages file. No country-code branches in
+code. A country stays switched off until its launch list is done.
+
+## 83.1 Live state (OBSERVED 22 October 2026, read-only SQL, git and curl)
+
+- **`country_settings`:** 35 rows, 6 enabled.
+  - **Enabled:** GB, US, IE, AU, NZ, CA. AU and NZ were last written 21 Oct 21:11 UTC and CA 22 Oct 12:32 UTC, each by
+    `dominic@hatchgrab.com`. IE was last written 22 Oct 10:26 UTC by `allergen-card-country`, which set
+    `allergen_card_only_allowed = false`; when IE was switched on can't be seen after the fact.
+  - **No FR row, and no FR `plan_prices`.** france-1's block B (`20261034_france_row.sql`) has **not** run, so France
+    exists only in code.
+  - **Present and switched off:** AT BE BG HR CY CZ DK EE FI DE GI GR HU IT LV LI LT LU MT NL NO PL PT RO SK SI ES SE CH.
+    They were inserted 22 Oct 19:34:02 UTC, `updated_by = 'europe-settings draft'`, with 87 `plan_prices` rows (3 each).
+  - europe-settings §0 records that they went in before the deploy and before price approval. They are byte-identical
+    to `supabase/migrations/20261036_europe_rows.sql` (md5 of every column, 22 Oct).
+- **Constraints:**
+  - `country_settings_address_format_chk` lists gb, us, ie, au, nz, ca, fr and the 29 European keys: exactly the 36
+    config keys, in `ADDRESS_FORMAT_KEYS` order. The 29 are in the working tree only (§49).
+  - `country_settings_allergen_set_chk` ∈ (uk14, us9, anz, ca).
+  - `country_settings_currency_chk` = the registry's 14 codes (GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN,
+    CZK, HUF, RON).
+- **Columns:**
+  - `country_settings.allergen_card_only_allowed` (boolean);
+  - `truck_events.suburb` (text);
+  - `truck_places.suburb` and `truck_places.region` (text);
+  - `trucks_base_region_code_chk` is **gone**; the app checks the code against the format's list (`lib/trade-area.ts`).
+  - Trucks are still GB/GBP 11 and US/USD 1; orders GBP 2,939 and USD 5.
+- **Deployed vs uncommitted:**
+  - `git log origin/main -1` = HEAD = `2d725e3e` "france" (22 Oct 19:57 BST; local ref, no fetch).
+  - **Committed and pushed:**
+    - `7fcd4fc9` "addresses" (21 Oct): ireland-2, address-formats-diagnosis, directions-link-fix, address-formats-1;
+    - `fadb352f` "allergens and address" (22 Oct): allergen-card-country, address-formats-2 (with its Follow-up),
+      ireland-3, native-prices (with its Follow-up), anz-terms;
+    - `7f905934` "canada": canada-1;
+    - `fc33b3d9` "canada readiness": canada-2;
+    - `ae871119` "about us": the About page (its report is in `2d725e3e`);
+    - `2d725e3e` "france": languages-1, france-1, `docs/i18n/add-a-country.md`.
+  - **Uncommitted** (`git status`):
+    - europe-settings: the 29 formats, en-MT / en-GI, `narrowIn`, the European `COUNTRY_PATH_SEGMENTS`, the EEA and
+      Gibraltar terms, its harness and SQL files;
+    - the france-1 Follow-up: the glossary split.
+  - **Live (curl, 22 Oct):**
+    - `/about` 200 and `/ca` 200;
+    - `/fr` 302s to `/uk` (no FR row);
+    - `/de` and `/mt` are **404**, because the deployed code has no European segments yet;
+    - `/llms.txt` 200; `/nz` shows "Prices in New Zealand dollars (NZD)";
+    - the live `/country-terms` has the France section but not the EEA or Gibraltar ones.
+  - Vercel's deploy record itself wasn't read. "Live" above means the public site behaves as `2d725e3e` does.
+- **Vercel Node.js version:** 24.x is needed before 1 Nov 2026 for tzdb 2026e (BC, Alberta, Manitoba). The build log's
+  `check-tzdata` line must say "present".
+  - ⚠️ **The Vercel build log was not visible: UNVERIFIED.**
+  - **OBSERVED locally, 22 Oct** (`npm run build`, Node v22.22.3): "check-tzdata: Node v22.22.3, ICU 78.2, tz data
+    2026a — the 2026 Canadian time-zone changes are MISSING … Keep Canada switched off until a build prints 'present'".
+  - **Canada is switched on.** Check the Vercel build log before 1 Nov.
+
+## 83.2 Address formats (`lib/address-formats.ts`)
+
+- **One entry per format:** gb, us, ie, au, nz, ca, fr and the 29 European keys. Each entry has:
+  - the ordered fields, required or optional;
+  - label variants (the words live in the `address` messages namespace);
+  - inline region lists — OBSERVED 22 Oct: US 51, IE 26 counties, AU 8, CA 13 (with `salesTax` and `signupClosed`),
+    and **IT 107 provinces**, which the delta doesn't list;
+  - the postal pattern, plus a named normaliser and an example;
+  - `identifiesPremises` (OBSERVED: true for GB and IE only);
+  - templates (line, area, calendar, geocode) and the Places mapping;
+  - AI rules (`ai.importer`, `ai.screenshot`, `ai.scraper`; GB's verbatim);
+  - `entry` flags (GB/US keep today's form exactly);
+  - `includedTax` where prices include tax: FR TVA 10 % and the European VAT defaults. OBSERVED: 29 formats carry it,
+    FR plus 28 European; Gibraltar has no VAT.
+- **The 29 European entries are uncommitted** (§83.1). They include Latvia's code after the town, with a comma ("Rīga,
+  LV-1050", the `comma` flag).
+- **Readers:**
+  - `lib/event-address.ts`, `lib/event-region-read.ts`, `components/manage/AddressFields.tsx`;
+  - the geocoder, `lib/places.ts`, `lib/trade-area.ts`;
+  - `lib/schedule-extract.ts`, `lib/admin/screenshot-events.ts`;
+  - `scripts/scraper-prompts.js` (imports the config directly);
+  - `lib/event-conflicts.ts`.
+- **The loader accepts the legacy values** `postcode` / `zip_state` as gb / us (OBSERVED: `LEGACY_ADDRESS_FORMATS`).
+  An unknown value is left out of lists and named on Admin › Countries (35.ak-2).
+- **Fixed on the way:**
+  - AU "NSW" was truncated to "NS";
+  - AU Places stored the council;
+  - US ZIPs gave false "same venue" warnings;
+  - the Google directions link (`lib/maps-links.ts`) now uses coordinates, or the address plus the country's short name.
+
+## 83.3 Native prices (`lib/currencies.ts`)
+
+- **Each currency holds:**
+  - `symbol` (the home form) and `intlSymbol`;
+  - `symbolShared`, with a reason comment;
+  - `namePlural`;
+  - the `homeDisplay` / `narrowIn` overrides: RON "lei"; GBP in en-GI "£".
+  - `narrowIn` is **uncommitted** (europe-settings). It applies to every amount in that locale, including menus and
+    orders, not only plan prices.
+- **`planMoneyFormatOf`** = the home form, on a country's own pages, the PDF, Billing and the plan prompts.
+  **`intlMoneyFormatOf`** = Admin and /llms.txt. JSON-LD keeps ISO codes.
+- **`pricing.currencyLine`** "Prices in {currency} ({code})", in `--hero-grey` (passes AA), only where `symbolShared`.
+  OBSERVED live on `/nz`, 22 Oct.
+
+## 83.4 Allergens by country
+
+- **`country_settings.allergen_card_only_allowed`** (default true).
+  - When false: the wizard and the menu-import Allergens step open on "Do you have an allergen card to upload?"; the
+    API refuses a change to `card`; a stored `card` is served per dish, with a notice in Manage.
+  - **False today:** IE, LV, PL, RO, SK (OBSERVED 22 Oct). IE is switched on; the other four are switched off.
+- **Sets:**
+  - uk14 (GB, IE, FR, Europe), us9, anz (AU/NZ), ca (Health Canada, 13);
+  - labels are stored in English; non-English locales show them translated (`lib/allergen-label.ts`).
+- **The WhatsApp guard's words are data per language** (`lib/allergen-guard/<lang>.json`, Option B). OBSERVED:
+  `en.json` and `fr.json`. A language with no list fails safe: every menu question gets the allergen reply.
+
+## 83.5 Canada
+
+- **Prices exclude tax.** The province's label and default rate are data on the `ca` regions. OBSERVED 22 Oct:
+  - HST: 13 % ON, 14 % NS, 15 % NB / NL / PE;
+  - GST 5 %: AB, BC (meals PST-exempt), NT, NU, YT;
+  - MB GST + RST 12 % and SK GST + PST 11 %: both closed;
+  - QC: no rate, closed.
+  - Ontario's $4 rebate is not modelled.
+- **Closed to signup by `signupClosed`, each with a reason:** QC (French), SK and MB (two-part tax lines).
+- **Fees and tips:** service fee off (Competition Act s. 74.01(1.1)); tipping on (10 / 15 / 20). OBSERVED on the CA row:
+  `service_fee_allowed = false`, `tipping_enabled_default = true`, `tip_presets_pct = {10,15,20}`,
+  `prices_include_tax = false`.
+- **Locale:** en-CA is a sparse override of en-US (`LOCALE_PARENT`); 87 keys (OBSERVED). Date order mdy and 12-hour
+  time (OBSERVED on the row).
+- **`scripts/check-tzdata.cjs`** runs in `prebuild` (OBSERVED in `package.json`) and prints the runtime's tz data. It
+  never fails a build. See §83.1 for what it printed locally on 22 Oct.
+
+## 83.6 Terms sections (`content/legal/country-specific-terms.md`)
+
+- **The sections, OBSERVED in the working tree on 22 Oct, in this order:** United States, Ireland, Australia, New
+  Zealand, Canada, France, "European Economic Area and Switzerland", Gibraltar.
+- **The last two are uncommitted** (europe-settings). The live page ends at France.
+- **Versioning:** `COUNTRY_TERMS_UPDATED` ('22 October 2026') and `TERMS_VERSION` ('2026-10-22') move together with
+  each change. TERMS_VERSION is write-only.
+- **Open legal questions** are in each report. The most significant:
+  - the Australian Consumer Law treats our service to a truck under A$100,000 as a consumer purchase (anz-terms A6);
+  - an EU GDPR Article 27 representative (ireland-2 flag 1);
+  - VAT/GST on our fees once billing starts (IE, AU, NZ and CA thresholds).
+
+## 83.7 About page and the country picker
+
+- **/about** is on the HatchGrab host only (Village Foodie 404). Live, 200 (curl, 22 Oct).
+  - **Content:** "Hi, I'm Dominic.", the founder's story, the company line from `lib/company.ts`, Contact us.
+  - **Photo:** `public/about/dominic.jpg` when present (square crop). OBSERVED 22 Oct: no `public/about/` folder yet,
+    so no photo.
+  - **`ABOUT_UPDATED`** in `lib/about.ts` moves when the page changes.
+  - **Also:** a footer link, the sitemap, a /llms.txt line, AboutPage JSON-LD and `Organization.founder`.
+- **The country picker** (`components/landing/CountryMenu.tsx`) is in the footer only, on every HatchGrab marketing
+  page.
+
+## 83.8 The language engine (languages-1)
+
+- **`lib/i18n/locales.ts` is the one list:** `LOCALES`, `LOCALE_PARENT`, `LANGUAGE_BASES`.
+  - **Locales (OBSERVED 22 Oct in the working tree):** en-GB, en-US, en-IE, en-AU, en-NZ, en-CA, fr-FR, en-MT, en-GI.
+    en-MT and en-GI are uncommitted.
+  - `LOCALE_PARENT`: en-CA → en-US; en-MT and en-GI → en-IE. `LANGUAGE_BASES = ['fr-FR']`.
+- **English variants are sparse overrides** (keys, OBSERVED): en-US 474, en-IE 6, en-AU 107, en-NZ 22, en-CA 87, en-GI
+  1, en-MT 0.
+- **A language base is a full file,** with en-GB only as a last resort, key by key. fr-FR has 5,056 keys against
+  en-GB's 5,042; the extras are the `planNames.*` keys.
+- **The browser loads only the visitor's language** (`registerLanguage` / `ensureLanguage`). English overrides are still
+  imported statically. SSR pages seed their words.
+- **Formats:** dates, ordinals, times, numbers and money use Intl in the country's locale for non-English. The English
+  rules are unchanged.
+- **Plan names** per language are in `planNames.*`. Pro is never renamed.
+- **`scripts/translation-check.cjs --locale xx-XX`:**
+  - structural problems block;
+  - English left, glossary, invariants, numbers, length and back-translation drift are flags, for a short table;
+  - the glossary JSON is built from `docs/i18n/seo-glossary-eu.md` (`scripts/glossary-build.cjs`).
+- **Known limits:** tickets fold to ASCII; legal pages, sign-in and account emails stay en-GB; stored English
+  (cancellation reasons) shows in English.
+
+## 83.9 France (built, switched off)
+
+- **No FR row yet** (OBSERVED 22 Oct, §83.1). `/fr` 302s to `/uk`. The FR address format is in the live CHECK, via
+  europe-settings' block A.
+- **Prices and words:** fr-FR, /fr, EUR at Ireland's prices. « Sans abonnement / Pro / Illimité »; « Paiement sur
+  place » / « Payer au retrait ».
+- **The order button** says « Commander et payer au retrait » (L. 221-14). « Aujourd'hui / Demain » come from Intl.
+- **TVA:** included, 10 % by default (`includedTax`), never added. « Dont TVA 10 % » appears on the customer email and
+  the ticket.
+- **Decimal comma entry** in Manage (`lib/decimal-input.ts`, `useDecimalBox`), driven by the locale.
+- **Payments:** the Payment Element shows the Cartes Bancaires brand choice by default; holds work.
+- **Allergen card allowed:** the DGCCRF accepts a whole-menu table.
+- **Decisions (22 Oct):** no withdrawal line and no mediator field (the truck's duty); no per-item TVA yet; the Tap to
+  Pay CB brand choice later.
+- **The glossary row** was split (france-1 Follow-up, uncommitted): "Private hire" « privatisation », "Private event"
+  « événement privé ». translation-check fr-FR: structural 0; glossary flags 69 → 50.
+
+## 83.10 The rest of Europe (data, switched off)
+
+- **29 rows** (europe-settings §2): currency, locale (BE nl-BE, CH de-CH, LU fr-LU, MT en-MT, GI en-GI, CY el-CY), time
+  zones, phone, address format, VAT default, Stripe fees and the allergen rule. Surcharges, the service fee and tipping
+  are off.
+- **Non-euro prices:** CHF 27/65, CZK 699/1 690, DKK 219/519, HUF 10 990/24 990, NOK 299/729, PLN 129/299, RON
+  149/369, SEK 329/769, Gibraltar £29/£69.
+  - **OBSERVED 22 Oct:** the live `plan_prices` rows hold exactly these proposed figures, and every row is still
+    `updated_by = 'europe-settings draft'`.
+  - **Dominic's approval is not recorded** anywhere observable (no report, no row change): **UNVERIFIED**.
+- **Payment-method notes only** (iDEAL/Wero, Bancontact, BLIK, TWINT, MobilePay, Swish, Vipps, Bizum, MB WAY): nothing
+  is built. Most can't hold a payment; pay at the truck covers them.
+- **Greece:** no in-person card payments through the processor.
+- **Malta and Gibraltar** can go live in English once europe-settings is deployed. Every other country waits for its
+  language.
+- **Until europe-settings is deployed,** the deployed code leaves these 29 rows out of every country list, logging one
+  line per row per read; their pages are 404, not 302 (§83.1).
+
+## 83.11 The one-prompt recipe (`docs/i18n/add-a-country.md`)
+
+**For a European country:** the language file, the allergen-guard words, translation-check, back-translation,
+screenshots, switch on.
+
+**For a new country outside Europe:** the country row and prices (NOT RUN SQL), the address format, currency, allergen
+set, locale, terms section, then the language.
+
+One language prompt switches on every country that speaks it.
 
 ---
 

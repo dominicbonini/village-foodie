@@ -32,7 +32,7 @@ import { crossesMidnight, eventTimeMins, eventEndMins, eventEndInstant, nowOnEve
 import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
 import { clockGridMinutes } from '@/lib/slot-generation'
-import { formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
+import { currencySymbol as currencySymbolOf, formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { currencyInfo } from '@/lib/currencies'
 import { feePhrase } from '@/lib/fee-phrase'
 import { PRIVACY_PATH } from '@/lib/legal'
@@ -1739,7 +1739,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     try {
       const m = truck?.money
       if (!m) return ''
-      return new Intl.NumberFormat(m.locale, { style: 'currency', currency: m.currency }).formatToParts(0).find(x => x.type === 'currency')?.value ?? ''
+      return currencySymbolOf(m)
     } catch { return '' }
   })()
   // THE TIP BLOCK — card orders only, tipping on. Equal buttons, the selected one a 2px dark border on a

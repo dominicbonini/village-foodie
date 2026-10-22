@@ -39,7 +39,8 @@ const ENGLISH = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA']
  *  "eo-XA" — Esperanto (no market we plan for, and Intl formats it with non-English data) in "XA", the pseudo-locale region. */
 // ⚠️ RE-PINNED (france-1, 22 October 2026): fr-FR is in both lists now (France's language), so eo-XA is added AFTER what is there.
 const XX_PATCHES = [
-  { file: 'lib/i18n/locales.ts', from: "export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR'] as const", to: "export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'eo-XA'] as const" },
+  // ⚠️ RE-PINNED (europe-settings, 22 October 2026): + en-MT and en-GI (Malta's and Gibraltar's English).
+  { file: 'lib/i18n/locales.ts', from: "export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI'] as const", to: "export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'eo-XA'] as const" },
   { file: 'lib/i18n/locales.ts', from: "export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR']", to: "export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'eo-XA']" },
 ]
 const XX = P.pseudoTree(EN)

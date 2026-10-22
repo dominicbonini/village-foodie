@@ -135,7 +135,8 @@ the language goes live.
 | Meal deal / combo | **formule** / **menu** | | Both | High | |
 | Upsell | **vente additionnelle** | | B2B | High | |
 | Allergens | **allergènes** — les 14 allergènes | | Both | High | |
-| Private event | **privatisation** / privatiser un food truck | location de food truck | Both | High | |
+| Private hire | **privatisation** / privatiser un food truck | location de food truck | Both | High | hiring a truck for a private party (france-1 follow-up, 22 Oct 2026) |
+| Private event | **événement privé** | | Both | High | the app's private event: a date hidden from the map, with its own ordering link — not « privatisation » |
 | Event pricing | **tarifs événementiels** | | B2B | Low | native check |
 | Schedule | **planning** / où nous trouver | dates et horaires | B2C | Med–High | |
 | Commission-free | **sans commission** / 0 % de commission | | B2B | Med–High | |

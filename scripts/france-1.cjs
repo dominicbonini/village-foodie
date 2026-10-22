@@ -242,7 +242,8 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
     JSON.stringify(prices.map(p => [p.plan_key, p.monthly_minor, p.included_online_minor, p.fee_bps, p.extra_van_monthly_minor])) === JSON.stringify([['payg', 0, 0, 99, 0], ['pro', 2900, 400000, 99, 2900], ['unlimited', 6900, null, 0, 6900]]))
   const Ph = await kit.bundle('fr1-phone', "export { isPlausiblePhone } from '@/lib/phone'")
   t('the phone example passes the app\'s phone check for France; a short one does not', Ph.isPlausiblePhone('06 12 34 56 78', 'FR', 'length') && !Ph.isPlausiblePhone('06 12', 'FR', 'length'))
-  t('France has its address /fr (COUNTRY_PATH_SEGMENTS), the one table that gives a country a page', /FR: 'fr' \}/.test(read('lib/marketing-country.ts')))
+  // ⚠️ RE-PINNED (europe-settings, 22 October 2026): the rest of Europe's segments follow France's in the same table.
+  t('France has its address /fr (COUNTRY_PATH_SEGMENTS), the one table that gives a country a page', /COUNTRY_PATH_SEGMENTS[^}]*\bFR: 'fr',/.test(read('lib/marketing-country.ts')))
 
   // ══ 10 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('10 · THE TERMS — a France section, the same shape and English as the others')

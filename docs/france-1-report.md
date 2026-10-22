@@ -454,6 +454,8 @@ select (select count(*) from public.country_settings where country_code = 'FR') 
 
 ## 13 · For you to decide (legal and product)
 
+*Answered by Dominic on 22 October 2026: see §16.*
+
 1. **No right of withdrawal, said on the checkout (L. 221-5 10°).**
    - A French online order must tell the customer, before ordering, that the 14-day withdrawal right does not apply
      (perishable food, catering on a set date: L. 221-28 4° and 12°).
@@ -524,6 +526,40 @@ Also worth knowing:
 - `content/legal/country-specific-terms.md`
 - `messages/en-GB.json` (49 keys added, none changed) and the generated catalogue
 - `scripts/harnesses.json`
+
+## 16 · Follow-up (Dominic's answers, 22 October 2026)
+
+1. **Right of withdrawal: no checkout line.** Telling the customer is the truck's duty as seller, and the France terms cover
+   it. The order page stays as it is.
+2. **Consumer mediator: no field.** Offering one is the truck's duty, and the France terms cover it.
+3. **TVA per item: not now.** Added to the backlog below.
+4. **Tap to Pay on iPhone and Cartes Bancaires:** added to the backlog below, for when Tap to Pay on iPhone is built.
+5. **The glossary row is split. Done:**
+   - **`docs/i18n/seo-glossary-eu.md`:** the FR table now has two rows:
+     - "Private hire" → « privatisation » / privatiser un food truck (hiring a truck);
+     - "Private event" → « événement privé » (the app's date hidden from the map, with its own ordering link).
+   - **`scripts/glossary-build.cjs`:** "Private hire" gets its en-GB pattern (`private hire`).
+   - **`lib/i18n/glossary/fr.json`** is rebuilt. It is the only file that changed; `glossary-build --check` passes for all
+     5 languages.
+   - **translation-check fr-FR:**
+     - **Structural 0** (exit 0);
+     - glossary flags **69 → 50**: the 19 « événement privé » flags are cleared;
+     - the one en-GB "Private hire" message (`eventTypes.newType.chips.privateHire`) already says « Privatisation »;
+     - every other count is unchanged (english 75 · length 219 · drift 234 · banned, invariants, numbers, plans 0).
+   - **`docs/france-1-translation-flags.md`** is refreshed. Only its counts changed.
+   - **The sweep:** `node scripts/run-harnesses.cjs` ran 164: 164 passed, 0 failed. No re-pins were needed.
+   - **Note:** the DE, NL, ES and IT "Private event" rows also name hiring a truck (« mieten », « huren », « alquiler »,
+     « noleggio »). Each language's own prompt should split its row the same way. They are not changed here.
+
+No SQL was run for this follow-up, and nothing in the database changed.
+
+### Backlog
+
+- **TVA per item.** Per-item rates (20 % alcohol, 5,5 % sealed food, 10 % hot food) are needed so a mixed order splits its
+  TVA, as service-public's food-truck example does. Until then the whole order takes the truck's one rate (default 10 %,
+  overridable).
+- **Cartes Bancaires brand choice on Tap to Pay on iPhone** (`requested_priority`). Build it with Tap to Pay on iPhone,
+  before French trucks use it. The online Payment Element and the WisePad 3 / S700 readers already offer the choice.
 
 ## Undo (only if Dominic asks)
 

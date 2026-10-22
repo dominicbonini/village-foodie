@@ -225,14 +225,25 @@
       "en": "\\ballergens?\\b"
     },
     {
-      "concept": "Private event",
+      "concept": "Private hire",
       "use": [
         "privatisation"
       ],
       "alts": "location de food truck",
       "scope": "Both",
       "conf": "High",
-      "notes": "",
+      "notes": "hiring a truck for a private party (france-1 follow-up, 22 Oct 2026)",
+      "en": "\\bprivate hire\\b"
+    },
+    {
+      "concept": "Private event",
+      "use": [
+        "événement privé"
+      ],
+      "alts": "",
+      "scope": "Both",
+      "conf": "High",
+      "notes": "the app's private event: a date hidden from the map, with its own ordering link — not « privatisation »",
       "en": "\\bprivate events?\\b"
     },
     {

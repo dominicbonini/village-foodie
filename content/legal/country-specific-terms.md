@@ -241,3 +241,114 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 **Marketing emails.** We send marketing emails only where French law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
 
 **Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
+
+## European Economic Area and Switzerland
+
+This section applies in every country of the European Economic Area that has no section of its own above, and in Switzerland: Austria, Belgium, Bulgaria, Croatia, Cyprus, the Czech Republic, Denmark, Estonia, Finland, Germany, Greece, Hungary, Italy, Latvia, Liechtenstein, Lithuania, Luxembourg, Malta, the Netherlands, Norway, Poland, Portugal, Romania, Slovakia, Slovenia, Spain, Sweden and Switzerland.
+
+### For food truck operators
+
+**You are the seller.** You sell your food, and you are the merchant of record for your card payments, as section 5 of the Terms of Service says. Your customers' order is with you, not with us. The consumer law of your country applies to your sales to your customers, and you are responsible for meeting it. That includes giving your customers your business name and contact details before they order, showing prices in your country's currency that include VAT and every other compulsory charge, telling them that the right of withdrawal does not apply to food that may spoil quickly or to catering supplied on a set date, offering access to dispute resolution where your country requires it, and dealing with complaints, cancellations and refunds. HatchGrab is the software you sell through.
+
+**Card payments.** Card payments from your customers go into your own Stripe account, which is set up for your country during onboarding, in your own name, under your own agreement with Stripe. The money settles there, in your country's currency, and is paid out to your bank account by Stripe. We never hold it. In the European Economic Area, when a customer's card carries two brands, the payment form lets them choose which brand pays, as EU law requires. EU law does not allow a charge for paying by consumer card, so HatchGrab adds no card surcharge in these countries. Stripe's processing fees for your country are set by Stripe and shown in HatchGrab and during onboarding.
+
+**No service fee.** The price your customer sees must be the total they pay, every compulsory charge included. HatchGrab adds no service fee in these countries.
+
+**Allergens.** You must give allergen information for every dish as the law of your country requires: the 14 allergens listed in Regulation (EU) No 1169/2011 in the European Economic Area, and the same 14 under the Swiss Ordinance on Food Information in Switzerland, under the national rules your food authority enforces. Some countries allow the information to be given in person if a written notice says so; others require it in writing. For orders placed online, the information has to be available before your customer orders. HatchGrab lets you show allergens against each dish, or one allergen card covering your whole menu where your country allows it, or both. If you use a card, it must name every dish and its allergens. HatchGrab shows exactly what you enter, as section 3 of the Terms of Service says. We do not check it.
+
+**Your prices and VAT.** Your menu prices are shown to customers including VAT. You are responsible for registering for, charging and paying VAT correctly. HatchGrab shows the VAT included in each order on receipts and tickets, at your country's rate for hot food sold to take away unless you set your own rate. Drinks, alcohol and food sold to eat later can be taxed at other rates. We do not check the rate.
+
+**Language.** Some countries require information for consumers to be in their official language or languages. In Malta, HatchGrab's pages for your customers are in English, one of Malta's official languages. You are responsible for the words you write yourself, such as your menu and your notes.
+
+**Our prices.** Accounts are billed in the currency of your country: euros in the euro area, and Swiss francs, Czech koruna, Danish kroner, Hungarian forint, Norwegian kroner, Polish złoty, Romanian lei or Swedish kronor elsewhere. HatchGrab Ltd is a UK company and is not registered for VAT in your country. If you are registered for VAT, give us your VAT number. You then account for any VAT on our fees yourself, under the reverse charge.
+
+**Your rights under local law.** Nothing in the Terms of Service takes away a right that the law of your country says cannot be limited or waived.
+
+**Your customers' data.** Under the EU General Data Protection Regulation (GDPR) in the European Economic Area, and the Swiss Federal Act on Data Protection in Switzerland, section 10 of the Terms of Service is our data processing agreement with you: you are the controller and we are the processor, in the same sense as Article 28 of the GDPR.
+
+**Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that the law of your country gives you and that cannot be excluded by agreement.
+
+### Privacy, for everyone in the European Economic Area and Switzerland
+
+**The law that applies.** When we handle personal data of people in the European Economic Area, the EU General Data Protection Regulation (GDPR) and the data protection law of their country apply; in Switzerland, the Federal Act on Data Protection. The UK law named in our Privacy Policy applies as well. The rights listed in section 8 of the Privacy Policy are your rights under these laws too.
+
+**Where your data is kept.** Your data is stored and processed in the United Kingdom. The European Commission and Switzerland have each decided that the UK protects personal data to an adequate standard, so no extra safeguard is needed for that. Where a service provider handles data in the United States (section 6 of the Privacy Policy), the transfer is covered by a safeguard the GDPR and Swiss law recognise.
+
+**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
+
+**Your requests.** You can ask us what personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within one month. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
+
+**Complaints.** You can complain to the data protection authority of the country where you live or work. The European Data Protection Board lists every authority in the European Economic Area at www.edpb.europa.eu (About EDPB › Members). In Switzerland, it is the Federal Data Protection and Information Commissioner, www.edoeb.admin.ch. We would appreciate the chance to put things right first.
+
+| Country | Data protection authority |
+|---|---|
+| Austria | dsb.gv.at |
+| Belgium | autoriteprotectiondonnees.be |
+| Bulgaria | cpdp.bg |
+| Croatia | azop.hr |
+| Cyprus | dataprotection.gov.cy |
+| Czech Republic | uoou.gov.cz |
+| Denmark | datatilsynet.dk |
+| Estonia | aki.ee |
+| Finland | tietosuoja.fi |
+| Germany | the authority of your Land (federal: bfdi.bund.de) |
+| Greece | dpa.gr |
+| Hungary | naih.hu |
+| Italy | garanteprivacy.it |
+| Latvia | dvi.gov.lv |
+| Liechtenstein | datenschutzstelle.li |
+| Lithuania | vdai.lrv.lt |
+| Luxembourg | cnpd.lu |
+| Malta | idpc.org.mt |
+| Netherlands | autoriteitpersoonsgegevens.nl |
+| Norway | datatilsynet.no |
+| Poland | uodo.gov.pl |
+| Portugal | cnpd.pt |
+| Romania | dataprotection.ro |
+| Slovakia | dataprotection.gov.sk |
+| Slovenia | ip-rs.si |
+| Spain | aepd.es |
+| Sweden | imy.se |
+| Switzerland | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
+
+**Marketing emails.** We send marketing emails only where the law of your country allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
+
+**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
+
+## Gibraltar
+
+### For food truck operators
+
+**You are the seller.** You sell your food, and you are the merchant of record for your card payments, as section 5 of the Terms of Service says. Your customers' order is with you, not with us. The consumer law of Gibraltar applies to your sales to your customers, and you are responsible for meeting it. That includes giving your customers your business name and contact details before they order, showing prices that include every compulsory charge, and dealing with complaints, cancellations and refunds. HatchGrab is the software you sell through.
+
+**Card payments.** Card payments from your customers go into your own Stripe account, which is set up for Gibraltar during onboarding, in your own name, under your own agreement with Stripe. The money settles there, in pounds sterling, and is paid out to your bank account by Stripe. We never hold it. HatchGrab adds no card surcharge and no service fee in Gibraltar. Stripe's processing fees for Gibraltar accounts are set by Stripe and shown in HatchGrab and during onboarding. Stripe may charge a different fee for cards issued outside Gibraltar, including UK cards.
+
+**Allergens.** You must give allergen information for every dish as the law of Gibraltar requires, for the 14 allergens listed in Regulation (EU) No 1169/2011. For orders placed online, the information has to be available before your customer orders. HatchGrab lets you show allergens against each dish, or one allergen card covering your whole menu, or both. If you use a card, it must name every dish and its allergens. HatchGrab shows exactly what you enter, as section 3 of the Terms of Service says. We do not check it.
+
+**Your prices and tax.** Gibraltar has no VAT, so HatchGrab shows no tax line on receipts and tickets unless you set a rate yourself. You are responsible for any tax that applies to your business.
+
+**Language.** HatchGrab's pages for your customers in Gibraltar are in English. You are responsible for the words you write yourself, such as your menu and your notes.
+
+**Our prices.** Accounts in Gibraltar are billed in pounds sterling.
+
+**Your rights under local law.** Nothing in the Terms of Service takes away a right that the law of Gibraltar says cannot be limited or waived.
+
+**Your customers' data.** Under the data protection law of Gibraltar, which includes the EU General Data Protection Regulation (GDPR) as it applies in Gibraltar, section 10 of the Terms of Service is our data processing agreement with you: you are the controller and we are the processor, in the same sense as Article 28 of the GDPR.
+
+**Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that the law of Gibraltar gives you and that cannot be excluded by agreement.
+
+### Privacy, for everyone in Gibraltar
+
+**The law that applies.** When we handle personal data of people in Gibraltar, the data protection law of Gibraltar applies, including the EU General Data Protection Regulation (GDPR) as it applies there, as well as the UK law named in our Privacy Policy. The rights listed in section 8 of the Privacy Policy are your rights under that law too.
+
+**Where your data is kept.** Your data is stored and processed in the United Kingdom. Where a service provider handles data in the United States (section 6 of the Privacy Policy), the transfer is covered by a safeguard the law recognises.
+
+**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
+
+**Your requests.** You can ask us what personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within one month. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
+
+**Complaints.** You can complain to the Gibraltar Regulatory Authority, Gibraltar's data protection regulator, at www.gra.gi. We would appreciate the chance to put things right first.
+
+**Marketing emails.** We send marketing emails only where the law of Gibraltar allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
+
+**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

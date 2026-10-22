@@ -25,7 +25,9 @@
 // suburb / townOrCity), so they translate. Examples, patterns, region names, templates and the AI rules ARE here: they
 // are facts about a country's addresses ("CB8 8PD" is the same in every language), not words to translate.
 
-export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca' | 'fr'
+export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca' | 'fr' | EuropeKey
+/** europe-settings (22 October 2026): the rest of Stripe's Europe, one format each. */
+export type EuropeKey = 'at' | 'be' | 'bg' | 'hr' | 'cy' | 'cz' | 'dk' | 'ee' | 'fi' | 'de' | 'gi' | 'gr' | 'hu' | 'it' | 'lv' | 'li' | 'lt' | 'lu' | 'mt' | 'nl' | 'no' | 'pl' | 'pt' | 'ro' | 'sk' | 'si' | 'es' | 'se' | 'ch'
 /** The two values `country_settings.address_format` held before this stage. Still accepted (see `addressFormatKeyOf`)
  *  so a deploy is safe before the "run after deploy" SQL maps them. */
 export type LegacyAddressStyle = 'postcode' | 'zip_state'
@@ -37,6 +39,8 @@ export type RegionLabel = 'state' | 'stateTerritory' | 'province' | 'county'
 export type LocalityLabel = 'area' | 'townOrArea' | 'city' | 'suburb' | 'townOrCity'
 export type FieldLabel = PostalLabel | RegionLabel | LocalityLabel | 'street'
 export type PostalNormaliser = 'gb' | 'eircode' | 'digits' | 'zip' | 'ca' | 'none'
+  // europe-settings: "110 00" (CZ, SK, GR, SE), "00-950" (PL), "1000-001" (PT), "1012 JS" (NL), "VLT 1117" (MT), "L-1648", "LV-1050", "LT-01143"
+  | 'nnn_nn' | 'nn_nnn' | 'nnnn_nnn' | 'nnnn_aa' | 'mt' | 'lu' | 'lv' | 'lt'
 
 export interface AddressField { key: AddressFieldKey; required: boolean; label: FieldLabel }
 export interface Region {
@@ -554,6 +558,422 @@ town buried in venue_name. If the town truly cannot be determined, use "".`,
 const COMMA_VENUE_LOCALITY_POSTAL: AddressTemplate = { sep: ', ', parts: ['{venue}', '{locality}', '{postalCode}'] }
 const DOT_LOCALITY_POSTAL: AddressTemplate = { sep: ' · ', parts: ['{locality}', '{postalCode}'] }
 
+
+// ══ europe-settings (22 October 2026, docs/europe-settings-report.md §3) — THE REST OF STRIPE'S EUROPE ═══════════════
+// One format per country, built by one factory from a row of FACTS: the postal code's shape and where it is written, the
+// local word for it, a worked example, the region list where locals write one (Italy's province), the takeaway-food VAT the
+// prices include (`includedTax`, as France's TVA) and the language schedules arrive in. Two shapes cover all of them:
+//   • code BEFORE the town — "1010 Wien", "00-950 Warszawa", "1012 JS Amsterdam" (every country but two);
+//   • code AFTER the town  — "Valletta VLT 1117" (Malta), "Gibraltar GX11 1AA" (Gibraltar).
+// ⛔ NO COUNTRY-CODE BRANCHES: the shape is the row's `before`, never the key.
+interface EuropeRow {
+  key: EuropeKey
+  country: string
+  adminLabel: string
+  postal: { pattern: string; normaliser: PostalNormaliser; example: string; label: PostalLabel; local: string; desc: string }
+  /** The postal code is written before the town ("1010 Wien") — false for Malta and Gibraltar ("Valletta VLT 1117"). */
+  before: boolean
+  /** After the town AND after a comma ("Rīga, LV-1050") — Latvia. Only with `before: false`. */
+  comma?: true
+  examples: { venue: string; street: string; locality: string; paste: string }
+  /** The language schedules usually arrive in, and how times are written in it (for the AI rules). */
+  language: string
+  timeHint: string
+  regions?: { list: readonly Region[]; label: RegionLabel; example: string; local: string }
+  /** Undefined where there is no VAT (Gibraltar): no « included » line. */
+  includedTax?: RegionSalesTax
+}
+
+function europeAi(r: EuropeRow): AddressAi {
+  const ex = r.examples, pc = r.postal.example
+  const townCode = r.before ? `${pc} ${ex.locality}` : `${ex.locality}${r.comma ? ',' : ''} ${pc}`
+  const placed = `"${townCode}"`
+  const region = r.regions
+  const regionRule = region
+    ? `\n- "state" holds the ${region.local} abbreviation when one is written after the town (e.g. "${region.example}"); otherwise leave it ""`
+    : `\n- There is no region or state in ${r.country} addresses — never return one`
+  const outPostal = region ? `"town":"Town","state":"${region.example}","postcode":"${pc}"` : `"town":"Town","postcode":"${pc}"`
+  const regionPart = region ? `,"state":"${region.example}"` : ''
+  return {
+    importer: {
+      knowledge: 'venues and locations in {country}',
+      venueRules: `- Extract ONLY the venue name — never include the town or the ${r.postal.local} in venue_name
+- "${ex.venue} ${ex.locality} ${pc}" → venue_name="${ex.venue}", town="${ex.locality}", postcode="${pc}"
+- "${ex.venue}, ${townCode}, 18:00-22:00" → venue_name="${ex.venue}", town="${ex.locality}", postcode="${pc}"`,
+      postalRules: `POSTAL CODE RULES:
+- "postcode" holds the ${r.postal.local}: ${r.postal.desc} (e.g. "${pc}") — written ${r.before ? 'BEFORE' : r.comma ? 'AFTER (and after a comma)' : 'AFTER'} the town in an address (${placed})
+- Always extract the FULL postal code as one unit, even when it is split across two lines
+- A postal code covers an area, never one building
+- A postal code alone is never a town${regionRule}`,
+      addressRules: `ADDRESS RULES:
+- address is for street-level detail only — the street and number (e.g. "${ex.street}")
+- NEVER populate address with the town or the postal code — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+      enrichRules: `- If you have a venue name and town but no postal code → give the venue's postal code only if you are certain of it
+- If you have a venue name but no town → determine the town from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have a postal code or town → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""
+- Schedules are often written in ${r.language}: read its day and month names, and times such as ${r.timeHint} → 24-hour "HH:MM"`,
+      examples: `Input: "${ex.venue} ${ex.locality} ${pc}"
+Output: {"event_date":"03/06/{year}","start_time":"","end_time":"","venue_name":"${ex.venue}","town":"${ex.locality}"${regionPart},"postcode":"${pc}"}
+
+Input: "${ex.venue}, ${ex.locality}, 18:00-22:00"
+Output: {"event_date":"14/06/{year}","start_time":"18:00","end_time":"22:00","venue_name":"${ex.venue}","town":"${ex.locality}"${regionPart},"postcode":""}`,
+      outputShape: outPostal,
+    },
+    screenshot: {
+      locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the town or the postal code in it.
+- Put the town in "Village", and the ${r.postal.local}, if one is shown, in "Postcode".${region ? `\n- Put the ${region.local} abbreviation, if one is shown, in "State" (e.g. "${region.example}").` : ''}
+- ${r.country}'s postal codes look like "${pc}" (${r.postal.desc}). If none is shown, use "".
+- Times may be written ${r.timeHint}: return 24-hour "HH:MM".`,
+      eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "${ex.locality}"${region ? `, "State": "${region.example}"` : ''}, "Postcode": "${pc}" }`,
+    },
+    scraper: {
+      venueRules: `VENUE RULES: "venue_name" = ONLY the venue name. "town" = the town or city it is in. "postcode" = the ${r.postal.local} (e.g. "${pc}"), otherwise "".${region ? ` "state" = the ${region.local} abbreviation (e.g. "${region.example}") when one is written, otherwise "".` : ''}`,
+      townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town is EMBEDDED inside the venue name, SPLIT it out —
+put the place-name in "town" and keep "venue_name" as just the venue name. Never leave a town buried in venue_name. If the
+town truly cannot be determined, use "".`,
+      examples: `  "${ex.paste}" -> {"venue_name":"${ex.venue}","town":"${ex.locality}"}
+  "${ex.venue} ${placed.slice(1, -1)}" -> {"venue_name":"${ex.venue}","town":"${ex.locality}","postcode":"${pc}"}`,
+      outputShape: region ? `"town":"Town","state":"${region.example} or empty","postcode":"Postal code or empty"` : `"town":"Town","postcode":"Postal code or empty"`,
+    },
+  }
+}
+
+function europeFormat(r: EuropeRow): AddressFormat {
+  const before = r.before
+  const codeTown = before ? '{postalCode} {locality}' : '{locality} {postalCode}'
+  const withRegion = r.regions ? `${codeTown} {region}` : codeTown
+  // Latvia: the town and the code are two comma-separated parts, so a missing code leaves no stray comma.
+  const townParts = r.comma ? ['{locality}', '{postalCode}'] : [withRegion]
+  return {
+    key: r.key,
+    adminLabel: r.adminLabel,
+    fields: [
+      { key: 'street', required: false, label: 'street' },
+      { key: 'locality', required: true, label: 'townOrCity' },
+      ...(r.regions ? [{ key: 'region' as const, required: false, label: r.regions.label }] : []),
+      { key: 'postalCode', required: false, label: r.postal.label },
+    ],
+    regions: r.regions ? { list: r.regions.list, shownAs: 'code' } : null,
+    postalCode: { pattern: r.postal.pattern, normaliser: r.postal.normaliser, example: r.postal.example, identifiesPremises: false },
+    entry: { customersSee: true, postalCheck: true, requiredMarks: true, regionInput: r.regions ? 'select' : 'text', sublines: 'area', reviewAndPlaces: true },
+    examples: {
+      venue: r.examples.venue, addressLine: `${r.examples.street}, ${r.examples.locality}`, locality: r.examples.locality,
+      ...(r.regions ? { region: r.regions.example } : {}), importPostalCode: r.postal.example, paste: r.examples.paste,
+    },
+    templates: {
+      line: { sep: ', ', parts: ['{venue}', ...townParts] },
+      area: [{ sep: r.comma ? ', ' : ' ', parts: townParts }],
+      calendar: { sep: ', ', parts: ['{venue}', ...townParts] },
+      geocode: { sep: ', ', parts: ['{venue}', ...(r.comma ? townParts : [codeTown]), '{country}'] },
+    },
+    places: r.regions
+      ? { localityTypes: ['locality', 'postal_town'], regionFrom: ['administrative_area_level_2'], regionCode: 'exact' }
+      : { localityTypes: ['locality', 'postal_town'], regionFrom: [], regionCode: null },
+    ai: europeAi(r),
+    ...(r.includedTax ? { includedTax: r.includedTax } : {}),
+  }
+}
+
+// The VAT a takeaway hot-food price INCLUDES, per country (label as locals write it on a receipt; thousandths of a percent).
+// Each is sourced in docs/europe-settings-report.md §2; the truck may set its own rate (Manage › Payments).
+const TAX_AT: RegionSalesTax | undefined = { label: 'USt.', milli: 10000 }
+const TAX_BE: RegionSalesTax | undefined = { label: 'btw', milli: 6000 }
+const TAX_BG: RegionSalesTax | undefined = { label: 'ДДС', milli: 20000 }
+const TAX_HR: RegionSalesTax | undefined = { label: 'PDV', milli: 13000 }
+const TAX_CY: RegionSalesTax | undefined = { label: 'ΦΠΑ', milli: 5000 }
+const TAX_CZ: RegionSalesTax | undefined = { label: 'DPH', milli: 12000 }
+const TAX_DK: RegionSalesTax | undefined = { label: 'moms', milli: 25000 }
+const TAX_EE: RegionSalesTax | undefined = { label: 'km', milli: 24000 }
+const TAX_FI: RegionSalesTax | undefined = { label: 'ALV', milli: 13500 }
+const TAX_DE: RegionSalesTax | undefined = { label: 'MwSt.', milli: 7000 }
+const TAX_GI: RegionSalesTax | undefined = undefined   // no VAT in Gibraltar
+const TAX_GR: RegionSalesTax | undefined = { label: 'ΦΠΑ', milli: 13000 }
+const TAX_HU: RegionSalesTax | undefined = { label: 'ÁFA', milli: 27000 }
+const TAX_IT: RegionSalesTax | undefined = { label: 'IVA', milli: 10000 }
+const TAX_LV: RegionSalesTax | undefined = { label: 'PVN', milli: 21000 }
+const TAX_LI: RegionSalesTax | undefined = { label: 'MWST', milli: 2600 }
+const TAX_LT: RegionSalesTax | undefined = { label: 'PVM', milli: 21000 }
+const TAX_LU: RegionSalesTax | undefined = { label: 'TVA', milli: 3000 }
+const TAX_MT: RegionSalesTax | undefined = { label: 'VAT', milli: 18000 }
+const TAX_NL: RegionSalesTax | undefined = { label: 'btw', milli: 9000 }
+const TAX_NO: RegionSalesTax | undefined = { label: 'MVA', milli: 15000 }
+const TAX_PL: RegionSalesTax | undefined = { label: 'VAT', milli: 8000 }
+const TAX_PT: RegionSalesTax | undefined = { label: 'IVA', milli: 13000 }
+const TAX_RO: RegionSalesTax | undefined = { label: 'TVA', milli: 11000 }
+const TAX_SK: RegionSalesTax | undefined = { label: 'DPH', milli: 19000 }
+const TAX_SI: RegionSalesTax | undefined = { label: 'DDV', milli: 9500 }
+const TAX_ES: RegionSalesTax | undefined = { label: 'IVA', milli: 10000 }
+const TAX_SE: RegionSalesTax | undefined = { label: 'moms', milli: 6000 }
+const TAX_CH: RegionSalesTax | undefined = { label: 'MWST', milli: 2600 }
+
+const IT_PROVINCES: readonly Region[] = [
+  { code: 'AG', name: "Agrigento" }, { code: 'AL', name: "Alessandria" }, { code: 'AN', name: "Ancona" }, { code: 'AO', name: "Aosta" },
+  { code: 'AP', name: "Ascoli Piceno" }, { code: 'AQ', name: "L'Aquila" }, { code: 'AR', name: "Arezzo" }, { code: 'AT', name: "Asti" },
+  { code: 'AV', name: "Avellino" }, { code: 'BA', name: "Bari" }, { code: 'BG', name: "Bergamo" }, { code: 'BI', name: "Biella" },
+  { code: 'BL', name: "Belluno" }, { code: 'BN', name: "Benevento" }, { code: 'BO', name: "Bologna" }, { code: 'BR', name: "Brindisi" },
+  { code: 'BS', name: "Brescia" }, { code: 'BT', name: "Barletta-Andria-Trani" }, { code: 'BZ', name: "Bolzano" }, { code: 'CA', name: "Cagliari" },
+  { code: 'CB', name: "Campobasso" }, { code: 'CE', name: "Caserta" }, { code: 'CH', name: "Chieti" }, { code: 'CL', name: "Caltanissetta" },
+  { code: 'CN', name: "Cuneo" }, { code: 'CO', name: "Como" }, { code: 'CR', name: "Cremona" }, { code: 'CS', name: "Cosenza" },
+  { code: 'CT', name: "Catania" }, { code: 'CZ', name: "Catanzaro" }, { code: 'EN', name: "Enna" }, { code: 'FC', name: "Forlì-Cesena" },
+  { code: 'FE', name: "Ferrara" }, { code: 'FG', name: "Foggia" }, { code: 'FI', name: "Firenze" }, { code: 'FM', name: "Fermo" },
+  { code: 'FR', name: "Frosinone" }, { code: 'GE', name: "Genova" }, { code: 'GO', name: "Gorizia" }, { code: 'GR', name: "Grosseto" },
+  { code: 'IM', name: "Imperia" }, { code: 'IS', name: "Isernia" }, { code: 'KR', name: "Crotone" }, { code: 'LC', name: "Lecco" },
+  { code: 'LE', name: "Lecce" }, { code: 'LI', name: "Livorno" }, { code: 'LO', name: "Lodi" }, { code: 'LT', name: "Latina" },
+  { code: 'LU', name: "Lucca" }, { code: 'MB', name: "Monza e Brianza" }, { code: 'MC', name: "Macerata" }, { code: 'ME', name: "Messina" },
+  { code: 'MI', name: "Milano" }, { code: 'MN', name: "Mantova" }, { code: 'MO', name: "Modena" }, { code: 'MS', name: "Massa-Carrara" },
+  { code: 'MT', name: "Matera" }, { code: 'NA', name: "Napoli" }, { code: 'NO', name: "Novara" }, { code: 'NU', name: "Nuoro" },
+  { code: 'OR', name: "Oristano" }, { code: 'PA', name: "Palermo" }, { code: 'PC', name: "Piacenza" }, { code: 'PD', name: "Padova" },
+  { code: 'PE', name: "Pescara" }, { code: 'PG', name: "Perugia" }, { code: 'PI', name: "Pisa" }, { code: 'PN', name: "Pordenone" },
+  { code: 'PO', name: "Prato" }, { code: 'PR', name: "Parma" }, { code: 'PT', name: "Pistoia" }, { code: 'PU', name: "Pesaro e Urbino" },
+  { code: 'PV', name: "Pavia" }, { code: 'PZ', name: "Potenza" }, { code: 'RA', name: "Ravenna" }, { code: 'RC', name: "Reggio Calabria" },
+  { code: 'RE', name: "Reggio Emilia" }, { code: 'RG', name: "Ragusa" }, { code: 'RI', name: "Rieti" }, { code: 'RM', name: "Roma" },
+  { code: 'RN', name: "Rimini" }, { code: 'RO', name: "Rovigo" }, { code: 'SA', name: "Salerno" }, { code: 'SI', name: "Siena" },
+  { code: 'SO', name: "Sondrio" }, { code: 'SP', name: "La Spezia" }, { code: 'SR', name: "Siracusa" }, { code: 'SS', name: "Sassari" },
+  { code: 'SU', name: "Sud Sardegna" }, { code: 'SV', name: "Savona" }, { code: 'TA', name: "Taranto" }, { code: 'TE', name: "Teramo" },
+  { code: 'TN', name: "Trento" }, { code: 'TO', name: "Torino" }, { code: 'TP', name: "Trapani" }, { code: 'TR', name: "Terni" },
+  { code: 'TS', name: "Trieste" }, { code: 'TV', name: "Treviso" }, { code: 'UD', name: "Udine" }, { code: 'VA', name: "Varese" },
+  { code: 'VB', name: "Verbano-Cusio-Ossola" }, { code: 'VC', name: "Vercelli" }, { code: 'VE', name: "Venezia" }, { code: 'VI', name: "Vicenza" },
+  { code: 'VR', name: "Verona" }, { code: 'VT', name: "Viterbo" }, { code: 'VV', name: "Vibo Valentia" },
+]
+const EUROPE_ROWS: readonly EuropeRow[] = [
+  {
+    key: "at", country: "Austria", adminLabel: "Austria — Postleitzahl, Ort",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "1010", label: "postalCode", local: "Postleitzahl (PLZ)", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Stephansplatz", street: "Graben 21", locality: "Wien", paste: "Stephansplatz, Wien" },
+    language: "German", timeHint: "\"18 Uhr\", \"18:30 Uhr\"",
+    includedTax: TAX_AT,
+  },
+  {
+    key: "be", country: "Belgium", adminLabel: "Belgium — postcode / code postal, ville",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "1000", label: "postalCode", local: "postcode (code postal)", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Grand-Place", street: "Rue au Beurre 1", locality: "Bruxelles", paste: "Grand-Place, Bruxelles" },
+    language: "Dutch or French", timeHint: "\"18u\", \"18.30 uur\", \"18h30\"",
+    includedTax: TAX_BE,
+  },
+  {
+    key: "bg", country: "Bulgaria", adminLabel: "Bulgaria — пощенски код, град",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "1000", label: "postalCode", local: "пощенски код (postal code)", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Ploshtad Nezavisimost", street: "bul. Vitosha 1", locality: "Sofia", paste: "Ploshtad Nezavisimost, Sofia" },
+    language: "Bulgarian", timeHint: "\"18:00 ч.\", \"18.30\"",
+    includedTax: TAX_BG,
+  },
+  {
+    key: "hr", country: "Croatia", adminLabel: "Croatia — poštanski broj, mjesto",
+    postal: { pattern: "^\\d{5}$", normaliser: "digits", example: "10000", label: "postalCode", local: "poštanski broj", desc: "5 digits" },
+    before: true,
+    examples: { venue: "Trg bana Jelačića", street: "Ilica 1", locality: "Zagreb", paste: "Trg bana Jelačića, Zagreb" },
+    language: "Croatian", timeHint: "\"18 h\", \"18.30\"",
+    includedTax: TAX_HR,
+  },
+  {
+    key: "cy", country: "Cyprus", adminLabel: "Cyprus — postal code, town",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "1010", label: "postalCode", local: "postal code (ταχυδρομικός κώδικας)", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Eleftheria Square", street: "Ledras 1", locality: "Nicosia", paste: "Eleftheria Square, Nicosia" },
+    language: "Greek or English", timeHint: "\"18:00\", \"6pm\"",
+    includedTax: TAX_CY,
+  },
+  {
+    key: "cz", country: "Czech Republic", adminLabel: "Czech Republic — PSČ, obec",
+    postal: { pattern: "^\\d{3} \\d{2}$", normaliser: "nnn_nn", example: "110 00", label: "postalCode", local: "PSČ (postal code)", desc: "5 digits written \"NNN NN\"" },
+    before: true,
+    examples: { venue: "Staroměstské náměstí", street: "Václavské náměstí 1", locality: "Praha", paste: "Staroměstské náměstí, Praha" },
+    language: "Czech", timeHint: "\"18 h\", \"18.30\", \"od 18:00\"",
+    includedTax: TAX_CZ,
+  },
+  {
+    key: "dk", country: "Denmark", adminLabel: "Denmark — postnummer, by",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "8000", label: "postalCode", local: "postnummer", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Aarhus Street Food", street: "Ny Banegårdsgade 46", locality: "Aarhus", paste: "Aarhus Street Food, Aarhus" },
+    language: "Danish", timeHint: "\"kl. 18\", \"18.30\"",
+    includedTax: TAX_DK,
+  },
+  {
+    key: "ee", country: "Estonia", adminLabel: "Estonia — sihtnumber, linn",
+    postal: { pattern: "^\\d{5}$", normaliser: "digits", example: "10146", label: "postalCode", local: "sihtnumber (postal code)", desc: "5 digits" },
+    before: true,
+    examples: { venue: "Raekoja plats", street: "Viru 1", locality: "Tallinn", paste: "Raekoja plats, Tallinn" },
+    language: "Estonian", timeHint: "\"kell 18\", \"18.30\"",
+    includedTax: TAX_EE,
+  },
+  {
+    key: "fi", country: "Finland", adminLabel: "Finland — postinumero, toimipaikka",
+    postal: { pattern: "^\\d{5}$", normaliser: "digits", example: "00100", label: "postalCode", local: "postinumero (postal code)", desc: "5 digits" },
+    before: true,
+    examples: { venue: "Kauppatori", street: "Pohjoisesplanadi 1", locality: "Helsinki", paste: "Kauppatori, Helsinki" },
+    language: "Finnish or Swedish", timeHint: "\"klo 18\", \"18.30\"",
+    includedTax: TAX_FI,
+  },
+  {
+    key: "de", country: "Germany", adminLabel: "Germany — Postleitzahl, Ort",
+    postal: { pattern: "^\\d{5}$", normaliser: "digits", example: "10117", label: "postalCode", local: "Postleitzahl (PLZ)", desc: "5 digits" },
+    before: true,
+    examples: { venue: "Gendarmenmarkt", street: "Friedrichstraße 1", locality: "Berlin", paste: "Gendarmenmarkt, Berlin" },
+    language: "German", timeHint: "\"18 Uhr\", \"18:30 Uhr\", \"ab 18 Uhr\"",
+    includedTax: TAX_DE,
+  },
+  {
+    key: "gi", country: "Gibraltar", adminLabel: "Gibraltar — postcode GX11 1AA",
+    postal: { pattern: "^GX11 1AA$", normaliser: "gb", example: "GX11 1AA", label: "postcode", local: "postcode", desc: "\"GX11 1AA\" — one postcode for all of Gibraltar" },
+    before: false,
+    examples: { venue: "Casemates Square", street: "Main Street 1", locality: "Gibraltar", paste: "Casemates Square, Gibraltar" },
+    language: "English", timeHint: "\"6pm\", \"18:00\"",
+    includedTax: TAX_GI,
+  },
+  {
+    key: "gr", country: "Greece", adminLabel: "Greece — Τ.Κ., πόλη",
+    postal: { pattern: "^\\d{3} \\d{2}$", normaliser: "nnn_nn", example: "105 57", label: "postalCode", local: "Τ.Κ. (postal code)", desc: "5 digits written \"NNN NN\"" },
+    before: true,
+    examples: { venue: "Plateia Syntagmatos", street: "Ermou 1", locality: "Athens", paste: "Plateia Syntagmatos, Athens" },
+    language: "Greek", timeHint: "\"18:00\", \"6 μ.μ.\"",
+    includedTax: TAX_GR,
+  },
+  {
+    key: "hu", country: "Hungary", adminLabel: "Hungary — irányítószám, település",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "1051", label: "postalCode", local: "irányítószám (postal code)", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Vörösmarty tér", street: "Váci utca 1", locality: "Budapest", paste: "Vörösmarty tér, Budapest" },
+    language: "Hungarian", timeHint: "\"18 órától\", \"18:30\"",
+    includedTax: TAX_HU,
+  },
+  {
+    key: "it", country: "Italy", adminLabel: "Italy — CAP, comune, provincia",
+    postal: { pattern: "^\\d{5}$", normaliser: "digits", example: "20122", label: "postalCode", local: "CAP (codice di avviamento postale)", desc: "5 digits" },
+    before: true,
+    examples: { venue: "Piazza del Duomo", street: "Via Dante 1", locality: "Milano", paste: "Piazza del Duomo, Milano" },
+    language: "Italian", timeHint: "\"ore 18\", \"18:30\", \"dalle 18\"",
+    regions: { list: IT_PROVINCES, label: 'province', example: 'MI', local: 'province (sigla)' },
+    includedTax: TAX_IT,
+  },
+  {
+    key: "lv", country: "Latvia", adminLabel: "Latvia — pilsēta, LV-pasta indekss",
+    postal: { pattern: "^LV-\\d{4}$", normaliser: "lv", example: "LV-1050", label: "postalCode", local: "pasta indekss (postal code)", desc: "\"LV-\" and 4 digits" },
+    before: false, comma: true,
+    examples: { venue: "Doma laukums", street: "Kaļķu iela 1", locality: "Rīga", paste: "Doma laukums, Rīga" },
+    language: "Latvian", timeHint: "\"plkst. 18\", \"18.30\"",
+    includedTax: TAX_LV,
+  },
+  {
+    key: "li", country: "Liechtenstein", adminLabel: "Liechtenstein — Postleitzahl, Ort",
+    postal: { pattern: "^94(8[5-9]|9[0-8])$", normaliser: "digits", example: "9490", label: "postalCode", local: "Postleitzahl (PLZ)", desc: "4 digits, 9485–9498" },
+    before: true,
+    examples: { venue: "Peter-Kaiser-Platz", street: "Städtle 1", locality: "Vaduz", paste: "Peter-Kaiser-Platz, Vaduz" },
+    language: "German", timeHint: "\"18 Uhr\", \"18.30 Uhr\"",
+    includedTax: TAX_LI,
+  },
+  {
+    key: "lt", country: "Lithuania", adminLabel: "Lithuania — LT-pašto kodas, miestas",
+    postal: { pattern: "^LT-\\d{5}$", normaliser: "lt", example: "LT-01143", label: "postalCode", local: "pašto kodas (postal code)", desc: "\"LT-\" and 5 digits" },
+    before: true,
+    examples: { venue: "Katedros aikštė", street: "Gedimino pr. 1", locality: "Vilnius", paste: "Katedros aikštė, Vilnius" },
+    language: "Lithuanian", timeHint: "\"18 val.\", \"18:30\"",
+    includedTax: TAX_LT,
+  },
+  {
+    key: "lu", country: "Luxembourg", adminLabel: "Luxembourg — L-code postal, localité",
+    postal: { pattern: "^L-\\d{4}$", normaliser: "lu", example: "L-1648", label: "postalCode", local: "code postal", desc: "\"L-\" and 4 digits" },
+    before: true,
+    examples: { venue: "Place Guillaume II", street: "Grand-Rue 1", locality: "Luxembourg", paste: "Place Guillaume II, Luxembourg" },
+    language: "French, German or Luxembourgish", timeHint: "\"18h00\", \"18 Uhr\"",
+    includedTax: TAX_LU,
+  },
+  {
+    key: "mt", country: "Malta", adminLabel: "Malta — locality, postcode",
+    postal: { pattern: "^[A-Z]{3} \\d{4}$", normaliser: "mt", example: "VLT 1117", label: "postcode", local: "postcode", desc: "3 letters, a space and 4 digits" },
+    before: false,
+    examples: { venue: "St George’s Square", street: "Republic Street 1", locality: "Valletta", paste: "St George’s Square, Valletta" },
+    language: "English or Maltese", timeHint: "\"6pm\", \"18:00\"",
+    includedTax: TAX_MT,
+  },
+  {
+    key: "nl", country: "Netherlands", adminLabel: "Netherlands — postcode, plaats",
+    postal: { pattern: "^\\d{4} [A-Z]{2}$", normaliser: "nnnn_aa", example: "1012 JS", label: "postalCode", local: "postcode", desc: "4 digits, a space and 2 letters" },
+    before: true,
+    examples: { venue: "Dam", street: "Damrak 1", locality: "Amsterdam", paste: "Dam, Amsterdam" },
+    language: "Dutch", timeHint: "\"18.00 uur\", \"vanaf 18 uur\"",
+    includedTax: TAX_NL,
+  },
+  {
+    key: "no", country: "Norway", adminLabel: "Norway — postnummer, sted",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "0150", label: "postalCode", local: "postnummer", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Rådhusplassen", street: "Karl Johans gate 1", locality: "Oslo", paste: "Rådhusplassen, Oslo" },
+    language: "Norwegian", timeHint: "\"kl. 18\", \"18.30\"",
+    includedTax: TAX_NO,
+  },
+  {
+    key: "pl", country: "Poland", adminLabel: "Poland — kod pocztowy, miejscowość",
+    postal: { pattern: "^\\d{2}-\\d{3}$", normaliser: "nn_nnn", example: "31-042", label: "postalCode", local: "kod pocztowy (postal code)", desc: "\"NN-NNN\"" },
+    before: true,
+    examples: { venue: "Rynek Główny", street: "ul. Floriańska 1", locality: "Kraków", paste: "Rynek Główny, Kraków" },
+    language: "Polish", timeHint: "\"od 18:00\", \"18.30\", \"godz. 18\"",
+    includedTax: TAX_PL,
+  },
+  {
+    key: "pt", country: "Portugal", adminLabel: "Portugal — código postal, localidade",
+    postal: { pattern: "^\\d{4}-\\d{3}$", normaliser: "nnnn_nnn", example: "1100-148", label: "postalCode", local: "código postal", desc: "\"NNNN-NNN\"" },
+    before: true,
+    examples: { venue: "Praça do Comércio", street: "Rua Augusta 1", locality: "Lisboa", paste: "Praça do Comércio, Lisboa" },
+    language: "Portuguese", timeHint: "\"18h\", \"18h30\", \"às 18:00\"",
+    includedTax: TAX_PT,
+  },
+  {
+    key: "ro", country: "Romania", adminLabel: "Romania — cod poștal, localitate",
+    postal: { pattern: "^\\d{6}$", normaliser: "digits", example: "030167", label: "postalCode", local: "cod poștal (postal code)", desc: "6 digits" },
+    before: true,
+    examples: { venue: "Piața Universității", street: "Bulevardul Regina Elisabeta 1", locality: "București", paste: "Piața Universității, București" },
+    language: "Romanian", timeHint: "\"ora 18\", \"18:30\"",
+    includedTax: TAX_RO,
+  },
+  {
+    key: "sk", country: "Slovakia", adminLabel: "Slovakia — PSČ, obec",
+    postal: { pattern: "^\\d{3} \\d{2}$", normaliser: "nnn_nn", example: "811 01", label: "postalCode", local: "PSČ (postal code)", desc: "5 digits written \"NNN NN\"" },
+    before: true,
+    examples: { venue: "Hlavné námestie", street: "Michalská 1", locality: "Bratislava", paste: "Hlavné námestie, Bratislava" },
+    language: "Slovak", timeHint: "\"od 18:00\", \"18.30 h\"",
+    includedTax: TAX_SK,
+  },
+  {
+    key: "si", country: "Slovenia", adminLabel: "Slovenia — poštna številka, kraj",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "1000", label: "postalCode", local: "poštna številka (postal code)", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Prešernov trg", street: "Čopova ulica 1", locality: "Ljubljana", paste: "Prešernov trg, Ljubljana" },
+    language: "Slovenian", timeHint: "\"ob 18h\", \"18.30\"",
+    includedTax: TAX_SI,
+  },
+  {
+    key: "es", country: "Spain", adminLabel: "Spain — código postal, municipio",
+    postal: { pattern: "^\\d{5}$", normaliser: "digits", example: "28012", label: "postalCode", local: "código postal", desc: "5 digits" },
+    before: true,
+    examples: { venue: "Plaza Mayor", street: "Calle Mayor 1", locality: "Madrid", paste: "Plaza Mayor, Madrid" },
+    language: "Spanish (or Catalan, Basque, Galician)", timeHint: "\"18:00 h\", \"a las 18h\"",
+    includedTax: TAX_ES,
+  },
+  {
+    key: "se", country: "Sweden", adminLabel: "Sweden — postnummer, postort",
+    postal: { pattern: "^\\d{3} \\d{2}$", normaliser: "nnn_nn", example: "111 29", label: "postalCode", local: "postnummer", desc: "5 digits written \"NNN NN\"" },
+    before: true,
+    examples: { venue: "Stortorget", street: "Västerlånggatan 1", locality: "Stockholm", paste: "Stortorget, Stockholm" },
+    language: "Swedish", timeHint: "\"kl. 18\", \"18.30\"",
+    includedTax: TAX_SE,
+  },
+  {
+    key: "ch", country: "Switzerland", adminLabel: "Switzerland — PLZ / NPA, Ort",
+    postal: { pattern: "^\\d{4}$", normaliser: "digits", example: "8001", label: "postalCode", local: "Postleitzahl (PLZ) / NPA", desc: "4 digits" },
+    before: true,
+    examples: { venue: "Paradeplatz", street: "Bahnhofstrasse 1", locality: "Zürich", paste: "Paradeplatz, Zürich" },
+    language: "German, French or Italian", timeHint: "\"18 Uhr\", \"18h00\", \"ore 18\"",
+    includedTax: TAX_CH,
+  },
+]
+
+
 export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> = {
   gb: {
     key: 'gb',
@@ -719,6 +1139,8 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
     // own rate when its sales are mostly those (docs/france-1-report.md §2).
     includedTax: { label: 'TVA', milli: 10000 },
   },
+  // europe-settings (22 October 2026): the rest of Stripe's Europe, built from EUROPE_ROWS (above), in its order.
+  ...(Object.fromEntries(EUROPE_ROWS.map(r => [r.key, europeFormat(r)])) as Record<EuropeKey, AddressFormat>),
 }
 
 export const ADDRESS_FORMAT_KEYS: readonly AddressFormatKey[] = Object.keys(ADDRESS_FORMATS) as AddressFormatKey[]
@@ -811,6 +1233,23 @@ const NORMALISERS: Readonly<Record<PostalNormaliser, (s: string) => string>> = {
   /** "m5v3l9" → "M5V 3L9". */
   ca: s => { const c = s.toUpperCase().replace(/\s+/g, ''); return c.length === 6 ? `${c.slice(0, 3)} ${c.slice(3)}` : s.trim().toUpperCase() },
   none: s => s.trim(),
+  // europe-settings: tidy only what clearly is the code; anything else is handed back trimmed (the check then warns).
+  /** "11000" → "110 00" (CZ, SK, GR, SE). */
+  nnn_nn: s => { const c = s.replace(/\s+/g, ''); return /^\d{5}$/.test(c) ? `${c.slice(0, 3)} ${c.slice(3)}` : s.trim() },
+  /** "31042" / "31 042" → "31-042" (PL). */
+  nn_nnn: s => { const c = s.replace(/[\s-]+/g, ''); return /^\d{5}$/.test(c) ? `${c.slice(0, 2)}-${c.slice(2)}` : s.trim() },
+  /** "1100148" → "1100-148" (PT). */
+  nnnn_nnn: s => { const c = s.replace(/[\s-]+/g, ''); return /^\d{7}$/.test(c) ? `${c.slice(0, 4)}-${c.slice(4)}` : s.trim() },
+  /** "1012js" → "1012 JS" (NL). */
+  nnnn_aa: s => { const c = s.toUpperCase().replace(/\s+/g, ''); return /^\d{4}[A-Z]{2}$/.test(c) ? `${c.slice(0, 4)} ${c.slice(4)}` : s.trim().toUpperCase() },
+  /** "vlt1117" → "VLT 1117" (MT). */
+  mt: s => { const c = s.toUpperCase().replace(/\s+/g, ''); return /^[A-Z]{3}\d{4}$/.test(c) ? `${c.slice(0, 3)} ${c.slice(3)}` : s.trim().toUpperCase() },
+  /** "1648" / "l1648" → "L-1648" (LU). */
+  lu: s => { const c = s.toUpperCase().replace(/[\s-]+/g, '').replace(/^L/, ''); return /^\d{4}$/.test(c) ? `L-${c}` : s.trim().toUpperCase() },
+  /** "1050" / "lv1050" → "LV-1050" (LV). */
+  lv: s => { const c = s.toUpperCase().replace(/[\s-]+/g, '').replace(/^LV/, ''); return /^\d{4}$/.test(c) ? `LV-${c}` : s.trim().toUpperCase() },
+  /** "01143" / "lt01143" → "LT-01143" (LT). */
+  lt: s => { const c = s.toUpperCase().replace(/[\s-]+/g, '').replace(/^LT/, ''); return /^\d{5}$/.test(c) ? `LT-${c}` : s.trim().toUpperCase() },
 }
 export const POSTAL_NORMALISERS: readonly PostalNormaliser[] = Object.keys(NORMALISERS) as PostalNormaliser[]
 

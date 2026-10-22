@@ -1,0 +1,32 @@
+{
+  "$comment": "europe-settings: the live CHECK constraints on country_settings and plan_prices, from the read-only pg_constraint query of 22 October 2026 (docs/europe-settings-report.md §12). Re-read at 19:39 UTC: block A was already in force, so the address-format CHECK here IS the live one (gb us ie au nz ca fr + the 29).",
+  "country_settings": {
+    "country_settings_address_format_chk": "CHECK ((address_format = ANY (ARRAY['gb'::text, 'us'::text, 'ie'::text, 'au'::text, 'nz'::text, 'ca'::text, 'fr'::text, 'at'::text, 'be'::text, 'bg'::text, 'hr'::text, 'cy'::text, 'cz'::text, 'dk'::text, 'ee'::text, 'fi'::text, 'de'::text, 'gi'::text, 'gr'::text, 'hu'::text, 'it'::text, 'lv'::text, 'li'::text, 'lt'::text, 'lu'::text, 'mt'::text, 'nl'::text, 'no'::text, 'pl'::text, 'pt'::text, 'ro'::text, 'sk'::text, 'si'::text, 'es'::text, 'se'::text, 'ch'::text])))",
+    "country_settings_allergen_set_chk": "CHECK ((allergen_set = ANY (ARRAY['uk14'::text, 'us9'::text, 'anz'::text, 'ca'::text])))",
+    "country_settings_code_chk": "CHECK ((country_code ~ '^[A-Z]{2}$'::text))",
+    "country_settings_competitor_pct_chk": "CHECK (((competitor_pct >= (0)::numeric) AND (competitor_pct <= (100)::numeric)))",
+    "country_settings_currency_chk": "CHECK ((currency = ANY (ARRAY['GBP'::text, 'USD'::text, 'EUR'::text, 'CAD'::text, 'AUD'::text, 'NZD'::text, 'CHF'::text, 'SEK'::text, 'NOK'::text, 'DKK'::text, 'PLN'::text, 'CZK'::text, 'HUF'::text, 'RON'::text])))",
+    "country_settings_date_order_chk": "CHECK ((date_order = ANY (ARRAY['dmy'::text, 'mdy'::text])))",
+    "country_settings_default_tz_chk": "CHECK ((default_timezone = ANY (timezones)))",
+    "country_settings_distance_unit_chk": "CHECK ((distance_unit = ANY (ARRAY['miles'::text, 'km'::text])))",
+    "country_settings_in_person_pct_chk": "CHECK (((card_fee_in_person_pct >= (0)::numeric) AND (card_fee_in_person_pct <= (100)::numeric)))",
+    "country_settings_minor_nonneg_chk": "CHECK (((starter_monthly_minor >= 0) AND (pro_monthly_minor >= 0) AND (max_monthly_minor >= 0) AND (pro_allowance_minor >= 0) AND (max_allowance_minor >= 0) AND (card_fee_online_fixed_minor >= 0) AND (card_fee_in_person_fixed_minor >= 0) AND (tap_to_pay_fixed_minor >= 0) AND (competitor_fixed_minor >= 0)))",
+    "country_settings_online_pct_chk": "CHECK (((card_fee_online_pct >= (0)::numeric) AND (card_fee_online_pct <= (100)::numeric)))",
+    "country_settings_phone_check_chk": "CHECK ((phone_check = ANY (ARRAY['length'::text, 'strict'::text, 'off'::text])))",
+    "country_settings_phone_chk": "CHECK ((phone_country_code ~ '^[1-9][0-9]{0,2}$'::text))",
+    "country_settings_platform_fee_pct_chk": "CHECK (((platform_fee_pct >= (0)::numeric) AND (platform_fee_pct <= (100)::numeric)))",
+    "country_settings_service_fee_bps_chk": "CHECK ((((service_fee_hatchgrab_bps >= 0) AND (service_fee_hatchgrab_bps <= 10000)) AND ((service_fee_truck_max_bps >= 0) AND (service_fee_truck_max_bps <= 10000))))",
+    "country_settings_service_fee_fixed_chk": "CHECK (((service_fee_hatchgrab_fixed_minor >= 0) AND (service_fee_truck_max_fixed_minor >= 0)))",
+    "country_settings_service_fee_recipient_chk": "CHECK ((service_fee_recipient = ANY (ARRAY['truck'::text, 'hatchgrab'::text])))",
+    "country_settings_surcharge_cap_pct_chk": "CHECK (((card_surcharge_cap_pct >= (0)::numeric) AND (card_surcharge_cap_pct <= (100)::numeric)))",
+    "country_settings_time_format_chk": "CHECK ((time_format = ANY (ARRAY['24h'::text, '12h'::text])))",
+    "country_settings_tip_presets_chk": "CHECK (((array_position(tip_presets_pct, NULL::numeric) IS NULL) AND ((0)::numeric <= ALL (tip_presets_pct)) AND ((100)::numeric >= ALL (tip_presets_pct))))",
+    "country_settings_week_start_chk": "CHECK ((week_start = ANY (ARRAY['monday'::text, 'sunday'::text])))"
+  },
+  "plan_prices": {
+    "plan_prices_extra_van_chk": "CHECK ((extra_van_monthly_minor >= 0))",
+    "plan_prices_fee_chk": "CHECK (((fee_bps >= 0) AND (fee_bps <= 10000)))",
+    "plan_prices_included_chk": "CHECK (((included_online_minor IS NULL) OR (included_online_minor >= 0)))",
+    "plan_prices_monthly_chk": "CHECK ((monthly_minor >= 0))"
+  }
+}

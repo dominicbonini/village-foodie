@@ -1,6 +1,6 @@
 # Translation check — fr-FR
 
-5056 keys checked against en-GB's 5042. **Structural: 0** (missing 0 — each would show its English fallback · extra 0 · ICU 0). Flags: english 75 · glossary 69 · banned 0 · invariants 0 · numbers 0 · length 219 · drift 234 · plans 0 · other 0.
+5056 keys checked against en-GB's 5042. **Structural: 0** (missing 0 — each would show its English fallback · extra 0 · ICU 0). Flags: english 75 · glossary 50 · banned 0 · invariants 0 · numbers 0 · length 219 · drift 234 · plans 0 · other 0.
 
 ## English left (75)
 
@@ -20,11 +20,10 @@
 | `emailSignup.signoffName` | identical to en-GB | Dominic |
 | … | 63 more | |
 
-## Glossary term not used (69)
+## Glossary term not used (50)
 
 | Key | Flag | Text |
 |---|---|---|
-| `order.privateEvent` | "Private event" → expected "privatisation" | Événement privé |
 | `dashboard.settings.intervalsHelp` | "Kitchen capacity" → expected "limiter le nombre de commandes par créneau" | L’intervalle entre les heures de retrait. Cela ne modifie ni la capacité de la cuisine ni les temps de préparation. |
 | `dashboard.settings.capacityTitle` | "Kitchen capacity" → expected "limiter le nombre de commandes par créneau" | Capacité de la cuisine |
 | `dashboard.settings.assignTruck` | "Kitchen capacity" → expected "limiter le nombre de commandes par créneau" | Attribuez un food truck à cet événement avant de définir la capacité de la cuisine. |
@@ -32,11 +31,12 @@
 | `preorder.deadline` | "Pre-order" → expected "commander à l'avance" | Précommandes jusqu’à {time} |
 | `preorder.deadlineOnDay` | "Pre-order" → expected "commander à l'avance" | Précommandes jusqu’à {time}, {day} |
 | `preorder.opens` | "Pre-order" → expected "commander à l'avance" | Ouverture des précommandes : {day} |
-| `privateLink.guestLabel` | "Private event" → expected "privatisation" | ÉVÉNEMENT PRIVÉ |
 | `errorsKitchen.slot_board_not_updated` | "Kitchen capacity" → expected "limiter le nombre de commandes par créneau" | Commande enregistrée, mais le tableau de capacité de la cuisine n’a pas pu être mis à jour — vérifiez le créneau avant d |
 | `printing.card.modeOnConfirmedHint` | "Pre-order" → expected "commander à l'avance" | Une précommande s’imprime lorsque vous l’acceptez, ce qui peut être plusieurs heures avant l’heure de retrait. Les comma |
 | `dashboardBanners.kitchenCapacity` | "Kitchen capacity" → expected "limiter le nombre de commandes par créneau" | Capacité de la cuisine |
-| … | 57 more | |
+| `goLive.kitchenCapacityUnset.title` | "Kitchen capacity" → expected "limiter le nombre de commandes par créneau" | Définissez la capacité de votre cuisine |
+| `goLive.kitchenCapacityUnset.where` | "Kitchen capacity" → expected "limiter le nombre de commandes par créneau" | Carte → Capacité de la cuisine |
+| … | 38 more | |
 
 ## Likely to overflow (much longer than en-GB) (219)
 

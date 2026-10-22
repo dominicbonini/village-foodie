@@ -6,6 +6,8 @@ import enAU from '@/messages/en-AU.json'
 import enNZ from '@/messages/en-NZ.json'
 import enCA from '@/messages/en-CA.json'
 import frFR from '@/messages/fr-FR.json'
+import enMT from '@/messages/en-MT.json'
+import enGI from '@/messages/en-GI.json'
 import type { AppLocale } from './locales'
 
-export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR }
+export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI }

@@ -288,7 +288,7 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   t('no country- or province-code comparison in the changed code', cc.length === 0, cc)
   t('the per-province tax and Quebec\'s closure live on the address format\'s region list (lib/address-formats.ts), and the CA row picks that format', /salesTax: CA_TAX\.hst13/.test(read('lib/address-formats.ts')) && CA.addressFormat === 'ca')
   // ⚠️ RE-PINNED (france-1, 22 October 2026): France's /fr follows Canada's entry in the same table.
-  t('Canada has its address /ca (COUNTRY_PATH_SEGMENTS) — the one table that gives a country a page', /CA: 'ca'(, FR: 'fr')? \}/.test(read('lib/marketing-country.ts')))
+  t('Canada has its address /ca (COUNTRY_PATH_SEGMENTS) — the one table that gives a country a page', /COUNTRY_PATH_SEGMENTS[^}]*\bCA: 'ca',/.test(read('lib/marketing-country.ts')))   // ⚠️ RE-PINNED (europe-settings): FR and the rest of Europe follow
   t('the CA phone example passes the app\'s phone check (416-555-0123, NANPA\'s fictional range)', await (async () => { const Ph = await kit.bundle('ca1-phone', "export { isPlausiblePhone } from '@/lib/phone'"); return Ph.isPlausiblePhone('416-555-0123', 'CA', 'length') && !Ph.isPlausiblePhone('416-555', 'CA', 'length') })())
 
   // ══ 9 ════════════════════════════════════════════════════════════════════════════════════════════════════════════

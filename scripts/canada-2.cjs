@@ -140,7 +140,8 @@ const WORDS = {
   // ends where France's begins; everything checked below is Canada's own text, as before.
   const frAt = A.indexOf('\n## France\n')
   const C = A.slice(at + 1, frAt > at ? frAt : undefined)
-  t('headings: … New Zealand, then Canada (then France); Canada has "For food truck operators" then "Privacy, for everyone in Canada"', JSON.stringify([...A.matchAll(/^## (.+)$/gm)].map(m => m[1])) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand', 'Canada', 'France'])
+  // ⚠️ RE-PINNED (europe-settings, 22 October 2026): two sections follow France — the EEA and Switzerland, and Gibraltar.
+  t('headings: … New Zealand, then Canada (then France, the EEA and Switzerland, Gibraltar); Canada has "For food truck operators" then "Privacy, for everyone in Canada"', JSON.stringify([...A.matchAll(/^## (.+)$/gm)].map(m => m[1])) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand', 'Canada', 'France', 'European Economic Area and Switzerland', 'Gibraltar'])
     && JSON.stringify([...C.matchAll(/^### (.+)$/gm)].map(m => m[1])) === JSON.stringify(['For food truck operators', 'Privacy, for everyone in Canada']))
   const paras = C.split(/\n\s*\n/).map(p => p.trim()).filter(p => p && !p.startsWith('#'))
   t(`every paragraph opens with a bold label (${paras.length})`, paras.every(p => /^\*\*[^*]+\.\*\* /.test(p)))

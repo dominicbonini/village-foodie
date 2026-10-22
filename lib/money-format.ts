@@ -31,8 +31,10 @@ import { currencyInfo } from '@/lib/currencies'
  *  format's Intl options, and its output, are exactly what they were. */
 export interface MoneyFormat { currency: string; locale: string; currencyDisplay?: 'narrowSymbol' }
 
-/** The Intl currency options for a format: its currency, plus its display override when it has one. */
-const currencyOpts = (f: MoneyFormat) => (f.currencyDisplay ? { style: 'currency' as const, currency: f.currency, currencyDisplay: f.currencyDisplay } : { style: 'currency' as const, currency: f.currency })
+/** The Intl currency options for a format: its currency, plus its display override when it has one — the format's own,
+ *  or the registry's for a locale that writes the currency's narrow symbol (`narrowIn`: "£29" in en-GI, never "GB£29"). */
+const displayOf = (f: MoneyFormat) => f.currencyDisplay ?? (currencyInfo(f.currency)?.narrowIn?.includes(f.locale) ? 'narrowSymbol' as const : undefined)
+const currencyOpts = (f: MoneyFormat) => { const d = displayOf(f); return d ? { style: 'currency' as const, currency: f.currency, currencyDisplay: d } : { style: 'currency' as const, currency: f.currency } }
 
 const cache = new Map<string, Intl.NumberFormat>()
 function nf(locale: string, opts: Intl.NumberFormatOptions): Intl.NumberFormat {

@@ -32,6 +32,7 @@ const EN = {
   'KDS': '\\bkitchen (display|screen)s?\\b',
   'Allergens': '\\ballergens?\\b',
   'Private event': '\\bprivate events?\\b',
+  'Private hire': '\\bprivate hire\\b',   // france-1 follow-up (22 October 2026): hiring a truck, split from Private event
   'WhatsApp auto-reply': '\\bauto-?repl(y|ies)\\b',
   'Card reader': '\\bcard readers?\\b',
   'Commission-free': '\\bcommission\\b',

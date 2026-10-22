@@ -31,7 +31,9 @@ export const MARKETING_COUNTRY = 'GB'
 // switched-off country, and it is in no router pick, hreflang set, sitemap or menu.
 // france-1 (22 October 2026): France's address, /fr — the first page in a language other than English (fr-FR). Switched
 // off, it 302s to /uk like the others.
-export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', FR: 'fr' }
+export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', FR: 'fr',
+  // europe-settings (22 October 2026): the rest of Stripe's Europe — each at its ISO code. Switched off, every one 302s to /uk.
+  AT: 'at', BE: 'be', BG: 'bg', HR: 'hr', CY: 'cy', CZ: 'cz', DK: 'dk', EE: 'ee', FI: 'fi', DE: 'de', GI: 'gi', GR: 'gr', HU: 'hu', IT: 'it', LV: 'lv', LI: 'li', LT: 'lt', LU: 'lu', MT: 'mt', NL: 'nl', NO: 'no', PL: 'pl', PT: 'pt', RO: 'ro', SK: 'sk', SI: 'si', ES: 'es', SE: 'se', CH: 'ch' }
 
 /** The three marketing pages that have a country address. */
 export type MarketingPage = 'landing' | 'features' | 'compare'

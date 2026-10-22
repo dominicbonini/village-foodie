@@ -99,8 +99,13 @@ const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
     R.CURRENCIES.every(c => intlOf(c) === INTL[c.code]), R.CURRENCIES.filter(c => intlOf(c) !== INTL[c.code]).map(c => `${c.code}: ${intlOf(c)}`))
   t('each form carries the registry\'s own symbol for it (`symbol` at home, `intlSymbol` side by side)', R.CURRENCIES.every(c => homeOf(c).includes(c.symbol) && intlOf(c).includes(c.intlSymbol)))
   const ownForm = c => sp(R.formatWholeAmount(2900, R.moneyFormatOf(F(c.code, c.locale))))
-  t('Intl does the work: the home form IS the country\'s own format, except where the registry overrides — and an override (`homeDisplay`) exists only where Intl alone misses the native symbol (RON: "29 RON" → "29 lei")',
-    R.CURRENCIES.every(c => (c.homeDisplay ? !ownForm(c).includes(c.symbol) && homeOf(c) !== ownForm(c) : homeOf(c) === ownForm(c))) && R.CURRENCIES.filter(c => c.homeDisplay).map(c => c.code).join() === 'RON',
+  // ⚠️ RE-PINNED (europe-settings, 22 October 2026): `narrowIn` writes a currency's narrow symbol in the locales that print it
+  // as foreign (ro-RO "29 RON", en-GI "GB£29") for EVERY amount, so a Romanian truck's own menu now says "29 lei" too — the
+  // home form and the truck's own form agree for all 14. The plan-only override (`homeDisplay`) is still RON's alone.
+  const rawForm = c => sp(new Intl.NumberFormat(c.locale, { style: 'currency', currency: c.code, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(29))
+  t('Intl does the work: the home form IS the country\'s own format; an override exists only where Intl alone misses the native symbol (RON: Intl\'s "29 RON" → "29 lei", plan prices and the truck\'s own alike)',
+    R.CURRENCIES.every(c => homeOf(c) === ownForm(c) && (c.homeDisplay ? !rawForm(c).includes(c.symbol) : rawForm(c) === ownForm(c))) && R.CURRENCIES.filter(c => c.homeDisplay).map(c => c.code).join() === 'RON'
+    && R.CURRENCIES.filter(c => c.narrowIn).map(c => `${c.code}:${c.narrowIn}`).join() === 'GBP:en-GI,RON:ro-RO',
     R.CURRENCIES.map(c => `${c.code} ${ownForm(c)} → ${homeOf(c)}`))
   t('GB / US / IE: the international form IS the home form (one format object for both)', ['GBP|en-GB', 'USD|en-US', 'EUR|en-IE'].every(k => { const [c, l] = k.split('|'); return JSON.stringify(R.intlMoneyFormatOf(F(c, l))) === JSON.stringify(R.moneyFormatOf(F(c, l))) }))
   const lineOf = c => { const x = R.currencyLineOf({ currency: c.code }); return x && R.translatorFor('en-GB', 'pricing')('currencyLine', x) }
