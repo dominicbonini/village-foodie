@@ -116,6 +116,10 @@ const NEW_WORDING = {
   'address.short.suburb': 'address-formats-2: "Suburb" in the import review and the Places editor',
   'address.tradeLabel.suburb': 'address-formats-2: "Suburb" on Where you trade (Australia)',
   'address.basedIn.suburb': 'address-formats-2: "Suburb you’re based in" at signup (Australia)',
+  // ⚠️ RE-PINNED (canada-1, 22 October 2026, docs/canada-1-report.md): the plain refusal for a truck based in a region closed to
+  // signups (Quebec, until HatchGrab is in French — data on the region, lib/address-formats.ts `signupClosed`). New words;
+  // scripts/canada-1.cjs §6 holds where it shows and its exact text.
+  'tradeArea.region_closed': 'canada-1: "Trucks based in {region} can’t sign up yet: HatchGrab isn’t available in {language} yet…" (Quebec)',
 }
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */

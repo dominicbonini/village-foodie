@@ -1,0 +1,19 @@
+{
+  "toast": {
+    "eventCancelled": "Event cancelled"
+  },
+  "cancelReasons": {
+    "customer_cancelled": "Customer cancelled"
+  },
+  "cancelModal": {
+    "noRefund": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer’s card.",
+    "held": "Their card is <b>held, not charged</b> — nothing has been charged, so there is nothing to refund. Cancelling releases the hold right away."
+  },
+  "orders": {
+    "completedSection": "Completed & cancelled ({count})",
+    "doneSummary": "{done} done{hasCancelled, select, yes { · {cancelled} cancelled} other {}}"
+  },
+  "stock": {
+    "howAvailable": "<b>Available</b>: green = on sale, grey = sold out (hidden from customers)."
+  }
+}

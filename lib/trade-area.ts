@@ -16,7 +16,7 @@ type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | '
   & Partial<Pick<CountrySettings, 'addressFormat'>>
 
 /** A refusal: a `tradeArea` message key and its values (the country's name, already as the settings row writes it). */
-export type TradeAreaCode = 'country_missing' | 'country_off' | 'zone_unknown' | 'town_missing' | 'town_too_long'
+export type TradeAreaCode = 'country_missing' | 'country_off' | 'zone_unknown' | 'town_missing' | 'town_too_long' | 'region_closed'
 export interface TradeAreaRefusal { code: TradeAreaCode; params: Record<string, string> }
 
 export const TRADE_AREA_ERRORS = {
@@ -25,6 +25,10 @@ export const TRADE_AREA_ERRORS = {
   zone: (name: string): TradeAreaRefusal => ({ code: 'zone_unknown', params: { country: name } }),
   noTown: { code: 'town_missing', params: {} } as TradeAreaRefusal,
   townTooLong: { code: 'town_too_long', params: {} } as TradeAreaRefusal,
+  // canada-1 (22 October 2026): the picked town is in a region whose address-format entry says signups there are closed
+  // (lib/address-formats.ts `signupClosed` — Quebec, until HatchGrab is in French). Its name and the language, as data.
+  regionClosed: (region: string, needsLanguage: string | undefined): TradeAreaRefusal =>
+    ({ code: 'region_closed', params: { region, hasLanguage: needsLanguage ? 'yes' : 'no', language: needsLanguage ?? '' } }),
 } as const
 
 /** What is stored on the truck. Coordinates and the place id are present only when a suggestion was picked. */
@@ -67,6 +71,10 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
   // 20261030_address_suburb_region.sql), which could not hold Australia's "NSW" or Ireland's "D".
   const fmt = addressFormatOf(c.addressFormat)
   const regionCodeFormat = fmt?.places.regionCode && fmt.regions ? fmt : null
+  // canada-1: a region the format closes to signups refuses here — the signup step, /api/setup, provisioning and Where you
+  // trade all run this, so none can accept it. Only a PICKED place carries a region code; a typed town has none.
+  const picked = pointed && regionCodeFormat && typeof input.base_region_code === 'string' ? regionOf(regionCodeFormat, input.base_region_code) : null
+  if (picked && picked.code === input.base_region_code && picked.signupClosed) return { ok: false, ...TRADE_AREA_ERRORS.regionClosed(picked.name, picked.signupClosed.needsLanguage) }
   return {
     ok: true,
     values: {

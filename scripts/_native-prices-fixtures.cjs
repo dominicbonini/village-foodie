@@ -3,7 +3,8 @@
 // inputs from here.
 //
 // GB, US (switched on), IE, AU and NZ are the rows the existing harnesses use (scripts/_lp1e-fixtures.cjs, ireland-1, anz-1).
-// CA and SE are FIXTURES ONLY: no such country exists, and neither has a page address. `page(…, { extraSegments: true })`
+// CA and SE are FIXTURES ONLY: no such country row exists. ⚠️ RE-PINNED (canada-1, 22 October 2026): CA has its real page
+// address now (/ca, lib/marketing-country.ts); SE still has none. `page(…, { extraSegments: true })`
 // gives them one INSIDE THE HARNESS BUNDLE (a patch of lib/marketing-country.ts's COUNTRY_PATH_SEGMENTS), so the real
 // landing, /features and /compare render for them; the app's own list is untouched. Their prices are illustrative (CAD 39,
 // SEK 29 — the brief's examples), chosen to show the format, not proposed.
@@ -80,7 +81,8 @@ const LIVE = () => [LP1E.GB(), LP1E.US_ON(), IE(), AU(), NZ()]
 const WITH_FIXTURES = () => [...LIVE(), CA(), SE()]
 const SEG = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', SE: 'se' }
 const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
-const SEGMENTS_FROM = "export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz' }"
+// ⚠️ RE-PINNED (canada-1, 22 October 2026): Canada has its real address now (/ca), so only the SE fixture is patched in.
+const SEGMENTS_FROM = "export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca' }"
 const SEGMENTS_TO = "export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', SE: 'se' }"
 
 /** A renderer over one LP1E context: `page(p, cc)` renders landing / features / compare for a country (HTML + metadata),

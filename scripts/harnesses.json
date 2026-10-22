@@ -148,6 +148,7 @@
     "outreach-legal-footer.cjs",
     "ireland-3.cjs",
     "anz-terms.cjs",
+    "canada-1.cjs",
     "language-phase-0.cjs",
     "messages-parity.cjs",
     "ui-literals.cjs",
@@ -203,6 +204,7 @@
         "_lp-ireland-3.cjs",
         "_lp-anz-terms.cjs",
         "_native-prices-fixtures.cjs",
+        "_canada-1-fixtures.cjs",
         "_lp-features-restore.cjs",
         "_outreach-schema-census.cjs",
         "_png-decode.cjs",
@@ -316,7 +318,8 @@
         "schedules-country-screenshots.cjs",
         "phase3-screens-shots.cjs",
         "address-formats-2-screens.cjs",
-        "native-prices-screens.cjs"
+        "native-prices-screens.cjs",
+        "canada-1-screens.cjs"
       ]
     }
   }

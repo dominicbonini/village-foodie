@@ -1706,10 +1706,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // the UK page is unchanged. They read `pageCharges`, the server's own engine run on this basket.
   //
   // UNDER THE BASKET HEADING: tax is not in the menu prices. The country's tax name in lower case
-  // ("sales tax"), and only where tax is added at checkout.
+  // ("sales tax"), and only where tax is added at checkout. canada-1 (22 October 2026): an ACRONYM stays as written — a
+  // Canadian truck's line is "HST" or "GST + PST", and "hst" is not a word — so only words that are not all capitals are lowered.
   const taxNoticeEl = checkout && !checkout.taxInclusive ? (
     <p className="text-[11px] text-slate-500 mb-2" data-tax-notice>
-      {tOrder('taxNotice', { tax: checkout.taxLabel.toLowerCase() })}
+      {tOrder('taxNotice', { tax: checkout.taxLabel.split(' ').map(w => (/^[A-Z]{2,}$/.test(w) ? w : w.toLowerCase())).join(' ') })}
     </p>
   ) : null
   // BESIDE IT (legal follow-ups, 19 October 2026): where the truck's online card orders carry a service fee, ONE line says

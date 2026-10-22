@@ -27,7 +27,9 @@ export const MARKETING_COUNTRY = 'GB'
 // US before it, /ie 302s to /uk and is left out of the router, hreflang, sitemap and menu until country_settings has an
 // IE row with enabled = true (a missing row counts as switched off everywhere these addresses are read).
 // anz-1 (21 October 2026): Australia /au and New Zealand /nz, on the same terms — invisible until each has an enabled row.
-export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz' }
+// canada-1 (22 October 2026): Canada's address, /ca. While CA is switched off (or has no row) it 302s to /uk like any
+// switched-off country, and it is in no router pick, hreflang set, sitemap or menu.
+export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca' }
 
 /** The three marketing pages that have a country address. */
 export type MarketingPage = 'landing' | 'features' | 'compare'

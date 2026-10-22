@@ -1,0 +1,382 @@
+[
+ {
+  "file": "webkit-ca-landing-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-landing-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-features-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-features-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-compare-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-compare-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-pdf-794.png",
+  "engine": "webkit",
+  "width": 794,
+  "scrollW": 794,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-on-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.72",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-on-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.72",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-bc-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-bc-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-ab-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-ab-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-sk-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.24",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-checkout-sk-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.24",
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-order-card-on-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-order-card-on-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "webkit-ca-manage-tax-on-390.png",
+  "engine": "webkit",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": "Leave it empty to charge HST at 13%, the rate on prepared food in Ontario."
+ },
+ {
+  "file": "webkit-ca-manage-tax-on-1440.png",
+  "engine": "webkit",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": "Leave it empty to charge HST at 13%, the rate on prepared food in Ontario."
+ },
+ {
+  "file": "chromium-ca-landing-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-landing-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-features-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-features-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-compare-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-compare-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-pdf-794.png",
+  "engine": "chromium",
+  "width": 794,
+  "scrollW": 794,
+  "line": "Prices in Canadian dollars (CAD)",
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-on-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.72",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-on-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.72",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-bc-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-bc-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-ab-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-ab-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $28.80",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-sk-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.24",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-checkout-sk-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": "Total $30.24",
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-order-card-on-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-order-card-on-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": null
+ },
+ {
+  "file": "chromium-ca-manage-tax-on-390.png",
+  "engine": "chromium",
+  "width": 390,
+  "scrollW": 390,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": "Leave it empty to charge HST at 13%, the rate on prepared food in Ontario."
+ },
+ {
+  "file": "chromium-ca-manage-tax-on-1440.png",
+  "engine": "chromium",
+  "width": 1440,
+  "scrollW": 1440,
+  "line": null,
+  "tax": null,
+  "total": null,
+  "regionDefault": "Leave it empty to charge HST at 13%, the rate on prepared food in Ontario."
+ }
+]

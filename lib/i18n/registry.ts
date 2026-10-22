@@ -14,7 +14,7 @@
 // (lib/i18n/messages.ts), which costs no browser anything.
 import type { Messages } from 'next-intl'
 import { deepMerge, type Tree } from './merge'
-import { resolveLocale, type AppLocale } from './locales'
+import { overrideChain, resolveLocale, type AppLocale } from './locales'
 
 interface Entry { base: Tree; overrides: Partial<Record<AppLocale, Tree>> }
 const ENTRIES = new Map<string, Entry>()
@@ -26,8 +26,9 @@ export function registerNamespace(namespace: string, base: unknown, overrides: P
   for (const k of [...MERGED.keys()]) if (k.endsWith(`|${namespace}`)) MERGED.delete(k)
 }
 
-/** One namespace in one locale: en-GB itself, or en-GB with that locale's file merged over it. Undefined when the
- *  namespace's catalog module was never imported (scripts/messages-split.cjs makes that a failed check). */
+/** One namespace in one locale: en-GB itself, or en-GB with that locale's file merged over it (canada-1: after its
+ *  parent's — en-CA reads en-US's file, then its own; lib/i18n/locales.ts LOCALE_PARENT). Undefined when the namespace's
+ *  catalog module was never imported (scripts/messages-split.cjs makes that a failed check). */
 export function namespaceMessages(locale: string | null | undefined, namespace: string): Tree | undefined {
   const l = resolveLocale(locale)
   const key = `${l}|${namespace}`
@@ -35,8 +36,8 @@ export function namespaceMessages(locale: string | null | undefined, namespace: 
   if (!m) {
     const e = ENTRIES.get(namespace)
     if (!e) return undefined
-    const over = e.overrides[l]
-    m = over && Object.keys(over).length ? deepMerge(e.base, over) : e.base
+    const overs = overrideChain(l).map(x => e.overrides[x]).filter((o): o is Tree => !!o && Object.keys(o).length > 0)
+    m = overs.length ? overs.reduce((acc, o) => deepMerge(acc, o), e.base) : e.base
     MERGED.set(key, m)
   }
   return m

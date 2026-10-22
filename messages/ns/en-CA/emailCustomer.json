@@ -1,0 +1,17 @@
+{
+  "cancellation": {
+    "subject": "Your order has been cancelled — {truck}",
+    "body": "Your order <b>#{id}</b> from <b>{truck}</b> has been cancelled.",
+    "textLead": "Hi {withName, select, yes {{name}} other {there}}, your order #{id} from {truck} has been cancelled."
+  },
+  "eventCancellation": {
+    "subject": "{truck} at {withLocation, select, yes {{location}} other {your event}} — cancelled",
+    "body": "Unfortunately <b>{truck}</b>’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled.",
+    "orderCancelled": "Your order <b>#{id}</b> has been cancelled.",
+    "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled."
+  },
+  "rejection": {
+    "body": "Unfortunately <b>{truck}</b> is unable to fulfil order #{id}.",
+    "textLead": "Unfortunately {truck} is unable to fulfil order #{id}."
+  }
+}

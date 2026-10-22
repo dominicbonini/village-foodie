@@ -45,7 +45,7 @@ async function photo(top) {   // the GB capture's own menu photos (Pizza Kitchen
   // The GB shot has Pizza first, then its "Specials" sub-category; the first item in its order is not shown.
   const menu = { categories: [{ id: 'c1', name: 'Pizza', subcategories: [{ id: 's1', name: 'Specials', sort_order: 1 }, { id: 's2', name: 'Sides', sort_order: 2 }] },
     { id: 'c2', name: 'Desserts' }, { id: 'c3', name: 'Drinks' }], items, upsell_rules: [], bundles: [] }
-  const ev = { id: 'ev-1', date: '01/09/2026', date_iso: '2026-09-01', date_friendly: 'Tuesday 1 September', start_time: '16:00', end_time: '20:00',
+  const ev = { id: 'ev-1', date: c.eventDate.date, date_iso: '2026-09-01', date_friendly: c.eventDate.friendly, start_time: '16:00', end_time: '20:00',
     venue_name: c.venue, village: c.town, notes: '', status: 'open', collection_interval_mins: 10 }
   const state = { truck, menu, events: [ev], event: ev, eventLoading: false, loading: false, noEvents: false, isScrolled: true, activeCategory: 'Pizza',
     basket: [{ menuItem: items[4], quantity: 1, modifiers: [], specialInstructions: '', cartKey: 'k-garlic' }], appliedDeals: [] }

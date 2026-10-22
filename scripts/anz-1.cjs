@@ -249,7 +249,8 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
     'Almond', 'Brazil nut', 'Cashew', 'Hazelnut', 'Macadamia', 'Pecan', 'Pine nut', 'Pistachio', 'Walnut']
   t('the anz list: the Food Standards Code PEAL list, 23 flat entries, tree nuts named one by one, no celery or mustard',
     JSON.stringify(A.allergenVocab('anz')) === JSON.stringify(ANZ) && !A.allergenVocab('anz').some(x => /celery|mustard|tree nuts|gluten/i.test(x)), A.allergenVocab('anz'))
-  t('the set list is uk14, us9, anz', JSON.stringify(A.ALLERGEN_SETS) === JSON.stringify(['uk14', 'us9', 'anz']))
+  // ⚠️ RE-PINNED (canada-1, 22 October 2026): the Canadian set follows (scripts/canada-1.cjs proves uk14 / us9 / anz unchanged).
+  t('the set list is uk14, us9, anz, ca', JSON.stringify(A.ALLERGEN_SETS) === JSON.stringify(['uk14', 'us9', 'anz', 'ca']))
   // 🔴 PINNED: the uk14 / us9 / no-set outputs, proved byte-identical to HEAD 4633801c (the report's proof run) and pinned here.
   const PINS = {
     uk14: { allergenVocab: 'fdeda71441c71e6f', genericReplacements: '1ec60ccf49050fb3', menuExtractAllergenLines: 'b050abf66792e8bf', menuExtractAllergenExample: 'a5b6223c428895d1',

@@ -1,0 +1,215 @@
+{
+  "order": {
+    "state": {
+      "confirmCancelled": "This order has been cancelled."
+    }
+  },
+  "dashboard": {
+    "toast": {
+      "eventCancelled": "Event cancelled"
+    },
+    "cancelReasons": {
+      "customer_cancelled": "Customer cancelled"
+    },
+    "cancelModal": {
+      "noRefund": "The order will be cancelled and the {amount} will stay with you. Nothing goes back to the customer’s card.",
+      "held": "Their card is <b>held, not charged</b> — nothing has been charged, so there is nothing to refund. Cancelling releases the hold right away."
+    },
+    "orders": {
+      "completedSection": "Completed & cancelled ({count})",
+      "doneSummary": "{done} done{hasCancelled, select, yes { · {cancelled} cancelled} other {}}"
+    },
+    "stock": {
+      "howAvailable": "<b>Available</b>: green = on sale, grey = sold out (hidden from customers)."
+    }
+  },
+  "errorsCustomer": {
+    "cannot_cancel": "This order can no longer be cancelled",
+    "cancel_window_passed": "{n, plural, one {Orders can no longer be cancelled within {count} minute of pickup} other {Orders can no longer be cancelled within {count} minutes of pickup}}"
+  },
+  "orderStatus": {
+    "cancelledTitle": "Order cancelled",
+    "cancelledBody": "Your order has been cancelled.{card, select, no {} other { If you paid by card, any refund is handled by {withTruck, select, yes {{truck}} other {the truck}} directly — please contact them about it.}}",
+    "statusCancelled": "This order has already been cancelled.",
+    "statusTooLate": "This order can no longer be cancelled.",
+    "statusName": {
+      "cancelled": "cancelled"
+    },
+    "cancelling": "Cancelling…"
+  },
+  "emailCustomer": {
+    "cancellation": {
+      "subject": "Your order has been cancelled — {truck}",
+      "body": "Your order <b>#{id}</b> from <b>{truck}</b> has been cancelled.",
+      "textLead": "Hi {withName, select, yes {{name}} other {there}}, your order #{id} from {truck} has been cancelled."
+    },
+    "eventCancellation": {
+      "subject": "{truck} at {withLocation, select, yes {{location}} other {your event}} — cancelled",
+      "body": "Unfortunately <b>{truck}</b>’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled.",
+      "orderCancelled": "Your order <b>#{id}</b> has been cancelled.",
+      "textLead": "Hi {withName, select, yes {{name}} other {there}}, unfortunately {truck}’s event{withLocation, select, yes { at {location}} other {}}{withDate, select, yes { on {date}} other {}} has been cancelled. Your order #{id} has been cancelled."
+    },
+    "rejection": {
+      "body": "Unfortunately <b>{truck}</b> is unable to fulfil order #{id}.",
+      "textLead": "Unfortunately {truck} is unable to fulfil order #{id}."
+    }
+  },
+  "kitchenModals": {
+    "eventCancel": {
+      "affected": "{n, plural, one {{count} order} other {{count} orders}} will be cancelled and customers notified.",
+      "cancelling": "Cancelling…"
+    }
+  },
+  "kds": {
+    "event": {
+      "cancelled": "Event cancelled"
+    }
+  },
+  "nativeShell": {
+    "gate": {
+      "status": "Order #{id} {action, select, confirm {confirmed} reject {rejected} ready {ready} collected {picked up} undo_collected {restored} cancel {cancelled} other {updated}}"
+    }
+  },
+  "paymentActions": {
+    "reason": "{reason, select, item_unavailable {Item unavailable} not_collected {Order not picked up} wrong_or_missing_item {Wrong or missing item} quality_issue {Quality issue} duplicate_payment {Duplicate payment} customer_cancelled {Customer cancelled} other {Other}}",
+    "paidCardMachine": "Paid on your card terminal{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Cash or your card terminal — not recorded"
+  },
+  "addOrder": {
+    "savedToast": "Order {id} saved{paid, select, cash { — paid in cash} card { — paid on your card terminal} other {}}",
+    "confirmedToast": "Order #{id} confirmed{paid, select, cash { — paid in cash} card { — paid on your card terminal} other {}}"
+  },
+  "emailAccount": {
+    "deletionScheduled": {
+      "cannotCancel": "<b>This cannot be cancelled from inside the app.</b> If this was not you, or you have\n    changed your mind, reply to this email as soon as possible."
+    }
+  },
+  "privateEvents": {
+    "form": {
+      "previewNote": "How it shows on your schedule — no venue, town or postal code."
+    }
+  },
+  "errorsManage": {
+    "wp_licence_required": "Please check the box to confirm you own or have a licence to use this font.",
+    "wp_last_toggle": "Keep either Location or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled."
+  },
+  "manageSchedule": {
+    "status": {
+      "cancelled": "Cancelled"
+    },
+    "toast": {
+      "eventCancelled": "Event cancelled",
+      "eventCancelledOrders": "Event cancelled · {count, plural, one {# order} other {# orders}} cancelled"
+    }
+  },
+  "schedulePlaces": {
+    "favRemoveAria": "Remove {name} from favourites",
+    "favAddAria": "Add {name} to favourites",
+    "favourites": "Favourites",
+    "favAddFailed": "Couldn’t add that favourite.",
+    "favRemoveFailed": "Couldn’t remove that favourite."
+  },
+  "socialPosts": {
+    "editorMoreSummary": "Spacing, tilt, words before, line spacing, darken the picture, centre the box",
+    "editorMoreSummaryBox": "Words before, line spacing, tilt, long names, centre the box",
+    "allTextSample": "Font, colour and effects for everything",
+    "followNote": "Same font, colour and effects as All text",
+    "lookSameHint": "Font, colour and effects come from All text. Pick “Its own style” to change them for this box only.",
+    "lookOwnHint": "This box has its own font, colour and effects. Pick “Same as All text” to match the others again.",
+    "styleMatchHint": "Font, colour and effects come from All text, so everything matches.",
+    "styleOwnHint": "Font, colour and effects are set just for this.",
+    "alignCentre": "≡ Centre",
+    "effectAutoHint": "If the words are hard to read on your picture, we add a soft shadow. Your colours never change.",
+    "labelCentreOn": "Centre on the picture"
+  },
+  "managePayments": {
+    "walkUp": {
+      "hatchgrabHelp": "Uses the same Stripe connection as your online payments — a card terminal, or tap to pay straight from your phone or tablet."
+    }
+  },
+  "designEditor": {
+    "rows": {
+      "showCancelled": "Show cancelled events",
+      "showCancelledHint": "A cancelled event shows its place crossed out and the word CANCELLED. Switched off, the day reads as a day off."
+    },
+    "picture": {
+      "drawBorderHint": "A line around the picture, in your own colour."
+    },
+    "settings": {
+      "colour": "Colour",
+      "textColour": "Text colour",
+      "lastToggle": "{kind, select, weekly {Keep either Place or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.} other {Keep either Venue or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.}}"
+    },
+    "align": {
+      "centre": "Centre"
+    },
+    "effects": {
+      "outlineColour": "Outline colour",
+      "bandColour": "Band colour",
+      "bandCancelled": "Band when the event is cancelled",
+      "bandCancelledHint": "Used instead of the band above when the event is cancelled."
+    },
+    "bits": {
+      "chooseColourFor": "{label} — choose any colour",
+      "chooseColour": "Choose any colour"
+    }
+  },
+  "fontPicker": {
+    "licenceTick": "I own this font or have a licence to use it"
+  },
+  "weeklyPost": {
+    "post": {
+      "eventDateCancelled": "{date} · cancelled",
+      "showCancelled": "Show cancelled events"
+    }
+  },
+  "manageTeam": {
+    "toast": {
+      "emailChangeCancelled": "Email change cancelled"
+    },
+    "cancelling": "Cancelling…"
+  },
+  "customDomain": {
+    "providers": {
+      "cloudflare": {
+        "proxy": "Set “Proxy status” to “DNS only” — the cloud beside it must be grey, not orange."
+      }
+    }
+  },
+  "posterWords": {
+    "cancelled": "CANCELLED"
+  },
+  "captions": {
+    "dayLineCancelled": "{day} — {where} — CANCELLED, sorry"
+  },
+  "weeklyPostApi": {
+    "licenceTick": "I own this font or have a licence to use it"
+  },
+  "landing": {
+    "jsonLd": {
+      "description": "Ordering, pre-orders and a kitchen screen for food trucks and catering in {country}."
+    },
+    "does": {
+      "devicesBody": "Runs on the phone in your apron, the tablet on the counter, the laptop in the truck — and the card terminal you already take payment on."
+    },
+    "meta": {
+      "description": "Take orders and pre-orders from your spot without the line. Ordering and kitchen-screen software for food trucks and catering in {country} — not a POS."
+    }
+  },
+  "siteFooter": {
+    "disclaimer": "Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor’s social media for last-minute updates."
+  },
+  "pricing": {
+    "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card terminal — HatchGrab charges 0%."
+  },
+  "featuresPage": {
+    "detail": {
+      "tap_to_pay": "Take card payments on a supported phone, so you don’t need a separate card terminal."
+    }
+  },
+  "compare": {
+    "breakdown": {
+      "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a card terminal at the window."
+    }
+  }
+}

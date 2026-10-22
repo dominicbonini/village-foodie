@@ -68,7 +68,7 @@ export interface CountrySettings {
   platformFeeEnabled: boolean
   /** Whether the service fee and card surcharge are taxed (D8). Default false. */
   feesTaxed: boolean
-  allergenSet: 'uk14' | 'us9' | 'anz'   // anz-1: Australia / New Zealand (lib/allergens.ts ANZ)
+  allergenSet: 'uk14' | 'us9' | 'anz' | 'ca'   // anz-1: Australia / New Zealand (lib/allergens.ts ANZ); canada-1: Canada (CA)
   /** allergen-card-country (21 October 2026): may a truck here show its allergens as ONE card for the whole menu
    *  (allergen_display_mode 'card')? True everywhere except where the law requires allergens per dish (Ireland, FSAI). */
   allergenCardOnlyAllowed: boolean

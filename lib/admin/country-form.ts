@@ -65,7 +65,7 @@ export interface CountryForm {
   addressFormat: AddressFormatKey
   timezones: string[]
   defaultTimezone: string
-  allergenSet: 'uk14' | 'us9' | 'anz'
+  allergenSet: 'uk14' | 'us9' | 'anz' | 'ca'
   /** allergen-card-country (21 October 2026): may trucks here show allergens as one card for the whole menu? */
   allergenCardOnlyAllowed: boolean
   supportHours: string
@@ -330,7 +330,7 @@ export function formToValues(f: CountryForm, ctx: { truckCount: number; storedCu
   if (badZone) err('timezones', `“${badZone}” isn't a time zone we recognise.`)
   if (new Set(timezones).size !== timezones.length) err('timezones', 'Each time zone can only appear once.')
   if (!timezones.includes(f.defaultTimezone)) err('defaultTimezone', 'The default time zone has to be one of the zones offered.')
-  if (f.allergenSet !== 'uk14' && f.allergenSet !== 'us9' && f.allergenSet !== 'anz') err('allergenSet', 'Choose an allergen list.')
+  if (f.allergenSet !== 'uk14' && f.allergenSet !== 'us9' && f.allergenSet !== 'anz' && f.allergenSet !== 'ca') err('allergenSet', 'Choose an allergen list.')
 
   if (errors.length) return { ok: false, errors }
   return {

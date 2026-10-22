@@ -11,22 +11,24 @@ import enUS from '@/messages/en-US.json'
 import enIE from '@/messages/en-IE.json'
 import enAU from '@/messages/en-AU.json'
 import enNZ from '@/messages/en-NZ.json'
+import enCA from '@/messages/en-CA.json'
 import type { Messages } from 'next-intl'
-import { DEFAULT_LOCALE, resolveLocale, type AppLocale } from './locales'
+import { DEFAULT_LOCALE, overrideChain, resolveLocale, type AppLocale } from './locales'
 import { deepMerge, type Tree } from './merge'
 
 export { deepMerge }
 
-const OVERRIDES: Record<AppLocale, Tree | null> = { 'en-GB': null, 'en-US': enUS as Tree, 'en-IE': enIE as Tree, 'en-AU': enAU as Tree, 'en-NZ': enNZ as Tree }
+const OVERRIDES: Record<AppLocale, Tree | null> = { 'en-GB': null, 'en-US': enUS as Tree, 'en-IE': enIE as Tree, 'en-AU': enAU as Tree, 'en-NZ': enNZ as Tree, 'en-CA': enCA as Tree }
 const CACHE = new Map<AppLocale, Messages>()
 
-/** Every message for a locale: en-GB itself, or en-GB with that locale's file merged over it. */
+/** Every message for a locale: en-GB itself, or en-GB with that locale's file merged over it — and, for a locale written
+ *  over another (canada-1: en-CA over en-US, lib/i18n/locales.ts LOCALE_PARENT), its parent's file first. */
 export function messagesFor(locale: string | null | undefined): Messages {
   const l = resolveLocale(locale)
   let m = CACHE.get(l)
   if (!m) {
-    const over = OVERRIDES[l]
-    m = (over ? deepMerge(enGB as Tree, over) : enGB) as Messages
+    const overs = overrideChain(l).map(x => OVERRIDES[x]).filter((o): o is Tree => !!o)
+    m = (overs.length ? overs.reduce((acc, o) => deepMerge(acc, o), enGB as Tree) : enGB) as Messages
     CACHE.set(l, m)
   }
   return m

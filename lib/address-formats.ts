@@ -39,7 +39,19 @@ export type FieldLabel = PostalLabel | RegionLabel | LocalityLabel | 'street'
 export type PostalNormaliser = 'gb' | 'eircode' | 'digits' | 'zip' | 'ca' | 'none'
 
 export interface AddressField { key: AddressFieldKey; required: boolean; label: FieldLabel }
-export interface Region { code: string; name: string; aliases?: readonly string[] }
+export interface Region {
+  code: string; name: string; aliases?: readonly string[]
+  /** canada-1 (22 October 2026): trucks BASED here cannot sign up yet (nor move their base here) — lib/trade-area.ts refuses
+   *  with `tradeArea.region_closed`, naming the region and, when given, the language HatchGrab must be available in first.
+   *  Quebec: the Charter of the French language (Bill 96) requires French, which HatchGrab does not have yet. */
+  signupClosed?: { needsLanguage?: string }
+  /** canada-1: the region's sales tax on prepared food, for a country whose menu prices exclude tax — the default a truck
+   *  based here gets (its own rate in Manage › Payments › Tax still wins) and the line's name on the checkout and receipt.
+   *  `milli` is thousandths of a percent (13 % = 13000), the unit of `trucks.tax_rate_milli`. */
+  salesTax?: RegionSalesTax
+}
+/** One region's sales tax: its name on the bill ("HST", "GST") and its rate in thousandths of a percent. */
+export interface RegionSalesTax { label: string; milli: number }
 /** A line: the parts are joined by `sep`; a part whose tokens are all empty is dropped; spaces collapse.
  *  `requires`: an alternative used only when those tokens have a value (the first alternative that qualifies wins). */
 export interface AddressTemplate { sep: string; parts: readonly string[]; requires?: readonly TemplateToken[] }
@@ -175,11 +187,38 @@ const AU_STATES: readonly Region[] = [
   ['TAS', 'Tasmania'], ['NT', 'Northern Territory'], ['ACT', 'Australian Capital Territory'],
 ].map(([code, name]) => ({ code, name }))
 
+// canada-1 (22 October 2026, docs/canada-1-report.md §2): each province's SALES TAX ON PREPARED FOOD (a food truck's meals) —
+// the default a truck based there gets and the name on its bill — and Quebec CLOSED to signups (French first, Bill 96).
+// Rates: CRA, "GST/HST rates" (https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/
+// charge-collect-which-rate.html — Nova Scotia's HST is 14% since 1 April 2025); prepared food is taxable for GST/HST (CRA
+// Memorandum 4.3). Provincial sales tax on meals: BRITISH COLUMBIA does not (PST 7 % exempts "Meals" — gov.bc.ca, food and beverage
+// service providers, 22 Apr 2026), so a BC truck's default is GST 5 %; SASKATCHEWAN taxes them (PST 6%, Information Bulletin PST-33: "meals and other
+// prepared food … are subject to PST"); MANITOBA taxes them (RST 7%; its 1 July 2026 grocery exemption excludes restaurants,
+// "concession stands, food carts and food trucks" — Information Notice RST 26-01). ⚠️ A province with TWO taxes is one line
+// today ("GST + PST", the combined rate): an order holds one tax line (lib/order-charges.ts), and Saskatchewan asks for PST
+// as a separate amount on the invoice — the two-line proposal is docs/canada-1-report.md §2.4, not built.
+const CA_TAX = {
+  gst: { label: 'GST', milli: 5000 },
+  hst13: { label: 'HST', milli: 13000 }, hst14: { label: 'HST', milli: 14000 }, hst15: { label: 'HST', milli: 15000 },
+  gstPstSk: { label: 'GST + PST', milli: 11000 }, gstRstMb: { label: 'GST + RST', milli: 12000 },
+} as const
 const CA_PROVINCES: readonly Region[] = [
-  ['AB', 'Alberta'], ['BC', 'British Columbia'], ['MB', 'Manitoba'], ['NB', 'New Brunswick'], ['NL', 'Newfoundland and Labrador'],
-  ['NS', 'Nova Scotia'], ['NT', 'Northwest Territories'], ['NU', 'Nunavut'], ['ON', 'Ontario'], ['PE', 'Prince Edward Island'],
-  ['QC', 'Quebec'], ['SK', 'Saskatchewan'], ['YT', 'Yukon'],
-].map(([code, name]) => ({ code, name }))
+  { code: 'AB', name: 'Alberta', salesTax: CA_TAX.gst },
+  // BC: PST does not apply to meals ("Sales of food for human consumption are exempt from PST, including: … Meals") — it does to
+  // soda beverages (7 %, since 1 April 2021) and liquor (10 %), which a truck selling them covers with its own rate (Dominic, 22 Oct).
+  { code: 'BC', name: 'British Columbia', salesTax: CA_TAX.gst },
+  { code: 'MB', name: 'Manitoba', salesTax: CA_TAX.gstRstMb },
+  { code: 'NB', name: 'New Brunswick', salesTax: CA_TAX.hst15 },
+  { code: 'NL', name: 'Newfoundland and Labrador', salesTax: CA_TAX.hst15 },
+  { code: 'NS', name: 'Nova Scotia', salesTax: CA_TAX.hst14 },
+  { code: 'NT', name: 'Northwest Territories', salesTax: CA_TAX.gst },
+  { code: 'NU', name: 'Nunavut', salesTax: CA_TAX.gst },
+  { code: 'ON', name: 'Ontario', salesTax: CA_TAX.hst13 },
+  { code: 'PE', name: 'Prince Edward Island', salesTax: CA_TAX.hst15 },
+  { code: 'QC', name: 'Quebec', signupClosed: { needsLanguage: 'French' } },
+  { code: 'SK', name: 'Saskatchewan', salesTax: CA_TAX.gstPstSk },
+  { code: 'YT', name: 'Yukon', salesTax: CA_TAX.gst },
+]
 
 // ── GB's and US's AI rules — THE PROMPTS' OWN LINES, VERBATIM (lib/schedule-extract.ts, lib/admin/screenshot-events.ts;
 // the scraper's from scripts/scraper-prompts.js, its UK and zip_state branches — address-formats-2 follow-up, 22 Oct 2026) ──
@@ -650,6 +689,15 @@ export function regionOf(format: AddressFormat | undefined, raw: unknown): Regio
   return format.regions.list.find(r => fold(r.code) === f || fold(r.name) === f || (r.aliases ?? []).some(a => fold(a) === f)) ?? null
 }
 
+/** canada-1: the sales tax of the region a truck is BASED in (`trucks.base_region_code`, stored exactly as the format's code),
+ *  or null — no format, no region list, a code not in it, or a region with no tax data (every US state: a US truck sets its
+ *  own rate, as before). */
+export function regionSalesTax(formatValue: unknown, code: unknown): RegionSalesTax | null {
+  const f = addressFormatOf(formatValue)
+  if (!f?.regions || typeof code !== 'string') return null
+  return f.regions.list.find(r => r.code === code)?.salesTax ?? null
+}
+
 /** How a region is written on a line: its code ("NSW") or its name ("Co. Kerry"), per the format. */
 export function regionDisplay(format: AddressFormat | undefined, raw: unknown): string | null {
   const r = regionOf(format, raw)
@@ -730,6 +778,9 @@ export function validateAddressFormats(formats: Readonly<Record<string, AddressF
       if (!codes.length) at('an empty region list')
       if (new Set(codes).size !== codes.length) at('a region code appears twice')
       for (const r of f.regions.list) if (!r.code.trim() || !r.name.trim() || r.code !== r.code.toUpperCase()) at(`malformed region ${JSON.stringify(r)}`)
+      // canada-1: a region's sales tax is a named rate between 0 and 100 %, in whole thousandths of a percent.
+      for (const r of f.regions.list) if (r.salesTax && (!r.salesTax.label.trim() || !Number.isInteger(r.salesTax.milli) || r.salesTax.milli < 0 || r.salesTax.milli > 100000)) at(`malformed sales tax on ${r.code}`)
+      for (const r of f.regions.list) if (r.signupClosed && r.salesTax) at(`${r.code} is closed to signups and also carries a sales tax`)
     }
     for (const [k, v] of Object.entries(f.examples)) if (typeof v !== 'string' || !v.trim()) at(`an empty example ${k}`)
     if (keys.includes('region') !== !!f.examples.region) at('a region field needs a region example, and an example needs the field')

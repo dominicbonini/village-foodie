@@ -1,4 +1,6 @@
-// The AUSTRALIA (au) and NEW ZEALAND (nz) fixtures for the landing screenshots (see README-anz.md in this folder).
+// The AUSTRALIA (au) and NEW ZEALAND (nz) fixtures for the landing screenshots (see README-anz.md in this folder) — and,
+// canada-1 (22 October 2026), CANADA (ca): the same three steps, with its own date order and week start (month-first,
+// Sunday; AU/NZ keep day-first, Monday, so their images are unchanged).
 // One table per country: money, time, phone, venue, customer names and a menu priced the way a pizza truck there
 // would price it. The order, dashboard and kitchen steps all read from here, so the three images agree.
 //
@@ -27,6 +29,21 @@ const C = {
     kdsNames: ['Liam', 'Olivia', 'Jack', 'Charlotte', 'Noah', 'Mia', 'Lachlan', 'Chloe', 'Isla', 'Cooper', 'Matilda', 'Harrison', 'Ruby', 'Archie', 'Zoe',
       'Hamish', 'Sienna', 'Angus', 'Evie', 'Mitchell'],
   },
+  ca: {
+    cc: 'CA', locale: 'en-CA', currency: 'CAD', timeZone: 'America/Toronto', utcOffset: -4,   // EDT in September (standard time from 1 Nov 2026)
+    dateOrder: 'mdy', weekStart: 'sunday', eventDate: { date: '09/01/2026', friendly: 'Tuesday, September 1' },
+    phone: { phoneCountry: 'CA', short_name: 'Canada', phone_example: '416-555-0123', phoneCheck: 'length' },
+    venue: 'Trinity Bellwoods Park', town: 'Toronto', staff: 'jess@pizzakitchen.example', can: '355 mL can.',
+    drinks: ['Coke', 'Canada Dry', 'Fanta', 'Water'],
+    // C$: pizzas 18–22, sides 9, drinks 3 (prices before tax — HST is added at checkout in Ontario)
+    price: { 'Margherita': 18, 'Marinara': 18, 'Four Cheese': 19, 'Garden Veggie': 19, 'Ham & Mushroom': 20, 'Hawaiian': 20, 'Calzone': 21, 'BBQ Chicken': 21,
+      'Spicy Chicken': 21, 'Chorizo & Pepper': 21, 'Pepperoni': 21, 'Tandoori Chicken': 21, 'Pesto Chicken': 21, 'Spicy Salami': 21, 'Goat’s Cheese': 21,
+      'Supreme': 22, 'Meat Lovers': 22, 'Hot Honey Pepperoni': 22, 'Nduja & Honey': 22, 'Truffle Mushroom': 22, 'Garlic Bread': 9,
+      'Coke': 3, 'Canada Dry': 3, 'Fanta': 3, 'Water': 2.5, 'Tiramisu': 9, 'Brownie': 7, 'Cookie': 4 },
+    dashQueue: ['Liam', 'Priya', 'Noah'], dashName: 'Chloé',
+    kdsNames: ['Liam', 'Olivia', 'Noah', 'Chloé', 'Arjun', 'Priya', 'Mateo', 'Zoe', 'Lucas', 'Mei', 'Owen', 'Nadia', 'Félix', 'Ava', 'Hassan', 'Grace',
+      'Daniel', 'Aaliyah', 'Ethan', 'Amelia'],
+  },
   nz: {
     cc: 'NZ', locale: 'en-NZ', currency: 'NZD', timeZone: 'Pacific/Auckland', utcOffset: 12,   // NZST in early September (daylight saving starts 27 Sep 2026)
     phone: { phoneCountry: 'NZ', short_name: 'New Zealand', phone_example: '021 123 4567', phoneCheck: 'length' },
@@ -50,8 +67,8 @@ function country() {
   process.argv.splice(2, 1)
   const c = C[key]
   const money = { currency: c.currency, locale: c.locale }
-  const time = { timeZone: c.timeZone, locale: c.locale, timeFormat: '12h', dateOrder: 'dmy', weekStart: 'monday' }
-  return { key, ...c, money, time, settings: { money: { ...money, localeByCountry: { [c.cc]: c.locale } }, currency: c.currency, country: c.cc, time, phone: c.phone } }
+  const time = { timeZone: c.timeZone, locale: c.locale, timeFormat: '12h', dateOrder: c.dateOrder ?? 'dmy', weekStart: c.weekStart ?? 'monday' }
+  return { key, ...c, eventDate: c.eventDate ?? { date: '01/09/2026', friendly: 'Tuesday 1 September' }, money, time, settings: { money: { ...money, localeByCountry: { [c.cc]: c.locale } }, currency: c.currency, country: c.cc, time, phone: c.phone } }
 }
 
 /** The UTC instant of a wall-clock time in the country on a given day — checked against Intl, so a wrong offset fails loudly. */
@@ -75,7 +92,7 @@ function clock(c, iso) {
   const wd = new Intl.DateTimeFormat(c.locale, { timeZone: c.timeZone, weekday: 'short' }).format(d)
   const day = new Intl.DateTimeFormat(c.locale, { timeZone: c.timeZone, day: 'numeric' }).format(d)
   const mon = new Intl.DateTimeFormat(c.locale, { timeZone: c.timeZone, month: 'long' }).format(d).slice(0, 3)
-  return { phone: hm, ipad: `${full}  ${wd} ${day} ${mon}` }
+  return { phone: hm, ipad: c.dateOrder === 'mdy' ? `${full}  ${wd} ${mon} ${day}` : `${full}  ${wd} ${day} ${mon}` }
 }
 
 module.exports = { country, instant, clock, PIZZAS, DESSERTS }

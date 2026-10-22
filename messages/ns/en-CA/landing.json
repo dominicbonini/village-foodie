@@ -1,0 +1,11 @@
+{
+  "jsonLd": {
+    "description": "Ordering, pre-orders and a kitchen screen for food trucks and catering in {country}."
+  },
+  "does": {
+    "devicesBody": "Runs on the phone in your apron, the tablet on the counter, the laptop in the truck — and the card terminal you already take payment on."
+  },
+  "meta": {
+    "description": "Take orders and pre-orders from your spot without the line. Ordering and kitchen-screen software for food trucks and catering in {country} — not a POS."
+  }
+}

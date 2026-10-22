@@ -42,6 +42,13 @@ const BY_COUNTRY: Record<string, Record<LandingScreen, string>> = {
     dashboard: '/screenshots/dashboard-v4-nz.png',
     phone: '/screenshots/customer-order-nz.png',
   },
+  // canada-1 (22 October 2026): a Canadian fixture truck ($ on the menu, en-CA, America/Toronto, 12-hour "p.m.", month-first
+  // dates, Trinity Bellwoods Park) — scripts/screenshots/anz-screens.cjs ca (README-anz.md). Never Gusto. Shown only on /ca.
+  CA: {
+    kitchen: '/screenshots/kitchen-ca.png',
+    dashboard: '/screenshots/dashboard-v4-ca.png',
+    phone: '/screenshots/customer-order-ca.png',
+  },
 }
 
 /** The public path of a hero screenshot for the visitor's marketing country (its ISO code, e.g. 'GB', 'US'). */

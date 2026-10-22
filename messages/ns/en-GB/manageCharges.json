@@ -2,7 +2,8 @@
   "heading": "Tax, tips and fees",
   "rate": {
     "label": "Sales tax rate",
-    "hint": "The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets."
+    "hint": "The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.",
+    "regionDefault": "Leave it empty to charge {label} at {rate}%, the rate on prepared food in {region}."
   },
   "tips": {
     "label": "Tips",

@@ -1,0 +1,9 @@
+{
+  "status": {
+    "cancelled": "Cancelled"
+  },
+  "toast": {
+    "eventCancelled": "Event cancelled",
+    "eventCancelledOrders": "Event cancelled · {count, plural, one {# order} other {# orders}} cancelled"
+  }
+}

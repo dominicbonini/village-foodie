@@ -64,7 +64,7 @@ interface ClassifierParams {
    *  the server's UTC date: from 00:00 to 01:00 BST it told the AI today was yesterday) and how dates and
    *  times read in the reply. Required. */
   time: TimeSettings
-  /** anz-1 (21 October 2026): the truck's allergen list (country_settings.allergen_set). Only 'anz' changes anything — it
+  /** anz-1 (21 October 2026): the truck's allergen list (country_settings.allergen_set). Only 'anz' and (canada-1) 'ca' change anything — it
    *  adds Australian/New Zealand phrasing to the allergen guard and the label families to the caveat check. Absent, 'uk14'
    *  or 'us9' → exactly the behaviour before. */
   allergenSet?: AllergenSet | null
@@ -164,12 +164,17 @@ const ALLERGEN_TOKENS = ['gf', 'df', 'free']
 // free) menu marks.
 const ANZ_ALLERGEN_STEMS = ['anaphyla', 'epipen', 'epi pen']
 const ANZ_ALLERGEN_TOKENS = ['nf', 'lf']
+// canada-1 (22 October 2026): CANADIAN PHRASING, for a 'ca' truck only — the same safety words (anaphylaxis / anaphylactic,
+// EpiPen, epi pen) and "peanut-free" / "nut-free" (Canadian schools' and menus' words; "free" is already a token above, so
+// "nut free" is caught — "peanut-free" is the one that needs its stem). Option B holds: bare allergen names stay out.
+const CA_ALLERGEN_STEMS = ['anaphyla', 'epipen', 'epi pen', 'peanut free', 'nut free']
 
 function mentionsAllergen(message: string, set?: AllergenSet | null): boolean {
   const normalised = ` ${message.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
   if (ALLERGEN_STEMS.some(stem => normalised.includes(stem))) return true
   const tokens = normalised.trim().split(' ')
   if (ALLERGEN_TOKENS.some(tok => tokens.includes(tok))) return true
+  if (set === 'ca') return CA_ALLERGEN_STEMS.some(stem => normalised.includes(stem))
   if (set !== 'anz') return false
   return ANZ_ALLERGEN_STEMS.some(stem => normalised.includes(stem)) || ANZ_ALLERGEN_TOKENS.some(tok => tokens.includes(tok))
 }
@@ -181,6 +186,15 @@ const ANZ_CAVEAT_WORDS: Record<string, string[]> = {
   crustacean: ['crustaceans', 'shellfish', 'prawn'], mollusc: ['molluscs', 'shellfish'], 'added sulphites': ['sulphite', 'sulfite'],
   wheat: ['gluten'], barley: ['gluten'], rye: ['gluten'], oats: ['gluten'],
   almond: ['nuts'], 'brazil nut': ['nuts'], cashew: ['nuts'], hazelnut: ['nuts'], macadamia: ['nuts'], pecan: ['nuts'], 'pine nut': ['nuts'], pistachio: ['nuts'], walnut: ['nuts'],
+}
+
+/** canada-1: the words a reply may use for a Canadian label — so "has dairy" for Milk, "wheat" or "gluten" for "Wheat and
+ *  triticale", "shrimp" for Crustaceans, or "sulfites" for "Added sulphites" still carries the caveat. CA only. */
+const CA_CAVEAT_WORDS: Record<string, string[]> = {
+  milk: ['dairy', 'lactose'], eggs: ['egg'], peanuts: ['peanut', 'nuts'], 'tree nuts': ['nuts', 'nut'], soy: ['soya'], sesame: ['sesame seeds'],
+  crustaceans: ['crustacean', 'shellfish', 'shrimp', 'prawn', 'crab', 'lobster'], molluscs: ['mollusc', 'shellfish', 'clams', 'mussels', 'oysters', 'scallops'],
+  'wheat and triticale': ['wheat', 'triticale', 'gluten'], 'gluten (barley, oats, rye)': ['gluten', 'barley', 'oats', 'rye'],
+  'added sulphites': ['sulphite', 'sulfite'], mustard: ['mustard'],
 }
 
 export interface WhatsAppReplyResult {
@@ -387,6 +401,7 @@ Rules (follow exactly — same discipline as "never make up events"):
           const w = String(a).trim().toLowerCase()
           if (w) allergenTagWords.add(w)
           if (w && params.allergenSet === 'anz') for (const x of ANZ_CAVEAT_WORDS[w] ?? []) allergenTagWords.add(x)   // anz-1
+          if (w && params.allergenSet === 'ca') for (const x of CA_CAVEAT_WORDS[w] ?? []) allergenTagWords.add(x)   // canada-1
         }
         const replyLower = llmReply.toLowerCase()
         const statesAllergen = [...allergenTagWords].some(w => replyLower.includes(w))

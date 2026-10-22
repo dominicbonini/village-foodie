@@ -18,6 +18,7 @@ import { formatMinor, currencySymbol, editableMinor } from '@/lib/money-format'
 import { applyBps } from '@/lib/order-charges'
 import { formatRateMilli, formatRateBps } from '@/lib/order-charge-lines'
 import { checkChargeSettings, feePhrase, pctText, type ChargeSettingsInput } from '@/lib/charge-settings'
+import { addressFormatOf, regionOf, regionSalesTax } from '@/lib/address-formats'
 // Language Phase 1d Part 2: the card's words are `manageCharges`; a refusal is an `errorsManage` code — the same one
 // `update_charges` sends — worded here in the truck's locale; the example quotes the customer's own charge line
 // (`charges.serviceFeeCustomer`), so it can never name a line the customer does not see.
@@ -28,6 +29,8 @@ import '@/lib/i18n/catalog/charges'
 
 export interface ChargesTruck {
   tax_rate_milli?: number | null
+  /** canada-1: the truck's base region ("ON"); its sales tax (lib/address-formats.ts) is the default when no rate is set. */
+  base_region_code?: string | null
   tipping_enabled?: boolean | null
   service_fee_enabled?: boolean | null
   service_fee_bps?: number | null
@@ -58,6 +61,10 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const [feeError, setFeeError] = useState<string | null>(null)
 
   if (cs.pricesIncludeTax) return null
+  // canada-1 (22 October 2026): the base region's sales tax, when the address format holds one (Canada) — the rate an empty box
+  // charges, shown as its placeholder and in one line under it. A region without one (every US state) shows nothing new.
+  const regionTax = regionSalesTax(cs.addressFormat, truck.base_region_code)
+  const regionName = regionTax ? regionOf(addressFormatOf(cs.addressFormat), truck.base_region_code)?.name ?? '' : ''
 
   const save = async (input: ChargeSettingsInput, onError: (e: string | null) => void) => {
     const r = checkChargeSettings(input, cs, money)
@@ -107,11 +114,12 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
             <input type="text" inputMode="decimal" aria-label={t('rate.label')} value={rate}
               onChange={e => setRate(e.target.value)}
               onBlur={() => { void save({ taxRate: rate }, setRateError) }}
-              placeholder="0"
+              placeholder={regionTax ? formatRateMilli(regionTax.milli) : '0'}
               className={`w-24 rounded-xl border px-3 py-2 text-sm text-right text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${rateError ? 'border-red-400' : 'border-slate-200'}`} />
             <span className="text-sm text-slate-600">%</span>
           </div>,
-          rateError ? <p className="text-xs text-red-600 mt-1" role="alert">{rateError}</p> : null,
+          rateError ? <p className="text-xs text-red-600 mt-1" role="alert">{rateError}</p>
+            : regionTax ? <p className="text-xs text-slate-500 mt-1" data-region-tax>{t('rate.regionDefault', { label: regionTax.label, rate: formatRateMilli(regionTax.milli), region: regionName })}</p> : null,
           'rate')}
 
         {row(t('tips.label'),

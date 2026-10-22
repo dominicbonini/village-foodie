@@ -420,7 +420,7 @@ export default function CountriesTab() {
     } },
 
     { group: 'Allergens and support' },
-    { label: 'Allergen list', cell: code => choice(code, 'allergenSet', [['uk14', 'UK 14'], ['us9', 'US 9'], ['anz', 'ANZ 23']]) },
+    { label: 'Allergen list', cell: code => choice(code, 'allergenSet', [['uk14', 'UK 14'], ['us9', 'US 9'], ['anz', 'ANZ 23'], ['ca', 'Canada 13']]) },
     // allergen-card-country (21 October 2026): off where the law needs allergens per dish (Ireland, FSAI) — trucks there are
     // not offered "Show an allergen card", and the server refuses it (docs/allergen-card-country-report.md).
     { label: 'Allergen card on its own', hint: 'Off where the law needs allergens shown against each dish', cell: code => toggle(code, 'allergenCardOnlyAllowed', `Allergen card on its own, ${code}`) },

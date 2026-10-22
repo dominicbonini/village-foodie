@@ -1,0 +1,6 @@
+{
+  "eventCancel": {
+    "affected": "{n, plural, one {{count} order} other {{count} orders}} will be cancelled and customers notified.",
+    "cancelling": "Cancelling…"
+  }
+}

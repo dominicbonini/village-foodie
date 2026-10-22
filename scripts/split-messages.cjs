@@ -2,7 +2,7 @@
 // scripts/split-messages.cjs — 🔴 THE ONE WAY THE PER-NAMESPACE CATALOGUE IS MADE (Language Phase 1b,
 // docs/language-phase-1b-report.md Part 1).
 //
-//   node scripts/split-messages.cjs           write the generated files from messages/en-GB.json + the override files (en-US, en-IE, en-AU, en-NZ)
+//   node scripts/split-messages.cjs           write the generated files from messages/en-GB.json + the override files (en-US, en-IE, en-AU, en-NZ, en-CA)
 //   node scripts/split-messages.cjs --check   change nothing; exit 1 if any generated file is missing, stale or extra
 //
 // The AUTHORED files stay messages/en-GB.json (the full base) and messages/en-US.json (only what differs). From them
@@ -17,7 +17,9 @@
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const CHECK = process.argv.includes('--check')
-const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ']
+// canada-1 (22 October 2026): en-CA, sparse — authored over en-US (lib/i18n/locales.ts LOCALE_PARENT); its namespace files
+// hold only its own keys, and lib/i18n/registry.ts merges en-US's first.
+const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA']
 // ireland-1 (20 October 2026): en-US is DENSE (a file per namespace, `{}` when it overrides nothing — as it always was);
 // a later locale is SPARSE: its per-namespace file is written, and imported by the catalog module, only where it overrides
 // something. en-IE overrides three namespaces, so the other catalog modules stay byte-identical.

@@ -1,0 +1,7 @@
+{
+  "providers": {
+    "cloudflare": {
+      "proxy": "Set “Proxy status” to “DNS only” — the cloud beside it must be grey, not orange."
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "post": {
+    "eventDateCancelled": "{date} · cancelled",
+    "showCancelled": "Show cancelled events"
+  }
+}

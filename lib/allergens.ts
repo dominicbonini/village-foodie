@@ -1,7 +1,7 @@
 // lib/allergens.ts — 🔴 THE ALLERGEN LIST A TRUCK USES, BY ITS COUNTRY (US readiness sweep, D35;
 // docs/us-readiness-sweep-report.md).
 //
-// PURE AND CLIENT-SAFE. `country_settings.allergen_set` says which list a country uses ('uk14' | 'us9' | 'anz'); every
+// PURE AND CLIENT-SAFE. `country_settings.allergen_set` says which list a country uses ('uk14' | 'us9' | 'anz' | 'ca'); every
 // place that offers, checks or asks an AI for allergens reads its list from here.
 //
 // ── 🔴 NO STORED DATA CHANGES ─────────────────────────────────────────────────────────────────────────────
@@ -12,9 +12,9 @@
 // ⚠️ THE UK LIST IS COPIED HERE VERBATIM, IN ITS ORDER, from components/manage/primitives.tsx's
 // `ALLERGEN_VOCAB` — which now re-exports it, so every UK screen and prompt reads exactly what it did.
 
-export type AllergenSet = 'uk14' | 'us9' | 'anz'
+export type AllergenSet = 'uk14' | 'us9' | 'anz' | 'ca'
 /** Every allergen set, for validation (lib/country-settings.ts, lib/admin/country-form.ts). */
-export const ALLERGEN_SETS: readonly AllergenSet[] = ['uk14', 'us9', 'anz']
+export const ALLERGEN_SETS: readonly AllergenSet[] = ['uk14', 'us9', 'anz', 'ca']
 
 /** The 14 allergens UK law requires a food business to declare. */
 export const UK_14 = ['Gluten', 'Crustaceans', 'Eggs', 'Fish', 'Peanuts', 'Soy', 'Dairy', 'Tree nuts', 'Celery', 'Mustard', 'Sesame', 'Sulphites', 'Lupin', 'Molluscs'] as const
@@ -27,12 +27,20 @@ export const US_9 = ['Milk', 'Eggs', 'Fish', 'Crustacean shellfish', 'Tree nuts'
  *  from the list's length). */
 export const ANZ = ['Wheat', 'Barley', 'Rye', 'Oats', 'Milk', 'Egg', 'Fish', 'Crustacean', 'Mollusc', 'Sesame', 'Lupin', 'Soy', 'Peanut',
   'Added sulphites', 'Almond', 'Brazil nut', 'Cashew', 'Hazelnut', 'Macadamia', 'Pecan', 'Pine nut', 'Pistachio', 'Walnut'] as const
+/** canada-1 (22 October 2026): Health Canada's PRIORITY FOOD ALLERGENS — peanuts, tree nuts, sesame, milk, eggs, fish,
+ *  crustaceans, molluscs, soy, wheat and triticale, mustard and sulphites (added, 10 ppm or more) — and the other gluten
+ *  sources (barley, oats, rye) as one entry. Health Canada groups "Crustaceans and molluscs" as one priority allergen; they
+ *  are two entries here, as in the UK list, so a menu can say which. A flat list like the others.
+ *  https://www.canada.ca/en/health-canada/services/food-allergies-intolerances/avoiding-allergens-food/allergen-labelling.html
+ *  https://inspection.canada.ca/en/food-labels/labelling/industry/list-ingredients-and-allergens */
+export const CA = ['Peanuts', 'Tree nuts', 'Sesame', 'Milk', 'Eggs', 'Fish', 'Crustaceans', 'Molluscs', 'Soy', 'Wheat and triticale', 'Mustard',
+  'Added sulphites', 'Gluten (barley, oats, rye)'] as const
 /** The nine tree nuts the ANZ list names one by one. */
 export const ANZ_TREE_NUTS = ['Almond', 'Brazil nut', 'Cashew', 'Hazelnut', 'Macadamia', 'Pecan', 'Pine nut', 'Pistachio', 'Walnut'] as const
 
 /** The list for a country's set. Anything unrecognised is the UK list — the list every truck had before. */
 export function allergenVocab(set: AllergenSet | null | undefined): readonly string[] {
-  return set === 'us9' ? US_9 : set === 'anz' ? ANZ : UK_14
+  return set === 'us9' ? US_9 : set === 'anz' ? ANZ : set === 'ca' ? CA : UK_14
 }
 
 /**
@@ -46,6 +54,16 @@ export function genericReplacements(set: AllergenSet | null | undefined): Record
   // anz: the Code names cereals and tree nuts one by one, so "Gluten", "Tree nuts" and "Nuts" are generics here, and so
   // are the UK/US labels a copied or imported menu may carry ("Dairy", "Eggs", …) — each must be refined to the ANZ
   // label(s) before it is confirmed, never dropped (dropping would under-warn).
+  // canada-1: the UK / US / ANZ labels a copied or imported menu may carry, refined to the Canadian ones. "Gluten" may be
+  // either cereal entry; "Shellfish" either of crustaceans and molluscs.
+  if (set === 'ca') {
+    return {
+      Nuts: ['Tree nuts', 'Peanuts'], Shellfish: ['Crustaceans', 'Molluscs'], Gluten: ['Wheat and triticale', 'Gluten (barley, oats, rye)'],
+      Dairy: ['Milk'], Wheat: ['Wheat and triticale'], 'Crustacean shellfish': ['Crustaceans'], Crustacean: ['Crustaceans'], Mollusc: ['Molluscs'],
+      Egg: ['Eggs'], Peanut: ['Peanuts'], Soybeans: ['Soy'], Sulphites: ['Added sulphites'], Barley: ['Gluten (barley, oats, rye)'], Oats: ['Gluten (barley, oats, rye)'],
+      Rye: ['Gluten (barley, oats, rye)'],
+    }
+  }
   if (set === 'anz') {
     return {
       Nuts: [...ANZ_TREE_NUTS, 'Peanut'], 'Tree nuts': [...ANZ_TREE_NUTS], Gluten: ['Wheat', 'Barley', 'Rye', 'Oats'],
@@ -65,6 +83,15 @@ export function genericReplacements(set: AllergenSet | null | undefined): Record
 
 /** lib/menu-extract.ts — the allergen block of the importer prompt, after the "allergens:" rule line. */
 export function menuExtractAllergenLines(set: AllergenSet | null | undefined): string {
+  if (set === 'ca') {
+    return `  The priority food allergens of Canadian food law (use these EXACT names): ${CA.join(', ')}
+  Map common menu wording to these names:
+  "dairy"/"lactose"/"cheese"/"cream"/"butter" → Milk; "egg" → Eggs; "peanut"/"groundnuts" → Peanuts; "nuts"/"almonds"/"cashews"/"walnuts"/"pecans"/"hazelnuts" → Tree nuts;
+  "soya"/"soybeans"/"tofu" → Soy; "shrimp"/"prawn"/"crab"/"lobster" → Crustaceans; "mussels"/"clams"/"oysters"/"scallops"/"squid" → Molluscs;
+  "sulphur dioxide"/"sulfites"/"sulphites" → Added sulphites; "flour"/"wheat"/"triticale" → Wheat and triticale; "barley"/"oats"/"rye" → Gluten (barley, oats, rye).
+  A bare "gluten" (no grain named) is NOT one of these names — leave it as "Gluten" (the operator refines it).
+  Normalise prefixes — "Includes Milk" / "Contains Milk" both become "Milk"; "May Contain Peanuts" becomes "Peanuts".`
+  }
   if (set === 'anz') {
     return `  The allergens Australian and New Zealand food law requires to be declared (use these EXACT names): ${ANZ.join(', ')}
   Map common menu wording to these names:
@@ -92,12 +119,18 @@ export function menuExtractAllergenLines(set: AllergenSet | null | undefined): s
 
 /** The importer prompt's example array for the "allergens:" rule line. */
 export function menuExtractAllergenExample(set: AllergenSet | null | undefined): string {
+  if (set === 'ca') return '["Milk", "Wheat and triticale", "Peanuts"]'
   if (set === 'anz') return '["Milk", "Wheat", "Peanut"]'
   return set === 'us9' ? '["Milk", "Wheat", "Peanuts"]' : '["Dairy", "Gluten", "Peanuts"]'
 }
 
 /** app/api/manage/process-allergens — the card prompt's list block. */
 export function allergenCardListLines(set: AllergenSet | null | undefined): string {
+  if (set === 'ca') {
+    return `Standard allergens to look for (the priority food allergens of Canadian food law — use these EXACT names):
+${CA.slice(0, 7).join(', ')},
+${CA.slice(7).join(', ')}`
+  }
   if (set === 'anz') {
     return `Standard allergens to look for (the allergens Australian and New Zealand food law requires to be declared — use these EXACT names):
 ${ANZ.slice(0, 14).join(', ')},
@@ -114,6 +147,11 @@ Celery, Mustard, Sesame, Sulphites, Lupin, Molluscs`
 
 /** The card prompt's closing rule. */
 export function allergenCardClosingRule(set: AllergenSet | null | undefined): string {
+  if (set === 'ca') {
+    return `If information is unclear or not present for a field, use an empty array or null. Be precise — the EXACT names
+only; map "dairy"→"Milk", "sulphites"→"Added sulphites", "wheat"→"Wheat and triticale", and "barley"/"oats"/"rye"→"Gluten (barley, oats, rye)".
+Leave generic "Nuts"/"Shellfish"/"Gluten" as written (the operator refines them).`
+  }
   if (set === 'anz') {
     return `If information is unclear or not present for a field, use an empty array or null. Be precise — the EXACT names
 only; map "dairy"→"Milk", "eggs"→"Egg", "sulphites"→"Added sulphites", and name each tree nut and each cereal on its own. Leave generic
@@ -131,6 +169,7 @@ names only; map "milk"→"Dairy". Leave generic "Nuts"/"Shellfish" as written (t
 export function allergenCardExample(set: AllergenSet | null | undefined): { contains: string; mayContain: string; entry: string; freeFrom: string; blanket: string } {
   // freeFrom / blanket (anz-1): the card prompt's two remaining example arrays — the UK/US prompt's own literals, so those
   // prompts are byte-identical; an ANZ prompt names ANZ labels ("Tree nuts" is not one).
+  if (set === 'ca') return { contains: '["Milk", "Wheat and triticale", "Eggs"]', mayContain: '["Nuts", "Soy"]', entry: '["Peanuts", "Wheat and triticale", "Crustaceans"]', freeFrom: '["Shellfish", "Fish"]', blanket: '["Tree nuts"]' }
   if (set === 'anz') return { contains: '["Milk", "Wheat", "Egg"]', mayContain: '["Nuts", "Soy"]', entry: '["Peanut", "Wheat", "Crustacean"]', freeFrom: '["Crustacean", "Fish"]', blanket: '["Peanut"]' }
   return set === 'us9'
     ? { contains: '["Milk", "Wheat", "Eggs"]', mayContain: '["Nuts", "Soybeans"]', entry: '["Peanuts", "Wheat", "Crustacean shellfish"]', freeFrom: '["Shellfish", "Fish"]', blanket: '["Tree nuts"]' }
@@ -143,6 +182,12 @@ export function allergenCardExample(set: AllergenSet | null | undefined): { cont
  * only where the examples write them. Any other set gets the text back unchanged — a UK or US prompt is byte-identical.
  */
 export function localiseExampleAllergens(text: string, set: AllergenSet | null | undefined): string {
+  // canada-1: the same four swaps for a Canadian truck, onto the Canadian labels.
+  if (set === 'ca') {
+    return text
+      .replace('(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Dairy"], Halloumi → ["Dairy"])', '(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Milk"], Halloumi → ["Milk"])')
+      .replace('"allergens": ["Dairy", "Lactose", "Gluten", "Eggs"]', '"allergens": ["Milk", "Wheat and triticale", "Eggs"]')
+  }
   if (set !== 'anz') return text
   return text
     .replace('(e.g. Prawn →\n  ["Crustaceans"], Cheese → ["Dairy"], Halloumi → ["Dairy"])', '(e.g. Prawn →\n  ["Crustacean"], Cheese → ["Milk"], Halloumi → ["Milk"])')

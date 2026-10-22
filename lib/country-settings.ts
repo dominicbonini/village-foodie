@@ -130,7 +130,7 @@ export function mapCountryRow(r: Row): CountrySettings {
     serviceFeeAllowed: bool(c, r, 'service_fee_allowed'),
     tippingEnabledDefault: bool(c, r, 'tipping_enabled_default'),
     tipPresetsPct: numArr(c, r, 'tip_presets_pct'),
-    allergenSet: oneOf(c, r, 'allergen_set', ['uk14', 'us9', 'anz'] as const),
+    allergenSet: oneOf(c, r, 'allergen_set', ['uk14', 'us9', 'anz', 'ca'] as const),   // canada-1: 'ca'
     allergenCardOnlyAllowed: bool(c, r, 'allergen_card_only_allowed'),
     cardFeeOnlinePct: num(c, r, 'card_fee_online_pct'),
     cardFeeOnlineFixedMinor: num(c, r, 'card_fee_online_fixed_minor'),

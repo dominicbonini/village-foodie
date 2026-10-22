@@ -1,0 +1,4 @@
+{
+  "savedToast": "Order {id} saved{paid, select, cash { — paid in cash} card { — paid on your card terminal} other {}}",
+  "confirmedToast": "Order #{id} confirmed{paid, select, cash { — paid in cash} card { — paid on your card terminal} other {}}"
+}

@@ -6,9 +6,11 @@
 // pure engine in lib/order-charges.ts.
 //
 // ── PRECEDENCE ──────────────────────────────────────────────────────────────────────────────────────────
-//   tax rule and name     the country (prices_include_tax, tax_label)
-//   tax rate              the truck's ONE rate, `tax_rate_milli` (thousandths of a percent). Ignored where tax
-//                         is included. ⛔ NO PER-EVENT OVERRIDE (Dominic, 13 October 2026): each truck has one
+//   tax rule and name     the country (prices_include_tax, tax_label) — canada-1 (22 October 2026): where tax is added on
+//                         top and the truck's base REGION carries a sales tax in its address format (lib/address-formats.ts
+//                         `salesTax`: Ontario "HST" 13 %, Alberta "GST" 5 %…), that region's name instead
+//   tax rate              the truck's ONE rate, `tax_rate_milli` (thousandths of a percent) — canada-1: else its region's
+//                         rate. Ignored where tax is included. ⛔ NO PER-EVENT OVERRIDE (Dominic, 13 October 2026): each truck has one
 //                         rate, and `truck_events.tax_rate_bps` is retired — unread and unwritten.
 //   tipping               the truck's tipping_enabled, else the country's tipping_enabled_default; the
 //                         presets are always the country's.
@@ -27,6 +29,7 @@ import type { CountrySettings } from '@/lib/country-settings-types'
 import { countrySettingsForTruck } from '@/lib/country-settings'
 import { truckPlanFeeBps } from '@/lib/plans-server'
 import type { OrderChargeRules } from '@/lib/order-charges'
+import { regionSalesTax } from '@/lib/address-formats'
 
 /** The truck columns the rules read (20261010_17). Every one is optional so a row read before the
  *  migration, or a narrow select, resolves to the defaults rather than failing. */
@@ -34,6 +37,8 @@ export interface TruckChargeFields {
   country?: string | null
   /** Thousandths of a percent (8.25 % = 8250). `tax_rate_bps` is retired (20261010_18) and never read. */
   tax_rate_milli?: number | null
+  /** canada-1: the truck's base region code ("ON") — its region's sales tax is the default rate and the line's name. */
+  base_region_code?: string | null
   tipping_enabled?: boolean | null
   card_fee_payer?: string | null
   service_fee_enabled?: boolean | null
@@ -53,7 +58,9 @@ export function resolveChargeRules(
   platformFeeBps: number | null = null,
 ): OrderChargeRules {
   const taxInclusive = country.pricesIncludeTax
-  const taxRateMilli = taxInclusive ? null : int(truck.tax_rate_milli)
+  // canada-1: the region's tax is DATA on the country's address format; a region without it (every US state) changes nothing.
+  const regionTax = taxInclusive ? null : regionSalesTax(country.addressFormat, truck.base_region_code)
+  const taxRateMilli = taxInclusive ? null : (int(truck.tax_rate_milli) ?? regionTax?.milli ?? null)
 
   let serviceFee: OrderChargeRules['serviceFee'] = null
   if (country.serviceFeeAllowed) {
@@ -74,7 +81,7 @@ export function resolveChargeRules(
 
   return {
     taxInclusive,
-    taxLabel: country.taxLabel,
+    taxLabel: regionTax?.label ?? country.taxLabel,
     taxRateMilli,
     feesTaxed: country.feesTaxed,
     serviceFee,

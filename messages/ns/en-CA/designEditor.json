@@ -1,0 +1,27 @@
+{
+  "rows": {
+    "showCancelled": "Show cancelled events",
+    "showCancelledHint": "A cancelled event shows its place crossed out and the word CANCELLED. Switched off, the day reads as a day off."
+  },
+  "picture": {
+    "drawBorderHint": "A line around the picture, in your own colour."
+  },
+  "settings": {
+    "colour": "Colour",
+    "textColour": "Text colour",
+    "lastToggle": "{kind, select, weekly {Keep either Place or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.} other {Keep either Venue or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.}}"
+  },
+  "align": {
+    "centre": "Centre"
+  },
+  "effects": {
+    "outlineColour": "Outline colour",
+    "bandColour": "Band colour",
+    "bandCancelled": "Band when the event is cancelled",
+    "bandCancelledHint": "Used instead of the band above when the event is cancelled."
+  },
+  "bits": {
+    "chooseColourFor": "{label} — choose any colour",
+    "chooseColour": "Choose any colour"
+  }
+}

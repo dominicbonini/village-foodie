@@ -1,4 +1,11 @@
-# Australia (AU) and New Zealand (NZ) screenshots
+# Australia (AU), New Zealand (NZ) and Canada (CA) screenshots
+
+> **canada-1 (22 October 2026):** the same scripts make Canada's three images — pass `ca`. The fixture is Pizza Kitchen at
+> Trinity Bellwoods Park, Toronto: CAD in `en-CA`, America/Toronto, 12-hour ("10:21 p.m."), **month-first** dates and
+> weeks starting **Sunday** (the `ca` entry's own `dateOrder` / `weekStart` / `eventDate`; AU and NZ keep day-first and
+> Monday, so their images are unchanged), phone 416-555-0123, prices before tax (C$18–22 pizzas), Canada Dry for 7Up,
+> 355 mL cans and Toronto names. `node scripts/screenshots/anz-screens.cjs ca docs/canada-1`; the copies in
+> `public/screenshots/*-ca.png` are mapped in `lib/landing-screens.ts` and shown only on /ca.
 
 These scripts make the three landing-page images for Australia and for New Zealand. One set of scripts does both countries: you pass `au` or `nz`. They are the AU/NZ twins of the US scripts (`README.md`) and the IE scripts (`README-ie.md`), and they leave those untouched.
 

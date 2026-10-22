@@ -3,5 +3,6 @@
   "country_off": "Trucks in that country can’t sign up yet. Choose another country.",
   "zone_unknown": "That time zone isn’t one we offer for that country. Choose one from the list.",
   "town_missing": "Tell us the town or city you’re based in.",
-  "town_too_long": "That town name is too long — 120 characters at most."
+  "town_too_long": "That town name is too long — 120 characters at most.",
+  "region_closed": "Trucks based in {region} can’t sign up yet{hasLanguage, select, yes {: HatchGrab isn’t available in {language} yet} other {}}. If your truck is based somewhere else, choose that town or city."
 }

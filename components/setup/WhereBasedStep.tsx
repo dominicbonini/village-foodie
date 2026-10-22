@@ -15,7 +15,7 @@ import type { SignupCountry } from '@/lib/signup-country-types'
 import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaRefusal } from '@/lib/trade-area'
 import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
 import { useT } from '@/lib/i18n/use-t'
-import { addressFormatOrDefault, fieldOf, type LocalityLabel } from '@/lib/address-formats'
+import { addressFormatKeyOf, addressFormatOrDefault, fieldOf, type LocalityLabel } from '@/lib/address-formats'
 import '@/lib/i18n/catalog/address'
 import '@/lib/i18n/catalog/whereBased'
 import '@/lib/i18n/catalog/tradeArea'
@@ -60,7 +60,9 @@ export function baseAnswerBody(a: BaseAnswer) {
 export function baseAnswerErrors(a: BaseAnswer, countries: SignupCountry[]): BaseErrors {
   const c = countries.find(x => x.code === a.country)
   if (!c) return { country: TRADE_AREA_ERRORS.noCountry }
-  const facts = { countryCode: c.code, name: c.name, enabled: true, timezones: c.timezones, defaultTimezone: c.defaultTimezone }
+  // canada-1 (22 October 2026): the country's address format too, so a town in a region closed to signups (Quebec) is refused
+  // here, in the step, in the same words as the server (lib/trade-area.ts `region_closed`).
+  const facts = { countryCode: c.code, name: c.name, enabled: true, timezones: c.timezones, defaultTimezone: c.defaultTimezone, addressFormat: addressFormatKeyOf(c.addressFormat) ?? undefined }
   const errs: BaseErrors = {}
   if (!c.timezones.includes(a.timezone)) errs.timezone = TRADE_AREA_ERRORS.zone(c.name)
   if (!a.place.name.trim()) errs.town = TRADE_AREA_ERRORS.noTown

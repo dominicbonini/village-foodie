@@ -1,0 +1,13 @@
+{
+  "editorMoreSummary": "Spacing, tilt, words before, line spacing, darken the picture, centre the box",
+  "editorMoreSummaryBox": "Words before, line spacing, tilt, long names, centre the box",
+  "allTextSample": "Font, colour and effects for everything",
+  "followNote": "Same font, colour and effects as All text",
+  "lookSameHint": "Font, colour and effects come from All text. Pick “Its own style” to change them for this box only.",
+  "lookOwnHint": "This box has its own font, colour and effects. Pick “Same as All text” to match the others again.",
+  "styleMatchHint": "Font, colour and effects come from All text, so everything matches.",
+  "styleOwnHint": "Font, colour and effects are set just for this.",
+  "alignCentre": "≡ Centre",
+  "effectAutoHint": "If the words are hard to read on your picture, we add a soft shadow. Your colours never change.",
+  "labelCentreOn": "Centre on the picture"
+}
