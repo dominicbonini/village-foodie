@@ -53,7 +53,12 @@ module.exports = async function us(h) {
     t('the engine supports a surcharge (3 % of $24.00 = 72¢) when rules carry one', sur.cardSurchargeMinor === 72 && sur.totalMinor === 2400 + 198 + 72)
 
     const gb = E.computeOrderCharges({ foodMinor: 2380, rules: rules({ taxInclusive: true, taxLabel: 'VAT', taxRateMilli: 20000, tipping: null }), channel: 'online_card' })
-    t('tax-inclusive: tax 0, rate stored NULL whatever rate is around, total = food', gb.taxMinor === 0 && gb.snapshot.tax_rate_milli === null && gb.totalMinor === 2380)
+    // ⚠️ RE-PINNED (france-1, 22 October 2026): an INCLUSIVE rate the rules carry is kept on the snapshot (France's TVA, worded
+    // « Dont TVA » after the total) and NEVER added. GB / IE / AU / NZ rules carry none — the resolver gives null for every
+    // inclusive format without `includedTax` (scripts/france-1.cjs §5) — so their snapshots store NULL exactly as before.
+    const gbNull = E.computeOrderCharges({ foodMinor: 2380, rules: rules({ taxInclusive: true, taxLabel: 'VAT', taxRateMilli: null, tipping: null }), channel: 'online_card' })
+    t('tax-inclusive: tax 0, nothing added, total = food; a carried inclusive rate is kept (not added), a GB-style rule (no rate) stores NULL',
+      gb.taxMinor === 0 && gb.totalMinor === 2380 && gb.snapshot.tax_rate_milli === 20000 && gbNull.taxMinor === 0 && gbNull.snapshot.tax_rate_milli === null && gbNull.totalMinor === 2380)
 
     t('refuses a non-integer food amount', (() => { try { E.computeOrderCharges({ foodMinor: 23.8, rules: rules(), channel: 'walk_up' }); return false } catch { return true } })())
     t('tip choice parsing: absent → null; malformed → invalid; a preset → allowed; a non-preset → not allowed',

@@ -1,7 +1,9 @@
 // Step 2 of the AU/NZ dashboard screenshot: frame <work>/dash-web-<au|nz>.png like public/screenshots/dashboard-v4.png (read
 // only), scaled to 800x551. Like the US frame (frame-dash.cjs), the clock is repainted in 12-hour form — "10:21 pm  Tue 1 Sep"
 // (the time from Intl in en-AU/en-NZ, the date day-month) — and nudged once onto the GB clock's position.
-//   node frame-dash-anz.cjs <au|nz> <workDir> <outDir> → <outDir>/dashboard-v4-<au|nz>.png
+// france-1: a 24-hour country (fr) is repainted too, because the GB date is English — "22:21  mar. 1 sept." (A.clock's 24-hour
+// form: time, weekday and month from Intl in fr-FR).
+//   node frame-dash-anz.cjs <au|nz|ca|fr> <workDir> <outDir> → <outDir>/dashboard-v4-<cc>.png
 const path = require('path'); const frame = require('./frame-ipad.cjs'); const bb = require('./bbox.cjs')
 const A = require('./anz-fixtures.cjs')
 const c = A.country()

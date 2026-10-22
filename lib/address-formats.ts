@@ -25,7 +25,7 @@
 // suburb / townOrCity), so they translate. Examples, patterns, region names, templates and the AI rules ARE here: they
 // are facts about a country's addresses ("CB8 8PD" is the same in every language), not words to translate.
 
-export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca'
+export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca' | 'fr'
 /** The two values `country_settings.address_format` held before this stage. Still accepted (see `addressFormatKeyOf`)
  *  so a deploy is safe before the "run after deploy" SQL maps them. */
 export type LegacyAddressStyle = 'postcode' | 'zip_state'
@@ -161,6 +161,11 @@ export interface AddressFormat {
    *  Kerry" → "KY"); null keeps none, and the key is absent from the answer (GB's answer is what it was). */
   places: { localityTypes: readonly string[]; regionFrom: readonly PlacesAdminLevel[]; regionCode: 'exact' | 'match' | null }
   ai: AddressAi
+  /** france-1 (22 October 2026): a country whose prices INCLUDE tax (country_settings.prices_include_tax) and whose receipts
+   *  say how much of the price is that tax: the label and the default rate (thousandths of a percent, the unit of
+   *  `trucks.tax_rate_milli`; the truck may set its own). Nothing is ever ADDED to a price — the rate only words the
+   *  "Dont TVA 10 % : 1,09 €" line after the total. Absent (GB, IE — every format before France): exactly as before. */
+  includedTax?: RegionSalesTax
 }
 
 // ── Region lists ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -492,6 +497,59 @@ cannot be determined, use "".`,
   },
 }
 
+/* france-1 (22 October 2026): France — street, 5-digit code postal, ville; no region. Schedules arrive in French ("samedi
+ * 14 juin", "18h-22h", "18 h 30"), so the rules say how to read them; the JSON keys are the same as every format's. */
+const FR_AI: AddressAi = {
+  importer: {
+    knowledge: `venues and locations in {country}`,
+    venueRules: `- Extract ONLY the venue name — never include the town (ville) or the code postal in venue_name
+- "Place Bellecour Lyon 69002" → venue_name="Place Bellecour", town="Lyon", postcode="69002"
+- "Marché de la Croix-Rousse, 69004 Lyon, 18h-22h" → venue_name="Marché de la Croix-Rousse", town="Lyon", postcode="69004"
+- A French article belongs to the venue name ("Le Bistrot du Port", "La Halle"); "à"/"au"/"sur" before a town is not part of either`,
+    postalRules: `CODE POSTAL RULES:
+- "postcode" holds the French code postal: exactly 5 digits (e.g. "75011", "69002", "13001") — written before the town in a French address ("69002 Lyon")
+- A code postal covers a whole area or district, never one building
+- Paris, Lyon and Marseille have one code per arrondissement ("75011" = Paris 11e, "69002" = Lyon 2e); keep the town as "Paris", "Lyon" or "Marseille"
+- A number of 5 digits next to a town is the code postal, not a street number
+- Never return a region or département name; there is no "state" for France`,
+    addressRules: `ADDRESS RULES:
+- address is for street-level detail only — number + street (e.g. "12 rue de la République", "3 place du Marché")
+- NEVER populate address with the town or the code postal — leave it blank if no street address is available
+- Most schedules will not have a street address — leave address as "" in those cases`,
+    enrichRules: `- If you have a venue name and town but no code postal → give the venue's code postal only if you are certain of it
+- If you have a venue name but no town → determine the town from your knowledge of that venue in {country}
+- If the venue name is ambiguous and you have a code postal or town → use that to identify the correct venue
+- Only enrich with high confidence — if uncertain, leave the field as ""
+- French dates and times: "samedi 14 juin" → 14/06; "18h", "18 h", "18h00" → "18:00"; "18h30", "18 h 30" → "18:30"; "midi" → "12:00"; "de 18h à 22h" → start 18:00, end 22:00`,
+    examples: `Input: "Mercredi 3 juin Place Bellecour 69002 Lyon"
+Output: {"event_date":"03/06/{year}","start_time":"","end_time":"","venue_name":"Place Bellecour","town":"Lyon","postcode":"69002"}
+
+Input: "Sam. 14 juin — Marché de la Croix-Rousse, Lyon, 18h-22h"
+Output: {"event_date":"14/06/{year}","start_time":"18:00","end_time":"22:00","venue_name":"Marché de la Croix-Rousse","town":"Lyon","postcode":""}
+
+Input: "Vendredi 20/06 Parking du Leclerc à Villeurbanne de 11 h 30 à 14 h"
+Output: {"event_date":"20/06/{year}","start_time":"11:30","end_time":"14:00","venue_name":"Parking du Leclerc","town":"Villeurbanne","postcode":""}`,
+    outputShape: `"town":"Ville","postcode":"CODE POSTAL"`,
+  },
+  screenshot: {
+    locationLines: `- Extract ONLY the venue name into "Venue Name" — never include the town or the code postal in it.
+- Put the town (ville) in "Village", and the code postal, if one is shown, in "Postcode".
+- A French code postal is 5 digits, written before the town ("69002 Lyon"). If no code postal is shown, use "".
+- French times: "18h" = "18:00", "18h30" or "18 h 30" = "18:30".`,
+    eventShape: `{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Lyon", "Postcode": "69002" }`,
+  },
+  scraper: {
+    venueRules: `VENUE RULES: "venue_name" = ONLY the venue name. "town" = the town or city (ville) it is in. "postcode" = the 5-digit code postal (e.g. "69002"), otherwise "".`,
+    townRules: `TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town is EMBEDDED inside the venue name, SPLIT it out —
+put the place-name in "town" and keep "venue_name" as just the venue name ("Marché de Villeurbanne" -> venue
+"Marché", town "Villeurbanne" only when the town is clearly a place-name added to a generic venue). Never leave a
+town buried in venue_name. If the town truly cannot be determined, use "".`,
+    examples: `  "Place Bellecour Lyon 69002"      -> {"venue_name":"Place Bellecour","town":"Lyon","postcode":"69002"}
+  "Parking du Leclerc, Villeurbanne" -> {"venue_name":"Parking du Leclerc","town":"Villeurbanne"}`,
+    outputShape: `"town":"Ville","postcode":"Code postal or empty"`,
+  },
+}
+
 // ── The templates the GB/US displays already wrote, as data (each one byte-identical to the code it replaced) ───────
 const COMMA_VENUE_LOCALITY_POSTAL: AddressTemplate = { sep: ', ', parts: ['{venue}', '{locality}', '{postalCode}'] }
 const DOT_LOCALITY_POSTAL: AddressTemplate = { sep: ' · ', parts: ['{locality}', '{postalCode}'] }
@@ -634,6 +692,33 @@ export const ADDRESS_FORMATS: Readonly<Record<AddressFormatKey, AddressFormat>> 
     places: { localityTypes: ['locality'], regionFrom: ['administrative_area_level_1'], regionCode: 'exact' },
     ai: CA_AI,
   },
+  // france-1 (22 October 2026): "12 rue de la République, 69002 Lyon" — the code postal BEFORE the town, no region.
+  // A code postal covers a whole commune or arrondissement, never one premises.
+  fr: {
+    key: 'fr',
+    adminLabel: 'France — code postal, ville',
+    fields: [
+      { key: 'street', required: false, label: 'street' },
+      { key: 'locality', required: true, label: 'city' },
+      { key: 'postalCode', required: false, label: 'postalCode' },
+    ],
+    regions: null,
+    postalCode: { pattern: '^\\d{5}$', normaliser: 'digits', example: '69002', identifiesPremises: false },
+    entry: { customersSee: true, postalCheck: true, requiredMarks: true, regionInput: 'text', sublines: 'area', reviewAndPlaces: true },
+    examples: { venue: 'Place Bellecour', addressLine: '12 rue de la République, Lyon', locality: 'Lyon', importPostalCode: '69002', paste: 'Place Bellecour, Lyon' },
+    templates: {
+      line: { sep: ', ', parts: ['{venue}', '{postalCode} {locality}'] },
+      area: [{ sep: ' ', parts: ['{postalCode}', '{locality}'] }],
+      calendar: { sep: ', ', parts: ['{venue}', '{postalCode} {locality}'] },
+      geocode: { sep: ', ', parts: ['{venue}', '{postalCode} {locality}', '{country}'] },
+    },
+    places: { localityTypes: ['locality'], regionFrom: [], regionCode: null },
+    ai: FR_AI,
+    // TVA on hot food and non-alcoholic drinks sold to take away, for immediate consumption: 10 % (CGI art. 279 m and n;
+    // entreprendre.service-public.gouv.fr F22399). Sealed food kept for later is 5,5 %, alcohol 20 % — the truck sets its
+    // own rate when its sales are mostly those (docs/france-1-report.md §2).
+    includedTax: { label: 'TVA', milli: 10000 },
+  },
 }
 
 export const ADDRESS_FORMAT_KEYS: readonly AddressFormatKey[] = Object.keys(ADDRESS_FORMATS) as AddressFormatKey[]
@@ -702,6 +787,11 @@ export function regionSalesTax(formatValue: unknown, code: unknown): RegionSales
 }
 
 /** How a region is written on a line: its code ("NSW") or its name ("Co. Kerry"), per the format. */
+/** france-1: the tax a format's prices INCLUDE, by default (null for every format but France's). */
+export function includedTaxOf(formatValue: unknown): RegionSalesTax | null {
+  return addressFormatOf(formatValue)?.includedTax ?? null
+}
+
 export function regionDisplay(format: AddressFormat | undefined, raw: unknown): string | null {
   const r = regionOf(format, raw)
   if (!r) return null

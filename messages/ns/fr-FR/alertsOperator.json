@@ -1,0 +1,28 @@
+{
+  "hi": "Bonjour {name},",
+  "limit80": {
+    "subject": "Vous avez utilisé 80 % des réponses WhatsApp de ce mois-ci",
+    "used": "Vos réponses automatiques WhatsApp en sont à <b>{used} sur {limit}</b> pour ce mois-ci.",
+    "nothingStopped": "Rien n’est interrompu. Quand vous atteindrez {limit}, les réponses automatiques seront mises en pause jusqu’à la réinitialisation de votre quota le <b>{reset}</b> — vos clients pourront toujours vous écrire, et vous verrez toujours tout ce qu’ils envoient.",
+    "raise": "Vous pouvez augmenter votre limite mensuelle dans les Paramètres quand vous le souhaitez.",
+    "raiseLink": "Vous pouvez augmenter votre limite mensuelle dans les Paramètres quand vous le souhaitez :",
+    "button": "Ouvrir les Paramètres"
+  },
+  "limit100": {
+    "subject": "Vos réponses automatiques WhatsApp sont en pause pour ce mois-ci",
+    "usedAll": "Vous avez utilisé la totalité des {limit} réponses automatiques WhatsApp de ce mois-ci : elles sont donc en pause.",
+    "stillReach": "<b>Vos clients peuvent toujours vous écrire normalement, et chaque message vous parvient toujours.</b> Seule la réponse automatique envoyée en retour est interrompue.",
+    "startAgain": "Elles reprendront le <b>{reset}</b>, ou immédiatement si vous augmentez votre limite mensuelle dans les Paramètres.",
+    "startAgainLink": "Elles reprendront le {reset}, ou immédiatement si vous augmentez votre limite mensuelle dans les Paramètres :",
+    "button": "Augmenter ma limite"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp a besoin d’un moyen de paiement avant de pouvoir envoyer des messages",
+    "stopped": "WhatsApp a bloqué l’envoi de vos réponses automatiques, car aucun moyen de paiement valide n’est associé à votre compte WhatsApp Business.",
+    "stillMessage": "<b>Vos clients peuvent toujours vous écrire, et vous verrez toujours tout ce qu’ils envoient</b> — mais les réponses ne leur parviennent pas.",
+    "payDirect": "Vous payez ces messages directement à WhatsApp : le problème se règle donc dans WhatsApp Manager, et non dans HatchGrab. Ajoutez ou mettez à jour une carte là-bas et les réponses reprendront d’elles-mêmes.",
+    "payDirectLink": "Vous payez ces messages directement à WhatsApp : le problème se règle donc dans WhatsApp Manager, et non dans HatchGrab. Ajoutez ou mettez à jour une carte là-bas et les réponses reprendront d’elles-mêmes :",
+    "button": "Ouvrir WhatsApp Manager",
+    "settings": "Vos paramètres HatchGrab : <link>{url}</link>"
+  }
+}

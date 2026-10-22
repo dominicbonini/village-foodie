@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} créneau} other {{count} créneaux}} en surcapacité — à vérifier",
+  "batchOver": "{cat} : fournée dépassée — {count} pour {slot} ({per} par fournée)",
+  "eventStartOver": "Surcapacité au début de l’événement — {n, plural, one {{count} article} other {{count} articles}} pour {slot}",
+  "kitchenOver": "Cuisine en surcapacité — {n, plural, one {{count} article} other {{count} articles}} en cuisson pour {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} article} other {{count} articles}}",
+  "placedAnyway": "Passées malgré tout : {list}",
+  "placedItem": "#{id} pour {slot}",
+  "orphans": "{times} en surcapacité — aucune commande trouvée à laquelle l’attribuer",
+  "dismiss": "Ignorer",
+  "kitchenCapacity": "Capacité de la cuisine",
+  "overCapacity": "Surcapacité",
+  "wakeUnsupported": "Cet appareil ne peut pas garder l’écran allumé.",
+  "wakeInsecure": "L’écran ne peut pas rester allumé depuis cette adresse.",
+  "wakeRetry": "Garder l’écran allumé — touchez pour réessayer",
+  "wakeAcquire": "Garder l’écran allumé",
+  "degraded": {
+    "serverError": "Le serveur n’a pas pu charger les commandes{hasStatus, select, yes { (erreur {status})} other {}}. Affichage des commandes de {at}. De nouvelles commandes peuvent manquer.",
+    "unreachable": "Impossible de joindre le serveur. Affichage des commandes de {at}. De nouvelles commandes peuvent manquer."
+  }
+}

@@ -189,3 +189,16 @@ html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }
 .manage-tab-pad:has(> *:first-child > [data-subtab-bar]:first-child) {
   padding-top: 0;
 }
+
+/* ── languages-1 (22 October 2026): MANAGE'S MENU AND SCHEDULE HEADER BUTTONS IN A LONGER LANGUAGE ──────────────────
+   "Import menu" and "+ Add category" (Schedule: "Import" and "+ Add event") sit side by side, both `whitespace-nowrap`, beside the "Menu" heading — and at 390px
+   another language's labels ("+ Ajouter une catégorie") push the row sideways. On a NON-English page only, on a phone, the
+   pair may wrap onto two lines (right-aligned), which is the whole fix. ⛔ English pages match none of this (`:lang(en)`),
+   so their row is exactly as before; the selector is the row's own shape (the two-button group whose second button sits in
+   a `self-start` wrapper — Menu's and Schedule's headers), so nothing else in Manage is touched. */
+@media (max-width: 639px) {
+  :root:not(:lang(en)) .justify-between > .flex.items-center.gap-2:has(> .flex-col.items-end + .self-start) {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

@@ -48,7 +48,7 @@ import {
 import { averageSample } from '@/lib/weekly-post/contrast'
 import { formatTimeRangeFor, type TimeStyle } from '@/lib/weekly-post/format'
 import {
-  LOCALES, PLACE_STYLE_IDS, DEFAULT_PLACE_STYLE, dateTextFor, intlLocaleFor, joinNameTown,
+  localeFor, PLACE_STYLE_IDS, DEFAULT_PLACE_STYLE, dateTextFor, intlLocaleFor, joinNameTown,
   type CountryCode, type DateStyleId, type PlaceStyleId,
 } from '@/lib/weekly-post/locale'
 import { addDaysYmd, weekdayName } from '@/lib/time-utils'
@@ -315,7 +315,7 @@ function placeLinesFor(style: unknown, t: DesignEditorT): string[] {
 }
 
 function itemsOf(l: AnyLayout, country: CountryCode, t: DesignEditorT, run: { first: string; last: string }, sp: SocialPostsT): Item[] {
-  const spec = LOCALES[country]
+  const spec = localeFor(country)   // languages-1: a language's poster key has its own spec (GB / US: the same object as before)
   const dateSample = dateSampleFor(l, country)
   /* 🔴 `placeStyleSample`, NOT `PLACE_STYLE_SAMPLES[...]` — 7 October 2026. The bare index threw on a
    * design saved before part 1, which has no `placeStyle` at all. The read path is fixed at source so
@@ -3223,7 +3223,7 @@ function SettingsPanel(p: SettingsProps & {
   const t = useT('designEditor')
   const sp = useT('socialPosts')
   const isWeek = isWeekLayout(layout)
-  const spec = LOCALES[country]
+  const spec = localeFor(country)   // languages-1: a language's poster key has its own spec (GB / US: the same object as before)
   const dateBox = selected === 'date' ? (layout.date as DateBox) : null
   const itemName = selItem?.name ?? t('item.thisBox')
   const shared = layout.textStyle

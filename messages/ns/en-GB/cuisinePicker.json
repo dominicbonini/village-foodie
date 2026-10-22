@@ -3,5 +3,32 @@
   "other": "Other…",
   "otherPlaceholder": "Tell us your cuisine",
   "addAnother": "+ Choose another",
-  "remove": "Remove {label}"
+  "remove": "Remove {label}",
+  "cuisine": {
+    "Asian": "Asian",
+    "BBQ": "BBQ",
+    "Bakery": "Bakery",
+    "Burgers": "Burgers",
+    "Caribbean": "Caribbean",
+    "Chicken": "Chicken",
+    "Chinese": "Chinese",
+    "Coffee": "Coffee",
+    "Desserts": "Desserts",
+    "FishChips": "Fish & Chips",
+    "Greek": "Greek",
+    "HotDogs": "Hot Dogs",
+    "Indian": "Indian",
+    "Italian": "Italian",
+    "JacketPotatoes": "Jacket Potatoes",
+    "Kebab": "Kebab",
+    "Korean": "Korean",
+    "Mexican": "Mexican",
+    "PieMash": "Pie & Mash",
+    "Pizza": "Pizza",
+    "Seafood": "Seafood",
+    "Tacos": "Tacos",
+    "Thai": "Thai",
+    "Vegan": "Vegan",
+    "Wraps": "Wraps"
+  }
 }

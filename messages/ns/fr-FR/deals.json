@@ -1,0 +1,17 @@
+{
+  "back": "← Retour",
+  "title": "Appliquer une formule",
+  "save": "Économisez {amount}",
+  "selectItems": "Sélectionnez les articles pour chaque élément",
+  "choose": "Choisir : {category}…",
+  "inYourBasket": "── Dans votre panier ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (dans le panier){state, select, used { — déjà dans une formule} taken { — choisi dans un autre élément} other {}}",
+  "addNew": "── Ajouter ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obligatoire · choisissez-en un} required {Obligatoire} other {Choisissez-en un}}{unmet, select, yes { (obligatoire)} other {}}",
+  "notePlaceholder": "Ajoutez une note, ex. sans oignon (facultatif)",
+  "backButton": "Retour",
+  "cancel": "Annuler",
+  "chooseRequired": "Choisir les options obligatoires",
+  "apply": "Appliquer la formule · {amount}"
+}

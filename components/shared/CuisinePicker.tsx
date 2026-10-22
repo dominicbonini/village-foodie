@@ -25,7 +25,7 @@
 // `storedToCuisineSlots` prevents that by construction: an unrecognised value is loaded into an "Other"
 // slot carrying its original text, so it is VISIBLE, EDITABLE and resolves back to itself unchanged.
 // No new list plumbing, no injected pseudo-option — it reuses the escape hatch the wizard already had.
-import { CUISINES, CUISINE_OTHER } from '@/lib/cuisines'
+import { CUISINES, CUISINE_OTHER, cuisineId } from '@/lib/cuisines'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/cuisinePicker'
 
@@ -100,8 +100,10 @@ export function CuisinePicker({
 
   const resolved = resolveCuisines(slots)
   // Language Phase 1c: the control's own words. The cuisine names are STORED values (trucks.cuisine_type, the
-  // discovery filter) and are shown as they are; CUISINE_OTHER is compared as an id, never as words.
+  // discovery filter); CUISINE_OTHER is compared as an id, never as words. languages-1: a listed cuisine is SHOWN in the
+  // locale's words (`cuisine.<id>`, the stored English in every English locale); a free-text one is shown as typed.
   const t = useT('cuisinePicker')
+  const label = (c: string) => ((CUISINES as readonly string[]).includes(c) && c !== CUISINE_OTHER ? t(`cuisine.${cuisineId(c)}` as never) : c)
 
   return (
     <>
@@ -116,7 +118,7 @@ export function CuisinePicker({
               onChange={e => setValue(i, e.target.value)}
               className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${invalid ? 'border-red-400' : 'border-slate-200'}`}>
               <option value="">{t('choose')}</option>
-              {CUISINES.map(c => <option key={c} value={c}>{c === CUISINE_OTHER ? t('other') : c}</option>)}
+              {CUISINES.map(c => <option key={c} value={c}>{c === CUISINE_OTHER ? t('other') : label(c)}</option>)}
             </select>
             {slot.value === CUISINE_OTHER && (
               <input type="text" value={slot.other} disabled={disabled} onChange={e => setOther(i, e.target.value)}
@@ -134,12 +136,12 @@ export function CuisinePicker({
       {resolved.length >= 2 && (
         <div className="flex flex-wrap gap-1.5 mt-2">
           {slots.map((slot, i) => {
-            const label = slot.value === CUISINE_OTHER ? slot.other.trim() : slot.value.trim()
-            if (!label) return null
+            const shown = slot.value === CUISINE_OTHER ? slot.other.trim() : label(slot.value.trim())
+            if (!shown) return null
             return (
               <span key={i} className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">
-                {label}
-                <button type="button" aria-label={t('remove', { label })} onClick={() => removeSlot(i)} disabled={disabled}
+                {shown}
+                <button type="button" aria-label={t('remove', { label: shown })} onClick={() => removeSlot(i)} disabled={disabled}
                   className="text-orange-400 hover:text-orange-700 leading-none">×</button>
               </span>
             )

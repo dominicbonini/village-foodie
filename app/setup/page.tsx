@@ -31,7 +31,8 @@ import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
 import { phoneErrorMessage } from '@/lib/phone-message'
 // Phase 2D-1: "Where's your truck based?" comes FIRST — the same step the demo modal shows.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
-import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
+// languages-1: the step's heading and button in the truck's language (were the en-GB WHERE_YOU_TRADE_COPY)
+import '@/lib/i18n/catalog/whereYouTrade'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/setup'
 import { errorTextIn } from '@/lib/i18n/customer-errors'
@@ -54,6 +55,7 @@ function SetupWizard() {
   // English `error` the fallback (US polish batch, 19 October 2026).
   const tErr = useT('errorsOnboarding')
   const tTrade = useT('tradeArea')
+  const tWhere = useT('whereYouTrade')
   const verify = params.get('verify')
 
   const [name, setName] = useState('')
@@ -265,7 +267,7 @@ function SetupWizard() {
 
           {stage === 'based' ? (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-5">
-              <h1 className="text-lg font-black text-slate-900">{WHERE_YOU_TRADE_COPY.stepHeading}</h1>
+              <h1 className="text-lg font-black text-slate-900">{tWhere('stepHeading')}</h1>
               {signupCountries.data && base ? (
                 <WhereBasedStep countries={signupCountries.data.countries} guessedCode={signupCountries.data.guess.fromLocation ? signupCountries.data.guess.code : null}
                   value={base} errors={baseErrors} onChange={a => { setBase(a); setBaseErrors({}) }} />
@@ -344,7 +346,7 @@ function SetupWizard() {
           {stage === 'based' ? (
             <button type="button" onClick={continueFromBased} disabled={!base}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl disabled:opacity-40">
-              {WHERE_YOU_TRADE_COPY.continueButton}
+              {tWhere('continueButton')}
             </button>
           ) : (
           <div className="flex gap-2">

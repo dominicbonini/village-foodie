@@ -1,0 +1,84 @@
+{
+  "loading": "Chargement de la console de gestion…",
+  "loadFailed": "Échec du chargement",
+  "requestFailed": "Échec",
+  "invalidToken": "Jeton invalide ou expiré",
+  "loadFailedReason": "Impossible de charger cette page : {reason}",
+  "noCountrySettings": "Impossible de charger les paramètres de pays de ce food truck. Veuillez actualiser la page.",
+  "noPlans": "Impossible de charger l’offre de ce food truck. Veuillez actualiser la page.",
+  "stale": "{hasTime, select, yes {Actualisation impossible. Affichage des données enregistrées à {time}. Vos modifications sont tout de même enregistrées.} other {Actualisation impossible. Affichage des dernières données enregistrées. Vos modifications sont tout de même enregistrées.}}",
+  "verify": {
+    "ok": "E-mail confirmé — merci.",
+    "expired": "Ce lien de confirmation a expiré. Contactez-nous et nous réglerons cela avant votre mise en ligne.",
+    "invalid": "Ce lien de confirmation n’a pas fonctionné. Contactez-nous et nous réglerons cela avant votre mise en ligne."
+  },
+  "profile": {
+    "updated": "Profil mis à jour",
+    "saveFailed": "Échec de l’enregistrement",
+    "title": "Modifier le profil",
+    "name": "Nom",
+    "namePlaceholder": "Votre nom",
+    "email": "E-mail",
+    "cancel": "Annuler",
+    "saving": "Enregistrement…",
+    "save": "Enregistrer"
+  },
+  "header": {
+    "subtitle": "Console de gestion",
+    "ordersDashboard": "← Tableau de bord des commandes"
+  },
+  "tabs": {
+    "menu": "Carte",
+    "schedule": "Planning",
+    "social": "Réseaux sociaux",
+    "reports": "Rapports",
+    "team": "Équipe",
+    "settings": "Paramètres",
+    "payments": "Paiements",
+    "billing": "Facturation",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Planning ({count})",
+    "stripeAttention": "Stripe requiert votre attention",
+    "allergensNotSet": "allergènes non renseignés"
+  },
+  "menuSections": {
+    "label": "Sections de la carte",
+    "items": "Articles",
+    "capacity": "Capacité de la cuisine",
+    "extras": "Suppléments et ventes additionnelles",
+    "deals": "Formules"
+  },
+  "socialSections": {
+    "label": "Sections réseaux sociaux",
+    "create": "Créer une publication",
+    "designs": "Visuels",
+    "locations": "Paramètres des lieux"
+  },
+  "notices": {
+    "review": "Vérifier →",
+    "tour": "Envie d’une visite rapide de votre tableau de bord ?",
+    "showMeAround": "Faites-moi visiter",
+    "dismiss": "Ignorer",
+    "approval": "{count, plural, one {Nous avons trouvé <b>{count}</b> événement pour vous — vérifiez-le et approuvez-le avant sa mise en ligne.} other {Nous avons trouvé <b>{count}</b> événements pour vous — vérifiez-les et approuvez-les avant leur mise en ligne.}}",
+    "allergens": "<b>Allergènes non renseignés</b> — les clients ne voient pas les informations sur les allergènes tant que vous ne les avez pas vérifiées. Vérifiez les allergènes de chaque plat dans l’onglet Carte.",
+    "domainLive": "<link>{domain}</link> est en ligne. Jetez-y un œil, puis confirmez-nous dans les Paramètres qu’il est correct.",
+    "stripe": "<b>Stripe a besoin d’une action de votre part</b> — les paiements par carte peuvent s’interrompre tant que ce n’est pas réglé.",
+    "profileTitle": "Complétez votre profil",
+    "missing": "À compléter : {fields}.",
+    "goToSettings": "Aller aux Paramètres →",
+    "field": {
+      "truckName": "nom du food truck",
+      "cuisineType": "type de cuisine",
+      "contactEmail": "e-mail de contact",
+      "contactPhone": "téléphone de contact"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Vous profitez d’un essai gratuit} other {Vous profitez d’un essai gratuit de {months} mois}}",
+    "ends": "{hasDate, select, yes {Fin de l’essai : <hl>{date}</hl>} other {Fin de l’essai : <hl>bientôt</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Toutes les fonctionnalités gratuites pendant # mois} other {Toutes les fonctionnalités gratuites pendant # mois}}} other {Toutes les fonctionnalités gratuites pendant votre essai}}",
+    "body": "{hasDate, select, yes {Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au <b>{date}</b>. La facturation ne commence que lorsque vous choisissez une offre et saisissez vos informations de paiement. D’ici là, il n’y a rien à résilier et rien à payer. Choisissez votre offre avant cette date — sinon, vous passerez à l’offre {fallback} et certaines fonctionnalités cesseront de fonctionner.} other {Rien ne vous sera facturé pendant votre essai. La facturation ne commence que lorsque vous choisissez une offre et saisissez vos informations de paiement. D’ici là, il n’y a rien à résilier et rien à payer. Choisissez votre offre avant la fin de l’essai — sinon, vous passerez à l’offre {fallback} et certaines fonctionnalités cesseront de fonctionner.}}",
+    "fees": "*Des frais standard de traitement des paiements par carte s’appliquent aux commandes en ligne",
+    "upgrade": "Mettre à niveau ici →"
+  }
+}

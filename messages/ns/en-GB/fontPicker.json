@@ -40,5 +40,7 @@
     "regular": "regular",
     "bold": "bold",
     "italic": "italic"
-  }
+  },
+  "ownLicence": "Your own",
+  "loadFailed": "Could not load fonts"
 }

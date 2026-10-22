@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Vous devez garder votre tableau de bord ou votre écran cuisine allumé et connecté pendant le service.",
+  "explainerBody": "Si l’écran s’éteint, si l’appareil perd sa connexion Internet ou si vous passez sur un autre site, la protection hors ligne prend le relais : elle suspend les commandes ou désactive l’acceptation automatique, selon votre choix.",
+  "reminder": "⚠️ Gardez votre tableau de bord ou votre écran cuisine allumé et connecté pendant le service, sinon la protection hors ligne risque de prendre le relais.",
+  "enableConfirm": "Protection hors ligne activée.\n\nPour que les commandes continuent d’arriver, votre écran doit rester allumé. Si cet appareil perd la connexion, la protection hors ligne prend le relais selon le mode choisi.\n\nVérifiez que l’option Écran allumé est activée sur cet appareil.",
+  "disableConfirm": "Désactiver la protection hors ligne pour cet événement ?\n\nSi cet appareil perd la connexion, les commandes en ligne continueront — les clients pourront passer des commandes que vous ne verrez pas. Ne la désactivez que si votre connexion est fiable.",
+  "cardDescription": "Détermine ce qui arrive aux nouvelles commandes quand votre appareil passe hors ligne.",
+  "purpose": "Si votre appareil perd sa connexion, cela empêche l’arrivée de commandes que vous ne pourriez pas voir.",
+  "switchLabel": "Protection des commandes hors ligne",
+  "switchHelp": "Ce qui se passe quand ce camion perd sa connexion.",
+  "modes": {
+    "pause": {
+      "label": "Suspendre les commandes en ligne",
+      "help": "Les clients ne peuvent pas commander tant que vous n’êtes pas de nouveau en ligne."
+    },
+    "no_auto_accept": {
+      "label": "Continuer à prendre les commandes, à confirmer vous-même",
+      "help": "L’acceptation automatique est désactivée : les clients peuvent toujours commander, mais rien n’est confirmé automatiquement. Vous confirmerez chaque commande une fois de nouveau en ligne — et toute commande encore en attente sera automatiquement refusée après le délai choisi, avec un e-mail pour en informer le client."
+    }
+  },
+  "autoRejectLabel": "Refuser les commandes en attente depuis plus de",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

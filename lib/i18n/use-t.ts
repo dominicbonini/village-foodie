@@ -8,10 +8,10 @@
 // gets en-GB, the agreed fallback, instead of throwing. Same messages, same ICU, same typed keys.
 // ⚠️ A NAMESPACE THE PROVIDER DOES NOT SEND (Language Phase 1a) still reads its words: the namespace comes from the
 // registry (its catalog module, which the component imports), never from what the provider chose to send.
-import { createContext, useContext, useEffect, useMemo } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { createTranslator } from 'next-intl'
-import { DEFAULT_LOCALE, type AppLocale } from './locales'
-import { messagesOf } from './registry'
+import { DEFAULT_LOCALE, resolveLocale, isLanguageBase, type AppLocale } from './locales'
+import { messagesOf, subscribe, registryVersion, ensureLanguage } from './registry'
 import type { AppNamespace } from './translator'
 
 export interface I18nState { locale: AppLocale; setLocale: (tag: string | null | undefined) => void }
@@ -32,5 +32,35 @@ export function useAppLocale(): AppLocale {
  *  calls this imports the namespace's catalog module (`import '@/lib/i18n/catalog/<namespace>'`). */
 export function useT<NS extends AppNamespace>(namespace: NS) {
   const { locale } = useContext(I18nContext)
-  return useMemo(() => createTranslator({ locale, messages: messagesOf(locale, [namespace.split('.')[0]]), namespace }), [locale, namespace])
+  // languages-1: a non-English language's words arrive after the first render in some screens (lib/i18n/registry.ts); the
+  // version changes when they land, so the translator is rebuilt. It never changes for an English locale.
+  const version = useSyncExternalStore(subscribe, registryVersion, registryVersion)
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` is the registry's change signal, read inside messagesOf
+  return useMemo(() => createTranslator({ locale, messages: messagesOf(locale, [namespace.split('.')[0]]), namespace }), [locale, namespace, version])
+}
+
+/** languages-1 (22 October 2026): the translator for a namespace in ANOTHER locale than the provider's — the demo wizard's chosen
+ *  country — or null with no locale. A non-English language's words are fetched (lib/i18n/registry.ts) and the translator is
+ *  rebuilt when they land; for English it is exactly `translatorFor(locale, namespace)`. */
+export function useTIn<NS extends AppNamespace>(locale: string | null | undefined, namespace: NS) {
+  const version = useSyncExternalStore(subscribe, registryVersion, registryVersion)
+  useEffect(() => { if (locale && isLanguageBase(locale)) void ensureLanguage(locale) }, [locale])
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` is the registry's change signal
+  return useMemo(() => (locale ? createTranslator({ locale: resolveLocale(locale), messages: messagesOf(locale, [namespace.split('.')[0]]), namespace }) : null), [locale, namespace, version])
+}
+
+/** languages-1 (22 October 2026): the locale of the page's <html lang> — for a component in the ROOT layout, outside every page's
+ *  language provider (the session alert). It follows a change (a non-English truck's provider sets the attribute once the
+ *  truck's language is known). Any English page resolves to its English locale or en-GB. */
+export function useDocumentLocale(): AppLocale {
+  const [lang, setLang] = useState<string | null>(null)
+  useEffect(() => {
+    const el = document.documentElement
+    const read = () => setLang(el.getAttribute('lang'))
+    read()
+    const mo = new MutationObserver(read)
+    mo.observe(el, { attributes: true, attributeFilter: ['lang'] })
+    return () => mo.disconnect()
+  }, [])
+  return resolveLocale(lang)
 }

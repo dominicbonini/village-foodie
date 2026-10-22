@@ -25,6 +25,9 @@
 // No `order_payments` write, no `recordCollectionPayment`, no resolver, no setting. Connect onboarding
 // and the in-person ledger are separate systems that will meet later, at the PaymentIntent — which is
 // explicitly not this pass.
+import { translatorFor } from '@/lib/i18n/translator'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import '@/lib/i18n/catalog/errorsManage'
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -166,6 +169,11 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // languages-1 (22 October 2026): this route's refusals in the truck's language (`errorsManage`; en-GB exactly as before). The
+  // screen shows `error` as it is, so it is worded here; the shape of every body is unchanged.
+  const routeWords = async (code: 'stripe_account_not_saved' | 'stripe_no_account' | 'stripe_request_failed') =>
+    translatorFor(await localeForTruck({ country: ctx.country }), 'errorsManage')(code)
+
   const { data: operator } = await supabase
     .from('operators')
     .select('id, stripe_account_id, stripe_charges_enabled, stripe_account_synced_at')
@@ -300,7 +308,7 @@ export async function POST(req: NextRequest) {
           `[stripe/connect] ACCOUNT CREATED BUT NOT PERSISTED — operator=${ctx.operatorId} account=${account.id} ` +
           `— record it by hand before retrying, or a second account will be created:`, error.message,
         )
-        return NextResponse.json({ error: 'Account created but not saved — contact support' }, { status: 500 })
+        return NextResponse.json({ error: await routeWords('stripe_account_not_saved') }, { status: 500 })
       }
       // 🔴 `livemode` IS ON THE LINE, AND NOW IT IS THE ONLY PLACE THE MODE OF A NEW ACCOUNT IS STATED.
       // It must AGREE WITH THE KEY THAT MADE THE CALL: a `livemode` that disagrees with STRIPE_SECRET_KEY
@@ -388,7 +396,7 @@ export async function POST(req: NextRequest) {
     // session expires, so returning a cached secret would hand back a dead one on a long-lived tab.
     if (action === 'account_session') {
       if (!operator?.stripe_account_id) {
-        return NextResponse.json({ error: 'No connected account yet' }, { status: 409 })
+        return NextResponse.json({ error: await routeWords('stripe_no_account') }, { status: 409 })
       }
       const session = await createAccountSession(operator.stripe_account_id)
       return NextResponse.json({ clientSecret: session.client_secret })
@@ -398,7 +406,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     // A missing STRIPE_SECRET_KEY throws through here, which is intended: a misconfigured key must
     // surface as a refusal the operator can see, not a silent no-op.
-    const message = err instanceof Error ? err.message : 'Stripe request failed'
+    const message = err instanceof Error ? err.message : await routeWords('stripe_request_failed')
     console.error(`[stripe/connect] action=${action} operator=${ctx.operatorId} FAILED:`, message)
     return NextResponse.json({ error: message }, { status: 500 })
   }

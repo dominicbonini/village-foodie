@@ -1,0 +1,30 @@
+{
+  "heading": "Taxes, pourboires et frais",
+  "rate": {
+    "label": "Taux de taxe de vente",
+    "hint": "Le taux appliqué à chaque commande. Les clients le voient ajouté au paiement, sur les reçus et sur les tickets.",
+    "regionDefault": "Laissez vide pour appliquer {label} à {rate} %, le taux en vigueur pour les plats préparés ({region})."
+  },
+  "included": {
+    "label": "{label} incluse dans vos prix",
+    "hint": "Vos prix incluent déjà la {label}. Ce taux indique seulement la part de {label} dans chaque prix, sur les reçus et les tickets — rien n’est ajouté au paiement.",
+    "default": "Laissez vide pour appliquer {rate} %, le taux de {label} sur les plats chauds vendus à emporter en {country}. Les produits emballés à consommer plus tard sont à 5,5 % et l’alcool à 20 %."
+  },
+  "tips": {
+    "label": "Pourboires",
+    "hint": "Les clients qui paient en ligne par carte peuvent ajouter un pourboire. Il vous revient intégralement.",
+    "choices": "Choix proposés aux clients :",
+    "chip": "{rate} %",
+    "other": "Autre montant"
+  },
+  "fee": {
+    "label": "Frais de service en ligne",
+    "hint": "Ajoutés uniquement aux commandes en ligne. Jamais aux commandes payées au retrait ni aux commandes au comptoir. Vous les conservez.",
+    "pctAria": "Pourcentage des frais de service",
+    "fixedAria": "Montant fixe des frais de service",
+    "max": "Maximum facturable : {max}",
+    "example": "Les clients les voient avant de payer, sur une seule ligne : « {label} {amount} ».",
+    "hatchgrab": "HatchGrab ajoute des frais de service de {fee} aux commandes en ligne de vos clients. Vous ne les payez pas et ne pouvez pas les modifier."
+  },
+  "saveFailed": "Impossible d’enregistrer — veuillez réessayer."
+}

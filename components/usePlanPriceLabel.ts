@@ -9,10 +9,9 @@
 import { usePriceMask } from '@/components/PricingPolicy'
 import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { planMoneyFormatOf } from '@/lib/country-settings-types'
-import { perMonthLabel } from '@/lib/money-format'
 import { maskPriceFor } from '@/lib/pricing'
 import { PRICE_WORD } from '@/lib/price-words'
-import { priceText } from '@/lib/price-text'
+import { priceText, perMonthText } from '@/lib/price-text'
 
 /** The mask alone: `(written amount or price word) → shown`, in the truck's words. Used for any plan_prices amount. */
 export function usePlanPriceMask(): (raw: string) => string {
@@ -27,6 +26,6 @@ export function usePlanPriceLabel(): (minor: number | null | undefined, unit?: '
   const cs = useOptionalCountrySettings()
   return (minor, unit = 'mo') => {
     if (minor === null || minor === undefined || !cs) return null
-    return mask(minor === 0 ? PRICE_WORD.free : perMonthLabel(minor, planMoneyFormatOf(cs), unit))
+    return mask(minor === 0 ? PRICE_WORD.free : perMonthText(minor, planMoneyFormatOf(cs), unit))
   }
 }

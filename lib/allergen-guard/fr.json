@@ -1,0 +1,145 @@
+{
+  "$comment": "france-1 (22 October 2026): the WhatsApp allergen guard's trigger words for FRENCH (fr-FR). OPTION B, as English: absence / safety words only — allergy and intolerance words, coeliac, anaphylaxis, \"sans <allergen>\", \"convient aux\" / \"adapté aux\", traces — NOT the bare allergen names (a presence question, \"il y a du lait dans le burger ?\", may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser: lower case, accents folded (é → e), œ kept as a letter — so both \"œ\" and \"oe\" spellings are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the French words a reply may use for it. scripts/france-1.cjs proves it.",
+  "language": "fr",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "intoleran",
+    "cœliaque",
+    "coeliaque",
+    "celiaque",
+    "maladie cœliaque",
+    "anaphyla",
+    "epipen",
+    "epi pen",
+    "adrenaline",
+    "choc anaphylactique",
+    "sans gluten",
+    "sans lactose",
+    "sans lait",
+    "sans produits laitiers",
+    "sans œuf",
+    "sans oeuf",
+    "sans œufs",
+    "sans oeufs",
+    "sans arachide",
+    "sans cacahu",
+    "sans noix",
+    "sans fruits a coque",
+    "sans fruit a coque",
+    "sans soja",
+    "sans sesame",
+    "sans crustace",
+    "sans poisson",
+    "sans moutarde",
+    "sans celeri",
+    "sans sulfite",
+    "sans lupin",
+    "sans mollusque",
+    "sans fruits de mer",
+    "convient aux",
+    "convient a un",
+    "convient a une",
+    "adapte aux",
+    "adapte a un",
+    "adapte a une",
+    "sans danger pour",
+    "sans risque pour",
+    "compatible avec",
+    "traces de",
+    "trace de",
+    "risque de trace",
+    "contamination croisee"
+  ],
+  "tokens": [
+    "sg"
+  ],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "blé",
+        "ble",
+        "farine"
+      ],
+      "crustaceans": [
+        "crustacé",
+        "crustacés",
+        "crustace",
+        "crustaces",
+        "crevette",
+        "crevettes",
+        "fruits de mer"
+      ],
+      "eggs": [
+        "œuf",
+        "œufs",
+        "oeuf",
+        "oeufs"
+      ],
+      "fish": [
+        "poisson",
+        "poissons"
+      ],
+      "peanuts": [
+        "arachide",
+        "arachides",
+        "cacahuète",
+        "cacahuètes",
+        "cacahuete",
+        "cacahuetes"
+      ],
+      "soy": [
+        "soja"
+      ],
+      "dairy": [
+        "lait",
+        "lactose",
+        "laitier",
+        "laitiers",
+        "laitière",
+        "fromage",
+        "crème",
+        "beurre"
+      ],
+      "tree nuts": [
+        "fruits à coque",
+        "fruit à coque",
+        "noix",
+        "noisette",
+        "noisettes",
+        "amande",
+        "amandes",
+        "pistache",
+        "pistaches",
+        "noix de cajou"
+      ],
+      "celery": [
+        "céleri",
+        "celeri"
+      ],
+      "mustard": [
+        "moutarde"
+      ],
+      "sesame": [
+        "sésame",
+        "sesame"
+      ],
+      "sulphites": [
+        "sulfite",
+        "sulfites"
+      ],
+      "lupin": [
+        "lupin"
+      ],
+      "molluscs": [
+        "mollusque",
+        "mollusques",
+        "moule",
+        "moules",
+        "huître",
+        "huîtres"
+      ]
+    }
+  }
+}

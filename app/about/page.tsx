@@ -26,6 +26,8 @@ import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
 import { PageLocale } from '@/lib/i18n/page-locale'
+// languages-1: a non-English page hands its browser the words its client components read (none for English).
+import { pageSeedProps } from '@/lib/i18n/page-words'
 import { localeOfCountry } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/aboutPage'
@@ -90,7 +92,7 @@ export default async function AboutPage({ searchParams }: { searchParams: Search
   })
 
   return (
-    <PageLocale locale={localeOfCountry(settings)}>
+    <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>
     <DemoModalProvider>
       <div className={CHROME}>
         <LandingNav landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} locale={settings.locale} />

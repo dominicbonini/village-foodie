@@ -134,5 +134,6 @@
     "subjectTotalMoved": "Order #{id} updated — now {total} (was {previous})",
     "subject": "Order #{id} updated",
     "subjectSlotMoved": "Your order #{id} has been updated"
-  }
+  },
+  "offlineRejectReason": "The van lost its internet connection, so this order could not be confirmed."
 }

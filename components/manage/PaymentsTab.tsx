@@ -524,7 +524,7 @@ export function PaymentsTab({ token, onTrial, features, showToast, afterOnline }
               ⚠️ ONE LINE. Detail belongs in the plan pricing, not on this page. */}
           {/* ⚠️ "standard" is in the message now (it was cardRegionOnline's prefix), so the sentence is whole. */}
           <p className="text-xs text-slate-500 mt-3">
-            {t('online.feeLine', { fee: cardFeeOnlineLabel(cs), region: cs.cardFeeRegionLabel })}
+            {t('online.feeLine', { fee: cardFeeOnlineLabel(cs), region: cardRegionInPerson(cs) })}
           </p>
           {/* ── 🔴 TEST MODE SAYS SO; LIVE MODE SAYS NOTHING. THE ASYMMETRY IS THE POINT. ──────────
               This line was once an unconditional literal reading "Test mode…" whatever keys were set —

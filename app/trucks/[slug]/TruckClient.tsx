@@ -17,6 +17,8 @@ import { safeHref } from '@/lib/safe-href';
 import { contactHref } from '@/lib/contact-topics';
 import { I18nContext, useAppLocale, useT } from '@/lib/i18n/use-t';
 import type { AppLocale } from '@/lib/i18n/locales';
+import type { LanguageSeed } from '@/lib/i18n/page-locale';
+import { seedLanguage } from '@/lib/i18n/registry';
 import type { TimeSettings } from '@/lib/time-utils';
 import { headerFromDiscoveryListRow, type TruckHeader } from '@/lib/truck-header';
 import '@/lib/i18n/catalog/truckPage';
@@ -46,7 +48,10 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 // `operatorHeader` (19 October 2026, lib/truck-header.ts): the truck's own header, sent by page.tsx only on the
 // HatchGrab host for a truck public there. Used only when the discovery list has no row for this slug; its events are
 // then the feed's operator events for this truck's slug.
-export default function TruckClient({ slug, locale, discovery = true, time, operatorHeader }: { slug: string; locale?: AppLocale; discovery?: boolean; time?: TimeSettings; operatorHeader?: TruckHeader }) {
+// `seed` (languages-1): a non-English truck's words for this page, from page.tsx (lib/i18n/page-words.ts) — registered before the
+// first render so it matches the server's. Absent for English.
+export default function TruckClient({ slug, locale, discovery = true, time, operatorHeader, seed }: { slug: string; locale?: AppLocale; discovery?: boolean; time?: TimeSettings; operatorHeader?: TruckHeader; seed?: LanguageSeed }) {
+  if (seed) for (const [l, words] of Object.entries(seed)) seedLanguage(l, words);
   const around = useAppLocale();
   const active = locale ?? around;
   const i18n = useMemo(() => ({ locale: active, setLocale: () => {} }), [active]);

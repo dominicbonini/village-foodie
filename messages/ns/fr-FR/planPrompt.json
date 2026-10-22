@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} font partie de l’offre {plan}.} other {{feature} fait partie de l’offre {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} ne font pas partie de votre offre.} other {{feature} ne fait pas partie de votre offre.}}",
+  "switchedOff": "{many, select, yes {{feature} : fonctionnalités désactivées pour votre food truck.} other {{feature} : fonctionnalité désactivée pour votre food truck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Changer d’offre →",
+  "features": {
+    "discovery_map": {
+      "name": "Le référencement sur le plan de découverte",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Le tableau de bord web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "L’application cuisine",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "La carte par QR code",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Les formules",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Les ventes additionnelles",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Les commandes au comptoir",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "La commande avec Paiement sur place",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Le bouton Épuisé",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Le décompte des stocks",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "La protection des commandes hors ligne",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Les paiements en ligne",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "La précommande à l’avance",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Les créneaux de retrait au choix du client",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Limiter le nombre de commandes par créneau",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "L’acceptation automatique",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Les réponses automatiques Messenger et Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Les QR codes personnalisés",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Les rapports avancés",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "L’impression des tickets cuisine",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "La synchronisation de la cuisine sur plusieurs appareils",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "L’écran cuisson",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Les réponses automatiques WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Votre planning sur votre propre site web",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Les publications pour les réseaux sociaux",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Les types d’événements personnalisés",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Les événements privés",
+      "many": "yes"
+    }
+  }
+}

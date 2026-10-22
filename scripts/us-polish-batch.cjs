@@ -299,7 +299,9 @@ const J = x => JSON.stringify(x)
       ['app/reset-password/page.tsx', "setError(errorText(tErr, data, t('errorFallback')))", "useT('errorsOnboarding')"],
       ['app/setup/page.tsx', "setError(errorTextIn([tErr, tTrade], data, t('createFailed')))", "useT('tradeArea')"],
       ['components/setup/WhereBasedStep.tsx', "errorText(tErr, error.server, t('countriesFailed'))", "useT('errorsOnboarding')"],
-      ['components/DemoGetStarted.tsx', "errorTextIn([tErr, tTrade] as never[], e.server, t(`error.${e.code}`))", "translatorFor(wizardLocale, 'errorsOnboarding')"],
+      // ⚠️ RE-PINNED (languages-1): the wizard's translators come from useTIn (which also fetches a non-English language's
+      // words) instead of useMemo(translatorFor(…)) — the same locale, the same namespace.
+      ['components/DemoGetStarted.tsx', "errorTextIn([tErr, tTrade] as never[], e.server, t(`error.${e.code}`))", "useTIn(wizardLocale, 'errorsOnboarding')"],
       ['components/landing/DemoUpload.tsx', "errorText(tErr, message.server, t(`error.${message.code}`))", "useT('errorsOnboarding')"],
       ['app/dashboard/[token]/page.tsx', "setRestartError(errorText(tErrO,data,tDash('demo.restartFailed')))", "useT('errorsKitchen'), tErrM=useT('errorsManage'), tErrO=useT('errorsOnboarding')"],
       ['app/dashboard/[token]/kds/page.tsx', "setError(errorText(tErrK, data, 'error.linkInvalid'))", "useT('errorsKitchen'), tErrM = useT('errorsManage')"],

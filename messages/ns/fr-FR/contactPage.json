@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Assistance",
+    "description": "Obtenez de l’aide avec HatchGrab. Envoyez-nous un message et nous vous répondrons par e-mail."
+  },
+  "logIn": "Se connecter",
+  "eyebrow": "Assistance",
+  "title": "Comment pouvons-nous vous aider ?",
+  "lede": "Quelque chose ne fonctionne pas, ou une question sur votre compte ? Deux façons de nous joindre — dans les deux cas, nous vous répondrons par e-mail.",
+  "emailUs": "Nous écrire",
+  "formHeading": "Ou remplissez le formulaire ci-dessous",
+  "loadingForm": "Chargement du formulaire…",
+  "formTitle": "Contacter l’assistance HatchGrab",
+  "privacy": "Confidentialité",
+  "terms": "Conditions",
+  "about": "À propos",
+  "copyright": "© {year} HatchGrab"
+}

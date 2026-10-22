@@ -39,6 +39,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { rejectOrder } from '@/lib/orders/reject-order'
+import { translatorFor } from '@/lib/i18n/translator'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import '@/lib/i18n/catalog/emailCustomer'
 
 export const runtime = 'nodejs'
 
@@ -53,8 +56,9 @@ const supabase = createClient(
 // through here and rejectionPaymentSentence is what distinguishes them.
 // ⚠️ NO TIMEFRAME AND NO PROMISE. "Try again shortly" would be a prediction about a connection nobody
 // can see, which is the failure this file's schedule note is about.
-const CONNECTIVITY_REASON =
-  'The van lost its internet connection, so this order could not be confirmed.'
+// languages-1 (22 October 2026): the sentence is `emailCustomer.offlineRejectReason` ("The van lost its internet connection, so
+// this order could not be confirmed." in en-GB, byte for byte), written in the TRUCK's language — it is stored on the order and
+// emailed — where the order is rejected below.
 
 // ⚠️ A SAFETY VALVE, NOT A POLICY — the same role `limit` plays in the capture sweep, which uses 100.
 // LOWER THAN THAT ONE ON PURPOSE: each rejection here makes a Stripe call and sends an email, so 50 is
@@ -119,7 +123,7 @@ export async function GET(req: NextRequest) {
 
     // The truck, for the customer email's sender and its name. rejectOrder reads `id` and `name` only.
     const { data: truck, error: truckErr } = await supabase
-      .from('trucks').select('id, name').eq('id', claim.truck_id).single()
+      .from('trucks').select('id, name, country').eq('id', claim.truck_id).single()
     if (truckErr || !truck) {
       failures.push({ order_key: claim.order_key, error: `truck ${claim.truck_id} unreadable: ${truckErr?.message ?? 'not found'}` })
       continue
@@ -132,7 +136,7 @@ export async function GET(req: NextRequest) {
       const result = await rejectOrder(supabase, {
         orderKey: claim.order_key,
         truck: { id: truck.id as string, name: (truck.name as string) ?? '' },
-        rejectionReason: CONNECTIVITY_REASON,
+        rejectionReason: translatorFor(await localeForTruck(truck as { country?: string | null }), 'emailCustomer')('offlineRejectReason'),   // languages-1
         actor: { actorKind: 'system', actorId: null, actorLabel: null, userRole: null, currentUserName: null, foreignOperator: false },
         source: 'system',
       })

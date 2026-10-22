@@ -4,6 +4,8 @@ interface QRCodeOptions {
   url: string
   logoUrl?: string | null
   truckName: string
+  /** languages-1: the attribution line in the truck's language (`manageSettings.qrPoweredBy`); English when absent. */
+  poweredBy?: string
 }
 
 function roundRect(
@@ -168,6 +170,7 @@ export async function generateQRCodePNG({
   url,
   logoUrl,
   truckName,
+  poweredBy = 'Powered by HatchGrab',
 }: QRCodeOptions): Promise<string> {
   const qrDataUrl = await QRCode.toDataURL(url, {
     width: 400,
@@ -247,7 +250,7 @@ export async function generateQRCodePNG({
   ctx.fillStyle = '#6B7280'
   ctx.font = '18px Arial, sans-serif'
   ctx.textAlign = 'right'
-  ctx.fillText('Powered by HatchGrab', rightX, brandingY)
+  ctx.fillText(poweredBy, rightX, brandingY)
 
   return canvas.toDataURL('image/png')
 }

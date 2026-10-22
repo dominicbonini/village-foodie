@@ -51,6 +51,9 @@ export interface PrivacyResult {
   name: string | null
   /** Set when `ok` is false. */
   error?: string
+  /** languages-1: the refusal's `errorsManage` code when it is one of ours (not the database's own message) — the route words
+   *  it in the truck's language; `error` stays its en-GB sentence. */
+  errorCode?: 'event_not_found' | 'private_unavailable' | 'private_not_private' | 'private_link_off'
 }
 
 /** 80 characters, matching `truck_events_private_name_shape`. If one moves, the other must. */
@@ -117,7 +120,7 @@ export async function applyPrivacy(
     .maybeSingle()
 
   if (readErr) return { ok: false, isPrivate: false, token: null, typeId: null, name: null, error: readErr.message }
-  if (!cur) return { ok: false, isPrivate: false, token: null, typeId: null, name: null, error: 'Event not found' }
+  if (!cur) return { ok: false, isPrivate: false, token: null, typeId: null, name: null, error: 'Event not found', errorCode: 'event_not_found' }
 
   const wasPrivate = cur.is_private === true
   const name = cleanPrivateName(intent.name)
@@ -158,7 +161,7 @@ export async function applyPrivacy(
     return {
       ok: false, isPrivate: wasPrivate, token: cur.private_token ?? null,
       typeId: cur.event_type_id ?? null, name: cur.private_name ?? null,
-      error: 'Private events are not available yet — the database migration has not been applied.',
+      error: 'Private events are not available yet — the database migration has not been applied.', errorCode: 'private_unavailable',
     }
   }
 
@@ -217,17 +220,17 @@ export async function replacePrivateLink(
     .maybeSingle()
 
   if (readErr || !cur) {
-    return { ok: false, isPrivate: false, token: null, typeId: null, name: null, error: readErr?.message || 'Event not found' }
+    return { ok: false, isPrivate: false, token: null, typeId: null, name: null, error: readErr?.message || 'Event not found', ...(readErr ? {} : { errorCode: 'event_not_found' as const }) }
   }
   if (!cur.is_private) {
-    return { ok: false, isPrivate: false, token: null, typeId: null, name: null, error: 'This event is not private.' }
+    return { ok: false, isPrivate: false, token: null, typeId: null, name: null, error: 'This event is not private.', errorCode: 'private_not_private' }
   }
 
   const type = await ensurePrivateType(supabase, truckId)
   if (!resolveLinkOrdering(cur, type)) {
     return {
       ok: false, isPrivate: true, token: null, typeId: cur.event_type_id ?? null, name: cur.private_name ?? null,
-      error: 'Ordering by private link is switched off for this event.',
+      error: 'Ordering by private link is switched off for this event.', errorCode: 'private_link_off',
     }
   }
 

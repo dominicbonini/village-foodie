@@ -6,6 +6,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useT } from '@/lib/i18n/use-t'
+import { PageLocale, type LanguageSeed } from '@/lib/i18n/page-locale'
+import { isLanguageBase, type AppLocale } from '@/lib/i18n/locales'
+import { htmlLangOfLocale } from '@/lib/page-lang'
+import '@/lib/i18n/catalog/embed'
 import TruckListCard from '@/components/TruckListCard'
 import type { VillageEvent } from '@/types'
 import type { TimeSettings } from '@/lib/time-utils'
@@ -33,7 +38,21 @@ import type { TimeSettings } from '@/lib/time-utils'
  * ⚠️ BOTH DEFAULT FALSE. The three pre-existing call sites pass neither and are unchanged — proven
  * by running the git-HEAD component against this one over the same matrix; see the links report.
  */
-export default function EmbedSchedule({ slug, truckName, orderOrigin }: { slug: string; truckName: string; orderOrigin?: string }) {
+// languages-1 (22 October 2026): `locale` — the truck's (the custom-domain page passes it; the iframe embed passes none → en-GB, as
+// before) — and `seed`, a non-English truck's words for this widget (lib/i18n/page-words.ts). The cards inside read the same
+// language through <PageLocale>.
+export default function EmbedSchedule({ slug, truckName, orderOrigin, locale, seed }: { slug: string; truckName: string; orderOrigin?: string; locale?: AppLocale; seed?: LanguageSeed }) {
+  return (
+    <PageLocale locale={locale} {...(seed ? { seed } : {})}>
+      <EmbedScheduleBody slug={slug} truckName={truckName} orderOrigin={orderOrigin} locale={locale} />
+    </PageLocale>
+  )
+}
+
+function EmbedScheduleBody({ slug, truckName, orderOrigin, locale }: { slug: string; truckName: string; orderOrigin?: string; locale?: AppLocale }) {
+  const t = useT('embed')
+  // A non-English truck's own domain declares its language (the server rendered "en", knowing no truck yet).
+  useEffect(() => { if (locale && isLanguageBase(locale)) document.documentElement.lang = htmlLangOfLocale(locale) }, [locale])
   const [events, setEvents] = useState<VillageEvent[] | null>(null)
   const [failed, setFailed] = useState(false)
   // The truck's own TimeSettings, sent by /api/embed/events — a US truck's schedule reads "11:30 AM". Absent → the card's
@@ -54,11 +73,11 @@ export default function EmbedSchedule({ slug, truckName, orderOrigin }: { slug: 
   if (failed) {
     // ⚠️ AN HONEST FAILURE, NOT "no events". The profile page learned this distinction the hard way —
     // a transient fetch blip must never tell a customer a real truck has nothing on.
-    return <p className="py-6 text-center text-sm text-slate-500">Couldn&apos;t load the schedule just now.</p>
+    return <p className="py-6 text-center text-sm text-slate-500">{t('loadFailed')}</p>
   }
 
   if (events === null) {
-    return <p className="py-6 text-center text-sm text-slate-400">Loading schedule…</p>
+    return <p className="py-6 text-center text-sm text-slate-400">{t('loading')}</p>
   }
 
   if (events.length === 0) {
@@ -67,7 +86,7 @@ export default function EmbedSchedule({ slug, truckName, orderOrigin }: { slug: 
     // which on an operator's own website would route their customer to us.
     return (
       <p className="py-6 text-center text-sm text-slate-500">
-        No upcoming events listed for {truckName}.
+        {t('empty', { truck: truckName })}
       </p>
     )
   }

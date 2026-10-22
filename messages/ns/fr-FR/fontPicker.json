@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Toutes",
+    "bold": "Épaisses",
+    "hand": "Manuscrites",
+    "classic": "Classiques",
+    "clean": "Épurées",
+    "own": "Les vôtres",
+    "ownCount": "Les vôtres ({count})"
+  },
+  "yoursTag": "· la vôtre",
+  "loadingFonts": "Chargement des polices…",
+  "search": "Rechercher parmi {count, number} polices",
+  "uploadButton": "↑ Importer votre police",
+  "loadingLibrary": "Chargement de la bibliothèque de polices…",
+  "tryAgain": "Réessayer",
+  "noOwn": "Vous n’avez encore importé aucune police. Utilisez le bouton « ↑ Importer votre police » ci-dessus.",
+  "recent": "Utilisées récemment",
+  "popular": "Populaires pour les affiches",
+  "adding": "Ajout…",
+  "noMatch": "Aucune police ne correspond à « {query} ».",
+  "showing": "{shown} sur {total, number} affichées — précisez votre saisie pour affiner.",
+  "couldNotAdd": "Impossible d’ajouter cette police",
+  "tooBig": "Cette police fait {size, number, ::.0 group-off} Mo. La limite est de 5 Mo.",
+  "woff": "Veuillez importer un fichier TTF ou OTF — vous pouvez généralement en télécharger un là où vous avez acheté la police.",
+  "uploadIncomplete": "L’import n’a pas abouti",
+  "added": "« {name} » ajoutée en version {face}.",
+  "face": {
+    "regular": "normale",
+    "bold": "grasse",
+    "italic": "italique"
+  },
+  "licenceTick": "Je possède cette police ou j’ai une licence pour l’utiliser",
+  "checking": "Vérification de la police…",
+  "addFont": "Ajouter",
+  "cancel": "Annuler",
+  "missingFaces": "Ajoutez la version {faces} de « {name} » (facultatif) — choisissez à nouveau le fichier.",
+  "somethingWrong": "Un problème est survenu",
+  "faceLower": {
+    "regular": "normale",
+    "bold": "grasse",
+    "italic": "italique"
+  },
+  "ownLicence": "La vôtre",
+  "loadFailed": "Impossible de charger les polices"
+}

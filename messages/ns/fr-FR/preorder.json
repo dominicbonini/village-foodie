@@ -1,0 +1,6 @@
+{
+  "closedPending": "Précommandes closes. En attente de validation par la cuisine.",
+  "deadline": "Précommandes jusqu’à {time}",
+  "deadlineOnDay": "Précommandes jusqu’à {time}, {day}",
+  "opens": "Ouverture des précommandes : {day}"
+}

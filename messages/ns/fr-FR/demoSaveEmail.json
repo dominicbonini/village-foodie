@@ -1,0 +1,9 @@
+{
+  "subject": "Votre démo HatchGrab — voici votre lien pour y revenir",
+  "heading": "Votre démo est enregistrée",
+  "intro": "Voici votre lien pour revenir à la démo, avec votre carte. Aucune connexion requise — il suffit de cliquer dessus.",
+  "button": "Ouvrir ma démo",
+  "freshDay": "À chaque retour, nous préparons une nouvelle journée de service pour que vous ayez de quoi tester.",
+  "deletion": "Comme il s’agit d’une démo, nous ne la conservons pas indéfiniment — nous la supprimerons, avec la carte, le\n                <b>{date}</b> (dans {days, plural, one {# jour} other {# jours}}). Si vous vous inscrivez d’ici\n                là, votre carte vous suit.",
+  "notSent": "Enregistrée, mais nous n’avons pas pu envoyer l’e-mail pour le moment."
+}

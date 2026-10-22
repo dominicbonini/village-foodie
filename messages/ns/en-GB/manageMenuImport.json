@@ -159,7 +159,8 @@
     "keepChecking": "We’ll keep checking this page and send any new dates for your approval.",
     "photoDesc": "Snap or paste your dates — we’ll read them in for you to check.",
     "noneFound": "We couldn’t find any dates in that — try a clearer photo, or add a date yourself.",
-    "manualTitle": "I’ll add my dates myself"
+    "manualTitle": "I’ll add my dates myself",
+    "trialNotStarted": "Adding events doesn't start your free trial — you choose which event starts it, later."
   },
   "done": {
     "summary": "{items, plural, one {# item} other {# items}} across {categories, plural, one {# category} other {# categories}}.",
@@ -180,5 +181,9 @@
     "keepEditing": "Keep editing",
     "discard": "Discard",
     "body": "Your changes won’t be saved — the imported items, prep times and kitchen capacity won’t be added."
+  },
+  "allergenCardText": {
+    "contains": "Contains: {list}",
+    "mayContain": "May contain: {list}"
   }
 }

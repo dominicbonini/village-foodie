@@ -1,0 +1,6 @@
+{
+  "heading": "Encaissement",
+  "intro": "Comment votre équipe enregistre le paiement de chaque commande.",
+  "paidStepHelp": "Ajoute un bouton Confirmer lorsque vous saisissez vous-même une commande : vous pouvez la passer maintenant et encaisser plus tard. Activez cette option si vous prenez des commandes par téléphone ou à l’avance.",
+  "paidStepNote": "Cela ne concerne que les commandes que vous ajoutez. Les commandes en ligne ne sont pas concernées."
+}

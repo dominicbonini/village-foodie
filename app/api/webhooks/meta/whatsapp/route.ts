@@ -34,6 +34,8 @@ import { monthResetLocalDate } from '@/lib/whatsapp/usage'
 import { usageMonthKey } from '@/lib/whatsapp/maintenance'
 import { WHATSAPP_MANAGER_URL } from '@/lib/whatsapp/copy'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/whatsappCustomer'
 /* 🔴 THE UPCOMING-EVENTS READ (private events redacted, overnight events kept until they end) — the shared one. */
 import { fetchUpcomingTruckEvents } from '@/lib/whatsapp/upcoming-events'
 
@@ -718,8 +720,11 @@ export async function POST(req: NextRequest) {
       // The route does not decide whether the number is usable — `handoffMessage` treats null, empty and
       // whitespace-only alike, and emits no clause at all when there is nothing to put in it.
       const hgUrlCap = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
+      // languages-1: the handoff in the truck's language (`whatsappCustomer.capHandoff` / `.capContact`; en-GB exactly as before).
+      const tCap = translatorFor(await localeForTruck(truck), 'whatsappCustomer')
       const capMessage = handoffMessage(
-        `${hgUrlCap}/trucks/${truck.slug}/order`, truck.whatsapp)
+        `${hgUrlCap}/trucks/${truck.slug}/order`, truck.whatsapp,
+        { handoff: link => tCap('capHandoff', { link }), contact: number => tCap('capContact', { number }) })
       // 🔴 `response_sent` NOW RECORDS WHAT META ACCEPTED, NOT WHAT WE COMPOSED. The send's failure was
       // caught and logged, and then the row was written claiming `response_sent: capMessage` anyway — so
       // a refused message counted against the truck's ceiling and, from this month, would be billed to

@@ -31,23 +31,24 @@ async function photo(top) {   // the GB capture's own menu photos (Pizza Kitchen
   const P = { supreme: await photo(669), ham: await photo(1107), marg: await photo(1527), pep: await photo(1965) }
   const truck = { id: 'test-truck', name: 'Pizza Kitchen', logo: null, mode: 'village', venue_name: null, time_selection_enabled: true, paused: false, plan: 'pro',
     ordering_available: true, card_payments_ready: false, allergen_display_mode: 'per_dish', money: c.money, time: c.time, phone: c.phone }
-  const $ = n => c.price[n]
-  const it = (id, name, description, photo_url, sub, dietary = []) => ({ id, name, description, price: $(name), category: 'Pizza', subcategory_id: sub, available: true, photo_url, dietary, allergens: [], modifierGroups: [] })
+  // c.n / c.cat / c.desc: the country's own names (France's tables); the English key itself for AU/NZ/CA.
+  const $ = n => c.price[c.n(n)]
+  const it = (id, name, description, photo_url, sub, dietary = []) => ({ id, name: c.n(name), description: c.desc(name, description), price: $(name), category: c.cat('Pizza'), subcategory_id: sub, available: true, photo_url, dietary, allergens: [], modifierGroups: [] })
   const items = [
     it('p1', 'Margherita', 'Tomato sauce, fresh mozzarella, fresh basil, extra virgin olive oil. Simple and classic.', P.marg, 's1', ['Vegetarian']),
     it('p2', 'Ham & Mushroom', 'Tomato sauce, mozzarella, ham, mushroom, extra virgin olive oil. A crowd favourite.', P.ham, 's1'),
     it('p3', 'Supreme', 'Pepperoni, sausage, black olives, mozzarella, tomato sauce. Fully loaded.', P.supreme, 's1'),
     it('p4', 'Pepperoni', 'Tomato sauce, mozzarella, pepperoni, hot honey. A spicy classic done right.', P.pep, 's1'),
     it('p5', 'Garlic Bread', 'Stone-baked flatbread, garlic butter, mozzarella, parsley.', null, 's2', ['Vegetarian']),
-    { id: 'd1', name: 'Tiramisu', description: 'Mascarpone, espresso-soaked sponge, cocoa.', price: $('Tiramisu'), category: 'Desserts', available: true, dietary: ['Vegetarian'], allergens: [], modifierGroups: [] },
-    { id: 'k1', name: 'Coke', description: c.can, price: $('Coke'), category: 'Drinks', available: true, dietary: [], allergens: [], modifierGroups: [] },
+    { id: 'd1', name: c.n('Tiramisu'), description: c.desc('Tiramisu', 'Mascarpone, espresso-soaked sponge, cocoa.'), price: $('Tiramisu'), category: c.cat('Desserts'), available: true, dietary: ['Vegetarian'], allergens: [], modifierGroups: [] },
+    { id: 'k1', name: c.n('Coke'), description: c.can, price: $('Coke'), category: c.cat('Drinks'), available: true, dietary: [], allergens: [], modifierGroups: [] },
   ]
   // The GB shot has Pizza first, then its "Specials" sub-category; the first item in its order is not shown.
-  const menu = { categories: [{ id: 'c1', name: 'Pizza', subcategories: [{ id: 's1', name: 'Specials', sort_order: 1 }, { id: 's2', name: 'Sides', sort_order: 2 }] },
-    { id: 'c2', name: 'Desserts' }, { id: 'c3', name: 'Drinks' }], items, upsell_rules: [], bundles: [] }
+  const menu = { categories: [{ id: 'c1', name: c.cat('Pizza'), subcategories: [{ id: 's1', name: c.cat('Specials'), sort_order: 1 }, { id: 's2', name: c.cat('Sides'), sort_order: 2 }] },
+    { id: 'c2', name: c.cat('Desserts') }, { id: 'c3', name: c.cat('Drinks') }], items, upsell_rules: [], bundles: [] }
   const ev = { id: 'ev-1', date: c.eventDate.date, date_iso: '2026-09-01', date_friendly: c.eventDate.friendly, start_time: '16:00', end_time: '20:00',
     venue_name: c.venue, village: c.town, notes: '', status: 'open', collection_interval_mins: 10 }
-  const state = { truck, menu, events: [ev], event: ev, eventLoading: false, loading: false, noEvents: false, isScrolled: true, activeCategory: 'Pizza',
+  const state = { truck, menu, events: [ev], event: ev, eventLoading: false, loading: false, noEvents: false, isScrolled: true, activeCategory: c.cat('Pizza'),
     basket: [{ menuItem: items[4], quantity: 1, modifiers: [], specialInstructions: '', cartKey: 'k-garlic' }], appliedDeals: [] }
   globalThis.__ms = state
   let body
@@ -66,14 +67,14 @@ async function photo(top) {   // the GB capture's own menu photos (Pizza Kitchen
     const pg = await browser.newPage({ viewport: { width: 428, height: WEB_H }, deviceScaleFactor: 3 })
     await pg.goto(srv.url, { waitUntil: 'load' })
     await pg.evaluate(() => document.fonts.ready)
-    const m = await pg.evaluate(() => {
-      const h = [...document.querySelectorAll('p')].find(p => p.textContent.trim().toUpperCase().startsWith('SPECIALS'))
+    const m = await pg.evaluate(([SPECIALS, DESCS]) => {
+      const h = [...document.querySelectorAll('p')].find(p => p.textContent.trim().toUpperCase().startsWith(SPECIALS))
       const group = h.parentElement
       window.scrollTo(0, group.getBoundingClientRect().top + window.scrollY - parseFloat(h.style.top || '121'))
       const footer = document.querySelector('.fixed.bottom-0')
-      const lines = [...document.querySelectorAll('p')].filter(p => /Tomato sauce|Pepperoni, sausage/.test(p.textContent)).map(p => Math.round(p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight)))
+      const lines = [...document.querySelectorAll('p')].filter(p => DESCS.includes(p.textContent.trim())).map(p => Math.round(p.getBoundingClientRect().height / parseFloat(getComputedStyle(p).lineHeight)))
       return { lines, top: h.style.top, footerTop: footer.getBoundingClientRect().top, scrollY: window.scrollY, overflowX: document.documentElement.scrollWidth - innerWidth }
-    })
+    }, [c.cat('Specials').toUpperCase(), items.slice(0, 4).map(i => i.description)])
     console.log('order measure', m)
     await pg.waitForTimeout(200)
     await pg.screenshot({ path: path.join(WORK, `order-web-${c.key}.png`) })

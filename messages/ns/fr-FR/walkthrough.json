@@ -1,0 +1,31 @@
+{
+  "intro": "La Gestion, c’est là où vous configurez votre food truck et suivez son activité. Le tableau de bord, c’est là où vous prenez les commandes et gérez chaque événement en direct.",
+  "ariaLabel": "Visite guidée du tableau de bord",
+  "step": "{current} sur {total}",
+  "skip": "Passer",
+  "back": "← Retour",
+  "next": "Suivant →",
+  "done": "Terminé",
+  "stops": {
+    "menu": {
+      "title": "Carte",
+      "body": "Vos plats, prix et allergènes. Toute modification ici est en ligne immédiatement."
+    },
+    "schedule": {
+      "title": "Planning",
+      "body": "Où et quand vous vendez. Ajoutez un événement ici et vos clients pourront commander pour celui-ci."
+    },
+    "build": {
+      "title": "Formules, suppléments et ventes additionnelles",
+      "body": "Les formules, ventes additionnelles, personnalisations et la capacité de votre cuisine se trouvent sous Carte — n’hésitez pas à explorer."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "body": "Les informations de votre food truck et la façon dont vos clients paient."
+    },
+    "billing": {
+      "title": "Facturation",
+      "body": "Là où se trouvent votre offre, votre facturation et les informations sur les fonctionnalités."
+    }
+  }
+}

@@ -7,5 +7,11 @@
   "contact": "Contact",
   "about": "About",
   "copyright": "© {year} HatchGrab",
-  "credit": "From the people behind <b>Village Foodie</b>"
+  "credit": "From the people behind <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Download HatchGrab on the App Store",
+    "appStoreAlt": "Download on the App Store",
+    "googlePlayLink": "Get HatchGrab on Google Play",
+    "googlePlayAlt": "Get it on Google Play"
+  }
 }

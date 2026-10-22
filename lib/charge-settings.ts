@@ -14,10 +14,11 @@ import type { ManageErrorCode } from '@/lib/i18n/manage-errors'
 import { translatorFor } from '@/lib/i18n/translator'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/errorsManage'
+import { includedTaxOf } from '@/lib/address-formats'   // france-1
 
 /** The four country facts the card and the action read. */
 export type ChargeCountry = Pick<CountrySettings,
-  'name' | 'pricesIncludeTax' | 'serviceFeeAllowed' | 'serviceFeeRecipient'
+  'name' | 'pricesIncludeTax' | 'serviceFeeAllowed' | 'serviceFeeRecipient' | 'addressFormat'
   | 'serviceFeeTruckMaxBps' | 'serviceFeeTruckMaxFixedMinor' | 'currency'>
 
 /** A refusal's code: an `errorsManage` key that starts `charges_`. */
@@ -80,7 +81,8 @@ export function checkChargeSettings(
 ): { ok: true; values: ChargeSettingsValues } | ChargeRefusal {
   const values: ChargeSettingsValues = {}
   if ('taxRate' in input) {
-    if (c.pricesIncludeTax) return refusal('charges_rate_not_here')
+    // france-1: a country whose prices INCLUDE a tax its receipts word (France's TVA) takes the rate those prices include.
+    if (c.pricesIncludeTax && !includedTaxOf(c.addressFormat)) return refusal('charges_rate_not_here')
     const v = rateBoxToMilli(String(input.taxRate ?? ''))
     if (v === 'decimals') return refusal('charges_rate_decimals')
     if (v === 'bad') return refusal('charges_rate_range')

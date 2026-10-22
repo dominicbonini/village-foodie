@@ -41,7 +41,7 @@
 // IDENTIFIER: token on the dashboard/KDS, slug on the customer order page (which never sees the token).
 // The endpoint accepts either; both are `demo-` prefixed and 130-bit random.
 
-import { useState, useEffect, useRef, useMemo, Fragment } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { createPortal } from 'react-dom'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -55,9 +55,8 @@ import { isPlausiblePhone, phonePlaceholder, type PhoneCopy } from '@/lib/phone'
 import { phoneErrorMessage } from '@/lib/phone-message'
 // Phase 2D-1: the wizard's FIRST step, "Where's your truck based?" — shared with /setup.
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
-import { WHERE_YOU_TRADE_COPY } from '@/lib/settings-copy'
-import { useT, useAppLocale } from '@/lib/i18n/use-t'
-import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/whereYouTrade'
+import { useT, useAppLocale, useTIn } from '@/lib/i18n/use-t'
 import { resolveLocale } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/demoGetStarted'
 import { errorTextIn } from '@/lib/i18n/customer-errors'
@@ -208,12 +207,16 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const tPage = useT('demoGetStarted')
   const pageLocale = useAppLocale()
   const wizardLocale = step !== 'landing' && chosenCountry ? resolveLocale(chosenCountry.locale) : null
-  const tWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'demoGetStarted') : null), [wizardLocale])
+  // languages-1: useTIn fetches a non-English wizard language's words and rebuilds the translator when they land.
+  const tWizard = useTIn(wizardLocale, 'demoGetStarted')
   const t = tWizard ?? tPage
   // A refusal's words follow the same rule: the wizard's language once a country is chosen, else the page's.
   const tErrPage = useT('errorsOnboarding'), tTradePage = useT('tradeArea')
-  const tErrWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'errorsOnboarding') : null), [wizardLocale])
-  const tTradeWizard = useMemo(() => (wizardLocale ? translatorFor(wizardLocale, 'tradeArea') : null), [wizardLocale])
+  const tErrWizard = useTIn(wizardLocale, 'errorsOnboarding')
+  const tTradeWizard = useTIn(wizardLocale, 'tradeArea')
+  // languages-1: the where-you-trade step's heading and button follow the same rule (they were the en-GB WHERE_YOU_TRADE_COPY).
+  const tWhereWizard = useTIn(wizardLocale, 'whereYouTrade'), tWherePage = useT('whereYouTrade')
+  const tWhere = tWhereWizard ?? tWherePage
   const tErr = tErrWizard ?? tErrPage
   const tTrade = tTradeWizard ?? tTradePage
   const wordsLocale = wizardLocale ?? pageLocale
@@ -744,7 +747,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                     className="absolute top-4 left-4 text-slate-400 hover:text-slate-600 text-2xl leading-none">‹</button>
                 )}
                 <div className="flex items-start justify-between gap-3 pl-6">
-                  <h3 className="font-black text-slate-900">{step === 'based' ? WHERE_YOU_TRADE_COPY.stepHeading : step === 'truck' ? t('truckStepHeading') : t('detailsStepHeading')}</h3>
+                  <h3 className="font-black text-slate-900">{step === 'based' ? tWhere('stepHeading') : step === 'truck' ? t('truckStepHeading') : t('detailsStepHeading')}</h3>
                   {!busy && (
                     <button type="button" onClick={closeModal} aria-label={t('close')}
                       className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
@@ -1191,7 +1194,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
               ) : step === 'based' ? (
                 <button type="button" onClick={() => { if (validateBasedStep()) { setError(null); setStep('truck') } }} disabled={busy || !base}
                   className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                  {WHERE_YOU_TRADE_COPY.continueButton}
+                  {tWhere('continueButton')}
                 </button>
               ) : step === 'truck' ? (
                 // STEP 1 → advance to "Your details". Validates step 1 on click (all at once); NO server write.

@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Accueil HatchGrab",
+  "cta": "Importer ma carte →",
+  "ctaShort": "Importer la carte",
+  "features": "Fonctionnalités",
+  "pricing": "Tarifs",
+  "logIn": "Se connecter",
+  "country": {
+    "button": "Pays : {name}. Changer de pays",
+    "menu": "Pays"
+  }
+}

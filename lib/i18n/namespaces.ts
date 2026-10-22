@@ -14,7 +14,9 @@ export const NAMESPACES = {
     // US polish batch (19 Oct 2026): the sign-up flow's refusals, worded from their codes.
     'errorsOnboarding',
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).
-    'address'],
+    'address',
+    // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
+    'whereYouTrade'],
   // The status / manage page.
   confirmation: ['orderStatus', 'errorsCustomer'],
   // Language Phase 1b: the kitchen surfaces and every shared piece they render (scripts/messages-split.cjs walks each
@@ -39,7 +41,9 @@ export const NAMESPACES = {
     // plan-features-config (Stage A2): the one upgrade prompt (Printing settings) and the features' names.
     'planPrompt',
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).
-    'address'],
+    'address',
+    // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
+    'whereYouTrade'],
   kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',
     'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',   // Language Phase 1c
     // Language Phase 1d (Settings): copy modules the KDS imports, whose en-GB exports read these namespaces.
@@ -49,7 +53,9 @@ export const NAMESPACES = {
     // plan-features-config (Stage A2): the one upgrade prompt and the features' names.
     'planPrompt',
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).
-    'address'],
+    'address',
+    // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
+    'whereYouTrade'],
   manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
     // Language Phase 1c: the cuisine and price controls, the walkthrough, and the where-based step.
     'cuisinePicker', 'priceControls', 'walkthrough', 'whereBased', 'tradeArea',
@@ -87,9 +93,22 @@ export const NAMESPACES = {
     // pricing-pages (Stage B): Billing's plan table (components/pricing/PlanTable.tsx).
     'planTable',
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).
-    'address'],
+    'address',
+    // languages-1 (22 October 2026): the shared menu upload control's words (components/menu/MenuUploadFields.tsx).
+    'demoUpload'],
+  // languages-1 (22 October 2026): the SERVER-RENDERED pages' client components — what lib/i18n/page-words.ts seeds a non-English
+  // page's browser with (its words are not in the bundle), so the first browser render matches the server's. scripts/
+  // messages-split.cjs walks each page's client graph and fails if a namespace its bundle carries is missing here.
+  // The marketing pages (landing, /features, /compare, /about, under <PageLocale>).
+  marketing: ['compare', 'demoUpload', 'errorsOnboarding', 'landingNav', 'planFeatures', 'planTable', 'provisionContent'],
+  // The public truck page (app/trucks/[slug]/page.tsx → TruckClient).
+  truckPage: ['eventCard', 'siteFooter', 'truckPage'],
+  // The custom-domain page's schedule widget (app/domain/page.tsx → app/embed/[slug]/EmbedSchedule.tsx).
+  embed: ['embed', 'eventCard'],
   // Language Phase 1c: the setup wizard.
   setup: ['setup', 'whereBased', 'tradeArea', 'errorsOnboarding',
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).
-    'address'],
+    'address',
+    // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
+    'whereYouTrade'],
 } as const satisfies Record<string, readonly AppNamespace[]>

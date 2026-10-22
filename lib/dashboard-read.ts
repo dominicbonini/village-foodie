@@ -22,6 +22,8 @@
 // scripts/ready-press-one-press.cjs.
 
 import { formatInstantClock, type TimeSettings } from '@/lib/time-utils'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/dashboardBanners'
 
 /** What a read slot holds while a read is running. `superseded` is set by the call that abORTS it. */
 export type ReadSlot = { controller: AbortController; superseded: boolean }
@@ -107,9 +109,10 @@ export function degradedBanner(d: Degraded, lastRefresh: Date, ts: TimeSettings 
   if (!d) return null
   // The truck's clock and style (Phase 2B; was the device's locale and zone): GB "15:20", US "3:20pm".
   const at = formatInstantClock(lastRefresh, ts)
+  // languages-1: the banner's words in the truck's language (`dashboardBanners.degraded`; en-GB exactly as before).
+  const t = translatorFor(ts?.locale, 'dashboardBanners')
   if (d.kind === 'server-error') {
-    const code = typeof d.status === 'number' ? ` (error ${d.status})` : ''
-    return `The server couldn't load orders${code}. Showing orders from ${at}. New orders may be missing.`
+    return t('degraded.serverError', { hasStatus: typeof d.status === 'number' ? 'yes' : 'no', status: String(d.status ?? ''), at })
   }
-  return `Can't reach the server. Showing orders from ${at}. New orders may be missing.`
+  return t('degraded.unreachable', { at })
 }

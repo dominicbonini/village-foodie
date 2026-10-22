@@ -1,0 +1,36 @@
+{
+  "h1": "Tout pour gérer votre service, dans chaque offre.",
+  "lede": "La prise de commandes, la possibilité de commander à l’avance, la limite de commandes par créneau et l’écran cuisine sont inclus dans toutes les offres.{hasUpgrades, select, yes { {plans} ajoutent {features}, avec des frais réduits.} other {}}",
+  "perMonth": "{price} / mois",
+  "group": {
+    "pay": "Ce que vous payez",
+    "run": "Gérer votre service",
+    "online": "Commandes en ligne",
+    "marketing": "Marketing et automatisation"
+  },
+  "pay": {
+    "included": "Commandes en ligne incluses chaque mois",
+    "fee": "Frais HatchGrab sur les commandes en ligne par carte*",
+    "walkUp": "Commandes au comptoir"
+  },
+  "cell": {
+    "unlimited": "Illimité",
+    "free": "Gratuit",
+    "feeAbove": "<b>{fee}</b> au-delà de {included}",
+    "yes": "Inclus",
+    "none": "Non inclus",
+    "comingSoon": "Bientôt disponible"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "réseaux sociaux",
+    "event_types": "tarifs événementiels personnalisés"
+  },
+  "meta": {
+    "description": "Toutes les fonctionnalités HatchGrab de chaque offre, côte à côte — {plans}, avec les frais et les quotas inclus.{months, plural, =0 {} one { Votre premier mois inclut tout.} other { Vos # premiers mois incluent tout.}}"
+  },
+  "notes": {
+    "whatsapp": "Les réponses automatiques WhatsApp nécessitent un compte WhatsApp Business. Meta peut facturer certains messages ; les réponses sont générées automatiquement.",
+    "printing": "L’impression des tickets cuisine nécessite une imprimante Bluetooth ou filaire compatible (non fournie)."
+  }
+}

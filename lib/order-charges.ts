@@ -188,7 +188,9 @@ export function computeOrderCharges(input: ChargeInput): OrderCharges {
 
   // ── tax (D3: once; D6: food is after the discount; D8: fees only when the country says) ──
   let taxMinor = 0
-  const taxRateMilli = rules.taxInclusive ? null : rules.taxRateMilli
+  // france-1: an INCLUSIVE rate (France's TVA) is kept on the snapshot for the receipt's "dont TVA" line and never added;
+  // every other inclusive country's rules carry no rate, so its snapshot is exactly as before (null).
+  const taxRateMilli = rules.taxRateMilli
   if (!rules.taxInclusive && taxRateMilli) {
     const base = foodMinor + (rules.feesTaxed ? serviceFeeMinor + cardSurchargeMinor : 0)
     taxMinor = applyMilli(base, taxRateMilli)
@@ -252,7 +254,8 @@ export function rulesForStoredOrder(current: OrderChargeRules, stored: StoredCha
     ...current,
     taxInclusive: stored.tax_inclusive,
     taxLabel: stored.tax_label ?? current.taxLabel,
-    taxRateMilli: stored.tax_inclusive ? null : (stored.tax_rate_milli ?? null),
+    // france-1: an inclusive order keeps the rate it was priced under too (null for every inclusive order before France).
+    taxRateMilli: stored.tax_rate_milli ?? null,
     cardFeePayer: stored.card_fee_payer === 'customer' ? 'customer' : stored.card_fee_payer === 'truck' ? 'truck' : current.cardFeePayer,
   }
 }
@@ -304,7 +307,7 @@ export function chargesForHatchSwitch(stored: StoredCharges): OrderCharges | nul
   const rules: OrderChargeRules = {
     taxInclusive: stored.tax_inclusive,
     taxLabel: stored.tax_label ?? '',
-    taxRateMilli: stored.tax_inclusive ? null : (stored.tax_rate_milli ?? null),
+    taxRateMilli: stored.tax_rate_milli ?? null,   // france-1: an inclusive order's rate is only ever worded, never added
     feesTaxed: false,                    // no fee or surcharge is left to tax
     serviceFee: null, tipping: null, surcharge: null,
     cardFeePayer: stored.card_fee_payer === 'customer' ? 'customer' : 'truck',

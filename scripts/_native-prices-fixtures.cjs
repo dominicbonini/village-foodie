@@ -56,12 +56,24 @@ const SE = () => ({
   tapToPayFixedMinor: 100, cardFeeRegionLabel: 'EEA cards', shortName: 'Sweden', phoneExample: '070 123 45 67', updatedBy: 'native-prices fixture',
 })
 
+/** france-1 (22 October 2026): France as docs/france-1-report.md's NOT RUN row has it — here SWITCHED ON, for the proof only
+ *  (scripts/france-1.cjs). Not in LIVE or WITH_FIXTURES, so no existing view sees it. */
+const FR = () => ({
+  ...LP1E.GB(), ...ANZ_ROW, countryCode: 'FR', name: 'France', enabled: true, currency: 'EUR', locale: 'fr-FR', phoneCountryCode: '33',
+  timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday', timezones: ['Europe/Paris'], defaultTimezone: 'Europe/Paris',
+  pricesIncludeTax: true, taxLabel: 'TVA', allergenSet: 'uk14', addressFormat: 'fr', allergenCardOnlyAllowed: true,
+  cardFeeOnlinePct: 1.5, cardFeeOnlineFixedMinor: 25, cardFeeInPersonPct: 1.4, cardFeeInPersonFixedMinor: 10, tapToPayFixedMinor: 10,
+  cardFeeRegionLabel: 'EEA cards', shortName: 'France', phoneExample: '06 12 34 56 78', updatedBy: 'france-1',
+})
+
 /** [monthlyMinor, includedOnlineMinor, feeBps, extraVanMonthlyMinor] per plan, for the countries the seed does not price. */
 const PRICES = {
   AU: { payg: [0, 0, 99, 0], pro: [3900, 550000, 99, 3900], unlimited: [9900, null, 0, 9900] },
   NZ: { payg: [0, 0, 99, 0], pro: [4900, 700000, 99, 4900], unlimited: [11900, null, 0, 11900] },
   CA: { payg: [0, 0, 99, 0], pro: [3900, 550000, 99, 3900], unlimited: [9900, null, 0, 9900] },
   SE: { payg: [0, 0, 99, 0], pro: [2900, 400000, 99, 2900], unlimited: [7900, null, 0, 7900] },
+  // france-1: Ireland's euro prices (the brief).
+  FR: { payg: [0, 0, 99, 0], pro: [2900, 400000, 99, 2900], unlimited: [6900, null, 0, 6900] },
 }
 const CATALOG = () => {
   const c = seedCatalog(path.resolve(__dirname, '..'))
@@ -79,11 +91,12 @@ const tablesOf = c => ({ plans: c.plans.map(snake), plan_prices: c.prices.map(sn
 /** The five live countries (all switched on — the live state, 21 October 2026) and the two fixtures. */
 const LIVE = () => [LP1E.GB(), LP1E.US_ON(), IE(), AU(), NZ()]
 const WITH_FIXTURES = () => [...LIVE(), CA(), SE()]
-const SEG = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', SE: 'se' }
+const SEG = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', SE: 'se', FR: 'fr' }
 const ROUTE = { landing: 'app/[country]/page', features: 'app/[country]/features/page', compare: 'app/[country]/compare/page' }
 // ⚠️ RE-PINNED (canada-1, 22 October 2026): Canada has its real address now (/ca), so only the SE fixture is patched in.
-const SEGMENTS_FROM = "export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca' }"
-const SEGMENTS_TO = "export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', SE: 'se' }"
+// ⚠️ RE-PINNED (france-1, 22 October 2026): …and France has its own (/fr) — the line the patch finds names it.
+const SEGMENTS_FROM = "export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', FR: 'fr' }"
+const SEGMENTS_TO = "export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', FR: 'fr', SE: 'se' }"
 
 /** A renderer over one LP1E context: `page(p, cc)` renders landing / features / compare for a country (HTML + metadata),
  *  `pdf(cc)` the plans PDF's HTML, `llms(ccs)` the /llms.txt body. Live countries render with the LIVE rows; CA and SE with
@@ -121,4 +134,4 @@ function renderer(kit, REPO, tag) {
   return { ctx, catalog, tables, page, pdf, llms, rowOf, lib }
 }
 
-module.exports = { IE, AU, NZ, CA, SE, LIVE, WITH_FIXTURES, PRICES, CATALOG, SEG, renderer }
+module.exports = { IE, AU, NZ, CA, SE, FR, LIVE, WITH_FIXTURES, PRICES, CATALOG, SEG, renderer }

@@ -5,6 +5,11 @@
     "hint": "The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.",
     "regionDefault": "Leave it empty to charge {label} at {rate}%, the rate on prepared food in {region}."
   },
+  "included": {
+    "label": "{label} in your prices",
+    "hint": "Your prices already include {label}. This rate only says how much of each price is {label}, on receipts and tickets — nothing is added at checkout.",
+    "default": "Leave it empty to use {rate}%, the {label} rate on hot food sold to take away in {country}."
+  },
   "tips": {
     "label": "Tips",
     "hint": "Customers paying online by card can add a tip. It all goes to you.",

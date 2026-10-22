@@ -13,7 +13,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { SignupCountry } from '@/lib/signup-country-types'
 import { checkTradeArea, TRADE_AREA_ERRORS, type TradeAreaRefusal } from '@/lib/trade-area'
-import { WHERE_YOU_TRADE_COPY as COPY } from '@/lib/settings-copy'
+import '@/lib/i18n/catalog/whereYouTrade'
 import { useT } from '@/lib/i18n/use-t'
 import { addressFormatKeyOf, addressFormatOrDefault, fieldOf, type LocalityLabel } from '@/lib/address-formats'
 import '@/lib/i18n/catalog/address'
@@ -204,6 +204,7 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
 }) {
   const c = countries.find(x => x.code === value.country) ?? countries[0]
   const tTrade = useT('tradeArea')
+  const tWhere = useT('whereYouTrade')   // languages-1: the step's words in the page's language (were the en-GB WHERE_YOU_TRADE_COPY)
   const tAddr = useT('address')
   const say = (r: TradeAreaRefusal) => tTrade(r.code, r.params)
   const setCountry = (code: string) => {
@@ -213,9 +214,9 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
   }
   return (
     <div className="space-y-5">
-      <p className="text-sm text-slate-600">{COPY.stepIntro}</p>
+      <p className="text-sm text-slate-600">{tWhere('stepIntro')}</p>
       <div>
-        <label htmlFor="base-country" className={LABEL}>{COPY.country.label}</label>
+        <label htmlFor="base-country" className={LABEL}>{tWhere('countryLabel')}</label>
         <div className="relative">
           {c?.flag && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -226,7 +227,7 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
             {countries.map(x => <option key={x.code} value={x.code}>{x.name}</option>)}
           </select>
         </div>
-        {guessedCode !== null && value.country === guessedCode && <p className="text-xs text-slate-500 mt-1">{COPY.countryGuessed}</p>}
+        {guessedCode !== null && value.country === guessedCode && <p className="text-xs text-slate-500 mt-1">{tWhere('countryGuessed')}</p>}
         {errors.country && <p className="text-xs text-red-600 mt-1">{say(errors.country)}</p>}
       </div>
       <div>
@@ -238,7 +239,7 @@ export function WhereBasedStep({ countries, guessedCode, value, onChange, errors
       </div>
       {c && c.timezones.length > 1 && (
         <div>
-          <label htmlFor="base-zone" className={LABEL}>{COPY.timezone.label}</label>
+          <label htmlFor="base-zone" className={LABEL}>{tWhere('timezoneLabel')}</label>
           <ZoneSelect id="base-zone" zones={c.timezones} value={value.timezone} onChange={tz => onChange({ ...value, timezone: tz })} />
           {errors.timezone && <p className="text-xs text-red-600 mt-1">{say(errors.timezone)}</p>}
         </div>

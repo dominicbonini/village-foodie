@@ -1,0 +1,25 @@
+{
+  "heading": "Semaine du {start} au {end}",
+  "daysOff": "Pas de service aujourd’hui",
+  "cancelled": "ANNULÉ",
+  "placeSample": {
+    "nameTownBelow": "Le Café de la Place\nLyon",
+    "nameTown": "Le Café de la Place, Lyon",
+    "nameOnly": "Le Café de la Place"
+  },
+  "busyWeek": {
+    "venue1": "Salle des fêtes de Villeurbanne",
+    "town1": "Villeurbanne",
+    "venue2": "Complexe sportif et terrain de loisirs de Saint-Genis-les-Ollières",
+    "town2": "Saint-Genis-les-Ollières",
+    "venue3": "Place du Marché",
+    "town3": "Vienne",
+    "venue4": "Festival gastronomique",
+    "town4": "Bourg-en-Bresse",
+    "venue5": "Le Bistrot du Port",
+    "town5": "Caluire",
+    "venue6": "Place de l’Église",
+    "town6": "Écully"
+  },
+  "poweredBy": "Propulsé par HatchGrab"
+}

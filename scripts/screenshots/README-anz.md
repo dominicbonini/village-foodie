@@ -1,4 +1,15 @@
-# Australia (AU), New Zealand (NZ) and Canada (CA) screenshots
+# Australia (AU), New Zealand (NZ), Canada (CA) and France (FR) screenshots
+
+> **france-1 (22 October 2026):** the same scripts make France's three images — pass `fr`. The fixture is Pizza Kitchen at
+> Place Bellecour, Lyon: EUR in `fr-FR` (prices TTC: pizzas 11–15 €, pain à l’ail 5 €, drinks 2,50–3 €), Europe/Paris (UTC+2),
+> a **24-hour** clock (the `fr` entry's own `timeFormat`; the others stay 12-hour), day-first dates, Monday weeks, phone
+> 06 12 34 56 78, 33 cl cans and French names (Léa, Hugo, Chloé…). France's dish, category and description text comes from the
+> entry's own `names` / `cats` / `desc` tables over the shared English keys (`c.n` / `c.cat` / `c.desc`; without a table they
+> return the key, so AU/NZ/CA render byte-for-byte as before). The phone's status bar is **kept as captured** ("16:31", as for
+> Ireland); the iPad bars are repainted because the GB date is English: "22:21  mar. 1 sept." / "21:08  mar. 1 sept." (Intl
+> `fr-FR`). The dashboard/kitchen event is on Thu 3 Sep (`eventYmd`), because the app's `eventDateLabel` still prints an English
+> "Tomorrow". `node scripts/screenshots/anz-screens.cjs fr docs/france-1`; the copies in `public/screenshots/*-fr.png` are mapped
+> in `lib/landing-screens.ts` and shown only on /fr.
 
 > **canada-1 (22 October 2026):** the same scripts make Canada's three images — pass `ca`. The fixture is Pizza Kitchen at
 > Trinity Bellwoods Park, Toronto: CAD in `en-CA`, America/Toronto, 12-hour ("10:21 p.m."), **month-first** dates and

@@ -2,6 +2,7 @@
 // lib/plan-features.ts, 19 October 2026; docs/plans-data-model-report.md). Not a plan fact.
 import { PRICE_WORD, type PriceWordId } from '@/lib/price-words'
 import { MASKED_PRICE } from '@/lib/pricing'
+import { formatAmount, type MoneyFormat } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/planFeatures'
 
@@ -16,4 +17,10 @@ const PRICE_WORD_IDS = new Map<string, PriceWordId | 'masked'>([
 export function priceText(val: string, locale: string | null | undefined): string {
   const id = PRICE_WORD_IDS.get(val)
   return id ? translatorFor(locale, 'planFeatures')(`priceWord.${id}`) : val
+}
+
+/** languages-1 (22 October 2026): "£29/mo" / "£29/month" in the locale's words (`planFeatures.perMonth`) — the display form of
+ *  lib/money-format.ts perMonthLabel, whose "/mo" is English. Identical to it in every English locale. */
+export function perMonthText(minor: number, f: MoneyFormat, unit: 'mo' | 'month' = 'mo'): string {
+  return translatorFor(f.locale, 'planFeatures')(`perMonth.${unit}`, { amount: formatAmount(minor, f) })
 }

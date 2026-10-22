@@ -50,7 +50,7 @@ import { cleanTypedPrice } from '@/lib/event-pricing/price'
  * screen; the two privacy confirms are the one copy module that owns those sentences (§73). */
 import { colourFor, STANDARD_COLOUR } from '@/lib/event-types/types'
 import {
-  PRIVATE_PUBLIC_NAME, CONFIRM_TO_PRIVATE, CONFIRM_FROM_PRIVATE,
+  PRIVATE_PUBLIC_NAME,
 } from '@/lib/private-events/copy'
 /* 🔴 THE ONE FORMATTER FOR "what is this private event called" — shared with the Events list, so a
  * blank name degrades to the generic label in one place rather than in three. */
@@ -151,6 +151,7 @@ import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/dashboard'
+import '@/lib/i18n/catalog/privateEvents'
 import { errorText } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/errorsKitchen'
 import '@/lib/i18n/catalog/errorsManage'
@@ -291,6 +292,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
   // Language Phase 1b: every word on this screen is a message in `dashboard` (messages/en-GB.json).
   const tDash=useT('dashboard')
+  // languages-1: the private-event words in the truck's language (they were lib/private-events/copy.ts's en-GB exports).
+  const tPrivEv=useT('privateEvents')
   // A refusal is worded from its code + params, its English `error` the fallback (US polish batch, 19 October 2026):
   // /api/dashboard/action → errorsKitchen, /api/events/action → errorsManage, /api/demo/restart → errorsOnboarding.
   const tErrK=useT('errorsKitchen'), tErrM=useT('errorsManage'), tErrO=useT('errorsOnboarding')
@@ -4249,8 +4252,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     {eventIsPrivate?(<>
                       <span aria-hidden>🔒</span>{' '}
                       {privateName
-                        ?<>{privateName} — <span className="text-purple-300 font-bold">{PRIVATE_PUBLIC_NAME}</span></>
-                        :<span className="text-purple-300 font-bold">{PRIVATE_PUBLIC_NAME}</span>}
+                        ?<>{privateName} — <span className="text-purple-300 font-bold">{tPrivEv('publicName')}</span></>
+                        :<span className="text-purple-300 font-bold">{tPrivEv('publicName')}</span>}
                       {' · '}{formatTime(activeEvent.start_time,dashTime)}–{formatTime(activeEvent.end_time,dashTime)}
                     </>):(<>
                       📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time,dashTime)}–{formatTime(activeEvent.end_time,dashTime)}
@@ -6906,8 +6909,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="space-y-3">
                 {/* ⛔ THE PRIVACY SENTENCE SITS ABOVE THE SERVICE BULLETS, because it is about who can
                     reach the event at all — which comes before what the kitchen does when they do. */}
-                {toPrivate&&<p className="text-sm font-semibold text-purple-700 bg-purple-50 border border-purple-200 rounded-xl p-3">{CONFIRM_TO_PRIVATE}</p>}
-                {fromPrivate&&<p className="text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">{CONFIRM_FROM_PRIVATE}</p>}
+                {toPrivate&&<p className="text-sm font-semibold text-purple-700 bg-purple-50 border border-purple-200 rounded-xl p-3">{tPrivEv('confirmToPrivate')}</p>}
+                {fromPrivate&&<p className="text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">{tPrivEv('confirmFromPrivate')}</p>}
                 <div className="text-sm text-slate-700 space-y-1">
                   <p>• {tDash('typePicker.newOrders',{type:targetName})}</p>
                   <p>• {tDash('typePicker.placedOrders')}</p>

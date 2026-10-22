@@ -572,6 +572,7 @@
   "charges": {
     "subtotal": "Subtotal",
     "taxFallback": "Tax",
+    "taxIncluded": "Includes {label}",
     "serviceFeeCustomer": "Online service fee",
     "serviceFee": "Service fee",
     "cardFee": "Card fee",
@@ -584,7 +585,57 @@
   "menuBadges": {
     "soldOut": "sold out",
     "left": "{count} left",
-    "spiceLevel": "Spice level {level} of {max}"
+    "spiceLevel": "Spice level {level} of {max}",
+    "dietary": {
+      "Vegetarian": "Vegetarian",
+      "Vegan": "Vegan",
+      "Halal": "Halal",
+      "Kosher": "Kosher",
+      "GlutenFree": "Gluten Free",
+      "DairyFree": "Dairy Free",
+      "Lactose": "Lactose"
+    },
+    "allergen": {
+      "Gluten": "Gluten",
+      "Crustaceans": "Crustaceans",
+      "Eggs": "Eggs",
+      "Fish": "Fish",
+      "Peanuts": "Peanuts",
+      "Soy": "Soy",
+      "Dairy": "Dairy",
+      "Treenuts": "Tree nuts",
+      "Celery": "Celery",
+      "Mustard": "Mustard",
+      "Sesame": "Sesame",
+      "Sulphites": "Sulphites",
+      "Lupin": "Lupin",
+      "Molluscs": "Molluscs",
+      "Milk": "Milk",
+      "Crustaceanshellfish": "Crustacean shellfish",
+      "Wheat": "Wheat",
+      "Soybeans": "Soybeans",
+      "Barley": "Barley",
+      "Rye": "Rye",
+      "Oats": "Oats",
+      "Egg": "Egg",
+      "Crustacean": "Crustacean",
+      "Mollusc": "Mollusc",
+      "Peanut": "Peanut",
+      "Addedsulphites": "Added sulphites",
+      "Almond": "Almond",
+      "Brazilnut": "Brazil nut",
+      "Cashew": "Cashew",
+      "Hazelnut": "Hazelnut",
+      "Macadamia": "Macadamia",
+      "Pecan": "Pecan",
+      "Pinenut": "Pine nut",
+      "Pistachio": "Pistachio",
+      "Walnut": "Walnut",
+      "Wheatandtriticale": "Wheat and triticale",
+      "Glutenbarleyoatsrye": "Gluten (barley, oats, rye)",
+      "Nuts": "Nuts",
+      "Shellfish": "Shellfish"
+    }
   },
   "errorsCustomer": {
     "sold_out_paying": "{names} sold out while you were paying. We’ve removed {count, plural, one {it} other {them}} and have not taken any money — please check your order before placing it again.",
@@ -652,7 +703,9 @@
     "listMany": "{init}, and {last}",
     "menuSummary": "{opener}We’ve got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}",
     "allergenCaveat": "Please double-check the full menu for allergen info — this is an automated reply.",
-    "specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}"
+    "specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}",
+    "capHandoff": "Thanks for all your messages! I can only reply a few times a day here.\n\nTo order: {link}",
+    "capContact": "To reach us directly: {number}"
   },
   "orderStatus": {
     "loadFailed": "Could not load order",
@@ -838,13 +891,22 @@
       "subjectTotalMoved": "Order #{id} updated — now {total} (was {previous})",
       "subject": "Order #{id} updated",
       "subjectSlotMoved": "Your order #{id} has been updated"
-    }
+    },
+    "offlineRejectReason": "The van lost its internet connection, so this order could not be confirmed."
   },
   "eventCard": {
     "live": "Live",
     "venueDetails": "View venue details for {venue}",
     "orderNow": "Order now",
     "preOrder": "Pre-order"
+  },
+  "embed": {
+    "metaDescription": "Where {truck} is trading next.",
+    "orderFrom": "Order from {truck}",
+    "poweredBy": "Powered by <b>HatchGrab</b>",
+    "loadFailed": "Couldn't load the schedule just now.",
+    "loading": "Loading schedule…",
+    "empty": "No upcoming events listed for {truck}."
   },
   "orderLine": {
     "total": "Total"
@@ -912,7 +974,13 @@
     "van_not_for_target": "Van not found for the target truck",
     "item_sold_out": "Sorry, {item} is sold out.",
     "choose_group": "Please choose {group} for {item}.",
-    "net_address_invalid": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100."
+    "net_address_invalid": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100.",
+    "stock_table_attention": "Could not save that extra. The stock table needs attention.",
+    "completed_payment_not_recorded": "Order completed, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.",
+    "slot_board_not_updated": "Order saved, but the kitchen capacity board could not be updated — check the slot before relying on it.",
+    "created_payment_not_recorded": "Order created, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.",
+    "payment_not_recorded": "Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.",
+    "payment_not_reversed": "Payment could not be reversed"
   },
   "kitchenModals": {
     "close": "Close",
@@ -1382,7 +1450,11 @@
     "wakeUnsupported": "This device can’t keep the screen on.",
     "wakeInsecure": "The screen can’t be kept on from this address.",
     "wakeRetry": "Keep screen on — tap to try again",
-    "wakeAcquire": "Keep screen on"
+    "wakeAcquire": "Keep screen on",
+    "degraded": {
+      "serverError": "The server couldn't load orders{hasStatus, select, yes { (error {status})} other {}}. Showing orders from {at}. New orders may be missing.",
+      "unreachable": "Can't reach the server. Showing orders from {at}. New orders may be missing."
+    }
   },
   "demo": {
     "notAvailable": "Not available in demo",
@@ -1509,7 +1581,8 @@
     "cancel": "Cancel",
     "markPaidAndCollected": "Mark paid & collected",
     "cashIcon": "💷",
-    "chargesSummary": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}"
+    "chargesSummary": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}",
+    "reverted": "Order #{id} reverted"
   },
   "addOrder": {
     "catClosed": "{cat} is closed for online orders this event — hidden from customers. You can still add for the hatch; you’ll be asked to confirm.",
@@ -1597,7 +1670,21 @@
     "addLine": "{edit, select, yes {Save changes} other {Add}} · {amount}",
     "done": "Done",
     "noUpcomingEvents": "No upcoming events found",
-    "cashIcon": "💷"
+    "cashIcon": "💷",
+    "fitSuffix": "{hasLabel, select, yes { · Not enough time} other { Not enough time}}",
+    "fitMessage": {
+      "title": "Can’t be ready by {slot}",
+      "batchLine": "{cat}: {batch} at a time, every {mins} minutes.",
+      "batchOne": "This order needs 1 batch to be ready by {slot}, and it doesn't have room.",
+      "batchNone": "This order needs {n} batches to be ready by {slot}, and none has room.",
+      "batchOneRoom": "This order needs {n} batches to be ready by {slot}, but only 1 has room.",
+      "batchSome": "This order needs {n} batches to be ready by {slot}, but only {m} have room.",
+      "windowFull": "{start}–{end} · {cat} · Full",
+      "windowFree": "{start}–{end} · {cat} · {free} free",
+      "windowShort": "{start}–{end} · {cat} · {free} free, needs {share}",
+      "kitchen": "Your kitchen cooks up to {cap} items at a time. Between {start} and {end} it's already cooking {existing}, and this order needs {add} more.",
+      "beforeOpen": "{cat} for {slot} would need to start cooking before your event opens."
+    }
   },
   "emailOperator": {
     "newOrder": {
@@ -1611,6 +1698,17 @@
       "autoConfirmed": "Auto-confirmed — no action needed.",
       "confirmPrompt": "Log in to your HatchGrab dashboard to confirm or reject this order.",
       "text": "New order #{id} from {name}{withSlot, select, yes { for {slot}} other {}}{withVenue, select, yes { at {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total {total}.{withNotes, select, yes { Notes: {notes}} other {}}"
+    },
+    "newEvents": {
+      "subject": "New events found for {truck} — please review",
+      "hi": "Hi there,",
+      "found": "We found <b>{n, plural, one {{count} new event} other {{count} new events}}</b> on your schedule that need your approval before they appear to customers.",
+      "listHeading": "Events found:",
+      "approve": "Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.",
+      "cta": "Review your schedule →",
+      "signoff": "— The HatchGrab team · hatchgrab.com",
+      "unknownVenue": "Unknown venue",
+      "text": "Hi there,\n\nWe found {n, plural, one {{count} new event} other {{count} new events}} on your schedule that need your approval:\n\n{list}\n\nReview them at: {url}\n\nOnce you approve them they'll go live on the map.\n\n— The HatchGrab team"
     }
   },
   "alertsOperator": {
@@ -1681,7 +1779,34 @@
     "other": "Other…",
     "otherPlaceholder": "Tell us your cuisine",
     "addAnother": "+ Choose another",
-    "remove": "Remove {label}"
+    "remove": "Remove {label}",
+    "cuisine": {
+      "Asian": "Asian",
+      "BBQ": "BBQ",
+      "Bakery": "Bakery",
+      "Burgers": "Burgers",
+      "Caribbean": "Caribbean",
+      "Chicken": "Chicken",
+      "Chinese": "Chinese",
+      "Coffee": "Coffee",
+      "Desserts": "Desserts",
+      "FishChips": "Fish & Chips",
+      "Greek": "Greek",
+      "HotDogs": "Hot Dogs",
+      "Indian": "Indian",
+      "Italian": "Italian",
+      "JacketPotatoes": "Jacket Potatoes",
+      "Kebab": "Kebab",
+      "Korean": "Korean",
+      "Mexican": "Mexican",
+      "PieMash": "Pie & Mash",
+      "Pizza": "Pizza",
+      "Seafood": "Seafood",
+      "Tacos": "Tacos",
+      "Thai": "Thai",
+      "Vegan": "Vegan",
+      "Wraps": "Wraps"
+    }
   },
   "priceControls": {
     "change": "{label} — change",
@@ -1838,6 +1963,11 @@
       "loginUpdateFailed": "Failed to update login credentials. Your email has not been changed.",
       "successTitle": "Email address updated",
       "successBody": "Your email has been changed to <b>{email}</b>. Signing you out…"
+    },
+    "sessionAlert": {
+      "title": "Your sign-in needs attention",
+      "body": "Everything on screen is still here. New changes may not save until you sign in again.",
+      "signIn": "Sign in again"
     }
   },
   "emailSignup": {
@@ -2125,6 +2255,15 @@
       "somethingWrong": "Something went wrong. Please try again.",
       "serverUnreachable": "We couldn’t reach the server. Check your connection and try again.",
       "sendFailed": "Couldn’t send that — try again."
+    },
+    "fields": {
+      "uploadLabel": "Upload menu file",
+      "dropHere": "Drop your menu here",
+      "dragOrTap": "Drag and drop or tap to choose",
+      "fileTypes": "Image or PDF",
+      "or": "or",
+      "pasteLabel": "Paste menu text",
+      "pastePlaceholder": "Paste your menu here — item names, descriptions, prices..."
     }
   },
   "provisionContent": {
@@ -2920,7 +3059,8 @@
       "keepChecking": "We’ll keep checking this page and send any new dates for your approval.",
       "photoDesc": "Snap or paste your dates — we’ll read them in for you to check.",
       "noneFound": "We couldn’t find any dates in that — try a clearer photo, or add a date yourself.",
-      "manualTitle": "I’ll add my dates myself"
+      "manualTitle": "I’ll add my dates myself",
+      "trialNotStarted": "Adding events doesn't start your free trial — you choose which event starts it, later."
     },
     "done": {
       "summary": "{items, plural, one {# item} other {# items}} across {categories, plural, one {# category} other {# categories}}.",
@@ -2941,6 +3081,10 @@
       "keepEditing": "Keep editing",
       "discard": "Discard",
       "body": "Your changes won’t be saved — the imported items, prep times and kitchen capacity won’t be added."
+    },
+    "allergenCardText": {
+      "contains": "Contains: {list}",
+      "mayContain": "May contain: {list}"
     }
   },
   "errorsManage": {
@@ -3154,7 +3298,13 @@
     "sg_merge_impossible": "Those places can’t be merged.",
     "sg_merge_write_failed": "Couldn’t merge those places.",
     "event_times_same": "The finish time can’t be the same as the start time.",
-    "feature_not_on_plan": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}"
+    "feature_not_on_plan": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}",
+    "stripe_account_not_saved": "Account created but not saved — contact support",
+    "stripe_no_account": "No connected account yet",
+    "stripe_request_failed": "Stripe request failed",
+    "private_unavailable": "Private events are not available yet — the database migration has not been applied.",
+    "private_not_private": "This event is not private.",
+    "private_link_off": "Ordering by private link is switched off for this event."
   },
   "tradeArea": {
     "country_missing": "Choose the country your truck is based in.",
@@ -3814,7 +3964,8 @@
       "buildFailed": "That could not be built just now. Try again shortly.",
       "close": "Close",
       "logoPlaceholder": "Your logo\nhere"
-    }
+    },
+    "qrPoweredBy": "Powered by HatchGrab"
   },
   "manageReports": {
     "filter": {
@@ -4339,6 +4490,11 @@
       "hint": "The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.",
       "regionDefault": "Leave it empty to charge {label} at {rate}%, the rate on prepared food in {region}."
     },
+    "included": {
+      "label": "{label} in your prices",
+      "hint": "Your prices already include {label}. This rate only says how much of each price is {label}, on receipts and tickets — nothing is added at checkout.",
+      "default": "Leave it empty to use {rate}%, the {label} rate on hot food sold to take away in {country}."
+    },
     "tips": {
       "label": "Tips",
       "hint": "Customers paying online by card can add a tip. It all goes to you.",
@@ -4539,7 +4695,9 @@
       "regular": "regular",
       "bold": "bold",
       "italic": "italic"
-    }
+    },
+    "ownLicence": "Your own",
+    "loadFailed": "Could not load fonts"
   },
   "weeklyPost": {
     "error": {
@@ -5201,7 +5359,8 @@
       "town5": "Cavendish",
       "venue6": "Church Green",
       "town6": "Long Melford"
-    }
+    },
+    "poweredBy": "Powered by HatchGrab"
   },
   "captions": {
     "labels": {
@@ -5398,7 +5557,13 @@
     "contact": "Contact",
     "about": "About",
     "copyright": "© {year} HatchGrab",
-    "credit": "From the people behind <b>Village Foodie</b>"
+    "credit": "From the people behind <b>Village Foodie</b>",
+    "badges": {
+      "appStoreLink": "Download HatchGrab on the App Store",
+      "appStoreAlt": "Download on the App Store",
+      "googlePlayLink": "Get HatchGrab on Google Play",
+      "googlePlayAlt": "Get it on Google Play"
+    }
   },
   "contactPage": {
     "meta": {
@@ -5613,6 +5778,18 @@
       }
     },
     "cardRegionOnline": "standard {region}",
+    "cardRegion": {
+      "UKcards": "UK cards",
+      "EEAcards": "EEA cards",
+      "UScards": "US cards",
+      "Australiancards": "Australian cards",
+      "NewZealandcards": "New Zealand cards",
+      "Canadiancards": "Canadian cards"
+    },
+    "perMonth": {
+      "mo": "{amount}/mo",
+      "month": "{amount}/month"
+    },
     "priceWord": {
       "free": "Free",
       "freeTrial": "Free trial",
@@ -5627,6 +5804,7 @@
       "included": "Included"
     }
   },
+  "planNames": {},
   "planPrompt": {
     "includedOn": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}",
     "notOnPlan": "{many, select, yes {{feature} are not on your plan.} other {{feature} is not on your plan.}}",
@@ -5864,7 +6042,8 @@
       "messenger_instagram_replies": "Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.",
       "sms_order_alerts": "Text customers automatically when their order’s ready.",
       "loyalty_stamp_cards": "Reward repeat customers with digital stamp cards — collected and redeemed automatically."
-    }
+    },
+    "metaTitle": "Plans & features compared — HatchGrab {country}"
   },
   "compare": {
     "eyebrow": "Cost comparison",

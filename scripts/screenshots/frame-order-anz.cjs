@@ -1,7 +1,9 @@
 // Step 2 of the AU/NZ order screenshot: frame <work>/order-web-<au|nz>.png with the GB capture's iOS status bar and Safari
 // bar (public/screenshots/customer-order.png, read only). Like the US frame (frame-order.cjs), the clock is repainted in
 // 12-hour form ("4:31" — the iPhone's bar shows no am/pm) and fitted to the GB clock's size and position in a few passes.
-//   node frame-order-anz.cjs <au|nz> <workDir> <outDir> → <outDir>/customer-order-<au|nz>.png
+// france-1: a 24-hour country (fr) keeps the GB status bar EXACTLY as captured ("16:31", no date), as frame-order-ie.cjs
+// does — order-anz.cjs renders at 16:31 Paris time — and fails if the clock pixels differ.
+//   node frame-order-anz.cjs <au|nz|ca|fr> <workDir> <outDir> → <outDir>/customer-order-<cc>.png
 const path = require('path'); const compose = require('./compose.cjs'); const bbox = require('./bbox.cjs')
 const A = require('./anz-fixtures.cjs')
 const c = A.country()
@@ -12,6 +14,13 @@ const GB = path.join(REPO, 'public/screenshots/customer-order.png')
 const out = path.join(OUT, `customer-order-${c.key}.png`)
 const web = path.join(WORK, `order-web-${c.key}.png`)
 ;(async () => {
+  if (c.timeFormat === '24h') {
+    await compose({ gb: GB, web, out, W: 1284, H: 2778, webTop: 141, bottomFrom: 2601, clocks: [] })
+    const region = { x: 60, y: 20, w: 400, h: 110 }
+    const want = await bbox(GB, region), got = await bbox(out, region)
+    if (JSON.stringify(want) !== JSON.stringify(got)) { console.error('frame-order-anz: the status-bar clock differs from the GB capture', { want, got }); process.exit(1) }
+    return console.log('24-hour: clock kept as captured', got)
+  }
   const text = A.clock(c, A.instant(c, '2026-09-01', '16:31')).phone
   console.log('clock', JSON.stringify(text))
   const region = { x: 60, y: 20, w: 400, h: 110 }

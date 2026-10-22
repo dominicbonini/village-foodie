@@ -9,5 +9,7 @@
   "listMany": "{init}, and {last}",
   "menuSummary": "{opener}We’ve got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}",
   "allergenCaveat": "Please double-check the full menu for allergen info — this is an automated reply.",
-  "specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}"
+  "specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Thanks for all your messages! I can only reply a few times a day here.\n\nTo order: {link}",
+  "capContact": "To reach us directly: {number}"
 }

@@ -1,0 +1,69 @@
+{
+  "close": "Fermer",
+  "cancel": "Annuler",
+  "selectReason": "Sélectionnez un motif",
+  "reject": {
+    "title": "Refuser la commande #{orderId} ?",
+    "reasonLabel": "Motif — obligatoire (visible par le client)",
+    "reason": "{reason, select, sold_out {Article épuisé} too_busy {Trop de monde — impossible dans les temps} closing_soon {Fermeture imminente} other {Autre}}",
+    "noteRequired": "Motif — obligatoire",
+    "noteOptional": "Note complémentaire — facultative",
+    "notePlaceholder": "Ajoutez des précisions pour le client…",
+    "keep": "Garder la commande",
+    "confirm": "Refuser la commande"
+  },
+  "eventCancel": {
+    "title": "Annuler cet événement ?",
+    "affected": "{n, plural, one {{count} commande sera annulée} other {{count} commandes seront annulées}} et les clients prévenus.",
+    "reasonLabel": "Motif — facultatif",
+    "reason": "{reason, select, vehicle_breakdown {Panne du véhicule} weather {Météo} venue_issue {Problème sur le lieu} personal_emergency {Urgence personnelle} other {Autre}}",
+    "messageLabel": "Message aux clients — facultatif",
+    "messagePlaceholder": "ex. : Désolés, notre remorque est tombée en panne en route vers le lieu…",
+    "keep": "Garder l’événement",
+    "cancelling": "Annulation…",
+    "confirm": "Annuler l’événement"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Redémarrer l’événement} other {Démarrer l’événement}}",
+    "changeEvent": "Changer d’événement",
+    "changeEventType": "Changer le type d’événement…",
+    "privateLink": "Lien privé et QR code",
+    "noteLabel": "Note pour les clients",
+    "notePlaceholder": "ex. : Garez-vous sur le parking principal, cherchez la tonnelle orange",
+    "noteHint": "Affichée aux clients sur la page de commande, sous les détails de votre événement.",
+    "saveNote": "Enregistrer la note",
+    "resume": "Reprendre les commandes",
+    "pause": "Suspendre les commandes",
+    "changeFinishTime": "Modifier l’heure de fin de l’événement",
+    "finishEvent": "Terminer l’événement",
+    "cancelEvent": "Annuler l’événement"
+  },
+  "finish": {
+    "confirmTitle": "Modifier l’heure de fin ?",
+    "willFinish": "Cet événement se terminera à <b>{selected}</b>{hasCurrent, select, yes { au lieu de <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} commande est prévue} other {{count} commandes sont prévues}} après {selected}.</b> {n, plural, one {Elle reste} other {Elles restent}} sur le tableau et {n, plural, one {doit toujours être préparée} other {doivent toujours être préparées}}. Modifier l’heure de fin empêche seulement de passer de NOUVELLES commandes pour des heures ultérieures.",
+    "saving": "Enregistrement…",
+    "confirm": "Modifier l’heure de fin",
+    "keepCurrent": "Conserver {current}",
+    "keepAsIs": "Laisser tel quel",
+    "title": "Modifier l’heure de fin",
+    "currentlySet": "Cet événement doit actuellement se terminer à <b>{current}</b>.",
+    "noFinishTime": "Aucune heure de fin n’est définie pour cet événement.",
+    "noTimesLeft": "Il ne reste plus d’horaires aujourd’hui. Utilisez plutôt Terminer l’événement.",
+    "newFinishTime": "Nouvelle heure de fin",
+    "optionCurrent": "{time} (actuelle)",
+    "earlier": "C’est plus tôt que l’heure de fin actuelle. Les clients ne pourront plus commander pour des heures ultérieures.",
+    "review": "Vérifier la modification",
+    "optionNextDay": "{time} (lendemain)"
+  },
+  "extraWait": {
+    "title": "Ajouter de l’attente",
+    "hint": "S’ajoute à l’heure de retrait annoncée pour les nouvelles commandes. Ne modifie pas l’heure de fin de l’événement.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Reconnecter pour charger",
+    "selected": "Sélectionné",
+    "status": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Pas commencé}}"
+  }
+}

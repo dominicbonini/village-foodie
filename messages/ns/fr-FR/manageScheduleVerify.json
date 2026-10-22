@@ -1,0 +1,9 @@
+{
+  "launch_failed": "La vérification est temporairement indisponible. Réessayez dans un instant.",
+  "malformed": "Cela ne ressemble pas à une adresse web. Essayez par exemple votrefoodtruck.fr/evenements",
+  "blocked": "Nous n’avons pas pu accéder à ce site — il bloque peut-être les vérifications automatiques. Essayez la page qui liste votre planning, ou ajoutez vos événements manuellement.",
+  "unreachable": "Nous n’avons pas pu joindre ce site web. Il est peut-être hors ligne, ou l’adresse est peut-être erronée.",
+  "no_content": "Nous avons atteint cette page, mais n’avons rien pu y lire. Vérifiez qu’elle est accessible publiquement.",
+  "no_events": "Nous n’avons trouvé aucun événement à venir sur cette page. Assurez-vous que l’URL renvoie directement à la page où votre planning est publié.",
+  "blockedDomain": "Utilisez l’URL de votre site web — les pages Facebook et Instagram ne peuvent pas être analysées automatiquement."
+}

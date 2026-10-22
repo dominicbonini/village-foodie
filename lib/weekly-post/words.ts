@@ -33,9 +33,10 @@ import '@/lib/i18n/catalog/errorsManage'
 import type { CountryCode } from './locale'
 
 /** The message locale a poster's words are in — its country's. ⚠️ Unknown or missing → en-GB. */
-const MESSAGE_LOCALE: Record<CountryCode, AppLocale> = { GB: 'en-GB', US: 'en-US' }
+const MESSAGE_LOCALE: Record<'GB' | 'US', AppLocale> = { GB: 'en-GB', US: 'en-US' }
+/** languages-1: a non-English language's poster key IS its locale tag (./locale.ts countryForTruck), so its words are its own. */
 export const posterLocaleOf = (country?: CountryCode | string | null): AppLocale =>
-  resolveLocale(MESSAGE_LOCALE[country as CountryCode])
+  resolveLocale(country === 'GB' || country === 'US' ? MESSAGE_LOCALE[country] : country)
 
 /** Words drawn on a poster, in that poster's country's language. */
 export const posterWordsFor = (country?: CountryCode | string | null) => translatorFor(posterLocaleOf(country), 'posterWords')

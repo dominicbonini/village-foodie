@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Autoriser les clients à annuler leurs commandes",
+    "sentence": "Les clients peuvent annuler jusqu’à <select></select> avant leur heure de retrait"
+  },
+  "autoAccept": {
+    "label": "Accepter automatiquement les commandes",
+    "help": "Les commandes sont confirmées automatiquement. Si le créneau demandé est complet, la commande passe au prochain créneau disponible. La confirmation n’a lieu que s’il reste de la capacité. Les commandes avec une note du client (par ex. une allergie) devront toujours être confirmées."
+  },
+  "orderReady": {
+    "label": "Étape « Commande prête »",
+    "help": "Affiche un bouton « Marquer comme prête » sur l’écran des commandes. Les écrans cuisine se règlent séparément, sur chaque appareil. Les clients reçoivent un e-mail dès qu’une commande est marquée comme prête. S’applique à tous les événements — vous pouvez toujours l’activer ou le désactiver pour un seul événement depuis son tableau de bord."
+  },
+  "buzzers": {
+    "label": "Remettez-vous des bipeurs pour le retrait ?",
+    "help": "Notez le bipeur remis à chaque client, pour savoir qui chercher quand son repas est prêt.",
+    "countLabel": "Combien de bipeurs avez-vous ?"
+  }
+}

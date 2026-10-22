@@ -29,7 +29,9 @@ module.exports = async function us(x) {
   t('the review screen and table read the truck\'s list (allergenVocab / genericReplacements by the provider\'s set)',
     // ⚠️ RE-PINNED (allergen-card-country, 21 October 2026): the wizard also reads the country's allergenCardOnlyAllowed
     // (a commented `const cardOnlyAllowed` line) between the set and `t` — named; nothing else may sit there.
-    /const allergenSet = useOptionalCountrySettings\(\)\?\.allergenSet\n(?:\s+\/\/[^\n]*\n)*\s+const cardOnlyAllowed = useOptionalCountrySettings\(\)\?\.allergenCardOnlyAllowed !== false\n\s+const t = useT\('manageAllergens'\)\n\s+const ALLERGEN_VOCAB = allergenVocab\(allergenSet\)\n\s+const GENERIC_REPLACEMENTS = genericReplacements\(allergenSet\)/.test(P)
+    // ⚠️ RE-PINNED (languages-1, 22 October 2026): + the wizard's locale (`const wizLocale = useAppLocale()`, the dietary
+    // columns' names in the truck's language) between `t` and the derived lists — named; nothing else may sit there.
+    /const allergenSet = useOptionalCountrySettings\(\)\?\.allergenSet\n(?:\s+\/\/[^\n]*\n)*\s+const cardOnlyAllowed = useOptionalCountrySettings\(\)\?\.allergenCardOnlyAllowed !== false\n\s+const t = useT\('manageAllergens'\)\n(?:\s+const wizLocale = useAppLocale\(\)   \/\/ languages-1:[^\n]*\n)?\s+const ALLERGEN_VOCAB = allergenVocab\(allergenSet\)\n\s+const GENERIC_REPLACEMENTS = genericReplacements\(allergenSet\)/.test(P)
     && !/^const (GENERIC_REPLACEMENTS|isVocab)\b/m.test(P))
 
   const US_TRUCK = { id: 'us-truck', name: 'Austin Eats', dashboard_token: 'tok-test', country: 'US', currency: 'USD' }

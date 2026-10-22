@@ -3,13 +3,19 @@
 // (plans-data-model, Stage A, 19 October 2026). The tables are service-role only, so the server sends the catalogue in
 // the page's authenticated payload (the Manage GET) and this hands it down — the CountrySettingsProvider pattern.
 // Read it with lib/plans.ts; nothing here names a plan.
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import type { PlanCatalog } from '@/lib/plans'
+import { localizePlans } from '@/lib/plan-names'
+import { useAppLocale } from '@/lib/i18n/use-t'
 
 const PlanCatalogContext = createContext<PlanCatalog | null>(null)
 
 export function PlanCatalogProvider({ catalog, children }: { catalog: PlanCatalog; children: React.ReactNode }) {
-  return <PlanCatalogContext.Provider value={catalog}>{children}</PlanCatalogContext.Provider>
+  // languages-1: the plans' names, descriptions and subtitles in the truck's language (lib/plan-names.ts) — the SAME catalogue
+  // object for every English locale.
+  const locale = useAppLocale()
+  const value = useMemo(() => localizePlans(catalog, locale), [catalog, locale])
+  return <PlanCatalogContext.Provider value={value}>{children}</PlanCatalogContext.Provider>
 }
 
 /** The catalogue. 🔴 THROWS outside a provider — a screen that silently had no plans would show the wrong one. */

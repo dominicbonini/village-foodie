@@ -338,8 +338,13 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
   // The guard is module-private; it is evaluated from its own source (constants + function), exactly as written.
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
   const waSrc = fs.readFileSync(path.join(REPO, 'lib/whatsapp-classifier.ts'), 'utf8')
-  const gStart = waSrc.indexOf('const ALLERGEN_STEMS'), gEnd = waSrc.indexOf('\n}\n', waSrc.indexOf('function mentionsAllergen')) + 3
-  const guard = new Function(esbuild.transformSync(waSrc.slice(gStart, gEnd), { loader: 'ts' }).code + '\nreturn mentionsAllergen')()
+  // ⚠️ RE-PINNED (languages-1, 22 October 2026, docs/languages-1-report.md §3): the guard's words are DATA now
+  // (lib/allergen-guard/en.json), read by lib/allergen-guard.ts — evaluated here as built, for an English truck. Its answers are
+  // the ones the lists in lib/whatsapp-classifier.ts gave (scripts/languages-1.cjs §6 proves 1,190 messages × 5 sets identical).
+  const gBuilt = esbuild.buildSync({ entryPoints: [path.join(REPO, 'lib/allergen-guard.ts')], bundle: true, write: false, platform: 'node', format: 'cjs', alias: { '@': REPO }, logLevel: 'silent' })
+  const gMod = { exports: {} }; new Function('module', 'exports', 'require', gBuilt.outputFiles[0].text)(gMod, gMod.exports, require)
+  const guard = (m, set) => gMod.exports.mentionsAllergen(m, set, 'en-GB')
+  const guardWords = JSON.parse(fs.readFileSync(path.join(REPO, 'lib/allergen-guard/en.json'), 'utf8'))
   const ANZ_SAFETY = ['my son has an EpiPen', 'she carries an epi-pen', 'anaphylaxis to peanuts — is the satay safe?', 'I am anaphylactic to sesame', 'is the burger NF?', 'LF options?']
   const BOTH = ['is it gluten free?', 'GF?', 'coeliac friendly?', 'dairy-free please', 'I am allergic to milk', 'can I have it free from shellfish']
   const NEITHER = ['does the satay have peanuts?', 'any sesame on the bun?', 'Are you open today', 'what time do you close', 'is it a nice day']
@@ -349,7 +354,8 @@ const ROWS = { on: () => [LP1E.GB(), LP1E.US_ON(), AU(true), NZ(true)], off: () 
   t('uk14 / us9 / no set: the guard is unchanged — the new phrasing is not added to them', [...ANZ_SAFETY, ...NEITHER].every(m => !guard(m, 'uk14') && !guard(m, 'us9') && !guard(m, null)) && BOTH.every(m => guard(m, 'uk14') && guard(m, 'us9')))
   t('the three callers pass the truck\'s set (preview, Twilio webhook, Meta webhook)', ['app/api/manage/whatsapp-preview/route.ts', 'app/api/webhooks/whatsapp/route.ts', 'app/api/webhooks/meta/whatsapp/route.ts']
     .every(f => /allergenSet:\s+await allergenSetForTruck\(truck\)/.test(fs.readFileSync(path.join(REPO, f), 'utf8'))))
-  t('the reply caveat widens to the anz family words for an anz truck only', /if \(w && params\.allergenSet === 'anz'\) for \(const x of ANZ_CAVEAT_WORDS\[w\]/.test(waSrc))
+  t('the reply caveat widens to the anz family words for an anz truck only', !!guardWords.caveatWords.anz.milk && /caveatTriggerWords\(items\.flatMap[^\n]*params\.allergenSet, params\.time\?\.locale\)/.test(waSrc)
+    && gMod.exports.caveatTriggerWords(['Milk'], 'anz', 'en-AU').has('dairy') && !gMod.exports.caveatTriggerWords(['Milk'], 'uk14', 'en-GB').has('dairy'))
 
   // ══ 7 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · EFTPOS — the card processor\'s dual-network notice on an Australian checkout only')

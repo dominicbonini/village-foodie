@@ -29,7 +29,8 @@ module.exports = async function after(x) {
     "import '@/lib/i18n/catalog/order'",   // Language Phase 1b: the translator reads the namespaces its caller imports
     "export { default as requestConfig } from '@/lib/i18n/request'", "export { NAMESPACES } from '@/lib/i18n/namespaces'",
   ].join('\n'), { stubs: { 'next-intl/server': 'export function getRequestConfig(fn) { return fn }' } })
-  const cases = [['en-GB', 'en-GB'], ['en-US', 'en-US'], ['fr-FR', 'en-GB'], ['en', 'en-GB'], ['en-us', 'en-GB'], ['', 'en-GB'], [null, 'en-GB'], [undefined, 'en-GB']]
+  // ⚠️ RE-PINNED (france-1, 22 October 2026): fr-FR is a supported locale now (France); the unsupported example is de-DE.
+  const cases = [['en-GB', 'en-GB'], ['en-US', 'en-US'], ['de-DE', 'en-GB'], ['en', 'en-GB'], ['en-us', 'en-GB'], ['', 'en-GB'], [null, 'en-GB'], [undefined, 'en-GB']]
   t('resolveLocale: en-GB and en-US only; anything else → en-GB', cases.every(([i, o]) => I.L.resolveLocale(i) === o), JSON.stringify(cases.map(([i]) => I.L.resolveLocale(i))))
   t('a country → its locale: GB → en-GB, US → en-US, none → en-GB', I.L.localeOfCountry(GB) === 'en-GB' && I.L.localeOfCountry(US_ON) === 'en-US' && I.L.localeOfCountry(null) === 'en-GB')
   // ⚠️ RE-PINNED (Language Phase 2): the catalogue this run renders with — the frozen pre-Phase-2 words under
@@ -80,7 +81,7 @@ module.exports = async function after(x) {
   }
   const gb = await kit.quietAsync(() => mount(React.createElement(C.I18nProvider, { namespaces: ['order'] }, React.createElement(C.Probe, { tag: 'en-GB' }))))
   const us = await kit.quietAsync(() => mount(React.createElement(C.I18nProvider, { namespaces: ['order'] }, React.createElement(C.Probe, { tag: 'en-US' }))))
-  const fr = await kit.quietAsync(() => mount(React.createElement(C.I18nProvider, { namespaces: ['order'] }, React.createElement(C.Probe, { tag: 'fr-FR' }))))
+  const fr = await kit.quietAsync(() => mount(React.createElement(C.I18nProvider, { namespaces: ['order'] }, React.createElement(C.Probe, { tag: 'de-DE' }))))   // ⚠️ RE-PINNED (france-1): de-DE, still unsupported
   t('client path: a GB truck → provider en-GB, today\'s UK words', gb === 'en-GB|Add a tip for the truck?', gb)
   t('client path: a US truck → provider switches to en-US; the words are the UK ones (no US override yet)', us === 'en-US|Add a tip for the truck?', us)
   t('client path: an unsupported locale → en-GB', fr === 'en-GB|Add a tip for the truck?', fr)

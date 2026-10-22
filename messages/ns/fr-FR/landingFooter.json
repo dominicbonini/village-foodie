@@ -1,0 +1,17 @@
+{
+  "tagline": "Moins de temps à réserver.<br></br>Plus de temps à cuisiner.",
+  "features": "Fonctionnalités",
+  "pricing": "Tarifs",
+  "privacy": "Confidentialité",
+  "terms": "Conditions",
+  "contact": "Contact",
+  "about": "À propos",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Par l’équipe derrière <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Télécharger HatchGrab dans l’App Store",
+    "appStoreAlt": "Télécharger dans l’App Store",
+    "googlePlayLink": "Obtenir HatchGrab sur Google Play",
+    "googlePlayAlt": "Disponible sur Google Play"
+  }
+}

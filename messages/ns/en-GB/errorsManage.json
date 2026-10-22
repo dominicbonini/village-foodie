@@ -209,5 +209,11 @@
   "sg_merge_impossible": "Those places can’t be merged.",
   "sg_merge_write_failed": "Couldn’t merge those places.",
   "event_times_same": "The finish time can’t be the same as the start time.",
-  "feature_not_on_plan": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}"
+  "feature_not_on_plan": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}",
+  "stripe_account_not_saved": "Account created but not saved — contact support",
+  "stripe_no_account": "No connected account yet",
+  "stripe_request_failed": "Stripe request failed",
+  "private_unavailable": "Private events are not available yet — the database migration has not been applied.",
+  "private_not_private": "This event is not private.",
+  "private_link_off": "Ordering by private link is switched off for this event."
 }

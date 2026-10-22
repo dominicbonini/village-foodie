@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Sans abonnement",
+    "subtitle": "Food trucks saisonniers et à temps partiel",
+    "description": "Aucun abonnement mensuel. Vous ne payez que lorsqu’un client paie en ligne par carte."
+  },
+  "pro": {
+    "subtitle": "Food trucks qui reçoivent régulièrement des précommandes",
+    "description": "Tout inclus, y compris les réponses automatiques WhatsApp et les publications pour les réseaux sociaux, avec des commandes en ligne incluses chaque mois."
+  },
+  "unlimited": {
+    "name": "Illimité",
+    "subtitle": "Food trucks très actifs et festivals",
+    "description": "Tout inclus, sans frais sur les commandes en ligne, quel que soit votre volume."
+  },
+  "trial": {
+    "name": "Essai gratuit",
+    "description": "Toutes les fonctionnalités, gratuitement, pendant votre essai."
+  },
+  "demo": {
+    "name": "Démo",
+    "description": "Bac à sable de prospection — jamais public."
+  },
+  "tester": {
+    "name": "Testeur",
+    "description": "Testeur avant lancement — accès complet."
+  }
+}

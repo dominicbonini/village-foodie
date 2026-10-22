@@ -1,6 +1,9 @@
 // ── 🔴 KEPT AFTER THE IFRAME REMOVAL (V11.49). ────────────────────────────────────────────────────
 // Shell, TruckIdentity, PoweredBy and truckLogoUrl are the chrome of the CUSTOM-DOMAIN page
 // (app/domain/page.tsx), which is their only caller now that the iframe route is gone.
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/embed'
+
 /**
  * ── THE SCHEDULE PAGE'S PIECES, SHARED BY TWO ROUTES ────────────────────────────────────────────
  *
@@ -95,7 +98,9 @@ export function TruckIdentity({ name, logoPath }: { name: string; logoPath: stri
 }
 
 /** The only outbound brand mark on the surface, and the only link to us other than the fallback. */
-export function PoweredBy() {
+/** languages-1: `locale` — the truck's; absent → en-GB, as before. */
+export function PoweredBy({ locale }: { locale?: string | null } = {}) {
+  const t = translatorFor(locale, 'embed')
   return (
     /* ── 🔴 THE TREATMENT IS COPIED FROM THE ORDER EMAIL, NOT INVENTED (29 August 2026). ──────────
        lib/email.ts:416 already brands this exact line, and it is the version customers see most:
@@ -149,7 +154,7 @@ export function PoweredBy() {
         href={process.env.NEXT_PUBLIC_HATCHGRAB_URL || 'https://www.hatchgrab.com'}
         className="transition-colors hover:text-slate-700"
       >
-        Powered by <span className="font-bold text-orange-600">HatchGrab</span>
+        {t.rich('poweredBy', { b: c => <span className="font-bold text-orange-600">{c}</span> })}
       </a>
     </p>
   )

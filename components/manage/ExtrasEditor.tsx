@@ -21,6 +21,7 @@ import { Card, Badge, EmptyState, Input, Btn, AllergenToggles, DietaryToggles } 
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { moneyFormatOf } from '@/lib/country-settings-types'
 import { formatMajor, currencySymbol } from '@/lib/money-format'
+import { normaliseDecimal, decimalForInput } from '@/lib/decimal-input'   // france-1
 // Language Phase 1d: this editor's words (manageExtras).
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/manageExtras'
@@ -133,7 +134,7 @@ export default function ExtrasEditor({
   // ── Option save — coerce the price STRING buffer → number here (only place). Caller persists. ──
   const handleSaveOption = async () => {
     if (!editingOption?.name || !editingOption.group_id) return
-    const parsedPrice = parseFloat(priceInput)
+    const parsedPrice = parseFloat(normaliseDecimal(priceInput, fmt.locale))   // france-1: "12,50" in a decimal-comma locale
     const price_adjustment = Number.isFinite(parsedPrice) ? parsedPrice : 0
     setSavingOption(true)
     try {
@@ -281,7 +282,7 @@ export default function ExtrasEditor({
                       {(opt.available === false || opt.stock_count === 0) && <span className="text-[10px] font-bold bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full">{t('soldOut')}</span>}
                       {opt.available !== false && opt.stock_count != null && opt.stock_count > 0 && <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">{t('left', { count: String(opt.stock_count) })}</span>}
                       <span className="text-sm font-bold text-orange-600">{opt.price_adjustment > 0 ? t('priceAdd', { price: amount(opt.price_adjustment) }) : opt.price_adjustment < 0 ? t('priceRemove', { price: amount(Math.abs(opt.price_adjustment)) }) : t('free')}</span>
-                      {canSaveOption && <button onClick={() => { setEditingOption(opt); setPriceInput(opt.price_adjustment ? String(opt.price_adjustment) : '') }} className="text-slate-300 hover:text-orange-500 text-xs px-1.5 py-0.5 rounded hover:bg-orange-50">✏️</button>}
+                      {canSaveOption && <button onClick={() => { setEditingOption(opt); setPriceInput(opt.price_adjustment ? decimalForInput(opt.price_adjustment, fmt.locale) : '') }} className="text-slate-300 hover:text-orange-500 text-xs px-1.5 py-0.5 rounded hover:bg-orange-50">✏️</button>}
                       {canDeleteOption && <button onClick={() => onDeleteOption?.(opt)} className="text-slate-300 hover:text-red-500 text-xs px-1.5 py-0.5 rounded hover:bg-red-50">🗑️</button>}
                     </div>
                   ))}

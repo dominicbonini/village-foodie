@@ -27,16 +27,17 @@ const names = f => [...new Set([...fs.readFileSync(path.join(REPO, f), 'utf8').m
   const truck = { ...GB.TRUCK, ...c.settings, name: 'Pizza Kitchen', plan: 'max', feature_overrides: {}, trial_expires_at: null, add_order_layout: 'tabs', takes_cash: false,
     completion_presses: 'one', kds_mode: false, keep_screen_on: true, auto_accept: false, venue_name: null, show_paid_step: false }
   let n = 0
-  const mk = (cat, name) => ({ id: `m${++n}`, name, price: c.price[name], category: cat, available: true, modifierGroups: [] })
-  const items = [...[...A.PIZZAS].sort((a, b) => a.localeCompare(b)).map(p => mk('Pizza', p)), ...c.drinks.map(p => mk('Drinks', p)), ...A.DESSERTS.map(p => mk('Desserts', p))]
-  const MENU = { categories: [{ id: 'c1', name: 'Pizza' }, { id: 'c2', name: 'Drinks' }, { id: 'c3', name: 'Desserts' }], items, bundles: [], upsell_rules: [] }
-  const EV = { ...GB.EVENT, id: 'ev-1', event_date: '2026-09-02', date: '2026-09-02', start_time: '09:00', end_time: '17:00', venue_name: c.venue, town: c.town,
+  // c.n / c.cat: the country's own dish and category names (France's tables); the English key itself for AU/NZ/CA.
+  const mk = (cat, name) => ({ id: `m${++n}`, name, price: c.price[name], category: c.cat(cat), available: true, modifierGroups: [] })
+  const items = [...A.PIZZAS.map(c.n).sort((a, b) => a.localeCompare(b)).map(p => mk('Pizza', p)), ...c.drinks.map(c.n).map(p => mk('Drinks', p)), ...A.DESSERTS.map(c.n).map(p => mk('Desserts', p))]
+  const MENU = { categories: [{ id: 'c1', name: c.cat('Pizza') }, { id: 'c2', name: c.cat('Drinks') }, { id: 'c3', name: c.cat('Desserts') }], items, bundles: [], upsell_rules: [] }
+  const EV = { ...GB.EVENT, id: 'ev-1', event_date: c.eventYmd, date: c.eventYmd, start_time: '09:00', end_time: '17:00', venue_name: c.venue, town: c.town,
     truck_id: truck.id, status: 'open', auto_open: true, closed_at: null, customer_note: null }
   const at = new Date(Date.parse(NOW) - 21 * 60000).toISOString()   // placed 21 minutes before "now", as in the IE fixture
   const order = (id, who, slot, list) => {
-    const lines = list.map(([name, q]) => ({ name, quantity: q, unit_price: c.price[name], modifiers: [] }))
+    const lines = list.map(([key, q]) => ({ name: c.n(key), quantity: q, unit_price: c.price[c.n(key)], modifiers: [] }))
     return { id, order_key: `00000000-0000-4000-8000-0000000002${id.padStart(2, '0')}`, customer_name: who, customer_phone: null, customer_email: null, slot,
-      requested_slot: null, asap_estimate: null, event_date: '2026-09-02', event_id: 'ev-1', van_id: null, status: 'pending', items: lines,
+      requested_slot: null, asap_estimate: null, event_date: c.eventYmd, event_id: 'ev-1', van_id: null, status: 'pending', items: lines,
       deals: [], total: lines.reduce((s, x) => s + x.quantity * x.unit_price, 0), notes: null, paid_at: null, collected_at: null, created_at: at, updated_at: at,
       payment_status: 'unpaid', order_type: 'collection', currency: c.currency, country: c.cc }
   }
@@ -44,14 +45,14 @@ const names = f => [...new Set([...fs.readFileSync(path.join(REPO, f), 'utf8').m
   const orders = [order('1', q1, '09:15', [['Pepperoni', 2]]), order('2', q2, '09:20', [['Supreme', 1]]), order('3', q3, '09:30', [['Margherita', 2]])]
   const itemCategoryMap = Object.fromEntries(items.map(i => [i.name, i.category]))
   const basket = [['Margherita', 1], ['Pepperoni', 1], ['Ham & Mushroom', 1], ['Coke', 1], [c.drinks[1], 1], ['Tiramisu', 2]]
-    .map(([name, quantity]) => ({ name, quantity, unit_price: c.price[name], cartKey: name, modifiers: [] }))
+    .map(([key, quantity]) => ({ name: c.n(key), quantity, unit_price: c.price[c.n(key)], cartKey: c.n(key), modifiers: [] }))
   const state = {
     truck, orders, loading: false, authenticated: true, truckMenu: MENU, todayEvents: [], upcomingEvents: [EV], selectedEventId: 'ev-1', eventsLoaded: true,
     firstOpenChecked: true, fetchedStockKeys: new Set(['ev-1']), payments: {}, heldAuthorisations: new Set(), paymentFailures: new Set(), deviceOnline: true,
-    activeTab: 'add', categoryOrder: ['Pizza', 'Drinks', 'Desserts'], itemCategoryMap, categoryConfigs: { pizza: { secs: 300, batch: 4 } }, wakeState: 'held',
+    activeTab: 'add', categoryOrder: ['Pizza', 'Drinks', 'Desserts'].map(c.cat), itemCategoryMap, categoryConfigs: { [c.cat('Pizza').toLowerCase()]: { secs: 300, batch: 4 } }, wakeState: 'held',
     soundEnabled: true, activeVanCount: 1, currentUserEmail: c.staff,
     // AddOrderPanel
-    manualItems: basket, manualName: c.dashName, activeMenuCat: 'Pizza', manualEvent: EV,
+    manualItems: basket, manualName: c.dashName, activeMenuCat: c.cat('Pizza'), manualEvent: EV,
     apiSlots: Array.from({ length: 48 }, (_, i) => { const m = 9 * 60 + 5 * i; const t = `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; return { collection_time: t, production_slot: t, available: true, is_past: false, is_grace: false, remaining: 10 } }),
   }
   globalThis.__ms = state; globalThis.__msSearch = ''

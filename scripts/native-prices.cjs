@@ -123,7 +123,9 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
     /const billingCurrencyLine = currencyLineOf\(countryRow\)/.test(manage) && count(manage, "tPricing('currencyLine', billingCurrencyLine)") === 1
     && /\{billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('currencyLine', billingCurrencyLine\)\}<\/p>\}\s*<p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('footnote'/.test(manage))
   t('Billing\'s card price, the van modal\'s add-on price and the plan prompts read planMoneyFormatOf (the home form)',
-    /const cardMoney = planMoneyFormatOf\(countryRow\)/.test(manage) && /perMonthLabel\(vanAddonMinor, planMoneyFormatOf\(vanSettings\), unit\)/.test(manage) && /perMonthLabel\(minor, planMoneyFormatOf\(cs\), unit\)/.test(code('components/usePlanPriceLabel.ts')))
+    // ⚠️ RE-PINNED (languages-1): perMonthLabel → perMonthText (lib/price-text.ts), the same amount through the same plan
+    // format, with "/mo" / " a month" from `planFeatures.perMonth.*` in the format's locale (en-GB words unchanged).
+    /const cardMoney = planMoneyFormatOf\(countryRow\)/.test(manage) && /perMonthText\(vanAddonMinor, planMoneyFormatOf\(vanSettings\), unit\)/.test(manage) && /perMonthText\(minor, planMoneyFormatOf\(cs\), unit\)/.test(code('components/usePlanPriceLabel.ts')))
   const L = await R.ctx.bundle('np-money', "export * from '@/lib/money-format'\nexport { moneyFormatOf, planMoneyFormatOf } from '@/lib/country-settings-types'")
   const au = await R.rowOf('AU'), nz = await R.rowOf('NZ')
   t('a truck\'s own money is the same format as our plan prices on its pages now — "$12.00" (AU menu), "$1,234.56" (NZ order) — and moneyFormatOf is unchanged',

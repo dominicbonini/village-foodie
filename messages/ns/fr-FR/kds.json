@@ -1,0 +1,129 @@
+{
+  "docTitle": "Cuisine · {truck}",
+  "loading": "Chargement de la cuisine…",
+  "pin": {
+    "title": "Saisir le PIN",
+    "placeholder": "PIN",
+    "unlock": "Déverrouiller",
+    "unreachable": "Impossible de joindre le serveur pour le moment. Votre code PIN est correct — réessayez dans un instant.",
+    "incorrect": "Code PIN incorrect",
+    "generic": "Une erreur est survenue. Réessayez."
+  },
+  "error": {
+    "linkInvalid": "Ce lien n’est plus valide.",
+    "couldNotLoad": "Impossible de charger les commandes",
+    "truckNotFound": "Food truck introuvable"
+  },
+  "degraded": {
+    "at": "⚠️ Serveur injoignable. Affichage des tickets de {time}. DES NOUVELLES COMMANDES PEUVENT MANQUER.",
+    "earlier": "⚠️ Serveur injoignable. Affichage des tickets précédents. DES NOUVELLES COMMANDES PEUVENT MANQUER."
+  },
+  "header": {
+    "dashboard": "Tableau de bord",
+    "backTitle": "Retour au tableau de bord",
+    "list": "Liste",
+    "grid": "Grille",
+    "full": "Complet",
+    "cook": "Cuisson",
+    "fullTitle": "Cartes complètes — prix et détails de paiement, comme les voit le guichet.",
+    "cookTitle": "Cartes cuisson — texte plus grand, regroupé par catégorie, sans prix.",
+    "readyStep": "Étape Prêt",
+    "readyOnlyTitle": "Cet écran ne fait que marquer les commandes comme prêtes, donc ce réglage ne peut pas être désactivé — c’est la seule étape qu’il effectue.",
+    "readyOnTitle": "Cet écran marque les commandes comme prêtes. Appuyez pour qu’un autre écran s’en charge.",
+    "readyOffTitle": "Un autre écran marque les commandes comme prêtes. Appuyez pour que celui-ci s’en charge.",
+    "handover": "Paiement et remise",
+    "handoverOnlyTitle": "Cet écran ne fait qu’encaisser, donc ce réglage ne peut pas être désactivé — c’est la seule étape qu’il effectue.",
+    "handoverOnTitle": "Cet écran encaisse et remet les commandes. Appuyez pour qu’un autre écran s’en charge.",
+    "handoverOffTitle": "Un autre écran encaisse. Appuyez pour que celui-ci s’en charge.",
+    "soundOn": "Le son des nouvelles commandes est activé — appuyez pour le désactiver",
+    "soundOff": "Le son des nouvelles commandes est désactivé — appuyez pour l’activer",
+    "screenOn": "Écran allumé",
+    "screenOff": "Écran éteint",
+    "screenSettings": "Paramètres de l’écran",
+    "manageEvent": "Gérer l’événement",
+    "manageEventTitle": "Gérer l’événement — le démarrer, le suspendre, le modifier ou le terminer",
+    "soundSettings": "Paramètres du son",
+    "soundSettingsTitle": "Sons déclenchés sur cet appareil",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Paramètres d’affichage",
+    "on": "Activé",
+    "off": "Désactivé",
+    "newOrderSound": "Son des nouvelles commandes",
+    "soundNeedsConfirming": "Seulement les commandes à confirmer",
+    "soundAll": "Toutes les nouvelles commandes",
+    "soundDue": "Son quand une commande doit être cuisinée",
+    "soundDueHelp": "Retentit quand un ticket passe à l’orange.",
+    "deviceSettings": "Paramètres de l’appareil",
+    "sound": "Son",
+    "close": "Fermer"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Commandes non chargées pour cet événement",
+    "mismatchBody": "Le serveur a répondu avec un autre événement : rien n’est affiché plutôt que de mauvaises commandes. Choisissez à nouveau l’événement ou rechargez.",
+    "mismatchBodyAt": "Le serveur a répondu avec un autre événement : rien n’est affiché plutôt que de mauvaises commandes pour {venue}. Choisissez à nouveau l’événement ou rechargez.",
+    "paused": "⏸ Commandes suspendues{reason, select, offline { (appareil hors ligne)} other {}} — les clients ne peuvent pas commander",
+    "resume": "Reprendre",
+    "offline": "Pas de connexion — affichage des dernières commandes connues. La commande en ligne a été suspendue pour les clients.",
+    "queued": "{n, plural, one {{count} action en attente} other {{count} actions en attente}}",
+    "extraWait": "⏱ Attente supplémentaire de +{mins} min active",
+    "clear": "Effacer",
+    "toMake": "À préparer",
+    "today": "Aujourd’hui · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Démarrer l’événement",
+    "recentlyClosed": "Événement terminé · {venue}, fin à {time}",
+    "eventStatus": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Pas commencé}}"
+  },
+  "board": {
+    "queueClear": "File d’attente vide",
+    "doneToday": "Terminées aujourd’hui · {count}",
+    "paid": "✓ payé",
+    "cardHeld": "carte autorisée",
+    "due": "{amount} à payer"
+  },
+  "screenOff": {
+    "title": "Autoriser l’extinction de l’écran ?",
+    "bodyVans": "{vans} {n, plural, one {a} other {ont}} la détection hors ligne activée. Si l’écran s’éteint, l’appareil peut cesser d’envoyer son signal de connexion et les commandes des clients peuvent être suspendues.",
+    "body": "Si l’écran s’éteint, l’appareil peut cesser d’envoyer son signal de connexion.",
+    "keepHint": "Gardez l’écran allumé pour que les commandes ne soient pas interrompues.",
+    "keep": "Garder l’écran allumé",
+    "allow": "Autoriser l’extinction"
+  },
+  "event": {
+    "change": "Changer d’événement",
+    "cancel": "Annuler",
+    "waitActive": "⏱ +{mins} min actif · Appuyez pour effacer",
+    "addWait": "⏱ Ajouter de l’attente",
+    "endTitle": "Terminer l’événement ?",
+    "endEarly": "Cet événement ne doit se terminer qu’à {time}. Plus aucune commande ne sera acceptée. Confirmer la fin de l’événement ?",
+    "endNow": "Terminer cet événement ? Plus aucune commande ne sera prise.",
+    "yes": "Oui",
+    "started": "Événement démarré",
+    "startFutureConfirm": "Cet événement a lieu le {date}. Le démarrer maintenant ?",
+    "finishTimeNow": "Heure de fin désormais : {time}",
+    "finished": "Événement terminé",
+    "cancelled": "Événement annulé",
+    "noteSaved": "Note enregistrée",
+    "pauseConfirm": "Suspendre les commandes ? Les clients verront « Commandes non acceptées » jusqu’à ce que vous repreniez.",
+    "switchConfirm": "Passer de {from} à {to} ?{n, plural, =0 {} one { {count} commande sur cet écran sera remplacée.} other { {count} commandes sur cet écran seront remplacées.}} Appuyez sur l’événement actuel pour revenir."
+  },
+  "intro": {
+    "title": "Voici l’écran cuisine",
+    "p1": "C’est la vue du cuisinier — les commandes à préparer, dans l’ordre où les préparer. L’écran près du grill l’affiche pendant que le comptoir utilise le tableau de bord des commandes.",
+    "p2": "Les cartes avancent à mesure que vous appuyez dessus : la personne qui cuisine sait toujours ce qui vient ensuite, et personne n’a besoin de crier. Tout ce qui s’affiche ici, ce sont vos données de démo — essayez.",
+    "gotIt": "Compris"
+  },
+  "toast": {
+    "failed": "Échec",
+    "rejectFailed": "Échec du refus",
+    "buzzerSaved": "Bipeur {n} enregistré",
+    "buzzerRemoved": "Bipeur {n} retiré",
+    "buzzerRemovedNone": "Bipeur retiré",
+    "buzzerAssigned": "Bipeur {n} attribué",
+    "buzzerAssignedFrom": "Bipeur {n} attribué (repris de #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Impossible de retirer le bipeur de {target, select, order {la commande #{id}} other {cette commande}}} other {Impossible de retirer le bipeur {n} — il est toujours sur {target, select, order {la commande #{id}} other {cette commande}}}}",
+    "buzzerAssignFailed": "Impossible de donner le bipeur {n} à {target, select, order {la commande #{id}} other {cette commande}} — {had, select, yes {elle a toujours le bipeur {prior}} other {elle n’a toujours pas de bipeur}}"
+  }
+}

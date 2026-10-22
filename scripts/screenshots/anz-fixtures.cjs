@@ -1,10 +1,13 @@
 // The AUSTRALIA (au) and NEW ZEALAND (nz) fixtures for the landing screenshots (see README-anz.md in this folder) — and,
 // canada-1 (22 October 2026), CANADA (ca): the same three steps, with its own date order and week start (month-first,
-// Sunday; AU/NZ keep day-first, Monday, so their images are unchanged).
+// Sunday; AU/NZ keep day-first, Monday, so their images are unchanged) — and, france-1 (22 October 2026), FRANCE (fr): fr-FR
+// words, a 24-hour clock (its own `timeFormat`; the others stay 12-hour) and French dish, category and drink names. France's
+// names come from its own `names` / `cats` / `desc` tables over the shared English keys (c.n / c.cat / c.desc below; with no
+// table they return the key, so AU/NZ/CA render exactly as before).
 // One table per country: money, time, phone, venue, customer names and a menu priced the way a pizza truck there
 // would price it. The order, dashboard and kitchen steps all read from here, so the three images agree.
 //
-// Every -anz step takes the country first:  node <step>-anz.cjs <au|nz> <workDir> [outDir]
+// Every -anz step takes the country first:  node <step>-anz.cjs <au|nz|ca|fr> <workDir> [outDir]
 // `country()` removes it from process.argv, so common.cjs's dirs() still reads <workDir> [outDir] as argv[2], argv[3].
 
 // The menu (the same names on all three screens). Names follow the GB/IE menu, with Meat Lovers (the usual name in
@@ -44,6 +47,39 @@ const C = {
     kdsNames: ['Liam', 'Olivia', 'Noah', 'Chloé', 'Arjun', 'Priya', 'Mateo', 'Zoe', 'Lucas', 'Mei', 'Owen', 'Nadia', 'Félix', 'Ava', 'Hassan', 'Grace',
       'Daniel', 'Aaliyah', 'Ethan', 'Amelia'],
   },
+  fr: {
+    cc: 'FR', locale: 'fr-FR', currency: 'EUR', timeZone: 'Europe/Paris', utcOffset: 2,   // CEST in September (standard time from 25 Oct 2026)
+    timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday', eventDate: { date: '01/09/2026', friendly: 'mardi 1 septembre' },
+    // The dashboard/kitchen event is on Thu 3 Sep, not "tomorrow" (Wed 2 Sep) as for the others: the app's eventDateLabel
+    // (lib/event-display.ts) still prints a hard-coded English "Today"/"Tomorrow", so a French header would read
+    // "Tomorrow 2 septembre". Two days out it prints the date alone, in French. Back to the default once that is translated.
+    eventYmd: '2026-09-03',
+    phone: { phoneCountry: 'FR', short_name: 'France', phone_example: '06 12 34 56 78', phoneCheck: 'length' },
+    venue: 'Place Bellecour', town: 'Lyon', staff: 'lea@pizzakitchen.example', can: '33 cl.',
+    drinks: ['Coca-Cola', 'Orangina', 'Perrier', 'Eau'],
+    // What a French pizza truck calls the shared menu (the keys are the English names the steps use).
+    names: { 'BBQ Chicken': 'Poulet Barbecue', 'Calzone': 'Calzone', 'Chorizo & Pepper': 'Chorizo Poivrons', 'Four Cheese': '4 Fromages',
+      'Garden Veggie': 'Végétarienne', 'Garlic Bread': 'Pain à l’ail', 'Goat’s Cheese': 'Chèvre Miel', 'Ham & Mushroom': 'Reine', 'Hawaiian': 'Hawaïenne',
+      'Hot Honey Pepperoni': 'Pepperoni Miel', 'Margherita': 'Margherita', 'Marinara': 'Marinara', 'Meat Lovers': 'Carnivore', 'Nduja & Honey': 'Calabraise',
+      'Pepperoni': 'Pepperoni', 'Pesto Chicken': 'Poulet Pesto', 'Spicy Chicken': 'Orientale', 'Spicy Salami': 'Diavola', 'Supreme': 'Royale',
+      'Tandoori Chicken': 'Savoyarde', 'Truffle Mushroom': 'Forestière', 'Tiramisu': 'Tiramisu', 'Brownie': 'Fondant chocolat', 'Cookie': 'Panna cotta',
+      'Coke': 'Coca-Cola' },
+    cats: { Pizza: 'Pizzas', Specials: 'Spécialités', Sides: 'Accompagnements', Desserts: 'Desserts', Drinks: 'Boissons' },
+    desc: { 'Margherita': 'Sauce tomate, mozzarella fraîche, basilic frais, huile d’olive vierge extra. Simple et classique.',
+      'Ham & Mushroom': 'Sauce tomate, mozzarella, jambon, champignons, huile d’olive vierge extra. La préférée de tous.',
+      'Supreme': 'Pepperoni, saucisse, olives noires, mozzarella, sauce tomate. Bien garnie.',
+      'Pepperoni': 'Sauce tomate, mozzarella, pepperoni, miel pimenté. Un classique relevé.',
+      'Garlic Bread': 'Pain cuit au feu de bois, beurre à l’ail, mozzarella, persil.',
+      'Tiramisu': 'Mascarpone, biscuit imbibé d’espresso, cacao.' },
+    // €, TTC (French menu prices include TVA): pizzas 11–15, sides 5, drinks 2,50–3, desserts 4,50–5. Keyed by the French name.
+    price: { 'Margherita': 11, 'Marinara': 11, '4 Fromages': 13, 'Végétarienne': 12, 'Reine': 12, 'Hawaïenne': 12, 'Calzone': 13, 'Poulet Barbecue': 13,
+      'Orientale': 13, 'Chorizo Poivrons': 13, 'Pepperoni': 12, 'Savoyarde': 14, 'Poulet Pesto': 13, 'Diavola': 13, 'Chèvre Miel': 13,
+      'Royale': 14, 'Carnivore': 14, 'Pepperoni Miel': 14, 'Calabraise': 14, 'Forestière': 15, 'Pain à l’ail': 5,
+      'Coca-Cola': 3, 'Orangina': 3, 'Perrier': 3, 'Eau': 2.5, 'Tiramisu': 5, 'Fondant chocolat': 4.5, 'Panna cotta': 4.5 },
+    dashQueue: ['Léa', 'Hugo', 'Chloé'], dashName: 'Lucas',
+    kdsNames: ['Léa', 'Hugo', 'Chloé', 'Lucas', 'Manon', 'Louis', 'Inès', 'Gabriel', 'Camille', 'Jules', 'Emma', 'Arthur', 'Jade', 'Raphaël', 'Louise',
+      'Léo', 'Alice', 'Nathan', 'Zoé', 'Théo'],
+  },
   nz: {
     cc: 'NZ', locale: 'en-NZ', currency: 'NZD', timeZone: 'Pacific/Auckland', utcOffset: 12,   // NZST in early September (daylight saving starts 27 Sep 2026)
     phone: { phoneCountry: 'NZ', short_name: 'New Zealand', phone_example: '021 123 4567', phoneCheck: 'length' },
@@ -60,15 +96,18 @@ const C = {
   },
 }
 
-/** Takes <au|nz> off process.argv (argv[2]) and returns that country's fixture, with its derived settings. */
+/** Takes <au|nz|ca|fr> off process.argv (argv[2]) and returns that country's fixture, with its derived settings.
+ *  n(key) / cat(key) / desc(key, en) give the country's own dish, category and description text for a shared English key
+ *  (France's tables); a country without those tables gets the key (or `en`) back unchanged. */
 function country() {
   const key = String(process.argv[2] || '').toLowerCase()
-  if (!C[key]) { console.error(`usage: node ${require('path').basename(process.argv[1])} <au|nz> <workDir> [outDir]  (or run anz-screens.cjs)`); process.exit(2) }
+  if (!C[key]) { console.error(`usage: node ${require('path').basename(process.argv[1])} <${Object.keys(C).join('|')}> <workDir> [outDir]  (or run anz-screens.cjs)`); process.exit(2) }
   process.argv.splice(2, 1)
   const c = C[key]
   const money = { currency: c.currency, locale: c.locale }
-  const time = { timeZone: c.timeZone, locale: c.locale, timeFormat: '12h', dateOrder: c.dateOrder ?? 'dmy', weekStart: c.weekStart ?? 'monday' }
-  return { key, ...c, eventDate: c.eventDate ?? { date: '01/09/2026', friendly: 'Tuesday 1 September' }, money, time, settings: { money: { ...money, localeByCountry: { [c.cc]: c.locale } }, currency: c.currency, country: c.cc, time, phone: c.phone } }
+  const time = { timeZone: c.timeZone, locale: c.locale, timeFormat: c.timeFormat ?? '12h', dateOrder: c.dateOrder ?? 'dmy', weekStart: c.weekStart ?? 'monday' }
+  const n = k => c.names?.[k] ?? k, cat = k => c.cats?.[k] ?? k, desc = (k, en) => c.desc?.[k] ?? en
+  return { key, ...c, timeFormat: time.timeFormat, eventYmd: c.eventYmd ?? '2026-09-02', n, cat, desc, eventDate: c.eventDate ?? { date: '01/09/2026', friendly: 'Tuesday 1 September' }, money, time, settings: { money: { ...money, localeByCountry: { [c.cc]: c.locale } }, currency: c.currency, country: c.cc, time, phone: c.phone } }
 }
 
 /** The UTC instant of a wall-clock time in the country on a given day — checked against Intl, so a wrong offset fails loudly. */
@@ -81,11 +120,16 @@ function instant(c, ymd, hhmm) {
   return t.toISOString()
 }
 
-/** The status-bar clocks, in the country's 12-hour form. The phone's bar shows the time alone ("4:31"); the iPad's adds
+/** The status-bar clocks, in the country's 12-hour form (a 24-hour country: see the first branch). The phone's bar shows the time alone ("4:31"); the iPad's adds
  *  the day period and the date in day-month order ("10:21 pm  Tue 1 Sep"). The time comes from Intl in the country's
  *  locale; the date keeps the GB capture's "Sep" (the app's own short-month rule — Intl's en-AU/en-NZ short form is "Sept"). */
 function clock(c, iso) {
   const d = new Date(iso)
+  if (c.timeFormat === '24h') {   // france-1: "16:31" on the phone; "22:21  mar. 1 sept." on the iPad — time, weekday and month all from Intl in the locale
+    const f = o => new Intl.DateTimeFormat(c.locale, { timeZone: c.timeZone, ...o }).format(d)
+    const hm = f({ hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+    return { phone: hm, ipad: `${hm}  ${f({ weekday: 'short' })} ${f({ day: 'numeric' })} ${f({ month: 'short' })}` }
+  }
   const parts = new Intl.DateTimeFormat(c.locale, { timeZone: c.timeZone, hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(d)
   const hm = parts.filter(x => x.type === 'hour' || x.type === 'minute' || (x.type === 'literal' && x.value === ':')).map(x => x.value).join('')
   const full = parts.map(x => x.value).join('').replace(/[  ]/g, ' ')

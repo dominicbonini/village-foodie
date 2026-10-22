@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Bonjour {name},} other {Bonjour,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Fondateur, HatchGrab",
+  "verify": {
+    "subject": "Confirmez votre adresse e-mail",
+    "thanks": "{hasTruck, select, yes {Merci d’avoir configuré {truck} sur HatchGrab.} other {Merci d’avoir configuré votre food truck sur HatchGrab.}}",
+    "button": "Confirmer mon adresse e-mail",
+    "buttonText": "Confirmer mon adresse e-mail : {url}",
+    "why": "C’est l’adresse avec laquelle vous vous connecterez, et celle où arrivent les alertes de commande — mieux vaut le faire maintenant.",
+    "next": "Une fois l’adresse confirmée, je vous enverrai tout ce qu’il faut pour démarrer.",
+    "carryOn": "Vous pouvez continuer la configuration en attendant.",
+    "stuck": "Un blocage ? Répondez simplement à cet e-mail — je réponds moi-même.",
+    "fallbackLink": "Si le bouton ne fonctionne pas, collez ce lien : {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Bienvenue sur HatchGrab, {name}} other {Bienvenue sur HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Je suis ravi d’accueillir {truck} sur HatchGrab.} other {Je suis ravi d’accueillir votre food truck sur HatchGrab.}}",
+    "trial": "{months, plural, one {Votre essai gratuit d’un mois a commencé — toutes les fonctionnalités sont débloquées.} other {Votre essai gratuit de # mois a commencé — toutes les fonctionnalités sont débloquées.}}",
+    "setup": "Si ce n’est pas déjà fait, la configuration est simple et prend environ quinze minutes.",
+    "button": "Ouvrir votre tableau de bord",
+    "bookmark": "Pensez à l’ajouter à vos favoris. Il fonctionne sur tous les appareils.",
+    "stuck": "En cas de blocage, répondez simplement à cet e-mail — je réponds moi-même.",
+    "lookingForward": "{hasTruck, select, yes {J’ai hâte de voir {truck} en activité.} other {J’ai hâte de voir votre food truck en activité.}}"
+  }
+}

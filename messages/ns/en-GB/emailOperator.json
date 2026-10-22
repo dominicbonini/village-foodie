@@ -10,5 +10,16 @@
     "autoConfirmed": "Auto-confirmed — no action needed.",
     "confirmPrompt": "Log in to your HatchGrab dashboard to confirm or reject this order.",
     "text": "New order #{id} from {name}{withSlot, select, yes { for {slot}} other {}}{withVenue, select, yes { at {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total {total}.{withNotes, select, yes { Notes: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "New events found for {truck} — please review",
+    "hi": "Hi there,",
+    "found": "We found <b>{n, plural, one {{count} new event} other {{count} new events}}</b> on your schedule that need your approval before they appear to customers.",
+    "listHeading": "Events found:",
+    "approve": "Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.",
+    "cta": "Review your schedule →",
+    "signoff": "— The HatchGrab team · hatchgrab.com",
+    "unknownVenue": "Unknown venue",
+    "text": "Hi there,\n\nWe found {n, plural, one {{count} new event} other {{count} new events}} on your schedule that need your approval:\n\n{list}\n\nReview them at: {url}\n\nOnce you approve them they'll go live on the map.\n\n— The HatchGrab team"
   }
 }

@@ -20,12 +20,16 @@
 
 import { ordinal, ordinalSuffix, type TextCase, type TextRun } from './format'
 import { weekdayName, monthName } from '@/lib/time-utils'
+import { isEnglish, isLanguageBase } from '@/lib/i18n/locales'   // languages-1
 /* ⚠️ `./words` imports THIS file as a type only, so this closes no cycle at run time. */
 import { posterWordsFor } from './words'
 
 /** The countries this table knows. ⚠️ A string union, not `string` — an unknown code is a bug, and
- *  `localeFor()` falls back to GB rather than producing an empty date. */
-export type CountryCode = 'GB' | 'US'
+ *  `localeFor()` falls back to GB rather than producing an empty date.
+ *  languages-1 (22 October 2026): or a NON-ENGLISH LANGUAGE's locale tag ('fr-FR') — a truck in a language that is not English
+ *  has no row in the GB/US table: its dates, separators and words come from Intl and its own messages (`languageSpec`). */
+export type LanguageKey = `${string}-${string}`
+export type CountryCode = 'GB' | 'US' | LanguageKey
 
 export const DEFAULT_COUNTRY: CountryCode = 'GB'
 
@@ -93,7 +97,25 @@ export const LOCALES: Record<CountryCode, LocaleSpec> = {
 /** ⚠️ AN UNKNOWN CODE FALLS BACK TO GB rather than throwing. A design must still render for a truck
  *  whose country column says something this build has not met. */
 export const localeFor = (c: CountryCode | string | null | undefined): LocaleSpec =>
-  LOCALES[(c as CountryCode)] ?? LOCALES[DEFAULT_COUNTRY]
+  (c === 'GB' || c === 'US' ? LOCALES[c] : isLanguageKey(c) ? languageSpec(c) : undefined) ?? LOCALES[DEFAULT_COUNTRY]
+
+/** languages-1: is this poster key a non-English language's locale tag (rather than GB / US)? */
+export const isLanguageKey = (c: unknown): c is LanguageKey => typeof c === 'string' && /^[a-z]{2,3}-[A-Z]{2}$/.test(c) && !isEnglish(c)
+const languageSpecs = new Map<string, LocaleSpec>()
+/** languages-1: the spec a non-English language's posters use — its numeric order from Intl, a 24-hour default, and each
+ *  style's sample a real date (Wednesday 14 October) written by Intl, no English ordinal. */
+function languageSpec(key: LanguageKey): LocaleSpec {
+  let spec = languageSpecs.get(key)
+  if (!spec) {
+    const order = new Intl.DateTimeFormat(key, { day: '2-digit', month: '2-digit', timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(2026, 9, 14))).filter(p => p.type === 'day' || p.type === 'month').map(p => p.type)
+    const sample = (id: DateStyleId) => dateTextFor('2026-10-14', id, key, { caps: false, raisedOrdinals: true })
+    spec = { country: key, numericOrder: order[0] === 'month' ? 'mdy' : 'dmy', defaultTimeStyle: '24h',
+      dateStyles: (['long', 'short', 'dayMonth', 'numeric'] as DateStyleId[]).map(id => ({ id, sample: '' })) }
+    languageSpecs.set(key, spec)
+    spec.dateStyles = spec.dateStyles.map(d => ({ ...d, sample: sample(d.id) }))
+  }
+  return spec
+}
 
 /**
  * ══ 🔴 THE ONE PLACE THE COUNTRY IS DECIDED ═══════════════════════════════════════════════════════
@@ -107,7 +129,9 @@ export const localeFor = (c: CountryCode | string | null | undefined): LocaleSpe
  * server, a handful of fields on the client) and none of them should have to widen a type to ask a
  * question about a column that does not exist yet.
  */
-export function countryForTruck(truck?: { country?: string | null } | null): CountryCode {
+export function countryForTruck(truck?: { country?: string | null } | null, locale?: string | null): CountryCode {
+  // languages-1: a truck whose language is not English (its country's locale, a LANGUAGE_BASES entry) words its posters in it.
+  if (locale && isLanguageBase(locale)) return locale as LanguageKey
   const c = truck?.country
   return c && (c in LOCALES) ? (c as CountryCode) : DEFAULT_COUNTRY
 }
@@ -116,9 +140,12 @@ export function countryForTruck(truck?: { country?: string | null } | null): Cou
  * lib/time-utils.ts (`weekdayName`, `monthName`, Intl.formatToParts) in the country's locale, the short month
  * by its English rule ("Sep", never en-GB Intl's "Sept"). The hand-written month arrays that lived here are
  * gone; the ORDER, the separator and the ordinal stay this table's business. */
-const INTL_LOCALE: Record<CountryCode, string> = { GB: 'en-GB', US: 'en-US' }
-/** The Intl locale a country's dates are worded in. ⚠️ Unknown → GB's, as `localeFor` does. */
-export const intlLocaleFor = (c: CountryCode | string | null | undefined): string => INTL_LOCALE[localeFor(c).country]
+const INTL_LOCALE: Record<'GB' | 'US', string> = { GB: 'en-GB', US: 'en-US' }
+/** The Intl locale a country's dates are worded in. ⚠️ Unknown → GB's, as `localeFor` does. languages-1: a language key's own. */
+export const intlLocaleFor = (c: CountryCode | string | null | undefined): string => {
+  const country = localeFor(c).country
+  return isLanguageKey(country) ? country : INTL_LOCALE[country as 'GB' | 'US']
+}
 
 const parts = (ymd: string) => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd)
@@ -169,8 +196,9 @@ export function datePartsFor(
 ): DateParts {
   const { mo, d } = parts(ymd)
   const spec = localeFor(country)
+  if (isLanguageKey(spec.country)) return languageDateParts(ymd, style, spec.country, c)
   const us = spec.country === 'US'
-  const loc = INTL_LOCALE[spec.country]
+  const loc = INTL_LOCALE[spec.country as 'GB' | 'US']
   const weekdayLong = weekdayName(ymd, loc, 'long')
   const weekdayShort = weekdayName(ymd, loc, 'short')
   const monthLong = monthName(ymd, loc, 'long')
@@ -214,6 +242,24 @@ export function datePartsFor(
   }
 }
 
+/** languages-1: a non-English language's date, split the same way — the parts Intl writes for the style (its own order,
+ *  punctuation and words; no ordinal), the weekday first where the language puts it first. */
+function languageDateParts(ymd: string, style: DateStyleId, key: LanguageKey, c: TextCase): DateParts {
+  const { y, mo, d } = parts(ymd)
+  const opts: Intl.DateTimeFormatOptions = style === 'long' ? { weekday: 'long', day: 'numeric', month: 'long' }
+    : style === 'short' ? { weekday: 'short', day: 'numeric', month: 'short' }
+      : style === 'dayMonth' ? { day: 'numeric', month: 'long' } : { weekday: 'short', day: '2-digit', month: '2-digit' }
+  const ps = new Intl.DateTimeFormat(key, { ...opts, timeZone: 'UTC' }).formatToParts(new Date(Date.UTC(y, mo - 1, d)))
+  const w = ps.findIndex(p => p.type === 'weekday')
+  if (w !== 0) return { weekday: [], separator: '', rest: [{ text: caps(ps.map(p => p.value).join(''), c.caps) }] }
+  const sepEnd = ps.findIndex((p, i) => i > 0 && p.type !== 'literal')
+  return {
+    weekday: [{ text: caps(ps[0].value, c.caps) }],
+    separator: ps.slice(1, sepEnd).map(p => p.value).join(''),
+    rest: [{ text: caps(ps.slice(sepEnd).map(p => p.value).join(''), c.caps) }],
+  }
+}
+
 /** The date on one line, as runs. */
 export function dateRunsFor(
   ymd: string, style: DateStyleId, country: CountryCode, c: TextCase,
@@ -253,7 +299,9 @@ export const dateTextFor = (
  * exactly the way the poster no longer is.
  */
 export function shortDateTextFor(ymd: string, country: CountryCode): string {
-  const { d } = parts(ymd)
+  const { y, mo, d } = parts(ymd)
+  // languages-1: a non-English language's compact date is Intl's own.
+  if (isLanguageKey(country)) return new Intl.DateTimeFormat(country, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(y, mo - 1, d)))
   const loc = intlLocaleFor(country)
   const weekday = weekdayName(ymd, loc, 'short')
   const month = monthName(ymd, loc, 'short')

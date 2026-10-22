@@ -1,0 +1,189 @@
+{
+  "cancel": "Annuler",
+  "back": "← Retour",
+  "backPlain": "Retour",
+  "next": "Suivant →",
+  "continue": "Continuer →",
+  "closeImport": "Fermer l’import",
+  "tryAgain": "Réessayer",
+  "catError": {
+    "empty": "Donnez un nom à la catégorie.",
+    "tooLong": "Ce nom est trop long.",
+    "clash": "Une catégorie « {name} » existe déjà."
+  },
+  "steps": {
+    "details": "Vos informations",
+    "menu": "Carte",
+    "extras": "Suppléments",
+    "allergens": "Allergènes",
+    "kitchen": "Cuisine",
+    "schedule": "Planning",
+    "settings": "Paramètres"
+  },
+  "toast": {
+    "demoGone": "Votre carte de démo n’est plus disponible — importez-la à nouveau pour continuer.",
+    "eventsSaveFailed": "Échec de l’enregistrement des événements",
+    "cardReadFailed": "Impossible de lire la fiche allergènes — réessayez",
+    "imageReadFailed": "Impossible de lire cette image — saisissez ou collez plutôt votre carte",
+    "commitFailedDetail": "Impossible de terminer l’enregistrement de la carte : {error}. Certains articles ont peut-être déjà été enregistrés — vérifiez votre carte avant de réessayer.",
+    "commitFailed": "Impossible de terminer l’enregistrement de la carte. Certains articles ont peut-être déjà été enregistrés — vérifiez votre carte avant de réessayer.",
+    "finishFailed": "Impossible de marquer la configuration comme terminée — vous pouvez quand même continuer.",
+    "scheduleReadFailed": "Impossible de lire ce planning — essayez une photo plus nette ou saisissez vos dates.",
+    "cardRead": "Fiche lue — reconnus : {matched}, {pending, plural, one {# reste} other {# restent}} à attribuer par vous"
+  },
+  "settingsReview": {
+    "anchorOrder": "Paramètres → Paramètres de commande",
+    "anchorDisplay": "Paramètres → Vos food trucks → Paramètres d’affichage",
+    "mins15": "15 minutes",
+    "mins30": "30 minutes",
+    "mins60": "60 minutes",
+    "hours2": "2 heures",
+    "title": "Quelques paramètres à vérifier",
+    "loading": "Chargement de vos paramètres actuels…",
+    "looksGood": "C’est bon →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Impossible d’enregistrer — vous pouvez le modifier dans Paramètres.",
+    "anchorContact": "Paramètres → Coordonnées",
+    "intro": "Nous avons appliqué quelques paramètres courants. Jetez-y un œil — vous pourrez tous les modifier plus tard dans Paramètres.",
+    "cancelAria": "Jusqu’à combien de temps avant le retrait les clients peuvent annuler"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Vérifiez-les avant la mise en ligne. D’ici là, les articles sont signalés « allergènes non renseignés ».",
+    "body": "Vérifiez-les dans Paramètres avant la mise en ligne. D’ici là, les articles sont signalés « allergènes non renseignés ».",
+    "title": "⚠ Allergènes et régimes alimentaires à renseigner"
+  },
+  "welcome": {
+    "title": "Bienvenue sur HatchGrab",
+    "yourTruck": "Votre food truck",
+    "stop": "Vous pouvez vous arrêter et revenir quand vous voulez.",
+    "body": "Le food truck {name} est configuré. Ajoutons maintenant votre carte, puis votre premier événement.",
+    "go": "C’est parti"
+  },
+  "offer": {
+    "title": "Utiliser la carte de votre démo ?",
+    "use": "Utiliser cette carte",
+    "upload": "Importer une autre carte",
+    "body": "Nous avons enregistré la carte que vous avez importée — {count, plural, one {# article} other {# articles}}. Utilisez-la comme point de départ ou importez-en une autre."
+  },
+  "upload": {
+    "title": "Importez votre carte",
+    "body": "Importez une photo de votre ardoise, une capture d’écran ou un PDF, ou collez votre carte sous forme de texte. Notre IA la lit et crée votre carte numérique — vous vérifiez tout avant l’enregistrement.",
+    "confirmCancel": "Annuler cet import ? Votre vérification de cette carte sera perdue.",
+    "process": "Analyser la carte",
+    "later": "Je le ferai plus tard"
+  },
+  "processing": {
+    "title": "Analyse de votre carte",
+    "body": "L’IA lit et classe vos articles…"
+  },
+  "review": {
+    "title": "Vérifiez la carte importée",
+    "editLaterSetup": "Noms, prix, suppléments, allergènes et régimes alimentaires restent modifiables à tout moment par la suite.",
+    "editLater": "Noms, prix, suppléments, allergènes et régimes alimentaires restent modifiables à tout moment dans Paramètres.",
+    "noPrice": "{count, plural, one {# article sans prix lisible} other {# articles sans prix lisible}}",
+    "renameCategoryAria": "Renommer la catégorie {name}",
+    "renameAria": "Renommer {name}",
+    "renameTitle": "Renommer la catégorie",
+    "deleteAria": "Supprimer {name}",
+    "deleteTitle": "Supprimer la catégorie",
+    "lastCategory": "Votre carte doit contenir au moins une catégorie",
+    "countOf": "{kept} sur {total}",
+    "existing": "existante",
+    "deleteEmptyTitle": "Supprimer « {name} » ?",
+    "deleteEmptyBody": "Elle ne contient aucun article, rien ne sera perdu.",
+    "delete": "Supprimer",
+    "moveTitle": "Où déplacer {count, plural, one {# article} other {# articles}} ?",
+    "moveBody": "Pour supprimer « {name} », il faut déplacer ses plats ailleurs — les articles sans catégorie ne sont pas importés.",
+    "moveAria": "Déplacer les articles de {name} vers",
+    "chooseCategory": "Choisir une catégorie…",
+    "moveDelete": "Déplacer et supprimer",
+    "itemName": "Nom de l’article",
+    "free": "gratuit ?",
+    "freeOn": "Gratuit ✕",
+    "nameFirst": "Nommez le nouvel article avant d’en ajouter un autre",
+    "addItem": "+ Ajouter un article",
+    "categoryName": "Nom de la catégorie",
+    "newCategoryAria": "Nom de la nouvelle catégorie",
+    "addCategory": "+ Ajouter une catégorie",
+    "ready": "{count, plural, one {# article prêt} other {# articles prêts}} à ajouter. Décochez ceux dont vous ne voulez pas.",
+    "noPriceBody": "Indiquez un prix pour chacun ou marquez-le comme gratuit — sinon il serait mis en ligne à {zero}. Vous ne pourrez pas continuer tant que ce n’est pas réglé.",
+    "incomplete": "Saisissez un nom pour ajouter cet article — les lignes vides ne sont pas importées."
+  },
+  "extras": {
+    "introSetup": "Certains plats peuvent être configurés comme <b>un seul article personnalisable</b> ou conservés comme <b>plats distincts</b>. Choisissez comment chacun doit apparaître. Vous pourrez le modifier plus tard.",
+    "intro": "Certains plats peuvent être configurés comme <b>un seul article personnalisable</b> ou conservés comme <b>plats distincts</b>. Choisissez comment chacun doit apparaître. Vous pourrez le modifier plus tard dans Paramètres.",
+    "none": "Aucun plat regroupable — chaque article est un plat indépendant.",
+    "axisChoice": "· choix : {axis}",
+    "grouped": "Regroupé · un article, le client choisit",
+    "separate": "Articles distincts"
+  },
+  "allergens": {
+    "title": "Allergènes",
+    "detected": "Nous avons détecté des allergènes dans votre carte. Choisissez ci-dessous comment les afficher.",
+    "howShow": "Comment voulez-vous afficher les allergènes à vos clients ?",
+    "skip": "Passer la configuration des allergènes pour l’instant"
+  },
+  "kitchen": {
+    "title": "Configuration cuisine",
+    "intro": "Indiquez aux clients combien de temps attendre — vous pourrez toujours modifier ces réglages plus tard.",
+    "howWorks": "Comment limiter le nombre de commandes par créneau",
+    "allExist": "Toutes les catégories existent déjà — aucun temps à définir.",
+    "totalHelp": "Définissez une capacité totale pour plafonner le nombre d’articles que la cuisine prend en charge par créneau. Laissez ∞ pour ne fixer aucune limite.",
+    "saveAdd": "Enregistrer et ajouter à la carte"
+  },
+  "schedule": {
+    "title": "Ajouter mon planning",
+    "intro": "Si votre planning est sur votre site web, nous pouvons le tenir à jour automatiquement — ou ajoutez vos dates vous-même.",
+    "websiteTitle": "Mon planning est sur mon site web",
+    "urlPlaceholder": "https://votrefoodtruck.fr/evenements",
+    "checking": "Vérification…",
+    "verify": "Vérifier",
+    "checkingSite": "Vérification de votre site web…",
+    "takesTime": "Cela peut prendre jusqu’à 2 minutes — merci de laisser cette page ouverte.",
+    "canRead": "✓ Nous pouvons lire votre planning",
+    "ownSite": "Votre propre site web — pas une page Facebook ou Instagram.",
+    "photoTitle": "Importer une photo de mon planning",
+    "dragChoose": "Glissez-déposez ou touchez pour choisir",
+    "imageOrPdf": "Image ou PDF",
+    "or": "ou",
+    "pastePlaceholder": "Collez vos dates ici…",
+    "read": "Lire le planning",
+    "found": "{count, plural, one {# date trouvée — elle sera ajoutée à votre planning.} other {# dates trouvées — elles seront ajoutées à votre planning.}}",
+    "dateTbc": "Date à confirmer",
+    "save": "Enregistrer {count, plural, one {# date} other {# dates}}",
+    "manualDesc": "Ajoutez-les plus tard dans l’onglet Planning — rien à faire maintenant.",
+    "manualBody": "Pas de problème. Vous pouvez ajouter et gérer vos dates à tout moment depuis l’onglet Planning de votre compte.",
+    "blockedDomain": "Utilisez l’URL de votre site web — les pages Facebook et Instagram ne peuvent pas être lues automatiquement.",
+    "saveFailed": "Nous avons lu votre planning, mais impossible de l’enregistrer pour le moment — réessayez.",
+    "websiteDesc": "Nous le vérifierons régulièrement et vous enverrons les nouvelles dates pour validation.",
+    "keepChecking": "Nous continuerons à vérifier cette page et vous enverrons les nouvelles dates pour validation.",
+    "photoDesc": "Prenez une photo ou collez vos dates — nous les lirons pour que vous les vérifiiez.",
+    "noneFound": "Nous n’avons trouvé aucune date — essayez une photo plus nette ou ajoutez une date vous-même.",
+    "manualTitle": "J’ajouterai mes dates moi-même",
+    "trialNotStarted": "Ajouter des événements ne déclenche pas votre essai gratuit — vous choisirez plus tard l’événement qui le démarre."
+  },
+  "done": {
+    "summary": "{items, plural, one {# article} other {# articles}} dans {categories, plural, one {# catégorie} other {# catégories}}.",
+    "imported": "Carte importée !",
+    "added": "Vos articles ont été ajoutés à la carte.",
+    "duplicates": "{count, plural, one {# doublon ignoré} other {# doublons ignorés}}",
+    "showMe": "Faites-moi visiter",
+    "remind": "Me le rappeler plus tard",
+    "allSet": "Tout est prêt !",
+    "explore": "Je découvre par moi-même"
+  },
+  "discard": {
+    "setupTitle": "Terminer la configuration plus tard ?",
+    "setupBody": "Votre compte et votre food truck sont enregistrés — rien n’est perdu. Vous pouvez ajouter votre carte à tout moment : connectez-vous et touchez <b>Importer la carte</b> sur l’écran de votre carte pour reprendre ici.",
+    "keepGoing": "Continuer",
+    "finishLater": "Terminer plus tard",
+    "title": "Abandonner cet import ?",
+    "keepEditing": "Continuer à modifier",
+    "discard": "Abandonner",
+    "body": "Vos modifications ne seront pas enregistrées — les articles importés, les temps de préparation et les réglages pour limiter le nombre de commandes par créneau ne seront pas ajoutés."
+  },
+  "allergenCardText": {
+    "contains": "Contient : {list}",
+    "mayContain": "Peut contenir : {list}"
+  }
+}

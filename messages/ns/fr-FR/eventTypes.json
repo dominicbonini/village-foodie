@@ -1,0 +1,83 @@
+{
+  "title": "Types d’événement",
+  "newTypeButton": "+ Nouveau type d’événement",
+  "close": "Fermer",
+  "loading": "Chargement…",
+  "missingTitle": "Les types d’événement ne sont pas encore activés.",
+  "missingBody": "La mise à jour de la base de données pour cette fonctionnalité n’a pas été appliquée. Rien n’est cassé — chaque événement utilise votre configuration habituelle.",
+  "column": "Colonne",
+  "vanGone": "Ce camion n’existe plus.",
+  "typeGone": "Ce type n’existe plus.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Plus d’options pour {name}",
+  "rename": "Renommer",
+  "moveLeft": "Déplacer à gauche",
+  "moveRight": "Déplacer à droite",
+  "delete": "Supprimer",
+  "sections": {
+    "vans": "CAMIONS",
+    "prices": "PRIX",
+    "itemPrices": "PRIX DES ARTICLES",
+    "service": "SERVICE"
+  },
+  "labelFor": "{label} pour {name}",
+  "intervalEvery": "Toutes les {mins} min",
+  "noTypes": "Vous n’avez pas encore de type d’événement : chaque événement utilise donc votre configuration habituelle.",
+  "renameTitle": "Renommer ce type",
+  "name": "Nom",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "copyVanOne": "Copier les paramètres du camion 1",
+  "thisType": "ce type",
+  "matchTitle": "Aligner « {name} » sur Standard ?",
+  "matchKeeps": "Tout ce que vous avez modifié sur le tableau de bord d’un événement reste inchangé, et les prix de ce type ne sont pas modifiés.",
+  "matchWillUse": "Il utilisera : {summary}",
+  "deleteTitle": "Supprimer « {name} » ?",
+  "deleteBody": "{n, plural, =0 {Aucun événement à venir n’utilise « {name} ».} one {{count} événement à venir utilise « {name} ». Il repassera en Standard.} other {{count} événements à venir utilisent « {name} ». Ils repasseront en Standard.}} Tout ce que vous avez modifié sur un événement donné reste inchangé.",
+  "keep": "Conserver",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "par défaut",
+    "vanSetup": "La configuration habituelle de ce camion — utilisée pour chaque événement sans type.",
+    "standardSetup": "Votre configuration habituelle — utilisée pour chaque événement sans type.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} événement à venir} other {{upcomingCount} événements à venir}} · {changed, plural, =0 {rien de modifié pour l’instant} one {{changedCount} sur {total} modifié} other {{changedCount} sur {total} modifiés}}",
+    "noMenuItems": "Aucun article pour l’instant — ajoutez-en dans Carte › Articles."
+  },
+  "newType": {
+    "title": "Nouveau type d’événement",
+    "namePlaceholder": "ex. Kermesse de l’école",
+    "help": "Touchez un nom ou saisissez le vôtre. Il démarre comme une copie de Standard, et modifier Standard par la suite ne le changera pas. Modifiez ce que vous voulez ensuite.",
+    "create": "Créer",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Bar",
+      "market": "Marché",
+      "privateHire": "Privatisation"
+    }
+  },
+  "select": {
+    "label": "Type d’événement",
+    "usual": "{name} est le type habituel pour ce lieu."
+  },
+  "summary": {
+    "normalSetup": "Votre configuration habituelle",
+    "sameAsStandard": "Identique à Standard",
+    "buzzersOn": "bipeurs activés",
+    "buzzersOff": "bipeurs désactivés",
+    "takeCashOn": "espèces acceptées",
+    "takeCashOff": "espèces non acceptées",
+    "markReadyOn": "étape « prête » activée",
+    "markReadyOff": "étape « prête » désactivée",
+    "collectionEvery": "retrait toutes les {mins} min",
+    "offlineOff": "protection hors ligne désactivée",
+    "offlineKeepTaking": "hors ligne : continuer à prendre les commandes",
+    "offlinePause": "hors ligne : suspendre les commandes"
+  },
+  "errors": {
+    "somethingWentWrong": "Une erreur s’est produite",
+    "couldNotLoad": "Chargement impossible",
+    "couldNotSave": "Enregistrement impossible",
+    "noVans": "Ce food truck n’a aucun camion à modifier."
+  }
+}

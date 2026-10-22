@@ -84,5 +84,19 @@
   "addLine": "{edit, select, yes {Save changes} other {Add}} · {amount}",
   "done": "Done",
   "noUpcomingEvents": "No upcoming events found",
-  "cashIcon": "💷"
+  "cashIcon": "💷",
+  "fitSuffix": "{hasLabel, select, yes { · Not enough time} other { Not enough time}}",
+  "fitMessage": {
+    "title": "Can’t be ready by {slot}",
+    "batchLine": "{cat}: {batch} at a time, every {mins} minutes.",
+    "batchOne": "This order needs 1 batch to be ready by {slot}, and it doesn't have room.",
+    "batchNone": "This order needs {n} batches to be ready by {slot}, and none has room.",
+    "batchOneRoom": "This order needs {n} batches to be ready by {slot}, but only 1 has room.",
+    "batchSome": "This order needs {n} batches to be ready by {slot}, but only {m} have room.",
+    "windowFull": "{start}–{end} · {cat} · Full",
+    "windowFree": "{start}–{end} · {cat} · {free} free",
+    "windowShort": "{start}–{end} · {cat} · {free} free, needs {share}",
+    "kitchen": "Your kitchen cooks up to {cap} items at a time. Between {start} and {end} it's already cooking {existing}, and this order needs {add} more.",
+    "beforeOpen": "{cat} for {slot} would need to start cooking before your event opens."
+  }
 }

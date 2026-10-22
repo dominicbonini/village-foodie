@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Heures de retrait",
+    "takes_cash": "Acceptez-vous les espèces ?",
+    "offline_protection": "Protection des commandes hors ligne",
+    "buzzer_prompt": "Me rappeler d’ajouter un bipeur"
+  },
+  "typeFollowsVanTitle": "Suit le réglage habituel de chaque camion",
+  "sameSettingsAllVansLabel": "Mêmes réglages pour tous les camions",
+  "sameSettingsAllVansHeader": "Tous les camions",
+  "sameSettingsConfirm": "Copier les réglages du Camion 1 sur tous les camions ? Cela copie tous les réglages de camion du Camion 1, comme « Identique au Camion 1 » dans Paramètres. La capacité de la cuisine a son propre interrupteur.",
+  "eventTypesFooterStandard": "Standard correspond à votre configuration habituelle. Le modifier ici le modifie aussi dans Paramètres.",
+  "eventTypesFooterOneEvent": "Pour modifier un réglage pour un seul événement, utilisez le tableau de bord de cet événement.",
+  "eventTypesSubtitle": "Modifications enregistrées au fur et à mesure.",
+  "matchStandardLabel": "Aligner sur Standard",
+  "matchStandardConfirm": "Remettre tous les réglages de ce type sur Standard ? Tout ce que vous avez modifié ici sera effacé.",
+  "priceLabels": {
+    "price_change_on": "Modifier les prix",
+    "price_mode": "Modification de prix",
+    "price_amount": "Montant",
+    "price_rounding": "Arrondi",
+    "item_prices": "Prix des articles"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Fixer chaque prix moi-même"
+  },
+  "priceRounding": {
+    "none": "Aucun",
+    "nearest_1": "Arrondi à 1 {symbol} près",
+    "up_1": "Arrondi supérieur"
+  },
+  "pricesStandardCell": "Les prix de votre carte",
+  "pricesTruckWideTitle": "Vos prix sont les mêmes pour tous les camions",
+  "pricesMenuCell": "Carte",
+  "pricesTypeOffCell": "Prix de la carte",
+  "itemPricesShow": "Afficher les prix",
+  "itemPricesHide": "Masquer les prix",
+  "priceItemsHeading": "Fixer le prix de chaque article",
+  "priceItemsOpen": "Voir ou modifier le prix de chaque article ›",
+  "priceItemsClose": "Masquer les prix des articles ⌃",
+  "ownPriceCount": "{n, plural, one {{count} article a son propre prix} other {{count} articles ont leur propre prix}}",
+  "priceTypeHint": "Touchez un prix pour saisir le vôtre.",
+  "pricesLiveNotice": "Cet événement est en cours. Les nouvelles commandes utilisent les nouveaux prix. Les commandes déjà passées gardent les leurs.",
+  "placeTypeHelper": "Ajouter un événement sélectionne ce type chaque fois que vous choisissez ce lieu.",
+  "postPictureStandardNote": "Les publications d’événement utilisent ici votre visuel standard.",
+  "eventItemsCardDescription": "Prix, limites d’articles et disponibilité pour cet événement uniquement. Les modifications s’appliquent immédiatement.",
+  "eventPriceColumnLabel": "Prix",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · cet événement} other {carte {price} · cet événement}}",
+  "eventPriceEdit": "✎ Modifier les prix",
+  "eventPriceCancel": "Annuler",
+  "eventPriceSave": "Enregistrer les prix",
+  "eventPriceEditNote": "Modification des prix pour cet événement uniquement. Les limites d’articles et la disponibilité sont verrouillées jusqu’à l’enregistrement.",
+  "eventPriceLiveNote": "En cours : les nouvelles commandes utilisent les nouveaux prix.",
+  "offlineWhenOfflineLabel": "Hors ligne"
+}

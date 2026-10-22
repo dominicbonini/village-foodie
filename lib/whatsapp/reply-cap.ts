@@ -98,22 +98,28 @@ function hasContact(contactNumber: string | null | undefined): boolean {
 }
 
 /** The variant sent when the truck has no usable contact number — order link only. */
-export function handoffMessageWithoutContact(orderLink: string): string {
+// languages-1 (22 October 2026): `words` — the two sentences in the truck's language (`whatsappCustomer.capHandoff` /
+// `.capContact`), passed by the webhook. This module stays import-free (its harness compiles it alone); the English below is its
+// default, byte for byte the en-GB messages.
+export interface HandoffWords { handoff: (orderLink: string) => string; contact: (contactNumber: string) => string }
+
+export function handoffMessageWithoutContact(orderLink: string, words?: HandoffWords): string {
+  if (words) return words.handoff(orderLink)
   return `Thanks for all your messages! I can only reply a few times a day here.\n\n`
     + `To order: ${orderLink}`
 }
 
 /** The variant sent when the truck has one — the contact clause is appended whole. */
-export function handoffMessageWithContact(orderLink: string, contactNumber: string): string {
-  return handoffMessageWithoutContact(orderLink)
-    + `\nTo reach us directly: ${contactNumber.trim()}`
+export function handoffMessageWithContact(orderLink: string, contactNumber: string, words?: HandoffWords): string {
+  return handoffMessageWithoutContact(orderLink, words)
+    + `\n${words ? words.contact(contactNumber.trim()) : `To reach us directly: ${contactNumber.trim()}`}`
 }
 
 /** The one call site's entry point. Picks the variant; never emits a clause with an empty value. */
-export function handoffMessage(orderLink: string, contactNumber: string | null | undefined): string {
+export function handoffMessage(orderLink: string, contactNumber: string | null | undefined, words?: HandoffWords): string {
   return hasContact(contactNumber)
-    ? handoffMessageWithContact(orderLink, contactNumber as string)
-    : handoffMessageWithoutContact(orderLink)
+    ? handoffMessageWithContact(orderLink, contactNumber as string, words)
+    : handoffMessageWithoutContact(orderLink, words)
 }
 
 // ── THE DECISION ────────────────────────────────────────────────────────────────────────────────────

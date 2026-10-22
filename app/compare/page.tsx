@@ -37,6 +37,8 @@ import '@/lib/i18n/catalog/compare'
 import '@/lib/i18n/catalog/pricing'
 import { currencyLineOf } from '@/lib/country-settings-types'
 import { getPlanCatalog } from '@/lib/plans-server'   // Stage B: the calculator's plans are the data's
+// languages-1: plan names in the page's language (lib/plan-names.ts) — the same catalogue for every English locale.
+import { localizePlans } from '@/lib/plan-names'
 // 🔴 The visitor's country (Phase 2D-1) — ?country, the hg_country cookie, the request's country, else GB; server-side.
 import { resolveVisitorCountry } from '@/lib/visitor-country'
 // Language Phase 1e: the calculator's words are read in THIS country's locale, handed down — CostComparison never
@@ -44,6 +46,8 @@ import { resolveVisitorCountry } from '@/lib/visitor-country'
 import { localeOfCountry } from '@/lib/i18n/locales'
 // …and the page's other client components (country menu, demo modal and CTAs) read the same locale from this boundary.
 import { PageLocale } from '@/lib/i18n/page-locale'
+// languages-1: a non-English page hands its browser the words its client components read (none for English).
+import { pageSeedProps } from '@/lib/i18n/page-words'
 import { marketingCountry, countryPageAlternates } from '@/lib/marketing-meta'
 import '../landing/landing.css'
 
@@ -161,7 +165,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
   const freeRaw = (await searchParams)?.free
   const freeMonthsOverride = typeof freeRaw === 'string' && /^\d{1,2}$/.test(freeRaw) && +freeRaw >= 1 && +freeRaw <= 12 ? +freeRaw : null
   const settings = visitor.settings
-  const catalog = await getPlanCatalog()
+  const catalog = localizePlans(await getPlanCatalog(), settings.locale)
 
   // ── 🔴 THE PROVIDER AND THE MODAL CAME BACK — 3 SEPTEMBER 2026. THIS PAGE'S CTAs OPEN THE DEMO. ───
   // They were removed on 23 August, when all three of this page's CTAs pointed at /signup and nothing in
@@ -186,7 +190,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
   // under it their own `open` state, and the modal mounted here would never see it — the CTA would look
   // dead. CostComparison.tsx deliberately renders neither.
   return (
-    <PageLocale locale={localeOfCountry(settings)}>
+    <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>
     <DemoModalProvider>
       {/* 🔴 `chrome-nav-only` IS WHAT MAKES THE NAV STICK, AND IT IS NOT COSMETIC.
           `.hg-landing nav` is `position: sticky; top: 0`, and a sticky element only travels inside its

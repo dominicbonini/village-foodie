@@ -293,6 +293,11 @@ for (const s of SURFACES) {
   } else {
     t(`⛔ …and REDACTS through a shared definition, not a typed string`,
       /PRIVATE_PUBLIC_LABEL|redactPrivateRows|PRIVATE_PUBLIC_NAME/.test(src)
+      /* ⚠️ RE-PINNED (languages-1): the feed and the embed word the label in the TRUCK'S language from the ONE message
+       * `privateEvents.publicName` (still a shared definition, never a typed string), and en-GB's value IS the constant. */
+      || (/const privateLabel = translatorFor\([^)]*, 'privateEvents'\)\('publicName'\)/.test(src)
+          && /\? privateLabel :/.test(src)
+          && msgGB('privateEvents.publicName') === 'Private event')
       /* The poster redacts inside lib/weekly-post/week-data.ts, which this file calls. */
       || (s.file === 'app/api/weekly-post/route.ts'
           && /PRIVATE_PUBLIC_LABEL/.test(codeOf(read('lib/weekly-post/week-data.ts')))))
@@ -323,7 +328,8 @@ for (const s of SURFACES) {
 {
   const src = read('app/api/events/route.ts')
   const keyAt = src.indexOf('const key = `${e.event_date}|${e.venue_name')
-  const subAt = src.indexOf('isPrivate ? PRIVATE_PUBLIC_LABEL')
+  // ⚠️ RE-PINNED (languages-1): the substitution reads `privateLabel` (privateEvents.publicName in the truck's language).
+  const subAt = src.indexOf('isPrivate ? privateLabel')
   t('🔴 /api/events builds its dedup key on the REAL venue name, BEFORE the substitution',
     keyAt > 0 && subAt > 0 && keyAt < subAt)
 }
@@ -1147,13 +1153,15 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
      * ⚠️ RE-AIMED AT THE PAGE (5 October 2026) — they are in the type picker behind `Manage event ▾`
      * now. The sentences and the rule that decides when each shows are unchanged. */
     t('🔴 switching TO private confirms, and the sentence is about the map and the link',
-      /CONFIRM_TO_PRIVATE/.test(dash)
+      // ⚠️ RE-PINNED (languages-1): the page reads {tPrivEv('confirmToPrivate')} (its own language); copy.ts keeps the en-GB constant.
+      (/CONFIRM_TO_PRIVATE/.test(dash) || /\{tPrivEv\('confirmToPrivate'\)\}/.test(dash))
       // ⚠️ RE-PINNED (Language Phase 1d): copy.ts's CONFIRM_TO_PRIVATE now reads gb('confirmToPrivate'); the
       // sentence is asserted in messages/en-GB.json at privateEvents.confirmToPrivate.
       && /export const CONFIRM_TO_PRIVATE = gb\('confirmToPrivate'\)/.test(read('lib/private-events/copy.ts'))
       && /This hides the address and the event from the map/.test(msgGB('privateEvents.confirmToPrivate')))
     t('🔴 switching FROM private confirms, and names the link stopping',
-      /CONFIRM_FROM_PRIVATE/.test(dash)
+      // ⚠️ RE-PINNED (languages-1): the page reads {tPrivEv('confirmFromPrivate')} (its own language); copy.ts keeps the en-GB constant.
+      (/CONFIRM_FROM_PRIVATE/.test(dash) || /\{tPrivEv\('confirmFromPrivate'\)\}/.test(dash))
       // ⚠️ RE-PINNED (Language Phase 1d): copy.ts's CONFIRM_FROM_PRIVATE now reads gb('confirmFromPrivate'); the
       // sentence is asserted in messages/en-GB.json at privateEvents.confirmFromPrivate.
       && /export const CONFIRM_FROM_PRIVATE = gb\('confirmFromPrivate'\)/.test(read('lib/private-events/copy.ts'))
@@ -1186,7 +1194,8 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
       if (a < 0) return false
       const arm = code.slice(a, code.indexOf('):(<>', a))
       return arm.length > 80
-        && /\{PRIVATE_PUBLIC_NAME\}/.test(arm)
+        // ⚠️ RE-PINNED (languages-1): {PRIVATE_PUBLIC_NAME} → {tPrivEv('publicName')}, en-GB "Private event".
+        && (/\{PRIVATE_PUBLIC_NAME\}/.test(arm) || (/\{tPrivEv\('publicName'\)\}/.test(arm) && msgGB('privateEvents.publicName') === 'Private event'))
         && /\{privateName/.test(arm)
         && /text-purple-300/.test(arm)
         /* ⛔ NO VENUE, NO TOWN, NO `fmtVenue` IN THE PRIVATE ARM. */
@@ -1273,7 +1282,7 @@ head('2 · every privacy read FAILS CLOSED — a read failure means "private"')
   {
     const src = read('app/api/events/route.ts')
     const keyMark = 'const key = `${e.event_date}|${e.venue_name'
-    const subMark = 'isPrivate ? PRIVATE_PUBLIC_LABEL'
+    const subMark = 'isPrivate ? privateLabel'   // ⚠️ RE-PINNED (languages-1), as the order assertion
     const keyAt = src.indexOf(keyMark)
     const subAt = src.indexOf(subMark)
     /* Cut the key statement out and paste it AFTER the substitution line — the broken order.

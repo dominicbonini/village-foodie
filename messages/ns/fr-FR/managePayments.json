@@ -1,0 +1,94 @@
+{
+  "heading": "Paiements",
+  "loading": "Vérification de votre compte Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Non configuré",
+      "body": "Cela prend environ 10 minutes. Munissez-vous de vos coordonnées bancaires et d’une pièce d’identité.",
+      "chip": "Non configuré"
+    },
+    "requirements": {
+      "title": "Stripe a besoin de vos informations",
+      "body": "Les paiements par carte ne fonctionneront pas tant que Stripe n’aura pas vos informations professionnelles et bancaires.",
+      "chip": "Action requise"
+    },
+    "pending": {
+      "title": "Connecté : Stripe vérifie vos informations",
+      "body": "Vous n’avez rien à faire. Stripe examine ce que vous avez envoyé, et cette page se mettra à jour une fois la vérification terminée.",
+      "chip": "Vérification"
+    },
+    "ready": {
+      "title": "Connecté",
+      "body": "Votre compte Stripe est connecté et peut accepter des paiements.",
+      "chip": "Prêt"
+    },
+    "restricted": {
+      "title": "Paiements par carte suspendus",
+      "body": "Stripe a suspendu les paiements par carte sur votre compte jusqu’à la résolution d’un problème.",
+      "chip": "Suspendu"
+    },
+    "unsupported": {
+      "title": "Les paiements par carte ne sont pas disponibles sur ce compte",
+      "body": "Stripe ne peut pas activer les paiements par carte ici. Contactez-nous et nous trouverons une solution avec vous.",
+      "chip": "Indisponible"
+    }
+  },
+  "keyMismatch": {
+    "title": "Les clés Stripe ne correspondent pas",
+    "body": "Le serveur de ce site utilise sa clé Stripe de <b>{server, select, live {production} other {test}}</b>, alors que le navigateur a été compilé avec celle de <b>{browser, select, live {production} other {test}}</b>. Les paiements par carte échoueraient au moment où un client essaie de payer : la configuration de Stripe est donc bloquée tant qu’elles ne correspondent pas.",
+    "fix": "Les deux clés doivent être définies pour le même environnement, puis le site recompilé : la clé publiable est intégrée au moment de la compilation, la clé secrète est lue à chaque requête."
+  },
+  "permission": {
+    "title": "Seul le propriétaire du food truck peut configurer les paiements",
+    "body": "Stripe est connecté par la personne dont le compte bancaire reçoit l’argent : la configuration doit donc se faire depuis son propre compte connecté. Il n’y a aucun problème avec ce food truck ni avec HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Les paiements par carte ne sont pas encore configurés",
+    "fetchTitle": "Impossible de vérifier le compte Stripe de ce food truck",
+    "keyMissing": "{name} n’est pas défini : les composants intégrés ne peuvent pas se charger."
+  },
+  "errors": {
+    "requestFailed": "Échec de la requête ({status})",
+    "unreachable": "Impossible de joindre Stripe"
+  },
+  "online": {
+    "heading": "Paiements en ligne",
+    "body": "Les clients paient par carte au moment de commander. L’argent va directement sur votre propre compte Stripe : nous ne le détenons jamais.",
+    "feeLine": "Stripe facture {fee} par paiement sur les {region} standard. Les autres cartes peuvent coûter plus cher. Les frais HatchGrab sur les commandes en ligne dépendent de votre offre : voir Facturation.",
+    "testMode": "Mode test. Aucun paiement réel ne peut encore être encaissé."
+  },
+  "trialNote": "Cette configuration ne démarre pas votre abonnement et ne vous facture rien aujourd’hui. C’est ainsi que vos clients vous paient ; votre offre est distincte.",
+  "admin": {
+    "title": "Vue admin de la plateforme",
+    "body": "Ce food truck n’a pas configuré les paiements en ligne. Seul le propriétaire peut le faire, depuis son propre compte connecté : il n’y a rien à faire ici."
+  },
+  "setUp": {
+    "button": "Configurer les paiements en ligne",
+    "busy": "Configuration…"
+  },
+  "toast": {
+    "alreadySetUp": "Déjà configuré : on continue",
+    "addDetails": "Ajoutez maintenant vos informations pour Stripe",
+    "createFailed": "Impossible de créer le compte"
+  },
+  "onboarding": {
+    "restricted": "Stripe prend le relais : vous vous connecterez à Stripe pour mettre à jour les informations demandées.",
+    "firstRun": "Stripe prend le relais : vous vous connecterez à Stripe, puis indiquerez vos informations professionnelles et bancaires."
+  },
+  "details": {
+    "title": "Vos informations Stripe",
+    "body": "Changez le compte bancaire sur lequel vous êtes payé, ou mettez à jour vos informations professionnelles et vos documents.",
+    "button": "Voir ou modifier"
+  },
+  "walkUp": {
+    "heading": "Paiements au comptoir",
+    "body": "Comment vous encaissez au comptoir. HatchGrab ne prend aucuns frais de plateforme sur les commandes au comptoir, quelle que soit votre solution.",
+    "ownTerminal": "Votre propre TPE",
+    "current": "Actuel",
+    "ownTerminalHelp": "Zettle, Square ou ce que vous utilisez déjà. Rien à configurer : seuls les frais de votre prestataire s’appliquent.",
+    "hatchgrab": "Via HatchGrab",
+    "comingSoon": "Bientôt disponible",
+    "hatchgrabHelp": "Utilise la même connexion Stripe que vos paiements en ligne : un TPE, ou le paiement sans contact directement sur votre téléphone ou votre tablette.",
+    "hatchgrabFees": "{fee} par paiement sur les {region}, plus {surcharge} pour le sans contact encaissé sur un téléphone ou une tablette. Les autres cartes peuvent coûter plus cher."
+  }
+}

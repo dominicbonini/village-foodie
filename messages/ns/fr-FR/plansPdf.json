@@ -1,0 +1,9 @@
+{
+  "title": "Offres et fonctionnalités",
+  "generated": "Généré le {date}",
+  "allowanceHeading": "Commandes en ligne incluses",
+  "smallPrint": "Précisions",
+  "priceNoteMasked": "Les prix indiqués « À confirmer » ne sont pas encore publiés.",
+  "omitNote": "Les prix ne figurent volontairement pas dans ce document.",
+  "terms": "Les chiffres correspondent aux conditions publiées des offres à la date ci-dessus et peuvent évoluer. Les frais de traitement des cartes sont facturés par Stripe, et non par HatchGrab. Ce document est un résumé, et non un contrat."
+}

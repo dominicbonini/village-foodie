@@ -1,0 +1,25 @@
+{
+  "$comment": "languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for ENGLISH, as data — moved verbatim from lib/whatsapp-classifier.ts (ALLERGEN_STEMS / ALLERGEN_TOKENS, anz-1's and canada-1's additions, and the caveat families). 'ascii' keeps English's normaliser exactly as it was (lower case, every run of non a-z0-9 → one space). OPTION B: absence/safety words only — bare allergen names are NOT triggers (a presence question reaches the AI, which confirms tagged allergens). A new language adds lib/allergen-guard/<language>.json with the same shape (docs/i18n/add-a-country.md).",
+  "language": "en",
+  "normalise": "ascii",
+  "stems": ["allerg", "intoleran", "coeliac", "celiac", "free from", "safe for", "suitable for"],
+  "tokens": ["gf", "df", "free"],
+  "bySet": {
+    "anz": { "stems": ["anaphyla", "epipen", "epi pen"], "tokens": ["nf", "lf"] },
+    "ca": { "stems": ["anaphyla", "epipen", "epi pen", "peanut free", "nut free"], "tokens": [] }
+  },
+  "caveatWords": {
+    "anz": {
+      "milk": ["dairy", "lactose"], "egg": ["eggs"], "peanut": ["peanuts", "nuts"], "soy": ["soya"],
+      "crustacean": ["crustaceans", "shellfish", "prawn"], "mollusc": ["molluscs", "shellfish"], "added sulphites": ["sulphite", "sulfite"],
+      "wheat": ["gluten"], "barley": ["gluten"], "rye": ["gluten"], "oats": ["gluten"],
+      "almond": ["nuts"], "brazil nut": ["nuts"], "cashew": ["nuts"], "hazelnut": ["nuts"], "macadamia": ["nuts"], "pecan": ["nuts"], "pine nut": ["nuts"], "pistachio": ["nuts"], "walnut": ["nuts"]
+    },
+    "ca": {
+      "milk": ["dairy", "lactose"], "eggs": ["egg"], "peanuts": ["peanut", "nuts"], "tree nuts": ["nuts", "nut"], "soy": ["soya"], "sesame": ["sesame seeds"],
+      "crustaceans": ["crustacean", "shellfish", "shrimp", "prawn", "crab", "lobster"], "molluscs": ["mollusc", "shellfish", "clams", "mussels", "oysters", "scallops"],
+      "wheat and triticale": ["wheat", "triticale", "gluten"], "gluten (barley, oats, rye)": ["gluten", "barley", "oats", "rye"],
+      "added sulphites": ["sulphite", "sulfite"], "mustard": ["mustard"]
+    }
+  }
+}

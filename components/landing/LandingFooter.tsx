@@ -128,7 +128,7 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
                 stack centred if they do not. `.foot-badge img` sets height:40px, width:auto.
                 ⚠️ The classes REPLACE the component's Tailwind defaults rather than adding to them, so
                 exactly one rule owns the gap. */}
-            <StoreBadges className="foot-apps" linkClassName="foot-badge" countryCode={country?.current.code} />
+            <StoreBadges className="foot-apps" linkClassName="foot-badge" countryCode={country?.current.code} locale={locale} />
             {/* Phase 2D-1: the country button, at every width — flag, full name, chevron. */}
             {country && <CountryMenu menu={country} />}
         </div>

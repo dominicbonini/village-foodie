@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu utilisateur",
+  "screenOn": "Écran allumé",
+  "screenOff": "Écran éteint",
+  "newOrderSound": "Son nouvelle commande",
+  "copied": "Copié",
+  "orderLink": "Lien de commande",
+  "qrCode": "QR code",
+  "kitchenScreen": "Écran cuisine",
+  "thisDevice": "Cet appareil",
+  "manage": "Gestion",
+  "ordersDashboard": "Tableau de bord des commandes",
+  "admin": "Admin",
+  "privacy": "Confidentialité",
+  "terms": "Conditions",
+  "signOut": "Se déconnecter",
+  "close": "Fermer"
+}

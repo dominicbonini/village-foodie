@@ -74,7 +74,8 @@ export function formatAmount(minor: number, f: MoneyFormat): string {
   }).format(toMajor(minor, f.currency))
 }
 
-/** "£29/mo" (or "£29/month"). The ONLY place a monthly price becomes a string. */
+/** "£29/mo" (or "£29/month"). The ONLY place a monthly price becomes a string. ⚠️ languages-1: "/mo" is English — a screen
+ *  writes it through lib/price-text.ts perMonthText, which words it in the locale (identical here for English). */
 export function perMonthLabel(minor: number, f: MoneyFormat, unit: 'mo' | 'month' = 'mo'): string {
   return `${formatAmount(minor, f)}/${unit}`
 }

@@ -6,19 +6,18 @@
 // messages/en-GB.json is the FULL base. messages/en-US.json holds ONLY the keys whose US
 // wording differs, and is deep-merged OVER en-GB here — so a key the US file lacks shows the UK text, never a
 // raw key. A later language is a full file of its own, checked for completeness by scripts/messages-parity.cjs.
+// languages-1 (22 October 2026): the other locales' files come from lib/i18n/locale-files.ts, GENERATED from the one locale list
+// (lib/i18n/locales.ts) — this file names no locale. A non-English base (LANGUAGE_BASES) is merged over en-GB the same way, so a
+// key its file lacks shows the English (the last resort, listed by scripts/translation-check.cjs), never a raw key.
 import enGB from '@/messages/en-GB.json'
-import enUS from '@/messages/en-US.json'
-import enIE from '@/messages/en-IE.json'
-import enAU from '@/messages/en-AU.json'
-import enNZ from '@/messages/en-NZ.json'
-import enCA from '@/messages/en-CA.json'
 import type { Messages } from 'next-intl'
 import { DEFAULT_LOCALE, overrideChain, resolveLocale, type AppLocale } from './locales'
 import { deepMerge, type Tree } from './merge'
+import { LOCALE_FILES } from './locale-files'
 
 export { deepMerge }
 
-const OVERRIDES: Record<AppLocale, Tree | null> = { 'en-GB': null, 'en-US': enUS as Tree, 'en-IE': enIE as Tree, 'en-AU': enAU as Tree, 'en-NZ': enNZ as Tree, 'en-CA': enCA as Tree }
+const OVERRIDES = LOCALE_FILES as Partial<Record<AppLocale, Tree>>
 const CACHE = new Map<AppLocale, Messages>()
 
 /** Every message for a locale: en-GB itself, or en-GB with that locale's file merged over it — and, for a locale written

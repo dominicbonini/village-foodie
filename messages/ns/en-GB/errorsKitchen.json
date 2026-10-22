@@ -61,5 +61,11 @@
   "van_not_for_target": "Van not found for the target truck",
   "item_sold_out": "Sorry, {item} is sold out.",
   "choose_group": "Please choose {group} for {item}.",
-  "net_address_invalid": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100."
+  "net_address_invalid": "Enter the printer’s address as 192.168.1.50 or 192.168.1.50:9100.",
+  "stock_table_attention": "Could not save that extra. The stock table needs attention.",
+  "completed_payment_not_recorded": "Order completed, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.",
+  "slot_board_not_updated": "Order saved, but the kitchen capacity board could not be updated — check the slot before relying on it.",
+  "created_payment_not_recorded": "Order created, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.",
+  "payment_not_recorded": "Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.",
+  "payment_not_reversed": "Payment could not be reversed"
 }

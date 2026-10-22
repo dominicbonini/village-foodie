@@ -16,9 +16,10 @@ import { Card, Toggle } from './primitives'
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { formatMinor, currencySymbol, editableMinor } from '@/lib/money-format'
 import { applyBps } from '@/lib/order-charges'
+import { normaliseDecimal, decimalForInput } from '@/lib/decimal-input'   // france-1: "12,50" in a decimal-comma locale
 import { formatRateMilli, formatRateBps } from '@/lib/order-charge-lines'
 import { checkChargeSettings, feePhrase, pctText, type ChargeSettingsInput } from '@/lib/charge-settings'
-import { addressFormatOf, regionOf, regionSalesTax } from '@/lib/address-formats'
+import { addressFormatOf, regionOf, regionSalesTax, includedTaxOf } from '@/lib/address-formats'
 // Language Phase 1d Part 2: the card's words are `manageCharges`; a refusal is an `errorsManage` code — the same one
 // `update_charges` sends — worded here in the truck's locale; the example quotes the customer's own charge line
 // (`charges.serviceFeeCustomer`), so it can never name a line the customer does not see.
@@ -52,15 +53,18 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const tErr = useT('errorsManage') as unknown as (code: string, params?: Record<string, string>) => string
   const fmt = { currency: cs.currency, locale: cs.locale }
   const money = (minor: number) => formatMinor(minor, fmt)
-  const [rate, setRate] = useState(truck.tax_rate_milli != null ? formatRateMilli(truck.tax_rate_milli) : '')
+  const [rate, setRate] = useState(truck.tax_rate_milli != null ? decimalForInput(formatRateMilli(truck.tax_rate_milli), cs.locale) : '')
   const [rateError, setRateError] = useState<string | null>(null)
   const [tipping, setTipping] = useState(typeof truck.tipping_enabled === 'boolean' ? truck.tipping_enabled : cs.tippingEnabledDefault)
   const [feeOn, setFeeOn] = useState(truck.service_fee_enabled === true)
-  const [feePct, setFeePct] = useState(truck.service_fee_bps ? pctText(truck.service_fee_bps) : '')
-  const [feeFixed, setFeeFixed] = useState(truck.service_fee_fixed_minor ? editableMinor(truck.service_fee_fixed_minor, fmt) : '')
+  const [feePct, setFeePct] = useState(truck.service_fee_bps ? decimalForInput(pctText(truck.service_fee_bps), cs.locale) : '')
+  const [feeFixed, setFeeFixed] = useState(truck.service_fee_fixed_minor ? decimalForInput(editableMinor(truck.service_fee_fixed_minor, fmt), cs.locale) : '')
   const [feeError, setFeeError] = useState<string | null>(null)
 
-  if (cs.pricesIncludeTax) return null
+  // france-1: a country whose prices INCLUDE a named tax its receipts word (France's TVA) shows ONE row — the rate its prices
+  // include, its default from the address format, the truck's own when typed. Every other tax-inclusive country: nothing, as before.
+  const includedTax = cs.pricesIncludeTax ? includedTaxOf(cs.addressFormat) : null
+  if (cs.pricesIncludeTax && !includedTax) return null
   // canada-1 (22 October 2026): the base region's sales tax, when the address format holds one (Canada) — the rate an empty box
   // charges, shown as its placeholder and in one line under it. A region without one (every US state) shows nothing new.
   const regionTax = regionSalesTax(cs.addressFormat, truck.base_region_code)
@@ -86,8 +90,9 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const maxPct = cs.serviceFeeTruckMaxBps
   const maxFixed = cs.serviceFeeTruckMaxFixedMinor
   const exampleFee = (() => {
-    const bps = Number(feePct) > 0 ? Math.round(Number(feePct) * 100) : 0
-    const fixed = Number(feeFixed) > 0 ? Math.round(Number(feeFixed) * 100) : 0
+    const pctNum = Number(normaliseDecimal(feePct, cs.locale)), fixedNum = Number(normaliseDecimal(feeFixed, cs.locale))   // france-1
+    const bps = pctNum > 0 ? Math.round(pctNum * 100) : 0
+    const fixed = fixedNum > 0 ? Math.round(fixedNum * 100) : 0
     return applyBps(EXAMPLE_FOOD_MINOR, Math.min(bps, maxPct ?? 0)) + Math.min(fixed, maxFixed ?? 0)
   })()
 
@@ -104,6 +109,30 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
     </div>
   )
 
+  const rateBox = (placeholderMilli: number | null) => (
+    <div className="flex items-center gap-1.5">
+      <input type="text" inputMode="decimal" aria-label={includedTax ? t('included.label', { label: includedTax.label }) : t('rate.label')} value={rate}
+        onChange={e => setRate(e.target.value)}
+        onBlur={() => { void save({ taxRate: normaliseDecimal(rate, cs.locale) }, setRateError) }}
+        placeholder={placeholderMilli !== null ? decimalForInput(formatRateMilli(placeholderMilli), cs.locale) : '0'}
+        className={`w-24 rounded-xl border px-3 py-2 text-sm text-right text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${rateError ? 'border-red-400' : 'border-slate-200'}`} />
+      <span className="text-sm text-slate-600">%</span>
+    </div>
+  )
+  if (includedTax) {
+    return (
+      <Card className="p-4">
+        <h3 className="text-base font-bold text-slate-800">{t('heading')}</h3>
+        <div className="divide-y divide-slate-100">
+          {row(t('included.label', { label: includedTax.label }), t('included.hint', { label: includedTax.label }), rateBox(includedTax.milli),
+            rateError ? <p className="text-xs text-red-600 mt-1" role="alert">{rateError}</p>
+              : <p className="text-xs text-slate-500 mt-1" data-included-tax>{t('included.default', { label: includedTax.label, rate: decimalForInput(formatRateMilli(includedTax.milli), cs.locale), country: cs.name })}</p>,
+            'rate')}
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4">
       <h3 className="text-base font-bold text-slate-800">{t('heading')}</h3>
@@ -113,8 +142,8 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
           <div className="flex items-center gap-1.5">
             <input type="text" inputMode="decimal" aria-label={t('rate.label')} value={rate}
               onChange={e => setRate(e.target.value)}
-              onBlur={() => { void save({ taxRate: rate }, setRateError) }}
-              placeholder={regionTax ? formatRateMilli(regionTax.milli) : '0'}
+              onBlur={() => { void save({ taxRate: normaliseDecimal(rate, cs.locale) }, setRateError) }}
+              placeholder={regionTax ? decimalForInput(formatRateMilli(regionTax.milli), cs.locale) : '0'}
               className={`w-24 rounded-xl border px-3 py-2 text-sm text-right text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${rateError ? 'border-red-400' : 'border-slate-200'}`} />
             <span className="text-sm text-slate-600">%</span>
           </div>,
@@ -145,7 +174,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
             <div className="flex items-center gap-1.5 text-sm text-slate-700" data-fee-boxes>
               {maxPct !== null && (<>
                 <input type="text" inputMode="decimal" aria-label={t('fee.pctAria')} value={feePct}
-                  onChange={e => setFeePct(e.target.value)} onBlur={() => { void save({ serviceFeePct: feePct }, setFeeError) }}
+                  onChange={e => setFeePct(e.target.value)} onBlur={() => { void save({ serviceFeePct: normaliseDecimal(feePct, cs.locale) }, setFeeError) }}
                   placeholder="0" className="w-16 rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-orange-400" />
                 <span>%</span>
               </>)}
@@ -153,7 +182,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
               {maxFixed !== null && (<>
                 <span>{currencySymbol(fmt)}</span>
                 <input type="text" inputMode="decimal" aria-label={t('fee.fixedAria')} value={feeFixed}
-                  onChange={e => setFeeFixed(e.target.value)} onBlur={() => { void save({ serviceFeeFixed: feeFixed }, setFeeError) }}
+                  onChange={e => setFeeFixed(e.target.value)} onBlur={() => { void save({ serviceFeeFixed: normaliseDecimal(feeFixed, cs.locale) }, setFeeError) }}
                   placeholder="0.00" className="w-20 rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </>)}
             </div>

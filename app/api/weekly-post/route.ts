@@ -1011,7 +1011,9 @@ export async function POST(req: NextRequest) {
    * ⚠️ READ HERE RATHER THAN IN THE THREE ACTIONS, so `load`, `captions` and `render` cannot disagree
    * about what the operator asked for — the tick list, the caption and the picture are one answer. */
   const showPrivate = body.showPrivate === true
-  const country = countryForTruck(truck as { country?: string | null })
+  // languages-1: with the truck's locale, so a non-English truck's posters and captions are worded in its language (an English
+  // locale changes nothing: countryForTruck reads the locale only for a LANGUAGE_BASES entry).
+  const country = countryForTruck(truck as { country?: string | null }, locale)
   // 🔴 THE TRUCK'S WEEK (Phase 2B): its zone decides "today", its country's week_start the first day —
   // Monday–Sunday for a GB truck, as before; was a fixed Europe/London and Monday-first for everyone.
   const truckTime = await truckTimeSettings(truck)

@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Logiciel de commande en ligne pour food trucks et restauration ambulante",
+    "description": "Commande en ligne, possibilité de commander à l’avance et écran cuisine pour les food trucks et la restauration ambulante ({country}).",
+    "audience": "Food truckers et professionnels de la restauration ambulante"
+  },
+  "hero": {
+    "title": "Le logiciel de commande en ligne pensé pour les <lean>food trucks.</lean>",
+    "subSmall": "Importez votre carte, sans inscription.<br></br>Une démo fonctionnelle en moins de 60 secondes.",
+    "tagline": "Moins de temps à gérer.<br></br>Plus de temps à <lean>cuisiner.</lean>",
+    "cta": "Importer ma carte →",
+    "ctaNote": "<lead>Importez une photo de votre carte et voyez-la fonctionner en moins de 60 secondes.</lead><small>Sans inscription. Sans carte bancaire.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "L’écran cuisine HatchGrab, avec les tickets de commande dans l’ordre de préparation",
+    "dashboardAlt": "Prise de commande sur HatchGrab : la carte à gauche, le panier en cours et le total à droite",
+    "phoneAlt": "Commander auprès d’un food truck sur HatchGrab : la carte avec photos et prix, et le total du panier en cours"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Premier mois entièrement gratuit, tout débloqué} other {# premiers mois entièrement gratuits, tout débloqué}}",
+    "noCard": "Sans carte bancaire",
+    "cancel": "Sans engagement, résiliable à tout moment"
+  },
+  "does": {
+    "eyebrow": "Fonctionnalités",
+    "title": "Conçu pour les food trucks, pas pour les restaurants.",
+    "lede": "La plupart des logiciels de commande supposent une adresse fixe, un wifi fiable et les mêmes horaires chaque semaine. Vous, vous changez d’emplacement chaque semaine, à des horaires différents, avec un réseau mobile capricieux, voire inexistant. HatchGrab a été conçu pour ça.",
+    "slotsTitle": "Vos clients choisissent leur heure de retrait",
+    "capacityTitle": "Limitez le nombre de commandes par créneau",
+    "capacityBody": "Indiquez combien vous pouvez cuisiner à la fois, et en combien de temps. Une fois une heure de retrait complète, les clients ne peuvent plus la choisir.",
+    "devicesTitle": "Fonctionne sur tout appareil",
+    "devicesBody": "Sur le téléphone dans votre tablier, la tablette sur le comptoir, l’ordinateur portable dans le camion — et le TPE avec lequel vous encaissez déjà.",
+    "postsTitle": "Automatisez vos publications Facebook et Instagram",
+    "postsBody": "Importez le visuel que vous publiez déjà sur Facebook ou Instagram. Nous y ajoutons vos dates, lieux et horaires, prêts à partager — chaque semaine ou chaque jour.",
+    "whatsappTitle": "Réponses automatiques WhatsApp",
+    "whatsappBody": "« Vous êtes où ce soir ? » « Vous avez quoi comme desserts ? » Votre WhatsApp répond pendant que vous roulez vers votre emplacement ou que vous êtes au grill, à partir de votre propre carte et de votre planning. Messenger et Instagram bientôt disponibles.",
+    "whatsappSoonTitle": "Réponses automatiques WhatsApp <soon>Bientôt</soon>",
+    "whatsappSoonBody": "« Vous êtes où ce soir ? » « Vous avez quoi comme desserts ? » Bientôt, votre WhatsApp répondra pendant que vous roulez vers votre emplacement ou que vous êtes au grill. Messenger et Instagram suivront.",
+    "offlineTitle": "Pas de réseau ? Continuez à servir.",
+    "offlineBody": "Si vous perdez le réseau, la commande en ligne se met automatiquement en pause pour que les clients ne passent pas de commandes que vous ne verriez pas. Continuez à prendre des commandes avec l’app iPhone, iPad et Android.",
+    "slotsBody": "Les clients commandent à l’avance et choisissent leur heure de retrait. Moins de file d’attente, et des plats prêts à leur arrivée."
+  },
+  "steps": {
+    "eyebrow": "Pour démarrer",
+    "title": "Configurez tout et commencez à prendre des commandes en 15 minutes environ.",
+    "lede": "Trois choses à régler — et deux ne demandent qu’une photo.",
+    "menuTitle": "Créez votre carte",
+    "menuBody": "Prenez votre ardoise en photo ou collez-la. Articles, prix et suppléments sont repris automatiquement. Vous n’avez qu’à vérifier.",
+    "scheduleTitle": "Ajoutez votre planning",
+    "scheduleBody": "Il est sur votre site web ? Nous le lisons depuis là et le tenons à jour. Sinon, prenez-le aussi en photo. Vous n’avez qu’à valider ce qui est trouvé.",
+    "shareTitle": "Partagez votre lien",
+    "shareBody": "Publiez-le sur Facebook, collez le QR code sur le camion. Les commandes arrivent sur votre écran, dans l’ordre où vous devez les préparer."
+  },
+  "testimonial": {
+    "quote": "HatchGrab a rendu les commandes tellement plus simples. Tout est organisé, nous suivons notre stock et savons exactement combien de pizzas il nous reste à vendre — et les créneaux de retrait sont parfaits pour les villages animés.",
+    "award": "Pizzeria mobile de l’année",
+    "awardScope": "Lauréat régional",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia et Bogdan — propriétaires"
+  },
+  "pricing": {
+    "eyebrow": "Tarifs",
+    "title": "Démarrez gratuitement. Évoluez selon vos besoins.",
+    "switchHead": "Vous utilisez une autre plateforme ?",
+    "switchBody": "Découvrez combien vous paieriez sur HatchGrab pour les mêmes commandes. Ça prend environ une minute.",
+    "switchCta": "Comparez ce que vous payez"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Envie de voir comme c’est simple ?",
+    "lede": "Importez une photo ou une capture d’écran de votre carte : nous la transformons en page de commande fonctionnelle, à tester en moins de 60 secondes. Vos articles, vos prix. Sans inscription, sans carte bancaire, rien à installer. Jetez un œil, puis décidez.",
+    "cta": "Importer ma carte maintenant →"
+  },
+  "meta": {
+    "title": "Logiciel de commande pour food trucks et restauration ambulante — HatchGrab {country}",
+    "description": "Prenez les commandes sur votre emplacement et laissez vos clients commander à l’avance, sans file d’attente. Logiciel de commande en ligne et écran cuisine pour les food trucks et la restauration ambulante ({country}) — pas un logiciel de caisse."
+  }
+}

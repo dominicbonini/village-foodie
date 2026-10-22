@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Lecture de votre carte…",
+    "found": "Articles trouvés…",
+    "kitchen": "Configuration de votre cuisine…",
+    "page": "Création de votre page de commande…",
+    "almost": "Presque prêt…"
+  },
+  "templateSteps": {
+    "truck": "Création de votre food truck d’exemple…",
+    "menu": "Configuration de la carte…",
+    "kitchen": "Configuration de la cuisine…",
+    "page": "Création de la page de commande…",
+    "almost": "Presque prêt…"
+  },
+  "dialogLabel": "Importer votre carte",
+  "heading": "✨ Importez votre carte",
+  "failedHeading": "Nous n’avons pas pu lire cette carte",
+  "close": "Fermer",
+  "intro": "Une photo de votre ardoise, une capture d’écran, un PDF, ou collez-la sous forme de texte. Notre IA la lit et vous crée une page de commande fonctionnelle — vos articles, vos prix — en moins de 60 secondes. Sans inscription, sans carte bancaire.",
+  "failedIntro": "Il arrive qu’une photo soit trop sombre, prise de biais ou manuscrite. C’est à nous de gérer, vous n’avez rien fait de mal. Quelques solutions :",
+  "usually": "Cela prend généralement moins de 60 secondes.",
+  "slow": "Cela prend plus de temps que d’habitude — c’est parfois le cas avec les grandes cartes.",
+  "keepWaiting": "Continuer d’attendre",
+  "sampleWhileYouWait": "Ou explorez une carte d’exemple en attendant",
+  "standIn": "Ceci <b>ne sera pas votre carte</b> — c’est un exemple pour vous montrer le fonctionnement.",
+  "seeSample": "Voir la carte d’exemple",
+  "tryAgain": "Réessayer",
+  "tryPhotoAgain": "Réessayer avec cette photo",
+  "tryDifferent": "Essayer une autre photo",
+  "uploadAnother": "← Importer une autre photo",
+  "orSample": "Ou explorez une carte d’exemple",
+  "orBuild": "Ou nous la créons pour vous",
+  "buildSent": "✓ Merci — c’est bien reçu. Nous vous enverrons un e-mail.",
+  "buildBody": "Laissez votre e-mail et une vraie personne saisira votre carte et vous enverra le lien.",
+  "emailPlaceholder": "vous@votrefoodtruck.fr",
+  "sending": "…",
+  "send": "Envoyer",
+  "noPhoto": "Pas de photo de votre carte sous la main ?",
+  "noPhotoBody": "Explorez plutôt un food truck d’exemple — vous pourrez importer le vôtre à tout moment.",
+  "build": "Créer ma démo →",
+  "nothingPublished": "Rien n’est publié — elle n’est visible que par vous.",
+  "error": {
+    "somethingWrong": "Une erreur est survenue. Veuillez réessayer.",
+    "serverUnreachable": "Nous n’avons pas pu joindre le serveur. Vérifiez votre connexion et réessayez.",
+    "sendFailed": "Envoi impossible — réessayez."
+  },
+  "fields": {
+    "uploadLabel": "Importer le fichier de la carte",
+    "dropHere": "Déposez votre carte ici",
+    "dragOrTap": "Glissez-déposez ou appuyez pour choisir",
+    "fileTypes": "Image ou PDF",
+    "or": "ou",
+    "pasteLabel": "Coller le texte de la carte",
+    "pastePlaceholder": "Collez votre carte ici — noms des articles, descriptions, prix…"
+  }
+}

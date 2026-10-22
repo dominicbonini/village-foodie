@@ -29,6 +29,7 @@ import { featureRefusal } from '@/lib/plan-refusal'
 import { truckCan } from '@/lib/plans'
 import { countrySettingsForTruck, addressFormatForTruck } from '@/lib/country-settings'
 import { getPlanCatalog } from '@/lib/plans-server'
+import { localizePlans } from '@/lib/plan-names'   // languages-1: plan names in the locale's language
 import { checkTradeArea, splitRegionCodeWrite } from '@/lib/trade-area'
 /* ── 🔴 LANGUAGE PHASE 1d: THE MENU, SCHEDULE AND SETTINGS TABS' REFUSALS CARRY A CODE ─────────────────────────────
  * `{ error: <today's English>, …every field it already carried…, code, params }` from `manageErrorBody`
@@ -40,6 +41,7 @@ import { manageErrorBody, tradeAreaErrorBody, type ManageErrorCode, type ManageE
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/errorsManage'
 import '@/lib/i18n/catalog/manageApi'
 // Language Phase 1d Part 2: the team invite email's words.
 import '@/lib/i18n/catalog/manageTeam'
@@ -524,7 +526,7 @@ export async function GET(req: NextRequest) {
   // plan through it (lib/plans.ts). ⚠️ FATAL like the settings: a page that guessed a plan would show the wrong one.
   let plans
   try {
-    plans = await getPlanCatalog()
+    plans = localizePlans(await getPlanCatalog(), countrySettings.locale)   // languages-1: plan names in the truck's language
   } catch (e) {
     console.error('[manage] plan catalogue read failed', e instanceof Error ? e.message : e)
     return NextResponse.json(manageErrorBody(await localeForTruck(truck), 'plans_failed'), { status: 500 })
@@ -597,6 +599,10 @@ export async function POST(req: NextRequest) {
   /** The truck's language — read once, and only when a refusal needs it, so a success makes no extra read. */
   let localeRead: Promise<AppLocale> | null = null
   const truckLocale = () => (localeRead ??= localeForTruck(truck))
+  /** languages-1: a lib/private-events/write.ts refusal in the truck's language when it is one of ours (its code), else the
+   *  database's own message as it came — the body's shape unchanged, en-GB exactly as before. */
+  const privateWords = async (r: { error?: string; errorCode?: 'event_not_found' | 'private_unavailable' | 'private_not_private' | 'private_link_off' }) =>
+    r.errorCode ? translatorFor(await truckLocale(), 'errorsManage')(r.errorCode) : r.error
   /** A refusal of ours: `{ error, …extra, code, params }` in the truck's language (lib/i18n/manage-errors.ts). */
   const refuse = async (code: ManageErrorCode, status: number, params: ManageErrorParams = {}, extra?: Record<string, unknown>) =>
     NextResponse.json(manageErrorBody(await truckLocale(), code, params, extra), { status })
@@ -661,9 +667,10 @@ export async function POST(req: NextRequest) {
     'sg_places', 'sg_upsert_place', 'sg_merge_place',
   ]
   if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
+    // languages-1: the plain body's sentence in the truck's language too (en-GB exactly as before; the body's shape unchanged).
     return tabAction
       ? refuse('insufficient_permissions', 403)
-      : NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+      : NextResponse.json({ error: translatorFor(await truckLocale(), 'errorsManage')('insufficient_permissions') }, { status: 403 })
   }
 
   // ── 🔴 THE FOUR CUSTOM-DOMAIN ACTIONS REFUSE A DEMO IDENTITY. ───────────────────────────────────
@@ -1145,7 +1152,7 @@ export async function POST(req: NextRequest) {
     if (featureOff) return featureOff
     const r = await replacePrivateLink(supabase, truck.id, String(body.id ?? ''))
     // `r.error` is lib/private-events/write.ts's (or the database's) — passed on as it comes; ours only when it has none.
-    if (!r.ok) return r.error ? NextResponse.json({ error: r.error }, { status: 400 }) : refuse('new_link_failed', 400)
+    if (!r.ok) return r.error ? NextResponse.json({ error: await privateWords(r) }, { status: 400 }) : refuse('new_link_failed', 400)
     return NextResponse.json({
       ok: true, token: r.token,
       url: r.token ? privateLinkUrl(r.token) : null,
@@ -1206,7 +1213,7 @@ export async function POST(req: NextRequest) {
           isPrivate: wantPrivate,
           name: body.private_name,
         })
-        if (!pr.ok) return pr.error ? NextResponse.json({ error: pr.error }, { status: 400 }) : refuse('privacy_save_failed', 400)
+        if (!pr.ok) return pr.error ? NextResponse.json({ error: await privateWords(pr) }, { status: 400 }) : refuse('privacy_save_failed', 400)
         savedEvent = {
           ...(savedEvent as Record<string, unknown>),
           is_private: pr.isPrivate, private_name: pr.name, private_token: pr.token,
@@ -1289,7 +1296,7 @@ export async function POST(req: NextRequest) {
           isPrivate: true,
           name: body.private_name,
         })
-        if (!pr.ok) return pr.error ? NextResponse.json({ error: pr.error }, { status: 400 }) : refuse('make_private_failed', 400)
+        if (!pr.ok) return pr.error ? NextResponse.json({ error: await privateWords(pr) }, { status: 400 }) : refuse('make_private_failed', 400)
         savedEvent = { ...(savedEvent as Record<string, unknown>), is_private: true, private_name: pr.name, private_token: pr.token }
       }
 

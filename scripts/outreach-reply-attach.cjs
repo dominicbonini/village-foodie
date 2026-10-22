@@ -464,7 +464,9 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     // table's tableGroups / tableCell), and generatePlansPdf reads the live catalogue (getPlanCatalog) — never a copy.
     check(/export function buildPlansPdfHtml\(s: CountrySettings, catalog: PlanCatalog\)/.test(LIB)
       && /offerPlans\(catalog, s\.countryCode\)/.test(LIB) && /tableGroups\(\)/.test(LIB) && /tableCell\(/.test(LIB)
-      && /const catalog = await getPlanCatalog\(\)/.test(LIB) && /buildPlansPdfHtml\(settings, catalog\)/.test(LIB),
+      // ⚠️ RE-PINNED (languages-1, 22 October 2026): the catalogue's plan names are worded in the country's language first
+      // (lib/plan-names.ts localizePlans — the same catalogue for every English country).
+      && /const catalog = (localizePlans\()?await getPlanCatalog\(\)(, settings\.locale\))?/.test(LIB) && /buildPlansPdfHtml\(settings, catalog\)/.test(LIB),
       '🔴 …still generated from the plan data (the catalogue, through lib/plan-offer), never from a copy of the markup')
     const ROUTE = readStripped('app/landing/features-pdf/route.ts')
     // 10 October 2026: the generator takes a COUNTRY, and both callers pass 'GB' explicitly (prospects have

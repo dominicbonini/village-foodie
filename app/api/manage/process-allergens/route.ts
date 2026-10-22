@@ -6,7 +6,8 @@ import { allergenCardListLines, allergenCardClosingRule, allergenCardExample, ty
 // Language Phase 1d: a refusal of ours is `{ error: <today's English>, …, code, params }` (lib/i18n/manage-errors.ts), in the
 // truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes. The model's text is not a refusal and is unchanged.
 import { manageErrorBody } from '@/lib/i18n/manage-errors'
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { DEFAULT_LOCALE, isEnglish } from '@/lib/i18n/locales'
+import { outputLanguageName } from '@/lib/ai-language'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 
 const supabase = createClient(
@@ -42,6 +43,11 @@ export async function POST(req: NextRequest) {
     console.error('[process-allergens] country settings unavailable — using the UK allergen list:', e instanceof Error ? e.message : e)
   }
   const ex = allergenCardExample(allergenSet)
+  // languages-1 (22 October 2026, .cursor/rules/language.mdc rule 10): a truck whose language is NOT English is told the card's
+  // likely language and that its words stay as printed. An English truck's prompts are exactly as before (nothing is added).
+  const cardLocale = await localeForTruck(truck)
+  const languageNote = isEnglish(cardLocale) ? ''
+    : `\n\nLANGUAGE: the card is most likely written in ${outputLanguageName(cardLocale)}. Keep dish names and the card's own words exactly as printed — never translate them; write any summary or note in ${outputLanguageName(cardLocale)}.`
 
   const prompt = `You are extracting allergen information from a food truck allergen card.
 
@@ -87,7 +93,7 @@ NON-PER-DISH statements — do NOT force these into "entries":
 
 "free_from" is an ABSENCE claim — list it in free_from ONLY; NEVER convert a free-from into a dish allergen.
 
-${allergenCardClosingRule(allergenSet)}`
+${allergenCardClosingRule(allergenSet)}${languageNote}`
 
   // Card-only TRANSCRIBE prompt — faithful prose, NO vocab mapping, NO restructuring (Interpretation A).
   const transcribePrompt = `You are transcribing the allergen and dietary information from a food truck's allergen card so the operator can review it.
@@ -100,7 +106,7 @@ RULES:
 - Do NOT restructure into "Contains: X, Y" unless the card itself is written that way.
 - IGNORE prices, decoration, logos, and any content that is not allergen/dietary information.
 - Preserve line breaks and list structure where the card has them.
-- Return ONLY the transcribed text — no preamble, no JSON, no markdown, no commentary.`
+- Return ONLY the transcribed text — no preamble, no JSON, no markdown, no commentary.${languageNote}`
 
   const activePrompt = transcribeOnly ? transcribePrompt : prompt
   const responseMimeType = transcribeOnly ? 'text/plain' : 'application/json'

@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Indisponible en démo",
+  "demoMode": "MODE DÉMO",
+  "loopLands": "C’est exactement ainsi qu’arrive une vraie commande",
+  "showMe": "Montrez-moi",
+  "noCard": "{sub} Sans carte bancaire.",
+  "notYet": "Pas encore",
+  "cashAndCollected": "Espèces · retirée",
+  "logoPlaceholder": "Votre logo ici",
+  "welcomeTitle": "{sample, select, yes {Voici une démo d’exemple} other {Voici votre démo}}",
+  "welcomeIntro": "{sample, select, yes {Voici une <b>carte d’exemple</b> pour vous montrer comment tout fonctionne — importez la vôtre quand vous voulez pour vous l’approprier.} other {Voici votre propre carte, à vos couleurs, sur un vrai tableau de commandes.}} Les commandes déjà affichées sont des exemples, pour vous montrer un service chargé.",
+  "twoThings": "Deux choses à essayer :",
+  "hitButton": "Appuyez sur <b>{button}</b> sur une commande",
+  "scanQr": "Scannez le <b>QR code</b> — ou touchez le lien — et commandez comme un client, puis regardez la commande arriver",
+  "qrAlt": "QR code vers votre page de commande client",
+  "openHere": "Ou ouvrez-la sur cet appareil",
+  "copyLink": "Copier le lien",
+  "copyDescribedAs": "lien de commande",
+  "noLinkTitle": "Votre lien de commande client",
+  "noLinkBody": "Le lien de votre page de commande se trouve dans le menu, en haut à droite.",
+  "asLive": "Les commandes et la cuisine fonctionnent exactement comme en conditions réelles.",
+  "startExploring": "Commencer à explorer",
+  "signupOffer": {
+    "heading": "Votre mois gratuit : inscrivez-vous maintenant",
+    "sub": "Le compteur ne démarre que lorsque vous décidez de passer en ligne."
+  },
+  "cashIcon": "💶"
+}

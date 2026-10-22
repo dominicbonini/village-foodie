@@ -40,7 +40,7 @@ import { formatMajorOrBare } from '@/lib/money-format'
 import { computeOrderCharges, rulesFromCheckout } from '@/lib/order-charges'
 import { WALK_UP_NAME } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
-import { useT } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/addOrder'
 import { errorText } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/errorsKitchen'
@@ -353,6 +353,11 @@ export function AddOrderPanel({
   // provides it to its leaves (the basket lines, the price editor, the deals modal) as well.
   const amount = (major: number) => formatMajorOrBare(major, truck.money, 'add order')
   const t = useT('addOrder')
+  const appLocale = useAppLocale()   // languages-1: the modifier rule hints in the truck's language
+  // languages-1: the fit suffix and the "Can't be ready" popup in the truck's language — the engine modules stay import-free and
+  // take the words from here (`addOrder.fitSuffix`, `addOrder.fitMessage`).
+  const fitSuffixWords = (hasLabel: boolean) => t('fitSuffix', { hasLabel: hasLabel ? 'yes' : 'no' })
+  const fitWords = (key: string, values?: Record<string, string>) => t(key as never, values as never)
   // /api/dashboard/action's refusals, worded from their code (errorsKitchen) — US polish batch, 19 October 2026.
   const tErr = useT('errorsKitchen')
 
@@ -1471,7 +1476,7 @@ setItemModal({ item, modGroups, editCartKey })
               slot: effectiveSlot,
               variant: fit.why.some(w => w.kind === 'preopen') ? 'toosoon' : (seenTone !== 'red' && freshTone === 'red') ? 'filled' : 'over',
               // Language Phase 2: the slot and the window times in the truck's style (GB as before, US "6:45 PM").
-              message: buildFitMessage({ slotLabel: String(formatSlot(effectiveSlot, panelTime)), why: fit.why, catLabel: catLabelFor, clock: hm => formatTime(hm, panelTime) }),
+              message: buildFitMessage({ slotLabel: String(formatSlot(effectiveSlot, panelTime)), why: fit.why, catLabel: catLabelFor, clock: hm => formatTime(hm, panelTime), t: fitWords }),
               override,
               stale,
             })
@@ -1891,7 +1896,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             // anyway". `disabled` would take the row out of the tab order and out of the picker entirely,
             // which is the opposite of what the mark is for — it flags the time, it does not withhold it.
             const mark = hasItems ? (wontFit ? CROSS_MARK : BLANK_MARK) : ''
-            return <option key={s.collection_time} value={s.collection_time} style={wontFit ? { color: '#94a3b8' } : undefined}>{mark}{formatSlot(s.collection_time, panelTime)} {ind.emoji}{ind.overTotal > 0 ? '❗' : ''}{label ? ` ${label}` : ''}{formatFitSuffix(ind.tone, wontFit, !!label)}</option>
+            return <option key={s.collection_time} value={s.collection_time} style={wontFit ? { color: '#94a3b8' } : undefined}>{mark}{formatSlot(s.collection_time, panelTime)} {ind.emoji}{ind.overTotal > 0 ? '❗' : ''}{label ? ` ${label}` : ''}{formatFitSuffix(ind.tone, wontFit, !!label, fitSuffixWords)}</option>
           })}
         </select>
       ) : (
@@ -2917,7 +2922,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
                   const isUnmet = modalUnmetGroupIds.includes(group.id)
                   // Shared groupRuleLabel (ONE source across manage modal + both order screens). Amber
                   // colour is the sole unmet cue (mirrors the customer order page).
-                  const ruleHint = groupRuleLabel(group)
+                  const ruleHint = groupRuleLabel(group, 'customer', appLocale)
                   return (
                     <div key={group.id}>
                       <p className="text-xs font-black uppercase tracking-wider mb-2">

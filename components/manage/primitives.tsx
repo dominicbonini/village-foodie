@@ -10,7 +10,9 @@ import { UK_14, allergenVocab } from '@/lib/allergens'
 import { useOptionalCountrySettings } from '@/components/CountrySettingsProvider'
 import { type ReactNode, type HTMLAttributes, type RefObject } from 'react'
 import { GREEN_SOLID } from '@/lib/ui-tokens'
-import { useT } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
+import { dietaryLabel } from '@/lib/dietary-label'
+import { allergenLabel } from '@/lib/allergen-label'   // france-1: a stored allergen label in the truck's language (English: as stored)
 import '@/lib/i18n/catalog/managePrimitives'
 
 export function Spinner() { return <div className="w-5 h-5 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" /> }
@@ -272,6 +274,7 @@ export function OptionCardChooser<K extends string>({ options, value, onChange, 
 
 export function AllergenToggles({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
   const vocab = useAllergenVocab()
+  const locale = useAppLocale()   // france-1: the labels shown in the truck's language (stored as their English names)
   return (
     <div className="flex flex-wrap gap-2">
       {vocab.map(allergen => {
@@ -280,7 +283,7 @@ export function AllergenToggles({ value, onChange }: { value: string[]; onChange
           <button key={allergen} type="button"
             onClick={() => onChange(active ? (value || []).filter(a => a !== allergen) : [...(value || []), allergen])}
             className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-            {allergen}
+            {allergenLabel(allergen, locale)}
           </button>
         )
       })}
@@ -289,6 +292,7 @@ export function AllergenToggles({ value, onChange }: { value: string[]; onChange
 }
 
 export function DietaryToggles({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+  const locale = useAppLocale()   // languages-1: the tags shown in the truck's language (stored as their English names)
   return (
     <div className="flex flex-wrap gap-2">
       {DIETARY_VOCAB.map(diet => {
@@ -297,7 +301,7 @@ export function DietaryToggles({ value, onChange }: { value: string[]; onChange:
           <button key={diet} type="button"
             onClick={() => onChange(active ? (value || []).filter(d => d !== diet) : [...(value || []), diet])}
             className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-green-50 border-green-300 text-green-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-            {diet}
+            {dietaryLabel(diet, locale)}
           </button>
         )
       })}

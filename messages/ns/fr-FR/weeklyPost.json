@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Une erreur s’est produite",
+    "previewFailed": "Impossible de générer l’aperçu",
+    "loadFailed": "Chargement impossible",
+    "tooBig": "Cette image fait {size, number, ::.0 group-off} Mo. La limite est de 10 Mo.",
+    "wrongType": "Choisissez un fichier PNG ou JPG.",
+    "uploadIncomplete": "L’import n’a pas abouti",
+    "uploadFailed": "Échec de l’import",
+    "saveFailed": "Enregistrement impossible",
+    "buildFailed": "Impossible de générer la publication",
+    "copyFailed": "Copie impossible — sélectionnez le texte et copiez-le manuellement."
+  },
+  "loading": "Chargement…",
+  "missingTable": {
+    "title": "Publication hebdomadaire : mise à jour de la base requise",
+    "body": "La table des visuels n’a pas encore été créée. Une fois la migration appliquée, cet écran fonctionnera."
+  },
+  "kind": {
+    "label": "Quel visuel",
+    "event": "Événement unique",
+    "week": "Hebdomadaire"
+  },
+  "setup": {
+    "title": "Configurez votre publication hebdomadaire",
+    "intro": "Importez la version vierge du visuel de planning hebdomadaire que vous créez déjà — le même visuel, sans vos zones de texte. HatchGrab y ajoute la semaine à partir de votre planning.",
+    "canvaTitle": "Comment exporter un visuel vierge depuis Canva",
+    "canvaStep1": "Ouvrez votre visuel de planning hebdomadaire habituel.",
+    "canvaStep2": "Supprimez les zones de texte avec les dates, lieux et horaires — gardez le fond et les titres que vous voulez conserver.",
+    "canvaStep3": "Partager › Télécharger › PNG.",
+    "uploading": "Import en cours…",
+    "upload": "Importer votre image vierge",
+    "uploadHint": "PNG ou JPG, 10 Mo maximum, au moins {px} px sur le petit côté.",
+    "phoneTip": "Idéal sur ordinateur ou iPad — les zones sont petites à déplacer sur téléphone.",
+    "designName": "Visuel de publication hebdomadaire",
+    "backDesigns": "‹ Visuels",
+    "back": "‹ Retour",
+    "pictureNote": "Votre image sans date ni lieu. Nous les ajoutons.",
+    "saved": "Visuel enregistré."
+  },
+  "week": {
+    "this": "Cette semaine",
+    "next": "Semaine prochaine"
+  },
+  "post": {
+    "title": "Votre publication hebdomadaire",
+    "editDesign": "Modifier le visuel",
+    "weekOf": "sem. du {date}",
+    "imageAlt": "Votre publication hebdomadaire",
+    "building": "Création de votre publication…",
+    "updating": "Mise à jour…",
+    "eventsTitle": "Les événements de la semaine",
+    "noEvents": "Aucun événement cette semaine.",
+    "eventDateCancelled": "{date} · annulé",
+    "showCancelled": "Afficher les événements annulés",
+    "showPrivate": "Afficher les événements privés",
+    "privateHint": "Ils apparaissent comme « Événement privé » avec la date et les horaires — jamais le lieu.",
+    "noteTitle": "Note",
+    "notePlaceholder": "ex. Commander à l’avance pour le retrait",
+    "noteHint": "Apparaît dans la légende, et dans la zone de note si vous en avez placé une.",
+    "captionTitle": "Légende pour votre page",
+    "perEventTitle": "Publication pour chaque événement",
+    "nothingToPost": "Rien à publier cette semaine.",
+    "textCopied": "Texte copié.",
+    "copyText": "Copier le texte",
+    "image": "Image",
+    "share": "Partager",
+    "noOrderLink": "Pas encore de lien de commande — définissez l’adresse web de votre food truck dans Paramètres."
+  }
+}

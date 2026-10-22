@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Nouvelle commande #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Nouvelle commande reçue",
+    "from": "<b>Commande #{id}</b> — client : <b>{name}</b>",
+    "collection": "Retrait : {time}",
+    "asap": "Pas d’heure précise — au plus tôt",
+    "total": "Total",
+    "notes": "<b>Remarques :</b> {notes}",
+    "autoConfirmed": "Confirmée automatiquement — aucune action requise.",
+    "confirmPrompt": "Connectez-vous à votre tableau de bord HatchGrab pour confirmer ou refuser cette commande.",
+    "text": "Nouvelle commande #{id} — client : {name}{withSlot, select, yes {, retrait : {slot}} other {}}{withVenue, select, yes {, lieu : {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total : {total}.{withNotes, select, yes { Remarques : {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Nouveaux événements trouvés pour {truck} — à vérifier",
+    "hi": "Bonjour,",
+    "found": "Nous avons trouvé dans votre planning <b>{n, plural, one {{count} nouvel événement} other {{count} nouveaux événements}}</b> à approuver avant affichage auprès des clients.",
+    "listHeading": "Événements trouvés :",
+    "approve": "Une fois approuvés dans votre onglet Planning, ils apparaîtront sur le plan et vos clients pourront commander à l’avance sur votre page de commande.",
+    "cta": "Vérifier votre planning →",
+    "signoff": "— L’équipe HatchGrab · hatchgrab.com",
+    "unknownVenue": "Lieu inconnu",
+    "text": "Bonjour,\n\nNous avons trouvé dans votre planning {n, plural, one {{count} nouvel événement} other {{count} nouveaux événements}} à approuver :\n\n{list}\n\nÀ vérifier ici : {url}\n\nUne fois approuvés, ils apparaîtront sur le plan.\n\n— L’équipe HatchGrab"
+  }
+}

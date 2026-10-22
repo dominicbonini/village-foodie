@@ -22,7 +22,7 @@ const names = src => [...src.matchAll(/const \[([a-zA-Z]+), *set[A-Za-z]+\] *= *
     { patches: [{ file: F, states: names(fs.readFileSync(path.join(REPO, F), 'utf8')) }] })
   const GB = FIX.country('GB')   // the GB fixture's truck/event shape, with the country's money, time and phone over it
   const T = { ...GB.TRUCK, ...c.settings, name: 'Pizza Kitchen', plan: 'max', show_paid_step: true, kds_mode: true, takes_cash: false, completion_presses: 'one' }
-  const EV = { ...GB.EVENT, id: 'ev-1', event_date: '2026-09-02', date: '2026-09-02', start_time: '09:00', end_time: '17:00', venue_name: c.venue,
+  const EV = { ...GB.EVENT, id: 'ev-1', event_date: c.eventYmd, date: c.eventYmd, start_time: '09:00', end_time: '17:00', venue_name: c.venue,
     town: c.town, truck_id: T.id, status: 'open', auto_open: true, closed_at: null, customer_note: null }
   const [dA, dB, dC] = c.drinks
   // [#, slot, status, [items]] — the GB board's shape: 3 and 7 and 8 and 17 ready (unpaid), 10 waiting to confirm, the rest confirmed.
@@ -52,21 +52,21 @@ const names = src => [...src.matchAll(/const \[([a-zA-Z]+), *set[A-Za-z]+\] *= *
   const at = new Date(Date.parse(NOW) - 38 * 60000).toISOString()   // placed 38 minutes before "now", as in the IE fixture
   const orders = ROWS.map(([n, slot, status, list], i) => {
     const who = c.kdsNames[i]
-    const counts = {}; for (const x of list) counts[x] = (counts[x] || 0) + 1
+    const counts = {}; for (const x of list.map(c.n)) counts[x] = (counts[x] || 0) + 1   // c.n: the country's own dish names (France's table)
     const items = Object.entries(counts).map(([name, quantity]) => ({ name, quantity, unit_price: c.price[name], modifiers: [] }))
     const total = items.reduce((s, x) => s + x.quantity * x.unit_price, 0)
     return { id: String(n), order_key: `00000000-0000-4000-8000-0000000001${String(i).padStart(2, '0')}`, customer_name: who, customer_phone: c.phone.phone_example,
-      customer_email: `${who.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()}@example.test`, slot, requested_slot: null, asap_estimate: null, event_date: '2026-09-02', event_id: 'ev-1', van_id: null,
+      customer_email: `${who.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()}@example.test`, slot, requested_slot: null, asap_estimate: null, event_date: c.eventYmd, event_id: 'ev-1', van_id: null,
       status, items, deals: [], total, total_minor: Math.round(total * 100), notes: null, paid_at: null, collected_at: null, created_at: at, updated_at: at, placed_at: at,
       payment_status: 'unpaid', order_type: 'collection', buzzer_number: null, currency: c.currency, country: c.cc, food_minor: Math.round(total * 100), tax_minor: 0,
       tax_rate_milli: null, tax_inclusive: true, tip_minor: 0, service_fee_minor: 0 }
   })
   const used = [...new Set(ROWS.flatMap(r => r[3]))]
-  const CAT = n => (c.drinks.includes(n) ? 'Drinks' : A.DESSERTS.includes(n) ? 'Desserts' : 'Pizza')
-  const itemCategoryMap = Object.fromEntries(used.map(n => [n, CAT(n)]))
+  const CAT = n => c.cat(c.drinks.includes(n) ? 'Drinks' : A.DESSERTS.includes(n) ? 'Desserts' : 'Pizza')
+  const itemCategoryMap = Object.fromEntries(used.map(n => [c.n(n), CAT(n)]))
   const state = { truck: T, orders, payments: {}, heldAuthorisations: new Set(), paymentFailures: new Set(), loading: false, hasLoaded: true, error: null, requiresPin: false,
     events: [EV], selectedEventId: 'ev-1', handoverPref: true, readyPref: true, prefsReconciled: true, layoutOverride: 'grid', cardModePref: 'window', showKdsIntro: false,
-    isOffline: false, deviceOnline: true, wakeState: 'held', keepScreenOn: true, soundEnabled: true, storedSoundCfg: null, categoryOrder: ['Pizza', 'Drinks', 'Desserts'],
+    isOffline: false, deviceOnline: true, wakeState: 'held', keepScreenOn: true, soundEnabled: true, storedSoundCfg: null, categoryOrder: ['Pizza', 'Drinks', 'Desserts'].map(c.cat),
     itemCategoryMap, activeVanCount: 1, phoneOpen: false, deviceOpen: false, pausedUntil: null, onlinePausedUntil: null, extraWaitMins: 0, showCookingStep: false }
   globalThis.__ms = state; globalThis.__msSearch = ''
   let body

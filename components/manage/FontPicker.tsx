@@ -41,6 +41,7 @@ import { DEFAULT_COUNTRY, dateTextFor, type CountryCode } from '@/lib/weekly-pos
  * upload button and the licence line were `FONT_UPLOAD_BTN` / `LICENCE_TICK` in lib/weekly-post/font-refs.ts;
  * they are screen words, so this screen reads them from its own namespace. */
 import { useAppLocale, useT } from '@/lib/i18n/use-t'
+import { FONT_LOAD_FAILED } from './useFontLibrary'
 import '@/lib/i18n/catalog/fontPicker'
 
 /** The three faces a family may have, by the key the route sends (`faceKey` in lib/weekly-post/font-refs.ts). */
@@ -124,6 +125,7 @@ function FontRow({ font, selected, sample, token, onPick }: {
   token: string
   onPick: () => void
 }) {
+  const tRow = useT('fontPicker')   // languages-1: an uploaded font's licence words in the truck's language
   const t = useT('fontPicker')
   return (
     <button type="button" onClick={onPick}
@@ -148,7 +150,7 @@ function FontRow({ font, selected, sample, token, onPick }: {
       </span>
       {/* ⚠️ THE LICENCE IS SHOWN, QUIETLY. It is the one fact about a font that matters legally and the
         * one an operator never thinks to ask — and for an uploaded font it reads "Your own". */}
-      <span className="shrink-0 text-[10px] text-slate-300">{font.licence}</span>
+      <span className="shrink-0 text-[10px] text-slate-300">{font.own ? tRow('ownLicence') : font.licence}</span>
     </button>
   )
 }
@@ -393,7 +395,7 @@ export function FontPicker(props: FontPickerProps) {
             {lib.loading && <p className="p-3 text-xs text-slate-400">{t('loadingLibrary')}</p>}
             {lib.error && (
               <div className="p-3">
-                <p className="text-xs text-red-600">{lib.error}</p>
+                <p className="text-xs text-red-600">{lib.error === FONT_LOAD_FAILED ? t('loadFailed') : lib.error}</p>
                 <button type="button" onClick={lib.reload} className="mt-1 text-xs font-bold text-orange-700">{t('tryAgain')}</button>
               </div>
             )}

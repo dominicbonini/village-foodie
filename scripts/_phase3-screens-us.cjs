@@ -314,7 +314,8 @@ module.exports = async function us(h) {
 
     // the card's source: rows, hints, variants
     const card = read('components/manage/ChargesCard.tsx')
-    t('the card returns nothing where prices include tax (every UK truck)', /if \(cs\.pricesIncludeTax\) return null/.test(card))
+    // ⚠️ RE-PINNED (france-1, 22 October 2026): …unless the country's address format names an included tax (France's TVA, one row).
+    t('the card returns nothing where prices include tax (every UK truck) — unless the format names an included tax (France)', /if \(cs\.pricesIncludeTax && !includedTax\) return null/.test(card) && /const includedTax = cs\.pricesIncludeTax \? includedTaxOf\(cs\.addressFormat\) : null/.test(card))
     // ⚠️ RE-PINNED (Language Phase 1d Part 2): the card's words moved to messages/ (`manageCharges`, and the example's
     // line name is the customer's own `charges.serviceFeeCustomer`). The same approved words are asserted, now in two
     // halves: (1) the card reads each row's word from the key at the same spot (same argument shapes — the fee phrase
@@ -500,6 +501,8 @@ module.exports = async function us(h) {
         // price is read through `withPlaceholderPlanPrices` — a switched-off country (the US) has NULL plan prices and the
         // raw read threw — and is then always masked (the vanPx assertion below).
         ["  const vanAddonMinor = vanAddonMonthlyMinor(truck.plan, vanSettings)", /^  const vanAddonMinor = vanAddonMonthlyMinor\(truck\.plan, withPlaceholderPlanPrices\(vanSettings\)\)$/],
+        // ⚠️ RE-PINNED (languages-1, 22 October 2026): the QR memo reads `t` (its "Powered by" line from messages).
+        ["  }, [orderUrl, truck.logo_storage_path, truck.name])", /^  \}, \[orderUrl, truck\.logo_storage_path, truck\.name, t\]\)$/],
       ]
       const named = (l, h) => NAMED.some(([line, re]) => l === line && h.add.some(x => re.test(x)))
       // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): Stage A legitimately removed plan-tier code from
@@ -529,7 +532,8 @@ module.exports = async function us(h) {
         // now joins them into one hunk of three removed lines (vanAddonMinor, vanAddonLabel, INCLUDED_VANS) — excused whole
         // only with both Stage A's replacement and the planMoneyFormatOf line in it.
         ['const vanAddonLabel = (unit: \'mo\' | \'month\') => perMonthLabel(vanAddonMinor, moneyFormatOf(vanSettings), unit)', 3,
-          /^  const vanAddonLabel = \(unit: 'mo' \| 'month'\) => perMonthLabel\(vanAddonMinor, planMoneyFormatOf\(vanSettings\), unit\)/, /INCLUDED_VANS: Record/],
+          // ⚠️ RE-PINNED (languages-1): perMonthLabel → perMonthText (the "/mo" words from messages, en-GB unchanged).
+          /^  const vanAddonLabel = \(unit: 'mo' \| 'month'\) => perMonthText\(vanAddonMinor, planMoneyFormatOf\(vanSettings\), unit\)/, /INCLUDED_VANS: Record/],
         // ⚠️ RE-PINNED (Stage A2): the van flow uses the plan's `includedVans` (plans.included_vans) instead of a literal 1.
         ['const included = INCLUDED_VANS[truck.plan] ?? 1', 13, /^    if \(vans\.length >= vansIncluded && vanAddonMinor > 0\) setShowVanBillingModal\(true\)$/, null],
         ['BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO', 3, /SWITCHED OFF FOR THIS TRUCK \(a feature override — no plan gates this since plans-data-model,$/, null],

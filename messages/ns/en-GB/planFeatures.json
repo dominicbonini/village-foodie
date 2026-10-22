@@ -98,6 +98,18 @@
     }
   },
   "cardRegionOnline": "standard {region}",
+  "cardRegion": {
+    "UKcards": "UK cards",
+    "EEAcards": "EEA cards",
+    "UScards": "US cards",
+    "Australiancards": "Australian cards",
+    "NewZealandcards": "New Zealand cards",
+    "Canadiancards": "Canadian cards"
+  },
+  "perMonth": {
+    "mo": "{amount}/mo",
+    "month": "{amount}/month"
+  },
   "priceWord": {
     "free": "Free",
     "freeTrial": "Free trial",

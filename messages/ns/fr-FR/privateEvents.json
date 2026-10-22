@@ -1,0 +1,42 @@
+{
+  "publicName": "Événement privé",
+  "chip": "Privé",
+  "grid": {
+    "orderingSection": "COMMANDES",
+    "linkRowLabel": "Prendre les commandes par lien privé et code QR",
+    "columnTitle": "Le type Privé intégré. Il ne peut être ni renommé, ni déplacé, ni supprimé."
+  },
+  "form": {
+    "help": "Apparaît sur votre planning comme « Événement privé » avec uniquement la date et les horaires — jamais l’adresse, le plan ni Village Foodie.",
+    "linkPromise": "Les invités commandent via un lien privé et un code QR — vous les recevrez après l’enregistrement.",
+    "nameLabel": "Nom de l’événement",
+    "nameHelp": "Les invités le voient en haut de la page de commande.",
+    "namePlaceholder": "Mariage de Sarah et Tom",
+    "previewNote": "Aperçu sur votre planning — sans lieu, ville ni code postal.",
+    "needsTimes": "Ajoutez une heure de début et de fin — un événement privé qui prend des commandes par lien en a besoin."
+  },
+  "link": {
+    "button": "Lien et QR",
+    "title": "Lien privé et code QR",
+    "label": "Lien privé",
+    "copy": "Copier",
+    "copied": "Copié",
+    "qrDownload": "Télécharger le QR",
+    "tableCards": "Imprimer les chevalets",
+    "newLink": "Créer un nouveau lien",
+    "working": "En cours…",
+    "newLinkConfirm": "Créer un nouveau lien ? Le lien actuel cessera immédiatement de fonctionner, ainsi que tous les codes QR déjà imprimés.",
+    "newLinkHelp": "À utiliser si le lien a été diffusé là où il ne devait pas. Le lien actuel cesse immédiatement de fonctionner, tout comme les codes QR imprimés.",
+    "newLinkFailed": "Impossible de créer un nouveau lien.",
+    "offNotice": "La commande par lien privé est désactivée pour cet événement : il n’y a donc aucun lien à partager. L’événement apparaît toujours sur votre planning comme « Événement privé »."
+  },
+  "cards": {
+    "printTitle": "{truck} — chevalets de table",
+    "scan": "Scannez pour commander",
+    "blurb": "Commandez et payez sur votre téléphone. Nous vous appellerons par votre nom quand ce sera prêt.",
+    "footer": "Commandes par HatchGrab"
+  },
+  "noSinglePost": "Les événements privés n’ont pas de publication dédiée — ils apparaissent sur votre affiche hebdomadaire comme « Événement privé ».",
+  "confirmToPrivate": "L’adresse et l’événement seront masqués sur le plan. Les invités auront besoin du lien privé pour commander.",
+  "confirmFromPrivate": "L’événement devient public : son adresse et son repère sur le plan s’afficheront, et le lien privé cessera de fonctionner."
+}

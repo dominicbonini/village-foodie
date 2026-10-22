@@ -5,6 +5,8 @@ import { getLocalDateInTz, formatYmdShortMonth, formatTime } from '@/lib/time-ut
 import { manageTabHref } from '@/lib/manage-links'
 import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/emailOperator'
 import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
 import { findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
 import { admitDiscoveryEvents, type TruckRow } from '@/lib/discovery-gate'
@@ -338,7 +340,9 @@ export async function POST(req: NextRequest) {
           const b = et ? formatTime(String(et), ts) : ''
           return a && b ? `${a}–${b}` : a || ''
         }
-        const venueLine = (e: any) => `${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}`
+        // languages-1 (22 October 2026): the email's words in the truck's language (`emailOperator.newEvents`; en-GB exactly as before).
+        const tm = translatorFor(ts.locale, 'emailOperator')
+        const venueLine = (e: any) => `${e.venue_name || tm('newEvents.unknownVenue')}${e.town ? `, ${e.town}` : ''}`
 
         // Venue-first hierarchy: bold venue on line 1, date | time on line 2 with scannable emojis.
         // Each event is two stacked text lines separated by an <hr> — reflows cleanly on mobile +
@@ -368,23 +372,25 @@ export async function POST(req: NextRequest) {
           return `  📍 ${venueLine(e)}\n  📅 ${fmtDate(e.event_date)}${t ? ` | ⏱️ ${t}` : ''}`
         }).join('\n\n')
 
+        // languages-1 (22 October 2026): the email's event count is an ICU plural rather than a hand-added "s".
+        const nv = { n, count: String(n) }
         await sendConfirmationEmail({
           to: truck.contact_email,
-          subject: `New events found for ${truck.name} — please review`,
+          subject: tm('newEvents.subject', { truck: truck.name }),
           html: `<div style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
-            <p>Hi there,</p>
-            <p>We found <strong>${n} new event${n !== 1 ? 's' : ''}</strong> on your schedule that need your approval before they appear to customers.</p>
-            <p style="font-weight:600;margin:20px 0 0">Events found:</p>
+            <p>${tm('newEvents.hi')}</p>
+            <p>${tm.markup('newEvents.found', { ...nv, b: c => `<strong>${c}</strong>` })}</p>
+            <p style="font-weight:600;margin:20px 0 0">${tm('newEvents.listHeading')}</p>
             <div style="border-top:1px solid #eef2f6;border-bottom:1px solid #eef2f6">${eventListHtml}</div>
-            <p style="margin-top:16px">Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.</p>
+            <p style="margin-top:16px">${tm('newEvents.approve')}</p>
             <p style="margin:24px 0 8px">
               <a href="${manageUrl}" style="background:#ea580c;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block">
-                Review your schedule →
+                ${tm('newEvents.cta')}
               </a>
             </p>
-            <p style="color:#94a3b8;font-size:12px;margin-top:24px">— The HatchGrab team · hatchgrab.com</p>
+            <p style="color:#94a3b8;font-size:12px;margin-top:24px">${tm('newEvents.signoff')}</p>
           </div>`,
-          text: `Hi there,\n\nWe found ${n} new event${n !== 1 ? 's' : ''} on your schedule that need your approval:\n\n${eventListText}\n\nReview them at: ${manageUrl}\n\nOnce you approve them they'll go live on the map.\n\n— The HatchGrab team`,
+          text: tm('newEvents.text', { ...nv, list: eventListText, url: manageUrl }),
           senderName: 'HatchGrab',
           truckName: truck.name,
         })

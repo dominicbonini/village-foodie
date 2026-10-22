@@ -10,7 +10,7 @@ import { isDemoIdentifier } from '@/lib/demo'
 // lib/money-server.ts (moneyFormatForOrder) — never a default, never GBP by omission.
 import { formatMajor, formatMinor, type MoneyFormat } from '@/lib/money-format'
 // Phase 3 screens: the order's tax, fee and tip lines — the same list every surface draws.
-import { chargeLinesFor, chargeLineText, type ChargeLineSource } from '@/lib/order-charge-lines'
+import { chargeLinesFor, chargeLineText, includedTaxLine, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { formatSlot, formatYmd, type TimeSettings } from '@/lib/time-utils'
 // 🔴 EVERY CUSTOMER SENTENCE BELOW IS IN messages/en-GB.json `emailCustomer` (Language Phase 1a), read in the
 // order's language — `money.locale`, its country's — so a translated email is a translated file, not an edit
@@ -22,6 +22,7 @@ import '@/lib/i18n/catalog/emailCustomer'
 import '@/lib/i18n/catalog/emailOperator'
 import { eventAddressLine } from '@/lib/event-address'
 import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
+import { langAttrOf } from '@/lib/page-lang'   // languages-1: <html lang> for a non-English email (none for English)
 
 type EmailT = ReturnType<typeof translatorFor<'emailCustomer'>>
 const emailT = (locale: string | null | undefined): EmailT => translatorFor(locale, 'emailCustomer')
@@ -245,6 +246,17 @@ export function chargeRowsHtml(charges: ChargeLineSource | null | undefined, mon
         <td style="text-align:right;padding:4px 0;color:#64748b">${formatMinor(l.minor, money)}</td>
       </tr>`).join('')
 }
+/** france-1: the tax the price INCLUDES, as a row after the total ("Dont TVA 10 % : 1,09 €") — '' for every order but an
+ *  inclusive-rate one (France), so the email is byte-identical everywhere else (lib/order-charge-lines.ts includedTaxLine). */
+export function includedTaxRowHtml(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string {
+  const l = includedTaxLine(charges, money.locale)
+  return l ? `<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8">${l.label} ${l.rate}</td><td style="text-align:right;padding:4px 0;font-size:12px;color:#94a3b8">${formatMinor(l.minor, money)}</td></tr>` : ''
+}
+/** The same, as a text line — an empty list for every order but an inclusive-rate one. */
+export function includedTaxTextLines(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string[] {
+  const l = includedTaxLine(charges, money.locale)
+  return l ? [chargeLineText(l, m => formatMinor(m, money), money.locale)] : []
+}
 /** The same rows as text lines, e.g. "Sales tax 8.25%: $1.98". Empty for every UK order. */
 export function chargeTextLines(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string[] {
   return chargeLinesFor(charges, 'customer', money.locale).map(l => chargeLineText(l, m => formatMinor(m, money), money.locale))
@@ -439,7 +451,7 @@ export function formatConfirmationEmail(params: {
   const heading = isReady ? t('confirmation.headingReady') : params.autoAccepted ? t('confirmation.headingConfirmed') : t('confirmation.headingReceived')
 
   const html = `<!DOCTYPE html>
-<html>
+<html${langAttrOf(params.money.locale)}>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b;background:#ffffff">
 
   <div style="text-align:center;padding:20px 0 16px">
@@ -464,7 +476,7 @@ export function formatConfirmationEmail(params: {
       <tr style="border-top:1px solid #e2e8f0">
         <td style="padding-top:10px;font-weight:800;font-size:15px">${t('confirmation.total')}</td>
         <td style="text-align:right;padding-top:10px;font-weight:800;font-size:15px">${formatMajor(params.total, params.money)}</td>
-      </tr>
+      </tr>${includedTaxRowHtml(params.charges, params.money)}
     </table>
   </div>
 
@@ -516,6 +528,7 @@ export function formatConfirmationEmail(params: {
     }).join('\n') : '',
     ...chargeTextLines(params.charges, params.money),
     t('confirmation.textTotal', { amount: formatMajor(params.total, params.money) }),
+    ...includedTaxTextLines(params.charges, params.money),
     isReady
       ? `${t('confirmation.textReady')}${payNote.readySuffix}`
       : params.slotAdjustedFrom && params.slot

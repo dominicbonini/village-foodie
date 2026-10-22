@@ -43,8 +43,12 @@ export function fitMins(m: number): string {
  *                   caller formats `slotLabel` the same way (formatSlot). Without it the windows read as the engine's
  *                   24-hour "HH:MM", as they always did. (A function, not the settings, so this module stays import-free.)
  */
-export function buildFitMessage(args: { slotLabel: string; why: FitWhy; catLabel?: (cat: string) => string; clock?: (hhmm: string) => string }): FitMessage {
+// languages-1 (22 October 2026): `t` — the popup's sentences in the truck's language (`addOrder.fitMessage`), passed by the screen.
+// This module stays import-free (the engine harnesses compile lib/ on its own); the English templates below are its default and
+// are exactly the en-GB messages. Numbers go in as plain strings, so they read as they always have.
+export function buildFitMessage(args: { slotLabel: string; why: FitWhy; catLabel?: (cat: string) => string; clock?: (hhmm: string) => string; t?: (key: string, values?: Record<string, string>) => string }): FitMessage {
   const { slotLabel, why } = args
+  const say = (key: string, values: Record<string, string>, english: string) => (args.t ? args.t(`fitMessage.${key}`, values) : english)
   const clock = (m: number) => (args.clock ? args.clock(fitMins(m)) : fitMins(m))
   const label = (cat: string) => args.catLabel?.(cat) || (cat.charAt(0).toUpperCase() + cat.slice(1))
   const lines: string[] = []
@@ -52,32 +56,33 @@ export function buildFitMessage(args: { slotLabel: string; why: FitWhy; catLabel
   for (const w of why) {
     if (w.kind === 'batch') {
       const Cat = label(w.cat)
-      lines.push(`${Cat}: ${w.batch} at a time, every ${w.prepMins} minutes.`)
+      lines.push(say('batchLine', { cat: Cat, batch: String(w.batch), mins: String(w.prepMins) }, `${Cat}: ${w.batch} at a time, every ${w.prepMins} minutes.`))
       const N = w.windows.length
       // M = windows that could take this order's share as it stands. A category only appears in `why`
       // when at least one of its windows is OVER, so M < N always — the M === N arm below is
       // unreachable by construction and exists so a future change cannot produce a missing sentence.
       const M = w.windows.filter(x => x.free >= x.share).length
       if (N === 1) {
-        lines.push(`This order needs 1 batch to be ready by ${slotLabel}, and it doesn't have room.`)
+        lines.push(say('batchOne', { slot: slotLabel }, `This order needs 1 batch to be ready by ${slotLabel}, and it doesn't have room.`))
       } else if (M === 0) {
-        lines.push(`This order needs ${N} batches to be ready by ${slotLabel}, and none has room.`)
+        lines.push(say('batchNone', { n: String(N), slot: slotLabel }, `This order needs ${N} batches to be ready by ${slotLabel}, and none has room.`))
       } else if (M === 1) {
-        lines.push(`This order needs ${N} batches to be ready by ${slotLabel}, but only 1 has room.`)
+        lines.push(say('batchOneRoom', { n: String(N), slot: slotLabel }, `This order needs ${N} batches to be ready by ${slotLabel}, but only 1 has room.`))
       } else {
-        lines.push(`This order needs ${N} batches to be ready by ${slotLabel}, but only ${M} have room.`)
+        lines.push(say('batchSome', { n: String(N), m: String(M), slot: slotLabel }, `This order needs ${N} batches to be ready by ${slotLabel}, but only ${M} have room.`))
       }
       for (const win of w.windows) {
         const span = `${clock(win.startMins)}–${clock(win.endMins)} · ${Cat}`
-        if (win.free <= 0) lines.push(`${span} · Full`)
-        else if (win.free >= win.share) lines.push(`${span} · ${win.free} free`)
-        else lines.push(`${span} · ${win.free} free, needs ${win.share}`)
+        const sv = { start: clock(win.startMins), end: clock(win.endMins), cat: Cat }
+        if (win.free <= 0) lines.push(say('windowFull', sv, `${span} · Full`))
+        else if (win.free >= win.share) lines.push(say('windowFree', { ...sv, free: String(win.free) }, `${span} · ${win.free} free`))
+        else lines.push(say('windowShort', { ...sv, free: String(win.free), share: String(win.share) }, `${span} · ${win.free} free, needs ${win.share}`))
       }
     } else if (w.kind === 'kitchen') {
-      lines.push(`Your kitchen cooks up to ${w.cap} items at a time. Between ${clock(w.startMins)} and ${clock(w.endMins)} it's already cooking ${w.existing}, and this order needs ${w.add} more.`)
+      lines.push(say('kitchen', { cap: String(w.cap), start: clock(w.startMins), end: clock(w.endMins), existing: String(w.existing), add: String(w.add) }, `Your kitchen cooks up to ${w.cap} items at a time. Between ${clock(w.startMins)} and ${clock(w.endMins)} it's already cooking ${w.existing}, and this order needs ${w.add} more.`))
     } else {
-      lines.push(`${label(w.cat)} for ${slotLabel} would need to start cooking before your event opens.`)
+      lines.push(say('beforeOpen', { cat: label(w.cat), slot: slotLabel }, `${label(w.cat)} for ${slotLabel} would need to start cooking before your event opens.`))
     }
   }
-  return { title: `Can\u2019t be ready by ${slotLabel}`, lines }
+  return { title: say('title', { slot: slotLabel }, `Can\u2019t be ready by ${slotLabel}`), lines }
 }

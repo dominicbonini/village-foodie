@@ -7,6 +7,7 @@
 //     (the first active public plan, in sort_order, that has it on) and the feature's name, in the truck's language.
 //     If no public plan has it, the refusal falls back to `feature_switched_off` — there is nothing to upgrade to.
 import { getPlanCatalog } from '@/lib/plans-server'
+import { localizePlans } from '@/lib/plan-names'   // languages-1: plan names in the locale's language
 import { featureAccess, type TruckAccessFields, type PlanCatalog } from '@/lib/plans'
 import type { Feature } from '@/lib/features'
 import type { ManageErrorCode, ManageErrorParams } from '@/lib/i18n/manage-errors'
@@ -23,7 +24,7 @@ export function featureWords(locale: string | null | undefined, feature: Feature
 
 /** The refusal for a feature on this truck, or null when it is allowed. `catalog` may be passed when already loaded. */
 export async function featureRefusal(truck: TruckAccessFields, feature: Feature, locale: string | null | undefined, catalog?: PlanCatalog): Promise<FeatureRefusal | null> {
-  const cat = catalog ?? await getPlanCatalog()
+  const cat = localizePlans(catalog ?? await getPlanCatalog(), locale)   // languages-1: the plan named in the locale's words
   const a = featureAccess(truck, cat, feature)
   if (a.allowed) return null
   if (a.block === 'plan' && a.upgradeTo) return { code: 'feature_not_on_plan', params: { ...featureWords(locale, feature), plan: a.upgradeTo.name } }

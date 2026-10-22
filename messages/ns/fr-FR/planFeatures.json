@@ -1,0 +1,126 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Présence sur le plan de découverte"
+    },
+    "web_dashboard": {
+      "name": "Tableau de bord web universel"
+    },
+    "qr_code": {
+      "name": "QR code"
+    },
+    "schedule_import": {
+      "name": "Import automatique du planning"
+    },
+    "meal_deals_upsells": {
+      "name": "Formules et ventes additionnelles"
+    },
+    "walkup_orders": {
+      "name": "Gestion des commandes au comptoir"
+    },
+    "sold_out_toggle": {
+      "name": "Passage en « épuisé » instantané"
+    },
+    "kitchen_app": {
+      "name": "Appli cuisine iPhone, iPad et Android"
+    },
+    "offline_protection": {
+      "name": "Protection des commandes hors ligne"
+    },
+    "online_payments": {
+      "name": "Paiements en ligne"
+    },
+    "advance_preordering": {
+      "name": "Commander à l’avance"
+    },
+    "preorder_deadline": {
+      "name": "Date limite de précommande"
+    },
+    "time_slot_selection": {
+      "name": "Choix du créneau de retrait par le client"
+    },
+    "kitchen_capacity": {
+      "name": "Capacité de la cuisine : limiter le nombre de commandes par créneau"
+    },
+    "stock_countdown": {
+      "name": "Décompte automatique des stocks"
+    },
+    "auto_accept": {
+      "name": "Acceptation automatique des commandes en ligne"
+    },
+    "branded_qr_code": {
+      "name": "QR code à vos couleurs"
+    },
+    "private_events": {
+      "name": "Événements privés"
+    },
+    "social_media_posts": {
+      "name": "Publications pour les réseaux sociaux"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Réponses automatiques WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Réponses automatiques Messenger et Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Encaissement sur votre téléphone"
+    },
+    "advanced_reporting": {
+      "name": "Rapports avancés"
+    },
+    "sms_order_alerts": {
+      "name": "Alertes de commande par SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Synchronisation cuisine multi-appareils"
+    },
+    "multi_user_access": {
+      "name": "Accès multi-utilisateurs"
+    },
+    "embed_schedule": {
+      "name": "Page planning sur votre propre site web"
+    },
+    "event_types": {
+      "name": "Types d’événements et tarifs événementiels personnalisés"
+    },
+    "buzzer_tracking": {
+      "name": "Suivi des bipeurs"
+    },
+    "ticket_printing": {
+      "name": "Impression des tickets cuisine"
+    },
+    "customer_display": {
+      "name": "Écran côté client"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Cartes de fidélité à tampons numériques"
+    }
+  },
+  "cardRegionOnline": "{region} standard",
+  "cardRegion": {
+    "UKcards": "cartes britanniques",
+    "EEAcards": "cartes de l’EEE",
+    "UScards": "cartes américaines",
+    "Australiancards": "cartes australiennes",
+    "NewZealandcards": "cartes néo-zélandaises",
+    "Canadiancards": "cartes canadiennes"
+  },
+  "perMonth": {
+    "mo": "{amount}/mois",
+    "month": "{amount}/mois"
+  },
+  "priceWord": {
+    "free": "Gratuit",
+    "freeTrial": "Essai gratuit",
+    "lifetime": "À vie",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Paiement sur place",
+    "unlimited": "Illimité",
+    "none": "—",
+    "masked": "À confirmer"
+  },
+  "cell": {
+    "included": "Inclus"
+  }
+}

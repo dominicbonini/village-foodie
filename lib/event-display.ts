@@ -50,17 +50,37 @@ export function eventDateLabel(dateStr: string, ts: TimeSettings | null | undefi
   const s = timeSettingsOr(ts, 'eventDateLabel')
   const todayStr = getLocalDateInTz(s.timeZone)
   const tomorrowStr = addDaysYmd(todayStr, 1)
+  const [Today, Tomorrow] = relativeDayWords(s.locale)
   if (style === 'compact') {
-    if (dateStr === todayStr) return 'Today'
-    if (dateStr === tomorrowStr) return 'Tomorrow'
+    if (dateStr === todayStr) return Today
+    if (dateStr === tomorrowStr) return Tomorrow
     // Language Phase 2: the short month by the product's rule — "Sep", never Intl's en-GB "Sept".
     return formatYmdShortMonth(dateStr, s, { weekday: 'short', day: 'numeric', month: 'short' })
   }
   const dayLabel = formatOrdinalDate(dateStr, s, false)
   const sep = s.dateOrder === 'mdy' ? ', ' : ' '
-  if (dateStr === todayStr) return `Today${sep}${dayLabel}`
-  if (dateStr === tomorrowStr) return `Tomorrow${sep}${dayLabel}`
+  if (dateStr === todayStr) return `${Today}${sep}${dayLabel}`
+  if (dateStr === tomorrowStr) return `${Tomorrow}${sep}${dayLabel}`
   return formatOrdinalDate(dateStr, s, true)
+}
+
+/** france-1 (22 October 2026): "Today" / "Tomorrow" in the truck's language. English: the words it always wrote, exactly (no
+ *  lookup); another language: Intl's own relative day ("aujourd’hui" → « Aujourd’hui », « Demain »), capitalised — no message
+ *  file needed, and this module stays as light as before. */
+const relativeWords = new Map<string, [string, string]>()
+function relativeDayWords(locale: string | null | undefined): [string, string] {
+  const tag = String(locale ?? '')
+  if (!tag || /^en(-|$)/i.test(tag)) return ['Today', 'Tomorrow']
+  let w = relativeWords.get(tag)
+  if (!w) {
+    try {
+      const rtf = new Intl.RelativeTimeFormat(tag, { numeric: 'auto' })
+      const cap = (x: string) => x.charAt(0).toLocaleUpperCase(tag) + x.slice(1)
+      w = [cap(rtf.format(0, 'day')), cap(rtf.format(1, 'day'))]
+    } catch { w = ['Today', 'Tomorrow'] }
+    relativeWords.set(tag, w)
+  }
+  return w
 }
 
 // ── THE EVENT STATUS LABEL — ONE MAPPING, TWO HEADERS ──────────────────────────────────────────────

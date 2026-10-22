@@ -7,10 +7,11 @@
 // learns it (`useTruckLocale`) — before that the page is loading and shows no truck text. It renders next-intl's
 // NextIntlClientProvider with ONLY the namespaces that surface needs (lib/i18n/namespaces.ts) — those of them the
 // page's own files have loaded (lib/i18n/registry.ts).
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { NextIntlClientProvider } from 'next-intl'
-import { DEFAULT_LOCALE, resolveLocale, type AppLocale } from './locales'
-import { messagesOf } from './registry'
+import { DEFAULT_LOCALE, resolveLocale, isLanguageBase, type AppLocale } from './locales'
+import { messagesOf, ensureLanguage, subscribe, registryVersion } from './registry'
+import { htmlLangOfLocale } from '@/lib/page-lang'
 import { I18nContext } from './use-t'
 import type { AppNamespace } from './translator'
 
@@ -18,8 +19,21 @@ export { useT, useTruckLocale, useAppLocale } from './use-t'
 
 export function I18nProvider({ namespaces, children }: { namespaces: readonly AppNamespace[]; children: ReactNode }) {
   const [locale, setLocaleState] = useState<AppLocale>(DEFAULT_LOCALE)
-  const messages = useMemo(() => messagesOf(locale, namespaces), [locale, namespaces])
-  const setLocale = useCallback((tag: string | null | undefined) => setLocaleState(resolveLocale(tag)), [])
+  const version = useSyncExternalStore(subscribe, registryVersion, registryVersion)
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` is the registry's change signal (languages-1)
+  const messages = useMemo(() => messagesOf(locale, namespaces), [locale, namespaces, version])
+  // languages-1: a non-English language is fetched FIRST (its words are not in the bundle — lib/i18n/registry.ts), then the
+  // screen switches, so it never shows half one language and half the other. An English locale switches at once, as before.
+  const setLocale = useCallback((tag: string | null | undefined) => {
+    const l = resolveLocale(tag)
+    if (!isLanguageBase(l)) { setLocaleState(l); return }
+    void ensureLanguage(l).then(() => setLocaleState(l))
+  }, [])
+  // languages-1: <html lang> follows a non-English truck's language once it is known (the server rendered "en" before it
+  // knew the truck). English pages keep the server's value, exactly as before.
+  useEffect(() => {
+    if (isLanguageBase(locale) && typeof document !== 'undefined') document.documentElement.lang = htmlLangOfLocale(locale)
+  }, [locale])
   const value = useMemo(() => ({ locale, setLocale }), [locale, setLocale])
   return (
     <I18nContext.Provider value={value}>

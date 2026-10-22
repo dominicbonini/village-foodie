@@ -94,6 +94,9 @@ const empty: Omit<FontLibrary, 'reload'> = {
   loading: true, error: null, all: [], byId: new Map(), popular: [], own: [], recent: [], count: 0,
 }
 
+/** languages-1: the stand-in error when a failure carries no message — the picker shows it as `fontPicker.loadFailed`. */
+export const FONT_LOAD_FAILED = 'Could not load fonts'
+
 export function useFontLibrary(token: string): FontLibrary {
   const [state, setState] = useState<Omit<FontLibrary, 'reload'>>(empty)
   const [nonce, setNonce] = useState(0)
@@ -126,7 +129,7 @@ export function useFontLibrary(token: string): FontLibrary {
         })
       } catch (e) {
         if (!alive) return
-        setState({ ...empty, loading: false, error: e instanceof Error ? e.message : 'Could not load fonts' })
+        setState({ ...empty, loading: false, error: e instanceof Error ? e.message : FONT_LOAD_FAILED })
       }
     })()
     return () => { alive = false }

@@ -47,6 +47,8 @@ import { useT, useTruckLocale, useAppLocale } from '@/lib/i18n/use-t'
 import { errorText, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/order'
 import '@/lib/i18n/catalog/errorsCustomer'
+import { dietaryLabel } from '@/lib/dietary-label'
+import { allergenLabel } from '@/lib/allergen-label'   // france-1: a stored allergen label in the page's language (English: as stored)   // languages-1: a stored dietary tag in the truck's language
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -3263,10 +3265,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         <SpiceLevel value={itemSpiciness} />
                         {item.dietary?.map((d: string) => (
-                          <DietaryChip key={d} label={d} />
+                          <DietaryChip key={d} label={dietaryLabel(d, pageLocale)} />
                         ))}
                         {truck?.allergen_display_mode !== 'card' && item.allergens?.map((a: string) => (
-                          <AllergenChip key={a} label={a} />
+                          <AllergenChip key={a} label={allergenLabel(a, pageLocale)} />
                         ))}
                       </div>
                     )}

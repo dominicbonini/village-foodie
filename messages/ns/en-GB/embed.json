@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Where {truck} is trading next.",
+  "orderFrom": "Order from {truck}",
+  "poweredBy": "Powered by <b>HatchGrab</b>",
+  "loadFailed": "Couldn't load the schedule just now.",
+  "loading": "Loading schedule…",
+  "empty": "No upcoming events listed for {truck}."
+}

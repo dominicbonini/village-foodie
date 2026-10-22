@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresse",
+    "postcode": "Code postal",
+    "zip": "Code ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Code postal",
+    "state": "État",
+    "stateTerritory": "État ou territoire",
+    "province": "Province",
+    "county": "Comté",
+    "area": "Commune (village ou ville)",
+    "townOrArea": "Ville ou commune",
+    "city": "Ville",
+    "suburb": "Quartier",
+    "townOrCity": "Ville"
+  },
+  "short": {
+    "area": "Commune",
+    "townOrArea": "Ville ou commune",
+    "city": "Ville",
+    "suburb": "Quartier",
+    "townOrCity": "Ville"
+  },
+  "inSentence": {
+    "postcode": "code postal",
+    "zip": "code ZIP",
+    "eircode": "Eircode",
+    "postalCode": "code postal"
+  },
+  "withArticle": {
+    "postcode": "un code postal",
+    "zip": "un code ZIP",
+    "eircode": "un Eircode",
+    "postalCode": "un code postal"
+  },
+  "tradeLabel": {
+    "area": "Ville",
+    "townOrArea": "Ville ou commune",
+    "city": "Ville",
+    "suburb": "Quartier",
+    "townOrCity": "Ville"
+  },
+  "basedIn": {
+    "area": "Ville où se trouve votre activité",
+    "townOrArea": "Ville ou commune où se trouve votre activité",
+    "city": "Ville où se trouve votre activité",
+    "suburb": "Quartier où se trouve votre activité",
+    "townOrCity": "Ville où se trouve votre activité"
+  },
+  "example": "ex. : {example}",
+  "customersSee": "Vu par les clients :",
+  "postalWarning": "Cela ne ressemble pas à {article} — par exemple {example}. Vous pouvez quand même l’enregistrer.",
+  "regionChoose": "Choisir…"
+}

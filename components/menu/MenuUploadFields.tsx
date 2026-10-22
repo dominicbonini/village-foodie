@@ -16,6 +16,8 @@
 // It owns the useDragDrop instance, because the drag behaviour IS the thing being shared.
 
 import { useDragDrop } from '@/lib/useDragDrop'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/demoUpload'
 
 /** Accept list — one definition, both surfaces. Kept identical to the Manage original. */
 export const MENU_UPLOAD_ACCEPT = ['image/*', '.pdf']
@@ -48,22 +50,24 @@ export function MenuUploadFields({
   accent?: keyof typeof ACCENT
 }) {
   const a = ACCENT[accent]
+  // languages-1: the control's words in the page's language (they were inline English).
+  const t = useT('demoUpload')
   const { isDragging, dragProps } = useDragDrop(f => onFile(f), MENU_UPLOAD_ACCEPT)
 
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs font-bold text-slate-600 mb-1">Upload menu file</label>
+        <label className="block text-xs font-bold text-slate-600 mb-1">{t('fields.uploadLabel')}</label>
         <label
           {...dragProps}
           className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isDragging ? a.dragging : a.idle}`}
         >
           <span className="text-3xl">{isDragging ? '📂' : file ? '✅' : '📷'}</span>
           <span className="text-sm text-slate-700 text-center break-all">
-            {isDragging ? 'Drop your menu here' : file ? file.name : 'Drag and drop or tap to choose'}
+            {isDragging ? t('fields.dropHere') : file ? file.name : t('fields.dragOrTap')}
           </span>
           {!isDragging && !file && (
-            <span className="text-xs text-slate-500">Image or PDF</span>
+            <span className="text-xs text-slate-500">{t('fields.fileTypes')}</span>
           )}
           <input
             type="file" accept="image/*,.pdf" className="sr-only" disabled={disabled}
@@ -73,16 +77,16 @@ export function MenuUploadFields({
       </div>
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs text-slate-400 font-medium">or</span>
+        <span className="text-xs text-slate-400 font-medium">{t('fields.or')}</span>
         <div className="flex-1 h-px bg-slate-200" />
       </div>
       <div>
-        <label className="block text-xs font-bold text-slate-600 mb-1">Paste menu text</label>
+        <label className="block text-xs font-bold text-slate-600 mb-1">{t('fields.pasteLabel')}</label>
         <textarea
           value={text}
           onChange={e => onText(e.target.value)}
           disabled={disabled}
-          placeholder="Paste your menu here — item names, descriptions, prices..."
+          placeholder={t('fields.pastePlaceholder')}
           rows={5}
           className={`w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 ${a.ring}`}
         />

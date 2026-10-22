@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Commander chez {truck}",
+    "orderDescription": "Commandez à l’avance chez {truck} et récupérez votre commande au food truck.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo {truck}"
+  },
+  "shareTitle": "{truck} : planning",
+  "shareText": "Découvrez où s’installe bientôt le food truck {truck} ! 🚚",
+  "linkCopied": "Lien du profil copié dans le presse-papiers ! 📋",
+  "facebookPage": "Page Facebook",
+  "loadingMap": "Chargement du plan…",
+  "view": {
+    "list": "Liste",
+    "map": "Plan"
+  },
+  "ownThisTruck": "C’est votre food truck ?",
+  "ownThisTruckTitle": "C’est votre food truck ? Cliquez pour mettre à jour votre profil",
+  "actions": {
+    "menu": "Carte",
+    "call": "Appeler",
+    "message": "Message",
+    "share": "Partager",
+    "order": "Commander"
+  },
+  "loadingSchedule": "Chargement du planning…",
+  "loadError": {
+    "title": "Chargement impossible",
+    "body": "Impossible de charger le planning pour le moment — il s’agit généralement d’un bref incident. Veuillez réessayer.",
+    "retry": "Réessayer"
+  },
+  "notFound": {
+    "title": "Food truck introuvable",
+    "body": "Nous n’avons trouvé aucune information sur ce food truck. Il a peut-être changé d’adresse ou mis à jour son profil.",
+    "cta": "Voir tous les food trucks"
+  },
+  "noEvents": {
+    "title": "Aucun événement à venir",
+    "body": "Il nous manque peut-être des informations sur ce food truck. Vous en êtes le propriétaire, ou vous connaissez son planning ?",
+    "cta": "Écrivez-nous pour le mettre à jour !"
+  },
+  "whereToFind": "Où nous trouver",
+  "missingEvent": "<strong>Il manque un événement ?</strong> <br></br>Que vous soyez le propriétaire de ce food truck ou simplement un fan fidèle, aidez-nous à garder cette page à jour ! <br></br><link>Contactez-nous pour ajouter les informations manquantes.</link>",
+  "weeklySchedule": "Recevoir le planning hebdo 🍕"
+}

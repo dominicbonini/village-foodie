@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Afficher les allergènes pour chaque plat",
+    "recommended": "Recommandé",
+    "perDishBody": "Vérifiez chaque plat et confirmez ses allergènes. Les clients voient les étiquettes par plat ainsi qu’une fiche récapitulative des allergènes générée à partir de celles-ci.",
+    "cardTitle": "Afficher une fiche allergènes",
+    "cardBody": "Importez ou collez une fiche allergènes unique (PDF, image ou texte), affichée telle quelle. Les étiquettes par plat restent masquées."
+  }
+}

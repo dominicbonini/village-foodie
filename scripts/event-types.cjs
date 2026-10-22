@@ -2402,7 +2402,10 @@ head('5b · THE MODAL AND THE CARD')
     if (a < 0) return false
     const arm = page.slice(a, page.indexOf('):(<>', a))
     return arm.length > 80
-      && /\{PRIVATE_PUBLIC_NAME\}/.test(arm) && /\{privateName/.test(arm) && /text-purple-300/.test(arm)
+      // ⚠️ RE-PINNED (languages-1, 22 October 2026): the generic label is `privateEvents.publicName` in the truck's language (it was
+      // the en-GB export PRIVATE_PUBLIC_NAME — the same words, asserted exactly).
+      && (/\{PRIVATE_PUBLIC_NAME\}/.test(arm) || (/\{tPrivEv\('publicName'\)\}/.test(arm) && GB_MSG('privateEvents.publicName') === 'Private event'))
+      && /\{privateName/.test(arm) && /text-purple-300/.test(arm)
       && !/venue_name|fmtVenue|\btown\b/.test(arm)
   })())
   t('🔴 `Manage event ▾` gains Change event type… and, for a private event, the link', (() => {
@@ -2422,7 +2425,12 @@ head('5b · THE MODAL AND THE CARD')
   /* ⛔ AND THE TWO PRIVACY CONFIRMS ARE ON THE SWITCH, from the one copy module that owns them. */
   t('⛔ switching into or out of Private confirms, with the shared sentences', (() => {
     const page = codeOf(dashPage)
-    return /CONFIRM_TO_PRIVATE/.test(page) && /CONFIRM_FROM_PRIVATE/.test(page)
+    // ⚠️ RE-PINNED (languages-1, 22 October 2026): the two sentences are `privateEvents.confirmToPrivate` / `.confirmFromPrivate`
+    // in the truck's language (they were the en-GB exports CONFIRM_TO_PRIVATE / CONFIRM_FROM_PRIVATE of those same messages).
+    return ((/CONFIRM_TO_PRIVATE/.test(page) && /CONFIRM_FROM_PRIVATE/.test(page))
+      || (/\{tPrivEv\('confirmToPrivate'\)\}/.test(page) && /\{tPrivEv\('confirmFromPrivate'\)\}/.test(page)
+        && GB_MSG('privateEvents.confirmToPrivate') === 'This hides the address and the event from the map. Guests will need the private link to order.'
+        && GB_MSG('privateEvents.confirmFromPrivate') === 'This makes the event public: its address and map pin will show, and the private link will stop working.'))
       && /const toPrivate=typePending!==undefined&&targetIsPrivate&&!eventIsPrivate/.test(page)
       && /const fromPrivate=typePending!==undefined&&!targetIsPrivate&&eventIsPrivate/.test(page)
   })())

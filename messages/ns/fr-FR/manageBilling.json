@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "par food truck / mois",
+  "transactionFees": "Frais de transaction",
+  "comingSoon": "Bientôt disponible",
+  "footnote2Masked": "Les paiements en ligne sont assurés par Stripe Connect. Les frais de plateforme et de traitement des cartes restent à confirmer et seront confirmés au lancement.",
+  "card": {
+    "title": "Facturation et paiements",
+    "managed": "La facturation est gérée par HatchGrab",
+    "earlyAccess": "Pendant l’accès anticipé, nous configurons et ajustons les offres manuellement.",
+    "planLine": "{trial, select, yes {{truck} · Offre {plan} (essai)} other {{truck} · Offre {plan}}}"
+  },
+  "currentPlan": "Offre actuelle",
+  "plan": {
+    "included": "Inclut {amount} de commandes en ligne par mois.",
+    "includedUnlimited": "Commandes en ligne illimitées incluses.",
+    "promo": "Prix spécial.",
+    "promoUntil": "Prix spécial jusqu’au {date}.",
+    "ended": "Votre offre {plan} a pris fin le {date}. Vous êtes désormais sur l’offre {now}.",
+    "trialMonths": "Un essai gratuit de {months} mois."
+  },
+  "trialEnds": "L’essai se termine le {date}",
+  "yourTrialEnds": "Votre essai se termine le {date}",
+  "notStarted": {
+    "heading": "Votre essai gratuit n’a pas encore commencé"
+  },
+  "onTrial": "Vous avez accès à toutes les fonctionnalités. Choisissez une offre avant la fin de votre essai.",
+  "onTrialNoCta": "Vous avez accès à toutes les fonctionnalités.",
+  "noCharge": "🔒 Rien ne vous sera facturé pendant votre essai, qui dure jusqu’au {date}. La facturation ne démarre que lorsque vous choisissez une offre et saisissez vos informations de paiement. D’ici là, il n’y a rien à résilier ni à payer.",
+  "fees": "*Des frais standard de traitement des cartes s’appliquent aux commandes en ligne",
+  "setUpPayment": "⏱ Choisissez une offre avant la fin de votre essai",
+  "changeYourPlan": "Changer d’offre",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Passer à l’offre {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Nous mettons en place la facturation automatique. Pour changer d’offre dès maintenant, envoyez-nous un message et nous nous en occuperons sous 24 heures.",
+    "mailSubject": "Passage à l’offre {plan} — {truck}",
+    "mailBody": "Bonjour, je souhaite passer {truck} à l’offre {plan} ({price}).",
+    "email": "Changer d’offre par e-mail",
+    "cancel": "Annuler"
+  }
+}

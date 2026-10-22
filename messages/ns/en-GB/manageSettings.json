@@ -210,5 +210,6 @@
     "buildFailed": "That could not be built just now. Try again shortly.",
     "close": "Close",
     "logoPlaceholder": "Your logo\nhere"
-  }
+  },
+  "qrPoweredBy": "Powered by HatchGrab"
 }

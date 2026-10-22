@@ -13,10 +13,16 @@
 // ⚠️ BOTTOM, NOT TOP: the KDS and dashboard both carry sticky headers and the AppHeader owns the safe
 // area. A top banner would fight them and could cover an order row.
 import { useEffect, useState } from 'react'
+import { useDocumentLocale } from '@/lib/i18n/use-t'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/auth'
 import { startSessionObserver, subscribeSessionAlert, type SessionAlert } from '@/lib/auth/session-observer'
 
 export function SessionAlertBanner() {
   const [alert, setAlert] = useState<SessionAlert>(null)
+  // languages-1: the banner sits in the ROOT layout, outside any page's language provider, so it reads the page's language from
+  // <html lang> (set by the server, or by a non-English truck's provider) — en-GB on every English page, as before.
+  const t = translatorFor(useDocumentLocale(), 'auth.sessionAlert')
 
   useEffect(() => {
     // Idempotent; the observer keeps running if this unmounts.
@@ -39,16 +45,16 @@ export function SessionAlertBanner() {
               — the operator has not been, from their point of view: the screen is still theirs and still
               working. It names the one thing that stopped (saving changes) so the sentence is actionable
               rather than alarming, and it does not expose the internal reason. */}
-          <p className="text-sm font-bold text-amber-900">Your sign-in needs attention</p>
+          <p className="text-sm font-bold text-amber-900">{t('title')}</p>
           <p className="text-xs text-amber-800 mt-0.5">
-            Everything on screen is still here. New changes may not save until you sign in again.
+            {t('body')}
           </p>
         </div>
         <a
           href="/login"
           className="shrink-0 rounded-lg bg-amber-600 px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-amber-700"
         >
-          Sign in again
+          {t('signIn')}
         </a>
       </div>
     </div>

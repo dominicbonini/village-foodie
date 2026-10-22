@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Camion",
+  "eventsFeed": {
+    "today": "Aujourd’hui · {date}",
+    "tomorrow": "Demain · {date}"
+  },
+  "privacyNotSaved": "L’événement est en ligne, mais sa confidentialité n’a pas pu être enregistrée.",
+  "stockWarning": "Aucun article disponible dans « {category} »",
+  "uncategorised": "Sans catégorie"
+}

@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Choisissez comment afficher les infos allergènes",
+    "detail": "Tant que vous n’avez pas choisi, les clients ne voient aucun de vos plats — la carte se protège en masquant tout plat dont les allergènes ne sont pas confirmés, et pour l’instant, c’est le cas de tous.",
+    "where": "Carte → Allergènes"
+  },
+  "allergensCardMissing": {
+    "title": "Ajoutez votre fiche allergènes",
+    "detail": "Vous avez choisi d’afficher une fiche allergènes, mais aucune n’est enregistrée — les clients verraient donc que des infos allergènes sont disponibles, puis ne trouveraient rien.",
+    "where": "Carte → Allergènes"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Confirmez les allergènes de {count} plat} other {Confirmez les allergènes de {count} plats}}",
+    "detail": "{n, plural, one {Votre plat est masqué pour les clients tant que vous n’avez pas confirmé ses allergènes.} other {{u, plural, one {{unverified} de vos {total} plats est masqué pour les clients tant que vous n’avez pas confirmé ses allergènes.} other {{unverified} de vos {total} plats sont masqués pour les clients tant que vous n’avez pas confirmé leurs allergènes.}}}} Un plat affiché sans allergènes confirmés se lit comme « n’en contient aucun » : la carte le masque donc plutôt que de prendre ce risque.",
+    "where": "Carte → Allergènes"
+  },
+  "noVan": {
+    "title": "Ajoutez un camion",
+    "detail": "Les événements sont rattachés à un camion — sans camion, rien ne permet de prendre des commandes.",
+    "where": "Paramètres → Vos food trucks"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Définissez la capacité de votre cuisine",
+    "detail": "Aucune capacité n’est définie pour {vans}. Sans elle, nous continuerons à promettre aux clients des heures de retrait que votre cuisine ne peut pas tenir.",
+    "where": "Carte → Capacité de la cuisine",
+    "unnamedVan": "Camion sans nom"
+  },
+  "noPrepBearingCategory": {
+    "title": "Indiquez-nous le temps de préparation de vos plats",
+    "detail": "{categories, select, none {Vous n’avez pas encore de catégories sur votre carte, nous ne pouvons donc pas calculer le temps de préparation d’une commande.} other {Aucune de vos catégories n’a de temps de cuisson défini : chaque commande nous semble donc instantanée. Nous continuerions à donner aux clients des heures de retrait que votre cuisine n’a aucune chance de tenir, et plus vous auriez de monde, plus elles seraient décalées.}}",
+    "where": "Carte → Catégories → Configuration cuisine"
+  },
+  "emailUnverified": {
+    "title": "Confirmez votre adresse e-mail",
+    "detail": "Nous envoyons à cette adresse les notifications de commande et les e-mails de récupération de compte. Si elle est erronée, vous le découvrirez quand quelque chose aura déjà mal tourné.",
+    "where": "Cherchez notre lien de confirmation dans votre boîte de réception"
+  },
+  "emailUnknown": {
+    "title": "Statut de confirmation de l’e-mail inconnu",
+    "detail": "La vérification des e-mails n’est pas encore branchée, ce point ne peut donc pas être évalué. Il bloque volontairement plutôt que de passer sans rien dire.",
+    "where": "—"
+  }
+}

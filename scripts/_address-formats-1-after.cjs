@@ -10,7 +10,8 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
 
   // ══ 1 ══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('1 · the config (lib/address-formats.ts)')
-  t(`six formats: ${F.ADDRESS_FORMAT_KEYS.join(', ')}`, JSON.stringify(F.ADDRESS_FORMAT_KEYS) === JSON.stringify(['gb', 'us', 'ie', 'au', 'nz', 'ca']))
+  // ⚠️ RE-PINNED (france-1, 22 October 2026): + France's format 'fr' (street, code postal, ville; no region).
+  t(`seven formats: ${F.ADDRESS_FORMAT_KEYS.join(', ')}`, JSON.stringify(F.ADDRESS_FORMAT_KEYS) === JSON.stringify(['gb', 'us', 'ie', 'au', 'nz', 'ca', 'fr']))
   const problems = F.validateAddressFormats()
   t('the validator finds nothing: every pattern compiles and matches its own example, every template token exists and has a field, every region list is well formed', problems.length === 0, problems)
   const broken = { ...F.ADDRESS_FORMATS, gb: { ...F.ADDRESS_FORMATS.gb, postalCode: { ...F.ADDRESS_FORMATS.gb.postalCode, pattern: '([' }, templates: { ...F.ADDRESS_FORMATS.gb.templates, line: { sep: ', ', parts: ['{venue}', '{county}'] } } } }
@@ -38,7 +39,10 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   // ══ 2 ══════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · the country row: the CHECK = the keys; legacy values accepted; an unknown value refused')
   const mig = read('supabase/migrations/20261028_address_formats.sql')
-  const chk = (mig.match(/check \(address_format in \(([^)]*)\)\)/) || [])[1]
+  // ⚠️ RE-PINNED (france-1, 22 October 2026): the CHECK that holds is the NEWEST migration that sets it — France's block A
+  // (20261033_france_address_format.sql) widens it to 'fr'. The legacy-value mapping below is still this stage's migration.
+  const latestChk = fs.readdirSync(path.join(REPO, 'supabase/migrations')).sort().map(f => read(`supabase/migrations/${f}`)).filter(x => /check \(address_format in \(/.test(x)).pop()
+  const chk = (latestChk.match(/check \(address_format in \(([^)]*)\)\)/) || [])[1]
   const chkKeys = chk ? [...chk.matchAll(/'([a-z_]+)'/g)].map(m => m[1]) : null
   t(`the migration's CHECK lists exactly the config's keys, in order (${chkKeys?.join(', ')})`, JSON.stringify(chkKeys) === JSON.stringify(F.ADDRESS_FORMAT_KEYS), chk)
   t('the migration maps the legacy values (postcode → gb, zip_state → us; IE/AU/NZ to their own) before adding the CHECK, and drops the old CHECK first',
@@ -55,8 +59,9 @@ module.exports = async function after({ kit, t, head, read, REPO, snapshot, SNAP
   // ⚠️ RE-PINNED (address-formats-2, 21 October 2026): stage 2 moved the labels onto each format's field types and variants
   // (messages `address.*`), so `messagesStyle` / `messagesStyleOf` are gone. What this pinned — GB and US words unchanged —
   // is now each format's postal label variant, and the GB/US words are byte-identical (scripts/address-formats-2.cjs).
-  t("each format's postal label variant: GB/AU/NZ 'postcode', US 'zip', IE 'eircode', CA 'postalCode'",
-    F.ADDRESS_FORMAT_KEYS.map(k => F.postalLabelOf(F.ADDRESS_FORMATS[k])).join() === 'postcode,zip,eircode,postcode,postcode,postalCode' && typeof F.messagesStyleOf === 'undefined')
+  // ⚠️ RE-PINNED (france-1): + FR 'postalCode' (« code postal »).
+  t("each format's postal label variant: GB/AU/NZ 'postcode', US 'zip', IE 'eircode', CA and FR 'postalCode'",
+    F.ADDRESS_FORMAT_KEYS.map(k => F.postalLabelOf(F.ADDRESS_FORMATS[k])).join() === 'postcode,zip,eircode,postcode,postcode,postalCode,postalCode' && typeof F.messagesStyleOf === 'undefined')
   const tab = read('components/admin/CountriesTab.tsx'), form = read('lib/admin/country-form.ts')
   t('Admin › Countries: the address field is a dropdown of the config\'s formats ("United Kingdom — postcode", "Ireland — Eircode", …)',
     /choice\(code, 'addressFormat', ADDRESS_FORMAT_KEYS\.map\(k => \[k, ADDRESS_FORMATS\[k\]\.adminLabel\]\)\)/.test(tab) && F.ADDRESS_FORMATS.ie.adminLabel === 'Ireland — Eircode' && F.ADDRESS_FORMATS.au.adminLabel === 'Australia — suburb, state, postcode')

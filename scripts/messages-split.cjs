@@ -63,8 +63,10 @@ t(`every file that reads a namespace imports its catalog module (${readers} file
 
 // 3
 // A TYPE-ONLY import (`import type enGB from …`, the typed keys) is erased by the compiler and carries nothing.
-const WHOLE = /^import (?!type )[^\n]*from '(@\/messages\/en-(GB|US)\.json|(@\/lib\/i18n|\.)\/messages)'/m
-const ALLOWED = new Set(['lib/i18n/messages.ts', 'lib/i18n/request.ts', 'lib/i18n/app-config.d.ts'])
+// languages-1 (22 October 2026): any authored locale file (not only en-GB / en-US), and lib/i18n/locale-files.ts — the generated
+// list of them that lib/i18n/messages.ts (the server) reads — is allowed beside it.
+const WHOLE = /^import (?!type )[^\n]*from '(@\/messages\/[a-z]{2}-[A-Z]{2}\.json|(@\/lib\/i18n|\.)\/(messages|locale-files))'/m
+const ALLOWED = new Set(['lib/i18n/messages.ts', 'lib/i18n/request.ts', 'lib/i18n/app-config.d.ts', 'lib/i18n/locale-files.ts'])
 const whole = files.filter(f => !ALLOWED.has(f) && WHOLE.test(fs.readFileSync(path.join(REPO, f), 'utf8')))
 t('only the server request config imports the whole catalogue (lib/i18n/messages.ts)', whole.length === 0, whole.join(', '))
 
@@ -97,6 +99,31 @@ for (const [name, page] of Object.entries(SURFACES)) {
   const missing = want.filter(n => !have.includes(n))
   if (process.argv.includes('--list')) console.log(`  ${name}: ${JSON.stringify(want)}`)
   t(`NAMESPACES.${name} names every namespace ${page} and its components read`, missing.length === 0, `missing: ${missing.join(', ')}`)
+}
+
+// 5 — languages-1 (22 October 2026): a SERVER-RENDERED page hands a non-English browser the words of every namespace its CLIENT
+// components carry (lib/i18n/page-words.ts). The client graph is every file from a 'use client' boundary down; its
+// namespaces are its catalog imports — exactly what its bundle carries. Each must be in the page's NAMESPACES entry, and
+// lib/i18n/page-words.ts must import every catalog those entries name (a server module registers its own words).
+function clientCatalogs(entry) {
+  const seen = new Set(), ns = new Set(), stack = [[entry, false]]
+  while (stack.length) {
+    const [f, client0] = stack.pop(); const key = f + '|' + client0; if (seen.has(key)) continue; seen.add(key)
+    if (!/^(app|components|lib|hooks)\//.test(f) || f.startsWith('lib/i18n/')) continue
+    const src = readFileSync(path.join(REPO, f), 'utf8')
+    const client = client0 || /^\s*['"]use client['"]/.test(src)
+    if (client) for (const m of src.matchAll(/import '@\/lib\/i18n\/catalog\/([A-Za-z0-9]+)'/g)) ns.add(m[1])
+    for (const m of src.matchAll(/(?:^|\n)\s*(?:import|export)[^'"\n]*?from\s+'([^']+)'/g)) { const r = resolveImport(f, m[1]); if (r) stack.push([r, client]) }
+  }
+  return ns
+}
+const SEEDED = { marketing: ['app/landing/page.tsx', 'app/features/page.tsx', 'app/compare/page.tsx', 'app/about/page.tsx'], truckPage: ['app/trucks/[slug]/page.tsx'], embed: ['app/domain/page.tsx'] }
+const PAGE_WORDS = readFileSync(path.join(REPO, 'lib/i18n/page-words.ts'), 'utf8')
+for (const [name, pages] of Object.entries(SEEDED)) {
+  const want = [...new Set(pages.flatMap(p => [...clientCatalogs(p)]))].sort(), have = nsOf(name) || []
+  if (process.argv.includes('--list')) console.log(`  ${name}: ${JSON.stringify(want)}`)
+  t(`NAMESPACES.${name} names every namespace the client components of ${pages.join(', ')} carry`, want.every(n => have.includes(n)), `missing: ${want.filter(n => !have.includes(n)).join(', ')}`)
+  t(`lib/i18n/page-words.ts imports the catalog of every NAMESPACES.${name} namespace`, have.every(n => PAGE_WORDS.includes(`import '@/lib/i18n/catalog/${n}'`)), have.filter(n => !PAGE_WORDS.includes(`import '@/lib/i18n/catalog/${n}'`)).join(', '))
 }
 
 console.log(`\n${fail ? '✗' : '✓'} messages-split: ${pass} passed, ${fail} failed`)

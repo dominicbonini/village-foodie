@@ -233,9 +233,13 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   const loc = A.localiseExampleAllergens(extractSrc, 'ca')
   t('the importer\'s worked examples are localised for ca (Dairy → Milk, Gluten → Wheat and triticale; no UK-only label left)', loc.includes('Cheese → ["Milk"]') && loc.includes('"allergens": ["Milk", "Wheat and triticale", "Eggs"]') && !/"allergens": \["Dairy|Halloumi → \["Dairy"\]/.test(loc))
   const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
-  const waSrc = read('lib/whatsapp-classifier.ts')
-  const gStart = waSrc.indexOf('const ALLERGEN_STEMS'), gEnd = waSrc.indexOf('\n}\n', waSrc.indexOf('function mentionsAllergen')) + 3
-  const guard = new Function(esbuild.transformSync(waSrc.slice(gStart, gEnd), { loader: 'ts' }).code + '\nreturn mentionsAllergen')()
+  // ⚠️ RE-PINNED (languages-1, 22 October 2026, docs/languages-1-report.md §3): the guard's words are DATA now
+  // (lib/allergen-guard/en.json), read by lib/allergen-guard.ts — evaluated here as built, for an English truck. Its answers are
+  // the ones the lists in lib/whatsapp-classifier.ts gave (scripts/languages-1.cjs §6 proves 1,190 messages × 5 sets identical).
+  const gBuilt = esbuild.buildSync({ entryPoints: [path.join(REPO, 'lib/allergen-guard.ts')], bundle: true, write: false, platform: 'node', format: 'cjs', alias: { '@': REPO }, logLevel: 'silent' })
+  const gMod = { exports: {} }; new Function('module', 'exports', 'require', gBuilt.outputFiles[0].text)(gMod, gMod.exports, require)
+  const guard = (m, set) => gMod.exports.mentionsAllergen(m, set, 'en-GB')
+  const guardWords = JSON.parse(fs.readFileSync(path.join(REPO, 'lib/allergen-guard/en.json'), 'utf8'))
   const CORPUS = ['my son has an EpiPen', 'she carries an epi-pen', 'anaphylaxis to peanuts — is the satay safe?', 'I am anaphylactic to sesame', 'is the burger NF?', 'LF options?',
     'is it gluten free?', 'GF?', 'coeliac friendly?', 'celiac?', 'dairy-free please', 'I am allergic to milk', 'can I have it free from shellfish', 'is it peanut-free?', 'nut free?',
     'does the satay have peanuts?', 'any sesame on the bun?', 'Are you open today', 'what time do you close', 'is it a nice day', 'any mustard in the sauce?', 'does it contain sulphites?']
@@ -244,8 +248,8 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   t('ca: the safety phrasing is caught (EpiPen, epi-pen, anaphylaxis, peanut-free); a presence question still reaches the AI (Option B)',
     ['my son has an EpiPen', 'she carries an epi-pen', 'anaphylaxis to peanuts — is the satay safe?', 'is it peanut-free?', 'is it gluten free?', 'celiac?'].every(m => guard(m, 'ca'))
     && ['does the satay have peanuts?', 'any mustard in the sauce?', 'Are you open today'].every(m => !guard(m, 'ca')))
-  t('the reply caveat widens to the Canadian family words for a ca truck only (its own line, beside anz\'s)', /if \(w && params\.allergenSet === 'ca'\) for \(const x of CA_CAVEAT_WORDS\[w\] \?\? \[\]\) allergenTagWords\.add\(x\)/.test(waSrc)
-    && /if \(w && params\.allergenSet === 'anz'\) for \(const x of ANZ_CAVEAT_WORDS\[w\] \?\? \[\]\) allergenTagWords\.add\(x\)   \/\/ anz-1/.test(waSrc))
+  t('the reply caveat widens to the Canadian family words for a ca truck only (its own list, beside anz\'s)', !!guardWords.caveatWords.ca.milk && !!guardWords.caveatWords.anz.milk
+    && gMod.exports.caveatTriggerWords(['Crustaceans'], 'ca', 'en-CA').has('shrimp') && !gMod.exports.caveatTriggerWords(['Crustaceans'], 'anz', 'en-AU').has('shrimp') && !gMod.exports.caveatTriggerWords(['Crustaceans'], 'uk14', 'en-GB').has('shrimp'))
   const Lo = await R.lib()
   t('the settings loader accepts allergen_set "ca" (the SQL\'s row loads) and the admin form offers "Canada 13"', CA.allergenSet === 'ca' && /\['ca', 'Canada 13'\]/.test(read('components/admin/CountriesTab.tsx')) && /f\.allergenSet !== 'ca'/.test(read('lib/admin/country-form.ts')) && typeof Lo.mapCountryRow === 'function')
 
@@ -283,7 +287,8 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   const cc = changed.filter(f => /(===|!==)\s*'(CA|QC|ON|BC|AB|SK|MB)'|'(CA|QC)'\s*(===|!==)|countryCode\s*===/.test(code(f)))
   t('no country- or province-code comparison in the changed code', cc.length === 0, cc)
   t('the per-province tax and Quebec\'s closure live on the address format\'s region list (lib/address-formats.ts), and the CA row picks that format', /salesTax: CA_TAX\.hst13/.test(read('lib/address-formats.ts')) && CA.addressFormat === 'ca')
-  t('Canada has its address /ca (COUNTRY_PATH_SEGMENTS) — the one table that gives a country a page', /CA: 'ca' \}/.test(read('lib/marketing-country.ts')))
+  // ⚠️ RE-PINNED (france-1, 22 October 2026): France's /fr follows Canada's entry in the same table.
+  t('Canada has its address /ca (COUNTRY_PATH_SEGMENTS) — the one table that gives a country a page', /CA: 'ca'(, FR: 'fr')? \}/.test(read('lib/marketing-country.ts')))
   t('the CA phone example passes the app\'s phone check (416-555-0123, NANPA\'s fictional range)', await (async () => { const Ph = await kit.bundle('ca1-phone', "export { isPlausiblePhone } from '@/lib/phone'"); return Ph.isPlausiblePhone('416-555-0123', 'CA', 'length') && !Ph.isPlausiblePhone('416-555', 'CA', 'length') })())
 
   // ══ 9 ════════════════════════════════════════════════════════════════════════════════════════════════════════════

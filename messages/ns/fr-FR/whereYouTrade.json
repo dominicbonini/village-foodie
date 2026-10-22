@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Où votre food truck est-il basé ?",
+  "stepIntro": "Ce choix définit votre devise, vos prix, votre fuseau horaire et le format des numéros de téléphone. Le pays ne pourra pas être modifié ensuite, car il est lié à vos paiements par carte.",
+  "settingsHeading": "Où vous exercez",
+  "countryLabel": "Pays",
+  "countryGuessed": "Nous l’avons déduit de votre position. Modifiez-le s’il est erroné.",
+  "countryLocked": "Votre pays ne peut pas être modifié",
+  "townLabel": "Ville",
+  "townQuestion": "Ville où est basée votre activité",
+  "timezoneLabel": "Fuseau horaire",
+  "continueButton": "Continuer",
+  "saveFailed": "Impossible d’enregistrer les paramètres — veuillez réessayer."
+}

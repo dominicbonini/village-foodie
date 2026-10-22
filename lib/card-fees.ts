@@ -4,6 +4,7 @@
 import { moneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
 import { feeLabel, smallFeeLabel } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
+import { isEnglish } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/planFeatures'
 
 // ── CARD PROCESSING FEES ────────────────────────────────────────────────────────────────────────────
@@ -39,5 +40,15 @@ export const tapToPaySurchargeLabel = (s: CountrySettings): string => smallFeeLa
 // visible change for UK trucks in the move to country_settings.
 // ⚠️ Language Phase 1e: the planFeatures sentences say "standard {region}" whole; this fragment remains for the landing
 // page's own sentences until they move (it is the message `planFeatures.cardRegionOnline`).
-export const cardRegionOnline = (s: CountrySettings): string => translatorFor(s.locale, 'planFeatures')('cardRegionOnline', { region: s.cardFeeRegionLabel })
-export const cardRegionInPerson = (s: CountrySettings): string => s.cardFeeRegionLabel
+// france-1 (22 October 2026): the label stays ENGLISH in country_settings ("EEA cards", the rows' convention) and is shown in a
+// language's own words by id — `planFeatures.cardRegion.<letters of the label>` ("EEA cards" → `EEAcards` → « cartes de l’EEE »);
+// an unknown label as stored. ⛔ Every English locale shows exactly the stored label: nothing is looked up.
+type Loose = { has(key: string): boolean; (key: string, v?: Record<string, string>): string }
+export function cardRegionLabel(s: CountrySettings): string {
+  if (isEnglish(s.locale)) return s.cardFeeRegionLabel
+  const t = translatorFor(s.locale, 'planFeatures') as unknown as Loose
+  const key = `cardRegion.${String(s.cardFeeRegionLabel ?? '').replace(/[^A-Za-z]/g, '')}`
+  return t.has(key) ? t(key) : s.cardFeeRegionLabel
+}
+export const cardRegionOnline = (s: CountrySettings): string => translatorFor(s.locale, 'planFeatures')('cardRegionOnline', { region: cardRegionLabel(s) })
+export const cardRegionInPerson = (s: CountrySettings): string => cardRegionLabel(s)

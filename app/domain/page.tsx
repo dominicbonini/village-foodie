@@ -8,6 +8,11 @@ import { orderPageUrl } from '@/lib/custom-domain/copy'   // the one builder for
 import { hostKey } from '@/lib/custom-host'
 import { Shell, TruckIdentity, PoweredBy, truckLogoUrl } from '@/components/embed/EmbedParts'
 import EmbedSchedule from '@/app/embed/[slug]/EmbedSchedule'
+import { localeForTruck } from '@/lib/i18n/server-locale'
+import { translatorFor } from '@/lib/i18n/translator'
+import { isEnglish } from '@/lib/i18n/locales'
+import { pageSeedProps } from '@/lib/i18n/page-words'
+import '@/lib/i18n/catalog/embed'
 
 /**
  * ── THE SCHEDULE PAGE, SERVED ON AN OPERATOR'S OWN DOMAIN ───────────────────────────────────────
@@ -47,6 +52,8 @@ type DomainTruck = {
   active: boolean
   custom_domain: string | null
   custom_domain_verified_at: string | null
+  /** languages-1: the truck's country — its words are its country's language. */
+  country?: string | null
 }
 
 /**
@@ -62,7 +69,7 @@ async function truckForHost(rawHost: string | null): Promise<DomainTruck | null>
   if (!key) return null
   const { data, error } = await supabase
     .from('trucks')
-    .select('id, name, slug, logo_storage_path, plan, feature_overrides, trial_expires_at, active, custom_domain, custom_domain_verified_at')
+    .select('id, name, slug, logo_storage_path, plan, feature_overrides, trial_expires_at, active, custom_domain, custom_domain_verified_at, country')
     .eq('custom_domain', key)
     .maybeSingle()
   if (error) {
@@ -105,26 +112,29 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const logo = truckLogoUrl(truck.logo_storage_path)
   const base = `https://${hostKey(rawHost)}`
+  // languages-1: the description in the truck's language; og:locale stays en_GB for English (as before), the truck's otherwise.
+  const locale = await localeForTruck(truck)
+  const description = translatorFor(locale, 'embed')('metaDescription', { truck: truck.name })
 
   return {
     metadataBase: new URL(base),
     title: { absolute: truck.name },
-    description: `Where ${truck.name} is trading next.`,
+    description,
     icons: logo ? { icon: logo } : undefined,
     robots: { index: false, follow: false, nocache: true },
     openGraph: {
       title: truck.name,
-      description: `Where ${truck.name} is trading next.`,
+      description,
       url: base,
       siteName: truck.name,
       images: logo ? [{ url: logo, alt: truck.name }] : [],
-      locale: 'en_GB',
+      locale: isEnglish(locale) ? 'en_GB' : locale.replace('-', '_'),
       type: 'website',
     },
     twitter: {
       card: logo ? 'summary' : 'summary_large_image',
       title: truck.name,
-      description: `Where ${truck.name} is trading next.`,
+      description,
       images: logo ? [logo] : [],
     },
   }
@@ -143,6 +153,9 @@ export default async function CustomDomainPage() {
   if (!truck) notFound()
 
   const planGrants = truckCan(truck, await getPlanCatalog(), 'embed_schedule')   // override → effective plan → allowed (Stage A2)
+  // languages-1: the page's words in the truck's language (en-GB for every English truck, as before).
+  const locale = await localeForTruck(truck)
+  const t = translatorFor(locale, 'embed')
 
   /**
    * ── THE LAPSED-PLAN FALLBACK: their name, one link onward, the brand line. ──────────────────────
@@ -185,10 +198,10 @@ export default async function CustomDomainPage() {
             rel="noopener noreferrer"
             className="mt-3 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
           >
-            Order from {truck.name}
+            {t('orderFrom', { truck: truck.name })}
           </a>
         )}
-        <PoweredBy />
+        <PoweredBy locale={locale} />
       </Shell>
     )
   }
@@ -199,8 +212,8 @@ export default async function CustomDomainPage() {
       {/* 🔴 `orderOrigin` IS THE WHOLE POINT ON THIS ROUTE. The CTA's href is relative, so without it
           the Order button would resolve to the operator's OWN domain — putting our ordering flow, and
           the payment provider's frame inside it, on an address we do not control. */}
-      <EmbedSchedule slug={truck.slug ?? ''} truckName={truck.name} orderOrigin={HATCHGRAB_URL} />
-      <PoweredBy />
+      <EmbedSchedule slug={truck.slug ?? ''} truckName={truck.name} orderOrigin={HATCHGRAB_URL} locale={locale} {...pageSeedProps(locale, 'embed')} />
+      <PoweredBy locale={locale} />
     </Shell>
   )
 }

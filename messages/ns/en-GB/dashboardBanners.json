@@ -13,5 +13,9 @@
   "wakeUnsupported": "This device can’t keep the screen on.",
   "wakeInsecure": "The screen can’t be kept on from this address.",
   "wakeRetry": "Keep screen on — tap to try again",
-  "wakeAcquire": "Keep screen on"
+  "wakeAcquire": "Keep screen on",
+  "degraded": {
+    "serverError": "The server couldn't load orders{hasStatus, select, yes { (error {status})} other {}}. Showing orders from {at}. New orders may be missing.",
+    "unreachable": "Can't reach the server. Showing orders from {at}. New orders may be missing."
+  }
 }

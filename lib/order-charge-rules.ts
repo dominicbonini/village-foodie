@@ -29,7 +29,7 @@ import type { CountrySettings } from '@/lib/country-settings-types'
 import { countrySettingsForTruck } from '@/lib/country-settings'
 import { truckPlanFeeBps } from '@/lib/plans-server'
 import type { OrderChargeRules } from '@/lib/order-charges'
-import { regionSalesTax } from '@/lib/address-formats'
+import { regionSalesTax, includedTaxOf } from '@/lib/address-formats'
 
 /** The truck columns the rules read (20261010_17). Every one is optional so a row read before the
  *  migration, or a narrow select, resolves to the defaults rather than failing. */
@@ -60,7 +60,10 @@ export function resolveChargeRules(
   const taxInclusive = country.pricesIncludeTax
   // canada-1: the region's tax is DATA on the country's address format; a region without it (every US state) changes nothing.
   const regionTax = taxInclusive ? null : regionSalesTax(country.addressFormat, truck.base_region_code)
-  const taxRateMilli = taxInclusive ? null : (int(truck.tax_rate_milli) ?? regionTax?.milli ?? null)
+  // france-1: a format whose prices INCLUDE a named tax (France's TVA) keeps a rate for the receipt's "dont TVA" line — the
+  // truck's own, else the format's default. Nothing is added to a price for it. Every other inclusive country: null, as before.
+  const includedTax = taxInclusive ? includedTaxOf(country.addressFormat) : null
+  const taxRateMilli = taxInclusive ? (includedTax ? (int(truck.tax_rate_milli) ?? includedTax.milli) : null) : (int(truck.tax_rate_milli) ?? regionTax?.milli ?? null)
 
   let serviceFee: OrderChargeRules['serviceFee'] = null
   if (country.serviceFeeAllowed) {
@@ -81,7 +84,7 @@ export function resolveChargeRules(
 
   return {
     taxInclusive,
-    taxLabel: regionTax?.label ?? country.taxLabel,
+    taxLabel: regionTax?.label ?? includedTax?.label ?? country.taxLabel,
     taxRateMilli,
     feesTaxed: country.feesTaxed,
     serviceFee,

@@ -1417,15 +1417,17 @@ head('5 · THE RENDERER DRAWS IT — AND DRAWS NOTHING WHEN IT SHOULD NOT')
       const ev = d.slice(d.indexOf('export function eventTree'))
       return /export const POWERED_BY = 'Powered by HatchGrab'/.test(d)
         /* ⚠️ EACH TREE PUSHES IT, and after its own `darkenEl`. */
-        && /children\.push\(poweredByEl\(W, H, keepReadable, fonts\)\)/.test(wk)
-        && /children\.push\(poweredByEl\(W, H, l\.keepReadable, fonts\)\)/.test(ev)
+        /* ⚠️ RE-PINNED (languages-1, 22 October 2026): + the mark's words in the poster's language (`words.poweredBy`, the
+         * `posterWords.poweredBy` message — "Powered by HatchGrab" in every English locale; POWERED_BY stays its en-GB value). */
+        && /children\.push\(poweredByEl\(W, H, keepReadable, fonts(, words\.poweredBy)?\)\)/.test(wk)
+        && /children\.push\(poweredByEl\(W, H, l\.keepReadable, fonts(, words\.poweredBy)?\)\)/.test(ev)
         && wk.indexOf('darkenEl(') < wk.indexOf('poweredByEl(')
         && ev.indexOf('darkenEl(') < ev.indexOf('poweredByEl(')
         /* ⛔ AND IT IS THE **LAST** CHILD IN BOTH, not merely after the darken — anything pushed after
          * it would be drawn on top of our own mark. ⚠️ THE LINE THAT FOLLOWS IT IS THE `return` NOW,
          * because the tree builder hands the list back instead of painting it. */
-        && /children\.push\(poweredByEl\(W, H, keepReadable, fonts\)\)\s*\n\s*return \{ children, warnings/.test(wk)
-        && /children\.push\(poweredByEl\(W, H, l\.keepReadable, fonts\)\)\s*\n\s*return \{ children, warnings/.test(ev)
+        && /children\.push\(poweredByEl\(W, H, keepReadable, fonts(, words\.poweredBy)?\)\)\s*\n\s*return \{ children, warnings/.test(wk)
+        && /children\.push\(poweredByEl\(W, H, l\.keepReadable, fonts(, words\.poweredBy)?\)\)\s*\n\s*return \{ children, warnings/.test(ev)
         /* 🔴 AND EACH RENDER FUNCTION CALLS EXACTLY ONE TREE BUILDER AND ONE `paint`, so neither can
          * assemble a poster of its own behind the shared one. */
         && /weeklyTree\(\{/.test(r) && /eventTree\(\{/.test(r)

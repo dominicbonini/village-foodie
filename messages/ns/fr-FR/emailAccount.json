@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Vérifiez votre nouvelle adresse e-mail HatchGrab",
+    "heading": "Vérifiez votre adresse e-mail",
+    "button": "Vérifier l’adresse e-mail"
+  },
+  "changeEmail": {
+    "requested": "Vous avez demandé à remplacer votre adresse e-mail HatchGrab par celle-ci.",
+    "click": "Cliquez sur le bouton ci-dessous pour la vérifier. Ce lien expire dans 24 heures.",
+    "ignore": "Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer cet e-mail en toute sécurité.",
+    "stillActive": "Votre adresse e-mail actuelle reste active."
+  },
+  "resendVerification": {
+    "requested": "Vous avez demandé à remplacer votre e-mail HatchGrab par cette adresse.",
+    "click": "Cliquez ci-dessous pour vérifier. Ce lien expire dans 24 heures.",
+    "ignore": "Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail.",
+    "stillActive": "Votre e-mail actuel reste actif."
+  },
+  "passwordReset": {
+    "subject": "Réinitialisez votre mot de passe HatchGrab",
+    "heading": "Réinitialisez votre mot de passe",
+    "requested": "Nous avons reçu une demande de réinitialisation du mot de passe de votre compte HatchGrab.",
+    "click": "Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans 1 heure.",
+    "button": "Réinitialiser le mot de passe",
+    "ignore": "Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer cet e-mail en toute sécurité.",
+    "unchanged": "Votre mot de passe ne changera pas tant que vous n’aurez pas cliqué sur le lien ci-dessus."
+  },
+  "deletionScheduled": {
+    "subject": "La suppression de votre compte HatchGrab est programmée",
+    "received": "Nous avons reçu une demande de suppression de ce compte HatchGrab.",
+    "orderingStopped": "<b>La commande en ligne a été arrêtée immédiatement</b> pour : {trucks}.",
+    "noTrucks": "(aucun food truck)",
+    "readable": "Votre tableau de bord reste\n    consultable pendant encore {days, plural, one {# jour} other {# jours}}.",
+    "scheduled": "La suppression du compte est programmée pour le <b>{date}</b>.",
+    "cannotCancel": "<b>Cette suppression ne peut pas être annulée depuis l’application.</b> Si vous n’êtes pas à l’origine de cette demande, ou si vous avez\n    changé d’avis, répondez à cet e-mail dès que possible.",
+    "kept": "Lors de la suppression du compte, nous effaçons vos données personnelles et celles de vos clients. Nous conservons\n    des registres comptables anonymes, que la loi nous oblige à garder."
+  }
+}

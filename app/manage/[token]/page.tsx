@@ -23,7 +23,7 @@ import { EventAddressFields, RegionInput, placeSubline, postalCodeForSave, useAd
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
 import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
-import { perMonthLabel, formatMajor, formatWholeAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
+import { formatMajor, formatWholeAmount, currencySymbol, type MoneyFormat } from '@/lib/money-format'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
 import { WhereYouTrade } from '@/components/manage/WhereYouTrade'
@@ -63,7 +63,7 @@ import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/pricing'
-import { priceText } from '@/lib/price-text'
+import { priceText, perMonthText } from '@/lib/price-text'
 import { WHATSAPP_LIVE, MESSENGER_INSTAGRAM_LIVE } from '@/lib/whatsapp-live'
 import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 // 🔴 THE REPLY CAP'S PER-CUSTOMER LIMIT, READ FROM THE MODULE THAT DECIDES IT rather than typed into the
@@ -133,7 +133,7 @@ import { KitchenCapacitySection } from '@/components/manage/KitchenCapacitySecti
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
-import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS } from '@/lib/settings-copy'   // Billing's not-started words: messages `manageBilling.notStarted`
+import { SETTING_COPY } from '@/lib/settings-copy'   // Billing's not-started words: messages `manageBilling.notStarted`
 /* 🔴 THREE LABELS ON THIS PAGE ARE NOW CONSTANTS, because the Event types modal and the dashboard's
  * "This event" card show the same three settings and were calling them something shorter. Settings is
  * still the SOURCE of the words — they were lifted from here — but there is one copy of each now, so
@@ -219,6 +219,10 @@ import '@/lib/i18n/catalog/manageBilling'
 import '@/lib/i18n/catalog/manageTeam'
 import { useAppLocale } from '@/lib/i18n/use-t'
 import { resolveLocale } from '@/lib/i18n/locales'
+import { dietaryLabel } from '@/lib/dietary-label'   // languages-1: a stored dietary tag in the truck's language
+import { allergenLabel } from '@/lib/allergen-label'   // france-1: a stored allergen label in the truck's language (English: as stored)
+import { useDecimalBox } from '@/components/shared/useDecimalBox'   // france-1: price boxes take "12,50" in a decimal-comma locale
+import { decimalForInput } from '@/lib/decimal-input'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: PlanKey; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
@@ -1909,6 +1913,7 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
   onAssign: (entry: CardEntry, dishId: string) => void; onDismiss: (entry: CardEntry) => void
   blanketOptIn: boolean; onBlanketToggle: (b: boolean) => void
 }) {
+  const cardLocale = useAppLocale()   // france-1: the allergen chips in the truck's language (stored as English labels)
   // Yes/No: uploading a card is OPTIONAL. Tri-state, defaults to NEITHER selected (null). The buttons stay
   // ALWAYS visible so the operator can switch between Yes/No; "Yes" reveals the upload UI inline BELOW the
   // (still-visible) buttons, "No" makes it clear they can just proceed via the footer. Reveal is driven by
@@ -1982,7 +1987,7 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
                   <div key={`${cardEntryKey(p.entry)}-${pi}`} className="border border-slate-200 rounded-xl p-3 flex flex-col gap-2">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="text-sm font-bold text-slate-900">{t('cardUpload.quotedName', { name: p.entry.name })}</span>
-                      <span className="inline-flex flex-wrap gap-1">{p.entry.allergens.map(a => <AllergenChip key={a} label={a} />)}</span>
+                      <span className="inline-flex flex-wrap gap-1">{p.entry.allergens.map(a => <AllergenChip key={a} label={allergenLabel(a, cardLocale)} />)}</span>
                     </div>
                     {p.candidates && <p className="text-[11px] text-amber-700 font-semibold">{t('cardUpload.ambiguous')}</p>}
                     <div className="flex items-center gap-2 flex-wrap">
@@ -2136,6 +2141,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   // On everywhere else, and outside a provider: exactly as before.
   const cardOnlyAllowed = useOptionalCountrySettings()?.allergenCardOnlyAllowed !== false
   const t = useT('manageAllergens')
+  const wizLocale = useAppLocale()   // languages-1: the dietary columns' names in the truck's language (stored as English codes)
   const ALLERGEN_VOCAB = allergenVocab(allergenSet)
   const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)
   const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)
@@ -2345,7 +2351,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   const selectedPills = (draft: { allergens: string[]; dietary: string[] }) =>
     (draft.dietary.length > 0 || draft.allergens.length > 0) ? (
       <span className="inline-flex flex-wrap gap-1 align-middle">
-        {draft.allergens.map(a => <AllergenChip key={a} label={a} />)}
+        {draft.allergens.map(a => <AllergenChip key={a} label={allergenLabel(a, wizLocale)} />)}
         {draft.dietary.map(d => <DietaryChip key={d} label={d} />)}
       </span>
     ) : null
@@ -2551,7 +2557,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
             const bg = changedCell ? 'bg-amber-200' : c.tone === 'diet' ? 'bg-green-50/40' : stripe(i)
             return (
               <td key={c.label} className={`p-0 text-center border-b border-r border-slate-100 ${bg} ${i === A ? DIVIDER : ''}`}>
-                <button type="button" disabled={!canEdit} onClick={toggle} aria-pressed={active} aria-label={c.label}
+                <button type="button" disabled={!canEdit} onClick={toggle} aria-pressed={active} aria-label={c.tone === 'diet' ? dietaryLabel(c.label, wizLocale) : allergenLabel(c.label, wizLocale)}
                   className={`w-full h-11 flex items-center justify-center text-base font-bold ${active ? 'text-slate-800' : 'text-transparent'} ${canEdit && !active ? 'hover:bg-slate-100/70' : ''} ${canEdit ? '' : 'cursor-default'}`}>
                   ✓
                 </button>
@@ -2589,7 +2595,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
                     <th style={{ width: DISH_COL_W }} className="sticky left-0 z-40 bg-white h-12 border-b border-r border-slate-200 text-left text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2">{t('wizard.review.dish')}</th>
                     <th style={{ left: DISH_COL_W }} className={`static sm:sticky z-40 bg-white ${STATUS_W} h-12 border-b border-r border-slate-200 text-center text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2`}>{t('wizard.review.status')}</th>
                     {COLUMNS.map((c, i) => (
-                      <th key={c.label} className={`bg-white h-12 px-0.5 py-1 align-middle text-center text-[11px] font-bold text-slate-900 leading-tight hyphens-auto break-words border-b border-r border-slate-100 ${i === A ? DIVIDER : ''}`}>{c.label}</th>
+                      <th key={c.label} className={`bg-white h-12 px-0.5 py-1 align-middle text-center text-[11px] font-bold text-slate-900 leading-tight hyphens-auto break-words border-b border-r border-slate-100 ${i === A ? DIVIDER : ''}`}>{c.tone === 'diet' ? dietaryLabel(c.label, wizLocale) : allergenLabel(c.label, wizLocale)}</th>
                     ))}
                   </tr>
                 </thead>
@@ -2820,6 +2826,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const ti = useT('manageMenuImport')
   const tv = useT('manageScheduleVerify')   // the schedule step's verify messages, keyed by the route's reason code
   const tk = useT('kitchenCapacity')        // the kitchen-setup step: the same explainer and grid words as Menu › Kitchen capacity
+  const tkLocale = useAppLocale()           // languages-1: the prep-time words in the truck's language
+  const priceBox = useDecimalBox(tkLocale)  // france-1: the item and import price boxes (English: the same number boxes)
   const tset = useT('settingsCopy')         // the settings review: the same labels and help as Manage › Settings
   const tstock = useT('stockCopy')          // the item editor's default-stock scope note (shared with the extras editor)
   const tabTime = useTruckTime()   // the schedule step's read-back dates and times, in the truck's settings
@@ -4381,8 +4389,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         if (cardImportDone && cardImportParsed) {
           const cardText = cardImportParsed.formatted_text || [
             cardImportParsed.summary,
-            cardImportParsed.contains?.length ? `Contains: ${cardImportParsed.contains.join(', ')}` : null,
-            cardImportParsed.may_contain?.length ? `May contain: ${cardImportParsed.may_contain.join(', ')}` : null,
+            // languages-1: the stored card text's labels in the truck's language (`manageMenuImport.allergenCardText`).
+            cardImportParsed.contains?.length ? ti('allergenCardText.contains', { list: cardImportParsed.contains.map(a => allergenLabel(a, tkLocale)).join(', ') }) : null,
+            cardImportParsed.may_contain?.length ? ti('allergenCardText.mayContain', { list: cardImportParsed.may_contain.map(a => allergenLabel(a, tkLocale)).join(', ') }) : null,
             cardImportParsed.cross_contamination?.length ? cardImportParsed.cross_contamination.join('. ') : null,
             cardImportParsed.additional_notes,
           ].filter(Boolean).join('\n')
@@ -4524,8 +4533,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     if (!allergenExtracted) return
     const formattedText = allergenExtracted.formatted_text || [
       allergenExtracted.summary,
-      allergenExtracted.contains?.length ? `Contains: ${allergenExtracted.contains.join(', ')}` : null,
-      allergenExtracted.may_contain?.length ? `May contain: ${allergenExtracted.may_contain.join(', ')}` : null,
+      // languages-1: the stored card text's labels in the truck's language (`manageMenuImport.allergenCardText`).
+      allergenExtracted.contains?.length ? ti('allergenCardText.contains', { list: allergenExtracted.contains.map((a: string) => allergenLabel(a, tkLocale)).join(', ') }) : null,
+      allergenExtracted.may_contain?.length ? ti('allergenCardText.mayContain', { list: allergenExtracted.may_contain.map((a: string) => allergenLabel(a, tkLocale)).join(', ') }) : null,
       allergenExtracted.dietary_options?.length ? allergenExtracted.dietary_options.join('. ') : null,
       allergenExtracted.additional_notes,
     ].filter(Boolean).join('\n')
@@ -5048,7 +5058,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                             <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
                           ))}
                           {item.allergens_verified !== false && item.allergens?.map(a => (
-                            <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{a}</span>
+                            <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{allergenLabel(a, tkLocale)}</span>
                           ))}
                           {item.default_stock != null && <Badge label={t('category.perEvent', { count: item.default_stock })} colour="slate" />}
                           {item.stock_count != null && <Badge label={t('category.stock', { count: item.stock_count })} colour="orange" />}
@@ -5342,7 +5352,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 <p className="text-xs font-semibold text-slate-500 mb-1">{t('allergens.mayContain')}</p>
                 <div className="flex flex-wrap gap-1">
                   {allergenExtracted.may_contain.map((a: string) => (
-                    <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{a}</span>
+                    <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{allergenLabel(a, tkLocale)}</span>
                   ))}
                 </div>
               </div>
@@ -5587,8 +5597,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Input label={t('item.price')} required type="number" value={editingItem.price || ''}
-                  onChange={v => setEditingItem(p => ({...p!, price: parseFloat(v) || 0}))}
+                <Input label={t('item.price')} required {...priceBox.box('item', editingItem.price || '', v => setEditingItem(p => ({...p!, price: parseFloat(v) || 0})))}
                   onBlur={() => { if (Number(editingItem.price) > 0) saveItemPatch({ price: Number(editingItem.price) }) }}
                   error={editingItem.id && !(Number(editingItem.price) > 0) ? t('toast.enterPrice') : ''}
                   placeholder="10.00" />
@@ -5647,7 +5656,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               <span className="text-sm font-bold text-slate-800">{g.name}</span>
                               {/* Operator-facing rule label (audience='operator') — normal case (not uppercase)
                                   so the longer "Customer can choose up to N" reads naturally; row wraps if tight. */}
-                              <span className="text-[10px] font-bold text-slate-400">{groupRuleLabel(g as any, 'operator')}</span>
+                              <span className="text-[10px] font-bold text-slate-400">{groupRuleLabel(g as any, 'operator', tkLocale)}</span>
                             </button>
                             {/* Options — only when the group is assigned to this dish. Left-packed (#2);
                                 selected pill is soft green (#1), not solid heavy green. */}
@@ -6188,8 +6197,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                       <span className="text-sm text-slate-400">{currencySymbol(tabFmt)}</span>
                                       {/* value stays EMPTY for an unresolved item — never "0.00", which invites
                                           skimming past it as if it were correct. */}
-                                      <input type="number" step="0.50" value={Number(item.price) > 0 ? item.price : ''} placeholder="0.00"
-                                        onChange={e => { const v = parseFloat(e.target.value); patchImportItem(globalIdx, it => ({ ...it, price: v > 0 ? v : 0, price_missing: !(v > 0), _free: v > 0 ? false : it._free })) }}
+                                      <input {...priceBox.rawBox(`import-${globalIdx}`, Number(item.price) > 0 ? item.price : '', e => { const v = parseFloat(e.target.value); patchImportItem(globalIdx, it => ({ ...it, price: v > 0 ? v : 0, price_missing: !(v > 0), _free: v > 0 ? false : it._free })) })} step="0.50" placeholder={decimalForInput('0.00', tkLocale)}
                                         className={`w-16 text-sm text-right rounded-lg px-2 py-1 border focus:outline-none focus:ring-1 focus:ring-orange-400 ${priceUnresolved(item) ? 'border-amber-400 bg-amber-50' : 'border-slate-200'}`} />
                                     </div>
                                   )}
@@ -6522,7 +6530,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     onChange={e => { setImportKitchenCapacity(c => ({ ...c, capacity_window_mins: parseInt(e.target.value) })); setImportKitchenDirty(true) }}
                     className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                     {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
-                      <option key={n} value={n}>{tk('windowEvery', { duration: formatPrepSecs(n * 60) })}</option>
+                      <option key={n} value={n}>{tk('windowEvery', { duration: formatPrepSecs(n * 60, tkLocale) })}</option>
                     ))}
                   </select>
                   <span/>
@@ -6573,7 +6581,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   reasonably assumes that is what starts a clock. ⚠️ It describes a mechanism that is
                   NOT built; the constant's own comment explains why it ships anyway. */}
               <p className="text-xs text-slate-500 mt-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-                {TRIAL_NOT_STARTED_BY_EVENTS}
+                {ti('schedule.trialNotStarted')}
               </p>
               {renderWizardStepper('schedule')}
             </div>
@@ -7243,6 +7251,7 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
   // 🔴 THE TRUCK'S MONEY FORMAT (the manage page's country settings) — every price on this tab.
   const tabFmt = moneyFormatOf(useCountrySettings())
   const tabAmount = (major: number) => formatMajor(major, tabFmt)
+  const dealBox = useDecimalBox(useAppLocale())   // france-1: the deal's price boxes take "12,50" in a decimal-comma locale
   const t = useT('manageDeals')
   // The truck's clock (Language Phase 1d): a deal's stored times, exactly as stored in 24h (GB unchanged).
   const ts = useTruckTime()
@@ -7338,8 +7347,8 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
               <Input label={t('name')} required value={editing.name || ''} onChange={v => setEditing(p => ({...p!, name: v}))} placeholder={t('namePlaceholder')} />
               <Input label={t('description')} value={editing.description || ''} onChange={v => setEditing(p => ({...p!, description: v}))} placeholder={t('descriptionPlaceholder')} />
               <div className="grid grid-cols-2 gap-3">
-                <Input label={t('price')} required type="number" value={editing.bundle_price || ''} onChange={v => setEditing(p => ({...p!, bundle_price: parseFloat(v) || 0}))} placeholder="12.00" />
-                <Input label={t('originalPrice')} type="number" value={editing.original_price ?? ''} onChange={v => setEditing(p => ({...p!, original_price: v === '' ? null : parseFloat(v)}))} placeholder={t('originalPlaceholder')} hint={t('originalHint')} />
+                <Input label={t('price')} required {...dealBox.box('price', editing.bundle_price || '', v => setEditing(p => ({...p!, bundle_price: parseFloat(v) || 0})))} placeholder={dealBox.comma ? '12,00' : '12.00'} />
+                <Input label={t('originalPrice')} {...dealBox.box('original', editing.original_price ?? '', v => setEditing(p => ({...p!, original_price: v === '' ? null : parseFloat(v)})))} placeholder={t('originalPlaceholder')} hint={t('originalHint')} />
               </div>
 
               <div>
@@ -11392,6 +11401,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
    * own namespaces (settingsCopy, serviceSettings, offlineProtection; the verify sentences are Schedule's
    * `manageScheduleVerify`). The truck's language decides, so a US truck reads "Your trucks", "Pickup times". */
   const t = useT('manageSettings')
+  const settingsLocale = useAppLocale()   // languages-1: the store badges' words in the truck's language
   const tSet = useT('settingsCopy')
   const tSvc = useT('serviceSettings')
   const tOff = useT('offlineProtection')
@@ -11640,8 +11650,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
         : null,
       truckName: truck.name,
+      poweredBy: t('qrPoweredBy'),   // languages-1: the attribution in the truck's language
     })
-  }, [orderUrl, truck.logo_storage_path, truck.name])
+  }, [orderUrl, truck.logo_storage_path, truck.name, t])
 
   /**
    * ── 🔴 THE PREVIEW IS A DOWNSCALED COPY, AND THE SIZE IS A SECURITY DECISION. ────────────────────
@@ -11888,7 +11899,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // Stage A2: the vans the effective plan includes (plans.included_vans, 1 for every plan as seeded); each van above it
   // costs the extra-van price.
   const vansIncluded = includedVans(truck, vanCatalog)
-  const vanAddonLabel = (unit: 'mo' | 'month') => perMonthLabel(vanAddonMinor, planMoneyFormatOf(vanSettings), unit)   // native-prices: a plan price, in the country's own form
+  const vanAddonLabel = (unit: 'mo' | 'month') => perMonthText(vanAddonMinor, planMoneyFormatOf(vanSettings), unit)   // native-prices: a plan price, in the country's own form
 
   const handleAddVanClick = () => {
     const confirmed = window.confirm(t('vans.addConfirm'))
@@ -12341,7 +12352,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           </p>
           {/* 🔴 THE SHARED BADGES — components/StoreBadges.tsx. Apple's badge first and in black is a
               VENDOR RULE, not styling, which is why this is a component and not two <a> tags here. */}
-          <StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} />
+          <StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} />
         </Card>
       )}
 
@@ -14584,7 +14595,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const monthlyLabel = (minor: number | null | undefined, isTrial: boolean, unit: 'mo' | 'month' = 'mo') =>
     minor === null || minor === undefined
       ? (isTrial ? PRICE_WORD.free : null)
-      : minor === 0 ? PRICE_WORD.free : perMonthLabel(minor, cardMoney, unit)
+      : minor === 0 ? PRICE_WORD.free : perMonthText(minor, cardMoney, unit)
   const planMonthly = (row: PlanRow, unit: 'mo' | 'month' = 'mo') =>
     monthlyLabel(planPriceFor(catalog, row.key, countryRow.countryCode)?.monthlyMinor, row.isTrial, unit)
   const currentPriceLabel = monthlyLabel(planNow.monthlyMinor, onTrial)

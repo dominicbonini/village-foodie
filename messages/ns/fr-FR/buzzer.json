@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Le bipeur <b>{number}</b> est attribué à la <b>commande n° {holderId}</b>{hasName, select, yes { ({name})} other {}}. L’attribuer à <b>{hasTarget, select, yes {la commande n° {targetId}} other {cette commande}}</b> ?",
+  "cancel": "Annuler",
+  "take": "Prendre le bipeur {number}",
+  "titleBlocking": "Bipeur pour la commande n° {id} ?",
+  "title": "Choisir un bipeur",
+  "subtitle": "{hasTarget, select, yes {Commande n° {id}} other {Cette commande}}{hasCurrent, select, yes { · bipeur actuel : {current}} other {}}",
+  "allTaken": "{n, plural, one {Le bipeur est déjà sorti. Touchez-le pour le reprendre à une autre commande.} other {Les {count} bipeurs sont tous sortis. Touchez-en un pour le reprendre à une autre commande.}}",
+  "thisOrder": "Cette commande",
+  "noBuzzer": "Aucun bipeur",
+  "done": "Terminé",
+  "lostTitle": "La commande n° {id} n’a pas de bipeur",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}une autre commande a pris le même bipeur pendant que vous étiez hors ligne. Donnez un autre bipeur à ce client.",
+  "dismiss": "Ignorer",
+  "assign": "Attribuer"
+}

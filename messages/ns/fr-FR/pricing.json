@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Votre premier mois est entièrement gratuit, avec toutes les fonctionnalités.} other {Vos # premiers mois sont entièrement gratuits, avec toutes les fonctionnalités.}}",
+    "body": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+  },
+  "card": {
+    "perTruckMonth": "par food truck / mois",
+    "mostTrucks": "Le plus choisi",
+    "tryFree": "Essai gratuit",
+    "seeEvery": "Toutes les fonctionnalités →",
+    "everything": "Tout pour assurer votre service",
+    "everythingIn": "Tout le contenu de l’offre {plan}, plus"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> uniquement sur les commandes en ligne payées par carte. Les commandes au comptoir sont toujours gratuites.",
+    "included": "Les <b>{included}</b> premiers de commandes en ligne sont inclus chaque mois, puis <b>{fee}*</b>. Les commandes au comptoir sont toujours gratuites.",
+    "noFee": "<b>Aucuns frais HatchGrab</b> sur les commandes en ligne, même aux périodes les plus chargées. Un coût mensuel prévisible."
+  },
+  "base": {
+    "walkUp": "Commandes au comptoir et écran cuisine",
+    "online": "Commande en ligne",
+    "preorders": "Précommandes et heures de retrait",
+    "capacity": "Capacité de la cuisine : limiter le nombre de commandes par créneau",
+    "privateEvents": "Événements privés",
+    "printing": "Impression des tickets cuisine",
+    "app": "Appli cuisine iPhone, iPad et Android"
+  },
+  "added": {
+    "whatsapp_replies": "Réponses automatiques WhatsApp",
+    "schedule_graphics": "Publications pour les réseaux sociaux (votre planning Facebook et Instagram) prêtes à publier",
+    "event_types": "Types d’événements et tarifs événementiels personnalisés"
+  },
+  "money": {
+    "unlimitedOrders": "Commandes en ligne illimitées, 0 % de frais HatchGrab",
+    "samePrice": "Le même prix pendant votre mois le plus chargé"
+  },
+  "comingSoon": "Bientôt disponible",
+  "bar": {
+    "title": "Quelle offre me coûte le moins cher ?",
+    "subtitle": "Vos commandes en ligne chaque mois",
+    "first": "Moins de {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Plus de {from} → <b>{plan}</b>",
+    "only": "Quel que soit le volume → <b>{plan}</b>"
+  },
+  "footnote": "* Plus les frais de carte Stripe sur les commandes en ligne payées par carte (tarif actuel {country} : {cardFee}), payés à Stripe et non à HatchGrab. Les commandes au comptoir passent par votre propre TPE : HatchGrab prend 0 %.",
+  "currencyLine": "Prix en {currency} ({code})"
+}

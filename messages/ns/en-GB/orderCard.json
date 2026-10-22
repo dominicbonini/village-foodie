@@ -42,5 +42,6 @@
   "cancel": "Cancel",
   "markPaidAndCollected": "Mark paid & collected",
   "cashIcon": "💷",
-  "chargesSummary": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}"
+  "chargesSummary": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}",
+  "reverted": "Order #{id} reverted"
 }

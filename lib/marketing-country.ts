@@ -29,7 +29,9 @@ export const MARKETING_COUNTRY = 'GB'
 // anz-1 (21 October 2026): Australia /au and New Zealand /nz, on the same terms — invisible until each has an enabled row.
 // canada-1 (22 October 2026): Canada's address, /ca. While CA is switched off (or has no row) it 302s to /uk like any
 // switched-off country, and it is in no router pick, hreflang set, sitemap or menu.
-export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca' }
+// france-1 (22 October 2026): France's address, /fr — the first page in a language other than English (fr-FR). Switched
+// off, it 302s to /uk like the others.
+export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk', US: 'us', IE: 'ie', AU: 'au', NZ: 'nz', CA: 'ca', FR: 'fr' }
 
 /** The three marketing pages that have a country address. */
 export type MarketingPage = 'landing' | 'features' | 'compare'

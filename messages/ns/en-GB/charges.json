@@ -1,6 +1,7 @@
 {
   "subtotal": "Subtotal",
   "taxFallback": "Tax",
+  "taxIncluded": "Includes {label}",
   "serviceFeeCustomer": "Online service fee",
   "serviceFee": "Service fee",
   "cardFee": "Card fee",

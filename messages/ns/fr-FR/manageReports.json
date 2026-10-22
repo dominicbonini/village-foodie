@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Plage de dates",
+    "event": "📍 Événement",
+    "filterBy": "Filtrer par",
+    "show": "Afficher",
+    "range": "<from></from><sep>au</sep><until></until>",
+    "selectEvent": "Choisissez un événement…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Événement",
+    "viewReport": "Voir le rapport",
+    "loading": "Chargement…",
+    "orders": "📋 Commandes",
+    "items": "📦 Articles",
+    "exportCsv": "⬇ Exporter en CSV"
+  },
+  "empty": {
+    "noOrders": "Aucune commande sur cette période.",
+    "selectEvent": "Choisissez un événement ci-dessus pour afficher son rapport."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} commande} other {{count} commandes}} · {total}"
+  },
+  "revenue": {
+    "title": "Détail du chiffre d’affaires",
+    "deals": "CA des formules",
+    "modifiers": "Suppléments sur options",
+    "foodSales": "Ventes de plats",
+    "total": "Total",
+    "other": "Autre",
+    "tax": "Taxes",
+    "tips": "Pourboires",
+    "serviceFees": "Frais de service",
+    "cardFees": "Frais de carte"
+  },
+  "itemsSold": {
+    "title": "Articles vendus"
+  },
+  "dealsCard": {
+    "title": "Formules"
+  },
+  "custom": {
+    "title": "Personnalisations",
+    "paidModifiers": "Options payantes",
+    "customerNotes": "Remarques des clients",
+    "note": "« {note} »"
+  },
+  "table": {
+    "item": "Article",
+    "modifier": "Option",
+    "qty": "Qté",
+    "total": "Total",
+    "date": "Date",
+    "time": "Heure",
+    "channel": "Canal"
+  },
+  "breakdown": {
+    "orders": "Détail des commandes",
+    "items": "Détail des articles"
+  },
+  "channel": {
+    "online": "En ligne",
+    "walkUp": "Au comptoir"
+  },
+  "csv": {
+    "orderId": "ID de commande",
+    "date": "Date",
+    "event": "Événement",
+    "timePlaced": "Heure de commande",
+    "collectionTime": "Heure de retrait",
+    "customerName": "Nom du client",
+    "orderType": "Type de commande",
+    "items": "Articles",
+    "deals": "Formules",
+    "modifiers": "Options",
+    "notes": "Remarques",
+    "subtotal": "Sous-total",
+    "tip": "Pourboire",
+    "serviceFee": "Frais de service",
+    "total": "Total",
+    "itemName": "Nom de l’article",
+    "qty": "Qté",
+    "unitPrice": "Prix unitaire",
+    "itemTotal": "Total article",
+    "orderTotal": "Total commande",
+    "unknownEvent": "Événement inconnu",
+    "asap": "Au plus tôt",
+    "unknownCustomer": "Inconnu",
+    "customerOnline": "Client en ligne",
+    "placedByTruck": "Passée par le food truck"
+  }
+}

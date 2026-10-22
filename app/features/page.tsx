@@ -40,10 +40,14 @@ import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'  
 // Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
 // from this boundary.
 import { PageLocale } from '@/lib/i18n/page-locale'
+// languages-1: a non-English page hands its browser the words its client components read (none for English).
+import { pageSeedProps } from '@/lib/i18n/page-words'
 import { localeOfCountry } from '@/lib/i18n/locales'
 import { PlanTable, planTableNotes } from '@/components/pricing/PlanTable'
 import { FEATURE_TABLE } from '@/lib/feature-table'
 import { getPlanCatalog } from '@/lib/plans-server'
+// languages-1: plan names in the page's language (lib/plan-names.ts) — the same catalogue for every English locale.
+import { localizePlans } from '@/lib/plan-names'
 import { offerPlans, offerTrialMonths, upgradeSummary } from '@/lib/plan-offer'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import { currencyLineOf } from '@/lib/country-settings-types'
@@ -73,7 +77,9 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
   const at = visitor.countryPage && countryPageAlternates('features', visitor.settings.countryCode, visitor.countryPage.alternates)
   // 🔴 STAGE B: the description named the retired tiers ("Starter, Pro and Max") and "your first month". It now names
   // the public plans and the trial length from the data — the one SEO change on this page (the title is unchanged).
-  const catalog = await getPlanCatalog()
+  const catalog = localizePlans(await getPlanCatalog(), visitor.settings.locale)
+  // languages-1: the title's words in the page's language (`featuresPage.metaTitle`; en-GB exactly as before).
+  const title = translatorFor(visitor.settings.locale, 'featuresPage')('metaTitle', { country: c.short })
   const description = translatorFor(visitor.settings.locale, 'planTable')('meta.description', {
     plans: new Intl.ListFormat(visitor.settings.locale, { type: 'conjunction' }).format(offerPlans(catalog, visitor.settings.countryCode).map(p => p.plan.name)),
     months: offerTrialMonths(catalog) ?? 0,
@@ -83,7 +89,7 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
     // 🔴 `absolute`, NOT a bare string — app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
     // so a plain string renders the brand twice. The landing page carries the same note and the same fix,
     // and it was caught there in the SERVED <head> rather than in the source.
-    title: { absolute: `Plans & features compared — HatchGrab ${c.short}` },
+    title: { absolute: title },
 
     // ⚠️ IT NAMES THE PLANS AND THE FREE TRIAL, which is what the page actually answers. It deliberately
     // does NOT repeat the landing's "not a POS" boundary — that line is there to make the wrong buyer
@@ -102,14 +108,14 @@ export async function generateMetadata({ params, searchParams }: { params?: Prom
       type: 'website',
       siteName: 'HatchGrab',
       url: at ? at.canonical : 'https://www.hatchgrab.com/features',
-      title: `Plans & features compared — HatchGrab ${c.short}`,
+      title: title,
       description,
       images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
       locale: c.ogLocale,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Plans & features compared — HatchGrab ${c.short}`,
+      title: title,
       description,
       images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
     },
@@ -153,7 +159,7 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   const visitor = await resolveVisitorCountry((await searchParams)?.country, { segment: (await params)?.country, page: 'features' })
   const settings = visitor.settings
   // 🔴 STAGE B: everything below the nav is the plan data, in the country's words.
-  const catalog = await getPlanCatalog()
+  const catalog = localizePlans(await getPlanCatalog(), settings.locale)
   const plans = offerPlans(catalog, settings.countryCode)
   const ups = upgradeSummary(catalog, plans)
   const t = translatorFor(settings.locale, 'planTable')
@@ -168,7 +174,7 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
   const details = Object.fromEntries(FEATURE_TABLE.map(r => [r.id, tPage(`detail.${r.id}` as never)]))
 
   return (
-    <PageLocale locale={localeOfCountry(settings)}>
+    <PageLocale locale={localeOfCountry(settings)} {...pageSeedProps(settings.locale, 'marketing')}>
     <DemoModalProvider>
       <div className={CHROME}>
         {/* ⚠️ `landingHref` IS NOT OPTIONAL ON A CHILD ROUTE. The nav's logo and its Pricing link are

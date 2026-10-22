@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Annulé",
+    "finished": "Terminé",
+    "unconfirmed": "Non confirmé",
+    "confirmed": "Confirmé",
+    "open": "Ouvert maintenant",
+    "closed": "Fermé"
+  },
+  "sections": {
+    "label": "Sections du planning",
+    "events": "Événements",
+    "eventTypes": "Types d’événements"
+  },
+  "header": {
+    "title": "Planning",
+    "upcoming": "{count} à venir",
+    "import": "✨ Importer le planning",
+    "importHint": "photo, PDF ou texte",
+    "addEvent": "+ Ajouter un événement",
+    "scraperAuto": "Recherche automatique des événements sur votre site web",
+    "changeInSettings": "Modifier dans les paramètres",
+    "scraperManual": "Vous gérez votre planning manuellement"
+  },
+  "empty": {
+    "title": "Aucun événement à venir",
+    "body": "Les événements récupérés sur vos réseaux sociaux et votre calendrier de réservations apparaîtront ici pour que vous les confirmiez"
+  },
+  "list": {
+    "openNow": "Ouvert maintenant",
+    "needsApproval": "En attente de votre approbation",
+    "needsConfirmation": "À confirmer",
+    "confirmed": "Confirmés",
+    "past": "Événements passés ({count})",
+    "found": "Nous avons trouvé {count, plural, one {# événement pour vous — vérifiez-le et approuvez-le avant sa mise en ligne.} other {# événements pour vous — vérifiez-les et approuvez-les avant leur mise en ligne.}}"
+  },
+  "card": {
+    "addName": "Ajouter un nom",
+    "timeNeeded": "⚠ Horaire requis",
+    "setTimeFirst": "Indiquez d’abord un horaire",
+    "confirm": "Confirmer",
+    "copy": "Copier",
+    "edit": "Modifier",
+    "makePost": "Créer une publication",
+    "cancel": "Annuler",
+    "approve": "Approuver",
+    "reject": "Refuser",
+    "stock": "⚠️ Stock",
+    "stockHidden": "Masqué — {reason}",
+    "noDeals": "Aucune formule active",
+    "dealsActive": "{count, plural, one {# formule active} other {# formules actives}} · {names}{hidden, plural, =0 {} one { · # masquée} other { · # masquées}}",
+    "approveNeedsTimes": "L’approbation est désactivée tant que cet événement n’a pas d’heure de début et de fin — ajoutez-les via Modifier."
+  },
+  "guessed": {
+    "title": "📍 Nous avons deviné ce lieu",
+    "body": "Plusieurs lieux correspondent à <b>{venue}</b>, nous avons donc choisi le plus probable{hasTown, select, yes { à <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Vérifiez qu’il s’agit du bon avant d’approuver — s’il est erroné, utilisez <b>Modifier</b> pour corriger la zone ou {postal}, sinon les clients seront envoyés au mauvais endroit.",
+    "thisVenue": "ce lieu"
+  },
+  "noLocation": {
+    "title": "📍 Pas encore de localisation",
+    "body": "Nous n’avons pas pu placer ce lieu sur le plan : il sera listé, mais sans repère sur le plan. Ajoutez {postal} via <b>Modifier</b> pour le placer sur le plan."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Conflit possible} other {Conflits possibles}} — à vérifier avant {pending, select, yes {d’approuver} other {de confirmer}}",
+    "duplicate": "Cet événement semble identique à un événement que vous avez déjà.",
+    "review": "Même lieu et même date, horaire différent — s’agit-il du même événement avec un horaire modifié, ou d’un créneau distinct ? Vérifiez avant d’approuver.",
+    "already": "Déjà dans votre planning : <b>{venue}</b>{details} ({status, select, confirmed {confirmé} open {ouvert} other {{status}}})",
+    "unnamedVenue": "Lieu sans nom",
+    "ack": "Oui, ce sont des événements différents — {pending, select, yes {approuver} other {confirmer}} quand même",
+    "cancel": "Annuler",
+    "overlap": "L’horaire de cet événement chevauche celui d’un autre événement le même jour — un même camion ne peut pas être à deux endroits à la fois. Vérifiez avant d’approuver."
+  },
+  "toast": {
+    "loadFailed": "Échec du chargement des événements",
+    "linkFailed": "Impossible de charger le lien",
+    "placeTypeFailed": "Événement enregistré. Le type habituel du lieu {place} ne l’a pas été — {reason}.",
+    "placeTypeFailedReason": "l’enregistrement n’a pas abouti",
+    "eventUpdated": "Événement mis à jour",
+    "eventAdded": "Événement ajouté",
+    "eventsSaved": "{count, plural, one {# événement enregistré} other {# événements enregistrés}}",
+    "saveEventsFailed": "Échec de l’enregistrement des événements",
+    "needsTime": "Ajoutez une heure de début et de fin avant d’approuver — cet événement a besoin d’un horaire pour être mis en ligne.",
+    "addStartTime": "Ajoutez une heure de début",
+    "addEndTime": "Ajoutez une heure de fin",
+    "chooseTruckBefore": "Choisissez le food truck qui assure cet événement avant d’approuver.",
+    "chooseTruck": "Choisissez le food truck qui assure cet événement",
+    "eventConfirmed": "Événement confirmé",
+    "eventRejected": "Événement refusé",
+    "undo": "↩ Annuler",
+    "eventRestored": "Événement restauré",
+    "restoreFailed": "Échec de la restauration",
+    "eventCancelled": "Événement annulé",
+    "eventCancelledOrders": "Événement annulé · {count, plural, one {# commande annulée} other {# commandes annulées}}",
+    "placeHidden": "Lieu masqué",
+    "placeShown": "Lieu de nouveau affiché",
+    "saveThatFailed": "Impossible d’enregistrer."
+  },
+  "link": {
+    "label": "Lien privé et QR code",
+    "close": "Fermer"
+  }
+}

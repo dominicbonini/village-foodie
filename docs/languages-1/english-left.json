@@ -1,0 +1,511 @@
+{
+ "1a/1a/api/US|cancel|noCancels": [
+  "cancellations",
+  "accepted"
+ ],
+ "1b/components/US|reject|none|note": [
+  "Sorry"
+ ],
+ "1b/components/US|reject|sold_out|note": [
+  "Sorry"
+ ],
+ "1b/components/US|reject|too_busy|note": [
+  "Sorry"
+ ],
+ "1b/components/US|reject|closing_soon|note": [
+  "Sorry"
+ ],
+ "1b/components/US|reject|other|note": [
+  "Sorry"
+ ],
+ "1b/components/US|cancel|none|note": [
+  "Sorry"
+ ],
+ "1b/components/US|cancel|vehicle_breakdown|note": [
+  "Sorry"
+ ],
+ "1b/components/US|cancel|weather|note": [
+  "Sorry"
+ ],
+ "1b/components/US|cancel|venue_issue|note": [
+  "Sorry"
+ ],
+ "1b/components/US|cancel|personal_emergency|note": [
+  "Sorry"
+ ],
+ "1b/components/US|cancel|other|note": [
+  "Sorry"
+ ],
+ "1b/printing/preview|US|dup|58": [
+  "rail"
+ ],
+ "1b/printing/preview|US|dup|80": [
+  "rail"
+ ],
+ "1c/api/US|signup|rateLimitedIp": [
+  "attempts"
+ ],
+ "1c/api/US|signup|rateLimitedEmail": [
+  "attempts"
+ ],
+ "1c/api/US|cancel-email-change|noChangeId": [
+  "refresh"
+ ],
+ "1c/api/US|change-email|brevoFails": [
+  "requested"
+ ],
+ "1c/api/US|change-email|ok": [
+  "requested"
+ ],
+ "1c/api/US|forgot-password|brevoFails": [
+  "won"
+ ],
+ "1c/api/US|forgot-password|ok": [
+  "won"
+ ],
+ "1c/api/US|resend-verification|noChangeId": [
+  "refresh"
+ ],
+ "1c/api/US|resend-verification|brevoFails": [
+  "requested"
+ ],
+ "1c/api/US|resend-verification|ok": [
+  "requested"
+ ],
+ "1c/api/US|demo|rateLimited": [
+  "few",
+  "demos"
+ ],
+ "1c/api/US|build-request|ok": [
+  "requested",
+  "Someone",
+  "automatically"
+ ],
+ "1c/api/US|build-request|okNoTruck": [
+  "requested",
+  "Someone",
+  "automatically"
+ ],
+ "1c/api/US|deletion|post|trucksFail": [
+  "stamp"
+ ],
+ "1c/api/US|deletion|post|ok": [
+  "requested",
+  "automatically"
+ ],
+ "1c/api/US|deletion|post|okNoTrucks": [
+  "immediately",
+  "mind",
+  "personal",
+  "keep",
+  "records",
+  "retain",
+  "requested",
+  "automatically"
+ ],
+ "1c/auth/US|verifySuccess|plain": [
+  "Signing"
+ ],
+ "1c/auth/US|verifySuccess|escaped": [
+  "Signing"
+ ],
+ "1c/demo/US|rows|return|build": [
+  "Cheeseburger",
+  "Double",
+  "Buttermilk",
+  "Halloumi",
+  "Stack",
+  "Smash",
+  "Skin",
+  "Fries",
+  "Onion",
+  "Rings",
+  "Craft",
+  "log",
+  "Nadia"
+ ],
+ "1c/demo/US|rows|return|visit": [
+  "Cheeseburger",
+  "Double",
+  "Onion",
+  "Rings",
+  "Halloumi",
+  "Stack",
+  "Skin",
+  "Fries",
+  "Smash",
+  "Craft",
+  "Buttermilk",
+  "Nadia",
+  "log"
+ ],
+ "1c/demo/US|rows|return|restart": [
+  "Cheeseburger",
+  "Double",
+  "Onion",
+  "Rings",
+  "Halloumi",
+  "Stack",
+  "Skin",
+  "Fries",
+  "Smash",
+  "Craft",
+  "Buttermilk",
+  "Nadia",
+  "log"
+ ],
+ "1c/setup/US|baseAnswerErrors|townTooLong": [
+  "most"
+ ],
+ "1c/setup/US|cuisine|three": [
+  "Mash"
+ ],
+ "1c/setup/US|provision|operator|minimal": [
+  "notification"
+ ],
+ "1c/setup/US|provision|operator|regionCode": [
+  "notification"
+ ],
+ "1c/setup/US|provision|operator|public": [
+  "immediately",
+  "notification"
+ ],
+ "1c/setup/US|provision|operator|otherCuisine": [
+  "notification"
+ ],
+ "1c/setup/US|provision|refuse|countryUnknown": [
+  "refusing",
+  "figures"
+ ],
+ "1d/api/US|manage|staff": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d/api/US|oos|manage|staff.invite_team_member": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d/api/US|eventTypes|loadWithPricesVanNoName": [
+  "uncategorised"
+ ],
+ "1d/api/US|events|noTruck": [
+  "refresh"
+ ],
+ "1d/api/US|affected|missing": [
+  "refresh"
+ ],
+ "1d/copy/US|serviceSettings|EVENT_ITEMS_CARD_DESCRIPTION": [
+  "limits",
+  "effect",
+  "immediately"
+ ],
+ "1d/copy/US|serviceSettings|EVENT_PRICE_EDIT_NOTE": [
+  "limits"
+ ],
+ "1d/copy/US|serviceSettings|EVENT_TYPES_FOOTER_STANDARD": [
+  "Changing"
+ ],
+ "1d/copy/US|serviceSettings|ITEM_PRICES_HIDE": [
+  "Hide"
+ ],
+ "1d/copy/US|serviceSettings|MATCH_STANDARD_CONFIRM": [
+  "cleared"
+ ],
+ "1d/copy/US|serviceSettings|PLACE_TYPE_HELPER": [
+  "picks",
+  "whenever"
+ ],
+ "1d/copy/US|serviceSettings|PRICES_LIVE_NOTICE": [
+  "placed",
+  "keep",
+  "theirs"
+ ],
+ "1d/copy/US|serviceSettings|PRICE_ITEMS_CLOSE": [
+  "Hide"
+ ],
+ "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM": [
+  "copies"
+ ],
+ "1d/copy/US|serviceSettings|TYPE_FOLLOWS_VAN_TITLE": [
+  "Follows"
+ ],
+ "1d/copy/US|serviceSettings|priceModeChoices|0": [
+  "myself"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_HELP": [
+  "turned",
+  "automatically",
+  "emailed",
+  "know"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL": [
+  "Keep",
+  "yourself"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_CARD_DESCRIPTION": [
+  "Decides",
+  "happens",
+  "drops"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_DISABLE_CONFIRM": [
+  "Disable",
+  "loses",
+  "disable",
+  "reliable"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_ENABLE_CONFIRM": [
+  "keep",
+  "flowing",
+  "stay",
+  "loses",
+  "sure"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER": [
+  "keep",
+  "goes",
+  "loses",
+  "internet",
+  "either",
+  "pausing",
+  "turning",
+  "whichever"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_BODY": [
+  "goes",
+  "loses",
+  "internet",
+  "either",
+  "pausing",
+  "turning",
+  "whichever"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_LEAD": [
+  "keep"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_MODES": [
+  "Keep",
+  "yourself",
+  "turned",
+  "automatically",
+  "emailed",
+  "know"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_PURPOSE": [
+  "loses",
+  "arriving"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER": [
+  "Keep"
+ ],
+ "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_SWITCH_HELP": [
+  "happens",
+  "loses"
+ ],
+ "1d/copy/US|stock|DEFAULT_STOCK_SCOPE_NOTE": [
+  "keep"
+ ],
+ "1d/copy/US|settingsCopy|SETTING_COPY": [
+  "automatically",
+  "requested",
+  "bumps",
+  "emailed",
+  "whenever",
+  "marked",
+  "buzzers",
+  "gave",
+  "know",
+  "who"
+ ],
+ "1d/copy/US|settingsCopy|TRIAL_NOT_STARTED_BILLING": [
+  "starts"
+ ],
+ "1d/copy/US|settingsCopy|TRIAL_NOT_STARTED_BY_EVENTS": [
+  "starts"
+ ],
+ "1d/copy/US|settingsCopy|WHERE_YOU_TRADE_COPY": [
+  "tied",
+  "guessed"
+ ],
+ "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC": [
+  "most"
+ ],
+ "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_EXAMPLE": [
+  "minutes",
+  "limits",
+  "maximum",
+  "keep"
+ ],
+ "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_NO_LIMIT": [
+  "infinity"
+ ],
+ "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING": [
+  "properly"
+ ],
+ "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER": [
+  "works",
+  "minutes",
+  "automatically",
+  "told",
+  "instantly",
+  "maximum"
+ ],
+ "1d/copy/US|kitchenCapacity|formatPrepSecs|0": [
+  "Instant"
+ ],
+ "1d/copy/US|kitchenCapacity|formatPrepSecs|6": [
+  "Instant"
+ ],
+ "1d/copy/US|kitchenCapacity|prepTimeOptionsFor|0": [
+  "Instant"
+ ],
+ "1d/copy/US|kitchenCapacity|prepTimeOptionsFor|1": [
+  "Instant"
+ ],
+ "1d/copy/US|kitchenCapacity|prepTimeOptionsFor|2": [
+  "Instant"
+ ],
+ "1d/copy/US|privateEvents|CONFIRM_TO_PRIVATE": [
+  "Guests"
+ ],
+ "1d/copy/US|privateEvents|PRIVATE_LINK_STANDARD_CELL": [
+  "everyone"
+ ],
+ "1d/copy/US|privateEvents|PRIVATE_NO_SINGLE_POST": [
+  "appear"
+ ],
+ "1d/copy/US|privateEvents|SCRAPED_PRIVATE_HINT": [
+  "marked",
+  "everyone"
+ ],
+ "1d2/api/US|manage|staff.invite_team_member": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d2/api/US|manage|staff.remove_team_member": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d2/api/US|manage|staff.sg_merge_place": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d2/api/US|manage|staff.save_embed_setup": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d2/api/US|manage|staff.domain_provision": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d2/api/US|manage|staff.domain_send_instructions": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d2/api/US|manage|domainCheck.notYet": [
+  "since"
+ ],
+ "1d2/api/US|manage|instructions.sendFails": [
+  "Target"
+ ],
+ "1d2/api/US|manage|instructions.ok": [
+  "Target"
+ ],
+ "1d2/api/US|manage|updateMember.staffOther": [
+  "insufficient",
+  "permissions"
+ ],
+ "1d2/api/US|manage|updateMember.managerOnManager": [
+  "managers"
+ ],
+ "1d2/api/US|manage|invite.managerInvitesManager": [
+  "managers"
+ ],
+ "1d2/api/US|manage|invite.managerInvitesOwner": [
+  "managers"
+ ],
+ "1d2/api/US|manage|removeTeam.managerOnManager": [
+  "managers"
+ ],
+ "1d2/api/US|manage|merge.otherWay": [
+  "cycle"
+ ],
+ "1d2/api/US|weeklyPost|overview.migration": [
+  "pictures"
+ ],
+ "1d2/api/US|weeklyPost|saveDesign.invalid": [
+  "version"
+ ],
+ "1d2/api/US|weeklyPost|render.invalid": [
+  "version"
+ ],
+ "1d2/api/US|weeklyPost|placeLayout.invalid": [
+  "version"
+ ],
+ "1d2/api/US|weeklyPost|eventDesign.invalid": [
+  "version"
+ ],
+ "1d2/api/US|weeklyPost|eventRender.invalid": [
+  "version"
+ ],
+ "1d2/api/US|weeklyPost|fontChoose.libraryUnreachable": [
+  "answered"
+ ],
+ "1d2/api/US|weeklyPost|fontSample.notYours": [
+  "yours"
+ ],
+ "1d2/api/US|weeklyPost|fontRename.notYours": [
+  "yours"
+ ],
+ "1d2/api/US|weeklyPost|fontRemove.notYours": [
+  "yours"
+ ],
+ "1d2/api/US|weeklyPost|socialTag.migration": [
+  "pictures"
+ ],
+ "1d2/api/US|weeklyPost|captionSave.migration": [
+  "pictures"
+ ],
+ "1d2/api/US|weeklyPostGET|uploadedFont": [
+  "served"
+ ],
+ "1d2/api/US|waSignup|badKind": [
+  "unrecognised"
+ ],
+ "1d2/payments/US|copy|checkCharge|feeOverPctDecimal": [
+  "most"
+ ],
+ "1d2/poster/US|caption|week.weekCaption": [
+  "sorry"
+ ],
+ "1d2/poster/US|qr|poster.standard": [
+  "Powered"
+ ],
+ "1d2/poster/US|qr|poster.branded": [
+  "Powered"
+ ],
+ "1d2/poster/US|qr|poster.longName": [
+  "Powered"
+ ],
+ "1d2/poster/US|qr|withLogo.placeholder": [
+  "system"
+ ],
+ "1d2/poster/US|locale|defaults": [
+  "Powered"
+ ],
+ "1d2/wada/US|domain|record|cloudflare": [
+  "Target"
+ ],
+ "1e/pages/landing|US|meta": [
+  "Ltd",
+  "Bonini"
+ ],
+ "1e/parts/legal|US|meta-privacy": [
+  "Ltd",
+  "collects",
+  "uses",
+  "personal"
+ ],
+ "1e/parts/legal|US|meta-terms": [
+  "using"
+ ]
+}

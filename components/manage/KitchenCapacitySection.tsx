@@ -41,7 +41,7 @@ import {
 } from '@/lib/kitchen-capacity'
 /* Language Phase 1d: every word here is `kitchenCapacity` in messages/ — the explainer pair is the SAME message the
  * dashboard's capacity card reads, so the two cannot drift again. */
-import { useT } from '@/lib/i18n/use-t'
+import { useAppLocale, useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/kitchenCapacity'
 
 /** Only what this screen reads from a category. The Menu tab already has these. */
@@ -313,6 +313,7 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
   updateVanSetting: (vanId: string, field: 'kitchen_capacity' | 'capacity_window_mins', value: number | null) => Promise<void>
 }) {
   const t = useT('kitchenCapacity')
+  const locale = useAppLocale()   // languages-1: the prep-time words in the truck's language
   return (
     /* ══════════════════════════════════════════════════════════════════════════════════════════
        🔴 THE MOVED CARD — FROM HERE DOWN THE MARKUP AND THE WORDING ARE UNCHANGED
@@ -381,7 +382,7 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
           onChange={e => void updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
           className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
           {Array.from({ length: 20 }, (_, i) => i + 1).concat(((van.capacity_window_mins ?? 5) > 20) ? [van.capacity_window_mins as number] : []).map(n => (
-            <option key={n} value={n}>{t('windowEvery', { duration: formatPrepSecs(n * 60) })}</option>
+            <option key={n} value={n}>{t('windowEvery', { duration: formatPrepSecs(n * 60, locale) })}</option>
           ))}
         </select>
         <span />

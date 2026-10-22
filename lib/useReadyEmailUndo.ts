@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { ShowToast } from './useToasts'
+import { useT } from '@/lib/i18n/use-t'
+import '@/lib/i18n/catalog/orderCard'
 
 // Shared "mark ready" deferred-email + undo machinery (extracted verbatim from the dashboard). Owns the
 // per-order email timers, the 4s schedule, the undo (cancel email + revert status), and the
@@ -17,6 +19,7 @@ export function useReadyEmailUndo(opts: {
   onUndoRestore?: (orderKey: string) => void
 }) {
   const { token, pin, showToast, refetch, onUndoRestore } = opts
+  const tCard = useT('orderCard')   // languages-1: the undo toast in the truck's language
   // Per-order deferred "ready" email timers — each Ready click fires the customer email after a 4s undo
   // window (independent of which toast is visible). undo clears the order's timer; tab-close flushes them.
   const pendingReadyEmails = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
@@ -40,7 +43,7 @@ export function useReadyEmailUndo(opts: {
     const t = pendingReadyEmails.current.get(orderKey); if (t) clearTimeout(t); pendingReadyEmails.current.delete(orderKey)
     onUndoRestore?.(orderKey)
     fetch('/api/dashboard/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, pin, action: 'undo_ready', order_key: orderKey }) }).then(() => refetch()).catch(() => {})
-    showToast(`Order #${displayId} reverted`)
+    showToast(tCard('reverted', { id: String(displayId) }))
   }
   // FLUSH on tab-close / unmount: any still-pending ready email is sent IMMEDIATELY via sendBeacon (a
   // normal fetch would be killed mid-unload). Clearing the timer first prevents a double-send; the

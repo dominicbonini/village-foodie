@@ -90,8 +90,11 @@ function countLabel(entries: Array<[string, number]>, rankOf: (cat: string) => n
  * ⚠️ THIS IS NOT THE POPUP. lib/slot-fit-message.ts opens "Can't be ready by 18:45" and lists every window
  * and its free room; that is the one place the operator reads WHY in full, and its LINES are untouched.
  */
-export function formatFitSuffix(tone: SlotTone, doesNotFit: boolean, hasLabel: boolean): string {
+// languages-1 (22 October 2026): `words` — the suffix in the truck's language (`addOrder.fitSuffix`), passed by the screen. This
+// module stays import-free (the engine harnesses compile lib/ on its own); the English below is its default.
+export function formatFitSuffix(tone: SlotTone, doesNotFit: boolean, hasLabel: boolean, words?: (hasLabel: boolean) => string): string {
   if (!doesNotFit || tone === 'red') return ''
+  if (words) return words(hasLabel)
   return hasLabel ? ' · Not enough time' : ' Not enough time'
 }
 

@@ -213,8 +213,10 @@ function panelLines(Panel, X, units, n, on, endMins, cx) {
   // strips the wording the popup DOES carry for the same purpose — each window's free room — and the
   // check below catches it.
   { const V = compile(variantRoot('v4b', [['lib/slot-fit-message.ts',
-      "        else if (win.free >= win.share) lines.push(`${span} · ${win.free} free`)",
-      "        else if (win.free >= win.share) lines.push(`${span}`)"]]), ['lib/slot-fit-message.ts', 'lib/slot-availability.ts'], 'dotV4b')
+      // ⚠️ RE-PINNED (languages-1, 22 October 2026): the line now passes its English template through `say` (the words come
+      // from the screen when it gives them, docs/languages-1-report.md §2); the broken variant drops the count from the template.
+      "        else if (win.free >= win.share) lines.push(say('windowFree', { ...sv, free: String(win.free) }, `${span} · ${win.free} free`))",
+      "        else if (win.free >= win.share) lines.push(say('windowFree', { ...sv, free: String(win.free) }, `${span}`))"]]), ['lib/slot-fit-message.ts', 'lib/slot-availability.ts'], 'dotV4b')
     const M = V.req('lib/slot-fit-message.js'), EV = V.req('lib/slot-availability.js')
     const back = EV.projectBackwardOccupancy({ '17:00': { pizza: 5 } }, PIZZA15, 17 * 60, null, 5, [], true)
     const fit = EV.fitOrderBackward(back, mins('17:05'), { pizza: 9 }, PIZZA15, null, 17 * 60, 5, NEG, {}, true)
@@ -248,7 +250,8 @@ function panelLines(Panel, X, units, n, on, endMins, cx) {
   // V8 — the POPUP's title shortened to match the label. It must not be: the popup is the one place the
   // operator reads WHY, and its title is the sentence that names the order.
   { const V = compile(variantRoot('v8', [['lib/slot-fit-message.ts',
-      "  return { title: `Can\\u2019t be ready by ${slotLabel}`, lines }", "  return { title: `Order won't fit at ${slotLabel}`, lines }"]]), ['lib/slot-fit-message.ts', 'lib/slot-availability.ts'], 'dotV8')
+      // ⚠️ RE-PINNED (languages-1, 22 October 2026): the title's English template is now `say`'s default (docs/languages-1-report.md §2).
+      "  return { title: say('title', { slot: slotLabel }, `Can\\u2019t be ready by ${slotLabel}`), lines }", "  return { title: say('title', { slot: slotLabel }, `Order won't fit at ${slotLabel}`), lines }"]]), ['lib/slot-fit-message.ts', 'lib/slot-availability.ts'], 'dotV8')
     const M = V.req('lib/slot-fit-message.js'), EV = V.req('lib/slot-availability.js')
     const back = EV.projectBackwardOccupancy({ '17:00': { pizza: 5 } }, PIZZA15, 17 * 60, null, 5, [], true)
     const fit = EV.fitOrderBackward(back, mins('17:05'), { pizza: 9 }, PIZZA15, null, 17 * 60, 5, NEG, {}, true)
@@ -325,7 +328,8 @@ function panelLines(Panel, X, units, n, on, endMins, cx) {
   }
   { // THE FIT SUFFIX — "Not enough time", green and amber only, its two separator forms.
     const panel = fs.readFileSync(path.join(REPO, 'components/dashboard/AddOrderPanel.tsx'), 'utf8')
-    check(/\{formatFitSuffix\(ind\.tone, wontFit, !!label\)\}/.test(panel), 'the option calls the ONE shared formatter with the dot\'s tone')
+    // ⚠️ RE-PINNED (languages-1, 22 October 2026): + the words in the truck's language (`fitSuffixWords`; docs/languages-1-report.md §2).
+    check(/\{formatFitSuffix\(ind\.tone, wontFit, !!label(, fitSuffixWords)?\)\}/.test(panel), 'the option calls the ONE shared formatter with the dot\'s tone')
     check(!/Order won/.test(panel.replace(/\/\/[^\n]*/g, '')), 'the panel spells no fit wording of its own (comments aside)')
     // A GREEN time that does not fit: an empty board and 9 pizzas early in the event (the pre-open lead
     // refuses them), so the dot has no label of its own and the suffix stands alone with no dash.

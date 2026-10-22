@@ -183,6 +183,13 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing .nav-only-sm { display: inline-flex; font-size: .82rem; padding: .4rem .45rem; }
   .hg-landing .nav-r { gap: .25rem; }
   .hg-landing .nav-cta { padding-inline: .9rem; }
+  /* languages-1 (22 October 2026): another language's "Log in" and CTA run longer than English's ("Se connecter",
+     "Importer le menu"), and the two no longer fit beside the logo at 390px. On a NON-English page only, the two buttons
+     may wrap their label onto a second line (centred, tight) instead of pushing the bar sideways. ⛔ English pages match
+     none of this (`:lang(en)`), so their nav is exactly as above. */
+  :root:not(:lang(en)) .hg-landing .nav-r { min-width: 0; }
+  :root:not(:lang(en)) .hg-landing .nav-r .btn { white-space: normal; text-align: center; line-height: 1.15; min-width: 0; }
+  :root:not(:lang(en)) .hg-landing .nav-cta { padding-inline: .6rem; }
 }
 
 /* ---------- hero ---------- */
@@ -912,6 +919,9 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    Manage › Billing's table (plan-table.css) is untouched. */
 .hg-landing .pt-features .pt-col { display: flex; flex-direction: column; }
 .hg-landing .pt-features .pt-col-price { margin-top: auto; padding-top: .1rem; }
+/* languages-1 (22 October 2026): another language's "{price} / month" can outgrow a phone's narrow plan column; on a
+   NON-English page the price may wrap (the bottom-aligned column above keeps the prices level). English: unchanged. */
+:root:not(:lang(en)) .hg-landing .pt-features .pt-col-price { white-space: normal; }
 @media(min-width:620px){
   .hg-landing .pt-features .pt-col-name { font-size: .95rem; }
   .hg-landing .pt-features .pt-col-price { font-size: .9rem; }

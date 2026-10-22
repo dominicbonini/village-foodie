@@ -23,6 +23,10 @@
 //     `formatOneTime`) and never pass a locale here, so no poster changes.
 // Storage is untouched: times stay "HH:MM:SS", instants stay UTC.
 
+// languages-1 (22 October 2026): a NON-ENGLISH locale's dates and times are Intl's own (no English ordinal, no forced "/" or
+// "pm"); every English locale keeps the hand-built forms below exactly. Kept import-free: the engine harnesses compile this file alone.
+const isEnglish = (tag: string | null | undefined): boolean => (String(tag ?? '').trim().split(/[-_]/)[0].toLowerCase() || 'en') === 'en'
+
 /** A truck's time, as the screens need it. From country_settings + trucks.timezone (lib/truck-time.ts). */
 export type TimeFormat = '24h' | '12h'
 export type DateOrder = 'dmy' | 'mdy'
@@ -97,11 +101,22 @@ export function clockOf(t: string | null | undefined, style: TimeFormat, locale?
   const h = Number(m[1]), mi = Number(m[2])
   if (h < 0 || h > 23 || mi < 0 || mi > 59) return ''
   if (style === '24h') return `${String(h).padStart(2, '0')}:${String(mi).padStart(2, '0')}`
+  // languages-1: a NON-ENGLISH locale's 12-hour clock is Intl's own (no English am/pm). English is exactly as before.
+  if (locale && !isEnglish(locale)) return intlClock(h, mi, locale, 'h12')
   const h12 = h % 12 || 12
   const rule = locale ? CLOCK_12H_RULES[locale] : undefined
   if (rule) return rule(h12, String(mi).padStart(2, '0'), h >= 12)
   const suffix = h < 12 ? 'am' : 'pm'
   return mi === 0 ? `${h12}${suffix}` : `${h12}:${String(mi).padStart(2, '0')}${suffix}`
+}
+
+const clockFormats = new Map<string, Intl.DateTimeFormat>()
+/** languages-1: a wall-clock time worded by Intl in a locale ("18:30", "6:30 PM", "18 h 30" where the locale writes it so). */
+function intlClock(h: number, mi: number, locale: string, hourCycle: 'h12' | 'h23'): string {
+  const key = `${locale}|${hourCycle}`
+  let f = clockFormats.get(key)
+  if (!f) { f = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit', hourCycle, timeZone: 'UTC' }); clockFormats.set(key, f) }
+  return f.format(new Date(Date.UTC(2000, 0, 1, h, mi)))
 }
 
 /** A stored time ("HH:MM[:SS]") for a screen, in the truck's style. GB: "18:30" exactly as before. */
@@ -334,6 +349,8 @@ export function formatInstantClock(instant: Date | string | number, ts: TimeSett
 /** "09/10/2026" (d/m) or "10/09/2026" (m/d). `short` gives the two-digit year: "09/10/26". */
 export function formatNumericDate(ymd: string, ts: TimeSettings | null | undefined, short = false): string {
   const s = timeSettingsOr(ts, 'formatNumericDate')
+  // languages-1: a non-English locale writes its own numeric date (09.10.2026, 09-10-2026) — Intl's, not a forced "/".
+  if (!isEnglish(s.locale)) return formatYmd(ymd, s, { day: '2-digit', month: '2-digit', year: short ? '2-digit' : 'numeric' })
   const [y, m, d] = ymd.split('-')
   const yy = short ? y.slice(2) : y
   return s.dateOrder === 'mdy' ? `${m}/${d}/${yy}` : `${d}/${m}/${yy}`
@@ -342,6 +359,7 @@ export function formatNumericDate(ymd: string, ts: TimeSettings | null | undefin
 /** "09/10" (d/m) or "10/09" (m/d). */
 export function formatNumericDayMonth(ymd: string, ts: TimeSettings | null | undefined): string {
   const s = timeSettingsOr(ts, 'formatNumericDayMonth')
+  if (!isEnglish(s.locale)) return formatYmd(ymd, s, { day: '2-digit', month: '2-digit' })   // languages-1
   const [, m, d] = ymd.split('-')
   return s.dateOrder === 'mdy' ? `${m}/${d}` : `${d}/${m}`
 }
@@ -415,6 +433,8 @@ export function monthName(ymd: string, locale: string, width: 'long' | 'short'):
  */
 export function formatOrdinalDate(ymd: string, ts: TimeSettings | null | undefined, weekday = true): string {
   const s = timeSettingsOr(ts, 'formatOrdinalDate')
+  // languages-1: a non-English locale has no English ordinal — its long date is Intl's ("vendredi 9 octobre", "Freitag, 9. Oktober").
+  if (!isEnglish(s.locale)) return formatYmd(ymd, s, weekday ? { weekday: 'long', day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long' })
   const d = Number(ymd.split('-')[2])
   const day = formatYmd(ymd, s, { weekday: 'long' })
   const month = formatYmd(ymd, s, { month: 'long' })
@@ -428,6 +448,7 @@ export function formatOrdinalDate(ymd: string, ts: TimeSettings | null | undefin
  */
 export function formatShortOrdinalDate(ymd: string, ts: TimeSettings | null | undefined): string {
   const s = timeSettingsOr(ts, 'formatShortOrdinalDate')
+  if (!isEnglish(s.locale)) return formatYmd(ymd, s, { weekday: 'short', day: 'numeric', month: 'short' })   // languages-1: Intl's
   const d = Number(ymd.split('-')[2])
   const wd = weekdayName(ymd, s.locale, 'short')
   const mo = monthName(ymd, s.locale, 'short')
@@ -460,6 +481,7 @@ export function formatYmdShortMonth(ymd: string, ts: TimeSettings | null | undef
  */
 export function formatShortDate(ymd: string, ts: TimeSettings | null | undefined): string {
   const s = timeSettingsOr(ts, 'formatShortDate')
+  if (!isEnglish(s.locale)) return formatYmd(ymd, s, { weekday: 'short', day: 'numeric', month: 'short' })   // languages-1: Intl's
   const d = Number(ymd.split('-')[2])
   const wd = weekdayName(ymd, s.locale, 'short')
   const mo = monthName(ymd, s.locale, 'short')

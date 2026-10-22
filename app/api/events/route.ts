@@ -8,7 +8,6 @@ import { readVanIntervals, readEventIntervalsForTruck, applyEventIntervals, NO_V
 import { readEventTypesForTruck } from '@/lib/event-types/read'
 /* 🔴 PRIVATE EVENTS: this feed SHOWS them, redacted. See the note above the mapper. */
 import { readPrivateEventIds } from '@/lib/private-events/read'
-import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 import { truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz, getNowMinsInTz, addDaysYmd, formatOrdinalDate, type TimeSettings } from '@/lib/time-utils'
 import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
@@ -21,6 +20,7 @@ import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageApi'
 import { readEventRegions } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
+import '@/lib/i18n/catalog/privateEvents'
 
 export const revalidate = 0
 
@@ -142,7 +142,10 @@ export async function GET(req: NextRequest) {
   const addressFormat = await addressFormatForTruck(truck)
   const regions = await readEventRegions(supabase, (rows || []).map(e => e.id), addressFormat)
 
-  const tFeed = translatorFor(await localeForTruck(truck), 'manageApi')
+  const feedLocale = await localeForTruck(truck)
+  const tFeed = translatorFor(feedLocale, 'manageApi')
+  // languages-1: a private event's public name in the truck's language (`privateEvents.publicName` — "Private event" in en-GB).
+  const privateLabel = translatorFor(feedLocale, 'privateEvents')('publicName')
   const seen = new Set<string>()
   const events = (rows || []).map(e => {
     /* ⛔ THE DEDUP KEY IS BUILT ON THE **REAL** VENUE NAME, BEFORE ANY SUBSTITUTION — §70.2 names this
@@ -164,7 +167,7 @@ export async function GET(req: NextRequest) {
       /* 🔴 THE REDACTION, FIELD BY FIELD. `publicVenueName` is not used here because this mapper
        * renames the columns as it goes (`town` → `village`), so the substitution is spelt out
        * alongside each one rather than applied to a row shape this object does not have. */
-      venue_name:    isPrivate ? PRIVATE_PUBLIC_LABEL : (e.venue_name || ''),
+      venue_name:    isPrivate ? privateLabel : (e.venue_name || ''),
       village:       isPrivate ? '' : (e.town || ''),
       postcode:      isPrivate ? '' : (e.postcode || ''),
       ...(!isPrivate && regions.get(e.id) ? { region: regions.get(e.id) } : {}),

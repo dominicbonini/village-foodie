@@ -226,7 +226,9 @@ console.log('\n── THE SHIPPED CODE MATCHES WHAT WAS MODELLED (source-level) 
   // 19 September 2026: the wording, the separators AND the red rule live in ONE shared formatter —
   // formatFitSuffix (lib/slot-display) — which the option calls with the dot's tone. The panel no longer
   // spells the string at all, so the assertion is on the call and on the formatter's own text.
-  check(/\{formatFitSuffix\(ind\.tone, wontFit, !!label\)\}/.test(panel), 'the option appends the shared fit suffix, passing the dot\'s tone')
+  // ⚠️ RE-PINNED (languages-1, 22 October 2026, docs/languages-1-report.md §2): + the words, in the truck's language — the
+  // formatter stays import-free (its English is the default) and the panel passes `fitSuffixWords` (`addOrder.fitSuffix`).
+  check(/\{formatFitSuffix\(ind\.tone, wontFit, !!label(, fitSuffixWords)?\)\}/.test(panel), 'the option appends the shared fit suffix, passing the dot\'s tone')
   check(!/Order won|Won\u2019t fit|Not enough time/.test(panel.replace(/\/\/[^\n]*/g, '')), '…and the panel spells no fit wording of its own (comments aside)')
   {
     const disp = fs.readFileSync(path.join(REPO, 'lib/slot-display.ts'), 'utf8')
@@ -236,7 +238,9 @@ console.log('\n── THE SHIPPED CODE MATCHES WHAT WAS MODELLED (source-level) 
   }
   // Language Phase 2: the slot and the window times are written in the truck's style (formatSlot / formatTime); the
   // popup's CONTENT is still fit.why alone.
-  check(/buildFitMessage\(\{ slotLabel: String\(formatSlot\(effectiveSlot, panelTime\)\), why: fit\.why, catLabel: catLabelFor, clock: hm => formatTime\(hm, panelTime\) \}\)/.test(panel), 'the popup is built from fit.why alone')
+  // ⚠️ RE-PINNED (languages-1): + `t: fitWords` — the popup's sentences in the truck's language (`addOrder.fitMessage`); the
+  // engine module stays import-free and its English templates are the default, byte for byte the en-GB messages.
+  check(/buildFitMessage\(\{ slotLabel: String\(formatSlot\(effectiveSlot, panelTime\)\), why: fit\.why, catLabel: catLabelFor, clock: hm => formatTime\(hm, panelTime\)(, t: fitWords)? \}\)/.test(panel), 'the popup is built from fit.why alone')
   // The popup and the label must feed the engine the SAME arguments, or they could disagree.
   for (const arg of ['basketByCat', 'capacityInputs.kitchenCapacity ?? null', 'capacityInputs.eventStartMins', 'capacityInputs.capacityWindowMins ?? 5'])
     check(panel.includes(arg), `the memo passes ${arg}`)

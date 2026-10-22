@@ -9,7 +9,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 /* 🔴 PRIVATE EVENTS SHOW HERE, REDACTED — this is the truck's own public schedule. */
 import { readPrivateEventIds } from '@/lib/private-events/read'
-import { PRIVATE_PUBLIC_LABEL } from '@/lib/private-events/resolve'
 /* 🔴 THE TRUCK'S OWN CLOCK AND FORMAT: its zone decides whether an overnight event is still on (lib/event-window.ts), and
  * its TimeSettings travel in the response so the schedule reads in its country's style (US "11:30 AM"). */
 import { truckTimeSettings } from '@/lib/truck-time'
@@ -17,6 +16,8 @@ import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/
 import { getLocalDateInTz, getNowMinsInTz, type TimeSettings } from '@/lib/time-utils'
 import { readEventRegions } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/privateEvents'
 
 /**
  * ── /api/embed/events?slug=<trucks.slug> — ONE TRUCK'S UPCOMING EVENTS, FILTERED IN SQL ─────────
@@ -128,13 +129,15 @@ export async function GET(req: NextRequest) {
 
   // Shaped as the VillageEvent fields TruckListCard actually reads, so the card renders unmodified.
   // `source: 'operator'` is a statement of fact, not a flag: these rows come from truck_events.
+  // languages-1: a private event's public name in the truck's language (`privateEvents.publicName`; "Private event" in en-GB).
+  const privateLabel = translatorFor(time?.locale, 'privateEvents')('publicName')
   const events = (rows || []).map((e) => ({
     id: e.id,
     date: toddmmyyyy(e.event_date),
     startTime: e.start_time || '',
     endTime: e.end_time || '',
     truckName: truck.name || '',
-    venueName: privacy.isPrivate(e.id) ? PRIVATE_PUBLIC_LABEL : (e.venue_name || ''),
+    venueName: privacy.isPrivate(e.id) ? privateLabel : (e.venue_name || ''),
     status: e.status,               // 'open' → Order now; 'confirmed' → Pre-order
     village: privacy.isPrivate(e.id) ? '' : (e.town || ''),
     postcode: privacy.isPrivate(e.id) ? '' : (e.postcode || ''),

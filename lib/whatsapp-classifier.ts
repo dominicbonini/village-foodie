@@ -6,6 +6,9 @@ import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/whatsappCustomer'
 import { crossesMidnight } from '@/lib/event-window'
 import type { AllergenSet } from '@/lib/allergens'
+import { mentionsAllergen, hasGuardWords, caveatTriggerWords } from '@/lib/allergen-guard'
+import { isEnglish } from '@/lib/i18n/locales'
+import { outputLanguageName } from '@/lib/ai-language'   // languages-1: the words are data per language
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -138,64 +141,13 @@ function allergenRedirect(t: ReplyT, truckName: string, truckEmoji: string, orde
   return t('allergenRedirect', { opener: greetingPrefix, url: orderUrl, truck: truckName, emoji: truckEmoji })
 }
 
-// Broad, deliberately over-triggering allergen/dietary-safety matcher. Normalises case,
-// punctuation and whitespace, then does substring/stem matching. A false positive just
-// redirects safely to the allergen page; a miss would let the menu LLM answer a safety
-// question with no allergen data — so we err hard toward redirecting.
-// OPTION B (absence-gated): the guard redirects ABSENCE/SAFETY questions ONLY — NOT presence
-// questions that merely name an allergen. Confirming a TAGGED allergen ("yes, lists Dairy") is a
-// safe positive declaration and now reaches the LLM (answered from tags); only ABSENCE is unsafe.
-// So bare allergen NAMES (dairy, gluten, nut, soy, egg, …) and 'contain'/'ingredient' (presence/info)
-// were REMOVED from the triggers. The free-from wall is now carried by ABSENCE/SAFETY signals:
-//   substrings → 'allerg' (allergy/allergic), 'intoleran', 'coeliac'/'celiac', 'free from',
-//                'safe for', 'suitable for'
-//   whole-token 'free' → catches "gluten free"/"dairy free"/"nut free"/"free from" AFTER
-//                normalisation turns "-free" into " free" (substring 'free' would over-match
-//                "freely"/"carefree"; whole-token is tighter). gf/df = gluten-/dairy-free.
-const ALLERGEN_STEMS = [
-  'allerg', 'intoleran', 'coeliac', 'celiac',
-  'free from', 'safe for', 'suitable for',
-]
-const ALLERGEN_TOKENS = ['gf', 'df', 'free']
-// anz-1 (21 October 2026): AUSTRALIAN / NEW ZEALAND PHRASING, for an 'anz' truck only (a UK or US truck's guard is exactly
-// as above). Option B holds: bare allergen names stay OUT (a presence question still reaches the LLM). "gluten free", "nut
-// free", "dairy free", "GF", "coeliac" are already caught above. These add the SAFETY words an Australian or New Zealand
-// customer uses — anaphylaxis / anaphylactic, EpiPen (and "epi pen", "epi-pen") — and the "NF" (nut free) / "LF" (lactose
-// free) menu marks.
-const ANZ_ALLERGEN_STEMS = ['anaphyla', 'epipen', 'epi pen']
-const ANZ_ALLERGEN_TOKENS = ['nf', 'lf']
-// canada-1 (22 October 2026): CANADIAN PHRASING, for a 'ca' truck only — the same safety words (anaphylaxis / anaphylactic,
-// EpiPen, epi pen) and "peanut-free" / "nut-free" (Canadian schools' and menus' words; "free" is already a token above, so
-// "nut free" is caught — "peanut-free" is the one that needs its stem). Option B holds: bare allergen names stay out.
-const CA_ALLERGEN_STEMS = ['anaphyla', 'epipen', 'epi pen', 'peanut free', 'nut free']
-
-function mentionsAllergen(message: string, set?: AllergenSet | null): boolean {
-  const normalised = ` ${message.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
-  if (ALLERGEN_STEMS.some(stem => normalised.includes(stem))) return true
-  const tokens = normalised.trim().split(' ')
-  if (ALLERGEN_TOKENS.some(tok => tokens.includes(tok))) return true
-  if (set === 'ca') return CA_ALLERGEN_STEMS.some(stem => normalised.includes(stem))
-  if (set !== 'anz') return false
-  return ANZ_ALLERGEN_STEMS.some(stem => normalised.includes(stem)) || ANZ_ALLERGEN_TOKENS.some(tok => tokens.includes(tok))
-}
-
-/** anz-1: the words a reply may use for an ANZ label — the label itself plus its everyday family word, so a reply that says
- *  "has dairy" for an item tagged Milk, or "sulphites" for "Added sulphites", still carries the caveat. ANZ only. */
-const ANZ_CAVEAT_WORDS: Record<string, string[]> = {
-  milk: ['dairy', 'lactose'], egg: ['eggs'], peanut: ['peanuts', 'nuts'], soy: ['soya'],
-  crustacean: ['crustaceans', 'shellfish', 'prawn'], mollusc: ['molluscs', 'shellfish'], 'added sulphites': ['sulphite', 'sulfite'],
-  wheat: ['gluten'], barley: ['gluten'], rye: ['gluten'], oats: ['gluten'],
-  almond: ['nuts'], 'brazil nut': ['nuts'], cashew: ['nuts'], hazelnut: ['nuts'], macadamia: ['nuts'], pecan: ['nuts'], 'pine nut': ['nuts'], pistachio: ['nuts'], walnut: ['nuts'],
-}
-
-/** canada-1: the words a reply may use for a Canadian label — so "has dairy" for Milk, "wheat" or "gluten" for "Wheat and
- *  triticale", "shrimp" for Crustaceans, or "sulfites" for "Added sulphites" still carries the caveat. CA only. */
-const CA_CAVEAT_WORDS: Record<string, string[]> = {
-  milk: ['dairy', 'lactose'], eggs: ['egg'], peanuts: ['peanut', 'nuts'], 'tree nuts': ['nuts', 'nut'], soy: ['soya'], sesame: ['sesame seeds'],
-  crustaceans: ['crustacean', 'shellfish', 'shrimp', 'prawn', 'crab', 'lobster'], molluscs: ['mollusc', 'shellfish', 'clams', 'mussels', 'oysters', 'scallops'],
-  'wheat and triticale': ['wheat', 'triticale', 'gluten'], 'gluten (barley, oats, rye)': ['gluten', 'barley', 'oats', 'rye'],
-  'added sulphites': ['sulphite', 'sulfite'], mustard: ['mustard'],
-}
+// 🔴 THE ALLERGEN GUARD'S WORDS ARE DATA PER LANGUAGE (languages-1, 22 October 2026): lib/allergen-guard.ts and
+// lib/allergen-guard/<language>.json. English's are the lists that lived here, verbatim (en.json), matched exactly as before —
+// broad and deliberately over-triggering: a false positive just redirects safely to the allergen page; a miss would let the
+// menu LLM answer a safety question with no allergen data. OPTION B (absence-gated): absence/safety words only ('allerg',
+// 'intoleran', 'coeliac'/'celiac', 'free from', 'safe for', 'suitable for', whole-token 'free', gf/df), bare allergen
+// names are NOT triggers; anz-1 and canada-1's phrasing for their allergen sets. A truck whose language has NO list fails
+// SAFE: it is matched against every list (Unicode-aware) and never gets the AI's menu answer.
 
 export interface WhatsAppReplyResult {
   reply: string | null
@@ -214,6 +166,14 @@ export async function generateWhatsAppReply(params: ClassifierParams): Promise<W
   const greetingInstruction = isFollowUp
     ? 'Do NOT open with a greeting; start directly with the answer.'
     : `Open with exactly: "${GREETING}"`
+
+  // languages-1 (22 October 2026, .cursor/rules/language.mdc rule 10): a truck whose language is NOT English gets one more rule in
+  // each prompt — the language to reply in (lib/ai-language.ts), names, prices and links copied as written — and the menu
+  // answer quotes the caveat in that language. An English truck's prompts are exactly as before (nothing is added).
+  const replyLocale = params.time?.locale
+  const nonEnglish = !!replyLocale && !isEnglish(replyLocale)
+  const languageRule = nonEnglish ? `\n- LANGUAGE: reply in ${outputLanguageName(replyLocale)}. Copy item names, venue names, prices and links exactly as they are written.` : ''
+  const classifyLanguageNote = nonEnglish ? `\n\nThe message may be written in ${outputLanguageName(replyLocale)}; classify it by its meaning.` : ''
 
   // Step 1: classify — ALLERGEN_QUERY listed before MENU_QUERY so allergen+food messages
   // route to the safety-first bucket rather than the general menu bucket.
@@ -235,7 +195,7 @@ IGNORE — spam, gibberish, complaints, requests to book the truck for events, o
 Examples: "can you cater my wedding", "you were late last time", "asdfghjkl"
 
 Message: "${customerMessage}"
-Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNORE`
+Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNORE${classifyLanguageNote}`
 
   let classification: 'SPECIFIC_QUERY' | 'MENU_QUERY' | 'ALLERGEN_QUERY' | 'IGNORE'
   try {
@@ -264,7 +224,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
   // page, so the LLM classifier can NEVER be the safety boundary. The in-branch MENU_QUERY check
   // (below) is intentionally LEFT in place as belt-and-braces. The ALLERGEN_QUERY branch redirects
   // unconditionally anyway, so this floor only changes MENU/SPECIFIC mis-classifications.
-  if (mentionsAllergen(customerMessage, params.allergenSet)) {
+  if (mentionsAllergen(customerMessage, params.allergenSet, params.time?.locale)) {
     return { reply: allergenRedirect(t, truckName, truckEmoji, orderUrl, greetingPrefix), classification }
   }
 
@@ -332,7 +292,8 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
         //    own ALLERGEN bucket: catches allergen-adjacent messages that still classified as
         //    MENU (e.g. "is the pepperoni pizza gluten free?"). If it matches we redirect with
         //    the SAME fixed allergen string and never call the LLM.
-        if (mentionsAllergen(customerMessage, params.allergenSet)) {
+        // languages-1: FAIL SAFE — a truck whose language has no allergen word list never gets the AI's menu answer.
+        if (!hasGuardWords(params.time?.locale) || mentionsAllergen(customerMessage, params.allergenSet, params.time?.locale)) {
           return { reply: allergenRedirect(t, truckName, truckEmoji, orderUrl, greetingPrefix), classification: 'MENU_QUERY' }
         }
 
@@ -363,7 +324,7 @@ Rules (follow exactly — same discipline as "never make up events"):
 - If they ask about an item that is NOT in the MENU, say we don't have it and point them to the order link.
 - The MENU includes per-item dietary tags (e.g. Vegetarian, Vegan) and allergen tags (e.g. Dairy, Gluten, Soy), entered by the operator.
 - PRESENCE — you MAY confirm what is TAGGED: if asked which items are vegetarian/vegan, list the items whose dietary tags include that, phrased as "the ones marked vegetarian" (NOT "only these"). If asked what an item contains, you MAY state the allergen tags listed on it (e.g. "the BBQ Chicken lists Dairy and Gluten").
-- ALLERGEN CAVEAT — ONLY when you actually STATE an item's allergen content (e.g. "lists Dairy and Gluten"): you MUST end that reply with "Please double-check the full menu for allergen info — this is an automated reply." (or a close paraphrase). Do NOT add this caveat to dietary answers (vegetarian/vegan) or to plain menu/price answers — it applies only when you affirmatively state allergen tags.
+- ALLERGEN CAVEAT — ONLY when you actually STATE an item's allergen content (e.g. "lists Dairy and Gluten"): you MUST end that reply with "${nonEnglish ? t('allergenCaveat') : 'Please double-check the full menu for allergen info — this is an automated reply.'}" (or a close paraphrase). Do NOT add this caveat to dietary answers (vegetarian/vegan) or to plain menu/price answers — it applies only when you affirmatively state allergen tags.
 - HAS/CONTAINS an allergen (presence-named question): if asked whether an item HAS or CONTAINS a specific allergen — if that allergen IS in the item's allergen tags, confirm it ("yes, the BBQ Chicken lists Dairy"). If it is NOT in the tags, do NOT say "no" / "it doesn't contain that" / "it's free of that" — the data may be incomplete — instead say you can't confirm that here and point them to the full menu/allergen info. DEFER, never DENY.
 - ABSENCE — NEVER assert, for BOTH dietary AND allergens: NEVER say an item is free of / does not contain / is safe for any allergen, and NEVER say an item is NOT vegetarian/vegan, based on a MISSING tag — the data may be incomplete. If a tag isn't present, do NOT infer its absence; point them to the full menu/allergen info for anything not listed.
 - COMPLETENESS: don't imply the list is exhaustive — say "the ones marked X" and suggest checking the menu for items not listed, since not every item may be tagged.
@@ -371,7 +332,7 @@ Rules (follow exactly — same discipline as "never make up events"):
 - NEVER invent items, prices, sizes, ingredients, or dietary/allergen claims.
 - Sound like the owner: warm and brief (1-3 sentences). No "I am an AI" line, no disclaimers.
 - End with the order link: ${orderUrl}
-- Sign off exactly as: — ${truckName} ${truckEmoji}`
+- Sign off exactly as: — ${truckName} ${truckEmoji}${languageRule}`
 
         // 3) LLM CALL — reuse callGemini, low temp, 8s AbortController timeout.
         const llmReply = await callGemini(menuAnswerPrompt, 0.2, 8000)
@@ -396,13 +357,9 @@ Rules (follow exactly — same discipline as "never make up events"):
         //    payload appears (case-insensitive) in the reply. Dietary-only/plain replies have no
         //    allergen word → no caveat. Append only if not already present (no duplication).
         const ALLERGEN_CAVEAT = t('allergenCaveat')
-        const allergenTagWords = new Set<string>()
-        for (const i of items) for (const a of ((i.allergens as string[]) || [])) {
-          const w = String(a).trim().toLowerCase()
-          if (w) allergenTagWords.add(w)
-          if (w && params.allergenSet === 'anz') for (const x of ANZ_CAVEAT_WORDS[w] ?? []) allergenTagWords.add(x)   // anz-1
-          if (w && params.allergenSet === 'ca') for (const x of CA_CAVEAT_WORDS[w] ?? []) allergenTagWords.add(x)   // canada-1
-        }
+        // languages-1: the tag words plus their everyday family words for the allergen set, in the truck's language (data:
+        // lib/allergen-guard/<language>.json caveatWords — anz-1's and canada-1's families, unchanged).
+        const allergenTagWords = caveatTriggerWords(items.flatMap(i => ((i.allergens as string[]) || [])), params.allergenSet, params.time?.locale)
         const replyLower = llmReply.toLowerCase()
         const statesAllergen = [...allergenTagWords].some(w => replyLower.includes(w))
         const cavedReply = statesAllergen && !llmReply.includes(ALLERGEN_CAVEAT)
@@ -472,7 +429,7 @@ Instructions:
 - Always end with the order link: ${orderUrl}
 - Keep to 2-3 sentences, warm and casual — like the owner typed it
 - Sign off as: ${truckName} ${truckEmoji}
-- Never mention Village Foodie or any platform name. Never make up events.`
+- Never mention Village Foodie or any platform name. Never make up events.${languageRule}`
 
   const specificFallback = t('specificFallback', { opener: greetingPrefix, url: scheduleUrl, truck: truckName, emoji: truckEmoji })
 

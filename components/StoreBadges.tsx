@@ -1,4 +1,6 @@
 import { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_SRC, appStoreUrlFor } from '@/lib/app-badges'
+import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/landingFooter'
 
 /**
  * ── THE TWO STORE BADGES. ONE COMPONENT, EVERY SURFACE THAT OFFERS THE APPS. ─────────────────────
@@ -32,11 +34,15 @@ export function StoreBadges({
   linkClassName = '',
   height = 40,
   countryCode,
+  locale,
 }: { className?: string; linkClassName?: string; height?: number
+  /** languages-1: the page's language for the badges' alt and aria words (`landingFooter.badges`); absent → en-GB. */
+  locale?: string | null
   /** Language Phase 1e: the page's country. GB or absent ⇒ the UK storefront link, exactly as before; any other
    *  country ⇒ the locale-free App Store link (`appStoreUrlFor`), so a US visitor is not sent to the GB store. */
   countryCode?: string | null }) {
   const wrap = className ?? 'flex flex-wrap items-center gap-4'
+  const t = translatorFor(locale, 'landingFooter')
   // seo-fixes S7 (20 October 2026): both badges sit low on the page (the landing footer, Manage › Settings), so they are
   // `loading="lazy"` — which also stops React preloading them in the <head>, where they competed with the hero image.
   // The reserved width × height above means a lazy load shifts nothing.
@@ -47,13 +53,13 @@ export function StoreBadges({
   return (
     <div className={wrap}>
       {APP_STORE_URL && (
-        <a href={appStoreUrlFor(countryCode)} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label="Download HatchGrab on the App Store">
-          <img src={APP_STORE_BADGE_SRC} alt="Download on the App Store" width={appleW} height={height} loading="lazy" style={{ height, width: 'auto', display: 'block' }} />
+        <a href={appStoreUrlFor(countryCode)} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label={t('badges.appStoreLink')}>
+          <img src={APP_STORE_BADGE_SRC} alt={t('badges.appStoreAlt')} width={appleW} height={height} loading="lazy" style={{ height, width: 'auto', display: 'block' }} />
         </a>
       )}
       {GOOGLE_PLAY_URL && (
-        <a href={GOOGLE_PLAY_URL} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label="Get HatchGrab on Google Play">
-          <img src={GOOGLE_PLAY_BADGE_SRC} alt="Get it on Google Play" width={playW} height={height} loading="lazy" style={{ height, width: 'auto', display: 'block' }} />
+        <a href={GOOGLE_PLAY_URL} target="_blank" rel="noopener noreferrer" className={linkClassName} aria-label={t('badges.googlePlayLink')}>
+          <img src={GOOGLE_PLAY_BADGE_SRC} alt={t('badges.googlePlayAlt')} width={playW} height={height} loading="lazy" style={{ height, width: 'auto', display: 'block' }} />
         </a>
       )}
     </div>

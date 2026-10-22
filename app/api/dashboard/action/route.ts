@@ -9,6 +9,7 @@ import { getLocalDateInTz, getNowMinsInTz } from '@/lib/time-utils'
 import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
 import { formatMajor } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
+import '@/lib/i18n/catalog/errorsKitchen'
 import { kitchenErrorBody, type KitchenErrorCode, type KitchenErrorParams } from '@/lib/i18n/kitchen-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
@@ -262,7 +263,8 @@ function optionStockWriteFailure(where: string, err: { code?: string; message?: 
   return terminal
     // ⚠️ THE TERMINAL BODY KEEPS ITS OWN `code` — the database's error code, which the offline queue reads — so it
     // gets no kitchen code beside it (Language Phase 1b; listed in docs/language-phase-1b-report.md).
-    ? NextResponse.json({ error: 'Could not save that extra. The stock table needs attention.', code: err.code }, { status: 400 })
+    // languages-1: its sentence in the truck's language (`errorsKitchen.stock_table_attention`; en-GB exactly as before).
+    ? NextResponse.json({ error: translatorFor(locale, 'errorsKitchen')('stock_table_attention'), code: err.code }, { status: 400 })
     : NextResponse.json(kitchenErrorBody(locale, 'service_unavailable', {}, { retryable: true }), { status: 503, headers: { 'Retry-After': '10' } })
 }
 
@@ -625,7 +627,7 @@ export async function POST(req: NextRequest) {
         chargedMinor = res.chargedMinor
       } catch (err) {
         console.error(`[collected] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order WAS still marked collected (fail-open). Re-run recalcOrderPayment for this order_key to repair; the reconciliation query in lib/payments/ledger.ts will list it until then:`, err)
-        paymentWarning = 'Order completed, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.'
+        paymentWarning = translatorFor(await localeForTruck(truck), 'errorsKitchen')('completed_payment_not_recorded')   // languages-1
       }
       // AUDIT (append-only, best-effort). Written AFTER the fact because nothing is destroyed here — the
       // ledger row and the order row both persist, so a lost audit row is a gap, not an erasure. It uses
@@ -727,7 +729,7 @@ export async function POST(req: NextRequest) {
         }
       } catch (err) {
         console.error(`[undo_collected] REFUSED for order_key=${orderKey} truck_id=${truck.id} — ledger reversal or its audit write failed; the payment row was NOT deleted and the order was NOT reverted:`, err)
-        return NextResponse.json({ error: err instanceof Error ? err.message : 'Payment could not be reversed' }, { status: 500 })
+        return NextResponse.json({ error: err instanceof Error ? err.message : translatorFor(await localeForTruck(truck), 'errorsKitchen')('payment_not_reversed') }, { status: 500 })
       }
       // The 'deleted' path already logged inside beforeDelete (it HAD to, before the row vanished), and
       // the split-paid-step path logged its status-only revert above. The other two destroy nothing —
@@ -1035,7 +1037,7 @@ export async function POST(req: NextRequest) {
         const slotErrors = [unbooked.error, rebooked.error].filter(Boolean)
         if (slotErrors.length) {
           console.error('[edit] production slot re-booking failed (order WAS saved):', slotErrors.join(' | '))
-          slotWarning = 'Order saved, but the kitchen capacity board could not be updated — check the slot before relying on it.'
+          slotWarning = translatorFor(await localeForTruck(truck), 'errorsKitchen')('slot_board_not_updated')   // languages-1
         }
       }
       } finally { if (editLock?.ok) await releaseEventLock(truck.id, order.event_date) }
@@ -2021,7 +2023,7 @@ export async function POST(req: NextRequest) {
           chargedMinor = res.chargedMinor
         } catch (err) {
           console.error(`[manual] LEDGER WRITE FAILED for order_key=${manualOrderKey} truck_id=${truck.id} — the ORDER WAS STILL CREATED (fail-open). Re-run recalcOrderPayment to repair:`, err)
-          manualPaymentWarning = 'Order created, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.'
+          manualPaymentWarning = translatorFor(await localeForTruck(truck), 'errorsKitchen')('created_payment_not_recorded')   // languages-1
         }
         await logAction(supabase, {
           action: 'manual_paid_at_order', truckId: truck.id, orderKey: manualOrderKey, amountMinor: chargedMinor,
@@ -2591,7 +2593,7 @@ export async function POST(req: NextRequest) {
         charged = res.chargedMinor
       } catch (err) {
         console.error(`[mark_paid] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order was NOT marked paid in the ledger (fail-open; status untouched). Re-run recalcOrderPayment to repair:`, err)
-        paymentWarning = 'Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.'
+        paymentWarning = translatorFor(await localeForTruck(truck), 'errorsKitchen')('payment_not_recorded')   // languages-1
       }
       await logAction(supabase, {
         action, truckId: truck.id, orderKey, amountMinor: charged,
@@ -2624,7 +2626,7 @@ export async function POST(req: NextRequest) {
         })
       } catch (err) {
         console.error(`[undo_mark_paid] REFUSED for order_key=${orderKey} truck_id=${truck.id} — the payment row was NOT deleted:`, err)
-        return NextResponse.json({ error: err instanceof Error ? err.message : 'Payment could not be reversed' }, { status: 500 })
+        return NextResponse.json({ error: err instanceof Error ? err.message : translatorFor(await localeForTruck(truck), 'errorsKitchen')('payment_not_reversed') }, { status: 500 })
       }
       return NextResponse.json({ success: true })
     }

@@ -94,6 +94,9 @@ export interface TicketOrder {
    *  "Sales tax 8.25%", "Service fee", "Tip"), each already worked out by lib/order-charge-lines.ts.
    *  ABSENT OR EMPTY FOR EVERY UK ORDER, and then not one byte of the ticket changes. */
   adjustments?: { label: string; minor: number }[] | null
+  /** france-1: the tax the total INCLUDES, printed under TOTAL ("Dont TVA 10 %   1,09 €"). Absent for every order but an
+   *  inclusive-rate one (France), so every other ticket prints exactly what it printed. */
+  includedTax?: { label: string; minor: number } | null
   total: number
   /** ── PAYMENT (D) ────────────────────────────────────────────────────────────────────────────────
    *  🔴 RESOLVED BY THE CALLER, NEVER RE-DERIVED HERE. `showPaidStep` comes from resolvePaidStep()
@@ -419,6 +422,7 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   }
 
   lines.push({ text: padBetween(t('total'), fitted(t('total'), order.total), width), bold: true })
+  if (order.includedTax) lines.push({ text: padBetween(order.includedTax.label, fitted(order.includedTax.label, order.includedTax.minor / 100), width) })
 
   // ── PAYMENT (D) — the caller has already resolved this. See the TicketOrder note.
   // 🔴 ABSENT when showPaidStep is false. Not "unpaid" — a truck without the paid step has no such state.

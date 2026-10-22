@@ -1,6 +1,7 @@
 // Step 2 of the AU/NZ kitchen screenshot: frame <work>/kds-web-<au|nz>.png like public/screenshots/kitchen.png (read only),
 // scaled to 640x480. Like the US frame (frame-kds.cjs), the clock is repainted in 12-hour form — "9:08 pm  Tue 1 Sep".
-//   node frame-kds-anz.cjs <au|nz> <workDir> <outDir> → <outDir>/kitchen-<au|nz>.png
+// france-1: a 24-hour country (fr) is repainted too, because the GB date is English — "21:08  mar. 1 sept." (A.clock's 24-hour form).
+//   node frame-kds-anz.cjs <au|nz|ca|fr> <workDir> <outDir> → <outDir>/kitchen-<cc>.png
 const path = require('path'); const frame = require('./frame-ipad.cjs')
 const A = require('./anz-fixtures.cjs')
 const c = A.country()

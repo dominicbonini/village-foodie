@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Où trouver prochainement le food truck {truck}.",
+  "orderFrom": "Commander chez {truck}",
+  "poweredBy": "Propulsé par <b>HatchGrab</b>",
+  "loadFailed": "Impossible de charger le planning pour le moment.",
+  "loading": "Chargement du planning…",
+  "empty": "Aucun événement à venir n’est indiqué pour le food truck {truck}."
+}

@@ -91,6 +91,26 @@ export function chargeLinesFor(src: ChargeLineSource | null | undefined, audienc
 }
 
 /**
+ * france-1 (22 October 2026): THE TAX A PRICE ALREADY INCLUDES, worded after the total on a receipt — "Dont TVA 10 % : 1,09 €".
+ * An order priced under an INCLUSIVE rate (France's TVA: lib/address-formats.ts `includedTax`) has a rate on its snapshot and
+ * no added tax; every other inclusive order (GB, IE) has no rate, and every exclusive one has its tax ADDED (a `tax` line),
+ * so this is null for all of them. ⛔ NEVER ONE OF chargeLinesFor's LINES: nothing adds it up, folds it or totals it.
+ */
+export function includedTaxLine(src: ChargeLineSource | null | undefined, locale?: string | null): ChargeLine | null {
+  if (!src) return null
+  const milli = typeof src.tax_rate_milli === 'number' && Number.isFinite(src.tax_rate_milli) ? Math.trunc(src.tax_rate_milli) : 0
+  const food = typeof src.food_minor === 'number' && Number.isFinite(src.food_minor) ? Math.round(src.food_minor) : 0
+  if (milli <= 0 || food <= 0 || pos(src.tax_minor) > 0) return null
+  const t = translatorFor(locale, 'charges')
+  const label = String(src.tax_label ?? '').trim() || t('taxFallback')
+  // The rate in the locale's own decimal mark ("5,5" in French); its amount is the share of the price, rounded once.
+  const rate = formatRateMilli(milli)
+  let comma = false
+  try { comma = new Intl.NumberFormat(locale ?? 'en-GB').formatToParts(1.5).find(p => p.type === 'decimal')?.value === ',' } catch { /* an unknown tag */ }
+  return { key: 'tax', label: t('taxIncluded', { label }), rate: t('rate', { rate: comma ? rate.replace('.', ',') : rate }), minor: Math.round(food * milli / (100000 + milli)) }
+}
+
+/**
  * Which kinds of charge a folded row adds up — the `parts` value the ONE ICU select names its row by
  * ("Tax & fees", "Tax, fees & tip", "Fees & tip"…). Service fee and card fee are both "fees". 19 October 2026
  * (US dress rehearsal Finding 4): the fold is named by what is in it, not always "Tax & fees".

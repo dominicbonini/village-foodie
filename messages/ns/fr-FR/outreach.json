@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Cet e-mail n’a pas de ligne de désinscription, il ne peut donc pas être envoyé. Utilisez Insérer la désinscription pour l’ajouter.",
+    "notSetUp": "Aucune phrase de désinscription n’est configurée, aucun e-mail de prospection ne peut donc être envoyé. Ajoutez-en une dans le panneau Signature de l’onglet Modèles.",
+    "notLoaded": "La phrase de désinscription n’est pas encore chargée, ce message ne peut donc pas être envoyé.",
+    "unreadable": "La phrase de désinscription n’a pas pu être lue, rien n’a donc été envoyé."
+  },
+  "retry": {
+    "notRebuilt": "Ce message n’a pas pu être reconstruit avec la ligne de l’entreprise, rien n’a donc été envoyé."
+  }
+}

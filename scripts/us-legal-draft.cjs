@@ -105,7 +105,8 @@ const NAMED = {
   // ⚠️ RE-PINNED (ireland-3, 21 October 2026): Ireland follows the United States.
   // ⚠️ RE-PINNED (anz-terms, 22 October 2026): Australia and New Zealand follow Ireland.
   // ⚠️ RE-PINNED (canada-2, 22 October 2026, docs/canada-2-report.md): Canada follows New Zealand.
-  t('one `## <Country>` heading per country — today "United States", "Ireland", "Australia", "New Zealand", "Canada" (adding a country is adding a heading)', JSON.stringify(countries) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand', 'Canada']), countries)
+  // ⚠️ RE-PINNED (france-1, 22 October 2026, docs/france-1-report.md §11): France follows Canada.
+  t('one `## <Country>` heading per country — today "United States", "Ireland", "Australia", "New Zealand", "Canada", "France" (adding a country is adding a heading)', JSON.stringify(countries) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand', 'Canada', 'France']), countries)
   const us = C.slice(C.indexOf('## United States'), C.indexOf('\n## Ireland'))
   t('US spelling inside the US section (no licence / behavioural / honour / organis- / authoris-)', !/licence|behavioural|honour|organis|authoris/.test(us))
   for (const [label, re] of [['the truck is the seller and merchant of record', /merchant of record/], ['sales tax is the truck\'s responsibility', /\*\*Sales tax\.\*\*/], ['all-in fee pricing where required (California)', /California's law on all-in pricing/],

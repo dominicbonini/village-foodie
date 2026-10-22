@@ -26,6 +26,8 @@ import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/Demo
 // Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
 // from this boundary.
 import { PageLocale } from '@/lib/i18n/page-locale'
+// languages-1: a non-English page hands its browser the words its client components read (none for English).
+import { pageSeedProps } from '@/lib/i18n/page-words'
 import { localeOfCountry } from '@/lib/i18n/locales'
 // Chrome EXTRACTED 23 August 2026 so the cost comparison (now /compare) renders the same nav and footer
 // from one definition.
@@ -42,6 +44,8 @@ import { LandingFooter } from '@/components/landing/LandingFooter'
 // is deleted; nothing on this page names a plan, a price or an allowance.
 import { PricingSection } from '@/components/pricing/PricingSection'
 import { getPlanCatalog } from '@/lib/plans-server'
+// languages-1: plan names in the page's language (lib/plan-names.ts) — the same catalogue for every English locale.
+import { localizePlans } from '@/lib/plan-names'
 import { offerTrialMonths } from '@/lib/plan-offer'
 import { priceText } from '@/lib/price-text'
 import { PRICE_WORD } from '@/lib/price-words'   // "Pay at Hatch" is a brand: the trial banner names it through its PRICE_WORD, never inside a message
@@ -201,7 +205,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   const seo = marketingCountry(visitor.settings)   // 🔴 D37: the JSON-LD's country (GB: UK, United Kingdom, en-GB)
   const s = visitor.settings
   // 🔴 STAGE B: the plan catalogue the pricing section is built from (60-second cache, lib/plans-server.ts).
-  const catalog = await getPlanCatalog()
+  const catalog = localizePlans(await getPlanCatalog(), s.locale)
   // The trial's length (plans.trial_months) for the "First 3 months completely free" trust lines — data, never typed
   // (Dominic, 20 October 2026: it read "First month 100% free"). No trial plan → no line rather than a wrong one.
   const trialMonths = offerTrialMonths(catalog)
@@ -218,7 +222,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
   return (
     // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
     // CTA below open one shared modal without the page itself becoming a client component.
-    <PageLocale locale={localeOfCountry(s)}>
+    <PageLocale locale={localeOfCountry(s)} {...pageSeedProps(s.locale, 'marketing')}>
     <DemoModalProvider>
     {/* 🔴 `hg-hero-watch` IS THE LANDING-ONLY SCOPE FOR THE HEADER-CTA REVEAL, AND IT IS RENDERED ON THE
         SERVER SO THE BUTTON IS HIDDEN IN THE FIRST PAINT. Every rule behind the reveal is written

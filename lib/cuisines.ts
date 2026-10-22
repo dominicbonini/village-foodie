@@ -40,6 +40,11 @@ export const CUISINES = [
 
 export type Cuisine = (typeof CUISINES)[number]
 
+/** languages-1 (22 October 2026): a cuisine's message id — its stored English name with everything but letters taken out
+ *  ("Fish & Chips" → "FishChips"). The STORED value never changes (trucks.cuisine_type, the discovery filter); only its
+ *  label is shown in the locale's words (`cuisinePicker.cuisine.<id>`). */
+export const cuisineId = (c: string): string => c.replace(/[^A-Za-z]/g, '')
+
 /** The sentinel the "Other…" option carries in a <select>; a chosen "Other" swaps in a free-text input. */
 export const CUISINE_OTHER = 'Other'
 

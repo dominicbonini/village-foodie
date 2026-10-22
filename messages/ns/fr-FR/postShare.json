@@ -1,0 +1,10 @@
+{
+  "download": "Télécharger l’image",
+  "copied": "Copié ✓",
+  "copyCaption": "Copier la légende",
+  "share": "Partager",
+  "copiedStatus": "{kind, select, postText {Texte de la publication copié.} other {Légende copiée.}}",
+  "copyFailed": "Copie impossible — sélectionnez le texte et copiez-le manuellement.",
+  "sharedStatus": "{kind, select, postText {Texte de la publication copié — collez-le dans votre publication.} other {Légende copiée — collez-la dans votre publication.}}",
+  "shareRefused": "{kind, select, postText {Le partage a été refusé : l’image a donc été téléchargée. Texte de la publication copié.} other {Le partage a été refusé : l’image a donc été téléchargée. Légende copiée.}}"
+}

@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Le titre ne tenait pas et a été raccourci.",
+    "date": "La date ne tenait pas et a été raccourcie.",
+    "daysOff": "Le texte des jours de repos ne tenait pas et a été raccourci.",
+    "place": "Le nom du lieu ne tenait pas et a été raccourci.",
+    "time": "L’horaire ne tenait pas et a été raccourci.",
+    "note": "Votre texte ne tenait pas et a été raccourci.",
+    "venue": "Le lieu ne tenait pas et a été raccourci.",
+    "area": "La localité ne tenait pas et a été raccourcie."
+  },
+  "fontFallback": "Une police utilisée par ce modèle ({id}) n’a pas pu être chargée — ces cadres sont en Oswald.",
+  "wrongShapeBackground": "L’image de ce lieu n’a pas le même format que votre modèle : l’arrière-plan standard est donc utilisé.",
+  "rowsFit": "Le dernier jour dépasse de {px} px le bas de l’image — réduisez l’espacement des lignes ou remontez la ligne 1.",
+  "placeStatus": {
+    "ownBoth": "Image et positions du texte propres",
+    "wrongShape": "Format différent — non utilisée tant qu’elle n’est pas remplacée",
+    "ownPicture": "Image propre, positions standard",
+    "ownPositions": "Image standard, positions du texte propres",
+    "none": "Pas encore d’image — modèle Standard utilisé"
+  },
+  "standardStatus": "Utilisé pour tous les autres lieux",
+  "option": {
+    "oneOff": "En importer une pour cette publication uniquement",
+    "placePoster": "Affiche : {name}",
+    "standard": "Modèle Standard"
+  },
+  "previewLabel": {
+    "lastEvent": "L’aperçu utilise votre dernier événement ici",
+    "noEvents": "Aucun événement ici pour l’instant — l’aperçu montre votre prochain événement avec le nom de ce lieu"
+  },
+  "fontUsage": {
+    "weekly": "votre modèle de publication hebdomadaire",
+    "event": "votre modèle de publication pour un événement",
+    "place": "votre modèle pour {place}",
+    "placeUnnamed": "votre modèle pour un lieu"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Gras",
+    "italic": "Italique"
+  },
+  "picture": {
+    "legacy": "Affiche de l’événement",
+    "fallback": "Image",
+    "wrongShape": "Format différent — ne peut pas servir d’arrière-plan complet"
+  },
+  "noPicture": {
+    "omit": "Ne pas l’afficher",
+    "blank": "Laisser un espace vide",
+    "logo": "Afficher votre logo"
+  },
+  "noPicturesAll": "{total, plural, one {Votre lieu a une image.} other {Vos {total} lieux ont tous une image.}}",
+  "noPicturesSome": "{without, plural, one {{without} de vos {total} lieux n’a pas encore d’image} other {{without} de vos {total} lieux n’ont pas encore d’image}}",
+  "licenceTick": "Je possède cette police ou j’ai une licence pour l’utiliser",
+  "fontUploadButton": "↑ Importer votre police"
+}

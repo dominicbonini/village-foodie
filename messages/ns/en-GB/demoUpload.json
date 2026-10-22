@@ -44,5 +44,14 @@
     "somethingWrong": "Something went wrong. Please try again.",
     "serverUnreachable": "We couldn’t reach the server. Check your connection and try again.",
     "sendFailed": "Couldn’t send that — try again."
+  },
+  "fields": {
+    "uploadLabel": "Upload menu file",
+    "dropHere": "Drop your menu here",
+    "dragOrTap": "Drag and drop or tap to choose",
+    "fileTypes": "Image or PDF",
+    "or": "or",
+    "pasteLabel": "Paste menu text",
+    "pastePlaceholder": "Paste your menu here — item names, descriptions, prices..."
   }
 }

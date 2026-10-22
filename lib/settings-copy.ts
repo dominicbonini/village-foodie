@@ -60,6 +60,8 @@ export interface SettingCopy {
 //
 // ⚠️ DO NOT read this as documentation of working behaviour, and do not write code against it. When
 // nomination ships, the nomination screen should render THIS constant so the two say the same thing.
+// ⚠️ languages-1 (22 October 2026): the import wizard now reads these words from messages — `manageMenuImport.schedule.trialNotStarted`,
+// in the truck's language. This export is kept, unchanged, for the nomination screen when it ships (rendered nowhere today).
 export const TRIAL_NOT_STARTED_BY_EVENTS =
   "Adding events doesn't start your free trial — you choose which event starts it, later."
 
@@ -72,6 +74,9 @@ export const TRIAL_NOT_STARTED_BY_EVENTS =
 // ⚠️ "every Max feature" is TRUE and is not marketing: PLAN_FEATURES.trial is `[...MAX_FEATURES]`, and
 // canAccess now grants that whole set on a NULL expiry. If the expired branch is ever changed to fall
 // back to Starter, re-read this sentence — it would still be true, but its neighbour would not be.
+// ⚠️ languages-1 (22 October 2026): NOTHING RENDERS THESE TWO — Billing's not-started words are `manageBilling.notStarted`
+// (messages), in the truck's language. They are kept, unchanged, because the language phases' captures pin them; English that
+// reaches no screen (docs/languages-1-report.md §2, "left").
 export const TRIAL_NOT_STARTED_HEADING = 'Your free trial has not started yet'
 export const TRIAL_NOT_STARTED_BILLING =
   'You have every Max feature while you set up. You choose which event starts your free trial - '

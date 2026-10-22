@@ -51,7 +51,7 @@ import { dayCells, shapeRadius, type DayPartsOn, type DaysBlock } from './days'
 import { locationLinesFor, timeLinesFor, withWordsBefore } from './lines'
 import type { FontBundle, ResolvedFace } from './font-bundle'
 import { DEFAULT_FONT_ID } from './font-list'
-import { cancelledWordFor, defaultHeadingFor, posterLocaleOf, weeklyPostWordsFor } from './words'
+import { cancelledWordFor, defaultHeadingFor, posterLocaleOf, posterWordsFor, weeklyPostWordsFor } from './words'
 
 
 export interface RenderWarning {
@@ -65,11 +65,14 @@ export const POWERED_BY = 'Powered by HatchGrab'
  * In the POSTER'S COUNTRY'S language (./words.ts explains why the country and not a request locale): the heading a
  * design with an empty stored heading draws, the word in a cancelled event's Time box, and the "did not fit"
  * warnings. ⚠️ NOTHING STORED IS READ FROM HERE — a saved heading or days-off text is drawn as saved. GB's are the
- * literals they replaced, byte for byte. "Powered by HatchGrab" stays inline: it is the brand. */
+ * literals they replaced, byte for byte. languages-1: "Powered by HatchGrab" is `posterWords.poweredBy` now — English in
+ * every English locale, the poster's language otherwise (the brand name never changes); POWERED_BY stays as the en-GB value. */
 type ShortenedKey = 'heading' | 'date' | 'daysOff' | 'place' | 'time' | 'note' | 'venue' | 'area'
 interface TreeWords {
   heading: string
   cancelled: string
+  /** languages-1: the mark at the foot — "Powered by HatchGrab" in the poster's language (the brand name never changes). */
+  poweredBy: string
   shortened: Record<ShortenedKey, string>
 }
 function treeWordsFor(country: CountryCode): TreeWords {
@@ -78,6 +81,7 @@ function treeWordsFor(country: CountryCode): TreeWords {
   return {
     heading: defaultHeadingFor(country),
     cancelled: cancelledWordFor(country),
+    poweredBy: posterWordsFor(country)('poweredBy'),
     shortened: Object.fromEntries(keys.map(k => [k, api(`shortened.${k}`)])) as Record<ShortenedKey, string>,
   }
 }
@@ -605,7 +609,7 @@ function daysEls(
  * 🔴 EXTRACTED IN STAGE 2 so the single-event post carries the identical mark rather than a second
  * one that could drift in size, position or opacity.
  */
-function poweredByEl(W: number, H: number, keepReadable: boolean, fonts: FontBundle): El {
+function poweredByEl(W: number, H: number, keepReadable: boolean, fonts: FontBundle, text: string = POWERED_BY): El {
   /* ⚠️ THE MARK'S FAMILY COMES FROM THE BUNDLE, not from `FONT_BY_ID`. The bundle always holds the
    * default family (see `paint`), and asking it means the mark is drawn in a family satori has
    * definitely been given — rather than a name that happens to match one. */
@@ -624,7 +628,7 @@ function poweredByEl(W: number, H: number, keepReadable: boolean, fonts: FontBun
     opacity: 0.85,
     ...(keepReadable ? { textShadow: `0px 1px ${Math.max(1, Math.round(pbSize * 0.18))}px #0b0b0bcc` } : {}),
     whiteSpace: 'pre',
-  }, POWERED_BY)])
+  }, text)])
 }
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE WHOLE TREE — ONE FUNCTION PER POSTER, CALLED BY THE RENDERER AND BY THE EDITOR
@@ -764,7 +768,7 @@ export function weeklyTree(input: WeeklyTreeInput): PosterTree {
    * something to say. */
   children.push(...noteEls(l.notes, note, scale, warnings, fonts, l.textStyle, words.shortened.note))
 
-  children.push(poweredByEl(W, H, keepReadable, fonts))
+  children.push(poweredByEl(W, H, keepReadable, fonts, words.poweredBy))
   return { children, warnings, W, H, scale }
 }
 
@@ -874,6 +878,6 @@ export function eventTree(input: EventTreeInput): PosterTree {
    * post's note, and the same "only render the box when there is something to put in it". */
   children.push(...noteEls(l.notes, note, scale, warnings, fonts, l.textStyle, words.shortened.note))
 
-  children.push(poweredByEl(W, H, l.keepReadable, fonts))
+  children.push(poweredByEl(W, H, l.keepReadable, fonts, words.poweredBy))
   return { children, warnings, W, H, scale }
 }

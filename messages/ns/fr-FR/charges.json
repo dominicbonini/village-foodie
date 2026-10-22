@@ -1,0 +1,13 @@
+{
+  "subtotal": "Sous-total",
+  "taxFallback": "Taxes",
+  "taxIncluded": "Dont {label}",
+  "serviceFeeCustomer": "Frais de service en ligne",
+  "serviceFee": "Frais de service",
+  "cardFee": "Frais de carte",
+  "tip": "Pourboire",
+  "rate": "{rate} %",
+  "line": "{label} : {amount}",
+  "lineWithRate": "{label} {rate} : {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Taxes, frais et pourboire} tax_tip {Taxes et pourboire} fees_tip {Frais et pourboire} fees {Frais} other {Taxes et frais}}"
+}

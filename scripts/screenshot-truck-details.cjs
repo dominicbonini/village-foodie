@@ -570,6 +570,23 @@ function fakeDb(opts = {}) {
       "* is written to truck_events.region exactly as Manage's importer saves it: only in a zip_state country (the US), only",
       "* a two-letter code, NEVER inferred (not from the truck's base town, not from the venue). Every other row — every GB",
       "* row — inserts exactly the columns it always did: the key is absent, not null. */",
+      /* ══ ⚠️ RE-PINNED (languages-1, 22 October 2026, docs/languages-1-report.md) — THE EIGHTH BUILD ══
+       * The review email's WORDS come from messages in the truck's language (`emailOperator.newEvents.*`; en-GB byte-identical,
+       * the count an ICU plural). ⛔ The bridge is untouched: no column, filter or admission rule moved — only the email body's
+       * sentences. Named: the added lines; their old literal forms are in TOLERATED_REMOVED. */
+      "import { translatorFor } from '@/lib/i18n/translator'",
+      "import '@/lib/i18n/catalog/emailOperator'",
+      "const tm = translatorFor(ts.locale, 'emailOperator')",
+      "const venueLine = (e: any) => `${e.venue_name || tm('newEvents.unknownVenue')}${e.town ? `, ${e.town}` : ''}`",
+      "const nv = { n, count: String(n) }",
+      "subject: tm('newEvents.subject', { truck: truck.name }),",
+      "<p>${tm('newEvents.hi')}</p>",
+      "<p>${tm.markup('newEvents.found', { ...nv, b: c => `<strong>${c}</strong>` })}</p>",
+      "<p style=\"font-weight:600;margin:20px 0 0\">${tm('newEvents.listHeading')}</p>",
+      "<p style=\"margin-top:16px\">${tm('newEvents.approve')}</p>",
+      "${tm('newEvents.cta')}",
+      "<p style=\"color:#94a3b8;font-size:12px;margin-top:24px\">${tm('newEvents.signoff')}</p>",
+      "text: tm('newEvents.text', { ...nv, list: eventListText, url: manageUrl }),",
     ]
     /* ══ ⛔ AND A LINE THAT WAS **REPLACED** NEEDS ITS OLD FORM TOLERATING TOO ════════════════════
      * `git diff` reports a replacement as a `-` AND a `+`, and this check reads both — so the first
@@ -597,6 +614,16 @@ function fakeDb(opts = {}) {
       "const matchedVenue = match.venue",
       // ⚠️ RE-PINNED (address-formats-1, 21 Oct 2026): the line the seventh build replaced (the format's message style).
       "try { zipState = (await getCountrySettings(country)).addressFormat === 'zip_state' } catch { zipState = false }",
+      // ⚠️ RE-PINNED (languages-1, 22 Oct 2026): the email's literal sentences the eighth build moved into messages.
+      "const venueLine = (e: any) => `${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}`",
+      "subject: `New events found for ${truck.name} — please review`,",
+      "<p>Hi there,</p>",
+      "<p>We found <strong>${n} new event${n !== 1 ? 's' : ''}</strong> on your schedule that need your approval before they appear to customers.</p>",
+      "<p style=\"font-weight:600;margin:20px 0 0\">Events found:</p>",
+      "<p style=\"margin-top:16px\">Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.</p>",
+      "Review your schedule →",
+      "<p style=\"color:#94a3b8;font-size:12px;margin-top:24px\">— The HatchGrab team · hatchgrab.com</p>",
+      "text: `Hi there,\\n\\nWe found ${n} new event${n !== 1 ? 's' : ''} on your schedule that need your approval:\\n\\n${eventListText}\\n\\nReview them at: ${manageUrl}\\n\\nOnce you approve them they'll go live on the map.\\n\\n— The HatchGrab team`,",
     ]
     if (gitClean(f)) return true
     let diff = ''

@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Votre fiche allergènes",
+    "intro": "Vos clients la voient <b>exactement telle que vous l’écrivez</b> — rien n’est réécrit. Saisissez ou collez le texte ci-dessous, ou importez une photo/un PDF et nous en lirons le texte pour que vous le vérifiiez.",
+    "empty": "Pas encore de fiche allergènes.",
+    "placeholder": "ex. : Tous nos fish & chips contiennent du blé et du lait. La friteuse est partagée avec des produits contenant du gluten et des fruits à coque. Options véganes disponibles — demandez à l’équipe.",
+    "reading": "Lecture de l’image…",
+    "upload": "📷 Importer une image / un PDF",
+    "uploadNote": "Nous lisons le texte de votre image pour que vous puissiez le vérifier — l’image n’est pas conservée."
+  },
+  "cardUpload": {
+    "dishFallback": "Plat",
+    "question": "Avez-vous une fiche allergènes à importer ?",
+    "perDish": "{detected, select, yes {Importez-la et nous l’utiliserons pour renseigner les allergènes de vos plats. Les allergènes détectés seront visibles à la page suivante, où vous confirmerez chaque plat.} other {Importez-la et nous l’utiliserons pour renseigner les allergènes de vos plats.}}",
+    "cardOnly": "Importez la fiche allergènes que vos clients verront.",
+    "yes": "Oui",
+    "no": "Non",
+    "noProblem": "Pas de souci — ce n’est pas obligatoire. Continuez avec le bouton ci-dessous.",
+    "analysing": "Analyse de la fiche…",
+    "dropzone": "Glissez-déposez ou touchez pour choisir",
+    "imageOrPdf": "Image ou PDF",
+    "or": "ou",
+    "pastePlaceholder": "Collez ici le texte de votre fiche allergènes…",
+    "process": "Analyser la fiche",
+    "cardRead": "Fiche lue ✓",
+    "unmatchedHeading": "Association automatique impossible — attribuez ou ignorez",
+    "quotedName": "« {name} »",
+    "ambiguous": "Ambigu — correspond à plusieurs plats ; choisissez le bon.",
+    "assignTo": "Attribuer à un plat…",
+    "dismiss": "Ignorer",
+    "blanket": "La fiche indique que <b>{list}</b> peut être présent dans <b>tous</b> les plats. L’ajouter à chaque plat ? (vous confirmerez quand même chacun) <muted>— désactivé par défaut</muted>",
+    "kitchenNotes": "Remarques de la cuisine (enregistrées dans vos infos allergènes)",
+    "matchSummary": "{n, plural, =0 {Associés à un plat : {matched}.} one {Associés à un plat : {matched}. {count} est à attribuer.} other {Associés à un plat : {matched}. {count} sont à attribuer.}}"
+  },
+  "savedCard": {
+    "showLess": "Voir moins",
+    "showMore": "Voir plus",
+    "fileOnly": "Un fichier de fiche est enregistré pour ce food truck, mais aucun texte de résumé n’a été conservé. Ouvrez l’original pour le lire.",
+    "viewOriginal": "Voir la fiche d’origine"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Impossible de lire la fiche allergènes — réessayez",
+      "confirmed": "Confirmé : {name}",
+      "undo": "Annuler",
+      "saveFailed": "Échec de l’enregistrement — veuillez réessayer",
+      "imageFailed": "Impossible de lire cette image — saisissez ou collez plutôt votre fiche",
+      "cardRead": "{n, plural, one {Fiche lue — associés : {matched}, à attribuer : {count}} other {Fiche lue — associés : {matched}, à attribuer : {count}}}"
+    },
+    "genericWarn": {
+      "text": "« {generic} » a été détecté mais n’est pas assez précis. Choisissez {picks} si ce plat en contient ({family}) — sinon, laissez-les non sélectionnés.",
+      "andOr": "{a} et/ou {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confirmé",
+      "confirmed": "Confirmé",
+      "needsReview": "À vérifier"
+    },
+    "confirm": {
+      "confirming": "Confirmation…",
+      "confirmed": "Confirmé ✓",
+      "confirm": "Confirmer",
+      "changed": "· modifié",
+      "changedTitle": "Modifié depuis votre dernière confirmation — confirmez à nouveau"
+    },
+    "allergens": "Allergènes",
+    "dietary": "Régimes",
+    "uncategorised": "Sans catégorie",
+    "review": {
+      "progress": "Confirmés : {confirmed} sur {total}",
+      "allConfirmed": "✓ Tous confirmés",
+      "list": "Liste",
+      "table": "Tableau",
+      "detected": "Détectés à partir de votre carte — <b>vérifiez-les</b>. Les allergènes restent masqués pour les clients tant que vous n’avez pas confirmé chaque plat.",
+      "viewOnly": "👁 Lecture seule — seul le propriétaire peut confirmer ou modifier les allergènes.",
+      "emptyTitle": "Aucun article",
+      "emptyBody": "Ajoutez d’abord des articles à la carte, puis définissez leurs allergènes ici.",
+      "dish": "Plat",
+      "status": "Statut"
+    },
+    "cardPanel": {
+      "reading": "Lecture des informations sur les allergènes…",
+      "saved": "🛡️ Fiche allergènes enregistrée",
+      "viewOriginal": "Voir la fiche d’origine",
+      "replace": "Remplacer la fiche",
+      "uploadHelp": "Importez votre fiche allergènes (photo/PDF) ou collez vos informations sur les allergènes — notre IA les structure pour vos clients.",
+      "add": "Ajouter une fiche allergènes",
+      "viewOnly": "👁 Lecture seule — seul le propriétaire peut ajouter la fiche allergènes.",
+      "intro": "Vos clients verront cette fiche comme référence des allergènes de la carte. Les allergènes par plat restent masqués en mode fiche uniquement (les données de vos plats sont conservées si vous passez plus tard au mode par plat)."
+    },
+    "subtitle": {
+      "choose": "Choisissez comment vos clients voient les informations sur les allergènes",
+      "card": "Ajoutez votre fiche allergènes",
+      "cardOptional": "Ajoutez une fiche allergènes (facultatif)",
+      "review": "Vérifiez et confirmez chaque plat"
+    },
+    "heading": {
+      "import": "Allergènes",
+      "standalone": "Réglage des allergènes"
+    },
+    "nav": {
+      "next": "Suivant →",
+      "back": "← Retour",
+      "skip": "Passer pour l’instant",
+      "saving": "Enregistrement…",
+      "done": "Terminé",
+      "saveLater": "Enregistrer et finir plus tard",
+      "close": "Fermer",
+      "finish": "Terminer",
+      "skipImport": "Passer la configuration des allergènes pour l’instant"
+    },
+    "hint": {
+      "skipDefers": "Passer, c’est reporter — les plats que vous n’avez pas confirmés restent masqués pour les clients jusqu’à ce que leurs allergènes soient confirmés.",
+      "importIncomplete": "Confirmez chaque plat pour continuer — ou « Passer la configuration des allergènes pour l’instant »."
+    }
+  }
+}

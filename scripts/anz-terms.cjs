@@ -95,7 +95,13 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
   const mig = read('supabase/migrations/20261029_allergen_card_only.sql')
   t('an allergen card on its own is allowed by default and switched off only for Ireland (AU and NZ keep card, per dish or both)', /allergen_card_only_allowed boolean not null default true/.test(mig) && /allergen_card_only_allowed = false[\s\S]*country_code = 'IE'/.test(mig) && !/country_code = '(AU|NZ)'/.test(mig))
   t('no card surcharge is ever added: the order rules hold `surcharge: null` for every country', /surcharge: null,/.test(read('lib/order-charge-rules.ts')))
-  t('a tax-inclusive country has no tax rate box (charges_rate_not_here) and adds no tax line (taxRateMilli null)', /if \(c\.pricesIncludeTax\) return refusal\('charges_rate_not_here'\)/.test(read('lib/charge-settings.ts')) && /const taxRateMilli = taxInclusive \? null :/.test(read('lib/order-charge-rules.ts')))
+  // ⚠️ RE-PINNED (france-1, 22 October 2026): a tax-inclusive country whose address FORMAT names an included tax (France's TVA,
+  // `includedTax`) takes a rate that is only worded on receipts, never added; AU and NZ's formats name none, so for them it is
+  // exactly as before — no rate box, no rate, no tax line.
+  t('a tax-inclusive country has no tax rate box (charges_rate_not_here) and adds no tax line (taxRateMilli null) — unless its format names an included tax (France); AU / NZ name none',
+    /if \(c\.pricesIncludeTax && !includedTaxOf\(c\.addressFormat\)\) return refusal\('charges_rate_not_here'\)/.test(read('lib/charge-settings.ts'))
+    && /const taxRateMilli = taxInclusive \? \(includedTax \? \(int\(truck\.tax_rate_milli\) \?\? includedTax\.milli\) : null\) :/.test(read('lib/order-charge-rules.ts'))
+    && !/includedTax/.test(read('lib/address-formats.ts').slice(read('lib/address-formats.ts').indexOf('  au: {'), read('lib/address-formats.ts').indexOf('  ca: {'))))
 
   // ── 6 · the rendered page ──
   console.log('\n── /country-terms, through the real renderer')

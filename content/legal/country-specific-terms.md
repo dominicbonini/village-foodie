@@ -201,3 +201,43 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 **Marketing emails.** We send marketing emails only with your consent, as Canada's anti-spam law requires. Every one says who it is from and how to unsubscribe, and we act on an unsubscribe within 10 business days.
 
 **Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
+
+## France
+
+### For food truck operators
+
+**You are the seller.** You sell your food, and you are the merchant of record for your card payments, as section 5 of the Terms of Service says. Your customers' order is with you, not with us. French consumer law, including the Code de la consommation, applies to your sales to your customers, and you are responsible for meeting it. That includes giving your customers your business name and contact details before they order, showing prices in euros that include TVA and every other compulsory charge, telling them that the right of withdrawal does not apply to food that may spoil quickly or to catering supplied on a set date, offering them free access to a consumer mediator and giving the mediator's details, and dealing with complaints, cancellations and refunds. HatchGrab is the software you sell through.
+
+**The order button.** French law requires the button that places an order to say clearly that the order means paying. In France, HatchGrab's order buttons say so ("Payer …" for a card payment, "Commander et payer au retrait" for payment at the truck).
+
+**Card payments.** Card payments from your customers go into your own Stripe account, which is set up for France during onboarding, in your own name, under your own agreement with Stripe. The money settles there, in euros, and is paid out to your bank account by Stripe. We never hold it. When a customer's card carries both Cartes Bancaires and another brand, the payment form lets them choose which brand pays, as EU law requires. French law does not allow a charge for paying by a particular method, so HatchGrab adds no card surcharge in France. Stripe's processing fees for French accounts are set by Stripe and shown in HatchGrab and during onboarding.
+
+**Allergens.** You must give allergen information for every dish as French and EU law requires: the 14 allergens listed in Regulation (EU) No 1169/2011, under the French rules in articles R. 412-12 to R. 412-16 of the Code de la consommation. The information must be in writing and available to your customer before they order. In France, HatchGrab lets you show allergens against each dish, or one allergen card covering your whole menu, or both. If you use a card, it must name every dish and its allergens. HatchGrab shows exactly what you enter, as section 3 of the Terms of Service says. We do not check it.
+
+**Your prices and TVA.** Your menu prices are shown to customers including TVA. You are responsible for registering for, charging and paying TVA correctly. HatchGrab shows the TVA included in each order on receipts and tickets, at 10% unless you set your own rate. 10% is the rate on hot food and drinks sold to take away. Food sold in a sealed container to eat later, and alcohol, are taxed at other rates. We do not check the rate. HatchGrab adds no service fee in France, because a compulsory charge has to be included in the price the customer sees.
+
+**Language.** In France, information for consumers must be in French. HatchGrab's pages for your customers are in French. You are responsible for the words you write yourself, such as your menu and your notes.
+
+**Our prices.** Accounts in France are billed in euros. HatchGrab Ltd is a UK company and is not registered for VAT. If you are registered for TVA in France, give us your intra-community VAT number. You then account for any VAT on our fees yourself, under the reverse charge.
+
+**Your rights under local law.** Nothing in the Terms of Service takes away a right that French law says cannot be limited or waived.
+
+**Your customers' data.** Under the EU General Data Protection Regulation (GDPR), section 10 of the Terms of Service is our data processing agreement with you: you are the controller and we are the processor, in the same sense as Article 28 of the GDPR.
+
+**Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that French law gives you and that cannot be excluded by agreement.
+
+### Privacy, for everyone in France
+
+**The law that applies.** When we handle personal data of people in France, the EU General Data Protection Regulation (GDPR) and the French Data Protection Act (loi Informatique et Libertés) apply, as well as the UK law named in our Privacy Policy. The rights listed in section 8 of the Privacy Policy are your rights under the GDPR too.
+
+**Where your data is kept.** Your data is stored and processed in the United Kingdom. The European Commission has decided that the UK protects personal data to the same standard as the EU, so no extra safeguard is needed for that. Where a service provider handles data in the United States (section 6 of the Privacy Policy), the transfer is covered by a safeguard the GDPR recognises.
+
+**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
+
+**Your requests.** You can ask us what personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within one month. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
+
+**Complaints.** You can complain to the CNIL (Commission nationale de l'informatique et des libertés), France's data protection regulator, at www.cnil.fr, or by post to CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. We would appreciate the chance to put things right first.
+
+**Marketing emails.** We send marketing emails only where French law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
+
+**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

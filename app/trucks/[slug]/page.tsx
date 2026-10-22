@@ -4,6 +4,7 @@ import { createSlug } from '@/lib/utils';
 import { VILLAGE_FOODIE_COUNTRY } from '@/lib/discovery-country';
 import { supabase } from '@/lib/supabase';
 import { localeForTruck } from '@/lib/i18n/server-locale';
+import { pageSeedProps } from '@/lib/i18n/page-words';
 import { truckTimeSettings } from '@/lib/truck-time';
 import type { TimeSettings } from '@/lib/time-utils';
 import { translatorFor } from '@/lib/i18n/translator';
@@ -146,6 +147,8 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ s
   // public there; TruckClient uses it only when the discovery list has no row for this slug. Village Foodie: never.
   const onHatchGrab = isHatchGrabHost(await requestHost());
   const operatorHeader = onHatchGrab ? headerFromOperatorRow(row, process.env.NEXT_PUBLIC_SUPABASE_URL || '') : null;
-  return <TruckClient slug={resolvedParams.slug} locale={await localeForTruck({ country })} discovery={country === VILLAGE_FOODIE_COUNTRY} time={await truckTime(row)}
-    {...(operatorHeader ? { operatorHeader } : {})} />;
+  // languages-1: a non-English truck's page hands its browser the words its client components read (none for English).
+  const locale = await localeForTruck({ country });
+  return <TruckClient slug={resolvedParams.slug} locale={locale} discovery={country === VILLAGE_FOODIE_COUNTRY} time={await truckTime(row)}
+    {...(operatorHeader ? { operatorHeader } : {})} {...pageSeedProps(locale, 'truckPage')} />;
 }

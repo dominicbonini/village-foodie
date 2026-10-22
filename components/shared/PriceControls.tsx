@@ -33,6 +33,8 @@ import { formatMinorOrBare, currencySymbolOrBare, editableAmount, type MoneyForm
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/priceControls'
 import '@/lib/i18n/catalog/serviceSettings'
+import { useAppLocale } from '@/lib/i18n/use-t'
+import { normaliseDecimal, decimalForInput } from '@/lib/decimal-input'   // france-1
 import {
   PRICE_MODE_VALUES, priceRoundingChoices,
 } from '@/lib/copy/serviceSettings'
@@ -238,11 +240,12 @@ export function PriceAmountInput({ mode, value, onCommit, disabled, label, heigh
   height?: number
 }) {
   const unit = amountUnitFor(mode, currencySymbol)
+  const locale = useAppLocale()   // france-1: "12,50" in a decimal-comma locale (lib/decimal-input.ts; English: unchanged)
   const [draft, setDraft] = useState<string | null>(null)
-  const shown = draft ?? (value === null || value === undefined ? '' : String(value))
+  const shown = draft ?? (value === null || value === undefined ? '' : decimalForInput(value, locale))
 
   const commit = () => {
-    const next = cleanPriceAmount(mode, draft)
+    const next = cleanPriceAmount(mode, draft === null ? draft : normaliseDecimal(draft, locale))
     setDraft(null)
     /* ⚠️ ONLY WHEN IT CHANGED. Tabbing through the box must not write. */
     if (next !== (value ?? null)) onCommit(next)
@@ -254,8 +257,8 @@ export function PriceAmountInput({ mode, value, onCommit, disabled, label, heigh
         type="text" inputMode="decimal" aria-label={label} disabled={disabled || unit === null}
         value={unit === null ? '' : shown}
         /* 🔴 `placeholder` CARRIES THE UNIT TOO, so an EMPTY box still says what it wants. */
-        placeholder={unit === null ? '' : unit === '%' ? '0' : '0.00'}
-        onFocus={() => setDraft(value === null || value === undefined ? '' : String(value))}
+        placeholder={unit === null ? '' : unit === '%' ? '0' : decimalForInput('0.00', locale)}
+        onFocus={() => setDraft(value === null || value === undefined ? '' : decimalForInput(value, locale))}
         onChange={e => setDraft(e.target.value)}
         onBlur={commit}
         onKeyDown={e => { if (e.key === 'Enter') { e.currentTarget.blur() } }}
@@ -350,7 +353,7 @@ export function PriceCell({
 
   if (editing) {
     const commit = () => {
-      const next = cleanTypedPrice(draft)
+      const next = cleanTypedPrice(normaliseDecimal(draft, money?.locale))   // france-1: "12,50" in a decimal-comma locale
       setEditing(false)
       /* ⚠️ A BLANK BOX CLEARS, which is the same instruction as the ×. An operator who selects the
        * number and deletes it means "stop typing a price for this one". */
@@ -423,7 +426,7 @@ export function PriceCell({
       <span className="inline-flex items-center gap-1 rounded-lg border border-blue-300 bg-blue-50 pl-2 pr-1"
         style={styleFor(height)}>
         <button type="button" disabled={disabled} aria-label={t('change', { label })}
-          onClick={() => { setDraft(String(typed)); setEditing(true) }}
+          onClick={() => { setDraft(decimalForInput(typed, money?.locale)); setEditing(true) }}
           className="text-sm font-semibold text-blue-800 tabular-nums disabled:text-slate-400">
           {minor(toPence(typed))}
         </button>
@@ -444,7 +447,7 @@ export function PriceCell({
      * editor — and an operator reading the difference is reading, not editing. */
     <span className="inline-flex min-w-0 items-baseline gap-1">
       <button type="button" disabled={disabled} aria-label={t('typePrice', { label })}
-        onClick={() => { setDraft(editableAmount(toPounds(shownPence), money)); setEditing(true) }}
+        onClick={() => { setDraft(decimalForInput(editableAmount(toPounds(shownPence), money), money?.locale)); setEditing(true) }}
         className="text-sm text-slate-900 tabular-nums rounded px-1 hover:bg-slate-100 disabled:text-slate-400 disabled:hover:bg-transparent">
         {minor(shownPence)}
       </button>

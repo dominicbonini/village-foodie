@@ -49,6 +49,13 @@ const BY_COUNTRY: Record<string, Record<LandingScreen, string>> = {
     dashboard: '/screenshots/dashboard-v4-ca.png',
     phone: '/screenshots/customer-order-ca.png',
   },
+  // france-1 (22 October 2026): a French fixture truck (€ TTC, fr-FR, Europe/Paris, 24-hour, Place Bellecour, Lyon) —
+  // scripts/screenshots/anz-screens.cjs fr. Never Gusto. Shown only on /fr.
+  FR: {
+    kitchen: '/screenshots/kitchen-fr.png',
+    dashboard: '/screenshots/dashboard-v4-fr.png',
+    phone: '/screenshots/customer-order-fr.png',
+  },
 }
 
 /** The public path of a hero screenshot for the visitor's marketing country (its ISO code, e.g. 'GB', 'US'). */

@@ -40,7 +40,9 @@ head(`2 · ${BASE} is the full base — every key elsewhere exists in it`)
 const baseKeys = new Set(leaves(msgs[BASE]).map(([k]) => k))
 for (const [loc, m] of Object.entries(msgs)) {
   if (loc === BASE) continue
-  const extra = leaves(m).map(([k]) => k).filter(k => !baseKeys.has(k))
+  // languages-1 (22 October 2026): a language's `planNames.<plan key>.{name,description,subtitle}` are the one set of keys en-GB
+  // does not hold (lib/plan-names.ts: the plans row is the English); scripts/translation-check.cjs checks them against the catalogue.
+  const extra = leaves(m).map(([k]) => k).filter(k => !baseKeys.has(k) && !/^planNames\.[A-Za-z0-9_]+\.(name|description|subtitle)$/.test(k))
   t(`${loc}: every key exists in ${BASE}`, extra.length === 0, extra.join(', '))
 }
 

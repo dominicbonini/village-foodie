@@ -1,0 +1,19 @@
+{
+  "heading": "Ventes additionnelles",
+  "intro": "Incitez vos clients à ajouter un petit plus. Quand quelqu’un commande dans une catégorie, suggérez des articles d’une autre — une boisson avec une pizza, une sauce avec un burger.",
+  "add": "+ Vente additionnelle",
+  "toast": {
+    "updated": "Règle mise à jour",
+    "added": "Règle ajoutée",
+    "removed": "Règle supprimée"
+  },
+  "whenAdds": "Quand le client ajoute…",
+  "suggestFrom": "Suggérer des articles de…",
+  "chooseCategory": "Choisir une catégorie",
+  "cancel": "Annuler",
+  "saveChanges": "Enregistrer",
+  "addRule": "Ajouter",
+  "empty": "Aucune règle pour l’instant.",
+  "confirmRemove": "Supprimer la règle de vente additionnelle « {trigger} → {suggest} » ?",
+  "upTo": "{n, plural, one {Jusqu’à {count} article suggéré} other {Jusqu’à {count} articles suggérés}}"
+}

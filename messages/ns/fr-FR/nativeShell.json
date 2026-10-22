@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Commande n° {id} : action annulée",
+    "saved": "Commande n° {id} enregistrée",
+    "undo": "↩ Annuler",
+    "paymentNotRecorded": "⚠ Commande n° {id} — PAIEMENT NON ENREGISTRÉ. {collect, select, yes {La commande a été finalisée} other {La commande a été enregistrée}} ; le paiement, non.",
+    "recordPayment": "Enregistrer le paiement",
+    "paid": "Commande n° {id} payée",
+    "undonePayment": "Annulé — paiement retiré",
+    "undoneCollected": "Annulé — commande non retirée",
+    "collected": "Commande n° {id} {paidToo, select, yes {payée et retirée} other {retirée}}",
+    "ready": "Commande n° {id} prête",
+    "readyBuzzer": "Commande n° {id} prête · <pill></pill>",
+    "status": "Commande n° {id} {action, select, confirm {confirmée} reject {refusée} ready {prête} collected {retirée} undo_collected {rétablie} cancel {annulée} other {mise à jour}}"
+  },
+  "conflicts": {
+    "more": "+{count} de plus",
+    "notOnScreenPlus": "+{count} hors de cet écran",
+    "notOnScreen": "{n, plural, one {{count} commande hors de cet écran} other {{count} commandes hors de cet écran}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PAIEMENT NON ENREGISTRÉ",
+    "paymentBody": "{orders} — paiement marqué sur cet appareil uniquement. Il n’a pas été transmis.",
+    "paymentCheck": "Vérifiez la commande et encaissez à nouveau si le montant est toujours dû.",
+    "dismiss": "Ignorer",
+    "confirmChecked": "Confirmez avoir vérifié : {orders}",
+    "confirmHides": "Cela masque l’avertissement. L’enregistrement est conservé sur cet appareil dans tous les cas.",
+    "notYet": "Pas encore",
+    "iveChecked": "J’ai vérifié : {orders}",
+    "statusBody": "⚠ {orders} — cette modification n’a pas été prise en compte. Vérifiez la commande.",
+    "offline": "📴 Pas de connexion — {n, plural, one {{count} modification enregistrée sur cet appareil. Elle sera envoyée dès votre retour en ligne.} other {{count} modifications enregistrées sur cet appareil. Elles seront envoyées dès votre retour en ligne.}} Les paramètres sont verrouillés.",
+    "syncing": "De retour en ligne — envoi de {n, plural, one {{count} modification} other {{count} modifications}}…",
+    "synced": "Modifications envoyées.",
+    "stillQueued": "{n, plural, one {{count} modification enregistrée sur cet appareil. Nouvelle tentative d’envoi en cours.} other {{count} modifications enregistrées sur cet appareil. Nouvelle tentative d’envoi en cours.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab est verrouillé",
+    "verifying": "Vérification…",
+    "unlock": "Déverrouiller",
+    "cantUseBiometric": "Impossible d’utiliser Face / Touch ID ?",
+    "enterPin": "Saisissez votre PIN de secours",
+    "wrongPin": "PIN incorrect — réessayez.",
+    "checking": "Vérification…",
+    "tryBiometric": "Essayer plutôt Face / Touch ID",
+    "forgot": "PIN oublié ? Vous devrez réinstaller l’application."
+  },
+  "notify": {
+    "title": "🔔 Notifications",
+    "intro": "Alertes sur cet appareil. Activez-les pour choisir celles que vous recevez.",
+    "refused": "Les notifications doivent être autorisées dans les paramètres de votre appareil pour activer cette option.",
+    "newOrder": "Alertes de nouvelle commande",
+    "newOrderHelp": "Soyez averti lorsqu’une commande client doit être confirmée.",
+    "offline": "Alertes hors ligne / suspension",
+    "offlineHelp": "Soyez averti lorsque cet appareil passe hors ligne (et que les commandes sont suspendues). <green>Fonctionne hors ligne.</green>"
+  },
+  "van": {
+    "label": "Camion",
+    "loadRetry": "Échec du chargement · Réessayer",
+    "select": "Sélectionner…"
+  },
+  "deviceSave": {
+    "network": "Impossible de joindre le serveur — vérifiez la connexion et réessayez.",
+    "server": "Enregistrement impossible pour le moment. Veuillez réessayer."
+  },
+  "setup": {
+    "fetchErrorTitle": "Impossible de charger la configuration de l’appareil",
+    "fetchErrorBody": "Nous n’avons pas pu joindre le serveur pour configurer <b>cet appareil</b>. Vérifiez la connexion et réessayez — vos commandes et vos paramètres ne sont pas affectés.",
+    "retry": "Réessayer",
+    "later": "Plus tard",
+    "noVanTitle": "Aucun camion actif",
+    "noVanBody": "Ce food truck n’a pas encore de camion actif. Activez-en un dans <b>Paramètres → Vos food trucks</b> : cet appareil se configurera alors automatiquement, sans autre étape ici.",
+    "goToVans": "Aller dans Paramètres → Vos food trucks",
+    "title": "Configurer cet appareil",
+    "body": "Configuration unique pour <b>cet appareil</b> : l’écran qui s’ouvre au démarrage et le camion associé. Ne s’applique qu’à cet appareil — les autres se configurent séparément, et vous pourrez modifier ces choix plus tard depuis le menu du profil → « Cet appareil ».",
+    "whichScreen": "Sur quel écran cet appareil doit-il s’ouvrir ?",
+    "dashboard": "Tableau de bord",
+    "kds": "KDS",
+    "whichVan": "À quel camion correspond cet appareil ?",
+    "selectVan": "Choisir un camion…",
+    "saving": "Enregistrement…",
+    "tryAgain": "Réessayer",
+    "continue": "Continuer"
+  },
+  "device": {
+    "title": "Cet appareil",
+    "viewing": "Vous consultez : <b>{truck}</b>",
+    "viewingVan": "Vous consultez : <b>{truck}</b> — <b>{van}</b>",
+    "only": "Cet appareil uniquement — les autres appareils se configurent séparément. (ID : {id}…)",
+    "truck": "Food truck",
+    "van": "Camion",
+    "defaultScreen": "Écran par défaut",
+    "orderNotifications": "Notifications de commande",
+    "patchFailed": "{setting, select, van {Camion} defaultScreen {Écran par défaut} other {Notifications de commande}} : non enregistré. {reason}",
+    "requireBiometric": "Exiger l’empreinte digitale ou la reconnaissance faciale à l’ouverture",
+    "pinTitle": "Définir un PIN de secours (4 à 6 chiffres)",
+    "pinHelp": "Votre solution si l’empreinte digitale ou la reconnaissance faciale ne fonctionne pas — c’est le seul recours, alors ne l’oubliez pas (un PIN oublié implique de réinstaller l’application). Fonctionne hors ligne.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Confirmer le PIN",
+    "pinTooShort": "Utilisez au moins 4 chiffres.",
+    "pinMismatch": "Les PIN ne correspondent pas.",
+    "setPin": "Définir le PIN et activer",
+    "cancel": "Annuler",
+    "noBiometric": "Aucune empreinte digitale ni reconnaissance faciale n’est configurée sur cet appareil — ajoutez-en une dans les paramètres de l’appareil. Votre PIN de secours fonctionne toujours.",
+    "footer": "Ces paramètres ne s’appliquent qu’à cet appareil — les autres appareils se configurent séparément."
+  },
+  "appLock": {
+    "unlockReason": "Déverrouiller HatchGrab",
+    "usePasscode": "Utiliser le code",
+    "cancel": "Annuler",
+    "confirmEnable": "Confirmez pour activer le verrouillage de l’application"
+  },
+  "channel": {
+    "ordersName": "Nouvelles commandes",
+    "ordersDescription": "Alertes lorsqu’une commande doit être confirmée."
+  },
+  "localNotify": {
+    "newOrderTitle": "Nouvelle commande",
+    "orderReceived": "Commande {number} reçue",
+    "newOrders": "{n, plural, one {Vous avez une nouvelle commande} other {Vous avez {count} nouvelles commandes}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Commandes suspendues",
+    "pausedBody": "Vous êtes hors ligne — les commandes clients sont suspendues.",
+    "offlineTitle": "Vous êtes hors ligne",
+    "offlineBody": "Cet appareil a perdu sa connexion."
+  }
+}

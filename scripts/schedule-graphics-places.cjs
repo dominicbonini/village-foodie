@@ -1278,7 +1278,9 @@ function runWiringSuite(lib) {
       /placeForTypedName\(name_key, rows\)/.test(fn) && fn.indexOf('placeForTypedName(') < fn.indexOf(".upsert(")
       // ⚠️ RE-PINNED (Language Phase 1d): the route's import block grew by the 1d i18n imports and their header
       // (~1,000 characters), pushing the places import past 8,000. The window is the import block, now 9,000.
-      && /from '@\/lib\/schedule-graphics\/places'/.test(R.slice(0, 9000)) && /\n  placeForTypedName,\n/.test(R.slice(0, 9000)))
+      // ⚠️ RE-PINNED (languages-1): the import block grew again (plan names, the private-events and errorsManage catalogs,
+      // ~200 characters), pushing the places import just past 9,000. The window is the import block, now 10,000.
+      && /from '@\/lib\/schedule-graphics\/places'/.test(R.slice(0, 10000)) && /\n  placeForTypedName,\n/.test(R.slice(0, 10000)))
     t('⚠️ a copied link to a place that is gone falls through to the name instead of linking nothing',
       /if \(picked\) return resolvePlaceMerge\(picked, placesById\(all\)\)\.id/.test(fn) && !/if \(!picked\) return null/.test(fn))
   }
@@ -2968,7 +2970,7 @@ function runWiringSuite(lib) {
      * scripts/language-phase-1e.cjs's Billing views (GB F === BEFORE byte-identical; US listed). ══ */
     movedEdits.push(
       { was: 'const vanPx = usePriceMask()', nowIn: PAGE_F, now: 'const vanPx = (val: string) => priceText(vanMask(val), vanSettings.locale)', reason: "the van add-on's price word in the truck's locale (the mask is `vanMask`)" },
-      { exact: true, was: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />', nowIn: PAGE_F, now: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} />', reason: "the App Store link follows the truck's country (GB unchanged)" },
+      { exact: true, was: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />', nowIn: PAGE_F, now: '<StoreBadges className="mt-3 flex flex-wrap items-center gap-3" countryCode={truck?.country} locale={settingsLocale} />', reason: "the App Store link follows the truck's country (GB unchanged); ⚠️ RE-PINNED (languages-1): the badge alt text in the truck's language" },
       { exact: true, was: 'const px = usePriceMask()', nowIn: PAGE_F, now: 'const px = (val: string) => priceText(mask(val), cs.locale)', reason: "Billing's price words in the truck's locale (the mask is `mask`)" },
       { exact: true, was: '<div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">', nowIn: PAGE_F, now: '<div key={row.id} className="flex items-start py-2.5 border-t border-slate-100">', reason: 'React key by row id' },
       { exact: true, was: '{FEATURE_SECTIONS.map(section => (', nowIn: PAGE_F, now: '{sections.map(section => (', reason: "the sections in the truck's locale: const sections = featureSections(cs.locale)" },
@@ -3037,6 +3039,35 @@ function runWiringSuite(lib) {
       { exact: true, was: "{event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && (", nowIn: PAGE_F,
         now: "{event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && !privateNow && (",
         reason: 'pending-card fix: the no-location box is hidden on a private event' },
+    )
+    /* ══ ⚠️ RE-PINNED (languages-1, 22 October 2026): the Manage page's own languages-1 edits — the allergen wizard's dietary
+     * column labels in the truck's language (`dietaryLabel(…, wizLocale)`; GB returns the label unchanged), the group rule's
+     * operator label in the truck's locale, and the QR memo reading `t` (the "Powered by" line from messages). Proven
+     * byte-identical in GB/US/IE/AU/NZ/CA by scripts/languages-1.cjs's before/after captures. ══ */
+    movedEdits.push(
+      { exact: true, was: '<button type="button" disabled={!canEdit} onClick={toggle} aria-pressed={active} aria-label={c.label}', nowIn: PAGE_F,
+        // ⚠️ RE-PINNED (france-1): the allergen columns' labels in the truck's language too (`allergenLabel`; English as stored).
+        now: "<button type=\"button\" disabled={!canEdit} onClick={toggle} aria-pressed={active} aria-label={c.tone === 'diet' ? dietaryLabel(c.label, wizLocale) : allergenLabel(c.label, wizLocale)}",
+        reason: "languages-1: the dietary column's label in the truck's language" },
+      { exact: true, was: "<th key={c.label} className={`bg-white h-12 px-0.5 py-1 align-middle text-center text-[11px] font-bold text-slate-900 leading-tight hyphens-auto break-words border-b border-r border-slate-100 ${i === A ? DIVIDER : ''}`}>{c.label}</th>", nowIn: PAGE_F,
+        now: "<th key={c.label} className={`bg-white h-12 px-0.5 py-1 align-middle text-center text-[11px] font-bold text-slate-900 leading-tight hyphens-auto break-words border-b border-r border-slate-100 ${i === A ? DIVIDER : ''}`}>{c.tone === 'diet' ? dietaryLabel(c.label, wizLocale) : allergenLabel(c.label, wizLocale)}</th>",
+        reason: "languages-1: the dietary column's heading in the truck's language" },
+      { exact: true, was: "<span className=\"text-[10px] font-bold text-slate-400\">{groupRuleLabel(g as any, 'operator')}</span>", nowIn: PAGE_F,
+        now: "<span className=\"text-[10px] font-bold text-slate-400\">{groupRuleLabel(g as any, 'operator', tkLocale)}</span>",
+        reason: "languages-1: the group rule's label in the truck's locale" },
+      { exact: true, was: '}, [orderUrl, truck.logo_storage_path, truck.name])', nowIn: PAGE_F,
+        now: '}, [orderUrl, truck.logo_storage_path, truck.name, t])',
+        reason: 'languages-1: the QR memo reads the "Powered by" words' },
+    )
+    /* ══ ⚠️ RE-PINNED (france-1, 22 October 2026): the Manage page's france-1 edits — allergen labels shown in the truck's language
+     * (lib/allergen-label.ts; English shows the stored label) and the import review's price box through useDecimalBox (an English
+     * locale gets exactly the same number box). Proven byte-identical in GB/US/IE/AU/NZ/CA by the before/after captures. ══ */
+    movedEdits.push(
+      { exact: true, was: "{draft.allergens.map(a => <AllergenChip key={a} label={a} />)}", nowIn: PAGE_F, now: "{draft.allergens.map(a => <AllergenChip key={a} label={allergenLabel(a, wizLocale)} />)}", reason: "france-1: the wizard's allergen chips in the truck's language (English: as stored)" },
+      { exact: true, was: "<span key={a} className=\"text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100\">{a}</span>", nowIn: PAGE_F, now: "<span key={a} className=\"text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100\">{allergenLabel(a, tkLocale)}</span>", reason: "france-1: the menu list's allergen chips in the truck's language" },
+      { exact: true, was: "<span key={a} className=\"text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg\">{a}</span>", nowIn: PAGE_F, now: "<span key={a} className=\"text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg\">{allergenLabel(a, tkLocale)}</span>", reason: "france-1: the card import's may-contain chips in the truck's language" },
+      { exact: true, was: "<input type=\"number\" step=\"0.50\" value={Number(item.price) > 0 ? item.price : ''} placeholder=\"0.00\"", nowIn: PAGE_F, now: "<input {...priceBox.rawBox(`import-${globalIdx}`, Number(item.price) > 0 ? item.price : '', e => { const v = parseFloat(e.target.value); patchImportItem(globalIdx, it => ({ ...it, price: v > 0 ? v : 0, price_missing: !(v > 0), _free: v > 0 ? false : it._free })) })} step=\"0.50\" placeholder={decimalForInput('0.00', tkLocale)}", reason: "france-1: the import review's price box through useDecimalBox (English: the same number box)" },
+      { exact: true, was: "onChange={e => { const v = parseFloat(e.target.value); patchImportItem(globalIdx, it => ({ ...it, price: v > 0 ? v : 0, price_missing: !(v > 0), _free: v > 0 ? false : it._free })) }}", nowIn: PAGE_F, now: "<input {...priceBox.rawBox(`import-${globalIdx}`, Number(item.price) > 0 ? item.price : '', e => { const v = parseFloat(e.target.value); patchImportItem(globalIdx, it => ({ ...it, price: v > 0 ? v : 0, price_missing: !(v > 0), _free: v > 0 ? false : it._free })) })} step=\"0.50\" placeholder={decimalForInput('0.00', tkLocale)}", reason: "france-1: \u2026its onChange is the rawBox callback, unchanged" },
     )
     const PENDING_CARD_REMOVED = new Map([
       '{pending && (',

@@ -1,0 +1,122 @@
+[
+ {
+  "name": "fr-landing",
+  "eng": "webkit",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-landing",
+  "eng": "webkit",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-features",
+  "eng": "webkit",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-features",
+  "eng": "webkit",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-compare",
+  "eng": "webkit",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-compare",
+  "eng": "webkit",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-plans-pdf",
+  "eng": "webkit",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-plans-pdf",
+  "eng": "webkit",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-email-confirmation",
+  "eng": "webkit",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-email-confirmation",
+  "eng": "webkit",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-landing",
+  "eng": "chromium",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-landing",
+  "eng": "chromium",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-features",
+  "eng": "chromium",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-features",
+  "eng": "chromium",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-compare",
+  "eng": "chromium",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-compare",
+  "eng": "chromium",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-plans-pdf",
+  "eng": "chromium",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-plans-pdf",
+  "eng": "chromium",
+  "w": 1280,
+  "sideways": false
+ },
+ {
+  "name": "fr-email-confirmation",
+  "eng": "chromium",
+  "w": 390,
+  "sideways": false
+ },
+ {
+  "name": "fr-email-confirmation",
+  "eng": "chromium",
+  "w": 1280,
+  "sideways": false
+ }
+]

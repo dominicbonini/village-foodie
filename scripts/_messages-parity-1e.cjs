@@ -76,6 +76,22 @@ const FIX_ARGS = {
 }
 /** Moved messages whose words are NEW on purpose (a named change), so no eb7ed44 string carries them: key → reason. */
 const NEW_WORDING = {
+  // ⚠️ RE-PINNED (france-1, 22 October 2026): menuBadges.allergen.<id> names every allergen set's STORED label so a language can
+  // show it in its own words (lib/allergen-label.ts; English shows the stored label and never reads these). The anz-1 / canada-1
+  // labels below are newer than eb7ed44, so no eb7ed44 string carries them; each is its set's label verbatim (lib/allergens.ts).
+  // ⚠️ RE-PINNED (france-1): planFeatures.cardRegion.<id> names each country row's card_fee_region_label (data, English by the
+  // rows' convention) so a language can word it; English shows the stored label and never reads these. Newer than eb7ed44:
+  'planFeatures.cardRegion.Australiancards': 'france-1: country_settings.card_fee_region_label "Australian cards", named for a language to word it',
+  'planFeatures.cardRegion.NewZealandcards': 'france-1: country_settings.card_fee_region_label "New Zealand cards", named for a language to word it',
+  'planFeatures.cardRegion.Canadiancards': 'france-1: country_settings.card_fee_region_label "Canadian cards", named for a language to word it',
+  'menuBadges.allergen.Barley': 'france-1: the stored allergen label "Barley" (lib/allergens.ts), named for a language to word it',
+  'menuBadges.allergen.Addedsulphites': 'france-1: the stored allergen label "Added sulphites" (lib/allergens.ts), named for a language to word it',
+  'menuBadges.allergen.Brazilnut': 'france-1: the stored allergen label "Brazil nut" (lib/allergens.ts), named for a language to word it',
+  'menuBadges.allergen.Macadamia': 'france-1: the stored allergen label "Macadamia" (lib/allergens.ts), named for a language to word it',
+  'menuBadges.allergen.Pinenut': 'france-1: the stored allergen label "Pine nut" (lib/allergens.ts), named for a language to word it',
+  'menuBadges.allergen.Pistachio': 'france-1: the stored allergen label "Pistachio" (lib/allergens.ts), named for a language to word it',
+  'menuBadges.allergen.Wheatandtriticale': 'france-1: the stored allergen label "Wheat and triticale" (lib/allergens.ts), named for a language to word it',
+  'menuBadges.allergen.Glutenbarleyoatsrye': 'france-1: the stored allergen label "Gluten (barley, oats, rye)" (lib/allergens.ts), named for a language to word it',
   // ⚠️ RE-PINNED (US dress rehearsal fixes, 19 October 2026): the US Add / Edit event form's new State box.
   'manageScheduleEvent.statePlaceholder': 'US dress rehearsal fix (Finding 6): the State box\'s example, a two-letter state ("e.g. NJ")',
   // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md): the outreach company footer and

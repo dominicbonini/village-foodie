@@ -35,6 +35,7 @@ import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import type { PlanCatalog } from '@/lib/plans'
 import { getPlanCatalog } from '@/lib/plans-server'
+import { localizePlans } from '@/lib/plan-names'   // languages-1: plan names in the locale's language
 import {
   offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands,
   tableGroups, tableCell, walkUpFree, type OfferPlan,
@@ -47,6 +48,7 @@ import '@/lib/i18n/catalog/planFeatures'
 import '@/lib/i18n/catalog/pricing'
 import '@/lib/i18n/catalog/planTable'
 import '@/lib/i18n/catalog/planPrompt'
+import { langAttrOf } from '@/lib/page-lang'   // languages-1: <html lang> for a non-English PDF (none for English)
 
 // ── 🔴 THE PAGE SIZE IS THE COUNTRY'S (Language Phase 1e). A US reader prints on US Letter; A4 there is clipped or
 // shrunk. The CSS `@page` rule and Chromium's `format` both read this one answer, so they cannot disagree.
@@ -146,6 +148,8 @@ const html = (t: unknown, key: string, values: Record<string, string | number> =
  * country's truck (components/usePlanPriceLabel.ts) — a prospect in a country not yet open never gets a price list.
  */
 export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): string {
+  // languages-1: the plans' names in the country's language (lib/plan-names.ts) — the same catalogue for English.
+  catalog = localizePlans(catalog, s.locale)
   const wordmark = wordmarkDataUri()
   // 🔴 THE DOCUMENT'S WORDS ARE THE COUNTRY'S LOCALE (Language Phase 1e). A price is masked FIRST (on its code), then shown.
   const locale = s.locale
@@ -233,7 +237,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const omitNote = omit
     ? `<p class="tbc">${esc(t('omitNote'))}</p>` : ''
 
-  return `<!doctype html><html><head><meta charset="utf-8"><style>
+  return `<!doctype html><html${langAttrOf(locale)}><head><meta charset="utf-8"><style>
   @page { size: ${paper.css}; margin: 14mm 12mm 16mm; }
   /* 🟢 THE ONLY TWO BRAND COLOURS, INTERPOLATED FROM lib/brand.ts — see the import note above.
      Everything else on this page stays the neutral greys it already was. */
@@ -380,7 +384,7 @@ export async function launchPdfBrowser() {
 export async function generatePlansPdf(country: string): Promise<Buffer> {
   // Read BEFORE the browser launches, so an unknown country (or an unreadable catalogue) fails fast and costs no Chromium.
   const settings = await getCountrySettings(country)
-  const catalog = await getPlanCatalog()
+  const catalog = localizePlans(await getPlanCatalog(), settings.locale)
   let browser: unknown = null
   try {
     browser = await launchPdfBrowser()

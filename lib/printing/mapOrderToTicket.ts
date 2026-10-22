@@ -26,7 +26,7 @@ import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { TicketOrder, TicketReprint } from '@/lib/printing/ticket'
 import { orderMoney } from '@/lib/money-format'
 import { formatSlot } from '@/lib/time-utils'
-import { chargeLinesFor, chargeSourceOf } from '@/lib/order-charge-lines'
+import { chargeLinesFor, chargeSourceOf, includedTaxLine } from '@/lib/order-charge-lines'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/ticket'
@@ -131,6 +131,11 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
       if (!lines.length) return undefined
       const t = translatorFor(locale, 'ticket')
       return lines.map(l => ({ label: l.rate ? t('chargeWithRate', { label: l.label, rate: l.rate }) : l.label, minor: l.minor }))
+    })(),
+    // france-1: the tax the total includes (France's TVA) — undefined for every other order, which prints as before.
+    includedTax: (() => {
+      const l = includedTaxLine(chargeSourceOf(order as unknown as Record<string, unknown>), locale)
+      return l ? { label: `${l.label} ${l.rate}`, minor: l.minor } : undefined
     })(),
     total: order.total,
 

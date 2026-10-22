@@ -136,8 +136,11 @@ const WORDS = {
   t('the fixture is the page anz-terms published (US, Ireland, Australia, New Zealand; dated 22 October 2026)', JSON.stringify([...B.matchAll(/^## (.+)$/gm)].map(m => m[1])) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand']) && B.includes('**Last updated:** 22 October 2026'))
   t('everything before `## Canada` — the intro, US, Ireland, Australia and New Zealand — is byte-identical (the date is already the build date)', at > 0 && A.slice(0, at) === B, `${at} vs ${B.length} bytes`)   // A[at] is the blank line before `## Canada`
   for (const f of ['content/legal/terms-and-conditions.md', 'content/legal/privacy-policy.md']) t(`${f} is byte-identical (7fcd4fc9)`, read(f) === execFileSync('git', ['show', `7fcd4fc9:${f}`], { cwd: REPO, encoding: 'utf8' }))
-  const C = A.slice(at + 1)
-  t('headings: … New Zealand, then Canada; Canada has "For food truck operators" then "Privacy, for everyone in Canada"', JSON.stringify([...A.matchAll(/^## (.+)$/gm)].map(m => m[1])) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand', 'Canada'])
+  // ⚠️ RE-PINNED (france-1, 22 October 2026, docs/france-1-report.md §11): France's section follows Canada's, so Canada's section
+  // ends where France's begins; everything checked below is Canada's own text, as before.
+  const frAt = A.indexOf('\n## France\n')
+  const C = A.slice(at + 1, frAt > at ? frAt : undefined)
+  t('headings: … New Zealand, then Canada (then France); Canada has "For food truck operators" then "Privacy, for everyone in Canada"', JSON.stringify([...A.matchAll(/^## (.+)$/gm)].map(m => m[1])) === JSON.stringify(['United States', 'Ireland', 'Australia', 'New Zealand', 'Canada', 'France'])
     && JSON.stringify([...C.matchAll(/^### (.+)$/gm)].map(m => m[1])) === JSON.stringify(['For food truck operators', 'Privacy, for everyone in Canada']))
   const paras = C.split(/\n\s*\n/).map(p => p.trim()).filter(p => p && !p.startsWith('#'))
   t(`every paragraph opens with a bold label (${paras.length})`, paras.every(p => /^\*\*[^*]+\.\*\* /.test(p)))
@@ -153,7 +156,8 @@ const WORDS = {
   t('the dates and TERMS_VERSION are the build date — 22 October 2026, which anz-terms had already set: the page, COUNTRY_TERMS_UPDATED and TERMS_VERSION agree',
     A.includes('**Last updated:** 22 October 2026') && L.includes("export const COUNTRY_TERMS_UPDATED = '22 October 2026'") && L.includes("export const TERMS_VERSION = '2026-10-22'"))
   const R = await kit.bundle('ca2-md-html', "export { renderLegalMarkdownHtml } from '@/lib/legal-markdown-html'")
-  t('the page renders: the before-page\'s HTML, then the Canada section\'s; the five country headings in order', R.renderLegalMarkdownHtml(A) === R.renderLegalMarkdownHtml(B) + R.renderLegalMarkdownHtml(C)
+  // ⚠️ RE-PINNED (france-1): …then France's section (docs/france-1-report.md §11).
+  t('the page renders: the before-page\'s HTML, then the Canada section\'s (then France\'s); the country headings in order', R.renderLegalMarkdownHtml(A) === R.renderLegalMarkdownHtml(B) + R.renderLegalMarkdownHtml(C) + (frAt > at ? R.renderLegalMarkdownHtml(A.slice(frAt + 1)) : '')
     && /<h2[^>]*>New Zealand<\/h2>[\s\S]*<h2[^>]*>Canada<\/h2>/.test(R.renderLegalMarkdownHtml(A)))
 
   console.log(`\n${fail ? '🔴' : '✅'} canada-2: ${pass} passed, ${fail} failed`)
