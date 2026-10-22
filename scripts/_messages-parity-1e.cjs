@@ -119,7 +119,9 @@ const NEW_WORDING = {
   // ⚠️ RE-PINNED (canada-1, 22 October 2026, docs/canada-1-report.md): the plain refusal for a truck based in a region closed to
   // signups (Quebec, until HatchGrab is in French — data on the region, lib/address-formats.ts `signupClosed`). New words;
   // scripts/canada-1.cjs §6 holds where it shows and its exact text.
-  'tradeArea.region_closed': 'canada-1: "Trucks based in {region} can’t sign up yet: HatchGrab isn’t available in {language} yet…" (Quebec)',
+  // ⚠️ RE-PINNED (canada-2, 22 October 2026): the reason is now a select — 'language' (Quebec) or 'taxLines' (Saskatchewan and
+  // Manitoba: "we’re adding separate GST and PST lines first", Dominic's words); scripts/canada-2.cjs §1 holds both sentences.
+  'tradeArea.region_closed': 'canada-1 / canada-2: "Trucks based in {region} can’t sign up yet: HatchGrab isn’t available in {language} yet…" (Quebec) / "…: we’re adding separate GST and PST lines first…" (Saskatchewan, Manitoba)',
 }
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */

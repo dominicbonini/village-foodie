@@ -45,7 +45,10 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
 
   // ── 2 · the shape and the points ──
   console.log('\n── the Australia and New Zealand sections')
-  const AU = A.slice(au + 1, nz), NZ = A.slice(nz + 1)
+  // ⚠️ RE-PINNED (canada-2, 22 October 2026): Canada follows New Zealand, so New Zealand ends at `## Canada` (scripts/canada-2.cjs
+  // proves everything before `## Canada` is the page anz-terms published, byte for byte).
+  const caAt = A.indexOf('\n## Canada\n')
+  const AU = A.slice(au + 1, nz), NZ = A.slice(nz + 1, caAt === -1 ? A.length : caAt + 1)
   for (const [name, s] of [['Australia', AU], ['New Zealand', NZ]]) {
     const heads = [...s.matchAll(/^#{2,3} (.+)$/gm)].map(m => m[1])
     t(`${name}: the US / Ireland shape — "## ${name}", "### For food truck operators", "### Privacy, for everyone in ${name}"`, JSON.stringify(heads) === JSON.stringify([name, 'For food truck operators', `Privacy, for everyone in ${name}`]), heads)
@@ -98,7 +101,7 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
   console.log('\n── /country-terms, through the real renderer')
   const R = await kit.bundle('anzt-md-html', "export { renderLegalMarkdownHtml } from '@/lib/legal-markdown-html'")
   const hA = R.renderLegalMarkdownHtml(A), hB = R.renderLegalMarkdownHtml(B)
-  t('the page\'s HTML is BEFORE\'s with the date moved, then Australia\'s and New Zealand\'s', hA === hB.replace('21 October 2026', DATE) + R.renderLegalMarkdownHtml(AU) + R.renderLegalMarkdownHtml(NZ))
+  t('the page\'s HTML is BEFORE\'s with the date moved, then Australia\'s and New Zealand\'s (then any later country\'s)', hA.startsWith(hB.replace('21 October 2026', DATE) + R.renderLegalMarkdownHtml(AU) + R.renderLegalMarkdownHtml(NZ)))
   t('the four country headings render in order: United States, Ireland, Australia, New Zealand', /<h2[^>]*>United States<\/h2>[\s\S]*<h2[^>]*>Ireland<\/h2>[\s\S]*<h2[^>]*>Australia<\/h2>[\s\S]*<h2[^>]*>New Zealand<\/h2>/.test(hA))
 
   console.log(`\n${pass} passed, ${fail} failed`)

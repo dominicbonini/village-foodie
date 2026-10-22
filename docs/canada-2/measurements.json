@@ -1,0 +1,78 @@
+[
+ {
+  "engine": "webkit",
+  "width": 1280,
+  "status": 200,
+  "h2": [
+   "United States",
+   "Ireland",
+   "Australia",
+   "New Zealand",
+   "Canada"
+  ],
+  "updated": "22 October 2026",
+  "flag": false,
+  "au": 7887.25,
+  "nz": 7887.25,
+  "end": 9481.25,
+  "scrollW": 1280,
+  "title": "Country-specific terms — HatchGrab"
+ },
+ {
+  "engine": "webkit",
+  "width": 390,
+  "status": 200,
+  "h2": [
+   "United States",
+   "Ireland",
+   "Australia",
+   "New Zealand",
+   "Canada"
+  ],
+  "updated": "22 October 2026",
+  "flag": false,
+  "au": 12907,
+  "nz": 12907,
+  "end": 15456.5,
+  "scrollW": 390,
+  "title": "Country-specific terms — HatchGrab"
+ },
+ {
+  "engine": "chromium",
+  "width": 1280,
+  "status": 200,
+  "h2": [
+   "United States",
+   "Ireland",
+   "Australia",
+   "New Zealand",
+   "Canada"
+  ],
+  "updated": "22 October 2026",
+  "flag": false,
+  "au": 7887.25,
+  "nz": 7887.25,
+  "end": 9481.25,
+  "scrollW": 1280,
+  "title": "Country-specific terms — HatchGrab"
+ },
+ {
+  "engine": "chromium",
+  "width": 390,
+  "status": 200,
+  "h2": [
+   "United States",
+   "Ireland",
+   "Australia",
+   "New Zealand",
+   "Canada"
+  ],
+  "updated": "22 October 2026",
+  "flag": false,
+  "au": 12907,
+  "nz": 12907,
+  "end": 15456.5,
+  "scrollW": 390,
+  "title": "Country-specific terms — HatchGrab"
+ }
+]

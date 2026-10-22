@@ -6,7 +6,7 @@
   "scripts": {
     "predev": "node scripts/split-messages.cjs",
     "dev": "next dev",
-    "prebuild": "node scripts/split-messages.cjs",
+    "prebuild": "node scripts/split-messages.cjs && node scripts/check-tzdata.cjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

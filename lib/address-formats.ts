@@ -42,9 +42,11 @@ export interface AddressField { key: AddressFieldKey; required: boolean; label: 
 export interface Region {
   code: string; name: string; aliases?: readonly string[]
   /** canada-1 (22 October 2026): trucks BASED here cannot sign up yet (nor move their base here) — lib/trade-area.ts refuses
-   *  with `tradeArea.region_closed`, naming the region and, when given, the language HatchGrab must be available in first.
-   *  Quebec: the Charter of the French language (Bill 96) requires French, which HatchGrab does not have yet. */
-  signupClosed?: { needsLanguage?: string }
+   *  with `tradeArea.region_closed`, naming the region and its REASON, each said plainly in messages:
+   *    'language' — HatchGrab must be available in `needsLanguage` first (Quebec: the Charter of the French language, Bill 96);
+   *    'taxLines' — the region's sales tax is two taxes that must show as separate lines, which an order cannot hold yet
+   *                 (canada-2, Dominic 22 Oct: Saskatchewan and Manitoba; their `salesTax` stays, for when they open). */
+  signupClosed?: { reason: 'language'; needsLanguage: string } | { reason: 'taxLines' }
   /** canada-1: the region's sales tax on prepared food, for a country whose menu prices exclude tax — the default a truck
    *  based here gets (its own rate in Manage › Payments › Tax still wins) and the line's name on the checkout and receipt.
    *  `milli` is thousandths of a percent (13 % = 13000), the unit of `trucks.tax_rate_milli`. */
@@ -194,9 +196,10 @@ const AU_STATES: readonly Region[] = [
 // Memorandum 4.3). Provincial sales tax on meals: BRITISH COLUMBIA does not (PST 7 % exempts "Meals" — gov.bc.ca, food and beverage
 // service providers, 22 Apr 2026), so a BC truck's default is GST 5 %; SASKATCHEWAN taxes them (PST 6%, Information Bulletin PST-33: "meals and other
 // prepared food … are subject to PST"); MANITOBA taxes them (RST 7%; its 1 July 2026 grocery exemption excludes restaurants,
-// "concession stands, food carts and food trucks" — Information Notice RST 26-01). ⚠️ A province with TWO taxes is one line
-// today ("GST + PST", the combined rate): an order holds one tax line (lib/order-charges.ts), and Saskatchewan asks for PST
-// as a separate amount on the invoice — the two-line proposal is docs/canada-1-report.md §2.4, not built.
+// "concession stands, food carts and food trucks" — Information Notice RST 26-01). ⚠️ A province with TWO taxes would be one
+// line ("GST + PST", the combined rate): an order holds one tax line (lib/order-charges.ts), and Saskatchewan asks for PST as a
+// separate amount on the invoice. canada-2 (Dominic, 22 October 2026): SASKATCHEWAN AND MANITOBA ARE THEREFORE CLOSED to signups
+// (`signupClosed: taxLines`) until the two-line build (docs/canada-1-report.md §2.4, in the backlog); their tax stays here.
 const CA_TAX = {
   gst: { label: 'GST', milli: 5000 },
   hst13: { label: 'HST', milli: 13000 }, hst14: { label: 'HST', milli: 14000 }, hst15: { label: 'HST', milli: 15000 },
@@ -207,7 +210,7 @@ const CA_PROVINCES: readonly Region[] = [
   // BC: PST does not apply to meals ("Sales of food for human consumption are exempt from PST, including: … Meals") — it does to
   // soda beverages (7 %, since 1 April 2021) and liquor (10 %), which a truck selling them covers with its own rate (Dominic, 22 Oct).
   { code: 'BC', name: 'British Columbia', salesTax: CA_TAX.gst },
-  { code: 'MB', name: 'Manitoba', salesTax: CA_TAX.gstRstMb },
+  { code: 'MB', name: 'Manitoba', salesTax: CA_TAX.gstRstMb, signupClosed: { reason: 'taxLines' } },
   { code: 'NB', name: 'New Brunswick', salesTax: CA_TAX.hst15 },
   { code: 'NL', name: 'Newfoundland and Labrador', salesTax: CA_TAX.hst15 },
   { code: 'NS', name: 'Nova Scotia', salesTax: CA_TAX.hst14 },
@@ -215,8 +218,8 @@ const CA_PROVINCES: readonly Region[] = [
   { code: 'NU', name: 'Nunavut', salesTax: CA_TAX.gst },
   { code: 'ON', name: 'Ontario', salesTax: CA_TAX.hst13 },
   { code: 'PE', name: 'Prince Edward Island', salesTax: CA_TAX.hst15 },
-  { code: 'QC', name: 'Quebec', signupClosed: { needsLanguage: 'French' } },
-  { code: 'SK', name: 'Saskatchewan', salesTax: CA_TAX.gstPstSk },
+  { code: 'QC', name: 'Quebec', signupClosed: { reason: 'language', needsLanguage: 'French' } },
+  { code: 'SK', name: 'Saskatchewan', salesTax: CA_TAX.gstPstSk, signupClosed: { reason: 'taxLines' } },
   { code: 'YT', name: 'Yukon', salesTax: CA_TAX.gst },
 ]
 
@@ -780,7 +783,8 @@ export function validateAddressFormats(formats: Readonly<Record<string, AddressF
       for (const r of f.regions.list) if (!r.code.trim() || !r.name.trim() || r.code !== r.code.toUpperCase()) at(`malformed region ${JSON.stringify(r)}`)
       // canada-1: a region's sales tax is a named rate between 0 and 100 %, in whole thousandths of a percent.
       for (const r of f.regions.list) if (r.salesTax && (!r.salesTax.label.trim() || !Number.isInteger(r.salesTax.milli) || r.salesTax.milli < 0 || r.salesTax.milli > 100000)) at(`malformed sales tax on ${r.code}`)
-      for (const r of f.regions.list) if (r.signupClosed && r.salesTax) at(`${r.code} is closed to signups and also carries a sales tax`)
+      // canada-2: a closed region may keep its tax (Saskatchewan, Manitoba — for when they open); a language closure names it.
+      for (const r of f.regions.list) if (r.signupClosed && !(r.signupClosed.reason === 'taxLines' || (r.signupClosed.reason === 'language' && r.signupClosed.needsLanguage.trim()))) at(`${r.code}: a malformed signup closure`)
     }
     for (const [k, v] of Object.entries(f.examples)) if (typeof v !== 'string' || !v.trim()) at(`an empty example ${k}`)
     if (keys.includes('region') !== !!f.examples.region) at('a region field needs a region example, and an example needs the field')

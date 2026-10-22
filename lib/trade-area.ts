@@ -6,7 +6,7 @@
 // 🔴 A REFUSAL IS A CODE AND ITS VALUES (Language Phase 1d), never words: `{ code, params }`, whose sentence is the
 // `tradeArea` namespace's message (messages/en-GB.json) — read by each caller in its own language: the routes through
 // `tradeAreaErrorBody` (lib/i18n/manage-errors.ts), provisioning through `translatorFor`, the signup step through `useT`.
-import { addressFormatOf, regionOf } from '@/lib/address-formats'
+import { addressFormatOf, regionOf, type Region } from '@/lib/address-formats'
 import type { CountrySettings } from '@/lib/country-settings-types'
 
 type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | 'timezones' | 'defaultTimezone'>
@@ -26,9 +26,10 @@ export const TRADE_AREA_ERRORS = {
   noTown: { code: 'town_missing', params: {} } as TradeAreaRefusal,
   townTooLong: { code: 'town_too_long', params: {} } as TradeAreaRefusal,
   // canada-1 (22 October 2026): the picked town is in a region whose address-format entry says signups there are closed
-  // (lib/address-formats.ts `signupClosed` — Quebec, until HatchGrab is in French). Its name and the language, as data.
-  regionClosed: (region: string, needsLanguage: string | undefined): TradeAreaRefusal =>
-    ({ code: 'region_closed', params: { region, hasLanguage: needsLanguage ? 'yes' : 'no', language: needsLanguage ?? '' } }),
+  // (lib/address-formats.ts `signupClosed`). Its name and the REASON, as data — canada-2: 'language' (Quebec, until HatchGrab
+  // is in French) or 'taxLines' (Saskatchewan and Manitoba, until an order can show GST and PST as separate lines).
+  regionClosed: (region: string, closed: NonNullable<Region['signupClosed']>): TradeAreaRefusal =>
+    ({ code: 'region_closed', params: { region, reason: closed.reason, language: closed.reason === 'language' ? closed.needsLanguage : '' } }),
 } as const
 
 /** What is stored on the truck. Coordinates and the place id are present only when a suggestion was picked. */
@@ -74,7 +75,7 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
   // canada-1: a region the format closes to signups refuses here — the signup step, /api/setup, provisioning and Where you
   // trade all run this, so none can accept it. Only a PICKED place carries a region code; a typed town has none.
   const picked = pointed && regionCodeFormat && typeof input.base_region_code === 'string' ? regionOf(regionCodeFormat, input.base_region_code) : null
-  if (picked && picked.code === input.base_region_code && picked.signupClosed) return { ok: false, ...TRADE_AREA_ERRORS.regionClosed(picked.name, picked.signupClosed.needsLanguage) }
+  if (picked && picked.code === input.base_region_code && picked.signupClosed) return { ok: false, ...TRADE_AREA_ERRORS.regionClosed(picked.name, picked.signupClosed) }
   return {
     ok: true,
     values: {

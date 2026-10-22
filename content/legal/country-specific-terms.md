@@ -163,3 +163,41 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 **Marketing emails.** We send marketing emails only where the law allows it. Every one says who it is from and tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
 
 **Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
+
+## Canada
+
+### For food truck operators
+
+**You are the seller.** You sell your food, and you are the merchant of record for your card payments, as section 5 of the Terms of Service says. Your customers' order is with you, not with us. The consumer protection law of the province or territory where you sell applies to your sales, and you are responsible for meeting it. HatchGrab is the software you sell through.
+
+**Prices.** Your menu prices are shown before tax, and tax is added at checkout as its own line. Any fixed charge a customer must pay, other than tax, has to be in the price they see first. That is why HatchGrab does not offer an online service fee in Canada. Tips are optional and are yours.
+
+**Sales tax.** HatchGrab fills in the sales tax of the province or territory you are based in (GST, HST, or GST and PST) and names it on the bill. You can set your own rate instead. You are responsible for registering for, charging and paying GST/HST and any provincial sales tax correctly. If you sell items taxed at another rate, such as soft drinks or alcohol in British Columbia, set your rate to match.
+
+**Card payments.** Card payments from your customers go into your own Stripe account, which is set up for Canada during onboarding, in your own name, under your own agreement with Stripe. The money settles there, in Canadian dollars, and is paid out to your bank account by Stripe. We never hold it. HatchGrab does not add a card surcharge to your orders.
+
+**Allergens.** Canada's allergen labelling rules are for prepackaged food. HatchGrab lets you show Health Canada's priority allergens against each dish, show your allergen card, or both. HatchGrab shows exactly what you enter, as section 3 of the Terms of Service says. We do not check it.
+
+**Quebec, Saskatchewan and Manitoba.** HatchGrab is not available yet to trucks based in Quebec, because it is not yet available in French, or to trucks based in Saskatchewan or Manitoba, because we are adding separate GST and PST lines first.
+
+**Our prices.** Accounts in Canada are billed in Canadian dollars. HatchGrab Ltd is a UK company. If you are registered for GST/HST, give us your registration number.
+
+**Your rights under local law.** Nothing in the Terms of Service takes away a right that the law where you are based says cannot be limited or waived.
+
+**Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that the law of your province or territory gives you and that cannot be excluded by agreement.
+
+### Privacy, for everyone in Canada
+
+**The law that applies.** When we handle personal information of people in Canada, the Personal Information Protection and Electronic Documents Act (PIPEDA) applies, and in British Columbia and Alberta their own private-sector privacy laws, as well as the UK law named in our Privacy Policy.
+
+**Where your information is kept.** Your information is stored and processed in the United Kingdom, and some is handled by service providers in the European Union and the United States (section 6 of the Privacy Policy), where it may be accessed under those countries' laws.
+
+**Your requests.** You can ask for the personal information we hold about you and ask us to correct it. Email privacy@hatchgrab.com. We will reply within 30 days.
+
+**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the Office of the Privacy Commissioner of Canada at www.priv.gc.ca or on 1-800-282-1376.
+
+**Breaches.** If a breach of security safeguards involving your information creates a real risk of significant harm, we will report it to the Privacy Commissioner and tell you as soon as feasible.
+
+**Marketing emails.** We send marketing emails only with your consent, as Canada's anti-spam law requires. Every one says who it is from and how to unsubscribe, and we act on an unsubscribe within 10 business days.
+
+**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
