@@ -1134,8 +1134,10 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 }
 
 /* europe-languages-2 (23 October 2026): Greek and Bulgarian — Archivo and Public Sans have neither alphabet, so Noto Sans
-   (app/layout.tsx, present only on those pages) fills those letters; Latin letters stay Archivo / Public Sans. */
+   (app/layout.tsx, present only on those pages) fills those letters; Latin letters stay Archivo / Public Sans. Noto goes
+   BEFORE each font's metric fallback ("Archivo Fallback" is a size-adjusted local Arial, which has Greek and Cyrillic and
+   would otherwise draw them, so Noto would never load) — the same order as app/globals.css's Geist stack. */
 :root:lang(el) .hg-landing, :root:lang(bg) .hg-landing {
-  --display: var(--font-archivo), var(--font-script-fallback), system-ui, sans-serif;
-  --body: var(--font-public-sans), var(--font-script-fallback), system-ui, sans-serif;
+  --display: 'Archivo', var(--font-script-fallback), 'Archivo Fallback', system-ui, sans-serif;
+  --body: 'Public Sans', var(--font-script-fallback), 'Public Sans Fallback', system-ui, sans-serif;
 }

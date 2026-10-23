@@ -1,0 +1,84 @@
+{
+  "loading": "Įkeliama valdymo konsolė…",
+  "loadFailed": "Nepavyko įkelti",
+  "requestFailed": "Nepavyko",
+  "invalidToken": "Netinkamas arba nebegaliojantis prieigos raktas",
+  "loadFailedReason": "Nepavyko įkelti šio puslapio: {reason}",
+  "noCountrySettings": "Nepavyko įkelti šio food truck šalies nustatymų. Atnaujinkite puslapį.",
+  "noPlans": "Nepavyko įkelti šio food truck plano. Atnaujinkite puslapį.",
+  "stale": "{hasTime, select, yes {Nepavyko atnaujinti. Rodoma tai, kas išsaugota {time}. Jūsų atliekami pakeitimai vis tiek išsaugomi.} other {Nepavyko atnaujinti. Rodoma tai, kas išsaugota. Jūsų atliekami pakeitimai vis tiek išsaugomi.}}",
+  "verify": {
+    "ok": "El. paštas patvirtintas — ačiū.",
+    "expired": "Ši patvirtinimo nuoroda nebegalioja. Susisiekite su mumis ir viską sutvarkysime, kol dar nepradėjote veikti.",
+    "invalid": "Ši patvirtinimo nuoroda neveikė. Susisiekite su mumis ir viską sutvarkysime, kol dar nepradėjote veikti."
+  },
+  "profile": {
+    "updated": "Profilis atnaujintas",
+    "saveFailed": "Nepavyko išsaugoti",
+    "title": "Redaguoti profilį",
+    "name": "Vardas",
+    "namePlaceholder": "Jūsų vardas",
+    "email": "El. paštas",
+    "cancel": "Atšaukti",
+    "saving": "Išsaugoma…",
+    "save": "Išsaugoti"
+  },
+  "header": {
+    "subtitle": "Valdymo konsolė",
+    "ordersDashboard": "← Užsakymų skydelis"
+  },
+  "tabs": {
+    "menu": "Meniu",
+    "schedule": "Tvarkaraštis",
+    "social": "Socialiniai tinklai",
+    "reports": "Ataskaitos",
+    "team": "Komanda",
+    "settings": "Nustatymai",
+    "payments": "Mokėjimai",
+    "billing": "Atsiskaitymai",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Tvarkaraštis ({count})",
+    "stripeAttention": "Stripe reikia jūsų dėmesio",
+    "allergensNotSet": "alergenai nenustatyti"
+  },
+  "menuSections": {
+    "label": "Meniu skiltys",
+    "items": "Patiekalai",
+    "capacity": "Virtuvės pajėgumas",
+    "extras": "Priedai ir papildomi pasiūlymai",
+    "deals": "Rinkiniai"
+  },
+  "socialSections": {
+    "label": "Socialinių tinklų skiltys",
+    "create": "Sukurti įrašą",
+    "designs": "Dizainai",
+    "locations": "Vietų nustatymai"
+  },
+  "notices": {
+    "review": "Peržiūrėti →",
+    "tour": "Norite trumpai susipažinti su valdymo skydeliu?",
+    "showMeAround": "Pradėti apžvalgą",
+    "dismiss": "Uždaryti",
+    "approval": "{count, plural, one {Radome jums <b>{count}</b> renginį — peržiūrėkite ir priimkite jį, kad jis būtų paskelbtas.} few {Radome jums <b>{count}</b> renginius — peržiūrėkite ir priimkite juos, kad jie būtų paskelbti.} many {Radome jums <b>{count}</b> renginių — peržiūrėkite ir priimkite juos, kad jie būtų paskelbti.} other {Radome jums <b>{count}</b> renginių — peržiūrėkite ir priimkite juos, kad jie būtų paskelbti.}}",
+    "allergens": "<b>Alergenai nenustatyti</b> — klientai nematys informacijos apie alergenus, kol jos nepatvirtinsite. Peržiūrėkite kiekvieno patiekalo alergenus skirtuke „Meniu“.",
+    "domainLive": "<link>{domain}</link> jau veikia. Apžiūrėkite jį, tada skiltyje „Nustatymai“ patvirtinkite, kad viskas gerai.",
+    "stripe": "<b>Stripe kažko iš jūsų reikia</b> — kol tai nesutvarkyta, mokėjimai kortele gali būti sustabdyti.",
+    "profileTitle": "Užpildykite profilį",
+    "missing": "Trūksta: {fields}.",
+    "goToSettings": "Atidaryti „Nustatymai“ →",
+    "field": {
+      "truckName": "food truck pavadinimas",
+      "cuisineType": "virtuvės tipas",
+      "contactEmail": "kontaktinis el. paštas",
+      "contactPhone": "kontaktinis telefonas"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Jūs naudojatės nemokamu bandomuoju laikotarpiu} other {Jūs naudojatės {months} mėn. nemokamu bandomuoju laikotarpiu}}",
+    "ends": "{hasDate, select, yes {Bandomasis laikotarpis baigiasi <hl>{date}</hl>} other {Bandomasis laikotarpis <hl>netrukus</hl> baigiasi}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Visos funkcijos nemokamai # mėnesį} few {Visos funkcijos nemokamai # mėnesius} many {Visos funkcijos nemokamai # mėnesių} other {Visos funkcijos nemokamai # mėnesių}}} other {Visos funkcijos nemokamai bandomuoju laikotarpiu}}",
+    "body": "{hasDate, select, yes {Bandomuoju laikotarpiu, kuris trunka iki <b>{date}</b>, jums nebus nieko apmokestinta. Mokesčiai pradedami skaičiuoti tik tada, kai pasirenkate planą ir įvedate mokėjimo duomenis. Iki tol nėra ko atšaukti ir nėra už ką mokėti. Pasirinkite planą iki tos datos — jei to nepadarysite, būsite perkelti į planą {fallback} ir kai kurios funkcijos nebeveiks.} other {Bandomuoju laikotarpiu jums nebus nieko apmokestinta. Mokesčiai pradedami skaičiuoti tik tada, kai pasirenkate planą ir įvedate mokėjimo duomenis. Iki tol nėra ko atšaukti ir nėra už ką mokėti. Pasirinkite planą, kol nesibaigė bandomasis laikotarpis — jei to nepadarysite, būsite perkelti į planą {fallback} ir kai kurios funkcijos nebeveiks.}}",
+    "fees": "*Už internetinius užsakymus taikomi standartiniai kortelių mokėjimų apdorojimo mokesčiai",
+    "upgrade": "Keisti planą čia →"
+  }
+}

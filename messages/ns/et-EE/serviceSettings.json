@@ -9,11 +9,11 @@
   "sameSettingsAllVansLabel": "Kõigil toiduautodel samad seaded",
   "sameSettingsAllVansHeader": "Kõik toiduautod",
   "sameSettingsConfirm": "Kas kopeerida Toiduauto 1 seaded kõigile toiduautodele? See kopeerib kõik Toiduauto 1 seaded, nagu valik „Sama mis Toiduauto 1“ jaotises Seaded. Köögi võimsusel on oma lüliti.",
-  "eventTypesFooterStandard": "Tavaline on sinu tavapärane seadistus. Kui muudad seda siin, muutub see ka jaotises Seaded.",
+  "eventTypesFooterStandard": "Tüüp „Tavaline“ on sinu tavapärane seadistus. Kui muudad seda siin, muutub see ka jaotises Seaded.",
   "eventTypesFooterOneEvent": "Kui soovid muuta seadet ainult ühel üritusel, kasuta selle ürituse töölauda.",
   "eventTypesSubtitle": "Muudatused salvestuvad jooksvalt.",
   "matchStandardLabel": "Nagu Tavaline",
-  "matchStandardConfirm": "Kas taastada selle tüübi kõik seaded nagu tüübil Tavaline? Kõik siin tehtud muudatused kustutatakse.",
+  "matchStandardConfirm": "Kas taastada selle tüübi kõik seaded nagu tüübil „Tavaline“? Kõik siin tehtud muudatused kustutatakse.",
   "priceLabels": {
     "price_change_on": "Muuda hindu",
     "price_mode": "Hinnamuutus",
@@ -54,6 +54,6 @@
   "eventPriceCancel": "Tühista",
   "eventPriceSave": "Salvesta hinnad",
   "eventPriceEditNote": "Muudad hindu ainult selle ürituse jaoks. Toodete limiidid ja saadavus on lukus, kuni salvestad.",
-  "eventPriceLiveNote": "Avaldatud: uued tellimused kasutavad uusi hindu.",
+  "eventPriceLiveNote": "Käimas: uued tellimused kasutavad uusi hindu.",
   "offlineWhenOfflineLabel": "Ühenduse katkemisel"
 }

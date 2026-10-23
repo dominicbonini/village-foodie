@@ -26,7 +26,7 @@
   "createWeeklyButton": "Loo nädalapostitus",
   "nextEventHeading": "Sinu järgmine üritus",
   "noUpcomingEvents": "Midagi pole tulemas.",
-  "imageChoicePrivate": "Eraüritused kasutavad alati sinu tavakujundust.",
+  "imageChoicePrivate": "Eraüritused kasutavad alati sinu põhikujundust.",
   "locationsTitle": "Asukohtade seaded",
   "locationsBlurb": "Lisa igale asukohale pildid. Neid kasutatakse postitust luues automaatselt.",
   "locationsSearchLabel": "Otsi asukohti",
@@ -53,7 +53,7 @@
   "eventBoxPhotoTitle": "Foto sinu ürituse postituste jaoks",
   "eventBoxPhotoBlurb": "See läheb sinu ürituse kujunduse fotoalasse ja kärbitakse seda täitma. Kuju võib olla mis tahes.",
   "eventBoxPosterTitle": "Plakat siinsete ürituste jaoks (valikuline)",
-  "eventBoxPosterBlurb": "See asendab selle asukoha üritustel sinu tavakujunduse täielikult.",
+  "eventBoxPosterBlurb": "See asendab selle asukoha üritustel sinu põhikujunduse täielikult.",
   "eventBoxAddPhotoSpace": "Lisa oma ürituse kujundusse fotoala, et kasutada mis tahes kujuga pilti",
   "weeklyBoxTitle": "Pilt rea kõrval sinu nädalapostitusel",
   "weeklyBoxBlurbLoc": "Logo või foto. See joonistatakse väikesena alale, mille sinu nädalakujundus sellele annab.",
@@ -65,7 +65,7 @@
   "slotEmpty": "Veel pole",
   "nameOnPostsLabel": "Nimi postitustel",
   "imageChoiceLabel": "Pilt",
-  "imageChoiceStandard": "Tavakujundus",
+  "imageChoiceStandard": "Põhikujundus",
   "imageChoiceOneOff": "Laadi üles ainult selle postituse jaoks",
   "tabCreateHeading": "Loo postitus",
   "tabCreateBlurb": "Loo postitus selle nädala või ühe ürituse kohta. Paneme sinu kuupäevad, asukohad ja kellaajad sinu kujundusele, valmis alla laadimiseks või jagamiseks.",
@@ -108,7 +108,7 @@
   "weeklyOnlyAddLink": "+ Kasuta nädalapostitustel teist pilti",
   "weeklyOnlyBoxTitle": "Pilt nädalapostituste jaoks",
   "weeklyOnlyBoxBlurb": "Kasutatakse nädalapostitustel sinu asukoha pildi asemel.",
-  "nameFromScheduleNote": "Nimi ja piirkond tulevad sinu ajakavast. Muuda neid jaotises Ajakava › Üritused › Lisa üritus › Korrasta asukohad.",
+  "nameFromScheduleNote": "Nimi ja piirkond tulevad sinu ajakavast. Muuda neid jaotises Ajakava › Üritused › Lisa üritus › Korrasta asukohti.",
   "leaveConfirmTitle": "Sul on salvestamata muudatusi. Kas lahkuda salvestamata?",
   "leaveConfirmStay": "Jätka muutmist",
   "leaveConfirmGo": "Lahku",
@@ -133,7 +133,7 @@
   "ownBadge": "oma",
   "editorClickToEdit": "klõpsa muutmiseks",
   "lookHeading": "VÄLIMUS",
-  "lookSame": "🔗 Sama nagu „Kogu tekst“",
+  "lookSame": "🔗 Sama nagu Kogu tekst",
   "lookOwn": "Oma stiil",
   "lookSameHint": "Font, värv ja efektid tulevad valikust „Kogu tekst“. Vali „Oma stiil“, et muuta neid ainult selles kastis.",
   "lookOwnHint": "Sellel kastil on oma font, värv ja efektid. Vali „Sama nagu Kogu tekst“, et see jälle teistega sobiks.",
@@ -278,7 +278,7 @@
     "event": "Kasutusel on pilt, mille selle postituse jaoks üles laadisid",
     "placePhoto": "{hasPlace, select, yes {Kasutusel on asukoha {place} foto} other {Kasutusel on selle asukoha foto}}",
     "placePoster": "{hasPlace, select, yes {Kasutusel on asukoha {place} plakat} other {Kasutusel on selle asukoha plakat}}",
-    "standard": "Kasutusel on sinu ürituse tavakujundus"
+    "standard": "Kasutusel on sinu ürituse põhikujundus"
   },
   "chipAll": "Kõik {n}",
   "chipMissing": "Pildid puudu {n}",
@@ -286,7 +286,7 @@
   "chipNoImages": "Pilte pole {n}",
   "chipNoPictures": "Pilte pole {n}",
   "showAllUpcoming": "Näita kõiki tulevasi üritusi ({n}) ⌄",
-  "eventBoxPosterShape": "Plakat peab olema sama kujuga kui sinu tavakujundus ({w}×{h}), sest sinu tekstikastid paigutati selle kuju järgi.",
+  "eventBoxPosterShape": "Plakat peab olema sama kujuga kui sinu põhikujundus ({w}×{h}), sest sinu tekstikastid paigutati selle kuju järgi.",
   "slotRemoveConfirm": "{what, select, poster {Kas eemaldada see plakat? Seda ei kasutata enam. Pilt ise jääb alles.} photo {Kas eemaldada see foto? Seda ei kasutata enam. Pilt ise jääb alles.} other {Kas eemaldada see pilt? Seda ei kasutata enam. Pilt ise jääb alles.}}",
   "imageChoicePlacePhoto": "Asukoha {place} foto",
   "imageChoicePlacePoster": "Asukoha {place} plakat",
@@ -294,8 +294,8 @@
   "captionAddLabel": "+ {name}",
   "otherChoices": "Muud valikud: {choices}",
   "posterBoxBlurbSized": {
-    "plain": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse tavakujunduse. Lisame kuupäeva, kellaajad ja teksti „Teenust pakub HatchGrab“.",
-    "withSize": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse tavakujunduse. Lisame kuupäeva, kellaajad ja teksti „Teenust pakub HatchGrab“. Sama kuju kui sinu tavakujundusel ({w} × {h})."
+    "plain": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse põhikujunduse. Lisame kuupäeva, kellaajad ja teksti „Platvorm: HatchGrab“.",
+    "withSize": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse põhikujunduse. Lisame kuupäeva, kellaajad ja teksti „Platvorm: HatchGrab“. Sama kuju kui sinu põhikujundusel ({w} × {h})."
   },
   "screen": {
     "noDesignYet": "Kujundust veel pole",

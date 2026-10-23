@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Privatumo politika – HatchGrab",
+    "privacyDescription": "Kaip HatchGrab Ltd renka ir naudoja asmens duomenis.",
+    "termsTitle": "Paslaugų teikimo sąlygos – HatchGrab",
+    "termsDescription": "HatchGrab naudojimo sąlygos.",
+    "countryTermsTitle": "Konkrečioms šalims taikomos sąlygos – HatchGrab",
+    "countryTermsDescription": "Papildomos taisyklės, kurios kai kuriose šalyse taikomos HatchGrab."
+  },
+  "homeLabel": "HatchGrab pradžia",
+  "privacy": "Privatumas",
+  "terms": "Sąlygos",
+  "countryTerms": "Šalių sąlygos",
+  "contact": "Kontaktai",
+  "lastUpdated": "Paskutinį kartą atnaujinta {date}",
+  "questions": "Turite klausimų? <link>Susisiekite</link> – mes tikri žmonės."
+}

@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVATUS RENGINYS",
+  "truckFallback": "Food truck",
+  "noSlugTitle": "Šis food truck dar neparuoštas užsakymams internetu.",
+  "orderingOffTitle": "Užsakymai internetu neįjungti",
+  "orderingOffBody": "Šiame renginyje užsakymai internetu nepriimami. Užsisakykite vietoje, prie furgono.",
+  "replacedTitle": "Ši nuoroda pakeista",
+  "replacedBody": "Ši nuoroda nebeveikia – {truck} ją pakeitė. Naujos nuorodos ar QR kodo paprašykite organizatoriaus.",
+  "madePublicBody": "Ši nuoroda nebeveikia – {truck} šį renginį paskelbė viešai. Užsisakyti galite įprastame puslapyje.",
+  "unknownTitle": "Ši nuoroda neveikia",
+  "unknownBody": "Ši nuoroda neveikia. Pasitikslinkite ją pas organizatorių arba dar kartą nuskenuokite QR kodą."
+}

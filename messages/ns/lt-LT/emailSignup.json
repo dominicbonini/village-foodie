@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Sveiki, {name},} other {Sveiki,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Įkūrėjas, HatchGrab",
+  "verify": {
+    "subject": "Patvirtinkite savo el. pašto adresą",
+    "thanks": "{hasTruck, select, yes {Ačiū, kad užregistravote savo food truck „{truck}“ HatchGrab platformoje.} other {Ačiū, kad užregistravote savo food truck HatchGrab platformoje.}}",
+    "button": "Patvirtinti el. pašto adresą",
+    "buttonText": "Patvirtinkite el. pašto adresą: {url}",
+    "why": "Šiuo adresu jungsitės prie paskyros ir juo bus siunčiami pranešimai apie užsakymus — todėl verta tai padaryti dabar.",
+    "next": "Kai jis bus patvirtintas, atsiųsiu viską, ko reikia pradžiai.",
+    "carryOn": "Tuo tarpu galite toliau tęsti nustatymą.",
+    "stuck": "Kur nors užstrigote? Tiesiog atsakykite į šį laišką — į tokius laiškus atsakau pats.",
+    "fallbackLink": "Jei mygtukas neveikia, įklijuokite šią nuorodą: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Sveiki atvykę į HatchGrab, {name}} other {Sveiki atvykę į HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Labai džiaugiuosi galėdamas pasveikinti jūsų food truck „{truck}“ HatchGrab platformoje.} other {Labai džiaugiuosi galėdamas pasveikinti jūsų food truck HatchGrab platformoje.}}",
+    "trial": "{months, plural, one {Prasidėjo jūsų nemokamas # mėnesio bandomasis laikotarpis — atrakintos visos funkcijos.} few {Prasidėjo jūsų nemokamas # mėnesių bandomasis laikotarpis — atrakintos visos funkcijos.} many {Prasidėjo jūsų nemokamas # mėnesių bandomasis laikotarpis — atrakintos visos funkcijos.} other {Prasidėjo jūsų nemokamas # mėnesių bandomasis laikotarpis — atrakintos visos funkcijos.}}",
+    "setup": "Jei dar to nepadarėte, nustatymas paprastas ir užtrunka apie penkiolika minučių.",
+    "button": "Atidaryti valdymo skydelį",
+    "bookmark": "Verta įsidėti į žymes. Veikia bet kuriame įrenginyje.",
+    "stuck": "Jei kur nors užstrigsite, tiesiog atsakykite į šį laišką — į tokius laiškus atsakau pats.",
+    "lookingForward": "{hasTruck, select, yes {Nekantriai laukiu, kada „{truck}“ pradės prekiauti.} other {Nekantriai laukiu, kada jūsų food truck pradės prekiauti.}}"
+  }
+}

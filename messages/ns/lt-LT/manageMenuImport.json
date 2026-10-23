@@ -1,0 +1,189 @@
+{
+  "cancel": "Atšaukti",
+  "back": "← Atgal",
+  "backPlain": "Atgal",
+  "next": "Toliau →",
+  "continue": "Tęsti →",
+  "closeImport": "Uždaryti importavimą",
+  "tryAgain": "Bandyti dar kartą",
+  "catError": {
+    "empty": "Suteikite kategorijai pavadinimą.",
+    "tooLong": "Pavadinimas per ilgas.",
+    "clash": "Kategorija „{name}“ jau yra."
+  },
+  "steps": {
+    "details": "Jūsų duomenys",
+    "menu": "Meniu",
+    "extras": "Priedai",
+    "allergens": "Alergenai",
+    "kitchen": "Virtuvės nustatymai",
+    "schedule": "Tvarkaraštis",
+    "settings": "Nustatymai"
+  },
+  "toast": {
+    "demoGone": "Jūsų demonstracinis meniu nebepasiekiamas — įkelkite jį dar kartą, kad galėtumėte tęsti.",
+    "eventsSaveFailed": "Nepavyko išsaugoti renginių",
+    "cardReadFailed": "Nepavyko nuskaityti alergenų kortelės — bandykite dar kartą",
+    "imageReadFailed": "Nepavyko nuskaityti šio vaizdo — verčiau įrašykite arba įklijuokite kortelės tekstą",
+    "commitFailedDetail": "Nepavyko baigti išsaugoti meniu: {error}. Kai kurie patiekalai galėjo būti jau išsaugoti — prieš bandydami dar kartą patikrinkite meniu.",
+    "commitFailed": "Nepavyko baigti išsaugoti meniu. Kai kurie patiekalai galėjo būti jau išsaugoti — prieš bandydami dar kartą patikrinkite meniu.",
+    "finishFailed": "Nepavyko pažymėti, kad nustatymas baigtas — vis tiek galite tęsti.",
+    "scheduleReadFailed": "Nepavyko nuskaityti šio tvarkaraščio — pabandykite aiškesnę nuotrauką arba įrašykite datas patys.",
+    "cardRead": "Kortelė nuskaityta — susieta: {matched}; {pending, plural, one {# laukia} few {# laukia} many {# laukia} other {# laukia}} jūsų priskyrimo"
+  },
+  "settingsReview": {
+    "anchorOrder": "Nustatymai → Užsakymų nustatymai",
+    "anchorDisplay": "Nustatymai → Jūsų furgonai → Rodymo nustatymai",
+    "mins15": "15 minučių",
+    "mins30": "30 minučių",
+    "mins60": "60 minučių",
+    "hours2": "2 valandos",
+    "title": "Keli nustatymai, kuriuos verta patikrinti",
+    "loading": "Įkeliami dabartiniai jūsų nustatymai…",
+    "looksGood": "Viskas gerai →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Nepavyko to išsaugoti — galite pakeisti skiltyje „Nustatymai“.",
+    "anchorContact": "Nustatymai → Kontaktai",
+    "intro": "Nustatėme jums keletą įprastų nustatymų. Verta greitai peržvelgti — bet kurį iš jų vėliau galėsite pakeisti skiltyje „Nustatymai“.",
+    "cancelAria": "Prieš kiek laiko iki atsiėmimo klientai gali atšaukti užsakymą"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Peržiūrėkite juos prieš pradėdami veikti. Kol to nepadarysite, patiekalai pažymėti „alergenai nenustatyti“.",
+    "body": "Peržiūrėkite juos skiltyje „Nustatymai“ prieš pradėdami veikti. Kol to nepadarysite, patiekalai pažymėti „alergenai nenustatyti“.",
+    "title": "⚠ Alergenai ir mitybos informacija dar nenustatyti"
+  },
+  "welcome": {
+    "title": "Sveiki atvykę į HatchGrab",
+    "yourTruck": "Jūsų food truck",
+    "stop": "Galite bet kada sustoti ir grįžti vėliau.",
+    "body": "Food truck „{name}“ paruoštas. Toliau pridėsime jūsų meniu, tada pirmąjį renginį.",
+    "go": "Pirmyn"
+  },
+  "offer": {
+    "title": "Naudoti meniu iš demonstracinės versijos?",
+    "use": "Naudoti šį meniu",
+    "upload": "Įkelti kitą meniu",
+    "body": "Išsaugojome jūsų įkeltą meniu — {count, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}. Naudokite jį kaip pradžią arba įkelkite kitą."
+  },
+  "upload": {
+    "title": "Importuokite meniu",
+    "body": "Įkelkite meniu lentos nuotrauką, ekrano kopiją, PDF arba įklijuokite meniu kaip tekstą. Mūsų DI jį perskaitys ir sukurs jūsų skaitmeninį meniu — prieš išsaugant viską peržiūrėsite.",
+    "confirmCancel": "Atšaukti šį importavimą? Šio meniu peržiūra bus atmesta.",
+    "process": "Apdoroti meniu",
+    "later": "Padarysiu vėliau"
+  },
+  "processing": {
+    "title": "Analizuojamas jūsų meniu",
+    "body": "DI skaito jūsų patiekalus ir skirsto juos į kategorijas…"
+  },
+  "review": {
+    "title": "Peržiūrėkite importuotą meniu",
+    "editLaterSetup": "Pavadinimus, kainas, priedus, alergenus ir mitybos informaciją vėliau galėsite redaguoti bet kada.",
+    "editLater": "Pavadinimus, kainas, priedus, alergenus ir mitybos informaciją galėsite bet kada redaguoti skiltyje „Nustatymai“.",
+    "noPrice": "Nepavyko nuskaityti kainos: {count, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}",
+    "renameCategoryAria": "Pervadinti kategoriją „{name}“",
+    "renameAria": "Pervadinti „{name}“",
+    "renameTitle": "Pervadinti kategoriją",
+    "deleteAria": "Ištrinti „{name}“",
+    "deleteTitle": "Ištrinti kategoriją",
+    "lastCategory": "Jūsų meniu reikia bent vienos kategorijos",
+    "countOf": "{kept} iš {total}",
+    "existing": "esama",
+    "deleteEmptyTitle": "Ištrinti „{name}“?",
+    "deleteEmptyBody": "Joje nėra patiekalų, todėl nieko neprarasite.",
+    "delete": "Ištrinti",
+    "moveTitle": "Kur perkelti {count, plural, one {# patiekalą} few {# patiekalus} many {# patiekalų} other {# patiekalų}}?",
+    "moveBody": "Ištrinant „{name}“, jos patiekalus reikia kur nors perkelti — patiekalai be kategorijos neimportuojami.",
+    "moveAria": "Perkelti patiekalus iš „{name}“ į",
+    "chooseCategory": "Pasirinkite kategoriją…",
+    "moveDelete": "Perkelti ir ištrinti",
+    "itemName": "Patiekalo pavadinimas",
+    "free": "nemokamas?",
+    "freeOn": "Nemokamas ✕",
+    "nameFirst": "Prieš pridėdami kitą, suteikite naujam patiekalui pavadinimą",
+    "addItem": "+ Pridėti patiekalą",
+    "categoryName": "Kategorijos pavadinimas",
+    "newCategoryAria": "Naujos kategorijos pavadinimas",
+    "addCategory": "+ Pridėti kategoriją",
+    "ready": "Paruošta pridėti: {count, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}. Atžymėkite tuos, kurių nenorite.",
+    "noPriceBody": "Kiekvienam nustatykite kainą arba pažymėkite kaip nemokamą — kitaip jis bus paskelbtas už {zero}. Kol to nesutvarkysite, tęsti negalėsite.",
+    "incomplete": "Įveskite pavadinimą, kad pridėtumėte šį patiekalą — tuščios eilutės neimportuojamos."
+  },
+  "extras": {
+    "introSetup": "Kai kuriuos patiekalus galima nustatyti kaip <b>vieną pritaikomą patiekalą</b> arba palikti kaip <b>atskirus patiekalus</b>. Pasirinkite, kaip kiekvienas turėtų būti rodomas. Vėliau tai galėsite pakeisti.",
+    "intro": "Kai kuriuos patiekalus galima nustatyti kaip <b>vieną pritaikomą patiekalą</b> arba palikti kaip <b>atskirus patiekalus</b>. Pasirinkite, kaip kiekvienas turėtų būti rodomas. Vėliau tai galėsite pakeisti skiltyje „Nustatymai“.",
+    "none": "Nėra grupuojamų patiekalų — kiekvienas patiekalas yra atskiras.",
+    "axisChoice": "· pasirinkimas: {axis}",
+    "grouped": "Sugrupuota · vienas patiekalas, renkasi klientas",
+    "separate": "Atskiri meniu patiekalai"
+  },
+  "allergens": {
+    "title": "Alergenai",
+    "detected": "Jūsų meniu aptikome alergenų. Toliau pasirinkite, kaip juos rodyti.",
+    "howShow": "Kaip norite rodyti alergenus klientams?",
+    "skip": "Kol kas praleisti alergenų nustatymą"
+  },
+  "kitchen": {
+    "title": "Virtuvės nustatymai",
+    "intro": "Padėkite klientams žinoti, kiek reikės laukti — šiuos nustatymus visada galėsite pakeisti vėliau.",
+    "howWorks": "Kaip veikia virtuvės pajėgumas",
+    "allExist": "Visos kategorijos jau yra — laiko nustatyti nereikia.",
+    "totalHelp": "Nustatykite bendrą pajėgumą, kad apribotumėte, kiek patiekalų virtuvė priima per vieną laiko intervalą. Palikite ∞, jei ribos nereikia.",
+    "saveAdd": "Išsaugoti ir pridėti į meniu"
+  },
+  "schedule": {
+    "title": "Pridėti mano tvarkaraštį",
+    "intro": "Jei jūsų tvarkaraštis skelbiamas jūsų svetainėje, galime jį automatiškai atnaujinti — arba pridėkite datas patys.",
+    "websiteTitle": "Mano tvarkaraštis yra mano svetainėje",
+    "urlPlaceholder": "https://jusufoodtruck.lt/renginiai",
+    "checking": "Tikrinama…",
+    "verify": "Patikrinti",
+    "checkingSite": "Tikrinama jūsų svetainė…",
+    "takesTime": "Tai gali užtrukti iki 2 minučių — neuždarykite šio lango.",
+    "canRead": "✓ Galime nuskaityti jūsų tvarkaraštį",
+    "ownSite": "Jūsų pačių svetainė — ne Facebook ar Instagram puslapis.",
+    "photoTitle": "Įkelti tvarkaraščio nuotrauką",
+    "dragChoose": "Vilkite ir įmeskite arba bakstelėkite, kad pasirinktumėte",
+    "imageOrPdf": "Vaizdas arba PDF",
+    "or": "arba",
+    "pastePlaceholder": "Įklijuokite datas čia…",
+    "read": "Nuskaityti tvarkaraštį",
+    "found": "Rasta {count, plural, one {# data} few {# datos} many {# datų} other {# datų}} — bus pridėta į jūsų tvarkaraštį.",
+    "dateTbc": "Data bus patikslinta",
+    "save": "Išsaugoti {count, plural, one {# datą} few {# datas} many {# datų} other {# datų}}",
+    "manualDesc": "Pridėkite jas vėliau skirtuke „Tvarkaraštis“ — dabar nieko daryti nereikia.",
+    "manualBody": "Jokių problemų. Datas bet kada galėsite pridėti ir tvarkyti savo paskyros skirtuke „Tvarkaraštis“.",
+    "blockedDomain": "Naudokite savo svetainės URL — Facebook ir Instagram puslapių automatiškai nuskaityti negalima.",
+    "saveFailed": "Jūsų tvarkaraštį nuskaitėme, bet šiuo metu nepavyko jo išsaugoti — bandykite dar kartą.",
+    "websiteDesc": "Reguliariai jį tikrinsime ir siųsime naujas datas jūsų sprendimui.",
+    "keepChecking": "Toliau tikrinsime šį puslapį ir siųsime naujas datas jūsų sprendimui.",
+    "photoDesc": "Nufotografuokite arba įklijuokite datas — nuskaitysime jas, o jūs patikrinsite.",
+    "noneFound": "Ten neradome jokių datų — pabandykite aiškesnę nuotrauką arba pridėkite datą patys.",
+    "manualTitle": "Datas pridėsiu savarankiškai",
+    "trialNotStarted": "Pridėjus renginius, jūsų nemokamas bandomasis laikotarpis neprasideda — vėliau patys pasirinksite, kuris renginys jį pradės."
+  },
+  "done": {
+    "summary": "{items, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}, {categories, plural, one {# kategorija} few {# kategorijos} many {# kategorijų} other {# kategorijų}}.",
+    "imported": "Meniu importuotas!",
+    "added": "Jūsų patiekalai pridėti į meniu.",
+    "duplicates": "{count, plural, one {Praleistas # dublikatas} few {Praleisti # dublikatai} many {Praleista # dublikatų} other {Praleista # dublikatų}}",
+    "showMe": "Aprodykite man",
+    "remind": "Priminti vėliau",
+    "allSet": "Viskas paruošta!",
+    "explore": "Apsižvalgysiu savarankiškai"
+  },
+  "discard": {
+    "setupTitle": "Baigti nustatymą vėliau?",
+    "setupBody": "Jūsų paskyra ir food truck išsaugoti — niekas neprarasta. Meniu galite pridėti bet kada: prisijunkite ir meniu ekrane bakstelėkite <b>Importuoti meniu</b>, kad tęstumėte nuo čia.",
+    "keepGoing": "Tęsti",
+    "finishLater": "Baigti vėliau",
+    "title": "Atmesti šį importavimą?",
+    "keepEditing": "Toliau redaguoti",
+    "discard": "Atmesti",
+    "body": "Jūsų pakeitimai nebus išsaugoti — importuoti patiekalai, ruošimo laikai ir virtuvės pajėgumas nebus pridėti."
+  },
+  "allergenCardText": {
+    "contains": "Sudėtyje yra: {list}",
+    "mayContain": "Gali būti: {list}"
+  }
+}

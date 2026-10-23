@@ -88,7 +88,7 @@
       "name": "Piiparite jälgimine"
     },
     "ticket_printing": {
-      "name": "Köögilipikute printimine"
+      "name": "Köögitšekkide printimine"
     },
     "customer_display": {
       "name": "Kliendiekraan"
@@ -115,7 +115,7 @@
     "free": "Tasuta",
     "freeTrial": "Tasuta prooviperiood",
     "lifetime": "Eluaegne",
-    "zeroPercent": "0 %",
+    "zeroPercent": "0%",
     "payAtHatch": "Tasumine kättesaamisel",
     "unlimited": "Piiramatu",
     "none": "—",

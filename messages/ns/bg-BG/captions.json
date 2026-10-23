@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Дати на седмицата",
+    "dayList": "Списък с дни",
+    "place": "Място",
+    "venue": "Локация",
+    "area": "Район",
+    "dayDate": "Ден и дата",
+    "times": "Часове",
+    "orderLink": "Линк за поръчка",
+    "locationTag": "Таг на мястото"
+  },
+  "weekHeader": "{truck} — къде сме тази седмица:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ОТМЕНЕНО, съжаляваме",
+  "noDates": "Тази седмица няма дати — проверете отново скоро.",
+  "orderAhead": "Поръчайте предварително: {url}",
+  "orderAheadTagged": "Поръчайте предварително: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Съжаляваме — {where}, {when}: няма да успеем да дойдем.",
+  "cancelledApology": "Извиняваме се на всички, които смятаха да дойдат. Скоро ще се върнем.",
+  "when": {
+    "today": "днес",
+    "tonight": "тази вечер",
+    "tomorrow": "утре",
+    "dated": "на {date}"
+  }
+}

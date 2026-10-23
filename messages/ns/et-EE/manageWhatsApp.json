@@ -64,7 +64,7 @@
     "option": "{n, number}",
     "usage": "Kasutatud {used, number} / {limit, number} · lähtestub {date}",
     "perCustomer": "Kuni {n} vastust kliendi kohta 24 tunni jooksul, seejärel üks sõnum, et vastad isiklikult.",
-    "emailAt": "Limiidi täitumisel vastused peatuvad. Saadame sulle e-kirja 80 % ja 100 % juures.",
+    "emailAt": "Limiidi täitumisel vastused peatuvad. Saadame sulle e-kirja 80% ja 100% juures.",
     "saved": "Kuu vastuste limiit salvestatud",
     "saveFailed": "Limiiti ei õnnestunud salvestada"
   },

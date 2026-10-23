@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Šiame el. laiške nėra prenumeratos atsisakymo eilutės, todėl jo išsiųsti negalima. Pridėkite ją mygtuku „Insert opt-out“.",
+    "notSetUp": "Nenustatytas prenumeratos atsisakymo sakinys, todėl negalima išsiųsti jokio pasiūlymo el. laiško. Pridėkite jį skirtuko „Templates“ skydelyje „Signature“.",
+    "notLoaded": "Prenumeratos atsisakymo sakinys dar neįkeltas, todėl šio laiško išsiųsti negalima.",
+    "unreadable": "Nepavyko nuskaityti prenumeratos atsisakymo sakinio, todėl niekas neišsiųsta."
+  },
+  "retry": {
+    "notRebuilt": "Nepavyko atkurti šio laiško su įmonės eilute, todėl niekas neišsiųsta."
+  }
+}

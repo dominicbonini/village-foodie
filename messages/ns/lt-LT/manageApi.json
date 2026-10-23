@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Furgonas",
+  "eventsFeed": {
+    "today": "Šiandien · {date}",
+    "tomorrow": "Rytoj · {date}"
+  },
+  "privacyNotSaved": "Renginys paskelbtas, bet jo privatumo nustatymo išsaugoti nepavyko.",
+  "stockWarning": "Kategorijoje „{category}“ nėra galimų patiekalų",
+  "uncategorised": "Be kategorijos"
+}

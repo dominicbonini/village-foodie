@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} — част от план „{plan}“.} other {{feature} — част от план „{plan}“.}}",
+  "notOnPlan": "{many, select, yes {{feature} — не са част от Вашия план.} other {{feature} — не е част от Вашия план.}}",
+  "switchedOff": "{many, select, yes {{feature} — функциите са изключени за Вашия фуд трък.} other {{feature} — функцията е изключена за Вашия фуд трък.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Надградете →",
+  "features": {
+    "discovery_map": {
+      "name": "Профил на публичната карта",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Уеб табло",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Кухненско приложение",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Меню с QR код",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Комбо оферти",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Допълнителни продажби",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Поръчки на място",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Онлайн поръчване с плащане при вземане",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Бутон „Изчерпано“",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Отброяване на наличностите",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Защита на поръчките при офлайн режим",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Онлайн плащания",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Предварително поръчване",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Времеви интервали за клиентите",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Управление на капацитета на кухнята",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Автоматично приемане",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Автоматични отговори в Messenger и Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR кодове с Вашата марка",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Разширена отчетност",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Печат на кухненски бонове",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Синхронизация на кухнята на няколко устройства",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Екран за готвача",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Автоматични отговори в WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Вашият график на собствения Ви сайт",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Публикации в социалните мрежи",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Собствени видове събития",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Частни събития",
+      "many": "yes"
+    }
+  }
+}

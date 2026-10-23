@@ -23,7 +23,7 @@
   "otherTip": "Cita summa",
   "tipAmount": "Dzeramnaudas summa",
   "tipCap": "Maksimālā dzeramnauda: {amount}.",
-  "tipNote": "100 % dzeramnaudas saņem food truck. Aprēķināta no ēdiena summas pirms nodokļiem.",
+  "tipNote": "100% dzeramnaudas saņem food truck. Aprēķināta no ēdiena summas pirms nodokļiem.",
   "authFailed": "Šo maksājumu nevarēja autorizēt. Nauda nav iekasēta — lūdzu, izmantojiet citu karti vai izvēlieties “Maksājiet saņemot”.",
   "couldNotPlace": "Mēs nevarējām noformēt jūsu pasūtījumu. Nauda nav iekasēta.",
   "paymentThrew": "Apstrādājot maksājumu, radās kļūda. Nauda nav iekasēta — lūdzu, mēģiniet vēlreiz vai izvēlieties “Maksājiet saņemot”.",

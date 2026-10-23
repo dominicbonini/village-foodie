@@ -49,7 +49,7 @@ const J = x => JSON.stringify(x)
     }
     let ROOT = null
     try {
-      ROOT = await kit.bundle('usp-root-meta', "export { generateMetadata } from '@/app/layout'", { stubs: { 'next/font/google': 'export const Geist = () => ({ variable: "" }); export const Geist_Mono = () => ({ variable: "" })', './globals.css': '', './providers': 'export const CSPostHogProvider = p => p.children', 'next/headers': HDR } })
+      ROOT = await kit.bundle('usp-root-meta', "export { generateMetadata } from '@/app/layout'", { stubs: { 'next/font/google': 'export const Geist = () => ({ variable: "" }); export const Geist_Mono = () => ({ variable: "" }); export const Noto_Sans = () => ({ variable: "" })', './globals.css': '', './providers': 'export const CSPostHogProvider = p => p.children', 'next/headers': HDR } })
     } catch (e) { ROOT = { __err: String(e.message).slice(0, 300) } }
     t('the root layout\'s own generateMetadata is bundled for the merge (not a copy of it)', !ROOT.__err, ROOT.__err)
     const CSV = ['Name,a,b,c,d,e,f,g,h,Logo', 'Pizzeria Gusto,,,,,,,,,/logos/pizzeriagusto.jpg', 'Pizza Kitchen,,,,,,,,,/logos/bbpizza.jpg'].join('\n')

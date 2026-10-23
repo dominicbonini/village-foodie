@@ -42,6 +42,6 @@
   "cancel": "Peruuta",
   "markPaidAndCollected": "Merkitse maksetuksi ja noudetuksi",
   "cashIcon": "💶",
-  "chargesSummary": "{parts, select, tax_fees_tip {Verot, maksut ja tippi} tax_tip {Verot ja tippi} fees_tip {Maksut ja tippi} fees {Maksut} other {Verot ja maksut}}",
+  "chargesSummary": "{parts, select, tax_fees_tip {Verot, maksut ja juomaraha} tax_tip {Verot ja juomaraha} fees_tip {Maksut ja juomaraha} fees {Maksut} other {Verot ja maksut}}",
   "reverted": "Tilaus #{id} palautettu"
 }

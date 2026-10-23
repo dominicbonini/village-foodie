@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Διεύθυνση",
+    "postcode": "Τ.Κ.",
+    "zip": "Κωδικός ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Τ.Κ.",
+    "state": "Πολιτεία",
+    "stateTerritory": "Πολιτεία ή επικράτεια",
+    "province": "Επαρχία",
+    "county": "Κομητεία",
+    "area": "Περιοχή (χωριό, κωμόπολη ή πόλη)",
+    "townOrArea": "Πόλη ή περιοχή",
+    "city": "Πόλη",
+    "suburb": "Προάστιο",
+    "townOrCity": "Πόλη"
+  },
+  "short": {
+    "area": "Περιοχή",
+    "townOrArea": "Πόλη ή περιοχή",
+    "city": "Πόλη",
+    "suburb": "Προάστιο",
+    "townOrCity": "Πόλη"
+  },
+  "inSentence": {
+    "postcode": "Τ.Κ.",
+    "zip": "κωδικός ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Τ.Κ."
+  },
+  "withArticle": {
+    "postcode": "έγκυρο Τ.Κ.",
+    "zip": "έγκυρο κωδικό ZIP",
+    "eircode": "έγκυρο Eircode",
+    "postalCode": "έγκυρο Τ.Κ."
+  },
+  "tradeLabel": {
+    "area": "Πόλη",
+    "townOrArea": "Πόλη ή περιοχή",
+    "city": "Πόλη",
+    "suburb": "Προάστιο",
+    "townOrCity": "Πόλη"
+  },
+  "basedIn": {
+    "area": "Πόλη όπου έχετε την έδρα σας",
+    "townOrArea": "Πόλη ή περιοχή όπου έχετε την έδρα σας",
+    "city": "Πόλη όπου έχετε την έδρα σας",
+    "suburb": "Προάστιο όπου έχετε την έδρα σας",
+    "townOrCity": "Πόλη όπου έχετε την έδρα σας"
+  },
+  "example": "π.χ. {example}",
+  "customersSee": "Οι πελάτες βλέπουν:",
+  "postalWarning": "Αυτό δεν μοιάζει με {article} — για παράδειγμα {example}. Μπορείτε όμως να το αποθηκεύσετε.",
+  "regionChoose": "Επιλέξτε…"
+}

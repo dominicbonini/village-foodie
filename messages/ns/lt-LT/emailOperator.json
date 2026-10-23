@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Naujas užsakymas #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Gautas naujas užsakymas",
+    "from": "<b>Užsakymas #{id}</b>, klientas: <b>{name}</b>",
+    "collection": "Atsiėmimo laikas: {time}",
+    "asap": "Konkretus laikas nenurodytas — kuo greičiau",
+    "total": "Iš viso",
+    "notes": "<b>Pastabos:</b> {notes}",
+    "autoConfirmed": "Patvirtinta automatiškai — nieko daryti nereikia.",
+    "confirmPrompt": "Prisijunkite prie HatchGrab valdymo skydelio, kad patvirtintumėte arba atmestumėte šį užsakymą.",
+    "text": "Naujas užsakymas #{id}, klientas: {name}{withSlot, select, yes {, laikas: {slot}} other {}}{withVenue, select, yes {, vieta: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Iš viso {total}.{withNotes, select, yes { Pastabos: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Rasta naujų renginių — {truck}: peržiūrėkite",
+    "hi": "Sveiki,",
+    "found": "Jūsų tvarkaraštyje rasta: <b>{n, plural, one {{count} naujas renginys} few {{count} nauji renginiai} many {{count} naujų renginių} other {{count} naujų renginių}}</b>. Prieš parodant juos klientams, jie laukia jūsų sprendimo.",
+    "listHeading": "Rasti renginiai:",
+    "approve": "Kai juos priimsite skirtuke „Tvarkaraštis“, jie atsiras žemėlapyje, o jūsų užsakymų puslapis bus pasirengęs priimti išankstinius užsakymus.",
+    "cta": "Peržiūrėti tvarkaraštį →",
+    "signoff": "— HatchGrab komanda · hatchgrab.com",
+    "unknownVenue": "Nežinoma vieta",
+    "text": "Sveiki,\n\nJūsų tvarkaraštyje rasta: {n, plural, one {{count} naujas renginys} few {{count} nauji renginiai} many {{count} naujų renginių} other {{count} naujų renginių}}. Jie laukia jūsų sprendimo:\n\n{list}\n\nPeržiūrėti galite čia: {url}\n\nKai juos priimsite, renginiai atsiras žemėlapyje.\n\n— HatchGrab komanda"
+  }
+}

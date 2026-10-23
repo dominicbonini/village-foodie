@@ -1,0 +1,9 @@
+{
+  "title": "Planai ir funkcijos",
+  "generated": "Sugeneruota {date}",
+  "allowanceHeading": "Įtraukti užsakymai internetu",
+  "smallPrint": "Smulkiosios sąlygos",
+  "priceNoteMasked": "Kainos, pažymėtos „Bus patikslinta“, dar nepaskelbtos.",
+  "omitNote": "Kainos šiame dokumente sąmoningai nepateikiamos.",
+  "terms": "Skaičiai atitinka paskelbtas planų sąlygas pirmiau nurodytą dieną ir gali keistis. Kortelių mokėjimų apdorojimo mokesčius taiko Stripe, o ne HatchGrab. Šis dokumentas yra santrauka, o ne sutartis."
+}

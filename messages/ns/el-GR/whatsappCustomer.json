@@ -1,0 +1,15 @@
+{
+  "greeting": "Γεια σας 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Δείτε ολόκληρο τον κατάλογό μας και πληροφορίες για τα αλλεργιογόνα εδώ: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Δείτε ολόκληρο τον κατάλογό μας εδώ: {url} — {truck} {emoji}",
+  "otherCategory": "Άλλα",
+  "categoryFrom": "{category} από {price}",
+  "listTwo": "{first} και {second}",
+  "listMany": "{init} και {last}",
+  "menuSummary": "{opener}Έχουμε {summary}. Δείτε ολόκληρο τον κατάλογο και παραγγείλτε εκ των προτέρων εδώ: {url} — {truck} {emoji}",
+  "allergenCaveat": "Ελέγξτε ολόκληρο τον κατάλογο για πληροφορίες σχετικά με τα αλλεργιογόνα — αυτή είναι αυτόματη απάντηση.",
+  "specificFallback": "{opener}Δείτε το τρέχον πρόγραμμά μας εδώ: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Ευχαριστούμε για όλα τα μηνύματά σας! Εδώ μπορώ να απαντώ μόνο λίγες φορές την ημέρα.\n\nΓια παραγγελία: {link}",
+  "capContact": "Για να επικοινωνήσετε απευθείας μαζί μας: {number}"
+}

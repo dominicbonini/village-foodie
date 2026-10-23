@@ -211,7 +211,7 @@
       "stockSaved": "Laoseis salvestatud",
       "categoryAvailabilitySaved": "Kategooria {category} saadavus salvestatud",
       "categoryUpdateFailed": "Kategooriat ei saanud uuendada — palun proovi uuesti",
-      "extraSaveFailed": "Seda lisandit ei saanud salvestada. Kontrolli seda enne vahetuse algust.",
+      "extraSaveFailed": "Seda lisa ei saanud salvestada. Kontrolli seda enne vahetuse algust.",
       "eventStarted": "{state, select, restarted {Üritus taaskäivitatud} other {Üritus alanud}}",
       "finishTimeNow": "Lõpuaeg nüüd {time}",
       "eventFinished": "Üritus lõpetatud",
@@ -245,7 +245,7 @@
       "logoPlaceholder": "Sinu logo siia",
       "alt": "Tellimise QR-kood",
       "demoName": "Demo",
-      "poweredBy": "Teenust pakub <b>{brand}</b>",
+      "poweredBy": "Platvorm: <b>{brand}</b>",
       "tapToClose": "Sulgemiseks puuduta ükskõik kus"
     },
     "pin": {
@@ -336,7 +336,7 @@
       "manageEvent": "Halda üritust",
       "noEvent": "Üritust pole valitud",
       "selectEvent": "Vali üritus",
-      "status": "{tone, select, paused {⏸ Peatatud} live {● Käib} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+      "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
     },
     "orders": {
       "noEvent": "Üritust pole valitud — tellimuste nägemiseks vali üritus",
@@ -427,11 +427,11 @@
       "prepAria": "Kategooria {category}: valmistusaeg",
       "countsLocked": "Küpsetatav — läheb alati arvesse (selle valmistusaeg ja partii määravad tempo)",
       "countsNoCap": "Määra võimsus, et valida, millised kategooriad arvesse lähevad",
-      "countsTick": "Märgi, et kaasata see kohene kategooria (lisandid, dipid, joogid) ühisesse ajaakna piirangusse",
+      "countsTick": "Märgi, et kaasata see kohene kategooria (lisandid, dipikastmed, joogid) ühisesse ajavahemiku piirangusse",
       "totalCapacity": "Koguvõimsus",
       "totalCapacityAria": "Koguvõimsus (tooted)",
       "items": "{n, plural, one {{count} toode} other {{count} toodet}}",
-      "windowAria": "Võimsuse ajaaken (minutites)",
+      "windowAria": "Võimsuse ajavahemik (minutid)",
       "windowEvery": "/ {duration}",
       "assignTruck": "Enne köögi võimsuse määramist määra sellele üritusele toiduauto.",
       "setCapacityFirst": "Määra võimsus, et valida, millised kategooriad arvesse lähevad."
@@ -822,7 +822,7 @@
       "leadReceived": "Aitäh! Saime sinu tellimuse kätte — anname teada, kui see on kinnitatud.",
       "orderNumber": "Tellimus #{id}",
       "total": "Kokku",
-      "poweredBy": "Teenust pakub <brand>HatchGrab</brand>",
+      "poweredBy": "Platvorm: <brand>HatchGrab</brand>",
       "textTitleReady": "Tellimus #{id} on kättesaamiseks valmis — {truck}",
       "textTitleConfirmed": "Tellimus #{id} on kinnitatud — {truck}",
       "textTitleReceived": "Tellimus #{id} on vastu võetud — {truck}",
@@ -855,8 +855,8 @@
     "common": {
       "hi": "Tere{withName, select, yes {, {name}} other {}}!",
       "sorry": "Vabandame võimalike ebamugavuste pärast.",
-      "poweredByDot": "Teenust pakub HatchGrab · hatchgrab.com",
-      "poweredByText": "Teenust pakub HatchGrab — hatchgrab.com",
+      "poweredByDot": "Platvorm: HatchGrab · hatchgrab.com",
+      "poweredByText": "Platvorm: HatchGrab — hatchgrab.com",
       "privacyLink": "Privaatsus",
       "privacyText": "Privaatsus: {url}"
     },
@@ -903,7 +903,7 @@
   "embed": {
     "metaDescription": "Kus {truck} järgmisena müüb.",
     "orderFrom": "Telli: {truck}",
-    "poweredBy": "Teenust pakub <b>HatchGrab</b>",
+    "poweredBy": "Platvorm: <b>HatchGrab</b>",
     "loadFailed": "Ajakava ei õnnestunud praegu laadida.",
     "loading": "Ajakava laadimine…",
     "empty": "{truck}: eelseisvaid üritusi pole."
@@ -975,7 +975,7 @@
     "item_sold_out": "Vabandust, {item} on läbi müüdud.",
     "choose_group": "Toode {item}: palun vali {group}.",
     "net_address_invalid": "Sisesta printeri aadress kujul 192.168.1.50 või 192.168.1.50:9100.",
-    "stock_table_attention": "Seda lisandit ei õnnestunud salvestada. Laoseisu tabel vajab tähelepanu.",
+    "stock_table_attention": "Seda lisa ei õnnestunud salvestada. Laoseisu tabel vajab tähelepanu.",
     "completed_payment_not_recorded": "Tellimus on lõpetatud, kuid maksekirjet ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",
     "slot_board_not_updated": "Tellimus on salvestatud, kuid köögi võimsuse tabelit ei õnnestunud uuendada — kontrolli ajavahemikku, enne kui sellele tugined.",
     "created_payment_not_recorded": "Tellimus on loodud, kuid maksekirjet ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",
@@ -1174,8 +1174,8 @@
       "truckNotFound": "Toiduautot ei leitud"
     },
     "degraded": {
-      "at": "⚠️ Serveriga ei saa ühendust. Näitan tellimusi seisuga {time}. UUSI TELLIMUSI VÕIB PUUDUDA.",
-      "earlier": "⚠️ Serveriga ei saa ühendust. Näitan varasemaid tellimusi. UUSI TELLIMUSI VÕIB PUUDUDA."
+      "at": "⚠️ Serveriga ei saa ühendust. Näitan tšekke seisuga {time}. UUSI TELLIMUSI VÕIB PUUDUDA.",
+      "earlier": "⚠️ Serveriga ei saa ühendust. Näitan varasemaid tšekke. UUSI TELLIMUSI VÕIB PUUDUDA."
     },
     "header": {
       "dashboard": "Töölaud",
@@ -1213,7 +1213,7 @@
       "soundNeedsConfirming": "Ainult kinnitamist vajavad tellimused",
       "soundAll": "Kõik uued tellimused",
       "soundDue": "Heli, kui tellimust on aeg valmistama hakata",
-      "soundDueHelp": "Kõlab, kui tellimuse kaart muutub merevaigukollaseks.",
+      "soundDueHelp": "Kõlab, kui tšekk muutub merevaigukollaseks.",
       "deviceSettings": "Seadme seaded",
       "sound": "Heli",
       "close": "Sulge"
@@ -1606,9 +1606,9 @@
     "paymentNotRecorded": "⚠ Tellimus #{id} lisatud — MAKSE POLE SALVESTATUD. Võta makse uuesti tellimuse kaardil.",
     "failed": "Ebaõnnestus",
     "buzzerSaveFailed": "Piipari numbrit ei õnnestunud salvestada — lisa see tellimuse kaardil",
-    "asap": "Niipea kui võimalik",
-    "asapNoFit": "Niipea kui võimalik — üle võimsuse (ükski ajavahemik ei sobi)",
-    "asapAt": "Niipea kui võimalik — {time}",
+    "asap": "Esimesel võimalusel",
+    "asapNoFit": "Esimesel võimalusel — üle võimsuse (ükski ajavahemik ei sobi)",
+    "asapAt": "Esimesel võimalusel — {time}",
     "afterClosing": "{time} · Pärast sulgemist",
     "buzzerN": "Piipar {number}",
     "addBuzzer": "+ Piipar",
@@ -1692,7 +1692,7 @@
       "heading": "Saabus uus tellimus",
       "from": "<b>Tellimus #{id}</b>, tellija <b>{name}</b>",
       "collection": "Kättesaamise aeg: {time}",
-      "asap": "Kindel aeg puudub — niipea kui võimalik",
+      "asap": "Kindel aeg puudub — esimesel võimalusel",
       "total": "Kokku",
       "notes": "<b>Märkused:</b> {notes}",
       "autoConfirmed": "Automaatselt kinnitatud — midagi pole vaja teha.",
@@ -1714,7 +1714,7 @@
   "alertsOperator": {
     "hi": "Tere, {name}!",
     "limit80": {
-      "subject": "Oled kasutanud 80 % selle kuu WhatsAppi vastustest",
+      "subject": "Oled kasutanud 80% selle kuu WhatsAppi vastustest",
       "used": "Selle kuu automaatseid WhatsAppi vastuseid on kasutatud <b>{used} / {limit}</b>.",
       "nothingStopped": "Midagi pole peatunud. Kui jõuad piirini {limit}, peatuvad automaatvastused kuni limiidi uuenemiseni (<b>{reset}</b>) — kliendid saavad sulle endiselt kirjutada ja näed kõike, mida nad saadavad.",
       "raise": "Saad igakuist limiiti igal ajal tõsta jaotises „Seaded“.",
@@ -2228,7 +2228,7 @@
     "heading": "✨ Laadi oma menüü üles",
     "failedHeading": "Me ei suutnud seda menüüd lugeda",
     "close": "Sulge",
-    "intro": "Foto sinu menüütahvlist, ekraanipilt, PDF või kleebi menüü tekstina. Meie AI loeb selle ja loob sulle toimiva tellimislehe — sinu tooted, sinu hinnad — vähem kui 60 sekundiga. Ilma registreerumise ja kaardita.",
+    "intro": "Foto sinu menüütahvlist, ekraanipilt, PDF või kleebi menüü tekstina. Meie tehisaru loeb selle ja loob sulle toimiva tellimislehe — sinu tooted, sinu hinnad — vähem kui 60 sekundiga. Ilma registreerumise ja kaardita.",
     "failedIntro": "Mõnikord on foto liiga tume, liiga viltu või käsitsi kirjutatud. Selle lahendamine on meie mure, mitte sinu viga. Mõned võimalused edasi:",
     "usually": "Tavaliselt võtab see alla 60 sekundi.",
     "slow": "See võtab tavalisest kauem — suurte menüüdega juhtub nii.",
@@ -2408,7 +2408,7 @@
         "saved": "🛡️ Allergeenikaart salvestatud",
         "viewOriginal": "Vaata originaalkaarti",
         "replace": "Asenda kaart",
-        "uploadHelp": "Laadi üles oma allergeenikaart (foto/PDF) või kleebi oma allergeeniteave — meie AI struktureerib selle klientide jaoks.",
+        "uploadHelp": "Laadi üles oma allergeenikaart (foto/PDF) või kleebi oma allergeeniteave — meie tehisaru struktureerib selle klientide jaoks.",
         "add": "Lisa allergeenikaart",
         "viewOnly": "👁 Ainult vaatamiseks — allergeenikaarti saab lisada ainult omanik.",
         "intro": "Kliendid näevad seda kaarti menüü allergeeniteabena. Ainult kaardi režiimis jäävad roogade allergeenid peidetuks (sinu roogade andmed säilivad juhuks, kui lähed hiljem üle roapõhisele teabele)."
@@ -2544,15 +2544,15 @@
   },
   "manageDeals": {
     "toast": {
-      "updated": "Komplekt uuendatud",
-      "created": "Komplekt loodud",
-      "removed": "Komplekt eemaldatud"
+      "updated": "Pakkumine uuendatud",
+      "created": "Pakkumine loodud",
+      "removed": "Pakkumine eemaldatud"
     },
-    "confirmRemove": "Kas eemaldada see komplekt?",
+    "confirmRemove": "Kas eemaldada see pakkumine?",
     "heading": "Pakkumised",
-    "count": "{n, plural, one {{count} komplekt seadistatud} other {{count} komplekti seadistatud}}",
-    "newDeal": "+ Uus komplekt",
-    "emptyTitle": "Komplekte veel pole",
+    "count": "{n, plural, one {{count} pakkumine seadistatud} other {{count} pakkumist seadistatud}}",
+    "newDeal": "+ Uus pakkumine",
+    "emptyTitle": "Pakkumisi veel pole",
     "active": "Aktiivne",
     "off": "Väljas",
     "autoApply": "Automaatne",
@@ -2560,30 +2560,30 @@
     "hidden": "Praegu klientide eest peidetud — {warning}",
     "edit": "Muuda",
     "delete": "Kustuta",
-    "editTitle": "Muuda komplekti",
-    "newTitle": "Uus komplekt",
-    "name": "Komplekti nimi",
+    "editTitle": "Muuda pakkumist",
+    "newTitle": "Uus pakkumine",
+    "name": "Pakkumise nimi",
     "namePlaceholder": "nt Lõunakomplekt",
     "description": "Kirjeldus",
     "descriptionPlaceholder": "Mis tahes pitsa + jook + dipikaste",
-    "price": "Komplekti hind",
+    "price": "Pakkumise hind",
     "originalPrice": "Algne hind",
     "originalPlaceholder": "tühi = automaatne",
     "originalHint": "tühi = arvutatakse toodete põhjal",
-    "slots": "Komplekti osad (selle komplekti jaoks vajalikud kategooriad)",
+    "slots": "Pakkumise osad (selle pakkumise jaoks vajalikud kategooriad)",
     "slot": "Osa {n}",
     "notUsed": "— Pole kasutusel —",
-    "dealActive": "Komplekt aktiivne",
+    "dealActive": "Pakkumine aktiivne",
     "applyHeading": "Rakenda üritustele",
-    "applyHelp": "Vali, kas see komplekt rakendub sinu üritustele automaatselt",
+    "applyHelp": "Vali, kas see pakkumine rakendub sinu üritustele automaatselt",
     "applyAll": "Rakenda automaatselt kõigile tulevastele üritustele",
-    "applyAllHelp": "See komplekt on aktiivne igal uuel üritusel, mille lood. Üksikute ürituste jaoks saad selle endiselt välja lülitada vahekaardil Ajakava.",
+    "applyAllHelp": "See pakkumine on aktiivne igal uuel üritusel, mille lood. Üksikute ürituste jaoks saad selle endiselt välja lülitada vahekaardil Ajakava.",
     "manualTitle": "Vali iga ürituse jaoks käsitsi",
-    "applyAllNote": "See komplekt lisatakse uutele üritustele. Olemasolevate ürituste komplekte halda vahekaardil Ajakava.",
+    "applyAllNote": "See pakkumine lisatakse uutele üritustele. Olemasolevate ürituste pakkumisi halda vahekaardil Ajakava.",
     "cancel": "Tühista",
-    "save": "Salvesta komplekt",
-    "emptyBody": "Loo komplekt, näiteks „Lõunakomplekt — mis tahes pitsa + jook + dipikaste hinnaga {price}“",
-    "manualHelp": "See komplekt ei ilmu üritustele, kui sa seda vahekaardil Ajakava sisse ei lülita.",
+    "save": "Salvesta pakkumine",
+    "emptyBody": "Loo komplektpakkumine, näiteks „Lõunakomplekt — mis tahes pitsa + jook + dipikaste hinnaga {price}“",
+    "manualHelp": "See pakkumine ei ilmu üritustele, kui sa seda vahekaardil Ajakava sisse ei lülita.",
     "saving": "Salvestan…"
   },
   "eventTypes": {
@@ -3380,7 +3380,7 @@
     "guessed": {
       "title": "📍 Arvasime selle asukoha ära",
       "body": "Mitu asukohta sobis nimega <b>{venue}</b>, seega valisime kõige sobivama{hasTown, select, yes { — <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Kontrolli enne heakskiitmist, et see on õige — kui see on vale, paranda nupuga <b>Muuda</b> piirkond või {postal}, muidu suunatakse kliendid valesse kohta.",
-      "thisVenue": "see koht"
+      "thisVenue": "see asukoht"
     },
     "noLocation": {
       "title": "📍 Asukoht puudub",
@@ -3440,7 +3440,7 @@
     "selectDate": "Vali kuupäev",
     "alwaysUse": "Kasuta alati tüüpi {type} (asukoht: {place})",
     "useNextTime": "Kasuta järgmisel korral tüüpi {type} (asukoht: {place})",
-    "thisPlace": "see koht",
+    "thisPlace": "see asukoht",
     "addressDetails": "Aadressi andmed",
     "venueName": "Asukoha nimi",
     "yourPlaces": "Sinu asukohad",
@@ -3587,11 +3587,11 @@
     "sameSettingsAllVansLabel": "Kõigil toiduautodel samad seaded",
     "sameSettingsAllVansHeader": "Kõik toiduautod",
     "sameSettingsConfirm": "Kas kopeerida Toiduauto 1 seaded kõigile toiduautodele? See kopeerib kõik Toiduauto 1 seaded, nagu valik „Sama mis Toiduauto 1“ jaotises Seaded. Köögi võimsusel on oma lüliti.",
-    "eventTypesFooterStandard": "Tavaline on sinu tavapärane seadistus. Kui muudad seda siin, muutub see ka jaotises Seaded.",
+    "eventTypesFooterStandard": "Tüüp „Tavaline“ on sinu tavapärane seadistus. Kui muudad seda siin, muutub see ka jaotises Seaded.",
     "eventTypesFooterOneEvent": "Kui soovid muuta seadet ainult ühel üritusel, kasuta selle ürituse töölauda.",
     "eventTypesSubtitle": "Muudatused salvestuvad jooksvalt.",
     "matchStandardLabel": "Nagu Tavaline",
-    "matchStandardConfirm": "Kas taastada selle tüübi kõik seaded nagu tüübil Tavaline? Kõik siin tehtud muudatused kustutatakse.",
+    "matchStandardConfirm": "Kas taastada selle tüübi kõik seaded nagu tüübil „Tavaline“? Kõik siin tehtud muudatused kustutatakse.",
     "priceLabels": {
       "price_change_on": "Muuda hindu",
       "price_mode": "Hinnamuutus",
@@ -3632,7 +3632,7 @@
     "eventPriceCancel": "Tühista",
     "eventPriceSave": "Salvesta hinnad",
     "eventPriceEditNote": "Muudad hindu ainult selle ürituse jaoks. Toodete limiidid ja saadavus on lukus, kuni salvestad.",
-    "eventPriceLiveNote": "Avaldatud: uued tellimused kasutavad uusi hindu.",
+    "eventPriceLiveNote": "Käimas: uued tellimused kasutavad uusi hindu.",
     "offlineWhenOfflineLabel": "Ühenduse katkemisel"
   },
   "offlineProtection": {
@@ -3965,7 +3965,7 @@
       "close": "Sulge",
       "logoPlaceholder": "Sinu logo\nsiia"
     },
-    "qrPoweredBy": "Teenust pakub HatchGrab"
+    "qrPoweredBy": "Platvorm: HatchGrab"
   },
   "manageReports": {
     "filter": {
@@ -4087,7 +4087,7 @@
     "createWeeklyButton": "Loo nädalapostitus",
     "nextEventHeading": "Sinu järgmine üritus",
     "noUpcomingEvents": "Midagi pole tulemas.",
-    "imageChoicePrivate": "Eraüritused kasutavad alati sinu tavakujundust.",
+    "imageChoicePrivate": "Eraüritused kasutavad alati sinu põhikujundust.",
     "locationsTitle": "Asukohtade seaded",
     "locationsBlurb": "Lisa igale asukohale pildid. Neid kasutatakse postitust luues automaatselt.",
     "locationsSearchLabel": "Otsi asukohti",
@@ -4114,7 +4114,7 @@
     "eventBoxPhotoTitle": "Foto sinu ürituse postituste jaoks",
     "eventBoxPhotoBlurb": "See läheb sinu ürituse kujunduse fotoalasse ja kärbitakse seda täitma. Kuju võib olla mis tahes.",
     "eventBoxPosterTitle": "Plakat siinsete ürituste jaoks (valikuline)",
-    "eventBoxPosterBlurb": "See asendab selle asukoha üritustel sinu tavakujunduse täielikult.",
+    "eventBoxPosterBlurb": "See asendab selle asukoha üritustel sinu põhikujunduse täielikult.",
     "eventBoxAddPhotoSpace": "Lisa oma ürituse kujundusse fotoala, et kasutada mis tahes kujuga pilti",
     "weeklyBoxTitle": "Pilt rea kõrval sinu nädalapostitusel",
     "weeklyBoxBlurbLoc": "Logo või foto. See joonistatakse väikesena alale, mille sinu nädalakujundus sellele annab.",
@@ -4126,7 +4126,7 @@
     "slotEmpty": "Veel pole",
     "nameOnPostsLabel": "Nimi postitustel",
     "imageChoiceLabel": "Pilt",
-    "imageChoiceStandard": "Tavakujundus",
+    "imageChoiceStandard": "Põhikujundus",
     "imageChoiceOneOff": "Laadi üles ainult selle postituse jaoks",
     "tabCreateHeading": "Loo postitus",
     "tabCreateBlurb": "Loo postitus selle nädala või ühe ürituse kohta. Paneme sinu kuupäevad, asukohad ja kellaajad sinu kujundusele, valmis alla laadimiseks või jagamiseks.",
@@ -4169,7 +4169,7 @@
     "weeklyOnlyAddLink": "+ Kasuta nädalapostitustel teist pilti",
     "weeklyOnlyBoxTitle": "Pilt nädalapostituste jaoks",
     "weeklyOnlyBoxBlurb": "Kasutatakse nädalapostitustel sinu asukoha pildi asemel.",
-    "nameFromScheduleNote": "Nimi ja piirkond tulevad sinu ajakavast. Muuda neid jaotises Ajakava › Üritused › Lisa üritus › Korrasta asukohad.",
+    "nameFromScheduleNote": "Nimi ja piirkond tulevad sinu ajakavast. Muuda neid jaotises Ajakava › Üritused › Lisa üritus › Korrasta asukohti.",
     "leaveConfirmTitle": "Sul on salvestamata muudatusi. Kas lahkuda salvestamata?",
     "leaveConfirmStay": "Jätka muutmist",
     "leaveConfirmGo": "Lahku",
@@ -4194,7 +4194,7 @@
     "ownBadge": "oma",
     "editorClickToEdit": "klõpsa muutmiseks",
     "lookHeading": "VÄLIMUS",
-    "lookSame": "🔗 Sama nagu „Kogu tekst“",
+    "lookSame": "🔗 Sama nagu Kogu tekst",
     "lookOwn": "Oma stiil",
     "lookSameHint": "Font, värv ja efektid tulevad valikust „Kogu tekst“. Vali „Oma stiil“, et muuta neid ainult selles kastis.",
     "lookOwnHint": "Sellel kastil on oma font, värv ja efektid. Vali „Sama nagu Kogu tekst“, et see jälle teistega sobiks.",
@@ -4339,7 +4339,7 @@
       "event": "Kasutusel on pilt, mille selle postituse jaoks üles laadisid",
       "placePhoto": "{hasPlace, select, yes {Kasutusel on asukoha {place} foto} other {Kasutusel on selle asukoha foto}}",
       "placePoster": "{hasPlace, select, yes {Kasutusel on asukoha {place} plakat} other {Kasutusel on selle asukoha plakat}}",
-      "standard": "Kasutusel on sinu ürituse tavakujundus"
+      "standard": "Kasutusel on sinu ürituse põhikujundus"
     },
     "chipAll": "Kõik {n}",
     "chipMissing": "Pildid puudu {n}",
@@ -4347,7 +4347,7 @@
     "chipNoImages": "Pilte pole {n}",
     "chipNoPictures": "Pilte pole {n}",
     "showAllUpcoming": "Näita kõiki tulevasi üritusi ({n}) ⌄",
-    "eventBoxPosterShape": "Plakat peab olema sama kujuga kui sinu tavakujundus ({w}×{h}), sest sinu tekstikastid paigutati selle kuju järgi.",
+    "eventBoxPosterShape": "Plakat peab olema sama kujuga kui sinu põhikujundus ({w}×{h}), sest sinu tekstikastid paigutati selle kuju järgi.",
     "slotRemoveConfirm": "{what, select, poster {Kas eemaldada see plakat? Seda ei kasutata enam. Pilt ise jääb alles.} photo {Kas eemaldada see foto? Seda ei kasutata enam. Pilt ise jääb alles.} other {Kas eemaldada see pilt? Seda ei kasutata enam. Pilt ise jääb alles.}}",
     "imageChoicePlacePhoto": "Asukoha {place} foto",
     "imageChoicePlacePoster": "Asukoha {place} plakat",
@@ -4355,8 +4355,8 @@
     "captionAddLabel": "+ {name}",
     "otherChoices": "Muud valikud: {choices}",
     "posterBoxBlurbSized": {
-      "plain": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse tavakujunduse. Lisame kuupäeva, kellaajad ja teksti „Teenust pakub HatchGrab“.",
-      "withSize": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse tavakujunduse. Lisame kuupäeva, kellaajad ja teksti „Teenust pakub HatchGrab“. Sama kuju kui sinu tavakujundusel ({w} × {h})."
+      "plain": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse põhikujunduse. Lisame kuupäeva, kellaajad ja teksti „Platvorm: HatchGrab“.",
+      "withSize": "Terviklik plakat siinsete ürituste jaoks. See asendab sinu ürituse põhikujunduse. Lisame kuupäeva, kellaajad ja teksti „Platvorm: HatchGrab“. Sama kuju kui sinu põhikujundusel ({w} × {h})."
     },
     "screen": {
       "noDesignYet": "Kujundust veel pole",
@@ -4488,18 +4488,18 @@
     "rate": {
       "label": "Müügimaksu määr",
       "hint": "Määr, mida rakendad igale tellimusele. Kliendid näevad seda kassas lisatuna, kviitungitel ja köögitšekkidel.",
-      "regionDefault": "Jäta tühjaks, et kasutada määra {rate} % ({label}) — valmistoidu määr piirkonnas {region}."
+      "regionDefault": "Jäta tühjaks, et kasutada määra {rate}% ({label}) — valmistoidu määr piirkonnas {region}."
     },
     "included": {
       "label": "Hindades sisaldub {label}",
       "hint": "Sinu hindades sisaldub juba {label}. See määr näitab kviitungitel ja köögitšekkidel ainult, kui suur osa igast hinnast on {label} — kassas midagi juurde ei lisata.",
-      "default": "Jäta tühjaks, et kasutada määra {rate} % ({label}) — see kehtib kaasa müüdavale soojale toidule ({country})."
+      "default": "Jäta tühjaks, et kasutada määra {rate}% ({label}) — see kehtib kaasa müüdavale soojale toidule ({country})."
     },
     "tips": {
       "label": "Jootraha",
       "hint": "Veebis kaardiga maksvad kliendid saavad lisada jootraha. Kõik see läheb sulle.",
       "choices": "Klientidele näidatavad valikud:",
-      "chip": "{rate} %",
+      "chip": "{rate}%",
       "other": "Muu summa"
     },
     "fee": {
@@ -4526,7 +4526,7 @@
       "daysSample": "{first} kuni {last}",
       "date": "Kuupäev",
       "place": "Asukoht",
-      "venue": "Toimumiskoht",
+      "venue": "Asukoht",
       "area": "Piirkond",
       "time": "Kellaaeg",
       "rows": "Read",
@@ -4568,9 +4568,9 @@
     },
     "scope": {
       "title": "Tekstide paigutus",
-      "standard": "Sama paigutus nagu tavakujundusel",
+      "standard": "Sama paigutus nagu põhikujundusel",
       "own": "Asukoha {place} oma paigutus",
-      "locked": "See paigutus tuleb sinu tavakujundusest. Vali „Asukoha {place} oma paigutus“, et tekste ainult siin liigutada."
+      "locked": "See paigutus tuleb sinu põhikujundusest. Vali „Asukoha {place} oma paigutus“, et tekste ainult siin liigutada."
     },
     "stage": {
       "hint": "Lohista kasti, et seda liigutada · lohista nurka, et suurust muuta",
@@ -5028,7 +5028,7 @@
       "option": "{n, number}",
       "usage": "Kasutatud {used, number} / {limit, number} · lähtestub {date}",
       "perCustomer": "Kuni {n} vastust kliendi kohta 24 tunni jooksul, seejärel üks sõnum, et vastad isiklikult.",
-      "emailAt": "Limiidi täitumisel vastused peatuvad. Saadame sulle e-kirja 80 % ja 100 % juures.",
+      "emailAt": "Limiidi täitumisel vastused peatuvad. Saadame sulle e-kirja 80% ja 100% juures.",
       "saved": "Kuu vastuste limiit salvestatud",
       "saveFailed": "Limiiti ei õnnestunud salvestada"
     },
@@ -5367,7 +5367,7 @@
       "weekDates": "Nädala kuupäevad",
       "dayList": "Päevade loend",
       "place": "Asukoht",
-      "venue": "Toimumiskoht",
+      "venue": "Asukoht",
       "area": "Piirkond",
       "dayDate": "Päev ja kuupäev",
       "times": "Kellaajad",
@@ -5400,7 +5400,7 @@
       "place": "Asukoha nimi ei mahtunud ära ja seda lühendati.",
       "time": "Kellaaeg ei mahtunud ära ja seda lühendati.",
       "note": "Sinu enda tekst ei mahtunud ära ja seda lühendati.",
-      "venue": "Toimumiskoht ei mahtunud ära ja seda lühendati.",
+      "venue": "Asukoht ei mahtunud ära ja seda lühendati.",
       "area": "Piirkond ei mahtunud ära ja seda lühendati."
     },
     "fontFallback": "Selle kujunduse fonti ({id}) ei õnnestunud laadida — need kastid on fondiga Oswald.",
@@ -5455,8 +5455,8 @@
     "completionHelp": "Mis juhtub, kui tasumata tellimus on üleandmiseks valmis.",
     "pressesOne": "Üks vajutus („Makstud ja kätte antud“)",
     "pressesOneHelp": "Parim, kui võtad raha vastu toidu üleandmisel. Saad ühe nupu „Makstud ja kätte antud“, mis registreerib makse ja lõpetab tellimuse korraga.",
-    "pressesTwo": "Kaks vajutust („Makstud“ ja „Kätte antud“)",
-    "pressesTwoHelp": "Parim, kui makse ja üleandmine toimuvad eri hetkedel — klient maksab leti juures ja võtab tellimuse kätte, kui see on valmis. Saad kaks nuppu: kõigepealt „Makstud“, seejärel „Kätte antud“, kui toit üle antakse."
+    "pressesTwo": "Kaks vajutust („Märgi makstuks“ ja „Kätte antud“)",
+    "pressesTwoHelp": "Parim, kui makse ja üleandmine toimuvad eri hetkedel — klient maksab leti juures ja võtab tellimuse kätte, kui see on valmis. Saad kaks nuppu: kõigepealt „Märgi makstuks“, seejärel „Kätte antud“, kui toit üle antakse."
   },
   "landing": {
     "jsonLd": {
@@ -5472,7 +5472,7 @@
       "ctaNote": "<lead>Laadi üles foto oma menüüst ja näed seda töötamas vähem kui 60 sekundiga.</lead><small>Registreerumist pole vaja. Pangakaarti pole vaja.</small>"
     },
     "shots": {
-      "kitchenAlt": "HatchGrabi köögiekraan, kus tellimuslipikud on valmistamise järjekorras",
+      "kitchenAlt": "HatchGrabi köögiekraan, kus tellimuste tšekid on valmistamise järjekorras",
       "dashboardAlt": "Tellimuse vastuvõtmine HatchGrabis: vasakul menüü, paremal ostukorv ja jooksev summa",
       "phoneAlt": "Toiduautost tellimine HatchGrabis: menüü fotode ja hindadega ning ostukorvi jooksev summa"
     },
@@ -5768,7 +5768,7 @@
         "name": "Piiparite jälgimine"
       },
       "ticket_printing": {
-        "name": "Köögilipikute printimine"
+        "name": "Köögitšekkide printimine"
       },
       "customer_display": {
         "name": "Kliendiekraan"
@@ -5795,7 +5795,7 @@
       "free": "Tasuta",
       "freeTrial": "Tasuta prooviperiood",
       "lifetime": "Eluaegne",
-      "zeroPercent": "0 %",
+      "zeroPercent": "0%",
       "payAtHatch": "Tasumine kättesaamisel",
       "unlimited": "Piiramatu",
       "none": "—",
@@ -5918,7 +5918,7 @@
         "many": "no"
       },
       "ticket_printing": {
-        "name": "Köögilipikute printimine",
+        "name": "Köögitšekkide printimine",
         "many": "no"
       },
       "multi_device_kds": {
@@ -5975,7 +5975,7 @@
       "preorders": "Ettetellimused ja kättesaamise ajad",
       "capacity": "Köögi võimsuse haldus",
       "privateEvents": "Eraüritused",
-      "printing": "Köögilipikute printimine",
+      "printing": "Köögitšekkide printimine",
       "app": "iPhone’i, iPadi ja Androidi köögirakendus"
     },
     "added": {
@@ -5984,7 +5984,7 @@
       "event_types": "Kohandatud ürituse tüübid ja hinnad"
     },
     "money": {
-      "unlimitedOrders": "Piiramatult veebitellimusi, HatchGrabi tasu 0 %",
+      "unlimitedOrders": "Piiramatult veebitellimusi, HatchGrabi tasu 0%",
       "samePrice": "Sama hind ka sinu kõige kiiremal kuul"
     },
     "comingSoon": "Tulekul",
@@ -5996,7 +5996,7 @@
       "last": "Üle {from} → <b>{plan}</b>",
       "only": "Mis tahes maht → <b>{plan}</b>"
     },
-    "footnote": "* Lisaks Stripe’i kaardimaksetasu veebis kaardiga makstud tellimustelt (praegu {country}: {cardFee}), mis makstakse Stripe’ile, mitte HatchGrabile. Tellimused kohapeal kasutavad sinu enda makseterminali — HatchGrab võtab 0 %.",
+    "footnote": "* Lisaks Stripe’i kaardimaksetasu veebis kaardiga makstud tellimustelt (praegu {country}: {cardFee}), mis makstakse Stripe’ile, mitte HatchGrabile. Tellimused kohapeal kasutavad sinu enda makseterminali — HatchGrab võtab 0%.",
     "currencyLine": "Hinnad: {currency} ({code})"
   },
   "planTable": {
@@ -6032,7 +6032,7 @@
     },
     "notes": {
       "whatsapp": "WhatsAppi automaatvastuste jaoks on vaja WhatsApp Businessi kontot. Meta võib mõne sõnumi eest tasu võtta; vastused luuakse automaatselt.",
-      "printing": "Köögilipikute printimiseks on vaja ühilduvat Bluetooth- või juhtmega printerit (pole kaasas)."
+      "printing": "Köögitšekkide printimiseks on vaja ühilduvat Bluetooth- või juhtmega printerit (pole kaasas)."
     }
   },
   "featuresPage": {
@@ -6043,7 +6043,7 @@
       "multi_device_kitchen": "Kasuta mitut ekraani — leti ääres ja köögis — ning kõik näitavad samu tellimusi reaalajas.",
       "multi_user_access": "Anna töötajatele oma kasutajakontod sobiva ligipääsutasemega.",
       "offline_protection": "Kui levi kaob, peatub veebitellimine, et kliendid ei saaks esitada tellimusi, mida sa ei näe. iPhone’i, iPadi ja Androidi rakendusega saad tellimusi vastu võtta ka võrguühenduseta; veebitöölaud vajab ühendust.",
-      "ticket_printing": "Prindi tellimuslipikud köögis Bluetooth- või juhtmega printerisse.",
+      "ticket_printing": "Prindi tellimuste tšekid köögis Bluetooth- või juhtmega printerisse.",
       "web_dashboard": "Juhi vahetust mis tahes telefoni, tahvelarvuti või sülearvuti brauserist.",
       "meal_deals_upsells": "Koonda tooted komplektideks ja paku kassas lisasid, et tõsta keskmise tellimuse väärtust.",
       "sold_out_toggle": "Märgi mis tahes toode ühe puudutusega otsas olevaks — klientidele muutub see kohe halliks.",

@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Υποχρεωτικό} other {Προαιρετικό}}{limit, select, one { · Επιλέξτε ένα} upTo { · Επιλέξτε έως {max}} other {}}",
+  "operator": "{required, select, yes {Υποχρεωτικό} other {Προαιρετικό}}{limit, select, one { · Ο πελάτης επιλέγει ένα} upTo { · Ο πελάτης μπορεί να επιλέξει έως {max}} other {}}"
+}

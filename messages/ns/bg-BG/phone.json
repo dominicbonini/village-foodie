@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {{name}: моля, въведете валиден мобилен номер} other {Моля, въведете валиден мобилен номер}}{withExample, select, yes { (напр. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {{name}: моля, въведете валиден телефонен номер} other {Моля, въведете валиден телефонен номер}}{withExample, select, yes { (напр. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {{name}: въведете валиден телефонен номер} other {Въведете валиден телефонен номер}}{withExample, select, yes { (напр. {example})} other {}}."
+}

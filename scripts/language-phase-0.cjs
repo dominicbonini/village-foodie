@@ -42,7 +42,8 @@ const head = s => console.log(`\n── ${s}`)
 const GB = SEEDS.gbFromSeed()
 const US_ON = { ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor: 0, proMonthlyMinor: 3900, maxMonthlyMinor: 6900, proAllowanceMinor: 200000, maxAllowanceMinor: 300000, platformFeePct: 0.99 }
 const STUBS = {
-  'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
+  // ⚠️ europe-languages-2 (23 October 2026): + Noto_Sans — app/layout.tsx's Greek / Cyrillic fallback.
+  'next/font/google': ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono', 'Noto_Sans'].map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
   'next/headers': `
     export async function headers() { return { get: k => (k === 'host' ? 'www.hatchgrab.com' : null), has: () => false } }
     export async function cookies() { return { get: () => undefined, has: () => false, getAll: () => [] } }`,

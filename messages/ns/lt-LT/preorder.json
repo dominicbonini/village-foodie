@@ -1,0 +1,6 @@
+{
+  "closedPending": "Išankstiniai užsakymai uždaryti. Laukiama virtuvės patvirtinimo.",
+  "deadline": "Užsisakykite iš anksto iki {time}",
+  "deadlineOnDay": "Užsisakykite iš anksto iki {time}, {day}",
+  "opens": "Išankstiniai užsakymai priimami nuo: {day}"
+}

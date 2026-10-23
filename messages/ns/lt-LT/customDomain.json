@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Įkelkite tvarkaraštį į savo svetainę",
+    "live": "<addr>{address}</addr> rodo jūsų tvarkaraštį.",
+    "create": "Sukursime puslapį adresu <addr>{address}</addr>, kuriame bus rodomas jūsų tvarkaraštis.",
+    "exampleDomain": "jusufoodtruck.lt",
+    "liveBadge": "Veikia",
+    "setUp": "Nustatyti",
+    "viewSetup": "Peržiūrėti nustatymus",
+    "continue": "Tęsti",
+    "justLive": "<b>{address}</b> veikia. Apžiūrėkite jį, tada žemiau patvirtinkite, kad viskas gerai."
+  },
+  "waiting": {
+    "title": "Laukiame, kol pradės veikti {address}",
+    "bodySince": "Tai nustatėte {date}. Nauji interneto adresai paprastai pradeda veikti per kelias minutes, o kartais visus pasiekia tik per 24 valandas — kol taip vyksta, jums nieko daryti nereikia. Jei eilutę už jus turėjo pridėti kas nors kitas, verta patikrinti, ar tikrai pridėjo.",
+    "body": "Nauji interneto adresai paprastai pradeda veikti per kelias minutes, o kartais visus pasiekia tik per 24 valandas — kol taip vyksta, jums nieko daryti nereikia. Jei eilutę už jus turėjo pridėti kas nors kitas, verta patikrinti, ar tikrai pridėjo."
+  },
+  "ready": {
+    "title": "{address} veikia",
+    "body": "Apžiūrėkite jį, tada nustatymuose patvirtinkite, kad viskas gerai."
+  },
+  "confirm": {
+    "heading": "Apžiūrėkite ir patvirtinkite, kad viskas gerai",
+    "open": "Atidarykite <link>{address}</link>",
+    "checkTimes": "Patikrinkite, ar datos ir laikai teisingi.",
+    "yes": "Taip, viskas gerai",
+    "no": "Ne, yra problema",
+    "problemLine": "Parašykite, ką matote, ir mes tai patikrinsime.",
+    "emailUs": "Parašyti mums",
+    "mailSubject": "Problema: {address}",
+    "mailLiveSince": "Veikia nuo {date}",
+    "mailSeeing": "Ką matau:"
+  },
+  "confirmed": {
+    "heading": "Ačiū — viską užsirašėme.",
+    "body": "Daugiau nieko daryti nereikia."
+  },
+  "turnOff": {
+    "link": "Išjungti",
+    "heading": "Išjungti savo interneto adresą?",
+    "stops": "Nebeveiks:",
+    "carriesOn": "Šis adresas toliau veiks lygiai taip pat, ir būtent į jį žmones nukreipia jūsų QR kodas:",
+    "reAdd": "Jei vėliau nustatysite tai iš naujo, palikite eilutę, kurią pridėjote pas savo interneto adreso tiekėją. Jei ne, paprašykite jo ją pašalinti.",
+    "cancel": "Palikti įjungtą",
+    "confirm": "Išjungti",
+    "working": "Išjungiama…",
+    "failed": "Šiuo metu nepavyko to išjungti. Niekas nepasikeitė — jūsų adresas vis dar veikia. Netrukus bandykite dar kartą."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Nepavyko įkelti jūsų nustatymų.",
+    "resumeFailedBody": "Niekas nepasikeitė. Netrukus bandykite dar kartą.",
+    "close": "Uždaryti",
+    "resuming": "Tęsiame nuo ten, kur baigėte…",
+    "genericError": "Kažkas nepavyko",
+    "saveFailed": "Nepavyko išsaugoti"
+  },
+  "address": {
+    "intro": "Jūsų tvarkaraštis gaus atskirą interneto adresą.",
+    "question": "Koks jūsų interneto adresas?",
+    "hint": "Tas, kuriuo žmonės jus jau randa.",
+    "aria": "Jūsų interneto adresas",
+    "willBe": "Jūsų adresas bus <addr>{address}</addr>",
+    "example": "Pavyzdžiui, <addr>{address}</addr>",
+    "noChange": "Jūsų svetainė nepasikeis — tiesiog pridėsite nuorodą į naująjį adresą.",
+    "notSetUp": "To nenustatėme.",
+    "restricted": "Tas, kas prižiūri jūsų interneto adresą, turi leisti mums įdiegti spynelę — mažą užraktą, kurį klientai mato šalia adreso. Kol jie mūsų nepridės, ji nepasirodys, todėl sustojome, kad nereikėtų jums jos veltui laukti. Paprašykite jų mus pridėti ir bandykite dar kartą.",
+    "blocked": "Šiuo metu jūsų interneto adresas visiškai blokuoja spynelę. Tas, kas jį prižiūri, turi tai leisti, kad viskas veiktų. Paprašykite jų tai pakeisti ir bandykite dar kartą.",
+    "elsewhere": "Šiuo adresu jau kažkas veikia. Kitame ekrane esančią žinutę nusiųskite tam, kas jį prižiūri — jie žinos, ką daryti.",
+    "provider": "Jūsų interneto adresą prižiūri <b>{provider}</b>. Parodysime, kur eiti.",
+    "provisionFailed": "Nepavyko nustatyti šio adreso.",
+    "willNotWork": "Šis adresas neveiks.",
+    "couldNotBeSetUp": "Šio adreso nustatyti nepavyko.",
+    "couldNotSetUp": "Nepavyko nustatyti",
+    "checking": "Tikrinama…",
+    "setting": "Nustatoma…",
+    "tryAgain": "Bandyti dar kartą",
+    "setUpAddress": "Nustatyti šį adresą",
+    "notNow": "Ne dabar"
+  },
+  "apex": {
+    "empty": "Įveskite adresą, kurį norėtumėte naudoti.",
+    "not_a_domain": "Tai nepanašu į interneto adresą.",
+    "unparseable": "Nepavyko to perskaityti kaip interneto adreso. Patikrinkite rašybą ir bandykite dar kartą.",
+    "apex": "{host} – tai visas jūsų svetainės adresas. Jei nukreipsite jį į mus, jūsų svetainę pakeis šis puslapis. Geriau pridėkite žodį priekyje — pavyzdžiui, renginiai.{host}.",
+    "too_deep": "Šiame adrese per daug dalių. Geriausiai tinka kažkas panašaus į renginiai.{domain}."
+  },
+  "record": {
+    "addAt": "Pridėkite tai ({provider})",
+    "open": "Atidaryti: {provider}",
+    "guide": "Vadovas šiuo klausimu ({provider})",
+    "addAtSave": "Pridėkite tai ({provider}) ir išsaugokite.",
+    "addSomewhere": "Pridėkite tai ten, kur prižiūrimas jūsų interneto adresas, ir išsaugokite.",
+    "hintChoose": "Pasirinkite tai iš sąrašo.",
+    "hintWord": "Tik šį žodį, ne visą adresą.",
+    "hintExact": "Nukopijuokite tiksliai.",
+    "timing": "Paprastai pradeda veikti per valandą, nors gali užtrukti ilgiau. Šio puslapio laikyti atidaryto nereikia.",
+    "someoneElse": "Jūsų interneto adresą prižiūri kas nors kitas?",
+    "sentTo": "Išsiųsta adresu {email}",
+    "emailPlaceholder": "jų el. pašto adresas",
+    "sending": "Siunčiama…",
+    "send": "Siųsti šią informaciją",
+    "sendFailed": "Nepavyko išsiųsti"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Atidarykite savo interneto adresą, tada „DNS“ ir „Records“.",
+      "add": "Pasirinkite „Add record“, tada lauke „Type“ pasirinkite „CNAME“.",
+      "name": "Pirmąją toliau pateiktą reikšmę įrašykite į lauką „Name“.",
+      "value": "Antrąją toliau pateiktą reikšmę įrašykite į lauką „Target“.",
+      "proxy": "Lauke „Proxy status“ nustatykite „DNS only“ — debesėlis šalia turi būti pilkas, ne oranžinis.",
+      "save": "Lauką „TTL“ palikite „Auto“ ir pasirinkite „Save“.",
+      "caveat": "Jei debesėlis liks oranžinis, spynelė niekada nepasirodys ir niekas nepaaiškins kodėl."
+    },
+    "godaddy": {
+      "open": "Atidarykite „Domain Portfolio“ ir pasirinkite savo interneto adresą.",
+      "dns": "Puslapyje „Domain Settings“ pasirinkite „DNS“.",
+      "add": "Pasirinkite „Add New Record“, tada meniu „Type“ pasirinkite „CNAME“.",
+      "name": "Pirmąją toliau pateiktą reikšmę įrašykite į lauką „Name“.",
+      "value": "Antrąją toliau pateiktą reikšmę įrašykite į lauką „Value“.",
+      "save": "Lauką „TTL“ palikite nepakeistą ir pasirinkite „Save“.",
+      "caveat": "Jei pridėjote kelis įrašus iš karto, mygtukas vadinasi „Save All Records“."
+    },
+    "123reg": {
+      "signIn": "Prisijunkite prie „123 Reg Control Panel“.",
+      "manage": "Šalia „Domains“ pasirinkite „Manage All“, tada pasirinkite savo interneto adresą.",
+      "dns": "Pasirinkite „DNS“, tada „Add New Record“.",
+      "type": "Sąraše „Type“ pasirinkite „CNAME“.",
+      "name": "Pirmąją toliau pateiktą reikšmę įrašykite į lauką „Name“.",
+      "value": "Antrąją toliau pateiktą reikšmę įrašykite į lauką „Value“ ir jos gale pridėkite tašką.",
+      "save": "Lauką „TTL“ palikite „Default“ ir spustelėkite „Save“.",
+      "caveat": "123 Reg reikalauja taško antrosios reikšmės gale, kitaip tai neveiks."
+    },
+    "wix": {
+      "open": "Atidarykite „Domains“, tada spustelėkite piktogramą „Domain Actions“ šalia savo interneto adreso.",
+      "manage": "Pasirinkite „Manage DNS Records“.",
+      "add": "Skiltyje „CNAME (Aliases)“ spustelėkite „+ Add Record“, tada „Got it“.",
+      "name": "Pirmąją toliau pateiktą reikšmę įrašykite į lauką „Host Name“.",
+      "value": "Antrąją toliau pateiktą reikšmę įrašykite į lauką „Value“.",
+      "save": "Spustelėkite „Save“, tada iššokančiame lange – „Save Changes“.",
+      "caveat": "Jei jūsų interneto adresas tik nukreiptas į Wix, o ne registruotas ten, Wix šio pakeitimo atlikti negali — tai turi padaryti tas, pas ką adresas registruotas."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Vienas įrašas, kurį reikia pridėti tvarkaraščio puslapiui: {truckName}",
+    "hello": "Sveiki,",
+    "introAt": "Skelbiame tiesioginį food truck {truckName} tvarkaraštį adresu {address}, todėl mūsų domene reikia pridėti vieną įrašą (domeno tiekėjas: {provider}).",
+    "introHolder": "Skelbiame tiesioginį food truck {truckName} tvarkaraštį adresu {address}, todėl mūsų domeno valdytojas turi pridėti prie domeno vieną įrašą.",
+    "stepsAt": "Ką daryti ({provider}):",
+    "guide": "Jų vadovas: {url}",
+    "wholeChange": "Tai ir yra visas pakeitimas — niekas kita svetainėje nepaveikiama, o likusi domeno dalis veikia lygiai taip pat kaip dabar. Paprastai pradeda veikti per valandą.",
+    "pointsAt": "Puslapis, į kurį nukreipiama, rodo, kur prekiausime toliau, ir pats atsinaujina.",
+    "replyTo": "Jei turite klausimų, rašykite adresu {email}.",
+    "thanks": "Ačiū,"
+  },
+  "liveEmail": {
+    "subject": "{address} veikia",
+    "goodNews": "Geros naujienos — {address} veikia.",
+    "body": "Jūsų tvarkaraštis dabar rodomas jūsų adresu. Apžiūrėkite jį ir patikrinkite: atidarykite {address}, įsitikinkite, kad renginiai jūsų ir datos teisingos.",
+    "confirm": "Tai padarę, atidarykite savo nustatymus HatchGrab ir patvirtinkite, kad viskas gerai. Nuo to niekas nepriklauso — tiesiog žinosime, kad tai matė žmogus."
+  }
+}

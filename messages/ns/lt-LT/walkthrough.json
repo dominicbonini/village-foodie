@@ -1,0 +1,31 @@
+{
+  "intro": "Skiltyje „Valdymas“ nustatote savo food truck ir matote, kaip jam sekasi. Valdymo skydelyje priimate užsakymus ir valdote kiekvieną renginį, kol jis vyksta.",
+  "ariaLabel": "Valdymo skydelio apžvalga",
+  "step": "{current} iš {total}",
+  "skip": "Praleisti",
+  "back": "← Atgal",
+  "next": "Toliau →",
+  "done": "Baigta",
+  "stops": {
+    "menu": {
+      "title": "Meniu",
+      "body": "Jūsų patiekalai, kainos ir alergenai. Bet koks pakeitimas čia įsigalioja iškart."
+    },
+    "schedule": {
+      "title": "Tvarkaraštis",
+      "body": "Kur ir kada prekiaujate. Pridėkite renginį čia, ir klientai galės pateikti jam užsakymus."
+    },
+    "build": {
+      "title": "Rinkiniai, priedai ir papildomi pasiūlymai",
+      "body": "Rinkiniai, papildomi pasiūlymai, pritaikymo parinktys ir virtuvės pajėgumas yra skiltyje „Meniu“ — drąsiai išbandykite."
+    },
+    "settings": {
+      "title": "Nustatymai",
+      "body": "Jūsų food truck duomenys ir tai, kaip klientai moka."
+    },
+    "billing": {
+      "title": "Atsiskaitymai",
+      "body": "Čia rasite savo planą, atsiskaitymų ir funkcijų informaciją."
+    }
+  }
+}

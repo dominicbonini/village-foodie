@@ -1,0 +1,13 @@
+{
+  "subtotal": "Υποσύνολο",
+  "taxFallback": "Φόρος",
+  "taxIncluded": "Περιλαμβάνει {label}",
+  "serviceFeeCustomer": "Χρέωση online υπηρεσίας",
+  "serviceFee": "Χρέωση υπηρεσίας",
+  "cardFee": "Χρέωση κάρτας",
+  "tip": "Φιλοδώρημα",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Φόροι, χρεώσεις και φιλοδώρημα} tax_tip {Φόροι και φιλοδώρημα} fees_tip {Χρεώσεις και φιλοδώρημα} fees {Χρεώσεις} other {Φόροι και χρεώσεις}}"
+}

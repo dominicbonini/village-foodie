@@ -33,7 +33,7 @@
   },
   "settingsReview": {
     "anchorOrder": "Iestatījumi → Pasūtījumu iestatījumi",
-    "anchorDisplay": "Iestatījumi → Jūsu food truck → Attēlošanas iestatījumi",
+    "anchorDisplay": "Iestatījumi → Jūsu busiņi → Attēlošanas iestatījumi",
     "mins15": "15 minūtes",
     "mins30": "30 minūtes",
     "mins60": "60 minūtes",
@@ -48,8 +48,8 @@
     "cancelAria": "Cik ilgi pirms saņemšanas klienti var atcelt"
   },
   "allergensNotSet": {
-    "bodySetup": "Pārskatiet tos pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “alergēni nav iestatīti”.",
-    "body": "Pārskatiet tos sadaļā Iestatījumi pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “alergēni nav iestatīti”.",
+    "bodySetup": "Pārskatiet tos pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “Alergēni nav iestatīti”.",
+    "body": "Pārskatiet tos sadaļā Iestatījumi pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “Alergēni nav iestatīti”.",
     "title": "⚠ Alergēni un uztura informācija vēl nav iestatīti"
   },
   "welcome": {

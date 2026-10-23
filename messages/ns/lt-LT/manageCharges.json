@@ -1,0 +1,30 @@
+{
+  "heading": "PVM, arbatpinigiai ir priemokos",
+  "rate": {
+    "label": "Pardavimo mokesčio tarifas",
+    "hint": "Tarifas, taikomas kiekvienam užsakymui. Klientai mato jį pridėtą atsiskaitant, čekiuose ir virtuvės kvituose.",
+    "regionDefault": "Palikite tuščią, kad būtų taikomas {label} — {rate} %, paruošto maisto tarifas ({region})."
+  },
+  "included": {
+    "label": "Kainos su {label}",
+    "hint": "Jūsų kainose jau yra {label}. Šis tarifas tik nurodo, kokią kiekvienos kainos dalį sudaro {label} čekiuose ir virtuvės kvituose — atsiskaitant nieko nepridedama.",
+    "default": "Palikite tuščią, kad būtų taikomas {rate} % — {label} tarifas karštam maistui išsinešti ({country})."
+  },
+  "tips": {
+    "label": "Arbatpinigiai",
+    "hint": "Internetu kortele mokantys klientai gali pridėti arbatpinigių. Visi jie atitenka jums.",
+    "choices": "Klientams rodomi pasirinkimai:",
+    "chip": "{rate} %",
+    "other": "Kita suma"
+  },
+  "fee": {
+    "label": "Aptarnavimo mokestis internetu",
+    "hint": "Pridedamas tik prie užsakymų internetu. Niekada — prie užsakymų su mokėjimu atsiimant ar užsakymų vietoje. Jis lieka jums.",
+    "pctAria": "Aptarnavimo mokesčio procentas",
+    "fixedAria": "Fiksuota aptarnavimo mokesčio suma",
+    "max": "Didžiausias galimas mokestis: {max}",
+    "example": "Klientai mato jį prieš mokėdami, viena eilute: „{label} {amount}“.",
+    "hatchgrab": "HatchGrab prideda aptarnavimo mokestį ({fee}) prie jūsų klientų užsakymų internetu. Jūs jo nemokate ir negalite pakeisti."
+  },
+  "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą."
+}

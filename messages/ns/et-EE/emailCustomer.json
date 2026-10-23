@@ -65,7 +65,7 @@
     "leadReceived": "Aitäh! Saime sinu tellimuse kätte — anname teada, kui see on kinnitatud.",
     "orderNumber": "Tellimus #{id}",
     "total": "Kokku",
-    "poweredBy": "Teenust pakub <brand>HatchGrab</brand>",
+    "poweredBy": "Platvorm: <brand>HatchGrab</brand>",
     "textTitleReady": "Tellimus #{id} on kättesaamiseks valmis — {truck}",
     "textTitleConfirmed": "Tellimus #{id} on kinnitatud — {truck}",
     "textTitleReceived": "Tellimus #{id} on vastu võetud — {truck}",
@@ -98,8 +98,8 @@
   "common": {
     "hi": "Tere{withName, select, yes {, {name}} other {}}!",
     "sorry": "Vabandame võimalike ebamugavuste pärast.",
-    "poweredByDot": "Teenust pakub HatchGrab · hatchgrab.com",
-    "poweredByText": "Teenust pakub HatchGrab — hatchgrab.com",
+    "poweredByDot": "Platvorm: HatchGrab · hatchgrab.com",
+    "poweredByText": "Platvorm: HatchGrab — hatchgrab.com",
     "privacyLink": "Privaatsus",
     "privacyText": "Privaatsus: {url}"
   },

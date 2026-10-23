@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck}: virtuvė",
+  "loading": "Įkeliamas virtuvės ekranas…",
+  "pin": {
+    "title": "Įveskite PIN",
+    "placeholder": "PIN",
+    "unlock": "Atrakinti",
+    "unreachable": "Šiuo metu nepavyksta pasiekti serverio. Jūsų PIN teisingas — po akimirkos bandykite dar kartą.",
+    "incorrect": "Neteisingas PIN",
+    "generic": "Kažkas nepavyko. Bandykite dar kartą."
+  },
+  "error": {
+    "linkInvalid": "Ši nuoroda nebegalioja.",
+    "couldNotLoad": "Nepavyko įkelti užsakymų",
+    "truckNotFound": "Food truck nerastas"
+  },
+  "degraded": {
+    "at": "⚠️ Nepavyksta pasiekti serverio. Rodomi užsakymai (būsena {time}). GALI TRŪKTI NAUJŲ UŽSAKYMŲ.",
+    "earlier": "⚠️ Nepavyksta pasiekti serverio. Rodomi ankstesni užsakymai. GALI TRŪKTI NAUJŲ UŽSAKYMŲ."
+  },
+  "header": {
+    "dashboard": "Valdymo skydelis",
+    "backTitle": "Atgal į valdymo skydelį",
+    "list": "Sąrašas",
+    "grid": "Tinklelis",
+    "full": "Pilnos",
+    "cook": "Virėjui",
+    "fullTitle": "Pilnos kortelės — kainos ir mokėjimo informacija, kaip jas mato aptarnaujantys prie furgono.",
+    "cookTitle": "Virėjo kortelės — didesnis šriftas, sugrupuota pagal kategorijas, be kainų.",
+    "readyStep": "Žingsnis „Paruošta“",
+    "readyOnlyTitle": "Šis ekranas tik žymi užsakymus paruoštais, todėl šios funkcijos išjungti negalima — tai vienintelis jo atliekamas žingsnis.",
+    "readyOnTitle": "Šis ekranas žymi užsakymus paruoštais. Bakstelėkite, kad tai darytų kitas ekranas.",
+    "readyOffTitle": "Užsakymus paruoštais žymi kitas ekranas. Bakstelėkite, kad tai darytų šis.",
+    "handover": "Mokėjimas ir išdavimas",
+    "handoverOnlyTitle": "Šis ekranas tik priima mokėjimus, todėl šios funkcijos išjungti negalima — tai vienintelis jo atliekamas žingsnis.",
+    "handoverOnTitle": "Šis ekranas priima mokėjimus ir išduoda užsakymus. Bakstelėkite, kad tai darytų kitas ekranas.",
+    "handoverOffTitle": "Mokėjimus priima kitas ekranas. Bakstelėkite, kad tai darytų šis.",
+    "soundOn": "Naujo užsakymo garsas įjungtas — bakstelėkite, kad išjungtumėte",
+    "soundOff": "Naujo užsakymo garsas išjungtas — bakstelėkite, kad įjungtumėte",
+    "screenOn": "Ekranas įjungtas",
+    "screenOff": "Ekranas gali užgesti",
+    "screenSettings": "Ekrano nustatymai",
+    "manageEvent": "Valdyti renginį",
+    "manageEventTitle": "Valdyti renginį — pradėti, pristabdyti, keisti ar baigti",
+    "soundSettings": "Garso nustatymai",
+    "soundSettingsTitle": "Kokie garsai skamba šiame įrenginyje",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Rodinio nustatymai",
+    "on": "Įjungta",
+    "off": "Išjungta",
+    "newOrderSound": "Naujo užsakymo garsas",
+    "soundNeedsConfirming": "Tik užsakymai, kuriuos reikia patvirtinti",
+    "soundAll": "Visi nauji užsakymai",
+    "soundDue": "Garsas, kai laikas gaminti užsakymą",
+    "soundDueHelp": "Skamba, kai kortelė tampa oranžinė.",
+    "deviceSettings": "Įrenginio nustatymai",
+    "sound": "Garsas",
+    "close": "Uždaryti"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Šio renginio užsakymai neįkelti",
+    "mismatchBody": "Serveris grąžino kitą renginį, todėl nerodoma nieko, kad nebūtų rodomi netinkami užsakymai. Pasirinkite renginį dar kartą arba įkelkite puslapį iš naujo.",
+    "mismatchBodyAt": "Serveris grąžino kitą renginį, todėl nerodoma nieko, kad nebūtų rodomi netinkami užsakymai (vieta: {venue}). Pasirinkite renginį dar kartą arba įkelkite puslapį iš naujo.",
+    "paused": "⏸ Užsakymai pristabdyti{reason, select, offline { (įrenginys neprisijungęs)} other {}} — klientai negali užsisakyti",
+    "resume": "Tęsti",
+    "offline": "Nėra ryšio — rodomi paskutiniai žinomi užsakymai. Internetiniai užsakymai klientams pristabdyti.",
+    "queued": "{n, plural, one {{count} veiksmas eilėje} few {{count} veiksmai eilėje} many {{count} veiksmų eilėje} other {{count} veiksmų eilėje}}",
+    "extraWait": "⏱ Taikomas papildomas laukimas: +{mins} min",
+    "clear": "Išvalyti",
+    "toMake": "Gaminti",
+    "today": "Šiandien · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Pradėti renginį",
+    "recentlyClosed": "Renginys baigtas · {venue}: pabaiga {time}",
+    "eventStatus": "{tone, select, paused {⏸ Pristabdytas} live {● Vyksta} finished {● Baigtas} cancelled {Atšauktas} other {Neprasidėjęs}}"
+  },
+  "board": {
+    "queueClear": "Eilė tuščia",
+    "doneToday": "Šiandien atlikta · {count}",
+    "paid": "✓ apmokėta",
+    "cardHeld": "lėšos rezervuotos",
+    "due": "mokėti {amount}"
+  },
+  "screenOff": {
+    "title": "Leisti ekranui užgesti?",
+    "bodyVans": "{vans}: {n, plural, one {įjungtas} few {įjungtas} many {įjungtas} other {įjungtas}} neprisijungimo aptikimas. Jei ekranas užges, įrenginys gali nustoti siųsti prisijungimo signalą, ir klientų užsakymai gali būti pristabdyti.",
+    "body": "Jei ekranas užges, įrenginys gali nustoti siųsti prisijungimo signalą.",
+    "keepHint": "Laikykite ekraną įjungtą, kad užsakymai būtų priimami be pertrūkių.",
+    "keep": "Laikyti ekraną įjungtą",
+    "allow": "Leisti užgesti"
+  },
+  "event": {
+    "change": "Keisti renginį",
+    "cancel": "Atšaukti",
+    "waitActive": "⏱ Taikoma +{mins} min · Bakstelėkite, kad išvalytumėte",
+    "addWait": "⏱ Pridėti laukimo",
+    "endTitle": "Baigti renginį?",
+    "endEarly": "Pagal tvarkaraštį šis renginys baigiasi tik {time}. Daugiau užsakymų nebus priimama. Patvirtinti renginio pabaigą?",
+    "endNow": "Baigti šį renginį? Daugiau užsakymų nebus priimama.",
+    "yes": "Taip",
+    "started": "Renginys pradėtas",
+    "startFutureConfirm": "Šis renginys vyksta {date}. Pradėti jį dabar?",
+    "finishTimeNow": "Pabaigos laikas dabar {time}",
+    "finished": "Renginys baigtas",
+    "cancelled": "Renginys atšauktas",
+    "noteSaved": "Pastaba išsaugota",
+    "pauseConfirm": "Pristabdyti užsakymus? Kol neatnaujinsite, klientai matys „Užsakymai sustabdyti“.",
+    "switchConfirm": "Perjungti renginį: {from} → {to}?{n, plural, =0 {} one { {count} užsakymas šiame ekrane bus pakeistas.} few { {count} užsakymai šiame ekrane bus pakeisti.} many { {count} užsakymų šiame ekrane bus pakeista.} other { {count} užsakymų šiame ekrane bus pakeista.}} Bakstelėkite dabartinį renginį, kad grįžtumėte."
+  },
+  "intro": {
+    "title": "Tai virtuvės ekranas",
+    "p1": "Tai virėjo vaizdas — užsakymai, kuriuos reikia pagaminti, ta tvarka, kuria juos reikia gaminti. Ekranas prie kepsninės rodo šį vaizdą, o aptarnaujantys klientus naudoja užsakymų skydelį.",
+    "p2": "Bakstelėtos kortelės keliauja toliau, todėl gaminantysis visada žino, kas toliau, ir niekam nereikia šaukti. Visa tai — jūsų demonstraciniai duomenys, drąsiai išbandykite.",
+    "gotIt": "Supratau"
+  },
+  "toast": {
+    "failed": "Nepavyko",
+    "rejectFailed": "Nepavyko atmesti",
+    "buzzerSaved": "Gaviklis {n} išsaugotas",
+    "buzzerRemoved": "Gaviklis {n} pašalintas",
+    "buzzerRemovedNone": "Gaviklis pašalintas",
+    "buzzerAssigned": "Gaviklis {n} priskirtas",
+    "buzzerAssignedFrom": "Gaviklis {n} priskirtas (paimtas iš #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Nepavyko pašalinti gaviklio iš {target, select, order {užsakymo #{id}} other {šio užsakymo}}} other {Nepavyko pašalinti gaviklio {n} — jis vis dar priskirtas {target, select, order {užsakymui #{id}} other {šiam užsakymui}}}}",
+    "buzzerAssignFailed": "Nepavyko priskirti gaviklio {n} {target, select, order {užsakymui #{id}} other {šiam užsakymui}} — {had, select, yes {jam vis dar priskirtas gaviklis {prior}} other {jis vis dar neturi gaviklio}}"
+  }
+}

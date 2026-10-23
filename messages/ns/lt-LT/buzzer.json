@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Gaviklis <b>{number}</b> priskirtas <b>užsakymui #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Paimti jį <b>{hasTarget, select, yes {užsakymui #{targetId}} other {šiam užsakymui}}</b>?",
+  "cancel": "Atšaukti",
+  "take": "Paimti gaviklį {number}",
+  "titleBlocking": "Gaviklis užsakymui #{id}?",
+  "title": "Pasirinkite gaviklį",
+  "subtitle": "{hasTarget, select, yes {Užsakymas #{id}} other {Šis užsakymas}}{hasCurrent, select, yes { · dabar gaviklis {current}} other {}}",
+  "allTaken": "{n, plural, one {Išduoti visi gavikliai ({count}). Bakstelėkite gaviklį, kad paimtumėte jį iš kito užsakymo.} few {Išduoti visi gavikliai ({count}). Bakstelėkite gaviklį, kad paimtumėte jį iš kito užsakymo.} many {Išduoti visi gavikliai ({count}). Bakstelėkite gaviklį, kad paimtumėte jį iš kito užsakymo.} other {Išduoti visi gavikliai ({count}). Bakstelėkite gaviklį, kad paimtumėte jį iš kito užsakymo.}}",
+  "thisOrder": "Šis užsakymas",
+  "noBuzzer": "Be gaviklio",
+  "done": "Atlikta",
+  "lostTitle": "Užsakymas #{id} neturi gaviklio",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}kol buvote neprisijungę, kitas užsakymas užėmė tą patį gaviklį. Duokite klientui kitą gaviklį.",
+  "dismiss": "Uždaryti",
+  "assign": "Priskirti"
+}

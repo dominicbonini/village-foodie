@@ -106,12 +106,12 @@
     "finished": "Pasākums beigts",
     "cancelled": "Pasākums atcelts",
     "noteSaved": "Piezīme saglabāta",
-    "pauseConfirm": "Pauzēt pasūtījumus? Klienti redzēs “Pasūtījumi netiek pieņemti”, līdz jūs atsāksiet.",
+    "pauseConfirm": "Pauzēt pasūtījumus? Klienti redzēs “Pasūtījumu pieņemšana pašlaik ir apturēta”, līdz jūs atsāksiet.",
     "switchConfirm": "Pārslēgt pasākumu: {from} → {to}?{n, plural, =0 {} zero { {count} pasūtījumi šajā ekrānā tiks aizstāti.} one { {count} pasūtījums šajā ekrānā tiks aizstāts.} other { {count} pasūtījumi šajā ekrānā tiks aizstāti.}} Pieskarieties pašreizējam pasākumam, lai pārslēgtos atpakaļ."
   },
   "intro": {
     "title": "Šis ir virtuves ekrāns",
-    "p1": "Tas ir pavāra skats — pasūtījumi, kas jāgatavo, tādā secībā, kādā tie jāgatavo. Ekrāns pie grila rāda šo, kamēr pie letes izmanto pasūtījumu paneli.",
+    "p1": "Tas ir pavāra skats — pasūtījumi, kas jāgatavo, tādā secībā, kādā tie jāgatavo. Ekrāns pie grila rāda šo, kamēr pie letes izmanto pasūtījumu vadības paneli.",
     "p2": "Kartītes pārvietojas, kad tām pieskaraties, tāpēc tas, kurš gatavo, vienmēr zina, kas sekos, un nevienam nav jākliedz. Viss šeit ir jūsu demo dati — izmēģiniet droši.",
     "gotIt": "Skaidrs"
   },

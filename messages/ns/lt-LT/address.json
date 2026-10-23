@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresas",
+    "postcode": "Pašto kodas",
+    "zip": "ZIP kodas",
+    "eircode": "Eircode",
+    "postalCode": "Pašto kodas",
+    "state": "Valstija",
+    "stateTerritory": "Valstija arba teritorija",
+    "province": "Provincija",
+    "county": "Apskritis",
+    "area": "Vietovė (kaimas, miestelis ar miestas)",
+    "townOrArea": "Miestas ar vietovė",
+    "city": "Miestas",
+    "suburb": "Rajonas",
+    "townOrCity": "Miestas ar miestelis"
+  },
+  "short": {
+    "area": "Vietovė",
+    "townOrArea": "Miestas ar vietovė",
+    "city": "Miestas",
+    "suburb": "Rajonas",
+    "townOrCity": "Miestas"
+  },
+  "inSentence": {
+    "postcode": "pašto kodas",
+    "zip": "ZIP kodas",
+    "eircode": "Eircode",
+    "postalCode": "pašto kodas"
+  },
+  "withArticle": {
+    "postcode": "pašto kodą",
+    "zip": "ZIP kodą",
+    "eircode": "Eircode",
+    "postalCode": "pašto kodą"
+  },
+  "tradeLabel": {
+    "area": "Miestas",
+    "townOrArea": "Miestas ar vietovė",
+    "city": "Miestas",
+    "suburb": "Rajonas",
+    "townOrCity": "Miestas ar miestelis"
+  },
+  "basedIn": {
+    "area": "Miestas, kuriame įsikūrėte",
+    "townOrArea": "Miestas ar vietovė, kur įsikūrėte",
+    "city": "Miestas, kuriame įsikūrėte",
+    "suburb": "Rajonas, kuriame įsikūrėte",
+    "townOrCity": "Miestas ar miestelis, kuriame įsikūrėte"
+  },
+  "example": "pvz., {example}",
+  "customersSee": "Klientai mato:",
+  "postalWarning": "Tai nepanašu į {article} — pavyzdžiui, {example}. Vis tiek galite išsaugoti.",
+  "regionChoose": "Pasirinkite…"
+}

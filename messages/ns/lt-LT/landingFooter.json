@@ -1,0 +1,17 @@
+{
+  "tagline": "Mažiau laiko užsakymams.<br></br>Daugiau – gaminimui.",
+  "features": "Funkcijos",
+  "pricing": "Kainos",
+  "privacy": "Privatumas",
+  "terms": "Sąlygos",
+  "contact": "Kontaktai",
+  "about": "Apie mus",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Iš <b>Village Foodie</b> kūrėjų",
+  "badges": {
+    "appStoreLink": "Atsisiųskite HatchGrab iš App Store",
+    "appStoreAlt": "Atsisiųskite iš App Store",
+    "googlePlayLink": "Gaukite HatchGrab per Google Play",
+    "googlePlayAlt": "Gaukite per Google Play"
+  }
+}

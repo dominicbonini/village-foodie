@@ -45,6 +45,10 @@ const TIME = argv.includes('--time') ? argv[argv.indexOf('--time') + 1].split(',
 // that scrolls sideways or clips text) — the lean run the recipe now asks for. Without them, every shot as before.
 const ENGINES = argv.includes('--engines') ? argv[argv.indexOf('--engines') + 1].split(',') : ['webkit', 'chromium']
 const FAILURES_ONLY = argv.includes('--failures-only')
+// europe-languages-2 (23 October 2026): --fonts paints each shot from a fake origin with the REAL built fonts and the root
+// layout's body classes (scripts/_real-fonts.cjs) — so a Greek or Bulgarian screenshot shows the font that draws it, not
+// the system fallback. Without it, every shot as before (inline CSS, system fonts).
+const FONTS = argv.includes('--fonts')
 
 // ── 1 · the copy, with the pseudo-language switched on ──────────────────────────────────────────────────────────────
 function makeCopy() {
@@ -214,10 +218,14 @@ async function shots(views) {
   for (const [engineName, engine] of [['webkit', webkit], ['chromium', chromium]].filter(([n]) => ENGINES.includes(n))) {
     const browser = await engine.launch()
     for (const [name, id] of picked) for (const w of [390, 1280]) {
-      const page = await browser.newPage({ viewport: { width: w, height: 900 } })
       const v = views[id]
       const body = typeof v === 'string' ? v : v && typeof v.html === 'string' ? v.html : `<pre style="font:14px/1.5 monospace;padding:16px;white-space:pre-wrap">${JSON.stringify(v, null, 1).replace(/</g, '&lt;')}</pre>`
-      await page.setContent(`<!doctype html><html lang="${TAG}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style><style>body{background:#fff;margin:0}</style></head><body>${body}</body></html>`, { waitUntil: 'load' })
+      let page, fontCtx = null
+      if (FONTS) ({ page, ctx: fontCtx } = await require('./_real-fonts.cjs').open(browser, { html: body, lang: TAG, width: w }))
+      else {
+        page = await browser.newPage({ viewport: { width: w, height: 900 } })
+        await page.setContent(`<!doctype html><html lang="${TAG}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style><style>body{background:#fff;margin:0}</style></head><body>${body}</body></html>`, { waitUntil: 'load' })
+      }
       await page.waitForTimeout(150)
       const m = await page.evaluate(() => {
         const clipped = []
@@ -231,7 +239,7 @@ async function shots(views) {
       })
       found.push({ engine: engineName, name, view: id, width: w, ...m })
       if (!FAILURES_ONLY || m.sideways || m.clipped.length) await page.screenshot({ path: path.join(OUT, `${name}-${engineName}-${w}.png`), fullPage: true })
-      await page.close()
+      await page.close(); if (fontCtx) await fontCtx.close()
     }
     await browser.close()
   }

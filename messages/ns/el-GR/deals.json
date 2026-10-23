@@ -1,0 +1,17 @@
+{
+  "back": "← Πίσω",
+  "title": "Εφαρμογή μενού",
+  "save": "Εξοικονομήστε {amount}",
+  "selectItems": "Επιλέξτε προϊόντα για κάθε θέση",
+  "choose": "Επιλέξτε: {category}…",
+  "inYourBasket": "── Στο καλάθι σας ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (στο καλάθι){state, select, used { — ήδη σε μενού} taken { — επιλεγμένο σε άλλη θέση} other {}}",
+  "addNew": "── Προσθήκη νέου ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Υποχρεωτικό · επιλέξτε ένα} required {Υποχρεωτικό} other {Επιλέξτε ένα}}{unmet, select, yes { (υποχρεωτικό)} other {}}",
+  "notePlaceholder": "Προσθέστε σημείωση, π.χ. χωρίς κρεμμύδι (προαιρετικό)",
+  "backButton": "Πίσω",
+  "cancel": "Ακύρωση",
+  "chooseRequired": "Επιλέξτε τις υποχρεωτικές επιλογές",
+  "apply": "Εφαρμογή μενού · {amount}"
+}

@@ -1,0 +1,13 @@
+{
+  "subtotal": "Междинна сума",
+  "taxFallback": "Данък",
+  "taxIncluded": "Вкл. {label}",
+  "serviceFeeCustomer": "Онлайн такса за обслужване",
+  "serviceFee": "Такса за обслужване",
+  "cardFee": "Такса за карта",
+  "tip": "Бакшиш",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Данъци, такси и бакшиш} tax_tip {Данъци и бакшиш} fees_tip {Такси и бакшиш} fees {Такси} other {Данъци и такси}}"
+}

@@ -1,0 +1,17 @@
+{
+  "tagline": "По-малко администрация.<br></br>Повече готвене.",
+  "features": "Функции",
+  "pricing": "Цени",
+  "privacy": "Поверителност",
+  "terms": "Условия",
+  "contact": "Контакт",
+  "about": "За нас",
+  "copyright": "© {year} HatchGrab",
+  "credit": "От екипа на <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Изтеглете HatchGrab от App Store",
+    "appStoreAlt": "Изтеглете от App Store",
+    "googlePlayLink": "Изтеглете HatchGrab от Google Play",
+    "googlePlayAlt": "Изтеглете от Google Play"
+  }
+}

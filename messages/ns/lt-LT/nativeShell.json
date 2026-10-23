@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Užsakymas #{id}: pakeitimas atšauktas",
+    "saved": "Užsakymas #{id} išsaugotas",
+    "undo": "↩ Anuliuoti",
+    "paymentNotRecorded": "⚠ Užsakymas #{id} — MOKĖJIMAS NEUŽREGISTRUOTAS. {collect, select, yes {Užsakymas užbaigtas} other {Užsakymas išsaugotas}}, o mokėjimas — ne.",
+    "recordPayment": "Užregistruoti mokėjimą",
+    "paid": "Užsakymas #{id} apmokėtas",
+    "undonePayment": "Anuliuota — mokėjimas pašalintas",
+    "undoneCollected": "Anuliuota — užsakymas neatsiimtas",
+    "collected": "Užsakymas #{id} {paidToo, select, yes {apmokėtas ir atsiimtas} other {atsiimtas}}",
+    "ready": "Užsakymas #{id} paruoštas",
+    "readyBuzzer": "Užsakymas #{id} paruoštas · <pill></pill>",
+    "status": "Užsakymas #{id} {action, select, confirm {patvirtintas} reject {atmestas} ready {paruoštas} collected {atsiimtas} undo_collected {atkurtas} cancel {atšauktas} other {atnaujintas}}"
+  },
+  "conflicts": {
+    "more": "dar +{count}",
+    "notOnScreenPlus": "+{count} ne šiame ekrane",
+    "notOnScreen": "{n, plural, one {{count} užsakymas ne šiame ekrane} few {{count} užsakymai ne šiame ekrane} many {{count} užsakymų ne šiame ekrane} other {{count} užsakymų ne šiame ekrane}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ MOKĖJIMAS NEUŽREGISTRUOTAS",
+    "paymentBody": "{orders} — pažymėta apmokėtu tik šiame įrenginyje. Mokėjimas neįvyko.",
+    "paymentCheck": "Patikrinkite užsakymą ir, jei suma vis dar nesumokėta, priimkite mokėjimą dar kartą.",
+    "dismiss": "Uždaryti",
+    "confirmChecked": "Patvirtinkite, kad patikrinote: {orders}",
+    "confirmHides": "Taip įspėjimas paslepiamas. Įrašas bet kuriuo atveju lieka šiame įrenginyje.",
+    "notYet": "Dar ne",
+    "iveChecked": "Patikrinau: {orders}",
+    "statusBody": "⚠ {orders} — šis pakeitimas neįvyko. Patikrinkite užsakymą.",
+    "offline": "📴 Nėra ryšio — {n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Jis bus išsiųstas, kai vėl prisijungsite.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.} many {{count} pakeitimų išsaugota šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.} other {{count} pakeitimų išsaugota šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.}} Nustatymai užrakinti.",
+    "syncing": "Vėl prisijungta — siunčiama: {n, plural, one {{count} pakeitimas} few {{count} pakeitimai} many {{count} pakeitimų} other {{count} pakeitimų}}…",
+    "synced": "Visi pakeitimai išsiųsti.",
+    "stillQueued": "{n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Vis dar bandoma jį išsiųsti.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Vis dar bandoma juos išsiųsti.} many {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.} other {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab užrakinta",
+    "verifying": "Tikrinama…",
+    "unlock": "Atrakinti",
+    "cantUseBiometric": "Negalite naudoti Face / Touch ID?",
+    "enterPin": "Įveskite atsarginį PIN",
+    "wrongPin": "Neteisingas PIN — bandykite dar kartą.",
+    "checking": "Tikrinama…",
+    "tryBiometric": "Bandyti Face / Touch ID",
+    "forgot": "Pamiršote PIN? Programėlę reikės įdiegti iš naujo."
+  },
+  "notify": {
+    "title": "🔔 Pranešimai",
+    "intro": "Įspėjimai šiame įrenginyje. Įjunkite, kad pasirinktumėte, kokius įspėjimus gausite.",
+    "refused": "Kad tai įjungtumėte, įrenginio nustatymuose reikia leisti pranešimus.",
+    "newOrder": "Įspėjimai apie naujus užsakymus",
+    "newOrderHelp": "Gaukite pranešimą, kai kliento užsakymą reikia patvirtinti.",
+    "offline": "Įspėjimai: be ryšio / pristabdyta",
+    "offlineHelp": "Gaukite pranešimą, kai šis įrenginys netenka ryšio (ir užsakymai pristabdomi). <green>Veikia ir be ryšio.</green>"
+  },
+  "van": {
+    "label": "Furgonas",
+    "loadRetry": "Nepavyko įkelti · Bandyti dar kartą",
+    "select": "Pasirinkite…"
+  },
+  "deviceSave": {
+    "network": "Nepavyko pasiekti serverio — patikrinkite ryšį ir bandykite dar kartą.",
+    "server": "Šiuo metu nepavyko išsaugoti. Bandykite dar kartą."
+  },
+  "setup": {
+    "fetchErrorTitle": "Nepavyko įkelti įrenginio sąrankos",
+    "fetchErrorBody": "Nepavyko pasiekti serverio, kad būtų nustatytas <b>šis įrenginys</b>. Patikrinkite ryšį ir bandykite dar kartą — jūsų užsakymams ir nustatymams tai įtakos neturi.",
+    "retry": "Bandyti dar kartą",
+    "later": "Vėliau",
+    "noVanTitle": "Nėra aktyvaus furgono",
+    "noVanBody": "Šis food truck dar neturi aktyvaus furgono. Aktyvuokite jį skiltyje <b>Nustatymai → Jūsų furgonai</b> — tada šis įrenginys bus nustatytas automatiškai, čia daugiau nieko daryti nereikės.",
+    "goToVans": "Eiti į Nustatymai → Jūsų furgonai",
+    "title": "Nustatykite šį įrenginį",
+    "body": "Vienkartinė <b>šio įrenginio</b> sąranka: kuris ekranas atsidaro ir kuriame furgone jis naudojamas. Taikoma tik šiam įrenginiui — kiti įrenginiai nustatomi atskirai, o vėliau tai galite pakeisti profilio meniu → „Šis įrenginys“.",
+    "whichScreen": "Kuris ekranas turi atsidaryti šiame įrenginyje?",
+    "dashboard": "Valdymo skydelis",
+    "kds": "Virtuvės ekranas",
+    "whichVan": "Kuriame furgone naudojamas šis įrenginys?",
+    "selectVan": "Pasirinkite furgoną…",
+    "saving": "Išsaugoma…",
+    "tryAgain": "Bandyti dar kartą",
+    "continue": "Tęsti"
+  },
+  "device": {
+    "title": "Šis įrenginys",
+    "viewing": "Peržiūrite: <b>{truck}</b>",
+    "viewingVan": "Peržiūrite: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Tik šis įrenginys — kiti įrenginiai nustatomi atskirai. (ID: {id}…)",
+    "truck": "Food truck",
+    "van": "Furgonas",
+    "defaultScreen": "Numatytasis ekranas",
+    "orderNotifications": "Pranešimai apie užsakymus",
+    "patchFailed": "{setting, select, van {Furgonas} defaultScreen {Numatytasis ekranas} other {Pranešimai apie užsakymus}}: neišsaugota. {reason}",
+    "requireBiometric": "Atidarant reikalauti piršto atspaudo ar veido atpažinimo",
+    "pinTitle": "Nustatykite atsarginį PIN (4–6 skaitmenys)",
+    "pinHelp": "Jūsų būdas patekti, jei piršto atspaudas ar veido atpažinimas neveiks — tai vienintelė atsarginė galimybė, tad nepamirškite jo (pamiršus PIN, programėlę teks įdiegti iš naujo). Veikia ir be ryšio.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Pakartokite PIN",
+    "pinTooShort": "Naudokite bent 4 skaitmenis.",
+    "pinMismatch": "PIN kodai nesutampa.",
+    "setPin": "Nustatyti PIN ir įjungti",
+    "cancel": "Atšaukti",
+    "noBiometric": "Šiame įrenginyje nenustatytas piršto atspaudas ar veido atpažinimas — pridėkite jį įrenginio nustatymuose. Atsarginis PIN vis tiek veikia.",
+    "footer": "Šie nustatymai taikomi tik šiam įrenginiui — kiti įrenginiai konfigūruojami atskirai."
+  },
+  "appLock": {
+    "unlockReason": "Atrakinti HatchGrab",
+    "usePasscode": "Naudoti slaptakodį",
+    "cancel": "Atšaukti",
+    "confirmEnable": "Patvirtinkite, kad įjungtumėte programėlės užraktą"
+  },
+  "channel": {
+    "ordersName": "Nauji užsakymai",
+    "ordersDescription": "Įspėjimai, kai užsakymą reikia patvirtinti."
+  },
+  "localNotify": {
+    "newOrderTitle": "Naujas užsakymas",
+    "orderReceived": "Gautas užsakymas {number}",
+    "newOrders": "{n, plural, one {Turite {count} naują užsakymą} few {Turite {count} naujus užsakymus} many {Turite {count} naujų užsakymų} other {Turite {count} naujų užsakymų}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Užsakymai pristabdyti",
+    "pausedBody": "Esate neprisijungę — klientų užsakymai pristabdyti.",
+    "offlineTitle": "Esate neprisijungę",
+    "offlineBody": "Šis įrenginys neteko ryšio."
+  }
+}

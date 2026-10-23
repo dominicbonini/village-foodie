@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Καταχώριση στον χάρτη αναζήτησης"
+    },
+    "web_dashboard": {
+      "name": "Πίνακας ελέγχου web για κάθε συσκευή"
+    },
+    "qr_code": {
+      "name": "Κωδικός QR"
+    },
+    "schedule_import": {
+      "name": "Αυτόματη εισαγωγή προγράμματος"
+    },
+    "meal_deals_upsells": {
+      "name": "Μενού & προτάσεις"
+    },
+    "walkup_orders": {
+      "name": "Διαχείριση παραγγελιών επί τόπου"
+    },
+    "sold_out_toggle": {
+      "name": "Άμεση σήμανση «Εξαντλήθηκε»"
+    },
+    "kitchen_app": {
+      "name": "Εφαρμογή κουζίνας για iPhone, iPad και Android"
+    },
+    "offline_protection": {
+      "name": "Προστασία παραγγελιών εκτός σύνδεσης"
+    },
+    "online_payments": {
+      "name": "Online πληρωμές"
+    },
+    "advance_preordering": {
+      "name": "Προπαραγγελίες για μελλοντικές ημερομηνίες"
+    },
+    "preorder_deadline": {
+      "name": "Προθεσμία προπαραγγελίας"
+    },
+    "time_slot_selection": {
+      "name": "Επιλογή χρονικού διαστήματος από τον πελάτη"
+    },
+    "kitchen_capacity": {
+      "name": "Διαχείριση χωρητικότητας κουζίνας"
+    },
+    "stock_countdown": {
+      "name": "Αυτόματη αντίστροφη μέτρηση αποθέματος"
+    },
+    "auto_accept": {
+      "name": "Αυτόματη αποδοχή online παραγγελιών"
+    },
+    "branded_qr_code": {
+      "name": "Κωδικός QR με το λογότυπό σας"
+    },
+    "private_events": {
+      "name": "Ιδιωτικές εκδηλώσεις"
+    },
+    "social_media_posts": {
+      "name": "Αναρτήσεις στα social media"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Αυτόματες απαντήσεις στο WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Αυτόματες απαντήσεις σε Messenger & Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Πληρωμές με κάρτα στο κινητό σας"
+    },
+    "advanced_reporting": {
+      "name": "Προηγμένες αναφορές"
+    },
+    "sms_order_alerts": {
+      "name": "Ειδοποιήσεις παραγγελιών με SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Συγχρονισμός κουζίνας σε πολλές συσκευές"
+    },
+    "multi_user_access": {
+      "name": "Πρόσβαση για πολλούς χρήστες"
+    },
+    "embed_schedule": {
+      "name": "Σελίδα προγράμματος στον δικό σας ιστότοπο"
+    },
+    "event_types": {
+      "name": "Προσαρμοσμένοι τύποι εκδηλώσεων & τιμές"
+    },
+    "buzzer_tracking": {
+      "name": "Παρακολούθηση βομβητών"
+    },
+    "ticket_printing": {
+      "name": "Εκτύπωση δελτίων κουζίνας"
+    },
+    "customer_display": {
+      "name": "Οθόνη για τους πελάτες"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Ψηφιακές κάρτες επιβράβευσης με σφραγίδες"
+    }
+  },
+  "cardRegionOnline": "τυπικές {region}",
+  "cardRegion": {
+    "UKcards": "βρετανικές κάρτες",
+    "EEAcards": "κάρτες από τον ΕΟΧ",
+    "UScards": "αμερικανικές κάρτες",
+    "Australiancards": "αυστραλιανές κάρτες",
+    "NewZealandcards": "νεοζηλανδικές κάρτες",
+    "Canadiancards": "καναδικές κάρτες",
+    "Swisscards": "ελβετικές κάρτες"
+  },
+  "perMonth": {
+    "mo": "{amount}/μήνα",
+    "month": "{amount}/μήνα"
+  },
+  "priceWord": {
+    "free": "Δωρεάν",
+    "freeTrial": "Δωρεάν δοκιμή",
+    "lifetime": "Εφ’ όρου ζωής",
+    "zeroPercent": "0%",
+    "payAtHatch": "Πληρωμή κατά την παραλαβή",
+    "unlimited": "Απεριόριστο",
+    "none": "—",
+    "masked": "Προς επιβεβαίωση"
+  },
+  "cell": {
+    "included": "Περιλαμβάνεται"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Be mėnesinio mokesčio",
+    "subtitle": "Sezoniniams ir ne visą laiką dirbantiems prekeiviams",
+    "description": "Jokio mėnesinio mokesčio. Mokate tik tada, kai klientas sumoka internetu kortele."
+  },
+  "pro": {
+    "subtitle": "Furgonams, reguliariai priimantiems išankstinius užsakymus",
+    "description": "Viskas, įskaitant WhatsApp automatinius atsakymus ir socialinių tinklų įrašus, o kas mėnesį įtraukta dalis užsakymų internetu."
+  },
+  "unlimited": {
+    "name": "Neribotas",
+    "subtitle": "Užimtiems furgonams ir festivaliams",
+    "description": "Viskas, be jokių mokesčių už užsakymus internetu, kad ir kiek jų būtų."
+  },
+  "trial": {
+    "name": "Nemokamas bandomasis laikotarpis",
+    "description": "Visos funkcijos nemokamai, kol trunka bandomasis laikotarpis."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Bandomoji aplinka potencialiems klientams – niekada nevieša."
+  },
+  "tester": {
+    "name": "Testuotojas",
+    "description": "Testuotojas prieš paleidimą – visa prieiga."
+  }
+}

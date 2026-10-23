@@ -135,12 +135,14 @@ async function bundle(dir) {
         return {
           pageScrollsSideways: document.documentElement.scrollWidth > window.innerWidth,
           spill, heads, gridW: grid.getBoundingClientRect().width,
-          lastTab: tabs.filter(x => /Trucks|Features|Domains|Outreach|Events|Screenshots|Templates|Countries/.test(x)).pop(),
+          lastTab: tabs.filter(x => /Trucks|Features|Domains|Outreach|Events|Screenshots|Templates|Countries|Pricing check/.test(x)).pop(),
+          countriesBeforeLast: (() => { const l = tabs.filter(x => /Trucks|Features|Domains|Outreach|Events|Screenshots|Templates|Countries|Pricing check/.test(x)); return /Countries/.test(l[l.length - 2] || '') })(),
           rows: [...grid.querySelectorAll('.sticky.left-0 p.text-sm')].map(p => p.textContent),
         }
       })
       t(`${tag}: no page errors`, errors.length === 0); if (errors.length) console.log('      ' + errors.slice(0, 3).join('\n      '))
-      t(`${tag}: "Countries" is the LAST tab in the bar`, /Countries/.test(m.lastTab || ''))
+      // ⚠️ RE-PINNED (pricing-check-1, 23 October 2026): Admin › Pricing check is now the last tab, Countries the one before it.
+      t(`${tag}: "Countries" comes just before "Pricing check", the last tab in the bar`, /Pricing check/.test(m.lastTab || '') && m.countriesBeforeLast)
       t(`${tag}: the page never scrolls sideways`, !m.pageScrollsSideways)
       t(`${tag}: nothing spills out of a grid cell`, m.spill.length === 0); if (m.spill.length) console.log('      spills: ' + m.spill.join(' | '))
       t(`${tag}: no Save button overlaps its country's name`, m.heads.every(x => !x.overlap))

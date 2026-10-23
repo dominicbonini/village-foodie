@@ -1,0 +1,8 @@
+{
+  "change": "{label} — keisti",
+  "useRule": "{label} — vietoj to taikyti taisyklę",
+  "typePrice": "{label} — įvesti kainą",
+  "backToRule": "Grįžti prie taisyklės",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

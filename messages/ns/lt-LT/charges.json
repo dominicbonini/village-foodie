@@ -1,0 +1,13 @@
+{
+  "subtotal": "Tarpinė suma",
+  "taxFallback": "Mokesčiai",
+  "taxIncluded": "Įskaičiuota: {label}",
+  "serviceFeeCustomer": "Aptarnavimo mokestis internetu",
+  "serviceFee": "Aptarnavimo mokestis",
+  "cardFee": "Kortelės mokestis",
+  "tip": "Arbatpinigiai",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Mokesčiai, priemokos ir arbatpinigiai} tax_tip {Mokesčiai ir arbatpinigiai} fees_tip {Priemokos ir arbatpinigiai} fees {Priemokos} other {Mokesčiai ir priemokos}}"
+}

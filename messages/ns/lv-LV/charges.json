@@ -6,7 +6,7 @@
   "serviceFee": "Apkalpošanas maksa",
   "cardFee": "Kartes komisija",
   "tip": "Dzeramnauda",
-  "rate": "{rate} %",
+  "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
   "foldedCharges": "{parts, select, tax_fees_tip {Nodokļi, maksas un dzeramnauda} tax_tip {Nodokļi un dzeramnauda} fees_tip {Maksas un dzeramnauda} fees {Maksas} other {Nodokļi un maksas}}"

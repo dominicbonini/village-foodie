@@ -3,7 +3,7 @@
   "generated": "Izveidots: {date}",
   "allowanceHeading": "Iekļautie tiešsaistes pasūtījumi",
   "smallPrint": "Papildu nosacījumi",
-  "priceNoteMasked": "Cenas, kas norādītas kā “tiks precizēts”, vēl nav publicētas.",
+  "priceNoteMasked": "Cenas, kas norādītas kā “Tiks precizēts”, vēl nav publicētas.",
   "omitNote": "Cenas šajā dokumentā apzināti nav iekļautas.",
   "terms": "Norādītie skaitļi atbilst publicētajiem plānu nosacījumiem augstāk minētajā datumā un var mainīties. Karšu maksājumu apstrādes komisijas ir Stripe maksa, nevis HatchGrab maksa. Šis dokuments ir kopsavilkums, nevis līgums."
 }

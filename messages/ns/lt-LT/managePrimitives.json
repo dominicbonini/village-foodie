@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Rodyti alergenus prie kiekvieno patiekalo",
+    "recommended": "Rekomenduojama",
+    "perDishBody": "Peržiūrėkite kiekvieną patiekalą ir patvirtinkite jo alergenus. Klientai mato kiekvieno patiekalo žymas ir iš jų sudarytą alergenų suvestinės kortelę.",
+    "cardTitle": "Rodyti alergenų kortelę",
+    "cardBody": "Įkelkite arba įklijuokite vieną alergenų kortelę (PDF, vaizdą ar tekstą) – ji rodoma tokia, kokia yra. Atskirų patiekalų žymos slepiamos."
+  }
+}

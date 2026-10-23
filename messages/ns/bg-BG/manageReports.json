@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Период",
+    "event": "📍 Събитие",
+    "filterBy": "Филтриране по",
+    "show": "Показване",
+    "range": "<from></from><sep>до</sep><until></until>",
+    "selectEvent": "Изберете събитие…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Събитие",
+    "viewReport": "Преглед на отчета",
+    "loading": "Зареждане…",
+    "orders": "📋 Поръчки",
+    "items": "📦 Артикули",
+    "exportCsv": "⬇ Експорт в CSV"
+  },
+  "empty": {
+    "noOrders": "Няма поръчки за този период.",
+    "selectEvent": "Изберете събитие по-горе, за да видите отчета за него."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} поръчка} other {{count} поръчки}} · {total}"
+  },
+  "revenue": {
+    "title": "Разбивка на приходите",
+    "deals": "Приходи от комбо оферти",
+    "modifiers": "Доплащания за добавки",
+    "foodSales": "Продажби на храна",
+    "total": "Общо",
+    "other": "Други",
+    "tax": "ДДС",
+    "tips": "Бакшиши",
+    "serviceFees": "Такси обслужване",
+    "cardFees": "Такси за карти"
+  },
+  "itemsSold": {
+    "title": "Продадени артикули"
+  },
+  "dealsCard": {
+    "title": "Комбо оферти"
+  },
+  "custom": {
+    "title": "Персонализации",
+    "paidModifiers": "Платени добавки",
+    "customerNotes": "Бележки от клиенти",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Артикул",
+    "modifier": "Добавка",
+    "qty": "Кол.",
+    "total": "Общо",
+    "date": "Дата",
+    "time": "Час",
+    "channel": "Канал"
+  },
+  "breakdown": {
+    "orders": "Разбивка по поръчки",
+    "items": "Разбивка по артикули"
+  },
+  "channel": {
+    "online": "Онлайн",
+    "walkUp": "На място"
+  },
+  "csv": {
+    "orderId": "№ на поръчка",
+    "date": "Дата",
+    "event": "Събитие",
+    "timePlaced": "Час на поръчване",
+    "collectionTime": "Час за вземане",
+    "customerName": "Име на клиента",
+    "orderType": "Вид поръчка",
+    "items": "Артикули",
+    "deals": "Комбо оферти",
+    "modifiers": "Добавки",
+    "notes": "Бележки",
+    "subtotal": "Междинна сума",
+    "tip": "Бакшиш",
+    "serviceFee": "Такса обслужване",
+    "total": "Общо",
+    "itemName": "Име на артикула",
+    "qty": "Кол.",
+    "unitPrice": "Единична цена",
+    "itemTotal": "Сума за артикула",
+    "orderTotal": "Сума на поръчката",
+    "unknownEvent": "Неизвестно събитие",
+    "asap": "Възможно най-скоро",
+    "unknownCustomer": "Неизвестен",
+    "customerOnline": "Клиент онлайн",
+    "placedByTruck": "Въведена от фуд тръка"
+  }
+}

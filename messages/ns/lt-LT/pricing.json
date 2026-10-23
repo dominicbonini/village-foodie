@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {# mėnesį naudojatės visiškai nemokamai – visos funkcijos atrakintos.} few {# mėnesius naudojatės visiškai nemokamai – visos funkcijos atrakintos.} many {# mėnesio naudojatės visiškai nemokamai – visos funkcijos atrakintos.} other {# mėnesių naudojatės visiškai nemokamai – visos funkcijos atrakintos.}}",
+    "body": "Su {brand} klientai užsisako iš anksto ir sumoka atsiimdami, todėl užsakymus internetu galite priimti visai nejungdami kortelių mokėjimų tiekėjo. Norite, kad būtų sumokama iš anksto? Bet kada pridėkite mokėjimus kortele internetu. Pasibaigus bandomajam laikotarpiui, pereisite prie plano <plan>{fallback}</plan>{fallbackFree, select, yes { (mėnesinis mokestis netaikomas)} other {}}, nebent pasirinksite kitą planą. Pradedant kortelės nereikia, jokios sutarties, atsisakyti galite bet kada."
+  },
+  "card": {
+    "perTruckMonth": "už furgoną / mėn.",
+    "mostTrucks": "Renkasi dauguma",
+    "tryFree": "Išbandykite nemokamai",
+    "seeEvery": "Visos funkcijos →",
+    "everything": "Viskas, ko reikia aptarnavimui",
+    "everythingIn": "Viskas, kas yra plane {plan}, ir dar:"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> tik už užsakymus internetu, apmokėtus kortele. Užsakymai vietoje visada nemokami.",
+    "included": "Užsakymams internetu iki <b>{included}</b> per mėnesį komisiniai netaikomi, viršijus – <b>{fee}*</b>. Užsakymai vietoje visada nemokami.",
+    "noFee": "<b>Jokių HatchGrab komisinių</b> už užsakymus internetu, kad ir kiek jų būtų. Viena nuspėjama mėnesio kaina."
+  },
+  "base": {
+    "walkUp": "Užsakymai vietoje ir virtuvės ekranas",
+    "online": "Užsakymai internetu",
+    "preorders": "Išankstiniai užsakymai ir atsiėmimo laikas",
+    "capacity": "Virtuvės pajėgumo valdymas",
+    "privateEvents": "Privatūs renginiai",
+    "printing": "Virtuvės kvitų spausdinimas",
+    "app": "iPhone, iPad ir Android virtuvės programėlė"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp automatiniai atsakymai",
+    "schedule_graphics": "Socialinių tinklų įrašai – jūsų Facebook ir Instagram tvarkaraštis – paruošti skelbti",
+    "event_types": "Savi renginių tipai ir kainos"
+  },
+  "money": {
+    "unlimitedOrders": "Neriboti užsakymai internetu, 0 % HatchGrab komisinių",
+    "samePrice": "Ta pati kaina net judriausią mėnesį"
+  },
+  "comingSoon": "Jau netrukus",
+  "bar": {
+    "title": "Kuris planas man pigiausias?",
+    "subtitle": "Jūsų užsakymai internetu per mėnesį",
+    "first": "Iki {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Daugiau nei {from} → <b>{plan}</b>",
+    "only": "Bet kokia apimtis → <b>{plan}</b>"
+  },
+  "footnote": "* Plius Stripe kortelių mokėjimų apdorojimo mokestis už užsakymus internetu, apmokėtus kortele (šiuo metu – {country}: {cardFee}), mokamas Stripe, o ne HatchGrab. Užsakymams vietoje naudojate savo mokėjimo terminalą – HatchGrab ima 0 %.",
+  "currencyLine": "Kainos nurodytos valiuta: {currency} ({code})"
+}

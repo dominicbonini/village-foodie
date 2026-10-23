@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Skaitome jūsų meniu…",
+    "found": "Radome jūsų patiekalus…",
+    "kitchen": "Nustatome jūsų virtuvę…",
+    "page": "Kuriame jūsų užsakymų puslapį…",
+    "almost": "Beveik paruošta…"
+  },
+  "templateSteps": {
+    "truck": "Kuriame pavyzdinį food truck…",
+    "menu": "Nustatome meniu…",
+    "kitchen": "Nustatome virtuvę…",
+    "page": "Kuriame užsakymų puslapį…",
+    "almost": "Beveik paruošta…"
+  },
+  "dialogLabel": "Įkelkite savo meniu",
+  "heading": "✨ Įkelkite savo meniu",
+  "failedHeading": "Nepavyko perskaityti šio meniu",
+  "close": "Uždaryti",
+  "intro": "Meniu lentos nuotrauka, ekrano kopija, PDF arba tiesiog įklijuotas tekstas. Mūsų DI jį perskaito ir sukuria jums veikiantį užsakymų puslapį — su jūsų patiekalais ir kainomis — greičiau nei per 60 sekundžių. Be registracijos, be kortelės.",
+  "failedIntro": "Kartais nuotrauka būna per tamsi, nufotografuota kampu arba ranka rašyta. Tai mūsų rūpestis, o ne jūsų klaida. Štai keli būdai, kaip tęsti:",
+  "usually": "Paprastai tai užtrunka mažiau nei 60 sekundžių.",
+  "slow": "Tai užtrunka ilgiau nei įprastai — su dideliais meniu kartais taip būna.",
+  "keepWaiting": "Laukti toliau",
+  "sampleWhileYouWait": "Arba, kol laukiate, apsižvalgykite su pavyzdiniu meniu",
+  "standIn": "Tai <b>nebus jūsų meniu</b> — tai pavyzdys, kad pamatytumėte, kaip viskas veikia.",
+  "seeSample": "Peržiūrėti pavyzdinį meniu",
+  "tryAgain": "Bandyti dar kartą",
+  "tryPhotoAgain": "Bandyti šią nuotrauką dar kartą",
+  "tryDifferent": "Bandyti kitą nuotrauką",
+  "uploadAnother": "← Įkelti kitą nuotrauką",
+  "orSample": "Arba apsižvalgykite su pavyzdiniu meniu",
+  "orBuild": "Arba mes jį sukursime už jus",
+  "buildSent": "✓ Ačiū — gavome. Parašysime jums el. paštu.",
+  "buildBody": "Palikite el. pašto adresą, ir tikras žmogus suves jūsų meniu bei atsiųs jums nuorodą.",
+  "emailPlaceholder": "jus@jusufoodtruck.lt",
+  "sending": "…",
+  "send": "Siųsti",
+  "noPhoto": "Neturite po ranka meniu nuotraukos?",
+  "noPhotoBody": "Vietoj to apsižvalgykite su pavyzdiniu food truck — savo meniu galėsite įkelti bet kada.",
+  "build": "Sukurti demo versiją →",
+  "nothingPublished": "Niekas nepaskelbta — tai matote tik jūs.",
+  "error": {
+    "somethingWrong": "Kažkas nepavyko. Bandykite dar kartą.",
+    "serverUnreachable": "Nepavyko pasiekti serverio. Patikrinkite ryšį ir bandykite dar kartą.",
+    "sendFailed": "Nepavyko išsiųsti — bandykite dar kartą."
+  },
+  "fields": {
+    "uploadLabel": "Įkelti meniu failą",
+    "dropHere": "Numeskite meniu čia",
+    "dragOrTap": "Nuvilkite arba bakstelėkite, kad pasirinktumėte",
+    "fileTypes": "Paveikslėlis arba PDF",
+    "or": "arba",
+    "pasteLabel": "Įklijuoti meniu tekstą",
+    "pastePlaceholder": "Įklijuokite meniu čia — patiekalų pavadinimus, aprašymus, kainas..."
+  }
+}

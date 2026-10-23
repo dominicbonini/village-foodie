@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} laiko intervalas viršija} few {{count} laiko intervalai viršija} many {{count} laiko intervalų viršija} other {{count} laiko intervalų viršija}} pajėgumą — peržiūrėkite",
+  "batchOver": "{cat}: viršytas partijos dydis — {count} laikui {slot} (partijoje po {per})",
+  "eventStartOver": "Renginio pradžioje viršytas pajėgumas — {n, plural, one {{count} patiekalas} few {{count} patiekalai} many {{count} patiekalų} other {{count} patiekalų}} laikui {slot}",
+  "kitchenOver": "Viršytas virtuvės pajėgumas — laikui {slot} gaminama: {n, plural, one {{count} patiekalas} few {{count} patiekalai} many {{count} patiekalų} other {{count} patiekalų}}",
+  "orderItems": "#{id} — {n, plural, one {{count} patiekalas} few {{count} patiekalai} many {{count} patiekalų} other {{count} patiekalų}}",
+  "placedAnyway": "Vis tiek pateikta: {list}",
+  "placedItem": "#{id} laikui {slot}",
+  "orphans": "{times}: viršytas pajėgumas — nerasta užsakymų, kuriems tai priskirti",
+  "dismiss": "Uždaryti",
+  "kitchenCapacity": "Virtuvės pajėgumas",
+  "overCapacity": "Viršytas pajėgumas",
+  "wakeUnsupported": "Šis įrenginys negali palaikyti įjungto ekrano.",
+  "wakeInsecure": "Naudojant šį adresą, ekrano palaikyti įjungto negalima.",
+  "wakeRetry": "Laikyti ekraną įjungtą — bakstelėkite, kad bandytumėte dar kartą",
+  "wakeAcquire": "Laikyti ekraną įjungtą",
+  "degraded": {
+    "serverError": "Serveriui nepavyko įkelti užsakymų{hasStatus, select, yes { (klaida {status})} other {}}. Rodomi užsakymai (būsena {at}). Gali trūkti naujų užsakymų.",
+    "unreachable": "Nepavyksta pasiekti serverio. Rodomi užsakymai (būsena {at}). Gali trūkti naujų užsakymų."
+  }
+}

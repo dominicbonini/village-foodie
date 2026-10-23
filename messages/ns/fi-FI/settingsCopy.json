@@ -9,7 +9,7 @@
   },
   "orderReady": {
     "label": "Valmis-vaihe",
-    "help": "Näytä tilausnäkymässä ”Merkitse valmiiksi” -painike. Keittiönäytöt asetetaan erikseen kussakin laitteessa. Asiakkaille lähetetään sähköposti aina, kun tilaus merkitään valmiiksi. Koskee kaikkia tapahtumia — voit silti kytkeä sen päälle tai pois yksittäiselle tapahtumalle sen ohjauspaneelissa."
+    "help": "Näytä tilausnäkymässä ”Valmis”-painike. Keittiönäytöt asetetaan erikseen kussakin laitteessa. Asiakkaille lähetetään sähköposti aina, kun tilaus merkitään valmiiksi. Koskee kaikkia tapahtumia — voit silti kytkeä sen päälle tai pois yksittäiselle tapahtumalle sen ohjauspaneelissa."
   },
   "buzzers": {
     "label": "Annatko asiakkaille summerin noutoa varten?",

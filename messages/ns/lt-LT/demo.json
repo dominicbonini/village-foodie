@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Demonstracinėje versijoje neprieinama",
+  "demoMode": "DEMONSTRACINIS REŽIMAS",
+  "loopLands": "Būtent taip atkeliauja tikras užsakymas",
+  "showMe": "Parodykite",
+  "noCard": "{sub} Kortelės nereikia.",
+  "notYet": "Dar ne",
+  "cashAndCollected": "Grynaisiais, atsiimta",
+  "logoPlaceholder": "Jūsų logotipas",
+  "welcomeTitle": "{sample, select, yes {Štai pavyzdinė demonstracija} other {Štai jūsų demonstracija}}",
+  "welcomeIntro": "{sample, select, yes {Tai <b>pavyzdinis meniu</b>, kad pamatytumėte, kaip viskas veikia — bet kada įkelkite savo, kad jis taptų jūsų.} other {Tai jūsų pačių meniu ir prekės ženklas tikroje užsakymų lentoje.}} Joje jau esantys užsakymai yra pavyzdžiai, kad pamatytumėte, kaip atrodo įtemptas darbas.",
+  "twoThings": "Išbandykite du dalykus:",
+  "hitButton": "Prie užsakymo paspauskite <b>{button}</b>",
+  "scanQr": "Nuskenuokite <b>QR kodą</b> arba bakstelėkite nuorodą, užsisakykite kaip klientas ir stebėkite, kaip užsakymas atkeliauja",
+  "qrAlt": "QR kodas į jūsų klientų užsakymų puslapį",
+  "openHere": "Arba atidarykite šiame įrenginyje",
+  "copyLink": "Kopijuoti nuorodą",
+  "copyDescribedAs": "užsakymo nuoroda",
+  "noLinkTitle": "Jūsų klientų užsakymų nuoroda",
+  "noLinkBody": "Užsakymų puslapio nuorodą rasite meniu viršuje dešinėje.",
+  "asLive": "Užsakymų ir virtuvės eiga — lygiai tokia pati kaip tikrame darbe.",
+  "startExploring": "Pradėti naršyti",
+  "signupOffer": {
+    "heading": "Užsiregistruokite dabar ir gaukite nemokamą mėnesį",
+    "sub": "Laikas pradedamas skaičiuoti tik tada, kai nuspręsite pradėti veikti."
+  },
+  "cashIcon": "💶"
+}

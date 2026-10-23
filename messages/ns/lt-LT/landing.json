@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Užsakymų sistema food truck ir mobiliojo maitinimo verslui",
+    "description": "Užsakymai, išankstiniai užsakymai ir virtuvės ekranas food truck ir mobiliojo maitinimo verslui ({country}).",
+    "audience": "Food truck ir mobiliojo maitinimo verslo savininkai"
+  },
+  "hero": {
+    "title": "Užsakymų sistema, sukurta <lean>food truck verslui.</lean>",
+    "subSmall": "Įkelkite savo meniu – registruotis nereikia.<br></br>Veikiančią demonstracinę versiją pamatysite greičiau nei per 60 sekundžių.",
+    "tagline": "Mažiau laiko užsakymams.<br></br>Daugiau – <lean>gaminimui.</lean>",
+    "cta": "Įkelti mano meniu →",
+    "ctaNote": "<lead>Įkelkite savo meniu nuotrauką ir pamatykite, kaip viskas veikia, greičiau nei per 60 sekundžių.</lead><small>Be registracijos. Be kortelės.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrab virtuvės ekranas su užsakymų kortelėmis gaminimo eilės tvarka",
+    "dashboardAlt": "Užsakymo priėmimas HatchGrab sistemoje: kairėje – meniu, dešinėje – krepšelis ir bendra suma",
+    "phoneAlt": "Užsakymas iš food truck per HatchGrab: meniu su nuotraukomis ir kainomis bei krepšelio suma"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {# mėnuo visiškai nemokamai, visos funkcijos atrakintos} few {# mėnesiai visiškai nemokamai, visos funkcijos atrakintos} many {# mėnesio visiškai nemokamai, visos funkcijos atrakintos} other {# mėnesių visiškai nemokamai, visos funkcijos atrakintos}}",
+    "noCard": "Kortelės nereikia",
+    "cancel": "Atsisakykite bet kada, be sutarties"
+  },
+  "does": {
+    "eyebrow": "Galimybės",
+    "title": "Sukurta food truck verslui, ne restoranams.",
+    "lede": "Dauguma užsakymų sistemų numato pastovų adresą, patikimą Wi-Fi ir tas pačias darbo valandas kiekvieną savaitę. O jūs kas savaitę esate vis kitoje vietoje, skirtingu laiku, kur mobilusis ryšys silpnas arba jo visai nėra. HatchGrab sukurta būtent tam.",
+    "slotsTitle": "Klientai patys renkasi atsiėmimo laiką",
+    "capacityTitle": "Nustatykite virtuvės pajėgumą",
+    "capacityBody": "Nustatykite, kiek galite pagaminti vienu metu ir kiek tai užtrunka. Kai atsiėmimo laikas užpildytas, klientai jo pasirinkti nebegali.",
+    "devicesTitle": "Veikia bet kuriame įrenginyje",
+    "devicesBody": "Veikia telefone prijuostės kišenėje, planšetėje ant prekystalio, nešiojamajame kompiuteryje furgone – ir mokėjimo terminale, kuriuo jau priimate mokėjimus.",
+    "postsTitle": "Automatizuokite savo Facebook ir Instagram įrašus",
+    "postsBody": "Įkelkite dizainą, kurį jau skelbiate Facebook ar Instagram. Mes įrašysime jūsų datas, vietas ir laiką – liks tik pasidalyti, kas savaitę ar kasdien.",
+    "whatsappTitle": "WhatsApp automatiniai atsakymai",
+    "whatsappBody": "„Kur būsite šįvakar?“ „Kokių desertų turite?“ Į žinutes WhatsApp atsakoma, kol vairuojate į prekybos vietą ar stovite prie grilio, – pagal jūsų meniu ir tvarkaraštį. Messenger ir Instagram – jau netrukus.",
+    "whatsappSoonTitle": "WhatsApp automatiniai atsakymai <soon>Jau netrukus</soon>",
+    "whatsappSoonBody": "„Kur būsite šįvakar?“ „Kokių desertų turite?“ Netrukus į žinutes WhatsApp bus atsakoma, kol vairuojate į prekybos vietą ar stovite prie grilio. Vėliau – ir Messenger bei Instagram.",
+    "offlineTitle": "Nėra ryšio? Toliau aptarnaukite klientus.",
+    "offlineBody": "Jei dingsta ryšys, užsakymai internetu automatiškai sustabdomi, kad klientai negalėtų pateikti užsakymų, kurių nematytumėte. Toliau priimkite užsakymus su iPhone, iPad ir Android programėle.",
+    "slotsBody": "Klientai užsisako iš anksto ir pasirenka atsiėmimo laiką. Trumpesnės eilės, o maistas paruoštas jiems atvykus."
+  },
+  "steps": {
+    "eyebrow": "Pradžia",
+    "title": "Viską nustatykite ir pradėkite priimti užsakymus maždaug per 15 minučių.",
+    "lede": "Reikia sutvarkyti tris dalykus – ir dviem iš jų pakanka nuotraukos.",
+    "menuTitle": "Sukurkite meniu",
+    "menuBody": "Nufotografuokite savo meniu lentą arba įklijuokite tekstą. Patiekalai, kainos ir priedai perkeliami automatiškai. Jums tereikia patikrinti, ar viskas teisinga.",
+    "scheduleTitle": "Pridėkite tvarkaraštį",
+    "scheduleBody": "Jis jau yra jūsų svetainėje? Nuskaitysime jį iš ten ir nuolat atnaujinsime. Jei ne – taip pat nufotografuokite. Jums tereikia priimti tai, ką radome.",
+    "shareTitle": "Pasidalykite nuoroda",
+    "shareBody": "Paskelbkite ją Facebook, užklijuokite QR kodą ant furgono. Užsakymai atsiranda jūsų ekrane ta tvarka, kuria juos reikia gaminti."
+  },
+  "testimonial": {
+    "quote": "Su HatchGrab užsakymai tapo daug paprastesni. Viskas sutvarkyta, galime sekti atsargas ir tiksliai žinome, kiek picų dar liko parduoti, – o laiko intervalai puikiai tinka judriems miesteliams.",
+    "award": "Metų mobilioji picerija",
+    "awardScope": "Regiono nugalėtoja",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia ir Bogdan – savininkai"
+  },
+  "pricing": {
+    "eyebrow": "Kainos",
+    "title": "Pradėkite nemokamai. Pereikite prie didesnio plano, kai prireiks.",
+    "switchHead": "Pereinate iš kitos platformos?",
+    "switchBody": "Pažiūrėkite, kiek mokėtumėte HatchGrab už tuos pačius užsakymus. Tai užtrunka maždaug minutę.",
+    "switchCta": "Palyginkite, kiek mokate"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Norite pamatyti, kaip lengva viską nustatyti?",
+    "lede": "Įkelkite meniu nuotrauką ar ekrano kopiją ir greičiau nei per 60 sekundžių paversime ją veikiančiu užsakymų puslapiu, kurį galėsite išbandyti. Jūsų patiekalai, jūsų kainos. Be registracijos, be kortelės, nieko nereikia diegti. Pažiūrėkite ir tada nuspręskite.",
+    "cta": "Įkelti meniu dabar →"
+  },
+  "meta": {
+    "title": "Užsakymų sistema food truck ir mobiliajam maitinimui – HatchGrab {country}",
+    "description": "Priimkite užsakymus ir išankstinius užsakymus savo prekybos vietoje be eilių. Užsakymų ir virtuvės ekrano programinė įranga food truck ir mobiliojo maitinimo verslui ({country}) – ne kasos sistema."
+  }
+}

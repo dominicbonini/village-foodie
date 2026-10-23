@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Kur įsikūręs jūsų food truck?",
+  "stepIntro": "Pagal tai nustatoma jūsų valiuta, kainos, laiko juosta ir telefono numerio formatas. Šalies vėliau pakeisti negalėsite, nes ji susieta su jūsų mokėjimais kortele.",
+  "settingsHeading": "Kur prekiaujate",
+  "countryLabel": "Šalis",
+  "countryGuessed": "Nustatėme pagal jūsų buvimo vietą. Jei neteisinga, pakeiskite.",
+  "countryLocked": "Jūsų šalies pakeisti negalima",
+  "townLabel": "Miestas ar gyvenvietė",
+  "townQuestion": "Miestas ar gyvenvietė, kurioje esate įsikūrę",
+  "timezoneLabel": "Laiko juosta",
+  "continueButton": "Tęsti",
+  "saveFailed": "Nepavyko išsaugoti nustatymų – bandykite dar kartą."
+}

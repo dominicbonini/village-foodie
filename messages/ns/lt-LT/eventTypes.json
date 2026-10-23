@@ -1,0 +1,83 @@
+{
+  "title": "Renginių tipai",
+  "newTypeButton": "+ Naujas renginio tipas",
+  "close": "Uždaryti",
+  "loading": "Įkeliama…",
+  "missingTitle": "Renginių tipai dar neįjungti.",
+  "missingBody": "Šios funkcijos duomenų bazės atnaujinimas dar neįdiegtas. Niekas nesugedo — visi renginiai naudoja įprastus jūsų nustatymus.",
+  "column": "Stulpelis",
+  "vanGone": "Šio furgono nebėra.",
+  "typeGone": "Šio tipo nebėra.",
+  "standard": "Standartinis",
+  "standardHeading": "STANDARTINIS",
+  "moreFor": "Daugiau: {name}",
+  "rename": "Pervadinti",
+  "moveLeft": "Perkelti kairėn",
+  "moveRight": "Perkelti dešinėn",
+  "delete": "Ištrinti",
+  "sections": {
+    "vans": "FURGONAI",
+    "prices": "KAINOS",
+    "itemPrices": "PATIEKALŲ KAINOS",
+    "service": "APTARNAVIMAS"
+  },
+  "labelFor": "{label}: {name}",
+  "intervalEvery": "Kas {mins} min.",
+  "noTypes": "Renginių tipų dar neturite, todėl visi renginiai naudoja įprastus jūsų nustatymus.",
+  "renameTitle": "Pervadinti šį tipą",
+  "name": "Pavadinimas",
+  "cancel": "Atšaukti",
+  "save": "Išsaugoti",
+  "copyVanOne": "Kopijuoti 1-ojo furgono nustatymus",
+  "thisType": "šis tipas",
+  "matchTitle": "Suvienodinti „{name}“ su tipu „Standartinis“?",
+  "matchKeeps": "Tai, ką pakeitėte atskiro renginio valdymo skydelyje, liks nepakeista, o šio tipo kainos nesikeis.",
+  "matchWillUse": "Bus naudojama: {summary}",
+  "deleteTitle": "Ištrinti „{name}“?",
+  "deleteBody": "{n, plural, =0 {Joks būsimas renginys nenaudoja „{name}“.} one {{count} būsimas renginys naudoja „{name}“. Jis grįš prie tipo „Standartinis“.} few {{count} būsimi renginiai naudoja „{name}“. Jie grįš prie tipo „Standartinis“.} many {{count} būsimų renginių naudoja „{name}“. Jie grįš prie tipo „Standartinis“.} other {{count} būsimų renginių naudoja „{name}“. Jie grįš prie tipo „Standartinis“.}} Tai, ką pakeitėte atskirame renginyje, liks nepakeista.",
+  "keep": "Palikti",
+  "phone": {
+    "standardTag": "Standartinis",
+    "defaultTag": "numatytasis",
+    "vanSetup": "Įprasti šio furgono nustatymai — naudojami kiekviename renginyje be tipo.",
+    "standardSetup": "Įprasti jūsų nustatymai — naudojami kiekviename renginyje be tipo.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} būsimas renginys} few {{upcomingCount} būsimi renginiai} many {{upcomingCount} būsimų renginių} other {{upcomingCount} būsimų renginių}} · {changed, plural, =0 {dar nieko nepakeista} one {pakeista {changedCount} iš {total}} few {pakeista {changedCount} iš {total}} many {pakeista {changedCount} iš {total}} other {pakeista {changedCount} iš {total}}}",
+    "noMenuItems": "Meniu patiekalų dar nėra — pridėkite juos skiltyje Meniu › Patiekalai."
+  },
+  "newType": {
+    "title": "Naujas renginio tipas",
+    "namePlaceholder": "pvz., Mokyklos šventė",
+    "help": "Bakstelėkite pavadinimą arba įrašykite savo. Naujas tipas sukuriamas kaip tipo „Standartinis“ kopija, ir vėlesni tipo „Standartinis“ pakeitimai jo nepakeis. Vėliau galite keisti bet ką.",
+    "create": "Sukurti",
+    "chips": {
+      "festival": "Festivalis",
+      "pub": "Baras",
+      "market": "Turgus",
+      "privateHire": "Food truck nuoma"
+    }
+  },
+  "select": {
+    "label": "Renginio tipas",
+    "usual": "Šiai vietai įprastas tipas: {name}."
+  },
+  "summary": {
+    "normalSetup": "Įprasti jūsų nustatymai",
+    "sameAsStandard": "Kaip „Standartinis“",
+    "buzzersOn": "gavikliai įjungti",
+    "buzzersOff": "gavikliai išjungti",
+    "takeCashOn": "grynieji priimami",
+    "takeCashOff": "grynieji nepriimami",
+    "markReadyOn": "žingsnis „Paruošta“ įjungtas",
+    "markReadyOff": "žingsnis „Paruošta“ išjungtas",
+    "collectionEvery": "atsiėmimas kas {mins} min.",
+    "offlineOff": "užsakymų apsauga atsijungus išjungta",
+    "offlineKeepTaking": "atsijungus: toliau priimti užsakymus",
+    "offlinePause": "atsijungus: sustabdyti užsakymus"
+  },
+  "errors": {
+    "somethingWentWrong": "Kažkas nepavyko",
+    "couldNotLoad": "Nepavyko įkelti",
+    "couldNotSave": "Nepavyko išsaugoti",
+    "noVans": "Šis food truck neturi furgonų, kuriuos būtų galima keisti."
+  }
+}

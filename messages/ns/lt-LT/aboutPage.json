@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Apie mus – HatchGrab",
+    "description": "HatchGrab įkūrė Dominic Bonini, kuris sukūrė Village Foodie, kad sužinotų, kurie food truck atvyksta į jo kaimą. Tai nedidelė įmonė, kuriai jis vadovauja pats."
+  },
+  "eyebrow": "Apie mus",
+  "title": "Sveiki, aš – Dominic.",
+  "photoAlt": "{name}, HatchGrab įkūrėjas",
+  "story": {
+    "village": "Gyvenu kaime. Į jį atvažiuoja food truck, bet niekada nežinodavau, kuris atvyks ir kada, jei neieškodavau Facebook.",
+    "villageFoodie": "Todėl sukūriau Village Foodie – paprastą būdą pamatyti, kurie food truck atvyksta į netoliese esančius kaimus.",
+    "hatchgrab": "Kuo daugiau food truck stebėjau, tuo labiau įsitikinau, kad jie nusipelno geresnių įrankių: sukurtų verslui, kuris kasdien būna vis kitoje vietoje, o ne restoranui su pastoviu adresu. Todėl ir įkūriau HatchGrab.",
+    "small": "Tai nedidelė įmonė, ir aš jai vadovauju pats. Jei susisieksite, atsakysiu jums aš, o ne pagalbos tarnybos eilė."
+  },
+  "signature": "<b>{name}</b> · Įkūrėjas",
+  "company": "{company} · registruota Anglijoje ir Velse · įmonės kodas {number} · registruotoji buveinė: {address}",
+  "contact": "Susisiekite su mumis"
+}

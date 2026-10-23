@@ -1,7 +1,7 @@
 {
   "hi": "Labdien, {name}!",
   "limit80": {
-    "subject": "Izmantoti 80 % no šī mēneša WhatsApp atbildēm",
+    "subject": "Izmantoti 80% no šī mēneša WhatsApp atbildēm",
     "used": "Jūsu automātiskās WhatsApp atbildes: šomēnes izmantotas <b>{used} no {limit}</b>.",
     "nothingStopped": "Nekas nav apturēts. Kad sasniegsiet {limit}, automātiskās atbildes tiks pauzētas, līdz limits atjaunosies <b>{reset}</b> — klienti joprojām var jums rakstīt, un jūs joprojām redzēsiet visu, ko viņi sūta.",
     "raise": "Mēneša limitu jebkurā laikā varat palielināt sadaļā “Iestatījumi”.",

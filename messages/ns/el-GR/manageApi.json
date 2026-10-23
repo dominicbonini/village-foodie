@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Food truck",
+  "eventsFeed": {
+    "today": "Σήμερα · {date}",
+    "tomorrow": "Αύριο · {date}"
+  },
+  "privacyNotSaved": "Η εκδήλωση δημοσιεύτηκε, αλλά η ρύθμιση ιδιωτικότητας δεν αποθηκεύτηκε.",
+  "stockWarning": "Κανένα διαθέσιμο προϊόν στην κατηγορία «{category}»",
+  "uncategorised": "Χωρίς κατηγορία"
+}

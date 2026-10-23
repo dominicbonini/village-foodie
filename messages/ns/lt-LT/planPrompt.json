@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} įtraukti į planą {plan}.} other {{feature} – įtraukta į planą {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} neįtraukti į jūsų planą.} other {{feature} – neįtraukta į jūsų planą.}}",
+  "switchedOff": "{many, select, yes {{feature} jūsų food truck išjungti.} other {{feature} – išjungta jūsų food truck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Keisti planą →",
+  "features": {
+    "discovery_map": {
+      "name": "Rodymas paieškos žemėlapyje",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Internetinis valdymo skydelis",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Virtuvės programėlė",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR kodo meniu",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Rinkiniai",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Papildomi pasiūlymai",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Užsakymai vietoje",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Užsakymai internetu su mokėjimu atsiimant",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Žymėjimas „Išparduota“",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Atsargų skaičiavimas",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Užsakymų apsauga atsijungus",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Mokėjimai internetu",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Išankstiniai užsakymai būsimoms datoms",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Klientų pasirenkami laiko intervalai",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Virtuvės pajėgumo valdymas",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatinis priėmimas",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger ir Instagram automatiniai atsakymai",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR kodai su jūsų logotipu",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Išplėstinės ataskaitos",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Virtuvės kvitų spausdinimas",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Virtuvės sinchronizavimas keliuose įrenginiuose",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Virėjo ekranas",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp automatiniai atsakymai",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Jūsų tvarkaraštis jūsų svetainėje",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Socialinių tinklų įrašai",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Savi renginių tipai",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Privatūs renginiai",
+      "many": "yes"
+    }
+  }
+}

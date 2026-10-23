@@ -4,7 +4,7 @@
     "heading": "Saabus uus tellimus",
     "from": "<b>Tellimus #{id}</b>, tellija <b>{name}</b>",
     "collection": "Kättesaamise aeg: {time}",
-    "asap": "Kindel aeg puudub — niipea kui võimalik",
+    "asap": "Kindel aeg puudub — esimesel võimalusel",
     "total": "Kokku",
     "notes": "<b>Märkused:</b> {notes}",
     "autoConfirmed": "Automaatselt kinnitatud — midagi pole vaja teha.",

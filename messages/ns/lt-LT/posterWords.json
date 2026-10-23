@@ -1,0 +1,25 @@
+{
+  "heading": "Savaitė: {start} – {end}",
+  "daysOff": "Šiandien nedirbame",
+  "cancelled": "ATŠAUKTA",
+  "placeSample": {
+    "nameTownBelow": "Karčema prie Rotušės\nKaunas",
+    "nameTown": "Karčema prie Rotušės, Kaunas",
+    "nameOnly": "Karčema prie Rotušės"
+  },
+  "busyWeek": {
+    "venue1": "Kauno kultūros namai",
+    "town1": "Kaunas",
+    "venue2": "Jonavos sporto ir laisvalaikio centro stadionas ir žaidimų aikštelė",
+    "town2": "Jonava",
+    "venue3": "Turgaus aikštė",
+    "town3": "Prienai",
+    "venue4": "Maisto festivalis",
+    "town4": "Kėdainiai",
+    "venue5": "Užeiga prie tilto",
+    "town5": "Alytus",
+    "venue6": "Bažnyčios aikštė",
+    "town6": "Birštonas"
+  },
+  "poweredBy": "Veikia su HatchGrab"
+}

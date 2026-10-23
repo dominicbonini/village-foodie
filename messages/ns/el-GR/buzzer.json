@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Ο βομβητής <b>{number}</b> είναι στην <b>παραγγελία #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Να δοθεί <b>{hasTarget, select, yes {στην παραγγελία #{targetId}} other {σε αυτή την παραγγελία}}</b>;",
+  "cancel": "Άκυρο",
+  "take": "Πάρτε τον βομβητή {number}",
+  "titleBlocking": "Βομβητής για την παραγγελία #{id};",
+  "title": "Επιλέξτε βομβητή",
+  "subtitle": "{hasTarget, select, yes {Παραγγελία #{id}} other {Αυτή η παραγγελία}}{hasCurrent, select, yes { · τώρα βομβητής {current}} other {}}",
+  "allTaken": "{n, plural, one {Ο βομβητής είναι σε χρήση. Πατήστε τον για να τον πάρετε από άλλη παραγγελία.} other {Και οι {count} βομβητές είναι σε χρήση. Πατήστε έναν για να τον πάρετε από άλλη παραγγελία.}}",
+  "thisOrder": "Αυτή η παραγγελία",
+  "noBuzzer": "Χωρίς βομβητή",
+  "done": "Τέλος",
+  "lostTitle": "Η παραγγελία #{id} δεν έχει βομβητή",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}μια άλλη παραγγελία δήλωσε τον ίδιο βομβητή όσο ήσασταν εκτός σύνδεσης. Δώστε τους έναν άλλο.",
+  "dismiss": "Απόκρυψη",
+  "assign": "Απόδοση"
+}

@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Jūsų alergenų kortelė",
+    "intro": "Klientai ją mato <b>tiksliai taip, kaip parašėte</b> — niekas neperrašoma. Įrašykite ar įklijuokite tekstą žemiau arba įkelkite nuotrauką / PDF, o mes nuskaitysime tekstą, kad galėtumėte jį patikrinti.",
+    "empty": "Alergenų kortelės dar nėra.",
+    "placeholder": "pvz., Visuose mūsų žuvies su bulvytėmis patiekaluose yra kviečių ir pieno. Gruzdintuvė naudojama ir patiekalams, kuriuose yra glitimo ir riešutų. Yra veganiškų patiekalų — klauskite personalo.",
+    "reading": "Skaitomas paveikslėlis…",
+    "upload": "📷 Įkelti paveikslėlį / PDF",
+    "uploadNote": "Nuskaitome tekstą iš jūsų paveikslėlio, kad galėtumėte jį peržiūrėti — paties paveikslėlio nesaugome."
+  },
+  "cardUpload": {
+    "dishFallback": "Patiekalas",
+    "question": "Ar turite alergenų kortelę, kurią galėtumėte įkelti?",
+    "perDish": "{detected, select, yes {Įkelkite ją, ir pagal ją nustatysime jūsų patiekalų alergenus. Aptikti alergenai bus matomi kitame puslapyje, kuriame patvirtinsite kiekvieną patiekalą.} other {Įkelkite ją, ir pagal ją nustatysime jūsų patiekalų alergenus.}}",
+    "cardOnly": "Įkelkite alergenų kortelę, kurią matys klientai.",
+    "yes": "Taip",
+    "no": "Ne",
+    "noProblem": "Nieko tokio — ji nebūtina. Tęskite toliau esančiu mygtuku.",
+    "analysing": "Analizuojama kortelė…",
+    "dropzone": "Nuvilkite arba bakstelėkite, kad pasirinktumėte",
+    "imageOrPdf": "Paveikslėlis arba PDF",
+    "or": "arba",
+    "pastePlaceholder": "Įklijuokite alergenų kortelės tekstą čia…",
+    "process": "Apdoroti kortelę",
+    "cardRead": "Kortelė nuskaityta ✓",
+    "unmatchedHeading": "Šių nepavyko susieti automatiškai — priskirkite arba atmeskite",
+    "quotedName": "„{name}“",
+    "ambiguous": "Neaišku — atitinka kelis patiekalus; pasirinkite tinkamą.",
+    "assignTo": "Priskirti patiekalui…",
+    "dismiss": "Atmesti",
+    "blanket": "Kortelėje nurodyta, kad <b>{list}</b> gali būti <b>visuose</b> patiekaluose. Pridėti prie kiekvieno patiekalo? (kiekvieną vis tiek patvirtinsite) <muted>— pagal numatytuosius nustatymus išjungta</muted>",
+    "kitchenNotes": "Virtuvės pastabos (išsaugomos jūsų alergenų informacijoje)",
+    "matchSummary": "{n, plural, =0 {Susieta su patiekalais: {matched}.} one {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} few {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} many {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} other {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Rodyti mažiau",
+    "showMore": "Rodyti daugiau",
+    "fileOnly": "Šiam food truck išsaugotas kortelės failas, bet santraukos tekstas neišsaugotas. Atidarykite originalą, kad jį perskaitytumėte.",
+    "viewOriginal": "Peržiūrėti originalią kortelę"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Nepavyko nuskaityti alergenų kortelės — bandykite dar kartą",
+      "confirmed": "Patvirtinta: {name}",
+      "undo": "Atšaukti",
+      "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą",
+      "imageFailed": "Nepavyko nuskaityti šio paveikslėlio — verčiau įrašykite arba įklijuokite kortelės tekstą",
+      "cardRead": "{n, plural, one {Kortelė nuskaityta — susieta: {matched}, laukia priskyrimo: {count}} few {Kortelė nuskaityta — susieta: {matched}, laukia priskyrimo: {count}} many {Kortelė nuskaityta — susieta: {matched}, laukia priskyrimo: {count}} other {Kortelė nuskaityta — susieta: {matched}, laukia priskyrimo: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Aptikta „{generic}“, bet tai nekonkretu. Jei šiame patiekale yra šios grupės alergenų ({family}), pažymėkite: {picks}. Jei nėra — palikite nepažymėtus.",
+      "andOr": "{a} ir (arba) {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Patvirtinta",
+      "confirmed": "Patvirtinta",
+      "needsReview": "Reikia peržiūrėti"
+    },
+    "confirm": {
+      "confirming": "Tvirtinama…",
+      "confirmed": "Patvirtinta ✓",
+      "confirm": "Patvirtinti",
+      "changed": "· pakeista",
+      "changedTitle": "Pakeista po paskutinio patvirtinimo — patvirtinkite dar kartą"
+    },
+    "allergens": "Alergenai",
+    "dietary": "Mityba",
+    "uncategorised": "Be kategorijos",
+    "review": {
+      "progress": "Patvirtinta: {confirmed} iš {total}",
+      "allConfirmed": "✓ Visi patvirtinti",
+      "list": "Sąrašas",
+      "table": "Lentelė",
+      "detected": "Aptikta jūsų meniu — <b>patikrinkite</b>. Alergenai klientams nerodomi, kol nepatvirtinsite kiekvieno patiekalo.",
+      "viewOnly": "👁 Tik peržiūra — patvirtinti ar keisti alergenus gali tik savininkas.",
+      "emptyTitle": "Meniu patiekalų nėra",
+      "emptyBody": "Pirmiausia pridėkite meniu patiekalų, tada čia nustatykite jų alergenus.",
+      "dish": "Patiekalas",
+      "status": "Būsena"
+    },
+    "cardPanel": {
+      "reading": "Skaitoma informacija apie alergenus…",
+      "saved": "🛡️ Alergenų kortelė išsaugota",
+      "viewOriginal": "Peržiūrėti originalią kortelę",
+      "replace": "Pakeisti kortelę",
+      "uploadHelp": "Įkelkite alergenų kortelę (nuotrauką / PDF) arba įklijuokite informaciją apie alergenus — mūsų DI ją sutvarkys klientams.",
+      "add": "Pridėti alergenų kortelę",
+      "viewOnly": "👁 Tik peržiūra — pridėti alergenų kortelę gali tik savininkas.",
+      "intro": "Klientai šią kortelę matys kaip meniu alergenų informaciją. Režimu „tik kortelė“ atskirų patiekalų alergenai nerodomi (jūsų patiekalų duomenys išsaugomi, jei vėliau pereitumėte prie alergenų kiekvienam patiekalui)."
+    },
+    "subtitle": {
+      "choose": "Pasirinkite, kaip klientai matys informaciją apie alergenus",
+      "card": "Pridėkite alergenų kortelę",
+      "cardOptional": "Pridėkite alergenų kortelę (neprivaloma)",
+      "review": "Patikrinkite ir patvirtinkite kiekvieną patiekalą"
+    },
+    "heading": {
+      "import": "Alergenai",
+      "standalone": "Alergenų nustatymas"
+    },
+    "nav": {
+      "next": "Toliau →",
+      "back": "← Atgal",
+      "skip": "Kol kas praleisti",
+      "saving": "Išsaugoma…",
+      "done": "Baigta",
+      "saveLater": "Išsaugoti ir baigti vėliau",
+      "close": "Uždaryti",
+      "finish": "Baigti",
+      "skipImport": "Kol kas praleisti alergenų nustatymą"
+    },
+    "hint": {
+      "skipDefers": "Praleidus tai tik atidedama — nepatvirtinti patiekalai klientams nerodomi, kol nebus patvirtinti jų alergenai.",
+      "importIncomplete": "Kad galėtumėte tęsti, patvirtinkite kiekvieną patiekalą — arba spauskite „Kol kas praleisti alergenų nustatymą“."
+    }
+  }
+}

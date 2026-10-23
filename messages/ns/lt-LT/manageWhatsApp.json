@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Išbandykite prieš prijungdami",
+    "intro": "Įveskite klausimą, kokį užduotų klientas, ir pamatykite, kokį tiksliai atsakymą jis gautų. Niekam nieko nesiunčiama.",
+    "examples": {
+      "where": "Kur būsite šįvakar?",
+      "doYouDo": "Ar turite picos su pepperoni?",
+      "menu": "Ką turite meniu?"
+    },
+    "placeholder": "Kokių desertų turite?",
+    "send": "Siųsti",
+    "empty": "Čia bus rodomas jūsų atsakymas",
+    "working": "Ruošiamas atsakymas…",
+    "noReply": "Atsakymas nebūtų išsiųstas.",
+    "noReplyWhy": "Tai panašu į šlamštą, rezervacijos užklausą ar nesusijusį klausimą, todėl automatinis atsakymas nesiunčiamas.",
+    "footnote": "Atsakymus generuoja DI, jie kaskart šiek tiek skiriasi ir kartais gali būti netikslūs.",
+    "failed": "Šiuo metu nepavyko sukurti peržiūros.",
+    "unreachable": "Nepavyko susisiekti su serveriu. Patikrinkite ryšį ir bandykite dar kartą."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Ruošiama…",
+      "unavailable": "Nepasiekiama",
+      "waiting": "Laukiama Facebook lango…",
+      "finishing": "Baigiama…",
+      "reconnect": "Prijungti iš naujo",
+      "setUp": "Nustatyti"
+    },
+    "startAgain": "Pradėti iš naujo",
+    "popupHint": "Nematote Facebook lango? Jis galėjo būti užblokuotas. Leiskite iššokančiuosius langus svetainei hatchgrab.com, tada spauskite „Pradėti iš naujo“."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsApp nustatymas šioje aplinkoje negalimas.",
+    "sdkBlocked": "Nepavyko įkelti Meta prisijungimo scenarijaus. Dažniausia priežastis – reklamų blokatorius arba apsauga nuo sekimo.",
+    "setupFailed": "Nustatymo užbaigti nepavyko. Niekas nepakeista.",
+    "setupFinished": "Nustatymas baigtas.",
+    "metaError": "Nustatymo metu Meta pranešė apie problemą. Niekas nepakeista. Bandykite dar kartą, o jei problema kartosis, susisiekite su mumis.",
+    "closed": "Nustatymo langas uždarytas nebaigus. Niekas nepakeista — spauskite „Nustatyti“, kad bandytumėte dar kartą.",
+    "disconnectedUnreachable": "WhatsApp atjungtas. Nepavyko susisiekti su Meta, kad būtų panaikinta prieiga. Pašalinkite HatchGrab programėlėje: WhatsApp Business → Nustatymai → Paskyra → Business Platform.",
+    "disconnected": "WhatsApp atjungtas. Automatiniai atsakymai sustabdyti.",
+    "close": "Uždaryti"
+  },
+  "card": {
+    "title": "Automatiniai atsakymai",
+    "description": "Automatiškai atsakykite į klientų klausimus socialiniuose tinkluose pagal savo meniu ir tvarkaraštį.",
+    "channels": "Kanalai",
+    "requiresAccount": "Reikalinga WhatsApp Business paskyra.",
+    "connected": "Prijungta",
+    "popupInstruction": "Atsidarys Facebook langas, kuriame prijungsite savo WhatsApp Business paskyrą. Jei nieko nepasirodo, naršyklėje leiskite iššokančiuosius langus svetainei hatchgrab.com ir dar kartą spauskite „Nustatyti“.",
+    "switchedOff": "Jūsų food truck WhatsApp automatiniai atsakymai išjungti.",
+    "expiring": "Netrukus reikės atnaujinti WhatsApp ryšį. Spauskite „Prijungti iš naujo“, kad automatiniai atsakymai veiktų toliau.",
+    "comingSoon": "Netrukus",
+    "instagram": "Automatiniai atsakymai į Instagram tiesiogines žinutes. Reikės Instagram profesionalios paskyros.",
+    "messenger": "Automatiniai atsakymai Facebook Messenger. Reikės Facebook puslapio."
+  },
+  "blocked": {
+    "title": "Jūsų atsakymai nepristatomi",
+    "body": "WhatsApp atsisako siųsti jūsų automatinius atsakymus dėl atsiskaitymo problemos jūsų WhatsApp Business paskyroje. Klientai vis tiek gali jums rašyti ir jūs matysite viską, ką jie siunčia, — tačiau jie negauna atsakymo.",
+    "fix": "Už šias žinutes mokate tiesiogiai WhatsApp, todėl tai sutvarkoma WhatsApp Manager. <link>Patikrinkite mokėjimo būdą</link>"
+  },
+  "limit": {
+    "heading": "Automatiniai atsakymai",
+    "label": "Mėnesio riba",
+    "option": "{n, number}",
+    "usage": "Panaudota {used, number} iš {limit, number} · atnaujinama {date}",
+    "perCustomer": "Didžiausias atsakymų skaičius vienam klientui per 24 valandas: {n}. Po to siunčiama viena žinutė, kad atsakysite asmeniškai.",
+    "emailAt": "Pasiekus ribą, atsakymai sustabdomi. Kai bus panaudota 80 % ir 100 % ribos, atsiųsime jums el. laišką.",
+    "saved": "Mėnesio atsakymų riba išsaugota",
+    "saveFailed": "Nepavyko išsaugoti ribos"
+  },
+  "billing": {
+    "heading": "Atsiskaitymai",
+    "paymentMethod": "Mokėjimo būdas",
+    "added": "Mokėjimo būdas pridėtas",
+    "missing": "Mokėjimo būdas nepridėtas",
+    "addInManager": "Pridėti WhatsApp Manager",
+    "summary": "Už atsakymus jūsų WhatsApp paskyrai sąskaitas išrašo Meta, ne HatchGrab. Nuo {from} nemokamų atsakymų per mėnesį: {free, number}. Duomenys tikrinti {checked}; apie pakeitimus skaitykite <link>Meta kainodaroje</link>.",
+    "howMetaCharges": "Kaip Meta skaičiuoja mokesčius",
+    "chargesTitle": "Už WhatsApp atsakymus mokestį ima Meta, ne HatchGrab.",
+    "chargesBody": "Už kiekvieną HatchGrab jūsų vardu išsiųstą atsakymą Meta išrašo sąskaitą jūsų WhatsApp Business paskyrai. Nuo {from} Meta kiekvienam numeriui per mėnesį suteikia nemokamų atsakymų: {free, number}; vėliau kiekvienas atsakymas apmokestinamas pagal Meta įkainius. Atsakymai, kuriuos patys siunčiate iš WhatsApp Business programėlės, neapmokestinami. Šias kainas nustato Meta ir gali jas keisti. <link>Žr. Meta kainodarą</link>",
+    "addPaymentInManager": "Pridėkite mokėjimo būdą WhatsApp Manager",
+    "aboveMissing": "Jūsų riba viršija nemokamų Meta atsakymų skaičių ({free, number}). Be mokėjimo būdo Meta sustabdys visus atsakymus, kai jie bus išnaudoti.",
+    "aboveGeneral": "Jūsų riba viršija nemokamų Meta atsakymų skaičių ({free, number}). Viršijantiems atsakymams jūsų WhatsApp paskyroje reikia mokėjimo būdo; be jo Meta sustabdo visus atsakymus, kai išnaudojami nemokami.",
+    "addPaymentMethod": "Pridėti mokėjimo būdą"
+  },
+  "disconnect": {
+    "link": "Atjungti WhatsApp",
+    "title": "Atjungti WhatsApp?",
+    "body": "Automatiniai atsakymai iškart sustabdomi, o HatchGrab praranda prieigą prie jūsų WhatsApp paskyros. Jūsų numeris toliau veikia WhatsApp Business programėlėje. Norėdami visiškai pašalinti HatchGrab, taip pat atidarykite WhatsApp Business → Nustatymai → Paskyra → Business Platform.",
+    "cancel": "Atšaukti",
+    "confirm": "Atjungti",
+    "working": "Atjungiama…",
+    "failed": "Nepavyko atjungti"
+  },
+  "signup": {
+    "logged": "Užregistruota.",
+    "partial": "Susiejome jūsų WhatsApp Business paskyrą, bet nepavyko užbaigti prijungimo. Jūs nieko blogai nepadarėte — susisiekite su mumis ir mes viską užbaigsime.",
+    "noNumber": "Jūsų WhatsApp Business paskyra susieta, bet negautas joks telefono numeris. Spauskite „Prijungti iš naujo“ ir užbaikite numerio žingsnį.",
+    "needsRegistering": "Jūsų paskyra susieta, bet šį numerį turime užregistruoti mes, kad atsakymai galėtų prasidėti. Susisiekite su pagalbos tarnyba — jūsų nustatymai išsaugoti, nekartokite nustatymo.",
+    "registerRefused": "Jūsų paskyra susieta, bet Meta neužregistravo numerio. Nustatymai išsaugoti — užuot kartoję nustatymą, susisiekite su pagalbos tarnyba.",
+    "deliveryRefused": "Jūsų paskyra susieta, bet Meta neįjungė žinučių pristatymo. Nustatymai išsaugoti — užuot kartoję nustatymą, susisiekite su pagalbos tarnyba.",
+    "numberTaken": "Šis WhatsApp numeris jau prijungtas prie kitos HatchGrab paskyros. Vienas numeris gali atsakinėti tik už vieną food truck. Susisiekite su pagalbos tarnyba ir mes jį perkelsime.",
+    "saveIncomplete": "Beveik baigta — nepavyko užbaigti išsaugojimo. Nustatymai išsaugoti, todėl užuot kartoję nustatymą, susisiekite su pagalbos tarnyba.",
+    "connected": "WhatsApp prijungtas. Automatiniai atsakymai pradės atsakinėti į šiuo numeriu gaunamas žinutes."
+  }
+}

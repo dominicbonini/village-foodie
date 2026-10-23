@@ -3,18 +3,18 @@
   "rate": {
     "label": "Pārdošanas nodokļa likme",
     "hint": "Likme, ko piemērojat katram pasūtījumam. Klienti redz to pieskaitītu, maksājot, kā arī čekos un virtuves čekos.",
-    "regionDefault": "Atstājiet tukšu, lai piemērotu {label} {rate} % apmērā — likmi gatavam ēdienam ({region})."
+    "regionDefault": "Atstājiet tukšu, lai piemērotu {label} {rate}% apmērā — likmi gatavam ēdienam ({region})."
   },
   "included": {
     "label": "{label} iekļauts jūsu cenās",
     "hint": "Jūsu cenās jau ir iekļauts {label}. Šī likme tikai norāda, cik liela katras cenas daļa ir {label}, čekos un virtuves čekos — maksājot nekas netiek pieskaitīts.",
-    "default": "Atstājiet tukšu, lai izmantotu {rate} % — {label} likmi karstam ēdienam līdzņemšanai ({country})."
+    "default": "Atstājiet tukšu, lai izmantotu {rate}% — {label} likmi karstam ēdienam līdzņemšanai ({country})."
   },
   "tips": {
     "label": "Dzeramnauda",
     "hint": "Klienti, kas maksā tiešsaistē ar karti, var pievienot dzeramnaudu. Tā visa pienākas jums.",
     "choices": "Klientiem redzamās izvēles:",
-    "chip": "{rate} %",
+    "chip": "{rate}%",
     "other": "Cita summa"
   },
   "fee": {

@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Адрес",
+    "postcode": "Пощенски код",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "Пощенски код",
+    "state": "Щат",
+    "stateTerritory": "Щат или територия",
+    "province": "Провинция",
+    "county": "Окръг",
+    "area": "Населено място (село или град)",
+    "townOrArea": "Град или район",
+    "city": "Град",
+    "suburb": "Квартал",
+    "townOrCity": "Град"
+  },
+  "short": {
+    "area": "Селище",
+    "townOrArea": "Град или район",
+    "city": "Град",
+    "suburb": "Квартал",
+    "townOrCity": "Град"
+  },
+  "inSentence": {
+    "postcode": "пощенски код",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "пощенски код"
+  },
+  "withArticle": {
+    "postcode": "пощенски код",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "пощенски код"
+  },
+  "tradeLabel": {
+    "area": "Град",
+    "townOrArea": "Град или район",
+    "city": "Град",
+    "suburb": "Квартал",
+    "townOrCity": "Град"
+  },
+  "basedIn": {
+    "area": "Град, в който сте базирани",
+    "townOrArea": "Град или район, в който сте базирани",
+    "city": "Град, в който сте базирани",
+    "suburb": "Квартал, в който сте базирани",
+    "townOrCity": "Град, в който сте базирани"
+  },
+  "example": "напр. {example}",
+  "customersSee": "Клиентите виждат:",
+  "postalWarning": "Това не прилича на валиден {article} — например {example}. Все пак можете да го запазите.",
+  "regionChoose": "Изберете…"
+}

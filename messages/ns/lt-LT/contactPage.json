@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Pagalba",
+    "description": "Gaukite pagalbos dėl HatchGrab. Parašykite mums ir atsakysime el. paštu."
+  },
+  "logIn": "Prisijungti",
+  "eyebrow": "Pagalba",
+  "title": "Kuo galime padėti?",
+  "lede": "Kažkas neveikia arba turite klausimą apie savo paskyrą? Susisiekti galite dviem būdais – bet kuriuo atveju atsakysime el. paštu.",
+  "emailUs": "Rašykite el. paštu",
+  "formHeading": "Arba užpildykite toliau pateiktą formą",
+  "loadingForm": "Forma įkeliama…",
+  "formTitle": "Susisiekite su HatchGrab pagalbos komanda",
+  "privacy": "Privatumas",
+  "terms": "Sąlygos",
+  "about": "Apie mus",
+  "copyright": "© {year} HatchGrab"
+}

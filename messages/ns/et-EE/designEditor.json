@@ -5,7 +5,7 @@
     "daysSample": "{first} kuni {last}",
     "date": "Kuupäev",
     "place": "Asukoht",
-    "venue": "Toimumiskoht",
+    "venue": "Asukoht",
     "area": "Piirkond",
     "time": "Kellaaeg",
     "rows": "Read",
@@ -47,9 +47,9 @@
   },
   "scope": {
     "title": "Tekstide paigutus",
-    "standard": "Sama paigutus nagu tavakujundusel",
+    "standard": "Sama paigutus nagu põhikujundusel",
     "own": "Asukoha {place} oma paigutus",
-    "locked": "See paigutus tuleb sinu tavakujundusest. Vali „Asukoha {place} oma paigutus“, et tekste ainult siin liigutada."
+    "locked": "See paigutus tuleb sinu põhikujundusest. Vali „Asukoha {place} oma paigutus“, et tekste ainult siin liigutada."
   },
   "stage": {
     "hint": "Lohista kasti, et seda liigutada · lohista nurka, et suurust muuta",

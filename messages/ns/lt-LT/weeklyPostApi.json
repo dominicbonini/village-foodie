@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Antraštė netilpo ir buvo sutrumpinta.",
+    "date": "Data netilpo ir buvo sutrumpinta.",
+    "daysOff": "Nedarbo dienų tekstas netilpo ir buvo sutrumpintas.",
+    "place": "Vieta netilpo ir buvo sutrumpinta.",
+    "time": "Laikas netilpo ir buvo sutrumpintas.",
+    "note": "Jūsų tekstas netilpo ir buvo sutrumpintas.",
+    "venue": "Vietos pavadinimas netilpo ir buvo sutrumpintas.",
+    "area": "Vietovė netilpo ir buvo sutrumpinta."
+  },
+  "fontFallback": "Nepavyko įkelti šiame dizaine naudojamo šrifto ({id}) – tie laukeliai rodomi šriftu Oswald.",
+  "wrongShapeBackground": "Šios vietos paveikslėlio forma skiriasi nuo jūsų dizaino, todėl naudojamas standartinis fonas.",
+  "rowsFit": "Paskutinė diena atsiduria {px} px žemiau paveikslėlio apačios – sumažinkite tarpus tarp eilučių arba perkelkite 1 eilutę aukščiau.",
+  "placeStatus": {
+    "ownBoth": "Savas paveikslėlis ir teksto pozicijos",
+    "wrongShape": "Kita forma – nenaudojamas, kol nepakeisite",
+    "ownPicture": "Savas paveikslėlis, standartinės pozicijos",
+    "ownPositions": "Standartinis paveikslėlis, savos teksto pozicijos",
+    "none": "Paveikslėlio dar nėra – naudojamas standartinis"
+  },
+  "standardStatus": "Naudojamas visose kitose vietose",
+  "option": {
+    "oneOff": "Įkelti paveikslėlį tik šiam įrašui",
+    "placePoster": "{name}: plakatas",
+    "standard": "Standartinis dizainas"
+  },
+  "previewLabel": {
+    "lastEvent": "Peržiūroje naudojamas paskutinis jūsų renginys šioje vietoje",
+    "noEvents": "Čia renginių dar nėra – peržiūroje rodomas kitas jūsų renginys su šios vietos pavadinimu"
+  },
+  "fontUsage": {
+    "weekly": "jūsų savaitės įrašo dizainas",
+    "event": "jūsų vieno renginio įrašo dizainas",
+    "place": "jūsų dizainas vietai „{place}“",
+    "placeUnnamed": "jūsų dizainas vietai"
+  },
+  "face": {
+    "regular": "Įprastas",
+    "bold": "Pusjuodis",
+    "italic": "Kursyvas"
+  },
+  "picture": {
+    "legacy": "Renginio plakatas",
+    "fallback": "Paveikslėlis",
+    "wrongShape": "Kita forma – negalima naudoti kaip viso fono"
+  },
+  "noPicture": {
+    "omit": "Praleisti",
+    "blank": "Palikti tuščią vietą",
+    "logo": "Rodyti logotipą"
+  },
+  "noPicturesAll": "{total, plural, one {Visos jūsų vietos ({total}) turi paveikslėlį.} few {Visos jūsų vietos ({total}) turi paveikslėlį.} many {Visos jūsų vietos ({total}) turi paveikslėlį.} other {Visos jūsų vietos ({total}) turi paveikslėlį.}}",
+  "noPicturesSome": "{without, plural, one {{without} iš {total} jūsų vietų dar neturi paveikslėlio} few {{without} iš {total} jūsų vietų dar neturi paveikslėlio} many {{without} iš {total} jūsų vietų dar neturi paveikslėlio} other {{without} iš {total} jūsų vietų dar neturi paveikslėlio}}",
+  "licenceTick": "Šis šriftas priklauso man arba turiu licenciją juo naudotis",
+  "fontUploadButton": "↑ Įkelti savo šriftą"
+}

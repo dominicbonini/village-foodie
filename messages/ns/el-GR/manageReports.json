@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Χρονικό εύρος",
+    "event": "📍 Εκδήλωση",
+    "filterBy": "Φιλτράρισμα κατά",
+    "show": "Εμφάνιση",
+    "range": "<from></from><sep>έως</sep><until></until>",
+    "selectEvent": "Επιλέξτε εκδήλωση…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Εκδήλωση",
+    "viewReport": "Προβολή αναφοράς",
+    "loading": "Φόρτωση…",
+    "orders": "📋 Παραγγελίες",
+    "items": "📦 Προϊόντα",
+    "exportCsv": "⬇ Εξαγωγή CSV"
+  },
+  "empty": {
+    "noOrders": "Δεν βρέθηκαν παραγγελίες για αυτή την περίοδο.",
+    "selectEvent": "Επιλέξτε μια εκδήλωση παραπάνω για να δείτε την αναφορά της."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} παραγγελία} other {{count} παραγγελίες}} · {total}"
+  },
+  "revenue": {
+    "title": "Ανάλυση εσόδων",
+    "deals": "Έσοδα από μενού",
+    "modifiers": "Επιπλέον χρεώσεις επιλογών",
+    "foodSales": "Πωλήσεις φαγητού",
+    "total": "Σύνολο",
+    "other": "Άλλα",
+    "tax": "Φόροι",
+    "tips": "Φιλοδωρήματα",
+    "serviceFees": "Χρεώσεις υπηρεσίας",
+    "cardFees": "Χρεώσεις καρτών"
+  },
+  "itemsSold": {
+    "title": "Προϊόντα που πουλήθηκαν"
+  },
+  "dealsCard": {
+    "title": "Μενού"
+  },
+  "custom": {
+    "title": "Προσαρμογές",
+    "paidModifiers": "Επιλογές με χρέωση",
+    "customerNotes": "Σημειώσεις πελατών",
+    "note": "«{note}»"
+  },
+  "table": {
+    "item": "Προϊόν",
+    "modifier": "Επιλογή",
+    "qty": "Ποσ.",
+    "total": "Σύνολο",
+    "date": "Ημερομηνία",
+    "time": "Ώρα",
+    "channel": "Κανάλι"
+  },
+  "breakdown": {
+    "orders": "Ανάλυση παραγγελιών",
+    "items": "Ανάλυση προϊόντων"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Επί τόπου"
+  },
+  "csv": {
+    "orderId": "Αριθμός παραγγελίας",
+    "date": "Ημερομηνία",
+    "event": "Εκδήλωση",
+    "timePlaced": "Ώρα καταχώρισης",
+    "collectionTime": "Ώρα παραλαβής",
+    "customerName": "Όνομα πελάτη",
+    "orderType": "Τύπος παραγγελίας",
+    "items": "Προϊόντα",
+    "deals": "Μενού",
+    "modifiers": "Επιλογές",
+    "notes": "Σημειώσεις",
+    "subtotal": "Μερικό σύνολο",
+    "tip": "Φιλοδώρημα",
+    "serviceFee": "Χρέωση υπηρεσίας",
+    "total": "Σύνολο",
+    "itemName": "Όνομα προϊόντος",
+    "qty": "Ποσ.",
+    "unitPrice": "Τιμή μονάδας",
+    "itemTotal": "Σύνολο προϊόντος",
+    "orderTotal": "Σύνολο παραγγελίας",
+    "unknownEvent": "Άγνωστη εκδήλωση",
+    "asap": "Το συντομότερο",
+    "unknownCustomer": "Άγνωστος",
+    "customerOnline": "Πελάτης online",
+    "placedByTruck": "Από το food truck"
+  }
+}

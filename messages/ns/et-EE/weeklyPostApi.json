@@ -6,7 +6,7 @@
     "place": "Asukoha nimi ei mahtunud ära ja seda lühendati.",
     "time": "Kellaaeg ei mahtunud ära ja seda lühendati.",
     "note": "Sinu enda tekst ei mahtunud ära ja seda lühendati.",
-    "venue": "Toimumiskoht ei mahtunud ära ja seda lühendati.",
+    "venue": "Asukoht ei mahtunud ära ja seda lühendati.",
     "area": "Piirkond ei mahtunud ära ja seda lühendati."
   },
   "fontFallback": "Selle kujunduse fonti ({id}) ei õnnestunud laadida — need kastid on fondiga Oswald.",

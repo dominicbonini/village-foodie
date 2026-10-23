@@ -24,7 +24,7 @@
     "otherTip": "Cita summa",
     "tipAmount": "Dzeramnaudas summa",
     "tipCap": "Maksimālā dzeramnauda: {amount}.",
-    "tipNote": "100 % dzeramnaudas saņem food truck. Aprēķināta no ēdiena summas pirms nodokļiem.",
+    "tipNote": "100% dzeramnaudas saņem food truck. Aprēķināta no ēdiena summas pirms nodokļiem.",
     "authFailed": "Šo maksājumu nevarēja autorizēt. Nauda nav iekasēta — lūdzu, izmantojiet citu karti vai izvēlieties “Maksājiet saņemot”.",
     "couldNotPlace": "Mēs nevarējām noformēt jūsu pasūtījumu. Nauda nav iekasēta.",
     "paymentThrew": "Apstrādājot maksājumu, radās kļūda. Nauda nav iekasēta — lūdzu, mēģiniet vēlreiz vai izvēlieties “Maksājiet saņemot”.",
@@ -179,7 +179,7 @@
     "generated": "Izveidots: {date}",
     "allowanceHeading": "Iekļautie tiešsaistes pasūtījumi",
     "smallPrint": "Papildu nosacījumi",
-    "priceNoteMasked": "Cenas, kas norādītas kā “tiks precizēts”, vēl nav publicētas.",
+    "priceNoteMasked": "Cenas, kas norādītas kā “Tiks precizēts”, vēl nav publicētas.",
     "omitNote": "Cenas šajā dokumentā apzināti nav iekļautas.",
     "terms": "Norādītie skaitļi atbilst publicētajiem plānu nosacījumiem augstāk minētajā datumā un var mainīties. Karšu maksājumu apstrādes komisijas ir Stripe maksa, nevis HatchGrab maksa. Šis dokuments ir kopsavilkums, nevis līgums."
   },
@@ -393,7 +393,7 @@
       "takesCashTitle": "Vai pieņemat skaidru naudu?",
       "takesCashHelp": "Sadala maksājuma pogu divās: “Skaidrā” un “Karte”.",
       "orderReadyTitle": "Pasūtījuma gatavības solis",
-      "orderReadyHelp": "Rāda pogu “Atzīmēt kā gatavu” pasūtījumu ekrānā. Virtuves ekrāni tiek iestatīti atsevišķi. Klienti saņem e-pastu ikreiz, kad pasūtījums tiek atzīmēts kā gatavs.",
+      "orderReadyHelp": "Rāda pogu “Gatavs” pasūtījumu ekrānā. Virtuves ekrāni tiek iestatīti atsevišķi. Klienti saņem e-pastu ikreiz, kad pasūtījums tiek atzīmēts kā gatavs.",
       "buzzerPromptTitle": "Atgādināt man pievienot peidžeri",
       "buzzerPromptHelp": "Atver peidžeru režģi, tiklīdz noformējat pasūtījumu, lai numurs nonāktu sarakstā, kamēr klients vēl stāv jūsu priekšā. Ja tas ir izslēgts, peidžeri joprojām varat pievienot jebkurā laikā, pieskaroties pasūtījumam, taču nekas jums par to neatgādinās. Noderīgi, ja izsniedzat peidžerus; viegli izslēdzams, ja ne.",
       "cardsTitle": "Pieņemt maksājumus ar karti tiešsaistē",
@@ -577,7 +577,7 @@
     "serviceFee": "Apkalpošanas maksa",
     "cardFee": "Kartes komisija",
     "tip": "Dzeramnauda",
-    "rate": "{rate} %",
+    "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
     "foldedCharges": "{parts, select, tax_fees_tip {Nodokļi, maksas un dzeramnauda} tax_tip {Nodokļi un dzeramnauda} fees_tip {Maksas un dzeramnauda} fees {Maksas} other {Nodokļi un maksas}}"
@@ -1265,12 +1265,12 @@
       "finished": "Pasākums beigts",
       "cancelled": "Pasākums atcelts",
       "noteSaved": "Piezīme saglabāta",
-      "pauseConfirm": "Pauzēt pasūtījumus? Klienti redzēs “Pasūtījumi netiek pieņemti”, līdz jūs atsāksiet.",
+      "pauseConfirm": "Pauzēt pasūtījumus? Klienti redzēs “Pasūtījumu pieņemšana pašlaik ir apturēta”, līdz jūs atsāksiet.",
       "switchConfirm": "Pārslēgt pasākumu: {from} → {to}?{n, plural, =0 {} zero { {count} pasūtījumi šajā ekrānā tiks aizstāti.} one { {count} pasūtījums šajā ekrānā tiks aizstāts.} other { {count} pasūtījumi šajā ekrānā tiks aizstāti.}} Pieskarieties pašreizējam pasākumam, lai pārslēgtos atpakaļ."
     },
     "intro": {
       "title": "Šis ir virtuves ekrāns",
-      "p1": "Tas ir pavāra skats — pasūtījumi, kas jāgatavo, tādā secībā, kādā tie jāgatavo. Ekrāns pie grila rāda šo, kamēr pie letes izmanto pasūtījumu paneli.",
+      "p1": "Tas ir pavāra skats — pasūtījumi, kas jāgatavo, tādā secībā, kādā tie jāgatavo. Ekrāns pie grila rāda šo, kamēr pie letes izmanto pasūtījumu vadības paneli.",
       "p2": "Kartītes pārvietojas, kad tām pieskaraties, tāpēc tas, kurš gatavo, vienmēr zina, kas sekos, un nevienam nav jākliedz. Viss šeit ir jūsu demo dati — izmēģiniet droši.",
       "gotIt": "Skaidrs"
     },
@@ -1466,7 +1466,7 @@
     "cashAndCollected": "Skaidrā, izsniegts",
     "logoPlaceholder": "Jūsu logotips šeit",
     "welcomeTitle": "{sample, select, yes {Lūk, parauga demo} other {Lūk, jūsu demo}}",
-    "welcomeIntro": "{sample, select, yes {Šī ir <b>parauga ēdienkarte</b>, lai jūs redzētu, kā viss darbojas — augšupielādējiet savu jebkurā laikā, lai to pielāgotu sev.} other {Šī ir jūsu ēdienkarte un zīmols īstā pasūtījumu panelī.}} Pasūtījumi, kas tajā jau ir, ir piemēri, lai jūs redzētu, kā izskatās rosīgs darbs.",
+    "welcomeIntro": "{sample, select, yes {Šī ir <b>parauga ēdienkarte</b>, lai jūs redzētu, kā viss darbojas — augšupielādējiet savu jebkurā laikā, lai to pielāgotu sev.} other {Šī ir jūsu ēdienkarte un zīmols īstā pasūtījumu vadības panelī.}} Pasūtījumi, kas tajā jau ir, ir piemēri, lai jūs redzētu, kā izskatās rosīgs darbs.",
     "twoThings": "Divas lietas, ko izmēģināt:",
     "hitButton": "Nospiediet <b>{button}</b> pie kāda pasūtījuma",
     "scanQr": "Noskenējiet <b>QR kodu</b> — vai pieskarieties saitei — un pasūtiet kā klients, tad vērojiet, kā pasūtījums pienāk",
@@ -1495,7 +1495,7 @@
     "kitchenScreen": "Virtuves ekrāns",
     "thisDevice": "Šī ierīce",
     "manage": "Pārvaldība",
-    "ordersDashboard": "Pasūtījumu panelis",
+    "ordersDashboard": "Pasūtījumu vadības panelis",
     "admin": "Administrēšana",
     "privacy": "Privātuma politika",
     "terms": "Noteikumi",
@@ -1714,7 +1714,7 @@
   "alertsOperator": {
     "hi": "Labdien, {name}!",
     "limit80": {
-      "subject": "Izmantoti 80 % no šī mēneša WhatsApp atbildēm",
+      "subject": "Izmantoti 80% no šī mēneša WhatsApp atbildēm",
       "used": "Jūsu automātiskās WhatsApp atbildes: šomēnes izmantotas <b>{used} no {limit}</b>.",
       "nothingStopped": "Nekas nav apturēts. Kad sasniegsiet {limit}, automātiskās atbildes tiks pauzētas, līdz limits atjaunosies <b>{reset}</b> — klienti joprojām var jums rakstīt, un jūs joprojām redzēsiet visu, ko viņi sūta.",
       "raise": "Mēneša limitu jebkurā laikā varat palielināt sadaļā “Iestatījumi”.",
@@ -1835,7 +1835,7 @@
     "noVan": {
       "title": "Pievienojiet busiņu",
       "detail": "Pasākumi ir piesaistīti busiņam — bez tā nav caur ko pieņemt pasūtījumus.",
-      "where": "Iestatījumi → Jūsu food truck"
+      "where": "Iestatījumi → Jūsu busiņi"
     },
     "kitchenCapacityUnset": {
       "title": "Iestatiet virtuves jaudu",
@@ -2933,7 +2933,7 @@
     },
     "settingsReview": {
       "anchorOrder": "Iestatījumi → Pasūtījumu iestatījumi",
-      "anchorDisplay": "Iestatījumi → Jūsu food truck → Attēlošanas iestatījumi",
+      "anchorDisplay": "Iestatījumi → Jūsu busiņi → Attēlošanas iestatījumi",
       "mins15": "15 minūtes",
       "mins30": "30 minūtes",
       "mins60": "60 minūtes",
@@ -2948,8 +2948,8 @@
       "cancelAria": "Cik ilgi pirms saņemšanas klienti var atcelt"
     },
     "allergensNotSet": {
-      "bodySetup": "Pārskatiet tos pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “alergēni nav iestatīti”.",
-      "body": "Pārskatiet tos sadaļā Iestatījumi pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “alergēni nav iestatīti”.",
+      "bodySetup": "Pārskatiet tos pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “Alergēni nav iestatīti”.",
+      "body": "Pārskatiet tos sadaļā Iestatījumi pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “Alergēni nav iestatīti”.",
       "title": "⚠ Alergēni un uztura informācija vēl nav iestatīti"
     },
     "welcome": {
@@ -3163,13 +3163,13 @@
     "auto_open_close_required": "Kaut kas nogāja greizi — atsvaidziniet lapu un mēģiniet vēlreiz.",
     "charges_owner_only": "Nodokļus, dzeramnaudu un maksas var mainīt tikai īpašnieks",
     "charges_rate_decimals": "Izmantojiet līdz 3 zīmēm aiz komata, piemēram, 8,875.",
-    "charges_rate_range": "Izmantojiet likmi no 0 līdz 20 %.",
+    "charges_rate_range": "Izmantojiet likmi no 0 līdz 20%.",
     "charges_rate_not_here": "Jūsu valstī cenās nodoklis jau ir iekļauts, tāpēc likme nav jāiestata.",
     "charges_fee_not_here": "Tiešsaistes apkalpošanas maksas jūsu valstī nav pieejamas.",
     "charges_fee_hatchgrab": "Tiešsaistes apkalpošanas maksu jūsu valstī nosaka HatchGrab, tāpēc to šeit nevar mainīt.",
     "charges_fee_pct": "Norādiet procentus, piemēram, 3 vai 3,5.",
     "charges_fee_fixed": "Norādiet summu, piemēram, 0,50.",
-    "charges_fee_over_pct": "Maksimālā maksa ir {max} %.",
+    "charges_fee_over_pct": "Maksimālā maksa ir {max}%.",
     "charges_fee_over_fixed": "Maksimālā maksa ir {max}.",
     "charges_fee_part_not_allowed": "Šī maksas daļa jūsu valstī nav atļauta.",
     "charges_choose_on_off": "Izvēlieties: ieslēgts vai izslēgts.",
@@ -3719,7 +3719,7 @@
     },
     "orderReady": {
       "label": "Solis “Gatavs”",
-      "help": "Pasūtījumu ekrānā rāda pogu “Atzīmēt kā gatavu”. Virtuves ekrāni tiek iestatīti atsevišķi katrā ierīcē. Klienti saņem e-pastu ikreiz, kad pasūtījums atzīmēts kā gatavs. Attiecas uz visiem pasākumiem — vienam pasākumam to joprojām var ieslēgt vai izslēgt tā vadības panelī."
+      "help": "Pasūtījumu ekrānā rāda pogu “Gatavs”. Virtuves ekrāni tiek iestatīti atsevišķi katrā ierīcē. Klienti saņem e-pastu ikreiz, kad pasūtījums atzīmēts kā gatavs. Attiecas uz visiem pasākumiem — vienam pasākumam to joprojām var ieslēgt vai izslēgt tā vadības panelī."
     },
     "buzzers": {
       "label": "Vai izsniedzat peidžerus pasūtījumu saņemšanai?",
@@ -3884,7 +3884,7 @@
       "sameOn": "Šim busiņam ir tādi paši iestatījumi, izņemot virtuves jaudu.",
       "sameOff": "Kopēt pirmā busiņa iestatījumus — visus, izņemot virtuves jaudu, — un uzturēt tos vienādus.",
       "displayTitle": "Attēlošanas iestatījumi",
-      "takesCashHelp": "Sadala maksājuma pogu divās — “Skaidra nauda” un “Karte”, lai ieņēmumus varētu salīdzināt ar kasi. Vienam pasākumam to var ieslēgt vadības panelī.",
+      "takesCashHelp": "Sadala maksājuma pogu divās — “Skaidrā” un “Karte”, lai ieņēmumus varētu salīdzināt ar kasi. Vienam pasākumam to var ieslēgt vadības panelī.",
       "followingTruck": "Tiek izmantots jūsu food truck iestatījums.",
       "buzzerCountAria": "Peidžeru skaits",
       "save": "Saglabāt",
@@ -4488,18 +4488,18 @@
     "rate": {
       "label": "Pārdošanas nodokļa likme",
       "hint": "Likme, ko piemērojat katram pasūtījumam. Klienti redz to pieskaitītu, maksājot, kā arī čekos un virtuves čekos.",
-      "regionDefault": "Atstājiet tukšu, lai piemērotu {label} {rate} % apmērā — likmi gatavam ēdienam ({region})."
+      "regionDefault": "Atstājiet tukšu, lai piemērotu {label} {rate}% apmērā — likmi gatavam ēdienam ({region})."
     },
     "included": {
       "label": "{label} iekļauts jūsu cenās",
       "hint": "Jūsu cenās jau ir iekļauts {label}. Šī likme tikai norāda, cik liela katras cenas daļa ir {label}, čekos un virtuves čekos — maksājot nekas netiek pieskaitīts.",
-      "default": "Atstājiet tukšu, lai izmantotu {rate} % — {label} likmi karstam ēdienam līdzņemšanai ({country})."
+      "default": "Atstājiet tukšu, lai izmantotu {rate}% — {label} likmi karstam ēdienam līdzņemšanai ({country})."
     },
     "tips": {
       "label": "Dzeramnauda",
       "hint": "Klienti, kas maksā tiešsaistē ar karti, var pievienot dzeramnaudu. Tā visa pienākas jums.",
       "choices": "Klientiem redzamās izvēles:",
-      "chip": "{rate} %",
+      "chip": "{rate}%",
       "other": "Cita summa"
     },
     "fee": {
@@ -4810,7 +4810,7 @@
       "paymentsIcon": "💶",
       "scheduleCount": "Grafiks ({count})",
       "stripeAttention": "Stripe nepieciešama jūsu rīcība",
-      "allergensNotSet": "alergēni nav norādīti"
+      "allergensNotSet": "alergēni nav iestatīti"
     },
     "menuSections": {
       "label": "Ēdienkartes sadaļas",
@@ -4831,7 +4831,7 @@
       "showMeAround": "Parādiet man",
       "dismiss": "Aizvērt",
       "approval": "{count, plural, zero {Mēs jums atradām <b>{count}</b> pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.} one {Mēs jums atradām <b>{count}</b> pasākumu — pārskatiet un apstipriniet to, pirms tas tiek publicēts.} other {Mēs jums atradām <b>{count}</b> pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.}}",
-      "allergens": "<b>Alergēni nav norādīti</b> — klienti neredz informāciju par alergēniem, kamēr jūs to neesat pārbaudījis. Pārskatiet katra ēdiena alergēnus cilnē Ēdienkarte.",
+      "allergens": "<b>Alergēni nav iestatīti</b> — klienti neredz informāciju par alergēniem, kamēr jūs to neesat pārbaudījis. Pārskatiet katra ēdiena alergēnus cilnē Ēdienkarte.",
       "domainLive": "<link>{domain}</link> darbojas. Apskatiet to un pēc tam sadaļā Iestatījumi apstipriniet, ka viss ir pareizi.",
       "stripe": "<b>Stripe kaut kas no jums ir nepieciešams</b> — kamēr tas nav nokārtots, karšu maksājumi var tikt apturēti.",
       "profileTitle": "Aizpildiet savu profilu",
@@ -5028,7 +5028,7 @@
       "option": "{n, number}",
       "usage": "Izmantots: {used, number} no {limit, number} · atjaunojas {date}",
       "perCustomer": "Atbilžu limits vienam klientam 24 stundās: {n}; pēc tam tiek nosūtīta viena ziņa, ka atbildēsiet personīgi.",
-      "emailAt": "Sasniedzot limitu, atbildes tiek apturētas. Mēs jums nosūtīsim e-pastu pie 80 % un 100 %.",
+      "emailAt": "Sasniedzot limitu, atbildes tiek apturētas. Mēs jums nosūtīsim e-pastu pie 80% un 100%.",
       "saved": "Mēneša atbilžu limits saglabāts",
       "saveFailed": "Neizdevās saglabāt limitu"
     },

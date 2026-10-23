@@ -1,0 +1,17 @@
+{
+  "back": "← Atgal",
+  "title": "Pritaikyti rinkinį",
+  "save": "Sutaupykite {amount}",
+  "selectItems": "Pasirinkite patiekalus kiekvienai rinkinio daliai",
+  "choose": "Pasirinkite: {category}…",
+  "inYourBasket": "── Jūsų krepšelyje ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (krepšelyje){state, select, used { – jau rinkinyje} taken { – pasirinkta kitoje dalyje} other {}}",
+  "addNew": "── Pridėti naują ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Privaloma · pasirinkite vieną} required {Privaloma} other {Pasirinkite vieną}}{unmet, select, yes { (privaloma)} other {}}",
+  "notePlaceholder": "Pridėkite pastabą, pvz., be svogūnų (neprivaloma)",
+  "backButton": "Atgal",
+  "cancel": "Atšaukti",
+  "chooseRequired": "Pasirinkite privalomas parinktis",
+  "apply": "Pritaikyti rinkinį · {amount}"
+}

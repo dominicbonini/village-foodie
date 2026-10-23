@@ -1,0 +1,9 @@
+{
+  "subject": "Jūsų HatchGrab demo versija — štai nuoroda sugrįžti",
+  "heading": "Jūsų demo versija išsaugota",
+  "intro": "Štai nuoroda sugrįžti į demo versiją su jūsų meniu. Prisijungti nereikia — tiesiog bakstelėkite ją.",
+  "button": "Atidaryti demo versiją",
+  "freshDay": "Kaskart jums sugrįžus paruošime naują prekybos dieną, kad turėtumėte ką išbandyti.",
+  "deletion": "Tai demo versija, todėl jos nesaugome amžinai — ją ir meniu ištrinsime <b>{date}</b> (po {days, plural, one {# dienos} few {# dienų} many {# dienų} other {# dienų}}). Jei iki tol užsiregistruosite, jūsų meniu keliaus kartu su jumis.",
+  "notSent": "Išsaugota, bet šiuo metu nepavyko išsiųsti laiško."
+}

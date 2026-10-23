@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Naują užsakymą reikia patvirtinti",
+    "body": "Užsakymas {number} — {truck}"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Visi",
+    "bold": "Ryškūs ir aukšti",
+    "hand": "Rankraštiniai",
+    "classic": "Klasikiniai",
+    "clean": "Paprasti",
+    "own": "Jūsų",
+    "ownCount": "Jūsų ({count})"
+  },
+  "yoursTag": "· jūsų",
+  "loadingFonts": "Įkeliami šriftai…",
+  "search": "Ieškoti šriftų (iš viso: {count, number})",
+  "uploadButton": "↑ Įkelti savo šriftą",
+  "loadingLibrary": "Įkeliama šriftų biblioteka…",
+  "tryAgain": "Bandyti dar kartą",
+  "noOwn": "Dar neįkėlėte nė vieno šrifto. Naudokite mygtuką „↑ Įkelti savo šriftą“ viršuje.",
+  "recent": "Neseniai naudoti",
+  "popular": "Populiarūs plakatams",
+  "adding": "Pridedama…",
+  "noMatch": "Pagal „{query}“ šriftų nerasta.",
+  "showing": "Rodoma {shown} iš {total, number} — įveskite daugiau, kad susiaurintumėte paiešką.",
+  "couldNotAdd": "Šio šrifto pridėti nepavyko",
+  "tooBig": "Šis šriftas užima {size, number, ::.0 group-off} MB. Didžiausias leidžiamas dydis – 5 MB.",
+  "woff": "Įkelkite TTF arba OTF failą — jį paprastai galima atsisiųsti ten, kur įsigijote šriftą.",
+  "uploadIncomplete": "Įkėlimas nebaigtas",
+  "added": "„{name}“ pridėtas kaip {face} versija.",
+  "face": {
+    "regular": "įprasta",
+    "bold": "pusjuodė",
+    "italic": "kursyvinė"
+  },
+  "licenceTick": "Šis šriftas priklauso man arba turiu licenciją jį naudoti",
+  "checking": "Tikrinamas šriftas…",
+  "addFont": "Pridėti šriftą",
+  "cancel": "Atšaukti",
+  "missingFaces": "Galite pridėti trūkstamą „{name}“ versiją: {faces} (neprivaloma) — pasirinkite failą dar kartą.",
+  "somethingWrong": "Kažkas nepavyko",
+  "faceLower": {
+    "regular": "įprasta",
+    "bold": "pusjuodė",
+    "italic": "kursyvinė"
+  },
+  "ownLicence": "Jūsų",
+  "loadFailed": "Nepavyko įkelti šriftų"
+}

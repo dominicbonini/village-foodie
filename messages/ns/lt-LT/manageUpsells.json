@@ -1,0 +1,19 @@
+{
+  "heading": "Papildomi pasiūlymai",
+  "intro": "Paskatinkite klientus užsisakyti ką nors papildomai. Kai kas nors užsisako iš vienos kategorijos, pasiūlykite patiekalų iš kitos — gėrimą prie picos, padažą prie mėsainio.",
+  "add": "+ Pridėti papildomą pasiūlymą",
+  "toast": {
+    "updated": "Papildomo pasiūlymo taisyklė atnaujinta",
+    "added": "Papildomo pasiūlymo taisyklė pridėta",
+    "removed": "Taisyklė pašalinta"
+  },
+  "whenAdds": "Kai klientas prideda…",
+  "suggestFrom": "Siūlyti patiekalus iš…",
+  "chooseCategory": "Pasirinkite kategoriją",
+  "cancel": "Atšaukti",
+  "saveChanges": "Išsaugoti pakeitimus",
+  "addRule": "Pridėti taisyklę",
+  "empty": "Papildomų pasiūlymų taisyklių dar nėra.",
+  "confirmRemove": "Pašalinti papildomo pasiūlymo taisyklę „{trigger} → {suggest}“?",
+  "upTo": "{n, plural, one {Siūloma iki {count} patiekalo} few {Siūloma iki {count} patiekalų} many {Siūloma iki {count} patiekalų} other {Siūloma iki {count} patiekalų}}"
+}

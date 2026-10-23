@@ -16,7 +16,7 @@
     "ownBoth": "Oma kuva ja omat tekstien sijainnit",
     "wrongShape": "Eri muoto — ei käytössä ennen kuin vaihdat sen",
     "ownPicture": "Oma kuva, vakiosijainnit",
-    "ownPositions": "Vakiokuva, omat tekstien sijainnit",
+    "ownPositions": "Vakiopohjan kuva, omat tekstien sijainnit",
     "none": "Ei vielä kuvaa — käytössä Vakio"
   },
   "standardStatus": "Käytössä kaikissa muissa paikoissa",
@@ -50,8 +50,8 @@
     "blank": "Jätä tyhjä tila",
     "logo": "Näytä logosi"
   },
-  "noPicturesAll": "{total, plural, one {Sijainnillasi on kuva.} other {Kaikissa sijainneissasi ({total}) on kuva.}}",
-  "noPicturesSome": "{without, plural, one {{without}/{total} sijainnistasi on vielä ilman kuvaa} other {{without}/{total} sijainnistasi on vielä ilman kuvaa}}",
+  "noPicturesAll": "{total, plural, one {Paikallasi on kuva.} other {Kaikilla paikoillasi ({total}) on kuva.}}",
+  "noPicturesSome": "{without, plural, one {{without}/{total} paikastasi on vielä ilman kuvaa} other {{without}/{total} paikastasi on vielä ilman kuvaa}}",
   "licenceTick": "Omistan tämän fontin tai minulla on lisenssi sen käyttöön",
   "fontUploadButton": "↑ Lataa oma fonttisi"
 }

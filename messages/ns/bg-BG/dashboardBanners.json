@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} интервал} other {{count} интервала}} над капацитета — прегледайте",
+  "batchOver": "{cat}: над партидата — {count} за {slot} ({per} на партида)",
+  "eventStartOver": "Над капацитета в началото на събитието — {n, plural, one {{count} артикул} other {{count} артикула}} за {slot}",
+  "kitchenOver": "Кухнята е над капацитета — {n, plural, one {{count} артикул се готви} other {{count} артикула се готвят}} за {slot}",
+  "orderItems": "№{id} — {n, plural, one {{count} артикул} other {{count} артикула}}",
+  "placedAnyway": "Приети въпреки това: {list}",
+  "placedItem": "№{id} за {slot}",
+  "orphans": "{times}: над капацитета — не са открити поръчки, към които да се отнесе",
+  "dismiss": "Затваряне",
+  "kitchenCapacity": "Капацитет на кухнята",
+  "overCapacity": "Над капацитета",
+  "wakeUnsupported": "Това устройство не може да държи екрана включен.",
+  "wakeInsecure": "От този адрес екранът не може да се държи включен.",
+  "wakeRetry": "Екранът да е включен — докоснете, за да опитате пак",
+  "wakeAcquire": "Екранът да е включен",
+  "degraded": {
+    "serverError": "Сървърът не можа да зареди поръчките{hasStatus, select, yes { (грешка {status})} other {}}. Показват се поръчките от {at}. Може да липсват нови поръчки.",
+    "unreachable": "Няма връзка със сървъра. Показват се поръчките от {at}. Може да липсват нови поръчки."
+  }
+}

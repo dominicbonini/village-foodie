@@ -52,7 +52,7 @@
     "label": "Somen osiot",
     "create": "Luo julkaisu",
     "designs": "Pohjat",
-    "locations": "Sijaintiasetukset"
+    "locations": "Paikkojen asetukset"
   },
   "notices": {
     "review": "Tarkista →",
@@ -79,6 +79,6 @@
     "offer": "{hasMonths, select, yes {{months, plural, one {Kaikki ominaisuudet ilmaiseksi # kuukauden ajan} other {Kaikki ominaisuudet ilmaiseksi # kuukauden ajan}}} other {Kaikki ominaisuudet ilmaiseksi kokeilujakson ajan}}",
     "body": "{hasDate, select, yes {Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää <b>{date}</b> asti. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa. Valitse pakettisi ennen sitä — jos et valitse, siirryt pakettiin {fallback} ja osa ominaisuuksista lakkaa toimimasta.} other {Sinulta ei veloiteta mitään kokeilujakson aikana. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa. Valitse pakettisi ennen kokeilujakson loppua — jos et valitse, siirryt pakettiin {fallback} ja osa ominaisuuksista lakkaa toimimasta.}}",
     "fees": "*Verkkotilauksiin sovelletaan tavanomaisia korttimaksujen käsittelykuluja",
-    "upgrade": "Vaihda pakettia tästä →"
+    "upgrade": "Päivitä pakettia tästä →"
   }
 }

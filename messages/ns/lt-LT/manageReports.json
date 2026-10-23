@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Laikotarpis",
+    "event": "📍 Renginys",
+    "filterBy": "Filtruoti pagal",
+    "show": "Rodyti",
+    "range": "<from></from><sep>iki</sep><until></until>",
+    "selectEvent": "Pasirinkite renginį…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Renginys",
+    "viewReport": "Rodyti ataskaitą",
+    "loading": "Įkeliama…",
+    "orders": "📋 Užsakymai",
+    "items": "📦 Patiekalai",
+    "exportCsv": "⬇ Eksportuoti CSV"
+  },
+  "empty": {
+    "noOrders": "Šiuo laikotarpiu užsakymų nerasta.",
+    "selectEvent": "Pasirinkite renginį viršuje, kad pamatytumėte jo ataskaitą."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} užsakymas} few {{count} užsakymai} many {{count} užsakymų} other {{count} užsakymų}} · {total}"
+  },
+  "revenue": {
+    "title": "Pajamų suskirstymas",
+    "deals": "Pajamos iš rinkinių",
+    "modifiers": "Priemokos už parinktis",
+    "foodSales": "Maisto pardavimai",
+    "total": "Iš viso",
+    "other": "Kita",
+    "tax": "Mokesčiai",
+    "tips": "Arbatpinigiai",
+    "serviceFees": "Aptarnavimo mokesčiai",
+    "cardFees": "Kortelių mokesčiai"
+  },
+  "itemsSold": {
+    "title": "Parduoti patiekalai"
+  },
+  "dealsCard": {
+    "title": "Rinkiniai"
+  },
+  "custom": {
+    "title": "Pritaikymai",
+    "paidModifiers": "Mokamos parinktys",
+    "customerNotes": "Klientų pastabos",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Patiekalas",
+    "modifier": "Parinktis",
+    "qty": "Kiekis",
+    "total": "Iš viso",
+    "date": "Data",
+    "time": "Laikas",
+    "channel": "Kanalas"
+  },
+  "breakdown": {
+    "orders": "Užsakymų suvestinė",
+    "items": "Patiekalų suvestinė"
+  },
+  "channel": {
+    "online": "Internetu",
+    "walkUp": "Vietoje"
+  },
+  "csv": {
+    "orderId": "Užsakymo ID",
+    "date": "Data",
+    "event": "Renginys",
+    "timePlaced": "Pateikimo laikas",
+    "collectionTime": "Atsiėmimo laikas",
+    "customerName": "Kliento vardas",
+    "orderType": "Užsakymo tipas",
+    "items": "Patiekalai",
+    "deals": "Rinkiniai",
+    "modifiers": "Parinktys",
+    "notes": "Pastabos",
+    "subtotal": "Tarpinė suma",
+    "tip": "Arbatpinigiai",
+    "serviceFee": "Aptarnavimo mokestis",
+    "total": "Iš viso",
+    "itemName": "Patiekalo pavadinimas",
+    "qty": "Kiekis",
+    "unitPrice": "Vieneto kaina",
+    "itemTotal": "Patiekalų suma",
+    "orderTotal": "Užsakymo suma",
+    "unknownEvent": "Nežinomas renginys",
+    "asap": "Kuo greičiau",
+    "unknownCustomer": "Nežinomas",
+    "customerOnline": "Klientas internetu",
+    "placedByTruck": "Pateikė food truck"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab pradžia",
+  "cta": "Įkelti mano meniu →",
+  "ctaShort": "Įkelti meniu",
+  "features": "Funkcijos",
+  "pricing": "Kainos",
+  "logIn": "Prisijungti",
+  "country": {
+    "button": "Šalis: {name}. Keisti šalį",
+    "menu": "Šalis"
+  }
+}

@@ -4,7 +4,6 @@
   "normalise": "unicode",
   "stems": [
     "alerg",
-    "nepanesam",
     "celiakij",
     "celiakija",
     "bez glutena",
@@ -31,7 +30,9 @@
     "var saturet",
     "pedas",
     "krusteniska piesarnojum",
-    "piesarnojum"
+    "piesarnojum",
+    "nepanes",
+    "piesarnos"
   ],
   "tokens": [],
   "caveatWords": {

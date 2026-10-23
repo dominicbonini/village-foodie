@@ -208,7 +208,7 @@
     "takesCashTitle": "Vai pieņemat skaidru naudu?",
     "takesCashHelp": "Sadala maksājuma pogu divās: “Skaidrā” un “Karte”.",
     "orderReadyTitle": "Pasūtījuma gatavības solis",
-    "orderReadyHelp": "Rāda pogu “Atzīmēt kā gatavu” pasūtījumu ekrānā. Virtuves ekrāni tiek iestatīti atsevišķi. Klienti saņem e-pastu ikreiz, kad pasūtījums tiek atzīmēts kā gatavs.",
+    "orderReadyHelp": "Rāda pogu “Gatavs” pasūtījumu ekrānā. Virtuves ekrāni tiek iestatīti atsevišķi. Klienti saņem e-pastu ikreiz, kad pasūtījums tiek atzīmēts kā gatavs.",
     "buzzerPromptTitle": "Atgādināt man pievienot peidžeri",
     "buzzerPromptHelp": "Atver peidžeru režģi, tiklīdz noformējat pasūtījumu, lai numurs nonāktu sarakstā, kamēr klients vēl stāv jūsu priekšā. Ja tas ir izslēgts, peidžeri joprojām varat pievienot jebkurā laikā, pieskaroties pasūtījumam, taču nekas jums par to neatgādinās. Noderīgi, ja izsniedzat peidžerus; viegli izslēdzams, ja ne.",
     "cardsTitle": "Pieņemt maksājumus ar karti tiešsaistē",

@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Профил на публичната карта"
+    },
+    "web_dashboard": {
+      "name": "Универсално уеб табло"
+    },
+    "qr_code": {
+      "name": "QR код"
+    },
+    "schedule_import": {
+      "name": "Автоматично импортиране на графика"
+    },
+    "meal_deals_upsells": {
+      "name": "Комбо оферти и допълнителни продажби"
+    },
+    "walkup_orders": {
+      "name": "Обработка на поръчки на място"
+    },
+    "sold_out_toggle": {
+      "name": "Моментално отбелязване като изчерпано"
+    },
+    "kitchen_app": {
+      "name": "Кухненско приложение за iPhone, iPad и Android"
+    },
+    "offline_protection": {
+      "name": "Защита на поръчките при офлайн режим"
+    },
+    "online_payments": {
+      "name": "Онлайн плащания"
+    },
+    "advance_preordering": {
+      "name": "Предварително поръчване"
+    },
+    "preorder_deadline": {
+      "name": "Краен срок за предварителни поръчки"
+    },
+    "time_slot_selection": {
+      "name": "Избор на времеви интервал от клиента"
+    },
+    "kitchen_capacity": {
+      "name": "Управление на капацитета на кухнята"
+    },
+    "stock_countdown": {
+      "name": "Автоматично отброяване на наличностите"
+    },
+    "auto_accept": {
+      "name": "Автоматично приемане на онлайн поръчки"
+    },
+    "branded_qr_code": {
+      "name": "QR код с Вашата марка"
+    },
+    "private_events": {
+      "name": "Частни събития"
+    },
+    "social_media_posts": {
+      "name": "Публикации в социалните мрежи"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Автоматични отговори в WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Автоматични отговори в Messenger и Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Приемане на плащания с телефона"
+    },
+    "advanced_reporting": {
+      "name": "Разширена отчетност"
+    },
+    "sms_order_alerts": {
+      "name": "SMS известия за поръчки"
+    },
+    "multi_device_kitchen": {
+      "name": "Синхронизация на кухнята на няколко устройства"
+    },
+    "multi_user_access": {
+      "name": "Достъп за няколко потребители"
+    },
+    "embed_schedule": {
+      "name": "Страница с графика на собствения Ви сайт"
+    },
+    "event_types": {
+      "name": "Собствени видове събития и цени"
+    },
+    "buzzer_tracking": {
+      "name": "Проследяване на пейджъри"
+    },
+    "ticket_printing": {
+      "name": "Печат на кухненски бонове"
+    },
+    "customer_display": {
+      "name": "Екран за клиентите"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Дигитални карти за лоялност с печати"
+    }
+  },
+  "cardRegionOnline": "стандартни {region}",
+  "cardRegion": {
+    "UKcards": "карти от Великобритания",
+    "EEAcards": "карти от ЕИП",
+    "UScards": "карти от САЩ",
+    "Australiancards": "карти от Австралия",
+    "NewZealandcards": "карти от Нова Зеландия",
+    "Canadiancards": "карти от Канада",
+    "Swisscards": "карти от Швейцария"
+  },
+  "perMonth": {
+    "mo": "{amount}/мес.",
+    "month": "{amount}/месец"
+  },
+  "priceWord": {
+    "free": "Безплатно",
+    "freeTrial": "Безплатен пробен период",
+    "lifetime": "Доживотно",
+    "zeroPercent": "0%",
+    "payAtHatch": "Плащане при вземане",
+    "unlimited": "Неограничено",
+    "none": "—",
+    "masked": "Уточнява се"
+  },
+  "cell": {
+    "included": "Включено"
+  }
+}

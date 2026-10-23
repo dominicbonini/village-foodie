@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Išsaugoti meniu →",
+    "heading": "Nustatykite savo food truck",
+    "sub": "Jūsų meniu bus perkeltas iškart.",
+    "privacy": "Šiuos duomenis naudosime tik jūsų food truck nustatymui ir demo versijos nuorodai išsiųsti — žr. mūsų <link>privatumo politiką</link>."
+  },
+  "sample": {
+    "bannerButton": "Nustatyti mano food truck →",
+    "heading": "Nustatykite savo food truck",
+    "sub": "Toliau įkelsite savo meniu — tai užtruks minutę.",
+    "privacy": "Šiuos duomenis naudosime tik jūsų food truck nustatymui ir demo versijos nuorodai išsiųsti — žr. mūsų <link>privatumo politiką</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Išsaugoti meniu →",
+    "heading": "Išsaugokite demo versiją",
+    "sub": "Saugosime ją 14 dienų ir iškart atsiųsime jums nuorodą el. paštu.",
+    "privacy": "Šiuos duomenis naudosime tik demo versijos nuorodai išsiųsti — žr. mūsų <link>privatumo politiką</link>."
+  },
+  "confirmationHeading": "Viskas paruošta",
+  "postSaveButton": "Nustatyti mano food truck →",
+  "enterSetupButton": "Nustatyti mano food truck →",
+  "emailOnlyLink": "Tiesiog atsiųskite man nuorodą, kad galėčiau grįžti į šią demo versiją",
+  "sendLinkButton": "Atsiųsti nuorodą",
+  "savingButton": "Išsaugoma…",
+  "continueButton": "Tęsti →",
+  "createAccountButton": "Sukurti paskyrą →",
+  "retryButton": "Bandyti dar kartą",
+  "backToDemoButton": "Grįžti į demo versiją",
+  "savedStatus": "{hasDate, select, yes {✓ Išsaugota — saugoma iki {date}} other {✓ Išsaugota}}",
+  "back": "Atgal",
+  "close": "Uždaryti",
+  "truckStepHeading": "Apie jūsų food truck",
+  "detailsStepHeading": "Užbaikite nustatymą",
+  "stepper": {
+    "details": "Duomenys",
+    "menu": "Meniu",
+    "allergens": "Alergenai",
+    "kitchen": "Virtuvė",
+    "schedule": "Tvarkaraštis"
+  },
+  "confirmEmailed": "Atsiuntėme jums el. paštu nuorodą tiesiai į šią demo versiją — prisijungti nereikia.",
+  "confirmKeepUntil": "Saugosime ją iki <b>{date}</b>. Kai viską nustatysite iki galo, jūsų meniu keliaus kartu su jumis.",
+  "loading": "Įkeliama…",
+  "firstName": "Vardas",
+  "lastName": "Pavardė",
+  "truckName": "Food truck pavadinimas",
+  "truckNamePlaceholder": "pvz., Kaimo virtuvė",
+  "cuisine": "Virtuvė",
+  "logoLabel": "Logotipas <opt>(neprivaloma)</opt>",
+  "logoPreviewAlt": "Logotipo peržiūra",
+  "changeLogo": "Keisti logotipą",
+  "removeLogo": "Pašalinti",
+  "uploadLogo": "📷 Įkelti logotipą",
+  "readyTitle": "Jūsų paskyra paruošta",
+  "readyBody": "Dabar užbaikime jūsų food truck nustatymą — meniu, alergenus ir virtuvę.",
+  "hangTight": "Palaukite — viską ruošiame.",
+  "stage": {
+    "account": "Kuriama jūsų paskyra",
+    "truck": "Nustatomas jūsų food truck",
+    "menu": "Įkeliamas jūsų meniu"
+  },
+  "stageState": {
+    "done": "atlikta",
+    "recognised": "jūs jau turite paskyrą",
+    "failed": "nepavyko",
+    "active": "vykdoma",
+    "pending": "laukiama"
+  },
+  "signIn": "Prisijungti",
+  "phone": "Telefonas",
+  "onWhatsapp": "Šiuo numeriu galima rašyti per WhatsApp",
+  "email": "El. paštas",
+  "emailPlaceholder": "jus@jusufoodtruck.lt",
+  "settingUpAs": "Paskyra kuriama adresu <b>{email}</b> <change>keisti</change>",
+  "password": "Slaptažodis",
+  "passwordPlaceholder": "Bent 8 simboliai",
+  "hidePassword": "Slėpti slaptažodį",
+  "showPassword": "Rodyti slaptažodį",
+  "promoLabel": "Turite kodą? <opt>(neprivaloma)</opt>",
+  "promoPlaceholder": "Įveskite jį čia",
+  "agreeTerms": "Sutinku su <terms>Sąlygomis</terms> ir <privacy>Privatumo politika</privacy>.",
+  "freeMonth": "Nustatymas nepradės jūsų nemokamo mėnesio. Jis prasidės, kai pasirinksite pirmąjį tikrą renginį — kai tik būsite pasiruošę.",
+  "fieldError": {
+    "firstName": "Nurodykite savo vardą.",
+    "lastName": "Ir pavardę.",
+    "truck": "Suteikite savo food truck pavadinimą.",
+    "cuisine": "Nurodykite, ką gaminate.",
+    "phoneMissing": "Pridėkite telefono numerį — juo jus pasiekia ir klientai, ir mes.",
+    "email": "Įveskite galiojantį el. pašto adresą.",
+    "password": "Slaptažodį turi sudaryti bent 8 simboliai.",
+    "terms": "Norėdami tęsti, sutikite su sąlygomis."
+  },
+  "error": {
+    "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą.",
+    "savedNoEmail": "Išsaugota, bet šiuo metu nepavyko išsiųsti nuorodos el. paštu.",
+    "unreachable": "Šiuo metu nepavyko su mumis susisiekti — bandykite dar kartą.",
+    "createAccountFailed": "Nepavyko sukurti jūsų paskyros.",
+    "truckCreateFailed": "Jūsų paskyra paruošta, bet nepavyko sukurti jūsų food truck. Bandykite dar kartą.",
+    "truckUnreachable": "Jūsų paskyra paruošta, bet šiuo metu nepavyko sukurti jūsų food truck. Bandykite dar kartą.",
+    "truckNoToken": "Jūsų food truck nustatytas, bet šiuo metu nepavyko jo atidaryti. Bandykite dar kartą."
+  }
+}

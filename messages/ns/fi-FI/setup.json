@@ -21,7 +21,7 @@
     "namePlaceholder": "Bobin Burgerit",
     "phoneLabel": "Puhelin",
     "whatsappTick": "Tämä numero on WhatsAppissa",
-    "phoneHelp": "Asiakkaat näkevät tämän tilausvahvistuksessaan, jotta he voivat kysyä tilauksesta. Valintamerkki ratkaisee, lukeeko siinä ”Soita meille” vai ”Lähetä WhatsApp-viesti”. Voit muuttaa kumpaakin kohdassa Asetukset."
+    "phoneHelp": "Asiakkaat näkevät tämän tilausvahvistuksessaan, jotta he voivat kysyä tilauksesta. Valintamerkki ratkaisee, lukeeko siinä ”Soita meille” vai ”Viestitä WhatsAppissa”. Voit muuttaa kumpaakin kohdassa Asetukset."
   },
   "phoneRequired": "Lisää puhelinnumero — sekä asiakkaat että me tavoitamme sinut sen kautta.",
   "createFailed": "Ruokarekan luominen epäonnistui.",

@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Priimti užsakymus be apmokėjimo",
+  "completionTitle": "Neapmokėto užsakymo užbaigimas",
+  "completionHelp": "Kas vyksta, kai neapmokėtas užsakymas paruoštas atiduoti.",
+  "pressesOne": "Vienas paspaudimas („Apmokėta ir atsiimta“)",
+  "pressesOneHelp": "Tinka, kai pinigus paimate atiduodami maistą. Gaunate vieną mygtuką „Apmokėta ir atsiimta“, kuris kartu užregistruoja mokėjimą ir užbaigia užsakymą.",
+  "pressesTwo": "Du paspaudimai („Pažymėti apmokėtu“ ir „Atsiimta“)",
+  "pressesTwoHelp": "Tinka, kai mokėjimas ir atidavimas vyksta skirtingu metu – klientas sumoka prie furgono, o atsiima, kai užsakymas paruoštas. Gaunate du mygtukus: pirmiausia „Pažymėti apmokėtu“, o kai klientas pasiima maistą, – „Atsiimta“."
+}

@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Πολιτική απορρήτου — HatchGrab",
+    "privacyDescription": "Πώς η HatchGrab Ltd συλλέγει και χρησιμοποιεί προσωπικά δεδομένα.",
+    "termsTitle": "Όροι χρήσης — HatchGrab",
+    "termsDescription": "Οι όροι χρήσης του HatchGrab.",
+    "countryTermsTitle": "Όροι ανά χώρα — HatchGrab",
+    "countryTermsDescription": "Οι επιπλέον κανόνες που ισχύουν για το HatchGrab σε ορισμένες χώρες."
+  },
+  "homeLabel": "Αρχική σελίδα HatchGrab",
+  "privacy": "Απόρρητο",
+  "terms": "Όροι",
+  "countryTerms": "Όροι ανά χώρα",
+  "contact": "Επικοινωνία",
+  "lastUpdated": "Τελευταία ενημέρωση: {date}",
+  "questions": "Ερωτήσεις; <link>Επικοινωνήστε μαζί μας</link> — είμαστε αληθινοί άνθρωποι."
+}

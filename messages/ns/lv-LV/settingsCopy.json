@@ -9,7 +9,7 @@
   },
   "orderReady": {
     "label": "Solis “Gatavs”",
-    "help": "Pasūtījumu ekrānā rāda pogu “Atzīmēt kā gatavu”. Virtuves ekrāni tiek iestatīti atsevišķi katrā ierīcē. Klienti saņem e-pastu ikreiz, kad pasūtījums atzīmēts kā gatavs. Attiecas uz visiem pasākumiem — vienam pasākumam to joprojām var ieslēgt vai izslēgt tā vadības panelī."
+    "help": "Pasūtījumu ekrānā rāda pogu “Gatavs”. Virtuves ekrāni tiek iestatīti atsevišķi katrā ierīcē. Klienti saņem e-pastu ikreiz, kad pasūtījums atzīmēts kā gatavs. Attiecas uz visiem pasākumiem — vienam pasākumam to joprojām var ieslēgt vai izslēgt tā vadības panelī."
   },
   "buzzers": {
     "label": "Vai izsniedzat peidžerus pasūtījumu saņemšanai?",

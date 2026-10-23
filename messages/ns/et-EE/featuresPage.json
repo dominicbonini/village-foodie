@@ -6,7 +6,7 @@
     "multi_device_kitchen": "Kasuta mitut ekraani — leti ääres ja köögis — ning kõik näitavad samu tellimusi reaalajas.",
     "multi_user_access": "Anna töötajatele oma kasutajakontod sobiva ligipääsutasemega.",
     "offline_protection": "Kui levi kaob, peatub veebitellimine, et kliendid ei saaks esitada tellimusi, mida sa ei näe. iPhone’i, iPadi ja Androidi rakendusega saad tellimusi vastu võtta ka võrguühenduseta; veebitöölaud vajab ühendust.",
-    "ticket_printing": "Prindi tellimuslipikud köögis Bluetooth- või juhtmega printerisse.",
+    "ticket_printing": "Prindi tellimuste tšekid köögis Bluetooth- või juhtmega printerisse.",
     "web_dashboard": "Juhi vahetust mis tahes telefoni, tahvelarvuti või sülearvuti brauserist.",
     "meal_deals_upsells": "Koonda tooted komplektideks ja paku kassas lisasid, et tõsta keskmise tellimuse väärtust.",
     "sold_out_toggle": "Märgi mis tahes toode ühe puudutusega otsas olevaks — klientidele muutub see kohe halliks.",

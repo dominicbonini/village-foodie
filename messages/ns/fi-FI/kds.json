@@ -15,8 +15,8 @@
     "truckNotFound": "Ruokarekkaa ei löytynyt"
   },
   "degraded": {
-    "at": "⚠️ Palvelimeen ei saada yhteyttä. Näytetään tiketit (tilanne {time}). UUSIA TILAUKSIA VOI PUUTTUA.",
-    "earlier": "⚠️ Palvelimeen ei saada yhteyttä. Näytetään aiemmat tiketit. UUSIA TILAUKSIA VOI PUUTTUA."
+    "at": "⚠️ Palvelimeen ei saada yhteyttä. Näytetään laput (tilanne {time}). UUSIA TILAUKSIA VOI PUUTTUA.",
+    "earlier": "⚠️ Palvelimeen ei saada yhteyttä. Näytetään aiemmat laput. UUSIA TILAUKSIA VOI PUUTTUA."
   },
   "header": {
     "dashboard": "Ohjauspaneeli",
@@ -54,7 +54,7 @@
     "soundNeedsConfirming": "Vain vahvistusta odottavat tilaukset",
     "soundAll": "Kaikki uudet tilaukset",
     "soundDue": "Ääni, kun tilauksen valmistus pitää aloittaa",
-    "soundDueHelp": "Soi, kun tiketti muuttuu oranssiksi.",
+    "soundDueHelp": "Soi, kun lappu muuttuu oranssiksi.",
     "deviceSettings": "Laiteasetukset",
     "sound": "Ääni",
     "close": "Sulje"
@@ -63,7 +63,7 @@
     "mismatchTitle": "⚠️ Tämän tapahtuman tilauksia ei ladattu",
     "mismatchBody": "Palvelin vastasi eri tapahtuman tiedoilla, joten mitään ei näytetä väärien tilausten sijaan. Valitse tapahtuma uudelleen tai lataa sivu uudelleen.",
     "mismatchBodyAt": "Palvelin vastasi eri tapahtuman tiedoilla, joten mitään ei näytetä väärien tilausten sijaan (paikka: {venue}). Valitse tapahtuma uudelleen tai lataa sivu uudelleen.",
-    "paused": "⏸ Tilaukset tauolla{reason, select, offline { (laite offline-tilassa)} other {}} — asiakkaat eivät voi tilata",
+    "paused": "⏸ Tilaukset keskeytetty{reason, select, offline { (laite offline-tilassa)} other {}} — asiakkaat eivät voi tilata",
     "resume": "Jatka",
     "offline": "Ei yhteyttä — näytetään viimeksi tunnetut tilaukset. Verkkotilaukset on keskeytetty asiakkailta.",
     "queued": "{n, plural, one {{count} toiminto jonossa} other {{count} toimintoa jonossa}}",
@@ -74,7 +74,7 @@
     "onDate": "{date} · {range}",
     "startEvent": "Aloita tapahtuma",
     "recentlyClosed": "Tapahtuma päättynyt · {venue} · päättyi klo {time}",
-    "eventStatus": "{tone, select, paused {⏸ Tauolla} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei alkanut}}"
+    "eventStatus": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}"
   },
   "board": {
     "queueClear": "Jono tyhjä",
@@ -106,7 +106,7 @@
     "finished": "Tapahtuma päätetty",
     "cancelled": "Tapahtuma peruttu",
     "noteSaved": "Huomautus tallennettu",
-    "pauseConfirm": "Keskeytetäänkö tilaukset? Asiakkaat näkevät viestin ”Ei ota vastaan tilauksia”, kunnes jatkat.",
+    "pauseConfirm": "Keskeytetäänkö tilaukset? Asiakkaat näkevät viestin ”Tilaaminen keskeytetty”, kunnes jatkat.",
     "switchConfirm": "Vaihdetaanko {from} → {to}?{n, plural, =0 {} one { {count} tilaus tällä näytöllä korvataan.} other { {count} tilausta tällä näytöllä korvataan.}} Palaa takaisin napauttamalla nykyistä tapahtumaa."
   },
   "intro": {

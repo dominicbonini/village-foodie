@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Savaitės datos",
+    "dayList": "Dienų sąrašas",
+    "place": "Vieta",
+    "venue": "Vietos pavadinimas",
+    "area": "Vietovė",
+    "dayDate": "Diena ir data",
+    "times": "Laikas",
+    "orderLink": "Užsakymo nuoroda",
+    "locationTag": "Vietos žyma"
+  },
+  "weekHeader": "{truck} – kur būsime šią savaitę:",
+  "dayLine": "{day} – {where} – {times}",
+  "dayLineNoTimes": "{day} – {where}",
+  "dayLineCancelled": "{day} – {where} – ATŠAUKTA, atsiprašome",
+  "noDates": "Šią savaitę datų nėra – užsukite netrukus.",
+  "orderAhead": "Užsisakykite iš anksto: {url}",
+  "orderAheadTagged": "Užsisakykite iš anksto: {url} {tag}",
+  "eventLine": "{truck}: {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck}: {where}, {when}.",
+  "cancelledSorry": "Atsiprašome – {when} negalėsime atvykti: {where}.",
+  "cancelledApology": "Atsiprašome visų, kurie planavo atvykti. Netrukus sugrįšime.",
+  "when": {
+    "today": "šiandien",
+    "tonight": "šį vakarą",
+    "tomorrow": "rytoj",
+    "dated": "{date}"
+  }
+}

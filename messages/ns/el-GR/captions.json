@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Ημερομηνίες εβδομάδας",
+    "dayList": "Λίστα ημερών",
+    "place": "Τοποθεσία",
+    "venue": "Χώρος",
+    "area": "Περιοχή",
+    "dayDate": "Ημέρα & ημερομηνία",
+    "times": "Ώρες",
+    "orderLink": "Σύνδεσμος παραγγελίας",
+    "locationTag": "Ετικέτα τοποθεσίας"
+  },
+  "weekHeader": "{truck} — πού θα μας βρείτε αυτή την εβδομάδα:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ΑΚΥΡΩΘΗΚΕ, λυπούμαστε",
+  "noDates": "Καμία ημερομηνία αυτή την εβδομάδα — ξαναδείτε σύντομα.",
+  "orderAhead": "Παραγγείλτε εκ των προτέρων: {url}",
+  "orderAheadTagged": "Παραγγείλτε εκ των προτέρων: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Λυπούμαστε — δεν θα μπορέσουμε να είμαστε στο ραντεβού μας: {where}, {when}.",
+  "cancelledApology": "Ζητούμε συγγνώμη από όλους όσοι σχεδίαζαν να έρθουν. Θα επιστρέψουμε σύντομα.",
+  "when": {
+    "today": "σήμερα",
+    "tonight": "απόψε",
+    "tomorrow": "αύριο",
+    "dated": "{date}"
+  }
+}

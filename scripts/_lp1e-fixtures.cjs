@@ -26,7 +26,8 @@ const US_ON = () => ({ ...SEEDS.usFromSeed(), enabled: true, starterMonthlyMinor
   proAllowanceMinor: 30000, maxAllowanceMinor: 100000, platformFeePct: 1.5 })
 const ROWS = { off: () => [GB(), US_OFF()], on: () => [GB(), US_ON()] }
 
-const FONT_NAMES = ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono', 'Inter']
+// ⚠️ europe-languages-2 (23 October 2026): + Noto_Sans — app/layout.tsx's Greek / Cyrillic fallback.
+const FONT_NAMES = ['Archivo', 'Public_Sans', 'Courier_Prime', 'Geist', 'Geist_Mono', 'Inter', 'Noto_Sans']
 const STUBS = {
   'next/font/google': FONT_NAMES.map(n => `export const ${n} = () => ({ variable: 'font-${n}', className: 'font-${n}', style: {} })`).join('\n'),
   'next/headers': `

@@ -3,18 +3,18 @@
   "rate": {
     "label": "Müügimaksu määr",
     "hint": "Määr, mida rakendad igale tellimusele. Kliendid näevad seda kassas lisatuna, kviitungitel ja köögitšekkidel.",
-    "regionDefault": "Jäta tühjaks, et kasutada määra {rate} % ({label}) — valmistoidu määr piirkonnas {region}."
+    "regionDefault": "Jäta tühjaks, et kasutada määra {rate}% ({label}) — valmistoidu määr piirkonnas {region}."
   },
   "included": {
     "label": "Hindades sisaldub {label}",
     "hint": "Sinu hindades sisaldub juba {label}. See määr näitab kviitungitel ja köögitšekkidel ainult, kui suur osa igast hinnast on {label} — kassas midagi juurde ei lisata.",
-    "default": "Jäta tühjaks, et kasutada määra {rate} % ({label}) — see kehtib kaasa müüdavale soojale toidule ({country})."
+    "default": "Jäta tühjaks, et kasutada määra {rate}% ({label}) — see kehtib kaasa müüdavale soojale toidule ({country})."
   },
   "tips": {
     "label": "Jootraha",
     "hint": "Veebis kaardiga maksvad kliendid saavad lisada jootraha. Kõik see läheb sulle.",
     "choices": "Klientidele näidatavad valikud:",
-    "chip": "{rate} %",
+    "chip": "{rate}%",
     "other": "Muu summa"
   },
   "fee": {

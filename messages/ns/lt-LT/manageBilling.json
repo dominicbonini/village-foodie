@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "už furgoną / mėn.",
+  "transactionFees": "Operacijų mokesčiai",
+  "comingSoon": "Netrukus",
+  "footnote2Masked": "Internetinius mokėjimus užtikrina Stripe Connect. Platformos ir kortelių mokėjimų apdorojimo mokesčiai dar tikslinami ir bus patvirtinti paleidimo metu.",
+  "card": {
+    "title": "Atsiskaitymai ir mokėjimai",
+    "managed": "Atsiskaitymus tvarko HatchGrab",
+    "earlyAccess": "Ankstyvosios prieigos laikotarpiu planus nustatome ir keičiame rankiniu būdu.",
+    "planLine": "{trial, select, yes {{truck} · planas {plan} (bandomasis laikotarpis)} other {{truck} · planas {plan}}}"
+  },
+  "currentPlan": "Dabartinis planas",
+  "plan": {
+    "included": "Įskaičiuota internetinių užsakymų už {amount} per mėnesį.",
+    "includedUnlimited": "Internetiniai užsakymai įskaičiuoti neribotai.",
+    "promo": "Speciali kaina.",
+    "promoUntil": "Speciali kaina iki {date}.",
+    "ended": "Jūsų planas {plan} baigėsi {date}. Dabar jūsų planas – {now}.",
+    "trialMonths": "{months} mėn. nemokamas bandomasis laikotarpis."
+  },
+  "trialEnds": "Bandomasis laikotarpis baigiasi {date}",
+  "yourTrialEnds": "Jūsų bandomasis laikotarpis baigiasi {date}",
+  "notStarted": {
+    "heading": "Jūsų nemokamas bandomasis laikotarpis dar neprasidėjo"
+  },
+  "onTrial": "Galite naudotis visomis funkcijomis. Pasirinkite planą, kol nesibaigė bandomasis laikotarpis.",
+  "onTrialNoCta": "Galite naudotis visomis funkcijomis.",
+  "noCharge": "🔒 Bandomuoju laikotarpiu, kuris trunka iki {date}, jums nebus nieko apmokestinta. Mokesčiai pradedami skaičiuoti tik tada, kai pasirenkate planą ir įvedate mokėjimo duomenis. Iki tol nėra ko atšaukti ir nėra už ką mokėti.",
+  "fees": "*Už internetinius užsakymus taikomi standartiniai kortelių mokėjimų apdorojimo mokesčiai",
+  "setUpPayment": "⏱ Pasirinkite planą, kol nesibaigė bandomasis laikotarpis",
+  "changeYourPlan": "Keisti planą",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Pereiti prie plano {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Šiuo metu diegiame automatinį atsiskaitymą. Norėdami pereiti dabar, parašykite mums ir viską sutvarkysime per 24 valandas.",
+    "mailSubject": "Perėjimas prie plano {plan} — {truck}",
+    "mailBody": "Sveiki, norėčiau, kad food truck {truck} pereitų prie plano {plan} ({price}).",
+    "email": "Parašyti mums el. laišką",
+    "cancel": "Atšaukti"
+  }
+}

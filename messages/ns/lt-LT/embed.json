@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Kur {truck} prekiaus artimiausiu metu.",
+  "orderFrom": "Užsisakyti: {truck}",
+  "poweredBy": "Veikia su <b>HatchGrab</b>",
+  "loadFailed": "Šiuo metu nepavyko įkelti tvarkaraščio.",
+  "loading": "Įkeliamas tvarkaraštis…",
+  "empty": "{truck}: artimiausių renginių nėra."
+}

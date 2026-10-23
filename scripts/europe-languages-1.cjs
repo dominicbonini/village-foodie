@@ -156,7 +156,7 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
   // ══ 2 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · COUNTRIES SWITCHED ON (fixture) — the landing page in the language, native prices, hreflang, sitemap')
   // europe-languages-2: prices are the APP's money formatter (lib/money-format.ts), not raw Intl — the registry overrides Intl
-  // where a country writes its currency differently (RON's "lei", never ro-RO Intl's "RON"; HUF's Stripe decimals).
+  // where a country writes its currency differently (RON's "lei", never ro-RO Intl's "RON"; HUF's two card-processor decimals).
   const MF = await kit.bundle('el1-money', "export * from '@/lib/money-format'")
   const pp = Object.fromEntries(EF.sqlRows().prices.map(p => [`${p.country_code}|${p.plan_key}`, p]))
   const ldOf = html => { const m = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html || ''); return m ? JSON.parse(m[1]) : null }

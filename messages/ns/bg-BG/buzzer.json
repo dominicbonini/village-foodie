@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Пейджър <b>{number}</b> е при <b>поръчка №{holderId}</b>{hasName, select, yes { ({name})} other {}}. Да го вземете ли за <b>{hasTarget, select, yes {поръчка №{targetId}} other {тази поръчка}}</b>?",
+  "cancel": "Отказ",
+  "take": "Вземане на пейджър {number}",
+  "titleBlocking": "Пейджър за поръчка №{id}?",
+  "title": "Изберете пейджър",
+  "subtitle": "{hasTarget, select, yes {Поръчка №{id}} other {Тази поръчка}}{hasCurrent, select, yes { · в момента пейджър {current}} other {}}",
+  "allTaken": "{n, plural, one {Пейджърът е зает. Докоснете го, за да го вземете от друга поръчка.} other {Всички {count} пейджъра са заети. Докоснете един, за да го вземете от друга поръчка.}}",
+  "thisOrder": "Тази поръчка",
+  "noBuzzer": "Без пейджър",
+  "done": "Готово",
+  "lostTitle": "Поръчка №{id} няма пейджър",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}друга поръчка взе същия пейджър, докато бяхте офлайн. Дайте на клиента друг.",
+  "dismiss": "Затваряне",
+  "assign": "Задаване"
+}

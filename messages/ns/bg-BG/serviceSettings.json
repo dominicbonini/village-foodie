@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Часове за вземане",
+    "takes_cash": "Приемате ли плащане в брой?",
+    "offline_protection": "Защита на поръчките при офлайн режим",
+    "buzzer_prompt": "Напомняне да добавя пейджър"
+  },
+  "typeFollowsVanTitle": "Следва обичайната настройка на всеки фуд трък",
+  "sameSettingsAllVansLabel": "Еднакви настройки за всички фуд тръкове",
+  "sameSettingsAllVansHeader": "Всички фуд тръкове",
+  "sameSettingsConfirm": "Да се копират ли настройките на Фуд трък 1 във всеки фуд трък? Копират се всички настройки на Фуд трък 1 — същото като „Като Фуд трък 1“ в Настройки. Капацитетът на кухнята има отделен превключвател.",
+  "eventTypesFooterStandard": "„Стандартно“ е обичайната Ви настройка. Промяната тук я променя и в Настройки.",
+  "eventTypesFooterOneEvent": "За да промените настройка само за едно събитие, използвайте таблото на това събитие.",
+  "eventTypesSubtitle": "Промените се запазват веднага.",
+  "matchStandardLabel": "Като „Стандартно“",
+  "matchStandardConfirm": "Да се върнат ли всички настройки на този вид към „Стандартно“? Всичко, което сте променили тук, ще бъде изчистено.",
+  "priceLabels": {
+    "price_change_on": "Промяна на цените",
+    "price_mode": "Промяна на цената",
+    "price_amount": "Сума",
+    "price_rounding": "Закръгляне",
+    "item_prices": "Цени на артикулите"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Задавам всяка цена ръчно"
+  },
+  "priceRounding": {
+    "none": "Без",
+    "nearest_1": "До най-близкото 1 {symbol}",
+    "up_1": "Винаги нагоре"
+  },
+  "pricesStandardCell": "Цените от менюто Ви",
+  "pricesTruckWideTitle": "Цените Ви са еднакви за всеки фуд трък",
+  "pricesMenuCell": "Меню",
+  "pricesTypeOffCell": "Цени от менюто",
+  "itemPricesShow": "Показване на цените",
+  "itemPricesHide": "Скриване на цените",
+  "priceItemsHeading": "Задайте цената на всеки артикул",
+  "priceItemsOpen": "Вижте или променете цената на всеки артикул ›",
+  "priceItemsClose": "Скриване на цените на артикулите ⌃",
+  "ownPriceCount": "{n, plural, one {{count} артикул има собствена цена} other {{count} артикула имат собствена цена}}",
+  "priceTypeHint": "Натиснете цена, за да въведете своя.",
+  "pricesLiveNotice": "Това събитие е активно. Новите поръчки използват новите цени. Вече направените поръчки запазват своите.",
+  "placeTypeHelper": "„Добавяне на събитие“ избира този вид всеки път, когато изберете това място.",
+  "postPictureStandardNote": "Публикациите за събития тук използват стандартния Ви дизайн.",
+  "eventItemsCardDescription": "Цени, лимити на артикулите и наличност само за това събитие. Промените влизат в сила веднага.",
+  "eventPriceColumnLabel": "Цена",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · това събитие} other {меню {price} · това събитие}}",
+  "eventPriceEdit": "✎ Редактирайте цените",
+  "eventPriceCancel": "Отказ",
+  "eventPriceSave": "Запазване на цените",
+  "eventPriceEditNote": "Редактирате цените само за това събитие. Лимитите на артикулите и наличността са заключени, докато не запазите.",
+  "eventPriceLiveNote": "Активно: новите поръчки използват новите цени.",
+  "offlineWhenOfflineLabel": "При офлайн режим"
+}

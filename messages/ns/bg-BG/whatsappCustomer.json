@@ -1,0 +1,15 @@
+{
+  "greeting": "Здравейте 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Цялото ни меню и информация за алергените можете да видите тук: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Цялото ни меню можете да разгледате тук: {url} — {truck} {emoji}",
+  "otherCategory": "Други",
+  "categoryFrom": "{category} от {price}",
+  "listTwo": "{first} и {second}",
+  "listMany": "{init} и {last}",
+  "menuSummary": "{opener}Предлагаме {summary}. Разгледайте цялото меню и поръчайте предварително тук: {url} — {truck} {emoji}",
+  "allergenCaveat": "Моля, проверете информацията за алергените в цялото меню — това е автоматичен отговор.",
+  "specificFallback": "{opener}Вижте актуалния ни график тук: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Благодарим за всички съобщения! Тук мога да отговарям само няколко пъти на ден.\n\nЗа поръчки: {link}",
+  "capContact": "За директна връзка с нас: {number}"
+}

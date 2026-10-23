@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {{name}: εισαγάγετε έναν έγκυρο αριθμό κινητού} other {Εισαγάγετε έναν έγκυρο αριθμό κινητού}}{withExample, select, yes { (π.χ. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {{name}: εισαγάγετε έναν έγκυρο αριθμό τηλεφώνου} other {Εισαγάγετε έναν έγκυρο αριθμό τηλεφώνου}}{withExample, select, yes { (π.χ. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {{name}: εισαγάγετε έγκυρο αριθμό τηλεφώνου} other {Εισαγάγετε έγκυρο αριθμό τηλεφώνου}}{withExample, select, yes { (π.χ. {example})} other {}}."
+}

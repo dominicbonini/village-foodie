@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Ώρες παραλαβής",
+    "takes_cash": "Δέχεστε μετρητά;",
+    "offline_protection": "Προστασία παραγγελιών εκτός σύνδεσης",
+    "buzzer_prompt": "Υπενθύμιση για προσθήκη βομβητή"
+  },
+  "typeFollowsVanTitle": "Ακολουθεί τη συνήθη ρύθμιση κάθε food truck",
+  "sameSettingsAllVansLabel": "Ίδιες ρυθμίσεις για όλα τα food truck",
+  "sameSettingsAllVansHeader": "Όλα τα food truck",
+  "sameSettingsConfirm": "Να αντιγραφούν οι ρυθμίσεις του Food truck 1 σε όλα τα food truck; Αντιγράφονται όλες οι ρυθμίσεις food truck του Food truck 1, όπως με την επιλογή «Ίδιες ρυθμίσεις με: Food truck 1» στις Ρυθμίσεις. Η χωρητικότητα κουζίνας έχει δικό της διακόπτη.",
+  "eventTypesFooterStandard": "Η «Κανονική» είναι η συνήθης διαμόρφωσή σας. Αν την αλλάξετε εδώ, αλλάζει και στις Ρυθμίσεις.",
+  "eventTypesFooterOneEvent": "Για να αλλάξετε μια ρύθμιση μόνο για μία εκδήλωση, χρησιμοποιήστε τον πίνακα ελέγχου εκείνης της εκδήλωσης.",
+  "eventTypesSubtitle": "Οι αλλαγές αποθηκεύονται αυτόματα.",
+  "matchStandardLabel": "Όπως η «Κανονική»",
+  "matchStandardConfirm": "Να επανέλθουν όλες οι ρυθμίσεις αυτού του τύπου στην «Κανονική»; Ό,τι αλλάξατε εδώ θα διαγραφεί.",
+  "priceLabels": {
+    "price_change_on": "Αλλαγή τιμών",
+    "price_mode": "Αλλαγή τιμής",
+    "price_amount": "Ποσό",
+    "price_rounding": "Στρογγυλοποίηση",
+    "item_prices": "Τιμές προϊόντων"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Ορίζω κάθε τιμή μόνος μου"
+  },
+  "priceRounding": {
+    "none": "Καμία",
+    "nearest_1": "Στο πλησιέστερο 1 {symbol}",
+    "up_1": "Πάντα προς τα πάνω"
+  },
+  "pricesStandardCell": "Οι τιμές του καταλόγου σας",
+  "pricesTruckWideTitle": "Οι τιμές σας είναι ίδιες για κάθε food truck",
+  "pricesMenuCell": "Κατάλογος",
+  "pricesTypeOffCell": "Τιμές καταλόγου",
+  "itemPricesShow": "Εμφάνιση τιμών",
+  "itemPricesHide": "Απόκρυψη τιμών",
+  "priceItemsHeading": "Ορίστε την τιμή κάθε προϊόντος",
+  "priceItemsOpen": "Δείτε ή αλλάξτε την τιμή κάθε προϊόντος ›",
+  "priceItemsClose": "Απόκρυψη τιμών προϊόντων ⌃",
+  "ownPriceCount": "{n, plural, one {{count} προϊόν έχει δική του τιμή} other {{count} προϊόντα έχουν δική τους τιμή}}",
+  "priceTypeHint": "Πατήστε μια τιμή για να γράψετε τη δική σας.",
+  "pricesLiveNotice": "Αυτή η εκδήλωση είναι ενεργή. Οι νέες παραγγελίες έχουν τις νέες τιμές. Οι παραγγελίες που έχουν ήδη γίνει κρατούν τις δικές τους.",
+  "placeTypeHelper": "Η Προσθήκη εκδήλωσης επιλέγει αυτόν τον τύπο κάθε φορά που διαλέγετε αυτή την τοποθεσία.",
+  "postPictureStandardNote": "Οι αναρτήσεις εκδηλώσεων εδώ χρησιμοποιούν το βασικό σας σχέδιο.",
+  "eventItemsCardDescription": "Τιμές, όρια προϊόντων και διαθεσιμότητα μόνο για αυτή την εκδήλωση. Οι αλλαγές ισχύουν αμέσως.",
+  "eventPriceColumnLabel": "Τιμή",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · αυτή η εκδήλωση} other {κατάλογος {price} · αυτή η εκδήλωση}}",
+  "eventPriceEdit": "✎ Επεξεργασία τιμών",
+  "eventPriceCancel": "Ακύρωση",
+  "eventPriceSave": "Αποθήκευση τιμών",
+  "eventPriceEditNote": "Επεξεργάζεστε τις τιμές μόνο για αυτή την εκδήλωση. Τα όρια προϊόντων και η διαθεσιμότητα είναι κλειδωμένα μέχρι να αποθηκεύσετε.",
+  "eventPriceLiveNote": "Ενεργή: οι νέες παραγγελίες έχουν τις νέες τιμές.",
+  "offlineWhenOfflineLabel": "Εκτός σύνδεσης"
+}

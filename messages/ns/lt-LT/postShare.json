@@ -1,0 +1,10 @@
+{
+  "download": "Atsisiųsti paveikslėlį",
+  "copied": "Nukopijuota ✓",
+  "copyCaption": "Kopijuoti įrašo tekstą",
+  "share": "Bendrinti",
+  "copiedStatus": "{kind, select, postText {Įrašo tekstas nukopijuotas.} other {Įrašo tekstas nukopijuotas.}}",
+  "copyFailed": "Nepavyko nukopijuoti – pažymėkite tekstą ir nukopijuokite jį rankiniu būdu.",
+  "sharedStatus": "{kind, select, postText {Įrašo tekstas nukopijuotas – įklijuokite jį į savo įrašą.} other {Įrašo tekstas nukopijuotas – įklijuokite jį į savo įrašą.}}",
+  "shareRefused": "{kind, select, postText {Bendrinti nepavyko, todėl paveikslėlis atsisiųstas. Įrašo tekstas nukopijuotas.} other {Bendrinti nepavyko, todėl paveikslėlis atsisiųstas. Įrašo tekstas nukopijuotas.}}"
+}

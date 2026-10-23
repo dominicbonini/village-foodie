@@ -4,7 +4,7 @@
     "heading": "Uusi tilaus vastaanotettu",
     "from": "<b>Tilaus #{id}</b>, asiakas: <b>{name}</b>",
     "collection": "Nouto: {time}",
-    "asap": "Ei tiettyä aikaa — heti kun mahdollista",
+    "asap": "Ei tiettyä aikaa — heti",
     "total": "Yhteensä",
     "notes": "<b>Lisätiedot:</b> {notes}",
     "autoConfirmed": "Vahvistettu automaattisesti — toimenpiteitä ei tarvita.",

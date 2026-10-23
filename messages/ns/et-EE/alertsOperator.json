@@ -1,7 +1,7 @@
 {
   "hi": "Tere, {name}!",
   "limit80": {
-    "subject": "Oled kasutanud 80 % selle kuu WhatsAppi vastustest",
+    "subject": "Oled kasutanud 80% selle kuu WhatsAppi vastustest",
     "used": "Selle kuu automaatseid WhatsAppi vastuseid on kasutatud <b>{used} / {limit}</b>.",
     "nothingStopped": "Midagi pole peatunud. Kui jõuad piirini {limit}, peatuvad automaatvastused kuni limiidi uuenemiseni (<b>{reset}</b>) — kliendid saavad sulle endiselt kirjutada ja näed kõike, mida nad saadavad.",
     "raise": "Saad igakuist limiiti igal ajal tõsta jaotises „Seaded“.",

@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Tikrinimas laikinai neveikia. Po akimirkos bandykite dar kartą.",
+  "malformed": "Tai nepanašu į svetainės adresą. Pabandykite, pvz., jusufoodtruck.lt/renginiai",
+  "blocked": "Nepavyko pasiekti šios svetainės – galbūt ji blokuoja automatinius patikrinimus. Pabandykite puslapį, kuriame skelbiamas jūsų tvarkaraštis, arba pridėkite renginius rankiniu būdu.",
+  "unreachable": "Nepavyko prisijungti prie šios svetainės. Galbūt ji neveikia arba adresas neteisingas.",
+  "no_content": "Puslapį pasiekėme, bet nieko jame nepavyko perskaityti. Patikrinkite, ar jis viešai prieinamas.",
+  "no_events": "Šiame puslapyje neradome būsimų renginių. Įsitikinkite, kad URL veda tiesiai į puslapį, kuriame skelbiamas jūsų tvarkaraštis.",
+  "blockedDomain": "Naudokite savo svetainės URL – Facebook ir Instagram puslapių automatiškai nuskaityti negalima."
+}

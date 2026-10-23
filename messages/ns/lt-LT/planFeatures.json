@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Rodymas paieškos žemėlapyje"
+    },
+    "web_dashboard": {
+      "name": "Universalus internetinis valdymo skydelis"
+    },
+    "qr_code": {
+      "name": "QR kodas"
+    },
+    "schedule_import": {
+      "name": "Automatinis tvarkaraščio importas"
+    },
+    "meal_deals_upsells": {
+      "name": "Rinkiniai ir papildomi pasiūlymai"
+    },
+    "walkup_orders": {
+      "name": "Užsakymų vietoje tvarkymas"
+    },
+    "sold_out_toggle": {
+      "name": "Greitas žymėjimas „Išparduota“"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad ir Android virtuvės programėlė"
+    },
+    "offline_protection": {
+      "name": "Užsakymų apsauga atsijungus"
+    },
+    "online_payments": {
+      "name": "Mokėjimai internetu"
+    },
+    "advance_preordering": {
+      "name": "Išankstiniai užsakymai būsimoms datoms"
+    },
+    "preorder_deadline": {
+      "name": "Išankstinių užsakymų terminas"
+    },
+    "time_slot_selection": {
+      "name": "Klientų pasirenkamas laiko intervalas"
+    },
+    "kitchen_capacity": {
+      "name": "Virtuvės pajėgumo valdymas"
+    },
+    "stock_countdown": {
+      "name": "Automatinis atsargų skaičiavimas"
+    },
+    "auto_accept": {
+      "name": "Automatinis užsakymų internetu priėmimas"
+    },
+    "branded_qr_code": {
+      "name": "QR kodas su jūsų logotipu"
+    },
+    "private_events": {
+      "name": "Privatūs renginiai"
+    },
+    "social_media_posts": {
+      "name": "Socialinių tinklų įrašai"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp automatiniai atsakymai"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger ir Instagram automatiniai atsakymai"
+    },
+    "tap_to_pay": {
+      "name": "Mokėjimų priėmimas telefonu"
+    },
+    "advanced_reporting": {
+      "name": "Išplėstinės ataskaitos"
+    },
+    "sms_order_alerts": {
+      "name": "SMS pranešimai apie užsakymus"
+    },
+    "multi_device_kitchen": {
+      "name": "Virtuvės sinchronizavimas keliuose įrenginiuose"
+    },
+    "multi_user_access": {
+      "name": "Prieiga keliems naudotojams"
+    },
+    "embed_schedule": {
+      "name": "Tvarkaraščio puslapis jūsų svetainėje"
+    },
+    "event_types": {
+      "name": "Savi renginių tipai ir kainos"
+    },
+    "buzzer_tracking": {
+      "name": "Gaviklių sekimas"
+    },
+    "ticket_printing": {
+      "name": "Virtuvės kvitų spausdinimas"
+    },
+    "customer_display": {
+      "name": "Ekranas klientams"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Skaitmeninės lojalumo kortelės su spaudais"
+    }
+  },
+  "cardRegionOnline": "standartinės {region}",
+  "cardRegion": {
+    "UKcards": "JK kortelės",
+    "EEAcards": "EEE kortelės",
+    "UScards": "JAV kortelės",
+    "Australiancards": "Australijos kortelės",
+    "NewZealandcards": "Naujosios Zelandijos kortelės",
+    "Canadiancards": "Kanados kortelės",
+    "Swisscards": "Šveicarijos kortelės"
+  },
+  "perMonth": {
+    "mo": "{amount}/mėn.",
+    "month": "{amount} per mėnesį"
+  },
+  "priceWord": {
+    "free": "Nemokamai",
+    "freeTrial": "Nemokamas bandomasis laikotarpis",
+    "lifetime": "Visam laikui",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Mokėjimas atsiimant",
+    "unlimited": "Neribota",
+    "none": "—",
+    "masked": "Bus patikslinta"
+  },
+  "cell": {
+    "included": "Įtraukta"
+  }
+}

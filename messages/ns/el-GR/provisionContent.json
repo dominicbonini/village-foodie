@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Πίτσες",
+    "burgers": "Burger",
+    "mains": "Κυρίως πιάτα",
+    "sides": "Συνοδευτικά",
+    "drinks": "Ποτά"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck πίτσας",
+      "items": {
+        "margherita": "Μαργαρίτα",
+        "pepperoni": "Πεπερόνι",
+        "ndujaHoney": "Nduja & μέλι",
+        "fourCheese": "Τέσσερα τυριά",
+        "gardenVeg": "Λαχανικών",
+        "garlicBread": "Σκορδόψωμο",
+        "rocketParmesan": "Ρόκα & παρμεζάνα",
+        "olives": "Ελιές",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck burger",
+      "items": {
+        "classicCheeseburger": "Κλασικό cheeseburger",
+        "doubleBacon": "Διπλό μπέικον",
+        "buttermilkChicken": "Κοτόπουλο με βουτυρόγαλα",
+        "halloumiStack": "Burger χαλούμι",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Πατάτες με τη φλούδα",
+        "loadedCheeseFries": "Πατάτες με λιωμένο τυρί",
+        "onionRings": "Κρεμμυδοδαχτυλίδια",
+        "craftLemonade": "Χειροποίητη λεμονάδα",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck κάρι",
+      "items": {
+        "chickenTikkaMasala": "Κοτόπουλο τίκα μασάλα",
+        "lambRoganJosh": "Αρνί ρόγκαν τζος",
+        "chanaMasala": "Τσάνα μασάλα",
+        "butterChicken": "Κοτόπουλο μπάτερ",
+        "saagPaneer": "Σαγκ πανίρ",
+        "pilauRice": "Ρύζι πιλάφι",
+        "garlicNaan": "Νάαν με σκόρδο",
+        "onionBhaji": "Μπάτζι κρεμμυδιού",
+        "mangoLassi": "Λάσι μάνγκο",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

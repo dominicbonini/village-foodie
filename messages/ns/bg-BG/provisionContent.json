@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Фуд трък 1",
+  "demoCategories": {
+    "pizza": "Пици",
+    "burgers": "Бургери",
+    "mains": "Основни",
+    "sides": "Гарнитури",
+    "drinks": "Напитки"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Фуд трък с пици",
+      "items": {
+        "margherita": "Маргарита",
+        "pepperoni": "Пеперони",
+        "ndujaHoney": "Ндуя с мед",
+        "fourCheese": "Четири сирена",
+        "gardenVeg": "Вегетариана",
+        "garlicBread": "Чеснов хляб",
+        "rocketParmesan": "Рукола и пармезан",
+        "olives": "Маслини",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Фуд трък с бургери",
+      "items": {
+        "classicCheeseburger": "Класически чийзбургер",
+        "doubleBacon": "Двоен бекон",
+        "buttermilkChicken": "Пиле в мътеница",
+        "halloumiStack": "Бургер с халуми",
+        "smashBurger": "Смаш бургер",
+        "skinOnFries": "Картофки с кората",
+        "loadedCheeseFries": "Картофки с чедър",
+        "onionRings": "Лучени кръгчета",
+        "craftLemonade": "Домашна лимонада",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Фуд трък с къри",
+      "items": {
+        "chickenTikkaMasala": "Пилешко тика масала",
+        "lambRoganJosh": "Агнешко роган джош",
+        "chanaMasala": "Чана масала",
+        "butterChicken": "Бътър чикън",
+        "saagPaneer": "Саг панир",
+        "pilauRice": "Ориз пилаф",
+        "garlicNaan": "Наан с чесън",
+        "onionBhaji": "Лучени баджи",
+        "mangoLassi": "Ласи с манго",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

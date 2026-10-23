@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Patvirtinkite naują HatchGrab el. pašto adresą",
+    "heading": "Patvirtinkite el. pašto adresą",
+    "button": "Patvirtinti el. pašto adresą"
+  },
+  "changeEmail": {
+    "requested": "Paprašėte pakeisti savo HatchGrab el. pašto adresą į šį adresą.",
+    "click": "Spustelėkite toliau esantį mygtuką, kad patvirtintumėte. Ši nuoroda galioja 24 valandas.",
+    "ignore": "Jei šio pakeitimo neprašėte, galite ramiai nekreipti dėmesio į šį laišką.",
+    "stillActive": "Jūsų dabartinis el. pašto adresas lieka aktyvus."
+  },
+  "resendVerification": {
+    "requested": "Paprašėte pakeisti savo HatchGrab el. paštą į šį adresą.",
+    "click": "Spustelėkite toliau, kad patvirtintumėte. Ši nuoroda galioja 24 valandas.",
+    "ignore": "Jei to neprašėte, nekreipkite dėmesio į šį laišką.",
+    "stillActive": "Jūsų dabartinis el. paštas lieka aktyvus."
+  },
+  "passwordReset": {
+    "subject": "Atkurkite HatchGrab slaptažodį",
+    "heading": "Atkurkite slaptažodį",
+    "requested": "Gavome prašymą atkurti jūsų HatchGrab paskyros slaptažodį.",
+    "click": "Spustelėkite toliau esantį mygtuką ir pasirinkite naują slaptažodį. Ši nuoroda galioja 1 valandą.",
+    "button": "Atkurti slaptažodį",
+    "ignore": "Jei to neprašėte, galite ramiai nekreipti dėmesio į šį laišką.",
+    "unchanged": "Jūsų slaptažodis nepasikeis, kol nespustelėsite aukščiau esančios nuorodos."
+  },
+  "deletionScheduled": {
+    "subject": "Jūsų HatchGrab paskyrą numatyta ištrinti",
+    "received": "Gavome prašymą ištrinti šią HatchGrab paskyrą.",
+    "orderingStopped": "<b>Internetiniai užsakymai iš karto sustabdyti</b>: {trucks}.",
+    "noTrucks": "(food truck nėra)",
+    "readable": "Jūsų valdymo skydelį dar {days, plural, one {# dieną} few {# dienas} many {# dienų} other {# dienų}} galėsite peržiūrėti.",
+    "scheduled": "Paskyrą numatyta ištrinti <b>{date}</b>.",
+    "cannotCancel": "<b>To negalima atšaukti programėlėje.</b> Jei tai buvote ne jūs arba persigalvojote, kuo greičiau atsakykite į šį laišką.",
+    "kept": "Ištrynę paskyrą, pašalinsime jūsų ir jūsų klientų asmens duomenis. Pasiliksime anoniminius apskaitos įrašus, kuriuos saugoti mus įpareigoja įstatymai."
+  }
+}

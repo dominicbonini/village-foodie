@@ -1,0 +1,17 @@
+{
+  "back": "← Назад",
+  "title": "Приложете комбо",
+  "save": "Спестете {amount}",
+  "selectItems": "Изберете артикули за всяка позиция",
+  "choose": "Изберете: {category}…",
+  "inYourBasket": "── Във Вашата количка ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (в количката){state, select, used { — вече е в комбо} taken { — избран в друга позиция} other {}}",
+  "addNew": "── Добавете нов ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Задължително · изберете един} required {Задължително} other {Изберете един}}{unmet, select, yes { (задължително)} other {}}",
+  "notePlaceholder": "Добавете бележка, напр. без лук (по желание)",
+  "backButton": "Назад",
+  "cancel": "Отказ",
+  "chooseRequired": "Изберете задължителните опции",
+  "apply": "Прилагане на комбо · {amount}"
+}

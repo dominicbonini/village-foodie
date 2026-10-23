@@ -1627,7 +1627,7 @@
  "errorsManage.wa_signup_not_available": "WhatsApp setup is not available for this account yet. Nothing was changed.",
  "errorsManage.wa_unrecognised_outcome": "Unrecognised setup outcome.",
  "errorsManage.wa_write_failed": "The connection to Meta was made, but it could not be saved. Contact support — do not do the setup again yet.",
- "errorsManage.wp_back_to_standard": "This place’s picture is a different shape from your Standard picture, so the standard text positions would not fit it. First replace it with a picture the same shape as your Standard picture, or keep this place’s own positions.",
+ "errorsManage.wp_back_to_standard": "This place’s picture is a different shape from your standard design’s picture, so the standard text positions would not fit it. First replace it with a picture the same shape as your standard design’s picture, or keep this place’s own positions.",
  "errorsManage.wp_bad_slot": "This is not a picture slot.",
  "errorsManage.wp_blank_unreadable": "Your blank background image could not be read.",
  "errorsManage.wp_box_missing": "{box, select, heading {The heading box is missing.} date {The date box is missing.} location {The place box is missing.} time {The time box is missing.} town {The locality box is missing.} days {The 7-day box is missing.} other {Your own text is missing.}}",

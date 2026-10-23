@@ -54,7 +54,7 @@
   "guessed": {
     "title": "📍 Arvasime selle asukoha ära",
     "body": "Mitu asukohta sobis nimega <b>{venue}</b>, seega valisime kõige sobivama{hasTown, select, yes { — <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Kontrolli enne heakskiitmist, et see on õige — kui see on vale, paranda nupuga <b>Muuda</b> piirkond või {postal}, muidu suunatakse kliendid valesse kohta.",
-    "thisVenue": "see koht"
+    "thisVenue": "see asukoht"
   },
   "noLocation": {
     "title": "📍 Asukoht puudub",

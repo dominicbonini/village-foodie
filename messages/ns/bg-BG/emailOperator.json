@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Нова поръчка №{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Получена е нова поръчка",
+    "from": "<b>Поръчка №{id}</b> от <b>{name}</b>",
+    "collection": "Вземане: {time}",
+    "asap": "Без конкретен час — възможно най-скоро",
+    "total": "Общо",
+    "notes": "<b>Бележки:</b> {notes}",
+    "autoConfirmed": "Потвърдена автоматично — не е нужно действие.",
+    "confirmPrompt": "Влезте в таблото си в HatchGrab, за да потвърдите или отхвърлите тази поръчка.",
+    "text": "Нова поръчка №{id} от {name}{withSlot, select, yes { за {slot}} other {}}{withVenue, select, yes { — място: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Общо {total}.{withNotes, select, yes { Бележки: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Нови събития за {truck} — моля, прегледайте ги",
+    "hi": "Здравейте,",
+    "found": "Открихме <b>{n, plural, one {{count} ново събитие} other {{count} нови събития}}</b> в графика Ви, които трябва да одобрите, преди да се покажат на клиентите.",
+    "listHeading": "Открити събития:",
+    "approve": "След като ги одобрите в раздел „График“, те ще се появят на картата и страницата Ви за поръчки ще е готова да приема предварителни поръчки.",
+    "cta": "Прегледайте графика си →",
+    "signoff": "— Екипът на HatchGrab · hatchgrab.com",
+    "unknownVenue": "Неизвестно място",
+    "text": "Здравейте,\n\nОткрихме {n, plural, one {{count} ново събитие} other {{count} нови събития}} в графика Ви, които трябва да одобрите:\n\n{list}\n\nПрегледайте ги тук: {url}\n\nСлед като ги одобрите, те ще се появят на картата.\n\n— Екипът на HatchGrab"
+  }
+}

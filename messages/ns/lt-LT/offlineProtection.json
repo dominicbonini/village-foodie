@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Aptarnavimo metu valdymo skydelis arba virtuvės ekranas turi būti įjungtas ir prisijungęs prie interneto.",
+  "explainerBody": "Jei ekranas išsijungia, įrenginys netenka interneto ryšio arba perjungiate į kitą svetainę, įsijungia apsauga atsijungus – ji sustabdo užsakymus arba išjungia automatinį priėmimą, priklausomai nuo jūsų pasirinkimo.",
+  "reminder": "⚠️ Aptarnavimo metu laikykite valdymo skydelį arba virtuvės ekraną įjungtą ir prisijungusį, kitaip gali įsijungti apsauga atsijungus.",
+  "enableConfirm": "Apsauga atsijungus įjungta.\n\nKad užsakymai nesustotų, ekranas turi likti įjungtas. Jei šis įrenginys netektų ryšio, apsauga atsijungus įsijungs jūsų pasirinktu režimu.\n\nĮsitikinkite, kad šiame įrenginyje įjungta funkcija „Ekranas įjungtas“.",
+  "disableConfirm": "Išjungti apsaugą atsijungus šiam renginiui?\n\nJei šis įrenginys netektų ryšio, internetiniai užsakymai bus toliau priimami – klientai gali pateikti užsakymų, kurių nematysite. Išjunkite tik tada, jei ryšys patikimas.",
+  "cardDescription": "Nustato, kas nutinka gaunamiems užsakymams, kai jūsų įrenginys atsijungia.",
+  "purpose": "Jei jūsų įrenginys netenka ryšio, ši funkcija sustabdo užsakymus, kol jų nematote.",
+  "switchLabel": "Užsakymų apsauga atsijungus",
+  "switchHelp": "Kas nutinka, kai šis furgonas netenka ryšio.",
+  "modes": {
+    "pause": {
+      "label": "Sustabdyti internetinius užsakymus",
+      "help": "Klientai negalės užsisakyti, kol vėl prisijungsite."
+    },
+    "no_auto_accept": {
+      "label": "Priimti užsakymus, bet tvirtinti rankiniu būdu",
+      "help": "Automatinis priėmimas išjungiamas, todėl klientai vis dar gali užsisakyti, bet niekas nepatvirtinama automatiškai. Kiekvieną užsakymą patvirtinsite vėl prisijungę, o visi dar laukiantys užsakymai po jūsų pasirinkto laiko bus automatiškai atmesti ir klientui apie tai bus pranešta el. paštu."
+    }
+  },
+  "autoRejectLabel": "Atmesti užsakymus, laukiančius ilgiau nei",
+  "autoRejectOption": "{n, plural, one {{count} min.} few {{count} min.} many {{count} min.} other {{count} min.}}"
+}

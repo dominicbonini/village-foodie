@@ -243,6 +243,25 @@ form), so its words must fit both modes.
 **`short_name`** is shown inside the language's sentences ("HatchGrab {country}"), so it must be in the language
 (NOT RUN SQL), and every message puts `{country}` where no article or case ending is needed.
 
+**What the thirteen after it taught** (europe-languages-2, 23 October 2026, docs/europe-languages-2-report.md):
+- **Plural categories are enforced.** translation-check fails a plural that lacks a CLDR category the locale uses (Polish
+  one/few/many, Slovenian one/two/few, Latvian zero/one, Romanian "de" after 20…): a "1" must never fall into `other`.
+- **A shared term sheet while the parts run.** Each language folder has a `TERMS.md` that every part reads first and appends
+  to (never rewrites) the moment it picks a word for a screen, tab or button. Then ONE consistency agent per merged language
+  (`CONSISTENCY.md`: TERMS.md wins, quoted labels must equal the real keys, "Powered by" = the poster's words) — it unified
+  30–200 strings per language. Do not let it run `split-messages`; the main session does, once.
+- **Inflecting languages:** never put a case ending on a placeholder — apposition or a colon ("food truck {truck}",
+  "Removed: {name}"); counts that are not plural messages become "Label: {n}".
+- **Percent spacing follows Intl** for the locale (`Intl.NumberFormat(l, {style:'percent'})`): "20%" for pl, hu, et, lv, el, bg;
+  "20 %" (non-breaking) for cs, sk, ro, hr, sl, fi, lt — the app prints the same.
+- **The guard words need stems, not words**, in an inflecting language ("laktoosivab", "piesarnos", "be glitim"):
+  europe-languages-1.cjs's safety questions found three such gaps.
+- **A new alphabet** (Greek, Cyrillic): `app/layout.tsx` adds Noto Sans (greek + cyrillic, preload: false) only on those
+  pages, and the stacks name it BEFORE each font's metric fallback — "Archivo Fallback" is a size-adjusted local Arial, which
+  has Greek and would draw it, so Noto would never load. `node scripts/europe-languages-2-fonts.cjs` (after a build) proves
+  the file loads on el/bg pages and never on a Latin one; `languages-1-e2e.cjs --fonts` paints shots with the real fonts.
+- **Admin-only English labels** ("Insert opt-out", "Templates", "Signature" in components/admin) are quoted in English.
+
 ## 8b · What France taught (france-1, 22 October 2026)
 
 - **Translate in parts, against one brief.** France was ten parallel parts, each given the same `STYLE.md`: the term base,

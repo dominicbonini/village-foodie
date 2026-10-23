@@ -60,7 +60,7 @@
     "logoPlaceholder": "Logosi tähän",
     "alt": "Tilauksen QR-koodi",
     "demoName": "Demo",
-    "poweredBy": "Toteutus: <b>{brand}</b>",
+    "poweredBy": "Palvelun tarjoaa <b>{brand}</b>",
     "tapToClose": "Sulje napauttamalla mitä tahansa kohtaa"
   },
   "pin": {
@@ -208,7 +208,7 @@
     "takesCashTitle": "Otatko vastaan käteistä?",
     "takesCashHelp": "Jakaa maksupainikkeen kahdeksi: ”Käteinen” ja ”Kortti”.",
     "orderReadyTitle": "Tilaus valmis -vaihe",
-    "orderReadyHelp": "Näytä tilausnäkymässä ”Merkitse valmiiksi” -painike. Keittiönäytöt asetetaan erikseen. Asiakkaille lähetetään sähköposti aina, kun tilaus merkitään valmiiksi.",
+    "orderReadyHelp": "Näytä tilausnäkymässä ”Valmis”-painike. Keittiönäytöt asetetaan erikseen. Asiakkaille lähetetään sähköposti aina, kun tilaus merkitään valmiiksi.",
     "buzzerPromptTitle": "Muistuta lisäämään summeri",
     "buzzerPromptHelp": "Avaa summeriruudukon heti, kun teet tilauksen, joten numero päätyy taululle asiakkaan ollessa vielä edessäsi. Kun tämä on pois päältä, voit yhä lisätä summerin milloin tahansa napauttamalla tilausta, mutta sinua ei muistuteta. Hyödyllinen, jos jaat summereita, ja helppo kytkeä pois, jos et jaa.",
     "cardsTitle": "Ota vastaan korttimaksuja verkossa",

@@ -1,0 +1,36 @@
+{
+  "h1": "Viskas, ko reikia aptarnavimui, – kiekviename plane.",
+  "lede": "Užsakymai, išankstiniai užsakymai, virtuvės pajėgumas ir virtuvės ekranas įtraukti į kiekvieną planą.{hasUpgrades, select, yes { {plans}: papildomai – {features}, o komisiniai mažesni.} other {}}",
+  "perMonth": "{price} / mėn.",
+  "group": {
+    "pay": "Ką mokate",
+    "run": "Aptarnavimas",
+    "online": "Užsakymai internetu",
+    "marketing": "Rinkodara ir automatizavimas"
+  },
+  "pay": {
+    "included": "Kas mėnesį įtraukti užsakymai internetu",
+    "fee": "HatchGrab komisiniai už užsakymus internetu kortele*",
+    "walkUp": "Užsakymai vietoje"
+  },
+  "cell": {
+    "unlimited": "Neribota",
+    "free": "Nemokamai",
+    "feeAbove": "<b>{fee}</b> viršijus {included}",
+    "yes": "Įtraukta",
+    "none": "Neįtraukta",
+    "comingSoon": "Jau netrukus"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "socialinių tinklų įrašai",
+    "event_types": "savos renginių kainos"
+  },
+  "meta": {
+    "description": "Visos HatchGrab funkcijos kiekviename plane, viena šalia kitos – {plans}, su mokesčiais ir limitais.{months, plural, =0 {} one { # mėnesį nuo pradžios viskas įtraukta.} few { # mėnesius nuo pradžios viskas įtraukta.} many { # mėnesio nuo pradžios viskas įtraukta.} other { # mėnesių nuo pradžios viskas įtraukta.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp automatiniams atsakymams reikia WhatsApp Business paskyros. Meta gali imti mokestį už kai kurias žinutes; atsakymai generuojami automatiškai.",
+    "printing": "Virtuvės kvitams spausdinti reikia suderinamo Bluetooth arba laidinio spausdintuvo (nepridedamas)."
+  }
+}

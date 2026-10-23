@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Pasirinkite, kaip rodysite informaciją apie alergenus",
+    "detail": "Kol nepasirinksite, klientai nematys nė vieno jūsų patiekalo — meniu apsisaugo paslėpdamas visus patiekalus su nepatvirtintais alergenais, o šiuo metu tokie yra visi.",
+    "where": "Meniu → Alergenai"
+  },
+  "allergensCardMissing": {
+    "title": "Pridėkite alergenų kortelę",
+    "detail": "Pasirinkote rodyti alergenų kortelę, bet nė viena neišsaugota — klientams būtų pranešta, kad informacija apie alergenus yra, o jie nieko nerastų.",
+    "where": "Meniu → Alergenai"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Patvirtinkite {count} patiekalo alergenus} few {Patvirtinkite {count} patiekalų alergenus} many {Patvirtinkite {count} patiekalų alergenus} other {Patvirtinkite {count} patiekalų alergenus}}",
+    "detail": "{n, plural, one {{u, plural, one {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jo alergenų.} few {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} many {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} other {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.}}} few {{u, plural, one {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jo alergenų.} few {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} many {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} other {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.}}} many {{u, plural, one {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jo alergenų.} few {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} many {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} other {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.}}} other {{u, plural, one {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jo alergenų.} few {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} many {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.} other {Klientams nerodoma patiekalų: {unverified} iš {total}, kol nepatvirtinsite jų alergenų.}}}} Patiekalas, rodomas be patvirtintų alergenų, suprantamas kaip „alergenų neturi“, todėl meniu jį paslepia, kad nerizikuotų.",
+    "where": "Meniu → Alergenai"
+  },
+  "noVan": {
+    "title": "Pridėkite furgoną",
+    "detail": "Renginiai priskiriami furgonui — be jo nėra per ką priimti užsakymų.",
+    "where": "Nustatymai → Jūsų furgonai"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Nustatykite virtuvės pajėgumą",
+    "detail": "Pajėgumas nenustatytas: {vans}. Be jo ir toliau žadėsime klientams atsiėmimo laikus, kurių jūsų virtuvė niekaip nespės.",
+    "where": "Meniu → Virtuvės pajėgumas",
+    "unnamedVan": "Furgonas be pavadinimo"
+  },
+  "noPrepBearingCategory": {
+    "title": "Nurodykite, kiek laiko ruošiamas jūsų maistas",
+    "detail": "{categories, select, none {Dar neturite meniu kategorijų, todėl negalime apskaičiuoti, kiek laiko užtrunka užsakymas.} other {Nė vienai jūsų kategorijai nenustatytas gaminimo laikas, todėl kiekvienas užsakymas mums atrodo paruošiamas akimirksniu. Ir toliau duotume klientams atsiėmimo laikus, kurių jūsų virtuvė neturi jokių galimybių spėti, o kuo daugiau užsakymų, tuo labiau jie neatitiktų tikrovės.}}",
+    "where": "Meniu → Kategorijos → Virtuvės nustatymai"
+  },
+  "emailUnverified": {
+    "title": "Patvirtinkite savo el. pašto adresą",
+    "detail": "Šiuo adresu siunčiame pranešimus apie užsakymus ir paskyros atkūrimo nuorodas. Jei jis neteisingas, tai sužinosite tik tada, kai kas nors jau bus nutikę.",
+    "where": "Savo pašto dėžutėje ieškokite mūsų patvirtinimo nuorodos"
+  },
+  "emailUnknown": {
+    "title": "El. pašto patvirtinimo būsena nežinoma",
+    "detail": "El. pašto patvirtinimas dar neprijungtas, todėl jo įvertinti neįmanoma. Šis patikrinimas sąmoningai blokuoja, užuot tyliai praleidęs.",
+    "where": "—"
+  }
+}

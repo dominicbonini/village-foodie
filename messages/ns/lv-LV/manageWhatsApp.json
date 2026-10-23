@@ -64,7 +64,7 @@
     "option": "{n, number}",
     "usage": "Izmantots: {used, number} no {limit, number} · atjaunojas {date}",
     "perCustomer": "Atbilžu limits vienam klientam 24 stundās: {n}; pēc tam tiek nosūtīta viena ziņa, ka atbildēsiet personīgi.",
-    "emailAt": "Sasniedzot limitu, atbildes tiek apturētas. Mēs jums nosūtīsim e-pastu pie 80 % un 100 %.",
+    "emailAt": "Sasniedzot limitu, atbildes tiek apturētas. Mēs jums nosūtīsim e-pastu pie 80% un 100%.",
     "saved": "Mēneša atbilžu limits saglabāts",
     "saveFailed": "Neizdevās saglabāt limitu"
   },

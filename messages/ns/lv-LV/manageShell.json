@@ -39,7 +39,7 @@
     "paymentsIcon": "💶",
     "scheduleCount": "Grafiks ({count})",
     "stripeAttention": "Stripe nepieciešama jūsu rīcība",
-    "allergensNotSet": "alergēni nav norādīti"
+    "allergensNotSet": "alergēni nav iestatīti"
   },
   "menuSections": {
     "label": "Ēdienkartes sadaļas",
@@ -60,7 +60,7 @@
     "showMeAround": "Parādiet man",
     "dismiss": "Aizvērt",
     "approval": "{count, plural, zero {Mēs jums atradām <b>{count}</b> pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.} one {Mēs jums atradām <b>{count}</b> pasākumu — pārskatiet un apstipriniet to, pirms tas tiek publicēts.} other {Mēs jums atradām <b>{count}</b> pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.}}",
-    "allergens": "<b>Alergēni nav norādīti</b> — klienti neredz informāciju par alergēniem, kamēr jūs to neesat pārbaudījis. Pārskatiet katra ēdiena alergēnus cilnē Ēdienkarte.",
+    "allergens": "<b>Alergēni nav iestatīti</b> — klienti neredz informāciju par alergēniem, kamēr jūs to neesat pārbaudījis. Pārskatiet katra ēdiena alergēnus cilnē Ēdienkarte.",
     "domainLive": "<link>{domain}</link> darbojas. Apskatiet to un pēc tam sadaļā Iestatījumi apstipriniet, ka viss ir pareizi.",
     "stripe": "<b>Stripe kaut kas no jums ir nepieciešams</b> — kamēr tas nav nokārtots, karšu maksājumi var tikt apturēti.",
     "profileTitle": "Aizpildiet savu profilu",

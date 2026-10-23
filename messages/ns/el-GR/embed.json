@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Πού θα βρίσκεται στη συνέχεια το food truck {truck}.",
+  "orderFrom": "Παραγγείλτε από το food truck {truck}",
+  "poweredBy": "Λειτουργεί με <b>HatchGrab</b>",
+  "loadFailed": "Δεν ήταν δυνατή η φόρτωση του προγράμματος αυτή τη στιγμή.",
+  "loading": "Φόρτωση προγράμματος…",
+  "empty": "Δεν υπάρχουν προσεχείς εκδηλώσεις για το food truck {truck}."
+}

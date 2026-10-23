@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Išlaidų palyginimas",
+  "title": "Palyginkite savo internetinių<br></br><accent>užsakymų išlaidas</accent>",
+  "system": {
+    "title": "Ar jau priimate užsakymus internetu?",
+    "yes": "Taip, per kitą sistemą",
+    "no": "Ne, dar ne"
+  },
+  "trucks": {
+    "title": "Kiek furgonų turite?",
+    "aria": "Furgonų skaičius"
+  },
+  "plan": {
+    "yourChoice": "Jūsų pasirinkimas",
+    "weSuggest": "Siūlome",
+    "summary": "{price} už furgoną per mėnesį, įskaičiuota internetinių užsakymų už {allowance}{fleet, plural, one {} few { kiekvienam furgonui} many { kiekvienam furgonui} other { kiekvienam furgonui}}.",
+    "switchTo": "Rinktis planą {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} už furgoną per mėnesį ir {pct} nuo internetinių užsakymų, apmokėtų kortele.} other {Jokio mėnesinio mokesčio — tik {pct} nuo internetinių užsakymų, apmokėtų kortele.}}",
+    "summaryNoFee": "{price} už furgoną per mėnesį: neriboti internetiniai užsakymai ir jokių HatchGrab komisinių."
+  },
+  "orders": {
+    "titleYes": "Internetiniai užsakymai per mėnesį vienam furgonui",
+    "count": "~{count, plural, one {# užsakymas} few {# užsakymai} many {# užsakymų} other {# užsakymų}}",
+    "captionNo": "Pakanka apytikrio spėjimo: išankstiniai užsakymai ir eilę aplenkiantys klientai, o ne mokėjimai grynaisiais ar kortele prie furgono.",
+    "captionYes": "Tik užsakymai, pateikti per jūsų užsakymų puslapį, o ne mokėjimai grynaisiais ar kortele prie furgono.",
+    "sliderAria": "Internetinių užsakymų vertė per mėnesį vienam furgonui",
+    "overAllowance": "Kiekvienam furgonui įskaičiuota internetinių užsakymų už {allowance}. Nuo viršijančios sumos ({excess}) imami {pct} komisiniai — <b>{over}</b> per mėnesį kiekvienam furgonui.",
+    "insideAllowance": "Neviršijate įskaičiuotos internetinių užsakymų sumos ({allowance}) — nieko papildomai prie plano kainos.",
+    "acrossFleet": "Iš viso ({fleet, plural, one {# furgonas} few {# furgonai} many {# furgonų} other {# furgonų}}): <b>{amount}</b> per mėnesį.",
+    "titleNo": "Kokią sumą, jūsų manymu, gautumėte iš užsakymų internetu per mėnesį vienam furgonui?",
+    "feeOnly": "{pct} nuo kiekvieno internetinio užsakymo, apmokėto kortele — <b>{over}</b> per mėnesį vienam furgonui.",
+    "noFee": "Neriboti internetiniai užsakymai įskaičiuoti — nieko papildomai prie plano kainos."
+  },
+  "fee": {
+    "title": "Kiek dabar mokate už užsakymą?",
+    "pctLabel": "Procentai",
+    "pctPlaceholder": "Jūsų tarifas",
+    "pctAria": "Procentiniai komisiniai",
+    "fixedLabel": "Plius už užsakymą",
+    "fixedPlaceholder": "Jūsų mokestis",
+    "fixedAria": "Centai už užsakymą",
+    "modeLabel": "Jų tarifas:",
+    "modeInclusive": "apima kortelių mokėjimų apdorojimą",
+    "modeOnTop": "kortelių apdorojimas imamas papildomai",
+    "onTopNote": "Kortelių mokėjimų apdorojimo mokestis ({fee}) imamas papildomai, todėl iš tikrųjų iš viso mokate <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Kortelių mokėjimų apdorojimo mokestis ({fee}) jau įskaičiuotas, ir jį mokėtumėte bet kur. Jų pačių komisiniai — <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Kiek dienų per savaitę prekiaujate?",
+    "help": "Renginiai, turgūs, prekybos vietos — bet kuri diena, kai furgonas išvažiuoja."
+  },
+  "jump": {
+    "cost": "Kiek tai kainuoja ↓",
+    "saving": "Kiek sutaupysite ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Užsakymai internetu, išankstiniai užsakymai ir virtuvės ekranas už</lead><figure>{amount}</figure><unit>per prekybos dieną</unit>",
+    "basedOn": "Skaičiuojant {days, plural, one {# dieną} few {# dienas} many {# dienų} other {# dienų}} per savaitę · {monthly} per mėnesį{fleet, plural, one {} few { vienam furgonui} many { vienam furgonui} other { vienam furgonui}}"
+  },
+  "coffee": "Pigiau nei puodelis kavos.",
+  "freeMonths": "{n, plural, one {Be to, pirmas mėnuo — mūsų dovana.} few {Be to, pirmieji # mėnesiai — mūsų dovana.} many {Be to, pirmieji # mėnesių — mūsų dovana.} other {Be to, pirmieji # mėnesių — mūsų dovana.}}",
+  "cta": {
+    "upload": "Įkelti mano meniu →",
+    "uploadSave": "Įkelti meniu ir sutaupyti {amount} →",
+    "ask": "Užduoti klausimą",
+    "noCard": "Pradedant kortelės nereikia"
+  },
+  "breakdown": {
+    "title": "Jūsų mėnesio išlaidos išsamiai",
+    "titleDearer": "Jūsų mėnuo su HatchGrab",
+    "plan": "Planas {plan}",
+    "over": "{pct} nuo {excess} virš įskaičiuotos sumos ({allowance})",
+    "inside": "Internetiniai užsakymai neviršija įskaičiuotos sumos ({allowance})",
+    "total": "HatchGrab kas mėnesį",
+    "freeMonths": "{n, plural, one {1-as mėnuo} few {1–# mėnesiai} many {1–# mėnesiai} other {1–# mėnesiai}}",
+    "freeAmount": "{amount} — mūsų dovana",
+    "acrossFleet": "Iš viso ({fleet, plural, one {# furgonas} few {# furgonai} many {# furgonų} other {# furgonų}})",
+    "perMonth": "{amount} per mėnesį",
+    "card": "Kortelių mokėjimų apdorojimas — Stripe mokestis {fee} už užsakymą, mokamas Stripe. Panašiai mokėtumėte ir naudodami mokėjimo terminalą prie furgono.",
+    "provider": "Jūsų dabartinio paslaugų teikėjo komisiniai ({pct})",
+    "feeOnly": "{pct} nuo internetinių užsakymų už {excess}",
+    "noFee": "Internetiniai užsakymai — neriboti, be HatchGrab komisinių"
+  },
+  "enterRate": "Įveskite, kiek mokate dabar, ir pamatysite, kiek sutaupysite.",
+  "panel": {
+    "nowYear": "<label>Dabar mokate</label><fig>{amount}<q> per metus</q></fig>",
+    "nowMonth": "<label>Dabar mokate</label><fig>{amount}<q> per mėnesį</q></fig>",
+    "oursYear": "<label>Su HatchGrab</label><fig>{amount}<q> per pirmuosius metus</q></fig>",
+    "oursMonth": "<label>Su HatchGrab</label><fig>{amount}<q> per mėnesį</q></fig>",
+    "acrossFleet": "už {fleet, plural, one {# furgoną} few {# furgonus} many {# furgonų} other {# furgonų}}"
+  },
+  "hero": {
+    "save": "<verb>Sutaupote</verb><figure>{amount}</figure><sub><num>{pct}</num> mažiau per pirmuosius metus</sub>",
+    "same": "<verb>Maždaug tiek pat</verb><figure>{amount}</figure><sub><num>{pct}</num> daugiau per pirmuosius metus</sub>",
+    "dearer": "<lead>Viskas, ką daro HatchGrab, už</lead><figure>{amount}</figure><unit>daugiau per savaitę</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} per mėnesį daugiau nei dabar} few {{amount} per mėnesį daugiau nei dabar už kiekvieną furgoną} many {{amount} per mėnesį daugiau nei dabar už kiekvieną furgoną} other {{amount} per mėnesį daugiau nei dabar už kiekvieną furgoną}}"
+  },
+  "anchor": {
+    "liability": "Tai metinis civilinės atsakomybės draudimas.",
+    "weekendPitch": "Tai savaitgalio prekybos vieta maisto festivalyje.",
+    "festivalPitches": "Tai kelios prekybos vietos festivaliuose.",
+    "fryer": "Tai nauja gruzdintuvė ir kepimo plokštė.",
+    "counter": "Tai visiškai atnaujintas jūsų aptarnavimo prekystalis.",
+    "vanDeposit": "Tai pradinis įnašas už antrą furgoną.",
+    "secondVan": "Tai antras furgonas kelyje."
+  },
+  "year": {
+    "one": "Pirmieji metai",
+    "two": "Antrieji metai",
+    "save": "Sutaupote {amount}<note>({pct} mažiau)</note>",
+    "extra": "Papildomai {amount}<note>({pct} daugiau)</note>",
+    "current": "Dabartinis teikėjas <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Apytikriai skaičiavimai pagal jūsų įvestus skaičius, darant prielaidą, kad vidutinis užsakymas yra {aov}. Kortelių mokėjimų apdorojimo mokestis taikomas, kad ir kokį teikėją naudotumėte. Prieš apsispręsdami pasitikrinkite.",
+    "yes": "Apytikriai skaičiavimai pagal jūsų įvestus skaičius, darant prielaidą, kad vidutinis užsakymas yra {aov}. Kortelių mokėjimų apdorojimo mokestis ({fee} už užsakymą) taikomas, kad ir kokį teikėją naudotumėte, todėl jis neįtrauktas nė vienoje pusėje.",
+    "onTop": "Bendra suma klausime Nr. {n} jį apima, o palyginimas — ne, nė vienoje pusėje.",
+    "check": "Prieš apsispręsdami pasitikrinkite dabartinio teikėjo tarifus."
+  },
+  "intro": "Užtruks apie minutę. Jau naudojate sistemą? Ją palyginsime. Dar ne? Tiksliai parodysime, kiek tai kainuoja.",
+  "twoYear": "Per dvejus metus sutaupysite <b>{amount}</b>.",
+  "meta": {
+    "title": "Išlaidų skaičiuoklė — HatchGrab {country}",
+    "description": "Palyginkite, kiek dabar jums kainuoja internetiniai užsakymai, su metais HatchGrab — įvertinimas per minutę."
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Savaitės antraštė",
+    "weekHeadingSample": "Savaitė nuo …",
+    "daysSample": "{first} – {last}",
+    "date": "Data",
+    "place": "Vieta",
+    "venue": "Vieta",
+    "area": "Vietovė",
+    "time": "Laikas",
+    "rows": "Eilutės",
+    "rowsSample": "{px} px atstumu · {first} – {last}",
+    "ownText": "Jūsų tekstas",
+    "noteTokenSample": "Pastaba, kurią įrašote kurdami įrašą",
+    "nothingYet": "Kol kas nieko",
+    "thisBox": "šis langelis"
+  },
+  "sample": {
+    "venue": "Karčema prie Rotušės",
+    "area": "Kaunas"
+  },
+  "bar": {
+    "previewWith": "Peržiūrėti su",
+    "undo": "Anuliuoti",
+    "undoTitle": "Anuliuoti (⌘Z)",
+    "redo": "Pakartoti",
+    "redoTitle": "Pakartoti (⇧⌘Z)",
+    "cancel": "Atšaukti",
+    "saving": "Išsaugoma…",
+    "save": "Išsaugoti dizainą"
+  },
+  "grid": {
+    "eachRow": "Kiekviena eilutė",
+    "placeOff": "Vietos pavadinimas yra jūsų paveikslėlyje — HatchGrab jo nepridės."
+  },
+  "background": {
+    "uploading": "Įkeliama…",
+    "replace": "Pakeisti paveikslėlį",
+    "shape": {
+      "square": "Kvadratas (1:1)",
+      "portrait45": "Vertikalus (4:5)",
+      "portrait916": "Vertikalus (9:16)",
+      "landscape169": "Horizontalus (16:9)",
+      "portrait": "Vertikalus",
+      "landscape": "Horizontalus"
+    }
+  },
+  "scope": {
+    "title": "Teksto išdėstymas",
+    "standard": "Toks pat išdėstymas kaip standartinio",
+    "own": "Atskiras išdėstymas: {place}",
+    "locked": "Šis išdėstymas paimtas iš standartinio dizaino. Pasirinkite „Atskiras išdėstymas: {place}“, kad perkeltumėte langelius tik čia."
+  },
+  "stage": {
+    "hint": "Tempkite langelį, kad perkeltumėte · tempkite kampą, kad pakeistumėte dydį",
+    "zoomOut": "Tolinti",
+    "zoomIn": "Artinti"
+  },
+  "rows": {
+    "spacing": "Tarpai",
+    "daysRun": "Dienos: {first} – {last}. Trys 1-osios eilutės langeliai nukopijuojami žemyn šiuo atstumu.",
+    "whichEvents": "Kurie renginiai",
+    "showCancelled": "Rodyti atšauktus renginius",
+    "showCancelledHint": "Atšauktas renginys rodomas perbraukta vieta ir žodžiu ATŠAUKTA. Išjungus diena rodoma kaip laisva."
+  },
+  "days": {
+    "reorder": "Keisti tvarką",
+    "move": "perkelti"
+  },
+  "picture": {
+    "picture": "Paveikslėlis",
+    "fill": "Užpildyti langelį",
+    "fit": "Sutalpinti",
+    "corners": "Kampai",
+    "square": "Statūs",
+    "rounded": "Suapvalinti",
+    "ifMissing": "Jei vieta neturi vaizdo",
+    "noPicture": {
+      "omit": "Praleisti",
+      "blank": "Palikti tuščią vietą",
+      "logo": "Rodyti jūsų logotipą"
+    },
+    "border": "Rėmelis",
+    "drawBorder": "Rodyti rėmelį",
+    "drawBorderHint": "Linija aplink paveikslėlį jūsų pasirinkta spalva.",
+    "borderWidth": "Rėmelio storis",
+    "cornerRadius": "Kampų spindulys",
+    "locationPictures": "Vietų paveikslėliai",
+    "addLocationPictures": "+ Pridėti vietų paveikslėlių",
+    "allHaveImage": "{total, plural, =0 {Kol kas neturite jokių vietų.} one {Vaizdą turi visos jūsų vietos (#).} few {Vaizdą turi visos jūsų vietos (#).} many {Vaizdą turi visos jūsų vietos (#).} other {Vaizdą turi visos jūsų vietos (#).}}",
+    "someWithout": "{without} iš jūsų {total, plural, one {# vietos} few {# vietų} many {# vietų} other {# vietų}} {without, plural, one {dar neturi vaizdo} few {dar neturi vaizdo} many {dar neturi vaizdo} other {dar neturi vaizdo}}"
+  },
+  "settings": {
+    "font": "Šriftas",
+    "colour": "Spalva",
+    "textColour": "Teksto spalva",
+    "ownStyleNote": "{count, plural, one {{names} turi savo stilių, todėl šis elementas nekeičiamas.} few {{names} turi savo stilių, todėl šie elementai nekeičiami.} many {{names} turi savo stilių, todėl šie elementai nekeičiami.} other {{names} turi savo stilių, todėl šie elementai nekeičiami.}}",
+    "matchAgain": "Vėl suderinti",
+    "matchName": "Suderinti su: {name}",
+    "lastToggle": "{kind, select, weekly {Palikite įjungtą „Vieta“ arba „Laikas“. Atšauktas renginys rodomas perbraukta vieta ir žodžiu ATŠAUKTA, todėl išjungus abu nebeliktų nieko, kas rodytų, kad jis atšauktas.} other {Palikite įjungtą „Vieta“ arba „Laikas“. Atšauktas renginys rodomas perbraukta vieta ir žodžiu ATŠAUKTA, todėl išjungus abu nebeliktų nieko, kas rodytų, kad jis atšauktas.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — šis šriftas turi tikrą kursyvą"
+  },
+  "align": {
+    "left": "Kairėje",
+    "centre": "Centre",
+    "right": "Dešinėje"
+  },
+  "effects": {
+    "outlineColour": "Kontūro spalva",
+    "bandColour": "Juostos spalva",
+    "bandDaysOff": "Juosta laisvomis dienomis",
+    "bandCancelled": "Juosta, kai renginys atšauktas",
+    "bandDaysOffHint": "Naudojama vietoj aukščiau esančios juostos dieną, kai neprekiaujate.",
+    "bandCancelledHint": "Naudojama vietoj aukščiau esančios juostos, kai renginys atšauktas."
+  },
+  "more": {
+    "dayOwnLine": "Diena atskiroje eilutėje",
+    "dayOwnLineHint": "Savaitės diena virš datos. Tik datai.",
+    "noEventDay": "Dieną be renginio",
+    "wordsBeforePlaceholder": "pvz., Raskite mus",
+    "neverHyphenate": "Vienas ilgas žodis be tarpų visada sumažinamas — vietos pavadinimo niekada neskaidome brūkšneliu."
+  },
+  "bits": {
+    "less": "Mažiau",
+    "more": "Daugiau",
+    "chooseColourFor": "{label} — pasirinkite bet kokią spalvą",
+    "chooseColour": "Pasirinkite bet kokią spalvą"
+  }
+}

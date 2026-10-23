@@ -1,0 +1,42 @@
+{
+  "publicName": "Privatus renginys",
+  "chip": "Privatus",
+  "grid": {
+    "orderingSection": "UŽSAKYMAI",
+    "linkRowLabel": "Priimti užsakymus per privačią nuorodą ir QR kodą",
+    "columnTitle": "Įtaisytasis tipas „Privatus“. Jo negalima pervadinti, perkelti ar ištrinti."
+  },
+  "form": {
+    "help": "Jūsų tvarkaraštyje rodomas kaip „Privatus renginys“ tik su data ir laiku — niekada nerodomas adresas, žemėlapis ar Village Foodie.",
+    "linkPromise": "Svečiai užsisako per privačią nuorodą ir QR kodą — juos gausite išsaugoję.",
+    "nameLabel": "Renginio pavadinimas",
+    "nameHelp": "Svečiai tai mato užsakymo puslapio viršuje.",
+    "namePlaceholder": "Rūtos ir Tomo vestuvės",
+    "previewNote": "Kaip rodoma jūsų tvarkaraštyje — be vietos, miesto ar pašto kodo.",
+    "needsTimes": "Pridėkite pradžios ir pabaigos laiką — jų reikia, kai privatus renginys priima užsakymus per nuorodą."
+  },
+  "link": {
+    "button": "Nuoroda ir QR",
+    "title": "Privati nuoroda ir QR kodas",
+    "label": "Privati nuoroda",
+    "copy": "Kopijuoti",
+    "copied": "Nukopijuota",
+    "qrDownload": "Atsisiųsti QR",
+    "tableCards": "Spausdinti stalo korteles",
+    "newLink": "Sukurti naują nuorodą",
+    "working": "Vykdoma…",
+    "newLinkConfirm": "Sukurti naują nuorodą? Dabartinė nuoroda iškart nustos veikti, o jau atspausdinti QR kodai taip pat nebeveiks.",
+    "newLinkHelp": "Naudokite, jei nuoroda pateko ten, kur neturėjo. Dabartinė nuoroda iškart nustos veikti, kaip ir atspausdinti QR kodai.",
+    "newLinkFailed": "Nepavyko sukurti naujos nuorodos.",
+    "offNotice": "Užsakymai per privačią nuorodą šiam renginiui išjungti, todėl nėra nuorodos, kuria būtų galima pasidalyti. Renginys vis tiek rodomas jūsų tvarkaraštyje kaip „Privatus renginys“."
+  },
+  "cards": {
+    "printTitle": "{truck} — stalo kortelės",
+    "scan": "Nuskenuokite ir užsisakykite",
+    "blurb": "Užsisakykite ir sumokėkite telefonu. Kai bus paruošta, pašauksime jus vardu.",
+    "footer": "Užsakymai per HatchGrab"
+  },
+  "noSinglePost": "Privatūs renginiai neturi atskiro įrašo — savaitės plakate jie rodomi kaip „Privatus renginys“.",
+  "confirmToPrivate": "Adresas bus paslėptas, o renginys nebus rodomas žemėlapyje. Svečiams užsisakyti reikės privačios nuorodos.",
+  "confirmFromPrivate": "Renginys taps viešas: bus rodomas jo adresas ir žymeklis žemėlapyje, o privati nuoroda nustos veikti."
+}

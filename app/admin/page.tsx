@@ -29,6 +29,7 @@ import DiscoveryEventsPanel from '@/components/admin/DiscoveryEventsPanel' // di
 import TemplatesPanel from '@/components/admin/TemplatesPanel' // outreach message templates (DB-backed)
 import ScreenshotsPanel from '@/components/admin/ScreenshotsPanel' // the screenshot uploader, rendered as a tab
 import CountriesTab from '@/components/admin/CountriesTab'           // per-country prices, fees and formats
+import PricingCheckTab from '@/components/admin/PricingCheckTab'     // competitor prices vs ours, per country (admin only)
 import { useSignupCountries } from '@/components/setup/WhereBasedStep'  // switched-on countries (create-truck)
 
 interface AdminTruck {
@@ -230,6 +231,8 @@ const ADMIN_TABS = {
   templates:   { icon: '✉️', label: 'Templates' },
   // Prices, card fees and formats per country — public.country_settings (components/admin/CountriesTab.tsx).
   countries:   { icon: '🌍', label: 'Countries' },
+  // Competitor prices, features and benchmarks vs our plan_prices — components/admin/PricingCheckTab.tsx (pricing-check-1).
+  pricing:     { icon: '⚖️', label: 'Pricing check' },
 } as const
 type AdminTab = keyof typeof ADMIN_TABS
 
@@ -260,6 +263,9 @@ export default function AdminPage() {
   // Has the Countries tab been opened yet? Set on selection, never cleared — see its render site.
   const [countriesSeen, setCountriesSeen] = useState(false)
   if (adminTab === 'countries' && !countriesSeen) setCountriesSeen(true)
+  // The same for Pricing check: mounted on the first visit, then hidden rather than unmounted (its filters and country stay).
+  const [pricingSeen, setPricingSeen] = useState(false)
+  if (adminTab === 'pricing' && !pricingSeen) setPricingSeen(true)
 
   // ── ?tab= SEEDS THE OPENING TAB, so /admin/outreach's redirect lands on the outreach tab rather than
   // on Trucks. 🔴 READ FROM window.location IN AN EFFECT, NOT useSearchParams(): useSearchParams forces
@@ -880,7 +886,9 @@ export default function AdminPage() {
 
       {/* Tab bar */}
       <div className="sticky top-[51px] z-40 bg-slate-900 border-b border-slate-700 overflow-x-auto">
-        <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
+        {/* max-w-6xl, the body wrapper's width (pricing-check-1): at 5xl (1024px) the ninth tab, Pricing check, was cut off at
+            1512px and had to be scrolled to. */}
+        <div className={"w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
           {(Object.keys(ADMIN_TABS) as AdminTab[]).map(tab => (
             <button
               key={tab}
@@ -902,7 +910,7 @@ export default function AdminPage() {
           panel in here would push its last columns off-screen on EVERY monitor. That is arithmetic, not
           a small-screen problem, and it is the exact fault that was fixed on that table earlier. The
           wrapper is HIDDEN rather than unmounted so the three tab blocks inside keep their state. */}
-      <div className={(adminTab === 'outreach' || adminTab === 'events') ? 'hidden' : "w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
+      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing') ? 'hidden' : "w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
 
         {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
             🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
@@ -1401,6 +1409,16 @@ export default function AdminPage() {
       {adminTab === 'events' && (
         <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
           <DiscoveryEventsPanel />
+        </div>
+      )}
+
+      {/* ── PRICING CHECK ──────────────────────────────────────────────────────────────────────────
+          OUTSIDE the max-w-6xl body wrapper, in the wide container Outreach uses: a country list beside a country's
+          tables, which wants the width of a 27in monitor rather than 1152px. Mounted on the first visit and HIDDEN after
+          (like Countries), so the chosen country, size and filters survive a look at another tab. */}
+      {pricingSeen && (
+        <div className={adminTab === 'pricing' ? 'w-full max-w-[1800px] mx-auto px-4 py-6' : 'hidden'}>
+          <PricingCheckTab />
         </div>
       )}
 

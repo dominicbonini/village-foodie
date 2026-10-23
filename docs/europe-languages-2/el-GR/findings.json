@@ -1,0 +1,197 @@
+{
+ "generated": "2026-10-23",
+ "views": 554,
+ "pseudoViews": 213,
+ "englishLeft": {
+  "words": [
+   {
+    "word": "Dip",
+    "views": 5,
+    "examples": [
+     "1a/1a/shared/dealSlots|US|unmet",
+     "1a/1a/shared/dealSlots|US|met",
+     "1a/1a/shared/dealSlots|US|allFilledUnmet"
+    ]
+   },
+   {
+    "word": "Crispy",
+    "views": 2,
+    "examples": [
+     "1a/1a/orderPage/US|itemModal",
+     "1a/1a/orderPage/US|itemModalEdit"
+    ]
+   },
+   {
+    "word": "Sorry",
+    "views": 2,
+    "examples": [
+     "1a/1a/orderPage/US|paymentFailed",
+     "1a/1a/orderPage/US|paymentFailedUrl"
+    ]
+   },
+   {
+    "word": "released",
+    "views": 2,
+    "examples": [
+     "1a/1a/emails/rejectSentence|US|held|true",
+     "1a/1a/emails/rejectSentence|US|held_short|true"
+    ]
+   },
+   {
+    "word": "cleared",
+    "views": 2,
+    "examples": [
+     "1a/1a/emails/rejectSentence|US|held|false",
+     "1a/1a/emails/rejectSentence|US|held_short|false"
+    ]
+   },
+   {
+    "word": "within",
+    "views": 2,
+    "examples": [
+     "1a/1a/emails/rejectSentence|US|held|false",
+     "1a/1a/emails/rejectSentence|US|held_short|false"
+    ]
+   },
+   {
+    "word": "placing",
+    "views": 1,
+    "examples": [
+     "1a/1a/orderPage/US|notices"
+    ]
+   },
+   {
+    "word": "currently",
+    "views": 1,
+    "examples": [
+     "1a/1a/orderPage/US|notices"
+    ]
+   },
+   {
+    "word": "contains",
+    "views": 1,
+    "examples": [
+     "1a/1a/whatsapp/US|menuLlmCaveat"
+    ]
+   },
+   {
+    "word": "cancellations",
+    "views": 1,
+    "examples": [
+     "1a/1a/api/US|cancel|noCancels"
+    ]
+   },
+   {
+    "word": "accepted",
+    "views": 1,
+    "examples": [
+     "1a/1a/api/US|cancel|noCancels"
+    ]
+   }
+  ],
+  "viewsWithEnglish": 16
+ },
+ "shots": [
+  {
+   "engine": "webkit",
+   "name": "order-page",
+   "view": "1a/1a/orderPage/US|menu",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "order-page",
+   "view": "1a/1a/orderPage/US|menu",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "order-basket",
+   "view": "1a/1a/orderPage/US|sheet",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "order-basket",
+   "view": "1a/1a/orderPage/US|sheet",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "status-page",
+   "view": "1a/1a/statusPage/US|confirmed",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "status-page",
+   "view": "1a/1a/statusPage/US|confirmed",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "customer-email",
+   "view": "1a/1a/emails/confirm|US|plain",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "customer-email",
+   "view": "1a/1a/emails/confirm|US|plain",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "whatsapp-allergen",
+   "view": "1a/1a/whatsapp/US|allergen",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "whatsapp-allergen",
+   "view": "1a/1a/whatsapp/US|allergen",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "whatsapp-menu",
+   "view": "1a/1a/whatsapp/US|menuDeterministic",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "webkit",
+   "name": "whatsapp-menu",
+   "view": "1a/1a/whatsapp/US|menuDeterministic",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  }
+ ],
+ "overflow390": {
+  "checked": 170,
+  "language": [],
+  "artefact": []
+ }
+}

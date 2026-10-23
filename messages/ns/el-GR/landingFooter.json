@@ -1,0 +1,17 @@
+{
+  "tagline": "Λιγότερη ώρα στις παραγγελίες.<br></br>Περισσότερη ώρα στο μαγείρεμα.",
+  "features": "Λειτουργίες",
+  "pricing": "Τιμές",
+  "privacy": "Απόρρητο",
+  "terms": "Όροι",
+  "contact": "Επικοινωνία",
+  "about": "Σχετικά με εμάς",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Από τους δημιουργούς του <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Κατεβάστε το HatchGrab από το App Store",
+    "appStoreAlt": "Λήψη από το App Store",
+    "googlePlayLink": "Αποκτήστε το HatchGrab στο Google Play",
+    "googlePlayAlt": "Διαθέσιμο στο Google Play"
+  }
+}

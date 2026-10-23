@@ -22,7 +22,7 @@
     "preorders": "Ettetellimused ja kättesaamise ajad",
     "capacity": "Köögi võimsuse haldus",
     "privateEvents": "Eraüritused",
-    "printing": "Köögilipikute printimine",
+    "printing": "Köögitšekkide printimine",
     "app": "iPhone’i, iPadi ja Androidi köögirakendus"
   },
   "added": {
@@ -31,7 +31,7 @@
     "event_types": "Kohandatud ürituse tüübid ja hinnad"
   },
   "money": {
-    "unlimitedOrders": "Piiramatult veebitellimusi, HatchGrabi tasu 0 %",
+    "unlimitedOrders": "Piiramatult veebitellimusi, HatchGrabi tasu 0%",
     "samePrice": "Sama hind ka sinu kõige kiiremal kuul"
   },
   "comingSoon": "Tulekul",
@@ -43,6 +43,6 @@
     "last": "Üle {from} → <b>{plan}</b>",
     "only": "Mis tahes maht → <b>{plan}</b>"
   },
-  "footnote": "* Lisaks Stripe’i kaardimaksetasu veebis kaardiga makstud tellimustelt (praegu {country}: {cardFee}), mis makstakse Stripe’ile, mitte HatchGrabile. Tellimused kohapeal kasutavad sinu enda makseterminali — HatchGrab võtab 0 %.",
+  "footnote": "* Lisaks Stripe’i kaardimaksetasu veebis kaardiga makstud tellimustelt (praegu {country}: {cardFee}), mis makstakse Stripe’ile, mitte HatchGrabile. Tellimused kohapeal kasutavad sinu enda makseterminali — HatchGrab võtab 0%.",
   "currencyLine": "Hinnad: {currency} ({code})"
 }

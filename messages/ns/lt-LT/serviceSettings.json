@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Atsiėmimo laikai",
+    "takes_cash": "Ar priimate grynuosius?",
+    "offline_protection": "Užsakymų apsauga atsijungus",
+    "buzzer_prompt": "Priminti pridėti gaviklį"
+  },
+  "typeFollowsVanTitle": "Taikomas kiekvieno furgono įprastas nustatymas",
+  "sameSettingsAllVansLabel": "Vienodi nustatymai visiems furgonams",
+  "sameSettingsAllVansHeader": "Visi furgonai",
+  "sameSettingsConfirm": "Nukopijuoti Furgono 1 nustatymus į visus furgonus? Bus nukopijuoti visi Furgono 1 nustatymai – taip pat, kaip veikia „Kaip Furgonas 1“ skiltyje „Nustatymai“. Virtuvės pajėgumas turi atskirą jungiklį.",
+  "eventTypesFooterStandard": "Standartinis – tai jūsų įprasta sąranka. Pakeitus jį čia, jis pasikeis ir skiltyje „Nustatymai“.",
+  "eventTypesFooterOneEvent": "Norėdami pakeisti nustatymą tik vienam renginiui, naudokite to renginio valdymo skydelį.",
+  "eventTypesSubtitle": "Pakeitimai išsaugomi iš karto.",
+  "matchStandardLabel": "Kaip Standartinis",
+  "matchStandardConfirm": "Grąžinti visiems šio tipo nustatymams tipo „Standartinis“ reikšmes? Visi čia atlikti pakeitimai bus panaikinti.",
+  "priceLabels": {
+    "price_change_on": "Keisti kainas",
+    "price_mode": "Kainos pakeitimas",
+    "price_amount": "Suma",
+    "price_rounding": "Apvalinimas",
+    "item_prices": "Patiekalų kainos"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Kiekvieną kainą nustatyti rankiniu būdu"
+  },
+  "priceRounding": {
+    "none": "Be apvalinimo",
+    "nearest_1": "Iki artimiausio 1 {symbol}",
+    "up_1": "Visada apvalinti į didesnę pusę"
+  },
+  "pricesStandardCell": "Jūsų meniu kainos",
+  "pricesTruckWideTitle": "Jūsų kainos vienodos visiems furgonams",
+  "pricesMenuCell": "Meniu",
+  "pricesTypeOffCell": "Meniu kainos",
+  "itemPricesShow": "Rodyti kainas",
+  "itemPricesHide": "Slėpti kainas",
+  "priceItemsHeading": "Nustatykite kiekvieno patiekalo kainą",
+  "priceItemsOpen": "Peržiūrėti ar keisti kiekvieno patiekalo kainą ›",
+  "priceItemsClose": "Slėpti patiekalų kainas ⌃",
+  "ownPriceCount": "{n, plural, one {{count} patiekalas turi savo kainą} few {{count} patiekalai turi savo kainą} many {{count} patiekalų turi savo kainą} other {{count} patiekalų turi savo kainą}}",
+  "priceTypeHint": "Paspauskite kainą, kad įrašytumėte savo.",
+  "pricesLiveNotice": "Šis renginys vyksta. Nauji užsakymai naudoja naujas kainas, o jau pateikti užsakymai – senąsias.",
+  "placeTypeHelper": "Pasirinkus šią vietą, lange „Pridėti renginį“ parenkamas šis tipas.",
+  "postPictureStandardNote": "Čia renginių įrašuose naudojamas jūsų standartinis dizainas.",
+  "eventItemsCardDescription": "Kainos, patiekalų limitai ir prieinamumas tik šiam renginiui. Pakeitimai įsigalioja iš karto.",
+  "eventPriceColumnLabel": "Kaina",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · šis renginys} other {meniu {price} · šis renginys}}",
+  "eventPriceEdit": "✎ Redaguoti kainas",
+  "eventPriceCancel": "Atšaukti",
+  "eventPriceSave": "Išsaugoti kainas",
+  "eventPriceEditNote": "Redaguojate kainas tik šiam renginiui. Kol neišsaugosite, patiekalų limitai ir prieinamumas užrakinti.",
+  "eventPriceLiveNote": "Vyksta: nauji užsakymai naudoja naujas kainas.",
+  "offlineWhenOfflineLabel": "Atsijungus"
+}

@@ -1,0 +1,69 @@
+{
+  "close": "Uždaryti",
+  "cancel": "Atšaukti",
+  "selectReason": "Pasirinkite priežastį",
+  "reject": {
+    "title": "Atmesti užsakymą #{orderId}?",
+    "reasonLabel": "Priežastis – privaloma (rodoma klientui)",
+    "reason": "{reason, select, sold_out {Išparduotas patiekalas} too_busy {Per daug užsakymų – nespėsime laiku} closing_soon {Netrukus uždarome} other {Kita}}",
+    "noteRequired": "Priežastis – privaloma",
+    "noteOptional": "Papildoma pastaba – neprivaloma",
+    "notePlaceholder": "Pateikite klientui daugiau informacijos…",
+    "keep": "Palikti užsakymą",
+    "confirm": "Atmesti užsakymą"
+  },
+  "eventCancel": {
+    "title": "Atšaukti šį renginį?",
+    "affected": "{n, plural, one {{count} užsakymas bus atšauktas} few {{count} užsakymai bus atšaukti} many {{count} užsakymų bus atšaukta} other {{count} užsakymų bus atšaukta}}, o klientams bus pranešta.",
+    "reasonLabel": "Priežastis – neprivaloma",
+    "reason": "{reason, select, vehicle_breakdown {Transporto priemonės gedimas} weather {Oras} venue_issue {Problema renginio vietoje} personal_emergency {Skubūs asmeniniai reikalai} other {Kita}}",
+    "messageLabel": "Žinutė klientams – neprivaloma",
+    "messagePlaceholder": "pvz., Atsiprašome, pakeliui į renginio vietą sugedo mūsų priekaba…",
+    "keep": "Palikti renginį",
+    "cancelling": "Atšaukiama…",
+    "confirm": "Atšaukti renginį"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Pradėti renginį iš naujo} other {Pradėti renginį}}",
+    "changeEvent": "Keisti renginį",
+    "changeEventType": "Keisti renginio tipą…",
+    "privateLink": "Privati nuoroda ir QR kodas",
+    "noteLabel": "Pastaba klientams",
+    "notePlaceholder": "pvz., Statykite automobilį pagrindinėje aikštelėje, ieškokite oranžinės palapinės",
+    "noteHint": "Rodoma klientams užsakymo puslapyje po jūsų renginio informacija.",
+    "saveNote": "Išsaugoti pastabą",
+    "resume": "Tęsti užsakymų priėmimą",
+    "pause": "Pristabdyti užsakymus",
+    "changeFinishTime": "Keisti renginio pabaigos laiką",
+    "finishEvent": "Baigti renginį",
+    "cancelEvent": "Atšaukti renginį"
+  },
+  "finish": {
+    "confirmTitle": "Keisti pabaigos laiką?",
+    "willFinish": "Šis renginys baigsis <b>{selected}</b>{hasCurrent, select, yes {, o ne <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} užsakymo atsiėmimo laikas} few {{count} užsakymų atsiėmimo laikas} many {{count} užsakymų atsiėmimo laikas} other {{count} užsakymų atsiėmimo laikas}} – po {selected}.</b> {n, plural, one {Jis lieka ekrane, ir jį vis tiek reikia paruošti.} few {Jie lieka ekrane, ir juos vis tiek reikia paruošti.} many {Jie lieka ekrane, ir juos vis tiek reikia paruošti.} other {Jie lieka ekrane, ir juos vis tiek reikia paruošti.}} Pakeitus pabaigos laiką, tik NAUJŲ užsakymų nebebus galima pateikti vėlesniam laikui.",
+    "saving": "Išsaugoma…",
+    "confirm": "Keisti pabaigos laiką",
+    "keepCurrent": "Palikti {current}",
+    "keepAsIs": "Palikti kaip yra",
+    "title": "Keisti pabaigos laiką",
+    "currentlySet": "Šiuo metu nustatyta, kad renginys baigsis <b>{current}</b>.",
+    "noFinishTime": "Šiam renginiui pabaigos laikas nenustatytas.",
+    "noTimesLeft": "Šiandien laikų nebeliko. Verčiau naudokite „Baigti renginį“.",
+    "newFinishTime": "Naujas pabaigos laikas",
+    "optionCurrent": "{time} (dabartinis)",
+    "earlier": "Tai anksčiau nei dabartinis pabaigos laikas. Klientai negalės užsisakyti vėlesniam laikui.",
+    "review": "Peržiūrėti pakeitimą",
+    "optionNextDay": "{time} (kitą dieną)"
+  },
+  "extraWait": {
+    "title": "Pridėti papildomo laukimo",
+    "hint": "Pridedama prie naujiems užsakymams nurodomo atsiėmimo laiko. Renginio pabaigos laikas nesikeičia.",
+    "option": "+{mins} min."
+  },
+  "picker": {
+    "reconnect": "Prisijunkite iš naujo, kad įkeltumėte",
+    "selected": "Pasirinkta",
+    "status": "{tone, select, paused {⏸ Pristabdytas} live {● Vyksta} finished {● Baigtas} cancelled {Atšauktas} other {Nepradėtas}}"
+  }
+}

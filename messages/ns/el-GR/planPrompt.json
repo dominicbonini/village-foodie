@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} περιλαμβάνονται στο πακέτο {plan}.} other {{feature} περιλαμβάνεται στο πακέτο {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} δεν περιλαμβάνονται στο πακέτο σας.} other {{feature} δεν περιλαμβάνεται στο πακέτο σας.}}",
+  "switchedOff": "{many, select, yes {{feature} έχουν απενεργοποιηθεί για το food truck σας.} other {{feature} έχει απενεργοποιηθεί για το food truck σας.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Αναβάθμιση →",
+  "features": {
+    "discovery_map": {
+      "name": "Η καταχώριση στον χάρτη αναζήτησης",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Ο πίνακας ελέγχου web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Η εφαρμογή κουζίνας",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Ο κατάλογος με κωδικό QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Τα μενού",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Οι προτάσεις",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Οι παραγγελίες επί τόπου",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Η online παραγγελία με «Πληρωμή κατά την παραλαβή»",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Η σήμανση «Εξαντλήθηκε»",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Η αντίστροφη μέτρηση αποθέματος",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Η προστασία παραγγελιών εκτός σύνδεσης",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Οι online πληρωμές",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Η προπαραγγελία για μελλοντικές ημερομηνίες",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Τα χρονικά διαστήματα παραλαβής",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Η διαχείριση χωρητικότητας κουζίνας",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Η αυτόματη αποδοχή",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Οι αυτόματες απαντήσεις σε Messenger & Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Οι κωδικοί QR με το λογότυπό σας",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Οι προηγμένες αναφορές",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "Η εκτύπωση δελτίων κουζίνας",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Ο συγχρονισμός κουζίνας σε πολλές συσκευές",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Η οθόνη κουζίνας",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Οι αυτόματες απαντήσεις στο WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Το πρόγραμμά σας στον δικό σας ιστότοπο",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Οι αναρτήσεις στα social media",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Οι προσαρμοσμένοι τύποι εκδηλώσεων",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Οι ιδιωτικές εκδηλώσεις",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Naudotojo meniu",
+  "screenOn": "Ekranas įjungtas",
+  "screenOff": "Ekranas gali užgesti",
+  "newOrderSound": "Naujo užsakymo garsas",
+  "copied": "Nukopijuota",
+  "orderLink": "Užsakymų nuoroda",
+  "qrCode": "QR kodas",
+  "kitchenScreen": "Virtuvės ekranas",
+  "thisDevice": "Šis įrenginys",
+  "manage": "Valdymas",
+  "ordersDashboard": "Užsakymų skydelis",
+  "admin": "Administravimas",
+  "privacy": "Privatumo politika",
+  "terms": "Sąlygos",
+  "signOut": "Atsijungti",
+  "close": "Uždaryti"
+}

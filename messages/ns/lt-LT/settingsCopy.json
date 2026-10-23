@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Leisti klientams atšaukti užsakymus",
+    "sentence": "Klientai gali atšaukti užsakymą, kol iki atsiėmimo laiko lieka ne mažiau kaip <select></select>"
+  },
+  "autoAccept": {
+    "label": "Automatiškai priimti užsakymus",
+    "help": "Užsakymai patvirtinami automatiškai. Jei pageidaujamas laiko intervalas užpildytas, užsakymas perkeliamas į kitą laisvą intervalą. Patvirtinama tik tada, kai pakanka pajėgumo. Užsakymus su kliento pastabomis (pvz., apie alergiją) vis tiek reikės patvirtinti."
+  },
+  "orderReady": {
+    "label": "Paruošto užsakymo žingsnis",
+    "help": "Užsakymų ekrane rodyti mygtuką „Paruošta“. Virtuvės ekranai nustatomi atskirai, kiekviename įrenginyje. Kai užsakymas pažymimas paruoštu, klientui siunčiamas el. laiškas. Taikoma visiems renginiams – vienam renginiui galite tai įjungti ar išjungti to renginio valdymo skydelyje."
+  },
+  "buzzers": {
+    "label": "Ar atsiėmimui dalijate gaviklius?",
+    "help": "Pažymėkite, kurį gaviklį davėte kiekvienam klientui, kad žinotumėte, ko ieškoti, kai jo maistas paruoštas.",
+    "countLabel": "Kiek gaviklių turite?"
+  }
+}

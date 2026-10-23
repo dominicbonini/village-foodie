@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {{name}: įveskite galiojantį mobiliojo telefono numerį} other {Įveskite galiojantį mobiliojo telefono numerį}}{withExample, select, yes { (pvz., {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {{name}: įveskite galiojantį telefono numerį} other {Įveskite galiojantį telefono numerį}}{withExample, select, yes { (pvz., {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {{name}: įveskite galiojantį telefono numerį} other {Įveskite galiojantį telefono numerį}}{withExample, select, yes { (pvz., {example})} other {}}."
+}

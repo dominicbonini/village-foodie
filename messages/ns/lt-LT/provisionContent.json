@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Furgonas 1",
+  "demoCategories": {
+    "pizza": "Picos",
+    "burgers": "Mėsainiai",
+    "mains": "Pagrindiniai",
+    "sides": "Garnyrai",
+    "drinks": "Gėrimai"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Picų furgonas",
+      "items": {
+        "margherita": "Margarita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja ir medus",
+        "fourCheese": "Keturi sūriai",
+        "gardenVeg": "Daržovių",
+        "garlicBread": "Česnakinė duona",
+        "rocketParmesan": "Rukola ir parmezanas",
+        "olives": "Alyvuogės",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Mėsainių furgonas",
+      "items": {
+        "classicCheeseburger": "Klasikinis mėsainis su sūriu",
+        "doubleBacon": "Dvigubas su šonine",
+        "buttermilkChicken": "Pasukose marinuota vištiena",
+        "halloumiStack": "Halloumi mėsainis",
+        "smashBurger": "Smash mėsainis",
+        "skinOnFries": "Bulvytės su lupenomis",
+        "loadedCheeseFries": "Bulvytės su sūrio padažu",
+        "onionRings": "Svogūnų žiedai",
+        "craftLemonade": "Naminis limonadas",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Kario furgonas",
+      "items": {
+        "chickenTikkaMasala": "Vištienos tikka masala",
+        "lambRoganJosh": "Ėrienos rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Sviestinė vištiena",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Pilau ryžiai",
+        "garlicNaan": "Česnakinis naanas",
+        "onionBhaji": "Svogūnų bhaji",
+        "mangoLassi": "Mangų lassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

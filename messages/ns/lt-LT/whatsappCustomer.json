@@ -1,0 +1,15 @@
+{
+  "greeting": "Sveiki 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Visą mūsų meniu ir informaciją apie alergenus rasite čia: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Visą mūsų meniu rasite čia: {url} — {truck} {emoji}",
+  "otherCategory": "Kita",
+  "categoryFrom": "{category} nuo {price}",
+  "listTwo": "{first} ir {second}",
+  "listMany": "{init} ir {last}",
+  "menuSummary": "{opener}Siūlome: {summary}. Visą meniu peržiūrėkite ir užsisakykite iš anksto čia: {url} — {truck} {emoji}",
+  "allergenCaveat": "Informaciją apie alergenus pasitikrinkite visame meniu – tai automatinis atsakymas.",
+  "specificFallback": "{opener}Naujausią mūsų tvarkaraštį rasite čia: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Ačiū už visas žinutes! Čia galiu atsakyti tik kelis kartus per dieną.\n\nUžsisakyti: {link}",
+  "capContact": "Susisiekti su mumis tiesiogiai: {number}"
+}

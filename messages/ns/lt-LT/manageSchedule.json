@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Atšauktas",
+    "finished": "Pasibaigęs",
+    "unconfirmed": "Nepatvirtintas",
+    "confirmed": "Patvirtintas",
+    "open": "Dabar veikia",
+    "closed": "Uždarytas"
+  },
+  "sections": {
+    "label": "Tvarkaraščio skiltys",
+    "events": "Renginiai",
+    "eventTypes": "Renginių tipai"
+  },
+  "header": {
+    "title": "Tvarkaraštis",
+    "upcoming": "Būsimi: {count}",
+    "import": "✨ Importuoti tvarkaraštį",
+    "importHint": "nuotrauka, PDF ar tekstas",
+    "addEvent": "+ Pridėti renginį",
+    "scraperAuto": "Renginių automatiškai ieškome jūsų svetainėje",
+    "changeInSettings": "Keisti skiltyje „Nustatymai“",
+    "scraperManual": "Tvarkaraštį tvarkote rankiniu būdu"
+  },
+  "empty": {
+    "title": "Būsimų renginių nėra",
+    "body": "Čia atsiras renginiai, rasti jūsų socialiniuose tinkluose ir rezervacijų kalendoriuje, kad galėtumėte juos patvirtinti"
+  },
+  "list": {
+    "openNow": "Dabar veikia",
+    "needsApproval": "Laukia jūsų sprendimo",
+    "needsConfirmation": "Reikia patvirtinti",
+    "confirmed": "Patvirtinti",
+    "past": "Praėję renginiai ({count})",
+    "found": "Radome {count, plural, one {# renginį – peržiūrėkite ir priimkite jį prieš paskelbiant.} few {# renginius – peržiūrėkite ir priimkite juos prieš paskelbiant.} many {# renginių – peržiūrėkite ir priimkite juos prieš paskelbiant.} other {# renginių – peržiūrėkite ir priimkite juos prieš paskelbiant.}}"
+  },
+  "card": {
+    "addName": "Pridėti pavadinimą",
+    "timeNeeded": "⚠ Reikia laiko",
+    "setTimeFirst": "Pirmiausia nustatykite laiką",
+    "confirm": "Patvirtinti",
+    "copy": "Kopijuoti",
+    "edit": "Redaguoti",
+    "makePost": "Sukurti įrašą",
+    "cancel": "Atšaukti",
+    "approve": "Priimti",
+    "reject": "Atmesti",
+    "stock": "⚠️ Likučiai",
+    "stockHidden": "Paslėpta – {reason}",
+    "noDeals": "Aktyvių rinkinių nėra",
+    "dealsActive": "{count, plural, one {# aktyvus rinkinys} few {# aktyvūs rinkiniai} many {# aktyvių rinkinių} other {# aktyvių rinkinių}} · {names}{hidden, plural, =0 {} one { · # paslėptas} few { · # paslėpti} many { · # paslėptų} other { · # paslėptų}}",
+    "approveNeedsTimes": "„Priimti“ neveiks, kol renginiui nenustatytas pradžios ir pabaigos laikas – pridėkite juos per „Redaguoti“."
+  },
+  "guessed": {
+    "title": "📍 Šią vietą nustatėme spėdami",
+    "body": "Pavadinimą <b>{venue}</b> atitinka kelios vietos, todėl parinkome tinkamiausią{hasTown, select, yes { (vietovė: <b>{town}</b>)} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Prieš priimdami patikrinkite, ar ji teisinga – jei ne, per <b>Redaguoti</b> pataisykite vietovę arba laukelį „{postal}“, kitaip klientai bus nukreipti ne ten.",
+    "thisVenue": "(be pavadinimo)"
+  },
+  "noLocation": {
+    "title": "📍 Vieta dar nenustatyta",
+    "body": "Šios vietos nepavyko pažymėti žemėlapyje, todėl ji bus rodoma sąraše, bet be žemėlapio žymeklio. Kad ji atsirastų žemėlapyje, per <b>Redaguoti</b> užpildykite laukelį „{postal}“."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Galimas konfliktas} few {Galimi konfliktai} many {Galimi konfliktai} other {Galimi konfliktai}} – peržiūrėkite prieš {pending, select, yes {priimdami} other {patvirtindami}}",
+    "duplicate": "Atrodo, kad šį renginį jau turite.",
+    "review": "Ta pati vieta ir data, bet kitas laikas – ar tai tas pats renginys su pakeistu laiku, ar atskiras laiko intervalas? Peržiūrėkite prieš priimdami.",
+    "already": "Jau yra jūsų tvarkaraštyje: <b>{venue}</b>{details} ({status, select, confirmed {patvirtintas} open {dabar veikia} other {{status}}})",
+    "unnamedVenue": "Vieta be pavadinimo",
+    "ack": "Taip, tai skirtingi renginiai – vis tiek {pending, select, yes {priimti} other {patvirtinti}}",
+    "cancel": "Atšaukti",
+    "overlap": "Šio renginio laikas sutampa su kitu tos pačios dienos renginiu – vienas furgonas negali būti dviejose vietose vienu metu. Patikrinkite prieš priimdami."
+  },
+  "toast": {
+    "loadFailed": "Nepavyko įkelti renginių",
+    "linkFailed": "Nepavyko įkelti nuorodos",
+    "placeTypeFailed": "Renginys išsaugotas. Įprasto vietos tipo ({place}) išsaugoti nepavyko – {reason}.",
+    "placeTypeFailedReason": "išsaugojimas neįvyko",
+    "eventUpdated": "Renginys atnaujintas",
+    "eventAdded": "Renginys pridėtas",
+    "eventsSaved": "{count, plural, one {Išsaugotas # renginys} few {Išsaugoti # renginiai} many {Išsaugota # renginių} other {Išsaugota # renginių}}",
+    "saveEventsFailed": "Nepavyko išsaugoti renginių",
+    "needsTime": "Prieš priimdami pridėkite pradžios ir pabaigos laiką – be jo renginys negali būti paskelbtas.",
+    "addStartTime": "Pridėkite pradžios laiką",
+    "addEndTime": "Pridėkite pabaigos laiką",
+    "chooseTruckBefore": "Prieš priimdami pasirinkite, kuris furgonas dirbs šiame renginyje.",
+    "chooseTruck": "Pasirinkite, kuris furgonas dirbs šiame renginyje",
+    "eventConfirmed": "Renginys patvirtintas",
+    "eventRejected": "Renginys atmestas",
+    "undo": "↩ Anuliuoti",
+    "eventRestored": "Renginys atkurtas",
+    "restoreFailed": "Nepavyko atkurti",
+    "eventCancelled": "Renginys atšauktas",
+    "eventCancelledOrders": "Renginys atšauktas · {count, plural, one {atšauktas # užsakymas} few {atšaukti # užsakymai} many {atšaukta # užsakymų} other {atšaukta # užsakymų}}",
+    "placeHidden": "Vieta paslėpta",
+    "placeShown": "Vieta vėl rodoma",
+    "saveThatFailed": "Nepavyko išsaugoti."
+  },
+  "link": {
+    "label": "Privati nuoroda ir QR kodas",
+    "close": "Uždaryti"
+  }
+}

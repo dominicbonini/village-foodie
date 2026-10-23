@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Privaloma} other {Neprivaloma}}{limit, select, one { · Pasirinkite vieną} upTo { · Pasirinkite iki {max}} other {}}",
+  "operator": "{required, select, yes {Privaloma} other {Neprivaloma}}{limit, select, one { · Klientas renkasi vieną} upTo { · Klientas gali pasirinkti iki {max}} other {}}"
+}

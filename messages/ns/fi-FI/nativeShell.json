@@ -71,7 +71,7 @@
     "noVanBody": "Tällä yrityksellä ei ole vielä aktiivista ruokarekkaa. Ota sellainen käyttöön kohdassa <b>Asetukset → Ruokarekkasi</b>, niin tämä laite määrittyy automaattisesti — täällä ei tarvita muita toimia.",
     "goToVans": "Siirry: Asetukset → Ruokarekkasi",
     "title": "Määritä tämä laite",
-    "body": "Kertaluonteinen määritys <b>tälle laitteelle</b>: mihin näkymään se avautuu ja mitä ruokarekkaa se palvelee. Koskee vain tätä laitetta — muut laitteet määritetään erikseen, ja voit muuttaa näitä myöhemmin kohdasta profiilivalikko → ”Tämä laite”.",
+    "body": "Kertaluonteinen määritys <b>tälle laitteelle</b>: mihin näkymään se avautuu ja mitä ruokarekkaa se palvelee. Koskee vain tätä laitetta — muut laitteet määritetään erikseen, ja voit muuttaa näitä myöhemmin kohdasta käyttäjävalikko → ”Tämä laite”.",
     "whichScreen": "Mihin näkymään tämä laite avautuu?",
     "dashboard": "Ohjauspaneeli",
     "kds": "Keittiönäyttö",
@@ -119,7 +119,7 @@
     "newOrders": "{n, plural, one {Sinulla on uusi tilaus} other {Sinulla on {count} uutta tilausta}}"
   },
   "offlineAlert": {
-    "pausedTitle": "Tilaaminen tauolla",
+    "pausedTitle": "Tilaaminen keskeytetty",
     "pausedBody": "Olet offline-tilassa — asiakkaiden tilaaminen on keskeytetty.",
     "offlineTitle": "Olet offline-tilassa",
     "offlineBody": "Tämä laite on menettänyt yhteyden."

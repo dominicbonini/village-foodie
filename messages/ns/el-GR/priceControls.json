@@ -1,0 +1,8 @@
+{
+  "change": "{label} — αλλαγή",
+  "useRule": "{label} — χρήση του κανόνα",
+  "typePrice": "{label} — πληκτρολογήστε τιμή",
+  "backToRule": "Επιστροφή στον κανόνα",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

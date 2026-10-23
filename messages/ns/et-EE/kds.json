@@ -15,8 +15,8 @@
     "truckNotFound": "Toiduautot ei leitud"
   },
   "degraded": {
-    "at": "⚠️ Serveriga ei saa ühendust. Näitan tellimusi seisuga {time}. UUSI TELLIMUSI VÕIB PUUDUDA.",
-    "earlier": "⚠️ Serveriga ei saa ühendust. Näitan varasemaid tellimusi. UUSI TELLIMUSI VÕIB PUUDUDA."
+    "at": "⚠️ Serveriga ei saa ühendust. Näitan tšekke seisuga {time}. UUSI TELLIMUSI VÕIB PUUDUDA.",
+    "earlier": "⚠️ Serveriga ei saa ühendust. Näitan varasemaid tšekke. UUSI TELLIMUSI VÕIB PUUDUDA."
   },
   "header": {
     "dashboard": "Töölaud",
@@ -54,7 +54,7 @@
     "soundNeedsConfirming": "Ainult kinnitamist vajavad tellimused",
     "soundAll": "Kõik uued tellimused",
     "soundDue": "Heli, kui tellimust on aeg valmistama hakata",
-    "soundDueHelp": "Kõlab, kui tellimuse kaart muutub merevaigukollaseks.",
+    "soundDueHelp": "Kõlab, kui tšekk muutub merevaigukollaseks.",
     "deviceSettings": "Seadme seaded",
     "sound": "Heli",
     "close": "Sulge"

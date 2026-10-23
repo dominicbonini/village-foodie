@@ -26,7 +26,7 @@
     "stockSaved": "Laoseis salvestatud",
     "categoryAvailabilitySaved": "Kategooria {category} saadavus salvestatud",
     "categoryUpdateFailed": "Kategooriat ei saanud uuendada — palun proovi uuesti",
-    "extraSaveFailed": "Seda lisandit ei saanud salvestada. Kontrolli seda enne vahetuse algust.",
+    "extraSaveFailed": "Seda lisa ei saanud salvestada. Kontrolli seda enne vahetuse algust.",
     "eventStarted": "{state, select, restarted {Üritus taaskäivitatud} other {Üritus alanud}}",
     "finishTimeNow": "Lõpuaeg nüüd {time}",
     "eventFinished": "Üritus lõpetatud",
@@ -60,7 +60,7 @@
     "logoPlaceholder": "Sinu logo siia",
     "alt": "Tellimise QR-kood",
     "demoName": "Demo",
-    "poweredBy": "Teenust pakub <b>{brand}</b>",
+    "poweredBy": "Platvorm: <b>{brand}</b>",
     "tapToClose": "Sulgemiseks puuduta ükskõik kus"
   },
   "pin": {
@@ -151,7 +151,7 @@
     "manageEvent": "Halda üritust",
     "noEvent": "Üritust pole valitud",
     "selectEvent": "Vali üritus",
-    "status": "{tone, select, paused {⏸ Peatatud} live {● Käib} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+    "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
   },
   "orders": {
     "noEvent": "Üritust pole valitud — tellimuste nägemiseks vali üritus",
@@ -242,11 +242,11 @@
     "prepAria": "Kategooria {category}: valmistusaeg",
     "countsLocked": "Küpsetatav — läheb alati arvesse (selle valmistusaeg ja partii määravad tempo)",
     "countsNoCap": "Määra võimsus, et valida, millised kategooriad arvesse lähevad",
-    "countsTick": "Märgi, et kaasata see kohene kategooria (lisandid, dipid, joogid) ühisesse ajaakna piirangusse",
+    "countsTick": "Märgi, et kaasata see kohene kategooria (lisandid, dipikastmed, joogid) ühisesse ajavahemiku piirangusse",
     "totalCapacity": "Koguvõimsus",
     "totalCapacityAria": "Koguvõimsus (tooted)",
     "items": "{n, plural, one {{count} toode} other {{count} toodet}}",
-    "windowAria": "Võimsuse ajaaken (minutites)",
+    "windowAria": "Võimsuse ajavahemik (minutid)",
     "windowEvery": "/ {duration}",
     "assignTruck": "Enne köögi võimsuse määramist määra sellele üritusele toiduauto.",
     "setCapacityFirst": "Määra võimsus, et valida, millised kategooriad arvesse lähevad."

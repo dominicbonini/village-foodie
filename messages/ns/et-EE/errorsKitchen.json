@@ -62,7 +62,7 @@
   "item_sold_out": "Vabandust, {item} on läbi müüdud.",
   "choose_group": "Toode {item}: palun vali {group}.",
   "net_address_invalid": "Sisesta printeri aadress kujul 192.168.1.50 või 192.168.1.50:9100.",
-  "stock_table_attention": "Seda lisandit ei õnnestunud salvestada. Laoseisu tabel vajab tähelepanu.",
+  "stock_table_attention": "Seda lisa ei õnnestunud salvestada. Laoseisu tabel vajab tähelepanu.",
   "completed_payment_not_recorded": "Tellimus on lõpetatud, kuid maksekirjet ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",
   "slot_board_not_updated": "Tellimus on salvestatud, kuid köögi võimsuse tabelit ei õnnestunud uuendada — kontrolli ajavahemikku, enne kui sellele tugined.",
   "created_payment_not_recorded": "Tellimus on loodud, kuid maksekirjet ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",

@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Užsisakykite: {truck}",
+    "orderDescription": "Užsisakykite iš anksto: {truck}. Atsiimkite prie furgono.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} logotipas"
+  },
+  "shareTitle": "{truck} tvarkaraštis",
+  "shareText": "Pažiūrėkite, kur {truck} sustos kitą kartą! 🚚",
+  "linkCopied": "Profilio nuoroda nukopijuota! 📋",
+  "facebookPage": "Facebook puslapis",
+  "loadingMap": "Žemėlapis įkeliamas…",
+  "view": {
+    "list": "Sąrašas",
+    "map": "Žemėlapis"
+  },
+  "ownThisTruck": "Tai jūsų food truck?",
+  "ownThisTruckTitle": "Tai jūsų food truck? Spustelėkite ir atnaujinkite profilį",
+  "actions": {
+    "menu": "Meniu",
+    "call": "Skambinti",
+    "message": "Rašyti",
+    "share": "Bendrinti",
+    "order": "Užsakyti"
+  },
+  "loadingSchedule": "Tvarkaraštis įkeliamas…",
+  "loadError": {
+    "title": "Nepavyko įkelti",
+    "body": "Šiuo metu nepavyko įkelti tvarkaraščio – dažniausiai tai trumpas sutrikimas. Bandykite dar kartą.",
+    "retry": "Bandyti dar kartą"
+  },
+  "notFound": {
+    "title": "Food truck nerastas",
+    "body": "Neradome jokios informacijos apie šį food truck. Galbūt jis persikėlė arba atnaujino profilį.",
+    "cta": "Peržiūrėti visus food truck"
+  },
+  "noEvents": {
+    "title": "Artimiausių renginių nerasta",
+    "body": "Galbūt mums trūksta informacijos apie šį food truck. Ar esate savininkas, o gal žinote jo tvarkaraštį?",
+    "cta": "Parašykite mums, kad atnaujintume!"
+  },
+  "whereToFind": "Kur mus rasti",
+  "missingEvent": "<strong>Trūksta renginio?</strong> <br></br>Jei esate šio food truck savininkas ar tiesiog ištikimas gerbėjas, padėkite mums, kad šis puslapis būtų tikslus! <br></br><link>Susisiekite su mumis ir pridėkite trūkstamą informaciją.</link>",
+  "weeklySchedule": "Gaukite savaitės tvarkaraštį 🍕"
+}

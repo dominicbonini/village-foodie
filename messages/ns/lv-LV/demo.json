@@ -8,7 +8,7 @@
   "cashAndCollected": "Skaidrā, izsniegts",
   "logoPlaceholder": "Jūsu logotips šeit",
   "welcomeTitle": "{sample, select, yes {Lūk, parauga demo} other {Lūk, jūsu demo}}",
-  "welcomeIntro": "{sample, select, yes {Šī ir <b>parauga ēdienkarte</b>, lai jūs redzētu, kā viss darbojas — augšupielādējiet savu jebkurā laikā, lai to pielāgotu sev.} other {Šī ir jūsu ēdienkarte un zīmols īstā pasūtījumu panelī.}} Pasūtījumi, kas tajā jau ir, ir piemēri, lai jūs redzētu, kā izskatās rosīgs darbs.",
+  "welcomeIntro": "{sample, select, yes {Šī ir <b>parauga ēdienkarte</b>, lai jūs redzētu, kā viss darbojas — augšupielādējiet savu jebkurā laikā, lai to pielāgotu sev.} other {Šī ir jūsu ēdienkarte un zīmols īstā pasūtījumu vadības panelī.}} Pasūtījumi, kas tajā jau ir, ir piemēri, lai jūs redzētu, kā izskatās rosīgs darbs.",
   "twoThings": "Divas lietas, ko izmēģināt:",
   "hitButton": "Nospiediet <b>{button}</b> pie kāda pasūtījuma",
   "scanQr": "Noskenējiet <b>QR kodu</b> — vai pieskarieties saitei — un pasūtiet kā klients, tad vērojiet, kā pasūtījums pienāk",

@@ -1,0 +1,28 @@
+{
+  "hi": "Sveiki, {name},",
+  "limit80": {
+    "subject": "Išnaudojote 80 % šio mėnesio WhatsApp atsakymų",
+    "used": "Šį mėnesį išnaudota automatinių WhatsApp atsakymų: <b>{used} iš {limit}</b>.",
+    "nothingStopped": "Niekas nesustojo. Pasiekus {limit}, automatiniai atsakymai bus pristabdyti, kol limitas atsinaujins <b>{reset}</b> — klientai vis tiek galės jums rašyti, o jūs matysite viską, ką jie siunčia.",
+    "raise": "Mėnesio limitą bet kada galite padidinti skiltyje „Nustatymai“.",
+    "raiseLink": "Mėnesio limitą bet kada galite padidinti skiltyje „Nustatymai“:",
+    "button": "Atidaryti nustatymus"
+  },
+  "limit100": {
+    "subject": "Jūsų WhatsApp automatiniai atsakymai šį mėnesį pristabdyti",
+    "usedAll": "Išnaudojote visus šio mėnesio automatinius WhatsApp atsakymus ({limit}), todėl jie pristabdyti.",
+    "stillReach": "<b>Klientai vis tiek gali jums rašyti kaip įprasta, ir kiekviena žinutė jus pasiekia.</b> Sustojo tik automatinių atsakymų siuntimas.",
+    "startAgain": "Jie vėl bus siunčiami nuo <b>{reset}</b> arba iškart, jei padidinsite mėnesio limitą skiltyje „Nustatymai“.",
+    "startAgainLink": "Jie vėl bus siunčiami nuo {reset} arba iškart, jei padidinsite mėnesio limitą skiltyje „Nustatymai“:",
+    "button": "Padidinti limitą"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp reikia mokėjimo būdo, kad galėtų siųsti žinutes",
+    "stopped": "WhatsApp sustabdė jūsų automatinių atsakymų siuntimą, nes jūsų WhatsApp Business paskyroje nėra veikiančio mokėjimo būdo.",
+    "stillMessage": "<b>Klientai vis tiek gali jums rašyti, ir jūs matysite viską, ką jie siunčia</b>, — tačiau atsakymai jų nepasiekia.",
+    "payDirect": "Už šias žinutes mokate tiesiogiai WhatsApp, todėl tai sutvarkoma WhatsApp Manager, o ne HatchGrab. Ten pridėkite arba atnaujinkite kortelę, ir atsakymai vėl bus siunčiami savaime.",
+    "payDirectLink": "Už šias žinutes mokate tiesiogiai WhatsApp, todėl tai sutvarkoma WhatsApp Manager, o ne HatchGrab. Ten pridėkite arba atnaujinkite kortelę, ir atsakymai vėl bus siunčiami savaime:",
+    "button": "Atidaryti WhatsApp Manager",
+    "settings": "Jūsų HatchGrab nustatymai: <link>{url}</link>"
+  }
+}

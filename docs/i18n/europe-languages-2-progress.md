@@ -30,20 +30,20 @@ Scratch folder (translation parts, checkers, captures):
 | Stage | Status | Notes |
 |---|---|---|
 | 0 · fixes from europe-languages-1 | done | 0.1 de-DE/de-AT card button without amount (docs/i18n/placeholder-drops.json lets translation-check accept exactly that); de-CH/LI keep it · 0.2 fr placeOrder « Commander avec obligation de paiement » (+ busyNotice, which quotes it) · 0.3 phone placeholder de +49, AT +43, CH +41, LI +423, sv +46, nb +47 (fr held — see above) · 0.4 sv "abonnemang" (7 strings), da "oversigt" (28) · 0.6 add-order-refresh-inputs: not the time of day (fake 08:18 clock passes); virtual clock removes the wall-clock dependency; 24-busy-loop load did not reproduce the old failure either (old and new both pass twice) · also: translation-check now enforces CLDR plural categories; fixed 19 missing categories in 8 built languages (3 real grammar bugs) |
-| 1 · Polish (pl-PL) | translated · merged · consistency done · 0 structural | checks pending |
-| 2 · Czech (cs-CZ) | translated · merged · consistency done · 0 structural | checks pending |
-| 3 · Slovak (sk-SK) | translated · merged · consistency done · 0 structural | checks pending |
-| 4 · Hungarian (hu-HU) | translated · merged · consistency done · 0 structural | checks pending |
-| 5 · Romanian (ro-RO) | translated · merged · consistency done · 0 structural | checks pending |
-| 6 · Croatian (hr-HR) | translated · merged · consistency done · 0 structural | checks pending |
-| 7 · Slovenian (sl-SI) | translated · merged · consistency done · 0 structural | checks pending |
-| 8 · Finnish (fi-FI) | translated · merged · 0 structural | consistency pass running |
-| 9 · Estonian (et-EE) | translating | 01–05, 07 done; 06, 08–10 running |
-| 10 · Latvian (lv-LV) | translating | 01–10 running |
-| 11 · Lithuanian (lt-LT) | translating | 01–05 running |
-| 12 · Greek (el-GR, el-CY) | todo | |
-| 13 · Bulgarian (bg-BG) | todo | |
-| Final | todo | |
+| 1 · Polish (pl-PL) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 2 · Czech (cs-CZ) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 3 · Slovak (sk-SK) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 4 · Hungarian (hu-HU) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 5 · Romanian (ro-RO) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 6 · Croatian (hr-HR) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 7 · Slovenian (sl-SI) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 8 · Finnish (fi-FI) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 9 · Estonian (et-EE) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 10 · Latvian (lv-LV) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 11 · Lithuanian (lt-LT) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 12 · Greek (el-GR, el-CY) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| 13 · Bulgarian (bg-BG) | done | merged · consistency pass · 0 structural · lean checks + order page pass |
+| Final | done | tsc ✓ · build ✓ · lint = baseline · sweep 164/165 (the 1: another session's lib/pricing-check.ts) · byte-identity ✓ · fonts 16/16 · report docs/europe-languages-2-report.md |
 
 ## Run log
 - 23 Oct, ~11:00: a usage limit stopped all 20 running translators (pl/cs/sk/hu/ro 01·02·04, hr 01·02·04·07·08); each was
@@ -53,3 +53,6 @@ Scratch folder (translation parts, checkers, captures):
 - Consistency pass per language (CONSISTENCY.md in scratch): one agent unifies tab/button/term names across the ten parts
   in messages/<locale>.json + docs/i18n/back/<locale>.json; the main session runs split-messages after.
 - "Insert opt-out", "Templates", "Signature" are English-only admin labels (components/admin/*): every new language quotes them in English.
+- 23 Oct, ~16:30: a second usage limit stopped 20 agents (lt 01–10, el 01–07, et/fi/lv consistency); all resumed from
+  their own transcripts after the 17:10 reset. Merged and registered so far: pl, cs, sk, hu, ro, hr, sl, fi, et, lv (all 0
+  structural); consistency done for pl, cs, sk, hu, ro, hr, sl. Still queued: el 08–10, bg 01–10, el-CY override.

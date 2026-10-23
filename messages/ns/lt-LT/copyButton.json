@@ -1,0 +1,10 @@
+{
+  "copy": "Kopijuoti",
+  "copied": "Nukopijuota ✓",
+  "failed": "Nepavyko nukopijuoti",
+  "aria": "{label} {thing}",
+  "announceCopied": "{thing}: nukopijuota",
+  "announceCopiedValue": "Reikšmė nukopijuota",
+  "announceFailed": "Nepavyko nukopijuoti: {thing}. Pažymėkite tekstą ir nukopijuokite jį patys.",
+  "announceFailedValue": "Nepavyko nukopijuoti reikšmės. Pažymėkite tekstą ir nukopijuokite jį patys."
+}

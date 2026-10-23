@@ -1,0 +1,94 @@
+{
+  "heading": "Mokėjimai",
+  "loading": "Tikriname jūsų Stripe paskyrą…",
+  "state": {
+    "not_connected": {
+      "title": "Nenustatyta",
+      "body": "Užtrunka apie 10 minučių. Jums reikės banko duomenų ir asmens dokumento.",
+      "chip": "Nenustatyta"
+    },
+    "requirements": {
+      "title": "Stripe reikia jūsų duomenų",
+      "body": "Mokėjimai kortele neveiks, kol Stripe negaus jūsų įmonės ir banko duomenų.",
+      "chip": "Reikia veiksmų"
+    },
+    "pending": {
+      "title": "Prijungta — Stripe tikrina jūsų duomenis",
+      "body": "Jums nieko daryti nereikia. Stripe peržiūri jūsų pateiktą informaciją, o šis puslapis atsinaujins, kai patikrinimas bus baigtas.",
+      "chip": "Tikrinama"
+    },
+    "ready": {
+      "title": "Prijungta",
+      "body": "Jūsų Stripe paskyra prijungta ir gali priimti mokėjimus.",
+      "chip": "Paruošta"
+    },
+    "restricted": {
+      "title": "Mokėjimai kortele sustabdyti",
+      "body": "Stripe sustabdė mokėjimus kortele jūsų paskyroje, kol bus išspręsta tam tikra problema.",
+      "chip": "Sustabdyta"
+    },
+    "unsupported": {
+      "title": "Šioje paskyroje mokėjimai kortele negalimi",
+      "body": "Stripe negali čia įjungti mokėjimų kortele. Susisiekite su mumis ir išspręsime tai kartu.",
+      "chip": "Negalima"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe raktai nesutampa",
+    "body": "Šios svetainės serveris naudoja <b>{server, select, live {tiesioginį} other {bandomąjį}}</b> Stripe raktą, o naršyklės versija sukurta su <b>{browser, select, live {tiesioginiu} other {bandomuoju}}</b>. Mokėjimai kortele nepavyktų tą akimirką, kai klientas bandytų mokėti, todėl Stripe nustatymas užblokuotas, kol raktai nesutaps.",
+    "fix": "Abu raktai turi būti nustatyti tai pačiai aplinkai, o svetainė po to iš naujo sukompiliuota — viešasis raktas įrašomas kompiliavimo metu, slaptasis raktas nuskaitomas per kiekvieną užklausą."
+  },
+  "permission": {
+    "title": "Mokėjimus gali nustatyti tik food truck savininkas",
+    "body": "Stripe prijungia asmuo, kurio banko sąskaita gauna pinigus, todėl tai reikia padaryti iš jo paties prisijungusios paskyros. Nei su šiuo food truck, nei su HatchGrab nieko blogo nėra."
+  },
+  "config": {
+    "keyMissingTitle": "Mokėjimai kortele dar nesukonfigūruoti",
+    "fetchTitle": "Nepavyko patikrinti šio food truck Stripe paskyros",
+    "keyMissing": "Nenustatyta: {name} — įterptiniai komponentai negali būti įkelti."
+  },
+  "errors": {
+    "requestFailed": "Užklausa nepavyko ({status})",
+    "unreachable": "Nepavyko susisiekti su Stripe"
+  },
+  "online": {
+    "heading": "Mokėjimai internetu",
+    "body": "Klientai moka kortele užsakydami. Pinigai keliauja tiesiai į jūsų Stripe paskyrą — mes jų niekada nelaikome.",
+    "feeLine": "Stripe ima {fee} už mokėjimą standartine kortele ({region}). Kitos kortelės gali kainuoti daugiau. HatchGrab mokestis už užsakymus internetu priklauso nuo jūsų plano — žr. „Atsiskaitymai“.",
+    "testMode": "Bandomasis režimas. Tikrų mokėjimų dar negalima priimti."
+  },
+  "trialNote": "Tai nustačius prenumerata neprasideda ir šiandien nieko nenuskaičiuojama. Taip klientai moka jums — jūsų planas yra atskiras dalykas.",
+  "admin": {
+    "title": "Peržiūrite kaip platformos administratorius",
+    "body": "Šis food truck nenustatė mokėjimų internetu. Pradėti gali tik savininkas iš savo prisijungusios paskyros — čia nieko spausti nereikia."
+  },
+  "setUp": {
+    "button": "Nustatyti mokėjimus internetu",
+    "busy": "Nustatoma…"
+  },
+  "toast": {
+    "alreadySetUp": "Jau nustatyta — tęsiame",
+    "addDetails": "Dabar pateikite savo duomenis Stripe",
+    "createFailed": "Nepavyko sukurti paskyros"
+  },
+  "onboarding": {
+    "restricted": "Toliau viskas vyksta Stripe — prisijungsite prie Stripe ir atnaujinsite reikalingus duomenis.",
+    "firstRun": "Toliau viskas vyksta Stripe — prisijungsite prie Stripe ir pateiksite įmonės bei banko duomenis."
+  },
+  "details": {
+    "title": "Jūsų Stripe duomenys",
+    "body": "Pakeiskite banko sąskaitą, į kurią gaunate pinigus, arba atnaujinkite įmonės duomenis ir dokumentus.",
+    "button": "Peržiūrėti arba redaguoti"
+  },
+  "walkUp": {
+    "heading": "Mokėjimai vietoje",
+    "body": "Kaip priimate pinigus prie furgono. HatchGrab neima komisinių už užsakymus vietoje, kad ir ką pasirinktumėte.",
+    "ownTerminal": "Jūsų mokėjimo terminalas",
+    "current": "Dabartinis",
+    "ownTerminalHelp": "Zettle, Square ar tai, ką jau naudojate. Nieko nustatyti nereikia — taikomi tik jūsų paslaugų teikėjo mokesčiai.",
+    "hatchgrab": "Per HatchGrab",
+    "comingSoon": "Netrukus",
+    "hatchgrabHelp": "Naudoja tą patį Stripe ryšį kaip ir mokėjimai internetu — mokėjimo terminalą arba bekontaktį mokėjimą tiesiai telefonu ar planšete.",
+    "hatchgrabFees": "{fee} už mokėjimą ({region}), plius {surcharge} už bekontaktį mokėjimą, priimtą telefonu ar planšete. Kitos kortelės gali kainuoti daugiau."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Kažkas nepavyko",
+    "previewFailed": "Nepavyko sukurti peržiūros",
+    "loadFailed": "Nepavyko įkelti",
+    "tooBig": "Šis vaizdas užima {size, number, ::.0 group-off} MB. Didžiausias leidžiamas dydis – 10 MB.",
+    "wrongType": "Pasirinkite PNG arba JPG failą.",
+    "uploadIncomplete": "Įkėlimas nebaigtas",
+    "uploadFailed": "Įkelti nepavyko",
+    "saveFailed": "Nepavyko išsaugoti",
+    "buildFailed": "Nepavyko sukurti įrašo",
+    "copyFailed": "Nepavyko nukopijuoti — pažymėkite tekstą ir nukopijuokite jį patys."
+  },
+  "loading": "Įkeliama…",
+  "missingTable": {
+    "title": "Savaitės įrašui reikia atnaujinti duomenų bazę",
+    "body": "Dizainų lentelė dar nesukurta. Pritaikius migraciją, šis ekranas veiks."
+  },
+  "kind": {
+    "label": "Dizaino tipas",
+    "event": "Vienas renginys",
+    "week": "Savaitės"
+  },
+  "setup": {
+    "title": "Nustatykite savaitės įrašą",
+    "intro": "Įkelkite tuščią savaitės tvarkaraščio grafikos, kurią jau kuriate, versiją — tą patį dizainą, tik be savo teksto laukelių. HatchGrab užpildys savaitę pagal jūsų tvarkaraštį.",
+    "canvaTitle": "Kaip eksportuoti tuščią versiją iš Canva",
+    "canvaStep1": "Atidarykite įprastą savaitės tvarkaraščio dizainą.",
+    "canvaStep2": "Ištrinkite teksto laukelius su datomis, vietomis ir laikais — palikite foną ir antraštes, kurias norite išsaugoti.",
+    "canvaStep3": "Bendrinti › Atsisiųsti › PNG.",
+    "uploading": "Įkeliama…",
+    "upload": "Įkelkite tuščią vaizdą",
+    "uploadHint": "PNG arba JPG, iki 10 MB, trumpoji kraštinė – ne mažiau kaip {px} px.",
+    "phoneTip": "Geriausia naudoti kompiuterį arba iPad — telefone laukeliai per maži, kad būtų patogu juos tempti.",
+    "designName": "Savaitės įrašo dizainas",
+    "backDesigns": "‹ Dizainai",
+    "back": "‹ Atgal",
+    "pictureNote": "Jūsų paveikslėlis be jokių datų ar vietų. Jas pridedame mes.",
+    "saved": "Dizainas išsaugotas."
+  },
+  "week": {
+    "this": "Ši savaitė",
+    "next": "Kita savaitė"
+  },
+  "post": {
+    "title": "Jūsų savaitės įrašas",
+    "editDesign": "Redaguoti dizainą",
+    "weekOf": "savaitė nuo {date}",
+    "imageAlt": "Jūsų savaitės įrašas",
+    "building": "Kuriamas įrašas…",
+    "updating": "Atnaujinama…",
+    "eventsTitle": "Šios savaitės renginiai",
+    "noEvents": "Šią savaitę renginių nėra.",
+    "eventDateCancelled": "{date} · atšauktas",
+    "showCancelled": "Rodyti atšauktus renginius",
+    "showPrivate": "Rodyti privačius renginius",
+    "privateHint": "Jie rodomi kaip „Privatus renginys“ su data ir laiku — vieta niekada nerodoma.",
+    "noteTitle": "Pastaba",
+    "notePlaceholder": "pvz., Užsisakykite iš anksto ir atsiimkite",
+    "noteHint": "Rodoma įrašo tekste ir pastabos laukelyje, jei jį įdėjote.",
+    "captionTitle": "Įrašo tekstas jūsų puslapiui",
+    "perEventTitle": "Įrašas kiekvienam renginiui",
+    "nothingToPost": "Šią savaitę nėra ką skelbti.",
+    "textCopied": "Tekstas nukopijuotas.",
+    "copyText": "Kopijuoti tekstą",
+    "image": "Vaizdas",
+    "share": "Bendrinti",
+    "noOrderLink": "Užsakymo nuorodos dar nėra — nustatykite food truck interneto adresą skiltyje „Nustatymai“."
+  }
+}

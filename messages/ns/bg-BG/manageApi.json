@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Фуд трък",
+  "eventsFeed": {
+    "today": "Днес · {date}",
+    "tomorrow": "Утре · {date}"
+  },
+  "privacyNotSaved": "Събитието е активно, но настройката му за поверителност не беше запазена.",
+  "stockWarning": "Няма налични артикули в „{category}“",
+  "uncategorised": "Без категория"
+}

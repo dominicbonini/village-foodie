@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Kur veikiate",
+    "identity": "Jūsų food truck",
+    "menu": "Jūsų meniu",
+    "event": "Pirmasis renginys"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Nustatoma",
+  "loading": "Įkeliama",
+  "loadingCountries": "Įkeliama…",
+  "verify": {
+    "ok": "El. paštas patvirtintas — ačiū.",
+    "expired": "Ši patvirtinimo nuoroda nebegalioja. Susisiekite su mumis — viską sutvarkysime, kol pradėsite veikti.",
+    "invalid": "Ši patvirtinimo nuoroda nesuveikė. Susisiekite su mumis — viską sutvarkysime, kol pradėsite veikti."
+  },
+  "identity": {
+    "heading": "Kaip vadinasi jūsų food truck?",
+    "intro": "Šį pavadinimą mato klientai. Niekas neskelbiama viešai, kol nenuspręsite pradėti veikti.",
+    "nameLabel": "Food truck pavadinimas",
+    "namePlaceholder": "Bobo mėsainiai",
+    "phoneLabel": "Telefonas",
+    "whatsappTick": "Šiuo numeriu galima rašyti per WhatsApp",
+    "phoneHelp": "Klientai mato jį užsakymo patvirtinime, kad galėtų pasiteirauti apie užsakymą. Varnelė lemia, ar bus rodoma „Skambinkite mums“, ar „Rašykite mums per WhatsApp“. Abu galite pakeisti skiltyje „Nustatymai“."
+  },
+  "phoneRequired": "Pridėkite telefono numerį — juo jus pasiekia ir klientai, ir mes.",
+  "createFailed": "Nepavyko sukurti jūsų food truck.",
+  "unreachable": "Šiuo metu nepavyko su mumis susisiekti — bandykite dar kartą.",
+  "back": "Atgal",
+  "creating": "Kuriamas jūsų food truck…",
+  "continue": "Tęsti"
+}

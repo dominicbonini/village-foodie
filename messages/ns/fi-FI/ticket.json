@@ -6,7 +6,7 @@
   "attempt": "yritys {attempt}",
   "orderNumber": "#{id}",
   "collect": "NOUTO {time}",
-  "collectAsap": "NOUTO MAHD. PIAN",
+  "collectAsap": "NOUTO HETI",
   "buzzer": "SUMMERI {number}",
   "itemLine": "{quantity}x {name}",
   "chargeWithRate": "{label} {rate}",
