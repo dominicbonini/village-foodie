@@ -1,0 +1,36 @@
+{
+  "h1": "Všetko, čo potrebujete na prevádzku, v každom pláne.",
+  "lede": "Objednávanie, predobjednávky, kapacita kuchyne a kuchynská obrazovka sú súčasťou každého plánu.{hasUpgrades, select, yes { {plans} pridávajú {features} a nižšie poplatky.} other {}}",
+  "perMonth": "{price} / mesiac",
+  "group": {
+    "pay": "Čo platíte",
+    "run": "Riadenie prevádzky",
+    "online": "Online objednávky",
+    "marketing": "Marketing a automatizácia"
+  },
+  "pay": {
+    "included": "Online objednávky v cene každý mesiac",
+    "fee": "Poplatok HatchGrab za online objednávky platené kartou*",
+    "walkUp": "Objednávky na mieste"
+  },
+  "cell": {
+    "unlimited": "Neobmedzené",
+    "free": "Zadarmo",
+    "feeAbove": "<b>{fee}</b> nad {included}",
+    "yes": "V cene",
+    "none": "Nie je v cene",
+    "comingSoon": "Už čoskoro"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "sociálne siete",
+    "event_types": "vlastné ceny pre akcie"
+  },
+  "meta": {
+    "description": "Všetky funkcie HatchGrab v každom pláne vedľa seba — {plans}, s poplatkami a limitmi.{months, plural, =0 {} one { Váš prvý mesiac zahŕňa všetko.} few { Vaše prvé # mesiace zahŕňajú všetko.} other { Vašich prvých # mesiacov zahŕňa všetko.}}"
+  },
+  "notes": {
+    "whatsapp": "Automatické odpovede pre WhatsApp vyžadujú účet WhatsApp Business. Meta môže niektoré správy spoplatniť; odpovede sa generujú automaticky.",
+    "printing": "Tlač kuchynských bločkov vyžaduje kompatibilnú Bluetooth alebo káblovú tlačiareň (nie je súčasťou dodávky)."
+  }
+}

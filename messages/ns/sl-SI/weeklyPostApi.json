@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Naslov je bil predolg, zato smo ga skrajšali.",
+    "date": "Datum je bil predolg, zato smo ga skrajšali.",
+    "daysOff": "Besedilo za dneve brez prodaje je bilo predolgo, zato smo ga skrajšali.",
+    "place": "Lokacija je bila predolga, zato smo jo skrajšali.",
+    "time": "Čas je bil predolg, zato smo ga skrajšali.",
+    "note": "Vaše besedilo je bilo predolgo, zato smo ga skrajšali.",
+    "venue": "Ime lokacije je bilo predolgo, zato smo ga skrajšali.",
+    "area": "Kraj je bil predolg, zato smo ga skrajšali."
+  },
+  "fontFallback": "Pisave, ki jo uporablja to oblikovanje ({id}), ni bilo mogoče naložiti — ti okvirji so v pisavi Oswald.",
+  "wrongShapeBackground": "Slika te lokacije ima drugačno obliko kot vaše oblikovanje, zato je uporabljeno standardno ozadje.",
+  "rowsFit": "Zadnji dan je {px} px pod spodnjim robom slike — zmanjšajte razmik med vrsticami ali premaknite 1. vrstico navzgor.",
+  "placeStatus": {
+    "ownBoth": "Lastna slika in položaji besedila",
+    "wrongShape": "Drugačna oblika — ne bo uporabljena, dokler je ne zamenjate",
+    "ownPicture": "Lastna slika, standardni položaji",
+    "ownPositions": "Standardna slika, lastni položaji besedila",
+    "none": "Slike še ni — uporablja se standardno oblikovanje"
+  },
+  "standardStatus": "Uporablja se na vseh drugih lokacijah",
+  "option": {
+    "oneOff": "Naloži sliko samo za to objavo",
+    "placePoster": "Plakat: {name}",
+    "standard": "Standardno oblikovanje"
+  },
+  "previewLabel": {
+    "lastEvent": "Predogled uporablja vaš zadnji dogodek na tej lokaciji",
+    "noEvents": "Tu še ni dogodkov — predogled prikazuje vaš naslednji dogodek z imenom te lokacije"
+  },
+  "fontUsage": {
+    "weekly": "vaše oblikovanje tedenske objave",
+    "event": "vaše oblikovanje objave za posamezen dogodek",
+    "place": "vaše oblikovanje za lokacijo {place}",
+    "placeUnnamed": "vaše oblikovanje za lokacijo"
+  },
+  "face": {
+    "regular": "Navadno",
+    "bold": "Krepko",
+    "italic": "Ležeče"
+  },
+  "picture": {
+    "legacy": "Plakat dogodka",
+    "fallback": "Slika",
+    "wrongShape": "Drugačna oblika — ni primerna za celotno ozadje"
+  },
+  "noPicture": {
+    "omit": "Izpusti",
+    "blank": "Pusti prazen prostor",
+    "logo": "Prikaži logotip"
+  },
+  "noPicturesAll": "{total, plural, one {Sliko imajo vse vaše lokacije: {total} od {total}.} two {Sliko imajo vse vaše lokacije: {total} od {total}.} few {Sliko imajo vse vaše lokacije: {total} od {total}.} other {Sliko imajo vse vaše lokacije: {total} od {total}.}}",
+  "noPicturesSome": "{without, plural, one {{without} od {total} vaših lokacij še nima slike} two {{without} od {total} vaših lokacij še nimata slike} few {{without} od {total} vaših lokacij še nimajo slike} other {{without} od {total} vaših lokacij še nima slike}}",
+  "licenceTick": "To pisavo imam v lasti ali imam licenco za njeno uporabo",
+  "fontUploadButton": "↑ Naloži svojo pisavo"
+}

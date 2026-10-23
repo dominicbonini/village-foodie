@@ -1,0 +1,94 @@
+{
+  "heading": "Płatności",
+  "loading": "Sprawdzamy twoje konto Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Nieskonfigurowane",
+      "body": "Zajmuje około 10 minut. Potrzebujesz danych konta bankowego i dokumentu tożsamości.",
+      "chip": "Nieskonfigurowane"
+    },
+    "requirements": {
+      "title": "Stripe potrzebuje twoich danych",
+      "body": "Płatności kartą nie będą działać, dopóki Stripe nie otrzyma danych twojej firmy i konta bankowego.",
+      "chip": "Wymagane działanie"
+    },
+    "pending": {
+      "title": "Połączono — Stripe sprawdza twoje dane",
+      "body": "Nie musisz nic robić. Stripe weryfikuje przesłane informacje, a ta strona zaktualizuje się, gdy skończy.",
+      "chip": "Weryfikacja"
+    },
+    "ready": {
+      "title": "Połączono",
+      "body": "Twoje konto Stripe jest połączone i może przyjmować płatności.",
+      "chip": "Gotowe"
+    },
+    "restricted": {
+      "title": "Płatności kartą wstrzymane",
+      "body": "Stripe wstrzymał płatności kartą na twoim koncie do czasu rozwiązania problemu.",
+      "chip": "Wstrzymane"
+    },
+    "unsupported": {
+      "title": "Płatności kartą są niedostępne na tym koncie",
+      "body": "Stripe nie może tu włączyć płatności kartą. Skontaktuj się z nami, a rozwiążemy to razem.",
+      "chip": "Niedostępne"
+    }
+  },
+  "keyMismatch": {
+    "title": "Klucze Stripe nie pasują do siebie",
+    "body": "Serwer tej strony używa klucza Stripe <b>{server, select, live {produkcyjnego} other {testowego}}</b>, a przeglądarka została zbudowana z kluczem <b>{browser, select, live {produkcyjnym} other {testowym}}</b>. Płatności kartą nie powiodłyby się w chwili, gdy klient próbuje zapłacić, dlatego konfiguracja Stripe jest zablokowana, dopóki klucze nie będą zgodne.",
+    "fix": "Oba klucze muszą być ustawione dla tego samego środowiska, a strona musi zostać potem ponownie zbudowana — klucz publikowalny jest wbudowywany podczas budowania, a klucz tajny jest odczytywany przy każdym żądaniu."
+  },
+  "permission": {
+    "title": "Tylko właściciel food trucka może skonfigurować płatności",
+    "body": "Stripe łączy osoba, na której konto bankowe trafiają pieniądze, więc konfiguracja musi odbyć się z jej własnego, zalogowanego konta. Z tym food truckiem ani z HatchGrab wszystko jest w porządku."
+  },
+  "config": {
+    "keyMissingTitle": "Płatności kartą nie są jeszcze skonfigurowane",
+    "fetchTitle": "Nie udało się sprawdzić konta Stripe tego food trucka",
+    "keyMissing": "Brak ustawienia {name} — nie można załadować osadzonych komponentów."
+  },
+  "errors": {
+    "requestFailed": "Żądanie nie powiodło się ({status})",
+    "unreachable": "Nie udało się połączyć ze Stripe"
+  },
+  "online": {
+    "heading": "Płatności online",
+    "body": "Klienci płacą kartą przy składaniu zamówienia. Pieniądze trafiają prosto na twoje własne konto Stripe — nigdy ich nie przechowujemy.",
+    "feeLine": "Stripe pobiera {fee} za płatność standardową kartą ({region}). Inne karty mogą kosztować więcej. Prowizja HatchGrab od zamówień online zależy od twojego planu — zobacz Rozliczenia.",
+    "testMode": "Tryb testowy. Nie można jeszcze przyjmować prawdziwych płatności."
+  },
+  "trialNote": "Skonfigurowanie tego nie rozpoczyna subskrypcji ani nie wiąże się dziś z żadną opłatą. W ten sposób klienci płacą tobie — twój plan to osobna sprawa.",
+  "admin": {
+    "title": "Widok administratora platformy",
+    "body": "Ten food truck nie skonfigurował płatności online. Może to zrobić tylko właściciel, ze swojego zalogowanego konta — tutaj nie ma nic do kliknięcia."
+  },
+  "setUp": {
+    "button": "Skonfiguruj płatności online",
+    "busy": "Konfigurowanie…"
+  },
+  "toast": {
+    "alreadySetUp": "Już skonfigurowane — kontynuujemy",
+    "addDetails": "Teraz podaj swoje dane dla Stripe",
+    "createFailed": "Nie udało się utworzyć konta"
+  },
+  "onboarding": {
+    "restricted": "Dalej przejmuje Stripe — zalogujesz się do Stripe i zaktualizujesz potrzebne dane.",
+    "firstRun": "Dalej przejmuje Stripe — zalogujesz się do Stripe, a potem podasz dane firmy i konta bankowego."
+  },
+  "details": {
+    "title": "Twoje dane w Stripe",
+    "body": "Zmień konto bankowe, na które otrzymujesz wypłaty, lub zaktualizuj dane i dokumenty firmy.",
+    "button": "Pokaż lub edytuj"
+  },
+  "walkUp": {
+    "heading": "Płatności na miejscu",
+    "body": "Jak przyjmujesz pieniądze przy okienku. HatchGrab nie pobiera prowizji od zamówień na miejscu, niezależnie od wybranej opcji.",
+    "ownTerminal": "Twój własny terminal płatniczy",
+    "current": "Obecnie",
+    "ownTerminalHelp": "Zettle, Square lub to, czego już używasz. Nie trzeba nic konfigurować — obowiązują tylko opłaty twojego dostawcy.",
+    "hatchgrab": "Przez HatchGrab",
+    "comingSoon": "Wkrótce",
+    "hatchgrabHelp": "Korzysta z tego samego połączenia Stripe co płatności online — terminal płatniczy albo płatności zbliżeniowe prosto na telefonie lub tablecie.",
+    "hatchgrabFees": "{fee} za płatność ({region}) plus {surcharge} za płatności zbliżeniowe przyjmowane telefonem lub tabletem. Inne karty mogą kosztować więcej."
+  }
+}

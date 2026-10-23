@@ -1,0 +1,31 @@
+{
+  "intro": "În Administrare vă configurați food truck-ul și vedeți cum merge. În Panoul de control primiți comenzi și gestionați fiecare eveniment pe măsură ce are loc.",
+  "ariaLabel": "Prezentarea panoului de control",
+  "step": "{current} din {total}",
+  "skip": "Omiteți",
+  "back": "← Înapoi",
+  "next": "Înainte →",
+  "done": "Gata",
+  "stops": {
+    "menu": {
+      "title": "Meniu",
+      "body": "Preparatele, prețurile și alergenii dumneavoastră. Orice modificați aici apare imediat."
+    },
+    "schedule": {
+      "title": "Program",
+      "body": "Unde și când vindeți. Adăugați aici un eveniment și clienții pot comanda pentru el."
+    },
+    "build": {
+      "title": "Combo-uri, Extra și sugestii",
+      "body": "Combo-urile, vânzările suplimentare, personalizările și capacitatea bucătăriei se află în Meniu — explorați liniștit."
+    },
+    "settings": {
+      "title": "Setări",
+      "body": "Datele food truck-ului și modul în care plătesc clienții."
+    },
+    "billing": {
+      "title": "Facturare",
+      "body": "Aici găsiți planul, facturarea și informațiile despre funcții."
+    }
+  }
+}

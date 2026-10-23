@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Uusi tilaus #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Uusi tilaus vastaanotettu",
+    "from": "<b>Tilaus #{id}</b>, asiakas: <b>{name}</b>",
+    "collection": "Nouto: {time}",
+    "asap": "Ei tiettyä aikaa — heti kun mahdollista",
+    "total": "Yhteensä",
+    "notes": "<b>Lisätiedot:</b> {notes}",
+    "autoConfirmed": "Vahvistettu automaattisesti — toimenpiteitä ei tarvita.",
+    "confirmPrompt": "Kirjaudu HatchGrabin ohjauspaneeliin vahvistaaksesi tai hylätäksesi tämän tilauksen.",
+    "text": "Uusi tilaus #{id}, asiakas: {name}{withSlot, select, yes {, noutoaika: {slot}} other {}}{withVenue, select, yes {, paikka: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Yhteensä {total}.{withNotes, select, yes { Lisätiedot: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Uusia tapahtumia löytyi — {truck}: tarkista ne",
+    "hi": "Hei,",
+    "found": "Aikataulustasi löytyi <b>{n, plural, one {{count} uusi tapahtuma} other {{count} uutta tapahtumaa}}</b>, {n, plural, one {joka sinun on hyväksyttävä ennen kuin se näkyy} other {jotka sinun on hyväksyttävä ennen kuin ne näkyvät}} asiakkaille.",
+    "listHeading": "Löydetyt tapahtumat:",
+    "approve": "Kun hyväksyt ne Aikataulu-välilehdellä, ne tulevat näkyviin kartalle ja tilaussivusi on valmis ottamaan vastaan ennakkotilauksia.",
+    "cta": "Tarkista aikataulusi →",
+    "signoff": "— HatchGrab-tiimi · hatchgrab.com",
+    "unknownVenue": "Tuntematon paikka",
+    "text": "Hei,\n\nAikataulustasi löytyi {n, plural, one {{count} uusi tapahtuma, joka odottaa} other {{count} uutta tapahtumaa, jotka odottavat}} hyväksyntääsi:\n\n{list}\n\nTarkista täällä: {url}\n\nKun hyväksyt ne, ne tulevat näkyviin kartalle.\n\n— HatchGrab-tiimi"
+  }
+}

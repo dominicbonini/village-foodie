@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Kde bude food truck {truck} predávať najbližšie.",
+  "orderFrom": "Objednať z food trucku {truck}",
+  "poweredBy": "Vytvorené v <b>HatchGrab</b>",
+  "loadFailed": "Harmonogram sa teraz nepodarilo načítať.",
+  "loading": "Načítava sa harmonogram…",
+  "empty": "Food truck {truck} nemá naplánované žiadne akcie."
+}

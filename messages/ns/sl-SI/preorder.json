@@ -1,0 +1,6 @@
+{
+  "closedPending": "Prednaročila zaprta. Odobriti jih mora kuhinja.",
+  "deadline": "Naročite vnaprej do {time}",
+  "deadlineOnDay": "Naročite vnaprej do {time}, {day}",
+  "opens": "Prednaročila se odprejo: {day}"
+}

@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Ověřte svou novou e-mailovou adresu pro HatchGrab",
+    "heading": "Ověřte svou e-mailovou adresu",
+    "button": "Ověřit e-mailovou adresu"
+  },
+  "changeEmail": {
+    "requested": "Požádali jste o změnu e-mailové adresy pro HatchGrab na tuto adresu.",
+    "click": "Ověřte ji kliknutím na tlačítko níže. Platnost odkazu vyprší za 24 hodin.",
+    "ignore": "Pokud jste o tuto změnu nežádali, můžete tento e-mail klidně ignorovat.",
+    "stillActive": "Vaše současná e-mailová adresa zůstává aktivní."
+  },
+  "resendVerification": {
+    "requested": "Požádali jste o změnu e-mailu pro HatchGrab na tuto adresu.",
+    "click": "Ověřte ji kliknutím níže. Platnost odkazu vyprší za 24 hodin.",
+    "ignore": "Pokud jste o to nežádali, tento e-mail ignorujte.",
+    "stillActive": "Váš současný e-mail zůstává aktivní."
+  },
+  "passwordReset": {
+    "subject": "Obnovení hesla k HatchGrab",
+    "heading": "Obnovení hesla",
+    "requested": "Obdrželi jsme žádost o obnovení hesla k vašemu účtu HatchGrab.",
+    "click": "Kliknutím na tlačítko níže zvolíte nové heslo. Platnost odkazu vyprší za 1 hodinu.",
+    "button": "Obnovit heslo",
+    "ignore": "Pokud jste o to nežádali, můžete tento e-mail klidně ignorovat.",
+    "unchanged": "Vaše heslo se nezmění, dokud nekliknete na odkaz výše."
+  },
+  "deletionScheduled": {
+    "subject": "Váš účet HatchGrab je naplánován ke smazání",
+    "received": "Obdrželi jsme žádost o smazání tohoto účtu HatchGrab.",
+    "orderingStopped": "<b>Online objednávky byly okamžitě zastaveny</b> u těchto food trucků: {trucks}.",
+    "noTrucks": "(žádné food trucky)",
+    "readable": "Váš přehled zůstane\n    k dispozici ke čtení ještě {days, plural, one {# den} few {# dny} other {# dní}}.",
+    "scheduled": "Účet je naplánován ke smazání dne <b>{date}</b>.",
+    "cannotCancel": "<b>V aplikaci to nelze zrušit.</b> Pokud jste to nebyli vy, nebo jste\n    změnili názor, odpovězte co nejdříve na tento e-mail.",
+    "kept": "Při smazání účtu odstraníme vaše osobní údaje a údaje vašich zákazníků. Uchováváme\n    anonymní účetní záznamy, které jsme ze zákona povinni uchovávat."
+  }
+}

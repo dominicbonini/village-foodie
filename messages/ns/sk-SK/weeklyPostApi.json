@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Nadpis sa nezmestil, preto bol skrátený.",
+    "date": "Dátum sa nezmestil, preto bol skrátený.",
+    "daysOff": "Text pre voľné dni sa nezmestil, preto bol skrátený.",
+    "place": "Názov miesta sa nezmestil, preto bol skrátený.",
+    "time": "Čas sa nezmestil, preto bol skrátený.",
+    "note": "Váš vlastný text sa nezmestil, preto bol skrátený.",
+    "venue": "Názov podniku sa nezmestil, preto bol skrátený.",
+    "area": "Obec sa nezmestila, preto bola skrátená."
+  },
+  "fontFallback": "Font, ktorý tento dizajn používa ({id}), sa nepodarilo načítať — tieto rámčeky sú vo fonte Oswald.",
+  "wrongShapeBackground": "Obrázok tohto miesta má iný tvar ako váš dizajn, preto sa použije štandardné pozadie.",
+  "rowsFit": "Posledný deň je {px} px pod spodným okrajom obrázka — zmenšite riadkovanie alebo posuňte 1. riadok vyššie.",
+  "placeStatus": {
+    "ownBoth": "Vlastný obrázok aj pozície textu",
+    "wrongShape": "Iný tvar — nepoužije sa, kým ho nenahradíte",
+    "ownPicture": "Vlastný obrázok, štandardné pozície",
+    "ownPositions": "Štandardný obrázok, vlastné pozície textu",
+    "none": "Zatiaľ bez obrázka — používa sa Štandardný"
+  },
+  "standardStatus": "Používa sa na všetkých ostatných miestach",
+  "option": {
+    "oneOff": "Nahrať obrázok len pre tento príspevok",
+    "placePoster": "Plagát miesta {name}",
+    "standard": "Štandardný dizajn"
+  },
+  "previewLabel": {
+    "lastEvent": "Ukážka používa vašu poslednú akciu na tomto mieste",
+    "noEvents": "Tu zatiaľ nemáte žiadne akcie — ukážka zobrazuje vašu najbližšiu akciu s názvom tohto miesta"
+  },
+  "fontUsage": {
+    "weekly": "váš dizajn týždenného príspevku",
+    "event": "váš dizajn príspevku o jednej akcii",
+    "place": "váš dizajn pre miesto {place}",
+    "placeUnnamed": "váš dizajn pre miesto"
+  },
+  "face": {
+    "regular": "Normálne",
+    "bold": "Tučné",
+    "italic": "Kurzíva"
+  },
+  "picture": {
+    "legacy": "Plagát akcie",
+    "fallback": "Obrázok",
+    "wrongShape": "Iný tvar — nedá sa použiť ako celé pozadie"
+  },
+  "noPicture": {
+    "omit": "Vynechať",
+    "blank": "Nechať prázdne miesto",
+    "logo": "Zobraziť vaše logo"
+  },
+  "noPicturesAll": "{total, plural, one {Vaše miesto má obrázok.} few {Všetky {total} vaše miesta majú obrázok.} other {Všetkých {total} vašich miest má obrázok.}}",
+  "noPicturesSome": "{without, plural, one {{without} z vašich {total} miest ešte nemá obrázok} few {{without} z vašich {total} miest ešte nemajú obrázok} other {{without} z vašich {total} miest ešte nemá obrázok}}",
+  "licenceTick": "Tento font vlastním alebo mám licenciu na jeho používanie",
+  "fontUploadButton": "↑ Nahrať vlastný font"
+}

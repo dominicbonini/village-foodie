@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} časové okno prekračuje kapacitu} few {{count} časové okná prekračujú kapacitu} other {{count} časových okien prekračuje kapacitu}} — skontrolujte",
+  "batchOver": "{cat}: prekročená dávka — {count} na {slot} ({per} na dávku)",
+  "eventStartOver": "Prekročená kapacita na začiatku akcie — {n, plural, one {{count} položka} few {{count} položky} other {{count} položiek}} na {slot}",
+  "kitchenOver": "Kuchyňa nad kapacitou — {n, plural, one {{count} položka sa pripravuje} few {{count} položky sa pripravujú} other {{count} položiek sa pripravuje}} na {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} položka} few {{count} položky} other {{count} položiek}}",
+  "placedAnyway": "Zadané aj tak: {list}",
+  "placedItem": "#{id} na {slot}",
+  "orphans": "{times}: prekročená kapacita — nenašli sa objednávky, ku ktorým ju priradiť",
+  "dismiss": "Zavrieť",
+  "kitchenCapacity": "Kapacita kuchyne",
+  "overCapacity": "Nad kapacitou",
+  "wakeUnsupported": "Toto zariadenie nedokáže nechať obrazovku zapnutú.",
+  "wakeInsecure": "Z tejto adresy nemožno nechať obrazovku zapnutú.",
+  "wakeRetry": "Nechať obrazovku zapnutú — ťuknutím skúsite znova",
+  "wakeAcquire": "Nechať obrazovku zapnutú",
+  "degraded": {
+    "serverError": "Server nedokázal načítať objednávky{hasStatus, select, yes { (chyba {status})} other {}}. Zobrazujú sa objednávky z {at}. Nové objednávky môžu chýbať.",
+    "unreachable": "Server je nedostupný. Zobrazujú sa objednávky z {at}. Nové objednávky môžu chýbať."
+  }
+}

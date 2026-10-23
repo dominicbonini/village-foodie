@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresă",
+    "postcode": "Cod poștal",
+    "zip": "Cod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Cod poștal",
+    "state": "Stat",
+    "stateTerritory": "Stat sau teritoriu",
+    "province": "Provincie",
+    "county": "Județ",
+    "area": "Localitate (sat, comună sau oraș)",
+    "townOrArea": "Localitate sau zonă",
+    "city": "Oraș",
+    "suburb": "Cartier",
+    "townOrCity": "Localitate"
+  },
+  "short": {
+    "area": "Localitate",
+    "townOrArea": "Localitate sau zonă",
+    "city": "Oraș",
+    "suburb": "Cartier",
+    "townOrCity": "Localitate"
+  },
+  "inSentence": {
+    "postcode": "cod poștal",
+    "zip": "cod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "cod poștal"
+  },
+  "withArticle": {
+    "postcode": "un cod poștal",
+    "zip": "un cod ZIP",
+    "eircode": "un Eircode",
+    "postalCode": "un cod poștal"
+  },
+  "tradeLabel": {
+    "area": "Localitate",
+    "townOrArea": "Localitate sau zonă",
+    "city": "Oraș",
+    "suburb": "Cartier",
+    "townOrCity": "Localitate"
+  },
+  "basedIn": {
+    "area": "Localitatea în care aveți sediul",
+    "townOrArea": "Localitatea sau zona în care aveți sediul",
+    "city": "Orașul în care aveți sediul",
+    "suburb": "Cartierul în care aveți sediul",
+    "townOrCity": "Localitatea în care aveți sediul"
+  },
+  "example": "ex.: {example}",
+  "customersSee": "Clienții văd:",
+  "postalWarning": "Nu pare să fie {article} — de exemplu, {example}. Îl puteți salva totuși.",
+  "regionChoose": "Alegeți…"
+}

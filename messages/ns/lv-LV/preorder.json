@@ -1,0 +1,6 @@
+{
+  "closedPending": "Iepriekšējo pasūtījumu pieņemšana slēgta. Jāapstiprina virtuvei.",
+  "deadline": "Pasūtiet iepriekš līdz plkst. {time}",
+  "deadlineOnDay": "Pasūtiet iepriekš līdz plkst. {time}, {day}",
+  "opens": "Iepriekšējo pasūtījumu pieņemšana sākas: {day}"
+}

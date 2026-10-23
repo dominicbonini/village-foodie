@@ -1,0 +1,94 @@
+{
+  "heading": "Maksut",
+  "loading": "Tarkistetaan Stripe-tiliäsi…",
+  "state": {
+    "not_connected": {
+      "title": "Ei käytössä",
+      "body": "Vie noin 10 minuuttia. Tarvitset pankkitietosi ja henkilötodistuksen.",
+      "chip": "Ei käytössä"
+    },
+    "requirements": {
+      "title": "Stripe tarvitsee tietosi",
+      "body": "Korttimaksut eivät toimi ennen kuin Stripellä on yrityksesi ja pankkisi tiedot.",
+      "chip": "Toimia tarvitaan"
+    },
+    "pending": {
+      "title": "Yhdistetty — Stripe tarkistaa tietojasi",
+      "body": "Sinun ei tarvitse tehdä mitään. Stripe käy läpi lähettämäsi tiedot, ja tämä sivu päivittyy, kun se on valmis.",
+      "chip": "Tarkistetaan"
+    },
+    "ready": {
+      "title": "Yhdistetty",
+      "body": "Stripe-tilisi on yhdistetty ja voi vastaanottaa maksuja.",
+      "chip": "Valmis"
+    },
+    "restricted": {
+      "title": "Korttimaksut keskeytetty",
+      "body": "Stripe on keskeyttänyt tilisi korttimaksut, kunnes asia on ratkaistu.",
+      "chip": "Keskeytetty"
+    },
+    "unsupported": {
+      "title": "Korttimaksut eivät ole käytettävissä tällä tilillä",
+      "body": "Stripe ei voi ottaa korttimaksuja käyttöön tässä. Ota yhteyttä, niin selvitämme asian kanssasi.",
+      "chip": "Ei saatavilla"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe-avaimet eivät täsmää",
+    "body": "Tämän sivuston palvelin käyttää Stripen <b>{server, select, live {tuotantoavainta} other {testiavainta}}</b>, mutta selain on koottu <b>{browser, select, live {tuotantoavaimella} other {testiavaimella}}</b>. Korttimaksut epäonnistuisivat juuri silloin, kun asiakas yrittää maksaa, joten Stripen käyttöönotto on estetty, kunnes avaimet täsmäävät.",
+    "fix": "Molemmat avaimet on asetettava samaan ympäristöön ja sivusto koottava sen jälkeen uudelleen — julkinen avain kiinnitetään koontivaiheessa, salainen avain luetaan jokaisella pyynnöllä."
+  },
+  "permission": {
+    "title": "Vain ruokarekan omistaja voi ottaa maksut käyttöön",
+    "body": "Stripen yhdistää henkilö, jonka pankkitilille rahat maksetaan, joten se on tehtävä hänen omalta kirjautuneelta tililtään. Tässä ruokarekassa tai HatchGrabissa ei ole mitään vikaa."
+  },
+  "config": {
+    "keyMissingTitle": "Korttimaksuja ei ole vielä määritetty",
+    "fetchTitle": "Emme voineet tarkistaa tämän ruokarekan Stripe-tiliä",
+    "keyMissing": "Arvoa {name} ei ole asetettu — upotettuja komponentteja ei voi ladata."
+  },
+  "errors": {
+    "requestFailed": "Pyyntö epäonnistui ({status})",
+    "unreachable": "Stripeen ei saatu yhteyttä"
+  },
+  "online": {
+    "heading": "Verkkomaksut",
+    "body": "Asiakkaat maksavat kortilla tilatessaan. Rahat menevät suoraan omalle Stripe-tilillesi — me emme koskaan säilytä niitä.",
+    "feeLine": "Stripe veloittaa {fee} maksulta tavallisilla korteilla ({region}). Muut kortit voivat maksaa enemmän. HatchGrabin oma maksu verkkotilauksista riippuu paketistasi — katso Laskutus.",
+    "testMode": "Testitila. Oikeita maksuja ei voi vielä vastaanottaa."
+  },
+  "trialNote": "Tämän käyttöönotto ei aloita pakettisi laskutusta eikä veloita sinulta tänään mitään. Sillä asiakkaasi maksavat sinulle — pakettisi on asia erikseen.",
+  "admin": {
+    "title": "Katselet alustan ylläpitäjänä",
+    "body": "Tämä ruokarekka ei ole ottanut verkkomaksuja käyttöön. Vain omistaja voi aloittaa sen omalta kirjautuneelta tililtään — tässä ei ole mitään painettavaa."
+  },
+  "setUp": {
+    "button": "Ota verkkomaksut käyttöön",
+    "busy": "Otetaan käyttöön…"
+  },
+  "toast": {
+    "alreadySetUp": "Jo käytössä — jatketaan",
+    "addDetails": "Lisää nyt tietosi Stripeä varten",
+    "createFailed": "Tilin luominen epäonnistui"
+  },
+  "onboarding": {
+    "restricted": "Stripe hoitaa tästä eteenpäin — kirjaudut Stripeen ja päivität sen tarvitsemat tiedot.",
+    "firstRun": "Stripe hoitaa tästä eteenpäin — kirjaudut Stripeen ja annat sitten yrityksesi ja pankkisi tiedot."
+  },
+  "details": {
+    "title": "Stripe-tietosi",
+    "body": "Vaihda pankkitili, jolle maksut tulevat, tai päivitä yrityksesi tiedot ja asiakirjat.",
+    "button": "Näytä tai muokkaa"
+  },
+  "walkUp": {
+    "heading": "Maksut paikan päällä",
+    "body": "Miten otat maksut vastaan ruokarekalla. HatchGrab ei veloita alustamaksua paikan päällä tehdyistä tilauksista, valitsitpa kumman tahansa.",
+    "ownTerminal": "Oma maksupääte",
+    "current": "Nykyinen",
+    "ownTerminalHelp": "Zettle, Square tai mikä tahansa jo käyttämäsi. Ei mitään määritettävää — vain palveluntarjoajasi omat maksut.",
+    "hatchgrab": "HatchGrabin kautta",
+    "comingSoon": "Tulossa pian",
+    "hatchgrabHelp": "Käyttää samaa Stripe-yhteyttä kuin verkkomaksusi — maksupääte tai lähimaksu suoraan puhelimella tai tabletilla.",
+    "hatchgrabFees": "{fee} maksulta ({region}), lisäksi {surcharge} puhelimella tai tabletilla vastaanotetuista lähimaksuista. Muut kortit voivat maksaa enemmän."
+  }
+}

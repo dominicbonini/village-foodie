@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Gdzie działasz",
+    "identity": "Twój food truck",
+    "menu": "Twoje menu",
+    "event": "Pierwsze wydarzenie"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Konfiguracja",
+  "loading": "Wczytywanie",
+  "loadingCountries": "Wczytywanie…",
+  "verify": {
+    "ok": "E-mail potwierdzony — dziękujemy.",
+    "expired": "Ten link potwierdzający wygasł. Skontaktuj się z nami, a załatwimy to przed startem.",
+    "invalid": "Ten link potwierdzający nie zadziałał. Skontaktuj się z nami, a załatwimy to przed startem."
+  },
+  "identity": {
+    "heading": "Jak nazywa się Twój food truck?",
+    "intro": "Tę nazwę zobaczą klienci. Nic nie zostanie opublikowane, dopóki nie zdecydujesz się wystartować.",
+    "nameLabel": "Nazwa food trucka",
+    "namePlaceholder": "Burgery u Boba",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Ten numer ma WhatsApp",
+    "phoneHelp": "Klienci zobaczą go w potwierdzeniu zamówienia, żeby móc zapytać o zamówienie. Zaznaczenie decyduje, czy wyświetli się „Zadzwoń do nas”, czy „Napisz do nas przez WhatsApp”. Obie rzeczy możesz zmienić w Ustawieniach."
+  },
+  "phoneRequired": "Dodaj numer telefonu — korzystamy z niego zarówno my, jak i klienci, żeby się z Tobą skontaktować.",
+  "createFailed": "Nie udało się utworzyć Twojego food trucka.",
+  "unreachable": "Nie udało się teraz z nami połączyć — spróbuj ponownie.",
+  "back": "Wstecz",
+  "creating": "Tworzenie Twojego food trucka…",
+  "continue": "Dalej"
+}

@@ -1,0 +1,189 @@
+{
+  "cancel": "Prekliči",
+  "back": "← Nazaj",
+  "backPlain": "Nazaj",
+  "next": "Naprej →",
+  "continue": "Nadaljuj →",
+  "closeImport": "Zapri uvoz",
+  "tryAgain": "Poskusi znova",
+  "catError": {
+    "empty": "Poimenujte kategorijo.",
+    "tooLong": "To ime je predolgo.",
+    "clash": "Kategorija z imenom „{name}“ že obstaja."
+  },
+  "steps": {
+    "details": "Vaši podatki",
+    "menu": "Jedilnik",
+    "extras": "Dodatki",
+    "allergens": "Alergeni",
+    "kitchen": "Nastavitev kuhinje",
+    "schedule": "Urnik",
+    "settings": "Nastavitve"
+  },
+  "toast": {
+    "demoGone": "Vaš jedilnik iz demo različice ni več na voljo — za nadaljevanje ga naložite znova.",
+    "eventsSaveFailed": "Dogodkov ni bilo mogoče shraniti",
+    "cardReadFailed": "Kartice alergenov ni bilo mogoče prebrati — poskusite znova",
+    "imageReadFailed": "Te slike ni bilo mogoče prebrati — kartico raje vpišite ali prilepite",
+    "commitFailedDetail": "Shranjevanja jedilnika ni bilo mogoče dokončati: {error}. Nekateri artikli so morda že shranjeni — pred ponovnim poskusom preverite jedilnik.",
+    "commitFailed": "Shranjevanja jedilnika ni bilo mogoče dokončati. Nekateri artikli so morda že shranjeni — pred ponovnim poskusom preverite jedilnik.",
+    "finishFailed": "Nastavitve ni bilo mogoče označiti kot dokončane — vseeno lahko nadaljujete.",
+    "scheduleReadFailed": "Tega urnika ni bilo mogoče prebrati — poskusite z jasnejšo fotografijo ali datume vpišite sami.",
+    "cardRead": "Kartica prebrana — ujemanja: {matched}; {pending, plural, one {# potrebuje} two {# potrebujeta} few {# potrebujejo} other {# potrebuje}} vašo dodelitev"
+  },
+  "settingsReview": {
+    "anchorOrder": "Nastavitve → Nastavitve naročil",
+    "anchorDisplay": "Nastavitve → Vaši food trucki → Nastavitve prikaza",
+    "mins15": "15 minut",
+    "mins30": "30 minut",
+    "mins60": "60 minut",
+    "hours2": "2 uri",
+    "title": "Nekaj nastavitev za preverjanje",
+    "loading": "Nalaganje trenutnih nastavitev …",
+    "looksGood": "Vse je v redu →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Tega ni bilo mogoče shraniti — spremenite lahko v zavihku Nastavitve.",
+    "anchorContact": "Nastavitve → Kontaktni podatki",
+    "intro": "Nastavili smo nekaj običajnih nastavitev. Splača se jih na hitro pogledati — vse lahko pozneje spremenite v zavihku Nastavitve.",
+    "cancelAria": "Koliko časa pred prevzemom lahko stranke prekličejo"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Preglejte jih pred objavo. Do takrat so artikli označeni z „alergeni niso nastavljeni“.",
+    "body": "Pred objavo jih preglejte v zavihku Nastavitve. Do takrat so artikli označeni z „alergeni niso nastavljeni“.",
+    "title": "⚠ Alergeni in prehranske oznake še niso nastavljeni"
+  },
+  "welcome": {
+    "title": "Dobrodošli v aplikaciji HatchGrab",
+    "yourTruck": "Vaš food truck",
+    "stop": "Kadar koli lahko prekinete in se vrnete.",
+    "body": "Food truck {name} je nastavljen. Zdaj bomo dodali vaš jedilnik, nato še prvi dogodek.",
+    "go": "Začnimo"
+  },
+  "offer": {
+    "title": "Želite uporabiti jedilnik iz demo različice?",
+    "use": "Uporabi ta jedilnik",
+    "upload": "Naloži drug jedilnik",
+    "body": "Shranili smo jedilnik, ki ste ga naložili — {count, plural, one {# artikel} two {# artikla} few {# artikli} other {# artiklov}}. Uporabite ga kot izhodišče ali naložite drugega."
+  },
+  "upload": {
+    "title": "Uvozite jedilnik",
+    "body": "Naložite fotografijo table z jedilnikom, posnetek zaslona ali PDF oziroma prilepite jedilnik kot besedilo. Naša UI ga prebere in ustvari vaš digitalni jedilnik — pred shranjevanjem vse pregledate.",
+    "confirmCancel": "Želite preklicati ta uvoz? Vaš pregled tega jedilnika bo zavržen.",
+    "process": "Obdelaj jedilnik",
+    "later": "Tega se lotim pozneje"
+  },
+  "processing": {
+    "title": "Analiziramo vaš jedilnik",
+    "body": "UI bere vaše artikle in jih razvršča v kategorije …"
+  },
+  "review": {
+    "title": "Preglejte uvoženi jedilnik",
+    "editLaterSetup": "Imena, cene, dodatke, alergene in prehranske podatke lahko pozneje kadar koli uredite.",
+    "editLater": "Imena, cene, dodatke, alergene in prehranske podatke lahko kadar koli uredite v zavihku Nastavitve.",
+    "noPrice": "Pri {count, plural, one {# artiklu} two {# artiklih} few {# artiklih} other {# artiklih}} nismo mogli prebrati cene",
+    "renameCategoryAria": "Preimenuj kategorijo {name}",
+    "renameAria": "Preimenuj {name}",
+    "renameTitle": "Preimenuj kategorijo",
+    "deleteAria": "Izbriši {name}",
+    "deleteTitle": "Izbriši kategorijo",
+    "lastCategory": "Jedilnik potrebuje vsaj eno kategorijo",
+    "countOf": "{kept} od {total}",
+    "existing": "obstoječa",
+    "deleteEmptyTitle": "Želite izbrisati „{name}“?",
+    "deleteEmptyBody": "V njej ni artiklov, zato se nič ne izgubi.",
+    "delete": "Izbriši",
+    "moveTitle": "Kam naj premaknemo {count, plural, one {# artikel} two {# artikla} few {# artikle} other {# artiklov}}?",
+    "moveBody": "Za izbris kategorije „{name}“ morate določiti, kam premakniti njene jedi — artikli brez kategorije se ne uvozijo.",
+    "moveAria": "Premakni artikle iz kategorije {name} v",
+    "chooseCategory": "Izberite kategorijo …",
+    "moveDelete": "Premakni in izbriši",
+    "itemName": "Ime artikla",
+    "free": "brezplačno?",
+    "freeOn": "Brezplačno ✕",
+    "nameFirst": "Poimenujte novi artikel, preden dodate naslednjega",
+    "addItem": "+ Dodaj artikel",
+    "categoryName": "Ime kategorije",
+    "newCategoryAria": "Ime nove kategorije",
+    "addCategory": "+ Dodaj kategorijo",
+    "ready": "{count, plural, one {# artikel je pripravljen} two {# artikla sta pripravljena} few {# artikli so pripravljeni} other {# artiklov je pripravljenih}} za dodajanje. Odznačite tiste, ki jih ne želite.",
+    "noPriceBody": "Vsakemu določite ceno ali ga označite kot brezplačnega — sicer bo objavljen s ceno {zero}. Dokler tega ne uredite, ne morete nadaljevati.",
+    "incomplete": "Vnesite ime, da dodate ta artikel — prazne vrstice se ne uvozijo."
+  },
+  "extras": {
+    "introSetup": "Nekatere jedi lahko nastavite kot <b>en prilagodljiv artikel</b> ali jih ohranite kot <b>ločene jedi</b>. Izberite, kako naj bo prikazana vsaka. To lahko pozneje spremenite.",
+    "intro": "Nekatere jedi lahko nastavite kot <b>en prilagodljiv artikel</b> ali jih ohranite kot <b>ločene jedi</b>. Izberite, kako naj bo prikazana vsaka. To lahko pozneje spremenite v zavihku Nastavitve.",
+    "none": "Ni jedi za združevanje — vsak artikel je samostojna jed.",
+    "axisChoice": "· izbira: {axis}",
+    "grouped": "Združeno · en artikel, stranka izbere",
+    "separate": "Ločeni artikli na jedilniku"
+  },
+  "allergens": {
+    "title": "Alergeni",
+    "detected": "Na vašem jedilniku smo zaznali alergene. Spodaj izberite, kako jih želite prikazati.",
+    "howShow": "Kako želite strankam prikazati alergene?",
+    "skip": "Nastavitev alergenov zaenkrat preskoči"
+  },
+  "kitchen": {
+    "title": "Nastavitev kuhinje",
+    "intro": "Strankam pomagajte vedeti, koliko bodo čakale — to lahko vedno pozneje spremenite.",
+    "howWorks": "Kako deluje zmogljivost kuhinje",
+    "allExist": "Vse kategorije že obstajajo — časov ni treba nastaviti.",
+    "totalHelp": "Nastavite skupno zmogljivost, da omejite, koliko artiklov kuhinja sprejme v enem časovnem terminu. Pustite ∞ za brez omejitve.",
+    "saveAdd": "Shrani in dodaj na jedilnik"
+  },
+  "schedule": {
+    "title": "Dodaj moj urnik",
+    "intro": "Če je vaš urnik na vaši spletni strani, ga lahko samodejno posodabljamo — ali pa datume dodate sami.",
+    "websiteTitle": "Moj urnik je na moji spletni strani",
+    "urlPlaceholder": "https://vasfoodtruck.si/dogodki",
+    "checking": "Preverjanje …",
+    "verify": "Preveri",
+    "checkingSite": "Preverjamo vašo spletno stran …",
+    "takesTime": "To lahko traja do 2 minuti — pustite to okno odprto.",
+    "canRead": "✓ Vaš urnik lahko preberemo",
+    "ownSite": "Vaša lastna spletna stran — ne stran na Facebooku ali Instagramu.",
+    "photoTitle": "Naloži fotografijo mojega urnika",
+    "dragChoose": "Povlecite in spustite ali tapnite za izbiro",
+    "imageOrPdf": "Slika ali PDF",
+    "or": "ali",
+    "pastePlaceholder": "Sem prilepite datume …",
+    "read": "Preberi urnik",
+    "found": "{count, plural, one {Najden # datum} two {Najdena # datuma} few {Najdeni # datumi} other {Najdenih # datumov}} — dodali jih bomo v vaš urnik.",
+    "dateTbc": "Datum še ni znan",
+    "save": "Shrani {count, plural, one {# datum} two {# datuma} few {# datume} other {# datumov}}",
+    "manualDesc": "Dodajte jih pozneje v zavihku Urnik — zdaj ni treba storiti ničesar.",
+    "manualBody": "Ni težav. Datume lahko kadar koli dodajate in urejate v zavihku Urnik v svojem računu.",
+    "blockedDomain": "Uporabite URL svoje spletne strani — strani na Facebooku in Instagramu ni mogoče samodejno prebrati.",
+    "saveFailed": "Vaš urnik smo prebrali, vendar ga trenutno ni bilo mogoče shraniti — poskusite znova.",
+    "websiteDesc": "Redno jo bomo preverjali in vam nove datume pošiljali v odobritev.",
+    "keepChecking": "To stran bomo še naprej preverjali in vam nove datume pošiljali v odobritev.",
+    "photoDesc": "Fotografirajte ali prilepite datume — prebrali jih bomo, vi pa jih preverite.",
+    "noneFound": "Tu nismo našli nobenega datuma — poskusite z jasnejšo fotografijo ali datum dodajte sami.",
+    "manualTitle": "Datume dodam ročno",
+    "trialNotStarted": "Dodajanje dogodkov ne sproži vašega brezplačnega preizkusnega obdobja — pozneje sami izberete, s katerim dogodkom se začne."
+  },
+  "done": {
+    "summary": "{items, plural, one {# artikel} two {# artikla} few {# artikli} other {# artiklov}} v {categories, plural, one {# kategoriji} two {# kategorijah} few {# kategorijah} other {# kategorijah}}.",
+    "imported": "Jedilnik uvožen!",
+    "added": "Vaši artikli so dodani na jedilnik.",
+    "duplicates": "{count, plural, one {Preskočen # dvojnik} two {Preskočena # dvojnika} few {Preskočeni # dvojniki} other {Preskočenih # dvojnikov}}",
+    "showMe": "Vodeni ogled",
+    "remind": "Opomni me pozneje",
+    "allSet": "Vse je pripravljeno!",
+    "explore": "Raziščem na lastno pest"
+  },
+  "discard": {
+    "setupTitle": "Želite nastavitev dokončati pozneje?",
+    "setupBody": "Vaš račun in food truck sta shranjena — nič se ne izgubi. Jedilnik lahko dodate kadar koli: prijavite se in na zaslonu jedilnika tapnite <b>Uvozi jedilnik</b>, da nadaljujete prav tukaj.",
+    "keepGoing": "Nadaljuj",
+    "finishLater": "Dokončaj pozneje",
+    "title": "Želite zavreči ta uvoz?",
+    "keepEditing": "Nadaljuj z urejanjem",
+    "discard": "Zavrzi",
+    "body": "Vaše spremembe ne bodo shranjene — uvoženi artikli, časi priprave in zmogljivost kuhinje ne bodo dodani."
+  },
+  "allergenCardText": {
+    "contains": "Vsebuje: {list}",
+    "mayContain": "Lahko vsebuje: {list}"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "close": "Sulje",
+  "cancel": "Peruuta",
+  "selectReason": "Valitse syy",
+  "reject": {
+    "title": "Hylätäänkö tilaus #{orderId}?",
+    "reasonLabel": "Syy — pakollinen (näytetään asiakkaalle)",
+    "reason": "{reason, select, sold_out {Tuote on loppunut} too_busy {Liian kiire — ei ehditä ajoissa} closing_soon {Suljemme pian} other {Muu}}",
+    "noteRequired": "Syy — pakollinen",
+    "noteOptional": "Lisähuomautus — valinnainen",
+    "notePlaceholder": "Kerro asiakkaalle tarkemmin…",
+    "keep": "Säilytä tilaus",
+    "confirm": "Hylkää tilaus"
+  },
+  "eventCancel": {
+    "title": "Perutaanko tämä tapahtuma?",
+    "affected": "{n, plural, one {{count} tilaus} other {{count} tilausta}} perutaan ja asiakkaille ilmoitetaan.",
+    "reasonLabel": "Syy — valinnainen",
+    "reason": "{reason, select, vehicle_breakdown {Ajoneuvon rikkoutuminen} weather {Sää} venue_issue {Ongelma paikan kanssa} personal_emergency {Henkilökohtainen hätätilanne} other {Muu}}",
+    "messageLabel": "Viesti asiakkaille — valinnainen",
+    "messagePlaceholder": "esim. Pahoittelut, peräkärrymme hajosi matkalla paikalle…",
+    "keep": "Säilytä tapahtuma",
+    "cancelling": "Perutaan…",
+    "confirm": "Peru tapahtuma"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Käynnistä tapahtuma uudelleen} other {Aloita tapahtuma}}",
+    "changeEvent": "Vaihda tapahtuma",
+    "changeEventType": "Vaihda tapahtuman tyyppi…",
+    "privateLink": "Yksityinen linkki ja QR-koodi",
+    "noteLabel": "Huomautus asiakkaille",
+    "notePlaceholder": "esim. Pysäköi pääparkkipaikalle ja etsi oranssi katos",
+    "noteHint": "Näytetään asiakkaille tilaussivulla tapahtuman tietojen alla.",
+    "saveNote": "Tallenna huomautus",
+    "resume": "Jatka tilauksia",
+    "pause": "Keskeytä tilaukset",
+    "changeFinishTime": "Muuta tapahtuman päättymisaikaa",
+    "finishEvent": "Päätä tapahtuma",
+    "cancelEvent": "Peru tapahtuma"
+  },
+  "finish": {
+    "confirmTitle": "Muutetaanko päättymisaikaa?",
+    "willFinish": "Tämä tapahtuma päättyy klo <b>{selected}</b>{hasCurrent, select, yes { eikä klo <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} tilaus on} other {{count} tilausta on}} noudettavissa klo {selected} jälkeen.</b> {n, plural, one {Se pysyy} other {Ne pysyvät}} taululla, ja {n, plural, one {se on} other {ne on}} silti valmistettava. Päättymisajan muuttaminen estää vain UUSIEN tilausten tekemisen myöhemmille ajoille.",
+    "saving": "Tallennetaan…",
+    "confirm": "Muuta päättymisaikaa",
+    "keepCurrent": "Pidä klo {current}",
+    "keepAsIs": "Pidä ennallaan",
+    "title": "Muuta päättymisaikaa",
+    "currentlySet": "Tämän tapahtuman päättymisajaksi on asetettu klo <b>{current}</b>.",
+    "noFinishTime": "Tälle tapahtumalle ei ole asetettu päättymisaikaa.",
+    "noTimesLeft": "Tälle päivälle ei ole enää aikoja jäljellä. Valitse sen sijaan ”Päätä tapahtuma”.",
+    "newFinishTime": "Uusi päättymisaika",
+    "optionCurrent": "{time} (nykyinen)",
+    "earlier": "Tämä on aiemmin kuin nykyinen päättymisaika. Asiakkaat eivät voi tilata sitä myöhemmille ajoille.",
+    "review": "Tarkista muutos",
+    "optionNextDay": "{time} (seuraava päivä)"
+  },
+  "extraWait": {
+    "title": "Lisää odotusaikaa",
+    "hint": "Lisätään uusille tilauksille ilmoitettuun noutoaikaan. Ei muuta tapahtuman päättymisaikaa.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Lataa yhdistämällä uudelleen",
+    "selected": "Valittu",
+    "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}"
+  }
+}

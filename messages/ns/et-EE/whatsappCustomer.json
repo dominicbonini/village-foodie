@@ -1,0 +1,15 @@
+{
+  "greeting": "Tere 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Meie täielik menüü ja allergeeniteave on siin: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Vaata meie täielikku menüüd siit: {url} — {truck} {emoji}",
+  "otherCategory": "Muu",
+  "categoryFrom": "{category} alates {price}",
+  "listTwo": "{first} ja {second}",
+  "listMany": "{init} ja {last}",
+  "menuSummary": "{opener}Meil on {summary}. Vaata kogu menüüd ja telli ette siit: {url} — {truck} {emoji}",
+  "allergenCaveat": "Allergeeniteabe saamiseks vaata palun kogu menüüd — see on automaatvastus.",
+  "specificFallback": "{opener}Vaata meie värskeimat ajakava siit: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Aitäh kõigi sõnumite eest! Siin saan vastata vaid paar korda päevas.\n\nTellimiseks: {link}",
+  "capContact": "Otse ühendust võtmiseks: {number}"
+}

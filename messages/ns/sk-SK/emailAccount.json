@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Overte svoju novú e-mailovú adresu v HatchGrab",
+    "heading": "Overte svoju e-mailovú adresu",
+    "button": "Overiť e-mailovú adresu"
+  },
+  "changeEmail": {
+    "requested": "Požiadali ste o zmenu svojej e-mailovej adresy v HatchGrab na túto adresu.",
+    "click": "Overte ju kliknutím na tlačidlo nižšie. Platnosť odkazu vyprší o 24 hodín.",
+    "ignore": "Ak ste o túto zmenu nežiadali, môžete tento e-mail pokojne ignorovať.",
+    "stillActive": "Vaša súčasná e-mailová adresa zostáva aktívna."
+  },
+  "resendVerification": {
+    "requested": "Požiadali ste o zmenu svojho e-mailu v HatchGrab na túto adresu.",
+    "click": "Overte ju kliknutím nižšie. Platnosť odkazu vyprší o 24 hodín.",
+    "ignore": "Ak ste o to nežiadali, tento e-mail ignorujte.",
+    "stillActive": "Váš súčasný e-mail zostáva aktívny."
+  },
+  "passwordReset": {
+    "subject": "Obnovenie hesla do HatchGrab",
+    "heading": "Obnovenie hesla",
+    "requested": "Dostali sme žiadosť o obnovenie hesla k vášmu účtu HatchGrab.",
+    "click": "Kliknutím na tlačidlo nižšie si zvoľte nové heslo. Platnosť odkazu vyprší o 1 hodinu.",
+    "button": "Obnoviť heslo",
+    "ignore": "Ak ste o to nežiadali, môžete tento e-mail pokojne ignorovať.",
+    "unchanged": "Vaše heslo sa nezmení, kým nekliknete na odkaz vyššie."
+  },
+  "deletionScheduled": {
+    "subject": "Váš účet HatchGrab je naplánovaný na zmazanie",
+    "received": "Dostali sme žiadosť o zmazanie tohto účtu HatchGrab.",
+    "orderingStopped": "<b>Online objednávanie bolo okamžite zastavené</b> pre: {trucks}.",
+    "noTrucks": "(žiadne food trucky)",
+    "readable": "Váš prehľad zostane\n    k dispozícii na čítanie ešte {days, plural, one {# deň} few {# dni} other {# dní}}.",
+    "scheduled": "Zmazanie účtu je naplánované na <b>{date}</b>.",
+    "cannotCancel": "<b>Toto nie je možné zrušiť priamo v aplikácii.</b> Ak ste to neboli vy alebo ste\n    zmenili názor, odpovedzte na tento e-mail čo najskôr.",
+    "kept": "Pri zmazaní účtu odstránime vaše osobné údaje aj údaje vašich zákazníkov. Ponecháme si\n    anonymné účtovné záznamy, ktoré sme zo zákona povinní uchovávať."
+  }
+}

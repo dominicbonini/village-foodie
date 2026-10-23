@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Válassza ki az allergének megjelenítését",
+    "detail": "Amíg nem dönt, a vásárlók egyetlen ételét sem látják — az étlap úgy védi magát, hogy elrejt mindent, aminek az allergénjei nincsenek megerősítve, és ez jelenleg minden.",
+    "where": "Étlap → Allergének"
+  },
+  "allergensCardMissing": {
+    "title": "Adja hozzá az allergénkártyáját",
+    "detail": "Azt választotta, hogy allergénkártyát jelenít meg, de nincs mentett kártya — így a vásárlók azt olvasnák, hogy van allergéninformáció, aztán nem találnának semmit.",
+    "where": "Étlap → Allergének"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Erősítse meg {count} étel allergénjeit} other {Erősítse meg {count} étel allergénjeit}}",
+    "detail": "{n, plural, one {Az étele rejtve marad a vásárlók elől, amíg meg nem erősíti az allergénjeit.} other {{u, plural, one {Az Ön {total} ételéből {unverified} rejtve marad a vásárlók elől, amíg meg nem erősíti az allergénjeit.} other {Az Ön {total} ételéből {unverified} rejtve marad a vásárlók elől, amíg meg nem erősíti az allergénjeiket.}}}} Ha egy étel megerősített allergének nélkül jelenik meg, az azt sugallja, hogy „egyiket sem tartalmazza”, ezért az étlap inkább elrejti, semmint ezt kockáztassa.",
+    "where": "Étlap → Allergének"
+  },
+  "noVan": {
+    "title": "Food truck hozzáadása",
+    "detail": "Minden esemény egy food truckhoz tartozik — enélkül nincs, ami a rendeléseket fogadja.",
+    "where": "Beállítások → Az Ön food truckjai"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Állítsa be a konyhai kapacitást",
+    "detail": "Nincs beállított kapacitás a következőkhöz: {vans}. Enélkül továbbra is olyan átvételi időket ígérünk a vásárlóknak, amelyeket a konyhája képtelen tartani.",
+    "where": "Étlap → Konyhai kapacitás",
+    "unnamedVan": "Névtelen food truck"
+  },
+  "noPrepBearingCategory": {
+    "title": "Adja meg, mennyi idő alatt készül el az étel",
+    "detail": "{categories, select, none {Még nincsenek étlapkategóriái, így nem tudjuk kiszámolni, mennyi ideig tart egy rendelés.} other {Egyik kategóriájához sincs elkészítési idő beállítva, ezért nálunk minden rendelés azonnalinak tűnik. Továbbra is olyan átvételi időket adnánk a vásárlóknak, amelyeket a konyhája esélytelen tartani, és minél nagyobb a forgalom, annál távolabb lennének a valóságtól.}}",
+    "where": "Étlap → Kategóriák → Konyha beállítása"
+  },
+  "emailUnverified": {
+    "title": "Erősítse meg e-mail-címét",
+    "detail": "Erre a címre küldjük a rendelési értesítéseket és a fiók-helyreállítást. Ha hibás, akkor derül ki, amikor már baj van.",
+    "where": "Keresse a postafiókjában a megerősítő linkünket"
+  },
+  "emailUnknown": {
+    "title": "Az e-mail-megerősítés állapota ismeretlen",
+    "detail": "Az e-mail-ellenőrzés még nincs bekötve, ezért ez nem értékelhető. Szándékosan blokkol, ahelyett hogy csendben átengedné.",
+    "where": "—"
+  }
+}

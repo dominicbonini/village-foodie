@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Osoite",
+    "postcode": "Postinumero",
+    "zip": "ZIP-koodi",
+    "eircode": "Eircode",
+    "postalCode": "Postinumero",
+    "state": "Osavaltio",
+    "stateTerritory": "Osavaltio tai territorio",
+    "province": "Provinssi",
+    "county": "Kreivikunta",
+    "area": "Alue (kylä, taajama tai kaupunki)",
+    "townOrArea": "Paikkakunta tai alue",
+    "city": "Kaupunki",
+    "suburb": "Kaupunginosa",
+    "townOrCity": "Paikkakunta"
+  },
+  "short": {
+    "area": "Alue",
+    "townOrArea": "Paikkakunta tai alue",
+    "city": "Kaupunki",
+    "suburb": "Kaupunginosa",
+    "townOrCity": "Paikkakunta"
+  },
+  "inSentence": {
+    "postcode": "postinumero",
+    "zip": "ZIP-koodi",
+    "eircode": "Eircode",
+    "postalCode": "postinumero"
+  },
+  "withArticle": {
+    "postcode": "postinumero",
+    "zip": "ZIP-koodi",
+    "eircode": "Eircode",
+    "postalCode": "postinumero"
+  },
+  "tradeLabel": {
+    "area": "Paikkakunta",
+    "townOrArea": "Paikkakunta tai alue",
+    "city": "Kaupunki",
+    "suburb": "Kaupunginosa",
+    "townOrCity": "Paikkakunta"
+  },
+  "basedIn": {
+    "area": "Paikkakunta, jossa toimit",
+    "townOrArea": "Paikkakunta tai alue, jossa toimit",
+    "city": "Kaupunki, jossa toimit",
+    "suburb": "Kaupunginosa, jossa toimit",
+    "townOrCity": "Paikkakunta, jossa toimit"
+  },
+  "example": "esim. {example}",
+  "customersSee": "Asiakkaat näkevät:",
+  "postalWarning": "Tarkista {article}: se ei näytä tavanomaiselta (esimerkki: {example}). Voit silti tallentaa sen.",
+  "regionChoose": "Valitse…"
+}

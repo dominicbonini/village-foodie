@@ -1,0 +1,84 @@
+{
+  "loading": "Ładowanie panelu zarządzania…",
+  "loadFailed": "Nie udało się załadować",
+  "requestFailed": "Błąd",
+  "invalidToken": "Nieprawidłowy lub wygasły token",
+  "loadFailedReason": "Nie udało się załadować tej strony: {reason}",
+  "noCountrySettings": "Nie udało się załadować ustawień kraju dla tego food trucka. Odśwież stronę.",
+  "noPlans": "Nie udało się załadować planu tego food trucka. Odśwież stronę.",
+  "stale": "{hasTime, select, yes {Nie udało się odświeżyć. Wyświetlamy dane zapisane o {time}. Wprowadzane zmiany nadal są zapisywane.} other {Nie udało się odświeżyć. Wyświetlamy ostatnio zapisane dane. Wprowadzane zmiany nadal są zapisywane.}}",
+  "verify": {
+    "ok": "Adres e-mail potwierdzony — dziękujemy.",
+    "expired": "Ten link potwierdzający wygasł. Skontaktuj się z nami, a załatwimy to przed startem.",
+    "invalid": "Ten link potwierdzający nie zadziałał. Skontaktuj się z nami, a załatwimy to przed startem."
+  },
+  "profile": {
+    "updated": "Profil zaktualizowany",
+    "saveFailed": "Nie udało się zapisać",
+    "title": "Edytuj profil",
+    "name": "Imię i nazwisko",
+    "namePlaceholder": "Twoje imię i nazwisko",
+    "email": "E-mail",
+    "cancel": "Anuluj",
+    "saving": "Zapisywanie…",
+    "save": "Zapisz"
+  },
+  "header": {
+    "subtitle": "Panel zarządzania",
+    "ordersDashboard": "← Panel zamówień"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Harmonogram",
+    "social": "Media społecznościowe",
+    "reports": "Raporty",
+    "team": "Zespół",
+    "settings": "Ustawienia",
+    "payments": "Płatności",
+    "billing": "Rozliczenia",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Harmonogram ({count})",
+    "stripeAttention": "Stripe wymaga twojej uwagi",
+    "allergensNotSet": "alergeny nieustawione"
+  },
+  "menuSections": {
+    "label": "Sekcje menu",
+    "items": "Pozycje",
+    "capacity": "Wydajność kuchni",
+    "extras": "Dodatki i dosprzedaż",
+    "deals": "Zestawy"
+  },
+  "socialSections": {
+    "label": "Sekcje mediów społecznościowych",
+    "create": "Utwórz post",
+    "designs": "Projekty",
+    "locations": "Ustawienia lokalizacji"
+  },
+  "notices": {
+    "review": "Sprawdź →",
+    "tour": "Chcesz szybko poznać swój panel?",
+    "showMeAround": "Oprowadź mnie",
+    "dismiss": "Zamknij",
+    "approval": "{count, plural, one {Znaleźliśmy dla ciebie <b>{count}</b> wydarzenie — sprawdź je i zatwierdź, zanim zostanie opublikowane.} few {Znaleźliśmy dla ciebie <b>{count}</b> wydarzenia — sprawdź je i zatwierdź, zanim zostaną opublikowane.} many {Znaleźliśmy dla ciebie <b>{count}</b> wydarzeń — sprawdź je i zatwierdź, zanim zostaną opublikowane.} other {Znaleźliśmy dla ciebie <b>{count}</b> wydarzenia — sprawdź je i zatwierdź, zanim zostaną opublikowane.}}",
+    "allergens": "<b>Alergeny nieustawione</b> — klienci nie zobaczą informacji o alergenach, dopóki ich nie zweryfikujesz. Sprawdź alergeny każdego dania w zakładce Menu.",
+    "domainLive": "<link>{domain}</link> już działa. Zobacz, jak wygląda, a potem potwierdź w Ustawieniach, że wszystko się zgadza.",
+    "stripe": "<b>Stripe czegoś od ciebie potrzebuje</b> — płatności kartą mogą zostać wstrzymane, dopóki tego nie załatwisz.",
+    "profileTitle": "Uzupełnij profil",
+    "missing": "Brakuje: {fields}.",
+    "goToSettings": "Przejdź do Ustawień →",
+    "field": {
+      "truckName": "nazwa food trucka",
+      "cuisineType": "rodzaj kuchni",
+      "contactEmail": "e-mail kontaktowy",
+      "contactPhone": "telefon kontaktowy"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Korzystasz z bezpłatnego okresu próbnego} other {Korzystasz z {months}-miesięcznego bezpłatnego okresu próbnego}}",
+    "ends": "{hasDate, select, yes {Okres próbny kończy się <hl>{date}</hl>} other {Okres próbny <hl>wkrótce</hl> się kończy}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Wszystkie funkcje za darmo przez # miesiąc} few {Wszystkie funkcje za darmo przez # miesiące} many {Wszystkie funkcje za darmo przez # miesięcy} other {Wszystkie funkcje za darmo przez # miesiąca}}} other {Wszystkie funkcje za darmo w okresie próbnym}}",
+    "body": "{hasDate, select, yes {W okresie próbnym, który trwa do <b>{date}</b>, nie zapłacisz nic. Opłaty zaczynają się dopiero wtedy, gdy wybierzesz plan i podasz dane płatnicze. Do tego czasu nie ma czego anulować ani za co płacić. Wybierz plan przed tym terminem — jeśli tego nie zrobisz, przejdziesz na plan {fallback} i niektóre funkcje przestaną działać.} other {W okresie próbnym nie zapłacisz nic. Opłaty zaczynają się dopiero wtedy, gdy wybierzesz plan i podasz dane płatnicze. Do tego czasu nie ma czego anulować ani za co płacić. Wybierz plan przed końcem okresu próbnego — jeśli tego nie zrobisz, przejdziesz na plan {fallback} i niektóre funkcje przestaną działać.}}",
+    "fees": "*Przy zamówieniach online obowiązują standardowe opłaty za obsługę płatności kartą",
+    "upgrade": "Zmień plan tutaj →"
+  }
+}

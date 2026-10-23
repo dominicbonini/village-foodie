@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Tühistatud",
+    "finished": "Lõppenud",
+    "unconfirmed": "Kinnitamata",
+    "confirmed": "Kinnitatud",
+    "open": "Praegu avatud",
+    "closed": "Suletud"
+  },
+  "sections": {
+    "label": "Ajakava jaotised",
+    "events": "Üritused",
+    "eventTypes": "Ürituste tüübid"
+  },
+  "header": {
+    "title": "Ajakava",
+    "upcoming": "{count} tulekul",
+    "import": "✨ Impordi ajakava",
+    "importHint": "foto, PDF või tekst",
+    "addEvent": "+ Lisa üritus",
+    "scraperAuto": "Otsime üritusi automaatselt sinu veebisaidilt",
+    "changeInSettings": "Muuda jaotises Seaded",
+    "scraperManual": "Haldad oma ajakava käsitsi"
+  },
+  "empty": {
+    "title": "Tulevasi üritusi pole",
+    "body": "Sinu sotsiaalmeediast ja broneerimiskalendrist leitud üritused ilmuvad siia, et saaksid need kinnitada"
+  },
+  "list": {
+    "openNow": "Praegu avatud",
+    "needsApproval": "Vajab sinu heakskiitu",
+    "needsConfirmation": "Vajab kinnitamist",
+    "confirmed": "Kinnitatud",
+    "past": "Möödunud üritused ({count})",
+    "found": "{count, plural, one {Leidsime sulle # ürituse — vaata see üle ja kiida heaks, enne kui see avaldatakse.} other {Leidsime sulle # üritust — vaata need üle ja kiida heaks, enne kui need avaldatakse.}}"
+  },
+  "card": {
+    "addName": "Lisa nimi",
+    "timeNeeded": "⚠ Aeg puudub",
+    "setTimeFirst": "Määra esmalt aeg",
+    "confirm": "Kinnita",
+    "copy": "Kopeeri",
+    "edit": "Muuda",
+    "makePost": "Loo postitus",
+    "cancel": "Tühista",
+    "approve": "Kiida heaks",
+    "reject": "Lükka tagasi",
+    "stock": "⚠️ Laoseis",
+    "stockHidden": "Peidetud — {reason}",
+    "noDeals": "Aktiivseid pakkumisi pole",
+    "dealsActive": "Aktiivsed: {count, plural, one {# pakkumine} other {# pakkumist}} · {names}{hidden, plural, =0 {} one { · # peidetud} other { · # peidetud}}",
+    "approveNeedsTimes": "Heakskiitmine pole võimalik, kuni üritusel on algus- ja lõpuaeg — lisa need nupuga Muuda."
+  },
+  "guessed": {
+    "title": "📍 Arvasime selle asukoha ära",
+    "body": "Mitu asukohta sobis nimega <b>{venue}</b>, seega valisime kõige sobivama{hasTown, select, yes { — <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Kontrolli enne heakskiitmist, et see on õige — kui see on vale, paranda nupuga <b>Muuda</b> piirkond või {postal}, muidu suunatakse kliendid valesse kohta.",
+    "thisVenue": "see koht"
+  },
+  "noLocation": {
+    "title": "📍 Asukoht puudub",
+    "body": "Me ei suutnud seda asukohta kaardile paigutada, seega kuvatakse see loendis, kuid ilma kaardinõelata. Kaardile lisamiseks lisa nupuga <b>Muuda</b> {postal}."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Võimalik konflikt} other {Võimalikud konfliktid}} — vaata üle enne {pending, select, yes {heakskiitmist} other {kinnitamist}}",
+    "duplicate": "See näib olevat sama üritus, mis sul juba on.",
+    "review": "Sama asukoht ja kuupäev, kuid erinev aeg — kas see on sama üritus muudetud ajaga või eraldi ajavahemik? Vaata enne heakskiitmist üle.",
+    "already": "Juba sinu ajakavas: <b>{venue}</b>{details} ({status, select, confirmed {kinnitatud} open {avatud} other {{status}}})",
+    "unnamedVenue": "Nimetu asukoht",
+    "ack": "Jah, need on erinevad üritused — {pending, select, yes {kiida siiski heaks} other {kinnita siiski}}",
+    "cancel": "Tühista",
+    "overlap": "Selle ürituse aeg kattub sama päeva teise üritusega — üks toiduauto ei saa olla korraga kahes kohas. Kontrolli enne heakskiitmist."
+  },
+  "toast": {
+    "loadFailed": "Ürituste laadimine ebaõnnestus",
+    "linkFailed": "Linki ei õnnestunud laadida",
+    "placeTypeFailed": "Üritus salvestatud. Asukoha {place} tavalist tüüpi ei salvestatud — {reason}.",
+    "placeTypeFailedReason": "salvestamine ei õnnestunud",
+    "eventUpdated": "Üritus uuendatud",
+    "eventAdded": "Üritus lisatud",
+    "eventsSaved": "{count, plural, one {# üritus salvestatud} other {# üritust salvestatud}}",
+    "saveEventsFailed": "Ürituste salvestamine ebaõnnestus",
+    "needsTime": "Lisa enne heakskiitmist algus- ja lõpuaeg — üritus vajab avaldamiseks aega.",
+    "addStartTime": "Lisa algusaeg",
+    "addEndTime": "Lisa lõpuaeg",
+    "chooseTruckBefore": "Vali enne heakskiitmist, milline toiduauto sellel üritusel töötab.",
+    "chooseTruck": "Vali, milline toiduauto sellel üritusel töötab",
+    "eventConfirmed": "Üritus kinnitatud",
+    "eventRejected": "Üritus tagasi lükatud",
+    "undo": "↩ Võta tagasi",
+    "eventRestored": "Üritus taastatud",
+    "restoreFailed": "Taastamine ebaõnnestus",
+    "eventCancelled": "Üritus tühistatud",
+    "eventCancelledOrders": "Üritus tühistatud · {count, plural, one {# tellimus} other {# tellimust}} tühistatud",
+    "placeHidden": "Asukoht peidetud",
+    "placeShown": "Asukoht taas nähtaval",
+    "saveThatFailed": "Seda ei õnnestunud salvestada."
+  },
+  "link": {
+    "label": "Privaatne link ja QR-kood",
+    "close": "Sulge"
+  }
+}

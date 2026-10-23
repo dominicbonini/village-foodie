@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Ilman kuukausimaksua",
+    "subtitle": "Kausiluonteiset ja osa-aikaiset yrittäjät",
+    "description": "Ei kuukausimaksua. Maksat vain, kun asiakas maksaa verkossa kortilla."
+  },
+  "pro": {
+    "subtitle": "Ruokarekat, joilla on säännöllisesti ennakkotilauksia",
+    "description": "Kaikki ominaisuudet, myös WhatsAppin automaattiset vastaukset ja somejulkaisut. Verkkotilauksia sisältyy hintaan joka kuukausi."
+  },
+  "unlimited": {
+    "name": "Rajaton",
+    "subtitle": "Vilkkaat ruokarekat ja festivaalit",
+    "description": "Kaikki ominaisuudet ilman verkkotilausten maksuja, olipa kiirettä kuinka paljon tahansa."
+  },
+  "trial": {
+    "name": "Ilmainen kokeilujakso",
+    "description": "Kaikki ominaisuudet ilmaiseksi kokeilujaksosi ajan."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Myyntidemo mahdolliselle asiakkaalle — ei koskaan julkinen."
+  },
+  "tester": {
+    "name": "Testaaja",
+    "description": "Testaaja ennen julkaisua — täydet käyttöoikeudet."
+  }
+}

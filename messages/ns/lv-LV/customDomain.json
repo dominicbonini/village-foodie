@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Pievienojiet savu grafiku savai tīmekļa vietnei",
+    "live": "Adresē <addr>{address}</addr> tiek rādīts jūsu grafiks.",
+    "create": "Mēs izveidojam lapu adresē <addr>{address}</addr>, kurā redzams jūsu grafiks.",
+    "exampleDomain": "jusufoodtruck.lv",
+    "liveBadge": "Darbojas",
+    "setUp": "Iestatīt",
+    "viewSetup": "Skatīt iestatījumus",
+    "continue": "Turpināt",
+    "justLive": "<b>{address}</b> darbojas. Apskatiet to un pēc tam zemāk apstipriniet, ka viss ir pareizi."
+  },
+  "waiting": {
+    "title": "Gaidām adresi {address}",
+    "bodySince": "Jūs to iestatījāt {date}. Jaunas tīmekļa adreses parasti sāk darboties dažu minūšu laikā, bet dažkārt līdz 24 stundām paiet, līdz tās sasniedz visus — tikmēr jums nekas nav jādara. Ja ierakstu jūsu vietā pievienoja kāds cits, ir vērts pārliecināties, ka viņš to izdarīja.",
+    "body": "Jaunas tīmekļa adreses parasti sāk darboties dažu minūšu laikā, bet dažkārt līdz 24 stundām paiet, līdz tās sasniedz visus — tikmēr jums nekas nav jādara. Ja ierakstu jūsu vietā pievienoja kāds cits, ir vērts pārliecināties, ka viņš to izdarīja."
+  },
+  "ready": {
+    "title": "{address} darbojas",
+    "body": "Apskatiet to un pēc tam savos iestatījumos apstipriniet, ka viss ir pareizi."
+  },
+  "confirm": {
+    "heading": "Apskatiet un apstipriniet, ka viss ir pareizi",
+    "open": "Atvērt <link>{address}</link>",
+    "checkTimes": "Pārbaudiet, vai datumi un laiki ir pareizi.",
+    "yes": "Jā, viss ir pareizi",
+    "no": "Nē, ir problēma",
+    "problemLine": "Pastāstiet, ko redzat, un mēs to apskatīsim.",
+    "emailUs": "Rakstīt mums",
+    "mailSubject": "Problēma ar adresi {address}",
+    "mailLiveSince": "Darbojas kopš {date}",
+    "mailSeeing": "Ko es redzu:"
+  },
+  "confirmed": {
+    "heading": "Paldies — esam to atzīmējuši.",
+    "body": "Vairāk nekas nav jādara."
+  },
+  "turnOff": {
+    "link": "Izslēgt",
+    "heading": "Izslēgt savu tīmekļa adresi?",
+    "stops": "Šis pārstās darboties:",
+    "carriesOn": "Šis turpinās darboties tieši tāpat kā līdz šim, un uz šejieni cilvēkus novirza jūsu QR kods:",
+    "reAdd": "Ja vēlāk to iestatīsiet vēlreiz, atstājiet ierakstu, ko pievienojāt pie sava tīmekļa adreses pakalpojuma sniedzēja. Ja ne — palūdziet viņiem to noņemt.",
+    "cancel": "Atstāt ieslēgtu",
+    "confirm": "Izslēgt",
+    "working": "Izslēdz…",
+    "failed": "Pašlaik to neizdevās izslēgt. Nekas nav mainījies — jūsu adrese joprojām darbojas. Drīz mēģiniet vēlreiz."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Neizdevās ielādēt jūsu iestatījumus.",
+    "resumeFailedBody": "Nekas nav mainījies. Drīz mēģiniet vēlreiz.",
+    "close": "Aizvērt",
+    "resuming": "Turpinām no vietas, kur apstājāties…",
+    "genericError": "Radās kļūda",
+    "saveFailed": "Neizdevās saglabāt"
+  },
+  "address": {
+    "intro": "Jūsu grafiks iegūst savu tīmekļa adresi.",
+    "question": "Kāda ir jūsu tīmekļa adrese?",
+    "hint": "Tā, kuru cilvēki jau izmanto, lai jūs atrastu.",
+    "aria": "Jūsu tīmekļa adrese",
+    "willBe": "Jūsu adrese būs <addr>{address}</addr>",
+    "example": "Piemēram, <addr>{address}</addr>",
+    "noChange": "Jūsu tīmekļa vietne nemainās — jūs tikai pievienojat saiti uz jauno adresi.",
+    "notSetUp": "Mēs to neesam iestatījuši.",
+    "restricted": "Tam, kas pārvalda jūsu tīmekļa adresi, ir jāļauj mums iestatīt slēdzenes ikonu — mazo slēdzeni, ko klienti redz blakus adresei. Kamēr viņi mūs nepievienos, tā neparādīsies, tāpēc mēs apstājāmies, nevis likām jums to gaidīt. Palūdziet viņiem mūs pievienot un pēc tam mēģiniet vēlreiz.",
+    "blocked": "Jūsu tīmekļa adrese pašlaik pilnībā bloķē slēdzenes ikonu. Tam, kas to pārvalda, tā ir jāatļauj, lai tas varētu darboties. Palūdziet viņiem to mainīt un pēc tam mēģiniet vēlreiz.",
+    "elsewhere": "Šajā adresē jau kaut kas darbojas. Nosūtiet ziņu nākamajā ekrānā tam, kas pārvalda adresi, — viņi zinās, kas jādara.",
+    "provider": "Jūsu tīmekļa adresi pārvalda <b>{provider}</b>. Mēs parādīsim, kur jāiet.",
+    "provisionFailed": "Šo adresi neizdevās iestatīt.",
+    "willNotWork": "Šī adrese nedarbosies.",
+    "couldNotBeSetUp": "Šo adresi nevarēja iestatīt.",
+    "couldNotSetUp": "Neizdevās iestatīt",
+    "checking": "Pārbauda…",
+    "setting": "Iestata…",
+    "tryAgain": "Mēģināt vēlreiz",
+    "setUpAddress": "Iestatīt šo adresi",
+    "notNow": "Ne tagad"
+  },
+  "apex": {
+    "empty": "Ierakstiet adresi, kuru vēlaties izmantot.",
+    "not_a_domain": "Tas neizskatās pēc tīmekļa adreses.",
+    "unparseable": "Mēs nevarējām to nolasīt kā tīmekļa adresi. Pārbaudiet rakstību un mēģiniet vēlreiz.",
+    "apex": "{host} ir jūsu tīmekļa vietnes pilnā adrese. Ja to novirzīsiet uz mums, jūsu tīmekļa vietni aizstās šī lapa. Tā vietā pievienojiet tai priekšā vārdu — piemēram, grafiks.{host}.",
+    "too_deep": "Šai adresei ir pārāk daudz daļu. Vislabāk der kaut kas līdzīgs grafiks.{domain}."
+  },
+  "record": {
+    "addAt": "Pievienojiet šo pakalpojumā {provider}",
+    "open": "Atvērt pakalpojumu {provider}",
+    "guide": "Pakalpojuma {provider} norādījumi par šo",
+    "addAtSave": "Pievienojiet šo pakalpojumā {provider} un saglabājiet.",
+    "addSomewhere": "Pievienojiet šo tur, kur tiek pārvaldīta jūsu tīmekļa adrese, un saglabājiet.",
+    "hintChoose": "Izvēlieties šo no saraksta.",
+    "hintWord": "Tikai šo vārdu, nevis visu adresi.",
+    "hintExact": "Nokopējiet šo precīzi.",
+    "timing": "Parasti tas sāk darboties stundas laikā, lai gan var aizņemt ilgāku laiku. Šī lapa nav jātur atvērta.",
+    "someoneElse": "Jūsu tīmekļa adresi pārvalda kāds cits?",
+    "sentTo": "Nosūtīts uz {email}",
+    "emailPlaceholder": "viņu e-pasta adrese",
+    "sending": "Sūta…",
+    "send": "Nosūtīt šo informāciju",
+    "sendFailed": "Neizdevās nosūtīt"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Atveriet savu tīmekļa adresi, pēc tam “DNS” un “Records”.",
+      "add": "Izvēlieties “Add record”, pēc tam kā “Type” izvēlieties “CNAME”.",
+      "name": "Ievadiet pirmo zemāk redzamo vērtību laukā “Name”.",
+      "value": "Ievadiet otro zemāk redzamo vērtību laukā “Target”.",
+      "proxy": "Iestatiet “Proxy status” uz “DNS only” — mākonim blakus jābūt pelēkam, nevis oranžam.",
+      "save": "Atstājiet “TTL” kā “Auto” un izvēlieties “Save”.",
+      "caveat": "Ja mākonis paliek oranžs, slēdzenes ikona nekad neparādīsies, un nekas nepateiks, kāpēc."
+    },
+    "godaddy": {
+      "open": "Atveriet savu “Domain Portfolio” un izvēlieties savu tīmekļa adresi.",
+      "dns": "Lapā “Domain Settings” izvēlieties “DNS”.",
+      "add": "Izvēlieties “Add New Record”, pēc tam izvēlnē “Type” izvēlieties “CNAME”.",
+      "name": "Ievadiet pirmo zemāk redzamo vērtību laukā “Name”.",
+      "value": "Ievadiet otro zemāk redzamo vērtību laukā “Value”.",
+      "save": "Atstājiet “TTL” nemainītu un izvēlieties “Save”.",
+      "caveat": "Ja pievienojāt vairākus ierakstus uzreiz, uz pogas būs rakstīts “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Piesakieties savā “123 Reg Control Panel”.",
+      "manage": "Blakus “Domains” izvēlieties “Manage All”, pēc tam izvēlieties savu tīmekļa adresi.",
+      "dns": "Izvēlieties “DNS”, pēc tam “Add New Record”.",
+      "type": "Sarakstā “Type” izvēlieties “CNAME”.",
+      "name": "Ievadiet pirmo zemāk redzamo vērtību laukā “Name”.",
+      "value": "Ievadiet otro zemāk redzamo vērtību laukā “Value” un pievienojiet tās beigās punktu.",
+      "save": "Atstājiet “TTL” kā “Default” un noklikšķiniet uz “Save”.",
+      "caveat": "123 Reg pieprasa punktu otrās vērtības beigās, citādi tas nedarbosies."
+    },
+    "wix": {
+      "open": "Atveriet “Domains”, pēc tam noklikšķiniet uz ikonas “Domain Actions” blakus savai tīmekļa adresei.",
+      "manage": "Izvēlieties “Manage DNS Records”.",
+      "add": "Sadaļā “CNAME (Aliases)” noklikšķiniet uz “+ Add Record”, pēc tam uz “Got it”.",
+      "name": "Ievadiet pirmo zemāk redzamo vērtību laukā “Host Name”.",
+      "value": "Ievadiet otro zemāk redzamo vērtību laukā “Value”.",
+      "save": "Noklikšķiniet uz “Save”, pēc tam uznirstošajā logā uz “Save Changes”.",
+      "caveat": "Ja jūsu tīmekļa adrese tikai norāda uz Wix, bet netiek tur glabāta, Wix šo izmaiņu veikt nevar — tas jādara tam, pie kura tā tiek glabāta."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Viens ieraksts, kas jāpievieno food truck {truckName} grafika lapai",
+    "hello": "Labdien!",
+    "introAt": "Mēs publicējam food truck {truckName} aktuālo grafiku adresē {address}, un šim nolūkam mūsu domēnam pakalpojumā {provider} jāpievieno viens ieraksts.",
+    "introHolder": "Mēs publicējam food truck {truckName} aktuālo grafiku adresē {address}, un šim nolūkam mūsu domēnam jāpievieno viens ieraksts pie tā, kas glabā mūsu domēnu.",
+    "stepsAt": "Pakalpojumā {provider}:",
+    "guide": "Viņu norādījumi: {url}",
+    "wholeChange": "Tā ir vienīgā izmaiņa — nekas cits tīmekļa vietnē netiek ietekmēts, un pārējais mūsu domēns turpina darboties tieši tāpat kā tagad. Parasti tas sāk darboties stundas laikā.",
+    "pointsAt": "Lapā, uz kuru tas norāda, redzams, kur mēs tirgosimies nākamreiz, un tā atjauninās automātiski.",
+    "replyTo": "Ja jums ir jautājumi, rakstiet uz {email}.",
+    "thanks": "Paldies!"
+  },
+  "liveEmail": {
+    "subject": "{address} darbojas",
+    "goodNews": "Labas ziņas — {address} darbojas.",
+    "body": "Jūsu grafiks tagad tiek rādīts jūsu pašu adresē. Apskatiet to un pārbaudiet, vai viss ir pareizi: atveriet {address}, pārliecinieties, ka pasākumi ir jūsu un datumi ir pareizi.",
+    "confirm": "Kad tas izdarīts, atveriet savus iestatījumus HatchGrab un apstipriniet, ka viss ir pareizi. No tā nekas nav atkarīgs — tas tikai nozīmē, ka mēs zinām, ka cilvēks to ir redzējis."
+  }
+}

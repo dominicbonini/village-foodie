@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Toiduauto 1",
+  "demoCategories": {
+    "pizza": "Pitsad",
+    "burgers": "Burgerid",
+    "mains": "Pearoad",
+    "sides": "Lisandid",
+    "drinks": "Joogid"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pitsaauto",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja ja mesi",
+        "fourCheese": "Neli juustu",
+        "gardenVeg": "Köögiviljapitsa",
+        "garlicBread": "Küüslauguleib",
+        "rocketParmesan": "Rukola ja parmesan",
+        "olives": "Oliivid",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burgeriauto",
+      "items": {
+        "classicCheeseburger": "Klassikaline juustuburger",
+        "doubleBacon": "Topeltpeekon",
+        "buttermilkChicken": "Petimarinaadis kana",
+        "halloumiStack": "Halloumiburger",
+        "smashBurger": "Smash-burger",
+        "skinOnFries": "Koorega friikartulid",
+        "loadedCheeseFries": "Juustused friikartulid",
+        "onionRings": "Sibularõngad",
+        "craftLemonade": "Käsitöölimonaad",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Karriauto",
+      "items": {
+        "chickenTikkaMasala": "Kana tikka masala",
+        "lambRoganJosh": "Lamba rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Võikana",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Pilaffiriis",
+        "garlicNaan": "Küüslaugunaan",
+        "onionBhaji": "Sibulabhaji",
+        "mangoLassi": "Mangolassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

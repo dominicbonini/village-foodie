@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Visi",
+    "bold": "Trekni un augsti",
+    "hand": "Rokraksta",
+    "classic": "Klasiskie",
+    "clean": "Vienkāršie",
+    "own": "Jūsu",
+    "ownCount": "Jūsu ({count})"
+  },
+  "yoursTag": "· jūsu",
+  "loadingFonts": "Ielādē fontus…",
+  "search": "Meklēt starp {count, number} fontiem",
+  "uploadButton": "↑ Augšupielādēt savu fontu",
+  "loadingLibrary": "Ielādē fontu bibliotēku…",
+  "tryAgain": "Mēģināt vēlreiz",
+  "noOwn": "Jūs vēl neesat augšupielādējis nevienu fontu. Izmantojiet pogu “↑ Augšupielādēt savu fontu” augstāk.",
+  "recent": "Nesen izmantotie",
+  "popular": "Populāri plakātiem",
+  "adding": "Pievieno…",
+  "noMatch": "Neviens fonts neatbilst vaicājumam “{query}”.",
+  "showing": "Rāda {shown} no {total, number} — rakstiet vairāk, lai sašaurinātu meklēšanu.",
+  "couldNotAdd": "Šo fontu neizdevās pievienot",
+  "tooBig": "Šis fonts ir {size, number, ::.0 group-off} MB liels. Ierobežojums ir 5 MB.",
+  "woff": "Lūdzu, augšupielādējiet TTF vai OTF failu — parasti to var lejupielādēt tur, kur iegādājāties fontu.",
+  "uploadIncomplete": "Augšupielāde netika pabeigta",
+  "added": "Fonts “{name}” pievienots kā stils: {face}.",
+  "face": {
+    "regular": "parastais",
+    "bold": "treknais",
+    "italic": "slīpraksts"
+  },
+  "licenceTick": "Šis fonts pieder man, vai man ir licence to izmantot",
+  "checking": "Pārbauda fontu…",
+  "addFont": "Pievienot fontu",
+  "cancel": "Atcelt",
+  "missingFaces": "Pievienojiet fonta “{name}” stilu: {faces} (nav obligāti) — izvēlieties failu vēlreiz.",
+  "somethingWrong": "Radās kļūda",
+  "faceLower": {
+    "regular": "parastais",
+    "bold": "treknais",
+    "italic": "slīpraksts"
+  },
+  "ownLicence": "Jūsu pašu",
+  "loadFailed": "Neizdevās ielādēt fontus"
+}

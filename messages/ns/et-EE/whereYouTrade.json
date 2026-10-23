@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Kus sinu toiduauto asub?",
+  "stepIntro": "See määrab sinu valuuta, hinnad, ajavööndi ja telefoninumbri vormingu. Riiki ei saa hiljem muuta, sest see on seotud sinu kaardimaksetega.",
+  "settingsHeading": "Tegutsemiskoht",
+  "countryLabel": "Riik",
+  "countryGuessed": "Arvasime selle sinu asukoha järgi. Muuda, kui see on vale.",
+  "countryLocked": "Sinu riiki ei saa muuta",
+  "townLabel": "Linn või asula",
+  "townQuestion": "Linn või asula, kus sa asud",
+  "timezoneLabel": "Ajavöönd",
+  "continueButton": "Jätka",
+  "saveFailed": "Seadeid ei õnnestunud salvestada — proovi uuesti."
+}

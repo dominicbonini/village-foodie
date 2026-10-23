@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Prikaz na zemljevidu food truckov"
+    },
+    "web_dashboard": {
+      "name": "Spletna nadzorna plošča za vse naprave"
+    },
+    "qr_code": {
+      "name": "QR koda"
+    },
+    "schedule_import": {
+      "name": "Samodejni uvoz urnika"
+    },
+    "meal_deals_upsells": {
+      "name": "Meniji in dodatna prodaja"
+    },
+    "walkup_orders": {
+      "name": "Obdelava naročil na mestu"
+    },
+    "sold_out_toggle": {
+      "name": "Takojšnja oznaka „razprodano“"
+    },
+    "kitchen_app": {
+      "name": "Kuhinjska aplikacija za iPhone, iPad in Android"
+    },
+    "offline_protection": {
+      "name": "Zaščita naročil brez povezave"
+    },
+    "online_payments": {
+      "name": "Spletna plačila"
+    },
+    "advance_preordering": {
+      "name": "Prednaročila za prihodnje datume"
+    },
+    "preorder_deadline": {
+      "name": "Rok za prednaročila"
+    },
+    "time_slot_selection": {
+      "name": "Izbira časovnega termina za kupce"
+    },
+    "kitchen_capacity": {
+      "name": "Upravljanje zmogljivosti kuhinje"
+    },
+    "stock_countdown": {
+      "name": "Samodejno odštevanje zaloge"
+    },
+    "auto_accept": {
+      "name": "Samodejno sprejemanje spletnih naročil"
+    },
+    "branded_qr_code": {
+      "name": "QR koda z vašo blagovno znamko"
+    },
+    "private_events": {
+      "name": "Zasebni dogodki"
+    },
+    "social_media_posts": {
+      "name": "Objave za družbena omrežja"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Samodejni odgovori v WhatsAppu"
+    },
+    "messenger_instagram_replies": {
+      "name": "Samodejni odgovori v Messengerju in Instagramu"
+    },
+    "tap_to_pay": {
+      "name": "Plačila s telefonom"
+    },
+    "advanced_reporting": {
+      "name": "Napredna poročila"
+    },
+    "sms_order_alerts": {
+      "name": "Obvestila o naročilih po SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Sinhronizacija kuhinje na več napravah"
+    },
+    "multi_user_access": {
+      "name": "Dostop za več uporabnikov"
+    },
+    "embed_schedule": {
+      "name": "Urnik na vaši spletni strani"
+    },
+    "event_types": {
+      "name": "Tipi dogodkov in cene po meri"
+    },
+    "buzzer_tracking": {
+      "name": "Sledenje pozivnikom"
+    },
+    "ticket_printing": {
+      "name": "Tiskanje kuhinjskih listkov"
+    },
+    "customer_display": {
+      "name": "Zaslon za kupce"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitalne kartice zvestobe z žigi"
+    }
+  },
+  "cardRegionOnline": "standardne {region}",
+  "cardRegion": {
+    "UKcards": "kartice iz Združenega kraljestva",
+    "EEAcards": "kartice iz EGP",
+    "UScards": "kartice iz ZDA",
+    "Australiancards": "kartice iz Avstralije",
+    "NewZealandcards": "kartice iz Nove Zelandije",
+    "Canadiancards": "kartice iz Kanade",
+    "Swisscards": "kartice iz Švice"
+  },
+  "perMonth": {
+    "mo": "{amount}/mes.",
+    "month": "{amount}/mesec"
+  },
+  "priceWord": {
+    "free": "Brezplačno",
+    "freeTrial": "Brezplačni preizkus",
+    "lifetime": "Doživljenjsko",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Plačilo ob prevzemu",
+    "unlimited": "Neomejeno",
+    "none": "—",
+    "masked": "Še ni znano"
+  },
+  "cell": {
+    "included": "Vključeno"
+  }
+}

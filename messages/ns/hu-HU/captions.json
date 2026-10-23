@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "A hét dátumai",
+    "dayList": "Napok listája",
+    "place": "Helyszín",
+    "venue": "Létesítmény",
+    "area": "Település",
+    "dayDate": "Nap és dátum",
+    "times": "Időpontok",
+    "orderLink": "Rendelési link",
+    "locationTag": "Helyszíncímke"
+  },
+  "weekHeader": "{truck} — itt leszünk ezen a héten:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ELMARAD, sajnáljuk",
+  "noDates": "Ezen a héten nincs időpont — nézzen vissza hamarosan.",
+  "orderAhead": "Rendeljen előre: {url}",
+  "orderAheadTagged": "Rendeljen előre: {url} {tag}",
+  "eventLine": "{truck}: {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck}: {where}, {when}.",
+  "cancelledSorry": "Sajnáljuk — nem tudunk ott lenni: {where}, {when}.",
+  "cancelledApology": "Elnézést kérünk mindenkitől, aki jönni készült. Hamarosan újra jövünk.",
+  "when": {
+    "today": "ma",
+    "tonight": "ma este",
+    "tomorrow": "holnap",
+    "dated": "{date}"
+  }
+}

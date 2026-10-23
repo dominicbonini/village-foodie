@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} sisalduvad paketis {plan}.} other {{feature} sisaldub paketis {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} ei ole sinu paketis.} other {{feature} ei ole sinu paketis.}}",
+  "switchedOff": "{many, select, yes {{feature} on sinu toiduauto jaoks välja lülitatud.} other {{feature} on sinu toiduauto jaoks välja lülitatud.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Uuenda paketti →",
+  "features": {
+    "discovery_map": {
+      "name": "Nähtavus avastuskaardil",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Veebitöölaud",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Köögirakendus",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-koodiga menüü",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Komplektid",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Lisamüügi pakkumised",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Tellimused kohapeal",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Veebitellimine tasumisega kättesaamisel",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "„Otsas“-märge",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Laoseisu mahaarvestus",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Tellimuste kaitse levi katkemisel",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Veebimaksed",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Ettetellimine tulevikuks",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Kliendi ajavahemikud",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Köögi võimsuse haldus",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automaatne vastuvõtt",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messengeri ja Instagrami automaatvastused",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Sinu logoga QR-koodid",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Täpsem aruandlus",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Köögilipikute printimine",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Köögi sünkroonimine mitme seadme vahel",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Kokaekraan",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsAppi automaatvastused",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Sinu ajakava sinu enda veebilehel",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Sotsiaalmeedia postitused",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Kohandatud ürituse tüübid",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Eraüritused",
+      "many": "yes"
+    }
+  }
+}

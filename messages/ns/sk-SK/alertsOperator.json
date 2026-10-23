@@ -1,0 +1,28 @@
+{
+  "hi": "Dobrý deň, {name},",
+  "limit80": {
+    "subject": "Využili ste 80 % automatických odpovedí cez WhatsApp na tento mesiac",
+    "used": "Vaše automatické odpovede cez WhatsApp tento mesiac využili <b>{used} z {limit}</b>.",
+    "nothingStopped": "Nič sa nezastavilo. Keď dosiahnete {limit}, automatické odpovede sa pozastavia až do obnovenia limitu (<b>{reset}</b>) — zákazníci vám môžu naďalej písať a stále uvidíte všetko, čo pošlú.",
+    "raise": "Mesačný limit si môžete kedykoľvek zvýšiť v Nastaveniach.",
+    "raiseLink": "Mesačný limit si môžete kedykoľvek zvýšiť v Nastaveniach:",
+    "button": "Otvoriť Nastavenia"
+  },
+  "limit100": {
+    "subject": "Automatické odpovede cez WhatsApp sú na tento mesiac pozastavené",
+    "usedAll": "Vyčerpali ste celý tohtomesačný limit automatických odpovedí cez WhatsApp ({limit}), preto sa pozastavili.",
+    "stillReach": "<b>Zákazníci vám môžu naďalej normálne písať a každá správa sa k vám dostane.</b> Zastavili sa iba automatické odpovede, ktoré od vás odchádzajú.",
+    "startAgain": "Znova sa spustia <b>{reset}</b> alebo hneď, ak si v Nastaveniach zvýšite mesačný limit.",
+    "startAgainLink": "Znova sa spustia {reset} alebo hneď, ak si v Nastaveniach zvýšite mesačný limit:",
+    "button": "Zvýšiť limit"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp potrebuje platobnú metódu, aby mohol posielať správy",
+    "stopped": "WhatsApp zastavil odosielanie vašich automatických odpovedí, pretože vo vašom účte WhatsApp Business nie je funkčná platobná metóda.",
+    "stillMessage": "<b>Zákazníci vám môžu naďalej písať a stále uvidíte všetko, čo pošlú</b> — odpovede sa však k nim nedostanú.",
+    "payDirect": "Za tieto správy platíte priamo spoločnosti WhatsApp, preto sa to rieši v nástroji WhatsApp Manager, nie v aplikácii HatchGrab. Pridajte alebo aktualizujte tam kartu a odpovede sa znova spustia samy.",
+    "payDirectLink": "Za tieto správy platíte priamo spoločnosti WhatsApp, preto sa to rieši v nástroji WhatsApp Manager, nie v aplikácii HatchGrab. Pridajte alebo aktualizujte tam kartu a odpovede sa znova spustia samy:",
+    "button": "Otvoriť WhatsApp Manager",
+    "settings": "Vaše nastavenia HatchGrab: <link>{url}</link>"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "hi": "Pozdravljeni, {name},",
+  "limit80": {
+    "subject": "Porabili ste 80 % samodejnih odgovorov WhatsApp za ta mesec",
+    "used": "Vaši samodejni odgovori WhatsApp so ta mesec porabili <b>{used} od {limit}</b>.",
+    "nothingStopped": "Nič se ni ustavilo. Ko dosežete mejo ({limit}), se samodejni odgovori začasno ustavijo, dokler se vaša mesečna kvota ne ponastavi (<b>{reset}</b>) — stranke vam še vedno lahko pišejo in še vedno boste videli vse, kar pošljejo.",
+    "raise": "Mesečno mejo lahko kadar koli zvišate v razdelku Nastavitve.",
+    "raiseLink": "Mesečno mejo lahko kadar koli zvišate v razdelku Nastavitve:",
+    "button": "Odpri Nastavitve"
+  },
+  "limit100": {
+    "subject": "Vaši samodejni odgovori WhatsApp so za ta mesec začasno ustavljeni",
+    "usedAll": "Porabili ste vse samodejne odgovore WhatsApp za ta mesec ({limit}), zato so začasno ustavljeni.",
+    "stillReach": "<b>Stranke vam še vedno lahko pišejo kot običajno in vsako sporočilo vas še vedno doseže.</b> Ustavilo se je le pošiljanje samodejnih odgovorov.",
+    "startAgain": "Znova bodo začeli delovati ob ponastavitvi kvote (<b>{reset}</b>) ali takoj, če mesečno mejo zvišate v razdelku Nastavitve.",
+    "startAgainLink": "Znova bodo začeli delovati ob ponastavitvi kvote ({reset}) ali takoj, če mesečno mejo zvišate v razdelku Nastavitve:",
+    "button": "Zvišaj mejo"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp za pošiljanje potrebuje način plačila",
+    "stopped": "WhatsApp je ustavil pošiljanje vaših samodejnih odgovorov, ker v vašem računu WhatsApp Business ni delujočega načina plačila.",
+    "stillMessage": "<b>Stranke vam še vedno lahko pišejo in še vedno boste videli vse, kar pošljejo</b> — odgovori pa jih ne dosežejo.",
+    "payDirect": "Ta sporočila plačujete neposredno družbi WhatsApp, zato se to uredi v orodju WhatsApp Manager, ne v aplikaciji HatchGrab. Tam dodajte ali posodobite kartico in odgovori bodo znova začeli delovati sami.",
+    "payDirectLink": "Ta sporočila plačujete neposredno družbi WhatsApp, zato se to uredi v orodju WhatsApp Manager, ne v aplikaciji HatchGrab. Tam dodajte ali posodobite kartico in odgovori bodo znova začeli delovati sami:",
+    "button": "Odpri WhatsApp Manager",
+    "settings": "Vaše nastavitve HatchGrab: <link>{url}</link>"
+  }
+}

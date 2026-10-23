@@ -1,0 +1,36 @@
+{
+  "h1": "Vše pro provoz vašeho prodeje, v každém tarifu.",
+  "lede": "Objednávky, předobjednávky, kapacita kuchyně a kuchyňská obrazovka jsou součástí každého tarifu.{hasUpgrades, select, yes { {plans} přidávají {features} a nižší poplatky.} other {}}",
+  "perMonth": "{price} / měsíc",
+  "group": {
+    "pay": "Co platíte",
+    "run": "Provoz prodeje",
+    "online": "Online objednávky",
+    "marketing": "Marketing a automatizace"
+  },
+  "pay": {
+    "included": "Online objednávky v ceně každý měsíc",
+    "fee": "Poplatek HatchGrab z online objednávek placených kartou*",
+    "walkUp": "Objednávky na místě"
+  },
+  "cell": {
+    "unlimited": "Neomezeně",
+    "free": "Zdarma",
+    "feeAbove": "<b>{fee}</b> nad {included}",
+    "yes": "V ceně",
+    "none": "Není součástí",
+    "comingSoon": "Již brzy"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "sociální sítě",
+    "event_types": "vlastní ceny pro akce"
+  },
+  "meta": {
+    "description": "Všechny funkce HatchGrab ve všech tarifech vedle sebe — {plans}, s poplatky a limity.{months, plural, =0 {} one { Váš první měsíc zahrnuje vše.} few { Vaše první # měsíce zahrnují vše.} other { Vašich prvních # měsíců zahrnuje vše.}}"
+  },
+  "notes": {
+    "whatsapp": "Automatické odpovědi na WhatsAppu vyžadují účet WhatsApp Business. Meta může za některé zprávy účtovat poplatky; odpovědi se generují automaticky.",
+    "printing": "Tisk kuchyňských lístků vyžaduje kompatibilní tiskárnu s Bluetooth nebo kabelovým připojením (není součástí dodávky)."
+  }
+}

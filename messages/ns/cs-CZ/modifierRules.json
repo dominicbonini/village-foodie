@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Povinné} other {Nepovinné}}{limit, select, one { · Vyberte jednu možnost} upTo { · Vyberte nejvýše {max}} other {}}",
+  "operator": "{required, select, yes {Povinné} other {Nepovinné}}{limit, select, one { · Zákazník vybírá jednu možnost} upTo { · Zákazník může vybrat nejvýše {max}} other {}}"
+}

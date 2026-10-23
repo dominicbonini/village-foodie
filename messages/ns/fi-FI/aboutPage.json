@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Tietoa meistä — HatchGrab",
+    "description": "HatchGrabin perusti Dominic Bonini, joka teki Village Foodie -palvelun saadakseen selville, mitkä ruokarekat tulevat hänen kyläänsä. Se on pieni yritys, jota hän pyörittää itse."
+  },
+  "eyebrow": "Tietoa meistä",
+  "title": "Hei, olen Dominic.",
+  "photoAlt": "{name}, HatchGrabin perustaja",
+  "story": {
+    "village": "Asun kylässä. Ruokarekkoja käy kylässä, mutta en koskaan tiennyt, mikä niistä on tulossa tai milloin, ellen kaivanut tietoa Facebookista.",
+    "villageFoodie": "Niinpä tein Village Foodie -palvelun, josta näkee helposti, mitkä ruokarekat ovat tulossa lähikyliin.",
+    "hatchgrab": "Mitä enemmän ruokarekkoja tutkin, sitä vahvemmin ajattelin, että ne ansaitsevat parempia työkaluja: jotain, joka on tehty joka päivä eri paikassa toimivalle yritykselle eikä kiinteän osoitteen ravintolalle. Siksi perustin HatchGrabin.",
+    "small": "Se on pieni yritys, ja pyöritän sitä itse. Kun otat yhteyttä, vastaus tulee minulta, ei tukijonosta."
+  },
+  "signature": "<b>{name}</b> · Perustaja",
+  "company": "{company} · rekisteröity Englannissa ja Walesissa · yritysnumero {number} · rekisteröity osoite: {address}",
+  "contact": "Ota yhteyttä"
+}

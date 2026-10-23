@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Uus tellimus ootab kinnitust",
+    "body": "Tellimus {number} — {truck}"
+  }
+}

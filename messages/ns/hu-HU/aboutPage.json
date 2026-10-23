@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Rólunk — HatchGrab",
+    "description": "A HatchGrabet Dominic Bonini alapította, aki a Village Foodie-t azért hozta létre, hogy megtudja, mely food truckok érkeznek a falujába. Kis cég, amelyet ő maga vezet."
+  },
+  "eyebrow": "Rólunk",
+  "title": "Üdvözlöm! Dominic vagyok.",
+  "photoAlt": "{name}, a HatchGrab alapítója",
+  "story": {
+    "village": "Egy faluban élek. Járnak hozzánk food truckok, de sosem tudtam, melyik jön és mikor, hacsak át nem bogarásztam a Facebookot.",
+    "villageFoodie": "Ezért elkészítettem a Village Foodie-t: egy egyszerű módot arra, hogy lássa, mely food truckok érkeznek a környékbeli falvakba.",
+    "hatchgrab": "Minél több food truckot ismertem meg, annál inkább úgy éreztem, jobb eszközöket érdemelnek: olyat, amelyet egy minden nap máshol álló vállalkozásra terveztek, nem pedig egy állandó címmel rendelkező étteremre. Ezért indítottam el a HatchGrabet.",
+    "small": "Kis cég, és magam vezetem. Ha felveszi velem a kapcsolatot, tőlem kap választ, nem egy ügyfélszolgálati várólistától."
+  },
+  "signature": "<b>{name}</b> · Alapító",
+  "company": "{company} · Angliában és Walesben bejegyzett cég · cégjegyzékszám: {number} · székhely: {address}",
+  "contact": "Kapcsolat"
+}

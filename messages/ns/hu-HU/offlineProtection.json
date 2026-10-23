@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Kiszolgálás közben a vezérlőpultnak vagy a konyhai kijelzőnek bekapcsolva és online kell maradnia.",
+  "explainerBody": "Ha a képernyő kikapcsol, az eszköz elveszíti az internetkapcsolatot, vagy Ön másik weboldalra vált, az offline védelem lép életbe — a választása szerint vagy szünetelteti a rendelést, vagy kikapcsolja az automatikus elfogadást.",
+  "reminder": "⚠️ Kiszolgálás közben tartsa bekapcsolva és online a vezérlőpultot vagy a konyhai kijelzőt, különben az offline védelem léphet életbe.",
+  "enableConfirm": "Offline védelem bekapcsolva.\n\nHogy a rendelések folyamatosan érkezzenek, a képernyőnek bekapcsolva kell maradnia. Ha ez az eszköz elveszíti a kapcsolatot, az offline védelem a választott módban lép életbe.\n\nGyőződjön meg róla, hogy a Képernyő bekapcsolva opció be van kapcsolva ezen az eszközön.",
+  "disableConfirm": "Kikapcsolja az offline védelmet ennél az eseménynél?\n\nHa ez az eszköz elveszíti a kapcsolatot, az online rendelések tovább érkeznek — a vásárlók olyan rendeléseket adhatnak le, amelyeket Ön nem lát. Csak akkor kapcsolja ki, ha megbízható a kapcsolata.",
+  "cardDescription": "Meghatározza, mi történik a beérkező rendelésekkel, ha az eszköze offline lesz.",
+  "purpose": "Ha az eszköze elveszíti a kapcsolatot, ez megakadályozza, hogy rendelések érkezzenek, amíg Ön nem látja őket.",
+  "switchLabel": "Offline rendelésvédelem",
+  "switchHelp": "Mi történik, ha ez a food truck elveszíti a kapcsolatot.",
+  "modes": {
+    "pause": {
+      "label": "Online rendelés szüneteltetése",
+      "help": "A vásárlók nem rendelhetnek, amíg Ön újra online nem lesz."
+    },
+    "no_auto_accept": {
+      "label": "Rendelésfogadás tovább, megerősítés kézzel",
+      "help": "Az automatikus elfogadás kikapcsol, így a vásárlók továbbra is rendelhetnek, de semmi sem erősítődik meg automatikusan. Amikor újra online lesz, mindegyiket Ön erősíti meg — a választott idő elteltével pedig a még várakozó rendeléseket automatikusan elutasítjuk, és erről e-mailben értesítjük a vásárlót."
+    }
+  },
+  "autoRejectLabel": "Elutasítás, ha a rendelés ennél tovább vár",
+  "autoRejectOption": "{n, plural, one {{count} perc} other {{count} perc}}"
+}

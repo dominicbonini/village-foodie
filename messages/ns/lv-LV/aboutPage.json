@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Par mums — HatchGrab",
+    "description": "HatchGrab dibināja Dominiks Bonīni, kurš izveidoja Village Foodie, lai uzzinātu, kuri food truck brauks uz viņa ciematu. Tas ir neliels uzņēmums, un viņš to vada pats."
+  },
+  "eyebrow": "Par mums",
+  "title": "Sveiki, es esmu Dominiks.",
+  "photoAlt": "{name}, HatchGrab dibinātājs",
+  "story": {
+    "village": "Es dzīvoju ciematā. Tajā iebrauc ēdienu busiņi, bet es nekad nezināju, kurš brauks vai kad, ja nepārmeklēju Facebook.",
+    "villageFoodie": "Tāpēc es izveidoju Village Foodie — vienkāršu veidu, kā redzēt, kuri busiņi brauks uz jums tuvējiem ciematiem.",
+    "hatchgrab": "Jo vairāk busiņu es aplūkoju, jo vairāk domāju, ka tie ir pelnījuši labākus rīkus: kaut ko, kas radīts uzņēmumam, kurš katru dienu ir citur, nevis restorānam ar pastāvīgu adresi. Tāpēc es dibināju HatchGrab.",
+    "small": "Tas ir neliels uzņēmums, un es to vadu pats. Ja sazināsieties ar mums, atbildi saņemsiet no manis, nevis no atbalsta rindas."
+  },
+  "signature": "<b>{name}</b> · Dibinātājs",
+  "company": "{company} · reģistrēts Anglijā un Velsā · reģistrācijas numurs {number} · juridiskā adrese: {address}",
+  "contact": "Sazinieties ar mums"
+}

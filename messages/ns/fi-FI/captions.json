@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Viikon päivämäärät",
+    "dayList": "Päivien luettelo",
+    "place": "Paikka",
+    "venue": "Tapahtumapaikka",
+    "area": "Alue",
+    "dayDate": "Päivä ja päivämäärä",
+    "times": "Kellonajat",
+    "orderLink": "Tilauslinkki",
+    "locationTag": "Sijaintitunniste"
+  },
+  "weekHeader": "{truck} — täällä olemme tällä viikolla:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — PERUTTU, pahoittelemme",
+  "noDates": "Ei päivämääriä tällä viikolla — katso pian uudelleen.",
+  "orderAhead": "Tilaa etukäteen: {url}",
+  "orderAheadTagged": "Tilaa etukäteen: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Pahoittelemme — emme pääse paikalle {when}: {where}.",
+  "cancelledApology": "Pahoittelut kaikille, jotka olivat tulossa. Palaamme pian.",
+  "when": {
+    "today": "tänään",
+    "tonight": "tänä iltana",
+    "tomorrow": "huomenna",
+    "dated": "{date}"
+  }
+}

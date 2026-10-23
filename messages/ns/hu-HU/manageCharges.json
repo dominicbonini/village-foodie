@@ -1,0 +1,30 @@
+{
+  "heading": "Adó, borravaló és díjak",
+  "rate": {
+    "label": "Forgalmi adó kulcsa",
+    "hint": "Az a kulcs, amelyet minden rendelésre felszámít. A vásárlók látják hozzáadva a fizetésnél, a nyugtákon és a jegyeken.",
+    "regionDefault": "Ha üresen hagyja, {rate}% lesz a felszámított adó ({label}) — ez a készételekre vonatkozó kulcs itt: {region}."
+  },
+  "included": {
+    "label": "{label} az árakban",
+    "hint": "Az árai már tartalmazzák ezt: {label}. Ez a kulcs csak azt mutatja meg a nyugtákon és a jegyeken, hogy az egyes árakból mennyi az adó ({label}) — a fizetésnél semmi nem adódik hozzá.",
+    "default": "Ha üresen hagyja, {rate}% lesz érvényes: az elvitelre értékesített meleg ételek adókulcsa ({label}, {country})."
+  },
+  "tips": {
+    "label": "Borravaló",
+    "hint": "Az online, kártyával fizető vásárlók borravalót adhatnak. Az egész Önhöz kerül.",
+    "choices": "A vásárlók által látott lehetőségek:",
+    "chip": "{rate}%",
+    "other": "Más összeg"
+  },
+  "fee": {
+    "label": "Online szolgáltatási díj",
+    "hint": "Csak az online rendelésekhez adódik hozzá, a „Fizetés átvételkor” és a helyszíni rendelésekhez soha. Önnél marad.",
+    "pctAria": "Szolgáltatási díj százaléka",
+    "fixedAria": "Szolgáltatási díj fix összege",
+    "max": "Legfeljebb ennyit számolhat fel: {max}",
+    "example": "A vásárlók fizetés előtt egy sorban látják: „{label} {amount}”.",
+    "hatchgrab": "A HatchGrab {fee} szolgáltatási díjat ad hozzá a vásárlói online rendeléseihez. Ezt nem Ön fizeti, és nem módosíthatja."
+  },
+  "saveFailed": "A mentés nem sikerült — kérjük, próbálja újra."
+}

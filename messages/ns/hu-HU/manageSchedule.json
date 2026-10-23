@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Lemondva",
+    "finished": "Befejeződött",
+    "unconfirmed": "Nincs megerősítve",
+    "confirmed": "Megerősítve",
+    "open": "Most nyitva",
+    "closed": "Zárva"
+  },
+  "sections": {
+    "label": "Menetrend részei",
+    "events": "Események",
+    "eventTypes": "Eseménytípusok"
+  },
+  "header": {
+    "title": "Menetrend",
+    "upcoming": "{count} közelgő",
+    "import": "✨ Menetrend importálása",
+    "importHint": "fotó, PDF vagy szöveg",
+    "addEvent": "+ Esemény hozzáadása",
+    "scraperAuto": "Az eseményeket automatikusan keressük a weboldalán",
+    "changeInSettings": "Módosítás a Beállításokban",
+    "scraperManual": "A menetrendjét kézzel kezeli"
+  },
+  "empty": {
+    "title": "Nincs közelgő esemény",
+    "body": "A közösségi médiából és a foglalási naptárából gyűjtött események itt jelennek meg, hogy megerősíthesse őket"
+  },
+  "list": {
+    "openNow": "Most nyitva",
+    "needsApproval": "Jóváhagyásra vár",
+    "needsConfirmation": "Megerősítésre vár",
+    "confirmed": "Megerősítve",
+    "past": "Korábbi események ({count})",
+    "found": "{count, plural, one {# eseményt találtunk Önnek — nézze át és hagyja jóvá, mielőtt élővé válik.} other {# eseményt találtunk Önnek — nézze át és hagyja jóvá őket, mielőtt élővé válnak.}}"
+  },
+  "card": {
+    "addName": "Név hozzáadása",
+    "timeNeeded": "⚠ Időpont szükséges",
+    "setTimeFirst": "Előbb adjon meg időpontot",
+    "confirm": "Megerősítés",
+    "copy": "Másolás",
+    "edit": "Szerkesztés",
+    "makePost": "Bejegyzés készítése",
+    "cancel": "Lemondás",
+    "approve": "Jóváhagyás",
+    "reject": "Elutasítás",
+    "stock": "⚠️ Készlet",
+    "stockHidden": "Rejtve — {reason}",
+    "noDeals": "Nincs aktív menü",
+    "dealsActive": "{count, plural, one {# menü} other {# menü}} aktív · {names}{hidden, plural, =0 {} one { · # rejtett} other { · # rejtett}}",
+    "approveNeedsTimes": "A jóváhagyás addig nem érhető el, amíg az eseménynek nincs kezdési és befejezési ideje — adja meg őket a Szerkesztés gombbal."
+  },
+  "guessed": {
+    "title": "📍 Becsült helyszín",
+    "body": "Több helyszín is egyezett ezzel: <b>{venue}</b>, ezért a legjobban illőt választottuk{hasTown, select, yes {, itt: <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Jóváhagyás előtt ellenőrizze, hogy ez-e a helyes — ha nem, a <b>Szerkesztés</b> gombbal javítsa a környéket vagy a(z) {postal} mezőt, különben a vásárlókat rossz helyre küldjük.",
+    "thisVenue": "ez a helyszín"
+  },
+  "noLocation": {
+    "title": "📍 Még nincs helyszín",
+    "body": "Ezt a helyszínt nem tudtuk elhelyezni a térképen, ezért megjelenik a listában, de térképjelölő nélkül. A térképre helyezéshez töltse ki a(z) {postal} mezőt a <b>Szerkesztés</b> gombbal."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Lehetséges ütközés} other {Lehetséges ütközések}} — nézze át {pending, select, yes {jóváhagyás} other {megerősítés}} előtt",
+    "duplicate": "Ez ugyanannak az eseménynek tűnik, amely már szerepel a menetrendjében.",
+    "review": "Ugyanaz a helyszín és dátum, de más időpont — ez ugyanaz az esemény módosított időponttal, vagy egy külön idősáv? Nézze át jóváhagyás előtt.",
+    "already": "Már szerepel a menetrendjében: <b>{venue}</b>{details} ({status, select, confirmed {megerősítve} open {nyitva} other {{status}}})",
+    "unnamedVenue": "Névtelen helyszín",
+    "ack": "Igen, ezek különböző események — mégis {pending, select, yes {jóváhagyom} other {megerősítem}}",
+    "cancel": "Mégse",
+    "overlap": "Ennek az eseménynek az időpontja átfedésben van egy másik, ugyanazon a napon lévő eseménnyel — egy food truck nem lehet egyszerre két helyen. Jóváhagyás előtt ellenőrizze."
+  },
+  "toast": {
+    "loadFailed": "Nem sikerült betölteni az eseményeket",
+    "linkFailed": "Nem sikerült betölteni a linket",
+    "placeTypeFailed": "Az esemény mentve, de a hely szokásos típusa nem ({place}) — {reason}.",
+    "placeTypeFailedReason": "a mentés nem sikerült",
+    "eventUpdated": "Esemény frissítve",
+    "eventAdded": "Esemény hozzáadva",
+    "eventsSaved": "{count, plural, one {# esemény mentve} other {# esemény mentve}}",
+    "saveEventsFailed": "Nem sikerült menteni az eseményeket",
+    "needsTime": "Jóváhagyás előtt adjon meg kezdési és befejezési időt — az esemény csak időponttal válhat élővé.",
+    "addStartTime": "Adjon meg kezdési időt",
+    "addEndTime": "Adjon meg befejezési időt",
+    "chooseTruckBefore": "Jóváhagyás előtt válassza ki, melyik food truck dolgozik ezen az eseményen.",
+    "chooseTruck": "Válassza ki, melyik food truck dolgozik ezen az eseményen",
+    "eventConfirmed": "Esemény megerősítve",
+    "eventRejected": "Esemény elutasítva",
+    "undo": "↩ Visszavonás",
+    "eventRestored": "Esemény visszaállítva",
+    "restoreFailed": "Nem sikerült visszaállítani",
+    "eventCancelled": "Esemény lemondva",
+    "eventCancelledOrders": "Esemény lemondva · {count, plural, one {# rendelés} other {# rendelés}} törölve",
+    "placeHidden": "Hely elrejtve",
+    "placeShown": "Hely újra látható",
+    "saveThatFailed": "Ezt nem sikerült menteni."
+  },
+  "link": {
+    "label": "Privát link és QR-kód",
+    "close": "Bezárás"
+  }
+}

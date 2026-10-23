@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Încercați înainte de conectare",
+    "intro": "Scrieți o întrebare așa cum ar pune-o un client și vedeți exact ce răspuns ar primi. Nu se trimite nimic nimănui.",
+    "examples": {
+      "where": "Unde sunteți diseară?",
+      "doYouDo": "Aveți pizza pepperoni?",
+      "menu": "Ce aveți în meniu?"
+    },
+    "placeholder": "Ce deserturi aveți?",
+    "send": "Trimiteți",
+    "empty": "Răspunsul va apărea aici",
+    "working": "Se pregătește răspunsul…",
+    "noReply": "Nu s-ar trimite niciun răspuns.",
+    "noReplyWhy": "Mesajul pare spam, o cerere de rezervare sau ceva fără legătură, așa că răspunsul automat nu se trimite.",
+    "footnote": "Răspunsurile sunt generate de AI, variază puțin de fiecare dată și pot fi uneori greșite.",
+    "failed": "Previzualizarea nu a putut fi generată acum.",
+    "unreachable": "Serverul nu a putut fi contactat. Verificați conexiunea și încercați din nou."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Se pregătește…",
+      "unavailable": "Indisponibil",
+      "waiting": "Se așteaptă fereastra Facebook…",
+      "finishing": "Se finalizează…",
+      "reconnect": "Reconectați",
+      "setUp": "Configurați"
+    },
+    "startAgain": "Începeți din nou",
+    "popupHint": "Nu vedeți fereastra Facebook? Este posibil să fi fost blocată. Permiteți ferestrele pop-up pentru hatchgrab.com, apoi apăsați Începeți din nou."
+  },
+  "notice": {
+    "sdkUnavailable": "Configurarea WhatsApp nu este disponibilă în acest mediu.",
+    "sdkBlocked": "Scriptul de autentificare Meta nu s-a putut încărca. Cauza obișnuită este un blocant de reclame sau protecția împotriva urmăririi.",
+    "setupFailed": "Configurarea nu a putut fi finalizată. Nu s-a modificat nimic.",
+    "setupFinished": "Configurare finalizată.",
+    "metaError": "Meta a raportat o problemă în timpul configurării. Nu s-a modificat nimic. Încercați din nou și contactați-ne dacă problema persistă.",
+    "closed": "Configurarea a fost închisă înainte de finalizare. Nu s-a modificat nimic — apăsați Configurați pentru a încerca din nou.",
+    "disconnectedUnreachable": "WhatsApp este deconectat. Nu am putut contacta Meta pentru a elimina accesul. Eliminați HatchGrab din WhatsApp Business → Setări → Cont → Business Platform.",
+    "disconnected": "WhatsApp este deconectat. Răspunsurile automate s-au oprit.",
+    "close": "Închideți"
+  },
+  "card": {
+    "title": "Răspunsuri automate",
+    "description": "Răspundeți automat la întrebările clienților pe rețelele sociale, folosind meniul și programul dumneavoastră.",
+    "channels": "Canale",
+    "requiresAccount": "Necesită un cont WhatsApp Business.",
+    "connected": "Conectat",
+    "popupInstruction": "Se va deschide o fereastră Facebook pentru a vă conecta contul WhatsApp Business. Dacă nu apare nimic, permiteți ferestrele pop-up pentru hatchgrab.com în browser, apoi apăsați din nou Configurați.",
+    "switchedOff": "Răspunsurile automate WhatsApp sunt dezactivate pentru food truck-ul dumneavoastră.",
+    "expiring": "Conexiunea WhatsApp trebuie reînnoită în curând. Apăsați Reconectați pentru ca răspunsurile automate să funcționeze în continuare.",
+    "comingSoon": "În curând",
+    "instagram": "Răspunsuri automate la mesajele directe Instagram. Va necesita un cont Instagram profesional.",
+    "messenger": "Răspunsuri automate pe Facebook Messenger. Va necesita o pagină de Facebook."
+  },
+  "blocked": {
+    "title": "Răspunsurile dumneavoastră nu sunt livrate",
+    "body": "WhatsApp refuză să trimită răspunsurile automate din cauza unei probleme de facturare în contul dumneavoastră WhatsApp Business. Clienții vă pot trimite în continuare mesaje și veți vedea tot ce trimit — dar nu primesc niciun răspuns.",
+    "fix": "Plătiți direct către WhatsApp pentru aceste mesaje, așa că problema se rezolvă în WhatsApp Manager. <link>Verificați metoda de plată</link>"
+  },
+  "limit": {
+    "heading": "Răspunsuri automate",
+    "label": "Limită lunară",
+    "option": "{n, number}",
+    "usage": "{used, number} din {limit, number} folosite · se resetează pe {date}",
+    "perCustomer": "Până la {n} răspunsuri per client în 24 de ore, apoi un mesaj că veți răspunde personal.",
+    "emailAt": "Răspunsurile se suspendă când atingeți limita. Vă trimitem un e-mail la 80% și la 100%.",
+    "saved": "Limita lunară de răspunsuri a fost salvată",
+    "saveFailed": "Limita nu a putut fi salvată"
+  },
+  "billing": {
+    "heading": "Facturare",
+    "paymentMethod": "Metodă de plată",
+    "added": "Metodă de plată adăugată",
+    "missing": "Nicio metodă de plată adăugată",
+    "addInManager": "Adăugați în WhatsApp Manager",
+    "summary": "Meta, nu HatchGrab, facturează contul dumneavoastră WhatsApp pentru răspunsuri. Începând cu {from}, primele {free, number} pe lună sunt gratuite. Informații corecte la {checked}; consultați <link>prețurile Meta</link> pentru eventuale modificări.",
+    "howMetaCharges": "Cum taxează Meta",
+    "chargesTitle": "Meta taxează răspunsurile WhatsApp, nu HatchGrab.",
+    "chargesBody": "Fiecare răspuns pe care HatchGrab îl trimite în numele dumneavoastră este facturat de Meta în contul dumneavoastră WhatsApp Business. Începând cu {from}, Meta include gratuit {free, number} de răspunsuri pe lună pentru fiecare număr; după aceea, fiecare răspuns este taxat la tariful Meta. Răspunsurile pe care le trimiteți personal din aplicația WhatsApp Business nu sunt taxate. Meta stabilește aceste prețuri și le poate modifica. <link>Vedeți prețurile Meta</link>",
+    "addPaymentInManager": "Adăugați o metodă de plată în WhatsApp Manager",
+    "aboveMissing": "Limita dumneavoastră depășește cele {free, number} de răspunsuri gratuite oferite de Meta. Fără o metodă de plată, Meta va opri toate răspunsurile după ce acestea se epuizează.",
+    "aboveGeneral": "Limita dumneavoastră depășește cele {free, number} de răspunsuri gratuite oferite de Meta. Răspunsurile peste acest număr necesită o metodă de plată în contul WhatsApp; fără ea, Meta oprește toate răspunsurile după epuizarea celor gratuite.",
+    "addPaymentMethod": "Adăugați o metodă de plată"
+  },
+  "disconnect": {
+    "link": "Deconectați WhatsApp",
+    "title": "Deconectați WhatsApp?",
+    "body": "Răspunsurile automate se opresc imediat, iar HatchGrab pierde accesul la contul dumneavoastră WhatsApp. Numărul continuă să funcționeze în aplicația WhatsApp Business. Pentru a elimina complet HatchGrab, deschideți și WhatsApp Business → Setări → Cont → Business Platform.",
+    "cancel": "Anulați",
+    "confirm": "Deconectați",
+    "working": "Se deconectează…",
+    "failed": "Deconectarea nu a reușit"
+  },
+  "signup": {
+    "logged": "Înregistrat.",
+    "partial": "Am conectat contul dumneavoastră WhatsApp Business, dar nu am putut finaliza conexiunea. Nu este nicio problemă din partea dumneavoastră — contactați-ne și o vom finaliza noi.",
+    "noNumber": "Contul WhatsApp Business este conectat, dar nu a fost returnat niciun număr de telefon. Apăsați Reconectați și finalizați pasul pentru număr.",
+    "needsRegistering": "Contul este conectat, dar acest număr trebuie înregistrat de noi înainte ca răspunsurile să poată începe. Contactați asistența — configurarea este salvată, nu o rulați din nou.",
+    "registerRefused": "Contul este conectat, dar Meta nu a înregistrat numărul. Configurarea este salvată — contactați asistența în loc să o rulați din nou.",
+    "deliveryRefused": "Contul este conectat, dar Meta nu a activat livrarea mesajelor. Configurarea este salvată — contactați asistența în loc să o rulați din nou.",
+    "numberTaken": "Acest număr WhatsApp este deja conectat la un alt cont HatchGrab. Un număr poate răspunde doar pentru un singur food truck. Contactați asistența și îl vom muta.",
+    "saveIncomplete": "Aproape gata — nu am putut finaliza salvarea. Configurarea este salvată; contactați asistența în loc să o rulați din nou.",
+    "connected": "WhatsApp este conectat. Răspunsurile automate vor începe să răspundă la mesajele trimise către acest număr."
+  }
+}

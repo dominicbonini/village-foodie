@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Food truck",
+  "eventsFeed": {
+    "today": "Dziś · {date}",
+    "tomorrow": "Jutro · {date}"
+  },
+  "privacyNotSaved": "Wydarzenie jest opublikowane, ale nie udało się zapisać jego ustawień prywatności.",
+  "stockWarning": "Brak dostępnych pozycji w kategorii „{category}”",
+  "uncategorised": "Bez kategorii"
+}

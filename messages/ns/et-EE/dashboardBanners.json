@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} ajavahemik} other {{count} ajavahemikku}} üle võimsuse — vaata üle",
+  "batchOver": "{cat} üle partii — {count} ajaks {slot} ({per} partii kohta)",
+  "eventStartOver": "Ürituse alguses üle võimsuse — {n, plural, one {{count} toode} other {{count} toodet}} ajaks {slot}",
+  "kitchenOver": "Köök üle võimsuse — {n, plural, one {{count} toode} other {{count} toodet}} valmib ajaks {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} toode} other {{count} toodet}}",
+  "placedAnyway": "Siiski esitatud: {list}",
+  "placedItem": "#{id} ajaks {slot}",
+  "orphans": "{times} üle võimsuse — ei leitud ühtegi tellimust, millega seda seostada",
+  "dismiss": "Sulge",
+  "kitchenCapacity": "Köögi võimsus",
+  "overCapacity": "Üle võimsuse",
+  "wakeUnsupported": "See seade ei suuda ekraani sees hoida.",
+  "wakeInsecure": "Sellelt aadressilt ei saa ekraani sees hoida.",
+  "wakeRetry": "Hoia ekraan sees — puuduta, et uuesti proovida",
+  "wakeAcquire": "Hoia ekraan sees",
+  "degraded": {
+    "serverError": "Server ei suutnud tellimusi laadida{hasStatus, select, yes { (viga {status})} other {}}. Näitan tellimusi seisuga {at}. Uued tellimused võivad puududa.",
+    "unreachable": "Serveriga ei saa ühendust. Näitan tellimusi seisuga {at}. Uued tellimused võivad puududa."
+  }
+}

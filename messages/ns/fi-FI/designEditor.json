@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Viikon otsikko",
+    "weekHeadingSample": "Viikko alkaen …",
+    "daysSample": "{first}–{last}",
+    "date": "Päivämäärä",
+    "place": "Paikka",
+    "venue": "Tapahtumapaikka",
+    "area": "Alue",
+    "time": "Aika",
+    "rows": "Rivit",
+    "rowsSample": "{px} px välein · {first}–{last}",
+    "ownText": "Oma teksti",
+    "noteTokenSample": "Viesti, jonka kirjoitat julkaisua tehdessäsi",
+    "nothingYet": "Ei vielä mitään",
+    "thisBox": "tämä ruutu"
+  },
+  "sample": {
+    "venue": "Ravintola Torikulma",
+    "area": "Tampere"
+  },
+  "bar": {
+    "previewWith": "Esikatsele:",
+    "undo": "Kumoa",
+    "undoTitle": "Kumoa (⌘Z)",
+    "redo": "Tee uudelleen",
+    "redoTitle": "Tee uudelleen (⇧⌘Z)",
+    "cancel": "Peruuta",
+    "saving": "Tallennetaan…",
+    "save": "Tallenna pohja"
+  },
+  "grid": {
+    "eachRow": "Jokainen rivi",
+    "placeOff": "Paikan nimi on kuvassasi — HatchGrab ei lisää sitä."
+  },
+  "background": {
+    "uploading": "Ladataan…",
+    "replace": "Vaihda kuva",
+    "shape": {
+      "square": "Neliö (1:1)",
+      "portrait45": "Pysty (4:5)",
+      "portrait916": "Pysty (9:16)",
+      "landscape169": "Vaaka (16:9)",
+      "portrait": "Pysty",
+      "landscape": "Vaaka"
+    }
+  },
+  "scope": {
+    "title": "Tekstien sijainnit",
+    "standard": "Samat sijainnit kuin vakiopohjassa",
+    "own": "Omat sijainnit: {place}",
+    "locked": "Nämä sijainnit tulevat vakiopohjastasi. Valitse ”Omat sijainnit: {place}”, niin voit siirtää niitä vain täällä."
+  },
+  "stage": {
+    "hint": "Siirrä ruutua vetämällä · muuta kokoa vetämällä kulmasta",
+    "zoomOut": "Loitonna",
+    "zoomIn": "Lähennä"
+  },
+  "rows": {
+    "spacing": "Välistys",
+    "daysRun": "Päivät: {first}–{last}. Rivin 1 kolme ruutua kopioidaan alaspäin tällä välillä.",
+    "whichEvents": "Mitkä tapahtumat",
+    "showCancelled": "Näytä perutut tapahtumat",
+    "showCancelledHint": "Perutun tapahtuman paikka näkyy yliviivattuna ja sen kohdalla sana PERUTTU. Kun tämä on pois päältä, päivä näkyy vapaapäivänä."
+  },
+  "days": {
+    "reorder": "Järjestä",
+    "move": "siirrä"
+  },
+  "picture": {
+    "picture": "Kuva",
+    "fill": "Täytä ruutu",
+    "fit": "Sovita sisään",
+    "corners": "Kulmat",
+    "square": "Suorat",
+    "rounded": "Pyöristetyt",
+    "ifMissing": "Jos paikalla ei ole kuvaa",
+    "noPicture": {
+      "omit": "Jätä pois",
+      "blank": "Jätä tyhjä tila",
+      "logo": "Näytä logosi"
+    },
+    "border": "Reunus",
+    "drawBorder": "Piirrä reunus",
+    "drawBorderHint": "Viiva kuvan ympärillä omalla värilläsi.",
+    "borderWidth": "Reunuksen leveys",
+    "cornerRadius": "Kulmien pyöristys",
+    "locationPictures": "Paikkojen kuvat",
+    "addLocationPictures": "+ Lisää paikkojen kuvia",
+    "allHaveImage": "{total, plural, =0 {Sinulla ei ole vielä paikkoja.} one {Paikallasi on kuva.} other {Kaikilla # paikallasi on kuva.}}",
+    "someWithout": "{total, plural, one {# paikastasi} other {# paikastasi}} {without} {without, plural, one {on vielä ilman kuvaa} other {on vielä ilman kuvaa}}"
+  },
+  "settings": {
+    "font": "Fontti",
+    "colour": "Väri",
+    "textColour": "Tekstin väri",
+    "ownStyleNote": "{count, plural, one {{names}: oma tyyli, joten sitä ei muuteta.} other {{names}: omat tyylit, joten niitä ei muuteta.}}",
+    "matchAgain": "Palauta yhteinen tyyli",
+    "matchName": "Sama kuin: {name}",
+    "lastToggle": "{kind, select, weekly {Pidä joko Paikka tai Aika päällä. Perutun tapahtuman paikka näkyy yliviivattuna ja sen kohdalla sana PERUTTU, joten jos molemmat ovat pois päältä, mikään ei kertoisi peruutuksesta.} other {Pidä joko Tapahtumapaikka tai Aika päällä. Perutun tapahtuman paikka näkyy yliviivattuna ja sen kohdalla sana PERUTTU, joten jos molemmat ovat pois päältä, mikään ei kertoisi peruutuksesta.}}"
+  },
+  "letters": {
+    "boldGlyph": "L",
+    "italicGlyph": "K",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — tässä fontissa on aito kursiivi"
+  },
+  "align": {
+    "left": "Vasen",
+    "centre": "Keskelle",
+    "right": "Oikea"
+  },
+  "effects": {
+    "outlineColour": "Ääriviivan väri",
+    "bandColour": "Nauhan väri",
+    "bandDaysOff": "Nauha vapaapäivinä",
+    "bandCancelled": "Nauha, kun tapahtuma on peruttu",
+    "bandDaysOffHint": "Käytetään yllä olevan nauhan sijaan päivinä, joina ei myydä.",
+    "bandCancelledHint": "Käytetään yllä olevan nauhan sijaan, kun tapahtuma on peruttu."
+  },
+  "more": {
+    "dayOwnLine": "Päivä omalla rivillään",
+    "dayOwnLineHint": "Viikonpäivä päivämäärän yläpuolella. Koskee vain päivämäärää.",
+    "noEventDay": "Päivänä, jona ei ole tapahtumaa",
+    "wordsBeforePlaceholder": "esim. Löydät meidät",
+    "neverHyphenate": "Yksi pitkä sana ilman välilyöntiä pienennetään aina — emme koskaan tavuta paikan nimeä."
+  },
+  "bits": {
+    "less": "Vähemmän",
+    "more": "Enemmän",
+    "chooseColourFor": "{label} — valitse mikä tahansa väri",
+    "chooseColour": "Valitse mikä tahansa väri"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Hét címsora",
+    "weekHeadingSample": "A hét kezdete: …",
+    "daysSample": "{first}–{last}",
+    "date": "Dátum",
+    "place": "Helyszín",
+    "venue": "Helyszín",
+    "area": "Település",
+    "time": "Időpont",
+    "rows": "Sorok",
+    "rowsSample": "{px} px távolság · {first}–{last}",
+    "ownText": "Saját szöveg",
+    "noteTokenSample": "A bejegyzés készítésekor beírt megjegyzés",
+    "nothingYet": "Még semmi",
+    "thisBox": "ez a doboz"
+  },
+  "sample": {
+    "venue": "Korona Vendéglő",
+    "area": "Szeged"
+  },
+  "bar": {
+    "previewWith": "Előnézet ezzel:",
+    "undo": "Visszavonás",
+    "undoTitle": "Visszavonás (⌘Z)",
+    "redo": "Mégis",
+    "redoTitle": "Mégis (⇧⌘Z)",
+    "cancel": "Mégse",
+    "saving": "Mentés…",
+    "save": "Dizájn mentése"
+  },
+  "grid": {
+    "eachRow": "Minden sor",
+    "placeOff": "A helyszín neve szerepel a képen — a HatchGrab nem teszi hozzá."
+  },
+  "background": {
+    "uploading": "Feltöltés…",
+    "replace": "Kép cseréje",
+    "shape": {
+      "square": "Négyzet (1:1)",
+      "portrait45": "Álló (4:5)",
+      "portrait916": "Álló (9:16)",
+      "landscape169": "Fekvő (16:9)",
+      "portrait": "Álló",
+      "landscape": "Fekvő"
+    }
+  },
+  "scope": {
+    "title": "Szövegpozíciók",
+    "standard": "Ugyanazok a pozíciók, mint az alapdizájnban",
+    "own": "Saját pozíciók: {place}",
+    "locked": "Ezek a pozíciók az alapdizájnból származnak. Válassza a „Saját pozíciók: {place}” lehetőséget, hogy csak itt helyezze át őket."
+  },
+  "stage": {
+    "hint": "Áthelyezéshez húzza a dobozt · átméretezéshez húzza a sarkát",
+    "zoomOut": "Kicsinyítés",
+    "zoomIn": "Nagyítás"
+  },
+  "rows": {
+    "spacing": "Térköz",
+    "daysRun": "A napok: {first}–{last}. Az 1. sor három dobozát ekkora távolsággal másoljuk lefelé.",
+    "whichEvents": "Mely események",
+    "showCancelled": "Lemondott események mutatása",
+    "showCancelledHint": "A lemondott eseménynél áthúzva látszik a helyszín, mellette a LEMONDVA szó. Kikapcsolva a nap szünnapként jelenik meg."
+  },
+  "days": {
+    "reorder": "Átrendezés",
+    "move": "áthelyezés"
+  },
+  "picture": {
+    "picture": "Kép",
+    "fill": "Doboz kitöltése",
+    "fit": "Beillesztés",
+    "corners": "Sarkok",
+    "square": "Szögletes",
+    "rounded": "Lekerekített",
+    "ifMissing": "Ha egy helyszínnek nincs képe",
+    "noPicture": {
+      "omit": "Kihagyás",
+      "blank": "Üres hely",
+      "logo": "Logó megjelenítése"
+    },
+    "border": "Keret",
+    "drawBorder": "Keret rajzolása",
+    "drawBorderHint": "Vonal a kép körül, az Ön által választott színnel.",
+    "borderWidth": "Keret vastagsága",
+    "cornerRadius": "Sarkok kerekítése",
+    "locationPictures": "Helyszínképek",
+    "addLocationPictures": "+ Helyszínképek hozzáadása",
+    "allHaveImage": "{total, plural, =0 {Még nincs egy helyszíne sem.} one {A helyszínének van képe.} other {Mind a # helyszínének van képe.}}",
+    "someWithout": "{total, plural, one {# helyszínéből} other {# helyszínéből}} {without} {without, plural, one {még nem rendelkezik képpel} other {még nem rendelkezik képpel}}"
+  },
+  "settings": {
+    "font": "Betűtípus",
+    "colour": "Szín",
+    "textColour": "Szövegszín",
+    "ownStyleNote": "{count, plural, one {{names}: saját stílusa van, ezért nem változik.} other {{names}: saját stílusuk van, ezért nem változnak.}}",
+    "matchAgain": "Igazítás újra",
+    "matchName": "Igazítás ehhez: {name}",
+    "lastToggle": "{kind, select, weekly {A Helyszín vagy az Időpont közül legalább az egyik maradjon bekapcsolva. A lemondott eseménynél áthúzva látszik a helyszín, mellette a LEMONDVA szó, így ha mindkettő ki van kapcsolva, semmi sem jelezné, hogy az esemény elmaradt.} other {A Helyszín vagy az Időpont közül legalább az egyik maradjon bekapcsolva. A lemondott eseménynél áthúzva látszik a helyszín, mellette a LEMONDVA szó, így ha mindkettő ki van kapcsolva, semmi sem jelezné, hogy az esemény elmaradt.}}"
+  },
+  "letters": {
+    "boldGlyph": "F",
+    "italicGlyph": "D",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — ennek a betűtípusnak valódi dőlt változata van"
+  },
+  "align": {
+    "left": "Balra",
+    "centre": "Középre",
+    "right": "Jobbra"
+  },
+  "effects": {
+    "outlineColour": "Körvonal színe",
+    "bandColour": "Sáv színe",
+    "bandDaysOff": "Sáv a szünnapokon",
+    "bandCancelled": "Sáv, ha az esemény elmarad",
+    "bandDaysOffHint": "A fenti sáv helyett ezt használjuk azokon a napokon, amikor nem árusít.",
+    "bandCancelledHint": "A fenti sáv helyett ezt használjuk, ha az esemény elmarad."
+  },
+  "more": {
+    "dayOwnLine": "Nap külön sorban",
+    "dayOwnLineHint": "A hét napja a dátum fölött. Csak dátumnál.",
+    "noEventDay": "Esemény nélküli napon",
+    "wordsBeforePlaceholder": "pl. Itt talál minket",
+    "neverHyphenate": "A szóköz nélküli hosszú szót mindig kicsinyítjük — helyszínnevet sosem választunk el kötőjellel."
+  },
+  "bits": {
+    "less": "Kevesebb",
+    "more": "Több",
+    "chooseColourFor": "{label} — tetszőleges szín választása",
+    "chooseColour": "Tetszőleges szín választása"
+  }
+}

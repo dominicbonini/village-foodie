@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Objednávkový systém pre food trucky a mobilné občerstvenie",
+    "description": "Objednávky, predobjednávky a kuchynská obrazovka pre food trucky a mobilné občerstvenie ({country}).",
+    "audience": "Prevádzkovatelia food truckov a mobilného občerstvenia"
+  },
+  "hero": {
+    "title": "Objednávkový systém vytvorený pre <lean>food trucky.</lean>",
+    "subSmall": "Nahrajte svoj jedálny lístok, bez registrácie.<br></br>Funkčnú ukážku uvidíte za menej ako 60 sekúnd.",
+    "tagline": "Menej papierovania.<br></br>Viac času na <lean>varenie.</lean>",
+    "cta": "Nahrať jedálny lístok →",
+    "ctaNote": "<lead>Nahrajte fotku svojho jedálneho lístka a za menej ako 60 sekúnd uvidíte, ako funguje.</lead><small>Bez registrácie. Bez platobnej karty.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Kuchynská obrazovka HatchGrab s objednávkami v poradí, v akom sa majú pripraviť",
+    "dashboardAlt": "Prijímanie objednávky v HatchGrab: jedálny lístok vľavo, priebežný košík a súčet vpravo",
+    "phoneAlt": "Objednávanie z food trucku cez HatchGrab: jedálny lístok s fotkami a cenami a priebežný súčet košíka"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Prvý mesiac úplne zadarmo, všetko odomknuté} few {Prvé # mesiace úplne zadarmo, všetko odomknuté} other {Prvých # mesiacov úplne zadarmo, všetko odomknuté}}",
+    "noCard": "Netreba platobnú kartu",
+    "cancel": "Bez zmluvy, zrušíte kedykoľvek"
+  },
+  "does": {
+    "eyebrow": "Čo to dokáže",
+    "title": "Vytvorené pre food trucky, nie pre reštaurácie.",
+    "lede": "Väčšina objednávkových systémov počíta s pevnou adresou, spoľahlivou wifi a rovnakými hodinami každý týždeň. Vy ste každý týždeň inde, v iných časoch, so slabým alebo žiadnym mobilným signálom. HatchGrab vznikol presne pre to.",
+    "slotsTitle": "Zákazníci si vyberajú čas vyzdvihnutia",
+    "capacityTitle": "Nastavte kapacitu kuchyne",
+    "capacityBody": "Nastavte, koľko dokážete pripraviť naraz a ako dlho to trvá. Keď je čas vyzdvihnutia plný, zákazníci si ho už nemôžu vybrať.",
+    "devicesTitle": "Funguje na každom zariadení",
+    "devicesBody": "Na telefóne vo vrecku zástery, na tablete na pulte, na notebooku vo food trucku — aj na platobnom termináli, na ktorom už prijímate platby.",
+    "postsTitle": "Automatizujte príspevky na Facebook a Instagram",
+    "postsBody": "Nahrajte dizajn, ktorý už zverejňujete na Facebooku alebo Instagrame. Doplníme doň vaše termíny, miesta a časy, pripravené na zdieľanie — každý týždeň alebo každý deň.",
+    "whatsappTitle": "Automatické odpovede pre WhatsApp",
+    "whatsappBody": "„Kde ste dnes večer?“ „Aké máte dezerty?“ Na správy cez WhatsApp sa odpovedá, kým šoférujete na stanovište alebo stojíte pri grile — podľa vášho vlastného jedálneho lístka a harmonogramu. Messenger a Instagram už čoskoro.",
+    "whatsappSoonTitle": "Automatické odpovede pre WhatsApp <soon>Už čoskoro</soon>",
+    "whatsappSoonBody": "„Kde ste dnes večer?“ „Aké máte dezerty?“ Čoskoro sa na správy cez WhatsApp bude odpovedať, kým šoférujete na stanovište alebo stojíte pri grile. Messenger a Instagram budú nasledovať.",
+    "offlineTitle": "Bez signálu? Predávajte ďalej.",
+    "offlineBody": "Ak stratíte signál, online objednávanie sa automaticky pozastaví, aby zákazníci nemohli zadávať objednávky, ktoré by ste nevideli. Objednávky prijímajte ďalej v aplikácii pre iPhone, iPad a Android.",
+    "slotsBody": "Zákazníci si objednajú vopred a vyberú si čas vyzdvihnutia. Kratšie rady a jedlo hotové, keď prídu."
+  },
+  "steps": {
+    "eyebrow": "Ako začať",
+    "title": "Nastavte všetko a začnite prijímať objednávky približne za 15 minút.",
+    "lede": "Tri veci na vybavenie — a na dve z nich stačí fotka.",
+    "menuTitle": "Vytvorte si jedálny lístok",
+    "menuBody": "Odfoťte svoju tabuľu alebo jedálny lístok vložte ako text. Položky, ceny aj doplnky sa prenesú samy. Vy len skontrolujete, či sedia.",
+    "scheduleTitle": "Pridajte harmonogram",
+    "scheduleBody": "Máte ho na webovej stránke? Načítame ho odtiaľ a budeme ho udržiavať aktuálny. Ak nie, odfoťte aj ten. Vy len schválite, čo sa nájde.",
+    "shareTitle": "Zdieľajte svoj odkaz",
+    "shareBody": "Zverejnite ho na Facebooku, QR kód nalepte na food truck. Objednávky vám pristanú na obrazovke v poradí, v akom ich treba pripraviť."
+  },
+  "testimonial": {
+    "quote": "HatchGrab nám objednávanie nesmierne uľahčil. Všetko je zorganizované, sledujeme zásoby a presne vieme, koľko píz nám ešte zostáva na predaj — a časové okná sú skvelé pre rušné dediny.",
+    "award": "Mobilná pizzeria roka",
+    "awardScope": "Regionálny víťaz",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia a Bogdan — majitelia"
+  },
+  "pricing": {
+    "eyebrow": "Ceny",
+    "title": "Začnite zadarmo. Na vyšší plán prejdite, keď to budete potrebovať.",
+    "switchHead": "Prechádzate z inej platformy?",
+    "switchBody": "Pozrite sa, koľko by ste za rovnaké objednávky platili v HatchGrab. Trvá to asi minútu.",
+    "switchCta": "Porovnajte, koľko platíte"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Chcete vidieť, aké jednoduché je nastavenie?",
+    "lede": "Nahrajte fotku alebo snímku obrazovky svojho jedálneho lístka a za menej ako 60 sekúnd z neho urobíme funkčnú objednávkovú stránku, ktorú si môžete vyskúšať. Vaše položky, vaše ceny. Bez registrácie, bez platobnej karty, nič netreba inštalovať. Pozrite sa a potom sa rozhodnite.",
+    "cta": "Nahrať jedálny lístok teraz →"
+  },
+  "meta": {
+    "title": "Objednávkový systém pre food trucky a mobilné občerstvenie — HatchGrab {country}",
+    "description": "Prijímajte objednávky a predobjednávky na stanovišti bez radu. Softvér na objednávky a kuchynskú obrazovku pre food trucky a mobilné občerstvenie ({country}) — nie pokladničný systém."
+  }
+}

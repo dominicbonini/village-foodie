@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Przez pierwszy miesiąc korzystasz całkowicie za darmo — ze wszystkich funkcji.} few {Przez pierwsze # miesiące korzystasz całkowicie za darmo — ze wszystkich funkcji.} many {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.} other {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.}}",
+    "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
+  },
+  "card": {
+    "perTruckMonth": "za food truck / miesiąc",
+    "mostTrucks": "Najczęściej wybierany",
+    "tryFree": "Wypróbuj za darmo",
+    "seeEvery": "Zobacz wszystkie funkcje →",
+    "everything": "Wszystko, czego potrzebujesz do obsługi",
+    "everythingIn": "Wszystko z planu {plan}, a do tego"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> tylko od zamówień online opłaconych kartą. Zamówienia na miejscu są zawsze bez opłat.",
+    "included": "Zamówienia online do kwoty <b>{included}</b> miesięcznie w cenie, powyżej — <b>{fee}*</b>. Zamówienia na miejscu są zawsze bez opłat.",
+    "noFee": "<b>Bez prowizji HatchGrab</b> od zamówień online, niezależnie od tego, ile masz ruchu. Jeden przewidywalny koszt miesięczny."
+  },
+  "base": {
+    "walkUp": "Zamówienia na miejscu i ekran kuchenny",
+    "online": "Zamówienia online",
+    "preorders": "Zamówienia z wyprzedzeniem i godziny odbioru",
+    "capacity": "Zarządzanie wydajnością kuchni",
+    "privateEvents": "Wydarzenia prywatne",
+    "printing": "Drukowanie bonów kuchennych",
+    "app": "Aplikacja kuchenna na iPhone, iPad i Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatyczne odpowiedzi WhatsApp",
+    "schedule_graphics": "Posty w mediach społecznościowych — twój harmonogram na Facebooka i Instagram — gotowe do publikacji",
+    "event_types": "Własne typy wydarzeń i ceny"
+  },
+  "money": {
+    "unlimitedOrders": "Nielimitowane zamówienia online, 0% prowizji HatchGrab",
+    "samePrice": "Ta sama cena w najbardziej ruchliwym miesiącu"
+  },
+  "comingSoon": "Wkrótce",
+  "bar": {
+    "title": "Który plan jest dla mnie najtańszy?",
+    "subtitle": "Twoje zamówienia online w miesiącu",
+    "first": "Poniżej {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Powyżej {from} → <b>{plan}</b>",
+    "only": "Dowolny poziom → <b>{plan}</b>"
+  },
+  "footnote": "* Do tego opłata Stripe za obsługę kart przy zamówieniach online opłaconych kartą (obecna stawka, {country}: {cardFee}), płacona firmie Stripe, nie HatchGrab. Zamówienia na miejscu obsługujesz własnym terminalem płatniczym — HatchGrab pobiera 0%.",
+  "currencyLine": "Ceny w walucie: {currency} ({code})"
+}

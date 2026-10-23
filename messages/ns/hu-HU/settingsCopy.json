@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "A vásárlók lemondhatják a rendelést",
+    "sentence": "A vásárlók legkésőbb ennyivel az átvételi idő előtt mondhatják le a rendelést: <select></select>"
+  },
+  "autoAccept": {
+    "label": "Rendelések automatikus elfogadása",
+    "help": "A rendelések automatikusan megerősítődnek. Ha a kért idősáv megtelt, a rendelés a következő szabad idősávba kerül. Csak akkor erősít meg, ha van kapacitás. A vásárlói megjegyzést tartalmazó rendeléseket (pl. allergia) továbbra is Önnek kell megerősítenie."
+  },
+  "orderReady": {
+    "label": "Elkészült lépés",
+    "help": "„Kész” gomb megjelenítése a rendelések képernyőn. A konyhai kijelzők beállítása külön, eszközönként történik. A vásárlók e-mailt kapnak, amikor a rendelésüket késznek jelölik. Minden eseményre vonatkozik — egy-egy eseménynél a vezérlőpultján továbbra is be- vagy kikapcsolhatja."
+  },
+  "buzzers": {
+    "label": "Ad csipogót a vásárlóknak az átvételhez?",
+    "help": "Rögzítse, melyik csipogót melyik vásárlónak adta, így tudni fogja, kit keressen, amikor elkészül az étele.",
+    "countLabel": "Hány csipogója van?"
+  }
+}

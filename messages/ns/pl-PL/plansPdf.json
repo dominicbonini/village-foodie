@@ -1,0 +1,9 @@
+{
+  "title": "Plany i funkcje",
+  "generated": "Wygenerowano {date}",
+  "allowanceHeading": "Limit zamówień online",
+  "smallPrint": "Drobny druk",
+  "priceNoteMasked": "Ceny oznaczone jako „do potwierdzenia” nie zostały jeszcze opublikowane.",
+  "omitNote": "Ceny celowo nie zostały ujęte w tym dokumencie.",
+  "terms": "Dane to opublikowane warunki planów na powyższy dzień i mogą się zmienić. Opłaty za obsługę płatności kartą pobiera Stripe, nie HatchGrab. Ten dokument jest podsumowaniem, a nie umową."
+}

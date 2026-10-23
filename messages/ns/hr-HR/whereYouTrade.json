@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Gdje je sjedište vašeg food trucka?",
+  "stepIntro": "Ovime se postavljaju valuta, cijene, vremenska zona i format telefonskog broja. Zemlju poslije nije moguće promijeniti jer je povezana s vašim kartičnim plaćanjima.",
+  "settingsHeading": "Gdje prodajete",
+  "countryLabel": "Zemlja",
+  "countryGuessed": "Pretpostavili smo prema vašoj lokaciji. Promijenite ako nije točno.",
+  "countryLocked": "Vašu zemlju nije moguće promijeniti",
+  "townLabel": "Grad ili mjesto",
+  "townQuestion": "Grad ili mjesto u kojem vam je sjedište",
+  "timezoneLabel": "Vremenska zona",
+  "continueButton": "Nastavi",
+  "saveFailed": "Spremanje postavki nije uspjelo — pokušajte ponovno."
+}

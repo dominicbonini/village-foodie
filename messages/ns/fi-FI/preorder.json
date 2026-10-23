@@ -1,0 +1,6 @@
+{
+  "closedPending": "Ennakkotilaukset suljettu. Keittiö hyväksyy.",
+  "deadline": "Tilaa etukäteen viimeistään klo {time}",
+  "deadlineOnDay": "Tilaa etukäteen viimeistään klo {time}, {day}",
+  "opens": "Ennakkotilaus aukeaa: {day}"
+}

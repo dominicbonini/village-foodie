@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Sijaintisi",
+    "identity": "Ruokarekkasi",
+    "menu": "Ruokalistasi",
+    "event": "Ensimmäinen tapahtuma"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Käyttöönotto",
+  "loading": "Ladataan",
+  "loadingCountries": "Ladataan…",
+  "verify": {
+    "ok": "Sähköposti vahvistettu — kiitos.",
+    "expired": "Vahvistuslinkki on vanhentunut. Ota yhteyttä, niin hoidamme asian ennen kuin julkaiset.",
+    "invalid": "Vahvistuslinkki ei toiminut. Ota yhteyttä, niin hoidamme asian ennen kuin julkaiset."
+  },
+  "identity": {
+    "heading": "Mikä ruokarekkasi nimi on?",
+    "intro": "Tämä on nimi, jonka asiakkaat näkevät. Mikään ei näy julkisesti ennen kuin päätät julkaista.",
+    "nameLabel": "Ruokarekan nimi",
+    "namePlaceholder": "Bobin Burgerit",
+    "phoneLabel": "Puhelin",
+    "whatsappTick": "Tämä numero on WhatsAppissa",
+    "phoneHelp": "Asiakkaat näkevät tämän tilausvahvistuksessaan, jotta he voivat kysyä tilauksesta. Valintamerkki ratkaisee, lukeeko siinä ”Soita meille” vai ”Lähetä WhatsApp-viesti”. Voit muuttaa kumpaakin kohdassa Asetukset."
+  },
+  "phoneRequired": "Lisää puhelinnumero — sekä asiakkaat että me tavoitamme sinut sen kautta.",
+  "createFailed": "Ruokarekan luominen epäonnistui.",
+  "unreachable": "Emme saaneet juuri nyt yhteyttä — yritä uudelleen.",
+  "back": "Takaisin",
+  "creating": "Luodaan ruokarekkaasi…",
+  "continue": "Jatka"
+}

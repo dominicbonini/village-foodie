@@ -1,0 +1,69 @@
+{
+  "close": "Aizvērt",
+  "cancel": "Atcelt",
+  "selectReason": "Izvēlieties iemeslu",
+  "reject": {
+    "title": "Noraidīt pasūtījumu #{orderId}?",
+    "reasonLabel": "Iemesls — obligāts (redzams klientam)",
+    "reason": "{reason, select, sold_out {Kāda pozīcija ir izpārdota} too_busy {Pārāk daudz darba — nepaspēsim laikā} closing_soon {Drīz slēdzam} other {Cits}}",
+    "noteRequired": "Iemesls — obligāts",
+    "noteOptional": "Papildu piezīme — neobligāta",
+    "notePlaceholder": "Pievienojiet klientam sīkāku informāciju…",
+    "keep": "Paturēt pasūtījumu",
+    "confirm": "Noraidīt pasūtījumu"
+  },
+  "eventCancel": {
+    "title": "Atcelt šo pasākumu?",
+    "affected": "{n, plural, zero {{count} pasūtījumi tiks atcelti, un klienti saņems paziņojumu.} one {{count} pasūtījums tiks atcelts, un klienti saņems paziņojumu.} other {{count} pasūtījumi tiks atcelti, un klienti saņems paziņojumu.}}",
+    "reasonLabel": "Iemesls — neobligāts",
+    "reason": "{reason, select, vehicle_breakdown {Transportlīdzekļa bojājums} weather {Laikapstākļi} venue_issue {Problēma ar norises vietu} personal_emergency {Personisks ārkārtas gadījums} other {Cits}}",
+    "messageLabel": "Ziņa klientiem — neobligāta",
+    "messagePlaceholder": "piem., Atvainojiet, mūsu piekabe salūza ceļā uz norises vietu…",
+    "keep": "Paturēt pasākumu",
+    "cancelling": "Atceļ…",
+    "confirm": "Atcelt pasākumu"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Atsākt pasākumu} other {Sākt pasākumu}}",
+    "changeEvent": "Mainīt pasākumu",
+    "changeEventType": "Mainīt pasākuma veidu…",
+    "privateLink": "Privātā saite un QR kods",
+    "noteLabel": "Piezīme klientiem",
+    "notePlaceholder": "piem., Novietojiet auto galvenajā stāvvietā, meklējiet oranžo nojumi",
+    "noteHint": "Klienti to redz pasūtījuma lapā zem jūsu pasākuma informācijas.",
+    "saveNote": "Saglabāt piezīmi",
+    "resume": "Atsākt pasūtījumus",
+    "pause": "Apturēt pasūtījumus",
+    "changeFinishTime": "Mainīt pasākuma beigu laiku",
+    "finishEvent": "Pabeigt pasākumu",
+    "cancelEvent": "Atcelt pasākumu"
+  },
+  "finish": {
+    "confirmTitle": "Mainīt beigu laiku?",
+    "willFinish": "Šis pasākums beigsies plkst. <b>{selected}</b>{hasCurrent, select, yes {, nevis <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, zero {{count} pasūtījumi jāizsniedz} one {{count} pasūtījums jāizsniedz} other {{count} pasūtījumi jāizsniedz}} pēc {selected}.</b> {n, plural, zero {Tie paliek} one {Tas paliek} other {Tie paliek}} uz tāfeles, un {n, plural, zero {tie joprojām jāpagatavo} one {tas joprojām jāpagatavo} other {tie joprojām jāpagatavo}}. Beigu laika maiņa tikai aptur JAUNUS pasūtījumus uz vēlākiem laikiem.",
+    "saving": "Saglabā…",
+    "confirm": "Mainīt beigu laiku",
+    "keepCurrent": "Paturēt {current}",
+    "keepAsIs": "Atstāt kā ir",
+    "title": "Mainīt beigu laiku",
+    "currentlySet": "Šim pasākumam pašlaik iestatītais beigu laiks ir <b>{current}</b>.",
+    "noFinishTime": "Šim pasākumam nav iestatīts beigu laiks.",
+    "noTimesLeft": "Šodien vairs nav pieejamu laiku. Tā vietā izmantojiet “Pabeigt pasākumu”.",
+    "newFinishTime": "Jauns beigu laiks",
+    "optionCurrent": "{time} (pašreizējais)",
+    "earlier": "Tas ir agrāk par pašreizējo beigu laiku. Klienti nevarēs pasūtīt uz vēlākiem laikiem.",
+    "review": "Pārskatīt izmaiņas",
+    "optionNextDay": "{time} (nākamajā dienā)"
+  },
+  "extraWait": {
+    "title": "Pievienot papildu gaidīšanas laiku",
+    "hint": "Palielina saņemšanas laiku, ko norāda jauniem pasūtījumiem. Pasākuma beigu laiks netiek mainīts.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Atjaunojiet savienojumu, lai ielādētu",
+    "selected": "Izvēlēts",
+    "status": "{tone, select, paused {⏸ Apturēts} live {● Norisinās} finished {● Pabeigts} cancelled {Atcelts} other {Nav sākts}}"
+  }
+}

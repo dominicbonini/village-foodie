@@ -1,0 +1,9 @@
+{
+  "subject": "Vaše demo HatchGrab — tady je odkaz zpět",
+  "heading": "Vaše demo je uložené",
+  "intro": "Tady je odkaz zpět na demo s vaším jídelním lístkem. Přihlášení není potřeba — stačí na něj klepnout.",
+  "button": "Otevřít moje demo",
+  "freshDay": "Pokaždé, když se vrátíte, připravíme nový den prodeje, abyste si měli s čím hrát.",
+  "deletion": "Tohle je demo, takže ho neuchováváme navždy — demo i jídelní lístek smažeme\n                <b>{date}</b> (za {days, plural, one {# den} few {# dny} other {# dní}}). Pokud se zaregistrujete\n                dřív, váš jídelní lístek půjde s vámi.",
+  "notSent": "Uloženo, ale e-mail se teď nepodařilo odeslat."
+}

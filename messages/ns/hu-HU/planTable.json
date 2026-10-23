@@ -1,0 +1,36 @@
+{
+  "h1": "Minden, ami a működéshez kell, minden csomagban.",
+  "lede": "A rendelés, az előrendelés, a kapacitáskezelés és a konyhai kijelző minden csomagban benne van.{hasUpgrades, select, yes { {plans}: emellett {features}, valamint alacsonyabb díjak.} other {}}",
+  "perMonth": "{price} / hó",
+  "group": {
+    "pay": "Mit fizet",
+    "run": "A kiszolgálás",
+    "online": "Online rendelések",
+    "marketing": "Marketing és automatizálás"
+  },
+  "pay": {
+    "included": "Havi díjmentes online rendelési keret",
+    "fee": "HatchGrab-díj online kártyás rendeléseknél*",
+    "walkUp": "Helyszíni rendelések"
+  },
+  "cell": {
+    "unlimited": "Korlátlan",
+    "free": "Díjmentes",
+    "feeAbove": "<b>{fee}</b> {included} felett",
+    "yes": "Benne van",
+    "none": "Nincs benne",
+    "comingSoon": "Hamarosan"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "közösségi média",
+    "event_types": "egyedi eseményárazás"
+  },
+  "meta": {
+    "description": "Minden HatchGrab-funkció minden csomagban, egymás mellett — {plans}, díjakkal és keretekkel.{months, plural, =0 {} one { Az első hónapban minden benne van.} other { Az első # hónapban minden benne van.}}"
+  },
+  "notes": {
+    "whatsapp": "A WhatsApp automatikus válaszokhoz WhatsApp Business-fiók szükséges. A Meta egyes üzenetekért díjat számíthat fel; a válaszok automatikusan készülnek.",
+    "printing": "A konyhai rendelésjegyek nyomtatásához kompatibilis Bluetooth- vagy vezetékes nyomtató szükséges (nem tartozék)."
+  }
+}

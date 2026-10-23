@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} elérhetők ebben a csomagban: {plan}.} other {{feature} elérhető ebben a csomagban: {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nem részei az Ön csomagjának.} other {{feature} nem része az Ön csomagjának.}}",
+  "switchedOff": "{many, select, yes {{feature} ki vannak kapcsolva az Ön food truckjánál.} other {{feature} ki van kapcsolva az Ön food truckjánál.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Csomagváltás →",
+  "features": {
+    "discovery_map": {
+      "name": "A megjelenés a felfedezőtérképen",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "A webes vezérlőpult",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "A konyhai alkalmazás",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "A QR-kódos étlap",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "A menük",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "A ráajánlások",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "A helyszíni rendelések",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "A rendelés „Fizetés átvételkor” móddal",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Az „elfogyott” kapcsoló",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "A készletszámláló",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "A rendelésvédelem térerő nélkül",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Az online fizetések",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Az előrendelés későbbi időpontokra",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "A vásárlói idősávok",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "A konyhai kapacitás kezelése",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Az automatikus elfogadás",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "A Messenger és Instagram automatikus válaszok",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "A logós QR-kódok",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "A részletes kimutatások",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "A konyhai rendelésjegy-nyomtatás",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "A konyhai szinkronizálás több eszközön",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "A szakácskijelző",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "A WhatsApp automatikus válaszok",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "A menetrend a saját weboldalán",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "A közösségimédia-bejegyzések",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Az egyedi eseménytípusok",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "A privát események",
+      "many": "yes"
+    }
+  }
+}

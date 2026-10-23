@@ -1,0 +1,8 @@
+{
+  "country_missing": "Valitse maa, jossa ruokarekkasi toimii.",
+  "country_off": "Kyseisessä maassa toimivat ruokarekat eivät voi vielä rekisteröityä. Valitse toinen maa.",
+  "zone_unknown": "Emme tarjoa tätä aikavyöhykettä kyseiselle maalle. Valitse aikavyöhyke luettelosta.",
+  "town_missing": "Kerro paikkakunta, jossa toimit.",
+  "town_too_long": "Paikkakunnan nimi on liian pitkä — enintään 120 merkkiä.",
+  "region_closed": "Alueella {region} toimivat ruokarekat eivät voi vielä rekisteröityä{reason, select, language {: HatchGrab ei ole vielä saatavilla kielellä {language}} taxLines {: lisäämme ensin erilliset GST- ja PST-rivit} other {}}. Jos ruokarekkasi toimii muualla, valitse se paikkakunta."
+}

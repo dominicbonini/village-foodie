@@ -1,0 +1,28 @@
+{
+  "notAvailable": "A demóban nem érhető el",
+  "demoMode": "DEMÓ MÓD",
+  "loopLands": "Pontosan így érkezik egy valódi rendelés",
+  "showMe": "Mutassa",
+  "noCard": "{sub} Bankkártya nem szükséges.",
+  "notYet": "Még nem",
+  "cashAndCollected": "Készpénz, átvéve",
+  "logoPlaceholder": "Az Ön logója",
+  "welcomeTitle": "{sample, select, yes {Íme egy mintademó} other {Íme az Ön demója}}",
+  "welcomeIntro": "{sample, select, yes {Ez egy <b>helyettesítő étlap</b>, hogy lássa, hogyan működik minden — bármikor feltöltheti a sajátját.} other {Ez az Ön saját étlapja és arculata, egy valódi táblán.}} A rajta lévő rendelések csak példák, hogy lássa, milyen egy forgalmas kiszolgálás.",
+  "twoThings": "Két dolgot érdemes kipróbálni:",
+  "hitButton": "Nyomja meg ezt a gombot egy rendelésen: <b>{button}</b>",
+  "scanQr": "Olvassa be a <b>QR-kódot</b> — vagy koppintson a linkre —, rendeljen vásárlóként, és nézze, ahogy megérkezik",
+  "qrAlt": "QR-kód a vásárlói rendelési oldalához",
+  "openHere": "Vagy nyissa meg ezen az eszközön",
+  "copyLink": "Link másolása",
+  "copyDescribedAs": "rendelési link",
+  "noLinkTitle": "Vásárlói rendelési link",
+  "noLinkBody": "A rendelési oldal linkjét a jobb felső menüben találja.",
+  "asLive": "A rendelési és konyhai folyamat pontosan úgy működik, mint élesben.",
+  "startExploring": "Felfedezés indítása",
+  "signupOffer": {
+    "heading": "Regisztráljon most az ingyenes hónapért",
+    "sub": "Az idő csak akkor kezd telni, amikor úgy dönt, hogy élesben indul."
+  },
+  "cashIcon": "💵"
+}

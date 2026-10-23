@@ -1,0 +1,8 @@
+{
+  "change": "{label} — mainīt",
+  "useRule": "{label} — izmantot noteikumu",
+  "typePrice": "{label} — ievadīt cenu",
+  "backToRule": "Atpakaļ pie noteikuma",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

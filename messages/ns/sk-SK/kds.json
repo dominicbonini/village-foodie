@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} – kuchyňa",
+  "loading": "Načítava sa kuchyňa…",
+  "pin": {
+    "title": "Zadajte PIN",
+    "placeholder": "PIN",
+    "unlock": "Odomknúť",
+    "unreachable": "Server je momentálne nedostupný. Váš PIN je v poriadku — skúste to o chvíľu znova.",
+    "incorrect": "Nesprávny PIN",
+    "generic": "Niečo sa pokazilo. Skúste to znova."
+  },
+  "error": {
+    "linkInvalid": "Tento odkaz už nie je platný.",
+    "couldNotLoad": "Objednávky sa nepodarilo načítať",
+    "truckNotFound": "Food truck sa nenašiel"
+  },
+  "degraded": {
+    "at": "⚠️ Server je nedostupný. Zobrazujú sa objednávky z {time}. NOVÉ OBJEDNÁVKY MÔŽU CHÝBAŤ.",
+    "earlier": "⚠️ Server je nedostupný. Zobrazujú sa staršie objednávky. NOVÉ OBJEDNÁVKY MÔŽU CHÝBAŤ."
+  },
+  "header": {
+    "dashboard": "Prehľad",
+    "backTitle": "Späť na prehľad",
+    "list": "Zoznam",
+    "grid": "Mriežka",
+    "full": "Celé",
+    "cook": "Kuchár",
+    "fullTitle": "Celé karty — ceny a platobné údaje, ako ich vidí obsluha pri výdaji.",
+    "cookTitle": "Karty pre kuchára — väčšie písmo, zoskupené podľa kategórie, bez cien.",
+    "readyStep": "Krok Hotové",
+    "readyOnlyTitle": "Táto obrazovka iba označuje objednávky ako hotové, takže to nemožno vypnúť — je to jediný krok, ktorý vykonáva.",
+    "readyOnTitle": "Táto obrazovka označuje objednávky ako hotové. Ťuknite, ak to má robiť iná obrazovka.",
+    "readyOffTitle": "Objednávky ako hotové označuje iná obrazovka. Ťuknite, ak to má robiť táto.",
+    "handover": "Platba a výdaj",
+    "handoverOnlyTitle": "Táto obrazovka iba prijíma platby, takže to nemožno vypnúť — je to jediný krok, ktorý vykonáva.",
+    "handoverOnTitle": "Táto obrazovka prijíma platby a vydáva objednávky. Ťuknite, ak to má robiť iná obrazovka.",
+    "handoverOffTitle": "Platby prijíma iná obrazovka. Ťuknite, ak to má robiť táto.",
+    "soundOn": "Zvuk novej objednávky je zapnutý — ťuknutím ho vypnete",
+    "soundOff": "Zvuk novej objednávky je vypnutý — ťuknutím ho zapnete",
+    "screenOn": "Obrazovka zapnutá",
+    "screenOff": "Obrazovka vypnutá",
+    "screenSettings": "Nastavenia obrazovky",
+    "manageEvent": "Spravovať akciu",
+    "manageEventTitle": "Spravovať akciu — spustiť, pozastaviť, zmeniť alebo ukončiť",
+    "soundSettings": "Nastavenia zvuku",
+    "soundSettingsTitle": "Ktoré zvuky sa na tomto zariadení prehrávajú",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Nastavenia zobrazenia",
+    "on": "Zapnuté",
+    "off": "Vypnuté",
+    "newOrderSound": "Zvuk novej objednávky",
+    "soundNeedsConfirming": "Len objednávky na potvrdenie",
+    "soundAll": "Všetky nové objednávky",
+    "soundDue": "Zvuk, keď treba objednávku začať pripravovať",
+    "soundDueHelp": "Zaznie, keď karta objednávky zmení farbu na oranžovú.",
+    "deviceSettings": "Nastavenia zariadenia",
+    "sound": "Zvuk",
+    "close": "Zavrieť"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Objednávky pre túto akciu sa nenačítali",
+    "mismatchBody": "Server odpovedal údajmi inej akcie, preto sa radšej nezobrazuje nič než nesprávne objednávky. Vyberte akciu znova alebo stránku znova načítajte.",
+    "mismatchBodyAt": "Server odpovedal údajmi inej akcie, preto sa radšej nezobrazuje nič než nesprávne objednávky pre miesto {venue}. Vyberte akciu znova alebo stránku znova načítajte.",
+    "paused": "⏸ Objednávky pozastavené{reason, select, offline { (zariadenie offline)} other {}} — zákazníci nemôžu objednávať",
+    "resume": "Obnoviť",
+    "offline": "Bez pripojenia — zobrazujú sa posledné známe objednávky. Online objednávanie je pre zákazníkov pozastavené.",
+    "queued": "{n, plural, one {{count} úkon čaká vo fronte} few {{count} úkony čakajú vo fronte} other {{count} úkonov čaká vo fronte}}",
+    "extraWait": "⏱ Aktívne čakanie navyše: +{mins} min",
+    "clear": "Zrušiť",
+    "toMake": "Na prípravu",
+    "today": "Dnes · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Spustiť akciu",
+    "recentlyClosed": "Akcia ukončená · {venue} – koniec o {time}",
+    "eventStatus": "{tone, select, paused {⏸ Pozastavená} live {● Prebieha} finished {● Ukončená} cancelled {Zrušená} other {Nezačala}}"
+  },
+  "board": {
+    "queueClear": "Front je prázdny",
+    "doneToday": "Dnes hotové · {count}",
+    "paid": "✓ zaplatené",
+    "cardHeld": "zablokované na karte",
+    "due": "{amount} na úhradu"
+  },
+  "screenOff": {
+    "title": "Povoliť vypnutie obrazovky?",
+    "bodyVans": "{vans} {n, plural, one {má} few {majú} other {majú}} zapnutú detekciu offline režimu. Ak sa obrazovka vypne, zariadenie môže prestať posielať signál, že je online, a objednávanie pre zákazníkov sa môže pozastaviť.",
+    "body": "Ak sa obrazovka vypne, zariadenie môže prestať posielať signál, že je online.",
+    "keepHint": "Nechajte obrazovku zapnutú, aby objednávanie nebolo prerušené.",
+    "keep": "Nechať obrazovku zapnutú",
+    "allow": "Povoliť vypnutie"
+  },
+  "event": {
+    "change": "Zmeniť akciu",
+    "cancel": "Zrušiť",
+    "waitActive": "⏱ +{mins} min aktívne · Ťuknutím zrušíte",
+    "addWait": "⏱ Pridať čakanie navyše",
+    "endTitle": "Ukončiť akciu?",
+    "endEarly": "Táto akcia má podľa plánu skončiť až o {time}. Ďalšie objednávky už nebudú možné. Naozaj chcete akciu ukončiť?",
+    "endNow": "Ukončiť túto akciu? Ďalšie objednávky sa už nebudú prijímať.",
+    "yes": "Áno",
+    "started": "Akcia spustená",
+    "startFutureConfirm": "Táto akcia sa koná {date}. Spustiť ju teraz?",
+    "finishTimeNow": "Čas ukončenia je teraz {time}",
+    "finished": "Akcia ukončená",
+    "cancelled": "Akcia zrušená",
+    "noteSaved": "Poznámka uložená",
+    "pauseConfirm": "Pozastaviť objednávky? Zákazníci budú vidieť „Objednávky sa neprijímajú“, kým ich znova nespustíte.",
+    "switchConfirm": "Prepnúť z akcie {from} na akciu {to}?{n, plural, =0 {} one { {count} objednávka na tejto obrazovke bude nahradená.} few { {count} objednávky na tejto obrazovke budú nahradené.} other { {count} objednávok na tejto obrazovke bude nahradených.}} Ťuknutím na aktuálnu akciu prepnete späť."
+  },
+  "intro": {
+    "title": "Toto je kuchynská obrazovka",
+    "p1": "Je to pohľad pre kuchára — objednávky, ktoré treba pripraviť, v poradí, v akom ich pripraviť. Obrazovka pri grile zobrazuje toto, kým pri okienku sa používa prehľad objednávok.",
+    "p2": "Karty sa po ťuknutí posúvajú ďalej, takže kto varí, vždy vie, čo je na rade, a nikto nemusí kričať. Všetko tu sú vaše ukážkové údaje — vyskúšajte si to.",
+    "gotIt": "Rozumiem"
+  },
+  "toast": {
+    "failed": "Zlyhalo",
+    "rejectFailed": "Zamietnutie zlyhalo",
+    "buzzerSaved": "Bzučiak {n} uložený",
+    "buzzerRemoved": "Bzučiak {n} odobratý",
+    "buzzerRemovedNone": "Bzučiak odobratý",
+    "buzzerAssigned": "Bzučiak {n} priradený",
+    "buzzerAssignedFrom": "Bzučiak {n} priradený (vzatý z #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Bzučiak sa nepodarilo odobrať z {target, select, order {objednávky #{id}} other {tejto objednávky}}} other {Bzučiak {n} sa nepodarilo odobrať — stále je pri {target, select, order {objednávke #{id}} other {tejto objednávke}}}}",
+    "buzzerAssignFailed": "Bzučiak {n} sa nepodarilo priradiť k {target, select, order {objednávke #{id}} other {tejto objednávke}} — {had, select, yes {stále má bzučiak {prior}} other {stále nemá žiadny bzučiak}}"
+  }
+}

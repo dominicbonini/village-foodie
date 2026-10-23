@@ -1,0 +1,10 @@
+{
+  "copy": "Copiați",
+  "copied": "Copiat ✓",
+  "failed": "Copierea a eșuat",
+  "aria": "{label} {thing}",
+  "announceCopied": "Copiat: {thing}",
+  "announceCopiedValue": "Valoare copiată",
+  "announceFailed": "Nu s-a putut copia: {thing}. Selectați textul și copiați-l manual.",
+  "announceFailedValue": "Nu s-a putut copia valoarea. Selectați textul și copiați-l manual."
+}

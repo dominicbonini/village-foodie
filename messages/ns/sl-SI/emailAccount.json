@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Potrdite svoj novi e-poštni naslov za HatchGrab",
+    "heading": "Potrdite svoj e-poštni naslov",
+    "button": "Potrdi e-poštni naslov"
+  },
+  "changeEmail": {
+    "requested": "Zahtevali ste, da se vaš e-poštni naslov za HatchGrab spremeni v ta naslov.",
+    "click": "Za potrditev kliknite spodnji gumb. Povezava poteče čez 24 ur.",
+    "ignore": "Če te spremembe niste zahtevali, lahko to sporočilo mirno prezrete.",
+    "stillActive": "Vaš trenutni e-poštni naslov ostaja aktiven."
+  },
+  "resendVerification": {
+    "requested": "Zahtevali ste, da se vaša e-pošta za HatchGrab spremeni na ta naslov.",
+    "click": "Za potrditev kliknite spodaj. Povezava poteče čez 24 ur.",
+    "ignore": "Če tega niste zahtevali, prezrite to sporočilo.",
+    "stillActive": "Vaša trenutna e-pošta ostaja aktivna."
+  },
+  "passwordReset": {
+    "subject": "Ponastavite geslo za HatchGrab",
+    "heading": "Ponastavite geslo",
+    "requested": "Prejeli smo zahtevo za ponastavitev gesla za vaš račun HatchGrab.",
+    "click": "Kliknite spodnji gumb in izberite novo geslo. Povezava poteče čez 1 uro.",
+    "button": "Ponastavi geslo",
+    "ignore": "Če tega niste zahtevali, lahko to sporočilo mirno prezrete.",
+    "unchanged": "Vaše geslo se ne bo spremenilo, dokler ne kliknete zgornje povezave."
+  },
+  "deletionScheduled": {
+    "subject": "Vaš račun HatchGrab je načrtovan za izbris",
+    "received": "Prejeli smo zahtevo za izbris tega računa HatchGrab.",
+    "orderingStopped": "<b>Spletno naročanje je takoj ustavljeno</b> za: {trucks}.",
+    "noTrucks": "(ni food truckov)",
+    "readable": "Vaša nadzorna plošča ostane\n    na voljo za branje še {days, plural, one {# dan} two {# dneva} few {# dni} other {# dni}}.",
+    "scheduled": "Račun bo izbrisan dne <b>{date}</b>.",
+    "cannotCancel": "<b>Tega ni mogoče preklicati v aplikaciji.</b> Če tega niste storili vi ali ste si\n    premislili, čim prej odgovorite na to sporočilo.",
+    "kept": "Ko bo račun izbrisan, odstranimo vaše osebne podatke in podatke vaših strank. Hranimo\n    anonimne računovodske evidence, ki jih moramo po zakonu ohraniti."
+  }
+}

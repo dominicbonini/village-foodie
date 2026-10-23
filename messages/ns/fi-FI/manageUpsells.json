@@ -1,0 +1,19 @@
+{
+  "heading": "Lisämyynti",
+  "intro": "Houkuttele asiakkaita lisäämään jotain ylimääräistä. Kun joku tilaa yhdestä kategoriasta, ehdota tuotteita toisesta — juoma pizzan kanssa, kastike burgerin kanssa.",
+  "add": "+ Lisää lisämyynti",
+  "toast": {
+    "updated": "Lisämyyntisääntö päivitetty",
+    "added": "Lisämyyntisääntö lisätty",
+    "removed": "Sääntö poistettu"
+  },
+  "whenAdds": "Kun asiakas lisää…",
+  "suggestFrom": "Ehdota tuotteita kategoriasta…",
+  "chooseCategory": "Valitse kategoria",
+  "cancel": "Peruuta",
+  "saveChanges": "Tallenna muutokset",
+  "addRule": "Lisää sääntö",
+  "empty": "Ei vielä lisämyyntisääntöjä.",
+  "confirmRemove": "Poistetaanko lisämyyntisääntö ”{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Ehdotetaan enintään {count} tuote} other {Ehdotetaan enintään {count} tuotetta}}"
+}

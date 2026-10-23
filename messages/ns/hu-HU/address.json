@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Cím",
+    "postcode": "Irányítószám",
+    "zip": "ZIP-kód",
+    "eircode": "Eircode",
+    "postalCode": "Irányítószám",
+    "state": "Állam",
+    "stateTerritory": "Állam vagy terület",
+    "province": "Tartomány",
+    "county": "Megye",
+    "area": "Település (falu, község vagy város)",
+    "townOrArea": "Település vagy környék",
+    "city": "Város",
+    "suburb": "Városrész",
+    "townOrCity": "Település"
+  },
+  "short": {
+    "area": "Település",
+    "townOrArea": "Település",
+    "city": "Város",
+    "suburb": "Városrész",
+    "townOrCity": "Település"
+  },
+  "inSentence": {
+    "postcode": "irányítószám",
+    "zip": "ZIP-kód",
+    "eircode": "Eircode",
+    "postalCode": "irányítószám"
+  },
+  "withArticle": {
+    "postcode": "egy irányítószám",
+    "zip": "egy ZIP-kód",
+    "eircode": "egy Eircode",
+    "postalCode": "egy irányítószám"
+  },
+  "tradeLabel": {
+    "area": "Település",
+    "townOrArea": "Település vagy környék",
+    "city": "Város",
+    "suburb": "Városrész",
+    "townOrCity": "Település"
+  },
+  "basedIn": {
+    "area": "Település, ahol működik",
+    "townOrArea": "Település vagy környék, ahol működik",
+    "city": "Város, ahol működik",
+    "suburb": "Városrész, ahol működik",
+    "townOrCity": "Település, ahol működik"
+  },
+  "example": "pl. {example}",
+  "customersSee": "A vevők ezt látják:",
+  "postalWarning": "Ez nem úgy néz ki, mint {article} — például {example}. Ettől még elmentheti.",
+  "regionChoose": "Válasszon…"
+}

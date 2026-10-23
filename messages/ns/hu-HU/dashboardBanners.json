@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} idősáv} other {{count} idősáv}} kapacitás felett — ellenőrizze",
+  "batchOver": "{cat}: adagkorlát felett — {count} db, idősáv: {slot} ({per} adagonként)",
+  "eventStartOver": "Kapacitás felett az esemény kezdetekor — {n, plural, one {{count} tétel} other {{count} tétel}}, idősáv: {slot}",
+  "kitchenOver": "A konyha kapacitás felett — {n, plural, one {{count} tétel} other {{count} tétel}} készül, idősáv: {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} tétel} other {{count} tétel}}",
+  "placedAnyway": "Mégis leadva: {list}",
+  "placedItem": "#{id}, idősáv: {slot}",
+  "orphans": "{times}: kapacitás felett — nem található hozzá rendelés",
+  "dismiss": "Elvetés",
+  "kitchenCapacity": "Konyhai kapacitás",
+  "overCapacity": "Kapacitás felett",
+  "wakeUnsupported": "Ez az eszköz nem tudja bekapcsolva tartani a képernyőt.",
+  "wakeInsecure": "Erről a címről nem tartható bekapcsolva a képernyő.",
+  "wakeRetry": "Képernyő bekapcsolva tartása — koppintson az újrapróbáláshoz",
+  "wakeAcquire": "Képernyő bekapcsolva tartása",
+  "degraded": {
+    "serverError": "A szerver nem tudta betölteni a rendeléseket{hasStatus, select, yes { (hiba: {status})} other {}}. A rendelések állapota: {at}. Új rendelések hiányozhatnak.",
+    "unreachable": "A szerver nem érhető el. A rendelések állapota: {at}. Új rendelések hiányozhatnak."
+  }
+}

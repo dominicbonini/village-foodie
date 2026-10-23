@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Titlul săptămânii",
+    "weekHeadingSample": "Săptămâna din …",
+    "daysSample": "{first} – {last}",
+    "date": "Data",
+    "place": "Loc",
+    "venue": "Local",
+    "area": "Zonă",
+    "time": "Ora",
+    "rows": "Rânduri",
+    "rowsSample": "la {px} px distanță · {first} – {last}",
+    "ownText": "Text propriu",
+    "noteTokenSample": "Nota pe care o scrieți când creați postarea",
+    "nothingYet": "Nimic încă",
+    "thisBox": "această casetă"
+  },
+  "sample": {
+    "venue": "Hanul din Piață",
+    "area": "Cluj-Napoca"
+  },
+  "bar": {
+    "previewWith": "Previzualizați cu",
+    "undo": "Anulați",
+    "undoTitle": "Anulați (⌘Z)",
+    "redo": "Refaceți",
+    "redoTitle": "Refaceți (⇧⌘Z)",
+    "cancel": "Renunțați",
+    "saving": "Se salvează…",
+    "save": "Salvați designul"
+  },
+  "grid": {
+    "eachRow": "Fiecare rând",
+    "placeOff": "Numele locului este în imagine — HatchGrab nu îl va adăuga."
+  },
+  "background": {
+    "uploading": "Se încarcă…",
+    "replace": "Înlocuiți imaginea",
+    "shape": {
+      "square": "Pătrat (1:1)",
+      "portrait45": "Vertical (4:5)",
+      "portrait916": "Vertical (9:16)",
+      "landscape169": "Orizontal (16:9)",
+      "portrait": "Vertical",
+      "landscape": "Orizontal"
+    }
+  },
+  "scope": {
+    "title": "Pozițiile textului",
+    "standard": "Aceleași poziții ca Standard",
+    "own": "Poziții proprii pentru {place}",
+    "locked": "Aceste poziții vin din designul Standard. Alegeți „Poziții proprii pentru {place}” ca să le mutați doar aici."
+  },
+  "stage": {
+    "hint": "Trageți o casetă ca s-o mutați · trageți de un colț ca s-o redimensionați",
+    "zoomOut": "Micșorați",
+    "zoomIn": "Măriți"
+  },
+  "rows": {
+    "spacing": "Spațiere",
+    "daysRun": "Zilele: {first} – {last}. Cele trei casete ale rândului 1 sunt copiate în jos la această distanță.",
+    "whichEvents": "Ce evenimente",
+    "showCancelled": "Afișați evenimentele anulate",
+    "showCancelledHint": "Un eveniment anulat apare cu locul tăiat și cuvântul ANULAT. Dacă opțiunea e dezactivată, ziua apare ca zi liberă."
+  },
+  "days": {
+    "reorder": "Reordonați",
+    "move": "mutați"
+  },
+  "picture": {
+    "picture": "Imagine",
+    "fill": "Umpleți caseta",
+    "fit": "Încadrați în casetă",
+    "corners": "Colțuri",
+    "square": "Drepte",
+    "rounded": "Rotunjite",
+    "ifMissing": "Dacă o locație nu are imagine",
+    "noPicture": {
+      "omit": "Omiteți-o",
+      "blank": "Lăsați un spațiu gol",
+      "logo": "Afișați sigla"
+    },
+    "border": "Chenar",
+    "drawBorder": "Adăugați un chenar",
+    "drawBorderHint": "O linie în jurul imaginii, în culoarea aleasă de dumneavoastră.",
+    "borderWidth": "Grosimea chenarului",
+    "cornerRadius": "Raza colțurilor",
+    "locationPictures": "Imaginile locațiilor",
+    "addLocationPictures": "+ Adăugați imagini pentru locații",
+    "allHaveImage": "{total, plural, =0 {Încă nu aveți nicio locație.} one {Locația dumneavoastră are o imagine.} few {Toate cele # locații ale dumneavoastră au o imagine.} other {Toate cele # de locații ale dumneavoastră au o imagine.}}",
+    "someWithout": "{without} din {total, plural, one {# locație} few {# locații} other {# de locații}} {without, plural, one {nu are} few {nu au} other {nu au}} încă imagine"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Culoare",
+    "textColour": "Culoarea textului",
+    "ownStyleNote": "{count, plural, one {{names} are stil propriu, deci nu se modifică.} few {{names} au stil propriu, deci nu se modifică.} other {{names} au stil propriu, deci nu se modifică.}}",
+    "matchAgain": "Potriviți din nou",
+    "matchName": "La fel ca {name}",
+    "lastToggle": "{kind, select, weekly {Păstrați activat fie „Loc”, fie „Ora”. Un eveniment anulat apare cu locul tăiat și cuvântul ANULAT, așa că, dacă ambele sunt dezactivate, nimic nu ar arăta că este anulat.} other {Păstrați activat fie „Local”, fie „Ora”. Un eveniment anulat apare cu locul tăiat și cuvântul ANULAT, așa că, dacă ambele sunt dezactivate, nimic nu ar arăta că este anulat.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — acest font are un cursiv adevărat"
+  },
+  "align": {
+    "left": "Stânga",
+    "centre": "Centru",
+    "right": "Dreapta"
+  },
+  "effects": {
+    "outlineColour": "Culoarea conturului",
+    "bandColour": "Culoarea benzii",
+    "bandDaysOff": "Banda în zilele libere",
+    "bandCancelled": "Banda când evenimentul este anulat",
+    "bandDaysOffHint": "Folosită în locul benzii de mai sus într-o zi fără activitate.",
+    "bandCancelledHint": "Folosită în locul benzii de mai sus când evenimentul este anulat."
+  },
+  "more": {
+    "dayOwnLine": "Ziua pe un rând separat",
+    "dayOwnLineHint": "Ziua săptămânii deasupra datei. Doar pentru dată.",
+    "noEventDay": "Într-o zi fără eveniment",
+    "wordsBeforePlaceholder": "de ex. Ne găsiți la",
+    "neverHyphenate": "Un cuvânt lung fără spații este întotdeauna micșorat — nu despărțim niciodată în silabe numele unui loc."
+  },
+  "bits": {
+    "less": "Mai puțin",
+    "more": "Mai mult",
+    "chooseColourFor": "{label} — alegeți orice culoare",
+    "chooseColour": "Alegeți orice culoare"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Zamówienie #{id} cofnięte",
+    "saved": "Zamówienie #{id} zapisane",
+    "undo": "↩ Cofnij",
+    "paymentNotRecorded": "⚠ Zamówienie #{id} — PŁATNOŚĆ NIEZAPISANA. {collect, select, yes {Zamówienie zostało zrealizowane} other {Zamówienie zostało zapisane}}, ale płatność nie.",
+    "recordPayment": "Zapisz płatność",
+    "paid": "Zamówienie #{id} opłacone",
+    "undonePayment": "Cofnięto — płatność usunięta",
+    "undoneCollected": "Cofnięto — zamówienie nieodebrane",
+    "collected": "Zamówienie #{id} {paidToo, select, yes {opłacone i odebrane} other {odebrane}}",
+    "ready": "Zamówienie #{id} gotowe",
+    "readyBuzzer": "Zamówienie #{id} gotowe · <pill></pill>",
+    "status": "Zamówienie #{id} {action, select, confirm {potwierdzone} reject {odrzucone} ready {gotowe} collected {odebrane} undo_collected {przywrócone} cancel {anulowane} other {zaktualizowane}}"
+  },
+  "conflicts": {
+    "more": "+{count} więcej",
+    "notOnScreenPlus": "+{count} poza tym ekranem",
+    "notOnScreen": "{n, plural, one {{count} zamówienie poza tym ekranem} few {{count} zamówienia poza tym ekranem} many {{count} zamówień poza tym ekranem} other {{count} zamówienia poza tym ekranem}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PŁATNOŚĆ NIEZAPISANA",
+    "paymentBody": "{orders} — oznaczone jako opłacone tylko na tym urządzeniu. Płatność nie dotarła do systemu.",
+    "paymentCheck": "Sprawdź zamówienie i przyjmij płatność ponownie, jeśli nadal jest należna.",
+    "dismiss": "Zamknij",
+    "confirmChecked": "Potwierdź, że sprawdzono: {orders}",
+    "confirmHides": "To ukrywa ostrzeżenie. Zapis i tak pozostaje na tym urządzeniu.",
+    "notYet": "Jeszcze nie",
+    "iveChecked": "Sprawdzone: {orders}",
+    "statusBody": "⚠ {orders} — ta zmiana nie dotarła do systemu. Sprawdź zamówienie.",
+    "offline": "📴 Brak połączenia — {n, plural, one {{count} zmiana zapisana na tym urządzeniu. Zostanie wysłana po powrocie online.} few {{count} zmiany zapisane na tym urządzeniu. Zostaną wysłane po powrocie online.} many {{count} zmian zapisanych na tym urządzeniu. Zostaną wysłane po powrocie online.} other {{count} zmiany zapisane na tym urządzeniu. Zostaną wysłane po powrocie online.}} Ustawienia są zablokowane.",
+    "syncing": "Znowu online — wysyłanie: {n, plural, one {{count} zmiana} few {{count} zmiany} many {{count} zmian} other {{count} zmiany}}…",
+    "synced": "Wszystkie zmiany wysłane.",
+    "stillQueued": "{n, plural, one {{count} zmiana zapisana na tym urządzeniu. Wciąż próbujemy ją wysłać.} few {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.} many {{count} zmian zapisanych na tym urządzeniu. Wciąż próbujemy je wysłać.} other {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab jest zablokowany",
+    "verifying": "Weryfikacja…",
+    "unlock": "Odblokuj",
+    "cantUseBiometric": "Nie możesz użyć Face / Touch ID?",
+    "enterPin": "Wpisz zapasowy PIN",
+    "wrongPin": "Zły PIN — spróbuj ponownie.",
+    "checking": "Sprawdzanie…",
+    "tryBiometric": "Użyj Face / Touch ID",
+    "forgot": "Nie pamiętasz PIN-u? Musisz ponownie zainstalować aplikację."
+  },
+  "notify": {
+    "title": "🔔 Powiadomienia",
+    "intro": "Alerty na tym urządzeniu. Włącz, aby wybrać, które alerty chcesz otrzymywać.",
+    "refused": "Aby to włączyć, zezwól na powiadomienia w Ustawieniach urządzenia.",
+    "newOrder": "Alerty o nowych zamówieniach",
+    "newOrderHelp": "Otrzymuj powiadomienie, gdy zamówienie klienta wymaga potwierdzenia.",
+    "offline": "Alerty offline / wstrzymania",
+    "offlineHelp": "Otrzymuj powiadomienie, gdy to urządzenie przejdzie w tryb offline (i zamawianie zostanie wstrzymane). <green>Działa offline.</green>"
+  },
+  "van": {
+    "label": "Food truck",
+    "loadRetry": "Nie udało się wczytać · Ponów",
+    "select": "Wybierz…"
+  },
+  "deviceSave": {
+    "network": "Nie udało się połączyć z serwerem — sprawdź połączenie i spróbuj ponownie.",
+    "server": "Nie udało się teraz zapisać. Spróbuj ponownie."
+  },
+  "setup": {
+    "fetchErrorTitle": "Nie udało się wczytać konfiguracji urządzenia",
+    "fetchErrorBody": "Nie udało się połączyć z serwerem, aby skonfigurować <b>to urządzenie</b>. Sprawdź połączenie i spróbuj ponownie — Twoje zamówienia i ustawienia są bezpieczne.",
+    "retry": "Ponów",
+    "later": "Później",
+    "noVanTitle": "Brak aktywnego food trucka",
+    "noVanBody": "Ta firma nie ma jeszcze aktywnego food trucka. Aktywuj go w <b>Ustawienia → Twoje food trucki</b>, a to urządzenie skonfiguruje się automatycznie — nic więcej nie trzeba tu robić.",
+    "goToVans": "Przejdź do Ustawienia → Twoje food trucki",
+    "title": "Skonfiguruj to urządzenie",
+    "body": "Jednorazowa konfiguracja <b>tego urządzenia</b>: ekran, który otwiera, i food truck, który obsługuje. Dotyczy tylko tego urządzenia — inne urządzenia konfiguruje się osobno, a ustawienia możesz później zmienić w menu profilu → „To urządzenie”.",
+    "whichScreen": "Który ekran ma otwierać to urządzenie?",
+    "dashboard": "Panel",
+    "kds": "Ekran kuchenny",
+    "whichVan": "Który food truck obsługuje to urządzenie?",
+    "selectVan": "Wybierz food truck…",
+    "saving": "Zapisywanie…",
+    "tryAgain": "Spróbuj ponownie",
+    "continue": "Dalej"
+  },
+  "device": {
+    "title": "To urządzenie",
+    "viewing": "Wyświetlasz: <b>{truck}</b>",
+    "viewingVan": "Wyświetlasz: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Tylko to urządzenie — inne urządzenia konfiguruje się osobno. (ID: {id}…)",
+    "truck": "Firma",
+    "van": "Food truck",
+    "defaultScreen": "Ekran domyślny",
+    "orderNotifications": "Powiadomienia o zamówieniach",
+    "patchFailed": "{setting, select, van {Food truck} defaultScreen {Ekran domyślny} other {Powiadomienia o zamówieniach}}: nie zapisano. {reason}",
+    "requireBiometric": "Wymagaj odcisku palca lub rozpoznawania twarzy do otwarcia",
+    "pinTitle": "Ustaw zapasowy PIN (4–6 cyfr)",
+    "pinHelp": "Twój sposób na wejście, gdy odcisk palca lub rozpoznawanie twarzy nie działa — to jedyna alternatywa, więc go nie zapomnij (zapomniany PIN oznacza ponowną instalację aplikacji). Działa offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Potwierdź PIN",
+    "pinTooShort": "Użyj co najmniej 4 cyfr.",
+    "pinMismatch": "PIN-y się nie zgadzają.",
+    "setPin": "Ustaw PIN i włącz",
+    "cancel": "Anuluj",
+    "noBiometric": "Na tym urządzeniu nie skonfigurowano odcisku palca ani rozpoznawania twarzy — dodaj je w ustawieniach urządzenia. Zapasowy PIN nadal działa.",
+    "footer": "Te ustawienia dotyczą tylko tego urządzenia — inne urządzenia konfiguruje się osobno."
+  },
+  "appLock": {
+    "unlockReason": "Odblokuj HatchGrab",
+    "usePasscode": "Użyj kodu",
+    "cancel": "Anuluj",
+    "confirmEnable": "Potwierdź, aby włączyć blokadę aplikacji"
+  },
+  "channel": {
+    "ordersName": "Nowe zamówienia",
+    "ordersDescription": "Alerty, gdy zamówienie wymaga potwierdzenia."
+  },
+  "localNotify": {
+    "newOrderTitle": "Nowe zamówienie",
+    "orderReceived": "Otrzymano zamówienie {number}",
+    "newOrders": "{n, plural, one {Masz nowe zamówienie} few {Masz {count} nowe zamówienia} many {Masz {count} nowych zamówień} other {Masz {count} nowe zamówienia}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Zamawianie wstrzymane",
+    "pausedBody": "Jesteś offline — zamawianie dla klientów jest wstrzymane.",
+    "offlineTitle": "Jesteś offline",
+    "offlineBody": "To urządzenie straciło połączenie."
+  }
+}

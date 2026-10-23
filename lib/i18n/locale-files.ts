@@ -22,6 +22,16 @@ const nlBE: unknown = require('@/messages/nl-BE.json')
 const svSE: unknown = require('@/messages/sv-SE.json')
 const daDK: unknown = require('@/messages/da-DK.json')
 const nbNO: unknown = require('@/messages/nb-NO.json')
+const plPL: unknown = require('@/messages/pl-PL.json')
+const csCZ: unknown = require('@/messages/cs-CZ.json')
+const huHU: unknown = require('@/messages/hu-HU.json')
+const skSK: unknown = require('@/messages/sk-SK.json')
+const roRO: unknown = require('@/messages/ro-RO.json')
+const hrHR: unknown = require('@/messages/hr-HR.json')
+const slSI: unknown = require('@/messages/sl-SI.json')
+const fiFI: unknown = require('@/messages/fi-FI.json')
+const etEE: unknown = require('@/messages/et-EE.json')
+const lvLV: unknown = require('@/messages/lv-LV.json')
 /* eslint-enable @typescript-eslint/no-require-imports */
 
-export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI, 'de-DE': deDE, 'de-AT': deAT, 'de-CH': deCH, 'de-LI': deLI, 'es-ES': esES, 'it-IT': itIT, 'pt-PT': ptPT, 'nl-NL': nlNL, 'nl-BE': nlBE, 'sv-SE': svSE, 'da-DK': daDK, 'nb-NO': nbNO }
+export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI, 'de-DE': deDE, 'de-AT': deAT, 'de-CH': deCH, 'de-LI': deLI, 'es-ES': esES, 'it-IT': itIT, 'pt-PT': ptPT, 'nl-NL': nlNL, 'nl-BE': nlBE, 'sv-SE': svSE, 'da-DK': daDK, 'nb-NO': nbNO, 'pl-PL': plPL, 'cs-CZ': csCZ, 'hu-HU': huHU, 'sk-SK': skSK, 'ro-RO': roRO, 'hr-HR': hrHR, 'sl-SI': slSI, 'fi-FI': fiFI, 'et-EE': etEE, 'lv-LV': lvLV }

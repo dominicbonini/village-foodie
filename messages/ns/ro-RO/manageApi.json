@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Food truck",
+  "eventsFeed": {
+    "today": "Astăzi · {date}",
+    "tomorrow": "Mâine · {date}"
+  },
+  "privacyNotSaved": "Evenimentul este publicat, dar setarea de confidențialitate nu a putut fi salvată.",
+  "stockWarning": "Niciun produs disponibil în „{category}”",
+  "uncategorised": "Fără categorie"
+}

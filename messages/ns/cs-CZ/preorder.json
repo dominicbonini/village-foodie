@@ -1,0 +1,6 @@
+{
+  "closedPending": "Předobjednávky uzavřeny. Čeká se na schválení kuchyní.",
+  "deadline": "Objednejte předem do {time}",
+  "deadlineOnDay": "Objednejte předem do {time}, {day}",
+  "opens": "Předobjednávky se otevřou: {day}"
+}

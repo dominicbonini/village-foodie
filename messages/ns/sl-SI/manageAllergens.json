@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Vaša kartica alergenov",
+    "intro": "Stranke jo vidijo <b>točno tako, kot jo napišete</b> — nič se ne prepiše. Vnesite ali prilepite besedilo spodaj ali pa naložite fotografijo/PDF in besedilo bomo prebrali namesto vas, vi pa ga preverite.",
+    "empty": "Kartice alergenov še ni.",
+    "placeholder": "npr. Vse naše jedi fish & chips vsebujejo pšenico in mleko. Cvrtnik si delimo z artikli, ki vsebujejo gluten in oreške. Na voljo so veganske možnosti — vprašajte osebje.",
+    "reading": "Branje slike…",
+    "upload": "📷 Naloži sliko / PDF",
+    "uploadNote": "Besedilo preberemo z vaše slike, da ga lahko pregledate — slike ne shranimo."
+  },
+  "cardUpload": {
+    "dishFallback": "Jed",
+    "question": "Imate kartico alergenov, ki bi jo naložili?",
+    "perDish": "{detected, select, yes {Naložite jo in z njo bomo sestavili alergene vaših jedi. Zaznani alergeni bodo vidni na naslednji strani, kjer potrdite vsako jed.} other {Naložite jo in z njo bomo sestavili alergene vaših jedi.}}",
+    "cardOnly": "Naložite kartico alergenov, ki jo bodo videle stranke.",
+    "yes": "Da",
+    "no": "Ne",
+    "noProblem": "Ni težav — ne potrebujete je. Nadaljujte s spodnjim gumbom.",
+    "analysing": "Analiziranje kartice…",
+    "dropzone": "Povlecite in spustite ali tapnite za izbiro",
+    "imageOrPdf": "Slika ali PDF",
+    "or": "ali",
+    "pastePlaceholder": "Sem prilepite besedilo kartice alergenov…",
+    "process": "Obdelaj kartico",
+    "cardRead": "Kartica prebrana ✓",
+    "unmatchedHeading": "Teh nismo mogli samodejno povezati — dodelite ali zavrzite",
+    "quotedName": "„{name}“",
+    "ambiguous": "Dvoumno — ustreza več jedem; izberite pravo.",
+    "assignTo": "Dodeli jedi…",
+    "dismiss": "Zavrzi",
+    "blanket": "Kartica navaja, da je lahko v <b>vseh</b> jedeh prisotno: <b>{list}</b>. Dodati k vsaki jedi? (vsako boste še vedno potrdili) <muted>— privzeto izklopljeno</muted>",
+    "kitchenNotes": "Opombe kuhinje (shranjene med podatke o alergenih)",
+    "matchSummary": "{n, plural, =0 {Povezano z jedjo: {matched}.} one {Povezano z jedjo: {matched}. {count} postavka čaka na vašo dodelitev.} two {Povezano z jedjo: {matched}. {count} postavki čakata na vašo dodelitev.} few {Povezano z jedjo: {matched}. {count} postavke čakajo na vašo dodelitev.} other {Povezano z jedjo: {matched}. {count} postavk čaka na vašo dodelitev.}}"
+  },
+  "savedCard": {
+    "showLess": "Pokaži manj",
+    "showMore": "Pokaži več",
+    "fileOnly": "Za ta food truck je shranjena datoteka kartice, povzetek besedila pa ni bil shranjen. Za branje odprite izvirnik.",
+    "viewOriginal": "Ogled izvirne kartice"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Kartice alergenov ni bilo mogoče prebrati — poskusite znova",
+      "confirmed": "Potrjeno: {name}",
+      "undo": "Razveljavi",
+      "saveFailed": "Shranjevanje ni uspelo — poskusite znova",
+      "imageFailed": "Te slike ni bilo mogoče prebrati — kartico raje vnesite ali prilepite",
+      "cardRead": "{n, plural, one {Kartica prebrana — povezano: {matched}, {count} postavka čaka na dodelitev} two {Kartica prebrana — povezano: {matched}, {count} postavki čakata na dodelitev} few {Kartica prebrana — povezano: {matched}, {count} postavke čakajo na dodelitev} other {Kartica prebrana — povezano: {matched}, {count} postavk čaka na dodelitev}}"
+    },
+    "genericWarn": {
+      "text": "„{generic}“ je bilo zaznano, vendar ni dovolj natančno. Če ta jed vsebuje živila iz skupine {family}, izberite: {picks} — če ne, jih pustite neizbrane.",
+      "andOr": "{a} in/ali {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Potrjeno",
+      "confirmed": "Potrjeno",
+      "needsReview": "Treba pregledati"
+    },
+    "confirm": {
+      "confirming": "Potrjevanje…",
+      "confirmed": "Potrjeno ✓",
+      "confirm": "Potrdi",
+      "changed": "· spremenjeno",
+      "changedTitle": "Urejeno po zadnji potrditvi — potrdite znova"
+    },
+    "allergens": "Alergeni",
+    "dietary": "Prehrana",
+    "uncategorised": "Brez kategorije",
+    "review": {
+      "progress": "Potrjeno: {confirmed} od {total}",
+      "allConfirmed": "✓ Vse potrjeno",
+      "list": "Seznam",
+      "table": "Tabela",
+      "detected": "Zaznano iz vašega jedilnika — <b>preverite</b>. Alergeni ostanejo skriti pred strankami, dokler ne potrdite vsake jedi.",
+      "viewOnly": "👁 Samo ogled — alergene lahko potrdi ali spremeni le lastnik.",
+      "emptyTitle": "Ni artiklov na jedilniku",
+      "emptyBody": "Najprej dodajte artikle na jedilnik, nato tukaj nastavite njihove alergene.",
+      "dish": "Jed",
+      "status": "Stanje"
+    },
+    "cardPanel": {
+      "reading": "Branje podatkov o alergenih…",
+      "saved": "🛡️ Kartica alergenov je shranjena",
+      "viewOriginal": "Ogled izvirne kartice",
+      "replace": "Zamenjaj kartico",
+      "uploadHelp": "Naložite kartico alergenov (fotografijo/PDF) ali prilepite podatke o alergenih — naša umetna inteligenca jih uredi za stranke.",
+      "add": "Dodaj kartico alergenov",
+      "viewOnly": "👁 Samo ogled — kartico alergenov lahko doda le lastnik.",
+      "intro": "Stranke bodo to kartico videle kot referenco za alergene na jedilniku. V načinu samo s kartico ostanejo alergeni posameznih jedi skriti (podatki o jedeh se ohranijo, če boste pozneje preklopili na alergene po jedeh)."
+    },
+    "subtitle": {
+      "choose": "Izberite, kako stranke vidijo podatke o alergenih",
+      "card": "Dodajte kartico alergenov",
+      "cardOptional": "Dodajte kartico alergenov (neobvezno)",
+      "review": "Preverite in potrdite vsako jed"
+    },
+    "heading": {
+      "import": "Alergeni",
+      "standalone": "Nastavitev alergenov"
+    },
+    "nav": {
+      "next": "Naprej →",
+      "back": "← Nazaj",
+      "skip": "Zaenkrat preskoči",
+      "saving": "Shranjevanje…",
+      "done": "Končano",
+      "saveLater": "Shrani in dokončaj pozneje",
+      "close": "Zapri",
+      "finish": "Zaključi",
+      "skipImport": "Zaenkrat preskoči nastavitev alergenov"
+    },
+    "hint": {
+      "skipDefers": "Preskok le odloži — jedi, ki jih niste potrdili, ostanejo skrite pred strankami, dokler njihovi alergeni niso potrjeni.",
+      "importIncomplete": "Za nadaljevanje potrdite vsako jed — ali izberite „Zaenkrat preskoči nastavitev alergenov“."
+    }
+  }
+}

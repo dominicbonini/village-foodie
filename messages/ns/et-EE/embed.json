@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Kus {truck} järgmisena müüb.",
+  "orderFrom": "Telli: {truck}",
+  "poweredBy": "Teenust pakub <b>HatchGrab</b>",
+  "loadFailed": "Ajakava ei õnnestunud praegu laadida.",
+  "loading": "Ajakava laadimine…",
+  "empty": "{truck}: eelseisvaid üritusi pole."
+}

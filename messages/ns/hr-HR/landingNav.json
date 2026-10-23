@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab — početna",
+  "cta": "Učitaj moj jelovnik →",
+  "ctaShort": "Učitaj jelovnik",
+  "features": "Značajke",
+  "pricing": "Cijene",
+  "logIn": "Prijava",
+  "country": {
+    "button": "Zemlja: {name}. Promijeni zemlju",
+    "menu": "Zemlja"
+  }
+}

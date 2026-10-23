@@ -1,0 +1,17 @@
+{
+  "back": "← Takaisin",
+  "title": "Valitse ateria",
+  "save": "Säästä {amount}",
+  "selectItems": "Valitse tuote jokaiseen kohtaan",
+  "choose": "Valitse: {category}…",
+  "inYourBasket": "── Ostoskorissa ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (ostoskorissa){state, select, used { — jo ateriassa} taken { — valittu toiseen kohtaan} other {}}",
+  "addNew": "── Lisää uusi ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Pakollinen · valitse yksi} required {Pakollinen} other {Valitse yksi}}{unmet, select, yes { (pakollinen)} other {}}",
+  "notePlaceholder": "Lisää huomautus, esim. ei sipulia (valinnainen)",
+  "backButton": "Takaisin",
+  "cancel": "Peruuta",
+  "chooseRequired": "Tee pakolliset valinnat",
+  "apply": "Lisää ateria · {amount}"
+}

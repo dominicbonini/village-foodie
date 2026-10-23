@@ -1,0 +1,17 @@
+{
+  "tagline": "Manje administracije.<br></br>Više kuhanja.",
+  "features": "Značajke",
+  "pricing": "Cijene",
+  "privacy": "Privatnost",
+  "terms": "Uvjeti",
+  "contact": "Kontakt",
+  "about": "O nama",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Od tvoraca platforme <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Preuzmite HatchGrab na App Storeu",
+    "appStoreAlt": "Preuzmite na App Storeu",
+    "googlePlayLink": "Nabavite HatchGrab na Google Playu",
+    "googlePlayAlt": "Nabavite na Google Playu"
+  }
+}

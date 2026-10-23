@@ -1,0 +1,12 @@
+{
+  "guestLabel": "EVENIMENT PRIVAT",
+  "truckFallback": "Food truck-ul",
+  "noSlugTitle": "Acest food truck nu este încă pregătit pentru comenzi online.",
+  "orderingOffTitle": "Comenzile online nu sunt activate",
+  "orderingOffBody": "La acest eveniment nu se primesc comenzi online. Vă rugăm să comandați la food truck.",
+  "replacedTitle": "Acest link a fost înlocuit",
+  "replacedBody": "Acest link nu mai funcționează — {truck} l-a înlocuit. Cereți organizatorului noul link sau noul cod QR.",
+  "madePublicBody": "Acest link nu mai funcționează — {truck} a făcut evenimentul public. Puteți comanda de pe pagina lor obișnuită.",
+  "unknownTitle": "Acest link nu funcționează",
+  "unknownBody": "Acest link nu funcționează. Verificați-l cu organizatorul sau scanați din nou codul QR."
+}

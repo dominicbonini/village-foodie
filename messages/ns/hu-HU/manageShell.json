@@ -1,0 +1,84 @@
+{
+  "loading": "A kezelőfelület betöltése…",
+  "loadFailed": "Nem sikerült betölteni",
+  "requestFailed": "Sikertelen",
+  "invalidToken": "Érvénytelen vagy lejárt token",
+  "loadFailedReason": "Nem sikerült betölteni az oldalt: {reason}",
+  "noCountrySettings": "Nem sikerült betölteni a food truck országbeállításait. Kérjük, frissítse az oldalt.",
+  "noPlans": "Nem sikerült betölteni a food truck csomagját. Kérjük, frissítse az oldalt.",
+  "stale": "{hasTime, select, yes {Nem sikerült frissíteni. A legutóbb mentett adatokat látja (mentés ideje: {time}). A módosításait továbbra is mentjük.} other {Nem sikerült frissíteni. A legutóbb mentett adatokat látja. A módosításait továbbra is mentjük.}}",
+  "verify": {
+    "ok": "E-mail-cím megerősítve — köszönjük.",
+    "expired": "Ez a megerősítő link lejárt. Vegye fel velünk a kapcsolatot, és még az indulás előtt elrendezzük.",
+    "invalid": "Ez a megerősítő link nem működött. Vegye fel velünk a kapcsolatot, és még az indulás előtt elrendezzük."
+  },
+  "profile": {
+    "updated": "Profil frissítve",
+    "saveFailed": "Nem sikerült menteni",
+    "title": "Profil szerkesztése",
+    "name": "Név",
+    "namePlaceholder": "Az Ön neve",
+    "email": "E-mail",
+    "cancel": "Mégse",
+    "saving": "Mentés…",
+    "save": "Mentés"
+  },
+  "header": {
+    "subtitle": "Kezelőfelület",
+    "ordersDashboard": "← Rendelések"
+  },
+  "tabs": {
+    "menu": "Étlap",
+    "schedule": "Menetrend",
+    "social": "Közösségi média",
+    "reports": "Kimutatások",
+    "team": "Csapat",
+    "settings": "Beállítások",
+    "payments": "Fizetések",
+    "billing": "Számlázás",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Menetrend ({count})",
+    "stripeAttention": "A Stripe teendőt jelez",
+    "allergensNotSet": "allergének nincsenek beállítva"
+  },
+  "menuSections": {
+    "label": "Étlap részei",
+    "items": "Tételek",
+    "capacity": "Konyhai kapacitás",
+    "extras": "Extrák és ráajánlások",
+    "deals": "Menük"
+  },
+  "socialSections": {
+    "label": "Közösségi média részei",
+    "create": "Bejegyzés készítése",
+    "designs": "Dizájnok",
+    "locations": "Helyszínbeállítások"
+  },
+  "notices": {
+    "review": "Ellenőrzés →",
+    "tour": "Szeretne egy gyors bemutatót az vezérlőpultjáról?",
+    "showMeAround": "Mutassa meg",
+    "dismiss": "Elvetés",
+    "approval": "{count, plural, one {<b>{count}</b> eseményt találtunk Önnek — ellenőrizze és hagyja jóvá, mielőtt megjelenik.} other {<b>{count}</b> eseményt találtunk Önnek — ellenőrizze és hagyja jóvá őket, mielőtt megjelennek.}}",
+    "allergens": "<b>Az allergének nincsenek beállítva</b> — a vendégek addig nem látják az allergéninformációkat, amíg Ön nem ellenőrzi őket. Ellenőrizze az egyes ételek allergénjeit az Étlap fülön.",
+    "domainLive": "Elérhető a webcím: <link>{domain}</link>. Nézze meg, majd a Beállításokban jelezze, hogy minden rendben van.",
+    "stripe": "<b>A Stripe teendőt jelez</b> — a kártyás fizetések leállhatnak, amíg ez nincs rendezve.",
+    "profileTitle": "Egészítse ki a profilját",
+    "missing": "Hiányzik: {fields}.",
+    "goToSettings": "Ugrás a Beállításokhoz →",
+    "field": {
+      "truckName": "a food truck neve",
+      "cuisineType": "konyha típusa",
+      "contactEmail": "kapcsolati e-mail-cím",
+      "contactPhone": "kapcsolati telefonszám"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Ingyenes próbaidőszakot használ} other {{months} hónapos ingyenes próbaidőszakot használ}}",
+    "ends": "{hasDate, select, yes {A próbaidőszak vége: <hl>{date}</hl>} other {A próbaidőszak <hl>hamarosan</hl> véget ér}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Minden funkció ingyenes # hónapig} other {Minden funkció ingyenes # hónapig}}} other {Minden funkció ingyenes a próbaidőszak alatt}}",
+    "body": "{hasDate, select, yes {A próbaidőszak végéig (<b>{date}</b>) semmilyen díjat nem számolunk fel Önnek. Számlázás csak akkor indul, ha Ön csomagot választ, és megadja a fizetési adatait. Addig nincs mit lemondani, és nincs mit fizetni. Addig válasszon csomagot — ha nem teszi, ez lesz a csomagja: {fallback}, és néhány funkció nem fog működni.} other {A próbaidőszak alatt semmilyen díjat nem számolunk fel Önnek. Számlázás csak akkor indul, ha Ön csomagot választ, és megadja a fizetési adatait. Addig nincs mit lemondani, és nincs mit fizetni. A próbaidőszak vége előtt válasszon csomagot — ha nem teszi, ez lesz a csomagja: {fallback}, és néhány funkció nem fog működni.}}",
+    "fees": "*Az online rendeléseknél a szokásos kártyás tranzakciós díjak érvényesek",
+    "upgrade": "Csomagváltás itt →"
+  }
+}

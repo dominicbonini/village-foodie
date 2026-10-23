@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Uživatelská nabídka",
+  "screenOn": "Obrazovka svítí",
+  "screenOff": "Obrazovka zhasíná",
+  "newOrderSound": "Zvuk nové objednávky",
+  "copied": "Zkopírováno",
+  "orderLink": "Odkaz na objednávky",
+  "qrCode": "QR kód",
+  "kitchenScreen": "Kuchyňská obrazovka",
+  "thisDevice": "Toto zařízení",
+  "manage": "Správa",
+  "ordersDashboard": "Přehled objednávek",
+  "admin": "Administrace",
+  "privacy": "Zásady ochrany osobních údajů",
+  "terms": "Podmínky",
+  "signOut": "Odhlásit se",
+  "close": "Zavřít"
+}

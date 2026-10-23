@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Időszak",
+    "event": "📍 Esemény",
+    "filterBy": "Szűrés",
+    "show": "Megjelenítés",
+    "range": "<from></from><sep>–</sep><until></until>",
+    "selectEvent": "Válasszon eseményt…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Esemény",
+    "viewReport": "Kimutatás megtekintése",
+    "loading": "Betöltés…",
+    "orders": "📋 Rendelések",
+    "items": "📦 Tételek",
+    "exportCsv": "⬇ CSV exportálása"
+  },
+  "empty": {
+    "noOrders": "Ebben az időszakban nincs rendelés.",
+    "selectEvent": "Válasszon fent egy eseményt a kimutatás megtekintéséhez."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} rendelés} other {{count} rendelés}} · {total}"
+  },
+  "revenue": {
+    "title": "Bevétel részletezése",
+    "deals": "Menük bevétele",
+    "modifiers": "Felárak a módosítókért",
+    "foodSales": "Ételeladás",
+    "total": "Összesen",
+    "other": "Egyéb",
+    "tax": "Adó",
+    "tips": "Borravaló",
+    "serviceFees": "Szolgáltatási díjak",
+    "cardFees": "Kártyadíjak"
+  },
+  "itemsSold": {
+    "title": "Eladott tételek"
+  },
+  "dealsCard": {
+    "title": "Menük"
+  },
+  "custom": {
+    "title": "Egyedi kérések",
+    "paidModifiers": "Fizetős módosítók",
+    "customerNotes": "Vásárlói megjegyzések",
+    "note": "„{note}”"
+  },
+  "table": {
+    "item": "Tétel",
+    "modifier": "Módosító",
+    "qty": "Db",
+    "total": "Összesen",
+    "date": "Dátum",
+    "time": "Idő",
+    "channel": "Csatorna"
+  },
+  "breakdown": {
+    "orders": "Rendelések részletezése",
+    "items": "Tételek részletezése"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Helyszíni"
+  },
+  "csv": {
+    "orderId": "Rendelésazonosító",
+    "date": "Dátum",
+    "event": "Esemény",
+    "timePlaced": "Leadás ideje",
+    "collectionTime": "Átvételi idő",
+    "customerName": "Vásárló neve",
+    "orderType": "Rendelés típusa",
+    "items": "Tételek",
+    "deals": "Menük",
+    "modifiers": "Módosítók",
+    "notes": "Megjegyzések",
+    "subtotal": "Részösszeg",
+    "tip": "Borravaló",
+    "serviceFee": "Szolgáltatási díj",
+    "total": "Összesen",
+    "itemName": "Tétel neve",
+    "qty": "Db",
+    "unitPrice": "Egységár",
+    "itemTotal": "Tétel összesen",
+    "orderTotal": "Rendelés összesen",
+    "unknownEvent": "Ismeretlen esemény",
+    "asap": "Mielőbb",
+    "unknownCustomer": "Ismeretlen",
+    "customerOnline": "Vásárló, online",
+    "placedByTruck": "A food truck rögzítette"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "back": "← Atpakaļ",
+  "title": "Pievienot komplektu",
+  "save": "Ietaupiet {amount}",
+  "selectItems": "Izvēlieties pozīciju katrai komplekta daļai",
+  "choose": "Izvēlieties: {category}…",
+  "inYourBasket": "── Jūsu grozā ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (grozā){state, select, used { — jau ir komplektā} taken { — jau izvēlēts citā daļā} other {}}",
+  "addNew": "── Pievienot jaunu ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obligāti · izvēlieties vienu} required {Obligāti} other {Izvēlieties vienu}}{unmet, select, yes { (obligāti)} other {}}",
+  "notePlaceholder": "Pievienojiet piezīmi, piem., bez sīpoliem (neobligāti)",
+  "backButton": "Atpakaļ",
+  "cancel": "Atcelt",
+  "chooseRequired": "Izvēlieties obligātās opcijas",
+  "apply": "Pievienot komplektu · {amount}"
+}

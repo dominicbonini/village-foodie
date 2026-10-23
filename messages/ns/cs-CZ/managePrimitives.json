@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Zobrazit alergeny u každého jídla",
+    "recommended": "Doporučeno",
+    "perDishBody": "Projděte každé jídlo a potvrďte jeho alergeny. Zákazníci uvidí štítky u jednotlivých jídel a z nich odvozenou souhrnnou kartu alergenů.",
+    "cardTitle": "Zobrazit kartu alergenů",
+    "cardBody": "Nahrajte nebo vložte jednu kartu alergenů (PDF, obrázek nebo text), která se zobrazí beze změn. Štítky u jednotlivých jídel zůstanou skryté."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "subject": "Jūsu HatchGrab demo versija — saite, lai atgrieztos",
+  "heading": "Jūsu demo versija ir saglabāta",
+  "intro": "Šeit ir saite, lai atgrieztos demo versijā ar jūsu ēdienkarti. Pieteikšanās nav vajadzīga — vienkārši pieskarieties tai.",
+  "button": "Atvērt manu demo versiju",
+  "freshDay": "Katru reizi, kad atgriezīsieties, mēs sagatavosim jaunu tirdzniecības dienu, lai būtu ar ko darboties.",
+  "deletion": "Šī ir demo versija, tāpēc mēs to neglabājam mūžīgi — mēs to un ēdienkarti izdzēsīsim\n                <b>{date}</b> ({days, plural, zero {pēc # dienām} one {pēc # dienas} other {pēc # dienām}}). Ja reģistrēsieties pirms\n                tam, jūsu ēdienkarte tiks pārnesta.",
+  "notSent": "Saglabāts, taču pašlaik neizdevās nosūtīt e-pastu."
+}

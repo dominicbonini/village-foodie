@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Bez měsíčního poplatku",
+    "subtitle": "Sezónní a příležitostní prodejci",
+    "description": "Žádný měsíční poplatek. Platíte jen tehdy, když zákazník zaplatí online kartou."
+  },
+  "pro": {
+    "subtitle": "Food trucky s pravidelnými předobjednávkami",
+    "description": "Vše včetně automatických odpovědí na WhatsAppu a příspěvků na sociální sítě, navíc s online objednávkami v ceně každý měsíc."
+  },
+  "unlimited": {
+    "name": "Neomezený",
+    "subtitle": "Vytížené food trucky a festivaly",
+    "description": "Vše, bez poplatků za online objednávky, ať máte jakkoli napilno."
+  },
+  "trial": {
+    "name": "Zkušební období zdarma",
+    "description": "Všechny funkce zdarma po dobu zkušebního období."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Ukázkové prostředí pro potenciální zákazníky — nikdy veřejné."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester před spuštěním — plný přístup."
+  }
+}

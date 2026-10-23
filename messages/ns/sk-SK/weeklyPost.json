@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Niečo sa pokazilo",
+    "previewFailed": "Náhľad sa nepodarilo vytvoriť",
+    "loadFailed": "Nepodarilo sa načítať",
+    "tooBig": "Tento obrázok má {size, number, ::.0 group-off} MB. Limit je 10 MB.",
+    "wrongType": "Vyberte súbor PNG alebo JPG.",
+    "uploadIncomplete": "Nahrávanie sa nedokončilo",
+    "uploadFailed": "Nahrávanie zlyhalo",
+    "saveFailed": "Nepodarilo sa uložiť",
+    "buildFailed": "Príspevok sa nepodarilo vytvoriť",
+    "copyFailed": "Nepodarilo sa skopírovať — označte text a skopírujte ho ručne."
+  },
+  "loading": "Načítava sa…",
+  "missingTable": {
+    "title": "Týždenný príspevok potrebuje aktualizáciu databázy",
+    "body": "Tabuľka dizajnov ešte nebola vytvorená. Po vykonaní migrácie bude táto obrazovka fungovať."
+  },
+  "kind": {
+    "label": "Ktorý dizajn",
+    "event": "Jedna akcia",
+    "week": "Týždenný"
+  },
+  "setup": {
+    "title": "Nastavte si týždenný príspevok",
+    "intro": "Nahrajte prázdnu verziu grafiky s týždenným harmonogramom, ktorú už vytvárate — rovnaký dizajn, len bez vašich textových polí. HatchGrab doplní týždeň podľa vášho harmonogramu.",
+    "canvaTitle": "Ako exportovať prázdnu verziu z aplikácie Canva",
+    "canvaStep1": "Otvorte svoj bežný dizajn týždenného harmonogramu.",
+    "canvaStep2": "Odstráňte textové polia s dátumami, miestami a časmi — ponechajte pozadie a nadpisy, ktoré chcete zachovať.",
+    "canvaStep3": "Zdieľať › Stiahnuť › PNG.",
+    "uploading": "Nahráva sa…",
+    "upload": "Nahrať prázdny obrázok",
+    "uploadHint": "PNG alebo JPG, najviac 10 MB, kratšia strana aspoň {px} px.",
+    "phoneTip": "Najlepšie na počítači alebo tablete iPad — na telefóne sa malé polia ťažko posúvajú.",
+    "designName": "Dizajn týždenného príspevku",
+    "backDesigns": "‹ Dizajny",
+    "back": "‹ Späť",
+    "pictureNote": "Váš obrázok bez dátumu a miesta. Tie doplníme my.",
+    "saved": "Dizajn bol uložený."
+  },
+  "week": {
+    "this": "Tento týždeň",
+    "next": "Budúci týždeň"
+  },
+  "post": {
+    "title": "Váš týždenný príspevok",
+    "editDesign": "Upraviť dizajn",
+    "weekOf": "týždeň od {date}",
+    "imageAlt": "Váš týždenný príspevok",
+    "building": "Vytvára sa príspevok…",
+    "updating": "Aktualizuje sa…",
+    "eventsTitle": "Akcie tento týždeň",
+    "noEvents": "Tento týždeň nie sú žiadne akcie.",
+    "eventDateCancelled": "{date} · zrušené",
+    "showCancelled": "Zobraziť zrušené akcie",
+    "showPrivate": "Zobraziť súkromné akcie",
+    "privateHint": "Zobrazia sa ako „Súkromná akcia“ s dátumom a časmi — nikdy s miestom.",
+    "noteTitle": "Poznámka",
+    "notePlaceholder": "napr. Predobjednávky na vyzdvihnutie",
+    "noteHint": "Zobrazí sa v popise a v poli na poznámku, ak ste ho do dizajnu umiestnili.",
+    "captionTitle": "Popis pre vašu stránku",
+    "perEventTitle": "Príspevok ku každej akcii",
+    "nothingToPost": "Tento týždeň nie je čo zverejniť.",
+    "textCopied": "Text bol skopírovaný.",
+    "copyText": "Kopírovať text",
+    "image": "Obrázok",
+    "share": "Zdieľať",
+    "noOrderLink": "Zatiaľ nemáte odkaz na objednávanie — webovú adresu food trucku nastavte v Nastaveniach."
+  }
+}

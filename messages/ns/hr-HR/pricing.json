@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Vaš prvi mjesec potpuno je besplatan — sve značajke otključane.} few {Vaša prva # mjeseca potpuno su besplatna — sve značajke otključane.} other {Vaših prvih # mjeseci potpuno je besplatno — sve značajke otključane.}}",
+    "body": "S platformom {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s pružateljem kartičnog plaćanja. Radije naplaćujete unaprijed? Online plaćanje karticom možete dodati bilo kada. Kad vaše besplatno probno razdoblje završi, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (bez mjesečne naknade)} other {}}, osim ako odaberete neki drugi paket. Bez kartice za početak, bez ugovora, otkažite bilo kada."
+  },
+  "card": {
+    "perTruckMonth": "po food trucku / mjesečno",
+    "mostTrucks": "Najpopularnije",
+    "tryFree": "Isprobajte besplatno",
+    "seeEvery": "Pogledajte sve značajke →",
+    "everything": "Sve što trebate za rad",
+    "everythingIn": "Sve iz paketa {plan}, i još"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> samo za online narudžbe plaćene karticom. Narudžbe na licu mjesta uvijek su besplatne.",
+    "included": "Svaki mjesec uključeno je prvih <b>{included}</b> u online narudžbama, a zatim <b>{fee}*</b>. Narudžbe na licu mjesta uvijek su besplatne.",
+    "noFee": "<b>Bez HatchGrab naknada</b> za online narudžbe, koliko god posla imali. Jedan predvidiv mjesečni trošak."
+  },
+  "base": {
+    "walkUp": "Narudžbe na licu mjesta i kuhinjski zaslon",
+    "online": "Online naručivanje",
+    "preorders": "Prednarudžbe i vrijeme preuzimanja",
+    "capacity": "Upravljanje kapacitetom kuhinje",
+    "privateEvents": "Privatni događaji",
+    "printing": "Ispis kuhinjskih listića",
+    "app": "Kuhinjska aplikacija za iPhone, iPad i Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatski odgovori na WhatsAppu",
+    "schedule_graphics": "Objave za društvene mreže — vaš raspored za Facebook i Instagram — spremne za objavu",
+    "event_types": "Prilagođene vrste događaja i cijene"
+  },
+  "money": {
+    "unlimitedOrders": "Neograničene online narudžbe, 0 % HatchGrab naknade",
+    "samePrice": "Ista cijena i u vašem najprometnijem mjesecu"
+  },
+  "comingSoon": "Uskoro",
+  "bar": {
+    "title": "Koji je paket za mene najjeftiniji?",
+    "subtitle": "Vaše online narudžbe mjesečno",
+    "first": "Manje od {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Više od {from} → <b>{plan}</b>",
+    "only": "Bilo koji obujam → <b>{plan}</b>"
+  },
+  "footnote": "* Uz to se za online narudžbe plaćene karticom naplaćuje Stripeova naknada za obradu kartičnih plaćanja (trenutačno — {country}: {cardFee}), koja se plaća Stripeu, a ne HatchGrabu. Narudžbe na licu mjesta naplaćujete vlastitim POS uređajem — HatchGrab naplaćuje 0 %.",
+  "currencyLine": "Cijene u valuti {currency} ({code})"
+}

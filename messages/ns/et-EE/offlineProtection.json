@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Teeninduse ajal peab töölaud või köögiekraan olema sees ja võrgus.",
+  "explainerBody": "Kui ekraan lülitub välja, seade kaotab internetiühenduse või lähed teisele veebisaidile, rakendub ühenduskatkestuse kaitse — see kas peatab tellimise või lülitab automaatse vastuvõtmise välja, vastavalt sinu valikule.",
+  "reminder": "⚠️ Hoia töölaud või köögiekraan teeninduse ajal sees ja võrgus, muidu võib rakenduda ühenduskatkestuse kaitse.",
+  "enableConfirm": "Ühenduskatkestuse kaitse on sisse lülitatud.\n\nEt tellimused saabuksid, peab ekraan jääma sisse. Kui see seade kaotab ühenduse, rakendub ühenduskatkestuse kaitse sinu valitud režiimis.\n\nVeendu, et selles seadmes on valik „Ekraan sees“ sisse lülitatud.",
+  "disableConfirm": "Kas lülitada selle ürituse ühenduskatkestuse kaitse välja?\n\nKui see seade kaotab ühenduse, jätkuvad veebitellimused — kliendid võivad esitada tellimusi, mida sa ei näe. Lülita välja ainult siis, kui sul on töökindel ühendus.",
+  "cardDescription": "Määrab, mis juhtub saabuvate tellimustega, kui sinu seade kaotab ühenduse.",
+  "purpose": "Kui sinu seade kaotab ühenduse, peatab see tellimuste saabumise ajaks, mil sa neid ei näe.",
+  "switchLabel": "Tellimuste kaitse ühenduse katkemisel",
+  "switchHelp": "Mis juhtub, kui see toiduauto kaotab ühenduse.",
+  "modes": {
+    "pause": {
+      "label": "Peata veebitellimine",
+      "help": "Kliendid ei saa tellida, kuni oled taas võrgus."
+    },
+    "no_auto_accept": {
+      "label": "Võta tellimusi vastu, kinnita need ise",
+      "help": "Automaatne vastuvõtmine lülitatakse välja, nii et kliendid saavad endiselt tellida, kuid midagi ei kinnitata automaatselt. Kinnitad iga tellimuse, kui oled taas võrgus — ja kõik, mis ootab ka pärast sinu valitud aega, lükatakse automaatselt tagasi ning kliendile saadetakse sellest e-kiri."
+    }
+  },
+  "autoRejectLabel": "Lükka tagasi tellimused, mis ootavad kauem kui",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

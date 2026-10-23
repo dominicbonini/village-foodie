@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Aikaväli",
+    "event": "📍 Tapahtuma",
+    "filterBy": "Suodata",
+    "show": "Näytä",
+    "range": "<from></from><sep>–</sep><until></until>",
+    "selectEvent": "Valitse tapahtuma…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Tapahtuma",
+    "viewReport": "Näytä raportti",
+    "loading": "Ladataan…",
+    "orders": "📋 Tilaukset",
+    "items": "📦 Tuotteet",
+    "exportCsv": "⬇ Vie CSV"
+  },
+  "empty": {
+    "noOrders": "Tältä ajalta ei löytynyt tilauksia.",
+    "selectEvent": "Valitse tapahtuma yltä nähdäksesi sen raportin."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} tilaus} other {{count} tilausta}} · {total}"
+  },
+  "revenue": {
+    "title": "Myynnin erittely",
+    "deals": "Aterioiden myynti",
+    "modifiers": "Lisävalintojen lisähinnat",
+    "foodSales": "Ruokamyynti",
+    "total": "Yhteensä",
+    "other": "Muut",
+    "tax": "ALV",
+    "tips": "Juomarahat",
+    "serviceFees": "Palvelumaksut",
+    "cardFees": "Korttikulut"
+  },
+  "itemsSold": {
+    "title": "Myydyt tuotteet"
+  },
+  "dealsCard": {
+    "title": "Ateriat"
+  },
+  "custom": {
+    "title": "Muokkaukset",
+    "paidModifiers": "Maksulliset lisävalinnat",
+    "customerNotes": "Asiakkaiden lisätiedot",
+    "note": "”{note}”"
+  },
+  "table": {
+    "item": "Tuote",
+    "modifier": "Lisävalinta",
+    "qty": "Määrä",
+    "total": "Yhteensä",
+    "date": "Päivä",
+    "time": "Aika",
+    "channel": "Kanava"
+  },
+  "breakdown": {
+    "orders": "Tilausten erittely",
+    "items": "Tuotteiden erittely"
+  },
+  "channel": {
+    "online": "Verkossa",
+    "walkUp": "Paikan päällä"
+  },
+  "csv": {
+    "orderId": "Tilausnumero",
+    "date": "Päivä",
+    "event": "Tapahtuma",
+    "timePlaced": "Tilausaika",
+    "collectionTime": "Noutoaika",
+    "customerName": "Asiakkaan nimi",
+    "orderType": "Tilaustyyppi",
+    "items": "Tuotteet",
+    "deals": "Ateriat",
+    "modifiers": "Lisävalinnat",
+    "notes": "Lisätiedot",
+    "subtotal": "Välisumma",
+    "tip": "Juomaraha",
+    "serviceFee": "Palvelumaksu",
+    "total": "Yhteensä",
+    "itemName": "Tuotteen nimi",
+    "qty": "Määrä",
+    "unitPrice": "Yksikköhinta",
+    "itemTotal": "Tuote yhteensä",
+    "orderTotal": "Tilaus yhteensä",
+    "unknownEvent": "Tuntematon tapahtuma",
+    "asap": "Mahdollisimman pian",
+    "unknownCustomer": "Tuntematon",
+    "customerOnline": "Asiakas verkossa",
+    "placedByTruck": "Ruokarekan kirjaama"
+  }
+}

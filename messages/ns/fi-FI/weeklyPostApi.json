@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Otsikko ei mahtunut, joten sitä lyhennettiin.",
+    "date": "Päivämäärä ei mahtunut, joten sitä lyhennettiin.",
+    "daysOff": "Vapaapäivien teksti ei mahtunut, joten sitä lyhennettiin.",
+    "place": "Paikan nimi ei mahtunut, joten sitä lyhennettiin.",
+    "time": "Kellonaika ei mahtunut, joten sitä lyhennettiin.",
+    "note": "Oma tekstisi ei mahtunut, joten sitä lyhennettiin.",
+    "venue": "Tapahtumapaikka ei mahtunut, joten sitä lyhennettiin.",
+    "area": "Alue ei mahtunut, joten sitä lyhennettiin."
+  },
+  "fontFallback": "Pohjan käyttämää fonttia ({id}) ei voitu ladata — näissä laatikoissa käytetään Oswald-fonttia.",
+  "wrongShapeBackground": "Tämän paikan kuva on eri muotoinen kuin pohjasi, joten käytetään vakiotaustaa.",
+  "rowsFit": "Viimeinen päivä jää {px} px kuvan alareunan alapuolelle — pienennä rivien väliä tai siirrä riviä 1 ylemmäs.",
+  "placeStatus": {
+    "ownBoth": "Oma kuva ja omat tekstien sijainnit",
+    "wrongShape": "Eri muoto — ei käytössä ennen kuin vaihdat sen",
+    "ownPicture": "Oma kuva, vakiosijainnit",
+    "ownPositions": "Vakiokuva, omat tekstien sijainnit",
+    "none": "Ei vielä kuvaa — käytössä Vakio"
+  },
+  "standardStatus": "Käytössä kaikissa muissa paikoissa",
+  "option": {
+    "oneOff": "Lataa kuva vain tähän julkaisuun",
+    "placePoster": "Juliste: {name}",
+    "standard": "Vakiopohja"
+  },
+  "previewLabel": {
+    "lastEvent": "Esikatselussa viimeisin tapahtumasi täällä",
+    "noEvents": "Täällä ei ole vielä tapahtumia — esikatselu näyttää seuraavan tapahtumasi tämän paikan nimellä"
+  },
+  "fontUsage": {
+    "weekly": "viikkojulkaisusi pohja",
+    "event": "tapahtumajulkaisusi pohja",
+    "place": "pohjasi paikalle {place}",
+    "placeUnnamed": "paikkakohtainen pohjasi"
+  },
+  "face": {
+    "regular": "Normaali",
+    "bold": "Lihavoitu",
+    "italic": "Kursiivi"
+  },
+  "picture": {
+    "legacy": "Tapahtumajuliste",
+    "fallback": "Kuva",
+    "wrongShape": "Eri muoto — ei voi käyttää koko taustana"
+  },
+  "noPicture": {
+    "omit": "Jätä pois",
+    "blank": "Jätä tyhjä tila",
+    "logo": "Näytä logosi"
+  },
+  "noPicturesAll": "{total, plural, one {Sijainnillasi on kuva.} other {Kaikissa sijainneissasi ({total}) on kuva.}}",
+  "noPicturesSome": "{without, plural, one {{without}/{total} sijainnistasi on vielä ilman kuvaa} other {{without}/{total} sijainnistasi on vielä ilman kuvaa}}",
+  "licenceTick": "Omistan tämän fontin tai minulla on lisenssi sen käyttöön",
+  "fontUploadButton": "↑ Lataa oma fonttisi"
+}

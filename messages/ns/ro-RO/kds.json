@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} — Bucătărie",
+  "loading": "Se încarcă bucătăria…",
+  "pin": {
+    "title": "Introduceți PIN-ul",
+    "placeholder": "PIN",
+    "unlock": "Deblocați",
+    "unreachable": "Serverul nu poate fi contactat acum. PIN-ul este corect — încercați din nou peste câteva clipe.",
+    "incorrect": "PIN incorect",
+    "generic": "A apărut o eroare. Încercați din nou."
+  },
+  "error": {
+    "linkInvalid": "Acest link nu mai este valabil.",
+    "couldNotLoad": "Comenzile nu au putut fi încărcate",
+    "truckNotFound": "Food truck negăsit"
+  },
+  "degraded": {
+    "at": "⚠️ Serverul nu poate fi contactat. Se afișează bonurile de la {time}. ESTE POSIBIL SĂ LIPSEASCĂ COMENZI NOI.",
+    "earlier": "⚠️ Serverul nu poate fi contactat. Se afișează bonuri mai vechi. ESTE POSIBIL SĂ LIPSEASCĂ COMENZI NOI."
+  },
+  "header": {
+    "dashboard": "Panou de control",
+    "backTitle": "Înapoi la panoul de control",
+    "list": "Listă",
+    "grid": "Grilă",
+    "full": "Complet",
+    "cook": "Bucătar",
+    "fullTitle": "Fișe complete — prețuri și detalii de plată, așa cum le vede cine servește clienții la food truck.",
+    "cookTitle": "Fișe pentru bucătar — text mai mare, grupat pe categorii, fără prețuri.",
+    "readyStep": "Pasul „Gata”",
+    "readyOnlyTitle": "Acest ecran doar marchează comenzile ca gata, deci opțiunea nu poate fi dezactivată — este singurul pas pe care îl face.",
+    "readyOnTitle": "Acest ecran marchează comenzile ca gata. Atingeți ca să o facă alt ecran.",
+    "readyOffTitle": "Alt ecran marchează comenzile ca gata. Atingeți ca să o facă acesta.",
+    "handover": "Plată și predare",
+    "handoverOnlyTitle": "Acest ecran doar încasează plata, deci opțiunea nu poate fi dezactivată — este singurul pas pe care îl face.",
+    "handoverOnTitle": "Acest ecran încasează plata și predă comanda. Atingeți ca să o facă alt ecran.",
+    "handoverOffTitle": "Alt ecran încasează plata. Atingeți ca să o facă acesta.",
+    "soundOn": "Sunetul pentru comenzi noi este pornit — atingeți pentru a-l opri",
+    "soundOff": "Sunetul pentru comenzi noi este oprit — atingeți pentru a-l porni",
+    "screenOn": "Ecran pornit",
+    "screenOff": "Ecran oprit",
+    "screenSettings": "Setări ecran",
+    "manageEvent": "Gestionare eveniment",
+    "manageEventTitle": "Gestionați evenimentul — porniți, întrerupeți, modificați sau încheiați",
+    "soundSettings": "Setări sunet",
+    "soundSettingsTitle": "Ce sunete se aud pe acest dispozitiv",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Setări afișare",
+    "on": "Pornit",
+    "off": "Oprit",
+    "newOrderSound": "Sunet comandă nouă",
+    "soundNeedsConfirming": "Doar comenzile de confirmat",
+    "soundAll": "Toate comenzile noi",
+    "soundDue": "Sunet când o comandă trebuie gătită",
+    "soundDueHelp": "Sună când un bon devine portocaliu.",
+    "deviceSettings": "Setări dispozitiv",
+    "sound": "Sunet",
+    "close": "Închideți"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Comenzile pentru acest eveniment nu s-au încărcat",
+    "mismatchBody": "Serverul a răspuns cu alt eveniment, așa că nu se afișează nimic, în loc de comenzi greșite. Alegeți din nou evenimentul sau reîncărcați.",
+    "mismatchBodyAt": "Serverul a răspuns cu alt eveniment, așa că nu se afișează nimic, în loc de comenzi greșite pentru {venue}. Alegeți din nou evenimentul sau reîncărcați.",
+    "paused": "⏸ Comenzi întrerupte{reason, select, offline { (dispozitiv offline)} other {}} — clienții nu pot comanda",
+    "resume": "Reluați",
+    "offline": "Fără conexiune — se afișează ultimele comenzi cunoscute. Comenzile online au fost întrerupte pentru clienți.",
+    "queued": "{n, plural, one {{count} acțiune în așteptare} few {{count} acțiuni în așteptare} other {{count} de acțiuni în așteptare}}",
+    "extraWait": "⏱ Așteptare suplimentară de +{mins} min activă",
+    "clear": "Anulați",
+    "toMake": "De făcut",
+    "today": "Azi · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Porniți evenimentul",
+    "recentlyClosed": "Eveniment încheiat · {venue}, încheiat la {time}",
+    "eventStatus": "{tone, select, paused {⏸ Întrerupt} live {● Activ} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}"
+  },
+  "board": {
+    "queueClear": "Nicio comandă",
+    "doneToday": "Gata azi · {count}",
+    "paid": "✓ plătit",
+    "cardHeld": "preautorizat",
+    "due": "{amount} de plată"
+  },
+  "screenOff": {
+    "title": "Permiteți oprirea ecranului?",
+    "bodyVans": "{vans} {n, plural, one {are} few {au} other {au}} detectarea offline activată. Dacă ecranul se oprește, dispozitivul poate înceta să trimită semnalul online, iar comenzile clienților pot fi întrerupte.",
+    "body": "Dacă ecranul se oprește, dispozitivul poate înceta să trimită semnalul online.",
+    "keepHint": "Țineți ecranul pornit pentru ca comenzile să nu fie întrerupte.",
+    "keep": "Țineți ecranul pornit",
+    "allow": "Permiteți oprirea"
+  },
+  "event": {
+    "change": "Schimbați evenimentul",
+    "cancel": "Anulați",
+    "waitActive": "⏱ +{mins} min activ · Atingeți pentru anulare",
+    "addWait": "⏱ Adăugați așteptare",
+    "endTitle": "Încheiați evenimentul?",
+    "endEarly": "Acest eveniment este programat să se încheie abia la {time}. Nu se vor mai accepta comenzi. Confirmați încheierea evenimentului?",
+    "endNow": "Încheiați acest eveniment? Nu se vor mai prelua comenzi.",
+    "yes": "Da",
+    "started": "Eveniment pornit",
+    "startFutureConfirm": "Acest eveniment are loc pe {date}. Îl porniți acum?",
+    "finishTimeNow": "Ora de încheiere este acum {time}",
+    "finished": "Eveniment încheiat",
+    "cancelled": "Eveniment anulat",
+    "noteSaved": "Notă salvată",
+    "pauseConfirm": "Întrerupeți comenzile? Clienții vor vedea „Comenzi suspendate” până când le reluați.",
+    "switchConfirm": "Treceți de la {from} la {to}?{n, plural, =0 {} one { {count} comandă de pe acest ecran va fi înlocuită.} few { {count} comenzi de pe acest ecran vor fi înlocuite.} other { {count} de comenzi de pe acest ecran vor fi înlocuite.}} Atingeți evenimentul curent pentru a reveni."
+  },
+  "intro": {
+    "title": "Acesta este ecranul de bucătărie",
+    "p1": "Este vederea bucătarului — comenzile de pregătit, în ordinea în care trebuie făcute. Ecranul de lângă grătar afișează asta, în timp ce la food truck, cine servește clienții folosește panoul de comenzi.",
+    "p2": "Fișele se mută pe măsură ce le atingeți, astfel încât cine gătește știe mereu ce urmează și nimeni nu trebuie să strige. Totul aici sunt date demo — încercați fără grijă.",
+    "gotIt": "Am înțeles"
+  },
+  "toast": {
+    "failed": "Eșuat",
+    "rejectFailed": "Respingerea a eșuat",
+    "buzzerSaved": "Pagerul {n} a fost salvat",
+    "buzzerRemoved": "Pagerul {n} a fost eliminat",
+    "buzzerRemovedNone": "Pager eliminat",
+    "buzzerAssigned": "Pagerul {n} a fost atribuit",
+    "buzzerAssignedFrom": "Pagerul {n} a fost atribuit (luat de la #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Pagerul nu a putut fi eliminat de la {target, select, order {comanda #{id}} other {această comandă}}} other {Pagerul {n} nu a putut fi eliminat — este încă la {target, select, order {comanda #{id}} other {această comandă}}}}",
+    "buzzerAssignFailed": "Pagerul {n} nu a putut fi dat {target, select, order {comenzii #{id}} other {acestei comenzi}} — {had, select, yes {are încă pagerul {prior}} other {încă nu are pager}}"
+  }
+}

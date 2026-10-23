@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Čteme váš jídelní lístek…",
+    "found": "Našli jsme vaše položky…",
+    "kitchen": "Nastavujeme vaši kuchyni…",
+    "page": "Vytváříme vaši objednávkovou stránku…",
+    "almost": "Skoro hotovo…"
+  },
+  "templateSteps": {
+    "truck": "Vytváříme ukázkový food truck…",
+    "menu": "Připravujeme jídelní lístek…",
+    "kitchen": "Nastavujeme kuchyni…",
+    "page": "Vytváříme objednávkovou stránku…",
+    "almost": "Skoro hotovo…"
+  },
+  "dialogLabel": "Nahrát jídelní lístek",
+  "heading": "✨ Nahrajte svůj jídelní lístek",
+  "failedHeading": "Tento jídelní lístek se nám nepodařilo přečíst",
+  "close": "Zavřít",
+  "intro": "Fotka vaší tabule s nabídkou, snímek obrazovky, PDF, nebo ho vložte jako text. Naše AI ho přečte a za méně než 60 sekund vám vytvoří funkční objednávkovou stránku — vaše položky, vaše ceny. Bez registrace, bez platební karty.",
+  "failedIntro": "Někdy je fotka moc tmavá, moc šikmá nebo psaná rukou. To je náš úkol, ne vaše chyba. Několik možností, jak dál:",
+  "usually": "Obvykle to trvá méně než 60 sekund.",
+  "slow": "Trvá to déle než obvykle — u velkých jídelních lístků se to stává.",
+  "keepWaiting": "Počkat ještě",
+  "sampleWhileYouWait": "Nebo se mezitím porozhlédněte s ukázkovým jídelním lístkem",
+  "standIn": "Tohle <b>nebude váš jídelní lístek</b> — je to zástupný lístek, abyste viděli, jak vše funguje.",
+  "seeSample": "Zobrazit ukázku",
+  "tryAgain": "Zkusit znovu",
+  "tryPhotoAgain": "Zkusit tuto fotku znovu",
+  "tryDifferent": "Zkusit jinou fotku",
+  "uploadAnother": "← Nahrát jinou fotku",
+  "orSample": "Nebo se porozhlédněte s ukázkovým jídelním lístkem",
+  "orBuild": "Nebo ho vytvoříme za vás",
+  "buildSent": "✓ Děkujeme — máme to. Ozveme se e-mailem.",
+  "buildBody": "Nechte nám svůj e-mail a skutečný člověk váš jídelní lístek zadá a pošle vám odkaz.",
+  "emailPlaceholder": "vy@vasfoodtruck.cz",
+  "sending": "…",
+  "send": "Odeslat",
+  "noPhoto": "Nemáte po ruce fotku jídelního lístku?",
+  "noPhotoBody": "Porozhlédněte se místo toho s ukázkovým food truckem — svůj lístek můžete nahrát kdykoli.",
+  "build": "Vytvořit demo →",
+  "nothingPublished": "Nic se nezveřejní — vidíte to jen vy.",
+  "error": {
+    "somethingWrong": "Něco se pokazilo. Zkuste to prosím znovu.",
+    "serverUnreachable": "Nepodařilo se spojit se serverem. Zkontrolujte připojení a zkuste to znovu.",
+    "sendFailed": "Nepodařilo se odeslat — zkuste to znovu."
+  },
+  "fields": {
+    "uploadLabel": "Nahrát soubor s jídelním lístkem",
+    "dropHere": "Sem přetáhněte jídelní lístek",
+    "dragOrTap": "Přetáhněte sem soubor nebo klepnutím vyberte",
+    "fileTypes": "Obrázek nebo PDF",
+    "or": "nebo",
+    "pasteLabel": "Vložit text jídelního lístku",
+    "pastePlaceholder": "Sem vložte jídelní lístek — názvy položek, popisy, ceny..."
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} sisältyvät pakettiin {plan}.} other {{feature} sisältyy pakettiin {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} eivät kuulu pakettiisi.} other {{feature} ei kuulu pakettiisi.}}",
+  "switchedOff": "{many, select, yes {{feature} ovat pois käytöstä yritykselläsi.} other {{feature} on pois käytöstä yritykselläsi.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Päivitä pakettia →",
+  "features": {
+    "discovery_map": {
+      "name": "Näkyvyys löytökartalla",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Selainpohjainen ohjauspaneeli",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Keittiösovellus",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-koodiruokalista",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Ateriat",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Lisämyyntiehdotukset",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Tilaukset paikan päällä",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Verkkotilaaminen (Maksu noudettaessa)",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Loppuunmyyty-merkintä",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Varastolaskuri",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Tilausten suojaus yhteyskatkoissa",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Verkkomaksut",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Ennakkotilaaminen",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Asiakkaiden aikaikkunat",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Keittiön kapasiteetin hallinta",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automaattinen hyväksyntä",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messengerin ja Instagramin automaattiset vastaukset",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR-koodit omalla logollasi",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Laaja raportointi",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Keittiölappujen tulostus",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Keittiön synkronointi usealle laitteelle",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Kokin näyttö",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsAppin automaattiset vastaukset",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Aikataulu omilla verkkosivuillasi",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Somejulkaisut",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Omat tapahtumatyypit",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Yksityistilaisuudet",
+      "many": "yes"
+    }
+  }
+}

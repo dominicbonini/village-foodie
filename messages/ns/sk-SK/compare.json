@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Porovnanie nákladov",
+  "title": "Porovnajte svoje náklady<br></br><accent>na online objednávky</accent>",
+  "system": {
+    "title": "Prijímate už online objednávky?",
+    "yes": "Áno, cez iný systém",
+    "no": "Nie, zatiaľ nie"
+  },
+  "trucks": {
+    "title": "Koľko food truckov prevádzkujete?",
+    "aria": "Počet food truckov"
+  },
+  "plan": {
+    "yourChoice": "Vaša voľba",
+    "weSuggest": "Odporúčame",
+    "summary": "{price} za food truck mesačne, v cene sú online objednávky v hodnote {allowance}{fleet, plural, one {} few { pre každý} other { pre každý}}.",
+    "switchTo": "Použiť radšej plán {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} za food truck mesačne plus {pct} z online objednávok platených kartou.} other {Bez mesačného poplatku — iba {pct} z online objednávok platených kartou.}}",
+    "summaryNoFee": "{price} za food truck mesačne, s neobmedzenými online objednávkami a bez poplatku HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Online objednávky za mesiac na jeden food truck",
+    "count": "~{count, plural, one {# objednávka} few {# objednávky} other {# objednávok}}",
+    "captionNo": "Stačí hrubý odhad — predobjednávky a zákazníci, ktorí nechcú stáť v rade, nie platby v hotovosti či kartou pri okienku.",
+    "captionYes": "Iba objednávky zadané cez vašu objednávkovú stránku — nie platby v hotovosti či kartou pri okienku.",
+    "sliderAria": "Mesačná hodnota online objednávok na food truck",
+    "overAllowance": "Online objednávky v hodnote {allowance} sú v cene pre každý food truck. Zo sumy {excess} nad tento limit sa účtuje {pct} — <b>{over}</b> mesačne za každý.",
+    "insideAllowance": "V rámci zahrnutých online objednávok v hodnote {allowance} — nič navyše k plánu.",
+    "acrossFleet": "Spolu za {fleet, plural, one {# food truck} few {# food trucky} other {# food truckov}}: <b>{amount}</b> mesačne.",
+    "titleNo": "Koľko by ste podľa vás utŕžili online za mesiac na jeden food truck?",
+    "feeOnly": "{pct} z každej online objednávky platenej kartou — <b>{over}</b> mesačne na food truck.",
+    "noFee": "Neobmedzené online objednávky v cene — nič navyše k plánu."
+  },
+  "fee": {
+    "title": "Koľko teraz platíte za objednávku?",
+    "pctLabel": "Percento",
+    "pctPlaceholder": "Vaša sadzba",
+    "pctAria": "Percentuálny poplatok",
+    "fixedLabel": "Plus za objednávku",
+    "fixedPlaceholder": "Váš poplatok",
+    "fixedAria": "Centy za objednávku",
+    "modeLabel": "Ich sadzba:",
+    "modeInclusive": "zahŕňa spracovanie kariet",
+    "modeOnTop": "sa účtuje navyše",
+    "onTopNote": "Spracovanie kariet vo výške {fee} sa k tomu účtuje navyše, takže v skutočnosti platíte spolu <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Spracovanie kariet vo výške {fee} je v tom zahrnuté a platili by ste ho kdekoľvek. Ich vlastný poplatok je <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Koľko dní v týždni predávate?",
+    "help": "Akcie, trhy, stanovištia — každý deň, keď je food truck vonku."
+  },
+  "jump": {
+    "cost": "Pozrite si, koľko to stojí ↓",
+    "saving": "Pozrite si, koľko ušetríte ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Online objednávky, predobjednávky a kuchynská obrazovka za</lead><figure>{amount}</figure><unit>na predajný deň</unit>",
+    "basedOn": "Pri {days, plural, one {# dni} few {# dňoch} other {# dňoch}} v týždni · {monthly} mesačne{fleet, plural, one {} few { na food truck} other { na food truck}}"
+  },
+  "coffee": "Menej než šálka kávy.",
+  "freeMonths": "{n, plural, one {A prvý mesiac máte od nás zadarmo.} few {A prvé # mesiace máte od nás zadarmo.} other {A prvých # mesiacov máte od nás zadarmo.}}",
+  "cta": {
+    "upload": "Nahrať môj jedálny lístok →",
+    "uploadSave": "Nahrať jedálny lístok a ušetriť {amount} →",
+    "ask": "Opýtajte sa nás",
+    "noCard": "Na nastavenie netreba kartu"
+  },
+  "breakdown": {
+    "title": "Váš mesiac v číslach",
+    "titleDearer": "Váš mesiac s HatchGrab",
+    "plan": "Plán {plan}",
+    "over": "{pct} zo sumy {excess} nad zahrnutý limit {allowance}",
+    "inside": "Online objednávky v rámci zahrnutého limitu {allowance}",
+    "total": "HatchGrab mesačne",
+    "freeMonths": "{n, plural, one {1. mesiac} few {Mesiace 1–#} other {Mesiace 1–#}}",
+    "freeAmount": "{amount} — od nás zadarmo",
+    "acrossFleet": "Za {fleet, plural, one {# food truck} few {# food trucky} other {# food truckov}}",
+    "perMonth": "{amount} mesačne",
+    "card": "Spracovanie kariet — {fee} za objednávku, ktoré platíte spoločnosti Stripe. Približne rovnako by ste zaplatili aj pri platobnom termináli pri okienku.",
+    "provider": "Vlastný poplatok vášho súčasného poskytovateľa ({pct})",
+    "feeOnly": "{pct} z online objednávok v hodnote {excess}",
+    "noFee": "Online objednávky — neobmedzene, bez poplatku HatchGrab"
+  },
+  "enterRate": "Zadajte, koľko platíte teraz, a uvidíte, koľko ušetríte.",
+  "panel": {
+    "nowYear": "<label>Teraz platíte</label><fig>{amount}<q> ročne</q></fig>",
+    "nowMonth": "<label>Teraz platíte</label><fig>{amount}<q> mesačne</q></fig>",
+    "oursYear": "<label>S HatchGrab</label><fig>{amount}<q> v prvom roku</q></fig>",
+    "oursMonth": "<label>S HatchGrab</label><fig>{amount}<q> mesačne</q></fig>",
+    "acrossFleet": "za {fleet, plural, one {# food truck} few {# food trucky} other {# food truckov}}"
+  },
+  "hero": {
+    "save": "<verb>Ušetríte</verb><figure>{amount}</figure><sub><num>{pct}</num> menej v prvom roku</sub>",
+    "same": "<verb>Približne rovnako</verb><figure>{amount}</figure><sub><num>{pct}</num> viac v prvom roku</sub>",
+    "dearer": "<lead>Všetko, čo HatchGrab ponúka, za</lead><figure>{amount}</figure><unit>týždenne navyše</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} mesačne viac ako teraz} few {{amount} mesačne na food truck viac ako teraz} other {{amount} mesačne na food truck viac ako teraz}}"
+  },
+  "anchor": {
+    "liability": "To je ročné poistenie zodpovednosti za škodu.",
+    "weekendPitch": "To je víkendové stanovište na food festivale.",
+    "festivalPitches": "To je zopár stanovíšť na festivaloch.",
+    "fryer": "To je nová fritéza a grilovacia platňa.",
+    "counter": "To je kompletná renovácia vášho výdajného pultu.",
+    "vanDeposit": "To je záloha na druhý food truck.",
+    "secondVan": "To je druhý food truck na cestách."
+  },
+  "year": {
+    "one": "1. rok",
+    "two": "2. rok",
+    "save": "Ušetríte {amount}<note>({pct} menej)</note>",
+    "extra": "O {amount} viac<note>({pct} viac)</note>",
+    "current": "Súčasný poskytovateľ <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Odhady vychádzajú z čísel, ktoré zadáte, pri priemernej objednávke {aov}. Spracovanie kariet sa platí pri každom poskytovateľovi. Pred rozhodnutím si to overte.",
+    "yes": "Odhady vychádzajú z čísel, ktoré zadáte, pri priemernej objednávke {aov}. Spracovanie kariet vo výške {fee} za objednávku sa platí pri každom poskytovateľovi, preto nie je zahrnuté ani na jednej strane.",
+    "onTop": "Celková suma v otázke {n} ho zahŕňa — porovnanie nie, ani na jednej strane.",
+    "check": "Pred rozhodnutím si overte sadzby svojho súčasného poskytovateľa."
+  },
+  "intro": "Trvá to asi minútu. Už používate nejaký systém? Porovnáme ho. Ešte nie? Ukážeme vám presne, koľko to stojí.",
+  "twoYear": "Za dva roky ušetríte <b>{amount}</b>.",
+  "meta": {
+    "title": "Kalkulačka nákladov — HatchGrab {country}",
+    "description": "Porovnajte, koľko vás teraz stoja online objednávky, s rokom používania HatchGrab — odhad za minútu."
+  }
+}

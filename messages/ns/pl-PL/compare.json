@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Porównanie kosztów",
+  "title": "Porównaj koszty<br></br><accent>zamówień online</accent>",
+  "system": {
+    "title": "Czy przyjmujesz już zamówienia online?",
+    "yes": "Tak, w innym systemie",
+    "no": "Nie, jeszcze nie"
+  },
+  "trucks": {
+    "title": "Ile masz food trucków?",
+    "aria": "Liczba food trucków"
+  },
+  "plan": {
+    "yourChoice": "Twój wybór",
+    "weSuggest": "Proponujemy",
+    "summary": "{price} miesięcznie za food truck, w tym zamówienia online o wartości {allowance}{fleet, plural, one {} few { na każdy z nich} many { na każdy z nich} other { na każdy z nich}}.",
+    "switchTo": "Wybierz zamiast tego plan {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} miesięcznie za food truck plus {pct} od zamówień online opłaconych kartą.} other {Bez opłaty miesięcznej — tylko {pct} od zamówień online opłaconych kartą.}}",
+    "summaryNoFee": "{price} miesięcznie za food truck, zamówienia online bez limitu i bez prowizji HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Zamówienia online miesięcznie, na food truck",
+    "count": "~{count, plural, one {# zamówienie} few {# zamówienia} many {# zamówień} other {# zamówienia}}",
+    "captionNo": "Wystarczy przybliżona wartość — zamówienia z wyprzedzeniem i bez stania w kolejce, nie gotówka ani karta przy okienku.",
+    "captionYes": "Tylko zamówienia złożone przez twoją stronę zamówień — nie gotówka ani karta przy okienku.",
+    "sliderAria": "Miesięczna wartość zamówień online na food truck",
+    "overAllowance": "Zamówienia online o wartości {allowance} w cenie na każdy food truck. Od nadwyżki {excess} pobieramy {pct} — <b>{over}</b> miesięcznie na każdy.",
+    "insideAllowance": "W ramach zamówień online o wartości {allowance} w cenie — nic ponad cenę planu.",
+    "acrossFleet": "Łącznie dla {fleet, plural, one {# food trucka} few {# food trucków} many {# food trucków} other {# food trucka}}: <b>{amount}</b> miesięcznie.",
+    "titleNo": "Jaka może być miesięczna wartość twoich zamówień online na jeden food truck?",
+    "feeOnly": "{pct} od każdego zamówienia online opłaconego kartą — <b>{over}</b> miesięcznie na food truck.",
+    "noFee": "Zamówienia online bez limitu w cenie — nic ponad cenę planu."
+  },
+  "fee": {
+    "title": "Ile płacisz teraz za zamówienie?",
+    "pctLabel": "Procent",
+    "pctPlaceholder": "Twoja stawka",
+    "pctAria": "Prowizja procentowa",
+    "fixedLabel": "Plus za zamówienie",
+    "fixedPlaceholder": "Twoja opłata",
+    "fixedAria": "Grosze za zamówienie",
+    "modeLabel": "Ich stawka:",
+    "modeInclusive": "obejmuje opłaty za płatności kartą",
+    "modeOnTop": "jest doliczana do opłat za karty",
+    "onTopNote": "Do tego dochodzi opłata za płatność kartą w wysokości {fee}, więc łącznie płacisz <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Opłata za płatność kartą w wysokości {fee} jest w tym zawarta i płacisz ją u każdego dostawcy. Ich własna prowizja to <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Ile dni w tygodniu pracujesz?",
+    "help": "Wydarzenia, targi, stałe miejsca — każdy dzień, w którym food truck wyjeżdża."
+  },
+  "jump": {
+    "cost": "Zobacz, ile to kosztuje ↓",
+    "saving": "Zobacz, ile oszczędzasz ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Zamówienia online, zamówienia z wyprzedzeniem i ekran kuchenny za</lead><figure>{amount}</figure><unit>za dzień pracy</unit>",
+    "basedOn": "Przy {days, plural, one {# dniu} few {# dniach} many {# dniach} other {# dnia}} pracy w tygodniu · {monthly} miesięcznie{fleet, plural, one {} few { na food truck} many { na food truck} other { na food truck}}"
+  },
+  "coffee": "Mniej niż kawa.",
+  "freeMonths": "{n, plural, one {A pierwszy miesiąc masz od nas gratis.} few {A pierwsze # miesiące masz od nas gratis.} many {A pierwsze # miesięcy masz od nas gratis.} other {A pierwsze # miesiąca masz od nas gratis.}}",
+  "cta": {
+    "upload": "Prześlij moje menu →",
+    "uploadSave": "Prześlij menu i oszczędź {amount} →",
+    "ask": "Zadaj nam pytanie",
+    "noCard": "Konfiguracja bez podawania karty"
+  },
+  "breakdown": {
+    "title": "Twój miesiąc w szczegółach",
+    "titleDearer": "Twój miesiąc z HatchGrab",
+    "plan": "Plan {plan}",
+    "over": "{pct} od {excess} ponad {allowance} w cenie",
+    "inside": "Zamówienia online w ramach {allowance} w cenie",
+    "total": "HatchGrab miesięcznie",
+    "freeMonths": "{n, plural, one {Miesiąc 1} few {Miesiące 1–#} many {Miesiące 1–#} other {Miesiące 1–#}}",
+    "freeAmount": "{amount} — gratis od nas",
+    "acrossFleet": "Łącznie dla {fleet, plural, one {# food trucka} few {# food trucków} many {# food trucków} other {# food trucka}}",
+    "perMonth": "{amount} miesięcznie",
+    "card": "Opłata za płatność kartą — {fee} za zamówienie według stawki Stripe, płatne na rzecz Stripe. Za terminal płatniczy przy okienku płacisz mniej więcej tyle samo.",
+    "provider": "Własna prowizja twojego obecnego dostawcy ({pct})",
+    "feeOnly": "{pct} od {excess} zamówień online",
+    "noFee": "Zamówienia online — bez limitu, bez prowizji HatchGrab"
+  },
+  "enterRate": "Wpisz, ile płacisz teraz, aby zobaczyć swoją oszczędność.",
+  "panel": {
+    "nowYear": "<label>Teraz płacisz</label><fig>{amount}<q> rocznie</q></fig>",
+    "nowMonth": "<label>Teraz płacisz</label><fig>{amount}<q> miesięcznie</q></fig>",
+    "oursYear": "<label>Z HatchGrab</label><fig>{amount}<q> w pierwszym roku</q></fig>",
+    "oursMonth": "<label>Z HatchGrab</label><fig>{amount}<q> miesięcznie</q></fig>",
+    "acrossFleet": "łącznie dla {fleet, plural, one {# food trucka} few {# food trucków} many {# food trucków} other {# food trucka}}"
+  },
+  "hero": {
+    "save": "<verb>Oszczędzasz</verb><figure>{amount}</figure><sub><num>{pct}</num> mniej w pierwszym roku</sub>",
+    "same": "<verb>Mniej więcej tyle samo</verb><figure>{amount}</figure><sub><num>{pct}</num> więcej w pierwszym roku</sub>",
+    "dearer": "<lead>Wszystko, co robi HatchGrab, za</lead><figure>{amount}</figure><unit>więcej tygodniowo</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} miesięcznie więcej niż teraz} few {{amount} miesięcznie więcej na food truck niż teraz} many {{amount} miesięcznie więcej na food truck niż teraz} other {{amount} miesięcznie więcej na food truck niż teraz}}"
+  },
+  "anchor": {
+    "liability": "To roczne ubezpieczenie OC działalności.",
+    "weekendPitch": "To weekendowe stoisko na festiwalu kulinarnym.",
+    "festivalPitches": "To kilka miejsc na festiwalach.",
+    "fryer": "To nowa frytownica i płyta grillowa.",
+    "counter": "To pełny remont twojej lady wydawczej.",
+    "vanDeposit": "To wkład własny na drugi food truck.",
+    "secondVan": "To drugi food truck w trasie."
+  },
+  "year": {
+    "one": "Rok pierwszy",
+    "two": "Rok drugi",
+    "save": "Oszczędzasz {amount}<note>({pct} mniej)</note>",
+    "extra": "Dodatkowo {amount}<note>({pct} więcej)</note>",
+    "current": "Obecny dostawca <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Szacunki na podstawie wpisanych przez ciebie danych, przy średnim zamówieniu {aov}. Opłaty za płatności kartą obowiązują u każdego dostawcy. Sprawdź przed podjęciem decyzji.",
+    "yes": "Szacunki na podstawie wpisanych przez ciebie danych, przy średnim zamówieniu {aov}. Opłata za płatność kartą w wysokości {fee} za zamówienie obowiązuje u każdego dostawcy, więc pomijamy ją po obu stronach.",
+    "onTop": "Łączna kwota w pytaniu {n} ją uwzględnia — porównanie nie uwzględnia jej po żadnej stronie.",
+    "check": "Przed podjęciem decyzji sprawdź stawki swojego obecnego dostawcy."
+  },
+  "intro": "Zajmuje to około minuty. Masz już system? Porównamy go. Jeszcze nie? Pokażemy ci dokładnie, ile to kosztuje.",
+  "twoYear": "W ciągu dwóch lat to <b>{amount}</b> oszczędności.",
+  "meta": {
+    "title": "Kalkulator kosztów — HatchGrab {country}",
+    "description": "Porównaj, ile teraz kosztują cię zamówienia online, z rokiem w HatchGrab — szacunek w minutę."
+  }
+}

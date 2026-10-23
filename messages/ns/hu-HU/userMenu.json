@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Felhasználói menü",
+  "screenOn": "Képernyő be",
+  "screenOff": "Képernyő ki",
+  "newOrderSound": "Új rendelés hangja",
+  "copied": "Másolva",
+  "orderLink": "Rendelési link",
+  "qrCode": "QR-kód",
+  "kitchenScreen": "Konyhai kijelző",
+  "thisDevice": "Ez az eszköz",
+  "manage": "Kezelés",
+  "ordersDashboard": "Rendelési vezérlőpult",
+  "admin": "Admin",
+  "privacy": "Adatvédelmi tájékoztató",
+  "terms": "Feltételek",
+  "signOut": "Kijelentkezés",
+  "close": "Bezárás"
+}

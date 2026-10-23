@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Hol működik",
+    "identity": "Az Ön food truckja",
+    "menu": "Az Ön étlapja",
+    "event": "Első esemény"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Beállítás",
+  "loading": "Betöltés",
+  "loadingCountries": "Betöltés…",
+  "verify": {
+    "ok": "E-mail-cím megerősítve — köszönjük.",
+    "expired": "Ez a megerősítő link lejárt. Vegye fel velünk a kapcsolatot, és az élesítés előtt rendezzük.",
+    "invalid": "Ez a megerősítő link nem működött. Vegye fel velünk a kapcsolatot, és az élesítés előtt rendezzük."
+  },
+  "identity": {
+    "heading": "Mi a food truckja neve?",
+    "intro": "Ezt a nevet látják a vásárlók. Semmi sem lesz nyilvános, amíg nem dönt úgy, hogy élesben indul.",
+    "nameLabel": "Food truck neve",
+    "namePlaceholder": "Bandi Burger",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Ez a szám elérhető WhatsAppon",
+    "phoneHelp": "A vásárlók ezt látják a rendelés visszaigazolásán, hogy kérdezhessenek a rendelésükről. A pipa dönti el, hogy „Hívjon minket” vagy „Írjon WhatsAppon” jelenik-e meg. Mindkettőt módosíthatja a Beállításokban."
+  },
+  "phoneRequired": "Adjon meg egy telefonszámot — a vásárlók és mi is ezen érjük el.",
+  "createFailed": "Nem sikerült létrehozni a food truckot.",
+  "unreachable": "Most nem sikerült elérni minket — kérjük, próbálja újra.",
+  "back": "Vissza",
+  "creating": "Food truck létrehozása…",
+  "continue": "Tovább"
+}

@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Pieņemt pasūtījumus bez priekšapmaksas",
+  "completionTitle": "Neapmaksāta pasūtījuma pabeigšana",
+  "completionHelp": "Kas notiek, kad neapmaksāts pasūtījums ir gatavs izsniegšanai.",
+  "pressesOne": "Viens spiediens (“Apmaksāts un izsniegts”)",
+  "pressesOneHelp": "Vislabāk, ja naudu saņemat, izsniedzot ēdienu. Jums būs viena poga “Apmaksāts un izsniegts”, kas vienlaikus reģistrē maksājumu un noņem pasūtījumu no saraksta.",
+  "pressesTwo": "Divi spiedieni (“Apmaksāts” un “Izsniegts”)",
+  "pressesTwoHelp": "Vislabāk, ja maksājums un izsniegšana notiek dažādos brīžos — klients samaksā uz vietas pie busiņa un saņem ēdienu, kad tas ir gatavs. Jums būs divas pogas: vispirms “Apmaksāts”, pēc tam “Izsniegts”, kad klients paņem ēdienu."
+}

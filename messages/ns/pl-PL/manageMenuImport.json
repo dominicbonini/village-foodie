@@ -1,0 +1,189 @@
+{
+  "cancel": "Anuluj",
+  "back": "← Wstecz",
+  "backPlain": "Wstecz",
+  "next": "Dalej →",
+  "continue": "Kontynuuj →",
+  "closeImport": "Zamknij import",
+  "tryAgain": "Spróbuj ponownie",
+  "catError": {
+    "empty": "Nadaj kategorii nazwę.",
+    "tooLong": "Ta nazwa jest za długa.",
+    "clash": "Kategoria o nazwie „{name}” już istnieje."
+  },
+  "steps": {
+    "details": "Twoje dane",
+    "menu": "Menu",
+    "extras": "Dodatki",
+    "allergens": "Alergeny",
+    "kitchen": "Ustawienia kuchni",
+    "schedule": "Harmonogram",
+    "settings": "Ustawienia"
+  },
+  "toast": {
+    "demoGone": "Twoje menu z wersji demo nie jest już dostępne — prześlij je ponownie, aby kontynuować.",
+    "eventsSaveFailed": "Nie udało się zapisać wydarzeń",
+    "cardReadFailed": "Nie udało się odczytać karty alergenów — spróbuj ponownie",
+    "imageReadFailed": "Nie udało się odczytać tego obrazu — zamiast tego wpisz lub wklej kartę",
+    "commitFailedDetail": "Nie udało się dokończyć zapisywania menu: {error}. Część pozycji mogła już zostać zapisana — sprawdź menu, zanim spróbujesz ponownie.",
+    "commitFailed": "Nie udało się dokończyć zapisywania menu. Część pozycji mogła już zostać zapisana — sprawdź menu, zanim spróbujesz ponownie.",
+    "finishFailed": "Nie udało się oznaczyć konfiguracji jako zakończonej — nadal możesz kontynuować.",
+    "scheduleReadFailed": "Nie udało się odczytać tego harmonogramu — spróbuj wyraźniejszego zdjęcia albo wpisz daty.",
+    "cardRead": "Karta odczytana — dopasowano: {matched}, {pending, plural, one {# wymaga} few {# wymagają} many {# wymaga} other {# wymaga}} przypisania przez ciebie"
+  },
+  "settingsReview": {
+    "anchorOrder": "Ustawienia → Ustawienia zamówień",
+    "anchorDisplay": "Ustawienia → Twoje food trucki → Ustawienia wyświetlania",
+    "mins15": "15 minut",
+    "mins30": "30 minut",
+    "mins60": "60 minut",
+    "hours2": "2 godziny",
+    "title": "Kilka ustawień do sprawdzenia",
+    "loading": "Wczytywanie obecnych ustawień…",
+    "looksGood": "Wszystko gra →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Nie udało się tego zapisać — możesz to zmienić w Ustawieniach.",
+    "anchorContact": "Ustawienia → Dane kontaktowe",
+    "intro": "Wybraliśmy dla ciebie kilka typowych ustawień. Warto rzucić na nie okiem — każde z nich możesz później zmienić w Ustawieniach.",
+    "cancelAria": "Ile czasu przed odbiorem klienci mogą anulować"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Sprawdź je przed uruchomieniem sprzedaży. Do tego czasu pozycje są oznaczone jako „alergeny nieustawione”.",
+    "body": "Sprawdź je w Ustawieniach przed uruchomieniem sprzedaży. Do tego czasu pozycje są oznaczone jako „alergeny nieustawione”.",
+    "title": "⚠ Alergeny i informacje dietetyczne nie są jeszcze ustawione"
+  },
+  "welcome": {
+    "title": "Witaj w HatchGrab",
+    "yourTruck": "Twój food truck",
+    "stop": "Możesz przerwać i wrócić w dowolnej chwili.",
+    "body": "Gotowe: {name}. Teraz dodamy twoje menu, a potem pierwsze wydarzenie.",
+    "go": "Zaczynamy"
+  },
+  "offer": {
+    "title": "Użyć menu z wersji demo?",
+    "use": "Użyj tego menu",
+    "upload": "Prześlij inne menu",
+    "body": "Zapisaliśmy przesłane przez ciebie menu — {count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}. Użyj go jako punktu wyjścia albo prześlij inne."
+  },
+  "upload": {
+    "title": "Importuj menu",
+    "body": "Prześlij zdjęcie tablicy z menu, zrzut ekranu, PDF albo wklej menu jako tekst. Nasza AI je odczyta i zbuduje twoje cyfrowe menu — przed zapisaniem sprawdzisz wszystko.",
+    "confirmCancel": "Anulować ten import? Twoje poprawki w tym menu zostaną odrzucone.",
+    "process": "Przetwórz menu",
+    "later": "Zrobię to później"
+  },
+  "processing": {
+    "title": "Analizujemy twoje menu",
+    "body": "AI odczytuje twoje pozycje i przypisuje je do kategorii…"
+  },
+  "review": {
+    "title": "Sprawdź zaimportowane menu",
+    "editLaterSetup": "Nazwy, ceny, dodatki, alergeny i informacje dietetyczne możesz później edytować w dowolnej chwili.",
+    "editLater": "Nazwy, ceny, dodatki, alergeny i informacje dietetyczne możesz edytować w dowolnej chwili w Ustawieniach.",
+    "noPrice": "{count, plural, one {# pozycja nie miała} few {# pozycje nie miały} many {# pozycji nie miało} other {# pozycji nie miało}} czytelnej ceny",
+    "renameCategoryAria": "Zmień nazwę kategorii {name}",
+    "renameAria": "Zmień nazwę: {name}",
+    "renameTitle": "Zmień nazwę kategorii",
+    "deleteAria": "Usuń: {name}",
+    "deleteTitle": "Usuń kategorię",
+    "lastCategory": "Twoje menu musi mieć co najmniej jedną kategorię",
+    "countOf": "{kept} z {total}",
+    "existing": "istniejąca",
+    "deleteEmptyTitle": "Usunąć „{name}”?",
+    "deleteEmptyBody": "Nie ma w niej pozycji, więc nic nie stracisz.",
+    "delete": "Usuń",
+    "moveTitle": "Gdzie przenieść {count, plural, one {# pozycję} few {# pozycje} many {# pozycji} other {# pozycji}}?",
+    "moveBody": "Aby usunąć „{name}”, trzeba gdzieś przenieść jej dania — pozycje bez kategorii nie są importowane.",
+    "moveAria": "Przenieś pozycje z kategorii {name} do",
+    "chooseCategory": "Wybierz kategorię…",
+    "moveDelete": "Przenieś i usuń",
+    "itemName": "Nazwa pozycji",
+    "free": "za darmo?",
+    "freeOn": "Za darmo ✕",
+    "nameFirst": "Nazwij nową pozycję, zanim dodasz kolejną",
+    "addItem": "+ Dodaj pozycję",
+    "categoryName": "Nazwa kategorii",
+    "newCategoryAria": "Nazwa nowej kategorii",
+    "addCategory": "+ Dodaj kategorię",
+    "ready": "{count, plural, one {# pozycja gotowa} few {# pozycje gotowe} many {# pozycji gotowych} other {# pozycji gotowych}} do dodania. Odznacz te, których nie chcesz.",
+    "noPriceBody": "Ustaw cenę dla każdej z nich albo oznacz ją jako darmową — w przeciwnym razie trafi do sprzedaży za {zero}. Nie przejdziesz dalej, dopóki tego nie uzupełnisz.",
+    "incomplete": "Wpisz nazwę, aby dodać tę pozycję — puste wiersze nie są importowane."
+  },
+  "extras": {
+    "introSetup": "Niektóre dania można ustawić jako <b>jedną pozycję z opcjami do wyboru</b> albo zostawić jako <b>osobne dania</b>. Wybierz, jak ma się wyświetlać każde z nich. Możesz to później zmienić.",
+    "intro": "Niektóre dania można ustawić jako <b>jedną pozycję z opcjami do wyboru</b> albo zostawić jako <b>osobne dania</b>. Wybierz, jak ma się wyświetlać każde z nich. Możesz to później zmienić w Ustawieniach.",
+    "none": "Brak dań do zgrupowania — każda pozycja jest osobnym daniem.",
+    "axisChoice": "· wybór: {axis}",
+    "grouped": "Zgrupowane · jedna pozycja, klient wybiera",
+    "separate": "Osobne pozycje menu"
+  },
+  "allergens": {
+    "title": "Alergeny",
+    "detected": "Wykryliśmy alergeny w twoim menu. Wybierz poniżej, jak je pokazywać.",
+    "howShow": "Jak chcesz pokazywać alergeny klientom?",
+    "skip": "Na razie pomiń ustawianie alergenów"
+  },
+  "kitchen": {
+    "title": "Ustawienia kuchni",
+    "intro": "Pomóż klientom wiedzieć, ile poczekają — zawsze możesz to później zmienić.",
+    "howWorks": "Jak działa wydajność kuchni",
+    "allExist": "Wszystkie kategorie już istnieją — nie ma czasów do ustawienia.",
+    "totalHelp": "Ustaw łączną wydajność, aby ograniczyć liczbę pozycji, które kuchnia przyjmuje w jednym przedziale czasowym. Zostaw ∞, jeśli bez limitu.",
+    "saveAdd": "Zapisz i dodaj do menu"
+  },
+  "schedule": {
+    "title": "Dodaj mój harmonogram",
+    "intro": "Jeśli twój harmonogram jest na twojej stronie internetowej, możemy automatycznie go aktualizować — albo dodaj daty samodzielnie.",
+    "websiteTitle": "Mój harmonogram jest na mojej stronie",
+    "urlPlaceholder": "https://twojfoodtruck.pl/wydarzenia",
+    "checking": "Sprawdzanie…",
+    "verify": "Sprawdź",
+    "checkingSite": "Sprawdzamy twoją stronę…",
+    "takesTime": "To może potrwać do 2 minut — nie zamykaj tego okna.",
+    "canRead": "✓ Możemy odczytać twój harmonogram",
+    "ownSite": "Twoja własna strona — nie profil na Facebooku ani Instagramie.",
+    "photoTitle": "Prześlij zdjęcie harmonogramu",
+    "dragChoose": "Przeciągnij i upuść lub stuknij, aby wybrać",
+    "imageOrPdf": "Obraz lub PDF",
+    "or": "lub",
+    "pastePlaceholder": "Wklej tutaj swoje daty…",
+    "read": "Odczytaj harmonogram",
+    "found": "{count, plural, one {Znaleziono # datę — zostanie dodana do twojego harmonogramu.} few {Znaleziono # daty — zostaną dodane do twojego harmonogramu.} many {Znaleziono # dat — zostaną dodane do twojego harmonogramu.} other {Znaleziono # daty — zostaną dodane do twojego harmonogramu.}}",
+    "dateTbc": "Data do potwierdzenia",
+    "save": "Zapisz {count, plural, one {# datę} few {# daty} many {# dat} other {# daty}}",
+    "manualDesc": "Dodaj je później w zakładce Harmonogram — teraz nic nie musisz robić.",
+    "manualBody": "Nie ma problemu. Możesz dodawać daty i zarządzać nimi w dowolnej chwili w zakładce Harmonogram na swoim koncie.",
+    "blockedDomain": "Podaj adres swojej strony internetowej — profili na Facebooku i Instagramie nie da się odczytać automatycznie.",
+    "saveFailed": "Odczytaliśmy twój harmonogram, ale nie udało się go teraz zapisać — spróbuj ponownie.",
+    "websiteDesc": "Będziemy ją regularnie sprawdzać i wysyłać ci nowe daty do zatwierdzenia.",
+    "keepChecking": "Będziemy dalej sprawdzać tę stronę i wysyłać ci nowe daty do zatwierdzenia.",
+    "photoDesc": "Zrób zdjęcie lub wklej daty — odczytamy je, a ty je sprawdzisz.",
+    "noneFound": "Nie znaleźliśmy tu żadnych dat — spróbuj wyraźniejszego zdjęcia albo dodaj datę samodzielnie.",
+    "manualTitle": "Dodam daty samodzielnie",
+    "trialNotStarted": "Dodanie wydarzeń nie uruchamia bezpłatnego okresu próbnego — później wybierzesz wydarzenie, od którego się zacznie."
+  },
+  "done": {
+    "summary": "{items, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}} w {categories, plural, one {# kategorii} few {# kategoriach} many {# kategoriach} other {# kategoriach}}.",
+    "imported": "Menu zaimportowane!",
+    "added": "Twoje pozycje zostały dodane do menu.",
+    "duplicates": "Pominięto {count, plural, one {# duplikat} few {# duplikaty} many {# duplikatów} other {# duplikatu}}",
+    "showMe": "Oprowadź mnie",
+    "remind": "Przypomnij mi później",
+    "allSet": "Wszystko gotowe!",
+    "explore": "Rozejrzę się na własną rękę"
+  },
+  "discard": {
+    "setupTitle": "Dokończyć konfigurację później?",
+    "setupBody": "Twoje konto i food truck są zapisane — nic nie przepadło. Menu możesz dodać w dowolnej chwili: zaloguj się i stuknij <b>Importuj menu</b> na ekranie menu, aby wrócić dokładnie tutaj.",
+    "keepGoing": "Kontynuuj",
+    "finishLater": "Dokończę później",
+    "title": "Odrzucić ten import?",
+    "keepEditing": "Edytuj dalej",
+    "discard": "Odrzuć",
+    "body": "Twoje zmiany nie zostaną zapisane — zaimportowane pozycje, czasy przygotowania i wydajność kuchni nie zostaną dodane."
+  },
+  "allergenCardText": {
+    "contains": "Zawiera: {list}",
+    "mayContain": "Może zawierać: {list}"
+  }
+}

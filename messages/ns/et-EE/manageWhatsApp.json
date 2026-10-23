@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Proovi enne ühendamist",
+    "intro": "Kirjuta küsimus nii, nagu klient seda küsiks, ja vaata täpselt, mida ta vastuseks saaks. Kellelegi ei saadeta midagi.",
+    "examples": {
+      "where": "Kus te täna õhtul olete?",
+      "doYouDo": "Kas teil on pepperoni-pitsat?",
+      "menu": "Mis menüüs on?"
+    },
+    "placeholder": "Milliseid magustoite teil on?",
+    "send": "Saada",
+    "empty": "Siia ilmub vastus",
+    "working": "Vastuse koostamine…",
+    "noReply": "Vastust ei saadetaks.",
+    "noReplyWhy": "See näib olevat rämpspost, broneerimissoov või midagi asjasse mittepuutuvat, seega automaatvastus jääb vaikseks.",
+    "footnote": "Vastused on loodud tehisintellektiga, erinevad iga kord veidi ja võivad vahel olla valed.",
+    "failed": "Eelvaadet ei õnnestunud praegu luua.",
+    "unreachable": "Serveriga ei saanud ühendust. Kontrolli oma ühendust ja proovi uuesti."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Ettevalmistamine…",
+      "unavailable": "Pole saadaval",
+      "waiting": "Facebooki akna ootamine…",
+      "finishing": "Lõpetamine…",
+      "reconnect": "Ühenda uuesti",
+      "setUp": "Seadista"
+    },
+    "startAgain": "Alusta uuesti",
+    "popupHint": "Ei näe Facebooki akent? See võis olla blokeeritud. Luba hüpikaknad saidil hatchgrab.com ja vajuta siis „Alusta uuesti“."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsAppi seadistamine pole selles keskkonnas saadaval.",
+    "sdkBlocked": "Meta sisselogimisskripti ei õnnestunud laadida. Tavaliselt on põhjuseks reklaamiblokeerija või jälgimiskaitse.",
+    "setupFailed": "Seadistamist ei õnnestunud lõpule viia. Midagi ei muudetud.",
+    "setupFinished": "Seadistamine on lõpetatud.",
+    "metaError": "Meta teatas seadistamise ajal probleemist. Midagi ei muudetud. Proovi uuesti ja võta meiega ühendust, kui see kordub.",
+    "closed": "Seadistamine suleti enne lõpetamist. Midagi ei muudetud — uuesti proovimiseks vajuta „Seadista“.",
+    "disconnectedUnreachable": "WhatsApp on lahti ühendatud. Me ei saanud Metaga ühendust, et juurdepääs eemaldada. Eemalda HatchGrab ise: WhatsApp Business → Seaded → Konto → Business Platform.",
+    "disconnected": "WhatsApp on lahti ühendatud. Automaatvastused on peatatud.",
+    "close": "Sulge"
+  },
+  "card": {
+    "title": "Automaatvastused",
+    "description": "Vasta klientide küsimustele sotsiaalmeedias automaatselt, kasutades oma menüüd ja ajakava.",
+    "channels": "Kanalid",
+    "requiresAccount": "Vajab WhatsApp Businessi kontot.",
+    "connected": "Ühendatud",
+    "popupInstruction": "Avaneb Facebooki aken, kus saad ühendada oma WhatsApp Businessi konto. Kui midagi ei ilmu, luba brauseris hüpikaknad saidil hatchgrab.com ja vajuta uuesti „Seadista“.",
+    "switchedOff": "WhatsAppi automaatvastused on sinu toiduauto jaoks välja lülitatud.",
+    "expiring": "Sinu WhatsAppi ühendus vajab peagi uuendamist. Vajuta „Ühenda uuesti“, et automaatvastused jätkaksid tööd.",
+    "comingSoon": "Tulekul",
+    "instagram": "Automaatvastused Instagrami otsesõnumitele. Vaja on Instagrami professionaalset kontot.",
+    "messenger": "Automaatvastused Facebook Messengeris. Vaja on Facebooki lehte."
+  },
+  "blocked": {
+    "title": "Sinu vastuseid ei edastata",
+    "body": "WhatsApp keeldub sinu automaatvastuseid saatmast, sest sinu WhatsApp Businessi kontol on arveldusprobleem. Kliendid saavad sulle endiselt kirjutada ja sa näed kõike, mida nad saadavad — kuid nad ei saa vastust.",
+    "fix": "Nende sõnumite eest maksad otse WhatsAppile, seega saab selle parandada WhatsApp Manageris. <link>Kontrolli oma makseviisi</link>"
+  },
+  "limit": {
+    "heading": "Automaatvastused",
+    "label": "Kuu limiit",
+    "option": "{n, number}",
+    "usage": "Kasutatud {used, number} / {limit, number} · lähtestub {date}",
+    "perCustomer": "Kuni {n} vastust kliendi kohta 24 tunni jooksul, seejärel üks sõnum, et vastad isiklikult.",
+    "emailAt": "Limiidi täitumisel vastused peatuvad. Saadame sulle e-kirja 80 % ja 100 % juures.",
+    "saved": "Kuu vastuste limiit salvestatud",
+    "saveFailed": "Limiiti ei õnnestunud salvestada"
+  },
+  "billing": {
+    "heading": "Arveldus",
+    "paymentMethod": "Makseviis",
+    "added": "Makseviis lisatud",
+    "missing": "Makseviis lisamata",
+    "addInManager": "Lisa WhatsApp Manageris",
+    "summary": "Vastuste eest esitab sinu WhatsAppi kontole arve Meta, mitte HatchGrab. Alates {from} on esimesed {free, number} vastust kuus tasuta. Andmed seisuga {checked}; muudatusi vaata <link>Meta hinnakirjast</link>.",
+    "howMetaCharges": "Kuidas Meta tasu võtab",
+    "chargesTitle": "WhatsAppi vastuste eest võtab tasu Meta, mitte HatchGrab.",
+    "chargesBody": "Iga vastuse eest, mille HatchGrab sinu nimel saadab, esitab Meta arve sinu WhatsApp Businessi kontole. Alates {from} sisaldab Meta iga numbri kohta {free, number} tasuta vastust kuus; pärast seda maksab iga vastus Meta hinna järgi. Vastused, mida saadad ise WhatsApp Businessi rakendusest, on tasuta. Need hinnad määrab Meta ja võib neid muuta. <link>Vaata Meta hinnakirja</link>",
+    "addPaymentInManager": "Lisa makseviis WhatsApp Manageris",
+    "aboveMissing": "Sinu limiit on suurem kui Meta {free, number} tasuta vastust. Ilma makseviisita peatab Meta kõik vastused, kui need on ära kasutatud.",
+    "aboveGeneral": "Sinu limiit on suurem kui Meta {free, number} tasuta vastust. Sellest rohkemate vastuste jaoks on sinu WhatsAppi kontol vaja makseviisi; ilma selleta peatab Meta kõik vastused, kui tasuta vastused on ära kasutatud.",
+    "addPaymentMethod": "Lisa makseviis"
+  },
+  "disconnect": {
+    "link": "Ühenda WhatsApp lahti",
+    "title": "Kas ühendada WhatsApp lahti?",
+    "body": "Automaatvastused peatuvad kohe ja HatchGrab kaotab juurdepääsu sinu WhatsAppi kontole. Sinu number töötab WhatsApp Businessi rakenduses edasi. HatchGrabi täielikuks eemaldamiseks ava ka WhatsApp Business → Seaded → Konto → Business Platform.",
+    "cancel": "Tühista",
+    "confirm": "Ühenda lahti",
+    "working": "Lahtiühendamine…",
+    "failed": "Lahtiühendamine ebaõnnestus"
+  },
+  "signup": {
+    "logged": "Logitud.",
+    "partial": "Sidusime sinu WhatsApp Businessi konto, kuid ühendust ei õnnestunud lõpule viia. Sinu poolel pole midagi valesti — võta meiega ühendust ja me viime selle lõpule.",
+    "noNumber": "Sinu WhatsApp Businessi konto on seotud, kuid telefoninumbrit ei tulnud tagasi. Vajuta „Ühenda uuesti“ ja vii numbri samm lõpuni.",
+    "needsRegistering": "Sinu konto on seotud, kuid enne vastuste alustamist peame selle numbri registreerima. Võta ühendust toega — sinu seadistus on salvestatud, ära käivita seda uuesti.",
+    "registerRefused": "Sinu konto on seotud, kuid Meta keeldus numbrit registreerimast. Sinu seadistus on salvestatud — võta ühendust toega, selle asemel et seda uuesti käivitada.",
+    "deliveryRefused": "Sinu konto on seotud, kuid Meta keeldus sõnumite edastamist sisse lülitamast. Sinu seadistus on salvestatud — võta ühendust toega, selle asemel et seda uuesti käivitada.",
+    "numberTaken": "See WhatsAppi number on juba ühendatud teise HatchGrabi kontoga. Üks number saab vastata ainult ühe toiduauto eest. Võta ühendust toega ja me tõstame selle üle.",
+    "saveIncomplete": "Peaaegu valmis — salvestamist ei õnnestunud lõpetada. Sinu seadistus on salvestatud; võta ühendust toega, selle asemel et seda uuesti käivitada.",
+    "connected": "WhatsApp on ühendatud. Automaatvastused hakkavad sellele numbrile saadetud sõnumitele vastama."
+  }
+}

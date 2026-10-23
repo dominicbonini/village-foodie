@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Beremo vaš jedilnik…",
+    "found": "Našli smo vaše artikle…",
+    "kitchen": "Nastavljamo vašo kuhinjo…",
+    "page": "Gradimo vašo stran za naročanje…",
+    "almost": "Skoraj pripravljeno…"
+  },
+  "templateSteps": {
+    "truck": "Gradimo vzorčni food truck…",
+    "menu": "Nastavljamo jedilnik…",
+    "kitchen": "Nastavljamo kuhinjo…",
+    "page": "Gradimo stran za naročanje…",
+    "almost": "Skoraj pripravljeno…"
+  },
+  "dialogLabel": "Naložite jedilnik",
+  "heading": "✨ Naložite jedilnik",
+  "failedHeading": "Tega jedilnika nismo mogli prebrati",
+  "close": "Zapri",
+  "intro": "Fotografija table z jedilnikom, posnetek zaslona, PDF ali pa ga prilepite kot besedilo. Naša umetna inteligenca ga prebere in vam v manj kot 60 sekundah zgradi delujočo stran za naročanje — z vašimi artikli in cenami. Brez registracije, brez kartice.",
+  "failedIntro": "Včasih je fotografija pretemna, preveč poševna ali napisana na roko. To moramo rešiti mi — niste naredili nič narobe. Nekaj možnosti za naprej:",
+  "usually": "To običajno traja manj kot 60 sekund.",
+  "slow": "To traja dlje kot običajno — pri velikih jedilnikih se to včasih zgodi.",
+  "keepWaiting": "Počakaj še",
+  "sampleWhileYouWait": "Ali pa si med čakanjem oglejte vzorčni jedilnik",
+  "standIn": "To <b>ne bo vaš jedilnik</b> — je le nadomestek, da vidite, kako deluje.",
+  "seeSample": "Oglej si vzorčni jedilnik",
+  "tryAgain": "Poskusi znova",
+  "tryPhotoAgain": "Poskusi znova s to fotografijo",
+  "tryDifferent": "Poskusi z drugo fotografijo",
+  "uploadAnother": "← Naloži drugo fotografijo",
+  "orSample": "Ali pa si oglejte vzorčni jedilnik",
+  "orBuild": "Ali pa ga pripravimo namesto vas",
+  "buildSent": "✓ Hvala — prejeli smo. Pisali vam bomo.",
+  "buildBody": "Pustite e-poštni naslov in resnična oseba bo vnesla vaš jedilnik ter vam poslala povezavo.",
+  "emailPlaceholder": "vi@vasfoodtruck.si",
+  "sending": "…",
+  "send": "Pošlji",
+  "noPhoto": "Nimate pri roki fotografije jedilnika?",
+  "noPhotoBody": "Namesto tega si oglejte vzorčni food truck — svoj jedilnik lahko naložite kadarkoli.",
+  "build": "Ustvari moj demo →",
+  "nothingPublished": "Nič ni objavljeno — to vidite samo vi.",
+  "error": {
+    "somethingWrong": "Prišlo je do napake. Poskusite znova.",
+    "serverUnreachable": "Strežnika nismo mogli doseči. Preverite povezavo in poskusite znova.",
+    "sendFailed": "Tega ni bilo mogoče poslati — poskusite znova."
+  },
+  "fields": {
+    "uploadLabel": "Naloži datoteko z jedilnikom",
+    "dropHere": "Spustite jedilnik sem",
+    "dragOrTap": "Povlecite in spustite ali tapnite za izbiro",
+    "fileTypes": "Slika ali PDF",
+    "or": "ali",
+    "pasteLabel": "Prilepite besedilo jedilnika",
+    "pastePlaceholder": "Sem prilepite jedilnik — imena artiklov, opise, cene …"
+  }
+}

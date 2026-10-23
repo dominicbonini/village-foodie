@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Toate",
+    "bold": "Groase și înalte",
+    "hand": "Scris de mână",
+    "classic": "Clasice",
+    "clean": "Simple",
+    "own": "Ale dvs.",
+    "ownCount": "Ale dvs. ({count})"
+  },
+  "yoursTag": "· al dvs.",
+  "loadingFonts": "Se încarcă fonturile…",
+  "search": "Căutați printre {count, number} de fonturi",
+  "uploadButton": "↑ Încărcați propriul font",
+  "loadingLibrary": "Se încarcă biblioteca de fonturi…",
+  "tryAgain": "Încercați din nou",
+  "noOwn": "Nu ați încărcat încă niciun font. Folosiți butonul „↑ Încărcați propriul font” de mai sus.",
+  "recent": "Folosite recent",
+  "popular": "Populare pentru afișe",
+  "adding": "Se adaugă…",
+  "noMatch": "Niciun font nu corespunde căutării „{query}”.",
+  "showing": "Se afișează {shown} din {total, number} — tastați mai mult pentru a restrânge căutarea.",
+  "couldNotAdd": "Fontul nu a putut fi adăugat",
+  "tooBig": "Fontul are {size, number, ::.0 group-off} MB. Limita este de 5 MB.",
+  "woff": "Încărcați un fișier TTF sau OTF — de obicei îl puteți descărca de unde ați cumpărat fontul.",
+  "uploadIncomplete": "Încărcarea nu s-a finalizat",
+  "added": "„{name}” a fost adăugat ca versiune {face}.",
+  "face": {
+    "regular": "normală",
+    "bold": "aldină",
+    "italic": "cursivă"
+  },
+  "licenceTick": "Dețin acest font sau am licență pentru a-l folosi",
+  "checking": "Se verifică fontul…",
+  "addFont": "Adăugați fontul",
+  "cancel": "Anulați",
+  "missingFaces": "Adăugați versiunea {faces} a fontului „{name}” (opțional) — alegeți din nou fișierul.",
+  "somethingWrong": "A apărut o problemă",
+  "faceLower": {
+    "regular": "normală",
+    "bold": "aldină",
+    "italic": "cursivă"
+  },
+  "ownLicence": "Al dvs.",
+  "loadFailed": "Fonturile nu au putut fi încărcate"
+}

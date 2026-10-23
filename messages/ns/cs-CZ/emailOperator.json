@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Nová objednávka #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Přijata nová objednávka",
+    "from": "<b>Objednávka #{id}</b> · zákazník: <b>{name}</b>",
+    "collection": "Vyzvednutí: {time}",
+    "asap": "Bez konkrétního času — co nejdříve",
+    "total": "Celkem",
+    "notes": "<b>Poznámky:</b> {notes}",
+    "autoConfirmed": "Automaticky potvrzeno — není třeba nic dělat.",
+    "confirmPrompt": "Přihlaste se do přehledu HatchGrab a objednávku potvrďte, nebo odmítněte.",
+    "text": "Nová objednávka #{id} · zákazník: {name}{withSlot, select, yes { · vyzvednutí: {slot}} other {}}{withVenue, select, yes { · místo: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Celkem {total}.{withNotes, select, yes { Poznámky: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}: nalezeny nové akce — zkontrolujte je prosím",
+    "hi": "Dobrý den,",
+    "found": "V rozpisu jsme našli <b>{n, plural, one {{count} novou akci} few {{count} nové akce} other {{count} nových akcí}}</b>, které musíte schválit, než se zobrazí zákazníkům.",
+    "listHeading": "Nalezené akce:",
+    "approve": "Jakmile je schválíte na kartě Rozpis, objeví se na mapě a vaše objednávková stránka bude připravená přijímat předobjednávky.",
+    "cta": "Zkontrolovat rozpis →",
+    "signoff": "— Tým HatchGrab · hatchgrab.com",
+    "unknownVenue": "Neznámé místo",
+    "text": "Dobrý den,\n\nv rozpisu jsme našli {n, plural, one {{count} novou akci} few {{count} nové akce} other {{count} nových akcí}}, které musíte schválit:\n\n{list}\n\nZkontrolujte je zde: {url}\n\nJakmile je schválíte, objeví se na mapě.\n\n— Tým HatchGrab"
+  }
+}

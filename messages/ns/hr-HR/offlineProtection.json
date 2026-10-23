@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Tijekom rada nadzorna ploča ili kuhinjski zaslon moraju biti uključeni i povezani s internetom.",
+  "explainerBody": "Ako se zaslon isključi, uređaj izgubi internet ili prijeđete na drugu web-stranicu, uključuje se zaštita izvan mreže — pauzira naručivanje ili isključuje automatsko prihvaćanje, ovisno o tome što ste odabrali.",
+  "reminder": "⚠️ Tijekom rada neka nadzorna ploča ili kuhinjski zaslon budu uključeni i povezani s internetom, inače se može uključiti zaštita izvan mreže.",
+  "enableConfirm": "Zaštita izvan mreže je uključena.\n\nDa bi narudžbe neprekidno stizale, zaslon mora ostati uključen. Ako ovaj uređaj izgubi vezu, zaštita izvan mreže preuzima u načinu koji ste odabrali.\n\nProvjerite je li na ovom uređaju uključena opcija „Zaslon uključen“.",
+  "disableConfirm": "Isključiti zaštitu izvan mreže za ovaj događaj?\n\nAko ovaj uređaj izgubi vezu, online narudžbe i dalje će stizati — kupci mogu naručiti, a da vi to ne vidite. Isključite samo ako imate pouzdanu vezu.",
+  "cardDescription": "Određuje što se događa s pristiglim narudžbama kad vaš uređaj ode izvan mreže.",
+  "purpose": "Ako vaš uređaj izgubi vezu, ovo sprječava pristizanje narudžbi koje ne možete vidjeti.",
+  "switchLabel": "Zaštita narudžbi izvan mreže",
+  "switchHelp": "Što se događa kad ovaj food truck izgubi vezu.",
+  "modes": {
+    "pause": {
+      "label": "Pauziraj online naručivanje",
+      "help": "Kupci ne mogu naručivati dok ponovno ne budete na mreži."
+    },
+    "no_auto_accept": {
+      "label": "Primaj narudžbe, ali ih potvrđuj sam",
+      "help": "Automatsko prihvaćanje je isključeno, pa kupci i dalje mogu naručivati, ali ništa se ne potvrđuje automatski. Svaku narudžbu potvrdit ćete kad ponovno budete na mreži — a sve što još čeka automatski se odbija nakon odabranog vremena, uz e-poruku kupcu s obavijesti."
+    }
+  },
+  "autoRejectLabel": "Odbij narudžbe koje čekaju dulje od",
+  "autoRejectOption": "{n, plural, one {{count} min} few {{count} min} other {{count} min}}"
+}

@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Food truck",
+  "eventsFeed": {
+    "today": "Ma · {date}",
+    "tomorrow": "Holnap · {date}"
+  },
+  "privacyNotSaved": "Az esemény élő, de az adatvédelmi beállítását nem sikerült menteni.",
+  "stockWarning": "Nincs elérhető tétel itt: „{category}”",
+  "uncategorised": "Kategória nélkül"
+}

@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Rādīt alergēnus pie katra ēdiena",
+    "recommended": "Ieteicams",
+    "perDishBody": "Pārskatiet katru ēdienu un apstipriniet tā alergēnus. Klienti redz atzīmes pie katra ēdiena un no tām izveidotu alergēnu kopsavilkuma karti.",
+    "cardTitle": "Rādīt alergēnu karti",
+    "cardBody": "Augšupielādējiet vai ielīmējiet vienu alergēnu karti (PDF, attēls vai teksts), kas tiek rādīta tāda, kāda tā ir. Atzīmes pie ēdieniem netiek rādītas."
+  }
+}

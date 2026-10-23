@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Az ellenőrzés átmenetileg nem érhető el. Kérjük, próbálja újra egy pillanat múlva.",
+  "malformed": "Ez nem tűnik webcímnek. Próbáljon ilyesmit: afoodtruckod.hu/esemenyek",
+  "blocked": "Nem tudtunk hozzáférni ehhez az oldalhoz — lehet, hogy blokkolja az automatikus ellenőrzéseket. Próbálja azt az oldalt, amelyen a menetrendje szerepel, vagy adja hozzá kézzel az eseményeket.",
+  "unreachable": "Nem értük el ezt a weboldalt. Lehet, hogy nem működik, vagy hibás a cím.",
+  "no_content": "Elértük az oldalt, de semmit sem tudtunk róla kiolvasni. Ellenőrizze, hogy nyilvánosan elérhető-e.",
+  "no_events": "Nem találtunk közelgő eseményt ezen az oldalon. Győződjön meg róla, hogy az URL közvetlenül arra az oldalra mutat, ahol a menetrendje szerepel.",
+  "blockedDomain": "Kérjük, a weboldala URL-jét használja — a Facebook- és Instagram-oldalakat nem lehet automatikusan feldolgozni."
+}

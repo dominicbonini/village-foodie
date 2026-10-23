@@ -1,0 +1,28 @@
+{
+  "hi": "Cześć, {name}!",
+  "limit80": {
+    "subject": "Wykorzystano 80% odpowiedzi WhatsApp na ten miesiąc",
+    "used": "W tym miesiącu Twoje automatyczne odpowiedzi WhatsApp wykorzystały <b>{used} z {limit}</b>.",
+    "nothingStopped": "Nic nie zostało zatrzymane. Po osiągnięciu {limit} automatyczne odpowiedzi zostaną wstrzymane do odnowienia limitu w dniu <b>{reset}</b> — klienci nadal mogą do Ciebie pisać, a Ty nadal zobaczysz wszystko, co wysyłają.",
+    "raise": "Miesięczny limit możesz w każdej chwili zwiększyć w Ustawieniach.",
+    "raiseLink": "Miesięczny limit możesz w każdej chwili zwiększyć w Ustawieniach:",
+    "button": "Otwórz Ustawienia"
+  },
+  "limit100": {
+    "subject": "Twoje automatyczne odpowiedzi WhatsApp zostały wstrzymane na ten miesiąc",
+    "usedAll": "Wykorzystano cały limit ({limit}) automatycznych odpowiedzi WhatsApp na ten miesiąc, więc zostały wstrzymane.",
+    "stillReach": "<b>Klienci nadal mogą pisać do Ciebie jak zwykle i każda wiadomość nadal do Ciebie dociera.</b> Zatrzymane zostało tylko wysyłanie automatycznych odpowiedzi.",
+    "startAgain": "Wznowią się <b>{reset}</b> albo od razu, jeśli zwiększysz miesięczny limit w Ustawieniach.",
+    "startAgainLink": "Wznowią się {reset} albo od razu, jeśli zwiększysz miesięczny limit w Ustawieniach:",
+    "button": "Zwiększ limit"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp potrzebuje metody płatności, aby wysyłać wiadomości",
+    "stopped": "WhatsApp wstrzymał wysyłanie Twoich automatycznych odpowiedzi, ponieważ na Twoim koncie WhatsApp Business nie ma działającej metody płatności.",
+    "stillMessage": "<b>Klienci nadal mogą do Ciebie pisać, a Ty nadal zobaczysz wszystko, co wysyłają</b> — ale odpowiedzi do nich nie docierają.",
+    "payDirect": "Za te wiadomości płacisz bezpośrednio WhatsApp, więc naprawisz to w WhatsApp Manager, a nie w HatchGrab. Dodaj lub zaktualizuj tam kartę, a odpowiedzi wznowią się same.",
+    "payDirectLink": "Za te wiadomości płacisz bezpośrednio WhatsApp, więc naprawisz to w WhatsApp Manager, a nie w HatchGrab. Dodaj lub zaktualizuj tam kartę, a odpowiedzi wznowią się same:",
+    "button": "Otwórz WhatsApp Manager",
+    "settings": "Twoje ustawienia HatchGrab: <link>{url}</link>"
+  }
+}

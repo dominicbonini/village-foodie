@@ -1,0 +1,25 @@
+{
+  "heading": "Tjedan od {start} do {end}",
+  "daysOff": "Danas ne radimo",
+  "cancelled": "OTKAZANO",
+  "placeSample": {
+    "nameTownBelow": "Konoba na Trgu\nZadar",
+    "nameTown": "Konoba na Trgu, Zadar",
+    "nameOnly": "Konoba na Trgu"
+  },
+  "busyWeek": {
+    "venue1": "Dom kulture Zadar",
+    "town1": "Zadar",
+    "venue2": "Sportsko-rekreacijski centar i nogometno igralište Biograd na Moru",
+    "town2": "Biograd na Moru",
+    "venue3": "Glavni trg",
+    "town3": "Nin",
+    "venue4": "Festival hrane",
+    "town4": "Šibenik",
+    "venue5": "Konoba Stari mlin",
+    "town5": "Split",
+    "venue6": "Trg kod crkve",
+    "town6": "Trogir"
+  },
+  "poweredBy": "Pokreće HatchGrab"
+}

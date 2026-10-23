@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {{name}: zadajte platné mobilné číslo} other {Zadajte platné mobilné číslo}}{withExample, select, yes { (napr. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {{name}: zadajte platné telefónne číslo} other {Zadajte platné telefónne číslo}}{withExample, select, yes { (napr. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {{name}: zadajte platné telefónne číslo} other {Zadajte platné telefónne číslo}}{withExample, select, yes { (napr. {example})} other {}}."
+}

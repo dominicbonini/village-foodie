@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu użytkownika",
+  "screenOn": "Ekran włączony",
+  "screenOff": "Ekran wyłączony",
+  "newOrderSound": "Dźwięk nowego zamówienia",
+  "copied": "Skopiowano",
+  "orderLink": "Link do zamówień",
+  "qrCode": "Kod QR",
+  "kitchenScreen": "Ekran kuchenny",
+  "thisDevice": "To urządzenie",
+  "manage": "Zarządzaj",
+  "ordersDashboard": "Panel zamówień",
+  "admin": "Admin",
+  "privacy": "Polityka prywatności",
+  "terms": "Regulamin",
+  "signOut": "Wyloguj się",
+  "close": "Zamknij"
+}

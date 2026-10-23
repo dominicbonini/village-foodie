@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Kde má váš food truck sídlo?",
+  "stepIntro": "Podle toho nastavíme měnu, ceny, časové pásmo a formát telefonních čísel. Zemi později nelze změnit, protože je svázaná s vašimi platbami kartou.",
+  "settingsHeading": "Kde prodáváte",
+  "countryLabel": "Země",
+  "countryGuessed": "Odhadli jsme ji podle vaší polohy. Pokud nesedí, změňte ji.",
+  "countryLocked": "Zemi nelze změnit",
+  "townLabel": "Město nebo obec",
+  "townQuestion": "Město nebo obec, kde máte sídlo",
+  "timezoneLabel": "Časové pásmo",
+  "continueButton": "Pokračovat",
+  "saveFailed": "Nastavení se nepodařilo uložit — zkuste to prosím znovu."
+}

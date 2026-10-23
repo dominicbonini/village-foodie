@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Nädala kuupäevad",
+    "dayList": "Päevade loend",
+    "place": "Asukoht",
+    "venue": "Toimumiskoht",
+    "area": "Piirkond",
+    "dayDate": "Päev ja kuupäev",
+    "times": "Kellaajad",
+    "orderLink": "Tellimislink",
+    "locationTag": "Asukoha silt"
+  },
+  "weekHeader": "{truck} — kus me sel nädalal oleme:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — TÜHISTATUD, vabandame",
+  "noDates": "Sel nädalal kuupäevi pole — vaata varsti uuesti.",
+  "orderAhead": "Telli ette: {url}",
+  "orderAheadTagged": "Telli ette: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Vabandust — me ei saa {when} kohal olla: {where}.",
+  "cancelledApology": "Vabandame kõigi ees, kes plaanisid tulla. Oleme varsti tagasi.",
+  "when": {
+    "today": "täna",
+    "tonight": "täna õhtul",
+    "tomorrow": "homme",
+    "dated": "{date}"
+  }
+}

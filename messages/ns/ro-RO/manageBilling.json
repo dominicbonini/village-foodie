@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "per food truck / lună",
+  "transactionFees": "Comisioane de tranzacție",
+  "comingSoon": "În curând",
+  "footnote2Masked": "Plățile online sunt procesate prin Stripe Connect. Comisioanele platformei și cele de procesare a cardurilor urmează să fie stabilite și vor fi confirmate la lansare.",
+  "card": {
+    "title": "Facturare și plăți",
+    "managed": "Facturarea este gestionată de HatchGrab",
+    "earlyAccess": "În perioada de acces anticipat configurăm și ajustăm planurile manual.",
+    "planLine": "{trial, select, yes {{truck} · Plan {plan} (perioadă de probă)} other {{truck} · Plan {plan}}}"
+  },
+  "currentPlan": "Planul actual",
+  "plan": {
+    "included": "Include comenzi online în valoare de {amount} pe lună.",
+    "includedUnlimited": "Comenzi online nelimitate incluse.",
+    "promo": "Preț special.",
+    "promoUntil": "Preț special până pe {date}.",
+    "ended": "Planul {plan} s-a încheiat pe {date}. Acum aveți planul {now}.",
+    "trialMonths": "Perioadă de probă gratuită — durata în luni: {months}."
+  },
+  "trialEnds": "Perioada de probă se încheie pe {date}",
+  "yourTrialEnds": "Perioada dumneavoastră de probă se încheie pe {date}",
+  "notStarted": {
+    "heading": "Perioada de probă gratuită nu a început încă"
+  },
+  "onTrial": "Aveți acces la toate funcțiile. Alegeți un plan înainte de sfârșitul perioadei de probă.",
+  "onTrialNoCta": "Aveți acces la toate funcțiile.",
+  "noCharge": "🔒 Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe {date}. Facturarea începe doar atunci când alegeți un plan și introduceți datele de plată. Până atunci nu aveți nimic de anulat și nimic de plătit.",
+  "fees": "*Pentru comenzile online se aplică comisioanele standard de procesare a plăților cu cardul",
+  "setUpPayment": "⏱ Alegeți un plan înainte de sfârșitul perioadei de probă",
+  "changeYourPlan": "Schimbați planul",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Treceți la {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Configurăm facturarea automată. Pentru a schimba planul acum, trimiteți-ne un mesaj și vă configurăm totul în 24 de ore.",
+    "mailSubject": "Trecere la {plan} — {truck}",
+    "mailBody": "Bună ziua, aș dori să trec {truck} la planul {plan} ({price}).",
+    "email": "Scrieți-ne pentru schimbare",
+    "cancel": "Anulați"
+  }
+}

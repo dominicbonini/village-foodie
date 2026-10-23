@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Kontrollimine pole ajutiselt saadaval. Proovi hetke pärast uuesti.",
+  "malformed": "See ei näe välja nagu veebiaadress. Proovi näiteks sinutoiduauto.ee/uritused",
+  "blocked": "Me ei pääsenud sellele saidile ligi — see võib automaatseid kontrolle blokeerida. Proovi lehte, kus on sinu ajakava, või lisa üritused käsitsi.",
+  "unreachable": "Me ei saanud selle veebisaidiga ühendust. See võib olla maas või aadress võib olla vale.",
+  "no_content": "Jõudsime sellele lehele, kuid ei suutnud sealt midagi lugeda. Kontrolli, et see oleks avalikult kättesaadav.",
+  "no_events": "Sellelt lehelt ei leitud ühtegi tulevast üritust. Veendu, et URL viib otse sinna, kus sinu ajakava on.",
+  "blockedDomain": "Kasuta oma veebisaidi URL-i — Facebooki ja Instagrami lehti ei saa automaatselt lugeda."
+}

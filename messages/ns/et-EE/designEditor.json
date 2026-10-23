@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Nädala pealkiri",
+    "weekHeadingSample": "Nädal alates …",
+    "daysSample": "{first} kuni {last}",
+    "date": "Kuupäev",
+    "place": "Asukoht",
+    "venue": "Toimumiskoht",
+    "area": "Piirkond",
+    "time": "Kellaaeg",
+    "rows": "Read",
+    "rowsSample": "{px} px vahega · {first} kuni {last}",
+    "ownText": "Sinu oma tekst",
+    "noteTokenSample": "Märkus, mille postitust luues kirjutad",
+    "nothingYet": "Veel pole",
+    "thisBox": "see kast"
+  },
+  "sample": {
+    "venue": "Raekoja Kõrts",
+    "area": "Tartu"
+  },
+  "bar": {
+    "previewWith": "Eelvaade:",
+    "undo": "Võta tagasi",
+    "undoTitle": "Võta tagasi (⌘Z)",
+    "redo": "Tee uuesti",
+    "redoTitle": "Tee uuesti (⇧⌘Z)",
+    "cancel": "Tühista",
+    "saving": "Salvestamine…",
+    "save": "Salvesta kujundus"
+  },
+  "grid": {
+    "eachRow": "Iga rida",
+    "placeOff": "Asukoha nimi on sinu pildil — HatchGrab seda ei lisa."
+  },
+  "background": {
+    "uploading": "Üleslaadimine…",
+    "replace": "Asenda pilt",
+    "shape": {
+      "square": "Ruut (1:1)",
+      "portrait45": "Püstformaat (4:5)",
+      "portrait916": "Püstformaat (9:16)",
+      "landscape169": "Rõhtformaat (16:9)",
+      "portrait": "Püstformaat",
+      "landscape": "Rõhtformaat"
+    }
+  },
+  "scope": {
+    "title": "Tekstide paigutus",
+    "standard": "Sama paigutus nagu tavakujundusel",
+    "own": "Asukoha {place} oma paigutus",
+    "locked": "See paigutus tuleb sinu tavakujundusest. Vali „Asukoha {place} oma paigutus“, et tekste ainult siin liigutada."
+  },
+  "stage": {
+    "hint": "Lohista kasti, et seda liigutada · lohista nurka, et suurust muuta",
+    "zoomOut": "Vähenda",
+    "zoomIn": "Suurenda"
+  },
+  "rows": {
+    "spacing": "Vahe",
+    "daysRun": "Päevad: {first} kuni {last}. 1. rea kolm kasti kopeeritakse selle vahega allapoole.",
+    "whichEvents": "Millised üritused",
+    "showCancelled": "Näita tühistatud üritusi",
+    "showCancelledHint": "Tühistatud ürituse asukoht kuvatakse läbikriipsutatuna koos sõnaga TÜHISTATUD. Kui see on välja lülitatud, kuvatakse päev vaba päevana."
+  },
+  "days": {
+    "reorder": "Muuda järjekorda",
+    "move": "liiguta"
+  },
+  "picture": {
+    "picture": "Pilt",
+    "fill": "Täida kast",
+    "fit": "Mahuta sisse",
+    "corners": "Nurgad",
+    "square": "Teravad",
+    "rounded": "Ümarad",
+    "ifMissing": "Kui asukohal pole pilti",
+    "noPicture": {
+      "omit": "Jäta välja",
+      "blank": "Jäta tühi koht",
+      "logo": "Näita oma logo"
+    },
+    "border": "Ääris",
+    "drawBorder": "Lisa ääris",
+    "drawBorderHint": "Joon ümber pildi, sinu valitud värvis.",
+    "borderWidth": "Äärise laius",
+    "cornerRadius": "Nurga raadius",
+    "locationPictures": "Asukohtade pildid",
+    "addLocationPictures": "+ Lisa asukohtade pilte",
+    "allHaveImage": "{total, plural, =0 {Sul pole veel ühtegi asukohta.} one {Sinu asukohal on pilt.} other {Kõigil sinu # asukohal on pilt.}}",
+    "someWithout": "{without} {without, plural, one {asukohal} other {asukohal}} sinu {total, plural, one {# asukohast} other {# asukohast}} pole veel pilti"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Värv",
+    "textColour": "Teksti värv",
+    "ownStyleNote": "{count, plural, one {{names} kasutab oma stiili, seega seda ei muudeta.} other {{names} kasutavad oma stiili, seega neid ei muudeta.}}",
+    "matchAgain": "Sobita uuesti",
+    "matchName": "Sobita: {name}",
+    "lastToggle": "{kind, select, weekly {Hoia sisse lülitatuna kas „Asukoht“ või „Kellaaeg“. Tühistatud ürituse asukoht kuvatakse läbikriipsutatuna koos sõnaga TÜHISTATUD, nii et kui mõlemad on välja lülitatud, ei näitaks miski, et üritus on tühistatud.} other {Hoia sisse lülitatuna kas „Toimumiskoht“ või „Kellaaeg“. Tühistatud ürituse asukoht kuvatakse läbikriipsutatuna koos sõnaga TÜHISTATUD, nii et kui mõlemad on välja lülitatud, ei näitaks miski, et üritus on tühistatud.}}"
+  },
+  "letters": {
+    "boldGlyph": "P",
+    "italicGlyph": "K",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — sellel fondil on päris kaldkiri"
+  },
+  "align": {
+    "left": "Vasakule",
+    "centre": "Keskele",
+    "right": "Paremale"
+  },
+  "effects": {
+    "outlineColour": "Kontuuri värv",
+    "bandColour": "Riba värv",
+    "bandDaysOff": "Riba vabadel päevadel",
+    "bandCancelled": "Riba tühistatud üritusel",
+    "bandDaysOffHint": "Kasutatakse ülaloleva riba asemel päeval, kui müüki pole.",
+    "bandCancelledHint": "Kasutatakse ülaloleva riba asemel, kui üritus on tühistatud."
+  },
+  "more": {
+    "dayOwnLine": "Päev eraldi real",
+    "dayOwnLineHint": "Nädalapäev kuupäeva kohal. Ainult kuupäeva puhul.",
+    "noEventDay": "Päeval, kus üritust pole",
+    "wordsBeforePlaceholder": "nt Leia meid",
+    "neverHyphenate": "Üks pikk tühikuta sõna tehakse alati väiksemaks — me ei poolita kunagi asukoha nime."
+  },
+  "bits": {
+    "less": "Vähem",
+    "more": "Rohkem",
+    "chooseColourFor": "{label} — vali mis tahes värv",
+    "chooseColour": "Vali mis tahes värv"
+  }
+}

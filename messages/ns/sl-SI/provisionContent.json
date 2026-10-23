@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pice",
+    "burgers": "Burgerji",
+    "mains": "Glavne jedi",
+    "sides": "Priloge",
+    "drinks": "Pijače"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck s picami",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja in med",
+        "fourCheese": "Štirje siri",
+        "gardenVeg": "Zelenjavna",
+        "garlicBread": "Česnov kruh",
+        "rocketParmesan": "Rukola in parmezan",
+        "olives": "Olive",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck z burgerji",
+      "items": {
+        "classicCheeseburger": "Klasični cheeseburger",
+        "doubleBacon": "Dvojna slanina",
+        "buttermilkChicken": "Piščanec v pinjencu",
+        "halloumiStack": "Halloumi burger",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Krompirček z lupino",
+        "loadedCheeseFries": "Krompirček s sirom in dodatki",
+        "onionRings": "Čebulni obročki",
+        "craftLemonade": "Domača limonada",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck s kariji",
+      "items": {
+        "chickenTikkaMasala": "Piščanec tikka masala",
+        "lambRoganJosh": "Jagnjetina rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Riž pilav",
+        "garlicNaan": "Česnov naan",
+        "onionBhaji": "Čebulni bhaji",
+        "mangoLassi": "Mangov lassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

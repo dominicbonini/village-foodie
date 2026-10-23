@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Ore de ridicare",
+    "takes_cash": "Acceptați numerar?",
+    "offline_protection": "Protecția comenzilor offline",
+    "buzzer_prompt": "Amintiți-mi să adaug un pager"
+  },
+  "typeFollowsVanTitle": "Urmează setarea obișnuită a fiecărui food truck",
+  "sameSettingsAllVansLabel": "Aceleași setări pentru toate food truck-urile",
+  "sameSettingsAllVansHeader": "Toate food truck-urile",
+  "sameSettingsConfirm": "Copiați setările pentru Food truck 1 la toate food truck-urile? Se copiază toate setările de food truck ale Food truck 1, la fel ca opțiunea „La fel ca Food truck 1” din Setări. Capacitatea bucătăriei are propriul comutator.",
+  "eventTypesFooterStandard": "Standard este configurația dumneavoastră obișnuită. Dacă o modificați aici, se modifică și în Setări.",
+  "eventTypesFooterOneEvent": "Pentru a modifica o setare doar pentru un eveniment, folosiți panoul de control al acelui eveniment.",
+  "eventTypesSubtitle": "Modificările se salvează pe parcurs.",
+  "matchStandardLabel": "Aliniați la Standard",
+  "matchStandardConfirm": "Readuceți toate setările acestui tip la Standard? Tot ce ați modificat aici va fi șters.",
+  "priceLabels": {
+    "price_change_on": "Modificați prețurile",
+    "price_mode": "Modificare de preț",
+    "price_amount": "Valoare",
+    "price_rounding": "Rotunjire",
+    "item_prices": "Prețurile produselor"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Stabilesc eu fiecare preț"
+  },
+  "priceRounding": {
+    "none": "Fără",
+    "nearest_1": "La unitate ({symbol})",
+    "up_1": "Mereu în sus"
+  },
+  "pricesStandardCell": "Prețurile din meniu",
+  "pricesTruckWideTitle": "Prețurile sunt aceleași pentru toate food truck-urile",
+  "pricesMenuCell": "Meniu",
+  "pricesTypeOffCell": "Prețurile din meniu",
+  "itemPricesShow": "Afișați prețurile",
+  "itemPricesHide": "Ascundeți prețurile",
+  "priceItemsHeading": "Stabiliți prețul fiecărui produs",
+  "priceItemsOpen": "Vedeți sau modificați prețul fiecărui produs ›",
+  "priceItemsClose": "Ascundeți prețurile produselor ⌃",
+  "ownPriceCount": "{n, plural, one {{count} produs are preț propriu} few {{count} produse au preț propriu} other {{count} de produse au preț propriu}}",
+  "priceTypeHint": "Apăsați pe un preț pentru a introduce propriul preț.",
+  "pricesLiveNotice": "Acest eveniment este în desfășurare. Comenzile noi folosesc prețurile noi. Comenzile deja plasate le păstrează pe cele vechi.",
+  "placeTypeHelper": "Când alegeți această locație, Adăugați un eveniment selectează automat acest tip.",
+  "postPictureStandardNote": "Postările despre evenimente folosesc aici designul standard.",
+  "eventItemsCardDescription": "Prețuri, limite de produse și disponibilitate doar pentru acest eveniment. Modificările se aplică imediat.",
+  "eventPriceColumnLabel": "Preț",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · acest eveniment} other {meniu {price} · acest eveniment}}",
+  "eventPriceEdit": "✎ Editați prețurile",
+  "eventPriceCancel": "Anulați",
+  "eventPriceSave": "Salvați prețurile",
+  "eventPriceEditNote": "Editați prețurile doar pentru acest eveniment. Limitele de produse și disponibilitatea sunt blocate până la salvare.",
+  "eventPriceLiveNote": "În desfășurare: comenzile noi folosesc prețurile noi.",
+  "offlineWhenOfflineLabel": "Când sunteți offline"
+}

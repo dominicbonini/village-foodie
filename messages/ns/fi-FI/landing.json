@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Ruokarekkojen ja liikkuvan ruokamyynnin tilausjärjestelmä",
+    "description": "Tilaukset, ennakkotilaukset ja keittiönäyttö ruokarekoille ja liikkuvalle ruokamyynnille ({country}).",
+    "audience": "Ruokarekkayrittäjät ja liikkuvan ruokamyynnin yrittäjät"
+  },
+  "hero": {
+    "title": "Tilausjärjestelmä, joka on tehty <lean>ruokarekoille.</lean>",
+    "subSmall": "Lataa ruokalistasi, rekisteröitymistä ei tarvita.<br></br>Näet toimivan demon alle 60 sekunnissa.",
+    "tagline": "Vähemmän aikaa tilauksiin.<br></br>Enemmän aikaa <lean>kokkaamiseen.</lean>",
+    "cta": "Lataa ruokalistani →",
+    "ctaNote": "<lead>Lataa kuva ruokalistastasi ja näe se toiminnassa alle 60 sekunnissa.</lead><small>Ei rekisteröitymistä. Ei korttia.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrabin keittiönäyttö, jossa tilauslaput ovat valmistusjärjestyksessä",
+    "dashboardAlt": "Tilauksen vastaanotto HatchGrabissa: ruokalista vasemmalla, ostoskori ja loppusumma oikealla",
+    "phoneAlt": "Tilaaminen ruokarekasta HatchGrabissa: ruokalista kuvineen ja hintoineen sekä ostoskorin loppusumma"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Ensimmäinen kuukausi täysin ilmainen, kaikki ominaisuudet käytössä} other {Ensimmäiset # kuukautta täysin ilmaisia, kaikki ominaisuudet käytössä}}",
+    "noCard": "Korttia ei tarvita",
+    "cancel": "Ei sitoumusta, voit lopettaa milloin tahansa"
+  },
+  "does": {
+    "eyebrow": "Mitä se tekee",
+    "title": "Tehty ruokarekoille, ei ravintoloille.",
+    "lede": "Useimmat tilausjärjestelmät olettavat kiinteän osoitteen, luotettavan wifin ja samat aukioloajat joka viikko. Sinä olet joka viikko uudessa paikassa, eri aikoihin, ja mobiiliverkko on heikko tai sitä ei ole lainkaan. HatchGrab on tehty juuri tähän.",
+    "slotsTitle": "Asiakkaat valitsevat noutoajan",
+    "capacityTitle": "Määritä keittiön kapasiteetti",
+    "capacityBody": "Määritä, kuinka paljon pystyt valmistamaan kerralla ja kuinka kauan se kestää. Kun noutoaika on täynnä, asiakkaat eivät voi valita sitä.",
+    "devicesTitle": "Toimii kaikilla laitteilla",
+    "devicesBody": "Toimii esiliinan taskussa olevalla puhelimella, tiskin tabletilla, ruokarekan läppärillä — ja maksupäätteellä, jolla jo otat maksuja vastaan.",
+    "postsTitle": "Automatisoi Facebook- ja Instagram-julkaisusi",
+    "postsBody": "Lataa pohja, jota jo käytät Facebookissa tai Instagramissa. Lisäämme siihen päivämäärät, paikat ja kellonajat valmiiksi jaettaviksi — joka viikko tai joka päivä.",
+    "whatsappTitle": "WhatsAppin automaattiset vastaukset",
+    "whatsappBody": "”Missä olette tänä iltana?” ”Mitä jälkiruokia teillä on?” WhatsAppiisi vastataan, kun ajat myyntipaikalle tai seisot grillin ääressä — oman ruokalistasi ja aikataulusi pohjalta. Messenger ja Instagram tulossa pian.",
+    "whatsappSoonTitle": "WhatsAppin automaattiset vastaukset <soon>Tulossa pian</soon>",
+    "whatsappSoonBody": "”Missä olette tänä iltana?” ”Mitä jälkiruokia teillä on?” Pian WhatsAppiisi vastataan, kun ajat myyntipaikalle tai seisot grillin ääressä. Messenger ja Instagram seuraavat perässä.",
+    "offlineTitle": "Ei kenttää? Jatka myyntiä.",
+    "offlineBody": "Jos yhteys katkeaa, verkkotilaukset keskeytyvät automaattisesti, jotta asiakkaat eivät voi tehdä tilauksia, joita et näe. Jatka tilausten vastaanottamista iPhone-, iPad- ja Android-sovelluksella.",
+    "slotsBody": "Asiakkaat tilaavat etukäteen ja valitsevat noutoajan. Vähemmän jonoja, ja ruoka on valmiina, kun he saapuvat."
+  },
+  "steps": {
+    "eyebrow": "Näin pääset alkuun",
+    "title": "Ota palvelu käyttöön ja ala vastaanottaa tilauksia noin 15 minuutissa.",
+    "lede": "Kolme asiaa hoidettavana — ja kahteen niistä riittää valokuva.",
+    "menuTitle": "Rakenna ruokalistasi",
+    "menuBody": "Ota kuva liitutaulustasi tai liitä teksti. Tuotteet, hinnat ja lisävalinnat siirtyvät itsestään. Sinä vain tarkistat, että ne ovat oikein.",
+    "scheduleTitle": "Lisää aikataulusi",
+    "scheduleBody": "Onko aikataulu verkkosivuillasi? Luemme sen sieltä ja pidämme sen ajan tasalla. Jos ei, ota siitäkin kuva. Sinä vain hyväksyt löydetyt tiedot.",
+    "shareTitle": "Jaa linkkisi",
+    "shareBody": "Julkaise se Facebookissa, kiinnitä QR-koodi ruokarekkaan. Tilaukset tulevat näytöllesi siinä järjestyksessä, jossa ne pitää valmistaa."
+  },
+  "testimonial": {
+    "quote": "HatchGrab on tehnyt tilaamisesta paljon helpompaa. Kaikki on järjestyksessä, voimme seurata varastoa ja tiedämme tarkalleen, montako pizzaa on vielä myytävänä — ja aikaikkunat ovat loistavia vilkkaissa kylissä.",
+    "award": "Vuoden liikkuva pizzeria",
+    "awardScope": "Alueellinen voittaja",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia ja Bogdan — omistajat"
+  },
+  "pricing": {
+    "eyebrow": "Hinnoittelu",
+    "title": "Aloita ilmaiseksi. Vaihda isompaan pakettiin, kun tarvitset.",
+    "switchHead": "Vaihdatko toisesta palvelusta?",
+    "switchBody": "Katso, mitä maksaisit HatchGrabissa samoista tilauksista. Vie noin minuutin.",
+    "switchCta": "Vertaa, mitä maksat nyt"
+  },
+  "final": {
+    "truckLabel": "Ruokarekka",
+    "title": "Haluatko nähdä, kuinka helppo käyttöönotto on?",
+    "lede": "Lataa kuva tai kuvakaappaus ruokalistastasi, niin teemme siitä toimivan tilaussivun, jota voit kokeilla alle 60 sekunnissa. Sinun tuotteesi, sinun hintasi. Ei rekisteröitymistä, ei korttia, ei mitään asennettavaa. Katso ensin, päätä sitten.",
+    "cta": "Lataa ruokalistani nyt →"
+  },
+  "meta": {
+    "title": "Tilausjärjestelmä ruokarekoille ja liikkuvalle ruokamyynnille — HatchGrab {country}",
+    "description": "Ota vastaan tilauksia ja ennakkotilauksia myyntipaikallasi ilman jonoa. Tilausjärjestelmä ja keittiönäyttö ruokarekoille ja liikkuvalle ruokamyynnille ({country}) — ei kassajärjestelmä."
+  }
+}

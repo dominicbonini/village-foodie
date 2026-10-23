@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Atcelts",
+    "finished": "Beidzies",
+    "unconfirmed": "Neapstiprināts",
+    "confirmed": "Apstiprināts",
+    "open": "Tagad atvērts",
+    "closed": "Slēgts"
+  },
+  "sections": {
+    "label": "Grafika sadaļas",
+    "events": "Pasākumi",
+    "eventTypes": "Pasākumu veidi"
+  },
+  "header": {
+    "title": "Grafiks",
+    "upcoming": "Gaidāmie: {count}",
+    "import": "✨ Importēt grafiku",
+    "importHint": "foto, PDF vai teksts",
+    "addEvent": "+ Pievienot pasākumu",
+    "scraperAuto": "Pasākumus automātiski meklējam jūsu tīmekļa vietnē",
+    "changeInSettings": "Mainīt sadaļā Iestatījumi",
+    "scraperManual": "Jūs pārvaldāt grafiku manuāli"
+  },
+  "empty": {
+    "title": "Nav gaidāmu pasākumu",
+    "body": "Šeit parādīsies pasākumi, kas atrasti jūsu sociālajos tīklos un rezervāciju kalendārā, lai jūs tos apstiprinātu"
+  },
+  "list": {
+    "openNow": "Tagad atvērts",
+    "needsApproval": "Gaida jūsu apstiprinājumu",
+    "needsConfirmation": "Jāapstiprina",
+    "confirmed": "Apstiprināti",
+    "past": "Pagājušie pasākumi ({count})",
+    "found": "Atradām {count, plural, zero {# pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.} one {# pasākumu — pārskatiet un apstipriniet to, pirms tas tiek publicēts.} other {# pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.}}"
+  },
+  "card": {
+    "addName": "Pievienot nosaukumu",
+    "timeNeeded": "⚠ Vajadzīgs laiks",
+    "setTimeFirst": "Vispirms iestatiet laiku",
+    "confirm": "Apstiprināt",
+    "copy": "Kopēt",
+    "edit": "Rediģēt",
+    "makePost": "Izveidot ierakstu",
+    "cancel": "Atcelt",
+    "approve": "Apstiprināt",
+    "reject": "Noraidīt",
+    "stock": "⚠️ Krājumi",
+    "stockHidden": "Paslēpts — {reason}",
+    "noDeals": "Nav aktīvu komplektu",
+    "dealsActive": "{count, plural, zero {# aktīvi komplekti} one {# aktīvs komplekts} other {# aktīvi komplekti}} · {names}{hidden, plural, =0 {} zero { · # paslēpti} one { · # paslēpts} other { · # paslēpti}}",
+    "approveNeedsTimes": "Apstiprināt nevar, kamēr pasākumam nav sākuma un beigu laika — pievienojiet tos ar “Rediģēt”."
+  },
+  "guessed": {
+    "title": "📍 Mēs uzminējām šo vietu",
+    "body": "Meklējot <b>{venue}</b>, atradām vairākas atbilstošas norises vietas, tāpēc izvēlējāmies tuvāko{hasTown, select, yes {: <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Pirms apstiprināšanas pārbaudiet, vai tā ir pareizā — ja nav, ar <b>Rediģēt</b> izlabojiet datus (apkaime, {postal}), citādi klienti tiks nosūtīti uz nepareizo vietu.",
+    "thisVenue": "šo norises vietu"
+  },
+  "noLocation": {
+    "title": "📍 Vieta vēl nav noteikta",
+    "body": "Šo norises vietu neizdevās atrast kartē, tāpēc tā būs sarakstā, bet bez kartes atzīmes. Lai to parādītu kartē, ar <b>Rediģēt</b> pievienojiet: {postal}."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, zero {Iespējami konflikti} one {Iespējams konflikts} other {Iespējami konflikti}} — pārskatiet pirms {pending, select, yes {apstiprināšanas} other {apstiprināšanas}}",
+    "duplicate": "Šķiet, ka šis pasākums jums jau ir.",
+    "review": "Tā pati norises vieta un datums, bet cits laiks — vai tas ir tas pats pasākums ar labotu laiku vai atsevišķa reize? Pārskatiet pirms apstiprināšanas.",
+    "already": "Jau ir jūsu grafikā: <b>{venue}</b>{details} ({status, select, confirmed {apstiprināts} open {atvērts} other {{status}}})",
+    "unnamedVenue": "Norises vieta bez nosaukuma",
+    "ack": "Jā, tie ir dažādi pasākumi — tomēr {pending, select, yes {apstiprināt} other {apstiprināt}}",
+    "cancel": "Atcelt",
+    "overlap": "Šī pasākuma laiks pārklājas ar citu tās pašas dienas pasākumu — viens busiņš nevar būt divās vietās vienlaikus. Pārbaudiet pirms apstiprināšanas."
+  },
+  "toast": {
+    "loadFailed": "Neizdevās ielādēt pasākumus",
+    "linkFailed": "Neizdevās ielādēt saiti",
+    "placeTypeFailed": "Pasākums saglabāts. Vietas {place} ierastais veids netika saglabāts — {reason}.",
+    "placeTypeFailedReason": "saglabāšana neizdevās",
+    "eventUpdated": "Pasākums atjaunināts",
+    "eventAdded": "Pasākums pievienots",
+    "eventsSaved": "{count, plural, zero {Saglabāti # pasākumi} one {Saglabāts # pasākums} other {Saglabāti # pasākumi}}",
+    "saveEventsFailed": "Neizdevās saglabāt pasākumus",
+    "needsTime": "Pirms apstiprināšanas pievienojiet sākuma un beigu laiku — bez laika pasākumu nevar publicēt.",
+    "addStartTime": "Pievienojiet sākuma laiku",
+    "addEndTime": "Pievienojiet beigu laiku",
+    "chooseTruckBefore": "Pirms apstiprināšanas izvēlieties, kurš busiņš strādās šajā pasākumā.",
+    "chooseTruck": "Izvēlieties, kurš busiņš strādās šajā pasākumā",
+    "eventConfirmed": "Pasākums apstiprināts",
+    "eventRejected": "Pasākums noraidīts",
+    "undo": "↩ Atsaukt",
+    "eventRestored": "Pasākums atjaunots",
+    "restoreFailed": "Neizdevās atjaunot",
+    "eventCancelled": "Pasākums atcelts",
+    "eventCancelledOrders": "Pasākums atcelts · {count, plural, zero {atcelti # pasūtījumi} one {atcelts # pasūtījums} other {atcelti # pasūtījumi}}",
+    "placeHidden": "Vieta paslēpta",
+    "placeShown": "Vieta atkal redzama",
+    "saveThatFailed": "Neizdevās saglabāt."
+  },
+  "link": {
+    "label": "Privātā saite un QR kods",
+    "close": "Aizvērt"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Paketi i značajke",
+  "generated": "Izrađeno: {date}",
+  "allowanceHeading": "Uključene online narudžbe",
+  "smallPrint": "Napomene",
+  "priceNoteMasked": "Cijene označene s „Naknadno“ još nisu objavljene.",
+  "omitNote": "Cijene namjerno nisu navedene u ovom dokumentu.",
+  "terms": "Iznosi odgovaraju objavljenim uvjetima paketa na gore navedeni datum i mogu se promijeniti. Naknade za obradu kartica naplaćuje Stripe, a ne HatchGrab. Ovaj je dokument sažetak, a ne ugovor."
+}

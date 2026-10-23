@@ -1,0 +1,6 @@
+{
+  "closedPending": "Az előrendelés lezárult. A konyha jóváhagyására vár.",
+  "deadline": "Előrendelés eddig: {time}",
+  "deadlineOnDay": "Előrendelés eddig: {day}, {time}",
+  "opens": "Az előrendelés indul: {day}"
+}

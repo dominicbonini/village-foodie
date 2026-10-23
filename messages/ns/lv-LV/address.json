@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adrese",
+    "postcode": "Pasta indekss",
+    "zip": "ZIP kods",
+    "eircode": "Eircode",
+    "postalCode": "Pasta indekss",
+    "state": "Štats",
+    "stateTerritory": "Štats vai teritorija",
+    "province": "Province",
+    "county": "Grāfiste",
+    "area": "Apdzīvota vieta (ciems vai pilsēta)",
+    "townOrArea": "Pilsēta vai apvidus",
+    "city": "Pilsēta",
+    "suburb": "Apkaime",
+    "townOrCity": "Pilsēta"
+  },
+  "short": {
+    "area": "Apdzīvota vieta",
+    "townOrArea": "Pilsēta vai apvidus",
+    "city": "Pilsēta",
+    "suburb": "Apkaime",
+    "townOrCity": "Pilsēta"
+  },
+  "inSentence": {
+    "postcode": "pasta indekss",
+    "zip": "ZIP kods",
+    "eircode": "Eircode",
+    "postalCode": "pasta indekss"
+  },
+  "withArticle": {
+    "postcode": "pasta indekss",
+    "zip": "ZIP kods",
+    "eircode": "Eircode",
+    "postalCode": "pasta indekss"
+  },
+  "tradeLabel": {
+    "area": "Pilsēta",
+    "townOrArea": "Pilsēta vai apvidus",
+    "city": "Pilsēta",
+    "suburb": "Apkaime",
+    "townOrCity": "Pilsēta"
+  },
+  "basedIn": {
+    "area": "Pilsēta, kurā atrodaties",
+    "townOrArea": "Pilsēta vai apvidus, kurā atrodaties",
+    "city": "Pilsēta, kurā atrodaties",
+    "suburb": "Apkaime, kurā atrodaties",
+    "townOrCity": "Pilsēta, kurā atrodaties"
+  },
+  "example": "piem., {example}",
+  "customersSee": "Klienti redz:",
+  "postalWarning": "Tas neizskatās pareizi (gaidīts: {article}, piemēram, {example}). Jūs to tomēr varat saglabāt.",
+  "regionChoose": "Izvēlieties…"
+}

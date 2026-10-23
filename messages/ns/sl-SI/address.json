@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Naslov",
+    "postcode": "Poštna številka",
+    "zip": "Koda ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Poštna številka",
+    "state": "Zvezna država",
+    "stateTerritory": "Zvezna država ali ozemlje",
+    "province": "Provinca",
+    "county": "Okrožje",
+    "area": "Kraj (vas, trg ali mesto)",
+    "townOrArea": "Kraj ali območje",
+    "city": "Mesto",
+    "suburb": "Četrt",
+    "townOrCity": "Kraj ali mesto"
+  },
+  "short": {
+    "area": "Kraj",
+    "townOrArea": "Kraj ali območje",
+    "city": "Mesto",
+    "suburb": "Četrt",
+    "townOrCity": "Kraj ali mesto"
+  },
+  "inSentence": {
+    "postcode": "poštna številka",
+    "zip": "koda ZIP",
+    "eircode": "Eircode",
+    "postalCode": "poštna številka"
+  },
+  "withArticle": {
+    "postcode": "poštna številka",
+    "zip": "koda ZIP",
+    "eircode": "Eircode",
+    "postalCode": "poštna številka"
+  },
+  "tradeLabel": {
+    "area": "Kraj ali mesto",
+    "townOrArea": "Kraj ali območje",
+    "city": "Mesto",
+    "suburb": "Četrt",
+    "townOrCity": "Kraj ali mesto"
+  },
+  "basedIn": {
+    "area": "Kraj ali mesto, kjer imate sedež",
+    "townOrArea": "Kraj ali območje, kjer imate sedež",
+    "city": "Mesto, kjer imate sedež",
+    "suburb": "Četrt, kjer imate sedež",
+    "townOrCity": "Kraj ali mesto, kjer imate sedež"
+  },
+  "example": "npr. {example}",
+  "customersSee": "Stranke vidijo:",
+  "postalWarning": "To ni videti kot {article} — na primer {example}. Vseeno lahko shranite.",
+  "regionChoose": "Izberite …"
+}

@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Introduceți un număr de mobil valid din {name}} other {Introduceți un număr de mobil valid}}{withExample, select, yes { (ex.: {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Introduceți un număr de telefon valid din {name}} other {Introduceți un număr de telefon valid}}{withExample, select, yes { (ex.: {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Introduceți un număr de telefon valid din {name}} other {Introduceți un număr de telefon valid}}{withExample, select, yes { (ex.: {example})} other {}}."
+}

@@ -1,0 +1,83 @@
+{
+  "title": "Tipovi događaja",
+  "newTypeButton": "+ Novi tip događaja",
+  "close": "Zatvori",
+  "loading": "Učitavanje…",
+  "missingTitle": "Tipovi događaja još nisu uključeni.",
+  "missingBody": "Ažuriranje baze podataka za ovu značajku još nije primijenjeno. Ništa nije pokvareno – svaki događaj koristi vaše uobičajene postavke.",
+  "column": "Stupac",
+  "vanGone": "Taj food truck više ne postoji.",
+  "typeGone": "Taj tip više ne postoji.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Više: {name}",
+  "rename": "Preimenuj",
+  "moveLeft": "Pomakni ulijevo",
+  "moveRight": "Pomakni udesno",
+  "delete": "Izbriši",
+  "sections": {
+    "vans": "FOOD TRUCKOVI",
+    "prices": "CIJENE",
+    "itemPrices": "CIJENE ARTIKALA",
+    "service": "USLUGA"
+  },
+  "labelFor": "{label} – {name}",
+  "intervalEvery": "Svakih {mins} min",
+  "noTypes": "Još nemate tipova događaja pa svaki događaj koristi vaše uobičajene postavke.",
+  "renameTitle": "Preimenuj ovaj tip",
+  "name": "Naziv",
+  "cancel": "Odustani",
+  "save": "Spremi",
+  "copyVanOne": "Kopiraj postavke food trucka 1",
+  "thisType": "ovaj tip",
+  "matchTitle": "Postaviti „{name}“ isto kao Standard?",
+  "matchKeeps": "Sve što ste promijenili na nadzornoj ploči pojedinog događaja ostaje kako jest, a cijene ovog tipa ne mijenjaju se.",
+  "matchWillUse": "Koristit će: {summary}",
+  "deleteTitle": "Izbrisati „{name}“?",
+  "deleteBody": "{n, plural, =0 {Nijedan nadolazeći događaj ne koristi „{name}“.} one {{count} nadolazeći događaj koristi „{name}“. Vratit će se na Standard.} few {{count} nadolazeća događaja koriste „{name}“. Vratit će se na Standard.} other {{count} nadolazećih događaja koristi „{name}“. Vratit će se na Standard.}} Sve što ste promijenili na pojedinom događaju ostaje kako jest.",
+  "keep": "Zadrži",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "zadano",
+    "vanSetup": "Uobičajene postavke ovog food trucka – koriste se na svakom događaju bez tipa.",
+    "standardSetup": "Vaše uobičajene postavke – koriste se na svakom događaju bez tipa.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} nadolazeći događaj} few {{upcomingCount} nadolazeća događaja} other {{upcomingCount} nadolazećih događaja}} · {changed, plural, =0 {još ništa nije promijenjeno} one {promijenjeno: {changedCount} od {total}} few {promijenjeno: {changedCount} od {total}} other {promijenjeno: {changedCount} od {total}}}",
+    "noMenuItems": "Još nema artikala na jelovniku – dodajte ih u Jelovnik › Artikli."
+  },
+  "newType": {
+    "title": "Novi tip događaja",
+    "namePlaceholder": "npr. Školska priredba",
+    "help": "Dodirnite naziv ili upišite svoj. Počinje kao kopija tipa Standard, a kasnije promjene tipa Standard neće ga mijenjati. Poslije možete promijeniti bilo što.",
+    "create": "Izradi",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Kafić",
+      "market": "Tržnica",
+      "privateHire": "Najam food trucka"
+    }
+  },
+  "select": {
+    "label": "Tip događaja",
+    "usual": "Za ovu lokaciju uobičajen je tip {name}."
+  },
+  "summary": {
+    "normalSetup": "Vaše uobičajene postavke",
+    "sameAsStandard": "Isto kao Standard",
+    "buzzersOn": "pageri uključeni",
+    "buzzersOff": "pageri isključeni",
+    "takeCashOn": "gotovina se prima",
+    "takeCashOff": "gotovina se ne prima",
+    "markReadyOn": "korak „Narudžba spremna“ uključen",
+    "markReadyOff": "korak „Narudžba spremna“ isključen",
+    "collectionEvery": "preuzimanje svakih {mins} min",
+    "offlineOff": "zaštita izvan mreže isključena",
+    "offlineKeepTaking": "izvan mreže: nastavi primati narudžbe",
+    "offlinePause": "izvan mreže: pauziraj narudžbe"
+  },
+  "errors": {
+    "somethingWentWrong": "Nešto je pošlo po zlu",
+    "couldNotLoad": "Učitavanje nije uspjelo",
+    "couldNotSave": "Spremanje nije uspjelo",
+    "noVans": "Nema food truckova za promjenu."
+  }
+}

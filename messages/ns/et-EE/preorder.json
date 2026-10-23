@@ -1,0 +1,6 @@
+{
+  "closedPending": "Ettetellimused suletud. Köök peab kinnitama.",
+  "deadline": "Telli ette kuni kella {time}",
+  "deadlineOnDay": "Telli ette kuni kella {time}, {day}",
+  "opens": "Ettetellimused avanevad: {day}"
+}

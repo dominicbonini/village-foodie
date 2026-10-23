@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Étlapom mentése →",
+    "heading": "Állítsa be a food truckját",
+    "sub": "Az étlapja automatikusan átkerül.",
+    "privacy": "Ezt csak a food truckja beállításához és a demólink elküldéséhez használjuk — lásd <link>adatvédelmi tájékoztatónkat</link>."
+  },
+  "sample": {
+    "bannerButton": "Food truckom beállítása →",
+    "heading": "Állítsa be a food truckját",
+    "sub": "Ezután feltöltheti a saját étlapját — egy percig tart.",
+    "privacy": "Ezt csak a food truckja beállításához és a demólink elküldéséhez használjuk — lásd <link>adatvédelmi tájékoztatónkat</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Étlapom mentése →",
+    "heading": "Mentse el a demóját",
+    "sub": "14 napig megőrizzük, és azonnal elküldjük e-mailben a visszavezető linket.",
+    "privacy": "Ezt csak a demólink elküldéséhez használjuk — lásd <link>adatvédelmi tájékoztatónkat</link>."
+  },
+  "confirmationHeading": "Minden kész",
+  "postSaveButton": "Food truckom beállítása →",
+  "enterSetupButton": "Food truckom beállítása →",
+  "emailOnlyLink": "Csak küldjenek e-mailben egy linket, hogy visszatérhessek ehhez a demóhoz",
+  "sendLinkButton": "Link küldése",
+  "savingButton": "Mentés…",
+  "continueButton": "Tovább →",
+  "createAccountButton": "Fiókom létrehozása →",
+  "retryButton": "Újra",
+  "backToDemoButton": "Vissza a demóhoz",
+  "savedStatus": "{hasDate, select, yes {✓ Mentve — megőrzés eddig: {date}} other {✓ Mentve}}",
+  "back": "Vissza",
+  "close": "Bezárás",
+  "truckStepHeading": "A food truckjáról",
+  "detailsStepHeading": "Beállítás befejezése",
+  "stepper": {
+    "details": "Adatok",
+    "menu": "Étlap",
+    "allergens": "Allergének",
+    "kitchen": "Konyha",
+    "schedule": "Menetrend"
+  },
+  "confirmEmailed": "E-mailben elküldtük a linket, amellyel közvetlenül visszatérhet ehhez a demóhoz — bejelentkezés nélkül.",
+  "confirmKeepUntil": "Megőrzés eddig: <b>{date}</b>. Az étlapja Önnel tart, amikor véglegesen beállítja a food truckját.",
+  "loading": "Betöltés…",
+  "firstName": "Keresztnév",
+  "lastName": "Vezetéknév",
+  "truckName": "Food truck neve",
+  "truckNamePlaceholder": "pl. Falusi Konyha",
+  "cuisine": "Konyhatípus",
+  "logoLabel": "Logó <opt>(nem kötelező)</opt>",
+  "logoPreviewAlt": "Logó előnézete",
+  "changeLogo": "Logó cseréje",
+  "removeLogo": "Eltávolítás",
+  "uploadLogo": "📷 Logó feltöltése",
+  "readyTitle": "A fiókja elkészült",
+  "readyBody": "Most fejezzük be a food truckja beállítását — az étlapot, az allergéneket és a konyhát.",
+  "hangTight": "Egy pillanat — mindent beállítunk.",
+  "stage": {
+    "account": "Fiók létrehozása",
+    "truck": "Food truck beállítása",
+    "menu": "Étlap betöltése"
+  },
+  "stageState": {
+    "done": "kész",
+    "recognised": "már van fiókja",
+    "failed": "sikertelen",
+    "active": "folyamatban",
+    "pending": "függőben"
+  },
+  "signIn": "Bejelentkezés",
+  "phone": "Telefon",
+  "onWhatsapp": "Ez a szám elérhető WhatsAppon",
+  "email": "E-mail",
+  "emailPlaceholder": "nev@afoodtruckod.hu",
+  "settingUpAs": "Beállítás ezzel a címmel: <b>{email}</b> <change>módosítás</change>",
+  "password": "Jelszó",
+  "passwordPlaceholder": "Legalább 8 karakter",
+  "hidePassword": "Jelszó elrejtése",
+  "showPassword": "Jelszó megjelenítése",
+  "promoLabel": "Van kódja? <opt>(nem kötelező)</opt>",
+  "promoPlaceholder": "Írja be ide",
+  "agreeTerms": "Elfogadom a <terms>Felhasználási feltételeket</terms> és az <privacy>Adatvédelmi tájékoztatót</privacy>.",
+  "freeMonth": "A beállítás még nem indítja el az ingyenes hónapot. Az akkor kezdődik, amikor kiválasztja az első élő eseményét — amikor csak készen áll.",
+  "fieldError": {
+    "firstName": "Adja meg a keresztnevét.",
+    "lastName": "És a vezetéknevét.",
+    "truck": "Adjon nevet a food truckjának.",
+    "cuisine": "Adja meg, mit főz.",
+    "phoneMissing": "Adjon meg egy telefonszámot — a vásárlók és mi is ezen érjük el Önt.",
+    "email": "Adjon meg érvényes e-mail-címet.",
+    "password": "A jelszónak legalább 8 karakterből kell állnia.",
+    "terms": "A folytatáshoz kérjük, fogadja el a feltételeket."
+  },
+  "error": {
+    "saveFailed": "Nem sikerült menteni — próbálja újra.",
+    "savedNoEmail": "Mentve — de a linket most nem sikerült e-mailben elküldeni.",
+    "unreachable": "Most nem sikerült kapcsolódni hozzánk — próbálja újra.",
+    "createAccountFailed": "Nem sikerült létrehozni a fiókját.",
+    "truckCreateFailed": "A fiókja elkészült, de a food truckot nem sikerült létrehozni. Próbálja újra.",
+    "truckUnreachable": "A fiókja elkészült, de a food truckot most nem sikerült létrehozni. Próbálja újra.",
+    "truckNoToken": "A food truckja be van állítva, de most nem sikerült megnyitni. Próbálja újra."
+  }
+}

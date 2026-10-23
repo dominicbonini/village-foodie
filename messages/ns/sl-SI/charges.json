@@ -1,0 +1,13 @@
+{
+  "subtotal": "Vmesni seštevek",
+  "taxFallback": "Davek",
+  "taxIncluded": "Vključeno: {label}",
+  "serviceFeeCustomer": "Pristojbina za spletno storitev",
+  "serviceFee": "Pristojbina za storitev",
+  "cardFee": "Pristojbina za kartico",
+  "tip": "Napitnina",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Davek, pristojbine in napitnina} tax_tip {Davek in napitnina} fees_tip {Pristojbine in napitnina} fees {Pristojbine} other {Davek in pristojbine}}"
+}

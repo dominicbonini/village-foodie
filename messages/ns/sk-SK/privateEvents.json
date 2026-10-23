@@ -1,0 +1,42 @@
+{
+  "publicName": "Súkromná akcia",
+  "chip": "Súkromná",
+  "grid": {
+    "orderingSection": "OBJEDNÁVANIE",
+    "linkRowLabel": "Prijímať objednávky cez súkromný odkaz a QR kód",
+    "columnTitle": "Vstavaný typ „Súkromná“. Nedá sa premenovať, presunúť ani odstrániť."
+  },
+  "form": {
+    "help": "Vo vašom harmonograme sa zobrazí ako „Súkromná akcia“ iba s dátumom a časmi — nikdy s adresou, mapou ani Village Foodie.",
+    "linkPromise": "Hostia objednávajú cez súkromný odkaz a QR kód — dostanete ich po uložení.",
+    "nameLabel": "Názov akcie",
+    "nameHelp": "Hostia ho uvidia v hornej časti objednávkovej stránky.",
+    "namePlaceholder": "Svadba Zuzany a Tomáša",
+    "previewNote": "Takto sa zobrazí vo vašom harmonograme — bez miesta, mesta a PSČ.",
+    "needsTimes": "Pridajte čas začiatku a konca — súkromná akcia s objednávaním cez odkaz ich potrebuje."
+  },
+  "link": {
+    "button": "Odkaz a QR",
+    "title": "Súkromný odkaz a QR kód",
+    "label": "Súkromný odkaz",
+    "copy": "Kopírovať",
+    "copied": "Skopírované",
+    "qrDownload": "Stiahnuť QR",
+    "tableCards": "Vytlačiť stolové kartičky",
+    "newLink": "Vytvoriť nový odkaz",
+    "working": "Spracúva sa…",
+    "newLinkConfirm": "Vytvoriť nový odkaz? Aktuálny odkaz okamžite prestane fungovať a prestanú fungovať aj všetky QR kódy, ktoré ste už vytlačili.",
+    "newLinkHelp": "Použite to, ak sa odkaz dostal tam, kam nemal. Aktuálny odkaz okamžite prestane fungovať a prestanú fungovať aj vytlačené QR kódy.",
+    "newLinkFailed": "Nový odkaz sa nepodarilo vytvoriť.",
+    "offNotice": "Objednávanie cez súkromný odkaz je pre túto akciu vypnuté, takže nie je čo zdieľať. Akcia sa vo vašom harmonograme stále zobrazuje ako „Súkromná akcia“."
+  },
+  "cards": {
+    "printTitle": "{truck} — stolové kartičky",
+    "scan": "Naskenujte a objednajte",
+    "blurb": "Objednajte a zaplaťte v telefóne. Keď to bude hotové, zavoláme vás menom.",
+    "footer": "Objednávky cez HatchGrab"
+  },
+  "noSinglePost": "Súkromné akcie nemajú vlastný príspevok — na vašom týždennom plagáte sa zobrazia ako „Súkromná akcia“.",
+  "confirmToPrivate": "Tým sa adresa aj akcia skryjú z mapy. Hostia budú na objednanie potrebovať súkromný odkaz.",
+  "confirmFromPrivate": "Tým sa akcia zverejní: zobrazí sa jej adresa a špendlík na mape a súkromný odkaz prestane fungovať."
+}

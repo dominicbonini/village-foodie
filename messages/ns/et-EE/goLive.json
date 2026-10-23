@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Vali, kuidas allergeeniteavet näidata",
+    "detail": "Kuni sa pole valinud, ei näe kliendid ühtki sinu rooga — menüü kaitseb ennast, peites kõik, mille allergeenid on kinnitamata, ja praegu on selline kõik.",
+    "where": "Menüü → Allergeenid"
+  },
+  "allergensCardMissing": {
+    "title": "Lisa oma allergeenikaart",
+    "detail": "Oled valinud allergeenikaardi näitamise, kuid ühtki kaarti pole salvestatud — nii öeldaks klientidele, et allergeeniteave on olemas, aga nad ei leiaks midagi.",
+    "where": "Menüü → Allergeenid"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Kinnita allergeenid: {count} roog} other {Kinnita allergeenid: {count} rooga}}",
+    "detail": "{n, plural, one {Sinu roog on klientide eest peidetud, kuni kinnitad selle allergeenid.} other {{u, plural, one {Roogi kokku {total}, neist {unverified} on klientide eest peidetud, kuni kinnitad selle allergeenid.} other {Roogi kokku {total}, neist {unverified} on klientide eest peidetud, kuni kinnitad nende allergeenid.}}}} Ilma kinnitatud allergeenideta näidatud roog näib, nagu see „ei sisalda midagi“, seega menüü pigem peidab selle, kui võtab sellise riski.",
+    "where": "Menüü → Allergeenid"
+  },
+  "noVan": {
+    "title": "Lisa toiduauto",
+    "detail": "Üritused käivad toiduauto kaudu — ilma selleta pole millegi kaudu tellimusi vastu võtta.",
+    "where": "Seaded → Sinu toiduautod"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Määra köögi võimsus",
+    "detail": "Köögi võimsus on määramata: {vans}. Ilma selleta lubame klientidele edasi kättesaamise aegu, milleni su köök kuidagi ei jõua.",
+    "where": "Menüü → Köögi võimsus",
+    "unnamedVan": "Nimetu toiduauto"
+  },
+  "noPrepBearingCategory": {
+    "title": "Ütle meile, kui kaua su toidu valmistamine võtab",
+    "detail": "{categories, select, none {Sul pole veel ühtki menüükategooriat, seega ei saa me kuidagi välja arvutada, kui kaua tellimus aega võtab.} other {Ühelgi sinu kategoorial pole valmistusaega määratud, nii et iga tellimus paistab meile kohene. Annaksime klientidele edasi kättesaamise aegu, milleni su köök ei jõua, ja mida rohkem tööd, seda rohkem need paigast ära oleksid.}}",
+    "where": "Menüü → Kategooriad → Köögi seadistus"
+  },
+  "emailUnverified": {
+    "title": "Kinnita oma e-posti aadress",
+    "detail": "Saadame sellele aadressile tellimuste teavitused ja konto taastamise kirjad. Kui aadress on vale, saad sellest teada alles siis, kui midagi on juba viltu läinud.",
+    "where": "Otsi postkastist meie kinnituslinki"
+  },
+  "emailUnknown": {
+    "title": "E-posti kinnituse olek teadmata",
+    "detail": "E-posti kinnitamine pole veel ühendatud, seega ei saa seda hinnata. See blokeerib meelega, selle asemel et vaikselt läbi lasta.",
+    "where": "—"
+  }
+}

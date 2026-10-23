@@ -1,0 +1,6 @@
+{
+  "closedPending": "Precomenzi închise. Bucătăria trebuie să aprobe.",
+  "deadline": "Precomandați până la {time}",
+  "deadlineOnDay": "Precomandați până la {time}, {day}",
+  "opens": "Precomenzile se deschid {day}"
+}

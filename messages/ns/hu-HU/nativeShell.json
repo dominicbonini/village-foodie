@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "#{id} rendelés visszaállítva",
+    "saved": "#{id} rendelés mentve",
+    "undo": "↩ Visszavonás",
+    "paymentNotRecorded": "⚠ #{id} rendelés — A FIZETÉS NINCS RÖGZÍTVE. {collect, select, yes {A rendelés teljesült} other {A rendelés mentve}}, a fizetés nem.",
+    "recordPayment": "Fizetés rögzítése",
+    "paid": "#{id} rendelés fizetve",
+    "undonePayment": "Visszavonva — fizetés eltávolítva",
+    "undoneCollected": "Visszavonva — a rendelés nincs átvéve",
+    "collected": "#{id} rendelés {paidToo, select, yes {fizetve és átvéve} other {átvéve}}",
+    "ready": "#{id} rendelés kész",
+    "readyBuzzer": "#{id} rendelés kész · <pill></pill>",
+    "status": "#{id} rendelés {action, select, confirm {megerősítve} reject {elutasítva} ready {kész} collected {átvéve} undo_collected {visszaállítva} cancel {törölve} other {frissítve}}"
+  },
+  "conflicts": {
+    "more": "+{count} további",
+    "notOnScreenPlus": "+{count} nincs ezen a képernyőn",
+    "notOnScreen": "{n, plural, one {{count} rendelés nincs ezen a képernyőn} other {{count} rendelés nincs ezen a képernyőn}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ A FIZETÉS NINCS RÖGZÍTVE",
+    "paymentBody": "{orders} — csak ezen az eszközön van fizetettnek jelölve. A fizetés nem lett rögzítve.",
+    "paymentCheck": "Ellenőrizze a rendelést, és ha még tartozás van, vegye fel újra a fizetést.",
+    "dismiss": "Elvetés",
+    "confirmChecked": "Erősítse meg, hogy ellenőrizte: {orders}",
+    "confirmHides": "Ez elrejti a figyelmeztetést. A bejegyzés mindenképp megmarad ezen az eszközön.",
+    "notYet": "Még nem",
+    "iveChecked": "Ellenőriztem: {orders}",
+    "statusBody": "⚠ {orders} — ez a módosítás nem ment át. Ellenőrizze a rendelést.",
+    "offline": "📴 Nincs kapcsolat — {n, plural, one {{count} módosítás mentve ezen az eszközön. Elküldjük, amint újra online lesz.} other {{count} módosítás mentve ezen az eszközön. Elküldjük őket, amint újra online lesz.}} A beállítások zárolva vannak.",
+    "syncing": "Újra online — {n, plural, one {{count} módosítás küldése} other {{count} módosítás küldése}}…",
+    "synced": "Minden módosítás elküldve.",
+    "stillQueued": "{n, plural, one {{count} módosítás mentve ezen az eszközön. Még próbáljuk elküldeni.} other {{count} módosítás mentve ezen az eszközön. Még próbáljuk elküldeni őket.}}"
+  },
+  "lock": {
+    "locked": "A HatchGrab zárolva van",
+    "verifying": "Ellenőrzés…",
+    "unlock": "Feloldás",
+    "cantUseBiometric": "Nem tudja használni a Face / Touch ID-t?",
+    "enterPin": "Adja meg a tartalék PIN-kódot",
+    "wrongPin": "Hibás PIN-kód — próbálja újra.",
+    "checking": "Ellenőrzés…",
+    "tryBiometric": "Inkább Face / Touch ID-val",
+    "forgot": "Elfelejtette a PIN-kódot? Újra kell telepítenie az alkalmazást."
+  },
+  "notify": {
+    "title": "🔔 Értesítések",
+    "intro": "Riasztások ezen az eszközön. Kapcsolja be, hogy kiválaszthassa, milyen riasztásokat kap.",
+    "refused": "A bekapcsoláshoz engedélyezni kell az értesítéseket az eszköz beállításaiban.",
+    "newOrder": "Riasztás új rendelésről",
+    "newOrderHelp": "Értesítést kap, ha egy vásárlói rendelés megerősítésre vár.",
+    "offline": "Riasztás offline állapotról / szünetelésről",
+    "offlineHelp": "Értesítést kap, ha ez az eszköz offline lesz (és a rendelés szünetel). <green>Offline is működik.</green>"
+  },
+  "van": {
+    "label": "Food truck",
+    "loadRetry": "Nem sikerült betölteni · Újra",
+    "select": "Válasszon…"
+  },
+  "deviceSave": {
+    "network": "A szerver nem érhető el — ellenőrizze a kapcsolatot, és próbálja újra.",
+    "server": "Ezt most nem sikerült menteni. Kérjük, próbálja újra."
+  },
+  "setup": {
+    "fetchErrorTitle": "Nem sikerült betölteni az eszköz beállítását",
+    "fetchErrorBody": "Nem értük el a szervert <b>ennek az eszköznek</b> a beállításához. Ellenőrizze a kapcsolatot, és próbálja újra — a rendeléseit és a beállításait ez nem érinti.",
+    "retry": "Újra",
+    "later": "Később",
+    "noVanTitle": "Nincs aktív food truck",
+    "noVanBody": "Ennek a vállalkozásnak még nincs aktív food truckja. Aktiváljon egyet itt: <b>Beállítások → Az Ön food truckjai</b>, és az eszköz automatikusan beállítja magát — itt nincs több teendő.",
+    "goToVans": "Ugrás: Beállítások → Az Ön food truckjai",
+    "title": "Eszköz beállítása",
+    "body": "Egyszeri beállítás <b>ehhez az eszközhöz</b>: melyik képernyővel nyíljon meg, és melyik food truckhoz tartozzon. Csak erre az eszközre vonatkozik — a többi eszközt külön kell beállítani, és ezeket később is módosíthatja: profilmenü → „Ez az eszköz”.",
+    "whichScreen": "Melyik képernyővel nyíljon meg ez az eszköz?",
+    "dashboard": "Vezérlőpult",
+    "kds": "Konyhai kijelző",
+    "whichVan": "Melyik food truckhoz tartozik ez az eszköz?",
+    "selectVan": "Válasszon food truckot…",
+    "saving": "Mentés…",
+    "tryAgain": "Próbálja újra",
+    "continue": "Tovább"
+  },
+  "device": {
+    "title": "Ez az eszköz",
+    "viewing": "Megtekintve: <b>{truck}</b>",
+    "viewingVan": "Megtekintve: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Csak erre az eszközre vonatkozik — a többi eszközt külön kell beállítani. (Azonosító: {id}…)",
+    "truck": "Vállalkozás",
+    "van": "Food truck",
+    "defaultScreen": "Alapértelmezett képernyő",
+    "orderNotifications": "Rendelésértesítések",
+    "patchFailed": "{setting, select, van {Food truck} defaultScreen {Alapértelmezett képernyő} other {Rendelésértesítések}}: nem sikerült menteni. {reason}",
+    "requireBiometric": "Ujjlenyomatos vagy arcfelismeréses feloldás megnyitáskor",
+    "pinTitle": "Tartalék PIN-kód beállítása (4–6 számjegy)",
+    "pinHelp": "Ezzel léphet be, ha az ujjlenyomatos vagy arcfelismeréses feloldás nem működik — ez az egyetlen tartalék, ezért ne felejtse el (elfelejtett PIN-kód esetén újra kell telepíteni az alkalmazást). Offline is működik.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN megerősítése",
+    "pinTooShort": "Legalább 4 számjegyet adjon meg.",
+    "pinMismatch": "A PIN-kódok nem egyeznek.",
+    "setPin": "PIN beállítása és bekapcsolás",
+    "cancel": "Mégse",
+    "noBiometric": "Ezen az eszközön nincs beállítva ujjlenyomatos vagy arcfelismeréses feloldás — adja hozzá az eszköz beállításaiban. A tartalék PIN-kód továbbra is működik.",
+    "footer": "Ezek a beállítások csak erre az eszközre vonatkoznak — a többi eszközt külön kell beállítani."
+  },
+  "appLock": {
+    "unlockReason": "HatchGrab feloldása",
+    "usePasscode": "Jelkód használata",
+    "cancel": "Mégse",
+    "confirmEnable": "Erősítse meg az alkalmazászár bekapcsolásához"
+  },
+  "channel": {
+    "ordersName": "Új rendelések",
+    "ordersDescription": "Riasztás, ha egy rendelés megerősítésre vár."
+  },
+  "localNotify": {
+    "newOrderTitle": "Új rendelés",
+    "orderReceived": "Új rendelés érkezett: {number}",
+    "newOrders": "{n, plural, one {Új rendelése érkezett} other {{count} új rendelése érkezett}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Rendelés szüneteltetve",
+    "pausedBody": "Ön offline — a vásárlói rendelés szünetel.",
+    "offlineTitle": "Ön offline",
+    "offlineBody": "Ez az eszköz elvesztette a kapcsolatot."
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "cancel": "Tühista",
+  "back": "← Tagasi",
+  "backPlain": "Tagasi",
+  "next": "Edasi →",
+  "continue": "Jätka →",
+  "closeImport": "Sulge import",
+  "tryAgain": "Proovi uuesti",
+  "catError": {
+    "empty": "Anna kategooriale nimi.",
+    "tooLong": "See nimi on liiga pikk.",
+    "clash": "Kategooria nimega „{name}“ on juba olemas."
+  },
+  "steps": {
+    "details": "Sinu andmed",
+    "menu": "Menüü",
+    "extras": "Lisad",
+    "allergens": "Allergeenid",
+    "kitchen": "Köögi seadistus",
+    "schedule": "Ajakava",
+    "settings": "Seaded"
+  },
+  "toast": {
+    "demoGone": "Sinu demomenüü pole enam saadaval — jätkamiseks laadi see uuesti üles.",
+    "eventsSaveFailed": "Ürituste salvestamine ebaõnnestus",
+    "cardReadFailed": "Allergeenikaarti ei õnnestunud lugeda — proovi uuesti",
+    "imageReadFailed": "Seda pilti ei õnnestunud lugeda — kirjuta või kleebi oma kaart hoopis tekstina",
+    "commitFailedDetail": "Menüü salvestamist ei õnnestunud lõpetada: {error}. Osa tooteid võib olla juba salvestatud — kontrolli menüüd enne uuesti proovimist.",
+    "commitFailed": "Menüü salvestamist ei õnnestunud lõpetada. Osa tooteid võib olla juba salvestatud — kontrolli menüüd enne uuesti proovimist.",
+    "finishFailed": "Seadistust ei õnnestunud lõpetatuks märkida — saad siiski jätkata.",
+    "scheduleReadFailed": "Seda ajakava ei õnnestunud lugeda — proovi selgemat fotot või sisesta kuupäevad ise.",
+    "cardRead": "Kaart loetud — {matched} sobitatud, {pending, plural, one {# vajab} other {# vajab}} sinu määramist"
+  },
+  "settingsReview": {
+    "anchorOrder": "Seaded → Tellimuse seaded",
+    "anchorDisplay": "Seaded → Sinu toiduautod → Kuvaseaded",
+    "mins15": "15 minutit",
+    "mins30": "30 minutit",
+    "mins60": "60 minutit",
+    "hours2": "2 tundi",
+    "title": "Mõned seaded üle vaadata",
+    "loading": "Laadin sinu praeguseid seadeid…",
+    "looksGood": "Tundub hea →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Seda ei õnnestunud salvestada — saad seda muuta jaotises Seaded.",
+    "anchorContact": "Seaded → Kontaktandmed",
+    "intro": "Seadsime sulle paika mõned levinud seaded. Tasub kiirelt üle vaadata — kõiki neid saad hiljem muuta jaotises Seaded.",
+    "cancelAria": "Kui kaua enne kättesaamist saavad kliendid tühistada"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Vaata need enne avalikuks minekut üle. Seni on tooted märgitud kui „allergeenid määramata“.",
+    "body": "Vaata need enne avalikuks minekut jaotises Seaded üle. Seni on tooted märgitud kui „allergeenid määramata“.",
+    "title": "⚠ Allergeenid ja toitumisteave pole veel määratud"
+  },
+  "welcome": {
+    "title": "Tere tulemast HatchGrabi",
+    "yourTruck": "Sinu toiduauto",
+    "stop": "Võid igal ajal pooleli jätta ja hiljem tagasi tulla.",
+    "body": "{name} on seadistatud. Järgmiseks lisame sinu menüü ja siis esimese ürituse.",
+    "go": "Alustame"
+  },
+  "offer": {
+    "title": "Kas kasutada demo menüüd?",
+    "use": "Kasuta seda menüüd",
+    "upload": "Laadi üles teine menüü",
+    "body": "Salvestasime sinu üles laaditud menüü — {count, plural, one {# toode} other {# toodet}}. Kasuta seda lähtepunktina või laadi üles teine."
+  },
+  "upload": {
+    "title": "Impordi oma menüü",
+    "body": "Laadi üles foto oma menüütahvlist, ekraanipilt või PDF või kleebi oma menüü tekstina. Meie tehisaru loeb selle ja loob sinu digitaalse menüü — enne salvestamist vaatad kõik üle.",
+    "confirmCancel": "Kas tühistada see import? Selle menüü ülevaatus läheb kaotsi.",
+    "process": "Töötle menüüd",
+    "later": "Teen seda hiljem"
+  },
+  "processing": {
+    "title": "Analüüsin sinu menüüd",
+    "body": "Tehisaru loeb ja kategoriseerib sinu tooteid…"
+  },
+  "review": {
+    "title": "Vaata imporditud menüü üle",
+    "editLaterSetup": "Nimesid, hindu, lisasid, allergeene ja toitumisteavet saab hiljem igal ajal muuta.",
+    "editLater": "Nimesid, hindu, lisasid, allergeene ja toitumisteavet saab igal ajal muuta jaotises Seaded.",
+    "noPrice": "Hinda ei õnnestunud lugeda: {count, plural, one {# toode} other {# toodet}}",
+    "renameCategoryAria": "Nimeta ümber kategooria {name}",
+    "renameAria": "Nimeta ümber: {name}",
+    "renameTitle": "Nimeta kategooria ümber",
+    "deleteAria": "Kustuta: {name}",
+    "deleteTitle": "Kustuta kategooria",
+    "lastCategory": "Sinu menüüs peab olema vähemalt üks kategooria",
+    "countOf": "{kept}/{total}",
+    "existing": "olemasolev",
+    "deleteEmptyTitle": "Kas kustutada „{name}“?",
+    "deleteEmptyBody": "Selles pole tooteid, seega midagi ei lähe kaotsi.",
+    "delete": "Kustuta",
+    "moveTitle": "Kuhu {count, plural, one {# toode} other {# toodet}} teisaldada?",
+    "moveBody": "Kategooria „{name}“ kustutamiseks on vaja kohta, kuhu selle road teisaldada — kategooriata tooteid ei impordita.",
+    "moveAria": "Teisalda tooted kategooriast {name} kategooriasse",
+    "chooseCategory": "Vali kategooria…",
+    "moveDelete": "Teisalda ja kustuta",
+    "itemName": "Toote nimi",
+    "free": "tasuta?",
+    "freeOn": "Tasuta ✕",
+    "nameFirst": "Anna uuele tootele nimi, enne kui järgmise lisad",
+    "addItem": "+ Lisa toode",
+    "categoryName": "Kategooria nimi",
+    "newCategoryAria": "Uue kategooria nimi",
+    "addCategory": "+ Lisa kategooria",
+    "ready": "{count, plural, one {# toode on lisamiseks valmis} other {# toodet on lisamiseks valmis}}. Eemalda linnuke neilt, mida sa ei soovi.",
+    "noPriceBody": "Määra igaühele hind või märgi see tasuta — muidu läheks see müüki hinnaga {zero}. Jätkata saad alles siis, kui need on korras.",
+    "incomplete": "Selle toote lisamiseks sisesta nimi — tühje ridu ei impordita."
+  },
+  "extras": {
+    "introSetup": "Mõned road saab seadistada <b>üheks kohandatavaks tooteks</b> või jätta <b>eraldi roogadeks</b>. Vali, kuidas igaüks kuvatakse. Saad seda hiljem muuta.",
+    "intro": "Mõned road saab seadistada <b>üheks kohandatavaks tooteks</b> või jätta <b>eraldi roogadeks</b>. Vali, kuidas igaüks kuvatakse. Saad seda hiljem muuta jaotises Seaded.",
+    "none": "Rühmitatavaid roogasid pole — iga toode on eraldi roog.",
+    "axisChoice": "· valik: {axis}",
+    "grouped": "Rühmitatud · üks toode, klient valib",
+    "separate": "Eraldi menüütooted"
+  },
+  "allergens": {
+    "title": "Allergeenid",
+    "detected": "Tuvastasime sinu menüüst allergeenid. Vali allpool, kuidas neid näidata.",
+    "howShow": "Kuidas soovid klientidele allergeene näidata?",
+    "skip": "Jäta allergeenide seadistus praegu vahele"
+  },
+  "kitchen": {
+    "title": "Köögi seadistus",
+    "intro": "Aita klientidel teada, kui kaua oodata — saad neid alati hiljem muuta.",
+    "howWorks": "Kuidas köögi võimsus toimib",
+    "allExist": "Kõik kategooriad on juba olemas — aegu pole vaja määrata.",
+    "totalHelp": "Määra koguvõimsus, et piirata, mitu toodet köök ajavahemiku kohta vastu võtab. Jäta ∞, kui piirangut pole vaja.",
+    "saveAdd": "Salvesta ja lisa menüüsse"
+  },
+  "schedule": {
+    "title": "Lisa minu ajakava",
+    "intro": "Kui sinu ajakava on sinu veebilehel, saame seda automaatselt ajakohasena hoida — või lisa kuupäevad ise.",
+    "websiteTitle": "Minu ajakava on minu veebilehel",
+    "urlPlaceholder": "https://sinutoiduauto.ee/uritused",
+    "checking": "Kontrollin…",
+    "verify": "Kontrolli",
+    "checkingSite": "Kontrollin sinu veebilehte…",
+    "takesTime": "See võib võtta kuni 2 minutit — palun hoia see aken avatud.",
+    "canRead": "✓ Saame sinu ajakava lugeda",
+    "ownSite": "Sinu enda veebileht — mitte Facebooki ega Instagrami leht.",
+    "photoTitle": "Laadi üles foto minu ajakavast",
+    "dragChoose": "Lohista või puuduta valimiseks",
+    "imageOrPdf": "Pilt või PDF",
+    "or": "või",
+    "pastePlaceholder": "Kleebi oma kuupäevad siia…",
+    "read": "Loe ajakava",
+    "found": "Leitud {count, plural, one {# kuupäev} other {# kuupäeva}} — need lisatakse sinu ajakavasse.",
+    "dateTbc": "Kuupäev selgub",
+    "save": "Salvesta {count, plural, one {# kuupäev} other {# kuupäeva}}",
+    "manualDesc": "Lisa need hiljem vahekaardil Ajakava — praegu pole midagi vaja teha.",
+    "manualBody": "Pole probleemi. Saad oma kuupäevi igal ajal lisada ja hallata oma konto vahekaardil Ajakava.",
+    "blockedDomain": "Palun kasuta oma veebilehe URL-i — Facebooki ja Instagrami lehti ei saa automaatselt lugeda.",
+    "saveFailed": "Lugesime sinu ajakava, kuid ei saanud seda praegu salvestada — proovi uuesti.",
+    "websiteDesc": "Kontrollime seda regulaarselt ja saadame uued kuupäevad sulle kinnitamiseks.",
+    "keepChecking": "Kontrollime seda lehte edasi ja saadame kõik uued kuupäevad sulle kinnitamiseks.",
+    "photoDesc": "Pildista või kleebi oma kuupäevad — loeme need sisse ja sina kontrollid.",
+    "noneFound": "Sealt ei leitud ühtegi kuupäeva — proovi selgemat fotot või lisa kuupäev ise.",
+    "manualTitle": "Lisan kuupäevad ise",
+    "trialNotStarted": "Ürituste lisamine ei käivita sinu tasuta prooviperioodi — hiljem valid ise, milline üritus selle käivitab."
+  },
+  "done": {
+    "summary": "{items, plural, one {# toode} other {# toodet}}, {categories, plural, one {# kategooria} other {# kategooriat}}.",
+    "imported": "Menüü imporditud!",
+    "added": "Sinu tooted on menüüsse lisatud.",
+    "duplicates": "{count, plural, one {# duplikaat} other {# duplikaati}} jäeti vahele",
+    "showMe": "Näita mulle ringi",
+    "remind": "Tuleta hiljem meelde",
+    "allSet": "Kõik on valmis!",
+    "explore": "Uurin ise"
+  },
+  "discard": {
+    "setupTitle": "Kas lõpetada seadistus hiljem?",
+    "setupBody": "Sinu konto ja toiduauto on salvestatud — midagi ei läinud kaotsi. Menüü saad lisada igal ajal: logi sisse ja puuduta menüüvaates nuppu <b>Impordi menüü</b>, et siitsamast jätkata.",
+    "keepGoing": "Jätka",
+    "finishLater": "Lõpeta hiljem",
+    "title": "Kas loobuda sellest impordist?",
+    "keepEditing": "Jätka muutmist",
+    "discard": "Loobu",
+    "body": "Sinu muudatusi ei salvestata — imporditud tooteid, ettevalmistusaegu ja köögi võimsust ei lisata."
+  },
+  "allergenCardText": {
+    "contains": "Sisaldab: {list}",
+    "mayContain": "Võib sisaldada: {list}"
+  }
+}

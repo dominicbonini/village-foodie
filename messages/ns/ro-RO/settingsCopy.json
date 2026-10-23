@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Permiteți clienților să anuleze comenzile",
+    "sentence": "Clienții pot anula cu până la <select></select> înainte de ora de ridicare"
+  },
+  "autoAccept": {
+    "label": "Acceptare automată a comenzilor",
+    "help": "Comenzile se confirmă automat. Dacă intervalul orar cerut este plin, comanda trece la următorul interval disponibil. Confirmarea are loc doar dacă există capacitate. Comenzile cu note de la client (de ex. o alergie) trebuie în continuare confirmate."
+  },
+  "orderReady": {
+    "label": "Pasul „Comandă gata”",
+    "help": "Afișează un buton „Gata” pe ecranul comenzilor. Ecranele de bucătărie se setează separat, pe fiecare dispozitiv. Clienții primesc un e-mail de fiecare dată când o comandă este marcată ca gata. Se aplică tuturor evenimentelor — puteți totuși să activați sau să dezactivați pasul pentru un singur eveniment, din panoul de control al acestuia."
+  },
+  "buzzers": {
+    "label": "Dați clienților pagere pentru ridicare?",
+    "help": "Notați ce pager ați dat fiecărui client, ca să știți pe cine să căutați când mâncarea este gata.",
+    "countLabel": "Câte pagere aveți?"
+  }
+}

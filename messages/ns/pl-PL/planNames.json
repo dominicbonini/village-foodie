@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Bez abonamentu",
+    "subtitle": "Sezonowe food trucki i praca dorywcza",
+    "description": "Bez opłaty miesięcznej. Płacisz tylko wtedy, gdy klient zapłaci online kartą."
+  },
+  "pro": {
+    "subtitle": "Food trucki z regularnymi zamówieniami z wyprzedzeniem",
+    "description": "Wszystko, łącznie z automatycznymi odpowiedziami WhatsApp i postami w mediach społecznościowych, z pulą zamówień online w cenie co miesiąc."
+  },
+  "unlimited": {
+    "name": "Bez limitu",
+    "subtitle": "Oblegane food trucki i festiwale",
+    "description": "Wszystko, bez opłat od zamówień online, niezależnie od tego, ile masz ruchu."
+  },
+  "trial": {
+    "name": "Bezpłatny okres próbny",
+    "description": "Wszystkie funkcje, za darmo, przez cały okres próbny."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Piaskownica dla potencjalnych klientów — nigdy publiczna."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester przed premierą — pełny dostęp."
+  }
+}

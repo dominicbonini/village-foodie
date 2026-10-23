@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Narudžba #{id} vraćena",
+    "saved": "Narudžba #{id} spremljena",
+    "undo": "↩ Poništi",
+    "paymentNotRecorded": "⚠ Narudžba #{id} — PLAĆANJE NIJE ZABILJEŽENO. {collect, select, yes {Narudžba je završena} other {Narudžba je spremljena}}, ali plaćanje nije.",
+    "recordPayment": "Zabilježi plaćanje",
+    "paid": "Narudžba #{id} plaćena",
+    "undonePayment": "Poništeno — plaćanje uklonjeno",
+    "undoneCollected": "Poništeno — narudžba nije preuzeta",
+    "collected": "Narudžba #{id} {paidToo, select, yes {plaćena i preuzeta} other {preuzeta}}",
+    "ready": "Narudžba #{id} spremna",
+    "readyBuzzer": "Narudžba #{id} spremna · <pill></pill>",
+    "status": "Narudžba #{id} {action, select, confirm {potvrđena} reject {odbijena} ready {spremna} collected {preuzeta} undo_collected {vraćena} cancel {otkazana} other {ažurirana}}"
+  },
+  "conflicts": {
+    "more": "+ još {count}",
+    "notOnScreenPlus": "+{count} izvan ovog zaslona",
+    "notOnScreen": "{n, plural, one {{count} narudžba nije na ovom zaslonu} few {{count} narudžbe nisu na ovom zaslonu} other {{count} narudžbi nije na ovom zaslonu}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PLAĆANJE NIJE ZABILJEŽENO",
+    "paymentBody": "{orders} — označeno kao plaćeno samo na ovom uređaju. Nije prošlo.",
+    "paymentCheck": "Provjerite narudžbu i ponovno naplatite ako iznos još nije plaćen.",
+    "dismiss": "Odbaci",
+    "confirmChecked": "Potvrdite da ste provjerili: {orders}",
+    "confirmHides": "Ovime se skriva upozorenje. Zapis u svakom slučaju ostaje na ovom uređaju.",
+    "notYet": "Još ne",
+    "iveChecked": "Provjereno: {orders}",
+    "statusBody": "⚠ {orders} — ova promjena nije prošla. Provjerite narudžbu.",
+    "offline": "📴 Nema veze — {n, plural, one {{count} promjena spremljena je na ovom uređaju. Poslat će se kad ponovno budete online.} few {{count} promjene spremljene su na ovom uređaju. Poslat će se kad ponovno budete online.} other {{count} promjena spremljeno je na ovom uređaju. Poslat će se kad ponovno budete online.}} Postavke su zaključane.",
+    "syncing": "Ponovno online — slanje: {n, plural, one {{count} promjena} few {{count} promjene} other {{count} promjena}}…",
+    "synced": "Sve promjene su poslane.",
+    "stillQueued": "{n, plural, one {{count} promjena spremljena je na ovom uređaju. Još je pokušavamo poslati.} few {{count} promjene spremljene su na ovom uređaju. Još ih pokušavamo poslati.} other {{count} promjena spremljeno je na ovom uređaju. Još ih pokušavamo poslati.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab je zaključan",
+    "verifying": "Provjera…",
+    "unlock": "Otključaj",
+    "cantUseBiometric": "Ne možete koristiti Face ID / Touch ID?",
+    "enterPin": "Unesite rezervni PIN",
+    "wrongPin": "Pogrešan PIN — pokušajte ponovno.",
+    "checking": "Provjera…",
+    "tryBiometric": "Pokušajte s Face ID / Touch ID",
+    "forgot": "Zaboravili ste PIN? Morat ćete ponovno instalirati aplikaciju."
+  },
+  "notify": {
+    "title": "🔔 Obavijesti",
+    "intro": "Upozorenja na ovom uređaju. Uključite ih kako biste odabrali koja upozorenja primate.",
+    "refused": "Za uključivanje ove opcije obavijesti moraju biti omogućene u postavkama uređaja.",
+    "newOrder": "Upozorenja o novim narudžbama",
+    "newOrderHelp": "Primite obavijest kad narudžbu kupca treba potvrditi.",
+    "offline": "Upozorenja: izvan mreže / pauza",
+    "offlineHelp": "Primite obavijest kad ovaj uređaj ode izvan mreže (i naručivanje se pauzira). <green>Radi i izvan mreže.</green>"
+  },
+  "van": {
+    "label": "Food truck",
+    "loadRetry": "Učitavanje nije uspjelo · Ponovi",
+    "select": "Odaberite…"
+  },
+  "deviceSave": {
+    "network": "Poslužitelj nije dostupan — provjerite vezu i pokušajte ponovno.",
+    "server": "Spremanje trenutačno nije uspjelo. Pokušajte ponovno."
+  },
+  "setup": {
+    "fetchErrorTitle": "Postavke uređaja nisu učitane",
+    "fetchErrorBody": "Nismo uspjeli doći do poslužitelja kako bismo postavili <b>ovaj uređaj</b>. Provjerite vezu i pokušajte ponovno — vaše narudžbe i postavke nisu zahvaćene.",
+    "retry": "Ponovi",
+    "later": "Kasnije",
+    "noVanTitle": "Nema aktivnog food trucka",
+    "noVanBody": "Ova tvrtka još nema aktivan food truck. Aktivirajte ga u <b>Postavke → Vaši food truckovi</b> i ovaj će se uređaj postaviti automatski — ovdje nisu potrebni daljnji koraci.",
+    "goToVans": "Idi na Postavke → Vaši food truckovi",
+    "title": "Postavite ovaj uređaj",
+    "body": "Jednokratno postavljanje za <b>ovaj uređaj</b>: zaslon koji se otvara i food truck kojem pripada. Vrijedi samo za ovaj uređaj — ostali uređaji postavljaju se zasebno, a ovo možete kasnije promijeniti u izborniku profila → „Ovaj uređaj“.",
+    "whichScreen": "Koji se zaslon treba otvarati na ovom uređaju?",
+    "dashboard": "Nadzorna ploča",
+    "kds": "Kuhinjski zaslon",
+    "whichVan": "Kojem food trucku pripada ovaj uređaj?",
+    "selectVan": "Odaberite food truck…",
+    "saving": "Spremanje…",
+    "tryAgain": "Pokušaj ponovno",
+    "continue": "Nastavi"
+  },
+  "device": {
+    "title": "Ovaj uređaj",
+    "viewing": "Pregledavate: <b>{truck}</b>",
+    "viewingVan": "Pregledavate: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Samo ovaj uređaj — ostali uređaji postavljaju se zasebno. (ID: {id}…)",
+    "truck": "Tvrtka",
+    "van": "Food truck",
+    "defaultScreen": "Zadani zaslon",
+    "orderNotifications": "Obavijesti o narudžbama",
+    "patchFailed": "{setting, select, van {Food truck} defaultScreen {Zadani zaslon} other {Obavijesti o narudžbama}}: nije spremljeno. {reason}",
+    "requireBiometric": "Za otvaranje zahtijevaj otisak prsta ili prepoznavanje lica",
+    "pinTitle": "Postavite rezervni PIN (4–6 znamenki)",
+    "pinHelp": "Vaš način ulaska ako otisak prsta ili prepoznavanje lica ne rade — to je jedina zamjena, pa ga nemojte zaboraviti (zaboravljeni PIN znači ponovnu instalaciju aplikacije). Radi i izvan mreže.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Potvrdite PIN",
+    "pinTooShort": "Upotrijebite najmanje 4 znamenke.",
+    "pinMismatch": "PIN-ovi se ne podudaraju.",
+    "setPin": "Postavi PIN i uključi",
+    "cancel": "Odustani",
+    "noBiometric": "Na ovom uređaju nije postavljen otisak prsta ni prepoznavanje lica — dodajte ga u postavkama uređaja. Rezervni PIN i dalje radi.",
+    "footer": "Ove postavke vrijede samo za ovaj uređaj — ostali uređaji postavljaju se zasebno."
+  },
+  "appLock": {
+    "unlockReason": "Otključajte HatchGrab",
+    "usePasscode": "Upotrijebi šifru",
+    "cancel": "Odustani",
+    "confirmEnable": "Potvrdite za uključivanje zaključavanja aplikacije"
+  },
+  "channel": {
+    "ordersName": "Nove narudžbe",
+    "ordersDescription": "Upozorenja kad narudžbu treba potvrditi."
+  },
+  "localNotify": {
+    "newOrderTitle": "Nova narudžba",
+    "orderReceived": "Primljena narudžba {number}",
+    "newOrders": "{n, plural, one {Imate {count} novu narudžbu} few {Imate {count} nove narudžbe} other {Imate {count} novih narudžbi}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Naručivanje pauzirano",
+    "pausedBody": "Izvan mreže ste — naručivanje za kupce je pauzirano.",
+    "offlineTitle": "Izvan mreže ste",
+    "offlineBody": "Ovaj je uređaj izgubio vezu."
+  }
+}

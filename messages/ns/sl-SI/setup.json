@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Kje delujete",
+    "identity": "Vaš food truck",
+    "menu": "Vaš jedilnik",
+    "event": "Prvi dogodek"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Nastavitev",
+  "loading": "Nalaganje",
+  "loadingCountries": "Nalaganje…",
+  "verify": {
+    "ok": "E-pošta je potrjena — hvala.",
+    "expired": "Ta povezava za potrditev je potekla. Pišite nam in to bomo uredili pred vašo objavo.",
+    "invalid": "Ta povezava za potrditev ni delovala. Pišite nam in to bomo uredili pred vašo objavo."
+  },
+  "identity": {
+    "heading": "Kako se imenuje vaš food truck?",
+    "intro": "To je ime, ki ga vidijo stranke. Nič ni javno, dokler se ne odločite za objavo.",
+    "nameLabel": "Ime food trucka",
+    "namePlaceholder": "Bobovi burgerji",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Ta številka uporablja WhatsApp",
+    "phoneHelp": "Stranke jo vidijo v potrditvi naročila, da vas lahko vprašajo o naročilu. Kljukica določa, ali tam piše „Pokličite nas“ ali „Pišite nam na WhatsApp“. Oboje lahko spremenite v razdelku Nastavitve."
+  },
+  "phoneRequired": "Dodajte telefonsko številko — prek nje vas dosežemo mi in stranke.",
+  "createFailed": "Vašega food trucka ni bilo mogoče ustvariti.",
+  "unreachable": "Trenutno nas ni bilo mogoče doseči — poskusite znova.",
+  "back": "Nazaj",
+  "creating": "Ustvarjanje vašega food trucka…",
+  "continue": "Nadaljuj"
+}

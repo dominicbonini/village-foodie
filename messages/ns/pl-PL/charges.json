@@ -1,0 +1,13 @@
+{
+  "subtotal": "Suma częściowa",
+  "taxFallback": "Podatek",
+  "taxIncluded": "Zawiera: {label}",
+  "serviceFeeCustomer": "Opłata serwisowa online",
+  "serviceFee": "Opłata serwisowa",
+  "cardFee": "Opłata za kartę",
+  "tip": "Napiwek",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Podatek, opłaty i napiwek} tax_tip {Podatek i napiwek} fees_tip {Opłaty i napiwek} fees {Opłaty} other {Podatek i opłaty}}"
+}

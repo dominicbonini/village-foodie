@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Ebből az e-mailből hiányzik a leiratkozási sor, ezért nem küldhető el. Adja hozzá az „Insert opt-out” gombbal.",
+    "notSetUp": "Nincs beállítva leiratkozási mondat, ezért egyetlen megkereső e-mail sem küldhető el. Adjon hozzá egyet a „Templates” lap „Signature” paneljén.",
+    "notLoaded": "A leiratkozási mondat még nem töltődött be, ezért ez nem küldhető el.",
+    "unreadable": "A leiratkozási mondatot nem sikerült beolvasni, ezért semmi sem lett elküldve."
+  },
+  "retry": {
+    "notRebuilt": "Az üzenetet nem sikerült újra összeállítani a cégadatokat tartalmazó sorral, ezért semmi sem lett elküldve."
+  }
+}

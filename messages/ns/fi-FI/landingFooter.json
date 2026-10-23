@@ -1,0 +1,17 @@
+{
+  "tagline": "Vähemmän aikaa tilauksiin.<br></br>Enemmän aikaa kokkaamiseen.",
+  "features": "Ominaisuudet",
+  "pricing": "Hinnoittelu",
+  "privacy": "Tietosuoja",
+  "terms": "Käyttöehdot",
+  "contact": "Ota yhteyttä",
+  "about": "Tietoa meistä",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Samoilta tekijöiltä kuin <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Lataa HatchGrab App Storesta",
+    "appStoreAlt": "Lataa App Storesta",
+    "googlePlayLink": "Hanki HatchGrab Google Playsta",
+    "googlePlayAlt": "Saatavana Google Playssa"
+  }
+}

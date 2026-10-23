@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Csipogó <b>{number}</b> jelenleg itt van: <b>#{holderId} rendelés</b>{hasName, select, yes { ({name})} other {}}. Átveszi <b>{hasTarget, select, yes {ehhez: #{targetId} rendelés} other {ehhez a rendeléshez}}</b>?",
+  "cancel": "Mégse",
+  "take": "Csipogó {number} átvétele",
+  "titleBlocking": "#{id} rendelés: kap csipogót?",
+  "title": "Csipogó kiválasztása",
+  "subtitle": "{hasTarget, select, yes {#{id} rendelés} other {Ez a rendelés}}{hasCurrent, select, yes { · jelenleg: csipogó {current}} other {}}",
+  "allTaken": "{n, plural, one {A csipogó ki van adva. Koppintson rá, hogy elvegye egy másik rendeléstől.} other {Minden csipogó ki van adva ({count} db). Koppintson egyre, hogy elvegye egy másik rendeléstől.}}",
+  "thisOrder": "Ez a rendelés",
+  "noBuzzer": "Nincs csipogó",
+  "done": "Kész",
+  "lostTitle": "#{id} rendelésnek nincs csipogója",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}egy másik rendelés ugyanazt a csipogót kapta, amíg Ön offline volt. Adjon neki egy másikat.",
+  "dismiss": "Elvetés",
+  "assign": "Kiosztás"
+}

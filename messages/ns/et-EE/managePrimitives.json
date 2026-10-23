@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Näita allergeene iga roa juures",
+    "recommended": "Soovitatav",
+    "perDishBody": "Vaata iga roog üle ja kinnita selle allergeenid. Kliendid näevad iga roa silte ja nende põhjal koostatud allergeenide kokkuvõtte kaarti.",
+    "cardTitle": "Näita allergeenikaarti",
+    "cardBody": "Laadi üles või kleebi üks allergeenikaart (PDF, pilt või tekst), mida näidatakse muutmata kujul. Roogade sildid jäävad peidetuks."
+  }
+}

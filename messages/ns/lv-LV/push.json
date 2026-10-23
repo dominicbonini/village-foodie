@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Jauns pasūtījums jāapstiprina",
+    "body": "Pasūtījums {number} — {truck}"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Paketid ja funktsioonid",
+  "generated": "Koostatud: {date}",
+  "allowanceHeading": "Veebitellimuste limiit",
+  "smallPrint": "Peenes kirjas",
+  "priceNoteMasked": "Hinnad märkega „Täpsustamisel“ pole veel avaldatud.",
+  "omitNote": "Hinnad on sellest dokumendist teadlikult välja jäetud.",
+  "terms": "Arvud on ülaltoodud kuupäeva seisuga avaldatud paketitingimused ja võivad muutuda. Kaardimaksete töötlemise tasud on Stripe’i enda tasu, mitte HatchGrabi oma. See dokument on kokkuvõte, mitte leping."
+}

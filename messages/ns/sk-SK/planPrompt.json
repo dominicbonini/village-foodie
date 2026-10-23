@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} sú súčasťou plánu {plan}.} other {{feature} je súčasťou plánu {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nie sú súčasťou vášho plánu.} other {{feature} nie je súčasťou vášho plánu.}}",
+  "switchedOff": "{many, select, yes {{feature} — tieto funkcie sú pre váš food truck vypnuté.} other {{feature} — táto funkcia je pre váš food truck vypnutá.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Prejsť na vyšší plán →",
+  "features": {
+    "discovery_map": {
+      "name": "Zobrazenie na mape food truckov",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Webový prehľad",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Kuchynská aplikácia",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Jedálny lístok cez QR kód",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Menu",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Ponuky navyše",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Objednávky na mieste",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Objednávanie s platbou pri vyzdvihnutí",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Prepínač „vypredané“",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Odpočítavanie zásob",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Ochrana objednávok pri výpadku pripojenia",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online platby",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Objednávanie vopred na neskorší termín",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Časové okná pre zákazníkov",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Riadenie kapacity kuchyne",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatické prijímanie objednávok",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatické odpovede pre Messenger a Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR kódy s vaším logom",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Rozšírené reportovanie",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Tlač kuchynských bločkov",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Synchronizácia kuchyne na viacerých zariadeniach",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Obrazovka pre kuchára",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatické odpovede pre WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Váš harmonogram na vlastnej webovej stránke",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Príspevky na sociálne siete",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Vlastné typy akcií",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Súkromné akcie",
+      "many": "yes"
+    }
+  }
+}

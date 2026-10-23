@@ -1,0 +1,189 @@
+{
+  "cancel": "Zrušiť",
+  "back": "← Späť",
+  "backPlain": "Späť",
+  "next": "Ďalej →",
+  "continue": "Pokračovať →",
+  "closeImport": "Zavrieť import",
+  "tryAgain": "Skúsiť znova",
+  "catError": {
+    "empty": "Pomenujte kategóriu.",
+    "tooLong": "Tento názov je príliš dlhý.",
+    "clash": "Kategória s názvom „{name}“ už existuje."
+  },
+  "steps": {
+    "details": "Vaše údaje",
+    "menu": "Jedálny lístok",
+    "extras": "Doplnky",
+    "allergens": "Alergény",
+    "kitchen": "Nastavenie kuchyne",
+    "schedule": "Harmonogram",
+    "settings": "Nastavenia"
+  },
+  "toast": {
+    "demoGone": "Váš ukážkový jedálny lístok už nie je k dispozícii — ak chcete pokračovať, nahrajte ho znova.",
+    "eventsSaveFailed": "Akcie sa nepodarilo uložiť",
+    "cardReadFailed": "Kartu alergénov sa nepodarilo prečítať — skúste to znova",
+    "imageReadFailed": "Tento obrázok sa nepodarilo prečítať — napíšte alebo vložte obsah karty",
+    "commitFailedDetail": "Jedálny lístok sa nepodarilo celý uložiť: {error}. Niektoré položky sa už možno uložili — pred ďalším pokusom skontrolujte jedálny lístok.",
+    "commitFailed": "Jedálny lístok sa nepodarilo celý uložiť. Niektoré položky sa už možno uložili — pred ďalším pokusom skontrolujte jedálny lístok.",
+    "finishFailed": "Nastavenie sa nepodarilo označiť ako dokončené — môžete však pokračovať.",
+    "scheduleReadFailed": "Tento harmonogram sa nepodarilo prečítať — skúste zreteľnejšiu fotku alebo zadajte termíny ručne.",
+    "cardRead": "Karta prečítaná — priradené: {matched}, {pending, plural, one {# čaká} few {# čakajú} other {# čaká}} na vaše priradenie"
+  },
+  "settingsReview": {
+    "anchorOrder": "Nastavenia → Nastavenia objednávok",
+    "anchorDisplay": "Nastavenia → Vaše food trucky → Nastavenia zobrazenia",
+    "mins15": "15 minút",
+    "mins30": "30 minút",
+    "mins60": "60 minút",
+    "hours2": "2 hodiny",
+    "title": "Niekoľko nastavení na kontrolu",
+    "loading": "Načítavajú sa vaše aktuálne nastavenia…",
+    "looksGood": "Vyzerá to dobre →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Nepodarilo sa to uložiť — môžete to zmeniť v Nastaveniach.",
+    "anchorContact": "Nastavenia → Kontaktné údaje",
+    "intro": "Nastavili sme vám niekoľko bežných nastavení. Oplatí sa na ne rýchlo pozrieť — ktorékoľvek z nich môžete neskôr zmeniť v Nastaveniach.",
+    "cancelAria": "Ako dlho pred vyzdvihnutím môžu zákazníci zrušiť objednávku"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Pred spustením ich skontrolujte. Dovtedy sú položky označené „alergény nie sú nastavené“.",
+    "body": "Pred spustením ich skontrolujte v Nastaveniach. Dovtedy sú položky označené „alergény nie sú nastavené“.",
+    "title": "⚠ Alergény a stravovacie údaje zatiaľ nie sú nastavené"
+  },
+  "welcome": {
+    "title": "Vitajte v HatchGrab",
+    "yourTruck": "Váš food truck",
+    "stop": "Kedykoľvek môžete prestať a vrátiť sa neskôr.",
+    "body": "Food truck {name} je nastavený. Teraz pridáme váš jedálny lístok a potom vašu prvú akciu.",
+    "go": "Poďme na to"
+  },
+  "offer": {
+    "title": "Použiť jedálny lístok z ukážky?",
+    "use": "Použiť tento jedálny lístok",
+    "upload": "Nahrať iný jedálny lístok",
+    "body": "Uložili sme jedálny lístok, ktorý ste nahrali — {count, plural, one {# položka} few {# položky} other {# položiek}}. Použite ho ako východisko alebo nahrajte iný."
+  },
+  "upload": {
+    "title": "Import jedálneho lístka",
+    "body": "Nahrajte fotku tabule s jedálnym lístkom, snímku obrazovky, PDF alebo vložte jedálny lístok ako text. Naša AI ho prečíta a vytvorí váš digitálny jedálny lístok — pred uložením všetko skontrolujete.",
+    "confirmCancel": "Zrušiť tento import? Vaša kontrola tohto jedálneho lístka sa zahodí.",
+    "process": "Spracovať jedálny lístok",
+    "later": "Urobím to neskôr"
+  },
+  "processing": {
+    "title": "Analyzujeme váš jedálny lístok",
+    "body": "AI číta a triedi vaše položky do kategórií…"
+  },
+  "review": {
+    "title": "Kontrola importovaného jedálneho lístka",
+    "editLaterSetup": "Názvy, ceny, doplnky, alergény aj stravovacie údaje môžete neskôr kedykoľvek upraviť.",
+    "editLater": "Názvy, ceny, doplnky, alergény aj stravovacie údaje môžete kedykoľvek upraviť v Nastaveniach.",
+    "noPrice": "{count, plural, one {Pri # položke} few {Pri # položkách} other {Pri # položkách}} sme nevedeli prečítať cenu",
+    "renameCategoryAria": "Premenovať kategóriu {name}",
+    "renameAria": "Premenovať {name}",
+    "renameTitle": "Premenovať kategóriu",
+    "deleteAria": "Odstrániť {name}",
+    "deleteTitle": "Odstrániť kategóriu",
+    "lastCategory": "Váš jedálny lístok potrebuje aspoň jednu kategóriu",
+    "countOf": "{kept} z {total}",
+    "existing": "existujúca",
+    "deleteEmptyTitle": "Odstrániť „{name}“?",
+    "deleteEmptyBody": "Nemá žiadne položky, takže sa nič nestratí.",
+    "delete": "Odstrániť",
+    "moveTitle": "Kam presunúť {count, plural, one {# položku} few {# položky} other {# položiek}}?",
+    "moveBody": "Pred odstránením kategórie „{name}“ treba jej jedlá niekam presunúť — položky bez kategórie sa neimportujú.",
+    "moveAria": "Presunúť položky z kategórie {name} do",
+    "chooseCategory": "Vyberte kategóriu…",
+    "moveDelete": "Presunúť a odstrániť",
+    "itemName": "Názov položky",
+    "free": "zadarmo?",
+    "freeOn": "Zadarmo ✕",
+    "nameFirst": "Pred pridaním ďalšej položky pomenujte novú",
+    "addItem": "+ Pridať položku",
+    "categoryName": "Názov kategórie",
+    "newCategoryAria": "Názov novej kategórie",
+    "addCategory": "+ Pridať kategóriu",
+    "ready": "{count, plural, one {# položka je pripravená} few {# položky sú pripravené} other {# položiek je pripravených}} na pridanie. Zrušte označenie tých, ktoré nechcete.",
+    "noPriceBody": "Každej nastavte cenu alebo ju označte ako zadarmo — inak by sa zverejnila za {zero}. Kým to nevyriešite, nemôžete pokračovať.",
+    "incomplete": "Ak chcete túto položku pridať, zadajte názov — prázdne riadky sa neimportujú."
+  },
+  "extras": {
+    "introSetup": "Niektoré jedlá možno nastaviť ako <b>jednu položku s výberom</b> alebo ponechať ako <b>samostatné jedlá</b>. Vyberte, ako sa má každé zobrazovať. Neskôr to môžete zmeniť.",
+    "intro": "Niektoré jedlá možno nastaviť ako <b>jednu položku s výberom</b> alebo ponechať ako <b>samostatné jedlá</b>. Vyberte, ako sa má každé zobrazovať. Neskôr to môžete zmeniť v Nastaveniach.",
+    "none": "Žiadne jedlá na zoskupenie — každá položka je samostatné jedlo.",
+    "axisChoice": "· výber: {axis}",
+    "grouped": "Zoskupené · jedna položka, zákazník si vyberie",
+    "separate": "Samostatné položky jedálneho lístka"
+  },
+  "allergens": {
+    "title": "Alergény",
+    "detected": "V jedálnom lístku sme rozpoznali alergény. Nižšie vyberte, ako ich zobrazovať.",
+    "howShow": "Ako chcete zákazníkom zobrazovať alergény?",
+    "skip": "Nastavenie alergénov zatiaľ preskočiť"
+  },
+  "kitchen": {
+    "title": "Nastavenie kuchyne",
+    "intro": "Pomôžte zákazníkom vedieť, ako dlho budú čakať — tieto údaje môžete kedykoľvek zmeniť.",
+    "howWorks": "Ako funguje kapacita kuchyne",
+    "allExist": "Všetky kategórie už existujú — nie je čo nastaviť.",
+    "totalHelp": "Nastavte celkovú kapacitu, ktorá obmedzí, koľko položiek kuchyňa prijme na jedno časové okno. Ak nechcete limit, ponechajte ∞.",
+    "saveAdd": "Uložiť a pridať do jedálneho lístka"
+  },
+  "schedule": {
+    "title": "Pridať môj harmonogram",
+    "intro": "Ak máte harmonogram na svojej webovej stránke, môžeme ho automaticky udržiavať aktuálny — alebo si termíny pridajte sami.",
+    "websiteTitle": "Môj harmonogram je na mojej webovej stránke",
+    "urlPlaceholder": "https://vasfoodtruck.sk/akcie",
+    "checking": "Overuje sa…",
+    "verify": "Overiť",
+    "checkingSite": "Kontrolujeme vašu webovú stránku…",
+    "takesTime": "Môže to trvať až 2 minúty — nechajte, prosím, túto stránku otvorenú.",
+    "canRead": "✓ Váš harmonogram vieme prečítať",
+    "ownSite": "Vaša vlastná webová stránka — nie stránka na Facebooku alebo Instagrame.",
+    "photoTitle": "Nahrať fotku môjho harmonogramu",
+    "dragChoose": "Pretiahnite sem alebo ťuknutím vyberte",
+    "imageOrPdf": "Obrázok alebo PDF",
+    "or": "alebo",
+    "pastePlaceholder": "Sem vložte svoje termíny…",
+    "read": "Prečítať harmonogram",
+    "found": "{count, plural, one {Našli sme # termín — pridáme ho} few {Našli sme # termíny — pridáme ich} other {Našli sme # termínov — pridáme ich}} do vášho harmonogramu.",
+    "dateTbc": "Termín upresníme",
+    "save": "Uložiť {count, plural, one {# termín} few {# termíny} other {# termínov}}",
+    "manualDesc": "Pridajte ich neskôr na karte Harmonogram — teraz netreba nič robiť.",
+    "manualBody": "Žiadny problém. Termíny môžete kedykoľvek pridávať a spravovať na karte Harmonogram vo svojom účte.",
+    "blockedDomain": "Použite adresu svojej webovej stránky — stránky na Facebooku a Instagrame nemožno automaticky načítať.",
+    "saveFailed": "Váš harmonogram sme prečítali, ale teraz sa ho nepodarilo uložiť — skúste to znova.",
+    "websiteDesc": "Budeme ju pravidelne kontrolovať a nové termíny vám pošleme na schválenie.",
+    "keepChecking": "Túto stránku budeme naďalej kontrolovať a nové termíny vám pošleme na schválenie.",
+    "photoDesc": "Odfoťte alebo vložte svoje termíny — načítame ich a vy ich skontrolujete.",
+    "noneFound": "Nenašli sme v tom žiadne termíny — skúste zreteľnejšiu fotku alebo pridajte termín sami.",
+    "manualTitle": "Termíny pridám ručne",
+    "trialNotStarted": "Pridanie akcií nespustí vašu bezplatnú skúšobnú verziu — neskôr si sami vyberiete, ktorá akcia ju spustí."
+  },
+  "done": {
+    "summary": "{items, plural, one {# položka} few {# položky} other {# položiek}} v {categories, plural, one {# kategórii} few {# kategóriách} other {# kategóriách}}.",
+    "imported": "Jedálny lístok importovaný!",
+    "added": "Vaše položky boli pridané do jedálneho lístka.",
+    "duplicates": "{count, plural, one {Preskočený # duplikát} few {Preskočené # duplikáty} other {Preskočených # duplikátov}}",
+    "showMe": "Ukážte mi to tu",
+    "remind": "Pripomenúť neskôr",
+    "allSet": "Všetko je pripravené!",
+    "explore": "Preskúmam to samostatne"
+  },
+  "discard": {
+    "setupTitle": "Dokončiť nastavenie neskôr?",
+    "setupBody": "Váš účet aj food truck sú uložené — nič sa nestratí. Jedálny lístok môžete pridať kedykoľvek: prihláste sa a na obrazovke jedálneho lístka ťuknite na <b>Importovať jedálny lístok</b> — budete pokračovať presne tu.",
+    "keepGoing": "Pokračovať",
+    "finishLater": "Dokončiť neskôr",
+    "title": "Zahodiť tento import?",
+    "keepEditing": "Pokračovať v úpravách",
+    "discard": "Zahodiť",
+    "body": "Vaše zmeny sa neuložia — importované položky, časy prípravy ani kapacita kuchyne sa nepridajú."
+  },
+  "allergenCardText": {
+    "contains": "Obsahuje: {list}",
+    "mayContain": "Môže obsahovať: {list}"
+  }
+}

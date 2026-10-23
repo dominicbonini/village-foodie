@@ -1,0 +1,94 @@
+{
+  "heading": "Plăți",
+  "loading": "Se verifică contul Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Neconfigurat",
+      "body": "Durează circa 10 minute. Veți avea nevoie de datele bancare și de un act de identitate.",
+      "chip": "Neconfigurat"
+    },
+    "requirements": {
+      "title": "Stripe are nevoie de datele dumneavoastră",
+      "body": "Plățile cu cardul nu vor funcționa până când Stripe nu are datele firmei și datele bancare.",
+      "chip": "Acțiune necesară"
+    },
+    "pending": {
+      "title": "Conectat — Stripe vă verifică datele",
+      "body": "Nu trebuie să faceți nimic. Stripe analizează ce ați trimis, iar această pagină se actualizează când verificarea se încheie.",
+      "chip": "În verificare"
+    },
+    "ready": {
+      "title": "Conectat",
+      "body": "Contul Stripe este conectat și poate primi plăți.",
+      "chip": "Gata"
+    },
+    "restricted": {
+      "title": "Plățile cu cardul sunt suspendate",
+      "body": "Stripe a suspendat plățile cu cardul în contul dumneavoastră până la rezolvarea unei probleme.",
+      "chip": "Suspendat"
+    },
+    "unsupported": {
+      "title": "Plățile cu cardul nu sunt disponibile pentru acest cont",
+      "body": "Stripe nu poate activa plățile cu cardul aici. Contactați-ne și vom rezolva împreună.",
+      "chip": "Indisponibil"
+    }
+  },
+  "keyMismatch": {
+    "title": "Cheile Stripe nu se potrivesc",
+    "body": "Serverul acestui site folosește cheia Stripe <b>{server, select, live {live} other {de test}}</b>, iar browserul a fost compilat cu cea <b>{browser, select, live {live} other {de test}}</b>. Plățile cu cardul ar eșua chiar în momentul în care un client încearcă să plătească, așa că configurarea Stripe este blocată până când cheile se potrivesc.",
+    "fix": "Ambele chei trebuie setate pentru același mediu, iar site-ul trebuie recompilat apoi — cheia publicabilă este inclusă la compilare, cheia secretă este citită la fiecare cerere."
+  },
+  "permission": {
+    "title": "Doar proprietarul food truckului poate configura plățile",
+    "body": "Stripe este conectat de persoana în al cărei cont bancar intră banii, deci trebuie configurat din propriul ei cont autentificat. Nu e nicio problemă cu acest food truck sau cu HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Plățile cu cardul nu sunt încă configurate",
+    "fetchTitle": "Nu am putut verifica contul Stripe al acestui food truck",
+    "keyMissing": "{name} nu este setat — componentele încorporate nu se pot încărca."
+  },
+  "errors": {
+    "requestFailed": "Cererea a eșuat ({status})",
+    "unreachable": "Stripe nu a putut fi contactat"
+  },
+  "online": {
+    "heading": "Plăți online",
+    "body": "Clienții plătesc cu cardul când comandă. Banii ajung direct în propriul dumneavoastră cont Stripe — noi nu îi păstrăm niciodată.",
+    "feeLine": "Stripe percepe {fee} per plată standard cu {region}. Alte carduri pot costa mai mult. Taxa proprie HatchGrab pentru comenzile online depinde de abonament — vedeți Facturare.",
+    "testMode": "Mod de testare. Încă nu se pot primi plăți reale."
+  },
+  "trialNote": "Configurarea nu pornește abonamentul și nu vă taxează nimic astăzi. Este modul în care vă plătesc clienții — abonamentul este separat.",
+  "admin": {
+    "title": "Vizualizare ca administrator al platformei",
+    "body": "Acest food truck nu a configurat plățile online. Doar proprietarul le poate porni, din propriul cont autentificat — aici nu este nimic de apăsat."
+  },
+  "setUp": {
+    "button": "Configurați plățile online",
+    "busy": "Se configurează…"
+  },
+  "toast": {
+    "alreadySetUp": "Deja configurat — continuăm",
+    "addDetails": "Acum adăugați datele pentru Stripe",
+    "createFailed": "Contul nu a putut fi creat"
+  },
+  "onboarding": {
+    "restricted": "De aici preia Stripe — vă veți autentifica în Stripe și veți actualiza datele necesare.",
+    "firstRun": "De aici preia Stripe — vă veți autentifica în Stripe, apoi veți completa datele firmei și datele bancare."
+  },
+  "details": {
+    "title": "Datele dumneavoastră Stripe",
+    "body": "Schimbați contul bancar în care primiți banii sau actualizați datele și documentele firmei.",
+    "button": "Vedeți sau editați"
+  },
+  "walkUp": {
+    "heading": "Plăți la fața locului",
+    "body": "Cum încasați banii la food truck. HatchGrab nu percepe nicio taxă de platformă pentru comenzile la fața locului, indiferent ce alegeți.",
+    "ownTerminal": "Propriul terminal de plată",
+    "current": "Actual",
+    "ownTerminalHelp": "Zettle, Square sau ce folosiți deja. Nimic de configurat — se aplică doar comisioanele furnizorului dumneavoastră.",
+    "hatchgrab": "Prin HatchGrab",
+    "comingSoon": "În curând",
+    "hatchgrabHelp": "Folosește aceeași conexiune Stripe ca plățile online — un terminal de plată sau contactless direct de pe telefon ori tabletă.",
+    "hatchgrabFees": "{fee} per plată cu {region}, plus {surcharge} pentru contactless încasat pe telefon sau tabletă. Alte carduri pot costa mai mult."
+  }
+}

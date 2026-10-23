@@ -1,0 +1,31 @@
+{
+  "intro": "Hallinnassa otat ruokarekkasi käyttöön ja seuraat, miten sillä menee. Ohjauspaneelissa otat vastaan tilauksia ja hoidat jokaisen tapahtuman sen aikana.",
+  "ariaLabel": "Ohjauspaneelin esittely",
+  "step": "{current}/{total}",
+  "skip": "Ohita",
+  "back": "← Takaisin",
+  "next": "Seuraava →",
+  "done": "Valmis",
+  "stops": {
+    "menu": {
+      "title": "Ruokalista",
+      "body": "Annoksesi, hinnat ja allergeenit. Kaikki täällä tekemäsi muutokset näkyvät heti."
+    },
+    "schedule": {
+      "title": "Aikataulu",
+      "body": "Missä ja milloin myyt. Lisää tapahtuma tänne, niin asiakkaat voivat tilata siihen."
+    },
+    "build": {
+      "title": "Ateriat sekä Lisävalinnat ja lisämyynti",
+      "body": "Ateriat, lisämyynti, muokkaukset ja keittiösi kapasiteetti löytyvät Ruokalistan alta — kokeile vapaasti."
+    },
+    "settings": {
+      "title": "Asetukset",
+      "body": "Ruokarekkasi tiedot ja se, miten asiakkaat maksavat."
+    },
+    "billing": {
+      "title": "Laskutus",
+      "body": "Täältä löydät pakettisi, laskutuksen ja tiedot ominaisuuksista."
+    }
+  }
+}

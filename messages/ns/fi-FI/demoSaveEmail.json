@@ -1,0 +1,9 @@
+{
+  "subject": "HatchGrab-demosi — tässä linkki takaisin",
+  "heading": "Demosi on tallennettu",
+  "intro": "Tässä on linkki takaisin demoon, jossa on oma ruokalistasi. Kirjautumista ei tarvita — napauta vain linkkiä.",
+  "button": "Avaa demoni",
+  "freshDay": "Joka kerta kun palaat, luomme uuden myyntipäivän, jotta sinulla on jotain kokeiltavaa.",
+  "deletion": "Tämä on demo, joten emme säilytä sitä ikuisesti — poistamme sen ja ruokalistan\n                <b>{date}</b> ({days, plural, one {# päivän päästä} other {# päivän päästä}}). Jos rekisteröidyt ennen\n                sitä, ruokalistasi siirtyy mukanasi.",
+  "notSent": "Tallennettu, mutta sähköpostin lähettäminen ei juuri nyt onnistunut."
+}

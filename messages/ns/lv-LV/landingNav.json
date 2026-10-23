@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab sākumlapa",
+  "cta": "Augšupielādēt ēdienkarti →",
+  "ctaShort": "Augšupielādēt ēdienkarti",
+  "features": "Funkcijas",
+  "pricing": "Cenas",
+  "logIn": "Pieteikties",
+  "country": {
+    "button": "Valsts: {name}. Mainīt valsti",
+    "menu": "Valsts"
+  }
+}

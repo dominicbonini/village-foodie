@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotal",
+  "taxFallback": "TVA",
+  "taxIncluded": "Include {label}",
+  "serviceFeeCustomer": "Taxă de serviciu online",
+  "serviceFee": "Taxă de serviciu",
+  "cardFee": "Taxă de card",
+  "tip": "Bacșiș",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Taxe, comisioane și bacșiș} tax_tip {Taxe și bacșiș} fees_tip {Comisioane și bacșiș} fees {Comisioane} other {Taxe și comisioane}}"
+}

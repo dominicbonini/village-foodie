@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Kde působíte",
+    "identity": "Váš food truck",
+    "menu": "Váš jídelní lístek",
+    "event": "První akce"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Nastavení",
+  "loading": "Načítání",
+  "loadingCountries": "Načítání…",
+  "verify": {
+    "ok": "E-mail potvrzen — děkujeme.",
+    "expired": "Platnost potvrzovacího odkazu vypršela. Ozvěte se nám a vyřešíme to, než spustíte ostrý provoz.",
+    "invalid": "Potvrzovací odkaz nefungoval. Ozvěte se nám a vyřešíme to, než spustíte ostrý provoz."
+  },
+  "identity": {
+    "heading": "Jak se váš food truck jmenuje?",
+    "intro": "Toto jméno uvidí zákazníci. Nic se nezveřejní, dokud se sami nerozhodnete spustit ostrý provoz.",
+    "nameLabel": "Název food trucku",
+    "namePlaceholder": "Bobovy burgery",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Toto číslo používá WhatsApp",
+    "phoneHelp": "Zákazníci ho uvidí v potvrzení objednávky, aby se mohli na objednávku zeptat. Zaškrtnutí určuje, zda tam bude „Zavolejte nám“, nebo „Napište nám na WhatsApp“. Obojí můžete změnit v Nastavení."
+  },
+  "phoneRequired": "Přidejte telefonní číslo — používají ho zákazníci i my, abychom se s vámi spojili.",
+  "createFailed": "Váš food truck se nepodařilo vytvořit.",
+  "unreachable": "Nepodařilo se s námi spojit — zkuste to prosím znovu.",
+  "back": "Zpět",
+  "creating": "Vytváříme váš food truck…",
+  "continue": "Pokračovat"
+}

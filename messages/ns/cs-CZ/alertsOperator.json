@@ -1,0 +1,28 @@
+{
+  "hi": "Dobrý den, {name},",
+  "limit80": {
+    "subject": "Využili jste 80 % automatických odpovědí na WhatsAppu pro tento měsíc",
+    "used": "Vaše automatické odpovědi na WhatsAppu tento měsíc využily <b>{used} z {limit}</b>.",
+    "nothingStopped": "Nic se nezastavilo. Až dosáhnete limitu {limit}, automatické odpovědi se pozastaví do obnovení limitu dne <b>{reset}</b> — zákazníci vám mohou psát dál a vy uvidíte vše, co pošlou.",
+    "raise": "Měsíční limit můžete kdykoli zvýšit v Nastavení.",
+    "raiseLink": "Měsíční limit můžete kdykoli zvýšit v Nastavení:",
+    "button": "Otevřít Nastavení"
+  },
+  "limit100": {
+    "subject": "Automatické odpovědi na WhatsAppu jsou pro tento měsíc pozastaveny",
+    "usedAll": "Vyčerpali jste celý měsíční limit {limit} automatických odpovědí na WhatsAppu, takže se pozastavily.",
+    "stillReach": "<b>Zákazníci vám mohou psát jako obvykle a každá zpráva se k vám dál dostane.</b> Zastavilo se jen odesílání automatických odpovědí.",
+    "startAgain": "Znovu se spustí dne <b>{reset}</b>, nebo hned, jakmile zvýšíte měsíční limit v Nastavení.",
+    "startAgainLink": "Znovu se spustí dne {reset}, nebo hned, jakmile zvýšíte měsíční limit v Nastavení:",
+    "button": "Zvýšit limit"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp potřebuje platební metodu, aby mohl odesílat",
+    "stopped": "WhatsApp zastavil odesílání vašich automatických odpovědí, protože ve vašem účtu WhatsApp Business není funkční platební metoda.",
+    "stillMessage": "<b>Zákazníci vám mohou dál psát a vy uvidíte vše, co pošlou</b> — odpovědi se k nim ale nedostanou.",
+    "payDirect": "Za tyto zprávy platíte přímo společnosti WhatsApp, takže se to řeší v nástroji WhatsApp Manager, ne v aplikaci HatchGrab. Přidejte nebo aktualizujte tam kartu a odpovědi se znovu spustí samy.",
+    "payDirectLink": "Za tyto zprávy platíte přímo společnosti WhatsApp, takže se to řeší v nástroji WhatsApp Manager, ne v aplikaci HatchGrab. Přidejte nebo aktualizujte tam kartu a odpovědi se znovu spustí samy:",
+    "button": "Otevřít WhatsApp Manager",
+    "settings": "Vaše nastavení HatchGrab: <link>{url}</link>"
+  }
+}

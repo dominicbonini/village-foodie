@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Adăugați programul pe site-ul dumneavoastră",
+    "live": "<addr>{address}</addr> afișează programul dumneavoastră.",
+    "create": "Creăm o pagină la <addr>{address}</addr> care afișează programul dumneavoastră.",
+    "exampleDomain": "foodtruckultau.ro",
+    "liveBadge": "Online",
+    "setUp": "Configurați",
+    "viewSetup": "Vedeți configurarea",
+    "continue": "Continuați",
+    "justLive": "<b>{address}</b> funcționează. Aruncați o privire, apoi confirmați-ne mai jos că totul este în regulă."
+  },
+  "waiting": {
+    "title": "Așteptăm {address}",
+    "bodySince": "Ați configurat acest lucru pe {date}. Adresele web noi încep de obicei să funcționeze în câteva minute și uneori durează până la 24 de ore să ajungă la toată lumea — nu trebuie să faceți nimic în acest timp. Dacă altcineva urma să adauge rândul pentru dumneavoastră, merită să verificați că a făcut-o.",
+    "body": "Adresele web noi încep de obicei să funcționeze în câteva minute și uneori durează până la 24 de ore să ajungă la toată lumea — nu trebuie să faceți nimic în acest timp. Dacă altcineva urma să adauge rândul pentru dumneavoastră, merită să verificați că a făcut-o."
+  },
+  "ready": {
+    "title": "{address} este online",
+    "body": "Aruncați o privire, apoi confirmați-ne în setări că totul este în regulă."
+  },
+  "confirm": {
+    "heading": "Aruncați o privire, apoi confirmați-ne că totul este în regulă",
+    "open": "Deschideți <link>{address}</link>",
+    "checkTimes": "Verificați dacă datele și orele sunt corecte.",
+    "yes": "Da, arată bine",
+    "no": "Nu, este o problemă",
+    "problemLine": "Spuneți-ne ce vedeți și ne uităm noi.",
+    "emailUs": "Scrieți-ne",
+    "mailSubject": "Problemă cu {address}",
+    "mailLiveSince": "Online din {date}",
+    "mailSeeing": "Ce văd:"
+  },
+  "confirmed": {
+    "heading": "Mulțumim — am notat.",
+    "body": "Nu mai este nimic de făcut."
+  },
+  "turnOff": {
+    "link": "Dezactivați",
+    "heading": "Dezactivați adresa web proprie?",
+    "stops": "Aceasta nu va mai funcționa:",
+    "carriesOn": "Aceasta funcționează în continuare exact ca acum și este adresa către care codul QR trimite oamenii:",
+    "reAdd": "Dacă o veți configura din nou mai târziu, lăsați rândul adăugat la compania care vă gestionează adresa web. Dacă nu, cereți-le să îl șteargă.",
+    "cancel": "Păstrați-o activă",
+    "confirm": "Dezactivați",
+    "working": "Se dezactivează…",
+    "failed": "Nu am putut dezactiva acum. Nu s-a schimbat nimic — adresa funcționează în continuare. Încercați din nou peste puțin timp."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Nu am putut încărca configurarea.",
+    "resumeFailedBody": "Nu s-a schimbat nimic. Încercați din nou peste puțin timp.",
+    "close": "Închideți",
+    "resuming": "Continuăm de unde ați rămas…",
+    "genericError": "A apărut o problemă",
+    "saveFailed": "Nu s-a putut salva"
+  },
+  "address": {
+    "intro": "Programul dumneavoastră primește propria adresă web.",
+    "question": "Care este adresa dumneavoastră web?",
+    "hint": "Cea pe care oamenii o folosesc deja ca să vă găsească.",
+    "aria": "Adresa dumneavoastră web proprie",
+    "willBe": "Adresa dumneavoastră va fi <addr>{address}</addr>",
+    "example": "De exemplu, <addr>{address}</addr>",
+    "noChange": "Site-ul dumneavoastră nu se schimbă — adăugați doar un link către noua adresă.",
+    "notSetUp": "Nu am configurat acest lucru.",
+    "restricted": "Cine se ocupă de adresa dumneavoastră web trebuie să ne permită să configurăm lacătul — micul lacăt pe care clienții îl văd lângă adresă. Până nu ne adaugă, acesta nu va apărea, așa că ne-am oprit în loc să vă lăsăm să așteptați. Cereți-le să ne adauge, apoi încercați din nou.",
+    "blocked": "Adresa dumneavoastră web blochează în prezent complet lacătul. Cine se ocupă de ea trebuie să îl permită pentru ca acest lucru să funcționeze. Cereți-le să schimbe asta, apoi încercați din nou.",
+    "elsewhere": "Ceva răspunde deja la această adresă. Trimiteți mesajul de pe ecranul următor celui care se ocupă de ea — va ști ce are de făcut.",
+    "provider": "Adresa dumneavoastră web este gestionată de <b>{provider}</b>. Vă arătăm unde să mergeți.",
+    "provisionFailed": "Nu am putut configura această adresă.",
+    "willNotWork": "Această adresă nu va funcționa.",
+    "couldNotBeSetUp": "Această adresă nu a putut fi configurată.",
+    "couldNotSetUp": "Configurarea nu a reușit",
+    "checking": "Se verifică…",
+    "setting": "Se configurează…",
+    "tryAgain": "Încercați din nou",
+    "setUpAddress": "Configurați această adresă",
+    "notNow": "Nu acum"
+  },
+  "apex": {
+    "empty": "Scrieți adresa pe care doriți să o folosiți.",
+    "not_a_domain": "Aceasta nu pare a fi o adresă web.",
+    "unparseable": "Nu am putut interpreta textul ca adresă web. Verificați ortografia și încercați din nou.",
+    "apex": "{host} este adresa întregului dumneavoastră site. Dacă o direcționați către noi, site-ul va fi înlocuit de această pagină. Puneți mai degrabă un cuvânt în fața ei — de exemplu program.{host}.",
+    "too_deep": "Această adresă are prea multe părți. Ceva de genul program.{domain} funcționează cel mai bine."
+  },
+  "record": {
+    "addAt": "Adăugați asta la {provider}",
+    "open": "Deschideți {provider}",
+    "guide": "Ghidul oferit de {provider} pentru acest pas",
+    "addAtSave": "Adăugați asta la {provider} și salvați.",
+    "addSomewhere": "Adăugați asta acolo unde este gestionată adresa dumneavoastră web și salvați.",
+    "hintChoose": "Alegeți această opțiune din listă.",
+    "hintWord": "Doar acest cuvânt, nu întreaga adresă.",
+    "hintExact": "Copiați exact.",
+    "timing": "De obicei începe să funcționeze în decurs de o oră, deși poate dura mai mult. Nu trebuie să țineți pagina deschisă.",
+    "someoneElse": "Altcineva se ocupă de adresa dumneavoastră web?",
+    "sentTo": "Trimis la {email}",
+    "emailPlaceholder": "adresa lor de e-mail",
+    "sending": "Se trimite…",
+    "send": "Trimiteți aceste detalii",
+    "sendFailed": "Nu s-a putut trimite"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Deschideți adresa web, apoi „DNS” și „Records”.",
+      "add": "Selectați „Add record”, apoi alegeți „CNAME” la „Type”.",
+      "name": "Introduceți prima valoare de mai jos în „Name”.",
+      "value": "Introduceți a doua valoare de mai jos în „Target”.",
+      "proxy": "Setați „Proxy status” la „DNS only” — norul de lângă trebuie să fie gri, nu portocaliu.",
+      "save": "Lăsați „TTL” la „Auto” și selectați „Save”.",
+      "caveat": "Dacă norul rămâne portocaliu, lacătul nu va apărea niciodată și nimic nu vă va spune de ce."
+    },
+    "godaddy": {
+      "open": "Deschideți „Domain Portfolio” și alegeți adresa web.",
+      "dns": "În „Domain Settings”, selectați „DNS”.",
+      "add": "Selectați „Add New Record”, apoi alegeți „CNAME” din meniul „Type”.",
+      "name": "Introduceți prima valoare de mai jos în „Name”.",
+      "value": "Introduceți a doua valoare de mai jos în „Value”.",
+      "save": "Lăsați „TTL” neschimbat și selectați „Save”.",
+      "caveat": "Dacă ați adăugat mai multe deodată, butonul afișează „Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Conectați-vă la „123 Reg Control Panel”.",
+      "manage": "Lângă „Domains”, selectați „Manage All”, apoi alegeți adresa web.",
+      "dns": "Selectați „DNS”, apoi „Add New Record”.",
+      "type": "Alegeți „CNAME” din lista „Type”.",
+      "name": "Introduceți prima valoare de mai jos în „Name”.",
+      "value": "Introduceți a doua valoare de mai jos în „Value” și adăugați un punct la final.",
+      "save": "Lăsați „TTL” la „Default” și faceți clic pe „Save”.",
+      "caveat": "123 Reg necesită un punct la finalul celei de-a doua valori, altfel nu va funcționa."
+    },
+    "wix": {
+      "open": "Deschideți „Domains”, apoi faceți clic pe pictograma „Domain Actions” de lângă adresa web.",
+      "manage": "Alegeți „Manage DNS Records”.",
+      "add": "În secțiunea „CNAME (Aliases)”, faceți clic pe „+ Add Record”, apoi pe „Got it”.",
+      "name": "Introduceți prima valoare de mai jos în „Host Name”.",
+      "value": "Introduceți a doua valoare de mai jos în „Value”.",
+      "save": "Faceți clic pe „Save”, apoi pe „Save Changes” în fereastra pop-up.",
+      "caveat": "Dacă adresa dumneavoastră web doar direcționează către Wix, fără a fi deținută acolo, Wix nu poate face această modificare — trebuie să o facă cel care o deține."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "O înregistrare de adăugat pentru pagina de program a food truck-ului {truckName}",
+    "hello": "Bună ziua,",
+    "introAt": "Publicăm programul live al food truck-ului {truckName} pe {address} și pentru asta trebuie adăugată o înregistrare la domeniul nostru, la {provider}.",
+    "introHolder": "Publicăm programul live al food truck-ului {truckName} pe {address} și pentru asta trebuie adăugată o înregistrare la domeniul nostru, la cel care îl deține.",
+    "stepsAt": "La {provider}:",
+    "guide": "Ghidul lor: {url}",
+    "wholeChange": "Aceasta este singura modificare — nimic altceva de pe site nu este afectat, iar restul domeniului nostru funcționează exact ca acum. De obicei începe să funcționeze în decurs de o oră.",
+    "pointsAt": "Pagina către care trimite arată unde vom fi data viitoare și se actualizează singură.",
+    "replyTo": "Scrieți la {email} dacă aveți întrebări.",
+    "thanks": "Vă mulțumim,"
+  },
+  "liveEmail": {
+    "subject": "{address} funcționează",
+    "goodNews": "Vești bune — {address} funcționează.",
+    "body": "Programul dumneavoastră apare acum la propria adresă. Aruncați o privire și verificați că este corect: deschideți {address}, asigurați-vă că evenimentele sunt ale dumneavoastră și că datele sunt corecte.",
+    "confirm": "După aceea, deschideți setările în HatchGrab și confirmați-ne că totul este în regulă. Nu depinde nimic de asta — înseamnă doar că știm că o persoană a văzut pagina."
+  }
+}

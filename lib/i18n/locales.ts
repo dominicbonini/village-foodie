@@ -28,7 +28,10 @@
 // europe-languages-1 (22 October 2026): German — de-DE, a full base; de-AT and de-CH sparse overrides over it, de-LI over de-CH
 // (Liechtenstein writes as Switzerland does). Then es-ES (Spain), it-IT (Italy) and pt-PT (Portugal), full bases; nl-NL (the
 // Netherlands) with nl-BE (Belgium's primary language, Flemish) a sparse override over it; sv-SE (Sweden); da-DK (Denmark); nb-NO (Norway, Bokmål).
-export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'de-DE', 'de-AT', 'de-CH', 'de-LI', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'nl-BE', 'sv-SE', 'da-DK', 'nb-NO'] as const
+// europe-languages-2 (23 October 2026): pl-PL (Poland), cs-CZ (Czechia), sk-SK (Slovakia), hu-HU (Hungary), ro-RO (Romania), hr-HR
+// (Croatia), sl-SI (Slovenia), fi-FI (Finland), et-EE (Estonia), lv-LV (Latvia), lt-LT (Lithuania), el-GR (Greece) with el-CY
+// (Cyprus) a sparse override over it, and bg-BG (Bulgaria) — full bases, each added here as its translation is merged.
+export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'de-DE', 'de-AT', 'de-CH', 'de-LI', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'nl-BE', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV'] as const
 export type AppLocale = (typeof LOCALES)[number]
 export const DEFAULT_LOCALE: AppLocale = 'en-GB'
 
@@ -41,7 +44,7 @@ export const LOCALE_PARENT: Partial<Record<AppLocale, AppLocale>> = { 'en-CA': '
 
 /** languages-1: the NON-ENGLISH locales — each a full base file (see the header). france-1: fr-FR (France's country row decides when anyone sees it); a country
  *  prompt adds its locale here (docs/i18n/add-a-country.md). */
-export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO']
+export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO', 'pl-PL', 'cs-CZ', 'hu-HU', 'sk-SK', 'ro-RO', 'hr-HR', 'sl-SI', 'fi-FI', 'et-EE', 'lv-LV']
 
 /** The override files a locale reads, outermost last: [] for en-GB, ['en-US'] for en-US, ['en-US', 'en-CA'] for en-CA,
  *  ['fr-FR'] for a language base (merged over en-GB, which is then only its fallback). */

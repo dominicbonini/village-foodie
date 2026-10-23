@@ -1,0 +1,17 @@
+{
+  "back": "← Tagasi",
+  "title": "Rakenda pakkumine",
+  "save": "Säästa {amount}",
+  "selectItems": "Vali igale kohale toode",
+  "choose": "Vali: {category}…",
+  "inYourBasket": "── Sinu ostukorvis ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (ostukorvis){state, select, used { — juba pakkumises} taken { — valitud teisele kohale} other {}}",
+  "addNew": "── Lisa uus ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Kohustuslik · vali üks} required {Kohustuslik} other {Vali üks}}{unmet, select, yes { (kohustuslik)} other {}}",
+  "notePlaceholder": "Lisa märkus, nt ilma sibulata (valikuline)",
+  "backButton": "Tagasi",
+  "cancel": "Tühista",
+  "chooseRequired": "Vali kohustuslikud valikud",
+  "apply": "Rakenda pakkumine · {amount}"
+}

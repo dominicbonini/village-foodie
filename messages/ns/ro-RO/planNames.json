@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Fără abonament",
+    "subtitle": "Food truck-uri sezoniere și cu program redus",
+    "description": "Fără taxă lunară. Plătiți doar când un client plătește online cu cardul."
+  },
+  "pro": {
+    "subtitle": "Food truck-uri care primesc regulat precomenzi",
+    "description": "Totul, inclusiv răspunsurile automate pe WhatsApp și postările pentru rețelele sociale, cu comenzi online incluse în fiecare lună."
+  },
+  "unlimited": {
+    "name": "Nelimitat",
+    "subtitle": "Food truck-uri aglomerate și festivaluri",
+    "description": "Totul, fără taxe pentru comenzile online, oricât de aglomerat ar fi."
+  },
+  "trial": {
+    "name": "Probă gratuită",
+    "description": "Toate funcțiile, gratuit, pe durata perioadei de probă."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Mediu de test pentru potențiali clienți — niciodată public."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester înainte de lansare — acces complet."
+  }
+}

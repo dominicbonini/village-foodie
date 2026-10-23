@@ -1,0 +1,25 @@
+{
+  "heading": "Heti program: {start} – {end}",
+  "daysOff": "Ma nem árusítunk",
+  "cancelled": "ELMARAD",
+  "placeSample": {
+    "nameTownBelow": "Korona Vendéglő\nSzeged",
+    "nameTown": "Korona Vendéglő, Szeged",
+    "nameOnly": "Korona Vendéglő"
+  },
+  "busyWeek": {
+    "venue1": "Szegedi Művelődési Ház",
+    "town1": "Szeged",
+    "venue2": "Hódmezővásárhelyi Sport- és Szabadidőpark és Játszótér",
+    "town2": "Hódmezővásárhely",
+    "venue3": "Piac tér",
+    "town3": "Makó",
+    "venue4": "Gasztrofesztivál",
+    "town4": "Kecskemét",
+    "venue5": "Bika Csárda",
+    "town5": "Csongrád",
+    "venue6": "Templom tér",
+    "town6": "Szentes"
+  },
+  "poweredBy": "Működteti: HatchGrab"
+}

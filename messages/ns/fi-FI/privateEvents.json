@@ -1,0 +1,42 @@
+{
+  "publicName": "Yksityistilaisuus",
+  "chip": "Yksityinen",
+  "grid": {
+    "orderingSection": "TILAAMINEN",
+    "linkRowLabel": "Ota tilauksia yksityisellä linkillä ja QR-koodilla",
+    "columnTitle": "Sisäänrakennettu Yksityinen-tyyppi. Sitä ei voi nimetä uudelleen, siirtää eikä poistaa."
+  },
+  "form": {
+    "help": "Näkyy aikataulussasi nimellä ”Yksityistilaisuus” pelkällä päivämäärällä ja kellonajoilla — ei koskaan osoitetta, karttaa eikä Village Foodie -palvelua.",
+    "linkPromise": "Vieraat tilaavat yksityisellä linkillä ja QR-koodilla — saat ne tallennuksen jälkeen.",
+    "nameLabel": "Tapahtuman nimi",
+    "nameHelp": "Vieraat näkevät tämän tilaussivun yläreunassa.",
+    "namePlaceholder": "Sarahin ja Tomin häät",
+    "previewNote": "Näin se näkyy aikataulussasi — ei paikkaa, paikkakuntaa eikä postinumeroa.",
+    "needsTimes": "Lisää alkamis- ja päättymisaika — linkillä tilauksia ottava yksityistilaisuus tarvitsee ne."
+  },
+  "link": {
+    "button": "Linkki ja QR",
+    "title": "Yksityinen linkki ja QR-koodi",
+    "label": "Yksityinen linkki",
+    "copy": "Kopioi",
+    "copied": "Kopioitu",
+    "qrDownload": "Lataa QR",
+    "tableCards": "Tulosta pöytäkortit",
+    "newLink": "Luo uusi linkki",
+    "working": "Käsitellään…",
+    "newLinkConfirm": "Luodaanko uusi linkki? Nykyinen linkki lakkaa toimimasta heti, samoin kaikki jo tulostamasi QR-koodit.",
+    "newLinkHelp": "Käytä tätä, jos linkki on päätynyt vääriin käsiin. Nykyinen linkki lakkaa toimimasta heti, samoin tulostetut QR-koodit.",
+    "newLinkFailed": "Uutta linkkiä ei voitu luoda.",
+    "offNotice": "Yksityisellä linkillä tilaaminen on poistettu käytöstä tässä tapahtumassa, joten jaettavaa linkkiä ei ole. Tapahtuma näkyy silti aikataulussasi nimellä ”Yksityistilaisuus”."
+  },
+  "cards": {
+    "printTitle": "{truck} – pöytäkortit",
+    "scan": "Skannaa ja tilaa",
+    "blurb": "Tilaa ja maksa puhelimellasi. Huudamme nimesi, kun tilaus on valmis.",
+    "footer": "Tilauspalvelu: HatchGrab"
+  },
+  "noSinglePost": "Yksityistilaisuuksista ei tehdä omaa julkaisua — ne näkyvät viikkojulkaisussasi nimellä ”Yksityistilaisuus”.",
+  "confirmToPrivate": "Tämä piilottaa osoitteen ja tapahtuman kartalta. Vieraat tarvitsevat yksityisen linkin tilatakseen.",
+  "confirmFromPrivate": "Tämä tekee tapahtumasta julkisen: sen osoite ja karttanasta näkyvät, ja yksityinen linkki lakkaa toimimasta."
+}

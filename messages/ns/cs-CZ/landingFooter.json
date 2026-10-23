@@ -1,0 +1,17 @@
+{
+  "tagline": "Méně papírování.<br></br>Více vaření.",
+  "features": "Funkce",
+  "pricing": "Ceník",
+  "privacy": "Soukromí",
+  "terms": "Podmínky",
+  "contact": "Kontakt",
+  "about": "O nás",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Od tvůrců <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Stáhnout HatchGrab z App Store",
+    "appStoreAlt": "Stáhněte si v App Store",
+    "googlePlayLink": "Stáhnout HatchGrab z Google Play",
+    "googlePlayAlt": "Nyní na Google Play"
+  }
+}

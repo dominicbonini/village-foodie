@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Peruttu",
+    "finished": "Päättynyt",
+    "unconfirmed": "Vahvistamaton",
+    "confirmed": "Vahvistettu",
+    "open": "Avoinna nyt",
+    "closed": "Suljettu"
+  },
+  "sections": {
+    "label": "Aikataulun osiot",
+    "events": "Tapahtumat",
+    "eventTypes": "Tapahtumatyypit"
+  },
+  "header": {
+    "title": "Aikataulu",
+    "upcoming": "{count} tulossa",
+    "import": "✨ Tuo aikataulu",
+    "importHint": "kuva, PDF tai teksti",
+    "addEvent": "+ Lisää tapahtuma",
+    "scraperAuto": "Haemme tapahtumat automaattisesti verkkosivustoltasi",
+    "changeInSettings": "Muuta kohdassa Asetukset",
+    "scraperManual": "Hallinnoit aikatauluasi itse"
+  },
+  "empty": {
+    "title": "Ei tulevia tapahtumia",
+    "body": "Somesta ja varauskalenteristasi haetut tapahtumat näkyvät tässä, jotta voit vahvistaa ne"
+  },
+  "list": {
+    "openNow": "Avoinna nyt",
+    "needsApproval": "Odottaa hyväksyntääsi",
+    "needsConfirmation": "Odottaa vahvistusta",
+    "confirmed": "Vahvistettu",
+    "past": "Menneet tapahtumat ({count})",
+    "found": "Löysimme sinulle {count, plural, one {# tapahtuman — tarkista ja hyväksy se ennen kuin se julkaistaan.} other {# tapahtumaa — tarkista ja hyväksy ne ennen kuin ne julkaistaan.}}"
+  },
+  "card": {
+    "addName": "Lisää nimi",
+    "timeNeeded": "⚠ Aika puuttuu",
+    "setTimeFirst": "Aseta ensin aika",
+    "confirm": "Vahvista",
+    "copy": "Kopioi",
+    "edit": "Muokkaa",
+    "makePost": "Tee julkaisu",
+    "cancel": "Peru",
+    "approve": "Hyväksy",
+    "reject": "Hylkää",
+    "stock": "⚠️ Varasto",
+    "stockHidden": "Piilotettu — {reason}",
+    "noDeals": "Ei aterioita käytössä",
+    "dealsActive": "{count, plural, one {# ateria} other {# ateriaa}} käytössä · {names}{hidden, plural, =0 {} one { · # piilotettu} other { · # piilotettua}}",
+    "approveNeedsTimes": "Hyväksyminen ei ole mahdollista, ennen kuin tapahtumalla on alkamis- ja päättymisaika — lisää ne kohdassa Muokkaa."
+  },
+  "guessed": {
+    "title": "📍 Arvasimme tämän sijainnin",
+    "body": "Hakua <b>{venue}</b> vastasi useampi kuin yksi paikka, joten valitsimme parhaiten sopivan{hasTown, select, yes { paikkakunnalta <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Tarkista ennen hyväksymistä, että se on oikea — jos se on väärä, korjaa alue tai {postal} kohdassa <b>Muokkaa</b>, muuten asiakkaat ohjataan väärään paikkaan.",
+    "thisVenue": "tämä paikka"
+  },
+  "noLocation": {
+    "title": "📍 Ei vielä sijaintia",
+    "body": "Emme pystyneet sijoittamaan tätä paikkaa kartalle, joten se näkyy luettelossa mutta ilman karttamerkkiä. Lisää {postal} kohdassa <b>Muokkaa</b>, niin se näkyy kartalla."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Mahdollinen päällekkäisyys} other {Mahdollisia päällekkäisyyksiä}} — tarkista ennen {pending, select, yes {hyväksymistä} other {vahvistamista}}",
+    "duplicate": "Tämä näyttää samalta tapahtumalta, joka sinulla on jo.",
+    "review": "Sama paikka ja päivä, eri aika — onko tämä sama tapahtuma muutetulla ajalla vai erillinen vuoro? Tarkista ennen hyväksymistä.",
+    "already": "Jo aikataulussasi: <b>{venue}</b>{details} ({status, select, confirmed {vahvistettu} open {avoinna} other {{status}}})",
+    "unnamedVenue": "Nimetön paikka",
+    "ack": "Kyllä, nämä ovat eri tapahtumia — {pending, select, yes {hyväksy} other {vahvista}} silti",
+    "cancel": "Peru",
+    "overlap": "Tämän tapahtuman aika menee päällekkäin toisen saman päivän tapahtuman kanssa — yksi ruokarekka ei voi olla kahdessa paikassa yhtä aikaa. Tarkista ennen hyväksymistä."
+  },
+  "toast": {
+    "loadFailed": "Tapahtumien lataus epäonnistui",
+    "linkFailed": "Linkkiä ei voitu ladata",
+    "placeTypeFailed": "Tapahtuma tallennettu. Paikan {place} tavallista tyyppiä ei tallennettu — {reason}.",
+    "placeTypeFailedReason": "tallennus ei mennyt läpi",
+    "eventUpdated": "Tapahtuma päivitetty",
+    "eventAdded": "Tapahtuma lisätty",
+    "eventsSaved": "{count, plural, one {# tapahtuma tallennettu} other {# tapahtumaa tallennettu}}",
+    "saveEventsFailed": "Tapahtumien tallennus epäonnistui",
+    "needsTime": "Lisää alkamis- ja päättymisaika ennen hyväksymistä — tapahtuma tarvitsee ajan, jotta sen voi julkaista.",
+    "addStartTime": "Lisää alkamisaika",
+    "addEndTime": "Lisää päättymisaika",
+    "chooseTruckBefore": "Valitse ennen hyväksymistä, mikä ruokarekka on tässä tapahtumassa.",
+    "chooseTruck": "Valitse, mikä ruokarekka on tässä tapahtumassa",
+    "eventConfirmed": "Tapahtuma vahvistettu",
+    "eventRejected": "Tapahtuma hylätty",
+    "undo": "↩ Kumoa",
+    "eventRestored": "Tapahtuma palautettu",
+    "restoreFailed": "Palautus epäonnistui",
+    "eventCancelled": "Tapahtuma peruttu",
+    "eventCancelledOrders": "Tapahtuma peruttu · {count, plural, one {# tilaus} other {# tilausta}} peruttu",
+    "placeHidden": "Paikka piilotettu",
+    "placeShown": "Paikka näytetään taas",
+    "saveThatFailed": "Tallennus ei onnistunut."
+  },
+  "link": {
+    "label": "Yksityinen linkki ja QR-koodi",
+    "close": "Sulje"
+  }
+}

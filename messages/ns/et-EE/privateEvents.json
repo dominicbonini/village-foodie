@@ -1,0 +1,42 @@
+{
+  "publicName": "Eraüritus",
+  "chip": "Privaatne",
+  "grid": {
+    "orderingSection": "TELLIMINE",
+    "linkRowLabel": "Võta tellimusi vastu privaatse lingi ja QR-koodiga",
+    "columnTitle": "Sisseehitatud tüüp „Privaatne“. Seda ei saa ümber nimetada, liigutada ega kustutada."
+  },
+  "form": {
+    "help": "Kuvatakse sinu ajakavas kui „Eraüritus“ ainult kuupäeva ja kellaaegadega — ilma aadressi ja kaardita ning mitte kunagi Village Foodie lehel.",
+    "linkPromise": "Külalised tellivad privaatse lingi ja QR-koodi kaudu — saad need pärast salvestamist.",
+    "nameLabel": "Ürituse nimi",
+    "nameHelp": "Külalised näevad seda tellimislehe ülaosas.",
+    "namePlaceholder": "Kadri ja Toomase pulm",
+    "previewNote": "Nii kuvatakse see sinu ajakavas — ilma asukoha, linna ja sihtnumbrita.",
+    "needsTimes": "Lisa algus- ja lõpuaeg — lingi kaudu tellimusi vastu võttev eraüritus vajab neid."
+  },
+  "link": {
+    "button": "Link ja QR",
+    "title": "Privaatne link ja QR-kood",
+    "label": "Privaatne link",
+    "copy": "Kopeeri",
+    "copied": "Kopeeritud",
+    "qrDownload": "Laadi QR alla",
+    "tableCards": "Prindi lauakaardid",
+    "newLink": "Loo uus link",
+    "working": "Töötlen…",
+    "newLinkConfirm": "Kas luua uus link? Praegune link lakkab kohe töötamast ja ka kõik juba prinditud QR-koodid lakkavad töötamast.",
+    "newLinkHelp": "Kasuta seda, kui link on sattunud kuhugi, kuhu see ei peaks. Praegune link lakkab kohe töötamast ja ka prinditud QR-koodid lakkavad töötamast.",
+    "newLinkFailed": "Uut linki ei õnnestunud luua.",
+    "offNotice": "Privaatse lingi kaudu tellimine on selle ürituse jaoks välja lülitatud, seega pole linki, mida jagada. Üritus kuvatakse sinu ajakavas endiselt kui „Eraüritus“."
+  },
+  "cards": {
+    "printTitle": "{truck} — lauakaardid",
+    "scan": "Skanni ja telli",
+    "blurb": "Telli ja maksa oma telefonis. Hüüame sinu nime, kui tellimus on valmis.",
+    "footer": "Tellimist pakub HatchGrab"
+  },
+  "noSinglePost": "Eraüritused ei saa oma postitust — need kuvatakse sinu nädalapostitusel kui „Eraüritus“.",
+  "confirmToPrivate": "See peidab aadressi ja ürituse kaardilt. Tellimiseks vajavad külalised privaatset linki.",
+  "confirmFromPrivate": "See muudab ürituse avalikuks: selle aadress ja kaardinõel on nähtavad ning privaatne link lakkab töötamast."
+}

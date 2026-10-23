@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Odwołane",
+    "finished": "Zakończone",
+    "unconfirmed": "Niepotwierdzone",
+    "confirmed": "Potwierdzone",
+    "open": "Otwarte teraz",
+    "closed": "Zamknięte"
+  },
+  "sections": {
+    "label": "Sekcje harmonogramu",
+    "events": "Wydarzenia",
+    "eventTypes": "Typy wydarzeń"
+  },
+  "header": {
+    "title": "Harmonogram",
+    "upcoming": "Nadchodzące: {count}",
+    "import": "✨ Importuj harmonogram",
+    "importHint": "zdjęcie, PDF lub tekst",
+    "addEvent": "+ Dodaj wydarzenie",
+    "scraperAuto": "Automatycznie wyszukujemy wydarzenia na twojej stronie internetowej",
+    "changeInSettings": "Zmień w Ustawieniach",
+    "scraperManual": "Harmonogramem zarządzasz ręcznie"
+  },
+  "empty": {
+    "title": "Brak nadchodzących wydarzeń",
+    "body": "Tutaj pojawią się do potwierdzenia wydarzenia pobrane z twoich mediów społecznościowych i kalendarza rezerwacji"
+  },
+  "list": {
+    "openNow": "Otwarte teraz",
+    "needsApproval": "Wymaga twojego zatwierdzenia",
+    "needsConfirmation": "Wymaga potwierdzenia",
+    "confirmed": "Potwierdzone",
+    "past": "Minione wydarzenia ({count})",
+    "found": "Znaleźliśmy dla ciebie {count, plural, one {# wydarzenie — sprawdź je i zatwierdź, zanim zostanie opublikowane.} few {# wydarzenia — sprawdź je i zatwierdź, zanim zostaną opublikowane.} many {# wydarzeń — sprawdź je i zatwierdź, zanim zostaną opublikowane.} other {# wydarzenia — sprawdź je i zatwierdź, zanim zostaną opublikowane.}}"
+  },
+  "card": {
+    "addName": "Dodaj nazwę",
+    "timeNeeded": "⚠ Brak godziny",
+    "setTimeFirst": "Najpierw ustaw godzinę",
+    "confirm": "Potwierdź",
+    "copy": "Kopiuj",
+    "edit": "Edytuj",
+    "makePost": "Utwórz post",
+    "cancel": "Odwołaj",
+    "approve": "Zatwierdź",
+    "reject": "Odrzuć",
+    "stock": "⚠️ Zapasy",
+    "stockHidden": "Ukryte — {reason}",
+    "noDeals": "Brak aktywnych zestawów",
+    "dealsActive": "{count, plural, one {# aktywny zestaw} few {# aktywne zestawy} many {# aktywnych zestawów} other {# aktywnego zestawu}} · {names}{hidden, plural, =0 {} one { · # ukryty} few { · # ukryte} many { · # ukrytych} other { · # ukrytego}}",
+    "approveNeedsTimes": "Zatwierdzenie jest niedostępne, dopóki to wydarzenie nie ma godziny rozpoczęcia i zakończenia — dodaj je przez Edytuj."
+  },
+  "guessed": {
+    "title": "📍 Odgadliśmy tę lokalizację",
+    "body": "Nazwa <b>{venue}</b> pasuje do więcej niż jednego miejsca, więc wybraliśmy najbardziej prawdopodobne{hasTown, select, yes { w miejscowości <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Przed zatwierdzeniem sprawdź, czy to właściwe miejsce — jeśli nie, użyj <b>Edytuj</b>, aby poprawić okolicę lub {postal}, inaczej klienci trafią w złe miejsce.",
+    "thisVenue": "tego miejsca"
+  },
+  "noLocation": {
+    "title": "📍 Brak lokalizacji",
+    "body": "Nie udało się umieścić tego miejsca na mapie, więc będzie widoczne na liście, ale bez pinezki na mapie. Dodaj {postal} przez <b>Edytuj</b>, aby pokazać je na mapie."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Możliwy konflikt} few {Możliwe konflikty} many {Możliwe konflikty} other {Możliwe konflikty}} — sprawdź przed {pending, select, yes {zatwierdzeniem} other {potwierdzeniem}}",
+    "duplicate": "To wygląda na to samo wydarzenie, które już masz.",
+    "review": "To samo miejsce i data, inna godzina — czy to to samo wydarzenie ze zmienioną godziną, czy osobny termin? Sprawdź przed zatwierdzeniem.",
+    "already": "Już w twoim harmonogramie: <b>{venue}</b>{details} ({status, select, confirmed {potwierdzone} open {otwarte} other {{status}}})",
+    "unnamedVenue": "Miejsce bez nazwy",
+    "ack": "Tak, to różne wydarzenia — mimo to {pending, select, yes {zatwierdź} other {potwierdź}}",
+    "cancel": "Anuluj",
+    "overlap": "Godziny tego wydarzenia nakładają się na inne wydarzenie tego samego dnia — jeden food truck nie może być w dwóch miejscach naraz. Sprawdź przed zatwierdzeniem."
+  },
+  "toast": {
+    "loadFailed": "Nie udało się wczytać wydarzeń",
+    "linkFailed": "Nie udało się wczytać linku",
+    "placeTypeFailed": "Wydarzenie zapisane. Zwykły typ miejsca {place} nie został zapisany — {reason}.",
+    "placeTypeFailedReason": "zapis się nie powiódł",
+    "eventUpdated": "Wydarzenie zaktualizowane",
+    "eventAdded": "Wydarzenie dodane",
+    "eventsSaved": "{count, plural, one {Zapisano # wydarzenie} few {Zapisano # wydarzenia} many {Zapisano # wydarzeń} other {Zapisano # wydarzenia}}",
+    "saveEventsFailed": "Nie udało się zapisać wydarzeń",
+    "needsTime": "Przed zatwierdzeniem dodaj godzinę rozpoczęcia i zakończenia — bez godzin to wydarzenie nie może zostać opublikowane.",
+    "addStartTime": "Dodaj godzinę rozpoczęcia",
+    "addEndTime": "Dodaj godzinę zakończenia",
+    "chooseTruckBefore": "Przed zatwierdzeniem wybierz food truck, który obsługuje to wydarzenie.",
+    "chooseTruck": "Wybierz food truck, który obsługuje to wydarzenie",
+    "eventConfirmed": "Wydarzenie potwierdzone",
+    "eventRejected": "Wydarzenie odrzucone",
+    "undo": "↩ Cofnij",
+    "eventRestored": "Wydarzenie przywrócone",
+    "restoreFailed": "Nie udało się przywrócić",
+    "eventCancelled": "Wydarzenie odwołane",
+    "eventCancelledOrders": "Wydarzenie odwołane · anulowano {count, plural, one {# zamówienie} few {# zamówienia} many {# zamówień} other {# zamówienia}}",
+    "placeHidden": "Miejsce ukryte",
+    "placeShown": "Miejsce znów widoczne",
+    "saveThatFailed": "Nie udało się tego zapisać."
+  },
+  "link": {
+    "label": "Prywatny link i kod QR",
+    "close": "Zamknij"
+  }
+}

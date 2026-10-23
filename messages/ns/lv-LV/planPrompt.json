@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {Plāns “{plan}” ietver: {feature}.} other {Plāns “{plan}” ietver: {feature}.}}",
+  "notOnPlan": "{many, select, yes {Jūsu plāns neietver: {feature}.} other {Jūsu plāns neietver: {feature}.}}",
+  "switchedOff": "{many, select, yes {Šī funkcija jūsu food truck ir izslēgta: {feature}.} other {Šī funkcija jūsu food truck ir izslēgta: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Uzlabot plānu →",
+  "features": {
+    "discovery_map": {
+      "name": "Ieraksts atklāšanas kartē",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Tīmekļa vadības panelis",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Virtuves lietotne",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR koda ēdienkarte",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Komplekti",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Papildpiedāvājumi",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Pasūtījumi uz vietas",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Pasūtīšana tiešsaistē ar “Apmaksa saņemot”",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Atzīme “Izpārdots”",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Krājumu atlikuma uzskaite",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Pasūtījumu aizsardzība bezsaistē",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Maksājumi tiešsaistē",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Iepriekšēja pasūtīšana uz nākamajiem datumiem",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Laika logi klientiem",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Virtuves jaudas pārvaldība",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automātiska pieņemšana",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger un Instagram automātiskās atbildes",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Zīmoloti QR kodi",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Paplašinātas atskaites",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Virtuves čeku drukāšana",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Virtuves sinhronizācija vairākās ierīcēs",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Pavāra ekrāns",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp automātiskās atbildes",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Jūsu grafiks jūsu tīmekļa vietnē",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Sociālo tīklu ieraksti",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Pielāgoti pasākumu veidi",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Privāti pasākumi",
+      "many": "yes"
+    }
+  }
+}

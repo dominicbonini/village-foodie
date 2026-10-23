@@ -1,0 +1,84 @@
+{
+  "loading": "Nalaganje konzole za upravljanje…",
+  "loadFailed": "Nalaganje ni uspelo",
+  "requestFailed": "Ni uspelo",
+  "invalidToken": "Neveljaven ali potekel žeton",
+  "loadFailedReason": "Te strani ni bilo mogoče naložiti: {reason}",
+  "noCountrySettings": "Nastavitev države za ta food truck ni bilo mogoče naložiti. Osvežite stran.",
+  "noPlans": "Paketa za ta food truck ni bilo mogoče naložiti. Osvežite stran.",
+  "stale": "{hasTime, select, yes {Osvežitev ni uspela. Prikazano je stanje, shranjeno ob {time}. Vaše spremembe se še vedno shranjujejo.} other {Osvežitev ni uspela. Prikazano je zadnje shranjeno stanje. Vaše spremembe se še vedno shranjujejo.}}",
+  "verify": {
+    "ok": "E-poštni naslov je potrjen — hvala.",
+    "expired": "Ta potrditvena povezava je potekla. Pišite nam in uredili bomo, preden začnete delovati.",
+    "invalid": "Ta potrditvena povezava ni delovala. Pišite nam in uredili bomo, preden začnete delovati."
+  },
+  "profile": {
+    "updated": "Profil je posodobljen",
+    "saveFailed": "Shranjevanje ni uspelo",
+    "title": "Uredi profil",
+    "name": "Ime",
+    "namePlaceholder": "Vaše ime",
+    "email": "E-pošta",
+    "cancel": "Prekliči",
+    "saving": "Shranjevanje…",
+    "save": "Shrani"
+  },
+  "header": {
+    "subtitle": "Konzola za upravljanje",
+    "ordersDashboard": "← Nadzorna plošča naročil"
+  },
+  "tabs": {
+    "menu": "Jedilnik",
+    "schedule": "Urnik",
+    "social": "Družbena omrežja",
+    "reports": "Poročila",
+    "team": "Ekipa",
+    "settings": "Nastavitve",
+    "payments": "Plačila",
+    "billing": "Obračun",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Urnik ({count})",
+    "stripeAttention": "Stripe potrebuje vašo pozornost",
+    "allergensNotSet": "alergeni niso nastavljeni"
+  },
+  "menuSections": {
+    "label": "Razdelki jedilnika",
+    "items": "Artikli",
+    "capacity": "Zmogljivost kuhinje",
+    "extras": "Dodatki in dodatna prodaja",
+    "deals": "Ponudbe"
+  },
+  "socialSections": {
+    "label": "Razdelki družbenih omrežij",
+    "create": "Ustvari objavo",
+    "designs": "Oblikovanje",
+    "locations": "Nastavitve lokacij"
+  },
+  "notices": {
+    "review": "Preglej →",
+    "tour": "Želite hiter ogled nadzorne plošče?",
+    "showMeAround": "Pokaži mi",
+    "dismiss": "Opusti",
+    "approval": "{count, plural, one {Našli smo <b>{count}</b> dogodek za vas — preglejte in potrdite ga, preden bo objavljen.} two {Našli smo <b>{count}</b> dogodka za vas — preglejte in potrdite ju, preden bosta objavljena.} few {Našli smo <b>{count}</b> dogodke za vas — preglejte in potrdite jih, preden bodo objavljeni.} other {Našli smo <b>{count}</b> dogodkov za vas — preglejte in potrdite jih, preden bodo objavljeni.}}",
+    "allergens": "<b>Alergeni niso nastavljeni</b> — stranke ne vidijo podatkov o alergenih, dokler jih ne preverite. Alergene vsake jedi preglejte na zavihku Jedilnik.",
+    "domainLive": "<link>{domain}</link> deluje. Oglejte si stran in nam v razdelku Nastavitve potrdite, da je pravilna.",
+    "stripe": "<b>Stripe od vas nekaj potrebuje</b> — kartična plačila se lahko ustavijo, dokler tega ne uredite.",
+    "profileTitle": "Dopolnite svoj profil",
+    "missing": "Manjka: {fields}.",
+    "goToSettings": "Pojdi v Nastavitve →",
+    "field": {
+      "truckName": "ime food trucka",
+      "cuisineType": "vrsta kuhinje",
+      "contactEmail": "kontaktna e-pošta",
+      "contactPhone": "kontaktni telefon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Uporabljate brezplačno preizkusno obdobje} other {Uporabljate {months}-mesečno brezplačno preizkusno obdobje}}",
+    "ends": "{hasDate, select, yes {Preizkusno obdobje se konča <hl>{date}</hl>} other {Preizkusno obdobje se konča <hl>kmalu</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Vse funkcije brezplačno za # mesec} two {Vse funkcije brezplačno za # meseca} few {Vse funkcije brezplačno za # mesece} other {Vse funkcije brezplačno za # mesecev}}} other {Vse funkcije brezplačno v preizkusnem obdobju}}",
+    "body": "{hasDate, select, yes {V preizkusnem obdobju, ki traja do <b>{date}</b>, vam ne bomo ničesar zaračunali. Obračun se začne šele, ko izberete paket in vnesete plačilne podatke. Do takrat vam ni treba ničesar preklicati ali plačati. Paket izberite pred tem datumom — sicer boste prešli na paket {fallback} in nekatere funkcije ne bodo več delovale.} other {V preizkusnem obdobju vam ne bomo ničesar zaračunali. Obračun se začne šele, ko izberete paket in vnesete plačilne podatke. Do takrat vam ni treba ničesar preklicati ali plačati. Paket izberite, preden se preizkusno obdobje konča — sicer boste prešli na paket {fallback} in nekatere funkcije ne bodo več delovale.}}",
+    "fees": "*Za spletna naročila veljajo standardni stroški obdelave kartičnih plačil",
+    "upgrade": "Nadgradite tukaj →"
+  }
+}

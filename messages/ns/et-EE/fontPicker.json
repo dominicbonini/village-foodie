@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Kõik",
+    "bold": "Paks ja kõrge",
+    "hand": "Käekiri",
+    "classic": "Klassikaline",
+    "clean": "Lihtne",
+    "own": "Sinu omad",
+    "ownCount": "Sinu omad ({count})"
+  },
+  "yoursTag": "· sinu",
+  "loadingFonts": "Fontide laadimine…",
+  "search": "Otsi {count, number} fondi seast",
+  "uploadButton": "↑ Laadi oma font üles",
+  "loadingLibrary": "Fonditeegi laadimine…",
+  "tryAgain": "Proovi uuesti",
+  "noOwn": "Sa pole veel ühtegi fonti üles laadinud. Kasuta ülal olevat nuppu „↑ Laadi oma font üles“.",
+  "recent": "Hiljuti kasutatud",
+  "popular": "Populaarsed plakatitel",
+  "adding": "Lisamine…",
+  "noMatch": "Ükski font ei vasta otsingule: „{query}“.",
+  "showing": "Kuvatakse {shown} / {total, number} — kitsendamiseks kirjuta rohkem.",
+  "couldNotAdd": "Seda fonti ei õnnestunud lisada",
+  "tooBig": "See font on {size, number, ::.0 group-off} MB. Piirang on 5 MB.",
+  "woff": "Laadi üles TTF- või OTF-fail — tavaliselt saad selle alla laadida sealt, kust fondi ostsid.",
+  "uploadIncomplete": "Üleslaadimine jäi pooleli",
+  "added": "Font „{name}“ lisatud — versioon: {face}.",
+  "face": {
+    "regular": "tavaline",
+    "bold": "paks",
+    "italic": "kaldkiri"
+  },
+  "licenceTick": "See font kuulub mulle või mul on litsents selle kasutamiseks",
+  "checking": "Fondi kontrollimine…",
+  "addFont": "Lisa font",
+  "cancel": "Tühista",
+  "missingFaces": "Lisa fondile „{name}“ ka versioon: {faces} (valikuline) — vali fail uuesti.",
+  "somethingWrong": "Midagi läks valesti",
+  "faceLower": {
+    "regular": "tavaline",
+    "bold": "paks",
+    "italic": "kaldkiri"
+  },
+  "ownLicence": "Sinu oma",
+  "loadFailed": "Fonte ei õnnestunud laadida"
+}

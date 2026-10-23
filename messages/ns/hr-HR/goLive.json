@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Odaberite kako prikazujete podatke o alergenima",
+    "detail": "Dok ne odaberete, kupci ne vide nijedno vaše jelo – jelovnik se štiti tako da skriva sve čiji alergeni nisu potvrđeni, a trenutačno je to sve.",
+    "where": "Jelovnik → Alergeni"
+  },
+  "allergensCardMissing": {
+    "title": "Dodajte karticu alergena",
+    "detail": "Odabrali ste prikaz kartice alergena, ali nijedna nije spremljena – kupcima bi se reklo da su podaci o alergenima dostupni, a zatim ne bi pronašli ništa.",
+    "where": "Jelovnik → Alergeni"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Potvrdite alergene za {count} jelo} few {Potvrdite alergene za {count} jela} other {Potvrdite alergene za {count} jela}}",
+    "detail": "{n, plural, one {Jelo bez potvrđenih alergena skriveno je od kupaca dok ne potvrdite njegove alergene.} few {{u, plural, one {{unverified} od vaših {total} jela skriveno je od kupaca dok ne potvrdite njegove alergene.} few {{unverified} od vaših {total} jela skrivena su od kupaca dok ne potvrdite njihove alergene.} other {{unverified} od vaših {total} jela skriveno je od kupaca dok ne potvrdite njihove alergene.}}} other {{u, plural, one {{unverified} od vaših {total} jela skriveno je od kupaca dok ne potvrdite njegove alergene.} few {{unverified} od vaših {total} jela skrivena su od kupaca dok ne potvrdite njihove alergene.} other {{unverified} od vaših {total} jela skriveno je od kupaca dok ne potvrdite njihove alergene.}}}} Jelo prikazano bez potvrđenih alergena čita se kao „ne sadrži ništa“, pa ga jelovnik radije skriva nego da riskira.",
+    "where": "Jelovnik → Alergeni"
+  },
+  "noVan": {
+    "title": "Dodajte food truck",
+    "detail": "Događaji se vode na food trucku – bez njega nema se preko čega primati narudžbe.",
+    "where": "Postavke → Vaši food truckovi"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Postavite kapacitet kuhinje",
+    "detail": "Kapacitet nije postavljen za: {vans}. Bez njega kupcima ćemo i dalje obećavati vremena preuzimanja koja vaša kuhinja nikako ne može ispuniti.",
+    "where": "Jelovnik → Kapacitet kuhinje",
+    "unnamedVan": "Food truck bez naziva"
+  },
+  "noPrepBearingCategory": {
+    "title": "Recite nam koliko traje priprema hrane",
+    "detail": "{categories, select, none {Još nemate kategorija jelovnika, pa ne možemo izračunati koliko traje priprema narudžbe.} other {Nijedna vaša kategorija nema postavljeno vrijeme pripreme, pa nam se svaka narudžba čini trenutačnom. Kupcima bismo i dalje davali vremena preuzimanja koja vaša kuhinja ne može ispuniti, a što više posla imate, to bi kašnjenje bilo veće.}}",
+    "where": "Jelovnik → Kategorije → Postavke kuhinje"
+  },
+  "emailUnverified": {
+    "title": "Potvrdite svoju adresu e-pošte",
+    "detail": "Obavijesti o narudžbama i oporavak računa šaljemo na ovu adresu. Ako je pogrešna, saznat ćete to tek kad nešto već pođe po zlu.",
+    "where": "Potražite našu poveznicu za potvrdu u pristigloj pošti"
+  },
+  "emailUnknown": {
+    "title": "Status potvrde e-pošte nije poznat",
+    "detail": "Provjera e-pošte još nije povezana, pa se ovo ne može procijeniti. Namjerno blokira umjesto da tiho prođe.",
+    "where": "—"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Povolit zákazníkům rušit objednávky",
+    "sentence": "Zákazníci mohou objednávku zrušit nejpozději <select></select> před časem vyzvednutí"
+  },
+  "autoAccept": {
+    "label": "Automaticky přijímat objednávky",
+    "help": "Objednávky se potvrzují automaticky. Pokud je požadované časové okno plné, objednávka se přesune do nejbližšího volného. Potvrzuje se jen při volné kapacitě. Objednávky s poznámkou zákazníka (např. alergie) bude i tak nutné potvrdit ručně."
+  },
+  "orderReady": {
+    "label": "Krok „Připraveno“",
+    "help": "Na obrazovce objednávek zobrazí tlačítko „Připraveno“. Kuchyňské obrazovky se nastavují zvlášť, na každém zařízení. Zákazník dostane e-mail pokaždé, když je objednávka označena jako připravená. Platí pro všechny akce — pro jednotlivou akci to můžete zapnout nebo vypnout na jejím přehledu."
+  },
+  "buzzers": {
+    "label": "Rozdáváte zákazníkům na vyzvednutí pagery?",
+    "help": "Zaznamenejte, jaký pager jste kterému zákazníkovi dali, ať víte, koho hledat, až bude jídlo hotové.",
+    "countLabel": "Kolik máte pagerů?"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "heading": "Lisamüük",
+  "intro": "Julgusta kliente midagi lisaks võtma. Kui keegi tellib ühest kategooriast, soovita tooteid teisest — jook pitsa kõrvale, kaste burgeri juurde.",
+  "add": "+ Lisa lisamüük",
+  "toast": {
+    "updated": "Lisamüügi reegel uuendatud",
+    "added": "Lisamüügi reegel lisatud",
+    "removed": "Reegel eemaldatud"
+  },
+  "whenAdds": "Kui klient lisab…",
+  "suggestFrom": "Soovita tooteid kategooriast…",
+  "chooseCategory": "Vali kategooria",
+  "cancel": "Tühista",
+  "saveChanges": "Salvesta muudatused",
+  "addRule": "Lisa reegel",
+  "empty": "Lisamüügi reegleid veel pole.",
+  "confirmRemove": "Kas eemaldada lisamüügi reegel „{trigger} → {suggest}“?",
+  "upTo": "{n, plural, one {Soovitatakse kuni {count} toode} other {Soovitatakse kuni {count} toodet}}"
+}

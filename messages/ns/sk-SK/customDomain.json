@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Pridajte harmonogram na svoj web",
+    "live": "Na adrese <addr>{address}</addr> sa zobrazuje váš harmonogram.",
+    "create": "Vytvoríme stránku na adrese <addr>{address}</addr>, ktorá bude zobrazovať váš harmonogram.",
+    "exampleDomain": "vasfoodtruck.sk",
+    "liveBadge": "Aktívne",
+    "setUp": "Nastaviť",
+    "viewSetup": "Zobraziť nastavenie",
+    "continue": "Pokračovať",
+    "justLive": "Adresa <b>{address}</b> funguje. Pozrite si ju a potom nám nižšie potvrďte, že je v poriadku."
+  },
+  "waiting": {
+    "title": "Čakáme na adresu {address}",
+    "bodySince": "Nastavili ste to {date}. Nové webové adresy zvyčajne začnú fungovať do niekoľkých minút, občas však trvá až 24 hodín, kým sa dostanú ku všetkým — medzitým nemusíte nič robiť. Ak za vás riadok pridával niekto iný, oplatí sa overiť, že to urobil.",
+    "body": "Nové webové adresy zvyčajne začnú fungovať do niekoľkých minút, občas však trvá až 24 hodín, kým sa dostanú ku všetkým — medzitým nemusíte nič robiť. Ak za vás riadok pridával niekto iný, oplatí sa overiť, že to urobil."
+  },
+  "ready": {
+    "title": "Adresa {address} funguje",
+    "body": "Pozrite si ju a potom nám v Nastaveniach potvrďte, že je v poriadku."
+  },
+  "confirm": {
+    "heading": "Pozrite si ju a potvrďte nám, že je v poriadku",
+    "open": "Otvorte <link>{address}</link>",
+    "checkTimes": "Skontrolujte, či sú dátumy a časy správne.",
+    "yes": "Áno, je to v poriadku",
+    "no": "Nie, je tam problém",
+    "problemLine": "Napíšte nám, čo vidíte, a pozrieme sa na to.",
+    "emailUs": "Napíšte nám",
+    "mailSubject": "Problém s adresou {address}",
+    "mailLiveSince": "Funguje od {date}",
+    "mailSeeing": "Čo vidím:"
+  },
+  "confirmed": {
+    "heading": "Ďakujeme — máme to zaznamenané.",
+    "body": "Nič ďalšie netreba robiť."
+  },
+  "turnOff": {
+    "link": "Vypnúť",
+    "heading": "Vypnúť vlastnú webovú adresu?",
+    "stops": "Toto prestane fungovať:",
+    "carriesOn": "Toto funguje ďalej presne ako doteraz a práve sem posiela ľudí váš QR kód:",
+    "reAdd": "Ak to budete neskôr nastavovať znova, riadok, ktorý ste pridali u správcu webovej adresy, ponechajte. Ak nie, požiadajte správcu, aby ho odstránil.",
+    "cancel": "Ponechať zapnuté",
+    "confirm": "Vypnúť",
+    "working": "Vypína sa…",
+    "failed": "Momentálne sa to nepodarilo vypnúť. Nič sa nezmenilo — vaša adresa stále funguje. Skúste to o chvíľu znova."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Nepodarilo sa načítať vaše nastavenie.",
+    "resumeFailedBody": "Nič sa nezmenilo. Skúste to o chvíľu znova.",
+    "close": "Zavrieť",
+    "resuming": "Pokračujeme tam, kde ste skončili…",
+    "genericError": "Niečo sa pokazilo",
+    "saveFailed": "Nepodarilo sa uložiť"
+  },
+  "address": {
+    "intro": "Váš harmonogram dostane vlastnú webovú adresu.",
+    "question": "Aká je vaša webová adresa?",
+    "hint": "Tá, cez ktorú vás ľudia už nachádzajú.",
+    "aria": "Vaša vlastná webová adresa",
+    "willBe": "Vaša adresa bude <addr>{address}</addr>",
+    "example": "Napríklad <addr>{address}</addr>",
+    "noChange": "Váš web sa nemení — len naň pridáte odkaz na novú adresu.",
+    "notSetUp": "Nič sme nenastavili.",
+    "restricted": "Správca vašej webovej adresy nám musí povoliť nastavenie zámku — malej ikony zámku, ktorú zákazníci vidia vedľa adresy. Kým nás nepridá, zámok sa nezobrazí, preto sme radšej prestali, než aby ste naň zbytočne čakali. Požiadajte ho, aby nás pridal, a potom to skúste znova.",
+    "blocked": "Vaša webová adresa momentálne zámok úplne blokuje. Jej správca to musí povoliť, inak to nebude fungovať. Požiadajte ho o zmenu a potom to skúste znova.",
+    "elsewhere": "Na tejto adrese už niečo odpovedá. Správu z ďalšej obrazovky pošlite správcovi adresy — bude vedieť, čo robiť.",
+    "provider": "Vašu webovú adresu spravuje <b>{provider}</b>. Ukážeme vám, kam ísť.",
+    "provisionFailed": "Túto adresu sa nám nepodarilo nastaviť.",
+    "willNotWork": "Táto adresa nebude fungovať.",
+    "couldNotBeSetUp": "Túto adresu sa nepodarilo nastaviť.",
+    "couldNotSetUp": "Nepodarilo sa nastaviť",
+    "checking": "Kontroluje sa…",
+    "setting": "Nastavuje sa…",
+    "tryAgain": "Skúsiť znova",
+    "setUpAddress": "Nastaviť túto adresu",
+    "notNow": "Teraz nie"
+  },
+  "apex": {
+    "empty": "Napíšte adresu, ktorú chcete použiť.",
+    "not_a_domain": "Toto nevyzerá ako webová adresa.",
+    "unparseable": "Nepodarilo sa nám to prečítať ako webovú adresu. Skontrolujte pravopis a skúste to znova.",
+    "apex": "{host} je celá adresa vášho webu. Ak ju nasmerujete na nás, váš web nahradí táto stránka. Pridajte pred ňu radšej slovo — napríklad program.{host}.",
+    "too_deep": "Táto adresa má príliš veľa častí. Najlepšie funguje niečo ako program.{domain}."
+  },
+  "record": {
+    "addAt": "Pridajte toto u poskytovateľa {provider}",
+    "open": "Otvoriť {provider}",
+    "guide": "Návod od poskytovateľa {provider}",
+    "addAtSave": "Pridajte toto u poskytovateľa {provider} a uložte.",
+    "addSomewhere": "Pridajte toto tam, kde sa spravuje vaša webová adresa, a uložte.",
+    "hintChoose": "Vyberte to zo zoznamu.",
+    "hintWord": "Len toto slovo, nie celú adresu.",
+    "hintExact": "Skopírujte to presne.",
+    "timing": "Zvyčajne to začne fungovať do hodiny, niekedy to však môže trvať dlhšie. Túto stránku nemusíte nechávať otvorenú.",
+    "someoneElse": "Vašu webovú adresu spravuje niekto iný?",
+    "sentTo": "Odoslané na {email}",
+    "emailPlaceholder": "jeho e-mailová adresa",
+    "sending": "Odosiela sa…",
+    "send": "Poslať tieto údaje",
+    "sendFailed": "Nepodarilo sa odoslať"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Otvorte svoju webovú adresu a potom „DNS“ a „Records“.",
+      "add": "Vyberte „Add record“ a ako „Type“ zvoľte „CNAME“.",
+      "name": "Prvú hodnotu nižšie vložte do poľa „Name“.",
+      "value": "Druhú hodnotu nižšie vložte do poľa „Target“.",
+      "proxy": "„Proxy status“ nastavte na „DNS only“ — obláčik vedľa musí byť sivý, nie oranžový.",
+      "save": "„TTL“ ponechajte na „Auto“ a vyberte „Save“.",
+      "caveat": "Ak obláčik zostane oranžový, zámok sa nikdy nezobrazí a nič vám nepovie prečo."
+    },
+    "godaddy": {
+      "open": "Otvorte „Domain Portfolio“ a vyberte svoju webovú adresu.",
+      "dns": "Na stránke „Domain Settings“ vyberte „DNS“.",
+      "add": "Vyberte „Add New Record“ a v ponuke „Type“ zvoľte „CNAME“.",
+      "name": "Prvú hodnotu nižšie vložte do poľa „Name“.",
+      "value": "Druhú hodnotu nižšie vložte do poľa „Value“.",
+      "save": "„TTL“ ponechajte bez zmeny a vyberte „Save“.",
+      "caveat": "Ak ste pridali viac záznamov naraz, tlačidlo sa volá „Save All Records“."
+    },
+    "123reg": {
+      "signIn": "Prihláste sa do „123 Reg Control Panel“.",
+      "manage": "Vedľa „Domains“ vyberte „Manage All“ a potom svoju webovú adresu.",
+      "dns": "Vyberte „DNS“ a potom „Add New Record“.",
+      "type": "V zozname „Type“ zvoľte „CNAME“.",
+      "name": "Prvú hodnotu nižšie vložte do poľa „Name“.",
+      "value": "Druhú hodnotu nižšie vložte do poľa „Value“ a na jej koniec pridajte bodku.",
+      "save": "„TTL“ ponechajte na „Default“ a kliknite na „Save“.",
+      "caveat": "123 Reg vyžaduje bodku na konci druhej hodnoty, inak to nebude fungovať."
+    },
+    "wix": {
+      "open": "Otvorte „Domains“ a potom kliknite na ikonu „Domain Actions“ vedľa svojej webovej adresy.",
+      "manage": "Vyberte „Manage DNS Records“.",
+      "add": "V sekcii „CNAME (Aliases)“ kliknite na „+ Add Record“ a potom na „Got it“.",
+      "name": "Prvú hodnotu nižšie vložte do poľa „Host Name“.",
+      "value": "Druhú hodnotu nižšie vložte do poľa „Value“.",
+      "save": "Kliknite na „Save“ a potom vo vyskakovacom okne na „Save Changes“.",
+      "caveat": "Ak vaša webová adresa na Wix iba smeruje a nie je tam registrovaná, Wix túto zmenu urobiť nemôže — musí ju urobiť ten, kto adresu drží."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Jeden záznam na pridanie pre stránku s harmonogramom – {truckName}",
+    "hello": "Dobrý deň,",
+    "introAt": "Živý harmonogram food trucku {truckName} umiestňujeme na adresu {address}, a preto potrebujeme pridať jeden záznam do našej domény u poskytovateľa {provider}.",
+    "introHolder": "Živý harmonogram food trucku {truckName} umiestňujeme na adresu {address}, a preto potrebujeme pridať jeden záznam do našej domény u toho, kto ju spravuje.",
+    "stepsAt": "U poskytovateľa {provider}:",
+    "guide": "Ich vlastný návod: {url}",
+    "wholeChange": "To je celá zmena — nič iné na webe sa neovplyvní a zvyšok našej domény funguje presne ako doteraz. Zvyčajne to začne fungovať do hodiny.",
+    "pointsAt": "Stránka, na ktorú záznam smeruje, ukazuje, kde budeme najbližšie predávať, a sama sa aktualizuje.",
+    "replyTo": "Ak máte otázky, odpovedzte na {email}.",
+    "thanks": "Ďakujem,"
+  },
+  "liveEmail": {
+    "subject": "Adresa {address} funguje",
+    "goodNews": "Dobrá správa — adresa {address} funguje.",
+    "body": "Váš harmonogram sa teraz zobrazuje na vašej vlastnej adrese. Pozrite si ho a skontrolujte, či je v poriadku: otvorte {address} a overte, že akcie sú vaše a dátumy sú správne.",
+    "confirm": "Keď to urobíte, otvorte nastavenia v HatchGrab a potvrďte nám, že je všetko v poriadku. Nič od toho nezávisí — len budeme vedieť, že to videl človek."
+  }
+}

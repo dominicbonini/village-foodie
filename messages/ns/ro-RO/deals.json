@@ -1,0 +1,17 @@
+{
+  "back": "← Înapoi",
+  "title": "Aplicați un combo",
+  "save": "Economisiți {amount}",
+  "selectItems": "Alegeți produsele pentru fiecare poziție",
+  "choose": "Alegeți {category}…",
+  "inYourBasket": "── În coș ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (în coș){state, select, used { — deja într-un combo} taken { — ales la altă poziție} other {}}",
+  "addNew": "── Adăugați nou ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obligatoriu · alegeți unul} required {Obligatoriu} other {Alegeți unul}}{unmet, select, yes { (obligatoriu)} other {}}",
+  "notePlaceholder": "Adăugați o notă, de ex. fără ceapă (opțional)",
+  "backButton": "Înapoi",
+  "cancel": "Anulare",
+  "chooseRequired": "Alegeți opțiunile obligatorii",
+  "apply": "Aplicați combo-ul · {amount}"
+}

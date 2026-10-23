@@ -1,0 +1,83 @@
+{
+  "title": "Tipuri de evenimente",
+  "newTypeButton": "+ Tip de eveniment nou",
+  "close": "Închideți",
+  "loading": "Se încarcă…",
+  "missingTitle": "Tipurile de evenimente nu sunt încă activate.",
+  "missingBody": "Actualizarea bazei de date pentru această funcție nu a fost aplicată. Nimic nu este stricat — fiecare eveniment folosește configurarea obișnuită.",
+  "column": "Coloană",
+  "vanGone": "Acest food truck nu mai există.",
+  "typeGone": "Acest tip nu mai există.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Mai multe pentru {name}",
+  "rename": "Redenumiți",
+  "moveLeft": "Mutați la stânga",
+  "moveRight": "Mutați la dreapta",
+  "delete": "Ștergeți",
+  "sections": {
+    "vans": "FOOD TRUCK-URI",
+    "prices": "PREȚURI",
+    "itemPrices": "PREȚURI PRODUSE",
+    "service": "SERVIRE"
+  },
+  "labelFor": "{label} pentru {name}",
+  "intervalEvery": "La fiecare {mins} min",
+  "noTypes": "Nu aveți încă tipuri de evenimente, așa că fiecare eveniment folosește configurarea obișnuită.",
+  "renameTitle": "Redenumiți acest tip",
+  "name": "Nume",
+  "cancel": "Anulați",
+  "save": "Salvați",
+  "copyVanOne": "Copiați setările food truck-ului 1",
+  "thisType": "acest tip",
+  "matchTitle": "Aliniați „{name}” la Standard?",
+  "matchKeeps": "Tot ce ați modificat în panoul de control al unui singur eveniment rămâne neschimbat, iar prețurile acestui tip nu se modifică.",
+  "matchWillUse": "Va folosi: {summary}",
+  "deleteTitle": "Ștergeți „{name}”?",
+  "deleteBody": "{n, plural, =0 {Niciun eveniment viitor nu folosește „{name}”.} one {{count} eveniment viitor folosește „{name}”. Va reveni la Standard.} few {{count} evenimente viitoare folosesc „{name}”. Vor reveni la Standard.} other {{count} de evenimente viitoare folosesc „{name}”. Vor reveni la Standard.}} Tot ce ați modificat la un singur eveniment rămâne neschimbat.",
+  "keep": "Păstrați",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "implicit",
+    "vanSetup": "Configurarea obișnuită a acestui food truck — folosită la fiecare eveniment fără tip.",
+    "standardSetup": "Configurarea obișnuită — folosită la fiecare eveniment fără tip.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} eveniment viitor} few {{upcomingCount} evenimente viitoare} other {{upcomingCount} de evenimente viitoare}} · {changed, plural, =0 {nimic modificat încă} one {{changedCount} din {total} modificat} few {{changedCount} din {total} modificate} other {{changedCount} din {total} modificate}}",
+    "noMenuItems": "Niciun produs în meniu încă — adăugați-le în Meniu › Produse."
+  },
+  "newType": {
+    "title": "Tip de eveniment nou",
+    "namePlaceholder": "ex. Serbare școlară",
+    "help": "Atingeți un nume sau scrieți unul propriu. Pornește ca o copie a configurării Standard, iar modificările ulterioare ale Standard nu îl vor schimba. Apoi modificați orice doriți.",
+    "create": "Creați",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Pub",
+      "market": "Piață",
+      "privateHire": "Închiriere food truck"
+    }
+  },
+  "select": {
+    "label": "Tip de eveniment",
+    "usual": "{name} este obișnuit pentru acest loc."
+  },
+  "summary": {
+    "normalSetup": "Configurarea obișnuită",
+    "sameAsStandard": "La fel ca Standard",
+    "buzzersOn": "pagere activate",
+    "buzzersOff": "pagere dezactivate",
+    "takeCashOn": "numerar acceptat",
+    "takeCashOff": "numerar neacceptat",
+    "markReadyOn": "pasul „gata” activat",
+    "markReadyOff": "pasul „gata” dezactivat",
+    "collectionEvery": "ridicare la fiecare {mins} min",
+    "offlineOff": "protecția offline dezactivată",
+    "offlineKeepTaking": "offline: se primesc comenzi în continuare",
+    "offlinePause": "offline: comenzile se suspendă"
+  },
+  "errors": {
+    "somethingWentWrong": "A apărut o eroare",
+    "couldNotLoad": "Nu s-a putut încărca",
+    "couldNotSave": "Nu s-a putut salva",
+    "noVans": "Această afacere nu are food truck-uri de modificat."
+  }
+}

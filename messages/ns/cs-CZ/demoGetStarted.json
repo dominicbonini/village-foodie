@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Uložit jídelní lístek →",
+    "heading": "Nastavte svůj food truck",
+    "sub": "Váš jídelní lístek se rovnou přenese.",
+    "privacy": "Údaje použijeme jen k nastavení vašeho food trucku a k odeslání odkazu na demo — viz naše <link>zásady ochrany osobních údajů</link>."
+  },
+  "sample": {
+    "bannerButton": "Nastavit food truck →",
+    "heading": "Nastavte svůj food truck",
+    "sub": "Hned potom nahrajete vlastní jídelní lístek — zabere to minutu.",
+    "privacy": "Údaje použijeme jen k nastavení vašeho food trucku a k odeslání odkazu na demo — viz naše <link>zásady ochrany osobních údajů</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Uložit jídelní lístek →",
+    "heading": "Uložte si demo",
+    "sub": "Uchováme ho 14 dní a hned vám e-mailem pošleme odkaz zpět.",
+    "privacy": "Údaje použijeme jen k odeslání odkazu na demo — viz naše <link>zásady ochrany osobních údajů</link>."
+  },
+  "confirmationHeading": "Vše je připraveno",
+  "postSaveButton": "Nastavit food truck →",
+  "enterSetupButton": "Nastavit food truck →",
+  "emailOnlyLink": "Jen mi pošlete e-mailem odkaz zpět na toto demo",
+  "sendLinkButton": "Poslat odkaz",
+  "savingButton": "Ukládání…",
+  "continueButton": "Pokračovat →",
+  "createAccountButton": "Vytvořit účet →",
+  "retryButton": "Zkusit znovu",
+  "backToDemoButton": "Zpět na demo",
+  "savedStatus": "{hasDate, select, yes {✓ Uloženo — uchováme do {date}} other {✓ Uloženo}}",
+  "back": "Zpět",
+  "close": "Zavřít",
+  "truckStepHeading": "O vašem food trucku",
+  "detailsStepHeading": "Dokončete nastavení",
+  "stepper": {
+    "details": "Údaje",
+    "menu": "Lístek",
+    "allergens": "Alergeny",
+    "kitchen": "Kuchyně",
+    "schedule": "Rozpis"
+  },
+  "confirmEmailed": "Poslali jsme vám e-mailem odkaz zpět na toto demo — přihlášení není potřeba.",
+  "confirmKeepUntil": "Uchováme ho do <b>{date}</b>. Až se zaregistrujete naostro, jídelní lístek půjde s vámi.",
+  "loading": "Načítání…",
+  "firstName": "Jméno",
+  "lastName": "Příjmení",
+  "truckName": "Název food trucku",
+  "truckNamePlaceholder": "např. Vesnická kuchyně",
+  "cuisine": "Kuchyně",
+  "logoLabel": "Logo <opt>(nepovinné)</opt>",
+  "logoPreviewAlt": "Náhled loga",
+  "changeLogo": "Změnit logo",
+  "removeLogo": "Odebrat",
+  "uploadLogo": "📷 Nahrát logo",
+  "readyTitle": "Váš účet je připravený",
+  "readyBody": "Teď dokončíme nastavení vašeho food trucku — jídelní lístek, alergeny a kuchyni.",
+  "hangTight": "Vydržte — vše připravujeme.",
+  "stage": {
+    "account": "Vytváříme váš účet",
+    "truck": "Nastavujeme váš food truck",
+    "menu": "Načítáme váš jídelní lístek"
+  },
+  "stageState": {
+    "done": "hotovo",
+    "recognised": "účet už máte",
+    "failed": "nezdařilo se",
+    "active": "probíhá",
+    "pending": "čeká"
+  },
+  "signIn": "Přihlásit se",
+  "phone": "Telefon",
+  "onWhatsapp": "Toto číslo používá WhatsApp",
+  "email": "E-mail",
+  "emailPlaceholder": "vy@vasfoodtruck.cz",
+  "settingUpAs": "Nastavujete jako <b>{email}</b> <change>změnit</change>",
+  "password": "Heslo",
+  "passwordPlaceholder": "Alespoň 8 znaků",
+  "hidePassword": "Skrýt heslo",
+  "showPassword": "Zobrazit heslo",
+  "promoLabel": "Máte kód? <opt>(nepovinné)</opt>",
+  "promoPlaceholder": "Zadejte ho sem",
+  "agreeTerms": "Souhlasím s <terms>Podmínkami</terms> a <privacy>Zásadami ochrany osobních údajů</privacy>.",
+  "freeMonth": "Nastavením se váš měsíc zdarma nespustí. Začne, až vyberete svou první ostrou akci — kdykoli budete připraveni.",
+  "fieldError": {
+    "firstName": "Napište nám své jméno.",
+    "lastName": "A své příjmení.",
+    "truck": "Pojmenujte svůj food truck.",
+    "cuisine": "Napište nám, co vaříte.",
+    "phoneMissing": "Přidejte telefonní číslo — zákazníci i my ho používáme, abychom se vám ozvali.",
+    "email": "Zadejte platnou e-mailovou adresu.",
+    "password": "Heslo musí mít alespoň 8 znaků.",
+    "terms": "Pro pokračování prosím přijměte podmínky."
+  },
+  "error": {
+    "saveFailed": "Nepodařilo se uložit — zkuste to znovu.",
+    "savedNoEmail": "Uloženo — ale odkaz se teď nepodařilo poslat e-mailem.",
+    "unreachable": "Teď se k nám nepodařilo připojit — zkuste to znovu.",
+    "createAccountFailed": "Účet se nepodařilo vytvořit.",
+    "truckCreateFailed": "Váš účet je připravený, ale food truck se nepodařilo vytvořit. Zkuste to znovu.",
+    "truckUnreachable": "Váš účet je připravený, ale food truck se teď nepodařilo vytvořit. Zkuste to znovu.",
+    "truckNoToken": "Váš food truck je nastavený, ale teď se ho nepodařilo otevřít. Zkuste to znovu."
+  }
+}

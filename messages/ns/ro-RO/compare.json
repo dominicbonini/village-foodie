@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Comparație de costuri",
+  "title": "Comparați costurile<br></br><accent>comenzilor online</accent>",
+  "system": {
+    "title": "Primiți deja comenzi online?",
+    "yes": "Da, cu alt sistem",
+    "no": "Nu, încă nu"
+  },
+  "trucks": {
+    "title": "Câte food truck-uri aveți?",
+    "aria": "Numărul de food truck-uri"
+  },
+  "plan": {
+    "yourChoice": "Alegerea dvs.",
+    "weSuggest": "Vă recomandăm",
+    "summary": "{price} pe food truck pe lună, cu comenzi online în valoare de {allowance} incluse{fleet, plural, one {} few { pentru fiecare} other { pentru fiecare}}.",
+    "switchTo": "Treceți la planul {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} pe food truck pe lună, plus {pct} la comenzile online plătite cu cardul.} other {Fără abonament lunar — doar {pct} la comenzile online plătite cu cardul.}}",
+    "summaryNoFee": "{price} pe food truck pe lună, cu comenzi online nelimitate și fără comision HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Comenzi online pe lună, per food truck",
+    "count": "~{count, plural, one {# comandă} few {# comenzi} other {# de comenzi}}",
+    "captionNo": "O estimare aproximativă e suficientă — comenzi de tip precomandă și clienți care evită coada, nu plăți în numerar sau cu cardul la food truck.",
+    "captionYes": "Doar comenzile plasate prin pagina dumneavoastră de comandă — nu plățile în numerar sau cu cardul la food truck.",
+    "sliderAria": "Valoarea lunară a comenzilor online per food truck",
+    "overAllowance": "Comenzi online în valoare de {allowance} incluse per food truck. Pentru suma de {excess} peste această limită se percepe {pct} — <b>{over}</b> pe lună pentru fiecare.",
+    "insideAllowance": "În limita comenzilor online de {allowance} incluse — nimic în plus față de plan.",
+    "acrossFleet": "Pentru {fleet, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}: <b>{amount}</b> pe lună.",
+    "titleNo": "Cât credeți că ați încasa online, pe lună, per food truck?",
+    "feeOnly": "{pct} la fiecare comandă online plătită cu cardul — <b>{over}</b> pe lună per food truck.",
+    "noFee": "Comenzi online nelimitate incluse — nimic în plus față de plan."
+  },
+  "fee": {
+    "title": "Cât plătiți acum pe comandă?",
+    "pctLabel": "Procent",
+    "pctPlaceholder": "Comisionul dvs.",
+    "pctAria": "Comision procentual",
+    "fixedLabel": "Plus pe comandă",
+    "fixedPlaceholder": "Taxa dvs.",
+    "fixedAria": "Bani pe comandă",
+    "modeLabel": "Comisionul lor:",
+    "modeInclusive": "include procesarea cardului",
+    "modeOnTop": "se percepe în plus",
+    "onTopNote": "Procesarea cardului, de {fee}, se percepe în plus, deci plătiți de fapt <b>{pct} + {fixed}</b> în total.",
+    "inclusiveNote": "Procesarea cardului, de {fee}, este inclusă și ați plăti-o oriunde. Comisionul lor propriu este de <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Câte zile pe săptămână lucrați?",
+    "help": "Evenimente, piețe, amplasamente — orice zi în care food truck-ul iese."
+  },
+  "jump": {
+    "cost": "Vedeți cât costă ↓",
+    "saving": "Vedeți cât economisiți ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Comenzi online, precomandă și ecranul de bucătărie pentru</lead><figure>{amount}</figure><unit>pe zi de lucru</unit>",
+    "basedOn": "Calculat pentru {days, plural, one {# zi} few {# zile} other {# de zile}} pe săptămână · {monthly} pe lună{fleet, plural, one {} few { per food truck} other { per food truck}}"
+  },
+  "coffee": "Mai puțin decât o cafea.",
+  "freeMonths": "{n, plural, one {Iar prima lună este din partea noastră.} few {Iar primele # luni sunt din partea noastră.} other {Iar primele # de luni sunt din partea noastră.}}",
+  "cta": {
+    "upload": "Încărcați meniul →",
+    "uploadSave": "Încărcați meniul și economisiți {amount} →",
+    "ask": "Puneți-ne o întrebare",
+    "noCard": "Fără card la configurare"
+  },
+  "breakdown": {
+    "title": "Luna dumneavoastră, în detaliu",
+    "titleDearer": "Luna dumneavoastră cu HatchGrab",
+    "plan": "Planul {plan}",
+    "over": "{pct} pentru {excess} peste suma inclusă de {allowance}",
+    "inside": "Comenzi online în limita sumei incluse de {allowance}",
+    "total": "HatchGrab pe lună",
+    "freeMonths": "{n, plural, one {Luna 1} few {Lunile 1–#} other {Lunile 1–#}}",
+    "freeAmount": "{amount} — gratuit",
+    "acrossFleet": "Pentru {fleet, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}",
+    "perMonth": "{amount} pe lună",
+    "card": "Procesarea cardului — comisionul Stripe de {fee} pe comandă, plătit către Stripe. Ați plăti cam la fel cu un terminal de plată la food truck.",
+    "provider": "Comisionul propriu al furnizorului actual ({pct})",
+    "feeOnly": "{pct} pentru comenzi online de {excess}",
+    "noFee": "Comenzi online — nelimitate, fără comision HatchGrab"
+  },
+  "enterRate": "Introduceți cât plătiți acum ca să vedeți cât economisiți.",
+  "panel": {
+    "nowYear": "<label>Acum plătiți</label><fig>{amount}<q> pe an</q></fig>",
+    "nowMonth": "<label>Acum plătiți</label><fig>{amount}<q> pe lună</q></fig>",
+    "oursYear": "<label>Cu HatchGrab</label><fig>{amount}<q> în primul an</q></fig>",
+    "oursMonth": "<label>Cu HatchGrab</label><fig>{amount}<q> pe lună</q></fig>",
+    "acrossFleet": "pentru {fleet, plural, one {# food truck} few {# food truck-uri} other {# de food truck-uri}}"
+  },
+  "hero": {
+    "save": "<verb>Economisiți</verb><figure>{amount}</figure><sub><num>{pct}</num> mai puțin în primul an</sub>",
+    "same": "<verb>Cam la fel</verb><figure>{amount}</figure><sub><num>{pct}</num> mai mult în primul an</sub>",
+    "dearer": "<lead>Tot ce face HatchGrab, pentru</lead><figure>{amount}</figure><unit>în plus pe săptămână</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} în plus pe lună față de acum} few {{amount} în plus per food truck pe lună față de acum} other {{amount} în plus per food truck pe lună față de acum}}"
+  },
+  "anchor": {
+    "liability": "Asta înseamnă un an de asigurare de răspundere civilă.",
+    "weekendPitch": "Asta înseamnă un amplasament de weekend la un festival gastronomic.",
+    "festivalPitches": "Asta înseamnă câteva amplasamente la festivaluri.",
+    "fryer": "Asta înseamnă o friteuză și o plită noi.",
+    "counter": "Asta înseamnă renovarea completă a tejghelei de servire.",
+    "vanDeposit": "Asta înseamnă avansul pentru un al doilea food truck.",
+    "secondVan": "Asta înseamnă un al doilea food truck pe drum."
+  },
+  "year": {
+    "one": "Anul 1",
+    "two": "Anul 2",
+    "save": "Economisiți {amount}<note>({pct} mai puțin)</note>",
+    "extra": "{amount} în plus<note>({pct} mai mult)</note>",
+    "current": "Furnizorul actual <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Estimări pe baza cifrelor introduse, presupunând o comandă medie de {aov}. Procesarea cardului se aplică indiferent de furnizor. Verificați înainte de a decide.",
+    "yes": "Estimări pe baza cifrelor introduse, presupunând o comandă medie de {aov}. Procesarea cardului, de {fee} pe comandă, se aplică indiferent de furnizor, așa că este exclusă de ambele părți.",
+    "onTop": "Suma totală de la întrebarea {n} o include — comparația nu, de nicio parte.",
+    "check": "Verificați tarifele furnizorului actual înainte de a decide."
+  },
+  "intro": "Durează cam un minut. Folosiți deja un sistem? Îl comparăm. Încă nu? Vă arătăm exact cât costă.",
+  "twoYear": "În doi ani, asta înseamnă <b>{amount}</b> economisiți.",
+  "meta": {
+    "title": "Calculator de costuri — HatchGrab {country}",
+    "description": "Comparați cât vă costă acum comenzile online cu un an pe HatchGrab — o estimare într-un minut."
+  }
+}

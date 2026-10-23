@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Cześć, {name}!} other {Cześć!}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Założyciel, HatchGrab",
+  "verify": {
+    "subject": "Potwierdź swój adres e-mail",
+    "thanks": "{hasTruck, select, yes {Dziękuję za skonfigurowanie food trucka {truck} w HatchGrab.} other {Dziękuję za skonfigurowanie twojego food trucka w HatchGrab.}}",
+    "button": "Potwierdź mój adres e-mail",
+    "buttonText": "Potwierdź mój adres e-mail: {url}",
+    "why": "Tym adresem będziesz się logować i na niego trafiają powiadomienia o zamówieniach — warto więc zrobić to teraz.",
+    "next": "Gdy tylko adres zostanie potwierdzony, wyślę ci wszystko, czego potrzebujesz, żeby zacząć.",
+    "carryOn": "W międzyczasie możesz dalej konfigurować konto.",
+    "stuck": "Masz z czymś kłopot? Po prostu odpowiedz na tę wiadomość — odpisuję osobiście.",
+    "fallbackLink": "Jeśli przycisk nie działa, wklej ten link: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Witaj w HatchGrab, {name}} other {Witaj w HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Bardzo się cieszę, że mogę powitać food truck {truck} w HatchGrab.} other {Bardzo się cieszę, że mogę powitać twój food truck w HatchGrab.}}",
+    "trial": "{months, plural, one {Twój miesięczny bezpłatny okres próbny właśnie się rozpoczął — wszystkie funkcje są odblokowane.} few {Twój #-miesięczny bezpłatny okres próbny właśnie się rozpoczął — wszystkie funkcje są odblokowane.} many {Twój #-miesięczny bezpłatny okres próbny właśnie się rozpoczął — wszystkie funkcje są odblokowane.} other {Twój #-miesięczny bezpłatny okres próbny właśnie się rozpoczął — wszystkie funkcje są odblokowane.}}",
+    "setup": "Jeśli jeszcze tego nie zrobiono, konfiguracja jest prosta i zajmuje około piętnastu minut.",
+    "button": "Otwórz swój panel",
+    "bookmark": "Warto dodać do zakładek. Działa na każdym urządzeniu.",
+    "stuck": "Jeśli utkniesz, po prostu odpowiedz na tę wiadomość — odpisuję osobiście.",
+    "lookingForward": "{hasTruck, select, yes {Nie mogę się doczekać, aż food truck {truck} zacznie sprzedawać.} other {Nie mogę się doczekać, aż twój food truck zacznie sprzedawać.}}"
+  }
+}

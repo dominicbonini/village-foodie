@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "po food trucku / mjesečno",
+  "transactionFees": "Transakcijske naknade",
+  "comingSoon": "Uskoro",
+  "footnote2Masked": "Online plaćanja omogućuje Stripe Connect. Naknade platforme i obrade kartica još nisu određene i bit će potvrđene pri pokretanju.",
+  "card": {
+    "title": "Naplata i plaćanja",
+    "managed": "Naplatom upravlja HatchGrab",
+    "earlyAccess": "Tijekom ranog pristupa pakete postavljamo i prilagođavamo ručno.",
+    "planLine": "{trial, select, yes {{truck} · Paket {plan} (probno razdoblje)} other {{truck} · Paket {plan}}}"
+  },
+  "currentPlan": "Trenutačni paket",
+  "plan": {
+    "included": "Uključuje online narudžbe u iznosu od {amount} mjesečno.",
+    "includedUnlimited": "Uključene neograničene online narudžbe.",
+    "promo": "Posebna cijena.",
+    "promoUntil": "Posebna cijena do {date}.",
+    "ended": "Vaš paket {plan} istekao je {date}. Sada koristite paket {now}.",
+    "trialMonths": "Besplatno probno razdoblje: {months} mj."
+  },
+  "trialEnds": "Probno razdoblje završava {date}",
+  "yourTrialEnds": "Vaše probno razdoblje završava {date}",
+  "notStarted": {
+    "heading": "Vaše besplatno probno razdoblje još nije počelo"
+  },
+  "onTrial": "Imate sve značajke. Odaberite paket prije isteka probnog razdoblja.",
+  "onTrialNoCta": "Imate sve značajke.",
+  "noCharge": "🔒 Tijekom probnog razdoblja, koje traje do {date}, ništa vam se neće naplatiti. Naplata počinje tek kad odaberete paket i unesete podatke za plaćanje. Do tada nemate što otkazati ni platiti.",
+  "fees": "*Na online narudžbe primjenjuju se standardne naknade za obradu kartičnih plaćanja",
+  "setUpPayment": "⏱ Odaberite paket prije isteka probnog razdoblja",
+  "changeYourPlan": "Promijeni paket",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Prijelaz na paket {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Uvodimo automatsku naplatu. Ako želite prijeći odmah, pošaljite nam poruku i sve ćemo postaviti u roku od 24 sata.",
+    "mailSubject": "Prijelaz na paket {plan} — {truck}",
+    "mailBody": "Pozdrav, molim prijelaz za {truck} na paket {plan} ({price}).",
+    "email": "Pišite nam za prijelaz",
+    "cancel": "Odustani"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Költségösszevetés",
+  "title": "Hasonlítsa össze online<br></br><accent>rendelési költségeit</accent>",
+  "system": {
+    "title": "Fogad már online rendeléseket?",
+    "yes": "Igen, egy másik rendszerrel",
+    "no": "Nem, még nem"
+  },
+  "trucks": {
+    "title": "Hány food truckot üzemeltet?",
+    "aria": "Food truckok száma"
+  },
+  "plan": {
+    "yourChoice": "Az Ön választása",
+    "weSuggest": "Javaslatunk",
+    "summary": "{price} food truckonként havonta; a díj{fleet, plural, one {} other { minden food trucknál}} {allowance} értékű online rendelést tartalmaz.",
+    "switchTo": "Válassza inkább ezt: {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} food truckonként havonta, plusz {pct} jutalék az online kártyás rendelések után.} other {Nincs havidíj — csak {pct} jutalék az online kártyás rendelések után.}}",
+    "summaryNoFee": "{price} food truckonként havonta, korlátlan online rendeléssel és HatchGrab-jutalék nélkül."
+  },
+  "orders": {
+    "titleYes": "Online rendelések havonta, food truckonként",
+    "count": "~{count, plural, one {# rendelés} other {# rendelés}}",
+    "captionNo": "Elég egy durva becslés — előrendelések és a sorban állást megspóroló vevők, nem a pultnál készpénzzel vagy kártyával fizetett vásárlások.",
+    "captionYes": "Csak a rendelési oldalán leadott rendelések — nem a pultnál készpénzzel vagy kártyával fizetett vásárlások.",
+    "sliderAria": "Havi online rendelési érték food truckonként",
+    "overAllowance": "Food truckonként {allowance} értékű online rendelés benne van a díjban. A felette lévő {excess} után {pct} jutalék jár — ez food truckonként havi <b>{over}</b>.",
+    "insideAllowance": "Belefér a díjban foglalt {allowance} értékű online rendelésbe — a csomagon felül nincs más költség.",
+    "acrossFleet": "{fleet, plural, one {# food truck} other {# food truck}} esetén: havi <b>{amount}</b>.",
+    "titleNo": "Mit gondol, mennyi online bevétele lenne havonta, food truckonként?",
+    "feeOnly": "{pct} jutalék minden online kártyás rendelés után — food truckonként havi <b>{over}</b>.",
+    "noFee": "Korlátlan online rendelés a díjban — a csomagon felül nincs más költség."
+  },
+  "fee": {
+    "title": "Most mennyit fizet rendelésenként?",
+    "pctLabel": "Százalék",
+    "pctPlaceholder": "Az Ön díjtétele",
+    "pctAria": "Százalékos jutalék",
+    "fixedLabel": "Plusz rendelésenként",
+    "fixedPlaceholder": "Az Ön díja",
+    "fixedAria": "Forint rendelésenként",
+    "modeLabel": "A díjtételük:",
+    "modeInclusive": "tartalmazza a kártyás fizetés díját",
+    "modeOnTop": "kártyadíjon felül",
+    "onTopNote": "A kártyás fizetés díja ({fee}) erre még rájön, így valójában mindent összevéve <b>{pct} + {fixed}</b> díjat fizet.",
+    "inclusiveNote": "A kártyás fizetés díja ({fee}) ebben benne van, és ezt bárhol fizetné. A saját jutalékuk: <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Hetente hány napot árusít?",
+    "help": "Rendezvények, piacok, standhelyek — minden nap, amikor kint van a food truck."
+  },
+  "jump": {
+    "cost": "Nézze meg, mennyibe kerül ↓",
+    "saving": "Nézze meg, mennyit spórol ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Online rendelés, előrendelések és konyhai kijelző mindössze</lead><figure>{amount}</figure><unit>árusítási naponként</unit>",
+    "basedOn": "Heti {days, plural, one {# nap} other {# nap}} alapján · havi {monthly}{fleet, plural, one {} other { food truckonként}}"
+  },
+  "coffee": "Kevesebb, mint egy kávé.",
+  "freeMonths": "{n, plural, one {És az első hónapot mi álljuk.} other {És az első # hónapot mi álljuk.}}",
+  "cta": {
+    "upload": "Feltöltöm az étlapomat →",
+    "uploadSave": "Feltöltöm az étlapomat — megtakarítás: {amount} →",
+    "ask": "Kérdezzen tőlünk",
+    "noCard": "A beállításhoz nem kell bankkártya"
+  },
+  "breakdown": {
+    "title": "Az Ön hónapja tételesen",
+    "titleDearer": "Az Ön hónapja a HatchGrabbel",
+    "plan": "{plan} csomag",
+    "over": "{pct} jutalék a díjban foglalt {allowance} feletti {excess} után",
+    "inside": "Online rendelések a díjban foglalt {allowance} keretén belül",
+    "total": "HatchGrab havonta",
+    "freeMonths": "{n, plural, one {1. hónap} other {1–#. hónap}}",
+    "freeAmount": "{amount} — ezt mi álljuk",
+    "acrossFleet": "{fleet, plural, one {# food truck} other {# food truck}} esetén",
+    "perMonth": "havi {amount}",
+    "card": "Kártyás fizetés — a Stripe díja rendelésenként {fee}, amelyet a Stripe kap. Nagyjából ugyanennyit fizetne egy kártyaterminálon is a pultnál.",
+    "provider": "Jelenlegi szolgáltatója saját jutaléka ({pct})",
+    "feeOnly": "{pct} jutalék {excess} értékű online rendelés után",
+    "noFee": "Online rendelések — korlátlanul, HatchGrab-jutalék nélkül"
+  },
+  "enterRate": "Adja meg, mennyit fizet most, és megmutatjuk, mennyit spórol.",
+  "panel": {
+    "nowYear": "<label>Jelenleg ennyit fizet</label><fig>{amount}<q> évente</q></fig>",
+    "nowMonth": "<label>Jelenleg ennyit fizet</label><fig>{amount}<q> havonta</q></fig>",
+    "oursYear": "<label>A HatchGrabbel</label><fig>{amount}<q> az első évben</q></fig>",
+    "oursMonth": "<label>A HatchGrabbel</label><fig>{amount}<q> havonta</q></fig>",
+    "acrossFleet": "{fleet, plural, one {# food truck} other {# food truck}} esetén"
+  },
+  "hero": {
+    "save": "<verb>Ennyit spórol</verb><figure>{amount}</figure><sub><num>{pct}</num> megtakarítás az első évben</sub>",
+    "same": "<verb>Nagyjából ugyanannyi</verb><figure>{amount}</figure><sub><num>{pct}</num> többlet az első évben</sub>",
+    "dearer": "<lead>A HatchGrab minden funkciója</lead><figure>{amount}</figure><unit>heti többletköltségért</unit>",
+    "dearerSub": "{fleet, plural, one {havonta {amount} többlet a mostanihoz képest} other {food truckonként havonta {amount} többlet a mostanihoz képest}}"
+  },
+  "anchor": {
+    "liability": "Ez egy évnyi általános felelősségbiztosítás.",
+    "weekendPitch": "Ez egy hétvégi standhely egy gasztrofesztiválon.",
+    "festivalPitches": "Ez néhány fesztiválos standhely.",
+    "fryer": "Ez egy új olajsütő és sütőlap.",
+    "counter": "Ez a kiszolgálópult teljes felújítása.",
+    "vanDeposit": "Ez egy második food truck előlege.",
+    "secondVan": "Ez egy második food truck az úton."
+  },
+  "year": {
+    "one": "Első év",
+    "two": "Második év",
+    "save": "Megtakarítás: {amount}<note>(mínusz {pct})</note>",
+    "extra": "Többlet: {amount}<note>(plusz {pct})</note>",
+    "current": "Jelenlegi szolgáltató <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Becslés az Ön által megadott adatok alapján, átlagosan {aov} értékű rendeléssel számolva. A kártyás fizetés díja bármely szolgáltatónál felmerül. Döntés előtt ellenőrizze.",
+    "yes": "Becslés az Ön által megadott adatok alapján, átlagosan {aov} értékű rendeléssel számolva. A rendelésenkénti kártyás fizetési díj ({fee}) bármely szolgáltatónál felmerül, ezért egyik oldalon sem számoltunk vele.",
+    "onTop": "A teljes összeg ({n}. kérdés) tartalmazza ezt — az összehasonlítás egyik oldalon sem.",
+    "check": "Döntés előtt ellenőrizze jelenlegi szolgáltatója díjait."
+  },
+  "intro": "Körülbelül egy perc. Már használ rendszert? Összehasonlítjuk. Még nem? Pontosan megmutatjuk, mennyibe kerül.",
+  "twoYear": "Két év alatt ez <b>{amount}</b> megtakarítás.",
+  "meta": {
+    "title": "Költségkalkulátor — HatchGrab {country}",
+    "description": "Hasonlítsa össze, mennyibe kerülnek most az online rendelései, és mennyibe kerülne egy év a HatchGrabbel — becslés egy perc alatt."
+  }
+}

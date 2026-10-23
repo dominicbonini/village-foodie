@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Pagina principală HatchGrab",
+  "cta": "Încărcați meniul →",
+  "ctaShort": "Încărcați meniul",
+  "features": "Funcții",
+  "pricing": "Prețuri",
+  "logIn": "Autentificare",
+  "country": {
+    "button": "Țară: {name}. Schimbați țara",
+    "menu": "Țară"
+  }
+}

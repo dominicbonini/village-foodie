@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Pager <b>{number}</b> je kod <b>narudžbe #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Preuzeti ga za <b>{hasTarget, select, yes {narudžbu #{targetId}} other {ovu narudžbu}}</b>?",
+  "cancel": "Odustani",
+  "take": "Preuzmi pager {number}",
+  "titleBlocking": "Pager za narudžbu #{id}?",
+  "title": "Odaberite pager",
+  "subtitle": "{hasTarget, select, yes {Narudžba #{id}} other {Ova narudžba}}{hasCurrent, select, yes { · trenutačno pager {current}} other {}}",
+  "allTaken": "{n, plural, one {Svi pageri su zauzeti ({count}). Dodirnite pager kako biste ga preuzeli s druge narudžbe.} few {Sva {count} pagera su zauzeta. Dodirnite jedan kako biste ga preuzeli s druge narudžbe.} other {Svih {count} pagera je zauzeto. Dodirnite jedan kako biste ga preuzeli s druge narudžbe.}}",
+  "thisOrder": "Ova narudžba",
+  "noBuzzer": "Bez pagera",
+  "done": "Gotovo",
+  "lostTitle": "Narudžba #{id} nema pager",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}druga je narudžba preuzela isti pager dok ste bili izvan mreže. Dodijelite im drugi.",
+  "dismiss": "Odbaci",
+  "assign": "Dodijeli"
+}

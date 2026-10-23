@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Selles e-kirjas pole loobumisrida, seega ei saa seda saata. Lisa see nupuga „Insert opt-out“.",
+    "notSetUp": "Loobumislauset pole seadistatud, seega ei saa ühtegi pöördumiskirja saata. Lisa see vahekaardi „Templates“ paneelil „Signature“.",
+    "notLoaded": "Loobumislauset pole veel laaditud, seega ei saa seda saata.",
+    "unreadable": "Loobumislauset ei õnnestunud lugeda, seega midagi ei saadetud."
+  },
+  "retry": {
+    "notRebuilt": "Seda sõnumit ei õnnestunud ettevõtte reaga uuesti koostada, seega midagi ei saadetud."
+  }
+}

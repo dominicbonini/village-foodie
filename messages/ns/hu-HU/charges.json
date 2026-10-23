@@ -1,0 +1,13 @@
+{
+  "subtotal": "Részösszeg",
+  "taxFallback": "Adó",
+  "taxIncluded": "Tartalmazza: {label}",
+  "serviceFeeCustomer": "Online szolgáltatási díj",
+  "serviceFee": "Szolgáltatási díj",
+  "cardFee": "Kártyadíj",
+  "tip": "Borravaló",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Adó, díjak és borravaló} tax_tip {Adó és borravaló} fees_tip {Díjak és borravaló} fees {Díjak} other {Adó és díjak}}"
+}

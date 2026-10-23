@@ -1,0 +1,12 @@
+{
+  "guestLabel": "ZASEBNI DOGODEK",
+  "truckFallback": "Food truck",
+  "noSlugTitle": "Ta food truck še ni nastavljen za spletno naročanje.",
+  "orderingOffTitle": "Spletno naročanje ni vklopljeno",
+  "orderingOffBody": "Ta dogodek ne sprejema spletnih naročil. Naročite na mestu.",
+  "replacedTitle": "Ta povezava je bila zamenjana",
+  "replacedBody": "Ta povezava ne deluje več – food truck {truck} jo je zamenjal. Novo povezavo ali QR kodo zahtevajte od organizatorja.",
+  "madePublicBody": "Ta povezava ne deluje več – food truck {truck} je ta dogodek objavil javno. Naročite lahko na njegovi običajni strani.",
+  "unknownTitle": "Ta povezava ne deluje",
+  "unknownBody": "Ta povezava ne deluje. Preverite jo pri organizatorju ali znova skenirajte QR kodo."
+}

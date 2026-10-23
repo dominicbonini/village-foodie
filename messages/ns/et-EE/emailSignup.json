@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Tere, {name}!} other {Tere!}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Asutaja, HatchGrab",
+  "verify": {
+    "subject": "Kinnita oma e-posti aadress",
+    "thanks": "{hasTruck, select, yes {Aitäh, et seadistad HatchGrabis toiduautot {truck}.} other {Aitäh, et seadistad HatchGrabis oma toiduautot.}}",
+    "button": "Kinnita minu e-posti aadress",
+    "buttonText": "Kinnita minu e-posti aadress: {url}",
+    "why": "Selle aadressiga logid sisse ja sinna saadetakse tellimuste teated — seega tasub see kohe ära teha.",
+    "next": "Kui see on kinnitatud, saadan sulle kõik, mida alustamiseks vajad.",
+    "carryOn": "Seniks võid seadistamisega jätkata.",
+    "stuck": "Jäid millegagi hätta? Vasta lihtsalt sellele kirjale — vastan ise.",
+    "fallbackLink": "Kui nupp ei tööta, kleebi see brauserisse: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Tere tulemast HatchGrabi, {name}} other {Tere tulemast HatchGrabi}}",
+    "intro": "{hasTruck, select, yes {Mul on väga hea meel tervitada HatchGrabis toiduautot {truck}.} other {Mul on väga hea meel tervitada HatchGrabis sinu toiduautot.}}",
+    "trial": "{months, plural, one {Sinu ühekuune tasuta prooviperiood on alanud — kõik funktsioonid on avatud.} other {Sinu tasuta prooviperiood (# kuud) on alanud — kõik funktsioonid on avatud.}}",
+    "setup": "Kui sa pole seda veel teinud, on seadistamine lihtne ja võtab umbes viisteist minutit.",
+    "button": "Ava oma töölaud",
+    "bookmark": "Tasub järjehoidjatesse lisada. Töötab igas seadmes.",
+    "stuck": "Kui jääd hätta, vasta lihtsalt sellele kirjale — vastan ise.",
+    "lookingForward": "{hasTruck, select, yes {Ootan põnevusega, et toiduauto {truck} müügiga alustaks.} other {Ootan põnevusega, et sinu toiduauto müügiga alustaks.}}"
+  }
+}

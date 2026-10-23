@@ -1,0 +1,25 @@
+{
+  "heading": "Týden od {start} do {end}",
+  "daysOff": "Dnes neprodáváme",
+  "cancelled": "ZRUŠENO",
+  "placeSample": {
+    "nameTownBelow": "Hostinec U Radnice\nBrno",
+    "nameTown": "Hostinec U Radnice, Brno",
+    "nameOnly": "Hostinec U Radnice"
+  },
+  "busyWeek": {
+    "venue1": "Kulturní dům Brno",
+    "town1": "Brno",
+    "venue2": "Sportovní areál a víceúčelové hřiště TJ Sokol Jihlava",
+    "town2": "Jihlava",
+    "venue3": "Masarykovo náměstí",
+    "town3": "Zlín",
+    "venue4": "Festival jídla",
+    "town4": "Olomouc",
+    "venue5": "Hostinec U Zlatého býka",
+    "town5": "Znojmo",
+    "venue6": "Kostelní náměstí",
+    "town6": "Kroměříž"
+  },
+  "poweredBy": "Běží na HatchGrab"
+}

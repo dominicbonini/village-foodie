@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Sinu allergeenikaart",
+    "intro": "Kliendid näevad seda <b>täpselt nii, nagu sa selle kirjutad</b> — midagi ei kirjutata ümber. Kirjuta või kleebi tekst allpool või laadi üles foto/PDF ja me loeme teksti sisse, et saaksid seda kontrollida.",
+    "empty": "Allergeenikaarti veel pole.",
+    "placeholder": "nt Kõik meie kala ja friikartulid sisaldavad nisu ja piima. Fritüür on ühine toodetega, mis sisaldavad gluteeni ja pähkleid. Saadaval ka veganvalikud — küsi teenindajalt.",
+    "reading": "Pildi lugemine…",
+    "upload": "📷 Laadi üles pilt / PDF",
+    "uploadNote": "Loeme teksti sinu pildilt, et saaksid selle üle vaadata — pilti ei salvestata."
+  },
+  "cardUpload": {
+    "dishFallback": "Roog",
+    "question": "Kas sul on allergeenikaart, mida üles laadida?",
+    "perDish": "{detected, select, yes {Laadi see üles ja me kasutame seda sinu roogade allergeenide koostamiseks. Tuvastatud allergeenid on näha järgmisel lehel, kus kinnitad iga roa.} other {Laadi see üles ja me kasutame seda sinu roogade allergeenide koostamiseks.}}",
+    "cardOnly": "Laadi üles allergeenikaart, mida kliendid näevad.",
+    "yes": "Jah",
+    "no": "Ei",
+    "noProblem": "Pole probleemi — seda pole vaja. Jätka alloleva nupuga.",
+    "analysing": "Kaardi analüüsimine…",
+    "dropzone": "Lohista siia või puuduta, et valida",
+    "imageOrPdf": "Pilt või PDF",
+    "or": "või",
+    "pastePlaceholder": "Kleebi siia oma allergeenikaardi tekst…",
+    "process": "Töötle kaarti",
+    "cardRead": "Kaart loetud ✓",
+    "unmatchedHeading": "Neid ei õnnestunud automaatselt siduda — määra roale või loobu",
+    "quotedName": "„{name}“",
+    "ambiguous": "Mitmetähenduslik — sobib mitme roaga; vali õige.",
+    "assignTo": "Määra roale…",
+    "dismiss": "Loobu",
+    "blanket": "Kaardi järgi võib <b>{list}</b> esineda <b>kõigis</b> roogades. Kas lisada igale roale? (iga roa kinnitad ikkagi ise) <muted>— vaikimisi väljas</muted>",
+    "kitchenNotes": "Köögi märkmed (salvestatakse sinu allergeeniteabesse)",
+    "matchSummary": "{n, plural, =0 {Roaga seotud: {matched}.} one {Roaga seotud: {matched}. Sinu määramist vajab: {count}.} other {Roaga seotud: {matched}. Sinu määramist vajavad: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Näita vähem",
+    "showMore": "Näita rohkem",
+    "fileOnly": "Selle toiduauto jaoks on kaardifail salvestatud, kuid kokkuvõtte teksti ei salvestatud. Lugemiseks ava originaal.",
+    "viewOriginal": "Vaata originaalkaarti"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Allergeenikaarti ei õnnestunud lugeda — proovi uuesti",
+      "confirmed": "{name} — kinnitatud",
+      "undo": "Võta tagasi",
+      "saveFailed": "Salvestamine ebaõnnestus — proovi palun uuesti",
+      "imageFailed": "Seda pilti ei õnnestunud lugeda — kirjuta või kleebi oma kaart hoopis tekstina",
+      "cardRead": "{n, plural, one {Kaart loetud — seotud: {matched}, määramist vajab: {count}} other {Kaart loetud — seotud: {matched}, määramist vajavad: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Tuvastati „{generic}“, kuid see pole täpne. Vali {picks}, kui see roog sisaldab järgmist: {family} — või jäta need valimata, kui ei sisalda.",
+      "andOr": "{a} ja/või {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Kinnitatud",
+      "confirmed": "Kinnitatud",
+      "needsReview": "Vajab ülevaatust"
+    },
+    "confirm": {
+      "confirming": "Kinnitamine…",
+      "confirmed": "Kinnitatud ✓",
+      "confirm": "Kinnita",
+      "changed": "· muudetud",
+      "changedTitle": "Muudetud pärast viimast kinnitamist — kinnita uuesti"
+    },
+    "allergens": "Allergeenid",
+    "dietary": "Toitumine",
+    "uncategorised": "Kategooriata",
+    "review": {
+      "progress": "Kinnitatud {confirmed}/{total}",
+      "allConfirmed": "✓ Kõik kinnitatud",
+      "list": "Loend",
+      "table": "Tabel",
+      "detected": "Tuvastatud sinu menüüst — <b>kontrolli neid</b>. Allergeenid jäävad klientide eest peidetuks, kuni kinnitad iga roa.",
+      "viewOnly": "👁 Ainult vaatamiseks — allergeene saab kinnitada või muuta ainult omanik.",
+      "emptyTitle": "Menüüs pole tooteid",
+      "emptyBody": "Lisa esmalt menüüsse tooted, seejärel määra siin nende allergeenid.",
+      "dish": "Roog",
+      "status": "Olek"
+    },
+    "cardPanel": {
+      "reading": "Allergeeniteabe lugemine…",
+      "saved": "🛡️ Allergeenikaart salvestatud",
+      "viewOriginal": "Vaata originaalkaarti",
+      "replace": "Asenda kaart",
+      "uploadHelp": "Laadi üles oma allergeenikaart (foto/PDF) või kleebi oma allergeeniteave — meie AI struktureerib selle klientide jaoks.",
+      "add": "Lisa allergeenikaart",
+      "viewOnly": "👁 Ainult vaatamiseks — allergeenikaarti saab lisada ainult omanik.",
+      "intro": "Kliendid näevad seda kaarti menüü allergeeniteabena. Ainult kaardi režiimis jäävad roogade allergeenid peidetuks (sinu roogade andmed säilivad juhuks, kui lähed hiljem üle roapõhisele teabele)."
+    },
+    "subtitle": {
+      "choose": "Vali, kuidas kliendid allergeeniteavet näevad",
+      "card": "Lisa oma allergeenikaart",
+      "cardOptional": "Lisa allergeenikaart (valikuline)",
+      "review": "Kontrolli ja kinnita iga roog"
+    },
+    "heading": {
+      "import": "Allergeenid",
+      "standalone": "Allergeenide seadistamine"
+    },
+    "nav": {
+      "next": "Edasi →",
+      "back": "← Tagasi",
+      "skip": "Jäta praegu vahele",
+      "saving": "Salvestamine…",
+      "done": "Valmis",
+      "saveLater": "Salvesta ja lõpeta hiljem",
+      "close": "Sulge",
+      "finish": "Lõpeta",
+      "skipImport": "Jäta allergeenide seadistamine praegu vahele"
+    },
+    "hint": {
+      "skipDefers": "Vahelejätmine lükkab asja edasi — road, mida sa pole kinnitanud, jäävad klientide eest peidetuks, kuni nende allergeenid on kinnitatud.",
+      "importIncomplete": "Jätkamiseks kinnita iga roog — või vali „Jäta allergeenide seadistamine praegu vahele“."
+    }
+  }
+}

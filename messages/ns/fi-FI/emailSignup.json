@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hei {name},} other {Hei,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Perustaja, HatchGrab",
+  "verify": {
+    "subject": "Vahvista sähköpostiosoitteesi",
+    "thanks": "{hasTruck, select, yes {Kiitos, että otat ruokarekkasi {truck} käyttöön HatchGrabissa.} other {Kiitos, että otat ruokarekkasi käyttöön HatchGrabissa.}}",
+    "button": "Vahvista sähköpostiosoitteeni",
+    "buttonText": "Vahvista sähköpostiosoitteeni: {url}",
+    "why": "Tällä osoitteella kirjaudut sisään, ja tänne tulevat tilausilmoitukset — joten se kannattaa tehdä nyt.",
+    "next": "Kun osoite on vahvistettu, lähetän sinulle kaiken, mitä tarvitset alkuun pääsemiseksi.",
+    "carryOn": "Voit sillä välin jatkaa käyttöönottoa.",
+    "stuck": "Jäikö jokin mietityttämään? Vastaa tähän viestiin — vastaan näihin itse.",
+    "fallbackLink": "Jos painike ei toimi, liitä tämä selaimeen: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Tervetuloa HatchGrabiin, {name}} other {Tervetuloa HatchGrabiin}}",
+    "intro": "{hasTruck, select, yes {Olen todella iloinen voidessani toivottaa ruokarekkasi {truck} tervetulleeksi HatchGrabiin.} other {Olen todella iloinen voidessani toivottaa ruokarekkasi tervetulleeksi HatchGrabiin.}}",
+    "trial": "{months, plural, one {Yhden kuukauden ilmainen kokeilujaksosi on alkanut — kaikki ominaisuudet ovat käytössä.} other {# kuukauden ilmainen kokeilujaksosi on alkanut — kaikki ominaisuudet ovat käytössä.}}",
+    "setup": "Jos et ole vielä tehnyt sitä, käyttöönotto on suoraviivaista ja vie noin vartin.",
+    "button": "Avaa ohjauspaneeli",
+    "bookmark": "Kannattaa lisätä kirjanmerkkeihin. Toimii millä tahansa laitteella.",
+    "stuck": "Vastaa tähän viestiin, jos jäät jumiin — vastaan näihin itse.",
+    "lookingForward": "{hasTruck, select, yes {Odotan innolla, että ruokarekkasi {truck} pääsee myymään.} other {Odotan innolla, että ruokarekkasi pääsee myymään.}}"
+  }
+}

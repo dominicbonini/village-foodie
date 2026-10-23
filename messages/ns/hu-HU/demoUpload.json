@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Étlap beolvasása…",
+    "found": "Megvannak a tételek…",
+    "kitchen": "Konyha beállítása…",
+    "page": "Rendelési oldal elkészítése…",
+    "almost": "Mindjárt kész…"
+  },
+  "templateSteps": {
+    "truck": "Minta food truck elkészítése…",
+    "menu": "Étlap beállítása…",
+    "kitchen": "Konyha beállítása…",
+    "page": "Rendelési oldal elkészítése…",
+    "almost": "Mindjárt kész…"
+  },
+  "dialogLabel": "Étlap feltöltése",
+  "heading": "✨ Töltse fel az étlapját",
+  "failedHeading": "Nem sikerült beolvasni ezt az étlapot",
+  "close": "Bezárás",
+  "intro": "Egy fotó az étlaptáblájáról, egy képernyőkép, egy PDF, vagy illessze be szövegként. A mesterséges intelligenciánk beolvassa, és 60 másodpercen belül működő rendelési oldalt készít Önnek — az Ön tételeivel, az Ön áraival. Regisztráció és bankkártya nélkül.",
+  "failedIntro": "Előfordul, hogy egy fotó túl sötét, túl ferde, vagy kézzel írt. Ezt nekünk kell megoldanunk, nem Ön rontott el valamit. Néhány lehetőség:",
+  "usually": "Ez általában kevesebb mint 60 másodpercig tart.",
+  "slow": "Ez a szokásosnál tovább tart — nagy étlapoknál előfordul.",
+  "keepWaiting": "Várok tovább",
+  "sampleWhileYouWait": "Vagy nézzen körül egy minta-étlappal, amíg vár",
+  "standIn": "Ez <b>nem az Ön étlapja</b> — csak helyettesítő, hogy lássa, hogyan működik.",
+  "seeSample": "Minta-étlap megtekintése",
+  "tryAgain": "Újra",
+  "tryPhotoAgain": "Újra ezzel a fotóval",
+  "tryDifferent": "Másik fotó kipróbálása",
+  "uploadAnother": "← Másik fotó feltöltése",
+  "orSample": "Vagy nézzen körül egy minta-étlappal",
+  "orBuild": "Vagy elkészítjük Ön helyett",
+  "buildSent": "✓ Köszönjük — megkaptuk. E-mailt küldünk Önnek.",
+  "buildBody": "Adja meg az e-mail-címét, és egy valódi munkatársunk felviszi az étlapját, majd elküldi Önnek a linket.",
+  "emailPlaceholder": "nev@afoodtruckod.hu",
+  "sending": "…",
+  "send": "Küldés",
+  "noPhoto": "Nincs kéznél fotó az étlapjáról?",
+  "noPhotoBody": "Nézzen körül inkább egy minta food truckkal — a sajátját bármikor feltöltheti.",
+  "build": "Demóm elkészítése →",
+  "nothingPublished": "Semmi sincs közzétéve — csak Ön látja.",
+  "error": {
+    "somethingWrong": "Hiba történt. Kérjük, próbálja újra.",
+    "serverUnreachable": "Nem sikerült elérni a szervert. Ellenőrizze a kapcsolatot, és próbálja újra.",
+    "sendFailed": "Nem sikerült elküldeni — próbálja újra."
+  },
+  "fields": {
+    "uploadLabel": "Étlapfájl feltöltése",
+    "dropHere": "Húzza ide az étlapját",
+    "dragOrTap": "Húzza ide, vagy koppintson a kiválasztáshoz",
+    "fileTypes": "Kép vagy PDF",
+    "or": "vagy",
+    "pasteLabel": "Étlap szövegének beillesztése",
+    "pastePlaceholder": "Illessze be ide az étlapját — tételnevek, leírások, árak..."
+  }
+}

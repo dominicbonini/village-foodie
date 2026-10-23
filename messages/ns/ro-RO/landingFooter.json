@@ -1,0 +1,17 @@
+{
+  "tagline": "Mai puțin timp cu administrarea.<br></br>Mai mult timp la gătit.",
+  "features": "Funcții",
+  "pricing": "Prețuri",
+  "privacy": "Confidențialitate",
+  "terms": "Termeni",
+  "contact": "Contact",
+  "about": "Despre noi",
+  "copyright": "© {year} HatchGrab",
+  "credit": "De la creatorii <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Descărcați HatchGrab din App Store",
+    "appStoreAlt": "Descărcați din App Store",
+    "googlePlayLink": "Obțineți HatchGrab pe Google Play",
+    "googlePlayAlt": "Disponibil pe Google Play"
+  }
+}

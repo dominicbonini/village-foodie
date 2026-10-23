@@ -1,0 +1,84 @@
+{
+  "loading": "Halduskonsooli laadimine…",
+  "loadFailed": "Laadimine ebaõnnestus",
+  "requestFailed": "Ebaõnnestus",
+  "invalidToken": "Kehtetu või aegunud pääsuluba",
+  "loadFailedReason": "Seda lehte ei õnnestunud laadida: {reason}",
+  "noCountrySettings": "Selle toiduauto riigiseadeid ei õnnestunud laadida. Värskenda lehte.",
+  "noPlans": "Selle toiduauto paketti ei õnnestunud laadida. Värskenda lehte.",
+  "stale": "{hasTime, select, yes {Värskendamine ebaõnnestus. Näitame seisu, mis salvestati kell {time}. Sinu tehtud muudatused salvestatakse ikkagi.} other {Värskendamine ebaõnnestus. Näitame viimati salvestatud seisu. Sinu tehtud muudatused salvestatakse ikkagi.}}",
+  "verify": {
+    "ok": "E-post kinnitatud — aitäh.",
+    "expired": "See kinnituslink on aegunud. Võta meiega ühendust ja lahendame selle enne, kui sinu leht avalikuks läheb.",
+    "invalid": "See kinnituslink ei töötanud. Võta meiega ühendust ja lahendame selle enne, kui sinu leht avalikuks läheb."
+  },
+  "profile": {
+    "updated": "Profiil uuendatud",
+    "saveFailed": "Salvestamine ebaõnnestus",
+    "title": "Muuda profiili",
+    "name": "Nimi",
+    "namePlaceholder": "Sinu nimi",
+    "email": "E-post",
+    "cancel": "Tühista",
+    "saving": "Salvestamine…",
+    "save": "Salvesta"
+  },
+  "header": {
+    "subtitle": "Halduskonsool",
+    "ordersDashboard": "← Tellimuste töölaud"
+  },
+  "tabs": {
+    "menu": "Menüü",
+    "schedule": "Ajakava",
+    "social": "Sotsiaalmeedia",
+    "reports": "Aruanded",
+    "team": "Meeskond",
+    "settings": "Seaded",
+    "payments": "Maksed",
+    "billing": "Arveldus",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Ajakava ({count})",
+    "stripeAttention": "Stripe vajab sinu tähelepanu",
+    "allergensNotSet": "allergeenid määramata"
+  },
+  "menuSections": {
+    "label": "Menüü jaotised",
+    "items": "Tooted",
+    "capacity": "Köögi võimsus",
+    "extras": "Lisad ja lisamüük",
+    "deals": "Pakkumised"
+  },
+  "socialSections": {
+    "label": "Sotsiaalmeedia jaotised",
+    "create": "Loo postitus",
+    "designs": "Kujundused",
+    "locations": "Asukohaseaded"
+  },
+  "notices": {
+    "review": "Vaata üle →",
+    "tour": "Kas soovid kiiret ringkäiku oma töölaual?",
+    "showMeAround": "Näita mulle",
+    "dismiss": "Sulge",
+    "approval": "{count, plural, one {Leidsime sulle <b>{count}</b> ürituse — vaata see üle ja kinnita enne, kui see avalikuks läheb.} other {Leidsime sulle <b>{count}</b> üritust — vaata need üle ja kinnita enne, kui need avalikuks lähevad.}}",
+    "allergens": "<b>Allergeenid määramata</b> — kliendid ei näe allergeeniteavet enne, kui oled selle kinnitanud. Vaata iga roa allergeenid üle vahekaardil Menüü.",
+    "domainLive": "<link>{domain}</link> töötab. Vaata see üle ja anna jaotises Seaded teada, et kõik on õige.",
+    "stripe": "<b>Stripe vajab sinult midagi</b> — kaardimaksed võivad peatuda, kuni see on korda tehtud.",
+    "profileTitle": "Täienda oma profiili",
+    "missing": "Puudu: {fields}.",
+    "goToSettings": "Ava Seaded →",
+    "field": {
+      "truckName": "toiduauto nimi",
+      "cuisineType": "köögi tüüp",
+      "contactEmail": "kontakt-e-post",
+      "contactPhone": "kontakttelefon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Sul on tasuta prooviperiood} other {Sul on {months} kuu pikkune tasuta prooviperiood}}",
+    "ends": "{hasDate, select, yes {Prooviperioodi lõpp: <hl>{date}</hl>} other {Prooviperiood lõpeb <hl>peagi</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Kõik funktsioonid tasuta # kuu jooksul} other {Kõik funktsioonid tasuta # kuu jooksul}}} other {Kõik funktsioonid tasuta prooviperioodi jooksul}}",
+    "body": "{hasDate, select, yes {Prooviperioodi ajal, mis kestab kuni <b>{date}</b>, ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta. Vali pakett enne seda kuupäeva — kui sa seda ei tee, viiakse sind üle paketile {fallback} ja mõned funktsioonid lakkavad töötamast.} other {Prooviperioodi ajal ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta. Vali pakett enne prooviperioodi lõppu — kui sa seda ei tee, viiakse sind üle paketile {fallback} ja mõned funktsioonid lakkavad töötamast.}}",
+    "fees": "*Veebitellimustele kehtivad tavapärased kaardimaksete töötlustasud",
+    "upgrade": "Vali pakett siin →"
+  }
+}

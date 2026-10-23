@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Fișa dumneavoastră de alergeni",
+    "intro": "Clienții o văd <b>exact cum o scrieți</b> — nimic nu este rescris. Scrieți sau lipiți mai jos ori încărcați o fotografie/un PDF și vă extragem textul ca să-l verificați.",
+    "empty": "Încă nu există o fișă de alergeni.",
+    "placeholder": "ex. Toate preparatele noastre fish & chips conțin grâu și lapte. Friteuza este folosită și pentru produse care conțin gluten și fructe cu coajă lemnoasă. Avem opțiuni vegane — întrebați personalul.",
+    "reading": "Se citește imaginea…",
+    "upload": "📷 Încărcați imagine / PDF",
+    "uploadNote": "Citim textul din imagine ca să-l puteți verifica — imaginea nu este stocată."
+  },
+  "cardUpload": {
+    "dishFallback": "Preparat",
+    "question": "Aveți o fișă de alergeni de încărcat?",
+    "perDish": "{detected, select, yes {Încărcați-o și o folosim pentru a completa alergenii preparatelor. Alergenii detectați vor fi vizibili pe pagina următoare, unde confirmați fiecare preparat.} other {Încărcați-o și o folosim pentru a completa alergenii preparatelor.}}",
+    "cardOnly": "Încărcați fișa de alergeni pe care o vor vedea clienții.",
+    "yes": "Da",
+    "no": "Nu",
+    "noProblem": "Nicio problemă — nu aveți nevoie de una. Continuați cu butonul de mai jos.",
+    "analysing": "Se analizează fișa…",
+    "dropzone": "Trageți și plasați sau atingeți pentru a alege",
+    "imageOrPdf": "Imagine sau PDF",
+    "or": "sau",
+    "pastePlaceholder": "Lipiți aici textul fișei de alergeni…",
+    "process": "Procesați fișa",
+    "cardRead": "Fișă citită ✓",
+    "unmatchedHeading": "Nu le-am putut asocia automat — alocați-le sau ignorați-le",
+    "quotedName": "„{name}”",
+    "ambiguous": "Ambiguu — se potrivește cu mai multe preparate; alegeți-l pe cel corect.",
+    "assignTo": "Alocați unui preparat…",
+    "dismiss": "Ignorați",
+    "blanket": "Fișa spune că <b>{list}</b> pot fi prezenți în <b>toate</b> preparatele. Îi adăugați la fiecare preparat? (veți confirma totuși fiecare preparat) <muted>— dezactivat implicit</muted>",
+    "kitchenNotes": "Note de bucătărie (salvate în informațiile despre alergeni)",
+    "matchSummary": "{n, plural, =0 {Asociate cu un preparat: {matched}.} one {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.} few {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.} other {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Afișați mai puțin",
+    "showMore": "Afișați mai mult",
+    "fileOnly": "Pentru acest food truck este salvat un fișier cu fișa, dar nu s-a stocat niciun text rezumat. Deschideți originalul pentru a-l citi.",
+    "viewOriginal": "Vedeți fișa originală"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Fișa de alergeni nu a putut fi citită — încercați din nou",
+      "confirmed": "{name} confirmat",
+      "undo": "Anulați",
+      "saveFailed": "Nu s-a putut salva — vă rugăm să încercați din nou",
+      "imageFailed": "Imaginea nu a putut fi citită — scrieți sau lipiți fișa în schimb",
+      "cardRead": "{n, plural, one {Fișă citită — asociate: {matched}, de alocat: {count}} few {Fișă citită — asociate: {matched}, de alocat: {count}} other {Fișă citită — asociate: {matched}, de alocat: {count}}}"
+    },
+    "genericWarn": {
+      "text": "„{generic}” a fost detectat, dar nu este specific. Alegeți {picks} dacă acest preparat conține {family} — sau lăsați-le nebifate dacă nu.",
+      "andOr": "{a} și/sau {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confirmat",
+      "confirmed": "Confirmat",
+      "needsReview": "De verificat"
+    },
+    "confirm": {
+      "confirming": "Se confirmă…",
+      "confirmed": "Confirmat ✓",
+      "confirm": "Confirmați",
+      "changed": "· modificat",
+      "changedTitle": "Modificat de la ultima confirmare — confirmați din nou"
+    },
+    "allergens": "Alergeni",
+    "dietary": "Regim alimentar",
+    "uncategorised": "Fără categorie",
+    "review": {
+      "progress": "Confirmate: {confirmed} din {total}",
+      "allConfirmed": "✓ Toate confirmate",
+      "list": "Listă",
+      "table": "Tabel",
+      "detected": "Detectați din meniu — <b>verificați-i</b>. Alergenii rămân ascunși clienților până confirmați fiecare preparat.",
+      "viewOnly": "👁 Doar vizualizare — doar proprietarul poate confirma sau modifica alergenii.",
+      "emptyTitle": "Niciun produs în meniu",
+      "emptyBody": "Adăugați mai întâi produse în meniu, apoi setați-le alergenii aici.",
+      "dish": "Preparat",
+      "status": "Stare"
+    },
+    "cardPanel": {
+      "reading": "Se citesc informațiile despre alergeni…",
+      "saved": "🛡️ Fișa de alergeni a fost salvată",
+      "viewOriginal": "Vedeți fișa originală",
+      "replace": "Înlocuiți fișa",
+      "uploadHelp": "Încărcați fișa de alergeni (fotografie/PDF) sau lipiți informațiile despre alergeni — AI-ul nostru le structurează pentru clienți.",
+      "add": "Adăugați fișa de alergeni",
+      "viewOnly": "👁 Doar vizualizare — doar proprietarul poate adăuga fișa de alergeni.",
+      "intro": "Clienții vor vedea această fișă ca referință pentru alergenii din meniu. În modul doar cu fișă, alergenii pe preparat rămân ascunși (datele preparatelor sunt păstrate, în caz că treceți mai târziu la alergeni pe preparat)."
+    },
+    "subtitle": {
+      "choose": "Alegeți cum văd clienții informațiile despre alergeni",
+      "card": "Adăugați fișa de alergeni",
+      "cardOptional": "Adăugați o fișă de alergeni (opțional)",
+      "review": "Verificați și confirmați fiecare preparat"
+    },
+    "heading": {
+      "import": "Alergeni",
+      "standalone": "Configurarea alergenilor"
+    },
+    "nav": {
+      "next": "Înainte →",
+      "back": "← Înapoi",
+      "skip": "Omiteți deocamdată",
+      "saving": "Se salvează…",
+      "done": "Gata",
+      "saveLater": "Salvați și terminați mai târziu",
+      "close": "Închideți",
+      "finish": "Finalizați",
+      "skipImport": "Omiteți deocamdată configurarea alergenilor"
+    },
+    "hint": {
+      "skipDefers": "Omiterea doar amână pasul — preparatele neconfirmate rămân ascunse clienților până când le sunt confirmați alergenii.",
+      "importIncomplete": "Confirmați fiecare preparat pentru a continua — sau „Omiteți deocamdată configurarea alergenilor”."
+    }
+  }
+}

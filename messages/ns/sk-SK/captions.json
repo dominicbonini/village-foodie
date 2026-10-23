@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Dátumy týždňa",
+    "dayList": "Zoznam dní",
+    "place": "Miesto",
+    "venue": "Podnik",
+    "area": "Obec",
+    "dayDate": "Deň a dátum",
+    "times": "Časy",
+    "orderLink": "Odkaz na objednávku",
+    "locationTag": "Označenie miesta"
+  },
+  "weekHeader": "{truck} — kde nás nájdete tento týždeň:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ZRUŠENÉ, prepáčte",
+  "noDates": "Tento týždeň žiadne termíny — čoskoro sa sem znova pozrite.",
+  "orderAhead": "Objednajte si vopred: {url}",
+  "orderAheadTagged": "Objednajte si vopred: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Prepáčte — {when} nebudeme môcť prísť na miesto {where}.",
+  "cancelledApology": "Ospravedlňujeme sa všetkým, ktorí plánovali prísť. Čoskoro sa vrátime.",
+  "when": {
+    "today": "dnes",
+    "tonight": "dnes večer",
+    "tomorrow": "zajtra",
+    "dated": "dňa {date}"
+  }
+}

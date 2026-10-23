@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Novo naročilo #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Prejeto novo naročilo",
+    "from": "<b>Naročilo #{id}</b>, stranka: <b>{name}</b>",
+    "collection": "Čas prevzema: {time}",
+    "asap": "Brez določenega časa — čim prej",
+    "total": "Skupaj",
+    "notes": "<b>Opombe:</b> {notes}",
+    "autoConfirmed": "Samodejno potrjeno — ni treba ukrepati.",
+    "confirmPrompt": "Prijavite se v nadzorno ploščo HatchGrab, da to naročilo potrdite ali zavrnete.",
+    "text": "Novo naročilo #{id}, stranka: {name}{withSlot, select, yes {, čas prevzema: {slot}} other {}}{withVenue, select, yes {, lokacija: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Skupaj {total}.{withNotes, select, yes { Opombe: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}: najdeni novi dogodki — prosimo, preglejte jih",
+    "hi": "Pozdravljeni,",
+    "found": "V vašem urniku smo našli nove dogodke, ki jih morate odobriti, preden bodo vidni strankam: <b>{n, plural, one {{count} nov dogodek} two {{count} nova dogodka} few {{count} novi dogodki} other {{count} novih dogodkov}}</b>.",
+    "listHeading": "Najdeni dogodki:",
+    "approve": "Ko jih odobrite v zavihku Urnik, bodo objavljeni na zemljevidu, vaša stran za naročanje pa bo pripravljena za prednaročila.",
+    "cta": "Preglejte svoj urnik →",
+    "signoff": "— Ekipa HatchGrab · hatchgrab.com",
+    "unknownVenue": "Neznana lokacija",
+    "text": "Pozdravljeni,\n\nv vašem urniku smo našli nove dogodke, ki jih morate odobriti: {n, plural, one {{count} nov dogodek} two {{count} nova dogodka} few {{count} novi dogodki} other {{count} novih dogodkov}}.\n\n{list}\n\nPreglejte jih tukaj: {url}\n\nKo jih odobrite, bodo objavljeni na zemljevidu.\n\n— Ekipa HatchGrab"
+  }
+}

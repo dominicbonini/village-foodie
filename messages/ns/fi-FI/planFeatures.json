@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Näkyvyys löytökartalla"
+    },
+    "web_dashboard": {
+      "name": "Selainpohjainen ohjauspaneeli"
+    },
+    "qr_code": {
+      "name": "QR-koodi"
+    },
+    "schedule_import": {
+      "name": "Aikataulun automaattinen tuonti"
+    },
+    "meal_deals_upsells": {
+      "name": "Ateriat ja lisämyynti"
+    },
+    "walkup_orders": {
+      "name": "Tilausten käsittely paikan päällä"
+    },
+    "sold_out_toggle": {
+      "name": "Pikamerkintä loppuunmyydyksi"
+    },
+    "kitchen_app": {
+      "name": "Keittiösovellus iPhonelle, iPadille ja Androidille"
+    },
+    "offline_protection": {
+      "name": "Tilausten suojaus yhteyskatkoissa"
+    },
+    "online_payments": {
+      "name": "Verkkomaksut"
+    },
+    "advance_preordering": {
+      "name": "Ennakkotilaukset"
+    },
+    "preorder_deadline": {
+      "name": "Ennakkotilausten takaraja"
+    },
+    "time_slot_selection": {
+      "name": "Asiakas valitsee aikaikkunan"
+    },
+    "kitchen_capacity": {
+      "name": "Keittiön kapasiteetin hallinta"
+    },
+    "stock_countdown": {
+      "name": "Automaattinen varastolaskuri"
+    },
+    "auto_accept": {
+      "name": "Verkkotilausten automaattinen hyväksyntä"
+    },
+    "branded_qr_code": {
+      "name": "QR-koodi omalla logollasi"
+    },
+    "private_events": {
+      "name": "Yksityistilaisuudet"
+    },
+    "social_media_posts": {
+      "name": "Somejulkaisut"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsAppin automaattiset vastaukset"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messengerin ja Instagramin automaattiset vastaukset"
+    },
+    "tap_to_pay": {
+      "name": "Maksujen vastaanotto puhelimella"
+    },
+    "advanced_reporting": {
+      "name": "Laaja raportointi"
+    },
+    "sms_order_alerts": {
+      "name": "Tilausilmoitukset tekstiviestillä"
+    },
+    "multi_device_kitchen": {
+      "name": "Keittiön synkronointi usealle laitteelle"
+    },
+    "multi_user_access": {
+      "name": "Useiden käyttäjien käyttöoikeudet"
+    },
+    "embed_schedule": {
+      "name": "Aikataulusivu omille verkkosivuillesi"
+    },
+    "event_types": {
+      "name": "Omat tapahtumatyypit ja hinnat"
+    },
+    "buzzer_tracking": {
+      "name": "Summereiden seuranta"
+    },
+    "ticket_printing": {
+      "name": "Keittiölappujen tulostus"
+    },
+    "customer_display": {
+      "name": "Asiakasnäyttö"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitaaliset kanta-asiakasleimakortit"
+    }
+  },
+  "cardRegionOnline": "tavalliset {region}",
+  "cardRegion": {
+    "UKcards": "Ison-Britannian kortit",
+    "EEAcards": "ETA-alueen kortit",
+    "UScards": "Yhdysvaltain kortit",
+    "Australiancards": "Australian kortit",
+    "NewZealandcards": "Uuden-Seelannin kortit",
+    "Canadiancards": "Kanadan kortit",
+    "Swisscards": "sveitsiläiset kortit"
+  },
+  "perMonth": {
+    "mo": "{amount}/kk",
+    "month": "{amount}/kuukausi"
+  },
+  "priceWord": {
+    "free": "Ilmainen",
+    "freeTrial": "Ilmainen kokeilujakso",
+    "lifetime": "Elinikäinen",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Maksu noudettaessa",
+    "unlimited": "Rajaton",
+    "none": "—",
+    "masked": "Tarkentuu"
+  },
+  "cell": {
+    "included": "Sisältyy"
+  }
+}

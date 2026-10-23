@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} aikaikkuna} other {{count} aikaikkunaa}} yli kapasiteetin — tarkista",
+  "batchOver": "{cat}: eräkoko ylittyy — {count} kpl klo {slot} ({per} / erä)",
+  "eventStartOver": "Yli kapasiteetin tapahtuman alussa — {n, plural, one {{count} tuote} other {{count} tuotetta}} klo {slot}",
+  "kitchenOver": "Keittiö yli kapasiteetin — {n, plural, one {{count} tuote} other {{count} tuotetta}} valmisteilla klo {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} tuote} other {{count} tuotetta}}",
+  "placedAnyway": "Lisätty silti: {list}",
+  "placedItem": "#{id} klo {slot}",
+  "orphans": "{times} yli kapasiteetin — ei tilauksia, joihin se voitaisiin kohdistaa",
+  "dismiss": "Sulje",
+  "kitchenCapacity": "Keittiön kapasiteetti",
+  "overCapacity": "Yli kapasiteetin",
+  "wakeUnsupported": "Tämä laite ei voi pitää näyttöä päällä.",
+  "wakeInsecure": "Näyttöä ei voi pitää päällä tästä osoitteesta.",
+  "wakeRetry": "Pidä näyttö päällä — yritä uudelleen napauttamalla",
+  "wakeAcquire": "Pidä näyttö päällä",
+  "degraded": {
+    "serverError": "Palvelin ei voinut ladata tilauksia{hasStatus, select, yes { (virhe {status})} other {}}. Näytetään tilaukset (tilanne {at}). Uusia tilauksia voi puuttua.",
+    "unreachable": "Palvelimeen ei saada yhteyttä. Näytetään tilaukset (tilanne {at}). Uusia tilauksia voi puuttua."
+  }
+}

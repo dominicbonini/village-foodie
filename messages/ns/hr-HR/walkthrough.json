@@ -1,0 +1,31 @@
+{
+  "intro": "U Upravljanju postavljate svoj food truck i pratite kako posluje. Na nadzornoj ploči primate narudžbe i vodite svaki događaj dok traje.",
+  "ariaLabel": "Vodič kroz nadzornu ploču",
+  "step": "{current} od {total}",
+  "skip": "Preskoči",
+  "back": "← Natrag",
+  "next": "Dalje →",
+  "done": "Gotovo",
+  "stops": {
+    "menu": {
+      "title": "Jelovnik",
+      "body": "Vaša jela, cijene i alergeni. Sve što ovdje promijenite odmah je vidljivo."
+    },
+    "schedule": {
+      "title": "Raspored",
+      "body": "Gdje i kada prodajete. Dodajte ovdje događaj i kupci mogu naručivati za njega."
+    },
+    "build": {
+      "title": "Meniji te Dodaci i dodatna ponuda",
+      "body": "Meniji, dodatna ponuda, prilagodbe i kapacitet kuhinje nalaze se u kartici Jelovnik – slobodno istražite."
+    },
+    "settings": {
+      "title": "Postavke",
+      "body": "Podaci o vašem food trucku i načini plaćanja za kupce."
+    },
+    "billing": {
+      "title": "Naplata",
+      "body": "Ovdje su podaci o vašem paketu, naplati i značajkama."
+    }
+  }
+}

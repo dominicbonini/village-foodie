@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Asistență",
+    "description": "Primiți ajutor cu HatchGrab. Trimiteți-ne un mesaj și vă răspundem prin e-mail."
+  },
+  "logIn": "Autentificare",
+  "eyebrow": "Asistență",
+  "title": "Cu ce vă putem ajuta?",
+  "lede": "Ceva nu funcționează sau aveți o întrebare despre cont? Ne puteți contacta în două moduri — în ambele cazuri vă răspundem prin e-mail.",
+  "emailUs": "Scrieți-ne un e-mail",
+  "formHeading": "Sau completați formularul de mai jos",
+  "loadingForm": "Se încarcă formularul…",
+  "formTitle": "Contactați asistența HatchGrab",
+  "privacy": "Confidențialitate",
+  "terms": "Termeni",
+  "about": "Despre noi",
+  "copyright": "© {year} HatchGrab"
+}

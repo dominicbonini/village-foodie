@@ -1,0 +1,25 @@
+{
+  "heading": "Nedēļa no {start} līdz {end}",
+  "daysOff": "Šodien nestrādājam",
+  "cancelled": "ATCELTS",
+  "placeSample": {
+    "nameTownBelow": "Krogs pie Rātsnama\nLiepāja",
+    "nameTown": "Krogs pie Rātsnama, Liepāja",
+    "nameOnly": "Krogs pie Rātsnama"
+  },
+  "busyWeek": {
+    "venue1": "Liepājas tautas nams",
+    "town1": "Liepāja",
+    "venue2": "Tukuma pilsētas stadions un bērnu rotaļu laukums",
+    "town2": "Tukums",
+    "venue3": "Tirgus laukums",
+    "town3": "Kuldīga",
+    "venue4": "Ēdienu festivāls",
+    "town4": "Ventspils",
+    "venue5": "Krodziņš “Pie Bulļa”",
+    "town5": "Talsi",
+    "venue6": "Baznīcas laukums",
+    "town6": "Cēsis"
+  },
+  "poweredBy": "Darbina HatchGrab"
+}

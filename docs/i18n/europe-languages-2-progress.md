@@ -30,17 +30,26 @@ Scratch folder (translation parts, checkers, captures):
 | Stage | Status | Notes |
 |---|---|---|
 | 0 · fixes from europe-languages-1 | done | 0.1 de-DE/de-AT card button without amount (docs/i18n/placeholder-drops.json lets translation-check accept exactly that); de-CH/LI keep it · 0.2 fr placeOrder « Commander avec obligation de paiement » (+ busyNotice, which quotes it) · 0.3 phone placeholder de +49, AT +43, CH +41, LI +423, sv +46, nb +47 (fr held — see above) · 0.4 sv "abonnemang" (7 strings), da "oversigt" (28) · 0.6 add-order-refresh-inputs: not the time of day (fake 08:18 clock passes); virtual clock removes the wall-clock dependency; 24-busy-loop load did not reproduce the old failure either (old and new both pass twice) · also: translation-check now enforces CLDR plural categories; fixed 19 missing categories in 8 built languages (3 real grammar bugs) |
-| 1 · Polish (pl-PL) | translating | parts 03, 05–10 done; 01, 02, 04 running |
-| 2 · Czech (cs-CZ) | translating | parts 03, 05–10 done; 01, 02 running; 04 queued |
-| 3 · Slovak (sk-SK) | translating | parts 03, 05–08, 10 done; 09, 01 running; 02, 04 queued |
-| 4 · Hungarian (hu-HU) | translating | 05, 07 done; 03, 06, 08–10 running |
-| 5 · Romanian (ro-RO) | translating | 05, 07 done; 03, 06, 08–10 running |
-| 6 · Croatian (hr-HR) | translating | 03, 05, 06 running |
-| 7 · Slovenian (sl-SI) | todo | |
-| 8 · Finnish (fi-FI) | todo | |
-| 9 · Estonian (et-EE) | todo | |
-| 10 · Latvian (lv-LV) | todo | |
-| 11 · Lithuanian (lt-LT) | todo | |
+| 1 · Polish (pl-PL) | translated · merged · consistency done · 0 structural | checks pending |
+| 2 · Czech (cs-CZ) | translated · merged · consistency done · 0 structural | checks pending |
+| 3 · Slovak (sk-SK) | translated · merged · consistency done · 0 structural | checks pending |
+| 4 · Hungarian (hu-HU) | translated · merged · consistency done · 0 structural | checks pending |
+| 5 · Romanian (ro-RO) | translated · merged · consistency done · 0 structural | checks pending |
+| 6 · Croatian (hr-HR) | translated · merged · consistency done · 0 structural | checks pending |
+| 7 · Slovenian (sl-SI) | translated · merged · consistency done · 0 structural | checks pending |
+| 8 · Finnish (fi-FI) | translated · merged · 0 structural | consistency pass running |
+| 9 · Estonian (et-EE) | translating | 01–05, 07 done; 06, 08–10 running |
+| 10 · Latvian (lv-LV) | translating | 01–10 running |
+| 11 · Lithuanian (lt-LT) | translating | 01–05 running |
 | 12 · Greek (el-GR, el-CY) | todo | |
 | 13 · Bulgarian (bg-BG) | todo | |
 | Final | todo | |
+
+## Run log
+- 23 Oct, ~11:00: a usage limit stopped all 20 running translators (pl/cs/sk/hu/ro 01·02·04, hr 01·02·04·07·08); each was
+  resumed from its own transcript after the reset — nothing redone. Still queued: hr 09·10; sl, fi, et, lv, lt, el, bg (all ten
+  parts each). Prompts: `node <scratch>/genprompt.cjs <lang> <NN>`.
+- europe-languages-1.cjs now lists the 13 new languages (button, plans, WhatsApp safety/plain questions) and reads 20261038 too.
+- Consistency pass per language (CONSISTENCY.md in scratch): one agent unifies tab/button/term names across the ten parts
+  in messages/<locale>.json + docs/i18n/back/<locale>.json; the main session runs split-messages after.
+- "Insert opt-out", "Templates", "Signature" are English-only admin labels (components/admin/*): every new language quotes them in English.

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Hiba történt",
+    "previewFailed": "Nem sikerült elkészíteni az előnézetet",
+    "loadFailed": "Nem sikerült betölteni",
+    "tooBig": "A kép mérete {size, number, ::.0 group-off} MB. A felső határ 10 MB.",
+    "wrongType": "Kérjük, PNG- vagy JPG-fájlt válasszon.",
+    "uploadIncomplete": "A feltöltés nem fejeződött be",
+    "uploadFailed": "A feltöltés sikertelen",
+    "saveFailed": "Nem sikerült menteni",
+    "buildFailed": "Nem sikerült elkészíteni a bejegyzést",
+    "copyFailed": "Nem sikerült másolni — jelölje ki a szöveget, és másolja ki kézzel."
+  },
+  "loading": "Betöltés…",
+  "missingTable": {
+    "title": "A heti bejegyzéshez adatbázis-frissítés szükséges",
+    "body": "A dizájnok táblája még nem jött létre. Amint a migráció lefutott, ez a képernyő működni fog."
+  },
+  "kind": {
+    "label": "Melyik dizájn",
+    "event": "Egy esemény",
+    "week": "Heti"
+  },
+  "setup": {
+    "title": "Heti bejegyzés beállítása",
+    "intro": "Töltse fel a már meglévő heti menetrendgrafikája üres változatát — ugyanazt a dizájnt, a saját szövegdobozai nélkül. A HatchGrab a menetrendje alapján tölti ki a hetet.",
+    "canvaTitle": "Üres változat exportálása a Canvából",
+    "canvaStep1": "Nyissa meg a szokásos heti menetrendgrafikáját.",
+    "canvaStep2": "Törölje a dátumokat, helyszíneket és időpontokat tartalmazó szövegdobozokat — a megtartandó hátteret és címeket hagyja meg.",
+    "canvaStep3": "Megosztás › Letöltés › PNG.",
+    "uploading": "Feltöltés…",
+    "upload": "Üres kép feltöltése",
+    "uploadHint": "PNG vagy JPG, legfeljebb 10 MB, a rövidebb oldalon legalább {px} px.",
+    "phoneTip": "Számítógépen vagy iPaden a legjobb — telefonon a dobozok túl kicsik a húzáshoz.",
+    "designName": "Heti bejegyzés dizájnja",
+    "backDesigns": "‹ Dizájnok",
+    "back": "‹ Vissza",
+    "pictureNote": "Az Ön képe, dátum és helyszín nélkül. Ezeket mi tesszük rá.",
+    "saved": "Dizájn mentve."
+  },
+  "week": {
+    "this": "Ez a hét",
+    "next": "Jövő hét"
+  },
+  "post": {
+    "title": "Az Ön heti bejegyzése",
+    "editDesign": "Dizájn szerkesztése",
+    "weekOf": "Hét kezdete: {date}",
+    "imageAlt": "Az Ön heti bejegyzése",
+    "building": "Bejegyzés készítése…",
+    "updating": "Frissítés…",
+    "eventsTitle": "A hét eseményei",
+    "noEvents": "Ezen a héten nincs esemény.",
+    "eventDateCancelled": "{date} · lemondva",
+    "showCancelled": "Lemondott események megjelenítése",
+    "showPrivate": "Privát események megjelenítése",
+    "privateHint": "„Privát esemény” felirattal jelennek meg, dátummal és időpontokkal — a helyszín soha nem látszik.",
+    "noteTitle": "Megjegyzés",
+    "notePlaceholder": "pl. Előrendelés helyszíni átvétellel",
+    "noteHint": "Megjelenik a bejegyzés szövegében, és a megjegyzésdobozban is, ha elhelyezett egyet.",
+    "captionTitle": "Bejegyzés szövege az oldalához",
+    "perEventTitle": "Bejegyzés eseményenként",
+    "nothingToPost": "Ezen a héten nincs mit közzétenni.",
+    "textCopied": "Szöveg kimásolva.",
+    "copyText": "Szöveg másolása",
+    "image": "Kép",
+    "share": "Megosztás",
+    "noOrderLink": "Még nincs rendelési link — adja meg a food truck webcímét a Beállításokban."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "h1": "Wszystko, czego potrzebujesz do obsługi, w każdym planie.",
+  "lede": "Zamówienia, zamówienia z wyprzedzeniem, wydajność kuchni i ekran kuchenny są w każdym planie.{hasUpgrades, select, yes { {plans} dodają {features} oraz niższe opłaty.} other {}}",
+  "perMonth": "{price} / miesiąc",
+  "group": {
+    "pay": "Ile płacisz",
+    "run": "Obsługa sprzedaży",
+    "online": "Zamówienia online",
+    "marketing": "Marketing i automatyzacja"
+  },
+  "pay": {
+    "included": "Zamówienia online w cenie (miesięcznie)",
+    "fee": "Prowizja HatchGrab od zamówień online opłaconych kartą*",
+    "walkUp": "Zamówienia na miejscu"
+  },
+  "cell": {
+    "unlimited": "Bez limitu",
+    "free": "Bez opłat",
+    "feeAbove": "<b>{fee}</b> powyżej {included}",
+    "yes": "W cenie",
+    "none": "Niedostępne",
+    "comingSoon": "Wkrótce"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "posty w mediach społecznościowych",
+    "event_types": "własne ceny na wydarzenia"
+  },
+  "meta": {
+    "description": "Wszystkie funkcje HatchGrab w każdym planie, obok siebie — {plans}, z opłatami i limitami.{months, plural, =0 {} one { Przez pierwszy miesiąc masz dostęp do wszystkiego.} few { Przez pierwsze # miesiące masz dostęp do wszystkiego.} many { Przez pierwsze # miesięcy masz dostęp do wszystkiego.} other { Przez pierwsze # miesięcy masz dostęp do wszystkiego.}}"
+  },
+  "notes": {
+    "whatsapp": "Automatyczne odpowiedzi WhatsApp wymagają konta WhatsApp Business. Meta może pobierać opłaty za niektóre wiadomości; odpowiedzi są generowane automatycznie.",
+    "printing": "Drukowanie bonów kuchennych wymaga zgodnej drukarki Bluetooth lub przewodowej (brak w zestawie)."
+  }
+}

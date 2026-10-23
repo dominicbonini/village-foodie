@@ -1,0 +1,83 @@
+{
+  "title": "Tapahtumatyypit",
+  "newTypeButton": "+ Uusi tapahtumatyyppi",
+  "close": "Sulje",
+  "loading": "Ladataan…",
+  "missingTitle": "Tapahtumatyypit eivät ole vielä käytössä.",
+  "missingBody": "Tämän ominaisuuden tietokantapäivitystä ei ole vielä tehty. Mikään ei ole rikki — jokainen tapahtuma käyttää tavallisia asetuksiasi.",
+  "column": "Sarake",
+  "vanGone": "Tätä ruokarekkaa ei enää ole.",
+  "typeGone": "Tätä tyyppiä ei enää ole.",
+  "standard": "Vakio",
+  "standardHeading": "VAKIO",
+  "moreFor": "Lisää: {name}",
+  "rename": "Nimeä uudelleen",
+  "moveLeft": "Siirrä vasemmalle",
+  "moveRight": "Siirrä oikealle",
+  "delete": "Poista",
+  "sections": {
+    "vans": "RUOKAREKAT",
+    "prices": "HINNAT",
+    "itemPrices": "TUOTEHINNAT",
+    "service": "PALVELU"
+  },
+  "labelFor": "{label} – {name}",
+  "intervalEvery": "{mins} min välein",
+  "noTypes": "Sinulla ei ole vielä tapahtumatyyppejä, joten jokainen tapahtuma käyttää tavallisia asetuksiasi.",
+  "renameTitle": "Nimeä tämä tyyppi uudelleen",
+  "name": "Nimi",
+  "cancel": "Peruuta",
+  "save": "Tallenna",
+  "copyVanOne": "Kopioi ruokarekan 1 asetukset",
+  "thisType": "tämä tyyppi",
+  "matchTitle": "Asetetaanko ”{name}” samaksi kuin Vakio?",
+  "matchKeeps": "Yksittäisen tapahtuman ohjauspaneelissa tekemäsi muutokset säilyvät ennallaan, eikä tämän tyypin hintoja muuteta.",
+  "matchWillUse": "Käyttöön tulee: {summary}",
+  "deleteTitle": "Poistetaanko ”{name}”?",
+  "deleteBody": "{n, plural, =0 {Mikään tuleva tapahtuma ei käytä tyyppiä ”{name}”.} one {{count} tuleva tapahtuma käyttää tyyppiä ”{name}”. Se palaa tyyppiin Vakio.} other {{count} tulevaa tapahtumaa käyttää tyyppiä ”{name}”. Ne palaavat tyyppiin Vakio.}} Yksittäiseen tapahtumaan tekemäsi muutokset säilyvät ennallaan.",
+  "keep": "Säilytä",
+  "phone": {
+    "standardTag": "Vakio",
+    "defaultTag": "oletus",
+    "vanSetup": "Tämän ruokarekan tavalliset asetukset — käytössä jokaisessa tapahtumassa, jolla ei ole tyyppiä.",
+    "standardSetup": "Tavalliset asetuksesi — käytössä jokaisessa tapahtumassa, jolla ei ole tyyppiä.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} tuleva tapahtuma} other {{upcomingCount} tulevaa tapahtumaa}} · {changed, plural, =0 {ei vielä muutoksia} one {{changedCount}/{total} muutettu} other {{changedCount}/{total} muutettu}}",
+    "noMenuItems": "Ruokalistalla ei ole vielä tuotteita — lisää niitä kohdassa Ruokalista › Tuotteet."
+  },
+  "newType": {
+    "title": "Uusi tapahtumatyyppi",
+    "namePlaceholder": "esim. Koulun kevätjuhla",
+    "help": "Napauta nimeä tai kirjoita oma. Tyyppi alkaa Vakion kopiona, eikä Vakion myöhempi muuttaminen muuta sitä. Voit muuttaa mitä tahansa jälkikäteen.",
+    "create": "Luo",
+    "chips": {
+      "festival": "Festivaali",
+      "pub": "Pubi",
+      "market": "Tori",
+      "privateHire": "Ruokarekan vuokraus"
+    }
+  },
+  "select": {
+    "label": "Tapahtumatyyppi",
+    "usual": "{name} on tavallinen tälle paikalle."
+  },
+  "summary": {
+    "normalSetup": "Tavalliset asetuksesi",
+    "sameAsStandard": "Sama kuin Vakio",
+    "buzzersOn": "summerit käytössä",
+    "buzzersOff": "summerit pois",
+    "takeCashOn": "käteinen käytössä",
+    "takeCashOff": "käteinen pois",
+    "markReadyOn": "valmiiksi merkitseminen käytössä",
+    "markReadyOff": "valmiiksi merkitseminen pois",
+    "collectionEvery": "nouto {mins} min välein",
+    "offlineOff": "offline-suojaus pois",
+    "offlineKeepTaking": "offline: tilauksia otetaan edelleen",
+    "offlinePause": "offline: tilaaminen keskeytetään"
+  },
+  "errors": {
+    "somethingWentWrong": "Jokin meni vikaan",
+    "couldNotLoad": "Lataus epäonnistui",
+    "couldNotSave": "Tallennus epäonnistui",
+    "noVans": "Tällä yrityksellä ei ole muutettavia ruokarekkoja."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "close": "Bezárás",
+  "cancel": "Mégse",
+  "selectReason": "Válasszon okot",
+  "reject": {
+    "title": "Elutasítja ezt a rendelést: #{orderId}?",
+    "reasonLabel": "Indok — kötelező (a vásárló látja)",
+    "reason": "{reason, select, sold_out {Egy tétel elfogyott} too_busy {Túl sok a rendelés — nem készül el időben} closing_soon {Hamarosan zárunk} other {Egyéb}}",
+    "noteRequired": "Indok — kötelező",
+    "noteOptional": "További megjegyzés — nem kötelező",
+    "notePlaceholder": "További részletek a vásárlónak…",
+    "keep": "Rendelés megtartása",
+    "confirm": "Rendelés elutasítása"
+  },
+  "eventCancel": {
+    "title": "Lemondja ezt az eseményt?",
+    "affected": "{n, plural, one {{count} rendelés} other {{count} rendelés}} törlődik, és értesítjük a vásárlókat.",
+    "reasonLabel": "Indok — nem kötelező",
+    "reason": "{reason, select, vehicle_breakdown {Járműhiba} weather {Időjárás} venue_issue {Probléma a helyszínnel} personal_emergency {Személyes vészhelyzet} other {Egyéb}}",
+    "messageLabel": "Üzenet a vásárlóknak — nem kötelező",
+    "messagePlaceholder": "pl. Sajnáljuk, a helyszín felé menet lerobbant az utánfutónk…",
+    "keep": "Esemény megtartása",
+    "cancelling": "Lemondás…",
+    "confirm": "Esemény lemondása"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Esemény újraindítása} other {Esemény indítása}}",
+    "changeEvent": "Esemény váltása",
+    "changeEventType": "Eseménytípus módosítása…",
+    "privateLink": "Privát link és QR-kód",
+    "noteLabel": "Megjegyzés a vásárlóknak",
+    "notePlaceholder": "pl. Parkoljon a fő parkolóban, keresse a narancssárga sátrat",
+    "noteHint": "A rendelési oldalon, az esemény adatai alatt jelenik meg a vásárlóknak.",
+    "saveNote": "Megjegyzés mentése",
+    "resume": "Rendelések folytatása",
+    "pause": "Rendelések szüneteltetése",
+    "changeFinishTime": "Befejezési idő módosítása",
+    "finishEvent": "Esemény befejezése",
+    "cancelEvent": "Esemény lemondása"
+  },
+  "finish": {
+    "confirmTitle": "Módosítja a befejezési időt?",
+    "willFinish": "Az esemény befejezési ideje: <b>{selected}</b>{hasCurrent, select, yes { (eddig: <b>{current}</b>)} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} rendelés esedékes ezután: {selected}.} other {{count} rendelés esedékes ezután: {selected}.}}</b> {n, plural, one {A táblán marad, és el kell készíteni.} other {A táblán maradnak, és el kell készíteni őket.}} A befejezési idő módosítása csak azt akadályozza meg, hogy későbbi időpontokra ÚJ rendeléseket adjanak le.",
+    "saving": "Mentés…",
+    "confirm": "Befejezési idő módosítása",
+    "keepCurrent": "Marad: {current}",
+    "keepAsIs": "Maradjon így",
+    "title": "Befejezési idő módosítása",
+    "currentlySet": "Az esemény jelenlegi befejezési ideje: <b>{current}</b>.",
+    "noFinishTime": "Ennek az eseménynek nincs befejezési ideje.",
+    "noTimesLeft": "Mára nincs több választható időpont. Használja inkább az Esemény befejezése gombot.",
+    "newFinishTime": "Új befejezési idő",
+    "optionCurrent": "{time} (jelenlegi)",
+    "earlier": "Ez korábbi a jelenlegi befejezési időnél. A vásárlók ennél későbbi időpontokra nem tudnak majd rendelni.",
+    "review": "Módosítás áttekintése",
+    "optionNextDay": "{time} (másnap)"
+  },
+  "extraWait": {
+    "title": "Extra várakozási idő",
+    "hint": "Hozzáadódik az új rendeléseknél megadott átvételi időhöz. Az esemény befejezési idejét nem módosítja.",
+    "option": "+{mins} perc"
+  },
+  "picker": {
+    "reconnect": "Újracsatlakozás",
+    "selected": "Kiválasztva",
+    "status": "{tone, select, paused {⏸ Szünetel} live {● Élő} finished {● Befejezve} cancelled {Lemondva} other {Nem indult el}}"
+  }
+}

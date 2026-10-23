@@ -1,0 +1,69 @@
+{
+  "close": "Zamknij",
+  "cancel": "Anuluj",
+  "selectReason": "Wybierz powód",
+  "reject": {
+    "title": "Odrzucić zamówienie #{orderId}?",
+    "reasonLabel": "Powód — wymagany (widoczny dla klienta)",
+    "reason": "{reason, select, sold_out {Wyprzedana pozycja} too_busy {Za duży ruch — nie zdążymy} closing_soon {Wkrótce zamykamy} other {Inny}}",
+    "noteRequired": "Powód — wymagany",
+    "noteOptional": "Dodatkowa notatka — opcjonalnie",
+    "notePlaceholder": "Dodaj więcej szczegółów dla klienta…",
+    "keep": "Zachowaj zamówienie",
+    "confirm": "Odrzuć zamówienie"
+  },
+  "eventCancel": {
+    "title": "Odwołać to wydarzenie?",
+    "affected": "{n, plural, one {{count} zamówienie zostanie anulowane} few {{count} zamówienia zostaną anulowane} many {{count} zamówień zostanie anulowanych} other {{count} zamówienia zostanie anulowane}}, a klienci dostaną powiadomienie.",
+    "reasonLabel": "Powód — opcjonalnie",
+    "reason": "{reason, select, vehicle_breakdown {Awaria pojazdu} weather {Pogoda} venue_issue {Problem z miejscem} personal_emergency {Nagła sprawa osobista} other {Inny}}",
+    "messageLabel": "Wiadomość do klientów — opcjonalnie",
+    "messagePlaceholder": "np. Przepraszamy, nasza przyczepa zepsuła się w drodze na miejsce…",
+    "keep": "Zachowaj wydarzenie",
+    "cancelling": "Odwoływanie…",
+    "confirm": "Odwołaj wydarzenie"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Rozpocznij wydarzenie ponownie} other {Rozpocznij wydarzenie}}",
+    "changeEvent": "Zmień wydarzenie",
+    "changeEventType": "Zmień typ wydarzenia…",
+    "privateLink": "Prywatny link i kod QR",
+    "noteLabel": "Notatka dla klientów",
+    "notePlaceholder": "np. Zaparkuj na głównym parkingu i szukaj pomarańczowego namiotu",
+    "noteHint": "Widoczna dla klientów na stronie zamówienia, pod szczegółami wydarzenia.",
+    "saveNote": "Zapisz notatkę",
+    "resume": "Wznów zamówienia",
+    "pause": "Wstrzymaj zamówienia",
+    "changeFinishTime": "Zmień godzinę zakończenia wydarzenia",
+    "finishEvent": "Zakończ wydarzenie",
+    "cancelEvent": "Odwołaj wydarzenie"
+  },
+  "finish": {
+    "confirmTitle": "Zmienić godzinę zakończenia?",
+    "willFinish": "To wydarzenie zakończy się o <b>{selected}</b>{hasCurrent, select, yes { zamiast o <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} zamówienie ma termin} few {{count} zamówienia mają termin} many {{count} zamówień ma termin} other {{count} zamówienia ma termin}} po {selected}.</b> {n, plural, one {Zostaje na ekranie i nadal trzeba je przygotować.} few {Zostają na ekranie i nadal trzeba je przygotować.} many {Zostają na ekranie i nadal trzeba je przygotować.} other {Zostają na ekranie i nadal trzeba je przygotować.}} Zmiana godziny zakończenia blokuje tylko NOWE zamówienia na późniejsze godziny.",
+    "saving": "Zapisywanie…",
+    "confirm": "Zmień godzinę zakończenia",
+    "keepCurrent": "Zostaw {current}",
+    "keepAsIs": "Zostaw bez zmian",
+    "title": "Zmień godzinę zakończenia",
+    "currentlySet": "To wydarzenie ma obecnie zakończyć się o <b>{current}</b>.",
+    "noFinishTime": "To wydarzenie nie ma ustawionej godziny zakończenia.",
+    "noTimesLeft": "Na dziś nie zostały już żadne godziny. Użyj opcji „Zakończ wydarzenie”.",
+    "newFinishTime": "Nowa godzina zakończenia",
+    "optionCurrent": "{time} (obecna)",
+    "earlier": "To wcześniej niż obecna godzina zakończenia. Klienci nie będą mogli zamawiać na późniejsze godziny.",
+    "review": "Sprawdź zmianę",
+    "optionNextDay": "{time} (następnego dnia)"
+  },
+  "extraWait": {
+    "title": "Dodaj czas oczekiwania",
+    "hint": "Wydłuża godzinę odbioru podawaną przy nowych zamówieniach. Nie zmienia godziny zakończenia wydarzenia.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Połącz ponownie, aby wczytać",
+    "selected": "Wybrane",
+    "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}"
+  }
+}

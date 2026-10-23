@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Afișați alergenii pentru fiecare preparat",
+    "recommended": "Recomandat",
+    "perDishBody": "Verificați fiecare preparat și confirmați-i alergenii. Clienții văd etichete pentru fiecare preparat, plus o fișă-rezumat a alergenilor generată pe baza lor.",
+    "cardTitle": "Afișați o fișă cu alergeni",
+    "cardBody": "Încărcați sau lipiți o singură fișă cu alergeni (PDF, imagine sau text), afișată ca atare. Etichetele pe preparat rămân ascunse."
+  }
+}

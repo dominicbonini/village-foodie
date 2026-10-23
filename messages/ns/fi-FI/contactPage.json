@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Tuki",
+    "description": "Saat apua HatchGrabin käyttöön. Lähetä meille viesti, niin vastaamme sähköpostitse."
+  },
+  "logIn": "Kirjaudu sisään",
+  "eyebrow": "Tuki",
+  "title": "Miten voimme auttaa?",
+  "lede": "Eikö jokin toimi, tai onko sinulla kysyttävää tilistäsi? Tavoitat meidät kahdella tavalla — kummin tahansa vastaamme sähköpostitse.",
+  "emailUs": "Lähetä sähköpostia",
+  "formHeading": "Tai täytä alla oleva lomake",
+  "loadingForm": "Ladataan lomaketta…",
+  "formTitle": "Ota yhteyttä HatchGrabin tukeen",
+  "privacy": "Tietosuoja",
+  "terms": "Käyttöehdot",
+  "about": "Tietoa meistä",
+  "copyright": "© {year} HatchGrab"
+}

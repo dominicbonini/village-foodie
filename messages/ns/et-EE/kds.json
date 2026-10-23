@@ -1,0 +1,129 @@
+{
+  "docTitle": "Köök · {truck}",
+  "loading": "Köögi laadimine…",
+  "pin": {
+    "title": "Sisesta PIN",
+    "placeholder": "PIN",
+    "unlock": "Ava",
+    "unreachable": "Serveriga ei saa praegu ühendust. Sinu PIN on korras — proovi hetke pärast uuesti.",
+    "incorrect": "Vale PIN",
+    "generic": "Midagi läks valesti. Proovi uuesti."
+  },
+  "error": {
+    "linkInvalid": "See link ei kehti enam.",
+    "couldNotLoad": "Tellimusi ei õnnestunud laadida",
+    "truckNotFound": "Toiduautot ei leitud"
+  },
+  "degraded": {
+    "at": "⚠️ Serveriga ei saa ühendust. Näitan tellimusi seisuga {time}. UUSI TELLIMUSI VÕIB PUUDUDA.",
+    "earlier": "⚠️ Serveriga ei saa ühendust. Näitan varasemaid tellimusi. UUSI TELLIMUSI VÕIB PUUDUDA."
+  },
+  "header": {
+    "dashboard": "Töölaud",
+    "backTitle": "Tagasi töölauale",
+    "list": "Loend",
+    "grid": "Ruudustik",
+    "full": "Täielik",
+    "cook": "Kokk",
+    "fullTitle": "Täielikud kaardid — hinnad ja makseandmed, nagu lett neid näeb.",
+    "cookTitle": "Koka kaardid — suurem kiri, rühmitatud kategooriate kaupa, ilma hindadeta.",
+    "readyStep": "Valmis märkimine",
+    "readyOnlyTitle": "See ekraan ainult märgib tellimusi valmis, seega ei saa seda välja lülitada — see on ainus samm, mida see teeb.",
+    "readyOnTitle": "See ekraan märgib tellimused valmis. Puuduta, et seda teeks hoopis teine ekraan.",
+    "readyOffTitle": "Tellimused märgib valmis teine ekraan. Puuduta, et seda teeks see ekraan.",
+    "handover": "Makse ja üleandmine",
+    "handoverOnlyTitle": "See ekraan ainult võtab makseid vastu, seega ei saa seda välja lülitada — see on ainus samm, mida see teeb.",
+    "handoverOnTitle": "See ekraan võtab makse vastu ja annab tellimuse üle. Puuduta, et seda teeks hoopis teine ekraan.",
+    "handoverOffTitle": "Makseid võtab vastu teine ekraan. Puuduta, et seda teeks see ekraan.",
+    "soundOn": "Uue tellimuse heli on sees — puuduta väljalülitamiseks",
+    "soundOff": "Uue tellimuse heli on väljas — puuduta sisselülitamiseks",
+    "screenOn": "Ekraan sees",
+    "screenOff": "Ekraan väljas",
+    "screenSettings": "Ekraani seaded",
+    "manageEvent": "Halda üritust",
+    "manageEventTitle": "Halda üritust — alusta, peata, muuda või lõpeta",
+    "soundSettings": "Heli seaded",
+    "soundSettingsTitle": "Millised helid selles seadmes kõlavad",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Vaate seaded",
+    "on": "Sees",
+    "off": "Väljas",
+    "newOrderSound": "Uue tellimuse heli",
+    "soundNeedsConfirming": "Ainult kinnitamist vajavad tellimused",
+    "soundAll": "Kõik uued tellimused",
+    "soundDue": "Heli, kui tellimust on aeg valmistama hakata",
+    "soundDueHelp": "Kõlab, kui tellimuse kaart muutub merevaigukollaseks.",
+    "deviceSettings": "Seadme seaded",
+    "sound": "Heli",
+    "close": "Sulge"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Selle ürituse tellimusi ei laaditud",
+    "mismatchBody": "Server vastas teise ürituse andmetega, seega ei näidata midagi, et vältida valede tellimuste kuvamist. Vali üritus uuesti või laadi leht uuesti.",
+    "mismatchBodyAt": "Server vastas teise ürituse andmetega, seega ei näidata midagi, et vältida valede tellimuste kuvamist (asukoht: {venue}). Vali üritus uuesti või laadi leht uuesti.",
+    "paused": "⏸ Tellimused peatatud{reason, select, offline { (seade võrguühenduseta)} other {}} — kliendid ei saa tellida",
+    "resume": "Jätka",
+    "offline": "Ühendus puudub — näitan viimati teadaolevaid tellimusi. Veebitellimine on klientide jaoks peatatud.",
+    "queued": "{n, plural, one {{count} toiming ootab} other {{count} toimingut ootab}}",
+    "extraWait": "⏱ Lisaooteaeg +{mins} min sees",
+    "clear": "Eemalda",
+    "toMake": "Valmistada",
+    "today": "Täna · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Alusta üritust",
+    "recentlyClosed": "Üritus lõppenud · {venue}: lõppes kell {time}",
+    "eventStatus": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+  },
+  "board": {
+    "queueClear": "Järjekord tühi",
+    "doneToday": "Täna valmis · {count}",
+    "paid": "✓ makstud",
+    "cardHeld": "broneeritud",
+    "due": "Tasuda {amount}"
+  },
+  "screenOff": {
+    "title": "Lubada ekraanil kustuda?",
+    "bodyVans": "{n, plural, one {Toiduautol} other {Toiduautodel}} {vans} on sisse lülitatud ühenduse katkemise tuvastus. Kui ekraan kustub, võib seade lõpetada võrgusoleku signaali saatmise ja klientide tellimine võidakse peatada.",
+    "body": "Kui ekraan kustub, võib seade lõpetada võrgusoleku signaali saatmise.",
+    "keepHint": "Hoia ekraan sees, et tellimine jätkuks katkestusteta.",
+    "keep": "Hoia ekraan sees",
+    "allow": "Luba ekraanil kustuda"
+  },
+  "event": {
+    "change": "Vaheta üritust",
+    "cancel": "Tühista",
+    "waitActive": "⏱ +{mins} min sees · Puuduta eemaldamiseks",
+    "addWait": "⏱ Lisa ooteaega",
+    "endTitle": "Lõpetada üritus?",
+    "endEarly": "Selle ürituse plaanitud lõpp on alles kell {time}. Rohkem tellimusi vastu ei võeta. Kas lõpetad ürituse?",
+    "endNow": "Lõpetada see üritus? Rohkem tellimusi vastu ei võeta.",
+    "yes": "Jah",
+    "started": "Üritus alanud",
+    "startFutureConfirm": "Ürituse kuupäev: {date}. Alustada kohe?",
+    "finishTimeNow": "Lõpuaeg nüüd {time}",
+    "finished": "Üritus lõppenud",
+    "cancelled": "Üritus tühistatud",
+    "noteSaved": "Märkus salvestatud",
+    "pauseConfirm": "Peatada tellimused? Kliendid näevad teadet „Tellimusi ei võeta vastu“, kuni jätkad.",
+    "switchConfirm": "Vahetada üritust: {from} → {to}?{n, plural, =0 {} one { {count} tellimus sellel ekraanil asendatakse.} other { {count} tellimust sellel ekraanil asendatakse.}} Tagasi vahetamiseks puuduta praegust üritust."
+  },
+  "intro": {
+    "title": "See on köögiekraan",
+    "p1": "See on koka vaade — tellimused, mis tuleb valmistada, selles järjekorras, nagu neid teha. Grilli juures olev ekraan näitab seda, samal ajal kui lett kasutab tellimuste töölauda.",
+    "p2": "Kaardid liiguvad edasi, kui neid puudutad, nii et kokk teab alati, mis järgmiseks tuleb, ja keegi ei pea karjuma. Kõik siin on sinu demoandmed — proovi julgelt.",
+    "gotIt": "Selge"
+  },
+  "toast": {
+    "failed": "Ebaõnnestus",
+    "rejectFailed": "Tagasilükkamine ebaõnnestus",
+    "buzzerSaved": "Piipar {n} salvestatud",
+    "buzzerRemoved": "Piipar {n} eemaldatud",
+    "buzzerRemovedNone": "Piipar eemaldatud",
+    "buzzerAssigned": "Piipar {n} määratud",
+    "buzzerAssignedFrom": "Piipar {n} määratud (võetud tellimuselt #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Piiparit ei õnnestunud eemaldada {target, select, order {tellimuselt #{id}} other {sellelt tellimuselt}}} other {Piiparit {n} ei õnnestunud eemaldada — see on endiselt {target, select, order {tellimusel #{id}} other {sellel tellimusel}}}}",
+    "buzzerAssignFailed": "Piiparit {n} ei õnnestunud anda {target, select, order {tellimusele #{id}} other {sellele tellimusele}} — {had, select, yes {sellel on endiselt piipar {prior}} other {sellel pole endiselt piiparit}}"
+  }
+}

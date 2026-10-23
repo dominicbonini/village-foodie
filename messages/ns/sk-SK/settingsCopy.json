@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Povoliť zákazníkom rušiť objednávky",
+    "sentence": "Zákazníci môžu zrušiť objednávku najneskôr <select></select> pred časom vyzdvihnutia"
+  },
+  "autoAccept": {
+    "label": "Automaticky prijímať objednávky",
+    "help": "Objednávky sa potvrdzujú automaticky. Ak je požadované časové okno plné, objednávka sa presunie do najbližšieho voľného okna. Potvrdí sa, len ak je voľná kapacita. Objednávky s poznámkou zákazníka (napr. alergia) bude aj tak treba potvrdiť."
+  },
+  "orderReady": {
+    "label": "Krok „Objednávka pripravená“",
+    "help": "Na obrazovke objednávok zobrazí tlačidlo „Hotové“. Kuchynské obrazovky sa nastavujú zvlášť, na každom zariadení. Zákazníci dostanú e-mail vždy, keď je objednávka označená ako pripravená. Platí pre všetky akcie — pre jednu akciu to stále môžete zapnúť alebo vypnúť v jej prehľade."
+  },
+  "buzzers": {
+    "label": "Dávate zákazníkom na vyzdvihnutie bzučiaky?",
+    "help": "Zaznamenajte, ktorý bzučiak ste dali ktorému zákazníkovi, aby ste vedeli, koho hľadať, keď bude jedlo hotové.",
+    "countLabel": "Koľko máte bzučiakov?"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "country_missing": "Odaberite zemlju u kojoj je sjedište vašeg food trucka.",
+  "country_off": "Food truckovi iz te zemlje još se ne mogu registrirati. Odaberite drugu zemlju.",
+  "zone_unknown": "Tu vremensku zonu ne nudimo za tu zemlju. Odaberite jednu s popisa.",
+  "town_missing": "Upišite grad ili mjesto u kojem vam je sjedište.",
+  "town_too_long": "Naziv mjesta predug je — najviše 120 znakova.",
+  "region_closed": "Food truckovi sa sjedištem u regiji {region} još se ne mogu registrirati{reason, select, language {: HatchGrab još nije dostupan na jeziku {language}} taxLines {: najprije dodajemo zasebne stavke za GST i PST} other {}}. Ako vam je food truck negdje drugdje, odaberite taj grad ili mjesto."
+}

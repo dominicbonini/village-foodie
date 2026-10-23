@@ -1,0 +1,10 @@
+{
+  "download": "Pobierz grafikę",
+  "copied": "Skopiowano ✓",
+  "copyCaption": "Kopiuj opis",
+  "share": "Udostępnij",
+  "copiedStatus": "{kind, select, postText {Skopiowano tekst posta.} other {Skopiowano opis.}}",
+  "copyFailed": "Nie udało się skopiować — zaznacz tekst i skopiuj go ręcznie.",
+  "sharedStatus": "{kind, select, postText {Skopiowano tekst posta — wklej go do swojego posta.} other {Skopiowano opis — wklej go do swojego posta.}}",
+  "shareRefused": "{kind, select, postText {Udostępnianie zostało odrzucone, więc grafika została pobrana. Skopiowano tekst posta.} other {Udostępnianie zostało odrzucone, więc grafika została pobrana. Skopiowano opis.}}"
+}

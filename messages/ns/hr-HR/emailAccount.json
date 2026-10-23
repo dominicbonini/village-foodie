@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Potvrdite svoju novu adresu e-pošte za HatchGrab",
+    "heading": "Potvrdite svoju adresu e-pošte",
+    "button": "Potvrdi adresu e-pošte"
+  },
+  "changeEmail": {
+    "requested": "Zatražili ste promjenu svoje adrese e-pošte za HatchGrab u ovu adresu.",
+    "click": "Kliknite gumb u nastavku za potvrdu. Ova poveznica istječe za 24 sata.",
+    "ignore": "Ako niste zatražili ovu promjenu, slobodno zanemarite ovu poruku.",
+    "stillActive": "Vaša trenutačna adresa e-pošte ostaje aktivna."
+  },
+  "resendVerification": {
+    "requested": "Zatražili ste promjenu svoje e-pošte za HatchGrab u ovu adresu.",
+    "click": "Kliknite u nastavku za potvrdu. Ova poveznica istječe za 24 sata.",
+    "ignore": "Ako to niste zatražili, zanemarite ovu poruku.",
+    "stillActive": "Vaša trenutačna e-pošta ostaje aktivna."
+  },
+  "passwordReset": {
+    "subject": "Ponovno postavite lozinku za HatchGrab",
+    "heading": "Ponovno postavite lozinku",
+    "requested": "Primili smo zahtjev za ponovno postavljanje lozinke vašeg računa na HatchGrabu.",
+    "click": "Kliknite gumb u nastavku kako biste odabrali novu lozinku. Ova poveznica istječe za 1 sat.",
+    "button": "Ponovno postavi lozinku",
+    "ignore": "Ako to niste zatražili, slobodno zanemarite ovu poruku.",
+    "unchanged": "Vaša se lozinka neće promijeniti dok ne kliknete gornju poveznicu."
+  },
+  "deletionScheduled": {
+    "subject": "Brisanje vašeg računa na HatchGrabu je zakazano",
+    "received": "Primili smo zahtjev za brisanje ovog računa na HatchGrabu.",
+    "orderingStopped": "<b>Online naručivanje odmah je zaustavljeno</b> za: {trucks}.",
+    "noTrucks": "(nema food truckova)",
+    "readable": "Vaša nadzorna ploča ostaje dostupna za pregled još {days, plural, one {# dan} few {# dana} other {# dana}}.",
+    "scheduled": "Brisanje računa zakazano je za <b>{date}</b>.",
+    "cannotCancel": "<b>Ovo se ne može otkazati unutar aplikacije.</b> Ako to niste bili vi ili ste se predomislili, što prije odgovorite na ovu poruku.",
+    "kept": "Kad se račun izbriše, uklanjamo vaše osobne podatke i podatke vaših kupaca. Zadržavamo anonimne računovodstvene zapise koje smo zakonski obvezni čuvati."
+  }
+}

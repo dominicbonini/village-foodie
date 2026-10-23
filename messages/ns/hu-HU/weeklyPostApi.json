@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "A cím nem fért ki, ezért lerövidítettük.",
+    "date": "A dátum nem fért ki, ezért lerövidítettük.",
+    "daysOff": "A szünnapok szövege nem fért ki, ezért lerövidítettük.",
+    "place": "A helyszín neve nem fért ki, ezért lerövidítettük.",
+    "time": "Az időpont nem fért ki, ezért lerövidítettük.",
+    "note": "A saját szövege nem fért ki, ezért lerövidítettük.",
+    "venue": "A létesítmény neve nem fért ki, ezért lerövidítettük.",
+    "area": "A település neve nem fért ki, ezért lerövidítettük."
+  },
+  "fontFallback": "A dizájn egyik betűtípusát ({id}) nem sikerült betölteni — ezek a mezők Oswald betűtípussal jelennek meg.",
+  "wrongShapeBackground": "Ennek a helyszínnek a képe más formájú, mint a dizájnja, ezért az alap hátteret használjuk.",
+  "rowsFit": "Az utolsó nap {px} px-szel a kép alja alá kerül — csökkentse a sorközt, vagy vigye feljebb az 1. sort.",
+  "placeStatus": {
+    "ownBoth": "Saját kép és szövegpozíciók",
+    "wrongShape": "Más forma — cseréig nem használjuk",
+    "ownPicture": "Saját kép, alap pozíciók",
+    "ownPositions": "Alap kép, saját szövegpozíciók",
+    "none": "Még nincs kép — az alapdizájnt használjuk"
+  },
+  "standardStatus": "Minden más helyszínen ezt használjuk",
+  "option": {
+    "oneOff": "Feltöltés csak ehhez a bejegyzéshez",
+    "placePoster": "Plakát: {name}",
+    "standard": "Alapdizájn"
+  },
+  "previewLabel": {
+    "lastEvent": "Az előnézet az itteni legutóbbi eseményét mutatja",
+    "noEvents": "Itt még nincs esemény — az előnézet a következő eseményét mutatja ennek a helyszínnek a nevével"
+  },
+  "fontUsage": {
+    "weekly": "a heti bejegyzés dizájnja",
+    "event": "az eseménybejegyzés dizájnja",
+    "place": "a helyszín dizájnja: {place}",
+    "placeUnnamed": "egy helyszín dizájnja"
+  },
+  "face": {
+    "regular": "Normál",
+    "bold": "Félkövér",
+    "italic": "Dőlt"
+  },
+  "picture": {
+    "legacy": "Eseményplakát",
+    "fallback": "Kép",
+    "wrongShape": "Más forma — teljes háttérként nem használható"
+  },
+  "noPicture": {
+    "omit": "Kihagyás",
+    "blank": "Üres hely hagyása",
+    "logo": "Logó megjelenítése"
+  },
+  "noPicturesAll": "{total, plural, one {A helyszínének van képe.} other {Minden helyszínének van képe ({total}).}}",
+  "noPicturesSome": "{without, plural, one {{total} helyszíne közül {without} még kép nélküli} other {{total} helyszíne közül {without} még kép nélküli}}",
+  "licenceTick": "Ez a betűtípus az enyém, vagy van licencem a használatára",
+  "fontUploadButton": "↑ Saját betűtípus feltöltése"
+}

@@ -1,0 +1,15 @@
+{
+  "greeting": "Dobrý den 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Celý jídelní lístek a informace o alergenech najdete zde: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Celý náš jídelní lístek najdete zde: {url} — {truck} {emoji}",
+  "otherCategory": "Ostatní",
+  "categoryFrom": "{category} od {price}",
+  "listTwo": "{first} a {second}",
+  "listMany": "{init} a {last}",
+  "menuSummary": "{opener}Nabízíme {summary}. Celý jídelní lístek a možnost objednat předem najdete zde: {url} — {truck} {emoji}",
+  "allergenCaveat": "Informace o alergenech si prosím ověřte v celém jídelním lístku — toto je automatická odpověď.",
+  "specificFallback": "{opener}Náš aktuální rozpis najdete zde: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Děkujeme za všechny zprávy! Tady můžu odpovědět jen několikrát denně.\n\nObjednávky: {link}",
+  "capContact": "Přímý kontakt: {number}"
+}

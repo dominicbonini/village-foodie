@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Tallenna ruokalistani →",
+    "heading": "Ota ruokarekkasi käyttöön",
+    "sub": "Ruokalistasi siirtyy suoraan mukaan.",
+    "privacy": "Käytämme tätä vain ruokarekkasi käyttöönottoon ja demolinkin lähettämiseen — katso <link>tietosuojaseloste</link>."
+  },
+  "sample": {
+    "bannerButton": "Ota ruokarekkani käyttöön →",
+    "heading": "Ota ruokarekkasi käyttöön",
+    "sub": "Seuraavaksi lataat oman ruokalistasi — se vie minuutin.",
+    "privacy": "Käytämme tätä vain ruokarekkasi käyttöönottoon ja demolinkin lähettämiseen — katso <link>tietosuojaseloste</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Tallenna ruokalistani →",
+    "heading": "Tallenna demosi",
+    "sub": "Säilytämme sitä 14 päivää ja lähetämme sinulle heti linkin takaisin.",
+    "privacy": "Käytämme tätä vain demolinkin lähettämiseen — katso <link>tietosuojaseloste</link>."
+  },
+  "confirmationHeading": "Kaikki valmista",
+  "postSaveButton": "Ota ruokarekkani käyttöön →",
+  "enterSetupButton": "Ota ruokarekkani käyttöön →",
+  "emailOnlyLink": "Lähetä minulle vain linkki, jolla pääsen takaisin tähän demoon",
+  "sendLinkButton": "Lähetä linkki",
+  "savingButton": "Tallennetaan…",
+  "continueButton": "Jatka →",
+  "createAccountButton": "Luo tilini →",
+  "retryButton": "Yritä uudelleen",
+  "backToDemoButton": "Takaisin demoon",
+  "savedStatus": "{hasDate, select, yes {✓ Tallennettu — säilytetään {date} asti} other {✓ Tallennettu}}",
+  "back": "Takaisin",
+  "close": "Sulje",
+  "truckStepHeading": "Tietoja ruokarekastasi",
+  "detailsStepHeading": "Viimeistele käyttöönotto",
+  "stepper": {
+    "details": "Tiedot",
+    "menu": "Ruokalista",
+    "allergens": "Allergeenit",
+    "kitchen": "Keittiö",
+    "schedule": "Aikataulu"
+  },
+  "confirmEmailed": "Lähetimme sinulle sähköpostilla linkin suoraan takaisin tähän demoon — kirjautumista ei tarvita.",
+  "confirmKeepUntil": "Säilytämme sitä <b>{date}</b> asti. Ruokalistasi siirtyy mukanasi, kun otat palvelun kunnolla käyttöön.",
+  "loading": "Ladataan…",
+  "firstName": "Etunimi",
+  "lastName": "Sukunimi",
+  "truckName": "Ruokarekan nimi",
+  "truckNamePlaceholder": "esim. Kylän Keittiö",
+  "cuisine": "Keittiö",
+  "logoLabel": "Logo <opt>(valinnainen)</opt>",
+  "logoPreviewAlt": "Logon esikatselu",
+  "changeLogo": "Vaihda logo",
+  "removeLogo": "Poista",
+  "uploadLogo": "📷 Lataa logo",
+  "readyTitle": "Tilisi on valmis",
+  "readyBody": "Viimeistellään nyt ruokarekkasi käyttöönotto — ruokalista, allergeenit ja keittiö.",
+  "hangTight": "Hetki vain — valmistelemme kaiken.",
+  "stage": {
+    "account": "Luodaan tiliäsi",
+    "truck": "Otetaan ruokarekkasi käyttöön",
+    "menu": "Ladataan ruokalistaasi"
+  },
+  "stageState": {
+    "done": "valmis",
+    "recognised": "sinulla on jo tili",
+    "failed": "epäonnistui",
+    "active": "käynnissä",
+    "pending": "odottaa"
+  },
+  "signIn": "Kirjaudu",
+  "phone": "Puhelin",
+  "onWhatsapp": "Tämä numero on WhatsAppissa",
+  "email": "Sähköposti",
+  "emailPlaceholder": "nimi@ruokarekkasi.fi",
+  "settingUpAs": "Käyttöönotto osoitteella <b>{email}</b> <change>vaihda</change>",
+  "password": "Salasana",
+  "passwordPlaceholder": "Vähintään 8 merkkiä",
+  "hidePassword": "Piilota salasana",
+  "showPassword": "Näytä salasana",
+  "promoLabel": "Onko sinulla koodi? <opt>(valinnainen)</opt>",
+  "promoPlaceholder": "Syötä se tähän",
+  "agreeTerms": "Hyväksyn <terms>käyttöehdot</terms> ja <privacy>tietosuojaselosteen</privacy>.",
+  "freeMonth": "Käyttöönotto ei käynnistä ilmaista kuukauttasi. Se alkaa, kun valitset ensimmäisen julkisen tapahtumasi — silloin kun olet valmis.",
+  "fieldError": {
+    "firstName": "Kerro etunimesi.",
+    "lastName": "Ja sukunimesi.",
+    "truck": "Anna ruokarekallesi nimi.",
+    "cuisine": "Kerro, mitä ruokaa teet.",
+    "phoneMissing": "Lisää puhelinnumero — sekä asiakkaat että me tavoitamme sinut sen kautta.",
+    "email": "Anna kelvollinen sähköpostiosoite.",
+    "password": "Salasanassa on oltava vähintään 8 merkkiä.",
+    "terms": "Hyväksy ehdot jatkaaksesi."
+  },
+  "error": {
+    "saveFailed": "Tallentaminen epäonnistui — yritä uudelleen.",
+    "savedNoEmail": "Tallennettu — mutta linkin lähettäminen sähköpostilla ei juuri nyt onnistunut.",
+    "unreachable": "Emme saaneet juuri nyt yhteyttä — yritä uudelleen.",
+    "createAccountFailed": "Tilin luominen epäonnistui.",
+    "truckCreateFailed": "Tilisi on valmis, mutta ruokarekan luominen epäonnistui. Yritä uudelleen.",
+    "truckUnreachable": "Tilisi on valmis, mutta ruokarekan luominen ei juuri nyt onnistunut. Yritä uudelleen.",
+    "truckNoToken": "Ruokarekkasi on otettu käyttöön, mutta sen avaaminen ei juuri nyt onnistunut. Yritä uudelleen."
+  }
+}

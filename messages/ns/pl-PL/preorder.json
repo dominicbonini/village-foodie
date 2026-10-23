@@ -1,0 +1,6 @@
+{
+  "closedPending": "Zamówienia z wyprzedzeniem zamknięte. Kuchnia musi je zatwierdzić.",
+  "deadline": "Zamów z wyprzedzeniem do {time}",
+  "deadlineOnDay": "Zamów z wyprzedzeniem do {time}, {day}",
+  "opens": "Start zamówień z wyprzedzeniem: {day}"
+}

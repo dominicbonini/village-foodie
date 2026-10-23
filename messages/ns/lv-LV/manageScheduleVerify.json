@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Pārbaude īslaicīgi nav pieejama. Lūdzu, pēc brīža mēģiniet vēlreiz.",
+  "malformed": "Tas neizskatās pēc tīmekļa adreses. Mēģiniet, piemēram, jusufoodtruck.lv/pasakumi",
+  "blocked": "Neizdevās piekļūt šai vietnei — iespējams, tā bloķē automātiskas pārbaudes. Izmēģiniet lapu, kurā ir jūsu grafiks, vai pievienojiet pasākumus manuāli.",
+  "unreachable": "Neizdevās sasniegt šo tīmekļa vietni. Iespējams, tā nedarbojas vai adrese ir nepareiza.",
+  "no_content": "Lapu atvērām, bet tajā neko neizdevās nolasīt. Pārbaudiet, vai tā ir publiski pieejama.",
+  "no_events": "Šajā lapā neatradām nevienu gaidāmu pasākumu. Pārliecinieties, ka URL ved tieši uz lapu, kurā ir jūsu grafiks.",
+  "blockedDomain": "Lūdzu, izmantojiet savas tīmekļa vietnes URL — Facebook un Instagram lapas nevar nolasīt automātiski."
+}

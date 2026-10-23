@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Rendelések fogadása előzetes fizetés nélkül",
+  "completionTitle": "Fizetetlen rendelés lezárása",
+  "completionHelp": "Mi történjen, amikor egy fizetetlen rendelés átadásra kész.",
+  "pressesOne": "Egy gombnyomás („Fizetve és átvéve”)",
+  "pressesOneHelp": "Akkor ideális, ha az étel átadásakor veszi át a pénzt. Egyetlen gombot kap, „Fizetve és átvéve”, amely egyszerre rögzíti a fizetést és lezárja a rendelést.",
+  "pressesTwo": "Két gombnyomás („Fizetve” és „Átvéve”)",
+  "pressesTwoHelp": "Akkor ideális, ha a fizetés és az átadás külön időpontban történik — valaki fizet a pultnál, majd átveszi a rendelést, amikor elkészül. Két gombot kap: előbb „Fizetve”, majd „Átvéve”, amikor elviszik az ételt."
+}

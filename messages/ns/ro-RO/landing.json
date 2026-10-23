@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistem de comenzi pentru food truck-uri și catering mobil",
+    "description": "Comenzi online, posibilitatea de a comanda în avans și ecran de bucătărie pentru food truck-uri și catering mobil ({country}).",
+    "audience": "Operatori de food truck-uri și de catering mobil"
+  },
+  "hero": {
+    "title": "Sistemul de comenzi creat pentru <lean>food truck-uri.</lean>",
+    "subSmall": "Încărcați meniul, fără înregistrare.<br></br>Vedeți un demo funcțional în mai puțin de 60 de secunde.",
+    "tagline": "Mai puțin timp cu administrarea.<br></br>Mai mult timp <lean>la gătit.</lean>",
+    "cta": "Încărcați meniul →",
+    "ctaNote": "<lead>Încărcați o fotografie a meniului și vedeți-l funcționând în mai puțin de 60 de secunde.</lead><small>Fără înregistrare. Fără card.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Ecranul de bucătărie HatchGrab, cu bonurile de comandă în ordinea în care trebuie gătite",
+    "dashboardAlt": "Preluarea unei comenzi în HatchGrab: meniul în stânga, coșul curent și totalul în dreapta",
+    "phoneAlt": "Comandă de la un food truck prin HatchGrab: meniul cu fotografii și prețuri și totalul curent al coșului"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Prima lună complet gratuită, totul deblocat} few {Primele # luni complet gratuite, totul deblocat} other {Primele # de luni complet gratuite, totul deblocat}}",
+    "noCard": "Nu este nevoie de card",
+    "cancel": "Anulați oricând, fără contract"
+  },
+  "does": {
+    "eyebrow": "Ce face",
+    "title": "Creat pentru food truck-uri, nu pentru restaurante.",
+    "lede": "Majoritatea sistemelor de comenzi presupun o adresă fixă, wifi de încredere și același program în fiecare săptămână. Dumneavoastră sunteți în alt loc în fiecare săptămână, la ore diferite, cu semnal mobil slab sau deloc. HatchGrab a fost creat exact pentru asta.",
+    "slotsTitle": "Clienții aleg ora de ridicare",
+    "capacityTitle": "Setați capacitatea bucătăriei",
+    "capacityBody": "Setați cât puteți găti deodată și cât durează. Când ora de ridicare respectivă s-a umplut, clienții nu o mai pot alege.",
+    "devicesTitle": "Funcționează pe orice dispozitiv",
+    "devicesBody": "Rulează pe telefonul din buzunarul șorțului, pe tableta de pe tejghea, pe laptopul din food truck — și pe terminalul de plată cu care încasați deja.",
+    "postsTitle": "Automatizați postările pe Facebook și Instagram",
+    "postsBody": "Încărcați designul pe care îl postați deja pe Facebook sau Instagram. Noi completăm datele, locațiile și orele, gata de distribuit — în fiecare săptămână sau în fiecare zi.",
+    "whatsappTitle": "Răspunsuri automate pe WhatsApp",
+    "whatsappBody": "„Unde sunteți diseară?” „Ce deserturi aveți?” Mesajele de pe WhatsApp primesc răspuns în timp ce conduceți spre locație sau stați la grătar, pe baza propriului meniu și program. Messenger și Instagram în curând.",
+    "whatsappSoonTitle": "Răspunsuri automate pe WhatsApp <soon>În curând</soon>",
+    "whatsappSoonBody": "„Unde sunteți diseară?” „Ce deserturi aveți?” În curând, mesajele de pe WhatsApp vor primi răspuns în timp ce conduceți spre locație sau stați la grătar. Urmează Messenger și Instagram.",
+    "offlineTitle": "Fără semnal? Serviți în continuare.",
+    "offlineBody": "Dacă pierdeți semnalul, comenzile online se pun automat pe pauză, ca clienții să nu plaseze comenzi pe care nu le-ați vedea. Continuați să primiți comenzi cu aplicația pentru iPhone, iPad și Android.",
+    "slotsBody": "Clienții comandă în avans și aleg ora de ridicare. Cozi mai scurte și mâncare gata când ajung."
+  },
+  "steps": {
+    "eyebrow": "Primii pași",
+    "title": "Configurați totul și începeți să primiți comenzi în aproximativ 15 minute.",
+    "lede": "Trei lucruri de pus la punct — iar pentru două e nevoie doar de o fotografie.",
+    "menuTitle": "Creați meniul",
+    "menuBody": "Fotografiați tabla cu meniul sau lipiți textul. Produsele, prețurile și suplimentele se preiau singure. Dumneavoastră doar verificați că sunt corecte.",
+    "scheduleTitle": "Adăugați programul",
+    "scheduleBody": "Îl aveți pe site? Îl preluăm de acolo și îl ținem la zi. Dacă nu, fotografiați-l și pe el. Dumneavoastră doar aprobați ce găsim.",
+    "shareTitle": "Distribuiți linkul",
+    "shareBody": "Postați-l pe Facebook, lipiți codul QR pe food truck. Comenzile apar pe ecran, în ordinea în care trebuie gătite."
+  },
+  "testimonial": {
+    "quote": "HatchGrab ne-a simplificat enorm comenzile. Totul e organizat, putem urmări stocul și știm exact câte pizze mai avem de vândut — iar intervalele orare sunt fantastice pentru satele aglomerate.",
+    "award": "Pizzeria mobilă a anului",
+    "awardScope": "Câștigător regional",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia și Bogdan — proprietari"
+  },
+  "pricing": {
+    "eyebrow": "Prețuri",
+    "title": "Începeți gratuit. Treceți la un plan superior când aveți nevoie.",
+    "switchHead": "Folosiți deja altă platformă?",
+    "switchBody": "Vedeți cât ați plăti pe HatchGrab pentru aceleași comenzi. Durează cam un minut.",
+    "switchCta": "Comparați ce plătiți"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Vreți să vedeți cât de ușoară este configurarea?",
+    "lede": "Încărcați o fotografie sau o captură de ecran a meniului și o transformăm într-o pagină de comenzi funcțională, pe care o puteți încerca în mai puțin de 60 de secunde. Produsele dumneavoastră, prețurile dumneavoastră. Fără înregistrare, fără card, nimic de instalat. Aruncați o privire, apoi decideți.",
+    "cta": "Încărcați meniul acum →"
+  },
+  "meta": {
+    "title": "Sistem de comenzi pentru food truck-uri și catering mobil — HatchGrab {country}",
+    "description": "Primiți comenzi direct la locație și oferiți precomandă online — fără cozi. Software de comenzi și ecran de bucătărie pentru food truck-uri și catering mobil ({country}) — nu un sistem POS."
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Ajavahemik",
+    "event": "📍 Üritus",
+    "filterBy": "Filtreeri",
+    "show": "Näita",
+    "range": "<from></from><sep>kuni</sep><until></until>",
+    "selectEvent": "Vali üritus…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Üritus",
+    "viewReport": "Vaata aruannet",
+    "loading": "Laadimine…",
+    "orders": "📋 Tellimused",
+    "items": "📦 Tooted",
+    "exportCsv": "⬇ Ekspordi CSV"
+  },
+  "empty": {
+    "noOrders": "Selle perioodi kohta tellimusi ei leitud.",
+    "selectEvent": "Vali ülal üritus, et selle aruannet näha."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} tellimus} other {{count} tellimust}} · {total}"
+  },
+  "revenue": {
+    "title": "Tulude jaotus",
+    "deals": "Pakkumiste tulu",
+    "modifiers": "Lisavalikute juurdehindlus",
+    "foodSales": "Toidumüük",
+    "total": "Kokku",
+    "other": "Muu",
+    "tax": "Maks",
+    "tips": "Jootraha",
+    "serviceFees": "Teenustasud",
+    "cardFees": "Kaarditasud"
+  },
+  "itemsSold": {
+    "title": "Müüdud tooted"
+  },
+  "dealsCard": {
+    "title": "Pakkumised"
+  },
+  "custom": {
+    "title": "Kohandused",
+    "paidModifiers": "Tasulised lisavalikud",
+    "customerNotes": "Kliendi märkused",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Toode",
+    "modifier": "Lisavalik",
+    "qty": "Kogus",
+    "total": "Kokku",
+    "date": "Kuupäev",
+    "time": "Kellaaeg",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Tellimuste jaotus",
+    "items": "Toodete jaotus"
+  },
+  "channel": {
+    "online": "Veebis",
+    "walkUp": "Kohapeal"
+  },
+  "csv": {
+    "orderId": "Tellimuse ID",
+    "date": "Kuupäev",
+    "event": "Üritus",
+    "timePlaced": "Tellimise aeg",
+    "collectionTime": "Kättesaamise aeg",
+    "customerName": "Kliendi nimi",
+    "orderType": "Tellimuse tüüp",
+    "items": "Tooted",
+    "deals": "Pakkumised",
+    "modifiers": "Lisavalikud",
+    "notes": "Märkused",
+    "subtotal": "Vahesumma",
+    "tip": "Jootraha",
+    "serviceFee": "Teenustasu",
+    "total": "Kokku",
+    "itemName": "Toote nimi",
+    "qty": "Kogus",
+    "unitPrice": "Ühiku hind",
+    "itemTotal": "Toote summa",
+    "orderTotal": "Tellimuse summa",
+    "unknownEvent": "Tundmatu üritus",
+    "asap": "Esimesel võimalusel",
+    "unknownCustomer": "Tundmatu",
+    "customerOnline": "Klient veebis",
+    "placedByTruck": "Lisas toiduauto"
+  }
+}

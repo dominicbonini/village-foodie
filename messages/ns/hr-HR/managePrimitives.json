@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Prikaži alergene uz svako jelo",
+    "recommended": "Preporučeno",
+    "perDishBody": "Pregledajte svako jelo i potvrdite njegove alergene. Kupci vide oznake uz svako jelo te karticu sa sažetkom alergena izrađenu iz njih.",
+    "cardTitle": "Prikaži karticu alergena",
+    "cardBody": "Prenesite ili zalijepite jednu karticu alergena (PDF, slika ili tekst) koja se prikazuje kakva jest. Oznake uz jela ostaju skrivene."
+  }
+}

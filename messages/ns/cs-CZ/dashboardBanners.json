@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} časové okno je} few {{count} časová okna jsou} other {{count} časových oken je}} nad kapacitou — zkontrolujte",
+  "batchOver": "{cat}: překročena dávka — {count} na {slot} ({per} na dávku)",
+  "eventStartOver": "Překročena kapacita na začátku akce — {n, plural, one {{count} položka} few {{count} položky} other {{count} položek}} na {slot}",
+  "kitchenOver": "Překročena kapacita kuchyně — {n, plural, one {{count} položka se vaří} few {{count} položky se vaří} other {{count} položek se vaří}} na {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} položka} few {{count} položky} other {{count} položek}}",
+  "placedAnyway": "Přesto zadáno: {list}",
+  "placedItem": "#{id} na {slot}",
+  "orphans": "{times}: překročena kapacita — nenalezeny žádné objednávky, ke kterým by se dala přiřadit",
+  "dismiss": "Zavřít",
+  "kitchenCapacity": "Kapacita kuchyně",
+  "overCapacity": "Překročena kapacita",
+  "wakeUnsupported": "Toto zařízení neumí nechat obrazovku zapnutou.",
+  "wakeInsecure": "Z této adresy nelze nechat obrazovku zapnutou.",
+  "wakeRetry": "Nechat obrazovku zapnutou — klepnutím to zkusíte znovu",
+  "wakeAcquire": "Nechat obrazovku zapnutou",
+  "degraded": {
+    "serverError": "Server nemohl načíst objednávky{hasStatus, select, yes { (chyba {status})} other {}}. Zobrazeny objednávky z {at}. Nové objednávky mohou chybět.",
+    "unreachable": "Server není dostupný. Zobrazeny objednávky z {at}. Nové objednávky mohou chybět."
+  }
+}

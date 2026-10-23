@@ -1,0 +1,9 @@
+{
+  "subject": "Vaša ukážka HatchGrab — tu je odkaz späť",
+  "heading": "Vaša ukážka je uložená",
+  "intro": "Tu je odkaz späť na ukážku s vaším jedálnym lístkom. Nemusíte sa prihlasovať — stačí naň ťuknúť.",
+  "button": "Otvoriť moju ukážku",
+  "freshDay": "Zakaždým, keď sa vrátite, pripravíme nový predajný deň, aby ste si mali čo vyskúšať.",
+  "deletion": "Je to ukážka, takže ju neuchovávame navždy — zmažeme ju aj s jedálnym lístkom\n                <b>{date}</b> (o {days, plural, one {# deň} few {# dni} other {# dní}}). Ak sa zaregistrujete\n                predtým, jedálny lístok si prenesiete so sebou.",
+  "notSent": "Uložené, ale e-mail sa momentálne nepodarilo odoslať."
+}

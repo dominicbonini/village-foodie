@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresa",
+    "postcode": "PSČ",
+    "zip": "ZIP kód",
+    "eircode": "Eircode",
+    "postalCode": "PSČ",
+    "state": "Štát",
+    "stateTerritory": "Štát alebo teritórium",
+    "province": "Provincia",
+    "county": "Grófstvo",
+    "area": "Obec (dedina alebo mesto)",
+    "townOrArea": "Mesto alebo obec",
+    "city": "Mesto",
+    "suburb": "Mestská časť",
+    "townOrCity": "Mesto alebo obec"
+  },
+  "short": {
+    "area": "Obec",
+    "townOrArea": "Mesto alebo obec",
+    "city": "Mesto",
+    "suburb": "Mestská časť",
+    "townOrCity": "Mesto alebo obec"
+  },
+  "inSentence": {
+    "postcode": "PSČ",
+    "zip": "ZIP kód",
+    "eircode": "Eircode",
+    "postalCode": "PSČ"
+  },
+  "withArticle": {
+    "postcode": "PSČ",
+    "zip": "ZIP kód",
+    "eircode": "Eircode",
+    "postalCode": "PSČ"
+  },
+  "tradeLabel": {
+    "area": "Mesto alebo obec",
+    "townOrArea": "Mesto alebo obec",
+    "city": "Mesto",
+    "suburb": "Mestská časť",
+    "townOrCity": "Mesto alebo obec"
+  },
+  "basedIn": {
+    "area": "Mesto alebo obec, kde pôsobíte",
+    "townOrArea": "Mesto alebo obec, kde pôsobíte",
+    "city": "Mesto, kde pôsobíte",
+    "suburb": "Mestská časť, kde pôsobíte",
+    "townOrCity": "Mesto alebo obec, kde pôsobíte"
+  },
+  "example": "napr. {example}",
+  "customersSee": "Zákazníci uvidia:",
+  "postalWarning": "Toto nevyzerá ako {article} — napríklad {example}. Aj tak to môžete uložiť.",
+  "regionChoose": "Vyberte…"
+}

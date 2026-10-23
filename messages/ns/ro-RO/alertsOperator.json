@@ -1,0 +1,28 @@
+{
+  "hi": "Bună ziua, {name},",
+  "limit80": {
+    "subject": "Ați folosit 80% din răspunsurile WhatsApp din această lună",
+    "used": "Răspunsurile automate WhatsApp au folosit <b>{used} din {limit}</b> pentru luna aceasta.",
+    "nothingStopped": "Nu s-a oprit nimic. Când ajungeți la {limit}, răspunsurile automate se întrerup până când alocarea se resetează, pe <b>{reset}</b> — clienții vă pot scrie în continuare și veți vedea tot ce trimit.",
+    "raise": "Puteți mări oricând limita lunară din Setări.",
+    "raiseLink": "Puteți mări oricând limita lunară din Setări:",
+    "button": "Deschideți Setările"
+  },
+  "limit100": {
+    "subject": "Răspunsurile automate WhatsApp s-au întrerupt pentru această lună",
+    "usedAll": "Ați folosit toate răspunsurile automate WhatsApp din această lună (limită: {limit}), așa că s-au întrerupt.",
+    "stillReach": "<b>Clienții vă pot scrie în continuare ca de obicei și fiecare mesaj ajunge la dumneavoastră.</b> Singurul lucru oprit este trimiterea răspunsului automat.",
+    "startAgain": "Vor reporni pe <b>{reset}</b> sau imediat, dacă măriți limita lunară din Setări.",
+    "startAgainLink": "Vor reporni pe {reset} sau imediat, dacă măriți limita lunară din Setări:",
+    "button": "Măriți limita"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp are nevoie de o metodă de plată pentru a trimite mesaje",
+    "stopped": "WhatsApp a oprit trimiterea răspunsurilor automate, deoarece contul WhatsApp Business nu are o metodă de plată funcțională.",
+    "stillMessage": "<b>Clienții vă pot scrie în continuare și veți vedea tot ce trimit</b> — dar răspunsurile nu ajung la ei.",
+    "payDirect": "Plătiți aceste mesaje direct către WhatsApp, așa că problema se rezolvă în WhatsApp Manager, nu în HatchGrab. Adăugați sau actualizați un card acolo și răspunsurile repornesc singure.",
+    "payDirectLink": "Plătiți aceste mesaje direct către WhatsApp, așa că problema se rezolvă în WhatsApp Manager, nu în HatchGrab. Adăugați sau actualizați un card acolo și răspunsurile repornesc singure:",
+    "button": "Deschideți WhatsApp Manager",
+    "settings": "Setările HatchGrab: <link>{url}</link>"
+  }
+}

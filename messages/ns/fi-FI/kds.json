@@ -1,0 +1,129 @@
+{
+  "docTitle": "Keittiö · {truck}",
+  "loading": "Ladataan keittiötä…",
+  "pin": {
+    "title": "Syötä PIN",
+    "placeholder": "PIN",
+    "unlock": "Avaa",
+    "unreachable": "Palvelimeen ei saada nyt yhteyttä. PIN-koodisi on kunnossa — yritä hetken kuluttua uudelleen.",
+    "incorrect": "Väärä PIN",
+    "generic": "Jokin meni vikaan. Yritä uudelleen."
+  },
+  "error": {
+    "linkInvalid": "Tämä linkki ei ole enää voimassa.",
+    "couldNotLoad": "Tilauksia ei voitu ladata",
+    "truckNotFound": "Ruokarekkaa ei löytynyt"
+  },
+  "degraded": {
+    "at": "⚠️ Palvelimeen ei saada yhteyttä. Näytetään tiketit (tilanne {time}). UUSIA TILAUKSIA VOI PUUTTUA.",
+    "earlier": "⚠️ Palvelimeen ei saada yhteyttä. Näytetään aiemmat tiketit. UUSIA TILAUKSIA VOI PUUTTUA."
+  },
+  "header": {
+    "dashboard": "Ohjauspaneeli",
+    "backTitle": "Takaisin ohjauspaneeliin",
+    "list": "Lista",
+    "grid": "Ruudukko",
+    "full": "Täysi",
+    "cook": "Kokki",
+    "fullTitle": "Täydet kortit — hinnat ja maksutiedot, kuten ne näkyvät tiskillä.",
+    "cookTitle": "Kokin kortit — isompi teksti, ryhmitelty kategorioittain, ei hintoja.",
+    "readyStep": "Valmis-vaihe",
+    "readyOnlyTitle": "Tämä näyttö vain merkitsee tilaukset valmiiksi, joten tätä ei voi kytkeä pois — se on näytön ainoa vaihe.",
+    "readyOnTitle": "Tämä näyttö merkitsee tilaukset valmiiksi. Napauta, niin toinen näyttö hoitaa sen.",
+    "readyOffTitle": "Toinen näyttö merkitsee tilaukset valmiiksi. Napauta, niin tämä näyttö hoitaa sen.",
+    "handover": "Maksu ja luovutus",
+    "handoverOnlyTitle": "Tämä näyttö vain ottaa maksut, joten tätä ei voi kytkeä pois — se on näytön ainoa vaihe.",
+    "handoverOnTitle": "Tämä näyttö ottaa maksut ja luovuttaa tilaukset. Napauta, niin toinen näyttö hoitaa sen.",
+    "handoverOffTitle": "Toinen näyttö ottaa maksut. Napauta, niin tämä näyttö hoitaa sen.",
+    "soundOn": "Uuden tilauksen ääni on päällä — mykistä napauttamalla",
+    "soundOff": "Uuden tilauksen ääni on pois — kytke päälle napauttamalla",
+    "screenOn": "Näyttö päällä",
+    "screenOff": "Näyttö pois",
+    "screenSettings": "Näytön asetukset",
+    "manageEvent": "Hallitse tapahtumaa",
+    "manageEventTitle": "Hallitse tapahtumaa — aloita, keskeytä, muuta tai päätä se",
+    "soundSettings": "Ääniasetukset",
+    "soundSettingsTitle": "Mitkä äänet soivat tällä laitteella",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Näkymäasetukset",
+    "on": "Päällä",
+    "off": "Pois",
+    "newOrderSound": "Uuden tilauksen ääni",
+    "soundNeedsConfirming": "Vain vahvistusta odottavat tilaukset",
+    "soundAll": "Kaikki uudet tilaukset",
+    "soundDue": "Ääni, kun tilauksen valmistus pitää aloittaa",
+    "soundDueHelp": "Soi, kun tiketti muuttuu oranssiksi.",
+    "deviceSettings": "Laiteasetukset",
+    "sound": "Ääni",
+    "close": "Sulje"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Tämän tapahtuman tilauksia ei ladattu",
+    "mismatchBody": "Palvelin vastasi eri tapahtuman tiedoilla, joten mitään ei näytetä väärien tilausten sijaan. Valitse tapahtuma uudelleen tai lataa sivu uudelleen.",
+    "mismatchBodyAt": "Palvelin vastasi eri tapahtuman tiedoilla, joten mitään ei näytetä väärien tilausten sijaan (paikka: {venue}). Valitse tapahtuma uudelleen tai lataa sivu uudelleen.",
+    "paused": "⏸ Tilaukset tauolla{reason, select, offline { (laite offline-tilassa)} other {}} — asiakkaat eivät voi tilata",
+    "resume": "Jatka",
+    "offline": "Ei yhteyttä — näytetään viimeksi tunnetut tilaukset. Verkkotilaukset on keskeytetty asiakkailta.",
+    "queued": "{n, plural, one {{count} toiminto jonossa} other {{count} toimintoa jonossa}}",
+    "extraWait": "⏱ +{mins} min lisäodotus käytössä",
+    "clear": "Poista",
+    "toMake": "Tehtävänä",
+    "today": "Tänään · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Aloita tapahtuma",
+    "recentlyClosed": "Tapahtuma päättynyt · {venue} · päättyi klo {time}",
+    "eventStatus": "{tone, select, paused {⏸ Tauolla} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei alkanut}}"
+  },
+  "board": {
+    "queueClear": "Jono tyhjä",
+    "doneToday": "Valmiina tänään · {count}",
+    "paid": "✓ maksettu",
+    "cardHeld": "katevaraus",
+    "due": "{amount} maksamatta"
+  },
+  "screenOff": {
+    "title": "Sallitaanko näytön sammuminen?",
+    "bodyVans": "{n, plural, one {Ruokarekalla} other {Ruokarekoilla}} {vans} on yhteyskatkon tunnistus käytössä. Jos näyttö sammuu, laite voi lakata lähettämästä online-signaaliaan, ja asiakkaiden tilaaminen voidaan keskeyttää.",
+    "body": "Jos näyttö sammuu, laite voi lakata lähettämästä online-signaaliaan.",
+    "keepHint": "Pidä näyttö päällä, jotta tilaaminen toimii keskeytyksettä.",
+    "keep": "Pidä näyttö päällä",
+    "allow": "Salli näytön sammuminen"
+  },
+  "event": {
+    "change": "Vaihda tapahtuma",
+    "cancel": "Peruuta",
+    "waitActive": "⏱ +{mins} min käytössä · Poista napauttamalla",
+    "addWait": "⏱ Lisää odotusaikaa",
+    "endTitle": "Päätetäänkö tapahtuma?",
+    "endEarly": "Tämän tapahtuman on määrä päättyä vasta klo {time}. Uusia tilauksia ei enää oteta vastaan. Vahvistatko tapahtuman päättämisen?",
+    "endNow": "Päätetäänkö tämä tapahtuma? Uusia tilauksia ei enää oteta vastaan.",
+    "yes": "Kyllä",
+    "started": "Tapahtuma aloitettu",
+    "startFutureConfirm": "Tämän tapahtuman päivä on {date}. Aloitetaanko se nyt?",
+    "finishTimeNow": "Päättymisaika on nyt {time}",
+    "finished": "Tapahtuma päätetty",
+    "cancelled": "Tapahtuma peruttu",
+    "noteSaved": "Huomautus tallennettu",
+    "pauseConfirm": "Keskeytetäänkö tilaukset? Asiakkaat näkevät viestin ”Ei ota vastaan tilauksia”, kunnes jatkat.",
+    "switchConfirm": "Vaihdetaanko {from} → {to}?{n, plural, =0 {} one { {count} tilaus tällä näytöllä korvataan.} other { {count} tilausta tällä näytöllä korvataan.}} Palaa takaisin napauttamalla nykyistä tapahtumaa."
+  },
+  "intro": {
+    "title": "Tämä on keittiönäyttö",
+    "p1": "Tämä on kokin näkymä — valmistettavat tilaukset siinä järjestyksessä, jossa ne tehdään. Grillin vieressä oleva näyttö näyttää tämän, kun tiski käyttää tilausten ohjauspaneelia.",
+    "p2": "Kortit siirtyvät, kun napautat niitä, joten kokki tietää aina, mitä seuraavaksi tehdään, eikä kenenkään tarvitse huutaa. Kaikki täällä on demotietoja — kokeile vapaasti.",
+    "gotIt": "Selvä"
+  },
+  "toast": {
+    "failed": "Epäonnistui",
+    "rejectFailed": "Hylkääminen epäonnistui",
+    "buzzerSaved": "Summeri {n} tallennettu",
+    "buzzerRemoved": "Summeri {n} poistettu",
+    "buzzerRemovedNone": "Summeri poistettu",
+    "buzzerAssigned": "Summeri {n} annettu",
+    "buzzerAssignedFrom": "Summeri {n} annettu (otettu tilaukselta #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Summeria ei voitu poistaa {target, select, order {tilaukselta #{id}} other {tältä tilaukselta}}} other {Summeria {n} ei voitu poistaa — se on yhä {target, select, order {tilauksella #{id}} other {tällä tilauksella}}}}",
+    "buzzerAssignFailed": "Summeria {n} ei voitu antaa {target, select, order {tilaukselle #{id}} other {tälle tilaukselle}} — {had, select, yes {sillä on yhä summeri {prior}} other {sillä ei vieläkään ole summeria}}"
+  }
+}

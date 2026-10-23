@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Časy vyzdvihnutia",
+    "takes_cash": "Prijímate hotovosť?",
+    "offline_protection": "Offline ochrana objednávok",
+    "buzzer_prompt": "Pripomenúť mi pridať bzučiak"
+  },
+  "typeFollowsVanTitle": "Riadi sa obvyklým nastavením každého food trucku",
+  "sameSettingsAllVansLabel": "Rovnaké nastavenia pre všetky food trucky",
+  "sameSettingsAllVansHeader": "Všetky food trucky",
+  "sameSettingsConfirm": "Skopírovať nastavenia food trucku 1 do všetkých food truckov? Skopírujú sa všetky nastavenia food trucku 1, rovnako ako pri voľbe „Rovnaké ako Food truck 1“ v Nastaveniach. Kapacita kuchyne má vlastný prepínač.",
+  "eventTypesFooterStandard": "Štandard je vaše obvyklé nastavenie. Ak ho zmeníte tu, zmení sa aj v Nastaveniach.",
+  "eventTypesFooterOneEvent": "Ak chcete zmeniť nastavenie len pre jednu akciu, použite prehľad tejto akcie.",
+  "eventTypesSubtitle": "Zmeny sa ukladajú priebežne.",
+  "matchStandardLabel": "Ako Štandard",
+  "matchStandardConfirm": "Vrátiť všetky nastavenia tohto typu na Štandard? Všetko, čo ste tu zmenili, sa vymaže.",
+  "priceLabels": {
+    "price_change_on": "Zmeniť ceny",
+    "price_mode": "Zmena ceny",
+    "price_amount": "Suma",
+    "price_rounding": "Zaokrúhľovanie",
+    "item_prices": "Ceny položiek"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Každú cenu nastaviť ručne"
+  },
+  "priceRounding": {
+    "none": "Žiadne",
+    "nearest_1": "Na najbližšie 1 {symbol}",
+    "up_1": "Vždy nahor"
+  },
+  "pricesStandardCell": "Ceny z jedálneho lístka",
+  "pricesTruckWideTitle": "Ceny sú rovnaké pre všetky food trucky",
+  "pricesMenuCell": "Jedálny lístok",
+  "pricesTypeOffCell": "Ceny z jedálneho lístka",
+  "itemPricesShow": "Zobraziť ceny",
+  "itemPricesHide": "Skryť ceny",
+  "priceItemsHeading": "Nastavte cenu každej položky",
+  "priceItemsOpen": "Zobraziť alebo zmeniť ceny položiek ›",
+  "priceItemsClose": "Skryť ceny položiek ⌃",
+  "ownPriceCount": "{n, plural, one {{count} položka má vlastnú cenu} few {{count} položky majú vlastnú cenu} other {{count} položiek má vlastnú cenu}}",
+  "priceTypeHint": "Ťuknite na cenu a zadajte vlastnú.",
+  "pricesLiveNotice": "Táto akcia je zverejnená. Nové objednávky majú nové ceny. Už zadané objednávky si ponechajú pôvodné.",
+  "placeTypeHelper": "Keď v okne Pridať akciu vyberiete toto miesto, vždy sa zvolí tento typ.",
+  "postPictureStandardNote": "Príspevky o akciách tu používajú váš štandardný dizajn.",
+  "eventItemsCardDescription": "Ceny, limity položiek a dostupnosť len pre túto akciu. Zmeny platia okamžite.",
+  "eventPriceColumnLabel": "Cena",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · táto akcia} other {jedálny lístok {price} · táto akcia}}",
+  "eventPriceEdit": "✎ Upraviť ceny",
+  "eventPriceCancel": "Zrušiť",
+  "eventPriceSave": "Uložiť ceny",
+  "eventPriceEditNote": "Upravujete ceny len pre túto akciu. Limity položiek a dostupnosť sú do uloženia zamknuté.",
+  "eventPriceLiveNote": "Zverejnené: nové objednávky majú nové ceny.",
+  "offlineWhenOfflineLabel": "Keď ste offline"
+}

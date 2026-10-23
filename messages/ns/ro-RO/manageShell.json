@@ -1,0 +1,84 @@
+{
+  "loading": "Se încarcă consola de administrare…",
+  "loadFailed": "Încărcarea a eșuat",
+  "requestFailed": "Eroare",
+  "invalidToken": "Token invalid sau expirat",
+  "loadFailedReason": "Pagina nu a putut fi încărcată: {reason}",
+  "noCountrySettings": "Setările de țară ale acestui food truck nu au putut fi încărcate. Reîmprospătați pagina.",
+  "noPlans": "Planul acestui food truck nu a putut fi încărcat. Reîmprospătați pagina.",
+  "stale": "{hasTime, select, yes {Reîmprospătarea nu a reușit. Se afișează datele salvate la {time}. Modificările pe care le faceți se salvează în continuare.} other {Reîmprospătarea nu a reușit. Se afișează datele salvate. Modificările pe care le faceți se salvează în continuare.}}",
+  "verify": {
+    "ok": "E-mail confirmat — vă mulțumim.",
+    "expired": "Linkul de confirmare a expirat. Contactați-ne și rezolvăm înainte de lansare.",
+    "invalid": "Linkul de confirmare nu a funcționat. Contactați-ne și rezolvăm înainte de lansare."
+  },
+  "profile": {
+    "updated": "Profil actualizat",
+    "saveFailed": "Salvarea a eșuat",
+    "title": "Editați profilul",
+    "name": "Nume",
+    "namePlaceholder": "Numele dumneavoastră",
+    "email": "E-mail",
+    "cancel": "Anulați",
+    "saving": "Se salvează…",
+    "save": "Salvați"
+  },
+  "header": {
+    "subtitle": "Consolă de administrare",
+    "ordersDashboard": "← Panoul de comenzi"
+  },
+  "tabs": {
+    "menu": "Meniu",
+    "schedule": "Program",
+    "social": "Rețele sociale",
+    "reports": "Rapoarte",
+    "team": "Echipă",
+    "settings": "Setări",
+    "payments": "Plăți",
+    "billing": "Facturare",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Program ({count})",
+    "stripeAttention": "Stripe necesită atenția dumneavoastră",
+    "allergensNotSet": "alergeni nesetați"
+  },
+  "menuSections": {
+    "label": "Secțiuni meniu",
+    "items": "Produse",
+    "capacity": "Capacitatea bucătăriei",
+    "extras": "Extra și sugestii",
+    "deals": "Combo-uri"
+  },
+  "socialSections": {
+    "label": "Secțiuni rețele sociale",
+    "create": "Creați o postare",
+    "designs": "Design-uri",
+    "locations": "Setări locații"
+  },
+  "notices": {
+    "review": "Verificați →",
+    "tour": "Doriți un tur rapid al panoului de control?",
+    "showMeAround": "Arătați-mi",
+    "dismiss": "Închideți",
+    "approval": "{count, plural, one {Am găsit <b>{count}</b> eveniment pentru dumneavoastră — verificați-l și aprobați-l înainte să fie publicat.} few {Am găsit <b>{count}</b> evenimente pentru dumneavoastră — verificați-le și aprobați-le înainte să fie publicate.} other {Am găsit <b>{count}</b> de evenimente pentru dumneavoastră — verificați-le și aprobați-le înainte să fie publicate.}}",
+    "allergens": "<b>Alergeni nesetați</b> — clienții nu pot vedea informațiile despre alergeni până nu le verificați. Verificați alergenii fiecărui preparat în fila Meniu.",
+    "domainLive": "<link>{domain}</link> este online. Aruncați o privire, apoi confirmați-ne în Setări că totul este în regulă.",
+    "stripe": "<b>Stripe are nevoie de ceva de la dumneavoastră</b> — plățile cu cardul se pot opri până se rezolvă.",
+    "profileTitle": "Completați profilul",
+    "missing": "Lipsesc: {fields}.",
+    "goToSettings": "Mergeți la Setări →",
+    "field": {
+      "truckName": "numele food truck-ului",
+      "cuisineType": "tipul de bucătărie",
+      "contactEmail": "e-mailul de contact",
+      "contactPhone": "telefonul de contact"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Sunteți în perioada de probă gratuită} other {Aveți o perioadă de probă gratuită — durata în luni: {months}}}",
+    "ends": "{hasDate, select, yes {Perioada de probă se încheie pe <hl>{date}</hl>} other {Perioada de probă se încheie <hl>în curând</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Toate funcțiile gratuite timp de # lună} few {Toate funcțiile gratuite timp de # luni} other {Toate funcțiile gratuite timp de # de luni}}} other {Toate funcțiile gratuite pe durata perioadei de probă}}",
+    "body": "{hasDate, select, yes {Nu vi se va percepe nimic pe durata perioadei de probă, care durează până pe <b>{date}</b>. Facturarea începe doar atunci când alegeți un plan și introduceți datele de plată. Până atunci nu aveți nimic de anulat și nimic de plătit. Alegeți planul înainte de această dată — dacă nu o faceți, veți trece la planul {fallback} și unele funcții nu vor mai funcționa.} other {Nu vi se va percepe nimic cât timp sunteți în perioada de probă. Facturarea începe doar atunci când alegeți un plan și introduceți datele de plată. Până atunci nu aveți nimic de anulat și nimic de plătit. Alegeți planul înainte de sfârșitul perioadei de probă — dacă nu o faceți, veți trece la planul {fallback} și unele funcții nu vor mai funcționa.}}",
+    "fees": "*Pentru comenzile online se aplică comisioanele standard de procesare a plăților cu cardul",
+    "upgrade": "Alegeți un plan →"
+  }
+}

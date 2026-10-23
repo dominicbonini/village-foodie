@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Izberite, kako prikazujete podatke o alergenih",
+    "detail": "Dokler ne izberete, stranke ne vidijo nobene vaše jedi — jedilnik se zaščiti tako, da skrije vse, česar alergeni niso potrjeni, trenutno pa je to vse.",
+    "where": "Jedilnik → Alergeni"
+  },
+  "allergensCardMissing": {
+    "title": "Dodajte kartico alergenov",
+    "detail": "Izbrali ste prikaz kartice alergenov, a nobena ni shranjena — stranke bi tako izvedele, da so podatki o alergenih na voljo, nato pa ne bi našle ničesar.",
+    "where": "Jedilnik → Alergeni"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Potrdite alergene za {count} jed} two {Potrdite alergene za {count} jedi} few {Potrdite alergene za {count} jedi} other {Potrdite alergene za {count} jedi}}",
+    "detail": "{n, plural, one {Vaša jed je skrita pred strankami, dokler ne potrdite njenih alergenov.} two {{u, plural, one {{unverified} od vaših {total} jedi je skrita pred strankami, dokler ne potrdite njenih alergenov.} two {{unverified} od vaših {total} jedi sta skriti pred strankami, dokler ne potrdite njunih alergenov.} few {{unverified} od vaših {total} jedi so skrite pred strankami, dokler ne potrdite njihovih alergenov.} other {{unverified} od vaših {total} jedi je skritih pred strankami, dokler ne potrdite njihovih alergenov.}}} few {{u, plural, one {{unverified} od vaših {total} jedi je skrita pred strankami, dokler ne potrdite njenih alergenov.} two {{unverified} od vaših {total} jedi sta skriti pred strankami, dokler ne potrdite njunih alergenov.} few {{unverified} od vaših {total} jedi so skrite pred strankami, dokler ne potrdite njihovih alergenov.} other {{unverified} od vaših {total} jedi je skritih pred strankami, dokler ne potrdite njihovih alergenov.}}} other {{u, plural, one {{unverified} od vaših {total} jedi je skrita pred strankami, dokler ne potrdite njenih alergenov.} two {{unverified} od vaših {total} jedi sta skriti pred strankami, dokler ne potrdite njunih alergenov.} few {{unverified} od vaših {total} jedi so skrite pred strankami, dokler ne potrdite njihovih alergenov.} other {{unverified} od vaših {total} jedi je skritih pred strankami, dokler ne potrdite njihovih alergenov.}}}} Jed, prikazana brez potrjenih alergenov, se bere kot „ne vsebuje ničesar“, zato jo jedilnik raje skrije, kot da bi tvegal.",
+    "where": "Jedilnik → Alergeni"
+  },
+  "noVan": {
+    "title": "Dodajte food truck",
+    "detail": "Dogodki tečejo prek food trucka — brez njega ni ničesar, prek česar bi sprejemali naročila.",
+    "where": "Nastavitve → Vaši food trucki"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Nastavite zmogljivost kuhinje",
+    "detail": "Zmogljivost ni nastavljena za: {vans}. Brez nje bomo strankam še naprej obljubljali čas prevzema, ki ga vaša kuhinja nikakor ne more doseči.",
+    "where": "Jedilnik → Zmogljivost kuhinje",
+    "unnamedVan": "Neimenovan food truck"
+  },
+  "noPrepBearingCategory": {
+    "title": "Povejte nam, koliko časa potrebuje vaša hrana",
+    "detail": "{categories, select, none {Še nimate nobene kategorije jedilnika, zato ne moremo izračunati, koliko časa traja naročilo.} other {Nobena vaša kategorija nima nastavljenega časa priprave, zato se nam vsako naročilo zdi takojšnje. Strankam bi še naprej dajali čas prevzema, ki ga vaša kuhinja ne more doseči, in bolj ko bi bili zasedeni, dlje od resničnosti bi bil.}}",
+    "where": "Jedilnik → Kategorije → Nastavitev kuhinje"
+  },
+  "emailUnverified": {
+    "title": "Potrdite svoj e-poštni naslov",
+    "detail": "Na ta naslov pošiljamo obvestila o naročilih in povezave za obnovitev računa. Če je napačen, to izveste šele, ko je nekaj že šlo narobe.",
+    "where": "V nabiralniku poiščite našo povezavo za potrditev"
+  },
+  "emailUnknown": {
+    "title": "Stanje potrditve e-pošte ni znano",
+    "detail": "Preverjanje e-pošte še ni povezano, zato tega ni mogoče oceniti. Ta pogoj namenoma blokira, namesto da bi ga tiho spustil naprej.",
+    "where": "—"
+  }
+}

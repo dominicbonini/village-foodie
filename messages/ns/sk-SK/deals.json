@@ -1,0 +1,17 @@
+{
+  "back": "← Späť",
+  "title": "Použiť menu",
+  "save": "Ušetríte {amount}",
+  "selectItems": "Vyberte položky pre každú časť menu",
+  "choose": "Vyberte: {category}…",
+  "inYourBasket": "── Vo vašom košíku ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (v košíku){state, select, used { — už je v inom menu} taken { — vybrané v inej časti} other {}}",
+  "addNew": "── Pridať nové ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Povinné · vyberte jednu možnosť} required {Povinné} other {Vyberte jednu možnosť}}{unmet, select, yes { (povinné)} other {}}",
+  "notePlaceholder": "Pridajte poznámku, napr. bez cibule (nepovinné)",
+  "backButton": "Späť",
+  "cancel": "Zrušiť",
+  "chooseRequired": "Vyberte povinné možnosti",
+  "apply": "Použiť menu · {amount}"
+}

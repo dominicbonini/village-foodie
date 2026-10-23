@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "food truckonként / hónap",
+  "transactionFees": "Tranzakciós díjak",
+  "comingSoon": "Hamarosan",
+  "footnote2Masked": "Az online fizetéseket a Stripe Connect biztosítja. A platform- és a kártyás tranzakciós díjak még nincsenek véglegesítve, az induláskor tesszük közzé őket.",
+  "card": {
+    "title": "Számlázás és fizetések",
+    "managed": "A számlázást a HatchGrab kezeli",
+    "earlyAccess": "A korai hozzáférés idején a csomagokat kézzel állítjuk be és módosítjuk.",
+    "planLine": "{trial, select, yes {{truck} · {plan} csomag (próbaidőszak)} other {{truck} · {plan} csomag}}"
+  },
+  "currentPlan": "Jelenlegi csomag",
+  "plan": {
+    "included": "Havonta {amount} értékű online rendelést tartalmaz.",
+    "includedUnlimited": "Korlátlan online rendelést tartalmaz.",
+    "promo": "Különleges ár.",
+    "promoUntil": "Különleges ár, érvényes eddig: {date}.",
+    "ended": "{plan} csomagja lejárt ({date}). Jelenlegi csomagja: {now}.",
+    "trialMonths": "{months} hónapos ingyenes próbaidőszak."
+  },
+  "trialEnds": "A próbaidőszak vége: {date}",
+  "yourTrialEnds": "Az Ön próbaidőszakának vége: {date}",
+  "notStarted": {
+    "heading": "Az ingyenes próbaidőszaka még nem kezdődött el"
+  },
+  "onTrial": "Minden funkció elérhető Önnek. Válasszon csomagot a próbaidőszak vége előtt.",
+  "onTrialNoCta": "Minden funkció elérhető Önnek.",
+  "noCharge": "🔒 A próbaidőszak végéig ({date}) semmilyen díjat nem számolunk fel Önnek. Számlázás csak akkor indul, ha Ön csomagot választ, és megadja a fizetési adatait. Addig nincs mit lemondani, és nincs mit fizetni.",
+  "fees": "*Az online rendeléseknél a szokásos kártyás tranzakciós díjak érvényesek",
+  "setUpPayment": "⏱ Válasszon csomagot a próbaidőszak vége előtt",
+  "changeYourPlan": "Csomag módosítása",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Csomagváltás: {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Az automatikus számlázást most vezetjük be. Ha már most váltana, írjon nekünk, és 24 órán belül beállítjuk.",
+    "mailSubject": "Csomagváltás: {plan} — {truck}",
+    "mailBody": "Üdvözlöm! Csomagot szeretnék váltani ennél a food trucknál: {truck}. Az új csomag: {plan} ({price}).",
+    "email": "Váltás kérése e-mailben",
+    "cancel": "Mégse"
+  }
+}

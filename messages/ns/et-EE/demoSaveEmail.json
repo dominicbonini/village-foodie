@@ -1,0 +1,9 @@
+{
+  "subject": "Sinu HatchGrabi demo — siin on link tagasi",
+  "heading": "Sinu demo on salvestatud",
+  "intro": "Siin on link tagasi demosse, kus on sinu menüü. Sisselogimist pole vaja — lihtsalt puuduta seda.",
+  "button": "Ava minu demo",
+  "freshDay": "Iga kord, kui tagasi tuled, seame valmis uue müügipäeva, et oleks millega katsetada.",
+  "deletion": "See on demo, seega me ei hoia seda igavesti — kustutame selle koos menüüga kuupäeval\n                <b>{date}</b> ({days, plural, one {# päeva pärast} other {# päeva pärast}}). Kui registreerud enne\n                seda, tuleb sinu menüü sinuga kaasa.",
+  "notSent": "Salvestatud, kuid me ei saanud e-kirja praegu saata."
+}

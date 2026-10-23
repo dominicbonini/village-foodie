@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Uporabniški meni",
+  "screenOn": "Zaslon vklopljen",
+  "screenOff": "Zaslon izklopljen",
+  "newOrderSound": "Zvok novih naročil",
+  "copied": "Kopirano",
+  "orderLink": "Povezava za naročanje",
+  "qrCode": "Koda QR",
+  "kitchenScreen": "Kuhinjski zaslon",
+  "thisDevice": "Ta naprava",
+  "manage": "Upravljanje",
+  "ordersDashboard": "Nadzorna plošča naročil",
+  "admin": "Administracija",
+  "privacy": "Pravilnik o zasebnosti",
+  "terms": "Pogoji",
+  "signOut": "Odjava",
+  "close": "Zapri"
+}

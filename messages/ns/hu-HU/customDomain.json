@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Tegye ki a menetrendjét a weboldalára",
+    "live": "Ez a cím mutatja a menetrendjét: <addr>{address}</addr>.",
+    "create": "Létrehozunk egy oldalt, amely a menetrendjét mutatja, ezen a címen: <addr>{address}</addr>.",
+    "exampleDomain": "afoodtruckod.hu",
+    "liveBadge": "Élő",
+    "setUp": "Beállítás",
+    "viewSetup": "Megtekintés",
+    "continue": "Folytatás",
+    "justLive": "Működik: <b>{address}</b>. Nézze meg, majd alább jelezze, hogy minden rendben van."
+  },
+  "waiting": {
+    "title": "Várunk erre a címre: {address}",
+    "bodySince": "A beállítás dátuma: {date}. Az új webcímek általában néhány percen belül működni kezdenek, de ritkán akár 24 órába is telhet, mire mindenkihez eljutnak — eközben Önnek nincs teendője. Ha valaki más vette fel Ön helyett a bejegyzést, érdemes ellenőrizni, hogy megtette-e.",
+    "body": "Az új webcímek általában néhány percen belül működni kezdenek, de ritkán akár 24 órába is telhet, mire mindenkihez eljutnak — eközben Önnek nincs teendője. Ha valaki más vette fel Ön helyett a bejegyzést, érdemes ellenőrizni, hogy megtette-e."
+  },
+  "ready": {
+    "title": "Elérhető: {address}",
+    "body": "Nézze meg, majd a beállításokban jelezze, hogy minden rendben van."
+  },
+  "confirm": {
+    "heading": "Nézze meg, majd jelezze, hogy rendben van",
+    "open": "Megnyitás: <link>{address}</link>",
+    "checkTimes": "Ellenőrizze, hogy a dátumok és időpontok helyesek-e.",
+    "yes": "Igen, rendben van",
+    "no": "Nem, probléma van",
+    "problemLine": "Írja meg, mit lát, és utánanézünk.",
+    "emailUs": "Írjon nekünk",
+    "mailSubject": "Probléma ezzel a címmel: {address}",
+    "mailLiveSince": "Élő ekkortól: {date}",
+    "mailSeeing": "Amit látok:"
+  },
+  "confirmed": {
+    "heading": "Köszönjük — mindent feljegyeztünk.",
+    "body": "Nincs más teendője."
+  },
+  "turnOff": {
+    "link": "Kikapcsolás",
+    "heading": "Kikapcsolja a saját webcímét?",
+    "stops": "Ez nem fog tovább működni:",
+    "carriesOn": "Ez pontosan úgy működik tovább, mint eddig, és ide irányítja az embereket a QR-kódja:",
+    "reAdd": "Ha később újra beállítja, hagyja meg a bejegyzést, amelyet a webcím szolgáltatójánál felvett. Ha nem, kérje meg őket, hogy távolítsák el.",
+    "cancel": "Maradjon bekapcsolva",
+    "confirm": "Kikapcsolás",
+    "working": "Kikapcsolás…",
+    "failed": "Most nem sikerült kikapcsolni. Semmi sem változott — a címe továbbra is működik. Próbálja újra kicsit később."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Nem sikerült betölteni a beállítását.",
+    "resumeFailedBody": "Semmi sem változott. Próbálja újra kicsit később.",
+    "close": "Bezárás",
+    "resuming": "Folytatás ott, ahol abbahagyta…",
+    "genericError": "Hiba történt",
+    "saveFailed": "Nem sikerült menteni"
+  },
+  "address": {
+    "intro": "A menetrendje saját webcímet kap.",
+    "question": "Mi az Ön webcíme?",
+    "hint": "Amelyen az emberek már most is megtalálják Önt.",
+    "aria": "Saját webcím",
+    "willBe": "A címe ez lesz: <addr>{address}</addr>",
+    "example": "Például: <addr>{address}</addr>",
+    "noChange": "A weboldala nem változik — csak egy linket kell hozzáadnia az új címre.",
+    "notSetUp": "Ezt nem állítottuk be.",
+    "restricted": "Annak, aki a webcímét kezeli, engedélyeznie kell számunkra a lakat beállítását — azt a kis lakatot, amelyet a vendégek a cím mellett látnak. Amíg nem engedélyeznek minket, a lakat nem jelenik meg, ezért inkább leálltunk, mint hogy várakozni hagyjuk. Kérje meg őket, hogy engedélyezzenek minket, majd próbálja újra.",
+    "blocked": "A webcíme jelenleg teljesen letiltja a lakatot. Annak, aki kezeli, engedélyeznie kell, hogy ez működhessen. Kérje meg, hogy módosítsa ezt, majd próbálja újra.",
+    "elsewhere": "Ezen a címen már válaszol valami. A következő képernyőn lévő üzenetet küldje el annak, aki a címet kezeli — tudni fogja, mi a teendő.",
+    "provider": "A webcímét ez a szolgáltató kezeli: <b>{provider}</b>. Megmutatjuk, hová kell mennie.",
+    "provisionFailed": "Nem sikerült beállítani ezt a címet.",
+    "willNotWork": "Ez a cím nem fog működni.",
+    "couldNotBeSetUp": "Ezt a címet nem lehetett beállítani.",
+    "couldNotSetUp": "Nem sikerült beállítani",
+    "checking": "Ellenőrzés…",
+    "setting": "Beállítás…",
+    "tryAgain": "Próbálja újra",
+    "setUpAddress": "Cím beállítása",
+    "notNow": "Most nem"
+  },
+  "apex": {
+    "empty": "Írja be a használni kívánt címet.",
+    "not_a_domain": "Ez nem tűnik webcímnek.",
+    "unparseable": "Ezt nem tudtuk webcímként értelmezni. Ellenőrizze a helyesírást, és próbálja újra.",
+    "apex": "Ez a teljes weboldalcíme: {host}. Ha ezt irányítja hozzánk, a weboldala helyére ez az oldal kerül. Inkább tegyen elé egy szót — például: program.{host}.",
+    "too_deep": "Ez a cím túl sok részből áll. Valami ilyesmi működik a legjobban: program.{domain}."
+  },
+  "record": {
+    "addAt": "Adja hozzá ezt itt: {provider}",
+    "open": "Megnyitás: {provider}",
+    "guide": "A szolgáltató saját útmutatója ehhez: {provider}",
+    "addAtSave": "Adja hozzá ezt itt: {provider}, majd mentse.",
+    "addSomewhere": "Adja hozzá ezt ott, ahol a webcímét kezelik, majd mentse.",
+    "hintChoose": "Ezt válassza ki a listából.",
+    "hintWord": "Csak ezt a szót, ne a teljes címet.",
+    "hintExact": "Pontosan így másolja be.",
+    "timing": "Általában egy órán belül működni kezd, de tovább is tarthat. Nem kell nyitva tartania ezt az oldalt.",
+    "someoneElse": "Valaki más kezeli a webcímét?",
+    "sentTo": "Elküldve ide: {email}",
+    "emailPlaceholder": "az ő e-mail-címe",
+    "sending": "Küldés…",
+    "send": "Adatok elküldése",
+    "sendFailed": "Nem sikerült elküldeni"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Nyissa meg a webcímét, majd a „DNS” és a „Records” menüt.",
+      "add": "Válassza az „Add record” lehetőséget, majd a „Type” mezőben a „CNAME” értéket.",
+      "name": "Az alábbi első értéket írja a „Name” mezőbe.",
+      "value": "Az alábbi második értéket írja a „Target” mezőbe.",
+      "proxy": "A „Proxy status” beállítás legyen „DNS only” — a mellette lévő felhőnek szürkének kell lennie, nem narancssárgának.",
+      "save": "A „TTL” maradjon „Auto”, majd válassza a „Save” gombot.",
+      "caveat": "Ha a felhő narancssárga marad, a lakat soha nem jelenik meg, és semmi sem jelzi, miért."
+    },
+    "godaddy": {
+      "open": "Nyissa meg a „Domain Portfolio” oldalt, és válassza ki a webcímét.",
+      "dns": "A „Domain Settings” oldalon válassza a „DNS” lehetőséget.",
+      "add": "Válassza az „Add New Record” lehetőséget, majd a „Type” menüből a „CNAME” értéket.",
+      "name": "Az alábbi első értéket írja a „Name” mezőbe.",
+      "value": "Az alábbi második értéket írja a „Value” mezőbe.",
+      "save": "A „TTL” maradjon változatlan, majd válassza a „Save” gombot.",
+      "caveat": "Ha egyszerre több bejegyzést adott hozzá, a gomb felirata „Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Jelentkezzen be a „123 Reg Control Panel” felületre.",
+      "manage": "A „Domains” mellett válassza a „Manage All” lehetőséget, majd válassza ki a webcímét.",
+      "dns": "Válassza a „DNS”, majd az „Add New Record” lehetőséget.",
+      "type": "A „Type” listából válassza a „CNAME” értéket.",
+      "name": "Az alábbi első értéket írja a „Name” mezőbe.",
+      "value": "Az alábbi második értéket írja a „Value” mezőbe, és tegyen a végére egy pontot.",
+      "save": "A „TTL” maradjon „Default”, majd kattintson a „Save” gombra.",
+      "caveat": "A 123 Reg esetében a második érték végére pontot kell tenni, különben nem fog működni."
+    },
+    "wix": {
+      "open": "Nyissa meg a „Domains” oldalt, majd kattintson a webcíme melletti „Domain Actions” ikonra.",
+      "manage": "Válassza a „Manage DNS Records” lehetőséget.",
+      "add": "A „CNAME (Aliases)” részben kattintson a „+ Add Record”, majd a „Got it” gombra.",
+      "name": "Az alábbi első értéket írja a „Host Name” mezőbe.",
+      "value": "Az alábbi második értéket írja a „Value” mezőbe.",
+      "save": "Kattintson a „Save” gombra, majd a felugró ablakban a „Save Changes” gombra.",
+      "caveat": "Ha a webcíme csak a Wix felé mutat, de nem ott van regisztrálva, a Wix nem tudja elvégezni ezt a módosítást — csak az, akinél a cím regisztrálva van."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Egy felveendő DNS-bejegyzés — {truckName} menetrendoldala",
+    "hello": "Üdvözlöm!",
+    "introAt": "Közzétesszük {truckName} aktuális menetrendjét ezen a címen: {address}. Ehhez egyetlen bejegyzést kell felvenni a domainünkhöz ennél a szolgáltatónál: {provider}.",
+    "introHolder": "Közzétesszük {truckName} aktuális menetrendjét ezen a címen: {address}. Ehhez egyetlen bejegyzést kell felvenni a domainünkhöz annál a szolgáltatónál, ahol a domainünk regisztrálva van.",
+    "stepsAt": "Teendők itt: {provider}",
+    "guide": "A szolgáltató saját útmutatója: {url}",
+    "wholeChange": "Ez az egész módosítás — a weboldalon semmi mást nem érint, és a domain többi része pontosan úgy működik tovább, mint most. Általában egy órán belül működni kezd.",
+    "pointsAt": "Az oldal, amelyre mutat, azt mutatja, hol árulunk legközelebb, és magától frissül.",
+    "replyTo": "Ha kérdése van, írjon erre a címre: {email}.",
+    "thanks": "Köszönöm!"
+  },
+  "liveEmail": {
+    "subject": "Működik: {address}",
+    "goodNews": "Jó hír — működik: {address}.",
+    "body": "A menetrendje most már a saját címén látható. Nézze meg, és ellenőrizze, hogy minden rendben van: nyissa meg ezt a címet: {address}, és győződjön meg róla, hogy az események az Önéi, és a dátumok helyesek.",
+    "confirm": "Ha ezzel megvan, nyissa meg a beállításait a HatchGrab felületén, és jelezze, hogy minden rendben van. Ettől semmi sem függ — csak így tudjuk, hogy egy ember is látta."
+  }
+}

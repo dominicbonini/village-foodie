@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Zvolte, jak zobrazíte informace o alergenech",
+    "detail": "Dokud si nevyberete, zákazníci neuvidí žádné z vašich jídel — jídelní lístek se chrání tím, že skryje vše, co nemá potvrzené alergeny, a teď je to všechno.",
+    "where": "Jídelní lístek → Alergeny"
+  },
+  "allergensCardMissing": {
+    "title": "Přidejte kartu alergenů",
+    "detail": "Zvolili jste zobrazení karty alergenů, ale žádná není uložená — zákazníci by se tak dozvěděli, že informace o alergenech jsou k dispozici, a pak by nic nenašli.",
+    "where": "Jídelní lístek → Alergeny"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Potvrďte alergeny u {count} jídla} few {Potvrďte alergeny u {count} jídel} other {Potvrďte alergeny u {count} jídel}}",
+    "detail": "{n, plural, one {Vaše jídlo je před zákazníky skryté, dokud nepotvrdíte jeho alergeny.} few {{u, plural, one {{unverified} z vašich {total} jídel je před zákazníky skryté, dokud nepotvrdíte jeho alergeny.} few {{unverified} z vašich {total} jídel jsou před zákazníky skrytá, dokud nepotvrdíte jejich alergeny.} other {{unverified} z vašich {total} jídel je před zákazníky skryto, dokud nepotvrdíte jejich alergeny.}}} other {{u, plural, one {{unverified} z vašich {total} jídel je před zákazníky skryté, dokud nepotvrdíte jeho alergeny.} few {{unverified} z vašich {total} jídel jsou před zákazníky skrytá, dokud nepotvrdíte jejich alergeny.} other {{unverified} z vašich {total} jídel je před zákazníky skryto, dokud nepotvrdíte jejich alergeny.}}}} Jídlo zobrazené bez potvrzených alergenů působí jako „neobsahuje žádné“, a proto ho jídelní lístek raději skryje, než by to riskoval.",
+    "where": "Jídelní lístek → Alergeny"
+  },
+  "noVan": {
+    "title": "Přidejte food truck",
+    "detail": "Akce běží přes food truck — bez něj nemáte přes co přijímat objednávky.",
+    "where": "Nastavení → Vaše food trucky"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Nastavte kapacitu kuchyně",
+    "detail": "Kapacita není nastavená u těchto food trucků: {vans}. Bez ní budeme zákazníkům dál slibovat čas vyzvednutí, který vaše kuchyně nemá šanci stihnout.",
+    "where": "Jídelní lístek → Kapacita kuchyně",
+    "unnamedVan": "Food truck bez názvu"
+  },
+  "noPrepBearingCategory": {
+    "title": "Řekněte nám, jak dlouho příprava trvá",
+    "detail": "{categories, select, none {Zatím nemáte žádné kategorie jídelního lístku, takže nemáme jak spočítat, jak dlouho objednávka trvá.} other {Žádná z vašich kategorií nemá nastavenou dobu přípravy, takže nám každá objednávka připadá okamžitá. Zákazníkům bychom dál nabízeli čas vyzvednutí, který vaše kuchyně nemá šanci stihnout, a čím víc práce byste měli, tím víc by se rozcházel se skutečností.}}",
+    "where": "Jídelní lístek → Kategorie → Nastavení kuchyně"
+  },
+  "emailUnverified": {
+    "title": "Potvrďte svou e-mailovou adresu",
+    "detail": "Na tuto adresu posíláme oznámení o objednávkách a obnovení účtu. Pokud je špatně, zjistíte to, až už se něco pokazí.",
+    "where": "Náš potvrzovací odkaz najdete ve své schránce"
+  },
+  "emailUnknown": {
+    "title": "Stav potvrzení e-mailu není znám",
+    "detail": "Ověřování e-mailu zatím není napojené, takže to nelze vyhodnotit. Záměrně to blokuje, místo aby to potichu prošlo.",
+    "where": "—"
+  }
+}

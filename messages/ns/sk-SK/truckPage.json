@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Objednajte si z food trucku {truck}",
+    "orderDescription": "Objednajte si vopred z food trucku {truck} a vyzdvihnite si objednávku priamo pri ňom.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo {truck}"
+  },
+  "shareTitle": "{truck} – harmonogram",
+  "shareText": "Pozrite sa, kde sa food truck {truck} objaví nabudúce! 🚚",
+  "linkCopied": "Odkaz na profil bol skopírovaný do schránky! 📋",
+  "facebookPage": "Stránka na Facebooku",
+  "loadingMap": "Načítava sa mapa…",
+  "view": {
+    "list": "Zoznam",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "Je to váš food truck?",
+  "ownThisTruckTitle": "Je to váš food truck? Kliknite a aktualizujte svoj profil",
+  "actions": {
+    "menu": "Jedálny lístok",
+    "call": "Zavolať",
+    "message": "Správa",
+    "share": "Zdieľať",
+    "order": "Objednať"
+  },
+  "loadingSchedule": "Načítava sa harmonogram…",
+  "loadError": {
+    "title": "Nepodarilo sa načítať",
+    "body": "Harmonogram sa momentálne nepodarilo načítať — zvyčajne ide o krátky výpadok. Skúste to znova.",
+    "retry": "Skúsiť znova"
+  },
+  "notFound": {
+    "title": "Food truck sa nenašiel",
+    "body": "K tomuto food trucku sme nenašli žiadne údaje. Možno sa presťahoval alebo aktualizoval svoj profil.",
+    "cta": "Zobraziť všetky food trucky"
+  },
+  "noEvents": {
+    "title": "Žiadne nadchádzajúce akcie",
+    "body": "Možno nám k tomuto food trucku chýbajú niektoré údaje. Ste jeho majiteľ alebo poznáte jeho harmonogram?",
+    "cta": "Napíšte nám a aktualizujeme to!"
+  },
+  "whereToFind": "Kde nás nájdete",
+  "missingEvent": "<strong>Chýba tu nejaká akcia?</strong> <br></br>Ak ste majiteľom tohto food trucku alebo jeho verným fanúšikom, pomôžte nám udržať túto stránku presnú! <br></br><link>Napíšte nám a doplníme chýbajúce údaje.</link>",
+  "weeklySchedule": "Získať týždenný harmonogram 🍕"
+}

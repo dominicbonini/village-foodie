@@ -1,0 +1,10 @@
+{
+  "copy": "Kopírovať",
+  "copied": "Skopírované ✓",
+  "failed": "Kopírovanie zlyhalo",
+  "aria": "{label} {thing}",
+  "announceCopied": "Skopírované: {thing}",
+  "announceCopiedValue": "Hodnota skopírovaná",
+  "announceFailed": "Nepodarilo sa skopírovať: {thing}. Označte text a skopírujte ho sami.",
+  "announceFailedValue": "Hodnotu sa nepodarilo skopírovať. Označte text a skopírujte ho sami."
+}

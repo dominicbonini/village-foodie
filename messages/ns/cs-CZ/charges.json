@@ -1,0 +1,13 @@
+{
+  "subtotal": "Mezisoučet",
+  "taxFallback": "Daň",
+  "taxIncluded": "Včetně {label}",
+  "serviceFeeCustomer": "Online servisní poplatek",
+  "serviceFee": "Servisní poplatek",
+  "cardFee": "Poplatek za kartu",
+  "tip": "Spropitné",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Daň, poplatky a spropitné} tax_tip {Daň a spropitné} fees_tip {Poplatky a spropitné} fees {Poplatky} other {Daň a poplatky}}"
+}

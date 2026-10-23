@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} termin} few {{count} termina} other {{count} termina}} iznad kapaciteta — provjerite",
+  "batchOver": "{cat}: premašena serija — {count} za {slot} ({per} po seriji)",
+  "eventStartOver": "Iznad kapaciteta na početku događaja — {n, plural, one {{count} artikl} few {{count} artikla} other {{count} artikala}} za {slot}",
+  "kitchenOver": "Kuhinja iznad kapaciteta — {n, plural, one {{count} artikl u pripremi} few {{count} artikla u pripremi} other {{count} artikala u pripremi}} za {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} artikl} few {{count} artikla} other {{count} artikala}}",
+  "placedAnyway": "Ipak zaprimljeno: {list}",
+  "placedItem": "#{id} za {slot}",
+  "orphans": "{times} iznad kapaciteta — nisu pronađene narudžbe kojima bi se to pripisalo",
+  "dismiss": "Odbaci",
+  "kitchenCapacity": "Kapacitet kuhinje",
+  "overCapacity": "Iznad kapaciteta",
+  "wakeUnsupported": "Ovaj uređaj ne može držati zaslon uključenim.",
+  "wakeInsecure": "Zaslon se ne može držati uključenim s ove adrese.",
+  "wakeRetry": "Drži zaslon uključenim — dodirnite za ponovni pokušaj",
+  "wakeAcquire": "Drži zaslon uključenim",
+  "degraded": {
+    "serverError": "Poslužitelj nije mogao učitati narudžbe{hasStatus, select, yes { (pogreška {status})} other {}}. Prikazuju se narudžbe od {at}. Moguće je da nedostaju nove narudžbe.",
+    "unreachable": "Poslužitelj nije dostupan. Prikazuju se narudžbe od {at}. Moguće je da nedostaju nove narudžbe."
+  }
+}

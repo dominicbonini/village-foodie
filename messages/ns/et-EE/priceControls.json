@@ -1,0 +1,8 @@
+{
+  "change": "{label} — muuda",
+  "useRule": "{label} — kasuta hoopis reeglit",
+  "typePrice": "{label} — sisesta hind",
+  "backToRule": "Tagasi reegli juurde",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

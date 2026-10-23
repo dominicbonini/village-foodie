@@ -1,0 +1,25 @@
+{
+  "heading": "Nädal {start} – {end}",
+  "daysOff": "Täna puhkepäev",
+  "cancelled": "TÜHISTATUD",
+  "placeSample": {
+    "nameTownBelow": "Raekoja Kõrts\nTartu",
+    "nameTown": "Raekoja Kõrts, Tartu",
+    "nameOnly": "Raekoja Kõrts"
+  },
+  "busyWeek": {
+    "venue1": "Tartu rahvamaja",
+    "town1": "Tartu",
+    "venue2": "Elva spordikeskuse staadion ja mänguväljak",
+    "town2": "Elva",
+    "venue3": "Turuplats",
+    "town3": "Põlva",
+    "venue4": "Toidufestival",
+    "town4": "Viljandi",
+    "venue5": "Vana Veski kõrts",
+    "town5": "Võru",
+    "venue6": "Kirikuplats",
+    "town6": "Otepää"
+  },
+  "poweredBy": "Platvorm: HatchGrab"
+}

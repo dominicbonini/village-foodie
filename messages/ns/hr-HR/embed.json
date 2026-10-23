@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} — gdje i kada sljedeći put.",
+  "orderFrom": "Naručite: {truck}",
+  "poweredBy": "Pokreće <b>HatchGrab</b>",
+  "loadFailed": "Raspored se trenutačno nije mogao učitati.",
+  "loading": "Učitavanje rasporeda…",
+  "empty": "{truck} trenutačno nema najavljenih događaja."
+}

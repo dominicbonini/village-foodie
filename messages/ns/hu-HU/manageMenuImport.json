@@ -1,0 +1,189 @@
+{
+  "cancel": "Mégse",
+  "back": "← Vissza",
+  "backPlain": "Vissza",
+  "next": "Tovább →",
+  "continue": "Folytatás →",
+  "closeImport": "Importálás bezárása",
+  "tryAgain": "Újra",
+  "catError": {
+    "empty": "Adjon nevet a kategóriának.",
+    "tooLong": "Ez a név túl hosszú.",
+    "clash": "Már van ilyen nevű kategória: „{name}”."
+  },
+  "steps": {
+    "details": "Az Ön adatai",
+    "menu": "Étlap",
+    "extras": "Extrák",
+    "allergens": "Allergének",
+    "kitchen": "Konyha beállítása",
+    "schedule": "Menetrend",
+    "settings": "Beállítások"
+  },
+  "toast": {
+    "demoGone": "A demóban feltöltött étlap már nem érhető el — a folytatáshoz töltse fel újra.",
+    "eventsSaveFailed": "Nem sikerült menteni az eseményeket",
+    "cardReadFailed": "Nem sikerült beolvasni az allergénkártyát — próbálja újra",
+    "imageReadFailed": "Nem sikerült beolvasni ezt a képet — inkább írja be vagy illessze be a táblázatot",
+    "commitFailedDetail": "Nem sikerült befejezni az étlap mentését: {error}. Lehet, hogy néhány tétel már elmentődött — újrapróbálás előtt ellenőrizze az étlapját.",
+    "commitFailed": "Nem sikerült befejezni az étlap mentését. Lehet, hogy néhány tétel már elmentődött — újrapróbálás előtt ellenőrizze az étlapját.",
+    "finishFailed": "Nem sikerült befejezettnek jelölni a beállítást — ettől még folytathatja.",
+    "scheduleReadFailed": "Nem sikerült beolvasni ezt a menetrendet — próbálkozzon élesebb fotóval, vagy írja be a dátumokat.",
+    "cardRead": "Táblázat beolvasva — {matched} egyeztetve, {pending, plural, one {# vár} other {# vár}} az Ön hozzárendelésére"
+  },
+  "settingsReview": {
+    "anchorOrder": "Beállítások → Rendelési beállítások",
+    "anchorDisplay": "Beállítások → Az Ön food truckjai → Megjelenítési beállítások",
+    "mins15": "15 perc",
+    "mins30": "30 perc",
+    "mins60": "60 perc",
+    "hours2": "2 óra",
+    "title": "Néhány ellenőrizendő beállítás",
+    "loading": "Jelenlegi beállításai betöltése…",
+    "looksGood": "Rendben →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Ezt nem sikerült menteni — a Beállításokban módosíthatja.",
+    "anchorContact": "Beállítások → Elérhetőségek",
+    "intro": "Beállítottunk néhány gyakori beállítást. Érdemes gyorsan átnézni — bármelyiket később módosíthatja a Beállításokban.",
+    "cancelAria": "Az átvétel előtt meddig mondhatják le a vásárlók a rendelést"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Élesítés előtt nézze át őket. Addig a tételek „allergének nincsenek beállítva” jelölést kapnak.",
+    "body": "Élesítés előtt nézze át őket a Beállításokban. Addig a tételek „allergének nincsenek beállítva” jelölést kapnak.",
+    "title": "⚠ Allergének és étrendi adatok még nincsenek beállítva"
+  },
+  "welcome": {
+    "title": "Üdvözli a HatchGrab",
+    "yourTruck": "Az Ön food truckja",
+    "stop": "Bármikor abbahagyhatja és visszatérhet.",
+    "body": "Beállítottuk: {name}. Most hozzáadjuk az étlapját, aztán az első eseményét.",
+    "go": "Kezdjük"
+  },
+  "offer": {
+    "title": "A demóban feltöltött étlapot használja?",
+    "use": "Ezt az étlapot használom",
+    "upload": "Másik étlap feltöltése",
+    "body": "Elmentettük a feltöltött étlapját — {count, plural, one {# tétel} other {# tétel}}. Használja kiindulópontként, vagy töltsön fel másikat."
+  },
+  "upload": {
+    "title": "Étlap importálása",
+    "body": "Töltsön fel egy fotót az étlaptáblájáról, egy képernyőképet vagy egy PDF-et, vagy illessze be az étlapot szövegként. Az AI kiolvassa, és elkészíti digitális étlapját — mentés előtt mindent átnézhet.",
+    "confirmCancel": "Megszakítja az importálást? Az étlap eddigi ellenőrzése elvész.",
+    "process": "Étlap feldolgozása",
+    "later": "Később csinálom"
+  },
+  "processing": {
+    "title": "Étlap elemzése",
+    "body": "Az AI olvassa és kategóriákba sorolja a tételeket…"
+  },
+  "review": {
+    "title": "Importált étlap ellenőrzése",
+    "editLaterSetup": "A nevek, árak, extrák, allergének és étrendi adatok később bármikor szerkeszthetők.",
+    "editLater": "A nevek, árak, extrák, allergének és étrendi adatok bármikor szerkeszthetők a Beállításokban.",
+    "noPrice": "{count, plural, one {# tételnél} other {# tételnél}} nem tudtunk árat kiolvasni",
+    "renameCategoryAria": "Kategória átnevezése: {name}",
+    "renameAria": "Átnevezés: {name}",
+    "renameTitle": "Kategória átnevezése",
+    "deleteAria": "Törlés: {name}",
+    "deleteTitle": "Kategória törlése",
+    "lastCategory": "Az étlapon legalább egy kategóriának lennie kell",
+    "countOf": "{kept} / {total}",
+    "existing": "meglévő",
+    "deleteEmptyTitle": "„{name}” törlése?",
+    "deleteEmptyBody": "Nincs benne tétel, így semmi sem vész el.",
+    "delete": "Törlés",
+    "moveTitle": "Hová kerüljön {count, plural, one {# tétel} other {# tétel}}?",
+    "moveBody": "„{name}” törléséhez meg kell adni, hová kerüljenek az ételei — a kategória nélküli tételek nem kerülnek importálásra.",
+    "moveAria": "Tételek áthelyezése innen: {name}, ide:",
+    "chooseCategory": "Válasszon kategóriát…",
+    "moveDelete": "Áthelyezés és törlés",
+    "itemName": "Tétel neve",
+    "free": "ingyenes?",
+    "freeOn": "Ingyenes ✕",
+    "nameFirst": "Adjon nevet az új tételnek, mielőtt újabbat ad hozzá",
+    "addItem": "+ Tétel hozzáadása",
+    "categoryName": "Kategória neve",
+    "newCategoryAria": "Új kategória neve",
+    "addCategory": "+ Kategória hozzáadása",
+    "ready": "{count, plural, one {# tétel} other {# tétel}} hozzáadásra kész. Vegye ki a jelölést azokról, amelyekre nincs szüksége.",
+    "noPriceBody": "Adjon meg mindegyiknek árat, vagy jelölje ingyenesnek — különben {zero} áron kerülne élesbe. Amíg ez nincs rendezve, nem folytathatja.",
+    "incomplete": "Adjon meg egy nevet a tétel hozzáadásához — az üres sorok nem kerülnek importálásra."
+  },
+  "extras": {
+    "introSetup": "Egyes ételeket <b>egyetlen testreszabható tételként</b> is beállíthat, vagy <b>külön ételekként</b> hagyhat. Válassza ki, hogyan jelenjenek meg. Ezt később módosíthatja.",
+    "intro": "Egyes ételeket <b>egyetlen testreszabható tételként</b> is beállíthat, vagy <b>külön ételekként</b> hagyhat. Válassza ki, hogyan jelenjenek meg. Ezt később a Beállításokban módosíthatja.",
+    "none": "Nincs csoportosítható étel — minden tétel önálló étel.",
+    "axisChoice": "· választható: {axis}",
+    "grouped": "Csoportosítva · egy tétel, a vásárló választ",
+    "separate": "Külön tételek az étlapon"
+  },
+  "allergens": {
+    "title": "Allergének",
+    "detected": "Allergéneket találtunk az étlapján. Alább válassza ki, hogyan jelenjenek meg.",
+    "howShow": "Hogyan szeretné megmutatni az allergéneket a vásárlóknak?",
+    "skip": "Allergének beállításának kihagyása egyelőre"
+  },
+  "kitchen": {
+    "title": "Konyha beállítása",
+    "intro": "Segítsen a vásárlóknak tudni, mennyit kell várniuk — ezeket később bármikor módosíthatja.",
+    "howWorks": "Hogyan működik a konyhai kapacitás",
+    "allExist": "Minden kategória létezik már — nincs beállítandó idő.",
+    "totalHelp": "Teljes kapacitás megadásával korlátozhatja, hány tételt vállal a konyha idősávonként. Korlát nélkül hagyja ∞ értéken.",
+    "saveAdd": "Mentés és hozzáadás az étlaphoz"
+  },
+  "schedule": {
+    "title": "Menetrendem hozzáadása",
+    "intro": "Ha a menetrendje a weboldalán van, automatikusan naprakészen tarthatjuk — vagy adja meg a dátumokat saját maga.",
+    "websiteTitle": "A menetrendem a weboldalamon van",
+    "urlPlaceholder": "https://afoodtruckod.hu/esemenyek",
+    "checking": "Ellenőrzés…",
+    "verify": "Ellenőrzés",
+    "checkingSite": "Weboldala ellenőrzése…",
+    "takesTime": "Ez akár 2 percig is tarthat — kérjük, ne zárja be.",
+    "canRead": "✓ Be tudjuk olvasni a menetrendjét",
+    "ownSite": "Saját weboldala — nem Facebook- vagy Instagram-oldal.",
+    "photoTitle": "Fotó feltöltése a menetrendemről",
+    "dragChoose": "Húzza ide, vagy koppintson a kiválasztáshoz",
+    "imageOrPdf": "Kép vagy PDF",
+    "or": "vagy",
+    "pastePlaceholder": "Illessze be ide a dátumokat…",
+    "read": "Menetrend beolvasása",
+    "found": "{count, plural, one {# dátumot találtunk} other {# dátumot találtunk}} — ezek bekerülnek a menetrendjébe.",
+    "dateTbc": "Dátum később",
+    "save": "{count, plural, one {# dátum mentése} other {# dátum mentése}}",
+    "manualDesc": "Később adja hozzá őket a Menetrend fülön — most nincs teendő.",
+    "manualBody": "Semmi gond. A dátumokat bármikor hozzáadhatja és kezelheti a fiókja Menetrend fülén.",
+    "blockedDomain": "Kérjük, a weboldala URL-jét adja meg — a Facebook- és Instagram-oldalakat nem lehet automatikusan beolvasni.",
+    "saveFailed": "Beolvastuk a menetrendjét, de most nem sikerült menteni — próbálja újra.",
+    "websiteDesc": "Rendszeresen ellenőrizzük, és az új dátumokat jóváhagyásra elküldjük Önnek.",
+    "keepChecking": "Továbbra is figyeljük ezt az oldalt, és az új dátumokat jóváhagyásra elküldjük Önnek.",
+    "photoDesc": "Fotózza le vagy illessze be a dátumokat — beolvassuk őket, Ön pedig ellenőrizheti.",
+    "noneFound": "Nem találtunk benne dátumot — próbálkozzon élesebb fotóval, vagy adjon meg egy dátumot saját maga.",
+    "manualTitle": "A dátumokat magam adom meg",
+    "trialNotStarted": "Az események hozzáadása nem indítja el az ingyenes próbaidőszakot — később Ön választja ki, melyik esemény indítsa."
+  },
+  "done": {
+    "summary": "{items, plural, one {# tétel} other {# tétel}}, {categories, plural, one {# kategóriában} other {# kategóriában}}.",
+    "imported": "Étlap importálva!",
+    "added": "A tételek felkerültek az étlapra.",
+    "duplicates": "{count, plural, one {# ismétlődő tétel kihagyva} other {# ismétlődő tétel kihagyva}}",
+    "showMe": "Kérek egy körbevezetést",
+    "remind": "Emlékeztessen később",
+    "allSet": "Minden kész!",
+    "explore": "Inkább körülnézek magam"
+  },
+  "discard": {
+    "setupTitle": "Később fejezi be a beállítást?",
+    "setupBody": "Fiókja és food truckja mentve — semmi sem veszett el. Az étlapot bármikor hozzáadhatja: jelentkezzen be, és koppintson az <b>Étlap importálása</b> gombra az étlap képernyőn, hogy pontosan innen folytassa.",
+    "keepGoing": "Folytatom",
+    "finishLater": "Később befejezem",
+    "title": "Elveti ezt az importálást?",
+    "keepEditing": "Szerkesztés folytatása",
+    "discard": "Elvetés",
+    "body": "A módosításai nem kerülnek mentésre — az importált tételek, az előkészítési idők és a konyhai kapacitás nem adódnak hozzá."
+  },
+  "allergenCardText": {
+    "contains": "Tartalmaz: {list}",
+    "mayContain": "Nyomokban tartalmazhat: {list}"
+  }
+}

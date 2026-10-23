@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Wybierz, jak pokazujesz informacje o alergenach",
+    "detail": "Dopóki nie wybierzesz, klienci nie zobaczą żadnego z twoich dań — menu chroni się, ukrywając wszystko, czego alergeny nie są potwierdzone, a teraz dotyczy to wszystkiego.",
+    "where": "Menu → Alergeny"
+  },
+  "allergensCardMissing": {
+    "title": "Dodaj kartę alergenów",
+    "detail": "Wybrano pokazywanie karty alergenów, ale żadna nie jest zapisana — klienci dowiedzieliby się, że informacje o alergenach są dostępne, a potem nic by nie znaleźli.",
+    "where": "Menu → Alergeny"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Potwierdź alergeny w {count} daniu} few {Potwierdź alergeny w {count} daniach} many {Potwierdź alergeny w {count} daniach} other {Potwierdź alergeny w {count} daniach}}",
+    "detail": "{n, plural, one {Twoje danie jest ukryte przed klientami, dopóki nie potwierdzisz jego alergenów.} few {{u, plural, one {{unverified} z {total} twoich dań jest ukryte przed klientami, dopóki nie potwierdzisz jego alergenów.} few {{unverified} z {total} twoich dań są ukryte przed klientami, dopóki nie potwierdzisz ich alergenów.} many {{unverified} z {total} twoich dań jest ukrytych przed klientami, dopóki nie potwierdzisz ich alergenów.} other {{unverified} z {total} twoich dań jest ukrytych przed klientami, dopóki nie potwierdzisz ich alergenów.}}} many {{u, plural, one {{unverified} z {total} twoich dań jest ukryte przed klientami, dopóki nie potwierdzisz jego alergenów.} few {{unverified} z {total} twoich dań są ukryte przed klientami, dopóki nie potwierdzisz ich alergenów.} many {{unverified} z {total} twoich dań jest ukrytych przed klientami, dopóki nie potwierdzisz ich alergenów.} other {{unverified} z {total} twoich dań jest ukrytych przed klientami, dopóki nie potwierdzisz ich alergenów.}}} other {{u, plural, one {{unverified} z {total} twoich dań jest ukryte przed klientami, dopóki nie potwierdzisz jego alergenów.} few {{unverified} z {total} twoich dań są ukryte przed klientami, dopóki nie potwierdzisz ich alergenów.} many {{unverified} z {total} twoich dań jest ukrytych przed klientami, dopóki nie potwierdzisz ich alergenów.} other {{unverified} z {total} twoich dań jest ukrytych przed klientami, dopóki nie potwierdzisz ich alergenów.}}}} Danie pokazane bez potwierdzonych alergenów wygląda tak, jakby „nie zawierało żadnych”, więc menu je ukrywa, zamiast ryzykować.",
+    "where": "Menu → Alergeny"
+  },
+  "noVan": {
+    "title": "Dodaj food truck",
+    "detail": "Wydarzenia są przypisane do food trucka — bez niego nie ma przez co przyjmować zamówień.",
+    "where": "Ustawienia → Twoje food trucki"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Ustaw wydajność kuchni",
+    "detail": "Nie ustawiono wydajności dla: {vans}. Bez niej będziemy obiecywać klientom godziny odbioru, których twoja kuchnia nie ma szans dotrzymać.",
+    "where": "Menu → Wydajność kuchni",
+    "unnamedVan": "Food truck bez nazwy"
+  },
+  "noPrepBearingCategory": {
+    "title": "Powiedz, ile trwa przygotowanie jedzenia",
+    "detail": "{categories, select, none {Nie masz jeszcze żadnych kategorii menu, więc nie mamy jak obliczyć, ile trwa realizacja zamówienia.} other {Żadna z twoich kategorii nie ma ustawionego czasu przygotowania, więc każde zamówienie wygląda dla nas na natychmiastowe. Podawalibyśmy klientom godziny odbioru, których twoja kuchnia nie ma szans dotrzymać, a im więcej ruchu, tym bardziej byłyby odległe.}}",
+    "where": "Menu → Kategorie → Ustawienia kuchni"
+  },
+  "emailUnverified": {
+    "title": "Potwierdź swój adres e-mail",
+    "detail": "Na ten adres wysyłamy powiadomienia o zamówieniach i linki do odzyskania konta. Jeśli jest błędny, dowiesz się o tym dopiero wtedy, gdy coś już pójdzie nie tak.",
+    "where": "Sprawdź skrzynkę i kliknij nasz link potwierdzający"
+  },
+  "emailUnknown": {
+    "title": "Status potwierdzenia e-maila nieznany",
+    "detail": "Weryfikacja e-maila nie jest jeszcze podłączona, więc nie da się tego sprawdzić. Celowo blokuje, zamiast po cichu przepuszczać.",
+    "where": "—"
+  }
+}

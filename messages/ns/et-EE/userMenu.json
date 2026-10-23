@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Kasutajamenüü",
+  "screenOn": "Ekraan sees",
+  "screenOff": "Ekraan väljas",
+  "newOrderSound": "Uue tellimuse heli",
+  "copied": "Kopeeritud",
+  "orderLink": "Tellimislink",
+  "qrCode": "QR-kood",
+  "kitchenScreen": "Köögiekraan",
+  "thisDevice": "See seade",
+  "manage": "Haldus",
+  "ordersDashboard": "Tellimuste töölaud",
+  "admin": "Admin",
+  "privacy": "Privaatsuspoliitika",
+  "terms": "Tingimused",
+  "signOut": "Logi välja",
+  "close": "Sulge"
+}

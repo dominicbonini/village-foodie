@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verificējiet savu jauno HatchGrab e-pasta adresi",
+    "heading": "Verificējiet savu e-pasta adresi",
+    "button": "Verificēt e-pasta adresi"
+  },
+  "changeEmail": {
+    "requested": "Jūs pieprasījāt nomainīt savu HatchGrab e-pasta adresi uz šo adresi.",
+    "click": "Noklikšķiniet uz zemāk esošās pogas, lai verificētu. Šī saite ir derīga 24 stundas.",
+    "ignore": "Ja jūs nepieprasījāt šīs izmaiņas, varat droši ignorēt šo e-pastu.",
+    "stillActive": "Jūsu pašreizējā e-pasta adrese joprojām ir aktīva."
+  },
+  "resendVerification": {
+    "requested": "Jūs pieprasījāt nomainīt savu HatchGrab e-pastu uz šo adresi.",
+    "click": "Noklikšķiniet zemāk, lai verificētu. Šī saite ir derīga 24 stundas.",
+    "ignore": "Ja jūs to nepieprasījāt, ignorējiet šo e-pastu.",
+    "stillActive": "Jūsu pašreizējais e-pasts joprojām ir aktīvs."
+  },
+  "passwordReset": {
+    "subject": "Atiestatiet savu HatchGrab paroli",
+    "heading": "Atiestatiet paroli",
+    "requested": "Mēs saņēmām pieprasījumu atiestatīt jūsu HatchGrab konta paroli.",
+    "click": "Noklikšķiniet uz zemāk esošās pogas, lai izvēlētos jaunu paroli. Šī saite ir derīga 1 stundu.",
+    "button": "Atiestatīt paroli",
+    "ignore": "Ja jūs to nepieprasījāt, varat droši ignorēt šo e-pastu.",
+    "unchanged": "Jūsu parole netiks mainīta, kamēr nenoklikšķināsiet uz augstāk esošās saites."
+  },
+  "deletionScheduled": {
+    "subject": "Jūsu HatchGrab konta dzēšana ir ieplānota",
+    "received": "Mēs esam saņēmuši pieprasījumu dzēst šo HatchGrab kontu.",
+    "orderingStopped": "<b>Tiešsaistes pasūtīšana ir nekavējoties apturēta</b>: {trucks}.",
+    "noTrucks": "(nav neviena food truck)",
+    "readable": "Jūsu vadības panelis\n    paliks pieejams lasīšanai vēl {days, plural, zero {# dienas} one {# dienu} other {# dienas}}.",
+    "scheduled": "Konta dzēšanas datums: <b>{date}</b>.",
+    "cannotCancel": "<b>To nevar atcelt lietotnē.</b> Ja pieprasījumu neiesniedzāt jūs vai ja vairs nevēlaties\n    dzēst kontu, pēc iespējas ātrāk atbildiet uz šo e-pastu.",
+    "kept": "Kad konts tiks dzēsts, mēs izdzēsīsim jūsu un jūsu klientu personas datus. Mēs saglabājam\n    anonīmus grāmatvedības ierakstus, kas mums jāglabā saskaņā ar likumu."
+  }
+}

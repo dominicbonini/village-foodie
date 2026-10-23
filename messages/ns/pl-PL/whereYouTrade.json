@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Gdzie stacjonuje twój food truck?",
+  "stepIntro": "Na tej podstawie ustawiamy walutę, ceny, strefę czasową i format numeru telefonu. Kraju nie można później zmienić, bo jest powiązany z twoimi płatnościami kartą.",
+  "settingsHeading": "Gdzie sprzedajesz",
+  "countryLabel": "Kraj",
+  "countryGuessed": "Ustaliliśmy to na podstawie twojej lokalizacji. Zmień, jeśli jest błędne.",
+  "countryLocked": "Nie można zmienić kraju",
+  "townLabel": "Miejscowość",
+  "townQuestion": "Miejscowość, w której stacjonujesz",
+  "timezoneLabel": "Strefa czasowa",
+  "continueButton": "Dalej",
+  "saveFailed": "Nie udało się zapisać ustawień — spróbuj ponownie."
+}

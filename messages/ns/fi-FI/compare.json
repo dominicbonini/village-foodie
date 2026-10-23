@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Kustannusvertailu",
+  "title": "Vertaa verkkotilaustesi<br></br><accent>kustannuksia</accent>",
+  "system": {
+    "title": "Otatko jo vastaan verkkotilauksia?",
+    "yes": "Kyllä, toisella järjestelmällä",
+    "no": "En vielä"
+  },
+  "trucks": {
+    "title": "Montako ruokarekkaa sinulla on?",
+    "aria": "Ruokarekkojen määrä"
+  },
+  "plan": {
+    "yourChoice": "Sinun valintasi",
+    "weSuggest": "Suosittelemme",
+    "summary": "{price} per ruokarekka kuukaudessa, ja hintaan sisältyy {allowance} edestä verkkotilauksia{fleet, plural, one {} other { jokaiselle ruokarekalle}}.",
+    "switchTo": "Valitse sen sijaan paketti {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per ruokarekka kuukaudessa sekä {pct} verkossa kortilla maksetuista tilauksista.} other {Ei kuukausimaksua — vain {pct} verkossa kortilla maksetuista tilauksista.}}",
+    "summaryNoFee": "{price} per ruokarekka kuukaudessa: rajattomasti verkkotilauksia eikä HatchGrabin maksua."
+  },
+  "orders": {
+    "titleYes": "Verkkotilaukset kuukaudessa, per ruokarekka",
+    "count": "~{count, plural, one {# tilaus} other {# tilausta}}",
+    "captionNo": "Karkea arvio riittää — ennakkotilaukset ja jonon ohittajat, ei käteis- tai korttimaksuja paikan päällä.",
+    "captionYes": "Vain tilaussivusi kautta tehdyt tilaukset — ei käteis- tai korttimaksuja paikan päällä.",
+    "sliderAria": "Verkkotilausten arvo kuukaudessa per ruokarekka",
+    "overAllowance": "Hintaan sisältyy {allowance} edestä verkkotilauksia per ruokarekka. Ylimenevästä osuudesta ({excess}) veloitetaan {pct} — <b>{over}</b> kuukaudessa per ruokarekka.",
+    "insideAllowance": "Pysyt hintaan sisältyvän määrän ({allowance} verkkotilauksia) sisällä — ei lisäkuluja paketin päälle.",
+    "acrossFleet": "{fleet, plural, one {# ruokarekka} other {# ruokarekkaa}} yhteensä: <b>{amount}</b> kuukaudessa.",
+    "titleNo": "Paljonko arvioit myyväsi verkossa kuukaudessa, per ruokarekka?",
+    "feeOnly": "{pct} jokaisesta verkossa kortilla maksetusta tilauksesta — <b>{over}</b> kuukaudessa per ruokarekka.",
+    "noFee": "Rajattomat verkkotilaukset sisältyvät hintaan — ei lisäkuluja paketin päälle."
+  },
+  "fee": {
+    "title": "Paljonko maksat nyt tilausta kohden?",
+    "pctLabel": "Prosentti",
+    "pctPlaceholder": "Oma prosenttisi",
+    "pctAria": "Prosenttimaksu",
+    "fixedLabel": "Lisäksi per tilaus",
+    "fixedPlaceholder": "Oma maksusi",
+    "fixedAria": "Senttiä per tilaus",
+    "modeLabel": "Heidän maksunsa:",
+    "modeInclusive": "sisältää korttimaksujen käsittelyn",
+    "modeOnTop": "veloitetaan sen lisäksi",
+    "onTopNote": "Korttimaksujen käsittely, {fee}, veloitetaan sen lisäksi, joten maksat todellisuudessa yhteensä <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Korttimaksujen käsittely, {fee}, sisältyy siihen, ja maksaisit sen missä tahansa. Heidän oma maksunsa on <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Montako päivää viikossa myyt?",
+    "help": "Tapahtumat, torit, myyntipaikat — jokainen päivä, jona ruokarekka on liikkeellä."
+  },
+  "jump": {
+    "cost": "Katso, mitä se maksaa ↓",
+    "saving": "Katso säästösi ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Verkkotilaukset, ennakkotilaukset ja keittiönäyttö hintaan</lead><figure>{amount}</figure><unit>per myyntipäivä</unit>",
+    "basedOn": "Perusteena {days, plural, one {# päivä} other {# päivää}} viikossa · {monthly} kuukaudessa{fleet, plural, one {} other { per ruokarekka}}"
+  },
+  "coffee": "Vähemmän kuin kuppi kahvia.",
+  "freeMonths": "{n, plural, one {Ja ensimmäinen kuukausi on ilmainen.} other {Ja ensimmäiset # kuukautta ovat ilmaisia.}}",
+  "cta": {
+    "upload": "Lataa ruokalistani →",
+    "uploadSave": "Lataa ruokalistani ja säästä {amount} →",
+    "ask": "Kysy meiltä",
+    "noCard": "Käyttöönottoon ei tarvita korttia"
+  },
+  "breakdown": {
+    "title": "Kuukautesi eriteltynä",
+    "titleDearer": "Kuukautesi HatchGrabilla",
+    "plan": "Paketti {plan}",
+    "over": "{pct} ylimenevästä osuudesta ({excess}), kun {allowance} sisältyy hintaan",
+    "inside": "Verkkotilaukset hintaan sisältyvän määrän ({allowance}) sisällä",
+    "total": "HatchGrab kuukaudessa",
+    "freeMonths": "{n, plural, one {Kuukausi 1} other {Kuukaudet 1–#}}",
+    "freeAmount": "{amount} — veloituksetta",
+    "acrossFleet": "{fleet, plural, one {# ruokarekka} other {# ruokarekkaa}} yhteensä",
+    "perMonth": "{amount} kuukaudessa",
+    "card": "Korttimaksujen käsittely — Stripen {fee} per tilaus, maksetaan Stripelle. Maksaisit lähes saman myös maksupäätteellä paikan päällä.",
+    "provider": "Nykyisen palveluntarjoajasi oma maksu ({pct})",
+    "feeOnly": "{pct} verkkotilauksista (yhteensä {excess})",
+    "noFee": "Verkkotilaukset — rajattomasti, ei HatchGrabin maksua"
+  },
+  "enterRate": "Syötä nykyinen maksusi, niin näet säästösi.",
+  "panel": {
+    "nowYear": "<label>Nyt maksat</label><fig>{amount}<q> vuodessa</q></fig>",
+    "nowMonth": "<label>Nyt maksat</label><fig>{amount}<q> kuukaudessa</q></fig>",
+    "oursYear": "<label>HatchGrabilla</label><fig>{amount}<q> ensimmäisenä vuonna</q></fig>",
+    "oursMonth": "<label>HatchGrabilla</label><fig>{amount}<q> kuukaudessa</q></fig>",
+    "acrossFleet": "yhteensä {fleet, plural, one {# ruokarekka} other {# ruokarekkaa}}"
+  },
+  "hero": {
+    "save": "<verb>Säästät</verb><figure>{amount}</figure><sub><num>{pct}</num> vähemmän ensimmäisenä vuonna</sub>",
+    "same": "<verb>Suunnilleen sama</verb><figure>{amount}</figure><sub><num>{pct}</num> enemmän ensimmäisenä vuonna</sub>",
+    "dearer": "<lead>Kaikki HatchGrabin toiminnot vain</lead><figure>{amount}</figure><unit>lisää viikossa</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} enemmän kuukaudessa kuin nyt} other {{amount} enemmän per ruokarekka kuukaudessa kuin nyt}}"
+  },
+  "anchor": {
+    "liability": "Se on vuoden vastuuvakuutus.",
+    "weekendPitch": "Se on viikonlopun myyntipaikka ruokafestivaaleilla.",
+    "festivalPitches": "Se on pari festivaalien myyntipaikkaa.",
+    "fryer": "Se on uusi rasvakeitin ja paistolevy.",
+    "counter": "Se on myyntitiskisi täysremontti.",
+    "vanDeposit": "Se on käsiraha toiseen ruokarekkaan.",
+    "secondVan": "Se on toinen ruokarekka tien päällä."
+  },
+  "year": {
+    "one": "Ensimmäinen vuosi",
+    "two": "Toinen vuosi",
+    "save": "Säästö {amount}<note>({pct} vähemmän)</note>",
+    "extra": "Lisäkulu {amount}<note>({pct} enemmän)</note>",
+    "current": "Nykyinen palveluntarjoaja <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Arviot perustuvat syöttämiisi lukuihin olettaen keskimääräisen tilauksen olevan {aov}. Korttimaksujen käsittelykulut koskevat kaikkia palveluntarjoajia. Tarkista ennen päätöstä.",
+    "yes": "Arviot perustuvat syöttämiisi lukuihin olettaen keskimääräisen tilauksen olevan {aov}. Korttimaksujen käsittely, {fee} per tilaus, koskee kaikkia palveluntarjoajia, joten se on jätetty pois molemmilta puolilta.",
+    "onTop": "Kysymyksen {n} kokonaissumma sisältää sen — vertailu ei sisällä sitä kummallakaan puolella.",
+    "check": "Tarkista nykyisen palveluntarjoajasi hinnat ennen päätöstä."
+  },
+  "intro": "Vie noin minuutin. Käytätkö jo jotain järjestelmää? Vertaamme sitä. Etkö vielä? Näytämme tarkalleen, mitä se maksaa.",
+  "twoYear": "Kahdessa vuodessa säästät <b>{amount}</b>.",
+  "meta": {
+    "title": "Kustannuslaskuri — HatchGrab {country}",
+    "description": "Vertaa, mitä verkkotilaukset maksavat sinulle nyt, vuoteen HatchGrabilla — arvio minuutissa."
+  }
+}

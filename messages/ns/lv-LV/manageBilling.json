@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "par food truck mēnesī",
+  "transactionFees": "Darījumu komisijas",
+  "comingSoon": "Drīzumā",
+  "footnote2Masked": "Tiešsaistes maksājumus nodrošina Stripe Connect. Platformas un karšu apstrādes komisijas vēl tiks precizētas un tiks apstiprinātas palaišanas brīdī.",
+  "card": {
+    "title": "Norēķini un maksājumi",
+    "managed": "Norēķinus pārvalda HatchGrab",
+    "earlyAccess": "Agrīnās piekļuves laikā plānus iestatām un pielāgojam manuāli.",
+    "planLine": "{trial, select, yes {{truck} · plāns {plan} (izmēģinājuma periods)} other {{truck} · plāns {plan}}}"
+  },
+  "currentPlan": "Pašreizējais plāns",
+  "plan": {
+    "included": "Ietver tiešsaistes pasūtījumus {amount} vērtībā mēnesī.",
+    "includedUnlimited": "Ietver neierobežotus tiešsaistes pasūtījumus.",
+    "promo": "Īpaša cena.",
+    "promoUntil": "Īpaša cena līdz {date}.",
+    "ended": "Jūsu plāns {plan} beidzās {date}. Jūsu pašreizējais plāns: {now}.",
+    "trialMonths": "Bezmaksas izmēģinājuma periods: {months} mēn."
+  },
+  "trialEnds": "Izmēģinājuma periods beidzas {date}",
+  "yourTrialEnds": "Jūsu izmēģinājuma periods beidzas {date}",
+  "notStarted": {
+    "heading": "Jūsu bezmaksas izmēģinājuma periods vēl nav sācies"
+  },
+  "onTrial": "Jums ir pieejamas visas funkcijas. Izvēlieties plānu, pirms beidzas izmēģinājuma periods.",
+  "onTrialNoCta": "Jums ir pieejamas visas funkcijas.",
+  "noCharge": "🔒 Izmēģinājuma periodā, kas ilgst līdz {date}, no jums netiks iekasēts nekas. Norēķini sākas tikai tad, kad izvēlaties plānu un ievadāt maksājuma datus. Līdz tam nav ko atcelt un nav par ko maksāt.",
+  "fees": "*Tiešsaistes pasūtījumiem piemēro standarta karšu apstrādes komisiju",
+  "setUpPayment": "⏱ Izvēlieties plānu, pirms beidzas izmēģinājuma periods",
+  "changeYourPlan": "Mainīt plānu",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Pāriet uz plānu {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Mēs ieviešam automātiskus norēķinus. Lai pārietu jau tagad, uzrakstiet mums, un 24 stundu laikā mēs visu iestatīsim.",
+    "mailSubject": "Pāreja uz plānu {plan} — {truck}",
+    "mailBody": "Labdien! Vēlos pārcelt food truck {truck} uz plānu {plan} ({price}).",
+    "email": "Rakstīt mums par pāreju",
+    "cancel": "Atcelt"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Comandați de la {truck}",
+    "orderDescription": "Comandați în avans de la {truck} și ridicați comanda de la food truck.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo {truck}"
+  },
+  "shareTitle": "{truck} — program",
+  "shareText": "Vedeți unde oprește data viitoare {truck}! 🚚",
+  "linkCopied": "Linkul profilului a fost copiat în clipboard! 📋",
+  "facebookPage": "Pagina de Facebook",
+  "loadingMap": "Se încarcă harta…",
+  "view": {
+    "list": "Listă",
+    "map": "Hartă"
+  },
+  "ownThisTruck": "Este food truck-ul dumneavoastră?",
+  "ownThisTruckTitle": "Este food truck-ul dumneavoastră? Faceți clic pentru a vă actualiza profilul",
+  "actions": {
+    "menu": "Meniu",
+    "call": "Sunați",
+    "message": "Mesaj",
+    "share": "Distribuiți",
+    "order": "Comandați"
+  },
+  "loadingSchedule": "Se încarcă programul…",
+  "loadError": {
+    "title": "Nu s-a putut încărca",
+    "body": "Nu am putut încărca programul acum — de obicei e o problemă de moment. Încercați din nou.",
+    "retry": "Reîncercați"
+  },
+  "notFound": {
+    "title": "Food truck negăsit",
+    "body": "Nu am găsit detalii despre acest food truck. Poate s-a mutat sau și-a actualizat profilul.",
+    "cta": "Vedeți toate food truck-urile"
+  },
+  "noEvents": {
+    "title": "Niciun eveniment programat",
+    "body": "Poate ne lipsesc unele detalii despre acest food truck. Sunteți proprietarul sau îi cunoașteți programul?",
+    "cta": "Scrieți-ne ca să actualizăm!"
+  },
+  "whereToFind": "Unde ne găsiți",
+  "missingEvent": "<strong>Lipsește un eveniment?</strong> <br></br>Dacă sunteți proprietarul acestui food truck sau doar un fan devotat, ajutați-ne să păstrăm pagina corectă! <br></br><link>Contactați-ne pentru a adăuga detaliile lipsă.</link>",
+  "weeklySchedule": "Primiți programul săptămânal 🍕"
+}

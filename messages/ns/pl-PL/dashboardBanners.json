@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} przedział przekracza wydajność} few {{count} przedziały przekraczają wydajność} many {{count} przedziałów przekracza wydajność} other {{count} przedziału przekracza wydajność}} — sprawdź",
+  "batchOver": "{cat}: przekroczona partia — {count} na {slot} ({per} na partię)",
+  "eventStartOver": "Przekroczona wydajność na start wydarzenia — {n, plural, one {{count} pozycja} few {{count} pozycje} many {{count} pozycji} other {{count} pozycji}} na {slot}",
+  "kitchenOver": "Kuchnia ponad wydajność — {n, plural, one {{count} pozycja w przygotowaniu} few {{count} pozycje w przygotowaniu} many {{count} pozycji w przygotowaniu} other {{count} pozycji w przygotowaniu}} na {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} pozycja} few {{count} pozycje} many {{count} pozycji} other {{count} pozycji}}",
+  "placedAnyway": "Złożone mimo to: {list}",
+  "placedItem": "#{id} na {slot}",
+  "orphans": "{times}: przekroczona wydajność — nie znaleziono zamówień, których to dotyczy",
+  "dismiss": "Zamknij",
+  "kitchenCapacity": "Wydajność kuchni",
+  "overCapacity": "Przekroczona wydajność",
+  "wakeUnsupported": "To urządzenie nie może utrzymać włączonego ekranu.",
+  "wakeInsecure": "Z tego adresu nie można utrzymać włączonego ekranu.",
+  "wakeRetry": "Nie wyłączaj ekranu — dotknij, aby spróbować ponownie",
+  "wakeAcquire": "Nie wyłączaj ekranu",
+  "degraded": {
+    "serverError": "Serwer nie mógł wczytać zamówień{hasStatus, select, yes { (błąd {status})} other {}}. Wyświetlane są zamówienia z {at}. Może brakować nowych zamówień.",
+    "unreachable": "Brak połączenia z serwerem. Wyświetlane są zamówienia z {at}. Może brakować nowych zamówień."
+  }
+}

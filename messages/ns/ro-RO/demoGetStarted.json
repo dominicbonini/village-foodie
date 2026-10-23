@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Salvați meniul →",
+    "heading": "Configurați-vă food truck-ul",
+    "sub": "Meniul se preia direct.",
+    "privacy": "Vom folosi aceste date doar pentru a vă configura food truck-ul și a vă trimite linkul demo — consultați <link>politica de confidențialitate</link>."
+  },
+  "sample": {
+    "bannerButton": "Configurați food truck-ul →",
+    "heading": "Configurați-vă food truck-ul",
+    "sub": "Următorul pas este să încărcați propriul meniu — durează un minut.",
+    "privacy": "Vom folosi aceste date doar pentru a vă configura food truck-ul și a vă trimite linkul demo — consultați <link>politica de confidențialitate</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Salvați meniul →",
+    "heading": "Salvați demo-ul",
+    "sub": "Îl păstrăm 14 zile și vă trimitem imediat un link pe e-mail.",
+    "privacy": "Vom folosi aceste date doar pentru a vă trimite linkul demo — consultați <link>politica de confidențialitate</link>."
+  },
+  "confirmationHeading": "Totul este gata",
+  "postSaveButton": "Configurați food truck-ul →",
+  "enterSetupButton": "Configurați food truck-ul →",
+  "emailOnlyLink": "Trimiteți-mi doar un link pe e-mail ca să revin la acest demo",
+  "sendLinkButton": "Trimiteți-mi linkul",
+  "savingButton": "Se salvează…",
+  "continueButton": "Continuați →",
+  "createAccountButton": "Creați-mi contul →",
+  "retryButton": "Încercați din nou",
+  "backToDemoButton": "Înapoi la demo",
+  "savedStatus": "{hasDate, select, yes {✓ Salvat — păstrat până pe {date}} other {✓ Salvat}}",
+  "back": "Înapoi",
+  "close": "Închideți",
+  "truckStepHeading": "Despre food truck-ul dumneavoastră",
+  "detailsStepHeading": "Finalizați configurarea",
+  "stepper": {
+    "details": "Date",
+    "menu": "Meniu",
+    "allergens": "Alergeni",
+    "kitchen": "Bucătărie",
+    "schedule": "Program"
+  },
+  "confirmEmailed": "V-am trimis pe e-mail un link direct către acest demo — nu este nevoie de conectare.",
+  "confirmKeepUntil": "Îl păstrăm până pe <b>{date}</b>. Meniul vine cu dumneavoastră când faceți configurarea completă.",
+  "loading": "Se încarcă…",
+  "firstName": "Prenume",
+  "lastName": "Nume",
+  "truckName": "Numele food truck-ului",
+  "truckNamePlaceholder": "ex. Bucătăria din Sat",
+  "cuisine": "Bucătărie",
+  "logoLabel": "Logo <opt>(opțional)</opt>",
+  "logoPreviewAlt": "Previzualizare logo",
+  "changeLogo": "Schimbați logoul",
+  "removeLogo": "Eliminați",
+  "uploadLogo": "📷 Încărcați logoul",
+  "readyTitle": "Contul este gata",
+  "readyBody": "Acum să terminăm configurarea food truck-ului — meniul, alergenii și bucătăria.",
+  "hangTight": "Un moment — pregătim totul.",
+  "stage": {
+    "account": "Se creează contul",
+    "truck": "Se configurează food truck-ul",
+    "menu": "Se încarcă meniul"
+  },
+  "stageState": {
+    "done": "gata",
+    "recognised": "aveți deja un cont",
+    "failed": "eșuat",
+    "active": "în curs",
+    "pending": "în așteptare"
+  },
+  "signIn": "Conectați-vă",
+  "phone": "Telefon",
+  "onWhatsapp": "Acest număr are WhatsApp",
+  "email": "E-mail",
+  "emailPlaceholder": "nume@foodtruckultau.ro",
+  "settingUpAs": "Configurare ca <b>{email}</b> <change>schimbați</change>",
+  "password": "Parolă",
+  "passwordPlaceholder": "Cel puțin 8 caractere",
+  "hidePassword": "Ascundeți parola",
+  "showPassword": "Afișați parola",
+  "promoLabel": "Aveți un cod? <opt>(opțional)</opt>",
+  "promoPlaceholder": "Introduceți-l aici",
+  "agreeTerms": "Accept <terms>Termenii</terms> și <privacy>Politica de confidențialitate</privacy>.",
+  "freeMonth": "Configurarea nu pornește luna gratuită. Aceasta începe când alegeți primul eveniment activ — oricând sunteți pregătit.",
+  "fieldError": {
+    "firstName": "Spuneți-ne prenumele.",
+    "lastName": "Și numele de familie.",
+    "truck": "Dați un nume food truck-ului.",
+    "cuisine": "Spuneți-ne ce gătiți.",
+    "phoneMissing": "Adăugați un număr de telefon — atât clienții, cât și noi îl folosim ca să vă contactăm.",
+    "email": "Introduceți o adresă de e-mail validă.",
+    "password": "Parola trebuie să aibă cel puțin 8 caractere.",
+    "terms": "Vă rugăm să acceptați termenii pentru a continua."
+  },
+  "error": {
+    "saveFailed": "Nu s-a putut salva — încercați din nou.",
+    "savedNoEmail": "Salvat — dar nu am putut trimite linkul pe e-mail chiar acum.",
+    "unreachable": "Nu ne-ați putut contacta chiar acum — încercați din nou.",
+    "createAccountFailed": "Contul nu a putut fi creat.",
+    "truckCreateFailed": "Contul este gata, dar nu am putut crea food truck-ul. Încercați din nou.",
+    "truckUnreachable": "Contul este gata, dar nu am putut crea food truck-ul chiar acum. Încercați din nou.",
+    "truckNoToken": "Food truck-ul este configurat, dar nu l-am putut deschide chiar acum. Încercați din nou."
+  }
+}

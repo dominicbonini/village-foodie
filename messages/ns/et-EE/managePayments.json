@@ -1,0 +1,94 @@
+{
+  "heading": "Maksed",
+  "loading": "Kontrollime sinu Stripe’i kontot…",
+  "state": {
+    "not_connected": {
+      "title": "Seadistamata",
+      "body": "Võtab umbes 10 minutit. Vaja on sinu pangaandmeid ja isikut tõendavat dokumenti.",
+      "chip": "Seadistamata"
+    },
+    "requirements": {
+      "title": "Stripe vajab sinu andmeid",
+      "body": "Kaardimaksed ei tööta enne, kui Stripe on saanud sinu ettevõtte ja panga andmed.",
+      "chip": "Vaja tegutseda"
+    },
+    "pending": {
+      "title": "Ühendatud — Stripe kontrollib sinu andmeid",
+      "body": "Sul pole vaja midagi teha. Stripe vaatab saadetu üle ja see leht uueneb, kui nad on valmis.",
+      "chip": "Kontrollimisel"
+    },
+    "ready": {
+      "title": "Ühendatud",
+      "body": "Sinu Stripe’i konto on ühendatud ja saab makseid vastu võtta.",
+      "chip": "Valmis"
+    },
+    "restricted": {
+      "title": "Kaardimaksed peatatud",
+      "body": "Stripe on sinu konto kaardimaksed peatanud, kuni üks probleem on lahendatud.",
+      "chip": "Peatatud"
+    },
+    "unsupported": {
+      "title": "Sellel kontol pole kaardimaksed saadaval",
+      "body": "Stripe ei saa siin kaardimakseid lubada. Võta meiega ühendust ja lahendame selle koos.",
+      "chip": "Pole saadaval"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe’i võtmed ei ühti",
+    "body": "Selle saidi server kasutab Stripe’i võtit režiimis <b>{server, select, live {päris} other {test}}</b>, aga brauseri versioon on ehitatud režiimi <b>{browser, select, live {päris} other {test}}</b> võtmega. Kaardimaksed ebaõnnestuksid hetkel, kui klient proovib maksta, seega on Stripe’i seadistamine blokeeritud, kuni võtmed ühtivad.",
+    "fix": "Mõlemad võtmed peavad olema määratud samale keskkonnale ja sait tuleb seejärel uuesti ehitada — avaldatav võti lisatakse ehitamise ajal, salajast võtit loetakse igal päringul."
+  },
+  "permission": {
+    "title": "Makseid saab seadistada ainult toiduauto omanik",
+    "body": "Stripe’i ühendab inimene, kelle pangakontole raha laekub, seega tuleb see seadistada tema enda sisselogitud kontolt. Selle toiduauto ega HatchGrabiga pole midagi valesti."
+  },
+  "config": {
+    "keyMissingTitle": "Kaardimakseid pole veel seadistatud",
+    "fetchTitle": "Selle toiduauto Stripe’i kontot ei õnnestunud kontrollida",
+    "keyMissing": "{name} pole määratud — manustatud komponente ei saa laadida."
+  },
+  "errors": {
+    "requestFailed": "Päring ebaõnnestus ({status})",
+    "unreachable": "Stripe’iga ei saadud ühendust"
+  },
+  "online": {
+    "heading": "Veebimaksed",
+    "body": "Kliendid maksavad tellides kaardiga. Raha läheb otse sinu enda Stripe’i kontole — meie seda kunagi ei hoia.",
+    "feeLine": "Stripe võtab tavaliste kaartide puhul ({region}) {fee} makse kohta. Teised kaardid võivad maksta rohkem. HatchGrabi enda tasu veebitellimustelt sõltub sinu paketist — vaata jaotist Arveldus.",
+    "testMode": "Testrežiim. Päris makseid veel vastu võtta ei saa."
+  },
+  "trialNote": "Selle seadistamine ei alusta sinu paketi arveldamist ega võta sinult täna midagi. Nii maksavad kliendid sulle — sinu pakett on eraldi.",
+  "admin": {
+    "title": "Vaatad platvormi administraatorina",
+    "body": "See toiduauto pole veebimakseid seadistanud. Seda saab alustada ainult omanik oma sisselogitud kontolt — siin pole midagi vajutada."
+  },
+  "setUp": {
+    "button": "Seadista veebimaksed",
+    "busy": "Seadistamine…"
+  },
+  "toast": {
+    "alreadySetUp": "Juba seadistatud — jätkame",
+    "addDetails": "Nüüd lisa oma andmed Stripe’i jaoks",
+    "createFailed": "Kontot ei õnnestunud luua"
+  },
+  "onboarding": {
+    "restricted": "Edasi juhib Stripe — logid Stripe’i sisse ja uuendad vajalikke andmeid.",
+    "firstRun": "Edasi juhib Stripe — logid Stripe’i sisse ja sisestad oma ettevõtte ja panga andmed."
+  },
+  "details": {
+    "title": "Sinu Stripe’i andmed",
+    "body": "Muuda pangakontot, kuhu sulle makstakse, või uuenda oma ettevõtte andmeid ja dokumente.",
+    "button": "Vaata või muuda"
+  },
+  "walkUp": {
+    "heading": "Maksed kohapeal",
+    "body": "Kuidas sa leti juures raha vastu võtad. HatchGrab ei võta kohapealsetelt tellimustelt platvormitasu, ükskõik mida sa valid.",
+    "ownTerminal": "Sinu enda makseterminal",
+    "current": "Praegune",
+    "ownTerminalHelp": "Zettle, Square või mis iganes sa juba kasutad. Midagi pole vaja seadistada — kehtivad ainult sinu teenusepakkuja tasud.",
+    "hatchgrab": "HatchGrabi kaudu",
+    "comingSoon": "Tulekul",
+    "hatchgrabHelp": "Kasutab sama Stripe’i ühendust nagu sinu veebimaksed — makseterminal või kontaktivaba makse otse sinu telefoni või tahvelarvutiga.",
+    "hatchgrabFees": "{fee} makse kohta ({region}), lisaks {surcharge} telefoni või tahvelarvutiga vastu võetud kontaktivaba makse eest. Teised kaardid võivad maksta rohkem."
+  }
+}

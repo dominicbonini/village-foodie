@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Piipar <b>{number}</b> on <b>tellimusel #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Kas võtad selle <b>{hasTarget, select, yes {tellimusele #{targetId}} other {sellele tellimusele}}</b>?",
+  "cancel": "Tühista",
+  "take": "Võta piipar {number}",
+  "titleBlocking": "Piipar tellimusele #{id}?",
+  "title": "Vali piipar",
+  "subtitle": "{hasTarget, select, yes {Tellimus #{id}} other {See tellimus}}{hasCurrent, select, yes { · praegu piipar {current}} other {}}",
+  "allTaken": "{n, plural, one {Piipar on kasutusel. Puuduta seda, et võtta see teiselt tellimuselt.} other {Kõik {count} piiparit on kasutusel. Puuduta üht, et võtta see teiselt tellimuselt.}}",
+  "thisOrder": "See tellimus",
+  "noBuzzer": "Ilma piiparita",
+  "done": "Valmis",
+  "lostTitle": "Tellimusel #{id} pole piiparit",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}teine tellimus võttis sama piipari, kui olid võrguühenduseta. Anna kliendile teine piipar.",
+  "dismiss": "Sulge",
+  "assign": "Määra"
+}

@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Přijímat objednávky bez platby",
+  "completionTitle": "Dokončení nezaplacené objednávky",
+  "completionHelp": "Co se stane, když je nezaplacená objednávka připravená k předání.",
+  "pressesOne": "Jedno stisknutí („Zaplaceno a vyzvednuto“)",
+  "pressesOneHelp": "Nejlepší, když přijímáte peníze při předání jídla. Máte jediné tlačítko „Zaplaceno a vyzvednuto“, které zaznamená platbu a zároveň objednávku uzavře.",
+  "pressesTwo": "Dvě stisknutí („Označit jako zaplaceno“ a „Vyzvednuto“)",
+  "pressesTwoHelp": "Nejlepší, když platba a předání proběhnou v jinou chvíli — zákazník zaplatí u food trucku a jídlo si vyzvedne, až bude hotové. Máte dvě tlačítka: nejdřív „Označit jako zaplaceno“, pak „Vyzvednuto“, když si zákazník jídlo odnese."
+}

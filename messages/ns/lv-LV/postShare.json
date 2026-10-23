@@ -1,0 +1,10 @@
+{
+  "download": "Lejupielādēt attēlu",
+  "copied": "Nokopēts ✓",
+  "copyCaption": "Kopēt parakstu",
+  "share": "Kopīgot",
+  "copiedStatus": "{kind, select, postText {Ieraksta teksts nokopēts.} other {Paraksts nokopēts.}}",
+  "copyFailed": "Neizdevās nokopēt — atlasiet tekstu un nokopējiet to paši.",
+  "sharedStatus": "{kind, select, postText {Ieraksta teksts nokopēts — ielīmējiet to savā ierakstā.} other {Paraksts nokopēts — ielīmējiet to savā ierakstā.}}",
+  "shareRefused": "{kind, select, postText {Kopīgošana tika noraidīta, tāpēc attēls ir lejupielādēts. Ieraksta teksts nokopēts.} other {Kopīgošana tika noraidīta, tāpēc attēls ir lejupielādēts. Paraksts nokopēts.}}"
+}

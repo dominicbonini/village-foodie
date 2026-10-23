@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Obligatoriu} other {Opțional}}{limit, select, one { · Alegeți o opțiune} upTo { · Alegeți maximum {max}} other {}}",
+  "operator": "{required, select, yes {Obligatoriu} other {Opțional}}{limit, select, one { · Clientul alege o opțiune} upTo { · Clientul poate alege maximum {max}} other {}}"
+}

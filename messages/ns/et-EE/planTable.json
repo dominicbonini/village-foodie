@@ -1,0 +1,36 @@
+{
+  "h1": "Kõik vahetuse läbiviimiseks vajalik — igas paketis.",
+  "lede": "Tellimine, ettetellimused, köögi võimsus ja köögiekraan sisalduvad igas paketis.{hasUpgrades, select, yes { Paketid {plans} lisavad juurde: {features}, ning madalamad tasud.} other {}}",
+  "perMonth": "{price} / kuu",
+  "group": {
+    "pay": "Mida sa maksad",
+    "run": "Vahetuse juhtimine",
+    "online": "Veebitellimused",
+    "marketing": "Turundus ja automatiseerimine"
+  },
+  "pay": {
+    "included": "Iga kuu hinnas sisalduvad veebitellimused",
+    "fee": "HatchGrabi tasu veebis kaardiga makstud tellimustelt*",
+    "walkUp": "Tellimused kohapeal"
+  },
+  "cell": {
+    "unlimited": "Piiramatu",
+    "free": "Tasuta",
+    "feeAbove": "<b>{fee}</b> üle {included}",
+    "yes": "Sisaldub",
+    "none": "Ei sisaldu",
+    "comingSoon": "Tulekul"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "sotsiaalmeedia",
+    "event_types": "ürituste kohandatud hinnad"
+  },
+  "meta": {
+    "description": "Kõik HatchGrabi funktsioonid kõigis pakettides kõrvuti — {plans} koos tasude ja limiitidega.{months, plural, =0 {} one { Sinu esimene kuu sisaldab kõike.} other { Sinu esimesed # kuud sisaldavad kõike.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsAppi automaatvastuste jaoks on vaja WhatsApp Businessi kontot. Meta võib mõne sõnumi eest tasu võtta; vastused luuakse automaatselt.",
+    "printing": "Köögilipikute printimiseks on vaja ühilduvat Bluetooth- või juhtmega printerit (pole kaasas)."
+  }
+}

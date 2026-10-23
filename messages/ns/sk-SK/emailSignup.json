@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Dobrý deň, {name},} other {Dobrý deň,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "zakladateľ, HatchGrab",
+  "verify": {
+    "subject": "Potvrďte svoju e-mailovú adresu",
+    "thanks": "{hasTruck, select, yes {Ďakujem, že ste v HatchGrab nastavili food truck {truck}.} other {Ďakujem, že ste v HatchGrab nastavili svoj food truck.}}",
+    "button": "Potvrdiť e-mailovú adresu",
+    "buttonText": "Potvrdiť e-mailovú adresu: {url}",
+    "why": "Touto adresou sa budete prihlasovať a chodia na ňu upozornenia na objednávky — preto sa oplatí urobiť to hneď.",
+    "next": "Hneď ako ju potvrdíte, pošlem vám všetko, čo potrebujete na začiatok.",
+    "carryOn": "Medzitým môžete pokračovať v nastavovaní.",
+    "stuck": "Zasekli ste sa pri niečom? Stačí odpovedať na tento e-mail — odpovedám osobne.",
+    "fallbackLink": "Ak tlačidlo nefunguje, vložte do prehliadača tento odkaz: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Vitajte v HatchGrab, {name}} other {Vitajte v HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Veľmi ma teší, že môžem v HatchGrab privítať food truck {truck}.} other {Veľmi ma teší, že môžem v HatchGrab privítať váš food truck.}}",
+    "trial": "{months, plural, one {Vaše mesačné bezplatné skúšobné obdobie sa začalo — všetky funkcie sú odomknuté.} few {Vaše #-mesačné bezplatné skúšobné obdobie sa začalo — všetky funkcie sú odomknuté.} other {Vaše #-mesačné bezplatné skúšobné obdobie sa začalo — všetky funkcie sú odomknuté.}}",
+    "setup": "Ak ste to ešte neurobili, nastavenie je jednoduché a trvá asi pätnásť minút.",
+    "button": "Otvoriť prehľad",
+    "bookmark": "Oplatí sa uložiť si ho medzi záložky. Funguje na akomkoľvek zariadení.",
+    "stuck": "Ak sa zaseknete, stačí odpovedať na tento e-mail — odpovedám osobne.",
+    "lookingForward": "{hasTruck, select, yes {Teším sa, až uvidím food truck {truck} predávať.} other {Teším sa, až uvidím váš food truck predávať.}}"
+  }
+}

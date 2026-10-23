@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVĀTS PASĀKUMS",
+  "truckFallback": "Food truck",
+  "noSlugTitle": "Šim food truck vēl nav iestatīta pasūtīšana tiešsaistē.",
+  "orderingOffTitle": "Pasūtīšana tiešsaistē nav ieslēgta",
+  "orderingOffBody": "Šajā pasākumā pasūtījumus tiešsaistē nepieņem. Lūdzu, pasūtiet uz vietas pie busiņa.",
+  "replacedTitle": "Šī saite ir aizstāta",
+  "replacedBody": "Šī saite vairs nedarbojas — {truck} to aizstāja ar jaunu. Lūdziet organizatoram jauno saiti vai QR kodu.",
+  "madePublicBody": "Šī saite vairs nedarbojas — {truck} padarīja šo pasākumu publisku. Varat pasūtīt viņu parastajā lapā.",
+  "unknownTitle": "Šī saite nedarbojas",
+  "unknownBody": "Šī saite nedarbojas. Pārbaudiet to pie organizatora vai vēlreiz noskenējiet QR kodu."
+}

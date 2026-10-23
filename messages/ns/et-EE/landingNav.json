@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab — avaleht",
+  "cta": "Laadi oma menüü üles →",
+  "ctaShort": "Laadi menüü",
+  "features": "Funktsioonid",
+  "pricing": "Hinnad",
+  "logIn": "Logi sisse",
+  "country": {
+    "button": "Riik: {name}. Muuda riiki",
+    "menu": "Riik"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Kohustuslik} other {Valikuline}}{limit, select, one { · Vali üks} upTo { · Vali kuni {max}} other {}}",
+  "operator": "{required, select, yes {Kohustuslik} other {Valikuline}}{limit, select, one { · Klient valib ühe} upTo { · Klient saab valida kuni {max}} other {}}"
+}

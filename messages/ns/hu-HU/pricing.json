@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Az első hónap teljesen ingyenes — minden funkció elérhető.} other {Az első # hónap teljesen ingyenes — minden funkció elérhető.}}",
+    "body": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
+  },
+  "card": {
+    "perTruckMonth": "food truckonként / hónap",
+    "mostTrucks": "A legnépszerűbb",
+    "tryFree": "Próbálja ki ingyen",
+    "seeEvery": "Az összes funkció →",
+    "everything": "Minden, ami a működéshez kell",
+    "everythingIn": "{plan} összes funkciója, plusz"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> csak az online kártyás rendelésekre. A helyszíni rendelések mindig díjmentesek.",
+    "included": "Havonta az első <b>{included}</b> értékű online rendelés díjmentes, utána <b>{fee}*</b>. A helyszíni rendelések mindig díjmentesek.",
+    "noFee": "<b>Nincs HatchGrab-díj</b> az online rendeléseken, bármekkora is a forgalom. Kiszámítható havi költség."
+  },
+  "base": {
+    "walkUp": "Helyszíni rendelések és konyhai kijelző",
+    "online": "Online rendelés",
+    "preorders": "Előrendelések és átvételi idők",
+    "capacity": "Konyhai kapacitás kezelése",
+    "privateEvents": "Privát események",
+    "printing": "Konyhai rendelésjegyek nyomtatása",
+    "app": "Konyhai alkalmazás iPhone-ra, iPadre és Androidra"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp automatikus válaszok",
+    "schedule_graphics": "Közösségimédia-bejegyzések — Facebook- és Instagram-menetrendje — közzétételre készen",
+    "event_types": "Egyedi eseménytípusok és árazás"
+  },
+  "money": {
+    "unlimitedOrders": "Korlátlan online rendelés, 0% HatchGrab-díj",
+    "samePrice": "Ugyanaz az ár a legforgalmasabb hónapjában is"
+  },
+  "comingSoon": "Hamarosan",
+  "bar": {
+    "title": "Melyik csomag a legolcsóbb nekem?",
+    "subtitle": "Havi online rendelései",
+    "first": "{to} alatt → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "{from} felett → <b>{plan}</b>",
+    "only": "Bármekkora forgalom → <b>{plan}</b>"
+  },
+  "footnote": "* Ehhez jön a Stripe kártyás feldolgozási díja az online kártyás rendeléseknél (jelenlegi díj, {country}: {cardFee}), amelyet a Stripe-nak fizet, nem a HatchGrabnek. A helyszíni rendelésekhez a saját kártyaterminálját használja — ezekre a HatchGrab 0%-ot számít fel.",
+  "currencyLine": "Pénznem: {currency} ({code})"
+}

@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Prima lună este complet gratuită — toate funcțiile deblocate.} few {Primele # luni sunt complet gratuite — toate funcțiile deblocate.} other {Primele # de luni sunt complet gratuite — toate funcțiile deblocate.}}",
+    "body": "Cu {brand}, clienții comandă în avans și plătesc la ridicare, așa că puteți primi comenzi online fără să conectați vreun procesator de plăți cu cardul. Preferați să încasați în avans? Adăugați oricând plățile online cu cardul. La finalul perioadei de probă treceți la planul <plan>{fallback}</plan>{fallbackFree, select, yes { (fără taxă lunară)} other {}}, dacă nu alegeți alt plan. Fără card la început, fără contract, anulați oricând."
+  },
+  "card": {
+    "perTruckMonth": "per food truck / lună",
+    "mostTrucks": "Cel mai ales",
+    "tryFree": "Încercați gratuit",
+    "seeEvery": "Vedeți toate funcțiile →",
+    "everything": "Tot ce vă trebuie pentru serviciu",
+    "everythingIn": "Tot din planul {plan}, plus"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> doar pentru comenzile online plătite cu cardul. Comenzile la fața locului sunt mereu gratuite.",
+    "included": "Comenzi online în valoare de <b>{included}</b> incluse în fiecare lună, apoi <b>{fee}*</b>. Comenzile la fața locului sunt mereu gratuite.",
+    "noFee": "<b>Fără taxe HatchGrab</b> pentru comenzile online, oricât de aglomerat ar fi. Un cost lunar previzibil."
+  },
+  "base": {
+    "walkUp": "Comenzi la fața locului și ecran de bucătărie",
+    "online": "Comenzi online",
+    "preorders": "Precomandă și ora de ridicare",
+    "capacity": "Capacitatea bucătăriei",
+    "privateEvents": "Evenimente private",
+    "printing": "Tipărirea bonurilor de bucătărie",
+    "app": "Aplicație de bucătărie pentru iPhone, iPad și Android"
+  },
+  "added": {
+    "whatsapp_replies": "Răspunsuri automate pe WhatsApp",
+    "schedule_graphics": "Postări pentru rețelele sociale — programul dumneavoastră pentru Facebook și Instagram — gata de publicat",
+    "event_types": "Tipuri de evenimente și prețuri personalizate"
+  },
+  "money": {
+    "unlimitedOrders": "Comenzi online nelimitate, 0% taxă HatchGrab",
+    "samePrice": "Același preț și în cea mai aglomerată lună"
+  },
+  "comingSoon": "În curând",
+  "bar": {
+    "title": "Ce plan este cel mai ieftin pentru mine?",
+    "subtitle": "Comenzile dumneavoastră online pe lună",
+    "first": "Sub {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Peste {from} → <b>{plan}</b>",
+    "only": "Orice volum → <b>{plan}</b>"
+  },
+  "footnote": "* Plus taxele Stripe de procesare a cardurilor pentru comenzile online plătite cu cardul (în prezent, {country}: {cardFee}), plătite către Stripe, nu către HatchGrab. Comenzile la fața locului folosesc propriul dumneavoastră terminal de plată — HatchGrab percepe 0%.",
+  "currencyLine": "Prețuri în {currency} ({code})"
+}

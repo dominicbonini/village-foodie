@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Zweryfikuj nowy adres e-mail w HatchGrab",
+    "heading": "Zweryfikuj adres e-mail",
+    "button": "Zweryfikuj adres e-mail"
+  },
+  "changeEmail": {
+    "requested": "Poproszono o zmianę adresu e-mail w HatchGrab na ten adres.",
+    "click": "Kliknij przycisk poniżej, aby go zweryfikować. Link wygaśnie za 24 godziny.",
+    "ignore": "Jeśli ta zmiana nie pochodzi od ciebie, możesz bezpiecznie zignorować tę wiadomość.",
+    "stillActive": "Twój obecny adres e-mail pozostaje aktywny."
+  },
+  "resendVerification": {
+    "requested": "Poproszono o zmianę adresu e-mail w HatchGrab na ten adres.",
+    "click": "Kliknij poniżej, aby go zweryfikować. Link wygaśnie za 24 godziny.",
+    "ignore": "Jeśli to nie ty, zignoruj tę wiadomość.",
+    "stillActive": "Twój obecny adres e-mail pozostaje aktywny."
+  },
+  "passwordReset": {
+    "subject": "Zresetuj hasło do HatchGrab",
+    "heading": "Zresetuj hasło",
+    "requested": "Otrzymaliśmy prośbę o zresetowanie hasła do twojego konta HatchGrab.",
+    "click": "Kliknij przycisk poniżej, aby wybrać nowe hasło. Link wygaśnie za 1 godzinę.",
+    "button": "Zresetuj hasło",
+    "ignore": "Jeśli to nie ty, możesz bezpiecznie zignorować tę wiadomość.",
+    "unchanged": "Twoje hasło nie zmieni się, dopóki nie klikniesz linku powyżej."
+  },
+  "deletionScheduled": {
+    "subject": "Twoje konto HatchGrab zostanie usunięte",
+    "received": "Otrzymaliśmy prośbę o usunięcie tego konta HatchGrab.",
+    "orderingStopped": "<b>Zamówienia online zostały natychmiast wstrzymane</b> w: {trucks}.",
+    "noTrucks": "(brak food trucków)",
+    "readable": "Twój panel pozostanie\n    dostępny do wglądu przez {days, plural, one {następny # dzień} few {następne # dni} many {następne # dni} other {następne # dnia}}.",
+    "scheduled": "Usunięcie konta zaplanowano na <b>{date}</b>.",
+    "cannotCancel": "<b>Nie można tego anulować w aplikacji.</b> Jeśli to nie ty albo\n    jednak chcesz zachować konto, jak najszybciej odpowiedz na tę wiadomość.",
+    "kept": "Po usunięciu konta usuwamy twoje dane osobowe i dane twoich klientów. Zachowujemy\n    anonimowe dane księgowe, których przechowywania wymaga od nas prawo."
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Razdoblje",
+    "event": "📍 Događaj",
+    "filterBy": "Filtriraj po",
+    "show": "Prikaži",
+    "range": "<from></from><sep>do</sep><until></until>",
+    "selectEvent": "Odaberite događaj…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Događaj",
+    "viewReport": "Prikaži izvještaj",
+    "loading": "Učitavanje…",
+    "orders": "📋 Narudžbe",
+    "items": "📦 Artikli",
+    "exportCsv": "⬇ Izvezi CSV"
+  },
+  "empty": {
+    "noOrders": "Za ovo razdoblje nema narudžbi.",
+    "selectEvent": "Odaberite događaj iznad kako biste vidjeli njegov izvještaj."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} narudžba} few {{count} narudžbe} other {{count} narudžbi}} · {total}"
+  },
+  "revenue": {
+    "title": "Raščlamba prihoda",
+    "deals": "Prihod od menija",
+    "modifiers": "Doplate za opcije",
+    "foodSales": "Prodaja hrane",
+    "total": "Ukupno",
+    "other": "Ostalo",
+    "tax": "Porez",
+    "tips": "Napojnice",
+    "serviceFees": "Naknade za uslugu",
+    "cardFees": "Naknade za kartice"
+  },
+  "itemsSold": {
+    "title": "Prodani artikli"
+  },
+  "dealsCard": {
+    "title": "Meniji"
+  },
+  "custom": {
+    "title": "Prilagodbe",
+    "paidModifiers": "Plaćene opcije",
+    "customerNotes": "Napomene kupaca",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Artikl",
+    "modifier": "Opcija",
+    "qty": "Kol.",
+    "total": "Ukupno",
+    "date": "Datum",
+    "time": "Vrijeme",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Raščlamba narudžbi",
+    "items": "Raščlamba artikala"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Na licu mjesta"
+  },
+  "csv": {
+    "orderId": "ID narudžbe",
+    "date": "Datum",
+    "event": "Događaj",
+    "timePlaced": "Vrijeme narudžbe",
+    "collectionTime": "Vrijeme preuzimanja",
+    "customerName": "Ime kupca",
+    "orderType": "Vrsta narudžbe",
+    "items": "Artikli",
+    "deals": "Meniji",
+    "modifiers": "Opcije",
+    "notes": "Napomene",
+    "subtotal": "Međuzbroj",
+    "tip": "Napojnica",
+    "serviceFee": "Naknada za uslugu",
+    "total": "Ukupno",
+    "itemName": "Naziv artikla",
+    "qty": "Kol.",
+    "unitPrice": "Jedinična cijena",
+    "itemTotal": "Ukupno za artikl",
+    "orderTotal": "Ukupno za narudžbu",
+    "unknownEvent": "Nepoznat događaj",
+    "asap": "Što prije",
+    "unknownCustomer": "Nepoznato",
+    "customerOnline": "Kupac online",
+    "placedByTruck": "Unio food truck"
+  }
+}

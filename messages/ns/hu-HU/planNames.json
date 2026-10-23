@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Havidíj nélkül",
+    "subtitle": "Szezonális és részidős árusoknak",
+    "description": "Nincs havidíj. Csak akkor fizet, ha egy vásárló online, kártyával fizet."
+  },
+  "pro": {
+    "subtitle": "Rendszeres előrendeléseket fogadó food truckoknak",
+    "description": "Minden funkció, beleértve a WhatsApp automatikus válaszokat és a közösségimédia-bejegyzéseket, havi díjmentes online rendelési kerettel."
+  },
+  "unlimited": {
+    "name": "Korlátlan",
+    "subtitle": "Forgalmas food truckoknak és fesztiválokra",
+    "description": "Minden funkció, online rendelési díjak nélkül, bármekkora is a forgalom."
+  },
+  "trial": {
+    "name": "Ingyenes próbaidőszak",
+    "description": "Minden funkció, ingyen, a próbaidőszak alatt."
+  },
+  "demo": {
+    "name": "Demó",
+    "description": "Bemutató tesztkörnyezet érdeklődőknek — sosem nyilvános."
+  },
+  "tester": {
+    "name": "Tesztelő",
+    "description": "Indulás előtti tesztelő — teljes hozzáférés."
+  }
+}

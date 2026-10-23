@@ -1,0 +1,8 @@
+{
+  "country_missing": "Izvēlieties valsti, kurā atrodas jūsu food truck.",
+  "country_off": "Food truck no šīs valsts vēl nevar reģistrēties. Izvēlieties citu valsti.",
+  "zone_unknown": "Šai valstij šāda laika josla netiek piedāvāta. Izvēlieties kādu no saraksta.",
+  "town_missing": "Norādiet pilsētu vai ciemu, kurā atrodas jūsu food truck.",
+  "town_too_long": "Pilsētas nosaukums ir pārāk garš — ne vairāk kā 120 rakstzīmes.",
+  "region_closed": "Food truck, kas atrodas reģionā {region}, vēl nevar reģistrēties{reason, select, language {: HatchGrab vēl nav pieejams valodā {language}} taxLines {: vispirms pievienojam atsevišķas GST un PST rindas} other {}}. Ja jūsu food truck atrodas citur, izvēlieties to pilsētu vai ciemu."
+}

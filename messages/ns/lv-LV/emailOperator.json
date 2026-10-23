@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Jauns pasūtījums #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Saņemts jauns pasūtījums",
+    "from": "<b>Pasūtījums #{id}</b> — <b>{name}</b>",
+    "collection": "Saņemšana: {time}",
+    "asap": "Nav konkrēta laika — pēc iespējas ātrāk",
+    "total": "Kopā",
+    "notes": "<b>Piezīmes:</b> {notes}",
+    "autoConfirmed": "Apstiprināts automātiski — nekas nav jādara.",
+    "confirmPrompt": "Piesakieties savā HatchGrab vadības panelī, lai apstiprinātu vai noraidītu šo pasūtījumu.",
+    "text": "Jauns pasūtījums #{id} — {name}{withSlot, select, yes {, laiks: {slot}} other {}}{withVenue, select, yes {, vieta: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Kopā {total}.{withNotes, select, yes { Piezīmes: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Atrasti jauni pasākumi — {truck}: lūdzu, pārskatiet",
+    "hi": "Labdien!",
+    "found": "Jūsu grafikā atradām <b>{n, plural, zero {{count} jaunus pasākumus} one {{count} jaunu pasākumu} other {{count} jaunus pasākumus}}</b>, kas jāapstiprina, pirms tie kļūst redzami klientiem.",
+    "listHeading": "Atrastie pasākumi:",
+    "approve": "Kad tos apstiprināsiet cilnē “Grafiks”, tie parādīsies kartē un jūsu pasūtīšanas lapa būs gatava pieņemt iepriekšējus pasūtījumus.",
+    "cta": "Pārskatīt grafiku →",
+    "signoff": "— HatchGrab komanda · hatchgrab.com",
+    "unknownVenue": "Nezināma vieta",
+    "text": "Labdien!\n\nJūsu grafikā atradām {n, plural, zero {{count} jaunus pasākumus} one {{count} jaunu pasākumu} other {{count} jaunus pasākumus}}, kas jāapstiprina:\n\n{list}\n\nPārskatiet tos šeit: {url}\n\nKad tos apstiprināsiet, tie parādīsies kartē.\n\n— HatchGrab komanda"
+  }
+}

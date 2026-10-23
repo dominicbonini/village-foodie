@@ -1,0 +1,9 @@
+{
+  "title": "Csomagok és funkciók",
+  "generated": "Készült: {date}",
+  "allowanceHeading": "Online rendelési keret",
+  "smallPrint": "Apró betűs rész",
+  "priceNoteMasked": "Az „Egyeztetendő” jelölésű árakat még nem tettük közzé.",
+  "omitNote": "Ez a dokumentum szándékosan nem tartalmaz árakat.",
+  "terms": "A számadatok a fenti dátumon közzétett csomagfeltételeket tükrözik, és változhatnak. A kártyás fizetés feldolgozási díját a Stripe számítja fel, nem a HatchGrab. Ez a dokumentum összefoglaló, nem szerződés."
+}

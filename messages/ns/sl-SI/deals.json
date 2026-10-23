@@ -1,0 +1,17 @@
+{
+  "back": "← Nazaj",
+  "title": "Uporabite ponudbo",
+  "save": "Prihranite {amount}",
+  "selectItems": "Izberite artikle za vsak del ponudbe",
+  "choose": "Izberite: {category}…",
+  "inYourBasket": "── V vaši košarici ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (v košarici){state, select, used { – že v ponudbi} taken { – izbrano v drugem delu ponudbe} other {}}",
+  "addNew": "── Dodaj novo ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obvezno · izberite eno} required {Obvezno} other {Izberite eno}}{unmet, select, yes { (obvezno)} other {}}",
+  "notePlaceholder": "Dodajte opombo, npr. brez čebule (neobvezno)",
+  "backButton": "Nazaj",
+  "cancel": "Prekliči",
+  "chooseRequired": "Izberite obvezne možnosti",
+  "apply": "Uporabite ponudbo · {amount}"
+}

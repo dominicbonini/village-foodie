@@ -1,0 +1,42 @@
+{
+  "publicName": "Privāts pasākums",
+  "chip": "Privāts",
+  "grid": {
+    "orderingSection": "PASŪTĪŠANA",
+    "linkRowLabel": "Pieņemt pasūtījumus ar privātu saiti un QR kodu",
+    "columnTitle": "Iebūvētais veids “Privāts”. To nevar pārdēvēt, pārvietot vai dzēst."
+  },
+  "form": {
+    "help": "Jūsu grafikā tiek rādīts kā “Privāts pasākums” tikai ar datumu un laiku — nekad ar adresi, karti vai Village Foodie.",
+    "linkPromise": "Viesi pasūta ar privātu saiti un QR kodu — tos saņemsiet pēc saglabāšanas.",
+    "nameLabel": "Pasākuma nosaukums",
+    "nameHelp": "Viesi to redz pasūtījuma lapas augšdaļā.",
+    "namePlaceholder": "Annas un Jāņa kāzas",
+    "previewNote": "Tā tas izskatās jūsu grafikā — bez norises vietas, pilsētas vai pasta indeksa.",
+    "needsTimes": "Pievienojiet sākuma un beigu laiku — tie ir nepieciešami privātam pasākumam, kas pieņem pasūtījumus ar saiti."
+  },
+  "link": {
+    "button": "Saite un QR",
+    "title": "Privātā saite un QR kods",
+    "label": "Privātā saite",
+    "copy": "Kopēt",
+    "copied": "Nokopēts",
+    "qrDownload": "Lejupielādēt QR",
+    "tableCards": "Drukāt galda kartītes",
+    "newLink": "Izveidot jaunu saiti",
+    "working": "Apstrādā…",
+    "newLinkConfirm": "Izveidot jaunu saiti? Pašreizējā saite uzreiz pārstās darboties, un pārstās darboties arī jau izdrukātie QR kodi.",
+    "newLinkHelp": "Izmantojiet šo, ja saite nonākusi tur, kur tai nevajadzētu. Pašreizējā saite uzreiz pārstāj darboties, un pārstāj darboties arī izdrukātie QR kodi.",
+    "newLinkFailed": "Neizdevās izveidot jaunu saiti.",
+    "offNotice": "Pasūtīšana ar privāto saiti šim pasākumam ir izslēgta, tāpēc nav saites, ko kopīgot. Pasākums joprojām tiek rādīts jūsu grafikā kā “Privāts pasākums”."
+  },
+  "cards": {
+    "printTitle": "{truck} — galda kartītes",
+    "scan": "Skenējiet, lai pasūtītu",
+    "blurb": "Pasūtiet un samaksājiet tālrunī. Kad būs gatavs, mēs nosauksim jūsu vārdu.",
+    "footer": "Pasūtīšanu nodrošina HatchGrab"
+  },
+  "noSinglePost": "Privātiem pasākumiem netiek veidots atsevišķs ieraksts — tie parādās jūsu nedēļas plakātā kā “Privāts pasākums”.",
+  "confirmToPrivate": "Tādējādi adrese un pasākums tiks paslēpti no kartes. Lai pasūtītu, viesiem būs nepieciešama privātā saite.",
+  "confirmFromPrivate": "Tādējādi pasākums kļūs publisks: tiks rādīta tā adrese un atzīme kartē, un privātā saite pārstās darboties."
+}

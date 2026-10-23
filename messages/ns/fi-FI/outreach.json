@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Tästä sähköpostista puuttuu kieltäytymislause, joten sitä ei voi lähettää. Lisää se painikkeella ”Insert opt-out”.",
+    "notSetUp": "Kieltäytymislausetta ei ole määritetty, joten yhtään markkinointisähköpostia ei voi lähettää. Lisää se välilehden ”Templates” paneelissa ”Signature”.",
+    "notLoaded": "Kieltäytymislause ei ole vielä latautunut, joten tätä ei voi lähettää.",
+    "unreadable": "Kieltäytymislausetta ei voitu lukea, joten mitään ei lähetetty."
+  },
+  "retry": {
+    "notRebuilt": "Viestiä ei voitu muodostaa uudelleen yrityksen tietorivin kanssa, joten mitään ei lähetetty."
+  }
+}

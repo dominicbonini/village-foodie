@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Preverjanje začasno ni na voljo. Poskusite znova čez trenutek.",
+  "malformed": "To ni videti kot spletni naslov. Poskusite na primer vasfoodtruck.si/dogodki",
+  "blocked": "Do te strani nismo mogli dostopati — morda blokira samodejna preverjanja. Poskusite s stranjo, na kateri je vaš urnik, ali dogodke dodajte ročno.",
+  "unreachable": "Te spletne strani nismo mogli doseči. Morda ne deluje ali pa je naslov napačen.",
+  "no_content": "Stran smo dosegli, vendar na njej nismo mogli ničesar prebrati. Preverite, ali je javno dostopna.",
+  "no_events": "Na tej strani nismo našli prihajajočih dogodkov. Preverite, ali URL vodi neposredno tja, kjer je objavljen vaš urnik.",
+  "blockedDomain": "Uporabite URL svoje spletne strani — strani na Facebooku in Instagramu ni mogoče samodejno pregledovati."
+}

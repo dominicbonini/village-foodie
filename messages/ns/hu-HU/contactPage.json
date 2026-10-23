@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Ügyfélszolgálat",
+    "description": "Segítség a HatchGrab használatához. Írjon nekünk, és e-mailben válaszolunk."
+  },
+  "logIn": "Bejelentkezés",
+  "eyebrow": "Ügyfélszolgálat",
+  "title": "Miben segíthetünk?",
+  "lede": "Valami nem működik, vagy kérdése van a fiókjával kapcsolatban? Kétféleképpen érhet el minket — mindkét esetben e-mailben válaszolunk.",
+  "emailUs": "Írjon e-mailt",
+  "formHeading": "Vagy töltse ki az alábbi űrlapot",
+  "loadingForm": "Űrlap betöltése…",
+  "formTitle": "Kapcsolatfelvétel a HatchGrab ügyfélszolgálatával",
+  "privacy": "Adatvédelem",
+  "terms": "Feltételek",
+  "about": "Rólunk",
+  "copyright": "© {year} HatchGrab"
+}

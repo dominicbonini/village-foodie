@@ -1,0 +1,10 @@
+{
+  "copy": "Kopeeri",
+  "copied": "Kopeeritud ✓",
+  "failed": "Kopeerimine ebaõnnestus",
+  "aria": "{label} {thing}",
+  "announceCopied": "Kopeeritud: {thing}",
+  "announceCopiedValue": "Väärtus kopeeritud",
+  "announceFailed": "Ei õnnestunud kopeerida: {thing}. Vali tekst ja kopeeri see ise.",
+  "announceFailedValue": "Väärtust ei õnnestunud kopeerida. Vali tekst ja kopeeri see ise."
+}

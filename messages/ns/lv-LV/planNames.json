@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Bez ikmēneša maksas",
+    "subtitle": "Sezonas un nepilna laika tirgotājiem",
+    "description": "Bez ikmēneša maksas. Jūs maksājat tikai tad, kad klients samaksā tiešsaistē ar karti."
+  },
+  "pro": {
+    "subtitle": "Food truck ar regulāriem iepriekšējiem pasūtījumiem",
+    "description": "Viss, ieskaitot WhatsApp automātiskās atbildes un sociālo tīklu ierakstus, ar katru mēnesi iekļautiem tiešsaistes pasūtījumiem."
+  },
+  "unlimited": {
+    "name": "Neierobežots",
+    "subtitle": "Noslogotiem food truck un festivāliem",
+    "description": "Viss, bez maksas par tiešsaistes pasūtījumiem, lai cik daudz darba jums būtu."
+  },
+  "trial": {
+    "name": "Bezmaksas izmēģinājums",
+    "description": "Visas funkcijas bez maksas, kamēr ilgst jūsu izmēģinājuma periods."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Demonstrācijas vide potenciālajiem klientiem — nekad nav publiska."
+  },
+  "tester": {
+    "name": "Testētājs",
+    "description": "Testētājs pirms palaišanas — pilna piekļuve."
+  }
+}

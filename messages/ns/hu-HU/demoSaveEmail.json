@@ -1,0 +1,9 @@
+{
+  "subject": "HatchGrab-demója — itt a link, amellyel visszatérhet",
+  "heading": "A demója el van mentve",
+  "intro": "Itt a link, amellyel visszatérhet az étlapját tartalmazó demóhoz. Bejelentkezés nem kell — csak koppintson rá.",
+  "button": "Demóm megnyitása",
+  "freshDay": "Minden visszatéréskor egy friss árusítási napot készítünk elő, hogy legyen mit kipróbálnia.",
+  "deletion": "Ez egy demó, ezért nem őrizzük meg örökre — az étlappal együtt töröljük ekkor:\n                <b>{date}</b> ({days, plural, one {# nap múlva} other {# nap múlva}}). Ha előtte\n                regisztrál, az étlapja Önnel tart.",
+  "notSent": "Elmentettük, de az e-mailt most nem sikerült elküldeni."
+}

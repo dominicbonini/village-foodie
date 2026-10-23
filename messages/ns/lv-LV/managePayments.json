@@ -1,0 +1,94 @@
+{
+  "heading": "Maksājumi",
+  "loading": "Pārbaudām jūsu Stripe kontu…",
+  "state": {
+    "not_connected": {
+      "title": "Nav iestatīts",
+      "body": "Aizņem apmēram 10 minūtes. Būs nepieciešami jūsu bankas rekvizīti un personu apliecinošs dokuments.",
+      "chip": "Nav iestatīts"
+    },
+    "requirements": {
+      "title": "Stripe nepieciešami jūsu dati",
+      "body": "Karšu maksājumi nedarbosies, kamēr Stripe nebūs saņēmis jūsu uzņēmuma un bankas datus.",
+      "chip": "Nepieciešama darbība"
+    },
+    "pending": {
+      "title": "Savienots — Stripe pārbauda jūsu datus",
+      "body": "Jums nekas nav jādara. Stripe izskata iesniegto, un šī lapa atjaunināsies, kad pārbaude būs pabeigta.",
+      "chip": "Pārbaude"
+    },
+    "ready": {
+      "title": "Savienots",
+      "body": "Jūsu Stripe konts ir savienots un var pieņemt maksājumus.",
+      "chip": "Gatavs"
+    },
+    "restricted": {
+      "title": "Karšu maksājumi apturēti",
+      "body": "Stripe ir apturējis karšu maksājumus jūsu kontā, līdz kāds jautājums tiks atrisināts.",
+      "chip": "Apturēts"
+    },
+    "unsupported": {
+      "title": "Šajā kontā karšu maksājumi nav pieejami",
+      "body": "Stripe šeit nevar iespējot karšu maksājumus. Sazinieties ar mums, un mēs to kopā atrisināsim.",
+      "chip": "Nav pieejams"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe atslēgas nesakrīt",
+    "body": "Šīs vietnes serveris izmanto <b>{server, select, live {reālā režīma} other {testa}}</b> Stripe atslēgu, bet pārlūka versija tika izveidota ar <b>{browser, select, live {reālā režīma} other {testa}}</b> atslēgu. Karšu maksājumi neizdotos brīdī, kad klients mēģina maksāt, tāpēc Stripe iestatīšana ir bloķēta, līdz atslēgas sakritīs.",
+    "fix": "Abām atslēgām jābūt iestatītām vienai un tai pašai videi, un pēc tam vietne jāpārbūvē — publiskojamā atslēga tiek iebūvēta būvēšanas laikā, slepenā atslēga tiek nolasīta katrā pieprasījumā."
+  },
+  "permission": {
+    "title": "Maksājumus var iestatīt tikai food truck īpašnieks",
+    "body": "Stripe pievieno persona, kuras bankas kontā nonāk nauda, tāpēc tas jāiestata no šīs personas konta, kurā tā ir pierakstījusies. Ar šo food truck vai HatchGrab viss ir kārtībā."
+  },
+  "config": {
+    "keyMissingTitle": "Karšu maksājumi vēl nav konfigurēti",
+    "fetchTitle": "Neizdevās pārbaudīt šī food truck Stripe kontu",
+    "keyMissing": "{name} nav iestatīts — iegultos komponentus nevar ielādēt."
+  },
+  "errors": {
+    "requestFailed": "Pieprasījums neizdevās ({status})",
+    "unreachable": "Neizdevās sazināties ar Stripe"
+  },
+  "online": {
+    "heading": "Tiešsaistes maksājumi",
+    "body": "Klienti maksā ar karti, kad pasūta. Nauda nonāk tieši jūsu Stripe kontā — mēs to nekad neuzglabājam.",
+    "feeLine": "Stripe iekasē {fee} par maksājumu ar standarta kartēm ({region}). Citas kartes var izmaksāt dārgāk. HatchGrab komisija par tiešsaistes pasūtījumiem ir atkarīga no jūsu plāna — skatiet sadaļu Norēķini.",
+    "testMode": "Testa režīms. Īstus maksājumus vēl nevar pieņemt."
+  },
+  "trialNote": "Šī iestatīšana nesāk jūsu abonementu un šodien no jums neko neiekasē. Tā jūsu klienti maksā jums — jūsu plāns ir atsevišķs.",
+  "admin": {
+    "title": "Skatāt kā platformas administrators",
+    "body": "Šis food truck nav iestatījis tiešsaistes maksājumus. To var sākt tikai īpašnieks no sava konta — šeit nav ko spiest."
+  },
+  "setUp": {
+    "button": "Iestatīt tiešsaistes maksājumus",
+    "busy": "Iestata…"
+  },
+  "toast": {
+    "alreadySetUp": "Jau iestatīts — turpinām",
+    "addDetails": "Tagad pievienojiet savus datus Stripe",
+    "createFailed": "Neizdevās izveidot kontu"
+  },
+  "onboarding": {
+    "restricted": "Tālāk palīdzēs Stripe — jūs pierakstīsieties Stripe un atjaunināsiet nepieciešamos datus.",
+    "firstRun": "Tālāk palīdzēs Stripe — jūs pierakstīsieties Stripe un norādīsiet uzņēmuma un bankas datus."
+  },
+  "details": {
+    "title": "Jūsu Stripe dati",
+    "body": "Mainiet bankas kontu, uz kuru saņemat maksājumus, vai atjauniniet uzņēmuma datus un dokumentus.",
+    "button": "Skatīt vai rediģēt"
+  },
+  "walkUp": {
+    "heading": "Maksājumi uz vietas",
+    "body": "Kā jūs pieņemat naudu pie busiņa. HatchGrab neiekasē platformas maksu par pasūtījumiem uz vietas, lai ko jūs izvēlētos.",
+    "ownTerminal": "Jūsu maksājumu terminālis",
+    "current": "Pašreizējais",
+    "ownTerminalHelp": "Zettle, Square vai tas, ko jau izmantojat. Nekas nav jāiestata — tiek piemērotas tikai jūsu pakalpojumu sniedzēja maksas.",
+    "hatchgrab": "Ar HatchGrab",
+    "comingSoon": "Drīzumā",
+    "hatchgrabHelp": "Izmanto to pašu Stripe savienojumu, ko tiešsaistes maksājumi — maksājumu termināli vai bezkontakta maksājumus tieši tālrunī vai planšetdatorā.",
+    "hatchgrabFees": "{fee} par maksājumu ({region}), kā arī {surcharge} par bezkontakta maksājumiem, kas pieņemti tālrunī vai planšetdatorā. Citas kartes var izmaksāt dārgāk."
+  }
+}

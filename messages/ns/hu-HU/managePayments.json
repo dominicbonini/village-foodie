@@ -1,0 +1,94 @@
+{
+  "heading": "Fizetések",
+  "loading": "Stripe-fiókja ellenőrzése…",
+  "state": {
+    "not_connected": {
+      "title": "Nincs beállítva",
+      "body": "Körülbelül 10 percet vesz igénybe. Szüksége lesz a bankszámla-adataira és a személyazonosító igazolványára.",
+      "chip": "Nincs beállítva"
+    },
+    "requirements": {
+      "title": "A Stripe-nak szüksége van az adataira",
+      "body": "A kártyás fizetés addig nem működik, amíg a Stripe meg nem kapja a vállalkozása és a bankszámlája adatait.",
+      "chip": "Teendő van"
+    },
+    "pending": {
+      "title": "Csatlakoztatva — a Stripe ellenőrzi az adatait",
+      "body": "Önnek nincs teendője. A Stripe átnézi, amit elküldött, és ez az oldal frissül, ha végzett.",
+      "chip": "Ellenőrzés"
+    },
+    "ready": {
+      "title": "Csatlakoztatva",
+      "body": "Stripe-fiókja csatlakoztatva van, és fogadhat fizetéseket.",
+      "chip": "Kész"
+    },
+    "restricted": {
+      "title": "A kártyás fizetés szünetel",
+      "body": "A Stripe szüneteltette a kártyás fizetést a fiókján, amíg egy problémát meg nem oldanak.",
+      "chip": "Szünetel"
+    },
+    "unsupported": {
+      "title": "Ezen a fiókon nem érhető el kártyás fizetés",
+      "body": "A Stripe itt nem tudja engedélyezni a kártyás fizetést. Vegye fel velünk a kapcsolatot, és közösen megoldjuk.",
+      "chip": "Nem érhető el"
+    }
+  },
+  "keyMismatch": {
+    "title": "A Stripe-kulcsok nem egyeznek",
+    "body": "Az oldal szervere ezt a Stripe-kulcsot használja: <b>{server, select, live {éles} other {teszt}}</b>, a böngészőbe épített kulcs viszont ez: <b>{browser, select, live {éles} other {teszt}}</b>. A kártyás fizetés abban a pillanatban hibára futna, amikor egy vásárló fizetni próbál, ezért a Stripe beállítása le van tiltva, amíg a kettő nem egyezik.",
+    "fix": "Mindkét kulcsot ugyanarra a környezetre kell beállítani, majd az oldalt újra kell buildelni — a közzétehető kulcs buildeléskor beépül, a titkos kulcsot pedig minden kérésnél beolvassa a rendszer."
+  },
+  "permission": {
+    "title": "Csak a food truck tulajdonosa állíthatja be a fizetéseket",
+    "body": "A Stripe-ot az a személy csatlakoztatja, akinek a bankszámlájára a pénz érkezik, ezért a saját, bejelentkezett fiókjából kell beállítania. Ezzel a food truckkal és a HatchGrabbel nincs semmi gond."
+  },
+  "config": {
+    "keyMissingTitle": "A kártyás fizetés még nincs konfigurálva",
+    "fetchTitle": "Nem tudtuk ellenőrizni ennek a food trucknak a Stripe-fiókját",
+    "keyMissing": "{name} nincs beállítva — a beágyazott komponensek nem tudnak betöltődni."
+  },
+  "errors": {
+    "requestFailed": "A kérés sikertelen ({status})",
+    "unreachable": "A Stripe nem érhető el"
+  },
+  "online": {
+    "heading": "Online fizetés",
+    "body": "A vásárlók rendeléskor kártyával fizetnek. A pénz közvetlenül az Ön saját Stripe-fiókjába kerül — mi sosem tartjuk magunknál.",
+    "feeLine": "A Stripe díja fizetésenként {fee} a szokásos kártyáknál ({region}). Más kártyák drágábbak lehetnek. A HatchGrab saját díja az online rendeléseken a csomagjától függ — lásd: Számlázás.",
+    "testMode": "Tesztüzemmód. Valódi fizetést még nem lehet fogadni."
+  },
+  "trialNote": "A beállítás nem indítja el az előfizetését, és ma semmit sem számlázunk Önnek. Ezen keresztül fizetnek Önnek a vásárlói — a csomagja ettől független.",
+  "admin": {
+    "title": "Megtekintés platformadminként",
+    "body": "Ez a food truck nem állította be az online fizetést. Csak a tulajdonos indíthatja el, a saját, bejelentkezett fiókjából — itt nincs mit megnyomni."
+  },
+  "setUp": {
+    "button": "Online fizetés beállítása",
+    "busy": "Beállítás…"
+  },
+  "toast": {
+    "alreadySetUp": "Már be van állítva — folytatjuk",
+    "addDetails": "Most adja meg az adatait a Stripe-nak",
+    "createFailed": "Nem sikerült létrehozni a fiókot"
+  },
+  "onboarding": {
+    "restricted": "Innen a Stripe veszi át — bejelentkezik a Stripe-ba, és frissíti a kért adatokat.",
+    "firstRun": "Innen a Stripe veszi át — bejelentkezik a Stripe-ba, majd megadja a vállalkozása és a bankszámlája adatait."
+  },
+  "details": {
+    "title": "Stripe-adatai",
+    "body": "Módosítsa a bankszámlát, amelyre a kifizetések érkeznek, vagy frissítse a vállalkozása adatait és dokumentumait.",
+    "button": "Megtekintés vagy szerkesztés"
+  },
+  "walkUp": {
+    "heading": "Helyszíni fizetés",
+    "body": "Így veszi át a pénzt a pultnál. A HatchGrab a helyszíni rendelések után nem számol fel platformdíjat, bármelyiket választja is.",
+    "ownTerminal": "Saját kártyaterminál",
+    "current": "Jelenlegi",
+    "ownTerminalHelp": "Zettle, Square vagy amit eddig is használ. Nincs mit beállítani — csak a szolgáltatója saját díjai érvényesek.",
+    "hatchgrab": "A HatchGraben keresztül",
+    "comingSoon": "Hamarosan",
+    "hatchgrabHelp": "Ugyanazt a Stripe-kapcsolatot használja, mint az online fizetés — kártyaterminállal, vagy érintéses fizetéssel közvetlenül a telefonján vagy táblagépén.",
+    "hatchgrabFees": "{fee} fizetésenként ({region}), plusz {surcharge} a telefonon vagy táblagépen fogadott érintéses fizetésekért. Más kártyák drágábbak lehetnek."
+  }
+}

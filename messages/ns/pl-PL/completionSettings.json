@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Przyjmuj zamówienia bez płatności",
+  "completionTitle": "Zamykanie nieopłaconego zamówienia",
+  "completionHelp": "Co się dzieje, gdy nieopłacone zamówienie jest gotowe do wydania.",
+  "pressesOne": "Jedno naciśnięcie („Opłacone i odebrane”)",
+  "pressesOneHelp": "Najlepsze, gdy pobierasz pieniądze przy wydawaniu jedzenia. Masz jeden przycisk, „Opłacone i odebrane”, który jednocześnie rejestruje płatność i zamyka zamówienie.",
+  "pressesTwo": "Dwa naciśnięcia („Oznacz jako opłacone” i „Odebrane”)",
+  "pressesTwoHelp": "Najlepsze, gdy płatność i wydanie następują w różnych momentach — ktoś płaci przy okienku, a odbiera, gdy zamówienie jest gotowe. Masz dwa przyciski: najpierw „Oznacz jako opłacone”, potem „Odebrane”, gdy klient zabiera jedzenie."
+}

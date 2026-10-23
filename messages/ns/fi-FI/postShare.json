@@ -1,0 +1,10 @@
+{
+  "download": "Lataa kuva",
+  "copied": "Kopioitu ✓",
+  "copyCaption": "Kopioi kuvateksti",
+  "share": "Jaa",
+  "copiedStatus": "{kind, select, postText {Julkaisun teksti kopioitu.} other {Kuvateksti kopioitu.}}",
+  "copyFailed": "Kopiointi ei onnistunut — valitse teksti ja kopioi se itse.",
+  "sharedStatus": "{kind, select, postText {Julkaisun teksti kopioitu — liitä se julkaisuusi.} other {Kuvateksti kopioitu — liitä se julkaisuusi.}}",
+  "shareRefused": "{kind, select, postText {Jakaminen estettiin, joten kuva ladattiin laitteellesi. Julkaisun teksti kopioitu.} other {Jakaminen estettiin, joten kuva ladattiin laitteellesi. Kuvateksti kopioitu.}}"
+}

@@ -1,0 +1,10 @@
+{
+  "download": "Kép letöltése",
+  "copied": "Másolva ✓",
+  "copyCaption": "Képaláírás másolása",
+  "share": "Megosztás",
+  "copiedStatus": "{kind, select, postText {A bejegyzés szövege kimásolva.} other {Képaláírás kimásolva.}}",
+  "copyFailed": "Nem sikerült másolni — jelölje ki a szöveget, és másolja ki kézzel.",
+  "sharedStatus": "{kind, select, postText {A bejegyzés szövege kimásolva — illessze be a bejegyzésébe.} other {Képaláírás kimásolva — illessze be a bejegyzésébe.}}",
+  "shareRefused": "{kind, select, postText {A megosztást elutasították, ezért letöltöttük a képet. A bejegyzés szövege kimásolva.} other {A megosztást elutasították, ezért letöltöttük a képet. Képaláírás kimásolva.}}"
+}

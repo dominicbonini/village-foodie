@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Privaatsuspoliitika — HatchGrab",
+    "privacyDescription": "Kuidas HatchGrab Ltd isikuandmeid kogub ja kasutab.",
+    "termsTitle": "Kasutustingimused — HatchGrab",
+    "termsDescription": "HatchGrabi kasutamise tingimused.",
+    "countryTermsTitle": "Riigipõhised tingimused — HatchGrab",
+    "countryTermsDescription": "Lisareeglid, mis kehtivad HatchGrabile mõnes riigis."
+  },
+  "homeLabel": "HatchGrab — avaleht",
+  "privacy": "Privaatsus",
+  "terms": "Tingimused",
+  "countryTerms": "Riigi tingimused",
+  "contact": "Kontakt",
+  "lastUpdated": "Viimati uuendatud: {date}",
+  "questions": "Küsimusi? <link>Võta ühendust</link> — me oleme päris inimesed."
+}

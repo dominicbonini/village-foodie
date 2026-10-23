@@ -1,0 +1,42 @@
+{
+  "publicName": "Eveniment privat",
+  "chip": "Privat",
+  "grid": {
+    "orderingSection": "COMENZI",
+    "linkRowLabel": "Primiți comenzi prin link privat și cod QR",
+    "columnTitle": "Tipul Privat integrat. Nu poate fi redenumit, mutat sau șters."
+  },
+  "form": {
+    "help": "Apare în programul dumneavoastră ca „Eveniment privat”, doar cu data și orele — niciodată adresa, harta sau Village Foodie.",
+    "linkPromise": "Invitații comandă printr-un link privat și un cod QR — le veți primi după salvare.",
+    "nameLabel": "Numele evenimentului",
+    "nameHelp": "Invitații văd acest nume în partea de sus a paginii de comandă.",
+    "namePlaceholder": "Nunta Ioanei și a lui Andrei",
+    "previewNote": "Cum apare în programul dumneavoastră — fără locație, localitate sau cod poștal.",
+    "needsTimes": "Adăugați o oră de început și una de sfârșit — un eveniment privat care primește comenzi prin link are nevoie de ele."
+  },
+  "link": {
+    "button": "Link și QR",
+    "title": "Link privat și cod QR",
+    "label": "Link privat",
+    "copy": "Copiați",
+    "copied": "Copiat",
+    "qrDownload": "Descărcați QR",
+    "tableCards": "Tipăriți cartonașe pentru mese",
+    "newLink": "Generați un link nou",
+    "working": "Se procesează…",
+    "newLinkConfirm": "Generați un link nou? Linkul actual nu va mai funcționa imediat, la fel ca și codurile QR pe care le-ați tipărit deja.",
+    "newLinkHelp": "Folosiți această opțiune dacă linkul a ajuns unde nu trebuia. Linkul actual nu va mai funcționa imediat, la fel ca și codurile QR tipărite.",
+    "newLinkFailed": "Nu s-a putut genera un link nou.",
+    "offNotice": "Comenzile prin link privat sunt dezactivate pentru acest eveniment, deci nu există niciun link de distribuit. Evenimentul apare în continuare în programul dumneavoastră ca „Eveniment privat”."
+  },
+  "cards": {
+    "printTitle": "{truck} — cartonașe pentru mese",
+    "scan": "Scanați pentru a comanda",
+    "blurb": "Comandați și plătiți de pe telefon. Vă strigăm pe nume când comanda este gata.",
+    "footer": "Comenzi prin HatchGrab"
+  },
+  "noSinglePost": "Evenimentele private nu primesc o postare proprie — apar pe afișul săptămânal ca „Eveniment privat”.",
+  "confirmToPrivate": "Astfel, adresa și evenimentul sunt ascunse de pe hartă. Invitații vor avea nevoie de linkul privat ca să comande.",
+  "confirmFromPrivate": "Astfel, evenimentul devine public: adresa și marcajul de pe hartă vor fi afișate, iar linkul privat nu va mai funcționa."
+}

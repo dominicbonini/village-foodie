@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "na food truck / mesec",
+  "transactionFees": "Transakcijski stroški",
+  "comingSoon": "Kmalu",
+  "footnote2Masked": "Spletna plačila omogoča Stripe Connect. Stroški platforme in obdelave kartičnih plačil še niso določeni in bodo potrjeni ob zagonu.",
+  "card": {
+    "title": "Obračun in plačila",
+    "managed": "Obračun ureja HatchGrab",
+    "earlyAccess": "V obdobju zgodnjega dostopa pakete nastavljamo in prilagajamo ročno.",
+    "planLine": "{trial, select, yes {{truck} · paket {plan} (preizkusno obdobje)} other {{truck} · paket {plan}}}"
+  },
+  "currentPlan": "Trenutni paket",
+  "plan": {
+    "included": "Vključuje spletna naročila v vrednosti {amount} na mesec.",
+    "includedUnlimited": "Vključuje neomejeno spletnih naročil.",
+    "promo": "Posebna cena.",
+    "promoUntil": "Posebna cena do {date}.",
+    "ended": "Vaš paket {plan} se je iztekel {date}. Zdaj uporabljate paket {now}.",
+    "trialMonths": "{months}-mesečno brezplačno preizkusno obdobje."
+  },
+  "trialEnds": "Preizkusno obdobje se konča {date}",
+  "yourTrialEnds": "Vaše preizkusno obdobje se konča {date}",
+  "notStarted": {
+    "heading": "Vaše brezplačno preizkusno obdobje se še ni začelo"
+  },
+  "onTrial": "Na voljo imate vse funkcije. Paket izberite, preden se preizkusno obdobje konča.",
+  "onTrialNoCta": "Na voljo imate vse funkcije.",
+  "noCharge": "🔒 V preizkusnem obdobju, ki traja do {date}, vam ne bomo ničesar zaračunali. Obračun se začne šele, ko izberete paket in vnesete plačilne podatke. Do takrat vam ni treba ničesar preklicati ali plačati.",
+  "fees": "*Za spletna naročila veljajo standardni stroški obdelave kartičnih plačil",
+  "setUpPayment": "⏱ Paket izberite, preden se preizkusno obdobje konča",
+  "changeYourPlan": "Zamenjajte paket",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Prehod na paket {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Samodejni obračun še vzpostavljamo. Če želite preiti zdaj, nam pišite in vse bomo uredili v 24 urah.",
+    "mailSubject": "Prehod na paket {plan} — {truck}",
+    "mailBody": "Pozdravljeni, za {truck} želim preiti na paket {plan} ({price}).",
+    "email": "Pišite nam za prehod",
+    "cancel": "Prekliči"
+  }
+}

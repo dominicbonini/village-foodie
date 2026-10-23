@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Kuutasuta",
+    "subtitle": "Hooajalised ja osalise ajaga ettevõtjad",
+    "description": "Kuutasu pole. Maksad ainult siis, kui klient maksab veebis kaardiga."
+  },
+  "pro": {
+    "subtitle": "Toiduautod, mis saavad regulaarselt ettetellimusi",
+    "description": "Kõik funktsioonid, sealhulgas WhatsAppi automaatvastused ja sotsiaalmeedia postitused, ning iga kuu teatud hulk veebitellimusi hinna sees."
+  },
+  "unlimited": {
+    "name": "Piiramatu",
+    "subtitle": "Suure käibega toiduautod ja festivalid",
+    "description": "Kõik funktsioonid, veebitellimustelt mingeid tasusid, ükskõik kui palju sul tegemist on."
+  },
+  "trial": {
+    "name": "Tasuta prooviperiood",
+    "description": "Kõik funktsioonid tasuta, kuni prooviperiood kestab."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Liivakast potentsiaalsetele klientidele — pole kunagi avalik."
+  },
+  "tester": {
+    "name": "Testija",
+    "description": "Testija enne käivitamist — täielik ligipääs."
+  }
+}

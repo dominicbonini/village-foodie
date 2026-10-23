@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Pakollinen} other {Valinnainen}}{limit, select, one { · Valitse yksi} upTo { · Valitse enintään {max}} other {}}",
+  "operator": "{required, select, yes {Pakollinen} other {Valinnainen}}{limit, select, one { · Asiakas valitsee yhden} upTo { · Asiakas voi valita enintään {max}} other {}}"
+}

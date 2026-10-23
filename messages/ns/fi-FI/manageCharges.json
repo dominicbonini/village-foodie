@@ -1,0 +1,30 @@
+{
+  "heading": "ALV, juomarahat ja palvelumaksu",
+  "rate": {
+    "label": "ALV-kanta",
+    "hint": "Kanta, jonka veloitat jokaisesta tilauksesta. Asiakkaat näkevät sen lisättynä kassalla, kuiteissa ja keittiölapuissa.",
+    "regionDefault": "Jätä tyhjäksi, niin käytetään valmistetun ruoan verokantaa ({region}): {label} {rate} %."
+  },
+  "included": {
+    "label": "{label} sisältyy hintoihin",
+    "hint": "Hintasi sisältävät jo veron ({label}). Tämä kanta kertoo vain, kuinka suuri osa kustakin hinnasta on veroa ({label}) kuiteissa ja keittiölapuissa — kassalla ei lisätä mitään.",
+    "default": "Jätä tyhjäksi, niin käytetään lämpimän noutoruoan verokantaa ({country}): {label} {rate} %."
+  },
+  "tips": {
+    "label": "Juomarahat",
+    "hint": "Verkossa kortilla maksavat asiakkaat voivat lisätä juomarahan. Se menee kokonaan sinulle.",
+    "choices": "Asiakkaiden vaihtoehdot:",
+    "chip": "{rate} %",
+    "other": "Muu summa"
+  },
+  "fee": {
+    "label": "Verkkopalvelumaksu",
+    "hint": "Lisätään vain verkkotilauksiin. Ei koskaan noudettaessa maksettaviin tai paikan päällä tehtyihin tilauksiin. Se jää sinulle.",
+    "pctAria": "Palvelumaksun prosentti",
+    "fixedAria": "Palvelumaksun kiinteä summa",
+    "max": "Enimmäismäärä: {max}",
+    "example": "Asiakkaat näkevät sen ennen maksamista yhtenä rivinä: ”{label} {amount}”.",
+    "hatchgrab": "HatchGrab lisää asiakkaidesi verkkotilauksiin palvelumaksun {fee}. Sinä et maksa sitä etkä voi muuttaa sitä."
+  },
+  "saveFailed": "Tallennus epäonnistui — yritä uudelleen."
+}

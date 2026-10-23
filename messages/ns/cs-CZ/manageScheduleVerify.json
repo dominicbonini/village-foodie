@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Ověření je dočasně nedostupné. Zkuste to prosím za chvíli znovu.",
+  "malformed": "Tohle nevypadá jako webová adresa. Zkuste například vasfoodtruck.cz/akce",
+  "blocked": "K tomuto webu jsme se nedostali — možná blokuje automatické kontroly. Zkuste stránku, na které je váš rozpis akcí, nebo přidejte akce ručně.",
+  "unreachable": "Tento web se nám nepodařilo načíst. Může být mimo provoz, nebo je adresa chybná.",
+  "no_content": "Stránku jsme načetli, ale nedokázali jsme na ní nic přečíst. Zkontrolujte, že je veřejně přístupná.",
+  "no_events": "Na této stránce jsme nenašli žádné nadcházející akce. Ujistěte se, že URL vede přímo na stránku s vaším rozpisem akcí.",
+  "blockedDomain": "Použijte URL svého webu — stránky na Facebooku a Instagramu nelze automaticky procházet."
+}

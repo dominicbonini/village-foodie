@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Nagłówek się nie zmieścił i został skrócony.",
+    "date": "Data się nie zmieściła i została skrócona.",
+    "daysOff": "Tekst o dniach wolnych się nie zmieścił i został skrócony.",
+    "place": "Nazwa miejsca się nie zmieściła i została skrócona.",
+    "time": "Godzina się nie zmieściła i została skrócona.",
+    "note": "Twój własny tekst się nie zmieścił i został skrócony.",
+    "venue": "Nazwa lokalu się nie zmieściła i została skrócona.",
+    "area": "Nazwa miejscowości się nie zmieściła i została skrócona."
+  },
+  "fontFallback": "Nie udało się wczytać czcionki używanej w tym projekcie ({id}) — te pola są w kroju Oswald.",
+  "wrongShapeBackground": "Grafika tego miejsca ma inny kształt niż twój projekt, więc użyto standardowego tła.",
+  "rowsFit": "Ostatni dzień wychodzi {px} px poza dolną krawędź obrazu — zmniejsz odstęp między wierszami lub przesuń wiersz 1 wyżej.",
+  "placeStatus": {
+    "ownBoth": "Własna grafika i pozycje tekstu",
+    "wrongShape": "Inny kształt — nieużywana do czasu zastąpienia",
+    "ownPicture": "Własna grafika, standardowe pozycje",
+    "ownPositions": "Standardowa grafika, własne pozycje tekstu",
+    "none": "Brak grafiki — używany jest projekt standardowy"
+  },
+  "standardStatus": "Używany we wszystkich pozostałych miejscach",
+  "option": {
+    "oneOff": "Prześlij grafikę tylko do tego posta",
+    "placePoster": "Plakat: {name}",
+    "standard": "Projekt standardowy"
+  },
+  "previewLabel": {
+    "lastEvent": "Podgląd używa twojego ostatniego wydarzenia w tym miejscu",
+    "noEvents": "Brak wydarzeń w tym miejscu — podgląd pokazuje twoje następne wydarzenie z nazwą tego miejsca"
+  },
+  "fontUsage": {
+    "weekly": "twój projekt posta tygodniowego",
+    "event": "twój projekt posta o pojedynczym wydarzeniu",
+    "place": "twój projekt dla miejsca {place}",
+    "placeUnnamed": "twój projekt dla miejsca"
+  },
+  "face": {
+    "regular": "Zwykły",
+    "bold": "Pogrubiony",
+    "italic": "Kursywa"
+  },
+  "picture": {
+    "legacy": "Plakat wydarzenia",
+    "fallback": "Grafika",
+    "wrongShape": "Inny kształt — nie może służyć jako całe tło"
+  },
+  "noPicture": {
+    "omit": "Pomiń",
+    "blank": "Zostaw puste miejsce",
+    "logo": "Pokaż swoje logo"
+  },
+  "noPicturesAll": "{total, plural, one {Twoja lokalizacja ma grafikę.} few {Każda z {total} twoich lokalizacji ma grafikę.} many {Każda z {total} twoich lokalizacji ma grafikę.} other {Każda z {total} twoich lokalizacji ma grafikę.}}",
+  "noPicturesSome": "{without, plural, one {{without} z {total} twoich lokalizacji nie ma jeszcze grafiki} few {{without} z {total} twoich lokalizacji nie mają jeszcze grafiki} many {{without} z {total} twoich lokalizacji nie ma jeszcze grafiki} other {{without} z {total} twoich lokalizacji nie ma jeszcze grafiki}}",
+  "licenceTick": "Jestem właścicielem tej czcionki lub mam licencję na jej używanie",
+  "fontUploadButton": "↑ Prześlij swoją czcionkę"
+}

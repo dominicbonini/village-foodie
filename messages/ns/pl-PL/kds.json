@@ -1,0 +1,129 @@
+{
+  "docTitle": "Kuchnia – {truck}",
+  "loading": "Wczytywanie kuchni…",
+  "pin": {
+    "title": "Wpisz PIN",
+    "placeholder": "PIN",
+    "unlock": "Odblokuj",
+    "unreachable": "Nie można teraz połączyć się z serwerem. Twój PIN jest w porządku — spróbuj ponownie za chwilę.",
+    "incorrect": "Nieprawidłowy PIN",
+    "generic": "Coś poszło nie tak. Spróbuj ponownie."
+  },
+  "error": {
+    "linkInvalid": "Ten link jest już nieważny.",
+    "couldNotLoad": "Nie udało się wczytać zamówień",
+    "truckNotFound": "Nie znaleziono food trucka"
+  },
+  "degraded": {
+    "at": "⚠️ Brak połączenia z serwerem. Wyświetlane są zamówienia z godz. {time}. MOŻE BRAKOWAĆ NOWYCH ZAMÓWIEŃ.",
+    "earlier": "⚠️ Brak połączenia z serwerem. Wyświetlane są wcześniejsze zamówienia. MOŻE BRAKOWAĆ NOWYCH ZAMÓWIEŃ."
+  },
+  "header": {
+    "dashboard": "Panel",
+    "backTitle": "Wróć do panelu",
+    "list": "Lista",
+    "grid": "Siatka",
+    "full": "Pełne",
+    "cook": "Kucharz",
+    "fullTitle": "Pełne karty — ceny i szczegóły płatności, tak jak widzi je obsługa przy okienku.",
+    "cookTitle": "Karty dla kucharza — większa czcionka, grupowanie według kategorii, bez cen.",
+    "readyStep": "Krok „Gotowe”",
+    "readyOnlyTitle": "Ten ekran tylko oznacza zamówienia jako gotowe, więc nie można tego wyłączyć — to jedyny krok, który wykonuje.",
+    "readyOnTitle": "Ten ekran oznacza zamówienia jako gotowe. Dotknij, aby robił to inny ekran.",
+    "readyOffTitle": "Zamówienia jako gotowe oznacza inny ekran. Dotknij, aby robił to ten ekran.",
+    "handover": "Płatność i wydanie",
+    "handoverOnlyTitle": "Ten ekran tylko przyjmuje płatności, więc nie można tego wyłączyć — to jedyny krok, który wykonuje.",
+    "handoverOnTitle": "Ten ekran przyjmuje płatności i wydaje zamówienia. Dotknij, aby robił to inny ekran.",
+    "handoverOffTitle": "Płatności przyjmuje inny ekran. Dotknij, aby robił to ten ekran.",
+    "soundOn": "Dźwięk nowego zamówienia włączony — dotknij, aby wyłączyć",
+    "soundOff": "Dźwięk nowego zamówienia wyłączony — dotknij, aby włączyć",
+    "screenOn": "Ekran włączony",
+    "screenOff": "Ekran wyłączony",
+    "screenSettings": "Ustawienia ekranu",
+    "manageEvent": "Zarządzaj wydarzeniem",
+    "manageEventTitle": "Zarządzaj wydarzeniem — rozpocznij, wstrzymaj, zmień lub zakończ",
+    "soundSettings": "Ustawienia dźwięku",
+    "soundSettingsTitle": "Które dźwięki odtwarza to urządzenie",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Ustawienia widoku",
+    "on": "Wł.",
+    "off": "Wył.",
+    "newOrderSound": "Dźwięk nowego zamówienia",
+    "soundNeedsConfirming": "Tylko zamówienia do potwierdzenia",
+    "soundAll": "Wszystkie nowe zamówienia",
+    "soundDue": "Dźwięk, gdy trzeba zacząć przygotowywać zamówienie",
+    "soundDueHelp": "Odtwarzany, gdy karta zmienia kolor na pomarańczowy.",
+    "deviceSettings": "Ustawienia urządzenia",
+    "sound": "Dźwięk",
+    "close": "Zamknij"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Nie wczytano zamówień dla tego wydarzenia",
+    "mismatchBody": "Serwer zwrócił inne wydarzenie, więc zamiast błędnych zamówień nic nie jest wyświetlane. Wybierz wydarzenie ponownie lub odśwież stronę.",
+    "mismatchBodyAt": "Serwer zwrócił inne wydarzenie, więc zamiast błędnych zamówień nic nie jest wyświetlane (miejsce: {venue}). Wybierz wydarzenie ponownie lub odśwież stronę.",
+    "paused": "⏸ Zamówienia wstrzymane{reason, select, offline { (urządzenie offline)} other {}} — klienci nie mogą zamawiać",
+    "resume": "Wznów",
+    "offline": "Brak połączenia — wyświetlane są ostatnie znane zamówienia. Zamówienia online zostały wstrzymane dla klientów.",
+    "queued": "{n, plural, one {{count} działanie w kolejce} few {{count} działania w kolejce} many {{count} działań w kolejce} other {{count} działania w kolejce}}",
+    "extraWait": "⏱ Aktywne dodatkowe oczekiwanie: +{mins} min",
+    "clear": "Wyczyść",
+    "toMake": "Do zrobienia",
+    "today": "Dziś · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Rozpocznij wydarzenie",
+    "recentlyClosed": "Wydarzenie zakończone · {venue}: koniec o {time}",
+    "eventStatus": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}"
+  },
+  "board": {
+    "queueClear": "Kolejka pusta",
+    "doneToday": "Zrobione dziś · {count}",
+    "paid": "✓ opłacone",
+    "cardHeld": "blokada na karcie",
+    "due": "Do zapłaty: {amount}"
+  },
+  "screenOff": {
+    "title": "Pozwolić na wyłączanie ekranu?",
+    "bodyVans": "{n, plural, one {Food truck {vans} ma} few {Food trucki {vans} mają} many {Food trucki {vans} mają} other {Food trucki {vans} mają}} włączone wykrywanie trybu offline. Jeśli ekran się wyłączy, urządzenie może przestać wysyłać sygnał online, a zamawianie dla klientów może zostać wstrzymane.",
+    "body": "Jeśli ekran się wyłączy, urządzenie może przestać wysyłać sygnał online.",
+    "keepHint": "Nie wyłączaj ekranu, aby zamawianie działało bez przerw.",
+    "keep": "Nie wyłączaj ekranu",
+    "allow": "Pozwól wyłączać ekran"
+  },
+  "event": {
+    "change": "Zmień wydarzenie",
+    "cancel": "Anuluj",
+    "waitActive": "⏱ +{mins} min aktywne · Dotknij, aby wyczyścić",
+    "addWait": "⏱ Dodaj czas oczekiwania",
+    "endTitle": "Zakończyć wydarzenie?",
+    "endEarly": "To wydarzenie ma się zakończyć dopiero o {time}. Nie będzie można składać kolejnych zamówień. Potwierdzasz zakończenie wydarzenia?",
+    "endNow": "Zakończyć to wydarzenie? Nowe zamówienia nie będą przyjmowane.",
+    "yes": "Tak",
+    "started": "Wydarzenie rozpoczęte",
+    "startFutureConfirm": "To wydarzenie jest zaplanowane na {date}. Rozpocząć je teraz?",
+    "finishTimeNow": "Nowa godzina zakończenia: {time}",
+    "finished": "Wydarzenie zakończone",
+    "cancelled": "Wydarzenie odwołane",
+    "noteSaved": "Notatka zapisana",
+    "pauseConfirm": "Wstrzymać zamówienia? Do czasu wznowienia klienci będą widzieć „Zamawianie wstrzymane”.",
+    "switchConfirm": "Przełączyć: {from} → {to}?{n, plural, =0 {} one { {count} zamówienie na tym ekranie zostanie zastąpione.} few { {count} zamówienia na tym ekranie zostaną zastąpione.} many { {count} zamówień na tym ekranie zostanie zastąpionych.} other { {count} zamówienia na tym ekranie zostanie zastąpione.}} Dotknij bieżącego wydarzenia, aby wrócić."
+  },
+  "intro": {
+    "title": "To jest ekran kuchenny",
+    "p1": "To widok dla kucharza — zamówienia do przygotowania, w kolejności, w jakiej trzeba je zrobić. Ten ekran stoi przy grillu, a przy okienku obsługa korzysta z panelu zamówień.",
+    "p2": "Karty przesuwają się, gdy je dotykasz, więc kto gotuje, zawsze wie, co dalej, i nikt nie musi krzyczeć. Wszystko tutaj to dane demo — śmiało, wypróbuj.",
+    "gotIt": "Rozumiem"
+  },
+  "toast": {
+    "failed": "Nie udało się",
+    "rejectFailed": "Nie udało się odrzucić",
+    "buzzerSaved": "Pager {n} zapisany",
+    "buzzerRemoved": "Pager {n} usunięty",
+    "buzzerRemovedNone": "Pager usunięty",
+    "buzzerAssigned": "Przypisano pager {n}",
+    "buzzerAssignedFrom": "Przypisano pager {n} (zabrany z #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Nie udało się usunąć pagera z {target, select, order {zamówienia #{id}} other {tego zamówienia}}} other {Nie udało się usunąć pagera {n} — nadal jest przy {target, select, order {zamówieniu #{id}} other {tym zamówieniu}}}}",
+    "buzzerAssignFailed": "Nie udało się przypisać pagera {n} do {target, select, order {zamówienia #{id}} other {tego zamówienia}} — {had, select, yes {nadal ma pager {prior}} other {nadal nie ma pagera}}"
+  }
+}

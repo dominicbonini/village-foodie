@@ -1,0 +1,9 @@
+{
+  "title": "Planuri și funcții",
+  "generated": "Generat la {date}",
+  "allowanceHeading": "Comenzi online incluse",
+  "smallPrint": "Condiții",
+  "priceNoteMasked": "Prețurile afișate ca „De confirmat” nu sunt încă publicate.",
+  "omitNote": "Prețurile nu sunt incluse intenționat în acest document.",
+  "terms": "Cifrele reprezintă condițiile publicate ale planurilor la data de mai sus și se pot schimba. Comisioanele de procesare a plăților cu cardul sunt percepute de Stripe, nu de HatchGrab. Acest document este un rezumat, nu un contract."
+}

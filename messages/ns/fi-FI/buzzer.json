@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Summeri <b>{number}</b> on <b>tilauksella #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Otetaanko se <b>{hasTarget, select, yes {tilaukselle #{targetId}} other {tälle tilaukselle}}</b>?",
+  "cancel": "Peruuta",
+  "take": "Ota summeri {number}",
+  "titleBlocking": "Summeri tilaukselle #{id}?",
+  "title": "Valitse summeri",
+  "subtitle": "{hasTarget, select, yes {Tilaus #{id}} other {Tämä tilaus}}{hasCurrent, select, yes { · nyt summeri {current}} other {}}",
+  "allTaken": "{n, plural, one {Summeri on käytössä. Napauta sitä ottaaksesi sen toiselta tilaukselta.} other {Kaikki {count} summeria ovat käytössä. Napauta yhtä ottaaksesi sen toiselta tilaukselta.}}",
+  "thisOrder": "Tämä tilaus",
+  "noBuzzer": "Ei summeria",
+  "done": "Valmis",
+  "lostTitle": "Tilauksella #{id} ei ole summeria",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}toinen tilaus otti saman summerin, kun olit offline-tilassa. Anna asiakkaalle toinen summeri.",
+  "dismiss": "Sulje",
+  "assign": "Anna"
+}

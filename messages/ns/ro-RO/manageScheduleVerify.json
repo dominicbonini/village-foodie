@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Verificarea este temporar indisponibilă. Încercați din nou peste câteva momente.",
+  "malformed": "Aceasta nu pare o adresă web. Încercați ceva de genul foodtruckultau.ro/evenimente",
+  "blocked": "Nu am putut accesa acest site — este posibil să blocheze verificările automate. Încercați pagina pe care este listat programul sau adăugați evenimentele manual.",
+  "unreachable": "Nu am putut accesa acest site. Poate fi indisponibil sau adresa poate fi greșită.",
+  "no_content": "Am accesat pagina, dar nu am putut citi nimic pe ea. Verificați că este accesibilă public.",
+  "no_events": "Nu am găsit niciun eveniment viitor pe această pagină. Asigurați-vă că URL-ul duce direct la pagina pe care este listat programul.",
+  "blockedDomain": "Folosiți URL-ul site-ului dumneavoastră — paginile de Facebook și Instagram nu pot fi analizate automat."
+}

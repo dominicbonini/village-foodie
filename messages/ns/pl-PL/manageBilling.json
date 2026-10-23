@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "za food truck / miesiąc",
+  "transactionFees": "Opłaty transakcyjne",
+  "comingSoon": "Wkrótce",
+  "footnote2Masked": "Płatności online obsługuje Stripe Connect. Opłaty platformy i opłaty za obsługę płatności kartą nie są jeszcze ustalone i zostaną potwierdzone przy starcie.",
+  "card": {
+    "title": "Rozliczenia i płatności",
+    "managed": "Rozliczeniami zarządza HatchGrab",
+    "earlyAccess": "W okresie wczesnego dostępu konfigurujemy i zmieniamy plany ręcznie.",
+    "planLine": "{trial, select, yes {{truck} · plan {plan} (okres próbny)} other {{truck} · plan {plan}}}"
+  },
+  "currentPlan": "Obecny plan",
+  "plan": {
+    "included": "Obejmuje zamówienia online o wartości {amount} miesięcznie.",
+    "includedUnlimited": "Nielimitowane zamówienia online w cenie.",
+    "promo": "Cena specjalna.",
+    "promoUntil": "Cena specjalna do {date}.",
+    "ended": "Twój plan {plan} zakończył się {date}. Teraz korzystasz z planu {now}.",
+    "trialMonths": "{months}-miesięczny bezpłatny okres próbny."
+  },
+  "trialEnds": "Okres próbny kończy się {date}",
+  "yourTrialEnds": "Twój okres próbny kończy się {date}",
+  "notStarted": {
+    "heading": "Twój bezpłatny okres próbny jeszcze się nie rozpoczął"
+  },
+  "onTrial": "Masz dostęp do wszystkich funkcji. Wybierz plan przed końcem okresu próbnego.",
+  "onTrialNoCta": "Masz dostęp do wszystkich funkcji.",
+  "noCharge": "🔒 W okresie próbnym, który trwa do {date}, nie zapłacisz nic. Opłaty zaczynają się dopiero wtedy, gdy wybierzesz plan i podasz dane płatnicze. Do tego czasu nie ma czego anulować ani za co płacić.",
+  "fees": "*Przy zamówieniach online obowiązują standardowe opłaty za obsługę płatności kartą",
+  "setUpPayment": "⏱ Wybierz plan przed końcem okresu próbnego",
+  "changeYourPlan": "Zmień plan",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Przejdź na plan {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Przygotowujemy automatyczne rozliczenia. Aby zmienić plan już teraz, napisz do nas, a w ciągu 24 godzin wszystko skonfigurujemy.",
+    "mailSubject": "Zmiana na plan {plan} — {truck}",
+    "mailBody": "Dzień dobry, chcę przenieść food truck {truck} na plan {plan} ({price}).",
+    "email": "Napisz do nas, aby zmienić plan",
+    "cancel": "Anuluj"
+  }
+}

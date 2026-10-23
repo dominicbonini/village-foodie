@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Itt árul legközelebb: {truck}.",
+  "orderFrom": "Rendelés: {truck}",
+  "poweredBy": "Működteti: <b>HatchGrab</b>",
+  "loadFailed": "Most nem sikerült betölteni a menetrendet.",
+  "loading": "Menetrend betöltése…",
+  "empty": "Nincs közelgő esemény — {truck}."
+}

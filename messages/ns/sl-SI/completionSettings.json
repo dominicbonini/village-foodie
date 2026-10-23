@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Naročila brez predhodnega plačila",
+  "completionTitle": "Zaključevanje neplačanega naročila",
+  "completionHelp": "Kaj se zgodi, ko je neplačano naročilo pripravljeno za izročitev.",
+  "pressesOne": "En pritisk („Plačano in prevzeto“)",
+  "pressesOneHelp": "Najbolje, ko denar prejmete ob izročitvi hrane. Dobite en sam gumb, „Plačano in prevzeto“, ki hkrati zabeleži plačilo in zaključi naročilo.",
+  "pressesTwo": "Dva pritiska („Označi kot plačano“ in „Prevzeto“)",
+  "pressesTwoHelp": "Najbolje, ko se plačilo in izročitev zgodita ob različnih trenutkih — kupec plača na mestu, hrano pa prevzame, ko je pripravljena. Dobite dva gumba: najprej „Označi kot plačano“, nato „Prevzeto“, ko kupec prevzame hrano."
+}

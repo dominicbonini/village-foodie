@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {{name}: kérjük, adjon meg érvényes mobilszámot} other {Kérjük, adjon meg érvényes mobilszámot}}{withExample, select, yes { (pl. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {{name}: kérjük, adjon meg érvényes telefonszámot} other {Kérjük, adjon meg érvényes telefonszámot}}{withExample, select, yes { (pl. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {{name}: adjon meg érvényes telefonszámot} other {Adjon meg érvényes telefonszámot}}{withExample, select, yes { (pl. {example})} other {}}."
+}

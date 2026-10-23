@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Pozivnik <b>{number}</b> je pri <b>naročilu #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Ga želite vzeti za <b>{hasTarget, select, yes {naročilo #{targetId}} other {to naročilo}}</b>?",
+  "cancel": "Prekliči",
+  "take": "Vzemi pozivnik {number}",
+  "titleBlocking": "Pozivnik za naročilo #{id}?",
+  "title": "Izberite pozivnik",
+  "subtitle": "{hasTarget, select, yes {Naročilo #{id}} other {To naročilo}}{hasCurrent, select, yes { · trenutno pozivnik {current}} other {}}",
+  "allTaken": "{n, plural, one {Edini pozivnik je oddan. Tapnite ga, da ga vzamete drugemu naročilu.} two {Vsi pozivniki so oddani ({count}). Tapnite enega, da ga vzamete drugemu naročilu.} few {Vsi pozivniki so oddani ({count}). Tapnite enega, da ga vzamete drugemu naročilu.} other {Vsi pozivniki so oddani ({count}). Tapnite enega, da ga vzamete drugemu naročilu.}}",
+  "thisOrder": "To naročilo",
+  "noBuzzer": "Brez pozivnika",
+  "done": "Končano",
+  "lostTitle": "Naročilo #{id} nima pozivnika",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}drugo naročilo je prevzelo isti pozivnik, medtem ko niste bili povezani. Stranki dajte drugega.",
+  "dismiss": "Opusti",
+  "assign": "Dodeli"
+}

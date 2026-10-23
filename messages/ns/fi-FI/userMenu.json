@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Käyttäjävalikko",
+  "screenOn": "Näyttö päällä",
+  "screenOff": "Näyttö pois",
+  "newOrderSound": "Uuden tilauksen ääni",
+  "copied": "Kopioitu",
+  "orderLink": "Tilauslinkki",
+  "qrCode": "QR-koodi",
+  "kitchenScreen": "Keittiönäyttö",
+  "thisDevice": "Tämä laite",
+  "manage": "Hallinta",
+  "ordersDashboard": "Tilausten ohjauspaneeli",
+  "admin": "Ylläpito",
+  "privacy": "Tietosuojaseloste",
+  "terms": "Käyttöehdot",
+  "signOut": "Kirjaudu ulos",
+  "close": "Sulje"
+}

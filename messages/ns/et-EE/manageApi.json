@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Toiduauto",
+  "eventsFeed": {
+    "today": "Täna · {date}",
+    "tomorrow": "Homme · {date}"
+  },
+  "privacyNotSaved": "Üritus on avaldatud, kuid selle privaatsusseadet ei õnnestunud salvestada.",
+  "stockWarning": "Kategoorias „{category}“ pole saadaolevaid tooteid",
+  "uncategorised": "Kategooriata"
+}

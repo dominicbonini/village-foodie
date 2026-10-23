@@ -1,0 +1,25 @@
+{
+  "heading": "Viikko {start}–{end}",
+  "daysOff": "Ei myyntiä tänään",
+  "cancelled": "PERUTTU",
+  "placeSample": {
+    "nameTownBelow": "Ravintola Torikulma\nTampere",
+    "nameTown": "Ravintola Torikulma, Tampere",
+    "nameOnly": "Ravintola Torikulma"
+  },
+  "busyWeek": {
+    "venue1": "Tampereen nuorisotalo",
+    "town1": "Tampere",
+    "venue2": "Lempäälän urheilukeskus ja lähiliikuntapuisto",
+    "town2": "Lempäälä",
+    "venue3": "Kauppatori",
+    "town3": "Nokia",
+    "venue4": "Ruokafestivaali",
+    "town4": "Hämeenlinna",
+    "venue5": "Pub Vanha Härkä",
+    "town5": "Pirkkala",
+    "venue6": "Kirkonmäki",
+    "town6": "Kangasala"
+  },
+  "poweredBy": "Palvelun tarjoaa HatchGrab"
+}

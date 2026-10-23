@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} interval orar} few {{count} intervale orare} other {{count} de intervale orare}} peste capacitate — verificați",
+  "batchOver": "{cat} peste șarjă — {count} pentru {slot} ({per} pe șarjă)",
+  "eventStartOver": "Peste capacitate la începutul evenimentului — {n, plural, one {{count} produs} few {{count} produse} other {{count} de produse}} pentru {slot}",
+  "kitchenOver": "Bucătăria e peste capacitate — {n, plural, one {{count} produs} few {{count} produse} other {{count} de produse}} în preparare pentru {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} produs} few {{count} produse} other {{count} de produse}}",
+  "placedAnyway": "Plasate oricum: {list}",
+  "placedItem": "#{id} pentru {slot}",
+  "orphans": "{times} peste capacitate — nu s-au găsit comenzile care au cauzat depășirea",
+  "dismiss": "Închideți",
+  "kitchenCapacity": "Capacitatea bucătăriei",
+  "overCapacity": "Peste capacitate",
+  "wakeUnsupported": "Acest dispozitiv nu poate ține ecranul pornit.",
+  "wakeInsecure": "Ecranul nu poate fi ținut pornit de la această adresă.",
+  "wakeRetry": "Țineți ecranul pornit — atingeți pentru a reîncerca",
+  "wakeAcquire": "Țineți ecranul pornit",
+  "degraded": {
+    "serverError": "Serverul nu a putut încărca comenzile{hasStatus, select, yes { (eroare {status})} other {}}. Se afișează comenzile de la {at}. Este posibil să lipsească comenzi noi.",
+    "unreachable": "Serverul nu poate fi contactat. Se afișează comenzile de la {at}. Este posibil să lipsească comenzi noi."
+  }
+}

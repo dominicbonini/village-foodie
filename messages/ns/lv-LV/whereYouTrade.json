@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Kur atrodas jūsu food truck?",
+  "stepIntro": "Tas nosaka jūsu valūtu, cenas, laika joslu un tālruņa numura formātu. Valsti vēlāk nevar mainīt, jo tā ir saistīta ar jūsu karšu maksājumiem.",
+  "settingsHeading": "Kur jūs tirgojaties",
+  "countryLabel": "Valsts",
+  "countryGuessed": "Mēs to uzminējām pēc jūsu atrašanās vietas. Ja tas nav pareizi, nomainiet.",
+  "countryLocked": "Jūsu valsti nevar mainīt",
+  "townLabel": "Pilsēta vai ciems",
+  "townQuestion": "Pilsēta vai ciems, kurā atrodas jūsu food truck",
+  "timezoneLabel": "Laika josla",
+  "continueButton": "Turpināt",
+  "saveFailed": "Neizdevās saglabāt iestatījumus — lūdzu, mēģiniet vēlreiz."
+}

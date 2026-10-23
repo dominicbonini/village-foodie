@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Listare pe harta de descoperire"
+    },
+    "web_dashboard": {
+      "name": "Panou de control web universal"
+    },
+    "qr_code": {
+      "name": "Cod QR"
+    },
+    "schedule_import": {
+      "name": "Import automat al programului"
+    },
+    "meal_deals_upsells": {
+      "name": "Combo-uri și vânzări suplimentare"
+    },
+    "walkup_orders": {
+      "name": "Procesarea comenzilor la fața locului"
+    },
+    "sold_out_toggle": {
+      "name": "Marcare instantanee ca epuizat"
+    },
+    "kitchen_app": {
+      "name": "Aplicație de bucătărie pentru iPhone, iPad și Android"
+    },
+    "offline_protection": {
+      "name": "Protecția comenzilor offline"
+    },
+    "online_payments": {
+      "name": "Plăți online"
+    },
+    "advance_preordering": {
+      "name": "Precomandă pentru date viitoare"
+    },
+    "preorder_deadline": {
+      "name": "Termen limită pentru precomandă"
+    },
+    "time_slot_selection": {
+      "name": "Alegerea intervalului orar de către client"
+    },
+    "kitchen_capacity": {
+      "name": "Capacitatea bucătăriei"
+    },
+    "stock_countdown": {
+      "name": "Numărătoare automată a stocului"
+    },
+    "auto_accept": {
+      "name": "Acceptare automată a comenzilor online"
+    },
+    "branded_qr_code": {
+      "name": "Cod QR cu logoul dumneavoastră"
+    },
+    "private_events": {
+      "name": "Evenimente private"
+    },
+    "social_media_posts": {
+      "name": "Postări pentru rețelele sociale"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Răspunsuri automate pe WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Răspunsuri automate pe Messenger și Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Încasare cu telefonul"
+    },
+    "advanced_reporting": {
+      "name": "Rapoarte avansate"
+    },
+    "sms_order_alerts": {
+      "name": "Alerte SMS pentru comenzi"
+    },
+    "multi_device_kitchen": {
+      "name": "Sincronizarea bucătăriei pe mai multe dispozitive"
+    },
+    "multi_user_access": {
+      "name": "Acces pentru mai mulți utilizatori"
+    },
+    "embed_schedule": {
+      "name": "Pagină cu programul pe propriul site"
+    },
+    "event_types": {
+      "name": "Tipuri de evenimente și prețuri personalizate"
+    },
+    "buzzer_tracking": {
+      "name": "Urmărirea pagerelor"
+    },
+    "ticket_printing": {
+      "name": "Tipărirea bonurilor de bucătărie"
+    },
+    "customer_display": {
+      "name": "Ecran pentru clienți"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Carduri digitale de fidelitate cu ștampile"
+    }
+  },
+  "cardRegionOnline": "{region} (standard)",
+  "cardRegion": {
+    "UKcards": "carduri din Regatul Unit",
+    "EEAcards": "carduri din SEE",
+    "UScards": "carduri din SUA",
+    "Australiancards": "carduri din Australia",
+    "NewZealandcards": "carduri din Noua Zeelandă",
+    "Canadiancards": "carduri din Canada",
+    "Swisscards": "carduri elvețiene"
+  },
+  "perMonth": {
+    "mo": "{amount}/lună",
+    "month": "{amount}/lună"
+  },
+  "priceWord": {
+    "free": "Gratuit",
+    "freeTrial": "Probă gratuită",
+    "lifetime": "Pe viață",
+    "zeroPercent": "0%",
+    "payAtHatch": "Plata la ridicare",
+    "unlimited": "Nelimitat",
+    "none": "—",
+    "masked": "De confirmat"
+  },
+  "cell": {
+    "included": "Inclus"
+  }
+}

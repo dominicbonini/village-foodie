@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Valitse, miten näytät allergeenitiedot",
+    "detail": "Ennen kuin valitset, asiakkaat eivät näe yhtään annostasi — ruokalista suojaa itseään piilottamalla kaiken, minkä allergeeneja ei ole vahvistettu, ja juuri nyt se tarkoittaa kaikkea.",
+    "where": "Ruokalista → Allergeenit"
+  },
+  "allergensCardMissing": {
+    "title": "Lisää allergeenikorttisi",
+    "detail": "Olet valinnut näyttää allergeenikortin, mutta sellaista ei ole tallennettu — asiakkaille kerrottaisiin, että allergeenitietoja on saatavilla, eivätkä he löytäisi mitään.",
+    "where": "Ruokalista → Allergeenit"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Vahvista {count} annoksen allergeenit} other {Vahvista {count} annoksen allergeenit}}",
+    "detail": "{n, plural, one {Annoksesi on piilossa asiakkailta, kunnes vahvistat sen allergeenit.} other {{u, plural, one {Annoksistasi {unverified}/{total} on piilossa asiakkailta, kunnes vahvistat sen allergeenit.} other {Annoksistasi {unverified}/{total} on piilossa asiakkailta, kunnes vahvistat niiden allergeenit.}}}} Annos, jonka allergeeneja ei ole vahvistettu, näyttäisi siltä kuin se ”ei sisältäisi mitään”, joten ruokalista piilottaa sen mieluummin kuin ottaa sen riskin.",
+    "where": "Ruokalista → Allergeenit"
+  },
+  "noVan": {
+    "title": "Lisää ruokarekka",
+    "detail": "Tapahtumat kuuluvat aina ruokarekalle — ilman sitä tilauksia ei voi ottaa vastaan.",
+    "where": "Asetukset → Ruokarekkasi"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Aseta keittiön kapasiteetti",
+    "detail": "Näiltä ruokarekoilta puuttuu kapasiteetti: {vans}. Ilman sitä lupaamme asiakkaille jatkossakin noutoaikoja, joihin keittiösi ei mitenkään ehdi.",
+    "where": "Ruokalista → Keittiön kapasiteetti",
+    "unnamedVan": "Nimetön ruokarekka"
+  },
+  "noPrepBearingCategory": {
+    "title": "Kerro, kauanko ruokasi valmistus kestää",
+    "detail": "{categories, select, none {Sinulla ei ole vielä ruokalistan kategorioita, joten emme voi laskea, kauanko tilauksen valmistus kestää.} other {Yhdellekään kategorialle ei ole asetettu valmistusaikaa, joten jokainen tilaus näyttää meistä valmistuvan heti. Antaisimme asiakkaille jatkuvasti noutoaikoja, joihin keittiösi ei ehdi, ja mitä kiireisempää on, sitä pahemmin ne menisivät pieleen.}}",
+    "where": "Ruokalista → Kategoriat → Keittiön asetukset"
+  },
+  "emailUnverified": {
+    "title": "Vahvista sähköpostiosoitteesi",
+    "detail": "Lähetämme tähän osoitteeseen tilausilmoitukset ja tilin palautuksen. Jos osoite on väärä, huomaat sen vasta, kun jokin on jo mennyt pieleen.",
+    "where": "Etsi saapuneista vahvistuslinkkimme"
+  },
+  "emailUnknown": {
+    "title": "Sähköpostin vahvistuksen tila tuntematon",
+    "detail": "Sähköpostin vahvistusta ei ole vielä kytketty käyttöön, joten tätä ei voi arvioida. Se estää tarkoituksella sen sijaan, että päästäisi läpi huomaamatta.",
+    "where": "—"
+  }
+}

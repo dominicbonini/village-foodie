@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Tellimus #{id} ennistatud",
+    "saved": "Tellimus #{id} salvestatud",
+    "undo": "↩ Võta tagasi",
+    "paymentNotRecorded": "⚠ Tellimus #{id} — MAKSE POLE SALVESTATUD. {collect, select, yes {Tellimus lõpetati} other {Tellimus salvestati}}, kuid makse mitte.",
+    "recordPayment": "Salvesta makse",
+    "paid": "Tellimus #{id} makstud",
+    "undonePayment": "Tagasi võetud — makse eemaldatud",
+    "undoneCollected": "Tagasi võetud — tellimus pole kätte antud",
+    "collected": "Tellimus #{id} {paidToo, select, yes {makstud ja kätte antud} other {kätte antud}}",
+    "ready": "Tellimus #{id} valmis",
+    "readyBuzzer": "Tellimus #{id} valmis · <pill></pill>",
+    "status": "Tellimus #{id} {action, select, confirm {kinnitatud} reject {tagasi lükatud} ready {valmis} collected {kätte antud} undo_collected {taastatud} cancel {tühistatud} other {uuendatud}}"
+  },
+  "conflicts": {
+    "more": "+{count} veel",
+    "notOnScreenPlus": "+{count} pole sellel ekraanil",
+    "notOnScreen": "{n, plural, one {{count} tellimus pole sellel ekraanil} other {{count} tellimust pole sellel ekraanil}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ MAKSE POLE SALVESTATUD",
+    "paymentBody": "{orders} — märgiti makstuks ainult selles seadmes. Makse pole läbi läinud.",
+    "paymentCheck": "Kontrolli tellimust ja võta makse uuesti, kui see on endiselt tasumata.",
+    "dismiss": "Sulge",
+    "confirmChecked": "Kinnita, et oled kontrollinud: {orders}",
+    "confirmHides": "See peidab hoiatuse. Kirje jääb igal juhul sellesse seadmesse alles.",
+    "notYet": "Veel mitte",
+    "iveChecked": "Olen kontrollinud: {orders}",
+    "statusBody": "⚠ {orders} — see muudatus ei läinud läbi. Kontrolli tellimust.",
+    "offline": "📴 Ühendus puudub — {n, plural, one {{count} muudatus salvestati selles seadmes. See saadetakse, kui oled taas võrgus.} other {{count} muudatust salvestati selles seadmes. Need saadetakse, kui oled taas võrgus.}} Seaded on lukus.",
+    "syncing": "Taas võrgus — saadan {n, plural, one {{count} muudatuse} other {{count} muudatust}}…",
+    "synced": "Kõik muudatused saadetud.",
+    "stillQueued": "{n, plural, one {{count} muudatus on selles seadmes salvestatud. Proovin seda endiselt saata.} other {{count} muudatust on selles seadmes salvestatud. Proovin neid endiselt saata.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab on lukus",
+    "verifying": "Kontrollimine…",
+    "unlock": "Ava",
+    "cantUseBiometric": "Face / Touch ID ei tööta?",
+    "enterPin": "Sisesta oma varu-PIN",
+    "wrongPin": "Vale PIN — proovi uuesti.",
+    "checking": "Kontrollimine…",
+    "tryBiometric": "Ava hoopis Face / Touch ID abil",
+    "forgot": "Unustasid PIN-i? Pead rakenduse uuesti installima."
+  },
+  "notify": {
+    "title": "🔔 Teavitused",
+    "intro": "Märguanded selles seadmes. Lülita sisse, et valida, milliseid märguandeid saad.",
+    "refused": "Selle sisselülitamiseks tuleb teavitused lubada seadme seadetes.",
+    "newOrder": "Uue tellimuse märguanded",
+    "newOrderHelp": "Saad teavituse, kui kliendi tellimus vajab kinnitamist.",
+    "offline": "Ühenduse katkemise / peatamise märguanded",
+    "offlineHelp": "Saad teavituse, kui see seade kaotab ühenduse (ja tellimine peatub). <green>Töötab ka võrguühenduseta.</green>"
+  },
+  "van": {
+    "label": "Toiduauto",
+    "loadRetry": "Laadimine ebaõnnestus · Proovi uuesti",
+    "select": "Vali…"
+  },
+  "deviceSave": {
+    "network": "Serveriga ei saanud ühendust — kontrolli ühendust ja proovi uuesti.",
+    "server": "Praegu ei õnnestunud salvestada. Proovi uuesti."
+  },
+  "setup": {
+    "fetchErrorTitle": "Seadme seadistust ei õnnestunud laadida",
+    "fetchErrorBody": "Me ei saanud serveriga ühendust, et <b>seda seadet</b> seadistada. Kontrolli ühendust ja proovi uuesti — sinu tellimusi ja seadeid see ei mõjuta.",
+    "retry": "Proovi uuesti",
+    "later": "Hiljem",
+    "noVanTitle": "Aktiivne toiduauto puudub",
+    "noVanBody": "Sinu kontol pole veel aktiivset toiduautot. Aktiveeri see jaotises <b>Seaded → Sinu toiduautod</b>, siis seadistub see seade automaatselt — siin pole rohkem midagi vaja teha.",
+    "goToVans": "Ava Seaded → Sinu toiduautod",
+    "title": "Seadista see seade",
+    "body": "Ühekordne seadistus <b>sellele seadmele</b>: millise ekraaniga see avaneb ja millist toiduautot see teenindab. Kehtib ainult selles seadmes — teised seadmed seadistatakse eraldi ja saad neid hiljem muuta profiilimenüüs → „See seade“.",
+    "whichScreen": "Millise ekraaniga see seade avaneb?",
+    "dashboard": "Töölaud",
+    "kds": "Köögiekraan",
+    "whichVan": "Millise toiduauto seade see on?",
+    "selectVan": "Vali toiduauto…",
+    "saving": "Salvestamine…",
+    "tryAgain": "Proovi uuesti",
+    "continue": "Jätka"
+  },
+  "device": {
+    "title": "See seade",
+    "viewing": "Vaatad: <b>{truck}</b>",
+    "viewingVan": "Vaatad: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Ainult see seade — teised seadmed seadistatakse eraldi. (ID: {id}…)",
+    "truck": "Ettevõte",
+    "van": "Toiduauto",
+    "defaultScreen": "Vaikimisi ekraan",
+    "orderNotifications": "Tellimuste teavitused",
+    "patchFailed": "{setting, select, van {Toiduauto} defaultScreen {Vaikimisi ekraan} other {Tellimuste teavitused}}: salvestamine ebaõnnestus. {reason}",
+    "requireBiometric": "Nõua avamiseks sõrmejälje- või näotuvastust",
+    "pinTitle": "Määra varu-PIN (4–6 numbrit)",
+    "pinHelp": "Sinu sisenemisviis, kui sõrmejälje- või näotuvastus ei tööta — see on ainus varuvõimalus, seega ära unusta seda (unustatud PIN tähendab rakenduse uuesti installimist). Töötab ka võrguühenduseta.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Kinnita PIN",
+    "pinTooShort": "Kasuta vähemalt 4 numbrit.",
+    "pinMismatch": "PIN-id ei ühti.",
+    "setPin": "Määra PIN ja lülita sisse",
+    "cancel": "Tühista",
+    "noBiometric": "Selles seadmes pole sõrmejälje- ega näotuvastust seadistatud — lisa see seadme seadetes. Sinu varu-PIN töötab endiselt.",
+    "footer": "Need seaded kehtivad ainult selles seadmes — teised seadmed seadistatakse eraldi."
+  },
+  "appLock": {
+    "unlockReason": "Ava HatchGrab",
+    "usePasscode": "Kasuta pääsukoodi",
+    "cancel": "Tühista",
+    "confirmEnable": "Kinnita rakenduse luku sisselülitamine"
+  },
+  "channel": {
+    "ordersName": "Uued tellimused",
+    "ordersDescription": "Märguanded, kui tellimus vajab kinnitamist."
+  },
+  "localNotify": {
+    "newOrderTitle": "Uus tellimus",
+    "orderReceived": "Tellimus {number} saabus",
+    "newOrders": "{n, plural, one {Sul on uus tellimus} other {Sul on {count} uut tellimust}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Tellimine peatatud",
+    "pausedBody": "Oled võrguühenduseta — klientide tellimine on peatatud.",
+    "offlineTitle": "Oled võrguühenduseta",
+    "offlineBody": "See seade kaotas ühenduse."
+  }
+}

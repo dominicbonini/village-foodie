@@ -1,0 +1,36 @@
+{
+  "h1": "Tot ce vă trebuie pentru serviciu, în fiecare plan.",
+  "lede": "Preluarea comenzilor, precomanda, capacitatea bucătăriei și ecranul de bucătărie sunt incluse în fiecare plan.{hasUpgrades, select, yes { {plans} adaugă {features} și taxe mai mici.} other {}}",
+  "perMonth": "{price} / lună",
+  "group": {
+    "pay": "Ce plătiți",
+    "run": "Gestionați serviciul",
+    "online": "Comenzi online",
+    "marketing": "Marketing și automatizare"
+  },
+  "pay": {
+    "included": "Comenzi online incluse lunar",
+    "fee": "Taxa HatchGrab pentru comenzile online plătite cu cardul*",
+    "walkUp": "Comenzi la fața locului"
+  },
+  "cell": {
+    "unlimited": "Nelimitat",
+    "free": "Gratuit",
+    "feeAbove": "<b>{fee}</b> peste {included}",
+    "yes": "Inclus",
+    "none": "Neinclus",
+    "comingSoon": "În curând"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "rețele sociale",
+    "event_types": "prețuri personalizate pentru evenimente"
+  },
+  "meta": {
+    "description": "Toate funcțiile HatchGrab din fiecare plan, comparate — {plans}, cu taxe și limite incluse.{months, plural, =0 {} one { Prima lună include totul.} few { Primele # luni includ totul.} other { Primele # de luni includ totul.}}"
+  },
+  "notes": {
+    "whatsapp": "Răspunsurile automate pe WhatsApp necesită un cont WhatsApp Business. Meta poate taxa unele mesaje; răspunsurile sunt generate automat.",
+    "printing": "Tipărirea bonurilor de bucătărie necesită o imprimantă compatibilă Bluetooth sau cu fir (nu este inclusă)."
+  }
+}

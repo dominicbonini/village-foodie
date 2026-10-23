@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Hol működik a food truckja?",
+  "stepIntro": "Ez határozza meg a pénznemet, az árakat, az időzónát és a telefonszámok formátumát. Az ország később nem módosítható, mert a kártyás fizetéseihez kötődik.",
+  "settingsHeading": "Ahol árusít",
+  "countryLabel": "Ország",
+  "countryGuessed": "Ezt a tartózkodási helye alapján becsültük meg. Ha nem stimmel, módosítsa.",
+  "countryLocked": "Az ország nem módosítható",
+  "townLabel": "Település",
+  "townQuestion": "A település, ahol működik",
+  "timezoneLabel": "Időzóna",
+  "continueButton": "Tovább",
+  "saveFailed": "Nem sikerült menteni a beállításokat — kérjük, próbálja újra."
+}

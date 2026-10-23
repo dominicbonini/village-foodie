@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Prišlo je do napake",
+    "previewFailed": "Predogleda ni bilo mogoče ustvariti",
+    "loadFailed": "Nalaganje ni uspelo",
+    "tooBig": "Slika ima {size, number, ::.0 group-off} MB. Omejitev je 10 MB.",
+    "wrongType": "Izberite datoteko PNG ali JPG.",
+    "uploadIncomplete": "Nalaganje se ni dokončalo",
+    "uploadFailed": "Nalaganje ni uspelo",
+    "saveFailed": "Shranjevanje ni uspelo",
+    "buildFailed": "Objave ni bilo mogoče ustvariti",
+    "copyFailed": "Kopiranje ni uspelo — označite besedilo in ga kopirajte ročno."
+  },
+  "loading": "Nalaganje…",
+  "missingTable": {
+    "title": "Tedenska objava potrebuje posodobitev baze podatkov",
+    "body": "Tabela za oblikovanje še ni ustvarjena. Ko bo migracija izvedena, bo ta zaslon deloval."
+  },
+  "kind": {
+    "label": "Katero oblikovanje",
+    "event": "Posamezen dogodek",
+    "week": "Tedensko"
+  },
+  "setup": {
+    "title": "Nastavite tedensko objavo",
+    "intro": "Naložite prazno različico grafike s tedenskim urnikom, ki jo že izdelujete — enako oblikovanje, le brez vaših besedilnih polj. HatchGrab teden izpolni iz vašega urnika.",
+    "canvaTitle": "Kako iz Canve izvoziti prazno različico",
+    "canvaStep1": "Odprite svoje običajno oblikovanje tedenskega urnika.",
+    "canvaStep2": "Izbrišite besedilna polja z datumi, lokacijami in urami — pustite ozadje in naslove, ki jih želite obdržati.",
+    "canvaStep3": "Deli › Prenesi › PNG.",
+    "uploading": "Nalaganje…",
+    "upload": "Naložite prazno sliko",
+    "uploadHint": "PNG ali JPG, do 10 MB, na krajši stranici vsaj {px} px.",
+    "phoneTip": "Najbolje na računalniku ali iPadu — na telefonu je polja težko premikati, ker so majhna.",
+    "designName": "Oblikovanje tedenske objave",
+    "backDesigns": "‹ Oblikovanje",
+    "back": "‹ Nazaj",
+    "pictureNote": "Vaša slika brez datuma ali lokacije. Te dodamo mi.",
+    "saved": "Oblikovanje je shranjeno."
+  },
+  "week": {
+    "this": "Ta teden",
+    "next": "Naslednji teden"
+  },
+  "post": {
+    "title": "Vaša tedenska objava",
+    "editDesign": "Uredi oblikovanje",
+    "weekOf": "teden od {date}",
+    "imageAlt": "Vaša tedenska objava",
+    "building": "Ustvarjanje objave…",
+    "updating": "Posodabljanje…",
+    "eventsTitle": "Dogodki ta teden",
+    "noEvents": "Ta teden ni dogodkov.",
+    "eventDateCancelled": "{date} · odpovedano",
+    "showCancelled": "Prikaži odpovedane dogodke",
+    "showPrivate": "Prikaži zasebne dogodke",
+    "privateHint": "Prikazani so kot „Zasebni dogodek“ z datumom in uro — lokacija nikoli.",
+    "noteTitle": "Opomba",
+    "notePlaceholder": "npr. Naročite vnaprej za prevzem",
+    "noteHint": "Prikaže se v opisu objave in v polju za opombo, če ste ga dodali.",
+    "captionTitle": "Opis za vašo stran",
+    "perEventTitle": "Objava za vsak dogodek",
+    "nothingToPost": "Ta teden ni ničesar za objavo.",
+    "textCopied": "Besedilo je kopirano.",
+    "copyText": "Kopiraj besedilo",
+    "image": "Slika",
+    "share": "Deli",
+    "noOrderLink": "Povezave za naročanje še ni — spletni naslov svojega food trucka nastavite v razdelku Nastavitve."
+  }
+}

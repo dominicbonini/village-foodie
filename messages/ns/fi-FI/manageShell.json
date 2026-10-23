@@ -1,0 +1,84 @@
+{
+  "loading": "Ladataan hallintapaneelia…",
+  "loadFailed": "Lataus epäonnistui",
+  "requestFailed": "Epäonnistui",
+  "invalidToken": "Virheellinen tai vanhentunut tunniste",
+  "loadFailedReason": "Sivua ei voitu ladata: {reason}",
+  "noCountrySettings": "Ruokarekan maa-asetuksia ei voitu ladata. Päivitä sivu.",
+  "noPlans": "Ruokarekan pakettia ei voitu ladata. Päivitä sivu.",
+  "stale": "{hasTime, select, yes {Päivitys epäonnistui. Näytetään klo {time} tallennetut tiedot. Tekemäsi muutokset tallentuvat silti.} other {Päivitys epäonnistui. Näytetään tallennetut tiedot. Tekemäsi muutokset tallentuvat silti.}}",
+  "verify": {
+    "ok": "Sähköposti vahvistettu — kiitos.",
+    "expired": "Vahvistuslinkki on vanhentunut. Ota yhteyttä, niin hoidamme asian ennen kuin julkaiset.",
+    "invalid": "Vahvistuslinkki ei toiminut. Ota yhteyttä, niin hoidamme asian ennen kuin julkaiset."
+  },
+  "profile": {
+    "updated": "Profiili päivitetty",
+    "saveFailed": "Tallennus epäonnistui",
+    "title": "Muokkaa profiilia",
+    "name": "Nimi",
+    "namePlaceholder": "Nimesi",
+    "email": "Sähköposti",
+    "cancel": "Peruuta",
+    "saving": "Tallennetaan…",
+    "save": "Tallenna"
+  },
+  "header": {
+    "subtitle": "Hallintapaneeli",
+    "ordersDashboard": "← Tilausten ohjauspaneeli"
+  },
+  "tabs": {
+    "menu": "Ruokalista",
+    "schedule": "Aikataulu",
+    "social": "Some",
+    "reports": "Raportit",
+    "team": "Tiimi",
+    "settings": "Asetukset",
+    "payments": "Maksut",
+    "billing": "Laskutus",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Aikataulu ({count})",
+    "stripeAttention": "Stripe vaatii huomiotasi",
+    "allergensNotSet": "allergeenit puuttuvat"
+  },
+  "menuSections": {
+    "label": "Ruokalistan osiot",
+    "items": "Tuotteet",
+    "capacity": "Keittiön kapasiteetti",
+    "extras": "Lisävalinnat ja lisämyynti",
+    "deals": "Ateriat"
+  },
+  "socialSections": {
+    "label": "Somen osiot",
+    "create": "Luo julkaisu",
+    "designs": "Pohjat",
+    "locations": "Sijaintiasetukset"
+  },
+  "notices": {
+    "review": "Tarkista →",
+    "tour": "Haluatko lyhyen esittelyn ohjauspaneelistasi?",
+    "showMeAround": "Esittele",
+    "dismiss": "Sulje",
+    "approval": "{count, plural, one {Löysimme sinulle <b>{count}</b> tapahtuman — tarkista ja hyväksy se ennen kuin se julkaistaan.} other {Löysimme sinulle <b>{count}</b> tapahtumaa — tarkista ja hyväksy ne ennen kuin ne julkaistaan.}}",
+    "allergens": "<b>Allergeenit puuttuvat</b> — asiakkaat eivät näe allergeenitietoja ennen kuin vahvistat ne. Tarkista jokaisen annoksen allergeenit välilehdellä Ruokalista.",
+    "domainLive": "<link>{domain}</link> on käytössä. Katso se ja vahvista sitten kohdassa Asetukset, että se on oikein.",
+    "stripe": "<b>Stripe tarvitsee sinulta jotain</b> — korttimaksut voivat keskeytyä, kunnes asia on hoidettu.",
+    "profileTitle": "Täydennä profiilisi",
+    "missing": "Puuttuu: {fields}.",
+    "goToSettings": "Avaa Asetukset →",
+    "field": {
+      "truckName": "ruokarekan nimi",
+      "cuisineType": "keittiötyyppi",
+      "contactEmail": "yhteyssähköposti",
+      "contactPhone": "yhteyspuhelin"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Käytössäsi on ilmainen kokeilujakso} other {Käytössäsi on {months} kuukauden ilmainen kokeilujakso}}",
+    "ends": "{hasDate, select, yes {Kokeilujakso päättyy <hl>{date}</hl>} other {Kokeilujakso päättyy <hl>pian</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Kaikki ominaisuudet ilmaiseksi # kuukauden ajan} other {Kaikki ominaisuudet ilmaiseksi # kuukauden ajan}}} other {Kaikki ominaisuudet ilmaiseksi kokeilujakson ajan}}",
+    "body": "{hasDate, select, yes {Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää <b>{date}</b> asti. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa. Valitse pakettisi ennen sitä — jos et valitse, siirryt pakettiin {fallback} ja osa ominaisuuksista lakkaa toimimasta.} other {Sinulta ei veloiteta mitään kokeilujakson aikana. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa. Valitse pakettisi ennen kokeilujakson loppua — jos et valitse, siirryt pakettiin {fallback} ja osa ominaisuuksista lakkaa toimimasta.}}",
+    "fees": "*Verkkotilauksiin sovelletaan tavanomaisia korttimaksujen käsittelykuluja",
+    "upgrade": "Vaihda pakettia tästä →"
+  }
+}

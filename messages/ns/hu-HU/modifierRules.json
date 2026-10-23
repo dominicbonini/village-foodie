@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Kötelező} other {Nem kötelező}}{limit, select, one { · Válasszon egyet} upTo { · Legfeljebb {max} választható} other {}}",
+  "operator": "{required, select, yes {Kötelező} other {Nem kötelező}}{limit, select, one { · A vásárló egyet választ} upTo { · A vásárló legfeljebb {max} elemet választhat} other {}}"
+}

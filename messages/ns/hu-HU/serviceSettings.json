@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Átvételi idők",
+    "takes_cash": "Elfogad készpénzt?",
+    "offline_protection": "Offline rendelésvédelem",
+    "buzzer_prompt": "Emlékeztessen a csipogó kiadására"
+  },
+  "typeFollowsVanTitle": "Minden food truck saját szokásos beállítását követi",
+  "sameSettingsAllVansLabel": "Azonos beállítások minden food truckhoz",
+  "sameSettingsAllVansHeader": "Minden food truck",
+  "sameSettingsConfirm": "Átmásolja az 1. food truck beállításait az összes food truckra? Ez az 1. food truck összes beállítását átmásolja, ugyanúgy, mint a Beállításokban az „Ugyanaz, mint: Food truck 1” opció. A konyhai kapacitásnak saját kapcsolója van.",
+  "eventTypesFooterStandard": "Az Alap a szokásos beállítása. Ha itt módosítja, a Beállításokban is módosul.",
+  "eventTypesFooterOneEvent": "Ha csak egy esemény beállításán változtatna, használja annak az eseménynek a vezérlőpultját.",
+  "eventTypesSubtitle": "A módosítások menet közben mentődnek.",
+  "matchStandardLabel": "Egyezzen az Alappal",
+  "matchStandardConfirm": "Visszaállítja ennek a típusnak minden beállítását az Alapra? Minden itt végzett módosítás törlődik.",
+  "priceLabels": {
+    "price_change_on": "Árak módosítása",
+    "price_mode": "Árváltozás",
+    "price_amount": "Összeg",
+    "price_rounding": "Kerekítés",
+    "item_prices": "Tételárak"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Minden árat magam adok meg"
+  },
+  "priceRounding": {
+    "none": "Nincs",
+    "nearest_1": "1 {symbol} pontossággal",
+    "up_1": "Mindig felfelé kerekít"
+  },
+  "pricesStandardCell": "Az étlap árai",
+  "pricesTruckWideTitle": "Az árai minden food trucknál azonosak",
+  "pricesMenuCell": "Étlap",
+  "pricesTypeOffCell": "Étlapárak",
+  "itemPricesShow": "Árak mutatása",
+  "itemPricesHide": "Árak elrejtése",
+  "priceItemsHeading": "Adja meg az egyes tételek árát",
+  "priceItemsOpen": "Tételárak megtekintése vagy módosítása ›",
+  "priceItemsClose": "Tételárak elrejtése ⌃",
+  "ownPriceCount": "{n, plural, one {{count} tételnek saját ára van} other {{count} tételnek saját ára van}}",
+  "priceTypeHint": "Koppintson egy árra a saját ár beírásához.",
+  "pricesLiveNotice": "Ez az esemény élő. Az új rendelések az új árakat használják. A már leadott rendelések megtartják a sajátjukat.",
+  "placeTypeHelper": "Az Esemény hozzáadása ezt a típust választja, valahányszor ezt a helyet választja.",
+  "postPictureStandardNote": "Az itteni eseménybejegyzések az alap dizájnját használják.",
+  "eventItemsCardDescription": "Árak, tételkorlátok és elérhetőség csak erre az eseményre. A módosítások azonnal életbe lépnek.",
+  "eventPriceColumnLabel": "Ár",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · ez az esemény} other {étlap {price} · ez az esemény}}",
+  "eventPriceEdit": "✎ Árak szerkesztése",
+  "eventPriceCancel": "Mégse",
+  "eventPriceSave": "Árak mentése",
+  "eventPriceEditNote": "Csak ennek az eseménynek az árait szerkeszti. A tételkorlátok és az elérhetőség a mentésig zárolva vannak.",
+  "eventPriceLiveNote": "Élő: az új rendelések az új árakat használják.",
+  "offlineWhenOfflineLabel": "Offline állapotban"
+}

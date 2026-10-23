@@ -1,0 +1,28 @@
+{
+  "hi": "Tere, {name}!",
+  "limit80": {
+    "subject": "Oled kasutanud 80 % selle kuu WhatsAppi vastustest",
+    "used": "Selle kuu automaatseid WhatsAppi vastuseid on kasutatud <b>{used} / {limit}</b>.",
+    "nothingStopped": "Midagi pole peatunud. Kui jõuad piirini {limit}, peatuvad automaatvastused kuni limiidi uuenemiseni (<b>{reset}</b>) — kliendid saavad sulle endiselt kirjutada ja näed kõike, mida nad saadavad.",
+    "raise": "Saad igakuist limiiti igal ajal tõsta jaotises „Seaded“.",
+    "raiseLink": "Saad igakuist limiiti igal ajal tõsta jaotises „Seaded“:",
+    "button": "Ava Seaded"
+  },
+  "limit100": {
+    "subject": "Sinu WhatsAppi automaatvastused on selleks kuuks peatatud",
+    "usedAll": "Oled ära kasutanud kõik selle kuu automaatsed WhatsAppi vastused ({limit}), seega on need peatatud.",
+    "stillReach": "<b>Kliendid saavad sulle endiselt tavapäraselt kirjutada ja iga sõnum jõuab sinuni.</b> Peatunud on ainult automaatne vastus.",
+    "startAgain": "Need hakkavad uuesti tööle <b>{reset}</b> või kohe, kui tõstad igakuist limiiti jaotises „Seaded“.",
+    "startAgainLink": "Need hakkavad uuesti tööle {reset} või kohe, kui tõstad igakuist limiiti jaotises „Seaded“:",
+    "button": "Tõsta limiiti"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp vajab enne saatmist makseviisi",
+    "stopped": "WhatsApp on peatanud sinu automaatvastuste saatmise, sest sinu WhatsApp Business kontol pole toimivat makseviisi.",
+    "stillMessage": "<b>Kliendid saavad sulle endiselt kirjutada ja näed kõike, mida nad saadavad</b> — kuid vastused nendeni ei jõua.",
+    "payDirect": "Nende sõnumite eest maksad otse WhatsAppile, seega parandatakse see WhatsApp Manageris, mitte HatchGrabis. Lisa või uuenda seal kaarti ja vastused hakkavad iseenesest uuesti liikuma.",
+    "payDirectLink": "Nende sõnumite eest maksad otse WhatsAppile, seega parandatakse see WhatsApp Manageris, mitte HatchGrabis. Lisa või uuenda seal kaarti ja vastused hakkavad iseenesest uuesti liikuma:",
+    "button": "Ava WhatsApp Manager",
+    "settings": "Sinu HatchGrabi seaded: <link>{url}</link>"
+  }
+}

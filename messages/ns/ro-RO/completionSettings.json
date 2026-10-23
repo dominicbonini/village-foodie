@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Primiți comenzi fără plată",
+  "completionTitle": "Finalizarea unei comenzi neplătite",
+  "completionHelp": "Ce se întâmplă când o comandă neplătită este gata de predat.",
+  "pressesOne": "O singură apăsare („Marcați plătită și ridicată”)",
+  "pressesOneHelp": "Ideal când încasați banii în momentul în care predați mâncarea. Aveți un singur buton, „Marcați plătită și ridicată”, care înregistrează plata și închide comanda deodată.",
+  "pressesTwo": "Două apăsări („Marcați plătită” și „Ridicată”)",
+  "pressesTwoHelp": "Ideal când plata și predarea au loc în momente diferite — cineva plătește la food truck, apoi ridică comanda când este gata. Aveți două butoane: întâi „Marcați plătită”, apoi „Ridicată” când clientul ia mâncarea."
+}

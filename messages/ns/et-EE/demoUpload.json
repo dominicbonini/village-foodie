@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Loeme sinu menüüd…",
+    "found": "Leidsime sinu tooted…",
+    "kitchen": "Seadistame sinu kööki…",
+    "page": "Loome sinu tellimislehte…",
+    "almost": "Peaaegu valmis…"
+  },
+  "templateSteps": {
+    "truck": "Loome sinu näidistoiduautot…",
+    "menu": "Seadistame menüüd…",
+    "kitchen": "Seadistame kööki…",
+    "page": "Loome tellimislehte…",
+    "almost": "Peaaegu valmis…"
+  },
+  "dialogLabel": "Laadi oma menüü üles",
+  "heading": "✨ Laadi oma menüü üles",
+  "failedHeading": "Me ei suutnud seda menüüd lugeda",
+  "close": "Sulge",
+  "intro": "Foto sinu menüütahvlist, ekraanipilt, PDF või kleebi menüü tekstina. Meie AI loeb selle ja loob sulle toimiva tellimislehe — sinu tooted, sinu hinnad — vähem kui 60 sekundiga. Ilma registreerumise ja kaardita.",
+  "failedIntro": "Mõnikord on foto liiga tume, liiga viltu või käsitsi kirjutatud. Selle lahendamine on meie mure, mitte sinu viga. Mõned võimalused edasi:",
+  "usually": "Tavaliselt võtab see alla 60 sekundi.",
+  "slow": "See võtab tavalisest kauem — suurte menüüdega juhtub nii.",
+  "keepWaiting": "Oota edasi",
+  "sampleWhileYouWait": "Või vaata ootamise ajal ringi näidismenüüga",
+  "standIn": "See <b>ei ole sinu menüü</b> — see on asendus, et näeksid, kuidas kõik töötab.",
+  "seeSample": "Vaata näidismenüüd",
+  "tryAgain": "Proovi uuesti",
+  "tryPhotoAgain": "Proovi seda fotot uuesti",
+  "tryDifferent": "Proovi teist fotot",
+  "uploadAnother": "← Laadi üles teine foto",
+  "orSample": "Või vaata ringi näidismenüüga",
+  "orBuild": "Või teeme selle sinu eest",
+  "buildSent": "✓ Aitäh — saime kätte. Saadame sulle e-kirja.",
+  "buildBody": "Jäta oma e-post ja päris inimene sisestab sinu menüü ning saadab sulle lingi.",
+  "emailPlaceholder": "sina@sinutoiduauto.ee",
+  "sending": "…",
+  "send": "Saada",
+  "noPhoto": "Menüü fotot pole käepärast?",
+  "noPhotoBody": "Vaata selle asemel ringi näidistoiduautoga — oma menüü saad üles laadida millal tahes.",
+  "build": "Loo minu demo →",
+  "nothingPublished": "Midagi pole avaldatud — ainult sina näed seda.",
+  "error": {
+    "somethingWrong": "Midagi läks valesti. Palun proovi uuesti.",
+    "serverUnreachable": "Me ei saanud serveriga ühendust. Kontrolli ühendust ja proovi uuesti.",
+    "sendFailed": "Saatmine ebaõnnestus — proovi uuesti."
+  },
+  "fields": {
+    "uploadLabel": "Laadi üles menüüfail",
+    "dropHere": "Lohista oma menüü siia",
+    "dragOrTap": "Lohista siia või puuduta, et valida",
+    "fileTypes": "Pilt või PDF",
+    "or": "või",
+    "pasteLabel": "Kleebi menüü tekst",
+    "pastePlaceholder": "Kleebi oma menüü siia — toodete nimed, kirjeldused, hinnad…"
+  }
+}

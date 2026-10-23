@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Czytamy twoje menu…",
+    "found": "Znaleźliśmy twoje pozycje…",
+    "kitchen": "Konfigurujemy twoją kuchnię…",
+    "page": "Tworzymy twoją stronę zamówień…",
+    "almost": "Prawie gotowe…"
+  },
+  "templateSteps": {
+    "truck": "Tworzymy przykładowy food truck…",
+    "menu": "Konfigurujemy menu…",
+    "kitchen": "Konfigurujemy kuchnię…",
+    "page": "Tworzymy stronę zamówień…",
+    "almost": "Prawie gotowe…"
+  },
+  "dialogLabel": "Prześlij swoje menu",
+  "heading": "✨ Prześlij swoje menu",
+  "failedHeading": "Nie udało się odczytać tego menu",
+  "close": "Zamknij",
+  "intro": "Zdjęcie tablicy z menu, zrzut ekranu, PDF albo wklejony tekst. Nasza AI je odczyta i zbuduje ci działającą stronę zamówień — z twoimi pozycjami i cenami — w niecałe 60 sekund. Bez rejestracji, bez karty.",
+  "failedIntro": "Czasem zdjęcie jest za ciemne, zrobione pod kątem albo menu jest pisane ręcznie. To nasze zadanie, a nie twój błąd. Co możesz zrobić:",
+  "usually": "Zwykle trwa to niecałe 60 sekund.",
+  "slow": "Trwa to dłużej niż zwykle — przy dużych menu tak bywa.",
+  "keepWaiting": "Czekaj dalej",
+  "sampleWhileYouWait": "Albo w międzyczasie rozejrzyj się z przykładowym menu",
+  "standIn": "To <b>nie będzie twoje menu</b> — to przykład, który pokazuje, jak to działa.",
+  "seeSample": "Zobacz przykładowe menu",
+  "tryAgain": "Spróbuj ponownie",
+  "tryPhotoAgain": "Ponów z tym zdjęciem",
+  "tryDifferent": "Spróbuj z innym zdjęciem",
+  "uploadAnother": "← Prześlij inne zdjęcie",
+  "orSample": "Albo rozejrzyj się z przykładowym menu",
+  "orBuild": "Albo zbudujemy je za ciebie",
+  "buildSent": "✓ Dzięki — mamy to. Napiszemy do ciebie.",
+  "buildBody": "Zostaw swój e-mail, a prawdziwa osoba wprowadzi twoje menu i wyśle ci link.",
+  "emailPlaceholder": "ty@twojfoodtruck.pl",
+  "sending": "…",
+  "send": "Wyślij",
+  "noPhoto": "Nie masz pod ręką zdjęcia menu?",
+  "noPhotoBody": "Rozejrzyj się z przykładowym food truckiem — swoje menu możesz przesłać w dowolnej chwili.",
+  "build": "Zbuduj moje demo →",
+  "nothingPublished": "Nic nie jest opublikowane — widzisz to tylko ty.",
+  "error": {
+    "somethingWrong": "Coś poszło nie tak. Spróbuj ponownie.",
+    "serverUnreachable": "Nie udało się połączyć z serwerem. Sprawdź połączenie i spróbuj ponownie.",
+    "sendFailed": "Nie udało się wysłać — spróbuj ponownie."
+  },
+  "fields": {
+    "uploadLabel": "Prześlij plik z menu",
+    "dropHere": "Upuść tu swoje menu",
+    "dragOrTap": "Przeciągnij i upuść albo dotknij, aby wybrać",
+    "fileTypes": "Obraz lub PDF",
+    "or": "lub",
+    "pasteLabel": "Wklej tekst menu",
+    "pastePlaceholder": "Wklej tu swoje menu — nazwy pozycji, opisy, ceny…"
+  }
+}

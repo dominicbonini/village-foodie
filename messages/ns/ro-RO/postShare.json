@@ -1,0 +1,10 @@
+{
+  "download": "Descărcați imaginea",
+  "copied": "Copiat ✓",
+  "copyCaption": "Copiați descrierea",
+  "share": "Distribuiți",
+  "copiedStatus": "{kind, select, postText {Textul postării a fost copiat.} other {Descrierea a fost copiată.}}",
+  "copyFailed": "Nu s-a putut copia — selectați textul și copiați-l manual.",
+  "sharedStatus": "{kind, select, postText {Textul postării a fost copiat — lipiți-l în postare.} other {Descrierea a fost copiată — lipiți-o în postare.}}",
+  "shareRefused": "{kind, select, postText {Distribuirea a fost refuzată, așa că imaginea a fost descărcată. Textul postării a fost copiat.} other {Distribuirea a fost refuzată, așa că imaginea a fost descărcată. Descrierea a fost copiată.}}"
+}

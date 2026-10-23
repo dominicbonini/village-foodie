@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Dodaj harmonogram do swojej strony internetowej",
+    "live": "Pod adresem <addr>{address}</addr> widać twój harmonogram.",
+    "create": "Utworzymy stronę pod adresem <addr>{address}</addr> z twoim harmonogramem.",
+    "exampleDomain": "twojfoodtruck.pl",
+    "liveBadge": "Działa",
+    "setUp": "Skonfiguruj",
+    "viewSetup": "Pokaż konfigurację",
+    "continue": "Dalej",
+    "justLive": "<b>{address}</b> działa. Zobacz, jak wygląda, a potem potwierdź poniżej, że wszystko się zgadza."
+  },
+  "waiting": {
+    "title": "Czekamy na {address}",
+    "bodySince": "Skonfigurowano to {date}. Nowe adresy internetowe zwykle zaczynają działać w ciągu kilku minut, a czasem docierają do wszystkich dopiero po 24 godzinach — w tym czasie nie musisz nic robić. Jeśli wpis dodawał za ciebie ktoś inny, warto sprawdzić, czy to zrobił.",
+    "body": "Nowe adresy internetowe zwykle zaczynają działać w ciągu kilku minut, a czasem docierają do wszystkich dopiero po 24 godzinach — w tym czasie nie musisz nic robić. Jeśli wpis dodawał za ciebie ktoś inny, warto sprawdzić, czy to zrobił."
+  },
+  "ready": {
+    "title": "{address} działa",
+    "body": "Zobacz, jak wygląda, a potem potwierdź w ustawieniach, że wszystko się zgadza."
+  },
+  "confirm": {
+    "heading": "Zobacz i potwierdź, że wszystko się zgadza",
+    "open": "Otwórz <link>{address}</link>",
+    "checkTimes": "Sprawdź, czy daty i godziny są prawidłowe.",
+    "yes": "Tak, wszystko się zgadza",
+    "no": "Nie, jest problem",
+    "problemLine": "Napisz, co widzisz, a my to sprawdzimy.",
+    "emailUs": "Napisz do nas",
+    "mailSubject": "Problem z adresem {address}",
+    "mailLiveSince": "Działa od {date}",
+    "mailSeeing": "Co widzę:"
+  },
+  "confirmed": {
+    "heading": "Dziękujemy — wszystko odnotowane.",
+    "body": "Nie musisz nic więcej robić."
+  },
+  "turnOff": {
+    "link": "Wyłącz",
+    "heading": "Wyłączyć własny adres internetowy?",
+    "stops": "To przestanie działać:",
+    "carriesOn": "To działa dalej bez zmian i właśnie tutaj kod QR kieruje ludzi:",
+    "reAdd": "Jeśli zamierzasz później skonfigurować to ponownie, zostaw wpis dodany u firmy obsługującej twój adres internetowy. Jeśli nie, poproś ją o jego usunięcie.",
+    "cancel": "Zostaw włączone",
+    "confirm": "Wyłącz",
+    "working": "Wyłączanie…",
+    "failed": "Nie udało się teraz tego wyłączyć. Nic się nie zmieniło — twój adres nadal działa. Spróbuj ponownie za chwilę."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Nie udało się załadować konfiguracji.",
+    "resumeFailedBody": "Nic się nie zmieniło. Spróbuj ponownie za chwilę.",
+    "close": "Zamknij",
+    "resuming": "Wznawiamy od miejsca, w którym przerwano…",
+    "genericError": "Coś poszło nie tak",
+    "saveFailed": "Nie udało się zapisać"
+  },
+  "address": {
+    "intro": "Twój harmonogram dostanie własny adres internetowy.",
+    "question": "Jaki jest twój adres internetowy?",
+    "hint": "Ten, pod którym ludzie już cię znajdują.",
+    "aria": "Twój własny adres internetowy",
+    "willBe": "Twój adres będzie brzmiał <addr>{address}</addr>",
+    "example": "Na przykład <addr>{address}</addr>",
+    "noChange": "Twoja strona internetowa się nie zmienia — wystarczy dodać na niej link do nowego adresu.",
+    "notSetUp": "Nie skonfigurowaliśmy tego.",
+    "restricted": "Firma lub osoba, która obsługuje twój adres internetowy, musi pozwolić nam ustawić kłódkę — małą kłódkę, którą klienci widzą obok adresu. Dopóki nas nie doda, kłódka się nie pojawi, więc przerwaliśmy, zamiast kazać ci na nią czekać. Poproś o dodanie nas, a potem spróbuj ponownie.",
+    "blocked": "Twój adres internetowy obecnie całkowicie blokuje kłódkę. Firma lub osoba, która go obsługuje, musi na nią zezwolić, zanim to zadziała. Poproś o zmianę tego ustawienia, a potem spróbuj ponownie.",
+    "elsewhere": "Pod tym adresem coś już działa. Wyślij wiadomość z następnego ekranu osobie lub firmie, która obsługuje ten adres — będzie wiedzieć, co zrobić.",
+    "provider": "Twój adres internetowy obsługuje <b>{provider}</b>. Pokażemy ci, gdzie przejść.",
+    "provisionFailed": "Nie udało się skonfigurować tego adresu.",
+    "willNotWork": "Ten adres nie zadziała.",
+    "couldNotBeSetUp": "Tego adresu nie da się skonfigurować.",
+    "couldNotSetUp": "Nie udało się skonfigurować",
+    "checking": "Sprawdzanie…",
+    "setting": "Konfigurowanie…",
+    "tryAgain": "Spróbuj ponownie",
+    "setUpAddress": "Skonfiguruj ten adres",
+    "notNow": "Nie teraz"
+  },
+  "apex": {
+    "empty": "Wpisz adres, którego chcesz używać.",
+    "not_a_domain": "To nie wygląda na adres internetowy.",
+    "unparseable": "Nie udało się odczytać tego jako adresu internetowego. Sprawdź pisownię i spróbuj ponownie.",
+    "apex": "{host} to pełny adres twojej strony internetowej. Jeśli skierujesz go do nas, twoją stronę zastąpi ta strona. Zamiast tego dodaj słowo na początku — na przykład grafik.{host}.",
+    "too_deep": "Ten adres ma za dużo członów. Najlepiej sprawdza się coś w rodzaju grafik.{domain}."
+  },
+  "record": {
+    "addAt": "Dodaj to w panelu {provider}",
+    "open": "Otwórz {provider}",
+    "guide": "Poradnik dostawcy {provider} na ten temat",
+    "addAtSave": "Dodaj to w panelu {provider} i zapisz.",
+    "addSomewhere": "Dodaj to tam, gdzie obsługiwany jest twój adres internetowy, i zapisz.",
+    "hintChoose": "Wybierz to z listy.",
+    "hintWord": "Tylko to słowo, nie cały adres.",
+    "hintExact": "Skopiuj to dokładnie.",
+    "timing": "Zwykle zaczyna działać w ciągu godziny, choć może to potrwać dłużej. Nie musisz trzymać tej strony otwartej.",
+    "someoneElse": "Twoim adresem internetowym zajmuje się ktoś inny?",
+    "sentTo": "Wysłano na adres {email}",
+    "emailPlaceholder": "adres e-mail tej osoby",
+    "sending": "Wysyłanie…",
+    "send": "Wyślij te dane",
+    "sendFailed": "Nie udało się wysłać"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Otwórz swój adres internetowy, a potem „DNS” i „Records”.",
+      "add": "Wybierz „Add record”, a następnie „CNAME” jako „Type”.",
+      "name": "Wpisz pierwszą wartość poniżej w polu „Name”.",
+      "value": "Wpisz drugą wartość poniżej w polu „Target”.",
+      "proxy": "Ustaw „Proxy status” na „DNS only” — chmurka obok musi być szara, nie pomarańczowa.",
+      "save": "Zostaw „TTL” na „Auto” i wybierz „Save”.",
+      "caveat": "Jeśli chmurka zostanie pomarańczowa, kłódka nigdy się nie pojawi i nic nie wskaże dlaczego."
+    },
+    "godaddy": {
+      "open": "Otwórz „Domain Portfolio” i wybierz swój adres internetowy.",
+      "dns": "Na stronie „Domain Settings” wybierz „DNS”.",
+      "add": "Wybierz „Add New Record”, a następnie „CNAME” z menu „Type”.",
+      "name": "Wpisz pierwszą wartość poniżej w polu „Name”.",
+      "value": "Wpisz drugą wartość poniżej w polu „Value”.",
+      "save": "Zostaw „TTL” bez zmian i wybierz „Save”.",
+      "caveat": "Jeśli dodajesz kilka wpisów naraz, przycisk ma nazwę „Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Zaloguj się do „123 Reg Control Panel”.",
+      "manage": "Obok „Domains” wybierz „Manage All”, a potem swój adres internetowy.",
+      "dns": "Wybierz „DNS”, a potem „Add New Record”.",
+      "type": "Wybierz „CNAME” z listy „Type”.",
+      "name": "Wpisz pierwszą wartość poniżej w polu „Name”.",
+      "value": "Wpisz drugą wartość poniżej w polu „Value” i dodaj kropkę na jej końcu.",
+      "save": "Zostaw „TTL” na „Default” i kliknij „Save”.",
+      "caveat": "123 Reg wymaga kropki na końcu drugiej wartości — bez niej to nie zadziała."
+    },
+    "wix": {
+      "open": "Otwórz „Domains”, a potem kliknij ikonę „Domain Actions” obok swojego adresu internetowego.",
+      "manage": "Wybierz „Manage DNS Records”.",
+      "add": "W sekcji „CNAME (Aliases)” kliknij „+ Add Record”, a potem „Got it”.",
+      "name": "Wpisz pierwszą wartość poniżej w polu „Host Name”.",
+      "value": "Wpisz drugą wartość poniżej w polu „Value”.",
+      "save": "Kliknij „Save”, a potem „Save Changes” w wyskakującym okienku.",
+      "caveat": "Jeśli twój adres internetowy tylko wskazuje na Wix, a nie jest tam zarejestrowany, Wix nie może wprowadzić tej zmiany — musi to zrobić firma, w której jest zarejestrowany."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "{truckName}: jeden wpis do dodania dla strony z harmonogramem",
+    "hello": "Dzień dobry,",
+    "introAt": "Umieszczamy aktualny harmonogram food trucka {truckName} pod adresem {address} i w tym celu trzeba dodać jeden wpis do naszej domeny w panelu {provider}.",
+    "introHolder": "Umieszczamy aktualny harmonogram food trucka {truckName} pod adresem {address} i w tym celu trzeba dodać jeden wpis do naszej domeny u firmy, w której jest zarejestrowana.",
+    "stepsAt": "W panelu {provider}:",
+    "guide": "Ich własny poradnik: {url}",
+    "wholeChange": "To cała zmiana — nic innego na stronie się nie zmienia, a reszta naszej domeny działa dokładnie tak jak teraz. Zwykle zaczyna to działać w ciągu godziny.",
+    "pointsAt": "Strona, na którą wskazuje wpis, pokazuje, gdzie będziemy sprzedawać w najbliższym czasie, i sama się aktualizuje.",
+    "replyTo": "W razie pytań proszę pisać na adres {email}.",
+    "thanks": "Dziękujemy,"
+  },
+  "liveEmail": {
+    "subject": "{address} działa",
+    "goodNews": "Dobra wiadomość — {address} działa.",
+    "body": "Twój harmonogram jest teraz widoczny pod twoim własnym adresem. Zobacz, jak wygląda, i sprawdź, czy wszystko się zgadza: otwórz {address}, upewnij się, że wydarzenia są twoje, a daty są prawidłowe.",
+    "confirm": "Gdy to zrobisz, otwórz ustawienia w HatchGrab i potwierdź, że wszystko się zgadza. Nic od tego nie zależy — po prostu będziemy wiedzieć, że ktoś to sprawdził."
+  }
+}

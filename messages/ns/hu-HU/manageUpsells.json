@@ -1,0 +1,19 @@
+{
+  "heading": "Ráajánlások",
+  "intro": "Ösztönözze a vásárlókat, hogy tegyenek még valamit a kosárba. Ha valaki az egyik kategóriából rendel, ajánljon tételeket egy másikból — egy italt a pizzához, egy szószt a burgerhez.",
+  "add": "+ Új ráajánlás",
+  "toast": {
+    "updated": "Ráajánlási szabály frissítve",
+    "added": "Ráajánlási szabály hozzáadva",
+    "removed": "Szabály eltávolítva"
+  },
+  "whenAdds": "Ha a vásárló hozzáad…",
+  "suggestFrom": "Ajánlott tételek innen…",
+  "chooseCategory": "Kategória kiválasztása",
+  "cancel": "Mégse",
+  "saveChanges": "Módosítások mentése",
+  "addRule": "Szabály hozzáadása",
+  "empty": "Még nincsenek ráajánlási szabályok.",
+  "confirmRemove": "Eltávolítja ezt a ráajánlási szabályt: „{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Legfeljebb {count} ajánlott tétel} other {Legfeljebb {count} ajánlott tétel}}"
+}

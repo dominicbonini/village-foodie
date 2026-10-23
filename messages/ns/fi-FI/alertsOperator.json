@@ -1,0 +1,28 @@
+{
+  "hi": "Hei {name},",
+  "limit80": {
+    "subject": "Olet käyttänyt 80 % tämän kuun WhatsApp-vastauksista",
+    "used": "Automaattiset WhatsApp-vastauksesi ovat käyttäneet tämän kuun kiintiöstä <b>{used}/{limit}</b>.",
+    "nothingStopped": "Mikään ei ole pysähtynyt. Kun raja {limit} täyttyy, automaattiset vastaukset ovat tauolla, kunnes kiintiösi nollautuu (<b>{reset}</b>) — asiakkaat voivat silti lähettää sinulle viestejä, ja näet edelleen kaiken, mitä he lähettävät.",
+    "raise": "Voit nostaa kuukausirajaa milloin tahansa kohdassa Asetukset.",
+    "raiseLink": "Voit nostaa kuukausirajaa milloin tahansa kohdassa Asetukset:",
+    "button": "Avaa Asetukset"
+  },
+  "limit100": {
+    "subject": "WhatsAppin automaattiset vastaukset ovat tauolla tältä kuulta",
+    "usedAll": "Olet käyttänyt kaikki tämän kuun {limit} automaattista WhatsApp-vastausta, joten ne ovat tauolla.",
+    "stillReach": "<b>Asiakkaat voivat silti lähettää sinulle viestejä normaalisti, ja jokainen viesti tavoittaa sinut.</b> Ainoastaan automaattisten vastausten lähettäminen on pysähtynyt.",
+    "startAgain": "Ne alkavat uudelleen <b>{reset}</b> tai heti, jos nostat kuukausirajaa kohdassa Asetukset.",
+    "startAgainLink": "Ne alkavat uudelleen {reset} tai heti, jos nostat kuukausirajaa kohdassa Asetukset:",
+    "button": "Nosta rajaa"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp tarvitsee maksutavan voidakseen lähettää viestejä",
+    "stopped": "WhatsApp on pysäyttänyt automaattisten vastaustesi lähettämisen, koska WhatsApp Business -tililläsi ei ole toimivaa maksutapaa.",
+    "stillMessage": "<b>Asiakkaat voivat silti lähettää sinulle viestejä, ja näet edelleen kaiken, mitä he lähettävät</b> — mutta vastaukset eivät tavoita heitä.",
+    "payDirect": "Maksat näistä viesteistä suoraan WhatsAppille, joten asia korjataan WhatsApp Managerissa eikä HatchGrabissa. Lisää tai päivitä siellä kortti, niin vastaukset alkavat taas itsestään.",
+    "payDirectLink": "Maksat näistä viesteistä suoraan WhatsAppille, joten asia korjataan WhatsApp Managerissa eikä HatchGrabissa. Lisää tai päivitä siellä kortti, niin vastaukset alkavat taas itsestään:",
+    "button": "Avaa WhatsApp Manager",
+    "settings": "HatchGrab-asetuksesi: <link>{url}</link>"
+  }
+}

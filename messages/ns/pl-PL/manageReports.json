@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Zakres dat",
+    "event": "📍 Wydarzenie",
+    "filterBy": "Filtruj według",
+    "show": "Pokaż",
+    "range": "<from></from><sep>do</sep><until></until>",
+    "selectEvent": "Wybierz wydarzenie…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Wydarzenie",
+    "viewReport": "Pokaż raport",
+    "loading": "Ładowanie…",
+    "orders": "📋 Zamówienia",
+    "items": "📦 Pozycje",
+    "exportCsv": "⬇ Eksportuj CSV"
+  },
+  "empty": {
+    "noOrders": "Brak zamówień w tym okresie.",
+    "selectEvent": "Wybierz wydarzenie powyżej, aby zobaczyć jego raport."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} zamówienie} few {{count} zamówienia} many {{count} zamówień} other {{count} zamówienia}} · {total}"
+  },
+  "revenue": {
+    "title": "Podział przychodu",
+    "deals": "Przychód z zestawów",
+    "modifiers": "Dopłaty za dodatki",
+    "foodSales": "Sprzedaż jedzenia",
+    "total": "Razem",
+    "other": "Inne",
+    "tax": "Podatek",
+    "tips": "Napiwki",
+    "serviceFees": "Opłaty serwisowe",
+    "cardFees": "Opłaty za karty"
+  },
+  "itemsSold": {
+    "title": "Sprzedane pozycje"
+  },
+  "dealsCard": {
+    "title": "Zestawy"
+  },
+  "custom": {
+    "title": "Personalizacje",
+    "paidModifiers": "Płatne dodatki",
+    "customerNotes": "Uwagi klientów",
+    "note": "„{note}”"
+  },
+  "table": {
+    "item": "Pozycja",
+    "modifier": "Dodatek",
+    "qty": "Ilość",
+    "total": "Razem",
+    "date": "Data",
+    "time": "Godzina",
+    "channel": "Kanał"
+  },
+  "breakdown": {
+    "orders": "Zestawienie zamówień",
+    "items": "Zestawienie pozycji"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Na miejscu"
+  },
+  "csv": {
+    "orderId": "ID zamówienia",
+    "date": "Data",
+    "event": "Wydarzenie",
+    "timePlaced": "Godzina złożenia",
+    "collectionTime": "Godzina odbioru",
+    "customerName": "Imię klienta",
+    "orderType": "Rodzaj zamówienia",
+    "items": "Pozycje",
+    "deals": "Zestawy",
+    "modifiers": "Dodatki",
+    "notes": "Uwagi",
+    "subtotal": "Suma częściowa",
+    "tip": "Napiwek",
+    "serviceFee": "Opłata serwisowa",
+    "total": "Razem",
+    "itemName": "Nazwa pozycji",
+    "qty": "Ilość",
+    "unitPrice": "Cena jednostkowa",
+    "itemTotal": "Wartość pozycji",
+    "orderTotal": "Wartość zamówienia",
+    "unknownEvent": "Nieznane wydarzenie",
+    "asap": "Jak najszybciej",
+    "unknownCustomer": "Nieznany",
+    "customerOnline": "Klient online",
+    "placedByTruck": "Złożone przez food truck"
+  }
+}

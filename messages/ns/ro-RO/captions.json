@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Datele săptămânii",
+    "dayList": "Lista zilelor",
+    "place": "Locație",
+    "venue": "Loc",
+    "area": "Zonă",
+    "dayDate": "Zi și dată",
+    "times": "Ore",
+    "orderLink": "Link de comandă",
+    "locationTag": "Etichetă de locație"
+  },
+  "weekHeader": "{truck} — unde suntem săptămâna aceasta:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ANULAT, ne pare rău",
+  "noDates": "Nicio dată săptămâna aceasta — reveniți curând.",
+  "orderAhead": "Comandați în avans: {url}",
+  "orderAheadTagged": "Comandați în avans: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Ne pare rău — nu putem ajunge {when} la {where}.",
+  "cancelledApology": "Ne cerem scuze tuturor celor care plănuiau să vină. Revenim curând.",
+  "when": {
+    "today": "azi",
+    "tonight": "diseară",
+    "tomorrow": "mâine",
+    "dated": "pe {date}"
+  }
+}

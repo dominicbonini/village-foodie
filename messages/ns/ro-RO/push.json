@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Comandă nouă de confirmat",
+    "body": "Comanda {number} — {truck}"
+  }
+}

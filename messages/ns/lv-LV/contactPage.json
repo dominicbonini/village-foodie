@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Atbalsts",
+    "description": "Saņemiet palīdzību saistībā ar HatchGrab. Nosūtiet mums ziņu, un mēs jums atbildēsim e-pastā."
+  },
+  "logIn": "Pieteikties",
+  "eyebrow": "Atbalsts",
+  "title": "Kā varam palīdzēt?",
+  "lede": "Kaut kas nedarbojas, vai jums ir jautājums par savu kontu? Ar mums var sazināties divos veidos — jebkurā gadījumā atbildēsim jums e-pastā.",
+  "emailUs": "Rakstiet mums e-pastu",
+  "formHeading": "Vai aizpildiet veidlapu zemāk",
+  "loadingForm": "Ielādē veidlapu…",
+  "formTitle": "Sazināties ar HatchGrab atbalstu",
+  "privacy": "Privātums",
+  "terms": "Noteikumi",
+  "about": "Par mums",
+  "copyright": "© {year} HatchGrab"
+}

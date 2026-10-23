@@ -1,0 +1,129 @@
+{
+  "docTitle": "Kuhinja — {truck}",
+  "loading": "Nalaganje kuhinje…",
+  "pin": {
+    "title": "Vnesite PIN",
+    "placeholder": "PIN",
+    "unlock": "Odkleni",
+    "unreachable": "Strežnik trenutno ni dosegljiv. Vaš PIN je pravilen — poskusite znova čez trenutek.",
+    "incorrect": "Napačen PIN",
+    "generic": "Prišlo je do napake. Poskusite znova."
+  },
+  "error": {
+    "linkInvalid": "Ta povezava ni več veljavna.",
+    "couldNotLoad": "Naročil ni bilo mogoče naložiti",
+    "truckNotFound": "Food truck ni bil najden"
+  },
+  "degraded": {
+    "at": "⚠️ Strežnik ni dosegljiv. Prikazani so listki s stanjem ob {time}. NOVA NAROČILA MORDA MANJKAJO.",
+    "earlier": "⚠️ Strežnik ni dosegljiv. Prikazani so starejši listki. NOVA NAROČILA MORDA MANJKAJO."
+  },
+  "header": {
+    "dashboard": "Nadzorna plošča",
+    "backTitle": "Nazaj na nadzorno ploščo",
+    "list": "Seznam",
+    "grid": "Mreža",
+    "full": "Polno",
+    "cook": "Kuhar",
+    "fullTitle": "Polni listki — cene in podatki o plačilu, kot jih vidite ob izdaji naročil.",
+    "cookTitle": "Listki za kuharja — večja pisava, razvrščeno po kategorijah, brez cen.",
+    "readyStep": "Korak Pripravljeno",
+    "readyOnlyTitle": "Ta zaslon samo označuje naročila kot pripravljena, zato tega ni mogoče izklopiti — to je edini korak, ki ga izvaja.",
+    "readyOnTitle": "Ta zaslon označuje naročila kot pripravljena. Tapnite, da to namesto njega opravlja drug zaslon.",
+    "readyOffTitle": "Naročila kot pripravljena označuje drug zaslon. Tapnite, da to opravlja ta zaslon.",
+    "handover": "Plačilo in izdaja",
+    "handoverOnlyTitle": "Ta zaslon samo sprejema plačila, zato tega ni mogoče izklopiti — to je edini korak, ki ga izvaja.",
+    "handoverOnTitle": "Ta zaslon sprejema plačila in izdaja naročila. Tapnite, da to namesto njega opravlja drug zaslon.",
+    "handoverOffTitle": "Plačila sprejema drug zaslon. Tapnite, da jih sprejema ta zaslon.",
+    "soundOn": "Zvok novih naročil je vklopljen — tapnite za izklop",
+    "soundOff": "Zvok novih naročil je izklopljen — tapnite za vklop",
+    "screenOn": "Zaslon vklopljen",
+    "screenOff": "Zaslon izklopljen",
+    "screenSettings": "Nastavitve zaslona",
+    "manageEvent": "Upravljanje dogodka",
+    "manageEventTitle": "Upravljanje dogodka — začetek, premor, sprememba ali konec",
+    "soundSettings": "Nastavitve zvoka",
+    "soundSettingsTitle": "Kateri zvoki se predvajajo v tej napravi",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Nastavitve prikaza",
+    "on": "Vklop",
+    "off": "Izklop",
+    "newOrderSound": "Zvok novega naročila",
+    "soundNeedsConfirming": "Samo naročila, ki čakajo na potrditev",
+    "soundAll": "Vsa nova naročila",
+    "soundDue": "Zvok, ko je treba naročilo začeti pripravljati",
+    "soundDueHelp": "Zazvoni, ko listek postane oranžen.",
+    "deviceSettings": "Nastavitve naprave",
+    "sound": "Zvok",
+    "close": "Zapri"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Naročila za ta dogodek niso naložena",
+    "mismatchBody": "Strežnik je vrnil drug dogodek, zato ni prikazano nič, namesto da bi bila prikazana napačna naročila. Znova izberite dogodek ali osvežite stran.",
+    "mismatchBodyAt": "Strežnik je vrnil drug dogodek, zato ni prikazano nič, namesto da bi bila prikazana napačna naročila za lokacijo {venue}. Znova izberite dogodek ali osvežite stran.",
+    "paused": "⏸ Naročila začasno ustavljena{reason, select, offline { (naprava brez povezave)} other {}} — stranke ne morejo naročati",
+    "resume": "Nadaljuj",
+    "offline": "Ni povezave — prikazana so zadnja znana naročila. Spletno naročanje je za stranke začasno ustavljeno.",
+    "queued": "{n, plural, one {{count} dejanje v čakalni vrsti} two {{count} dejanji v čakalni vrsti} few {{count} dejanja v čakalni vrsti} other {{count} dejanj v čakalni vrsti}}",
+    "extraWait": "⏱ Dodatno čakanje aktivno: +{mins} min",
+    "clear": "Počisti",
+    "toMake": "Za pripravo",
+    "today": "Danes · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Začni dogodek",
+    "recentlyClosed": "Dogodek končan · {venue}: konec ob {time}",
+    "eventStatus": "{tone, select, paused {⏸ Začasno ustavljeno} live {● V živo} finished {● Končano} cancelled {Preklicano} other {Ni začet}}"
+  },
+  "board": {
+    "queueClear": "Vrsta je prazna",
+    "doneToday": "Danes končano · {count}",
+    "paid": "✓ plačano",
+    "cardHeld": "rezervirano",
+    "due": "za plačilo: {amount}"
+  },
+  "screenOff": {
+    "title": "Dovolite izklop zaslona?",
+    "bodyVans": "{vans} {n, plural, one {ima} two {imata} few {imajo} other {imajo}} vklopljeno zaznavanje izgube povezave. Če se zaslon izklopi, naprava morda preneha pošiljati signal, da je povezana, in naročanje strank se lahko začasno ustavi.",
+    "body": "Če se zaslon izklopi, naprava morda preneha pošiljati signal, da je povezana.",
+    "keepHint": "Pustite zaslon vklopljen za nemoteno naročanje.",
+    "keep": "Pusti zaslon vklopljen",
+    "allow": "Dovoli izklop"
+  },
+  "event": {
+    "change": "Zamenjaj dogodek",
+    "cancel": "Prekliči",
+    "waitActive": "⏱ +{mins} min aktivno · Tapnite za odstranitev",
+    "addWait": "⏱ Dodaj čakalni čas",
+    "endTitle": "Končati dogodek?",
+    "endEarly": "Ta dogodek naj bi se končal šele ob {time}. Novih naročil ne bo več mogoče oddati. Potrdite konec dogodka?",
+    "endNow": "Končati ta dogodek? Novih naročil ne boste več sprejemali.",
+    "yes": "Da",
+    "started": "Dogodek se je začel",
+    "startFutureConfirm": "Datum tega dogodka: {date}. Ga želite začeti zdaj?",
+    "finishTimeNow": "Čas konca je zdaj {time}",
+    "finished": "Dogodek končan",
+    "cancelled": "Dogodek preklican",
+    "noteSaved": "Opomba shranjena",
+    "pauseConfirm": "Želite začasno ustaviti naročila? Stranke bodo videle „Naročil ne sprejemamo“, dokler ne nadaljujete.",
+    "switchConfirm": "Zamenjati dogodek: {from} → {to}?{n, plural, =0 {} one { {count} naročilo na tem zaslonu bo zamenjano.} two { {count} naročili na tem zaslonu bosta zamenjani.} few { {count} naročila na tem zaslonu bodo zamenjana.} other { {count} naročil na tem zaslonu bo zamenjanih.}} Za vrnitev tapnite trenutni dogodek."
+  },
+  "intro": {
+    "title": "To je kuhinjski zaslon",
+    "p1": "To je pogled za kuharja — naročila, ki jih morate pripraviti, v vrstnem redu priprave. Zaslon ob žaru prikazuje to, pult pa uporablja nadzorno ploščo naročil.",
+    "p2": "Listki se premikajo, ko jih tapnete, zato tisti, ki kuha, vedno ve, kaj je naslednje, in nikomur ni treba kričati. Vse tukaj so vaši demo podatki — kar preizkusite.",
+    "gotIt": "Razumem"
+  },
+  "toast": {
+    "failed": "Ni uspelo",
+    "rejectFailed": "Zavrnitev ni uspela",
+    "buzzerSaved": "Pozivnik {n} shranjen",
+    "buzzerRemoved": "Pozivnik {n} odstranjen",
+    "buzzerRemovedNone": "Pozivnik odstranjen",
+    "buzzerAssigned": "Pozivnik {n} dodeljen",
+    "buzzerAssignedFrom": "Pozivnik {n} dodeljen (vzet naročilu #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Pozivnika ni bilo mogoče odstraniti z {target, select, order {naročila #{id}} other {tega naročila}}} other {Pozivnika {n} ni bilo mogoče odstraniti — še vedno je pri {target, select, order {naročilu #{id}} other {tem naročilu}}}}",
+    "buzzerAssignFailed": "Pozivnika {n} ni bilo mogoče dodeliti {target, select, order {naročilu #{id}} other {temu naročilu}} — {had, select, yes {še vedno ima pozivnik {prior}} other {še vedno nima pozivnika}}"
+  }
+}

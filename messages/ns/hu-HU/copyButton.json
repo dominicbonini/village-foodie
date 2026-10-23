@@ -1,0 +1,10 @@
+{
+  "copy": "Másolás",
+  "copied": "Másolva ✓",
+  "failed": "Másolási hiba",
+  "aria": "{label} {thing}",
+  "announceCopied": "{thing} kimásolva",
+  "announceCopiedValue": "Érték kimásolva",
+  "announceFailed": "Nem sikerült kimásolni: {thing}. Jelölje ki a szöveget, és másolja ki saját maga.",
+  "announceFailedValue": "Nem sikerült kimásolni az értéket. Jelölje ki a szöveget, és másolja ki saját maga."
+}

@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, zero {{count} laika logi} one {{count} laika logs} other {{count} laika logi}} pārsniedz jaudu — pārskatiet",
+  "batchOver": "{cat}: partija pārsniegta — {count} uz {slot} ({per} vienā partijā)",
+  "eventStartOver": "Jauda pārsniegta pasākuma sākumā — {n, plural, zero {{count} pozīcijas} one {{count} pozīcija} other {{count} pozīcijas}} uz {slot}",
+  "kitchenOver": "Virtuves jauda pārsniegta — {n, plural, zero {{count} pozīcijas} one {{count} pozīcija} other {{count} pozīcijas}} gatavojas uz {slot}",
+  "orderItems": "#{id} — {n, plural, zero {{count} pozīcijas} one {{count} pozīcija} other {{count} pozīcijas}}",
+  "placedAnyway": "Tomēr pieņemti: {list}",
+  "placedItem": "#{id} uz {slot}",
+  "orphans": "{times}: jauda pārsniegta — nav atrasts neviens pasūtījums, kam to piedēvēt",
+  "dismiss": "Aizvērt",
+  "kitchenCapacity": "Virtuves jauda",
+  "overCapacity": "Jauda pārsniegta",
+  "wakeUnsupported": "Šī ierīce nevar paturēt ekrānu ieslēgtu.",
+  "wakeInsecure": "No šīs adreses ekrānu nevar paturēt ieslēgtu.",
+  "wakeRetry": "Turēt ekrānu ieslēgtu — pieskarieties, lai mēģinātu vēlreiz",
+  "wakeAcquire": "Turēt ekrānu ieslēgtu",
+  "degraded": {
+    "serverError": "Serveris nevarēja ielādēt pasūtījumus{hasStatus, select, yes { (kļūda {status})} other {}}. Rāda pasūtījumus (stāvoklis: {at}). Var trūkt jaunu pasūtījumu.",
+    "unreachable": "Nevar sazināties ar serveri. Rāda pasūtījumus (stāvoklis: {at}). Var trūkt jaunu pasūtījumu."
+  }
+}

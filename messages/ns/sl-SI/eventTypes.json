@@ -1,0 +1,83 @@
+{
+  "title": "Tipi dogodkov",
+  "newTypeButton": "+ Nov tip dogodka",
+  "close": "Zapri",
+  "loading": "Nalaganje …",
+  "missingTitle": "Tipi dogodkov še niso vklopljeni.",
+  "missingBody": "Posodobitev baze podatkov za to funkcijo še ni bila izvedena. Nič ni pokvarjeno — vsi dogodki uporabljajo vašo običajno nastavitev.",
+  "column": "Stolpec",
+  "vanGone": "Ta food truck ne obstaja več.",
+  "typeGone": "Ta tip ne obstaja več.",
+  "standard": "Standardni",
+  "standardHeading": "STANDARDNI",
+  "moreFor": "Več možnosti: {name}",
+  "rename": "Preimenuj",
+  "moveLeft": "Premakni levo",
+  "moveRight": "Premakni desno",
+  "delete": "Izbriši",
+  "sections": {
+    "vans": "FOOD TRUCKI",
+    "prices": "CENE",
+    "itemPrices": "CENE ARTIKLOV",
+    "service": "POSTREŽBA"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Na {mins} min",
+  "noTypes": "Še nimate nobenega tipa dogodka, zato vsi dogodki uporabljajo vašo običajno nastavitev.",
+  "renameTitle": "Preimenuj ta tip",
+  "name": "Ime",
+  "cancel": "Prekliči",
+  "save": "Shrani",
+  "copyVanOne": "Kopiraj nastavitve: Food truck 1",
+  "thisType": "ta tip",
+  "matchTitle": "Želite „{name}“ uskladiti s tipom Standardni?",
+  "matchKeeps": "Vse, kar ste spremenili na nadzorni plošči posameznega dogodka, ostane, kot je, cene tega tipa pa se ne spremenijo.",
+  "matchWillUse": "Nastavitev bo: {summary}",
+  "deleteTitle": "Želite izbrisati „{name}“?",
+  "deleteBody": "{n, plural, =0 {Noben prihajajoči dogodek ne uporablja tipa „{name}“.} one {{count} prihajajoči dogodek uporablja tip „{name}“. Vrnil se bo na tip Standardni.} two {{count} prihajajoča dogodka uporabljata tip „{name}“. Vrnila se bosta na tip Standardni.} few {{count} prihajajoči dogodki uporabljajo tip „{name}“. Vrnili se bodo na tip Standardni.} other {{count} prihajajočih dogodkov uporablja tip „{name}“. Vrnili se bodo na tip Standardni.}} Vse, kar ste spremenili na posameznem dogodku, ostane, kot je.",
+  "keep": "Obdrži",
+  "phone": {
+    "standardTag": "Standardni",
+    "defaultTag": "privzeto",
+    "vanSetup": "Običajna nastavitev tega food trucka — velja za vse dogodke brez tipa.",
+    "standardSetup": "Vaša običajna nastavitev — velja za vse dogodke brez tipa.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} prihajajoči dogodek} two {{upcomingCount} prihajajoča dogodka} few {{upcomingCount} prihajajoči dogodki} other {{upcomingCount} prihajajočih dogodkov}} · {changed, plural, =0 {še nič spremenjenega} one {spremenjeno: {changedCount} od {total}} two {spremenjeno: {changedCount} od {total}} few {spremenjeno: {changedCount} od {total}} other {spremenjeno: {changedCount} od {total}}}",
+    "noMenuItems": "Na jedilniku še ni artiklov — dodajte jih v Jedilnik › Artikli."
+  },
+  "newType": {
+    "title": "Nov tip dogodka",
+    "namePlaceholder": "npr. Šolska prireditev",
+    "help": "Tapnite ime ali vpišite svoje. Tip se začne kot kopija tipa Standardni in poznejše spremembe tipa Standardni nanj ne vplivajo. Nato spremenite, kar želite.",
+    "create": "Ustvari",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Gostilna",
+      "market": "Tržnica",
+      "privateHire": "Najem food trucka"
+    }
+  },
+  "select": {
+    "label": "Tip dogodka",
+    "usual": "Za to lokacijo je običajen tip: {name}."
+  },
+  "summary": {
+    "normalSetup": "Vaša običajna nastavitev",
+    "sameAsStandard": "Enako kot Standardni",
+    "buzzersOn": "pozivniki vklopljeni",
+    "buzzersOff": "pozivniki izklopljeni",
+    "takeCashOn": "gotovina vklopljena",
+    "takeCashOff": "gotovina izklopljena",
+    "markReadyOn": "korak „Pripravljeno“ vklopljen",
+    "markReadyOff": "korak „Pripravljeno“ izklopljen",
+    "collectionEvery": "prevzem na {mins} min",
+    "offlineOff": "zaščita brez povezave izklopljena",
+    "offlineKeepTaking": "brez povezave: naročila se še sprejemajo",
+    "offlinePause": "brez povezave: naročanje se ustavi"
+  },
+  "errors": {
+    "somethingWentWrong": "Prišlo je do napake",
+    "couldNotLoad": "Nalaganje ni uspelo",
+    "couldNotSave": "Shranjevanje ni uspelo",
+    "noVans": "V tem računu ni food truckov, ki bi jih lahko spremenili."
+  }
+}

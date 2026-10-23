@@ -1,0 +1,10 @@
+{
+  "download": "Stáhnout obrázek",
+  "copied": "Zkopírováno ✓",
+  "copyCaption": "Kopírovat popisek",
+  "share": "Sdílet",
+  "copiedStatus": "{kind, select, postText {Text příspěvku zkopírován.} other {Popisek zkopírován.}}",
+  "copyFailed": "Nepodařilo se zkopírovat — označte text a zkopírujte ho ručně.",
+  "sharedStatus": "{kind, select, postText {Text příspěvku zkopírován — vložte ho do příspěvku.} other {Popisek zkopírován — vložte ho do příspěvku.}}",
+  "shareRefused": "{kind, select, postText {Sdílení bylo odmítnuto, proto se obrázek stáhl. Text příspěvku zkopírován.} other {Sdílení bylo odmítnuto, proto se obrázek stáhl. Popisek zkopírován.}}"
+}

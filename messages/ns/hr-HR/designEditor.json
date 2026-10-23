@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Naslov tjedna",
+    "weekHeadingSample": "Tjedan od …",
+    "daysSample": "{first} – {last}",
+    "date": "Datum",
+    "place": "Lokacija",
+    "venue": "Mjesto",
+    "area": "Područje",
+    "time": "Vrijeme",
+    "rows": "Retci",
+    "rowsSample": "razmak {px} px · {first} – {last}",
+    "ownText": "Vlastiti tekst",
+    "noteTokenSample": "Napomena koju upišete pri izradi objave",
+    "nothingYet": "Još ništa",
+    "thisBox": "ovaj okvir"
+  },
+  "sample": {
+    "venue": "Konoba na Trgu",
+    "area": "Zadar"
+  },
+  "bar": {
+    "previewWith": "Pregled s",
+    "undo": "Poništi",
+    "undoTitle": "Poništi (⌘Z)",
+    "redo": "Ponovi",
+    "redoTitle": "Ponovi (⇧⌘Z)",
+    "cancel": "Odustani",
+    "saving": "Spremanje…",
+    "save": "Spremi dizajn"
+  },
+  "grid": {
+    "eachRow": "Svaki redak",
+    "placeOff": "Naziv lokacije nalazi se na vašoj slici – HatchGrab ga neće dodati."
+  },
+  "background": {
+    "uploading": "Učitavanje…",
+    "replace": "Zamijeni sliku",
+    "shape": {
+      "square": "Kvadrat (1:1)",
+      "portrait45": "Uspravno (4:5)",
+      "portrait916": "Uspravno (9:16)",
+      "landscape169": "Položeno (16:9)",
+      "portrait": "Uspravno",
+      "landscape": "Položeno"
+    }
+  },
+  "scope": {
+    "title": "Položaji teksta",
+    "standard": "Isti položaji kao Standard",
+    "own": "Vlastiti položaji za lokaciju {place}",
+    "locked": "Ovi položaji dolaze iz vašeg dizajna Standard. Odaberite „Vlastiti položaji za lokaciju {place}“ kako biste ih pomaknuli samo ovdje."
+  },
+  "stage": {
+    "hint": "Povucite okvir da ga pomaknete · povucite kut da promijenite veličinu",
+    "zoomOut": "Smanji prikaz",
+    "zoomIn": "Povećaj prikaz"
+  },
+  "rows": {
+    "spacing": "Razmak",
+    "daysRun": "Dani: {first} – {last}. Tri okvira 1. retka kopiraju se prema dolje za ovaj razmak.",
+    "whichEvents": "Koji događaji",
+    "showCancelled": "Prikaži otkazane događaje",
+    "showCancelledHint": "Otkazani događaj prikazuje prekriženu lokaciju i riječ OTKAZANO. Kad je isključeno, dan se prikazuje kao neradni."
+  },
+  "days": {
+    "reorder": "Promijeni redoslijed",
+    "move": "pomakni"
+  },
+  "picture": {
+    "picture": "Slika",
+    "fill": "Ispuni okvir",
+    "fit": "Prilagodi okviru",
+    "corners": "Kutovi",
+    "square": "Ravni",
+    "rounded": "Zaobljeni",
+    "ifMissing": "Ako lokacija nema sliku",
+    "noPicture": {
+      "omit": "Izostavi je",
+      "blank": "Ostavi prazan prostor",
+      "logo": "Prikaži svoj logotip"
+    },
+    "border": "Obrub",
+    "drawBorder": "Nacrtaj obrub",
+    "drawBorderHint": "Linija oko slike, u boji po vašem izboru.",
+    "borderWidth": "Debljina obruba",
+    "cornerRadius": "Zaobljenost kutova",
+    "locationPictures": "Slike lokacija",
+    "addLocationPictures": "+ Dodaj slike lokacija",
+    "allHaveImage": "{total, plural, =0 {Još nemate nijednu lokaciju.} one {Svaka vaša lokacija ima sliku (ukupno #).} few {Svaka vaša lokacija ima sliku (ukupno #).} other {Svaka vaša lokacija ima sliku (ukupno #).}}",
+    "someWithout": "{without} od {total, plural, one {# lokacije} few {# lokacije} other {# lokacija}} {without, plural, one {još nema sliku} few {još nemaju sliku} other {još nema sliku}}"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Boja",
+    "textColour": "Boja teksta",
+    "ownStyleNote": "{count, plural, one {{names} ima vlastiti stil, pa se ne mijenja.} few {{names} imaju vlastiti stil, pa se ne mijenjaju.} other {{names} imaju vlastiti stil, pa se ne mijenjaju.}}",
+    "matchAgain": "Ponovno uskladi",
+    "matchName": "Uskladi s: {name}",
+    "lastToggle": "{kind, select, weekly {Ostavite uključeno barem Lokaciju ili Vrijeme. Otkazani događaj prikazuje prekriženu lokaciju i riječ OTKAZANO, pa kad bi oboje bilo isključeno, ništa ne bi pokazivalo da je otkazan.} other {Ostavite uključeno barem Mjesto ili Vrijeme. Otkazani događaj prikazuje prekriženu lokaciju i riječ OTKAZANO, pa kad bi oboje bilo isključeno, ništa ne bi pokazivalo da je otkazan.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} – ovaj font ima pravi kurziv"
+  },
+  "align": {
+    "left": "Lijevo",
+    "centre": "Sredina",
+    "right": "Desno"
+  },
+  "effects": {
+    "outlineColour": "Boja obruba",
+    "bandColour": "Boja trake",
+    "bandDaysOff": "Traka na neradne dane",
+    "bandCancelled": "Traka kad je događaj otkazan",
+    "bandDaysOffHint": "Koristi se umjesto gornje trake na dan bez rada.",
+    "bandCancelledHint": "Koristi se umjesto gornje trake kad je događaj otkazan."
+  },
+  "more": {
+    "dayOwnLine": "Dan u zasebnom retku",
+    "dayOwnLineHint": "Dan u tjednu iznad datuma. Samo za datum.",
+    "noEventDay": "Na dan bez događaja",
+    "wordsBeforePlaceholder": "npr. Nađite nas",
+    "neverHyphenate": "Jedna duga riječ bez razmaka uvijek se smanjuje – naziv lokacije nikad ne rastavljamo na slogove."
+  },
+  "bits": {
+    "less": "Manje",
+    "more": "Više",
+    "chooseColourFor": "{label} – odaberite bilo koju boju",
+    "chooseColour": "Odaberite bilo koju boju"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Domovská stránka HatchGrab",
+  "cta": "Nahrať jedálny lístok →",
+  "ctaShort": "Nahrať lístok",
+  "features": "Funkcie",
+  "pricing": "Ceny",
+  "logIn": "Prihlásiť sa",
+  "country": {
+    "button": "Krajina: {name}. Zmeniť krajinu",
+    "menu": "Krajina"
+  }
+}

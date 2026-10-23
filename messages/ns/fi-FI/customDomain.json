@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Lisää aikataulusi verkkosivuillesi",
+    "live": "<addr>{address}</addr> näyttää aikataulusi.",
+    "create": "Luomme osoitteeseen <addr>{address}</addr> sivun, joka näyttää aikataulusi.",
+    "exampleDomain": "ruokarekkasi.fi",
+    "liveBadge": "Käytössä",
+    "setUp": "Ota käyttöön",
+    "viewSetup": "Näytä asetukset",
+    "continue": "Jatka",
+    "justLive": "<b>{address}</b> toimii. Katso se ja vahvista sitten alla, että se on oikein."
+  },
+  "waiting": {
+    "title": "Odotamme osoitetta {address}",
+    "bodySince": "Teit asetukset {date}. Uudet verkko-osoitteet alkavat yleensä toimia muutamassa minuutissa, ja joskus kestää jopa 24 tuntia, ennen kuin ne näkyvät kaikille — sillä välin sinun ei tarvitse tehdä mitään. Jos joku muu lisäsi rivin puolestasi, kannattaa tarkistaa, että hän teki sen.",
+    "body": "Uudet verkko-osoitteet alkavat yleensä toimia muutamassa minuutissa, ja joskus kestää jopa 24 tuntia, ennen kuin ne näkyvät kaikille — sillä välin sinun ei tarvitse tehdä mitään. Jos joku muu lisäsi rivin puolestasi, kannattaa tarkistaa, että hän teki sen."
+  },
+  "ready": {
+    "title": "{address} on käytössä",
+    "body": "Katso se ja vahvista sitten asetuksissasi, että se on oikein."
+  },
+  "confirm": {
+    "heading": "Katso ja vahvista, että se on oikein",
+    "open": "Avaa <link>{address}</link>",
+    "checkTimes": "Tarkista, että päivämäärät ja kellonajat ovat oikein.",
+    "yes": "Kyllä, se näyttää oikealta",
+    "no": "Ei, siinä on ongelma",
+    "problemLine": "Kerro, mitä näet, niin selvitämme asian.",
+    "emailUs": "Lähetä sähköpostia",
+    "mailSubject": "Ongelma osoitteessa {address}",
+    "mailLiveSince": "Käytössä {date} alkaen",
+    "mailSeeing": "Mitä näen:"
+  },
+  "confirmed": {
+    "heading": "Kiitos — merkitty.",
+    "body": "Muuta tehtävää ei ole."
+  },
+  "turnOff": {
+    "link": "Poista käytöstä",
+    "heading": "Poistetaanko oma verkko-osoitteesi käytöstä?",
+    "stops": "Tämä lakkaa toimimasta:",
+    "carriesOn": "Tämä jatkaa täsmälleen ennallaan, ja QR-koodisi ohjaa ihmiset tänne:",
+    "reAdd": "Jos aiot ottaa sen myöhemmin uudelleen käyttöön, jätä verkko-osoitteesi palveluntarjoajalle lisäämäsi rivi paikalleen. Jos et aio, pyydä heitä poistamaan se.",
+    "cancel": "Pidä käytössä",
+    "confirm": "Poista käytöstä",
+    "working": "Poistetaan käytöstä…",
+    "failed": "Emme voineet poistaa sitä käytöstä juuri nyt. Mitään ei muuttunut — osoitteesi toimii edelleen. Yritä hetken päästä uudelleen."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Asetuksiasi ei voitu ladata.",
+    "resumeFailedBody": "Mitään ei muuttunut. Yritä hetken päästä uudelleen.",
+    "close": "Sulje",
+    "resuming": "Jatketaan siitä, mihin jäit…",
+    "genericError": "Jokin meni vikaan",
+    "saveFailed": "Tallennus epäonnistui"
+  },
+  "address": {
+    "intro": "Aikataulusi saa oman verkko-osoitteen.",
+    "question": "Mikä on verkko-osoitteesi?",
+    "hint": "Se, jolla ihmiset jo löytävät sinut.",
+    "aria": "Oma verkko-osoitteesi",
+    "willBe": "Osoitteesi on <addr>{address}</addr>",
+    "example": "Esimerkiksi <addr>{address}</addr>",
+    "noChange": "Verkkosivusi eivät muutu — lisäät niihin vain linkin uuteen osoitteeseen.",
+    "notSetUp": "Emme ole ottaneet tätä käyttöön.",
+    "restricted": "Verkko-osoitteesi ylläpitäjän on annettava meidän ottaa käyttöön riippulukko — pieni lukko, jonka asiakkaat näkevät osoitteen vieressä. Ennen kuin he lisäävät meidät, lukko ei näy, joten keskeytimme sen sijaan, että jättäisimme sinut odottamaan. Pyydä heitä lisäämään meidät ja yritä sitten uudelleen.",
+    "blocked": "Verkko-osoitteesi estää tällä hetkellä riippulukon kokonaan. Osoitteen ylläpitäjän on sallittava se, jotta tämä voi toimia. Pyydä heitä muuttamaan asetusta ja yritä sitten uudelleen.",
+    "elsewhere": "Osoitteessa vastaa jo jokin muu. Lähetä seuraavan näkymän viesti osoitteen ylläpitäjälle — hän tietää, mitä tehdä.",
+    "provider": "Verkko-osoitettasi ylläpitää <b>{provider}</b>. Näytämme, minne mennä.",
+    "provisionFailed": "Emme voineet ottaa osoitetta käyttöön.",
+    "willNotWork": "Tämä osoite ei toimi.",
+    "couldNotBeSetUp": "Osoitetta ei voitu ottaa käyttöön.",
+    "couldNotSetUp": "Käyttöönotto epäonnistui",
+    "checking": "Tarkistetaan…",
+    "setting": "Otetaan käyttöön…",
+    "tryAgain": "Yritä uudelleen",
+    "setUpAddress": "Ota osoite käyttöön",
+    "notNow": "Ei nyt"
+  },
+  "apex": {
+    "empty": "Kirjoita osoite, jota haluat käyttää.",
+    "not_a_domain": "Tämä ei näytä verkko-osoitteelta.",
+    "unparseable": "Emme pystyneet tulkitsemaan tätä verkko-osoitteeksi. Tarkista kirjoitusasu ja yritä uudelleen.",
+    "apex": "{host} on verkkosivustosi koko osoite. Jos ohjaat sen meille, tämä sivu korvaa verkkosivustosi. Lisää sen sijaan sana eteen — esimerkiksi tapahtumat.{host}.",
+    "too_deep": "Osoitteessa on liian monta osaa. Esimerkiksi tapahtumat.{domain} toimii parhaiten."
+  },
+  "record": {
+    "addAt": "Lisää tämä palvelussa {provider}",
+    "open": "Avaa {provider}",
+    "guide": "Palvelun {provider} oma ohje tähän",
+    "addAtSave": "Lisää tämä palvelussa {provider} ja tallenna.",
+    "addSomewhere": "Lisää tämä siellä, missä verkko-osoitettasi ylläpidetään, ja tallenna.",
+    "hintChoose": "Valitse tämä luettelosta.",
+    "hintWord": "Vain tämä sana, ei koko osoitetta.",
+    "hintExact": "Kopioi tämä täsmälleen.",
+    "timing": "Se alkaa yleensä toimia tunnin kuluessa, mutta voi kestää kauemmin. Tätä sivua ei tarvitse pitää auki.",
+    "someoneElse": "Ylläpitääkö verkko-osoitettasi joku muu?",
+    "sentTo": "Lähetetty osoitteeseen {email}",
+    "emailPlaceholder": "hänen sähköpostiosoitteensa",
+    "sending": "Lähetetään…",
+    "send": "Lähetä nämä tiedot",
+    "sendFailed": "Lähetys epäonnistui"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Avaa verkko-osoitteesi ja sitten ”DNS” ja ”Records”.",
+      "add": "Valitse ”Add record” ja valitse sitten kohtaan ”Type” ”CNAME”.",
+      "name": "Kirjoita alla oleva ensimmäinen arvo kenttään ”Name”.",
+      "value": "Kirjoita alla oleva toinen arvo kenttään ”Target”.",
+      "proxy": "Aseta ”Proxy status” arvoon ”DNS only” — sen vieressä olevan pilven on oltava harmaa, ei oranssi.",
+      "save": "Jätä ”TTL” arvoon ”Auto” ja valitse ”Save”.",
+      "caveat": "Jos pilvi jää oranssiksi, riippulukko ei koskaan tule näkyviin, eikä mikään kerro miksi."
+    },
+    "godaddy": {
+      "open": "Avaa ”Domain Portfolio” ja valitse verkko-osoitteesi.",
+      "dns": "Valitse ”Domain Settings” -sivulla ”DNS”.",
+      "add": "Valitse ”Add New Record” ja valitse sitten ”Type”-valikosta ”CNAME”.",
+      "name": "Kirjoita alla oleva ensimmäinen arvo kenttään ”Name”.",
+      "value": "Kirjoita alla oleva toinen arvo kenttään ”Value”.",
+      "save": "Jätä ”TTL” ennalleen ja valitse ”Save”.",
+      "caveat": "Jos lisäsit useamman kerralla, painikkeessa lukee ”Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Kirjaudu palveluun ”123 Reg Control Panel”.",
+      "manage": "Valitse ”Domains”-kohdan vierestä ”Manage All” ja valitse sitten verkko-osoitteesi.",
+      "dns": "Valitse ”DNS” ja sitten ”Add New Record”.",
+      "type": "Valitse ”Type”-luettelosta ”CNAME”.",
+      "name": "Kirjoita alla oleva ensimmäinen arvo kenttään ”Name”.",
+      "value": "Kirjoita alla oleva toinen arvo kenttään ”Value” ja lisää sen loppuun piste.",
+      "save": "Jätä ”TTL” arvoon ”Default” ja napsauta ”Save”.",
+      "caveat": "123 Reg vaatii pisteen toisen arvon loppuun, muuten se ei toimi."
+    },
+    "wix": {
+      "open": "Avaa ”Domains” ja napsauta sitten verkko-osoitteesi vieressä olevaa ”Domain Actions” -kuvaketta.",
+      "manage": "Valitse ”Manage DNS Records”.",
+      "add": "Napsauta ”CNAME (Aliases)” -osiossa ”+ Add Record” ja sitten ”Got it”.",
+      "name": "Kirjoita alla oleva ensimmäinen arvo kenttään ”Host Name”.",
+      "value": "Kirjoita alla oleva toinen arvo kenttään ”Value”.",
+      "save": "Napsauta ”Save” ja sitten ponnahdusikkunassa ”Save Changes”.",
+      "caveat": "Jos verkko-osoitteesi vain ohjaa Wixiin eikä ole rekisteröity siellä, Wix ei voi tehdä tätä muutosta — sen täytyy tehdä osoitteen haltijan."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Yksi lisättävä tietue aikataulusivua varten — {truckName}",
+    "hello": "Hei,",
+    "introAt": "Julkaisemme ruokarekkamme {truckName} ajantasaisen aikataulun osoitteessa {address}, ja sitä varten verkkotunnukseemme on lisättävä yksi tietue palvelussa {provider}.",
+    "introHolder": "Julkaisemme ruokarekkamme {truckName} ajantasaisen aikataulun osoitteessa {address}, ja sitä varten verkkotunnukseemme on lisättävä yksi tietue siellä, missä verkkotunnustamme ylläpidetään.",
+    "stepsAt": "Palvelussa {provider}:",
+    "guide": "Palvelun oma ohje: {url}",
+    "wholeChange": "Siinä on koko muutos — mikään muu verkkosivuilla ei muutu, ja verkkotunnuksemme muut osat toimivat täsmälleen kuten nyt. Se alkaa yleensä toimia tunnin kuluessa.",
+    "pointsAt": "Sivu, johon tietue osoittaa, näyttää, missä myymme seuraavaksi, ja päivittyy itsestään.",
+    "replyTo": "Vastaa osoitteeseen {email}, jos sinulla on kysyttävää.",
+    "thanks": "Kiitos,"
+  },
+  "liveEmail": {
+    "subject": "{address} toimii",
+    "goodNews": "Hyviä uutisia — {address} toimii.",
+    "body": "Aikataulusi näkyy nyt omassa osoitteessasi. Katso se ja tarkista, että se on oikein: avaa {address} ja varmista, että tapahtumat ovat sinun ja päivämäärät ovat oikein.",
+    "confirm": "Kun olet tehnyt sen, avaa asetuksesi HatchGrabissa ja vahvista, että se on oikein. Mikään ei riipu siitä — näin vain tiedämme, että joku on nähnyt sen."
+  }
+}

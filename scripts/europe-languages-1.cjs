@@ -155,6 +155,9 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
 
   // ══ 2 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · COUNTRIES SWITCHED ON (fixture) — the landing page in the language, native prices, hreflang, sitemap')
+  // europe-languages-2: prices are the APP's money formatter (lib/money-format.ts), not raw Intl — the registry overrides Intl
+  // where a country writes its currency differently (RON's "lei", never ro-RO Intl's "RON"; HUF's Stripe decimals).
+  const MF = await kit.bundle('el1-money', "export * from '@/lib/money-format'")
   const pp = Object.fromEntries(EF.sqlRows().prices.map(p => [`${p.country_code}|${p.plan_key}`, p]))
   const ldOf = html => { const m = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html || ''); return m ? JSON.parse(m[1]) : null }
   const langsOf = m => Object.fromEntries(Object.entries(m?.alternates?.languages || {}).map(([k, v]) => [k, String(v).replace('https://www.hatchgrab.com', '')]))
@@ -165,7 +168,7 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
     const tx = text(P.html), M = flat(messagesOf(l))
     // "No English left": no en-GB sentence of the page's own namespaces (where the language's words differ) is on the page.
     const leftovers = Object.entries(flat(EN)).filter(([k, v]) => /^(landing|landingNav|landingFooter|pricing|planTable|siteFooter)\./.test(k) && v.length >= 14 && !/[{<]/.test(v) && M[k] !== v && tx.includes(v)).map(([k]) => k)
-    const fmt = minor => new Intl.NumberFormat(row.locale, { style: 'currency', currency: row.currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(minor / 100).replace(/[  ]/g, ' ')
+    const fmt = minor => MF.formatWholeAmount(minor, { currency: row.currency, locale: row.locale }).replace(/[  ]/g, ' ')
     const pro = fmt(pp[`${cc}|pro`].monthly_minor), unl = fmt(pp[`${cc}|unlimited`].monthly_minor)
     t(`/${seg} (${cc}, ${l}): renders in the language («${M['landingNav.logIn']}»), no en-GB sentence left, prices ${pro} / ${unl} from the rows`,
       !!P.html && !P.redirectedTo && tx.includes(M['landingNav.logIn']) && leftovers.length === 0 && tx.includes(pro) && tx.includes(unl), { redirect: P.redirectedTo, leftovers: leftovers.slice(0, 8), seen: tx.match(/(CHF|kr\.?|€)\s?\d[\d.,']*|\d[\d.,' ]*\s?(€|kr\.?)/g)?.slice(0, 8) })
@@ -223,7 +226,7 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
       const M = flat(messagesOf(L.base))
       const allergenReply = Object.entries(M).filter(([k]) => /^whatsappCustomer\./.test(k) && /allerg/i.test(k)).map(([, v]) => v.replace(/\{[^}]*\}/g, '').slice(0, 25))
       t(`${L.lang}: WhatsApp, "${L.safety[0]}" → the fixed allergen reply in the language, never the AI's menu answer`, mid - before <= 1 && allergenReply.some(s => (a.reply ?? '').includes(s.trim())), { reply: a.reply, calls: mid - before })
-      const price = new Intl.NumberFormat(row.locale, { style: 'currency', currency: row.currency }).format(12).replace(/[  ]/g, ' ')
+      const price = MF.formatMajor(12, { currency: row.currency, locale: row.locale }).replace(/[  ]/g, ' ')
       t(`${L.lang}: WhatsApp, "${L.plain[1]}" → answered on the menu path (classifier and menu AI asked; offline here, so the summary with ${price}), not the allergen reply`,
         aiCalls - mid === 2 && String(p.reply ?? '').replace(/[  ]/g, ' ').includes(price), { reply: p.reply, calls: aiCalls - mid })
     }
@@ -232,7 +235,6 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
   // ══ 4 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · NUMBERS — the separator from Intl; Swiss German writes a point')
   const D = await kit.bundle('el1-decimal', "export * from '@/lib/decimal-input'")
-  const MF = await kit.bundle('el1-money', "export * from '@/lib/money-format'")
   for (const L of BUILT) for (const l of new Set([L.base, ...Object.values(L.countries)])) {
     const row = rowsOn.find(r => r.locale === l) ?? { currency: 'EUR' }
     const comma = new Intl.NumberFormat(l).formatToParts(1.5).find(p => p.type === 'decimal').value === ','
@@ -253,10 +255,10 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
   // ══ 5 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('5 · THE NOT RUN SQL — short names in each language; switched off')
   for (const f of SHORT_SQL) {
-  const sql = read(f)
-  t(`${f.replace(/^.*\/(\d+)_.*$/, '$1')}: one begin/commit, only short_name updates, each guarded by enabled = false; the language\'s own name for each built country',
-    (sql.match(/\bbegin;/g) || []).length === 1 && (sql.match(/\bcommit;/g) || []).length === 1 && !/\b(insert|delete|alter|drop)\b/i.test(sql.replace(/--[^\n]*/g, ''))
-    && [...sql.matchAll(/^update [^\n]+$/gm)].every(m => /set short_name = '[^']+'\s+where country_code = '[A-Z]{2}' and enabled = false;$/.test(m[0])) && ON.every(cc => !!SHORT[cc]), SHORT)
+    const sql = read(f)
+    t(`${f.replace(/^.*\/(\d+)_.*$/, '$1')}: one begin/commit, only short_name updates, each guarded by enabled = false; the language's own name for each built country`,
+      (sql.match(/\bbegin;/g) || []).length === 1 && (sql.match(/\bcommit;/g) || []).length === 1 && !/\b(insert|delete|alter|drop)\b/i.test(sql.replace(/--[^\n]*/g, ''))
+      && [...sql.matchAll(/^update [^\n]+$/gm)].every(m => /set short_name = '[^']+'\s+where country_code = '[A-Z]{2}' and enabled = false;$/.test(m[0])) && ON.every(cc => !!SHORT[cc]), SHORT)
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} europe-languages-1: ${pass} passed, ${fail} failed`)

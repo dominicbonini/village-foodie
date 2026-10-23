@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "A apărut o problemă",
+    "previewFailed": "Previzualizarea nu a putut fi generată",
+    "loadFailed": "Nu s-a putut încărca",
+    "tooBig": "Imaginea are {size, number, ::.0 group-off} MB. Limita este de 10 MB.",
+    "wrongType": "Alegeți un fișier PNG sau JPG.",
+    "uploadIncomplete": "Încărcarea nu s-a finalizat",
+    "uploadFailed": "Încărcarea a eșuat",
+    "saveFailed": "Nu s-a putut salva",
+    "buildFailed": "Postarea nu a putut fi generată",
+    "copyFailed": "Nu s-a putut copia — selectați textul și copiați-l manual."
+  },
+  "loading": "Se încarcă…",
+  "missingTable": {
+    "title": "Postarea săptămânală necesită o actualizare a bazei de date",
+    "body": "Tabelul pentru design-uri nu a fost creat încă. După aplicarea migrării, acest ecran va funcționa."
+  },
+  "kind": {
+    "label": "Ce design",
+    "event": "Un singur eveniment",
+    "week": "Săptămânal"
+  },
+  "setup": {
+    "title": "Configurați postarea săptămânală",
+    "intro": "Încărcați versiunea goală a graficului cu programul săptămânal pe care îl faceți deja — același design, fără casetele dumneavoastră de text. HatchGrab completează săptămâna din programul dumneavoastră.",
+    "canvaTitle": "Cum exportați o versiune goală din Canva",
+    "canvaStep1": "Deschideți designul obișnuit pentru programul săptămânal.",
+    "canvaStep2": "Ștergeți casetele de text cu datele, locurile și orele — lăsați fundalul și titlurile pe care doriți să le păstrați.",
+    "canvaStep3": "Partajați › Descărcați › PNG.",
+    "uploading": "Se încarcă…",
+    "upload": "Încărcați imaginea goală",
+    "uploadHint": "PNG sau JPG, până la 10 MB, de cel puțin {px} px pe latura scurtă.",
+    "phoneTip": "Funcționează cel mai bine pe computer sau iPad — pe telefon, casetele sunt prea mici pentru a fi trase.",
+    "designName": "Design pentru postarea săptămânală",
+    "backDesigns": "‹ Design-uri",
+    "back": "‹ Înapoi",
+    "pictureNote": "Imaginea dumneavoastră, fără date sau locuri pe ea. Pe acestea le adăugăm noi.",
+    "saved": "Designul a fost salvat."
+  },
+  "week": {
+    "this": "Săptămâna aceasta",
+    "next": "Săptămâna viitoare"
+  },
+  "post": {
+    "title": "Postarea săptămânală",
+    "editDesign": "Editați designul",
+    "weekOf": "săpt. din {date}",
+    "imageAlt": "Postarea dumneavoastră săptămânală",
+    "building": "Se generează postarea…",
+    "updating": "Se actualizează…",
+    "eventsTitle": "Evenimentele săptămânii",
+    "noEvents": "Niciun eveniment săptămâna aceasta.",
+    "eventDateCancelled": "{date} · anulat",
+    "showCancelled": "Afișați evenimentele anulate",
+    "showPrivate": "Afișați evenimentele private",
+    "privateHint": "Apar ca „Eveniment privat”, cu data și orele — niciodată cu locul.",
+    "noteTitle": "Notă",
+    "notePlaceholder": "ex.: Precomandă pentru ridicare",
+    "noteHint": "Apare în descriere și în caseta de notă, dacă ați plasat una.",
+    "captionTitle": "Descriere pentru pagina dumneavoastră",
+    "perEventTitle": "Postare pentru fiecare eveniment",
+    "nothingToPost": "Nimic de postat săptămâna aceasta.",
+    "textCopied": "Text copiat.",
+    "copyText": "Copiați textul",
+    "image": "Imagine",
+    "share": "Distribuiți",
+    "noOrderLink": "Încă nu există un link de comandă — setați adresa web a food truck-ului în Setări."
+  }
+}

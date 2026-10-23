@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresa",
+    "postcode": "Poštanski broj",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "Poštanski broj",
+    "state": "Savezna država",
+    "stateTerritory": "Savezna država ili teritorij",
+    "province": "Pokrajina",
+    "county": "Okrug",
+    "area": "Mjesto (selo ili grad)",
+    "townOrArea": "Grad ili mjesto",
+    "city": "Grad",
+    "suburb": "Četvrt",
+    "townOrCity": "Grad"
+  },
+  "short": {
+    "area": "Mjesto",
+    "townOrArea": "Grad ili mjesto",
+    "city": "Grad",
+    "suburb": "Četvrt",
+    "townOrCity": "Grad"
+  },
+  "inSentence": {
+    "postcode": "poštanski broj",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "poštanski broj"
+  },
+  "withArticle": {
+    "postcode": "poštanski broj",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "poštanski broj"
+  },
+  "tradeLabel": {
+    "area": "Grad",
+    "townOrArea": "Grad ili mjesto",
+    "city": "Grad",
+    "suburb": "Četvrt",
+    "townOrCity": "Grad"
+  },
+  "basedIn": {
+    "area": "Grad u kojem je vaše sjedište",
+    "townOrArea": "Grad ili mjesto u kojem je vaše sjedište",
+    "city": "Grad u kojem je vaše sjedište",
+    "suburb": "Četvrt u kojoj je vaše sjedište",
+    "townOrCity": "Grad u kojem je vaše sjedište"
+  },
+  "example": "npr. {example}",
+  "customersSee": "Kupci vide:",
+  "postalWarning": "To ne izgleda kao {article} – na primjer {example}. Svejedno ga možete spremiti.",
+  "regionChoose": "Odaberite…"
+}

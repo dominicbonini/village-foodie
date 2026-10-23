@@ -1,0 +1,31 @@
+{
+  "intro": "A Kezelés részben állíthatja be a food truckját, és itt látja, hogyan teljesít. A Vezérlőpulton veszi fel a rendeléseket, és itt viszi végig az egyes eseményeket, ahogy zajlanak.",
+  "ariaLabel": "Vezérlőpult-bemutató",
+  "step": "{current}/{total}",
+  "skip": "Kihagyás",
+  "back": "← Vissza",
+  "next": "Tovább →",
+  "done": "Kész",
+  "stops": {
+    "menu": {
+      "title": "Étlap",
+      "body": "Ételei, árai és allergénjei. Bármit módosít itt, azonnal élesbe kerül."
+    },
+    "schedule": {
+      "title": "Menetrend",
+      "body": "Hol és mikor árusít. Vegyen fel itt egy eseményt, és a vásárlók rendelhetnek rá."
+    },
+    "build": {
+      "title": "Menük, valamint Extrák és ráajánlások",
+      "body": "A menük, a ráajánlások, a testreszabások és a konyhai kapacitás az Étlap alatt találhatók — nyugodtan próbálgassa őket."
+    },
+    "settings": {
+      "title": "Beállítások",
+      "body": "A food truckja adatai és a vásárlók fizetési módjai."
+    },
+    "billing": {
+      "title": "Számlázás",
+      "body": "Itt találja a csomagjával, a számlázással és a funkciókkal kapcsolatos információkat."
+    }
+  }
+}

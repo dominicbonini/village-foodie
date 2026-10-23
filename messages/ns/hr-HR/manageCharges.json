@@ -1,0 +1,30 @@
+{
+  "heading": "Porez, napojnice i naknade",
+  "rate": {
+    "label": "Stopa poreza na promet",
+    "hint": "Stopa koju obračunavate na svaku narudžbu. Kupci je vide dodanu pri plaćanju, na računima i na listićima.",
+    "regionDefault": "Ostavite prazno da se primijeni {label} od {rate} %, stopa za pripremljenu hranu ({region})."
+  },
+  "included": {
+    "label": "{label} uključen u cijene",
+    "hint": "Vaše cijene već uključuju {label}. Ova stopa samo pokazuje koliki dio svake cijene čini {label}, na računima i listićima – pri plaćanju se ništa ne dodaje.",
+    "default": "Ostavite prazno da se primijeni stopa od {rate} % ({label}) za toplu hranu za van ({country})."
+  },
+  "tips": {
+    "label": "Napojnice",
+    "hint": "Kupci koji plaćaju online karticom mogu dodati napojnicu. Sve ide vama.",
+    "choices": "Mogućnosti koje kupci vide:",
+    "chip": "{rate} %",
+    "other": "Drugi iznos"
+  },
+  "fee": {
+    "label": "Naknada za online uslugu",
+    "hint": "Dodaje se samo online narudžbama. Nikad narudžbama s plaćanjem pri preuzimanju ni narudžbama na licu mjesta. Zadržavate je vi.",
+    "pctAria": "Postotak naknade za uslugu",
+    "fixedAria": "Fiksni iznos naknade za uslugu",
+    "max": "Najviše što možete naplatiti: {max}",
+    "example": "Kupci je vide prije plaćanja, u jednom retku: „{label} {amount}“.",
+    "hatchgrab": "HatchGrab online narudžbama vaših kupaca dodaje naknadu za uslugu od {fee}. Vi je ne plaćate i ne možete je promijeniti."
+  },
+  "saveFailed": "Spremanje nije uspjelo – pokušajte ponovno."
+}

@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Šim e-pastam nav atteikšanās rindas, tāpēc to nevar nosūtīt. Lai to pievienotu, izmantojiet “Insert opt-out”.",
+    "notSetUp": "Nav iestatīts atteikšanās teikums, tāpēc nevienu uzrunas e-pastu nevar nosūtīt. Pievienojiet to cilnes “Templates” panelī “Signature”.",
+    "notLoaded": "Atteikšanās teikums vēl nav ielādēts, tāpēc šo nevar nosūtīt.",
+    "unreadable": "Atteikšanās teikumu neizdevās nolasīt, tāpēc nekas netika nosūtīts."
+  },
+  "retry": {
+    "notRebuilt": "Šo ziņojumu neizdevās izveidot no jauna ar uzņēmuma rindu, tāpēc nekas netika nosūtīts."
+  }
+}

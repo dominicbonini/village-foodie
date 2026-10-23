@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Ota tilauksia vastaan ilman maksua",
+  "completionTitle": "Maksamattoman tilauksen päättäminen",
+  "completionHelp": "Mitä tapahtuu, kun maksamaton tilaus on valmis luovutettavaksi.",
+  "pressesOne": "Yksi painallus (”Merkitse maksetuksi ja noudetuksi”)",
+  "pressesOneHelp": "Paras, kun otat maksun samalla kun annat ruoan. Saat yhden painikkeen, ”Merkitse maksetuksi ja noudetuksi”, joka kirjaa maksun ja kuittaa tilauksen samalla kertaa.",
+  "pressesTwo": "Kaksi painallusta (”Merkitse maksetuksi” ja ”Noudettu”)",
+  "pressesTwoHelp": "Paras, kun maksu ja luovutus tapahtuvat eri aikaan — asiakas maksaa ruokarekalla ja noutaa ruoan, kun se on valmis. Saat kaksi painiketta: ensin ”Merkitse maksetuksi”, sitten ”Noudettu”, kun asiakas ottaa ruoan."
+}

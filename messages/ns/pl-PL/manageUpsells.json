@@ -1,0 +1,19 @@
+{
+  "heading": "Dosprzedaż",
+  "intro": "Zachęć klientów, by dobrali coś jeszcze. Gdy ktoś zamawia z jednej kategorii, zaproponuj pozycje z innej — napój do pizzy, sos do burgera.",
+  "add": "+ Dodaj regułę",
+  "toast": {
+    "updated": "Zaktualizowano regułę",
+    "added": "Dodano regułę",
+    "removed": "Reguła usunięta"
+  },
+  "whenAdds": "Gdy klient doda…",
+  "suggestFrom": "Proponuj pozycje z…",
+  "chooseCategory": "Wybierz kategorię",
+  "cancel": "Anuluj",
+  "saveChanges": "Zapisz zmiany",
+  "addRule": "Dodaj regułę",
+  "empty": "Nie ma jeszcze reguł dosprzedaży.",
+  "confirmRemove": "Usunąć regułę dosprzedaży „{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Maks. {count} proponowana pozycja} few {Maks. {count} proponowane pozycje} many {Maks. {count} proponowanych pozycji} other {Maks. {count} proponowanej pozycji}}"
+}

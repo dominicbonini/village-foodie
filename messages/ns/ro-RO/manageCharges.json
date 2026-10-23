@@ -1,0 +1,30 @@
+{
+  "heading": "Taxe, bacșiș și comisioane",
+  "rate": {
+    "label": "Cota taxei pe vânzări",
+    "hint": "Cota pe care o aplicați la fiecare comandă. Clienții o văd adăugată la plată, pe chitanțe și pe bonuri.",
+    "regionDefault": "Lăsați gol pentru a aplica {label} de {rate}%, cota pentru mâncare preparată ({region})."
+  },
+  "included": {
+    "label": "{label} inclusă în prețuri",
+    "hint": "Prețurile dumneavoastră includ deja {label}. Această cotă arată doar cât din fiecare preț reprezintă {label}, pe chitanțe și pe bonuri — nu se adaugă nimic la plată.",
+    "default": "Lăsați gol pentru a folosi {rate}%, cota de {label} pentru mâncarea caldă vândută la pachet ({country})."
+  },
+  "tips": {
+    "label": "Bacșiș",
+    "hint": "Clienții care plătesc online cu cardul pot adăuga bacșiș. Îl primiți integral.",
+    "choices": "Opțiuni afișate clienților:",
+    "chip": "{rate}%",
+    "other": "Altă sumă"
+  },
+  "fee": {
+    "label": "Taxă de serviciu online",
+    "hint": "Se adaugă doar la comenzile online. Niciodată la comenzile cu plata la ridicare sau la cele la fața locului. Suma rămâne la dumneavoastră.",
+    "pctAria": "Procentul taxei de serviciu",
+    "fixedAria": "Suma fixă a taxei de serviciu",
+    "max": "Maximul pe care îl puteți percepe: {max}",
+    "example": "Clienții o văd înainte să plătească, pe un singur rând: „{label} {amount}”.",
+    "hatchgrab": "HatchGrab adaugă o taxă de serviciu de {fee} la comenzile online ale clienților dumneavoastră. Nu o plătiți dumneavoastră și nu o puteți modifica."
+  },
+  "saveFailed": "Nu s-a putut salva — încercați din nou."
+}

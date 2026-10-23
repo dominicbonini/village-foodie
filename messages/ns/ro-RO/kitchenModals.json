@@ -1,0 +1,69 @@
+{
+  "close": "Închideți",
+  "cancel": "Anulare",
+  "selectReason": "Alegeți un motiv",
+  "reject": {
+    "title": "Respingeți comanda #{orderId}?",
+    "reasonLabel": "Motiv — obligatoriu (afișat clientului)",
+    "reason": "{reason, select, sold_out {Un produs s-a epuizat} too_busy {Prea aglomerat — nu putem pregăti la timp} closing_soon {Închidem în curând} other {Altul}}",
+    "noteRequired": "Motiv — obligatoriu",
+    "noteOptional": "Notă suplimentară — opțional",
+    "notePlaceholder": "Adăugați mai multe detalii pentru client…",
+    "keep": "Păstrați comanda",
+    "confirm": "Respingeți comanda"
+  },
+  "eventCancel": {
+    "title": "Anulați acest eveniment?",
+    "affected": "{n, plural, one {{count} comandă va fi anulată} few {{count} comenzi vor fi anulate} other {{count} de comenzi vor fi anulate}}, iar clienții vor fi anunțați.",
+    "reasonLabel": "Motiv — opțional",
+    "reason": "{reason, select, vehicle_breakdown {Defecțiune la vehicul} weather {Vreme} venue_issue {Problemă la locație} personal_emergency {Urgență personală} other {Altul}}",
+    "messageLabel": "Mesaj pentru clienți — opțional",
+    "messagePlaceholder": "de ex. Ne pare rău, remorca noastră s-a defectat în drum spre locație…",
+    "keep": "Păstrați evenimentul",
+    "cancelling": "Se anulează…",
+    "confirm": "Anulați evenimentul"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Reporniți evenimentul} other {Porniți evenimentul}}",
+    "changeEvent": "Schimbați evenimentul",
+    "changeEventType": "Schimbați tipul evenimentului…",
+    "privateLink": "Link privat și cod QR",
+    "noteLabel": "Notă pentru clienți",
+    "notePlaceholder": "de ex. Parcați în parcarea principală, căutați cortul portocaliu",
+    "noteHint": "Afișată clienților pe pagina de comandă, sub detaliile evenimentului.",
+    "saveNote": "Salvați nota",
+    "resume": "Reluați comenzile",
+    "pause": "Suspendați comenzile",
+    "changeFinishTime": "Schimbați ora de încheiere a evenimentului",
+    "finishEvent": "Încheiați evenimentul",
+    "cancelEvent": "Anulați evenimentul"
+  },
+  "finish": {
+    "confirmTitle": "Schimbați ora de încheiere?",
+    "willFinish": "Acest eveniment se va încheia la <b>{selected}</b>{hasCurrent, select, yes { în loc de <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} comandă este programată} few {{count} comenzi sunt programate} other {{count} de comenzi sunt programate}} după {selected}.</b> {n, plural, one {Rămâne} few {Rămân} other {Rămân}} pe ecran și {n, plural, one {trebuie pregătită} few {trebuie pregătite} other {trebuie pregătite}} în continuare. Schimbarea orei de încheiere oprește doar plasarea comenzilor NOI pentru ore ulterioare.",
+    "saving": "Se salvează…",
+    "confirm": "Schimbați ora de încheiere",
+    "keepCurrent": "Păstrați {current}",
+    "keepAsIs": "Lăsați așa",
+    "title": "Schimbați ora de încheiere",
+    "currentlySet": "Acest eveniment este setat momentan să se încheie la <b>{current}</b>.",
+    "noFinishTime": "Acest eveniment nu are setată o oră de încheiere.",
+    "noTimesLeft": "Nu mai sunt ore disponibile azi. Folosiți „Încheiați evenimentul”.",
+    "newFinishTime": "Noua oră de încheiere",
+    "optionCurrent": "{time} (actuală)",
+    "earlier": "Este mai devreme decât ora de încheiere actuală. Clienții nu vor mai putea comanda pentru ore ulterioare.",
+    "review": "Verificați modificarea",
+    "optionNextDay": "{time} (a doua zi)"
+  },
+  "extraWait": {
+    "title": "Adăugați timp de așteptare",
+    "hint": "Se adaugă la ora de ridicare comunicată pentru comenzile noi. Nu schimbă ora de încheiere a evenimentului.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Reconectați-vă pentru încărcare",
+    "selected": "Selectat",
+    "status": "{tone, select, paused {⏸ Suspendat} live {● În desfășurare} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}"
+  }
+}

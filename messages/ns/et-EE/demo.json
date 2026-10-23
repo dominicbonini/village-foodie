@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Demos pole saadaval",
+  "demoMode": "DEMOREŽIIM",
+  "loopLands": "Täpselt nii saabub päris tellimus",
+  "showMe": "Näita",
+  "noCard": "{sub} Kaarti pole vaja.",
+  "notYet": "Veel mitte",
+  "cashAndCollected": "Sularaha, kätte antud",
+  "logoPlaceholder": "Sinu logo siia",
+  "welcomeTitle": "{sample, select, yes {Siin on näidisdemo} other {Siin on sinu demo}}",
+  "welcomeIntro": "{sample, select, yes {See on <b>ajutine menüü</b>, et näeksid, kuidas kõik töötab — laadi igal ajal üles oma menüü, et see sinu omaks muuta.} other {See on sinu enda menüü ja kujundus päris tellimustetahvlil.}} Seal juba olevad tellimused on näited, et näeksid, milline on kiire teenindus.",
+  "twoThings": "Kaks asja, mida proovida:",
+  "hitButton": "Vajuta tellimusel nuppu <b>{button}</b>",
+  "scanQr": "Skanni <b>QR-kood</b> — või puuduta linki — ja telli kliendina, siis vaata, kuidas tellimus saabub",
+  "qrAlt": "QR-kood sinu klientide tellimislehele",
+  "openHere": "Või ava see selles seadmes",
+  "copyLink": "Kopeeri link",
+  "copyDescribedAs": "tellimislink",
+  "noLinkTitle": "Sinu klientide tellimislink",
+  "noLinkBody": "Sinu tellimislehe link on menüüs üleval paremal.",
+  "asLive": "Tellimine ja köögi töövoog on täpselt samad nagu päriselt.",
+  "startExploring": "Hakka uurima",
+  "signupOffer": {
+    "heading": "Registreeru kohe ja saa tasuta kuu",
+    "sub": "Aeg hakkab jooksma alles siis, kui otsustad avalikuks minna."
+  },
+  "cashIcon": "💶"
+}

@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Titlul nu a încăput și a fost scurtat.",
+    "date": "Data nu a încăput și a fost scurtată.",
+    "daysOff": "Textul pentru zilele libere nu a încăput și a fost scurtat.",
+    "place": "Numele locației nu a încăput și a fost scurtat.",
+    "time": "Ora nu a încăput și a fost scurtată.",
+    "note": "Textul dumneavoastră nu a încăput și a fost scurtat.",
+    "venue": "Locul nu a încăput și a fost scurtat.",
+    "area": "Zona nu a încăput și a fost scurtată."
+  },
+  "fontFallback": "Un font folosit de acest design ({id}) nu a putut fi încărcat — casetele respective folosesc Oswald.",
+  "wrongShapeBackground": "Imaginea acestei locații are alt format decât designul dumneavoastră, așa că se folosește fundalul standard.",
+  "rowsFit": "Ultima zi depășește cu {px} px marginea de jos a imaginii — reduceți spațierea rândurilor sau mutați rândul 1 mai sus.",
+  "placeStatus": {
+    "ownBoth": "Imagine și poziții ale textului proprii",
+    "wrongShape": "Format diferit — nu se folosește până nu este înlocuită",
+    "ownPicture": "Imagine proprie, poziții standard",
+    "ownPositions": "Imagine standard, poziții ale textului proprii",
+    "none": "Încă nu există imagine — se folosește Standard"
+  },
+  "standardStatus": "Folosit la toate celelalte locații",
+  "option": {
+    "oneOff": "Încărcați una doar pentru această postare",
+    "placePoster": "Afiș: {name}",
+    "standard": "Design Standard"
+  },
+  "previewLabel": {
+    "lastEvent": "Previzualizarea folosește ultimul dumneavoastră eveniment de aici",
+    "noEvents": "Încă nu există evenimente aici — previzualizarea arată următorul eveniment cu numele acestei locații"
+  },
+  "fontUsage": {
+    "weekly": "designul postării săptămânale",
+    "event": "designul postării pentru un eveniment",
+    "place": "designul pentru {place}",
+    "placeUnnamed": "designul pentru o locație"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Aldin",
+    "italic": "Cursiv"
+  },
+  "picture": {
+    "legacy": "Afișul evenimentului",
+    "fallback": "Imagine",
+    "wrongShape": "Format diferit — nu poate fi folosită ca fundal complet"
+  },
+  "noPicture": {
+    "omit": "Omiteți",
+    "blank": "Lăsați un spațiu gol",
+    "logo": "Afișați logoul"
+  },
+  "noPicturesAll": "{total, plural, one {Locația dumneavoastră are o imagine.} few {Toate cele {total} locații ale dumneavoastră au o imagine.} other {Toate cele {total} de locații ale dumneavoastră au o imagine.}}",
+  "noPicturesSome": "{without, plural, one {{without} locație din {total} nu are încă imagine} few {{without} locații din {total} nu au încă imagine} other {{without} de locații din {total} nu au încă imagine}}",
+  "licenceTick": "Dețin acest font sau am licență pentru a-l folosi",
+  "fontUploadButton": "↑ Încărcați fontul"
+}

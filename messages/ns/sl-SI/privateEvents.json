@@ -1,0 +1,42 @@
+{
+  "publicName": "Zasebni dogodek",
+  "chip": "Zasebno",
+  "grid": {
+    "orderingSection": "NAROČANJE",
+    "linkRowLabel": "Sprejemanje naročil prek zasebne povezave in kode QR",
+    "columnTitle": "Vgrajeni tip Zasebno. Ni ga mogoče preimenovati, premakniti ali izbrisati."
+  },
+  "form": {
+    "help": "Na vašem urniku je prikazan kot „Zasebni dogodek“, samo z datumom in uro — nikoli z naslovom ali zemljevidom in nikoli na Village Foodie.",
+    "linkPromise": "Gostje naročajo prek zasebne povezave in kode QR — dobili ju boste po shranjevanju.",
+    "nameLabel": "Ime dogodka",
+    "nameHelp": "Gostje to vidijo na vrhu strani za naročanje.",
+    "namePlaceholder": "Poroka Sare in Toma",
+    "previewNote": "Tako je prikazan na vašem urniku — brez lokacije, kraja in poštne številke.",
+    "needsTimes": "Dodajte začetni in končni čas — zasebni dogodek, ki sprejema naročila prek povezave, ju potrebuje."
+  },
+  "link": {
+    "button": "Povezava in QR",
+    "title": "Zasebna povezava in koda QR",
+    "label": "Zasebna povezava",
+    "copy": "Kopiraj",
+    "copied": "Kopirano",
+    "qrDownload": "Prenesi QR",
+    "tableCards": "Natisni namizne kartice",
+    "newLink": "Ustvari novo povezavo",
+    "working": "V teku …",
+    "newLinkConfirm": "Želite ustvariti novo povezavo? Trenutna povezava takoj preneha delovati, prav tako vse kode QR, ki ste jih že natisnili.",
+    "newLinkHelp": "To uporabite, če je povezava prišla tja, kamor ne bi smela. Trenutna povezava takoj preneha delovati, prav tako natisnjene kode QR.",
+    "newLinkFailed": "Nove povezave ni bilo mogoče ustvariti.",
+    "offNotice": "Naročanje prek zasebne povezave je za ta dogodek izklopljeno, zato ni povezave za deljenje. Dogodek je na vašem urniku še vedno prikazan kot „Zasebni dogodek“."
+  },
+  "cards": {
+    "printTitle": "{truck} — namizne kartice",
+    "scan": "Skenirajte za naročilo",
+    "blurb": "Naročite in plačajte na telefonu. Ko bo pripravljeno, vas bomo poklicali po imenu.",
+    "footer": "Naročanje omogoča HatchGrab"
+  },
+  "noSinglePost": "Zasebni dogodki nimajo lastne objave — na vašem tedenskem plakatu so prikazani kot „Zasebni dogodek“.",
+  "confirmToPrivate": "S tem se naslov skrije, dogodek pa se umakne z zemljevida. Gostje bodo za naročanje potrebovali zasebno povezavo.",
+  "confirmFromPrivate": "S tem dogodek postane javen: prikazana bosta njegov naslov in oznaka na zemljevidu, zasebna povezava pa bo prenehala delovati."
+}

@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Vaša kartica alergena",
+    "intro": "Kupci je vide <b>točno onako kako je napišete</b> – ništa se ne prepravlja. Upišite ili zalijepite tekst u nastavku ili učitajte fotografiju/PDF, a mi ćemo izdvojiti tekst da ga provjerite.",
+    "empty": "Još nema kartice alergena.",
+    "placeholder": "npr. Sva naša jela s prženom ribom sadrže pšenicu i mlijeko. Friteza se dijeli s artiklima koji sadrže gluten i orašasto voće. Dostupne su veganske opcije – pitajte osoblje.",
+    "reading": "Čitamo sliku…",
+    "upload": "📷 Učitaj sliku / PDF",
+    "uploadNote": "Tekst izdvajamo sa slike kako biste ga mogli pregledati – slika se ne pohranjuje."
+  },
+  "cardUpload": {
+    "dishFallback": "Jelo",
+    "question": "Imate li karticu alergena za učitavanje?",
+    "perDish": "{detected, select, yes {Učitajte je i iz nje ćemo složiti alergene vaših jela. Prepoznati alergeni bit će vidljivi na sljedećoj stranici, gdje potvrđujete svako jelo.} other {Učitajte je i iz nje ćemo složiti alergene vaših jela.}}",
+    "cardOnly": "Učitajte karticu alergena koju će kupci vidjeti.",
+    "yes": "Da",
+    "no": "Ne",
+    "noProblem": "Nema problema – nije vam potrebna. Nastavite gumbom u nastavku.",
+    "analysing": "Analiziramo karticu…",
+    "dropzone": "Povucite i ispustite ili dodirnite za odabir",
+    "imageOrPdf": "Slika ili PDF",
+    "or": "ili",
+    "pastePlaceholder": "Zalijepite tekst kartice alergena ovdje…",
+    "process": "Obradi karticu",
+    "cardRead": "Kartica pročitana ✓",
+    "unmatchedHeading": "Ove stavke nismo uspjeli automatski povezati – dodijelite ih ili odbacite",
+    "quotedName": "„{name}“",
+    "ambiguous": "Nejasno – odgovara više jela; odaberite pravo.",
+    "assignTo": "Dodijeli jelu…",
+    "dismiss": "Odbaci",
+    "blanket": "Prema kartici, u <b>svim</b> jelima mogu biti prisutni: <b>{list}</b>. Dodati na svako jelo? (svako ćete i dalje potvrditi) <muted>– prema zadanim postavkama isključeno</muted>",
+    "kitchenNotes": "Bilješke kuhinje (spremaju se uz vaše podatke o alergenima)",
+    "matchSummary": "{n, plural, =0 {Povezano s jelom: {matched}.} one {Povezano s jelom: {matched}. {count} stavka čeka vašu dodjelu.} few {Povezano s jelom: {matched}. {count} stavke čekaju vašu dodjelu.} other {Povezano s jelom: {matched}. {count} stavki čeka vašu dodjelu.}}"
+  },
+  "savedCard": {
+    "showLess": "Prikaži manje",
+    "showMore": "Prikaži više",
+    "fileOnly": "Za ovaj food truck spremljena je datoteka kartice, ali nije pohranjen tekstni sažetak. Otvorite izvornik da biste je pročitali.",
+    "viewOriginal": "Prikaži izvornu karticu"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Karticu alergena nije bilo moguće pročitati – pokušajte ponovno",
+      "confirmed": "Potvrđeno: {name}",
+      "undo": "Poništi",
+      "saveFailed": "Spremanje nije uspjelo – pokušajte ponovno",
+      "imageFailed": "Tu sliku nije bilo moguće pročitati – upišite ili zalijepite karticu",
+      "cardRead": "{n, plural, one {Kartica pročitana – povezano: {matched}, čeka dodjelu: {count}} few {Kartica pročitana – povezano: {matched}, čeka dodjelu: {count}} other {Kartica pročitana – povezano: {matched}, čeka dodjelu: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Prepoznato je „{generic}“, ali to nije dovoljno precizno. Odaberite {picks} ako ovo jelo sadrži sljedeće: {family} – ili ih ostavite neodabranima ako ne sadrži.",
+      "andOr": "{a} i/ili {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Potvrđeno",
+      "confirmed": "Potvrđeno",
+      "needsReview": "Treba provjeru"
+    },
+    "confirm": {
+      "confirming": "Potvrđivanje…",
+      "confirmed": "Potvrđeno ✓",
+      "confirm": "Potvrdi",
+      "changed": "· promijenjeno",
+      "changedTitle": "Uređeno nakon zadnje potvrde – potvrdite ponovno"
+    },
+    "allergens": "Alergeni",
+    "dietary": "Prehrana",
+    "uncategorised": "Bez kategorije",
+    "review": {
+      "progress": "Potvrđeno: {confirmed} od {total}",
+      "allConfirmed": "✓ Sve potvrđeno",
+      "list": "Popis",
+      "table": "Tablica",
+      "detected": "Prepoznato iz vašeg jelovnika – <b>provjerite</b>. Alergeni ostaju skriveni od kupaca dok ne potvrdite svako jelo.",
+      "viewOnly": "👁 Samo pregled – alergene može potvrditi ili mijenjati samo vlasnik.",
+      "emptyTitle": "Nema artikala na jelovniku",
+      "emptyBody": "Najprije dodajte artikle na jelovnik, a zatim ovdje postavite njihove alergene.",
+      "dish": "Jelo",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Čitamo podatke o alergenima…",
+      "saved": "🛡️ Kartica alergena spremljena",
+      "viewOriginal": "Prikaži izvornu karticu",
+      "replace": "Zamijeni karticu",
+      "uploadHelp": "Učitajte karticu alergena (fotografiju/PDF) ili zalijepite podatke o alergenima – naš AI ih strukturira za kupce.",
+      "add": "Dodaj karticu alergena",
+      "viewOnly": "👁 Samo pregled – karticu alergena može dodati samo vlasnik.",
+      "intro": "Kupci će ovu karticu vidjeti kao referencu za alergene na jelovniku. Alergeni po jelima ostaju skriveni u načinu sa samom karticom (podaci o jelima čuvaju se ako kasnije prijeđete na prikaz po jelima)."
+    },
+    "subtitle": {
+      "choose": "Odaberite kako kupci vide podatke o alergenima",
+      "card": "Dodajte karticu alergena",
+      "cardOptional": "Dodajte karticu alergena (neobavezno)",
+      "review": "Provjerite i potvrdite svako jelo"
+    },
+    "heading": {
+      "import": "Alergeni",
+      "standalone": "Postavke alergena"
+    },
+    "nav": {
+      "next": "Dalje →",
+      "back": "← Natrag",
+      "skip": "Preskoči zasad",
+      "saving": "Spremanje…",
+      "done": "Gotovo",
+      "saveLater": "Spremi i dovrši kasnije",
+      "close": "Zatvori",
+      "finish": "Završi",
+      "skipImport": "Preskoči postavke alergena zasad"
+    },
+    "hint": {
+      "skipDefers": "Preskakanje samo odgađa – jela koja niste potvrdili ostaju skrivena od kupaca dok im se alergeni ne potvrde.",
+      "importIncomplete": "Za nastavak potvrdite svako jelo – ili odaberite „Preskoči postavke alergena zasad“."
+    }
+  }
+}

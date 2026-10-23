@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Podpora",
+    "description": "Získejte pomoc s HatchGrab. Pošlete nám zprávu a odpovíme vám e-mailem."
+  },
+  "logIn": "Přihlásit se",
+  "eyebrow": "Podpora",
+  "title": "Jak vám můžeme pomoci?",
+  "lede": "Něco nefunguje, nebo máte dotaz ke svému účtu? Ozvěte se nám jedním ze dvou způsobů — v obou případech vám odpovíme e-mailem.",
+  "emailUs": "Napište nám",
+  "formHeading": "Nebo vyplňte formulář níže",
+  "loadingForm": "Načítání formuláře…",
+  "formTitle": "Kontaktovat podporu HatchGrab",
+  "privacy": "Soukromí",
+  "terms": "Podmínky",
+  "about": "O nás",
+  "copyright": "© {year} HatchGrab"
+}

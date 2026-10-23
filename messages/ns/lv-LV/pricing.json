@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, zero {Jūsu pirmie # mēneši ir pilnīgi bez maksas — visas funkcijas pieejamas.} one {Jūsu pirmais mēnesis ir pilnīgi bez maksas — visas funkcijas pieejamas.} other {Jūsu pirmie # mēneši ir pilnīgi bez maksas — visas funkcijas pieejamas.}}",
+    "body": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Vēlaties saņemt samaksu uzreiz? Pievienojiet karšu maksājumus tiešsaistē jebkurā laikā. Kad izmēģinājuma periods beidzas, jūs pārejat uz plānu <plan>{fallback}</plan>{fallbackFree, select, yes { (0 € mēnesī)} other {}}, ja vien neizvēlaties citu plānu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā."
+  },
+  "card": {
+    "perTruckMonth": "par busiņu / mēnesī",
+    "mostTrucks": "Populārākais",
+    "tryFree": "Izmēģiniet bez maksas",
+    "seeEvery": "Skatīt visas funkcijas →",
+    "everything": "Viss, kas vajadzīgs darbam",
+    "everythingIn": "Viss, kas ir plānā “{plan}”, un arī"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> tikai par tiešsaistes pasūtījumiem, kas apmaksāti ar karti. Pasūtījumi uz vietas vienmēr ir bez maksas.",
+    "included": "Katru mēnesī iekļauti pirmie <b>{included}</b> tiešsaistes pasūtījumu, pēc tam <b>{fee}*</b>. Pasūtījumi uz vietas vienmēr ir bez maksas.",
+    "noFee": "<b>Bez HatchGrab komisijas</b> par tiešsaistes pasūtījumiem, lai cik daudz darba jums būtu. Viena paredzama ikmēneša maksa."
+  },
+  "base": {
+    "walkUp": "Pasūtījumi uz vietas un virtuves ekrāns",
+    "online": "Pasūtīšana tiešsaistē",
+    "preorders": "Iepriekšēji pasūtījumi un saņemšanas laiki",
+    "capacity": "Virtuves jaudas pārvaldība",
+    "privateEvents": "Privāti pasākumi",
+    "printing": "Virtuves čeku drukāšana",
+    "app": "Virtuves lietotne iPhone, iPad un Android ierīcēm"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp automātiskās atbildes",
+    "schedule_graphics": "Sociālo tīklu ieraksti — jūsu Facebook un Instagram grafiks — gatavi publicēšanai",
+    "event_types": "Pielāgoti pasākumu veidi un cenas"
+  },
+  "money": {
+    "unlimitedOrders": "Neierobežoti tiešsaistes pasūtījumi, 0% HatchGrab komisija",
+    "samePrice": "Tā pati cena arī visnoslogotākajā mēnesī"
+  },
+  "comingSoon": "Drīzumā",
+  "bar": {
+    "title": "Kurš plāns man ir izdevīgākais?",
+    "subtitle": "Jūsu tiešsaistes pasūtījumi mēnesī",
+    "first": "Līdz {to} → <b>{plan}</b>",
+    "middle": "{from}–{to} → <b>{plan}</b>",
+    "last": "Virs {from} → <b>{plan}</b>",
+    "only": "Jebkurš apjoms → <b>{plan}</b>"
+  },
+  "footnote": "* Papildus jāmaksā Stripe karšu maksājumu apstrādes maksa par tiešsaistes pasūtījumiem ar karti (pašlaik {country}: {cardFee}), ko maksājat Stripe, nevis HatchGrab. Pasūtījumiem uz vietas tiek izmantots jūsu maksājumu terminālis — HatchGrab komisija ir 0%.",
+  "currencyLine": "Cenas norādītas valūtā: {currency} ({code})"
+}

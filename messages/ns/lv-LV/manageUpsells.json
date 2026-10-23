@@ -1,0 +1,19 @@
+{
+  "heading": "Papildpiedāvājumi",
+  "intro": "Mudiniet klientus pievienot vēl kaut ko. Kad kāds pasūta no vienas kategorijas, iesakiet pozīcijas no citas — dzērienu pie picas, mērci pie burgera.",
+  "add": "+ Pievienot papildpiedāvājumu",
+  "toast": {
+    "updated": "Papildpiedāvājuma noteikums atjaunināts",
+    "added": "Papildpiedāvājuma noteikums pievienots",
+    "removed": "Noteikums noņemts"
+  },
+  "whenAdds": "Kad klients pievieno…",
+  "suggestFrom": "Ieteikt pozīcijas no…",
+  "chooseCategory": "Izvēlieties kategoriju",
+  "cancel": "Atcelt",
+  "saveChanges": "Saglabāt izmaiņas",
+  "addRule": "Pievienot noteikumu",
+  "empty": "Papildpiedāvājumu noteikumu vēl nav.",
+  "confirmRemove": "Noņemt papildpiedāvājuma noteikumu “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, zero {Iesaka līdz {count} pozīcijām} one {Iesaka līdz {count} pozīcijai} other {Iesaka līdz {count} pozīcijām}}"
+}

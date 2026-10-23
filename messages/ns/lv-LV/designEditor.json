@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Nedēļas virsraksts",
+    "weekHeadingSample": "Nedēļa no …",
+    "daysSample": "{first}–{last}",
+    "date": "Datums",
+    "place": "Vieta",
+    "venue": "Norises vieta",
+    "area": "Apkaime",
+    "time": "Laiks",
+    "rows": "Rindas",
+    "rowsSample": "{px} px atstarpe · {first}–{last}",
+    "ownText": "Jūsu teksts",
+    "noteTokenSample": "Piezīme, ko ierakstāt, veidojot ierakstu",
+    "nothingYet": "Vēl nekā nav",
+    "thisBox": "šis lauks"
+  },
+  "sample": {
+    "venue": "Krogs pie Rātsnama",
+    "area": "Liepāja"
+  },
+  "bar": {
+    "previewWith": "Priekšskatīt ar",
+    "undo": "Atsaukt",
+    "undoTitle": "Atsaukt (⌘Z)",
+    "redo": "Atkārtot",
+    "redoTitle": "Atkārtot (⇧⌘Z)",
+    "cancel": "Atcelt",
+    "saving": "Saglabā…",
+    "save": "Saglabāt dizainu"
+  },
+  "grid": {
+    "eachRow": "Katra rinda",
+    "placeOff": "Vietas nosaukums ir jūsu attēlā — HatchGrab to nepievienos."
+  },
+  "background": {
+    "uploading": "Augšupielādē…",
+    "replace": "Aizstāt attēlu",
+    "shape": {
+      "square": "Kvadrāts (1:1)",
+      "portrait45": "Vertikāls (4:5)",
+      "portrait916": "Vertikāls (9:16)",
+      "landscape169": "Horizontāls (16:9)",
+      "portrait": "Vertikāls",
+      "landscape": "Horizontāls"
+    }
+  },
+  "scope": {
+    "title": "Teksta izvietojums",
+    "standard": "Tāds pats izvietojums kā standarta dizainā",
+    "own": "Savs izvietojums: {place}",
+    "locked": "Šis izvietojums tiek ņemts no jūsu standarta dizaina. Izvēlieties “Savs izvietojums: {place}”, lai to mainītu tikai šeit."
+  },
+  "stage": {
+    "hint": "Velciet lauku, lai to pārvietotu · velciet stūri, lai mainītu izmēru",
+    "zoomOut": "Tālināt",
+    "zoomIn": "Tuvināt"
+  },
+  "rows": {
+    "spacing": "Atstarpe",
+    "daysRun": "Dienas: {first}–{last}. 1. rindas trīs lauki tiek kopēti uz leju ar šādu atstarpi.",
+    "whichEvents": "Kuri pasākumi",
+    "showCancelled": "Rādīt atceltos pasākumus",
+    "showCancelledHint": "Atceltam pasākumam vieta ir pārsvītrota un redzams vārds ATCELTS. Ja izslēgts, diena tiek rādīta kā brīvdiena."
+  },
+  "days": {
+    "reorder": "Pārkārtot",
+    "move": "pārvietot"
+  },
+  "picture": {
+    "picture": "Attēls",
+    "fill": "Aizpildīt lauku",
+    "fit": "Ietilpināt",
+    "corners": "Stūri",
+    "square": "Taisni",
+    "rounded": "Noapaļoti",
+    "ifMissing": "Ja vietai nav attēla",
+    "noPicture": {
+      "omit": "Izlaist",
+      "blank": "Atstāt tukšu vietu",
+      "logo": "Rādīt jūsu logotipu"
+    },
+    "border": "Apmale",
+    "drawBorder": "Zīmēt apmali",
+    "drawBorderHint": "Līnija ap attēlu jūsu izvēlētā krāsā.",
+    "borderWidth": "Apmales biezums",
+    "cornerRadius": "Stūru rādiuss",
+    "locationPictures": "Vietu attēli",
+    "addLocationPictures": "+ Pievienot vietu attēlus",
+    "allHaveImage": "{total, plural, =0 {Jums vēl nav nevienas vietas.} zero {Visām # jūsu vietām ir attēls.} one {Attēls ir katrai jūsu vietai (#).} other {Visām # jūsu vietām ir attēls.}}",
+    "someWithout": "{without} no {total, plural, zero {jūsu # vietām} one {jūsu # vietas} other {jūsu # vietām}} {without, plural, zero {vēl nav attēla} one {vēl nav attēla} other {vēl nav attēla}}"
+  },
+  "settings": {
+    "font": "Fonts",
+    "colour": "Krāsa",
+    "textColour": "Teksta krāsa",
+    "ownStyleNote": "{count, plural, zero {{names}: savs stils, tāpēc netiek mainīti.} one {{names}: savs stils, tāpēc netiek mainīts.} other {{names}: savs stils, tāpēc netiek mainīti.}}",
+    "matchAgain": "Atkal saskaņot",
+    "matchName": "Saskaņot ar: {name}",
+    "lastToggle": "{kind, select, weekly {Atstājiet ieslēgtu vismaz “Vieta” vai “Laiks”. Atceltam pasākumam vieta ir pārsvītrota un redzams vārds ATCELTS, tāpēc, ja abi būtu izslēgti, nekas neliecinātu, ka pasākums ir atcelts.} other {Atstājiet ieslēgtu vismaz “Norises vieta” vai “Laiks”. Atceltam pasākumam vieta ir pārsvītrota un redzams vārds ATCELTS, tāpēc, ja abi būtu izslēgti, nekas neliecinātu, ka pasākums ir atcelts.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — šim fontam ir īsts slīpraksts"
+  },
+  "align": {
+    "left": "Pa kreisi",
+    "centre": "Centrā",
+    "right": "Pa labi"
+  },
+  "effects": {
+    "outlineColour": "Kontūras krāsa",
+    "bandColour": "Joslas krāsa",
+    "bandDaysOff": "Josla brīvdienās",
+    "bandCancelled": "Josla, ja pasākums atcelts",
+    "bandDaysOffHint": "Tiek izmantota augstāk norādītās joslas vietā dienā, kad netiek tirgots.",
+    "bandCancelledHint": "Tiek izmantota augstāk norādītās joslas vietā, ja pasākums ir atcelts."
+  },
+  "more": {
+    "dayOwnLine": "Diena atsevišķā rindā",
+    "dayOwnLineHint": "Nedēļas diena virs datuma. Tikai datumam.",
+    "noEventDay": "Dienā bez pasākuma",
+    "wordsBeforePlaceholder": "piem., Mūs atradīsiet",
+    "neverHyphenate": "Viens garš vārds bez atstarpēm vienmēr tiek samazināts — mēs nekad nedalām vietas nosaukumu ar defisi."
+  },
+  "bits": {
+    "less": "Mazāk",
+    "more": "Vairāk",
+    "chooseColourFor": "{label} — izvēlieties jebkuru krāsu",
+    "chooseColour": "Izvēlieties jebkuru krāsu"
+  }
+}

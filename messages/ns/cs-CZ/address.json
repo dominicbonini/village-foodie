@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresa",
+    "postcode": "PSČ",
+    "zip": "ZIP kód",
+    "eircode": "Eircode",
+    "postalCode": "PSČ",
+    "state": "Stát",
+    "stateTerritory": "Stát nebo teritorium",
+    "province": "Provincie",
+    "county": "Hrabství",
+    "area": "Obec (vesnice nebo město)",
+    "townOrArea": "Město nebo oblast",
+    "city": "Město",
+    "suburb": "Čtvrť",
+    "townOrCity": "Město nebo obec"
+  },
+  "short": {
+    "area": "Obec",
+    "townOrArea": "Město nebo oblast",
+    "city": "Město",
+    "suburb": "Čtvrť",
+    "townOrCity": "Město nebo obec"
+  },
+  "inSentence": {
+    "postcode": "PSČ",
+    "zip": "ZIP kód",
+    "eircode": "Eircode",
+    "postalCode": "PSČ"
+  },
+  "withArticle": {
+    "postcode": "PSČ",
+    "zip": "ZIP kód",
+    "eircode": "Eircode",
+    "postalCode": "PSČ"
+  },
+  "tradeLabel": {
+    "area": "Město nebo obec",
+    "townOrArea": "Město nebo oblast",
+    "city": "Město",
+    "suburb": "Čtvrť",
+    "townOrCity": "Město nebo obec"
+  },
+  "basedIn": {
+    "area": "Město nebo obec, kde sídlíte",
+    "townOrArea": "Město nebo oblast, kde sídlíte",
+    "city": "Město, kde sídlíte",
+    "suburb": "Čtvrť, kde sídlíte",
+    "townOrCity": "Město nebo obec, kde sídlíte"
+  },
+  "example": "např. {example}",
+  "customersSee": "Zákazníci uvidí:",
+  "postalWarning": "Tohle nevypadá jako {article} — například {example}. Přesto to můžete uložit.",
+  "regionChoose": "Vyberte…"
+}

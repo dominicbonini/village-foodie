@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgeri",
+    "mains": "Feluri principale",
+    "sides": "Garnituri",
+    "drinks": "Băuturi"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck cu pizza",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja și miere",
+        "fourCheese": "Quattro formaggi",
+        "gardenVeg": "Vegetariană",
+        "garlicBread": "Pâine cu usturoi",
+        "rocketParmesan": "Rucola și parmezan",
+        "olives": "Măsline",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck cu burgeri",
+      "items": {
+        "classicCheeseburger": "Cheeseburger clasic",
+        "doubleBacon": "Dublu bacon",
+        "buttermilkChicken": "Pui marinat în lapte bătut",
+        "halloumiStack": "Burger cu halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Cartofi prăjiți cu coajă",
+        "loadedCheeseFries": "Cartofi prăjiți cu brânză",
+        "onionRings": "Inele de ceapă",
+        "craftLemonade": "Limonadă artizanală",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck cu curry",
+      "items": {
+        "chickenTikkaMasala": "Pui tikka masala",
+        "lambRoganJosh": "Miel rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Orez pilau",
+        "garlicNaan": "Naan cu usturoi",
+        "onionBhaji": "Onion bhaji",
+        "mangoLassi": "Lassi cu mango",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

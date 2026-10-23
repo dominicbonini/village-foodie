@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Sinu esimene kuu on täiesti tasuta — kõik funktsioonid avatud.} other {Sinu esimesed # kuud on täiesti tasuta — kõik funktsioonid avatud.}}",
+    "body": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
+  },
+  "card": {
+    "perTruckMonth": "toiduauto kohta kuus",
+    "mostTrucks": "Populaarseim",
+    "tryFree": "Proovi tasuta",
+    "seeEvery": "Vaata kõiki funktsioone →",
+    "everything": "Kõik vahetuse läbiviimiseks vajalik",
+    "everythingIn": "Kõik, mis paketis {plan}, ja lisaks"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> ainult veebis kaardiga makstud tellimustelt. Tellimused kohapeal on alati tasuta.",
+    "included": "Iga kuu on esimesed <b>{included}</b> veebitellimuste käibest hinnas, seejärel <b>{fee}*</b>. Tellimused kohapeal on alati tasuta.",
+    "noFee": "<b>HatchGrabi tasusid pole</b> veebitellimustelt, ükskõik kui palju sul tegemist on. Üks etteaimatav igakuine kulu."
+  },
+  "base": {
+    "walkUp": "Tellimused kohapeal ja köögiekraan",
+    "online": "Veebitellimine",
+    "preorders": "Ettetellimused ja kättesaamise ajad",
+    "capacity": "Köögi võimsuse haldus",
+    "privateEvents": "Eraüritused",
+    "printing": "Köögilipikute printimine",
+    "app": "iPhone’i, iPadi ja Androidi köögirakendus"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsAppi automaatvastused",
+    "schedule_graphics": "Sotsiaalmeedia postitused — sinu Facebooki ja Instagrami ajakava — postitamiseks valmis",
+    "event_types": "Kohandatud ürituse tüübid ja hinnad"
+  },
+  "money": {
+    "unlimitedOrders": "Piiramatult veebitellimusi, HatchGrabi tasu 0 %",
+    "samePrice": "Sama hind ka sinu kõige kiiremal kuul"
+  },
+  "comingSoon": "Tulekul",
+  "bar": {
+    "title": "Milline pakett on minu jaoks kõige soodsam?",
+    "subtitle": "Sinu veebitellimused kuus",
+    "first": "Alla {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Üle {from} → <b>{plan}</b>",
+    "only": "Mis tahes maht → <b>{plan}</b>"
+  },
+  "footnote": "* Lisaks Stripe’i kaardimaksetasu veebis kaardiga makstud tellimustelt (praegu {country}: {cardFee}), mis makstakse Stripe’ile, mitte HatchGrabile. Tellimused kohapeal kasutavad sinu enda makseterminali — HatchGrab võtab 0 %.",
+  "currencyLine": "Hinnad: {currency} ({code})"
+}

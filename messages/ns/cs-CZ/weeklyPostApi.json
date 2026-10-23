@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Nadpis se nevešel a byl zkrácen.",
+    "date": "Datum se nevešlo a bylo zkráceno.",
+    "daysOff": "Text pro dny volna se nevešel a byl zkrácen.",
+    "place": "Název místa se nevešel a byl zkrácen.",
+    "time": "Čas se nevešel a byl zkrácen.",
+    "note": "Váš vlastní text se nevešel a byl zkrácen.",
+    "venue": "Místo konání se nevešlo a bylo zkráceno.",
+    "area": "Lokalita se nevešla a byla zkrácena."
+  },
+  "fontFallback": "Písmo, které tento design používá ({id}), se nepodařilo načíst — tato pole jsou v písmu Oswald.",
+  "wrongShapeBackground": "Obrázek tohoto místa má jiný tvar než váš design, proto se použije standardní pozadí.",
+  "rowsFit": "Poslední den je {px} px pod spodním okrajem obrázku — zmenšete rozestup řádků nebo posuňte 1. řádek výš.",
+  "placeStatus": {
+    "ownBoth": "Vlastní obrázek i rozmístění textu",
+    "wrongShape": "Jiný tvar — nepoužije se, dokud ho nenahradíte",
+    "ownPicture": "Vlastní obrázek, standardní rozmístění",
+    "ownPositions": "Standardní obrázek, vlastní rozmístění textu",
+    "none": "Zatím bez obrázku — používá se Standardní"
+  },
+  "standardStatus": "Používá se na všech ostatních místech",
+  "option": {
+    "oneOff": "Nahrát obrázek jen pro tento příspěvek",
+    "placePoster": "Plakát: {name}",
+    "standard": "Standardní design"
+  },
+  "previewLabel": {
+    "lastEvent": "Náhled používá vaši poslední akci na tomto místě",
+    "noEvents": "Zatím tu nejsou žádné akce — náhled ukazuje vaši příští akci s názvem tohoto místa"
+  },
+  "fontUsage": {
+    "weekly": "váš design týdenního příspěvku",
+    "event": "váš design příspěvku pro jednotlivou akci",
+    "place": "váš design pro místo {place}",
+    "placeUnnamed": "váš design pro místo"
+  },
+  "face": {
+    "regular": "Normální",
+    "bold": "Tučné",
+    "italic": "Kurzíva"
+  },
+  "picture": {
+    "legacy": "Plakát akce",
+    "fallback": "Obrázek",
+    "wrongShape": "Jiný tvar — nelze použít jako celé pozadí"
+  },
+  "noPicture": {
+    "omit": "Vynechat",
+    "blank": "Ponechat prázdné místo",
+    "logo": "Zobrazit logo"
+  },
+  "noPicturesAll": "{total, plural, one {Vaše místo má obrázek.} few {Všechna {total} vaše místa mají obrázek.} other {Všech {total} vašich míst má obrázek.}}",
+  "noPicturesSome": "{without, plural, one {{without} z vašich {total} míst zatím nemá obrázek} few {{without} z vašich {total} míst zatím nemají obrázek} other {{without} z vašich {total} míst zatím nemá obrázek}}",
+  "licenceTick": "Toto písmo vlastním nebo mám licenci k jeho použití",
+  "fontUploadButton": "↑ Nahrát vlastní písmo"
+}

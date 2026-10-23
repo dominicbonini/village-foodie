@@ -1,0 +1,9 @@
+{
+  "subject": "Vaš HatchGrab demo – evo poveznice za povratak",
+  "heading": "Vaš demo je spremljen",
+  "intro": "Evo poveznice za povratak u demo s vašim jelovnikom. Prijava nije potrebna – samo je dodirnite.",
+  "button": "Otvori moj demo",
+  "freshDay": "Svaki put kad se vratite, pripremit ćemo novi dan prodaje kako biste imali s čime isprobavati.",
+  "deletion": "Ovo je demo, pa ga ne čuvamo zauvijek – izbrisat ćemo ga zajedno s jelovnikom <b>{date}</b> (za {days, plural, one {# dan} few {# dana} other {# dana}}). Ako se registrirate prije toga, vaš jelovnik ide s vama.",
+  "notSent": "Spremljeno, ali trenutačno nismo mogli poslati e-poštu."
+}

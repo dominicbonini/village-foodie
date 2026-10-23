@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Ieraksts atklāšanas kartē"
+    },
+    "web_dashboard": {
+      "name": "Universāls tīmekļa vadības panelis"
+    },
+    "qr_code": {
+      "name": "QR kods"
+    },
+    "schedule_import": {
+      "name": "Automātiska grafika importēšana"
+    },
+    "meal_deals_upsells": {
+      "name": "Komplekti un papildpiedāvājumi"
+    },
+    "walkup_orders": {
+      "name": "Pasūtījumu uz vietas apstrāde"
+    },
+    "sold_out_toggle": {
+      "name": "Tūlītēja atzīme “Izpārdots”"
+    },
+    "kitchen_app": {
+      "name": "Virtuves lietotne iPhone, iPad un Android ierīcēm"
+    },
+    "offline_protection": {
+      "name": "Pasūtījumu aizsardzība bezsaistē"
+    },
+    "online_payments": {
+      "name": "Maksājumi tiešsaistē"
+    },
+    "advance_preordering": {
+      "name": "Iepriekšēja pasūtīšana uz nākamajiem datumiem"
+    },
+    "preorder_deadline": {
+      "name": "Iepriekšējo pasūtījumu termiņš"
+    },
+    "time_slot_selection": {
+      "name": "Laika loga izvēle klientiem"
+    },
+    "kitchen_capacity": {
+      "name": "Virtuves jaudas pārvaldība"
+    },
+    "stock_countdown": {
+      "name": "Automātiska krājumu atlikuma uzskaite"
+    },
+    "auto_accept": {
+      "name": "Automātiska tiešsaistes pasūtījumu pieņemšana"
+    },
+    "branded_qr_code": {
+      "name": "Zīmolots QR kods"
+    },
+    "private_events": {
+      "name": "Privāti pasākumi"
+    },
+    "social_media_posts": {
+      "name": "Sociālo tīklu ieraksti"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp automātiskās atbildes"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger un Instagram automātiskās atbildes"
+    },
+    "tap_to_pay": {
+      "name": "Maksājumu pieņemšana tālrunī"
+    },
+    "advanced_reporting": {
+      "name": "Paplašinātas atskaites"
+    },
+    "sms_order_alerts": {
+      "name": "Pasūtījumu paziņojumi īsziņā"
+    },
+    "multi_device_kitchen": {
+      "name": "Virtuves sinhronizācija vairākās ierīcēs"
+    },
+    "multi_user_access": {
+      "name": "Piekļuve vairākiem lietotājiem"
+    },
+    "embed_schedule": {
+      "name": "Grafika lapa jūsu tīmekļa vietnē"
+    },
+    "event_types": {
+      "name": "Pielāgoti pasākumu veidi un cenas"
+    },
+    "buzzer_tracking": {
+      "name": "Peidžeru uzskaite"
+    },
+    "ticket_printing": {
+      "name": "Virtuves čeku drukāšana"
+    },
+    "customer_display": {
+      "name": "Ekrāns klientiem"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitālās lojalitātes zīmogu kartes"
+    }
+  },
+  "cardRegionOnline": "standarta {region}",
+  "cardRegion": {
+    "UKcards": "kartes no Apvienotās Karalistes",
+    "EEAcards": "kartes no EEZ",
+    "UScards": "kartes no ASV",
+    "Australiancards": "kartes no Austrālijas",
+    "NewZealandcards": "kartes no Jaunzēlandes",
+    "Canadiancards": "kartes no Kanādas",
+    "Swisscards": "Šveices kartes"
+  },
+  "perMonth": {
+    "mo": "{amount}/mēn.",
+    "month": "{amount} mēnesī"
+  },
+  "priceWord": {
+    "free": "Bez maksas",
+    "freeTrial": "Bezmaksas izmēģinājums",
+    "lifetime": "Uz mūžu",
+    "zeroPercent": "0%",
+    "payAtHatch": "Apmaksa saņemot",
+    "unlimited": "Neierobežots",
+    "none": "—",
+    "masked": "Tiks precizēts"
+  },
+  "cell": {
+    "included": "Iekļauts"
+  }
+}

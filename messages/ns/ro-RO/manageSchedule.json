@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Anulat",
+    "finished": "Încheiat",
+    "unconfirmed": "Neconfirmat",
+    "confirmed": "Confirmat",
+    "open": "Deschis acum",
+    "closed": "Închis"
+  },
+  "sections": {
+    "label": "Secțiunile programului",
+    "events": "Evenimente",
+    "eventTypes": "Tipuri de evenimente"
+  },
+  "header": {
+    "title": "Program",
+    "upcoming": "Urmează: {count}",
+    "import": "✨ Importați programul",
+    "importHint": "fotografie, PDF sau text",
+    "addEvent": "+ Adăugați un eveniment",
+    "scraperAuto": "Căutăm automat evenimentele pe site-ul dumneavoastră",
+    "changeInSettings": "Modificați în Setări",
+    "scraperManual": "Vă gestionați programul manual"
+  },
+  "empty": {
+    "title": "Niciun eveniment programat",
+    "body": "Evenimentele preluate de pe rețelele sociale și din calendarul de rezervări vor apărea aici, ca să le confirmați"
+  },
+  "list": {
+    "openNow": "Deschis acum",
+    "needsApproval": "Necesită aprobarea dumneavoastră",
+    "needsConfirmation": "Necesită confirmare",
+    "confirmed": "Confirmate",
+    "past": "Evenimente trecute ({count})",
+    "found": "Am găsit {count, plural, one {# eveniment pentru dumneavoastră — verificați-l și aprobați-l înainte să fie publicat.} few {# evenimente pentru dumneavoastră — verificați-le și aprobați-le înainte să fie publicate.} other {# de evenimente pentru dumneavoastră — verificați-le și aprobați-le înainte să fie publicate.}}"
+  },
+  "card": {
+    "addName": "Adăugați un nume",
+    "timeNeeded": "⚠ Lipsește ora",
+    "setTimeFirst": "Setați mai întâi ora",
+    "confirm": "Confirmați",
+    "copy": "Copiați",
+    "edit": "Editați",
+    "makePost": "Creați o postare",
+    "cancel": "Anulați",
+    "approve": "Aprobați",
+    "reject": "Respingeți",
+    "stock": "⚠️ Stoc",
+    "stockHidden": "Ascuns — {reason}",
+    "noDeals": "Niciun combo activ",
+    "dealsActive": "{count, plural, one {# combo activ} few {# combo-uri active} other {# de combo-uri active}} · {names}{hidden, plural, =0 {} one { · # ascuns} few { · # ascunse} other { · # de ascunse}}",
+    "approveNeedsTimes": "Aprobarea este dezactivată până când evenimentul are o oră de început și una de sfârșit — adăugați-le cu Editați."
+  },
+  "guessed": {
+    "title": "📍 Am estimat această locație",
+    "body": "Mai multe locații corespund cu <b>{venue}</b>, așa că am ales varianta cea mai potrivită{hasTown, select, yes { în <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Verificați că este cea corectă înainte de aprobare — dacă este greșită, folosiți <b>Editați</b> pentru a corecta zona sau {postal}; altfel, clienții vor fi trimiși în locul greșit.",
+    "thisVenue": "această locație"
+  },
+  "noLocation": {
+    "title": "📍 Încă nicio locație",
+    "body": "Nu am putut plasa această locație pe hartă, așa că va apărea în listă, dar fără pin pe hartă. Adăugați {postal} cu <b>Editați</b> pentru a o pune pe hartă."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Posibil conflict} few {Posibile conflicte} other {Posibile conflicte}} — verificați înainte de {pending, select, yes {aprobare} other {confirmare}}",
+    "duplicate": "Pare să fie același eveniment pe care îl aveți deja.",
+    "review": "Aceeași locație și aceeași dată, altă oră — este același eveniment cu ora modificată sau un interval separat? Verificați înainte de aprobare.",
+    "already": "Deja în program: <b>{venue}</b>{details} ({status, select, confirmed {confirmat} open {deschis} other {{status}}})",
+    "unnamedVenue": "Locație fără nume",
+    "ack": "Da, sunt evenimente diferite — {pending, select, yes {aprobați} other {confirmați}} oricum",
+    "cancel": "Anulați",
+    "overlap": "Ora acestui eveniment se suprapune cu un alt eveniment din aceeași zi — un food truck nu poate fi în două locuri în același timp. Verificați înainte de aprobare."
+  },
+  "toast": {
+    "loadFailed": "Evenimentele nu au putut fi încărcate",
+    "linkFailed": "Linkul nu a putut fi încărcat",
+    "placeTypeFailed": "Eveniment salvat. Tipul obișnuit pentru {place} nu a fost salvat — {reason}.",
+    "placeTypeFailedReason": "salvarea nu a reușit",
+    "eventUpdated": "Eveniment actualizat",
+    "eventAdded": "Eveniment adăugat",
+    "eventsSaved": "{count, plural, one {# eveniment salvat} few {# evenimente salvate} other {# de evenimente salvate}}",
+    "saveEventsFailed": "Evenimentele nu au putut fi salvate",
+    "needsTime": "Adăugați o oră de început și una de sfârșit înainte de aprobare — evenimentul are nevoie de o oră pentru a fi publicat.",
+    "addStartTime": "Adăugați ora de început",
+    "addEndTime": "Adăugați ora de sfârșit",
+    "chooseTruckBefore": "Alegeți food truck-ul care lucrează la acest eveniment înainte de aprobare.",
+    "chooseTruck": "Alegeți food truck-ul care lucrează la acest eveniment",
+    "eventConfirmed": "Eveniment confirmat",
+    "eventRejected": "Eveniment respins",
+    "undo": "↩ Anulați",
+    "eventRestored": "Eveniment restabilit",
+    "restoreFailed": "Restabilirea nu a reușit",
+    "eventCancelled": "Eveniment anulat",
+    "eventCancelledOrders": "Eveniment anulat · {count, plural, one {# comandă anulată} few {# comenzi anulate} other {# de comenzi anulate}}",
+    "placeHidden": "Locație ascunsă",
+    "placeShown": "Locația este din nou afișată",
+    "saveThatFailed": "Nu am putut salva."
+  },
+  "link": {
+    "label": "Link privat și cod QR",
+    "close": "Închideți"
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "cancel": "Anulați",
+  "back": "← Înapoi",
+  "backPlain": "Înapoi",
+  "next": "Înainte →",
+  "continue": "Continuați →",
+  "closeImport": "Închideți importul",
+  "tryAgain": "Încercați din nou",
+  "catError": {
+    "empty": "Dați un nume categoriei.",
+    "tooLong": "Numele este prea lung.",
+    "clash": "Există deja o categorie numită „{name}”."
+  },
+  "steps": {
+    "details": "Datele dumneavoastră",
+    "menu": "Meniu",
+    "extras": "Extra",
+    "allergens": "Alergeni",
+    "kitchen": "Configurare bucătărie",
+    "schedule": "Program",
+    "settings": "Setări"
+  },
+  "toast": {
+    "demoGone": "Meniul demo nu mai este disponibil — vă rugăm să îl încărcați din nou ca să continuați.",
+    "eventsSaveFailed": "Evenimentele nu au putut fi salvate",
+    "cardReadFailed": "Fișa de alergeni nu a putut fi citită — încercați din nou",
+    "imageReadFailed": "Imaginea nu a putut fi citită — scrieți sau lipiți conținutul fișei",
+    "commitFailedDetail": "Salvarea meniului nu a putut fi finalizată: {error}. Unele produse s-ar putea să fie deja salvate — verificați meniul înainte să încercați din nou.",
+    "commitFailed": "Salvarea meniului nu a putut fi finalizată. Unele produse s-ar putea să fie deja salvate — verificați meniul înainte să încercați din nou.",
+    "finishFailed": "Configurarea nu a putut fi marcată ca finalizată — puteți continua totuși.",
+    "scheduleReadFailed": "Programul nu a putut fi citit — încercați o fotografie mai clară sau scrieți datele.",
+    "cardRead": "Fișă citită — potrivite: {matched}; de alocat de dumneavoastră: {pending, plural, one {#} few {#} other {#}}"
+  },
+  "settingsReview": {
+    "anchorOrder": "Setări → Setări comenzi",
+    "anchorDisplay": "Setări → Food truck-urile dumneavoastră → Setări de afișare",
+    "mins15": "15 minute",
+    "mins30": "30 de minute",
+    "mins60": "60 de minute",
+    "hours2": "2 ore",
+    "title": "Câteva setări de verificat",
+    "loading": "Se încarcă setările actuale…",
+    "looksGood": "Arată bine →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Nu s-a putut salva — puteți modifica asta în Setări.",
+    "anchorContact": "Setări → Date de contact",
+    "intro": "V-am configurat câteva setări uzuale. Merită o privire rapidă — le puteți modifica oricând mai târziu în Setări.",
+    "cancelAria": "Cu cât timp înainte de ridicare pot anula clienții"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Verificați-i înainte de lansare. Până atunci, produsele sunt marcate cu „alergeni nesetați”.",
+    "body": "Verificați-i în Setări înainte de lansare. Până atunci, produsele sunt marcate cu „alergeni nesetați”.",
+    "title": "⚠ Alergenii și regimul alimentar nu sunt încă setate"
+  },
+  "welcome": {
+    "title": "Bun venit la HatchGrab",
+    "yourTruck": "Food truck-ul dumneavoastră",
+    "stop": "Vă puteți opri și reveni oricând.",
+    "body": "{name} este configurat. Acum adăugăm meniul, apoi primul eveniment.",
+    "go": "Să începem"
+  },
+  "offer": {
+    "title": "Folosiți meniul din demo?",
+    "use": "Folosiți acest meniu",
+    "upload": "Încărcați alt meniu",
+    "body": "Am salvat meniul pe care l-ați încărcat — {count, plural, one {# produs} few {# produse} other {# de produse}}. Folosiți-l ca punct de plecare sau încărcați altul."
+  },
+  "upload": {
+    "title": "Importați meniul",
+    "body": "Încărcați o fotografie a tablei cu meniul, o captură de ecran, un PDF sau lipiți meniul ca text. AI-ul nostru îl citește și vă creează meniul digital — verificați totul înainte de salvare.",
+    "confirmCancel": "Anulați acest import? Verificarea acestui meniu se va pierde.",
+    "process": "Procesați meniul",
+    "later": "Fac asta mai târziu"
+  },
+  "processing": {
+    "title": "Analizăm meniul",
+    "body": "AI-ul citește și grupează produsele pe categorii…"
+  },
+  "review": {
+    "title": "Verificați meniul importat",
+    "editLaterSetup": "Numele, prețurile, extra, alergenii și informațiile despre regimul alimentar pot fi editate oricând mai târziu.",
+    "editLater": "Numele, prețurile, extra, alergenii și informațiile despre regimul alimentar pot fi editate oricând în Setări.",
+    "noPrice": "{count, plural, one {# produs nu avea un preț lizibil} few {# produse nu aveau un preț lizibil} other {# de produse nu aveau un preț lizibil}}",
+    "renameCategoryAria": "Redenumiți categoria {name}",
+    "renameAria": "Redenumiți {name}",
+    "renameTitle": "Redenumiți categoria",
+    "deleteAria": "Ștergeți {name}",
+    "deleteTitle": "Ștergeți categoria",
+    "lastCategory": "Meniul are nevoie de cel puțin o categorie",
+    "countOf": "{kept} din {total}",
+    "existing": "existentă",
+    "deleteEmptyTitle": "Ștergeți „{name}”?",
+    "deleteEmptyBody": "Nu conține produse, deci nu se pierde nimic.",
+    "delete": "Ștergeți",
+    "moveTitle": "Unde să mutăm {count, plural, one {# produs} few {# produse} other {# de produse}}?",
+    "moveBody": "Pentru a șterge „{name}”, preparatele sale trebuie mutate undeva — produsele fără categorie nu se importă.",
+    "moveAria": "Mutați produsele din {name} în",
+    "chooseCategory": "Alegeți o categorie…",
+    "moveDelete": "Mutați și ștergeți",
+    "itemName": "Numele produsului",
+    "free": "gratuit?",
+    "freeOn": "Gratuit ✕",
+    "nameFirst": "Dați un nume noului produs înainte să adăugați altul",
+    "addItem": "+ Adăugați produs",
+    "categoryName": "Numele categoriei",
+    "newCategoryAria": "Numele noii categorii",
+    "addCategory": "+ Adăugați categorie",
+    "ready": "{count, plural, one {# produs gata de adăugat} few {# produse gata de adăugat} other {# de produse gata de adăugat}}. Debifați ce nu doriți.",
+    "noPriceBody": "Setați un preț pentru fiecare sau marcați-l ca gratuit — altfel ar fi publicat la {zero}. Nu puteți continua până nu le rezolvați.",
+    "incomplete": "Introduceți un nume pentru a adăuga acest produs — rândurile goale nu se importă."
+  },
+  "extras": {
+    "introSetup": "Unele preparate pot fi configurate ca <b>un singur produs personalizabil</b> sau păstrate ca <b>preparate separate</b>. Alegeți cum să apară fiecare. Puteți schimba asta mai târziu.",
+    "intro": "Unele preparate pot fi configurate ca <b>un singur produs personalizabil</b> sau păstrate ca <b>preparate separate</b>. Alegeți cum să apară fiecare. Puteți schimba asta mai târziu în Setări.",
+    "none": "Niciun preparat de grupat — fiecare produs este un preparat de sine stătător.",
+    "axisChoice": "· alegere: {axis}",
+    "grouped": "Grupat · un singur produs, clientul alege",
+    "separate": "Produse separate în meniu"
+  },
+  "allergens": {
+    "title": "Alergeni",
+    "detected": "Am detectat alergeni în meniu. Alegeți mai jos cum să fie afișați.",
+    "howShow": "Cum doriți să le afișați clienților alergenii?",
+    "skip": "Săriți deocamdată peste configurarea alergenilor"
+  },
+  "kitchen": {
+    "title": "Configurare bucătărie",
+    "intro": "Ajutați-i pe clienți să știe cât au de așteptat — puteți modifica oricând aceste valori mai târziu.",
+    "howWorks": "Cum funcționează capacitatea bucătăriei",
+    "allExist": "Toate categoriile există deja — nu sunt timpi de setat.",
+    "totalHelp": "Setați o capacitate totală pentru a limita câte produse preia bucătăria pe fiecare interval orar. Lăsați ∞ pentru fără limită.",
+    "saveAdd": "Salvați și adăugați în meniu"
+  },
+  "schedule": {
+    "title": "Adăugați programul meu",
+    "intro": "Dacă programul dumneavoastră este pe site, îl putem ține la zi automat — sau vă puteți adăuga singur datele.",
+    "websiteTitle": "Programul meu este pe site-ul meu",
+    "urlPlaceholder": "https://foodtruckultau.ro/evenimente",
+    "checking": "Se verifică…",
+    "verify": "Verificați",
+    "checkingSite": "Vă verificăm site-ul…",
+    "takesTime": "Poate dura până la 2 minute — vă rugăm să lăsați pagina deschisă.",
+    "canRead": "✓ Putem citi programul dumneavoastră",
+    "ownSite": "Site-ul dumneavoastră propriu — nu o pagină de Facebook sau Instagram.",
+    "photoTitle": "Încarc o fotografie a programului meu",
+    "dragChoose": "Trageți și plasați sau atingeți pentru a alege",
+    "imageOrPdf": "Imagine sau PDF",
+    "or": "sau",
+    "pastePlaceholder": "Lipiți datele aici…",
+    "read": "Citiți programul",
+    "found": "{count, plural, one {# dată găsită — va fi adăugată} few {# date găsite — vor fi adăugate} other {# de date găsite — vor fi adăugate}} în programul dumneavoastră.",
+    "dateTbc": "Dată de confirmat",
+    "save": "Salvați {count, plural, one {# dată} few {# date} other {# de date}}",
+    "manualDesc": "Le adăugați mai târziu în fila Program — nu trebuie să faceți nimic acum.",
+    "manualBody": "Nicio problemă. Puteți adăuga și gestiona datele oricând din fila Program a contului dumneavoastră.",
+    "blockedDomain": "Vă rugăm să folosiți adresa site-ului dumneavoastră — paginile de Facebook și Instagram nu pot fi citite automat.",
+    "saveFailed": "Am citit programul, dar nu l-am putut salva acum — încercați din nou.",
+    "websiteDesc": "Îl verificăm regulat și vă trimitem datele noi spre aprobare.",
+    "keepChecking": "Vom verifica în continuare această pagină și vă vom trimite orice dată nouă spre aprobare.",
+    "photoDesc": "Fotografiați sau lipiți datele — le citim noi, iar dumneavoastră le verificați.",
+    "noneFound": "Nu am găsit nicio dată acolo — încercați o fotografie mai clară sau adăugați singur o dată.",
+    "manualTitle": "Îmi adaug singur datele",
+    "trialNotStarted": "Adăugarea evenimentelor nu pornește perioada de probă gratuită — alegeți mai târziu evenimentul cu care începe."
+  },
+  "done": {
+    "summary": "{items, plural, one {# produs} few {# produse} other {# de produse}} în {categories, plural, one {# categorie} few {# categorii} other {# de categorii}}.",
+    "imported": "Meniu importat!",
+    "added": "Produsele au fost adăugate în meniu.",
+    "duplicates": "{count, plural, one {# duplicat omis} few {# duplicate omise} other {# de duplicate omise}}",
+    "showMe": "Arătați-mi aplicația",
+    "remind": "Amintiți-mi mai târziu",
+    "allSet": "Totul este gata!",
+    "explore": "Explorez singur"
+  },
+  "discard": {
+    "setupTitle": "Terminați configurarea mai târziu?",
+    "setupBody": "Contul și food truck-ul dumneavoastră sunt salvate — nu se pierde nimic. Puteți adăuga meniul oricând: conectați-vă și atingeți <b>Importați meniul</b> pe ecranul meniului ca să continuați exact de aici.",
+    "keepGoing": "Continuați",
+    "finishLater": "Termin mai târziu",
+    "title": "Renunțați la acest import?",
+    "keepEditing": "Continuați editarea",
+    "discard": "Renunțați",
+    "body": "Modificările nu vor fi salvate — produsele importate, timpii de preparare și capacitatea bucătăriei nu vor fi adăugate."
+  },
+  "allergenCardText": {
+    "contains": "Conține: {list}",
+    "mayContain": "Poate conține: {list}"
+  }
+}

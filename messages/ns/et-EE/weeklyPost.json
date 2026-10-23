@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Midagi läks valesti",
+    "previewFailed": "Eelvaadet ei õnnestunud luua",
+    "loadFailed": "Laadimine ebaõnnestus",
+    "tooBig": "See pilt on {size, number, ::.0 group-off} MB. Piirang on 10 MB.",
+    "wrongType": "Vali PNG- või JPG-fail.",
+    "uploadIncomplete": "Üleslaadimine jäi pooleli",
+    "uploadFailed": "Üleslaadimine ebaõnnestus",
+    "saveFailed": "Salvestamine ebaõnnestus",
+    "buildFailed": "Postitust ei õnnestunud koostada",
+    "copyFailed": "Kopeerimine ebaõnnestus — vali tekst ja kopeeri see käsitsi."
+  },
+  "loading": "Laadimine…",
+  "missingTable": {
+    "title": "Nädalapostitus vajab andmebaasi uuendust",
+    "body": "Kujunduste tabelit pole veel loodud. Kui migratsioon on rakendatud, hakkab see vaade tööle."
+  },
+  "kind": {
+    "label": "Milline kujundus",
+    "event": "Üks üritus",
+    "week": "Terve nädal"
+  },
+  "setup": {
+    "title": "Seadista oma nädalapostitus",
+    "intro": "Laadi üles tühi versioon nädala ajakava pildist, mida sa juba teed — sama kujundus, kust on eemaldatud sinu tekstikastid. HatchGrab täidab nädala sinu ajakava põhjal.",
+    "canvaTitle": "Kuidas Canvast tühja versiooni eksportida",
+    "canvaStep1": "Ava oma tavapärane nädala ajakava kujundus.",
+    "canvaStep2": "Kustuta kuupäevade, asukohtade ja kellaaegadega tekstikastid — jäta alles taust ja pealkirjad, mida soovid hoida.",
+    "canvaStep3": "Jaga › Laadi alla › PNG.",
+    "uploading": "Üleslaadimine…",
+    "upload": "Laadi üles oma tühi pilt",
+    "uploadHint": "PNG või JPG, kuni 10 MB, lühemal küljel vähemalt {px} px.",
+    "phoneTip": "Parim arvutis või iPadis — telefonis on kastid lohistamiseks liiga väikesed.",
+    "designName": "Nädalapostituse kujundus",
+    "backDesigns": "‹ Kujundused",
+    "back": "‹ Tagasi",
+    "pictureNote": "Sinu pilt ilma kuupäeva ja asukohata. Need lisame meie.",
+    "saved": "Kujundus salvestatud."
+  },
+  "week": {
+    "this": "See nädal",
+    "next": "Järgmine nädal"
+  },
+  "post": {
+    "title": "Sinu nädalapostitus",
+    "editDesign": "Muuda kujundust",
+    "weekOf": "nädal alates {date}",
+    "imageAlt": "Sinu nädalapostitus",
+    "building": "Postituse koostamine…",
+    "updating": "Uuendamine…",
+    "eventsTitle": "Selle nädala üritused",
+    "noEvents": "Sel nädalal üritusi pole.",
+    "eventDateCancelled": "{date} · tühistatud",
+    "showCancelled": "Näita tühistatud üritusi",
+    "showPrivate": "Näita eraüritusi",
+    "privateHint": "Need kuvatakse kui „Eraüritus“ koos kuupäeva ja kellaaegadega — asukohta mitte kunagi.",
+    "noteTitle": "Märkus",
+    "notePlaceholder": "nt Telli ette ja tule järele",
+    "noteHint": "Kuvatakse postituse tekstis ja märkusekastis, kui oled selle lisanud.",
+    "captionTitle": "Postituse tekst sinu lehele",
+    "perEventTitle": "Postitus iga ürituse kohta",
+    "nothingToPost": "Sel nädalal pole midagi postitada.",
+    "textCopied": "Tekst kopeeritud.",
+    "copyText": "Kopeeri tekst",
+    "image": "Pilt",
+    "share": "Jaga",
+    "noOrderLink": "Tellimislinki veel pole — määra oma toiduauto veebiaadress jaotises Seaded."
+  }
+}

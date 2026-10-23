@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Obligāti} other {Neobligāti}}{limit, select, one { · Izvēlieties vienu} upTo { · Izvēlieties ne vairāk kā {max}} other {}}",
+  "operator": "{required, select, yes {Obligāti} other {Neobligāti}}{limit, select, one { · Klients izvēlas vienu} upTo { · Klients var izvēlēties ne vairāk kā {max}} other {}}"
+}

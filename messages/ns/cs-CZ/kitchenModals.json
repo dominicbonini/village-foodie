@@ -1,0 +1,69 @@
+{
+  "close": "Zavřít",
+  "cancel": "Zrušit",
+  "selectReason": "Vyberte důvod",
+  "reject": {
+    "title": "Odmítnout objednávku #{orderId}?",
+    "reasonLabel": "Důvod — povinné (uvidí ho zákazník)",
+    "reason": "{reason, select, sold_out {Položka je vyprodaná} too_busy {Moc práce — nestihneme to včas} closing_soon {Brzy zavíráme} other {Jiný}}",
+    "noteRequired": "Důvod — povinné",
+    "noteOptional": "Doplňující poznámka — nepovinné",
+    "notePlaceholder": "Doplňte podrobnosti pro zákazníka…",
+    "keep": "Ponechat objednávku",
+    "confirm": "Odmítnout objednávku"
+  },
+  "eventCancel": {
+    "title": "Zrušit tuto akci?",
+    "affected": "{n, plural, one {{count} objednávka bude zrušena} few {{count} objednávky budou zrušeny} other {{count} objednávek bude zrušeno}} a zákazníci dostanou oznámení.",
+    "reasonLabel": "Důvod — nepovinné",
+    "reason": "{reason, select, vehicle_breakdown {Porucha vozidla} weather {Počasí} venue_issue {Problém s místem} personal_emergency {Osobní nouzová situace} other {Jiný}}",
+    "messageLabel": "Zpráva pro zákazníky — nepovinné",
+    "messagePlaceholder": "např. Omlouváme se, cestou na místo se nám porouchal přívěs…",
+    "keep": "Ponechat akci",
+    "cancelling": "Rušíme…",
+    "confirm": "Zrušit akci"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Znovu spustit akci} other {Spustit akci}}",
+    "changeEvent": "Změnit akci",
+    "changeEventType": "Změnit typ akce…",
+    "privateLink": "Soukromý odkaz a QR kód",
+    "noteLabel": "Poznámka pro zákazníky",
+    "notePlaceholder": "např. Parkujte na hlavním parkovišti, hledejte oranžový stan",
+    "noteHint": "Zákazníci ji uvidí na stránce objednávky pod podrobnostmi o akci.",
+    "saveNote": "Uložit poznámku",
+    "resume": "Obnovit objednávky",
+    "pause": "Pozastavit objednávky",
+    "changeFinishTime": "Změnit čas konce akce",
+    "finishEvent": "Ukončit akci",
+    "cancelEvent": "Zrušit akci"
+  },
+  "finish": {
+    "confirmTitle": "Změnit čas konce?",
+    "willFinish": "Tato akce skončí v <b>{selected}</b>{hasCurrent, select, yes { místo v <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} objednávka má} few {{count} objednávky mají} other {{count} objednávek má}} čas vyzvednutí po {selected}.</b> {n, plural, one {Zůstává} few {Zůstávají} other {Zůstávají}} na obrazovce a {n, plural, one {je ji stále potřeba připravit} few {je stále potřeba je připravit} other {je stále potřeba je připravit}}. Změna času konce jen zabrání zadávání NOVÝCH objednávek na pozdější časy.",
+    "saving": "Ukládání…",
+    "confirm": "Změnit čas konce",
+    "keepCurrent": "Ponechat {current}",
+    "keepAsIs": "Ponechat beze změny",
+    "title": "Změnit čas konce",
+    "currentlySet": "Tato akce má nyní nastavený konec na <b>{current}</b>.",
+    "noFinishTime": "Tato akce nemá nastavený čas konce.",
+    "noTimesLeft": "Na dnešek už nezbývají žádné časy. Použijte místo toho „Ukončit akci“.",
+    "newFinishTime": "Nový čas konce",
+    "optionCurrent": "{time} (současný)",
+    "earlier": "Tento čas je dřívější než současný čas konce. Zákazníci nebudou moci objednávat na pozdější časy.",
+    "review": "Zkontrolovat změnu",
+    "optionNextDay": "{time} (další den)"
+  },
+  "extraWait": {
+    "title": "Prodloužit čekání",
+    "hint": "Prodlouží čas vyzvednutí uváděný u nových objednávek. Čas konce akce se nemění.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Pro načtení se znovu připojte",
+    "selected": "Vybráno",
+    "status": "{tone, select, paused {⏸ Pozastaveno} live {● Probíhá} finished {● Ukončeno} cancelled {Zrušeno} other {Nezahájeno}}"
+  }
+}

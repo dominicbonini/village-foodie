@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Rendelési rendszer food truckoknak és mobil vendéglátóknak",
+    "description": "Rendelés, előrendelés és konyhai kijelző {country} food truckjai és mobil vendéglátói számára.",
+    "audience": "Food truck-üzemeltetők és mobil vendéglátók"
+  },
+  "hero": {
+    "title": "Rendelési rendszer, kifejezetten <lean>food truckokra szabva.</lean>",
+    "subSmall": "Töltse fel az étlapját, regisztráció nélkül.<br></br>Működő demó kevesebb mint 60 másodperc alatt.",
+    "tagline": "Kevesebb papírmunka.<br></br>Több <lean>főzés.</lean>",
+    "cta": "Feltöltöm az étlapomat →",
+    "ctaNote": "<lead>Töltsön fel egy fotót az étlapjáról, és kevesebb mint 60 másodperc múlva már működés közben láthatja.</lead><small>Regisztráció nélkül. Bankkártya nélkül.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "A HatchGrab konyhai kijelzője a rendelésjegyekkel, elkészítési sorrendben",
+    "dashboardAlt": "Rendelésfelvétel a HatchGrabben: balra az étlap, jobbra a kosár és a végösszeg",
+    "phoneAlt": "Rendelés egy food truckból a HatchGrabben: étlap fotókkal és árakkal, folyamatosan frissülő kosárösszeggel"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Az első hónap teljesen ingyenes, minden funkcióval} other {Az első # hónap teljesen ingyenes, minden funkcióval}}",
+    "noCard": "Bankkártya nem szükséges",
+    "cancel": "Bármikor lemondható, szerződés nélkül"
+  },
+  "does": {
+    "eyebrow": "Mit tud?",
+    "title": "Food truckokra szabva, nem éttermekre.",
+    "lede": "A legtöbb rendelési rendszer állandó címmel, megbízható wifivel és minden héten azonos nyitvatartással számol. Ön viszont hétről hétre máshol áll, más időpontokban, gyenge vagy semmilyen mobilhálózattal. A HatchGrabet pontosan erre építettük.",
+    "slotsTitle": "A vásárlók maguk választják az átvételi időt",
+    "capacityTitle": "Állítsa be a konyhai kapacitását",
+    "capacityBody": "Adja meg, mennyit tud egyszerre elkészíteni, és mennyi ideig tart. Ha egy átvételi idő betelt, a vásárlók már nem választhatják.",
+    "devicesTitle": "Bármilyen eszközön működik",
+    "devicesBody": "Fut a kötényzsebében lévő telefonon, a pulton álló tableten, a food truckban lévő laptopon — és azon a kártyaterminálon is, amelyen már most is fogad fizetést.",
+    "postsTitle": "Automatizálja Facebook- és Instagram-bejegyzéseit",
+    "postsBody": "Töltse fel a dizájnt, amelyet már most is használ a Facebookon vagy az Instagramon. Mi kitöltjük a dátumokkal, helyszínekkel és időpontokkal, megosztásra készen — hetente vagy naponta.",
+    "whatsappTitle": "WhatsApp automatikus válaszok",
+    "whatsappBody": "„Hol lesznek ma este?” „Milyen desszertjeik vannak?” A WhatsAppon érkező kérdésekre akkor is születik válasz, amikor Ön éppen a helyszínre vezet vagy a grill mellett áll — a saját étlapja és menetrendje alapján. Messenger és Instagram hamarosan.",
+    "whatsappSoonTitle": "WhatsApp automatikus válaszok <soon>Hamarosan</soon>",
+    "whatsappSoonBody": "„Hol lesznek ma este?” „Milyen desszertjeik vannak?” Hamarosan a WhatsAppon érkező kérdésekre akkor is születik válasz, amikor Ön éppen a helyszínre vezet vagy a grill mellett áll. Utána jön a Messenger és az Instagram.",
+    "offlineTitle": "Nincs térerő? Szolgáljon ki tovább.",
+    "offlineBody": "Ha megszűnik a térerő, az online rendelés automatikusan szünetel, így a vásárlók nem adhatnak le olyan rendelést, amelyet Ön nem látna. A rendelésfelvételt folytathatja az iPhone-, iPad- és Android-alkalmazással.",
+    "slotsBody": "A vásárlók előre rendelnek, és átvételi időt választanak. Rövidebb sorok, és az étel kész, mire megérkeznek."
+  },
+  "steps": {
+    "eyebrow": "Az első lépések",
+    "title": "Kb. 15 perc alatt mindent beállíthat, és már fogadhatja is a rendeléseket.",
+    "lede": "Három teendő — és ebből kettőhöz elég egy fotó.",
+    "menuTitle": "Állítsa össze az étlapját",
+    "menuBody": "Fotózza le a tábláját, vagy illessze be a szöveget. A tételek, az árak és az extrák maguktól átkerülnek. Önnek csak ellenőriznie kell őket.",
+    "scheduleTitle": "Adja hozzá a menetrendjét",
+    "scheduleBody": "Fent van a weboldalán? Onnan beolvassuk, és naprakészen tartjuk. Ha nincs, azt is fotózza le. Önnek csak jóvá kell hagynia, amit találunk.",
+    "shareTitle": "Ossza meg a linkjét",
+    "shareBody": "Tegye közzé a Facebookon, ragassza a QR-kódot a food truckra. A rendelések megjelennek a kijelzőjén, abban a sorrendben, ahogy el kell készítenie őket."
+  },
+  "testimonial": {
+    "quote": "A HatchGrabbel sokkal egyszerűbb lett a rendelés. Minden rendezett, követjük a készletet, és pontosan tudjuk, hány pizzát tudunk még eladni — az idősávok pedig fantasztikusak a forgalmas falvakban.",
+    "award": "Az év mobil pizzériája",
+    "awardScope": "Regionális győztes",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia és Bogdan — tulajdonosok"
+  },
+  "pricing": {
+    "eyebrow": "Árak",
+    "title": "Kezdje ingyen. Bővítsen, ha szükséges.",
+    "switchHead": "Másik platformról váltana?",
+    "switchBody": "Nézze meg, mennyit fizetne a HatchGrabnél ugyanennyi rendelésért. Kb. egy percet vesz igénybe.",
+    "switchCta": "Hasonlítsa össze, mennyit fizet"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Kíváncsi, milyen egyszerű a beállítás?",
+    "lede": "Töltsön fel egy fotót vagy képernyőképet az étlapjáról, és kevesebb mint 60 másodperc alatt működő rendelési oldalt készítünk belőle, amelyet kedvére kipróbálhat. Az Ön tételei, az Ön árai. Regisztráció, bankkártya és telepítés nélkül. Nézze meg, aztán döntsön.",
+    "cta": "Feltöltöm most az étlapomat →"
+  },
+  "meta": {
+    "title": "Rendelési rendszer food truckoknak és mobil vendéglátóknak — HatchGrab {country}",
+    "description": "Fogadjon rendeléseket és előrendeléseket sorban állás nélkül. Rendelési szoftver konyhai kijelzővel {country} food truckjai és mobil vendéglátói számára — nem kasszarendszer."
+  }
+}

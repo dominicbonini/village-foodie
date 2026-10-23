@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Jūsu atrašanās vieta",
+    "identity": "Jūsu food truck",
+    "menu": "Jūsu ēdienkarte",
+    "event": "Pirmais pasākums"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Iestatīšana",
+  "loading": "Ielādē",
+  "loadingCountries": "Ielādē…",
+  "verify": {
+    "ok": "E-pasts apstiprināts — paldies.",
+    "expired": "Šīs apstiprinājuma saites derīgums ir beidzies. Sazinieties ar mums, un mēs to sakārtosim, pirms sākat darbu.",
+    "invalid": "Šī apstiprinājuma saite nedarbojās. Sazinieties ar mums, un mēs to sakārtosim, pirms sākat darbu."
+  },
+  "identity": {
+    "heading": "Kā sauc jūsu food truck?",
+    "intro": "Šo nosaukumu redz klienti. Nekas netiek publicēts, līdz jūs izvēlaties sākt darbu.",
+    "nameLabel": "Food truck nosaukums",
+    "namePlaceholder": "Boba burgeri",
+    "phoneLabel": "Tālrunis",
+    "whatsappTick": "Šis numurs ir pieejams WhatsApp",
+    "phoneHelp": "Klienti to redz pasūtījuma apstiprinājumā, lai varētu jautāt par pasūtījumu. Atzīme nosaka, vai tur būs rakstīts “Zvaniet mums” vai “Rakstiet mums WhatsApp”. Abus varat mainīt sadaļā “Iestatījumi”."
+  },
+  "phoneRequired": "Pievienojiet tālruņa numuru — gan klienti, gan mēs to izmantojam, lai ar jums sazinātos.",
+  "createFailed": "Neizdevās izveidot jūsu food truck.",
+  "unreachable": "Pašlaik neizdevās ar mums sazināties — lūdzu, mēģiniet vēlreiz.",
+  "back": "Atpakaļ",
+  "creating": "Veido jūsu food truck…",
+  "continue": "Turpināt"
+}

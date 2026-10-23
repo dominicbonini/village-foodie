@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Obecność na mapie food trucków"
+    },
+    "web_dashboard": {
+      "name": "Uniwersalny panel w przeglądarce"
+    },
+    "qr_code": {
+      "name": "Kod QR"
+    },
+    "schedule_import": {
+      "name": "Automatyczny import harmonogramu"
+    },
+    "meal_deals_upsells": {
+      "name": "Zestawy i dosprzedaż"
+    },
+    "walkup_orders": {
+      "name": "Obsługa zamówień na miejscu"
+    },
+    "sold_out_toggle": {
+      "name": "Szybkie oznaczanie „wyprzedane”"
+    },
+    "kitchen_app": {
+      "name": "Aplikacja kuchenna na iPhone, iPad i Android"
+    },
+    "offline_protection": {
+      "name": "Ochrona zamówień offline"
+    },
+    "online_payments": {
+      "name": "Płatności online"
+    },
+    "advance_preordering": {
+      "name": "Zamówienia z wyprzedzeniem"
+    },
+    "preorder_deadline": {
+      "name": "Termin zamówień z wyprzedzeniem"
+    },
+    "time_slot_selection": {
+      "name": "Wybór przedziału czasowego przez klienta"
+    },
+    "kitchen_capacity": {
+      "name": "Zarządzanie wydajnością kuchni"
+    },
+    "stock_countdown": {
+      "name": "Automatyczne odliczanie zapasów"
+    },
+    "auto_accept": {
+      "name": "Automatyczna akceptacja zamówień online"
+    },
+    "branded_qr_code": {
+      "name": "Kod QR z twoim logo"
+    },
+    "private_events": {
+      "name": "Wydarzenia prywatne"
+    },
+    "social_media_posts": {
+      "name": "Posty w mediach społecznościowych"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatyczne odpowiedzi WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatyczne odpowiedzi w Messengerze i na Instagramie"
+    },
+    "tap_to_pay": {
+      "name": "Przyjmowanie płatności telefonem"
+    },
+    "advanced_reporting": {
+      "name": "Zaawansowane raporty"
+    },
+    "sms_order_alerts": {
+      "name": "Powiadomienia SMS o zamówieniach"
+    },
+    "multi_device_kitchen": {
+      "name": "Synchronizacja kuchni na wielu urządzeniach"
+    },
+    "multi_user_access": {
+      "name": "Dostęp dla wielu użytkowników"
+    },
+    "embed_schedule": {
+      "name": "Harmonogram na twojej stronie internetowej"
+    },
+    "event_types": {
+      "name": "Własne typy wydarzeń i ceny"
+    },
+    "buzzer_tracking": {
+      "name": "Obsługa pagerów"
+    },
+    "ticket_printing": {
+      "name": "Drukowanie bonów kuchennych"
+    },
+    "customer_display": {
+      "name": "Ekran dla klientów"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Cyfrowe karty lojalnościowe z pieczątkami"
+    }
+  },
+  "cardRegionOnline": "standardowe {region}",
+  "cardRegion": {
+    "UKcards": "karty brytyjskie",
+    "EEAcards": "karty z EOG",
+    "UScards": "karty amerykańskie",
+    "Australiancards": "karty australijskie",
+    "NewZealandcards": "karty nowozelandzkie",
+    "Canadiancards": "karty kanadyjskie",
+    "Swisscards": "karty szwajcarskie"
+  },
+  "perMonth": {
+    "mo": "{amount}/mies.",
+    "month": "{amount}/miesiąc"
+  },
+  "priceWord": {
+    "free": "Za darmo",
+    "freeTrial": "Bezpłatny okres próbny",
+    "lifetime": "Dożywotnio",
+    "zeroPercent": "0%",
+    "payAtHatch": "Płatność przy odbiorze",
+    "unlimited": "Bez limitu",
+    "none": "—",
+    "masked": "Do potwierdzenia"
+  },
+  "cell": {
+    "included": "W cenie"
+  }
+}

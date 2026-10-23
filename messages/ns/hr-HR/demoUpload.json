@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Čitamo vaš jelovnik…",
+    "found": "Pronašli smo vaše artikle…",
+    "kitchen": "Postavljamo vašu kuhinju…",
+    "page": "Izrađujemo vašu stranicu za narudžbe…",
+    "almost": "Još malo…"
+  },
+  "templateSteps": {
+    "truck": "Izrađujemo vaš ogledni food truck…",
+    "menu": "Postavljamo jelovnik…",
+    "kitchen": "Postavljamo kuhinju…",
+    "page": "Izrađujemo stranicu za narudžbe…",
+    "almost": "Još malo…"
+  },
+  "dialogLabel": "Učitajte svoj jelovnik",
+  "heading": "✨ Učitajte svoj jelovnik",
+  "failedHeading": "Taj jelovnik nismo uspjeli pročitati",
+  "close": "Zatvori",
+  "intro": "Fotografija ploče s jelovnikom, snimka zaslona, PDF ili zalijepljeni tekst. Naš AI ga pročita i izradi vam funkcionalnu stranicu za narudžbe – vaši artikli, vaše cijene – za manje od 60 sekundi. Bez registracije, bez kartice.",
+  "failedIntro": "Ponekad je fotografija pretamna, snimljena pod kutom ili rukom pisana. To je naš posao riješiti, a ne vaša pogreška. Nekoliko mogućnosti:",
+  "usually": "Ovo obično traje manje od 60 sekundi.",
+  "slow": "Ovo traje dulje nego inače – kod velikih jelovnika to se događa.",
+  "keepWaiting": "Nastavi čekati",
+  "sampleWhileYouWait": "Ili dok čekate razgledajte ogledni jelovnik",
+  "standIn": "Ovo <b>neće biti vaš jelovnik</b> – samo je zamjena kako biste vidjeli kako sve radi.",
+  "seeSample": "Pogledaj ogledni jelovnik",
+  "tryAgain": "Pokušaj ponovno",
+  "tryPhotoAgain": "Pokušaj ponovno s ovom fotografijom",
+  "tryDifferent": "Pokušaj s drugom fotografijom",
+  "uploadAnother": "← Učitaj drugu fotografiju",
+  "orSample": "Ili razgledajte ogledni jelovnik",
+  "orBuild": "Ili ćemo ga izraditi umjesto vas",
+  "buildSent": "✓ Hvala – primili smo. Javit ćemo vam se e-poštom.",
+  "buildBody": "Ostavite svoju e-poštu i stvarna osoba unijet će vaš jelovnik i poslati vam poveznicu.",
+  "emailPlaceholder": "vi@vasfoodtruck.hr",
+  "sending": "…",
+  "send": "Pošalji",
+  "noPhoto": "Nemate pri ruci fotografiju jelovnika?",
+  "noPhotoBody": "Razgledajte umjesto toga ogledni food truck – svoj jelovnik možete učitati u bilo kojem trenutku.",
+  "build": "Izradi moj demo →",
+  "nothingPublished": "Ništa nije objavljeno – vidite to samo vi.",
+  "error": {
+    "somethingWrong": "Nešto je pošlo po zlu. Pokušajte ponovno.",
+    "serverUnreachable": "Nismo se mogli spojiti s poslužiteljem. Provjerite vezu i pokušajte ponovno.",
+    "sendFailed": "Slanje nije uspjelo – pokušajte ponovno."
+  },
+  "fields": {
+    "uploadLabel": "Učitajte datoteku jelovnika",
+    "dropHere": "Ispustite jelovnik ovdje",
+    "dragOrTap": "Povucite i ispustite ili dodirnite za odabir",
+    "fileTypes": "Slika ili PDF",
+    "or": "ili",
+    "pasteLabel": "Zalijepite tekst jelovnika",
+    "pastePlaceholder": "Zalijepite jelovnik ovdje – nazive artikala, opise, cijene..."
+  }
+}

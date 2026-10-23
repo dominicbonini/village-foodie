@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Ova e-poruka nema redak za odjavu, pa se ne može poslati. Dodajte ga gumbom „Insert opt-out“.",
+    "notSetUp": "Rečenica za odjavu nije postavljena, pa se ne može poslati nijedna e-poruka za pridobivanje klijenata. Dodajte je na ploči Potpis na kartici Predlošci.",
+    "notLoaded": "Rečenica za odjavu još se nije učitala, pa se ovo ne može poslati.",
+    "unreadable": "Rečenicu za odjavu nije bilo moguće pročitati, pa ništa nije poslano."
+  },
+  "retry": {
+    "notRebuilt": "Tu poruku nije bilo moguće ponovno sastaviti s retkom o tvrtki, pa ništa nije poslano."
+  }
+}

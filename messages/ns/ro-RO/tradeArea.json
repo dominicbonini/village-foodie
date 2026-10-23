@@ -1,0 +1,8 @@
+{
+  "country_missing": "Alegeți țara în care își are sediul food truck-ul dumneavoastră.",
+  "country_off": "Food truck-urile din această țară nu se pot înscrie încă. Alegeți altă țară.",
+  "zone_unknown": "Nu oferim acest fus orar pentru această țară. Alegeți unul din listă.",
+  "town_missing": "Spuneți-ne orașul sau localitatea în care aveți sediul.",
+  "town_too_long": "Numele localității este prea lung — maximum 120 de caractere.",
+  "region_closed": "Food truck-urile din regiunea {region} nu se pot înscrie încă{reason, select, language {: HatchGrab nu este încă disponibil în limba {language}} taxLines {: adăugăm mai întâi rânduri separate pentru GST și PST} other {}}. Dacă food truck-ul dumneavoastră are sediul în altă parte, alegeți acel oraș sau acea localitate."
+}

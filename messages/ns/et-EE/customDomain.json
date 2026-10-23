@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Lisa oma ajakava oma veebisaidile",
+    "live": "<addr>{address}</addr> näitab sinu ajakava.",
+    "create": "Loome aadressile <addr>{address}</addr> lehe, mis näitab sinu ajakava.",
+    "exampleDomain": "sinutoiduauto.ee",
+    "liveBadge": "Aktiivne",
+    "setUp": "Seadista",
+    "viewSetup": "Vaata seadistust",
+    "continue": "Jätka",
+    "justLive": "<b>{address}</b> töötab. Vaata see üle ja anna allpool teada, et kõik on õige."
+  },
+  "waiting": {
+    "title": "Ootame, et {address} tööle hakkaks",
+    "bodySince": "Seadistasid selle {date}. Uued veebiaadressid hakkavad tavaliselt tööle mõne minuti jooksul, mõnikord võtab kõigini jõudmine kuni 24 tundi — sel ajal ei pea sa midagi tegema. Kui keegi teine lisas rea sinu eest, tasub kontrollida, et ta seda ka tegi.",
+    "body": "Uued veebiaadressid hakkavad tavaliselt tööle mõne minuti jooksul, mõnikord võtab kõigini jõudmine kuni 24 tundi — sel ajal ei pea sa midagi tegema. Kui keegi teine lisas rea sinu eest, tasub kontrollida, et ta seda ka tegi."
+  },
+  "ready": {
+    "title": "{address} töötab",
+    "body": "Vaata see üle ja anna seadetes teada, et kõik on õige."
+  },
+  "confirm": {
+    "heading": "Vaata üle ja anna teada, kas kõik on õige",
+    "open": "Ava <link>{address}</link>",
+    "checkTimes": "Kontrolli, et kuupäevad ja kellaajad on õiged.",
+    "yes": "Jah, kõik on õige",
+    "no": "Ei, on probleem",
+    "problemLine": "Kirjelda, mida näed, ja me vaatame selle üle.",
+    "emailUs": "Saada meile e-kiri",
+    "mailSubject": "Probleem aadressiga {address}",
+    "mailLiveSince": "Töötab alates {date}",
+    "mailSeeing": "Mida ma näen:"
+  },
+  "confirmed": {
+    "heading": "Aitäh — kõik on kirjas.",
+    "body": "Rohkem pole midagi vaja teha."
+  },
+  "turnOff": {
+    "link": "Lülita see välja",
+    "heading": "Kas lülitada oma veebiaadress välja?",
+    "stops": "See lakkab töötamast:",
+    "carriesOn": "See jääb täpselt samaks ja sinna suunab sinu QR-kood inimesi:",
+    "reAdd": "Kui seadistad selle hiljem uuesti, jäta veebiaadressi pakkuja juures lisatud rida alles. Kui mitte, palu neil see eemaldada.",
+    "cancel": "Jäta sisse",
+    "confirm": "Lülita välja",
+    "working": "Väljalülitamine…",
+    "failed": "Me ei saanud seda praegu välja lülitada. Midagi ei muutunud — sinu aadress töötab endiselt. Proovi varsti uuesti."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Me ei saanud sinu seadistust laadida.",
+    "resumeFailedBody": "Midagi ei muutunud. Proovi varsti uuesti.",
+    "close": "Sulge",
+    "resuming": "Jätkame sealt, kus pooleli jäi…",
+    "genericError": "Midagi läks valesti",
+    "saveFailed": "Salvestamine ebaõnnestus"
+  },
+  "address": {
+    "intro": "Sinu ajakava saab oma veebiaadressi.",
+    "question": "Mis on sinu veebiaadress?",
+    "hint": "See, mille järgi inimesed sind juba leiavad.",
+    "aria": "Sinu oma veebiaadress",
+    "willBe": "Sinu aadress on <addr>{address}</addr>",
+    "example": "Näiteks <addr>{address}</addr>",
+    "noChange": "Sinu veebisait ei muutu — lisad lihtsalt lingi uuele aadressile.",
+    "notSetUp": "Me pole seda seadistanud.",
+    "restricted": "Sinu veebiaadressi haldaja peab lubama meil seadistada tabaluku — väikese luku, mida kliendid aadressi kõrval näevad. Kuni nad meid ei lisa, seda ei ilmu, seega peatasime protsessi, et sa ei peaks asjata ootama. Palu neil meid lisada ja proovi siis uuesti.",
+    "blocked": "Sinu veebiaadress blokeerib praegu tabaluku täielikult. Selle haldaja peab selle lubama, enne kui see saab toimida. Palu neil seda muuta ja proovi siis uuesti.",
+    "elsewhere": "Sellel aadressil vastab juba midagi muud. Saada järgmisel ekraanil olev sõnum aadressi haldajale — nad teavad, mida teha.",
+    "provider": "Sinu veebiaadressi haldab <b>{provider}</b>. Näitame, kuhu minna.",
+    "provisionFailed": "Me ei saanud seda aadressi seadistada.",
+    "willNotWork": "See aadress ei tööta.",
+    "couldNotBeSetUp": "Seda aadressi ei õnnestunud seadistada.",
+    "couldNotSetUp": "Seadistamine ebaõnnestus",
+    "checking": "Kontrollimine…",
+    "setting": "Seadistamine…",
+    "tryAgain": "Proovi uuesti",
+    "setUpAddress": "Seadista see aadress",
+    "notNow": "Mitte praegu"
+  },
+  "apex": {
+    "empty": "Sisesta aadress, mida soovid kasutada.",
+    "not_a_domain": "See ei näe välja nagu veebiaadress.",
+    "unparseable": "Me ei suutnud seda veebiaadressina lugeda. Kontrolli kirjapilti ja proovi uuesti.",
+    "apex": "{host} on sinu kogu veebisaidi aadress. Kui suunad selle meile, asendab see leht sinu veebisaidi. Lisa selle ette hoopis mõni sõna — näiteks ajakava.{host}.",
+    "too_deep": "Sellel aadressil on liiga palju osi. Kõige paremini sobib midagi sellist nagu ajakava.{domain}."
+  },
+  "record": {
+    "addAt": "Lisa see pakkuja {provider} juures",
+    "open": "Ava {provider}",
+    "guide": "Pakkuja {provider} enda juhend selle kohta",
+    "addAtSave": "Lisa see pakkuja {provider} juures ja salvesta.",
+    "addSomewhere": "Lisa see seal, kus sinu veebiaadressi hallatakse, ja salvesta.",
+    "hintChoose": "Vali see loendist.",
+    "hintWord": "Ainult see sõna, mitte kogu aadress.",
+    "hintExact": "Kopeeri see täpselt.",
+    "timing": "Tavaliselt hakkab see tööle tunni jooksul, kuid võib võtta ka kauem. Seda lehte ei pea avatuna hoidma.",
+    "someoneElse": "Kas sinu veebiaadressi haldab keegi teine?",
+    "sentTo": "Saadetud aadressile {email}",
+    "emailPlaceholder": "tema e-posti aadress",
+    "sending": "Saatmine…",
+    "send": "Saada need andmed",
+    "sendFailed": "Saatmine ebaõnnestus"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Ava oma veebiaadress, seejärel „DNS“ ja „Records“.",
+      "add": "Vali „Add record“ ja seejärel väljal „Type“ väärtus „CNAME“.",
+      "name": "Sisesta allolev esimene väärtus väljale „Name“.",
+      "value": "Sisesta allolev teine väärtus väljale „Target“.",
+      "proxy": "Määra „Proxy status“ väärtuseks „DNS only“ — selle kõrval olev pilv peab olema hall, mitte oranž.",
+      "save": "Jäta „TTL“ väärtuseks „Auto“ ja vali „Save“.",
+      "caveat": "Kui pilv jääb oranžiks, ei ilmu tabalukk kunagi ja keegi ei ütle, miks."
+    },
+    "godaddy": {
+      "open": "Ava oma „Domain Portfolio“ ja vali oma veebiaadress.",
+      "dns": "Lehel „Domain Settings“ vali „DNS“.",
+      "add": "Vali „Add New Record“ ja seejärel menüüst „Type“ väärtus „CNAME“.",
+      "name": "Sisesta allolev esimene väärtus väljale „Name“.",
+      "value": "Sisesta allolev teine väärtus väljale „Value“.",
+      "save": "Jäta „TTL“ nii, nagu see on, ja vali „Save“.",
+      "caveat": "Kui lisasid korraga mitu kirjet, on nupul kiri „Save All Records“."
+    },
+    "123reg": {
+      "signIn": "Logi sisse keskkonda „123 Reg Control Panel“.",
+      "manage": "Vali „Domains“ kõrval „Manage All“ ja seejärel oma veebiaadress.",
+      "dns": "Vali „DNS“ ja seejärel „Add New Record“.",
+      "type": "Vali loendist „Type“ väärtus „CNAME“.",
+      "name": "Sisesta allolev esimene väärtus väljale „Name“.",
+      "value": "Sisesta allolev teine väärtus väljale „Value“ ja lisa selle lõppu punkt.",
+      "save": "Jäta „TTL“ väärtuseks „Default“ ja klõpsa „Save“.",
+      "caveat": "123 Reg nõuab teise väärtuse lõppu punkti, muidu see ei tööta."
+    },
+    "wix": {
+      "open": "Ava „Domains“ ja klõpsa oma veebiaadressi kõrval ikooni „Domain Actions“.",
+      "manage": "Vali „Manage DNS Records“.",
+      "add": "Jaotises „CNAME (Aliases)“ klõpsa „+ Add Record“ ja seejärel „Got it“.",
+      "name": "Sisesta allolev esimene väärtus väljale „Host Name“.",
+      "value": "Sisesta allolev teine väärtus väljale „Value“.",
+      "save": "Klõpsa „Save“ ja seejärel hüpikaknas „Save Changes“.",
+      "caveat": "Kui sinu veebiaadress ainult suunab Wixile, mitte ei asu seal, ei saa Wix seda muudatust teha — seda peab tegema aadressi haldaja."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Ajakava leht ({truckName}): vaja lisada üks kirje",
+    "hello": "Tere!",
+    "introAt": "Paneme toiduauto {truckName} reaalajas ajakava aadressile {address} ja selleks tuleb meie domeenile pakkuja {provider} juures lisada üks kirje.",
+    "introHolder": "Paneme toiduauto {truckName} reaalajas ajakava aadressile {address} ja selleks tuleb meie domeenile lisada üks kirje seal, kus meie domeeni hallatakse.",
+    "stepsAt": "Pakkuja {provider} juures:",
+    "guide": "Nende enda juhend: {url}",
+    "wholeChange": "See ongi kogu muudatus — veebisaidil ei muutu midagi muud ja ülejäänud domeen töötab täpselt nagu praegu. Tavaliselt hakkab see tööle tunni jooksul.",
+    "pointsAt": "Leht, kuhu kirje suunab, näitab, kus me järgmisena müüme, ja uueneb ise.",
+    "replyTo": "Küsimuste korral kirjuta aadressile {email}.",
+    "thanks": "Aitäh!"
+  },
+  "liveEmail": {
+    "subject": "{address} töötab",
+    "goodNews": "Hea uudis — {address} töötab.",
+    "body": "Sinu ajakava on nüüd nähtav sinu oma aadressil. Vaata see üle ja kontrolli, et kõik on õige: ava {address}, veendu, et üritused on sinu omad ja kuupäevad on õiged.",
+    "confirm": "Kui oled seda teinud, ava HatchGrabis oma seaded ja anna meile teada, et kõik on õige. Sellest ei sõltu midagi — nii teame lihtsalt, et inimene on selle üle vaadanud."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Ei käytettävissä demossa",
+  "demoMode": "DEMOTILA",
+  "loopLands": "Juuri näin oikea tilaus saapuu",
+  "showMe": "Näytä",
+  "noCard": "{sub} Korttia ei tarvita.",
+  "notYet": "Ei vielä",
+  "cashAndCollected": "Käteinen ja noudettu",
+  "logoPlaceholder": "Logosi tähän",
+  "welcomeTitle": "{sample, select, yes {Tässä on esimerkkidemo} other {Tässä on demosi}}",
+  "welcomeIntro": "{sample, select, yes {Tämä on <b>esimerkkiruokalista</b>, jotta näet, miten kaikki toimii — lataa oma milloin tahansa, niin siitä tulee sinun.} other {Tämä on oma ruokalistasi ja ilmeesi oikealla näytöllä.}} Näytöllä jo olevat tilaukset ovat esimerkkejä, jotta näet, miltä ruuhka näyttää.",
+  "twoThings": "Kaksi kokeiltavaa asiaa:",
+  "hitButton": "Paina tilauksessa painiketta <b>{button}</b>",
+  "scanQr": "Skannaa <b>QR-koodi</b> — tai napauta linkkiä — ja tilaa asiakkaana. Katso sitten, miten tilaus saapuu",
+  "qrAlt": "QR-koodi asiakkaidesi tilaussivulle",
+  "openHere": "Tai avaa se tällä laitteella",
+  "copyLink": "Kopioi linkki",
+  "copyDescribedAs": "tilauslinkki",
+  "noLinkTitle": "Asiakkaidesi tilauslinkki",
+  "noLinkBody": "Tilaussivusi linkki on valikossa oikeassa yläkulmassa.",
+  "asLive": "Tilaus- ja keittiöprosessi toimii täsmälleen kuten oikeassa käytössä.",
+  "startExploring": "Aloita tutustuminen",
+  "signupOffer": {
+    "heading": "Rekisteröidy nyt ja saat ilmaisen kuukauden",
+    "sub": "Aika alkaa kulua vasta, kun päätät julkaista."
+  },
+  "cashIcon": "💶"
+}

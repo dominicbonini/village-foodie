@@ -1,0 +1,25 @@
+{
+  "heading": "Týždeň od {start} do {end}",
+  "daysOff": "Dnes nepredávame",
+  "cancelled": "ZRUŠENÉ",
+  "placeSample": {
+    "nameTownBelow": "Hostinec pri Radnici\nTrnava",
+    "nameTown": "Hostinec pri Radnici, Trnava",
+    "nameOnly": "Hostinec pri Radnici"
+  },
+  "busyWeek": {
+    "venue1": "Kultúrny dom Trnava",
+    "town1": "Trnava",
+    "venue2": "Športový areál a multifunkčné ihrisko Pezinok",
+    "town2": "Pezinok",
+    "venue3": "Hlavné námestie",
+    "town3": "Senec",
+    "venue4": "Festival jedla",
+    "town4": "Nitra",
+    "venue5": "Hostinec U Býka",
+    "town5": "Piešťany",
+    "venue6": "Kostolné námestie",
+    "town6": "Hlohovec"
+  },
+  "poweredBy": "Vytvorené v HatchGrab"
+}

@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Naslov nije stao pa je skraćen.",
+    "date": "Datum nije stao pa je skraćen.",
+    "daysOff": "Tekst za neradne dane nije stao pa je skraćen.",
+    "place": "Naziv lokacije nije stao pa je skraćen.",
+    "time": "Vrijeme nije stalo pa je skraćeno.",
+    "note": "Vaš tekst nije stao pa je skraćen.",
+    "venue": "Mjesto održavanja nije stalo pa je skraćeno.",
+    "area": "Područje nije stalo pa je skraćeno."
+  },
+  "fontFallback": "Font koji ovaj dizajn koristi ({id}) nije se mogao učitati — ti su okviri prikazani fontom Oswald.",
+  "wrongShapeBackground": "Slika ove lokacije drugačijeg je oblika od vašeg dizajna, pa se koristi standardna pozadina.",
+  "rowsFit": "Posljednji dan pada {px} px ispod dna slike — smanjite razmak između redaka ili pomaknite 1. redak prema gore.",
+  "placeStatus": {
+    "ownBoth": "Vlastita slika i položaji teksta",
+    "wrongShape": "Drugačiji oblik — ne koristi se dok se ne zamijeni",
+    "ownPicture": "Vlastita slika, standardni položaji",
+    "ownPositions": "Standardna slika, vlastiti položaji teksta",
+    "none": "Još nema slike — koristi se Standard"
+  },
+  "standardStatus": "Koristi se na svim ostalim lokacijama",
+  "option": {
+    "oneOff": "Učitaj sliku samo za ovu objavu",
+    "placePoster": "Plakat: {name}",
+    "standard": "Standardni dizajn"
+  },
+  "previewLabel": {
+    "lastEvent": "Pregled koristi vaš posljednji događaj ovdje",
+    "noEvents": "Ovdje još nema događaja — pregled prikazuje vaš sljedeći događaj s nazivom ove lokacije"
+  },
+  "fontUsage": {
+    "weekly": "vaš dizajn tjedne objave",
+    "event": "vaš dizajn objave za pojedinačni događaj",
+    "place": "vaš dizajn za lokaciju {place}",
+    "placeUnnamed": "vaš dizajn za lokaciju"
+  },
+  "face": {
+    "regular": "Obično",
+    "bold": "Podebljano",
+    "italic": "Kurziv"
+  },
+  "picture": {
+    "legacy": "Plakat događaja",
+    "fallback": "Slika",
+    "wrongShape": "Drugačiji oblik — ne može se koristiti kao cijela pozadina"
+  },
+  "noPicture": {
+    "omit": "Izostavi",
+    "blank": "Ostavi prazan prostor",
+    "logo": "Prikaži svoj logotip"
+  },
+  "noPicturesAll": "{total, plural, one {Svaka vaša lokacija ima sliku.} few {Sve {total} vaše lokacije imaju sliku.} other {Svih {total} vaših lokacija ima sliku.}}",
+  "noPicturesSome": "{without, plural, one {{without} od {total} vaših lokacija još nema sliku} few {{without} od {total} vaših lokacija još nemaju sliku} other {{without} od {total} vaših lokacija još nema sliku}}",
+  "licenceTick": "Vlasnik sam ovog fonta ili imam licencu za njegovo korištenje",
+  "fontUploadButton": "↑ Učitaj svoj font"
+}

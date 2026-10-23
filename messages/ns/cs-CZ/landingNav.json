@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab – domů",
+  "cta": "Nahrát jídelní lístek →",
+  "ctaShort": "Nahrát lístek",
+  "features": "Funkce",
+  "pricing": "Ceník",
+  "logIn": "Přihlásit se",
+  "country": {
+    "button": "Země: {name}. Změnit zemi",
+    "menu": "Země"
+  }
+}

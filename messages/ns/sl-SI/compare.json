@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Primerjava stroškov",
+  "title": "Primerjajte stroške<br></br><accent>spletnih naročil</accent>",
+  "system": {
+    "title": "Ali že sprejemate spletna naročila?",
+    "yes": "Da, z drugim sistemom",
+    "no": "Ne, še ne"
+  },
+  "trucks": {
+    "title": "Koliko food truckov imate?",
+    "aria": "Število food truckov"
+  },
+  "plan": {
+    "yourChoice": "Vaša izbira",
+    "weSuggest": "Priporočamo",
+    "summary": "{price} na food truck na mesec, z vključenimi spletnimi naročili v vrednosti {allowance}{fleet, plural, one {} two { za vsakega} few { za vsakega} other { za vsakega}}.",
+    "switchTo": "Raje izberi paket {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} na food truck na mesec in {pct} od spletnih naročil, plačanih s kartico.} other {Brez mesečne naročnine — samo {pct} od spletnih naročil, plačanih s kartico.}}",
+    "summaryNoFee": "{price} na food truck na mesec, z neomejenimi spletnimi naročili in brez provizije HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Spletna naročila na mesec na food truck",
+    "count": "~{count, plural, one {# naročilo} two {# naročili} few {# naročila} other {# naročil}}",
+    "captionNo": "Groba ocena zadostuje — prednaročila in stranke, ki se izognejo vrsti, ne pa plačila z gotovino ali kartico na mestu.",
+    "captionYes": "Samo naročila, oddana prek vaše strani za naročanje — ne pa plačila z gotovino ali kartico na mestu.",
+    "sliderAria": "Mesečna vrednost spletnih naročil na food truck",
+    "overAllowance": "Na food truck so vključena spletna naročila v vrednosti {allowance}. Za presežek {excess} se zaračuna {pct} — <b>{over}</b> na mesec za vsakega.",
+    "insideAllowance": "V okviru vključenih spletnih naročil v vrednosti {allowance} — nič dodatnega poleg paketa.",
+    "acrossFleet": "Za {fleet, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}: <b>{amount}</b> na mesec.",
+    "titleNo": "Koliko bi po vaši oceni zaslužili s spletnimi naročili na mesec na food truck?",
+    "feeOnly": "{pct} od vsakega spletnega naročila, plačanega s kartico — <b>{over}</b> na mesec na food truck.",
+    "noFee": "Neomejena spletna naročila so vključena — nič dodatnega poleg paketa."
+  },
+  "fee": {
+    "title": "Koliko zdaj plačate na naročilo?",
+    "pctLabel": "Odstotek",
+    "pctPlaceholder": "Vaša stopnja",
+    "pctAria": "Odstotna provizija",
+    "fixedLabel": "Dodatno na naročilo",
+    "fixedPlaceholder": "Vaša provizija",
+    "fixedAria": "Centi na naročilo",
+    "modeLabel": "Njihova stopnja:",
+    "modeInclusive": "vključuje obdelavo kartičnih plačil",
+    "modeOnTop": "se zaračuna dodatno",
+    "onTopNote": "Obdelava kartičnih plačil v višini {fee} se zaračuna dodatno, zato dejansko skupaj plačate <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Obdelava kartičnih plačil v višini {fee} je že vključena in bi jo plačali kjer koli. Njihova lastna provizija je <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Koliko dni na teden prodajate?",
+    "help": "Dogodki, tržnice, prodajna mesta — vsak dan, ko je food truck na poti."
+  },
+  "jump": {
+    "cost": "Poglejte, koliko stane ↓",
+    "saving": "Poglejte svoj prihranek ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Spletno naročanje, prednaročila in kuhinjski zaslon za</lead><figure>{amount}</figure><unit>na prodajni dan</unit>",
+    "basedOn": "Na podlagi {days, plural, one {# dneva} two {# dni} few {# dni} other {# dni}} na teden · {monthly} na mesec{fleet, plural, one {} two { na food truck} few { na food truck} other { na food truck}}"
+  },
+  "coffee": "Manj kot cena kave.",
+  "freeMonths": "{n, plural, one {In prvi mesec je brezplačen.} two {In prva # meseca sta brezplačna.} few {In prvi # meseci so brezplačni.} other {In prvih # mesecev je brezplačnih.}}",
+  "cta": {
+    "upload": "Naloži svoj jedilnik →",
+    "uploadSave": "Naloži jedilnik in prihrani {amount} →",
+    "ask": "Vprašajte nas",
+    "noCard": "Za nastavitev ne potrebujete kartice"
+  },
+  "breakdown": {
+    "title": "Vaš mesec po postavkah",
+    "titleDearer": "Vaš mesec s HatchGrab",
+    "plan": "Paket {plan}",
+    "over": "{pct} od presežka {excess} nad vključenimi {allowance}",
+    "inside": "Spletna naročila v okviru vključenih {allowance}",
+    "total": "HatchGrab na mesec",
+    "freeMonths": "{n, plural, one {1. mesec} two {Meseci 1–#} few {Meseci 1–#} other {Meseci 1–#}}",
+    "freeAmount": "{amount} — na naš račun",
+    "acrossFleet": "Za {fleet, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}",
+    "perMonth": "{amount} na mesec",
+    "card": "Obdelava kartičnih plačil — provizija Stripe {fee} na naročilo, ki jo plačate podjetju Stripe. Približno enako bi plačali s plačilnim terminalom na mestu.",
+    "provider": "Lastna provizija vašega sedanjega ponudnika ({pct})",
+    "feeOnly": "{pct} od spletnih naročil v vrednosti {excess}",
+    "noFee": "Spletna naročila — neomejeno, brez provizije HatchGrab"
+  },
+  "enterRate": "Vnesite, koliko plačujete zdaj, in videli boste svoj prihranek.",
+  "panel": {
+    "nowYear": "<label>Zdaj plačujete</label><fig>{amount}<q> na leto</q></fig>",
+    "nowMonth": "<label>Zdaj plačujete</label><fig>{amount}<q> na mesec</q></fig>",
+    "oursYear": "<label>S HatchGrab</label><fig>{amount}<q> v prvem letu</q></fig>",
+    "oursMonth": "<label>S HatchGrab</label><fig>{amount}<q> na mesec</q></fig>",
+    "acrossFleet": "za {fleet, plural, one {# food truck} two {# food trucka} few {# food trucke} other {# food truckov}}"
+  },
+  "hero": {
+    "save": "<verb>Prihranite</verb><figure>{amount}</figure><sub><num>{pct}</num> manj v prvem letu</sub>",
+    "same": "<verb>Približno enako</verb><figure>{amount}</figure><sub><num>{pct}</num> več v prvem letu</sub>",
+    "dearer": "<lead>Vse, kar ponuja HatchGrab, za</lead><figure>{amount}</figure><unit>več na teden</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} več na mesec kot zdaj} two {{amount} več na food truck na mesec kot zdaj} few {{amount} več na food truck na mesec kot zdaj} other {{amount} več na food truck na mesec kot zdaj}}"
+  },
+  "anchor": {
+    "liability": "To je cena enoletnega zavarovanja odgovornosti.",
+    "weekendPitch": "To je cena prodajnega mesta za en vikend na festivalu hrane.",
+    "festivalPitches": "To je cena nekaj prodajnih mest na festivalih.",
+    "fryer": "To je cena novega cvrtnika in žar plošče.",
+    "counter": "To je cena popolne prenove vašega strežnega pulta.",
+    "vanDeposit": "To je polog za drugi food truck.",
+    "secondVan": "To je še en food truck na cesti."
+  },
+  "year": {
+    "one": "Prvo leto",
+    "two": "Drugo leto",
+    "save": "Prihranek {amount}<note>({pct} manj)</note>",
+    "extra": "Dodatno {amount}<note>({pct} več)</note>",
+    "current": "Sedanji ponudnik <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Ocene temeljijo na številkah, ki jih vnesete, ob povprečnem naročilu v vrednosti {aov}. Obdelava kartičnih plačil velja ne glede na ponudnika. Pred odločitvijo preverite.",
+    "yes": "Ocene temeljijo na številkah, ki jih vnesete, ob povprečnem naročilu v vrednosti {aov}. Obdelava kartičnih plačil v višini {fee} na naročilo velja ne glede na ponudnika, zato ni upoštevana na nobeni strani.",
+    "onTop": "Skupni znesek pri vprašanju {n} jo vključuje — primerjava pa je ne, na nobeni strani.",
+    "check": "Pred odločitvijo preverite cene svojega sedanjega ponudnika."
+  },
+  "intro": "Traja približno minuto. Že uporabljate sistem? Primerjali ga bomo. Še ne? Pokazali vam bomo, koliko točno stane.",
+  "twoYear": "V dveh letih prihranite <b>{amount}</b>.",
+  "meta": {
+    "title": "Kalkulator stroškov — HatchGrab {country}",
+    "description": "Primerjajte, koliko vas zdaj stanejo spletna naročila, z enim letom pri HatchGrab — ocena v eni minuti."
+  }
+}

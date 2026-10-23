@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Virsraksts neietilpa, tāpēc tika saīsināts.",
+    "date": "Datums neietilpa, tāpēc tika saīsināts.",
+    "daysOff": "Brīvdienu teksts neietilpa, tāpēc tika saīsināts.",
+    "place": "Vietas nosaukums neietilpa, tāpēc tika saīsināts.",
+    "time": "Laiks neietilpa, tāpēc tika saīsināts.",
+    "note": "Jūsu teksts neietilpa, tāpēc tika saīsināts.",
+    "venue": "Norises vieta neietilpa, tāpēc tika saīsināta.",
+    "area": "Apkaime neietilpa, tāpēc tika saīsināta."
+  },
+  "fontFallback": "Neizdevās ielādēt šajā dizainā izmantoto fontu ({id}) — šajos laukos tiek izmantots Oswald.",
+  "wrongShapeBackground": "Šīs vietas attēls ir citas formas nekā jūsu dizains, tāpēc tiek izmantots standarta fons.",
+  "rowsFit": "Pēdējā diena atrodas {px} px zem attēla apakšējās malas — samaziniet rindu atstarpi vai pārvietojiet 1. rindu augstāk.",
+  "placeStatus": {
+    "ownBoth": "Savs attēls un teksta novietojums",
+    "wrongShape": "Cita forma — netiks izmantots, kamēr neaizstāsiet",
+    "ownPicture": "Savs attēls, standarta novietojums",
+    "ownPositions": "Standarta attēls, savs teksta novietojums",
+    "none": "Attēla vēl nav — tiek izmantots standarta dizains"
+  },
+  "standardStatus": "Tiek izmantots visās pārējās vietās",
+  "option": {
+    "oneOff": "Augšupielādēt attēlu tikai šim ierakstam",
+    "placePoster": "Plakāts: {name}",
+    "standard": "Standarta dizains"
+  },
+  "previewLabel": {
+    "lastEvent": "Priekšskatījumā redzams jūsu pēdējais pasākums šajā vietā",
+    "noEvents": "Šajā vietā pasākumu vēl nav — priekšskatījumā redzams jūsu nākamais pasākums ar šīs vietas nosaukumu"
+  },
+  "fontUsage": {
+    "weekly": "jūsu nedēļas ieraksta dizains",
+    "event": "jūsu atsevišķa pasākuma ieraksta dizains",
+    "place": "jūsu dizains vietai “{place}”",
+    "placeUnnamed": "jūsu dizains kādai vietai"
+  },
+  "face": {
+    "regular": "Parasts",
+    "bold": "Treknraksts",
+    "italic": "Slīpraksts"
+  },
+  "picture": {
+    "legacy": "Pasākuma plakāts",
+    "fallback": "Attēls",
+    "wrongShape": "Cita forma — nevar izmantot kā pilnu fonu"
+  },
+  "noPicture": {
+    "omit": "Izlaist",
+    "blank": "Atstāt tukšu vietu",
+    "logo": "Rādīt jūsu logotipu"
+  },
+  "noPicturesAll": "{total, plural, zero {Visām {total} jūsu vietām ir attēls.} one {Katrai jūsu vietai ir attēls.} other {Visām {total} jūsu vietām ir attēls.}}",
+  "noPicturesSome": "{without, plural, zero {{without} no {total} jūsu vietām vēl nav attēla} one {{without} no {total} jūsu vietām vēl nav attēla} other {{without} no {total} jūsu vietām vēl nav attēla}}",
+  "licenceTick": "Šis fonts pieder man, vai man ir licence to izmantot",
+  "fontUploadButton": "↑ Augšupielādēt savu fontu"
+}

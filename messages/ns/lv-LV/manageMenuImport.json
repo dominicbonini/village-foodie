@@ -1,0 +1,189 @@
+{
+  "cancel": "Atcelt",
+  "back": "← Atpakaļ",
+  "backPlain": "Atpakaļ",
+  "next": "Tālāk →",
+  "continue": "Turpināt →",
+  "closeImport": "Aizvērt importu",
+  "tryAgain": "Mēģināt vēlreiz",
+  "catError": {
+    "empty": "Piešķiriet kategorijai nosaukumu.",
+    "tooLong": "Šis nosaukums ir pārāk garš.",
+    "clash": "Kategorija “{name}” jau pastāv."
+  },
+  "steps": {
+    "details": "Jūsu dati",
+    "menu": "Ēdienkarte",
+    "extras": "Piedevas",
+    "allergens": "Alergēni",
+    "kitchen": "Virtuves iestatījumi",
+    "schedule": "Grafiks",
+    "settings": "Iestatījumi"
+  },
+  "toast": {
+    "demoGone": "Jūsu demo ēdienkarte vairs nav pieejama — lūdzu, augšupielādējiet to vēlreiz, lai turpinātu.",
+    "eventsSaveFailed": "Neizdevās saglabāt pasākumus",
+    "cardReadFailed": "Neizdevās nolasīt alergēnu karti — mēģiniet vēlreiz",
+    "imageReadFailed": "Neizdevās nolasīt šo attēlu — tā vietā ierakstiet vai ielīmējiet kartes saturu",
+    "commitFailedDetail": "Neizdevās pabeigt ēdienkartes saglabāšanu: {error}. Dažas pozīcijas, iespējams, jau ir saglabātas — pirms mēģināt vēlreiz, pārbaudiet ēdienkarti.",
+    "commitFailed": "Neizdevās pabeigt ēdienkartes saglabāšanu. Dažas pozīcijas, iespējams, jau ir saglabātas — pirms mēģināt vēlreiz, pārbaudiet ēdienkarti.",
+    "finishFailed": "Neizdevās atzīmēt iestatīšanu kā pabeigtu — joprojām varat turpināt.",
+    "scheduleReadFailed": "Neizdevās nolasīt šo grafiku — mēģiniet skaidrāku foto vai ierakstiet datumus.",
+    "cardRead": "Karte nolasīta — sakrīt: {matched}, jums jāpiešķir: {pending, plural, zero {#} one {#} other {#}}"
+  },
+  "settingsReview": {
+    "anchorOrder": "Iestatījumi → Pasūtījumu iestatījumi",
+    "anchorDisplay": "Iestatījumi → Jūsu food truck → Attēlošanas iestatījumi",
+    "mins15": "15 minūtes",
+    "mins30": "30 minūtes",
+    "mins60": "60 minūtes",
+    "hours2": "2 stundas",
+    "title": "Daži iestatījumi, ko pārbaudīt",
+    "loading": "Ielādē jūsu pašreizējos iestatījumus…",
+    "looksGood": "Izskatās labi →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Neizdevās saglabāt — to varat mainīt sadaļā Iestatījumi.",
+    "anchorContact": "Iestatījumi → Kontaktinformācija",
+    "intro": "Esam jums iestatījuši dažus ierastus iestatījumus. Vērts ātri apskatīt — jebkuru no tiem vēlāk varat mainīt sadaļā Iestatījumi.",
+    "cancelAria": "Cik ilgi pirms saņemšanas klienti var atcelt"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Pārskatiet tos pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “alergēni nav iestatīti”.",
+    "body": "Pārskatiet tos sadaļā Iestatījumi pirms publicēšanas. Līdz tam pozīcijas ir atzīmētas ar “alergēni nav iestatīti”.",
+    "title": "⚠ Alergēni un uztura informācija vēl nav iestatīti"
+  },
+  "welcome": {
+    "title": "Laipni lūdzam HatchGrab",
+    "yourTruck": "Jūsu food truck",
+    "stop": "Varat apstāties un atgriezties jebkurā laikā.",
+    "body": "{name}: iestatīšana pabeigta. Tālāk pievienosim jūsu ēdienkarti un pēc tam pirmo pasākumu.",
+    "go": "Sākam"
+  },
+  "offer": {
+    "title": "Izmantot ēdienkarti no demo?",
+    "use": "Izmantot šo ēdienkarti",
+    "upload": "Augšupielādēt citu ēdienkarti",
+    "body": "Mēs saglabājām jūsu augšupielādēto ēdienkarti — {count, plural, zero {# pozīcijas} one {# pozīcija} other {# pozīcijas}}. Izmantojiet to kā sākumpunktu vai augšupielādējiet citu."
+  },
+  "upload": {
+    "title": "Importējiet savu ēdienkarti",
+    "body": "Augšupielādējiet ēdienkartes tāfeles foto, ekrānuzņēmumu, PDF vai ielīmējiet ēdienkarti kā tekstu. Mūsu MI to nolasa un izveido jūsu digitālo ēdienkarti — pirms saglabāšanas jūs visu pārskatāt.",
+    "confirmCancel": "Atcelt šo importu? Jūsu veiktā šīs ēdienkartes pārskatīšana tiks atmesta.",
+    "process": "Apstrādāt ēdienkarti",
+    "later": "Izdarīšu to vēlāk"
+  },
+  "processing": {
+    "title": "Analizējam jūsu ēdienkarti",
+    "body": "MI nolasa jūsu pozīcijas un sakārto tās kategorijās…"
+  },
+  "review": {
+    "title": "Pārskatiet importēto ēdienkarti",
+    "editLaterSetup": "Nosaukumus, cenas, piedevas, alergēnus un uztura informāciju vēlāk var rediģēt jebkurā laikā.",
+    "editLater": "Nosaukumus, cenas, piedevas, alergēnus un uztura informāciju jebkurā laikā var rediģēt sadaļā Iestatījumi.",
+    "noPrice": "{count, plural, zero {# pozīcijām} one {# pozīcijai} other {# pozīcijām}} nevarējām nolasīt cenu",
+    "renameCategoryAria": "Pārdēvēt kategoriju {name}",
+    "renameAria": "Pārdēvēt: {name}",
+    "renameTitle": "Pārdēvēt kategoriju",
+    "deleteAria": "Dzēst: {name}",
+    "deleteTitle": "Dzēst kategoriju",
+    "lastCategory": "Jūsu ēdienkartē jābūt vismaz vienai kategorijai",
+    "countOf": "{kept} no {total}",
+    "existing": "jau ir",
+    "deleteEmptyTitle": "Dzēst “{name}”?",
+    "deleteEmptyBody": "Tajā nav pozīciju, tāpēc nekas netiek zaudēts.",
+    "delete": "Dzēst",
+    "moveTitle": "Kur pārvietot {count, plural, zero {# pozīcijas} one {# pozīciju} other {# pozīcijas}}?",
+    "moveBody": "Lai dzēstu “{name}”, tās ēdieni jāpārvieto citur — pozīcijas bez kategorijas netiek importētas.",
+    "moveAria": "Kategorija {name}: pārvietot pozīcijas uz",
+    "chooseCategory": "Izvēlieties kategoriju…",
+    "moveDelete": "Pārvietot un dzēst",
+    "itemName": "Pozīcijas nosaukums",
+    "free": "bez maksas?",
+    "freeOn": "Bez maksas ✕",
+    "nameFirst": "Pirms pievienojat nākamo, piešķiriet nosaukumu jaunajai pozīcijai",
+    "addItem": "+ Pievienot pozīciju",
+    "categoryName": "Kategorijas nosaukums",
+    "newCategoryAria": "Jaunās kategorijas nosaukums",
+    "addCategory": "+ Pievienot kategoriju",
+    "ready": "{count, plural, zero {# pozīcijas gatavas pievienošanai} one {# pozīcija gatava pievienošanai} other {# pozīcijas gatavas pievienošanai}}. Noņemiet atzīmi tām, kuras nevēlaties.",
+    "noPriceBody": "Iestatiet cenu katrai vai atzīmējiet kā bezmaksas — citādi tā tiks publicēta par {zero}. Kamēr tas nav sakārtots, turpināt nevar.",
+    "incomplete": "Ievadiet nosaukumu, lai pievienotu šo pozīciju — tukšas rindas netiek importētas."
+  },
+  "extras": {
+    "introSetup": "Dažus ēdienus var iestatīt kā <b>vienu pielāgojamu pozīciju</b> vai atstāt kā <b>atsevišķus ēdienus</b>. Izvēlieties, kā katram jāparādās. To varat mainīt vēlāk.",
+    "intro": "Dažus ēdienus var iestatīt kā <b>vienu pielāgojamu pozīciju</b> vai atstāt kā <b>atsevišķus ēdienus</b>. Izvēlieties, kā katram jāparādās. To vēlāk varat mainīt sadaļā Iestatījumi.",
+    "none": "Nav grupējamu ēdienu — katra pozīcija ir atsevišķs ēdiens.",
+    "axisChoice": "· izvēle: {axis}",
+    "grouped": "Grupēts · viena pozīcija, klients izvēlas",
+    "separate": "Atsevišķas ēdienkartes pozīcijas"
+  },
+  "allergens": {
+    "title": "Alergēni",
+    "detected": "Jūsu ēdienkartē atradām alergēnus. Tālāk izvēlieties, kā tos rādīt.",
+    "howShow": "Kā vēlaties rādīt alergēnus klientiem?",
+    "skip": "Pagaidām izlaist alergēnu iestatīšanu"
+  },
+  "kitchen": {
+    "title": "Virtuves iestatījumi",
+    "intro": "Palīdziet klientiem uzzināt, cik ilgi jāgaida — šos iestatījumus vienmēr varat mainīt vēlāk.",
+    "howWorks": "Kā darbojas virtuves jauda",
+    "allExist": "Visas kategorijas jau pastāv — nav laiku, ko iestatīt.",
+    "totalHelp": "Iestatiet kopējo jaudu, lai ierobežotu, cik pozīciju virtuve uzņemas katrā laika logā. Atstājiet ∞, ja limita nav.",
+    "saveAdd": "Saglabāt un pievienot ēdienkartei"
+  },
+  "schedule": {
+    "title": "Pievienot manu grafiku",
+    "intro": "Ja jūsu grafiks ir jūsu tīmekļvietnē, varam to automātiski uzturēt aktuālu — vai pievienojiet datumus paši.",
+    "websiteTitle": "Mans grafiks ir manā tīmekļvietnē",
+    "urlPlaceholder": "https://jusufoodtruck.lv/pasakumi",
+    "checking": "Pārbauda…",
+    "verify": "Pārbaudīt",
+    "checkingSite": "Pārbaudām jūsu tīmekļvietni…",
+    "takesTime": "Tas var aizņemt līdz 2 minūtēm — lūdzu, neaizveriet šo logu.",
+    "canRead": "✓ Varam nolasīt jūsu grafiku",
+    "ownSite": "Jūsu pašu tīmekļvietne — nevis Facebook vai Instagram lapa.",
+    "photoTitle": "Augšupielādēt grafika foto",
+    "dragChoose": "Velciet un nometiet vai pieskarieties, lai izvēlētos",
+    "imageOrPdf": "Attēls vai PDF",
+    "or": "vai",
+    "pastePlaceholder": "Ielīmējiet savus datumus šeit…",
+    "read": "Nolasīt grafiku",
+    "found": "{count, plural, zero {Atrasti # datumi — tie tiks pievienoti jūsu grafikam.} one {Atrasts # datums — tas tiks pievienots jūsu grafikam.} other {Atrasti # datumi — tie tiks pievienoti jūsu grafikam.}}",
+    "dateTbc": "Datums tiks precizēts",
+    "save": "Saglabāt {count, plural, zero {# datumus} one {# datumu} other {# datumus}}",
+    "manualDesc": "Pievienojiet tos vēlāk cilnē “Grafiks” — tagad nekas nav jādara.",
+    "manualBody": "Nekas. Savus datumus varat pievienot un pārvaldīt jebkurā laikā sava konta cilnē “Grafiks”.",
+    "blockedDomain": "Lūdzu, izmantojiet savas tīmekļvietnes URL — Facebook un Instagram lapas automātiski nolasīt nevar.",
+    "saveFailed": "Jūsu grafiku nolasījām, taču pašlaik to neizdevās saglabāt — mēģiniet vēlreiz.",
+    "websiteDesc": "Mēs to regulāri pārbaudīsim un sūtīsim jaunos datumus jūsu apstiprināšanai.",
+    "keepChecking": "Mēs turpināsim pārbaudīt šo lapu un sūtīsim jaunos datumus jūsu apstiprināšanai.",
+    "photoDesc": "Nofotografējiet vai ielīmējiet savus datumus — mēs tos nolasīsim, lai jūs varētu pārbaudīt.",
+    "noneFound": "Tajā neatradām nevienu datumu — mēģiniet skaidrāku foto vai pievienojiet datumu manuāli.",
+    "manualTitle": "Datumus pievienošu manuāli",
+    "trialNotStarted": "Pasākumu pievienošana nesāk jūsu bezmaksas izmēģinājuma periodu — vēlāk jūs izvēlēsieties, kurš pasākums to sāks."
+  },
+  "done": {
+    "summary": "{items, plural, zero {# pozīcijas} one {# pozīcija} other {# pozīcijas}} {categories, plural, zero {# kategorijās} one {# kategorijā} other {# kategorijās}}.",
+    "imported": "Ēdienkarte importēta!",
+    "added": "Jūsu pozīcijas ir pievienotas ēdienkartei.",
+    "duplicates": "{count, plural, zero {Izlaisti # dublikāti} one {Izlaists # dublikāts} other {Izlaisti # dublikāti}}",
+    "showMe": "Iepazīstināt ar lietotni",
+    "remind": "Atgādināt vēlāk",
+    "allSet": "Viss gatavs!",
+    "explore": "Izpētīšu patstāvīgi"
+  },
+  "discard": {
+    "setupTitle": "Pabeigt iestatīšanu vēlāk?",
+    "setupBody": "Jūsu konts un food truck ir saglabāti — nekas nav zaudēts. Ēdienkarti varat pievienot jebkurā laikā: pierakstieties un ēdienkartes ekrānā pieskarieties <b>Importēt ēdienkarti</b>, lai turpinātu tieši no šejienes.",
+    "keepGoing": "Turpināt",
+    "finishLater": "Pabeigt vēlāk",
+    "title": "Atmest šo importu?",
+    "keepEditing": "Turpināt rediģēt",
+    "discard": "Atmest",
+    "body": "Jūsu izmaiņas netiks saglabātas — importētās pozīcijas, gatavošanas laiki un virtuves jauda netiks pievienoti."
+  },
+  "allergenCardText": {
+    "contains": "Satur: {list}",
+    "mayContain": "Var saturēt: {list}"
+  }
+}

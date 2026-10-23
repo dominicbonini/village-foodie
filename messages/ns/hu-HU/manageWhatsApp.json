@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Próbálja ki csatlakoztatás előtt",
+    "intro": "Írjon be egy kérdést úgy, ahogy egy vendég feltenné, és nézze meg, pontosan milyen választ kapna. Senkinek nem küldünk el semmit.",
+    "examples": {
+      "where": "Hol lesztek ma este?",
+      "doYouDo": "Van pepperonis pizzátok?",
+      "menu": "Mi van az étlapon?"
+    },
+    "placeholder": "Milyen desszertjeitek vannak?",
+    "send": "Küldés",
+    "empty": "A válasz itt jelenik meg",
+    "working": "A válasz összeállítása…",
+    "noReply": "Nem menne ki válasz.",
+    "noReplyWhy": "Ez spamnek, foglalási kérésnek vagy nem kapcsolódó üzenetnek tűnik, ezért az automatikus válasz nem reagál rá.",
+    "footnote": "A válaszokat mesterséges intelligencia készíti, ezért kissé eltérhetnek egymástól, és időnként tévesek lehetnek.",
+    "failed": "Most nem sikerült előnézetet készíteni.",
+    "unreachable": "Nem sikerült elérni a szervert. Ellenőrizze a kapcsolatot, és próbálja újra."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Előkészítés…",
+      "unavailable": "Nem elérhető",
+      "waiting": "Várakozás a Facebook-ablakra…",
+      "finishing": "Befejezés…",
+      "reconnect": "Újracsatlakozás",
+      "setUp": "Beállítás"
+    },
+    "startAgain": "Újrakezdés",
+    "popupHint": "Nem látja a Facebook-ablakot? Lehet, hogy a böngésző letiltotta. Engedélyezze a felugró ablakokat a hatchgrab.com számára, majd nyomja meg az Újrakezdés gombot."
+  },
+  "notice": {
+    "sdkUnavailable": "A WhatsApp beállítása ebben a környezetben nem érhető el.",
+    "sdkBlocked": "A Meta bejelentkezési szkriptje nem töltődött be. Ennek oka általában egy reklámblokkoló vagy a követés elleni védelem.",
+    "setupFailed": "A beállítást nem sikerült befejezni. Semmi sem változott.",
+    "setupFinished": "A beállítás kész.",
+    "metaError": "A Meta hibát jelzett a beállítás során. Semmi sem változott. Próbálja újra, és ha a hiba ismétlődik, lépjen kapcsolatba velünk.",
+    "closed": "A beállítást bezárták, mielőtt befejeződött volna. Semmi sem változott — az újrapróbáláshoz nyomja meg a Beállítás gombot.",
+    "disconnectedUnreachable": "A WhatsApp le van választva. Nem értük el a Metát, hogy visszavonjuk a hozzáférést. Kérjük, távolítsa el a HatchGrab hozzáférését itt: WhatsApp Business → Beállítások → Fiók → Business Platform.",
+    "disconnected": "A WhatsApp le van választva. Az automatikus válaszok leálltak.",
+    "close": "Bezárás"
+  },
+  "card": {
+    "title": "Automatikus válaszok",
+    "description": "Válaszoljon automatikusan a vendégek kérdéseire a közösségi médiában, az étlapja és a menetrendje alapján.",
+    "channels": "Csatornák",
+    "requiresAccount": "WhatsApp Business-fiók szükséges.",
+    "connected": "Csatlakoztatva",
+    "popupInstruction": "Megnyílik egy Facebook-ablak a WhatsApp Business-fiókja csatlakoztatásához. Ha nem jelenik meg semmi, engedélyezze a böngészőjében a felugró ablakokat a hatchgrab.com számára, majd nyomja meg újra a Beállítás gombot.",
+    "switchedOff": "A WhatsApp automatikus válaszai ki vannak kapcsolva az Ön food truckjánál.",
+    "expiring": "A WhatsApp-kapcsolatát hamarosan meg kell újítani. Nyomja meg az Újracsatlakozás gombot, hogy az automatikus válaszok tovább működjenek.",
+    "comingSoon": "Hamarosan",
+    "instagram": "Automatikus válaszok az Instagram közvetlen üzeneteire. Instagram professzionális fiók szükséges majd hozzá.",
+    "messenger": "Automatikus válaszok a Facebook Messengerben. Facebook-oldal szükséges majd hozzá."
+  },
+  "blocked": {
+    "title": "A válaszai nem jutnak el a vendégekhez",
+    "body": "A WhatsApp a WhatsApp Business-fiókjával kapcsolatos számlázási probléma miatt nem küldi el az automatikus válaszait. A vendégek továbbra is írhatnak Önnek, és Ön továbbra is lát mindent, amit küldenek — de ők nem kapnak választ.",
+    "fix": "Ezekért az üzenetekért közvetlenül a WhatsAppnak fizet, ezért ezt a WhatsApp Managerben lehet rendezni. <link>Fizetési mód ellenőrzése</link>"
+  },
+  "limit": {
+    "heading": "Automatikus válaszok",
+    "label": "Havi korlát",
+    "option": "{n, number}",
+    "usage": "{used, number} / {limit, number} felhasználva · nullázás: {date}",
+    "perCustomer": "Vendégenként legfeljebb {n} válasz 24 órán belül, utána egy üzenet arról, hogy személyesen fog válaszolni.",
+    "emailAt": "A korlát elérésekor a válaszok szünetelnek. 80%-nál és 100%-nál e-mailt küldünk Önnek.",
+    "saved": "Havi válaszkorlát mentve",
+    "saveFailed": "Nem sikerült menteni a korlátot"
+  },
+  "billing": {
+    "heading": "Számlázás",
+    "paymentMethod": "Fizetési mód",
+    "added": "Fizetési mód hozzáadva",
+    "missing": "Nincs fizetési mód megadva",
+    "addInManager": "Hozzáadás a WhatsApp Managerben",
+    "summary": "A válaszokért nem a HatchGrab, hanem a Meta számláz a WhatsApp-fiókjának. Havonta az első {free, number} válasz ingyenes (ettől kezdve: {from}). Az adatok állapota: {checked}; a változásokat a <link>Meta díjszabásában</link> követheti.",
+    "howMetaCharges": "Hogyan számláz a Meta",
+    "chargesTitle": "A WhatsApp-válaszokért a Meta számláz, nem a HatchGrab.",
+    "chargesBody": "Minden válaszért, amelyet a HatchGrab az Ön nevében küld, a Meta számláz a WhatsApp Business-fiókjának. A Meta telefonszámonként havonta {free, number} ingyenes választ biztosít (ettől kezdve: {from}); ezen felül minden válasz a Meta díjszabása szerint fizetős. A WhatsApp Business alkalmazásból saját maga által küldött válaszokért nem kell fizetni. Ezeket az árakat a Meta határozza meg, és módosíthatja őket. <link>A Meta díjszabása</link>",
+    "addPaymentInManager": "Fizetési mód hozzáadása a WhatsApp Managerben",
+    "aboveMissing": "A korlátja meghaladja a Meta által adott {free, number} ingyenes választ. Fizetési mód nélkül a Meta minden választ leállít, amint ezek elfogynak.",
+    "aboveGeneral": "A korlátja meghaladja a Meta által adott {free, number} ingyenes választ. Az ezen felüli válaszokhoz fizetési mód szükséges a WhatsApp-fiókjában; enélkül a Meta minden választ leállít, amint az ingyenesek elfogynak.",
+    "addPaymentMethod": "Fizetési mód hozzáadása"
+  },
+  "disconnect": {
+    "link": "WhatsApp leválasztása",
+    "title": "Leválasztja a WhatsAppot?",
+    "body": "Az automatikus válaszok azonnal leállnak, és a HatchGrab elveszíti a hozzáférést a WhatsApp-fiókjához. A telefonszáma továbbra is működik a WhatsApp Business alkalmazásban. A HatchGrab teljes eltávolításához nyissa meg ezt is: WhatsApp Business → Beállítások → Fiók → Business Platform.",
+    "cancel": "Mégse",
+    "confirm": "Leválasztás",
+    "working": "Leválasztás…",
+    "failed": "Nem sikerült leválasztani"
+  },
+  "signup": {
+    "logged": "Rögzítve.",
+    "partial": "Összekapcsoltuk a WhatsApp Business-fiókját, de a kapcsolatot nem tudtuk befejezni. Az Ön oldalán nincs semmi hiba — kérjük, lépjen kapcsolatba velünk, és mi befejezzük.",
+    "noNumber": "A WhatsApp Business-fiókja össze van kapcsolva, de nem kaptunk vissza telefonszámot. Nyomja meg az Újracsatlakozás gombot, és fejezze be a telefonszámos lépést.",
+    "needsRegistering": "A fiókja össze van kapcsolva, de ezt a telefonszámot nekünk kell regisztrálnunk, mielőtt a válaszok elindulhatnak. Kérjük, forduljon az ügyfélszolgálathoz — a beállítása mentve van, ne futtassa újra.",
+    "registerRefused": "A fiókja össze van kapcsolva, de a Meta nem regisztrálta a telefonszámot. A beállítása mentve van — kérjük, ne futtassa újra, hanem forduljon az ügyfélszolgálathoz.",
+    "deliveryRefused": "A fiókja össze van kapcsolva, de a Meta nem kapcsolta be az üzenetek kézbesítését. A beállítása mentve van — kérjük, ne futtassa újra, hanem forduljon az ügyfélszolgálathoz.",
+    "numberTaken": "Ez a WhatsApp-szám már egy másik HatchGrab-fiókhoz kapcsolódik. Egy szám csak egy food truck nevében válaszolhat. Forduljon az ügyfélszolgálathoz, és átköltöztetjük.",
+    "saveIncomplete": "Majdnem kész — nem tudtuk befejezni a mentést. A beállítása mentve van, kérjük, ne futtassa újra, hanem forduljon az ügyfélszolgálathoz.",
+    "connected": "A WhatsApp csatlakoztatva. Az automatikus válaszok mostantól megválaszolják az erre a számra érkező üzeneteket."
+  }
+}

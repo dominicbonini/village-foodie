@@ -1,0 +1,42 @@
+{
+  "publicName": "Wydarzenie prywatne",
+  "chip": "Prywatne",
+  "grid": {
+    "orderingSection": "ZAMÓWIENIA",
+    "linkRowLabel": "Przyjmuj zamówienia przez prywatny link i kod QR",
+    "columnTitle": "Wbudowany typ Prywatne. Nie można zmienić jego nazwy, przenieść go ani usunąć."
+  },
+  "form": {
+    "help": "Wyświetla się w harmonogramie jako „Wydarzenie prywatne” tylko z datą i godzinami — nigdy z adresem, mapą ani Village Foodie.",
+    "linkPromise": "Goście zamawiają przez prywatny link i kod QR — dostaniesz je po zapisaniu.",
+    "nameLabel": "Nazwa wydarzenia",
+    "nameHelp": "Goście zobaczą ją na górze strony zamówień.",
+    "namePlaceholder": "Wesele Ani i Tomka",
+    "previewNote": "Tak wygląda w harmonogramie — bez miejsca, miejscowości ani kodu pocztowego.",
+    "needsTimes": "Dodaj godzinę rozpoczęcia i zakończenia — wydarzenie prywatne z zamówieniami przez link ich wymaga."
+  },
+  "link": {
+    "button": "Link i QR",
+    "title": "Prywatny link i kod QR",
+    "label": "Prywatny link",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano",
+    "qrDownload": "Pobierz QR",
+    "tableCards": "Drukuj karty na stoliki",
+    "newLink": "Utwórz nowy link",
+    "working": "Trwa…",
+    "newLinkConfirm": "Utworzyć nowy link? Obecny link od razu przestanie działać, a wydrukowane już kody QR również przestaną działać.",
+    "newLinkHelp": "Użyj tego, jeśli link trafił tam, gdzie nie powinien. Obecny link od razu przestanie działać, a wydrukowane kody QR również.",
+    "newLinkFailed": "Nie udało się utworzyć nowego linku.",
+    "offNotice": "Zamawianie przez prywatny link jest wyłączone dla tego wydarzenia, więc nie ma linku do udostępnienia. Wydarzenie nadal wyświetla się w harmonogramie jako „Wydarzenie prywatne”."
+  },
+  "cards": {
+    "printTitle": "{truck} — karty na stoliki",
+    "scan": "Zeskanuj, aby zamówić",
+    "blurb": "Zamów i zapłać telefonem. Zawołamy cię po imieniu, gdy zamówienie będzie gotowe.",
+    "footer": "Zamówienia przez HatchGrab"
+  },
+  "noSinglePost": "Wydarzenia prywatne nie dostają osobnego posta — pojawiają się na twoim tygodniowym plakacie jako „Wydarzenie prywatne”.",
+  "confirmToPrivate": "To ukryje adres i wydarzenie na mapie. Goście będą potrzebować prywatnego linku, aby zamówić.",
+  "confirmFromPrivate": "To sprawi, że wydarzenie będzie publiczne: jego adres i pinezka na mapie będą widoczne, a prywatny link przestanie działać."
+}

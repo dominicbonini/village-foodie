@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Nadpis týdne",
+    "weekHeadingSample": "Týden od …",
+    "daysSample": "{first} až {last}",
+    "date": "Datum",
+    "place": "Místo",
+    "venue": "Podnik",
+    "area": "Obec",
+    "time": "Čas",
+    "rows": "Řádky",
+    "rowsSample": "{px} px od sebe · {first} až {last}",
+    "ownText": "Váš vlastní text",
+    "noteTokenSample": "Poznámka, kterou napíšete při vytváření příspěvku",
+    "nothingYet": "Zatím nic",
+    "thisBox": "tento rámeček"
+  },
+  "sample": {
+    "venue": "Hostinec U Radnice",
+    "area": "Brno"
+  },
+  "bar": {
+    "previewWith": "Náhled s",
+    "undo": "Zpět",
+    "undoTitle": "Zpět (⌘Z)",
+    "redo": "Znovu",
+    "redoTitle": "Znovu (⇧⌘Z)",
+    "cancel": "Zrušit",
+    "saving": "Ukládání…",
+    "save": "Uložit design"
+  },
+  "grid": {
+    "eachRow": "Každý řádek",
+    "placeOff": "Název místa je ve vašem obrázku – HatchGrab ho nepřidá."
+  },
+  "background": {
+    "uploading": "Nahrávání…",
+    "replace": "Vyměnit obrázek",
+    "shape": {
+      "square": "Čtverec (1:1)",
+      "portrait45": "Na výšku (4:5)",
+      "portrait916": "Na výšku (9:16)",
+      "landscape169": "Na šířku (16:9)",
+      "portrait": "Na výšku",
+      "landscape": "Na šířku"
+    }
+  },
+  "scope": {
+    "title": "Pozice textu",
+    "standard": "Stejné pozice jako ve standardním designu",
+    "own": "Vlastní pozice pro místo {place}",
+    "locked": "Tyto pozice pocházejí z vašeho standardního designu. Zvolte „Vlastní pozice pro místo {place}“, chcete-li je posunout jen tady."
+  },
+  "stage": {
+    "hint": "Rámeček přesunete tažením · velikost změníte tažením za roh",
+    "zoomOut": "Oddálit",
+    "zoomIn": "Přiblížit"
+  },
+  "rows": {
+    "spacing": "Rozestup",
+    "daysRun": "Dny jdou od {first} do {last}. Tři rámečky 1. řádku se o tuto vzdálenost kopírují dolů.",
+    "whichEvents": "Které akce",
+    "showCancelled": "Zobrazit zrušené akce",
+    "showCancelledHint": "U zrušené akce je místo přeškrtnuté a je u ní slovo ZRUŠENO. Když je to vypnuté, den se zobrazí jako volný."
+  },
+  "days": {
+    "reorder": "Změnit pořadí",
+    "move": "přesunout"
+  },
+  "picture": {
+    "picture": "Obrázek",
+    "fill": "Vyplnit rámeček",
+    "fit": "Zobrazit celý",
+    "corners": "Rohy",
+    "square": "Ostré",
+    "rounded": "Zaoblené",
+    "ifMissing": "Když místo nemá obrázek",
+    "noPicture": {
+      "omit": "Vynechat",
+      "blank": "Nechat prázdné místo",
+      "logo": "Zobrazit vaše logo"
+    },
+    "border": "Okraj",
+    "drawBorder": "Nakreslit okraj",
+    "drawBorderHint": "Čára kolem obrázku ve vaší vlastní barvě.",
+    "borderWidth": "Šířka okraje",
+    "cornerRadius": "Zaoblení rohů",
+    "locationPictures": "Obrázky míst",
+    "addLocationPictures": "+ Přidat obrázky míst",
+    "allHaveImage": "{total, plural, =0 {Zatím nemáte žádná místa.} one {Vaše místo má obrázek.} few {Všechna # vaše místa mají obrázek.} other {Všech # vašich míst má obrázek.}}",
+    "someWithout": "{without} z {total, plural, one {# vašeho místa} few {# vašich míst} other {# vašich míst}} zatím {without, plural, one {nemá} few {nemají} other {nemá}} obrázek"
+  },
+  "settings": {
+    "font": "Písmo",
+    "colour": "Barva",
+    "textColour": "Barva textu",
+    "ownStyleNote": "{count, plural, one {{names} má vlastní styl, proto se nemění.} few {{names} mají vlastní styl, proto se nemění.} other {{names} mají vlastní styl, proto se nemění.}}",
+    "matchAgain": "Znovu sladit",
+    "matchName": "Sladit s: {name}",
+    "lastToggle": "{kind, select, weekly {Nechte zapnuté buď Místo, nebo Čas. U zrušené akce je místo přeškrtnuté a je u ní slovo ZRUŠENO, takže kdyby byly vypnuté obě položky, nic by neukazovalo, že je zrušená.} other {Nechte zapnutý buď Podnik, nebo Čas. U zrušené akce je místo přeškrtnuté a je u ní slovo ZRUŠENO, takže kdyby byly vypnuté obě položky, nic by neukazovalo, že je zrušená.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} – toto písmo má skutečnou kurzívu"
+  },
+  "align": {
+    "left": "Vlevo",
+    "centre": "Na střed",
+    "right": "Vpravo"
+  },
+  "effects": {
+    "outlineColour": "Barva obrysu",
+    "bandColour": "Barva pruhu",
+    "bandDaysOff": "Pruh ve volné dny",
+    "bandCancelled": "Pruh u zrušené akce",
+    "bandDaysOffHint": "Použije se místo pruhu výše v den, kdy neprodáváte.",
+    "bandCancelledHint": "Použije se místo pruhu výše, když je akce zrušená."
+  },
+  "more": {
+    "dayOwnLine": "Den na samostatném řádku",
+    "dayOwnLineHint": "Den v týdnu nad datem. Jen u data.",
+    "noEventDay": "V den bez akce",
+    "wordsBeforePlaceholder": "např. Najdete nás",
+    "neverHyphenate": "Jedno dlouhé slovo bez mezery se vždy zmenší – název místa nikdy nedělíme spojovníkem."
+  },
+  "bits": {
+    "less": "Méně",
+    "more": "Více",
+    "chooseColourFor": "{label} – zvolte libovolnou barvu",
+    "chooseColour": "Zvolte libovolnou barvu"
+  }
+}

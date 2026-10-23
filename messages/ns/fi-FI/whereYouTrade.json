@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Missä ruokarekkasi toimii?",
+  "stepIntro": "Tämä määrää valuutan, hinnat, aikavyöhykkeen ja puhelinnumeron muodon. Maata ei voi muuttaa myöhemmin, koska se on sidottu korttimaksuihisi.",
+  "settingsHeading": "Missä myyt",
+  "countryLabel": "Maa",
+  "countryGuessed": "Päättelimme tämän sijainnistasi. Vaihda se, jos se on väärä.",
+  "countryLocked": "Maata ei voi muuttaa",
+  "townLabel": "Paikkakunta",
+  "townQuestion": "Paikkakunta, jossa toimit",
+  "timezoneLabel": "Aikavyöhyke",
+  "continueButton": "Jatka",
+  "saveFailed": "Asetusten tallennus ei onnistunut — yritä uudelleen."
+}

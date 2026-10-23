@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Wszystkie",
+    "bold": "Grube i wysokie",
+    "hand": "Odręczne",
+    "classic": "Klasyczne",
+    "clean": "Proste",
+    "own": "Twoje",
+    "ownCount": "Twoje ({count})"
+  },
+  "yoursTag": "· twoja",
+  "loadingFonts": "Ładowanie czcionek…",
+  "search": "Szukaj wśród {count, number} czcionek",
+  "uploadButton": "↑ Prześlij swoją czcionkę",
+  "loadingLibrary": "Ładowanie biblioteki czcionek…",
+  "tryAgain": "Spróbuj ponownie",
+  "noOwn": "Nie ma tu jeszcze żadnej przesłanej czcionki. Użyj przycisku „↑ Prześlij swoją czcionkę” powyżej.",
+  "recent": "Ostatnio używane",
+  "popular": "Popularne na plakaty",
+  "adding": "Dodawanie…",
+  "noMatch": "Żadna czcionka nie pasuje do „{query}”.",
+  "showing": "Wyświetlono {shown} z {total, number} — wpisz więcej, aby zawęzić wyniki.",
+  "couldNotAdd": "Nie udało się dodać tej czcionki",
+  "tooBig": "Ta czcionka ma {size, number, ::.0 group-off} MB. Limit to 5 MB.",
+  "woff": "Prześlij plik TTF lub OTF — zwykle można go pobrać tam, gdzie kupiono czcionkę.",
+  "uploadIncomplete": "Przesyłanie nie zostało ukończone",
+  "added": "Dodano „{name}” jako wersję: {face}.",
+  "face": {
+    "regular": "zwykła",
+    "bold": "pogrubiona",
+    "italic": "kursywa"
+  },
+  "licenceTick": "Ta czcionka należy do mnie lub mam licencję na jej używanie",
+  "checking": "Sprawdzanie czcionki…",
+  "addFont": "Dodaj czcionkę",
+  "cancel": "Anuluj",
+  "missingFaces": "Dodaj wersję „{name}”: {faces} (opcjonalnie) — wybierz plik ponownie.",
+  "somethingWrong": "Coś poszło nie tak",
+  "faceLower": {
+    "regular": "zwykła",
+    "bold": "pogrubiona",
+    "italic": "kursywa"
+  },
+  "ownLicence": "Własna",
+  "loadFailed": "Nie udało się załadować czcionek"
+}

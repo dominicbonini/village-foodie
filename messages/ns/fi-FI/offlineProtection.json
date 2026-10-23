@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Ohjauspaneelin tai keittiönäytön on oltava päällä ja verkossa koko myyntivuoron ajan.",
+  "explainerBody": "Jos näyttö sammuu, laitteen internetyhteys katkeaa tai siirryt toiselle verkkosivustolle, offline-suojaus ottaa ohjat — se joko keskeyttää tilaamisen tai kytkee automaattisen hyväksynnän pois, valintasi mukaan.",
+  "reminder": "⚠️ Pidä ohjauspaneeli tai keittiönäyttö päällä ja verkossa koko myyntivuoron ajan, muuten offline-suojaus voi ottaa ohjat.",
+  "enableConfirm": "Offline-suojaus otettu käyttöön.\n\nJotta tilaukset tulevat perille, näytön on pysyttävä päällä. Jos tämän laitteen yhteys katkeaa, offline-suojaus ottaa ohjat valitsemallasi tavalla.\n\nVarmista, että Näyttö päällä on käytössä tässä laitteessa.",
+  "disableConfirm": "Poistetaanko offline-suojaus käytöstä tästä tapahtumasta?\n\nJos tämän laitteen yhteys katkeaa, verkkotilaukset jatkuvat — asiakkaat voivat tehdä tilauksia, joita et näe. Poista käytöstä vain, jos yhteytesi on luotettava.",
+  "cardDescription": "Määrittää, mitä saapuville tilauksille tapahtuu, kun laitteesi yhteys katkeaa.",
+  "purpose": "Jos laitteesi yhteys katkeaa, tämä estää tilauksia saapumasta silloin, kun et näe niitä.",
+  "switchLabel": "Tilausten offline-suojaus",
+  "switchHelp": "Mitä tapahtuu, kun tämän ruokarekan yhteys katkeaa.",
+  "modes": {
+    "pause": {
+      "label": "Keskeytä verkkotilaukset",
+      "help": "Asiakkaat eivät voi tilata, ennen kuin olet taas verkossa."
+    },
+    "no_auto_accept": {
+      "label": "Ota tilauksia vastaan, vahvista ne itse",
+      "help": "Automaattinen hyväksyntä kytketään pois, joten asiakkaat voivat yhä tilata, mutta mitään ei vahvisteta automaattisesti. Vahvistat jokaisen tilauksen, kun olet taas verkossa — ja yhä odottavat tilaukset hylätään automaattisesti valitsemasi ajan jälkeen, ja asiakkaalle ilmoitetaan siitä sähköpostilla."
+    }
+  },
+  "autoRejectLabel": "Hylkää tilaukset, jotka ovat odottaneet yli",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

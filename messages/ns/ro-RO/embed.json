@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Unde va fi {truck} în perioada următoare.",
+  "orderFrom": "Comandați de la {truck}",
+  "poweredBy": "Oferit de <b>HatchGrab</b>",
+  "loadFailed": "Programul nu a putut fi încărcat acum.",
+  "loading": "Se încarcă programul…",
+  "empty": "Niciun eveniment programat pentru {truck}."
+}

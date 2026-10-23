@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Ruokarekka 1",
+  "demoCategories": {
+    "pizza": "Pizzat",
+    "burgers": "Burgerit",
+    "mains": "Pääruoat",
+    "sides": "Lisukkeet",
+    "drinks": "Juomat"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizzarekka",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja & hunaja",
+        "fourCheese": "Neljä juustoa",
+        "gardenVeg": "Kasvis",
+        "garlicBread": "Valkosipulileipä",
+        "rocketParmesan": "Rucola & parmesaani",
+        "olives": "Oliivit",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burgerirekka",
+      "items": {
+        "classicCheeseburger": "Klassinen juustoburgeri",
+        "doubleBacon": "Tuplapekoni",
+        "buttermilkChicken": "Piimäkana",
+        "halloumiStack": "Halloumiburgeri",
+        "smashBurger": "Smash-burgeri",
+        "skinOnFries": "Kuorelliset ranskalaiset",
+        "loadedCheeseFries": "Juustoranskalaiset",
+        "onionRings": "Sipulirenkaat",
+        "craftLemonade": "Käsityölimonadi",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Currirekka",
+      "items": {
+        "chickenTikkaMasala": "Kana tikka masala",
+        "lambRoganJosh": "Lammas rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Voikana",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Pilau-riisi",
+        "garlicNaan": "Valkosipulinaan",
+        "onionBhaji": "Sipulibhaji",
+        "mangoLassi": "Mangolassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

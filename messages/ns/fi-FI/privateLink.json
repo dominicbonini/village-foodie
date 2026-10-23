@@ -1,0 +1,12 @@
+{
+  "guestLabel": "YKSITYISTILAISUUS",
+  "truckFallback": "Ruokarekka",
+  "noSlugTitle": "Tähän ruokarekkaan ei voi vielä tilata verkossa.",
+  "orderingOffTitle": "Verkkotilaus ei ole käytössä",
+  "orderingOffBody": "Tähän tapahtumaan ei voi tilata verkossa. Tilaa paikan päällä ruokarekalta.",
+  "replacedTitle": "Tämä linkki on korvattu",
+  "replacedBody": "Tämä linkki ei enää toimi — {truck} on korvannut sen uudella. Pyydä järjestäjältä uusi linkki tai QR-koodi.",
+  "madePublicBody": "Tämä linkki ei enää toimi — {truck} on muuttanut tapahtuman julkiseksi. Voit tilata ruokarekan tavalliselta sivulta.",
+  "unknownTitle": "Tämä linkki ei toimi",
+  "unknownBody": "Tämä linkki ei toimi. Tarkista se järjestäjältä tai skannaa QR-koodi uudelleen."
+}

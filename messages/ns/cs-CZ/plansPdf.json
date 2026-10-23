@@ -1,0 +1,9 @@
+{
+  "title": "Tarify a funkce",
+  "generated": "Vygenerováno {date}",
+  "allowanceHeading": "Zahrnuté online objednávky",
+  "smallPrint": "Podrobnosti",
+  "priceNoteMasked": "Ceny uvedené jako „Upřesníme“ zatím nebyly zveřejněny.",
+  "omitNote": "Ceny záměrně nejsou v tomto dokumentu uvedeny.",
+  "terms": "Údaje odpovídají zveřejněným podmínkám tarifů k výše uvedenému datu a mohou se změnit. Poplatky za zpracování karet účtuje Stripe, nikoli HatchGrab. Tento dokument je shrnutí, nikoli smlouva."
+}

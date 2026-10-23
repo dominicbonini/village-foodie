@@ -1,0 +1,12 @@
+{
+  "guestLabel": "SOUKROMÁ AKCE",
+  "truckFallback": "Food truck",
+  "noSlugTitle": "Tento food truck zatím nemá nastavené online objednávky.",
+  "orderingOffTitle": "Online objednávky nejsou zapnuté",
+  "orderingOffBody": "Na tuto akci nelze objednávat online. Objednejte si prosím na místě u výdejního okénka.",
+  "replacedTitle": "Tento odkaz byl nahrazen",
+  "replacedBody": "Tento odkaz už nefunguje — food truck {truck} ho nahradil novým. Požádejte organizátora o nový odkaz nebo QR kód.",
+  "madePublicBody": "Tento odkaz už nefunguje — food truck {truck} tuto akci zveřejnil. Objednat si můžete na jeho běžné stránce.",
+  "unknownTitle": "Tento odkaz nefunguje",
+  "unknownBody": "Tento odkaz nefunguje. Ověřte ho u organizátora, nebo znovu naskenujte QR kód."
+}

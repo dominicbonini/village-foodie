@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Saglabāt manu ēdienkarti →",
+    "heading": "Iestatiet savu food truck",
+    "sub": "Jūsu ēdienkarte tiks pārnesta uzreiz.",
+    "privacy": "Mēs to izmantosim tikai, lai iestatītu jūsu food truck un nosūtītu demo saiti — skatiet mūsu <link>privātuma politiku</link>."
+  },
+  "sample": {
+    "bannerButton": "Iestatīt manu food truck →",
+    "heading": "Iestatiet savu food truck",
+    "sub": "Nākamajā solī augšupielādēsiet savu ēdienkarti — tas aizņem minūti.",
+    "privacy": "Mēs to izmantosim tikai, lai iestatītu jūsu food truck un nosūtītu demo saiti — skatiet mūsu <link>privātuma politiku</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Saglabāt manu ēdienkarti →",
+    "heading": "Saglabājiet savu demo versiju",
+    "sub": "Mēs to glabāsim 14 dienas un uzreiz nosūtīsim jums saiti e-pastā.",
+    "privacy": "Mēs to izmantosim tikai, lai nosūtītu demo saiti — skatiet mūsu <link>privātuma politiku</link>."
+  },
+  "confirmationHeading": "Viss gatavs",
+  "postSaveButton": "Iestatīt manu food truck →",
+  "enterSetupButton": "Iestatīt manu food truck →",
+  "emailOnlyLink": "Tikai nosūtiet man saiti, lai atgrieztos šajā demo versijā",
+  "sendLinkButton": "Sūtīt man saiti",
+  "savingButton": "Saglabā…",
+  "continueButton": "Turpināt →",
+  "createAccountButton": "Izveidot manu kontu →",
+  "retryButton": "Mēģināt vēlreiz",
+  "backToDemoButton": "Atpakaļ uz demo versiju",
+  "savedStatus": "{hasDate, select, yes {✓ Saglabāts — glabāsim līdz {date}} other {✓ Saglabāts}}",
+  "back": "Atpakaļ",
+  "close": "Aizvērt",
+  "truckStepHeading": "Par jūsu food truck",
+  "detailsStepHeading": "Pabeidziet iestatīšanu",
+  "stepper": {
+    "details": "Dati",
+    "menu": "Ēdienkarte",
+    "allergens": "Alergēni",
+    "kitchen": "Virtuve",
+    "schedule": "Grafiks"
+  },
+  "confirmEmailed": "Mēs jums e-pastā nosūtījām saiti tieši uz šo demo versiju — pieteikšanās nav vajadzīga.",
+  "confirmKeepUntil": "Glabāsim to līdz <b>{date}</b>. Kad iestatīsiet visu pa īstam, jūsu ēdienkarte tiks pārnesta.",
+  "loading": "Ielādē…",
+  "firstName": "Vārds",
+  "lastName": "Uzvārds",
+  "truckName": "Food truck nosaukums",
+  "truckNamePlaceholder": "piem., Ciema virtuve",
+  "cuisine": "Virtuve",
+  "logoLabel": "Logotips <opt>(neobligāti)</opt>",
+  "logoPreviewAlt": "Logotipa priekšskatījums",
+  "changeLogo": "Mainīt logotipu",
+  "removeLogo": "Noņemt",
+  "uploadLogo": "📷 Augšupielādēt logotipu",
+  "readyTitle": "Jūsu konts ir gatavs",
+  "readyBody": "Tagad pabeigsim jūsu food truck iestatīšanu — ēdienkarti, alergēnus un virtuvi.",
+  "hangTight": "Brīdi uzgaidiet — viss tiek iestatīts.",
+  "stage": {
+    "account": "Izveido jūsu kontu",
+    "truck": "Iestata jūsu food truck",
+    "menu": "Ielādē jūsu ēdienkarti"
+  },
+  "stageState": {
+    "done": "gatavs",
+    "recognised": "jums jau ir konts",
+    "failed": "neizdevās",
+    "active": "notiek",
+    "pending": "gaida"
+  },
+  "signIn": "Pieteikties",
+  "phone": "Tālrunis",
+  "onWhatsapp": "Šis numurs ir pieejams WhatsApp",
+  "email": "E-pasts",
+  "emailPlaceholder": "jus@jusufoodtruck.lv",
+  "settingUpAs": "Konta e-pasts: <b>{email}</b> <change>mainīt</change>",
+  "password": "Parole",
+  "passwordPlaceholder": "Vismaz 8 rakstzīmes",
+  "hidePassword": "Slēpt paroli",
+  "showPassword": "Rādīt paroli",
+  "promoLabel": "Vai jums ir kods? <opt>(neobligāti)</opt>",
+  "promoPlaceholder": "Ievadiet to šeit",
+  "agreeTerms": "Es piekrītu <terms>Noteikumiem</terms> un <privacy>Privātuma politikai</privacy>.",
+  "freeMonth": "Iestatīšana neuzsāks jūsu bezmaksas mēnesi. Tas sāksies, kad izvēlēsieties savu pirmo publisko pasākumu — kad vien būsiet gatavi.",
+  "fieldError": {
+    "firstName": "Norādiet savu vārdu.",
+    "lastName": "Un savu uzvārdu.",
+    "truck": "Piešķiriet savam food truck nosaukumu.",
+    "cuisine": "Pastāstiet, ko jūs gatavojat.",
+    "phoneMissing": "Pievienojiet tālruņa numuru — gan klienti, gan mēs to izmantojam, lai ar jums sazinātos.",
+    "email": "Ievadiet derīgu e-pasta adresi.",
+    "password": "Parolei jābūt vismaz 8 rakstzīmes garai.",
+    "terms": "Lai turpinātu, lūdzu, piekrītiet noteikumiem."
+  },
+  "error": {
+    "saveFailed": "Neizdevās to saglabāt — mēģiniet vēlreiz.",
+    "savedNoEmail": "Saglabāts — taču pašlaik neizdevās nosūtīt saiti e-pastā.",
+    "unreachable": "Pašlaik neizdevās izveidot savienojumu ar mums — mēģiniet vēlreiz.",
+    "createAccountFailed": "Neizdevās izveidot jūsu kontu.",
+    "truckCreateFailed": "Jūsu konts ir gatavs, taču neizdevās izveidot jūsu food truck. Mēģiniet vēlreiz.",
+    "truckUnreachable": "Jūsu konts ir gatavs, taču pašlaik neizdevās izveidot jūsu food truck. Mēģiniet vēlreiz.",
+    "truckNoToken": "Jūsu food truck ir iestatīts, taču pašlaik neizdevās to atvērt. Mēģiniet vēlreiz."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Busiņš 1",
+  "demoCategories": {
+    "pizza": "Picas",
+    "burgers": "Burgeri",
+    "mains": "Pamatēdieni",
+    "sides": "Garnīri",
+    "drinks": "Dzērieni"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Picu busiņš",
+      "items": {
+        "margherita": "Margarita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja un medus",
+        "fourCheese": "Četri sieri",
+        "gardenVeg": "Dārzeņu pica",
+        "garlicBread": "Ķiploku maize",
+        "rocketParmesan": "Rukola un parmezāns",
+        "olives": "Olīvas",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burgeru busiņš",
+      "items": {
+        "classicCheeseburger": "Klasiskais siera burgers",
+        "doubleBacon": "Dubultais bekona burgers",
+        "buttermilkChicken": "Vista paniņās",
+        "halloumiStack": "Halloumi burgers",
+        "smashBurger": "Smash burgers",
+        "skinOnFries": "Frī kartupeļi ar mizu",
+        "loadedCheeseFries": "Frī ar sieru un piedevām",
+        "onionRings": "Sīpolu gredzeni",
+        "craftLemonade": "Amatnieku limonāde",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Karija busiņš",
+      "items": {
+        "chickenTikkaMasala": "Vistas tikka masala",
+        "lambRoganJosh": "Jēra rogan josh",
+        "chanaMasala": "Čana masala",
+        "butterChicken": "Sviesta vista",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Pilau rīsi",
+        "garlicNaan": "Ķiploku naans",
+        "onionBhaji": "Sīpolu bhadži",
+        "mangoLassi": "Mango lasi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

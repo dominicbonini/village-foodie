@@ -1,0 +1,69 @@
+{
+  "close": "Sulge",
+  "cancel": "Loobu",
+  "selectReason": "Vali põhjus",
+  "reject": {
+    "title": "Kas lükata tellimus #{orderId} tagasi?",
+    "reasonLabel": "Põhjus — kohustuslik (näidatakse kliendile)",
+    "reason": "{reason, select, sold_out {Toode on otsas} too_busy {Liiga kiire — ei jõua õigeks ajaks} closing_soon {Sulgeme varsti} other {Muu}}",
+    "noteRequired": "Põhjus — kohustuslik",
+    "noteOptional": "Lisamärkus — valikuline",
+    "notePlaceholder": "Lisa kliendile täpsemat teavet…",
+    "keep": "Jäta tellimus alles",
+    "confirm": "Lükka tellimus tagasi"
+  },
+  "eventCancel": {
+    "title": "Kas tühistada see üritus?",
+    "affected": "{n, plural, one {{count} tellimus tühistatakse} other {{count} tellimust tühistatakse}} ja kliente teavitatakse.",
+    "reasonLabel": "Põhjus — valikuline",
+    "reason": "{reason, select, vehicle_breakdown {Sõiduki rike} weather {Ilm} venue_issue {Probleem asukohaga} personal_emergency {Isiklik hädaolukord} other {Muu}}",
+    "messageLabel": "Sõnum klientidele — valikuline",
+    "messagePlaceholder": "nt Vabandust, meie haagis läks teel asukohta katki…",
+    "keep": "Jäta üritus alles",
+    "cancelling": "Tühistamine…",
+    "confirm": "Tühista üritus"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Alusta üritust uuesti} other {Alusta üritust}}",
+    "changeEvent": "Vaheta üritust",
+    "changeEventType": "Muuda ürituse tüüpi…",
+    "privateLink": "Privaatne link ja QR-kood",
+    "noteLabel": "Märkus klientidele",
+    "notePlaceholder": "nt Pargi peaparklasse, otsi oranži varikatust",
+    "noteHint": "Kuvatakse klientidele tellimislehel sinu ürituse andmete all.",
+    "saveNote": "Salvesta märkus",
+    "resume": "Jätka tellimuste vastuvõttu",
+    "pause": "Peata tellimused",
+    "changeFinishTime": "Muuda ürituse lõpuaega",
+    "finishEvent": "Lõpeta üritus",
+    "cancelEvent": "Tühista üritus"
+  },
+  "finish": {
+    "confirmTitle": "Kas muuta lõpuaega?",
+    "willFinish": "See üritus lõpeb kell <b>{selected}</b>{hasCurrent, select, yes { (seni <b>{current}</b>)} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} tellimus on} other {{count} tellimust on}} tähtajaga hiljem kui {selected}.</b> {n, plural, one {See jääb} other {Need jäävad}} tahvlile ja {n, plural, one {selle} other {need}} tuleb siiski valmistada. Lõpuaja muutmine peatab ainult UUTE tellimuste esitamise hilisemateks aegadeks.",
+    "saving": "Salvestamine…",
+    "confirm": "Muuda lõpuaega",
+    "keepCurrent": "Jäta alles: {current}",
+    "keepAsIs": "Jäta nii",
+    "title": "Muuda lõpuaega",
+    "currentlySet": "Selle ürituse lõpuaeg on praegu <b>{current}</b>.",
+    "noFinishTime": "Sellel üritusel pole lõpuaega määratud.",
+    "noTimesLeft": "Täna pole enam aegu jäänud. Kasuta selle asemel nuppu „Lõpeta üritus“.",
+    "newFinishTime": "Uus lõpuaeg",
+    "optionCurrent": "{time} (praegune)",
+    "earlier": "See on praegusest lõpuajast varasem. Kliendid ei saa hilisemateks aegadeks tellida.",
+    "review": "Vaata muudatus üle",
+    "optionNextDay": "{time} (järgmine päev)"
+  },
+  "extraWait": {
+    "title": "Lisa ooteaega",
+    "hint": "Lisandub uutele tellimustele antavale kättesaamise ajale. Ürituse lõpuaega see ei muuda.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Laadimiseks ühenda uuesti",
+    "selected": "Valitud",
+    "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+  }
+}

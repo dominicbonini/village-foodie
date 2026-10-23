@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Luba klientidel tellimusi tühistada",
+    "sentence": "Kliendid saavad tühistada kuni <select></select> enne kättesaamise aega"
+  },
+  "autoAccept": {
+    "label": "Võta tellimused automaatselt vastu",
+    "help": "Tellimused kinnitatakse automaatselt. Kui soovitud ajavahemik on täis, liigub tellimus järgmisse vabasse ajavahemikku. Kinnitatakse ainult siis, kui võimsust jätkub. Kliendi märkustega tellimused (nt allergia) tuleb siiski ise kinnitada."
+  },
+  "orderReady": {
+    "label": "Samm „Tellimus valmis“",
+    "help": "Näita tellimuste ekraanil nuppu „Märgi valmis“. Köögiekraanid seadistatakse eraldi, igas seadmes. Kliendid saavad e-kirja alati, kui tellimus märgitakse valmis. Kehtib kõigile üritustele — ühe ürituse jaoks saad selle siiski ürituse töölaual sisse või välja lülitada."
+  },
+  "buzzers": {
+    "label": "Kas jagad kättesaamiseks piipareid?",
+    "help": "Märgi üles, millise piipari iga klient sai, et teaksid, keda otsida, kui tema toit on valmis.",
+    "countLabel": "Mitu piiparit sul on?"
+  }
+}

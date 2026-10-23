@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Domača stran HatchGrab",
+  "cta": "Naložite svoj jedilnik →",
+  "ctaShort": "Naložite jedilnik",
+  "features": "Funkcije",
+  "pricing": "Cenik",
+  "logIn": "Prijava",
+  "country": {
+    "button": "Država: {name}. Spremeni državo",
+    "menu": "Država"
+  }
+}

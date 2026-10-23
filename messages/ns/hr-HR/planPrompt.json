@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} su dio paketa {plan}.} other {{feature} dio je paketa {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nisu dio vašeg paketa.} other {{feature} nije dio vašeg paketa.}}",
+  "switchedOff": "{many, select, yes {Za vaš food truck isključene su značajke: {feature}.} other {Za vaš food truck isključena je značajka: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Nadogradi →",
+  "features": {
+    "discovery_map": {
+      "name": "Prikaz na javnoj karti food truckova",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Web nadzorna ploča",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Kuhinjska aplikacija",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Jelovnik s QR kodom",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Meniji",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Dodatne ponude",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Narudžbe na licu mjesta",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Online naručivanje uz plaćanje pri preuzimanju",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Označavanje „rasprodano“",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Odbrojavanje zaliha",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Zaštita narudžbi izvan mreže",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online plaćanja",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Naručivanje unaprijed",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Termini preuzimanja za kupce",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Upravljanje kapacitetom kuhinje",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatsko prihvaćanje",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatski odgovori na Messengeru i Instagramu",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR kodovi s vašim logotipom",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Napredno izvještavanje",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Ispis kuhinjskih listića",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Sinkronizacija kuhinje na više uređaja",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Zaslon za kuhara",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatski odgovori na WhatsAppu",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Vaš raspored na vašoj web-stranici",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Objave za društvene mreže",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Prilagođene vrste događaja",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Privatni događaji",
+      "many": "yes"
+    }
+  }
+}

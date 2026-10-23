@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Kur {truck} strādās nākamreiz.",
+  "orderFrom": "Pasūtīt: {truck}",
+  "poweredBy": "Darbina <b>HatchGrab</b>",
+  "loadFailed": "Pašlaik neizdevās ielādēt grafiku.",
+  "loading": "Ielādē grafiku…",
+  "empty": "{truck}: nav gaidāmu pasākumu."
+}

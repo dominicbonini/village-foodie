@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Rendelés: {truck}",
+    "orderDescription": "Rendeljen előre: {truck} — és vegye át a rendelését a food trucknál.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} logó"
+  },
+  "shareTitle": "{truck} – menetrend",
+  "shareText": "Nézze meg, hol áll meg legközelebb: {truck}! 🚚",
+  "linkCopied": "Profillink a vágólapra másolva! 📋",
+  "facebookPage": "Facebook-oldal",
+  "loadingMap": "Térkép betöltése…",
+  "view": {
+    "list": "Lista",
+    "map": "Térkép"
+  },
+  "ownThisTruck": "Öné ez a food truck?",
+  "ownThisTruckTitle": "Öné ez a food truck? Kattintson ide a profil frissítéséhez",
+  "actions": {
+    "menu": "Étlap",
+    "call": "Hívás",
+    "message": "Üzenet",
+    "share": "Megosztás",
+    "order": "Rendelés"
+  },
+  "loadingSchedule": "Menetrend betöltése…",
+  "loadError": {
+    "title": "Nem sikerült betölteni",
+    "body": "Most nem sikerült betölteni a menetrendet — ez általában csak átmeneti hiba. Kérjük, próbálja újra.",
+    "retry": "Újra"
+  },
+  "notFound": {
+    "title": "A food truck nem található",
+    "body": "Nem találtunk adatokat ehhez a food truckhoz. Lehet, hogy máshová költöztek, vagy frissítették a profiljukat.",
+    "cta": "Összes food truck"
+  },
+  "noEvents": {
+    "title": "Nincsenek közelgő események",
+    "body": "Lehet, hogy hiányoznak adatok erről a food truckról. Ön a tulajdonos, vagy ismeri a menetrendjüket?",
+    "cta": "Írjon nekünk, és frissítjük!"
+  },
+  "whereToFind": "Itt talál minket",
+  "missingEvent": "<strong>Hiányzik egy esemény?</strong> <br></br>Ha Ön a food truck tulajdonosa vagy egyszerűen lelkes rajongója, segítsen naprakészen tartani ezt az oldalt! <br></br><link>Írjon nekünk a hiányzó adatokkal.</link>",
+  "weeklySchedule": "Heti menetrend kérése 🍕"
+}

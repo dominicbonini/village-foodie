@@ -1,0 +1,12 @@
+{
+  "guestLabel": "ERAÜRITUS",
+  "truckFallback": "Toiduauto",
+  "noSlugTitle": "See toiduauto pole veel veebitellimusteks seadistatud.",
+  "orderingOffTitle": "Veebitellimine pole sisse lülitatud",
+  "orderingOffBody": "See üritus ei võta veebitellimusi vastu. Palun telli kohapeal leti juures.",
+  "replacedTitle": "See link on asendatud",
+  "replacedBody": "See link ei tööta enam — {truck} asendas selle. Küsi korraldajalt uut linki või QR-koodi.",
+  "madePublicBody": "See link ei tööta enam — {truck} muutis selle ürituse avalikuks. Saad tellida nende tavaliselt lehelt.",
+  "unknownTitle": "See link ei tööta",
+  "unknownBody": "See link ei tööta. Kontrolli seda korraldajaga või skanni QR-kood uuesti."
+}

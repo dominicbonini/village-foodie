@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Sveiki, {name}!} other {Sveiki!}}",
+  "signoffName": "Dominic",
+  "signoffRole": "HatchGrab dibinātājs",
+  "verify": {
+    "subject": "Apstipriniet savu e-pasta adresi",
+    "thanks": "{hasTruck, select, yes {Paldies, ka iestatāt food truck {truck} platformā HatchGrab.} other {Paldies, ka iestatāt savu food truck platformā HatchGrab.}}",
+    "button": "Apstiprināt manu e-pasta adresi",
+    "buttonText": "Apstiprināt manu e-pasta adresi: {url}",
+    "why": "Ar šo adresi jūs pieteiksieties, un uz to tiek sūtīti paziņojumi par pasūtījumiem — tāpēc to vērts izdarīt jau tagad.",
+    "next": "Tiklīdz tā būs apstiprināta, es jums nosūtīšu visu, kas nepieciešams, lai sāktu.",
+    "carryOn": "Pa to laiku varat turpināt iestatīšanu.",
+    "stuck": "Kaut kas neizdodas? Vienkārši atbildiet uz šo e-pastu — uz tiem atbildu es pats.",
+    "fallbackLink": "Ja poga nedarbojas, ielīmējiet pārlūkā šo saiti: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Laipni lūdzam HatchGrab, {name}} other {Laipni lūdzam HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Esmu patiesi priecīgs sveikt food truck {truck} platformā HatchGrab.} other {Esmu patiesi priecīgs sveikt jūsu food truck platformā HatchGrab.}}",
+    "trial": "{months, plural, zero {Jūsu # mēnešu bezmaksas izmēģinājuma periods ir sācies — atbloķētas visas funkcijas.} one {Jūsu # mēneša bezmaksas izmēģinājuma periods ir sācies — atbloķētas visas funkcijas.} other {Jūsu # mēnešu bezmaksas izmēģinājuma periods ir sācies — atbloķētas visas funkcijas.}}",
+    "setup": "Ja iestatīšana vēl nav paveikta, tā ir vienkārša un aizņem apmēram piecpadsmit minūtes.",
+    "button": "Atvērt vadības paneli",
+    "bookmark": "To vērts saglabāt grāmatzīmēs. Tas darbojas jebkurā ierīcē.",
+    "stuck": "Ja kaut kas neizdodas, vienkārši atbildiet uz šo e-pastu — uz tiem atbildu es pats.",
+    "lookingForward": "{hasTruck, select, yes {Ar nepacietību gaidu, kad food truck {truck} sāks tirgoties.} other {Ar nepacietību gaidu, kad jūsu food truck sāks tirgoties.}}"
+  }
+}

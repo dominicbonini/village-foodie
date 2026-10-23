@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Podczas obsługi twój panel lub ekran kuchenny musi być włączony i online.",
+  "explainerBody": "Jeśli ekran się wyłączy, urządzenie straci internet albo przełączysz się na inną stronę, włącza się ochrona offline — wstrzymuje zamawianie albo wyłącza automatyczne przyjmowanie, zależnie od twojego wyboru.",
+  "reminder": "⚠️ Podczas obsługi trzymaj panel lub ekran kuchenny włączony i online, inaczej może włączyć się ochrona offline.",
+  "enableConfirm": "Ochrona offline włączona.\n\nAby zamówienia napływały bez przerwy, ekran musi pozostać włączony. Jeśli to urządzenie straci połączenie, ochrona offline zadziała w wybranym trybie.\n\nUpewnij się, że na tym urządzeniu włączona jest opcja „Ekran włączony”.",
+  "disableConfirm": "Wyłączyć ochronę offline dla tego wydarzenia?\n\nJeśli to urządzenie straci połączenie, zamówienia online będą nadal przyjmowane — klienci mogą składać zamówienia, których nie zobaczysz. Wyłącz tylko wtedy, gdy masz pewne połączenie.",
+  "cardDescription": "Decyduje, co dzieje się z nowymi zamówieniami, gdy twoje urządzenie traci połączenie.",
+  "purpose": "Jeśli twoje urządzenie straci połączenie, ta opcja wstrzymuje napływ zamówień, których nie widzisz.",
+  "switchLabel": "Ochrona zamówień offline",
+  "switchHelp": "Co się dzieje, gdy ten food truck traci połączenie.",
+  "modes": {
+    "pause": {
+      "label": "Wstrzymaj zamówienia online",
+      "help": "Klienci nie mogą zamawiać, dopóki nie wrócisz online."
+    },
+    "no_auto_accept": {
+      "label": "Przyjmuj zamówienia i potwierdzaj je ręcznie",
+      "help": "Automatyczne przyjmowanie jest wyłączone, więc klienci nadal mogą zamawiać, ale nic nie jest potwierdzane automatycznie. Potwierdzisz każde zamówienie po powrocie online — a wszystko, co nadal czeka, zostanie automatycznie odrzucone po wybranym czasie, a klient dostanie o tym e-mail."
+    }
+  },
+  "autoRejectLabel": "Odrzucaj zamówienia czekające dłużej niż",
+  "autoRejectOption": "{n, plural, one {{count} min} few {{count} min} many {{count} min} other {{count} min}}"
+}

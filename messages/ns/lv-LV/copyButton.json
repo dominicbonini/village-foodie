@@ -1,0 +1,10 @@
+{
+  "copy": "Kopēt",
+  "copied": "Nokopēts ✓",
+  "failed": "Neizdevās nokopēt",
+  "aria": "{label} {thing}",
+  "announceCopied": "Nokopēts: {thing}",
+  "announceCopiedValue": "Vērtība nokopēta",
+  "announceFailed": "Neizdevās nokopēt: {thing}. Atlasiet tekstu un nokopējiet to paši.",
+  "announceFailedValue": "Neizdevās nokopēt vērtību. Atlasiet tekstu un nokopējiet to paši."
+}

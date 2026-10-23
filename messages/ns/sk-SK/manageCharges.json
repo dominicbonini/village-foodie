@@ -1,0 +1,30 @@
+{
+  "heading": "Dane, prepitné a poplatky",
+  "rate": {
+    "label": "Sadzba dane z predaja",
+    "hint": "Sadzba, ktorú účtujete pri každej objednávke. Zákazníci ju vidia pripočítanú pri platbe, na účtenkách a na bločkoch.",
+    "regionDefault": "Ak pole necháte prázdne, účtuje sa {label} vo výške {rate} % – sadzba na pripravené jedlá ({region})."
+  },
+  "included": {
+    "label": "{label} v cenách",
+    "hint": "Vaše ceny už obsahujú {label}. Táto sadzba len určuje, akú časť každej ceny tvorí {label}, na účtenkách a bločkoch — pri platbe sa nič nepripočíta.",
+    "default": "Ak pole necháte prázdne, použije sa {rate} % – sadzba {label} na teplé jedlá so sebou ({country})."
+  },
+  "tips": {
+    "label": "Prepitné",
+    "hint": "Zákazníci, ktorí platia online kartou, môžu pridať prepitné. Celé pripadne vám.",
+    "choices": "Možnosti pre zákazníkov:",
+    "chip": "{rate} %",
+    "other": "Iná suma"
+  },
+  "fee": {
+    "label": "Online servisný poplatok",
+    "hint": "Pripočíta sa len k online objednávkam. Nikdy nie k objednávkam s platbou pri vyzdvihnutí ani k objednávkam na mieste. Ponecháte si ho.",
+    "pctAria": "Servisný poplatok v percentách",
+    "fixedAria": "Servisný poplatok – pevná suma",
+    "max": "Najviac môžete účtovať: {max}",
+    "example": "Zákazníci ho uvidia pred platbou ako jeden riadok: „{label} {amount}“.",
+    "hatchgrab": "HatchGrab pripočíta k online objednávkam vašich zákazníkov servisný poplatok {fee}. Neplatíte ho vy a nemôžete ho zmeniť."
+  },
+  "saveFailed": "Nepodarilo sa uložiť — skúste to znova."
+}

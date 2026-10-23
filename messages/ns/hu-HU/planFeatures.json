@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Megjelenés a felfedezőtérképen"
+    },
+    "web_dashboard": {
+      "name": "Univerzális webes vezérlőpult"
+    },
+    "qr_code": {
+      "name": "QR-kód"
+    },
+    "schedule_import": {
+      "name": "Automatikus menetrend-importálás"
+    },
+    "meal_deals_upsells": {
+      "name": "Menük és ráajánlások"
+    },
+    "walkup_orders": {
+      "name": "Helyszíni rendelések kezelése"
+    },
+    "sold_out_toggle": {
+      "name": "Azonnali „elfogyott” kapcsoló"
+    },
+    "kitchen_app": {
+      "name": "Konyhai alkalmazás iPhone-ra, iPadre és Androidra"
+    },
+    "offline_protection": {
+      "name": "Rendelésvédelem térerő nélkül"
+    },
+    "online_payments": {
+      "name": "Online fizetés"
+    },
+    "advance_preordering": {
+      "name": "Előrendelés későbbi időpontokra"
+    },
+    "preorder_deadline": {
+      "name": "Előrendelési határidő"
+    },
+    "time_slot_selection": {
+      "name": "Idősávválasztás a vásárlóknak"
+    },
+    "kitchen_capacity": {
+      "name": "Konyhai kapacitás kezelése"
+    },
+    "stock_countdown": {
+      "name": "Automatikus készletszámláló"
+    },
+    "auto_accept": {
+      "name": "Online rendelések automatikus elfogadása"
+    },
+    "branded_qr_code": {
+      "name": "Logós QR-kód"
+    },
+    "private_events": {
+      "name": "Privát események"
+    },
+    "social_media_posts": {
+      "name": "Közösségimédia-bejegyzések"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp automatikus válaszok"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger és Instagram automatikus válaszok"
+    },
+    "tap_to_pay": {
+      "name": "Fizetés elfogadása telefonnal"
+    },
+    "advanced_reporting": {
+      "name": "Részletes kimutatások"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-értesítés rendelésekről"
+    },
+    "multi_device_kitchen": {
+      "name": "Konyhai szinkronizálás több eszközön"
+    },
+    "multi_user_access": {
+      "name": "Többfelhasználós hozzáférés"
+    },
+    "embed_schedule": {
+      "name": "Menetrend a saját weboldalán"
+    },
+    "event_types": {
+      "name": "Egyedi eseménytípusok és árazás"
+    },
+    "buzzer_tracking": {
+      "name": "Vendéghívó csipogók követése"
+    },
+    "ticket_printing": {
+      "name": "Konyhai rendelésjegyek nyomtatása"
+    },
+    "customer_display": {
+      "name": "Vásárlói kijelző"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitális törzsvásárlói pecsétkártyák"
+    }
+  },
+  "cardRegionOnline": "normál {region}",
+  "cardRegion": {
+    "UKcards": "brit kártyák",
+    "EEAcards": "EGT-s kártyák",
+    "UScards": "amerikai kártyák",
+    "Australiancards": "ausztrál kártyák",
+    "NewZealandcards": "új-zélandi kártyák",
+    "Canadiancards": "kanadai kártyák",
+    "Swisscards": "svájci kártyák"
+  },
+  "perMonth": {
+    "mo": "{amount}/hó",
+    "month": "{amount}/hónap"
+  },
+  "priceWord": {
+    "free": "Ingyenes",
+    "freeTrial": "Ingyenes próbaidőszak",
+    "lifetime": "Életre szóló",
+    "zeroPercent": "0%",
+    "payAtHatch": "Fizetés átvételkor",
+    "unlimited": "Korlátlan",
+    "none": "—",
+    "masked": "Egyeztetendő"
+  },
+  "cell": {
+    "included": "Benne van"
+  }
+}

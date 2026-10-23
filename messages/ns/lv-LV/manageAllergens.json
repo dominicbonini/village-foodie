@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Jūsu alergēnu karte",
+    "intro": "Klienti to redz <b>tieši tā, kā jūs to uzrakstāt</b> — nekas netiek pārrakstīts. Ierakstiet vai ielīmējiet tekstu zemāk vai augšupielādējiet fotogrāfiju/PDF, un mēs nolasīsim tekstu, lai jūs to pārbaudītu.",
+    "empty": "Alergēnu kartes vēl nav.",
+    "placeholder": "piem., Visas mūsu zivis ar frī satur kviešus un pienu. Fritieris tiek koplietots ar produktiem, kas satur lipekli un riekstus. Pieejamas vegāniskas izvēles — jautājiet personālam.",
+    "reading": "Lasa attēlu…",
+    "upload": "📷 Augšupielādēt attēlu / PDF",
+    "uploadNote": "Mēs nolasām tekstu no jūsu attēla, lai jūs to varētu pārskatīt — attēls netiek saglabāts."
+  },
+  "cardUpload": {
+    "dishFallback": "Ēdiens",
+    "question": "Vai jums ir alergēnu karte, ko augšupielādēt?",
+    "perDish": "{detected, select, yes {Augšupielādējiet to, un mēs to izmantosim, lai aizpildītu jūsu ēdienu alergēnus. Atpazītie alergēni būs redzami nākamajā lapā, kur jūs apstiprināsiet katru ēdienu.} other {Augšupielādējiet to, un mēs to izmantosim, lai aizpildītu jūsu ēdienu alergēnus.}}",
+    "cardOnly": "Augšupielādējiet alergēnu karti, ko redzēs klienti.",
+    "yes": "Jā",
+    "no": "Nē",
+    "noProblem": "Nekas — tā nav obligāta. Turpiniet ar zemāk esošo pogu.",
+    "analysing": "Analizē karti…",
+    "dropzone": "Velciet un nometiet vai pieskarieties, lai izvēlētos",
+    "imageOrPdf": "Attēls vai PDF",
+    "or": "vai",
+    "pastePlaceholder": "Ielīmējiet alergēnu kartes tekstu šeit…",
+    "process": "Apstrādāt karti",
+    "cardRead": "Karte nolasīta ✓",
+    "unmatchedHeading": "Šos neizdevās sasaistīt automātiski — piešķiriet vai noraidiet",
+    "quotedName": "“{name}”",
+    "ambiguous": "Neskaidrs — atbilst vairākiem ēdieniem; izvēlieties pareizo.",
+    "assignTo": "Piešķirt ēdienam…",
+    "dismiss": "Noraidīt",
+    "blanket": "Kartē norādīts, ka <b>{list}</b> var būt <b>visos</b> ēdienos. Pievienot katram ēdienam? (katru jūs tik un tā apstiprināsiet) <muted>— pēc noklusējuma izslēgts</muted>",
+    "kitchenNotes": "Virtuves piezīmes (saglabātas jūsu alergēnu informācijā)",
+    "matchSummary": "{n, plural, =0 {Sasaistīti ar ēdieniem: {matched}.} zero {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} one {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} other {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Rādīt mazāk",
+    "showMore": "Rādīt vairāk",
+    "fileOnly": "Šim food truck ir saglabāts kartes fails, taču kopsavilkuma teksts netika saglabāts. Atveriet oriģinālu, lai to izlasītu.",
+    "viewOriginal": "Skatīt oriģinālo karti"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Neizdevās nolasīt alergēnu karti — mēģiniet vēlreiz",
+      "confirmed": "Apstiprināts: {name}",
+      "undo": "Atsaukt",
+      "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz",
+      "imageFailed": "Neizdevās nolasīt šo attēlu — tā vietā ierakstiet vai ielīmējiet kartes tekstu",
+      "cardRead": "{n, plural, zero {Karte nolasīta — sasaistīti: {matched}, jāpiešķir: {count}} one {Karte nolasīta — sasaistīti: {matched}, jāpiešķir: {count}} other {Karte nolasīta — sasaistīti: {matched}, jāpiešķir: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Tika atpazīts “{generic}”, taču tas nav konkrēts. Ja šis ēdiens satur alergēnus no grupas “{family}”, atzīmējiet: {picks}. Ja nesatur, atstājiet tos neatzīmētus.",
+      "andOr": "{a} un/vai {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Apstiprināts",
+      "confirmed": "Apstiprināts",
+      "needsReview": "Jāpārskata"
+    },
+    "confirm": {
+      "confirming": "Apstiprina…",
+      "confirmed": "Apstiprināts ✓",
+      "confirm": "Apstiprināt",
+      "changed": "· mainīts",
+      "changedTitle": "Rediģēts kopš pēdējās apstiprināšanas — apstipriniet vēlreiz"
+    },
+    "allergens": "Alergēni",
+    "dietary": "Diēta",
+    "uncategorised": "Bez kategorijas",
+    "review": {
+      "progress": "Apstiprināti: {confirmed} no {total}",
+      "allConfirmed": "✓ Visi apstiprināti",
+      "list": "Saraksts",
+      "table": "Tabula",
+      "detected": "Atpazīts no jūsu ēdienkartes — <b>pārbaudiet</b>. Alergēni klientiem nav redzami, kamēr neapstiprināsiet katru ēdienu.",
+      "viewOnly": "👁 Tikai skatīšana — alergēnus var apstiprināt vai mainīt tikai īpašnieks.",
+      "emptyTitle": "Nav ēdienkartes pozīciju",
+      "emptyBody": "Vispirms pievienojiet ēdienkartes pozīcijas, pēc tam iestatiet šeit to alergēnus.",
+      "dish": "Ēdiens",
+      "status": "Statuss"
+    },
+    "cardPanel": {
+      "reading": "Lasa alergēnu informāciju…",
+      "saved": "🛡️ Alergēnu karte saglabāta",
+      "viewOriginal": "Skatīt oriģinālo karti",
+      "replace": "Aizstāt karti",
+      "uploadHelp": "Augšupielādējiet savu alergēnu karti (fotogrāfiju/PDF) vai ielīmējiet alergēnu informāciju — mūsu MI to sakārto klientiem.",
+      "add": "Pievienot alergēnu karti",
+      "viewOnly": "👁 Tikai skatīšana — alergēnu karti var pievienot tikai īpašnieks.",
+      "intro": "Klienti redzēs šo karti kā ēdienkartes alergēnu informāciju. Režīmā “tikai karte” atsevišķu ēdienu alergēni ir paslēpti (jūsu ēdienu dati tiek saglabāti gadījumam, ja vēlāk pārslēgsieties uz alergēniem katram ēdienam)."
+    },
+    "subtitle": {
+      "choose": "Izvēlieties, kā klienti redz alergēnu informāciju",
+      "card": "Pievienojiet alergēnu karti",
+      "cardOptional": "Pievienojiet alergēnu karti (neobligāti)",
+      "review": "Pārbaudiet un apstipriniet katru ēdienu"
+    },
+    "heading": {
+      "import": "Alergēni",
+      "standalone": "Alergēnu iestatīšana"
+    },
+    "nav": {
+      "next": "Tālāk →",
+      "back": "← Atpakaļ",
+      "skip": "Pagaidām izlaist",
+      "saving": "Saglabā…",
+      "done": "Gatavs",
+      "saveLater": "Saglabāt un pabeigt vēlāk",
+      "close": "Aizvērt",
+      "finish": "Pabeigt",
+      "skipImport": "Pagaidām izlaist alergēnu iestatīšanu"
+    },
+    "hint": {
+      "skipDefers": "Izlaišana tikai atliek — neapstiprinātie ēdieni paliek paslēpti klientiem, līdz to alergēni tiks apstiprināti.",
+      "importIncomplete": "Lai turpinātu, apstipriniet katru ēdienu — vai izvēlieties “Pagaidām izlaist alergēnu iestatīšanu”."
+    }
+  }
+}

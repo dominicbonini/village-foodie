@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Izvēlieties, kā rādīt alergēnu informāciju",
+    "detail": "Kamēr neizvēlēsieties, klienti neredz nevienu jūsu ēdienu — ēdienkarte sevi aizsargā, paslēpjot visu, kam alergēni nav apstiprināti, un šobrīd tas ir viss.",
+    "where": "Ēdienkarte → Alergēni"
+  },
+  "allergensCardMissing": {
+    "title": "Pievienojiet alergēnu karti",
+    "detail": "Jūs izvēlējāties rādīt alergēnu karti, taču neviena nav saglabāta — klientiem tiktu teikts, ka alergēnu informācija ir pieejama, bet viņi neko neatrastu.",
+    "where": "Ēdienkarte → Alergēni"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, zero {Apstipriniet alergēnus: {count} ēdieni} one {Apstipriniet alergēnus: {count} ēdiens} other {Apstipriniet alergēnus: {count} ēdieni}}",
+    "detail": "{n, plural, zero {{u, plural, zero {{unverified} no jūsu {total} ēdieniem ir paslēpti klientiem, līdz apstiprināsiet to alergēnus.} one {{unverified} no jūsu {total} ēdieniem ir paslēpts klientiem, līdz apstiprināsiet tā alergēnus.} other {{unverified} no jūsu {total} ēdieniem ir paslēpti klientiem, līdz apstiprināsiet to alergēnus.}}} one {Klientiem paslēpti ēdieni: {unverified} no {total}. Tie parādīsies, kad apstiprināsiet to alergēnus.} other {{u, plural, zero {{unverified} no jūsu {total} ēdieniem ir paslēpti klientiem, līdz apstiprināsiet to alergēnus.} one {{unverified} no jūsu {total} ēdieniem ir paslēpts klientiem, līdz apstiprināsiet tā alergēnus.} other {{unverified} no jūsu {total} ēdieniem ir paslēpti klientiem, līdz apstiprināsiet to alergēnus.}}}} Ēdiens, kas parādīts bez apstiprinātiem alergēniem, tiek uztverts kā “nesatur nevienu”, tāpēc ēdienkarte to labāk paslēpj, nevis riskē.",
+    "where": "Ēdienkarte → Alergēni"
+  },
+  "noVan": {
+    "title": "Pievienojiet busiņu",
+    "detail": "Pasākumi ir piesaistīti busiņam — bez tā nav caur ko pieņemt pasūtījumus.",
+    "where": "Iestatījumi → Jūsu food truck"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Iestatiet virtuves jaudu",
+    "detail": "Virtuves jauda nav iestatīta šiem busiņiem: {vans}. Bez tās mēs turpināsim solīt klientiem saņemšanas laikus, kurus jūsu virtuve nekādi nevar ievērot.",
+    "where": "Ēdienkarte → Virtuves jauda",
+    "unnamedVan": "Busiņš bez nosaukuma"
+  },
+  "noPrepBearingCategory": {
+    "title": "Pastāstiet, cik ilgi gatavojas jūsu ēdiens",
+    "detail": "{categories, select, none {Jums vēl nav nevienas ēdienkartes kategorijas, tāpēc mēs nevaram aprēķināt, cik ilgi aizņem pasūtījums.} other {Nevienai jūsu kategorijai nav iestatīts gatavošanas laiks, tāpēc mums katrs pasūtījums šķiet tūlītējs. Mēs turpinātu dot klientiem saņemšanas laikus, kurus jūsu virtuve nevar ievērot, un jo vairāk darba jums būtu, jo vairāk tie atpaliktu.}}",
+    "where": "Ēdienkarte → Kategorijas → Virtuves iestatījumi"
+  },
+  "emailUnverified": {
+    "title": "Apstipriniet savu e-pasta adresi",
+    "detail": "Uz šo adresi mēs sūtām paziņojumus par pasūtījumiem un konta atjaunošanu. Ja tā ir nepareiza, jūs to uzzināsiet tikai tad, kad kaut kas jau būs nogājis greizi.",
+    "where": "Meklējiet savā iesūtnē mūsu apstiprinājuma saiti"
+  },
+  "emailUnknown": {
+    "title": "E-pasta apstiprinājuma statuss nav zināms",
+    "detail": "E-pasta verifikācija vēl nav pieslēgta, tāpēc to nevar novērtēt. Tā apzināti bloķē, nevis klusi palaiž cauri.",
+    "where": "—"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Trebuie să țineți panoul de control sau ecranul de bucătărie pornit și online în timpul serviciului.",
+  "explainerBody": "Dacă ecranul se stinge, dispozitivul pierde conexiunea la internet sau treceți pe alt site, intervine protecția offline — fie pune comenzile pe pauză, fie dezactivează acceptarea automată, după cum ați ales.",
+  "reminder": "⚠️ Țineți panoul de control sau ecranul de bucătărie pornit și online în timpul serviciului; altfel, poate interveni protecția offline.",
+  "enableConfirm": "Protecția offline este activată.\n\nCa să primiți în continuare comenzi, ecranul trebuie să rămână pornit. Dacă acest dispozitiv pierde conexiunea, protecția offline intervine în modul ales.\n\nAsigurați-vă că opțiunea Ecran pornit este activată pe acest dispozitiv.",
+  "disableConfirm": "Dezactivați protecția offline pentru acest eveniment?\n\nDacă acest dispozitiv pierde conexiunea, comenzile online vor continua — clienții pot plasa comenzi pe care nu le vedeți. Dezactivați-o doar dacă aveți o conexiune sigură.",
+  "cardDescription": "Stabilește ce se întâmplă cu comenzile primite când dispozitivul rămâne fără conexiune.",
+  "purpose": "Dacă dispozitivul pierde conexiunea, această opțiune oprește sosirea comenzilor pe care nu le puteți vedea.",
+  "switchLabel": "Protecția comenzilor offline",
+  "switchHelp": "Ce se întâmplă când acest food truck pierde conexiunea.",
+  "modes": {
+    "pause": {
+      "label": "Opriți temporar comenzile online",
+      "help": "Clienții nu pot comanda până când reveniți online."
+    },
+    "no_auto_accept": {
+      "label": "Primiți în continuare comenzi, confirmați-le dumneavoastră",
+      "help": "Acceptarea automată este dezactivată, așa că clienții pot comanda în continuare, dar nimic nu se confirmă automat. Veți confirma fiecare comandă când reveniți online — iar orice comandă aflată încă în așteptare este respinsă automat după intervalul ales, iar clientul este anunțat prin e-mail."
+    }
+  },
+  "autoRejectLabel": "Respingeți comenzile care așteaptă mai mult de",
+  "autoRejectOption": "{n, plural, one {{count} minut} few {{count} minute} other {{count} de minute}}"
+}

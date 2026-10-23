@@ -1,0 +1,13 @@
+{
+  "subtotal": "Vahesumma",
+  "taxFallback": "Maks",
+  "taxIncluded": "Sealhulgas {label}",
+  "serviceFeeCustomer": "Veebitellimuse teenustasu",
+  "serviceFee": "Teenustasu",
+  "cardFee": "Kaarditasu",
+  "tip": "Jootraha",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Maksud, tasud ja jootraha} tax_tip {Maksud ja jootraha} fees_tip {Tasud ja jootraha} fees {Tasud} other {Maksud ja tasud}}"
+}

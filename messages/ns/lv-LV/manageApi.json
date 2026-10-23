@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Busiņš",
+  "eventsFeed": {
+    "today": "Šodien · {date}",
+    "tomorrow": "Rīt · {date}"
+  },
+  "privacyNotSaved": "Pasākums ir publicēts, taču tā privātuma iestatījumu neizdevās saglabāt.",
+  "stockWarning": "Kategorijā “{category}” nav pieejamu pozīciju",
+  "uncategorised": "Bez kategorijas"
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Plány a funkcie",
+  "generated": "Vygenerované {date}",
+  "allowanceHeading": "Zahrnuté online objednávky",
+  "smallPrint": "Dôležité upozornenia",
+  "priceNoteMasked": "Ceny označené „Upresníme“ ešte neboli zverejnené.",
+  "omitNote": "Ceny zámerne nie sú súčasťou tohto dokumentu.",
+  "terms": "Údaje zodpovedajú zverejneným podmienkam plánov k vyššie uvedenému dátumu a môžu sa zmeniť. Poplatky za spracovanie kariet účtuje Stripe, nie HatchGrab. Tento dokument je zhrnutie, nie zmluva."
+}

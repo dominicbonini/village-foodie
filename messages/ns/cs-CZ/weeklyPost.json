@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Něco se pokazilo",
+    "previewFailed": "Náhled se nepodařilo vytvořit",
+    "loadFailed": "Nepodařilo se načíst",
+    "tooBig": "Obrázek má {size, number, ::.0 group-off} MB. Limit je 10 MB.",
+    "wrongType": "Vyberte prosím PNG nebo JPG.",
+    "uploadIncomplete": "Nahrávání se nedokončilo",
+    "uploadFailed": "Nahrávání se nezdařilo",
+    "saveFailed": "Nepodařilo se uložit",
+    "buildFailed": "Příspěvek se nepodařilo vytvořit",
+    "copyFailed": "Nepodařilo se zkopírovat — označte text a zkopírujte ho ručně."
+  },
+  "loading": "Načítání…",
+  "missingTable": {
+    "title": "Týdenní příspěvek vyžaduje aktualizaci databáze",
+    "body": "Tabulka designů ještě nebyla vytvořena. Po provedení migrace bude tato obrazovka fungovat."
+  },
+  "kind": {
+    "label": "Který design",
+    "event": "Jedna akce",
+    "week": "Týdenní"
+  },
+  "setup": {
+    "title": "Nastavte si týdenní příspěvek",
+    "intro": "Nahrajte prázdnou verzi grafiky týdenního rozpisu, kterou už vytváříte — stejný design, jen bez vašich textových polí. HatchGrab doplní týden podle vašeho rozpisu.",
+    "canvaTitle": "Jak z Canvy exportovat prázdnou verzi",
+    "canvaStep1": "Otevřete svůj obvyklý design týdenního rozpisu.",
+    "canvaStep2": "Smažte textová pole s daty, místy a časy — ponechte pozadí a nadpisy, které chcete zachovat.",
+    "canvaStep3": "Sdílet › Stáhnout › PNG.",
+    "uploading": "Nahrávání…",
+    "upload": "Nahrát prázdný obrázek",
+    "uploadHint": "PNG nebo JPG, max. 10 MB, alespoň {px} px na kratší straně.",
+    "phoneTip": "Nejlépe na počítači nebo iPadu — na telefonu se malá pole špatně přetahují.",
+    "designName": "Design týdenního příspěvku",
+    "backDesigns": "‹ Designy",
+    "back": "‹ Zpět",
+    "pictureNote": "Váš obrázek bez data a místa. Ty doplníme my.",
+    "saved": "Design uložen."
+  },
+  "week": {
+    "this": "Tento týden",
+    "next": "Příští týden"
+  },
+  "post": {
+    "title": "Váš týdenní příspěvek",
+    "editDesign": "Upravit design",
+    "weekOf": "týden od {date}",
+    "imageAlt": "Váš týdenní příspěvek",
+    "building": "Vytváříme váš příspěvek…",
+    "updating": "Aktualizace…",
+    "eventsTitle": "Akce tento týden",
+    "noEvents": "Tento týden žádné akce.",
+    "eventDateCancelled": "{date} · zrušeno",
+    "showCancelled": "Zobrazit zrušené akce",
+    "showPrivate": "Zobrazit soukromé akce",
+    "privateHint": "Zobrazí se jako „Soukromá akce“ s datem a časy — nikdy s místem.",
+    "noteTitle": "Poznámka",
+    "notePlaceholder": "např. Předobjednávky k vyzvednutí",
+    "noteHint": "Zobrazí se v popisku a v poli pro poznámku, pokud jste ho umístili.",
+    "captionTitle": "Popisek pro vaši stránku",
+    "perEventTitle": "Příspěvek ke každé akci",
+    "nothingToPost": "Tento týden není co zveřejnit.",
+    "textCopied": "Text zkopírován.",
+    "copyText": "Kopírovat text",
+    "image": "Obrázek",
+    "share": "Sdílet",
+    "noOrderLink": "Zatím nemáte odkaz pro objednávky — nastavte webovou adresu svého food trucku v Nastavení."
+  }
+}

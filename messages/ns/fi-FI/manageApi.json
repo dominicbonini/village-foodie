@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Ruokarekka",
+  "eventsFeed": {
+    "today": "Tänään · {date}",
+    "tomorrow": "Huomenna · {date}"
+  },
+  "privacyNotSaved": "Tapahtuma on julkaistu, mutta sen yksityisyysasetusta ei voitu tallentaa.",
+  "stockWarning": "Ei saatavilla olevia tuotteita kategoriassa ”{category}”",
+  "uncategorised": "Luokittelematon"
+}

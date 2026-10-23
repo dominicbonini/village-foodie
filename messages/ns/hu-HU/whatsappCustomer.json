@@ -1,0 +1,15 @@
+{
+  "greeting": "Üdvözöljük 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Teljes étlapunkat és az allergénekre vonatkozó információkat itt találja: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Teljes étlapunkat itt nézheti meg: {url} — {truck} {emoji}",
+  "otherCategory": "Egyéb",
+  "categoryFrom": "{category}, kezdőár: {price}",
+  "listTwo": "{first} és {second}",
+  "listMany": "{init} és {last}",
+  "menuSummary": "{opener}Kínálatunk: {summary}. Nézze meg a teljes étlapot, és rendeljen előre itt: {url} — {truck} {emoji}",
+  "allergenCaveat": "Az allergénekkel kapcsolatban kérjük, ellenőrizze a teljes étlapot — ez egy automatikus válasz.",
+  "specificFallback": "{opener}Legfrissebb menetrendünket itt találja: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Köszönjük az üzeneteit! Itt naponta csak néhányszor tudok válaszolni.\n\nRendelés: {link}",
+  "capContact": "Közvetlen elérhetőségünk: {number}"
+}

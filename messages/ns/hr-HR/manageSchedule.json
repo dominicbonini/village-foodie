@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Otkazano",
+    "finished": "Završeno",
+    "unconfirmed": "Nepotvrđeno",
+    "confirmed": "Potvrđeno",
+    "open": "Sada otvoreno",
+    "closed": "Zatvoreno"
+  },
+  "sections": {
+    "label": "Odjeljci rasporeda",
+    "events": "Događaji",
+    "eventTypes": "Vrste događaja"
+  },
+  "header": {
+    "title": "Raspored",
+    "upcoming": "Nadolazeći: {count}",
+    "import": "✨ Uvezi raspored",
+    "importHint": "fotografija, PDF ili tekst",
+    "addEvent": "+ Dodaj događaj",
+    "scraperAuto": "Događaje automatski pronalazimo na vašoj web-stranici",
+    "changeInSettings": "Promijenite u Postavkama",
+    "scraperManual": "Raspored vodite ručno"
+  },
+  "empty": {
+    "title": "Nema nadolazećih događaja",
+    "body": "Ovdje će se pojaviti događaji pronađeni na vašim društvenim mrežama i u kalendaru rezervacija kako biste ih potvrdili"
+  },
+  "list": {
+    "openNow": "Sada otvoreno",
+    "needsApproval": "Čeka vaše odobrenje",
+    "needsConfirmation": "Čeka potvrdu",
+    "confirmed": "Potvrđeno",
+    "past": "Prošli događaji ({count})",
+    "found": "Pronašli smo {count, plural, one {# događaj za vas — pregledajte ga i odobrite prije nego što bude objavljen.} few {# događaja za vas — pregledajte ih i odobrite prije nego što budu objavljeni.} other {# događaja za vas — pregledajte ih i odobrite prije nego što budu objavljeni.}}"
+  },
+  "card": {
+    "addName": "Dodajte naziv",
+    "timeNeeded": "⚠ Nedostaje vrijeme",
+    "setTimeFirst": "Najprije postavite vrijeme",
+    "confirm": "Potvrdi",
+    "copy": "Kopiraj",
+    "edit": "Uredi",
+    "makePost": "Izradi objavu",
+    "cancel": "Otkaži",
+    "approve": "Odobri",
+    "reject": "Odbij",
+    "stock": "⚠️ Zalihe",
+    "stockHidden": "Skriveno — {reason}",
+    "noDeals": "Nema aktivnih menija",
+    "dealsActive": "Aktivno: {count, plural, one {# meni} few {# menija} other {# menija}} · {names}{hidden, plural, =0 {} one { · # skriven} few { · # skrivena} other { · # skrivenih}}",
+    "approveNeedsTimes": "Odobravanje nije moguće dok događaj nema vrijeme početka i završetka — dodajte ih putem opcije Uredi."
+  },
+  "guessed": {
+    "title": "📍 Ovu smo lokaciju pretpostavili",
+    "body": "Nazivu <b>{venue}</b> odgovara više lokacija, pa smo odabrali onu koja najbolje odgovara{hasTown, select, yes { u mjestu <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Prije odobravanja provjerite je li to prava lokacija — ako nije, putem opcije <b>Uredi</b> ispravite područje ili {postal}, inače će kupci biti upućeni na pogrešno mjesto.",
+    "thisVenue": "ova lokacija"
+  },
+  "noLocation": {
+    "title": "📍 Još nema lokacije",
+    "body": "Ovu lokaciju nismo mogli smjestiti na kartu, pa će biti navedena, ali bez oznake na karti. Dodajte {postal} putem opcije <b>Uredi</b> da se prikaže na karti."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Mogući sukob} few {Mogući sukobi} other {Mogući sukobi}} — provjerite prije {pending, select, yes {odobravanja} other {potvrđivanja}}",
+    "duplicate": "Ovo izgleda kao događaj koji već imate.",
+    "review": "Ista lokacija i datum, ali drugo vrijeme — je li ovo isti događaj s izmijenjenim vremenom ili zaseban termin? Provjerite prije odobravanja.",
+    "already": "Već u rasporedu: <b>{venue}</b>{details} ({status, select, confirmed {potvrđeno} open {otvoreno} other {{status}}})",
+    "unnamedVenue": "Lokacija bez naziva",
+    "ack": "Da, to su različiti događaji — svejedno {pending, select, yes {odobri} other {potvrdi}}",
+    "cancel": "Odustani",
+    "overlap": "Vrijeme ovog događaja preklapa se s drugim događajem istog dana — jedan food truck ne može biti na dva mjesta odjednom. Provjerite prije odobravanja."
+  },
+  "toast": {
+    "loadFailed": "Učitavanje događaja nije uspjelo",
+    "linkFailed": "Poveznicu nije moguće učitati",
+    "placeTypeFailed": "Događaj je spremljen, ali uobičajena vrsta za lokaciju {place} nije — {reason}.",
+    "placeTypeFailedReason": "spremanje nije prošlo",
+    "eventUpdated": "Događaj je ažuriran",
+    "eventAdded": "Događaj je dodan",
+    "eventsSaved": "{count, plural, one {Spremljen je # događaj} few {Spremljena su # događaja} other {Spremljeno je # događaja}}",
+    "saveEventsFailed": "Spremanje događaja nije uspjelo",
+    "needsTime": "Prije odobravanja dodajte vrijeme početka i završetka — događaj treba vrijeme da bi bio objavljen.",
+    "addStartTime": "Dodajte vrijeme početka",
+    "addEndTime": "Dodajte vrijeme završetka",
+    "chooseTruckBefore": "Prije odobravanja odaberite koji food truck radi na ovom događaju.",
+    "chooseTruck": "Odaberite koji food truck radi na ovom događaju",
+    "eventConfirmed": "Događaj je potvrđen",
+    "eventRejected": "Događaj je odbijen",
+    "undo": "↩ Poništi",
+    "eventRestored": "Događaj je vraćen",
+    "restoreFailed": "Vraćanje nije uspjelo",
+    "eventCancelled": "Događaj je otkazan",
+    "eventCancelledOrders": "Događaj je otkazan · {count, plural, one {otkazana je # narudžba} few {otkazane su # narudžbe} other {otkazano je # narudžbi}}",
+    "placeHidden": "Lokacija je skrivena",
+    "placeShown": "Lokacija je ponovno prikazana",
+    "saveThatFailed": "Spremanje nije uspjelo."
+  },
+  "link": {
+    "label": "Privatna poveznica i QR kod",
+    "close": "Zatvori"
+  }
+}

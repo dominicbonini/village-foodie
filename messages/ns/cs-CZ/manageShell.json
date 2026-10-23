@@ -1,0 +1,84 @@
+{
+  "loading": "Načítání správy…",
+  "loadFailed": "Načtení se nezdařilo",
+  "requestFailed": "Nezdařilo se",
+  "invalidToken": "Neplatný nebo prošlý token",
+  "loadFailedReason": "Tuto stránku se nepodařilo načíst: {reason}",
+  "noCountrySettings": "Nepodařilo se načíst nastavení země pro tento food truck. Obnovte prosím stránku.",
+  "noPlans": "Nepodařilo se načíst tarif tohoto food trucku. Obnovte prosím stránku.",
+  "stale": "{hasTime, select, yes {Obnovení se nezdařilo. Zobrazujeme stav uložený v {time}. Vaše změny se i tak uloží.} other {Obnovení se nezdařilo. Zobrazujeme naposledy uložený stav. Vaše změny se i tak uloží.}}",
+  "verify": {
+    "ok": "E-mail potvrzen — děkujeme.",
+    "expired": "Platnost tohoto potvrzovacího odkazu vypršela. Ozvěte se nám a vyřešíme to před spuštěním.",
+    "invalid": "Tento potvrzovací odkaz nefungoval. Ozvěte se nám a vyřešíme to před spuštěním."
+  },
+  "profile": {
+    "updated": "Profil aktualizován",
+    "saveFailed": "Uložení se nezdařilo",
+    "title": "Upravit profil",
+    "name": "Jméno",
+    "namePlaceholder": "Vaše jméno",
+    "email": "E-mail",
+    "cancel": "Zrušit",
+    "saving": "Ukládání…",
+    "save": "Uložit"
+  },
+  "header": {
+    "subtitle": "Správa",
+    "ordersDashboard": "← Přehled objednávek"
+  },
+  "tabs": {
+    "menu": "Jídelní lístek",
+    "schedule": "Rozpis",
+    "social": "Sociální sítě",
+    "reports": "Statistiky",
+    "team": "Tým",
+    "settings": "Nastavení",
+    "payments": "Platby",
+    "billing": "Fakturace",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Rozpis ({count})",
+    "stripeAttention": "Stripe vyžaduje vaši pozornost",
+    "allergensNotSet": "alergeny nenastaveny"
+  },
+  "menuSections": {
+    "label": "Sekce jídelního lístku",
+    "items": "Položky",
+    "capacity": "Kapacita kuchyně",
+    "extras": "Doplňky a nabídky navíc",
+    "deals": "Menu"
+  },
+  "socialSections": {
+    "label": "Sekce sociálních sítí",
+    "create": "Vytvořit příspěvek",
+    "designs": "Designy",
+    "locations": "Nastavení míst"
+  },
+  "notices": {
+    "review": "Zkontrolovat →",
+    "tour": "Chcete krátkou prohlídku svého přehledu?",
+    "showMeAround": "Provést",
+    "dismiss": "Zavřít",
+    "approval": "{count, plural, one {Našli jsme pro vás <b>{count}</b> akci — před zveřejněním ji zkontrolujte a schvalte.} few {Našli jsme pro vás <b>{count}</b> akce — před zveřejněním je zkontrolujte a schvalte.} other {Našli jsme pro vás <b>{count}</b> akcí — před zveřejněním je zkontrolujte a schvalte.}}",
+    "allergens": "<b>Alergeny nejsou vyplněny</b> — zákazníci informace o alergenech neuvidí, dokud je neověříte. Zkontrolujte alergeny u každého jídla na kartě Jídelní lístek.",
+    "domainLive": "Adresa <link>{domain}</link> je v provozu. Podívejte se na ni a pak nám v Nastavení potvrďte, že je v pořádku.",
+    "stripe": "<b>Stripe od vás něco potřebuje</b> — dokud to nevyřešíte, mohou se platby kartou zastavit.",
+    "profileTitle": "Doplňte svůj profil",
+    "missing": "Chybí: {fields}.",
+    "goToSettings": "Přejít do Nastavení →",
+    "field": {
+      "truckName": "název food trucku",
+      "cuisineType": "typ kuchyně",
+      "contactEmail": "kontaktní e-mail",
+      "contactPhone": "kontaktní telefon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Využíváte bezplatné zkušební období} other {Využíváte {months}měsíční bezplatné zkušební období}}",
+    "ends": "{hasDate, select, yes {Zkušební období končí <hl>{date}</hl>} other {Zkušební období končí <hl>brzy</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Všechny funkce zdarma na # měsíc} few {Všechny funkce zdarma na # měsíce} other {Všechny funkce zdarma na # měsíců}}} other {Všechny funkce zdarma po dobu zkušebního období}}",
+    "body": "{hasDate, select, yes {Během zkušebního období, které trvá do <b>{date}</b>, vám nic neúčtujeme. Účtovat začneme teprve, až si vyberete tarif a zadáte platební údaje. Do té doby není co rušit ani platit. Vyberte si tarif do konce zkušebního období — jinak přejdete na {fallback} a některé funkce přestanou fungovat.} other {Během zkušebního období vám nic neúčtujeme. Účtovat začneme teprve, až si vyberete tarif a zadáte platební údaje. Do té doby není co rušit ani platit. Vyberte si tarif do konce zkušebního období — jinak přejdete na {fallback} a některé funkce přestanou fungovat.}}",
+    "fees": "*U online objednávek se účtují standardní poplatky za zpracování karet",
+    "upgrade": "Přejít na vyšší tarif →"
+  }
+}

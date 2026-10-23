@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Vyzkoušejte si to před připojením",
+    "intro": "Napište otázku, jakou by položil zákazník, a uvidíte přesně, co by dostal zpět. Nikomu se nic neodešle.",
+    "examples": {
+      "where": "Kde jste dnes večer?",
+      "doYouDo": "Máte pizzu pepperoni?",
+      "menu": "Co máte na jídelním lístku?"
+    },
+    "placeholder": "Jaké máte dezerty?",
+    "send": "Odeslat",
+    "empty": "Zde se zobrazí vaše odpověď",
+    "working": "Připravujeme odpověď…",
+    "noReply": "Žádná odpověď by se neodeslala.",
+    "noReplyWhy": "Vypadá to jako spam, žádost o rezervaci nebo něco nesouvisejícího, takže automatická odpověď mlčí.",
+    "footnote": "Odpovědi generuje AI, pokaždé se mírně liší a občas mohou být chybné.",
+    "failed": "Náhled se teď nepodařilo vytvořit.",
+    "unreachable": "Nepodařilo se spojit se serverem. Zkontrolujte připojení a zkuste to znovu."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Příprava…",
+      "unavailable": "Nedostupné",
+      "waiting": "Čekání na okno Facebooku…",
+      "finishing": "Dokončování…",
+      "reconnect": "Znovu připojit",
+      "setUp": "Nastavit"
+    },
+    "startAgain": "Začít znovu",
+    "popupHint": "Nevidíte okno Facebooku? Mohlo být zablokováno. Povolte vyskakovací okna pro hatchgrab.com a pak stiskněte Začít znovu."
+  },
+  "notice": {
+    "sdkUnavailable": "Nastavení WhatsAppu není v tomto prostředí dostupné.",
+    "sdkBlocked": "Přihlašovací skript společnosti Meta se nepodařilo načíst. Obvyklou příčinou je blokátor reklam nebo ochrana proti sledování.",
+    "setupFailed": "Nastavení se nepodařilo dokončit. Nic se nezměnilo.",
+    "setupFinished": "Nastavení dokončeno.",
+    "metaError": "Meta během nastavení nahlásila problém. Nic se nezměnilo. Zkuste to znovu, a pokud se to bude opakovat, kontaktujte nás.",
+    "closed": "Nastavení bylo zavřeno před dokončením. Nic se nezměnilo — pro nový pokus stiskněte Nastavit.",
+    "disconnectedUnreachable": "WhatsApp je odpojen. Nepodařilo se nám spojit se společností Meta a odebrat přístup. Odeberte prosím HatchGrab ve WhatsApp Business → Nastavení → Účet → Business Platform.",
+    "disconnected": "WhatsApp je odpojen. Automatické odpovědi byly zastaveny.",
+    "close": "Zavřít"
+  },
+  "card": {
+    "title": "Automatické odpovědi",
+    "description": "Automaticky odpovídejte na dotazy zákazníků na sociálních sítích podle svého jídelního lístku a rozpisu.",
+    "channels": "Kanály",
+    "requiresAccount": "Vyžaduje účet WhatsApp Business.",
+    "connected": "Připojeno",
+    "popupInstruction": "Otevře se okno Facebooku pro připojení vašeho účtu WhatsApp Business. Pokud se nic neobjeví, povolte v prohlížeči vyskakovací okna pro hatchgrab.com a znovu stiskněte Nastavit.",
+    "switchedOff": "Automatické odpovědi přes WhatsApp jsou pro váš food truck vypnuté.",
+    "expiring": "Připojení k WhatsAppu bude brzy potřeba obnovit. Stiskněte Znovu připojit, aby automatické odpovědi fungovaly dál.",
+    "comingSoon": "Již brzy",
+    "instagram": "Automatické odpovědi na přímé zprávy na Instagramu. Bude vyžadovat profesionální účet Instagram.",
+    "messenger": "Automatické odpovědi ve Facebook Messengeru. Bude vyžadovat stránku na Facebooku."
+  },
+  "blocked": {
+    "title": "Vaše odpovědi se nedoručují",
+    "body": "WhatsApp odmítá odesílat vaše automatické odpovědi kvůli problému s platbami na vašem účtu WhatsApp Business. Zákazníci vám mohou dál psát a vy dál uvidíte vše, co pošlou — jen od vás nedostávají odpověď.",
+    "fix": "Za tyto zprávy platíte přímo WhatsAppu, takže se to řeší ve WhatsApp Manageru. <link>Zkontrolujte platební metodu</link>"
+  },
+  "limit": {
+    "heading": "Automatické odpovědi",
+    "label": "Měsíční limit",
+    "option": "{n, number}",
+    "usage": "Využito {used, number} z {limit, number} · obnoví se {date}",
+    "perCustomer": "Jednomu zákazníkovi odpovíme za 24 hodin nejvýše {n}×, potom pošleme jednu zprávu, že odpovíte osobně.",
+    "emailAt": "Po dosažení limitu se odpovědi pozastaví. Při 80 % a 100 % vám pošleme e-mail.",
+    "saved": "Měsíční limit odpovědí uložen",
+    "saveFailed": "Limit se nepodařilo uložit"
+  },
+  "billing": {
+    "heading": "Fakturace",
+    "paymentMethod": "Platební metoda",
+    "added": "Platební metoda přidána",
+    "missing": "Není přidána žádná platební metoda",
+    "addInManager": "Přidat ve WhatsApp Manageru",
+    "summary": "Odpovědi účtuje na váš účet WhatsApp společnost Meta, ne HatchGrab. Od {from} je měsíčně zdarma prvních {free, number}. Platné k {checked}; změny ověříte v <link>ceníku společnosti Meta</link>.",
+    "howMetaCharges": "Jak Meta účtuje",
+    "chargesTitle": "Odpovědi přes WhatsApp účtuje Meta, ne HatchGrab.",
+    "chargesBody": "Každou odpověď, kterou za vás HatchGrab odešle, vyúčtuje Meta na váš účet WhatsApp Business. Od {from} zahrnuje Meta měsíčně {free, number} bezplatných odpovědí na číslo; poté se každá odpověď účtuje podle sazby společnosti Meta. Odpovědi, které posíláte sami z aplikace WhatsApp Business, se neúčtují. Tyto ceny stanovuje Meta a může je měnit. <link>Ceník společnosti Meta</link>",
+    "addPaymentInManager": "Přidejte platební metodu ve WhatsApp Manageru",
+    "aboveMissing": "Váš limit převyšuje počet bezplatných odpovědí od společnosti Meta ({free, number}). Bez platební metody Meta po jejich vyčerpání zastaví všechny odpovědi.",
+    "aboveGeneral": "Váš limit převyšuje počet bezplatných odpovědí od společnosti Meta ({free, number}). Další odpovědi vyžadují platební metodu na vašem účtu WhatsApp; bez ní Meta po vyčerpání bezplatných odpovědí zastaví všechny odpovědi.",
+    "addPaymentMethod": "Přidat platební metodu"
+  },
+  "disconnect": {
+    "link": "Odpojit WhatsApp",
+    "title": "Odpojit WhatsApp?",
+    "body": "Automatické odpovědi se okamžitě zastaví a HatchGrab ztratí přístup k vašemu účtu WhatsApp. Vaše číslo bude dál fungovat v aplikaci WhatsApp Business. Chcete-li HatchGrab odebrat úplně, otevřete také WhatsApp Business → Nastavení → Účet → Business Platform.",
+    "cancel": "Zrušit",
+    "confirm": "Odpojit",
+    "working": "Odpojování…",
+    "failed": "Odpojení se nezdařilo"
+  },
+  "signup": {
+    "logged": "Zaznamenáno.",
+    "partial": "Propojili jsme váš účet WhatsApp Business, ale připojení se nepodařilo dokončit. Na vaší straně je vše v pořádku — kontaktujte nás prosím a dokončíme to.",
+    "noNumber": "Váš účet WhatsApp Business je propojen, ale nevrátilo se žádné telefonní číslo. Stiskněte Znovu připojit a dokončete krok s číslem.",
+    "needsRegistering": "Váš účet je propojen, ale toto číslo musíme nejdřív zaregistrovat my, než se začne odpovídat. Kontaktujte prosím podporu — nastavení je uložené, nespouštějte ho znovu.",
+    "registerRefused": "Váš účet je propojen, ale Meta číslo odmítla zaregistrovat. Nastavení je uložené — místo opakování kontaktujte prosím podporu.",
+    "deliveryRefused": "Váš účet je propojen, ale Meta odmítla zapnout doručování zpráv. Nastavení je uložené — místo opakování kontaktujte prosím podporu.",
+    "numberTaken": "Toto číslo WhatsApp je už připojeno k jinému účtu HatchGrab. Jedno číslo může odpovídat jen za jeden food truck. Kontaktujte podporu a číslo převedeme.",
+    "saveIncomplete": "Skoro hotovo — uložení se nepodařilo dokončit. Nastavení je uložené, místo opakování kontaktujte prosím podporu.",
+    "connected": "WhatsApp je připojen. Automatické odpovědi začnou odpovídat na zprávy na toto číslo."
+  }
+}

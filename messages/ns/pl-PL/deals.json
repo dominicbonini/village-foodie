@@ -1,0 +1,17 @@
+{
+  "back": "← Wstecz",
+  "title": "Zastosuj zestaw",
+  "save": "Oszczędzasz {amount}",
+  "selectItems": "Wybierz pozycje do każdego elementu zestawu",
+  "choose": "Wybierz: {category}…",
+  "inYourBasket": "── W koszyku ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (w koszyku){state, select, used { — już w zestawie} taken { — wybrane w innym elemencie} other {}}",
+  "addNew": "── Dodaj nową ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Wymagane · wybierz jedną} required {Wymagane} other {Wybierz jedną}}{unmet, select, yes { (wymagane)} other {}}",
+  "notePlaceholder": "Dodaj uwagę, np. bez cebuli (opcjonalnie)",
+  "backButton": "Wstecz",
+  "cancel": "Anuluj",
+  "chooseRequired": "Wybierz wymagane opcje",
+  "apply": "Zastosuj zestaw · {amount}"
+}

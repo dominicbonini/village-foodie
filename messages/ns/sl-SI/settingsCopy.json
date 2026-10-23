@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Strankam dovoli preklic naročil",
+    "sentence": "Stranke lahko prekličejo naročilo, dokler je do časa prevzema še vsaj <select></select>"
+  },
+  "autoAccept": {
+    "label": "Samodejno sprejemaj naročila",
+    "help": "Naročila se potrdijo samodejno. Če je zahtevani časovni termin zaseden, se naročilo premakne v naslednji prosti termin. Potrdi se le, če je na voljo zmogljivost. Naročila z opombami strank (npr. alergija) je še vedno treba potrditi."
+  },
+  "orderReady": {
+    "label": "Korak „pripravljeno“",
+    "help": "Na zaslonu z naročili prikaže gumb „Označi kot pripravljeno“. Kuhinjski zasloni se nastavijo posebej, na vsaki napravi. Stranke prejmejo e-pošto vsakič, ko je naročilo označeno kot pripravljeno. Velja za vse dogodke — za posamezen dogodek ga lahko še vedno vklopite ali izklopite na njegovi nadzorni plošči."
+  },
+  "buzzers": {
+    "label": "Ali ob prevzemu delite pozivnike?",
+    "help": "Zabeležite, kateri pozivnik ste dali posamezni stranki, da boste vedeli, koga iskati, ko bo hrana pripravljena.",
+    "countLabel": "Koliko pozivnikov imate?"
+  }
+}

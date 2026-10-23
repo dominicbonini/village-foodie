@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Podrška",
+    "description": "Potražite pomoć za HatchGrab. Pošaljite nam poruku i odgovorit ćemo vam e-poštom."
+  },
+  "logIn": "Prijava",
+  "eyebrow": "Podrška",
+  "title": "Kako vam možemo pomoći?",
+  "lede": "Nešto ne radi ili imate pitanje o svom računu? Dva su načina da nas kontaktirate — u oba slučaja odgovorit ćemo vam e-poštom.",
+  "emailUs": "Pošaljite nam e-poruku",
+  "formHeading": "Ili ispunite obrazac u nastavku",
+  "loadingForm": "Učitavanje obrasca…",
+  "formTitle": "Kontaktirajte podršku HatchGraba",
+  "privacy": "Privatnost",
+  "terms": "Uvjeti",
+  "about": "O nama",
+  "copyright": "© {year} HatchGrab"
+}

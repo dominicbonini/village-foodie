@@ -1,0 +1,10 @@
+{
+  "copy": "Kopiraj",
+  "copied": "Kopirano ✓",
+  "failed": "Kopiranje nije uspjelo",
+  "aria": "{label} {thing}",
+  "announceCopied": "Kopirano: {thing}",
+  "announceCopiedValue": "Vrijednost kopirana",
+  "announceFailed": "Nije moguće kopirati: {thing}. Označite tekst i kopirajte ga sami.",
+  "announceFailedValue": "Vrijednost nije moguće kopirati. Označite tekst i kopirajte ga sami."
+}

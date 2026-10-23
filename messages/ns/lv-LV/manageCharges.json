@@ -1,0 +1,30 @@
+{
+  "heading": "Nodokļi, dzeramnauda un maksas",
+  "rate": {
+    "label": "Pārdošanas nodokļa likme",
+    "hint": "Likme, ko piemērojat katram pasūtījumam. Klienti redz to pieskaitītu, maksājot, kā arī čekos un virtuves čekos.",
+    "regionDefault": "Atstājiet tukšu, lai piemērotu {label} {rate} % apmērā — likmi gatavam ēdienam ({region})."
+  },
+  "included": {
+    "label": "{label} iekļauts jūsu cenās",
+    "hint": "Jūsu cenās jau ir iekļauts {label}. Šī likme tikai norāda, cik liela katras cenas daļa ir {label}, čekos un virtuves čekos — maksājot nekas netiek pieskaitīts.",
+    "default": "Atstājiet tukšu, lai izmantotu {rate} % — {label} likmi karstam ēdienam līdzņemšanai ({country})."
+  },
+  "tips": {
+    "label": "Dzeramnauda",
+    "hint": "Klienti, kas maksā tiešsaistē ar karti, var pievienot dzeramnaudu. Tā visa pienākas jums.",
+    "choices": "Klientiem redzamās izvēles:",
+    "chip": "{rate} %",
+    "other": "Cita summa"
+  },
+  "fee": {
+    "label": "Tiešsaistes apkalpošanas maksa",
+    "hint": "Tiek pievienota tikai tiešsaistes pasūtījumiem. Nekad — pasūtījumiem ar apmaksu saņemot vai pasūtījumiem uz vietas. Tā paliek jums.",
+    "pctAria": "Apkalpošanas maksa procentos",
+    "fixedAria": "Apkalpošanas maksa, fiksēta summa",
+    "max": "Maksimālā summa: {max}",
+    "example": "Klienti to redz pirms maksāšanas vienā rindā: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab pievieno {fee} apkalpošanas maksu jūsu klientu tiešsaistes pasūtījumiem. Jūs to nemaksājat un nevarat mainīt."
+  },
+  "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz."
+}

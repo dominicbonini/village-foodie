@@ -1,0 +1,8 @@
+{
+  "country_missing": "Vyberte krajinu, v ktorej má váš food truck sídlo.",
+  "country_off": "Food trucky z tejto krajiny sa zatiaľ nemôžu registrovať. Vyberte inú krajinu.",
+  "zone_unknown": "Toto časové pásmo pre danú krajinu neponúkame. Vyberte si zo zoznamu.",
+  "town_missing": "Uveďte mesto alebo obec, kde máte sídlo.",
+  "town_too_long": "Názov mesta je príliš dlhý — najviac 120 znakov.",
+  "region_closed": "Food trucky so sídlom v regióne {region} sa zatiaľ nemôžu registrovať{reason, select, language {: HatchGrab zatiaľ nie je dostupný v jazyku {language}} taxLines {: najprv pridávame samostatné riadky pre dane GST a PST} other {}}. Ak má váš food truck sídlo inde, vyberte to mesto alebo obec."
+}

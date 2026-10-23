@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Atļaut klientiem atcelt pasūtījumus",
+    "sentence": "Klienti var atcelt ne vēlāk kā <select></select> pirms saņemšanas laika"
+  },
+  "autoAccept": {
+    "label": "Automātiski pieņemt pasūtījumus",
+    "help": "Pasūtījumi tiek apstiprināti automātiski. Ja pieprasītais laika logs ir pilns, pasūtījums tiek pārcelts uz nākamo brīvo laika logu. Apstiprina tikai tad, ja pietiek jaudas. Pasūtījumi ar klienta piezīmēm (piem., par alerģiju) joprojām būs jāapstiprina."
+  },
+  "orderReady": {
+    "label": "Solis “Gatavs”",
+    "help": "Pasūtījumu ekrānā rāda pogu “Atzīmēt kā gatavu”. Virtuves ekrāni tiek iestatīti atsevišķi katrā ierīcē. Klienti saņem e-pastu ikreiz, kad pasūtījums atzīmēts kā gatavs. Attiecas uz visiem pasākumiem — vienam pasākumam to joprojām var ieslēgt vai izslēgt tā vadības panelī."
+  },
+  "buzzers": {
+    "label": "Vai izsniedzat peidžerus pasūtījumu saņemšanai?",
+    "help": "Pierakstiet, kuru peidžeri iedevāt katram klientam, lai zinātu, ko meklēt, kad ēdiens ir gatavs.",
+    "countLabel": "Cik peidžeru jums ir?"
+  }
+}

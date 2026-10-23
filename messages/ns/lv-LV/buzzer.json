@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Peidžeris <b>{number}</b> ir pie <b>pasūtījuma #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Paņemt to <b>{hasTarget, select, yes {pasūtījumam #{targetId}} other {šim pasūtījumam}}</b>?",
+  "cancel": "Atcelt",
+  "take": "Paņemt peidžeri {number}",
+  "titleBlocking": "Peidžeris pasūtījumam #{id}?",
+  "title": "Izvēlieties peidžeri",
+  "subtitle": "{hasTarget, select, yes {Pasūtījums #{id}} other {Šis pasūtījums}}{hasCurrent, select, yes { · pašlaik peidžeris {current}} other {}}",
+  "allTaken": "{n, plural, zero {Visi {count} peidžeri ir izsniegti. Pieskarieties kādam, lai paņemtu to no cita pasūtījuma.} one {{count} peidžeris ir izsniegts. Pieskarieties tam, lai paņemtu to no cita pasūtījuma.} other {Visi {count} peidžeri ir izsniegti. Pieskarieties kādam, lai paņemtu to no cita pasūtījuma.}}",
+  "thisOrder": "Šis pasūtījums",
+  "noBuzzer": "Bez peidžera",
+  "done": "Gatavs",
+  "lostTitle": "Pasūtījumam #{id} nav peidžera",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}kamēr bijāt bezsaistē, cits pasūtījums paņēma to pašu peidžeri. Iedodiet citu.",
+  "dismiss": "Aizvērt",
+  "assign": "Piešķirt"
+}

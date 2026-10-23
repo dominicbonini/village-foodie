@@ -1,0 +1,25 @@
+{
+  "heading": "Tydzień od {start} do {end}",
+  "daysOff": "Dziś nieczynne",
+  "cancelled": "ODWOŁANE",
+  "placeSample": {
+    "nameTownBelow": "Kawiarnia pod Ratuszem\nKraków",
+    "nameTown": "Kawiarnia pod Ratuszem, Kraków",
+    "nameOnly": "Kawiarnia pod Ratuszem"
+  },
+  "busyWeek": {
+    "venue1": "Dom Kultury w Krakowie",
+    "town1": "Kraków",
+    "venue2": "Gminny Ośrodek Sportu i Rekreacji oraz boisko w Niepołomicach",
+    "town2": "Niepołomice",
+    "venue3": "Rynek",
+    "town3": "Wieliczka",
+    "venue4": "Festiwal Smaków",
+    "town4": "Tarnów",
+    "venue5": "Karczma pod Dębem",
+    "town5": "Bochnia",
+    "venue6": "Plac Kościelny",
+    "town6": "Nowy Sącz"
+  },
+  "poweredBy": "Działa dzięki HatchGrab"
+}

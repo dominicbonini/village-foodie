@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Salli asiakkaiden perua tilauksia",
+    "sentence": "Asiakkaat voivat perua viimeistään <select></select> ennen noutoaikaansa"
+  },
+  "autoAccept": {
+    "label": "Hyväksy tilaukset automaattisesti",
+    "help": "Tilaukset vahvistetaan automaattisesti. Jos pyydetty aikaikkuna on täynnä, tilaus siirtyy seuraavaan vapaaseen aikaikkunaan. Vahvistus tehdään vain, kun kapasiteettia on. Tilaukset, joissa on asiakkaan lisätietoja (esim. allergia), on silti vahvistettava itse."
+  },
+  "orderReady": {
+    "label": "Valmis-vaihe",
+    "help": "Näytä tilausnäkymässä ”Merkitse valmiiksi” -painike. Keittiönäytöt asetetaan erikseen kussakin laitteessa. Asiakkaille lähetetään sähköposti aina, kun tilaus merkitään valmiiksi. Koskee kaikkia tapahtumia — voit silti kytkeä sen päälle tai pois yksittäiselle tapahtumalle sen ohjauspaneelissa."
+  },
+  "buzzers": {
+    "label": "Annatko asiakkaille summerin noutoa varten?",
+    "help": "Kirjaa, minkä summerin annoit kullekin asiakkaalle, niin tiedät, ketä etsiä, kun ruoka on valmis.",
+    "countLabel": "Montako summeria sinulla on?"
+  }
+}

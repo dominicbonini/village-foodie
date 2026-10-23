@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "Nad zmogljivostjo: {n, plural, one {{count} termin} two {{count} termina} few {{count} termini} other {{count} terminov}} — preverite",
+  "batchOver": "{cat}: serija presežena — {count} za {slot} ({per} na serijo)",
+  "eventStartOver": "Nad zmogljivostjo ob začetku dogodka — {n, plural, one {{count} artikel} two {{count} artikla} few {{count} artikli} other {{count} artiklov}} za {slot}",
+  "kitchenOver": "Kuhinja nad zmogljivostjo — v pripravi {n, plural, one {{count} artikel} two {{count} artikla} few {{count} artikli} other {{count} artiklov}} za {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} artikel} two {{count} artikla} few {{count} artikli} other {{count} artiklov}}",
+  "placedAnyway": "Vseeno oddano: {list}",
+  "placedItem": "#{id} za {slot}",
+  "orphans": "{times} nad zmogljivostjo — ni naročil, ki bi jim to lahko pripisali",
+  "dismiss": "Opusti",
+  "kitchenCapacity": "Zmogljivost kuhinje",
+  "overCapacity": "Nad zmogljivostjo",
+  "wakeUnsupported": "Ta naprava ne more ohraniti vklopljenega zaslona.",
+  "wakeInsecure": "S tega naslova zaslona ni mogoče ohraniti vklopljenega.",
+  "wakeRetry": "Pusti zaslon vklopljen — tapnite za ponovni poskus",
+  "wakeAcquire": "Pusti zaslon vklopljen",
+  "degraded": {
+    "serverError": "Strežnik ni mogel naložiti naročil{hasStatus, select, yes { (napaka {status})} other {}}. Prikazana so naročila s stanjem ob {at}. Nova naročila morda manjkajo.",
+    "unreachable": "Strežnik ni dosegljiv. Prikazana so naročila s stanjem ob {at}. Nova naročila morda manjkajo."
+  }
+}

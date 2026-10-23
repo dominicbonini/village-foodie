@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Interval de date",
+    "event": "📍 Eveniment",
+    "filterBy": "Filtrați după",
+    "show": "Afișați",
+    "range": "<from></from><sep>până la</sep><until></until>",
+    "selectEvent": "Alegeți un eveniment…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Eveniment",
+    "viewReport": "Vedeți raportul",
+    "loading": "Se încarcă…",
+    "orders": "📋 Comenzi",
+    "items": "📦 Produse",
+    "exportCsv": "⬇ Exportați CSV"
+  },
+  "empty": {
+    "noOrders": "Nu există comenzi în această perioadă.",
+    "selectEvent": "Alegeți mai sus un eveniment pentru a-i vedea raportul."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} comandă} few {{count} comenzi} other {{count} de comenzi}} · {total}"
+  },
+  "revenue": {
+    "title": "Defalcarea veniturilor",
+    "deals": "Venituri din combo-uri",
+    "modifiers": "Suplimente pentru opțiuni",
+    "foodSales": "Vânzări de mâncare",
+    "total": "Total",
+    "other": "Altele",
+    "tax": "TVA",
+    "tips": "Bacșiș",
+    "serviceFees": "Taxe de serviciu",
+    "cardFees": "Comisioane card"
+  },
+  "itemsSold": {
+    "title": "Produse vândute"
+  },
+  "dealsCard": {
+    "title": "Combo-uri"
+  },
+  "custom": {
+    "title": "Personalizări",
+    "paidModifiers": "Opțiuni contra cost",
+    "customerNotes": "Note de la clienți",
+    "note": "„{note}”"
+  },
+  "table": {
+    "item": "Produs",
+    "modifier": "Opțiune",
+    "qty": "Cant.",
+    "total": "Total",
+    "date": "Data",
+    "time": "Ora",
+    "channel": "Canal"
+  },
+  "breakdown": {
+    "orders": "Detalii comenzi",
+    "items": "Detalii produse"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "La fața locului"
+  },
+  "csv": {
+    "orderId": "ID comandă",
+    "date": "Data",
+    "event": "Eveniment",
+    "timePlaced": "Ora plasării",
+    "collectionTime": "Ora de ridicare",
+    "customerName": "Nume client",
+    "orderType": "Tip comandă",
+    "items": "Produse",
+    "deals": "Combo-uri",
+    "modifiers": "Opțiuni",
+    "notes": "Note",
+    "subtotal": "Subtotal",
+    "tip": "Bacșiș",
+    "serviceFee": "Taxă de serviciu",
+    "total": "Total",
+    "itemName": "Nume produs",
+    "qty": "Cant.",
+    "unitPrice": "Preț unitar",
+    "itemTotal": "Total produs",
+    "orderTotal": "Total comandă",
+    "unknownEvent": "Eveniment necunoscut",
+    "asap": "Cât mai curând",
+    "unknownCustomer": "Necunoscut",
+    "customerOnline": "Client online",
+    "placedByTruck": "Plasată de food truck"
+  }
+}

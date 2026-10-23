@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Izmēģiniet pirms savienošanas",
+    "intro": "Ierakstiet jautājumu tā, kā to uzdotu klients, un redziet, kādu atbildi viņš saņemtu. Nekas netiek nosūtīts.",
+    "examples": {
+      "where": "Kur jūs esat šovakar?",
+      "doYouDo": "Vai jums ir pepperoni?",
+      "menu": "Kas ir ēdienkartē?"
+    },
+    "placeholder": "Kādi deserti jums ir?",
+    "send": "Sūtīt",
+    "empty": "Šeit parādīsies jūsu atbilde",
+    "working": "Gatavo atbildi…",
+    "noReply": "Atbilde netiktu nosūtīta.",
+    "noReplyWhy": "Tas izskatās pēc surogātpasta, rezervācijas pieprasījuma vai nesaistīta jautājuma, tāpēc automātiskā atbilde netiek sūtīta.",
+    "footnote": "Atbildes ģenerē MI, tās katru reizi nedaudz atšķiras un dažkārt var būt kļūdainas.",
+    "failed": "Pašlaik neizdevās izveidot priekšskatījumu.",
+    "unreachable": "Neizdevās sazināties ar serveri. Pārbaudiet savienojumu un mēģiniet vēlreiz."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Sagatavo…",
+      "unavailable": "Nav pieejams",
+      "waiting": "Gaida Facebook logu…",
+      "finishing": "Pabeidz…",
+      "reconnect": "Savienot vēlreiz",
+      "setUp": "Iestatīt"
+    },
+    "startAgain": "Sākt no jauna",
+    "popupHint": "Neredzat Facebook logu? Iespējams, tas ir bloķēts. Atļaujiet uznirstošos logus vietnei hatchgrab.com un pēc tam nospiediet “Sākt no jauna”."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsApp iestatīšana šajā vidē nav pieejama.",
+    "sdkBlocked": "Neizdevās ielādēt Meta pieteikšanās skriptu. Parasti iemesls ir reklāmu bloķētājs vai izsekošanas aizsardzība.",
+    "setupFailed": "Iestatīšanu neizdevās pabeigt. Nekas netika mainīts.",
+    "setupFinished": "Iestatīšana pabeigta.",
+    "metaError": "Iestatīšanas laikā Meta ziņoja par problēmu. Nekas netika mainīts. Mēģiniet vēlreiz un sazinieties ar mums, ja tas atkārtojas.",
+    "closed": "Iestatīšana tika aizvērta, pirms tā bija pabeigta. Nekas netika mainīts — nospiediet “Iestatīt”, lai mēģinātu vēlreiz.",
+    "disconnectedUnreachable": "WhatsApp ir atvienots. Mēs nevarējām sazināties ar Meta, lai noņemtu piekļuvi. Lūdzu, noņemiet HatchGrab sadaļā WhatsApp Business → Iestatījumi → Konts → Business Platform.",
+    "disconnected": "WhatsApp ir atvienots. Automātiskās atbildes ir apturētas.",
+    "close": "Aizvērt"
+  },
+  "card": {
+    "title": "Automātiskās atbildes",
+    "description": "Automātiski atbildiet uz klientu jautājumiem jūsu sociālajos tīklos, izmantojot jūsu ēdienkarti un grafiku.",
+    "channels": "Kanāli",
+    "requiresAccount": "Nepieciešams WhatsApp Business konts.",
+    "connected": "Savienots",
+    "popupInstruction": "Tiks atvērts Facebook logs, lai savienotu jūsu WhatsApp Business kontu. Ja nekas neparādās, atļaujiet pārlūkprogrammā uznirstošos logus vietnei hatchgrab.com un vēlreiz nospiediet “Iestatīt”.",
+    "switchedOff": "WhatsApp automātiskās atbildes jūsu food truck ir izslēgtas.",
+    "expiring": "Jūsu WhatsApp savienojums drīz jāatjauno. Nospiediet “Savienot vēlreiz”, lai automātiskās atbildes turpinātu darboties.",
+    "comingSoon": "Drīzumā",
+    "instagram": "Automātiskās atbildes uz Instagram tiešajām ziņām. Būs nepieciešams Instagram profesionālais konts.",
+    "messenger": "Automātiskās atbildes Facebook Messenger. Būs nepieciešama Facebook lapa."
+  },
+  "blocked": {
+    "title": "Jūsu atbildes netiek piegādātas",
+    "body": "WhatsApp atsakās sūtīt jūsu automātiskās atbildes, jo jūsu WhatsApp Business kontā ir norēķinu problēma. Klienti joprojām var jums rakstīt, un jūs joprojām redzēsiet visu, ko viņi sūta, — taču viņi nesaņem atbildi.",
+    "fix": "Par šīm ziņām jūs maksājat tieši WhatsApp, tāpēc tas jālabo WhatsApp Manager. <link>Pārbaudiet maksājuma veidu</link>"
+  },
+  "limit": {
+    "heading": "Automātiskās atbildes",
+    "label": "Mēneša limits",
+    "option": "{n, number}",
+    "usage": "Izmantots: {used, number} no {limit, number} · atjaunojas {date}",
+    "perCustomer": "Atbilžu limits vienam klientam 24 stundās: {n}; pēc tam tiek nosūtīta viena ziņa, ka atbildēsiet personīgi.",
+    "emailAt": "Sasniedzot limitu, atbildes tiek apturētas. Mēs jums nosūtīsim e-pastu pie 80 % un 100 %.",
+    "saved": "Mēneša atbilžu limits saglabāts",
+    "saveFailed": "Neizdevās saglabāt limitu"
+  },
+  "billing": {
+    "heading": "Norēķini",
+    "paymentMethod": "Maksājuma veids",
+    "added": "Maksājuma veids pievienots",
+    "missing": "Maksājuma veids nav pievienots",
+    "addInManager": "Pievienot WhatsApp Manager",
+    "summary": "Par atbildēm jūsu WhatsApp kontam rēķinu izraksta Meta, nevis HatchGrab. No {from} pirmās {free, number} atbildes mēnesī ir bezmaksas. Informācija pārbaudīta {checked}; izmaiņas skatiet <link>Meta cenrādī</link>.",
+    "howMetaCharges": "Kā Meta iekasē maksu",
+    "chargesTitle": "Par WhatsApp atbildēm maksu iekasē Meta, nevis HatchGrab.",
+    "chargesBody": "Par katru atbildi, ko HatchGrab nosūta jūsu vārdā, Meta izraksta rēķinu jūsu WhatsApp Business kontam. No {from} Meta katram numuram mēnesī piešķir {free, number} bezmaksas atbildes; pēc tam par katru atbildi maksa tiek iekasēta pēc Meta tarifa. Par atbildēm, ko sūtāt pats no lietotnes WhatsApp Business, maksa netiek iekasēta. Šīs cenas nosaka Meta, un tās var mainīties. <link>Skatīt Meta cenrādi</link>",
+    "addPaymentInManager": "Pievienojiet maksājuma veidu WhatsApp Manager",
+    "aboveMissing": "Jūsu limits pārsniedz Meta bezmaksas atbilžu skaitu ({free, number}). Bez maksājuma veida Meta apturēs visas atbildes, tiklīdz bezmaksas atbildes būs izmantotas.",
+    "aboveGeneral": "Jūsu limits pārsniedz Meta bezmaksas atbilžu skaitu ({free, number}). Atbildēm virs tā jūsu WhatsApp kontā nepieciešams maksājuma veids; bez tā Meta aptur visas atbildes, tiklīdz bezmaksas atbildes ir izmantotas.",
+    "addPaymentMethod": "Pievienot maksājuma veidu"
+  },
+  "disconnect": {
+    "link": "Atvienot WhatsApp",
+    "title": "Atvienot WhatsApp?",
+    "body": "Automātiskās atbildes tiek nekavējoties apturētas, un HatchGrab zaudē piekļuvi jūsu WhatsApp kontam. Jūsu numurs turpina darboties lietotnē WhatsApp Business. Lai HatchGrab noņemtu pilnībā, atveriet arī WhatsApp Business → Iestatījumi → Konts → Business Platform.",
+    "cancel": "Atcelt",
+    "confirm": "Atvienot",
+    "working": "Atvieno…",
+    "failed": "Neizdevās atvienot"
+  },
+  "signup": {
+    "logged": "Reģistrēts.",
+    "partial": "Mēs piesaistījām jūsu WhatsApp Business kontu, bet nevarējām pabeigt savienojumu. Jūsu pusē viss ir kārtībā — lūdzu, sazinieties ar mums, un mēs to pabeigsim.",
+    "noNumber": "Jūsu WhatsApp Business konts ir piesaistīts, taču tālruņa numurs netika saņemts. Nospiediet “Savienot vēlreiz” un pabeidziet numura soli.",
+    "needsRegistering": "Jūsu konts ir piesaistīts, taču šis numurs mums ir jāreģistrē, pirms var sākt sūtīt atbildes. Lūdzu, sazinieties ar atbalsta dienestu — jūsu iestatījumi ir saglabāti, neveiciet iestatīšanu vēlreiz.",
+    "registerRefused": "Jūsu konts ir piesaistīts, taču Meta atteicās reģistrēt numuru. Jūsu iestatījumi ir saglabāti — lūdzu, sazinieties ar atbalsta dienestu, nevis veiciet iestatīšanu vēlreiz.",
+    "deliveryRefused": "Jūsu konts ir piesaistīts, taču Meta atteicās ieslēgt ziņu piegādi. Jūsu iestatījumi ir saglabāti — lūdzu, sazinieties ar atbalsta dienestu, nevis veiciet iestatīšanu vēlreiz.",
+    "numberTaken": "Šis WhatsApp numurs jau ir savienots ar citu HatchGrab kontu. Viens numurs var atbildēt tikai viena food truck vārdā. Sazinieties ar atbalsta dienestu, un mēs to pārcelsim.",
+    "saveIncomplete": "Gandrīz gatavs — mēs nevarējām pabeigt saglabāšanu. Jūsu iestatījumi ir saglabāti, lūdzu, sazinieties ar atbalsta dienestu, nevis veiciet iestatīšanu vēlreiz.",
+    "connected": "WhatsApp ir savienots. Automātiskās atbildes sāks atbildēt uz ziņām, kas sūtītas uz šo numuru."
+  }
+}

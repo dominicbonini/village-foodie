@@ -1,0 +1,69 @@
+{
+  "close": "Zapri",
+  "cancel": "Prekliči",
+  "selectReason": "Izberite razlog",
+  "reject": {
+    "title": "Želite zavrniti naročilo #{orderId}?",
+    "reasonLabel": "Razlog – obvezno (prikazano stranki)",
+    "reason": "{reason, select, sold_out {Artikel je razprodan} too_busy {Preveč dela – ne bomo pravočasno} closing_soon {Kmalu zapiramo} other {Drugo}}",
+    "noteRequired": "Razlog – obvezno",
+    "noteOptional": "Dodatna opomba – neobvezno",
+    "notePlaceholder": "Dodajte več podrobnosti za stranko…",
+    "keep": "Obdrži naročilo",
+    "confirm": "Zavrni naročilo"
+  },
+  "eventCancel": {
+    "title": "Želite odpovedati ta dogodek?",
+    "affected": "{n, plural, one {{count} naročilo bo preklicano, stranke pa bodo obveščene.} two {{count} naročili bosta preklicani, stranke pa bodo obveščene.} few {{count} naročila bodo preklicana, stranke pa bodo obveščene.} other {{count} naročil bo preklicanih, stranke pa bodo obveščene.}}",
+    "reasonLabel": "Razlog – neobvezno",
+    "reason": "{reason, select, vehicle_breakdown {Okvara vozila} weather {Vreme} venue_issue {Težava z lokacijo} personal_emergency {Nujne osebne okoliščine} other {Drugo}}",
+    "messageLabel": "Sporočilo strankam – neobvezno",
+    "messagePlaceholder": "npr. Oprostite, na poti do lokacije se nam je pokvarila prikolica…",
+    "keep": "Obdrži dogodek",
+    "cancelling": "Odpovedovanje…",
+    "confirm": "Odpovej dogodek"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Znova začni dogodek} other {Začni dogodek}}",
+    "changeEvent": "Zamenjaj dogodek",
+    "changeEventType": "Spremeni tip dogodka…",
+    "privateLink": "Zasebna povezava in QR koda",
+    "noteLabel": "Opomba za stranke",
+    "notePlaceholder": "npr. Parkirajte na glavnem parkirišču in poiščite oranžni šotor",
+    "noteHint": "Strankam se prikaže na strani za naročanje pod podrobnostmi dogodka.",
+    "saveNote": "Shrani opombo",
+    "resume": "Nadaljuj naročila",
+    "pause": "Ustavi naročila",
+    "changeFinishTime": "Spremeni čas zaključka dogodka",
+    "finishEvent": "Zaključi dogodek",
+    "cancelEvent": "Odpovej dogodek"
+  },
+  "finish": {
+    "confirmTitle": "Želite spremeniti čas zaključka?",
+    "willFinish": "Ta dogodek se bo zaključil ob <b>{selected}</b>{hasCurrent, select, yes { namesto ob <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} naročilo je predvideno za čas po {selected}.} two {{count} naročili sta predvideni za čas po {selected}.} few {{count} naročila so predvidena za čas po {selected}.} other {{count} naročil je predvidenih za čas po {selected}.}}</b> {n, plural, one {Ostane na zaslonu in ga je še treba pripraviti.} two {Ostaneta na zaslonu in ju je še treba pripraviti.} few {Ostanejo na zaslonu in jih je še treba pripraviti.} other {Ostanejo na zaslonu in jih je še treba pripraviti.}} Sprememba časa zaključka prepreči le oddajo NOVIH naročil za poznejše čase.",
+    "saving": "Shranjevanje…",
+    "confirm": "Spremeni čas zaključka",
+    "keepCurrent": "Obdrži {current}",
+    "keepAsIs": "Pusti tako",
+    "title": "Spremeni čas zaključka",
+    "currentlySet": "Čas zaključka tega dogodka je trenutno <b>{current}</b>.",
+    "noFinishTime": "Ta dogodek nima nastavljenega časa zaključka.",
+    "noTimesLeft": "Za danes ni več razpoložljivih časov. Namesto tega uporabite „Zaključi dogodek“.",
+    "newFinishTime": "Nov čas zaključka",
+    "optionCurrent": "{time} (trenutno)",
+    "earlier": "To je prej kot trenutni čas zaključka. Stranke ne bodo mogle naročati za čase po njem.",
+    "review": "Preglej spremembo",
+    "optionNextDay": "{time} (naslednji dan)"
+  },
+  "extraWait": {
+    "title": "Dodaj dodatno čakanje",
+    "hint": "Podaljša čas prevzema, ki ga navedemo pri novih naročilih. Časa zaključka dogodka ne spremeni.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Za nalaganje se znova poveži",
+    "selected": "Izbrano",
+    "status": "{tone, select, paused {⏸ Ustavljeno} live {● V teku} finished {● Zaključeno} cancelled {Odpovedano} other {Ni začeto}}"
+  }
+}

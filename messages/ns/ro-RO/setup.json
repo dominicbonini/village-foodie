@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Unde vă aflați",
+    "identity": "Food truck-ul",
+    "menu": "Meniul",
+    "event": "Primul eveniment"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Configurare",
+  "loading": "Se încarcă",
+  "loadingCountries": "Se încarcă…",
+  "verify": {
+    "ok": "E-mail confirmat — vă mulțumim.",
+    "expired": "Linkul de confirmare a expirat. Contactați-ne și rezolvăm înainte de lansare.",
+    "invalid": "Linkul de confirmare nu a funcționat. Contactați-ne și rezolvăm înainte de lansare."
+  },
+  "identity": {
+    "heading": "Cum se numește food truck-ul dumneavoastră?",
+    "intro": "Acesta este numele pe care îl văd clienții. Nimic nu devine public până nu decideți să vă lansați.",
+    "nameLabel": "Numele food truck-ului",
+    "namePlaceholder": "Burgerii lui Bob",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Acest număr are WhatsApp",
+    "phoneHelp": "Clienții văd numărul în confirmarea comenzii, ca să vă poată întreba despre o comandă. Bifa decide dacă scrie „Sunați-ne” sau „Scrieți-ne pe WhatsApp”. Le puteți schimba pe amândouă din Setări."
+  },
+  "phoneRequired": "Adăugați un număr de telefon — atât clienții, cât și noi îl folosim pentru a vă contacta.",
+  "createFailed": "Food truck-ul nu a putut fi creat.",
+  "unreachable": "Nu ne-am putut conecta acum — vă rugăm să încercați din nou.",
+  "back": "Înapoi",
+  "creating": "Se creează food truck-ul…",
+  "continue": "Continuați"
+}

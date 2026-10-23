@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Uusi tilaus vahvistettavana",
+    "body": "Tilaus {number} — {truck}"
+  }
+}

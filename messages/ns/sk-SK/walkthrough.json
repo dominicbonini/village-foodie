@@ -1,0 +1,31 @@
+{
+  "intro": "V Správe nastavujete svoj food truck a sledujete, ako sa mu darí. V Prehľade objednávok prijímate objednávky a riadite každú akciu priamo počas nej.",
+  "ariaLabel": "Prehliadka prehľadu objednávok",
+  "step": "{current} z {total}",
+  "skip": "Preskočiť",
+  "back": "← Späť",
+  "next": "Ďalej →",
+  "done": "Hotovo",
+  "stops": {
+    "menu": {
+      "title": "Jedálny lístok",
+      "body": "Vaše jedlá, ceny a alergény. Čokoľvek tu zmeníte, platí okamžite."
+    },
+    "schedule": {
+      "title": "Harmonogram",
+      "body": "Kde a kedy predávate. Pridajte tu akciu a zákazníci si na ňu môžu objednávať."
+    },
+    "build": {
+      "title": "Menu, doplnky a ponuky navyše",
+      "body": "Menu, ponuky navyše, úpravy jedál a kapacita kuchyne sú v časti Jedálny lístok — pokojne si to vyskúšajte."
+    },
+    "settings": {
+      "title": "Nastavenia",
+      "body": "Údaje o vašom food trucku a spôsob, akým zákazníci platia."
+    },
+    "billing": {
+      "title": "Fakturácia",
+      "body": "Tu nájdete svoj plán, fakturáciu a informácie o funkciách."
+    }
+  }
+}

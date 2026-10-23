@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Privātuma politika — HatchGrab",
+    "privacyDescription": "Kā HatchGrab Ltd vāc un izmanto personas datus.",
+    "termsTitle": "Pakalpojuma noteikumi — HatchGrab",
+    "termsDescription": "HatchGrab lietošanas noteikumi.",
+    "countryTermsTitle": "Valstij specifiskie noteikumi — HatchGrab",
+    "countryTermsDescription": "Papildu noteikumi, kas uz HatchGrab attiecas dažās valstīs."
+  },
+  "homeLabel": "HatchGrab sākumlapa",
+  "privacy": "Privātums",
+  "terms": "Noteikumi",
+  "countryTerms": "Valstu noteikumi",
+  "contact": "Kontakti",
+  "lastUpdated": "Pēdējoreiz atjaunināts: {date}",
+  "questions": "Jautājumi? <link>Sazinieties ar mums</link> — mēs esam īsti cilvēki."
+}

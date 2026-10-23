@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Počas prevádzky musíte mať prehľad alebo kuchynskú obrazovku zapnutú a online.",
+  "explainerBody": "Ak sa obrazovka vypne, zariadenie stratí internet alebo prepnete na inú webovú stránku, prevezme kontrolu offline ochrana — buď pozastaví objednávanie, alebo vypne automatické prijímanie, podľa toho, čo ste zvolili.",
+  "reminder": "⚠️ Počas prevádzky majte prehľad alebo kuchynskú obrazovku zapnutú a online, inak môže zasiahnuť offline ochrana.",
+  "enableConfirm": "Offline ochrana je zapnutá.\n\nAby objednávky prichádzali bez prerušenia, obrazovka musí zostať zapnutá. Ak toto zariadenie stratí pripojenie, offline ochrana prevezme kontrolu v režime, ktorý ste zvolili.\n\nUistite sa, že je na tomto zariadení zapnutá možnosť „Obrazovka zapnutá“.",
+  "disableConfirm": "Vypnúť offline ochranu pre túto akciu?\n\nAk toto zariadenie stratí pripojenie, online objednávky budú pokračovať — zákazníci môžu zadávať objednávky, ktoré neuvidíte. Vypnite ju, len ak máte spoľahlivé pripojenie.",
+  "cardDescription": "Určuje, čo sa stane s prichádzajúcimi objednávkami, keď vaše zariadenie prejde do režimu offline.",
+  "purpose": "Ak vaše zariadenie stratí pripojenie, zastaví príjem objednávok, kým ich nevidíte.",
+  "switchLabel": "Offline ochrana objednávok",
+  "switchHelp": "Čo sa stane, keď tento food truck stratí pripojenie.",
+  "modes": {
+    "pause": {
+      "label": "Pozastaviť online objednávanie",
+      "help": "Zákazníci nemôžu objednávať, kým nebudete znova online."
+    },
+    "no_auto_accept": {
+      "label": "Prijímať objednávky, potvrdzovať ručne",
+      "help": "Automatické prijímanie sa vypne, takže zákazníci môžu stále objednávať, ale nič sa nepotvrdí automaticky. Každú objednávku potvrdíte, keď budete znova online — a čo bude čakať dlhšie ako zvolený čas, sa automaticky zamietne a zákazník o tom dostane e-mail."
+    }
+  },
+  "autoRejectLabel": "Zamietnuť objednávky čakajúce dlhšie ako",
+  "autoRejectOption": "{n, plural, one {{count} min} few {{count} min} other {{count} min}}"
+}

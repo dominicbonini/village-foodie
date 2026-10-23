@@ -1,0 +1,19 @@
+{
+  "heading": "Vânzări suplimentare",
+  "intro": "Încurajați clienții să adauge ceva în plus. Când cineva comandă dintr-o categorie, sugerați produse din alta — o băutură la pizza, un sos la burger.",
+  "add": "+ Adăugați o regulă",
+  "toast": {
+    "updated": "Regula de vânzare suplimentară a fost actualizată",
+    "added": "Regula de vânzare suplimentară a fost adăugată",
+    "removed": "Regula a fost eliminată"
+  },
+  "whenAdds": "Când clientul adaugă…",
+  "suggestFrom": "Sugerați produse din…",
+  "chooseCategory": "Alegeți categoria",
+  "cancel": "Anulați",
+  "saveChanges": "Salvați modificările",
+  "addRule": "Adăugați regula",
+  "empty": "Încă nu există reguli de vânzare suplimentară.",
+  "confirmRemove": "Eliminați regula de vânzare suplimentară „{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Până la {count} produs sugerat} few {Până la {count} produse sugerate} other {Până la {count} de produse sugerate}}"
+}

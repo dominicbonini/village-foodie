@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Vaš prvi mesec je popolnoma brezplačen — vse funkcije so odklenjene.} two {Vaša prva # meseca sta popolnoma brezplačna — vse funkcije so odklenjene.} few {Vaši prvi # meseci so popolnoma brezplačni — vse funkcije so odklenjene.} other {Vaših prvih # mesecev je popolnoma brezplačnih — vse funkcije so odklenjene.}}",
+    "body": "S storitvijo {brand} kupci naročijo vnaprej in plačajo ob prevzemu, zato lahko spletna naročila sprejemate, ne da bi sploh povezali ponudnika kartičnih plačil. Bi raje prejeli plačilo vnaprej? Spletna kartična plačila lahko dodate kadar koli. Ko se brezplačno preizkusno obdobje konča, preidete na paket <plan>{fallback}</plan>{fallbackFree, select, yes { (brez mesečnega plačila)} other {}}, razen če izberete drug paket. Brez kartice za začetek, brez pogodbe, odpoved kadar koli."
+  },
+  "card": {
+    "perTruckMonth": "na food truck / mesec",
+    "mostTrucks": "Najpogostejša izbira",
+    "tryFree": "Preizkusite brezplačno",
+    "seeEvery": "Oglejte si vse funkcije →",
+    "everything": "Vse za vodenje prodaje",
+    "everythingIn": "Vse iz paketa {plan}, poleg tega pa še"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> le pri spletnih naročilih, plačanih s kartico. Naročila na mestu so vedno brezplačna.",
+    "included": "Spletna naročila v vrednosti do <b>{included}</b> so vsak mesec vključena, nad tem <b>{fee}*</b>. Naročila na mestu so vedno brezplačna.",
+    "noFee": "<b>Brez provizije HatchGrab</b> za spletna naročila, ne glede na obseg. En predvidljiv mesečni strošek."
+  },
+  "base": {
+    "walkUp": "Naročila na mestu in kuhinjski zaslon",
+    "online": "Spletno naročanje",
+    "preorders": "Prednaročila in čas prevzema",
+    "capacity": "Upravljanje zmogljivosti kuhinje",
+    "privateEvents": "Zasebni dogodki",
+    "printing": "Tiskanje kuhinjskih listkov",
+    "app": "Kuhinjska aplikacija za iPhone, iPad in Android"
+  },
+  "added": {
+    "whatsapp_replies": "Samodejni odgovori v WhatsAppu",
+    "schedule_graphics": "Objave za družbena omrežja — vaš urnik za Facebook in Instagram — pripravljene za objavo",
+    "event_types": "Tipi dogodkov in cene po meri"
+  },
+  "money": {
+    "unlimitedOrders": "Neomejeno spletnih naročil, 0 % provizije HatchGrab",
+    "samePrice": "Enaka cena tudi v najbolj zasedenem mesecu"
+  },
+  "comingSoon": "Kmalu",
+  "bar": {
+    "title": "Kateri paket je zame najcenejši?",
+    "subtitle": "Vaša spletna naročila na mesec",
+    "first": "Manj kot {to} → <b>{plan}</b>",
+    "middle": "{from}–{to} → <b>{plan}</b>",
+    "last": "Več kot {from} → <b>{plan}</b>",
+    "only": "Kakršen koli obseg → <b>{plan}</b>"
+  },
+  "footnote": "* Poleg tega Stripe pri spletnih naročilih, plačanih s kartico, zaračuna obdelavo kartičnih plačil (trenutna tarifa – {country}: {cardFee}), ki jo plačate podjetju Stripe, ne HatchGrab. Za naročila na mestu uporabljate svoj plačilni terminal — HatchGrab zaračuna 0 %.",
+  "currencyLine": "Cene: {currency} ({code})"
+}

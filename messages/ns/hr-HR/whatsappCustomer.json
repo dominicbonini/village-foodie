@@ -1,0 +1,15 @@
+{
+  "greeting": "Pozdrav 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Cijeli jelovnik i informacije o alergenima pronaći ćete ovdje: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Cijeli jelovnik pogledajte ovdje: {url} — {truck} {emoji}",
+  "otherCategory": "Ostalo",
+  "categoryFrom": "{category} od {price}",
+  "listTwo": "{first} i {second}",
+  "listMany": "{init} i {last}",
+  "menuSummary": "{opener}U ponudi imamo: {summary}. Cijeli jelovnik pogledajte i naručite unaprijed ovdje: {url} — {truck} {emoji}",
+  "allergenCaveat": "Informacije o alergenima provjerite u cijelom jelovniku — ovo je automatski odgovor.",
+  "specificFallback": "{opener}Naš najnoviji raspored pogledajte ovdje: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Hvala na svim porukama! Ovdje mogu odgovoriti samo nekoliko puta dnevno.\n\nZa narudžbu: {link}",
+  "capContact": "Za izravan kontakt: {number}"
+}

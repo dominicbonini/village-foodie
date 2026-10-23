@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Zrušeno",
+    "finished": "Skončilo",
+    "unconfirmed": "Nepotvrzeno",
+    "confirmed": "Potvrzeno",
+    "open": "Právě otevřeno",
+    "closed": "Zavřeno"
+  },
+  "sections": {
+    "label": "Sekce rozpisu",
+    "events": "Akce",
+    "eventTypes": "Typy akcí"
+  },
+  "header": {
+    "title": "Rozpis",
+    "upcoming": "Nadcházející: {count}",
+    "import": "✨ Importovat rozpis",
+    "importHint": "fotka, PDF nebo text",
+    "addEvent": "+ Přidat akci",
+    "scraperAuto": "Akce automaticky vyhledáváme na vašem webu",
+    "changeInSettings": "Změnit v Nastavení",
+    "scraperManual": "Rozpis spravujete ručně"
+  },
+  "empty": {
+    "title": "Žádné nadcházející akce",
+    "body": "Akce načtené z vašich sociálních sítí a rezervačního kalendáře se zobrazí zde, abyste je mohli potvrdit"
+  },
+  "list": {
+    "openNow": "Právě otevřeno",
+    "needsApproval": "Čeká na vaše schválení",
+    "needsConfirmation": "Čeká na potvrzení",
+    "confirmed": "Potvrzené",
+    "past": "Proběhlé akce ({count})",
+    "found": "Našli jsme pro vás {count, plural, one {# akci — před zveřejněním ji zkontrolujte a schvalte.} few {# akce — před zveřejněním je zkontrolujte a schvalte.} other {# akcí — před zveřejněním je zkontrolujte a schvalte.}}"
+  },
+  "card": {
+    "addName": "Přidat název",
+    "timeNeeded": "⚠ Chybí čas",
+    "setTimeFirst": "Nejprve nastavte čas",
+    "confirm": "Potvrdit",
+    "copy": "Kopírovat",
+    "edit": "Upravit",
+    "makePost": "Vytvořit příspěvek",
+    "cancel": "Zrušit",
+    "approve": "Schválit",
+    "reject": "Odmítnout",
+    "stock": "⚠️ Zásoby",
+    "stockHidden": "Skryto — {reason}",
+    "noDeals": "Žádná aktivní menu",
+    "dealsActive": "{count, plural, one {Aktivní # menu} few {Aktivní # menu} other {Aktivních # menu}} · {names}{hidden, plural, =0 {} one { · # skryté} few { · # skrytá} other { · # skrytých}}",
+    "approveNeedsTimes": "Schválení není možné, dokud akce nemá čas začátku a konce — doplňte je přes Upravit."
+  },
+  "guessed": {
+    "title": "📍 Toto místo jsme odhadli",
+    "body": "Názvu <b>{venue}</b> odpovídá více míst, proto jsme vybrali to nejpravděpodobnější{hasTown, select, yes { v lokalitě <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Před schválením ověřte, že je správné — pokud není, opravte oblast nebo {postal} přes <b>Upravit</b>, jinak budou zákazníci posláni na špatné místo.",
+    "thisVenue": "toto místo"
+  },
+  "noLocation": {
+    "title": "📍 Zatím bez polohy",
+    "body": "Toto místo se nám nepodařilo umístit na mapu, takže bude v seznamu, ale bez špendlíku na mapě. Doplňte {postal} přes <b>Upravit</b> a místo se na mapě zobrazí."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Možný konflikt} few {Možné konflikty} other {Možné konflikty}} — zkontrolujte před {pending, select, yes {schválením} other {potvrzením}}",
+    "duplicate": "Vypadá to na stejnou akci, kterou už máte.",
+    "review": "Stejné místo i datum, jiný čas — jde o stejnou akci s upraveným časem, nebo o samostatný termín? Před schválením zkontrolujte.",
+    "already": "Už ve vašem rozpisu: <b>{venue}</b>{details} ({status, select, confirmed {potvrzeno} open {otevřeno} other {{status}}})",
+    "unnamedVenue": "Místo bez názvu",
+    "ack": "Ano, jsou to různé akce — přesto {pending, select, yes {schválit} other {potvrdit}}",
+    "cancel": "Zrušit",
+    "overlap": "Čas této akce se překrývá s jinou akcí ve stejný den — jeden food truck nemůže být na dvou místech zároveň. Před schválením zkontrolujte."
+  },
+  "toast": {
+    "loadFailed": "Akce se nepodařilo načíst",
+    "linkFailed": "Odkaz se nepodařilo načíst",
+    "placeTypeFailed": "Akce je uložena. Obvyklý typ pro místo {place} uložen nebyl — {reason}.",
+    "placeTypeFailedReason": "uložení neproběhlo",
+    "eventUpdated": "Akce aktualizována",
+    "eventAdded": "Akce přidána",
+    "eventsSaved": "{count, plural, one {# akce uložena} few {# akce uloženy} other {# akcí uloženo}}",
+    "saveEventsFailed": "Akce se nepodařilo uložit",
+    "needsTime": "Před schválením doplňte čas začátku a konce — bez času akci nelze zveřejnit.",
+    "addStartTime": "Doplňte čas začátku",
+    "addEndTime": "Doplňte čas konce",
+    "chooseTruckBefore": "Před schválením vyberte, který food truck na akci pojede.",
+    "chooseTruck": "Vyberte, který food truck na akci pojede",
+    "eventConfirmed": "Akce potvrzena",
+    "eventRejected": "Akce odmítnuta",
+    "undo": "↩ Vrátit zpět",
+    "eventRestored": "Akce obnovena",
+    "restoreFailed": "Obnovení se nezdařilo",
+    "eventCancelled": "Akce zrušena",
+    "eventCancelledOrders": "Akce zrušena · {count, plural, one {zrušena # objednávka} few {zrušeny # objednávky} other {zrušeno # objednávek}}",
+    "placeHidden": "Místo skryto",
+    "placeShown": "Místo je opět zobrazeno",
+    "saveThatFailed": "Nepodařilo se to uložit."
+  },
+  "link": {
+    "label": "Soukromý odkaz a QR kód",
+    "close": "Zavřít"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Weryfikacja jest chwilowo niedostępna. Spróbuj ponownie za chwilę.",
+  "malformed": "To nie wygląda na adres strony internetowej. Spróbuj np. twojfoodtruck.pl/wydarzenia",
+  "blocked": "Nie udało się otworzyć tej strony — być może blokuje automatyczne sprawdzanie. Spróbuj podstrony z twoim harmonogramem albo dodaj wydarzenia ręcznie.",
+  "unreachable": "Nie udało się połączyć z tą stroną. Może nie działać albo adres jest błędny.",
+  "no_content": "Udało się otworzyć tę stronę, ale nie dało się z niej nic odczytać. Sprawdź, czy jest publicznie dostępna.",
+  "no_events": "Nie znaleźliśmy na tej stronie żadnych nadchodzących wydarzeń. Upewnij się, że adres URL prowadzi bezpośrednio tam, gdzie jest twój harmonogram.",
+  "blockedDomain": "Użyj adresu URL swojej strony internetowej — stron w serwisach Facebook i Instagram nie da się automatycznie przeszukiwać."
+}

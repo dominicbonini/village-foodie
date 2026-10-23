@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Období",
+    "event": "📍 Akce",
+    "filterBy": "Filtrovat podle",
+    "show": "Zobrazit",
+    "range": "<from></from><sep>až</sep><until></until>",
+    "selectEvent": "Vyberte akci…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Akce",
+    "viewReport": "Zobrazit statistiky",
+    "loading": "Načítání…",
+    "orders": "📋 Objednávky",
+    "items": "📦 Položky",
+    "exportCsv": "⬇ Exportovat CSV"
+  },
+  "empty": {
+    "noOrders": "Za toto období nebyly nalezeny žádné objednávky.",
+    "selectEvent": "Výše vyberte akci a zobrazte její statistiky."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} objednávka} few {{count} objednávky} other {{count} objednávek}} · {total}"
+  },
+  "revenue": {
+    "title": "Rozpis tržeb",
+    "deals": "Tržby z menu",
+    "modifiers": "Příplatky za volby",
+    "foodSales": "Prodej jídel",
+    "total": "Celkem",
+    "other": "Ostatní",
+    "tax": "Daň",
+    "tips": "Spropitné",
+    "serviceFees": "Servisní poplatky",
+    "cardFees": "Poplatky za karty"
+  },
+  "itemsSold": {
+    "title": "Prodané položky"
+  },
+  "dealsCard": {
+    "title": "Menu"
+  },
+  "custom": {
+    "title": "Úpravy",
+    "paidModifiers": "Placené volby",
+    "customerNotes": "Poznámky zákazníků",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Položka",
+    "modifier": "Volba",
+    "qty": "Ks",
+    "total": "Celkem",
+    "date": "Datum",
+    "time": "Čas",
+    "channel": "Kanál"
+  },
+  "breakdown": {
+    "orders": "Rozpis objednávek",
+    "items": "Rozpis položek"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Na místě"
+  },
+  "csv": {
+    "orderId": "ID objednávky",
+    "date": "Datum",
+    "event": "Akce",
+    "timePlaced": "Čas objednání",
+    "collectionTime": "Čas vyzvednutí",
+    "customerName": "Jméno zákazníka",
+    "orderType": "Typ objednávky",
+    "items": "Položky",
+    "deals": "Menu",
+    "modifiers": "Volby",
+    "notes": "Poznámky",
+    "subtotal": "Mezisoučet",
+    "tip": "Spropitné",
+    "serviceFee": "Servisní poplatek",
+    "total": "Celkem",
+    "itemName": "Název položky",
+    "qty": "Ks",
+    "unitPrice": "Jednotková cena",
+    "itemTotal": "Položka celkem",
+    "orderTotal": "Objednávka celkem",
+    "unknownEvent": "Neznámá akce",
+    "asap": "Co nejdříve",
+    "unknownCustomer": "Neznámý",
+    "customerOnline": "Zákazník online",
+    "placedByTruck": "Zadal food truck"
+  }
+}

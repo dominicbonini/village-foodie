@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Vahvista uusi HatchGrab-sähköpostiosoitteesi",
+    "heading": "Vahvista sähköpostiosoitteesi",
+    "button": "Vahvista sähköpostiosoite"
+  },
+  "changeEmail": {
+    "requested": "Pyysit HatchGrab-sähköpostiosoitteesi vaihtamista tähän osoitteeseen.",
+    "click": "Vahvista napsauttamalla alla olevaa painiketta. Linkki vanhenee 24 tunnissa.",
+    "ignore": "Jos et pyytänyt tätä muutosta, voit turvallisesti jättää tämän viestin huomiotta.",
+    "stillActive": "Nykyinen sähköpostiosoitteesi pysyy käytössä."
+  },
+  "resendVerification": {
+    "requested": "Pyysit HatchGrab-sähköpostisi vaihtamista tähän osoitteeseen.",
+    "click": "Vahvista napsauttamalla alta. Linkki vanhenee 24 tunnissa.",
+    "ignore": "Jos et pyytänyt tätä, jätä tämä viesti huomiotta.",
+    "stillActive": "Nykyinen sähköpostisi pysyy käytössä."
+  },
+  "passwordReset": {
+    "subject": "Vaihda HatchGrab-salasanasi",
+    "heading": "Vaihda salasanasi",
+    "requested": "Saimme pyynnön vaihtaa HatchGrab-tilisi salasana.",
+    "click": "Valitse uusi salasana napsauttamalla alla olevaa painiketta. Linkki vanhenee 1 tunnin kuluttua.",
+    "button": "Vaihda salasana",
+    "ignore": "Jos et pyytänyt tätä, voit turvallisesti jättää tämän viestin huomiotta.",
+    "unchanged": "Salasanasi ei vaihdu, ennen kuin napsautat yllä olevaa linkkiä."
+  },
+  "deletionScheduled": {
+    "subject": "HatchGrab-tilisi on määrä poistaa",
+    "received": "Olemme vastaanottaneet pyynnön poistaa tämä HatchGrab-tili.",
+    "orderingStopped": "<b>Verkkotilaukset on lopetettu välittömästi</b> näissä ruokarekoissa: {trucks}.",
+    "noTrucks": "(ei ruokarekkoja)",
+    "readable": "Ohjauspaneelisi pysyy\n    luettavissa vielä {days, plural, one {# päivän} other {# päivän}} ajan.",
+    "scheduled": "Tili on määrä poistaa <b>{date}</b>.",
+    "cannotCancel": "<b>Tätä ei voi perua sovelluksen sisältä.</b> Jos tämä et ollut sinä tai olet\n    muuttanut mielesi, vastaa tähän viestiin mahdollisimman pian.",
+    "kept": "Kun tili poistetaan, poistamme henkilötietosi ja asiakkaidesi tiedot. Säilytämme\n    anonyymit kirjanpitotiedot, jotka laki velvoittaa meidät säilyttämään."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "loading": "Ielādē pārvaldības paneli…",
+  "loadFailed": "Neizdevās ielādēt",
+  "requestFailed": "Neizdevās",
+  "invalidToken": "Nederīgs vai novecojis pilnvarojums",
+  "loadFailedReason": "Neizdevās ielādēt šo lapu: {reason}",
+  "noCountrySettings": "Neizdevās ielādēt šī food truck valsts iestatījumus. Lūdzu, atsvaidziniet lapu.",
+  "noPlans": "Neizdevās ielādēt šī food truck plānu. Lūdzu, atsvaidziniet lapu.",
+  "stale": "{hasTime, select, yes {Neizdevās atsvaidzināt. Rāda datus, kas saglabāti {time}. Jūsu veiktās izmaiņas joprojām tiek saglabātas.} other {Neizdevās atsvaidzināt. Rāda saglabātos datus. Jūsu veiktās izmaiņas joprojām tiek saglabātas.}}",
+  "verify": {
+    "ok": "E-pasts apstiprināts — paldies.",
+    "expired": "Šīs apstiprinājuma saites derīgums ir beidzies. Sazinieties ar mums, un mēs to sakārtosim, pirms sākat darbu.",
+    "invalid": "Šī apstiprinājuma saite nedarbojās. Sazinieties ar mums, un mēs to sakārtosim, pirms sākat darbu."
+  },
+  "profile": {
+    "updated": "Profils atjaunināts",
+    "saveFailed": "Neizdevās saglabāt",
+    "title": "Rediģēt profilu",
+    "name": "Vārds",
+    "namePlaceholder": "Jūsu vārds",
+    "email": "E-pasts",
+    "cancel": "Atcelt",
+    "saving": "Saglabā…",
+    "save": "Saglabāt"
+  },
+  "header": {
+    "subtitle": "Pārvaldības panelis",
+    "ordersDashboard": "← Pasūtījumu vadības panelis"
+  },
+  "tabs": {
+    "menu": "Ēdienkarte",
+    "schedule": "Grafiks",
+    "social": "Sociālie tīkli",
+    "reports": "Atskaites",
+    "team": "Komanda",
+    "settings": "Iestatījumi",
+    "payments": "Maksājumi",
+    "billing": "Norēķini",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Grafiks ({count})",
+    "stripeAttention": "Stripe nepieciešama jūsu rīcība",
+    "allergensNotSet": "alergēni nav norādīti"
+  },
+  "menuSections": {
+    "label": "Ēdienkartes sadaļas",
+    "items": "Pozīcijas",
+    "capacity": "Virtuves jauda",
+    "extras": "Piedevas un papildpiedāvājumi",
+    "deals": "Komplekti"
+  },
+  "socialSections": {
+    "label": "Sociālo tīklu sadaļas",
+    "create": "Izveidot ierakstu",
+    "designs": "Dizaini",
+    "locations": "Vietu iestatījumi"
+  },
+  "notices": {
+    "review": "Pārskatīt →",
+    "tour": "Vēlaties īsu ievadu jūsu vadības panelī?",
+    "showMeAround": "Parādiet man",
+    "dismiss": "Aizvērt",
+    "approval": "{count, plural, zero {Mēs jums atradām <b>{count}</b> pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.} one {Mēs jums atradām <b>{count}</b> pasākumu — pārskatiet un apstipriniet to, pirms tas tiek publicēts.} other {Mēs jums atradām <b>{count}</b> pasākumus — pārskatiet un apstipriniet tos, pirms tie tiek publicēti.}}",
+    "allergens": "<b>Alergēni nav norādīti</b> — klienti neredz informāciju par alergēniem, kamēr jūs to neesat pārbaudījis. Pārskatiet katra ēdiena alergēnus cilnē Ēdienkarte.",
+    "domainLive": "<link>{domain}</link> darbojas. Apskatiet to un pēc tam sadaļā Iestatījumi apstipriniet, ka viss ir pareizi.",
+    "stripe": "<b>Stripe kaut kas no jums ir nepieciešams</b> — kamēr tas nav nokārtots, karšu maksājumi var tikt apturēti.",
+    "profileTitle": "Aizpildiet savu profilu",
+    "missing": "Trūkst: {fields}.",
+    "goToSettings": "Uz Iestatījumiem →",
+    "field": {
+      "truckName": "food truck nosaukums",
+      "cuisineType": "virtuves veids",
+      "contactEmail": "kontakta e-pasts",
+      "contactPhone": "kontakta tālrunis"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Jums ir bezmaksas izmēģinājuma periods} other {Jūsu bezmaksas izmēģinājuma periods: {months} mēn.}}",
+    "ends": "{hasDate, select, yes {Izmēģinājuma periods beidzas <hl>{date}</hl>} other {Izmēģinājuma periods beigsies <hl>drīz</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, zero {Visas funkcijas bez maksas # mēnešus} one {Visas funkcijas bez maksas # mēnesi} other {Visas funkcijas bez maksas # mēnešus}}} other {Visas funkcijas bez maksas izmēģinājuma periodā}}",
+    "body": "{hasDate, select, yes {Izmēģinājuma periodā, kas ilgst līdz <b>{date}</b>, no jums netiks iekasēts nekas. Norēķini sākas tikai tad, kad izvēlaties plānu un ievadāt maksājuma datus. Līdz tam nav ko atcelt un nav par ko maksāt. Izvēlieties plānu līdz šim datumam — ja to neizdarīsiet, jums tiks piemērots plāns {fallback} un dažas funkcijas pārstās darboties.} other {Izmēģinājuma periodā no jums netiks iekasēts nekas. Norēķini sākas tikai tad, kad izvēlaties plānu un ievadāt maksājuma datus. Līdz tam nav ko atcelt un nav par ko maksāt. Izvēlieties plānu, pirms izmēģinājuma periods beidzas — ja to neizdarīsiet, jums tiks piemērots plāns {fallback} un dažas funkcijas pārstās darboties.}}",
+    "fees": "*Tiešsaistes pasūtījumiem piemēro standarta karšu apstrādes komisiju",
+    "upgrade": "Mainīt plānu šeit →"
+  }
+}

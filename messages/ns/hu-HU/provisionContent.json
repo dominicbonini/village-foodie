@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pizzák",
+    "burgers": "Burgerek",
+    "mains": "Főételek",
+    "sides": "Köretek",
+    "drinks": "Italok"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza food truck",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja és méz",
+        "fourCheese": "Négysajtos",
+        "gardenVeg": "Zöldséges",
+        "garlicBread": "Fokhagymás kenyér",
+        "rocketParmesan": "Rukkola és parmezán",
+        "olives": "Olívabogyó",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger food truck",
+      "items": {
+        "classicCheeseburger": "Klasszikus sajtburger",
+        "doubleBacon": "Dupla baconburger",
+        "buttermilkChicken": "Írós pácolt csirke",
+        "halloumiStack": "Halloumi burger",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Héjas hasábburgonya",
+        "loadedCheeseFries": "Sajtos megrakott sült krumpli",
+        "onionRings": "Hagymakarika",
+        "craftLemonade": "Kézműves limonádé",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Curry food truck",
+      "items": {
+        "chickenTikkaMasala": "Csirke tikka masala",
+        "lambRoganJosh": "Bárány rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Piláfrizs",
+        "garlicNaan": "Fokhagymás naan",
+        "onionBhaji": "Hagymás bhaji",
+        "mangoLassi": "Mangós lassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

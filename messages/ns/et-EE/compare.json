@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Kulude võrdlus",
+  "title": "Võrdle oma veebitellimuste<br></br><accent>kulusid</accent>",
+  "system": {
+    "title": "Kas võtad praegu veebitellimusi vastu?",
+    "yes": "Jah, mõne teise süsteemiga",
+    "no": "Ei, veel mitte"
+  },
+  "trucks": {
+    "title": "Mitu toiduautot sul on?",
+    "aria": "Toiduautode arv"
+  },
+  "plan": {
+    "yourChoice": "Sinu valik",
+    "weSuggest": "Soovitame",
+    "summary": "{price} toiduauto kohta kuus, hinnas on veebitellimused kuni {allowance}{fleet, plural, one {} other { iga toiduauto kohta}}.",
+    "switchTo": "Vali hoopis {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} toiduauto kohta kuus, lisaks {pct} veebis kaardiga makstud tellimustelt.} other {Kuutasu pole — ainult {pct} veebis kaardiga makstud tellimustelt.}}",
+    "summaryNoFee": "{price} toiduauto kohta kuus, piiramatult veebitellimusi ja HatchGrabi tasu pole."
+  },
+  "orders": {
+    "titleYes": "Veebitellimusi kuus toiduauto kohta",
+    "count": "~{count, plural, one {# tellimus} other {# tellimust}}",
+    "captionNo": "Ligikaudne hinnang sobib — ettetellimused ja järjekorrast mööda tellijad, mitte sularaha- ega kaardimaksed leti juures.",
+    "captionYes": "Ainult sinu tellimislehe kaudu tehtud tellimused — mitte sularaha- ega kaardimaksed leti juures.",
+    "sliderAria": "Veebitellimuste väärtus kuus toiduauto kohta",
+    "overAllowance": "Iga toiduauto hinnas on veebitellimused kuni {allowance}. Seda ületavalt summalt ({excess}) võetakse {pct} — <b>{over}</b> kuus iga toiduauto kohta.",
+    "insideAllowance": "Jääb hinnas sisalduvate veebitellimuste piiresse ({allowance}) — paketile midagi lisaks ei tule.",
+    "acrossFleet": "Kokku {fleet, plural, one {# toiduauto} other {# toiduauto}} peale: <b>{amount}</b> kuus.",
+    "titleNo": "Kui palju arvad, et teeniksid veebitellimustelt kuus toiduauto kohta?",
+    "feeOnly": "{pct} igalt veebis kaardiga makstud tellimuselt — <b>{over}</b> kuus toiduauto kohta.",
+    "noFee": "Piiramatult veebitellimusi hinnas — paketile midagi lisaks ei tule."
+  },
+  "fee": {
+    "title": "Kui palju maksad praegu tellimuse kohta?",
+    "pctLabel": "Protsent",
+    "pctPlaceholder": "Sinu määr",
+    "pctAria": "Protsendipõhine tasu",
+    "fixedLabel": "Lisaks tellimuse kohta",
+    "fixedPlaceholder": "Sinu tasu",
+    "fixedAria": "Senti tellimuse kohta",
+    "modeLabel": "Nende määr:",
+    "modeInclusive": "sisaldab kaardimakse tasu",
+    "modeOnTop": "kaardimakse tasu lisandub",
+    "onTopNote": "Kaardimakse tasu {fee} lisandub sellele, seega maksad tegelikult kokku <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Kaardimakse tasu {fee} sisaldub selles ja maksaksid seda igal pool. Nende oma vahendustasu on <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Mitu päeva nädalas sa töötad?",
+    "help": "Üritused, turud, müügikohad — iga päev, mil toiduauto väljas on."
+  },
+  "jump": {
+    "cost": "Vaata, mis see maksab ↓",
+    "saving": "Vaata oma säästu ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Veebitellimused, ettetellimused ja köögiekraan hinnaga</lead><figure>{amount}</figure><unit>müügipäeva kohta</unit>",
+    "basedOn": "Arvestus: {days, plural, one {# päev} other {# päeva}} nädalas · {monthly} kuus{fleet, plural, one {} other { toiduauto kohta}}"
+  },
+  "coffee": "Vähem kui tass kohvi.",
+  "freeMonths": "{n, plural, one {Ja esimene kuu on meie kulul.} other {Ja esimesed # kuud on meie kulul.}}",
+  "cta": {
+    "upload": "Laadi menüü üles →",
+    "uploadSave": "Laadi menüü üles ja säästa {amount} →",
+    "ask": "Esita meile küsimus",
+    "noCard": "Seadistamiseks pole kaarti vaja"
+  },
+  "breakdown": {
+    "title": "Sinu kuu kulud lahti kirjutatuna",
+    "titleDearer": "Sinu kuu HatchGrabiga",
+    "plan": "pakett {plan}",
+    "over": "{pct} summalt {excess}, mis ületab hinnas sisalduva mahu ({allowance})",
+    "inside": "Veebitellimused hinnas sisalduva mahu ({allowance}) piires",
+    "total": "HatchGrab kuus",
+    "freeMonths": "{n, plural, one {1. kuu} other {Kuud 1–#}}",
+    "freeAmount": "{amount} — meie kulul",
+    "acrossFleet": "Kokku {fleet, plural, one {# toiduauto} other {# toiduauto}} peale",
+    "perMonth": "{amount} kuus",
+    "card": "Kaardimaksete töötlemine — Stripe’i tasu {fee} tellimuse kohta, makstakse Stripe’ile. Leti juures makseterminaliga maksaksid umbes sama palju.",
+    "provider": "Sinu praeguse teenusepakkuja oma vahendustasu ({pct})",
+    "feeOnly": "{pct} veebitellimustelt summas {excess}",
+    "noFee": "Veebitellimused — piiramatult, HatchGrabi tasuta"
+  },
+  "enterRate": "Sisesta, kui palju praegu maksad, et näha oma säästu.",
+  "panel": {
+    "nowYear": "<label>Praegu maksad</label><fig>{amount}<q> aastas</q></fig>",
+    "nowMonth": "<label>Praegu maksad</label><fig>{amount}<q> kuus</q></fig>",
+    "oursYear": "<label>HatchGrabiga</label><fig>{amount}<q> esimesel aastal</q></fig>",
+    "oursMonth": "<label>HatchGrabiga</label><fig>{amount}<q> kuus</q></fig>",
+    "acrossFleet": "kokku {fleet, plural, one {# toiduauto} other {# toiduauto}} peale"
+  },
+  "hero": {
+    "save": "<verb>Säästad</verb><figure>{amount}</figure><sub><num>{pct}</num> vähem esimesel aastal</sub>",
+    "same": "<verb>Umbes sama</verb><figure>{amount}</figure><sub><num>{pct}</num> rohkem esimesel aastal</sub>",
+    "dearer": "<lead>Kõik, mida HatchGrab teeb, hinnaga</lead><figure>{amount}</figure><unit>rohkem nädalas</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} kuus rohkem kui praegu} other {{amount} kuus toiduauto kohta rohkem kui praegu}}"
+  },
+  "anchor": {
+    "liability": "See on aasta tsiviilvastutuskindlustust.",
+    "weekendPitch": "See on nädalavahetuse müügikoht toidufestivalil.",
+    "festivalPitches": "See on paar müügikohta festivalidel.",
+    "fryer": "See on uus fritüür ja grillplaat.",
+    "counter": "See on sinu müügileti täielik uuendus.",
+    "vanDeposit": "See on sissemakse teise toiduauto jaoks.",
+    "secondVan": "See on teine toiduauto teel."
+  },
+  "year": {
+    "one": "1. aasta",
+    "two": "2. aasta",
+    "save": "Säästad {amount}<note>({pct} vähem)</note>",
+    "extra": "Lisaks {amount}<note>({pct} rohkem)</note>",
+    "current": "Praegune teenusepakkuja <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Hinnangud põhinevad sinu sisestatud arvudel ja keskmisel tellimusel {aov}. Kaardimaksete tasu kehtib olenemata teenusepakkujast. Kontrolli enne otsustamist.",
+    "yes": "Hinnangud põhinevad sinu sisestatud arvudel ja keskmisel tellimusel {aov}. Kaardimaksete tasu {fee} tellimuse kohta kehtib olenemata teenusepakkujast, seega pole seda kummalgi poolel arvestatud.",
+    "onTop": "Küsimuse {n} vastuses toodud kogusumma sisaldab seda — võrdlus aga ei sisalda seda kummalgi poolel.",
+    "check": "Kontrolli enne otsustamist oma praeguse teenusepakkuja hindu."
+  },
+  "intro": "Võtab umbes minuti. Kasutad juba mõnda süsteemi? Võrdleme seda. Veel mitte? Näitame täpselt, mis see maksab.",
+  "twoYear": "Kahe aastaga säästad <b>{amount}</b>.",
+  "meta": {
+    "title": "Kulukalkulaator — HatchGrab {country}",
+    "description": "Võrdle oma veebitellimuste praeguseid kulusid aastaga HatchGrabis — hinnang minutiga."
+  }
+}

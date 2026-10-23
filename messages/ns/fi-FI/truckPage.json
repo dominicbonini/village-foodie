@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Ruokarekka | Village Foodie",
+    "hgFallbackTitle": "Ruokarekka",
+    "orderTitle": "Tilaa: {truck}",
+    "orderDescription": "Tilaa etukäteen: {truck}. Nouda tilauksesi ruokarekalta.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo: {truck}"
+  },
+  "shareTitle": "{truck}: aikataulu",
+  "shareText": "Katso, minne {truck} seuraavaksi pysähtyy! 🚚",
+  "linkCopied": "Profiilin linkki kopioitu leikepöydälle! 📋",
+  "facebookPage": "Facebook-sivu",
+  "loadingMap": "Ladataan karttaa…",
+  "view": {
+    "list": "Lista",
+    "map": "Kartta"
+  },
+  "ownThisTruck": "Omistatko tämän ruokarekan?",
+  "ownThisTruckTitle": "Omistatko tämän ruokarekan? Päivitä profiilisi napsauttamalla",
+  "actions": {
+    "menu": "Ruokalista",
+    "call": "Soita",
+    "message": "Viesti",
+    "share": "Jaa",
+    "order": "Tilaa"
+  },
+  "loadingSchedule": "Ladataan aikataulua…",
+  "loadError": {
+    "title": "Lataus epäonnistui",
+    "body": "Aikataulua ei voitu ladata juuri nyt — yleensä kyse on hetkellisestä häiriöstä. Yritä uudelleen.",
+    "retry": "Yritä uudelleen"
+  },
+  "notFound": {
+    "title": "Ruokarekkaa ei löytynyt",
+    "body": "Emme löytäneet tietoja tästä ruokarekasta. Se on ehkä siirtynyt muualle tai päivittänyt profiilinsa.",
+    "cta": "Näytä kaikki ruokarekat"
+  },
+  "noEvents": {
+    "title": "Tulevia tapahtumia ei löytynyt",
+    "body": "Meiltä saattaa puuttua tietoja tästä ruokarekasta. Oletko omistaja, tai tiedätkö sen aikataulun?",
+    "cta": "Lähetä meille viesti, niin päivitämme!"
+  },
+  "whereToFind": "Mistä meidät löytää",
+  "missingEvent": "<strong>Puuttuuko meiltä tapahtuma?</strong> <br></br>Jos omistat tämän ruokarekan tai olet vain uskollinen fani, auta meitä pitämään tämä sivu ajan tasalla! <br></br><link>Ota yhteyttä ja lisää puuttuvat tiedot.</link>",
+  "weeklySchedule": "Tilaa viikkoaikataulu 🍕"
+}

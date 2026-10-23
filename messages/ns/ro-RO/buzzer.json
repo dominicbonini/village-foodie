@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Pagerul <b>{number}</b> este la <b>comanda #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Îl luați pentru <b>{hasTarget, select, yes {comanda #{targetId}} other {această comandă}}</b>?",
+  "cancel": "Anulați",
+  "take": "Luați pagerul {number}",
+  "titleBlocking": "Pager pentru comanda #{id}?",
+  "title": "Alegeți un pager",
+  "subtitle": "{hasTarget, select, yes {Comanda #{id}} other {Această comandă}}{hasCurrent, select, yes { · acum pagerul {current}} other {}}",
+  "allTaken": "{n, plural, one {Pagerul este dat. Atingeți-l pentru a-l lua de la altă comandă.} few {Toate cele {count} pagere sunt date. Atingeți unul pentru a-l lua de la altă comandă.} other {Toate cele {count} de pagere sunt date. Atingeți unul pentru a-l lua de la altă comandă.}}",
+  "thisOrder": "Această comandă",
+  "noBuzzer": "Fără pager",
+  "done": "Gata",
+  "lostTitle": "Comanda #{id} nu are pager",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}altă comandă a primit același pager cât timp erați offline. Dați acestui client alt pager.",
+  "dismiss": "Închideți",
+  "assign": "Atribuiți"
+}

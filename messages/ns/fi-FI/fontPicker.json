@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Kaikki",
+    "bold": "Lihavat",
+    "hand": "Käsinkirjoitetut",
+    "classic": "Klassiset",
+    "clean": "Selkeät",
+    "own": "Omat",
+    "ownCount": "Omat ({count})"
+  },
+  "yoursTag": "· oma",
+  "loadingFonts": "Ladataan fontteja…",
+  "search": "Hae {count, number} fontin joukosta",
+  "uploadButton": "↑ Lataa oma fontti",
+  "loadingLibrary": "Ladataan fonttikirjastoa…",
+  "tryAgain": "Yritä uudelleen",
+  "noOwn": "Et ole vielä ladannut omaa fonttia. Käytä yllä olevaa ”↑ Lataa oma fontti” -painiketta.",
+  "recent": "Viimeksi käytetyt",
+  "popular": "Suositut julisteisiin",
+  "adding": "Lisätään…",
+  "noMatch": "Mikään fontti ei vastaa hakua ”{query}”.",
+  "showing": "Näytetään {shown}/{total, number} — tarkenna hakua kirjoittamalla lisää.",
+  "couldNotAdd": "Fonttia ei voitu lisätä",
+  "tooBig": "Fontti on {size, number, ::.0 group-off} Mt. Enimmäiskoko on 5 Mt.",
+  "woff": "Lataa TTF- tai OTF-tiedosto — sellaisen voi yleensä ladata sieltä, mistä ostit fontin.",
+  "uploadIncomplete": "Lataus jäi kesken",
+  "added": "Fontti ”{name}” lisättiin. Leikkaus: {face}.",
+  "face": {
+    "regular": "normaali",
+    "bold": "lihavoitu",
+    "italic": "kursiivi"
+  },
+  "licenceTick": "Omistan tämän fontin tai minulla on lisenssi sen käyttöön",
+  "checking": "Tarkistetaan fonttia…",
+  "addFont": "Lisää fontti",
+  "cancel": "Peruuta",
+  "missingFaces": "Lisää fontille ”{name}” puuttuva leikkaus: {faces} (valinnainen) — valitse tiedosto uudelleen.",
+  "somethingWrong": "Jokin meni vikaan",
+  "faceLower": {
+    "regular": "normaali",
+    "bold": "lihavoitu",
+    "italic": "kursiivi"
+  },
+  "ownLicence": "Oma",
+  "loadFailed": "Fontteja ei voitu ladata"
+}

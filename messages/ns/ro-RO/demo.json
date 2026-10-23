@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Indisponibil în demo",
+  "demoMode": "MOD DEMO",
+  "loopLands": "Exact așa sosește o comandă reală",
+  "showMe": "Arătați-mi",
+  "noCard": "{sub} Nu este nevoie de card.",
+  "notYet": "Încă nu",
+  "cashAndCollected": "Numerar și ridicată",
+  "logoPlaceholder": "Logo-ul dumneavoastră aici",
+  "welcomeTitle": "{sample, select, yes {Iată un demo de exemplu} other {Iată demo-ul dumneavoastră}}",
+  "welcomeIntro": "{sample, select, yes {Acesta este un <b>meniu de exemplu</b>, ca să vedeți cum funcționează totul — încărcați-l oricând pe al dumneavoastră.} other {Acestea sunt meniul și identitatea vizuală proprii, pe un panou real.}} Comenzile deja afișate sunt exemple, ca să vedeți cum arată un serviciu aglomerat.",
+  "twoThings": "Două lucruri de încercat:",
+  "hitButton": "Apăsați <b>{button}</b> la o comandă",
+  "scanQr": "Scanați <b>codul QR</b> — sau atingeți linkul — și comandați ca un client, apoi urmăriți cum sosește comanda",
+  "qrAlt": "Cod QR către pagina de comandă pentru clienți",
+  "openHere": "Sau deschideți-o pe acest dispozitiv",
+  "copyLink": "Copiați linkul",
+  "copyDescribedAs": "linkul de comandă",
+  "noLinkTitle": "Linkul de comandă pentru clienți",
+  "noLinkBody": "Linkul paginii de comandă se află în meniu, în dreapta sus.",
+  "asLive": "Fluxul de comandă și de bucătărie este exact ca în funcționarea reală.",
+  "startExploring": "Începeți explorarea",
+  "signupOffer": {
+    "heading": "Înscrieți-vă acum pentru luna gratuită",
+    "sub": "Perioada începe să curgă abia când decideți să vă lansați."
+  },
+  "cashIcon": "💵"
+}

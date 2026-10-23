@@ -1,0 +1,28 @@
+{
+  "notAvailable": "V ukázce není k dispozici",
+  "demoMode": "UKÁZKOVÝ REŽIM",
+  "loopLands": "Přesně takhle přichází skutečná objednávka",
+  "showMe": "Ukázat",
+  "noCard": "{sub} Bez platební karty.",
+  "notYet": "Ještě ne",
+  "cashAndCollected": "Hotově a vyzvednuto",
+  "logoPlaceholder": "Zde bude vaše logo",
+  "welcomeTitle": "{sample, select, yes {Tady je ukázkové demo} other {Tady je vaše demo}}",
+  "welcomeIntro": "{sample, select, yes {Toto je <b>zástupný jídelní lístek</b>, abyste viděli, jak vše funguje — kdykoli nahrajte vlastní a bude to vaše.} other {Toto je váš vlastní jídelní lístek a vzhled na skutečné tabuli objednávek.}} Objednávky, které už na ní jsou, jsou ukázkové, abyste viděli rušný provoz.",
+  "twoThings": "Vyzkoušejte dvě věci:",
+  "hitButton": "Klepněte na <b>{button}</b> u objednávky",
+  "scanQr": "Naskenujte <b>QR kód</b> — nebo klepněte na odkaz — objednejte si jako zákazník a sledujte, jak objednávka dorazí",
+  "qrAlt": "QR kód vaší objednávkové stránky pro zákazníky",
+  "openHere": "Nebo ji otevřete v tomto zařízení",
+  "copyLink": "Kopírovat odkaz",
+  "copyDescribedAs": "odkaz na objednávky",
+  "noLinkTitle": "Váš odkaz pro objednávky zákazníků",
+  "noLinkBody": "Odkaz na vaši objednávkovou stránku najdete v nabídce vpravo nahoře.",
+  "asLive": "Objednávání i práce v kuchyni fungují přesně jako v ostrém provozu.",
+  "startExploring": "Pustit se do toho",
+  "signupOffer": {
+    "heading": "Zaregistrujte se teď na měsíc zdarma",
+    "sub": "Čas začne běžet až ve chvíli, kdy se rozhodnete spustit ostrý provoz."
+  },
+  "cashIcon": "💵"
+}

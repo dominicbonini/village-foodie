@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck}: seuraavat myyntipaikat.",
+  "orderFrom": "Tilaa: {truck}",
+  "poweredBy": "Palvelun tarjoaa <b>HatchGrab</b>",
+  "loadFailed": "Aikataulua ei voitu ladata juuri nyt.",
+  "loading": "Ladataan aikataulua…",
+  "empty": "{truck}: ei tulevia tapahtumia."
+}

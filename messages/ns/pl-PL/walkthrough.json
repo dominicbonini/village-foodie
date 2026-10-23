@@ -1,0 +1,31 @@
+{
+  "intro": "W sekcji Zarządzaj konfigurujesz swój food truck i sprawdzasz, jak mu idzie. W panelu przyjmujesz zamówienia i prowadzisz każde wydarzenie na bieżąco.",
+  "ariaLabel": "Przewodnik po panelu",
+  "step": "{current} z {total}",
+  "skip": "Pomiń",
+  "back": "← Wstecz",
+  "next": "Dalej →",
+  "done": "Gotowe",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "Twoje dania, ceny i alergeny. Każda zmiana tutaj od razu jest widoczna dla klientów."
+    },
+    "schedule": {
+      "title": "Harmonogram",
+      "body": "Gdzie i kiedy sprzedajesz. Dodaj tu wydarzenie, a klienci będą mogli na nie zamawiać."
+    },
+    "build": {
+      "title": "Zestawy oraz Dodatki i dosprzedaż",
+      "body": "Zestawy, dosprzedaż, personalizacje i wydajność kuchni znajdziesz w zakładce Menu — śmiało, wypróbuj."
+    },
+    "settings": {
+      "title": "Ustawienia",
+      "body": "Dane twojego food trucka i sposoby płatności dla klientów."
+    },
+    "billing": {
+      "title": "Rozliczenia",
+      "body": "Tu znajdziesz informacje o planie, rozliczeniach i funkcjach."
+    }
+  }
+}

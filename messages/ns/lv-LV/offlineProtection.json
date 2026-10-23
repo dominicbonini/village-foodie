@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Darba laikā vadības panelim vai virtuves ekrānam jābūt ieslēgtam un tiešsaistē.",
+  "explainerBody": "Ja ekrāns izslēdzas, ierīce zaudē interneta savienojumu vai jūs pārslēdzaties uz citu vietni, darbojas bezsaistes aizsardzība — tā vai nu aptur pasūtīšanu, vai izslēdz automātisko pieņemšanu, atkarībā no jūsu izvēles.",
+  "reminder": "⚠️ Darba laikā turiet vadības paneli vai virtuves ekrānu ieslēgtu un tiešsaistē, citādi var ieslēgties bezsaistes aizsardzība.",
+  "enableConfirm": "Bezsaistes aizsardzība ieslēgta.\n\nLai pasūtījumi turpinātu ienākt, ekrānam jāpaliek ieslēgtam. Ja šī ierīce zaudē savienojumu, bezsaistes aizsardzība darbojas jūsu izvēlētajā režīmā.\n\nPārliecinieties, ka šajā ierīcē ir ieslēgta funkcija “Ekrāns ieslēgts”.",
+  "disableConfirm": "Izslēgt bezsaistes aizsardzību šim pasākumam?\n\nJa šī ierīce zaudēs savienojumu, tiešsaistes pasūtījumi turpināsies — klienti var veikt pasūtījumus, kurus jūs neredzat. Izslēdziet tikai tad, ja jums ir uzticams savienojums.",
+  "cardDescription": "Nosaka, kas notiek ar ienākošajiem pasūtījumiem, kad ierīce zaudē savienojumu.",
+  "purpose": "Ja ierīce zaudē savienojumu, šī funkcija aptur pasūtījumu ienākšanu, kamēr jūs tos nevarat redzēt.",
+  "switchLabel": "Bezsaistes pasūtījumu aizsardzība",
+  "switchHelp": "Kas notiek, kad šis busiņš zaudē savienojumu.",
+  "modes": {
+    "pause": {
+      "label": "Apturēt tiešsaistes pasūtīšanu",
+      "help": "Klienti nevar pasūtīt, līdz jūs atkal esat tiešsaistē."
+    },
+    "no_auto_accept": {
+      "label": "Turpināt pieņemt pasūtījumus, apstiprināt manuāli",
+      "help": "Automātiskā pieņemšana tiek izslēgta, tāpēc klienti joprojām var pasūtīt, bet nekas netiek apstiprināts automātiski. Katru pasūtījumu apstiprināsiet, kad atkal būsiet tiešsaistē, — un viss, kas joprojām gaida, pēc jūsu izvēlētā laika tiek automātiski noraidīts, un klients par to saņem e-pastu."
+    }
+  },
+  "autoRejectLabel": "Noraidīt pasūtījumus, kas gaida ilgāk par",
+  "autoRejectOption": "{n, plural, zero {{count} min} one {{count} min} other {{count} min}}"
+}

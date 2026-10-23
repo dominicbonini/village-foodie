@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "To e-sporočilo nima vrstice za odjavo, zato ga ni mogoče poslati. Dodajte jo z gumbom „Insert opt-out“.",
+    "notSetUp": "Stavek za odjavo ni nastavljen, zato ni mogoče poslati nobenega e-sporočila za pridobivanje strank. Dodajte ga na plošči „Signature“ v zavihku „Templates“.",
+    "notLoaded": "Stavek za odjavo se še ni naložil, zato tega ni mogoče poslati.",
+    "unreadable": "Stavka za odjavo ni bilo mogoče prebrati, zato ni bilo nič poslano."
+  },
+  "retry": {
+    "notRebuilt": "Sporočila ni bilo mogoče znova sestaviti z vrstico o podjetju, zato ni bilo nič poslano."
+  }
+}

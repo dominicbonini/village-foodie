@@ -1,0 +1,17 @@
+{
+  "tagline": "Mazāk pierakstīšanas.<br></br>Vairāk gatavošanas.",
+  "features": "Funkcijas",
+  "pricing": "Cenas",
+  "privacy": "Privātums",
+  "terms": "Noteikumi",
+  "contact": "Kontakti",
+  "about": "Par mums",
+  "copyright": "© {year} HatchGrab",
+  "credit": "No <b>Village Foodie</b> veidotājiem",
+  "badges": {
+    "appStoreLink": "Lejupielādējiet HatchGrab no App Store",
+    "appStoreAlt": "Lejupielādēt no App Store",
+    "googlePlayLink": "Iegūstiet HatchGrab pakalpojumā Google Play",
+    "googlePlayAlt": "Iegūt pakalpojumā Google Play"
+  }
+}

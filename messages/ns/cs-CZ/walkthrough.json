@@ -1,0 +1,31 @@
+{
+  "intro": "Ve Správě svůj food truck nastavujete a sledujete, jak se mu daří. Na Přehledu přijímáte objednávky a řídíte každou akci v jejím průběhu.",
+  "ariaLabel": "Prohlídka přehledu",
+  "step": "{current} z {total}",
+  "skip": "Přeskočit",
+  "back": "← Zpět",
+  "next": "Další →",
+  "done": "Hotovo",
+  "stops": {
+    "menu": {
+      "title": "Jídelní lístek",
+      "body": "Vaše jídla, ceny a alergeny. Cokoli tu změníte, platí okamžitě."
+    },
+    "schedule": {
+      "title": "Rozpis",
+      "body": "Kde a kdy prodáváte. Přidejte sem akci a zákazníci si na ni budou moci objednat."
+    },
+    "build": {
+      "title": "Menu, doplňky a nabídky navíc",
+      "body": "Menu, nabídky navíc, přizpůsobení a kapacitu kuchyně najdete pod kartou Jídelní lístek — klidně si to vyzkoušejte."
+    },
+    "settings": {
+      "title": "Nastavení",
+      "body": "Údaje o vašem food trucku a způsob, jakým zákazníci platí."
+    },
+    "billing": {
+      "title": "Fakturace",
+      "body": "Tady najdete svůj tarif, fakturaci a informace o funkcích."
+    }
+  }
+}

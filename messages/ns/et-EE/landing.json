@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Tellimissüsteem toiduautodele ja mobiilsele toitlustusele",
+    "description": "Tellimused, ettetellimused ja köögiekraan toiduautodele ja mobiilsele toitlustusele ({country}).",
+    "audience": "Toiduautode ja mobiilse toitlustuse ettevõtjad"
+  },
+  "hero": {
+    "title": "Tellimissüsteem, mis on loodud <lean>toiduautodele.</lean>",
+    "subSmall": "Laadi oma menüü üles, registreerumist pole vaja.<br></br>Näed töötavat demot vähem kui 60 sekundiga.",
+    "tagline": "Vähem askeldamist.<br></br>Rohkem <lean>kokkamist.</lean>",
+    "cta": "Laadi oma menüü üles →",
+    "ctaNote": "<lead>Laadi üles foto oma menüüst ja näed seda töötamas vähem kui 60 sekundiga.</lead><small>Registreerumist pole vaja. Pangakaarti pole vaja.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrabi köögiekraan, kus tellimuslipikud on valmistamise järjekorras",
+    "dashboardAlt": "Tellimuse vastuvõtmine HatchGrabis: vasakul menüü, paremal ostukorv ja jooksev summa",
+    "phoneAlt": "Toiduautost tellimine HatchGrabis: menüü fotode ja hindadega ning ostukorvi jooksev summa"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Esimene kuu täiesti tasuta, kõik funktsioonid avatud} other {Esimesed # kuud täiesti tasuta, kõik funktsioonid avatud}}",
+    "noCard": "Pangakaarti pole vaja",
+    "cancel": "Loobu igal ajal, lepingut pole"
+  },
+  "does": {
+    "eyebrow": "Mida see teeb",
+    "title": "Loodud toiduautodele, mitte restoranidele.",
+    "lede": "Enamik tellimissüsteeme eeldab kindlat aadressi, töökindlat wifit ja igal nädalal samu lahtiolekuaegu. Sina oled iga nädal uues kohas, eri aegadel, nõrga mobiililevi või üldse ilma levita. HatchGrab on loodud just selleks.",
+    "slotsTitle": "Kliendid valivad kättesaamise aja",
+    "capacityTitle": "Määra oma köögi võimsus",
+    "capacityBody": "Määra, kui palju suudad korraga valmistada ja kui kaua see aega võtab. Kui kättesaamise aeg on täis, ei saa kliendid seda enam valida.",
+    "devicesTitle": "Töötab igas seadmes",
+    "devicesBody": "Töötab telefonis sinu põlletaskus, tahvelarvutis leti peal, sülearvutis toiduautos — ja makseterminalis, millega sa juba makseid vastu võtad.",
+    "postsTitle": "Automatiseeri oma Facebooki ja Instagrami postitused",
+    "postsBody": "Laadi üles kujundus, mida sa juba Facebookis või Instagramis postitad. Meie lisame sinu kuupäevad, asukohad ja kellaajad, valmis jagamiseks — iga nädal või iga päev.",
+    "whatsappTitle": "WhatsAppi automaatvastused",
+    "whatsappBody": "„Kus te täna õhtul olete?“ „Milliseid magustoite teil on?“ Sinu WhatsAppi sõnumitele vastatakse sel ajal, kui sõidad müügikohta või seisad grilli taga — sinu enda menüü ja ajakava põhjal. Messenger ja Instagram on tulekul.",
+    "whatsappSoonTitle": "WhatsAppi automaatvastused <soon>Tulekul</soon>",
+    "whatsappSoonBody": "„Kus te täna õhtul olete?“ „Milliseid magustoite teil on?“ Peagi vastatakse sinu WhatsAppi sõnumitele sel ajal, kui sõidad müügikohta või seisad grilli taga. Messenger ja Instagram järgnevad.",
+    "offlineTitle": "Levi pole? Teeninda edasi.",
+    "offlineBody": "Kui levi kaob, peatub veebitellimine automaatselt, et kliendid ei saaks esitada tellimusi, mida sa ei näe. Jätka tellimuste vastuvõtmist iPhone’i, iPadi ja Androidi rakendusega.",
+    "slotsBody": "Kliendid tellivad ette ja valivad kättesaamise aja. Vähem järjekordi ja toit on valmis, kui nad saabuvad."
+  },
+  "steps": {
+    "eyebrow": "Alustamine",
+    "title": "Seadista kõik ja hakka tellimusi vastu võtma umbes 15 minutiga.",
+    "lede": "Kolm asja korda ajada — ja kahe jaoks piisab fotost.",
+    "menuTitle": "Koosta oma menüü",
+    "menuBody": "Pildista oma menüütahvlit või kleebi menüü sisse. Tooted, hinnad ja lisandid tulevad üle iseenesest. Sina kontrollid vaid, et need on õiged.",
+    "scheduleTitle": "Lisa oma ajakava",
+    "scheduleBody": "On see sinu veebilehel? Loeme selle sealt ja hoiame ajakohasena. Kui ei, pildista ka see. Sina kinnitad vaid, mis leiti.",
+    "shareTitle": "Jaga oma linki",
+    "shareBody": "Postita see Facebooki, kleebi QR-kood toiduauto külge. Tellimused jõuavad sinu ekraanile selles järjekorras, milles neid valmistada tuleb."
+  },
+  "testimonial": {
+    "quote": "HatchGrab on tellimise palju lihtsamaks teinud. Kõik on korras, saame laoseisu jälgida ja teame täpselt, mitu pitsat meil veel müüa on — ja ajavahemikud on rahvarohketes külades lihtsalt suurepärased.",
+    "award": "Aasta liikuv pitsabaar",
+    "awardScope": "Piirkondlik võitja",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia ja Bogdan — omanikud"
+  },
+  "pricing": {
+    "eyebrow": "Hinnad",
+    "title": "Alusta tasuta. Uuenda paketti, kui vaja.",
+    "switchHead": "Tuled üle mõnelt teiselt platvormilt?",
+    "switchBody": "Vaata, kui palju maksaksid samade tellimuste eest HatchGrabis. Võtab umbes minuti.",
+    "switchCta": "Võrdle, kui palju maksad"
+  },
+  "final": {
+    "truckLabel": "Toiduauto",
+    "title": "Tahad näha, kui lihtne on seadistamine?",
+    "lede": "Laadi üles oma menüü foto või ekraanipilt ja me teeme sellest vähem kui 60 sekundiga töötava tellimislehe, mida saad ise järele proovida. Sinu tooted, sinu hinnad. Ei registreerumist, ei pangakaarti, midagi pole vaja installida. Vaata järele ja otsusta siis.",
+    "cta": "Laadi oma menüü kohe üles →"
+  },
+  "meta": {
+    "title": "Tellimissüsteem toiduautodele ja mobiilsele toitlustusele — HatchGrab {country}",
+    "description": "Võta müügikohas vastu tellimusi ja ettetellimusi ilma järjekorrata. Tellimis- ja köögiekraanitarkvara toiduautodele ja mobiilsele toitlustusele ({country}) — mitte kassasüsteem."
+  }
+}

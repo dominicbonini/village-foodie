@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVÁT ESEMÉNY",
+  "truckFallback": "A food truck",
+  "noSlugTitle": "Ez a food truck még nincs beállítva online rendelésre.",
+  "orderingOffTitle": "Az online rendelés nincs bekapcsolva",
+  "orderingOffBody": "Ez az esemény nem fogad online rendeléseket. Kérjük, rendeljen a pultnál.",
+  "replacedTitle": "Ezt a linket lecserélték",
+  "replacedBody": "Ez a link már nem működik — lecserélte: {truck}. Kérje el a szervezőtől az új linket vagy QR-kódot.",
+  "madePublicBody": "Ez a link már nem működik — {truck}: ez az esemény mostantól nyilvános. A szokásos oldalukon rendelhet.",
+  "unknownTitle": "Ez a link nem működik",
+  "unknownBody": "Ez a link nem működik. Ellenőrizze a szervezővel, vagy olvassa be újra a QR-kódot."
+}

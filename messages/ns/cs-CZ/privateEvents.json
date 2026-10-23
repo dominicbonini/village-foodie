@@ -1,0 +1,42 @@
+{
+  "publicName": "Soukromá akce",
+  "chip": "Soukromá",
+  "grid": {
+    "orderingSection": "OBJEDNÁVKY",
+    "linkRowLabel": "Přijímat objednávky přes soukromý odkaz a QR kód",
+    "columnTitle": "Vestavěný typ Soukromá. Nelze ho přejmenovat, přesunout ani smazat."
+  },
+  "form": {
+    "help": "V rozpisu se zobrazí jako „Soukromá akce“ jen s datem a časy — adresa se nikdy nezobrazí a akce nebude na mapě ani na Village Foodie.",
+    "linkPromise": "Hosté objednávají přes soukromý odkaz a QR kód — dostanete je po uložení.",
+    "nameLabel": "Název akce",
+    "nameHelp": "Hosté ho uvidí v horní části objednávkové stránky.",
+    "namePlaceholder": "Svatba Sáry a Tomáše",
+    "previewNote": "Takto se zobrazí ve vašem rozpisu — bez místa, města a PSČ.",
+    "needsTimes": "Přidejte čas začátku a konce — soukromá akce s objednávkami přes odkaz je potřebuje."
+  },
+  "link": {
+    "button": "Odkaz a QR",
+    "title": "Soukromý odkaz a QR kód",
+    "label": "Soukromý odkaz",
+    "copy": "Kopírovat",
+    "copied": "Zkopírováno",
+    "qrDownload": "Stáhnout QR",
+    "tableCards": "Vytisknout stolní kartičky",
+    "newLink": "Vytvořit nový odkaz",
+    "working": "Zpracování…",
+    "newLinkConfirm": "Vytvořit nový odkaz? Současný odkaz okamžitě přestane fungovat a přestanou fungovat i QR kódy, které jste už vytiskli.",
+    "newLinkHelp": "Použijte, pokud se odkaz dostal tam, kam neměl. Současný odkaz okamžitě přestane fungovat a vytištěné QR kódy také.",
+    "newLinkFailed": "Nový odkaz se nepodařilo vytvořit.",
+    "offNotice": "Objednávání přes soukromý odkaz je u této akce vypnuté, takže není co sdílet. Akce se ve vašem rozpisu stále zobrazuje jako „Soukromá akce“."
+  },
+  "cards": {
+    "printTitle": "{truck} — stolní kartičky",
+    "scan": "Naskenujte a objednejte",
+    "blurb": "Objednejte a zaplaťte v telefonu. Až bude hotovo, zavoláme vaše jméno.",
+    "footer": "Objednávky přes HatchGrab"
+  },
+  "noSinglePost": "Soukromé akce nemají vlastní příspěvek — na týdenním plakátu se zobrazí jako „Soukromá akce“.",
+  "confirmToPrivate": "Tímto skryjete adresu a akci z mapy. Hosté budou k objednání potřebovat soukromý odkaz.",
+  "confirmFromPrivate": "Tímto bude akce veřejná: zobrazí se její adresa a špendlík na mapě a soukromý odkaz přestane fungovat."
+}

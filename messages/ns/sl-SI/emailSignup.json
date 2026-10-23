@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Pozdravljeni, {name},} other {Pozdravljeni,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "ustanovitelj, HatchGrab",
+  "verify": {
+    "subject": "Potrdite svoj e-poštni naslov",
+    "thanks": "{hasTruck, select, yes {Hvala, ker ste v aplikaciji HatchGrab nastavili food truck {truck}.} other {Hvala, ker ste v aplikaciji HatchGrab nastavili svoj food truck.}}",
+    "button": "Potrdi moj e-poštni naslov",
+    "buttonText": "Potrdi moj e-poštni naslov: {url}",
+    "why": "S tem naslovom se boste prijavljali in nanj prihajajo obvestila o naročilih — zato se splača, da to opravite zdaj.",
+    "next": "Ko bo potrjen, vam bom poslal vse, kar potrebujete za začetek.",
+    "carryOn": "Medtem lahko nadaljujete z nastavljanjem.",
+    "stuck": "Se vam je kje zataknilo? Preprosto odgovorite na to sporočilo — na ta sporočila odgovarjam osebno.",
+    "fallbackLink": "Če gumb ne deluje, prilepite to povezavo v brskalnik: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Dobrodošli v HatchGrab, {name}} other {Dobrodošli v HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Res me veseli, da lahko v HatchGrab pozdravim food truck {truck}.} other {Res me veseli, da lahko v HatchGrab pozdravim vaš food truck.}}",
+    "trial": "{months, plural, one {Vaše enomesečno brezplačno preizkusno obdobje se je začelo — vse funkcije so odklenjene.} two {Vaše #-mesečno brezplačno preizkusno obdobje se je začelo — vse funkcije so odklenjene.} few {Vaše #-mesečno brezplačno preizkusno obdobje se je začelo — vse funkcije so odklenjene.} other {Vaše #-mesečno brezplačno preizkusno obdobje se je začelo — vse funkcije so odklenjene.}}",
+    "setup": "Če tega še niste storili: nastavitev je preprosta in traja približno petnajst minut.",
+    "button": "Odpri nadzorno ploščo",
+    "bookmark": "Splača se jo dodati med zaznamke. Deluje na vsaki napravi.",
+    "stuck": "Če se vam kje zatakne, preprosto odgovorite na to sporočilo — na ta sporočila odgovarjam osebno.",
+    "lookingForward": "{hasTruck, select, yes {Veselim se, ko bo food truck {truck} začel prodajati.} other {Veselim se, ko bo vaš food truck začel prodajati.}}"
+  }
+}

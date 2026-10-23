@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Tento e-mail nemá vetu na odhlásenie, preto ho nemožno odoslať. Pridajte ju tlačidlom „Insert opt-out“.",
+    "notSetUp": "Nie je nastavená žiadna veta na odhlásenie, preto nemožno odoslať žiadny oslovovací e-mail. Pridajte ju v paneli Podpis na karte Šablóny.",
+    "notLoaded": "Veta na odhlásenie sa ešte nenačítala, preto to nemožno odoslať.",
+    "unreadable": "Vetu na odhlásenie sa nepodarilo načítať, preto sa nič neodoslalo."
+  },
+  "retry": {
+    "notRebuilt": "Túto správu sa nepodarilo znovu zostaviť s riadkom o spoločnosti, preto sa nič neodoslalo."
+  }
+}

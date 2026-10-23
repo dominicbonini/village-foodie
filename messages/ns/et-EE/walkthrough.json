@@ -1,0 +1,31 @@
+{
+  "intro": "Halduses seadistad oma toiduauto ja näed, kuidas tal läheb. Töölaual võtad tellimusi vastu ja juhid iga üritust selle toimumise ajal.",
+  "ariaLabel": "Töölaua tutvustus",
+  "step": "{current}/{total}",
+  "skip": "Jäta vahele",
+  "back": "← Tagasi",
+  "next": "Edasi →",
+  "done": "Valmis",
+  "stops": {
+    "menu": {
+      "title": "Menüü",
+      "body": "Sinu road, hinnad ja allergeenid. Muuda siin midagi ja see on kohe klientidele nähtav."
+    },
+    "schedule": {
+      "title": "Ajakava",
+      "body": "Kus ja millal sa müüd. Lisa siia üritus ja kliendid saavad selle jaoks tellida."
+    },
+    "build": {
+      "title": "Pakkumised ning Lisad ja lisamüük",
+      "body": "Pakkumised, lisamüük, kohandused ja köögi võimsus asuvad Menüü all — proovi julgelt järele."
+    },
+    "settings": {
+      "title": "Seaded",
+      "body": "Sinu toiduauto andmed ja see, kuidas kliendid maksavad."
+    },
+    "billing": {
+      "title": "Arveldus",
+      "body": "Siin on sinu pakett, arveldus ja funktsioonide teave."
+    }
+  }
+}

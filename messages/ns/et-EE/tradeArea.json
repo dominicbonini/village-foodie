@@ -1,0 +1,8 @@
+{
+  "country_missing": "Vali riik, kus sinu toiduauto asub.",
+  "country_off": "Selle riigi toiduautod ei saa veel registreeruda. Vali mõni teine riik.",
+  "zone_unknown": "Seda ajavööndit me selle riigi jaoks ei paku. Vali üks loendist.",
+  "town_missing": "Sisesta linn või asula, kus sa asud.",
+  "town_too_long": "Linna nimi on liiga pikk — kuni 120 tähemärki.",
+  "region_closed": "Piirkonnas {region} asuvad toiduautod ei saa veel registreeruda{reason, select, language {: HatchGrab pole veel saadaval keeles {language}} taxLines {: lisame esmalt eraldi GST ja PST read} other {}}. Kui sinu toiduauto asub mujal, vali see linn või asula."
+}

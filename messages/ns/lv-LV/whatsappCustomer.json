@@ -1,0 +1,15 @@
+{
+  "greeting": "Sveiki 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Mūsu pilno ēdienkarti un informāciju par alergēniem varat apskatīt šeit: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Mūsu pilno ēdienkarti varat apskatīt šeit: {url} — {truck} {emoji}",
+  "otherCategory": "Cits",
+  "categoryFrom": "{category} no {price}",
+  "listTwo": "{first} un {second}",
+  "listMany": "{init} un {last}",
+  "menuSummary": "{opener}Mūsu piedāvājumā: {summary}. Pilno ēdienkarti skatiet un pasūtiet iepriekš šeit: {url} — {truck} {emoji}",
+  "allergenCaveat": "Lūdzu, informāciju par alergēniem pārbaudiet pilnajā ēdienkartē — šī ir automātiska atbilde.",
+  "specificFallback": "{opener}Mūsu jaunāko grafiku skatiet šeit: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Paldies par visām ziņām! Šeit varu atbildēt tikai dažas reizes dienā.\n\nLai pasūtītu: {link}",
+  "capContact": "Lai sazinātos ar mums tieši: {number}"
+}

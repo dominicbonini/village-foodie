@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Všetky",
+    "bold": "Výrazné a vysoké",
+    "hand": "Ručne písané",
+    "classic": "Klasické",
+    "clean": "Čisté",
+    "own": "Vlastné",
+    "ownCount": "Vlastné ({count})"
+  },
+  "yoursTag": "· vlastné",
+  "loadingFonts": "Načítavajú sa písma…",
+  "search": "Hľadať písmo (spolu {count, number})",
+  "uploadButton": "↑ Nahrať vlastné písmo",
+  "loadingLibrary": "Načítava sa knižnica písiem…",
+  "tryAgain": "Skúsiť znova",
+  "noOwn": "Zatiaľ ste nenahrali žiadne písmo. Použite tlačidlo „↑ Nahrať vlastné písmo“ vyššie.",
+  "recent": "Nedávno použité",
+  "popular": "Obľúbené na plagáty",
+  "adding": "Pridáva sa…",
+  "noMatch": "Výrazu „{query}“ nezodpovedá žiadne písmo.",
+  "showing": "Zobrazuje sa {shown} z {total, number} — spresnite hľadanie ďalšími znakmi.",
+  "couldNotAdd": "Toto písmo sa nepodarilo pridať",
+  "tooBig": "Toto písmo má {size, number, ::.0 group-off} MB. Limit je 5 MB.",
+  "woff": "Nahrajte súbor TTF alebo OTF — zvyčajne si ho môžete stiahnuť tam, kde ste písmo kúpili.",
+  "uploadIncomplete": "Nahrávanie sa nedokončilo",
+  "added": "Písmo „{name}“ bolo pridané ako {face} rez.",
+  "face": {
+    "regular": "obyčajný",
+    "bold": "tučný",
+    "italic": "kurzívny"
+  },
+  "licenceTick": "Toto písmo vlastním alebo mám licenciu na jeho používanie",
+  "checking": "Kontroluje sa písmo…",
+  "addFont": "Pridať písmo",
+  "cancel": "Zrušiť",
+  "missingFaces": "K písmu „{name}“ pridajte aj rez: {faces} (voliteľné) — vyberte súbor znova.",
+  "somethingWrong": "Niečo sa pokazilo",
+  "faceLower": {
+    "regular": "obyčajný",
+    "bold": "tučný",
+    "italic": "kurzívny"
+  },
+  "ownLicence": "Vlastné",
+  "loadFailed": "Písma sa nepodarilo načítať"
+}

@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Pasūtiet no food truck {truck}",
+    "orderDescription": "Pasūtiet iepriekš no food truck {truck} un saņemiet pasūtījumu pie busiņa.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} logotips"
+  },
+  "shareTitle": "{truck} — grafiks",
+  "shareText": "Paskatieties, kur food truck {truck} būs nākamreiz! 🚚",
+  "linkCopied": "Profila saite nokopēta starpliktuvē! 📋",
+  "facebookPage": "Facebook lapa",
+  "loadingMap": "Ielādē karti…",
+  "view": {
+    "list": "Saraksts",
+    "map": "Karte"
+  },
+  "ownThisTruck": "Šis food truck ir jūsu?",
+  "ownThisTruckTitle": "Šis food truck ir jūsu? Noklikšķiniet, lai atjauninātu profilu",
+  "actions": {
+    "menu": "Ēdienkarte",
+    "call": "Zvanīt",
+    "message": "Rakstīt",
+    "share": "Kopīgot",
+    "order": "Pasūtīt"
+  },
+  "loadingSchedule": "Ielādē grafiku…",
+  "loadError": {
+    "title": "Neizdevās ielādēt",
+    "body": "Pašlaik neizdevās ielādēt grafiku — parasti tā ir īslaicīga kļūme. Lūdzu, mēģiniet vēlreiz.",
+    "retry": "Mēģināt vēlreiz"
+  },
+  "notFound": {
+    "title": "Food truck nav atrasts",
+    "body": "Mēs neatradām informāciju par šo food truck. Iespējams, tas ir pārvietojies vai atjauninājis savu profilu.",
+    "cta": "Skatīt visus food truck"
+  },
+  "noEvents": {
+    "title": "Gaidāmu pasākumu nav",
+    "body": "Iespējams, mums trūkst informācijas par šo food truck. Vai esat īpašnieks vai zināt tā grafiku?",
+    "cta": "Uzrakstiet mums, lai to atjauninātu!"
+  },
+  "whereToFind": "Kur mūs atrast",
+  "missingEvent": "<strong>Mums trūkst kāda pasākuma?</strong> <br></br>Ja esat šī food truck īpašnieks vai vienkārši uzticīgs fans, palīdziet mums uzturēt šo lapu precīzu! <br></br><link>Sazinieties ar mums, lai pievienotu trūkstošo informāciju.</link>",
+  "weeklySchedule": "Saņemt nedēļas grafiku 🍕"
+}

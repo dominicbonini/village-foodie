@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "O nas — HatchGrab",
+    "description": "HatchGrab je ustanovil Dominic Bonini, ki je ustvaril Village Foodie, da bi izvedel, kateri food trucki prihajajo v njegovo vas. To je majhno podjetje, ki ga vodi sam."
+  },
+  "eyebrow": "O nas",
+  "title": "Pozdravljeni, sem Dominic.",
+  "photoAlt": "{name}, ustanovitelj podjetja HatchGrab",
+  "story": {
+    "village": "Živim na vasi. Food trucki prihajajo, a nikoli nisem vedel, kateri bo prišel in kdaj, ne da bi brskal po Facebooku.",
+    "villageFoodie": "Zato sem ustvaril Village Foodie, preprost način, da vidite, kateri food trucki prihajajo v vasi v vaši bližini.",
+    "hatchgrab": "Več food truckov kot sem si ogledal, bolj sem bil prepričan, da si zaslužijo boljša orodja: nekaj, kar je narejeno za podjetje, ki je vsak dan drugje, in ne za restavracijo s stalnim naslovom. Zato sem ustanovil HatchGrab.",
+    "small": "To je majhno podjetje in vodim ga sam. Če mi pišete, vam odgovorim jaz, ne čakalna vrsta podpore."
+  },
+  "signature": "<b>{name}</b> · Ustanovitelj",
+  "company": "{company} · registrirano v Angliji in Walesu · matična številka {number} · sedež: {address}",
+  "contact": "Pišite nam"
+}

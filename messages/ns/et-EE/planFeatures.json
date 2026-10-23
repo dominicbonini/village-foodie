@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Nähtavus avastuskaardil"
+    },
+    "web_dashboard": {
+      "name": "Universaalne veebitöölaud"
+    },
+    "qr_code": {
+      "name": "QR-kood"
+    },
+    "schedule_import": {
+      "name": "Ajakava automaatne import"
+    },
+    "meal_deals_upsells": {
+      "name": "Komplektid ja lisamüük"
+    },
+    "walkup_orders": {
+      "name": "Tellimused kohapeal"
+    },
+    "sold_out_toggle": {
+      "name": "„Otsas“-märge ühe puudutusega"
+    },
+    "kitchen_app": {
+      "name": "iPhone’i, iPadi ja Androidi köögirakendus"
+    },
+    "offline_protection": {
+      "name": "Tellimuste kaitse levi katkemisel"
+    },
+    "online_payments": {
+      "name": "Veebimaksed"
+    },
+    "advance_preordering": {
+      "name": "Ettetellimused tulevikuks"
+    },
+    "preorder_deadline": {
+      "name": "Ettetellimuste tähtaeg"
+    },
+    "time_slot_selection": {
+      "name": "Ajavahemiku valik kliendile"
+    },
+    "kitchen_capacity": {
+      "name": "Köögi võimsuse haldus"
+    },
+    "stock_countdown": {
+      "name": "Automaatne laoseisu mahaarvestus"
+    },
+    "auto_accept": {
+      "name": "Veebitellimuste automaatne vastuvõtt"
+    },
+    "branded_qr_code": {
+      "name": "Sinu logoga QR-kood"
+    },
+    "private_events": {
+      "name": "Eraüritused"
+    },
+    "social_media_posts": {
+      "name": "Sotsiaalmeedia postitused"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsAppi automaatvastused"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messengeri ja Instagrami automaatvastused"
+    },
+    "tap_to_pay": {
+      "name": "Maksete vastuvõtt telefoniga"
+    },
+    "advanced_reporting": {
+      "name": "Täpsem aruandlus"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-teated tellimuste kohta"
+    },
+    "multi_device_kitchen": {
+      "name": "Köögi sünkroonimine mitme seadme vahel"
+    },
+    "multi_user_access": {
+      "name": "Mitme kasutaja ligipääs"
+    },
+    "embed_schedule": {
+      "name": "Ajakava leht sinu enda veebilehel"
+    },
+    "event_types": {
+      "name": "Kohandatud ürituse tüübid ja hinnad"
+    },
+    "buzzer_tracking": {
+      "name": "Piiparite jälgimine"
+    },
+    "ticket_printing": {
+      "name": "Köögilipikute printimine"
+    },
+    "customer_display": {
+      "name": "Kliendiekraan"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitaalsed püsikliendi templikaardid"
+    }
+  },
+  "cardRegionOnline": "tavalised {region}",
+  "cardRegion": {
+    "UKcards": "Ühendkuningriigi kaardid",
+    "EEAcards": "EMP kaardid",
+    "UScards": "USA kaardid",
+    "Australiancards": "Austraalia kaardid",
+    "NewZealandcards": "Uus-Meremaa kaardid",
+    "Canadiancards": "Kanada kaardid",
+    "Swisscards": "Šveitsi kaardid"
+  },
+  "perMonth": {
+    "mo": "{amount}/kuu",
+    "month": "{amount} kuus"
+  },
+  "priceWord": {
+    "free": "Tasuta",
+    "freeTrial": "Tasuta prooviperiood",
+    "lifetime": "Eluaegne",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Tasumine kättesaamisel",
+    "unlimited": "Piiramatu",
+    "none": "—",
+    "masked": "Täpsustamisel"
+  },
+  "cell": {
+    "included": "Sisaldub"
+  }
+}

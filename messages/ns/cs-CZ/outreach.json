@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "V tomto e-mailu chybí věta pro odhlášení, takže ho nelze odeslat. Přidejte ji tlačítkem „Insert opt-out“.",
+    "notSetUp": "Není nastavena žádná věta pro odhlášení, takže nelze odeslat žádný oslovovací e-mail. Přidejte ji na kartě „Templates“ v panelu „Signature“.",
+    "notLoaded": "Věta pro odhlášení se ještě nenačetla, takže to nelze odeslat.",
+    "unreadable": "Větu pro odhlášení se nepodařilo přečíst, takže nic nebylo odesláno."
+  },
+  "retry": {
+    "notRebuilt": "Zprávu se nepodařilo znovu sestavit s řádkem o společnosti, takže nic nebylo odesláno."
+  }
+}

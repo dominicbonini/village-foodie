@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Võta tellimusi vastu ilma makseta",
+  "completionTitle": "Tasumata tellimuse lõpetamine",
+  "completionHelp": "Mis juhtub, kui tasumata tellimus on üleandmiseks valmis.",
+  "pressesOne": "Üks vajutus („Makstud ja kätte antud“)",
+  "pressesOneHelp": "Parim, kui võtad raha vastu toidu üleandmisel. Saad ühe nupu „Makstud ja kätte antud“, mis registreerib makse ja lõpetab tellimuse korraga.",
+  "pressesTwo": "Kaks vajutust („Makstud“ ja „Kätte antud“)",
+  "pressesTwoHelp": "Parim, kui makse ja üleandmine toimuvad eri hetkedel — klient maksab leti juures ja võtab tellimuse kätte, kui see on valmis. Saad kaks nuppu: kõigepealt „Makstud“, seejärel „Kätte antud“, kui toit üle antakse."
+}

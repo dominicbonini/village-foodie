@@ -1,0 +1,25 @@
+{
+  "heading": "Teden od {start} do {end}",
+  "daysOff": "Danes ne prodajamo",
+  "cancelled": "ODPOVEDANO",
+  "placeSample": {
+    "nameTownBelow": "Gostilna na Trgu\nMaribor",
+    "nameTown": "Gostilna na Trgu, Maribor",
+    "nameOnly": "Gostilna na Trgu"
+  },
+  "busyWeek": {
+    "venue1": "Kulturni dom Maribor",
+    "town1": "Maribor",
+    "venue2": "Športni park in rekreacijsko igrišče Slovenska Bistrica",
+    "town2": "Slovenska Bistrica",
+    "venue3": "Mestni trg",
+    "town3": "Ptuj",
+    "venue4": "Festival hrane",
+    "town4": "Celje",
+    "venue5": "Gostilna pri Lipi",
+    "town5": "Murska Sobota",
+    "venue6": "Trg pred cerkvijo",
+    "town6": "Ormož"
+  },
+  "poweredBy": "Poganja HatchGrab"
+}

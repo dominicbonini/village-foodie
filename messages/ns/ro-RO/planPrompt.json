@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} fac parte din planul {plan}.} other {{feature} face parte din planul {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nu fac parte din planul dumneavoastră.} other {{feature} nu face parte din planul dumneavoastră.}}",
+  "switchedOff": "{many, select, yes {{feature}: funcții dezactivate pentru food truck-ul dumneavoastră.} other {{feature}: funcție dezactivată pentru food truck-ul dumneavoastră.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Schimbați planul →",
+  "features": {
+    "discovery_map": {
+      "name": "Listarea pe harta de descoperire",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Panoul de control web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Aplicația de bucătărie",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Meniul cu cod QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Combo-urile",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Vânzările suplimentare",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Comenzile la fața locului",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Comanda online cu Plata la ridicare",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Butonul „Epuizat”",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Numărătoarea inversă a stocului",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Protecția comenzilor offline",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Plățile online",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Precomanda pentru date viitoare",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Intervalele orare alese de clienți",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Capacitatea bucătăriei",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Acceptarea automată",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Răspunsurile automate pe Messenger și Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Codurile QR personalizate",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Rapoartele avansate",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "Tipărirea bonurilor de bucătărie",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Sincronizarea bucătăriei pe mai multe dispozitive",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Ecranul pentru bucătar",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Răspunsurile automate pe WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Programul pe propriul site",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Postările pentru rețelele sociale",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Tipurile de evenimente personalizate",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Evenimentele private",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Comandă nouă #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Comandă nouă primită",
+    "from": "<b>Comanda #{id}</b> de la <b>{name}</b>",
+    "collection": "Ridicare: {time}",
+    "asap": "Fără oră anume — cât mai curând",
+    "total": "Total",
+    "notes": "<b>Note:</b> {notes}",
+    "autoConfirmed": "Confirmată automat — nu este necesară nicio acțiune.",
+    "confirmPrompt": "Conectați-vă la panoul de control HatchGrab pentru a confirma sau a respinge această comandă.",
+    "text": "Comandă nouă #{id} de la {name}{withSlot, select, yes { pentru {slot}} other {}}{withVenue, select, yes { la {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total {total}.{withNotes, select, yes { Note: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Evenimente noi găsite pentru {truck} — vă rugăm să le verificați",
+    "hi": "Bună ziua,",
+    "found": "Am găsit în programul dumneavoastră <b>{n, plural, one {{count} eveniment nou} few {{count} evenimente noi} other {{count} de evenimente noi}}</b> care trebuie aprobate înainte de a fi afișate clienților.",
+    "listHeading": "Evenimente găsite:",
+    "approve": "După ce le aprobați în fila Program, vor apărea pe hartă, iar clienții vor putea comanda în avans de pe pagina de comandă.",
+    "cta": "Verificați programul →",
+    "signoff": "— Echipa HatchGrab · hatchgrab.com",
+    "unknownVenue": "Locație necunoscută",
+    "text": "Bună ziua,\n\nAm găsit în programul dumneavoastră {n, plural, one {{count} eveniment nou} few {{count} evenimente noi} other {{count} de evenimente noi}} care trebuie aprobate:\n\n{list}\n\nLe puteți verifica aici: {url}\n\nDupă ce le aprobați, vor apărea pe hartă.\n\n— Echipa HatchGrab"
+  }
+}

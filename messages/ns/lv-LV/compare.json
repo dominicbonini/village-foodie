@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Izmaksu salīdzinājums",
+  "title": "Salīdziniet savas tiešsaistes<br></br><accent>pasūtījumu izmaksas</accent>",
+  "system": {
+    "title": "Vai jūs jau pieņemat tiešsaistes pasūtījumus?",
+    "yes": "Jā, ar citu sistēmu",
+    "no": "Nē, vēl ne"
+  },
+  "trucks": {
+    "title": "Cik busiņu jums ir?",
+    "aria": "Busiņu skaits"
+  },
+  "plan": {
+    "yourChoice": "Jūsu izvēle",
+    "weSuggest": "Mēs iesakām",
+    "summary": "{price} par busiņu mēnesī, iekļauti tiešsaistes pasūtījumi {allowance} vērtībā{fleet, plural, zero { katram busiņam} one {} other { katram busiņam}}.",
+    "switchTo": "Izvēlēties plānu {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} par busiņu mēnesī, plus {pct} no tiešsaistes pasūtījumiem ar karti.} other {Bez ikmēneša maksas — tikai {pct} no tiešsaistes pasūtījumiem ar karti.}}",
+    "summaryNoFee": "{price} par busiņu mēnesī, neierobežoti tiešsaistes pasūtījumi un bez HatchGrab komisijas."
+  },
+  "orders": {
+    "titleYes": "Tiešsaistes pasūtījumi mēnesī uz vienu busiņu",
+    "count": "~{count, plural, zero {# pasūtījumu} one {# pasūtījums} other {# pasūtījumi}}",
+    "captionNo": "Pietiek ar aptuvenu minējumu — iepriekšēji pasūtījumi un pasūtījumi bez rindas, nevis maksājumi skaidrā naudā vai ar karti pie busiņa.",
+    "captionYes": "Tikai pasūtījumi, kas veikti jūsu pasūtījumu lapā, — nevis maksājumi skaidrā naudā vai ar karti pie busiņa.",
+    "sliderAria": "Tiešsaistes pasūtījumu vērtība mēnesī uz vienu busiņu",
+    "overAllowance": "Katram busiņam iekļauti tiešsaistes pasūtījumi {allowance} vērtībā. No pārsnieguma ({excess}) tiek ieturēti {pct} — <b>{over}</b> mēnesī par katru busiņu.",
+    "insideAllowance": "Iekļautā apjoma ({allowance}) robežās — nekādu papildu maksu virs plāna.",
+    "acrossFleet": "Kopā {fleet, plural, zero {# busiņiem} one {# busiņam} other {# busiņiem}}: <b>{amount}</b> mēnesī.",
+    "titleNo": "Cik lielu apgrozījumu tiešsaistē, jūsuprāt, viens busiņš gūtu mēnesī?",
+    "feeOnly": "{pct} no katra tiešsaistes pasūtījuma ar karti — <b>{over}</b> mēnesī par busiņu.",
+    "noFee": "Iekļauti neierobežoti tiešsaistes pasūtījumi — nekādu papildu maksu virs plāna."
+  },
+  "fee": {
+    "title": "Cik jūs pašlaik maksājat par pasūtījumu?",
+    "pctLabel": "Procenti",
+    "pctPlaceholder": "Jūsu likme",
+    "pctAria": "Procentuālā komisija",
+    "fixedLabel": "Plus par pasūtījumu",
+    "fixedPlaceholder": "Jūsu maksa",
+    "fixedAria": "Centi par pasūtījumu",
+    "modeLabel": "Viņu likme:",
+    "modeInclusive": "ietver karšu apstrādi",
+    "modeOnTop": "tiek iekasēta papildus",
+    "onTopNote": "Karšu apstrādes maksa {fee} tiek iekasēta papildus, tātad kopā jūs faktiski maksājat <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Karšu apstrādes maksa {fee} jau ir iekļauta, un to jūs maksātu jebkurā gadījumā. Viņu pašu komisija ir <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Cik dienas nedēļā jūs strādājat?",
+    "help": "Pasākumi, tirgi, pastāvīgās vietas — jebkura diena, kad busiņš ir ceļā."
+  },
+  "jump": {
+    "cost": "Skatīt izmaksas ↓",
+    "saving": "Skatīt ietaupījumu ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Tiešsaistes pasūtījumi, iepriekšēji pasūtījumi un virtuves ekrāns par</lead><figure>{amount}</figure><unit>darba dienā</unit>",
+    "basedOn": "Pieņemot {days, plural, zero {# dienu} one {# dienu} other {# dienas}} nedēļā · {monthly} mēnesī{fleet, plural, zero { par busiņu} one {} other { par busiņu}}"
+  },
+  "coffee": "Mazāk nekā kafijas tase.",
+  "freeMonths": "{n, plural, zero {Un pirmie # mēneši ir uz mūsu rēķina.} one {Un pirmais mēnesis ir uz mūsu rēķina.} other {Un pirmie # mēneši ir uz mūsu rēķina.}}",
+  "cta": {
+    "upload": "Augšupielādēt manu ēdienkarti →",
+    "uploadSave": "Augšupielādēt ēdienkarti un ietaupīt {amount} →",
+    "ask": "Uzdot jautājumu",
+    "noCard": "Iestatīšanai karte nav vajadzīga"
+  },
+  "breakdown": {
+    "title": "Jūsu mēneša izmaksas sīkāk",
+    "titleDearer": "Jūsu mēnesis ar HatchGrab",
+    "plan": "Plāns {plan}",
+    "over": "{pct} no pārsnieguma ({excess}) virs iekļautā apjoma ({allowance})",
+    "inside": "Tiešsaistes pasūtījumi iekļautā apjoma ({allowance}) robežās",
+    "total": "HatchGrab mēnesī",
+    "freeMonths": "{n, plural, zero {1.–#. mēnesis} one {1. mēnesis} other {1.–#. mēnesis}}",
+    "freeAmount": "{amount} — uz mūsu rēķina",
+    "acrossFleet": "Kopā {fleet, plural, zero {# busiņiem} one {# busiņam} other {# busiņiem}}",
+    "perMonth": "{amount} mēnesī",
+    "card": "Karšu apstrāde — Stripe maksa {fee} par pasūtījumu, ko maksājat Stripe. Ar maksājumu termināli pie busiņa jūs maksātu aptuveni tikpat.",
+    "provider": "Jūsu pašreizējā pakalpojumu sniedzēja komisija ({pct})",
+    "feeOnly": "{pct} no tiešsaistes pasūtījumiem {excess} vērtībā",
+    "noFee": "Tiešsaistes pasūtījumi — neierobežoti, bez HatchGrab komisijas"
+  },
+  "enterRate": "Ievadiet, cik maksājat tagad, lai redzētu savu ietaupījumu.",
+  "panel": {
+    "nowYear": "<label>Pašlaik jūs maksājat</label><fig>{amount}<q> gadā</q></fig>",
+    "nowMonth": "<label>Pašlaik jūs maksājat</label><fig>{amount}<q> mēnesī</q></fig>",
+    "oursYear": "<label>Ar HatchGrab</label><fig>{amount}<q> pirmajā gadā</q></fig>",
+    "oursMonth": "<label>Ar HatchGrab</label><fig>{amount}<q> mēnesī</q></fig>",
+    "acrossFleet": "kopā {fleet, plural, zero {# busiņiem} one {# busiņam} other {# busiņiem}}"
+  },
+  "hero": {
+    "save": "<verb>Jūs ietaupāt</verb><figure>{amount}</figure><sub><num>{pct}</num> mazāk pirmajā gadā</sub>",
+    "same": "<verb>Aptuveni tikpat</verb><figure>{amount}</figure><sub><num>{pct}</num> vairāk pirmajā gadā</sub>",
+    "dearer": "<lead>Viss, ko dara HatchGrab, par</lead><figure>{amount}</figure><unit>vairāk nedēļā</unit>",
+    "dearerSub": "{fleet, plural, zero {par {amount} vairāk uz busiņu mēnesī nekā tagad} one {par {amount} mēnesī vairāk nekā tagad} other {par {amount} vairāk uz busiņu mēnesī nekā tagad}}"
+  },
+  "anchor": {
+    "liability": "Tik maksā gada civiltiesiskās atbildības apdrošināšana.",
+    "weekendPitch": "Tik maksā vieta ēdienu festivālā uz nedēļas nogali.",
+    "festivalPitches": "Tik maksā pāris vietas festivālos.",
+    "fryer": "Tik maksā jauna fritēze un cepamvirsma.",
+    "counter": "Tik maksā pilnīga jūsu apkalpošanas letes atjaunošana.",
+    "vanDeposit": "Tik maksā pirmā iemaksa par otru busiņu.",
+    "secondVan": "Tas ir otrs busiņš uz ceļa."
+  },
+  "year": {
+    "one": "Pirmais gads",
+    "two": "Otrais gads",
+    "save": "Ietaupījums {amount}<note>({pct} mazāk)</note>",
+    "extra": "Papildus {amount}<note>({pct} vairāk)</note>",
+    "current": "Pašreizējais pakalpojumu sniedzējs <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Aplēses pamatā ir jūsu ievadītie skaitļi, pieņemot, ka vidējais pasūtījums ir {aov}. Karšu apstrādes maksa jāmaksā neatkarīgi no pakalpojumu sniedzēja. Pirms lēmuma pieņemšanas pārbaudiet.",
+    "yes": "Aplēses pamatā ir jūsu ievadītie skaitļi, pieņemot, ka vidējais pasūtījums ir {aov}. Karšu apstrādes maksa {fee} par pasūtījumu jāmaksā neatkarīgi no pakalpojumu sniedzēja, tāpēc tā nav ieskaitīta nevienā pusē.",
+    "onTop": "Kopsummā jautājumā Nr. {n} tā ir iekļauta — salīdzinājumā gan ne, nevienā pusē.",
+    "check": "Pirms lēmuma pieņemšanas pārbaudiet sava pašreizējā pakalpojumu sniedzēja likmes."
+  },
+  "intro": "Aizņem apmēram minūti. Jau izmantojat kādu sistēmu? Mēs to salīdzināsim. Vēl ne? Mēs precīzi parādīsim, cik tas maksā.",
+  "twoYear": "Divos gados jūs ietaupāt <b>{amount}</b>.",
+  "meta": {
+    "title": "Izmaksu kalkulators — HatchGrab {country}",
+    "description": "Salīdziniet, cik jums tagad izmaksā tiešsaistes pasūtījumi, ar gadu kopā ar HatchGrab — aplēse vienā minūtē."
+  }
+}

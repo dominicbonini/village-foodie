@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Kde bude food truck {truck} prodávat příště.",
+  "orderFrom": "Objednat u food trucku {truck}",
+  "poweredBy": "Běží na <b>HatchGrab</b>",
+  "loadFailed": "Rozpis se teď nepodařilo načíst.",
+  "loading": "Načítáme rozpis…",
+  "empty": "Food truck {truck} nemá v rozpisu žádné nadcházející akce."
+}

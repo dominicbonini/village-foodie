@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Kje ima vaš food truck sedež?",
+  "stepIntro": "S tem se nastavijo valuta, cene, časovni pas in oblika telefonske številke. Države pozneje ni mogoče spremeniti, ker je povezana z vašimi kartičnimi plačili.",
+  "settingsHeading": "Kje prodajate",
+  "countryLabel": "Država",
+  "countryGuessed": "To smo ugotovili glede na vašo lokacijo. Če ni pravilno, jo spremenite.",
+  "countryLocked": "Države ni mogoče spremeniti",
+  "townLabel": "Kraj ali mesto",
+  "townQuestion": "Kraj ali mesto, kjer imate sedež",
+  "timezoneLabel": "Časovni pas",
+  "continueButton": "Naprej",
+  "saveFailed": "Nastavitev ni bilo mogoče shraniti — poskusite znova."
+}

@@ -1,0 +1,25 @@
+{
+  "heading": "Săptămâna {start} – {end}",
+  "daysOff": "Închis azi",
+  "cancelled": "ANULAT",
+  "placeSample": {
+    "nameTownBelow": "Hanul din Piață\nCluj-Napoca",
+    "nameTown": "Hanul din Piață, Cluj-Napoca",
+    "nameOnly": "Hanul din Piață"
+  },
+  "busyWeek": {
+    "venue1": "Casa de Cultură Cluj",
+    "town1": "Cluj-Napoca",
+    "venue2": "Baza Sportivă și Terenul de Agrement din Dej",
+    "town2": "Dej",
+    "venue3": "Piața Centrală",
+    "town3": "Alba Iulia",
+    "venue4": "Festivalul Gastronomic",
+    "town4": "Turda",
+    "venue5": "Hanul Cetății",
+    "town5": "Sibiu",
+    "venue6": "Piața Bisericii",
+    "town6": "Gherla"
+  },
+  "poweredBy": "Oferit de HatchGrab"
+}

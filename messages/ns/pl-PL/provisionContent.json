@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgery",
+    "mains": "Dania główne",
+    "sides": "Dodatki",
+    "drinks": "Napoje"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck z pizzą",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja z miodem",
+        "fourCheese": "Cztery sery",
+        "gardenVeg": "Wegetariańska",
+        "garlicBread": "Chlebek czosnkowy",
+        "rocketParmesan": "Rukola z parmezanem",
+        "olives": "Oliwki",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck z burgerami",
+      "items": {
+        "classicCheeseburger": "Klasyczny cheeseburger",
+        "doubleBacon": "Podwójny bekon",
+        "buttermilkChicken": "Kurczak w maślance",
+        "halloumiStack": "Burger z halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Frytki ze skórką",
+        "loadedCheeseFries": "Frytki z sosem serowym",
+        "onionRings": "Krążki cebulowe",
+        "craftLemonade": "Domowa lemoniada",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck z curry",
+      "items": {
+        "chickenTikkaMasala": "Kurczak tikka masala",
+        "lambRoganJosh": "Jagnięcina rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Kurczak maślany",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Ryż pilau",
+        "garlicNaan": "Naan czosnkowy",
+        "onionBhaji": "Bhaji cebulowe",
+        "mangoLassi": "Mango lassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

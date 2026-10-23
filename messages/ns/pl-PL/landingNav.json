@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Strona główna HatchGrab",
+  "cta": "Prześlij moje menu →",
+  "ctaShort": "Prześlij menu",
+  "features": "Funkcje",
+  "pricing": "Cennik",
+  "logIn": "Zaloguj się",
+  "country": {
+    "button": "Kraj: {name}. Zmień kraj",
+    "menu": "Kraj"
+  }
+}

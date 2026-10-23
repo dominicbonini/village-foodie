@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Tilaus #{id} palautettu",
+    "saved": "Tilaus #{id} tallennettu",
+    "undo": "↩ Kumoa",
+    "paymentNotRecorded": "⚠ Tilaus #{id} — MAKSUA EI KIRJATTU. {collect, select, yes {Tilaus merkittiin valmiiksi} other {Tilaus tallennettiin}}, mutta maksua ei kirjattu.",
+    "recordPayment": "Kirjaa maksu",
+    "paid": "Tilaus #{id} maksettu",
+    "undonePayment": "Kumottu — maksu poistettu",
+    "undoneCollected": "Kumottu — tilausta ei noudettu",
+    "collected": "Tilaus #{id} {paidToo, select, yes {maksettu ja noudettu} other {noudettu}}",
+    "ready": "Tilaus #{id} valmis",
+    "readyBuzzer": "Tilaus #{id} valmis · <pill></pill>",
+    "status": "Tilaus #{id} {action, select, confirm {vahvistettu} reject {hylätty} ready {valmis} collected {noudettu} undo_collected {palautettu jonoon} cancel {peruttu} other {päivitetty}}"
+  },
+  "conflicts": {
+    "more": "+{count} lisää",
+    "notOnScreenPlus": "+{count} ei tällä näytöllä",
+    "notOnScreen": "{n, plural, one {{count} tilaus ei ole tällä näytöllä} other {{count} tilausta ei ole tällä näytöllä}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ MAKSUA EI KIRJATTU",
+    "paymentBody": "{orders} — merkitty maksetuksi vain tällä laitteella. Maksu ei ole mennyt läpi.",
+    "paymentCheck": "Tarkista tilaus ja veloita maksu uudelleen, jos se on yhä maksamatta.",
+    "dismiss": "Sulje",
+    "confirmChecked": "Vahvista, että olet tarkistanut: {orders}",
+    "confirmHides": "Tämä piilottaa varoituksen. Tieto säilyy tällä laitteella joka tapauksessa.",
+    "notYet": "Ei vielä",
+    "iveChecked": "Olen tarkistanut: {orders}",
+    "statusBody": "⚠ {orders} — tämä muutos ei mennyt läpi. Tarkista tilaus.",
+    "offline": "📴 Ei yhteyttä — {n, plural, one {{count} muutos tallennettu tälle laitteelle. Se lähetetään, kun yhteys palaa.} other {{count} muutosta tallennettu tälle laitteelle. Ne lähetetään, kun yhteys palaa.}} Asetukset on lukittu.",
+    "syncing": "Yhteys palasi — lähetetään {n, plural, one {{count} muutos} other {{count} muutosta}}…",
+    "synced": "Kaikki muutokset lähetetty.",
+    "stillQueued": "{n, plural, one {{count} muutos tallennettu tälle laitteelle. Sen lähettämistä yritetään yhä.} other {{count} muutosta tallennettu tälle laitteelle. Niiden lähettämistä yritetään yhä.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab on lukittu",
+    "verifying": "Varmennetaan…",
+    "unlock": "Avaa",
+    "cantUseBiometric": "Eikö Face / Touch ID toimi?",
+    "enterPin": "Syötä vara-PIN",
+    "wrongPin": "Väärä PIN — yritä uudelleen.",
+    "checking": "Tarkistetaan…",
+    "tryBiometric": "Käytä mieluummin Face / Touch ID -tunnistusta",
+    "forgot": "Unohditko PIN-koodin? Sovellus on asennettava uudelleen."
+  },
+  "notify": {
+    "title": "🔔 Ilmoitukset",
+    "intro": "Hälytykset tällä laitteella. Ota käyttöön, niin voit valita, mitkä hälytykset saat.",
+    "refused": "Ilmoitukset on sallittava laitteesi asetuksissa, jotta voit ottaa tämän käyttöön.",
+    "newOrder": "Uuden tilauksen hälytykset",
+    "newOrderHelp": "Saat ilmoituksen, kun asiakkaan tilaus odottaa vahvistusta.",
+    "offline": "Yhteyskatko- ja taukohälytykset",
+    "offlineHelp": "Saat ilmoituksen, kun tämä laite menettää yhteyden (ja tilaaminen keskeytyy). <green>Toimii ilman yhteyttä.</green>"
+  },
+  "van": {
+    "label": "Ruokarekka",
+    "loadRetry": "Lataus epäonnistui · Yritä uudelleen",
+    "select": "Valitse…"
+  },
+  "deviceSave": {
+    "network": "Palvelimeen ei saatu yhteyttä — tarkista yhteys ja yritä uudelleen.",
+    "server": "Tallennus ei onnistunut juuri nyt. Yritä uudelleen."
+  },
+  "setup": {
+    "fetchErrorTitle": "Laitteen asetuksia ei voitu ladata",
+    "fetchErrorBody": "Emme saaneet yhteyttä palvelimeen <b>tämän laitteen</b> määrittämiseksi. Tarkista yhteys ja yritä uudelleen — tilauksesi ja asetuksesi eivät muutu.",
+    "retry": "Yritä uudelleen",
+    "later": "Myöhemmin",
+    "noVanTitle": "Ei aktiivista ruokarekkaa",
+    "noVanBody": "Tällä yrityksellä ei ole vielä aktiivista ruokarekkaa. Ota sellainen käyttöön kohdassa <b>Asetukset → Ruokarekkasi</b>, niin tämä laite määrittyy automaattisesti — täällä ei tarvita muita toimia.",
+    "goToVans": "Siirry: Asetukset → Ruokarekkasi",
+    "title": "Määritä tämä laite",
+    "body": "Kertaluonteinen määritys <b>tälle laitteelle</b>: mihin näkymään se avautuu ja mitä ruokarekkaa se palvelee. Koskee vain tätä laitetta — muut laitteet määritetään erikseen, ja voit muuttaa näitä myöhemmin kohdasta profiilivalikko → ”Tämä laite”.",
+    "whichScreen": "Mihin näkymään tämä laite avautuu?",
+    "dashboard": "Ohjauspaneeli",
+    "kds": "Keittiönäyttö",
+    "whichVan": "Minkä ruokarekan laite tämä on?",
+    "selectVan": "Valitse ruokarekka…",
+    "saving": "Tallennetaan…",
+    "tryAgain": "Yritä uudelleen",
+    "continue": "Jatka"
+  },
+  "device": {
+    "title": "Tämä laite",
+    "viewing": "Näytössä: <b>{truck}</b>",
+    "viewingVan": "Näytössä: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Vain tämä laite — muut laitteet määritetään erikseen. (Tunnus: {id}…)",
+    "truck": "Yritys",
+    "van": "Ruokarekka",
+    "defaultScreen": "Oletusnäkymä",
+    "orderNotifications": "Tilausilmoitukset",
+    "patchFailed": "{setting, select, van {Ruokarekka} defaultScreen {Oletusnäkymä} other {Tilausilmoitukset}}: tallennus epäonnistui. {reason}",
+    "requireBiometric": "Vaadi sormenjälki- tai kasvotunnistus avattaessa",
+    "pinTitle": "Aseta vara-PIN (4–6 numeroa)",
+    "pinHelp": "Pääset sisään tällä, jos sormenjälki- tai kasvotunnistus ei toimi — se on ainoa varakeino, joten älä unohda sitä (unohtunut PIN tarkoittaa sovelluksen uudelleenasennusta). Toimii ilman yhteyttä.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Vahvista PIN",
+    "pinTooShort": "Käytä vähintään 4 numeroa.",
+    "pinMismatch": "PIN-koodit eivät täsmää.",
+    "setPin": "Aseta PIN ja ota käyttöön",
+    "cancel": "Peruuta",
+    "noBiometric": "Tälle laitteelle ei ole määritetty sormenjälki- tai kasvotunnistusta — lisää se laitteesi asetuksissa. Vara-PIN toimii silti.",
+    "footer": "Nämä asetukset koskevat vain tätä laitetta — muut laitteet määritetään erikseen."
+  },
+  "appLock": {
+    "unlockReason": "Avaa HatchGrab",
+    "usePasscode": "Käytä pääsykoodia",
+    "cancel": "Peruuta",
+    "confirmEnable": "Vahvista sovelluslukituksen käyttöönotto"
+  },
+  "channel": {
+    "ordersName": "Uudet tilaukset",
+    "ordersDescription": "Ilmoitukset, kun tilaus odottaa vahvistusta."
+  },
+  "localNotify": {
+    "newOrderTitle": "Uusi tilaus",
+    "orderReceived": "Tilaus {number} vastaanotettu",
+    "newOrders": "{n, plural, one {Sinulla on uusi tilaus} other {Sinulla on {count} uutta tilausta}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Tilaaminen tauolla",
+    "pausedBody": "Olet offline-tilassa — asiakkaiden tilaaminen on keskeytetty.",
+    "offlineTitle": "Olet offline-tilassa",
+    "offlineBody": "Tämä laite on menettänyt yhteyden."
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "toiduauto kohta / kuus",
+  "transactionFees": "Tehingutasud",
+  "comingSoon": "Tulekul",
+  "footnote2Masked": "Veebimakseid võimaldab Stripe Connect. Platvormi- ja kaarditöötlustasud on veel täpsustamisel ning kinnitatakse käivitamisel.",
+  "card": {
+    "title": "Arveldus ja maksed",
+    "managed": "Arveldust haldab HatchGrab",
+    "earlyAccess": "Varajase juurdepääsu ajal seadistame ja muudame pakette käsitsi.",
+    "planLine": "{trial, select, yes {{truck} · pakett {plan} (prooviperiood)} other {{truck} · pakett {plan}}}"
+  },
+  "currentPlan": "Praegune pakett",
+  "plan": {
+    "included": "Sisaldab {amount} väärtuses veebitellimusi kuus.",
+    "includedUnlimited": "Piiramatult veebitellimusi hinna sees.",
+    "promo": "Erihind.",
+    "promoUntil": "Erihind kuni {date}.",
+    "ended": "Sinu pakett {plan} lõppes {date}. Nüüd on sul pakett {now}.",
+    "trialMonths": "{months} kuu pikkune tasuta prooviperiood."
+  },
+  "trialEnds": "Prooviperiood lõpeb {date}",
+  "yourTrialEnds": "Sinu prooviperiood lõpeb {date}",
+  "notStarted": {
+    "heading": "Sinu tasuta prooviperiood pole veel alanud"
+  },
+  "onTrial": "Sul on kõik funktsioonid. Vali pakett enne prooviperioodi lõppu.",
+  "onTrialNoCta": "Sul on kõik funktsioonid.",
+  "noCharge": "🔒 Prooviperioodi ajal, mis kestab kuni {date}, ei võeta sinult mingit tasu. Arveldus algab alles siis, kui valid paketi ja sisestad oma makseandmed. Seni pole midagi tühistada ega maksta.",
+  "fees": "*Veebitellimustele kehtivad tavapärased kaardimaksete töötlustasud",
+  "setUpPayment": "⏱ Vali pakett enne prooviperioodi lõppu",
+  "changeYourPlan": "Muuda paketti",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Mine üle paketile {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Seadistame praegu automaatset arveldust. Kui soovid kohe üle minna, saada meile sõnum ja seadistame kõik 24 tunni jooksul.",
+    "mailSubject": "Üleminek paketile {plan} — {truck}",
+    "mailBody": "Tere! Soovin viia toiduauto {truck} üle paketile {plan} ({price}).",
+    "email": "Saada meile e-kiri üleminekuks",
+    "cancel": "Tühista"
+  }
+}

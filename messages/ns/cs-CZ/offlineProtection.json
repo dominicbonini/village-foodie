@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Během provozu musíte mít přehled nebo kuchyňskou obrazovku zapnutou a online.",
+  "explainerBody": "Pokud obrazovka zhasne, zařízení ztratí internet nebo přepnete na jiný web, převezme řízení ochrana při výpadku — podle vaší volby buď pozastaví objednávky, nebo vypne automatické přijímání.",
+  "reminder": "⚠️ Během provozu mějte přehled nebo kuchyňskou obrazovku zapnutou a online, jinak může převzít řízení ochrana při výpadku.",
+  "enableConfirm": "Ochrana při výpadku zapnuta.\n\nAby objednávky dál přicházely, musí obrazovka zůstat zapnutá. Pokud toto zařízení ztratí připojení, převezme řízení ochrana při výpadku ve zvoleném režimu.\n\nUjistěte se, že je na tomto zařízení zapnutá funkce „Obrazovka svítí“.",
+  "disableConfirm": "Vypnout ochranu při výpadku pro tuto akci?\n\nPokud toto zařízení ztratí připojení, online objednávky budou dál přicházet — zákazníci mohou zadat objednávky, které neuvidíte. Vypínejte jen tehdy, máte-li spolehlivé připojení.",
+  "cardDescription": "Určuje, co se stane s příchozími objednávkami, když vaše zařízení přejde do režimu offline.",
+  "purpose": "Pokud vaše zařízení ztratí připojení, zabrání příchodu objednávek, které byste neviděli.",
+  "switchLabel": "Ochrana objednávek při výpadku",
+  "switchHelp": "Co se stane, když tento food truck ztratí připojení.",
+  "modes": {
+    "pause": {
+      "label": "Pozastavit online objednávky",
+      "help": "Zákazníci nemohou objednávat, dokud nebudete znovu online."
+    },
+    "no_auto_accept": {
+      "label": "Přijímat objednávky, potvrzovat ručně",
+      "help": "Automatické přijímání se vypne, takže zákazníci mohou dál objednávat, ale nic se nepotvrdí automaticky. Každou objednávku potvrdíte, až budete znovu online — a co bude čekat déle než zvolenou dobu, se automaticky odmítne a zákazník o tom dostane e-mail."
+    }
+  },
+  "autoRejectLabel": "Odmítat objednávky čekající déle než",
+  "autoRejectOption": "{n, plural, one {{count} min} few {{count} min} other {{count} min}}"
+}

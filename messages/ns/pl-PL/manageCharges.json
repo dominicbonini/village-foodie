@@ -1,0 +1,30 @@
+{
+  "heading": "Podatki, napiwki i opłaty",
+  "rate": {
+    "label": "Stawka podatku od sprzedaży",
+    "hint": "Stawka naliczana od każdego zamówienia. Klienci widzą ją doliczoną przy płatności, w potwierdzeniach i na bonach.",
+    "regionDefault": "Zostaw puste, aby naliczać {label} według stawki {rate}% — stawki na przygotowane jedzenie ({region})."
+  },
+  "included": {
+    "label": "{label} w twoich cenach",
+    "hint": "Twoje ceny już zawierają {label}. Ta stawka określa tylko, jaka część każdej ceny to {label}, w potwierdzeniach i na bonach — przy płatności nic nie jest doliczane.",
+    "default": "Zostaw puste, aby użyć stawki {rate}% — stawki {label} na ciepłe jedzenie na wynos (kraj: {country})."
+  },
+  "tips": {
+    "label": "Napiwki",
+    "hint": "Klienci płacący online kartą mogą dodać napiwek. Całość trafia do ciebie.",
+    "choices": "Opcje widoczne dla klientów:",
+    "chip": "{rate}%",
+    "other": "Inna kwota"
+  },
+  "fee": {
+    "label": "Opłata serwisowa online",
+    "hint": "Doliczana tylko do zamówień online. Nigdy do zamówień z płatnością przy odbiorze ani zamówień na miejscu. Zatrzymujesz ją.",
+    "pctAria": "Procent opłaty serwisowej",
+    "fixedAria": "Stała kwota opłaty serwisowej",
+    "max": "Maksymalna opłata: {max}",
+    "example": "Klienci widzą ją przed zapłatą jako jedną pozycję: „{label} {amount}”.",
+    "hatchgrab": "HatchGrab dolicza opłatę serwisową {fee} do zamówień online twoich klientów. Nie płacisz jej i nie możesz jej zmienić."
+  },
+  "saveFailed": "Nie udało się zapisać — spróbuj ponownie."
+}

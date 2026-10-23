@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Adatvédelmi tájékoztató — HatchGrab",
+    "privacyDescription": "Hogyan gyűjti és használja fel a HatchGrab Ltd a személyes adatokat.",
+    "termsTitle": "Felhasználási feltételek — HatchGrab",
+    "termsDescription": "A HatchGrab használatának feltételei.",
+    "countryTermsTitle": "Országspecifikus feltételek — HatchGrab",
+    "countryTermsDescription": "Kiegészítő szabályok, amelyek egyes országokban vonatkoznak a HatchGrabre."
+  },
+  "homeLabel": "HatchGrab kezdőlap",
+  "privacy": "Adatvédelem",
+  "terms": "Feltételek",
+  "countryTerms": "Országspecifikus feltételek",
+  "contact": "Kapcsolat",
+  "lastUpdated": "Utolsó frissítés: {date}",
+  "questions": "Kérdése van? <link>Lépjen kapcsolatba velünk</link> — valódi emberek vagyunk."
+}

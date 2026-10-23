@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Pozwól klientom anulować zamówienia",
+    "sentence": "Klienci mogą anulować zamówienie najpóźniej <select></select> przed godziną odbioru"
+  },
+  "autoAccept": {
+    "label": "Automatycznie przyjmuj zamówienia",
+    "help": "Zamówienia są potwierdzane automatycznie. Jeśli wybrany przedział czasowy jest pełny, zamówienie przechodzi do następnego wolnego przedziału. Potwierdzenie następuje tylko wtedy, gdy kuchnia ma wolną wydajność. Zamówienia z uwagami klienta (np. o alergii) nadal trzeba potwierdzić."
+  },
+  "orderReady": {
+    "label": "Krok „Gotowe”",
+    "help": "Pokazuje przycisk „Gotowe” na ekranie zamówień. Ekrany kuchenne ustawia się osobno, na każdym urządzeniu. Klient dostaje e-mail za każdym razem, gdy zamówienie zostanie oznaczone jako gotowe. Dotyczy wszystkich wydarzeń — nadal możesz włączyć lub wyłączyć tę opcję dla pojedynczego wydarzenia w jego panelu."
+  },
+  "buzzers": {
+    "label": "Czy wydajesz pagery do odbioru zamówień?",
+    "help": "Zapisuj, jaki pager dostał każdy klient, żeby wiedzieć, kogo szukać, gdy jego jedzenie będzie gotowe.",
+    "countLabel": "Ile masz pagerów?"
+  }
+}

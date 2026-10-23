@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Ni na voljo v predstavitvi",
+  "demoMode": "DEMO NAČIN",
+  "loopLands": "Točno tako prispe pravo naročilo",
+  "showMe": "Pokaži mi",
+  "noCard": "{sub} Kartica ni potrebna.",
+  "notYet": "Še ne",
+  "cashAndCollected": "Gotovina in prevzeto",
+  "logoPlaceholder": "Tukaj vaš logotip",
+  "welcomeTitle": "{sample, select, yes {To je vzorčna predstavitev} other {To je vaša predstavitev}}",
+  "welcomeIntro": "{sample, select, yes {To je <b>vzorčni jedilnik</b>, da vidite, kako vse deluje — kadar koli lahko naložite svojega in ga prilagodite.} other {To je vaš jedilnik z vašo celostno podobo na pravi tabli naročil.}} Naročila, ki so že na njej, so primeri, da vidite, kako je videti živahna izmena.",
+  "twoThings": "Preizkusite dve stvari:",
+  "hitButton": "Na naročilu tapnite <b>{button}</b>",
+  "scanQr": "Skenirajte <b>kodo QR</b> — ali tapnite povezavo — in naročite kot stranka, nato pa opazujte, kako naročilo prispe",
+  "qrAlt": "Koda QR za vašo stran za naročanje",
+  "openHere": "Ali jo odprite v tej napravi",
+  "copyLink": "Kopiraj povezavo",
+  "copyDescribedAs": "povezava za naročanje",
+  "noLinkTitle": "Vaša povezava za naročanje",
+  "noLinkBody": "Povezava do vaše strani za naročanje je v meniju zgoraj desno.",
+  "asLive": "Naročanje in delo v kuhinji potekata točno tako kot v živo.",
+  "startExploring": "Začni raziskovati",
+  "signupOffer": {
+    "heading": "Registrirajte se zdaj za brezplačni mesec",
+    "sub": "Odštevanje se začne šele, ko se odločite za objavo."
+  },
+  "cashIcon": "💶"
+}

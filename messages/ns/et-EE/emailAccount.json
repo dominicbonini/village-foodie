@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Kinnita oma uus HatchGrabi e-posti aadress",
+    "heading": "Kinnita oma e-posti aadress",
+    "button": "Kinnita e-posti aadress"
+  },
+  "changeEmail": {
+    "requested": "Taotlesid oma HatchGrabi e-posti aadressi muutmist sellele aadressile.",
+    "click": "Kinnitamiseks klõpsa alloleval nupul. See link aegub 24 tunni pärast.",
+    "ignore": "Kui sa seda muudatust ei taotlenud, võid selle kirja rahulikult tähelepanuta jätta.",
+    "stillActive": "Sinu praegune e-posti aadress jääb aktiivseks."
+  },
+  "resendVerification": {
+    "requested": "Taotlesid oma HatchGrabi e-posti muutmist sellele aadressile.",
+    "click": "Kinnitamiseks klõpsa allpool. See link aegub 24 tunni pärast.",
+    "ignore": "Kui sa seda ei taotlenud, jäta see kiri tähelepanuta.",
+    "stillActive": "Sinu praegune e-post jääb aktiivseks."
+  },
+  "passwordReset": {
+    "subject": "Lähtesta oma HatchGrabi parool",
+    "heading": "Lähtesta oma parool",
+    "requested": "Saime taotluse sinu HatchGrabi konto parooli lähtestamiseks.",
+    "click": "Uue parooli valimiseks klõpsa alloleval nupul. See link aegub 1 tunni pärast.",
+    "button": "Lähtesta parool",
+    "ignore": "Kui sa seda ei taotlenud, võid selle kirja rahulikult tähelepanuta jätta.",
+    "unchanged": "Sinu parool ei muutu enne, kui klõpsad ülaltoodud lingil."
+  },
+  "deletionScheduled": {
+    "subject": "Sinu HatchGrabi konto on määratud kustutamisele",
+    "received": "Saime taotluse selle HatchGrabi konto kustutamiseks.",
+    "orderingStopped": "<b>Veebitellimine on kohe peatatud</b> toiduautodes: {trucks}.",
+    "noTrucks": "(toiduautosid pole)",
+    "readable": "Sinu töölaud jääb\n    loetavaks {days, plural, one {veel # päev} other {veel # päeva}}.",
+    "scheduled": "Konto kustutamise kuupäev on <b>{date}</b>.",
+    "cannotCancel": "<b>Seda ei saa rakenduses tühistada.</b> Kui see polnud sina või oled\n    meelt muutnud, vasta sellele kirjale võimalikult kiiresti.",
+    "kept": "Konto kustutamisel eemaldame sinu isikuandmed ja sinu klientide andmed. Säilitame\n    anonüümsed raamatupidamisandmed, mille säilitamist seadus meilt nõuab."
+  }
+}

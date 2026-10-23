@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "System zamówień dla food trucków i gastronomii mobilnej",
+    "description": "Zamówienia, zamówienia z wyprzedzeniem i ekran kuchenny dla food trucków i gastronomii mobilnej ({country}).",
+    "audience": "Właściciele food trucków i firm gastronomii mobilnej"
+  },
+  "hero": {
+    "title": "System zamówień stworzony dla <lean>food trucków.</lean>",
+    "subSmall": "Prześlij swoje menu, bez rejestracji.<br></br>Działające demo w niecałe 60 sekund.",
+    "tagline": "Mniej czasu na organizację.<br></br>Więcej czasu na <lean>gotowanie.</lean>",
+    "cta": "Prześlij moje menu →",
+    "ctaNote": "<lead>Prześlij zdjęcie swojego menu i zobacz, jak działa, w niecałe 60 sekund.</lead><small>Bez rejestracji. Bez karty.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Ekran kuchenny HatchGrab z bonami zamówień w kolejności przygotowania",
+    "dashboardAlt": "Przyjmowanie zamówienia w HatchGrab: menu po lewej, bieżący koszyk i suma po prawej",
+    "phoneAlt": "Zamawianie z food trucka w HatchGrab: menu ze zdjęciami i cenami oraz bieżąca suma koszyka"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Pierwszy miesiąc całkowicie za darmo, wszystko odblokowane} few {Pierwsze # miesiące całkowicie za darmo, wszystko odblokowane} many {Pierwsze # miesięcy całkowicie za darmo, wszystko odblokowane} other {Pierwsze # miesięcy całkowicie za darmo, wszystko odblokowane}}",
+    "noCard": "Karta niepotrzebna",
+    "cancel": "Rezygnujesz w dowolnej chwili, bez umowy"
+  },
+  "does": {
+    "eyebrow": "Co potrafi",
+    "title": "Stworzony dla food trucków, nie dla restauracji.",
+    "lede": "Większość systemów zamówień zakłada stały adres, niezawodne wi-fi i te same godziny co tydzień. Ty co tydzień stoisz gdzie indziej, o różnych porach, ze słabym zasięgiem albo bez niego. HatchGrab powstał właśnie z myślą o tym.",
+    "slotsTitle": "Klienci wybierają godzinę odbioru",
+    "capacityTitle": "Ustaw wydajność kuchni",
+    "capacityBody": "Ustaw, ile możesz przygotować naraz i ile to trwa. Gdy godzina odbioru się zapełni, klienci nie mogą jej już wybrać.",
+    "devicesTitle": "Działa na każdym urządzeniu",
+    "devicesBody": "Na telefonie w kieszeni fartucha, tablecie na ladzie, laptopie w food trucku — i na terminalu płatniczym, na którym już przyjmujesz płatności.",
+    "postsTitle": "Zautomatyzuj posty na Facebooku i Instagramie",
+    "postsBody": "Prześlij projekt, który już publikujesz na Facebooku lub Instagramie. Uzupełnimy go o twoje daty, miejsca i godziny — gotowy do udostępnienia co tydzień lub codziennie.",
+    "whatsappTitle": "Automatyczne odpowiedzi WhatsApp",
+    "whatsappBody": "„Gdzie jesteście dziś wieczorem?” „Jakie macie desery?” Twój WhatsApp odpowiada, gdy jedziesz na miejsce albo stoisz przy grillu — na podstawie twojego menu i harmonogramu. Messenger i Instagram już wkrótce.",
+    "whatsappSoonTitle": "Automatyczne odpowiedzi WhatsApp <soon>Wkrótce</soon>",
+    "whatsappSoonBody": "„Gdzie jesteście dziś wieczorem?” „Jakie macie desery?” Wkrótce twój WhatsApp będzie odpowiadać, gdy jedziesz na miejsce albo stoisz przy grillu. Messenger i Instagram w następnej kolejności.",
+    "offlineTitle": "Brak zasięgu? Obsługuj dalej.",
+    "offlineBody": "Gdy stracisz zasięg, zamówienia online automatycznie się wstrzymują, więc klienci nie złożą zamówień, których nie zobaczysz. Przyjmuj dalej zamówienia w aplikacji na iPhone, iPad i Android.",
+    "slotsBody": "Klienci zamawiają z wyprzedzeniem i wybierają godzinę odbioru. Krótsze kolejki, a jedzenie czeka gotowe, gdy przychodzą."
+  },
+  "steps": {
+    "eyebrow": "Na start",
+    "title": "Skonfiguruj wszystko i zacznij przyjmować zamówienia w około 15 minut.",
+    "lede": "Trzy rzeczy do załatwienia — a do dwóch wystarczy zdjęcie.",
+    "menuTitle": "Przygotuj menu",
+    "menuBody": "Zrób zdjęcie tablicy z menu albo je wklej. Pozycje, ceny i dodatki przenoszą się same. Ty tylko sprawdzasz, czy wszystko się zgadza.",
+    "scheduleTitle": "Dodaj harmonogram",
+    "scheduleBody": "Masz go na swojej stronie? Odczytamy go stamtąd i będziemy go aktualizować. Jeśli nie, jemu też zrób zdjęcie. Ty tylko zatwierdzasz to, co znajdziemy.",
+    "shareTitle": "Udostępnij link",
+    "shareBody": "Wrzuć go na Facebooka, przyklej kod QR na food trucku. Zamówienia trafiają na twój ekran w kolejności, w jakiej trzeba je przygotować."
+  },
+  "testimonial": {
+    "quote": "HatchGrab bardzo ułatwił nam przyjmowanie zamówień. Wszystko jest uporządkowane, śledzimy zapasy i wiemy dokładnie, ile pizz zostało nam do sprzedania — a przedziały czasowe to rewelacja w ruchliwych miejscowościach.",
+    "award": "Mobilna Pizzeria Roku",
+    "awardScope": "Zwycięzca regionalny",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia i Bogdan — właściciele"
+  },
+  "pricing": {
+    "eyebrow": "Cennik",
+    "title": "Zacznij za darmo. Zmień plan, gdy będzie trzeba.",
+    "switchHead": "Przechodzisz z innej platformy?",
+    "switchBody": "Sprawdź, ile kosztowałyby cię te same zamówienia w HatchGrab. Zajmuje to około minuty.",
+    "switchCta": "Porównaj, ile płacisz"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Chcesz zobaczyć, jak łatwa jest konfiguracja?",
+    "lede": "Prześlij zdjęcie lub zrzut ekranu swojego menu, a w niecałe 60 sekund zamienimy je w działającą stronę zamówień do wypróbowania. Twoje pozycje, twoje ceny. Bez rejestracji, bez karty, nic do instalowania. Zobacz, a potem zdecyduj.",
+    "cta": "Prześlij moje menu teraz →"
+  },
+  "meta": {
+    "title": "System zamówień dla food trucków i gastronomii mobilnej — HatchGrab {country}",
+    "description": "Przyjmuj zamówienia i zamówienia z wyprzedzeniem na swoim stanowisku bez kolejki. Oprogramowanie do zamówień z ekranem kuchennym dla food trucków i gastronomii mobilnej ({country}) — to nie system POS."
+  }
+}

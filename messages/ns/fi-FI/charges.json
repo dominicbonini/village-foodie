@@ -1,0 +1,13 @@
+{
+  "subtotal": "Välisumma",
+  "taxFallback": "Vero",
+  "taxIncluded": "Sisältää {label}",
+  "serviceFeeCustomer": "Verkkopalvelumaksu",
+  "serviceFee": "Palvelumaksu",
+  "cardFee": "Korttikulu",
+  "tip": "Juomaraha",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Verot, kulut ja juomaraha} tax_tip {Verot ja juomaraha} fees_tip {Kulut ja juomaraha} fees {Kulut} other {Verot ja kulut}}"
+}

@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Naslednje lokacije food trucka {truck}.",
+  "orderFrom": "Naročite pri food trucku {truck}",
+  "poweredBy": "Poganja <b>HatchGrab</b>",
+  "loadFailed": "Urnika trenutno ni bilo mogoče naložiti.",
+  "loading": "Nalaganje urnika…",
+  "empty": "Food truck {truck} nima napovedanih prihodnjih dogodkov."
+}

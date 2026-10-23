@@ -1,0 +1,17 @@
+{
+  "tagline": "Vähem askeldamist.<br></br>Rohkem kokkamist.",
+  "features": "Funktsioonid",
+  "pricing": "Hinnad",
+  "privacy": "Privaatsus",
+  "terms": "Tingimused",
+  "contact": "Kontakt",
+  "about": "Meist",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> loojatelt",
+  "badges": {
+    "appStoreLink": "Laadi HatchGrab alla App Store’ist",
+    "appStoreAlt": "Laadi alla App Store’ist",
+    "googlePlayLink": "Hangi HatchGrab Google Playst",
+    "googlePlayAlt": "Hangi see Google Playst"
+  }
+}

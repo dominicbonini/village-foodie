@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Näytä allergeenit annoskohtaisesti",
+    "recommended": "Suositeltu",
+    "perDishBody": "Käy jokainen annos läpi ja vahvista sen allergeenit. Asiakkaat näkevät annoskohtaiset merkinnät sekä niistä kootun allergeenikortin.",
+    "cardTitle": "Näytä allergeenikortti",
+    "cardBody": "Lataa tai liitä yksi allergeenikortti (PDF, kuva tai teksti), joka näytetään sellaisenaan. Annoskohtaiset merkinnät pysyvät piilossa."
+  }
+}

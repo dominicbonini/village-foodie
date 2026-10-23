@@ -1,0 +1,94 @@
+{
+  "heading": "Plaćanja",
+  "loading": "Provjeravamo vaš Stripe račun…",
+  "state": {
+    "not_connected": {
+      "title": "Nije postavljeno",
+      "body": "Traje oko 10 minuta. Trebat će vam bankovni podaci i osobna isprava.",
+      "chip": "Nije postavljeno"
+    },
+    "requirements": {
+      "title": "Stripe treba vaše podatke",
+      "body": "Plaćanja karticom neće raditi dok Stripe ne dobije podatke o vašem poslovanju i bankovne podatke.",
+      "chip": "Potrebna radnja"
+    },
+    "pending": {
+      "title": "Povezano – Stripe provjerava vaše podatke",
+      "body": "Ne morate ništa učiniti. Stripe pregledava što ste poslali, a ova se stranica ažurira kad završi.",
+      "chip": "Provjera"
+    },
+    "ready": {
+      "title": "Povezano",
+      "body": "Vaš Stripe račun povezan je i može primati plaćanja.",
+      "chip": "Spremno"
+    },
+    "restricted": {
+      "title": "Plaćanja karticom pauzirana",
+      "body": "Stripe je pauzirao plaćanja karticom na vašem računu dok se nešto ne riješi.",
+      "chip": "Pauzirano"
+    },
+    "unsupported": {
+      "title": "Plaćanja karticom nisu dostupna na ovom računu",
+      "body": "Stripe ovdje ne može omogućiti plaćanja karticom. Javite nam se i riješit ćemo to zajedno s vama.",
+      "chip": "Nedostupno"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe ključevi se ne podudaraju",
+    "body": "Poslužitelj ove stranice koristi <b>{server, select, live {produkcijski} other {testni}}</b> Stripe ključ, a preglednik je izgrađen s <b>{browser, select, live {produkcijskim} other {testnim}}</b>. Plaćanja karticom ne bi uspjela u trenutku kad kupac pokuša platiti, pa je postavljanje Stripea blokirano dok se ključevi ne usklade.",
+    "fix": "Oba ključa moraju biti postavljena za isto okruženje, a stranica nakon toga ponovno izgrađena – javni ključ ugrađuje se pri izgradnji, a tajni se čita pri svakom zahtjevu."
+  },
+  "permission": {
+    "title": "Plaćanja može postaviti samo vlasnik food trucka",
+    "body": "Stripe povezuje osoba na čiji bankovni račun stiže novac, pa se mora postaviti s njezina prijavljenog računa. S ovim food truckom i s HatchGrabom sve je u redu."
+  },
+  "config": {
+    "keyMissingTitle": "Plaćanja karticom još nisu konfigurirana",
+    "fetchTitle": "Nismo mogli provjeriti Stripe račun ovog food trucka",
+    "keyMissing": "Nije postavljeno: {name} – ugrađene komponente ne mogu se učitati."
+  },
+  "errors": {
+    "requestFailed": "Zahtjev nije uspio ({status})",
+    "unreachable": "Stripe nije dostupan"
+  },
+  "online": {
+    "heading": "Online plaćanja",
+    "body": "Kupci plaćaju karticom pri naručivanju. Novac ide izravno na vaš Stripe račun – mi ga nikad ne držimo.",
+    "feeLine": "Stripe naplaćuje {fee} po plaćanju za standardne {region}. Druge kartice mogu koštati više. Vlastita naknada HatchGraba na online narudžbe ovisi o vašem paketu – pogledajte karticu „Naplata“.",
+    "testMode": "Testni način rada. Stvarna plaćanja još se ne mogu primati."
+  },
+  "trialNote": "Postavljanje ovoga ne pokreće vašu pretplatu i danas vam ništa ne naplaćuje. Ovako vam kupci plaćaju – vaš paket je zaseban.",
+  "admin": {
+    "title": "Pregled kao administrator platforme",
+    "body": "Ovaj food truck nije postavio online plaćanja. Može ih pokrenuti samo vlasnik, sa svog prijavljenog računa – ovdje nema što pritisnuti."
+  },
+  "setUp": {
+    "button": "Postavi online plaćanja",
+    "busy": "Postavljanje…"
+  },
+  "toast": {
+    "alreadySetUp": "Već postavljeno – nastavljamo",
+    "addDetails": "Sada dodajte svoje podatke za Stripe",
+    "createFailed": "Račun nije bilo moguće izraditi"
+  },
+  "onboarding": {
+    "restricted": "Dalje preuzima Stripe – prijavit ćete se u Stripe i ažurirati podatke koje treba.",
+    "firstRun": "Dalje preuzima Stripe – prijavit ćete se u Stripe, a zatim unijeti podatke o poslovanju i bankovne podatke."
+  },
+  "details": {
+    "title": "Vaši podaci za Stripe",
+    "body": "Promijenite bankovni račun na koji primate isplate ili ažurirajte podatke i dokumente o poslovanju.",
+    "button": "Pregledaj ili uredi"
+  },
+  "walkUp": {
+    "heading": "Plaćanja na licu mjesta",
+    "body": "Kako naplaćujete na food trucku. HatchGrab ne naplaćuje naknadu platforme za narudžbe na licu mjesta, što god odabrali.",
+    "ownTerminal": "Vaš vlastiti POS uređaj",
+    "current": "Trenutačno",
+    "ownTerminalHelp": "Zettle, Square ili što god već koristite. Ništa ne treba postaviti – primjenjuju se samo naknade vašeg pružatelja usluge.",
+    "hatchgrab": "Putem HatchGraba",
+    "comingSoon": "Uskoro",
+    "hatchgrabHelp": "Koristi istu Stripe vezu kao vaša online plaćanja – POS uređaj ili beskontaktno plaćanje izravno na mobitelu ili tabletu.",
+    "hatchgrabFees": "{fee} po plaćanju za {region}, plus {surcharge} za beskontaktno plaćanje primljeno na mobitelu ili tabletu. Druge kartice mogu koštati više."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "subtotal": "Međuzbroj",
+  "taxFallback": "Porez",
+  "taxIncluded": "Uključeno: {label}",
+  "serviceFeeCustomer": "Naknada za online uslugu",
+  "serviceFee": "Naknada za uslugu",
+  "cardFee": "Naknada za karticu",
+  "tip": "Napojnica",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Porez, naknade i napojnica} tax_tip {Porez i napojnica} fees_tip {Naknade i napojnica} fees {Naknade} other {Porez i naknade}}"
+}

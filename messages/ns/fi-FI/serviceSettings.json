@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Noutoajat",
+    "takes_cash": "Otatko vastaan käteistä?",
+    "offline_protection": "Tilausten offline-suojaus",
+    "buzzer_prompt": "Muistuta lisäämään summeri"
+  },
+  "typeFollowsVanTitle": "Noudattaa kunkin ruokarekan tavallista asetusta",
+  "sameSettingsAllVansLabel": "Samat asetukset kaikille ruokarekoille",
+  "sameSettingsAllVansHeader": "Kaikki ruokarekat",
+  "sameSettingsConfirm": "Kopioidaanko Ruokarekka 1:n asetukset kaikkiin ruokarekkoihin? Tämä kopioi kaikki Ruokarekka 1:n asetukset, samoin kuin ”Sama kuin Ruokarekka 1” kohdassa Asetukset. Keittiön kapasiteetilla on oma kytkimensä.",
+  "eventTypesFooterStandard": "Vakio on tavallinen kokoonpanosi. Kun muutat sitä tässä, se muuttuu myös kohdassa Asetukset.",
+  "eventTypesFooterOneEvent": "Jos haluat muuttaa asetusta vain yhdelle tapahtumalle, käytä kyseisen tapahtuman ohjauspaneelia.",
+  "eventTypesSubtitle": "Muutokset tallentuvat sitä mukaa.",
+  "matchStandardLabel": "Sama kuin Vakio",
+  "matchStandardConfirm": "Palautetaanko tämän tyypin kaikki asetukset Vakio-asetuksiin? Kaikki tässä tekemäsi muutokset poistetaan.",
+  "priceLabels": {
+    "price_change_on": "Muuta hintoja",
+    "price_mode": "Hinnanmuutos",
+    "price_amount": "Määrä",
+    "price_rounding": "Pyöristys",
+    "item_prices": "Tuotteiden hinnat"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Asetan jokaisen hinnan itse"
+  },
+  "priceRounding": {
+    "none": "Ei pyöristystä",
+    "nearest_1": "Tarkkuus 1 {symbol}",
+    "up_1": "Pyöristä aina ylöspäin"
+  },
+  "pricesStandardCell": "Ruokalistasi hinnat",
+  "pricesTruckWideTitle": "Hintasi ovat samat kaikissa ruokarekoissa",
+  "pricesMenuCell": "Ruokalista",
+  "pricesTypeOffCell": "Ruokalistan hinnat",
+  "itemPricesShow": "Näytä hinnat",
+  "itemPricesHide": "Piilota hinnat",
+  "priceItemsHeading": "Aseta kunkin tuotteen hinta",
+  "priceItemsOpen": "Näytä tai muuta tuotteiden hintoja ›",
+  "priceItemsClose": "Piilota tuotteiden hinnat ⌃",
+  "ownPriceCount": "{n, plural, one {{count} tuotteella on oma hinta} other {{count} tuotteella on oma hinta}}",
+  "priceTypeHint": "Paina hintaa, niin voit kirjoittaa oman.",
+  "pricesLiveNotice": "Tämä tapahtuma on julkaistu. Uudet tilaukset käyttävät uusia hintoja. Jo tehdyt tilaukset säilyttävät omansa.",
+  "placeTypeHelper": "Lisää tapahtuma valitsee tämän tyypin aina, kun valitset tämän paikan.",
+  "postPictureStandardNote": "Tämän tyypin tapahtumajulkaisut käyttävät vakiopohjaasi.",
+  "eventItemsCardDescription": "Hinnat, tuoterajat ja saatavuus vain tähän tapahtumaan. Muutokset tulevat voimaan heti.",
+  "eventPriceColumnLabel": "Hinta",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · tämä tapahtuma} other {ruokalista {price} · tämä tapahtuma}}",
+  "eventPriceEdit": "✎ Muokkaa hintoja",
+  "eventPriceCancel": "Peru",
+  "eventPriceSave": "Tallenna hinnat",
+  "eventPriceEditNote": "Muokkaat hintoja vain tähän tapahtumaan. Tuoterajat ja saatavuus ovat lukittuina, kunnes tallennat.",
+  "eventPriceLiveNote": "Julkaistu: uudet tilaukset käyttävät uusia hintoja.",
+  "offlineWhenOfflineLabel": "Kun yhteys katkeaa"
+}

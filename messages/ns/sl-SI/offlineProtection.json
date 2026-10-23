@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Med izmeno morata biti vaša nadzorna plošča ali kuhinjski zaslon vklopljena in povezana s spletom.",
+  "explainerBody": "Če se zaslon izklopi, naprava izgubi internetno povezavo ali preklopite na drugo spletno stran, prevzame zaščita brez povezave — glede na vašo izbiro začasno ustavi naročanje ali izklopi samodejno sprejemanje.",
+  "reminder": "⚠️ Med izmeno naj bosta nadzorna plošča ali kuhinjski zaslon vklopljena in povezana s spletom, sicer lahko prevzame zaščita brez povezave.",
+  "enableConfirm": "Zaščita brez povezave je vklopljena.\n\nDa bodo naročila nemoteno prihajala, mora zaslon ostati vklopljen. Če ta naprava izgubi povezavo, zaščita brez povezave prevzame v načinu, ki ste ga izbrali.\n\nPrepričajte se, da je na tej napravi vklopljena možnost „Zaslon vklopljen“.",
+  "disableConfirm": "Želite izklopiti zaščito brez povezave za ta dogodek?\n\nČe ta naprava izgubi povezavo, bodo spletna naročila še naprej prihajala — stranke bodo morda oddale naročila, ki jih ne boste videli. Izklopite jo samo, če imate zanesljivo povezavo.",
+  "cardDescription": "Določa, kaj se zgodi z dohodnimi naročili, ko vaša naprava izgubi povezavo.",
+  "purpose": "Če vaša naprava izgubi povezavo, ta možnost prepreči, da bi naročila prihajala, ko jih ne vidite.",
+  "switchLabel": "Zaščita naročil brez povezave",
+  "switchHelp": "Kaj se zgodi, ko ta food truck izgubi povezavo.",
+  "modes": {
+    "pause": {
+      "label": "Začasno ustavi spletno naročanje",
+      "help": "Stranke ne morejo naročati, dokler niste spet povezani."
+    },
+    "no_auto_accept": {
+      "label": "Še naprej sprejemaj naročila, potrdim jih ročno",
+      "help": "Samodejno sprejemanje se izklopi, zato stranke še lahko naročajo, vendar se nič ne potrdi samodejno. Vsako naročilo boste potrdili, ko boste spet povezani — kar še čaka, se po izbranem času samodejno zavrne, stranka pa o tem prejme e-poštno sporočilo."
+    }
+  },
+  "autoRejectLabel": "Zavrni naročila, ki čakajo dlje kot",
+  "autoRejectOption": "{n, plural, one {{count} min} two {{count} min} few {{count} min} other {{count} min}}"
+}

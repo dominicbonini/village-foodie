@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Comanda #{id}: modificare anulată",
+    "saved": "Comanda #{id} a fost salvată",
+    "undo": "↩ Anulați",
+    "paymentNotRecorded": "⚠ Comanda #{id} — PLATA NU A FOST ÎNREGISTRATĂ. {collect, select, yes {Comanda a fost finalizată} other {Comanda a fost salvată}}; plata, nu.",
+    "recordPayment": "Înregistrați plata",
+    "paid": "Comanda #{id} plătită",
+    "undonePayment": "Anulat — plata a fost eliminată",
+    "undoneCollected": "Anulat — comanda nu este ridicată",
+    "collected": "Comanda #{id} {paidToo, select, yes {plătită și ridicată} other {ridicată}}",
+    "ready": "Comanda #{id} gata",
+    "readyBuzzer": "Comanda #{id} gata · <pill></pill>",
+    "status": "Comanda #{id} {action, select, confirm {confirmată} reject {respinsă} ready {gata} collected {ridicată} undo_collected {restabilită} cancel {anulată} other {actualizată}}"
+  },
+  "conflicts": {
+    "more": "+{count} în plus",
+    "notOnScreenPlus": "+{count} în afara acestui ecran",
+    "notOnScreen": "{n, plural, one {{count} comandă care nu e pe acest ecran} few {{count} comenzi care nu sunt pe acest ecran} other {{count} de comenzi care nu sunt pe acest ecran}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PLATA NU A FOST ÎNREGISTRATĂ",
+    "paymentBody": "{orders} — marcat ca plătit doar pe acest dispozitiv. Plata nu s-a transmis.",
+    "paymentCheck": "Verificați comanda și încasați din nou dacă suma este încă datorată.",
+    "dismiss": "Închideți",
+    "confirmChecked": "Confirmați că ați verificat {orders}",
+    "confirmHides": "Avertismentul va fi ascuns. Înregistrarea rămâne oricum pe acest dispozitiv.",
+    "notYet": "Încă nu",
+    "iveChecked": "Am verificat {orders}",
+    "statusBody": "⚠ {orders} — această modificare nu s-a transmis. Verificați comanda.",
+    "offline": "📴 Fără conexiune — {n, plural, one {{count} modificare salvată pe acest dispozitiv. Va fi trimisă când reveniți online.} few {{count} modificări salvate pe acest dispozitiv. Vor fi trimise când reveniți online.} other {{count} de modificări salvate pe acest dispozitiv. Vor fi trimise când reveniți online.}} Setările sunt blocate.",
+    "syncing": "Din nou online — se trimit modificările: {n, plural, one {{count} modificare} few {{count} modificări} other {{count} de modificări}}…",
+    "synced": "Toate modificările au fost trimise.",
+    "stillQueued": "{n, plural, one {{count} modificare salvată pe acest dispozitiv. Încercăm în continuare să o trimitem.} few {{count} modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.} other {{count} de modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab este blocat",
+    "verifying": "Se verifică…",
+    "unlock": "Deblocați",
+    "cantUseBiometric": "Nu puteți folosi Face ID / Touch ID?",
+    "enterPin": "Introduceți PIN-ul de rezervă",
+    "wrongPin": "PIN greșit — încercați din nou.",
+    "checking": "Se verifică…",
+    "tryBiometric": "Încercați cu Face ID / Touch ID",
+    "forgot": "Ați uitat PIN-ul? Va trebui să reinstalați aplicația."
+  },
+  "notify": {
+    "title": "🔔 Notificări",
+    "intro": "Alerte pe acest dispozitiv. Activați-le pentru a alege ce alerte primiți.",
+    "refused": "Pentru a activa această opțiune, notificările trebuie permise în Setările dispozitivului.",
+    "newOrder": "Alerte pentru comenzi noi",
+    "newOrderHelp": "Primiți o notificare când o comandă a unui client trebuie confirmată.",
+    "offline": "Alerte offline / întrerupere",
+    "offlineHelp": "Primiți o notificare când acest dispozitiv iese offline (iar comenzile se întrerup). <green>Funcționează și offline.</green>"
+  },
+  "van": {
+    "label": "Food truck",
+    "loadRetry": "Nu s-a putut încărca · Reîncercați",
+    "select": "Selectați…"
+  },
+  "deviceSave": {
+    "network": "Serverul nu a putut fi contactat — verificați conexiunea și încercați din nou.",
+    "server": "Nu s-a putut salva acum. Vă rugăm să încercați din nou."
+  },
+  "setup": {
+    "fetchErrorTitle": "Configurarea dispozitivului nu s-a putut încărca",
+    "fetchErrorBody": "Nu am putut contacta serverul pentru a configura <b>acest dispozitiv</b>. Verificați conexiunea și încercați din nou — comenzile și setările dumneavoastră nu sunt afectate.",
+    "retry": "Reîncercați",
+    "later": "Mai târziu",
+    "noVanTitle": "Niciun food truck activ",
+    "noVanBody": "Afacerea dumneavoastră nu are încă niciun food truck activ. Activați unul în <b>Setări → Food truck-urile dumneavoastră</b>, iar acest dispozitiv se configurează automat — nu mai este nimic de făcut aici.",
+    "goToVans": "Mergeți la Setări → Food truck-urile dumneavoastră",
+    "title": "Configurați acest dispozitiv",
+    "body": "Configurare unică pentru <b>acest dispozitiv</b>: ecranul pe care se deschide și food truck-ul pentru care funcționează. Se aplică doar acestui dispozitiv — celelalte dispozitive se configurează separat, iar alegerile pot fi schimbate oricând din meniul profilului → „Acest dispozitiv”.",
+    "whichScreen": "Pe ce ecran să se deschidă acest dispozitiv?",
+    "dashboard": "Panou de control",
+    "kds": "Ecran de bucătărie",
+    "whichVan": "Pentru ce food truck este acest dispozitiv?",
+    "selectVan": "Selectați un food truck…",
+    "saving": "Se salvează…",
+    "tryAgain": "Încercați din nou",
+    "continue": "Continuați"
+  },
+  "device": {
+    "title": "Acest dispozitiv",
+    "viewing": "Vizualizați: <b>{truck}</b>",
+    "viewingVan": "Vizualizați: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Doar acest dispozitiv — celelalte dispozitive se configurează separat. (ID: {id}…)",
+    "truck": "Afacere",
+    "van": "Food truck",
+    "defaultScreen": "Ecran implicit",
+    "orderNotifications": "Notificări comenzi",
+    "patchFailed": "{setting, select, van {Food truck} defaultScreen {Ecran implicit} other {Notificări comenzi}}: nu s-a salvat. {reason}",
+    "requireBiometric": "Cereți amprenta sau recunoașterea facială la deschidere",
+    "pinTitle": "Setați un PIN de rezervă (4–6 cifre)",
+    "pinHelp": "Calea de acces dacă amprenta sau recunoașterea facială nu funcționează — este singura alternativă, așa că nu-l uitați (un PIN uitat înseamnă reinstalarea aplicației). Funcționează offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Confirmați PIN-ul",
+    "pinTooShort": "Folosiți cel puțin 4 cifre.",
+    "pinMismatch": "PIN-urile nu coincid.",
+    "setPin": "Setați PIN-ul și activați",
+    "cancel": "Anulați",
+    "noBiometric": "Pe acest dispozitiv nu este configurată amprenta sau recunoașterea facială — adăugați una din setările dispozitivului. PIN-ul de rezervă funcționează în continuare.",
+    "footer": "Aceste setări se aplică doar acestui dispozitiv — celelalte dispozitive se configurează separat."
+  },
+  "appLock": {
+    "unlockReason": "Deblocați HatchGrab",
+    "usePasscode": "Folosiți codul de acces",
+    "cancel": "Anulați",
+    "confirmEnable": "Confirmați pentru a activa blocarea aplicației"
+  },
+  "channel": {
+    "ordersName": "Comenzi noi",
+    "ordersDescription": "Alerte când o comandă trebuie confirmată."
+  },
+  "localNotify": {
+    "newOrderTitle": "Comandă nouă",
+    "orderReceived": "Comanda {number} a fost primită",
+    "newOrders": "{n, plural, one {Aveți o comandă nouă} few {Aveți {count} comenzi noi} other {Aveți {count} de comenzi noi}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Comenzi întrerupte",
+    "pausedBody": "Sunteți offline — comenzile clienților sunt întrerupte.",
+    "offlineTitle": "Sunteți offline",
+    "offlineBody": "Acest dispozitiv a pierdut conexiunea."
+  }
+}

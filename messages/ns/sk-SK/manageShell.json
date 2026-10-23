@@ -1,0 +1,84 @@
+{
+  "loading": "Načítava sa Správa…",
+  "loadFailed": "Načítanie zlyhalo",
+  "requestFailed": "Zlyhalo",
+  "invalidToken": "Neplatný alebo expirovaný token",
+  "loadFailedReason": "Túto stránku sa nepodarilo načítať: {reason}",
+  "noCountrySettings": "Nepodarilo sa načítať nastavenia krajiny pre tento food truck. Obnovte stránku.",
+  "noPlans": "Nepodarilo sa načítať plán tohto food trucku. Obnovte stránku.",
+  "stale": "{hasTime, select, yes {Obnovenie zlyhalo. Zobrazujeme stav uložený o {time}. Vaše zmeny sa stále ukladajú.} other {Obnovenie zlyhalo. Zobrazujeme posledný uložený stav. Vaše zmeny sa stále ukladajú.}}",
+  "verify": {
+    "ok": "E-mail bol potvrdený — ďakujeme.",
+    "expired": "Platnosť tohto potvrdzovacieho odkazu vypršala. Ozvite sa nám a vyriešime to ešte pred spustením.",
+    "invalid": "Tento potvrdzovací odkaz nefungoval. Ozvite sa nám a vyriešime to ešte pred spustením."
+  },
+  "profile": {
+    "updated": "Profil bol aktualizovaný",
+    "saveFailed": "Uloženie zlyhalo",
+    "title": "Upraviť profil",
+    "name": "Meno",
+    "namePlaceholder": "Vaše meno",
+    "email": "E-mail",
+    "cancel": "Zrušiť",
+    "saving": "Ukladá sa…",
+    "save": "Uložiť"
+  },
+  "header": {
+    "subtitle": "Správa",
+    "ordersDashboard": "← Prehľad objednávok"
+  },
+  "tabs": {
+    "menu": "Jedálny lístok",
+    "schedule": "Harmonogram",
+    "social": "Sociálne siete",
+    "reports": "Štatistiky",
+    "team": "Tím",
+    "settings": "Nastavenia",
+    "payments": "Platby",
+    "billing": "Fakturácia",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Harmonogram ({count})",
+    "stripeAttention": "Stripe vyžaduje vašu pozornosť",
+    "allergensNotSet": "alergény nie sú nastavené"
+  },
+  "menuSections": {
+    "label": "Sekcie jedálneho lístka",
+    "items": "Položky",
+    "capacity": "Kapacita kuchyne",
+    "extras": "Doplnky a ponuky navyše",
+    "deals": "Menu"
+  },
+  "socialSections": {
+    "label": "Sekcie sociálnych sietí",
+    "create": "Vytvoriť príspevok",
+    "designs": "Dizajny",
+    "locations": "Nastavenia miest"
+  },
+  "notices": {
+    "review": "Skontrolovať →",
+    "tour": "Chcete rýchlu prehliadku svojho prehľadu?",
+    "showMeAround": "Ukážte mi to",
+    "dismiss": "Zavrieť",
+    "approval": "{count, plural, one {Našli sme pre vás <b>{count}</b> akciu — pred zverejnením ju skontrolujte a schváľte.} few {Našli sme pre vás <b>{count}</b> akcie — pred zverejnením ich skontrolujte a schváľte.} other {Našli sme pre vás <b>{count}</b> akcií — pred zverejnením ich skontrolujte a schváľte.}}",
+    "allergens": "<b>Alergény nie sú nastavené</b> — zákazníci neuvidia informácie o alergénoch, kým ich neoveríte. Skontrolujte alergény každého jedla na karte Jedálny lístok.",
+    "domainLive": "Adresa <link>{domain}</link> už funguje. Pozrite si ju a potom nám v Nastaveniach potvrďte, že je v poriadku.",
+    "stripe": "<b>Stripe od vás niečo potrebuje</b> — kým to nevyriešite, platby kartou sa môžu zastaviť.",
+    "profileTitle": "Doplňte svoj profil",
+    "missing": "Chýba: {fields}.",
+    "goToSettings": "Prejsť do Nastavení →",
+    "field": {
+      "truckName": "názov food trucku",
+      "cuisineType": "typ kuchyne",
+      "contactEmail": "kontaktný e-mail",
+      "contactPhone": "kontaktný telefón"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Využívate bezplatné skúšobné obdobie} other {Využívate {months}-mesačné bezplatné skúšobné obdobie}}",
+    "ends": "{hasDate, select, yes {Skúšobné obdobie končí <hl>{date}</hl>} other {Skúšobné obdobie končí <hl>čoskoro</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Všetky funkcie zadarmo na # mesiac} few {Všetky funkcie zadarmo na # mesiace} other {Všetky funkcie zadarmo na # mesiacov}}} other {Všetky funkcie zadarmo počas skúšobného obdobia}}",
+    "body": "{hasDate, select, yes {Počas skúšobného obdobia, ktoré trvá do <b>{date}</b>, vám nebudeme nič účtovať. Fakturácia sa začne až vtedy, keď si vyberiete plán a zadáte platobné údaje. Dovtedy nie je čo rušiť ani platiť. Vyberte si plán ešte predtým — inak prejdete na plán {fallback} a niektoré funkcie prestanú fungovať.} other {Počas skúšobného obdobia vám nebudeme nič účtovať. Fakturácia sa začne až vtedy, keď si vyberiete plán a zadáte platobné údaje. Dovtedy nie je čo rušiť ani platiť. Vyberte si plán ešte pred jeho koncom — inak prejdete na plán {fallback} a niektoré funkcie prestanú fungovať.}}",
+    "fees": "*Pri online objednávkach sa účtujú štandardné poplatky za spracovanie platieb kartou",
+    "upgrade": "Prejsť na vyšší plán →"
+  }
+}

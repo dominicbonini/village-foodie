@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Unde își are sediul food truck-ul dumneavoastră?",
+  "stepIntro": "Aceasta stabilește moneda, prețurile, fusul orar și formatul numerelor de telefon. Țara nu mai poate fi schimbată ulterior, deoarece este legată de plățile cu cardul.",
+  "settingsHeading": "Unde vindeți",
+  "countryLabel": "Țara",
+  "countryGuessed": "Am dedus-o din locul în care vă aflați. Schimbați-o dacă este greșită.",
+  "countryLocked": "Țara nu poate fi schimbată",
+  "townLabel": "Oraș sau localitate",
+  "townQuestion": "Orașul sau localitatea în care aveți sediul",
+  "timezoneLabel": "Fus orar",
+  "continueButton": "Continuați",
+  "saveFailed": "Setările nu au putut fi salvate — încercați din nou."
+}

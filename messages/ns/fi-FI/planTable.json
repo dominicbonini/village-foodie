@@ -1,0 +1,36 @@
+{
+  "h1": "Kaikki myyntivuoron pyörittämiseen kaikissa paketeissa.",
+  "lede": "Tilaukset, ennakkotilaukset, keittiön kapasiteetti ja keittiönäyttö sisältyvät kaikkiin paketteihin.{hasUpgrades, select, yes { {plans} tuovat lisäksi {features} sekä pienemmät maksut.} other {}}",
+  "perMonth": "{price} / kk",
+  "group": {
+    "pay": "Mitä maksat",
+    "run": "Myyntivuoron pyörittäminen",
+    "online": "Verkkotilaukset",
+    "marketing": "Markkinointi ja automaatio"
+  },
+  "pay": {
+    "included": "Kuukausittain sisältyvät verkkotilaukset",
+    "fee": "HatchGrabin maksu kortilla maksetuista verkkotilauksista*",
+    "walkUp": "Tilaukset paikan päällä"
+  },
+  "cell": {
+    "unlimited": "Rajaton",
+    "free": "Maksuton",
+    "feeAbove": "<b>{fee}</b>, kun {included} ylittyy",
+    "yes": "Sisältyy",
+    "none": "Ei sisälly",
+    "comingSoon": "Tulossa pian"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "somejulkaisut",
+    "event_types": "omat tapahtumahinnat"
+  },
+  "meta": {
+    "description": "Kaikki HatchGrabin ominaisuudet kaikissa paketeissa rinnakkain — {plans}, maksuineen ja kuukausikiintiöineen.{months, plural, =0 {} one { Ensimmäinen kuukautesi sisältää kaiken.} other { Ensimmäiset # kuukauttasi sisältävät kaiken.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsAppin automaattiset vastaukset edellyttävät WhatsApp Business -tiliä. Meta voi veloittaa joistakin viesteistä; vastaukset luodaan automaattisesti.",
+    "printing": "Keittiölappujen tulostus edellyttää yhteensopivaa Bluetooth- tai johdollista tulostinta (ei sisälly)."
+  }
+}

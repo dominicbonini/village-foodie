@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} – konyha",
+  "loading": "Konyha betöltése…",
+  "pin": {
+    "title": "PIN-kód megadása",
+    "placeholder": "PIN",
+    "unlock": "Feloldás",
+    "unreachable": "A szerver most nem érhető el. A PIN-kódja rendben van — próbálja újra egy kis idő múlva.",
+    "incorrect": "Hibás PIN-kód",
+    "generic": "Hiba történt. Próbálja újra."
+  },
+  "error": {
+    "linkInvalid": "Ez a link már nem érvényes.",
+    "couldNotLoad": "Nem sikerült betölteni a rendeléseket",
+    "truckNotFound": "A food truck nem található"
+  },
+  "degraded": {
+    "at": "⚠️ A szerver nem érhető el. A jegyek állapota: {time}. ÚJ RENDELÉSEK HIÁNYOZHATNAK.",
+    "earlier": "⚠️ A szerver nem érhető el. Korábbi jegyek láthatók. ÚJ RENDELÉSEK HIÁNYOZHATNAK."
+  },
+  "header": {
+    "dashboard": "Vezérlőpult",
+    "backTitle": "Vissza a vezérlőpultra",
+    "list": "Lista",
+    "grid": "Rács",
+    "full": "Teljes",
+    "cook": "Szakács",
+    "fullTitle": "Teljes kártyák — árak és fizetési adatok, ahogy a pultnál látják.",
+    "cookTitle": "Szakácskártyák — nagyobb betű, kategóriánként csoportosítva, árak nélkül.",
+    "readyStep": "„Kész” lépés",
+    "readyOnlyTitle": "Ez a képernyő csak késznek jelöli a rendeléseket, ezért ez nem kapcsolható ki — ez az egyetlen lépés, amelyet végez.",
+    "readyOnTitle": "Ez a képernyő jelöli késznek a rendeléseket. Koppintson, hogy inkább egy másik képernyő végezze.",
+    "readyOffTitle": "Egy másik képernyő jelöli késznek a rendeléseket. Koppintson, hogy ez végezze.",
+    "handover": "Fizetés és átadás",
+    "handoverOnlyTitle": "Ez a képernyő csak a fizetést fogadja, ezért ez nem kapcsolható ki — ez az egyetlen lépés, amelyet végez.",
+    "handoverOnTitle": "Ez a képernyő fogadja a fizetést és adja át a rendelést. Koppintson, hogy inkább egy másik képernyő végezze.",
+    "handoverOffTitle": "Egy másik képernyő fogadja a fizetést. Koppintson, hogy ez végezze.",
+    "soundOn": "Az új rendelés hangja be van kapcsolva — koppintson a kikapcsoláshoz",
+    "soundOff": "Az új rendelés hangja ki van kapcsolva — koppintson a bekapcsoláshoz",
+    "screenOn": "Képernyő be",
+    "screenOff": "Képernyő ki",
+    "screenSettings": "Képernyő-beállítások",
+    "manageEvent": "Esemény kezelése",
+    "manageEventTitle": "Esemény kezelése — indítás, szüneteltetés, módosítás vagy befejezés",
+    "soundSettings": "Hangbeállítások",
+    "soundSettingsTitle": "Mely hangok szólnak ezen az eszközön",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Nézet beállításai",
+    "on": "Be",
+    "off": "Ki",
+    "newOrderSound": "Új rendelés hangja",
+    "soundNeedsConfirming": "Csak a megerősítésre váró rendelések",
+    "soundAll": "Minden új rendelés",
+    "soundDue": "Hang, amikor egy rendelést el kell kezdeni főzni",
+    "soundDueHelp": "Megszólal, amikor egy jegy sárgára vált.",
+    "deviceSettings": "Eszközbeállítások",
+    "sound": "Hang",
+    "close": "Bezárás"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Az esemény rendelései nincsenek betöltve",
+    "mismatchBody": "A szerver egy másik eseménnyel válaszolt, ezért inkább semmi sem jelenik meg, mint rossz rendelések. Válassza ki újra az eseményt, vagy töltse újra az oldalt.",
+    "mismatchBodyAt": "A szerver egy másik eseménnyel válaszolt, ezért inkább semmi sem jelenik meg, mint rossz rendelések (helyszín: {venue}). Válassza ki újra az eseményt, vagy töltse újra az oldalt.",
+    "paused": "⏸ Rendelések szüneteltetve{reason, select, offline { (az eszköz offline)} other {}} — a vásárlók nem tudnak rendelni",
+    "resume": "Folytatás",
+    "offline": "Nincs kapcsolat — az utolsó ismert rendelések láthatók. Az online rendelés szünetel a vásárlók számára.",
+    "queued": "{n, plural, one {{count} művelet sorban áll} other {{count} művelet sorban áll}}",
+    "extraWait": "⏱ +{mins} perc extra várakozás aktív",
+    "clear": "Törlés",
+    "toMake": "Elkészítendő",
+    "today": "Ma · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Esemény indítása",
+    "recentlyClosed": "Esemény befejezve · {venue}, zárás: {time}",
+    "eventStatus": "{tone, select, paused {⏸ Szünetel} live {● Élő} finished {● Befejezve} cancelled {Elmarad} other {Nem kezdődött el}}"
+  },
+  "board": {
+    "queueClear": "Üres a sor",
+    "doneToday": "Ma kész · {count}",
+    "paid": "✓ fizetve",
+    "cardHeld": "kártya zárolva",
+    "due": "{amount} fizetendő"
+  },
+  "screenOff": {
+    "title": "Kikapcsolhat a képernyő?",
+    "bodyVans": "Offline-észlelés bekapcsolva{n, plural, one { ennél a food trucknál:} other { ezeknél a food truckoknál:}} {vans}. Ha a képernyő kikapcsol, az eszköz leállhat az online jelzés küldésével, és a vásárlói rendelés szünetelhet.",
+    "body": "Ha a képernyő kikapcsol, az eszköz leállhat az online jelzés küldésével.",
+    "keepHint": "Tartsa bekapcsolva a képernyőt a zavartalan rendelés érdekében.",
+    "keep": "Képernyő bekapcsolva",
+    "allow": "Kikapcsolás engedélyezése"
+  },
+  "event": {
+    "change": "Esemény váltása",
+    "cancel": "Mégse",
+    "waitActive": "⏱ +{mins} p aktív · Koppintson a törléshez",
+    "addWait": "⏱ Extra várakozás",
+    "endTitle": "Befejezi az eseményt?",
+    "endEarly": "Ez az esemény a tervek szerint csak ekkor ér véget: {time}. Több rendelés nem lesz lehetséges. Biztosan befejezi az eseményt?",
+    "endNow": "Befejezi ezt az eseményt? Több rendelést nem fogad.",
+    "yes": "Igen",
+    "started": "Esemény elindítva",
+    "startFutureConfirm": "Ennek az eseménynek az időpontja: {date}. Elindítja most?",
+    "finishTimeNow": "Új zárási idő: {time}",
+    "finished": "Esemény befejezve",
+    "cancelled": "Esemény lemondva",
+    "noteSaved": "Megjegyzés mentve",
+    "pauseConfirm": "Szünetelteti a rendeléseket? A vásárlók a „Jelenleg nem fogadunk rendelést” üzenetet látják, amíg nem folytatja.",
+    "switchConfirm": "Váltás erről: {from}, erre: {to}?{n, plural, =0 {} one { A képernyőn lévő {count} rendelés lecserélődik.} other { A képernyőn lévő {count} rendelés lecserélődik.}} Koppintson az aktuális eseményre a visszaváltáshoz."
+  },
+  "intro": {
+    "title": "Ez a konyhai kijelző",
+    "p1": "Ez a szakács nézete — az elkészítendő rendelések, az elkészítés sorrendjében. A grill melletti képernyő ezt mutatja, a pultnál pedig a rendelési vezérlőpultot használják.",
+    "p2": "A kártyák koppintásra továbblépnek, így aki főz, mindig tudja, mi következik, és senkinek sem kell kiabálnia. Itt minden demóadat — próbálja ki nyugodtan.",
+    "gotIt": "Értem"
+  },
+  "toast": {
+    "failed": "Sikertelen",
+    "rejectFailed": "Az elutasítás nem sikerült",
+    "buzzerSaved": "Csipogó {n} mentve",
+    "buzzerRemoved": "Csipogó {n} eltávolítva",
+    "buzzerRemovedNone": "Csipogó eltávolítva",
+    "buzzerAssigned": "Csipogó {n} kiosztva",
+    "buzzerAssignedFrom": "Csipogó {n} kiosztva (elvéve innen: #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Nem sikerült eltávolítani a csipogót {target, select, order {erről a rendelésről: #{id}} other {erről a rendelésről}}} other {Nem sikerült eltávolítani: csipogó {n} — még mindig {target, select, order {ennél a rendelésnél van: #{id}} other {ennél a rendelésnél van}}}}",
+    "buzzerAssignFailed": "Nem sikerült kiosztani: csipogó {n} → {target, select, order {#{id} rendelés} other {ez a rendelés}} — {had, select, yes {még mindig nála van: csipogó {prior}} other {még mindig nincs csipogója}}"
+  }
+}

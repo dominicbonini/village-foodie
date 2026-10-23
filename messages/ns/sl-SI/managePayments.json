@@ -1,0 +1,94 @@
+{
+  "heading": "Plačila",
+  "loading": "Preverjamo vaš račun Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Ni nastavljeno",
+      "body": "Traja približno 10 minut. Potrebovali boste bančne podatke in osebni dokument.",
+      "chip": "Ni nastavljeno"
+    },
+    "requirements": {
+      "title": "Stripe potrebuje vaše podatke",
+      "body": "Plačila s kartico ne bodo delovala, dokler Stripe ne prejme podatkov o vašem podjetju in bančnem računu.",
+      "chip": "Potrebno ukrepanje"
+    },
+    "pending": {
+      "title": "Povezano – Stripe preverja vaše podatke",
+      "body": "Ničesar vam ni treba storiti. Stripe pregleduje, kar ste poslali, in ta stran se posodobi, ko bo pregled končan.",
+      "chip": "Preverjanje"
+    },
+    "ready": {
+      "title": "Povezano",
+      "body": "Vaš račun Stripe je povezan in lahko sprejema plačila.",
+      "chip": "Pripravljeno"
+    },
+    "restricted": {
+      "title": "Plačila s kartico so začasno ustavljena",
+      "body": "Stripe je na vašem računu začasno ustavil plačila s kartico, dokler težava ne bo odpravljena.",
+      "chip": "Ustavljeno"
+    },
+    "unsupported": {
+      "title": "Plačila s kartico na tem računu niso na voljo",
+      "body": "Stripe tukaj ne more omogočiti plačil s kartico. Pišite nam in rešitev bomo poiskali skupaj z vami.",
+      "chip": "Ni na voljo"
+    }
+  },
+  "keyMismatch": {
+    "title": "Ključa Stripe se ne ujemata",
+    "body": "Strežnik tega spletnega mesta uporablja <b>{server, select, live {produkcijski} other {testni}}</b> ključ Stripe, brskalniški del pa je bil zgrajen s <b>{browser, select, live {produkcijskim} other {testnim}}</b> ključem. Plačila s kartico bi spodletela v trenutku, ko bi stranka poskušala plačati, zato je nastavitev Stripe blokirana, dokler se ključa ne ujemata.",
+    "fix": "Oba ključa morata biti nastavljena za isto okolje, spletno mesto pa nato znova zgrajeno – objavljivi ključ se vgradi ob gradnji, skrivni ključ pa se prebere ob vsaki zahtevi."
+  },
+  "permission": {
+    "title": "Plačila lahko nastavi le lastnik food trucka",
+    "body": "Stripe poveže oseba, katere bančni račun prejema denar, zato ga je treba nastaviti iz njenega lastnega prijavljenega računa. S tem food truckom in s HatchGrab je vse v redu."
+  },
+  "config": {
+    "keyMissingTitle": "Plačila s kartico še niso konfigurirana",
+    "fetchTitle": "Računa Stripe tega food trucka nismo mogli preveriti",
+    "keyMissing": "{name} ni nastavljen – vgrajenih komponent ni mogoče naložiti."
+  },
+  "errors": {
+    "requestFailed": "Zahteva ni uspela ({status})",
+    "unreachable": "Stripe ni dosegljiv"
+  },
+  "online": {
+    "heading": "Spletna plačila",
+    "body": "Stranke plačajo s kartico ob naročilu. Denar gre neposredno na vaš lastni račun Stripe – mi ga nikoli ne hranimo.",
+    "feeLine": "Stripe za standardne kartice zaračuna {fee} na plačilo ({region}). Druge kartice so lahko dražje. Pristojbina HatchGrab za spletna naročila je odvisna od vašega paketa – glejte Obračun.",
+    "testMode": "Testni način. Pravih plačil še ni mogoče sprejemati."
+  },
+  "trialNote": "Ta nastavitev ne začne vaše naročnine in vam danes ničesar ne zaračuna. Tako vam plačujejo stranke – vaš paket je ločena stvar.",
+  "admin": {
+    "title": "Ogled kot skrbnik platforme",
+    "body": "Ta food truck še ni nastavil spletnih plačil. Nastavi jih lahko le lastnik iz svojega prijavljenega računa – tukaj ni ničesar za pritisniti."
+  },
+  "setUp": {
+    "button": "Nastavi spletna plačila",
+    "busy": "Nastavljanje…"
+  },
+  "toast": {
+    "alreadySetUp": "Že nastavljeno – nadaljujemo",
+    "addDetails": "Zdaj dodajte svoje podatke za Stripe",
+    "createFailed": "Računa ni bilo mogoče ustvariti"
+  },
+  "onboarding": {
+    "restricted": "Od tu naprej prevzame Stripe – prijavili se boste v Stripe in posodobili zahtevane podatke.",
+    "firstRun": "Od tu naprej prevzame Stripe – prijavili se boste v Stripe in nato vnesli podatke o podjetju in bančnem računu."
+  },
+  "details": {
+    "title": "Vaši podatki Stripe",
+    "body": "Spremenite bančni račun, na katerega prejemate plačila, ali posodobite podatke in dokumente podjetja.",
+    "button": "Ogled ali urejanje"
+  },
+  "walkUp": {
+    "heading": "Plačila na mestu",
+    "body": "Kako sprejemate denar na mestu. HatchGrab pri naročilih na mestu ne zaračuna pristojbine platforme, ne glede na vašo izbiro.",
+    "ownTerminal": "Vaš lastni plačilni terminal",
+    "current": "Trenutno",
+    "ownTerminalHelp": "Zettle, Square ali kar koli že uporabljate. Ničesar ni treba nastaviti – veljajo le pristojbine vašega ponudnika.",
+    "hatchgrab": "Prek HatchGrab",
+    "comingSoon": "Kmalu",
+    "hatchgrabHelp": "Uporablja isto povezavo Stripe kot vaša spletna plačila – plačilni terminal ali brezstično plačilo neposredno na telefonu ali tablici.",
+    "hatchgrabFees": "{fee} na plačilo ({region}), dodatno pa še {surcharge} za brezstična plačila, sprejeta na telefonu ali tablici. Druge kartice so lahko dražje."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "intro": "Pārvaldībā jūs iestatāt savu food truck un redzat, kā tam veicas. Vadības panelī jūs pieņemat pasūtījumus un vadāt katru pasākumu tā norises laikā.",
+  "ariaLabel": "Vadības paneļa apskats",
+  "step": "{current} no {total}",
+  "skip": "Izlaist",
+  "back": "← Atpakaļ",
+  "next": "Tālāk →",
+  "done": "Gatavs",
+  "stops": {
+    "menu": {
+      "title": "Ēdienkarte",
+      "body": "Jūsu ēdieni, cenas un alergēni. Jebkuras izmaiņas šeit stājas spēkā uzreiz."
+    },
+    "schedule": {
+      "title": "Grafiks",
+      "body": "Kur un kad jūs tirgojaties. Pievienojiet šeit pasākumu, un klienti varēs tam pasūtīt."
+    },
+    "build": {
+      "title": "Komplekti, piedevas un papildpiedāvājumi",
+      "body": "Komplekti, papildpiedāvājumi, pielāgojumi un jūsu virtuves jauda atrodas sadaļā Ēdienkarte — droši izmēģiniet."
+    },
+    "settings": {
+      "title": "Iestatījumi",
+      "body": "Jūsu food truck informācija un tas, kā klienti maksā."
+    },
+    "billing": {
+      "title": "Norēķini",
+      "body": "Šeit atrodama informācija par jūsu plānu, norēķiniem un funkcijām."
+    }
+  }
+}

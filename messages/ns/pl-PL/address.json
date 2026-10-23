@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adres",
+    "postcode": "Kod pocztowy",
+    "zip": "Kod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Kod pocztowy",
+    "state": "Stan",
+    "stateTerritory": "Stan lub terytorium",
+    "province": "Prowincja",
+    "county": "Hrabstwo",
+    "area": "Miejscowość (wieś lub miasto)",
+    "townOrArea": "Miasto lub gmina",
+    "city": "Miasto",
+    "suburb": "Dzielnica",
+    "townOrCity": "Miejscowość"
+  },
+  "short": {
+    "area": "Miejscowość",
+    "townOrArea": "Miasto lub gmina",
+    "city": "Miasto",
+    "suburb": "Dzielnica",
+    "townOrCity": "Miejscowość"
+  },
+  "inSentence": {
+    "postcode": "kod pocztowy",
+    "zip": "kod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "kod pocztowy"
+  },
+  "withArticle": {
+    "postcode": "kod pocztowy",
+    "zip": "kod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "kod pocztowy"
+  },
+  "tradeLabel": {
+    "area": "Miejscowość",
+    "townOrArea": "Miasto lub gmina",
+    "city": "Miasto",
+    "suburb": "Dzielnica",
+    "townOrCity": "Miejscowość"
+  },
+  "basedIn": {
+    "area": "Miejscowość, w której masz siedzibę",
+    "townOrArea": "Miasto lub gmina, w której masz siedzibę",
+    "city": "Miasto, w którym masz siedzibę",
+    "suburb": "Dzielnica, w której masz siedzibę",
+    "townOrCity": "Miejscowość, w której masz siedzibę"
+  },
+  "example": "np. {example}",
+  "customersSee": "Klienci widzą:",
+  "postalWarning": "To nie wygląda na {article} — na przykład {example}. Możesz to jednak zapisać.",
+  "regionChoose": "Wybierz…"
+}

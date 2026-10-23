@@ -1,0 +1,19 @@
+{
+  "heading": "Nabídky navíc",
+  "intro": "Pobídněte zákazníky, aby si přidali něco navíc. Když si někdo objedná z jedné kategorie, nabídněte mu položky z jiné — nápoj k pizze, omáčku k burgeru.",
+  "add": "+ Přidat nabídku navíc",
+  "toast": {
+    "updated": "Pravidlo nabídky navíc upraveno",
+    "added": "Pravidlo nabídky navíc přidáno",
+    "removed": "Pravidlo odebráno"
+  },
+  "whenAdds": "Když zákazník přidá…",
+  "suggestFrom": "Nabídnout položky z…",
+  "chooseCategory": "Vyberte kategorii",
+  "cancel": "Zrušit",
+  "saveChanges": "Uložit změny",
+  "addRule": "Přidat pravidlo",
+  "empty": "Zatím žádná pravidla nabídek navíc.",
+  "confirmRemove": "Odebrat pravidlo nabídky navíc „{trigger} → {suggest}“?",
+  "upTo": "{n, plural, one {Až {count} navrhovaná položka} few {Až {count} navrhované položky} other {Až {count} navrhovaných položek}}"
+}

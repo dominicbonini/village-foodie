@@ -1,0 +1,8 @@
+{
+  "change": "{label} — módosítás",
+  "useRule": "{label} — inkább a szabály alkalmazása",
+  "typePrice": "{label} — ár megadása",
+  "backToRule": "Vissza a szabályhoz",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

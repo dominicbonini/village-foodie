@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Coś poszło nie tak",
+    "previewFailed": "Nie udało się utworzyć podglądu",
+    "loadFailed": "Nie udało się załadować",
+    "tooBig": "Ten obraz ma {size, number, ::.0 group-off} MB. Limit to 10 MB.",
+    "wrongType": "Wybierz plik PNG lub JPG.",
+    "uploadIncomplete": "Przesyłanie nie zostało ukończone",
+    "uploadFailed": "Przesyłanie nie powiodło się",
+    "saveFailed": "Nie udało się zapisać",
+    "buildFailed": "Nie udało się utworzyć posta",
+    "copyFailed": "Nie udało się skopiować — zaznacz tekst i skopiuj go ręcznie."
+  },
+  "loading": "Ładowanie…",
+  "missingTable": {
+    "title": "Cotygodniowy post wymaga aktualizacji bazy danych",
+    "body": "Tabela projektów nie została jeszcze utworzona. Po zastosowaniu migracji ten ekran zacznie działać."
+  },
+  "kind": {
+    "label": "Który projekt",
+    "event": "Jedno wydarzenie",
+    "week": "Tygodniowy"
+  },
+  "setup": {
+    "title": "Skonfiguruj cotygodniowy post",
+    "intro": "Prześlij pustą wersję grafiki z tygodniowym harmonogramem, którą już przygotowujesz — ten sam projekt, ale bez twoich pól tekstowych. HatchGrab uzupełni tydzień na podstawie twojego harmonogramu.",
+    "canvaTitle": "Jak wyeksportować pusty projekt z aplikacji Canva",
+    "canvaStep1": "Otwórz swój zwykły projekt tygodniowego harmonogramu.",
+    "canvaStep2": "Usuń pola tekstowe z datami, miejscami i godzinami — zostaw tło i nagłówki, które chcesz zachować.",
+    "canvaStep3": "Udostępnij › Pobierz › PNG.",
+    "uploading": "Przesyłanie…",
+    "upload": "Prześlij pusty obraz",
+    "uploadHint": "PNG lub JPG, do 10 MB, co najmniej {px} px na krótszym boku.",
+    "phoneTip": "Najlepiej na komputerze lub tablecie iPad — na telefonie pola są za małe, by je wygodnie przeciągać.",
+    "designName": "Projekt cotygodniowego posta",
+    "backDesigns": "‹ Projekty",
+    "back": "‹ Wstecz",
+    "pictureNote": "Twój obraz bez żadnej daty ani miejsca. Te dodamy my.",
+    "saved": "Projekt zapisany."
+  },
+  "week": {
+    "this": "Ten tydzień",
+    "next": "Przyszły tydzień"
+  },
+  "post": {
+    "title": "Twój cotygodniowy post",
+    "editDesign": "Edytuj projekt",
+    "weekOf": "tydzień od {date}",
+    "imageAlt": "Twój cotygodniowy post",
+    "building": "Tworzenie posta…",
+    "updating": "Aktualizowanie…",
+    "eventsTitle": "Wydarzenia w tym tygodniu",
+    "noEvents": "Brak wydarzeń w tym tygodniu.",
+    "eventDateCancelled": "{date} · odwołane",
+    "showCancelled": "Pokaż odwołane wydarzenia",
+    "showPrivate": "Pokaż wydarzenia prywatne",
+    "privateHint": "Są widoczne jako „Wydarzenie prywatne” z datą i godzinami — nigdy z miejscem.",
+    "noteTitle": "Notatka",
+    "notePlaceholder": "np. Zamów z wyprzedzeniem z odbiorem osobistym",
+    "noteHint": "Pojawia się w opisie posta oraz w polu notatki, jeśli je dodano.",
+    "captionTitle": "Opis posta na twoją stronę",
+    "perEventTitle": "Post dla każdego wydarzenia",
+    "nothingToPost": "W tym tygodniu nie ma czego publikować.",
+    "textCopied": "Skopiowano tekst.",
+    "copyText": "Kopiuj tekst",
+    "image": "Obraz",
+    "share": "Udostępnij",
+    "noOrderLink": "Nie masz jeszcze linku do zamówień — ustaw adres strony food trucka w Ustawieniach."
+  }
+}

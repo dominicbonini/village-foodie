@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verificați noua adresă de e-mail HatchGrab",
+    "heading": "Verificați adresa de e-mail",
+    "button": "Verificați adresa de e-mail"
+  },
+  "changeEmail": {
+    "requested": "Ați solicitat schimbarea adresei de e-mail HatchGrab cu această adresă.",
+    "click": "Faceți clic pe butonul de mai jos pentru verificare. Acest link expiră în 24 de ore.",
+    "ignore": "Dacă nu ați solicitat această modificare, puteți ignora acest e-mail.",
+    "stillActive": "Adresa de e-mail actuală rămâne activă."
+  },
+  "resendVerification": {
+    "requested": "Ați solicitat schimbarea e-mailului HatchGrab cu această adresă.",
+    "click": "Faceți clic mai jos pentru verificare. Acest link expiră în 24 de ore.",
+    "ignore": "Dacă nu ați solicitat acest lucru, ignorați acest e-mail.",
+    "stillActive": "E-mailul actual rămâne activ."
+  },
+  "passwordReset": {
+    "subject": "Resetați parola HatchGrab",
+    "heading": "Resetați parola",
+    "requested": "Am primit o solicitare de resetare a parolei pentru contul dumneavoastră HatchGrab.",
+    "click": "Faceți clic pe butonul de mai jos pentru a alege o parolă nouă. Acest link expiră în 1 oră.",
+    "button": "Resetați parola",
+    "ignore": "Dacă nu ați solicitat acest lucru, puteți ignora acest e-mail.",
+    "unchanged": "Parola nu se va schimba până nu faceți clic pe linkul de mai sus."
+  },
+  "deletionScheduled": {
+    "subject": "Contul dumneavoastră HatchGrab este programat pentru ștergere",
+    "received": "Am primit o solicitare de ștergere a acestui cont HatchGrab.",
+    "orderingStopped": "<b>Comenzile online au fost oprite imediat</b> pentru: {trucks}.",
+    "noTrucks": "(niciun food truck)",
+    "readable": "Panoul de control rămâne\n    disponibil pentru citire în {days, plural, one {următoarea # zi} few {următoarele # zile} other {următoarele # de zile}}.",
+    "scheduled": "Ștergerea contului este programată pentru <b>{date}</b>.",
+    "cannotCancel": "<b>Acest lucru nu poate fi anulat din aplicație.</b> Dacă nu ați fost dumneavoastră sau v-ați\n    răzgândit, răspundeți la acest e-mail cât mai curând posibil.",
+    "kept": "Când contul este șters, eliminăm datele dumneavoastră personale și datele clienților dumneavoastră. Păstrăm\n    înregistrări contabile anonime, pe care legea ne obligă să le păstrăm."
+  }
+}

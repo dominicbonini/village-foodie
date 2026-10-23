@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Twoja karta alergenów",
+    "intro": "Klienci widzą ją <b>dokładnie tak, jak ją napiszesz</b> — niczego nie przerabiamy. Wpisz lub wklej tekst poniżej albo prześlij zdjęcie/PDF, a my odczytamy z niego tekst do sprawdzenia.",
+    "empty": "Nie ma jeszcze karty alergenów.",
+    "placeholder": "np. Wszystkie nasze dania z rybą i frytkami zawierają pszenicę i mleko. Frytownica jest wspólna z produktami zawierającymi gluten i orzechy. Dostępne opcje wegańskie — zapytaj obsługę.",
+    "reading": "Odczytywanie obrazu…",
+    "upload": "📷 Prześlij obraz / PDF",
+    "uploadNote": "Odczytujemy tekst z obrazu, do sprawdzenia — samego obrazu nie przechowujemy."
+  },
+  "cardUpload": {
+    "dishFallback": "Danie",
+    "question": "Masz kartę alergenów do przesłania?",
+    "perDish": "{detected, select, yes {Prześlij ją, a na jej podstawie uzupełnimy alergeny twoich dań. Wykryte alergeny zobaczysz na następnej stronie, gdzie potwierdzisz każde danie.} other {Prześlij ją, a na jej podstawie uzupełnimy alergeny twoich dań.}}",
+    "cardOnly": "Prześlij kartę alergenów, którą zobaczą klienci.",
+    "yes": "Tak",
+    "no": "Nie",
+    "noProblem": "Nie ma problemu — nie jest potrzebna. Przejdź dalej przyciskiem poniżej.",
+    "analysing": "Analizowanie karty…",
+    "dropzone": "Przeciągnij i upuść albo dotknij, aby wybrać",
+    "imageOrPdf": "Obraz lub PDF",
+    "or": "lub",
+    "pastePlaceholder": "Wklej tu tekst karty alergenów…",
+    "process": "Przetwórz kartę",
+    "cardRead": "Karta odczytana ✓",
+    "unmatchedHeading": "Nie udało się automatycznie dopasować — przypisz lub odrzuć",
+    "quotedName": "„{name}”",
+    "ambiguous": "Niejednoznaczne — pasuje do kilku dań; wybierz właściwe.",
+    "assignTo": "Przypisz do dania…",
+    "dismiss": "Odrzuć",
+    "blanket": "Według karty <b>{list}</b> może występować we <b>wszystkich</b> daniach. Dodać do każdego dania? (każde i tak potwierdzisz) <muted>— domyślnie wyłączone</muted>",
+    "kitchenNotes": "Uwagi kuchni (zapisywane w informacjach o alergenach)",
+    "matchSummary": "{n, plural, =0 {Dopasowano do dań: {matched}.} one {Dopasowano do dań: {matched}. {count} pozycja wymaga twojego przypisania.} few {Dopasowano do dań: {matched}. {count} pozycje wymagają twojego przypisania.} many {Dopasowano do dań: {matched}. {count} pozycji wymaga twojego przypisania.} other {Dopasowano do dań: {matched}. {count} pozycji wymaga twojego przypisania.}}"
+  },
+  "savedCard": {
+    "showLess": "Pokaż mniej",
+    "showMore": "Pokaż więcej",
+    "fileOnly": "Dla tego food trucka zapisano plik karty, ale bez tekstu podsumowania. Otwórz oryginał, aby go przeczytać.",
+    "viewOriginal": "Zobacz oryginalną kartę"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Nie udało się odczytać karty alergenów — spróbuj ponownie",
+      "confirmed": "Potwierdzono: {name}",
+      "undo": "Cofnij",
+      "saveFailed": "Nie udało się zapisać — spróbuj ponownie",
+      "imageFailed": "Nie udało się odczytać tego obrazu — wpisz lub wklej treść karty",
+      "cardRead": "{n, plural, one {Karta odczytana — dopasowano: {matched}, do przypisania: {count} pozycja} few {Karta odczytana — dopasowano: {matched}, do przypisania: {count} pozycje} many {Karta odczytana — dopasowano: {matched}, do przypisania: {count} pozycji} other {Karta odczytana — dopasowano: {matched}, do przypisania: {count} pozycji}}"
+    },
+    "genericWarn": {
+      "text": "Wykryto „{generic}”, ale to określenie ogólne. Wybierz {picks}, jeśli to danie zawiera {family} — albo zostaw je niezaznaczone, jeśli nie zawiera.",
+      "andOr": "{a} i/lub {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Potwierdzone",
+      "confirmed": "Potwierdzone",
+      "needsReview": "Do sprawdzenia"
+    },
+    "confirm": {
+      "confirming": "Potwierdzanie…",
+      "confirmed": "Potwierdzone ✓",
+      "confirm": "Potwierdź",
+      "changed": "· zmienione",
+      "changedTitle": "Zmienione od ostatniego potwierdzenia — potwierdź ponownie"
+    },
+    "allergens": "Alergeny",
+    "dietary": "Dieta",
+    "uncategorised": "Bez kategorii",
+    "review": {
+      "progress": "Potwierdzone: {confirmed} z {total}",
+      "allConfirmed": "✓ Wszystkie potwierdzone",
+      "list": "Lista",
+      "table": "Tabela",
+      "detected": "Wykryte w twoim menu — <b>sprawdź je</b>. Alergeny pozostają ukryte przed klientami, dopóki nie potwierdzisz każdego dania.",
+      "viewOnly": "👁 Tylko podgląd — tylko właściciel może potwierdzać lub zmieniać alergeny.",
+      "emptyTitle": "Brak pozycji w menu",
+      "emptyBody": "Najpierw dodaj pozycje do menu, a potem ustaw tu ich alergeny.",
+      "dish": "Danie",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Odczytywanie informacji o alergenach…",
+      "saved": "🛡️ Karta alergenów zapisana",
+      "viewOriginal": "Zobacz oryginalną kartę",
+      "replace": "Zastąp kartę",
+      "uploadHelp": "Prześlij kartę alergenów (zdjęcie/PDF) albo wklej informacje o alergenach — nasza AI uporządkuje je dla klientów.",
+      "add": "Dodaj kartę alergenów",
+      "viewOnly": "👁 Tylko podgląd — tylko właściciel może dodać kartę alergenów.",
+      "intro": "Klienci zobaczą tę kartę jako informację o alergenach w menu. W trybie samej karty alergeny przy daniach pozostają ukryte (dane dań zachowujemy na wypadek późniejszego przejścia na alergeny przy każdym daniu)."
+    },
+    "subtitle": {
+      "choose": "Wybierz, jak klienci widzą informacje o alergenach",
+      "card": "Dodaj kartę alergenów",
+      "cardOptional": "Dodaj kartę alergenów (opcjonalnie)",
+      "review": "Sprawdź i potwierdź każde danie"
+    },
+    "heading": {
+      "import": "Alergeny",
+      "standalone": "Konfiguracja alergenów"
+    },
+    "nav": {
+      "next": "Dalej →",
+      "back": "← Wstecz",
+      "skip": "Na razie pomiń",
+      "saving": "Zapisywanie…",
+      "done": "Gotowe",
+      "saveLater": "Zapisz i dokończ później",
+      "close": "Zamknij",
+      "finish": "Zakończ",
+      "skipImport": "Na razie pomiń konfigurację alergenów"
+    },
+    "hint": {
+      "skipDefers": "Pominięcie odkłada sprawę — niepotwierdzone dania pozostają ukryte przed klientami, dopóki ich alergeny nie zostaną potwierdzone.",
+      "importIncomplete": "Potwierdź każde danie, aby kontynuować — albo wybierz „Na razie pomiń konfigurację alergenów”."
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Datumu diapazons",
+    "event": "📍 Pasākums",
+    "filterBy": "Filtrēt pēc",
+    "show": "Rādīt",
+    "range": "<from></from><sep>līdz</sep><until></until>",
+    "selectEvent": "Izvēlieties pasākumu…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Pasākums",
+    "viewReport": "Skatīt atskaiti",
+    "loading": "Ielādē…",
+    "orders": "📋 Pasūtījumi",
+    "items": "📦 Pozīcijas",
+    "exportCsv": "⬇ Eksportēt CSV"
+  },
+  "empty": {
+    "noOrders": "Šajā periodā pasūtījumu nav.",
+    "selectEvent": "Augstāk izvēlieties pasākumu, lai skatītu tā atskaiti."
+  },
+  "summary": {
+    "totals": "{n, plural, zero {{count} pasūtījumu} one {{count} pasūtījums} other {{count} pasūtījumi}} · {total}"
+  },
+  "revenue": {
+    "title": "Ieņēmumu sadalījums",
+    "deals": "Ieņēmumi no komplektiem",
+    "modifiers": "Piemaksas par piedevām",
+    "foodSales": "Ēdienu pārdošana",
+    "total": "Kopā",
+    "other": "Citi",
+    "tax": "Nodoklis",
+    "tips": "Dzeramnauda",
+    "serviceFees": "Apkalpošanas maksas",
+    "cardFees": "Karšu komisijas"
+  },
+  "itemsSold": {
+    "title": "Pārdotās pozīcijas"
+  },
+  "dealsCard": {
+    "title": "Komplekti"
+  },
+  "custom": {
+    "title": "Pielāgojumi",
+    "paidModifiers": "Maksas piedevas",
+    "customerNotes": "Klientu piezīmes",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Pozīcija",
+    "modifier": "Piedeva",
+    "qty": "Daudz.",
+    "total": "Kopā",
+    "date": "Datums",
+    "time": "Laiks",
+    "channel": "Kanāls"
+  },
+  "breakdown": {
+    "orders": "Pasūtījumu sadalījums",
+    "items": "Pozīciju sadalījums"
+  },
+  "channel": {
+    "online": "Tiešsaistē",
+    "walkUp": "Uz vietas"
+  },
+  "csv": {
+    "orderId": "Pasūtījuma ID",
+    "date": "Datums",
+    "event": "Pasākums",
+    "timePlaced": "Pasūtīšanas laiks",
+    "collectionTime": "Saņemšanas laiks",
+    "customerName": "Klienta vārds",
+    "orderType": "Pasūtījuma veids",
+    "items": "Pozīcijas",
+    "deals": "Komplekti",
+    "modifiers": "Piedevas",
+    "notes": "Piezīmes",
+    "subtotal": "Starpsumma",
+    "tip": "Dzeramnauda",
+    "serviceFee": "Apkalpošanas maksa",
+    "total": "Kopā",
+    "itemName": "Pozīcijas nosaukums",
+    "qty": "Daudzums",
+    "unitPrice": "Vienības cena",
+    "itemTotal": "Pozīcijas summa",
+    "orderTotal": "Pasūtījuma summa",
+    "unknownEvent": "Nezināms pasākums",
+    "asap": "Pēc iespējas ātrāk",
+    "unknownCustomer": "Nezināms",
+    "customerOnline": "Klients tiešsaistē",
+    "placedByTruck": "Ievadījis food truck"
+  }
+}

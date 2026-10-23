@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Nedēļas datumi",
+    "dayList": "Dienu saraksts",
+    "place": "Vieta",
+    "venue": "Norises vieta",
+    "area": "Apkaime",
+    "dayDate": "Diena un datums",
+    "times": "Laiki",
+    "orderLink": "Pasūtīšanas saite",
+    "locationTag": "Atrašanās vietas atzīme"
+  },
+  "weekHeader": "{truck} — kur mūs atrast šonedēļ:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ATCELTS, atvainojiet",
+  "noDates": "Šonedēļ datumu nav — ieskatieties drīz atkal.",
+  "orderAhead": "Pasūtiet iepriekš: {url}",
+  "orderAheadTagged": "Pasūtiet iepriekš: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Atvainojiet — {when} mēs nevarēsim ierasties: {where}.",
+  "cancelledApology": "Atvainojamies visiem, kas bija plānojuši atnākt. Drīz būsim atpakaļ.",
+  "when": {
+    "today": "šodien",
+    "tonight": "šovakar",
+    "tomorrow": "rīt",
+    "dated": "{date}"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Új rendelés #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Új rendelés érkezett",
+    "from": "<b>#{id} rendelés</b>, vásárló: <b>{name}</b>",
+    "collection": "Átvétel: {time}",
+    "asap": "Nincs megadott időpont — mielőbb",
+    "total": "Összesen",
+    "notes": "<b>Megjegyzés:</b> {notes}",
+    "autoConfirmed": "Automatikusan megerősítve — nincs teendő.",
+    "confirmPrompt": "Jelentkezzen be a HatchGrab vezérlőpultjára a rendelés megerősítéséhez vagy elutasításához.",
+    "text": "Új rendelés #{id}, vásárló: {name}{withSlot, select, yes {, átvétel: {slot}} other {}}{withVenue, select, yes {, helyszín: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Összesen: {total}.{withNotes, select, yes { Megjegyzés: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}: új eseményeket találtunk — kérjük, ellenőrizze",
+    "hi": "Üdvözöljük!",
+    "found": "<b>{n, plural, one {{count} új eseményt} other {{count} új eseményt}}</b> találtunk a menetrendjében, amelyeket jóvá kell hagynia, mielőtt megjelennek a vásárlóknak.",
+    "listHeading": "Talált események:",
+    "approve": "Amint jóváhagyja őket a Menetrend lapon, megjelennek a térképen, és a rendelési oldala készen áll az előrendelések fogadására.",
+    "cta": "Menetrend áttekintése →",
+    "signoff": "— A HatchGrab csapata · hatchgrab.com",
+    "unknownVenue": "Ismeretlen helyszín",
+    "text": "Üdvözöljük!\n\n{n, plural, one {{count} új eseményt} other {{count} új eseményt}} találtunk a menetrendjében, amelyeket jóvá kell hagynia:\n\n{list}\n\nItt tekintheti át őket: {url}\n\nAmint jóváhagyja őket, megjelennek a térképen.\n\n— A HatchGrab csapata"
+  }
+}

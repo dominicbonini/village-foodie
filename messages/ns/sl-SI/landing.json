@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistem za naročanje za food trucke in mobilno gostinstvo",
+    "description": "Naročanje, prednaročila in kuhinjski zaslon za food trucke in mobilno gostinstvo ({country}).",
+    "audience": "Lastniki food truckov in ponudniki mobilnega gostinstva"
+  },
+  "hero": {
+    "title": "Sistem za naročanje, narejen za <lean>food trucke.</lean>",
+    "subSmall": "Naložite jedilnik, brez registracije.<br></br>Delujoč demo si oglejte v manj kot 60 sekundah.",
+    "tagline": "Manj telefoniranja.<br></br>Več <lean>kuhanja.</lean>",
+    "cta": "Naložite svoj jedilnik →",
+    "ctaNote": "<lead>Naložite fotografijo jedilnika in v manj kot 60 sekundah si oglejte, kako deluje.</lead><small>Brez registracije. Brez kartice.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Kuhinjski zaslon HatchGrab z listki naročil v vrstnem redu priprave",
+    "dashboardAlt": "Sprejemanje naročila v HatchGrab: jedilnik na levi, sprotna košarica in skupni znesek na desni",
+    "phoneAlt": "Naročanje pri food trucku prek HatchGrab: jedilnik s fotografijami in cenami ter sprotni skupni znesek košarice"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Prvi mesec popolnoma brezplačno, vse funkcije odklenjene} two {Prva # meseca popolnoma brezplačno, vse funkcije odklenjene} few {Prvi # meseci popolnoma brezplačno, vse funkcije odklenjene} other {Prvih # mesecev popolnoma brezplačno, vse funkcije odklenjene}}",
+    "noCard": "Kartica ni potrebna",
+    "cancel": "Odpoved kadar koli, brez pogodbe"
+  },
+  "does": {
+    "eyebrow": "Kaj zna",
+    "title": "Narejeno za food trucke, ne za restavracije.",
+    "lede": "Večina sistemov za naročanje predvideva stalen naslov, zanesljiv wifi in vsak teden enak delovni čas. Vi pa ste vsak teden drugje, ob različnih urah, s slabim mobilnim signalom ali brez njega. HatchGrab je narejen prav za to.",
+    "slotsTitle": "Kupci izberejo čas prevzema",
+    "capacityTitle": "Nastavite zmogljivost kuhinje",
+    "capacityBody": "Nastavite, koliko lahko skuhate naenkrat in koliko časa to traja. Ko je čas prevzema zaseden, ga kupci ne morejo izbrati.",
+    "devicesTitle": "Deluje na vsaki napravi",
+    "devicesBody": "Na telefonu v predpasniku, tablici na pultu, prenosniku v food trucku — in na plačilnem terminalu, s katerim že sprejemate plačila.",
+    "postsTitle": "Avtomatizirajte objave na Facebooku in Instagramu",
+    "postsBody": "Naložite oblikovanje, ki ga že objavljate na Facebooku ali Instagramu. Vanj vpišemo vaše datume, lokacije in ure, pripravljeno za deljenje — vsak teden ali vsak dan.",
+    "whatsappTitle": "Samodejni odgovori v WhatsAppu",
+    "whatsappBody": "„Kje ste nocoj?“ „Katere sladice imate?“ Na sporočila v WhatsAppu se odgovarja namesto vas, medtem ko se peljete na prodajno mesto ali stojite za žarom — z vašim jedilnikom in urnikom. Messenger in Instagram prihajata kmalu.",
+    "whatsappSoonTitle": "Samodejni odgovori v WhatsAppu <soon>Kmalu</soon>",
+    "whatsappSoonBody": "„Kje ste nocoj?“ „Katere sladice imate?“ Kmalu se bo na sporočila v WhatsAppu odgovarjalo namesto vas, medtem ko se peljete na prodajno mesto ali stojite za žarom. Sledita Messenger in Instagram.",
+    "offlineTitle": "Ni signala? Strezite naprej.",
+    "offlineBody": "Če izgubite signal, se spletno naročanje samodejno ustavi, da kupci ne morejo oddati naročil, ki jih ne bi videli. Naročila še naprej sprejemajte z aplikacijo za iPhone, iPad in Android.",
+    "slotsBody": "Kupci naročijo vnaprej in izberejo čas prevzema. Krajše vrste in hrana, ki je pripravljena, ko pridejo."
+  },
+  "steps": {
+    "eyebrow": "Kako začeti",
+    "title": "Nastavite vse in začnite sprejemati naročila v približno 15 minutah.",
+    "lede": "Urediti morate tri stvari — za dve potrebujete le fotografijo.",
+    "menuTitle": "Ustvarite jedilnik",
+    "menuBody": "Fotografirajte svojo tablo ali prilepite besedilo. Artikli, cene in dodatki se prenesejo sami. Vi le preverite, ali je vse prav.",
+    "scheduleTitle": "Dodajte urnik",
+    "scheduleBody": "Ga imate na spletni strani? Preberemo ga od tam in ga sproti posodabljamo. Če ne, ga prav tako fotografirajte. Vi le potrdite, kar najdemo.",
+    "shareTitle": "Delite povezavo",
+    "shareBody": "Objavite jo na Facebooku, QR kodo nalepite na food truck. Naročila prispejo na vaš zaslon v vrstnem redu, v katerem jih morate skuhati."
+  },
+  "testimonial": {
+    "quote": "HatchGrab nam je močno olajšal naročanje. Vse je urejeno, spremljamo lahko zalogo in natančno vemo, koliko pic nam je še ostalo za prodajo — časovni termini pa so odlični za živahne vasi.",
+    "award": "Mobilna picerija leta",
+    "awardScope": "Regionalni zmagovalec",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia in Bogdan — lastnika"
+  },
+  "pricing": {
+    "eyebrow": "Cenik",
+    "title": "Začnite brezplačno. Nadgradite, ko boste potrebovali.",
+    "switchHead": "Prehajate z druge platforme?",
+    "switchBody": "Poglejte, koliko bi za enaka naročila plačali s HatchGrab. Traja približno minuto.",
+    "switchCta": "Primerjajte, koliko plačujete"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Bi radi videli, kako preprosta je nastavitev?",
+    "lede": "Naložite fotografijo ali posnetek zaslona svojega jedilnika in v manj kot 60 sekundah ga spremenimo v delujočo stran za naročanje, ki jo lahko preizkusite. Vaši artikli, vaše cene. Brez registracije, brez kartice, brez nameščanja. Poglejte, nato se odločite.",
+    "cta": "Naložite jedilnik zdaj →"
+  },
+  "meta": {
+    "title": "Sistem za naročanje za food trucke in mobilno gostinstvo — HatchGrab {country}",
+    "description": "Sprejemajte naročila in prednaročila na svojem prodajnem mestu brez vrste. Programska oprema za naročanje in kuhinjski zaslon za food trucke in mobilno gostinstvo ({country}) — ni blagajniški sistem."
+  }
+}

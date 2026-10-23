@@ -1,0 +1,17 @@
+{
+  "tagline": "Manj telefoniranja.<br></br>Več kuhanja.",
+  "features": "Funkcije",
+  "pricing": "Cenik",
+  "privacy": "Zasebnost",
+  "terms": "Pogoji",
+  "contact": "Kontakt",
+  "about": "O nas",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Od ustvarjalcev <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Prenesite HatchGrab v trgovini App Store",
+    "appStoreAlt": "Prenesite v trgovini App Store",
+    "googlePlayLink": "Prenesite HatchGrab v trgovini Google Play",
+    "googlePlayAlt": "Na voljo v trgovini Google Play"
+  }
+}

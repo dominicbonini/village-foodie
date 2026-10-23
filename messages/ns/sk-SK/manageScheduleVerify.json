@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Overenie je dočasne nedostupné. Skúste to znova o chvíľu.",
+  "malformed": "Toto nevyzerá ako webová adresa. Skúste napríklad vasfoodtruck.sk/akcie",
+  "blocked": "K tejto stránke sme sa nedostali — možno blokuje automatické kontroly. Skúste stránku, na ktorej je váš harmonogram, alebo pridajte akcie ručne.",
+  "unreachable": "Tento web sa nám nepodarilo otvoriť. Možno nefunguje alebo je adresa nesprávna.",
+  "no_content": "Stránku sme otvorili, ale nedalo sa na nej nič prečítať. Skontrolujte, či je verejne prístupná.",
+  "no_events": "Na tejto stránke sme nenašli žiadne nadchádzajúce akcie. Uistite sa, že adresa URL vedie priamo na miesto, kde je váš harmonogram.",
+  "blockedDomain": "Použite adresu URL svojho webu — stránky na Facebooku a Instagrame sa nedajú automaticky prehľadávať."
+}

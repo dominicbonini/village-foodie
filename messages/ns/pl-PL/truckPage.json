@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Zamów w food trucku {truck}",
+    "orderDescription": "Zamów z wyprzedzeniem w food trucku {truck} i odbierz przy food trucku.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo: {truck}"
+  },
+  "shareTitle": "{truck} — harmonogram",
+  "shareText": "Sprawdź, gdzie następnym razem stanie food truck {truck}! 🚚",
+  "linkCopied": "Link do profilu skopiowany do schowka! 📋",
+  "facebookPage": "Strona na Facebooku",
+  "loadingMap": "Wczytywanie mapy…",
+  "view": {
+    "list": "Lista",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "To twój food truck?",
+  "ownThisTruckTitle": "To twój food truck? Kliknij, aby zaktualizować profil",
+  "actions": {
+    "menu": "Menu",
+    "call": "Zadzwoń",
+    "message": "Wiadomość",
+    "share": "Udostępnij",
+    "order": "Zamów"
+  },
+  "loadingSchedule": "Wczytywanie harmonogramu…",
+  "loadError": {
+    "title": "Nie udało się wczytać",
+    "body": "Nie udało się teraz wczytać harmonogramu — zwykle to chwilowy problem. Spróbuj ponownie.",
+    "retry": "Ponów"
+  },
+  "notFound": {
+    "title": "Nie znaleziono food trucka",
+    "body": "Nie znaleźliśmy żadnych informacji o tym food trucku. Może zmienił lokalizację albo zaktualizował profil.",
+    "cta": "Zobacz wszystkie food trucki"
+  },
+  "noEvents": {
+    "title": "Brak nadchodzących wydarzeń",
+    "body": "Może brakuje nam informacji o tym food trucku. Jesteś właścicielem albo znasz jego harmonogram?",
+    "cta": "Napisz do nas, a zaktualizujemy!"
+  },
+  "whereToFind": "Gdzie nas znaleźć",
+  "missingEvent": "<strong>Brakuje jakiegoś wydarzenia?</strong> <br></br>Jeśli jesteś właścicielem tego food trucka albo po prostu wiernym fanem, pomóż nam dbać o aktualność tej strony! <br></br><link>Napisz do nas, aby uzupełnić brakujące informacje.</link>",
+  "weeklySchedule": "Odbieraj harmonogram co tydzień 🍕"
+}

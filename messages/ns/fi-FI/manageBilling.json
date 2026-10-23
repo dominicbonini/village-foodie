@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "per ruokarekka / kk",
+  "transactionFees": "Maksutapahtumakulut",
+  "comingSoon": "Tulossa pian",
+  "footnote2Masked": "Verkkomaksut toimivat Stripe Connectin avulla. Alustan ja korttimaksujen käsittelyn kulut ovat vielä auki, ja ne vahvistetaan lanseerauksen yhteydessä.",
+  "card": {
+    "title": "Laskutus ja maksut",
+    "managed": "Laskutusta hoitaa HatchGrab",
+    "earlyAccess": "Ennakkokäytön aikana määritämme ja muutamme paketit käsin.",
+    "planLine": "{trial, select, yes {{truck} · paketti {plan} (kokeilujakso)} other {{truck} · paketti {plan}}}"
+  },
+  "currentPlan": "Nykyinen paketti",
+  "plan": {
+    "included": "Sisältää verkkotilauksia {amount} edestä kuukaudessa.",
+    "includedUnlimited": "Sisältää rajattomasti verkkotilauksia.",
+    "promo": "Erikoishinta.",
+    "promoUntil": "Erikoishinta {date} asti.",
+    "ended": "Pakettisi {plan} päättyi {date}. Nykyinen pakettisi: {now}.",
+    "trialMonths": "{months} kuukauden ilmainen kokeilujakso."
+  },
+  "trialEnds": "Kokeilujakso päättyy {date}",
+  "yourTrialEnds": "Kokeilujaksosi päättyy {date}",
+  "notStarted": {
+    "heading": "Ilmainen kokeilujaksosi ei ole vielä alkanut"
+  },
+  "onTrial": "Käytössäsi ovat kaikki ominaisuudet. Valitse paketti ennen kuin kokeilujaksosi päättyy.",
+  "onTrialNoCta": "Käytössäsi ovat kaikki ominaisuudet.",
+  "noCharge": "🔒 Sinulta ei veloiteta mitään kokeilujakson aikana, joka kestää {date} asti. Laskutus alkaa vasta, kun valitset paketin ja annat maksutietosi. Siihen asti ei ole mitään peruttavaa eikä maksettavaa.",
+  "fees": "*Verkkotilauksiin sovelletaan tavanomaisia korttimaksujen käsittelykuluja",
+  "setUpPayment": "⏱ Valitse paketti ennen kuin kokeilujaksosi päättyy",
+  "changeYourPlan": "Vaihda pakettia",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Vaihda pakettiin {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Otamme automaattista laskutusta käyttöön. Jos haluat vaihtaa heti, lähetä meille viesti, niin hoidamme vaihdon 24 tunnin kuluessa.",
+    "mailSubject": "Paketin vaihto: {plan} — {truck}",
+    "mailBody": "Hei, haluaisin vaihtaa pakettiin {plan} ({price}). Ruokarekka: {truck}.",
+    "email": "Vaihda sähköpostilla",
+    "cancel": "Peruuta"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Meniu utilizator",
+  "screenOn": "Ecran pornit",
+  "screenOff": "Ecran oprit",
+  "newOrderSound": "Sunet comandă nouă",
+  "copied": "Copiat",
+  "orderLink": "Link de comandă",
+  "qrCode": "Cod QR",
+  "kitchenScreen": "Ecran de bucătărie",
+  "thisDevice": "Acest dispozitiv",
+  "manage": "Administrare",
+  "ordersDashboard": "Panoul de comenzi",
+  "admin": "Admin",
+  "privacy": "Politica de confidențialitate",
+  "terms": "Termeni",
+  "signOut": "Deconectare",
+  "close": "Închideți"
+}

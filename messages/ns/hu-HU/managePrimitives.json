@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Allergének feltüntetése minden ételnél",
+    "recommended": "Ajánlott",
+    "perDishBody": "Nézzen át minden ételt, és erősítse meg az allergénjeit. A vásárlók ételenkénti címkéket látnak, valamint egy ezekből összeállított allergénösszesítő kártyát.",
+    "cardTitle": "Allergénkártya megjelenítése",
+    "cardBody": "Töltsön fel vagy illesszen be egyetlen allergénkártyát (PDF, kép vagy szöveg), amely változtatás nélkül jelenik meg. Az ételenkénti címkék rejtve maradnak."
+  }
+}

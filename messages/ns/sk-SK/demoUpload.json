@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Čítame váš jedálny lístok…",
+    "found": "Našli sme vaše položky…",
+    "kitchen": "Nastavujeme vašu kuchyňu…",
+    "page": "Vytvárame vašu objednávkovú stránku…",
+    "almost": "Takmer hotovo…"
+  },
+  "templateSteps": {
+    "truck": "Vytvárame ukážkový food truck…",
+    "menu": "Nastavujeme jedálny lístok…",
+    "kitchen": "Nastavujeme kuchyňu…",
+    "page": "Vytvárame objednávkovú stránku…",
+    "almost": "Takmer hotovo…"
+  },
+  "dialogLabel": "Nahrajte jedálny lístok",
+  "heading": "✨ Nahrajte jedálny lístok",
+  "failedHeading": "Tento jedálny lístok sa nám nepodarilo prečítať",
+  "close": "Zavrieť",
+  "intro": "Fotka tabule s jedálnym lístkom, snímka obrazovky, PDF alebo ho vložte ako text. Naša AI ho prečíta a vytvorí vám funkčnú objednávkovú stránku — s vašimi položkami a cenami — za menej než 60 sekúnd. Bez registrácie, bez karty.",
+  "failedIntro": "Niekedy je fotka príliš tmavá, nakrivo alebo ručne písaná. To je naša starosť, nie vaša chyba. Čo môžete urobiť:",
+  "usually": "Zvyčajne to trvá menej než 60 sekúnd.",
+  "slow": "Trvá to dlhšie než zvyčajne — pri veľkých jedálnych lístkoch sa to stáva.",
+  "keepWaiting": "Čakať ďalej",
+  "sampleWhileYouWait": "Alebo si zatiaľ prezrite ukážkový jedálny lístok",
+  "standIn": "Toto <b>nebude váš jedálny lístok</b> — je to len náhrada, aby ste videli, ako to funguje.",
+  "seeSample": "Ukážkový jedálny lístok",
+  "tryAgain": "Skúsiť znova",
+  "tryPhotoAgain": "Skúsiť túto fotku znova",
+  "tryDifferent": "Skúsiť inú fotku",
+  "uploadAnother": "← Nahrať inú fotku",
+  "orSample": "Alebo si prezrite ukážkový jedálny lístok",
+  "orBuild": "Alebo ho vytvoríme za vás",
+  "buildSent": "✓ Ďakujeme — máme to. Ozveme sa e-mailom.",
+  "buildBody": "Nechajte nám e-mail a skutočný človek vám jedálny lístok zadá a pošle odkaz.",
+  "emailPlaceholder": "vy@vasfoodtruck.sk",
+  "sending": "…",
+  "send": "Odoslať",
+  "noPhoto": "Nemáte po ruke fotku jedálneho lístka?",
+  "noPhotoBody": "Prezrite si radšej ukážkový food truck — svoj lístok môžete nahrať kedykoľvek.",
+  "build": "Vytvoriť moju ukážku →",
+  "nothingPublished": "Nič sa nezverejní — vidíte to len vy.",
+  "error": {
+    "somethingWrong": "Niečo sa pokazilo. Skúste to znova.",
+    "serverUnreachable": "Nepodarilo sa spojiť so serverom. Skontrolujte pripojenie a skúste to znova.",
+    "sendFailed": "Nepodarilo sa to odoslať — skúste to znova."
+  },
+  "fields": {
+    "uploadLabel": "Nahrať súbor s jedálnym lístkom",
+    "dropHere": "Sem pretiahnite jedálny lístok",
+    "dragOrTap": "Pretiahnite sem alebo ťuknite a vyberte",
+    "fileTypes": "Obrázok alebo PDF",
+    "or": "alebo",
+    "pasteLabel": "Vložiť text jedálneho lístka",
+    "pastePlaceholder": "Sem vložte jedálny lístok — názvy položiek, popisy, ceny..."
+  }
+}

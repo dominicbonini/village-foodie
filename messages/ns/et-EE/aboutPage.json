@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Meist — HatchGrab",
+    "description": "HatchGrabi asutas Dominic Bonini, kes lõi Village Foodie, et teada saada, millised toiduautod tema külla tulevad. See on väike ettevõte ja ta juhib seda ise."
+  },
+  "eyebrow": "Meist",
+  "title": "Tere, mina olen Dominic.",
+  "photoAlt": "{name}, HatchGrabi asutaja",
+  "story": {
+    "village": "Ma elan külas. Toiduautod käivad siin, aga ma ei teadnud kunagi, milline neist tuleb või millal, ilma Facebookis tuhnimata.",
+    "villageFoodie": "Seepärast lõin Village Foodie — lihtsa viisi näha, millised toiduautod sinu lähedal asuvatesse küladesse tulevad.",
+    "hatchgrab": "Mida rohkem toiduautosid ma vaatasin, seda enam leidsin, et need väärivad paremaid tööriistu: midagi, mis on loodud ettevõttele, mis on iga päev eri kohas, mitte kindla aadressiga restoranile. Seepärast asutasingi HatchGrabi.",
+    "small": "See on väike ettevõte ja ma juhin seda ise. Kui võtad ühendust, vastan sulle mina, mitte tugiteenuse järjekord."
+  },
+  "signature": "<b>{name}</b> · asutaja",
+  "company": "{company} · registreeritud Inglismaal ja Walesis · registrikood {number} · registrijärgne aadress: {address}",
+  "contact": "Võta meiega ühendust"
+}

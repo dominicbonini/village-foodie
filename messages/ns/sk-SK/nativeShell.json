@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Objednávka #{id} vrátená späť",
+    "saved": "Objednávka #{id} uložená",
+    "undo": "↩ Späť",
+    "paymentNotRecorded": "⚠ Objednávka #{id} — PLATBA NEZAZNAMENANÁ. {collect, select, yes {Objednávka bola dokončená} other {Objednávka bola uložená}}, platba však nie.",
+    "recordPayment": "Zaznamenať platbu",
+    "paid": "Objednávka #{id} zaplatená",
+    "undonePayment": "Vrátené späť — platba odstránená",
+    "undoneCollected": "Vrátené späť — objednávka nevyzdvihnutá",
+    "collected": "Objednávka #{id} {paidToo, select, yes {zaplatená a vyzdvihnutá} other {vyzdvihnutá}}",
+    "ready": "Objednávka #{id} hotová",
+    "readyBuzzer": "Objednávka #{id} hotová · <pill></pill>",
+    "status": "Objednávka #{id} {action, select, confirm {potvrdená} reject {zamietnutá} ready {hotová} collected {vyzdvihnutá} undo_collected {obnovená} cancel {zrušená} other {aktualizovaná}}"
+  },
+  "conflicts": {
+    "more": "+{count} ďalšie",
+    "notOnScreenPlus": "+{count} mimo tejto obrazovky",
+    "notOnScreen": "{n, plural, one {{count} objednávka nie je na tejto obrazovke} few {{count} objednávky nie sú na tejto obrazovke} other {{count} objednávok nie je na tejto obrazovke}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PLATBA NEZAZNAMENANÁ",
+    "paymentBody": "{orders} — označené ako zaplatené iba na tomto zariadení. Platba neprešla.",
+    "paymentCheck": "Skontrolujte objednávku a ak platba stále chýba, prijmite ju znova.",
+    "dismiss": "Zavrieť",
+    "confirmChecked": "Potvrďte, že ste skontrolovali: {orders}",
+    "confirmHides": "Tým sa upozornenie skryje. Záznam zostane na tomto zariadení v každom prípade.",
+    "notYet": "Ešte nie",
+    "iveChecked": "Skontrolované: {orders}",
+    "statusBody": "⚠ {orders} — táto zmena neprešla. Skontrolujte objednávku.",
+    "offline": "📴 Bez pripojenia — {n, plural, one {{count} zmena je uložená na tomto zariadení. Odošle sa, keď budete znova online.} few {{count} zmeny sú uložené na tomto zariadení. Odošlú sa, keď budete znova online.} other {{count} zmien je uložených na tomto zariadení. Odošlú sa, keď budete znova online.}} Nastavenia sú zamknuté.",
+    "syncing": "Opäť online — {n, plural, one {odosiela sa {count} zmena} few {odosielajú sa {count} zmeny} other {odosiela sa {count} zmien}}…",
+    "synced": "Všetky zmeny boli odoslané.",
+    "stillQueued": "{n, plural, one {{count} zmena je uložená na tomto zariadení. Stále sa ju pokúšame odoslať.} few {{count} zmeny sú uložené na tomto zariadení. Stále sa ich pokúšame odoslať.} other {{count} zmien je uložených na tomto zariadení. Stále sa ich pokúšame odoslať.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab je zamknutý",
+    "verifying": "Overuje sa…",
+    "unlock": "Odomknúť",
+    "cantUseBiometric": "Nedá sa použiť Face / Touch ID?",
+    "enterPin": "Zadajte záložný PIN",
+    "wrongPin": "Nesprávny PIN — skúste to znova.",
+    "checking": "Kontroluje sa…",
+    "tryBiometric": "Skúsiť radšej Face / Touch ID",
+    "forgot": "Zabudli ste PIN? Budete musieť aplikáciu preinštalovať."
+  },
+  "notify": {
+    "title": "🔔 Upozornenia",
+    "intro": "Upozornenia na tomto zariadení. Zapnite ich a vyberte, ktoré chcete dostávať.",
+    "refused": "Ak to chcete zapnúť, povoľte upozornenia v Nastaveniach zariadenia.",
+    "newOrder": "Upozornenia na nové objednávky",
+    "newOrderHelp": "Upozornenie, keď treba potvrdiť objednávku zákazníka.",
+    "offline": "Upozornenia na offline / pozastavenie",
+    "offlineHelp": "Upozornenie, keď toto zariadenie prejde do offline režimu (a objednávanie sa pozastaví). <green>Funguje aj offline.</green>"
+  },
+  "van": {
+    "label": "Food truck",
+    "loadRetry": "Nenačítalo sa · Skúsiť znova",
+    "select": "Vybrať…"
+  },
+  "deviceSave": {
+    "network": "Server je nedostupný — skontrolujte pripojenie a skúste to znova.",
+    "server": "Momentálne sa to nepodarilo uložiť. Skúste to znova."
+  },
+  "setup": {
+    "fetchErrorTitle": "Nastavenie zariadenia sa nepodarilo načítať",
+    "fetchErrorBody": "Nepodarilo sa spojiť so serverom a nastaviť <b>toto zariadenie</b>. Skontrolujte pripojenie a skúste to znova — vaše objednávky a nastavenia to neovplyvní.",
+    "retry": "Skúsiť znova",
+    "later": "Neskôr",
+    "noVanTitle": "Žiadny aktívny food truck",
+    "noVanBody": "Váš podnik zatiaľ nemá aktívny food truck. Aktivujte ho v <b>Nastavenia → Vaše food trucky</b> a toto zariadenie sa nastaví automaticky — tu už nič ďalšie robiť netreba.",
+    "goToVans": "Prejsť do Nastavenia → Vaše food trucky",
+    "title": "Nastavenie tohto zariadenia",
+    "body": "Jednorazové nastavenie pre <b>toto zariadenie</b>: ktorá obrazovka sa otvorí a ktorý food truck obsluhuje. Platí iba pre toto zariadenie — ostatné zariadenia sa nastavujú samostatne a neskôr to môžete zmeniť v ponuke profilu → „Toto zariadenie“.",
+    "whichScreen": "Ktorá obrazovka sa má na tomto zariadení otvoriť?",
+    "dashboard": "Prehľad",
+    "kds": "Kuchynská obrazovka",
+    "whichVan": "Ku ktorému food trucku patrí toto zariadenie?",
+    "selectVan": "Vyberte food truck…",
+    "saving": "Ukladá sa…",
+    "tryAgain": "Skúsiť znova",
+    "continue": "Pokračovať"
+  },
+  "device": {
+    "title": "Toto zariadenie",
+    "viewing": "Zobrazujete: <b>{truck}</b>",
+    "viewingVan": "Zobrazujete: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Iba toto zariadenie — ostatné zariadenia sa nastavujú samostatne. (ID: {id}…)",
+    "truck": "Podnik",
+    "van": "Food truck",
+    "defaultScreen": "Predvolená obrazovka",
+    "orderNotifications": "Upozornenia na objednávky",
+    "patchFailed": "{setting, select, van {Food truck} defaultScreen {Predvolená obrazovka} other {Upozornenia na objednávky}} – nastavenie sa neuložilo. {reason}",
+    "requireBiometric": "Pri otvorení vyžadovať odomknutie odtlačkom prsta alebo tvárou",
+    "pinTitle": "Nastavte záložný PIN (4–6 číslic)",
+    "pinHelp": "Váš spôsob prístupu, ak odomknutie odtlačkom prsta alebo tvárou nefunguje — je to jediná záložná možnosť, tak ho nezabudnite (zabudnutý PIN znamená preinštalovanie aplikácie). Funguje offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Potvrďte PIN",
+    "pinTooShort": "Použite aspoň 4 číslice.",
+    "pinMismatch": "PIN kódy sa nezhodujú.",
+    "setPin": "Nastaviť PIN a zapnúť",
+    "cancel": "Zrušiť",
+    "noBiometric": "Na tomto zariadení nie je nastavené odomknutie odtlačkom prsta ani tvárou — pridajte ho v nastaveniach zariadenia. Záložný PIN stále funguje.",
+    "footer": "Tieto nastavenia platia iba pre toto zariadenie — ostatné zariadenia sa nastavujú samostatne."
+  },
+  "appLock": {
+    "unlockReason": "Odomknúť HatchGrab",
+    "usePasscode": "Použiť kód",
+    "cancel": "Zrušiť",
+    "confirmEnable": "Potvrďte zapnutie zámku aplikácie"
+  },
+  "channel": {
+    "ordersName": "Nové objednávky",
+    "ordersDescription": "Upozornenia, keď treba potvrdiť objednávku."
+  },
+  "localNotify": {
+    "newOrderTitle": "Nová objednávka",
+    "orderReceived": "Prijatá objednávka {number}",
+    "newOrders": "{n, plural, one {Máte novú objednávku} few {Máte {count} nové objednávky} other {Máte {count} nových objednávok}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Objednávanie pozastavené",
+    "pausedBody": "Ste offline — objednávanie pre zákazníkov je pozastavené.",
+    "offlineTitle": "Ste offline",
+    "offlineBody": "Toto zariadenie stratilo pripojenie."
+  }
+}

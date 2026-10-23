@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Luetaan ruokalistaasi…",
+    "found": "Tuotteesi löytyivät…",
+    "kitchen": "Valmistellaan keittiötäsi…",
+    "page": "Rakennetaan tilaussivuasi…",
+    "almost": "Melkein valmista…"
+  },
+  "templateSteps": {
+    "truck": "Rakennetaan esimerkkirekkaasi…",
+    "menu": "Valmistellaan ruokalistaa…",
+    "kitchen": "Valmistellaan keittiötä…",
+    "page": "Rakennetaan tilaussivua…",
+    "almost": "Melkein valmista…"
+  },
+  "dialogLabel": "Lataa ruokalistasi",
+  "heading": "✨ Lataa ruokalistasi",
+  "failedHeading": "Emme pystyneet lukemaan tätä ruokalistaa",
+  "close": "Sulje",
+  "intro": "Kuva ruokalistataulusta, kuvakaappaus, PDF tai liitä se tekstinä. Tekoälymme lukee sen ja rakentaa sinulle toimivan tilaussivun — omat tuotteesi, omat hintasi — alle 60 sekunnissa. Ei rekisteröitymistä, ei korttia.",
+  "failedIntro": "Joskus kuva on liian tumma, liian vinossa tai käsin kirjoitettu. Se on meidän ratkaistavamme, et tehnyt mitään väärin. Muutama tapa jatkaa:",
+  "usually": "Tämä vie yleensä alle 60 sekuntia.",
+  "slow": "Tämä kestää tavallista kauemmin — isoilla ruokalistoilla niin käy joskus.",
+  "keepWaiting": "Odota vielä",
+  "sampleWhileYouWait": "Tai tutustu esimerkkiruokalistaan odottaessasi",
+  "standIn": "Tämä <b>ei ole sinun ruokalistasi</b> — se on esimerkki, jotta näet, miten kaikki toimii.",
+  "seeSample": "Katso esimerkkiruokalista",
+  "tryAgain": "Yritä uudelleen",
+  "tryPhotoAgain": "Kokeile tätä kuvaa uudelleen",
+  "tryDifferent": "Kokeile toista kuvaa",
+  "uploadAnother": "← Lataa toinen kuva",
+  "orSample": "Tai tutustu esimerkkiruokalistaan",
+  "orBuild": "Tai me teemme sen puolestasi",
+  "buildSent": "✓ Kiitos — saimme sen. Otamme yhteyttä sähköpostilla.",
+  "buildBody": "Jätä sähköpostiosoitteesi, niin oikea ihminen syöttää ruokalistasi ja lähettää sinulle linkin.",
+  "emailPlaceholder": "nimi@ruokarekkasi.fi",
+  "sending": "…",
+  "send": "Lähetä",
+  "noPhoto": "Eikö sinulla ole kuvaa ruokalistasta käsillä?",
+  "noPhotoBody": "Tutustu sen sijaan esimerkkirekkaan — voit ladata omasi milloin tahansa.",
+  "build": "Rakenna demoni →",
+  "nothingPublished": "Mitään ei julkaista — vain sinä näet tämän.",
+  "error": {
+    "somethingWrong": "Jokin meni pieleen. Yritä uudelleen.",
+    "serverUnreachable": "Emme saaneet yhteyttä palvelimeen. Tarkista yhteytesi ja yritä uudelleen.",
+    "sendFailed": "Lähettäminen epäonnistui — yritä uudelleen."
+  },
+  "fields": {
+    "uploadLabel": "Lataa ruokalistatiedosto",
+    "dropHere": "Pudota ruokalistasi tähän",
+    "dragOrTap": "Vedä ja pudota tai napauta valitaksesi",
+    "fileTypes": "Kuva tai PDF",
+    "or": "tai",
+    "pasteLabel": "Liitä ruokalistan teksti",
+    "pastePlaceholder": "Liitä ruokalistasi tähän — tuotteiden nimet, kuvaukset, hinnat..."
+  }
+}

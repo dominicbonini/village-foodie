@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Kokeile ennen yhdistämistä",
+    "intro": "Kirjoita kysymys niin kuin asiakas sen kysyisi, ja näet tarkalleen, mitä hän saisi vastaukseksi. Mitään ei lähetetä kenellekään.",
+    "examples": {
+      "where": "Missä olette tänä iltana?",
+      "doYouDo": "Onko teillä pepperonipizzaa?",
+      "menu": "Mitä ruokalistalla on?"
+    },
+    "placeholder": "Mitä jälkiruokia teillä on?",
+    "send": "Lähetä",
+    "empty": "Vastauksesi näkyy tässä",
+    "working": "Muodostetaan vastausta…",
+    "noReply": "Vastausta ei lähetettäisi.",
+    "noReplyWhy": "Viesti vaikuttaa roskapostilta, varauspyynnöltä tai muuten asiaan kuulumattomalta, joten automaattiset vastaukset eivät vastaa siihen.",
+    "footnote": "Vastaukset ovat tekoälyn tuottamia, vaihtelevat hieman joka kerta ja voivat toisinaan olla virheellisiä.",
+    "failed": "Esikatselua ei voitu luoda juuri nyt.",
+    "unreachable": "Palvelimeen ei saatu yhteyttä. Tarkista yhteys ja yritä uudelleen."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Valmistellaan…",
+      "unavailable": "Ei saatavilla",
+      "waiting": "Odotetaan Facebook-ikkunaa…",
+      "finishing": "Viimeistellään…",
+      "reconnect": "Yhdistä uudelleen",
+      "setUp": "Ota käyttöön"
+    },
+    "startAgain": "Aloita alusta",
+    "popupHint": "Etkö näe Facebook-ikkunaa? Se on ehkä estetty. Salli ponnahdusikkunat sivustolle hatchgrab.com ja paina sitten Aloita alusta."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsAppin käyttöönotto ei ole saatavilla tässä ympäristössä.",
+    "sdkBlocked": "Metan kirjautumisskriptiä ei voitu ladata. Syynä on yleensä mainosten esto tai seurannan esto.",
+    "setupFailed": "Käyttöönottoa ei voitu viedä loppuun. Mitään ei muutettu.",
+    "setupFinished": "Käyttöönotto valmis.",
+    "metaError": "Meta ilmoitti ongelmasta käyttöönoton aikana. Mitään ei muutettu. Yritä uudelleen ja ota meihin yhteyttä, jos ongelma toistuu.",
+    "closed": "Käyttöönotto suljettiin ennen kuin se valmistui. Mitään ei muutettu — yritä uudelleen painamalla Ota käyttöön.",
+    "disconnectedUnreachable": "WhatsApp-yhteys on katkaistu. Emme saaneet yhteyttä Metaan käyttöoikeuden poistamiseksi. Poista HatchGrab kohdassa WhatsApp Business → Asetukset → Tili → Business Platform.",
+    "disconnected": "WhatsApp-yhteys on katkaistu. Automaattiset vastaukset on lopetettu.",
+    "close": "Sulje"
+  },
+  "card": {
+    "title": "Automaattiset vastaukset",
+    "description": "Vastaa asiakkaiden kysymyksiin automaattisesti somessa ruokalistasi ja aikataulusi perusteella.",
+    "channels": "Kanavat",
+    "requiresAccount": "Vaatii WhatsApp Business -tilin.",
+    "connected": "Yhdistetty",
+    "popupInstruction": "Facebook-ikkuna avautuu WhatsApp Business -tilisi yhdistämistä varten. Jos mitään ei tule näkyviin, salli selaimessasi ponnahdusikkunat sivustolle hatchgrab.com ja paina sitten uudelleen Ota käyttöön.",
+    "switchedOff": "WhatsAppin automaattiset vastaukset on poistettu käytöstä ruokarekaltasi.",
+    "expiring": "WhatsApp-yhteytesi on uusittava pian. Paina Yhdistä uudelleen, jotta automaattiset vastaukset toimivat edelleen.",
+    "comingSoon": "Tulossa pian",
+    "instagram": "Automaattiset vastaukset Instagramin yksityisviesteihin. Vaatii Instagramin ammattilaistilin.",
+    "messenger": "Automaattiset vastaukset Facebook Messengeriin. Vaatii Facebook-sivun."
+  },
+  "blocked": {
+    "title": "Vastauksiasi ei toimiteta",
+    "body": "WhatsApp kieltäytyy lähettämästä automaattisia vastauksiasi WhatsApp Business -tilisi laskutusongelman vuoksi. Asiakkaat voivat edelleen lähettää sinulle viestejä, ja näet kaiken, mitä he lähettävät — mutta he eivät saa vastausta.",
+    "fix": "Maksat nämä viestit suoraan WhatsAppille, joten ongelma korjataan WhatsApp Managerissa. <link>Tarkista maksutapasi</link>"
+  },
+  "limit": {
+    "heading": "Automaattiset vastaukset",
+    "label": "Kuukausiraja",
+    "option": "{n, number}",
+    "usage": "{used, number}/{limit, number} käytetty · nollautuu {date}",
+    "perCustomer": "Enintään {n} vastausta asiakasta kohden 24 tunnissa, sen jälkeen yksi viesti, jossa kerrotaan, että vastaat henkilökohtaisesti.",
+    "emailAt": "Vastaukset keskeytyvät, kun raja täyttyy. Lähetämme sinulle sähköpostia, kun 80 % ja 100 % on käytetty.",
+    "saved": "Kuukausittainen vastausraja tallennettu",
+    "saveFailed": "Rajaa ei voitu tallentaa"
+  },
+  "billing": {
+    "heading": "Laskutus",
+    "paymentMethod": "Maksutapa",
+    "added": "Maksutapa lisätty",
+    "missing": "Maksutapaa ei ole lisätty",
+    "addInManager": "Lisää WhatsApp Managerissa",
+    "summary": "Vastauksista laskuttaa WhatsApp-tiliäsi Meta, ei HatchGrab. {from} alkaen ensimmäiset {free, number} vastausta kuukaudessa ovat ilmaisia. Tieto tarkistettu {checked}; katso mahdolliset muutokset <link>Metan hinnoittelusta</link>.",
+    "howMetaCharges": "Näin Meta laskuttaa",
+    "chargesTitle": "WhatsApp-vastauksista laskuttaa Meta, ei HatchGrab.",
+    "chargesBody": "Meta laskuttaa WhatsApp Business -tiliäsi jokaisesta vastauksesta, jonka HatchGrab lähettää puolestasi. {from} alkaen Meta antaa {free, number} ilmaista vastausta kuukaudessa numeroa kohden; sen jälkeen jokaisesta vastauksesta veloitetaan Metan hinnan mukaan. Vastauksista, jotka lähetät itse WhatsApp Business -sovelluksesta, ei veloiteta. Meta päättää nämä hinnat ja voi muuttaa niitä. <link>Katso Metan hinnoittelu</link>",
+    "addPaymentInManager": "Lisää maksutapa WhatsApp Managerissa",
+    "aboveMissing": "Rajasi ylittää Metan {free, number} ilmaista vastausta. Ilman maksutapaa Meta lopettaa kaikki vastaukset, kun ne on käytetty.",
+    "aboveGeneral": "Rajasi ylittää Metan {free, number} ilmaista vastausta. Sen ylittävät vastaukset vaativat WhatsApp-tilillesi maksutavan; ilman sitä Meta lopettaa kaikki vastaukset, kun ilmaiset on käytetty.",
+    "addPaymentMethod": "Lisää maksutapa"
+  },
+  "disconnect": {
+    "link": "Katkaise WhatsApp-yhteys",
+    "title": "Katkaistaanko WhatsApp-yhteys?",
+    "body": "Automaattiset vastaukset loppuvat heti, ja HatchGrab menettää pääsyn WhatsApp-tiliisi. Numerosi toimii edelleen WhatsApp Business -sovelluksessa. Jos haluat poistaa HatchGrabin kokonaan, avaa myös WhatsApp Business → Asetukset → Tili → Business Platform.",
+    "cancel": "Peruuta",
+    "confirm": "Katkaise yhteys",
+    "working": "Katkaistaan yhteyttä…",
+    "failed": "Yhteyttä ei voitu katkaista"
+  },
+  "signup": {
+    "logged": "Kirjattu.",
+    "partial": "Linkitimme WhatsApp Business -tilisi, mutta yhteyttä ei voitu viimeistellä. Vika ei ole sinun päässäsi — ota meihin yhteyttä, niin viimeistelemme sen.",
+    "noNumber": "WhatsApp Business -tilisi on linkitetty, mutta puhelinnumeroa ei saatu. Paina Yhdistä uudelleen ja suorita numerovaihe loppuun.",
+    "needsRegistering": "Tilisi on linkitetty, mutta meidän on rekisteröitävä tämä numero ennen kuin vastaukset voivat alkaa. Ota yhteyttä tukeen — asetuksesi on tallennettu, älä tee käyttöönottoa uudelleen.",
+    "registerRefused": "Tilisi on linkitetty, mutta Meta ei rekisteröinyt numeroa. Asetuksesi on tallennettu — ota yhteyttä tukeen äläkä tee käyttöönottoa uudelleen.",
+    "deliveryRefused": "Tilisi on linkitetty, mutta Meta ei ottanut viestien toimitusta käyttöön. Asetuksesi on tallennettu — ota yhteyttä tukeen äläkä tee käyttöönottoa uudelleen.",
+    "numberTaken": "Tämä WhatsApp-numero on jo yhdistetty toiseen HatchGrab-tiliin. Numero voi vastata vain yhden ruokarekan puolesta. Ota yhteyttä tukeen, niin siirrämme sen.",
+    "saveIncomplete": "Melkein valmista — tallennusta ei voitu viedä loppuun. Asetuksesi on tallennettu, ota yhteyttä tukeen äläkä tee käyttöönottoa uudelleen.",
+    "connected": "WhatsApp on yhdistetty. Automaattiset vastaukset alkavat vastata tähän numeroon tuleviin viesteihin."
+  }
+}

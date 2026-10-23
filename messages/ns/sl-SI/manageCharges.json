@@ -1,0 +1,30 @@
+{
+  "heading": "DDV, napitnine in pristojbine",
+  "rate": {
+    "label": "Stopnja prometnega davka",
+    "hint": "Stopnja, ki jo zaračunate pri vsakem naročilu. Stranke jo vidijo prišteto ob plačilu, na računih in na listkih.",
+    "regionDefault": "Če pustite prazno, se zaračuna {label} po stopnji {rate} %, ki velja za pripravljeno hrano ({region})."
+  },
+  "included": {
+    "label": "Cene vključujejo {label}",
+    "hint": "Vaše cene že vključujejo {label}. Ta stopnja na računih in listkih le pokaže, kolikšen del vsake cene je {label} – ob plačilu se nič ne prišteje.",
+    "default": "Če pustite prazno, se uporabi {rate} %, stopnja {label} za toplo hrano, prodano za s seboj ({country})."
+  },
+  "tips": {
+    "label": "Napitnine",
+    "hint": "Stranke, ki plačajo na spletu s kartico, lahko dodajo napitnino. V celoti pripada vam.",
+    "choices": "Možnosti, ki jih vidijo stranke:",
+    "chip": "{rate} %",
+    "other": "Drug znesek"
+  },
+  "fee": {
+    "label": "Spletna pristojbina za storitev",
+    "hint": "Doda se samo spletnim naročilom. Nikoli naročilom s plačilom ob prevzemu ali naročilom na mestu. Pripada vam.",
+    "pctAria": "Odstotek pristojbine za storitev",
+    "fixedAria": "Fiksni znesek pristojbine za storitev",
+    "max": "Največ, kar lahko zaračunate: {max}",
+    "example": "Stranke jo vidijo pred plačilom, v eni vrstici: „{label} {amount}“.",
+    "hatchgrab": "HatchGrab spletnim naročilom vaših strank doda pristojbino za storitev v višini {fee}. Vi je ne plačate in je ne morete spremeniti."
+  },
+  "saveFailed": "Shranjevanje ni uspelo – poskusite znova."
+}

@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Acest e-mail nu are rândul de dezabonare, așa că nu poate fi trimis. Folosiți „Insert opt-out” pentru a-l adăuga.",
+    "notSetUp": "Nu este configurată nicio frază de dezabonare, așa că nu se poate trimite niciun e-mail de prospectare. Adăugați una în panoul Semnătură din fila Șabloane.",
+    "notLoaded": "Fraza de dezabonare nu s-a încărcat încă, așa că acest mesaj nu poate fi trimis.",
+    "unreadable": "Fraza de dezabonare nu a putut fi citită, așa că nu s-a trimis nimic."
+  },
+  "retry": {
+    "notRebuilt": "Mesajul nu a putut fi refăcut cu rândul despre companie, așa că nu s-a trimis nimic."
+  }
+}

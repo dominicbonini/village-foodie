@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Tietosuojaseloste — HatchGrab",
+    "privacyDescription": "Miten HatchGrab Ltd kerää ja käyttää henkilötietoja.",
+    "termsTitle": "Käyttöehdot — HatchGrab",
+    "termsDescription": "HatchGrabin käyttöehdot.",
+    "countryTermsTitle": "Maakohtaiset ehdot — HatchGrab",
+    "countryTermsDescription": "Lisäsäännöt, joita HatchGrabiin sovelletaan joissakin maissa."
+  },
+  "homeLabel": "HatchGrabin etusivu",
+  "privacy": "Tietosuoja",
+  "terms": "Käyttöehdot",
+  "countryTerms": "Maakohtaiset ehdot",
+  "contact": "Ota yhteyttä",
+  "lastUpdated": "Päivitetty viimeksi {date}",
+  "questions": "Kysyttävää? <link>Ota yhteyttä</link> — olemme oikeita ihmisiä."
+}

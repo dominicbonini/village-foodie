@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Saņemšanas laiki",
+    "takes_cash": "Vai pieņemat skaidru naudu?",
+    "offline_protection": "Bezsaistes pasūtījumu aizsardzība",
+    "buzzer_prompt": "Atgādināt man pievienot peidžeri"
+  },
+  "typeFollowsVanTitle": "Atbilst katra busiņa ierastajam iestatījumam",
+  "sameSettingsAllVansLabel": "Vienādi iestatījumi visiem busiņiem",
+  "sameSettingsAllVansHeader": "Visi busiņi",
+  "sameSettingsConfirm": "Kopēt busiņa 1 iestatījumus visiem busiņiem? Tiks kopēti visi busiņa 1 iestatījumi — tāpat kā ar “Tāpat kā: Busiņš 1” sadaļā Iestatījumi. Virtuves jaudai ir savs slēdzis.",
+  "eventTypesFooterStandard": "Standarta veids ir jūsu ierastie iestatījumi. Ja to maināt šeit, tas mainās arī sadaļā Iestatījumi.",
+  "eventTypesFooterOneEvent": "Lai mainītu iestatījumu tikai vienam pasākumam, izmantojiet šī pasākuma vadības paneli.",
+  "eventTypesSubtitle": "Izmaiņas tiek saglabātas uzreiz.",
+  "matchStandardLabel": "Kā Standarta veidam",
+  "matchStandardConfirm": "Atiestatīt visus šī veida iestatījumus kā Standarta veidam? Viss, ko šeit mainījāt, tiks notīrīts.",
+  "priceLabels": {
+    "price_change_on": "Mainīt cenas",
+    "price_mode": "Cenas izmaiņa",
+    "price_amount": "Summa",
+    "price_rounding": "Noapaļošana",
+    "item_prices": "Pozīciju cenas"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Iestatīt katru cenu manuāli"
+  },
+  "priceRounding": {
+    "none": "Nav",
+    "nearest_1": "Līdz tuvākajam 1 {symbol}",
+    "up_1": "Vienmēr noapaļot uz augšu"
+  },
+  "pricesStandardCell": "Jūsu ēdienkartes cenas",
+  "pricesTruckWideTitle": "Jūsu cenas ir vienādas visiem busiņiem",
+  "pricesMenuCell": "Ēdienkarte",
+  "pricesTypeOffCell": "Ēdienkartes cenas",
+  "itemPricesShow": "Rādīt cenas",
+  "itemPricesHide": "Slēpt cenas",
+  "priceItemsHeading": "Iestatiet katras pozīcijas cenu",
+  "priceItemsOpen": "Skatīt vai mainīt katras pozīcijas cenu ›",
+  "priceItemsClose": "Slēpt pozīciju cenas ⌃",
+  "ownPriceCount": "{n, plural, zero {{count} pozīcijām ir sava cena} one {{count} pozīcijai ir sava cena} other {{count} pozīcijām ir sava cena}}",
+  "priceTypeHint": "Nospiediet cenu, lai ierakstītu savu.",
+  "pricesLiveNotice": "Šis pasākums ir aktīvs. Jaunajiem pasūtījumiem tiek piemērotas jaunās cenas. Jau veiktajiem pasūtījumiem cenas nemainās.",
+  "placeTypeHelper": "Pievienojot pasākumu, šis veids tiek izvēlēts ikreiz, kad izvēlaties šo vietu.",
+  "postPictureStandardNote": "Pasākumu ierakstos šeit tiek izmantots jūsu standarta dizains.",
+  "eventItemsCardDescription": "Cenas, pozīciju limiti un pieejamība tikai šim pasākumam. Izmaiņas stājas spēkā nekavējoties.",
+  "eventPriceColumnLabel": "Cena",
+  "eventPriceOwnNote": "{hasType, select, yes {{type}: {price} · šis pasākums} other {ēdienkartē: {price} · šis pasākums}}",
+  "eventPriceEdit": "✎ Rediģēt cenas",
+  "eventPriceCancel": "Atcelt",
+  "eventPriceSave": "Saglabāt cenas",
+  "eventPriceEditNote": "Jūs rediģējat cenas tikai šim pasākumam. Pozīciju limiti un pieejamība ir bloķēti, līdz saglabāsiet.",
+  "eventPriceLiveNote": "Aktīvs: jaunajiem pasūtījumiem tiek piemērotas jaunās cenas.",
+  "offlineWhenOfflineLabel": "Bezsaistē"
+}

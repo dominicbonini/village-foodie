@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Bzučiak <b>{number}</b> má <b>objednávka #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Vziať ho pre <b>{hasTarget, select, yes {objednávku #{targetId}} other {túto objednávku}}</b>?",
+  "cancel": "Zrušiť",
+  "take": "Vziať bzučiak {number}",
+  "titleBlocking": "Bzučiak pre objednávku #{id}?",
+  "title": "Vyberte bzučiak",
+  "subtitle": "{hasTarget, select, yes {Objednávka #{id}} other {Táto objednávka}}{hasCurrent, select, yes { · aktuálne bzučiak {current}} other {}}",
+  "allTaken": "{n, plural, one {Bzučiak je vydaný. Ťuknutím ho vezmete z inej objednávky.} few {Všetky {count} bzučiaky sú vydané. Ťuknutím na jeden ho vezmete z inej objednávky.} other {Všetkých {count} bzučiakov je vydaných. Ťuknutím na jeden ho vezmete z inej objednávky.}}",
+  "thisOrder": "Táto objednávka",
+  "noBuzzer": "Bez bzučiaka",
+  "done": "Hotovo",
+  "lostTitle": "Objednávka #{id} nemá bzučiak",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}iná objednávka si počas vášho výpadku pripojenia nárokovala ten istý bzučiak. Dajte zákazníkovi iný.",
+  "dismiss": "Zavrieť",
+  "assign": "Priradiť"
+}

@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Megerősítendő új rendelés",
+    "body": "Rendelés: {number} — {truck}"
+  }
+}

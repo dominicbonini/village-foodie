@@ -1,0 +1,83 @@
+{
+  "title": "Ürituse tüübid",
+  "newTypeButton": "+ Uus ürituse tüüp",
+  "close": "Sulge",
+  "loading": "Laadin…",
+  "missingTitle": "Ürituse tüübid pole veel sisse lülitatud.",
+  "missingBody": "Selle funktsiooni andmebaasi uuendust pole veel rakendatud. Midagi pole katki — iga üritus kasutab sinu tavaseadistust.",
+  "column": "Veerg",
+  "vanGone": "Seda toiduautot enam pole.",
+  "typeGone": "Seda tüüpi enam pole.",
+  "standard": "Tavaline",
+  "standardHeading": "TAVALINE",
+  "moreFor": "Veel: {name}",
+  "rename": "Nimeta ümber",
+  "moveLeft": "Liiguta vasakule",
+  "moveRight": "Liiguta paremale",
+  "delete": "Kustuta",
+  "sections": {
+    "vans": "TOIDUAUTOD",
+    "prices": "HINNAD",
+    "itemPrices": "TOODETE HINNAD",
+    "service": "TEENINDUS"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Iga {mins} min järel",
+  "noTypes": "Sul pole veel ürituse tüüpe, seega iga üritus kasutab sinu tavaseadistust.",
+  "renameTitle": "Nimeta see tüüp ümber",
+  "name": "Nimi",
+  "cancel": "Tühista",
+  "save": "Salvesta",
+  "copyVanOne": "Kopeeri toiduauto 1 seaded",
+  "thisType": "see tüüp",
+  "matchTitle": "Kas ühtlustada „{name}“ tüübiga „Tavaline“?",
+  "matchKeeps": "Kõik, mida muutsid üksiku ürituse töölaual, jääb samaks ja selle tüübi hindu ei muudeta.",
+  "matchWillUse": "Kasutatakse: {summary}",
+  "deleteTitle": "Kas kustutada „{name}“?",
+  "deleteBody": "{n, plural, =0 {Ükski tulevane üritus ei kasuta tüüpi „{name}“.} one {{count} tulevane üritus kasutab tüüpi „{name}“. See läheb tagasi tüübile „Tavaline“.} other {{count} tulevast üritust kasutab tüüpi „{name}“. Need lähevad tagasi tüübile „Tavaline“.}} Kõik, mida muutsid üksiku ürituse juures, jääb samaks.",
+  "keep": "Jäta alles",
+  "phone": {
+    "standardTag": "Tavaline",
+    "defaultTag": "vaikimisi",
+    "vanSetup": "Selle toiduauto tavaseadistus — kasutatakse igal tüübita üritusel.",
+    "standardSetup": "Sinu tavaseadistus — kasutatakse igal tüübita üritusel.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} tulevane üritus} other {{upcomingCount} tulevast üritust}} · {changed, plural, =0 {veel midagi muudetud pole} one {muudetud {changedCount}/{total}} other {muudetud {changedCount}/{total}}}",
+    "noMenuItems": "Menüüs pole veel tooteid — lisa need jaotises Menüü › Tooted."
+  },
+  "newType": {
+    "title": "Uus ürituse tüüp",
+    "namePlaceholder": "nt Koolilaat",
+    "help": "Puuduta nime või kirjuta oma. Tüüp algab tüübi „Tavaline“ koopiana ja hilisemad muudatused tüübis „Tavaline“ seda ei mõjuta. Pärast saad muuta mida iganes.",
+    "create": "Loo",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Pubi",
+      "market": "Turg",
+      "privateHire": "Toiduauto rent"
+    }
+  },
+  "select": {
+    "label": "Ürituse tüüp",
+    "usual": "{name} on selle asukoha jaoks tavapärane."
+  },
+  "summary": {
+    "normalSetup": "Sinu tavaseadistus",
+    "sameAsStandard": "Sama mis „Tavaline“",
+    "buzzersOn": "piiparid sees",
+    "buzzersOff": "piiparid väljas",
+    "takeCashOn": "sularaha vastuvõtt sees",
+    "takeCashOff": "sularaha vastuvõtt väljas",
+    "markReadyOn": "valmis märkimise samm sees",
+    "markReadyOff": "valmis märkimise samm väljas",
+    "collectionEvery": "kättesaamine iga {mins} min järel",
+    "offlineOff": "võrguühenduseta kaitse väljas",
+    "offlineKeepTaking": "võrguühenduseta: tellimuste vastuvõtt jätkub",
+    "offlinePause": "võrguühenduseta: tellimine peatatakse"
+  },
+  "errors": {
+    "somethingWentWrong": "Midagi läks valesti",
+    "couldNotLoad": "Laadimine ebaõnnestus",
+    "couldNotSave": "Salvestamine ebaõnnestus",
+    "noVans": "Sellel ettevõttel pole toiduautosid, mida muuta."
+  }
+}

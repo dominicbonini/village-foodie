@@ -1,0 +1,83 @@
+{
+  "title": "Typy akcií",
+  "newTypeButton": "+ Nový typ akcie",
+  "close": "Zavrieť",
+  "loading": "Načítava sa…",
+  "missingTitle": "Typy akcií zatiaľ nie sú zapnuté.",
+  "missingBody": "Aktualizácia databázy pre túto funkciu ešte nebola vykonaná. Nič nie je pokazené — každá akcia používa vaše bežné nastavenie.",
+  "column": "Stĺpec",
+  "vanGone": "Tento food truck už neexistuje.",
+  "typeGone": "Tento typ už neexistuje.",
+  "standard": "Štandard",
+  "standardHeading": "ŠTANDARD",
+  "moreFor": "Ďalšie pre {name}",
+  "rename": "Premenovať",
+  "moveLeft": "Posunúť doľava",
+  "moveRight": "Posunúť doprava",
+  "delete": "Odstrániť",
+  "sections": {
+    "vans": "FOOD TRUCKY",
+    "prices": "CENY",
+    "itemPrices": "CENY POLOŽIEK",
+    "service": "OBSLUHA"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Každých {mins} min",
+  "noTypes": "Zatiaľ nemáte žiadne typy akcií, takže každá akcia používa vaše bežné nastavenie.",
+  "renameTitle": "Premenovať tento typ",
+  "name": "Názov",
+  "cancel": "Zrušiť",
+  "save": "Uložiť",
+  "copyVanOne": "Skopírovať nastavenia food trucku 1",
+  "thisType": "tento typ",
+  "matchTitle": "Zosúladiť „{name}“ so Štandardom?",
+  "matchKeeps": "Všetko, čo ste zmenili na prehľade jednotlivej akcie, zostane tak, ako je, a ceny tohto typu sa nezmenia.",
+  "matchWillUse": "Použije sa: {summary}",
+  "deleteTitle": "Odstrániť „{name}“?",
+  "deleteBody": "{n, plural, =0 {Žiadna nadchádzajúca akcia nepoužíva „{name}“.} one {{count} nadchádzajúca akcia používa „{name}“. Vráti sa k typu Štandard.} few {{count} nadchádzajúce akcie používajú „{name}“. Vrátia sa k typu Štandard.} other {{count} nadchádzajúcich akcií používa „{name}“. Vrátia sa k typu Štandard.}} Všetko, čo ste zmenili na jednotlivej akcii, zostane tak, ako je.",
+  "keep": "Ponechať",
+  "phone": {
+    "standardTag": "Štandard",
+    "defaultTag": "predvolené",
+    "vanSetup": "Bežné nastavenie tohto food trucku — používa sa na každej akcii bez typu.",
+    "standardSetup": "Vaše bežné nastavenie — používa sa na každej akcii bez typu.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} nadchádzajúca akcia} few {{upcomingCount} nadchádzajúce akcie} other {{upcomingCount} nadchádzajúcich akcií}} · {changed, plural, =0 {zatiaľ nič nezmenené} one {zmenené: {changedCount} z {total}} few {zmenené: {changedCount} z {total}} other {zmenené: {changedCount} z {total}}}",
+    "noMenuItems": "Zatiaľ žiadne položky jedálneho lístka — pridajte ich v Jedálny lístok › Položky."
+  },
+  "newType": {
+    "title": "Nový typ akcie",
+    "namePlaceholder": "napr. Školská slávnosť",
+    "help": "Ťuknite na názov alebo napíšte vlastný. Začína ako kópia Štandardu a neskoršie zmeny Štandardu ho neovplyvnia. Potom môžete zmeniť čokoľvek.",
+    "create": "Vytvoriť",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Hostinec",
+      "market": "Trh",
+      "privateHire": "Prenájom food trucku"
+    }
+  },
+  "select": {
+    "label": "Typ akcie",
+    "usual": "Pre toto miesto sa zvyčajne používa {name}."
+  },
+  "summary": {
+    "normalSetup": "Vaše bežné nastavenie",
+    "sameAsStandard": "Rovnaké ako Štandard",
+    "buzzersOn": "bzučiaky zapnuté",
+    "buzzersOff": "bzučiaky vypnuté",
+    "takeCashOn": "prijímanie hotovosti zapnuté",
+    "takeCashOff": "prijímanie hotovosti vypnuté",
+    "markReadyOn": "krok „Objednávka pripravená“ zapnutý",
+    "markReadyOff": "krok „Objednávka pripravená“ vypnutý",
+    "collectionEvery": "vyzdvihnutie každých {mins} min",
+    "offlineOff": "ochrana pri výpadku pripojenia vypnutá",
+    "offlineKeepTaking": "offline: ďalej prijímať objednávky",
+    "offlinePause": "offline: pozastaviť objednávanie"
+  },
+  "errors": {
+    "somethingWentWrong": "Niečo sa pokazilo",
+    "couldNotLoad": "Nepodarilo sa načítať",
+    "couldNotSave": "Nepodarilo sa uložiť",
+    "noVans": "Tento podnik nemá žiadne food trucky, ktoré by sa dali zmeniť."
+  }
+}

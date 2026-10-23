@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} są dostępne w planie {plan}.} other {{feature} jest częścią planu {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nie są dostępne w twoim planie.} other {{feature} nie wchodzi w zakres twojego planu.}}",
+  "switchedOff": "{many, select, yes {{feature} są wyłączone dla twojego food trucka.} other {{feature}: funkcja wyłączona dla twojego food trucka.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Zmień plan →",
+  "features": {
+    "discovery_map": {
+      "name": "Obecność na mapie food trucków",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Panel w przeglądarce",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Aplikacja kuchenna",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Menu z kodem QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Zestawy",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Dosprzedaż",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Zamówienia na miejscu",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Zamawianie z płatnością przy odbiorze",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Przełącznik „wyprzedane”",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Odliczanie zapasów",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Ochrona zamówień offline",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Płatności online",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Zamówienia z wyprzedzeniem",
+      "many": "yes"
+    },
+    "time_slot_selection": {
+      "name": "Przedziały czasowe dla klientów",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Zarządzanie wydajnością kuchni",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatyczna akceptacja",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatyczne odpowiedzi w Messengerze i na Instagramie",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Kody QR z twoim logo",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Zaawansowane raporty",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "Drukowanie bonów kuchennych",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Synchronizacja kuchni na wielu urządzeniach",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Ekran dla kucharza",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatyczne odpowiedzi WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Harmonogram na twojej własnej stronie internetowej",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Posty w mediach społecznościowych",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Własne typy wydarzeń",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Wydarzenia prywatne",
+      "many": "yes"
+    }
+  }
+}

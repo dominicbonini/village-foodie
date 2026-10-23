@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Pealkiri ei mahtunud ära ja seda lühendati.",
+    "date": "Kuupäev ei mahtunud ära ja seda lühendati.",
+    "daysOff": "Puhkepäevade tekst ei mahtunud ära ja seda lühendati.",
+    "place": "Asukoha nimi ei mahtunud ära ja seda lühendati.",
+    "time": "Kellaaeg ei mahtunud ära ja seda lühendati.",
+    "note": "Sinu enda tekst ei mahtunud ära ja seda lühendati.",
+    "venue": "Toimumiskoht ei mahtunud ära ja seda lühendati.",
+    "area": "Piirkond ei mahtunud ära ja seda lühendati."
+  },
+  "fontFallback": "Selle kujunduse fonti ({id}) ei õnnestunud laadida — need kastid on fondiga Oswald.",
+  "wrongShapeBackground": "Selle asukoha pilt on sinu kujundusest erineva kujuga, seega kasutatakse põhikujunduse tausta.",
+  "rowsFit": "Viimane päev jääb pildi alumisest servast {px} px allapoole — vähenda ridade vahet või liiguta 1. rida ülespoole.",
+  "placeStatus": {
+    "ownBoth": "Oma pilt ja tekstide paigutus",
+    "wrongShape": "Teise kujuga — ei kasutata enne asendamist",
+    "ownPicture": "Oma pilt, põhikujunduse paigutus",
+    "ownPositions": "Põhikujunduse pilt, oma tekstide paigutus",
+    "none": "Pilti veel pole — kasutatakse põhikujundust"
+  },
+  "standardStatus": "Kasutatakse kõigis teistes asukohtades",
+  "option": {
+    "oneOff": "Laadi üles pilt ainult selle postituse jaoks",
+    "placePoster": "{name} — plakat",
+    "standard": "Põhikujundus"
+  },
+  "previewLabel": {
+    "lastEvent": "Eelvaade kasutab sinu viimast üritust siin",
+    "noEvents": "Siin pole veel üritusi — eelvaade näitab sinu järgmist üritust selle asukoha nimega"
+  },
+  "fontUsage": {
+    "weekly": "sinu nädalapostituse kujundus",
+    "event": "sinu üksiku ürituse postituse kujundus",
+    "place": "sinu kujundus asukohale {place}",
+    "placeUnnamed": "sinu kujundus ühele asukohale"
+  },
+  "face": {
+    "regular": "Tavaline",
+    "bold": "Paks",
+    "italic": "Kaldkiri"
+  },
+  "picture": {
+    "legacy": "Ürituse plakat",
+    "fallback": "Pilt",
+    "wrongShape": "Teise kujuga — ei saa kasutada kogu taustana"
+  },
+  "noPicture": {
+    "omit": "Jäta välja",
+    "blank": "Jäta tühi koht",
+    "logo": "Näita oma logo"
+  },
+  "noPicturesAll": "{total, plural, one {Sinu asukohal on pilt.} other {Kõigil sinu {total} asukohal on pilt.}}",
+  "noPicturesSome": "{without, plural, one {Sinu {total} asukohast {without} on veel ilma pildita} other {Sinu {total} asukohast {without} on veel ilma pildita}}",
+  "licenceTick": "See font kuulub mulle või mul on selle kasutamiseks litsents",
+  "fontUploadButton": "↑ Laadi oma font üles"
+}

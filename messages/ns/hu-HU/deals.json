@@ -1,0 +1,17 @@
+{
+  "back": "← Vissza",
+  "title": "Menü kiválasztása",
+  "save": "Megtakarítás: {amount}",
+  "selectItems": "Válasszon tételt minden helyre",
+  "choose": "Válasszon: {category}…",
+  "inYourBasket": "── A kosarában ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (a kosárban){state, select, used { — már egy menü része} taken { — egy másik helyen kiválasztva} other {}}",
+  "addNew": "── Új hozzáadása ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Kötelező · válasszon egyet} required {Kötelező} other {Válasszon egyet}}{unmet, select, yes { (kötelező)} other {}}",
+  "notePlaceholder": "Megjegyzés, pl. hagyma nélkül (nem kötelező)",
+  "backButton": "Vissza",
+  "cancel": "Mégse",
+  "chooseRequired": "Válassza ki a kötelező opciókat",
+  "apply": "Menü kiválasztása · {amount}"
+}

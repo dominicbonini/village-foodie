@@ -1,0 +1,189 @@
+{
+  "cancel": "Peruuta",
+  "back": "← Takaisin",
+  "backPlain": "Takaisin",
+  "next": "Seuraava →",
+  "continue": "Jatka →",
+  "closeImport": "Sulje tuonti",
+  "tryAgain": "Yritä uudelleen",
+  "catError": {
+    "empty": "Anna kategorialle nimi.",
+    "tooLong": "Nimi on liian pitkä.",
+    "clash": "Kategoria ”{name}” on jo olemassa."
+  },
+  "steps": {
+    "details": "Tietosi",
+    "menu": "Ruokalista",
+    "extras": "Lisävalinnat",
+    "allergens": "Allergeenit",
+    "kitchen": "Keittiön asetukset",
+    "schedule": "Aikataulu",
+    "settings": "Asetukset"
+  },
+  "toast": {
+    "demoGone": "Demoruokalistasi ei ole enää saatavilla — lataa se uudelleen jatkaaksesi.",
+    "eventsSaveFailed": "Tapahtumien tallennus epäonnistui",
+    "cardReadFailed": "Allergeenikorttia ei voitu lukea — yritä uudelleen",
+    "imageReadFailed": "Kuvaa ei voitu lukea — kirjoita tai liitä kortin tiedot sen sijaan",
+    "commitFailedDetail": "Ruokalistan tallennusta ei voitu viedä loppuun: {error}. Osa tuotteista on ehkä jo tallentunut — tarkista ruokalistasi ennen kuin yrität uudelleen.",
+    "commitFailed": "Ruokalistan tallennusta ei voitu viedä loppuun. Osa tuotteista on ehkä jo tallentunut — tarkista ruokalistasi ennen kuin yrität uudelleen.",
+    "finishFailed": "Käyttöönottoa ei voitu merkitä valmiiksi — voit silti jatkaa.",
+    "scheduleReadFailed": "Aikataulua ei voitu lukea — kokeile selkeämpää kuvaa tai kirjoita päivämäärät itse.",
+    "cardRead": "Kortti luettu — {matched} yhdistetty, {pending, plural, one {# odottaa} other {# odottaa}} kohdistustasi"
+  },
+  "settingsReview": {
+    "anchorOrder": "Asetukset → Tilausasetukset",
+    "anchorDisplay": "Asetukset → Ruokarekkasi → Näyttöasetukset",
+    "mins15": "15 minuuttia",
+    "mins30": "30 minuuttia",
+    "mins60": "60 minuuttia",
+    "hours2": "2 tuntia",
+    "title": "Muutama tarkistettava asetus",
+    "loading": "Ladataan nykyisiä asetuksiasi…",
+    "looksGood": "Näyttää hyvältä →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Tallennus ei onnistunut — voit muuttaa tämän kohdassa Asetukset.",
+    "anchorContact": "Asetukset → Yhteystiedot",
+    "intro": "Olemme ottaneet käyttöön joitakin yleisiä asetuksia. Niihin kannattaa vilkaista — voit muuttaa mitä tahansa niistä myöhemmin kohdassa Asetukset.",
+    "cancelAria": "Kuinka kauan ennen noutoa asiakkaat voivat peruuttaa"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Tarkista ne ennen julkaisua. Tuotteissa näkyy merkintä ”allergeeneja ei asetettu”, kunnes teet sen.",
+    "body": "Tarkista ne kohdassa Asetukset ennen julkaisua. Tuotteissa näkyy merkintä ”allergeeneja ei asetettu”, kunnes teet sen.",
+    "title": "⚠ Allergeeneja ja ruokavaliotietoja ei ole vielä asetettu"
+  },
+  "welcome": {
+    "title": "Tervetuloa HatchGrabiin",
+    "yourTruck": "Ruokarekkasi",
+    "stop": "Voit keskeyttää ja palata milloin tahansa.",
+    "body": "{name} on valmis. Seuraavaksi lisäämme ruokalistasi ja sitten ensimmäisen tapahtumasi.",
+    "go": "Aloitetaan"
+  },
+  "offer": {
+    "title": "Käytetäänkö demosi ruokalistaa?",
+    "use": "Käytä tätä ruokalistaa",
+    "upload": "Lataa toinen ruokalista",
+    "body": "Tallensimme lataamasi ruokalistan — {count, plural, one {# tuote} other {# tuotetta}}. Käytä sitä lähtökohtana tai lataa toinen."
+  },
+  "upload": {
+    "title": "Tuo ruokalistasi",
+    "body": "Lataa kuva ruokalistataulustasi, kuvakaappaus tai PDF, tai liitä ruokalistasi tekstinä. Tekoälymme lukee sen ja rakentaa digitaalisen ruokalistasi — tarkistat kaiken ennen tallennusta.",
+    "confirmCancel": "Peruutetaanko tämä tuonti? Tämän ruokalistan tarkistuksesi hylätään.",
+    "process": "Käsittele ruokalista",
+    "later": "Teen tämän myöhemmin"
+  },
+  "processing": {
+    "title": "Analysoidaan ruokalistaasi",
+    "body": "Tekoäly lukee ja luokittelee tuotteitasi…"
+  },
+  "review": {
+    "title": "Tarkista tuotu ruokalista",
+    "editLaterSetup": "Nimiä, hintoja, lisävalintoja, allergeeneja ja ruokavaliotietoja voi muokata myöhemmin milloin tahansa.",
+    "editLater": "Nimiä, hintoja, lisävalintoja, allergeeneja ja ruokavaliotietoja voi muokata milloin tahansa kohdassa Asetukset.",
+    "noPrice": "Hintaa ei voitu lukea: {count, plural, one {# tuote} other {# tuotetta}}",
+    "renameCategoryAria": "Nimeä kategoria uudelleen: {name}",
+    "renameAria": "Nimeä uudelleen: {name}",
+    "renameTitle": "Nimeä kategoria uudelleen",
+    "deleteAria": "Poista: {name}",
+    "deleteTitle": "Poista kategoria",
+    "lastCategory": "Ruokalistassasi on oltava vähintään yksi kategoria",
+    "countOf": "{kept}/{total}",
+    "existing": "olemassa oleva",
+    "deleteEmptyTitle": "Poistetaanko ”{name}”?",
+    "deleteEmptyBody": "Siinä ei ole tuotteita, joten mitään ei menetetä.",
+    "delete": "Poista",
+    "moveTitle": "Minne {count, plural, one {# tuote siirretään} other {# tuotetta siirretään}}?",
+    "moveBody": "Kun ”{name}” poistetaan, sen annoksille tarvitaan uusi paikka — tuotteita, joilla ei ole kategoriaa, ei tuoda.",
+    "moveAria": "Uusi kategoria tuotteille, kategoria: {name}",
+    "chooseCategory": "Valitse kategoria…",
+    "moveDelete": "Siirrä ja poista",
+    "itemName": "Tuotteen nimi",
+    "free": "ilmainen?",
+    "freeOn": "Ilmainen ✕",
+    "nameFirst": "Nimeä uusi tuote ennen kuin lisäät toisen",
+    "addItem": "+ Lisää tuote",
+    "categoryName": "Kategorian nimi",
+    "newCategoryAria": "Uuden kategorian nimi",
+    "addCategory": "+ Lisää kategoria",
+    "ready": "{count, plural, one {# tuote} other {# tuotetta}} valmiina lisättäväksi. Poista rasti niistä, joita et halua.",
+    "noPriceBody": "Aseta jokaiselle hinta tai merkitse se ilmaiseksi — muuten se julkaistaisiin hintaan {zero}. Et voi jatkaa ennen kuin nämä on korjattu.",
+    "incomplete": "Anna nimi lisätäksesi tämän tuotteen — tyhjiä rivejä ei tuoda."
+  },
+  "extras": {
+    "introSetup": "Jotkin annokset voidaan asettaa <b>yhdeksi muokattavaksi tuotteeksi</b> tai pitää <b>erillisinä annoksina</b>. Valitse, miten kukin näkyy. Voit muuttaa tätä myöhemmin.",
+    "intro": "Jotkin annokset voidaan asettaa <b>yhdeksi muokattavaksi tuotteeksi</b> tai pitää <b>erillisinä annoksina</b>. Valitse, miten kukin näkyy. Voit muuttaa tätä myöhemmin kohdassa Asetukset.",
+    "none": "Ei ryhmiteltäviä annoksia — jokainen tuote on erillinen annos.",
+    "axisChoice": "· valinta: {axis}",
+    "grouped": "Ryhmitelty · yksi tuote, asiakas valitsee",
+    "separate": "Erilliset ruokalistan tuotteet"
+  },
+  "allergens": {
+    "title": "Allergeenit",
+    "detected": "Tunnistimme ruokalistastasi allergeeneja. Valitse alta, miten ne näytetään.",
+    "howShow": "Miten haluat näyttää allergeenit asiakkaille?",
+    "skip": "Ohita allergeenien asetus toistaiseksi"
+  },
+  "kitchen": {
+    "title": "Keittiön asetukset",
+    "intro": "Auta asiakkaita tietämään, kauanko odottaa — voit aina muuttaa näitä myöhemmin.",
+    "howWorks": "Miten keittiön kapasiteetti toimii",
+    "allExist": "Kaikki kategoriat ovat jo olemassa — aikoja ei tarvitse asettaa.",
+    "totalHelp": "Aseta kokonaiskapasiteetti rajoittaaksesi, montako tuotetta keittiö ottaa työn alle aikaikkunaa kohden. Jätä arvoksi ∞, jos et halua rajaa.",
+    "saveAdd": "Tallenna ja lisää ruokalistaan"
+  },
+  "schedule": {
+    "title": "Lisää aikatauluni",
+    "intro": "Jos aikataulusi on verkkosivustollasi, voimme pitää sen ajan tasalla automaattisesti — tai voit lisätä päivämäärät itse.",
+    "websiteTitle": "Aikatauluni on verkkosivustollani",
+    "urlPlaceholder": "https://ruokarekkasi.fi/tapahtumat",
+    "checking": "Tarkistetaan…",
+    "verify": "Vahvista",
+    "checkingSite": "Tarkistetaan verkkosivustoasi…",
+    "takesTime": "Tämä voi kestää jopa 2 minuuttia — pidä tämä auki.",
+    "canRead": "✓ Pystymme lukemaan aikataulusi",
+    "ownSite": "Oma verkkosivustosi — ei Facebook- tai Instagram-sivu.",
+    "photoTitle": "Lataa kuva aikataulustani",
+    "dragChoose": "Vedä ja pudota tai valitse napauttamalla",
+    "imageOrPdf": "Kuva tai PDF",
+    "or": "tai",
+    "pastePlaceholder": "Liitä päivämäärät tähän…",
+    "read": "Lue aikataulu",
+    "found": "{count, plural, one {# päivämäärä löytyi} other {# päivämäärää löytyi}} — ne lisätään aikatauluusi.",
+    "dateTbc": "Päivämäärä vahvistamatta",
+    "save": "Tallenna {count, plural, one {# päivämäärä} other {# päivämäärää}}",
+    "manualDesc": "Lisää ne myöhemmin Aikataulu-välilehdellä — nyt ei tarvitse tehdä mitään.",
+    "manualBody": "Ei hätää. Voit lisätä ja hallita päivämääriäsi milloin tahansa tilisi Aikataulu-välilehdellä.",
+    "blockedDomain": "Käytä verkkosivustosi URL-osoitetta — Facebook- ja Instagram-sivuja ei voi lukea automaattisesti.",
+    "saveFailed": "Luimme aikataulusi, mutta emme voineet tallentaa sitä juuri nyt — yritä uudelleen.",
+    "websiteDesc": "Tarkistamme sen säännöllisesti ja lähetämme uudet päivämäärät hyväksyttäväksesi.",
+    "keepChecking": "Tarkistamme tätä sivua jatkossakin ja lähetämme uudet päivämäärät hyväksyttäväksesi.",
+    "photoDesc": "Ota kuva tai liitä päivämääräsi — luemme ne tarkistettavaksesi.",
+    "noneFound": "Emme löytäneet siitä päivämääriä — kokeile selkeämpää kuvaa tai lisää päivämäärä itse.",
+    "manualTitle": "Lisään päivämääräni itse",
+    "trialNotStarted": "Tapahtumien lisääminen ei käynnistä ilmaista kokeilujaksoasi — valitset myöhemmin, mikä tapahtuma käynnistää sen."
+  },
+  "done": {
+    "summary": "{items, plural, one {# tuote} other {# tuotetta}}, {categories, plural, one {# kategoriassa} other {# kategoriassa}}.",
+    "imported": "Ruokalista tuotu!",
+    "added": "Tuotteesi on lisätty ruokalistaan.",
+    "duplicates": "{count, plural, one {# kaksoiskappale} other {# kaksoiskappaletta}} ohitettu",
+    "showMe": "Esittele sovellus",
+    "remind": "Muistuta myöhemmin",
+    "allSet": "Kaikki valmista!",
+    "explore": "Tutustun itse"
+  },
+  "discard": {
+    "setupTitle": "Viimeisteletkö käyttöönoton myöhemmin?",
+    "setupBody": "Tilisi ja ruokarekkasi on tallennettu — mitään ei menetetty. Voit lisätä ruokalistasi milloin tahansa: kirjaudu sisään ja napauta ruokalistanäkymässä <b>Tuo ruokalista</b>, niin jatkat tästä.",
+    "keepGoing": "Jatka",
+    "finishLater": "Viimeistele myöhemmin",
+    "title": "Hylätäänkö tämä tuonti?",
+    "keepEditing": "Jatka muokkaamista",
+    "discard": "Hylkää",
+    "body": "Muutoksiasi ei tallenneta — tuotuja tuotteita, valmistusaikoja ja keittiön kapasiteettia ei lisätä."
+  },
+  "allergenCardText": {
+    "contains": "Sisältää: {list}",
+    "mayContain": "Voi sisältää: {list}"
+  }
+}

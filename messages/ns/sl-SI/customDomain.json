@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Dodajte urnik na svojo spletno stran",
+    "live": "<addr>{address}</addr> prikazuje vaš urnik.",
+    "create": "Na <addr>{address}</addr> ustvarimo stran z vašim urnikom.",
+    "exampleDomain": "vasfoodtruck.si",
+    "liveBadge": "Deluje",
+    "setUp": "Nastavi",
+    "viewSetup": "Ogled nastavitve",
+    "continue": "Nadaljuj",
+    "justLive": "<b>{address}</b> deluje. Oglejte si stran in nam spodaj potrdite, da je pravilna."
+  },
+  "waiting": {
+    "title": "Čakamo na naslov {address}",
+    "bodySince": "To ste nastavili {date}. Novi spletni naslovi običajno začnejo delovati v nekaj minutah, včasih pa traja do 24 ur, da dosežejo vse — medtem vam ni treba storiti ničesar. Če je vrstico za vas dodajal nekdo drug, je vredno preveriti, ali jo je res dodal.",
+    "body": "Novi spletni naslovi običajno začnejo delovati v nekaj minutah, včasih pa traja do 24 ur, da dosežejo vse — medtem vam ni treba storiti ničesar. Če je vrstico za vas dodajal nekdo drug, je vredno preveriti, ali jo je res dodal."
+  },
+  "ready": {
+    "title": "{address} deluje",
+    "body": "Oglejte si stran in nam v nastavitvah potrdite, da je pravilna."
+  },
+  "confirm": {
+    "heading": "Oglejte si stran in nam potrdite, da je pravilna",
+    "open": "Odprite <link>{address}</link>",
+    "checkTimes": "Preverite, ali so datumi in ure pravilni.",
+    "yes": "Da, vse je pravilno",
+    "no": "Ne, nekaj je narobe",
+    "problemLine": "Povejte nam, kaj vidite, in si bomo ogledali.",
+    "emailUs": "Pišite nam",
+    "mailSubject": "Težava z naslovom {address}",
+    "mailLiveSince": "Deluje od {date}",
+    "mailSeeing": "Kaj vidim:"
+  },
+  "confirmed": {
+    "heading": "Hvala — vse smo si zabeležili.",
+    "body": "Ničesar drugega vam ni treba storiti."
+  },
+  "turnOff": {
+    "link": "Izklopi to",
+    "heading": "Želite izklopiti svoj spletni naslov?",
+    "stops": "To bo prenehalo delovati:",
+    "carriesOn": "To deluje naprej natanko tako kot zdaj in sem vodi vaša koda QR:",
+    "reAdd": "Če boste to pozneje znova nastavili, pustite vrstico, ki ste jo dodali pri ponudniku spletnega naslova. Če ne, ga prosite, naj jo odstrani.",
+    "cancel": "Pusti vklopljeno",
+    "confirm": "Izklopi",
+    "working": "Izklapljanje…",
+    "failed": "Tega trenutno nismo mogli izklopiti. Nič se ni spremenilo — vaš naslov še vedno deluje. Poskusite znova čez nekaj časa."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Vaše nastavitve nismo mogli naložiti.",
+    "resumeFailedBody": "Nič se ni spremenilo. Poskusite znova čez nekaj časa.",
+    "close": "Zapri",
+    "resuming": "Nadaljujemo, kjer ste ostali…",
+    "genericError": "Prišlo je do napake",
+    "saveFailed": "Shranjevanje ni uspelo"
+  },
+  "address": {
+    "intro": "Vaš urnik dobi svoj spletni naslov.",
+    "question": "Kakšen je vaš spletni naslov?",
+    "hint": "Tisti, prek katerega vas ljudje že najdejo.",
+    "aria": "Vaš spletni naslov",
+    "willBe": "Vaš naslov bo <addr>{address}</addr>",
+    "example": "Na primer <addr>{address}</addr>",
+    "noChange": "Vaša spletna stran se ne spremeni — le dodate povezavo na novi naslov.",
+    "notSetUp": "Tega nismo nastavili.",
+    "restricted": "Kdor upravlja vaš spletni naslov, nam mora dovoliti nastavitev ključavnice — majhne ključavnice, ki jo stranke vidijo ob naslovu. Dokler nas ne dodajo, se ne bo prikazala, zato smo se raje ustavili, kot da bi vas pustili čakati. Prosite jih, naj nas dodajo, nato poskusite znova.",
+    "blocked": "Vaš spletni naslov trenutno ključavnico povsem blokira. Kdor ga upravlja, jo mora dovoliti, preden lahko to deluje. Prosite jih, naj to spremenijo, nato poskusite znova.",
+    "elsewhere": "Na tem naslovu se že nekaj odziva. Sporočilo na naslednjem zaslonu pošljite tistemu, ki upravlja naslov — vedel bo, kaj storiti.",
+    "provider": "Vaš spletni naslov upravlja ponudnik <b>{provider}</b>. Pokazali vam bomo, kam iti.",
+    "provisionFailed": "Tega naslova nismo mogli nastaviti.",
+    "willNotWork": "Ta naslov ne bo deloval.",
+    "couldNotBeSetUp": "Tega naslova ni bilo mogoče nastaviti.",
+    "couldNotSetUp": "Nastavitev ni uspela",
+    "checking": "Preverjanje…",
+    "setting": "Nastavljanje…",
+    "tryAgain": "Poskusi znova",
+    "setUpAddress": "Nastavi ta naslov",
+    "notNow": "Ne zdaj"
+  },
+  "apex": {
+    "empty": "Vnesite naslov, ki ga želite uporabiti.",
+    "not_a_domain": "To ni videti kot spletni naslov.",
+    "unparseable": "Tega nismo mogli prebrati kot spletni naslov. Preverite črkovanje in poskusite znova.",
+    "apex": "{host} je celoten naslov vaše spletne strani. Če ga usmerite k nam, to stran nadomesti vašo spletno stran. Pred naslov raje dodajte besedo — na primer urnik.{host}.",
+    "too_deep": "Ta naslov ima preveč delov. Najbolje deluje nekaj takega kot urnik.{domain}."
+  },
+  "record": {
+    "addAt": "To dodajte pri ponudniku {provider}",
+    "open": "Odpri {provider}",
+    "guide": "Navodila ponudnika {provider} za to",
+    "addAtSave": "To dodajte pri ponudniku {provider} in shranite.",
+    "addSomewhere": "To dodajte tam, kjer se upravlja vaš spletni naslov, in shranite.",
+    "hintChoose": "To izberite s seznama.",
+    "hintWord": "Samo to besedo, ne celotnega naslova.",
+    "hintExact": "To kopirajte natančno.",
+    "timing": "Običajno začne delovati v eni uri, lahko pa traja tudi dlje. Te strani vam ni treba imeti odprte.",
+    "someoneElse": "Vaš spletni naslov upravlja nekdo drug?",
+    "sentTo": "Poslano na {email}",
+    "emailPlaceholder": "njegov e-poštni naslov",
+    "sending": "Pošiljanje…",
+    "send": "Pošlji te podatke",
+    "sendFailed": "Pošiljanje ni uspelo"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Odprite svoj spletni naslov, nato „DNS“ in „Records“.",
+      "add": "Izberite „Add record“, nato kot „Type“ izberite „CNAME“.",
+      "name": "Prvo vrednost spodaj vnesite v polje „Name“.",
+      "value": "Drugo vrednost spodaj vnesite v polje „Target“.",
+      "proxy": "„Proxy status“ nastavite na „DNS only“ — oblaček zraven mora biti siv, ne oranžen.",
+      "save": "„TTL“ pustite na „Auto“ in izberite „Save“.",
+      "caveat": "Če oblaček ostane oranžen, se ključavnica nikoli ne bo prikazala in nič vam ne bo povedalo, zakaj."
+    },
+    "godaddy": {
+      "open": "Odprite „Domain Portfolio“ in izberite svoj spletni naslov.",
+      "dns": "Na strani „Domain Settings“ izberite „DNS“.",
+      "add": "Izberite „Add New Record“, nato v meniju „Type“ izberite „CNAME“.",
+      "name": "Prvo vrednost spodaj vnesite v polje „Name“.",
+      "value": "Drugo vrednost spodaj vnesite v polje „Value“.",
+      "save": "„TTL“ pustite, kot je, in izberite „Save“.",
+      "caveat": "Če ste naenkrat dodali več zapisov, gumb kaže „Save All Records“."
+    },
+    "123reg": {
+      "signIn": "Prijavite se v „123 Reg Control Panel“.",
+      "manage": "Ob „Domains“ izberite „Manage All“, nato izberite svoj spletni naslov.",
+      "dns": "Izberite „DNS“, nato „Add New Record“.",
+      "type": "Na seznamu „Type“ izberite „CNAME“.",
+      "name": "Prvo vrednost spodaj vnesite v polje „Name“.",
+      "value": "Drugo vrednost spodaj vnesite v polje „Value“ in ji na koncu dodajte piko.",
+      "save": "„TTL“ pustite na „Default“ in kliknite „Save“.",
+      "caveat": "123 Reg potrebuje piko na koncu druge vrednosti, sicer ne bo delovalo."
+    },
+    "wix": {
+      "open": "Odprite „Domains“, nato kliknite ikono „Domain Actions“ ob svojem spletnem naslovu.",
+      "manage": "Izberite „Manage DNS Records“.",
+      "add": "V razdelku „CNAME (Aliases)“ kliknite „+ Add Record“, nato „Got it“.",
+      "name": "Prvo vrednost spodaj vnesite v polje „Host Name“.",
+      "value": "Drugo vrednost spodaj vnesite v polje „Value“.",
+      "save": "Kliknite „Save“, nato v pojavnem oknu kliknite „Save Changes“.",
+      "caveat": "Če vaš spletni naslov na Wix le kaže in ni registriran tam, Wix te spremembe ne more narediti — narediti jo mora tisti, pri katerem je naslov registriran."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "En zapis za stran z urnikom: {truckName}",
+    "hello": "Pozdravljeni,",
+    "introAt": "Urnik v živo za {truckName} objavljamo na {address}, za kar je treba naši domeni pri ponudniku {provider} dodati en zapis.",
+    "introHolder": "Urnik v živo za {truckName} objavljamo na {address}, za kar je treba naši domeni dodati en zapis pri tistem, ki upravlja našo domeno.",
+    "stepsAt": "Pri ponudniku {provider}:",
+    "guide": "Njihova navodila: {url}",
+    "wholeChange": "To je vsa sprememba — nič drugega na spletni strani se ne spremeni in preostanek naše domene deluje natanko tako kot zdaj. Običajno začne delovati v eni uri.",
+    "pointsAt": "Stran, na katero kaže, prikazuje, kje bomo prodajali naslednjič, in se sama posodablja.",
+    "replyTo": "Če imate vprašanja, odgovorite na {email}.",
+    "thanks": "Hvala,"
+  },
+  "liveEmail": {
+    "subject": "{address} deluje",
+    "goodNews": "Dobra novica — {address} deluje.",
+    "body": "Vaš urnik je zdaj prikazan na vašem lastnem naslovu. Oglejte si ga in preverite, ali je pravilen: odprite {address} in se prepričajte, da so dogodki vaši in da so datumi pravilni.",
+    "confirm": "Ko to storite, odprite nastavitve v aplikaciji HatchGrab in nam potrdite, da je pravilen. Od tega nič ni odvisno — le vemo, da ga je videl človek."
+  }
+}

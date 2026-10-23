@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Prijímať objednávky bez platby",
+  "completionTitle": "Dokončenie nezaplatenej objednávky",
+  "completionHelp": "Čo sa stane, keď je nezaplatená objednávka pripravená na odovzdanie.",
+  "pressesOne": "Jedno stlačenie („Zaplatené a vyzdvihnuté“)",
+  "pressesOneHelp": "Najlepšie, keď peniaze prijímate pri odovzdaní jedla. Dostanete jedno tlačidlo „Zaplatené a vyzdvihnuté“, ktoré naraz zaznamená platbu aj uzavrie objednávku.",
+  "pressesTwo": "Dve stlačenia („Označiť ako zaplatené“ a „Vyzdvihnutá“)",
+  "pressesTwoHelp": "Najlepšie, keď platba a odovzdanie prebiehajú v rôznych chvíľach — zákazník zaplatí pri okienku a jedlo si vyzdvihne, keď je hotové. Dostanete dve tlačidlá: najprv „Označiť ako zaplatené“, potom „Vyzdvihnutá“, keď si jedlo prevezme."
+}

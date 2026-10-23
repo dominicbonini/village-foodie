@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Allergeenikorttisi",
+    "intro": "Asiakkaat näkevät tämän <b>täsmälleen niin kuin kirjoitat sen</b> — mitään ei muotoilla uudelleen. Kirjoita tai liitä alle, tai lataa kuva/PDF, niin luemme tekstin tarkistettavaksesi.",
+    "empty": "Ei vielä allergeenikorttia.",
+    "placeholder": "esim. Kaikki leivitetyt kala-annoksemme sisältävät vehnää ja maitoa. Friteerauskeitin on yhteinen gluteenia ja pähkinöitä sisältävien tuotteiden kanssa. Vegaanisia vaihtoehtoja saatavilla — kysy henkilökunnalta.",
+    "reading": "Luetaan kuvaa…",
+    "upload": "📷 Lataa kuva / PDF",
+    "uploadNote": "Luemme tekstin kuvastasi, jotta voit tarkistaa sen — kuvaa ei tallenneta."
+  },
+  "cardUpload": {
+    "dishFallback": "Annos",
+    "question": "Onko sinulla allergeenikortti ladattavaksi?",
+    "perDish": "{detected, select, yes {Lataa se, niin käytämme sitä annostesi allergeenien pohjana. Tunnistetut allergeenit näkyvät seuraavalla sivulla, jossa vahvistat jokaisen annoksen.} other {Lataa se, niin käytämme sitä annostesi allergeenien pohjana.}}",
+    "cardOnly": "Lataa allergeenikortti, jonka asiakkaat näkevät.",
+    "yes": "Kyllä",
+    "no": "Ei",
+    "noProblem": "Ei hätää — et tarvitse sellaista. Jatka alla olevalla painikkeella.",
+    "analysing": "Analysoidaan korttia…",
+    "dropzone": "Vedä ja pudota tai napauta valitaksesi",
+    "imageOrPdf": "Kuva tai PDF",
+    "or": "tai",
+    "pastePlaceholder": "Liitä allergeenikorttisi teksti tähän…",
+    "process": "Käsittele kortti",
+    "cardRead": "Kortti luettu ✓",
+    "unmatchedHeading": "Näitä ei voitu yhdistää automaattisesti — kohdista tai hylkää",
+    "quotedName": "”{name}”",
+    "ambiguous": "Epäselvä — sopii useaan annokseen; valitse oikea.",
+    "assignTo": "Kohdista annokseen…",
+    "dismiss": "Hylkää",
+    "blanket": "Kortin mukaan <b>{list}</b> voi esiintyä <b>kaikissa</b> annoksissa. Lisätäänkö jokaiseen annokseen? (vahvistat silti jokaisen erikseen) <muted>— oletuksena pois päältä</muted>",
+    "kitchenNotes": "Keittiön huomautukset (tallennetaan allergeenitietoihisi)",
+    "matchSummary": "{n, plural, =0 {{matched} yhdistetty annokseen.} one {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.} other {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.}}"
+  },
+  "savedCard": {
+    "showLess": "Näytä vähemmän",
+    "showMore": "Näytä lisää",
+    "fileOnly": "Tälle ruokarekalle on tallennettu korttitiedosto, mutta yhteenvetotekstiä ei tallennettu. Avaa alkuperäinen lukeaksesi sen.",
+    "viewOriginal": "Näytä alkuperäinen kortti"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Allergeenikortin lukeminen epäonnistui — yritä uudelleen",
+      "confirmed": "{name} vahvistettu",
+      "undo": "Kumoa",
+      "saveFailed": "Tallentaminen epäonnistui — yritä uudelleen",
+      "imageFailed": "Kuvan lukeminen epäonnistui — kirjoita tai liitä korttisi teksti",
+      "cardRead": "{n, plural, one {Kortti luettu — {matched} yhdistetty, {count} odottaa kohdistamista} other {Kortti luettu — {matched} yhdistetty, {count} odottaa kohdistamista}}"
+    },
+    "genericWarn": {
+      "text": "Tunnistettiin ”{generic}”, mutta se ei ole tarkka. Valitse {picks}, jos annos sisältää seuraavaa: {family} — tai jätä ne valitsematta, jos ei sisällä.",
+      "andOr": "{a} ja/tai {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Vahvistettu",
+      "confirmed": "Vahvistettu",
+      "needsReview": "Tarkistettava"
+    },
+    "confirm": {
+      "confirming": "Vahvistetaan…",
+      "confirmed": "Vahvistettu ✓",
+      "confirm": "Vahvista",
+      "changed": "· muutettu",
+      "changedTitle": "Muokattu edellisen vahvistuksen jälkeen — vahvista uudelleen"
+    },
+    "allergens": "Allergeenit",
+    "dietary": "Ruokavaliot",
+    "uncategorised": "Luokittelematon",
+    "review": {
+      "progress": "{confirmed}/{total} vahvistettu",
+      "allConfirmed": "✓ Kaikki vahvistettu",
+      "list": "Lista",
+      "table": "Taulukko",
+      "detected": "Tunnistettu ruokalistastasi — <b>tarkista nämä</b>. Allergeenit pysyvät piilossa asiakkailta, kunnes vahvistat jokaisen annoksen.",
+      "viewOnly": "👁 Vain luku — vain omistaja voi vahvistaa tai muuttaa allergeeneja.",
+      "emptyTitle": "Ei ruokalistan tuotteita",
+      "emptyBody": "Lisää ensin tuotteita ruokalistalle ja aseta sitten niiden allergeenit täällä.",
+      "dish": "Annos",
+      "status": "Tila"
+    },
+    "cardPanel": {
+      "reading": "Luetaan allergeenitietoja…",
+      "saved": "🛡️ Allergeenikortti tallennettu",
+      "viewOriginal": "Näytä alkuperäinen kortti",
+      "replace": "Vaihda kortti",
+      "uploadHelp": "Lataa allergeenikorttisi (kuva/PDF) tai liitä allergeenitietosi — tekoälymme jäsentää ne asiakkaille.",
+      "add": "Lisää allergeenikortti",
+      "viewOnly": "👁 Vain luku — vain omistaja voi lisätä allergeenikortin.",
+      "intro": "Asiakkaat näkevät tämän kortin ruokalistan allergeenitietona. Annoskohtaiset allergeenit pysyvät piilossa pelkän kortin tilassa (annostietosi säilyvät, jos vaihdat myöhemmin annoskohtaiseen)."
+    },
+    "subtitle": {
+      "choose": "Valitse, miten asiakkaat näkevät allergeenitiedot",
+      "card": "Lisää allergeenikorttisi",
+      "cardOptional": "Lisää allergeenikortti (valinnainen)",
+      "review": "Tarkista ja vahvista jokainen annos"
+    },
+    "heading": {
+      "import": "Allergeenit",
+      "standalone": "Allergeenien asetukset"
+    },
+    "nav": {
+      "next": "Seuraava →",
+      "back": "← Takaisin",
+      "skip": "Ohita toistaiseksi",
+      "saving": "Tallennetaan…",
+      "done": "Valmis",
+      "saveLater": "Tallenna ja jatka myöhemmin",
+      "close": "Sulje",
+      "finish": "Valmis",
+      "skipImport": "Ohita allergeenien asetukset toistaiseksi"
+    },
+    "hint": {
+      "skipDefers": "Ohittaminen siirtää myöhemmäksi — annokset, joita et ole vahvistanut, pysyvät piilossa asiakkailta, kunnes niiden allergeenit on vahvistettu.",
+      "importIncomplete": "Vahvista jokainen annos jatkaaksesi — tai ”Ohita allergeenien asetukset toistaiseksi”."
+    }
+  }
+}

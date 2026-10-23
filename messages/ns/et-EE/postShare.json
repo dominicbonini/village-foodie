@@ -1,0 +1,10 @@
+{
+  "download": "Laadi pilt alla",
+  "copied": "Kopeeritud ✓",
+  "copyCaption": "Kopeeri pealdis",
+  "share": "Jaga",
+  "copiedStatus": "{kind, select, postText {Postituse tekst kopeeritud.} other {Pealdis kopeeritud.}}",
+  "copyFailed": "Kopeerimine ei õnnestunud — vali tekst ja kopeeri see käsitsi.",
+  "sharedStatus": "{kind, select, postText {Postituse tekst kopeeritud — kleebi see oma postitusse.} other {Pealdis kopeeritud — kleebi see oma postitusse.}}",
+  "shareRefused": "{kind, select, postText {Jagamine keelati, seega pilt laaditi alla. Postituse tekst kopeeritud.} other {Jagamine keelati, seega pilt laaditi alla. Pealdis kopeeritud.}}"
+}

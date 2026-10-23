@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgery",
+    "mains": "Hlavní jídla",
+    "sides": "Přílohy",
+    "drinks": "Nápoje"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck s pizzou",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja s medem",
+        "fourCheese": "Čtyři sýry",
+        "gardenVeg": "Zeleninová",
+        "garlicBread": "Česnekový chléb",
+        "rocketParmesan": "Rukola a parmazán",
+        "olives": "Olivy",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck s burgery",
+      "items": {
+        "classicCheeseburger": "Klasický cheeseburger",
+        "doubleBacon": "Dvojitý se slaninou",
+        "buttermilkChicken": "Kuře v podmáslí",
+        "halloumiStack": "Halloumi burger",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Hranolky se slupkou",
+        "loadedCheeseFries": "Hranolky se sýrovou omáčkou",
+        "onionRings": "Cibulové kroužky",
+        "craftLemonade": "Domácí limonáda",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck s kari",
+      "items": {
+        "chickenTikkaMasala": "Kuřecí tikka masala",
+        "lambRoganJosh": "Jehněčí rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Rýže pilau",
+        "garlicNaan": "Česnekový naan",
+        "onionBhaji": "Cibulové bhaji",
+        "mangoLassi": "Mangové lassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Gdzie i kiedy znajdziesz food truck {truck}.",
+  "orderFrom": "Zamów w food trucku {truck}",
+  "poweredBy": "Działa dzięki <b>HatchGrab</b>",
+  "loadFailed": "Nie udało się teraz wczytać harmonogramu.",
+  "loading": "Wczytywanie harmonogramu…",
+  "empty": "Food truck {truck} nie ma zaplanowanych wydarzeń."
+}

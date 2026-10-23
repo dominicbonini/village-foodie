@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Salvesta mu menüü →",
+    "heading": "Seadista oma toiduauto",
+    "sub": "Sinu menüü tuleb otse kaasa.",
+    "privacy": "Kasutame seda ainult sinu toiduauto seadistamiseks ja demolingi saatmiseks — vaata meie <link>privaatsuspoliitikat</link>."
+  },
+  "sample": {
+    "bannerButton": "Seadista mu toiduauto →",
+    "heading": "Seadista oma toiduauto",
+    "sub": "Järgmiseks laadid üles oma menüü — see võtab minuti.",
+    "privacy": "Kasutame seda ainult sinu toiduauto seadistamiseks ja demolingi saatmiseks — vaata meie <link>privaatsuspoliitikat</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Salvesta mu menüü →",
+    "heading": "Salvesta oma demo",
+    "sub": "Hoiame seda 14 päeva ja saadame sulle e-postiga lingi otse tagasi.",
+    "privacy": "Kasutame seda ainult demolingi saatmiseks — vaata meie <link>privaatsuspoliitikat</link>."
+  },
+  "confirmationHeading": "Kõik on valmis",
+  "postSaveButton": "Seadista mu toiduauto →",
+  "enterSetupButton": "Seadista mu toiduauto →",
+  "emailOnlyLink": "Saada mulle lihtsalt e-postiga link, et sellesse demosse tagasi tulla",
+  "sendLinkButton": "Saada mulle link",
+  "savingButton": "Salvestamine…",
+  "continueButton": "Jätka →",
+  "createAccountButton": "Loo minu konto →",
+  "retryButton": "Proovi uuesti",
+  "backToDemoButton": "Tagasi demosse",
+  "savedStatus": "{hasDate, select, yes {✓ Salvestatud — alles kuni {date}} other {✓ Salvestatud}}",
+  "back": "Tagasi",
+  "close": "Sulge",
+  "truckStepHeading": "Sinu toiduautost",
+  "detailsStepHeading": "Lõpeta seadistamine",
+  "stepper": {
+    "details": "Andmed",
+    "menu": "Menüü",
+    "allergens": "Allergeenid",
+    "kitchen": "Köök",
+    "schedule": "Ajakava"
+  },
+  "confirmEmailed": "Saatsime sulle e-postiga lingi otse sellesse demosse tagasi — sisselogimist pole vaja.",
+  "confirmKeepUntil": "Hoiame seda alles kuni <b>{date}</b>. Kui seadistad päriselt, tuleb sinu menüü kaasa.",
+  "loading": "Laadimine…",
+  "firstName": "Eesnimi",
+  "lastName": "Perekonnanimi",
+  "truckName": "Toiduauto nimi",
+  "truckNamePlaceholder": "nt Küla Köök",
+  "cuisine": "Köök",
+  "logoLabel": "Logo <opt>(valikuline)</opt>",
+  "logoPreviewAlt": "Logo eelvaade",
+  "changeLogo": "Muuda logo",
+  "removeLogo": "Eemalda",
+  "uploadLogo": "📷 Laadi logo üles",
+  "readyTitle": "Sinu konto on valmis",
+  "readyBody": "Nüüd lõpetame sinu toiduauto seadistamise — menüü, allergeenid ja köök.",
+  "hangTight": "Oota hetk — seame kõik valmis.",
+  "stage": {
+    "account": "Loome sinu kontot",
+    "truck": "Seadistame sinu toiduautot",
+    "menu": "Laadime sinu menüüd"
+  },
+  "stageState": {
+    "done": "valmis",
+    "recognised": "sul on juba konto",
+    "failed": "ebaõnnestus",
+    "active": "käimas",
+    "pending": "ootel"
+  },
+  "signIn": "Logi sisse",
+  "phone": "Telefon",
+  "onWhatsapp": "See number on WhatsAppis",
+  "email": "E-post",
+  "emailPlaceholder": "sina@sinutoiduauto.ee",
+  "settingUpAs": "Seadistad kasutajana <b>{email}</b> <change>muuda</change>",
+  "password": "Parool",
+  "passwordPlaceholder": "Vähemalt 8 tähemärki",
+  "hidePassword": "Peida parool",
+  "showPassword": "Näita parooli",
+  "promoLabel": "Kas sul on kood? <opt>(valikuline)</opt>",
+  "promoPlaceholder": "Sisesta see siia",
+  "agreeTerms": "Nõustun <terms>tingimustega</terms> ja <privacy>privaatsuspoliitikaga</privacy>.",
+  "freeMonth": "Seadistamine ei käivita sinu tasuta kuud. See algab siis, kui valid oma esimese päris ürituse — siis, kui oled valmis.",
+  "fieldError": {
+    "firstName": "Ütle meile oma eesnimi.",
+    "lastName": "Ja oma perekonnanimi.",
+    "truck": "Anna oma toiduautole nimi.",
+    "cuisine": "Ütle meile, mida sa valmistad.",
+    "phoneMissing": "Lisa telefoninumber — nii kliendid kui ka meie kasutame seda sinuga ühenduse võtmiseks.",
+    "email": "Sisesta kehtiv e-posti aadress.",
+    "password": "Parool peab olema vähemalt 8 tähemärki pikk.",
+    "terms": "Jätkamiseks nõustu palun tingimustega."
+  },
+  "error": {
+    "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti.",
+    "savedNoEmail": "Salvestatud — kuid me ei saanud linki praegu e-postiga saata.",
+    "unreachable": "Me ei saanud praegu ühendust — proovi uuesti.",
+    "createAccountFailed": "Kontot ei õnnestunud luua.",
+    "truckCreateFailed": "Sinu konto on valmis, kuid toiduautot ei õnnestunud luua. Proovi uuesti.",
+    "truckUnreachable": "Sinu konto on valmis, kuid toiduautot ei õnnestunud praegu luua. Proovi uuesti.",
+    "truckNoToken": "Sinu toiduauto on seadistatud, kuid me ei saanud seda praegu avada. Proovi uuesti."
+  }
+}

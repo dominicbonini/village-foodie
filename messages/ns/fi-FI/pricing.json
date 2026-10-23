@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Ensimmäinen kuukautesi on täysin ilmainen — kaikki ominaisuudet käytössä.} other {Ensimmäiset # kuukauttasi ovat täysin ilmaisia — kaikki ominaisuudet käytössä.}}",
+    "body": "Näin {brand} toimii: asiakkaat tilaavat etukäteen ja maksavat noutaessaan, joten voit ottaa vastaan verkkotilauksia ilman korttimaksujen käsittelijää. Haluatko ottaa maksun etukäteen? Lisää korttimaksut verkossa milloin tahansa. Kun kokeilujaksosi päättyy, siirryt pakettiin <plan>{fallback}</plan>{fallbackFree, select, yes { (ei kuukausimaksua)} other {}}, ellet valitse muuta pakettia. Aloittamiseen ei tarvita korttia, ei sopimusta, voit lopettaa milloin tahansa."
+  },
+  "card": {
+    "perTruckMonth": "ruokarekkaa kohden / kk",
+    "mostTrucks": "Suosituin",
+    "tryFree": "Kokeile ilmaiseksi",
+    "seeEvery": "Katso kaikki ominaisuudet →",
+    "everything": "Kaikki, mitä myyntivuoron pyörittämiseen tarvitaan",
+    "everythingIn": "Kaikki paketin {plan} ominaisuudet ja lisäksi"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> vain kortilla maksetuista verkkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia.",
+    "included": "Joka kuukausi hintaan sisältyy verkkotilauksia <b>{included}</b> edestä, sen jälkeen <b>{fee}*</b>. Tilaukset paikan päällä ovat aina maksuttomia.",
+    "noFee": "<b>Ei HatchGrabin maksuja</b> verkkotilauksista, olipa kiirettä kuinka paljon tahansa. Yksi ennustettava kuukausihinta."
+  },
+  "base": {
+    "walkUp": "Tilaukset paikan päällä ja keittiönäyttö",
+    "online": "Verkkotilaukset",
+    "preorders": "Ennakkotilaukset ja noutoajat",
+    "capacity": "Keittiön kapasiteetin hallinta",
+    "privateEvents": "Yksityistilaisuudet",
+    "printing": "Keittiölappujen tulostus",
+    "app": "Keittiösovellus iPhonelle, iPadille ja Androidille"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsAppin automaattiset vastaukset",
+    "schedule_graphics": "Somejulkaisut — Facebook- ja Instagram-aikataulusi — valmiina julkaistaviksi",
+    "event_types": "Omat tapahtumatyypit ja hinnat"
+  },
+  "money": {
+    "unlimitedOrders": "Rajattomasti verkkotilauksia, HatchGrabin maksu 0 %",
+    "samePrice": "Sama hinta myös kiireisimpänä kuukautenasi"
+  },
+  "comingSoon": "Tulossa pian",
+  "bar": {
+    "title": "Mikä paketti on minulle edullisin?",
+    "subtitle": "Verkkotilauksesi kuukaudessa",
+    "first": "Alle {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Yli {from} → <b>{plan}</b>",
+    "only": "Mikä tahansa määrä → <b>{plan}</b>"
+  },
+  "footnote": "* Lisäksi Stripen korttimaksujen käsittelykulut kortilla maksetuista verkkotilauksista (tällä hetkellä {country}: {cardFee}), jotka maksetaan Stripelle, ei HatchGrabille. Tilaukset paikan päällä maksetaan omalla maksupäätteelläsi — HatchGrab veloittaa 0 %.",
+  "currencyLine": "Hinnat: {currency} ({code})"
+}

@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Erősítse meg új HatchGrab e-mail-címét",
+    "heading": "Erősítse meg e-mail-címét",
+    "button": "E-mail-cím megerősítése"
+  },
+  "changeEmail": {
+    "requested": "Ön kérte, hogy HatchGrab e-mail-címe erre a címre módosuljon.",
+    "click": "A megerősítéshez kattintson az alábbi gombra. Ez a link 24 óra múlva lejár.",
+    "ignore": "Ha nem Ön kérte ezt a módosítást, nyugodtan figyelmen kívül hagyhatja ezt az e-mailt.",
+    "stillActive": "A jelenlegi e-mail-címe továbbra is aktív marad."
+  },
+  "resendVerification": {
+    "requested": "Ön kérte, hogy HatchGrab e-mail-címe erre a címre módosuljon.",
+    "click": "A megerősítéshez kattintson alább. Ez a link 24 óra múlva lejár.",
+    "ignore": "Ha nem Ön kérte, hagyja figyelmen kívül ezt az e-mailt.",
+    "stillActive": "A jelenlegi e-mail-címe aktív marad."
+  },
+  "passwordReset": {
+    "subject": "HatchGrab-jelszó visszaállítása",
+    "heading": "Jelszó visszaállítása",
+    "requested": "Kérelmet kaptunk HatchGrab-fiókja jelszavának visszaállítására.",
+    "click": "Új jelszó megadásához kattintson az alábbi gombra. Ez a link 1 óra múlva lejár.",
+    "button": "Jelszó visszaállítása",
+    "ignore": "Ha nem Ön kérte, nyugodtan figyelmen kívül hagyhatja ezt az e-mailt.",
+    "unchanged": "A jelszava addig nem változik, amíg nem kattint a fenti linkre."
+  },
+  "deletionScheduled": {
+    "subject": "HatchGrab-fiókja törlésre van ütemezve",
+    "received": "Kérelmet kaptunk ennek a HatchGrab-fióknak a törlésére.",
+    "orderingStopped": "<b>Az online rendelés azonnal leállt</b> a következő food truckoknál: {trucks}.",
+    "noTrucks": "(nincs food truck)",
+    "readable": "A vezérlőpultja a következő {days, plural, one {# napig} other {# napig}}\n    még megtekinthető marad.",
+    "scheduled": "A fiók törlésének tervezett időpontja: <b>{date}</b>.",
+    "cannotCancel": "<b>Ez az alkalmazásból nem vonható vissza.</b> Ha nem Ön kérte, vagy\n    meggondolta magát, mielőbb válaszoljon erre az e-mailre.",
+    "kept": "A fiók törlésekor töröljük az Ön személyes adatait és a vásárlói adatait. Megőrizzük\n    az anonim számviteli nyilvántartást, amelynek megőrzésére jogszabály kötelez."
+  }
+}

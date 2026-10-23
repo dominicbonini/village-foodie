@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Politica de confidențialitate — HatchGrab",
+    "privacyDescription": "Cum colectează și folosește HatchGrab Ltd datele personale.",
+    "termsTitle": "Termeni și condiții — HatchGrab",
+    "termsDescription": "Termenii de utilizare a HatchGrab.",
+    "countryTermsTitle": "Termeni specifici fiecărei țări — HatchGrab",
+    "countryTermsDescription": "Regulile suplimentare care se aplică HatchGrab în unele țări."
+  },
+  "homeLabel": "Pagina principală HatchGrab",
+  "privacy": "Confidențialitate",
+  "terms": "Termeni",
+  "countryTerms": "Termeni pe țări",
+  "contact": "Contact",
+  "lastUpdated": "Ultima actualizare: {date}",
+  "questions": "Întrebări? <link>Contactați-ne</link> — suntem oameni reali."
+}

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Radās kļūda",
+    "previewFailed": "Priekšskatījumu neizdevās izveidot",
+    "loadFailed": "Neizdevās ielādēt",
+    "tooBig": "Šis attēls ir {size, number, ::.0 group-off} MB liels. Ierobežojums ir 10 MB.",
+    "wrongType": "Lūdzu, izvēlieties PNG vai JPG failu.",
+    "uploadIncomplete": "Augšupielāde netika pabeigta",
+    "uploadFailed": "Augšupielāde neizdevās",
+    "saveFailed": "Neizdevās saglabāt",
+    "buildFailed": "Neizdevās izveidot ierakstu",
+    "copyFailed": "Neizdevās nokopēt — atlasiet tekstu un nokopējiet to manuāli."
+  },
+  "loading": "Ielādē…",
+  "missingTable": {
+    "title": "Nedēļas ierakstam nepieciešams datubāzes atjauninājums",
+    "body": "Dizainu tabula vēl nav izveidota. Kad migrācija būs veikta, šis ekrāns darbosies."
+  },
+  "kind": {
+    "label": "Kurš dizains",
+    "event": "Viens pasākums",
+    "week": "Nedēļas"
+  },
+  "setup": {
+    "title": "Iestatiet savu nedēļas ierakstu",
+    "intro": "Augšupielādējiet tukšo versiju no nedēļas grafika attēla, ko jau veidojat, — to pašu dizainu, tikai bez jūsu teksta laukiem. HatchGrab aizpildīs nedēļu no jūsu grafika.",
+    "canvaTitle": "Kā eksportēt tukšu attēlu no Canva",
+    "canvaStep1": "Atveriet savu ierasto nedēļas grafika dizainu.",
+    "canvaStep2": "Izdzēsiet teksta laukus ar datumiem, vietām un laikiem — atstājiet fonu un virsrakstus, ko vēlaties paturēt.",
+    "canvaStep3": "Share › Download › PNG.",
+    "uploading": "Augšupielādē…",
+    "upload": "Augšupielādējiet savu tukšo attēlu",
+    "uploadHint": "PNG vai JPG, līdz 10 MB, īsākajā malā vismaz {px} px.",
+    "phoneTip": "Ērtāk datorā vai iPad — telefonā laukus ir grūti vilkt, jo tie ir mazi.",
+    "designName": "Nedēļas ieraksta dizains",
+    "backDesigns": "‹ Dizaini",
+    "back": "‹ Atpakaļ",
+    "pictureNote": "Jūsu attēls bez datumiem un vietām. Tos pievienojam mēs.",
+    "saved": "Dizains saglabāts."
+  },
+  "week": {
+    "this": "Šī nedēļa",
+    "next": "Nākamā nedēļa"
+  },
+  "post": {
+    "title": "Jūsu nedēļas ieraksts",
+    "editDesign": "Rediģēt dizainu",
+    "weekOf": "Nedēļas sākums: {date}",
+    "imageAlt": "Jūsu nedēļas ieraksts",
+    "building": "Veido jūsu ierakstu…",
+    "updating": "Atjaunina…",
+    "eventsTitle": "Šīs nedēļas pasākumi",
+    "noEvents": "Šonedēļ pasākumu nav.",
+    "eventDateCancelled": "{date} · atcelts",
+    "showCancelled": "Rādīt atceltos pasākumus",
+    "showPrivate": "Rādīt privātos pasākumus",
+    "privateHint": "Tie tiek rādīti kā “Privāts pasākums” ar datumu un laiku — vieta netiek rādīta nekad.",
+    "noteTitle": "Piezīme",
+    "notePlaceholder": "piem., Pasūtiet iepriekš un saņemiet uz vietas",
+    "noteHint": "Tiek rādīta parakstā un piezīmes laukā, ja tādu esat izvietojis.",
+    "captionTitle": "Paraksts jūsu lapai",
+    "perEventTitle": "Ieraksts katram pasākumam",
+    "nothingToPost": "Šonedēļ nav ko publicēt.",
+    "textCopied": "Teksts nokopēts.",
+    "copyText": "Kopēt tekstu",
+    "image": "Attēls",
+    "share": "Kopīgot",
+    "noOrderLink": "Pasūtīšanas saites vēl nav — iestatiet sava food truck tīmekļa adresi sadaļā Iestatījumi."
+  }
+}

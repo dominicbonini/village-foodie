@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Kättesaamise ajad",
+    "takes_cash": "Kas võtad sularaha vastu?",
+    "offline_protection": "Tellimuste kaitse ühenduse katkemisel",
+    "buzzer_prompt": "Tuleta meelde piipar lisada"
+  },
+  "typeFollowsVanTitle": "Järgib iga toiduauto tavapärast seadet",
+  "sameSettingsAllVansLabel": "Kõigil toiduautodel samad seaded",
+  "sameSettingsAllVansHeader": "Kõik toiduautod",
+  "sameSettingsConfirm": "Kas kopeerida Toiduauto 1 seaded kõigile toiduautodele? See kopeerib kõik Toiduauto 1 seaded, nagu valik „Sama mis Toiduauto 1“ jaotises Seaded. Köögi võimsusel on oma lüliti.",
+  "eventTypesFooterStandard": "Tavaline on sinu tavapärane seadistus. Kui muudad seda siin, muutub see ka jaotises Seaded.",
+  "eventTypesFooterOneEvent": "Kui soovid muuta seadet ainult ühel üritusel, kasuta selle ürituse töölauda.",
+  "eventTypesSubtitle": "Muudatused salvestuvad jooksvalt.",
+  "matchStandardLabel": "Nagu Tavaline",
+  "matchStandardConfirm": "Kas taastada selle tüübi kõik seaded nagu tüübil Tavaline? Kõik siin tehtud muudatused kustutatakse.",
+  "priceLabels": {
+    "price_change_on": "Muuda hindu",
+    "price_mode": "Hinnamuutus",
+    "price_amount": "Summa",
+    "price_rounding": "Ümardamine",
+    "item_prices": "Toodete hinnad"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Määran iga hinna ise"
+  },
+  "priceRounding": {
+    "none": "Puudub",
+    "nearest_1": "Lähima 1 {symbol} täpsusega",
+    "up_1": "Ümarda alati üles"
+  },
+  "pricesStandardCell": "Sinu menüü hinnad",
+  "pricesTruckWideTitle": "Sinu hinnad on kõigil toiduautodel samad",
+  "pricesMenuCell": "Menüü",
+  "pricesTypeOffCell": "Menüü hinnad",
+  "itemPricesShow": "Näita hindu",
+  "itemPricesHide": "Peida hinnad",
+  "priceItemsHeading": "Määra iga toote hind",
+  "priceItemsOpen": "Vaata või muuda iga toote hinda ›",
+  "priceItemsClose": "Peida toodete hinnad ⌃",
+  "ownPriceCount": "{n, plural, one {{count} tootel on oma hind} other {{count} tootel on oma hind}}",
+  "priceTypeHint": "Oma hinna sisestamiseks vajuta hinnale.",
+  "pricesLiveNotice": "See üritus on avaldatud. Uued tellimused kasutavad uusi hindu. Juba esitatud tellimuste hinnad ei muutu.",
+  "placeTypeHelper": "„Lisa üritus“ valib selle tüübi alati, kui valid selle asukoha.",
+  "postPictureStandardNote": "Siinsed ürituse postitused kasutavad sinu tavalist kujundust.",
+  "eventItemsCardDescription": "Hinnad, toodete limiidid ja saadavus ainult selle ürituse jaoks. Muudatused jõustuvad kohe.",
+  "eventPriceColumnLabel": "Hind",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · see üritus} other {menüü {price} · see üritus}}",
+  "eventPriceEdit": "✎ Muuda hindu",
+  "eventPriceCancel": "Tühista",
+  "eventPriceSave": "Salvesta hinnad",
+  "eventPriceEditNote": "Muudad hindu ainult selle ürituse jaoks. Toodete limiidid ja saadavus on lukus, kuni salvestad.",
+  "eventPriceLiveNote": "Avaldatud: uued tellimused kasutavad uusi hindu.",
+  "offlineWhenOfflineLabel": "Ühenduse katkemisel"
+}

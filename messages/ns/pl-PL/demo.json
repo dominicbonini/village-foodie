@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Niedostępne w wersji demo",
+  "demoMode": "TRYB DEMO",
+  "loopLands": "Dokładnie tak wpada prawdziwe zamówienie",
+  "showMe": "Pokaż",
+  "noCard": "{sub} Bez podawania karty.",
+  "notYet": "Jeszcze nie",
+  "cashAndCollected": "Gotówka i odebrane",
+  "logoPlaceholder": "Tu Twoje logo",
+  "welcomeTitle": "{sample, select, yes {Oto przykładowe demo} other {Oto Twoje demo}}",
+  "welcomeIntro": "{sample, select, yes {To <b>przykładowe menu</b>, które pokazuje, jak to wszystko działa — w każdej chwili możesz wgrać własne.} other {To Twoje własne menu i branding na prawdziwym panelu.}} Zamówienia, które już tu są, to przykłady — tak wygląda ruchliwa zmiana.",
+  "twoThings": "Dwie rzeczy do wypróbowania:",
+  "hitButton": "Kliknij <b>{button}</b> przy zamówieniu",
+  "scanQr": "Zeskanuj <b>kod QR</b> — albo dotknij linku — i zamów jako klient, a potem zobacz, jak zamówienie wpada",
+  "qrAlt": "Kod QR do strony zamówień dla klientów",
+  "openHere": "Albo otwórz ją na tym urządzeniu",
+  "copyLink": "Kopiuj link",
+  "copyDescribedAs": "link do zamówień",
+  "noLinkTitle": "Twój link do zamówień dla klientów",
+  "noLinkBody": "Link do strony zamówień znajdziesz w menu w prawym górnym rogu.",
+  "asLive": "Zamawianie i praca kuchni działają dokładnie tak jak na żywo.",
+  "startExploring": "Zacznij odkrywać",
+  "signupOffer": {
+    "heading": "Zarejestruj się teraz i odbierz darmowy miesiąc",
+    "sub": "Okres próbny zacznie się dopiero, gdy zdecydujesz się wystartować."
+  },
+  "cashIcon": "💵"
+}

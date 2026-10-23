@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Kedves {name}!} other {Üdvözlöm!}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Alapító, HatchGrab",
+  "verify": {
+    "subject": "Erősítse meg e-mail-címét",
+    "thanks": "{hasTruck, select, yes {Köszönöm, hogy a HatchGrabben beállította a food truckját: {truck}.} other {Köszönöm, hogy a HatchGrabben beállította a food truckját.}}",
+    "button": "E-mail-címem megerősítése",
+    "buttonText": "E-mail-címem megerősítése: {url}",
+    "why": "Ezzel a címmel fog bejelentkezni, és ide érkeznek a rendelési értesítések — ezért érdemes most elintézni.",
+    "next": "Amint megerősítette, elküldök mindent, amire az induláshoz szüksége van.",
+    "carryOn": "Közben nyugodtan folytathatja a beállítást.",
+    "stuck": "Elakadt valahol? Csak válaszoljon erre a levélre — ezekre én magam válaszolok.",
+    "fallbackLink": "Ha a gomb nem működik, másolja be ezt: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Üdvözöljük a HatchGrabben, {name}} other {Üdvözöljük a HatchGrabben}}",
+    "intro": "{hasTruck, select, yes {Nagyon örülök, hogy üdvözölhetem a HatchGrabben: {truck}.} other {Nagyon örülök, hogy üdvözölhetem a food truckját a HatchGrabben.}}",
+    "trial": "{months, plural, one {Elindult az egyhónapos ingyenes próbaidőszaka — minden funkció elérhető.} other {Elindult a # hónapos ingyenes próbaidőszaka — minden funkció elérhető.}}",
+    "setup": "Ha még nem tette meg, a beállítás egyszerű, és nagyjából tizenöt percet vesz igénybe.",
+    "button": "Vezérlőpult megnyitása",
+    "bookmark": "Érdemes könyvjelzőzni. Bármilyen eszközön működik.",
+    "stuck": "Ha elakad, csak válaszoljon erre a levélre — ezekre én magam válaszolok.",
+    "lookingForward": "{hasTruck, select, yes {Már nagyon várom, hogy működés közben lássam: {truck}.} other {Már nagyon várom, hogy működés közben lássam a food truckját.}}"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "h1": "Viss, kas vajadzīgs darbam, — katrā plānā.",
+  "lede": "Pasūtījumi, iepriekšēji pasūtījumi, virtuves jauda un virtuves ekrāns ir iekļauti katrā plānā.{hasUpgrades, select, yes { Plānos {plans} ir arī: {features} un zemākas komisijas.} other {}}",
+  "perMonth": "{price} mēnesī",
+  "group": {
+    "pay": "Ko jūs maksājat",
+    "run": "Jūsu darbs",
+    "online": "Tiešsaistes pasūtījumi",
+    "marketing": "Mārketings un automatizācija"
+  },
+  "pay": {
+    "included": "Katru mēnesi iekļautie tiešsaistes pasūtījumi",
+    "fee": "HatchGrab komisija par tiešsaistes pasūtījumiem ar karti*",
+    "walkUp": "Pasūtījumi uz vietas"
+  },
+  "cell": {
+    "unlimited": "Neierobežoti",
+    "free": "Bez maksas",
+    "feeAbove": "<b>{fee}</b> virs {included}",
+    "yes": "Iekļauts",
+    "none": "Nav iekļauts",
+    "comingSoon": "Drīzumā"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "sociālie tīkli",
+    "event_types": "pielāgotas pasākumu cenas"
+  },
+  "meta": {
+    "description": "Visas HatchGrab funkcijas visos plānos, salīdzinātas blakus — {plans}, ar komisijām un iekļautajiem apjomiem.{months, plural, =0 {} zero { Jūsu pirmajos # mēnešos ir iekļauts viss.} one { Jūsu pirmajā mēnesī ir iekļauts viss.} other { Jūsu pirmajos # mēnešos ir iekļauts viss.}}"
+  },
+  "notes": {
+    "whatsapp": "WhatsApp automātiskajām atbildēm ir vajadzīgs WhatsApp Business konts. Meta var iekasēt maksu par dažām ziņām; atbildes tiek ģenerētas automātiski.",
+    "printing": "Virtuves čeku drukāšanai ir vajadzīgs saderīgs Bluetooth vai vadu printeris (netiek nodrošināts)."
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Pasūtījumu sistēma food truck un izbraukuma ēdināšanai",
+    "description": "Pasūtījumi, iepriekšēji pasūtījumi un virtuves ekrāns food truck uzņēmumiem un izbraukuma ēdināšanai ({country}).",
+    "audience": "Food truck un izbraukuma ēdināšanas uzņēmēji"
+  },
+  "hero": {
+    "title": "Pasūtījumu sistēma, kas radīta <lean>food truck uzņēmumiem.</lean>",
+    "subSmall": "Augšupielādējiet savu ēdienkarti, reģistrēšanās nav vajadzīga.<br></br>Darbojošos demo redzēsiet nepilnās 60 sekundēs.",
+    "tagline": "Mazāk pierakstīšanas.<br></br>Vairāk <lean>gatavošanas.</lean>",
+    "cta": "Augšupielādēt ēdienkarti →",
+    "ctaNote": "<lead>Augšupielādējiet savas ēdienkartes foto un nepilnās 60 sekundēs redziet to darbībā.</lead><small>Bez reģistrēšanās. Bez kartes.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrab virtuves ekrāns ar pasūtījumu čekiem gatavošanas secībā",
+    "dashboardAlt": "Pasūtījuma pieņemšana HatchGrab: kreisajā pusē ēdienkarte, labajā pusē grozs un kopsumma",
+    "phoneAlt": "Pasūtīšana no food truck HatchGrab: ēdienkarte ar foto un cenām un groza kopsumma"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, zero {Pirmie # mēneši pilnīgi bez maksas, visas funkcijas pieejamas} one {Pirmais mēnesis pilnīgi bez maksas, visas funkcijas pieejamas} other {Pirmie # mēneši pilnīgi bez maksas, visas funkcijas pieejamas}}",
+    "noCard": "Karte nav vajadzīga",
+    "cancel": "Atsakieties jebkurā laikā, bez līguma"
+  },
+  "does": {
+    "eyebrow": "Ko tā dara",
+    "title": "Radīta food truck uzņēmumiem, nevis restorāniem.",
+    "lede": "Lielākā daļa pasūtījumu sistēmu paredz pastāvīgu adresi, stabilu bezvadu internetu un vienu un to pašu darba laiku katru nedēļu. Jūs katru nedēļu esat citur, dažādos laikos, ar vāju mobilo pārklājumu vai bez tā. HatchGrab ir radīts tieši tam.",
+    "slotsTitle": "Klienti izvēlas saņemšanas laiku",
+    "capacityTitle": "Iestatiet virtuves jaudu",
+    "capacityBody": "Iestatiet, cik daudz varat pagatavot vienlaikus un cik ilgi tas aizņem. Kad saņemšanas laiks ir aizpildīts, klienti to vairs nevar izvēlēties.",
+    "devicesTitle": "Darbojas jebkurā ierīcē",
+    "devicesBody": "Darbojas tālrunī jūsu priekšauta kabatā, planšetdatorā uz letes, klēpjdatorā busiņā — un maksājumu terminālī, ar kuru jau pieņemat maksājumus.",
+    "postsTitle": "Automatizējiet savus Facebook un Instagram ierakstus",
+    "postsBody": "Augšupielādējiet dizainu, ko jau publicējat Facebook vai Instagram. Mēs ierakstīsim jūsu datumus, vietas un laikus, gatavus kopīgošanai — katru nedēļu vai katru dienu.",
+    "whatsappTitle": "WhatsApp automātiskās atbildes",
+    "whatsappBody": "“Kur jūs esat šovakar?” “Kādi deserti jums ir?” Kamēr jūs braucat uz tirdzniecības vietu vai stāvat pie grila, jūsu WhatsApp saņem atbildes, kas balstītas uz jūsu ēdienkarti un grafiku. Messenger un Instagram drīzumā.",
+    "whatsappSoonTitle": "WhatsApp automātiskās atbildes <soon>Drīzumā</soon>",
+    "whatsappSoonBody": "“Kur jūs esat šovakar?” “Kādi deserti jums ir?” Drīz jūsu WhatsApp saņems atbildes, kamēr jūs braucat uz tirdzniecības vietu vai stāvat pie grila. Pēc tam Messenger un Instagram.",
+    "offlineTitle": "Nav signāla? Turpiniet strādāt.",
+    "offlineBody": "Ja pazūd signāls, pasūtīšana tiešsaistē automātiski tiek apturēta, lai klienti nevarētu veikt pasūtījumus, ko jūs neredzēsiet. Turpiniet pieņemt pasūtījumus ar iPhone, iPad un Android lietotni.",
+    "slotsBody": "Klienti pasūta iepriekš un izvēlas saņemšanas laiku. Mazāk rindu, un ēdiens ir gatavs, kad viņi ierodas."
+  },
+  "steps": {
+    "eyebrow": "Kā sākt",
+    "title": "Iestatiet visu un sāciet pieņemt pasūtījumus aptuveni 15 minūtēs.",
+    "lede": "Jāsakārto trīs lietas — un divām no tām pietiek ar foto.",
+    "menuTitle": "Izveidojiet ēdienkarti",
+    "menuBody": "Nofotografējiet savu tāfeli vai ielīmējiet tekstu. Pozīcijas, cenas un piedevas tiek pārnestas pašas. Jums tikai jāpārbauda, vai viss ir pareizi.",
+    "scheduleTitle": "Pievienojiet savu grafiku",
+    "scheduleBody": "Grafiks ir jūsu tīmekļa vietnē? Mēs to nolasīsim no turienes un uzturēsim aktuālu. Ja nav, nofotografējiet arī to. Jums tikai jāapstiprina atrastais.",
+    "shareTitle": "Kopīgojiet savu saiti",
+    "shareBody": "Publicējiet to Facebook, uzlīmējiet QR kodu uz busiņa. Pasūtījumi parādās jūsu ekrānā tādā secībā, kādā tie jāgatavo."
+  },
+  "testimonial": {
+    "quote": "HatchGrab ir padarījis pasūtīšanu daudz vienkāršāku. Viss ir sakārtots, mēs varam sekot krājumiem un precīzi zinām, cik picu vēl varam pārdot — un laika logi ir lieliski noslogotos ciematos.",
+    "award": "Gada mobilā picērija",
+    "awardScope": "Reģionālais uzvarētājs",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadja un Bogdans — īpašnieki"
+  },
+  "pricing": {
+    "eyebrow": "Cenas",
+    "title": "Sāciet bez maksas. Uzlabojiet plānu, kad vajadzīgs.",
+    "switchHead": "Pārejat no citas platformas?",
+    "switchBody": "Uzziniet, cik jūs maksātu HatchGrab par tiem pašiem pasūtījumiem. Tas aizņem aptuveni minūti.",
+    "switchCta": "Salīdziniet, cik maksājat"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Vēlaties redzēt, cik vienkārši ir sākt?",
+    "lede": "Augšupielādējiet savas ēdienkartes foto vai ekrānuzņēmumu, un nepilnās 60 sekundēs mēs to pārvērtīsim strādājošā pasūtīšanas lapā, ko varēsiet izmēģināt. Jūsu pozīcijas, jūsu cenas. Bez reģistrēšanās, bez kartes, nekas nav jāinstalē. Apskatiet un tad izlemiet.",
+    "cta": "Augšupielādēt ēdienkarti tagad →"
+  },
+  "meta": {
+    "title": "Pasūtījumu sistēma food truck un izbraukuma ēdināšanai — HatchGrab {country}",
+    "description": "Pieņemiet pasūtījumus un iepriekšējus pasūtījumus savā tirdzniecības vietā bez rindām. Pasūtījumu un virtuves ekrāna programmatūra food truck uzņēmumiem un izbraukuma ēdināšanai ({country}) — nevis kases sistēma."
+  }
+}

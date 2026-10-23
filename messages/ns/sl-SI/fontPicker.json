@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Vse",
+    "bold": "Krepke in visoke",
+    "hand": "Rokopisne",
+    "classic": "Klasične",
+    "clean": "Čiste",
+    "own": "Vaše",
+    "ownCount": "Vaše ({count})"
+  },
+  "yoursTag": "· vaša",
+  "loadingFonts": "Nalaganje pisav…",
+  "search": "Iskanje pisav ({count, number})",
+  "uploadButton": "↑ Naložite svojo pisavo",
+  "loadingLibrary": "Nalaganje knjižnice pisav…",
+  "tryAgain": "Poskusi znova",
+  "noOwn": "Niste še naložili nobene pisave. Uporabite gumb „↑ Naložite svojo pisavo“ zgoraj.",
+  "recent": "Nedavno uporabljene",
+  "popular": "Priljubljene za plakate",
+  "adding": "Dodajanje…",
+  "noMatch": "Ni pisave, ki bi ustrezala iskanju „{query}“.",
+  "showing": "Prikazano: {shown} od {total, number} — vnesite več, da zožite izbor.",
+  "couldNotAdd": "Pisave ni bilo mogoče dodati",
+  "tooBig": "Pisava ima {size, number, ::.0 group-off} MB. Omejitev je 5 MB.",
+  "woff": "Naložite datoteko TTF ali OTF — običajno jo lahko prenesete tam, kjer ste pisavo kupili.",
+  "uploadIncomplete": "Nalaganje se ni dokončalo",
+  "added": "Pisava „{name}“ je dodana kot različica: {face}.",
+  "face": {
+    "regular": "navadna",
+    "bold": "krepka",
+    "italic": "ležeča"
+  },
+  "licenceTick": "Ta pisava je moja ali imam licenco za njeno uporabo",
+  "checking": "Preverjanje pisave…",
+  "addFont": "Dodaj pisavo",
+  "cancel": "Prekliči",
+  "missingFaces": "Dodajte še različico pisave „{name}“: {faces} (neobvezno) — znova izberite datoteko.",
+  "somethingWrong": "Prišlo je do napake",
+  "faceLower": {
+    "regular": "navadna",
+    "bold": "krepka",
+    "italic": "ležeča"
+  },
+  "ownLicence": "Vaša lastna",
+  "loadFailed": "Pisav ni bilo mogoče naložiti"
+}

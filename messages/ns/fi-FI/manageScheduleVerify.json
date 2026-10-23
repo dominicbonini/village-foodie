@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Tarkistus ei ole tilapäisesti käytettävissä. Yritä hetken kuluttua uudelleen.",
+  "malformed": "Tämä ei näytä verkko-osoitteelta. Kokeile esimerkiksi ruokarekkasi.fi/tapahtumat",
+  "blocked": "Emme päässeet tälle sivustolle — se saattaa estää automaattiset tarkistukset. Kokeile sivua, jolla aikataulusi on, tai lisää tapahtumat itse.",
+  "unreachable": "Emme saaneet yhteyttä tähän sivustoon. Se voi olla alhaalla, tai osoite voi olla väärä.",
+  "no_content": "Pääsimme sivulle, mutta emme pystyneet lukemaan siltä mitään. Tarkista, että se on julkisesti saatavilla.",
+  "no_events": "Emme löytäneet tältä sivulta tulevia tapahtumia. Varmista, että URL-osoite vie suoraan sivulle, jolla aikataulusi on.",
+  "blockedDomain": "Käytä verkkosivustosi osoitetta — Facebook- ja Instagram-sivuja ei voi lukea automaattisesti."
+}

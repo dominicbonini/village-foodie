@@ -1,0 +1,15 @@
+{
+  "greeting": "Bună ziua 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Meniul complet și informațiile despre alergeni sunt aici: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Meniul nostru complet este aici: {url} — {truck} {emoji}",
+  "otherCategory": "Altele",
+  "categoryFrom": "{category} de la {price}",
+  "listTwo": "{first} și {second}",
+  "listMany": "{init} și {last}",
+  "menuSummary": "{opener}Avem {summary}. Vedeți meniul complet și comandați în avans aici: {url} — {truck} {emoji}",
+  "allergenCaveat": "Vă rugăm să verificați informațiile despre alergeni în meniul complet — acesta este un răspuns automat.",
+  "specificFallback": "{opener}Programul nostru actualizat este aici: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Mulțumim pentru mesaje! Aici pot răspunde doar de câteva ori pe zi.\n\nPentru comenzi: {link}",
+  "capContact": "Ne puteți contacta direct: {number}"
+}

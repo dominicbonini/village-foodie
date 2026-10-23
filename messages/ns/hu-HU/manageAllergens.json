@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Az Ön allergénkártyája",
+    "intro": "A vásárlók <b>pontosan úgy látják, ahogy Ön megírja</b> — semmit sem fogalmazunk át. Írja be vagy illessze be alább, vagy töltsön fel egy fotót/PDF-et, és beolvassuk a szöveget, hogy ellenőrizhesse.",
+    "empty": "Még nincs allergénkártya.",
+    "placeholder": "pl. Minden fish & chips ételünk búzát és tejet tartalmaz. A fritőzt glutént és diófélét tartalmazó termékekkel közösen használjuk. Vegán választék is van — kérdezze munkatársainkat.",
+    "reading": "Kép beolvasása…",
+    "upload": "📷 Kép / PDF feltöltése",
+    "uploadNote": "A szöveget kiolvassuk a képből, hogy átnézhesse — magát a képet nem tároljuk."
+  },
+  "cardUpload": {
+    "dishFallback": "Étel",
+    "question": "Van feltölthető allergénkártyája?",
+    "perDish": "{detected, select, yes {Töltsön fel egyet, és ebből állítjuk össze az ételek allergénjeit. A felismert allergének a következő oldalon jelennek meg, ahol minden ételt megerősít.} other {Töltsön fel egyet, és ebből állítjuk össze az ételek allergénjeit.}}",
+    "cardOnly": "Töltse fel azt az allergénkártyát, amelyet a vásárlók látni fognak.",
+    "yes": "Igen",
+    "no": "Nem",
+    "noProblem": "Semmi gond — nincs rá szükség. Folytassa az alábbi gombbal.",
+    "analysing": "Kártya elemzése…",
+    "dropzone": "Húzza ide, vagy koppintson a kiválasztáshoz",
+    "imageOrPdf": "Kép vagy PDF",
+    "or": "vagy",
+    "pastePlaceholder": "Illessze be ide az allergénkártya szövegét…",
+    "process": "Kártya feldolgozása",
+    "cardRead": "Kártya beolvasva ✓",
+    "unmatchedHeading": "Nem párosítható automatikusan — rendelje hozzá vagy vesse el",
+    "quotedName": "„{name}”",
+    "ambiguous": "Nem egyértelmű — több ételhez is illik; válassza ki a megfelelőt.",
+    "assignTo": "Hozzárendelés ételhez…",
+    "dismiss": "Elvetés",
+    "blanket": "A kártya szerint <b>{list}</b> <b>minden</b> ételben előfordulhat. Hozzáadja minden ételhez? (mindegyiket így is megerősíti) <muted>— alapból kikapcsolva</muted>",
+    "kitchenNotes": "Konyhai megjegyzések (az allergéninformációk közé mentve)",
+    "matchSummary": "{n, plural, =0 {{matched} tétel párosítva ételhez.} one {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.} other {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.}}"
+  },
+  "savedCard": {
+    "showLess": "Kevesebb",
+    "showMore": "Több",
+    "fileOnly": "Ehhez a food truckhoz el van mentve egy kártyafájl, de összefoglaló szöveg nincs tárolva. Az elolvasásához nyissa meg az eredetit.",
+    "viewOriginal": "Eredeti kártya megtekintése"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Nem sikerült beolvasni az allergénkártyát — próbálja újra",
+      "confirmed": "Megerősítve: {name}",
+      "undo": "Visszavonás",
+      "saveFailed": "Nem sikerült menteni — kérjük, próbálja újra",
+      "imageFailed": "Nem sikerült beolvasni ezt a képet — inkább írja be vagy illessze be a kártyát",
+      "cardRead": "{n, plural, one {Kártya beolvasva — {matched} párosítva, {count} hozzárendelésre vár} other {Kártya beolvasva — {matched} párosítva, {count} hozzárendelésre vár}}"
+    },
+    "genericWarn": {
+      "text": "„{generic}” felismerve, de nem elég konkrét. Ha az étel tartalmaz ilyet ({family}), válassza ki: {picks} — ha nem, hagyja kijelöletlenül.",
+      "andOr": "{a} és/vagy {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Megerősítve",
+      "confirmed": "Megerősítve",
+      "needsReview": "Ellenőrizendő"
+    },
+    "confirm": {
+      "confirming": "Megerősítés…",
+      "confirmed": "Megerősítve ✓",
+      "confirm": "Megerősítés",
+      "changed": "· módosítva",
+      "changedTitle": "Módosult a legutóbbi megerősítés óta — erősítse meg újra"
+    },
+    "allergens": "Allergének",
+    "dietary": "Étrend",
+    "uncategorised": "Kategória nélkül",
+    "review": {
+      "progress": "{confirmed}/{total} megerősítve",
+      "allConfirmed": "✓ Mind megerősítve",
+      "list": "Lista",
+      "table": "Táblázat",
+      "detected": "Az étlapjából felismerve — <b>ellenőrizze ezeket</b>. Az allergének rejtve maradnak a vásárlók elől, amíg minden ételt meg nem erősít.",
+      "viewOnly": "👁 Csak megtekintés — allergéneket csak a tulajdonos erősíthet meg vagy módosíthat.",
+      "emptyTitle": "Üres az étlap",
+      "emptyBody": "Először vegyen fel tételeket az étlapra, majd itt adja meg az allergénjeiket.",
+      "dish": "Étel",
+      "status": "Állapot"
+    },
+    "cardPanel": {
+      "reading": "Allergéninformációk beolvasása…",
+      "saved": "🛡️ Allergénkártya mentve",
+      "viewOriginal": "Eredeti kártya megtekintése",
+      "replace": "Kártya cseréje",
+      "uploadHelp": "Töltse fel az allergénkártyáját (fotó/PDF), vagy illessze be az allergéninformációit — a mesterséges intelligenciánk áttekinthetően rendezi a vásárlók számára.",
+      "add": "Allergénkártya hozzáadása",
+      "viewOnly": "👁 Csak megtekintés — allergénkártyát csak a tulajdonos adhat hozzá.",
+      "intro": "A vásárlók ezt a kártyát látják majd az étlap allergén-tájékoztatójaként. Csak kártyás módban az ételenkénti allergének rejtve maradnak (az ételadatokat megőrizzük arra az esetre, ha később ételenkénti módra vált)."
+    },
+    "subtitle": {
+      "choose": "Válassza ki, hogyan lássák a vásárlók az allergéninformációkat",
+      "card": "Adja hozzá az allergénkártyáját",
+      "cardOptional": "Allergénkártya hozzáadása (nem kötelező)",
+      "review": "Minden étel ellenőrzése és megerősítése"
+    },
+    "heading": {
+      "import": "Allergének",
+      "standalone": "Allergének beállítása"
+    },
+    "nav": {
+      "next": "Tovább →",
+      "back": "← Vissza",
+      "skip": "Most kihagyom",
+      "saving": "Mentés…",
+      "done": "Kész",
+      "saveLater": "Mentés, befejezés később",
+      "close": "Bezárás",
+      "finish": "Befejezés",
+      "skipImport": "Allergénbeállítás kihagyása most"
+    },
+    "hint": {
+      "skipDefers": "A kihagyás csak elhalasztja — a meg nem erősített ételek rejtve maradnak a vásárlók elől, amíg az allergénjeiket meg nem erősítik.",
+      "importIncomplete": "A folytatáshoz erősítsen meg minden ételt — vagy válassza ezt: „Allergénbeállítás kihagyása most”."
+    }
+  }
+}

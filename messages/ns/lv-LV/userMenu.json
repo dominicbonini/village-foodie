@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Lietotāja izvēlne",
+  "screenOn": "Ekrāns ieslēgts",
+  "screenOff": "Ekrāns izslēgts",
+  "newOrderSound": "Jauna pasūtījuma skaņa",
+  "copied": "Nokopēts",
+  "orderLink": "Pasūtīšanas saite",
+  "qrCode": "QR kods",
+  "kitchenScreen": "Virtuves ekrāns",
+  "thisDevice": "Šī ierīce",
+  "manage": "Pārvaldība",
+  "ordersDashboard": "Pasūtījumu panelis",
+  "admin": "Administrēšana",
+  "privacy": "Privātuma politika",
+  "terms": "Noteikumi",
+  "signOut": "Izrakstīties",
+  "close": "Aizvērt"
+}

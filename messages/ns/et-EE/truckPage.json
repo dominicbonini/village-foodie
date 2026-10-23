@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Toiduauto | Village Foodie",
+    "hgFallbackTitle": "Toiduauto",
+    "orderTitle": "Telli: {truck}",
+    "orderDescription": "{truck}: telli ette ja võta tellimus kätte toiduauto juurest.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} — logo"
+  },
+  "shareTitle": "{truck} — ajakava",
+  "shareText": "Vaata, kuhu {truck} järgmiseks tuleb! 🚚",
+  "linkCopied": "Profiili link kopeeriti lõikelauale! 📋",
+  "facebookPage": "Facebooki leht",
+  "loadingMap": "Kaardi laadimine…",
+  "view": {
+    "list": "Loend",
+    "map": "Kaart"
+  },
+  "ownThisTruck": "Oled selle toiduauto omanik?",
+  "ownThisTruckTitle": "Oled selle toiduauto omanik? Klõpsa, et oma profiili uuendada",
+  "actions": {
+    "menu": "Menüü",
+    "call": "Helista",
+    "message": "Sõnum",
+    "share": "Jaga",
+    "order": "Telli"
+  },
+  "loadingSchedule": "Ajakava laadimine…",
+  "loadError": {
+    "title": "Laadimine ebaõnnestus",
+    "body": "Ajakava ei õnnestunud praegu laadida — tavaliselt on see lühike tõrge. Proovi uuesti.",
+    "retry": "Proovi uuesti"
+  },
+  "notFound": {
+    "title": "Toiduautot ei leitud",
+    "body": "Selle toiduauto andmeid ei leitud. Võib-olla on see kolinud või oma profiili uuendanud.",
+    "cta": "Vaata kõiki toiduautosid"
+  },
+  "noEvents": {
+    "title": "Eelseisvaid üritusi ei leitud",
+    "body": "Võib-olla on meil selle toiduauto kohta mõned andmed puudu. Oled sa omanik või tead nende ajakava?",
+    "cta": "Saada meile sõnum ja uuendame!"
+  },
+  "whereToFind": "Kust meid leida",
+  "missingEvent": "<strong>Kas meil on mõni üritus puudu?</strong> <br></br>Kui oled selle toiduauto omanik või lihtsalt pühendunud fänn, aita meil seda lehte täpsena hoida! <br></br><link>Võta meiega ühendust, et puuduvad andmed lisada.</link>",
+  "weeklySchedule": "Saa iganädalane ajakava 🍕"
+}

@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Alegeți cum afișați informațiile despre alergeni",
+    "detail": "Până nu alegeți, clienții nu văd niciunul dintre preparatele dumneavoastră — meniul se protejează ascunzând tot ce are alergenii neconfirmați, iar acum asta înseamnă totul.",
+    "where": "Meniu → Alergeni"
+  },
+  "allergensCardMissing": {
+    "title": "Adăugați fișa de alergeni",
+    "detail": "Ați ales să afișați o fișă de alergeni, dar nu este salvată niciuna — clienților li s-ar spune că informațiile despre alergeni sunt disponibile și apoi nu ar găsi nimic.",
+    "where": "Meniu → Alergeni"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Confirmați alergenii pentru {count} preparat} few {Confirmați alergenii pentru {count} preparate} other {Confirmați alergenii pentru {count} de preparate}}",
+    "detail": "{n, plural, one {Preparatul dumneavoastră este ascuns clienților până îi confirmați alergenii.} few {{u, plural, one {{unverified} preparat din {total} este ascuns clienților până îi confirmați alergenii.} few {{unverified} preparate din {total} sunt ascunse clienților până le confirmați alergenii.} other {{unverified} de preparate din {total} sunt ascunse clienților până le confirmați alergenii.}}} other {{u, plural, one {{unverified} preparat din {total} este ascuns clienților până îi confirmați alergenii.} few {{unverified} preparate din {total} sunt ascunse clienților până le confirmați alergenii.} other {{unverified} de preparate din {total} sunt ascunse clienților până le confirmați alergenii.}}}} Un preparat afișat fără alergeni confirmați se citește ca „nu conține niciun alergen”, așa că meniul îl ascunde în loc să riște asta.",
+    "where": "Meniu → Alergeni"
+  },
+  "noVan": {
+    "title": "Adăugați un food truck",
+    "detail": "Evenimentele rulează pe un food truck — fără unul, nu aveți prin ce să primiți comenzi.",
+    "where": "Setări → Food truck-urile dumneavoastră"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Setați capacitatea bucătăriei",
+    "detail": "Nu este setată nicio capacitate pentru {vans}. Fără ea, vom continua să promitem clienților ore de ridicare pe care bucătăria dumneavoastră nu are cum să le respecte.",
+    "where": "Meniu → Capacitatea bucătăriei",
+    "unnamedVan": "Food truck fără nume"
+  },
+  "noPrepBearingCategory": {
+    "title": "Spuneți-ne cât durează preparatele",
+    "detail": "{categories, select, none {Nu aveți încă nicio categorie în meniu, așa că nu avem cum să calculăm cât durează o comandă.} other {Niciuna dintre categoriile dumneavoastră nu are setat un timp de gătire, așa că orice comandă ni se pare instantanee. Am continua să le dăm clienților ore de ridicare pe care bucătăria nu are nicio șansă să le respecte, iar cu cât aveți mai mult de lucru, cu atât ar fi mai târzii.}}",
+    "where": "Meniu → Categorii → Configurare bucătărie"
+  },
+  "emailUnverified": {
+    "title": "Confirmați adresa de e-mail",
+    "detail": "Trimitem la această adresă notificările despre comenzi și recuperarea contului. Dacă este greșită, aflați abia când ceva a mers deja prost.",
+    "where": "Căutați în inbox linkul nostru de confirmare"
+  },
+  "emailUnknown": {
+    "title": "Starea confirmării e-mailului este necunoscută",
+    "detail": "Verificarea e-mailului nu este încă conectată, așa că acest lucru nu poate fi evaluat. Blochează intenționat, în loc să treacă fără avertisment.",
+    "where": "—"
+  }
+}

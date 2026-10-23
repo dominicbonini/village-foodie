@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Objednat z food trucku {truck}",
+    "orderDescription": "Objednejte si předem z food trucku {truck} a vyzvedněte si objednávku přímo u něj.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo {truck}"
+  },
+  "shareTitle": "{truck} — rozpis",
+  "shareText": "Podívejte se, kde se {truck} objeví příště! 🚚",
+  "linkCopied": "Odkaz na profil zkopírován do schránky! 📋",
+  "facebookPage": "Stránka na Facebooku",
+  "loadingMap": "Načítání mapy…",
+  "view": {
+    "list": "Seznam",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "Je tento food truck váš?",
+  "ownThisTruckTitle": "Je tento food truck váš? Klikněte a aktualizujte svůj profil",
+  "actions": {
+    "menu": "Jídelní lístek",
+    "call": "Zavolat",
+    "message": "Napsat",
+    "share": "Sdílet",
+    "order": "Objednat"
+  },
+  "loadingSchedule": "Načítání rozpisu…",
+  "loadError": {
+    "title": "Nepodařilo se načíst",
+    "body": "Rozpis se teď nepodařilo načíst — obvykle jde jen o krátký výpadek. Zkuste to prosím znovu.",
+    "retry": "Znovu"
+  },
+  "notFound": {
+    "title": "Food truck nenalezen",
+    "body": "K tomuto food trucku jsme nenašli žádné údaje. Možná se přesunul nebo aktualizoval svůj profil.",
+    "cta": "Zobrazit všechny food trucky"
+  },
+  "noEvents": {
+    "title": "Žádné nadcházející akce",
+    "body": "Možná nám u tohoto food trucku chybí některé údaje. Jste majitel, nebo znáte jeho rozpis?",
+    "cta": "Napište nám a my to doplníme!"
+  },
+  "whereToFind": "Kde nás najdete",
+  "missingEvent": "<strong>Chybí nám nějaká akce?</strong> <br></br>Pokud jste majitel tohoto food trucku nebo jeho věrný fanoušek, pomozte nám udržet tuto stránku aktuální! <br></br><link>Kontaktujte nás a doplňte chybějící údaje.</link>",
+  "weeklySchedule": "Týdenní rozpis e-mailem 🍕"
+}

@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} jsou součástí tarifu {plan}.} other {{feature} je součástí tarifu {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nejsou ve vašem tarifu.} other {{feature} není ve vašem tarifu.}}",
+  "switchedOff": "{many, select, yes {{feature} — tyto funkce jsou pro váš food truck vypnuté.} other {{feature} — tato funkce je pro váš food truck vypnutá.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Změnit tarif →",
+  "features": {
+    "discovery_map": {
+      "name": "Zobrazení na veřejné mapě",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Webový přehled",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Kuchyňská aplikace",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Jídelní lístek přes QR kód",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Menu",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Nabídky navíc",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Objednávky na místě",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Objednávání s platbou při vyzvednutí",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Přepínač „vyprodáno“",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Odpočet zásob",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Ochrana objednávek při výpadku signálu",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online platby",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Předobjednávky na pozdější termín",
+      "many": "yes"
+    },
+    "time_slot_selection": {
+      "name": "Časové okno podle volby zákazníka",
+      "many": "no"
+    },
+    "smart_batch_pacing": {
+      "name": "Řízení kapacity kuchyně",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatické přijímání",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatické odpovědi na Messengeru a Instagramu",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR kódy s vaším logem",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Pokročilé reporty",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "Tisk kuchyňských lístků",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Synchronizace kuchyně na více zařízeních",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Obrazovka pro kuchaře",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatické odpovědi na WhatsAppu",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Rozpis na vašem vlastním webu",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Příspěvky na sociální sítě",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Vlastní typy akcí",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Soukromé akce",
+      "many": "yes"
+    }
+  }
+}

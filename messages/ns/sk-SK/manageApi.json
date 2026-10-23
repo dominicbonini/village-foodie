@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Food truck",
+  "eventsFeed": {
+    "today": "Dnes · {date}",
+    "tomorrow": "Zajtra · {date}"
+  },
+  "privacyNotSaved": "Akcia je zverejnená, ale jej nastavenie súkromia sa nepodarilo uložiť.",
+  "stockWarning": "V kategórii „{category}“ nie sú dostupné žiadne položky",
+  "uncategorised": "Bez kategórie"
+}

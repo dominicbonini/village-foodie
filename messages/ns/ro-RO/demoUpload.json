@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Citim meniul…",
+    "found": "Am găsit produsele…",
+    "kitchen": "Configurăm bucătăria…",
+    "page": "Construim pagina de comenzi…",
+    "almost": "Aproape gata…"
+  },
+  "templateSteps": {
+    "truck": "Construim food truck-ul de exemplu…",
+    "menu": "Configurăm meniul…",
+    "kitchen": "Configurăm bucătăria…",
+    "page": "Construim pagina de comenzi…",
+    "almost": "Aproape gata…"
+  },
+  "dialogLabel": "Încărcați meniul",
+  "heading": "✨ Încărcați meniul",
+  "failedHeading": "Nu am putut citi acest meniu",
+  "close": "Închideți",
+  "intro": "O fotografie a panoului cu meniul, o captură de ecran, un PDF sau lipiți-l ca text. AI-ul nostru îl citește și vă construiește o pagină de comenzi funcțională — produsele dumneavoastră, prețurile dumneavoastră — în mai puțin de 60 de secunde. Fără înregistrare, fără card.",
+  "failedIntro": "Uneori o fotografie este prea întunecată, prea înclinată sau scrisă de mână. Asta e treaba noastră, nu o greșeală a dumneavoastră. Câteva variante:",
+  "usually": "De obicei durează mai puțin de 60 de secunde.",
+  "slow": "Durează mai mult decât de obicei — se întâmplă uneori la meniurile mari.",
+  "keepWaiting": "Așteptați în continuare",
+  "sampleWhileYouWait": "Sau explorați un meniu de exemplu cât așteptați",
+  "standIn": "Acesta <b>nu va fi meniul dumneavoastră</b> — este un exemplu ca să vedeți cum funcționează.",
+  "seeSample": "Vedeți meniul de exemplu",
+  "tryAgain": "Încercați din nou",
+  "tryPhotoAgain": "Încercați din nou această fotografie",
+  "tryDifferent": "Încercați altă fotografie",
+  "uploadAnother": "← Încărcați altă fotografie",
+  "orSample": "Sau explorați un meniu de exemplu",
+  "orBuild": "Sau îl construim noi pentru dumneavoastră",
+  "buildSent": "✓ Mulțumim — l-am primit. Vă vom scrie pe e-mail.",
+  "buildBody": "Lăsați-ne adresa de e-mail și o persoană reală vă va introduce meniul și vă va trimite linkul.",
+  "emailPlaceholder": "nume@foodtruckultau.ro",
+  "sending": "…",
+  "send": "Trimiteți",
+  "noPhoto": "Nu aveți la îndemână o fotografie a meniului?",
+  "noPhotoBody": "Explorați în schimb un food truck de exemplu — puteți încărca meniul dumneavoastră oricând.",
+  "build": "Creați demo-ul →",
+  "nothingPublished": "Nimic nu este publicat — doar dumneavoastră îl vedeți.",
+  "error": {
+    "somethingWrong": "Ceva nu a funcționat. Vă rugăm să încercați din nou.",
+    "serverUnreachable": "Nu am putut contacta serverul. Verificați conexiunea și încercați din nou.",
+    "sendFailed": "Nu s-a putut trimite — încercați din nou."
+  },
+  "fields": {
+    "uploadLabel": "Încărcați fișierul cu meniul",
+    "dropHere": "Trageți meniul aici",
+    "dragOrTap": "Trageți și plasați sau atingeți pentru a alege",
+    "fileTypes": "Imagine sau PDF",
+    "or": "sau",
+    "pasteLabel": "Lipiți textul meniului",
+    "pastePlaceholder": "Lipiți meniul aici — numele produselor, descrieri, prețuri..."
+  }
+}

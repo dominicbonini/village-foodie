@@ -1,0 +1,83 @@
+{
+  "title": "Pasākumu veidi",
+  "newTypeButton": "+ Jauns pasākuma veids",
+  "close": "Aizvērt",
+  "loading": "Ielādē…",
+  "missingTitle": "Pasākumu veidi vēl nav ieslēgti.",
+  "missingBody": "Šīs funkcijas datubāzes atjauninājums vēl nav piemērots. Nekas nav salūzis — visi pasākumi izmanto jūsu parastos iestatījumus.",
+  "column": "Kolonna",
+  "vanGone": "Šis busiņš vairs nepastāv.",
+  "typeGone": "Šis veids vairs nepastāv.",
+  "standard": "Standarta",
+  "standardHeading": "STANDARTA",
+  "moreFor": "Vairāk: {name}",
+  "rename": "Pārdēvēt",
+  "moveLeft": "Pārvietot pa kreisi",
+  "moveRight": "Pārvietot pa labi",
+  "delete": "Dzēst",
+  "sections": {
+    "vans": "BUSIŅI",
+    "prices": "CENAS",
+    "itemPrices": "POZĪCIJU CENAS",
+    "service": "APKALPOŠANA"
+  },
+  "labelFor": "{label}: {name}",
+  "intervalEvery": "Ik pēc {mins} min",
+  "noTypes": "Jums vēl nav pasākumu veidu, tāpēc visi pasākumi izmanto jūsu parastos iestatījumus.",
+  "renameTitle": "Pārdēvēt šo veidu",
+  "name": "Nosaukums",
+  "cancel": "Atcelt",
+  "save": "Saglabāt",
+  "copyVanOne": "Kopēt 1. busiņa iestatījumus",
+  "thisType": "šis veids",
+  "matchTitle": "Pielīdzināt Standarta veidam: “{name}”?",
+  "matchKeeps": "Viss, ko mainījāt viena pasākuma vadības panelī, paliek kā ir, un šī veida cenas netiek mainītas.",
+  "matchWillUse": "Tiks izmantots: {summary}",
+  "deleteTitle": "Dzēst “{name}”?",
+  "deleteBody": "{n, plural, =0 {Neviens gaidāmais pasākums neizmanto “{name}”.} zero {{count} gaidāmie pasākumi izmanto “{name}”. Tie atgriezīsies pie Standarta veida.} one {{count} gaidāmais pasākums izmanto “{name}”. Tas atgriezīsies pie Standarta veida.} other {{count} gaidāmie pasākumi izmanto “{name}”. Tie atgriezīsies pie Standarta veida.}} Viss, ko mainījāt atsevišķā pasākumā, paliek kā ir.",
+  "keep": "Paturēt",
+  "phone": {
+    "standardTag": "Standarta",
+    "defaultTag": "noklusējums",
+    "vanSetup": "Šī busiņa parastie iestatījumi — tiek izmantoti katrā pasākumā bez veida.",
+    "standardSetup": "Jūsu parastie iestatījumi — tiek izmantoti katrā pasākumā bez veida.",
+    "cardSummary": "{upcoming, plural, zero {{upcomingCount} gaidāmie pasākumi} one {{upcomingCount} gaidāmais pasākums} other {{upcomingCount} gaidāmie pasākumi}} · {changed, plural, =0 {vēl nekas nav mainīts} zero {mainīti {changedCount} no {total}} one {mainīts {changedCount} no {total}} other {mainīti {changedCount} no {total}}}",
+    "noMenuItems": "Ēdienkartē vēl nav pozīciju — pievienojiet tās sadaļā Ēdienkarte › Pozīcijas."
+  },
+  "newType": {
+    "title": "Jauns pasākuma veids",
+    "namePlaceholder": "piem., Skolas svētki",
+    "help": "Pieskarieties nosaukumam vai ierakstiet savu. Veids sākas kā Standarta veida kopija, un vēlākas Standarta veida izmaiņas to neietekmēs. Pēc tam mainiet jebko.",
+    "create": "Izveidot",
+    "chips": {
+      "festival": "Festivāls",
+      "pub": "Krogs",
+      "market": "Tirgus",
+      "privateHire": "Food truck noma"
+    }
+  },
+  "select": {
+    "label": "Pasākuma veids",
+    "usual": "Šai vietai parasti: {name}."
+  },
+  "summary": {
+    "normalSetup": "Jūsu parastie iestatījumi",
+    "sameAsStandard": "Tāpat kā Standarta veidam",
+    "buzzersOn": "peidžeri ieslēgti",
+    "buzzersOff": "peidžeri izslēgti",
+    "takeCashOn": "skaidra nauda: ieslēgta",
+    "takeCashOff": "skaidra nauda: izslēgta",
+    "markReadyOn": "solis “gatavs” ieslēgts",
+    "markReadyOff": "solis “gatavs” izslēgts",
+    "collectionEvery": "saņemšana ik pēc {mins} min",
+    "offlineOff": "bezsaistes aizsardzība izslēgta",
+    "offlineKeepTaking": "bezsaistē: turpināt pieņemt pasūtījumus",
+    "offlinePause": "bezsaistē: apturēt pasūtīšanu"
+  },
+  "errors": {
+    "somethingWentWrong": "Kaut kas nogāja greizi",
+    "couldNotLoad": "Neizdevās ielādēt",
+    "couldNotSave": "Neizdevās saglabāt",
+    "noVans": "Šim food truck nav busiņu, ko mainīt."
+  }
+}

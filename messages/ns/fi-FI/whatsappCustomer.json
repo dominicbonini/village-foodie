@@ -1,0 +1,15 @@
+{
+  "greeting": "Moikka 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Koko ruokalistamme ja allergeenitiedot löydät täältä: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Koko ruokalistamme löydät täältä: {url} — {truck} {emoji}",
+  "otherCategory": "Muut",
+  "categoryFrom": "{category} alkaen {price}",
+  "listTwo": "{first} ja {second}",
+  "listMany": "{init} ja {last}",
+  "menuSummary": "{opener}Meiltä löytyy: {summary}. Katso koko ruokalista ja tilaa etukäteen täältä: {url} — {truck} {emoji}",
+  "allergenCaveat": "Tarkista allergeenitiedot koko ruokalistasta — tämä on automaattinen vastaus.",
+  "specificFallback": "{opener}Katso uusin aikataulumme täältä: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Kiitos kaikista viesteistäsi! Voin vastata täällä vain muutaman kerran päivässä.\n\nTilaa täältä: {link}",
+  "capContact": "Tavoitat meidät suoraan: {number}"
+}

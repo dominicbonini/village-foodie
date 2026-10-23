@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Data týdne",
+    "dayList": "Seznam dnů",
+    "place": "Místo",
+    "venue": "Místo konání",
+    "area": "Lokalita",
+    "dayDate": "Den a datum",
+    "times": "Časy",
+    "orderLink": "Odkaz na objednávku",
+    "locationTag": "Označení místa"
+  },
+  "weekHeader": "{truck} — kde nás najdete tento týden:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ZRUŠENO, omlouváme se",
+  "noDates": "Tento týden nejsou žádné termíny — brzy se podívejte znovu.",
+  "orderAhead": "Objednejte předem: {url}",
+  "orderAheadTagged": "Objednejte předem: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Omlouváme se — {when} nebudeme moci přijet: {where}.",
+  "cancelledApology": "Omlouváme se všem, kdo plánovali přijít. Brzy jsme zpět.",
+  "when": {
+    "today": "dnes",
+    "tonight": "dnes večer",
+    "tomorrow": "zítra",
+    "dated": "dne {date}"
+  }
+}

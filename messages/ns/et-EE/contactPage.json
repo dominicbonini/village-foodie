@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Tugi",
+    "description": "Abi HatchGrabi kasutamisel. Saada meile sõnum ja vastame sulle e-posti teel."
+  },
+  "logIn": "Logi sisse",
+  "eyebrow": "Tugi",
+  "title": "Kuidas saame aidata?",
+  "lede": "Midagi ei tööta või on sul küsimus oma konto kohta? Meiega saab ühendust kahel viisil — mõlemal juhul vastame sulle e-posti teel.",
+  "emailUs": "Kirjuta meile",
+  "formHeading": "Või täida allolev vorm",
+  "loadingForm": "Vormi laadimine…",
+  "formTitle": "Võta ühendust HatchGrabi toega",
+  "privacy": "Privaatsus",
+  "terms": "Tingimused",
+  "about": "Meist",
+  "copyright": "© {year} HatchGrab"
+}

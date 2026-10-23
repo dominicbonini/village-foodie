@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "za food truck / měsíc",
+  "transactionFees": "Transakční poplatky",
+  "comingSoon": "Již brzy",
+  "footnote2Masked": "Online platby zajišťuje Stripe Connect. Poplatky platformy a za zpracování karet budou upřesněny a potvrdíme je při spuštění.",
+  "card": {
+    "title": "Fakturace a platby",
+    "managed": "Fakturaci spravuje HatchGrab",
+    "earlyAccess": "Během předběžného přístupu tarify nastavujeme a upravujeme ručně.",
+    "planLine": "{trial, select, yes {{truck} · tarif {plan} (zkušební období)} other {{truck} · tarif {plan}}}"
+  },
+  "currentPlan": "Aktuální tarif",
+  "plan": {
+    "included": "Zahrnuje online objednávky v hodnotě {amount} měsíčně.",
+    "includedUnlimited": "Neomezené online objednávky v ceně.",
+    "promo": "Zvláštní cena.",
+    "promoUntil": "Zvláštní cena do {date}.",
+    "ended": "Váš tarif {plan} skončil {date}. Nyní máte tarif {now}.",
+    "trialMonths": "{months}měsíční bezplatné zkušební období."
+  },
+  "trialEnds": "Zkušební období končí {date}",
+  "yourTrialEnds": "Vaše zkušební období končí {date}",
+  "notStarted": {
+    "heading": "Vaše bezplatné zkušební období ještě nezačalo"
+  },
+  "onTrial": "Máte k dispozici všechny funkce. Vyberte si tarif do konce zkušebního období.",
+  "onTrialNoCta": "Máte k dispozici všechny funkce.",
+  "noCharge": "🔒 Během zkušebního období, které trvá do {date}, vám nic neúčtujeme. Účtovat začneme teprve, až si vyberete tarif a zadáte platební údaje. Do té doby není co rušit ani platit.",
+  "fees": "*U online objednávek se účtují standardní poplatky za zpracování karet",
+  "setUpPayment": "⏱ Vyberte si tarif do konce zkušebního období",
+  "changeYourPlan": "Změnit tarif",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Přejít na {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Automatickou fakturaci teprve připravujeme. Pokud chcete přejít hned, napište nám a do 24 hodin vše nastavíme.",
+    "mailSubject": "Přechod na {plan} — {truck}",
+    "mailBody": "Dobrý den, prosím o převod food trucku {truck} na tarif {plan} ({price}).",
+    "email": "Napsat nám o přechod",
+    "cancel": "Zrušit"
+  }
+}

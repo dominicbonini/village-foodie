@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Pasūtījuma #{id} izmaiņa atsaukta",
+    "saved": "Pasūtījums #{id} saglabāts",
+    "undo": "↩ Atsaukt",
+    "paymentNotRecorded": "⚠ Pasūtījums #{id} — MAKSĀJUMS NAV REĢISTRĒTS. {collect, select, yes {Pasūtījums pabeigts} other {Pasūtījums saglabāts}}, bet nauda — nē.",
+    "recordPayment": "Reģistrēt maksājumu",
+    "paid": "Pasūtījums #{id} apmaksāts",
+    "undonePayment": "Atsaukts — maksājums noņemts",
+    "undoneCollected": "Atsaukts — pasūtījums nav izsniegts",
+    "collected": "Pasūtījums #{id} {paidToo, select, yes {apmaksāts un izsniegts} other {izsniegts}}",
+    "ready": "Pasūtījums #{id} gatavs",
+    "readyBuzzer": "Pasūtījums #{id} gatavs · <pill></pill>",
+    "status": "Pasūtījums #{id} {action, select, confirm {apstiprināts} reject {noraidīts} ready {gatavs} collected {izsniegts} undo_collected {atjaunots} cancel {atcelts} other {atjaunināts}}"
+  },
+  "conflicts": {
+    "more": "+{count} vēl",
+    "notOnScreenPlus": "+{count} nav šajā ekrānā",
+    "notOnScreen": "{n, plural, zero {{count} pasūtījumi nav šajā ekrānā} one {{count} pasūtījums nav šajā ekrānā} other {{count} pasūtījumi nav šajā ekrānā}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ MAKSĀJUMS NAV REĢISTRĒTS",
+    "paymentBody": "{orders} — atzīmēts kā apmaksāts tikai šajā ierīcē. Maksājums nav apstrādāts.",
+    "paymentCheck": "Pārbaudiet pasūtījumu un pieņemiet maksājumu vēlreiz, ja tas joprojām nav samaksāts.",
+    "dismiss": "Aizvērt",
+    "confirmChecked": "Apstipriniet, ka pārbaudījāt: {orders}",
+    "confirmHides": "Tas paslēpj brīdinājumu. Ieraksts jebkurā gadījumā paliek šajā ierīcē.",
+    "notYet": "Vēl ne",
+    "iveChecked": "Pārbaudīts: {orders}",
+    "statusBody": "⚠ {orders} — šī izmaiņa netika nosūtīta. Pārbaudiet pasūtījumu.",
+    "offline": "📴 Nav savienojuma — {n, plural, zero {{count} izmaiņas saglabātas šajā ierīcē. Tās tiks nosūtītas, kad atkal būsiet tiešsaistē.} one {{count} izmaiņa saglabāta šajā ierīcē. Tā tiks nosūtīta, kad atkal būsiet tiešsaistē.} other {{count} izmaiņas saglabātas šajā ierīcē. Tās tiks nosūtītas, kad atkal būsiet tiešsaistē.}} Iestatījumi ir bloķēti.",
+    "syncing": "Atkal tiešsaistē — sūta {n, plural, zero {{count} izmaiņas} one {{count} izmaiņu} other {{count} izmaiņas}}…",
+    "synced": "Visas izmaiņas nosūtītas.",
+    "stillQueued": "{n, plural, zero {{count} izmaiņas saglabātas šajā ierīcē. Joprojām mēģina tās nosūtīt.} one {{count} izmaiņa saglabāta šajā ierīcē. Joprojām mēģina to nosūtīt.} other {{count} izmaiņas saglabātas šajā ierīcē. Joprojām mēģina tās nosūtīt.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab ir bloķēts",
+    "verifying": "Pārbauda…",
+    "unlock": "Atbloķēt",
+    "cantUseBiometric": "Nevar izmantot Face / Touch ID?",
+    "enterPin": "Ievadiet rezerves PIN",
+    "wrongPin": "Nepareizs PIN — mēģiniet vēlreiz.",
+    "checking": "Pārbauda…",
+    "tryBiometric": "Izmēģināt Face / Touch ID",
+    "forgot": "Aizmirsāt PIN? Lietotne būs jāinstalē no jauna."
+  },
+  "notify": {
+    "title": "🔔 Paziņojumi",
+    "intro": "Brīdinājumi šajā ierīcē. Ieslēdziet, lai izvēlētos, kurus brīdinājumus saņemt.",
+    "refused": "Lai to ieslēgtu, paziņojumi jāatļauj ierīces iestatījumos.",
+    "newOrder": "Jaunu pasūtījumu brīdinājumi",
+    "newOrderHelp": "Saņemiet paziņojumu, kad klienta pasūtījums jāapstiprina.",
+    "offline": "Bezsaistes / pauzes brīdinājumi",
+    "offlineHelp": "Saņemiet paziņojumu, kad šī ierīce zaudē savienojumu (un pasūtīšana tiek pauzēta). <green>Darbojas bezsaistē.</green>"
+  },
+  "van": {
+    "label": "Busiņš",
+    "loadRetry": "Neizdevās ielādēt · Mēģināt vēlreiz",
+    "select": "Izvēlieties…"
+  },
+  "deviceSave": {
+    "network": "Nevarēja sazināties ar serveri — pārbaudiet savienojumu un mēģiniet vēlreiz.",
+    "server": "Pašlaik neizdevās saglabāt. Lūdzu, mēģiniet vēlreiz."
+  },
+  "setup": {
+    "fetchErrorTitle": "Neizdevās ielādēt ierīces iestatīšanu",
+    "fetchErrorBody": "Nevarējām sazināties ar serveri, lai iestatītu <b>šo ierīci</b>. Pārbaudiet savienojumu un mēģiniet vēlreiz — jūsu pasūtījumi un iestatījumi netiek ietekmēti.",
+    "retry": "Atkārtot",
+    "later": "Vēlāk",
+    "noVanTitle": "Nav aktīva busiņa",
+    "noVanBody": "Šim food truck vēl nav aktīva busiņa. Aktivizējiet to sadaļā <b>Iestatījumi → Jūsu busiņi</b>, un šī ierīce iestatīsies automātiski — šeit nekas vairs nav jādara.",
+    "goToVans": "Atvērt Iestatījumi → Jūsu busiņi",
+    "title": "Iestatiet šo ierīci",
+    "body": "Vienreizēja iestatīšana <b>šai ierīcei</b>: ekrāns, ko tā atver, un busiņš, kuram tā strādā. Attiecas tikai uz šo ierīci — citas ierīces iestata atsevišķi, un vēlāk to var mainīt profila izvēlnē → “Šī ierīce”.",
+    "whichScreen": "Kuru ekrānu šai ierīcei atvērt?",
+    "dashboard": "Vadības panelis",
+    "kds": "Virtuves ekrāns",
+    "whichVan": "Kuram busiņam pieder šī ierīce?",
+    "selectVan": "Izvēlieties busiņu…",
+    "saving": "Saglabā…",
+    "tryAgain": "Mēģināt vēlreiz",
+    "continue": "Turpināt"
+  },
+  "device": {
+    "title": "Šī ierīce",
+    "viewing": "Jūs skatāt: <b>{truck}</b>",
+    "viewingVan": "Jūs skatāt: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Tikai šī ierīce — citas ierīces iestata atsevišķi. (ID: {id}…)",
+    "truck": "Food truck",
+    "van": "Busiņš",
+    "defaultScreen": "Sākuma ekrāns",
+    "orderNotifications": "Pasūtījumu paziņojumi",
+    "patchFailed": "{setting, select, van {Busiņš} defaultScreen {Sākuma ekrāns} other {Pasūtījumu paziņojumi}}: izmaiņa netika saglabāta. {reason}",
+    "requireBiometric": "Atvēršanai pieprasīt pirksta nospiedumu vai sejas atpazīšanu",
+    "pinTitle": "Iestatiet rezerves PIN (4–6 cipari)",
+    "pinHelp": "Jūsu ceļš iekšā, ja pirksta nospiedums vai sejas atpazīšana nedarbojas — tā ir vienīgā rezerves iespēja, tāpēc neaizmirstiet to (aizmirsts PIN nozīmē lietotnes atkārtotu instalēšanu). Darbojas bezsaistē.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Apstipriniet PIN",
+    "pinTooShort": "Izmantojiet vismaz 4 ciparus.",
+    "pinMismatch": "PIN kodi nesakrīt.",
+    "setPin": "Iestatīt PIN un ieslēgt",
+    "cancel": "Atcelt",
+    "noBiometric": "Šajā ierīcē nav iestatīta pirksta nospieduma vai sejas atpazīšana — pievienojiet to ierīces iestatījumos. Jūsu rezerves PIN joprojām darbojas.",
+    "footer": "Šie iestatījumi attiecas tikai uz šo ierīci — citas ierīces tiek konfigurētas atsevišķi."
+  },
+  "appLock": {
+    "unlockReason": "Atbloķēt HatchGrab",
+    "usePasscode": "Izmantot piekļuves kodu",
+    "cancel": "Atcelt",
+    "confirmEnable": "Apstipriniet, lai ieslēgtu lietotnes bloķēšanu"
+  },
+  "channel": {
+    "ordersName": "Jauni pasūtījumi",
+    "ordersDescription": "Brīdinājumi, kad pasūtījums jāapstiprina."
+  },
+  "localNotify": {
+    "newOrderTitle": "Jauns pasūtījums",
+    "orderReceived": "Saņemts pasūtījums {number}",
+    "newOrders": "{n, plural, zero {Jums ir {count} jauni pasūtījumi} one {Jums ir {count} jauns pasūtījums} other {Jums ir {count} jauni pasūtījumi}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Pasūtīšana pauzēta",
+    "pausedBody": "Jūs esat bezsaistē — klientu pasūtīšana ir pauzēta.",
+    "offlineTitle": "Jūs esat bezsaistē",
+    "offlineBody": "Šī ierīce ir zaudējusi savienojumu."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Jokin meni vikaan",
+    "previewFailed": "Esikatselua ei voitu luoda",
+    "loadFailed": "Lataus epäonnistui",
+    "tooBig": "Kuva on {size, number, ::.0 group-off} Mt. Enimmäiskoko on 10 Mt.",
+    "wrongType": "Valitse PNG- tai JPG-kuva.",
+    "uploadIncomplete": "Lataus jäi kesken",
+    "uploadFailed": "Lataus epäonnistui",
+    "saveFailed": "Tallennus epäonnistui",
+    "buildFailed": "Julkaisua ei voitu luoda",
+    "copyFailed": "Kopiointi epäonnistui — valitse teksti ja kopioi se itse."
+  },
+  "loading": "Ladataan…",
+  "missingTable": {
+    "title": "Viikkojulkaisu vaatii tietokannan päivityksen",
+    "body": "Pohjien taulua ei ole vielä luotu. Kun migraatio on ajettu, tämä näkymä toimii."
+  },
+  "kind": {
+    "label": "Mikä pohja",
+    "event": "Yksittäinen tapahtuma",
+    "week": "Viikko"
+  },
+  "setup": {
+    "title": "Ota viikkojulkaisu käyttöön",
+    "intro": "Lataa tyhjä versio viikkoaikataulukuvasta, jonka jo nyt teet — sama ulkoasu, mutta omat tekstilaatikkosi poistettuina. HatchGrab täyttää viikon aikataulustasi.",
+    "canvaTitle": "Näin viet tyhjän pohjan Canvasta",
+    "canvaStep1": "Avaa tavallinen viikkoaikataulusi pohja.",
+    "canvaStep2": "Poista tekstilaatikot, joissa on päivämäärät, paikat ja kellonajat — jätä tausta ja otsikot, jotka haluat pitää.",
+    "canvaStep3": "Jaa › Lataa › PNG.",
+    "uploading": "Ladataan…",
+    "upload": "Lataa tyhjä kuvasi",
+    "uploadHint": "PNG tai JPG, enintään 10 Mt, lyhyemmällä sivulla vähintään {px} px.",
+    "phoneTip": "Toimii parhaiten tietokoneella tai iPadilla — puhelimella laatikot ovat pieniä raahata.",
+    "designName": "Viikkojulkaisun pohja",
+    "backDesigns": "‹ Pohjat",
+    "back": "‹ Takaisin",
+    "pictureNote": "Kuvasi ilman päivämääriä tai paikkoja. Me lisäämme ne.",
+    "saved": "Pohja tallennettu."
+  },
+  "week": {
+    "this": "Tämä viikko",
+    "next": "Ensi viikko"
+  },
+  "post": {
+    "title": "Viikkojulkaisusi",
+    "editDesign": "Muokkaa pohjaa",
+    "weekOf": "viikko alk. {date}",
+    "imageAlt": "Viikkojulkaisusi",
+    "building": "Luodaan julkaisua…",
+    "updating": "Päivitetään…",
+    "eventsTitle": "Tämän viikon tapahtumat",
+    "noEvents": "Ei tapahtumia tällä viikolla.",
+    "eventDateCancelled": "{date} · peruttu",
+    "showCancelled": "Näytä perutut tapahtumat",
+    "showPrivate": "Näytä yksityistilaisuudet",
+    "privateHint": "Ne näkyvät nimellä ”Yksityistilaisuus” päivämäärän ja kellonaikojen kanssa — paikkaa ei koskaan näytetä.",
+    "noteTitle": "Huomautus",
+    "notePlaceholder": "esim. Tilaa etukäteen ja nouda",
+    "noteHint": "Näkyy kuvatekstissä ja huomautuslaatikossa, jos lisäsit sellaisen.",
+    "captionTitle": "Kuvateksti sivullesi",
+    "perEventTitle": "Julkaisu tapahtumittain",
+    "nothingToPost": "Ei julkaistavaa tällä viikolla.",
+    "textCopied": "Teksti kopioitu.",
+    "copyText": "Kopioi teksti",
+    "image": "Kuva",
+    "share": "Jaa",
+    "noOrderLink": "Tilauslinkkiä ei vielä ole — aseta ruokarekkasi verkko-osoite kohdassa Asetukset."
+  }
+}

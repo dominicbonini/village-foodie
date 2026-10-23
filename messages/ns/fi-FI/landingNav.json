@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrabin etusivu",
+  "cta": "Lataa ruokalistani →",
+  "ctaShort": "Lataa ruokalista",
+  "features": "Ominaisuudet",
+  "pricing": "Hinnoittelu",
+  "logIn": "Kirjaudu sisään",
+  "country": {
+    "button": "Maa: {name}. Vaihda maata",
+    "menu": "Maa"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "docTitle": "Virtuve · {truck}",
+  "loading": "Ielādē virtuvi…",
+  "pin": {
+    "title": "Ievadiet PIN",
+    "placeholder": "PIN",
+    "unlock": "Atbloķēt",
+    "unreachable": "Pašlaik nevar sazināties ar serveri. Jūsu PIN ir pareizs — mēģiniet vēlreiz pēc brīža.",
+    "incorrect": "Nepareizs PIN",
+    "generic": "Kaut kas nogāja greizi. Mēģiniet vēlreiz."
+  },
+  "error": {
+    "linkInvalid": "Šī saite vairs nav derīga.",
+    "couldNotLoad": "Neizdevās ielādēt pasūtījumus",
+    "truckNotFound": "Food truck nav atrasts"
+  },
+  "degraded": {
+    "at": "⚠️ Nevar sazināties ar serveri. Rāda kartītes (stāvoklis: {time}). VAR TRŪKT JAUNU PASŪTĪJUMU.",
+    "earlier": "⚠️ Nevar sazināties ar serveri. Rāda agrāk ielādētās kartītes. VAR TRŪKT JAUNU PASŪTĪJUMU."
+  },
+  "header": {
+    "dashboard": "Vadības panelis",
+    "backTitle": "Atpakaļ uz vadības paneli",
+    "list": "Saraksts",
+    "grid": "Režģis",
+    "full": "Pilns",
+    "cook": "Pavāram",
+    "fullTitle": "Pilnas kartītes — cenas un maksājuma informācija, kā tās redz pie busiņa.",
+    "cookTitle": "Pavāra kartītes — lielāks teksts, grupētas pa kategorijām, bez cenām.",
+    "readyStep": "Gatavības solis",
+    "readyOnlyTitle": "Šis ekrāns tikai atzīmē pasūtījumus kā gatavus, tāpēc to nevar izslēgt — tas ir vienīgais solis, ko tas veic.",
+    "readyOnTitle": "Šis ekrāns atzīmē pasūtījumus kā gatavus. Pieskarieties, lai to darītu cits ekrāns.",
+    "readyOffTitle": "Pasūtījumus kā gatavus atzīmē cits ekrāns. Pieskarieties, lai to darītu šis.",
+    "handover": "Apmaksa un izsniegšana",
+    "handoverOnlyTitle": "Šis ekrāns tikai pieņem apmaksu, tāpēc to nevar izslēgt — tas ir vienīgais solis, ko tas veic.",
+    "handoverOnTitle": "Šis ekrāns pieņem apmaksu un izsniedz pasūtījumus. Pieskarieties, lai to darītu cits ekrāns.",
+    "handoverOffTitle": "Apmaksu pieņem cits ekrāns. Pieskarieties, lai to darītu šis.",
+    "soundOn": "Jauna pasūtījuma skaņa ieslēgta — pieskarieties, lai izslēgtu",
+    "soundOff": "Jauna pasūtījuma skaņa izslēgta — pieskarieties, lai ieslēgtu",
+    "screenOn": "Ekrāns ieslēgts",
+    "screenOff": "Ekrāns izslēgts",
+    "screenSettings": "Ekrāna iestatījumi",
+    "manageEvent": "Pārvaldīt pasākumu",
+    "manageEventTitle": "Pārvaldīt pasākumu — sākt, pauzēt, mainīt vai beigt",
+    "soundSettings": "Skaņas iestatījumi",
+    "soundSettingsTitle": "Kuras skaņas skan šajā ierīcē",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Skata iestatījumi",
+    "on": "Iesl.",
+    "off": "Izsl.",
+    "newOrderSound": "Jauna pasūtījuma skaņa",
+    "soundNeedsConfirming": "Tikai apstiprināmie pasūtījumi",
+    "soundAll": "Visi jaunie pasūtījumi",
+    "soundDue": "Skaņa, kad pasūtījums jāsāk gatavot",
+    "soundDueHelp": "Skan, kad kartīte kļūst dzeltena.",
+    "deviceSettings": "Ierīces iestatījumi",
+    "sound": "Skaņa",
+    "close": "Aizvērt"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Šim pasākumam pasūtījumi nav ielādēti",
+    "mismatchBody": "Serveris atbildēja ar citu pasākumu, tāpēc nekas netiek rādīts, lai nerādītu nepareizus pasūtījumus. Izvēlieties pasākumu vēlreiz vai pārlādējiet.",
+    "mismatchBodyAt": "Serveris atbildēja ar citu pasākumu, tāpēc nekas netiek rādīts, lai nerādītu nepareizus pasūtījumus (vieta: {venue}). Izvēlieties pasākumu vēlreiz vai pārlādējiet.",
+    "paused": "⏸ Pasūtījumi pauzēti{reason, select, offline { (ierīce bezsaistē)} other {}} — klienti nevar pasūtīt",
+    "resume": "Atsākt",
+    "offline": "Nav savienojuma — rāda pēdējos zināmos pasūtījumus. Tiešsaistes pasūtīšana klientiem ir pauzēta.",
+    "queued": "{n, plural, zero {{count} darbības rindā} one {{count} darbība rindā} other {{count} darbības rindā}}",
+    "extraWait": "⏱ Aktīva papildu gaidīšana: +{mins} min",
+    "clear": "Noņemt",
+    "toMake": "Jāgatavo",
+    "today": "Šodien · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Sākt pasākumu",
+    "recentlyClosed": "Pasākums beidzies · {venue}: beidzās {time}",
+    "eventStatus": "{tone, select, paused {⏸ Pauzēts} live {● Notiek} finished {● Beidzies} cancelled {Atcelts} other {Nav sākts}}"
+  },
+  "board": {
+    "queueClear": "Rinda tukša",
+    "doneToday": "Šodien pabeigti · {count}",
+    "paid": "✓ apmaksāts",
+    "cardHeld": "summa rezervēta",
+    "due": "jāmaksā {amount}"
+  },
+  "screenOff": {
+    "title": "Atļaut ekrānam izslēgties?",
+    "bodyVans": "{vans}: {n, plural, zero {ieslēgta} one {ieslēgta} other {ieslēgta}} bezsaistes noteikšana. Ja ekrāns izslēgsies, ierīce var pārstāt sūtīt tiešsaistes signālu un klientu pasūtīšana var tikt pauzēta.",
+    "body": "Ja ekrāns izslēgsies, ierīce var pārstāt sūtīt tiešsaistes signālu.",
+    "keepHint": "Turiet ekrānu ieslēgtu, lai pasūtīšana netiktu pārtraukta.",
+    "keep": "Turēt ekrānu ieslēgtu",
+    "allow": "Atļaut izslēgties"
+  },
+  "event": {
+    "change": "Mainīt pasākumu",
+    "cancel": "Atcelt",
+    "waitActive": "⏱ +{mins} min aktīvs · Pieskarieties, lai noņemtu",
+    "addWait": "⏱ Papildu gaidīšana",
+    "endTitle": "Beigt pasākumu?",
+    "endEarly": "Šo pasākumu plānots beigt tikai {time}. Vairs netiks pieņemti pasūtījumi. Apstiprināt pasākuma beigšanu?",
+    "endNow": "Beigt šo pasākumu? Vairs netiks pieņemti pasūtījumi.",
+    "yes": "Jā",
+    "started": "Pasākums sākts",
+    "startFutureConfirm": "Pasākuma datums: {date}. Sākt to tagad?",
+    "finishTimeNow": "Beigu laiks tagad: {time}",
+    "finished": "Pasākums beigts",
+    "cancelled": "Pasākums atcelts",
+    "noteSaved": "Piezīme saglabāta",
+    "pauseConfirm": "Pauzēt pasūtījumus? Klienti redzēs “Pasūtījumi netiek pieņemti”, līdz jūs atsāksiet.",
+    "switchConfirm": "Pārslēgt pasākumu: {from} → {to}?{n, plural, =0 {} zero { {count} pasūtījumi šajā ekrānā tiks aizstāti.} one { {count} pasūtījums šajā ekrānā tiks aizstāts.} other { {count} pasūtījumi šajā ekrānā tiks aizstāti.}} Pieskarieties pašreizējam pasākumam, lai pārslēgtos atpakaļ."
+  },
+  "intro": {
+    "title": "Šis ir virtuves ekrāns",
+    "p1": "Tas ir pavāra skats — pasūtījumi, kas jāgatavo, tādā secībā, kādā tie jāgatavo. Ekrāns pie grila rāda šo, kamēr pie letes izmanto pasūtījumu paneli.",
+    "p2": "Kartītes pārvietojas, kad tām pieskaraties, tāpēc tas, kurš gatavo, vienmēr zina, kas sekos, un nevienam nav jākliedz. Viss šeit ir jūsu demo dati — izmēģiniet droši.",
+    "gotIt": "Skaidrs"
+  },
+  "toast": {
+    "failed": "Neizdevās",
+    "rejectFailed": "Neizdevās noraidīt",
+    "buzzerSaved": "Peidžeris {n} saglabāts",
+    "buzzerRemoved": "Peidžeris {n} noņemts",
+    "buzzerRemovedNone": "Peidžeris noņemts",
+    "buzzerAssigned": "Peidžeris {n} piešķirts",
+    "buzzerAssignedFrom": "Peidžeris {n} piešķirts (paņemts no #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Neizdevās noņemt peidžeri no {target, select, order {pasūtījuma #{id}} other {šī pasūtījuma}}} other {Neizdevās noņemt peidžeri {n} — tas joprojām ir pie {target, select, order {pasūtījuma #{id}} other {šī pasūtījuma}}}}",
+    "buzzerAssignFailed": "Neizdevās piešķirt peidžeri {n} {target, select, order {pasūtījumam #{id}} other {šim pasūtījumam}} — {had, select, yes {tam joprojām ir peidžeris {prior}} other {tam joprojām nav peidžera}}"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Vaša karta alergénov",
+    "intro": "Zákazníci ju uvidia <b>presne tak, ako ju napíšete</b> — nič sa neprepisuje. Napíšte alebo vložte text nižšie, prípadne nahrajte fotku/PDF a my z nej text načítame, aby ste ho mohli skontrolovať.",
+    "empty": "Zatiaľ žiadna karta alergénov.",
+    "placeholder": "napr. Všetky naše vyprážané ryby s hranolkami obsahujú pšenicu a mlieko. Fritéza sa zdieľa s jedlami, ktoré obsahujú glutén a orechy. Vegánske možnosti k dispozícii — opýtajte sa obsluhy.",
+    "reading": "Čítame obrázok…",
+    "upload": "📷 Nahrať obrázok / PDF",
+    "uploadNote": "Text z obrázka prečítame, aby ste ho mohli skontrolovať — samotný obrázok sa neukladá."
+  },
+  "cardUpload": {
+    "dishFallback": "Jedlo",
+    "question": "Máte kartu alergénov, ktorú chcete nahrať?",
+    "perDish": "{detected, select, yes {Nahrajte ju a podľa nej nastavíme alergény vašich jedál. Rozpoznané alergény uvidíte na ďalšej stránke, kde potvrdíte každé jedlo.} other {Nahrajte ju a podľa nej nastavíme alergény vašich jedál.}}",
+    "cardOnly": "Nahrajte kartu alergénov, ktorú uvidia zákazníci.",
+    "yes": "Áno",
+    "no": "Nie",
+    "noProblem": "Nevadí — nepotrebujete ju. Pokračujte tlačidlom nižšie.",
+    "analysing": "Analyzujeme kartu…",
+    "dropzone": "Pretiahnite sem alebo ťuknite a vyberte",
+    "imageOrPdf": "Obrázok alebo PDF",
+    "or": "alebo",
+    "pastePlaceholder": "Sem vložte text karty alergénov…",
+    "process": "Spracovať kartu",
+    "cardRead": "Karta prečítaná ✓",
+    "unmatchedHeading": "Nepodarilo sa priradiť automaticky — priraďte alebo zamietnite",
+    "quotedName": "„{name}“",
+    "ambiguous": "Nejednoznačné — zodpovedá viacerým jedlám; vyberte to správne.",
+    "assignTo": "Priradiť k jedlu…",
+    "dismiss": "Zamietnuť",
+    "blanket": "Podľa karty sa <b>{list}</b> môžu vyskytovať vo <b>všetkých</b> jedlách. Pridať ku každému jedlu? (každé aj tak potvrdíte) <muted>— predvolene vypnuté</muted>",
+    "kitchenNotes": "Poznámky z kuchyne (uložia sa k informáciám o alergénoch)",
+    "matchSummary": "{n, plural, =0 {Priradené k jedlu: {matched}.} one {Priradené k jedlu: {matched}. Čaká na vaše priradenie: {count}.} few {Priradené k jedlu: {matched}. Čaká na vaše priradenie: {count}.} other {Priradené k jedlu: {matched}. Čaká na vaše priradenie: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Zobraziť menej",
+    "showMore": "Zobraziť viac",
+    "fileOnly": "Pre tento food truck je uložený súbor karty, ale nie je k nemu uložený žiadny súhrnný text. Otvorte originál a prečítajte si ho.",
+    "viewOriginal": "Zobraziť pôvodnú kartu"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Kartu alergénov sa nepodarilo prečítať — skúste to znova",
+      "confirmed": "Potvrdené: {name}",
+      "undo": "Späť",
+      "saveFailed": "Uloženie zlyhalo — skúste to znova",
+      "imageFailed": "Tento obrázok sa nepodarilo prečítať — kartu radšej napíšte alebo vložte",
+      "cardRead": "{n, plural, one {Karta prečítaná — priradené: {matched}, čaká na priradenie: {count}} few {Karta prečítaná — priradené: {matched}, čaká na priradenie: {count}} other {Karta prečítaná — priradené: {matched}, čaká na priradenie: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Rozpoznali sme „{generic}“, ale nie je to dosť konkrétne. Ak toto jedlo obsahuje {family}, vyberte {picks} — ak nie, nechajte ich nevybraté.",
+      "andOr": "{a} a/alebo {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Potvrdené",
+      "confirmed": "Potvrdené",
+      "needsReview": "Skontrolovať"
+    },
+    "confirm": {
+      "confirming": "Potvrdzuje sa…",
+      "confirmed": "Potvrdené ✓",
+      "confirm": "Potvrdiť",
+      "changed": "· zmenené",
+      "changedTitle": "Upravené od posledného potvrdenia — potvrďte znova"
+    },
+    "allergens": "Alergény",
+    "dietary": "Stravovanie",
+    "uncategorised": "Bez kategórie",
+    "review": {
+      "progress": "Potvrdené: {confirmed} z {total}",
+      "allConfirmed": "✓ Všetko potvrdené",
+      "list": "Zoznam",
+      "table": "Tabuľka",
+      "detected": "Rozpoznané z vášho jedálneho lístka — <b>skontrolujte ich</b>. Alergény zostanú pred zákazníkmi skryté, kým nepotvrdíte každé jedlo.",
+      "viewOnly": "👁 Len na čítanie — alergény môže potvrdiť alebo zmeniť len vlastník.",
+      "emptyTitle": "Žiadne položky",
+      "emptyBody": "Najprv pridajte položky do jedálneho lístka a potom tu nastavte ich alergény.",
+      "dish": "Jedlo",
+      "status": "Stav"
+    },
+    "cardPanel": {
+      "reading": "Čítame informácie o alergénoch…",
+      "saved": "🛡️ Karta alergénov uložená",
+      "viewOriginal": "Zobraziť pôvodnú kartu",
+      "replace": "Nahradiť kartu",
+      "uploadHelp": "Nahrajte kartu alergénov (fotku/PDF) alebo vložte informácie o alergénoch — naša AI ich pre zákazníkov prehľadne usporiada.",
+      "add": "Pridať kartu alergénov",
+      "viewOnly": "👁 Len na čítanie — kartu alergénov môže pridať len vlastník.",
+      "intro": "Zákazníci uvidia túto kartu ako prehľad alergénov k jedálnemu lístku. V režime iba s kartou zostanú alergény pri jednotlivých jedlách skryté (údaje o jedlách sa uchovajú pre prípad, že neskôr prejdete na alergény pri každom jedle)."
+    },
+    "subtitle": {
+      "choose": "Zvoľte, ako zákazníci uvidia informácie o alergénoch",
+      "card": "Pridajte kartu alergénov",
+      "cardOptional": "Pridajte kartu alergénov (nepovinné)",
+      "review": "Skontrolujte a potvrďte každé jedlo"
+    },
+    "heading": {
+      "import": "Alergény",
+      "standalone": "Nastavenie alergénov"
+    },
+    "nav": {
+      "next": "Ďalej →",
+      "back": "← Späť",
+      "skip": "Zatiaľ preskočiť",
+      "saving": "Ukladá sa…",
+      "done": "Hotovo",
+      "saveLater": "Uložiť a dokončiť neskôr",
+      "close": "Zavrieť",
+      "finish": "Dokončiť",
+      "skipImport": "Nastavenie alergénov zatiaľ preskočiť"
+    },
+    "hint": {
+      "skipDefers": "Preskočením to len odložíte — nepotvrdené jedlá zostanú pred zákazníkmi skryté, kým nepotvrdíte ich alergény.",
+      "importIncomplete": "Ak chcete pokračovať, potvrďte každé jedlo — alebo zvoľte „Nastavenie alergénov zatiaľ preskočiť“."
+    }
+  }
+}

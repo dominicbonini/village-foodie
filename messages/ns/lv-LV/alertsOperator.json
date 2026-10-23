@@ -1,0 +1,28 @@
+{
+  "hi": "Labdien, {name}!",
+  "limit80": {
+    "subject": "Izmantoti 80 % no šī mēneša WhatsApp atbildēm",
+    "used": "Jūsu automātiskās WhatsApp atbildes: šomēnes izmantotas <b>{used} no {limit}</b>.",
+    "nothingStopped": "Nekas nav apturēts. Kad sasniegsiet {limit}, automātiskās atbildes tiks pauzētas, līdz limits atjaunosies <b>{reset}</b> — klienti joprojām var jums rakstīt, un jūs joprojām redzēsiet visu, ko viņi sūta.",
+    "raise": "Mēneša limitu jebkurā laikā varat palielināt sadaļā “Iestatījumi”.",
+    "raiseLink": "Mēneša limitu jebkurā laikā varat palielināt sadaļā “Iestatījumi”:",
+    "button": "Atvērt iestatījumus"
+  },
+  "limit100": {
+    "subject": "Jūsu WhatsApp automātiskās atbildes šomēnes ir pauzētas",
+    "usedAll": "Šī mēneša automātisko WhatsApp atbilžu limits ({limit}) ir izmantots, tāpēc tās ir pauzētas.",
+    "stillReach": "<b>Klienti joprojām var jums rakstīt kā parasti, un katrs ziņojums jūs sasniedz.</b> Vienīgais, kas apstājies, ir automātiskā atbilde.",
+    "startAgain": "Tās atsāksies <b>{reset}</b> vai uzreiz, ja palielināsiet mēneša limitu sadaļā “Iestatījumi”.",
+    "startAgainLink": "Tās atsāksies {reset} vai uzreiz, ja palielināsiet mēneša limitu sadaļā “Iestatījumi”:",
+    "button": "Palielināt limitu"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp nevar sūtīt bez maksājuma veida",
+    "stopped": "WhatsApp ir apturējis jūsu automātiskās atbildes, jo jūsu WhatsApp Business kontā nav derīga maksājuma veida.",
+    "stillMessage": "<b>Klienti joprojām var jums rakstīt, un jūs joprojām redzēsiet visu, ko viņi sūta</b> — taču atbildes viņus nesasniedz.",
+    "payDirect": "Par šiem ziņojumiem jūs maksājat tieši WhatsApp, tāpēc tas jālabo WhatsApp Manager, nevis HatchGrab. Pievienojiet vai atjauniniet tur karti, un atbildes atsāksies pašas.",
+    "payDirectLink": "Par šiem ziņojumiem jūs maksājat tieši WhatsApp, tāpēc tas jālabo WhatsApp Manager, nevis HatchGrab. Pievienojiet vai atjauniniet tur karti, un atbildes atsāksies pašas:",
+    "button": "Atvērt WhatsApp Manager",
+    "settings": "Jūsu HatchGrab iestatījumi: <link>{url}</link>"
+  }
+}

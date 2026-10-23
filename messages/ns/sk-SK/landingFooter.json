@@ -1,0 +1,17 @@
+{
+  "tagline": "Menej papierovania.<br></br>Viac času na varenie.",
+  "features": "Funkcie",
+  "pricing": "Ceny",
+  "privacy": "Ochrana súkromia",
+  "terms": "Podmienky",
+  "contact": "Kontakt",
+  "about": "O nás",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Od tvorcov <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Stiahnite si HatchGrab z App Store",
+    "appStoreAlt": "Stiahnuť v App Store",
+    "googlePlayLink": "Získajte HatchGrab na Google Play",
+    "googlePlayAlt": "Teraz na Google Play"
+  }
+}

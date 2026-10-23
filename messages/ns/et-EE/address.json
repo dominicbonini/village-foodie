@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Aadress",
+    "postcode": "Postiindeks",
+    "zip": "ZIP-kood",
+    "eircode": "Eircode",
+    "postalCode": "Postiindeks",
+    "state": "Osariik",
+    "stateTerritory": "Osariik või territoorium",
+    "province": "Provints",
+    "county": "Maakond",
+    "area": "Piirkond (küla, alev või linn)",
+    "townOrArea": "Linn või piirkond",
+    "city": "Linn",
+    "suburb": "Linnaosa",
+    "townOrCity": "Linn või alev"
+  },
+  "short": {
+    "area": "Piirkond",
+    "townOrArea": "Linn või piirkond",
+    "city": "Linn",
+    "suburb": "Linnaosa",
+    "townOrCity": "Linn või alev"
+  },
+  "inSentence": {
+    "postcode": "postiindeks",
+    "zip": "ZIP-kood",
+    "eircode": "Eircode",
+    "postalCode": "postiindeks"
+  },
+  "withArticle": {
+    "postcode": "postiindeks",
+    "zip": "ZIP-kood",
+    "eircode": "Eircode",
+    "postalCode": "postiindeks"
+  },
+  "tradeLabel": {
+    "area": "Linn või alev",
+    "townOrArea": "Linn või piirkond",
+    "city": "Linn",
+    "suburb": "Linnaosa",
+    "townOrCity": "Linn või alev"
+  },
+  "basedIn": {
+    "area": "Linn või alev, kus tegutsed",
+    "townOrArea": "Linn või piirkond, kus tegutsed",
+    "city": "Linn, kus tegutsed",
+    "suburb": "Linnaosa, kus tegutsed",
+    "townOrCity": "Linn või alev, kus tegutsed"
+  },
+  "example": "nt {example}",
+  "customersSee": "Kliendid näevad:",
+  "postalWarning": "See ei tundu olevat {article} — näiteks {example}. Saad selle siiski salvestada.",
+  "regionChoose": "Vali…"
+}

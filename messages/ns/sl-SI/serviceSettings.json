@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Časi prevzema",
+    "takes_cash": "Ali sprejemate gotovino?",
+    "offline_protection": "Zaščita naročil brez povezave",
+    "buzzer_prompt": "Opomni me, naj dodam pozivnik"
+  },
+  "typeFollowsVanTitle": "Sledi običajni nastavitvi vsakega food trucka",
+  "sameSettingsAllVansLabel": "Enake nastavitve za vse food trucke",
+  "sameSettingsAllVansHeader": "Vsi food trucki",
+  "sameSettingsConfirm": "Želite nastavitve food trucka 1 kopirati na vse food trucke? Kopirajo se vse nastavitve food trucka 1, enako kot z možnostjo „Enako kot Food truck 1“ v Nastavitvah. Zmogljivost kuhinje ima svoje stikalo.",
+  "eventTypesFooterStandard": "Standardni je vaša običajna postavitev. Če ga spremenite tukaj, se spremeni tudi v Nastavitvah.",
+  "eventTypesFooterOneEvent": "Če želite nastavitev spremeniti samo za en dogodek, uporabite nadzorno ploščo tega dogodka.",
+  "eventTypesSubtitle": "Spremembe se shranjujejo sproti.",
+  "matchStandardLabel": "Enako kot Standardni",
+  "matchStandardConfirm": "Želite vse nastavitve tega tipa vrniti na Standardni? Vse, kar ste tukaj spremenili, bo izbrisano.",
+  "priceLabels": {
+    "price_change_on": "Spremeni cene",
+    "price_mode": "Sprememba cene",
+    "price_amount": "Znesek",
+    "price_rounding": "Zaokroževanje",
+    "item_prices": "Cene artiklov"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Vsako ceno nastavim ročno"
+  },
+  "priceRounding": {
+    "none": "Brez",
+    "nearest_1": "Na najbližji 1 {symbol}",
+    "up_1": "Vedno zaokroži navzgor"
+  },
+  "pricesStandardCell": "Cene na vašem jedilniku",
+  "pricesTruckWideTitle": "Cene so enake za vse food trucke",
+  "pricesMenuCell": "Jedilnik",
+  "pricesTypeOffCell": "Cene z jedilnika",
+  "itemPricesShow": "Prikaži cene",
+  "itemPricesHide": "Skrij cene",
+  "priceItemsHeading": "Nastavite ceno vsakega artikla",
+  "priceItemsOpen": "Ogled ali sprememba cene posameznih artiklov ›",
+  "priceItemsClose": "Skrij cene artiklov ⌃",
+  "ownPriceCount": "{n, plural, one {{count} artikel ima svojo ceno} two {{count} artikla imata svojo ceno} few {{count} artikli imajo svojo ceno} other {{count} artiklov ima svojo ceno}}",
+  "priceTypeHint": "Pritisnite ceno, da vpišete svojo.",
+  "pricesLiveNotice": "Ta dogodek poteka. Nova naročila uporabljajo nove cene. Že oddana naročila ohranijo svoje.",
+  "placeTypeHelper": "Ko izberete to lokacijo, okno Dodaj dogodek samodejno izbere ta tip.",
+  "postPictureStandardNote": "Objave dogodkov tukaj uporabljajo vaše standardno oblikovanje.",
+  "eventItemsCardDescription": "Cene, omejitve artiklov in razpoložljivost samo za ta dogodek. Spremembe začnejo veljati takoj.",
+  "eventPriceColumnLabel": "Cena",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · ta dogodek} other {jedilnik {price} · ta dogodek}}",
+  "eventPriceEdit": "✎ Uredi cene",
+  "eventPriceCancel": "Prekliči",
+  "eventPriceSave": "Shrani cene",
+  "eventPriceEditNote": "Urejate cene samo za ta dogodek. Omejitve artiklov in razpoložljivost so zaklenjene, dokler ne shranite.",
+  "eventPriceLiveNote": "V teku: nova naročila uporabljajo nove cene.",
+  "offlineWhenOfflineLabel": "Ko ni povezave"
+}

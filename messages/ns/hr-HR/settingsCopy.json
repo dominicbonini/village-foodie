@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Dopusti kupcima otkazivanje narudžbi",
+    "sentence": "Kupci mogu otkazati najkasnije <select></select> prije vremena preuzimanja"
+  },
+  "autoAccept": {
+    "label": "Automatski prihvaćaj narudžbe",
+    "help": "Narudžbe se potvrđuju automatski. Ako je traženi termin preuzimanja popunjen, narudžba se premješta u sljedeći slobodan termin. Potvrđuje se samo kad ima kapaciteta. Narudžbe s napomenom kupca (npr. alergija) i dalje treba potvrditi ručno."
+  },
+  "orderReady": {
+    "label": "Korak „Narudžba spremna“",
+    "help": "Prikazuje gumb „Označi kao spremno“ na zaslonu narudžbi. Kuhinjski zasloni postavljaju se zasebno, na svakom uređaju. Kupci dobivaju e-poruku svaki put kad je narudžba označena kao spremna. Vrijedi za sve događaje — za pojedini događaj i dalje ga možete uključiti ili isključiti na njegovoj nadzornoj ploči."
+  },
+  "buzzers": {
+    "label": "Dijelite li pagere za preuzimanje?",
+    "help": "Zabilježite koji ste pager dali kojem kupcu kako biste znali koga tražiti kad mu hrana bude gotova.",
+    "countLabel": "Koliko pagera imate?"
+  }
+}

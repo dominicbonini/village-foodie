@@ -1,0 +1,94 @@
+{
+  "heading": "Platby",
+  "loading": "Kontrolujeme váš účet Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Nenastaveno",
+      "body": "Zabere to asi 10 minut. Budete potřebovat bankovní údaje a doklad totožnosti.",
+      "chip": "Nenastaveno"
+    },
+    "requirements": {
+      "title": "Stripe potřebuje vaše údaje",
+      "body": "Platby kartou nebudou fungovat, dokud Stripe nebude mít údaje o vaší firmě a bankovní údaje.",
+      "chip": "Vyžaduje akci"
+    },
+    "pending": {
+      "title": "Připojeno – Stripe ověřuje vaše údaje",
+      "body": "Nemusíte nic dělat. Stripe kontroluje, co jste odeslali, a tato stránka se po dokončení aktualizuje.",
+      "chip": "Ověřuje se"
+    },
+    "ready": {
+      "title": "Připojeno",
+      "body": "Váš účet Stripe je připojen a může přijímat platby.",
+      "chip": "Připraveno"
+    },
+    "restricted": {
+      "title": "Platby kartou pozastaveny",
+      "body": "Stripe pozastavil platby kartou na vašem účtu, dokud se něco nevyřeší.",
+      "chip": "Pozastaveno"
+    },
+    "unsupported": {
+      "title": "Platby kartou nejsou na tomto účtu dostupné",
+      "body": "Stripe zde nemůže zapnout platby kartou. Ozvěte se nám a vyřešíme to společně.",
+      "chip": "Nedostupné"
+    }
+  },
+  "keyMismatch": {
+    "title": "Klíče Stripe si neodpovídají",
+    "body": "Server tohoto webu používá <b>{server, select, live {ostrý} other {testovací}}</b> klíč Stripe, zatímco prohlížečová verze byla sestavena s <b>{browser, select, live {ostrým} other {testovacím}}</b> klíčem. Platby kartou by selhaly ve chvíli, kdy se zákazník pokusí zaplatit, proto je nastavení Stripe zablokované, dokud se klíče neshodují.",
+    "fix": "Oba klíče musí být nastavené pro stejné prostředí a web je potom nutné znovu sestavit – veřejný klíč se vkládá při sestavení, tajný klíč se načítá při každém požadavku."
+  },
+  "permission": {
+    "title": "Platby může nastavit jen majitel food trucku",
+    "body": "Stripe připojuje osoba, na jejíž bankovní účet peníze chodí, takže se musí nastavit z jejího vlastního přihlášeného účtu. S tímto food truckem ani s HatchGrab není nic v nepořádku."
+  },
+  "config": {
+    "keyMissingTitle": "Platby kartou zatím nejsou nakonfigurované",
+    "fetchTitle": "Účet Stripe tohoto food trucku se nepodařilo ověřit",
+    "keyMissing": "{name} není nastaveno – vložené komponenty se nemohou načíst."
+  },
+  "errors": {
+    "requestFailed": "Požadavek selhal ({status})",
+    "unreachable": "Nepodařilo se spojit se Stripe"
+  },
+  "online": {
+    "heading": "Online platby",
+    "body": "Zákazníci platí kartou při objednání. Peníze jdou přímo na váš vlastní účet Stripe – my je nikdy nedržíme.",
+    "feeLine": "Stripe si účtuje {fee} za platbu (standardní {region}). Jiné karty mohou být dražší. Vlastní poplatek HatchGrab za online objednávky závisí na vašem tarifu – viz Fakturace.",
+    "testMode": "Testovací režim. Skutečné platby zatím nelze přijímat."
+  },
+  "trialNote": "Nastavením se nespustí vaše předplatné a dnes vám nic nenaúčtujeme. Jde o to, jak vám platí zákazníci – váš tarif je samostatná věc.",
+  "admin": {
+    "title": "Zobrazení jako správce platformy",
+    "body": "Tento food truck nemá nastavené online platby. Spustit je může jen majitel ze svého přihlášeného účtu – zde není co stisknout."
+  },
+  "setUp": {
+    "button": "Nastavit online platby",
+    "busy": "Nastavuje se…"
+  },
+  "toast": {
+    "alreadySetUp": "Už je nastaveno – pokračujeme",
+    "addDetails": "Teď zadejte své údaje pro Stripe",
+    "createFailed": "Účet se nepodařilo vytvořit"
+  },
+  "onboarding": {
+    "restricted": "Dál už to převezme Stripe – přihlásíte se do Stripe a doplníte údaje, které potřebuje.",
+    "firstRun": "Dál už to převezme Stripe – přihlásíte se do Stripe a zadáte údaje o firmě a bankovní údaje."
+  },
+  "details": {
+    "title": "Vaše údaje ve Stripe",
+    "body": "Změňte bankovní účet, na který dostáváte peníze, nebo aktualizujte údaje o firmě a dokumenty.",
+    "button": "Zobrazit nebo upravit"
+  },
+  "walkUp": {
+    "heading": "Platby na místě",
+    "body": "Jak přijímáte peníze u food trucku. HatchGrab si u objednávek na místě neúčtuje žádný poplatek platformy, ať zvolíte cokoli.",
+    "ownTerminal": "Vlastní platební terminál",
+    "current": "Aktuální",
+    "ownTerminalHelp": "Zettle, Square nebo cokoli, co už používáte. Nic se nenastavuje – platí jen poplatky vašeho poskytovatele.",
+    "hatchgrab": "Přes HatchGrab",
+    "comingSoon": "Již brzy",
+    "hatchgrabHelp": "Používá stejné připojení ke Stripe jako vaše online platby – platební terminál, nebo bezkontaktní platbu přímo na telefonu či tabletu.",
+    "hatchgrabFees": "{fee} za platbu ({region}), plus {surcharge} za bezkontaktní platbu přijatou na telefonu nebo tabletu. Jiné karty mohou být dražší."
+  }
+}

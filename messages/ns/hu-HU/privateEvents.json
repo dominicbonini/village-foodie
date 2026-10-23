@@ -1,0 +1,42 @@
+{
+  "publicName": "Privát esemény",
+  "chip": "Privát",
+  "grid": {
+    "orderingSection": "RENDELÉS",
+    "linkRowLabel": "Rendelésfelvétel privát linkkel és QR-kóddal",
+    "columnTitle": "A beépített Privát típus. Nem lehet átnevezni, áthelyezni vagy törölni."
+  },
+  "form": {
+    "help": "A menetrendjében „Privát esemény” néven jelenik meg, csak a dátummal és az időpontokkal — soha nem látszik a cím, a térkép vagy a Village Foodie.",
+    "linkPromise": "A vendégek privát linken és QR-kóddal rendelnek — mentés után megkapja őket.",
+    "nameLabel": "Esemény neve",
+    "nameHelp": "A vendégek ezt látják a rendelési oldal tetején.",
+    "namePlaceholder": "Kata és Bence esküvője",
+    "previewNote": "Így jelenik meg a menetrendjében — helyszín, település és irányítószám nélkül.",
+    "needsTimes": "Adjon meg kezdési és befejezési időt — a linken rendelést fogadó privát eseményhez ezek szükségesek."
+  },
+  "link": {
+    "button": "Link és QR",
+    "title": "Privát link és QR-kód",
+    "label": "Privát link",
+    "copy": "Másolás",
+    "copied": "Másolva",
+    "qrDownload": "QR letöltése",
+    "tableCards": "Asztali kártyák nyomtatása",
+    "newLink": "Új link létrehozása",
+    "working": "Folyamatban…",
+    "newLinkConfirm": "Létrehoz egy új linket? A jelenlegi link azonnal megszűnik működni, és a már kinyomtatott QR-kódok sem fognak működni.",
+    "newLinkHelp": "Akkor használja, ha a link rossz helyre került. A jelenlegi link azonnal megszűnik működni, és a kinyomtatott QR-kódok sem működnek tovább.",
+    "newLinkFailed": "Nem sikerült új linket létrehozni.",
+    "offNotice": "Ennél az eseménynél ki van kapcsolva a privát linkes rendelés, ezért nincs megosztható link. Az esemény továbbra is „Privát esemény” néven látszik a menetrendjében."
+  },
+  "cards": {
+    "printTitle": "{truck} — asztali kártyák",
+    "scan": "Rendeléshez olvassa be",
+    "blurb": "Rendeljen és fizessen a telefonján. Szólítjuk a nevén, amikor elkészült.",
+    "footer": "Rendelés: HatchGrab"
+  },
+  "noSinglePost": "A privát eseményekhez nem készül külön bejegyzés — a heti plakáton „Privát esemény” néven jelennek meg.",
+  "confirmToPrivate": "Ez elrejti a címet, és az esemény nem jelenik meg a térképen. A vendégeknek a rendeléshez a privát linkre lesz szükségük.",
+  "confirmFromPrivate": "Ezzel az esemény nyilvános lesz: látszik a címe és a térképes jelölője, a privát link pedig megszűnik működni."
+}

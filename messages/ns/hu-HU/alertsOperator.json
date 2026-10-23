@@ -1,0 +1,28 @@
+{
+  "hi": "Kedves {name}!",
+  "limit80": {
+    "subject": "Felhasználta az e havi WhatsApp-válaszok 80%-át",
+    "used": "Az automatikus WhatsApp-válaszokból ebben a hónapban <b>{used} / {limit}</b> fogyott el.",
+    "nothingStopped": "Semmi sem állt le. Ha eléri a keretet ({limit}), az automatikus válaszok szünetelnek, amíg a keret meg nem újul: <b>{reset}</b> — a vásárlók továbbra is írhatnak Önnek, és Ön továbbra is mindent lát, amit küldenek.",
+    "raise": "A havi keretet bármikor megemelheti a Beállításokban.",
+    "raiseLink": "A havi keretet bármikor megemelheti a Beállításokban:",
+    "button": "Beállítások megnyitása"
+  },
+  "limit100": {
+    "subject": "A WhatsAppos automatikus válaszok erre a hónapra szünetelnek",
+    "usedAll": "Felhasználta az e havi összes automatikus WhatsApp-választ (keret: {limit}), ezért szünetelnek.",
+    "stillReach": "<b>A vásárlók továbbra is a szokásos módon írhatnak Önnek, és minden üzenet megérkezik.</b> Csak az automatikus válasz kiküldése állt le.",
+    "startAgain": "Újraindulnak ekkor: <b>{reset}</b>, vagy azonnal, ha megemeli a havi keretet a Beállításokban.",
+    "startAgainLink": "Újraindulnak ekkor: {reset}, vagy azonnal, ha megemeli a havi keretet a Beállításokban:",
+    "button": "Keret emelése"
+  },
+  "paymentBlocked": {
+    "subject": "Fizetési mód szükséges a WhatsApp-üzenetek küldéséhez",
+    "stopped": "A WhatsApp leállította az automatikus válaszok kiküldését, mert nincs működő fizetési mód a WhatsApp Business-fiókjában.",
+    "stillMessage": "<b>A vásárlók továbbra is írhatnak Önnek, és Ön továbbra is mindent lát, amit küldenek</b> — de a válaszok nem jutnak el hozzájuk.",
+    "payDirect": "Ezekért az üzenetekért közvetlenül a WhatsAppnak fizet, ezért ezt a WhatsApp Managerben kell rendezni, nem a HatchGrabben. Adjon meg vagy frissítsen ott egy kártyát, és a válaszok maguktól újraindulnak.",
+    "payDirectLink": "Ezekért az üzenetekért közvetlenül a WhatsAppnak fizet, ezért ezt a WhatsApp Managerben kell rendezni, nem a HatchGrabben. Adjon meg vagy frissítsen ott egy kártyát, és a válaszok maguktól újraindulnak:",
+    "button": "WhatsApp Manager megnyitása",
+    "settings": "HatchGrab-beállításai: <link>{url}</link>"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Paketi in funkcije",
+  "generated": "Ustvarjeno: {date}",
+  "allowanceHeading": "Vključena spletna naročila",
+  "smallPrint": "Drobni tisk",
+  "priceNoteMasked": "Cene z oznako „Še ni znano“ še niso objavljene.",
+  "omitNote": "Cene v ta dokument namenoma niso vključene.",
+  "terms": "Podatki ustrezajo objavljenim pogojem paketov na zgornji datum in se lahko spremenijo. Stroške obdelave kartičnih plačil zaračunava Stripe, ne HatchGrab. Ta dokument je povzetek, ne pogodba."
+}

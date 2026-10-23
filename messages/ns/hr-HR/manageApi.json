@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Food truck",
+  "eventsFeed": {
+    "today": "Danas · {date}",
+    "tomorrow": "Sutra · {date}"
+  },
+  "privacyNotSaved": "Događaj je objavljen, ali njegova postavka privatnosti nije spremljena.",
+  "stockWarning": "Nema dostupnih artikala u kategoriji „{category}“",
+  "uncategorised": "Bez kategorije"
+}

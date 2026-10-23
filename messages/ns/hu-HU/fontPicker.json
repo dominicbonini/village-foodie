@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Összes",
+    "bold": "Vastag és magas",
+    "hand": "Kézírásos",
+    "classic": "Klasszikus",
+    "clean": "Letisztult",
+    "own": "Sajátok",
+    "ownCount": "Sajátok ({count})"
+  },
+  "yoursTag": "· saját",
+  "loadingFonts": "Betűtípusok betöltése…",
+  "search": "Keresés {count, number} betűtípus között",
+  "uploadButton": "↑ Saját betűtípus feltöltése",
+  "loadingLibrary": "A betűtípus-könyvtár betöltése…",
+  "tryAgain": "Próbálja újra",
+  "noOwn": "Még nem töltött fel betűtípust. Használja a fenti „↑ Saját betűtípus feltöltése” gombot.",
+  "recent": "Legutóbb használt",
+  "popular": "Népszerű plakátokhoz",
+  "adding": "Hozzáadás…",
+  "noMatch": "Egy betűtípus sem felel meg ennek: „{query}”.",
+  "showing": "{shown} / {total, number} megjelenítve — gépeljen tovább a szűkítéshez.",
+  "couldNotAdd": "Ezt a betűtípust nem sikerült hozzáadni",
+  "tooBig": "A betűtípus mérete {size, number, ::.0 group-off} MB. A felső határ 5 MB.",
+  "woff": "Kérjük, TTF vagy OTF fájlt töltsön fel — általában ott tölthető le, ahol a betűtípust vásárolta.",
+  "uploadIncomplete": "A feltöltés nem fejeződött be",
+  "added": "Hozzáadva: „{name}”, {face} változatként.",
+  "face": {
+    "regular": "normál",
+    "bold": "félkövér",
+    "italic": "dőlt"
+  },
+  "licenceTick": "Ez a betűtípus az enyém, vagy van licencem a használatára",
+  "checking": "A betűtípus ellenőrzése…",
+  "addFont": "Hozzáadás",
+  "cancel": "Mégse",
+  "missingFaces": "„{name}”: adja hozzá a {faces} változatot is (nem kötelező) — válassza ki újra a fájlt.",
+  "somethingWrong": "Hiba történt",
+  "faceLower": {
+    "regular": "normál",
+    "bold": "félkövér",
+    "italic": "dőlt"
+  },
+  "ownLicence": "Saját",
+  "loadFailed": "Nem sikerült betölteni a betűtípusokat"
+}

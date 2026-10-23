@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Spremi moj jelovnik →",
+    "heading": "Postavite svoj food truck",
+    "sub": "Vaš se jelovnik izravno prenosi.",
+    "privacy": "Ovo ćemo koristiti samo za postavljanje vašeg food trucka i slanje poveznice na demo – pogledajte naša <link>pravila privatnosti</link>."
+  },
+  "sample": {
+    "bannerButton": "Postavi moj food truck →",
+    "heading": "Postavite svoj food truck",
+    "sub": "Zatim ćete učitati svoj jelovnik – traje minutu.",
+    "privacy": "Ovo ćemo koristiti samo za postavljanje vašeg food trucka i slanje poveznice na demo – pogledajte naša <link>pravila privatnosti</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Spremi moj jelovnik →",
+    "heading": "Spremite svoj demo",
+    "sub": "Čuvat ćemo ga 14 dana i odmah vam poslati poveznicu za povratak.",
+    "privacy": "Ovo ćemo koristiti samo za slanje poveznice na demo – pogledajte naša <link>pravila privatnosti</link>."
+  },
+  "confirmationHeading": "Sve je spremno",
+  "postSaveButton": "Postavi moj food truck →",
+  "enterSetupButton": "Postavi moj food truck →",
+  "emailOnlyLink": "Samo mi pošaljite poveznicu za povratak u ovaj demo",
+  "sendLinkButton": "Pošalji mi poveznicu",
+  "savingButton": "Spremanje…",
+  "continueButton": "Nastavi →",
+  "createAccountButton": "Izradi moj račun →",
+  "retryButton": "Pokušaj ponovno",
+  "backToDemoButton": "Natrag na demo",
+  "savedStatus": "{hasDate, select, yes {✓ Spremljeno – čuva se do {date}} other {✓ Spremljeno}}",
+  "back": "Natrag",
+  "close": "Zatvori",
+  "truckStepHeading": "O vašem food trucku",
+  "detailsStepHeading": "Dovršite postavljanje",
+  "stepper": {
+    "details": "Podaci",
+    "menu": "Jelovnik",
+    "allergens": "Alergeni",
+    "kitchen": "Kuhinja",
+    "schedule": "Raspored"
+  },
+  "confirmEmailed": "Poslali smo vam e-poštom poveznicu izravno natrag u ovaj demo – prijava nije potrebna.",
+  "confirmKeepUntil": "Čuvat ćemo ga do <b>{date}</b>. Vaš jelovnik ide s vama kad sve postavite.",
+  "loading": "Učitavanje…",
+  "firstName": "Ime",
+  "lastName": "Prezime",
+  "truckName": "Naziv food trucka",
+  "truckNamePlaceholder": "npr. Seoska kuhinja",
+  "cuisine": "Kuhinja",
+  "logoLabel": "Logotip <opt>(neobavezno)</opt>",
+  "logoPreviewAlt": "Pregled logotipa",
+  "changeLogo": "Promijeni logotip",
+  "removeLogo": "Ukloni",
+  "uploadLogo": "📷 Učitaj logotip",
+  "readyTitle": "Vaš je račun spreman",
+  "readyBody": "Sad dovršimo postavljanje vašeg food trucka – jelovnik, alergene i kuhinju.",
+  "hangTight": "Samo trenutak – sve postavljamo.",
+  "stage": {
+    "account": "Izrađujemo vaš račun",
+    "truck": "Postavljamo vaš food truck",
+    "menu": "Učitavamo vaš jelovnik"
+  },
+  "stageState": {
+    "done": "gotovo",
+    "recognised": "već imate račun",
+    "failed": "nije uspjelo",
+    "active": "u tijeku",
+    "pending": "na čekanju"
+  },
+  "signIn": "Prijava",
+  "phone": "Telefon",
+  "onWhatsapp": "Ovaj je broj na WhatsAppu",
+  "email": "E-pošta",
+  "emailPlaceholder": "vi@vasfoodtruck.hr",
+  "settingUpAs": "Postavljate kao <b>{email}</b> <change>promijeni</change>",
+  "password": "Lozinka",
+  "passwordPlaceholder": "Najmanje 8 znakova",
+  "hidePassword": "Sakrij lozinku",
+  "showPassword": "Prikaži lozinku",
+  "promoLabel": "Imate kod? <opt>(neobavezno)</opt>",
+  "promoPlaceholder": "Upišite ga ovdje",
+  "agreeTerms": "Prihvaćam <terms>Uvjete</terms> i <privacy>Pravila privatnosti</privacy>.",
+  "freeMonth": "Postavljanjem ne pokrećete besplatni mjesec. On počinje kad odaberete svoj prvi događaj uživo – kad god budete spremni.",
+  "fieldError": {
+    "firstName": "Upišite svoje ime.",
+    "lastName": "I svoje prezime.",
+    "truck": "Dajte naziv svom food trucku.",
+    "cuisine": "Recite nam što kuhate.",
+    "phoneMissing": "Dodajte telefonski broj – preko njega vas kontaktiraju i kupci i mi.",
+    "email": "Unesite valjanu adresu e-pošte.",
+    "password": "Lozinka mora imati najmanje 8 znakova.",
+    "terms": "Za nastavak prihvatite uvjete."
+  },
+  "error": {
+    "saveFailed": "Spremanje nije uspjelo – pokušajte ponovno.",
+    "savedNoEmail": "Spremljeno – ali trenutačno vam nismo mogli poslati poveznicu e-poštom.",
+    "unreachable": "Trenutačno vas ne možemo spojiti – pokušajte ponovno.",
+    "createAccountFailed": "Račun nije bilo moguće izraditi.",
+    "truckCreateFailed": "Vaš je račun spreman, ali food truck nije bilo moguće izraditi. Pokušajte ponovno.",
+    "truckUnreachable": "Vaš je račun spreman, ali food truck trenutačno nije bilo moguće izraditi. Pokušajte ponovno.",
+    "truckNoToken": "Vaš je food truck postavljen, ali ga trenutačno nismo mogli otvoriti. Pokušajte ponovno."
+  }
+}

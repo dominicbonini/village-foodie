@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Zobrazení na veřejné mapě"
+    },
+    "web_dashboard": {
+      "name": "Univerzální webový přehled"
+    },
+    "qr_code": {
+      "name": "QR kód"
+    },
+    "schedule_import": {
+      "name": "Automatický import rozpisu"
+    },
+    "meal_deals_upsells": {
+      "name": "Menu a nabídky navíc"
+    },
+    "walkup_orders": {
+      "name": "Zpracování objednávek na místě"
+    },
+    "sold_out_toggle": {
+      "name": "Okamžité označení „vyprodáno“"
+    },
+    "kitchen_app": {
+      "name": "Kuchyňská aplikace pro iPhone, iPad a Android"
+    },
+    "offline_protection": {
+      "name": "Ochrana objednávek při výpadku signálu"
+    },
+    "online_payments": {
+      "name": "Online platby"
+    },
+    "advance_preordering": {
+      "name": "Předobjednávky na pozdější termín"
+    },
+    "preorder_deadline": {
+      "name": "Uzávěrka předobjednávek"
+    },
+    "time_slot_selection": {
+      "name": "Časové okno podle volby zákazníka"
+    },
+    "kitchen_capacity": {
+      "name": "Řízení kapacity kuchyně"
+    },
+    "stock_countdown": {
+      "name": "Automatický odpočet zásob"
+    },
+    "auto_accept": {
+      "name": "Automatické přijímání online objednávek"
+    },
+    "branded_qr_code": {
+      "name": "QR kód s vaším logem"
+    },
+    "private_events": {
+      "name": "Soukromé akce"
+    },
+    "social_media_posts": {
+      "name": "Příspěvky na sociální sítě"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatické odpovědi na WhatsAppu"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatické odpovědi na Messengeru a Instagramu"
+    },
+    "tap_to_pay": {
+      "name": "Platby kartou na vašem telefonu"
+    },
+    "advanced_reporting": {
+      "name": "Pokročilé reporty"
+    },
+    "sms_order_alerts": {
+      "name": "SMS upozornění na objednávky"
+    },
+    "multi_device_kitchen": {
+      "name": "Synchronizace kuchyně na více zařízeních"
+    },
+    "multi_user_access": {
+      "name": "Přístup pro více uživatelů"
+    },
+    "embed_schedule": {
+      "name": "Rozpis na vašem vlastním webu"
+    },
+    "event_types": {
+      "name": "Vlastní typy akcí a ceny"
+    },
+    "buzzer_tracking": {
+      "name": "Vyvolávací pagery"
+    },
+    "ticket_printing": {
+      "name": "Tisk kuchyňských lístků"
+    },
+    "customer_display": {
+      "name": "Displej pro zákazníky"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitální věrnostní karty s razítky"
+    }
+  },
+  "cardRegionOnline": "standardní {region}",
+  "cardRegion": {
+    "UKcards": "britské karty",
+    "EEAcards": "karty z EHP",
+    "UScards": "americké karty",
+    "Australiancards": "australské karty",
+    "NewZealandcards": "novozélandské karty",
+    "Canadiancards": "kanadské karty",
+    "Swisscards": "švýcarské karty"
+  },
+  "perMonth": {
+    "mo": "{amount}/měs.",
+    "month": "{amount}/měsíc"
+  },
+  "priceWord": {
+    "free": "Zdarma",
+    "freeTrial": "Zkušební období zdarma",
+    "lifetime": "Doživotně",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Platba při vyzvednutí",
+    "unlimited": "Neomezeně",
+    "none": "—",
+    "masked": "Upřesníme"
+  },
+  "cell": {
+    "included": "V ceně"
+  }
+}

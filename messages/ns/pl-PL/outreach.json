@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Ten e-mail nie ma linijki o rezygnacji z wiadomości, więc nie można go wysłać. Dodaj ją przyciskiem „Insert opt-out”.",
+    "notSetUp": "Nie ustawiono zdania o rezygnacji z wiadomości, więc nie można wysłać żadnego e-maila z ofertą. Dodaj je w panelu Podpis na karcie Szablony.",
+    "notLoaded": "Zdanie o rezygnacji z wiadomości jeszcze się nie wczytało, więc nie można tego wysłać.",
+    "unreadable": "Nie udało się odczytać zdania o rezygnacji z wiadomości, więc nic nie zostało wysłane."
+  },
+  "retry": {
+    "notRebuilt": "Nie udało się odtworzyć tej wiadomości z linijką z danymi firmy, więc nic nie zostało wysłane."
+  }
+}

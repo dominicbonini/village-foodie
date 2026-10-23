@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Pokazuj alergeny przy każdym daniu",
+    "recommended": "Zalecane",
+    "perDishBody": "Sprawdź każde danie i potwierdź jego alergeny. Klienci widzą oznaczenia przy daniach oraz kartę z podsumowaniem alergenów utworzoną na ich podstawie.",
+    "cardTitle": "Pokazuj kartę alergenów",
+    "cardBody": "Prześlij lub wklej jedną kartę alergenów (PDF, obraz lub tekst), wyświetlaną bez zmian. Oznaczenia przy daniach pozostają ukryte."
+  }
+}

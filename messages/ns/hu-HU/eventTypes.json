@@ -1,0 +1,83 @@
+{
+  "title": "Eseménytípusok",
+  "newTypeButton": "+ Új eseménytípus",
+  "close": "Bezárás",
+  "loading": "Betöltés…",
+  "missingTitle": "Az eseménytípusok még nincsenek bekapcsolva.",
+  "missingBody": "A funkcióhoz szükséges adatbázis-frissítés még nem futott le. Semmi sem romlott el — minden esemény a szokásos beállításait használja.",
+  "column": "Oszlop",
+  "vanGone": "Ez a food truck már nem létezik.",
+  "typeGone": "Ez a típus már nem létezik.",
+  "standard": "Alap",
+  "standardHeading": "ALAP",
+  "moreFor": "További lehetőségek: {name}",
+  "rename": "Átnevezés",
+  "moveLeft": "Mozgatás balra",
+  "moveRight": "Mozgatás jobbra",
+  "delete": "Törlés",
+  "sections": {
+    "vans": "FOOD TRUCKOK",
+    "prices": "ÁRAK",
+    "itemPrices": "TÉTELÁRAK",
+    "service": "KISZOLGÁLÁS"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "{mins} percenként",
+  "noTypes": "Még nincs eseménytípusa, így minden esemény a szokásos beállításait használja.",
+  "renameTitle": "Típus átnevezése",
+  "name": "Név",
+  "cancel": "Mégse",
+  "save": "Mentés",
+  "copyVanOne": "Az 1. food truck beállításainak másolása",
+  "thisType": "ez a típus",
+  "matchTitle": "Alap beállítások átvétele ide: „{name}”?",
+  "matchKeeps": "Amit egy-egy esemény vezérlőpultján külön módosított, az változatlan marad, és ennek a típusnak az árai sem változnak.",
+  "matchWillUse": "Ezt fogja használni: {summary}",
+  "deleteTitle": "„{name}” törlése?",
+  "deleteBody": "{n, plural, =0 {Egy közelgő esemény sem használja ezt: „{name}”.} one {{count} közelgő esemény használja ezt: „{name}”. Visszaáll az Alap típusra.} other {{count} közelgő esemény használja ezt: „{name}”. Ezek visszaállnak az Alap típusra.}} Amit egy-egy eseményen külön módosított, az változatlan marad.",
+  "keep": "Megtartás",
+  "phone": {
+    "standardTag": "Alap",
+    "defaultTag": "alapértelmezett",
+    "vanSetup": "Ennek a food trucknak a szokásos beállítása — minden típus nélküli eseménynél ezt használja.",
+    "standardSetup": "Az Ön szokásos beállítása — minden típus nélküli eseménynél ezt használja.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} közelgő esemény} other {{upcomingCount} közelgő esemény}} · {changed, plural, =0 {még nincs módosítás} one {{changedCount}/{total} módosítva} other {{changedCount}/{total} módosítva}}",
+    "noMenuItems": "Még nincs tétel az étlapon — adja hozzá őket itt: Étlap › Tételek."
+  },
+  "newType": {
+    "title": "Új eseménytípus",
+    "namePlaceholder": "pl. Iskolai majális",
+    "help": "Koppintson egy névre, vagy írjon sajátot. Az Alap másolataként indul, és ha később módosítja az Alapot, ez nem változik. Utána bármit átállíthat.",
+    "create": "Létrehozás",
+    "chips": {
+      "festival": "Fesztivál",
+      "pub": "Söröző",
+      "market": "Piac",
+      "privateHire": "Food truck bérlés"
+    }
+  },
+  "select": {
+    "label": "Eseménytípus",
+    "usual": "Ezen a helyen általában: {name}."
+  },
+  "summary": {
+    "normalSetup": "Szokásos beállítás",
+    "sameAsStandard": "Azonos az Alappal",
+    "buzzersOn": "csipogók be",
+    "buzzersOff": "csipogók ki",
+    "takeCashOn": "készpénz elfogadása be",
+    "takeCashOff": "készpénz elfogadása ki",
+    "markReadyOn": "„Kész” jelölés be",
+    "markReadyOff": "„Kész” jelölés ki",
+    "collectionEvery": "átvétel {mins} percenként",
+    "offlineOff": "offline védelem ki",
+    "offlineKeepTaking": "offline: rendelésfelvétel folytatódik",
+    "offlinePause": "offline: rendelés szüneteltetése"
+  },
+  "errors": {
+    "somethingWentWrong": "Hiba történt",
+    "couldNotLoad": "Nem sikerült betölteni",
+    "couldNotSave": "Nem sikerült menteni",
+    "noVans": "Ehhez a vállalkozáshoz nem tartozik módosítható food truck."
+  }
+}

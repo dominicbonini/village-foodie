@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Kde má váš food truck sídlo?",
+  "stepIntro": "Podľa toho sa nastaví mena, ceny, časové pásmo a formát telefónneho čísla. Krajinu neskôr nemožno zmeniť, pretože je naviazaná na vaše platby kartou.",
+  "settingsHeading": "Kde predávate",
+  "countryLabel": "Krajina",
+  "countryGuessed": "Odhadli sme to podľa vašej polohy. Ak to nesedí, zmeňte to.",
+  "countryLocked": "Krajinu nemožno zmeniť",
+  "townLabel": "Mesto alebo obec",
+  "townQuestion": "Mesto alebo obec, kde máte sídlo",
+  "timezoneLabel": "Časové pásmo",
+  "continueButton": "Pokračovať",
+  "saveFailed": "Nastavenia sa nepodarilo uložiť — skúste to znova."
+}

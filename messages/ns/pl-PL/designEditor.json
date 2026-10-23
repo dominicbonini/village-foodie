@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Nagłówek tygodnia",
+    "weekHeadingSample": "Tydzień od …",
+    "daysSample": "{first}–{last}",
+    "date": "Data",
+    "place": "Miejsce",
+    "venue": "Lokal",
+    "area": "Miejscowość",
+    "time": "Godzina",
+    "rows": "Wiersze",
+    "rowsSample": "{px} px odstępu · {first}–{last}",
+    "ownText": "Twój własny tekst",
+    "noteTokenSample": "Notatka wpisana przy tworzeniu posta",
+    "nothingYet": "Jeszcze nic",
+    "thisBox": "to pole"
+  },
+  "sample": {
+    "venue": "Kawiarnia pod Ratuszem",
+    "area": "Kraków"
+  },
+  "bar": {
+    "previewWith": "Podgląd z",
+    "undo": "Cofnij",
+    "undoTitle": "Cofnij (⌘Z)",
+    "redo": "Ponów",
+    "redoTitle": "Ponów (⇧⌘Z)",
+    "cancel": "Anuluj",
+    "saving": "Zapisywanie…",
+    "save": "Zapisz projekt"
+  },
+  "grid": {
+    "eachRow": "Każdy wiersz",
+    "placeOff": "Nazwa miejsca jest na twoim obrazie — HatchGrab jej nie doda."
+  },
+  "background": {
+    "uploading": "Przesyłanie…",
+    "replace": "Zamień obraz",
+    "shape": {
+      "square": "Kwadrat (1:1)",
+      "portrait45": "Pionowy (4:5)",
+      "portrait916": "Pionowy (9:16)",
+      "landscape169": "Poziomy (16:9)",
+      "portrait": "Pionowy",
+      "landscape": "Poziomy"
+    }
+  },
+  "scope": {
+    "title": "Położenie tekstu",
+    "standard": "To samo położenie co w Standardowym",
+    "own": "Własne położenie: {place}",
+    "locked": "To położenie pochodzi z twojego Standardowego projektu. Wybierz „Własne położenie: {place}”, aby przesunąć elementy tylko tutaj."
+  },
+  "stage": {
+    "hint": "Przeciągnij pole, aby je przesunąć · przeciągnij narożnik, aby zmienić rozmiar",
+    "zoomOut": "Pomniejsz",
+    "zoomIn": "Powiększ"
+  },
+  "rows": {
+    "spacing": "Odstęp",
+    "daysRun": "Dni od {first} do {last}. Trzy pola z wiersza 1 są kopiowane w dół z tym odstępem.",
+    "whichEvents": "Które wydarzenia",
+    "showCancelled": "Pokazuj odwołane wydarzenia",
+    "showCancelledHint": "Odwołane wydarzenie pokazuje przekreślone miejsce i słowo ODWOŁANE. Po wyłączeniu ten dzień wygląda jak dzień wolny."
+  },
+  "days": {
+    "reorder": "Zmień kolejność",
+    "move": "przesuń"
+  },
+  "picture": {
+    "picture": "Obraz",
+    "fill": "Wypełnij pole",
+    "fit": "Zmieść w polu",
+    "corners": "Narożniki",
+    "square": "Proste",
+    "rounded": "Zaokrąglone",
+    "ifMissing": "Jeśli lokalizacja nie ma obrazu",
+    "noPicture": {
+      "omit": "Pomiń",
+      "blank": "Zostaw puste miejsce",
+      "logo": "Pokaż swoje logo"
+    },
+    "border": "Ramka",
+    "drawBorder": "Dodaj ramkę",
+    "drawBorderHint": "Linia wokół obrazu w wybranym przez ciebie kolorze.",
+    "borderWidth": "Grubość ramki",
+    "cornerRadius": "Promień narożników",
+    "locationPictures": "Obrazy lokalizacji",
+    "addLocationPictures": "+ Dodaj obrazy lokalizacji",
+    "allHaveImage": "{total, plural, =0 {Nie masz jeszcze żadnych lokalizacji.} one {Twoja lokalizacja ma obraz.} few {Każda z # twoich lokalizacji ma obraz.} many {Każda z # twoich lokalizacji ma obraz.} other {Każda z # twoich lokalizacji ma obraz.}}",
+    "someWithout": "{without} z {total, plural, one {# twojej lokalizacji} few {# twoich lokalizacji} many {# twoich lokalizacji} other {# twoich lokalizacji}} {without, plural, one {nie ma} few {nie mają} many {nie ma} other {nie ma}} jeszcze obrazu"
+  },
+  "settings": {
+    "font": "Czcionka",
+    "colour": "Kolor",
+    "textColour": "Kolor tekstu",
+    "ownStyleNote": "{count, plural, one {{names} ma własny styl, więc pozostaje bez zmian.} few {{names} mają własny styl, więc pozostają bez zmian.} many {{names} mają własny styl, więc pozostają bez zmian.} other {{names} mają własny styl, więc pozostają bez zmian.}}",
+    "matchAgain": "Dopasuj ponownie",
+    "matchName": "Dopasuj do: {name}",
+    "lastToggle": "{kind, select, weekly {Pozostaw włączone Miejsce lub Godzinę. Odwołane wydarzenie pokazuje przekreślone miejsce i słowo ODWOŁANE, więc gdy oba są wyłączone, nic nie wskazywałoby, że jest odwołane.} other {Pozostaw włączony Lokal lub Godzinę. Odwołane wydarzenie pokazuje przekreślone miejsce i słowo ODWOŁANE, więc gdy oba są wyłączone, nic nie wskazywałoby, że jest odwołane.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — ta czcionka ma prawdziwą kursywę"
+  },
+  "align": {
+    "left": "Do lewej",
+    "centre": "Do środka",
+    "right": "Do prawej"
+  },
+  "effects": {
+    "outlineColour": "Kolor obrysu",
+    "bandColour": "Kolor paska",
+    "bandDaysOff": "Pasek w dni wolne",
+    "bandCancelled": "Pasek przy odwołanym wydarzeniu",
+    "bandDaysOffHint": "Używany zamiast powyższego paska w dniu bez sprzedaży.",
+    "bandCancelledHint": "Używany zamiast powyższego paska, gdy wydarzenie jest odwołane."
+  },
+  "more": {
+    "dayOwnLine": "Dzień w osobnym wierszu",
+    "dayOwnLineHint": "Dzień tygodnia nad datą. Tylko data.",
+    "noEventDay": "W dniu bez wydarzenia",
+    "wordsBeforePlaceholder": "np. Znajdziesz nas",
+    "neverHyphenate": "Jedno długie słowo bez spacji jest zawsze zmniejszane — nigdy nie dzielimy nazwy miejsca łącznikiem."
+  },
+  "bits": {
+    "less": "Mniej",
+    "more": "Więcej",
+    "chooseColourFor": "{label} — wybierz dowolny kolor",
+    "chooseColour": "Wybierz dowolny kolor"
+  }
+}

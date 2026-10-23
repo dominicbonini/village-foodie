@@ -1,0 +1,17 @@
+{
+  "back": "← Zpět",
+  "title": "Použít menu",
+  "save": "Ušetříte {amount}",
+  "selectItems": "Vyberte položky pro každou pozici",
+  "choose": "Vyberte: {category}…",
+  "inYourBasket": "── Ve vašem košíku ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (v košíku){state, select, used { — už je v menu} taken { — vybráno v jiné pozici} other {}}",
+  "addNew": "── Přidat novou ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Povinné · vyberte jednu} required {Povinné} other {Vyberte jednu}}{unmet, select, yes { (povinné)} other {}}",
+  "notePlaceholder": "Přidejte poznámku, např. bez cibule (nepovinné)",
+  "backButton": "Zpět",
+  "cancel": "Zrušit",
+  "chooseRequired": "Vyberte povinné možnosti",
+  "apply": "Použít menu · {amount}"
+}

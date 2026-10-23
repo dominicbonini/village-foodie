@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Nowe zamówienie #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Otrzymano nowe zamówienie",
+    "from": "<b>Zamówienie #{id}</b> od: <b>{name}</b>",
+    "collection": "Odbiór: {time}",
+    "asap": "Bez konkretnej godziny — jak najszybciej",
+    "total": "Suma",
+    "notes": "<b>Uwagi:</b> {notes}",
+    "autoConfirmed": "Potwierdzone automatycznie — nic nie musisz robić.",
+    "confirmPrompt": "Zaloguj się do panelu HatchGrab, aby potwierdzić lub odrzucić to zamówienie.",
+    "text": "Nowe zamówienie #{id} od: {name}{withSlot, select, yes {, odbiór: {slot}} other {}}{withVenue, select, yes {, miejsce: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Suma: {total}.{withNotes, select, yes { Uwagi: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}: znaleźliśmy nowe wydarzenia — sprawdź je",
+    "hi": "Cześć,",
+    "found": "Znaleźliśmy w Twoim harmonogramie <b>{n, plural, one {{count} nowe wydarzenie} few {{count} nowe wydarzenia} many {{count} nowych wydarzeń} other {{count} nowego wydarzenia}}</b> do zatwierdzenia, zanim zobaczą je klienci.",
+    "listHeading": "Znalezione wydarzenia:",
+    "approve": "Wydarzenia zatwierdzone w zakładce Harmonogram pojawiają się na mapie, a Twoja strona zamówień jest gotowa na zamówienia z wyprzedzeniem.",
+    "cta": "Sprawdź harmonogram →",
+    "signoff": "— Zespół HatchGrab · hatchgrab.com",
+    "unknownVenue": "Nieznane miejsce",
+    "text": "Cześć,\n\nZnaleźliśmy w Twoim harmonogramie {n, plural, one {{count} nowe wydarzenie} few {{count} nowe wydarzenia} many {{count} nowych wydarzeń} other {{count} nowego wydarzenia}} do zatwierdzenia:\n\n{list}\n\nSprawdź je tutaj: {url}\n\nZatwierdzone wydarzenia pojawiają się na mapie.\n\n— Zespół HatchGrab"
+  }
+}

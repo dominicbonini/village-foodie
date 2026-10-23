@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Pager <b>{number}</b> je u <b>objednávky #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Přesunout ho k <b>{hasTarget, select, yes {objednávce #{targetId}} other {této objednávce}}</b>?",
+  "cancel": "Zrušit",
+  "take": "Převzít pager {number}",
+  "titleBlocking": "Pager pro objednávku #{id}?",
+  "title": "Vyberte pager",
+  "subtitle": "{hasTarget, select, yes {Objednávka #{id}} other {Tato objednávka}}{hasCurrent, select, yes { · nyní pager {current}} other {}}",
+  "allTaken": "{n, plural, one {Pager je vydaný. Klepnutím ho převezmete z jiné objednávky.} few {Všechny {count} pagery jsou vydané. Klepnutím na jeden ho převezmete z jiné objednávky.} other {Všech {count} pagerů je vydaných. Klepnutím na jeden ho převezmete z jiné objednávky.}}",
+  "thisOrder": "Tato objednávka",
+  "noBuzzer": "Bez pageru",
+  "done": "Hotovo",
+  "lostTitle": "Objednávka #{id} nemá pager",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}jiná objednávka si zabrala stejný pager, když jste byli offline. Dejte zákazníkovi jiný.",
+  "dismiss": "Zavřít",
+  "assign": "Přidělit"
+}

@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Uus tellimus #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Saabus uus tellimus",
+    "from": "<b>Tellimus #{id}</b>, tellija <b>{name}</b>",
+    "collection": "Kättesaamise aeg: {time}",
+    "asap": "Kindel aeg puudub — niipea kui võimalik",
+    "total": "Kokku",
+    "notes": "<b>Märkused:</b> {notes}",
+    "autoConfirmed": "Automaatselt kinnitatud — midagi pole vaja teha.",
+    "confirmPrompt": "Logi sisse oma HatchGrabi töölauale, et see tellimus kinnitada või tagasi lükata.",
+    "text": "Uus tellimus #{id}, tellija {name}{withSlot, select, yes {, aeg {slot}} other {}}{withVenue, select, yes {, asukoht {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Kokku {total}.{withNotes, select, yes { Märkused: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}: leitud uued üritused — palun vaata üle",
+    "hi": "Tere!",
+    "found": "Leidsime sinu ajakavast <b>{n, plural, one {{count} uue ürituse} other {{count} uut üritust}}</b>. Enne klientidele näitamist on vaja sinu kinnitust.",
+    "listHeading": "Leitud üritused:",
+    "approve": "Kui oled need vahekaardil „Ajakava“ kinnitanud, ilmuvad need kaardile ja sinu tellimisleht on valmis ettetellimusi vastu võtma.",
+    "cta": "Vaata ajakava üle →",
+    "signoff": "— HatchGrabi meeskond · hatchgrab.com",
+    "unknownVenue": "Tundmatu asukoht",
+    "text": "Tere!\n\nLeidsime sinu ajakavast {n, plural, one {{count} uue ürituse, mis vajab} other {{count} uut üritust, mis vajavad}} sinu kinnitust:\n\n{list}\n\nVaata need üle: {url}\n\nKui oled need kinnitanud, ilmuvad need kaardile.\n\n— HatchGrabi meeskond"
+  }
+}

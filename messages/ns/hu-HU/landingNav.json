@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab kezdőlap",
+  "cta": "Feltöltöm az étlapomat →",
+  "ctaShort": "Étlap feltöltése",
+  "features": "Funkciók",
+  "pricing": "Árak",
+  "logIn": "Bejelentkezés",
+  "country": {
+    "button": "Ország: {name}. Ország módosítása",
+    "menu": "Ország"
+  }
+}

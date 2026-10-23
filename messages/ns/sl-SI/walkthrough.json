@@ -1,0 +1,31 @@
+{
+  "intro": "V razdelku Upravljanje nastavite svoj food truck in spremljate, kako vam gre. Na Nadzorni plošči sprejemate naročila in vodite vsak dogodek, medtem ko poteka.",
+  "ariaLabel": "Vodič po nadzorni plošči",
+  "step": "{current} od {total}",
+  "skip": "Preskoči",
+  "back": "← Nazaj",
+  "next": "Naprej →",
+  "done": "Končano",
+  "stops": {
+    "menu": {
+      "title": "Jedilnik",
+      "body": "Vaše jedi, cene in alergeni. Karkoli spremenite tukaj, je takoj objavljeno."
+    },
+    "schedule": {
+      "title": "Urnik",
+      "body": "Kje in kdaj prodajate. Tukaj dodajte dogodek in stranke bodo lahko zanj naročale."
+    },
+    "build": {
+      "title": "Ponudbe ter Dodatki in dodatna prodaja",
+      "body": "Ponudbe, dodatna prodaja, prilagoditve in zmogljivost kuhinje so pod zavihkom Jedilnik — kar raziščite."
+    },
+    "settings": {
+      "title": "Nastavitve",
+      "body": "Podatki o vašem food trucku in načini, kako vam stranke plačajo."
+    },
+    "billing": {
+      "title": "Obračun",
+      "body": "Tukaj so vaš paket, obračun in podatki o funkcijah."
+    }
+  }
+}

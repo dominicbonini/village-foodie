@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Obdobje",
+    "event": "📍 Dogodek",
+    "filterBy": "Filtriraj po",
+    "show": "Prikaži",
+    "range": "<from></from><sep>do</sep><until></until>",
+    "selectEvent": "Izberite dogodek…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Dogodek",
+    "viewReport": "Prikaži poročilo",
+    "loading": "Nalaganje…",
+    "orders": "📋 Naročila",
+    "items": "📦 Artikli",
+    "exportCsv": "⬇ Izvozi CSV"
+  },
+  "empty": {
+    "noOrders": "Za to obdobje ni naročil.",
+    "selectEvent": "Zgoraj izberite dogodek, da si ogledate njegovo poročilo."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} naročilo} two {{count} naročili} few {{count} naročila} other {{count} naročil}} · {total}"
+  },
+  "revenue": {
+    "title": "Razčlenitev prihodkov",
+    "deals": "Prihodki od ponudb",
+    "modifiers": "Doplačila za možnosti",
+    "foodSales": "Prodaja hrane",
+    "total": "Skupaj",
+    "other": "Drugo",
+    "tax": "DDV",
+    "tips": "Napitnine",
+    "serviceFees": "Pristojbine za storitev",
+    "cardFees": "Pristojbine za kartice"
+  },
+  "itemsSold": {
+    "title": "Prodani artikli"
+  },
+  "dealsCard": {
+    "title": "Ponudbe"
+  },
+  "custom": {
+    "title": "Prilagoditve",
+    "paidModifiers": "Plačljive možnosti",
+    "customerNotes": "Opombe strank",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Artikel",
+    "modifier": "Možnost",
+    "qty": "Kol.",
+    "total": "Skupaj",
+    "date": "Datum",
+    "time": "Čas",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Razčlenitev naročil",
+    "items": "Razčlenitev artiklov"
+  },
+  "channel": {
+    "online": "Splet",
+    "walkUp": "Na mestu"
+  },
+  "csv": {
+    "orderId": "ID naročila",
+    "date": "Datum",
+    "event": "Dogodek",
+    "timePlaced": "Čas oddaje",
+    "collectionTime": "Čas prevzema",
+    "customerName": "Ime stranke",
+    "orderType": "Vrsta naročila",
+    "items": "Artikli",
+    "deals": "Ponudbe",
+    "modifiers": "Možnosti",
+    "notes": "Opombe",
+    "subtotal": "Vmesni seštevek",
+    "tip": "Napitnina",
+    "serviceFee": "Pristojbina za storitev",
+    "total": "Skupaj",
+    "itemName": "Ime artikla",
+    "qty": "Kol.",
+    "unitPrice": "Cena na enoto",
+    "itemTotal": "Skupaj za artikel",
+    "orderTotal": "Skupaj za naročilo",
+    "unknownEvent": "Neznan dogodek",
+    "asap": "Čim prej",
+    "unknownCustomer": "Neznano",
+    "customerOnline": "Stranka na spletu",
+    "placedByTruck": "Oddal food truck"
+  }
+}

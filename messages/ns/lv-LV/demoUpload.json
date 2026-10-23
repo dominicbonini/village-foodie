@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Lasām jūsu ēdienkarti…",
+    "found": "Atradām jūsu pozīcijas…",
+    "kitchen": "Iestatām jūsu virtuvi…",
+    "page": "Veidojam jūsu pasūtīšanas lapu…",
+    "almost": "Gandrīz gatavs…"
+  },
+  "templateSteps": {
+    "truck": "Veidojam jūsu parauga food truck…",
+    "menu": "Iestatām ēdienkarti…",
+    "kitchen": "Iestatām virtuvi…",
+    "page": "Veidojam pasūtīšanas lapu…",
+    "almost": "Gandrīz gatavs…"
+  },
+  "dialogLabel": "Augšupielādējiet savu ēdienkarti",
+  "heading": "✨ Augšupielādējiet savu ēdienkarti",
+  "failedHeading": "Mēs nevarējām nolasīt šo ēdienkarti",
+  "close": "Aizvērt",
+  "intro": "Ēdienkartes dēļa fotogrāfija, ekrānuzņēmums, PDF vai ielīmēts teksts. Mūsu MI to nolasa un izveido jums strādājošu pasūtīšanas lapu — ar jūsu pozīcijām un cenām — mazāk nekā 60 sekundēs. Bez reģistrācijas, bez kartes.",
+  "failedIntro": "Dažreiz fotogrāfija ir pārāk tumša, uzņemta slīpi vai rakstīta ar roku. Tas ir mūsu uzdevums, nevis jūsu kļūda. Dažas iespējas, kā turpināt:",
+  "usually": "Parasti tas aizņem mazāk nekā 60 sekundes.",
+  "slow": "Tas aizņem ilgāk nekā parasti — ar lielām ēdienkartēm tā mēdz gadīties.",
+  "keepWaiting": "Gaidīt tālāk",
+  "sampleWhileYouWait": "Vai arī, kamēr gaidāt, apskatiet parauga ēdienkarti",
+  "standIn": "Šī <b>nebūs jūsu ēdienkarte</b> — tā ir tikai paraugs, lai jūs redzētu, kā viss darbojas.",
+  "seeSample": "Skatīt parauga ēdienkarti",
+  "tryAgain": "Mēģināt vēlreiz",
+  "tryPhotoAgain": "Mēģināt šo fotogrāfiju vēlreiz",
+  "tryDifferent": "Mēģināt citu fotogrāfiju",
+  "uploadAnother": "← Augšupielādēt citu fotogrāfiju",
+  "orSample": "Vai arī apskatiet parauga ēdienkarti",
+  "orBuild": "Vai arī mēs to izveidosim jūsu vietā",
+  "buildSent": "✓ Paldies — saņēmām. Mēs jums rakstīsim.",
+  "buildBody": "Atstājiet savu e-pastu, un īsts cilvēks ievadīs jūsu ēdienkarti un nosūtīs jums saiti.",
+  "emailPlaceholder": "jus@jusufoodtruck.lv",
+  "sending": "…",
+  "send": "Sūtīt",
+  "noPhoto": "Nav pie rokas ēdienkartes fotogrāfijas?",
+  "noPhotoBody": "Tā vietā apskatiet parauga food truck — savu ēdienkarti varat augšupielādēt jebkurā laikā.",
+  "build": "Izveidot manu demo versiju →",
+  "nothingPublished": "Nekas nav publicēts — to redzat tikai jūs.",
+  "error": {
+    "somethingWrong": "Kaut kas nogāja greizi. Lūdzu, mēģiniet vēlreiz.",
+    "serverUnreachable": "Neizdevās sazināties ar serveri. Pārbaudiet savienojumu un mēģiniet vēlreiz.",
+    "sendFailed": "Neizdevās nosūtīt — mēģiniet vēlreiz."
+  },
+  "fields": {
+    "uploadLabel": "Augšupielādēt ēdienkartes failu",
+    "dropHere": "Nometiet ēdienkarti šeit",
+    "dragOrTap": "Velciet un nometiet vai pieskarieties, lai izvēlētos",
+    "fileTypes": "Attēls vai PDF",
+    "or": "vai",
+    "pasteLabel": "Ielīmēt ēdienkartes tekstu",
+    "pastePlaceholder": "Ielīmējiet ēdienkarti šeit — pozīciju nosaukumus, aprakstus, cenas..."
+  }
+}

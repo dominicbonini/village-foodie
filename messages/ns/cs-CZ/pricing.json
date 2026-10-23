@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Váš první měsíc je úplně zdarma — se všemi funkcemi.} few {Vaše první # měsíce jsou úplně zdarma — se všemi funkcemi.} other {Vašich prvních # měsíců je úplně zdarma — se všemi funkcemi.}}",
+    "body": "S {brand} si zákazníci objednají předem a zaplatí při vyzvednutí, takže můžete přijímat online objednávky, aniž byste museli připojovat platební bránu pro karty. Chcete raději inkasovat předem? Online platby kartou můžete přidat kdykoli. Po skončení zkušebního období přejdete na tarif <plan>{fallback}</plan>{fallbackFree, select, yes { — bez měsíčního poplatku —} other {}}, pokud si nevyberete jiný tarif. Na začátek žádná platební karta, žádné závazky, zrušení kdykoli."
+  },
+  "card": {
+    "perTruckMonth": "za food truck / měsíc",
+    "mostTrucks": "Nejoblíbenější",
+    "tryFree": "Vyzkoušejte zdarma",
+    "seeEvery": "Všechny funkce →",
+    "everything": "Vše pro provoz vašeho prodeje",
+    "everythingIn": "Vše z tarifu {plan}, a navíc"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> pouze z online objednávek placených kartou. Objednávky na místě jsou vždy zdarma.",
+    "included": "Prvních <b>{included}</b> online objednávek je každý měsíc v ceně, poté <b>{fee}*</b>. Objednávky na místě jsou vždy zdarma.",
+    "noFee": "<b>Žádné poplatky HatchGrab</b> z online objednávek, ať máte jakkoli napilno. Jedny předvídatelné měsíční náklady."
+  },
+  "base": {
+    "walkUp": "Objednávky na místě a kuchyňská obrazovka",
+    "online": "Online objednávky",
+    "preorders": "Předobjednávky a čas vyzvednutí",
+    "capacity": "Řízení kapacity kuchyně",
+    "privateEvents": "Soukromé akce",
+    "printing": "Tisk kuchyňských lístků",
+    "app": "Kuchyňská aplikace pro iPhone, iPad a Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatické odpovědi na WhatsAppu",
+    "schedule_graphics": "Příspěvky na sociální sítě — váš rozpis pro Facebook a Instagram — připravené ke zveřejnění",
+    "event_types": "Vlastní typy akcí a ceny"
+  },
+  "money": {
+    "unlimitedOrders": "Neomezené online objednávky, poplatek HatchGrab 0 %",
+    "samePrice": "Stejná cena i ve vašem nejrušnějším měsíci"
+  },
+  "comingSoon": "Již brzy",
+  "bar": {
+    "title": "Který tarif mi vyjde nejlevněji?",
+    "subtitle": "Vaše online objednávky za měsíc",
+    "first": "Méně než {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Více než {from} → <b>{plan}</b>",
+    "only": "Jakýkoli objem → <b>{plan}</b>"
+  },
+  "footnote": "* Plus poplatek Stripe za zpracování karet u online objednávek placených kartou (aktuálně {country}: {cardFee}), placený společnosti Stripe, ne HatchGrab. Objednávky na místě jdou přes váš vlastní platební terminál — HatchGrab si účtuje 0 %.",
+  "currencyLine": "Ceny v měně: {currency} ({code})"
+}

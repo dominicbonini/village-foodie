@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Kus sa tegutsed",
+    "identity": "Sinu toiduauto",
+    "menu": "Sinu menüü",
+    "event": "Esimene üritus"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Seadistamine",
+  "loading": "Laadimine",
+  "loadingCountries": "Laadimine…",
+  "verify": {
+    "ok": "E-post kinnitatud — aitäh!",
+    "expired": "See kinnituslink on aegunud. Võta meiega ühendust ja lahendame selle enne, kui avalikuks lähed.",
+    "invalid": "See kinnituslink ei töötanud. Võta meiega ühendust ja lahendame selle enne, kui avalikuks lähed."
+  },
+  "identity": {
+    "heading": "Mis on sinu toiduauto nimi?",
+    "intro": "Seda nime näevad kliendid. Midagi ei avaldata enne, kui otsustad avalikuks minna.",
+    "nameLabel": "Toiduauto nimi",
+    "namePlaceholder": "Bobi Burgerid",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "See number on WhatsAppis",
+    "phoneHelp": "Kliendid näevad seda oma tellimuse kinnitusel, et saaksid tellimuse kohta küsida. Linnuke määrab, kas seal on kirjas „Helista meile“ või „Kirjuta meile WhatsAppis“. Mõlemat saad muuta jaotises „Seaded“."
+  },
+  "phoneRequired": "Lisa telefoninumber — selle kaudu võtavad sinuga ühendust nii kliendid kui ka meie.",
+  "createFailed": "Sinu toiduautot ei õnnestunud luua.",
+  "unreachable": "Meiega ei õnnestunud praegu ühendust saada — proovi uuesti.",
+  "back": "Tagasi",
+  "creating": "Sinu toiduautot luuakse…",
+  "continue": "Jätka"
+}

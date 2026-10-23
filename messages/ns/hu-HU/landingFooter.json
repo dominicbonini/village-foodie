@@ -1,0 +1,17 @@
+{
+  "tagline": "Kevesebb papírmunka.<br></br>Több főzés.",
+  "features": "Funkciók",
+  "pricing": "Árak",
+  "privacy": "Adatvédelem",
+  "terms": "Feltételek",
+  "contact": "Kapcsolat",
+  "about": "Rólunk",
+  "copyright": "© {year} HatchGrab",
+  "credit": "A <b>Village Foodie</b> készítőitől",
+  "badges": {
+    "appStoreLink": "Töltse le a HatchGrabet az App Store-ból",
+    "appStoreAlt": "Letölthető az App Store-ból",
+    "googlePlayLink": "Töltse le a HatchGrabet a Google Playről",
+    "googlePlayAlt": "Szerezd meg: Google Play"
+  }
+}

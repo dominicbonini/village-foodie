@@ -1,0 +1,19 @@
+{
+  "heading": "Ponuky navyše",
+  "intro": "Povzbuďte zákazníkov, aby si pridali niečo navyše. Keď si niekto objedná z jednej kategórie, ponúknite mu položky z inej — nápoj k pizzi, omáčku k burgeru.",
+  "add": "+ Pridať ponuku navyše",
+  "toast": {
+    "updated": "Pravidlo upravené",
+    "added": "Pravidlo pridané",
+    "removed": "Pravidlo odstránené"
+  },
+  "whenAdds": "Keď zákazník pridá…",
+  "suggestFrom": "Ponúknuť položky z…",
+  "chooseCategory": "Vyberte kategóriu",
+  "cancel": "Zrušiť",
+  "saveChanges": "Uložiť zmeny",
+  "addRule": "Pridať pravidlo",
+  "empty": "Zatiaľ žiadne pravidlá ponúk navyše.",
+  "confirmRemove": "Odstrániť pravidlo ponuky navyše „{trigger} → {suggest}“?",
+  "upTo": "{n, plural, one {Ponúkne sa najviac {count} položka} few {Ponúknu sa najviac {count} položky} other {Ponúkne sa najviac {count} položiek}}"
+}

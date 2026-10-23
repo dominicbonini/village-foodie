@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Bună ziua, {name},} other {Bună ziua,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Fondator, HatchGrab",
+  "verify": {
+    "subject": "Confirmați adresa de e-mail",
+    "thanks": "{hasTruck, select, yes {Vă mulțumim că ați configurat {truck} pe HatchGrab.} other {Vă mulțumim că v-ați configurat food truck-ul pe HatchGrab.}}",
+    "button": "Confirmați adresa de e-mail",
+    "buttonText": "Confirmați adresa de e-mail: {url}",
+    "why": "Cu această adresă vă veți conecta și aici ajung alertele despre comenzi — așa că merită să o confirmați acum.",
+    "next": "După confirmare, vă trimit tot ce vă trebuie ca să porniți.",
+    "carryOn": "Între timp, puteți continua configurarea.",
+    "stuck": "V-ați blocat la ceva? Răspundeți pur și simplu la acest e-mail — răspund personal.",
+    "fallbackLink": "Dacă butonul nu funcționează, lipiți acest link în browser: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Bun venit la HatchGrab, {name}} other {Bun venit la HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Mă bucur foarte mult să întâmpin {truck} pe HatchGrab.} other {Mă bucur foarte mult să vă întâmpin food truck-ul pe HatchGrab.}}",
+    "trial": "{months, plural, one {Perioada de probă gratuită de o lună a început — toate funcțiile sunt deblocate.} few {Perioada de probă gratuită de # luni a început — toate funcțiile sunt deblocate.} other {Perioada de probă gratuită de # de luni a început — toate funcțiile sunt deblocate.}}",
+    "setup": "Dacă nu ați făcut-o deja, configurarea este simplă și durează cam cincisprezece minute.",
+    "button": "Deschideți panoul de control",
+    "bookmark": "Merită salvat la favorite. Funcționează pe orice dispozitiv.",
+    "stuck": "Dacă vă blocați, răspundeți pur și simplu la acest e-mail — răspund personal.",
+    "lookingForward": "{hasTruck, select, yes {Abia aștept să văd {truck} în acțiune.} other {Abia aștept să vă văd food truck-ul în acțiune.}}"
+  }
+}

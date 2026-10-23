@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Godziny odbioru",
+    "takes_cash": "Czy przyjmujesz gotówkę?",
+    "offline_protection": "Ochrona zamówień offline",
+    "buzzer_prompt": "Przypominaj mi o przypisaniu pagera"
+  },
+  "typeFollowsVanTitle": "Zgodnie ze zwykłym ustawieniem każdego food trucka",
+  "sameSettingsAllVansLabel": "Te same ustawienia dla wszystkich food trucków",
+  "sameSettingsAllVansHeader": "Wszystkie food trucki",
+  "sameSettingsConfirm": "Skopiować ustawienia food trucka 1 do wszystkich food trucków? Kopiuje to wszystkie ustawienia food trucka 1, tak samo jak opcja „Tak jak Food truck 1” w Ustawieniach. Wydajność kuchni ma osobny przełącznik.",
+  "eventTypesFooterStandard": "Standard to twoje zwykłe ustawienia. Zmiana tutaj zmienia je też w Ustawieniach.",
+  "eventTypesFooterOneEvent": "Aby zmienić ustawienie tylko dla jednego wydarzenia, użyj panelu tego wydarzenia.",
+  "eventTypesSubtitle": "Zmiany zapisują się na bieżąco.",
+  "matchStandardLabel": "Jak Standard",
+  "matchStandardConfirm": "Przywrócić wszystkie ustawienia tego typu do wartości z typu Standard? Wszystko, co tu zmieniono, zostanie wyczyszczone.",
+  "priceLabels": {
+    "price_change_on": "Zmień ceny",
+    "price_mode": "Zmiana ceny",
+    "price_amount": "Kwota",
+    "price_rounding": "Zaokrąglanie",
+    "item_prices": "Ceny pozycji"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Ustawiam każdą cenę ręcznie"
+  },
+  "priceRounding": {
+    "none": "Brak",
+    "nearest_1": "Do najbliższego 1 {symbol}",
+    "up_1": "Zawsze w górę"
+  },
+  "pricesStandardCell": "Ceny z twojego menu",
+  "pricesTruckWideTitle": "Twoje ceny są takie same dla każdego food trucka",
+  "pricesMenuCell": "Menu",
+  "pricesTypeOffCell": "Ceny z menu",
+  "itemPricesShow": "Pokaż ceny",
+  "itemPricesHide": "Ukryj ceny",
+  "priceItemsHeading": "Ustaw cenę każdej pozycji",
+  "priceItemsOpen": "Zobacz lub zmień cenę każdej pozycji ›",
+  "priceItemsClose": "Ukryj ceny pozycji ⌃",
+  "ownPriceCount": "{n, plural, one {{count} pozycja ma własną cenę} few {{count} pozycje mają własną cenę} many {{count} pozycji ma własną cenę} other {{count} pozycji ma własną cenę}}",
+  "priceTypeHint": "Naciśnij cenę, aby wpisać własną.",
+  "pricesLiveNotice": "To wydarzenie trwa. Nowe zamówienia mają nowe ceny. Złożone już zamówienia zachowują swoje.",
+  "placeTypeHelper": "Okno „Dodaj wydarzenie” wybiera ten typ zawsze, gdy wybierzesz to miejsce.",
+  "postPictureStandardNote": "Posty o wydarzeniach mają tutaj twój standardowy projekt.",
+  "eventItemsCardDescription": "Ceny, limity pozycji i dostępność tylko dla tego wydarzenia. Zmiany działają od razu.",
+  "eventPriceColumnLabel": "Cena",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · to wydarzenie} other {menu {price} · to wydarzenie}}",
+  "eventPriceEdit": "✎ Edytuj ceny",
+  "eventPriceCancel": "Anuluj",
+  "eventPriceSave": "Zapisz ceny",
+  "eventPriceEditNote": "Edytujesz ceny tylko dla tego wydarzenia. Limity pozycji i dostępność są zablokowane do czasu zapisania.",
+  "eventPriceLiveNote": "Na żywo: nowe zamówienia mają nowe ceny.",
+  "offlineWhenOfflineLabel": "Gdy jesteś offline"
+}
