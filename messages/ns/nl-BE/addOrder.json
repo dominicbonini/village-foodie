@@ -1,0 +1,5 @@
+{
+  "savedToast": "Bestelling {id} opgeslagen{paid, select, cash { — contant betaald} card { — betaald met je betaalterminal} other {}}",
+  "confirmedToast": "Bestelling #{id} bevestigd{paid, select, cash { — contant betaald} card { — betaald met je betaalterminal} other {}}",
+  "card": "Kaart"
+}

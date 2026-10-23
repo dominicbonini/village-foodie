@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Kies hoe je allergeneninformatie toont",
+    "detail": "Zolang je niet kiest, zien klanten geen enkel gerecht — de menukaart beschermt zichzelf door alles te verbergen waarvan de allergenen niet bevestigd zijn, en op dit moment is dat alles.",
+    "where": "Menu → Allergenen"
+  },
+  "allergensCardMissing": {
+    "title": "Voeg je allergenenkaart toe",
+    "detail": "Je hebt gekozen voor een allergenenkaart, maar er is er nog geen opgeslagen — klanten krijgen dan te horen dat er allergeneninformatie is en vinden vervolgens niets.",
+    "where": "Menu → Allergenen"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Bevestig de allergenen van {count} gerecht} other {Bevestig de allergenen van {count} gerechten}}",
+    "detail": "{n, plural, one {Je gerecht is verborgen voor klanten tot je de allergenen ervan bevestigt.} other {{u, plural, one {{unverified} van je {total} gerechten is verborgen voor klanten tot je de allergenen ervan bevestigt.} other {{unverified} van je {total} gerechten zijn verborgen voor klanten tot je de allergenen ervan bevestigt.}}}} Een gerecht dat zonder bevestigde allergenen wordt getoond, lijkt ‘bevat geen allergenen’ te zeggen, dus verbergt de menukaart het liever dan dat risico te nemen.",
+    "where": "Menu → Allergenen"
+  },
+  "noVan": {
+    "title": "Voeg een foodtruck toe",
+    "detail": "Evenementen lopen via een foodtruck — zonder foodtruck kun je nergens bestellingen op ontvangen.",
+    "where": "Instellingen → Je foodtrucks"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Stel je keukencapaciteit in",
+    "detail": "Er is geen capaciteit ingesteld voor {vans}. Zonder capaciteit blijven we klanten afhaaltijden beloven die je keuken onmogelijk kan halen.",
+    "where": "Menu → Keukencapaciteit",
+    "unnamedVan": "Naamloze foodtruck"
+  },
+  "noPrepBearingCategory": {
+    "title": "Vertel ons hoe lang je eten duurt",
+    "detail": "{categories, select, none {Je hebt nog geen categorieën op je menukaart, dus we kunnen niet berekenen hoe lang een bestelling duurt.} other {Geen van je categorieën heeft een bereidingstijd, dus voor ons lijkt elke bestelling meteen klaar. We zouden klanten afhaaltijden blijven geven die je keuken nooit kan halen, en hoe drukker het wordt, hoe verder ze ernaast zitten.}}",
+    "where": "Menu → Categorieën → Keukeninstellingen"
+  },
+  "emailUnverified": {
+    "title": "Bevestig je e-mailadres",
+    "detail": "We sturen bestelmeldingen en accountherstel naar dit adres. Klopt het niet, dan merk je dat pas als er al iets is misgegaan.",
+    "where": "Kijk in je inbox voor onze bevestigingslink"
+  },
+  "emailUnknown": {
+    "title": "Status e-mailbevestiging onbekend",
+    "detail": "E-mailverificatie is nog niet gekoppeld, dus dit kan niet worden gecontroleerd. Het blokkeert bewust in plaats van stilletjes goed te keuren.",
+    "where": "—"
+  }
+}

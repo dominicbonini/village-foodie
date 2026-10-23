@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Dónde operas",
+    "identity": "Tu food truck",
+    "menu": "Tu carta",
+    "event": "Primer evento"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Configurando",
+  "loading": "Cargando",
+  "loadingCountries": "Cargando…",
+  "verify": {
+    "ok": "Email confirmado. ¡Gracias!",
+    "expired": "Ese enlace de confirmación ha caducado. Escríbenos y lo solucionaremos antes de que empieces a recibir pedidos.",
+    "invalid": "Ese enlace de confirmación no ha funcionado. Escríbenos y lo solucionaremos antes de que empieces a recibir pedidos."
+  },
+  "identity": {
+    "heading": "¿Cómo se llama tu food truck?",
+    "intro": "Es el nombre que verán los clientes. Nada será público hasta que decidas publicarte.",
+    "nameLabel": "Nombre del food truck",
+    "namePlaceholder": "La Hamburguesería de Bob",
+    "phoneLabel": "Teléfono",
+    "whatsappTick": "Este número tiene WhatsApp",
+    "phoneHelp": "Los clientes lo ven en la confirmación del pedido para poder preguntarte por él. La casilla decide si pone “Llámanos” o “Escríbenos por WhatsApp”. Puedes cambiar ambas cosas en Ajustes."
+  },
+  "phoneRequired": "Añade un número de teléfono: tanto los clientes como nosotros lo usamos para contactarte.",
+  "createFailed": "No se ha podido crear tu food truck.",
+  "unreachable": "No hemos podido conectar ahora mismo. Inténtalo de nuevo.",
+  "back": "Atrás",
+  "creating": "Creando tu food truck…",
+  "continue": "Continuar"
+}

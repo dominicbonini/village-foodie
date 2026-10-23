@@ -222,14 +222,26 @@
       "en": "\\ballergens?\\b"
     },
     {
-      "concept": "Private event",
+      "concept": "Private hire",
       "use": [
-        "eventos privados"
+        "alquiler de food truck",
+        "alquilar un food truck"
       ],
-      "alts": "alquiler de food truck",
+      "alts": "food truck para bodas, eventos de empresa",
       "scope": "Both",
       "conf": "High",
-      "notes": "",
+      "notes": "hiring a truck for a private party (europe-languages-1, 22 Oct 2026, split as France's was)",
+      "en": "\\bprivate hire\\b"
+    },
+    {
+      "concept": "Private event",
+      "use": [
+        "evento privado"
+      ],
+      "alts": "",
+      "scope": "Both",
+      "conf": "Med",
+      "notes": "the app's private event: a date hidden from the map, with its own ordering link — not \"alquiler\"",
       "en": "\\bprivate events?\\b"
     },
     {

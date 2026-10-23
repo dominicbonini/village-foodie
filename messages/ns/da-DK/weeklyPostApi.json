@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Overskriften var for lang og er blevet forkortet.",
+    "date": "Datoen var for lang og er blevet forkortet.",
+    "daysOff": "Teksten for fridage var for lang og er blevet forkortet.",
+    "place": "Stedets navn var for langt og er blevet forkortet.",
+    "time": "Tidspunktet var for langt og er blevet forkortet.",
+    "note": "Din egen tekst var for lang og er blevet forkortet.",
+    "venue": "Lokationen var for lang og er blevet forkortet.",
+    "area": "Området var for langt og er blevet forkortet."
+  },
+  "fontFallback": "En skrifttype, som dette design bruger ({id}), kunne ikke indlæses — de felter vises i Oswald.",
+  "wrongShapeBackground": "Dette steds billede har et andet format end dit design, så standardbaggrunden bruges.",
+  "rowsFit": "Den sidste dag ligger {px} px under billedets nederste kant — mindsk rækkeafstanden, eller flyt række 1 op.",
+  "placeStatus": {
+    "ownBoth": "Eget billede og egne tekstplaceringer",
+    "wrongShape": "Andet format — bruges ikke, før det udskiftes",
+    "ownPicture": "Eget billede, standardplaceringer",
+    "ownPositions": "Standardbillede, egne tekstplaceringer",
+    "none": "Intet billede endnu — bruger Standard"
+  },
+  "standardStatus": "Bruges alle andre steder",
+  "option": {
+    "oneOff": "Upload et kun til dette opslag",
+    "placePoster": "Plakat for {name}",
+    "standard": "Standarddesign"
+  },
+  "previewLabel": {
+    "lastEvent": "Forhåndsvisningen bruger dit seneste arrangement her",
+    "noEvents": "Ingen arrangementer her endnu — forhåndsvisningen viser dit næste arrangement med dette steds navn"
+  },
+  "fontUsage": {
+    "weekly": "dit design til ugeopslag",
+    "event": "dit design til opslag om et enkelt arrangement",
+    "place": "dit design til {place}",
+    "placeUnnamed": "dit design til et sted"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Fed",
+    "italic": "Kursiv"
+  },
+  "picture": {
+    "legacy": "Eventplakat",
+    "fallback": "Billede",
+    "wrongShape": "Andet format — kan ikke bruges som hel baggrund"
+  },
+  "noPicture": {
+    "omit": "Udelad det",
+    "blank": "Lad der være et tomt felt",
+    "logo": "Vis dit logo"
+  },
+  "noPicturesAll": "{total, plural, one {Dit sted har et billede.} other {Alle dine {total} steder har et billede.}}",
+  "noPicturesSome": "{without, plural, one {{without} af dine {total} steder har endnu intet billede} other {{without} af dine {total} steder har endnu intet billede}}",
+  "licenceTick": "Jeg ejer denne skrifttype eller har licens til at bruge den",
+  "fontUploadButton": "↑ Upload din skrifttype"
+}

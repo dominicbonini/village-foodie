@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Vælg, hvordan du viser allergeninfo",
+    "detail": "Indtil du vælger, ser kunderne ingen af dine retter – menukortet beskytter sig selv ved at skjule alt, hvis allergener ikke er bekræftet, og lige nu er det hele menukortet.",
+    "where": "Menukort → Allergener"
+  },
+  "allergensCardMissing": {
+    "title": "Tilføj din allergenliste",
+    "detail": "Du har valgt at vise en allergenliste, men der er ikke gemt nogen – så kunderne ville få at vide, at der findes allergeninfo, og så ikke finde noget.",
+    "where": "Menukort → Allergener"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Bekræft allergener for {count} ret} other {Bekræft allergener for {count} retter}}",
+    "detail": "{n, plural, one {Din ret er skjult for kunderne, indtil du bekræfter dens allergener.} other {{u, plural, one {{unverified} af dine {total} retter er skjult for kunderne, indtil du bekræfter dens allergener.} other {{unverified} af dine {total} retter er skjult for kunderne, indtil du bekræfter deres allergener.}}}} En ret, der vises uden bekræftede allergener, læses som »indeholder ingen«, så menukortet skjuler den hellere end at løbe den risiko.",
+    "where": "Menukort → Allergener"
+  },
+  "noVan": {
+    "title": "Tilføj en foodtruck",
+    "detail": "Arrangementer kører på en foodtruck – uden en er der intet at tage imod bestillinger med.",
+    "where": "Indstillinger → Dine foodtrucks"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Indstil din køkkenkapacitet",
+    "detail": "Der er ikke indstillet kapacitet for {vans}. Uden den bliver vi ved med at love kunderne afhentningstider, som dit køkken ikke har en chance for at nå.",
+    "where": "Menukort → Køkkenkapacitet",
+    "unnamedVan": "Unavngiven foodtruck"
+  },
+  "noPrepBearingCategory": {
+    "title": "Fortæl os, hvor lang tid din mad tager",
+    "detail": "{categories, select, none {Du har endnu ingen kategorier på menukortet, så vi kan ikke regne ud, hvor lang tid en bestilling tager.} other {Ingen af dine kategorier har en tilberedningstid, så for os ser hver bestilling ud til at være klar med det samme. Vi ville blive ved med at give kunderne afhentningstider, som dit køkken ikke har en chance for at nå, og jo travlere du får, jo længere ude ville de ligge.}}",
+    "where": "Menukort → Kategorier → Køkkenopsætning"
+  },
+  "emailUnverified": {
+    "title": "Bekræft din e-mailadresse",
+    "detail": "Vi sender ordrebeskeder og gendannelse af kontoen til denne adresse. Hvis den er forkert, opdager du det først, når noget allerede er gået galt.",
+    "where": "Tjek din indbakke for vores bekræftelseslink"
+  },
+  "emailUnknown": {
+    "title": "Status for e-mailbekræftelse ukendt",
+    "detail": "E-mailbekræftelse er ikke koblet på endnu, så det kan ikke vurderes. Den blokerer med vilje i stedet for at lade det passere i stilhed.",
+    "where": "—"
+  }
+}

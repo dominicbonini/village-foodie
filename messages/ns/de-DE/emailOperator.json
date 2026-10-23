@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Neue Bestellung #{id} – {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Neue Bestellung eingegangen",
+    "from": "<b>Bestellung #{id}</b> von <b>{name}</b>",
+    "collection": "Abholung: {time}",
+    "asap": "Keine feste Zeit – so schnell wie möglich",
+    "total": "Gesamt",
+    "notes": "<b>Notizen:</b> {notes}",
+    "autoConfirmed": "Automatisch bestätigt – Sie müssen nichts tun.",
+    "confirmPrompt": "Melden Sie sich in Ihrem HatchGrab-Dashboard an, um diese Bestellung zu bestätigen oder abzulehnen.",
+    "text": "Neue Bestellung #{id} von {name}{withSlot, select, yes { für {slot}} other {}}{withVenue, select, yes {, Standort: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Gesamt {total}.{withNotes, select, yes { Notizen: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Neue Events für {truck} gefunden – bitte prüfen",
+    "hi": "Hallo,",
+    "found": "Wir haben in Ihrem Terminplan <b>{n, plural, one {{count} neues Event} other {{count} neue Events}}</b> gefunden, die Sie freigeben müssen, bevor Kunden sie sehen.",
+    "listHeading": "Gefundene Events:",
+    "approve": "Sobald Sie sie im Tab „Termine“ freigeben, erscheinen sie auf der Karte, und Ihre Bestellseite ist bereit für Vorbestellungen.",
+    "cta": "Terminplan prüfen →",
+    "signoff": "– Ihr HatchGrab-Team · hatchgrab.com",
+    "unknownVenue": "Unbekannter Standort",
+    "text": "Hallo,\n\nwir haben in Ihrem Terminplan {n, plural, one {{count} neues Event} other {{count} neue Events}} gefunden, die Ihre Freigabe brauchen:\n\n{list}\n\nHier prüfen: {url}\n\nSobald Sie sie freigeben, erscheinen sie auf der Karte.\n\n– Ihr HatchGrab-Team"
+  }
+}

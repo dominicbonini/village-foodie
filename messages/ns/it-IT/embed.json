@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Le prossime tappe di {truck}.",
+  "orderFrom": "Ordina da {truck}",
+  "poweredBy": "Con la tecnologia di <b>HatchGrab</b>",
+  "loadFailed": "Al momento non è possibile caricare il calendario.",
+  "loading": "Caricamento del calendario…",
+  "empty": "Nessun evento in programma per {truck}."
+}

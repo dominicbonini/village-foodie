@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVÉ-EVENEMENT",
+  "truckFallback": "De foodtruck",
+  "noSlugTitle": "Deze foodtruck is nog niet ingesteld voor online bestellen.",
+  "orderingOffTitle": "Online bestellen staat niet aan",
+  "orderingOffBody": "Dit evenement neemt geen online bestellingen aan. Bestel aan het loket.",
+  "replacedTitle": "Deze link is vervangen",
+  "replacedBody": "Deze link werkt niet meer — {truck} heeft hem vervangen. Vraag de organisator om de nieuwe link of QR-code.",
+  "madePublicBody": "Deze link werkt niet meer — {truck} heeft dit evenement openbaar gemaakt. Je kunt bestellen via hun gewone pagina.",
+  "unknownTitle": "Deze link werkt niet",
+  "unknownBody": "Deze link werkt niet. Controleer hem bij de organisator of scan de QR-code opnieuw."
+}

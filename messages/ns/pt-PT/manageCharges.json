@@ -1,0 +1,30 @@
+{
+  "heading": "Impostos, gorjetas e taxas",
+  "rate": {
+    "label": "Taxa de imposto sobre vendas",
+    "hint": "A taxa que cobra em cada encomenda. Os clientes veem-na acrescentada no pagamento, nos recibos e nos talões.",
+    "regionDefault": "Deixe em branco para cobrar {label} a {rate} %, a taxa sobre comida preparada ({region})."
+  },
+  "included": {
+    "label": "{label} incluído nos seus preços",
+    "hint": "Os seus preços já incluem {label}. Esta taxa indica apenas que parte de cada preço é {label}, nos recibos e nos talões — nada é acrescentado no pagamento.",
+    "default": "Deixe em branco para usar {rate} %, a taxa de {label} sobre comida quente vendida para levar ({country})."
+  },
+  "tips": {
+    "label": "Gorjetas",
+    "hint": "Os clientes que pagam online com cartão podem deixar uma gorjeta. Fica toda para si.",
+    "choices": "Opções que os clientes veem:",
+    "chip": "{rate} %",
+    "other": "Outro valor"
+  },
+  "fee": {
+    "label": "Taxa de serviço online",
+    "hint": "Acrescentada apenas às encomendas online. Nunca às encomendas com pagamento no levantamento nem às feitas ao balcão. Fica para si.",
+    "pctAria": "Percentagem da taxa de serviço",
+    "fixedAria": "Valor fixo da taxa de serviço",
+    "max": "Máximo que pode cobrar: {max}",
+    "example": "Os clientes veem-na antes de pagar, numa só linha: «{label} {amount}».",
+    "hatchgrab": "O HatchGrab acrescenta uma taxa de serviço de {fee} às encomendas online dos seus clientes. Não é paga por si e não a pode alterar."
+  },
+  "saveFailed": "Não foi possível guardar — tente novamente."
+}

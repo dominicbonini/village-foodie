@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Aceptar pedidos sin pago",
+  "completionTitle": "Cerrar un pedido sin pagar",
+  "completionHelp": "Qué pasa cuando un pedido sin pagar está listo para entregar.",
+  "pressesOne": "Un toque (“Marcar pagado y recogido”)",
+  "pressesOneHelp": "Ideal si cobras al entregar la comida. Tienes un único botón, “Marcar pagado y recogido”, que registra el pago y cierra el pedido a la vez.",
+  "pressesTwo": "Dos toques (“Marcar pagado” y “Recogido”)",
+  "pressesTwoHelp": "Ideal si el pago y la entrega ocurren en momentos distintos: el cliente paga en la ventanilla y recoge cuando está listo. Tienes dos botones: primero “Marcar pagado” y luego “Recogido” cuando se lleva la comida."
+}

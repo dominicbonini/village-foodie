@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Gem mit menukort →",
+    "heading": "Sæt din foodtruck op",
+    "sub": "Dit menukort følger direkte med.",
+    "privacy": "Vi bruger det kun til at sætte din foodtruck op og sende dit demolink – se vores <link>privatlivspolitik</link>."
+  },
+  "sample": {
+    "bannerButton": "Sæt min foodtruck op →",
+    "heading": "Sæt din foodtruck op",
+    "sub": "Bagefter uploader du dit eget menukort – det tager et minut.",
+    "privacy": "Vi bruger det kun til at sætte din foodtruck op og sende dit demolink – se vores <link>privatlivspolitik</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Gem mit menukort →",
+    "heading": "Gem din demo",
+    "sub": "Vi gemmer den i 14 dage og sender dig straks et link tilbage på e-mail.",
+    "privacy": "Vi bruger det kun til at sende dit demolink – se vores <link>privatlivspolitik</link>."
+  },
+  "confirmationHeading": "Så er du klar",
+  "postSaveButton": "Sæt min foodtruck op →",
+  "enterSetupButton": "Sæt min foodtruck op →",
+  "emailOnlyLink": "Send mig bare et link på e-mail, så jeg kan vende tilbage til denne demo",
+  "sendLinkButton": "Send mig linket",
+  "savingButton": "Gemmer…",
+  "continueButton": "Fortsæt →",
+  "createAccountButton": "Opret min konto →",
+  "retryButton": "Prøv igen",
+  "backToDemoButton": "Tilbage til demoen",
+  "savedStatus": "{hasDate, select, yes {✓ Gemt – gemmes til {date}} other {✓ Gemt}}",
+  "back": "Tilbage",
+  "close": "Luk",
+  "truckStepHeading": "Om din foodtruck",
+  "detailsStepHeading": "Gør opsætningen færdig",
+  "stepper": {
+    "details": "Dine data",
+    "menu": "Menukort",
+    "allergens": "Allergener",
+    "kitchen": "Køkken",
+    "schedule": "Kalender"
+  },
+  "confirmEmailed": "Vi har sendt dig et link direkte tilbage til denne demo på e-mail – intet login nødvendigt.",
+  "confirmKeepUntil": "Vi gemmer den til <b>{date}</b>. Dit menukort følger med, når du sætter det hele rigtigt op.",
+  "loading": "Indlæser…",
+  "firstName": "Fornavn",
+  "lastName": "Efternavn",
+  "truckName": "Foodtruckens navn",
+  "truckNamePlaceholder": "f.eks. Landsbykøkkenet",
+  "cuisine": "Køkken",
+  "logoLabel": "Logo <opt>(valgfrit)</opt>",
+  "logoPreviewAlt": "Forhåndsvisning af logo",
+  "changeLogo": "Skift logo",
+  "removeLogo": "Fjern",
+  "uploadLogo": "📷 Upload logo",
+  "readyTitle": "Din konto er klar",
+  "readyBody": "Lad os nu gøre opsætningen af din foodtruck færdig – dit menukort, allergener og køkken.",
+  "hangTight": "Et øjeblik – vi sætter det hele op.",
+  "stage": {
+    "account": "Opretter din konto",
+    "truck": "Sætter din foodtruck op",
+    "menu": "Indlæser dit menukort"
+  },
+  "stageState": {
+    "done": "færdig",
+    "recognised": "du har allerede en konto",
+    "failed": "mislykkedes",
+    "active": "i gang",
+    "pending": "venter"
+  },
+  "signIn": "Log ind",
+  "phone": "Telefon",
+  "onWhatsapp": "Dette nummer er på WhatsApp",
+  "email": "E-mail",
+  "emailPlaceholder": "dig@dinfoodtruck.dk",
+  "settingUpAs": "Sætter op som <b>{email}</b> <change>ændr</change>",
+  "password": "Adgangskode",
+  "passwordPlaceholder": "Mindst 8 tegn",
+  "hidePassword": "Skjul adgangskode",
+  "showPassword": "Vis adgangskode",
+  "promoLabel": "Har du en kode? <opt>(valgfrit)</opt>",
+  "promoPlaceholder": "Skriv den her",
+  "agreeTerms": "Jeg accepterer <terms>vilkårene</terms> og <privacy>privatlivspolitikken</privacy>.",
+  "freeMonth": "Opsætningen starter ikke din gratis måned. Den begynder, når du vælger dit første live-arrangement – når du er klar.",
+  "fieldError": {
+    "firstName": "Fortæl os dit fornavn.",
+    "lastName": "Og dit efternavn.",
+    "truck": "Giv din foodtruck et navn.",
+    "cuisine": "Fortæl os, hvad du laver af mad.",
+    "phoneMissing": "Tilføj et telefonnummer – både kunderne og vi bruger det til at få fat i dig.",
+    "email": "Skriv en gyldig e-mailadresse.",
+    "password": "Adgangskoden skal være på mindst 8 tegn.",
+    "terms": "Accepter vilkårene for at fortsætte."
+  },
+  "error": {
+    "saveFailed": "Det kunne ikke gemmes – prøv igen.",
+    "savedNoEmail": "Gemt – men vi kunne ikke sende linket på e-mail lige nu.",
+    "unreachable": "Vi kunne ikke få forbindelse lige nu – prøv igen.",
+    "createAccountFailed": "Vi kunne ikke oprette din konto.",
+    "truckCreateFailed": "Din konto er klar, men vi kunne ikke oprette din foodtruck. Prøv igen.",
+    "truckUnreachable": "Din konto er klar, men vi kunne ikke oprette din foodtruck lige nu. Prøv igen.",
+    "truckNoToken": "Din foodtruck er sat op, men vi kunne ikke åbne den lige nu. Prøv igen."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Wo ist Ihr Foodtruck ansässig?",
+  "stepIntro": "Danach richten sich Ihre Währung, Preise, Zeitzone und das Format der Telefonnummer. Das Land kann später nicht geändert werden, da es mit Ihren Kartenzahlungen verknüpft ist.",
+  "settingsHeading": "Wo Sie verkaufen",
+  "countryLabel": "Land",
+  "countryGuessed": "Wir haben das anhand Ihres aktuellen Aufenthaltsorts geschätzt. Ändern Sie es, falls es nicht stimmt.",
+  "countryLocked": "Ihr Land kann nicht geändert werden",
+  "townLabel": "Ort oder Stadt",
+  "townQuestion": "Ort oder Stadt, in der Sie ansässig sind",
+  "timezoneLabel": "Zeitzone",
+  "continueButton": "Weiter",
+  "saveFailed": "Die Einstellungen konnten nicht gespeichert werden – bitte versuchen Sie es erneut."
+}

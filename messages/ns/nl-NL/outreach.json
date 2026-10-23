@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Deze e-mail heeft geen afmeldregel en kan dus niet worden verstuurd. Gebruik ‘Afmelding invoegen’ om die toe te voegen.",
+    "notSetUp": "Er is geen afmeldzin ingesteld, dus er kan geen acquisitie-e-mail worden verstuurd. Voeg er een toe in het paneel Handtekening op het tabblad Sjablonen.",
+    "notLoaded": "De afmeldzin is nog niet geladen, dus dit kan niet worden verstuurd.",
+    "unreadable": "De afmeldzin kon niet worden gelezen, dus er is niets verstuurd."
+  },
+  "retry": {
+    "notRebuilt": "Dat bericht kon niet opnieuw worden opgebouwd met de bedrijfsregel, dus er is niets verstuurd."
+  }
+}

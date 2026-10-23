@@ -1,0 +1,83 @@
+{
+  "title": "Arrangementstyper",
+  "newTypeButton": "+ Ny arrangementstype",
+  "close": "Lukk",
+  "loading": "Laster…",
+  "missingTitle": "Arrangementstyper er ikke slått på ennå.",
+  "missingBody": "Databaseoppdateringen for denne funksjonen er ikke tatt i bruk ennå. Ingenting er ødelagt – alle arrangementer bruker det vanlige oppsettet ditt.",
+  "column": "Kolonne",
+  "vanGone": "Den matbilen finnes ikke lenger.",
+  "typeGone": "Den typen finnes ikke lenger.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Mer for {name}",
+  "rename": "Gi nytt navn",
+  "moveLeft": "Flytt til venstre",
+  "moveRight": "Flytt til høyre",
+  "delete": "Slett",
+  "sections": {
+    "vans": "MATBILER",
+    "prices": "PRISER",
+    "itemPrices": "VAREPRISER",
+    "service": "DRIFT"
+  },
+  "labelFor": "{label} for {name}",
+  "intervalEvery": "Hvert {mins} min",
+  "noTypes": "Du har ingen arrangementstyper ennå, så alle arrangementer bruker det vanlige oppsettet ditt.",
+  "renameTitle": "Gi denne typen nytt navn",
+  "name": "Navn",
+  "cancel": "Avbryt",
+  "save": "Lagre",
+  "copyVanOne": "Kopier innstillingene fra Matbil 1",
+  "thisType": "denne typen",
+  "matchTitle": "Gjøre «{name}» lik Standard?",
+  "matchKeeps": "Det du har endret i dashbordet for ett enkelt arrangement, forblir som det er, og prisene for denne typen endres ikke.",
+  "matchWillUse": "Den vil bruke: {summary}",
+  "deleteTitle": "Slette «{name}»?",
+  "deleteBody": "{n, plural, =0 {Ingen kommende arrangementer bruker «{name}».} one {{count} kommende arrangement bruker «{name}». Det går tilbake til Standard.} other {{count} kommende arrangementer bruker «{name}». De går tilbake til Standard.}} Det du har endret på ett enkelt arrangement, forblir som det er.",
+  "keep": "Behold",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "standard",
+    "vanSetup": "Det vanlige oppsettet for denne matbilen – brukes på alle arrangementer uten type.",
+    "standardSetup": "Det vanlige oppsettet ditt – brukes på alle arrangementer uten type.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} kommende arrangement} other {{upcomingCount} kommende arrangementer}} · {changed, plural, =0 {ingenting endret ennå} one {{changedCount} av {total} endret} other {{changedCount} av {total} endret}}",
+    "noMenuItems": "Ingen varer på menyen ennå – legg dem til under Meny › Varer."
+  },
+  "newType": {
+    "title": "Ny arrangementstype",
+    "namePlaceholder": "f.eks. Skolefest",
+    "help": "Trykk på et navn eller skriv ditt eget. Typen starter som en kopi av Standard, og senere endringer i Standard påvirker den ikke. Endre hva du vil etterpå.",
+    "create": "Opprett",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Pub",
+      "market": "Marked",
+      "privateHire": "Leie matbil"
+    }
+  },
+  "select": {
+    "label": "Arrangementstype",
+    "usual": "{name} er vanlig for denne plassen."
+  },
+  "summary": {
+    "normalSetup": "Det vanlige oppsettet ditt",
+    "sameAsStandard": "Samme som Standard",
+    "buzzersOn": "summere på",
+    "buzzersOff": "summere av",
+    "takeCashOn": "kontanter på",
+    "takeCashOff": "kontanter av",
+    "markReadyOn": "klarmelding på",
+    "markReadyOff": "klarmelding av",
+    "collectionEvery": "henting hvert {mins} min",
+    "offlineOff": "beskyttelse ved nettbrudd av",
+    "offlineKeepTaking": "ved nettbrudd: ta fortsatt imot bestillinger",
+    "offlinePause": "ved nettbrudd: sett bestilling på pause"
+  },
+  "errors": {
+    "somethingWentWrong": "Noe gikk galt",
+    "couldNotLoad": "Kunne ikke laste",
+    "couldNotSave": "Kunne ikke lagre",
+    "noVans": "Denne bedriften har ingen matbiler å endre."
+  }
+}

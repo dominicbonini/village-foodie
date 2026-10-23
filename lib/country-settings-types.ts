@@ -125,7 +125,14 @@ export function intlMoneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'
 
 /** The currency line a country's pricing carries when its home symbol is shared — the registry's plural name and code
  *  for `pricing.currencyLine` ("Prices in New Zealand dollars (NZD)") — or null (GB, US, IE: no line). */
-export function currencyLineOf(s: Pick<CountrySettings, 'currency'>): { currency: string; code: string } | null {
+export function currencyLineOf(s: Pick<CountrySettings, 'currency'> & { locale?: string | null }): { currency: string; code: string } | null {
   const c = currencyInfo(s.currency)
-  return c?.symbolShared ? { currency: c.namePlural, code: c.code } : null
+  if (!c?.symbolShared) return null
+  // europe-languages-1 (22 October 2026): the registry's names are English ("Swedish kronor"), so a page in another language
+  // names the currency in its own words — Intl's display name ("svensk krona"), framed by that language's message. Every
+  // English locale keeps the registry's plural, exactly as before.
+  if (s.locale && !/^en(-|$)/i.test(s.locale)) {
+    try { const name = new Intl.DisplayNames([s.locale], { type: 'currency' }).of(c.code); if (name) return { currency: name, code: c.code } } catch { /* the registry's name below */ }
+  }
+  return { currency: c.namePlural, code: c.code }
 }

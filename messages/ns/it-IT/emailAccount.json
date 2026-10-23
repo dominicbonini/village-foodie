@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifica il tuo nuovo indirizzo email HatchGrab",
+    "heading": "Verifica il tuo indirizzo email",
+    "button": "Verifica indirizzo email"
+  },
+  "changeEmail": {
+    "requested": "Hai chiesto di cambiare il tuo indirizzo email HatchGrab con questo indirizzo.",
+    "click": "Fai clic sul pulsante qui sotto per verificarlo. Questo link scade tra 24 ore.",
+    "ignore": "Se non hai richiesto questa modifica, puoi ignorare questa email senza problemi.",
+    "stillActive": "Il tuo indirizzo email attuale resta attivo."
+  },
+  "resendVerification": {
+    "requested": "Hai chiesto di cambiare la tua email HatchGrab con questo indirizzo.",
+    "click": "Fai clic qui sotto per verificarlo. Questo link scade tra 24 ore.",
+    "ignore": "Se non l’hai richiesto tu, ignora questa email.",
+    "stillActive": "La tua email attuale resta attiva."
+  },
+  "passwordReset": {
+    "subject": "Reimposta la tua password HatchGrab",
+    "heading": "Reimposta la password",
+    "requested": "Abbiamo ricevuto una richiesta di reimpostazione della password del tuo account HatchGrab.",
+    "click": "Fai clic sul pulsante qui sotto per scegliere una nuova password. Questo link scade tra 1 ora.",
+    "button": "Reimposta password",
+    "ignore": "Se non l’hai richiesto tu, puoi ignorare questa email senza problemi.",
+    "unchanged": "La tua password non cambierà finché non fai clic sul link qui sopra."
+  },
+  "deletionScheduled": {
+    "subject": "L’eliminazione del tuo account HatchGrab è programmata",
+    "received": "Abbiamo ricevuto una richiesta di eliminazione di questo account HatchGrab.",
+    "orderingStopped": "<b>Gli ordini online sono stati sospesi immediatamente</b> su: {trucks}.",
+    "noTrucks": "(nessun food truck)",
+    "readable": "La tua dashboard resta\n    consultabile ancora per {days, plural, one {# giorno} other {# giorni}}.",
+    "scheduled": "L’eliminazione dell’account è programmata per il <b>{date}</b>.",
+    "cannotCancel": "<b>Non è possibile annullarla dall’app.</b> Se non l’hai richiesta tu, o se hai\n    cambiato idea, rispondi a questa email il prima possibile.",
+    "kept": "Quando l’account viene eliminato, rimuoviamo i tuoi dati personali e quelli dei tuoi clienti. Manteniamo\n    registri contabili anonimi, che la legge ci obbliga a conservare."
+  }
+}

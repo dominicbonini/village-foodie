@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Alle",
+    "bold": "Fed og høj",
+    "hand": "Håndskrift",
+    "classic": "Klassisk",
+    "clean": "Enkel",
+    "own": "Dine egne",
+    "ownCount": "Dine egne ({count})"
+  },
+  "yoursTag": "· din egen",
+  "loadingFonts": "Indlæser skrifttyper…",
+  "search": "Søg blandt {count, number} skrifttyper",
+  "uploadButton": "↑ Upload din skrifttype",
+  "loadingLibrary": "Indlæser skrifttypebiblioteket…",
+  "tryAgain": "Prøv igen",
+  "noOwn": "Du har ikke uploadet en skrifttype endnu. Brug knappen »↑ Upload din skrifttype« ovenfor.",
+  "recent": "Senest brugt",
+  "popular": "Populære til plakater",
+  "adding": "Tilføjer…",
+  "noMatch": "Ingen skrifttype matcher »{query}«.",
+  "showing": "Viser {shown} af {total, number} – skriv mere for at indsnævre søgningen.",
+  "couldNotAdd": "Skrifttypen kunne ikke tilføjes",
+  "tooBig": "Skrifttypen fylder {size, number, ::.0 group-off} MB. Grænsen er 5 MB.",
+  "woff": "Upload en TTF- eller OTF-fil – du kan som regel downloade en der, hvor du købte skrifttypen.",
+  "uploadIncomplete": "Uploaden blev ikke fuldført",
+  "added": "»{name}« er tilføjet som den {face} udgave.",
+  "face": {
+    "regular": "normale",
+    "bold": "fede",
+    "italic": "kursive"
+  },
+  "licenceTick": "Jeg ejer denne skrifttype eller har licens til at bruge den",
+  "checking": "Kontrollerer skrifttypen…",
+  "addFont": "Tilføj skrifttype",
+  "cancel": "Annuller",
+  "missingFaces": "Tilføj den {faces} udgave af »{name}« (valgfrit) – vælg filen igen.",
+  "somethingWrong": "Noget gik galt",
+  "faceLower": {
+    "regular": "normale",
+    "bold": "fede",
+    "italic": "kursive"
+  },
+  "ownLicence": "Din egen",
+  "loadFailed": "Kunne ikke indlæse skrifttyper"
+}

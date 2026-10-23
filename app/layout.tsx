@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { CSPostHogProvider } from "./providers";
@@ -22,6 +22,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
   preload: false,
 });
+
+// europe-languages-2 (23 October 2026): GREEK AND CYRILLIC. Geist has Cyrillic but no Greek, and the landing faces (Archivo,
+// Public Sans) have neither, so a Greek or Bulgarian page fell back to whatever the device had. Noto Sans fills ONLY those letters:
+// its variable is put on <body> only when the page is in Greek or Bulgarian (below), the stacks name it only under :lang(el) /
+// :lang(bg) (app/globals.css, app/landing/landing.css), it is never preloaded, and each @font-face carries a unicode-range — so
+// a Latin page never fetches one of its files, and English HTML is byte for byte as before.
+const scriptFallback = Noto_Sans({
+  variable: "--font-script-fallback",
+  subsets: ["greek", "cyrillic"],
+  preload: false,
+  display: "swap",
+});
+const NEEDS_SCRIPT_FALLBACK = /^(el|bg)(-|$)/i
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers()
@@ -110,7 +123,7 @@ export default async function RootLayout({
   return (
     <html lang={lang} data-brand={brand}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased${NEEDS_SCRIPT_FALLBACK.test(lang) ? ` ${scriptFallback.variable}` : ''}`}
       >
         <CSPostHogProvider host={host}>
           {children}

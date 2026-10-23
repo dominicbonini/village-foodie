@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "A consumo",
+    "subtitle": "Food truck stagionali e part-time",
+    "description": "Nessun canone mensile. Paghi solo quando un cliente paga online con carta."
+  },
+  "pro": {
+    "subtitle": "Food truck con preordini regolari",
+    "description": "Tutto incluso, anche le risposte automatiche WhatsApp e i post per i social, con ordini online inclusi ogni mese."
+  },
+  "unlimited": {
+    "name": "Illimitato",
+    "subtitle": "Food truck molto attivi e festival",
+    "description": "Tutto incluso, senza commissioni sugli ordini online, per quanto lavoro tu abbia."
+  },
+  "trial": {
+    "name": "Prova gratuita",
+    "description": "Tutte le funzioni, gratis, per tutta la durata della prova."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Ambiente di prova per potenziali clienti — mai pubblico."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester pre-lancio — accesso completo."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Pago por uso",
+    "subtitle": "Negocios de temporada y a tiempo parcial",
+    "description": "Sin cuota mensual. Solo pagas cuando un cliente paga online con tarjeta."
+  },
+  "pro": {
+    "subtitle": "Food trucks con pedidos anticipados habituales",
+    "description": "Todo incluido, también las respuestas automáticas de WhatsApp y las publicaciones para redes sociales, con pedidos online incluidos cada mes."
+  },
+  "unlimited": {
+    "name": "Ilimitado",
+    "subtitle": "Food trucks con mucho movimiento y festivales",
+    "description": "Todo incluido, sin comisiones en los pedidos online, por mucho trabajo que tengas."
+  },
+  "trial": {
+    "name": "Prueba gratuita",
+    "description": "Todas las funciones, gratis, mientras dure tu prueba."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Entorno de pruebas para clientes potenciales — nunca público."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester antes del lanzamiento — acceso completo."
+  }
+}

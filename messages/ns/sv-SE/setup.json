@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Var du finns",
+    "identity": "Din foodtruck",
+    "menu": "Din meny",
+    "event": "Första evenemanget"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Kom igång",
+  "loading": "Laddar",
+  "loadingCountries": "Laddar…",
+  "verify": {
+    "ok": "E-postadressen är bekräftad — tack!",
+    "expired": "Bekräftelselänken har gått ut. Hör av dig så löser vi det innan du går live.",
+    "invalid": "Bekräftelselänken fungerade inte. Hör av dig så löser vi det innan du går live."
+  },
+  "identity": {
+    "heading": "Vad heter din foodtruck?",
+    "intro": "Det här är namnet kunderna ser. Inget blir offentligt förrän du väljer att gå live.",
+    "nameLabel": "Foodtruckens namn",
+    "namePlaceholder": "Bobs Burgare",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Numret finns på WhatsApp",
+    "phoneHelp": "Kunderna ser det i sin beställningsbekräftelse så att de kan fråga om en beställning. Bocken avgör om det står ”Ring oss” eller ”Skriv till oss på WhatsApp”. Du kan ändra båda under Inställningar."
+  },
+  "phoneRequired": "Lägg till ett telefonnummer — både kunderna och vi använder det för att nå dig.",
+  "createFailed": "Kunde inte skapa din foodtruck.",
+  "unreachable": "Kunde inte nå oss just nu — försök igen.",
+  "back": "Tillbaka",
+  "creating": "Skapar din foodtruck…",
+  "continue": "Fortsätt"
+}

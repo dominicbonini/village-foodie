@@ -1,0 +1,31 @@
+{
+  "intro": "A Gestão é onde configura o seu food truck e vê como está a correr. O Painel é onde recebe encomendas e gere cada evento em tempo real.",
+  "ariaLabel": "Visita guiada ao painel",
+  "step": "{current} de {total}",
+  "skip": "Saltar",
+  "back": "← Voltar",
+  "next": "Seguinte →",
+  "done": "Concluído",
+  "stops": {
+    "menu": {
+      "title": "Ementa",
+      "body": "Os seus pratos, preços e alergénios. Tudo o que alterar aqui fica disponível de imediato."
+    },
+    "schedule": {
+      "title": "Agenda",
+      "body": "Onde e quando está a vender. Adicione aqui um evento e os clientes podem encomendar para ele."
+    },
+    "build": {
+      "title": "Menus, extras e vendas adicionais",
+      "body": "Menus, vendas adicionais, personalizações e a capacidade da cozinha estão em Ementa — explore à vontade."
+    },
+    "settings": {
+      "title": "Definições",
+      "body": "Os dados do seu food truck e a forma como os clientes pagam."
+    },
+    "billing": {
+      "title": "Faturação",
+      "body": "Onde encontra o seu plano, a faturação e as informações sobre funcionalidades."
+    }
+  }
+}

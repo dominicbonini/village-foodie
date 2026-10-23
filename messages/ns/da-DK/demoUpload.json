@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Læser dit menukort…",
+    "found": "Har fundet dine varer…",
+    "kitchen": "Sætter dit køkken op…",
+    "page": "Bygger din bestillingsside…",
+    "almost": "Næsten klar…"
+  },
+  "templateSteps": {
+    "truck": "Bygger din eksempel-foodtruck…",
+    "menu": "Sætter menukortet op…",
+    "kitchen": "Sætter køkkenet op…",
+    "page": "Bygger bestillingssiden…",
+    "almost": "Næsten klar…"
+  },
+  "dialogLabel": "Upload dit menukort",
+  "heading": "✨ Upload dit menukort",
+  "failedHeading": "Vi kunne ikke læse det menukort",
+  "close": "Luk",
+  "intro": "Et foto af din menutavle, et skærmbillede, en PDF – eller indsæt det som tekst. Vores AI læser det og bygger en bestillingsside til dig, der virker – dine varer, dine priser – på under 60 sekunder. Ingen tilmelding, intet betalingskort.",
+  "failedIntro": "Nogle gange er et foto for mørkt, for skævt eller håndskrevet. Det er vores opgave at klare, ikke noget, du har gjort forkert. Et par muligheder:",
+  "usually": "Det tager normalt under 60 sekunder.",
+  "slow": "Det tager længere tid end normalt – det gør store menukort nogle gange.",
+  "keepWaiting": "Vent lidt endnu",
+  "sampleWhileYouWait": "Eller kig dig omkring med et eksempelmenukort, mens du venter",
+  "standIn": "Dette <b>bliver ikke dit menukort</b> – det er kun et eksempel, så du kan se, hvordan det virker.",
+  "seeSample": "Se eksempelmenukort",
+  "tryAgain": "Prøv igen",
+  "tryPhotoAgain": "Prøv dette foto igen",
+  "tryDifferent": "Prøv et andet foto",
+  "uploadAnother": "← Upload et andet foto",
+  "orSample": "Eller kig dig omkring med et eksempelmenukort",
+  "orBuild": "Eller lad os bygge det for dig",
+  "buildSent": "✓ Tak – vi har modtaget det. Vi sender dig en e-mail.",
+  "buildBody": "Skriv din e-mail, så lægger et rigtigt menneske dit menukort ind og sender dig linket.",
+  "emailPlaceholder": "dig@dinfoodtruck.dk",
+  "sending": "…",
+  "send": "Send",
+  "noPhoto": "Har du ikke et foto af menukortet ved hånden?",
+  "noPhotoBody": "Kig dig omkring med en eksempel-foodtruck i stedet – du kan uploade dit eget når som helst.",
+  "build": "Byg min demo →",
+  "nothingPublished": "Intet er offentliggjort – kun du kan se det.",
+  "error": {
+    "somethingWrong": "Noget gik galt. Prøv igen.",
+    "serverUnreachable": "Vi kunne ikke få forbindelse til serveren. Tjek din forbindelse, og prøv igen.",
+    "sendFailed": "Det kunne ikke sendes – prøv igen."
+  },
+  "fields": {
+    "uploadLabel": "Upload fil med menukort",
+    "dropHere": "Slip dit menukort her",
+    "dragOrTap": "Træk og slip, eller tryk for at vælge",
+    "fileTypes": "Billede eller PDF",
+    "or": "eller",
+    "pasteLabel": "Indsæt menukortets tekst",
+    "pastePlaceholder": "Indsæt dit menukort her – varenavne, beskrivelser, priser…"
+  }
+}

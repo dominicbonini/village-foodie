@@ -1,0 +1,10 @@
+{
+  "download": "Scarica l’immagine",
+  "copied": "Copiato ✓",
+  "copyCaption": "Copia la didascalia",
+  "share": "Condividi",
+  "copiedStatus": "{kind, select, postText {Testo del post copiato.} other {Didascalia copiata.}}",
+  "copyFailed": "Impossibile copiare — seleziona il testo e copialo a mano.",
+  "sharedStatus": "{kind, select, postText {Testo del post copiato — incollalo nel tuo post.} other {Didascalia copiata — incollala nel tuo post.}}",
+  "shareRefused": "{kind, select, postText {La condivisione è stata rifiutata, quindi l’immagine è stata scaricata. Testo del post copiato.} other {La condivisione è stata rifiutata, quindi l’immagine è stata scaricata. Didascalia copiata.}}"
+}

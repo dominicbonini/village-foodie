@@ -202,3 +202,7 @@ html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }
     justify-content: flex-end;
   }
 }
+
+/* europe-languages-2 (23 October 2026): Greek and Bulgarian pages — Noto Sans fills the letters Geist lacks (Greek), after Geist and
+   before its metric fallback. The variable exists only on those pages (app/layout.tsx), so no Latin page is affected. */
+:root:lang(el) body, :root:lang(bg) body { --font-geist-sans: 'Geist', var(--font-script-fallback), 'Geist Fallback'; }

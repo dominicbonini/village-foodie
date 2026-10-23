@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Nieuwe bestelling #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Nieuwe bestelling ontvangen",
+    "from": "<b>Bestelling #{id}</b> van <b>{name}</b>",
+    "collection": "Afhaaltijd: {time}",
+    "asap": "Geen specifieke tijd — zo snel mogelijk",
+    "total": "Totaal",
+    "notes": "<b>Notities:</b> {notes}",
+    "autoConfirmed": "Automatisch bevestigd — je hoeft niets te doen.",
+    "confirmPrompt": "Log in op je HatchGrab-dashboard om deze bestelling te bevestigen of te weigeren.",
+    "text": "Nieuwe bestelling #{id} van {name}{withSlot, select, yes { voor {slot}} other {}}{withVenue, select, yes { bij {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Totaal {total}.{withNotes, select, yes { Notities: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Nieuwe evenementen gevonden voor {truck} — graag controleren",
+    "hi": "Hallo,",
+    "found": "We hebben <b>{n, plural, one {{count} nieuw evenement} other {{count} nieuwe evenementen}}</b> in je planning gevonden die je eerst moet goedkeuren voordat klanten ze zien.",
+    "listHeading": "Gevonden evenementen:",
+    "approve": "Zodra je ze goedkeurt op het tabblad Planning, staan ze live op de kaart en kunnen klanten via je bestelpagina vooraf bestellen.",
+    "cta": "Bekijk je planning →",
+    "signoff": "— Het HatchGrab-team · hatchgrab.com",
+    "unknownVenue": "Onbekende locatie",
+    "text": "Hallo,\n\nWe hebben {n, plural, one {{count} nieuw evenement} other {{count} nieuwe evenementen}} in je planning gevonden die je moet goedkeuren:\n\n{list}\n\nBekijk ze hier: {url}\n\nZodra je ze goedkeurt, staan ze live op de kaart.\n\n— Het HatchGrab-team"
+  }
+}

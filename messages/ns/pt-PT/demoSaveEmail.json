@@ -1,0 +1,9 @@
+{
+  "subject": "A sua demonstração do HatchGrab — eis a ligação para voltar",
+  "heading": "A sua demonstração está guardada",
+  "intro": "Eis a ligação para voltar à demonstração com a sua ementa. Não é preciso iniciar sessão — basta tocar nela.",
+  "button": "Abrir a minha demonstração",
+  "freshDay": "Sempre que voltar, preparamos um novo dia de vendas para ter com que experimentar.",
+  "deletion": "Isto é uma demonstração, por isso não a guardamos para sempre — vamos eliminá-la, e a ementa, em\n                <b>{date}</b> ({days, plural, one {# dia} other {# dias}}). Se se registar antes\n                disso, a sua ementa vem consigo.",
+  "notSent": "Guardado, mas não conseguimos enviar o email agora."
+}

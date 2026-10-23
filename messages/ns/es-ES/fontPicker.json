@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Todas",
+    "bold": "Gruesas y altas",
+    "hand": "Manuscritas",
+    "classic": "Clásicas",
+    "clean": "Sencillas",
+    "own": "Tuyas",
+    "ownCount": "Tuyas ({count})"
+  },
+  "yoursTag": "· tuya",
+  "loadingFonts": "Cargando fuentes…",
+  "search": "Buscar entre {count, number} fuentes",
+  "uploadButton": "↑ Sube tu fuente",
+  "loadingLibrary": "Cargando la biblioteca de fuentes…",
+  "tryAgain": "Reintentar",
+  "noOwn": "Aún no has subido ninguna fuente. Usa el botón “↑ Sube tu fuente” de arriba.",
+  "recent": "Usadas recientemente",
+  "popular": "Populares para carteles",
+  "adding": "Añadiendo…",
+  "noMatch": "Ninguna fuente coincide con “{query}”.",
+  "showing": "Se muestran {shown} de {total, number}: escribe más para acotar la búsqueda.",
+  "couldNotAdd": "No se ha podido añadir esa fuente",
+  "tooBig": "Esa fuente pesa {size, number, ::.0 group-off} MB. El límite es de 5 MB.",
+  "woff": "Sube un archivo TTF u OTF; normalmente puedes descargarlo desde donde compraste la fuente.",
+  "uploadIncomplete": "La subida no se ha completado",
+  "added": "Se ha añadido “{name}” como su versión {face}.",
+  "face": {
+    "regular": "normal",
+    "bold": "negrita",
+    "italic": "cursiva"
+  },
+  "licenceTick": "Esta fuente es mía o tengo licencia para usarla",
+  "checking": "Comprobando la fuente…",
+  "addFont": "Añadir fuente",
+  "cancel": "Cancelar",
+  "missingFaces": "Añade la versión {faces} de “{name}” (opcional): vuelve a elegir el archivo.",
+  "somethingWrong": "Algo ha salido mal",
+  "faceLower": {
+    "regular": "normal",
+    "bold": "negrita",
+    "italic": "cursiva"
+  },
+  "ownLicence": "Propia",
+  "loadFailed": "No se han podido cargar las fuentes"
+}

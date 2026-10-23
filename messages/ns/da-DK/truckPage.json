@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Foodtruck | Village Foodie",
+    "hgFallbackTitle": "Foodtruck",
+    "orderTitle": "Bestil hos {truck}",
+    "orderDescription": "Forudbestil hos {truck}, og hent maden ved foodtrucken.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo: {truck}"
+  },
+  "shareTitle": "{truck} – her holder vi",
+  "shareText": "Se, hvor {truck} holder næste gang! 🚚",
+  "linkCopied": "Profillinket er kopieret til udklipsholderen! 📋",
+  "facebookPage": "Facebookside",
+  "loadingMap": "Indlæser kort…",
+  "view": {
+    "list": "Liste",
+    "map": "Kort"
+  },
+  "ownThisTruck": "Ejer du denne foodtruck?",
+  "ownThisTruckTitle": "Ejer du denne foodtruck? Klik for at opdatere din profil",
+  "actions": {
+    "menu": "Menukort",
+    "call": "Ring",
+    "message": "Skriv",
+    "share": "Del",
+    "order": "Bestil"
+  },
+  "loadingSchedule": "Indlæser kalender…",
+  "loadError": {
+    "title": "Kunne ikke indlæses",
+    "body": "Vi kunne ikke indlæse kalenderen lige nu — det er som regel en kortvarig fejl. Prøv igen.",
+    "retry": "Prøv igen"
+  },
+  "notFound": {
+    "title": "Foodtrucken blev ikke fundet",
+    "body": "Vi kunne ikke finde oplysninger om denne foodtruck. Den er måske flyttet eller har opdateret sin profil.",
+    "cta": "Se alle foodtrucks"
+  },
+  "noEvents": {
+    "title": "Ingen kommende arrangementer",
+    "body": "Vi mangler måske nogle oplysninger om denne foodtruck. Er du ejeren, eller kender du kalenderen?",
+    "cta": "Send os en besked, så opdaterer vi!"
+  },
+  "whereToFind": "Her holder vi",
+  "missingEvent": "<strong>Mangler vi et arrangement?</strong> <br></br>Hvis du ejer denne foodtruck eller bare er en trofast fan, så hjælp os med at holde siden opdateret! <br></br><link>Kontakt os for at tilføje manglende oplysninger.</link>",
+  "weeklySchedule": "Få ugens kalender 🍕"
+}

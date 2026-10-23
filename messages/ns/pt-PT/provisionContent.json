@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pizzas",
+    "burgers": "Hambúrgueres",
+    "mains": "Pratos principais",
+    "sides": "Acompanhamentos",
+    "drinks": "Bebidas"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck de pizzas",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja e mel",
+        "fourCheese": "Quatro queijos",
+        "gardenVeg": "Vegetariana",
+        "garlicBread": "Pão de alho",
+        "rocketParmesan": "Rúcula e parmesão",
+        "olives": "Azeitonas",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck de hambúrgueres",
+      "items": {
+        "classicCheeseburger": "Cheeseburger clássico",
+        "doubleBacon": "Duplo bacon",
+        "buttermilkChicken": "Frango marinado em leitelho",
+        "halloumiStack": "Hambúrguer de halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Batatas fritas com casca",
+        "loadedCheeseFries": "Batatas fritas com queijo",
+        "onionRings": "Anéis de cebola",
+        "craftLemonade": "Limonada artesanal",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck de caril",
+      "items": {
+        "chickenTikkaMasala": "Frango tikka masala",
+        "lambRoganJosh": "Borrego rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Arroz pilau",
+        "garlicNaan": "Naan de alho",
+        "onionBhaji": "Bhaji de cebola",
+        "mangoLassi": "Lassi de manga",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

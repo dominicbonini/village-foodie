@@ -1,0 +1,189 @@
+{
+  "cancel": "Cancelar",
+  "back": "← Voltar",
+  "backPlain": "Voltar",
+  "next": "Seguinte →",
+  "continue": "Continuar →",
+  "closeImport": "Fechar importação",
+  "tryAgain": "Tentar novamente",
+  "catError": {
+    "empty": "Dê um nome à categoria.",
+    "tooLong": "Esse nome é demasiado longo.",
+    "clash": "Já existe uma categoria chamada «{name}»."
+  },
+  "steps": {
+    "details": "Os seus dados",
+    "menu": "Ementa",
+    "extras": "Extras",
+    "allergens": "Alergénios",
+    "kitchen": "Cozinha",
+    "schedule": "Agenda",
+    "settings": "Definições"
+  },
+  "toast": {
+    "demoGone": "A ementa da sua demonstração já não está disponível — carregue-a novamente para continuar.",
+    "eventsSaveFailed": "Não foi possível guardar os eventos",
+    "cardReadFailed": "Não foi possível ler a ficha de alergénios — tente novamente",
+    "imageReadFailed": "Não foi possível ler essa imagem — escreva ou cole a sua ficha",
+    "commitFailedDetail": "Não foi possível concluir a gravação da ementa: {error}. Alguns artigos podem já ter sido guardados — verifique a sua ementa antes de tentar novamente.",
+    "commitFailed": "Não foi possível concluir a gravação da ementa. Alguns artigos podem já ter sido guardados — verifique a sua ementa antes de tentar novamente.",
+    "finishFailed": "Não foi possível marcar a configuração como concluída — pode continuar na mesma.",
+    "scheduleReadFailed": "Não foi possível ler essa agenda — tente uma foto mais nítida ou escreva as suas datas.",
+    "cardRead": "Ficha lida — {matched} correspondidos, {pending, plural, one {# precisa} other {# precisam}} da sua atribuição"
+  },
+  "settingsReview": {
+    "anchorOrder": "Definições → Definições de encomenda",
+    "anchorDisplay": "Definições → Os seus food trucks → Definições de apresentação",
+    "mins15": "15 minutos",
+    "mins30": "30 minutos",
+    "mins60": "60 minutos",
+    "hours2": "2 horas",
+    "title": "Algumas definições a verificar",
+    "loading": "A carregar as suas definições atuais…",
+    "looksGood": "Está tudo bem →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Não foi possível guardar — pode alterar isto nas Definições.",
+    "anchorContact": "Definições → Contactos",
+    "intro": "Configurámos algumas definições habituais. Vale a pena dar uma vista de olhos — pode alterar qualquer uma delas mais tarde nas Definições.",
+    "cancelAria": "Com quanta antecedência em relação ao levantamento os clientes podem cancelar"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Reveja-os antes de começar a vender online. Até lá, os artigos ficam assinalados com «alergénios não definidos».",
+    "body": "Reveja-os nas Definições antes de começar a vender online. Até lá, os artigos ficam assinalados com «alergénios não definidos».",
+    "title": "⚠ Alergénios e dados alimentares por definir"
+  },
+  "welcome": {
+    "title": "Boas-vindas ao HatchGrab",
+    "yourTruck": "O seu food truck",
+    "stop": "Pode parar e voltar quando quiser.",
+    "body": "{name} está configurado. A seguir adicionamos a sua ementa e depois o seu primeiro evento.",
+    "go": "Vamos começar"
+  },
+  "offer": {
+    "title": "Usar a ementa da sua demonstração?",
+    "use": "Usar esta ementa",
+    "upload": "Carregar outra ementa",
+    "body": "Guardámos a ementa que carregou — {count, plural, one {# artigo} other {# artigos}}. Use-a como ponto de partida ou carregue outra."
+  },
+  "upload": {
+    "title": "Importar a sua ementa",
+    "body": "Carregue uma foto do quadro da ementa, uma captura de ecrã, um PDF ou cole a sua ementa como texto. A nossa IA lê-a e cria a sua ementa digital — revê tudo antes de ser guardado.",
+    "confirmCancel": "Cancelar esta importação? A revisão desta ementa será descartada.",
+    "process": "Processar ementa",
+    "later": "Faço isto mais tarde"
+  },
+  "processing": {
+    "title": "A analisar a sua ementa",
+    "body": "A IA está a ler e a categorizar os seus artigos…"
+  },
+  "review": {
+    "title": "Rever ementa importada",
+    "editLaterSetup": "Nomes, preços, extras, alergénios e informações alimentares podem ser editados a qualquer momento.",
+    "editLater": "Nomes, preços, extras, alergénios e informações alimentares podem ser editados a qualquer momento nas Definições.",
+    "noPrice": "{count, plural, one {# artigo não tinha} other {# artigos não tinham}} um preço que conseguíssemos ler",
+    "renameCategoryAria": "Mudar o nome da categoria {name}",
+    "renameAria": "Mudar o nome de {name}",
+    "renameTitle": "Mudar o nome da categoria",
+    "deleteAria": "Eliminar {name}",
+    "deleteTitle": "Eliminar categoria",
+    "lastCategory": "A sua ementa precisa de pelo menos uma categoria",
+    "countOf": "{kept} de {total}",
+    "existing": "existente",
+    "deleteEmptyTitle": "Eliminar «{name}»?",
+    "deleteEmptyBody": "Não tem artigos, por isso nada se perde.",
+    "delete": "Eliminar",
+    "moveTitle": "Para onde {count, plural, one {deve ir # artigo} other {devem ir # artigos}}?",
+    "moveBody": "Para eliminar «{name}» é preciso mover os pratos para outro lado — os artigos sem categoria não são importados.",
+    "moveAria": "Mover artigos de {name} para",
+    "chooseCategory": "Escolha uma categoria…",
+    "moveDelete": "Mover e eliminar",
+    "itemName": "Nome do artigo",
+    "free": "grátis?",
+    "freeOn": "Grátis ✕",
+    "nameFirst": "Dê um nome ao novo artigo antes de adicionar outro",
+    "addItem": "+ Adicionar artigo",
+    "categoryName": "Nome da categoria",
+    "newCategoryAria": "Nome da nova categoria",
+    "addCategory": "+ Adicionar categoria",
+    "ready": "{count, plural, one {# artigo pronto} other {# artigos prontos}} a adicionar. Desmarque os que não quiser.",
+    "noPriceBody": "Defina um preço para cada um ou marque-o como grátis — caso contrário, ficaria disponível a {zero}. Só pode continuar depois de resolver isto.",
+    "incomplete": "Introduza um nome para adicionar este artigo — as linhas vazias não são importadas."
+  },
+  "extras": {
+    "introSetup": "Alguns pratos podem ser configurados como <b>um artigo personalizável</b> ou mantidos como <b>pratos separados</b>. Escolha como cada um deve aparecer. Pode alterar isto mais tarde.",
+    "intro": "Alguns pratos podem ser configurados como <b>um artigo personalizável</b> ou mantidos como <b>pratos separados</b>. Escolha como cada um deve aparecer. Pode alterar isto mais tarde nas Definições.",
+    "none": "Não há pratos agrupáveis — cada artigo é um prato independente.",
+    "axisChoice": "· escolha de {axis}",
+    "grouped": "Agrupado · um artigo, o cliente escolhe",
+    "separate": "Artigos separados na ementa"
+  },
+  "allergens": {
+    "title": "Alergénios",
+    "detected": "Detetámos alergénios na sua ementa. Escolha abaixo como os mostrar.",
+    "howShow": "Como quer mostrar os alergénios aos clientes?",
+    "skip": "Saltar a configuração de alergénios por agora"
+  },
+  "kitchen": {
+    "title": "Configuração da cozinha",
+    "intro": "Ajude os clientes a saber quanto tempo esperar — pode sempre alterar isto mais tarde.",
+    "howWorks": "Como funciona a capacidade da cozinha",
+    "allExist": "Todas as categorias já existem — não há tempos a definir.",
+    "totalHelp": "Defina uma capacidade total para limitar quantos artigos a cozinha aceita por horário. Deixe em ∞ para não haver limite.",
+    "saveAdd": "Guardar e adicionar à ementa"
+  },
+  "schedule": {
+    "title": "Adicionar a minha agenda",
+    "intro": "Se a sua agenda está no seu site, podemos mantê-la atualizada automaticamente — ou adicione as datas por si.",
+    "websiteTitle": "A minha agenda está no meu site",
+    "urlPlaceholder": "https://oseufoodtruck.pt/eventos",
+    "checking": "A verificar…",
+    "verify": "Verificar",
+    "checkingSite": "A verificar o seu site…",
+    "takesTime": "Isto pode demorar até 2 minutos — mantenha esta página aberta.",
+    "canRead": "✓ Conseguimos ler a sua agenda",
+    "ownSite": "O seu próprio site — não uma página de Facebook ou Instagram.",
+    "photoTitle": "Carregar uma foto da minha agenda",
+    "dragChoose": "Arraste e largue ou toque para escolher",
+    "imageOrPdf": "Imagem ou PDF",
+    "or": "ou",
+    "pastePlaceholder": "Cole aqui as suas datas…",
+    "read": "Ler agenda",
+    "found": "{count, plural, one {# data encontrada — será adicionada à sua agenda.} other {# datas encontradas — serão adicionadas à sua agenda.}}",
+    "dateTbc": "Data a confirmar",
+    "save": "Guardar {count, plural, one {# data} other {# datas}}",
+    "manualDesc": "Adicione-as mais tarde no separador Agenda — não precisa de fazer nada agora.",
+    "manualBody": "Não há problema. Pode adicionar e gerir as suas datas a qualquer momento no separador Agenda da sua conta.",
+    "blockedDomain": "Use o endereço do seu site — as páginas de Facebook e Instagram não podem ser lidas automaticamente.",
+    "saveFailed": "Lemos a sua agenda, mas não foi possível guardá-la agora — tente novamente.",
+    "websiteDesc": "Vamos verificá-lo regularmente e enviar-lhe as novas datas para aprovação.",
+    "keepChecking": "Vamos continuar a verificar esta página e enviar-lhe as novas datas para aprovação.",
+    "photoDesc": "Tire uma foto ou cole as suas datas — lemo-las para que as possa verificar.",
+    "noneFound": "Não encontrámos datas aí — tente uma foto mais nítida ou adicione uma data por si.",
+    "manualTitle": "Vou adicionar as minhas datas",
+    "trialNotStarted": "Adicionar eventos não inicia o seu teste gratuito — escolhe mais tarde qual o evento que o inicia."
+  },
+  "done": {
+    "summary": "{items, plural, one {# artigo} other {# artigos}} em {categories, plural, one {# categoria} other {# categorias}}.",
+    "imported": "Ementa importada!",
+    "added": "Os seus artigos foram adicionados à ementa.",
+    "duplicates": "{count, plural, one {# duplicado ignorado} other {# duplicados ignorados}}",
+    "showMe": "Mostrar-me como funciona",
+    "remind": "Lembrar-me mais tarde",
+    "allSet": "Está tudo pronto!",
+    "explore": "Explorar por conta própria"
+  },
+  "discard": {
+    "setupTitle": "Terminar a configuração mais tarde?",
+    "setupBody": "A sua conta e o seu food truck estão guardados — nada se perde. Pode adicionar a sua ementa a qualquer momento: inicie sessão e toque em <b>Importar ementa</b> no ecrã da ementa para continuar exatamente aqui.",
+    "keepGoing": "Continuar",
+    "finishLater": "Terminar mais tarde",
+    "title": "Descartar esta importação?",
+    "keepEditing": "Continuar a editar",
+    "discard": "Descartar",
+    "body": "As suas alterações não serão guardadas — os artigos importados, os tempos de preparação e a capacidade da cozinha não serão adicionados."
+  },
+  "allergenCardText": {
+    "contains": "Contém: {list}",
+    "mayContain": "Pode conter: {list}"
+  }
+}

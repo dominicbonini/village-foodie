@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Din første måned er helt gratis — med alle funktioner.} other {Dine første # måneder er helt gratis — med alle funktioner.}}",
+    "body": "Med {brand} forudbestiller kunderne og betaler ved afhentning, så du kan tage imod onlinebestillinger helt uden at tilknytte en kortindløser. Vil du hellere tage betaling på forhånd? Tilføj onlinebetaling med kort når som helst. Når din prøveperiode slutter, skifter du til abonnementet <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedspris)} other {}}, medmindre du vælger et andet. Intet betalingskort for at starte, ingen binding, opsig når som helst."
+  },
+  "card": {
+    "perTruckMonth": "pr. foodtruck/måned",
+    "mostTrucks": "Valgt af flest",
+    "tryFree": "Prøv gratis",
+    "seeEvery": "Se alle funktioner →",
+    "everything": "Alt, du skal bruge til din service",
+    "everythingIn": "Alt i {plan}, plus"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> kun på onlinebestillinger betalt med kort. Bestillinger ved vognen er altid gratis.",
+    "included": "De første <b>{included}</b> i onlinebestillinger er inkluderet hver måned, derefter <b>{fee}*</b>. Bestillinger ved vognen er altid gratis.",
+    "noFee": "<b>Ingen HatchGrab-gebyrer</b> på onlinebestillinger, uanset hvor travlt du har. Én fast månedlig udgift."
+  },
+  "base": {
+    "walkUp": "Bestillinger ved vognen og køkkenskærm",
+    "online": "Onlinebestilling",
+    "preorders": "Forudbestillinger og afhentningstider",
+    "capacity": "Styring af køkkenkapacitet",
+    "privateEvents": "Private arrangementer",
+    "printing": "Udskrivning af køkkenbonner",
+    "app": "Køkkenapp til iPhone, iPad og Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatiske svar på WhatsApp",
+    "schedule_graphics": "Opslag på sociale medier — din kalender til Facebook og Instagram — klar til at dele",
+    "event_types": "Egne eventtyper og eventpriser"
+  },
+  "money": {
+    "unlimitedOrders": "Ubegrænsede onlinebestillinger, 0 % i HatchGrab-gebyr",
+    "samePrice": "Samme pris i din travleste måned"
+  },
+  "comingSoon": "Kommer snart",
+  "bar": {
+    "title": "Hvilket abonnement er billigst for mig?",
+    "subtitle": "Dine onlinebestillinger pr. måned",
+    "first": "Under {to} → <b>{plan}</b>",
+    "middle": "{from}–{to} → <b>{plan}</b>",
+    "last": "Over {from} → <b>{plan}</b>",
+    "only": "Uanset mængde → <b>{plan}</b>"
+  },
+  "footnote": "* Hertil kommer Stripes kortgebyr på onlinebestillinger betalt med kort (aktuel sats – {country}: {cardFee}), som betales til Stripe, ikke til HatchGrab. Bestillinger ved vognen går gennem din egen kortterminal — HatchGrab tager 0 %.",
+  "currencyLine": "Valuta: {currency} ({code})"
+}

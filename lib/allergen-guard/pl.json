@@ -1,0 +1,117 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for POLISH (pl-PL). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "pl",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "nietoleran",
+    "celiaki",
+    "celiakia",
+    "bezglutenow",
+    "bez glutenu",
+    "bez laktozy",
+    "bezlaktozow",
+    "bez mleka",
+    "bez nabialu",
+    "bez nabiału",
+    "bez jajek",
+    "bez jaj",
+    "bez orzechow",
+    "bez orzeszkow",
+    "bez soi",
+    "bez sezamu",
+    "bez ryb",
+    "bez skorupiak",
+    "bez seler",
+    "bez gorczyc",
+    "bez siarczyn",
+    "anafilak",
+    "wstrzas anafilaktyczny",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "wolne od",
+    "wolny od",
+    "wolna od",
+    "odpowiedni dla",
+    "odpowiednie dla",
+    "bezpieczne dla",
+    "bezpieczny dla",
+    "moze zawierac",
+    "sladowe ilosci",
+    "slady",
+    "sladow",
+    "zanieczyszczenie krzyzowe",
+    "kontaminacja",
+    "nadwrazliwosc"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "pszenica",
+        "mąka"
+      ],
+      "crustaceans": [
+        "skorupiaki",
+        "krewetki"
+      ],
+      "eggs": [
+        "jajka",
+        "jaja",
+        "jajko",
+        "majonez"
+      ],
+      "fish": [
+        "ryba",
+        "ryby"
+      ],
+      "peanuts": [
+        "orzeszki ziemne",
+        "orzeszki arachidowe"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "mleko",
+        "laktoza",
+        "ser",
+        "śmietana",
+        "masło",
+        "nabiał"
+      ],
+      "tree nuts": [
+        "orzechy",
+        "migdały",
+        "laskowe",
+        "pistacje",
+        "nerkowce"
+      ],
+      "celery": [
+        "seler"
+      ],
+      "mustard": [
+        "gorczyca",
+        "musztarda"
+      ],
+      "sesame": [
+        "sezam"
+      ],
+      "sulphites": [
+        "siarczyny",
+        "dwutlenek siarki"
+      ],
+      "lupin": [
+        "łubin"
+      ],
+      "molluscs": [
+        "mięczaki",
+        "małże",
+        "kalmary"
+      ]
+    }
+  }
+}

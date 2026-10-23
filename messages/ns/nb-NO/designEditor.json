@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Ukeoverskrift",
+    "weekHeadingSample": "Uken fra …",
+    "daysSample": "{first} til {last}",
+    "date": "Dato",
+    "place": "Plass",
+    "venue": "Sted",
+    "area": "Område",
+    "time": "Tid",
+    "rows": "Rader",
+    "rowsSample": "{px} px mellomrom · {first} til {last}",
+    "ownText": "Din egen tekst",
+    "noteTokenSample": "Merknaden du skriver når du lager innlegget",
+    "nothingYet": "Ingenting ennå",
+    "thisBox": "denne boksen"
+  },
+  "sample": {
+    "venue": "Kafé Torget",
+    "area": "Bergen"
+  },
+  "bar": {
+    "previewWith": "Forhåndsvis med",
+    "undo": "Angre",
+    "undoTitle": "Angre (⌘Z)",
+    "redo": "Gjør om",
+    "redoTitle": "Gjør om (⇧⌘Z)",
+    "cancel": "Avbryt",
+    "saving": "Lagrer …",
+    "save": "Lagre design"
+  },
+  "grid": {
+    "eachRow": "Hver rad",
+    "placeOff": "Plassnavnet står i bildet ditt – HatchGrab legger det ikke til."
+  },
+  "background": {
+    "uploading": "Laster opp …",
+    "replace": "Bytt bilde",
+    "shape": {
+      "square": "Kvadratisk (1:1)",
+      "portrait45": "Stående (4:5)",
+      "portrait916": "Stående (9:16)",
+      "landscape169": "Liggende (16:9)",
+      "portrait": "Stående",
+      "landscape": "Liggende"
+    }
+  },
+  "scope": {
+    "title": "Tekstplassering",
+    "standard": "Samme plassering som Standard",
+    "own": "Egen plassering for {place}",
+    "locked": "Denne plasseringen kommer fra Standard-designet ditt. Velg «Egen plassering for {place}» for å flytte tekstene bare her."
+  },
+  "stage": {
+    "hint": "Dra en boks for å flytte den · dra i et hjørne for å endre størrelsen",
+    "zoomOut": "Zoom ut",
+    "zoomIn": "Zoom inn"
+  },
+  "rows": {
+    "spacing": "Avstand",
+    "daysRun": "Dagene går fra {first} til {last}. De tre boksene i rad 1 kopieres nedover med denne avstanden.",
+    "whichEvents": "Hvilke arrangementer",
+    "showCancelled": "Vis avlyste arrangementer",
+    "showCancelledHint": "Et avlyst arrangement vises med plassen overstreket og ordet AVLYST. Er dette slått av, vises dagen som en fridag."
+  },
+  "days": {
+    "reorder": "Endre rekkefølge",
+    "move": "flytt"
+  },
+  "picture": {
+    "picture": "Bilde",
+    "fill": "Fyll boksen",
+    "fit": "Tilpass innenfor",
+    "corners": "Hjørner",
+    "square": "Skarpe",
+    "rounded": "Avrundede",
+    "ifMissing": "Hvis en plass ikke har bilde",
+    "noPicture": {
+      "omit": "Utelat det",
+      "blank": "La det stå tomt",
+      "logo": "Vis logoen din"
+    },
+    "border": "Kant",
+    "drawBorder": "Tegn en kant",
+    "drawBorderHint": "En linje rundt bildet, i din egen farge.",
+    "borderWidth": "Kanttykkelse",
+    "cornerRadius": "Hjørneradius",
+    "locationPictures": "Plassbilder",
+    "addLocationPictures": "+ Legg til plassbilder",
+    "allHaveImage": "{total, plural, =0 {Du har ingen plasser ennå.} one {Plassen din har et bilde.} other {Alle # plassene dine har et bilde.}}",
+    "someWithout": "{without} av {total, plural, one {# plass} other {# plasser}} {without, plural, one {mangler} other {mangler}} bilde ennå"
+  },
+  "settings": {
+    "font": "Skrift",
+    "colour": "Farge",
+    "textColour": "Tekstfarge",
+    "ownStyleNote": "{count, plural, one {{names} har sin egen stil, så den endres ikke.} other {{names} har sin egen stil, så de endres ikke.}}",
+    "matchAgain": "Gjør lik igjen",
+    "matchName": "Gjør lik {name}",
+    "lastToggle": "{kind, select, weekly {La enten Plass eller Tid være slått på. Et avlyst arrangement vises med plassen overstreket og ordet AVLYST, så med begge slått av ville ingenting vise at det er avlyst.} other {La enten Sted eller Tid være slått på. Et avlyst arrangement vises med plassen overstreket og ordet AVLYST, så med begge slått av ville ingenting vise at det er avlyst.}}"
+  },
+  "letters": {
+    "boldGlyph": "F",
+    "italicGlyph": "K",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} – denne skriften har ekte kursiv"
+  },
+  "align": {
+    "left": "Venstre",
+    "centre": "Midtstilt",
+    "right": "Høyre"
+  },
+  "effects": {
+    "outlineColour": "Konturfarge",
+    "bandColour": "Stripefarge",
+    "bandDaysOff": "Stripe på fridager",
+    "bandCancelled": "Stripe når arrangementet er avlyst",
+    "bandDaysOffHint": "Brukes i stedet for stripen over på en dag uten salg.",
+    "bandCancelledHint": "Brukes i stedet for stripen over når arrangementet er avlyst."
+  },
+  "more": {
+    "dayOwnLine": "Dagen på egen linje",
+    "dayOwnLineHint": "Ukedagen over datoen. Bare for dato.",
+    "noEventDay": "På en dag uten arrangement",
+    "wordsBeforePlaceholder": "f.eks. Her står vi",
+    "neverHyphenate": "Et langt ord uten mellomrom blir alltid gjort mindre – vi deler aldri et plassnavn med bindestrek."
+  },
+  "bits": {
+    "less": "Mindre",
+    "more": "Mer",
+    "chooseColourFor": "{label} – velg hvilken som helst farge",
+    "chooseColour": "Velg hvilken som helst farge"
+  }
+}

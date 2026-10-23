@@ -1,0 +1,264 @@
+{
+  "order": {
+    "completeOrder": "Bestellung abschliessen",
+    "close": "Schliessen",
+    "payAmount": "Zahlungspflichtig bestellen · {amount}",
+    "tryAgainAmount": "Erneut zahlungspflichtig bestellen · {amount}"
+  },
+  "dashboard": {
+    "qr": {
+      "tapToClose": "Zum Schliessen beliebige Stelle antippen"
+    },
+    "common": {
+      "close": "Schliessen"
+    },
+    "stock": {
+      "howEdit": "Bearbeiten: Zubereitungszeit, Chargengrösse und Notizen pro Kategorie festlegen."
+    },
+    "edit": {
+      "afterClosing": "Nach Schliessung"
+    }
+  },
+  "errorsKitchen": {
+    "refund_amount_invalid": "Geben Sie einen Betrag grösser als null ein."
+  },
+  "kitchenModals": {
+    "close": "Schliessen",
+    "reject": {
+      "reason": "{reason, select, sold_out {Ein Artikel ist ausverkauft} too_busy {Zu viel los – nicht rechtzeitig machbar} closing_soon {Wir schliessen bald} other {Sonstiges}}"
+    }
+  },
+  "kds": {
+    "header": {
+      "cookTitle": "Küchenansicht – grössere Schrift, nach Kategorie gruppiert, ohne Preise.",
+      "cashIcon": "💵"
+    },
+    "panel": {
+      "close": "Schliessen"
+    },
+    "event": {
+      "endEarly": "Dieses Event endet planmässig erst um {time}. Danach sind keine Bestellungen mehr möglich. Event jetzt beenden?"
+    },
+    "intro": {
+      "p2": "Karten wandern weiter, wenn Sie sie antippen – so weiss, wer gerade kocht, immer, was als Nächstes kommt, und niemand muss rufen. Alles hier sind Ihre Demodaten – probieren Sie es ruhig aus."
+    }
+  },
+  "dashboardBanners": {
+    "batchOver": "{cat} über der Durchgangsgrösse – {count} für {slot} ({per} pro Durchgang)"
+  },
+  "demo": {
+    "cashIcon": "💵"
+  },
+  "userMenu": {
+    "close": "Schliessen"
+  },
+  "orderCard": {
+    "cashIcon": "💵",
+    "chargesSummary": "{parts, select, tax_fees_tip {MWST, Gebühren & Trinkgeld} tax_tip {MWST & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {MWST & Gebühren}}"
+  },
+  "addOrder": {
+    "cashIcon": "💵"
+  },
+  "setup": {
+    "identity": {
+      "heading": "Wie heisst Ihr Foodtruck?"
+    }
+  },
+  "emailSignup": {
+    "welcome": {
+      "intro": "{hasTruck, select, yes {Ich freue mich sehr, {truck} bei HatchGrab willkommen zu heissen.} other {Ich freue mich sehr, Ihren Foodtruck bei HatchGrab willkommen zu heissen.}}"
+    }
+  },
+  "errorsOnboarding": {
+    "file_too_big": "Diese Datei ist zu gross (max. {mb} MB). Ein normales Foto Ihrer Speisekarte reicht völlig."
+  },
+  "demoGetStarted": {
+    "close": "Schliessen",
+    "detailsStepHeading": "Einrichtung abschliessen"
+  },
+  "demoUpload": {
+    "close": "Schliessen",
+    "slow": "Das dauert länger als üblich – bei grossen Speisekarten kommt das vor."
+  },
+  "manageAllergens": {
+    "cardUpload": {
+      "blanket": "Laut Allergenkarte können <b>{list}</b> in <b>allen</b> Gerichten enthalten sein. Zu jedem Gericht hinzufügen? (Sie bestätigen trotzdem jedes einzeln) <muted>– standardmässig aus</muted>"
+    },
+    "wizard": {
+      "nav": {
+        "close": "Schliessen",
+        "finish": "Abschliessen"
+      }
+    }
+  },
+  "manageUpsells": {
+    "intro": "Regen Sie Kunden an, noch etwas dazuzunehmen. Wenn jemand aus einer Kategorie bestellt, schlagen Sie Artikel aus einer anderen vor – ein Getränk zur Pizza, eine Sosse zum Burger."
+  },
+  "eventTypes": {
+    "close": "Schliessen"
+  },
+  "manageMenu": {
+    "newCategory": {
+      "notesHelp": "Kunden können zu jedem Artikel eine Notiz hinzufügen (z. B. „ohne Zwiebeln“). Der Foodtruck kann unabhängig davon immer Artikelnotizen hinzufügen. Alle Bestellungen haben ausserdem ein Notizfeld für die gesamte Bestellung."
+    },
+    "item": {
+      "close": "Schliessen"
+    }
+  },
+  "manageMenuImport": {
+    "closeImport": "Import schliessen",
+    "schedule": {
+      "websiteDesc": "Wir prüfen sie regelmässig und senden Ihnen neue Termine zur Freigabe."
+    },
+    "discard": {
+      "setupTitle": "Einrichtung später abschliessen?",
+      "finishLater": "Später abschliessen"
+    }
+  },
+  "errorsManage": {
+    "charges_rate_decimals": "Verwenden Sie höchstens 3 Nachkommastellen, z. B. 8.875.",
+    "charges_fee_pct": "Geben Sie einen Prozentsatz ein, z. B. 3 oder 3.5.",
+    "charges_fee_fixed": "Geben Sie einen Betrag ein, z. B. 0.50.",
+    "wp_font_too_big": "Diese Schriftart ist {size} MB gross. Das Limit liegt bei 5 MB.",
+    "wp_caption_too_long": "Diese Bildunterschrift ist zu lang – maximal 4000 Zeichen.",
+    "wp_upload_too_big": "Dieses Bild ist {size} MB gross. Das Limit liegt bei {max} MB – exportieren Sie es noch einmal in kleinerer Grösse.",
+    "wp_upload_no_size": "Dieses Bild gibt keine Grösse an – exportieren Sie es noch einmal.",
+    "wp_upload_too_small": "Dieses Bild ist {width}×{height} gross. Die kürzere Seite muss mindestens {min} px haben, damit der Text scharf bleibt.",
+    "wp_picture_size_unknown": "Die Grösse dieses Bildes konnte nicht gelesen werden.",
+    "wp_picture_wrong_shape": "Dieses Bild hat ein anderes Format als Ihr Standardbild ({width}×{height}). Exportieren Sie es in derselben Grösse.",
+    "wp_layout_size_unknown": "Die Bildgrösse des Designs ist nicht bekannt.",
+    "wp_box_not_number": "{box, select, heading {Das Feld für die Überschrift hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} date {Das Feld für das Datum hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} location {Das Feld für den Ort hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} time {Das Feld für die Uhrzeit hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} town {Das Feld für die Stadt hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} days {Das Feld für die 7 Tage hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} other {Ihr eigener Text hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.}}"
+  },
+  "manageSchedule": {
+    "link": {
+      "close": "Schliessen"
+    }
+  },
+  "manageScheduleEvent": {
+    "close": "Schliessen"
+  },
+  "manageScheduleImport": {
+    "review": {
+      "excludeQ": "„{venue}“ von künftigen Importen ausschliessen?",
+      "yesExclude": "Ja, ausschliessen"
+    }
+  },
+  "kitchenCapacity": {
+    "desc": "Die höchste Zahl an Artikeln, die Ihre Küche gleichzeitig herausgeben kann – über alle angehakten Kategorien hinweg. Die eigene Durchgangsgrösse jeder Kategorie gilt zusätzlich.",
+    "warning": "⚠️ Damit die Küchenkapazität richtig funktioniert, legen Sie für Ihre Speisekarten-Kategorien eine Zubereitungszeit und eine Durchgangsgrösse fest (Speisekarte & Bestand). Ohne diese Angaben weiss die Kapazitätsberechnung nicht, wie lange die Zubereitung dauert."
+  },
+  "manageSettings": {
+    "emojiPicker": {
+      "categories": {
+        "sweet": "Süsses & Desserts"
+      }
+    },
+    "orders": {
+      "openCloseTitle": "Öffnen und Schliessen",
+      "autoClose": "Automatisch für Bestellungen schliessen"
+    },
+    "vans": {
+      "sameOn": "Dieser Foodtruck verwendet dieselben Einstellungen, ausser der Küchenkapazität.",
+      "sameOff": "Die Einstellungen des ersten Foodtrucks übernehmen – alles ausser der Küchenkapazität – und synchron halten."
+    },
+    "schedule": {
+      "checkingHelp": "Das kann bis zu 2 Minuten dauern – bitte lassen Sie diese Seite geöffnet und schliessen Sie den Tab nicht."
+    },
+    "qr": {
+      "close": "Schliessen"
+    }
+  },
+  "socialPosts": {
+    "bgPortraitTip": "Tipp: Ein Bild im Hochformat (1080 × 1350, 4:5) wird in den Feeds von Instagram und Facebook am grössten angezeigt.",
+    "daysBlurb": "Eine Zeile pro Tag. Ziehen Sie das orangefarbene Feld auf Ihrem Plakat, um die Zeilen zu verschieben; ziehen Sie an seinen Ecken, um sie zu vergrössern oder zu verkleinern.",
+    "qlBigPicture": "Grosses Bild",
+    "previewPostClose": "Schliessen",
+    "darkenHint": "Legt eine dunkle Ebene über Ihr Bild, damit weisse Schrift besser lesbar ist.",
+    "labelTextSize": "Textgrösse",
+    "allTextSizeHint": "Ändert alle Felder auf einmal; grosse Felder bleiben grösser.",
+    "backgroundSummary": "Bild ersetzen · Bild abdunkeln · Grössenempfehlung",
+    "phoneTabSize": "Grösse",
+    "phoneSheetClose": "Schliessen",
+    "screen": {
+      "imageTooBig": "Dieses Bild ist {size} MB gross. Die Grenze liegt bei 10 MB."
+    }
+  },
+  "designEditor": {
+    "stage": {
+      "hint": "Feld ziehen zum Verschieben · Ecke ziehen zum Ändern der Grösse",
+      "zoomIn": "Vergrössern"
+    }
+  },
+  "fontPicker": {
+    "tooBig": "Diese Schrift ist {size, number, ::.0 group-off} MB gross. Die Obergrenze liegt bei 5 MB."
+  },
+  "weeklyPost": {
+    "error": {
+      "tooBig": "Dieses Bild ist {size, number, ::.0 group-off} MB gross. Die Obergrenze liegt bei 10 MB."
+    }
+  },
+  "manageShell": {
+    "tabs": {
+      "paymentsIcon": "💵"
+    }
+  },
+  "manageWhatsApp": {
+    "notice": {
+      "close": "Schliessen"
+    },
+    "signup": {
+      "partial": "Wir haben Ihr WhatsApp Business-Konto verknüpft, konnten die Verbindung aber nicht abschliessen. Auf Ihrer Seite ist alles in Ordnung – bitte kontaktieren Sie uns, dann schliessen wir sie ab.",
+      "noNumber": "Ihr WhatsApp Business-Konto ist verknüpft, aber es wurde keine Telefonnummer übermittelt. Klicken Sie auf „Neu verbinden“ und schliessen Sie den Schritt mit der Nummer ab.",
+      "saveIncomplete": "Fast geschafft – wir konnten das Speichern nicht abschliessen. Ihre Einrichtung ist gespeichert, bitte kontaktieren Sie den Support, statt sie erneut auszuführen."
+    }
+  },
+  "customDomain": {
+    "wizard": {
+      "close": "Schliessen"
+    },
+    "address": {
+      "elsewhere": "Unter dieser Adresse antwortet bereits etwas anderes. Senden Sie die Nachricht auf der nächsten Seite an die Person, die die Adresse betreut – sie weiss, was zu tun ist."
+    },
+    "providers": {
+      "godaddy": {
+        "caveat": "Wenn Sie mehrere Einträge auf einmal hinzugefügt haben, heisst die Schaltfläche „Save All Records“."
+      }
+    }
+  },
+  "deleteAccount": {
+    "body": "Dieses HatchGrab-Konto dauerhaft schliessen und keine Online-Bestellungen mehr annehmen."
+  },
+  "eventPost": {
+    "error": {
+      "imageTooBig": "Dieses Bild ist {size} MB gross. Die Grenze liegt bei 10 MB."
+    },
+    "modal": {
+      "close": "Schliessen"
+    }
+  },
+  "completionSettings": {
+    "completionTitle": "Unbezahlte Bestellung abschliessen",
+    "pressesOneHelp": "Ideal, wenn Sie das Geld bei der Übergabe des Essens kassieren. Sie erhalten eine einzige Schaltfläche, „Bezahlt & abgeholt“, die die Zahlung erfasst und die Bestellung zugleich abschliesst."
+  },
+  "planNames": {
+    "pro": {
+      "subtitle": "Für Foodtrucks mit regelmässigen Vorbestellungen"
+    }
+  },
+  "pricing": {
+    "card": {
+      "tryFree": "Gratis testen"
+    }
+  },
+  "compare": {
+    "fee": {
+      "fixedAria": "Rappen pro Bestellung"
+    },
+    "anchor": {
+      "secondVan": "Das ist ein zweiter Foodtruck auf der Strasse."
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+41 78 123 45 67"
+  }
+}

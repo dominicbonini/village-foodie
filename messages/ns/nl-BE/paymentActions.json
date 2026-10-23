@@ -1,0 +1,4 @@
+{
+  "paidCardMachine": "Betaald met je betaalterminal{mixed, select, yes { — {amount}} other {}}",
+  "inPersonHint": "Contant of met je betaalterminal — niet geregistreerd"
+}

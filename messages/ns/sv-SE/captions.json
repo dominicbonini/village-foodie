@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Veckans datum",
+    "dayList": "Lista över dagar",
+    "place": "Plats",
+    "venue": "Ställe",
+    "area": "Ort",
+    "dayDate": "Dag och datum",
+    "times": "Tider",
+    "orderLink": "Beställningslänk",
+    "locationTag": "Platstagg"
+  },
+  "weekHeader": "{truck} – här står vi den här veckan:",
+  "dayLine": "{day} – {where} – {times}",
+  "dayLineNoTimes": "{day} – {where}",
+  "dayLineCancelled": "{day} – {where} – INSTÄLLT, tyvärr",
+  "noDates": "Inga datum den här veckan – titta in igen snart.",
+  "orderAhead": "Förbeställ: {url}",
+  "orderAheadTagged": "Förbeställ: {url} {tag}",
+  "eventLine": "{truck} kommer till {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} kommer till {where} {when}.",
+  "cancelledSorry": "Tyvärr – vi kan inte komma till {where} {when}.",
+  "cancelledApology": "Förlåt till alla som hade tänkt komma. Vi är snart tillbaka.",
+  "when": {
+    "today": "idag",
+    "tonight": "ikväll",
+    "tomorrow": "imorgon",
+    "dated": "den {date}"
+  }
+}

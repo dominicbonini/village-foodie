@@ -1,0 +1,19 @@
+{
+  "heading": "Ventas sugeridas",
+  "intro": "Anima a los clientes a añadir algo más. Cuando alguien pide de una categoría, sugiere productos de otra: una bebida con una pizza, una salsa con una hamburguesa.",
+  "add": "+ Añadir venta sugerida",
+  "toast": {
+    "updated": "Regla de venta sugerida actualizada",
+    "added": "Regla de venta sugerida añadida",
+    "removed": "Regla eliminada"
+  },
+  "whenAdds": "Cuando el cliente añade…",
+  "suggestFrom": "Sugerir productos de…",
+  "chooseCategory": "Elegir categoría",
+  "cancel": "Cancelar",
+  "saveChanges": "Guardar cambios",
+  "addRule": "Añadir regla",
+  "empty": "Aún no hay reglas de venta sugerida.",
+  "confirmRemove": "¿Eliminar la regla de venta sugerida “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Se sugiere hasta {count} producto} other {Se sugieren hasta {count} productos}}"
+}

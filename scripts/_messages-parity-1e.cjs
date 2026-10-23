@@ -84,6 +84,8 @@ const NEW_WORDING = {
   'planFeatures.cardRegion.Australiancards': 'france-1: country_settings.card_fee_region_label "Australian cards", named for a language to word it',
   'planFeatures.cardRegion.NewZealandcards': 'france-1: country_settings.card_fee_region_label "New Zealand cards", named for a language to word it',
   'planFeatures.cardRegion.Canadiancards': 'france-1: country_settings.card_fee_region_label "Canadian cards", named for a language to word it',
+  // ⚠️ RE-PINNED (europe-languages-1, 22 October 2026): Switzerland's row label "Swiss cards", named so German (de-CH) words it.
+  'planFeatures.cardRegion.Swisscards': 'europe-languages-1: country_settings.card_fee_region_label "Swiss cards", named for a language to word it',
   'menuBadges.allergen.Barley': 'france-1: the stored allergen label "Barley" (lib/allergens.ts), named for a language to word it',
   'menuBadges.allergen.Addedsulphites': 'france-1: the stored allergen label "Added sulphites" (lib/allergens.ts), named for a language to word it',
   'menuBadges.allergen.Brazilnut': 'france-1: the stored allergen label "Brazil nut" (lib/allergens.ts), named for a language to word it',

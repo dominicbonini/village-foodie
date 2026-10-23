@@ -1,0 +1,104 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for FINNISH (fi-FI). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "fi",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "intoleran",
+    "yliherkk",
+    "keliaki",
+    "gluteeniton",
+    "gluteenittom",
+    "laktoositon",
+    "laktoosittom",
+    "maidoton",
+    "maidottom",
+    "kananmunaton",
+    "pahkinaton",
+    "pähkinätön",
+    "maapahkinaton",
+    "soijaton",
+    "seesamiton",
+    "ilman gluteenia",
+    "ilman laktoosia",
+    "ilman maitoa",
+    "ilman pahkinoita",
+    "anafyla",
+    "epipen",
+    "epi pen",
+    "adrenaliini",
+    "sopii",
+    "sopiiko",
+    "turvallinen",
+    "voi sisaltaa",
+    "jaamia",
+    "jäämiä",
+    "ristikontaminaatio",
+    "kontaminaati"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluteeni",
+        "vehnä",
+        "jauho"
+      ],
+      "crustaceans": [
+        "äyriäiset",
+        "katkarapu"
+      ],
+      "eggs": [
+        "kananmuna",
+        "muna",
+        "majoneesi"
+      ],
+      "fish": [
+        "kala"
+      ],
+      "peanuts": [
+        "maapähkinä"
+      ],
+      "soy": [
+        "soija",
+        "tofu"
+      ],
+      "dairy": [
+        "maito",
+        "laktoosi",
+        "juusto",
+        "kerma",
+        "voi"
+      ],
+      "tree nuts": [
+        "pähkinä",
+        "pähkinät",
+        "manteli",
+        "hasselpähkinä",
+        "pistaasi",
+        "cashew"
+      ],
+      "celery": [
+        "selleri"
+      ],
+      "mustard": [
+        "sinappi"
+      ],
+      "sesame": [
+        "seesami"
+      ],
+      "sulphites": [
+        "sulfiitti",
+        "rikkidioksidi"
+      ],
+      "lupin": [
+        "lupiini"
+      ],
+      "molluscs": [
+        "nilviäiset",
+        "simpukka",
+        "kalmari"
+      ]
+    }
+  }
+}

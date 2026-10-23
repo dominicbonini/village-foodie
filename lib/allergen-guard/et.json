@@ -1,0 +1,103 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for ESTONIAN (et-EE). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "et",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "talumatus",
+    "talumatu",
+    "tsoliaakia",
+    "tsöliaakia",
+    "gluteenivaba",
+    "laktoosivaba",
+    "piimavaba",
+    "munavaba",
+    "pahklivaba",
+    "pähklivaba",
+    "maapahklivaba",
+    "sojavaba",
+    "seesamivaba",
+    "ilma gluteenita",
+    "ilma laktoosita",
+    "ilma piimata",
+    "ilma pahkliteta",
+    "anafula",
+    "anafülak",
+    "anafulak",
+    "epipen",
+    "epi pen",
+    "adrenaliin",
+    "sobib",
+    "ohutu",
+    "voib sisaldada",
+    "jalgi",
+    "jälgi",
+    "ristsaastumine",
+    "saastumi"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluteen",
+        "nisu",
+        "jahu"
+      ],
+      "crustaceans": [
+        "koorikloomad",
+        "krevetid"
+      ],
+      "eggs": [
+        "muna",
+        "munad",
+        "majonees"
+      ],
+      "fish": [
+        "kala"
+      ],
+      "peanuts": [
+        "maapähkel",
+        "maapähklid"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "piim",
+        "laktoos",
+        "juust",
+        "koor",
+        "või"
+      ],
+      "tree nuts": [
+        "pähklid",
+        "pähkel",
+        "mandlid",
+        "sarapuupähkel",
+        "pistaatsia"
+      ],
+      "celery": [
+        "seller"
+      ],
+      "mustard": [
+        "sinep"
+      ],
+      "sesame": [
+        "seesam"
+      ],
+      "sulphites": [
+        "sulfitid",
+        "vääveldioksiid"
+      ],
+      "lupin": [
+        "lupiin"
+      ],
+      "molluscs": [
+        "molluskid",
+        "rannakarbid",
+        "kalmaar"
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "greeting": "Hej 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Här hittar du hela vår meny och information om allergener: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Här hittar du hela vår meny: {url} — {truck} {emoji}",
+  "otherCategory": "Övrigt",
+  "categoryFrom": "{category} från {price}",
+  "listTwo": "{first} och {second}",
+  "listMany": "{init} och {last}",
+  "menuSummary": "{opener}Vi har {summary}. Se hela menyn och förbeställ här: {url} — {truck} {emoji}",
+  "allergenCaveat": "Dubbelkolla allergeninformationen i hela menyn — det här är ett automatiskt svar.",
+  "specificFallback": "{opener}Här står vi härnäst: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Tack för alla dina meddelanden! Jag kan bara svara några gånger per dag här.\n\nFör att beställa: {link}",
+  "capContact": "Nå oss direkt: {number}"
+}

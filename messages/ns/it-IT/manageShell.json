@@ -1,0 +1,84 @@
+{
+  "loading": "Caricamento della console di gestione…",
+  "loadFailed": "Caricamento non riuscito",
+  "requestFailed": "Non riuscito",
+  "invalidToken": "Token non valido o scaduto",
+  "loadFailedReason": "Impossibile caricare questa pagina: {reason}",
+  "noCountrySettings": "Impossibile caricare le impostazioni del paese di questo food truck. Aggiorna la pagina.",
+  "noPlans": "Impossibile caricare il piano di questo food truck. Aggiorna la pagina.",
+  "stale": "{hasTime, select, yes {Aggiornamento non riuscito. Mostriamo i dati salvati alle {time}. Le modifiche che fai vengono comunque salvate.} other {Aggiornamento non riuscito. Mostriamo gli ultimi dati salvati. Le modifiche che fai vengono comunque salvate.}}",
+  "verify": {
+    "ok": "Email confermata — grazie.",
+    "expired": "Il link di conferma è scaduto. Contattaci e sistemiamo tutto prima che tu vada online.",
+    "invalid": "Il link di conferma non ha funzionato. Contattaci e sistemiamo tutto prima che tu vada online."
+  },
+  "profile": {
+    "updated": "Profilo aggiornato",
+    "saveFailed": "Salvataggio non riuscito",
+    "title": "Modifica profilo",
+    "name": "Nome",
+    "namePlaceholder": "Il tuo nome",
+    "email": "Email",
+    "cancel": "Annulla",
+    "saving": "Salvataggio…",
+    "save": "Salva"
+  },
+  "header": {
+    "subtitle": "Console di gestione",
+    "ordersDashboard": "← Dashboard ordini"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Calendario",
+    "social": "Social",
+    "reports": "Report",
+    "team": "Team",
+    "settings": "Impostazioni",
+    "payments": "Pagamenti",
+    "billing": "Fatturazione",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Calendario ({count})",
+    "stripeAttention": "Stripe richiede la tua attenzione",
+    "allergensNotSet": "allergeni non impostati"
+  },
+  "menuSections": {
+    "label": "Sezioni del menu",
+    "items": "Prodotti",
+    "capacity": "Capacità della cucina",
+    "extras": "Extra e upselling",
+    "deals": "Menu combo"
+  },
+  "socialSections": {
+    "label": "Sezioni social",
+    "create": "Crea un post",
+    "designs": "Modelli",
+    "locations": "Impostazioni dei luoghi"
+  },
+  "notices": {
+    "review": "Controlla →",
+    "tour": "Vuoi un breve tour della tua dashboard?",
+    "showMeAround": "Fammi vedere",
+    "dismiss": "Chiudi",
+    "approval": "{count, plural, one {Abbiamo trovato <b>{count}</b> evento per te — controllalo e approvalo prima che venga pubblicato.} other {Abbiamo trovato <b>{count}</b> eventi per te — controllali e approvali prima che vengano pubblicati.}}",
+    "allergens": "<b>Allergeni non impostati</b> — i clienti non vedono le informazioni sugli allergeni finché non le verifichi. Controlla gli allergeni di ogni piatto nella scheda Menu.",
+    "domainLive": "<link>{domain}</link> è online. Dagli un’occhiata, poi confermaci nelle Impostazioni che è tutto giusto.",
+    "stripe": "<b>Stripe ha bisogno di qualcosa da te</b> — i pagamenti con carta potrebbero interrompersi finché non è risolto.",
+    "profileTitle": "Completa il tuo profilo",
+    "missing": "Mancano: {fields}.",
+    "goToSettings": "Vai alle Impostazioni →",
+    "field": {
+      "truckName": "nome del food truck",
+      "cuisineType": "tipo di cucina",
+      "contactEmail": "email di contatto",
+      "contactPhone": "telefono di contatto"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Sei in prova gratuita} other {Sei in prova gratuita (mesi: {months})}}",
+    "ends": "{hasDate, select, yes {La prova termina il <hl>{date}</hl>} other {La prova termina <hl>a breve</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Tutte le funzioni gratis per # mese} other {Tutte le funzioni gratis per # mesi}}} other {Tutte le funzioni gratis durante la prova}}",
+    "body": "{hasDate, select, yes {Durante la prova, che dura fino al <b>{date}</b>, non ti verrà addebitato nulla. La fatturazione inizia solo quando scegli un piano e inserisci i tuoi dati di pagamento. Fino ad allora non c’è nulla da disdire e nulla da pagare. Scegli il tuo piano entro quella data — altrimenti passerai al piano {fallback} e alcune funzioni smetteranno di funzionare.} other {Durante la prova non ti verrà addebitato nulla. La fatturazione inizia solo quando scegli un piano e inserisci i tuoi dati di pagamento. Fino ad allora non c’è nulla da disdire e nulla da pagare. Scegli il tuo piano prima della fine della prova — altrimenti passerai al piano {fallback} e alcune funzioni smetteranno di funzionare.}}",
+    "fees": "*Sugli ordini online si applicano le normali commissioni per i pagamenti con carta",
+    "upgrade": "Scegli un piano →"
+  }
+}

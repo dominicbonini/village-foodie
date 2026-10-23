@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Bestilling #{id} sat tilbage",
+    "saved": "Bestilling #{id} gemt",
+    "undo": "↩ Fortryd",
+    "paymentNotRecorded": "⚠ Bestilling #{id} — BETALING IKKE REGISTRERET. {collect, select, yes {Bestillingen blev afsluttet} other {Bestillingen blev gemt}}; betalingen blev ikke.",
+    "recordPayment": "Registrer betaling",
+    "paid": "Bestilling #{id} betalt",
+    "undonePayment": "Fortrudt — betaling fjernet",
+    "undoneCollected": "Fortrudt — bestilling ikke afhentet",
+    "collected": "Bestilling #{id} {paidToo, select, yes {betalt og afhentet} other {afhentet}}",
+    "ready": "Bestilling #{id} klar",
+    "readyBuzzer": "Bestilling #{id} klar · <pill></pill>",
+    "status": "Bestilling #{id} {action, select, confirm {bekræftet} reject {afvist} ready {klar} collected {afhentet} undo_collected {gendannet} cancel {annulleret} other {opdateret}}"
+  },
+  "conflicts": {
+    "more": "+{count} til",
+    "notOnScreenPlus": "+{count} ikke på denne skærm",
+    "notOnScreen": "{n, plural, one {{count} bestilling ikke på denne skærm} other {{count} bestillinger ikke på denne skærm}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ BETALING IKKE REGISTRERET",
+    "paymentBody": "{orders} — kun markeret som betalt på denne enhed. Betalingen er ikke gået igennem.",
+    "paymentCheck": "Tjek bestillingen, og tag imod betaling igen, hvis beløbet stadig mangler.",
+    "dismiss": "Luk",
+    "confirmChecked": "Bekræft, at du har tjekket {orders}",
+    "confirmHides": "Dette skjuler advarslen. Registreringen gemmes på denne enhed under alle omstændigheder.",
+    "notYet": "Ikke endnu",
+    "iveChecked": "Jeg har tjekket {orders}",
+    "statusBody": "⚠ {orders} — denne ændring gik ikke igennem. Tjek bestillingen.",
+    "offline": "📴 Ingen forbindelse — {n, plural, one {{count} ændring gemt på denne enhed. Den sendes, når du er online igen.} other {{count} ændringer gemt på denne enhed. De sendes, når du er online igen.}} Indstillingerne er låst.",
+    "syncing": "Online igen — sender {n, plural, one {{count} ændring} other {{count} ændringer}}…",
+    "synced": "Alle ændringer er sendt.",
+    "stillQueued": "{n, plural, one {{count} ændring gemt på denne enhed. Prøver stadig at sende den.} other {{count} ændringer gemt på denne enhed. Prøver stadig at sende dem.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab er låst",
+    "verifying": "Bekræfter…",
+    "unlock": "Lås op",
+    "cantUseBiometric": "Kan du ikke bruge Face / Touch ID?",
+    "enterPin": "Indtast din reserve-PIN",
+    "wrongPin": "Forkert PIN — prøv igen.",
+    "checking": "Tjekker…",
+    "tryBiometric": "Prøv Face / Touch ID i stedet",
+    "forgot": "Glemt din PIN? Så skal du geninstallere appen."
+  },
+  "notify": {
+    "title": "🔔 Notifikationer",
+    "intro": "Notifikationer på denne enhed. Slå til for at vælge, hvilke du vil have.",
+    "refused": "Notifikationer skal være slået til i enhedens Indstillinger, før du kan slå dette til.",
+    "newOrder": "Besked om nye bestillinger",
+    "newOrderHelp": "Få besked, når en kundebestilling skal bekræftes.",
+    "offline": "Besked ved offline / pause",
+    "offlineHelp": "Få besked, når denne enhed går offline (og bestilling sættes på pause). <green>Virker offline.</green>"
+  },
+  "van": {
+    "label": "Foodtruck",
+    "loadRetry": "Kunne ikke indlæse · Prøv igen",
+    "select": "Vælg…"
+  },
+  "deviceSave": {
+    "network": "Kunne ikke få forbindelse til serveren — tjek forbindelsen, og prøv igen.",
+    "server": "Kunne ikke gemme lige nu. Prøv igen."
+  },
+  "setup": {
+    "fetchErrorTitle": "Kunne ikke indlæse enhedsopsætningen",
+    "fetchErrorBody": "Vi kunne ikke få forbindelse til serveren for at sætte <b>denne enhed</b> op. Tjek forbindelsen, og prøv igen — dine bestillinger og indstillinger er ikke berørt.",
+    "retry": "Prøv igen",
+    "later": "Senere",
+    "noVanTitle": "Ingen aktiv foodtruck",
+    "noVanBody": "Din virksomhed har endnu ingen aktiv foodtruck. Aktiver en under <b>Indstillinger → Dine foodtrucks</b>, så sætter denne enhed sig selv op automatisk — der er ikke flere trin her.",
+    "goToVans": "Gå til Indstillinger → Dine foodtrucks",
+    "title": "Sæt denne enhed op",
+    "body": "Engangsopsætning af <b>denne enhed</b>: hvilken skærm den åbner på, og hvilken foodtruck den hører til. Gælder kun denne enhed — andre enheder indstilles hver for sig, og du kan ændre det senere i profilmenuen → »Denne enhed«.",
+    "whichScreen": "Hvilken skærm skal denne enhed åbne på?",
+    "dashboard": "Oversigt",
+    "kds": "Køkkenskærm",
+    "whichVan": "Hvilken foodtruck hører denne enhed til?",
+    "selectVan": "Vælg en foodtruck…",
+    "saving": "Gemmer…",
+    "tryAgain": "Prøv igen",
+    "continue": "Fortsæt"
+  },
+  "device": {
+    "title": "Denne enhed",
+    "viewing": "Du ser: <b>{truck}</b>",
+    "viewingVan": "Du ser: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Kun denne enhed — andre enheder indstilles hver for sig. (ID: {id}…)",
+    "truck": "Virksomhed",
+    "van": "Foodtruck",
+    "defaultScreen": "Startskærm",
+    "orderNotifications": "Bestillingsnotifikationer",
+    "patchFailed": "{setting, select, van {Foodtruck} defaultScreen {Startskærm} other {Bestillingsnotifikationer}} blev ikke gemt. {reason}",
+    "requireBiometric": "Kræv oplåsning med fingeraftryk eller ansigt for at åbne",
+    "pinTitle": "Angiv en reserve-PIN (4–6 cifre)",
+    "pinHelp": "Din vej ind, hvis oplåsning med fingeraftryk eller ansigt ikke virker — det er den eneste reserveløsning, så glem den ikke (en glemt PIN betyder, at appen skal geninstalleres). Virker offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Bekræft PIN",
+    "pinTooShort": "Brug mindst 4 cifre.",
+    "pinMismatch": "PIN-koderne er ikke ens.",
+    "setPin": "Angiv PIN og slå til",
+    "cancel": "Annuller",
+    "noBiometric": "Der er ikke sat oplåsning med fingeraftryk eller ansigt op på denne enhed — tilføj det i enhedens indstillinger. Din reserve-PIN virker stadig.",
+    "footer": "Disse indstillinger gælder kun denne enhed — andre enheder indstilles hver for sig."
+  },
+  "appLock": {
+    "unlockReason": "Lås HatchGrab op",
+    "usePasscode": "Brug adgangskode",
+    "cancel": "Annuller",
+    "confirmEnable": "Bekræft for at slå applås til"
+  },
+  "channel": {
+    "ordersName": "Nye bestillinger",
+    "ordersDescription": "Besked, når en bestilling skal bekræftes."
+  },
+  "localNotify": {
+    "newOrderTitle": "Ny bestilling",
+    "orderReceived": "Bestilling {number} modtaget",
+    "newOrders": "{n, plural, one {Du har en ny bestilling} other {Du har {count} nye bestillinger}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Bestilling sat på pause",
+    "pausedBody": "Du er offline — kundernes bestilling er sat på pause.",
+    "offlineTitle": "Du er offline",
+    "offlineBody": "Denne enhed har mistet forbindelsen."
+  }
+}

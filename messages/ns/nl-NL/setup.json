@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Waar je gevestigd bent",
+    "identity": "Je foodtruck",
+    "menu": "Je menu",
+    "event": "Eerste evenement"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Instellen",
+  "loading": "Laden",
+  "loadingCountries": "Laden…",
+  "verify": {
+    "ok": "E-mailadres bevestigd — bedankt.",
+    "expired": "Die bevestigingslink is verlopen. Neem contact met ons op, dan regelen we het voordat je live gaat.",
+    "invalid": "Die bevestigingslink werkte niet. Neem contact met ons op, dan regelen we het voordat je live gaat."
+  },
+  "identity": {
+    "heading": "Hoe heet je foodtruck?",
+    "intro": "Dit is de naam die klanten zien. Er wordt niets openbaar tot je zelf besluit live te gaan.",
+    "nameLabel": "Naam foodtruck",
+    "namePlaceholder": "Bobs Burgers",
+    "phoneLabel": "Telefoon",
+    "whatsappTick": "Dit nummer heeft WhatsApp",
+    "phoneHelp": "Klanten zien dit op hun bestelbevestiging, zodat ze een vraag over een bestelling kunnen stellen. Het vinkje bepaalt of daar ‘Bel ons’ of ‘WhatsApp ons’ staat. Je kunt beide wijzigen in Instellingen."
+  },
+  "phoneRequired": "Voeg een telefoonnummer toe — klanten en wij gebruiken het allebei om je te bereiken.",
+  "createFailed": "Kon je foodtruck niet aanmaken.",
+  "unreachable": "We zijn nu even niet bereikbaar — probeer het opnieuw.",
+  "back": "Terug",
+  "creating": "Je foodtruck wordt aangemaakt…",
+  "continue": "Doorgaan"
+}

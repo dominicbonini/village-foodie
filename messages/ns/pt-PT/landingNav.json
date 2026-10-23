@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Página inicial da HatchGrab",
+  "cta": "Carregar a minha ementa →",
+  "ctaShort": "Carregar ementa",
+  "features": "Funcionalidades",
+  "pricing": "Preços",
+  "logIn": "Iniciar sessão",
+  "country": {
+    "button": "País: {name}. Mudar de país",
+    "menu": "País"
+  }
+}

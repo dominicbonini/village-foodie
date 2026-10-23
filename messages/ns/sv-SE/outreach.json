@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Det här mejlet saknar en avregistreringsrad och kan därför inte skickas. Använd Infoga avregistrering för att lägga till den.",
+    "notSetUp": "Ingen avregistreringsmening är inställd, så inga utskick kan skickas. Lägg till en i panelen Signatur på fliken Mallar.",
+    "notLoaded": "Avregistreringsmeningen har inte laddats än, så det här kan inte skickas.",
+    "unreadable": "Avregistreringsmeningen kunde inte läsas, så inget skickades."
+  },
+  "retry": {
+    "notRebuilt": "Meddelandet kunde inte byggas om med företagsraden, så inget skickades."
+  }
+}

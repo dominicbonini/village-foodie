@@ -1,0 +1,17 @@
+{
+  "tagline": "Mindre tid på bestillinger.<br></br>Mer tid til matlaging.",
+  "features": "Funksjoner",
+  "pricing": "Priser",
+  "privacy": "Personvern",
+  "terms": "Vilkår",
+  "contact": "Kontakt",
+  "about": "Om oss",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Fra folkene bak <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Last ned HatchGrab i App Store",
+    "appStoreAlt": "Last ned i App Store",
+    "googlePlayLink": "Last ned HatchGrab på Google Play",
+    "googlePlayAlt": "Tilgjengelig på Google Play"
+  }
+}

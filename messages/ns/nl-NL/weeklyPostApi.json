@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "De kop paste niet en is ingekort.",
+    "date": "De datum paste niet en is ingekort.",
+    "daysOff": "De tekst voor vrije dagen paste niet en is ingekort.",
+    "place": "De locatie paste niet en is ingekort.",
+    "time": "De tijd paste niet en is ingekort.",
+    "note": "Je eigen tekst paste niet en is ingekort.",
+    "venue": "De naam van de locatie paste niet en is ingekort.",
+    "area": "De plaatsnaam paste niet en is ingekort."
+  },
+  "fontFallback": "Een lettertype van dit ontwerp ({id}) kon niet worden geladen — die vakken staan in Oswald.",
+  "wrongShapeBackground": "De afbeelding van deze locatie heeft een andere vorm dan je ontwerp, dus de standaardachtergrond wordt gebruikt.",
+  "rowsFit": "De laatste dag valt {px} px onder de onderkant van de afbeelding — verklein de regelafstand of zet rij 1 hoger.",
+  "placeStatus": {
+    "ownBoth": "Eigen afbeelding en tekstposities",
+    "wrongShape": "Andere vorm — pas gebruikt na vervangen",
+    "ownPicture": "Eigen afbeelding, standaardposities",
+    "ownPositions": "Standaardafbeelding, eigen tekstposities",
+    "none": "Nog geen afbeelding — Standaard wordt gebruikt"
+  },
+  "standardStatus": "Gebruikt op alle andere locaties",
+  "option": {
+    "oneOff": "Upload er een alleen voor deze post",
+    "placePoster": "Poster van {name}",
+    "standard": "Standaardontwerp"
+  },
+  "previewLabel": {
+    "lastEvent": "Voorbeeld gebruikt je laatste evenement hier",
+    "noEvents": "Hier nog geen evenementen — het voorbeeld toont je volgende evenement met de naam van deze locatie"
+  },
+  "fontUsage": {
+    "weekly": "je ontwerp voor de weekpost",
+    "event": "je ontwerp voor de post voor één evenement",
+    "place": "je ontwerp voor {place}",
+    "placeUnnamed": "je ontwerp voor een locatie"
+  },
+  "face": {
+    "regular": "Normaal",
+    "bold": "Vet",
+    "italic": "Cursief"
+  },
+  "picture": {
+    "legacy": "Evenementposter",
+    "fallback": "Afbeelding",
+    "wrongShape": "Andere vorm — kan niet als volledige achtergrond worden gebruikt"
+  },
+  "noPicture": {
+    "omit": "Weglaten",
+    "blank": "Lege ruimte laten",
+    "logo": "Je logo tonen"
+  },
+  "noPicturesAll": "{total, plural, one {Je locatie heeft een afbeelding.} other {Al je {total} locaties hebben een afbeelding.}}",
+  "noPicturesSome": "{without, plural, one {{without} van je {total} locaties heeft nog geen afbeelding} other {{without} van je {total} locaties hebben nog geen afbeelding}}",
+  "licenceTick": "Ik ben eigenaar van dit lettertype of heb een licentie om het te gebruiken",
+  "fontUploadButton": "↑ Upload je lettertype"
+}

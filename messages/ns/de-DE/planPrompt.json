@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} sind im Tarif {plan} enthalten.} other {{feature} ist im Tarif {plan} enthalten.}}",
+  "notOnPlan": "{many, select, yes {{feature} sind in Ihrem Tarif nicht enthalten.} other {{feature} ist in Ihrem Tarif nicht enthalten.}}",
+  "switchedOff": "{many, select, yes {{feature} sind für Ihren Foodtruck deaktiviert.} other {{feature} ist für Ihren Foodtruck deaktiviert.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Upgraden →",
+  "features": {
+    "discovery_map": {
+      "name": "Der Eintrag auf der Entdecken-Karte",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Das Web-Dashboard",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Die Küchen-App",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Die Speisekarte per QR-Code",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Menüs",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Upselling",
+      "many": "no"
+    },
+    "walkup_orders": {
+      "name": "Bestellungen vor Ort",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Online-Bestellungen mit Bezahlung bei Abholung",
+      "many": "yes"
+    },
+    "sold_out_toggle": {
+      "name": "Der Ausverkauft-Schalter",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Der Bestands-Countdown",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Der Bestellschutz bei Offline-Betrieb",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online-Zahlungen",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Vorbestellungen für spätere Termine",
+      "many": "yes"
+    },
+    "time_slot_selection": {
+      "name": "Zeitfenster für Kunden",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Die Verwaltung der Küchenkapazität",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Die automatische Annahme",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatische Antworten für Messenger & Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR-Codes mit Ihrem Logo",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Erweiterte Auswertungen",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "Der Druck von Küchenbons",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Die Küchen-Synchronisierung auf mehreren Geräten",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Die Kochansicht",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatische WhatsApp-Antworten",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Ihre Termine auf Ihrer eigenen Website",
+      "many": "yes"
+    },
+    "schedule_graphics": {
+      "name": "Social-Media-Beiträge",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Eigene Event-Typen",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Private Events",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Die Überschrift war zu lang und wurde gekürzt.",
+    "date": "Das Datum war zu lang und wurde gekürzt.",
+    "daysOff": "Der Text für Ruhetage war zu lang und wurde gekürzt.",
+    "place": "Der Standortname war zu lang und wurde gekürzt.",
+    "time": "Die Uhrzeit war zu lang und wurde gekürzt.",
+    "note": "Ihr eigener Text war zu lang und wurde gekürzt.",
+    "venue": "Der Veranstaltungsort war zu lang und wurde gekürzt.",
+    "area": "Der Ort war zu lang und wurde gekürzt."
+  },
+  "fontFallback": "Eine Schriftart dieses Designs ({id}) konnte nicht geladen werden – diese Felder werden in Oswald angezeigt.",
+  "wrongShapeBackground": "Das Bild dieses Standorts hat ein anderes Format als Ihr Design, daher wird der Standardhintergrund verwendet.",
+  "rowsFit": "Der letzte Tag liegt {px} px unterhalb des Bildrands – verringern Sie den Zeilenabstand oder verschieben Sie Zeile 1 nach oben.",
+  "placeStatus": {
+    "ownBoth": "Eigenes Bild und eigene Textpositionen",
+    "wrongShape": "Anderes Format – erst nach dem Ersetzen verwendet",
+    "ownPicture": "Eigenes Bild, Standardpositionen",
+    "ownPositions": "Standardbild, eigene Textpositionen",
+    "none": "Noch kein Bild – Standard wird verwendet"
+  },
+  "standardStatus": "Wird an allen anderen Standorten verwendet",
+  "option": {
+    "oneOff": "Nur für diesen Beitrag ein Bild hochladen",
+    "placePoster": "Poster für {name}",
+    "standard": "Standard-Design"
+  },
+  "previewLabel": {
+    "lastEvent": "Die Vorschau zeigt Ihr letztes Event hier",
+    "noEvents": "Noch keine Events hier – die Vorschau zeigt Ihr nächstes Event mit dem Namen dieses Standorts"
+  },
+  "fontUsage": {
+    "weekly": "Ihr Design für den Wochenbeitrag",
+    "event": "Ihr Design für Event-Beiträge",
+    "place": "Ihr Design für {place}",
+    "placeUnnamed": "Ihr Design für einen Standort"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Fett",
+    "italic": "Kursiv"
+  },
+  "picture": {
+    "legacy": "Event-Poster",
+    "fallback": "Bild",
+    "wrongShape": "Anderes Format – kann nicht als vollständiger Hintergrund verwendet werden"
+  },
+  "noPicture": {
+    "omit": "Weglassen",
+    "blank": "Leerraum lassen",
+    "logo": "Ihr Logo zeigen"
+  },
+  "noPicturesAll": "{total, plural, one {Ihr Standort hat ein Bild.} other {Alle {total} Standorte haben ein Bild.}}",
+  "noPicturesSome": "{without, plural, one {{without} von Ihren {total} Standorten hat noch kein Bild} other {{without} von Ihren {total} Standorten haben noch kein Bild}}",
+  "licenceTick": "Ich besitze diese Schriftart oder habe eine Lizenz zur Nutzung",
+  "fontUploadButton": "↑ Schriftart hochladen"
+}

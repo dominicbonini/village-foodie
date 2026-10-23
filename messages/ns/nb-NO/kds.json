@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} – kjøkken",
+  "loading": "Laster kjøkkenet…",
+  "pin": {
+    "title": "Skriv inn PIN",
+    "placeholder": "PIN",
+    "unlock": "Lås opp",
+    "unreachable": "Får ikke kontakt med serveren akkurat nå. PIN-koden din er riktig — prøv igjen om litt.",
+    "incorrect": "Feil PIN",
+    "generic": "Noe gikk galt. Prøv igjen."
+  },
+  "error": {
+    "linkInvalid": "Denne lenken er ikke lenger gyldig.",
+    "couldNotLoad": "Kunne ikke laste bestillinger",
+    "truckNotFound": "Fant ikke matbilen"
+  },
+  "degraded": {
+    "at": "⚠️ Får ikke kontakt med serveren. Viser bonger fra {time}. NYE BESTILLINGER KAN MANGLE.",
+    "earlier": "⚠️ Får ikke kontakt med serveren. Viser bonger fra tidligere. NYE BESTILLINGER KAN MANGLE."
+  },
+  "header": {
+    "dashboard": "Oversikt",
+    "backTitle": "Tilbake til oversikten",
+    "list": "Liste",
+    "grid": "Rutenett",
+    "full": "Komplett",
+    "cook": "Kokk",
+    "fullTitle": "Komplette kort — priser og betalingsdetaljer, slik luka ser dem.",
+    "cookTitle": "Kokkekort — større skrift, gruppert etter kategori, uten priser.",
+    "readyStep": "Klar-steg",
+    "readyOnlyTitle": "Denne skjermen markerer bare bestillinger som klare, så dette kan ikke slås av — det er det eneste steget den gjør.",
+    "readyOnTitle": "Denne skjermen markerer bestillinger som klare. Trykk for å la en annen skjerm gjøre det i stedet.",
+    "readyOffTitle": "En annen skjerm markerer bestillinger som klare. Trykk for å la denne gjøre det.",
+    "handover": "Betaling og utlevering",
+    "handoverOnlyTitle": "Denne skjermen tar bare betalt, så dette kan ikke slås av — det er det eneste steget den gjør.",
+    "handoverOnTitle": "Denne skjermen tar betalt og leverer ut. Trykk for å la en annen skjerm gjøre det i stedet.",
+    "handoverOffTitle": "En annen skjerm tar betalt. Trykk for å la denne gjøre det.",
+    "soundOn": "Lyd for nye bestillinger er på — trykk for å slå den av",
+    "soundOff": "Lyd for nye bestillinger er av — trykk for å slå den på",
+    "screenOn": "Skjerm på",
+    "screenOff": "Skjerm av",
+    "screenSettings": "Skjerminnstillinger",
+    "manageEvent": "Styr arrangement",
+    "manageEventTitle": "Styr arrangementet — start, sett på pause, endre eller avslutt det",
+    "soundSettings": "Lydinnstillinger",
+    "soundSettingsTitle": "Hvilke lyder som spilles på denne enheten",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Visningsinnstillinger",
+    "on": "På",
+    "off": "Av",
+    "newOrderSound": "Lyd for ny bestilling",
+    "soundNeedsConfirming": "Bare bestillinger som må bekreftes",
+    "soundAll": "Alle nye bestillinger",
+    "soundDue": "Lyd når en bestilling skal lages",
+    "soundDueHelp": "Spilles når en bong blir gul.",
+    "deviceSettings": "Enhetsinnstillinger",
+    "sound": "Lyd",
+    "close": "Lukk"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Bestillinger ikke lastet for arrangementet",
+    "mismatchBody": "Serveren svarte med et annet arrangement, så ingenting vises i stedet for feil bestillinger. Velg arrangementet på nytt, eller last inn siden på nytt.",
+    "mismatchBodyAt": "Serveren svarte med et annet arrangement, så ingenting vises i stedet for feil bestillinger for {venue}. Velg arrangementet på nytt, eller last inn siden på nytt.",
+    "paused": "⏸ Bestillinger på pause{reason, select, offline { (enheten er frakoblet)} other {}} — kundene kan ikke bestille",
+    "resume": "Fortsett",
+    "offline": "Ingen tilkobling — viser sist kjente bestillinger. Nettbestilling er satt på pause for kundene.",
+    "queued": "{n, plural, one {{count} handling i kø} other {{count} handlinger i kø}}",
+    "extraWait": "⏱ +{mins} min ekstra ventetid er aktiv",
+    "clear": "Fjern",
+    "toMake": "Å lage",
+    "today": "I dag · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Start arrangement",
+    "recentlyClosed": "Arrangementet er avsluttet · {venue} stengte {time}",
+    "eventStatus": "{tone, select, paused {⏸ På pause} live {● Pågår} finished {● Avsluttet} cancelled {Avlyst} other {Ikke startet}}"
+  },
+  "board": {
+    "queueClear": "Køen er tom",
+    "doneToday": "Ferdig i dag · {count}",
+    "paid": "✓ betalt",
+    "cardHeld": "kort reservert",
+    "due": "{amount} å betale"
+  },
+  "screenOff": {
+    "title": "La skjermen slå seg av?",
+    "bodyVans": "{vans} {n, plural, one {har} other {har}} frakoblingsvarsling slått på. Hvis skjermen slår seg av, kan enheten slutte å sende tilkoblingssignalet sitt, og kundebestilling kan bli satt på pause.",
+    "body": "Hvis skjermen slår seg av, kan enheten slutte å sende tilkoblingssignalet sitt.",
+    "keepHint": "Hold skjermen på, så bestillingene går uten avbrudd.",
+    "keep": "Hold skjermen på",
+    "allow": "La skjermen slå seg av"
+  },
+  "event": {
+    "change": "Bytt arrangement",
+    "cancel": "Avbryt",
+    "waitActive": "⏱ +{mins} min aktiv · Trykk for å fjerne",
+    "addWait": "⏱ Legg til ekstra ventetid",
+    "endTitle": "Avslutte arrangementet?",
+    "endEarly": "Arrangementet skal ikke slutte før {time}. Ingen flere bestillinger blir tatt imot. Vil du avslutte arrangementet?",
+    "endNow": "Avslutte arrangementet? Ingen flere bestillinger blir tatt imot.",
+    "yes": "Ja",
+    "started": "Arrangement startet",
+    "startFutureConfirm": "Dette arrangementet er {date}. Starte det nå?",
+    "finishTimeNow": "Sluttid nå {time}",
+    "finished": "Arrangement avsluttet",
+    "cancelled": "Arrangementet er avlyst",
+    "noteSaved": "Notatet er lagret",
+    "pauseConfirm": "Sette bestillinger på pause? Kundene ser «Tar ikke imot bestillinger» til du fortsetter.",
+    "switchConfirm": "Bytte fra {from} til {to}?{n, plural, =0 {} one { {count} bestilling på denne skjermen blir erstattet.} other { {count} bestillinger på denne skjermen blir erstattet.}} Trykk på det gjeldende arrangementet for å bytte tilbake."
+  },
+  "intro": {
+    "title": "Dette er kjøkkenskjermen",
+    "p1": "Det er kokkens visning — bestillingene du må lage, i den rekkefølgen de skal lages. Skjermen ved grillen viser denne, mens disken bruker bestillingsoversikten.",
+    "p2": "Kortene flytter seg bortover når du trykker på dem, så den som lager mat alltid vet hva som er neste, og ingen trenger å rope. Alt her er demodataene dine — prøv deg fram.",
+    "gotIt": "Skjønner"
+  },
+  "toast": {
+    "failed": "Mislyktes",
+    "rejectFailed": "Kunne ikke avvise",
+    "buzzerSaved": "Personsøker {n} lagret",
+    "buzzerRemoved": "Personsøker {n} fjernet",
+    "buzzerRemovedNone": "Personsøker fjernet",
+    "buzzerAssigned": "Personsøker {n} tildelt",
+    "buzzerAssignedFrom": "Personsøker {n} tildelt (tatt fra #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Kunne ikke fjerne personsøkeren fra {target, select, order {bestilling #{id}} other {denne bestillingen}}} other {Kunne ikke fjerne personsøker {n} — den er fortsatt på {target, select, order {bestilling #{id}} other {denne bestillingen}}}}",
+    "buzzerAssignFailed": "Kunne ikke gi personsøker {n} til {target, select, order {bestilling #{id}} other {denne bestillingen}} — {had, select, yes {den har fortsatt personsøker {prior}} other {den har fortsatt ingen personsøker}}"
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "cancel": "Annuleren",
+  "back": "← Terug",
+  "backPlain": "Terug",
+  "next": "Volgende →",
+  "continue": "Doorgaan →",
+  "closeImport": "Import sluiten",
+  "tryAgain": "Opnieuw proberen",
+  "catError": {
+    "empty": "Geef de categorie een naam.",
+    "tooLong": "Die naam is te lang.",
+    "clash": "Er is al een categorie met de naam ‘{name}’."
+  },
+  "steps": {
+    "details": "Je gegevens",
+    "menu": "Menu",
+    "extras": "Extra’s",
+    "allergens": "Allergenen",
+    "kitchen": "Keuken",
+    "schedule": "Planning",
+    "settings": "Instellingen"
+  },
+  "toast": {
+    "demoGone": "Je demomenu is niet meer beschikbaar — upload het opnieuw om verder te gaan.",
+    "eventsSaveFailed": "Evenementen opslaan mislukt",
+    "cardReadFailed": "Kon de allergenenkaart niet lezen — probeer het opnieuw",
+    "imageReadFailed": "Kon die afbeelding niet lezen — typ of plak je kaart in plaats daarvan",
+    "commitFailedDetail": "Kon de menukaart niet helemaal opslaan: {error}. Sommige items zijn misschien al opgeslagen — controleer je menukaart voordat je het opnieuw probeert.",
+    "commitFailed": "Kon de menukaart niet helemaal opslaan. Sommige items zijn misschien al opgeslagen — controleer je menukaart voordat je het opnieuw probeert.",
+    "finishFailed": "Kon de installatie niet als voltooid markeren — je kunt gewoon doorgaan.",
+    "scheduleReadFailed": "Kon die planning niet lezen — probeer een duidelijkere foto of typ je data in.",
+    "cardRead": "Kaart gelezen — {matched} gekoppeld, {pending, plural, one {# moet} other {# moeten}} nog door jou worden toegewezen"
+  },
+  "settingsReview": {
+    "anchorOrder": "Instellingen → Bestelinstellingen",
+    "anchorDisplay": "Instellingen → Je foodtrucks → Weergave-instellingen",
+    "mins15": "15 minuten",
+    "mins30": "30 minuten",
+    "mins60": "60 minuten",
+    "hours2": "2 uur",
+    "title": "Een paar instellingen om te controleren",
+    "loading": "Je huidige instellingen laden…",
+    "looksGood": "Ziet er goed uit →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Kon dat niet opslaan — je kunt het wijzigen in Instellingen.",
+    "anchorContact": "Instellingen → Contactgegevens",
+    "intro": "We hebben een paar gangbare instellingen voor je klaargezet. Even naar kijken loont — je kunt ze later allemaal wijzigen in Instellingen.",
+    "cancelAria": "Hoe lang voor het afhalen klanten kunnen annuleren"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Controleer ze voordat je live gaat. Tot die tijd staat bij items ‘allergenen niet ingesteld’.",
+    "body": "Controleer ze in Instellingen voordat je live gaat. Tot die tijd staat bij items ‘allergenen niet ingesteld’.",
+    "title": "⚠ Allergenen & dieet zijn nog niet ingesteld"
+  },
+  "welcome": {
+    "title": "Welkom bij HatchGrab",
+    "yourTruck": "Je foodtruck",
+    "stop": "Je kunt altijd stoppen en later verdergaan.",
+    "body": "{name} staat klaar. Nu voegen we je menukaart toe en daarna je eerste evenement.",
+    "go": "Aan de slag"
+  },
+  "offer": {
+    "title": "Het menu uit je demo gebruiken?",
+    "use": "Dit menu gebruiken",
+    "upload": "Een ander menu uploaden",
+    "body": "We hebben het menu bewaard dat je hebt geüpload — {count, plural, one {# item} other {# items}}. Gebruik het als startpunt of upload een ander menu."
+  },
+  "upload": {
+    "title": "Je menukaart importeren",
+    "body": "Upload een foto van je menubord, een screenshot of een PDF, of plak je menukaart als tekst. Onze AI leest hem en bouwt je digitale menukaart — je controleert alles voordat het wordt opgeslagen.",
+    "confirmCancel": "Deze import annuleren? Wat je in dit menu hebt nagekeken, gaat verloren.",
+    "process": "Menu verwerken",
+    "later": "Dit doe ik later"
+  },
+  "processing": {
+    "title": "Je menukaart wordt geanalyseerd",
+    "body": "AI leest je items en deelt ze in categorieën in…"
+  },
+  "review": {
+    "title": "Geïmporteerd menu controleren",
+    "editLaterSetup": "Namen, prijzen, extra’s, allergenen en dieetinfo kun je later altijd nog aanpassen.",
+    "editLater": "Namen, prijzen, extra’s, allergenen en dieetinfo kun je altijd aanpassen in Instellingen.",
+    "noPrice": "Bij {count, plural, one {# item} other {# items}} konden we geen prijs lezen",
+    "renameCategoryAria": "Categorie {name} hernoemen",
+    "renameAria": "{name} hernoemen",
+    "renameTitle": "Categorie hernoemen",
+    "deleteAria": "{name} verwijderen",
+    "deleteTitle": "Categorie verwijderen",
+    "lastCategory": "Je menu heeft minstens één categorie nodig",
+    "countOf": "{kept} van {total}",
+    "existing": "bestaand",
+    "deleteEmptyTitle": "‘{name}’ verwijderen?",
+    "deleteEmptyBody": "Er staan geen items in, dus er gaat niets verloren.",
+    "delete": "Verwijderen",
+    "moveTitle": "{count, plural, one {Waar moet # item naartoe?} other {Waar moeten # items naartoe?}}",
+    "moveBody": "Als je ‘{name}’ verwijdert, moeten de gerechten ergens anders heen — items zonder categorie worden niet geïmporteerd.",
+    "moveAria": "Items uit {name} verplaatsen naar",
+    "chooseCategory": "Kies een categorie…",
+    "moveDelete": "Verplaatsen & verwijderen",
+    "itemName": "Naam item",
+    "free": "gratis?",
+    "freeOn": "Gratis ✕",
+    "nameFirst": "Geef het nieuwe item een naam voordat je er nog een toevoegt",
+    "addItem": "+ Item toevoegen",
+    "categoryName": "Naam categorie",
+    "newCategoryAria": "Naam nieuwe categorie",
+    "addCategory": "+ Categorie toevoegen",
+    "ready": "{count, plural, one {# item klaar} other {# items klaar}} om toe te voegen. Vink uit wat je niet wilt.",
+    "noPriceBody": "Geef elk item een prijs of markeer het als gratis — anders gaat het live voor {zero}. Je kunt pas verder als dit geregeld is.",
+    "incomplete": "Vul een naam in om dit item toe te voegen — lege regels worden niet geïmporteerd."
+  },
+  "extras": {
+    "introSetup": "Sommige gerechten kun je instellen als <b>één item met keuzes</b> of houden als <b>losse gerechten</b>. Kies hoe elk gerecht moet verschijnen. Je kunt dit later wijzigen.",
+    "intro": "Sommige gerechten kun je instellen als <b>één item met keuzes</b> of houden als <b>losse gerechten</b>. Kies hoe elk gerecht moet verschijnen. Je kunt dit later wijzigen in Instellingen.",
+    "none": "Geen gerechten om te groeperen — elk item is een los gerecht.",
+    "axisChoice": "· keuze: {axis}",
+    "grouped": "Gegroepeerd · één item, klant kiest",
+    "separate": "Losse menu-items"
+  },
+  "allergens": {
+    "title": "Allergenen",
+    "detected": "We hebben allergenen in je menukaart gevonden. Kies hieronder hoe je ze wilt tonen.",
+    "howShow": "Hoe wil je allergenen aan klanten tonen?",
+    "skip": "Allergenen voorlopig overslaan"
+  },
+  "kitchen": {
+    "title": "Keuken instellen",
+    "intro": "Laat klanten weten hoe lang ze moeten wachten — je kunt dit later altijd nog wijzigen.",
+    "howWorks": "Zo werkt keukencapaciteit",
+    "allExist": "Alle categorieën bestaan al — geen tijden in te stellen.",
+    "totalHelp": "Stel een totale capaciteit in om te begrenzen hoeveel items de keuken per tijdslot aanneemt. Laat op ∞ staan voor geen limiet.",
+    "saveAdd": "Opslaan & aan menu toevoegen"
+  },
+  "schedule": {
+    "title": "Mijn planning toevoegen",
+    "intro": "Staat je planning op je website? Dan kunnen we hem automatisch bijhouden — of voeg je data zelf toe.",
+    "websiteTitle": "Mijn planning staat op mijn website",
+    "urlPlaceholder": "https://jouwfoodtruck.nl/evenementen",
+    "checking": "Controleren…",
+    "verify": "Controleren",
+    "checkingSite": "Je website wordt gecontroleerd…",
+    "takesTime": "Dit kan tot 2 minuten duren — houd dit scherm open.",
+    "canRead": "✓ We kunnen je planning lezen",
+    "ownSite": "Je eigen website — geen Facebook- of Instagram-pagina.",
+    "photoTitle": "Een foto van mijn planning uploaden",
+    "dragChoose": "Sleep een bestand of tik om te kiezen",
+    "imageOrPdf": "Afbeelding of PDF",
+    "or": "of",
+    "pastePlaceholder": "Plak je data hier…",
+    "read": "Planning lezen",
+    "found": "{count, plural, one {# datum} other {# data}} gevonden — die worden aan je planning toegevoegd.",
+    "dateTbc": "Datum volgt",
+    "save": "{count, plural, one {# datum} other {# data}} opslaan",
+    "manualDesc": "Voeg ze later toe op het tabblad Planning — nu hoef je niets te doen.",
+    "manualBody": "Geen probleem. Je kunt je data altijd toevoegen en beheren via het tabblad Planning in je account.",
+    "blockedDomain": "Gebruik de URL van je website — Facebook- en Instagram-pagina’s kunnen niet automatisch worden uitgelezen.",
+    "saveFailed": "We hebben je planning gelezen, maar konden hem nu niet opslaan — probeer het opnieuw.",
+    "websiteDesc": "We controleren hem regelmatig en sturen nieuwe data ter goedkeuring.",
+    "keepChecking": "We blijven deze pagina controleren en sturen nieuwe data ter goedkeuring.",
+    "photoDesc": "Maak een foto of plak je data — wij lezen ze in zodat jij ze kunt controleren.",
+    "noneFound": "We konden daar geen data in vinden — probeer een duidelijkere foto of voeg zelf een datum toe.",
+    "manualTitle": "Ik voeg mijn data zelf toe",
+    "trialNotStarted": "Evenementen toevoegen start je gratis proefperiode niet — later kies je zelf met welk evenement die begint."
+  },
+  "done": {
+    "summary": "{items, plural, one {# item} other {# items}} in {categories, plural, one {# categorie} other {# categorieën}}.",
+    "imported": "Menu geïmporteerd!",
+    "added": "Je items zijn aan de menukaart toegevoegd.",
+    "duplicates": "{count, plural, one {# dubbel item} other {# dubbele items}} overgeslagen",
+    "showMe": "Geef me een rondleiding",
+    "remind": "Herinner me later",
+    "allSet": "Je bent er klaar voor!",
+    "explore": "Ik kijk zelf rond"
+  },
+  "discard": {
+    "setupTitle": "Later verder instellen?",
+    "setupBody": "Je account en foodtruck zijn opgeslagen — er gaat niets verloren. Je kunt je menukaart altijd toevoegen: log in en tik op <b>Menu importeren</b> in je menuscherm om hier verder te gaan.",
+    "keepGoing": "Doorgaan",
+    "finishLater": "Later afmaken",
+    "title": "Deze import weggooien?",
+    "keepEditing": "Verder bewerken",
+    "discard": "Weggooien",
+    "body": "Je wijzigingen worden niet opgeslagen — de geïmporteerde items, bereidingstijden en keukencapaciteit worden niet toegevoegd."
+  },
+  "allergenCardText": {
+    "contains": "Bevat: {list}",
+    "mayContain": "Kan bevatten: {list}"
+  }
+}

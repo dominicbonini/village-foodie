@@ -1,0 +1,10 @@
+{
+  "download": "Descargar imagen",
+  "copied": "Copiado ✓",
+  "copyCaption": "Copiar texto",
+  "share": "Compartir",
+  "copiedStatus": "{kind, select, postText {Texto de la publicación copiado.} other {Texto copiado.}}",
+  "copyFailed": "No se pudo copiar — selecciona el texto y cópialo a mano.",
+  "sharedStatus": "{kind, select, postText {Texto de la publicación copiado — pégalo en tu publicación.} other {Texto copiado — pégalo en tu publicación.}}",
+  "shareRefused": "{kind, select, postText {No se permitió compartir, así que se ha descargado la imagen. Texto de la publicación copiado.} other {No se permitió compartir, así que se ha descargado la imagen. Texto copiado.}}"
+}

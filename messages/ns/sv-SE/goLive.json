@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Välj hur du visar allergeninformation",
+    "detail": "Tills du har valt ser kunderna inga av dina rätter — menyn skyddar sig själv genom att dölja allt vars allergener inte är bekräftade, och just nu gäller det allt.",
+    "where": "Meny → Allergener"
+  },
+  "allergensCardMissing": {
+    "title": "Lägg till din allergenlista",
+    "detail": "Du har valt att visa en allergenlista, men ingen är sparad — så kunderna skulle få veta att allergeninformation finns och sedan inte hitta något.",
+    "where": "Meny → Allergener"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Bekräfta allergener för {count} rätt} other {Bekräfta allergener för {count} rätter}}",
+    "detail": "{n, plural, one {Din rätt döljs för kunderna tills du bekräftar dess allergener.} other {{u, plural, one {{unverified} av dina {total} rätter döljs för kunderna tills du bekräftar dess allergener.} other {{unverified} av dina {total} rätter döljs för kunderna tills du bekräftar deras allergener.}}}} En rätt som visas utan bekräftade allergener uppfattas som ”innehåller inga”, så menyn döljer den hellre än att ta den risken.",
+    "where": "Meny → Allergener"
+  },
+  "noVan": {
+    "title": "Lägg till en foodtruck",
+    "detail": "Evenemang kopplas till en foodtruck — utan en finns det inget som kan ta emot beställningar.",
+    "where": "Inställningar → Dina foodtruckar"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Ställ in din kökskapacitet",
+    "detail": "Ingen kapacitet är inställd för {vans}. Utan den fortsätter vi att lova kunderna upphämtningstider som ditt kök inte har en chans att klara.",
+    "where": "Meny → Kökskapacitet",
+    "unnamedVan": "Namnlös foodtruck"
+  },
+  "noPrepBearingCategory": {
+    "title": "Berätta hur lång tid din mat tar",
+    "detail": "{categories, select, none {Du har inga menykategorier än, så vi kan inte räkna ut hur lång tid en beställning tar.} other {Ingen av dina kategorier har en tillagningstid inställd, så varje beställning ser ut att gå på nolltid för oss. Vi skulle fortsätta ge kunderna upphämtningstider som ditt kök inte har en chans att klara, och ju mer att göra du har, desto mer skulle de slå fel.}}",
+    "where": "Meny → Kategorier → Köksinställningar"
+  },
+  "emailUnverified": {
+    "title": "Bekräfta din e-postadress",
+    "detail": "Vi skickar beställningsaviseringar och kontoåterställning till den här adressen. Om den är fel märker du det först när något redan har gått snett.",
+    "where": "Kolla din inkorg efter vår bekräftelselänk"
+  },
+  "emailUnknown": {
+    "title": "Okänd status för e-postbekräftelse",
+    "detail": "E-postverifiering är inte kopplad än, så detta kan inte bedömas. Det blockerar avsiktligt i stället för att släppas igenom i tysthet.",
+    "where": "—"
+  }
+}

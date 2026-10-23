@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {O seu primeiro mês é totalmente grátis — com todas as funcionalidades desbloqueadas.} other {Os seus primeiros # meses são totalmente grátis — com todas as funcionalidades desbloqueadas.}}",
+    "body": "Com {brand}, os clientes encomendam com antecedência e pagam no levantamento, por isso pode receber encomendas online sem ligar nenhum serviço de pagamentos com cartão. Prefere receber o pagamento antecipadamente? Adicione pagamentos online com cartão quando quiser. Quando o seu teste terminar, passa para o plano <plan>{fallback}</plan>{fallbackFree, select, yes { (sem mensalidade)} other {}}, a menos que escolha outro plano. Sem cartão para começar, sem contrato, cancele quando quiser."
+  },
+  "card": {
+    "perTruckMonth": "por food truck / mês",
+    "mostTrucks": "O mais escolhido",
+    "tryFree": "Experimente grátis",
+    "seeEvery": "Ver todas as funcionalidades →",
+    "everything": "Tudo para gerir o seu serviço",
+    "everythingIn": "Tudo o que o plano {plan} inclui, e ainda"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> apenas nas encomendas online pagas com cartão. As encomendas ao balcão são sempre grátis.",
+    "included": "Os primeiros <b>{included}</b> em encomendas online estão incluídos todos os meses; depois, <b>{fee}*</b>. As encomendas ao balcão são sempre grátis.",
+    "noFee": "<b>Sem taxas HatchGrab</b> nas encomendas online, por mais movimento que tenha. Um custo mensal previsível."
+  },
+  "base": {
+    "walkUp": "Encomendas ao balcão e ecrã da cozinha",
+    "online": "Encomendas online",
+    "preorders": "Encomendas antecipadas e hora de levantamento",
+    "capacity": "Gestão da capacidade da cozinha",
+    "privateEvents": "Eventos privados",
+    "printing": "Impressão de talões da cozinha",
+    "app": "App da cozinha para iPhone, iPad e Android"
+  },
+  "added": {
+    "whatsapp_replies": "Respostas automáticas do WhatsApp",
+    "schedule_graphics": "Publicações para redes sociais — a sua agenda para Facebook e Instagram — prontas a publicar",
+    "event_types": "Tipos de evento e preços por evento personalizados"
+  },
+  "money": {
+    "unlimitedOrders": "Encomendas online ilimitadas, 0 % de taxa HatchGrab",
+    "samePrice": "O mesmo preço no seu mês mais movimentado"
+  },
+  "comingSoon": "Em breve",
+  "bar": {
+    "title": "Que plano me fica mais barato?",
+    "subtitle": "As suas encomendas online por mês",
+    "first": "Menos de {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Mais de {from} → <b>{plan}</b>",
+    "only": "Qualquer volume → <b>{plan}</b>"
+  },
+  "footnote": "* Acrescem as taxas de processamento de cartões da Stripe nas encomendas online pagas com cartão (tarifa atual — {country}: {cardFee}), pagas à Stripe e não à HatchGrab. As encomendas ao balcão usam o seu próprio terminal de pagamento — a HatchGrab cobra 0 %.",
+  "currencyLine": "Preços em {currency} ({code})"
+}

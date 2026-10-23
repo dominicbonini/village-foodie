@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Dove ha sede il tuo food truck?",
+  "stepIntro": "Da qui dipendono valuta, prezzi, fuso orario e formato del telefono. Il paese non si può cambiare in seguito, perché è legato ai tuoi pagamenti con carta.",
+  "settingsHeading": "Dove operi",
+  "countryLabel": "Paese",
+  "countryGuessed": "L’abbiamo dedotto dalla tua posizione. Cambialo se è sbagliato.",
+  "countryLocked": "Il paese non può essere cambiato",
+  "townLabel": "Città o comune",
+  "townQuestion": "Città o comune in cui hai sede",
+  "timezoneLabel": "Fuso orario",
+  "continueButton": "Continua",
+  "saveFailed": "Impossibile salvare le impostazioni: riprova."
+}

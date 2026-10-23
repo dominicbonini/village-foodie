@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Mostra gli allergeni per ogni piatto",
+    "recommended": "Consigliato",
+    "perDishBody": "Controlla ogni piatto e conferma i suoi allergeni. I clienti vedono le etichette per piatto più una scheda allergeni riassuntiva ricavata da queste.",
+    "cardTitle": "Mostra una scheda allergeni",
+    "cardBody": "Carica o incolla un’unica scheda allergeni (PDF, immagine o testo), mostrata così com’è. Le etichette per piatto restano nascoste."
+  }
+}

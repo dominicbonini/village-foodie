@@ -1,0 +1,15 @@
+{
+  "bgPortraitTip": "Tipp: Ein Bild im Hochformat (1080 × 1350, 4:5) wird in den Feeds von Instagram und Facebook am grössten angezeigt.",
+  "daysBlurb": "Eine Zeile pro Tag. Ziehen Sie das orangefarbene Feld auf Ihrem Plakat, um die Zeilen zu verschieben; ziehen Sie an seinen Ecken, um sie zu vergrössern oder zu verkleinern.",
+  "qlBigPicture": "Grosses Bild",
+  "previewPostClose": "Schliessen",
+  "darkenHint": "Legt eine dunkle Ebene über Ihr Bild, damit weisse Schrift besser lesbar ist.",
+  "labelTextSize": "Textgrösse",
+  "allTextSizeHint": "Ändert alle Felder auf einmal; grosse Felder bleiben grösser.",
+  "backgroundSummary": "Bild ersetzen · Bild abdunkeln · Grössenempfehlung",
+  "phoneTabSize": "Grösse",
+  "phoneSheetClose": "Schliessen",
+  "screen": {
+    "imageTooBig": "Dieses Bild ist {size} MB gross. Die Grenze liegt bei 10 MB."
+  }
+}

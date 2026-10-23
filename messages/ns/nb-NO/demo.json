@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Ikke tilgjengelig i demoen",
+  "demoMode": "DEMOMODUS",
+  "loopLands": "Akkurat slik kommer en ekte bestilling inn",
+  "showMe": "Vis meg",
+  "noCard": "{sub} Du trenger ikke kort.",
+  "notYet": "Ikke ennå",
+  "cashAndCollected": "Kontant og hentet",
+  "logoPlaceholder": "Logoen din her",
+  "welcomeTitle": "{sample, select, yes {Her er en eksempeldemo} other {Her er demoen din}}",
+  "welcomeIntro": "{sample, select, yes {Dette er en <b>eksempelmeny</b>, så du kan se hvordan alt fungerer — last opp din egen når som helst for å gjøre den til din.} other {Dette er din egen meny og profil, på en ekte bestillingsskjerm.}} Bestillingene som allerede ligger der, er eksempler, så du kan se hvordan en travel dag ser ut.",
+  "twoThings": "To ting du kan prøve:",
+  "hitButton": "Trykk <b>{button}</b> på en bestilling",
+  "scanQr": "Skann <b>QR-koden</b> — eller trykk på lenken — og bestill som en kunde, og se bestillingen komme inn",
+  "qrAlt": "QR-kode til bestillingssiden din for kunder",
+  "openHere": "Eller åpne den på denne enheten",
+  "copyLink": "Kopier lenke",
+  "copyDescribedAs": "bestillingslenke",
+  "noLinkTitle": "Bestillingslenken din for kunder",
+  "noLinkBody": "Lenken til bestillingssiden din ligger i menyen øverst til høyre.",
+  "asLive": "Bestillingene og kjøkkenflyten fungerer nøyaktig som i ekte drift.",
+  "startExploring": "Begynn å utforske",
+  "signupOffer": {
+    "heading": "Registrer deg for en gratis måned nå",
+    "sub": "Klokka starter ikke før du bestemmer deg for å åpne for kunder."
+  },
+  "cashIcon": "💵"
+}

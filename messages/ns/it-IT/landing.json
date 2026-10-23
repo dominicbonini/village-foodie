@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistema di ordini online per food truck e ristorazione ambulante",
+    "description": "Ordini online, preordini e monitor cucina per food truck e ristorazione ambulante ({country}).",
+    "audience": "Gestori di food truck e operatori della ristorazione ambulante"
+  },
+  "hero": {
+    "title": "Il sistema di ordini online pensato per i <lean>food truck.</lean>",
+    "subSmall": "Carica il tuo menu, senza registrazione.<br></br>Una demo funzionante in meno di 60 secondi.",
+    "tagline": "Meno tempo a gestire gli ordini.<br></br>Più tempo ai <lean>fornelli.</lean>",
+    "cta": "Carica il mio menu →",
+    "ctaNote": "<lead>Carica una foto del tuo menu e guardalo funzionare in meno di 60 secondi.</lead><small>Nessuna registrazione. Nessuna carta.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Il monitor cucina di HatchGrab, con le comande in ordine di preparazione",
+    "dashboardAlt": "Un ordine preso su HatchGrab: il menu a sinistra, il carrello e il totale a destra",
+    "phoneAlt": "Ordinare da un food truck su HatchGrab: il menu con foto e prezzi e il totale del carrello aggiornato"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Primo mese completamente gratis, tutto sbloccato} other {Primi # mesi completamente gratis, tutto sbloccato}}",
+    "noCard": "Nessuna carta richiesta",
+    "cancel": "Disdici quando vuoi, nessun vincolo"
+  },
+  "does": {
+    "eyebrow": "Cosa fa",
+    "title": "Pensato per i food truck, non per i ristoranti.",
+    "lede": "La maggior parte dei sistemi di ordini online dà per scontati un indirizzo fisso, un Wi-Fi affidabile e gli stessi orari ogni settimana. Tu invece ogni settimana sei in un posto diverso, a orari diversi, con una copertura mobile scarsa o assente. HatchGrab è nato per questo.",
+    "slotsTitle": "I clienti scelgono l’orario di ritiro",
+    "capacityTitle": "Imposta gli ordini massimi per fascia oraria",
+    "capacityBody": "Imposta quanto riesci a cucinare alla volta e quanto tempo ci vuole. Quando un orario di ritiro è pieno, i clienti non possono più sceglierlo.",
+    "devicesTitle": "Funziona su qualsiasi dispositivo",
+    "devicesBody": "Funziona sul telefono nel grembiule, sul tablet sul bancone, sul portatile nel food truck — e sul POS con cui incassi già.",
+    "postsTitle": "Automatizza i tuoi post su Facebook e Instagram",
+    "postsBody": "Carica la grafica che pubblichi già su Facebook o Instagram. Noi inseriamo date, luoghi e orari, pronti da condividere — ogni settimana o ogni giorno.",
+    "whatsappTitle": "Risposte automatiche WhatsApp",
+    "whatsappBody": "«Dove siete stasera?» «Che dolci avete?» Il tuo WhatsApp risponde mentre guidi verso la postazione o sei alla piastra, usando il tuo menu e il tuo calendario. Messenger e Instagram in arrivo.",
+    "whatsappSoonTitle": "Risposte automatiche WhatsApp <soon>In arrivo</soon>",
+    "whatsappSoonBody": "«Dove siete stasera?» «Che dolci avete?» Presto il tuo WhatsApp risponderà mentre guidi verso la postazione o sei alla piastra. Seguiranno Messenger e Instagram.",
+    "offlineTitle": "Niente segnale? Continua a servire.",
+    "offlineBody": "Se perdi il segnale, gli ordini online si mettono in pausa automaticamente, così i clienti non possono inviare ordini che non vedresti. Continua a prendere ordini con l’app per iPhone, iPad e Android.",
+    "slotsBody": "I clienti ordinano in anticipo e scelgono un orario di ritiro. Meno code e cibo pronto al loro arrivo."
+  },
+  "steps": {
+    "eyebrow": "Per iniziare",
+    "title": "Configura tutto e inizia a ricevere ordini in circa 15 minuti.",
+    "lede": "Tre cose da sistemare — e per due basta una foto.",
+    "menuTitle": "Crea il tuo menu",
+    "menuBody": "Fotografa la lavagna o incolla il testo. Piatti, prezzi ed extra vengono importati da soli. Tu controlli solo che sia tutto giusto.",
+    "scheduleTitle": "Aggiungi il tuo calendario",
+    "scheduleBody": "Ce l’hai sul tuo sito? Lo leggiamo da lì e lo teniamo aggiornato. Altrimenti, fotografa anche quello. Tu approvi solo quello che troviamo.",
+    "shareTitle": "Condividi il tuo link",
+    "shareBody": "Pubblicalo su Facebook, attacca il QR code sul food truck. Gli ordini arrivano sul tuo schermo, nell’ordine in cui devi prepararli."
+  },
+  "testimonial": {
+    "quote": "HatchGrab ha reso gli ordini molto più semplici. È tutto organizzato, teniamo sotto controllo le scorte e sappiamo esattamente quante pizze ci restano da vendere — e le fasce orarie di ritiro sono fantastiche nei paesi più affollati.",
+    "award": "Pizzeria mobile dell’anno",
+    "awardScope": "Vincitore regionale",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia e Bogdan — titolari"
+  },
+  "pricing": {
+    "eyebrow": "Prezzi",
+    "title": "Inizia gratis. Passa a un piano superiore quando ti serve.",
+    "switchHead": "Usi già un’altra piattaforma?",
+    "switchBody": "Scopri quanto pagheresti con HatchGrab per gli stessi ordini. Ci vuole circa un minuto.",
+    "switchCta": "Confronta quanto paghi"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Vuoi vedere quanto è facile configurarlo?",
+    "lede": "Carica una foto o uno screenshot del tuo menu e lo trasformiamo in una pagina di ordini funzionante da provare in meno di 60 secondi. I tuoi piatti, i tuoi prezzi. Nessuna registrazione, nessuna carta, niente da installare. Dai un’occhiata, poi decidi.",
+    "cta": "Carica subito il mio menu →"
+  },
+  "meta": {
+    "title": "Sistema di ordini online per food truck e ristorazione ambulante — HatchGrab {country}",
+    "description": "Ricevi ordini e preordini dalla tua postazione, senza code. Software di ordini online e monitor cucina per food truck e ristorazione ambulante ({country}) — non una cassa."
+  }
+}

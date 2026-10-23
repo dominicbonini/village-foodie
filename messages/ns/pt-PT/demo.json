@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Indisponível na demonstração",
+  "demoMode": "MODO DEMO",
+  "loopLands": "É exatamente assim que chega uma encomenda real",
+  "showMe": "Mostrar",
+  "noCard": "{sub} Não precisa de cartão.",
+  "notYet": "Ainda não",
+  "cashAndCollected": "Dinheiro e levantada",
+  "logoPlaceholder": "O seu logótipo aqui",
+  "welcomeTitle": "{sample, select, yes {Eis uma demonstração de exemplo} other {Eis a sua demonstração}}",
+  "welcomeIntro": "{sample, select, yes {Esta é uma <b>ementa provisória</b> para ver como tudo funciona — carregue a sua quando quiser para a tornar sua.} other {Esta é a sua própria ementa e imagem, num painel real.}} As encomendas que já lá estão são exemplos, para que veja um serviço movimentado.",
+  "twoThings": "Duas coisas a experimentar:",
+  "hitButton": "Toque em <b>{button}</b> numa encomenda",
+  "scanQr": "Leia o <b>código QR</b> — ou toque no link — e encomende como cliente; depois veja a encomenda chegar",
+  "qrAlt": "Código QR para a sua página de encomendas",
+  "openHere": "Ou abra-a neste dispositivo",
+  "copyLink": "Copiar link",
+  "copyDescribedAs": "link de encomenda",
+  "noLinkTitle": "O seu link de encomenda para clientes",
+  "noLinkBody": "O link da sua página de encomendas está no menu, no canto superior direito.",
+  "asLive": "O fluxo de encomendas e da cozinha é exatamente igual ao real.",
+  "startExploring": "Começar a explorar",
+  "signupOffer": {
+    "heading": "Registe-se já para o seu mês grátis",
+    "sub": "O tempo só começa a contar quando decidir ficar online."
+  },
+  "cashIcon": "💶"
+}

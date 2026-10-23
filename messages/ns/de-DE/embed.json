@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Wo {truck} als Nächstes steht.",
+  "orderFrom": "Bei {truck} bestellen",
+  "poweredBy": "Bereitgestellt von <b>HatchGrab</b>",
+  "loadFailed": "Die Termine konnten gerade nicht geladen werden.",
+  "loading": "Termine werden geladen…",
+  "empty": "Keine anstehenden Termine für {truck}."
+}

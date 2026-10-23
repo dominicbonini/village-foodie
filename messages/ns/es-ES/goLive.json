@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Elige cómo muestras la información de alérgenos",
+    "detail": "Hasta que elijas, los clientes no ven ninguno de tus platos: la carta se protege ocultando todo lo que tenga alérgenos sin confirmar, y ahora mismo eso es todo.",
+    "where": "Carta → Alérgenos"
+  },
+  "allergensCardMissing": {
+    "title": "Añade tu carta de alérgenos",
+    "detail": "Has elegido mostrar una carta de alérgenos, pero no hay ninguna guardada, así que a los clientes se les diría que hay información de alérgenos y luego no encontrarían nada.",
+    "where": "Carta → Alérgenos"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Confirma los alérgenos de {count} plato} other {Confirma los alérgenos de {count} platos}}",
+    "detail": "{n, plural, one {Tu plato está oculto para los clientes hasta que confirmes sus alérgenos.} other {{u, plural, one {{unverified} de tus {total} platos está oculto para los clientes hasta que confirmes sus alérgenos.} other {{unverified} de tus {total} platos están ocultos para los clientes hasta que confirmes sus alérgenos.}}}} Un plato mostrado sin alérgenos confirmados se lee como “no contiene ninguno”, así que la carta lo oculta en vez de correr ese riesgo.",
+    "where": "Carta → Alérgenos"
+  },
+  "noVan": {
+    "title": "Añade un food truck",
+    "detail": "Los eventos van asociados a un food truck: sin uno, no hay por dónde recibir pedidos.",
+    "where": "Ajustes → Tus food trucks"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Configura tu capacidad de cocina",
+    "detail": "No hay capacidad configurada para {vans}. Sin ella, seguiremos prometiendo a los clientes horas de recogida que tu cocina no puede cumplir.",
+    "where": "Carta → Capacidad de cocina",
+    "unnamedVan": "Food truck sin nombre"
+  },
+  "noPrepBearingCategory": {
+    "title": "Dinos cuánto tarda tu comida",
+    "detail": "{categories, select, none {Todavía no tienes categorías en la carta, así que no podemos calcular cuánto tarda un pedido.} other {Ninguna de tus categorías tiene un tiempo de cocinado configurado, así que para nosotros todos los pedidos parecen instantáneos. Seguiríamos dando a los clientes horas de recogida que tu cocina no tiene forma de cumplir, y cuanto más trabajo tengas, más desfasadas estarían.}}",
+    "where": "Carta → Categorías → Configuración de cocina"
+  },
+  "emailUnverified": {
+    "title": "Confirma tu dirección de correo electrónico",
+    "detail": "Enviamos a esta dirección los avisos de pedidos y la recuperación de la cuenta. Si es incorrecta, te enterarás cuando algo ya haya salido mal.",
+    "where": "Busca nuestro enlace de confirmación en tu bandeja de entrada"
+  },
+  "emailUnknown": {
+    "title": "Estado de confirmación del correo desconocido",
+    "detail": "La verificación del correo aún no está conectada, así que no se puede evaluar. Por diseño, bloquea en lugar de darse por superada en silencio.",
+    "where": "—"
+  }
+}

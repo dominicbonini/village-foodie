@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} er inkluderet i abonnementet »{plan}«.} other {{feature} er inkluderet i abonnementet »{plan}«.}}",
+  "notOnPlan": "{many, select, yes {{feature} er ikke med i dit abonnement.} other {{feature} er ikke med i dit abonnement.}}",
+  "switchedOff": "{many, select, yes {{feature} er slået fra for din foodtruck.} other {{feature} er slået fra for din foodtruck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Opgrader →",
+  "features": {
+    "discovery_map": {
+      "name": "Synlighed på HatchGrab-kortet",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Weboversigten",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Køkkenappen",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Menukortet via QR-kode",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Menuer",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Mersalg",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Bestillinger ved vognen",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Bestilling med betaling ved afhentning",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Udsolgt-knappen",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Lagernedtælling",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Beskyttelse af bestillinger uden forbindelse",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Onlinebetalinger",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Forudbestilling til kommende datoer",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Tidsrum, som kunderne vælger",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Styring af køkkenkapacitet",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatisk accept",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatiske svar på Messenger og Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR-koder med dit logo",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Avancerede rapporter",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Udskrivning af køkkenbonner",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Synkronisering mellem flere skærme i køkkenet",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Kokkeskærmen",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatiske svar på WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Din kalender på din egen hjemmeside",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Opslag på sociale medier",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Egne eventtyper",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Private arrangementer",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Bestillingssystem for matbiler og mobil servering",
+    "description": "Nettbestilling, forhåndsbestilling og kjøkkenskjerm for matbiler og mobil servering i {country}.",
+    "audience": "Matbileiere og aktører innen mobil servering"
+  },
+  "hero": {
+    "title": "Bestillingssystemet laget for <lean>matbiler.</lean>",
+    "subSmall": "Last opp menyen din, uten registrering.<br></br>Se en fungerende demo på under 60 sekunder.",
+    "tagline": "Mindre tid på bestillinger.<br></br>Mer tid til <lean>matlaging.</lean>",
+    "cta": "Last opp menyen min →",
+    "ctaNote": "<lead>Last opp et bilde av menyen din og se den i bruk på under 60 sekunder.</lead><small>Ingen registrering. Ingen kort.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Kjøkkenskjermen i HatchGrab, med bestillingsbonger i den rekkefølgen de skal lages",
+    "dashboardAlt": "Ta imot en bestilling i HatchGrab: menyen til venstre, handlekurven og totalsummen til høyre",
+    "phoneAlt": "Bestille fra en matbil med HatchGrab: menyen med bilder og priser, og en løpende totalsum i handlekurven"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Første måned helt gratis, alt låst opp} other {De første # månedene helt gratis, alt låst opp}}",
+    "noCard": "Ikke behov for kort",
+    "cancel": "Si opp når som helst, ingen bindingstid"
+  },
+  "does": {
+    "eyebrow": "Dette får du",
+    "title": "Laget for matbiler, ikke restauranter.",
+    "lede": "De fleste bestillingssystemer forutsetter fast adresse, stabilt wifi og de samme åpningstidene hver uke. Du står et nytt sted hver uke, til ulike tider, med dårlig eller ingen mobildekning. HatchGrab er laget for nettopp det.",
+    "slotsTitle": "Kundene velger hentetid",
+    "capacityTitle": "Still inn kjøkkenkapasiteten",
+    "capacityBody": "Angi hvor mye du kan lage samtidig, og hvor lang tid det tar. Når en hentetid er full, kan ikke kundene velge den.",
+    "devicesTitle": "Fungerer på alle enheter",
+    "devicesBody": "Kjører på telefonen i forkleet, nettbrettet på disken, den bærbare PC-en i matbilen — og betalingsterminalen du allerede tar betalt med.",
+    "postsTitle": "Automatiser innleggene dine på Facebook og Instagram",
+    "postsBody": "Last opp designet du allerede bruker på Facebook eller Instagram. Vi fyller inn datoer, steder og klokkeslett, klart til deling — hver uke eller hver dag.",
+    "whatsappTitle": "Automatiske svar på WhatsApp",
+    "whatsappBody": "«Hvor står dere i kveld?» «Hvilke desserter har dere?» WhatsApp-meldingene dine blir besvart mens du kjører til standplassen eller står ved grillen, ut fra din egen meny og kalender. Messenger og Instagram kommer snart.",
+    "whatsappSoonTitle": "Automatiske svar på WhatsApp <soon>Kommer snart</soon>",
+    "whatsappSoonBody": "«Hvor står dere i kveld?» «Hvilke desserter har dere?» Snart blir WhatsApp-meldingene dine besvart mens du kjører til standplassen eller står ved grillen. Messenger og Instagram følger etter.",
+    "offlineTitle": "Ingen dekning? Fortsett å servere.",
+    "offlineBody": "Mister du dekningen, settes nettbestillingen automatisk på pause, så kundene ikke kan legge inn bestillinger du ikke ser. Fortsett å ta imot bestillinger med appen for iPhone, iPad og Android.",
+    "slotsBody": "Kundene forhåndsbestiller, velger hentetid og slipper køen. Maten er klar når de kommer."
+  },
+  "steps": {
+    "eyebrow": "Kom i gang",
+    "title": "Sett opp alt og begynn å ta imot bestillinger på rundt 15 minutter.",
+    "lede": "Tre ting å ordne — og to av dem trenger bare et bilde.",
+    "menuTitle": "Lag menyen din",
+    "menuBody": "Ta bilde av menytavla eller lim inn menyen. Retter, priser og tillegg kommer med av seg selv. Du sjekker bare at alt stemmer.",
+    "scheduleTitle": "Legg inn kalenderen din",
+    "scheduleBody": "Har du den på nettsiden din? Da leser vi den derfra og holder den oppdatert. Hvis ikke, ta bilde av den også. Du godkjenner bare det vi finner.",
+    "shareTitle": "Del lenken din",
+    "shareBody": "Legg den ut på Facebook, og klistre QR-koden på matbilen. Bestillingene havner på skjermen din, i den rekkefølgen du skal lage dem."
+  },
+  "testimonial": {
+    "quote": "HatchGrab har gjort bestillingene så mye enklere. Alt er organisert, vi har kontroll på lageret og vet nøyaktig hvor mange pizzaer vi har igjen å selge — og tidslukene er fantastiske på travle småsteder.",
+    "award": "Årets mobile pizzeria",
+    "awardScope": "Regional vinner",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia og Bogdan — eiere"
+  },
+  "pricing": {
+    "eyebrow": "Priser",
+    "title": "Start gratis. Oppgrader når du trenger det.",
+    "switchHead": "Bytter du fra en annen plattform?",
+    "switchBody": "Se hva du ville betalt hos HatchGrab for de samme bestillingene. Tar omtrent ett minutt.",
+    "switchCta": "Sammenlign hva du betaler"
+  },
+  "final": {
+    "truckLabel": "Matbil",
+    "title": "Vil du se hvor enkelt det er å komme i gang?",
+    "lede": "Last opp et bilde eller en skjermdump av menyen din, så gjør vi den om til en fungerende bestillingsside du kan prøve deg fram med på under 60 sekunder. Dine retter, dine priser. Ingen registrering, ikke noe kort, ingenting å installere. Ta en titt, og bestem deg etterpå.",
+    "cta": "Last opp menyen min nå →"
+  },
+  "meta": {
+    "title": "Bestillingssystem for matbiler og mobil servering — HatchGrab {country}",
+    "description": "Ta imot bestillinger og forhåndsbestillinger på standplassen – kundene slipper køen. Bestillingssystem og kjøkkenskjerm for matbiler og mobil servering i {country} — ikke et kassasystem."
+  }
+}

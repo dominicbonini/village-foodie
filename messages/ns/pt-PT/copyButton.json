@@ -1,0 +1,10 @@
+{
+  "copy": "Copiar",
+  "copied": "Copiado ✓",
+  "failed": "Falha ao copiar",
+  "aria": "{label} {thing}",
+  "announceCopied": "Copiado: {thing}",
+  "announceCopiedValue": "Valor copiado",
+  "announceFailed": "Não foi possível copiar: {thing}. Selecione o texto e copie-o manualmente.",
+  "announceFailedValue": "Não foi possível copiar o valor. Selecione o texto e copie-o manualmente."
+}

@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {{name}: introduza um número de telemóvel válido} other {Introduza um número de telemóvel válido}}{withExample, select, yes { (ex.: {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {{name}: introduza um número de telefone válido} other {Introduza um número de telefone válido}}{withExample, select, yes { (ex.: {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {{name}: introduza um número de telefone válido} other {Introduza um número de telefone válido}}{withExample, select, yes { (ex.: {example})} other {}}."
+}

@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "pro Foodtruck / Monat",
+  "transactionFees": "Transaktionsgebühren",
+  "comingSoon": "Demnächst",
+  "footnote2Masked": "Online-Zahlungen laufen über Stripe Connect. Plattform- und Kartengebühren stehen noch nicht fest und werden zum Start bekannt gegeben.",
+  "card": {
+    "title": "Abrechnung & Zahlungen",
+    "managed": "Die Abrechnung wird von HatchGrab verwaltet",
+    "earlyAccess": "In der Startphase richten wir Tarife manuell ein und passen sie an.",
+    "planLine": "{trial, select, yes {{truck} · Tarif {plan} (Testphase)} other {{truck} · Tarif {plan}}}"
+  },
+  "currentPlan": "Aktueller Tarif",
+  "plan": {
+    "included": "Enthält Online-Bestellungen im Wert von {amount} pro Monat.",
+    "includedUnlimited": "Unbegrenzte Online-Bestellungen inklusive.",
+    "promo": "Sonderpreis.",
+    "promoUntil": "Sonderpreis bis {date}.",
+    "ended": "Ihr Tarif {plan} ist am {date} ausgelaufen. Ihr Tarif jetzt: {now}.",
+    "trialMonths": "Eine {months}-monatige kostenlose Testphase."
+  },
+  "trialEnds": "Testphase endet am {date}",
+  "yourTrialEnds": "Ihre Testphase endet am {date}",
+  "notStarted": {
+    "heading": "Ihre kostenlose Testphase hat noch nicht begonnen"
+  },
+  "onTrial": "Ihnen stehen alle Funktionen zur Verfügung. Wählen Sie einen Tarif, bevor Ihre Testphase endet.",
+  "onTrialNoCta": "Ihnen stehen alle Funktionen zur Verfügung.",
+  "noCharge": "🔒 Während Ihrer Testphase, die bis zum {date} läuft, zahlen Sie nichts. Die Abrechnung beginnt erst, wenn Sie einen Tarif wählen und Ihre Zahlungsdaten eingeben. Bis dahin gibt es nichts zu kündigen und nichts zu bezahlen.",
+  "fees": "*Bei Online-Bestellungen fallen die üblichen Kartengebühren an",
+  "setUpPayment": "⏱ Wählen Sie einen Tarif, bevor Ihre Testphase endet",
+  "changeYourPlan": "Tarif wechseln",
+  "planButton": "{plan} – {price}",
+  "upgradeModal": {
+    "title": "Zu {plan} wechseln",
+    "tagline": "{price} – {description}",
+    "body": "Wir richten gerade die automatische Abrechnung ein. Wenn Sie jetzt wechseln möchten, schreiben Sie uns kurz – wir stellen Sie innerhalb von 24 Stunden um.",
+    "mailSubject": "Wechsel zu {plan} – {truck}",
+    "mailBody": "Hallo, ich möchte {truck} auf den Tarif {plan} ({price}) umstellen.",
+    "email": "Per E-Mail wechseln",
+    "cancel": "Abbrechen"
+  }
+}

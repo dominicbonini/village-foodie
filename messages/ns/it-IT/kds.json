@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} · Cucina",
+  "loading": "Caricamento cucina…",
+  "pin": {
+    "title": "Inserisci il PIN",
+    "placeholder": "PIN",
+    "unlock": "Sblocca",
+    "unreachable": "Al momento il server non è raggiungibile. Il PIN non c’entra — riprova tra poco.",
+    "incorrect": "PIN errato",
+    "generic": "Si è verificato un errore. Riprova."
+  },
+  "error": {
+    "linkInvalid": "Questo link non è più valido.",
+    "couldNotLoad": "Impossibile caricare gli ordini",
+    "truckNotFound": "Food truck non trovato"
+  },
+  "degraded": {
+    "at": "⚠️ Server non raggiungibile. Comande aggiornate alle {time}. POTREBBERO MANCARE NUOVI ORDINI.",
+    "earlier": "⚠️ Server non raggiungibile. Comande di un aggiornamento precedente. POTREBBERO MANCARE NUOVI ORDINI."
+  },
+  "header": {
+    "dashboard": "Dashboard",
+    "backTitle": "Torna alla dashboard",
+    "list": "Elenco",
+    "grid": "Griglia",
+    "full": "Completa",
+    "cook": "Cucina",
+    "fullTitle": "Schede complete — prezzi e dettagli di pagamento, come le vede il banco.",
+    "cookTitle": "Schede cucina — testo più grande, raggruppate per categoria, senza prezzi.",
+    "readyStep": "Fase Pronto",
+    "readyOnlyTitle": "Questo schermo segna solo gli ordini come pronti, quindi non si può disattivare — è l’unica fase che svolge.",
+    "readyOnTitle": "Questo schermo segna gli ordini come pronti. Tocca per affidarlo a un altro schermo.",
+    "readyOffTitle": "Un altro schermo segna gli ordini come pronti. Tocca per affidarlo a questo.",
+    "handover": "Pagamento e ritiro",
+    "handoverOnlyTitle": "Questo schermo gestisce solo i pagamenti, quindi non si può disattivare — è l’unica fase che svolge.",
+    "handoverOnTitle": "Questo schermo incassa e gestisce il ritiro. Tocca per affidarlo a un altro schermo.",
+    "handoverOffTitle": "Un altro schermo incassa. Tocca per affidarlo a questo.",
+    "soundOn": "Suono nuovi ordini attivo — tocca per disattivarlo",
+    "soundOff": "Suono nuovi ordini disattivato — tocca per attivarlo",
+    "screenOn": "Schermo acceso",
+    "screenOff": "Schermo spento",
+    "screenSettings": "Impostazioni schermo",
+    "manageEvent": "Gestisci evento",
+    "manageEventTitle": "Gestisci evento — avvialo, mettilo in pausa, modificalo o terminalo",
+    "soundSettings": "Impostazioni audio",
+    "soundSettingsTitle": "Quali suoni si attivano su questo dispositivo",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Impostazioni vista",
+    "on": "Attivo",
+    "off": "Disattivo",
+    "newOrderSound": "Suono nuovo ordine",
+    "soundNeedsConfirming": "Solo ordini da confermare",
+    "soundAll": "Tutti i nuovi ordini",
+    "soundDue": "Suono quando un ordine va messo in cottura",
+    "soundDueHelp": "Suona quando una comanda diventa arancione.",
+    "deviceSettings": "Impostazioni dispositivo",
+    "sound": "Suono",
+    "close": "Chiudi"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Ordini non caricati per questo evento",
+    "mismatchBody": "Il server ha risposto con un evento diverso, quindi non mostriamo nulla piuttosto che ordini sbagliati. Seleziona di nuovo l’evento o ricarica.",
+    "mismatchBodyAt": "Il server ha risposto con un evento diverso, quindi non mostriamo nulla piuttosto che ordini sbagliati per {venue}. Seleziona di nuovo l’evento o ricarica.",
+    "paused": "⏸ Ordini in pausa{reason, select, offline { (dispositivo offline)} other {}} — i clienti non possono ordinare",
+    "resume": "Riprendi",
+    "offline": "Nessuna connessione — mostro gli ultimi ordini noti. Gli ordini online sono stati sospesi per i clienti.",
+    "queued": "{n, plural, one {{count} azione in coda} other {{count} azioni in coda}}",
+    "extraWait": "⏱ Attesa extra di +{mins} min attiva",
+    "clear": "Rimuovi",
+    "toMake": "Da preparare",
+    "today": "Oggi · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Avvia evento",
+    "recentlyClosed": "Evento terminato · {venue}, chiuso alle {time}",
+    "eventStatus": "{tone, select, paused {⏸ In pausa} live {● In corso} finished {● Terminato} cancelled {Annullato} other {Non iniziato}}"
+  },
+  "board": {
+    "queueClear": "Coda vuota",
+    "doneToday": "Completati oggi · {count}",
+    "paid": "✓ pagato",
+    "cardHeld": "carta preautorizzata",
+    "due": "{amount} da pagare"
+  },
+  "screenOff": {
+    "title": "Consentire lo spegnimento dello schermo?",
+    "bodyVans": "{vans} {n, plural, one {ha} other {hanno}} il rilevamento offline attivo. Se lo schermo si spegne, il dispositivo potrebbe smettere di inviare il segnale di connessione e gli ordini dei clienti potrebbero essere sospesi.",
+    "body": "Se lo schermo si spegne, il dispositivo potrebbe smettere di inviare il segnale di connessione.",
+    "keepHint": "Tieni lo schermo acceso per non interrompere gli ordini.",
+    "keep": "Tieni lo schermo acceso",
+    "allow": "Consenti lo spegnimento"
+  },
+  "event": {
+    "change": "Cambia evento",
+    "cancel": "Annulla",
+    "waitActive": "⏱ +{mins} min attivi · Tocca per rimuovere",
+    "addWait": "⏱ Aggiungi attesa extra",
+    "endTitle": "Terminare l’evento?",
+    "endEarly": "Questo evento dovrebbe terminare alle {time}. Non saranno più accettati ordini. Confermi di voler terminare l’evento?",
+    "endNow": "Terminare questo evento? Non saranno più accettati ordini.",
+    "yes": "Sì",
+    "started": "Evento avviato",
+    "startFutureConfirm": "Questo evento è in programma il {date}. Avviarlo ora?",
+    "finishTimeNow": "Nuovo orario di fine: {time}",
+    "finished": "Evento terminato",
+    "cancelled": "Evento annullato",
+    "noteSaved": "Nota salvata",
+    "pauseConfirm": "Mettere in pausa gli ordini? I clienti vedranno «Ordini sospesi» finché non riprendi.",
+    "switchConfirm": "Passare da {from} a {to}?{n, plural, =0 {} one { {count} ordine su questo schermo verrà sostituito.} other { {count} ordini su questo schermo verranno sostituiti.}} Tocca l’evento attuale per tornare indietro."
+  },
+  "intro": {
+    "title": "Questo è il monitor cucina",
+    "p1": "È la vista di chi cucina — gli ordini da preparare, nell’ordine in cui prepararli. Lo schermo vicino alla piastra mostra questo, mentre al banco si usa la dashboard ordini.",
+    "p2": "Le schede avanzano man mano che le tocchi, così chi cucina sa sempre cosa viene dopo e nessuno deve urlare. Qui sono tutti dati demo — prova pure.",
+    "gotIt": "Ho capito"
+  },
+  "toast": {
+    "failed": "Non riuscito",
+    "rejectFailed": "Rifiuto non riuscito",
+    "buzzerSaved": "Cercapersone {n} salvato",
+    "buzzerRemoved": "Cercapersone {n} rimosso",
+    "buzzerRemovedNone": "Cercapersone rimosso",
+    "buzzerAssigned": "Cercapersone {n} assegnato",
+    "buzzerAssignedFrom": "Cercapersone {n} assegnato (preso dal #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Impossibile togliere il cercapersone {target, select, order {all’ordine #{id}} other {a questo ordine}}} other {Impossibile togliere il cercapersone {n} — è ancora assegnato {target, select, order {all’ordine #{id}} other {a questo ordine}}}}",
+    "buzzerAssignFailed": "Impossibile dare il cercapersone {n} {target, select, order {all’ordine #{id}} other {a questo ordine}} — {had, select, yes {ha ancora il cercapersone {prior}} other {non ha ancora un cercapersone}}"
+  }
+}

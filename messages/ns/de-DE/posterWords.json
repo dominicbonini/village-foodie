@@ -1,0 +1,25 @@
+{
+  "heading": "Woche vom {start} bis {end}",
+  "daysOff": "Heute Ruhetag",
+  "cancelled": "ABGESAGT",
+  "placeSample": {
+    "nameTownBelow": "Gasthaus Zur Linde\nBamberg",
+    "nameTown": "Gasthaus Zur Linde, Bamberg",
+    "nameOnly": "Gasthaus Zur Linde"
+  },
+  "busyWeek": {
+    "venue1": "Bürgerhaus Bamberg",
+    "town1": "Bamberg",
+    "venue2": "Sportgelände und Bolzplatz des TSV Erlangen-Tennenlohe",
+    "town2": "Erlangen-Tennenlohe",
+    "venue3": "Marktplatz",
+    "town3": "Fürth",
+    "venue4": "Street Food Festival",
+    "town4": "Würzburg",
+    "venue5": "Gasthof Zum Ochsen",
+    "town5": "Bayreuth",
+    "venue6": "Kirchplatz",
+    "town6": "Nürnberg"
+  },
+  "poweredBy": "Bereitgestellt von HatchGrab"
+}

@@ -1,0 +1,76 @@
+{
+  "order": {
+    "authFailed": "Die betaling kon niet worden geautoriseerd. Er is geen geld afgeschreven — probeer een andere kaart of kies ‘Ter plaatse betalen’.",
+    "paymentThrew": "Er ging iets mis bij die betaling. Er is geen geld afgeschreven — probeer het opnieuw of kies ‘Ter plaatse betalen’.",
+    "payAtTruck": "Ter plaatse betalen",
+    "payAtTruckLine": "Ter plaatse betalen bij het afhalen · Geen kaartgegevens nodig"
+  },
+  "errorsCustomer": {
+    "card_unavailable": "We konden de kaartbetaling nu niet instellen, dus je bestelling is niet geplaatst en er is niets afgeschreven. Je winkelmandje is bewaard — probeer het opnieuw of kies Ter plaatse betalen.",
+    "pay_at_hatch_unavailable": "Deze foodtruck neemt op dit moment geen online bestellingen met Ter plaatse betalen aan. Betaal met je kaart."
+  },
+  "orderStatus": {
+    "payAtTruck": "Ter plaatse betalen"
+  },
+  "emailCustomer": {
+    "payNote": {
+      "hatchTitle": "Ter plaatse betalen als je afhaalt",
+      "hatchText": "Ter plaatse betalen als je afhaalt.",
+      "hatchReady": "Ter plaatse betalen."
+    }
+  },
+  "paymentActions": {
+    "paidCardMachine": "Betaald met je betaalterminal{mixed, select, yes { — {amount}} other {}}",
+    "inPersonHint": "Contant of met je betaalterminal — niet geregistreerd"
+  },
+  "orderCard": {
+    "cardAndCollected": "Kaart & afgehaald",
+    "card": "Kaart"
+  },
+  "addOrder": {
+    "savedToast": "Bestelling {id} opgeslagen{paid, select, cash { — contant betaald} card { — betaald met je betaalterminal} other {}}",
+    "confirmedToast": "Bestelling #{id} bevestigd{paid, select, cash { — contant betaald} card { — betaald met je betaalterminal} other {}}",
+    "card": "Kaart"
+  },
+  "managePayments": {
+    "walkUp": {
+      "ownTerminal": "Je eigen betaalterminal",
+      "hatchgrabHelp": "Gebruikt dezelfde Stripe-koppeling als je online betalingen — een betaalterminal, of contactloos rechtstreeks op je telefoon of tablet."
+    }
+  },
+  "landing": {
+    "does": {
+      "devicesBody": "Op de telefoon in je schort, de tablet op de toonbank, de laptop in de foodtruck — en het betaalterminal waarmee je nu al afrekent."
+    }
+  },
+  "planFeatures": {
+    "priceWord": {
+      "payAtHatch": "Ter plaatse betalen"
+    }
+  },
+  "planPrompt": {
+    "features": {
+      "online_ordering_pay_at_hatch": {
+        "name": "Online bestellen met Ter plaatse betalen"
+      }
+    }
+  },
+  "pricing": {
+    "footnote": "* Plus de kaarttransactiekosten van Stripe op online kaartbestellingen (nu {country}: {cardFee}), te betalen aan Stripe, niet aan HatchGrab. Bestellingen aan de truck lopen via je eigen betaalterminal — HatchGrab rekent 0%."
+  },
+  "featuresPage": {
+    "detail": {
+      "walkup_orders": "Neem bestellingen aan het loket aan en beheer ze, betaald via je eigen betaalterminal.",
+      "tap_to_pay": "Ontvang kaartbetalingen op een geschikte telefoon, zodat je geen aparte betaalterminal nodig hebt."
+    }
+  },
+  "compare": {
+    "orders": {
+      "captionNo": "Een ruwe schatting is prima — voorbestellingen en klanten die de rij overslaan, niet contant of met de kaart betalen aan het loket.",
+      "captionYes": "Alleen bestellingen via je bestelpagina — niet contant of met de kaart betalen aan het loket."
+    },
+    "breakdown": {
+      "card": "Kaartverwerking — Stripe rekent {fee} per bestelling, betaald aan Stripe. Met een betaalterminal aan het loket betaal je ongeveer hetzelfde."
+    }
+  }
+}

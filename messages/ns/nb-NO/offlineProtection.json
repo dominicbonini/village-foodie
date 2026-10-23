@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Du må ha oversikten eller kjøkkenskjermen på og tilkoblet under servering.",
+  "explainerBody": "Hvis skjermen slås av, enheten mister internett eller du går til et annet nettsted, tar beskyttelsen ved frakobling over – enten ved å sette bestillinger på pause eller ved å slå av automatisk godkjenning, alt etter hva du valgte.",
+  "reminder": "⚠️ Ha oversikten eller kjøkkenskjermen på og tilkoblet under servering, ellers kan beskyttelsen ved frakobling slå inn.",
+  "enableConfirm": "Beskyttelse ved frakobling er slått på.\n\nFor at bestillingene skal fortsette å komme inn, må skjermen være på. Hvis denne enheten mister forbindelsen, tar beskyttelsen over i modusen du valgte.\n\nSørg for at Skjerm på er slått på på denne enheten.",
+  "disableConfirm": "Slå av beskyttelse ved frakobling for dette arrangementet?\n\nHvis denne enheten mister forbindelsen, fortsetter nettbestillingene – kunder kan legge inn bestillinger du ikke ser. Slå den bare av hvis du har en stabil forbindelse.",
+  "cardDescription": "Bestemmer hva som skjer med innkommende bestillinger når enheten din mister forbindelsen.",
+  "purpose": "Hvis enheten din mister forbindelsen, stopper dette bestillinger mens du ikke kan se dem.",
+  "switchLabel": "Beskyttelse ved frakobling",
+  "switchHelp": "Hva som skjer når denne matbilen mister forbindelsen.",
+  "modes": {
+    "pause": {
+      "label": "Sett nettbestilling på pause",
+      "help": "Kundene kan ikke bestille før du er tilkoblet igjen."
+    },
+    "no_auto_accept": {
+      "label": "Ta imot bestillinger, bekreft dem selv",
+      "help": "Automatisk godkjenning slås av, så kundene kan fortsatt bestille, men ingenting bekreftes automatisk. Du bekrefter hver bestilling når du er tilkoblet igjen – og det som fortsatt venter, avvises automatisk etter tiden du har valgt, og kunden får beskjed på e-post."
+    }
+  },
+  "autoRejectLabel": "Avvis bestillinger som har ventet lenger enn",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

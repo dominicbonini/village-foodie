@@ -1,0 +1,25 @@
+{
+  "heading": "Semana de {start} a {end}",
+  "daysOff": "Hoje não abrimos",
+  "cancelled": "CANCELADO",
+  "placeSample": {
+    "nameTownBelow": "Taberna do Largo\nBraga",
+    "nameTown": "Taberna do Largo, Braga",
+    "nameOnly": "Taberna do Largo"
+  },
+  "busyWeek": {
+    "venue1": "Junta de Freguesia de Braga",
+    "town1": "Braga",
+    "venue2": "Complexo Desportivo e Parque de Jogos de Vila Nova de Famalicão",
+    "town2": "Vila Nova de Famalicão",
+    "venue3": "Praça do Mercado",
+    "town3": "Barcelos",
+    "venue4": "Festival Gastronómico",
+    "town4": "Guimarães",
+    "venue5": "Tasca do Zé",
+    "town5": "Viana do Castelo",
+    "venue6": "Adro da Igreja",
+    "town6": "Ponte de Lima"
+  },
+  "poweredBy": "Com tecnologia HatchGrab"
+}

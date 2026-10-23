@@ -1,0 +1,30 @@
+{
+  "heading": "Moms, drikkepenge og gebyrer",
+  "rate": {
+    "label": "Momssats",
+    "hint": "Den sats, du lægger på hver bestilling. Kunderne ser den lagt til ved betaling, på kvitteringer og på bonner.",
+    "regionDefault": "Lad feltet stå tomt for at opkræve {label} med {rate} %, satsen for tilberedt mad ({region})."
+  },
+  "included": {
+    "label": "Priser inkl. {label}",
+    "hint": "Dine priser er allerede inkl. {label}. Satsen viser kun, hvor stor en del af hver pris der er {label}, på kvitteringer og bonner — der lægges intet oveni ved betaling.",
+    "default": "Lad feltet stå tomt for at bruge {rate} % – satsen for {label} på varm mad til at tage med ({country})."
+  },
+  "tips": {
+    "label": "Drikkepenge",
+    "hint": "Kunder, der betaler online med kort, kan give drikkepenge. Det hele går til dig.",
+    "choices": "Valg, kunderne ser:",
+    "chip": "{rate} %",
+    "other": "Andet beløb"
+  },
+  "fee": {
+    "label": "Servicegebyr online",
+    "hint": "Lægges kun på onlinebestillinger. Aldrig på bestillinger med betaling ved afhentning eller køb i lugen. Du beholder det.",
+    "pctAria": "Servicegebyr i procent",
+    "fixedAria": "Servicegebyr som fast beløb",
+    "max": "Det højeste, du kan opkræve: {max}",
+    "example": "Kunderne ser det, før de betaler, som én linje: »{label} {amount}«.",
+    "hatchgrab": "HatchGrab lægger et servicegebyr på {fee} på dine kunders onlinebestillinger. Du betaler det ikke og kan ikke ændre det."
+  },
+  "saveFailed": "Kunne ikke gemme — prøv igen."
+}

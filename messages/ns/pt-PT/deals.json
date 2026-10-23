@@ -1,0 +1,17 @@
+{
+  "back": "← Voltar",
+  "title": "Aplicar um menu",
+  "save": "Poupe {amount}",
+  "selectItems": "Selecione os artigos para cada elemento",
+  "choose": "Escolher: {category}…",
+  "inYourBasket": "── No seu cesto ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (no cesto){state, select, used { — já incluído num menu} taken { — escolhido noutro elemento} other {}}",
+  "addNew": "── Adicionar novo ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obrigatório · escolha um} required {Obrigatório} other {Escolha um}}{unmet, select, yes { (obrigatório)} other {}}",
+  "notePlaceholder": "Adicione uma nota, p. ex. sem cebola (opcional)",
+  "backButton": "Voltar",
+  "cancel": "Cancelar",
+  "chooseRequired": "Escolher as opções obrigatórias",
+  "apply": "Aplicar menu · {amount}"
+}

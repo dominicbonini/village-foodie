@@ -1,0 +1,123 @@
+{
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for ITALIAN (it-IT). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "it",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "intolleran",
+    "celiac",
+    "celiachia",
+    "anafila",
+    "epipen",
+    "epi pen",
+    "adrenalina",
+    "senza glutine",
+    "senza lattosio",
+    "senza latte",
+    "senza latticini",
+    "senza uova",
+    "senza uovo",
+    "senza frutta a guscio",
+    "senza noci",
+    "senza arachidi",
+    "senza soia",
+    "senza sesamo",
+    "senza pesce",
+    "senza crostacei",
+    "senza molluschi",
+    "senza senape",
+    "senza sedano",
+    "senza solfiti",
+    "senza lupini",
+    "gluten free",
+    "lattosio free",
+    "privo di",
+    "priva di",
+    "adatto a",
+    "adatta a",
+    "adatto per",
+    "adatta per",
+    "sicuro per",
+    "sicura per",
+    "tracce di",
+    "puo contenere",
+    "contaminazione"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "glutine",
+        "frumento",
+        "grano",
+        "farina"
+      ],
+      "crustaceans": [
+        "crostacei",
+        "crostaceo",
+        "gamberi",
+        "gambero",
+        "scampi"
+      ],
+      "eggs": [
+        "uova",
+        "uovo",
+        "maionese"
+      ],
+      "fish": [
+        "pesce"
+      ],
+      "peanuts": [
+        "arachidi",
+        "arachide"
+      ],
+      "soy": [
+        "soia",
+        "tofu"
+      ],
+      "dairy": [
+        "latte",
+        "lattosio",
+        "latticini",
+        "formaggio",
+        "mozzarella",
+        "panna",
+        "burro",
+        "yogurt"
+      ],
+      "tree nuts": [
+        "frutta a guscio",
+        "noci",
+        "noce",
+        "mandorle",
+        "nocciole",
+        "pistacchi",
+        "anacardi"
+      ],
+      "celery": [
+        "sedano"
+      ],
+      "mustard": [
+        "senape"
+      ],
+      "sesame": [
+        "sesamo"
+      ],
+      "sulphites": [
+        "solfiti",
+        "anidride solforosa"
+      ],
+      "lupin": [
+        "lupini",
+        "lupino"
+      ],
+      "molluscs": [
+        "molluschi",
+        "cozze",
+        "vongole",
+        "calamari",
+        "polpo"
+      ]
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Abholzeiten",
+    "takes_cash": "Nehmen Sie Bargeld an?",
+    "offline_protection": "Offline-Bestellschutz",
+    "buzzer_prompt": "An Pager erinnern"
+  },
+  "typeFollowsVanTitle": "Folgt der üblichen Einstellung des jeweiligen Foodtrucks",
+  "sameSettingsAllVansLabel": "Gleiche Einstellungen für alle Foodtrucks",
+  "sameSettingsAllVansHeader": "Alle Foodtrucks",
+  "sameSettingsConfirm": "Die Einstellungen von Foodtruck 1 auf alle Foodtrucks kopieren? Damit werden alle Foodtruck-Einstellungen von Foodtruck 1 übernommen – wie mit „Wie Foodtruck 1“ in den Einstellungen. Die Küchenkapazität hat einen eigenen Schalter.",
+  "eventTypesFooterStandard": "„Standard“ ist Ihre übliche Einrichtung. Wenn Sie es hier ändern, ändert es sich auch in den Einstellungen.",
+  "eventTypesFooterOneEvent": "Um eine Einstellung nur für ein Event zu ändern, nutzen Sie das Dashboard dieses Events.",
+  "eventTypesSubtitle": "Änderungen werden laufend gespeichert.",
+  "matchStandardLabel": "Wie Standard",
+  "matchStandardConfirm": "Alle Einstellungen dieses Typs auf Standard zurücksetzen? Alles, was Sie hier geändert haben, wird gelöscht.",
+  "priceLabels": {
+    "price_change_on": "Preise ändern",
+    "price_mode": "Preisänderung",
+    "price_amount": "Betrag",
+    "price_rounding": "Rundung",
+    "item_prices": "Artikelpreise"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Jeden Preis selbst festlegen"
+  },
+  "priceRounding": {
+    "none": "Keine",
+    "nearest_1": "Auf 1 {symbol} runden",
+    "up_1": "Immer aufrunden"
+  },
+  "pricesStandardCell": "Ihre Speisekartenpreise",
+  "pricesTruckWideTitle": "Ihre Preise sind für jeden Foodtruck gleich",
+  "pricesMenuCell": "Speisekarte",
+  "pricesTypeOffCell": "Speisekartenpreise",
+  "itemPricesShow": "Preise anzeigen",
+  "itemPricesHide": "Preise ausblenden",
+  "priceItemsHeading": "Preis für jeden Artikel festlegen",
+  "priceItemsOpen": "Artikelpreise ansehen oder ändern ›",
+  "priceItemsClose": "Artikelpreise ausblenden ⌃",
+  "ownPriceCount": "{n, plural, one {{count} Artikel hat einen eigenen Preis} other {{count} Artikel haben einen eigenen Preis}}",
+  "priceTypeHint": "Tippen Sie auf einen Preis, um einen eigenen einzugeben.",
+  "pricesLiveNotice": "Dieses Event ist live. Neue Bestellungen verwenden die neuen Preise. Bereits aufgegebene Bestellungen behalten ihre.",
+  "placeTypeHelper": "„Event hinzufügen“ wählt diesen Typ, sobald Sie diesen Ort auswählen.",
+  "postPictureStandardNote": "Event-Beiträge verwenden hier Ihr Standarddesign.",
+  "eventItemsCardDescription": "Preise, Artikellimits und Verfügbarkeit nur für dieses Event. Änderungen gelten sofort.",
+  "eventPriceColumnLabel": "Preis",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · dieses Event} other {Speisekarte {price} · dieses Event}}",
+  "eventPriceEdit": "✎ Preise bearbeiten",
+  "eventPriceCancel": "Abbrechen",
+  "eventPriceSave": "Preise speichern",
+  "eventPriceEditNote": "Sie bearbeiten die Preise nur für dieses Event. Artikellimits und Verfügbarkeit sind bis zum Speichern gesperrt.",
+  "eventPriceLiveNote": "Live: Neue Bestellungen verwenden die neuen Preise.",
+  "offlineWhenOfflineLabel": "Wenn offline"
+}

@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Beställningssystem för foodtruckar och mobil catering",
+    "description": "Onlinebeställning, förbeställningar och köksskärm för foodtruckar och mobil catering i {country}.",
+    "audience": "Foodtruckägare och företag inom mobil catering"
+  },
+  "hero": {
+    "title": "Beställningssystemet byggt för <lean>foodtruckar.</lean>",
+    "subSmall": "Ladda upp din meny, ingen registrering behövs.<br></br>Se en fungerande demo på under 60 sekunder.",
+    "tagline": "Mindre tid på beställningar.<br></br>Mer tid att <lean>laga mat.</lean>",
+    "cta": "Ladda upp min meny →",
+    "ctaNote": "<lead>Ladda upp ett foto av din meny och se den fungera på under 60 sekunder.</lead><small>Ingen registrering. Inget kort.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "HatchGrabs köksskärm med beställningsbongar i den ordning de ska lagas",
+    "dashboardAlt": "Ta emot en beställning i HatchGrab: menyn till vänster, varukorgen och totalsumman till höger",
+    "phoneAlt": "Beställa från en foodtruck med HatchGrab: menyn med bilder och priser, och varukorgens totalsumma"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Första månaden helt gratis, med alla funktioner} other {De första # månaderna helt gratis, med alla funktioner}}",
+    "noCard": "Inget kort behövs",
+    "cancel": "Avsluta när du vill, ingen bindningstid"
+  },
+  "does": {
+    "eyebrow": "Funktioner",
+    "title": "Byggt för foodtruckar, inte restauranger.",
+    "lede": "De flesta beställningssystem utgår från en fast adress, stabilt wifi och samma öppettider varje vecka. Du står på en ny plats varje vecka, på olika tider, med dålig eller ingen mobiltäckning. HatchGrab är byggt för just det.",
+    "slotsTitle": "Kunderna väljer upphämtningstid",
+    "capacityTitle": "Ställ in din kökskapacitet",
+    "capacityBody": "Ange hur mycket du kan laga samtidigt och hur lång tid det tar. När en upphämtningstid är full kan kunderna inte välja den.",
+    "devicesTitle": "Fungerar på alla enheter",
+    "devicesBody": "Körs på mobilen i förklädet, surfplattan på disken, laptopen i foodtrucken – och kortläsaren du redan tar betalt med.",
+    "postsTitle": "Automatisera dina inlägg på Facebook och Instagram",
+    "postsBody": "Ladda upp designen du redan använder på Facebook eller Instagram. Vi fyller i dina datum, platser och tider, klart att dela – varje vecka eller varje dag.",
+    "whatsappTitle": "Automatiska svar på WhatsApp",
+    "whatsappBody": "”Var står ni ikväll?” ”Vilka efterrätter har ni?” Din WhatsApp svarar medan du kör till ställplatsen eller står vid grillen, utifrån din egen meny och ditt schema. Messenger och Instagram kommer snart.",
+    "whatsappSoonTitle": "Automatiska svar på WhatsApp <soon>Kommer snart</soon>",
+    "whatsappSoonBody": "”Var står ni ikväll?” ”Vilka efterrätter har ni?” Snart svarar din WhatsApp medan du kör till ställplatsen eller står vid grillen. Messenger och Instagram följer efter.",
+    "offlineTitle": "Ingen täckning? Fortsätt servera.",
+    "offlineBody": "Om du tappar täckningen pausas onlinebeställningen automatiskt, så att kunderna inte kan lägga beställningar som du inte ser. Fortsätt ta emot beställningar med appen för iPhone, iPad och Android.",
+    "slotsBody": "Kunderna förbeställer, väljer en upphämtningstid och slipper kön. Maten är klar när de kommer."
+  },
+  "steps": {
+    "eyebrow": "Kom igång",
+    "title": "Kom igång och ta emot beställningar på ungefär 15 minuter.",
+    "lede": "Tre saker att fixa – och två av dem kräver bara ett foto.",
+    "menuTitle": "Bygg din meny",
+    "menuBody": "Fotografera menytavlan eller klistra in menyn. Rätter, priser och tillval kommer med av sig själva. Du kollar bara att allt stämmer.",
+    "scheduleTitle": "Lägg till ditt schema",
+    "scheduleBody": "Finns det på din webbplats? Då läser vi det därifrån och håller det uppdaterat. Annars fotograferar du det också. Du godkänner bara det vi hittar.",
+    "shareTitle": "Dela din länk",
+    "shareBody": "Lägg upp den på Facebook och sätt QR-koden på foodtrucken. Beställningarna hamnar på din skärm, i den ordning du behöver laga dem."
+  },
+  "testimonial": {
+    "quote": "HatchGrab har gjort beställningarna så mycket enklare. Allt är organiserat, vi kan hålla koll på lagret och vet exakt hur många pizzor vi har kvar att sälja – och tidsluckorna är fantastiska i livliga byar.",
+    "award": "Årets mobila pizzeria",
+    "awardScope": "Regional vinnare",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia och Bogdan – ägare"
+  },
+  "pricing": {
+    "eyebrow": "Priser",
+    "title": "Börja gratis. Uppgradera när du behöver.",
+    "switchHead": "Byter du från en annan plattform?",
+    "switchBody": "Se vad du skulle betala hos HatchGrab för samma beställningar. Det tar ungefär en minut.",
+    "switchCta": "Jämför vad du betalar"
+  },
+  "final": {
+    "truckLabel": "Foodtruck",
+    "title": "Vill du se hur enkelt det är att komma igång?",
+    "lede": "Ladda upp ett foto eller en skärmdump av din meny, så gör vi om den till en fungerande beställningssida som du kan prova på under 60 sekunder. Dina rätter, dina priser. Ingen registrering, inget kort, inget att installera. Ta en titt och bestäm dig sedan.",
+    "cta": "Ladda upp min meny nu →"
+  },
+  "meta": {
+    "title": "Beställningssystem för foodtruckar och mobil catering – HatchGrab {country}",
+    "description": "Ta emot beställningar och förbeställningar på din ställplats – utan kö. Beställningssystem och köksskärm för foodtruckar och mobil catering i {country} – inte ett kassasystem."
+  }
+}

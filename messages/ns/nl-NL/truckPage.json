@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Foodtruck | Village Foodie",
+    "hgFallbackTitle": "Foodtruck",
+    "orderTitle": "Bestellen bij {truck}",
+    "orderDescription": "Bestel vooraf bij {truck} en haal je bestelling af bij de foodtruck.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo van {truck}"
+  },
+  "shareTitle": "Planning van {truck}",
+  "shareText": "Bekijk waar {truck} binnenkort staat! 🚚",
+  "linkCopied": "Profiellink gekopieerd naar het klembord! 📋",
+  "facebookPage": "Facebookpagina",
+  "loadingMap": "Kaart laden…",
+  "view": {
+    "list": "Lijst",
+    "map": "Kaart"
+  },
+  "ownThisTruck": "Is dit jouw foodtruck?",
+  "ownThisTruckTitle": "Is dit jouw foodtruck? Klik om je profiel bij te werken",
+  "actions": {
+    "menu": "Menu",
+    "call": "Bellen",
+    "message": "Bericht",
+    "share": "Delen",
+    "order": "Bestellen"
+  },
+  "loadingSchedule": "Planning laden…",
+  "loadError": {
+    "title": "Laden mislukt",
+    "body": "We konden de planning nu niet laden — meestal is dat maar een kort probleempje. Probeer het opnieuw.",
+    "retry": "Opnieuw proberen"
+  },
+  "notFound": {
+    "title": "Foodtruck niet gevonden",
+    "body": "We konden geen gegevens van deze foodtruck vinden. Misschien staan ze ergens anders of is het profiel bijgewerkt.",
+    "cta": "Alle foodtrucks bekijken"
+  },
+  "noEvents": {
+    "title": "Geen komende evenementen gevonden",
+    "body": "Misschien missen we wat gegevens van deze foodtruck. Ben jij de eigenaar, of ken je de planning?",
+    "cta": "Stuur ons een bericht om het bij te werken!"
+  },
+  "whereToFind": "Waar staan we?",
+  "missingEvent": "<strong>Missen we een evenement?</strong> <br></br>Ben je de eigenaar van deze foodtruck of gewoon een trouwe fan? Help ons deze pagina actueel te houden! <br></br><link>Neem contact op om ontbrekende gegevens toe te voegen.</link>",
+  "weeklySchedule": "Ontvang de weekplanning 🍕"
+}

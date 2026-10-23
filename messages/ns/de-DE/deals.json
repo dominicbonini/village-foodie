@@ -1,0 +1,17 @@
+{
+  "back": "← Zurück",
+  "title": "Menü auswählen",
+  "save": "{amount} sparen",
+  "selectItems": "Wählen Sie für jeden Menübestandteil einen Artikel",
+  "choose": "{category} wählen…",
+  "inYourBasket": "── In Ihrem Warenkorb ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (im Warenkorb){state, select, used { – bereits in einem Menü} taken { – in einem anderen Bestandteil gewählt} other {}}",
+  "addNew": "── Neu hinzufügen ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Pflicht · eine Option wählen} required {Pflicht} other {Eine Option wählen}}{unmet, select, yes { (erforderlich)} other {}}",
+  "notePlaceholder": "Notiz hinzufügen, z. B. ohne Zwiebeln (optional)",
+  "backButton": "Zurück",
+  "cancel": "Abbrechen",
+  "chooseRequired": "Pflichtoptionen wählen",
+  "apply": "Menü übernehmen · {amount}"
+}

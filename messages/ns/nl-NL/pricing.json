@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Je eerste maand is helemaal gratis — met alle functies.} other {Je eerste # maanden zijn helemaal gratis — met alle functies.}}",
+    "body": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
+  },
+  "card": {
+    "perTruckMonth": "per foodtruck / maand",
+    "mostTrucks": "Meest gekozen",
+    "tryFree": "Probeer gratis",
+    "seeEvery": "Bekijk alle functies →",
+    "everything": "Alles om je service te draaien",
+    "everythingIn": "Alles uit {plan}, plus"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> alleen op online kaartbestellingen. Bestellingen aan de truck zijn altijd gratis.",
+    "included": "Eerste <b>{included}</b> aan online bestellingen per maand inbegrepen, daarna <b>{fee}*</b>. Bestellingen aan de truck zijn altijd gratis.",
+    "noFee": "<b>Geen HatchGrab-kosten</b> op online bestellingen, hoe druk je het ook krijgt. Eén voorspelbaar maandbedrag."
+  },
+  "base": {
+    "walkUp": "Bestellingen aan de truck & keukenscherm",
+    "online": "Online bestellen",
+    "preorders": "Vooraf bestellen & afhaaltijden",
+    "capacity": "Maximaal aantal bestellingen per tijdslot",
+    "privateEvents": "Privé-evenementen",
+    "printing": "Keukenbonnen printen",
+    "app": "Keukenapp voor iPhone, iPad en Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatische antwoorden via WhatsApp",
+    "schedule_graphics": "Social media posts — je planning voor Facebook en Instagram — klaar om te plaatsen",
+    "event_types": "Eigen evenementtypes & prijzen per evenement"
+  },
+  "money": {
+    "unlimitedOrders": "Onbeperkt online bestellingen, 0% HatchGrab-kosten",
+    "samePrice": "Dezelfde prijs in je drukste maand"
+  },
+  "comingSoon": "Binnenkort",
+  "bar": {
+    "title": "Welk abonnement is voor mij het goedkoopst?",
+    "subtitle": "Je online bestellingen per maand",
+    "first": "Onder {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Boven {from} → <b>{plan}</b>",
+    "only": "Elk volume → <b>{plan}</b>"
+  },
+  "footnote": "* Plus de kaarttransactiekosten van Stripe op online kaartbestellingen (nu {country}: {cardFee}), te betalen aan Stripe, niet aan HatchGrab. Bestellingen aan de truck lopen via je eigen pinapparaat — HatchGrab rekent 0%.",
+  "currencyLine": "Prijzen in {currency} ({code})"
+}

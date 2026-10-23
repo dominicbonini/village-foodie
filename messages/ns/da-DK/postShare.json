@@ -1,0 +1,10 @@
+{
+  "download": "Download billede",
+  "copied": "Kopieret ✓",
+  "copyCaption": "Kopiér billedtekst",
+  "share": "Del",
+  "copiedStatus": "{kind, select, postText {Opslagsteksten er kopieret.} other {Billedteksten er kopieret.}}",
+  "copyFailed": "Kunne ikke kopiere — markér teksten, og kopiér den manuelt.",
+  "sharedStatus": "{kind, select, postText {Opslagsteksten er kopieret — indsæt den i dit opslag.} other {Billedteksten er kopieret — indsæt den i dit opslag.}}",
+  "shareRefused": "{kind, select, postText {Deling blev afvist, så billedet er downloadet. Opslagsteksten er kopieret.} other {Deling blev afvist, så billedet er downloadet. Billedteksten er kopieret.}}"
+}

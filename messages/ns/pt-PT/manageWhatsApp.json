@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Experimente antes de ligar",
+    "intro": "Escreva uma pergunta como um cliente faria e veja exatamente o que ele receberia. Nada é enviado a ninguém.",
+    "examples": {
+      "where": "Onde estão hoje à noite?",
+      "doYouDo": "Têm pizza de pepperoni?",
+      "menu": "O que há na ementa?"
+    },
+    "placeholder": "Que sobremesas têm?",
+    "send": "Enviar",
+    "empty": "A sua resposta aparece aqui",
+    "working": "A preparar a resposta…",
+    "noReply": "Não seria enviada nenhuma resposta.",
+    "noReplyWhy": "Parece spam, um pedido de reserva ou algo não relacionado, por isso a resposta automática não é enviada.",
+    "footnote": "As respostas são geradas por IA, variam ligeiramente de cada vez e podem ocasionalmente estar erradas.",
+    "failed": "Não foi possível criar uma pré-visualização neste momento.",
+    "unreachable": "Não foi possível contactar o servidor. Verifique a sua ligação e tente novamente."
+  },
+  "setup": {
+    "button": {
+      "preparing": "A preparar…",
+      "unavailable": "Indisponível",
+      "waiting": "A aguardar a janela do Facebook…",
+      "finishing": "A concluir…",
+      "reconnect": "Voltar a ligar",
+      "setUp": "Configurar"
+    },
+    "startAgain": "Recomeçar",
+    "popupHint": "Não vê a janela do Facebook? Pode ter sido bloqueada. Permita pop-ups para hatchgrab.com e depois prima Recomeçar."
+  },
+  "notice": {
+    "sdkUnavailable": "A configuração do WhatsApp não está disponível neste ambiente.",
+    "sdkBlocked": "Não foi possível carregar o script de início de sessão da Meta. Normalmente, a causa é um bloqueador de anúncios ou a proteção contra rastreamento.",
+    "setupFailed": "Não foi possível concluir a configuração. Nada foi alterado.",
+    "setupFinished": "Configuração concluída.",
+    "metaError": "A Meta comunicou um problema durante a configuração. Nada foi alterado. Tente novamente e contacte-nos se continuar a acontecer.",
+    "closed": "A configuração foi fechada antes de terminar. Nada foi alterado — prima Configurar para tentar novamente.",
+    "disconnectedUnreachable": "O WhatsApp está desligado. Não conseguimos contactar a Meta para remover o acesso. Remova o HatchGrab em WhatsApp Business → Definições → Conta → Plataforma empresarial.",
+    "disconnected": "O WhatsApp está desligado. As respostas automáticas pararam.",
+    "close": "Fechar"
+  },
+  "card": {
+    "title": "Respostas automáticas",
+    "description": "Responda automaticamente às perguntas dos clientes nas suas redes sociais, com base na sua ementa e na sua agenda.",
+    "channels": "Canais",
+    "requiresAccount": "Requer uma conta WhatsApp Business.",
+    "connected": "Ligado",
+    "popupInstruction": "Vai abrir-se uma janela do Facebook para ligar a sua conta WhatsApp Business. Se não aparecer nada, permita pop-ups para hatchgrab.com no seu navegador e depois prima Configurar novamente.",
+    "switchedOff": "As respostas automáticas do WhatsApp estão desativadas para o seu food truck.",
+    "expiring": "A sua ligação ao WhatsApp tem de ser renovada em breve. Prima Voltar a ligar para manter as respostas automáticas a funcionar.",
+    "comingSoon": "Brevemente",
+    "instagram": "Respostas automáticas às mensagens diretas do Instagram. Vai requerer uma conta profissional do Instagram.",
+    "messenger": "Respostas automáticas no Facebook Messenger. Vai requerer uma Página do Facebook."
+  },
+  "blocked": {
+    "title": "As suas respostas não estão a ser entregues",
+    "body": "O WhatsApp está a recusar enviar as suas respostas automáticas devido a um problema de faturação na sua conta WhatsApp Business. Os clientes continuam a poder enviar-lhe mensagens e continua a ver tudo o que enviam — mas não estão a receber resposta.",
+    "fix": "Paga estas mensagens diretamente ao WhatsApp, por isso o problema resolve-se no WhatsApp Manager. <link>Verificar o método de pagamento</link>"
+  },
+  "limit": {
+    "heading": "Respostas automáticas",
+    "label": "Limite mensal",
+    "option": "{n, number}",
+    "usage": "{used, number} de {limit, number} usadas · repõe a {date}",
+    "perCustomer": "Até {n} respostas por cliente em 24 horas e, depois, uma mensagem a dizer que vai responder pessoalmente.",
+    "emailAt": "As respostas param quando atingir o limite. Enviamos-lhe um email aos 80 % e aos 100 %.",
+    "saved": "Limite mensal de respostas guardado",
+    "saveFailed": "Não foi possível guardar o limite"
+  },
+  "billing": {
+    "heading": "Faturação",
+    "paymentMethod": "Método de pagamento",
+    "added": "Método de pagamento adicionado",
+    "missing": "Nenhum método de pagamento adicionado",
+    "addInManager": "Adicionar no WhatsApp Manager",
+    "summary": "É a Meta, e não o HatchGrab, que fatura as respostas à sua conta WhatsApp. A partir de {from}, as primeiras {free, number} por mês são gratuitas. Informação correta a {checked}; consulte os <link>preços da Meta</link> para ver alterações.",
+    "howMetaCharges": "Como a Meta cobra",
+    "chargesTitle": "É a Meta que cobra as respostas do WhatsApp, não o HatchGrab.",
+    "chargesBody": "Cada resposta que o HatchGrab envia por si é faturada pela Meta à sua conta WhatsApp Business. A partir de {from}, a Meta inclui {free, number} respostas gratuitas por mês por número; depois disso, cada resposta é cobrada à tarifa da Meta. As respostas que envia pessoalmente a partir da app WhatsApp Business não são cobradas. A Meta define estes preços e pode alterá-los. <link>Ver os preços da Meta</link>",
+    "addPaymentInManager": "Adicionar um método de pagamento no WhatsApp Manager",
+    "aboveMissing": "O seu limite está acima das {free, number} respostas gratuitas da Meta. Sem um método de pagamento, a Meta para todas as respostas quando estas se esgotarem.",
+    "aboveGeneral": "O seu limite está acima das {free, number} respostas gratuitas da Meta. As respostas para além dessas exigem um método de pagamento na sua conta WhatsApp; sem ele, a Meta para todas as respostas quando as gratuitas se esgotarem.",
+    "addPaymentMethod": "Adicionar um método de pagamento"
+  },
+  "disconnect": {
+    "link": "Desligar o WhatsApp",
+    "title": "Desligar o WhatsApp?",
+    "body": "As respostas automáticas param de imediato e o HatchGrab perde o acesso à sua conta WhatsApp. O seu número continua a funcionar na app WhatsApp Business. Para remover o HatchGrab por completo, abra também WhatsApp Business → Definições → Conta → Plataforma empresarial.",
+    "cancel": "Cancelar",
+    "confirm": "Desligar",
+    "working": "A desligar…",
+    "failed": "Não foi possível desligar"
+  },
+  "signup": {
+    "logged": "Registado.",
+    "partial": "Associámos a sua conta WhatsApp Business, mas não conseguimos concluir a ligação. Não há nenhum problema do seu lado — contacte-nos e nós terminamos o processo.",
+    "noNumber": "A sua conta WhatsApp Business está associada, mas não foi devolvido nenhum número de telefone. Prima Voltar a ligar e conclua o passo do número.",
+    "needsRegistering": "A sua conta está associada, mas este número tem de ser registado por nós antes de as respostas poderem começar. Contacte o suporte — a sua configuração está guardada, não a execute novamente.",
+    "registerRefused": "A sua conta está associada, mas a Meta não registou o número. A sua configuração está guardada — contacte o suporte em vez de a executar novamente.",
+    "deliveryRefused": "A sua conta está associada, mas a Meta não ativou a entrega de mensagens. A sua configuração está guardada — contacte o suporte em vez de a executar novamente.",
+    "numberTaken": "Esse número de WhatsApp já está ligado a outra conta HatchGrab. Um número só pode responder por um food truck. Contacte o suporte e nós transferimo-lo.",
+    "saveIncomplete": "Quase lá — não conseguimos terminar de guardar. A sua configuração está guardada; contacte o suporte em vez de a executar novamente.",
+    "connected": "O WhatsApp está ligado. As respostas automáticas vão começar a responder às mensagens enviadas para este número."
+  }
+}

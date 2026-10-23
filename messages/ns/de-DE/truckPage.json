@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Foodtruck | Village Foodie",
+    "hgFallbackTitle": "Foodtruck",
+    "orderTitle": "Bei {truck} bestellen",
+    "orderDescription": "Bestellen Sie vorab bei {truck} und holen Sie Ihre Bestellung am Foodtruck ab.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo von {truck}"
+  },
+  "shareTitle": "Termine von {truck}",
+  "shareText": "Schauen Sie, wo {truck} als Nächstes steht! 🚚",
+  "linkCopied": "Profillink in die Zwischenablage kopiert! 📋",
+  "facebookPage": "Facebook-Seite",
+  "loadingMap": "Karte wird geladen…",
+  "view": {
+    "list": "Liste",
+    "map": "Karte"
+  },
+  "ownThisTruck": "Ist das Ihr Foodtruck?",
+  "ownThisTruckTitle": "Ist das Ihr Foodtruck? Klicken Sie hier, um Ihr Profil zu aktualisieren",
+  "actions": {
+    "menu": "Speisekarte",
+    "call": "Anrufen",
+    "message": "Nachricht",
+    "share": "Teilen",
+    "order": "Bestellen"
+  },
+  "loadingSchedule": "Termine werden geladen…",
+  "loadError": {
+    "title": "Laden fehlgeschlagen",
+    "body": "Die Termine konnten gerade nicht geladen werden – meist ist das nur eine kurze Störung. Bitte versuchen Sie es erneut.",
+    "retry": "Erneut versuchen"
+  },
+  "notFound": {
+    "title": "Foodtruck nicht gefunden",
+    "body": "Wir konnten keine Angaben zu diesem Foodtruck finden. Vielleicht ist er umgezogen oder hat sein Profil geändert.",
+    "cta": "Alle Foodtrucks ansehen"
+  },
+  "noEvents": {
+    "title": "Keine anstehenden Events gefunden",
+    "body": "Möglicherweise fehlen uns Angaben zu diesem Foodtruck. Sind Sie der Inhaber oder kennen Sie die Termine?",
+    "cta": "Schreiben Sie uns, damit wir alles aktualisieren!"
+  },
+  "whereToFind": "Hier finden Sie uns",
+  "missingEvent": "<strong>Fehlt ein Event?</strong> <br></br>Wenn Ihnen dieser Foodtruck gehört oder Sie einfach ein treuer Fan sind, helfen Sie uns, diese Seite aktuell zu halten! <br></br><link>Kontaktieren Sie uns, um fehlende Angaben zu ergänzen.</link>",
+  "weeklySchedule": "Wöchentliche Termine erhalten 🍕"
+}

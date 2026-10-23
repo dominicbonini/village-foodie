@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Velg hvordan du viser allergeninformasjon",
+    "detail": "Til du har valgt, ser kundene ingen av rettene dine — menyen beskytter seg selv ved å skjule alt der allergenene ikke er bekreftet, og akkurat nå gjelder det alt.",
+    "where": "Meny → Allergener"
+  },
+  "allergensCardMissing": {
+    "title": "Legg til allergenlisten din",
+    "detail": "Du har valgt å vise en allergenliste, men ingen er lagret — da får kundene beskjed om at allergeninformasjon finnes, og så finner de ingenting.",
+    "where": "Meny → Allergener"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Bekreft allergener for {count} rett} other {Bekreft allergener for {count} retter}}",
+    "detail": "{n, plural, one {Retten din er skjult for kundene til du bekrefter allergenene.} other {{u, plural, one {{unverified} av dine {total} retter er skjult for kundene til du bekrefter allergenene.} other {{unverified} av dine {total} retter er skjult for kundene til du bekrefter allergenene.}}}} En rett som vises uten bekreftede allergener, leses som «inneholder ingen», så menyen skjuler den heller enn å ta den risikoen.",
+    "where": "Meny → Allergener"
+  },
+  "noVan": {
+    "title": "Legg til en matbil",
+    "detail": "Arrangementer kjøres mot en matbil — uten en matbil er det ingenting å ta imot bestillinger gjennom.",
+    "where": "Innstillinger → Dine matbiler"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Angi kjøkkenkapasiteten din",
+    "detail": "Ingen kapasitet er angitt for {vans}. Uten den fortsetter vi å love kundene hentetider som kjøkkenet ditt ikke har noen mulighet til å holde.",
+    "where": "Meny → Kjøkkenkapasitet",
+    "unnamedVan": "Matbil uten navn"
+  },
+  "noPrepBearingCategory": {
+    "title": "Fortell oss hvor lang tid maten tar",
+    "detail": "{categories, select, none {Du har ingen menykategorier ennå, så vi har ingen måte å regne ut hvor lang tid en bestilling tar.} other {Ingen av kategoriene dine har angitt tilberedningstid, så for oss ser hver bestilling ut til å være klar med en gang. Vi ville fortsatt gitt kundene hentetider kjøkkenet ditt ikke har sjanse til å holde, og jo travlere du får det, desto mer feil ville de blitt.}}",
+    "where": "Meny → Kategorier → Kjøkkenoppsett"
+  },
+  "emailUnverified": {
+    "title": "Bekreft e-postadressen din",
+    "detail": "Vi sender bestillingsvarsler og kontogjenoppretting til denne adressen. Er den feil, oppdager du det først når noe allerede har gått galt.",
+    "where": "Se etter bekreftelseslenken vår i innboksen din"
+  },
+  "emailUnknown": {
+    "title": "Ukjent status for e-postbekreftelse",
+    "detail": "E-postbekreftelse er ikke koblet opp ennå, så dette kan ikke vurderes. Det blokkerer med vilje i stedet for å slippe gjennom i det stille.",
+    "where": "—"
+  }
+}

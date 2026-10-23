@@ -1,0 +1,14 @@
+{
+  "qr": {
+    "tapToClose": "Zum Schliessen beliebige Stelle antippen"
+  },
+  "common": {
+    "close": "Schliessen"
+  },
+  "stock": {
+    "howEdit": "Bearbeiten: Zubereitungszeit, Chargengrösse und Notizen pro Kategorie festlegen."
+  },
+  "edit": {
+    "afterClosing": "Nach Schliessung"
+  }
+}

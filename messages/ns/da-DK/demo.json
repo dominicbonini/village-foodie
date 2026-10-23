@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Ikke tilgængelig i demoen",
+  "demoMode": "DEMOTILSTAND",
+  "loopLands": "Præcis sådan lander en rigtig bestilling",
+  "showMe": "Vis mig",
+  "noCard": "{sub} Intet kort nødvendigt.",
+  "notYet": "Ikke endnu",
+  "cashAndCollected": "Kontant og afhentet",
+  "logoPlaceholder": "Dit logo her",
+  "welcomeTitle": "{sample, select, yes {Her er en eksempeldemo} other {Her er din demo}}",
+  "welcomeIntro": "{sample, select, yes {Dette er et <b>midlertidigt menukort</b>, så du kan se, hvordan det hele virker — upload dit eget når som helst for at gøre det til dit.} other {Dette er dit eget menukort og dit eget design på en rigtig tavle.}} Bestillingerne, der allerede ligger der, er eksempler, så du kan se en travl vagt.",
+  "twoThings": "To ting, du kan prøve:",
+  "hitButton": "Tryk på <b>{button}</b> på en bestilling",
+  "scanQr": "Scan <b>QR-koden</b> — eller tryk på linket — og bestil som kunde, og se så bestillingen lande",
+  "qrAlt": "QR-kode til din bestillingsside for kunder",
+  "openHere": "Eller åbn den på denne enhed",
+  "copyLink": "Kopier link",
+  "copyDescribedAs": "bestillingslink",
+  "noLinkTitle": "Dit bestillingslink til kunder",
+  "noLinkBody": "Linket til din bestillingsside findes i menuen øverst til højre.",
+  "asLive": "Bestillings- og køkkenforløbet er præcis, som det kører i virkeligheden.",
+  "startExploring": "Gå på opdagelse",
+  "signupOffer": {
+    "heading": "Tilmeld dig din gratis måned nu",
+    "sub": "Uret starter først, når du beslutter dig for at gå live."
+  },
+  "cashIcon": "💵"
+}

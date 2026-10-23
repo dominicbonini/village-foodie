@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Overskriften fikk ikke plass og ble forkortet.",
+    "date": "Datoen fikk ikke plass og ble forkortet.",
+    "daysOff": "Teksten for stengte dager fikk ikke plass og ble forkortet.",
+    "place": "Stedsnavnet fikk ikke plass og ble forkortet.",
+    "time": "Klokkeslettet fikk ikke plass og ble forkortet.",
+    "note": "Din egen tekst fikk ikke plass og ble forkortet.",
+    "venue": "Arrangementsstedet fikk ikke plass og ble forkortet.",
+    "area": "Området fikk ikke plass og ble forkortet."
+  },
+  "fontFallback": "En skrift som dette designet bruker ({id}), kunne ikke lastes inn — de boksene vises i Oswald.",
+  "wrongShapeBackground": "Bildet for dette stedet har et annet format enn designet ditt, så standardbakgrunnen brukes.",
+  "rowsFit": "Den siste dagen havner {px} px under bunnen av bildet — reduser radavstanden eller flytt rad 1 opp.",
+  "placeStatus": {
+    "ownBoth": "Eget bilde og egne tekstplasseringer",
+    "wrongShape": "Annet format — brukes ikke før det erstattes",
+    "ownPicture": "Eget bilde, standardplasseringer",
+    "ownPositions": "Standardbilde, egne tekstplasseringer",
+    "none": "Ingen bilde ennå — bruker Standard"
+  },
+  "standardStatus": "Brukes på alle andre steder",
+  "option": {
+    "oneOff": "Last opp et bilde bare for dette innlegget",
+    "placePoster": "Plakat: {name}",
+    "standard": "Standarddesign"
+  },
+  "previewLabel": {
+    "lastEvent": "Forhåndsvisningen bruker det siste arrangementet ditt her",
+    "noEvents": "Ingen arrangementer her ennå — forhåndsvisningen viser neste arrangement med navnet på dette stedet"
+  },
+  "fontUsage": {
+    "weekly": "designet for ukeinnlegget ditt",
+    "event": "designet for arrangementsinnlegget ditt",
+    "place": "designet ditt for {place}",
+    "placeUnnamed": "designet ditt for et sted"
+  },
+  "face": {
+    "regular": "Vanlig",
+    "bold": "Fet",
+    "italic": "Kursiv"
+  },
+  "picture": {
+    "legacy": "Arrangementsplakat",
+    "fallback": "Bilde",
+    "wrongShape": "Annet format — kan ikke brukes som hel bakgrunn"
+  },
+  "noPicture": {
+    "omit": "Utelat det",
+    "blank": "La det stå tomt",
+    "logo": "Vis logoen din"
+  },
+  "noPicturesAll": "{total, plural, one {Stedet ditt har et bilde.} other {Alle de {total} stedene dine har et bilde.}}",
+  "noPicturesSome": "{without, plural, one {{without} av dine {total} steder har ikke bilde ennå} other {{without} av dine {total} steder har ikke bilde ennå}}",
+  "licenceTick": "Jeg eier denne skriften eller har lisens til å bruke den",
+  "fontUploadButton": "↑ Last opp skriften din"
+}

@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVAT EVENEMANG",
+  "truckFallback": "Foodtrucken",
+  "noSlugTitle": "Den här foodtrucken är inte redo för onlinebeställning än.",
+  "orderingOffTitle": "Onlinebeställning är inte påslagen",
+  "orderingOffBody": "Det här evenemanget tar inte emot onlinebeställningar. Beställ i luckan.",
+  "replacedTitle": "Den här länken har ersatts",
+  "replacedBody": "Den här länken fungerar inte längre — {truck} har ersatt den. Be arrangören om den nya länken eller QR-koden.",
+  "madePublicBody": "Den här länken fungerar inte längre — {truck} har gjort evenemanget offentligt. Du kan beställa via deras vanliga sida.",
+  "unknownTitle": "Den här länken fungerar inte",
+  "unknownBody": "Den här länken fungerar inte. Kontrollera den med arrangören eller skanna QR-koden igen."
+}

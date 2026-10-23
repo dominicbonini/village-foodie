@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Bestellingen aannemen zonder betaling",
+  "completionTitle": "Een onbetaalde bestelling afronden",
+  "completionHelp": "Wat er gebeurt als een onbetaalde bestelling klaar is om mee te geven.",
+  "pressesOne": "Eén tik (‘Markeer betaald & afgehaald’)",
+  "pressesOneHelp": "Handig als je afrekent op het moment dat je het eten meegeeft. Je krijgt één knop, ‘Markeer betaald & afgehaald’, die de betaling registreert en de bestelling in één keer afrondt.",
+  "pressesTwo": "Twee tikken (‘Markeer als betaald’ & ‘Afgehaald’)",
+  "pressesTwoHelp": "Handig als betalen en meegeven op verschillende momenten gebeuren — iemand betaalt aan het loket en haalt het eten op als het klaar is. Je krijgt twee knoppen: eerst ‘Markeer als betaald’, daarna ‘Afgehaald’ als de klant het eten meeneemt."
+}

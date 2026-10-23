@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Controleren is tijdelijk niet mogelijk. Probeer het zo nog eens.",
+  "malformed": "Dat lijkt geen webadres. Probeer bijvoorbeeld jouwfoodtruck.nl/evenementen",
+  "blocked": "We konden deze site niet openen — misschien blokkeert hij automatische controles. Probeer de pagina waarop je planning staat, of voeg je evenementen handmatig toe.",
+  "unreachable": "We konden deze website niet bereiken. Misschien is hij offline, of klopt het adres niet.",
+  "no_content": "We hebben deze pagina bereikt, maar konden er niets op lezen. Controleer of hij openbaar toegankelijk is.",
+  "no_events": "We hebben op deze pagina geen komende evenementen gevonden. Zorg dat de URL direct verwijst naar de pagina waar je planning staat.",
+  "blockedDomain": "Gebruik de URL van je website — Facebook- en Instagram-pagina’s kunnen we niet automatisch uitlezen."
+}

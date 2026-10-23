@@ -1,0 +1,10 @@
+{
+  "download": "Last ned bildet",
+  "copied": "Kopiert ✓",
+  "copyCaption": "Kopier bildetekst",
+  "share": "Del",
+  "copiedStatus": "{kind, select, postText {Innleggsteksten er kopiert.} other {Bildeteksten er kopiert.}}",
+  "copyFailed": "Kunne ikke kopiere — merk teksten og kopier den manuelt.",
+  "sharedStatus": "{kind, select, postText {Innleggsteksten er kopiert — lim den inn i innlegget ditt.} other {Bildeteksten er kopiert — lim den inn i innlegget ditt.}}",
+  "shareRefused": "{kind, select, postText {Delingen ble avvist, så bildet er lastet ned. Innleggsteksten er kopiert.} other {Delingen ble avvist, så bildet er lastet ned. Bildeteksten er kopiert.}}"
+}

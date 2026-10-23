@@ -1,0 +1,9 @@
+{
+  "launch_failed": "A verificação está temporariamente indisponível. Tente novamente daqui a pouco.",
+  "malformed": "Isso não parece um endereço web. Experimente algo como oseufoodtruck.pt/eventos",
+  "blocked": "Não conseguimos aceder a este site — pode estar a bloquear verificações automáticas. Experimente a página onde lista a sua agenda ou adicione os eventos manualmente.",
+  "unreachable": "Não conseguimos contactar este site. Pode estar em baixo ou o endereço pode estar errado.",
+  "no_content": "Chegámos a esta página, mas não conseguimos ler nada nela. Confirme que está acessível ao público.",
+  "no_events": "Não encontrámos eventos futuros nesta página. Confirme que o URL aponta diretamente para onde a sua agenda está listada.",
+  "blockedDomain": "Use o URL do seu site — as páginas de Facebook e Instagram não podem ser lidas automaticamente."
+}

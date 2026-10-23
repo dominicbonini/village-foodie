@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Indirizzo",
+    "postcode": "CAP",
+    "zip": "Codice ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Codice postale",
+    "state": "Stato",
+    "stateTerritory": "Stato o territorio",
+    "province": "Provincia",
+    "county": "Contea",
+    "area": "Località (paese o città)",
+    "townOrArea": "Città o località",
+    "city": "Città",
+    "suburb": "Quartiere",
+    "townOrCity": "Paese o città"
+  },
+  "short": {
+    "area": "Località",
+    "townOrArea": "Città o località",
+    "city": "Città",
+    "suburb": "Quartiere",
+    "townOrCity": "Paese o città"
+  },
+  "inSentence": {
+    "postcode": "CAP",
+    "zip": "codice ZIP",
+    "eircode": "Eircode",
+    "postalCode": "codice postale"
+  },
+  "withArticle": {
+    "postcode": "un CAP",
+    "zip": "un codice ZIP",
+    "eircode": "un Eircode",
+    "postalCode": "un codice postale"
+  },
+  "tradeLabel": {
+    "area": "Paese o città",
+    "townOrArea": "Città o località",
+    "city": "Città",
+    "suburb": "Quartiere",
+    "townOrCity": "Paese o città"
+  },
+  "basedIn": {
+    "area": "Paese o città in cui hai sede",
+    "townOrArea": "Città o località in cui hai sede",
+    "city": "Città in cui hai sede",
+    "suburb": "Quartiere in cui hai sede",
+    "townOrCity": "Paese o città in cui hai sede"
+  },
+  "example": "es. {example}",
+  "customersSee": "I clienti vedono:",
+  "postalWarning": "Non sembra {article} — per esempio {example}. Puoi salvarlo comunque.",
+  "regionChoose": "Scegli…"
+}

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Horas de levantamento",
+    "takes_cash": "Aceita dinheiro?",
+    "offline_protection": "Proteção de encomendas sem ligação",
+    "buzzer_prompt": "Lembrar-me de adicionar um pager"
+  },
+  "typeFollowsVanTitle": "Segue a definição habitual de cada food truck",
+  "sameSettingsAllVansLabel": "Mesmas definições para todos os food trucks",
+  "sameSettingsAllVansHeader": "Todos os food trucks",
+  "sameSettingsConfirm": "Copiar as definições do Food truck 1 para todos os food trucks? Isto copia todas as definições do Food truck 1, tal como «Igual ao Food truck 1» nas Definições. A capacidade da cozinha tem o seu próprio interruptor.",
+  "eventTypesFooterStandard": "Padrão é a sua configuração habitual. Alterá-la aqui também a altera nas Definições.",
+  "eventTypesFooterOneEvent": "Para alterar uma definição só para um evento, use o painel desse evento.",
+  "eventTypesSubtitle": "As alterações são guardadas à medida que as faz.",
+  "matchStandardLabel": "Igualar ao Padrão",
+  "matchStandardConfirm": "Repor todas as definições deste tipo no Padrão? Tudo o que alterou aqui será apagado.",
+  "priceLabels": {
+    "price_change_on": "Alterar preços",
+    "price_mode": "Alteração de preço",
+    "price_amount": "Valor",
+    "price_rounding": "Arredondamento",
+    "item_prices": "Preços dos artigos"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Definir cada preço eu próprio"
+  },
+  "priceRounding": {
+    "none": "Nenhum",
+    "nearest_1": "Ao 1 {symbol} mais próximo",
+    "up_1": "Arredondar sempre para cima"
+  },
+  "pricesStandardCell": "Os preços da sua ementa",
+  "pricesTruckWideTitle": "Os seus preços são iguais para todos os food trucks",
+  "pricesMenuCell": "Ementa",
+  "pricesTypeOffCell": "Preços da ementa",
+  "itemPricesShow": "Mostrar preços",
+  "itemPricesHide": "Ocultar preços",
+  "priceItemsHeading": "Definir o preço de cada artigo",
+  "priceItemsOpen": "Ver ou alterar o preço de cada artigo ›",
+  "priceItemsClose": "Ocultar preços dos artigos ⌃",
+  "ownPriceCount": "{n, plural, one {{count} artigo tem preço próprio} other {{count} artigos têm preço próprio}}",
+  "priceTypeHint": "Toque num preço para escrever o seu.",
+  "pricesLiveNotice": "Este evento está a decorrer. As novas encomendas usam os novos preços. As encomendas já feitas mantêm os seus.",
+  "placeTypeHelper": "Adicionar evento escolhe este tipo sempre que selecionar este local.",
+  "postPictureStandardNote": "Aqui, as publicações de eventos usam o seu design padrão.",
+  "eventItemsCardDescription": "Preços, limites de artigos e disponibilidade só para este evento. As alterações aplicam-se de imediato.",
+  "eventPriceColumnLabel": "Preço",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {ementa {price} · este evento}}",
+  "eventPriceEdit": "✎ Editar preços",
+  "eventPriceCancel": "Cancelar",
+  "eventPriceSave": "Guardar preços",
+  "eventPriceEditNote": "A editar preços só para este evento. Os limites de artigos e a disponibilidade ficam bloqueados até guardar.",
+  "eventPriceLiveNote": "A decorrer: as novas encomendas usam os novos preços.",
+  "offlineWhenOfflineLabel": "Sem ligação"
+}

@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresse",
+    "postcode": "Postleitzahl",
+    "zip": "ZIP-Code",
+    "eircode": "Eircode",
+    "postalCode": "Postleitzahl",
+    "state": "Bundesland",
+    "stateTerritory": "Bundesstaat oder Territorium",
+    "province": "Provinz",
+    "county": "Grafschaft",
+    "area": "Ort (Dorf, Gemeinde oder Stadt)",
+    "townOrArea": "Ort oder Gegend",
+    "city": "Stadt",
+    "suburb": "Stadtteil",
+    "townOrCity": "Stadt oder Gemeinde"
+  },
+  "short": {
+    "area": "Ort",
+    "townOrArea": "Ort oder Gegend",
+    "city": "Stadt",
+    "suburb": "Stadtteil",
+    "townOrCity": "Stadt oder Gemeinde"
+  },
+  "inSentence": {
+    "postcode": "Postleitzahl",
+    "zip": "ZIP-Code",
+    "eircode": "Eircode",
+    "postalCode": "Postleitzahl"
+  },
+  "withArticle": {
+    "postcode": "eine Postleitzahl",
+    "zip": "ein ZIP-Code",
+    "eircode": "ein Eircode",
+    "postalCode": "eine Postleitzahl"
+  },
+  "tradeLabel": {
+    "area": "Stadt oder Gemeinde",
+    "townOrArea": "Ort oder Gegend",
+    "city": "Stadt",
+    "suburb": "Stadtteil",
+    "townOrCity": "Stadt oder Gemeinde"
+  },
+  "basedIn": {
+    "area": "Stadt oder Gemeinde, in der Sie ansässig sind",
+    "townOrArea": "Ort oder Gegend, in der Sie ansässig sind",
+    "city": "Stadt, in der Sie ansässig sind",
+    "suburb": "Stadtteil, in dem Sie ansässig sind",
+    "townOrCity": "Stadt oder Gemeinde, in der Sie ansässig sind"
+  },
+  "example": "z. B. {example}",
+  "customersSee": "Kunden sehen:",
+  "postalWarning": "Das sieht nicht wie {article} aus – zum Beispiel {example}. Sie können es trotzdem speichern.",
+  "regionChoose": "Auswählen…"
+}

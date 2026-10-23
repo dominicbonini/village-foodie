@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} – Küche",
+  "loading": "Küche wird geladen…",
+  "pin": {
+    "title": "PIN eingeben",
+    "placeholder": "PIN",
+    "unlock": "Entsperren",
+    "unreachable": "Der Server ist gerade nicht erreichbar. Ihre PIN ist korrekt – versuchen Sie es gleich noch einmal.",
+    "incorrect": "Falsche PIN",
+    "generic": "Etwas ist schiefgelaufen. Versuchen Sie es erneut."
+  },
+  "error": {
+    "linkInvalid": "Dieser Link ist nicht mehr gültig.",
+    "couldNotLoad": "Bestellungen konnten nicht geladen werden",
+    "truckNotFound": "Foodtruck nicht gefunden"
+  },
+  "degraded": {
+    "at": "⚠️ Server nicht erreichbar. Bons von {time} werden angezeigt. NEUE BESTELLUNGEN KÖNNEN FEHLEN.",
+    "earlier": "⚠️ Server nicht erreichbar. Ältere Bons werden angezeigt. NEUE BESTELLUNGEN KÖNNEN FEHLEN."
+  },
+  "header": {
+    "dashboard": "Dashboard",
+    "backTitle": "Zurück zum Dashboard",
+    "list": "Liste",
+    "grid": "Raster",
+    "full": "Komplett",
+    "cook": "Küche",
+    "fullTitle": "Komplettansicht – Preise und Zahlungsdetails, wie an der Ausgabe.",
+    "cookTitle": "Küchenansicht – größere Schrift, nach Kategorie gruppiert, ohne Preise.",
+    "readyStep": "Schritt „Fertig“",
+    "readyOnlyTitle": "Dieser Bildschirm markiert Bestellungen nur als fertig – das lässt sich nicht ausschalten, da es sein einziger Schritt ist.",
+    "readyOnTitle": "Dieser Bildschirm markiert Bestellungen als fertig. Antippen, damit ein anderer Bildschirm das übernimmt.",
+    "readyOffTitle": "Ein anderer Bildschirm markiert Bestellungen als fertig. Antippen, damit dieser es übernimmt.",
+    "handover": "Zahlung & Übergabe",
+    "handoverOnlyTitle": "Dieser Bildschirm kassiert nur – das lässt sich nicht ausschalten, da es sein einziger Schritt ist.",
+    "handoverOnTitle": "Dieser Bildschirm kassiert und übergibt. Antippen, damit ein anderer Bildschirm das übernimmt.",
+    "handoverOffTitle": "Ein anderer Bildschirm kassiert. Antippen, damit dieser es übernimmt.",
+    "soundOn": "Ton für neue Bestellungen ist an – zum Ausschalten antippen",
+    "soundOff": "Ton für neue Bestellungen ist aus – zum Einschalten antippen",
+    "screenOn": "Bildschirm an",
+    "screenOff": "Bildschirm aus",
+    "screenSettings": "Bildschirmeinstellungen",
+    "manageEvent": "Event verwalten",
+    "manageEventTitle": "Event verwalten – starten, pausieren, ändern oder beenden",
+    "soundSettings": "Toneinstellungen",
+    "soundSettingsTitle": "Welche Töne auf diesem Gerät abgespielt werden",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Ansichtseinstellungen",
+    "on": "An",
+    "off": "Aus",
+    "newOrderSound": "Ton bei neuer Bestellung",
+    "soundNeedsConfirming": "Nur Bestellungen, die bestätigt werden müssen",
+    "soundAll": "Alle neuen Bestellungen",
+    "soundDue": "Ton, wenn eine Bestellung zubereitet werden muss",
+    "soundDueHelp": "Ertönt, wenn ein Bon gelb wird.",
+    "deviceSettings": "Geräteeinstellungen",
+    "sound": "Ton",
+    "close": "Schließen"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Bestellungen für dieses Event nicht geladen",
+    "mismatchBody": "Der Server hat mit einem anderen Event geantwortet. Damit keine falschen Bestellungen erscheinen, wird nichts angezeigt. Wählen Sie das Event erneut oder laden Sie neu.",
+    "mismatchBodyAt": "Der Server hat mit einem anderen Event geantwortet. Damit keine falschen Bestellungen für {venue} erscheinen, wird nichts angezeigt. Wählen Sie das Event erneut oder laden Sie neu.",
+    "paused": "⏸ Bestellungen pausiert{reason, select, offline { (Gerät offline)} other {}} – Kunden können nicht bestellen",
+    "resume": "Fortsetzen",
+    "offline": "Keine Verbindung – die zuletzt bekannten Bestellungen werden angezeigt. Online-Bestellungen sind für Kunden pausiert.",
+    "queued": "{n, plural, one {{count} Aktion in der Warteschlange} other {{count} Aktionen in der Warteschlange}}",
+    "extraWait": "⏱ +{mins} Min. zusätzliche Wartezeit aktiv",
+    "clear": "Aufheben",
+    "toMake": "Zuzubereiten",
+    "today": "Heute · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Event starten",
+    "recentlyClosed": "Event beendet · {venue} endete um {time}",
+    "eventStatus": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}"
+  },
+  "board": {
+    "queueClear": "Alles erledigt",
+    "doneToday": "Heute erledigt · {count}",
+    "paid": "✓ bezahlt",
+    "cardHeld": "Karte autorisiert",
+    "due": "{amount} offen"
+  },
+  "screenOff": {
+    "title": "Abschalten des Bildschirms erlauben?",
+    "bodyVans": "{vans} {n, plural, one {hat} other {haben}} die Offline-Erkennung aktiviert. Wenn der Bildschirm ausgeht, sendet das Gerät eventuell kein Online-Signal mehr, und Kundenbestellungen können pausiert werden.",
+    "body": "Wenn der Bildschirm ausgeht, sendet das Gerät eventuell kein Online-Signal mehr.",
+    "keepHint": "Lassen Sie den Bildschirm an, damit Bestellungen ohne Unterbrechung möglich sind.",
+    "keep": "Bildschirm anlassen",
+    "allow": "Abschalten erlauben"
+  },
+  "event": {
+    "change": "Event wechseln",
+    "cancel": "Abbrechen",
+    "waitActive": "⏱ +{mins} Min. aktiv · Zum Aufheben antippen",
+    "addWait": "⏱ Wartezeit verlängern",
+    "endTitle": "Event beenden?",
+    "endEarly": "Dieses Event endet planmäßig erst um {time}. Danach sind keine Bestellungen mehr möglich. Event jetzt beenden?",
+    "endNow": "Dieses Event beenden? Es werden keine Bestellungen mehr angenommen.",
+    "yes": "Ja",
+    "started": "Event gestartet",
+    "startFutureConfirm": "Dieses Event findet am {date} statt. Jetzt starten?",
+    "finishTimeNow": "Ende jetzt {time}",
+    "finished": "Event beendet",
+    "cancelled": "Event abgesagt",
+    "noteSaved": "Notiz gespeichert",
+    "pauseConfirm": "Bestellungen pausieren? Kunden sehen „Keine Bestellungen möglich“, bis Sie fortsetzen.",
+    "switchConfirm": "Von {from} zu {to} wechseln?{n, plural, =0 {} one { {count} Bestellung auf diesem Bildschirm wird ersetzt.} other { {count} Bestellungen auf diesem Bildschirm werden ersetzt.}} Tippen Sie auf das aktuelle Event, um zurückzuwechseln."
+  },
+  "intro": {
+    "title": "Das ist der Küchenmonitor",
+    "p1": "Das ist die Ansicht für die Küche – die Bestellungen, die Sie zubereiten müssen, in der richtigen Reihenfolge. Der Bildschirm am Grill zeigt diese Ansicht, während an der Theke das Bestell-Dashboard läuft.",
+    "p2": "Karten wandern weiter, wenn Sie sie antippen – so weiß, wer gerade kocht, immer, was als Nächstes kommt, und niemand muss rufen. Alles hier sind Ihre Demodaten – probieren Sie es ruhig aus.",
+    "gotIt": "Verstanden"
+  },
+  "toast": {
+    "failed": "Fehlgeschlagen",
+    "rejectFailed": "Ablehnen fehlgeschlagen",
+    "buzzerSaved": "Pager {n} gespeichert",
+    "buzzerRemoved": "Pager {n} entfernt",
+    "buzzerRemovedNone": "Pager entfernt",
+    "buzzerAssigned": "Pager {n} zugewiesen",
+    "buzzerAssignedFrom": "Pager {n} zugewiesen (von #{from} übernommen)",
+    "buzzerRemoveFailed": "{had, select, no {Pager konnte nicht von {target, select, order {Bestellung #{id}} other {dieser Bestellung}} entfernt werden} other {Pager {n} konnte nicht entfernt werden – er ist noch bei {target, select, order {Bestellung #{id}} other {dieser Bestellung}}}}",
+    "buzzerAssignFailed": "Pager {n} konnte {target, select, order {Bestellung #{id}} other {dieser Bestellung}} nicht zugewiesen werden – {had, select, yes {sie hat noch Pager {prior}} other {sie hat weiterhin keinen Pager}}"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Support",
+    "description": "Få hjælp til HatchGrab. Send os en besked, så svarer vi dig på e-mail."
+  },
+  "logIn": "Log ind",
+  "eyebrow": "Support",
+  "title": "Hvordan kan vi hjælpe?",
+  "lede": "Virker noget ikke, eller har du et spørgsmål om din konto? Du kan kontakte os på to måder — uanset hvilken, svarer vi dig på e-mail.",
+  "emailUs": "Skriv til os",
+  "formHeading": "Eller udfyld formularen herunder",
+  "loadingForm": "Indlæser formular…",
+  "formTitle": "Kontakt HatchGrabs support",
+  "privacy": "Privatliv",
+  "terms": "Vilkår",
+  "about": "Om os",
+  "copyright": "© {year} HatchGrab"
+}

@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hallo {name},} other {Hallo,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Gründer, HatchGrab",
+  "verify": {
+    "subject": "Bestätigen Sie Ihre E-Mail-Adresse",
+    "thanks": "{hasTruck, select, yes {Danke, dass Sie {truck} bei HatchGrab einrichten.} other {Danke, dass Sie Ihren Foodtruck bei HatchGrab einrichten.}}",
+    "button": "Meine E-Mail-Adresse bestätigen",
+    "buttonText": "Meine E-Mail-Adresse bestätigen: {url}",
+    "why": "Mit dieser Adresse melden Sie sich an, und hierhin gehen Ihre Bestellbenachrichtigungen – es lohnt sich also, das gleich zu erledigen.",
+    "next": "Sobald sie bestätigt ist, schicke ich Ihnen alles, was Sie für den Start brauchen.",
+    "carryOn": "Sie können in der Zwischenzeit mit der Einrichtung weitermachen.",
+    "stuck": "Hängen Sie irgendwo fest? Antworten Sie einfach auf diese E-Mail – ich beantworte sie selbst.",
+    "fallbackLink": "Falls die Schaltfläche nicht funktioniert, fügen Sie diesen Link ein: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Willkommen bei HatchGrab, {name}} other {Willkommen bei HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Ich freue mich sehr, {truck} bei HatchGrab willkommen zu heißen.} other {Ich freue mich sehr, Ihren Foodtruck bei HatchGrab willkommen zu heißen.}}",
+    "trial": "{months, plural, one {Ihre einmonatige kostenlose Testphase hat begonnen – alle Funktionen sind freigeschaltet.} other {Ihre #-monatige kostenlose Testphase hat begonnen – alle Funktionen sind freigeschaltet.}}",
+    "setup": "Falls Sie es noch nicht getan haben: Die Einrichtung ist unkompliziert und dauert etwa fünfzehn Minuten.",
+    "button": "Ihr Dashboard öffnen",
+    "bookmark": "Am besten gleich als Lesezeichen speichern. Es funktioniert auf jedem Gerät.",
+    "stuck": "Antworten Sie einfach auf diese E-Mail, wenn Sie nicht weiterkommen – ich beantworte sie selbst.",
+    "lookingForward": "{hasTruck, select, yes {Ich freue mich darauf, {truck} im Einsatz zu sehen.} other {Ich freue mich darauf, Ihren Foodtruck im Einsatz zu sehen.}}"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Inicio de HatchGrab",
+  "cta": "Subir mi carta →",
+  "ctaShort": "Subir carta",
+  "features": "Funciones",
+  "pricing": "Precios",
+  "logIn": "Entrar",
+  "country": {
+    "button": "País: {name}. Cambiar de país",
+    "menu": "País"
+  }
+}

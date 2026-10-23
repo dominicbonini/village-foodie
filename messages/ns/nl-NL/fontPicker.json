@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Alle",
+    "bold": "Vet & hoog",
+    "hand": "Handgeschreven",
+    "classic": "Klassiek",
+    "clean": "Strak",
+    "own": "Eigen",
+    "ownCount": "Eigen ({count})"
+  },
+  "yoursTag": "· eigen",
+  "loadingFonts": "Lettertypen laden…",
+  "search": "Zoek in {count, number} lettertypen",
+  "uploadButton": "↑ Upload je lettertype",
+  "loadingLibrary": "Lettertypebibliotheek laden…",
+  "tryAgain": "Opnieuw proberen",
+  "noOwn": "Je hebt nog geen lettertype geüpload. Gebruik de knop ‘↑ Upload je lettertype’ hierboven.",
+  "recent": "Onlangs gebruikt",
+  "popular": "Populair voor posters",
+  "adding": "Toevoegen…",
+  "noMatch": "Geen lettertype gevonden voor ‘{query}’.",
+  "showing": "{shown} van {total, number} getoond — typ meer om de lijst te verkleinen.",
+  "couldNotAdd": "Dat lettertype kon niet worden toegevoegd",
+  "tooBig": "Dat lettertype is {size, number, ::.0 group-off} MB. De limiet is 5 MB.",
+  "woff": "Upload een TTF- of OTF-bestand — meestal kun je dat downloaden waar je het lettertype hebt gekocht.",
+  "uploadIncomplete": "De upload is niet voltooid",
+  "added": "‘{name}’ toegevoegd als {face} versie.",
+  "face": {
+    "regular": "normale",
+    "bold": "vette",
+    "italic": "cursieve"
+  },
+  "licenceTick": "Ik ben eigenaar van dit lettertype of heb een licentie om het te gebruiken",
+  "checking": "Lettertype controleren…",
+  "addFont": "Lettertype toevoegen",
+  "cancel": "Annuleren",
+  "missingFaces": "Voeg de {faces} versie van ‘{name}’ toe (optioneel) — kies het bestand opnieuw.",
+  "somethingWrong": "Er ging iets mis",
+  "faceLower": {
+    "regular": "normale",
+    "bold": "vette",
+    "italic": "cursieve"
+  },
+  "ownLicence": "Eigen",
+  "loadFailed": "Lettertypen konden niet worden geladen"
+}

@@ -1,0 +1,9 @@
+{
+  "subject": "HatchGrab-demoen din — her er lenken tilbake",
+  "heading": "Demoen din er lagret",
+  "intro": "Her er lenken tilbake til demoen med menyen din. Du trenger ikke logge inn — bare trykk på den.",
+  "button": "Åpne demoen min",
+  "freshDay": "Hver gang du kommer tilbake, setter vi opp en ny salgsdag, så du har noe å prøve deg fram med.",
+  "deletion": "Dette er en demo, så vi tar ikke vare på den for alltid — vi sletter den og menyen\n                <b>{date}</b> ({days, plural, one {om # dag} other {om # dager}}). Registrerer du deg før\n                det, blir menyen med deg.",
+  "notSent": "Lagret, men vi fikk ikke sendt e-posten akkurat nå."
+}

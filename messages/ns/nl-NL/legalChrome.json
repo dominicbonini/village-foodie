@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Privacybeleid — HatchGrab",
+    "privacyDescription": "Hoe HatchGrab Ltd persoonsgegevens verzamelt en gebruikt.",
+    "termsTitle": "Gebruiksvoorwaarden — HatchGrab",
+    "termsDescription": "De voorwaarden voor het gebruik van HatchGrab.",
+    "countryTermsTitle": "Landspecifieke voorwaarden — HatchGrab",
+    "countryTermsDescription": "De extra regels die in sommige landen voor HatchGrab gelden."
+  },
+  "homeLabel": "HatchGrab-startpagina",
+  "privacy": "Privacy",
+  "terms": "Voorwaarden",
+  "countryTerms": "Voorwaarden per land",
+  "contact": "Contact",
+  "lastUpdated": "Laatst bijgewerkt: {date}",
+  "questions": "Vragen? <link>Neem contact op</link> — we zijn echte mensen."
+}

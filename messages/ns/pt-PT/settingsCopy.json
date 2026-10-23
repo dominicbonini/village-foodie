@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Permitir que os clientes cancelem encomendas",
+    "sentence": "Os clientes podem cancelar até <select></select> antes da hora de levantamento"
+  },
+  "autoAccept": {
+    "label": "Aceitar encomendas automaticamente",
+    "help": "As encomendas são confirmadas automaticamente. Se o horário pedido estiver cheio, a encomenda passa para o horário seguinte disponível. Só confirma quando há capacidade. As encomendas com notas do cliente (p. ex. uma alergia) continuam a precisar de confirmação."
+  },
+  "orderReady": {
+    "label": "Passo «encomenda pronta»",
+    "help": "Mostra um botão «Marcar como pronta» no ecrã de encomendas. Os ecrãs da cozinha configuram-se à parte, em cada dispositivo. Os clientes recebem um email sempre que uma encomenda é marcada como pronta. Aplica-se a todos os eventos — pode ainda ativá-lo ou desativá-lo para um único evento no respetivo painel."
+  },
+  "buzzers": {
+    "label": "Entrega pagers para o levantamento?",
+    "help": "Registe que pager deu a cada cliente, para saber quem procurar quando a comida estiver pronta.",
+    "countLabel": "Quantos pagers tem?"
+  }
+}

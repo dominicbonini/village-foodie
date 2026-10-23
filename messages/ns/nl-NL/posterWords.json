@@ -1,0 +1,25 @@
+{
+  "heading": "Week van {start} t/m {end}",
+  "daysOff": "Vandaag gesloten",
+  "cancelled": "AFGELAST",
+  "placeSample": {
+    "nameTownBelow": "Café De Zwaan\nHaarlem",
+    "nameTown": "Café De Zwaan, Haarlem",
+    "nameOnly": "Café De Zwaan"
+  },
+  "busyWeek": {
+    "venue1": "Dorpshuis Haarlem",
+    "town1": "Haarlem",
+    "venue2": "Sportpark en Speelterrein Tanthof-Zuid",
+    "town2": "Delft",
+    "venue3": "Markt",
+    "town3": "Gouda",
+    "venue4": "Foodfestival",
+    "town4": "Leiden",
+    "venue5": "Café De Gouden Leeuw",
+    "town5": "Alkmaar",
+    "venue6": "Kerkplein",
+    "town6": "Amersfoort"
+  },
+  "poweredBy": "Mogelijk gemaakt door HatchGrab"
+}

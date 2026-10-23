@@ -1,0 +1,9 @@
+{
+  "launch_failed": "La verificación no está disponible temporalmente. Inténtalo de nuevo en un momento.",
+  "malformed": "Eso no parece una dirección web. Prueba algo como tufoodtruck.es/eventos",
+  "blocked": "No hemos podido acceder a este sitio: puede que bloquee las comprobaciones automáticas. Prueba con la página donde aparece tu agenda o añade los eventos manualmente.",
+  "unreachable": "No hemos podido conectar con esta web. Puede que esté caída o que la dirección sea incorrecta.",
+  "no_content": "Hemos llegado a esta página, pero no hemos podido leer nada en ella. Comprueba que es de acceso público.",
+  "no_events": "No hemos encontrado próximos eventos en esta página. Asegúrate de que la URL lleva directamente a donde aparece tu agenda.",
+  "blockedDomain": "Usa la URL de tu web: las páginas de Facebook e Instagram no se pueden leer automáticamente."
+}

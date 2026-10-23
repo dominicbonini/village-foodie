@@ -1,0 +1,5 @@
+{
+  "welcome": {
+    "intro": "{hasTruck, select, yes {Ich freue mich sehr, {truck} bei HatchGrab willkommen zu heissen.} other {Ich freue mich sehr, Ihren Foodtruck bei HatchGrab willkommen zu heissen.}}"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVAT ARRANGEMENT",
+  "truckFallback": "Matbilen",
+  "noSlugTitle": "Denne matbilen er ikke satt opp for nettbestilling ennå.",
+  "orderingOffTitle": "Nettbestilling er ikke slått på",
+  "orderingOffBody": "Dette arrangementet tar ikke imot nettbestillinger. Bestill i luka.",
+  "replacedTitle": "Denne lenken er erstattet",
+  "replacedBody": "Denne lenken virker ikke lenger – {truck} har erstattet den. Be arrangøren om den nye lenken eller QR-koden.",
+  "madePublicBody": "Denne lenken virker ikke lenger – {truck} har gjort arrangementet offentlig. Du kan bestille fra den vanlige siden deres.",
+  "unknownTitle": "Denne lenken virker ikke",
+  "unknownBody": "Denne lenken virker ikke. Sjekk den med arrangøren, eller skann QR-koden på nytt."
+}

@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Geannuleerd",
+    "finished": "Afgelopen",
+    "unconfirmed": "Niet bevestigd",
+    "confirmed": "Bevestigd",
+    "open": "Nu open",
+    "closed": "Gesloten"
+  },
+  "sections": {
+    "label": "Onderdelen van de planning",
+    "events": "Evenementen",
+    "eventTypes": "Evenementtypes"
+  },
+  "header": {
+    "title": "Planning",
+    "upcoming": "{count} gepland",
+    "import": "✨ Planning importeren",
+    "importHint": "foto, PDF of tekst",
+    "addEvent": "+ Evenement toevoegen",
+    "scraperAuto": "We zoeken automatisch evenementen op je website",
+    "changeInSettings": "Wijzigen in Instellingen",
+    "scraperManual": "Je beheert je planning handmatig"
+  },
+  "empty": {
+    "title": "Geen geplande evenementen",
+    "body": "Evenementen die we van je social media en boekingsagenda halen, verschijnen hier zodat je ze kunt bevestigen"
+  },
+  "list": {
+    "openNow": "Nu open",
+    "needsApproval": "Wacht op je goedkeuring",
+    "needsConfirmation": "Nog bevestigen",
+    "confirmed": "Bevestigd",
+    "past": "Afgelopen evenementen ({count})",
+    "found": "We hebben {count, plural, one {# evenement voor je gevonden — controleer het en keur het goed voordat het live gaat.} other {# evenementen voor je gevonden — controleer ze en keur ze goed voordat ze live gaan.}}"
+  },
+  "card": {
+    "addName": "Naam toevoegen",
+    "timeNeeded": "⚠ Tijd nodig",
+    "setTimeFirst": "Stel eerst een tijd in",
+    "confirm": "Bevestigen",
+    "copy": "Kopiëren",
+    "edit": "Bewerken",
+    "makePost": "Bericht maken",
+    "cancel": "Annuleren",
+    "approve": "Goedkeuren",
+    "reject": "Afwijzen",
+    "stock": "⚠️ Voorraad",
+    "stockHidden": "Verborgen — {reason}",
+    "noDeals": "Geen actieve deals",
+    "dealsActive": "{count, plural, one {# deal} other {# deals}} actief · {names}{hidden, plural, =0 {} one { · # verborgen} other { · # verborgen}}",
+    "approveNeedsTimes": "Goedkeuren kan pas als dit evenement een begin- en eindtijd heeft — voeg die toe via Bewerken."
+  },
+  "guessed": {
+    "title": "📍 We hebben deze locatie ingeschat",
+    "body": "Meer dan één locatie past bij <b>{venue}</b>, dus we hebben de beste match gekozen{hasTown, select, yes { in <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Controleer of het de juiste is voordat je goedkeurt — klopt het niet, corrigeer dan het gebied of {postal} via <b>Bewerken</b>, anders worden klanten naar de verkeerde plek gestuurd.",
+    "thisVenue": "deze locatie"
+  },
+  "noLocation": {
+    "title": "📍 Nog geen locatie",
+    "body": "We konden deze locatie niet op de kaart zetten. Hij wordt wel vermeld, maar zonder kaartspeld. Voeg {postal} toe via <b>Bewerken</b> om hem op de kaart te zetten."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Mogelijk conflict} other {Mogelijke conflicten}} — controleer dit voordat je {pending, select, yes {goedkeurt} other {bevestigt}}",
+    "duplicate": "Dit lijkt hetzelfde evenement als een dat je al hebt.",
+    "review": "Zelfde locatie en datum, andere tijd — is dit hetzelfde evenement met een aangepaste tijd, of een apart tijdslot? Controleer dit voordat je goedkeurt.",
+    "already": "Staat al in je planning: <b>{venue}</b>{details} ({status, select, confirmed {bevestigd} open {open} other {{status}}})",
+    "unnamedVenue": "Naamloze locatie",
+    "ack": "Ja, dit zijn verschillende evenementen — toch {pending, select, yes {goedkeuren} other {bevestigen}}",
+    "cancel": "Annuleren",
+    "overlap": "De tijd van dit evenement overlapt met een ander evenement op dezelfde dag — één foodtruck kan niet op twee plekken tegelijk staan. Controleer dit voordat je goedkeurt."
+  },
+  "toast": {
+    "loadFailed": "Evenementen laden mislukt",
+    "linkFailed": "Link kon niet worden geladen",
+    "placeTypeFailed": "Evenement opgeslagen, maar het vaste type voor {place} niet — {reason}.",
+    "placeTypeFailedReason": "het opslaan is niet gelukt",
+    "eventUpdated": "Evenement bijgewerkt",
+    "eventAdded": "Evenement toegevoegd",
+    "eventsSaved": "{count, plural, one {# evenement opgeslagen} other {# evenementen opgeslagen}}",
+    "saveEventsFailed": "Evenementen opslaan mislukt",
+    "needsTime": "Voeg een begin- en eindtijd toe voordat je goedkeurt — dit evenement heeft een tijd nodig om live te gaan.",
+    "addStartTime": "Voeg een begintijd toe",
+    "addEndTime": "Voeg een eindtijd toe",
+    "chooseTruckBefore": "Kies welke foodtruck op dit evenement staat voordat je goedkeurt.",
+    "chooseTruck": "Kies welke foodtruck op dit evenement staat",
+    "eventConfirmed": "Evenement bevestigd",
+    "eventRejected": "Evenement afgewezen",
+    "undo": "↩ Ongedaan maken",
+    "eventRestored": "Evenement hersteld",
+    "restoreFailed": "Herstellen mislukt",
+    "eventCancelled": "Evenement geannuleerd",
+    "eventCancelledOrders": "Evenement geannuleerd · {count, plural, one {# bestelling} other {# bestellingen}} geannuleerd",
+    "placeHidden": "Plek verborgen",
+    "placeShown": "Plek weer zichtbaar",
+    "saveThatFailed": "Dat kon niet worden opgeslagen."
+  },
+  "link": {
+    "label": "Privélink en QR-code",
+    "close": "Sluiten"
+  }
+}

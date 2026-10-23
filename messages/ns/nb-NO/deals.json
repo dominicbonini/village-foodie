@@ -1,0 +1,17 @@
+{
+  "back": "← Tilbake",
+  "title": "Velg måltid",
+  "save": "Spar {amount}",
+  "selectItems": "Velg en vare for hver del",
+  "choose": "Velg {category}…",
+  "inYourBasket": "── I handlekurven ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (i handlekurven){state, select, used { – allerede i et måltid} taken { – valgt i en annen del} other {}}",
+  "addNew": "── Legg til ny ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Påkrevd · velg én} required {Påkrevd} other {Velg én}}{unmet, select, yes { (påkrevd)} other {}}",
+  "notePlaceholder": "Legg til en kommentar, f.eks. uten løk (valgfritt)",
+  "backButton": "Tilbake",
+  "cancel": "Avbryt",
+  "chooseRequired": "Velg påkrevde alternativer",
+  "apply": "Legg til måltid · {amount}"
+}

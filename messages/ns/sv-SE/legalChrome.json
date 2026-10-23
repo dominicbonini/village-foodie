@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Integritetspolicy – HatchGrab",
+    "privacyDescription": "Hur HatchGrab Ltd samlar in och använder personuppgifter.",
+    "termsTitle": "Användarvillkor – HatchGrab",
+    "termsDescription": "Villkoren för att använda HatchGrab.",
+    "countryTermsTitle": "Landsspecifika villkor – HatchGrab",
+    "countryTermsDescription": "De extra regler som gäller för HatchGrab i vissa länder."
+  },
+  "homeLabel": "HatchGrab startsida",
+  "privacy": "Integritet",
+  "terms": "Villkor",
+  "countryTerms": "Villkor per land",
+  "contact": "Kontakt",
+  "lastUpdated": "Senast uppdaterad {date}",
+  "questions": "Frågor? <link>Hör av dig</link> – vi är riktiga människor."
+}

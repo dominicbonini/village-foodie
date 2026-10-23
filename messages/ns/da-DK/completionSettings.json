@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Tag imod bestillinger uden betaling",
+  "completionTitle": "Afslutning af en ubetalt bestilling",
+  "completionHelp": "Hvad der sker, når en ubetalt bestilling er klar til udlevering.",
+  "pressesOne": "Ét tryk (»Marker betalt og afhentet«)",
+  "pressesOneHelp": "Bedst, når du tager imod pengene, samtidig med at du rækker maden over. Du får én knap, »Marker betalt og afhentet«, som registrerer betalingen og afslutter bestillingen på én gang.",
+  "pressesTwo": "To tryk (»Marker betalt« og »Afhentet«)",
+  "pressesTwoHelp": "Bedst, når betaling og udlevering sker på forskellige tidspunkter — kunden betaler i lugen og henter maden, når den er klar. Du får to knapper: først »Marker betalt«, derefter »Afhentet«, når kunden tager maden."
+}

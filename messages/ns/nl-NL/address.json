@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adres",
+    "postcode": "Postcode",
+    "zip": "ZIP-code",
+    "eircode": "Eircode",
+    "postalCode": "Postcode",
+    "state": "Staat",
+    "stateTerritory": "Staat of territorium",
+    "province": "Provincie",
+    "county": "Graafschap",
+    "area": "Plaats (dorp of stad)",
+    "townOrArea": "Plaats of regio",
+    "city": "Stad",
+    "suburb": "Wijk",
+    "townOrCity": "Plaats"
+  },
+  "short": {
+    "area": "Plaats",
+    "townOrArea": "Plaats of regio",
+    "city": "Stad",
+    "suburb": "Wijk",
+    "townOrCity": "Plaats"
+  },
+  "inSentence": {
+    "postcode": "postcode",
+    "zip": "ZIP-code",
+    "eircode": "Eircode",
+    "postalCode": "postcode"
+  },
+  "withArticle": {
+    "postcode": "een postcode",
+    "zip": "een ZIP-code",
+    "eircode": "een Eircode",
+    "postalCode": "een postcode"
+  },
+  "tradeLabel": {
+    "area": "Plaats",
+    "townOrArea": "Plaats of regio",
+    "city": "Stad",
+    "suburb": "Wijk",
+    "townOrCity": "Plaats"
+  },
+  "basedIn": {
+    "area": "Plaats waar je gevestigd bent",
+    "townOrArea": "Plaats of regio waar je gevestigd bent",
+    "city": "Stad waar je gevestigd bent",
+    "suburb": "Wijk waar je gevestigd bent",
+    "townOrCity": "Plaats waar je gevestigd bent"
+  },
+  "example": "bijv. {example}",
+  "customersSee": "Klanten zien:",
+  "postalWarning": "Dat lijkt niet op {article} — bijvoorbeeld {example}. Je kunt het toch opslaan.",
+  "regionChoose": "Kies…"
+}

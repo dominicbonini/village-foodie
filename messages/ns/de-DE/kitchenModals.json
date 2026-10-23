@@ -1,0 +1,69 @@
+{
+  "close": "Schließen",
+  "cancel": "Abbrechen",
+  "selectReason": "Grund auswählen",
+  "reject": {
+    "title": "Bestellung #{orderId} ablehnen?",
+    "reasonLabel": "Grund – erforderlich (wird dem Kunden angezeigt)",
+    "reason": "{reason, select, sold_out {Ein Artikel ist ausverkauft} too_busy {Zu viel los – nicht rechtzeitig machbar} closing_soon {Wir schließen bald} other {Sonstiges}}",
+    "noteRequired": "Grund – erforderlich",
+    "noteOptional": "Zusätzliche Notiz – optional",
+    "notePlaceholder": "Weitere Details für den Kunden…",
+    "keep": "Bestellung behalten",
+    "confirm": "Bestellung ablehnen"
+  },
+  "eventCancel": {
+    "title": "Dieses Event absagen?",
+    "affected": "{n, plural, one {{count} Bestellung wird} other {{count} Bestellungen werden}} storniert und die Kunden werden benachrichtigt.",
+    "reasonLabel": "Grund – optional",
+    "reason": "{reason, select, vehicle_breakdown {Fahrzeugpanne} weather {Wetter} venue_issue {Problem am Veranstaltungsort} personal_emergency {Persönlicher Notfall} other {Sonstiges}}",
+    "messageLabel": "Nachricht an die Kunden – optional",
+    "messagePlaceholder": "z. B. Leider hatte unser Anhänger auf dem Weg zum Veranstaltungsort eine Panne…",
+    "keep": "Event behalten",
+    "cancelling": "Wird abgesagt…",
+    "confirm": "Event absagen"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Event neu starten} other {Event starten}}",
+    "changeEvent": "Event wechseln",
+    "changeEventType": "Eventtyp ändern…",
+    "privateLink": "Privater Link & QR-Code",
+    "noteLabel": "Hinweis für Kunden",
+    "notePlaceholder": "z. B. Parken Sie auf dem Hauptparkplatz und halten Sie Ausschau nach dem orangefarbenen Pavillon",
+    "noteHint": "Wird Kunden auf der Bestellseite unter Ihren Eventdetails angezeigt.",
+    "saveNote": "Hinweis speichern",
+    "resume": "Bestellungen fortsetzen",
+    "pause": "Bestellungen pausieren",
+    "changeFinishTime": "Endzeit des Events ändern",
+    "finishEvent": "Event beenden",
+    "cancelEvent": "Event absagen"
+  },
+  "finish": {
+    "confirmTitle": "Endzeit ändern?",
+    "willFinish": "Dieses Event endet um <b>{selected}</b>{hasCurrent, select, yes { statt um <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} Bestellung ist} other {{count} Bestellungen sind}} nach {selected} fällig.</b> {n, plural, one {Sie bleibt} other {Sie bleiben}} auf dem Küchenmonitor und {n, plural, one {muss} other {müssen}} trotzdem zubereitet werden. Das Ändern der Endzeit verhindert nur NEUE Bestellungen für spätere Zeiten.",
+    "saving": "Wird gespeichert…",
+    "confirm": "Endzeit ändern",
+    "keepCurrent": "{current} beibehalten",
+    "keepAsIs": "Unverändert lassen",
+    "title": "Endzeit ändern",
+    "currentlySet": "Dieses Event endet derzeit um <b>{current}</b>.",
+    "noFinishTime": "Für dieses Event ist keine Endzeit festgelegt.",
+    "noTimesLeft": "Für heute sind keine Zeiten mehr übrig. Verwenden Sie stattdessen „Event beenden“.",
+    "newFinishTime": "Neue Endzeit",
+    "optionCurrent": "{time} (aktuell)",
+    "earlier": "Das ist früher als die aktuelle Endzeit. Kunden können dann nicht mehr für spätere Zeiten bestellen.",
+    "review": "Änderung prüfen",
+    "optionNextDay": "{time} (nächster Tag)"
+  },
+  "extraWait": {
+    "title": "Zusätzliche Wartezeit",
+    "hint": "Wird zur Abholzeit neuer Bestellungen addiert. Die Endzeit des Events ändert sich dadurch nicht.",
+    "option": "+{mins} Min."
+  },
+  "picker": {
+    "reconnect": "Zum Laden neu verbinden",
+    "selected": "Ausgewählt",
+    "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}"
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "cancel": "Annuller",
+  "back": "← Tilbage",
+  "backPlain": "Tilbage",
+  "next": "Næste →",
+  "continue": "Fortsæt →",
+  "closeImport": "Luk import",
+  "tryAgain": "Prøv igen",
+  "catError": {
+    "empty": "Giv kategorien et navn.",
+    "tooLong": "Navnet er for langt.",
+    "clash": "Der findes allerede en kategori, der hedder »{name}«."
+  },
+  "steps": {
+    "details": "Dine oplysninger",
+    "menu": "Menukort",
+    "extras": "Tilvalg",
+    "allergens": "Allergener",
+    "kitchen": "Køkkenopsætning",
+    "schedule": "Kalender",
+    "settings": "Indstillinger"
+  },
+  "toast": {
+    "demoGone": "Dit demo-menukort er ikke længere tilgængeligt — upload det igen for at fortsætte.",
+    "eventsSaveFailed": "Kunne ikke gemme arrangementer",
+    "cardReadFailed": "Kunne ikke læse allergenlisten — prøv igen",
+    "imageReadFailed": "Kunne ikke læse billedet — skriv eller indsæt din liste i stedet",
+    "commitFailedDetail": "Kunne ikke gemme hele menukortet: {error}. Nogle varer er måske allerede gemt — tjek dit menukort, før du prøver igen.",
+    "commitFailed": "Kunne ikke gemme hele menukortet. Nogle varer er måske allerede gemt — tjek dit menukort, før du prøver igen.",
+    "finishFailed": "Kunne ikke markere opsætningen som færdig — du kan stadig fortsætte.",
+    "scheduleReadFailed": "Kunne ikke læse kalenderen — prøv et tydeligere foto, eller skriv dine datoer ind.",
+    "cardRead": "Liste læst — {matched} matchet, {pending, plural, one {# skal} other {# skal}} tildeles af dig"
+  },
+  "settingsReview": {
+    "anchorOrder": "Indstillinger → Bestillingsindstillinger",
+    "anchorDisplay": "Indstillinger → Dine foodtrucks → Visningsindstillinger",
+    "mins15": "15 minutter",
+    "mins30": "30 minutter",
+    "mins60": "60 minutter",
+    "hours2": "2 timer",
+    "title": "Et par indstillinger at tjekke",
+    "loading": "Indlæser dine nuværende indstillinger…",
+    "looksGood": "Ser godt ud →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Kunne ikke gemme det — du kan ændre det under Indstillinger.",
+    "anchorContact": "Indstillinger → Kontaktoplysninger",
+    "intro": "Vi har valgt nogle almindelige indstillinger for dig. De er værd at kigge hurtigt på — du kan ændre dem alle senere under Indstillinger.",
+    "cancelAria": "Hvor længe før afhentning kunderne kan annullere"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Gennemgå dem, før du går live. Varerne er markeret »allergener ikke angivet«, indtil du gør det.",
+    "body": "Gennemgå dem under Indstillinger, før du går live. Varerne er markeret »allergener ikke angivet«, indtil du gør det.",
+    "title": "⚠ Allergener og kosthensyn er ikke angivet endnu"
+  },
+  "welcome": {
+    "title": "Velkommen til HatchGrab",
+    "yourTruck": "Din foodtruck",
+    "stop": "Du kan stoppe og vende tilbage, når du vil.",
+    "body": "{name} er sat op. Nu tilføjer vi dit menukort og derefter dit første arrangement.",
+    "go": "Kom i gang"
+  },
+  "offer": {
+    "title": "Brug menukortet fra din demo?",
+    "use": "Brug dette menukort",
+    "upload": "Upload et andet menukort",
+    "body": "Vi har gemt det menukort, du uploadede — {count, plural, one {# vare} other {# varer}}. Brug det som udgangspunkt, eller upload et andet."
+  },
+  "upload": {
+    "title": "Importér dit menukort",
+    "body": "Upload et foto af din menutavle, et skærmbillede eller en PDF, eller indsæt dit menukort som tekst. Vores AI læser det og bygger dit digitale menukort — du gennemgår alt, før det bliver gemt.",
+    "confirmCancel": "Annuller denne import? Din gennemgang af dette menukort bliver kasseret.",
+    "process": "Behandl menukort",
+    "later": "Det gør jeg senere"
+  },
+  "processing": {
+    "title": "Analyserer dit menukort",
+    "body": "AI læser og kategoriserer dine varer…"
+  },
+  "review": {
+    "title": "Gennemgå importeret menukort",
+    "editLaterSetup": "Navne, priser, tilvalg, allergener og kosthensyn kan alle redigeres senere når som helst.",
+    "editLater": "Navne, priser, tilvalg, allergener og kosthensyn kan alle redigeres når som helst under Indstillinger.",
+    "noPrice": "{count, plural, one {# vare} other {# varer}} havde ingen pris, vi kunne læse",
+    "renameCategoryAria": "Omdøb kategorien {name}",
+    "renameAria": "Omdøb {name}",
+    "renameTitle": "Omdøb kategori",
+    "deleteAria": "Slet {name}",
+    "deleteTitle": "Slet kategori",
+    "lastCategory": "Dit menukort skal have mindst én kategori",
+    "countOf": "{kept} af {total}",
+    "existing": "findes allerede",
+    "deleteEmptyTitle": "Slet »{name}«?",
+    "deleteEmptyBody": "Den har ingen varer, så intet går tabt.",
+    "delete": "Slet",
+    "moveTitle": "Hvor skal {count, plural, one {# vare} other {# varer}} hen?",
+    "moveBody": "Når »{name}« slettes, skal dens retter flyttes et andet sted hen — varer uden kategori bliver ikke importeret.",
+    "moveAria": "Flyt varer fra {name} til",
+    "chooseCategory": "Vælg en kategori…",
+    "moveDelete": "Flyt og slet",
+    "itemName": "Varens navn",
+    "free": "gratis?",
+    "freeOn": "Gratis ✕",
+    "nameFirst": "Giv den nye vare et navn, før du tilføjer en til",
+    "addItem": "+ Tilføj vare",
+    "categoryName": "Kategoriens navn",
+    "newCategoryAria": "Navn på ny kategori",
+    "addCategory": "+ Tilføj kategori",
+    "ready": "{count, plural, one {# vare} other {# varer}} klar til at blive tilføjet. Fjern fluebenet ved dem, du ikke vil have med.",
+    "noPriceBody": "Angiv en pris for hver, eller markér den som gratis — ellers går den live til {zero}. Du kan ikke fortsætte, før det er ordnet.",
+    "incomplete": "Angiv et navn for at tilføje denne vare — tomme rækker importeres ikke."
+  },
+  "extras": {
+    "introSetup": "Nogle retter kan sættes op som <b>én vare med tilvalg</b> eller beholdes som <b>separate retter</b>. Vælg, hvordan hver skal vises. Du kan ændre det senere.",
+    "intro": "Nogle retter kan sættes op som <b>én vare med tilvalg</b> eller beholdes som <b>separate retter</b>. Vælg, hvordan hver skal vises. Du kan ændre det senere under Indstillinger.",
+    "none": "Ingen retter at gruppere — hver vare er en selvstændig ret.",
+    "axisChoice": "· valg: {axis}",
+    "grouped": "Grupperet · én vare, kunden vælger",
+    "separate": "Separate varer på menukortet"
+  },
+  "allergens": {
+    "title": "Allergener",
+    "detected": "Vi har fundet allergener på dit menukort. Vælg nedenfor, hvordan de skal vises.",
+    "howShow": "Hvordan vil du vise allergener for kunderne?",
+    "skip": "Spring opsætning af allergener over indtil videre"
+  },
+  "kitchen": {
+    "title": "Køkkenopsætning",
+    "intro": "Hjælp kunderne med at vide, hvor længe de skal vente — du kan altid ændre det senere.",
+    "howWorks": "Sådan fungerer køkkenkapacitet",
+    "allExist": "Alle kategorier findes allerede — ingen tider at angive.",
+    "totalHelp": "Angiv en samlet kapacitet for at begrænse, hvor mange varer køkkenet tager ind pr. tidsrum. Lad stå på ∞ for ingen grænse.",
+    "saveAdd": "Gem og tilføj til menukort"
+  },
+  "schedule": {
+    "title": "Tilføj min kalender",
+    "intro": "Hvis din kalender ligger på din hjemmeside, kan vi automatisk holde den opdateret — eller du kan selv tilføje dine datoer.",
+    "websiteTitle": "Min kalender ligger på min hjemmeside",
+    "urlPlaceholder": "https://dinfoodtruck.dk/arrangementer",
+    "checking": "Tjekker…",
+    "verify": "Bekræft",
+    "checkingSite": "Tjekker din hjemmeside…",
+    "takesTime": "Det kan tage op til 2 minutter — lad venligst siden være åben.",
+    "canRead": "✓ Vi kan læse din kalender",
+    "ownSite": "Din egen hjemmeside — ikke en Facebook- eller Instagram-side.",
+    "photoTitle": "Upload et foto af min kalender",
+    "dragChoose": "Træk og slip, eller tryk for at vælge",
+    "imageOrPdf": "Billede eller PDF",
+    "or": "eller",
+    "pastePlaceholder": "Indsæt dine datoer her…",
+    "read": "Læs kalender",
+    "found": "{count, plural, one {# dato} other {# datoer}} fundet — de bliver føjet til din kalender.",
+    "dateTbc": "Dato følger",
+    "save": "Gem {count, plural, one {# dato} other {# datoer}}",
+    "manualDesc": "Tilføj dem senere under fanen Kalender — intet at gøre nu.",
+    "manualBody": "Intet problem. Du kan tilføje og administrere dine datoer når som helst fra fanen Kalender på din konto.",
+    "blockedDomain": "Brug din hjemmesides URL — Facebook- og Instagram-sider kan ikke læses automatisk.",
+    "saveFailed": "Vi har læst din kalender, men kunne ikke gemme den lige nu — prøv igen.",
+    "websiteDesc": "Vi tjekker den jævnligt og sender nye datoer til din godkendelse.",
+    "keepChecking": "Vi bliver ved med at tjekke siden og sender nye datoer til din godkendelse.",
+    "photoDesc": "Tag et billede, eller indsæt dine datoer — vi læser dem ind, så du kan tjekke dem.",
+    "noneFound": "Vi kunne ikke finde nogen datoer — prøv et tydeligere foto, eller tilføj selv en dato.",
+    "manualTitle": "Jeg tilføjer selv mine datoer",
+    "trialNotStarted": "Din gratis prøveperiode starter ikke, når du tilføjer arrangementer — du vælger senere, hvilket arrangement der starter den."
+  },
+  "done": {
+    "summary": "{items, plural, one {# vare} other {# varer}} fordelt på {categories, plural, one {# kategori} other {# kategorier}}.",
+    "imported": "Menukort importeret!",
+    "added": "Dine varer er føjet til menukortet.",
+    "duplicates": "{count, plural, one {# dublet} other {# dubletter}} sprunget over",
+    "showMe": "Vis mig rundt",
+    "remind": "Mind mig om det senere",
+    "allSet": "Du er klar!",
+    "explore": "Jeg udforsker selv"
+  },
+  "discard": {
+    "setupTitle": "Gør opsætningen færdig senere?",
+    "setupBody": "Din konto og din foodtruck er gemt — intet går tabt. Du kan tilføje dit menukort når som helst: Log ind, og tryk på <b>Importér menukort</b> på din menukortskærm for at fortsætte lige herfra.",
+    "keepGoing": "Fortsæt",
+    "finishLater": "Gør færdig senere",
+    "title": "Kassér denne import?",
+    "keepEditing": "Redigér videre",
+    "discard": "Kassér",
+    "body": "Dine ændringer bliver ikke gemt — de importerede varer, tilberedningstider og køkkenkapaciteten bliver ikke tilføjet."
+  },
+  "allergenCardText": {
+    "contains": "Indeholder: {list}",
+    "mayContain": "Kan indeholde: {list}"
+  }
+}

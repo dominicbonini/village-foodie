@@ -1,0 +1,10 @@
+{
+  "closeImport": "Import schliessen",
+  "schedule": {
+    "websiteDesc": "Wir prüfen sie regelmässig und senden Ihnen neue Termine zur Freigabe."
+  },
+  "discard": {
+    "setupTitle": "Einrichtung später abschliessen?",
+    "finishLater": "Später abschliessen"
+  }
+}

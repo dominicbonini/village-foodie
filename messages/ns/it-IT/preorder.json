@@ -1,0 +1,6 @@
+{
+  "closedPending": "Preordini chiusi. In attesa dell’approvazione della cucina.",
+  "deadline": "Preordina entro le {time}",
+  "deadlineOnDay": "Preordina entro le {time}, {day}",
+  "opens": "Apertura preordini: {day}"
+}

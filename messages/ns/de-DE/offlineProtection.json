@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Ihr Dashboard oder Küchenmonitor muss während des Betriebs eingeschaltet und online bleiben.",
+  "explainerBody": "Wenn sich der Bildschirm ausschaltet, das Gerät die Internetverbindung verliert oder Sie zu einer anderen Website wechseln, greift der Offline-Schutz – je nach Ihrer Wahl wird die Bestellannahme pausiert oder die automatische Annahme ausgeschaltet.",
+  "reminder": "⚠️ Lassen Sie Ihr Dashboard oder Ihren Küchenmonitor während des Betriebs eingeschaltet und online, sonst greift unter Umständen der Offline-Schutz.",
+  "enableConfirm": "Offline-Schutz aktiviert.\n\nDamit weiter Bestellungen eingehen, muss Ihr Bildschirm eingeschaltet bleiben. Verliert dieses Gerät die Verbindung, greift der Offline-Schutz im gewählten Modus.\n\nAchten Sie darauf, dass „Bildschirm an“ auf diesem Gerät aktiviert ist.",
+  "disableConfirm": "Offline-Schutz für dieses Event deaktivieren?\n\nVerliert dieses Gerät die Verbindung, gehen weiter Online-Bestellungen ein – Kunden können Bestellungen aufgeben, die Sie nicht sehen. Deaktivieren Sie ihn nur bei einer zuverlässigen Verbindung.",
+  "cardDescription": "Legt fest, was mit eingehenden Bestellungen passiert, wenn Ihr Gerät offline geht.",
+  "purpose": "Verliert Ihr Gerät die Verbindung, verhindert dies, dass Bestellungen eingehen, die Sie nicht sehen können.",
+  "switchLabel": "Offline-Bestellschutz",
+  "switchHelp": "Was passiert, wenn dieser Foodtruck die Verbindung verliert.",
+  "modes": {
+    "pause": {
+      "label": "Online-Bestellungen pausieren",
+      "help": "Kunden können erst wieder bestellen, wenn Sie wieder online sind."
+    },
+    "no_auto_accept": {
+      "label": "Weiter Bestellungen annehmen, selbst bestätigen",
+      "help": "Die automatische Annahme wird ausgeschaltet: Kunden können weiter bestellen, aber nichts wird automatisch bestätigt. Sie bestätigen jede Bestellung, sobald Sie wieder online sind – und alles, was nach der gewählten Zeit noch wartet, wird automatisch abgelehnt; der Kunde wird per E-Mail darüber informiert."
+    }
+  },
+  "autoRejectLabel": "Bestellungen ablehnen, die länger warten als",
+  "autoRejectOption": "{n, plural, one {{count} Min.} other {{count} Min.}}"
+}

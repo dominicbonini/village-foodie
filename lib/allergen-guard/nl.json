@@ -1,0 +1,131 @@
+{
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for DUTCH (nl-NL, nl-BE). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "nl",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "intoleran",
+    "overgevoelig",
+    "coeliak",
+    "glutenintoleran",
+    "anafyla",
+    "epipen",
+    "epi pen",
+    "adrenaline",
+    "glutenvrij",
+    "lactosevrij",
+    "melkvrij",
+    "zuivelvrij",
+    "eivrij",
+    "notenvrij",
+    "pindavrij",
+    "sojavrij",
+    "sesamvrij",
+    "visvrij",
+    "zonder gluten",
+    "zonder lactose",
+    "zonder melk",
+    "zonder zuivel",
+    "zonder ei",
+    "zonder noten",
+    "zonder pinda",
+    "zonder soja",
+    "zonder sesam",
+    "zonder vis",
+    "zonder schaaldier",
+    "zonder weekdier",
+    "zonder mosterd",
+    "zonder selderij",
+    "zonder sulfiet",
+    "zonder lupine",
+    "vrij van",
+    "geschikt voor",
+    "veilig voor",
+    "sporen van",
+    "kan sporen",
+    "kruisbesmetting",
+    "kruiscontaminatie"
+  ],
+  "tokens": [
+    "vrij"
+  ],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "tarwe",
+        "meel",
+        "bloem"
+      ],
+      "crustaceans": [
+        "schaaldieren",
+        "schaaldier",
+        "garnalen",
+        "garnaal",
+        "kreeft"
+      ],
+      "eggs": [
+        "eieren",
+        "eidooier",
+        "mayonaise"
+      ],
+      "fish": [
+        "vis",
+        "zalm",
+        "tonijn"
+      ],
+      "peanuts": [
+        "pinda",
+        "pinda’s",
+        "pindas",
+        "pindakaas"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "melk",
+        "lactose",
+        "zuivel",
+        "kaas",
+        "room",
+        "boter",
+        "yoghurt"
+      ],
+      "tree nuts": [
+        "noten",
+        "noot",
+        "amandel",
+        "amandelen",
+        "hazelnoot",
+        "walnoot",
+        "pistache",
+        "cashew"
+      ],
+      "celery": [
+        "selderij"
+      ],
+      "mustard": [
+        "mosterd"
+      ],
+      "sesame": [
+        "sesam",
+        "sesamzaad"
+      ],
+      "sulphites": [
+        "sulfiet",
+        "sulfieten"
+      ],
+      "lupin": [
+        "lupine"
+      ],
+      "molluscs": [
+        "weekdieren",
+        "weekdier",
+        "mosselen",
+        "inktvis"
+      ]
+    }
+  }
+}

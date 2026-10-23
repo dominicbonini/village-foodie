@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Lägg till ditt schema på din webbplats",
+    "live": "<addr>{address}</addr> visar ditt schema.",
+    "create": "Vi skapar en sida på <addr>{address}</addr> som visar ditt schema.",
+    "exampleDomain": "dinfoodtruck.se",
+    "liveBadge": "Aktiv",
+    "setUp": "Ställ in",
+    "viewSetup": "Visa inställning",
+    "continue": "Fortsätt",
+    "justLive": "<b>{address}</b> fungerar. Ta en titt och bekräfta sedan nedan att allt stämmer."
+  },
+  "waiting": {
+    "title": "Vi väntar på {address}",
+    "bodySince": "Du ställde in det här {date}. Nya webbadresser brukar börja fungera inom några minuter, men ibland tar det upp till 24 timmar innan de når alla – du behöver inte göra något under tiden. Om någon annan skulle lägga till raden åt dig är det värt att kontrollera att de har gjort det.",
+    "body": "Nya webbadresser brukar börja fungera inom några minuter, men ibland tar det upp till 24 timmar innan de når alla – du behöver inte göra något under tiden. Om någon annan skulle lägga till raden åt dig är det värt att kontrollera att de har gjort det."
+  },
+  "ready": {
+    "title": "{address} är igång",
+    "body": "Ta en titt och bekräfta sedan i dina inställningar att allt stämmer."
+  },
+  "confirm": {
+    "heading": "Ta en titt och bekräfta att allt stämmer",
+    "open": "Öppna <link>{address}</link>",
+    "checkTimes": "Kontrollera att datum och tider stämmer.",
+    "yes": "Ja, det ser rätt ut",
+    "no": "Nej, något är fel",
+    "problemLine": "Berätta vad du ser så tittar vi på det.",
+    "emailUs": "Mejla oss",
+    "mailSubject": "Problem med {address}",
+    "mailLiveSince": "Igång sedan {date}",
+    "mailSeeing": "Det här ser jag:"
+  },
+  "confirmed": {
+    "heading": "Tack – det är noterat.",
+    "body": "Du behöver inte göra något mer."
+  },
+  "turnOff": {
+    "link": "Stäng av",
+    "heading": "Stänga av din egen webbadress?",
+    "stops": "Det här slutar fungera:",
+    "carriesOn": "Det här fortsätter precis som förut, och det är hit din QR-kod skickar folk:",
+    "reAdd": "Om du ska ställa in det igen senare kan du låta raden du lade till hos företaget som sköter din webbadress vara kvar. Annars ber du dem ta bort den.",
+    "cancel": "Behåll den",
+    "confirm": "Stäng av",
+    "working": "Stänger av…",
+    "failed": "Vi kunde inte stänga av det just nu. Ingenting har ändrats – din adress fungerar fortfarande. Försök igen om en stund."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Vi kunde inte ladda din inställning.",
+    "resumeFailedBody": "Ingenting har ändrats. Försök igen om en stund.",
+    "close": "Stäng",
+    "resuming": "Fortsätter där du slutade…",
+    "genericError": "Något gick fel",
+    "saveFailed": "Kunde inte spara"
+  },
+  "address": {
+    "intro": "Ditt schema får en egen webbadress.",
+    "question": "Vad är din webbadress?",
+    "hint": "Den som folk redan använder för att hitta dig.",
+    "aria": "Din egen webbadress",
+    "willBe": "Din adress blir <addr>{address}</addr>",
+    "example": "Till exempel <addr>{address}</addr>",
+    "noChange": "Din webbplats ändras inte – du lägger bara till en länk till den nya adressen.",
+    "notSetUp": "Vi har inte ställt in det här.",
+    "restricted": "Den som sköter din webbadress måste låta oss ställa in hänglåset – det lilla låset som kunderna ser bredvid adressen. Tills de lägger till oss visas det inte, så vi har stoppat i stället för att låta dig vänta på det. Be dem lägga till oss och försök sedan igen.",
+    "blocked": "Din webbadress blockerar just nu hänglåset helt. Den som sköter den måste tillåta det innan det här kan fungera. Be dem ändra det och försök sedan igen.",
+    "elsewhere": "Något svarar redan på den adressen. Skicka meddelandet på nästa skärm till den som sköter den – de vet vad som behöver göras.",
+    "provider": "Din webbadress sköts av <b>{provider}</b>. Vi visar dig var du ska gå.",
+    "provisionFailed": "Vi kunde inte ställa in den adressen.",
+    "willNotWork": "Den adressen kommer inte att fungera.",
+    "couldNotBeSetUp": "Den adressen kunde inte ställas in.",
+    "couldNotSetUp": "Kunde inte ställa in det",
+    "checking": "Kontrollerar…",
+    "setting": "Ställer in…",
+    "tryAgain": "Försök igen",
+    "setUpAddress": "Ställ in den här adressen",
+    "notNow": "Inte nu"
+  },
+  "apex": {
+    "empty": "Skriv adressen du vill använda.",
+    "not_a_domain": "Det ser inte ut som en webbadress.",
+    "unparseable": "Vi kunde inte läsa det som en webbadress. Kontrollera stavningen och försök igen.",
+    "apex": "{host} är hela din webbplatsadress. Om du pekar den mot oss ersätts din webbplats av den här sidan. Sätt ett ord framför i stället – till exempel schema.{host}.",
+    "too_deep": "Den adressen har för många delar. Något i stil med schema.{domain} fungerar bäst."
+  },
+  "record": {
+    "addAt": "Lägg till det här hos {provider}",
+    "open": "Öppna {provider}",
+    "guide": "Guide om det här från {provider}",
+    "addAtSave": "Lägg till det här hos {provider} och spara.",
+    "addSomewhere": "Lägg till det här där din webbadress sköts, och spara.",
+    "hintChoose": "Välj det här i listan.",
+    "hintWord": "Bara det här ordet, inte hela adressen.",
+    "hintExact": "Kopiera det här exakt.",
+    "timing": "Det brukar börja fungera inom en timme, men det kan ta längre tid. Du behöver inte ha den här sidan öppen.",
+    "someoneElse": "Sköter någon annan din webbadress?",
+    "sentTo": "Skickat till {email}",
+    "emailPlaceholder": "deras e-postadress",
+    "sending": "Skickar…",
+    "send": "Skicka uppgifterna",
+    "sendFailed": "Kunde inte skicka"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Öppna din webbadress och sedan ”DNS” och ”Records”.",
+      "add": "Välj ”Add record” och välj sedan ”CNAME” som ”Type”.",
+      "name": "Ange det första värdet nedan i ”Name”.",
+      "value": "Ange det andra värdet nedan i ”Target”.",
+      "proxy": "Ställ ”Proxy status” på ”DNS only” – molnet bredvid ska vara grått, inte orange.",
+      "save": "Låt ”TTL” stå på ”Auto” och välj ”Save”.",
+      "caveat": "Om molnet förblir orange visas hänglåset aldrig, och ingenting säger varför."
+    },
+    "godaddy": {
+      "open": "Öppna din ”Domain Portfolio” och välj din webbadress.",
+      "dns": "Välj ”DNS” under ”Domain Settings”.",
+      "add": "Välj ”Add New Record” och välj sedan ”CNAME” i menyn ”Type”.",
+      "name": "Ange det första värdet nedan i ”Name”.",
+      "value": "Ange det andra värdet nedan i ”Value”.",
+      "save": "Låt ”TTL” vara som den är och välj ”Save”.",
+      "caveat": "Om du lade till flera på en gång står det ”Save All Records” på knappen."
+    },
+    "123reg": {
+      "signIn": "Logga in på din ”123 Reg Control Panel”.",
+      "manage": "Välj ”Manage All” bredvid ”Domains” och välj sedan din webbadress.",
+      "dns": "Välj ”DNS” och sedan ”Add New Record”.",
+      "type": "Välj ”CNAME” i listan ”Type”.",
+      "name": "Ange det första värdet nedan i ”Name”.",
+      "value": "Ange det andra värdet nedan i ”Value” och lägg till en punkt i slutet av det.",
+      "save": "Låt ”TTL” stå på ”Default” och klicka på ”Save”.",
+      "caveat": "123 Reg kräver en punkt i slutet av det andra värdet, annars fungerar det inte."
+    },
+    "wix": {
+      "open": "Öppna ”Domains” och klicka sedan på ikonen ”Domain Actions” bredvid din webbadress.",
+      "manage": "Välj ”Manage DNS Records”.",
+      "add": "Klicka på ”+ Add Record” i avsnittet ”CNAME (Aliases)” och klicka sedan på ”Got it”.",
+      "name": "Ange det första värdet nedan i ”Host Name”.",
+      "value": "Ange det andra värdet nedan i ”Value”.",
+      "save": "Klicka på ”Save” och sedan på ”Save Changes” i popup-fönstret.",
+      "caveat": "Om din webbadress bara pekar mot Wix i stället för att vara registrerad där kan Wix inte göra den här ändringen – det måste den som har adressen göra."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "En DNS-post att lägga till för schemasidan för {truckName}",
+    "hello": "Hej,",
+    "introAt": "Vi lägger ut det aktuella schemat för {truckName} på {address}, och för det behöver en DNS-post läggas till för vår domän hos {provider}.",
+    "introHolder": "Vi lägger ut det aktuella schemat för {truckName} på {address}, och för det behöver en DNS-post läggas till för vår domän hos den som har hand om vår domän.",
+    "stepsAt": "Hos {provider}:",
+    "guide": "Deras egen guide: {url}",
+    "wholeChange": "Det är hela ändringen – inget annat på webbplatsen påverkas, och resten av vår domän fungerar precis som nu. Det brukar börja fungera inom en timme.",
+    "pointsAt": "Sidan som posten pekar mot visar var vi står härnäst och uppdateras automatiskt.",
+    "replyTo": "Skriv till {email} om du har några frågor.",
+    "thanks": "Tack på förhand,"
+  },
+  "liveEmail": {
+    "subject": "{address} fungerar",
+    "goodNews": "Goda nyheter – {address} fungerar.",
+    "body": "Ditt schema visas nu på din egen adress. Ta en titt och kontrollera att det stämmer: öppna {address} och se till att evenemangen är dina och att datumen ser rätt ut.",
+    "confirm": "När du har gjort det öppnar du dina inställningar i HatchGrab och bekräftar att allt stämmer. Inget hänger på det – det betyder bara att vi vet att en människa har sett det."
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Wo Sie ansässig sind",
+    "identity": "Ihr Foodtruck",
+    "menu": "Ihre Speisekarte",
+    "event": "Erstes Event"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Einrichtung",
+  "loading": "Wird geladen",
+  "loadingCountries": "Wird geladen…",
+  "verify": {
+    "ok": "E-Mail bestätigt – vielen Dank.",
+    "expired": "Dieser Bestätigungslink ist abgelaufen. Melden Sie sich bei uns, und wir klären das, bevor Sie live gehen.",
+    "invalid": "Dieser Bestätigungslink hat nicht funktioniert. Melden Sie sich bei uns, und wir klären das, bevor Sie live gehen."
+  },
+  "identity": {
+    "heading": "Wie heißt Ihr Foodtruck?",
+    "intro": "Diesen Namen sehen Ihre Kunden. Nichts wird veröffentlicht, bevor Sie sich entscheiden, live zu gehen.",
+    "nameLabel": "Name des Foodtrucks",
+    "namePlaceholder": "Bobs Burger",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Diese Nummer ist bei WhatsApp",
+    "phoneHelp": "Kunden sehen sie in ihrer Bestellbestätigung, damit sie bei Fragen zu einer Bestellung nachfragen können. Das Häkchen entscheidet, ob dort „Rufen Sie uns an“ oder „Schreiben Sie uns auf WhatsApp“ steht. Beides können Sie in den Einstellungen ändern."
+  },
+  "phoneRequired": "Fügen Sie eine Telefonnummer hinzu – darüber erreichen Sie sowohl Kunden als auch wir.",
+  "createFailed": "Ihr Foodtruck konnte nicht angelegt werden.",
+  "unreachable": "Wir sind gerade nicht erreichbar – bitte versuchen Sie es erneut.",
+  "back": "Zurück",
+  "creating": "Ihr Foodtruck wird angelegt…",
+  "continue": "Weiter"
+}

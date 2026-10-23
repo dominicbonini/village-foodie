@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Zet je planning op je website",
+    "live": "<addr>{address}</addr> toont je planning.",
+    "create": "We maken een pagina op <addr>{address}</addr> met je planning.",
+    "exampleDomain": "jouwfoodtruck.nl",
+    "liveBadge": "Live",
+    "setUp": "Instellen",
+    "viewSetup": "Instellingen bekijken",
+    "continue": "Doorgaan",
+    "justLive": "<b>{address}</b> werkt. Bekijk het en laat ons hieronder weten of het klopt."
+  },
+  "waiting": {
+    "title": "We wachten op {address}",
+    "bodySince": "Je hebt dit op {date} ingesteld. Nieuwe webadressen werken meestal binnen een paar minuten, en soms duurt het tot 24 uur voordat iedereen ze bereikt — je hoeft in de tussentijd niets te doen. Voegde iemand anders de regel voor je toe? Dan is het de moeite waard om na te gaan of dat gebeurd is.",
+    "body": "Nieuwe webadressen werken meestal binnen een paar minuten, en soms duurt het tot 24 uur voordat iedereen ze bereikt — je hoeft in de tussentijd niets te doen. Voegde iemand anders de regel voor je toe? Dan is het de moeite waard om na te gaan of dat gebeurd is."
+  },
+  "ready": {
+    "title": "{address} is live",
+    "body": "Bekijk het en laat ons in je instellingen weten of het klopt."
+  },
+  "confirm": {
+    "heading": "Bekijk het en laat ons weten of het klopt",
+    "open": "Open <link>{address}</link>",
+    "checkTimes": "Controleer of de datums en tijden kloppen.",
+    "yes": "Ja, het klopt",
+    "no": "Nee, er is een probleem",
+    "problemLine": "Vertel ons wat je ziet, dan kijken we ernaar.",
+    "emailUs": "Mail ons",
+    "mailSubject": "Probleem met {address}",
+    "mailLiveSince": "Live sinds {date}",
+    "mailSeeing": "Wat ik zie:"
+  },
+  "confirmed": {
+    "heading": "Bedankt — dat is genoteerd.",
+    "body": "Je hoeft verder niets te doen."
+  },
+  "turnOff": {
+    "link": "Dit uitzetten",
+    "heading": "Je eigen webadres uitzetten?",
+    "stops": "Dit werkt dan niet meer:",
+    "carriesOn": "Dit blijft precies zoals het is, en hier stuurt je QR-code mensen naartoe:",
+    "reAdd": "Wil je het later opnieuw instellen? Laat de regel die je hebt toegevoegd dan staan bij het bedrijf van je webadres. Zo niet, vraag hen dan om die te verwijderen.",
+    "cancel": "Laten aanstaan",
+    "confirm": "Uitzetten",
+    "working": "Uitzetten…",
+    "failed": "We konden het nu niet uitzetten. Er is niets veranderd — je adres werkt nog. Probeer het zo opnieuw."
+  },
+  "wizard": {
+    "resumeFailedTitle": "We konden je instellingen niet laden.",
+    "resumeFailedBody": "Er is niets veranderd. Probeer het zo opnieuw.",
+    "close": "Sluiten",
+    "resuming": "We gaan verder waar je was gebleven…",
+    "genericError": "Er ging iets mis",
+    "saveFailed": "Kon niet opslaan"
+  },
+  "address": {
+    "intro": "Je planning krijgt een eigen webadres.",
+    "question": "Wat is je webadres?",
+    "hint": "Het adres waarop mensen je nu al vinden.",
+    "aria": "Je eigen webadres",
+    "willBe": "Je adres wordt <addr>{address}</addr>",
+    "example": "Bijvoorbeeld <addr>{address}</addr>",
+    "noChange": "Je website verandert niet — je voegt alleen een link naar het nieuwe adres toe.",
+    "notSetUp": "We hebben dit niet ingesteld.",
+    "restricted": "Wie je webadres beheert, moet ons toestemming geven om het slotje in te stellen — het kleine slot dat klanten ernaast zien. Zolang ze ons niet toevoegen, verschijnt het niet, dus we zijn gestopt in plaats van je erop te laten wachten. Vraag hen ons toe te voegen en probeer het dan opnieuw.",
+    "blocked": "Je webadres blokkeert het slotje op dit moment volledig. Wie het beheert, moet het toestaan voordat dit kan werken. Vraag hen dat aan te passen en probeer het dan opnieuw.",
+    "elsewhere": "Op dat adres reageert al iets anders. Stuur het bericht op het volgende scherm naar wie het beheert — die weet wat er moet gebeuren.",
+    "provider": "Je webadres wordt beheerd door <b>{provider}</b>. We laten je zien waar je heen moet.",
+    "provisionFailed": "We konden dat adres niet instellen.",
+    "willNotWork": "Dat adres werkt niet.",
+    "couldNotBeSetUp": "Dat adres kon niet worden ingesteld.",
+    "couldNotSetUp": "Instellen mislukt",
+    "checking": "Controleren…",
+    "setting": "Instellen…",
+    "tryAgain": "Opnieuw proberen",
+    "setUpAddress": "Dit adres instellen",
+    "notNow": "Niet nu"
+  },
+  "apex": {
+    "empty": "Typ het adres dat je wilt gebruiken.",
+    "not_a_domain": "Dat lijkt geen webadres.",
+    "unparseable": "We konden dat niet als webadres lezen. Controleer de spelling en probeer het opnieuw.",
+    "apex": "{host} is het volledige adres van je website. Als je dat naar ons laat verwijzen, wordt je website vervangen door deze pagina. Zet er liever een woord voor — bijvoorbeeld agenda.{host}.",
+    "too_deep": "Dat adres heeft te veel delen. Iets als agenda.{domain} werkt het best."
+  },
+  "record": {
+    "addAt": "Voeg dit toe bij {provider}",
+    "open": "Open {provider}",
+    "guide": "Eigen handleiding van {provider} hierover",
+    "addAtSave": "Voeg dit toe bij {provider} en sla op.",
+    "addSomewhere": "Voeg dit toe waar je webadres wordt beheerd, en sla op.",
+    "hintChoose": "Kies dit uit de lijst.",
+    "hintWord": "Alleen dit woord, niet het hele adres.",
+    "hintExact": "Kopieer dit precies.",
+    "timing": "Meestal werkt het binnen een uur, maar het kan langer duren. Je hoeft deze pagina niet open te houden.",
+    "someoneElse": "Beheert iemand anders je webadres?",
+    "sentTo": "Verstuurd naar {email}",
+    "emailPlaceholder": "hun e-mailadres",
+    "sending": "Versturen…",
+    "send": "Deze gegevens versturen",
+    "sendFailed": "Versturen mislukt"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Open je webadres, daarna ‘DNS’ en ‘Records’.",
+      "add": "Kies ‘Add record’ en selecteer ‘CNAME’ als ‘Type’.",
+      "name": "Zet de eerste waarde hieronder in ‘Name’.",
+      "value": "Zet de tweede waarde hieronder in ‘Target’.",
+      "proxy": "Zet ‘Proxy status’ op ‘DNS only’ — het wolkje ernaast moet grijs zijn, niet oranje.",
+      "save": "Laat ‘TTL’ op ‘Auto’ staan en kies ‘Save’.",
+      "caveat": "Blijft het wolkje oranje, dan verschijnt het slotje nooit, en nergens staat waarom."
+    },
+    "godaddy": {
+      "open": "Open je ‘Domain Portfolio’ en kies je webadres.",
+      "dns": "Kies op ‘Domain Settings’ de optie ‘DNS’.",
+      "add": "Kies ‘Add New Record’ en selecteer ‘CNAME’ in het menu ‘Type’.",
+      "name": "Zet de eerste waarde hieronder in ‘Name’.",
+      "value": "Zet de tweede waarde hieronder in ‘Value’.",
+      "save": "Laat ‘TTL’ zoals het is en kies ‘Save’.",
+      "caveat": "Heb je er meer dan één tegelijk toegevoegd, dan heet de knop ‘Save All Records’."
+    },
+    "123reg": {
+      "signIn": "Log in op je ‘123 Reg Control Panel’.",
+      "manage": "Kies naast ‘Domains’ de optie ‘Manage All’ en kies dan je webadres.",
+      "dns": "Kies ‘DNS’ en daarna ‘Add New Record’.",
+      "type": "Kies ‘CNAME’ in de lijst ‘Type’.",
+      "name": "Zet de eerste waarde hieronder in ‘Name’.",
+      "value": "Zet de tweede waarde hieronder in ‘Value’ en zet er een punt achter.",
+      "save": "Laat ‘TTL’ op ‘Default’ staan en klik op ‘Save’.",
+      "caveat": "123 Reg heeft een punt aan het eind van de tweede waarde nodig, anders werkt het niet."
+    },
+    "wix": {
+      "open": "Open ‘Domains’ en klik op het pictogram ‘Domain Actions’ naast je webadres.",
+      "manage": "Kies ‘Manage DNS Records’.",
+      "add": "Klik in het onderdeel ‘CNAME (Aliases)’ op ‘+ Add Record’ en daarna op ‘Got it’.",
+      "name": "Zet de eerste waarde hieronder in ‘Host Name’.",
+      "value": "Zet de tweede waarde hieronder in ‘Value’.",
+      "save": "Klik op ‘Save’ en daarna op ‘Save Changes’ in de pop-up.",
+      "caveat": "Verwijst je webadres alleen naar Wix en staat het daar niet geregistreerd, dan kan Wix dit niet aanpassen — degene bij wie het geregistreerd staat, moet dat doen."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Eén record toevoegen voor de planningspagina van {truckName}",
+    "hello": "Hallo,",
+    "introAt": "We zetten de actuele planning van {truckName} op {address}, en daarvoor moet er één record worden toegevoegd aan ons domein bij {provider}.",
+    "introHolder": "We zetten de actuele planning van {truckName} op {address}, en daarvoor moet er één record worden toegevoegd aan ons domein, bij de partij waar ons domein geregistreerd staat.",
+    "stepsAt": "Bij {provider}:",
+    "guide": "Hun eigen handleiding: {url}",
+    "wholeChange": "Dat is de hele wijziging — verder verandert er niets aan de website, en de rest van ons domein blijft precies zo werken als nu. Meestal werkt het binnen een uur.",
+    "pointsAt": "De pagina waarnaar het verwijst, toont waar we hierna staan en houdt zichzelf actueel.",
+    "replyTo": "Reageer op {email} als je vragen hebt.",
+    "thanks": "Bedankt,"
+  },
+  "liveEmail": {
+    "subject": "{address} werkt",
+    "goodNews": "Goed nieuws — {address} werkt.",
+    "body": "Je planning staat nu op je eigen adres. Bekijk het en controleer of het klopt: open {address} en kijk of de evenementen van jou zijn en de datums kloppen.",
+    "confirm": "Als je dat gedaan hebt, open dan je instellingen op HatchGrab en laat ons weten dat het klopt. Er hangt niets van af — het betekent alleen dat we weten dat iemand het heeft gezien."
+  }
+}

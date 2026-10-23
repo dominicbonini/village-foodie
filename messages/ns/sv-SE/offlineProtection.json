@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Du måste hålla din översikt eller köksskärm påslagen och online under serveringen.",
+  "explainerBody": "Om skärmen släcks, enheten tappar internet eller du byter till en annan webbplats tar offlineskyddet över – antingen pausas beställningarna eller så stängs automatiskt godkännande av, beroende på vad du valt.",
+  "reminder": "⚠️ Håll din översikt eller köksskärm påslagen och online under serveringen, annars kan offlineskyddet ta över.",
+  "enableConfirm": "Offlineskyddet är på.\n\nFör att beställningarna ska fortsätta komma in måste skärmen vara påslagen. Om enheten tappar anslutningen tar offlineskyddet över i det läge du valt.\n\nSe till att Skärm på är aktiverat på den här enheten.",
+  "disableConfirm": "Stänga av offlineskyddet för det här evenemanget?\n\nOm enheten tappar anslutningen fortsätter onlinebeställningarna – kunder kan lägga beställningar som du inte ser. Stäng bara av om du har en pålitlig anslutning.",
+  "cardDescription": "Avgör vad som händer med inkommande beställningar när din enhet går offline.",
+  "purpose": "Om din enhet tappar anslutningen stoppar det här beställningar från att komma in medan du inte kan se dem.",
+  "switchLabel": "Skydd för beställningar offline",
+  "switchHelp": "Vad som händer när den här foodtrucken tappar anslutningen.",
+  "modes": {
+    "pause": {
+      "label": "Pausa onlinebeställningar",
+      "help": "Kunderna kan inte beställa förrän du är online igen."
+    },
+    "no_auto_accept": {
+      "label": "Fortsätt ta emot beställningar, bekräfta dem själv",
+      "help": "Automatiskt godkännande stängs av, så kunderna kan fortfarande beställa men inget bekräftas automatiskt. Du bekräftar varje beställning när du är online igen – och allt som fortfarande väntar avvisas automatiskt efter den tid du valt, och kunden får ett mejl om det."
+    }
+  },
+  "autoRejectLabel": "Avvisa beställningar som väntat längre än",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

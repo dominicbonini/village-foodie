@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu do utilizador",
+  "screenOn": "Ecrã ligado",
+  "screenOff": "Ecrã desligado",
+  "newOrderSound": "Som de nova encomenda",
+  "copied": "Copiado",
+  "orderLink": "Link de encomenda",
+  "qrCode": "Código QR",
+  "kitchenScreen": "Ecrã da cozinha",
+  "thisDevice": "Este dispositivo",
+  "manage": "Gerir",
+  "ordersDashboard": "Painel de encomendas",
+  "admin": "Admin",
+  "privacy": "Política de privacidade",
+  "terms": "Termos",
+  "signOut": "Terminar sessão",
+  "close": "Fechar"
+}

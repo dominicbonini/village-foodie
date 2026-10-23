@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Matbil",
+  "eventsFeed": {
+    "today": "I dag · {date}",
+    "tomorrow": "I morgen · {date}"
+  },
+  "privacyNotSaved": "Arrangementet er publisert, men personverninnstillingen kunne ikke lagres.",
+  "stockWarning": "Ingen tilgjengelige varer i «{category}»",
+  "uncategorised": "Uten kategori"
+}

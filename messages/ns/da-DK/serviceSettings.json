@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Afhentningstider",
+    "takes_cash": "Tager du imod kontanter?",
+    "offline_protection": "Offlinebeskyttelse af bestillinger",
+    "buzzer_prompt": "Mind mig om at tilføje en buzzer"
+  },
+  "typeFollowsVanTitle": "Følger hver foodtrucks sædvanlige indstilling",
+  "sameSettingsAllVansLabel": "Samme indstillinger for alle foodtrucks",
+  "sameSettingsAllVansHeader": "Alle foodtrucks",
+  "sameSettingsConfirm": "Kopier indstillingerne fra Foodtruck 1 til alle foodtrucks? Det kopierer alle foodtruck-indstillinger fra Foodtruck 1, ligesom »Samme som Foodtruck 1« under Indstillinger. Køkkenkapacitet har sin egen kontakt.",
+  "eventTypesFooterStandard": "Standard er din sædvanlige opsætning. Ændrer du den her, ændres den også under Indstillinger.",
+  "eventTypesFooterOneEvent": "Vil du kun ændre en indstilling for ét arrangement, så brug det arrangements oversigt.",
+  "eventTypesSubtitle": "Ændringer gemmes løbende.",
+  "matchStandardLabel": "Som Standard",
+  "matchStandardConfirm": "Sæt alle indstillinger for denne type tilbage til Standard? Alt, du har ændret her, bliver nulstillet.",
+  "priceLabels": {
+    "price_change_on": "Ændr priser",
+    "price_mode": "Prisændring",
+    "price_amount": "Beløb",
+    "price_rounding": "Afrunding",
+    "item_prices": "Varepriser"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Jeg sætter selv hver pris"
+  },
+  "priceRounding": {
+    "none": "Ingen",
+    "nearest_1": "Nærmeste 1 {symbol}",
+    "up_1": "Rund altid op"
+  },
+  "pricesStandardCell": "Dine priser fra menukortet",
+  "pricesTruckWideTitle": "Dine priser er de samme for alle foodtrucks",
+  "pricesMenuCell": "Menukort",
+  "pricesTypeOffCell": "Menukortpriser",
+  "itemPricesShow": "Vis priser",
+  "itemPricesHide": "Skjul priser",
+  "priceItemsHeading": "Angiv prisen på hver vare",
+  "priceItemsOpen": "Se eller ændr prisen på hver vare ›",
+  "priceItemsClose": "Skjul varepriser ⌃",
+  "ownPriceCount": "{n, plural, one {{count} vare har sin egen pris} other {{count} varer har deres egen pris}}",
+  "priceTypeHint": "Tryk på en pris for at skrive din egen.",
+  "pricesLiveNotice": "Arrangementet er i gang. Nye bestillinger bruger de nye priser. Bestillinger, der allerede er afgivet, beholder deres.",
+  "placeTypeHelper": "Tilføj arrangement vælger denne type, hver gang du vælger dette sted.",
+  "postPictureStandardNote": "Opslag om arrangementer her bruger dit standarddesign.",
+  "eventItemsCardDescription": "Priser, varegrænser og tilgængelighed kun for dette arrangement. Ændringer gælder med det samme.",
+  "eventPriceColumnLabel": "Pris",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · dette arrangement} other {menukort {price} · dette arrangement}}",
+  "eventPriceEdit": "✎ Rediger priser",
+  "eventPriceCancel": "Annuller",
+  "eventPriceSave": "Gem priser",
+  "eventPriceEditNote": "Du redigerer kun priser for dette arrangement. Varegrænser og tilgængelighed er låst, indtil du gemmer.",
+  "eventPriceLiveNote": "I gang: nye bestillinger bruger de nye priser.",
+  "offlineWhenOfflineLabel": "Når offline"
+}

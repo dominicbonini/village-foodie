@@ -1,0 +1,19 @@
+{
+  "heading": "Upselling",
+  "intro": "Invoglia i clienti ad aggiungere qualcosa in più. Quando qualcuno ordina da una categoria, suggerisci prodotti di un’altra — una bibita con la pizza, una salsa con il burger.",
+  "add": "+ Aggiungi upselling",
+  "toast": {
+    "updated": "Regola di upselling aggiornata",
+    "added": "Regola di upselling aggiunta",
+    "removed": "Regola rimossa"
+  },
+  "whenAdds": "Quando il cliente aggiunge…",
+  "suggestFrom": "Suggerisci prodotti da…",
+  "chooseCategory": "Scegli una categoria",
+  "cancel": "Annulla",
+  "saveChanges": "Salva modifiche",
+  "addRule": "Aggiungi regola",
+  "empty": "Nessuna regola di upselling per ora.",
+  "confirmRemove": "Rimuovere la regola di upselling «{trigger} → {suggest}»?",
+  "upTo": "{n, plural, one {Fino a {count} prodotto suggerito} other {Fino a {count} prodotti suggeriti}}"
+}

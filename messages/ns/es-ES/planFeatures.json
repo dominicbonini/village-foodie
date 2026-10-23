@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Ficha en el mapa de descubrimiento"
+    },
+    "web_dashboard": {
+      "name": "Panel web universal"
+    },
+    "qr_code": {
+      "name": "Código QR"
+    },
+    "schedule_import": {
+      "name": "Importación automática de la agenda"
+    },
+    "meal_deals_upsells": {
+      "name": "Menús y ventas sugeridas"
+    },
+    "walkup_orders": {
+      "name": "Gestión de pedidos en ventanilla"
+    },
+    "sold_out_toggle": {
+      "name": "Marcar agotado al instante"
+    },
+    "kitchen_app": {
+      "name": "App de cocina para iPhone, iPad y Android"
+    },
+    "offline_protection": {
+      "name": "Protección de pedidos sin conexión"
+    },
+    "online_payments": {
+      "name": "Pagos online"
+    },
+    "advance_preordering": {
+      "name": "Pedidos anticipados"
+    },
+    "preorder_deadline": {
+      "name": "Plazo para pedidos anticipados"
+    },
+    "time_slot_selection": {
+      "name": "Elección de franja horaria por el cliente"
+    },
+    "kitchen_capacity": {
+      "name": "Pedidos máximos por franja"
+    },
+    "stock_countdown": {
+      "name": "Cuenta atrás automática de stock"
+    },
+    "auto_accept": {
+      "name": "Aceptación automática de pedidos online"
+    },
+    "branded_qr_code": {
+      "name": "Código QR con tu marca"
+    },
+    "private_events": {
+      "name": "Eventos privados"
+    },
+    "social_media_posts": {
+      "name": "Publicaciones para redes sociales"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Respuestas automáticas de WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Respuestas automáticas de Messenger e Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Cobra con tu móvil"
+    },
+    "advanced_reporting": {
+      "name": "Informes avanzados"
+    },
+    "sms_order_alerts": {
+      "name": "Avisos de pedido por SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Cocina sincronizada en varios dispositivos"
+    },
+    "multi_user_access": {
+      "name": "Acceso multiusuario"
+    },
+    "embed_schedule": {
+      "name": "Tu agenda en tu propia web"
+    },
+    "event_types": {
+      "name": "Tipos de evento y precios personalizados"
+    },
+    "buzzer_tracking": {
+      "name": "Control de avisadores"
+    },
+    "ticket_printing": {
+      "name": "Impresión de comandas"
+    },
+    "customer_display": {
+      "name": "Pantalla para clientes"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Tarjetas de sellos digitales"
+    }
+  },
+  "cardRegionOnline": "{region} estándar",
+  "cardRegion": {
+    "UKcards": "tarjetas británicas",
+    "EEAcards": "tarjetas del EEE",
+    "UScards": "tarjetas de EE. UU.",
+    "Australiancards": "tarjetas australianas",
+    "NewZealandcards": "tarjetas neozelandesas",
+    "Canadiancards": "tarjetas canadienses",
+    "Swisscards": "tarjetas suizas"
+  },
+  "perMonth": {
+    "mo": "{amount}/mes",
+    "month": "{amount}/mes"
+  },
+  "priceWord": {
+    "free": "Gratis",
+    "freeTrial": "Prueba gratuita",
+    "lifetime": "De por vida",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Pago al recoger",
+    "unlimited": "Ilimitado",
+    "none": "—",
+    "masked": "Por confirmar"
+  },
+  "cell": {
+    "included": "Incluido"
+  }
+}

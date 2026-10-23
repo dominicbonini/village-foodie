@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "per matbil / måned",
+  "transactionFees": "Transaksjonsgebyrer",
+  "comingSoon": "Kommer snart",
+  "footnote2Masked": "Nettbetalinger leveres av Stripe Connect. Plattform- og kortgebyrer er ikke fastsatt ennå og bekreftes ved lansering.",
+  "card": {
+    "title": "Fakturering og betalinger",
+    "managed": "Faktureringen håndteres av HatchGrab",
+    "earlyAccess": "I perioden med tidlig tilgang setter vi opp og justerer abonnementer manuelt.",
+    "planLine": "{trial, select, yes {{truck} · Abonnement {plan} (prøveperiode)} other {{truck} · Abonnement {plan}}}"
+  },
+  "currentPlan": "Nåværende abonnement",
+  "plan": {
+    "included": "Inkluderer nettbestillinger for {amount} i måneden.",
+    "includedUnlimited": "Ubegrenset med nettbestillinger inkludert.",
+    "promo": "Spesialpris.",
+    "promoUntil": "Spesialpris til {date}.",
+    "ended": "Abonnementet ditt ({plan}) ble avsluttet {date}. Nå har du {now}.",
+    "trialMonths": "En gratis prøveperiode på {months} måneder."
+  },
+  "trialEnds": "Prøveperioden slutter {date}",
+  "yourTrialEnds": "Prøveperioden din slutter {date}",
+  "notStarted": {
+    "heading": "Den gratis prøveperioden din har ikke startet ennå"
+  },
+  "onTrial": "Du har alle funksjoner. Velg et abonnement før prøveperioden slutter.",
+  "onTrialNoCta": "Du har alle funksjoner.",
+  "noCharge": "🔒 Du blir ikke belastet noe i prøveperioden, som varer til {date}. Fakturering starter først når du velger et abonnement og legger inn betalingsopplysningene dine. Inntil da er det ingenting å si opp og ingenting å betale.",
+  "fees": "*Vanlige kortgebyrer gjelder for nettbestillinger",
+  "setUpPayment": "⏱ Velg et abonnement før prøveperioden slutter",
+  "changeYourPlan": "Bytt abonnement",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Bytt til {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Vi holder på å sette opp automatisk fakturering. Vil du bytte nå, kan du sende oss en melding, så ordner vi det innen 24 timer.",
+    "mailSubject": "Bytt til {plan} — {truck}",
+    "mailBody": "Hei, jeg vil gjerne bytte {truck} til abonnementet {plan} ({price}).",
+    "email": "Send oss e-post for å bytte",
+    "cancel": "Avbryt"
+  }
+}

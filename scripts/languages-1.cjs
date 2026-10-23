@@ -38,10 +38,14 @@ const ENGLISH = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA']
 /** The pseudo-language switched on in a bundle: its line in lib/i18n/locales.ts, exactly as a country prompt adds one. Its tag is
  *  "eo-XA" — Esperanto (no market we plan for, and Intl formats it with non-English data) in "XA", the pseudo-locale region. */
 // ⚠️ RE-PINNED (france-1, 22 October 2026): fr-FR is in both lists now (France's language), so eo-XA is added AFTER what is there.
+// ⚠️ RE-PINNED (europe-languages-1, 22 October 2026): the two lines are read from the file and matched by their shape, not their
+// text — each language prompt adds to them (de-DE … nb-NO), so eo-XA is appended to whatever is there.
+const LOCALES_LINE = /export const LOCALES = \[[^\]]*\] as const/.exec(fs.readFileSync(path.join(REPO, 'lib/i18n/locales.ts'), 'utf8'))[0]
+const BASES_LINE = /export const LANGUAGE_BASES: readonly AppLocale\[\] = \[[^\]]*\]/.exec(fs.readFileSync(path.join(REPO, 'lib/i18n/locales.ts'), 'utf8'))[0]
 const XX_PATCHES = [
   // ⚠️ RE-PINNED (europe-settings, 22 October 2026): + en-MT and en-GI (Malta's and Gibraltar's English).
-  { file: 'lib/i18n/locales.ts', from: "export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI'] as const", to: "export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'eo-XA'] as const" },
-  { file: 'lib/i18n/locales.ts', from: "export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR']", to: "export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'eo-XA']" },
+  { file: 'lib/i18n/locales.ts', from: LOCALES_LINE, to: LOCALES_LINE.replace('] as const', ", 'eo-XA'] as const") },
+  { file: 'lib/i18n/locales.ts', from: BASES_LINE, to: BASES_LINE.replace(/\]$/, ", 'eo-XA']") },
 ]
 const XX = P.pseudoTree(EN)
 
@@ -86,7 +90,8 @@ const XX = P.pseudoTree(EN)
     const withoutLanguage = src => { const ls = src.replace(' and messages/eo-XA.json', '').split('\n'); return ls.filter((l, i) => !l.startsWith("registerLanguage(") || !l.includes(", 'eo-XA', ") ? !(l.startsWith('// eslint-disable-next-line') && (ls[i + 1] || '').includes(", 'eo-XA', ")) : false).join('\n') }
     const englishPartSame = catalogs.filter(f => withoutLanguage(fs.readFileSync(path.join(mini, 'lib/i18n/catalog', f), 'utf8')) !== read(`lib/i18n/catalog/${f}`))
     t('every catalog module still registers its English words exactly as before (the language lines are only ADDED)', englishPartSame.length === 0, englishPartSame.slice(0, 5))
-    t('lib/i18n/locale-files.ts gains eo-XA for the server', fs.readFileSync(path.join(mini, 'lib/i18n/locale-files.ts'), 'utf8').includes("import eoXA from '@/messages/eo-XA.json'"))
+    // ⚠️ RE-PINNED (europe-languages-1): a non-English whole file is read untyped (require), so the editor's TS server does not infer it.
+    t('lib/i18n/locale-files.ts gains eo-XA for the server', fs.readFileSync(path.join(mini, 'lib/i18n/locale-files.ts'), 'utf8').includes("const eoXA: unknown = require('@/messages/eo-XA.json')"))
   } finally { fs.rmSync(mini, { recursive: true, force: true }) }
 
   // ══ 2 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -180,14 +185,19 @@ const XX = P.pseudoTree(EN)
     t(`English, allergen set "${set}": ${GOLDG.messages.length} messages answered exactly as before languages-1`, now === GOLDG.sets[set], now === GOLDG.sets[set] ? undefined : GOLDG.messages.find((m, i) => now[i] !== GOLDG.sets[set][i]))
   }
   t('the English words are data (lib/allergen-guard/en.json), and lib/whatsapp-classifier.ts holds none of them', fs.existsSync(path.join(REPO, 'lib/allergen-guard/en.json')) && !/const (ALLERGEN_STEMS|ALLERGEN_TOKENS|ANZ_ALLERGEN_STEMS|CA_ALLERGEN_STEMS|ANZ_CAVEAT_WORDS|CA_CAVEAT_WORDS)\b/.test(read('lib/whatsapp-classifier.ts')))
-  const GX = await kit.bundle('l1-guard-de', "export * from '@/lib/allergen-guard'", { patches: [{ file: 'lib/allergen-guard.ts', from: 'export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, fr: fr as GuardWords }',
-    to: "export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, fr: fr as GuardWords, de: { language: 'de', normalise: 'unicode', stems: ['allergi', 'unverträglich', 'glutenfrei', 'laktosefrei', 'ohne gluten'], tokens: ['frei'] } }" }] })
-  t('a German list (fixture): "Ist das glutenfrei?", "ALLERGIE!", "Unverträglichkeit" are caught; "Wo seid ihr heute?" is not', GX.mentionsAllergen('Ist das glutenfrei?', null, 'de-DE') && GX.mentionsAllergen('ALLERGIE!', null, 'de-AT') && GX.mentionsAllergen('Ich habe eine Unverträglichkeit', null, 'de-DE') && !GX.mentionsAllergen('Wo seid ihr heute?', null, 'de-DE'))
+  // ⚠️ RE-PINNED (europe-languages-1, 22 October 2026): German HAS its real list now (lib/allergen-guard/de.json), so the same
+  // assertions run against it instead of a fixture list patched in.
+  const GX = G
+  t('a German list (lib/allergen-guard/de.json): "Ist das glutenfrei?", "ALLERGIE!", "Unverträglichkeit" are caught; "Wo seid ihr heute?" is not', GX.mentionsAllergen('Ist das glutenfrei?', null, 'de-DE') && GX.mentionsAllergen('ALLERGIE!', null, 'de-AT') && GX.mentionsAllergen('Ich habe eine Unverträglichkeit', null, 'de-DE') && !GX.mentionsAllergen('Wo seid ihr heute?', null, 'de-DE'))
   t('…Unicode-aware: accents and case folded ("Allérgie" → allergie)', GX.mentionsAllergen('Allérgie?', null, 'de-DE'))
   // ⚠️ RE-PINNED (france-1, 22 October 2026): French HAS a list now (lib/allergen-guard/fr.json; scripts/france-1.cjs proves
   // it), so the language with NO list is Italian (it-IT) — the fail-safe it proves is unchanged.
-  t('a language with NO list: hasGuardWords is false (the classifier then never lets the AI answer a menu question)', !G.hasGuardWords('it-IT') && G.hasGuardWords('en-US'))
-  t('…and its messages are matched against EVERY list, Unicode-aware ("allergia" holds "allerg")', G.mentionsAllergen('Un’allergia alle noci?', null, 'it-IT'))
+  // ⚠️ RE-PINNED (europe-languages-1, 22 October 2026): Italian (and German, Spanish, Portuguese, Dutch and the Nordic languages)
+  // HAS a list now, so the language with NO list is Polish (pl-PL) — the fail-safe it proves is unchanged.
+  // ⚠️ RE-PINNED (europe-languages-2, 23 October 2026): Polish (and the other EU languages) HAS a list now, so the language with
+  // NO list is Turkish (tr-TR) — the fail-safe it proves is unchanged.
+  t('a language with NO list: hasGuardWords is false (the classifier then never lets the AI answer a menu question)', !G.hasGuardWords('tr-TR') && G.hasGuardWords('en-US'))
+  t('…and its messages are matched against EVERY list ("intoleransım" holds the "intolerans" stem)', G.mentionsAllergen('Laktoz intoleransım var', null, 'tr-TR'))
   // The real reply function, for a truck whose language has no list: a plain menu question gets the allergen reply, no AI call.
   const W = await kit.bundle('l1-wa', "export { generateWhatsAppReply } from '@/lib/whatsapp-classifier'")
   globalThis.__harnessDb = kit.fakeDb({ menu_items_db: [{ truck_id: 't1', name: 'Pizza', category_id: 'c1', price: 9, is_available: true, is_active: true, allergens: ['Milk'], dietary_info: [], menu_categories: { name: 'Mains' } }] })
@@ -195,14 +205,14 @@ const XX = P.pseudoTree(EN)
   const realFetch = globalThis.fetch
   globalThis.fetch = async u => { if (String(u).includes('generativelanguage')) aiCalls++; throw new Error('no network in this harness') }
   try {
-    const base = { money: { currency: 'EUR', locale: 'it-IT' }, allergenSet: 'uk14', truckName: 'Il Furgone', truckEmoji: '🍕', truckId: 't1', events: [], scheduleUrl: 'https://x/o', orderUrl: 'https://x/o', isFollowUp: false }
-    const fr = await kit.quietAsync(() => W.generateWhatsAppReply({ ...base, time: { timeZone: 'Europe/Rome', locale: 'it-IT', timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' }, customerMessage: 'Che pizze avete?' }))
+    const base = { money: { currency: 'TRY', locale: 'tr-TR' }, allergenSet: 'uk14', truckName: 'Food Truck İstanbul', truckEmoji: '🍕', truckId: 't1', events: [], scheduleUrl: 'https://x/o', orderUrl: 'https://x/o', isFollowUp: false }
+    const fr = await kit.quietAsync(() => W.generateWhatsAppReply({ ...base, time: { timeZone: 'Europe/Istanbul', locale: 'tr-TR', timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' }, customerMessage: 'Hangi pizzalarınız var?' }))
     const frCalls = aiCalls
     const en = await kit.quietAsync(() => W.generateWhatsAppReply({ ...base, money: { currency: 'GBP', locale: 'en-GB' }, time: { timeZone: 'Europe/London', locale: 'en-GB', timeFormat: '24h', dateOrder: 'dmy', weekStart: 'monday' }, customerMessage: 'What pizzas do you have?' }))
     const redirect = /allergen/i.test(fr.reply ?? '')
-    t('a it-IT truck (no list) asked a plain menu question: the ALLERGEN reply, and the menu AI is never asked', redirect && fr.classification === 'MENU_QUERY', fr)
+    t('a tr-TR truck (no list) asked a plain menu question: the ALLERGEN reply, and the menu AI is never asked', redirect && fr.classification === 'MENU_QUERY', fr)
     t('…while an English truck asked the same gets the menu answer path (its deterministic summary here — no network), not the allergen reply', !/allergen/i.test(en.reply ?? '') && en.classification === 'MENU_QUERY', en)
-    t(`the it-IT truck's reply made ${frCalls} AI attempt(s) — the classifier only; the menu answer is never asked (the English one tried both: ${aiCalls - frCalls})`, frCalls === 1 && aiCalls - frCalls === 2, { frCalls, enCalls: aiCalls - frCalls })
+    t(`the tr-TR truck's reply made ${frCalls} AI attempt(s) — the classifier only; the menu answer is never asked (the English one tried both: ${aiCalls - frCalls})`, frCalls === 1 && aiCalls - frCalls === 2, { frCalls, enCalls: aiCalls - frCalls })
   } finally { globalThis.fetch = realFetch; delete globalThis.__harnessDb }
 
   // ══ 7 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════

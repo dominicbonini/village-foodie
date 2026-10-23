@@ -1,0 +1,31 @@
+{
+  "intro": "Under Hantera ställer du in din foodtruck och ser hur det går. Översikten är där du tar emot beställningar och sköter varje evenemang medan det pågår.",
+  "ariaLabel": "Genomgång av översikten",
+  "step": "{current} av {total}",
+  "skip": "Hoppa över",
+  "back": "← Tillbaka",
+  "next": "Nästa →",
+  "done": "Klar",
+  "stops": {
+    "menu": {
+      "title": "Meny",
+      "body": "Dina rätter, priser och allergener. Ändrar du något här syns det direkt."
+    },
+    "schedule": {
+      "title": "Schema",
+      "body": "Var och när du säljer. Lägg till ett evenemang här så kan kunderna beställa till det."
+    },
+    "build": {
+      "title": "Måltider samt Tillägg och merförsäljning",
+      "body": "Måltider, merförsäljning, anpassningar och din kökskapacitet finns under Meny — testa dig fram."
+    },
+    "settings": {
+      "title": "Inställningar",
+      "body": "Din foodtrucks uppgifter och hur kunderna betalar."
+    },
+    "billing": {
+      "title": "Fakturering",
+      "body": "Här hittar du ditt abonnemang, fakturering och information om funktioner."
+    }
+  }
+}

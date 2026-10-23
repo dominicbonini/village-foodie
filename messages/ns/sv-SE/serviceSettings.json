@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Upphämtningstider",
+    "takes_cash": "Tar du kontanter?",
+    "offline_protection": "Skydd för beställningar offline",
+    "buzzer_prompt": "Påminn mig om att lägga till en summer"
+  },
+  "typeFollowsVanTitle": "Följer varje foodtrucks vanliga inställning",
+  "sameSettingsAllVansLabel": "Samma inställningar för alla foodtruckar",
+  "sameSettingsAllVansHeader": "Alla foodtruckar",
+  "sameSettingsConfirm": "Kopiera inställningarna för Foodtruck 1 till alla foodtruckar? Det kopierar alla foodtruckinställningar för Foodtruck 1, precis som ”Samma som Foodtruck 1” i Inställningar. Kökskapaciteten har ett eget reglage.",
+  "eventTypesFooterStandard": "Standard är din vanliga uppsättning. Ändrar du den här ändras den även i Inställningar.",
+  "eventTypesFooterOneEvent": "Vill du ändra en inställning för bara ett evenemang använder du evenemangets översikt.",
+  "eventTypesSubtitle": "Ändringar sparas direkt.",
+  "matchStandardLabel": "Som Standard",
+  "matchStandardConfirm": "Återställa alla inställningar för den här typen till Standard? Allt du har ändrat här rensas.",
+  "priceLabels": {
+    "price_change_on": "Ändra priser",
+    "price_mode": "Prisändring",
+    "price_amount": "Belopp",
+    "price_rounding": "Avrundning",
+    "item_prices": "Artikelpriser"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Sätt varje pris själv"
+  },
+  "priceRounding": {
+    "none": "Ingen",
+    "nearest_1": "Närmaste 1 {symbol}",
+    "up_1": "Avrunda alltid uppåt"
+  },
+  "pricesStandardCell": "Dina menypriser",
+  "pricesTruckWideTitle": "Dina priser är desamma för alla foodtruckar",
+  "pricesMenuCell": "Meny",
+  "pricesTypeOffCell": "Menypriser",
+  "itemPricesShow": "Visa priser",
+  "itemPricesHide": "Dölj priser",
+  "priceItemsHeading": "Sätt priset för varje artikel",
+  "priceItemsOpen": "Visa eller ändra varje artikels pris ›",
+  "priceItemsClose": "Dölj artikelpriser ⌃",
+  "ownPriceCount": "{n, plural, one {{count} artikel har eget pris} other {{count} artiklar har eget pris}}",
+  "priceTypeHint": "Tryck på ett pris för att skriva ditt eget.",
+  "pricesLiveNotice": "Evenemanget pågår. Nya beställningar får de nya priserna. Redan lagda beställningar behåller sina.",
+  "placeTypeHelper": "Lägg till evenemang väljer den här typen när du väljer den här platsen.",
+  "postPictureStandardNote": "Evenemangsinlägg här använder din standarddesign.",
+  "eventItemsCardDescription": "Priser, artikelgränser och tillgänglighet för bara det här evenemanget. Ändringar gäller direkt.",
+  "eventPriceColumnLabel": "Pris",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · det här evenemanget} other {meny {price} · det här evenemanget}}",
+  "eventPriceEdit": "✎ Redigera priser",
+  "eventPriceCancel": "Avbryt",
+  "eventPriceSave": "Spara priser",
+  "eventPriceEditNote": "Du redigerar priser för bara det här evenemanget. Artikelgränser och tillgänglighet är låsta tills du sparar.",
+  "eventPriceLiveNote": "Pågår: nya beställningar får de nya priserna.",
+  "offlineWhenOfflineLabel": "Vid offline"
+}

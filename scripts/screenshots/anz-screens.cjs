@@ -11,7 +11,7 @@ const { REPO, assertNotPublic } = require('./common.cjs')
 const args = process.argv.slice(2)
 const keep = args.includes('--keep')
 const [cc, outArg] = args.filter(a => !a.startsWith('--'))
-if (!['au', 'nz', 'ca', 'fr'].includes(String(cc).toLowerCase())) { console.error('usage: node scripts/screenshots/anz-screens.cjs <au|nz|ca|fr> [outDir] [--keep]'); process.exit(2) }
+if (!['au', 'nz', 'ca', 'fr', 'de', 'at', 'ch'].includes(String(cc).toLowerCase())) { console.error('usage: node scripts/screenshots/anz-screens.cjs <au|nz|ca|fr|de|at|ch> [outDir] [--keep]'); process.exit(2) }   // german-1: + de, at, ch
 const key = cc.toLowerCase()
 if (outArg) assertNotPublic(outArg)
 const OUT = outArg ? path.resolve(outArg) : fs.mkdtempSync(path.join(os.tmpdir(), `${key}-screens-out-`))

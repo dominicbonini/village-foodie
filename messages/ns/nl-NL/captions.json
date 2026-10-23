@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Data van de week",
+    "dayList": "Lijst met dagen",
+    "place": "Locatie",
+    "venue": "Naam locatie",
+    "area": "Plaats",
+    "dayDate": "Dag & datum",
+    "times": "Tijden",
+    "orderLink": "Bestellink",
+    "locationTag": "Locatietag"
+  },
+  "weekHeader": "{truck} — hier staan we deze week:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — AFGELAST, sorry",
+  "noDates": "Deze week geen data — kijk binnenkort weer.",
+  "orderAhead": "Bestel vooraf: {url}",
+  "orderAheadTagged": "Bestel vooraf: {url} {tag}",
+  "eventLine": "{truck} staat {when} bij {where}, {times}.",
+  "eventLineNoTimes": "{truck} staat {when} bij {where}.",
+  "cancelledSorry": "Sorry — we kunnen {when} helaas niet naar {where} komen.",
+  "cancelledApology": "Excuses aan iedereen die van plan was te komen. We zijn snel weer terug.",
+  "when": {
+    "today": "vandaag",
+    "tonight": "vanavond",
+    "tomorrow": "morgen",
+    "dated": "op {date}"
+  }
+}

@@ -56,6 +56,28 @@ const BY_COUNTRY: Record<string, Record<LandingScreen, string>> = {
     dashboard: '/screenshots/dashboard-v4-fr.png',
     phone: '/screenshots/customer-order-fr.png',
   },
+  // europe-languages-1 (22 October 2026): German fixture trucks — Berlin (€, de-DE), Wien (€, de-AT), Zürich (CHF, de-CH) —
+  // scripts/screenshots/anz-screens.cjs de|at|ch. Never Gusto. Liechtenstein (CHF, de-LI over de-CH) shows the Swiss set.
+  DE: {
+    kitchen: '/screenshots/kitchen-de.png',
+    dashboard: '/screenshots/dashboard-v4-de.png',
+    phone: '/screenshots/customer-order-de.png',
+  },
+  AT: {
+    kitchen: '/screenshots/kitchen-at.png',
+    dashboard: '/screenshots/dashboard-v4-at.png',
+    phone: '/screenshots/customer-order-at.png',
+  },
+  CH: {
+    kitchen: '/screenshots/kitchen-ch.png',
+    dashboard: '/screenshots/dashboard-v4-ch.png',
+    phone: '/screenshots/customer-order-ch.png',
+  },
+  LI: {
+    kitchen: '/screenshots/kitchen-ch.png',
+    dashboard: '/screenshots/dashboard-v4-ch.png',
+    phone: '/screenshots/customer-order-ch.png',
+  },
 }
 
 /** The public path of a hero screenshot for the visitor's marketing country (its ISO code, e.g. 'GB', 'US'). */

@@ -1,0 +1,6 @@
+{
+  "heading": "Zahlung annehmen",
+  "intro": "Wie Ihr Team die Zahlung für jede Bestellung erfasst.",
+  "paidStepHelp": "Fügt eine Schaltfläche „Bestätigen“ hinzu, wenn Sie selbst eine Bestellung hinzufügen. So können Sie sie jetzt aufgeben und die Zahlung später annehmen. Schalten Sie dies ein, wenn Sie telefonische Bestellungen oder Vorbestellungen annehmen.",
+  "paidStepNote": "Dies betrifft nur Bestellungen, die Sie selbst hinzufügen. Online-Bestellungen sind nicht betroffen."
+}

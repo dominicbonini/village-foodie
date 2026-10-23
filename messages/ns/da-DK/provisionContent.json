@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Foodtruck 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgere",
+    "mains": "Hovedretter",
+    "sides": "Tilbehør",
+    "drinks": "Drikkevarer"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza-foodtruck",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja & honning",
+        "fourCheese": "Fire oste",
+        "gardenVeg": "Grøntsager",
+        "garlicBread": "Hvidløgsbrød",
+        "rocketParmesan": "Rucola & parmesan",
+        "olives": "Oliven",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger-foodtruck",
+      "items": {
+        "classicCheeseburger": "Klassisk cheeseburger",
+        "doubleBacon": "Dobbelt bacon",
+        "buttermilkChicken": "Kylling i kærnemælk",
+        "halloumiStack": "Halloumiburger",
+        "smashBurger": "Smashburger",
+        "skinOnFries": "Pommes frites med skræl",
+        "loadedCheeseFries": "Pommes frites med ost og topping",
+        "onionRings": "Løgringe",
+        "craftLemonade": "Hjemmelavet lemonade",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Curry-foodtruck",
+      "items": {
+        "chickenTikkaMasala": "Kylling tikka masala",
+        "lambRoganJosh": "Lam rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Pilaffris",
+        "garlicNaan": "Hvidløgsnaan",
+        "onionBhaji": "Løgbhaji",
+        "mangoLassi": "Mangolassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

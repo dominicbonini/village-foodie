@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} tidslucka} other {{count} tidsluckor}} över kapaciteten — granska",
+  "batchOver": "{cat} över omgångsstorleken — {count} till {slot} ({per} per omgång)",
+  "eventStartOver": "Över kapaciteten vid evenemangets start — {n, plural, one {{count} artikel} other {{count} artiklar}} till {slot}",
+  "kitchenOver": "Köket över kapaciteten — {n, plural, one {{count} artikel} other {{count} artiklar}} tillagas till {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} artikel} other {{count} artiklar}}",
+  "placedAnyway": "Lagda ändå: {list}",
+  "placedItem": "#{id} till {slot}",
+  "orphans": "{times} över kapaciteten — inga beställningar hittades att koppla det till",
+  "dismiss": "Stäng",
+  "kitchenCapacity": "Kökskapacitet",
+  "overCapacity": "Över kapaciteten",
+  "wakeUnsupported": "Den här enheten kan inte hålla skärmen tänd.",
+  "wakeInsecure": "Skärmen kan inte hållas tänd från den här adressen.",
+  "wakeRetry": "Håll skärmen tänd — tryck för att försöka igen",
+  "wakeAcquire": "Håll skärmen tänd",
+  "degraded": {
+    "serverError": "Servern kunde inte ladda beställningar{hasStatus, select, yes { (fel {status})} other {}}. Visar beställningar från {at}. Nya beställningar kan saknas.",
+    "unreachable": "Kan inte nå servern. Visar beställningar från {at}. Nya beställningar kan saknas."
+  }
+}

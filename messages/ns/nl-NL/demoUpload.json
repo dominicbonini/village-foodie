@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Je menukaart lezen…",
+    "found": "Je gerechten gevonden…",
+    "kitchen": "Je keuken instellen…",
+    "page": "Je bestelpagina bouwen…",
+    "almost": "Bijna klaar…"
+  },
+  "templateSteps": {
+    "truck": "Je voorbeeldfoodtruck bouwen…",
+    "menu": "De menukaart instellen…",
+    "kitchen": "De keuken instellen…",
+    "page": "De bestelpagina bouwen…",
+    "almost": "Bijna klaar…"
+  },
+  "dialogLabel": "Upload je menukaart",
+  "heading": "✨ Upload je menukaart",
+  "failedHeading": "We konden die menukaart niet lezen",
+  "close": "Sluiten",
+  "intro": "Een foto van je menubord, een screenshot, een PDF, of plak het als tekst. Onze AI leest het en bouwt een werkende bestelpagina voor je — jouw gerechten, jouw prijzen — in minder dan 60 seconden. Geen aanmelding, geen betaalkaart.",
+  "failedIntro": "Soms is een foto te donker, te scheef of handgeschreven. Dat is aan ons om op te lossen, niet iets wat jij fout hebt gedaan. Een paar mogelijkheden:",
+  "usually": "Dit duurt meestal minder dan 60 seconden.",
+  "slow": "Dit duurt langer dan normaal — bij grote menukaarten gebeurt dat soms.",
+  "keepWaiting": "Blijven wachten",
+  "sampleWhileYouWait": "Of kijk rond met een voorbeeldmenukaart terwijl je wacht",
+  "standIn": "Dit <b>wordt niet jouw menukaart</b> — het is een voorbeeld zodat je ziet hoe het werkt.",
+  "seeSample": "Voorbeeldmenukaart bekijken",
+  "tryAgain": "Opnieuw proberen",
+  "tryPhotoAgain": "Deze foto opnieuw proberen",
+  "tryDifferent": "Een andere foto proberen",
+  "uploadAnother": "← Een andere foto uploaden",
+  "orSample": "Of kijk rond met een voorbeeldmenukaart",
+  "orBuild": "Of wij maken hem voor je",
+  "buildSent": "✓ Bedankt — we hebben het ontvangen. We mailen je.",
+  "buildBody": "Laat je e-mailadres achter, dan zet een echt persoon je menukaart erin en stuurt je de link.",
+  "emailPlaceholder": "naam@jouwfoodtruck.nl",
+  "sending": "…",
+  "send": "Versturen",
+  "noPhoto": "Geen foto van je menukaart bij de hand?",
+  "noPhotoBody": "Kijk dan rond met een voorbeeldfoodtruck — je kunt de jouwe altijd later uploaden.",
+  "build": "Mijn demo maken →",
+  "nothingPublished": "Er wordt niets gepubliceerd — alleen jij kunt het zien.",
+  "error": {
+    "somethingWrong": "Er ging iets mis. Probeer het opnieuw.",
+    "serverUnreachable": "We konden de server niet bereiken. Controleer je verbinding en probeer het opnieuw.",
+    "sendFailed": "Versturen mislukt — probeer het opnieuw."
+  },
+  "fields": {
+    "uploadLabel": "Menukaartbestand uploaden",
+    "dropHere": "Sleep je menukaart hierheen",
+    "dragOrTap": "Sleep een bestand hierheen of tik om te kiezen",
+    "fileTypes": "Afbeelding of PDF",
+    "or": "of",
+    "pasteLabel": "Tekst van menukaart plakken",
+    "pastePlaceholder": "Plak je menukaart hier — namen van gerechten, beschrijvingen, prijzen…"
+  }
+}

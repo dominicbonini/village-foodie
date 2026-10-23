@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Summer <b>{number}</b> är kopplad till <b>beställning #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Ta den till <b>{hasTarget, select, yes {beställning #{targetId}} other {den här beställningen}}</b>?",
+  "cancel": "Avbryt",
+  "take": "Ta summer {number}",
+  "titleBlocking": "Summer till beställning #{id}?",
+  "title": "Välj en summer",
+  "subtitle": "{hasTarget, select, yes {Beställning #{id}} other {Den här beställningen}}{hasCurrent, select, yes { · nu summer {current}} other {}}",
+  "allTaken": "{n, plural, one {Personsökaren är ute. Tryck på den för att ta den från en annan beställning.} other {Alla {count} summer är ute. Tryck på en för att ta den från en annan beställning.}}",
+  "thisOrder": "Den här beställningen",
+  "noBuzzer": "Ingen summer",
+  "done": "Klar",
+  "lostTitle": "Beställning #{id} har ingen summer",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}en annan beställning tog samma summer medan du var offline. Ge kunden en annan.",
+  "dismiss": "Stäng",
+  "assign": "Tilldela"
+}

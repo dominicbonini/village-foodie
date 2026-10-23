@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab forside",
+  "cta": "Upload mit menukort →",
+  "ctaShort": "Upload menukort",
+  "features": "Funktioner",
+  "pricing": "Priser",
+  "logIn": "Log ind",
+  "country": {
+    "button": "Land: {name}. Skift land",
+    "menu": "Land"
+  }
+}

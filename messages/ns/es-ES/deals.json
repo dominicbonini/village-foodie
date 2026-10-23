@@ -1,0 +1,17 @@
+{
+  "back": "← Volver",
+  "title": "Aplicar un menú",
+  "save": "Ahorra {amount}",
+  "selectItems": "Elige los productos de cada apartado",
+  "choose": "Elige: {category}…",
+  "inYourBasket": "── En tu cesta ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (en la cesta){state, select, used { — ya está en un menú} taken { — elegido en otro apartado} other {}}",
+  "addNew": "── Añadir nuevo ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obligatorio · elige uno} required {Obligatorio} other {Elige uno}}{unmet, select, yes { (obligatorio)} other {}}",
+  "notePlaceholder": "Añade una nota, p. ej., sin cebolla (opcional)",
+  "backButton": "Volver",
+  "cancel": "Cancelar",
+  "chooseRequired": "Elige las opciones obligatorias",
+  "apply": "Aplicar menú · {amount}"
+}

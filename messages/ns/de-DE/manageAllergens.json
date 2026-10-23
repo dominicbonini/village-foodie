@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Ihre Allergenkarte",
+    "intro": "Kunden sehen sie <b>genau so, wie Sie sie schreiben</b> – nichts wird umformuliert. Tippen oder fügen Sie den Text unten ein, oder laden Sie ein Foto/PDF hoch, dann lesen wir den Text aus, damit Sie ihn prüfen können.",
+    "empty": "Noch keine Allergenkarte.",
+    "placeholder": "z. B. Alle unsere Fish & Chips enthalten Weizen und Milch. Die Fritteuse wird auch für Produkte mit Gluten und Schalenfrüchten verwendet. Vegane Optionen verfügbar – fragen Sie unser Team.",
+    "reading": "Bild wird gelesen…",
+    "upload": "📷 Bild / PDF hochladen",
+    "uploadNote": "Wir lesen den Text aus Ihrem Bild aus, damit Sie ihn prüfen können – das Bild wird nicht gespeichert."
+  },
+  "cardUpload": {
+    "dishFallback": "Gericht",
+    "question": "Haben Sie eine Allergenkarte zum Hochladen?",
+    "perDish": "{detected, select, yes {Laden Sie sie hoch, und wir erstellen daraus die Allergenangaben Ihrer Gerichte. Erkannte Allergene sehen Sie auf der nächsten Seite, wo Sie jedes Gericht bestätigen.} other {Laden Sie sie hoch, und wir erstellen daraus die Allergenangaben Ihrer Gerichte.}}",
+    "cardOnly": "Laden Sie die Allergenkarte hoch, die Kunden sehen werden.",
+    "yes": "Ja",
+    "no": "Nein",
+    "noProblem": "Kein Problem – Sie brauchen keine. Fahren Sie mit der Schaltfläche unten fort.",
+    "analysing": "Allergenkarte wird analysiert…",
+    "dropzone": "Hierher ziehen oder zum Auswählen tippen",
+    "imageOrPdf": "Bild oder PDF",
+    "or": "oder",
+    "pastePlaceholder": "Fügen Sie den Text Ihrer Allergenkarte hier ein…",
+    "process": "Allergenkarte auswerten",
+    "cardRead": "Allergenkarte gelesen ✓",
+    "unmatchedHeading": "Diese konnten nicht automatisch zugeordnet werden – zuordnen oder verwerfen",
+    "quotedName": "„{name}“",
+    "ambiguous": "Nicht eindeutig – passt zu mehreren Gerichten; wählen Sie das richtige aus.",
+    "assignTo": "Gericht zuordnen…",
+    "dismiss": "Verwerfen",
+    "blanket": "Laut Allergenkarte können <b>{list}</b> in <b>allen</b> Gerichten enthalten sein. Zu jedem Gericht hinzufügen? (Sie bestätigen trotzdem jedes einzeln) <muted>– standardmäßig aus</muted>",
+    "kitchenNotes": "Küchenhinweise (werden in Ihren Allergeninformationen gespeichert)",
+    "matchSummary": "{n, plural, =0 {Einem Gericht zugeordnet: {matched}.} one {Einem Gericht zugeordnet: {matched}. Von Ihnen noch zuzuordnen: {count}.} other {Einem Gericht zugeordnet: {matched}. Von Ihnen noch zuzuordnen: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Weniger anzeigen",
+    "showMore": "Mehr anzeigen",
+    "fileOnly": "Für diesen Foodtruck ist eine Datei der Allergenkarte gespeichert, aber kein Zusammenfassungstext. Öffnen Sie das Original, um sie zu lesen.",
+    "viewOriginal": "Original-Allergenkarte ansehen"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Die Allergenkarte konnte nicht gelesen werden – versuchen Sie es erneut",
+      "confirmed": "{name} bestätigt",
+      "undo": "Rückgängig",
+      "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut",
+      "imageFailed": "Dieses Bild konnte nicht gelesen werden – tippen oder fügen Sie den Text Ihrer Allergenkarte stattdessen ein",
+      "cardRead": "{n, plural, one {Allergenkarte gelesen – {matched} zugeordnet, {count} noch zuzuordnen} other {Allergenkarte gelesen – {matched} zugeordnet, {count} noch zuzuordnen}}"
+    },
+    "genericWarn": {
+      "text": "„{generic}“ wurde erkannt, ist aber nicht eindeutig. Wählen Sie {picks}, wenn dieses Gericht {family} enthält – oder lassen Sie sie abgewählt, wenn nicht.",
+      "andOr": "{a} und/oder {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Bestätigt",
+      "confirmed": "Bestätigt",
+      "needsReview": "Prüfung nötig"
+    },
+    "confirm": {
+      "confirming": "Wird bestätigt…",
+      "confirmed": "Bestätigt ✓",
+      "confirm": "Bestätigen",
+      "changed": "· geändert",
+      "changedTitle": "Seit Ihrer letzten Bestätigung bearbeitet – bitte erneut bestätigen"
+    },
+    "allergens": "Allergene",
+    "dietary": "Ernährung",
+    "uncategorised": "Ohne Kategorie",
+    "review": {
+      "progress": "{confirmed} von {total} bestätigt",
+      "allConfirmed": "✓ Alle bestätigt",
+      "list": "Liste",
+      "table": "Tabelle",
+      "detected": "Aus Ihrer Speisekarte erkannt – <b>bitte prüfen</b>. Allergene bleiben für Kunden ausgeblendet, bis Sie jedes Gericht bestätigen.",
+      "viewOnly": "👁 Nur Ansicht – nur der Inhaber kann Allergene bestätigen oder ändern.",
+      "emptyTitle": "Keine Artikel auf der Speisekarte",
+      "emptyBody": "Fügen Sie zuerst Artikel zur Speisekarte hinzu und legen Sie dann hier deren Allergene fest.",
+      "dish": "Gericht",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Allergeninformationen werden gelesen…",
+      "saved": "🛡️ Allergenkarte gespeichert",
+      "viewOriginal": "Original-Allergenkarte ansehen",
+      "replace": "Allergenkarte ersetzen",
+      "uploadHelp": "Laden Sie Ihre Allergenkarte hoch (Foto/PDF) oder fügen Sie Ihre Allergeninformationen ein – unsere KI bereitet sie für Kunden auf.",
+      "add": "Allergenkarte hinzufügen",
+      "viewOnly": "👁 Nur Ansicht – nur der Inhaber kann die Allergenkarte hinzufügen.",
+      "intro": "Kunden sehen diese Allergenkarte als Allergen-Referenz der Speisekarte. Allergene pro Gericht bleiben im Modus „nur Allergenkarte“ ausgeblendet (Ihre Gerichtsdaten bleiben erhalten, falls Sie später zur Angabe pro Gericht wechseln)."
+    },
+    "subtitle": {
+      "choose": "Wählen Sie, wie Kunden Allergeninformationen sehen",
+      "card": "Fügen Sie Ihre Allergenkarte hinzu",
+      "cardOptional": "Fügen Sie eine Allergenkarte hinzu (optional)",
+      "review": "Jedes Gericht prüfen & bestätigen"
+    },
+    "heading": {
+      "import": "Allergene",
+      "standalone": "Allergen-Einrichtung"
+    },
+    "nav": {
+      "next": "Weiter →",
+      "back": "← Zurück",
+      "skip": "Vorerst überspringen",
+      "saving": "Wird gespeichert…",
+      "done": "Fertig",
+      "saveLater": "Speichern & später fertigstellen",
+      "close": "Schließen",
+      "finish": "Abschließen",
+      "skipImport": "Allergen-Einrichtung vorerst überspringen"
+    },
+    "hint": {
+      "skipDefers": "Überspringen verschiebt nur – Gerichte, die Sie nicht bestätigt haben, bleiben für Kunden ausgeblendet, bis ihre Allergene bestätigt sind.",
+      "importIncomplete": "Bestätigen Sie jedes Gericht, um fortzufahren – oder wählen Sie „Allergen-Einrichtung vorerst überspringen“."
+    }
+  }
+}

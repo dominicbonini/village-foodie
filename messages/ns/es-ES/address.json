@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Dirección",
+    "postcode": "Código postal",
+    "zip": "Código ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Código postal",
+    "state": "Estado",
+    "stateTerritory": "Estado o territorio",
+    "province": "Provincia",
+    "county": "Condado",
+    "area": "Localidad (pueblo o ciudad)",
+    "townOrArea": "Localidad o zona",
+    "city": "Ciudad",
+    "suburb": "Barrio",
+    "townOrCity": "Pueblo o ciudad"
+  },
+  "short": {
+    "area": "Localidad",
+    "townOrArea": "Localidad o zona",
+    "city": "Ciudad",
+    "suburb": "Barrio",
+    "townOrCity": "Pueblo o ciudad"
+  },
+  "inSentence": {
+    "postcode": "código postal",
+    "zip": "código ZIP",
+    "eircode": "Eircode",
+    "postalCode": "código postal"
+  },
+  "withArticle": {
+    "postcode": "un código postal",
+    "zip": "un código ZIP",
+    "eircode": "un Eircode",
+    "postalCode": "un código postal"
+  },
+  "tradeLabel": {
+    "area": "Pueblo o ciudad",
+    "townOrArea": "Localidad o zona",
+    "city": "Ciudad",
+    "suburb": "Barrio",
+    "townOrCity": "Pueblo o ciudad"
+  },
+  "basedIn": {
+    "area": "Pueblo o ciudad donde tienes tu base",
+    "townOrArea": "Localidad o zona donde tienes tu base",
+    "city": "Ciudad donde tienes tu base",
+    "suburb": "Barrio donde tienes tu base",
+    "townOrCity": "Pueblo o ciudad donde tienes tu base"
+  },
+  "example": "p. ej., {example}",
+  "customersSee": "Los clientes ven:",
+  "postalWarning": "No parece {article}; por ejemplo, {example}. Puedes guardarlo igualmente.",
+  "regionChoose": "Elige…"
+}

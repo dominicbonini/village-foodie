@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Synlig på foodtruckkartan"
+    },
+    "web_dashboard": {
+      "name": "Översikt på webben för alla enheter"
+    },
+    "qr_code": {
+      "name": "QR-kod"
+    },
+    "schedule_import": {
+      "name": "Automatisk import av schema"
+    },
+    "meal_deals_upsells": {
+      "name": "Måltider och merförsäljning"
+    },
+    "walkup_orders": {
+      "name": "Hantering av beställningar på plats"
+    },
+    "sold_out_toggle": {
+      "name": "Markera slutsålt med ett tryck"
+    },
+    "kitchen_app": {
+      "name": "Köksapp för iPhone, iPad och Android"
+    },
+    "offline_protection": {
+      "name": "Skydd för beställningar vid avbrott"
+    },
+    "online_payments": {
+      "name": "Onlinebetalningar"
+    },
+    "advance_preordering": {
+      "name": "Förbeställning till senare datum"
+    },
+    "preorder_deadline": {
+      "name": "Sista tid för förbeställning"
+    },
+    "time_slot_selection": {
+      "name": "Kunden väljer tidslucka"
+    },
+    "kitchen_capacity": {
+      "name": "Kökskapacitet: max antal beställningar per tidslucka"
+    },
+    "stock_countdown": {
+      "name": "Automatisk lagernedräkning"
+    },
+    "auto_accept": {
+      "name": "Godkänn onlinebeställningar automatiskt"
+    },
+    "branded_qr_code": {
+      "name": "QR-kod med din logga"
+    },
+    "private_events": {
+      "name": "Privata evenemang"
+    },
+    "social_media_posts": {
+      "name": "Inlägg i sociala medier"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatiska svar på WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatiska svar på Messenger och Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Ta betalt med mobilen"
+    },
+    "advanced_reporting": {
+      "name": "Avancerad rapportering"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-aviseringar om beställningar"
+    },
+    "multi_device_kitchen": {
+      "name": "Synkade köksskärmar på flera enheter"
+    },
+    "multi_user_access": {
+      "name": "Flera användare"
+    },
+    "embed_schedule": {
+      "name": "Schemasida på din egen webbplats"
+    },
+    "event_types": {
+      "name": "Egna evenemangstyper och evenemangspriser"
+    },
+    "buzzer_tracking": {
+      "name": "Pagerhantering"
+    },
+    "ticket_printing": {
+      "name": "Utskrift av köksbongar"
+    },
+    "customer_display": {
+      "name": "Kundskärm"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitala stämpelkort"
+    }
+  },
+  "cardRegionOnline": "vanliga {region}",
+  "cardRegion": {
+    "UKcards": "brittiska kort",
+    "EEAcards": "kort från EES",
+    "UScards": "amerikanska kort",
+    "Australiancards": "australiska kort",
+    "NewZealandcards": "nyzeeländska kort",
+    "Canadiancards": "kanadensiska kort",
+    "Swisscards": "schweiziska kort"
+  },
+  "perMonth": {
+    "mo": "{amount}/mån",
+    "month": "{amount}/månad"
+  },
+  "priceWord": {
+    "free": "Gratis",
+    "freeTrial": "Gratis provperiod",
+    "lifetime": "Livstid",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Betala på plats",
+    "unlimited": "Obegränsat",
+    "none": "—",
+    "masked": "Ej fastställt"
+  },
+  "cell": {
+    "included": "Ingår"
+  }
+}

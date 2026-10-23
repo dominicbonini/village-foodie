@@ -1,0 +1,94 @@
+{
+  "heading": "Pagamentos",
+  "loading": "A verificar a sua conta Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Não configurado",
+      "body": "Demora cerca de 10 minutos. Vai precisar dos seus dados bancários e de um documento de identificação.",
+      "chip": "Não configurado"
+    },
+    "requirements": {
+      "title": "A Stripe precisa dos seus dados",
+      "body": "Os pagamentos com cartão não funcionam enquanto a Stripe não tiver os dados da sua empresa e os seus dados bancários.",
+      "chip": "Ação necessária"
+    },
+    "pending": {
+      "title": "Ligado — a Stripe está a verificar os seus dados",
+      "body": "Não precisa de fazer nada. A Stripe está a analisar o que enviou e esta página é atualizada quando terminar.",
+      "chip": "Em verificação"
+    },
+    "ready": {
+      "title": "Ligado",
+      "body": "A sua conta Stripe está ligada e pode receber pagamentos.",
+      "chip": "Pronto"
+    },
+    "restricted": {
+      "title": "Pagamentos com cartão suspensos",
+      "body": "A Stripe suspendeu os pagamentos com cartão na sua conta até que uma questão seja resolvida.",
+      "chip": "Suspenso"
+    },
+    "unsupported": {
+      "title": "Os pagamentos com cartão não estão disponíveis nesta conta",
+      "body": "A Stripe não consegue ativar pagamentos com cartão aqui. Contacte-nos e resolvemos a situação consigo.",
+      "chip": "Indisponível"
+    }
+  },
+  "keyMismatch": {
+    "title": "As chaves Stripe não coincidem",
+    "body": "O servidor deste site está a usar a chave Stripe de <b>{server, select, live {produção} other {teste}}</b>, mas o navegador foi compilado com a de <b>{browser, select, live {produção} other {teste}}</b>. Os pagamentos com cartão falhariam no momento em que um cliente tentasse pagar, por isso a configuração da Stripe está bloqueada até as duas coincidirem.",
+    "fix": "As duas chaves têm de estar definidas para o mesmo ambiente e o site tem de ser recompilado a seguir — a chave publicável é incorporada no momento da compilação; a chave secreta é lida em cada pedido."
+  },
+  "permission": {
+    "title": "Só o proprietário do food truck pode configurar os pagamentos",
+    "body": "A Stripe é ligada pela pessoa cuja conta bancária recebe o dinheiro, por isso tem de ser configurada a partir da conta dessa pessoa, com a sessão dela iniciada. Não há nenhum problema com este food truck nem com o HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Os pagamentos com cartão ainda não estão configurados",
+    "fetchTitle": "Não foi possível verificar a conta Stripe deste food truck",
+    "keyMissing": "{name} não está definido — os componentes incorporados não podem ser carregados."
+  },
+  "errors": {
+    "requestFailed": "O pedido falhou ({status})",
+    "unreachable": "Não foi possível contactar a Stripe"
+  },
+  "online": {
+    "heading": "Pagamentos online",
+    "body": "Os clientes pagam com cartão quando encomendam. O dinheiro vai diretamente para a sua própria conta Stripe — nunca o retemos.",
+    "feeLine": "A Stripe cobra {fee} por pagamento com {region} (cartões normais). Outros cartões podem custar mais. A taxa do próprio HatchGrab nas encomendas online depende do seu plano — consulte Faturação.",
+    "testMode": "Modo de teste. Ainda não é possível receber pagamentos reais."
+  },
+  "trialNote": "Configurar isto não inicia a sua subscrição nem lhe cobra nada hoje. É a forma como os seus clientes lhe pagam — o seu plano é à parte.",
+  "admin": {
+    "title": "A ver como administrador da plataforma",
+    "body": "Este food truck ainda não configurou os pagamentos online. Só o proprietário o pode fazer, a partir da sua própria conta com sessão iniciada — não há nada para premir aqui."
+  },
+  "setUp": {
+    "button": "Configurar pagamentos online",
+    "busy": "A configurar…"
+  },
+  "toast": {
+    "alreadySetUp": "Já está configurado — a continuar",
+    "addDetails": "Agora adicione os seus dados para a Stripe",
+    "createFailed": "Não foi possível criar a conta"
+  },
+  "onboarding": {
+    "restricted": "A Stripe trata do resto — vai iniciar sessão na Stripe e atualizar os dados de que ela precisa.",
+    "firstRun": "A Stripe trata do resto — vai iniciar sessão na Stripe e depois indicar os dados da sua empresa e os seus dados bancários."
+  },
+  "details": {
+    "title": "Os seus dados Stripe",
+    "body": "Altere a conta bancária onde recebe os pagamentos, ou atualize os dados e documentos da sua empresa.",
+    "button": "Ver ou editar"
+  },
+  "walkUp": {
+    "heading": "Pagamentos ao balcão",
+    "body": "Como recebe o dinheiro ao balcão. O HatchGrab não cobra taxa de plataforma nos pagamentos ao balcão, seja qual for a opção.",
+    "ownTerminal": "O seu próprio terminal de pagamento",
+    "current": "Atual",
+    "ownTerminalHelp": "Zettle, Square ou o que já usa. Nada a configurar — só se aplicam as taxas do seu fornecedor.",
+    "hatchgrab": "Através do HatchGrab",
+    "comingSoon": "Em breve",
+    "hatchgrabHelp": "Usa a mesma ligação Stripe dos seus pagamentos online — um terminal de pagamento, ou contactless diretamente no seu telemóvel ou tablet.",
+    "hatchgrabFees": "{fee} por pagamento com {region}, mais {surcharge} por pagamentos contactless recebidos no telemóvel ou tablet. Outros cartões podem custar mais."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "loading": "Beheeromgeving laden…",
+  "loadFailed": "Laden mislukt",
+  "requestFailed": "Mislukt",
+  "invalidToken": "Ongeldige of verlopen token",
+  "loadFailedReason": "Deze pagina kon niet worden geladen: {reason}",
+  "noCountrySettings": "De landinstellingen van deze foodtruck konden niet worden geladen. Vernieuw de pagina.",
+  "noPlans": "Het abonnement van deze foodtruck kon niet worden geladen. Vernieuw de pagina.",
+  "stale": "{hasTime, select, yes {Vernieuwen lukte niet. Je ziet wat er om {time} was opgeslagen. Wijzigingen die je maakt, worden nog steeds opgeslagen.} other {Vernieuwen lukte niet. Je ziet wat er was opgeslagen. Wijzigingen die je maakt, worden nog steeds opgeslagen.}}",
+  "verify": {
+    "ok": "E-mailadres bevestigd — bedankt.",
+    "expired": "Die bevestigingslink is verlopen. Neem contact op, dan regelen we het voordat je live gaat.",
+    "invalid": "Die bevestigingslink werkte niet. Neem contact op, dan regelen we het voordat je live gaat."
+  },
+  "profile": {
+    "updated": "Profiel bijgewerkt",
+    "saveFailed": "Opslaan mislukt",
+    "title": "Profiel bewerken",
+    "name": "Naam",
+    "namePlaceholder": "Je naam",
+    "email": "E-mail",
+    "cancel": "Annuleren",
+    "saving": "Opslaan…",
+    "save": "Opslaan"
+  },
+  "header": {
+    "subtitle": "Beheeromgeving",
+    "ordersDashboard": "← Bestellingendashboard"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Planning",
+    "social": "Social media",
+    "reports": "Rapporten",
+    "team": "Team",
+    "settings": "Instellingen",
+    "payments": "Betalingen",
+    "billing": "Facturatie",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Planning ({count})",
+    "stripeAttention": "Stripe vraagt je aandacht",
+    "allergensNotSet": "allergenen niet ingesteld"
+  },
+  "menuSections": {
+    "label": "Menuonderdelen",
+    "items": "Gerechten",
+    "capacity": "Keukencapaciteit",
+    "extras": "Extra’s & upselling",
+    "deals": "Combideals"
+  },
+  "socialSections": {
+    "label": "Social-mediaonderdelen",
+    "create": "Post maken",
+    "designs": "Ontwerpen",
+    "locations": "Locatie-instellingen"
+  },
+  "notices": {
+    "review": "Bekijken →",
+    "tour": "Zin in een korte rondleiding door je dashboard?",
+    "showMeAround": "Laat me rondkijken",
+    "dismiss": "Sluiten",
+    "approval": "{count, plural, one {We hebben <b>{count}</b> evenement voor je gevonden — bekijk en keur het goed voordat het live gaat.} other {We hebben <b>{count}</b> evenementen voor je gevonden — bekijk en keur ze goed voordat ze live gaan.}}",
+    "allergens": "<b>Allergenen niet ingesteld</b> — klanten zien geen allergeneninformatie tot je die hebt gecontroleerd. Controleer de allergenen van elk gerecht op het tabblad Menu.",
+    "domainLive": "<link>{domain}</link> is live. Bekijk het en laat ons bij Instellingen weten of het klopt.",
+    "stripe": "<b>Stripe heeft iets van je nodig</b> — kaartbetalingen kunnen stoppen tot dat geregeld is.",
+    "profileTitle": "Maak je profiel compleet",
+    "missing": "Ontbreekt: {fields}.",
+    "goToSettings": "Naar Instellingen →",
+    "field": {
+      "truckName": "naam van de foodtruck",
+      "cuisineType": "soort keuken",
+      "contactEmail": "contact-e-mail",
+      "contactPhone": "contacttelefoon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Je zit in een gratis proefperiode} other {Je zit in een gratis proefperiode ({months} mnd.)}}",
+    "ends": "{hasDate, select, yes {Proefperiode eindigt <hl>{date}</hl>} other {Proefperiode eindigt <hl>binnenkort</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Alle functies # maand gratis} other {Alle functies # maanden gratis}}} other {Alle functies gratis tijdens je proefperiode}}",
+    "body": "{hasDate, select, yes {Tijdens je proefperiode, die loopt tot <b>{date}</b>, betaal je niets. Er wordt pas iets in rekening gebracht als je een abonnement kiest en je betaalgegevens invult. Tot die tijd valt er niets op te zeggen en niets te betalen. Kies vóór die datum je abonnement — doe je dat niet, dan ga je over naar {fallback} en werken sommige functies niet meer.} other {Zolang je proefperiode loopt, betaal je niets. Er wordt pas iets in rekening gebracht als je een abonnement kiest en je betaalgegevens invult. Tot die tijd valt er niets op te zeggen en niets te betalen. Kies je abonnement voordat de proefperiode afloopt — doe je dat niet, dan ga je over naar {fallback} en werken sommige functies niet meer.}}",
+    "fees": "*Op online bestellingen gelden de standaard kaarttransactiekosten",
+    "upgrade": "Upgrade hier →"
+  }
+}

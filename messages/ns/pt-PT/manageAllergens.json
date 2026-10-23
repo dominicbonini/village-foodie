@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "A sua ficha de alergénios",
+    "intro": "Os clientes veem isto <b>exatamente como o escrever</b> — nada é reescrito. Escreva ou cole abaixo, ou carregue uma fotografia/PDF e nós extraímos o texto para o rever.",
+    "empty": "Ainda não há ficha de alergénios.",
+    "placeholder": "p. ex. Todos os nossos fritos de peixe contêm trigo e leite. A fritadeira é partilhada com produtos que contêm glúten e frutos de casca rija. Opções veganas disponíveis — pergunte à equipa.",
+    "reading": "A ler a imagem…",
+    "upload": "📷 Carregar imagem / PDF",
+    "uploadNote": "Extraímos o texto da sua imagem para o poder rever — a imagem não é guardada."
+  },
+  "cardUpload": {
+    "dishFallback": "Prato",
+    "question": "Tem uma ficha de alergénios para carregar?",
+    "perDish": "{detected, select, yes {Carregue-a e usamo-la para preencher os alergénios dos seus pratos. Os alergénios detetados aparecem na página seguinte, onde confirma cada prato.} other {Carregue-a e usamo-la para preencher os alergénios dos seus pratos.}}",
+    "cardOnly": "Carregue a ficha de alergénios que os clientes vão ver.",
+    "yes": "Sim",
+    "no": "Não",
+    "noProblem": "Não há problema — não precisa de ter uma. Continue com o botão abaixo.",
+    "analysing": "A analisar a ficha…",
+    "dropzone": "Arraste e largue ou toque para escolher",
+    "imageOrPdf": "Imagem ou PDF",
+    "or": "ou",
+    "pastePlaceholder": "Cole aqui o texto da sua ficha de alergénios…",
+    "process": "Processar ficha",
+    "cardRead": "Ficha lida ✓",
+    "unmatchedHeading": "Não foi possível associar estes automaticamente — atribua ou ignore",
+    "quotedName": "«{name}»",
+    "ambiguous": "Ambíguo — corresponde a vários pratos; escolha o certo.",
+    "assignTo": "Atribuir ao prato…",
+    "dismiss": "Ignorar",
+    "blanket": "A ficha indica que <b>{list}</b> pode estar presente em <b>todos</b> os pratos. Adicionar a todos os pratos? (continua a confirmar cada um) <muted>— desativado por predefinição</muted>",
+    "kitchenNotes": "Notas da cozinha (guardadas na sua informação sobre alergénios)",
+    "matchSummary": "{n, plural, =0 {Associados a um prato: {matched}.} one {Associados a um prato: {matched}. {count} precisa que o atribua.} other {Associados a um prato: {matched}. {count} precisam que os atribua.}}"
+  },
+  "savedCard": {
+    "showLess": "Mostrar menos",
+    "showMore": "Mostrar mais",
+    "fileOnly": "Está guardado um ficheiro de ficha para este food truck, mas não foi guardado nenhum texto de resumo. Abra o original para o ler.",
+    "viewOriginal": "Ver ficha original"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Não foi possível ler a ficha de alergénios — tente novamente",
+      "confirmed": "Confirmado: {name}",
+      "undo": "Anular",
+      "saveFailed": "Não foi possível guardar — tente novamente",
+      "imageFailed": "Não foi possível ler essa imagem — escreva ou cole antes a sua ficha",
+      "cardRead": "{n, plural, one {Ficha lida — associados: {matched}; {count} por atribuir} other {Ficha lida — associados: {matched}; {count} por atribuir}}"
+    },
+    "genericWarn": {
+      "text": "Foi detetado «{generic}», mas não é específico. Escolha {picks} se este prato contiver {family} — ou deixe sem seleção se não contiver.",
+      "andOr": "{a} e/ou {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confirmado",
+      "confirmed": "Confirmado",
+      "needsReview": "A rever"
+    },
+    "confirm": {
+      "confirming": "A confirmar…",
+      "confirmed": "Confirmado ✓",
+      "confirm": "Confirmar",
+      "changed": "· alterado",
+      "changedTitle": "Editado desde a última confirmação — confirme novamente"
+    },
+    "allergens": "Alergénios",
+    "dietary": "Dieta",
+    "uncategorised": "Sem categoria",
+    "review": {
+      "progress": "{confirmed} de {total} confirmados",
+      "allConfirmed": "✓ Todos confirmados",
+      "list": "Lista",
+      "table": "Tabela",
+      "detected": "Detetados a partir da sua ementa — <b>verifique-os</b>. Os alergénios ficam ocultos para os clientes até confirmar cada prato.",
+      "viewOnly": "👁 Só de leitura — só o titular pode confirmar ou alterar alergénios.",
+      "emptyTitle": "Sem artigos na ementa",
+      "emptyBody": "Adicione primeiro artigos à ementa e depois defina aqui os respetivos alergénios.",
+      "dish": "Prato",
+      "status": "Estado"
+    },
+    "cardPanel": {
+      "reading": "A ler a informação sobre alergénios…",
+      "saved": "🛡️ Ficha de alergénios guardada",
+      "viewOriginal": "Ver ficha original",
+      "replace": "Substituir ficha",
+      "uploadHelp": "Carregue a sua ficha de alergénios (fotografia/PDF) ou cole a sua informação sobre alergénios — a nossa IA organiza-a para os clientes.",
+      "add": "Adicionar ficha de alergénios",
+      "viewOnly": "👁 Só de leitura — só o titular pode adicionar a ficha de alergénios.",
+      "intro": "Os clientes vão ver esta ficha como a referência de alergénios da ementa. No modo só com ficha, os alergénios por prato ficam ocultos (os dados dos pratos são mantidos caso mude mais tarde para alergénios por prato)."
+    },
+    "subtitle": {
+      "choose": "Escolha como os clientes veem a informação sobre alergénios",
+      "card": "Adicione a sua ficha de alergénios",
+      "cardOptional": "Adicione uma ficha de alergénios (opcional)",
+      "review": "Verifique e confirme cada prato"
+    },
+    "heading": {
+      "import": "Alergénios",
+      "standalone": "Configuração de alergénios"
+    },
+    "nav": {
+      "next": "Seguinte →",
+      "back": "← Voltar",
+      "skip": "Saltar por agora",
+      "saving": "A guardar…",
+      "done": "Concluído",
+      "saveLater": "Guardar e terminar mais tarde",
+      "close": "Fechar",
+      "finish": "Terminar",
+      "skipImport": "Saltar a configuração de alergénios por agora"
+    },
+    "hint": {
+      "skipDefers": "Saltar adia — os pratos que não confirmou ficam ocultos para os clientes até os respetivos alergénios serem confirmados.",
+      "importIncomplete": "Confirme todos os pratos para continuar — ou «Saltar a configuração de alergénios por agora»."
+    }
+  }
+}

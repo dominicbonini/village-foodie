@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Ihre Speisekarte wird gelesen…",
+    "found": "Ihre Artikel wurden gefunden…",
+    "kitchen": "Ihre Küche wird eingerichtet…",
+    "page": "Ihre Bestellseite wird erstellt…",
+    "almost": "Fast fertig…"
+  },
+  "templateSteps": {
+    "truck": "Ihr Beispiel-Foodtruck wird erstellt…",
+    "menu": "Die Speisekarte wird eingerichtet…",
+    "kitchen": "Die Küche wird eingerichtet…",
+    "page": "Die Bestellseite wird erstellt…",
+    "almost": "Fast fertig…"
+  },
+  "dialogLabel": "Speisekarte hochladen",
+  "heading": "✨ Speisekarte hochladen",
+  "failedHeading": "Wir konnten diese Speisekarte nicht lesen",
+  "close": "Schließen",
+  "intro": "Ein Foto Ihrer Speisekartentafel, ein Screenshot, ein PDF – oder fügen Sie sie als Text ein. Unsere KI liest sie und erstellt Ihnen in unter 60 Sekunden eine funktionierende Bestellseite – mit Ihren Artikeln und Ihren Preisen. Keine Registrierung, keine Kreditkarte.",
+  "failedIntro": "Manchmal ist ein Foto zu dunkel, zu schräg oder handgeschrieben. Das müssen wir lösen – Sie haben nichts falsch gemacht. So geht es weiter:",
+  "usually": "Das dauert normalerweise unter 60 Sekunden.",
+  "slow": "Das dauert länger als üblich – bei großen Speisekarten kommt das vor.",
+  "keepWaiting": "Weiter warten",
+  "sampleWhileYouWait": "Oder sehen Sie sich während des Wartens mit einer Beispiel-Speisekarte um",
+  "standIn": "Das ist <b>nicht Ihre Speisekarte</b> – nur ein Platzhalter, damit Sie sehen, wie alles funktioniert.",
+  "seeSample": "Beispiel-Speisekarte ansehen",
+  "tryAgain": "Erneut versuchen",
+  "tryPhotoAgain": "Dieses Foto erneut versuchen",
+  "tryDifferent": "Anderes Foto versuchen",
+  "uploadAnother": "← Anderes Foto hochladen",
+  "orSample": "Oder sehen Sie sich mit einer Beispiel-Speisekarte um",
+  "orBuild": "Oder wir erstellen sie für Sie",
+  "buildSent": "✓ Danke – ist angekommen. Wir melden uns per E-Mail.",
+  "buildBody": "Hinterlassen Sie Ihre E-Mail-Adresse, und ein echter Mensch trägt Ihre Speisekarte ein und schickt Ihnen den Link.",
+  "emailPlaceholder": "name@ihr-foodtruck.de",
+  "sending": "…",
+  "send": "Senden",
+  "noPhoto": "Kein Foto Ihrer Speisekarte zur Hand?",
+  "noPhotoBody": "Sehen Sie sich stattdessen einen Beispiel-Foodtruck an – Ihre eigene Speisekarte können Sie jederzeit hochladen.",
+  "build": "Meine Demo erstellen →",
+  "nothingPublished": "Nichts ist veröffentlicht – nur Sie können es sehen.",
+  "error": {
+    "somethingWrong": "Etwas ist schiefgegangen. Bitte versuchen Sie es erneut.",
+    "serverUnreachable": "Wir konnten den Server nicht erreichen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "sendFailed": "Das konnte nicht gesendet werden – versuchen Sie es erneut."
+  },
+  "fields": {
+    "uploadLabel": "Speisekarten-Datei hochladen",
+    "dropHere": "Speisekarte hier ablegen",
+    "dragOrTap": "Hierher ziehen oder zum Auswählen tippen",
+    "fileTypes": "Bild oder PDF",
+    "or": "oder",
+    "pasteLabel": "Speisekarte als Text einfügen",
+    "pastePlaceholder": "Fügen Sie Ihre Speisekarte hier ein – Artikelnamen, Beschreibungen, Preise…"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab Startseite",
+  "cta": "Speisekarte hochladen →",
+  "ctaShort": "Speisekarte hochladen",
+  "features": "Funktionen",
+  "pricing": "Preise",
+  "logIn": "Anmelden",
+  "country": {
+    "button": "Land: {name}. Land ändern",
+    "menu": "Land"
+  }
+}

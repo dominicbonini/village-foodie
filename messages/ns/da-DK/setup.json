@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Hvor du holder til",
+    "identity": "Din foodtruck",
+    "menu": "Dit menukort",
+    "event": "Første arrangement"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Opsætning",
+  "loading": "Indlæser",
+  "loadingCountries": "Indlæser…",
+  "verify": {
+    "ok": "E-mail bekræftet — tak.",
+    "expired": "Bekræftelseslinket er udløbet. Kontakt os, så ordner vi det, før du går live.",
+    "invalid": "Bekræftelseslinket virkede ikke. Kontakt os, så ordner vi det, før du går live."
+  },
+  "identity": {
+    "heading": "Hvad hedder din foodtruck?",
+    "intro": "Det er navnet, kunderne ser. Intet bliver offentligt, før du vælger at gå live.",
+    "nameLabel": "Navn på foodtruck",
+    "namePlaceholder": "Bobs Burgerbar",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Dette nummer er på WhatsApp",
+    "phoneHelp": "Kunderne ser det på deres bestillingsbekræftelse, så de kan spørge til en bestilling. Fluebenet afgør, om der står »Ring til os« eller »Skriv til os på WhatsApp«. Du kan ændre begge dele under Indstillinger."
+  },
+  "phoneRequired": "Tilføj et telefonnummer — både kunderne og vi bruger det til at få fat i dig.",
+  "createFailed": "Kunne ikke oprette din foodtruck.",
+  "unreachable": "Kunne ikke få forbindelse til os lige nu — prøv igen.",
+  "back": "Tilbage",
+  "creating": "Opretter din foodtruck…",
+  "continue": "Fortsæt"
+}

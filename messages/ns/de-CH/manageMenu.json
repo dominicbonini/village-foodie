@@ -1,0 +1,8 @@
+{
+  "newCategory": {
+    "notesHelp": "Kunden können zu jedem Artikel eine Notiz hinzufügen (z. B. „ohne Zwiebeln“). Der Foodtruck kann unabhängig davon immer Artikelnotizen hinzufügen. Alle Bestellungen haben ausserdem ein Notizfeld für die gesamte Bestellung."
+  },
+  "item": {
+    "close": "Schliessen"
+  }
+}

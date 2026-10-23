@@ -1,0 +1,69 @@
+{
+  "close": "Stäng",
+  "cancel": "Avbryt",
+  "selectReason": "Välj en anledning",
+  "reject": {
+    "title": "Avvisa beställning #{orderId}?",
+    "reasonLabel": "Anledning — obligatorisk (visas för kunden)",
+    "reason": "{reason, select, sold_out {En vara är slut} too_busy {För mycket att göra — hinner inte i tid} closing_soon {Stänger snart} other {Annat}}",
+    "noteRequired": "Anledning — obligatorisk",
+    "noteOptional": "Extra kommentar — valfritt",
+    "notePlaceholder": "Lägg till mer information till kunden…",
+    "keep": "Behåll beställningen",
+    "confirm": "Avvisa beställningen"
+  },
+  "eventCancel": {
+    "title": "Ställa in evenemanget?",
+    "affected": "{n, plural, one {{count} beställning} other {{count} beställningar}} avbryts och kunderna meddelas.",
+    "reasonLabel": "Anledning — valfritt",
+    "reason": "{reason, select, vehicle_breakdown {Fordonshaveri} weather {Vädret} venue_issue {Problem med platsen} personal_emergency {Akut personlig händelse} other {Annat}}",
+    "messageLabel": "Meddelande till kunderna — valfritt",
+    "messagePlaceholder": "t.ex. Tyvärr gick vår släpvagn sönder på vägen till platsen…",
+    "keep": "Behåll evenemanget",
+    "cancelling": "Ställer in…",
+    "confirm": "Ställ in evenemanget"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Starta om evenemanget} other {Starta evenemanget}}",
+    "changeEvent": "Byt evenemang",
+    "changeEventType": "Ändra evenemangstyp…",
+    "privateLink": "Privat länk och QR-kod",
+    "noteLabel": "Info till kunderna",
+    "notePlaceholder": "t.ex. Parkera på den stora parkeringen, leta efter det orangea partytältet",
+    "noteHint": "Visas för kunderna på beställningssidan under evenemangsinformationen.",
+    "saveNote": "Spara info",
+    "resume": "Återuppta beställningar",
+    "pause": "Pausa beställningar",
+    "changeFinishTime": "Ändra sluttid för evenemanget",
+    "finishEvent": "Avsluta evenemanget",
+    "cancelEvent": "Ställ in evenemanget"
+  },
+  "finish": {
+    "confirmTitle": "Ändra sluttiden?",
+    "willFinish": "Evenemanget slutar <b>{selected}</b>{hasCurrent, select, yes { i stället för <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} beställning ska} other {{count} beställningar ska}} hämtas efter {selected}.</b> {n, plural, one {Den ligger} other {De ligger}} kvar på tavlan och {n, plural, one {behöver} other {behöver}} fortfarande lagas. Att ändra sluttiden stoppar bara NYA beställningar för senare tider.",
+    "saving": "Sparar…",
+    "confirm": "Ändra sluttid",
+    "keepCurrent": "Behåll {current}",
+    "keepAsIs": "Behåll som det är",
+    "title": "Ändra sluttid",
+    "currentlySet": "Evenemanget är just nu inställt på att sluta <b>{current}</b>.",
+    "noFinishTime": "Evenemanget har ingen sluttid.",
+    "noTimesLeft": "Det finns inga tider kvar i dag. Använd Avsluta evenemanget i stället.",
+    "newFinishTime": "Ny sluttid",
+    "optionCurrent": "{time} (nuvarande)",
+    "earlier": "Det är tidigare än nuvarande sluttid. Kunderna kommer inte att kunna beställa till tider efter den.",
+    "review": "Granska ändringen",
+    "optionNextDay": "{time} (nästa dag)"
+  },
+  "extraWait": {
+    "title": "Lägg till extra väntetid",
+    "hint": "Läggs till upphämtningstiden som anges för nya beställningar. Evenemangets sluttid ändras inte.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Återanslut för att ladda",
+    "selected": "Valt",
+    "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Inte startat}}"
+  }
+}

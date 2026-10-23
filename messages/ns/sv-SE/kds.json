@@ -1,0 +1,129 @@
+{
+  "docTitle": "Kök – {truck}",
+  "loading": "Laddar köket…",
+  "pin": {
+    "title": "Ange PIN-kod",
+    "placeholder": "PIN",
+    "unlock": "Lås upp",
+    "unreachable": "Kan inte nå servern just nu. Det är inget fel på din PIN-kod — försök igen om en stund.",
+    "incorrect": "Fel PIN-kod",
+    "generic": "Något gick fel. Försök igen."
+  },
+  "error": {
+    "linkInvalid": "Länken är inte längre giltig.",
+    "couldNotLoad": "Kunde inte ladda beställningar",
+    "truckNotFound": "Foodtrucken hittades inte"
+  },
+  "degraded": {
+    "at": "⚠️ Kan inte nå servern. Visar bongar från {time}. NYA BESTÄLLNINGAR KAN SAKNAS.",
+    "earlier": "⚠️ Kan inte nå servern. Visar bongar från tidigare. NYA BESTÄLLNINGAR KAN SAKNAS."
+  },
+  "header": {
+    "dashboard": "Översikt",
+    "backTitle": "Tillbaka till översikten",
+    "list": "Lista",
+    "grid": "Rutnät",
+    "full": "Komplett",
+    "cook": "Kock",
+    "fullTitle": "Kompletta kort — priser och betalningsuppgifter, som i luckan.",
+    "cookTitle": "Kockkort — större text, grupperat efter kategori, utan priser.",
+    "readyStep": "Klarmarkering",
+    "readyOnlyTitle": "Den här skärmen markerar bara beställningar som klara, så det här kan inte stängas av — det är det enda steget den gör.",
+    "readyOnTitle": "Den här skärmen markerar beställningar som klara. Tryck så gör en annan skärm det i stället.",
+    "readyOffTitle": "En annan skärm markerar beställningar som klara. Tryck så gör den här skärmen det.",
+    "handover": "Betalning & utlämning",
+    "handoverOnlyTitle": "Den här skärmen tar bara betalt, så det här kan inte stängas av — det är det enda steget den gör.",
+    "handoverOnTitle": "Den här skärmen tar betalt och lämnar ut. Tryck så gör en annan skärm det i stället.",
+    "handoverOffTitle": "En annan skärm tar betalt. Tryck så gör den här skärmen det.",
+    "soundOn": "Ljud för nya beställningar är på — tryck för att stänga av",
+    "soundOff": "Ljud för nya beställningar är av — tryck för att slå på",
+    "screenOn": "Skärm på",
+    "screenOff": "Skärm av",
+    "screenSettings": "Skärminställningar",
+    "manageEvent": "Hantera evenemang",
+    "manageEventTitle": "Hantera evenemang — starta, pausa, ändra eller avsluta det",
+    "soundSettings": "Ljudinställningar",
+    "soundSettingsTitle": "Vilka ljud som spelas på den här enheten",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Visningsinställningar",
+    "on": "På",
+    "off": "Av",
+    "newOrderSound": "Beställningsljud",
+    "soundNeedsConfirming": "Bara beställningar som ska bekräftas",
+    "soundAll": "Alla nya beställningar",
+    "soundDue": "Ljud när en beställning ska börja lagas",
+    "soundDueHelp": "Hörs när en bong blir gul.",
+    "deviceSettings": "Enhetsinställningar",
+    "sound": "Ljud",
+    "close": "Stäng"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Beställningarna laddades inte för det här evenemanget",
+    "mismatchBody": "Servern svarade med ett annat evenemang, så ingenting visas i stället för fel beställningar. Välj evenemanget igen eller ladda om.",
+    "mismatchBodyAt": "Servern svarade med ett annat evenemang, så ingenting visas i stället för fel beställningar för {venue}. Välj evenemanget igen eller ladda om.",
+    "paused": "⏸ Beställningar pausade{reason, select, offline { (enheten offline)} other {}} — kunderna kan inte beställa",
+    "resume": "Återuppta",
+    "offline": "Ingen anslutning — visar senast kända beställningar. Onlinebeställning har pausats för kunderna.",
+    "queued": "{n, plural, one {{count} åtgärd i kö} other {{count} åtgärder i kö}}",
+    "extraWait": "⏱ +{mins} min extra väntetid aktiv",
+    "clear": "Rensa",
+    "toMake": "Att laga",
+    "today": "I dag · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Starta evenemang",
+    "recentlyClosed": "Evenemanget avslutat · {venue} slutade kl. {time}",
+    "eventStatus": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Ej startat}}"
+  },
+  "board": {
+    "queueClear": "Kön är tom",
+    "doneToday": "Klara i dag · {count}",
+    "paid": "✓ betald",
+    "cardHeld": "kort reserverat",
+    "due": "{amount} att betala"
+  },
+  "screenOff": {
+    "title": "Låta skärmen släckas?",
+    "bodyVans": "{vans} {n, plural, one {har} other {har}} offlineavkänning påslagen. Om skärmen släcks kan enheten sluta skicka sin onlinesignal och kundbeställningar kan pausas.",
+    "body": "Om skärmen släcks kan enheten sluta skicka sin onlinesignal.",
+    "keepHint": "Håll skärmen tänd så att beställningarna inte avbryts.",
+    "keep": "Håll skärmen tänd",
+    "allow": "Tillåt släckt skärm"
+  },
+  "event": {
+    "change": "Byt evenemang",
+    "cancel": "Avbryt",
+    "waitActive": "⏱ +{mins} min aktiv · Tryck för att rensa",
+    "addWait": "⏱ Lägg till väntetid",
+    "endTitle": "Avsluta evenemanget?",
+    "endEarly": "Evenemanget ska inte sluta förrän {time}. Inga fler beställningar tas emot. Bekräfta för att avsluta evenemanget?",
+    "endNow": "Avsluta evenemanget? Inga fler beställningar tas emot.",
+    "yes": "Ja",
+    "started": "Evenemanget startat",
+    "startFutureConfirm": "Det här evenemanget är {date}. Starta det nu?",
+    "finishTimeNow": "Sluttid nu {time}",
+    "finished": "Evenemanget avslutat",
+    "cancelled": "Evenemanget inställt",
+    "noteSaved": "Anteckningen sparad",
+    "pauseConfirm": "Pausa beställningar? Kunderna ser ”Tar inte emot beställningar” tills du återupptar.",
+    "switchConfirm": "Byta från {from} till {to}?{n, plural, =0 {} one { {count} beställning på den här skärmen ersätts.} other { {count} beställningar på den här skärmen ersätts.}} Tryck på det aktuella evenemanget för att byta tillbaka."
+  },
+  "intro": {
+    "title": "Det här är köksskärmen",
+    "p1": "Det är kockens vy — beställningarna du ska laga, i den ordning de ska lagas. Skärmen vid grillen visar den här medan luckan använder beställningsöversikten.",
+    "p2": "Korten flyttas vidare när du trycker på dem, så den som lagar maten vet alltid vad som står på tur och ingen behöver ropa. Allt här är din demodata — testa fritt.",
+    "gotIt": "Uppfattat"
+  },
+  "toast": {
+    "failed": "Misslyckades",
+    "rejectFailed": "Kunde inte avvisa",
+    "buzzerSaved": "Summer {n} sparad",
+    "buzzerRemoved": "Summer {n} borttagen",
+    "buzzerRemovedNone": "Summer borttagen",
+    "buzzerAssigned": "Summer {n} tilldelad",
+    "buzzerAssignedFrom": "Summer {n} tilldelad (tagen från #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Kunde inte ta bort summern från {target, select, order {beställning #{id}} other {den här beställningen}}} other {Kunde inte ta bort summer {n} — den är fortfarande kopplad till {target, select, order {beställning #{id}} other {den här beställningen}}}}",
+    "buzzerAssignFailed": "Kunde inte ge summer {n} till {target, select, order {beställning #{id}} other {den här beställningen}} — {had, select, yes {den har fortfarande summer {prior}} other {den har fortfarande ingen summer}}"
+  }
+}

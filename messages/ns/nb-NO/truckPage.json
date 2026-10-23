@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Matbil | Village Foodie",
+    "hgFallbackTitle": "Matbil",
+    "orderTitle": "Bestill fra {truck}",
+    "orderDescription": "Forhåndsbestill fra {truck} og hent ved matbilen.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo – {truck}"
+  },
+  "shareTitle": "{truck} – her står vi",
+  "shareText": "Se hvor {truck} står neste gang! 🚚",
+  "linkCopied": "Profillenken er kopiert til utklippstavlen! 📋",
+  "facebookPage": "Facebook-side",
+  "loadingMap": "Laster kart…",
+  "view": {
+    "list": "Liste",
+    "map": "Kart"
+  },
+  "ownThisTruck": "Er dette din matbil?",
+  "ownThisTruckTitle": "Er dette din matbil? Klikk for å oppdatere profilen din",
+  "actions": {
+    "menu": "Meny",
+    "call": "Ring",
+    "message": "Melding",
+    "share": "Del",
+    "order": "Bestill"
+  },
+  "loadingSchedule": "Laster kalender…",
+  "loadError": {
+    "title": "Kunne ikke laste",
+    "body": "Vi fikk ikke lastet kalenderen akkurat nå — det er som regel bare et kort avbrudd. Prøv igjen.",
+    "retry": "Prøv igjen"
+  },
+  "notFound": {
+    "title": "Fant ikke matbilen",
+    "body": "Vi fant ingen opplysninger om denne matbilen. Den kan ha flyttet eller oppdatert profilen sin.",
+    "cta": "Se alle matbiler"
+  },
+  "noEvents": {
+    "title": "Ingen kommende arrangementer",
+    "body": "Vi mangler kanskje noen opplysninger om denne matbilen. Er du eieren, eller kjenner du kalenderen deres?",
+    "cta": "Send oss en melding, så oppdaterer vi!"
+  },
+  "whereToFind": "Her står vi",
+  "missingEvent": "<strong>Mangler vi et arrangement?</strong> <br></br>Er du eieren av denne matbilen eller bare en ivrig fan? Hjelp oss å holde siden oppdatert! <br></br><link>Kontakt oss for å legge til manglende opplysninger.</link>",
+  "weeklySchedule": "Få ukekalenderen 🍕"
+}

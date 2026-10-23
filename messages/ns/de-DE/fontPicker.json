@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Alle",
+    "bold": "Fett & hoch",
+    "hand": "Handschrift",
+    "classic": "Klassisch",
+    "clean": "Schlicht",
+    "own": "Eigene",
+    "ownCount": "Eigene ({count})"
+  },
+  "yoursTag": "· eigene",
+  "loadingFonts": "Schriften werden geladen…",
+  "search": "{count, number} Schriften durchsuchen",
+  "uploadButton": "↑ Eigene Schrift hochladen",
+  "loadingLibrary": "Schriftbibliothek wird geladen…",
+  "tryAgain": "Erneut versuchen",
+  "noOwn": "Sie haben noch keine Schrift hochgeladen. Nutzen Sie oben die Schaltfläche „↑ Eigene Schrift hochladen“.",
+  "recent": "Zuletzt verwendet",
+  "popular": "Beliebt für Plakate",
+  "adding": "Wird hinzugefügt…",
+  "noMatch": "Keine Schrift passt zu „{query}“.",
+  "showing": "{shown} von {total, number} angezeigt – tippen Sie weiter, um die Auswahl einzugrenzen.",
+  "couldNotAdd": "Diese Schrift konnte nicht hinzugefügt werden",
+  "tooBig": "Diese Schrift ist {size, number, ::.0 group-off} MB groß. Die Obergrenze liegt bei 5 MB.",
+  "woff": "Bitte laden Sie eine TTF- oder OTF-Datei hoch – meist können Sie diese dort herunterladen, wo Sie die Schrift gekauft haben.",
+  "uploadIncomplete": "Der Upload wurde nicht abgeschlossen",
+  "added": "„{name}“ wurde als {face} Version hinzugefügt.",
+  "face": {
+    "regular": "normale",
+    "bold": "fette",
+    "italic": "kursive"
+  },
+  "licenceTick": "Ich besitze diese Schrift oder habe eine Lizenz zu ihrer Nutzung",
+  "checking": "Schrift wird geprüft…",
+  "addFont": "Schrift hinzufügen",
+  "cancel": "Abbrechen",
+  "missingFaces": "Fügen Sie die {faces} Version von „{name}“ hinzu (optional) – wählen Sie die Datei dazu erneut aus.",
+  "somethingWrong": "Etwas ist schiefgelaufen",
+  "faceLower": {
+    "regular": "normale",
+    "bold": "fette",
+    "italic": "kursive"
+  },
+  "ownLicence": "Eigene Schrift",
+  "loadFailed": "Schriften konnten nicht geladen werden"
+}

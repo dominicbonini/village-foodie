@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Foodtruck",
+  "eventsFeed": {
+    "today": "Heute · {date}",
+    "tomorrow": "Morgen · {date}"
+  },
+  "privacyNotSaved": "Das Event ist live, aber seine Sichtbarkeitseinstellung konnte nicht gespeichert werden.",
+  "stockWarning": "Keine verfügbaren Artikel in „{category}“",
+  "uncategorised": "Ohne Kategorie"
+}

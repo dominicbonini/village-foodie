@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Ordine #{id} ripristinato",
+    "saved": "Ordine #{id} salvato",
+    "undo": "↩ Annulla",
+    "paymentNotRecorded": "⚠ Ordine #{id} — PAGAMENTO NON REGISTRATO. {collect, select, yes {L’ordine è stato completato} other {L’ordine è stato salvato}}; il pagamento no.",
+    "recordPayment": "Registra pagamento",
+    "paid": "Ordine #{id} pagato",
+    "undonePayment": "Annullato — pagamento rimosso",
+    "undoneCollected": "Annullato — ordine non ritirato",
+    "collected": "Ordine #{id} {paidToo, select, yes {pagato e ritirato} other {ritirato}}",
+    "ready": "Ordine #{id} pronto",
+    "readyBuzzer": "Ordine #{id} pronto · <pill></pill>",
+    "status": "Ordine #{id} {action, select, confirm {confermato} reject {rifiutato} ready {pronto} collected {ritirato} undo_collected {ripristinato} cancel {annullato} other {aggiornato}}"
+  },
+  "conflicts": {
+    "more": "+{count} altri",
+    "notOnScreenPlus": "+{count} non su questo schermo",
+    "notOnScreen": "{n, plural, one {{count} ordine non presente su questo schermo} other {{count} ordini non presenti su questo schermo}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PAGAMENTO NON REGISTRATO",
+    "paymentBody": "{orders} — segnato come pagato solo su questo dispositivo. Non è andato a buon fine.",
+    "paymentCheck": "Controlla l’ordine e incassa di nuovo se è ancora dovuto.",
+    "dismiss": "Chiudi",
+    "confirmChecked": "Conferma di aver controllato {orders}",
+    "confirmHides": "Così nascondi l’avviso. Il registro resta comunque su questo dispositivo.",
+    "notYet": "Non ancora",
+    "iveChecked": "Ho controllato {orders}",
+    "statusBody": "⚠ {orders} — questa modifica non è andata a buon fine. Controlla l’ordine.",
+    "offline": "📴 Nessuna connessione — {n, plural, one {{count} modifica salvata su questo dispositivo. Verrà inviata quando tornerai online.} other {{count} modifiche salvate su questo dispositivo. Verranno inviate quando tornerai online.}} Impostazioni bloccate.",
+    "syncing": "Di nuovo online — invio di {n, plural, one {{count} modifica} other {{count} modifiche}}…",
+    "synced": "Tutte le modifiche sono state inviate.",
+    "stillQueued": "{n, plural, one {{count} modifica salvata su questo dispositivo. Sto ancora provando a inviarla.} other {{count} modifiche salvate su questo dispositivo. Sto ancora provando a inviarle.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab è bloccato",
+    "verifying": "Verifica…",
+    "unlock": "Sblocca",
+    "cantUseBiometric": "Non riesci a usare Face / Touch ID?",
+    "enterPin": "Inserisci il PIN di riserva",
+    "wrongPin": "PIN errato — riprova.",
+    "checking": "Controllo…",
+    "tryBiometric": "Prova invece con Face / Touch ID",
+    "forgot": "Hai dimenticato il PIN? Dovrai reinstallare l’app."
+  },
+  "notify": {
+    "title": "🔔 Notifiche",
+    "intro": "Avvisi su questo dispositivo. Attivali per scegliere quali ricevere.",
+    "refused": "Per attivarle, abilita le notifiche nelle Impostazioni del dispositivo.",
+    "newOrder": "Avvisi nuovi ordini",
+    "newOrderHelp": "Ricevi una notifica quando l’ordine di un cliente va confermato.",
+    "offline": "Avvisi offline / pausa",
+    "offlineHelp": "Ricevi una notifica quando questo dispositivo va offline (e gli ordini vengono sospesi). <green>Funziona offline.</green>"
+  },
+  "van": {
+    "label": "Food truck",
+    "loadRetry": "Caricamento non riuscito · Riprova",
+    "select": "Seleziona…"
+  },
+  "deviceSave": {
+    "network": "Server non raggiungibile — controlla la connessione e riprova.",
+    "server": "Impossibile salvare in questo momento. Riprova."
+  },
+  "setup": {
+    "fetchErrorTitle": "Impossibile caricare la configurazione del dispositivo",
+    "fetchErrorBody": "Non siamo riusciti a raggiungere il server per configurare <b>questo dispositivo</b>. Controlla la connessione e riprova — ordini e impostazioni non sono stati toccati.",
+    "retry": "Riprova",
+    "later": "Più tardi",
+    "noVanTitle": "Nessun food truck attivo",
+    "noVanBody": "Questa attività non ha ancora un food truck attivo. Attivane uno in <b>Impostazioni → I tuoi food truck</b>, poi questo dispositivo si configura da solo — qui non serve fare altro.",
+    "goToVans": "Vai a Impostazioni → I tuoi food truck",
+    "title": "Configura questo dispositivo",
+    "body": "Configurazione una tantum per <b>questo dispositivo</b>: la schermata con cui si apre e quale food truck gestisce. Vale solo per questo dispositivo — gli altri si configurano a parte, e puoi cambiare queste scelte in seguito dal menu profilo → «Questo dispositivo».",
+    "whichScreen": "Con quale schermata deve aprirsi questo dispositivo?",
+    "dashboard": "Dashboard",
+    "kds": "Monitor cucina",
+    "whichVan": "A quale food truck appartiene questo dispositivo?",
+    "selectVan": "Seleziona un food truck…",
+    "saving": "Salvataggio…",
+    "tryAgain": "Riprova",
+    "continue": "Continua"
+  },
+  "device": {
+    "title": "Questo dispositivo",
+    "viewing": "Stai visualizzando: <b>{truck}</b>",
+    "viewingVan": "Stai visualizzando: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Solo questo dispositivo — gli altri si configurano a parte. (ID: {id}…)",
+    "truck": "Attività",
+    "van": "Food truck",
+    "defaultScreen": "Schermata predefinita",
+    "orderNotifications": "Notifiche ordini",
+    "patchFailed": "Impossibile salvare: {setting, select, van {food truck} defaultScreen {schermata predefinita} other {notifiche ordini}}. {reason}",
+    "requireBiometric": "Richiedi impronta o riconoscimento facciale per aprire",
+    "pinTitle": "Imposta un PIN di riserva (4–6 cifre)",
+    "pinHelp": "È il tuo modo per entrare se impronta o riconoscimento facciale non funzionano — è l’unica alternativa, quindi non dimenticarlo (se dimentichi il PIN devi reinstallare l’app). Funziona offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Conferma PIN",
+    "pinTooShort": "Usa almeno 4 cifre.",
+    "pinMismatch": "I PIN non coincidono.",
+    "setPin": "Imposta PIN e attiva",
+    "cancel": "Annulla",
+    "noBiometric": "Su questo dispositivo non è configurato lo sblocco con impronta o volto — aggiungilo nelle impostazioni del dispositivo. Il PIN di riserva funziona comunque.",
+    "footer": "Queste impostazioni valgono solo per questo dispositivo — gli altri dispositivi si configurano a parte."
+  },
+  "appLock": {
+    "unlockReason": "Sblocca HatchGrab",
+    "usePasscode": "Usa codice",
+    "cancel": "Annulla",
+    "confirmEnable": "Conferma per attivare il blocco app"
+  },
+  "channel": {
+    "ordersName": "Nuovi ordini",
+    "ordersDescription": "Avvisi quando un ordine va confermato."
+  },
+  "localNotify": {
+    "newOrderTitle": "Nuovo ordine",
+    "orderReceived": "Ordine {number} ricevuto",
+    "newOrders": "{n, plural, one {Hai un nuovo ordine} other {Hai {count} nuovi ordini}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Ordini sospesi",
+    "pausedBody": "Sei offline — gli ordini dei clienti sono sospesi.",
+    "offlineTitle": "Sei offline",
+    "offlineBody": "Questo dispositivo ha perso la connessione."
+  }
+}

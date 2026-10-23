@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Kunden das Stornieren von Bestellungen erlauben",
+    "sentence": "Kunden können bis <select></select> vor ihrer Abholzeit stornieren"
+  },
+  "autoAccept": {
+    "label": "Bestellungen automatisch annehmen",
+    "help": "Bestellungen werden automatisch bestätigt. Ist das gewünschte Zeitfenster voll, rückt die Bestellung ins nächste freie Zeitfenster. Bestätigt wird nur, wenn Kapazität frei ist. Bestellungen mit Kundenhinweisen (z. B. einer Allergie) müssen weiterhin bestätigt werden."
+  },
+  "orderReady": {
+    "label": "Schritt „Als fertig markieren“",
+    "help": "Zeigt auf dem Bestellbildschirm eine Schaltfläche „Als fertig markieren“. Küchenmonitore werden separat auf jedem Gerät eingestellt. Kunden erhalten eine E-Mail, sobald eine Bestellung als fertig markiert wird. Gilt für alle Events – auf dem Dashboard eines Events können Sie es trotzdem nur für dieses Event ein- oder ausschalten."
+  },
+  "buzzers": {
+    "label": "Geben Sie Pager für die Abholung aus?",
+    "help": "Notieren Sie, welchen Pager Sie welchem Kunden gegeben haben, damit Sie wissen, nach wem Sie suchen müssen, wenn das Essen fertig ist.",
+    "countLabel": "Wie viele Pager haben Sie?"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "authFailed": "Die betaling kon niet worden geautoriseerd. Er is geen geld afgeschreven — probeer een andere kaart of kies ‘Ter plaatse betalen’.",
+  "paymentThrew": "Er ging iets mis bij die betaling. Er is geen geld afgeschreven — probeer het opnieuw of kies ‘Ter plaatse betalen’.",
+  "payAtTruck": "Ter plaatse betalen",
+  "payAtTruckLine": "Ter plaatse betalen bij het afhalen · Geen kaartgegevens nodig"
+}

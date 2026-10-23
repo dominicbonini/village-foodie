@@ -1,0 +1,25 @@
+{
+  "heading": "Veckan {start} till {end}",
+  "daysOff": "Stängt idag",
+  "cancelled": "INSTÄLLT",
+  "placeSample": {
+    "nameTownBelow": "Krogen Tre Byttor\nUppsala",
+    "nameTown": "Krogen Tre Byttor, Uppsala",
+    "nameOnly": "Krogen Tre Byttor"
+  },
+  "busyWeek": {
+    "venue1": "Bygdegården Uppsala",
+    "town1": "Uppsala",
+    "venue2": "Idrottsplatsen och fritidsområdet med bollplaner i Örsundsbro",
+    "town2": "Örsundsbro",
+    "venue3": "Stora torget",
+    "town3": "Sala",
+    "venue4": "Matfestivalen",
+    "town4": "Västerås",
+    "venue5": "Gästgivargården",
+    "town5": "Enköping",
+    "venue6": "Kyrkbacken",
+    "town6": "Örebro"
+  },
+  "poweredBy": "Drivs av HatchGrab"
+}

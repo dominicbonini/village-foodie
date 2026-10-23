@@ -1,0 +1,19 @@
+{
+  "heading": "Upselling",
+  "intro": "Regen Sie Kunden an, noch etwas dazuzunehmen. Wenn jemand aus einer Kategorie bestellt, schlagen Sie Artikel aus einer anderen vor – ein Getränk zur Pizza, eine Soße zum Burger.",
+  "add": "+ Upselling hinzufügen",
+  "toast": {
+    "updated": "Upselling-Regel aktualisiert",
+    "added": "Upselling-Regel hinzugefügt",
+    "removed": "Regel entfernt"
+  },
+  "whenAdds": "Wenn Kunden etwas hinzufügen aus…",
+  "suggestFrom": "Artikel vorschlagen aus…",
+  "chooseCategory": "Kategorie auswählen",
+  "cancel": "Abbrechen",
+  "saveChanges": "Änderungen speichern",
+  "addRule": "Regel hinzufügen",
+  "empty": "Noch keine Upselling-Regeln.",
+  "confirmRemove": "Upselling-Regel „{trigger} → {suggest}“ entfernen?",
+  "upTo": "{n, plural, one {Bis zu {count} Artikel vorgeschlagen} other {Bis zu {count} Artikel vorgeschlagen}}"
+}

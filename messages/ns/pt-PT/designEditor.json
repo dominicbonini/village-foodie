@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Título da semana",
+    "weekHeadingSample": "Semana de …",
+    "daysSample": "{first} a {last}",
+    "date": "Data",
+    "place": "Local",
+    "venue": "Local",
+    "area": "Zona",
+    "time": "Horário",
+    "rows": "Linhas",
+    "rowsSample": "{px} px de distância · {first} a {last}",
+    "ownText": "O seu próprio texto",
+    "noteTokenSample": "A nota que escreve ao criar a publicação",
+    "nothingYet": "Ainda nada",
+    "thisBox": "esta caixa"
+  },
+  "sample": {
+    "venue": "Taberna do Largo",
+    "area": "Braga"
+  },
+  "bar": {
+    "previewWith": "Pré-visualizar com",
+    "undo": "Anular",
+    "undoTitle": "Anular (⌘Z)",
+    "redo": "Refazer",
+    "redoTitle": "Refazer (⇧⌘Z)",
+    "cancel": "Cancelar",
+    "saving": "A guardar…",
+    "save": "Guardar design"
+  },
+  "grid": {
+    "eachRow": "Cada linha",
+    "placeOff": "O nome do local já está na sua imagem — o HatchGrab não o vai acrescentar."
+  },
+  "background": {
+    "uploading": "A carregar…",
+    "replace": "Substituir imagem",
+    "shape": {
+      "square": "Quadrado (1:1)",
+      "portrait45": "Vertical (4:5)",
+      "portrait916": "Vertical (9:16)",
+      "landscape169": "Horizontal (16:9)",
+      "portrait": "Vertical",
+      "landscape": "Horizontal"
+    }
+  },
+  "scope": {
+    "title": "Posições do texto",
+    "standard": "Mesmas posições do design Padrão",
+    "own": "Posições próprias: {place}",
+    "locked": "Estas posições vêm do seu design Padrão. Escolha «Posições próprias: {place}» para as mover só aqui."
+  },
+  "stage": {
+    "hint": "Arraste uma caixa para a mover · arraste um canto para redimensionar",
+    "zoomOut": "Diminuir zoom",
+    "zoomIn": "Aumentar zoom"
+  },
+  "rows": {
+    "spacing": "Espaçamento",
+    "daysRun": "Os dias vão de {first} a {last}. As três caixas da linha 1 são copiadas para baixo com esta distância.",
+    "whichEvents": "Que eventos",
+    "showCancelled": "Mostrar eventos cancelados",
+    "showCancelledHint": "Um evento cancelado mostra o local riscado e a palavra CANCELADO. Se estiver desativado, o dia aparece como dia de folga."
+  },
+  "days": {
+    "reorder": "Reordenar",
+    "move": "mover"
+  },
+  "picture": {
+    "picture": "Imagem",
+    "fill": "Preencher a caixa",
+    "fit": "Ajustar ao interior",
+    "corners": "Cantos",
+    "square": "Retos",
+    "rounded": "Arredondados",
+    "ifMissing": "Se um local não tiver imagem",
+    "noPicture": {
+      "omit": "Omitir",
+      "blank": "Deixar um espaço em branco",
+      "logo": "Mostrar o seu logótipo"
+    },
+    "border": "Moldura",
+    "drawBorder": "Desenhar uma moldura",
+    "drawBorderHint": "Uma linha à volta da imagem, na cor que escolher.",
+    "borderWidth": "Espessura da moldura",
+    "cornerRadius": "Raio dos cantos",
+    "locationPictures": "Imagens dos locais",
+    "addLocationPictures": "+ Adicionar imagens dos locais",
+    "allHaveImage": "{total, plural, =0 {Ainda não tem nenhum local.} one {O seu local tem uma imagem.} other {Os seus # locais têm todos uma imagem.}}",
+    "someWithout": "{without} dos seus {total, plural, one {# local} other {# locais}} ainda {without, plural, one {não tem} other {não têm}} imagem"
+  },
+  "settings": {
+    "font": "Tipo de letra",
+    "colour": "Cor",
+    "textColour": "Cor do texto",
+    "ownStyleNote": "{count, plural, one {{names} tem estilo próprio, por isso não é alterado.} other {{names} têm estilo próprio, por isso não são alterados.}}",
+    "matchAgain": "Voltar a igualar",
+    "matchName": "Igualar a {name}",
+    "lastToggle": "{kind, select, weekly {Mantenha Local ou Horário ativado. Um evento cancelado mostra o local riscado e a palavra CANCELADO, por isso, com os dois desativados, nada indicaria que está cancelado.} other {Mantenha Local ou Horário ativado. Um evento cancelado mostra o local riscado e a palavra CANCELADO, por isso, com os dois desativados, nada indicaria que está cancelado.}}"
+  },
+  "letters": {
+    "boldGlyph": "N",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — este tipo de letra tem um itálico verdadeiro"
+  },
+  "align": {
+    "left": "Esquerda",
+    "centre": "Centro",
+    "right": "Direita"
+  },
+  "effects": {
+    "outlineColour": "Cor do contorno",
+    "bandColour": "Cor da faixa",
+    "bandDaysOff": "Faixa nos dias de folga",
+    "bandCancelled": "Faixa quando o evento é cancelado",
+    "bandDaysOffHint": "Usada em vez da faixa acima num dia sem atividade.",
+    "bandCancelledHint": "Usada em vez da faixa acima quando o evento é cancelado."
+  },
+  "more": {
+    "dayOwnLine": "Dia numa linha própria",
+    "dayOwnLineHint": "O dia da semana acima da data. Só para a data.",
+    "noEventDay": "Num dia sem evento",
+    "wordsBeforePlaceholder": "ex.: Encontre-nos",
+    "neverHyphenate": "Uma palavra longa sem espaços é sempre reduzida — nunca dividimos o nome de um local com hífen."
+  },
+  "bits": {
+    "less": "Menos",
+    "more": "Mais",
+    "chooseColourFor": "{label} — escolher qualquer cor",
+    "chooseColour": "Escolher qualquer cor"
+  }
+}

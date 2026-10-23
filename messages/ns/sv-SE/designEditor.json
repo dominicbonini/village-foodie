@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Veckorubrik",
+    "weekHeadingSample": "Veckan från …",
+    "daysSample": "{first} till {last}",
+    "date": "Datum",
+    "place": "Plats",
+    "venue": "Ställe",
+    "area": "Ort",
+    "time": "Tid",
+    "rows": "Rader",
+    "rowsSample": "{px} px mellan · {first} till {last}",
+    "ownText": "Egen text",
+    "noteTokenSample": "Anteckningen du skriver när du skapar inlägget",
+    "nothingYet": "Inget än",
+    "thisBox": "den här rutan"
+  },
+  "sample": {
+    "venue": "Krogen Tre Byttor",
+    "area": "Uppsala"
+  },
+  "bar": {
+    "previewWith": "Förhandsvisa med",
+    "undo": "Ångra",
+    "undoTitle": "Ångra (⌘Z)",
+    "redo": "Gör om",
+    "redoTitle": "Gör om (⇧⌘Z)",
+    "cancel": "Avbryt",
+    "saving": "Sparar …",
+    "save": "Spara design"
+  },
+  "grid": {
+    "eachRow": "Varje rad",
+    "placeOff": "Platsnamnet finns i din bild – HatchGrab lägger inte till det."
+  },
+  "background": {
+    "uploading": "Laddar upp …",
+    "replace": "Byt bild",
+    "shape": {
+      "square": "Kvadrat (1:1)",
+      "portrait45": "Stående (4:5)",
+      "portrait916": "Stående (9:16)",
+      "landscape169": "Liggande (16:9)",
+      "portrait": "Stående",
+      "landscape": "Liggande"
+    }
+  },
+  "scope": {
+    "title": "Textpositioner",
+    "standard": "Samma positioner som Standard",
+    "own": "Egna positioner för {place}",
+    "locked": "De här positionerna kommer från din standarddesign. Välj ”Egna positioner för {place}” för att flytta dem bara här."
+  },
+  "stage": {
+    "hint": "Dra en ruta för att flytta den · dra i ett hörn för att ändra storlek",
+    "zoomOut": "Zooma ut",
+    "zoomIn": "Zooma in"
+  },
+  "rows": {
+    "spacing": "Avstånd",
+    "daysRun": "Dagarna går från {first} till {last}. Rad 1:s tre rutor kopieras nedåt med det här avståndet.",
+    "whichEvents": "Vilka evenemang",
+    "showCancelled": "Visa inställda evenemang",
+    "showCancelledHint": "Ett inställt evenemang visar platsen överstruken och ordet INSTÄLLT. Om det är avstängt visas dagen som en ledig dag."
+  },
+  "days": {
+    "reorder": "Ändra ordning",
+    "move": "flytta"
+  },
+  "picture": {
+    "picture": "Bild",
+    "fill": "Fyll rutan",
+    "fit": "Passa in",
+    "corners": "Hörn",
+    "square": "Raka",
+    "rounded": "Rundade",
+    "ifMissing": "Om en plats inte har någon bild",
+    "noPicture": {
+      "omit": "Utelämna den",
+      "blank": "Lämna en tom yta",
+      "logo": "Visa din logga"
+    },
+    "border": "Kant",
+    "drawBorder": "Rita en kant",
+    "drawBorderHint": "En linje runt bilden, i den färg du väljer.",
+    "borderWidth": "Kantens bredd",
+    "cornerRadius": "Hörnradie",
+    "locationPictures": "Platsbilder",
+    "addLocationPictures": "+ Lägg till platsbilder",
+    "allHaveImage": "{total, plural, =0 {Du har inga platser än.} one {Din plats har en bild.} other {Alla dina # platser har en bild.}}",
+    "someWithout": "{without} av dina {total, plural, one {# plats} other {# platser}} {without, plural, one {saknar} other {saknar}} bild än"
+  },
+  "settings": {
+    "font": "Typsnitt",
+    "colour": "Färg",
+    "textColour": "Textfärg",
+    "ownStyleNote": "{count, plural, one {{names} har en egen stil och ändras därför inte.} other {{names} har egna stilar och ändras därför inte.}}",
+    "matchAgain": "Matcha igen",
+    "matchName": "Matcha {name}",
+    "lastToggle": "{kind, select, weekly {Låt antingen Plats eller Tid vara påslagen. Ett inställt evenemang visar platsen överstruken och ordet INSTÄLLT, så om båda är avstängda finns inget som visar att det är inställt.} other {Låt antingen Ställe eller Tid vara påslagen. Ett inställt evenemang visar platsen överstruken och ordet INSTÄLLT, så om båda är avstängda finns inget som visar att det är inställt.}}"
+  },
+  "letters": {
+    "boldGlyph": "F",
+    "italicGlyph": "K",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} – det här typsnittet har en äkta kursiv"
+  },
+  "align": {
+    "left": "Vänster",
+    "centre": "Centrerat",
+    "right": "Höger"
+  },
+  "effects": {
+    "outlineColour": "Konturfärg",
+    "bandColour": "Remsans färg",
+    "bandDaysOff": "Remsa på lediga dagar",
+    "bandCancelled": "Remsa när evenemanget är inställt",
+    "bandDaysOffHint": "Används i stället för remsan ovan en dag utan försäljning.",
+    "bandCancelledHint": "Används i stället för remsan ovan när evenemanget är inställt."
+  },
+  "more": {
+    "dayOwnLine": "Dagen på egen rad",
+    "dayOwnLineHint": "Veckodagen ovanför datumet. Bara för datum.",
+    "noEventDay": "En dag utan evenemang",
+    "wordsBeforePlaceholder": "t.ex. Hitta oss",
+    "neverHyphenate": "Ett långt ord utan mellanslag krymps alltid – vi avstavar aldrig ett platsnamn."
+  },
+  "bits": {
+    "less": "Mindre",
+    "more": "Mer",
+    "chooseColourFor": "{label} – välj valfri färg",
+    "chooseColour": "Välj valfri färg"
+  }
+}

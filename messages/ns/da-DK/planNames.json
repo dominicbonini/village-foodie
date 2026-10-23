@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Uden månedsgebyr",
+    "subtitle": "Sæson- og deltidsforhandlere",
+    "description": "Intet månedsgebyr. Du betaler kun, når en kunde betaler online med kort."
+  },
+  "pro": {
+    "subtitle": "Foodtrucks med faste forudbestillinger",
+    "description": "Alt, inklusive automatiske svar på WhatsApp og opslag på sociale medier, med onlinebestillinger inkluderet hver måned."
+  },
+  "unlimited": {
+    "name": "Ubegrænset",
+    "subtitle": "Travle foodtrucks og festivaler",
+    "description": "Alt, uden gebyrer på onlinebestillinger, uanset hvor travlt du har."
+  },
+  "trial": {
+    "name": "Gratis prøveperiode",
+    "description": "Alle funktioner, gratis, så længe din prøveperiode løber."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Sandkasse til potentielle kunder — aldrig offentlig."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester før lancering — fuld adgang."
+  }
+}

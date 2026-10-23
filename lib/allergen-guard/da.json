@@ -1,0 +1,131 @@
+{
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for DANISH (da-DK). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "da",
+  "normalise": "unicode",
+  "stems": [
+    "allergi",
+    "allergisk",
+    "allergen",
+    "intoleran",
+    "overfolsom",
+    "cøliaki",
+    "coliaki",
+    "coeliaki",
+    "glutenintoleran",
+    "anafylak",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "glutenfri",
+    "laktosefri",
+    "maelkefri",
+    "mælkefri",
+    "aeggefri",
+    "æggefri",
+    "nøddefri",
+    "noddefri",
+    "jordnoddefri",
+    "jordnøddefri",
+    "sojafri",
+    "sesamfri",
+    "fiskefri",
+    "uden gluten",
+    "uden laktose",
+    "uden maelk",
+    "uden mælk",
+    "uden aeg",
+    "uden æg",
+    "uden nødder",
+    "uden nodder",
+    "uden jordnod",
+    "uden jordnød",
+    "uden soja",
+    "uden sesam",
+    "uden fisk",
+    "uden skaldyr",
+    "uden sennep",
+    "uden selleri",
+    "fri for",
+    "egnet til",
+    "egnet for",
+    "sikker for",
+    "spor af",
+    "kan indeholde",
+    "krydskontamin"
+  ],
+  "tokens": [
+    "fri"
+  ],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "hvede",
+        "mel"
+      ],
+      "crustaceans": [
+        "krebsdyr",
+        "rejer",
+        "reje",
+        "hummer",
+        "skaldyr"
+      ],
+      "eggs": [
+        "æg",
+        "mayonnaise"
+      ],
+      "fish": [
+        "fisk",
+        "laks",
+        "tun"
+      ],
+      "peanuts": [
+        "jordnød",
+        "jordnødder"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "mælk",
+        "laktose",
+        "ost",
+        "fløde",
+        "smør",
+        "yoghurt"
+      ],
+      "tree nuts": [
+        "nødder",
+        "nød",
+        "mandel",
+        "mandler",
+        "hasselnød",
+        "valnød",
+        "pistacie",
+        "cashew"
+      ],
+      "celery": [
+        "selleri"
+      ],
+      "mustard": [
+        "sennep"
+      ],
+      "sesame": [
+        "sesam"
+      ],
+      "sulphites": [
+        "sulfit",
+        "sulfitter"
+      ],
+      "lupin": [
+        "lupin"
+      ],
+      "molluscs": [
+        "bløddyr",
+        "muslinger",
+        "blæksprutte"
+      ]
+    }
+  }
+}

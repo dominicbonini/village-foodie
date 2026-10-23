@@ -1,0 +1,69 @@
+{
+  "close": "Sluiten",
+  "cancel": "Annuleren",
+  "selectReason": "Kies een reden",
+  "reject": {
+    "title": "Bestelling #{orderId} afwijzen?",
+    "reasonLabel": "Reden — verplicht (zichtbaar voor de klant)",
+    "reason": "{reason, select, sold_out {Een item is uitverkocht} too_busy {Te druk — lukt niet op tijd} closing_soon {We sluiten bijna} other {Anders}}",
+    "noteRequired": "Reden — verplicht",
+    "noteOptional": "Extra opmerking — optioneel",
+    "notePlaceholder": "Geef de klant meer uitleg…",
+    "keep": "Bestelling houden",
+    "confirm": "Bestelling afwijzen"
+  },
+  "eventCancel": {
+    "title": "Dit evenement annuleren?",
+    "affected": "{n, plural, one {{count} bestelling wordt} other {{count} bestellingen worden}} geannuleerd en klanten krijgen bericht.",
+    "reasonLabel": "Reden — optioneel",
+    "reason": "{reason, select, vehicle_breakdown {Pech met het voertuig} weather {Weer} venue_issue {Probleem met de locatie} personal_emergency {Persoonlijke noodsituatie} other {Anders}}",
+    "messageLabel": "Bericht aan klanten — optioneel",
+    "messagePlaceholder": "bijv. Sorry, onze aanhanger kreeg onderweg naar de locatie pech…",
+    "keep": "Evenement houden",
+    "cancelling": "Annuleren…",
+    "confirm": "Evenement annuleren"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Evenement herstarten} other {Evenement starten}}",
+    "changeEvent": "Ander evenement",
+    "changeEventType": "Type evenement wijzigen…",
+    "privateLink": "Privélink & QR-code",
+    "noteLabel": "Opmerking voor klanten",
+    "notePlaceholder": "bijv. Parkeer op de grote parkeerplaats en zoek de oranje partytent",
+    "noteHint": "Zichtbaar voor klanten op de bestelpagina, onder de gegevens van je evenement.",
+    "saveNote": "Opmerking opslaan",
+    "resume": "Bestellingen hervatten",
+    "pause": "Bestellingen pauzeren",
+    "changeFinishTime": "Eindtijd van evenement wijzigen",
+    "finishEvent": "Evenement afronden",
+    "cancelEvent": "Evenement annuleren"
+  },
+  "finish": {
+    "confirmTitle": "Eindtijd wijzigen?",
+    "willFinish": "Dit evenement eindigt om <b>{selected}</b>{hasCurrent, select, yes { in plaats van <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} bestelling staat} other {{count} bestellingen staan}} gepland na {selected}.</b> {n, plural, one {Die blijft} other {Die blijven}} op het scherm staan en {n, plural, one {moet} other {moeten}} nog steeds worden gemaakt. Het wijzigen van de eindtijd voorkomt alleen dat er NIEUWE bestellingen voor latere tijden worden geplaatst.",
+    "saving": "Opslaan…",
+    "confirm": "Eindtijd wijzigen",
+    "keepCurrent": "{current} behouden",
+    "keepAsIs": "Zo laten",
+    "title": "Eindtijd wijzigen",
+    "currentlySet": "Dit evenement eindigt nu om <b>{current}</b>.",
+    "noFinishTime": "Voor dit evenement is geen eindtijd ingesteld.",
+    "noTimesLeft": "Er zijn vandaag geen tijden meer over. Gebruik in plaats daarvan Evenement afronden.",
+    "newFinishTime": "Nieuwe eindtijd",
+    "optionCurrent": "{time} (huidig)",
+    "earlier": "Dat is eerder dan de huidige eindtijd. Klanten kunnen dan niet meer bestellen voor latere tijden.",
+    "review": "Wijziging controleren",
+    "optionNextDay": "{time} (volgende dag)"
+  },
+  "extraWait": {
+    "title": "Extra wachttijd",
+    "hint": "Wordt opgeteld bij de afhaaltijd die bij nieuwe bestellingen wordt genoemd. De eindtijd van het evenement verandert niet.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Opnieuw verbinden om te laden",
+    "selected": "Geselecteerd",
+    "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}"
+  }
+}

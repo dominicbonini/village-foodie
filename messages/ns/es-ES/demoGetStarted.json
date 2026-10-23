@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Guardar mi carta →",
+    "heading": "Configura tu food truck",
+    "sub": "Tu carta se pasa tal cual.",
+    "privacy": "Solo usaremos estos datos para configurar tu food truck y enviarte el enlace a tu demo. Consulta nuestra <link>política de privacidad</link>."
+  },
+  "sample": {
+    "bannerButton": "Configurar mi food truck →",
+    "heading": "Configura tu food truck",
+    "sub": "Después subirás tu propia carta: es cosa de un minuto.",
+    "privacy": "Solo usaremos estos datos para configurar tu food truck y enviarte el enlace a tu demo. Consulta nuestra <link>política de privacidad</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Guardar mi carta →",
+    "heading": "Guarda tu demo",
+    "sub": "La guardaremos 14 días y te enviaremos por correo un enlace para volver directamente.",
+    "privacy": "Solo usaremos estos datos para enviarte el enlace a tu demo. Consulta nuestra <link>política de privacidad</link>."
+  },
+  "confirmationHeading": "Todo listo",
+  "postSaveButton": "Configurar mi food truck →",
+  "enterSetupButton": "Configurar mi food truck →",
+  "emailOnlyLink": "Prefiero recibir solo un enlace por correo para volver a esta demo",
+  "sendLinkButton": "Enviarme el enlace",
+  "savingButton": "Guardando…",
+  "continueButton": "Continuar →",
+  "createAccountButton": "Crear mi cuenta →",
+  "retryButton": "Reintentar",
+  "backToDemoButton": "Volver a la demo",
+  "savedStatus": "{hasDate, select, yes {✓ Guardada: se conserva hasta el {date}} other {✓ Guardada}}",
+  "back": "Atrás",
+  "close": "Cerrar",
+  "truckStepHeading": "Sobre tu food truck",
+  "detailsStepHeading": "Termina la configuración",
+  "stepper": {
+    "details": "Tus datos",
+    "menu": "Carta",
+    "allergens": "Alérgenos",
+    "kitchen": "Cocina",
+    "schedule": "Agenda"
+  },
+  "confirmEmailed": "Te hemos enviado por correo un enlace para volver directamente a esta demo, sin iniciar sesión.",
+  "confirmKeepUntil": "La guardaremos hasta el <b>{date}</b>. Tu carta se viene contigo cuando hagas la configuración completa.",
+  "loading": "Cargando…",
+  "firstName": "Nombre",
+  "lastName": "Apellidos",
+  "truckName": "Nombre del food truck",
+  "truckNamePlaceholder": "p. ej., La Cocina del Pueblo",
+  "cuisine": "Tipo de cocina",
+  "logoLabel": "Logotipo <opt>(opcional)</opt>",
+  "logoPreviewAlt": "Vista previa del logotipo",
+  "changeLogo": "Cambiar logotipo",
+  "removeLogo": "Quitar",
+  "uploadLogo": "📷 Subir logotipo",
+  "readyTitle": "Tu cuenta está lista",
+  "readyBody": "Ahora terminemos de configurar tu food truck: la carta, los alérgenos y la cocina.",
+  "hangTight": "Un momento: lo estamos preparando todo.",
+  "stage": {
+    "account": "Creando tu cuenta",
+    "truck": "Configurando tu food truck",
+    "menu": "Cargando tu carta"
+  },
+  "stageState": {
+    "done": "hecho",
+    "recognised": "ya tienes una cuenta",
+    "failed": "error",
+    "active": "en curso",
+    "pending": "pendiente"
+  },
+  "signIn": "Iniciar sesión",
+  "phone": "Teléfono",
+  "onWhatsapp": "Este número tiene WhatsApp",
+  "email": "Correo electrónico",
+  "emailPlaceholder": "tu@tufoodtruck.es",
+  "settingUpAs": "Configurando como <b>{email}</b> <change>cambiar</change>",
+  "password": "Contraseña",
+  "passwordPlaceholder": "Al menos 8 caracteres",
+  "hidePassword": "Ocultar contraseña",
+  "showPassword": "Mostrar contraseña",
+  "promoLabel": "¿Tienes un código? <opt>(opcional)</opt>",
+  "promoPlaceholder": "Escríbelo aquí",
+  "agreeTerms": "Acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
+  "freeMonth": "Configurar no pone en marcha tu mes gratis. Este empieza cuando eliges tu primer evento publicado, cuando tú quieras.",
+  "fieldError": {
+    "firstName": "Dinos tu nombre.",
+    "lastName": "Y tus apellidos.",
+    "truck": "Ponle un nombre a tu food truck.",
+    "cuisine": "Dinos qué cocinas.",
+    "phoneMissing": "Añade un número de teléfono: tanto los clientes como nosotros lo usamos para contactarte.",
+    "email": "Introduce una dirección de correo válida.",
+    "password": "La contraseña debe tener al menos 8 caracteres.",
+    "terms": "Acepta los términos para continuar."
+  },
+  "error": {
+    "saveFailed": "No se ha podido guardar. Vuelve a intentarlo.",
+    "savedNoEmail": "Guardada, pero no hemos podido enviarte el enlace por correo ahora mismo.",
+    "unreachable": "No hemos podido conectar ahora mismo. Vuelve a intentarlo.",
+    "createAccountFailed": "No se ha podido crear tu cuenta.",
+    "truckCreateFailed": "Tu cuenta está lista, pero no hemos podido crear tu food truck. Vuelve a intentarlo.",
+    "truckUnreachable": "Tu cuenta está lista, pero no hemos podido crear tu food truck ahora mismo. Vuelve a intentarlo.",
+    "truckNoToken": "Tu food truck está configurado, pero no hemos podido abrirlo ahora mismo. Vuelve a intentarlo."
+  }
+}

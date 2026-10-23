@@ -1,0 +1,7 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the ONLY messages a language may write without one of en-GB's placeholders, each with its legal reason. scripts/translation-check.cjs reads this file; anything not listed here must keep every placeholder (structural). A regional variant inherits its language's entry and may put the placeholder back (de-CH and de-LI do: Switzerland has no button rule).",
+  "de": {
+    "order.payAmount": { "drop": ["amount"], "why": "BGB § 312j Abs. 3 (DE) and FAGG § 8 Abs. 2 (AT): the order button carries only the words „zahlungspflichtig bestellen“ — Dominic, 23 October 2026: no amount on the German and Austrian card button" },
+    "order.tryAgainAmount": { "drop": ["amount"], "why": "the same button after a failed attempt — the same rule" }
+  }
+}

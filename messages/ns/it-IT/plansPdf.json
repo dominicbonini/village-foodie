@@ -1,0 +1,9 @@
+{
+  "title": "Piani e funzionalità",
+  "generated": "Generato il {date}",
+  "allowanceHeading": "Ordini online inclusi",
+  "smallPrint": "Note",
+  "priceNoteMasked": "I prezzi indicati come «Da definire» non sono ancora pubblicati.",
+  "omitNote": "I prezzi non sono inclusi di proposito in questo documento.",
+  "terms": "I dati corrispondono alle condizioni dei piani pubblicate alla data indicata sopra e possono cambiare. Le commissioni di elaborazione delle carte sono applicate da Stripe, non da HatchGrab. Questo documento è un riepilogo, non un contratto."
+}

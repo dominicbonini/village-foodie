@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Allergenen per gerecht tonen",
+    "recommended": "Aanbevolen",
+    "perDishBody": "Controleer elk gerecht en bevestig de allergenen. Klanten zien labels per gerecht, plus een samenvattende allergenenkaart die daarop gebaseerd is.",
+    "cardTitle": "Een allergenenkaart tonen",
+    "cardBody": "Upload of plak één allergenenkaart (PDF, afbeelding of tekst); die wordt getoond zoals hij is. Labels per gerecht blijven verborgen."
+  }
+}

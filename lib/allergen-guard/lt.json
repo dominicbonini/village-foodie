@@ -1,0 +1,105 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for LITHUANIAN (lt-LT). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "lt",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "netoleravim",
+    "netoleran",
+    "celiakij",
+    "celiakija",
+    "be gliuteno",
+    "begliuten",
+    "be laktozes",
+    "be pieno",
+    "be kiausiniu",
+    "be riesutu",
+    "be zemes riesutu",
+    "be sojos",
+    "be sezamo",
+    "be zuvies",
+    "be vezagyviu",
+    "be salieru",
+    "be garstyciu",
+    "be sulfitu",
+    "anafilak",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "tinka",
+    "tinkamas",
+    "saugu",
+    "saugus",
+    "gali buti",
+    "pedsaku",
+    "pėdsakų",
+    "kryzmine tarsa",
+    "kryžminė tarša",
+    "tarsa"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "glitimas",
+        "gliutenas",
+        "kvietiniai",
+        "miltai"
+      ],
+      "crustaceans": [
+        "vėžiagyviai",
+        "krevetės"
+      ],
+      "eggs": [
+        "kiaušiniai",
+        "kiaušinis",
+        "majonezas"
+      ],
+      "fish": [
+        "žuvis"
+      ],
+      "peanuts": [
+        "žemės riešutai"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "pienas",
+        "laktozė",
+        "sūris",
+        "grietinėlė",
+        "sviestas"
+      ],
+      "tree nuts": [
+        "riešutai",
+        "migdolai",
+        "lazdyno",
+        "pistacijos",
+        "anakardžiai"
+      ],
+      "celery": [
+        "salierai"
+      ],
+      "mustard": [
+        "garstyčios"
+      ],
+      "sesame": [
+        "sezamas"
+      ],
+      "sulphites": [
+        "sulfitai",
+        "sieros dioksidas"
+      ],
+      "lupin": [
+        "lubinai"
+      ],
+      "molluscs": [
+        "moliuskai",
+        "midijos",
+        "kalmarai"
+      ]
+    }
+  }
+}

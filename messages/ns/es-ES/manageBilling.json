@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "por food truck / mes",
+  "transactionFees": "Comisiones por transacción",
+  "comingSoon": "Próximamente",
+  "footnote2Masked": "Los pagos online funcionan con Stripe Connect. Las comisiones de la plataforma y de procesamiento de tarjetas están por confirmar y se anunciarán en el lanzamiento.",
+  "card": {
+    "title": "Facturación y pagos",
+    "managed": "HatchGrab gestiona la facturación",
+    "earlyAccess": "Durante el acceso anticipado, configuramos y ajustamos los planes manualmente.",
+    "planLine": "{trial, select, yes {{truck} · plan {plan} (prueba)} other {{truck} · plan {plan}}}"
+  },
+  "currentPlan": "Plan actual",
+  "plan": {
+    "included": "Incluye {amount} en pedidos online al mes.",
+    "includedUnlimited": "Pedidos online ilimitados incluidos.",
+    "promo": "Precio especial.",
+    "promoUntil": "Precio especial hasta el {date}.",
+    "ended": "Tu plan {plan} terminó el {date}. Ahora tienes el plan {now}.",
+    "trialMonths": "Prueba gratuita. Meses gratis: {months}."
+  },
+  "trialEnds": "La prueba termina el {date}",
+  "yourTrialEnds": "Tu prueba termina el {date}",
+  "notStarted": {
+    "heading": "Tu prueba gratuita aún no ha empezado"
+  },
+  "onTrial": "Tienes todas las funciones. Elige un plan antes de que termine tu prueba.",
+  "onTrialNoCta": "Tienes todas las funciones.",
+  "noCharge": "🔒 No se te cobrará nada durante tu prueba, que dura hasta el {date}. La facturación solo empieza cuando eliges un plan e introduces tus datos de pago. Hasta entonces, no hay nada que cancelar ni nada que pagar.",
+  "fees": "*En los pedidos online se aplican las comisiones estándar por pago con tarjeta",
+  "setUpPayment": "⏱ Elige un plan antes de que termine tu prueba",
+  "changeYourPlan": "Cambia tu plan",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Cambiar a {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Estamos preparando la facturación automática. Para cambiar ahora, escríbenos y lo dejaremos todo listo en menos de 24 horas.",
+    "mailSubject": "Cambio a {plan} — {truck}",
+    "mailBody": "Hola: me gustaría pasar {truck} al plan {plan} ({price}).",
+    "email": "Escríbenos para cambiar",
+    "cancel": "Cancelar"
+  }
+}

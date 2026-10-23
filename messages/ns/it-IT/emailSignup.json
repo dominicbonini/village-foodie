@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Ciao {name},} other {Ciao,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Fondatore, HatchGrab",
+  "verify": {
+    "subject": "Conferma il tuo indirizzo email",
+    "thanks": "{hasTruck, select, yes {Grazie per aver configurato {truck} su HatchGrab.} other {Grazie per aver configurato il tuo food truck su HatchGrab.}}",
+    "button": "Conferma il mio indirizzo email",
+    "buttonText": "Conferma il mio indirizzo email: {url}",
+    "why": "È l’indirizzo con cui accederai e a cui arrivano gli avvisi degli ordini — quindi conviene farlo subito.",
+    "next": "Una volta confermato, ti invierò tutto ciò che ti serve per iniziare.",
+    "carryOn": "Nel frattempo puoi continuare la configurazione.",
+    "stuck": "Hai qualche difficoltà? Rispondi semplicemente a questa email — rispondo io di persona.",
+    "fallbackLink": "Se il pulsante non funziona, incolla questo link: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Ti diamo il benvenuto su HatchGrab, {name}} other {Ti diamo il benvenuto su HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Sono davvero felice di dare il benvenuto a {truck} su HatchGrab.} other {Sono davvero felice di dare il benvenuto al tuo food truck su HatchGrab.}}",
+    "trial": "{months, plural, one {La tua prova gratuita di un mese è iniziata — tutte le funzionalità sono sbloccate.} other {La tua prova gratuita di # mesi è iniziata — tutte le funzionalità sono sbloccate.}}",
+    "setup": "Se non l’hai già fatto, la configurazione è semplice e richiede circa quindici minuti.",
+    "button": "Apri la tua dashboard",
+    "bookmark": "Ti conviene salvarla nei preferiti. Funziona su qualsiasi dispositivo.",
+    "stuck": "Se hai qualche difficoltà, rispondi semplicemente a questa email — rispondo io di persona.",
+    "lookingForward": "{hasTruck, select, yes {Non vedo l’ora di vedere {truck} all’opera.} other {Non vedo l’ora di vedere il tuo food truck all’opera.}}"
+  }
+}

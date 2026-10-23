@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Denne e-posten mangler linjen for avmelding, så den kan ikke sendes. Bruk «Sett inn avmelding» for å legge den til.",
+    "notSetUp": "Ingen avmeldingssetning er satt opp, så ingen e-poster kan sendes ut. Legg til en i panelet «Signatur» under fanen «Maler».",
+    "notLoaded": "Avmeldingssetningen er ikke lastet inn ennå, så dette kan ikke sendes.",
+    "unreadable": "Avmeldingssetningen kunne ikke leses, så ingenting ble sendt."
+  },
+  "retry": {
+    "notRebuilt": "Meldingen kunne ikke bygges på nytt med firmalinjen, så ingenting ble sendt."
+  }
+}

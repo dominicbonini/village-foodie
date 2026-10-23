@@ -1,0 +1,25 @@
+{
+  "heading": "Ugen fra {start} til {end}",
+  "daysOff": "Lukket i dag",
+  "cancelled": "AFLYST",
+  "placeSample": {
+    "nameTownBelow": "Kroen ved Torvet\nAarhus",
+    "nameTown": "Kroen ved Torvet, Aarhus",
+    "nameOnly": "Kroen ved Torvet"
+  },
+  "busyWeek": {
+    "venue1": "Forsamlingshuset i Aarhus",
+    "town1": "Aarhus",
+    "venue2": "Skanderborg Idrætspark og Boldbanerne ved Søen",
+    "town2": "Skanderborg",
+    "venue3": "Torvet",
+    "town3": "Silkeborg",
+    "venue4": "Madfestival",
+    "town4": "Randers",
+    "venue5": "Kroen ved Åen",
+    "town5": "Horsens",
+    "venue6": "Kirkepladsen",
+    "town6": "Ry"
+  },
+  "poweredBy": "Drevet af HatchGrab"
+}

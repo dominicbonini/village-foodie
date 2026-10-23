@@ -1,0 +1,15 @@
+{
+  "greeting": "Hoi 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Onze volledige menukaart en allergeneninformatie vind je hier: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Bekijk hier onze volledige menukaart: {url} — {truck} {emoji}",
+  "otherCategory": "Overig",
+  "categoryFrom": "{category} vanaf {price}",
+  "listTwo": "{first} en {second}",
+  "listMany": "{init} en {last}",
+  "menuSummary": "{opener}We hebben {summary}. Bekijk de volledige menukaart en bestel vooraf via: {url} — {truck} {emoji}",
+  "allergenCaveat": "Controleer voor allergenen altijd de volledige menukaart — dit is een automatisch antwoord.",
+  "specificFallback": "{opener}Bekijk hier onze actuele planning: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Bedankt voor al je berichten! Ik kan hier maar een paar keer per dag antwoorden.\n\nBestellen: {link}",
+  "capContact": "Direct contact: {number}"
+}

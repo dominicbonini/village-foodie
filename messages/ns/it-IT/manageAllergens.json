@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "La tua scheda allergeni",
+    "intro": "I clienti la vedono <b>esattamente come la scrivi</b> — nulla viene riscritto. Scrivi o incolla qui sotto, oppure carica una foto/PDF e ne estrarremo il testo da farti controllare.",
+    "empty": "Nessuna scheda allergeni per ora.",
+    "placeholder": "ad es. Tutti i nostri fish & chips contengono frumento e latte. La friggitrice è condivisa con prodotti contenenti glutine e frutta a guscio. Opzioni vegane disponibili — chiedi al personale.",
+    "reading": "Lettura dell’immagine…",
+    "upload": "📷 Carica immagine / PDF",
+    "uploadNote": "Estraiamo il testo dalla tua immagine perché tu possa controllarlo — l’immagine non viene conservata."
+  },
+  "cardUpload": {
+    "dishFallback": "Piatto",
+    "question": "Hai una scheda allergeni da caricare?",
+    "perDish": "{detected, select, yes {Caricala e la useremo per compilare gli allergeni dei tuoi piatti. Gli allergeni rilevati saranno visibili nella pagina successiva, dove confermi ogni piatto.} other {Caricala e la useremo per compilare gli allergeni dei tuoi piatti.}}",
+    "cardOnly": "Carica la scheda allergeni che vedranno i clienti.",
+    "yes": "Sì",
+    "no": "No",
+    "noProblem": "Nessun problema — non è obbligatoria. Continua con il pulsante qui sotto.",
+    "analysing": "Analisi della scheda…",
+    "dropzone": "Trascina e rilascia o tocca per scegliere",
+    "imageOrPdf": "Immagine o PDF",
+    "or": "oppure",
+    "pastePlaceholder": "Incolla qui il testo della tua scheda allergeni…",
+    "process": "Elabora scheda",
+    "cardRead": "Scheda letta ✓",
+    "unmatchedHeading": "Non abbinati automaticamente — assegnali o ignorali",
+    "quotedName": "«{name}»",
+    "ambiguous": "Ambiguo — corrisponde a più piatti; scegli quello giusto.",
+    "assignTo": "Assegna a un piatto…",
+    "dismiss": "Ignora",
+    "blanket": "La scheda indica la possibile presenza di <b>{list}</b> in <b>tutti</b> i piatti. Aggiungere a ogni piatto? (confermerai comunque ciascuno) <muted>— disattivato di default</muted>",
+    "kitchenNotes": "Note della cucina (salvate nelle informazioni sugli allergeni)",
+    "matchSummary": "{n, plural, =0 {Abbinati a un piatto: {matched}.} one {Abbinati a un piatto: {matched}. Da assegnare: {count}.} other {Abbinati a un piatto: {matched}. Da assegnare: {count}.}}"
+  },
+  "savedCard": {
+    "showLess": "Mostra meno",
+    "showMore": "Mostra di più",
+    "fileOnly": "Per questo food truck è salvato un file della scheda, ma non è stato memorizzato alcun testo di riepilogo. Apri l’originale per leggerlo.",
+    "viewOriginal": "Vedi scheda originale"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Impossibile leggere la scheda allergeni — riprova",
+      "confirmed": "Confermato: {name}",
+      "undo": "Annulla",
+      "saveFailed": "Impossibile salvare — riprova",
+      "imageFailed": "Impossibile leggere l’immagine — scrivi o incolla la tua scheda",
+      "cardRead": "{n, plural, one {Scheda letta — abbinati: {matched}, da assegnare: {count}} other {Scheda letta — abbinati: {matched}, da assegnare: {count}}}"
+    },
+    "genericWarn": {
+      "text": "È stato rilevato «{generic}», ma non è specifico. Seleziona {picks} se questo piatto contiene {family} — oppure lasciali non selezionati se non li contiene.",
+      "andOr": "{a} e/o {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confermato",
+      "confirmed": "Confermato",
+      "needsReview": "Da verificare"
+    },
+    "confirm": {
+      "confirming": "Conferma in corso…",
+      "confirmed": "Confermato ✓",
+      "confirm": "Conferma",
+      "changed": "· modificato",
+      "changedTitle": "Modificato dall’ultima conferma — conferma di nuovo"
+    },
+    "allergens": "Allergeni",
+    "dietary": "Dieta",
+    "uncategorised": "Senza categoria",
+    "review": {
+      "progress": "{confirmed} di {total} confermati",
+      "allConfirmed": "✓ Tutti confermati",
+      "list": "Elenco",
+      "table": "Tabella",
+      "detected": "Rilevati dal tuo menu — <b>controllali</b>. Gli allergeni restano nascosti ai clienti finché non confermi ogni piatto.",
+      "viewOnly": "👁 Solo visualizzazione — solo il titolare può confermare o modificare gli allergeni.",
+      "emptyTitle": "Nessun piatto nel menu",
+      "emptyBody": "Aggiungi prima i piatti al menu, poi imposta qui i loro allergeni.",
+      "dish": "Piatto",
+      "status": "Stato"
+    },
+    "cardPanel": {
+      "reading": "Lettura delle informazioni sugli allergeni…",
+      "saved": "🛡️ Scheda allergeni salvata",
+      "viewOriginal": "Vedi scheda originale",
+      "replace": "Sostituisci scheda",
+      "uploadHelp": "Carica la tua scheda allergeni (foto/PDF) o incolla le informazioni sugli allergeni — la nostra IA le organizza per i clienti.",
+      "add": "Aggiungi scheda allergeni",
+      "viewOnly": "👁 Solo visualizzazione — solo il titolare può aggiungere la scheda allergeni.",
+      "intro": "I clienti vedranno questa scheda come riferimento sugli allergeni del menu. In modalità solo scheda gli allergeni dei singoli piatti restano nascosti (i dati dei piatti vengono conservati nel caso passassi in seguito alla modalità per piatto)."
+    },
+    "subtitle": {
+      "choose": "Scegli come i clienti vedono le informazioni sugli allergeni",
+      "card": "Aggiungi la tua scheda allergeni",
+      "cardOptional": "Aggiungi una scheda allergeni (facoltativa)",
+      "review": "Controlla e conferma ogni piatto"
+    },
+    "heading": {
+      "import": "Allergeni",
+      "standalone": "Configurazione allergeni"
+    },
+    "nav": {
+      "next": "Avanti →",
+      "back": "← Indietro",
+      "skip": "Salta per ora",
+      "saving": "Salvataggio…",
+      "done": "Fine",
+      "saveLater": "Salva e completa dopo",
+      "close": "Chiudi",
+      "finish": "Termina",
+      "skipImport": "Salta la configurazione allergeni per ora"
+    },
+    "hint": {
+      "skipDefers": "Saltare rimanda soltanto — i piatti che non hai confermato restano nascosti ai clienti finché i loro allergeni non vengono confermati.",
+      "importIncomplete": "Conferma ogni piatto per continuare — oppure «Salta la configurazione allergeni per ora»."
+    }
+  }
+}

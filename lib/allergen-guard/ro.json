@@ -1,0 +1,103 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for ROMANIAN (ro-RO). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "ro",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "intoleran",
+    "celiac",
+    "celiachie",
+    "fara gluten",
+    "fara lactoza",
+    "fara lapte",
+    "fara lactate",
+    "fara oua",
+    "fara ou",
+    "fara nuci",
+    "fara arahide",
+    "fara soia",
+    "fara susan",
+    "fara peste",
+    "fara crustacee",
+    "fara telina",
+    "fara mustar",
+    "fara sulfiti",
+    "anafila",
+    "epipen",
+    "epi pen",
+    "adrenalina",
+    "potrivit pentru",
+    "potrivita pentru",
+    "sigur pentru",
+    "sigura pentru",
+    "poate contine",
+    "urme de",
+    "contaminare incrucisata",
+    "contaminare"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "grâu",
+        "făină"
+      ],
+      "crustaceans": [
+        "crustacee",
+        "creveți"
+      ],
+      "eggs": [
+        "ouă",
+        "ou",
+        "maioneză"
+      ],
+      "fish": [
+        "pește"
+      ],
+      "peanuts": [
+        "arahide"
+      ],
+      "soy": [
+        "soia",
+        "tofu"
+      ],
+      "dairy": [
+        "lapte",
+        "lactoză",
+        "brânză",
+        "smântână",
+        "unt",
+        "lactate"
+      ],
+      "tree nuts": [
+        "nuci",
+        "migdale",
+        "alune",
+        "fistic",
+        "caju"
+      ],
+      "celery": [
+        "țelină"
+      ],
+      "mustard": [
+        "muștar"
+      ],
+      "sesame": [
+        "susan"
+      ],
+      "sulphites": [
+        "sulfiți",
+        "dioxid de sulf"
+      ],
+      "lupin": [
+        "lupin"
+      ],
+      "molluscs": [
+        "moluște",
+        "midii",
+        "calamar"
+      ]
+    }
+  }
+}

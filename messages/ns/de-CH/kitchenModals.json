@@ -1,0 +1,6 @@
+{
+  "close": "Schliessen",
+  "reject": {
+    "reason": "{reason, select, sold_out {Ein Artikel ist ausverkauft} too_busy {Zu viel los – nicht rechtzeitig machbar} closing_soon {Wir schliessen bald} other {Sonstiges}}"
+  }
+}

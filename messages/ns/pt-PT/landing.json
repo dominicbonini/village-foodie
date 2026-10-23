@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistema de encomendas online para food trucks e restauração móvel",
+    "description": "Encomendas, encomendas antecipadas e ecrã da cozinha para food trucks e restauração móvel ({country}).",
+    "audience": "Operadores de food trucks e de restauração móvel"
+  },
+  "hero": {
+    "title": "O sistema de encomendas online feito para <lean>food trucks.</lean>",
+    "subSmall": "Carregue a sua ementa, sem registo.<br></br>Veja uma demonstração a funcionar em menos de 60 segundos.",
+    "tagline": "Menos tempo a gerir.<br></br>Mais tempo a <lean>cozinhar.</lean>",
+    "cta": "Carregar a minha ementa →",
+    "ctaNote": "<lead>Carregue uma foto da sua ementa e veja-a a funcionar em menos de 60 segundos.</lead><small>Sem registo. Sem cartão.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "O ecrã da cozinha da HatchGrab, com os talões das encomendas pela ordem de preparação",
+    "dashboardAlt": "Registar uma encomenda na HatchGrab: a ementa à esquerda, o cesto e o total à direita",
+    "phoneAlt": "Encomendar a um food truck na HatchGrab: a ementa com fotos e preços, e o total do cesto atualizado"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Primeiro mês totalmente grátis, com tudo desbloqueado} other {Primeiros # meses totalmente grátis, com tudo desbloqueado}}",
+    "noCard": "Não precisa de cartão",
+    "cancel": "Cancele quando quiser, sem contrato"
+  },
+  "does": {
+    "eyebrow": "O que faz",
+    "title": "Feito para food trucks, não para restaurantes.",
+    "lede": "A maioria dos sistemas de encomendas parte do princípio de que tem uma morada fixa, Wi-Fi fiável e o mesmo horário todas as semanas. Mas o seu food truck está num sítio novo todas as semanas, a horas diferentes, com rede móvel fraca ou inexistente. A HatchGrab foi feita para isso.",
+    "slotsTitle": "Os clientes escolhem a hora de levantamento",
+    "capacityTitle": "Defina a capacidade da cozinha",
+    "capacityBody": "Indique quanto consegue cozinhar de cada vez e quanto tempo demora. Quando uma hora de levantamento fica cheia, os clientes já não a podem escolher.",
+    "devicesTitle": "Funciona em qualquer dispositivo",
+    "devicesBody": "Funciona no telemóvel que traz no avental, no tablet ao balcão, no portátil dentro do food truck — e no terminal de pagamento que já usa para cobrar.",
+    "postsTitle": "Automatize as suas publicações no Facebook e Instagram",
+    "postsBody": "Carregue o design que já publica no Facebook ou Instagram. Nós preenchemos as datas, os locais e os horários, prontos a partilhar — todas as semanas ou todos os dias.",
+    "whatsappTitle": "Respostas automáticas do WhatsApp",
+    "whatsappBody": "«Onde estão hoje à noite?» «Que sobremesas têm?» O seu WhatsApp responde enquanto conduz até ao local ou está à grelha, com base na sua ementa e na sua agenda. Messenger e Instagram em breve.",
+    "whatsappSoonTitle": "Respostas automáticas do WhatsApp <soon>Em breve</soon>",
+    "whatsappSoonBody": "«Onde estão hoje à noite?» «Que sobremesas têm?» Em breve, o seu WhatsApp vai responder enquanto conduz até ao local ou está à grelha. Seguem-se o Messenger e o Instagram.",
+    "offlineTitle": "Sem rede? Continue a servir.",
+    "offlineBody": "Se perder a rede, as encomendas online são pausadas automaticamente, para que os clientes não façam encomendas que não vai ver. Continue a receber encomendas com a app para iPhone, iPad e Android.",
+    "slotsBody": "Os clientes encomendam com antecedência e escolhem uma hora de levantamento. Menos filas, e a comida pronta quando chegam."
+  },
+  "steps": {
+    "eyebrow": "Para começar",
+    "title": "Configure tudo e comece a receber encomendas em cerca de 15 minutos.",
+    "lede": "Três coisas a tratar — e duas delas só precisam de uma foto.",
+    "menuTitle": "Crie a sua ementa",
+    "menuBody": "Fotografe o seu quadro ou cole o texto. Artigos, preços e extras são importados automaticamente. Só tem de confirmar que está tudo certo.",
+    "scheduleTitle": "Adicione a sua agenda",
+    "scheduleBody": "Tem-na no seu site? Lemo-la a partir daí e mantemo-la atualizada. Se não, fotografe-a também. Só tem de aprovar o que encontrarmos.",
+    "shareTitle": "Partilhe o seu link",
+    "shareBody": "Publique-o no Facebook, cole o código QR no food truck. As encomendas chegam ao seu ecrã pela ordem em que as tem de cozinhar."
+  },
+  "testimonial": {
+    "quote": "A HatchGrab tornou as encomendas muito mais fáceis. Está tudo organizado, conseguimos controlar o stock e saber exatamente quantas pizzas nos faltam vender — e os horários de levantamento são fantásticos para as aldeias mais movimentadas.",
+    "award": "Pizzaria Móvel do Ano",
+    "awardScope": "Vencedor regional",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia e Bogdan — proprietários"
+  },
+  "pricing": {
+    "eyebrow": "Preços",
+    "title": "Comece grátis. Mude de plano quando precisar.",
+    "switchHead": "Vem de outra plataforma?",
+    "switchBody": "Veja quanto pagaria na HatchGrab pelas mesmas encomendas. Demora cerca de um minuto.",
+    "switchCta": "Compare o que está a pagar"
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Quer ver como é fácil configurar?",
+    "lede": "Carregue uma foto ou captura de ecrã da sua ementa e transformamo-la numa página de encomendas a funcionar, para experimentar em menos de 60 segundos. Os seus artigos, os seus preços. Sem registo, sem cartão, nada para instalar. Dê uma vista de olhos e depois decida.",
+    "cta": "Carregar a minha ementa agora →"
+  },
+  "meta": {
+    "title": "Sistema de encomendas para food trucks e restauração móvel — HatchGrab {country}",
+    "description": "Receba encomendas e encomendas antecipadas no seu local, sem filas. Software de encomendas online e ecrã da cozinha para food trucks e restauração móvel ({country}) — não é um sistema POS."
+  }
+}

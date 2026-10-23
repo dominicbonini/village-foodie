@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Abgesagt",
+    "finished": "Beendet",
+    "unconfirmed": "Unbestätigt",
+    "confirmed": "Bestätigt",
+    "open": "Jetzt geöffnet",
+    "closed": "Geschlossen"
+  },
+  "sections": {
+    "label": "Bereiche der Termine",
+    "events": "Events",
+    "eventTypes": "Event-Typen"
+  },
+  "header": {
+    "title": "Termine",
+    "upcoming": "{count} anstehend",
+    "import": "✨ Termine importieren",
+    "importHint": "Foto, PDF oder Text",
+    "addEvent": "+ Event hinzufügen",
+    "scraperAuto": "Events werden automatisch auf Ihrer Website gesucht",
+    "changeInSettings": "In den Einstellungen ändern",
+    "scraperManual": "Sie verwalten Ihre Termine manuell"
+  },
+  "empty": {
+    "title": "Keine anstehenden Events",
+    "body": "Events aus Ihren sozialen Medien und Ihrem Buchungskalender erscheinen hier, damit Sie sie bestätigen können"
+  },
+  "list": {
+    "openNow": "Jetzt geöffnet",
+    "needsApproval": "Wartet auf Ihre Freigabe",
+    "needsConfirmation": "Muss bestätigt werden",
+    "confirmed": "Bestätigt",
+    "past": "Vergangene Events ({count})",
+    "found": "Wir haben {count, plural, one {# Event für Sie gefunden – bitte prüfen und freigeben, bevor es live geht.} other {# Events für Sie gefunden – bitte prüfen und freigeben, bevor sie live gehen.}}"
+  },
+  "card": {
+    "addName": "Namen hinzufügen",
+    "timeNeeded": "⚠ Uhrzeit fehlt",
+    "setTimeFirst": "Erst Uhrzeit festlegen",
+    "confirm": "Bestätigen",
+    "copy": "Kopieren",
+    "edit": "Bearbeiten",
+    "makePost": "Beitrag erstellen",
+    "cancel": "Absagen",
+    "approve": "Freigeben",
+    "reject": "Ablehnen",
+    "stock": "⚠️ Bestand",
+    "stockHidden": "Ausgeblendet – {reason}",
+    "noDeals": "Keine aktiven Angebote",
+    "dealsActive": "{count, plural, one {# Angebot aktiv} other {# Angebote aktiv}} · {names}{hidden, plural, =0 {} one { · # ausgeblendet} other { · # ausgeblendet}}",
+    "approveNeedsTimes": "„Freigeben“ ist erst möglich, wenn dieses Event eine Start- und Endzeit hat – fügen Sie sie über „Bearbeiten“ hinzu."
+  },
+  "guessed": {
+    "title": "📍 Diesen Ort haben wir geschätzt",
+    "body": "Mehrere Veranstaltungsorte passten zu <b>{venue}</b>, daher haben wir den passendsten gewählt{hasTown, select, yes { in <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Prüfen Sie vor dem Freigeben, ob es der richtige ist – falls nicht, korrigieren Sie mit <b>Bearbeiten</b> die Gegend oder {postal}, sonst werden Kunden an den falschen Ort geschickt.",
+    "thisVenue": "diesem Veranstaltungsort"
+  },
+  "noLocation": {
+    "title": "📍 Noch kein Ort",
+    "body": "Wir konnten diesen Veranstaltungsort nicht auf der Karte finden. Er wird daher aufgeführt, aber ohne Markierung auf der Karte. Fügen Sie mit <b>Bearbeiten</b> {postal} hinzu, damit er auf der Karte erscheint."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Möglicher Konflikt} other {Mögliche Konflikte}} – vor dem {pending, select, yes {Freigeben} other {Bestätigen}} prüfen",
+    "duplicate": "Das scheint dasselbe Event zu sein, das Sie bereits haben.",
+    "review": "Gleicher Veranstaltungsort und gleiches Datum, aber andere Uhrzeit – ist das dasselbe Event mit geänderter Uhrzeit oder ein separates Zeitfenster? Vor dem Freigeben prüfen.",
+    "already": "Bereits in Ihren Terminen: <b>{venue}</b>{details} ({status, select, confirmed {bestätigt} open {geöffnet} other {{status}}})",
+    "unnamedVenue": "Unbenannter Veranstaltungsort",
+    "ack": "Ja, das sind verschiedene Events – trotzdem {pending, select, yes {freigeben} other {bestätigen}}",
+    "cancel": "Abbrechen",
+    "overlap": "Die Zeit dieses Events überschneidet sich mit einem anderen Event am selben Tag – ein einzelner Foodtruck kann nicht an zwei Orten gleichzeitig sein. Vor dem Freigeben prüfen."
+  },
+  "toast": {
+    "loadFailed": "Events konnten nicht geladen werden",
+    "linkFailed": "Der Link konnte nicht geladen werden",
+    "placeTypeFailed": "Event gespeichert. Der übliche Typ für {place} wurde nicht gespeichert – {reason}.",
+    "placeTypeFailedReason": "das Speichern ist fehlgeschlagen",
+    "eventUpdated": "Event aktualisiert",
+    "eventAdded": "Event hinzugefügt",
+    "eventsSaved": "{count, plural, one {# Event gespeichert} other {# Events gespeichert}}",
+    "saveEventsFailed": "Events konnten nicht gespeichert werden",
+    "needsTime": "Fügen Sie vor dem Freigeben eine Start- und Endzeit hinzu – ohne Uhrzeit kann dieses Event nicht live gehen.",
+    "addStartTime": "Startzeit hinzufügen",
+    "addEndTime": "Endzeit hinzufügen",
+    "chooseTruckBefore": "Wählen Sie vor dem Freigeben, welcher Foodtruck bei diesem Event im Einsatz ist.",
+    "chooseTruck": "Wählen Sie, welcher Foodtruck bei diesem Event im Einsatz ist",
+    "eventConfirmed": "Event bestätigt",
+    "eventRejected": "Event abgelehnt",
+    "undo": "↩ Rückgängig",
+    "eventRestored": "Event wiederhergestellt",
+    "restoreFailed": "Wiederherstellen fehlgeschlagen",
+    "eventCancelled": "Event abgesagt",
+    "eventCancelledOrders": "Event abgesagt · {count, plural, one {# Bestellung} other {# Bestellungen}} storniert",
+    "placeHidden": "Ort ausgeblendet",
+    "placeShown": "Ort wieder eingeblendet",
+    "saveThatFailed": "Das konnte nicht gespeichert werden."
+  },
+  "link": {
+    "label": "Privater Link und QR-Code",
+    "close": "Schließen"
+  }
+}

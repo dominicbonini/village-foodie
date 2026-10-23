@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Denne e-mail har ingen afmeldingslinje, så den kan ikke sendes. Brug »Indsæt afmelding« for at tilføje den.",
+    "notSetUp": "Der er ikke sat nogen afmeldingssætning op, så der kan ikke sendes opsøgende e-mails. Tilføj en i panelet Signatur under fanen Skabeloner.",
+    "notLoaded": "Afmeldingssætningen er ikke indlæst endnu, så denne kan ikke sendes.",
+    "unreadable": "Afmeldingssætningen kunne ikke læses, så intet blev sendt."
+  },
+  "retry": {
+    "notRebuilt": "Beskeden kunne ikke genopbygges med firmalinjen, så intet blev sendt."
+  }
+}

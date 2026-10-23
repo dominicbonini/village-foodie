@@ -1,0 +1,6 @@
+{
+  "closedPending": "Förbeställningar stängda. Köket ska godkänna.",
+  "deadline": "Förbeställ senast {time}",
+  "deadlineOnDay": "Förbeställ senast {time}, {day}",
+  "opens": "Förbeställningar öppnar {day}"
+}

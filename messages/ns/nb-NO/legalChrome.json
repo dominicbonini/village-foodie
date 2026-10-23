@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Personvernerklæring — HatchGrab",
+    "privacyDescription": "Hvordan HatchGrab Ltd samler inn og bruker personopplysninger.",
+    "termsTitle": "Bruksvilkår — HatchGrab",
+    "termsDescription": "Vilkårene for å bruke HatchGrab.",
+    "countryTermsTitle": "Landsspesifikke vilkår — HatchGrab",
+    "countryTermsDescription": "De ekstra reglene som gjelder for HatchGrab i enkelte land."
+  },
+  "homeLabel": "HatchGrab – forsiden",
+  "privacy": "Personvern",
+  "terms": "Vilkår",
+  "countryTerms": "Vilkår per land",
+  "contact": "Kontakt",
+  "lastUpdated": "Sist oppdatert {date}",
+  "questions": "Spørsmål? <link>Ta kontakt</link> — vi er ekte mennesker."
+}

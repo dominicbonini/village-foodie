@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Probeer het uit voordat je koppelt",
+    "intro": "Typ een vraag zoals een klant die zou stellen en zie precies welk antwoord die terugkrijgt. Er wordt niets naar iemand verstuurd.",
+    "examples": {
+      "where": "Waar staan jullie vanavond?",
+      "doYouDo": "Hebben jullie pepperoni?",
+      "menu": "Wat staat er op het menu?"
+    },
+    "placeholder": "Welke desserts hebben jullie?",
+    "send": "Versturen",
+    "empty": "Je antwoord verschijnt hier",
+    "working": "Antwoord wordt bedacht…",
+    "noReply": "Er zou geen antwoord worden verstuurd.",
+    "noReplyWhy": "Dit lijkt op spam, een boekingsaanvraag of iets wat er niets mee te maken heeft, dus het automatische antwoord blijft uit.",
+    "footnote": "Antwoorden worden door AI gemaakt, verschillen telkens een beetje en kunnen af en toe niet kloppen.",
+    "failed": "Er kon nu geen voorbeeld worden gemaakt.",
+    "unreachable": "De server is niet bereikbaar. Controleer je verbinding en probeer het opnieuw."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Voorbereiden…",
+      "unavailable": "Niet beschikbaar",
+      "waiting": "Wachten op Facebook-venster…",
+      "finishing": "Afronden…",
+      "reconnect": "Opnieuw koppelen",
+      "setUp": "Instellen"
+    },
+    "startAgain": "Opnieuw beginnen",
+    "popupHint": "Zie je het Facebook-venster niet? Misschien is het geblokkeerd. Sta pop-ups toe voor hatchgrab.com en klik dan op Opnieuw beginnen."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsApp instellen is in deze omgeving niet beschikbaar.",
+    "sdkBlocked": "Het inlogscript van Meta kon niet laden. Meestal komt dat door een adblocker of trackingbescherming.",
+    "setupFailed": "Het instellen kon niet worden afgerond. Er is niets gewijzigd.",
+    "setupFinished": "Instellen voltooid.",
+    "metaError": "Meta meldde een probleem tijdens het instellen. Er is niets gewijzigd. Probeer het opnieuw en neem contact met ons op als het blijft gebeuren.",
+    "closed": "Het instellen werd gesloten voordat het klaar was. Er is niets gewijzigd — klik op Instellen om het opnieuw te proberen.",
+    "disconnectedUnreachable": "WhatsApp is ontkoppeld. We konden Meta niet bereiken om de toegang in te trekken. Verwijder HatchGrab in WhatsApp Business → Instellingen → Account → Business Platform.",
+    "disconnected": "WhatsApp is ontkoppeld. Automatische antwoorden zijn gestopt.",
+    "close": "Sluiten"
+  },
+  "card": {
+    "title": "Automatische antwoorden",
+    "description": "Beantwoord vragen van klanten automatisch op je social media, met je menu en planning.",
+    "channels": "Kanalen",
+    "requiresAccount": "Vereist een WhatsApp Business-account.",
+    "connected": "Gekoppeld",
+    "popupInstruction": "Er opent een Facebook-venster om je WhatsApp Business-account te koppelen. Verschijnt er niets? Sta dan pop-ups toe voor hatchgrab.com in je browser en klik opnieuw op Instellen.",
+    "switchedOff": "Automatische antwoorden via WhatsApp staan uit voor je foodtruck.",
+    "expiring": "Je WhatsApp-koppeling moet binnenkort worden vernieuwd. Klik op Opnieuw koppelen om automatische antwoorden actief te houden.",
+    "comingSoon": "Binnenkort",
+    "instagram": "Automatische antwoorden op directe berichten op Instagram. Hiervoor is een professioneel Instagram-account nodig.",
+    "messenger": "Automatische antwoorden op Facebook Messenger. Hiervoor is een Facebook-pagina nodig."
+  },
+  "blocked": {
+    "title": "Je antwoorden worden niet afgeleverd",
+    "body": "WhatsApp verstuurt je automatische antwoorden niet vanwege een betalingsprobleem op je WhatsApp Business-account. Klanten kunnen je nog steeds berichten sturen en je ziet nog steeds alles wat ze sturen — maar ze krijgen geen antwoord.",
+    "fix": "Je betaalt WhatsApp zelf voor deze berichten, dus dit los je op in WhatsApp Manager. <link>Controleer je betaalmethode</link>"
+  },
+  "limit": {
+    "heading": "Automatische antwoorden",
+    "label": "Maandlimiet",
+    "option": "{n, number}",
+    "usage": "{used, number} van {limit, number} gebruikt · reset op {date}",
+    "perCustomer": "Maximaal {n} antwoorden per klant per 24 uur, daarna één bericht dat je zelf antwoordt.",
+    "emailAt": "Bij je limiet worden antwoorden gepauzeerd. We mailen je bij 80% en 100%.",
+    "saved": "Maandlimiet voor antwoorden opgeslagen",
+    "saveFailed": "De limiet kon niet worden opgeslagen"
+  },
+  "billing": {
+    "heading": "Facturatie",
+    "paymentMethod": "Betaalmethode",
+    "added": "Betaalmethode toegevoegd",
+    "missing": "Geen betaalmethode toegevoegd",
+    "addInManager": "Toevoegen in WhatsApp Manager",
+    "summary": "Meta, niet HatchGrab, brengt antwoorden in rekening bij je WhatsApp-account. Vanaf {from} zijn de eerste {free, number} per maand gratis. Klopt per {checked}; bekijk <link>de prijzen van Meta</link> voor wijzigingen.",
+    "howMetaCharges": "Hoe Meta kosten rekent",
+    "chargesTitle": "Meta rekent de kosten voor WhatsApp-antwoorden, niet HatchGrab.",
+    "chargesBody": "Elk antwoord dat HatchGrab namens jou verstuurt, wordt door Meta in rekening gebracht bij je WhatsApp Business-account. Vanaf {from} geeft Meta {free, number} gratis antwoorden per maand per nummer; daarna wordt elk antwoord tegen het tarief van Meta berekend. Antwoorden die je zelf verstuurt vanuit de WhatsApp Business-app kosten niets. Meta bepaalt deze prijzen en kan ze wijzigen. <link>Bekijk de prijzen van Meta</link>",
+    "addPaymentInManager": "Voeg een betaalmethode toe in WhatsApp Manager",
+    "aboveMissing": "Je limiet ligt boven de {free, number} gratis antwoorden van Meta. Zonder betaalmethode stopt Meta alle antwoorden zodra die op zijn.",
+    "aboveGeneral": "Je limiet ligt boven de {free, number} gratis antwoorden van Meta. Voor antwoorden daarboven is een betaalmethode op je WhatsApp-account nodig; zonder betaalmethode stopt Meta alle antwoorden zodra de gratis antwoorden op zijn.",
+    "addPaymentMethod": "Betaalmethode toevoegen"
+  },
+  "disconnect": {
+    "link": "WhatsApp ontkoppelen",
+    "title": "WhatsApp ontkoppelen?",
+    "body": "Automatische antwoorden stoppen meteen en HatchGrab verliest de toegang tot je WhatsApp-account. Je nummer blijft gewoon werken in de WhatsApp Business-app. Wil je HatchGrab helemaal verwijderen, open dan ook WhatsApp Business → Instellingen → Account → Business Platform.",
+    "cancel": "Annuleren",
+    "confirm": "Ontkoppelen",
+    "working": "Ontkoppelen…",
+    "failed": "Ontkoppelen mislukt"
+  },
+  "signup": {
+    "logged": "Vastgelegd.",
+    "partial": "We hebben je WhatsApp Business-account gekoppeld, maar konden de verbinding niet voltooien. Aan jouw kant is niets mis — neem contact met ons op, dan maken wij het af.",
+    "noNumber": "Je WhatsApp Business-account is gekoppeld, maar er kwam geen telefoonnummer terug. Klik op Opnieuw koppelen en rond de stap voor het nummer af.",
+    "needsRegistering": "Je account is gekoppeld, maar dit nummer moet eerst door ons worden geregistreerd voordat antwoorden kunnen starten. Neem contact met ons op — je instellingen zijn opgeslagen, voer het instellen niet opnieuw uit.",
+    "registerRefused": "Je account is gekoppeld, maar Meta wilde het nummer niet registreren. Je instellingen zijn opgeslagen — neem contact met ons op in plaats van het instellen opnieuw uit te voeren.",
+    "deliveryRefused": "Je account is gekoppeld, maar Meta wilde de bezorging van berichten niet inschakelen. Je instellingen zijn opgeslagen — neem contact met ons op in plaats van het instellen opnieuw uit te voeren.",
+    "numberTaken": "Dat WhatsApp-nummer is al gekoppeld aan een ander HatchGrab-account. Een nummer kan maar voor één foodtruck antwoorden. Neem contact met ons op, dan zetten wij het over.",
+    "saveIncomplete": "Bijna klaar — we konden het opslaan niet afronden. Je instellingen zijn opgeslagen; neem contact met ons op in plaats van het instellen opnieuw uit te voeren.",
+    "connected": "WhatsApp is gekoppeld. Automatische antwoorden beantwoorden vanaf nu berichten aan dit nummer."
+  }
+}

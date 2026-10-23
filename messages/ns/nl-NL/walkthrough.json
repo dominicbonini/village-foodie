@@ -1,0 +1,31 @@
+{
+  "intro": "In Beheer stel je je foodtruck in en zie je hoe het loopt. In het Dashboard neem je bestellingen aan en volg je elk evenement terwijl het loopt.",
+  "ariaLabel": "Rondleiding door het dashboard",
+  "step": "{current} van {total}",
+  "skip": "Overslaan",
+  "back": "← Terug",
+  "next": "Volgende →",
+  "done": "Klaar",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "Je gerechten, prijzen en allergenen. Wat je hier wijzigt, staat meteen live."
+    },
+    "schedule": {
+      "title": "Planning",
+      "body": "Waar en wanneer je staat. Voeg hier een evenement toe en klanten kunnen ervoor bestellen."
+    },
+    "build": {
+      "title": "Deals en Extra’s & upselling",
+      "body": "Deals, upselling, aanpassingen en je keukencapaciteit vind je onder Menu — probeer gerust wat uit."
+    },
+    "settings": {
+      "title": "Instellingen",
+      "body": "De gegevens van je foodtruck en hoe klanten betalen."
+    },
+    "billing": {
+      "title": "Facturering",
+      "body": "Hier vind je je abonnement, facturering en informatie over functies."
+    }
+  }
+}

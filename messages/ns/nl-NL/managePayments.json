@@ -1,0 +1,94 @@
+{
+  "heading": "Betalingen",
+  "loading": "Je Stripe-account wordt gecontroleerd…",
+  "state": {
+    "not_connected": {
+      "title": "Niet ingesteld",
+      "body": "Duurt ongeveer 10 minuten. Je hebt je bankgegevens en een identiteitsbewijs nodig.",
+      "chip": "Niet ingesteld"
+    },
+    "requirements": {
+      "title": "Stripe heeft je gegevens nodig",
+      "body": "Kaartbetalingen werken pas als Stripe de gegevens van je bedrijf en je bank heeft.",
+      "chip": "Actie nodig"
+    },
+    "pending": {
+      "title": "Gekoppeld — Stripe controleert je gegevens",
+      "body": "Je hoeft niets te doen. Stripe bekijkt wat je hebt gestuurd, en deze pagina wordt bijgewerkt zodra dat klaar is.",
+      "chip": "In controle"
+    },
+    "ready": {
+      "title": "Gekoppeld",
+      "body": "Je Stripe-account is gekoppeld en kan betalingen ontvangen.",
+      "chip": "Klaar"
+    },
+    "restricted": {
+      "title": "Kaartbetalingen gepauzeerd",
+      "body": "Stripe heeft kaartbetalingen op je account gepauzeerd tot er iets is opgelost.",
+      "chip": "Gepauzeerd"
+    },
+    "unsupported": {
+      "title": "Kaartbetalingen zijn niet beschikbaar op dit account",
+      "body": "Stripe kan hier geen kaartbetalingen inschakelen. Neem contact met ons op, dan lossen we het samen met je op.",
+      "chip": "Niet beschikbaar"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe-sleutels komen niet overeen",
+    "body": "De server van deze site gebruikt de Stripe-sleutel voor <b>{server, select, live {live} other {test}}</b>, terwijl de browser is gebouwd met die voor <b>{browser, select, live {live} other {test}}</b>. Kaartbetalingen zouden mislukken op het moment dat een klant probeert te betalen, dus Stripe instellen is geblokkeerd tot ze overeenkomen.",
+    "fix": "Beide sleutels moeten voor dezelfde omgeving zijn ingesteld, en de site moet daarna opnieuw worden gebouwd — de publieke sleutel wordt bij het bouwen ingebakken, de geheime sleutel wordt bij elk verzoek gelezen."
+  },
+  "permission": {
+    "title": "Alleen de eigenaar van de foodtruck kan betalingen instellen",
+    "body": "Stripe wordt gekoppeld door degene op wiens bankrekening het geld binnenkomt, dus het moet worden ingesteld vanuit diens eigen ingelogde account. Er is niets mis met deze foodtruck of met HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Kaartbetalingen zijn nog niet geconfigureerd",
+    "fetchTitle": "We konden het Stripe-account van deze foodtruck niet controleren",
+    "keyMissing": "{name} is niet ingesteld — de ingebouwde onderdelen kunnen niet laden."
+  },
+  "errors": {
+    "requestFailed": "Verzoek mislukt ({status})",
+    "unreachable": "Kon Stripe niet bereiken"
+  },
+  "online": {
+    "heading": "Online betalingen",
+    "body": "Klanten betalen met hun kaart wanneer ze bestellen. Het geld gaat rechtstreeks naar je eigen Stripe-account — wij houden het nooit vast.",
+    "feeLine": "Stripe rekent {fee} per betaling voor standaard {region}. Andere kaarten kunnen meer kosten. De eigen kosten van HatchGrab voor online bestellingen hangen af van je abonnement — zie Facturatie.",
+    "testMode": "Testmodus. Er kunnen nog geen echte betalingen worden ontvangen."
+  },
+  "trialNote": "Dit instellen start je abonnement niet en kost je vandaag niets. Zo betalen je klanten jou — je abonnement staat daar los van.",
+  "admin": {
+    "title": "Je bekijkt dit als platformbeheerder",
+    "body": "Deze foodtruck heeft online betalingen niet ingesteld. Alleen de eigenaar kan dat starten, vanuit diens eigen ingelogde account — hier valt niets aan te klikken."
+  },
+  "setUp": {
+    "button": "Online betalingen instellen",
+    "busy": "Bezig met instellen…"
+  },
+  "toast": {
+    "alreadySetUp": "Al ingesteld — we gaan verder",
+    "addDetails": "Vul nu je gegevens in voor Stripe",
+    "createFailed": "Kon het account niet aanmaken"
+  },
+  "onboarding": {
+    "restricted": "Stripe neemt het vanaf hier over — je logt in bij Stripe en werkt de gegevens bij die nodig zijn.",
+    "firstRun": "Stripe neemt het vanaf hier over — je logt in bij Stripe en geeft daarna de gegevens van je bedrijf en je bank op."
+  },
+  "details": {
+    "title": "Je Stripe-gegevens",
+    "body": "Wijzig de bankrekening waarop je wordt uitbetaald, of werk je bedrijfsgegevens en documenten bij.",
+    "button": "Bekijken of wijzigen"
+  },
+  "walkUp": {
+    "heading": "Betalingen aan de truck",
+    "body": "Hoe je aan het loket afrekent. HatchGrab rekent geen platformkosten voor bestellingen aan de truck, wat je ook kiest.",
+    "ownTerminal": "Je eigen pinapparaat",
+    "current": "Huidig",
+    "ownTerminalHelp": "Zettle, Square of wat je al gebruikt. Niets in te stellen — alleen de kosten van je eigen aanbieder gelden.",
+    "hatchgrab": "Via HatchGrab",
+    "comingSoon": "Binnenkort",
+    "hatchgrabHelp": "Gebruikt dezelfde Stripe-koppeling als je online betalingen — een pinapparaat, of contactloos rechtstreeks op je telefoon of tablet.",
+    "hatchgrabFees": "{fee} per betaling voor {region}, plus {surcharge} voor contactloos betalen op een telefoon of tablet. Andere kaarten kunnen meer kosten."
+  }
+}

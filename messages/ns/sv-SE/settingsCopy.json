@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Låt kunderna avboka beställningar",
+    "sentence": "Kunderna kan avboka upp till <select></select> före sin upphämtningstid"
+  },
+  "autoAccept": {
+    "label": "Godkänn beställningar automatiskt",
+    "help": "Beställningar bekräftas automatiskt. Om den önskade tidsluckan är full flyttas beställningen till nästa lediga tidslucka. Bekräftar bara när det finns kapacitet. Beställningar med kommentarer från kunden (t.ex. en allergi) behöver fortfarande bekräftas."
+  },
+  "orderReady": {
+    "label": "Klarmarkering",
+    "help": "Visa knappen ”Markera som klar” på beställningsskärmen. Köksskärmar ställs in separat, på varje enhet. Kunderna får ett mejl när en beställning markeras som klar. Gäller alla evenemang – du kan ändå slå på eller av det för ett enskilt evenemang i dess översikt."
+  },
+  "buzzers": {
+    "label": "Delar du ut summrar vid upphämtning?",
+    "help": "Notera vilken summer du gav varje kund, så att du vet vem du ska leta efter när maten är klar.",
+    "countLabel": "Hur många summrar har du?"
+  }
+}

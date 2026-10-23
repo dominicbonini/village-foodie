@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Debes mantener el panel o la pantalla de cocina encendidos y conectados durante el servicio.",
+  "explainerBody": "Si la pantalla se apaga, el dispositivo pierde internet o cambias a otra web, la protección sin conexión toma el control: pausa los pedidos o desactiva la aceptación automática, según lo que hayas elegido.",
+  "reminder": "⚠️ Mantén el panel o la pantalla de cocina encendidos y conectados durante el servicio, o la protección sin conexión podría tomar el control.",
+  "enableConfirm": "Protección sin conexión activada.\n\nPara que los pedidos sigan llegando, la pantalla debe permanecer encendida. Si este dispositivo pierde la conexión, la protección sin conexión toma el control en el modo que hayas elegido.\n\nAsegúrate de que Pantalla encendida está activado en este dispositivo.",
+  "disableConfirm": "¿Desactivar la protección sin conexión para este evento?\n\nSi este dispositivo pierde la conexión, los pedidos online seguirán llegando: los clientes podrían hacer pedidos que no ves. Desactívala solo si tienes una conexión fiable.",
+  "cardDescription": "Decide qué pasa con los pedidos entrantes cuando tu dispositivo se queda sin conexión.",
+  "purpose": "Si tu dispositivo pierde la conexión, esto evita que lleguen pedidos mientras no puedes verlos.",
+  "switchLabel": "Protección de pedidos sin conexión",
+  "switchHelp": "Qué pasa cuando este food truck pierde la conexión.",
+  "modes": {
+    "pause": {
+      "label": "Pausar los pedidos online",
+      "help": "Los clientes no pueden pedir hasta que vuelvas a estar conectado."
+    },
+    "no_auto_accept": {
+      "label": "Seguir recibiendo pedidos y confirmarlos yo",
+      "help": "La aceptación automática se desactiva, así que los clientes pueden seguir pidiendo, pero nada se confirma automáticamente. Confirmarás cada pedido cuando vuelvas a estar conectado, y los que sigan en espera se rechazarán automáticamente pasado el tiempo que hayas elegido, avisando al cliente por email."
+    }
+  },
+  "autoRejectLabel": "Rechazar pedidos que esperen más de",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

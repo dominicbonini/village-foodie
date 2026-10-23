@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Kostnadsjämförelse",
+  "title": "Jämför dina kostnader<br></br><accent>för onlinebeställningar</accent>",
+  "system": {
+    "title": "Tar du emot onlinebeställningar i dag?",
+    "yes": "Ja, med ett annat system",
+    "no": "Nej, inte än"
+  },
+  "trucks": {
+    "title": "Hur många foodtruckar har du?",
+    "aria": "Antal foodtruckar"
+  },
+  "plan": {
+    "yourChoice": "Ditt val",
+    "weSuggest": "Vårt förslag",
+    "summary": "{price} per foodtruck och månad, och onlinebeställningar för {allowance} ingår{fleet, plural, one {} other { för varje}}.",
+    "switchTo": "Välj {plan} i stället",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck och månad, plus {pct} på onlinebeställningar som betalas med kort.} other {Ingen månadsavgift – bara {pct} på onlinebeställningar som betalas med kort.}}",
+    "summaryNoFee": "{price} per foodtruck och månad, med obegränsat antal onlinebeställningar och ingen avgift till HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Onlinebeställningar per månad och foodtruck",
+    "count": "~{count, plural, one {# beställning} other {# beställningar}}",
+    "captionNo": "En grov uppskattning räcker – förbeställningar och kunder som slipper kön, inte kontant- eller kortbetalningar i luckan.",
+    "captionYes": "Bara beställningar som görs via din beställningssida – inte kontant- eller kortbetalningar i luckan.",
+    "sliderAria": "Värde på onlinebeställningar per månad och foodtruck",
+    "overAllowance": "Onlinebeställningar för {allowance} ingår per foodtruck. De {excess} över det debiteras med {pct} – <b>{over}</b> i månaden per foodtruck.",
+    "insideAllowance": "Inom de {allowance} i onlinebeställningar som ingår – inget utöver abonnemanget.",
+    "acrossFleet": "För {fleet, plural, one {# foodtruck} other {# foodtruckar}}: <b>{amount}</b> i månaden.",
+    "titleNo": "Hur mycket tror du att du skulle sälja för online per månad och foodtruck?",
+    "feeOnly": "{pct} på varje onlinebeställning som betalas med kort – <b>{over}</b> i månaden per foodtruck.",
+    "noFee": "Obegränsat antal onlinebeställningar ingår – inget utöver abonnemanget."
+  },
+  "fee": {
+    "title": "Vad betalar du per beställning i dag?",
+    "pctLabel": "Procent",
+    "pctPlaceholder": "Din procentsats",
+    "pctAria": "Procentuell avgift",
+    "fixedLabel": "Plus per beställning",
+    "fixedPlaceholder": "Din avgift",
+    "fixedAria": "Öre per beställning",
+    "modeLabel": "Deras avgift:",
+    "modeInclusive": "inkluderar kortavgiften",
+    "modeOnTop": "kortavgiften tillkommer",
+    "onTopNote": "Kortavgiften på {fee} tillkommer, så du betalar egentligen <b>{pct} + {fixed}</b> totalt.",
+    "inclusiveNote": "Kortavgiften på {fee} ingår i det, och den betalar du oavsett leverantör. Deras egen avgift är <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Hur många dagar i veckan säljer du?",
+    "help": "Evenemang, marknader, ställplatser – alla dagar foodtrucken är ute."
+  },
+  "jump": {
+    "cost": "Se vad det kostar ↓",
+    "saving": "Se hur mycket du sparar ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Onlinebeställning, förbeställningar och köksskärm för</lead><figure>{amount}</figure><unit>per försäljningsdag</unit>",
+    "basedOn": "Baserat på {days, plural, one {# dag} other {# dagar}} i veckan · {monthly} i månaden{fleet, plural, one {} other { per foodtruck}}"
+  },
+  "coffee": "Mindre än en kopp kaffe.",
+  "freeMonths": "{n, plural, one {Och första månaden bjuder vi på.} other {Och de första # månaderna bjuder vi på.}}",
+  "cta": {
+    "upload": "Ladda upp min meny →",
+    "uploadSave": "Ladda upp min meny och spara {amount} →",
+    "ask": "Ställ en fråga",
+    "noCard": "Inget kort behövs för att komma igång"
+  },
+  "breakdown": {
+    "title": "Din månad i detalj",
+    "titleDearer": "Din månad med HatchGrab",
+    "plan": "Abonnemanget {plan}",
+    "over": "{pct} på de {excess} över de {allowance} som ingår",
+    "inside": "Onlinebeställningar inom de {allowance} som ingår",
+    "total": "HatchGrab per månad",
+    "freeMonths": "{n, plural, one {Månad 1} other {Månad 1–#}}",
+    "freeAmount": "{amount} – vi bjuder",
+    "acrossFleet": "För {fleet, plural, one {# foodtruck} other {# foodtruckar}}",
+    "perMonth": "{amount} i månaden",
+    "card": "Kortavgift – Stripes avgift på {fee} per beställning, som betalas till Stripe. Ungefär lika mycket skulle du betala med en kortläsare i luckan.",
+    "provider": "Din nuvarande leverantörs egen avgift ({pct})",
+    "feeOnly": "{pct} på {excess} i onlinebeställningar",
+    "noFee": "Onlinebeställningar – obegränsat, ingen avgift till HatchGrab"
+  },
+  "enterRate": "Ange vad du betalar i dag för att se hur mycket du sparar.",
+  "panel": {
+    "nowYear": "<label>Just nu betalar du</label><fig>{amount}<q> per år</q></fig>",
+    "nowMonth": "<label>Just nu betalar du</label><fig>{amount}<q> i månaden</q></fig>",
+    "oursYear": "<label>Med HatchGrab</label><fig>{amount}<q> första året</q></fig>",
+    "oursMonth": "<label>Med HatchGrab</label><fig>{amount}<q> i månaden</q></fig>",
+    "acrossFleet": "för {fleet, plural, one {# foodtruck} other {# foodtruckar}}"
+  },
+  "hero": {
+    "save": "<verb>Du sparar</verb><figure>{amount}</figure><sub><num>{pct}</num> mindre första året</sub>",
+    "same": "<verb>Ungefär samma</verb><figure>{amount}</figure><sub><num>{pct}</num> mer första året</sub>",
+    "dearer": "<lead>Allt som HatchGrab gör, för</lead><figure>{amount}</figure><unit>mer i veckan</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} mer i månaden än nu} other {{amount} mer per foodtruck och månad än nu}}"
+  },
+  "anchor": {
+    "liability": "Det motsvarar ett års ansvarsförsäkring.",
+    "weekendPitch": "Det motsvarar en helgplats på en matfestival.",
+    "festivalPitches": "Det motsvarar ett par festivalplatser.",
+    "fryer": "Det motsvarar en ny fritös och stekhäll.",
+    "counter": "Det motsvarar en helrenovering av din serveringsdisk.",
+    "vanDeposit": "Det motsvarar en handpenning på en andra foodtruck.",
+    "secondVan": "Det motsvarar en andra foodtruck på vägarna."
+  },
+  "year": {
+    "one": "År ett",
+    "two": "År två",
+    "save": "Spara {amount}<note>({pct} mindre)</note>",
+    "extra": "{amount} extra<note>({pct} mer)</note>",
+    "current": "Nuvarande leverantör <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Uppskattningar baserade på siffrorna du anger, med ett genomsnittligt ordervärde på {aov}. Kortavgifter tillkommer oavsett vilken leverantör du använder. Kontrollera innan du bestämmer dig.",
+    "yes": "Uppskattningar baserade på siffrorna du anger, med ett genomsnittligt ordervärde på {aov}. Kortavgiften på {fee} per beställning tillkommer oavsett vilken leverantör du använder, så den räknas inte med på någon av sidorna.",
+    "onTop": "Totalsumman i fråga {n} inkluderar den – jämförelsen gör det inte, på någon av sidorna.",
+    "check": "Kontrollera din nuvarande leverantörs avgifter innan du bestämmer dig."
+  },
+  "intro": "Tar ungefär en minut. Använder du redan ett system? Då jämför vi det. Inte än? Då visar vi exakt vad det kostar.",
+  "twoYear": "På två år sparar du <b>{amount}</b>.",
+  "meta": {
+    "title": "Kostnadskalkylator – HatchGrab {country}",
+    "description": "Jämför vad dina onlinebeställningar kostar i dag med ett år på HatchGrab – en uppskattning på en minut."
+  }
+}

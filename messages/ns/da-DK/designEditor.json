@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Ugeoverskrift",
+    "weekHeadingSample": "Ugen fra …",
+    "daysSample": "{first} til {last}",
+    "date": "Dato",
+    "place": "Sted",
+    "venue": "Stednavn",
+    "area": "Område",
+    "time": "Tid",
+    "rows": "Rækker",
+    "rowsSample": "{px} px imellem · {first} til {last}",
+    "ownText": "Din egen tekst",
+    "noteTokenSample": "Den note, du skriver, når du laver opslaget",
+    "nothingYet": "Intet endnu",
+    "thisBox": "denne boks"
+  },
+  "sample": {
+    "venue": "Kroen ved Torvet",
+    "area": "Aarhus"
+  },
+  "bar": {
+    "previewWith": "Vis eksempel med",
+    "undo": "Fortryd",
+    "undoTitle": "Fortryd (⌘Z)",
+    "redo": "Gentag",
+    "redoTitle": "Gentag (⇧⌘Z)",
+    "cancel": "Annullér",
+    "saving": "Gemmer…",
+    "save": "Gem design"
+  },
+  "grid": {
+    "eachRow": "Hver række",
+    "placeOff": "Stedets navn står på dit billede — HatchGrab tilføjer det ikke."
+  },
+  "background": {
+    "uploading": "Uploader…",
+    "replace": "Erstat billede",
+    "shape": {
+      "square": "Kvadratisk (1:1)",
+      "portrait45": "Højformat (4:5)",
+      "portrait916": "Højformat (9:16)",
+      "landscape169": "Bredformat (16:9)",
+      "portrait": "Højformat",
+      "landscape": "Bredformat"
+    }
+  },
+  "scope": {
+    "title": "Tekstplaceringer",
+    "standard": "Samme placeringer som Standard",
+    "own": "Egne placeringer for {place}",
+    "locked": "Disse placeringer kommer fra dit standarddesign. Vælg »Egne placeringer for {place}« for kun at flytte dem her."
+  },
+  "stage": {
+    "hint": "Træk i en boks for at flytte den · træk i et hjørne for at ændre størrelsen",
+    "zoomOut": "Zoom ud",
+    "zoomIn": "Zoom ind"
+  },
+  "rows": {
+    "spacing": "Afstand",
+    "daysRun": "Dagene går fra {first} til {last}. De tre bokse i række 1 kopieres nedad med denne afstand.",
+    "whichEvents": "Hvilke arrangementer",
+    "showCancelled": "Vis aflyste arrangementer",
+    "showCancelledHint": "Et aflyst arrangement vises med stedet overstreget og ordet AFLYST. Er det slået fra, vises dagen som en fridag."
+  },
+  "days": {
+    "reorder": "Skift rækkefølge",
+    "move": "flyt"
+  },
+  "picture": {
+    "picture": "Billede",
+    "fill": "Fyld boksen",
+    "fit": "Tilpas inden for boksen",
+    "corners": "Hjørner",
+    "square": "Skarpe",
+    "rounded": "Afrundede",
+    "ifMissing": "Hvis et sted ikke har et billede",
+    "noPicture": {
+      "omit": "Udelad det",
+      "blank": "Efterlad et tomt felt",
+      "logo": "Vis dit logo"
+    },
+    "border": "Kant",
+    "drawBorder": "Tegn en kant",
+    "drawBorderHint": "En streg rundt om billedet i din egen farve.",
+    "borderWidth": "Kantens bredde",
+    "cornerRadius": "Hjørneradius",
+    "locationPictures": "Billeder af steder",
+    "addLocationPictures": "+ Tilføj billeder af steder",
+    "allHaveImage": "{total, plural, =0 {Du har ingen steder endnu.} one {Dit sted har et billede.} other {Alle dine # steder har et billede.}}",
+    "someWithout": "{without} af dine {total, plural, one {# sted} other {# steder}} {without, plural, one {har} other {har}} endnu intet billede"
+  },
+  "settings": {
+    "font": "Skrifttype",
+    "colour": "Farve",
+    "textColour": "Tekstfarve",
+    "ownStyleNote": "{count, plural, one {{names} har sin egen stil og bliver derfor ikke ændret.} other {{names} har deres egen stil og bliver derfor ikke ændret.}}",
+    "matchAgain": "Match igen",
+    "matchName": "Match {name}",
+    "lastToggle": "{kind, select, weekly {Hold enten Sted eller Tid slået til. Et aflyst arrangement vises med stedet overstreget og ordet AFLYST, så med begge slået fra ville intet vise, at det er aflyst.} other {Hold enten Stednavn eller Tid slået til. Et aflyst arrangement vises med stedet overstreget og ordet AFLYST, så med begge slået fra ville intet vise, at det er aflyst.}}"
+  },
+  "letters": {
+    "boldGlyph": "F",
+    "italicGlyph": "K",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — denne skrifttype har en ægte kursiv"
+  },
+  "align": {
+    "left": "Venstre",
+    "centre": "Midte",
+    "right": "Højre"
+  },
+  "effects": {
+    "outlineColour": "Konturfarve",
+    "bandColour": "Båndfarve",
+    "bandDaysOff": "Bånd på fridage",
+    "bandCancelled": "Bånd, når arrangementet er aflyst",
+    "bandDaysOffHint": "Bruges i stedet for båndet ovenfor på en dag uden salg.",
+    "bandCancelledHint": "Bruges i stedet for båndet ovenfor, når arrangementet er aflyst."
+  },
+  "more": {
+    "dayOwnLine": "Dag på sin egen linje",
+    "dayOwnLineHint": "Ugedagen over datoen. Kun dato.",
+    "noEventDay": "På en dag uden arrangement",
+    "wordsBeforePlaceholder": "fx Find os",
+    "neverHyphenate": "Et langt ord uden mellemrum gøres altid mindre — vi orddeler aldrig et stednavn."
+  },
+  "bits": {
+    "less": "Mindre",
+    "more": "Mere",
+    "chooseColourFor": "{label} — vælg en vilkårlig farve",
+    "chooseColour": "Vælg en vilkårlig farve"
+  }
+}

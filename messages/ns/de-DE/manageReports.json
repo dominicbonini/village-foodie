@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Zeitraum",
+    "event": "📍 Event",
+    "filterBy": "Filtern nach",
+    "show": "Anzeigen",
+    "range": "<from></from><sep>bis</sep><until></until>",
+    "selectEvent": "Event auswählen…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Event",
+    "viewReport": "Bericht anzeigen",
+    "loading": "Wird geladen…",
+    "orders": "📋 Bestellungen",
+    "items": "📦 Artikel",
+    "exportCsv": "⬇ CSV exportieren"
+  },
+  "empty": {
+    "noOrders": "Für diesen Zeitraum wurden keine Bestellungen gefunden.",
+    "selectEvent": "Wählen Sie oben ein Event aus, um seinen Bericht zu sehen."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} Bestellung} other {{count} Bestellungen}} · {total}"
+  },
+  "revenue": {
+    "title": "Umsatzaufschlüsselung",
+    "deals": "Umsatz aus Menüs",
+    "modifiers": "Aufpreise für Optionen",
+    "foodSales": "Speisenverkauf",
+    "total": "Gesamt",
+    "other": "Sonstiges",
+    "tax": "Steuer",
+    "tips": "Trinkgeld",
+    "serviceFees": "Servicegebühren",
+    "cardFees": "Kartengebühren"
+  },
+  "itemsSold": {
+    "title": "Verkaufte Artikel"
+  },
+  "dealsCard": {
+    "title": "Menüs"
+  },
+  "custom": {
+    "title": "Anpassungen",
+    "paidModifiers": "Kostenpflichtige Optionen",
+    "customerNotes": "Kundenhinweise",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Artikel",
+    "modifier": "Option",
+    "qty": "Menge",
+    "total": "Gesamt",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Bestellübersicht",
+    "items": "Artikelübersicht"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Vor Ort"
+  },
+  "csv": {
+    "orderId": "Bestell-ID",
+    "date": "Datum",
+    "event": "Event",
+    "timePlaced": "Bestellzeit",
+    "collectionTime": "Abholzeit",
+    "customerName": "Kundenname",
+    "orderType": "Bestellart",
+    "items": "Artikel",
+    "deals": "Menüs",
+    "modifiers": "Optionen",
+    "notes": "Hinweise",
+    "subtotal": "Zwischensumme",
+    "tip": "Trinkgeld",
+    "serviceFee": "Servicegebühr",
+    "total": "Gesamt",
+    "itemName": "Artikelname",
+    "qty": "Menge",
+    "unitPrice": "Stückpreis",
+    "itemTotal": "Artikelsumme",
+    "orderTotal": "Bestellsumme",
+    "unknownEvent": "Unbekanntes Event",
+    "asap": "Schnellstmöglich",
+    "unknownCustomer": "Unbekannt",
+    "customerOnline": "Kunde online",
+    "placedByTruck": "Vom Foodtruck aufgegeben"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Horas de recogida",
+    "takes_cash": "¿Aceptas efectivo?",
+    "offline_protection": "Protección de pedidos sin conexión",
+    "buzzer_prompt": "Recordarme dar un avisador"
+  },
+  "typeFollowsVanTitle": "Sigue el ajuste habitual de cada food truck",
+  "sameSettingsAllVansLabel": "Mismos ajustes para todos los food trucks",
+  "sameSettingsAllVansHeader": "Todos los food trucks",
+  "sameSettingsConfirm": "¿Copiar los ajustes del Food truck 1 a todos los food trucks? Se copian todos los ajustes del Food truck 1, igual que con “Igual que Food truck 1” en Ajustes. La capacidad de cocina tiene su propio interruptor.",
+  "eventTypesFooterStandard": "Estándar es tu configuración habitual. Si lo cambias aquí, también cambia en Ajustes.",
+  "eventTypesFooterOneEvent": "Para cambiar un ajuste solo para un evento, usa el panel de ese evento.",
+  "eventTypesSubtitle": "Los cambios se guardan sobre la marcha.",
+  "matchStandardLabel": "Igual que Estándar",
+  "matchStandardConfirm": "¿Volver a poner todos los ajustes de este tipo como en Estándar? Se borrará todo lo que hayas cambiado aquí.",
+  "priceLabels": {
+    "price_change_on": "Cambiar precios",
+    "price_mode": "Cambio de precio",
+    "price_amount": "Importe",
+    "price_rounding": "Redondeo",
+    "item_prices": "Precios de los productos"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Fijar cada precio yo"
+  },
+  "priceRounding": {
+    "none": "Ninguno",
+    "nearest_1": "Al {symbol}1 más cercano",
+    "up_1": "Redondear siempre al alza"
+  },
+  "pricesStandardCell": "Los precios de tu carta",
+  "pricesTruckWideTitle": "Tus precios son los mismos para todos los food trucks",
+  "pricesMenuCell": "Carta",
+  "pricesTypeOffCell": "Precios de la carta",
+  "itemPricesShow": "Mostrar precios",
+  "itemPricesHide": "Ocultar precios",
+  "priceItemsHeading": "Fija el precio de cada producto",
+  "priceItemsOpen": "Ver o cambiar el precio de cada producto ›",
+  "priceItemsClose": "Ocultar precios de los productos ⌃",
+  "ownPriceCount": "{n, plural, one {{count} producto tiene precio propio} other {{count} productos tienen precio propio}}",
+  "priceTypeHint": "Pulsa un precio para escribir el tuyo.",
+  "pricesLiveNotice": "Este evento está en marcha. Los pedidos nuevos usan los precios nuevos. Los pedidos ya hechos mantienen los suyos.",
+  "placeTypeHelper": "Añadir evento elige este tipo siempre que elijas este lugar.",
+  "postPictureStandardNote": "Aquí, las publicaciones de eventos usan tu diseño estándar.",
+  "eventItemsCardDescription": "Precios, límites de productos y disponibilidad solo para este evento. Los cambios se aplican al momento.",
+  "eventPriceColumnLabel": "Precio",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · este evento} other {carta {price} · este evento}}",
+  "eventPriceEdit": "✎ Editar precios",
+  "eventPriceCancel": "Cancelar",
+  "eventPriceSave": "Guardar precios",
+  "eventPriceEditNote": "Estás editando los precios solo para este evento. Los límites de productos y la disponibilidad quedan bloqueados hasta que guardes.",
+  "eventPriceLiveNote": "En marcha: los pedidos nuevos usan los precios nuevos.",
+  "offlineWhenOfflineLabel": "Sin conexión"
+}

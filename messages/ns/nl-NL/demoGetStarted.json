@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Mijn menukaart opslaan →",
+    "heading": "Stel je foodtruck in",
+    "sub": "Je menukaart gaat direct mee.",
+    "privacy": "We gebruiken dit alleen om je foodtruck in te stellen en je demolink te sturen — zie ons <link>privacybeleid</link>."
+  },
+  "sample": {
+    "bannerButton": "Mijn foodtruck instellen →",
+    "heading": "Stel je foodtruck in",
+    "sub": "Hierna upload je je eigen menukaart — dat kost een minuutje.",
+    "privacy": "We gebruiken dit alleen om je foodtruck in te stellen en je demolink te sturen — zie ons <link>privacybeleid</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Mijn menukaart opslaan →",
+    "heading": "Sla je demo op",
+    "sub": "We bewaren hem 14 dagen en mailen je meteen een link terug.",
+    "privacy": "We gebruiken dit alleen om je demolink te sturen — zie ons <link>privacybeleid</link>."
+  },
+  "confirmationHeading": "Alles staat klaar",
+  "postSaveButton": "Mijn foodtruck instellen →",
+  "enterSetupButton": "Mijn foodtruck instellen →",
+  "emailOnlyLink": "Mail me alleen een link om terug te komen naar deze demo",
+  "sendLinkButton": "Stuur me de link",
+  "savingButton": "Opslaan…",
+  "continueButton": "Doorgaan →",
+  "createAccountButton": "Mijn account aanmaken →",
+  "retryButton": "Opnieuw proberen",
+  "backToDemoButton": "Terug naar de demo",
+  "savedStatus": "{hasDate, select, yes {✓ Opgeslagen — bewaard tot {date}} other {✓ Opgeslagen}}",
+  "back": "Terug",
+  "close": "Sluiten",
+  "truckStepHeading": "Over je foodtruck",
+  "detailsStepHeading": "Rond het instellen af",
+  "stepper": {
+    "details": "Je gegevens",
+    "menu": "Menu",
+    "allergens": "Allergenen",
+    "kitchen": "Keuken",
+    "schedule": "Planning"
+  },
+  "confirmEmailed": "We hebben je een link gemaild die je direct terugbrengt naar deze demo — geen login nodig.",
+  "confirmKeepUntil": "We bewaren hem tot <b>{date}</b>. Je menukaart gaat mee als je alles echt instelt.",
+  "loading": "Laden…",
+  "firstName": "Voornaam",
+  "lastName": "Achternaam",
+  "truckName": "Naam van de foodtruck",
+  "truckNamePlaceholder": "bijv. De Dorpskeuken",
+  "cuisine": "Keuken",
+  "logoLabel": "Logo <opt>(optioneel)</opt>",
+  "logoPreviewAlt": "Voorbeeld van logo",
+  "changeLogo": "Logo wijzigen",
+  "removeLogo": "Verwijderen",
+  "uploadLogo": "📷 Logo uploaden",
+  "readyTitle": "Je account is klaar",
+  "readyBody": "Laten we nu je foodtruck verder instellen — je menukaart, allergenen en keuken.",
+  "hangTight": "Even geduld — we zetten alles klaar.",
+  "stage": {
+    "account": "Je account aanmaken",
+    "truck": "Je foodtruck instellen",
+    "menu": "Je menukaart laden"
+  },
+  "stageState": {
+    "done": "klaar",
+    "recognised": "je hebt al een account",
+    "failed": "mislukt",
+    "active": "bezig",
+    "pending": "in de wacht"
+  },
+  "signIn": "Inloggen",
+  "phone": "Telefoon",
+  "onWhatsapp": "Dit nummer zit op WhatsApp",
+  "email": "E-mail",
+  "emailPlaceholder": "naam@jouwfoodtruck.nl",
+  "settingUpAs": "Je stelt in als <b>{email}</b> <change>wijzigen</change>",
+  "password": "Wachtwoord",
+  "passwordPlaceholder": "Minstens 8 tekens",
+  "hidePassword": "Wachtwoord verbergen",
+  "showPassword": "Wachtwoord tonen",
+  "promoLabel": "Heb je een code? <opt>(optioneel)</opt>",
+  "promoPlaceholder": "Vul hem hier in",
+  "agreeTerms": "Ik ga akkoord met de <terms>Voorwaarden</terms> en het <privacy>Privacybeleid</privacy>.",
+  "freeMonth": "Met instellen start je gratis maand nog niet. Die begint pas als je je eerste live evenement kiest — wanneer jij er klaar voor bent.",
+  "fieldError": {
+    "firstName": "Vul je voornaam in.",
+    "lastName": "En je achternaam.",
+    "truck": "Geef je foodtruck een naam.",
+    "cuisine": "Vertel ons wat je kookt.",
+    "phoneMissing": "Voeg een telefoonnummer toe — klanten en wij gebruiken het allebei om je te bereiken.",
+    "email": "Voer een geldig e-mailadres in.",
+    "password": "Het wachtwoord moet minstens 8 tekens lang zijn.",
+    "terms": "Ga akkoord met de voorwaarden om verder te gaan."
+  },
+  "error": {
+    "saveFailed": "Opslaan mislukt — probeer het opnieuw.",
+    "savedNoEmail": "Opgeslagen — maar we konden de link nu niet mailen.",
+    "unreachable": "We konden je even niet bereiken — probeer het opnieuw.",
+    "createAccountFailed": "Je account kon niet worden aangemaakt.",
+    "truckCreateFailed": "Je account is klaar, maar we konden je foodtruck niet aanmaken. Probeer het opnieuw.",
+    "truckUnreachable": "Je account is klaar, maar we konden je foodtruck nu niet aanmaken. Probeer het opnieuw.",
+    "truckNoToken": "Je foodtruck is ingesteld, maar we konden hem nu niet openen. Probeer het opnieuw."
+  }
+}

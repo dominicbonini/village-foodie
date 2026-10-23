@@ -1,0 +1,25 @@
+{
+  "heading": "Semana del {start} al {end}",
+  "daysOff": "Hoy no abrimos",
+  "cancelled": "CANCELADO",
+  "placeSample": {
+    "nameTownBelow": "Bar La Plaza\nAlcalá de Henares",
+    "nameTown": "Bar La Plaza, Alcalá de Henares",
+    "nameOnly": "Bar La Plaza"
+  },
+  "busyWeek": {
+    "venue1": "Centro Cultural de Alcalá",
+    "town1": "Alcalá de Henares",
+    "venue2": "Polideportivo Municipal y Campo de Fútbol de Azuqueca de Henares",
+    "town2": "Azuqueca de Henares",
+    "venue3": "Plaza Mayor",
+    "town3": "Toledo",
+    "venue4": "Festival Gastronómico",
+    "town4": "Guadalajara",
+    "venue5": "Mesón El Arco",
+    "town5": "Segovia",
+    "venue6": "Plaza de la Iglesia",
+    "town6": "Ávila"
+  },
+  "poweredBy": "Con la tecnología de HatchGrab"
+}

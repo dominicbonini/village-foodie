@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pizzas",
+    "burgers": "Hamburguesas",
+    "mains": "Principales",
+    "sides": "Acompañamientos",
+    "drinks": "Bebidas"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck de pizzas",
+      "items": {
+        "margherita": "Margarita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja y miel",
+        "fourCheese": "Cuatro quesos",
+        "gardenVeg": "Vegetal",
+        "garlicBread": "Pan de ajo",
+        "rocketParmesan": "Rúcula y parmesano",
+        "olives": "Aceitunas",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck de hamburguesas",
+      "items": {
+        "classicCheeseburger": "Cheeseburger clásica",
+        "doubleBacon": "Doble bacon",
+        "buttermilkChicken": "Pollo marinado en suero de leche",
+        "halloumiStack": "Hamburguesa de halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Patatas fritas con piel",
+        "loadedCheeseFries": "Patatas con queso",
+        "onionRings": "Aros de cebolla",
+        "craftLemonade": "Limonada artesanal",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck de curris",
+      "items": {
+        "chickenTikkaMasala": "Pollo tikka masala",
+        "lambRoganJosh": "Cordero rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Arroz pilaf",
+        "garlicNaan": "Naan de ajo",
+        "onionBhaji": "Onion bhaji",
+        "mangoLassi": "Lassi de mango",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

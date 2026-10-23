@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Periode",
+    "event": "📍 Arrangement",
+    "filterBy": "Filtrér efter",
+    "show": "Vis",
+    "range": "<from></from><sep>til</sep><until></until>",
+    "selectEvent": "Vælg et arrangement…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Arrangement",
+    "viewReport": "Vis rapport",
+    "loading": "Indlæser…",
+    "orders": "📋 Bestillinger",
+    "items": "📦 Varer",
+    "exportCsv": "⬇ Eksportér CSV"
+  },
+  "empty": {
+    "noOrders": "Ingen bestillinger i denne periode.",
+    "selectEvent": "Vælg et arrangement ovenfor for at se rapporten."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} bestilling} other {{count} bestillinger}} · {total}"
+  },
+  "revenue": {
+    "title": "Fordeling af omsætning",
+    "deals": "Omsætning fra menuer",
+    "modifiers": "Tillæg for tilvalg",
+    "foodSales": "Salg af mad",
+    "total": "I alt",
+    "other": "Andet",
+    "tax": "Moms",
+    "tips": "Drikkepenge",
+    "serviceFees": "Servicegebyrer",
+    "cardFees": "Kortgebyrer"
+  },
+  "itemsSold": {
+    "title": "Solgte varer"
+  },
+  "dealsCard": {
+    "title": "Menuer"
+  },
+  "custom": {
+    "title": "Tilpasninger",
+    "paidModifiers": "Betalte tilvalg",
+    "customerNotes": "Bemærkninger fra kunder",
+    "note": "»{note}«"
+  },
+  "table": {
+    "item": "Vare",
+    "modifier": "Tilvalg",
+    "qty": "Antal",
+    "total": "I alt",
+    "date": "Dato",
+    "time": "Tidspunkt",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Fordeling af bestillinger",
+    "items": "Fordeling af varer"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "I lugen"
+  },
+  "csv": {
+    "orderId": "Ordre-id",
+    "date": "Dato",
+    "event": "Arrangement",
+    "timePlaced": "Bestilt kl.",
+    "collectionTime": "Afhentningstid",
+    "customerName": "Kundenavn",
+    "orderType": "Ordretype",
+    "items": "Varer",
+    "deals": "Menuer",
+    "modifiers": "Tilvalg",
+    "notes": "Bemærkninger",
+    "subtotal": "Subtotal",
+    "tip": "Drikkepenge",
+    "serviceFee": "Servicegebyr",
+    "total": "I alt",
+    "itemName": "Varenavn",
+    "qty": "Antal",
+    "unitPrice": "Stykpris",
+    "itemTotal": "Vare i alt",
+    "orderTotal": "Ordre i alt",
+    "unknownEvent": "Ukendt arrangement",
+    "asap": "Hurtigst muligt",
+    "unknownCustomer": "Ukendt",
+    "customerOnline": "Kunde online",
+    "placedByTruck": "Oprettet af foodtrucken"
+  }
+}

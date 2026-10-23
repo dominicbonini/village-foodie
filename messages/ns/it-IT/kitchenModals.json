@@ -1,0 +1,69 @@
+{
+  "close": "Chiudi",
+  "cancel": "Annulla",
+  "selectReason": "Seleziona un motivo",
+  "reject": {
+    "title": "Rifiutare l’ordine #{orderId}?",
+    "reasonLabel": "Motivo — obbligatorio (visibile al cliente)",
+    "reason": "{reason, select, sold_out {Articolo esaurito} too_busy {Troppo lavoro — non riusciamo in tempo} closing_soon {Chiusura imminente} other {Altro}}",
+    "noteRequired": "Motivo — obbligatorio",
+    "noteOptional": "Nota aggiuntiva — facoltativa",
+    "notePlaceholder": "Aggiungi altri dettagli per il cliente…",
+    "keep": "Mantieni l’ordine",
+    "confirm": "Rifiuta ordine"
+  },
+  "eventCancel": {
+    "title": "Annullare questo evento?",
+    "affected": "{n, plural, one {{count} ordine verrà annullato} other {{count} ordini verranno annullati}} e i clienti verranno avvisati.",
+    "reasonLabel": "Motivo — facoltativo",
+    "reason": "{reason, select, vehicle_breakdown {Guasto al veicolo} weather {Maltempo} venue_issue {Problema con il luogo} personal_emergency {Emergenza personale} other {Altro}}",
+    "messageLabel": "Messaggio ai clienti — facoltativo",
+    "messagePlaceholder": "es. Ci dispiace, il nostro rimorchio si è guastato mentre andavamo sul posto…",
+    "keep": "Mantieni l’evento",
+    "cancelling": "Annullamento…",
+    "confirm": "Annulla evento"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Riavvia evento} other {Avvia evento}}",
+    "changeEvent": "Cambia evento",
+    "changeEventType": "Cambia tipo di evento…",
+    "privateLink": "Link privato e QR code",
+    "noteLabel": "Nota per i clienti",
+    "notePlaceholder": "es. Parcheggia nel parcheggio principale e cerca il gazebo arancione",
+    "noteHint": "Visibile ai clienti nella pagina dell’ordine, sotto i dettagli dell’evento.",
+    "saveNote": "Salva nota",
+    "resume": "Riprendi gli ordini",
+    "pause": "Sospendi gli ordini",
+    "changeFinishTime": "Cambia orario di fine evento",
+    "finishEvent": "Termina evento",
+    "cancelEvent": "Annulla evento"
+  },
+  "finish": {
+    "confirmTitle": "Cambiare l’orario di fine?",
+    "willFinish": "Questo evento terminerà alle <b>{selected}</b>{hasCurrent, select, yes { invece che alle <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} ordine è previsto} other {{count} ordini sono previsti}} dopo le {selected}.</b> {n, plural, one {Resta in lista e va comunque preparato} other {Restano in lista e vanno comunque preparati}}. Cambiare l’orario di fine blocca solo i NUOVI ordini per gli orari successivi.",
+    "saving": "Salvataggio…",
+    "confirm": "Cambia orario di fine",
+    "keepCurrent": "Mantieni {current}",
+    "keepAsIs": "Lascia invariato",
+    "title": "Cambia orario di fine",
+    "currentlySet": "Al momento questo evento termina alle <b>{current}</b>.",
+    "noFinishTime": "Per questo evento non è impostato un orario di fine.",
+    "noTimesLeft": "Per oggi non ci sono più orari disponibili. Usa invece Termina evento.",
+    "newFinishTime": "Nuovo orario di fine",
+    "optionCurrent": "{time} (attuale)",
+    "earlier": "È prima dell’orario di fine attuale. I clienti non potranno ordinare per orari successivi.",
+    "review": "Rivedi la modifica",
+    "optionNextDay": "{time} (giorno dopo)"
+  },
+  "extraWait": {
+    "title": "Aggiungi attesa",
+    "hint": "Si aggiunge all’orario di ritiro indicato sui nuovi ordini. Non cambia l’orario di fine dell’evento.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Riconnettiti per caricare",
+    "selected": "Selezionato",
+    "status": "{tone, select, paused {⏸ In pausa} live {● In corso} finished {● Terminato} cancelled {Annullato} other {Non iniziato}}"
+  }
+}

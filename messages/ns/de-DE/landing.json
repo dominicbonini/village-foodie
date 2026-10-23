@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Online-Bestellsystem für Foodtrucks und mobiles Catering",
+    "description": "Online-Bestellungen, Vorbestellungen und Küchenmonitor für Foodtrucks und mobiles Catering – {country}.",
+    "audience": "Foodtruck-Betreiber und mobile Caterer"
+  },
+  "hero": {
+    "title": "Das Online-Bestellsystem für <lean>Foodtrucks.</lean>",
+    "subSmall": "Speisekarte hochladen, ohne Registrierung.<br></br>Eine funktionierende Demo in unter 60 Sekunden.",
+    "tagline": "Weniger Verwaltung.<br></br>Mehr Zeit zum <lean>Kochen.</lean>",
+    "cta": "Speisekarte hochladen →",
+    "ctaNote": "<lead>Laden Sie ein Foto Ihrer Speisekarte hoch und sehen Sie sie in unter 60 Sekunden in Aktion.</lead><small>Ohne Registrierung. Ohne Kreditkarte.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Der HatchGrab-Küchenmonitor mit Bestellbons in der Reihenfolge der Zubereitung",
+    "dashboardAlt": "Eine Bestellung in HatchGrab aufnehmen: links die Speisekarte, rechts der Warenkorb mit laufender Summe",
+    "phoneAlt": "Bei einem Foodtruck über HatchGrab bestellen: die Speisekarte mit Fotos und Preisen und die laufende Summe im Warenkorb"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Erster Monat komplett kostenlos, alle Funktionen freigeschaltet} other {Die ersten # Monate komplett kostenlos, alle Funktionen freigeschaltet}}",
+    "noCard": "Keine Kreditkarte nötig",
+    "cancel": "Jederzeit kündbar, ohne Vertragsbindung"
+  },
+  "does": {
+    "eyebrow": "Funktionen",
+    "title": "Für Foodtrucks gemacht, nicht für Restaurants.",
+    "lede": "Die meisten Bestellsysteme setzen eine feste Adresse, stabiles WLAN und jede Woche dieselben Öffnungszeiten voraus. Sie stehen jede Woche woanders, zu anderen Zeiten, mit schwachem oder gar keinem Mobilfunkempfang. Genau dafür wurde HatchGrab entwickelt.",
+    "slotsTitle": "Kunden wählen ihre Abholzeit",
+    "capacityTitle": "Küchenkapazität festlegen",
+    "capacityBody": "Legen Sie fest, wie viel Sie gleichzeitig zubereiten können und wie lange es dauert. Ist eine Abholzeit ausgebucht, können Kunden sie nicht mehr wählen.",
+    "devicesTitle": "Läuft auf jedem Gerät",
+    "devicesBody": "Auf dem Smartphone in der Schürze, dem Tablet auf der Theke, dem Laptop im Foodtruck – und dem Kartenlesegerät, mit dem Sie schon heute kassieren.",
+    "postsTitle": "Facebook- und Instagram-Beiträge automatisieren",
+    "postsBody": "Laden Sie das Design hoch, das Sie schon auf Facebook oder Instagram posten. Wir tragen Ihre Termine, Standorte und Uhrzeiten ein – fertig zum Teilen, jede Woche oder jeden Tag.",
+    "whatsappTitle": "Automatische WhatsApp-Antworten",
+    "whatsappBody": "„Wo stehen Sie heute Abend?“ „Welche Desserts haben Sie?“ Ihre WhatsApp-Nachrichten werden beantwortet, während Sie zum Standort fahren oder am Grill stehen – mit Ihrer eigenen Speisekarte und Ihren Terminen. Messenger und Instagram folgen in Kürze.",
+    "whatsappSoonTitle": "Automatische WhatsApp-Antworten <soon>Demnächst</soon>",
+    "whatsappSoonBody": "„Wo stehen Sie heute Abend?“ „Welche Desserts haben Sie?“ Bald werden Ihre WhatsApp-Nachrichten beantwortet, während Sie zum Standort fahren oder am Grill stehen. Messenger und Instagram folgen.",
+    "offlineTitle": "Kein Empfang? Einfach weiter verkaufen.",
+    "offlineBody": "Wenn Sie den Empfang verlieren, werden Online-Bestellungen automatisch pausiert, damit Kunden keine Bestellungen aufgeben, die Sie nicht sehen. Mit der App für iPhone, iPad und Android nehmen Sie weiter Bestellungen an.",
+    "slotsBody": "Kunden bestellen vor und wählen eine Abholzeit. Kürzere Schlangen – und das Essen ist fertig, wenn sie ankommen."
+  },
+  "steps": {
+    "eyebrow": "So starten Sie",
+    "title": "In etwa 15 Minuten eingerichtet und bereit für die ersten Bestellungen.",
+    "lede": "Drei Dinge sind zu erledigen – und für zwei davon reicht ein Foto.",
+    "menuTitle": "Speisekarte erstellen",
+    "menuBody": "Fotografieren Sie Ihre Tafel oder fügen Sie den Text ein. Gerichte, Preise und Extras werden automatisch übernommen. Sie prüfen nur, ob alles stimmt.",
+    "scheduleTitle": "Termine hinzufügen",
+    "scheduleBody": "Stehen Ihre Termine auf Ihrer Website? Dann lesen wir sie dort aus und halten sie aktuell. Falls nicht, fotografieren Sie sie einfach auch. Sie bestätigen nur, was gefunden wurde.",
+    "shareTitle": "Link teilen",
+    "shareBody": "Posten Sie ihn auf Facebook, kleben Sie den QR-Code an den Foodtruck. Die Bestellungen landen auf Ihrem Bildschirm – in der Reihenfolge, in der Sie sie zubereiten müssen."
+  },
+  "testimonial": {
+    "quote": "HatchGrab hat das Bestellen so viel einfacher gemacht. Alles ist organisiert, wir behalten den Bestand im Blick und wissen genau, wie viele Pizzen wir noch verkaufen können – und die Zeitfenster sind fantastisch für belebte Dörfer.",
+    "award": "Mobile Pizzeria des Jahres",
+    "awardScope": "Regionaler Gewinner",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan – Inhaber"
+  },
+  "pricing": {
+    "eyebrow": "Preise",
+    "title": "Kostenlos starten. Upgraden, wenn Sie es brauchen.",
+    "switchHead": "Sie wechseln von einer anderen Plattform?",
+    "switchBody": "Sehen Sie, was Sie bei HatchGrab für dieselben Bestellungen zahlen würden. Dauert etwa eine Minute.",
+    "switchCta": "Kosten vergleichen"
+  },
+  "final": {
+    "truckLabel": "Foodtruck",
+    "title": "Möchten Sie sehen, wie einfach die Einrichtung ist?",
+    "lede": "Laden Sie ein Foto oder einen Screenshot Ihrer Speisekarte hoch, und wir machen daraus in unter 60 Sekunden eine funktionierende Bestellseite zum Ausprobieren. Ihre Gerichte, Ihre Preise. Ohne Registrierung, ohne Kreditkarte, ohne Installation. Schauen Sie es sich an und entscheiden Sie dann.",
+    "cta": "Jetzt Speisekarte hochladen →"
+  },
+  "meta": {
+    "title": "Online-Bestellsystem für Foodtrucks & mobiles Catering – HatchGrab {country}",
+    "description": "Bestellungen und Vorbestellungen an Ihrem Standort – ohne Anstehen. Bestellsystem und Küchenmonitor für Foodtrucks und mobiles Catering ({country}) – kein Kassensystem."
+  }
+}

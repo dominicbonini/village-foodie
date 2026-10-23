@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Visa allergener vid varje rätt",
+    "recommended": "Rekommenderas",
+    "perDishBody": "Gå igenom varje rätt och bekräfta dess allergener. Kunderna ser märkningar per rätt plus en sammanfattande allergenlista som bygger på dem.",
+    "cardTitle": "Visa en allergenlista",
+    "cardBody": "Ladda upp eller klistra in en enda allergenlista (PDF, bild eller text) som visas som den är. Märkningar per rätt hålls dolda."
+  }
+}

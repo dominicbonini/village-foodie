@@ -1,0 +1,30 @@
+{
+  "heading": "Btw, fooien en kosten",
+  "rate": {
+    "label": "Btw-tarief",
+    "hint": "Het tarief dat je op elke bestelling rekent. Klanten zien het bij het afrekenen erbij komen, en op kassabonnen en bonnen.",
+    "regionDefault": "Laat leeg om {label} te rekenen tegen {rate}%, het tarief voor bereid eten ({region})."
+  },
+  "included": {
+    "label": "Prijzen inclusief {label}",
+    "hint": "Je prijzen zijn al inclusief {label}. Dit tarief geeft alleen aan hoeveel van elke prijs {label} is, op kassabonnen en bonnen — bij het afrekenen komt er niets bij.",
+    "default": "Laat leeg om {rate}% te gebruiken, het {label}-tarief voor warm eten om mee te nemen ({country})."
+  },
+  "tips": {
+    "label": "Fooien",
+    "hint": "Klanten die online met hun kaart betalen, kunnen een fooi geven. Die gaat helemaal naar jou.",
+    "choices": "Keuzes die klanten zien:",
+    "chip": "{rate}%",
+    "other": "Ander bedrag"
+  },
+  "fee": {
+    "label": "Online servicekosten",
+    "hint": "Alleen bij online bestellingen. Nooit bij bestellingen die bij afhalen worden betaald of bij bestellingen aan de truck. Jij houdt ze.",
+    "pctAria": "Percentage servicekosten",
+    "fixedAria": "Vast bedrag servicekosten",
+    "max": "Maximaal te rekenen: {max}",
+    "example": "Klanten zien ze vóór het betalen, als één regel: ‘{label} {amount}’.",
+    "hatchgrab": "HatchGrab rekent {fee} servicekosten op de online bestellingen van je klanten. Jij betaalt die niet en kunt ze niet wijzigen."
+  },
+  "saveFailed": "Opslaan mislukt — probeer het opnieuw."
+}

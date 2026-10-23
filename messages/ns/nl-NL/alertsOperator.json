@@ -1,0 +1,28 @@
+{
+  "hi": "Hallo {name},",
+  "limit80": {
+    "subject": "Je hebt 80% van de WhatsApp-antwoorden van deze maand gebruikt",
+    "used": "Je automatische WhatsApp-antwoorden hebben deze maand <b>{used} van de {limit}</b> gebruikt.",
+    "nothingStopped": "Er is nog niets gestopt. Zodra je {limit} bereikt, worden automatische antwoorden gepauzeerd tot je tegoed op <b>{reset}</b> wordt vernieuwd — klanten kunnen je nog steeds berichten sturen en je ziet nog steeds alles wat ze sturen.",
+    "raise": "Je kunt je maandlimiet altijd verhogen in Instellingen.",
+    "raiseLink": "Je kunt je maandlimiet altijd verhogen in Instellingen:",
+    "button": "Instellingen openen"
+  },
+  "limit100": {
+    "subject": "Je automatische WhatsApp-antwoorden zijn voor deze maand gepauzeerd",
+    "usedAll": "Je hebt alle {limit} automatische WhatsApp-antwoorden van deze maand gebruikt, dus ze zijn gepauzeerd.",
+    "stillReach": "<b>Klanten kunnen je gewoon berichten blijven sturen, en elk bericht komt nog steeds bij je aan.</b> Het enige wat gestopt is, is het automatische antwoord dat terug wordt gestuurd.",
+    "startAgain": "Ze starten weer op <b>{reset}</b>, of meteen als je je maandlimiet verhoogt in Instellingen.",
+    "startAgainLink": "Ze starten weer op {reset}, of meteen als je je maandlimiet verhoogt in Instellingen:",
+    "button": "Mijn limiet verhogen"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp heeft een betaalmethode nodig om te kunnen versturen",
+    "stopped": "WhatsApp verstuurt je automatische antwoorden niet meer, omdat er geen werkende betaalmethode op je WhatsApp Business-account staat.",
+    "stillMessage": "<b>Klanten kunnen je nog steeds berichten sturen en je ziet nog steeds alles wat ze sturen</b> — maar de antwoorden bereiken hen niet.",
+    "payDirect": "Je betaalt WhatsApp zelf voor deze berichten, dus je lost dit op in WhatsApp Manager en niet in HatchGrab. Voeg daar een kaart toe of werk die bij, dan starten de antwoorden vanzelf weer.",
+    "payDirectLink": "Je betaalt WhatsApp zelf voor deze berichten, dus je lost dit op in WhatsApp Manager en niet in HatchGrab. Voeg daar een kaart toe of werk die bij, dan starten de antwoorden vanzelf weer:",
+    "button": "WhatsApp Manager openen",
+    "settings": "Je HatchGrab-instellingen: <link>{url}</link>"
+  }
+}

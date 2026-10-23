@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Scegli come mostrare le informazioni sugli allergeni",
+    "detail": "Finché non scegli, i clienti non vedono nessuno dei tuoi piatti — il menu si protegge nascondendo ogni piatto con allergeni non confermati, e in questo momento lo sono tutti.",
+    "where": "Menu → Allergeni"
+  },
+  "allergensCardMissing": {
+    "title": "Aggiungi la tua scheda allergeni",
+    "detail": "Hai scelto di mostrare una scheda allergeni, ma non ne hai salvata nessuna — quindi ai clienti verrebbe detto che le informazioni sugli allergeni sono disponibili, e poi non troverebbero nulla.",
+    "where": "Menu → Allergeni"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Conferma gli allergeni di {count} piatto} other {Conferma gli allergeni di {count} piatti}}",
+    "detail": "{n, plural, one {Il tuo piatto è nascosto ai clienti finché non ne confermi gli allergeni.} other {{u, plural, one {{unverified} dei tuoi {total} piatti è nascosto ai clienti finché non ne confermi gli allergeni.} other {{unverified} dei tuoi {total} piatti sono nascosti ai clienti finché non ne confermi gli allergeni.}}}} Un piatto mostrato senza allergeni confermati viene letto come «non ne contiene», quindi il menu preferisce nasconderlo piuttosto che correre questo rischio.",
+    "where": "Menu → Allergeni"
+  },
+  "noVan": {
+    "title": "Aggiungi un food truck",
+    "detail": "Gli eventi sono collegati a un food truck — senza, non c’è nulla attraverso cui ricevere ordini.",
+    "where": "Impostazioni → I tuoi food truck"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Imposta la capacità della cucina",
+    "detail": "Ordini massimi per fascia oraria non impostati per: {vans}. Senza questo dato continueremo a promettere ai clienti orari di ritiro che la tua cucina non ha modo di rispettare.",
+    "where": "Menu → Capacità della cucina",
+    "unnamedVan": "Food truck senza nome"
+  },
+  "noPrepBearingCategory": {
+    "title": "Indicaci i tempi di preparazione",
+    "detail": "{categories, select, none {Non hai ancora categorie nel menu, quindi non abbiamo modo di calcolare quanto tempo richiede un ordine.} other {Nessuna delle tue categorie ha un tempo di cottura impostato, quindi per noi ogni ordine sembra istantaneo. Continueremmo a dare ai clienti orari di ritiro che la tua cucina non ha alcuna possibilità di rispettare, e più lavoro hai, più sarebbero lontani dalla realtà.}}",
+    "where": "Menu → Categorie → Configurazione cucina"
+  },
+  "emailUnverified": {
+    "title": "Conferma il tuo indirizzo email",
+    "detail": "A questo indirizzo inviamo le notifiche degli ordini e il recupero dell’account. Se è sbagliato, lo scopri quando qualcosa è già andato storto.",
+    "where": "Cerca il nostro link di conferma nella tua casella di posta"
+  },
+  "emailUnknown": {
+    "title": "Stato di conferma dell’email sconosciuto",
+    "detail": "La verifica dell’email non è ancora attiva, quindi questo controllo non può essere valutato. Per scelta blocca, invece di passare senza avvisare.",
+    "where": "—"
+  }
+}

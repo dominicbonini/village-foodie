@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Aceitar encomendas sem pagamento",
+  "completionTitle": "Concluir uma encomenda não paga",
+  "completionHelp": "O que acontece quando uma encomenda não paga está pronta a entregar.",
+  "pressesOne": "Um toque («Marcar paga e levantada»)",
+  "pressesOneHelp": "Ideal quando recebe o dinheiro no momento em que entrega a comida. Tem um único botão, «Marcar paga e levantada», que regista o pagamento e conclui a encomenda de uma só vez.",
+  "pressesTwo": "Dois toques («Marcar paga» e «Levantada»)",
+  "pressesTwoHelp": "Ideal quando o pagamento e a entrega acontecem em momentos diferentes — o cliente paga ao balcão e levanta quando estiver pronto. Tem dois botões: primeiro «Marcar paga» e depois «Levantada» quando o cliente leva a comida."
+}

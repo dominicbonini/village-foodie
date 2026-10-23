@@ -1,0 +1,19 @@
+{
+  "heading": "Upselling",
+  "intro": "Geef klanten een duwtje om iets extra’s te nemen. Als iemand iets uit de ene categorie bestelt, stel je items uit een andere voor — een drankje bij een pizza, een saus bij een burger.",
+  "add": "+ Upselling toevoegen",
+  "toast": {
+    "updated": "Upsellingregel bijgewerkt",
+    "added": "Upsellingregel toegevoegd",
+    "removed": "Regel verwijderd"
+  },
+  "whenAdds": "Als de klant iets toevoegt uit…",
+  "suggestFrom": "Stel items voor uit…",
+  "chooseCategory": "Kies een categorie",
+  "cancel": "Annuleren",
+  "saveChanges": "Wijzigingen opslaan",
+  "addRule": "Regel toevoegen",
+  "empty": "Nog geen upsellingregels.",
+  "confirmRemove": "Upsellingregel ‘{trigger} → {suggest}’ verwijderen?",
+  "upTo": "{n, plural, one {Max. {count} item voorgesteld} other {Max. {count} items voorgesteld}}"
+}

@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Presença no mapa de descoberta"
+    },
+    "web_dashboard": {
+      "name": "Painel web universal"
+    },
+    "qr_code": {
+      "name": "Código QR"
+    },
+    "schedule_import": {
+      "name": "Importação automática da agenda"
+    },
+    "meal_deals_upsells": {
+      "name": "Menus e vendas adicionais"
+    },
+    "walkup_orders": {
+      "name": "Gestão de encomendas ao balcão"
+    },
+    "sold_out_toggle": {
+      "name": "Marcar como esgotado num instante"
+    },
+    "kitchen_app": {
+      "name": "App da cozinha para iPhone, iPad e Android"
+    },
+    "offline_protection": {
+      "name": "Proteção de encomendas offline"
+    },
+    "online_payments": {
+      "name": "Pagamentos online"
+    },
+    "advance_preordering": {
+      "name": "Encomendas antecipadas"
+    },
+    "preorder_deadline": {
+      "name": "Prazo para encomendas antecipadas"
+    },
+    "time_slot_selection": {
+      "name": "Escolha do horário pelo cliente"
+    },
+    "kitchen_capacity": {
+      "name": "Gestão da capacidade da cozinha — máximo de encomendas por horário"
+    },
+    "stock_countdown": {
+      "name": "Contagem decrescente automática do stock"
+    },
+    "auto_accept": {
+      "name": "Aceitação automática de encomendas online"
+    },
+    "branded_qr_code": {
+      "name": "Código QR personalizado"
+    },
+    "private_events": {
+      "name": "Eventos privados"
+    },
+    "social_media_posts": {
+      "name": "Publicações para redes sociais"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Respostas automáticas do WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Respostas automáticas do Messenger e Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Receber pagamentos no seu telemóvel"
+    },
+    "advanced_reporting": {
+      "name": "Relatórios avançados"
+    },
+    "sms_order_alerts": {
+      "name": "Alertas de encomenda por SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Sincronização da cozinha em vários dispositivos"
+    },
+    "multi_user_access": {
+      "name": "Acesso para vários utilizadores"
+    },
+    "embed_schedule": {
+      "name": "Página da agenda no seu próprio site"
+    },
+    "event_types": {
+      "name": "Tipos de evento e preços por evento personalizados"
+    },
+    "buzzer_tracking": {
+      "name": "Gestão de pagers"
+    },
+    "ticket_printing": {
+      "name": "Impressão de talões da cozinha"
+    },
+    "customer_display": {
+      "name": "Ecrã para os clientes"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Cartões de fidelização digitais"
+    }
+  },
+  "cardRegionOnline": "{region} padrão",
+  "cardRegion": {
+    "UKcards": "cartões do Reino Unido",
+    "EEAcards": "cartões do EEE",
+    "UScards": "cartões dos EUA",
+    "Australiancards": "cartões australianos",
+    "NewZealandcards": "cartões neozelandeses",
+    "Canadiancards": "cartões canadianos",
+    "Swisscards": "cartões suíços"
+  },
+  "perMonth": {
+    "mo": "{amount}/mês",
+    "month": "{amount}/mês"
+  },
+  "priceWord": {
+    "free": "Grátis",
+    "freeTrial": "Teste gratuito",
+    "lifetime": "Vitalício",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Pagar ao levantar",
+    "unlimited": "Ilimitado",
+    "none": "—",
+    "masked": "A confirmar"
+  },
+  "cell": {
+    "included": "Incluído"
+  }
+}

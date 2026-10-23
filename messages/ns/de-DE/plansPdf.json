@@ -1,0 +1,9 @@
+{
+  "title": "Tarife und Funktionen",
+  "generated": "Erstellt am {date}",
+  "allowanceHeading": "Kontingent für Online-Bestellungen",
+  "smallPrint": "Kleingedrucktes",
+  "priceNoteMasked": "Mit „Folgt“ gekennzeichnete Preise sind noch nicht veröffentlicht.",
+  "omitNote": "Preise sind in diesem Dokument bewusst nicht enthalten.",
+  "terms": "Die Angaben entsprechen den veröffentlichten Tarifbedingungen zum oben genannten Datum und können sich ändern. Gebühren für die Kartenabwicklung werden von Stripe selbst erhoben, nicht von HatchGrab. Dieses Dokument ist eine Zusammenfassung, kein Vertrag."
+}

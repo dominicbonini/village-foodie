@@ -37,6 +37,16 @@
     "dist",
     "build",
     "supabase/functions",
+    "docs",
+    "android",
+    "ios",
+    "public",
+    "logs",
+    "data",
+    "assets",
+    "certificates",
+    "content",
+    "messages",
     "**/*.spec.ts",
     "**/*.test.ts"
   ]

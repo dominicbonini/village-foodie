@@ -1,0 +1,129 @@
+{
+  "docTitle": "{truck} · Keuken",
+  "loading": "Keuken laden…",
+  "pin": {
+    "title": "Pincode invoeren",
+    "placeholder": "Pincode",
+    "unlock": "Ontgrendelen",
+    "unreachable": "Kan de server nu niet bereiken. Je pincode klopt — probeer het zo opnieuw.",
+    "incorrect": "Onjuiste pincode",
+    "generic": "Er ging iets mis. Probeer het opnieuw."
+  },
+  "error": {
+    "linkInvalid": "Deze link is niet meer geldig.",
+    "couldNotLoad": "Kon bestellingen niet laden",
+    "truckNotFound": "Foodtruck niet gevonden"
+  },
+  "degraded": {
+    "at": "⚠️ Kan de server niet bereiken. Bonnen van {time} worden getoond. NIEUWE BESTELLINGEN KUNNEN ONTBREKEN.",
+    "earlier": "⚠️ Kan de server niet bereiken. Eerdere bonnen worden getoond. NIEUWE BESTELLINGEN KUNNEN ONTBREKEN."
+  },
+  "header": {
+    "dashboard": "Dashboard",
+    "backTitle": "Terug naar het dashboard",
+    "list": "Lijst",
+    "grid": "Raster",
+    "full": "Volledig",
+    "cook": "Kok",
+    "fullTitle": "Volledige kaarten — prijzen en betaalgegevens, zoals het loket ze ziet.",
+    "cookTitle": "Kokkaarten — grotere letters, per categorie, zonder prijzen.",
+    "readyStep": "Stap Klaar",
+    "readyOnlyTitle": "Dit scherm markeert alleen bestellingen als klaar, dus dit kan niet uit — het is de enige stap die het doet.",
+    "readyOnTitle": "Dit scherm markeert bestellingen als klaar. Tik zodat een ander scherm dit doet.",
+    "readyOffTitle": "Een ander scherm markeert bestellingen als klaar. Tik zodat dit scherm het doet.",
+    "handover": "Betalen & meegeven",
+    "handoverOnlyTitle": "Dit scherm rekent alleen af, dus dit kan niet uit — het is de enige stap die het doet.",
+    "handoverOnTitle": "Dit scherm rekent af en geeft bestellingen mee. Tik zodat een ander scherm dit doet.",
+    "handoverOffTitle": "Een ander scherm rekent af. Tik zodat dit scherm het doet.",
+    "soundOn": "Geluid bij nieuwe bestelling staat aan — tik om het uit te zetten",
+    "soundOff": "Geluid bij nieuwe bestelling staat uit — tik om het aan te zetten",
+    "screenOn": "Scherm aan",
+    "screenOff": "Scherm uit",
+    "screenSettings": "Scherminstellingen",
+    "manageEvent": "Evenement beheren",
+    "manageEventTitle": "Evenement beheren — starten, pauzeren, wijzigen of afronden",
+    "soundSettings": "Geluidsinstellingen",
+    "soundSettingsTitle": "Welke geluiden er op dit apparaat afgaan",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Weergave",
+    "on": "Aan",
+    "off": "Uit",
+    "newOrderSound": "Geluid nieuwe bestelling",
+    "soundNeedsConfirming": "Alleen bestellingen die bevestigd moeten worden",
+    "soundAll": "Alle nieuwe bestellingen",
+    "soundDue": "Geluid als een bestelling bereid moet worden",
+    "soundDueHelp": "Klinkt zodra een bon oranje wordt.",
+    "deviceSettings": "Apparaatinstellingen",
+    "sound": "Geluid",
+    "close": "Sluiten"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Bestellingen voor dit evenement niet geladen",
+    "mismatchBody": "De server gaf een ander evenement terug, dus er wordt niets getoond in plaats van de verkeerde bestellingen. Kies het evenement opnieuw of herlaad de pagina.",
+    "mismatchBodyAt": "De server gaf een ander evenement terug, dus er wordt niets getoond in plaats van de verkeerde bestellingen voor {venue}. Kies het evenement opnieuw of herlaad de pagina.",
+    "paused": "⏸ Bestellingen gepauzeerd{reason, select, offline { (apparaat offline)} other {}} — klanten kunnen niet bestellen",
+    "resume": "Hervatten",
+    "offline": "Geen verbinding — de laatst bekende bestellingen worden getoond. Online bestellen is voor klanten gepauzeerd.",
+    "queued": "{n, plural, one {{count} actie in de wachtrij} other {{count} acties in de wachtrij}}",
+    "extraWait": "⏱ +{mins} min extra wachttijd actief",
+    "clear": "Wissen",
+    "toMake": "Te maken",
+    "today": "Vandaag · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Evenement starten",
+    "recentlyClosed": "Evenement afgelopen · {venue} gesloten om {time}",
+    "eventStatus": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}"
+  },
+  "board": {
+    "queueClear": "Wachtrij leeg",
+    "doneToday": "Vandaag klaar · {count}",
+    "paid": "✓ betaald",
+    "cardHeld": "kaart gereserveerd",
+    "due": "{amount} te betalen"
+  },
+  "screenOff": {
+    "title": "Scherm uit laten gaan?",
+    "bodyVans": "{vans} {n, plural, one {heeft} other {hebben}} offlinedetectie aan staan. Als het scherm uitgaat, kan het apparaat stoppen met het versturen van zijn onlinesignaal en kan bestellen door klanten worden gepauzeerd.",
+    "body": "Als het scherm uitgaat, kan het apparaat stoppen met het versturen van zijn onlinesignaal.",
+    "keepHint": "Houd het scherm aan, zodat bestellen zonder onderbreking doorgaat.",
+    "keep": "Scherm aan houden",
+    "allow": "Scherm mag uit"
+  },
+  "event": {
+    "change": "Evenement wijzigen",
+    "cancel": "Annuleren",
+    "waitActive": "⏱ +{mins} min actief · Tik om te wissen",
+    "addWait": "⏱ Extra wachttijd toevoegen",
+    "endTitle": "Evenement beëindigen?",
+    "endEarly": "Dit evenement staat gepland tot {time}. Er kunnen geen bestellingen meer worden geplaatst. Bevestigen om het evenement te beëindigen?",
+    "endNow": "Dit evenement afronden? Er worden geen bestellingen meer aangenomen.",
+    "yes": "Ja",
+    "started": "Evenement gestart",
+    "startFutureConfirm": "Dit evenement is op {date}. Nu starten?",
+    "finishTimeNow": "Eindtijd nu {time}",
+    "finished": "Evenement afgelopen",
+    "cancelled": "Evenement geannuleerd",
+    "noteSaved": "Notitie opgeslagen",
+    "pauseConfirm": "Bestellingen pauzeren? Klanten zien ‘Geen bestellingen mogelijk’ tot je hervat.",
+    "switchConfirm": "Overschakelen van {from} naar {to}?{n, plural, =0 {} one { {count} bestelling op dit scherm wordt vervangen.} other { {count} bestellingen op dit scherm worden vervangen.}} Tik op het huidige evenement om terug te schakelen."
+  },
+  "intro": {
+    "title": "Dit is het keukenscherm",
+    "p1": "Dit is het overzicht voor de kok — de bestellingen die je moet maken, in de volgorde waarin je ze maakt. Het scherm bij de grill toont dit, terwijl de toonbank het bestellingendashboard gebruikt.",
+    "p2": "Kaarten schuiven door als je erop tikt, zodat wie er kookt altijd weet wat er komt en niemand hoeft te roepen. Alles hier is je demodata — probeer maar wat uit.",
+    "gotIt": "Begrepen"
+  },
+  "toast": {
+    "failed": "Mislukt",
+    "rejectFailed": "Weigeren mislukt",
+    "buzzerSaved": "Pieper {n} opgeslagen",
+    "buzzerRemoved": "Pieper {n} verwijderd",
+    "buzzerRemovedNone": "Pieper verwijderd",
+    "buzzerAssigned": "Pieper {n} toegewezen",
+    "buzzerAssignedFrom": "Pieper {n} toegewezen (overgenomen van #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Kon de pieper niet loskoppelen van {target, select, order {bestelling #{id}} other {deze bestelling}}} other {Kon pieper {n} niet loskoppelen — hij hoort nog bij {target, select, order {bestelling #{id}} other {deze bestelling}}}}",
+    "buzzerAssignFailed": "Kon pieper {n} niet aan {target, select, order {bestelling #{id}} other {deze bestelling}} geven — {had, select, yes {die heeft nog pieper {prior}} other {die heeft nog steeds geen pieper}}"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Datumintervall",
+    "event": "📍 Evenemang",
+    "filterBy": "Filtrera efter",
+    "show": "Visa",
+    "range": "<from></from><sep>till</sep><until></until>",
+    "selectEvent": "Välj ett evenemang …",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Evenemang",
+    "viewReport": "Visa rapport",
+    "loading": "Laddar …",
+    "orders": "📋 Beställningar",
+    "items": "📦 Artiklar",
+    "exportCsv": "⬇ Exportera CSV"
+  },
+  "empty": {
+    "noOrders": "Inga beställningar under den här perioden.",
+    "selectEvent": "Välj ett evenemang ovan för att se dess rapport."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} beställning} other {{count} beställningar}} · {total}"
+  },
+  "revenue": {
+    "title": "Intäkter i detalj",
+    "deals": "Intäkter från måltider",
+    "modifiers": "Pristillägg för tillval",
+    "foodSales": "Matförsäljning",
+    "total": "Totalt",
+    "other": "Övrigt",
+    "tax": "Moms",
+    "tips": "Dricks",
+    "serviceFees": "Serviceavgifter",
+    "cardFees": "Kortavgifter"
+  },
+  "itemsSold": {
+    "title": "Sålda artiklar"
+  },
+  "dealsCard": {
+    "title": "Måltider"
+  },
+  "custom": {
+    "title": "Anpassningar",
+    "paidModifiers": "Betalda tillval",
+    "customerNotes": "Kundkommentarer",
+    "note": "”{note}”"
+  },
+  "table": {
+    "item": "Artikel",
+    "modifier": "Tillval",
+    "qty": "Antal",
+    "total": "Totalt",
+    "date": "Datum",
+    "time": "Tid",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Beställningar i detalj",
+    "items": "Artiklar i detalj"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "På plats"
+  },
+  "csv": {
+    "orderId": "Beställnings-ID",
+    "date": "Datum",
+    "event": "Evenemang",
+    "timePlaced": "Beställd kl.",
+    "collectionTime": "Upphämtningstid",
+    "customerName": "Kundens namn",
+    "orderType": "Beställningstyp",
+    "items": "Artiklar",
+    "deals": "Måltider",
+    "modifiers": "Tillval",
+    "notes": "Kommentarer",
+    "subtotal": "Delsumma",
+    "tip": "Dricks",
+    "serviceFee": "Serviceavgift",
+    "total": "Totalt",
+    "itemName": "Artikelnamn",
+    "qty": "Antal",
+    "unitPrice": "Styckpris",
+    "itemTotal": "Summa artikel",
+    "orderTotal": "Summa beställning",
+    "unknownEvent": "Okänt evenemang",
+    "asap": "Snarast",
+    "unknownCustomer": "Okänd",
+    "customerOnline": "Kund online",
+    "placedByTruck": "Lagd av foodtrucken"
+  }
+}

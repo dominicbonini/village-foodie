@@ -1,0 +1,28 @@
+{
+  "notAvailable": "In der Demo nicht verfügbar",
+  "demoMode": "DEMO-MODUS",
+  "loopLands": "Genau so geht eine echte Bestellung ein",
+  "showMe": "Zeigen",
+  "noCard": "{sub} Keine Kreditkarte nötig.",
+  "notYet": "Noch nicht",
+  "cashAndCollected": "Bar & abgeholt",
+  "logoPlaceholder": "Ihr Logo hier",
+  "welcomeTitle": "{sample, select, yes {Hier ist eine Beispiel-Demo} other {Hier ist Ihre Demo}}",
+  "welcomeIntro": "{sample, select, yes {Das ist eine <b>Platzhalter-Speisekarte</b>, damit Sie sehen, wie alles funktioniert – laden Sie jederzeit Ihre eigene hoch, um sie zu Ihrer zu machen.} other {Das ist Ihre eigene Speisekarte mit Ihrem Branding in einer echten Bestellübersicht.}} Die Bestellungen darauf sind Beispiele, damit Sie einen vollen Betrieb sehen.",
+  "twoThings": "Zwei Dinge zum Ausprobieren:",
+  "hitButton": "Tippen Sie bei einer Bestellung auf <b>{button}</b>",
+  "scanQr": "Scannen Sie den <b>QR-Code</b> – oder tippen Sie auf den Link –, bestellen Sie als Kunde und sehen Sie zu, wie die Bestellung eingeht",
+  "qrAlt": "QR-Code zu Ihrer Bestellseite für Kunden",
+  "openHere": "Oder auf diesem Gerät öffnen",
+  "copyLink": "Link kopieren",
+  "copyDescribedAs": "Bestelllink",
+  "noLinkTitle": "Ihr Bestelllink für Kunden",
+  "noLinkBody": "Den Link zu Ihrer Bestellseite finden Sie im Benutzermenü oben rechts.",
+  "asLive": "Bestellablauf und Küche funktionieren genau wie im Live-Betrieb.",
+  "startExploring": "Jetzt erkunden",
+  "signupOffer": {
+    "heading": "Jetzt für Ihren kostenlosen Monat registrieren",
+    "sub": "Die Uhr läuft erst, wenn Sie sich entscheiden, live zu gehen."
+  },
+  "cashIcon": "💶"
+}

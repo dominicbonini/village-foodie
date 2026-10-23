@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Vermelding op de ontdekkaart"
+    },
+    "web_dashboard": {
+      "name": "Universeel webdashboard"
+    },
+    "qr_code": {
+      "name": "QR-code"
+    },
+    "schedule_import": {
+      "name": "Automatische import van je planning"
+    },
+    "meal_deals_upsells": {
+      "name": "Combideals & upselling"
+    },
+    "walkup_orders": {
+      "name": "Bestellingen aan de truck verwerken"
+    },
+    "sold_out_toggle": {
+      "name": "Direct op ‘uitverkocht’ zetten"
+    },
+    "kitchen_app": {
+      "name": "Keukenapp voor iPhone, iPad en Android"
+    },
+    "offline_protection": {
+      "name": "Offline-bescherming van bestellingen"
+    },
+    "online_payments": {
+      "name": "Online betalingen"
+    },
+    "advance_preordering": {
+      "name": "Ruim vooraf bestellen"
+    },
+    "preorder_deadline": {
+      "name": "Uiterste besteltijd voor vooraf bestellen"
+    },
+    "time_slot_selection": {
+      "name": "Klant kiest een tijdslot"
+    },
+    "kitchen_capacity": {
+      "name": "Maximaal aantal bestellingen per tijdslot"
+    },
+    "stock_countdown": {
+      "name": "Automatisch voorraad aftellen"
+    },
+    "auto_accept": {
+      "name": "Online bestellingen automatisch accepteren"
+    },
+    "branded_qr_code": {
+      "name": "QR-code met je eigen logo"
+    },
+    "private_events": {
+      "name": "Privé-evenementen"
+    },
+    "social_media_posts": {
+      "name": "Social media posts"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatische antwoorden via WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatische antwoorden via Messenger & Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Betalingen ontvangen op je telefoon"
+    },
+    "advanced_reporting": {
+      "name": "Uitgebreide rapportage"
+    },
+    "sms_order_alerts": {
+      "name": "Bestelmeldingen via sms"
+    },
+    "multi_device_kitchen": {
+      "name": "Keukensynchronisatie op meerdere apparaten"
+    },
+    "multi_user_access": {
+      "name": "Toegang voor meerdere gebruikers"
+    },
+    "embed_schedule": {
+      "name": "Planningspagina op je eigen website"
+    },
+    "event_types": {
+      "name": "Eigen evenementtypes & prijzen per evenement"
+    },
+    "buzzer_tracking": {
+      "name": "Buzzers koppelen aan bestellingen"
+    },
+    "ticket_printing": {
+      "name": "Keukenbonnen printen"
+    },
+    "customer_display": {
+      "name": "Scherm voor klanten"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitale spaarkaarten"
+    }
+  },
+  "cardRegionOnline": "standaard {region}",
+  "cardRegion": {
+    "UKcards": "betaalkaarten uit het VK",
+    "EEAcards": "betaalkaarten uit de EER",
+    "UScards": "betaalkaarten uit de VS",
+    "Australiancards": "betaalkaarten uit Australië",
+    "NewZealandcards": "betaalkaarten uit Nieuw-Zeeland",
+    "Canadiancards": "betaalkaarten uit Canada",
+    "Swisscards": "betaalkaarten uit Zwitserland"
+  },
+  "perMonth": {
+    "mo": "{amount}/mnd",
+    "month": "{amount}/maand"
+  },
+  "priceWord": {
+    "free": "Gratis",
+    "freeTrial": "Gratis proefperiode",
+    "lifetime": "Levenslang",
+    "zeroPercent": "0%",
+    "payAtHatch": "Betaal bij de truck",
+    "unlimited": "Onbeperkt",
+    "none": "—",
+    "masked": "N.t.b."
+  },
+  "cell": {
+    "included": "Inbegrepen"
+  }
+}

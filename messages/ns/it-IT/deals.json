@@ -1,0 +1,17 @@
+{
+  "back": "← Indietro",
+  "title": "Applica un menu combo",
+  "save": "Risparmi {amount}",
+  "selectItems": "Scegli un articolo per ogni voce",
+  "choose": "Scegli {category}…",
+  "inYourBasket": "── Nel tuo carrello ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (nel carrello){state, select, used { — già in un menu combo} taken { — già scelto in un’altra voce} other {}}",
+  "addNew": "── Aggiungi nuovo ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obbligatorio · scegline uno} required {Obbligatorio} other {Scegline uno}}{unmet, select, yes { (obbligatorio)} other {}}",
+  "notePlaceholder": "Aggiungi una nota, es. senza cipolla (facoltativo)",
+  "backButton": "Indietro",
+  "cancel": "Annulla",
+  "chooseRequired": "Scegli le opzioni obbligatorie",
+  "apply": "Applica menu combo · {amount}"
+}

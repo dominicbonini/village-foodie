@@ -1,0 +1,42 @@
+{
+  "publicName": "Privates Event",
+  "chip": "Privat",
+  "grid": {
+    "orderingSection": "BESTELLUNG",
+    "linkRowLabel": "Bestellungen per privatem Link und QR-Code annehmen",
+    "columnTitle": "Der integrierte Typ „Privat“. Er kann nicht umbenannt, verschoben oder gelöscht werden."
+  },
+  "form": {
+    "help": "Erscheint in Ihren Terminen als „Privates Event“, nur mit Datum und Uhrzeiten – nie mit Adresse, nie auf der Karte und nie auf Village Foodie.",
+    "linkPromise": "Gäste bestellen per privatem Link und QR-Code – beides erhalten Sie nach dem Speichern.",
+    "nameLabel": "Eventname",
+    "nameHelp": "Gäste sehen diesen Namen oben auf der Bestellseite.",
+    "namePlaceholder": "Hochzeit von Sarah & Tom",
+    "previewNote": "So erscheint es in Ihren Terminen – ohne Veranstaltungsort, Ort oder Postleitzahl.",
+    "needsTimes": "Fügen Sie eine Start- und Endzeit hinzu – ein privates Event mit Bestellung per Link braucht beides."
+  },
+  "link": {
+    "button": "Link & QR",
+    "title": "Privater Link & QR-Code",
+    "label": "Privater Link",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "qrDownload": "QR-Code herunterladen",
+    "tableCards": "Tischaufsteller drucken",
+    "newLink": "Neuen Link erstellen",
+    "working": "Wird bearbeitet…",
+    "newLinkConfirm": "Neuen Link erstellen? Der aktuelle Link funktioniert dann sofort nicht mehr, und auch bereits gedruckte QR-Codes funktionieren nicht mehr.",
+    "newLinkHelp": "Nutzen Sie dies, wenn der Link irgendwo gelandet ist, wo er nicht hingehört. Der aktuelle Link funktioniert sofort nicht mehr, und gedruckte QR-Codes ebenfalls nicht.",
+    "newLinkFailed": "Neuer Link konnte nicht erstellt werden.",
+    "offNotice": "Die Bestellung per privatem Link ist für dieses Event ausgeschaltet, daher gibt es keinen Link zum Teilen. Das Event erscheint weiterhin in Ihren Terminen als „Privates Event“."
+  },
+  "cards": {
+    "printTitle": "{truck} – Tischaufsteller",
+    "scan": "Zum Bestellen scannen",
+    "blurb": "Bestellen und bezahlen Sie auf Ihrem Handy. Wir rufen Ihren Namen auf, sobald alles fertig ist.",
+    "footer": "Bestellungen über HatchGrab"
+  },
+  "noSinglePost": "Private Events erhalten keinen eigenen Beitrag – sie erscheinen auf Ihrem Wochenposter als „Privates Event“.",
+  "confirmToPrivate": "Dadurch werden die Adresse ausgeblendet und das Event von der Karte entfernt. Gäste brauchen den privaten Link, um zu bestellen.",
+  "confirmFromPrivate": "Dadurch wird das Event öffentlich: Adresse und Kartenpin werden angezeigt, und der private Link funktioniert nicht mehr."
+}

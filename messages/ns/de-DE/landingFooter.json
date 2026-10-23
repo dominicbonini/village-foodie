@@ -1,0 +1,17 @@
+{
+  "tagline": "Weniger Verwaltung.<br></br>Mehr Zeit zum Kochen.",
+  "features": "Funktionen",
+  "pricing": "Preise",
+  "privacy": "Datenschutz",
+  "terms": "AGB",
+  "contact": "Kontakt",
+  "about": "Über uns",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Von den Machern von <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "HatchGrab im App Store laden",
+    "appStoreAlt": "Laden im App Store",
+    "googlePlayLink": "HatchGrab bei Google Play herunterladen",
+    "googlePlayAlt": "Jetzt bei Google Play"
+  }
+}

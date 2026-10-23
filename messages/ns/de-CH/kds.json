@@ -1,0 +1,15 @@
+{
+  "header": {
+    "cookTitle": "Küchenansicht – grössere Schrift, nach Kategorie gruppiert, ohne Preise.",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "close": "Schliessen"
+  },
+  "event": {
+    "endEarly": "Dieses Event endet planmässig erst um {time}. Danach sind keine Bestellungen mehr möglich. Event jetzt beenden?"
+  },
+  "intro": {
+    "p2": "Karten wandern weiter, wenn Sie sie antippen – so weiss, wer gerade kocht, immer, was als Nächstes kommt, und niemand muss rufen. Alles hier sind Ihre Demodaten – probieren Sie es ruhig aus."
+  }
+}

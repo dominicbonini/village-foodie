@@ -1,0 +1,4 @@
+{
+  "desc": "Die höchste Zahl an Artikeln, die Ihre Küche gleichzeitig herausgeben kann – über alle angehakten Kategorien hinweg. Die eigene Durchgangsgrösse jeder Kategorie gilt zusätzlich.",
+  "warning": "⚠️ Damit die Küchenkapazität richtig funktioniert, legen Sie für Ihre Speisekarten-Kategorien eine Zubereitungszeit und eine Durchgangsgrösse fest (Speisekarte & Bestand). Ohne diese Angaben weiss die Kapazitätsberechnung nicht, wie lange die Zubereitung dauert."
+}

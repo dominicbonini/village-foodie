@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Ta emot beställningar utan förskottsbetalning",
+  "completionTitle": "Avsluta en obetald beställning",
+  "completionHelp": "Vad som händer när en obetald beställning är klar att lämnas ut.",
+  "pressesOne": "Ett tryck (”Markera betald & hämtad”)",
+  "pressesOneHelp": "Bäst när du tar betalt samtidigt som du lämnar ut maten. Du får en enda knapp, ”Markera betald & hämtad”, som registrerar betalningen och avslutar beställningen på en gång.",
+  "pressesTwo": "Två tryck (”Markera betald” och ”Hämtad”)",
+  "pressesTwoHelp": "Bäst när betalning och utlämning sker vid olika tillfällen – någon betalar i luckan och hämtar sedan när maten är klar. Du får två knappar: först ”Markera betald”, sedan ”Hämtad” när kunden tar maten."
+}

@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Alle",
+    "bold": "Fet og høy",
+    "hand": "Håndskrift",
+    "classic": "Klassisk",
+    "clean": "Enkel",
+    "own": "Dine",
+    "ownCount": "Dine ({count})"
+  },
+  "yoursTag": "· din",
+  "loadingFonts": "Laster skrifttyper…",
+  "search": "Søk i {count, number} skrifttyper",
+  "uploadButton": "↑ Last opp din skrifttype",
+  "loadingLibrary": "Laster skrifttypebiblioteket…",
+  "tryAgain": "Prøv igjen",
+  "noOwn": "Du har ikke lastet opp noen skrifttype ennå. Bruk knappen «↑ Last opp din skrifttype» ovenfor.",
+  "recent": "Nylig brukt",
+  "popular": "Populære til plakater",
+  "adding": "Legger til…",
+  "noMatch": "Ingen skrifttype samsvarer med «{query}».",
+  "showing": "Viser {shown} av {total, number} — skriv mer for å snevre inn søket.",
+  "couldNotAdd": "Skrifttypen kunne ikke legges til",
+  "tooBig": "Skrifttypen er {size, number, ::.0 group-off} MB. Grensen er 5 MB.",
+  "woff": "Last opp en TTF- eller OTF-fil — du kan vanligvis laste ned en der du kjøpte skrifttypen.",
+  "uploadIncomplete": "Opplastingen ble ikke fullført",
+  "added": "La til «{name}» som {face} versjon.",
+  "face": {
+    "regular": "vanlig",
+    "bold": "fet",
+    "italic": "kursiv"
+  },
+  "licenceTick": "Jeg eier denne skrifttypen eller har lisens til å bruke den",
+  "checking": "Sjekker skrifttypen…",
+  "addFont": "Legg til skrifttype",
+  "cancel": "Avbryt",
+  "missingFaces": "Legg til {faces} versjon av «{name}» (valgfritt) — velg filen på nytt.",
+  "somethingWrong": "Noe gikk galt",
+  "faceLower": {
+    "regular": "vanlig",
+    "bold": "fet",
+    "italic": "kursiv"
+  },
+  "ownLicence": "Din egen",
+  "loadFailed": "Kunne ikke laste skrifttyper"
+}

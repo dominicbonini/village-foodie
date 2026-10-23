@@ -69,7 +69,32 @@ const termRe = term => new RegExp(term.toLowerCase().split(/\s+/).map(w => w.rep
   // france-1: an apostrophe matches either form — the glossary writes ' and a translation must write ’ (ICU).
   .replace(/['’]/g, "['’]"), 'iu')
 
-function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, guardLanguages, sameWords }) {
+/** The plural categories a message is missing for the locale: [{ arg, cat, example }]. Cardinal and ordinal plurals; whole numbers
+ *  0–1000 (every category a count reaches does so well before that). */
+const pluralRulesCache = new Map()
+function missingPluralCategories(msg, locale) {
+  const out = []
+  let ast; try { ast = parse(msg, { ignoreTag: false, requiresOtherClause: false }) } catch { return out }
+  const walk = nodes => { for (const n of nodes) {
+    if (n.type === TYPE.plural) {
+      const type = n.pluralType === 'ordinal' ? 'ordinal' : 'cardinal'
+      const key = `${locale}|${type}`
+      let pr = pluralRulesCache.get(key); if (!pr) { pr = new Intl.PluralRules(locale, { type }); pluralRulesCache.set(key, pr) }
+      const seen = new Set()
+      for (let i = 0; i <= 1000; i++) {
+        if (`=${i}` in n.options) continue
+        const cat = pr.select(i - (n.offset || 0))
+        if (!(cat in n.options) && cat !== 'other' && !seen.has(cat)) { seen.add(cat); out.push({ arg: n.value, cat, example: i }) }
+      }
+      for (const o of Object.values(n.options)) walk(o.value)
+    } else if (n.type === TYPE.select) { for (const o of Object.values(n.options)) walk(o.value) }
+    else if (n.type === TYPE.tag) walk(n.children)
+  } }
+  walk(ast)
+  return out
+}
+
+function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, guardLanguages, sameWords, drops }) {
   const lang = locale.split('-')[0].toLowerCase()
   const E = flat(en), T = flat(messages)
   const S = { missing: [], extra: [], icu: [] }
@@ -94,10 +119,19 @@ function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, 
     try { st = skeleton(t) } catch (e) { S.icu.push(`${k}: does not parse — ${e.message}`); continue }
     if (k in E) {
       se = skeleton(E[k])
-      if (st.args.join() !== se.args.join()) S.icu.push(`${k}: placeholders ${JSON.stringify(st.args)} ≠ en-GB ${JSON.stringify(se.args)}`)
+      // europe-languages-2: a placeholder a law requires a language to leave out (docs/i18n/placeholder-drops.json) may be
+      // missing — only those named there, only for that key; every other placeholder must still match.
+      const mayDrop = new Set((drops?.[k]?.drop ?? []).map(n => `${n}:arg`))
+      const stArgs = st.args.join(), seArgs = se.args.filter(a => !(mayDrop.has(a) && !st.args.includes(a))).join()
+      if (stArgs !== seArgs) S.icu.push(`${k}: placeholders ${JSON.stringify(st.args)} ≠ en-GB ${JSON.stringify(se.args)}`)
       for (const [n, o] of Object.entries(se.selects)) if ((st.selects[n] ?? []).join() !== o.join()) S.icu.push(`${k}: select {${n}} options ${JSON.stringify(st.selects[n])} ≠ en-GB ${JSON.stringify(o)}`)
       for (const [n, p] of Object.entries(se.plurals)) { const q = st.plurals[n]; if (!q || q.exact.join() !== p.exact.join() || !q.other) S.icu.push(`${k}: plural {${n}} ${JSON.stringify(q)} — needs en-GB's exact cases ${JSON.stringify(p.exact)} and an "other"`) }
       if (st.tags.join() !== se.tags.join()) S.icu.push(`${k}: tags ${JSON.stringify(st.tags)} ≠ en-GB ${JSON.stringify(se.tags)}`)
+      // europe-languages-2: THE LANGUAGE'S OWN PLURAL CATEGORIES (CLDR, via Intl.PluralRules). For every whole number a count can
+      // take, the category the language's rules pick must be in the message — unless an exact case (=0, =1 …) catches that
+      // number first. Polish "5 zamówień" needs `many`, Czech "3 objednávky" `few`, Slovenian "2 naročili" `two`, Latvian "0"
+      // and "10–20" `zero`; a message that leaves one out shows `other`'s form, which is wrong for those numbers.
+      for (const miss of missingPluralCategories(t, locale)) S.icu.push(`${k}: plural {${miss.arg}} lacks "${miss.cat}" (${locale} uses it for ${miss.example})`)
     } else se = null
     // ── flags ──
     if (se) {
@@ -159,7 +193,7 @@ function report({ locale, S, F, counts }, max = 12) {
   return L.join('\n')
 }
 
-module.exports = { check, report, skeleton, termRe, flat }
+module.exports = { check, report, skeleton, termRe, flat, missingPluralCategories }
 
 if (require.main === module) {
   const a = args()
@@ -173,8 +207,20 @@ if (require.main === module) {
   const knownPlanKeys = catalogPlans && catalogPlans.filter(p => p.active).map(p => p.key)
   const guardLanguages = fs.readdirSync(path.join(REPO, 'lib/allergen-guard')).filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, ''))
   const swFile = a['same-words'] || `docs/i18n/same-words/${lang}.json`
-  const r = check({ locale: a.locale, messages: read(a.messages || `messages/${a.locale}.json`), en: read('messages/en-GB.json'),
-    glossary: fs.existsSync(path.resolve(REPO, gFile)) ? read(gFile) : null, back: fs.existsSync(path.resolve(REPO, bFile)) ? read(bFile) : null, planKeys, knownPlanKeys, guardLanguages,
+  // german-1 (22 October 2026): a REGIONAL VARIANT of a language (de-AT, de-CH over de-DE; de-LI over de-CH — LOCALE_PARENT in
+  // lib/i18n/locales.ts) is a sparse file, so it is checked as the app reads it: its chain merged, outermost last, and its
+  // back-translations likewise. A locale with no parent reads its one file, exactly as before.
+  const parents = Object.fromEntries([...(/export const LOCALE_PARENT[^=]*=\s*\{([^}]*)\}/.exec(fs.readFileSync(path.join(REPO, 'lib/i18n/locales.ts'), 'utf8'))?.[1] ?? '')
+    .matchAll(/'([a-z]{2}-[A-Z]{2})':\s*'([a-z]{2}-[A-Z]{2})'/g)].map(m => [m[1], m[2]]))
+  const chain = []; for (let l = a.locale; l && l !== 'en-GB'; l = parents[l]) chain.unshift(l)
+  const deep = (x, y) => { const o = { ...x }; for (const [k, v] of Object.entries(y ?? {})) o[k] = v && typeof v === 'object' && !Array.isArray(v) && o[k] && typeof o[k] === 'object' ? deep(o[k], v) : v; return o }
+  const merged = (files, own) => (chain.length > 1 && !own ? files.filter(f => fs.existsSync(path.resolve(REPO, f))).reduce((acc, f) => deep(acc, read(f)), {}) : null)
+  const messages = merged(chain.map(l => `messages/${l}.json`), a.messages) ?? read(a.messages || `messages/${a.locale}.json`)
+  const backAll = merged(chain.map(l => `docs/i18n/back/${l}.json`), a.back) ?? (fs.existsSync(path.resolve(REPO, bFile)) ? read(bFile) : null)
+  const dropsFile = path.join(REPO, 'docs/i18n/placeholder-drops.json')
+  const drops = fs.existsSync(dropsFile) ? JSON.parse(fs.readFileSync(dropsFile, 'utf8'))[lang] ?? null : null
+  const r = check({ locale: a.locale, messages, en: read('messages/en-GB.json'), drops,
+    glossary: fs.existsSync(path.resolve(REPO, gFile)) ? read(gFile) : null, back: backAll, planKeys, knownPlanKeys, guardLanguages,
     sameWords: fs.existsSync(path.resolve(REPO, swFile)) ? read(swFile) : null })
   const md = report({ locale: a.locale, ...r }, Number(a.max) || 12)
   if (a.report) fs.writeFileSync(path.resolve(REPO, a.report), md + '\n')

@@ -1,0 +1,25 @@
+{
+  "heading": "Uken fra {start} til {end}",
+  "daysOff": "Stengt i dag",
+  "cancelled": "AVLYST",
+  "placeSample": {
+    "nameTownBelow": "Kafé Torget\nBergen",
+    "nameTown": "Kafé Torget, Bergen",
+    "nameOnly": "Kafé Torget"
+  },
+  "busyWeek": {
+    "venue1": "Grendehuset i Bergen",
+    "town1": "Bergen",
+    "venue2": "Vossevangen idrettsplass og aktivitetspark med ballbinge",
+    "town2": "Voss",
+    "venue3": "Torget",
+    "town3": "Haugesund",
+    "venue4": "Matfestival",
+    "town4": "Stavanger",
+    "venue5": "Os Gjestgiveri",
+    "town5": "Os",
+    "venue6": "Kirkebakken",
+    "town6": "Stord"
+  },
+  "poweredBy": "Drevet av HatchGrab"
+}

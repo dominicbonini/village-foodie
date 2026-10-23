@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Intervalo de datas",
+    "event": "📍 Evento",
+    "filterBy": "Filtrar por",
+    "show": "Mostrar",
+    "range": "<from></from><sep>a</sep><until></until>",
+    "selectEvent": "Selecione um evento…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Evento",
+    "viewReport": "Ver relatório",
+    "loading": "A carregar…",
+    "orders": "📋 Encomendas",
+    "items": "📦 Artigos",
+    "exportCsv": "⬇ Exportar CSV"
+  },
+  "empty": {
+    "noOrders": "Não foram encontradas encomendas neste período.",
+    "selectEvent": "Selecione um evento acima para ver o respetivo relatório."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} encomenda} other {{count} encomendas}} · {total}"
+  },
+  "revenue": {
+    "title": "Detalhe da receita",
+    "deals": "Receita de menus",
+    "modifiers": "Suplementos de opções",
+    "foodSales": "Vendas de comida",
+    "total": "Total",
+    "other": "Outros",
+    "tax": "Impostos",
+    "tips": "Gorjetas",
+    "serviceFees": "Taxas de serviço",
+    "cardFees": "Taxas de cartão"
+  },
+  "itemsSold": {
+    "title": "Artigos vendidos"
+  },
+  "dealsCard": {
+    "title": "Menus"
+  },
+  "custom": {
+    "title": "Personalizações",
+    "paidModifiers": "Opções pagas",
+    "customerNotes": "Notas dos clientes",
+    "note": "«{note}»"
+  },
+  "table": {
+    "item": "Artigo",
+    "modifier": "Opção",
+    "qty": "Qtd.",
+    "total": "Total",
+    "date": "Data",
+    "time": "Hora",
+    "channel": "Canal"
+  },
+  "breakdown": {
+    "orders": "Detalhe das encomendas",
+    "items": "Detalhe dos artigos"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Ao balcão"
+  },
+  "csv": {
+    "orderId": "ID da encomenda",
+    "date": "Data",
+    "event": "Evento",
+    "timePlaced": "Hora da encomenda",
+    "collectionTime": "Hora de levantamento",
+    "customerName": "Nome do cliente",
+    "orderType": "Tipo de encomenda",
+    "items": "Artigos",
+    "deals": "Menus",
+    "modifiers": "Opções",
+    "notes": "Notas",
+    "subtotal": "Subtotal",
+    "tip": "Gorjeta",
+    "serviceFee": "Taxa de serviço",
+    "total": "Total",
+    "itemName": "Nome do artigo",
+    "qty": "Qtd.",
+    "unitPrice": "Preço unitário",
+    "itemTotal": "Total do artigo",
+    "orderTotal": "Total da encomenda",
+    "unknownEvent": "Evento desconhecido",
+    "asap": "O mais cedo possível",
+    "unknownCustomer": "Desconhecido",
+    "customerOnline": "Cliente online",
+    "placedByTruck": "Registada pelo food truck"
+  }
+}

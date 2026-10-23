@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Cancelado",
+    "finished": "Terminado",
+    "unconfirmed": "Por confirmar",
+    "confirmed": "Confirmado",
+    "open": "Aberto agora",
+    "closed": "Fechado"
+  },
+  "sections": {
+    "label": "Secções da agenda",
+    "events": "Eventos",
+    "eventTypes": "Tipos de evento"
+  },
+  "header": {
+    "title": "Agenda",
+    "upcoming": "{count} próximos",
+    "import": "✨ Importar agenda",
+    "importHint": "foto, PDF ou texto",
+    "addEvent": "+ Adicionar evento",
+    "scraperAuto": "A procurar eventos automaticamente no seu site",
+    "changeInSettings": "Alterar nas Definições",
+    "scraperManual": "Está a gerir a sua agenda manualmente"
+  },
+  "empty": {
+    "title": "Sem eventos próximos",
+    "body": "Os eventos recolhidos das suas redes sociais e do seu calendário de reservas aparecem aqui para os confirmar"
+  },
+  "list": {
+    "openNow": "Aberto agora",
+    "needsApproval": "Precisa da sua aprovação",
+    "needsConfirmation": "Por confirmar",
+    "confirmed": "Confirmados",
+    "past": "Eventos passados ({count})",
+    "found": "Encontrámos {count, plural, one {# evento para si — reveja-o e aprove-o antes de ser publicado.} other {# eventos para si — reveja-os e aprove-os antes de serem publicados.}}"
+  },
+  "card": {
+    "addName": "Adicionar um nome",
+    "timeNeeded": "⚠ Falta a hora",
+    "setTimeFirst": "Defina primeiro uma hora",
+    "confirm": "Confirmar",
+    "copy": "Copiar",
+    "edit": "Editar",
+    "makePost": "Criar publicação",
+    "cancel": "Cancelar",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "stock": "⚠️ Stock",
+    "stockHidden": "Oculto — {reason}",
+    "noDeals": "Sem promoções ativas",
+    "dealsActive": "{count, plural, one {# promoção ativa} other {# promoções ativas}} · {names}{hidden, plural, =0 {} one { · # oculta} other { · # ocultas}}",
+    "approveNeedsTimes": "Só pode aprovar quando este evento tiver hora de início e de fim — adicione-as em Editar."
+  },
+  "guessed": {
+    "title": "📍 Adivinhámos esta localização",
+    "body": "Mais do que um local corresponde a <b>{venue}</b>, por isso escolhemos o mais provável{hasTown, select, yes { em <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Confirme que é o correto antes de aprovar — se estiver errado, use <b>Editar</b> para corrigir a zona ou {postal}; caso contrário, os clientes serão enviados para o sítio errado.",
+    "thisVenue": "este local"
+  },
+  "noLocation": {
+    "title": "📍 Ainda sem localização",
+    "body": "Não conseguimos colocar este local no mapa, por isso vai aparecer na lista, mas sem marcador no mapa. Adicione {postal} em <b>Editar</b> para o colocar no mapa."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Possível conflito} other {Possíveis conflitos}} — reveja antes de {pending, select, yes {aprovar} other {confirmar}}",
+    "duplicate": "Parece ser o mesmo evento que já tem.",
+    "review": "Mesmo local e data, hora diferente — é o mesmo evento com a hora alterada ou um horário à parte? Reveja antes de aprovar.",
+    "already": "Já está na sua agenda: <b>{venue}</b>{details} ({status, select, confirmed {confirmado} open {aberto} other {{status}}})",
+    "unnamedVenue": "Local sem nome",
+    "ack": "Sim, são eventos diferentes — {pending, select, yes {aprovar} other {confirmar}} mesmo assim",
+    "cancel": "Cancelar",
+    "overlap": "A hora deste evento sobrepõe-se a outro evento no mesmo dia — um só food truck não pode estar em dois sítios ao mesmo tempo. Verifique antes de aprovar."
+  },
+  "toast": {
+    "loadFailed": "Não foi possível carregar os eventos",
+    "linkFailed": "Não foi possível carregar a ligação",
+    "placeTypeFailed": "Evento guardado. O tipo habitual para {place} não foi guardado — {reason}.",
+    "placeTypeFailedReason": "a gravação não foi concluída",
+    "eventUpdated": "Evento atualizado",
+    "eventAdded": "Evento adicionado",
+    "eventsSaved": "{count, plural, one {# evento guardado} other {# eventos guardados}}",
+    "saveEventsFailed": "Não foi possível guardar os eventos",
+    "needsTime": "Adicione a hora de início e de fim antes de aprovar — este evento precisa de uma hora para ser publicado.",
+    "addStartTime": "Adicione uma hora de início",
+    "addEndTime": "Adicione uma hora de fim",
+    "chooseTruckBefore": "Escolha que food truck vai estar neste evento antes de aprovar.",
+    "chooseTruck": "Escolha que food truck vai estar neste evento",
+    "eventConfirmed": "Evento confirmado",
+    "eventRejected": "Evento rejeitado",
+    "undo": "↩ Anular",
+    "eventRestored": "Evento reposto",
+    "restoreFailed": "Não foi possível repor",
+    "eventCancelled": "Evento cancelado",
+    "eventCancelledOrders": "Evento cancelado · {count, plural, one {# encomenda cancelada} other {# encomendas canceladas}}",
+    "placeHidden": "Local ocultado",
+    "placeShown": "Local visível novamente",
+    "saveThatFailed": "Não foi possível guardar."
+  },
+  "link": {
+    "label": "Ligação privada e código QR",
+    "close": "Fechar"
+  }
+}

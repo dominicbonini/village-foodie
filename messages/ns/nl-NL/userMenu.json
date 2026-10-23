@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Gebruikersmenu",
+  "screenOn": "Scherm aan",
+  "screenOff": "Scherm uit",
+  "newOrderSound": "Geluid nieuwe bestelling",
+  "copied": "Gekopieerd",
+  "orderLink": "Bestellink",
+  "qrCode": "QR-code",
+  "kitchenScreen": "Keukenscherm",
+  "thisDevice": "Dit apparaat",
+  "manage": "Beheren",
+  "ordersDashboard": "Bestellingendashboard",
+  "admin": "Admin",
+  "privacy": "Privacybeleid",
+  "terms": "Voorwaarden",
+  "signOut": "Uitloggen",
+  "close": "Sluiten"
+}

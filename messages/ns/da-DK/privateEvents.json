@@ -1,0 +1,42 @@
+{
+  "publicName": "Privat arrangement",
+  "chip": "Privat",
+  "grid": {
+    "orderingSection": "BESTILLING",
+    "linkRowLabel": "Tag imod bestillinger via privat link og QR-kode",
+    "columnTitle": "Den indbyggede type Privat. Den kan ikke omdøbes, flyttes eller slettes."
+  },
+  "form": {
+    "help": "Vises i din kalender som »Privat arrangement« med kun dato og tidspunkter — aldrig adressen, kortet eller Village Foodie.",
+    "linkPromise": "Gæsterne bestiller via et privat link og en QR-kode — du får dem, når du har gemt.",
+    "nameLabel": "Arrangementets navn",
+    "nameHelp": "Gæsterne ser dette øverst på bestillingssiden.",
+    "namePlaceholder": "Sarah og Toms bryllup",
+    "previewNote": "Sådan vises det i din kalender — uden sted, by eller postnummer.",
+    "needsTimes": "Tilføj et start- og sluttidspunkt — et privat arrangement, der tager imod bestillinger via link, skal have dem."
+  },
+  "link": {
+    "button": "Link og QR",
+    "title": "Privat link og QR-kode",
+    "label": "Privat link",
+    "copy": "Kopiér",
+    "copied": "Kopieret",
+    "qrDownload": "Download QR",
+    "tableCards": "Udskriv bordkort",
+    "newLink": "Lav et nyt link",
+    "working": "Arbejder…",
+    "newLinkConfirm": "Lav et nyt link? Det nuværende link holder op med at virke med det samme, og alle QR-koder, du allerede har udskrevet, holder også op med at virke.",
+    "newLinkHelp": "Brug dette, hvis linket er havnet et sted, hvor det ikke burde være. Det nuværende link holder op med at virke med det samme, og udskrevne QR-koder holder også op med at virke.",
+    "newLinkFailed": "Kunne ikke lave et nyt link.",
+    "offNotice": "Bestilling via privat link er slået fra for dette arrangement, så der er intet link at dele. Arrangementet vises stadig i din kalender som »Privat arrangement«."
+  },
+  "cards": {
+    "printTitle": "{truck} — bordkort",
+    "scan": "Scan for at bestille",
+    "blurb": "Bestil og betal på din telefon. Vi råber dit navn op, når det er klar.",
+    "footer": "Bestilling via HatchGrab"
+  },
+  "noSinglePost": "Private arrangementer får ikke deres eget opslag — de vises på din ugeplakat som »Privat arrangement«.",
+  "confirmToPrivate": "Dette skjuler adressen og arrangementet på kortet. Gæsterne skal bruge det private link for at bestille.",
+  "confirmFromPrivate": "Dette gør arrangementet offentligt: adressen og kortnålen bliver vist, og det private link holder op med at virke."
+}

@@ -1,0 +1,6 @@
+{
+  "heading": "Receber pagamentos",
+  "intro": "Como a sua equipa regista o pagamento de cada encomenda.",
+  "paidStepHelp": "Adiciona um botão Confirmar quando regista uma encomenda manualmente, para a poder registar já e receber o pagamento mais tarde. Ative esta opção se aceita encomendas por telefone ou antecipadas.",
+  "paidStepNote": "Só afeta as encomendas que adiciona. Não afeta as encomendas online."
+}

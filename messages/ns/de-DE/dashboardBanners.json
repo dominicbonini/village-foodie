@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} Zeitfenster} other {{count} Zeitfenster}} über der Kapazität – prüfen",
+  "batchOver": "{cat} über der Durchgangsgröße – {count} für {slot} ({per} pro Durchgang)",
+  "eventStartOver": "Kapazität zum Eventstart überschritten – {n, plural, one {{count} Artikel} other {{count} Artikel}} für {slot}",
+  "kitchenOver": "Küche über der Kapazität – {n, plural, one {{count} Artikel} other {{count} Artikel}} in Zubereitung für {slot}",
+  "orderItems": "#{id} – {n, plural, one {{count} Artikel} other {{count} Artikel}}",
+  "placedAnyway": "Trotzdem aufgegeben: {list}",
+  "placedItem": "#{id} für {slot}",
+  "orphans": "{times} über der Kapazität – keine zugehörigen Bestellungen gefunden",
+  "dismiss": "Ausblenden",
+  "kitchenCapacity": "Küchenkapazität",
+  "overCapacity": "Über der Kapazität",
+  "wakeUnsupported": "Dieses Gerät kann den Bildschirm nicht anlassen.",
+  "wakeInsecure": "Von dieser Adresse aus kann der Bildschirm nicht angelassen werden.",
+  "wakeRetry": "Bildschirm anlassen – für neuen Versuch antippen",
+  "wakeAcquire": "Bildschirm anlassen",
+  "degraded": {
+    "serverError": "Der Server konnte keine Bestellungen laden{hasStatus, select, yes { (Fehler {status})} other {}}. Bestellungen von {at} werden angezeigt. Neue Bestellungen können fehlen.",
+    "unreachable": "Server nicht erreichbar. Bestellungen von {at} werden angezeigt. Neue Bestellungen können fehlen."
+  }
+}

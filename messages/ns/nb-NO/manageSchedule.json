@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Avlyst",
+    "finished": "Ferdig",
+    "unconfirmed": "Ikke bekreftet",
+    "confirmed": "Bekreftet",
+    "open": "Åpent nå",
+    "closed": "Stengt"
+  },
+  "sections": {
+    "label": "Kalenderdeler",
+    "events": "Arrangementer",
+    "eventTypes": "Arrangementstyper"
+  },
+  "header": {
+    "title": "Kalender",
+    "upcoming": "{count} kommende",
+    "import": "✨ Importer kalender",
+    "importHint": "bilde, PDF eller tekst",
+    "addEvent": "+ Legg til arrangement",
+    "scraperAuto": "Finner arrangementer automatisk på nettsiden din",
+    "changeInSettings": "Endre i Innstillinger",
+    "scraperManual": "Du styrer kalenderen manuelt"
+  },
+  "empty": {
+    "title": "Ingen kommende arrangementer",
+    "body": "Arrangementer vi henter fra sosiale medier og bookingkalenderen din, dukker opp her så du kan bekrefte dem"
+  },
+  "list": {
+    "openNow": "Åpent nå",
+    "needsApproval": "Må godkjennes av deg",
+    "needsConfirmation": "Må bekreftes",
+    "confirmed": "Bekreftet",
+    "past": "Tidligere arrangementer ({count})",
+    "found": "Vi fant {count, plural, one {# arrangement til deg – se gjennom og godkjenn før det publiseres.} other {# arrangementer til deg – se gjennom og godkjenn før de publiseres.}}"
+  },
+  "card": {
+    "addName": "Legg til navn",
+    "timeNeeded": "⚠ Mangler tid",
+    "setTimeFirst": "Angi tid først",
+    "confirm": "Bekreft",
+    "copy": "Kopier",
+    "edit": "Rediger",
+    "makePost": "Lag innlegg",
+    "cancel": "Avlys",
+    "approve": "Godkjenn",
+    "reject": "Avvis",
+    "stock": "⚠️ Lager",
+    "stockHidden": "Skjult – {reason}",
+    "noDeals": "Ingen aktive tilbud",
+    "dealsActive": "{count, plural, one {# tilbud aktivt} other {# tilbud aktive}} · {names}{hidden, plural, =0 {} one { · # skjult} other { · # skjulte}}",
+    "approveNeedsTimes": "Du kan ikke godkjenne før arrangementet har start- og sluttid – legg dem til med Rediger."
+  },
+  "guessed": {
+    "title": "📍 Vi gjettet dette stedet",
+    "body": "Mer enn ett sted passet til <b>{venue}</b>, så vi valgte det som passet best{hasTown, select, yes { i <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Sjekk at det er riktig sted før du godkjenner – hvis det er feil, bruk <b>Rediger</b> for å rette området eller {postal}, ellers blir kundene sendt til feil sted.",
+    "thisVenue": "dette stedet"
+  },
+  "noLocation": {
+    "title": "📍 Ingen plassering ennå",
+    "body": "Vi klarte ikke å plassere dette stedet på kartet, så det blir oppført, men uten kartnål. Legg til {postal} med <b>Rediger</b> for å få det på kartet."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Mulig konflikt} other {Mulige konflikter}} – sjekk før du {pending, select, yes {godkjenner} other {bekrefter}}",
+    "duplicate": "Dette ser ut som et arrangement du allerede har.",
+    "review": "Samme sted og dato, men annen tid – er dette samme arrangement med endret tid, eller en egen økt? Sjekk før du godkjenner.",
+    "already": "Står allerede i kalenderen din: <b>{venue}</b>{details} ({status, select, confirmed {bekreftet} open {åpent} other {{status}}})",
+    "unnamedVenue": "Sted uten navn",
+    "ack": "Ja, dette er ulike arrangementer – {pending, select, yes {godkjenn} other {bekreft}} likevel",
+    "cancel": "Avbryt",
+    "overlap": "Tiden for dette arrangementet overlapper et annet arrangement samme dag – én matbil kan ikke være to steder samtidig. Sjekk før du godkjenner."
+  },
+  "toast": {
+    "loadFailed": "Kunne ikke laste arrangementer",
+    "linkFailed": "Kunne ikke laste lenken",
+    "placeTypeFailed": "Arrangementet er lagret. Vanlig type for {place} ble ikke lagret – {reason}.",
+    "placeTypeFailedReason": "lagringen gikk ikke gjennom",
+    "eventUpdated": "Arrangement oppdatert",
+    "eventAdded": "Arrangement lagt til",
+    "eventsSaved": "{count, plural, one {# arrangement lagret} other {# arrangementer lagret}}",
+    "saveEventsFailed": "Kunne ikke lagre arrangementer",
+    "needsTime": "Legg til start- og sluttid før du godkjenner – arrangementet trenger en tid for å bli publisert.",
+    "addStartTime": "Legg til starttid",
+    "addEndTime": "Legg til sluttid",
+    "chooseTruckBefore": "Velg hvilken matbil som skal jobbe på arrangementet før du godkjenner.",
+    "chooseTruck": "Velg hvilken matbil som skal jobbe på arrangementet",
+    "eventConfirmed": "Arrangement bekreftet",
+    "eventRejected": "Arrangement avvist",
+    "undo": "↩ Angre",
+    "eventRestored": "Arrangement gjenopprettet",
+    "restoreFailed": "Kunne ikke gjenopprette",
+    "eventCancelled": "Arrangement avlyst",
+    "eventCancelledOrders": "Arrangement avlyst · {count, plural, one {# bestilling} other {# bestillinger}} kansellert",
+    "placeHidden": "Plassen er skjult",
+    "placeShown": "Plassen vises igjen",
+    "saveThatFailed": "Kunne ikke lagre det."
+  },
+  "link": {
+    "label": "Privat lenke og QR-kode",
+    "close": "Lukk"
+  }
+}

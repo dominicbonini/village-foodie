@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Tu primer mes es totalmente gratis, con todas las funciones desbloqueadas.} other {Tus primeros # meses son totalmente gratis, con todas las funciones desbloqueadas.}}",
+    "body": "Con {brand}, tus clientes piden con antelación y pagan al recoger, así que puedes aceptar pedidos online sin conectar ningún procesador de pagos con tarjeta. ¿Prefieres cobrar por adelantado? Añade el pago online con tarjeta cuando quieras. Cuando termine tu prueba, pasarás al plan <plan>{fallback}</plan>{fallbackFree, select, yes { (sin cuota mensual)} other {}}, salvo que elijas otro plan. Sin tarjeta para empezar, sin permanencia, cancela cuando quieras."
+  },
+  "card": {
+    "perTruckMonth": "por food truck / mes",
+    "mostTrucks": "El más elegido",
+    "tryFree": "Prueba gratis",
+    "seeEvery": "Ver todas las funciones →",
+    "everything": "Todo para gestionar tu servicio",
+    "everythingIn": "Todo lo del plan {plan}, y además"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> solo en pedidos online pagados con tarjeta. Los pedidos en ventanilla siempre son gratis.",
+    "included": "Los primeros <b>{included}</b> en pedidos online, incluidos cada mes; después, <b>{fee}*</b>. Los pedidos en ventanilla siempre son gratis.",
+    "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un coste mensual fijo y previsible."
+  },
+  "base": {
+    "walkUp": "Pedidos en ventanilla y pantalla de cocina",
+    "online": "Pedidos online",
+    "preorders": "Pedidos anticipados y hora de recogida",
+    "capacity": "Pedidos máximos por franja",
+    "privateEvents": "Eventos privados",
+    "printing": "Impresión de comandas",
+    "app": "App de cocina para iPhone, iPad y Android"
+  },
+  "added": {
+    "whatsapp_replies": "Respuestas automáticas de WhatsApp",
+    "schedule_graphics": "Publicaciones para redes sociales — tu agenda para Facebook e Instagram — listas para publicar",
+    "event_types": "Tipos de evento y precios personalizados"
+  },
+  "money": {
+    "unlimitedOrders": "Pedidos online ilimitados, 0 % de comisión de HatchGrab",
+    "samePrice": "El mismo precio en tu mes de más trabajo"
+  },
+  "comingSoon": "Próximamente",
+  "bar": {
+    "title": "¿Qué plan me sale más barato?",
+    "subtitle": "Tus pedidos online al mes",
+    "first": "Menos de {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Más de {from} → <b>{plan}</b>",
+    "only": "Cualquier volumen → <b>{plan}</b>"
+  },
+  "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propio datáfono — HatchGrab cobra 0 %.",
+  "currencyLine": "Precios en {currency} ({code})"
+}

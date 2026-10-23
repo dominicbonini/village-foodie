@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Noe gikk galt",
+    "previewFailed": "Forhåndsvisningen kunne ikke lages",
+    "loadFailed": "Kunne ikke laste",
+    "tooBig": "Bildet er {size, number, ::.0 group-off} MB. Grensen er 10 MB.",
+    "wrongType": "Velg en PNG eller JPG.",
+    "uploadIncomplete": "Opplastingen ble ikke fullført",
+    "uploadFailed": "Opplastingen mislyktes",
+    "saveFailed": "Kunne ikke lagre",
+    "buildFailed": "Kunne ikke lage innlegget",
+    "copyFailed": "Kunne ikke kopiere — merk teksten og kopier den manuelt."
+  },
+  "loading": "Laster…",
+  "missingTable": {
+    "title": "Ukeinnlegget trenger en databaseoppdatering",
+    "body": "Designtabellen er ikke opprettet ennå. Når migreringen er kjørt, vil denne skjermen fungere."
+  },
+  "kind": {
+    "label": "Hvilket design",
+    "event": "Enkelt arrangement",
+    "week": "Ukentlig"
+  },
+  "setup": {
+    "title": "Sett opp ukeinnlegget ditt",
+    "intro": "Last opp en tom versjon av ukegrafikken du allerede lager — samme design, men uten dine egne tekstbokser. HatchGrab fyller inn uken fra kalenderen din.",
+    "canvaTitle": "Slik eksporterer du en tom versjon fra Canva",
+    "canvaStep1": "Åpne det vanlige ukedesignet ditt.",
+    "canvaStep2": "Slett tekstboksene med datoer, steder og klokkeslett — behold bakgrunnen og overskriftene du vil ha med.",
+    "canvaStep3": "Del › Last ned › PNG.",
+    "uploading": "Laster opp…",
+    "upload": "Last opp det tomme bildet ditt",
+    "uploadHint": "PNG eller JPG, opptil 10 MB, minst {px} px på den korte siden.",
+    "phoneTip": "Best på datamaskin eller iPad — boksene er små å dra på mobil.",
+    "designName": "Design for ukeinnlegg",
+    "backDesigns": "‹ Design",
+    "back": "‹ Tilbake",
+    "pictureNote": "Bildet ditt uten dato eller sted. Det legger vi til.",
+    "saved": "Designet er lagret."
+  },
+  "week": {
+    "this": "Denne uken",
+    "next": "Neste uke"
+  },
+  "post": {
+    "title": "Ukeinnlegget ditt",
+    "editDesign": "Rediger design",
+    "weekOf": "uken fra {date}",
+    "imageAlt": "Ukeinnlegget ditt",
+    "building": "Lager innlegget ditt…",
+    "updating": "Oppdaterer…",
+    "eventsTitle": "Ukens arrangementer",
+    "noEvents": "Ingen arrangementer denne uken.",
+    "eventDateCancelled": "{date} · avlyst",
+    "showCancelled": "Vis avlyste arrangementer",
+    "showPrivate": "Vis private arrangementer",
+    "privateHint": "De vises som «Privat arrangement» med dato og klokkeslett — aldri stedet.",
+    "noteTitle": "Merknad",
+    "notePlaceholder": "f.eks. Forhåndsbestill for henting",
+    "noteHint": "Vises i bildeteksten, og i merknadsboksen hvis du har lagt inn en.",
+    "captionTitle": "Bildetekst til siden din",
+    "perEventTitle": "Innlegg for hvert arrangement",
+    "nothingToPost": "Ingenting å legge ut denne uken.",
+    "textCopied": "Teksten er kopiert.",
+    "copyText": "Kopier tekst",
+    "image": "Bilde",
+    "share": "Del",
+    "noOrderLink": "Ingen bestillingslenke ennå — angi nettadressen til matbilen din under Innstillinger."
+  }
+}

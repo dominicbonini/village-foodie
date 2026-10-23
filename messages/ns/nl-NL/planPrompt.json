@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} zijn inbegrepen bij {plan}.} other {{feature} is inbegrepen bij {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} zitten niet in je abonnement.} other {{feature} zit niet in je abonnement.}}",
+  "switchedOff": "{many, select, yes {{feature} staan uit voor je foodtruck.} other {{feature} staat uit voor je foodtruck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Upgraden →",
+  "features": {
+    "discovery_map": {
+      "name": "Vermelding op de ontdekkaart",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Het webdashboard",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "De keukenapp",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "De menukaart via QR-code",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Combideals",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Upsell-aanbiedingen",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Bestellingen aan de truck",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Online bestellen met Betalen bij afhalen",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "De knop ‘Uitverkocht’",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Voorraad aftellen",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Offline-bescherming van bestellingen",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online betalingen",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Ruim vooraf bestellen",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Tijdsloten voor klanten",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Maximaal aantal bestellingen per tijdslot",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatisch accepteren",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatische antwoorden via Messenger & Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR-codes met je eigen logo",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Uitgebreide rapportage",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Keukenbonnen printen",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Keukensynchronisatie op meerdere apparaten",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Het kokscherm",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatische antwoorden via WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Je planning op je eigen website",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Social media posts",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Eigen evenementtypes",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Privé-evenementen",
+      "many": "yes"
+    }
+  }
+}

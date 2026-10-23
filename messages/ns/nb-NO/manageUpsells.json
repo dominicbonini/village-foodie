@@ -1,0 +1,19 @@
+{
+  "heading": "Mersalg",
+  "intro": "Få kundene til å legge til litt ekstra. Når noen bestiller fra én kategori, foreslår du retter fra en annen — drikke til pizzaen, saus til burgeren.",
+  "add": "+ Legg til mersalg",
+  "toast": {
+    "updated": "Mersalgsregelen er oppdatert",
+    "added": "Mersalgsregelen er lagt til",
+    "removed": "Regelen er fjernet"
+  },
+  "whenAdds": "Når kunden legger til…",
+  "suggestFrom": "Foreslå retter fra…",
+  "chooseCategory": "Velg kategori",
+  "cancel": "Avbryt",
+  "saveChanges": "Lagre endringer",
+  "addRule": "Legg til regel",
+  "empty": "Ingen mersalgsregler ennå.",
+  "confirmRemove": "Fjerne mersalgsregelen «{trigger} → {suggest}»?",
+  "upTo": "{n, plural, one {Opptil {count} rett foreslås} other {Opptil {count} retter foreslås}}"
+}

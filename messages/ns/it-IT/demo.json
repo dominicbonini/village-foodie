@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Non disponibile nella demo",
+  "demoMode": "MODALITÀ DEMO",
+  "loopLands": "Ecco esattamente come arriva un ordine vero",
+  "showMe": "Fammi vedere",
+  "noCard": "{sub} Nessuna carta richiesta.",
+  "notYet": "Non ancora",
+  "cashAndCollected": "Contanti e ritirato",
+  "logoPlaceholder": "Il tuo logo qui",
+  "welcomeTitle": "{sample, select, yes {Ecco una demo di esempio} other {Ecco la tua demo}}",
+  "welcomeIntro": "{sample, select, yes {Questo è un <b>menu di prova</b> per farti vedere come funziona — carica il tuo quando vuoi per renderlo davvero tuo.} other {Questi sono il tuo menu e il tuo brand, su un pannello ordini reale.}} Gli ordini già presenti sono esempi, per mostrarti un servizio pieno.",
+  "twoThings": "Due cose da provare:",
+  "hitButton": "Premi <b>{button}</b> su un ordine",
+  "scanQr": "Inquadra il <b>codice QR</b> — o tocca il link — e ordina come un cliente, poi guardalo arrivare",
+  "qrAlt": "Codice QR della tua pagina ordini per i clienti",
+  "openHere": "Oppure aprila su questo dispositivo",
+  "copyLink": "Copia link",
+  "copyDescribedAs": "link per ordinare",
+  "noLinkTitle": "Il tuo link per gli ordini dei clienti",
+  "noLinkBody": "Il link alla tua pagina ordini è nel menu, in alto a destra.",
+  "asLive": "Il flusso di ordini e cucina è esattamente quello reale.",
+  "startExploring": "Inizia a esplorare",
+  "signupOffer": {
+    "heading": "Iscriviti ora per il tuo mese gratuito",
+    "sub": "Il conteggio parte solo quando decidi di andare online."
+  },
+  "cashIcon": "💶"
+}

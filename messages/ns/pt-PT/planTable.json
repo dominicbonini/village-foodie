@@ -1,0 +1,36 @@
+{
+  "h1": "Tudo para gerir o seu serviço, em todos os planos.",
+  "lede": "Encomendas, encomendas antecipadas, capacidade da cozinha e ecrã da cozinha estão incluídos em todos os planos.{hasUpgrades, select, yes { {plans} acrescentam {features} e taxas mais baixas.} other {}}",
+  "perMonth": "{price} / mês",
+  "group": {
+    "pay": "O que paga",
+    "run": "Gerir o seu serviço",
+    "online": "Encomendas online",
+    "marketing": "Marketing e automatização"
+  },
+  "pay": {
+    "included": "Encomendas online incluídas por mês",
+    "fee": "Taxa HatchGrab nas encomendas online com cartão*",
+    "walkUp": "Encomendas ao balcão"
+  },
+  "cell": {
+    "unlimited": "Ilimitado",
+    "free": "Grátis",
+    "feeAbove": "<b>{fee}</b> acima de {included}",
+    "yes": "Incluído",
+    "none": "Não incluído",
+    "comingSoon": "Em breve"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "redes sociais",
+    "event_types": "preços por evento personalizados"
+  },
+  "meta": {
+    "description": "Todas as funcionalidades da HatchGrab em todos os planos, lado a lado — {plans}, com taxas e encomendas incluídas.{months, plural, =0 {} one { O seu primeiro mês inclui tudo.} other { Os seus primeiros # meses incluem tudo.}}"
+  },
+  "notes": {
+    "whatsapp": "As respostas automáticas do WhatsApp requerem uma conta WhatsApp Business. A Meta pode cobrar algumas mensagens; as respostas são geradas automaticamente.",
+    "printing": "A impressão de talões da cozinha requer uma impressora Bluetooth ou com cabo compatível (não incluída)."
+  }
+}

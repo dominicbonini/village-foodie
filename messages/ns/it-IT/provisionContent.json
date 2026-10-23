@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Food truck 1",
+  "demoCategories": {
+    "pizza": "Pizze",
+    "burgers": "Burger",
+    "mains": "Piatti principali",
+    "sides": "Contorni",
+    "drinks": "Bevande"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck pizza",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Diavola",
+        "ndujaHoney": "’Nduja e miele",
+        "fourCheese": "Quattro formaggi",
+        "gardenVeg": "Ortolana",
+        "garlicBread": "Pane all’aglio",
+        "rocketParmesan": "Rucola e parmigiano",
+        "olives": "Olive",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck burger",
+      "items": {
+        "classicCheeseburger": "Cheeseburger classico",
+        "doubleBacon": "Doppio bacon",
+        "buttermilkChicken": "Pollo fritto al latticello",
+        "halloumiStack": "Burger di halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Patatine con la buccia",
+        "loadedCheeseFries": "Patatine al formaggio fuso",
+        "onionRings": "Anelli di cipolla",
+        "craftLemonade": "Limonata artigianale",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck curry",
+      "items": {
+        "chickenTikkaMasala": "Pollo tikka masala",
+        "lambRoganJosh": "Agnello rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Riso pilaf",
+        "garlicNaan": "Naan all’aglio",
+        "onionBhaji": "Onion bhaji",
+        "mangoLassi": "Lassi al mango",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

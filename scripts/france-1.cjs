@@ -95,7 +95,7 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
   // ══ 3 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · THE LANGUAGE — fr-FR, a full base; the checks; the words the law and the glossary fix')
   const L = read('lib/i18n/locales.ts')
-  t('fr-FR is in LOCALES and LANGUAGE_BASES (its one line), with its own full file', /LOCALES = \[[^\]]*'fr-FR'/.test(L) && /LANGUAGE_BASES: readonly AppLocale\[\] = \['fr-FR'\]/.test(L) && fs.existsSync(path.join(REPO, 'messages/fr-FR.json')))
+  t('fr-FR is in LOCALES and LANGUAGE_BASES (its one line), with its own full file', /LOCALES = \[[^\]]*'fr-FR'/.test(L) && /LANGUAGE_BASES: readonly AppLocale\[\] = \['fr-FR'/.test(L)   /* ⚠️ RE-PINNED (europe-languages-1): later bases follow fr-FR */ && fs.existsSync(path.join(REPO, 'messages/fr-FR.json')))
   const tc = spawnSync(process.execPath, ['scripts/translation-check.cjs', '--locale', 'fr-FR'], { cwd: REPO, encoding: 'utf8' })
   t('translation-check: 0 structural problems (every key, ICU skeletons identical to en-GB)', tc.status === 0 && /\*\*Structural: 0\*\*/.test(tc.stdout), tc.stdout.slice(0, 400))
   t('…and no number, price or brand changed, no banned term, every plan named', /invariants 0 · numbers 0 · length \d+ · drift \d+ · plans 0 · other 0/.test(tc.stdout) && /banned 0/.test(tc.stdout), tc.stdout.match(/Flags:.*/)?.[0])
@@ -104,8 +104,10 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
     at(FR_MSG, 'order.payAtTruck') === 'Payer au retrait' && at(FR_MSG, 'planNames.payg.name') === 'Sans abonnement' && at(FR_MSG, 'planNames.unlimited.name') === 'Illimité'
     && JSON.stringify(FR_MSG).includes('Paiement sur place') && /essai gratuit/i.test(JSON.stringify(FR_MSG)) && /\bla carte\b/.test(at(FR_MSG, 'order.addItemsPrompt')))
   t('« Pro » keeps its name (no planNames.pro.name); « menu » never names the list of dishes in the order page\'s prompts', at(FR_MSG, 'planNames.pro.name') === undefined && !/\bmenu\b/i.test(at(FR_MSG, 'order.addItemsPrompt')))
-  t('the order button says the order means paying (Code de la consommation L. 221-14): « Commander et payer au retrait », « Payer {amount} »',
-    at(FR_MSG, 'order.placeOrder') === 'Commander et payer au retrait' && at(FR_MSG, 'order.payAmount') === 'Payer {amount}')
+  // ⚠️ RE-PINNED (europe-languages-2, Dominic's decision 23 October 2026): the first button is also shown in card mode (it opens
+  // the card form), so it says the order means paying without naming a way to pay.
+  t('the order button says the order means paying (Code de la consommation L. 221-14): « Commander avec obligation de paiement », « Payer {amount} »',
+    at(FR_MSG, 'order.placeOrder') === 'Commander avec obligation de paiement' && at(FR_MSG, 'order.payAmount') === 'Payer {amount}' && /«[\s\u00a0\u202f]Commander avec obligation de paiement[\s\u00a0\u202f]»/.test(at(FR_MSG, 'order.busyNotice')))
   t('no straight apostrophe in any French string (ICU would read it as an escape)', !JSON.stringify(FR_MSG).replace(/https?:[^"]*/g, '').includes("'"))
 
   // ══ 4 ════════════════════════════════════════════════════════════════════════════════════════════════════════════

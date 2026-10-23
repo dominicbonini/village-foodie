@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Bestilling #{id} tilbakestilt",
+    "saved": "Bestilling #{id} lagret",
+    "undo": "↩ Angre",
+    "paymentNotRecorded": "⚠ Bestilling #{id} — BETALINGEN ER IKKE REGISTRERT. {collect, select, yes {Bestillingen ble fullført} other {Bestillingen ble lagret}}, men betalingen ble ikke det.",
+    "recordPayment": "Registrer betaling",
+    "paid": "Bestilling #{id} betalt",
+    "undonePayment": "Angret — betalingen er fjernet",
+    "undoneCollected": "Angret — bestillingen er ikke hentet",
+    "collected": "Bestilling #{id} {paidToo, select, yes {betalt og hentet} other {hentet}}",
+    "ready": "Bestilling #{id} klar",
+    "readyBuzzer": "Bestilling #{id} klar · <pill></pill>",
+    "status": "Bestilling #{id} {action, select, confirm {bekreftet} reject {avvist} ready {klar} collected {hentet} undo_collected {gjenopprettet} cancel {kansellert} other {oppdatert}}"
+  },
+  "conflicts": {
+    "more": "+{count} til",
+    "notOnScreenPlus": "+{count} ikke på denne skjermen",
+    "notOnScreen": "{n, plural, one {{count} bestilling ikke på denne skjermen} other {{count} bestillinger ikke på denne skjermen}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ BETALINGEN ER IKKE REGISTRERT",
+    "paymentBody": "{orders} — merket som betalt bare på denne enheten. Betalingen har ikke gått gjennom.",
+    "paymentCheck": "Sjekk bestillingen, og ta betalt på nytt hvis beløpet fortsatt ikke er betalt.",
+    "dismiss": "Skjul",
+    "confirmChecked": "Bekreft at du har sjekket {orders}",
+    "confirmHides": "Dette skjuler varselet. Registreringen beholdes på denne enheten uansett.",
+    "notYet": "Ikke ennå",
+    "iveChecked": "Jeg har sjekket {orders}",
+    "statusBody": "⚠ {orders} — denne endringen gikk ikke gjennom. Sjekk bestillingen.",
+    "offline": "📴 Ingen tilkobling — {n, plural, one {{count} endring er lagret på denne enheten. Den sendes når du er tilkoblet igjen.} other {{count} endringer er lagret på denne enheten. De sendes når du er tilkoblet igjen.}} Innstillingene er låst.",
+    "syncing": "Tilkoblet igjen — sender {n, plural, one {{count} endring} other {{count} endringer}}…",
+    "synced": "Alle endringer er sendt.",
+    "stillQueued": "{n, plural, one {{count} endring er lagret på denne enheten. Prøver fortsatt å sende den.} other {{count} endringer er lagret på denne enheten. Prøver fortsatt å sende dem.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab er låst",
+    "verifying": "Bekrefter…",
+    "unlock": "Lås opp",
+    "cantUseBiometric": "Kan du ikke bruke Face / Touch ID?",
+    "enterPin": "Skriv inn reserve-PIN-koden din",
+    "wrongPin": "Feil PIN — prøv igjen.",
+    "checking": "Sjekker…",
+    "tryBiometric": "Prøv Face / Touch ID i stedet",
+    "forgot": "Glemt PIN-koden? Da må du installere appen på nytt."
+  },
+  "notify": {
+    "title": "🔔 Varsler",
+    "intro": "Varsler på denne enheten. Slå på for å velge hvilke varsler du får.",
+    "refused": "Varsler må tillates i enhetens Innstillinger før du kan slå på dette.",
+    "newOrder": "Varsler om nye bestillinger",
+    "newOrderHelp": "Få varsel når en kundebestilling må bekreftes.",
+    "offline": "Varsler om frakobling / pause",
+    "offlineHelp": "Få varsel når denne enheten mister tilkoblingen (og bestilling settes på pause). <green>Virker uten nett.</green>"
+  },
+  "van": {
+    "label": "Matbil",
+    "loadRetry": "Kunne ikke laste · Prøv igjen",
+    "select": "Velg…"
+  },
+  "deviceSave": {
+    "network": "Fikk ikke kontakt med serveren — sjekk tilkoblingen og prøv igjen.",
+    "server": "Kunne ikke lagre akkurat nå. Prøv igjen."
+  },
+  "setup": {
+    "fetchErrorTitle": "Kunne ikke laste enhetsoppsettet",
+    "fetchErrorBody": "Vi fikk ikke kontakt med serveren for å sette opp <b>denne enheten</b>. Sjekk tilkoblingen og prøv igjen — bestillingene og innstillingene dine er ikke berørt.",
+    "retry": "Prøv igjen",
+    "later": "Senere",
+    "noVanTitle": "Ingen aktiv matbil",
+    "noVanBody": "Kontoen har ingen aktiv matbil ennå. Aktiver en i <b>Innstillinger → Dine matbiler</b>, så settes denne enheten opp automatisk — du trenger ikke gjøre noe mer her.",
+    "goToVans": "Gå til Innstillinger → Dine matbiler",
+    "title": "Sett opp denne enheten",
+    "body": "Engangsoppsett for <b>denne enheten</b>: hvilken skjerm den åpner, og hvilken matbil den hører til. Gjelder bare denne enheten — andre enheter stilles inn hver for seg, og du kan endre dette senere fra profilmenyen → «Denne enheten».",
+    "whichScreen": "Hvilken skjerm skal denne enheten åpne?",
+    "dashboard": "Oversikt",
+    "kds": "KDS",
+    "whichVan": "Hvilken matbil hører denne enheten til?",
+    "selectVan": "Velg en matbil…",
+    "saving": "Lagrer…",
+    "tryAgain": "Prøv igjen",
+    "continue": "Fortsett"
+  },
+  "device": {
+    "title": "Denne enheten",
+    "viewing": "Du ser på: <b>{truck}</b>",
+    "viewingVan": "Du ser på: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Bare denne enheten — andre enheter stilles inn hver for seg. (ID: {id}…)",
+    "truck": "Bedrift",
+    "van": "Matbil",
+    "defaultScreen": "Startskjerm",
+    "orderNotifications": "Bestillingsvarsler",
+    "patchFailed": "{setting, select, van {Matbil} defaultScreen {Startskjerm} other {Bestillingsvarsler}} ble ikke lagret. {reason}",
+    "requireBiometric": "Krev fingeravtrykk eller ansiktsgjenkjenning for å åpne",
+    "pinTitle": "Velg en reserve-PIN (4–6 sifre)",
+    "pinHelp": "Veien inn hvis fingeravtrykk eller ansiktsgjenkjenning ikke virker — det er den eneste reserveløsningen, så ikke glem den (glemt PIN betyr at du må installere appen på nytt). Virker uten nett.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Bekreft PIN",
+    "pinTooShort": "Bruk minst 4 sifre.",
+    "pinMismatch": "PIN-kodene er ikke like.",
+    "setPin": "Lagre PIN og slå på",
+    "cancel": "Avbryt",
+    "noBiometric": "Ingen fingeravtrykk eller ansiktsgjenkjenning er satt opp på denne enheten — legg det til i enhetens innstillinger. Reserve-PIN-koden virker fortsatt.",
+    "footer": "Disse innstillingene gjelder bare denne enheten — andre enheter stilles inn hver for seg."
+  },
+  "appLock": {
+    "unlockReason": "Lås opp HatchGrab",
+    "usePasscode": "Bruk kode",
+    "cancel": "Avbryt",
+    "confirmEnable": "Bekreft for å slå på applås"
+  },
+  "channel": {
+    "ordersName": "Nye bestillinger",
+    "ordersDescription": "Varsler når en bestilling må bekreftes."
+  },
+  "localNotify": {
+    "newOrderTitle": "Ny bestilling",
+    "orderReceived": "Bestilling {number} mottatt",
+    "newOrders": "{n, plural, one {Du har en ny bestilling} other {Du har {count} nye bestillinger}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Bestilling satt på pause",
+    "pausedBody": "Du er frakoblet — kundebestilling er satt på pause.",
+    "offlineTitle": "Du er frakoblet",
+    "offlineBody": "Denne enheten har mistet tilkoblingen."
+  }
+}

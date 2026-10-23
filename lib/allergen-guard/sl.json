@@ -1,0 +1,103 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for SLOVENIAN (sl-SI). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "sl",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "intoleran",
+    "preobcutljiv",
+    "celiakij",
+    "celiakija",
+    "brez glutena",
+    "brezglutensk",
+    "brez laktoze",
+    "brez mleka",
+    "brez mlecnih",
+    "brez jajc",
+    "brez oresckov",
+    "brez arasidov",
+    "brez soje",
+    "brez sezama",
+    "brez rib",
+    "brez rakov",
+    "brez zelene",
+    "brez gorcice",
+    "brez sulfitov",
+    "anafila",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "primerno za",
+    "primeren za",
+    "varno za",
+    "lahko vsebuje",
+    "sledi",
+    "navzkrizna kontaminacija",
+    "kontaminacij"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "pšenica",
+        "moka"
+      ],
+      "crustaceans": [
+        "raki",
+        "kozice"
+      ],
+      "eggs": [
+        "jajca",
+        "jajce",
+        "majoneza"
+      ],
+      "fish": [
+        "riba",
+        "ribe"
+      ],
+      "peanuts": [
+        "arašidi"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "mleko",
+        "laktoza",
+        "sir",
+        "smetana",
+        "maslo"
+      ],
+      "tree nuts": [
+        "oreški",
+        "orehi",
+        "mandlji",
+        "lešniki",
+        "pistacije"
+      ],
+      "celery": [
+        "zelena"
+      ],
+      "mustard": [
+        "gorčica"
+      ],
+      "sesame": [
+        "sezam"
+      ],
+      "sulphites": [
+        "sulfiti",
+        "žveplov dioksid"
+      ],
+      "lupin": [
+        "volčji bob"
+      ],
+      "molluscs": [
+        "mehkužci",
+        "školjke",
+        "lignji"
+      ]
+    }
+  }
+}

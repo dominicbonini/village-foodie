@@ -1,0 +1,107 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for SLOVAK (sk-SK). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "sk",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "intoleran",
+    "neznasanliv",
+    "celiaki",
+    "celiakia",
+    "bezlepkov",
+    "bez lepku",
+    "bez laktozy",
+    "bezlaktozov",
+    "bez mlieka",
+    "bez mliecnych",
+    "bez vajec",
+    "bez orechov",
+    "bez arasidov",
+    "bez soje",
+    "bez sezamu",
+    "bez ryb",
+    "bez korys",
+    "bez zeler",
+    "bez horcice",
+    "bez siricitan",
+    "anafylak",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "vhodne pre",
+    "vhodny pre",
+    "vhodna pre",
+    "bezpecne pre",
+    "moze obsahovat",
+    "stopy",
+    "stopove mnozstvo",
+    "krizova kontaminacia",
+    "kontaminac"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "lepok",
+        "pšenica",
+        "múka"
+      ],
+      "crustaceans": [
+        "kôrovce",
+        "krevety"
+      ],
+      "eggs": [
+        "vajcia",
+        "vajce",
+        "majonéza"
+      ],
+      "fish": [
+        "ryba",
+        "ryby"
+      ],
+      "peanuts": [
+        "arašidy"
+      ],
+      "soy": [
+        "sója",
+        "tofu"
+      ],
+      "dairy": [
+        "mlieko",
+        "laktóza",
+        "syr",
+        "smotana",
+        "maslo"
+      ],
+      "tree nuts": [
+        "orechy",
+        "mandle",
+        "lieskové",
+        "pistácie",
+        "kešu"
+      ],
+      "celery": [
+        "zeler"
+      ],
+      "mustard": [
+        "horčica"
+      ],
+      "sesame": [
+        "sezam"
+      ],
+      "sulphites": [
+        "siričitany",
+        "oxid siričitý"
+      ],
+      "lupin": [
+        "vlčí bôb",
+        "lupina"
+      ],
+      "molluscs": [
+        "mäkkýše",
+        "mušle",
+        "kalamáre"
+      ]
+    }
+  }
+}

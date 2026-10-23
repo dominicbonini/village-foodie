@@ -1,0 +1,8 @@
+{
+  "change": "{label} — alterar",
+  "useRule": "{label} — usar antes a regra",
+  "typePrice": "{label} — escrever um preço",
+  "backToRule": "Voltar à regra",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

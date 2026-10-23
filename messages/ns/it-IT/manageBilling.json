@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "per food truck / mese",
+  "transactionFees": "Commissioni sulle transazioni",
+  "comingSoon": "Prossimamente",
+  "footnote2Masked": "I pagamenti online sono gestiti da Stripe Connect. Le commissioni della piattaforma e quelle per i pagamenti con carta sono da definire e verranno confermate al lancio.",
+  "card": {
+    "title": "Fatturazione e pagamenti",
+    "managed": "La fatturazione è gestita da HatchGrab",
+    "earlyAccess": "Durante l’accesso anticipato impostiamo e modifichiamo i piani manualmente.",
+    "planLine": "{trial, select, yes {{truck} · piano {plan} (prova)} other {{truck} · piano {plan}}}"
+  },
+  "currentPlan": "Piano attuale",
+  "plan": {
+    "included": "Include {amount} di ordini online al mese.",
+    "includedUnlimited": "Ordini online illimitati inclusi.",
+    "promo": "Prezzo speciale.",
+    "promoUntil": "Prezzo speciale fino al {date}.",
+    "ended": "Il tuo piano {plan} è terminato il {date}. Ora sei sul piano {now}.",
+    "trialMonths": "Prova gratuita · mesi: {months}."
+  },
+  "trialEnds": "La prova termina il {date}",
+  "yourTrialEnds": "La tua prova termina il {date}",
+  "notStarted": {
+    "heading": "La tua prova gratuita non è ancora iniziata"
+  },
+  "onTrial": "Hai tutte le funzioni. Scegli un piano prima della fine della prova.",
+  "onTrialNoCta": "Hai tutte le funzioni.",
+  "noCharge": "🔒 Durante la prova, che dura fino al {date}, non ti verrà addebitato nulla. La fatturazione inizia solo quando scegli un piano e inserisci i tuoi dati di pagamento. Fino ad allora non c’è nulla da disdire e nulla da pagare.",
+  "fees": "*Sugli ordini online si applicano le normali commissioni per i pagamenti con carta",
+  "setUpPayment": "⏱ Scegli un piano prima della fine della prova",
+  "changeYourPlan": "Cambia piano",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Passa al piano {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Stiamo attivando la fatturazione automatica. Per cambiare piano subito, scrivici e ti attiviamo entro 24 ore.",
+    "mailSubject": "Passaggio al piano {plan} — {truck}",
+    "mailBody": "Ciao, vorrei passare {truck} al piano {plan} ({price}).",
+    "email": "Scrivici per cambiare piano",
+    "cancel": "Annulla"
+  }
+}

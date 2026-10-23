@@ -1,0 +1,83 @@
+{
+  "title": "Tipi di evento",
+  "newTypeButton": "+ Nuovo tipo di evento",
+  "close": "Chiudi",
+  "loading": "Caricamento…",
+  "missingTitle": "I tipi di evento non sono ancora attivi.",
+  "missingBody": "L’aggiornamento del database per questa funzione non è stato applicato. Non c’è nessun problema: ogni evento usa la tua configurazione abituale.",
+  "column": "Colonna",
+  "vanGone": "Quel food truck non esiste più.",
+  "typeGone": "Quel tipo non esiste più.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Altro per {name}",
+  "rename": "Rinomina",
+  "moveLeft": "Sposta a sinistra",
+  "moveRight": "Sposta a destra",
+  "delete": "Elimina",
+  "sections": {
+    "vans": "FOOD TRUCK",
+    "prices": "PREZZI",
+    "itemPrices": "PREZZI PRODOTTI",
+    "service": "SERVIZIO"
+  },
+  "labelFor": "{label} per {name}",
+  "intervalEvery": "Ogni {mins} min",
+  "noTypes": "Non hai ancora tipi di evento, quindi ogni evento usa la tua configurazione abituale.",
+  "renameTitle": "Rinomina questo tipo",
+  "name": "Nome",
+  "cancel": "Annulla",
+  "save": "Salva",
+  "copyVanOne": "Copia le impostazioni del food truck 1",
+  "thisType": "questo tipo",
+  "matchTitle": "Allineare «{name}» a Standard?",
+  "matchKeeps": "Le modifiche fatte nella dashboard di un singolo evento restano invariate e i prezzi di questo tipo non cambiano.",
+  "matchWillUse": "Userà: {summary}",
+  "deleteTitle": "Eliminare «{name}»?",
+  "deleteBody": "{n, plural, =0 {Nessun evento in programma usa «{name}».} one {{count} evento in programma usa «{name}». Tornerà a Standard.} other {{count} eventi in programma usano «{name}». Torneranno a Standard.}} Le modifiche fatte su un singolo evento restano invariate.",
+  "keep": "Mantieni",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "predefinito",
+    "vanSetup": "La configurazione abituale di questo food truck: usata in ogni evento senza tipo.",
+    "standardSetup": "La tua configurazione abituale: usata in ogni evento senza tipo.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} evento in programma} other {{upcomingCount} eventi in programma}} · {changed, plural, =0 {ancora nessuna modifica} one {{changedCount} su {total} modificato} other {{changedCount} su {total} modificati}}",
+    "noMenuItems": "Ancora nessun prodotto nel menu: aggiungili in Menu › Prodotti."
+  },
+  "newType": {
+    "title": "Nuovo tipo di evento",
+    "namePlaceholder": "es. Festa della scuola",
+    "help": "Tocca un nome o scrivine uno tuo. Parte come copia di Standard e, se poi modifichi Standard, non cambierà. Dopo puoi modificare tutto.",
+    "create": "Crea",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Pub",
+      "market": "Mercato",
+      "privateHire": "Noleggio food truck"
+    }
+  },
+  "select": {
+    "label": "Tipo di evento",
+    "usual": "{name} è il tipo abituale per questo luogo."
+  },
+  "summary": {
+    "normalSetup": "La tua configurazione abituale",
+    "sameAsStandard": "Uguale a Standard",
+    "buzzersOn": "cercapersone attivi",
+    "buzzersOff": "cercapersone disattivati",
+    "takeCashOn": "contanti accettati",
+    "takeCashOff": "contanti non accettati",
+    "markReadyOn": "passaggio «pronto» attivo",
+    "markReadyOff": "passaggio «pronto» disattivato",
+    "collectionEvery": "ritiro ogni {mins} min",
+    "offlineOff": "protezione offline disattivata",
+    "offlineKeepTaking": "offline: continua a ricevere ordini",
+    "offlinePause": "offline: sospendi gli ordini"
+  },
+  "errors": {
+    "somethingWentWrong": "Qualcosa è andato storto",
+    "couldNotLoad": "Impossibile caricare",
+    "couldNotSave": "Impossibile salvare",
+    "noVans": "Questa attività non ha food truck da modificare."
+  }
+}

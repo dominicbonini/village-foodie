@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Allergene bei jedem Gericht anzeigen",
+    "recommended": "Empfohlen",
+    "perDishBody": "Prüfen Sie jedes Gericht und bestätigen Sie seine Allergene. Kunden sehen Kennzeichnungen pro Gericht sowie eine daraus abgeleitete Allergenkarte als Übersicht.",
+    "cardTitle": "Eine Allergenkarte anzeigen",
+    "cardBody": "Laden Sie eine einzelne Allergenkarte hoch (PDF, Bild oder Text) oder fügen Sie sie ein – sie wird unverändert angezeigt. Kennzeichnungen pro Gericht bleiben ausgeblendet."
+  }
+}

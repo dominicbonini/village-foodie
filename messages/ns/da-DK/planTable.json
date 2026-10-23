@@ -1,0 +1,36 @@
+{
+  "h1": "Alt til at køre din service — i alle abonnementer.",
+  "lede": "Bestilling, forudbestilling, kapacitet og køkkenskærm er inkluderet i alle abonnementer.{hasUpgrades, select, yes { {plans} tilføjer {features} og lavere gebyrer.} other {}}",
+  "perMonth": "{price}/måned",
+  "group": {
+    "pay": "Det betaler du",
+    "run": "Kør din service",
+    "online": "Onlinebestillinger",
+    "marketing": "Markedsføring og automatisering"
+  },
+  "pay": {
+    "included": "Onlinebestillinger inkluderet hver måned",
+    "fee": "HatchGrab-gebyr på onlinebestillinger med kort*",
+    "walkUp": "Bestillinger ved vognen"
+  },
+  "cell": {
+    "unlimited": "Ubegrænset",
+    "free": "Gratis",
+    "feeAbove": "<b>{fee}</b> over {included}",
+    "yes": "Inkluderet",
+    "none": "Ikke inkluderet",
+    "comingSoon": "Kommer snart"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "sociale medier",
+    "event_types": "egne eventpriser"
+  },
+  "meta": {
+    "description": "Alle HatchGrabs funktioner i alle abonnementer, side om side — {plans}, med gebyrer og inkluderede mængder.{months, plural, =0 {} one { Din første måned inkluderer alt.} other { Dine første # måneder inkluderer alt.}}"
+  },
+  "notes": {
+    "whatsapp": "Automatiske svar på WhatsApp kræver en WhatsApp Business-konto. Meta kan opkræve betaling for nogle beskeder; svarene genereres automatisk.",
+    "printing": "Udskrivning af køkkenbonner kræver en kompatibel Bluetooth- eller kablet printer (følger ikke med)."
+  }
+}

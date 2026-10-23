@@ -1,0 +1,19 @@
+{
+  "heading": "Mersalg",
+  "intro": "Få kunderne til at tilføje lidt ekstra. Når nogen bestiller fra én kategori, så foreslå varer fra en anden – en drik til en pizza, en sauce til en burger.",
+  "add": "+ Tilføj mersalg",
+  "toast": {
+    "updated": "Regel for mersalg opdateret",
+    "added": "Regel for mersalg tilføjet",
+    "removed": "Regel fjernet"
+  },
+  "whenAdds": "Når kunden tilføjer…",
+  "suggestFrom": "Foreslå varer fra…",
+  "chooseCategory": "Vælg kategori",
+  "cancel": "Annuller",
+  "saveChanges": "Gem ændringer",
+  "addRule": "Tilføj regel",
+  "empty": "Ingen regler for mersalg endnu.",
+  "confirmRemove": "Fjern reglen for mersalg »{trigger} → {suggest}«?",
+  "upTo": "{n, plural, one {Op til {count} vare foreslås} other {Op til {count} varer foreslås}}"
+}

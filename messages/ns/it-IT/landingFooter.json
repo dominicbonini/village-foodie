@@ -1,0 +1,17 @@
+{
+  "tagline": "Meno tempo a gestire gli ordini.<br></br>Più tempo ai fornelli.",
+  "features": "Funzioni",
+  "pricing": "Prezzi",
+  "privacy": "Privacy",
+  "terms": "Termini",
+  "contact": "Contatti",
+  "about": "Chi siamo",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Dal team di <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Scarica HatchGrab su App Store",
+    "appStoreAlt": "Scarica su App Store",
+    "googlePlayLink": "Scarica HatchGrab su Google Play",
+    "googlePlayAlt": "Disponibile su Google Play"
+  }
+}

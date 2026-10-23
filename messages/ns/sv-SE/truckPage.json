@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Foodtruck | Village Foodie",
+    "hgFallbackTitle": "Foodtruck",
+    "orderTitle": "Beställ från {truck}",
+    "orderDescription": "Förbeställ från {truck} och hämta vid foodtrucken.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logotyp: {truck}"
+  },
+  "shareTitle": "Schema: {truck}",
+  "shareText": "Kolla var {truck} står härnäst! 🚚",
+  "linkCopied": "Profillänken har kopierats! 📋",
+  "facebookPage": "Facebooksida",
+  "loadingMap": "Laddar karta…",
+  "view": {
+    "list": "Lista",
+    "map": "Karta"
+  },
+  "ownThisTruck": "Äger du den här foodtrucken?",
+  "ownThisTruckTitle": "Äger du den här foodtrucken? Klicka för att uppdatera din profil",
+  "actions": {
+    "menu": "Meny",
+    "call": "Ring",
+    "message": "Meddelande",
+    "share": "Dela",
+    "order": "Beställ"
+  },
+  "loadingSchedule": "Laddar schema…",
+  "loadError": {
+    "title": "Kunde inte ladda",
+    "body": "Vi kunde inte ladda schemat just nu – det är oftast ett kort avbrott. Försök igen.",
+    "retry": "Försök igen"
+  },
+  "notFound": {
+    "title": "Foodtrucken hittades inte",
+    "body": "Vi hittade inga uppgifter om den här foodtrucken. Den kan ha flyttat eller uppdaterat sin profil.",
+    "cta": "Visa alla foodtruckar"
+  },
+  "noEvents": {
+    "title": "Inga kommande evenemang",
+    "body": "Vi kanske saknar uppgifter om den här foodtrucken. Är du ägaren, eller känner du till schemat?",
+    "cta": "Skicka ett meddelande så uppdaterar vi!"
+  },
+  "whereToFind": "Här står vi",
+  "missingEvent": "<strong>Saknar vi ett evenemang?</strong> <br></br>Äger du den här foodtrucken eller är du bara ett troget fan? Hjälp oss att hålla sidan korrekt! <br></br><link>Kontakta oss för att lägga till det som saknas.</link>",
+  "weeklySchedule": "Få veckoschemat 🍕"
+}

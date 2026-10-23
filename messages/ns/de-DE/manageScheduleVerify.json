@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Die Prüfung ist vorübergehend nicht verfügbar. Bitte versuchen Sie es gleich noch einmal.",
+  "malformed": "Das sieht nicht nach einer Webadresse aus. Versuchen Sie z. B. ihr-foodtruck.de/termine",
+  "blocked": "Wir konnten nicht auf diese Website zugreifen – möglicherweise blockiert sie automatische Prüfungen. Versuchen Sie die Seite, auf der Ihre Termine stehen, oder fügen Sie Events manuell hinzu.",
+  "unreachable": "Wir konnten diese Website nicht erreichen. Sie ist vielleicht offline oder die Adresse ist falsch.",
+  "no_content": "Wir haben diese Seite erreicht, konnten darauf aber nichts lesen. Prüfen Sie, ob sie öffentlich zugänglich ist.",
+  "no_events": "Wir konnten auf dieser Seite keine anstehenden Events finden. Achten Sie darauf, dass die URL direkt auf die Seite mit Ihren Terminen verweist.",
+  "blockedDomain": "Bitte verwenden Sie die URL Ihrer Website – Facebook- und Instagram-Seiten können nicht automatisch ausgelesen werden."
+}

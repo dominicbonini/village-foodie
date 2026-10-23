@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Kostenvergelijking",
+  "title": "Vergelijk je kosten voor<br></br><accent>online bestellen</accent>",
+  "system": {
+    "title": "Neem je nu al online bestellingen aan?",
+    "yes": "Ja, met een ander systeem",
+    "no": "Nee, nog niet"
+  },
+  "trucks": {
+    "title": "Met hoeveel foodtrucks werk je?",
+    "aria": "Aantal foodtrucks"
+  },
+  "plan": {
+    "yourChoice": "Jouw keuze",
+    "weSuggest": "Ons advies",
+    "summary": "{price} per foodtruck per maand, met {allowance} aan online bestellingen inbegrepen{fleet, plural, one {} other { voor elke foodtruck}}.",
+    "switchTo": "Kies liever {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per foodtruck per maand, plus {pct} op online kaartbestellingen.} other {Geen maandkosten — alleen {pct} op online kaartbestellingen.}}",
+    "summaryNoFee": "{price} per foodtruck per maand, met onbeperkt online bestellingen en geen kosten van HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Online bestellingen per maand, per foodtruck",
+    "count": "~{count, plural, one {# bestelling} other {# bestellingen}}",
+    "captionNo": "Een ruwe schatting is prima — voorbestellingen en klanten die de rij overslaan, niet contant of pinnen aan het loket.",
+    "captionYes": "Alleen bestellingen via je bestelpagina — niet contant of pinnen aan het loket.",
+    "sliderAria": "Maandelijkse waarde van online bestellingen per foodtruck",
+    "overAllowance": "{allowance} aan online bestellingen inbegrepen per foodtruck. Over de {excess} daarboven betaal je {pct} — <b>{over}</b> per maand per foodtruck.",
+    "insideAllowance": "Binnen de inbegrepen {allowance} aan online bestellingen — niets bovenop het abonnement.",
+    "acrossFleet": "Voor {fleet, plural, one {# foodtruck} other {# foodtrucks}}: <b>{amount}</b> per maand.",
+    "titleNo": "Hoeveel denk je online te verkopen, per maand, per foodtruck?",
+    "feeOnly": "{pct} op elke online kaartbestelling — <b>{over}</b> per maand per foodtruck.",
+    "noFee": "Onbeperkt online bestellingen inbegrepen — niets bovenop het abonnement."
+  },
+  "fee": {
+    "title": "Wat betaal je nu per bestelling?",
+    "pctLabel": "Percentage",
+    "pctPlaceholder": "Jouw tarief",
+    "pctAria": "Percentage per bestelling",
+    "fixedLabel": "Plus per bestelling",
+    "fixedPlaceholder": "Jouw kosten",
+    "fixedAria": "Cent per bestelling",
+    "modeLabel": "Hun tarief:",
+    "modeInclusive": "is inclusief kaartverwerking",
+    "modeOnTop": "komt bovenop kaartverwerking",
+    "onTopNote": "Daar komt nog {fee} voor kaartverwerking bovenop, dus in totaal betaal je eigenlijk <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "De {fee} voor kaartverwerking zit daar al in, en die betaal je overal. Hun eigen kosten zijn <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Op hoeveel dagen per week verkoop je?",
+    "help": "Evenementen, markten, standplaatsen — elke dag dat de foodtruck eropuit gaat."
+  },
+  "jump": {
+    "cost": "Bekijk wat het kost ↓",
+    "saving": "Bekijk je besparing ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Online bestellen, voorbestellingen en je keukenscherm voor</lead><figure>{amount}</figure><unit>per verkoopdag</unit>",
+    "basedOn": "Op basis van {days, plural, one {# dag} other {# dagen}} per week · {monthly} per maand{fleet, plural, one {} other { per foodtruck}}"
+  },
+  "coffee": "Minder dan een kop koffie.",
+  "freeMonths": "{n, plural, one {En je eerste maand krijg je van ons.} other {En je eerste # maanden krijg je van ons.}}",
+  "cta": {
+    "upload": "Upload je menukaart →",
+    "uploadSave": "Upload je menukaart en bespaar {amount} →",
+    "ask": "Stel ons een vraag",
+    "noCard": "Geen betaalkaart nodig om te beginnen"
+  },
+  "breakdown": {
+    "title": "Jouw maand, uitgesplitst",
+    "titleDearer": "Jouw maand met HatchGrab",
+    "plan": "Abonnement {plan}",
+    "over": "{pct} over de {excess} boven de inbegrepen {allowance}",
+    "inside": "Online bestellingen binnen de inbegrepen {allowance}",
+    "total": "HatchGrab per maand",
+    "freeMonths": "{n, plural, one {Maand 1} other {Maand 1–#}}",
+    "freeAmount": "{amount} — op onze kosten",
+    "acrossFleet": "Voor {fleet, plural, one {# foodtruck} other {# foodtrucks}}",
+    "perMonth": "{amount} per maand",
+    "card": "Kaartverwerking — Stripe rekent {fee} per bestelling, betaald aan Stripe. Met een pinapparaat aan het loket betaal je ongeveer hetzelfde.",
+    "provider": "Eigen kosten van je huidige aanbieder ({pct})",
+    "feeOnly": "{pct} over {excess} aan online bestellingen",
+    "noFee": "Online bestellingen — onbeperkt, geen kosten van HatchGrab"
+  },
+  "enterRate": "Vul in wat je nu betaalt om je besparing te zien.",
+  "panel": {
+    "nowYear": "<label>Nu betaal je</label><fig>{amount}<q> per jaar</q></fig>",
+    "nowMonth": "<label>Nu betaal je</label><fig>{amount}<q> per maand</q></fig>",
+    "oursYear": "<label>Met HatchGrab</label><fig>{amount}<q> in het eerste jaar</q></fig>",
+    "oursMonth": "<label>Met HatchGrab</label><fig>{amount}<q> per maand</q></fig>",
+    "acrossFleet": "voor {fleet, plural, one {# foodtruck} other {# foodtrucks}}"
+  },
+  "hero": {
+    "save": "<verb>Je bespaart</verb><figure>{amount}</figure><sub><num>{pct}</num> minder in je eerste jaar</sub>",
+    "same": "<verb>Ongeveer hetzelfde</verb><figure>{amount}</figure><sub><num>{pct}</num> meer in je eerste jaar</sub>",
+    "dearer": "<lead>Alles wat HatchGrab doet, voor</lead><figure>{amount}</figure><unit>meer per week</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} per maand meer dan nu} other {{amount} per foodtruck per maand meer dan nu}}"
+  },
+  "anchor": {
+    "liability": "Dat is een jaar bedrijfsaansprakelijkheidsverzekering.",
+    "weekendPitch": "Dat is een weekend een standplaats op een foodfestival.",
+    "festivalPitches": "Dat zijn een paar standplaatsen op festivals.",
+    "fryer": "Dat is een nieuwe friteuse en bakplaat.",
+    "counter": "Dat is een complete vernieuwing van je uitgiftebalie.",
+    "vanDeposit": "Dat is een aanbetaling op een tweede foodtruck.",
+    "secondVan": "Dat is een tweede foodtruck op de weg."
+  },
+  "year": {
+    "one": "Eerste jaar",
+    "two": "Tweede jaar",
+    "save": "Bespaar {amount}<note>({pct} minder)</note>",
+    "extra": "{amount} extra<note>({pct} meer)</note>",
+    "current": "Huidige aanbieder <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Schattingen op basis van de cijfers die je invult, uitgaande van een gemiddelde bestelling van {aov}. Kosten voor kaartverwerking betaal je bij elke aanbieder. Controleer alles voordat je beslist.",
+    "yes": "Schattingen op basis van de cijfers die je invult, uitgaande van een gemiddelde bestelling van {aov}. Kaartverwerking van {fee} per bestelling betaal je bij elke aanbieder, dus die is aan beide kanten weggelaten.",
+    "onTop": "Het totaalbedrag bij vraag {n} is daar inclusief — de vergelijking niet, aan geen van beide kanten.",
+    "check": "Controleer de tarieven van je huidige aanbieder voordat je beslist."
+  },
+  "intro": "Duurt ongeveer een minuut. Gebruik je al een systeem? Dan vergelijken we het. Nog niet? Dan laten we je precies zien wat het kost.",
+  "twoYear": "Over twee jaar bespaar je zo <b>{amount}</b>.",
+  "meta": {
+    "title": "Kostencalculator — HatchGrab {country}",
+    "description": "Vergelijk wat je online bestellingen je nu kosten met een jaar HatchGrab — een schatting in een minuut."
+  }
+}

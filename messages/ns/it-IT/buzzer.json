@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Il cercapersone <b>{number}</b> è assegnato <b>all’ordine #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Spostarlo <b>{hasTarget, select, yes {all’ordine #{targetId}} other {a questo ordine}}</b>?",
+  "cancel": "Annulla",
+  "take": "Prendi il cercapersone {number}",
+  "titleBlocking": "Cercapersone per l’ordine #{id}?",
+  "title": "Scegli un cercapersone",
+  "subtitle": "{hasTarget, select, yes {Ordine #{id}} other {Questo ordine}}{hasCurrent, select, yes { · attuale: cercapersone {current}} other {}}",
+  "allTaken": "{n, plural, one {Il cercapersone è in uso. Toccalo per prenderlo da un altro ordine.} other {Tutti i {count} cercapersone sono in uso. Toccane uno per prenderlo da un altro ordine.}}",
+  "thisOrder": "Questo ordine",
+  "noBuzzer": "Nessun cercapersone",
+  "done": "Fatto",
+  "lostTitle": "L’ordine #{id} non ha un cercapersone",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}un altro ordine ha preso lo stesso cercapersone mentre eri offline. Dagliene uno diverso.",
+  "dismiss": "Chiudi",
+  "assign": "Assegna"
+}

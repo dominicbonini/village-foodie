@@ -1,0 +1,8 @@
+{
+  "country_missing": "Scegli il paese in cui ha sede il tuo food truck.",
+  "country_off": "I food truck di quel paese non possono ancora registrarsi. Scegli un altro paese.",
+  "zone_unknown": "Quel fuso orario non è tra quelli disponibili per quel paese. Scegline uno dall’elenco.",
+  "town_missing": "Indica la città o il comune in cui hai sede.",
+  "town_too_long": "Il nome della città è troppo lungo: massimo 120 caratteri.",
+  "region_closed": "I food truck con sede in {region} non possono ancora registrarsi{reason, select, language {: HatchGrab non è ancora disponibile in {language}} taxLines {: stiamo prima aggiungendo righe separate per GST e PST} other {}}. Se il tuo food truck ha sede altrove, scegli quella città o comune."
+}

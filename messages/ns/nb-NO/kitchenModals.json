@@ -1,0 +1,69 @@
+{
+  "close": "Lukk",
+  "cancel": "Avbryt",
+  "selectReason": "Velg en årsak",
+  "reject": {
+    "title": "Avvise bestilling #{orderId}?",
+    "reasonLabel": "Årsak – påkrevd (vises for kunden)",
+    "reason": "{reason, select, sold_out {En vare er utsolgt} too_busy {For travelt – rekker det ikke i tide} closing_soon {Stenger snart} other {Annet}}",
+    "noteRequired": "Årsak – påkrevd",
+    "noteOptional": "Ekstra kommentar – valgfritt",
+    "notePlaceholder": "Legg til flere detaljer for kunden…",
+    "keep": "Behold bestillingen",
+    "confirm": "Avvis bestillingen"
+  },
+  "eventCancel": {
+    "title": "Avlyse dette arrangementet?",
+    "affected": "{n, plural, one {{count} bestilling} other {{count} bestillinger}} blir avbestilt, og kundene får beskjed.",
+    "reasonLabel": "Årsak – valgfritt",
+    "reason": "{reason, select, vehicle_breakdown {Motorstopp} weather {Været} venue_issue {Problem på stedet} personal_emergency {Personlig nødsituasjon} other {Annet}}",
+    "messageLabel": "Melding til kundene – valgfritt",
+    "messagePlaceholder": "f.eks. Beklager, tilhengeren vår brøt sammen på vei til arrangementet…",
+    "keep": "Behold arrangementet",
+    "cancelling": "Avlyser…",
+    "confirm": "Avlys arrangementet"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Start arrangementet på nytt} other {Start arrangementet}}",
+    "changeEvent": "Bytt arrangement",
+    "changeEventType": "Endre arrangementstype…",
+    "privateLink": "Privat lenke og QR-kode",
+    "noteLabel": "Beskjed til kundene",
+    "notePlaceholder": "f.eks. Parker på hovedparkeringen, se etter det oransje partyteltet",
+    "noteHint": "Vises for kundene på bestillingssiden, under detaljene om arrangementet.",
+    "saveNote": "Lagre beskjed",
+    "resume": "Gjenoppta bestillinger",
+    "pause": "Pause bestillinger",
+    "changeFinishTime": "Endre sluttid for arrangementet",
+    "finishEvent": "Avslutt arrangementet",
+    "cancelEvent": "Avlys arrangementet"
+  },
+  "finish": {
+    "confirmTitle": "Endre sluttid?",
+    "willFinish": "Dette arrangementet avsluttes kl. <b>{selected}</b>{hasCurrent, select, yes { i stedet for <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} bestilling skal} other {{count} bestillinger skal}} hentes etter {selected}.</b> {n, plural, one {Den blir} other {De blir}} stående på tavlen og må fortsatt {n, plural, one {lages} other {lages}}. Ny sluttid stopper bare NYE bestillinger for senere tidspunkter.",
+    "saving": "Lagrer…",
+    "confirm": "Endre sluttid",
+    "keepCurrent": "Behold {current}",
+    "keepAsIs": "Behold som nå",
+    "title": "Endre sluttid",
+    "currentlySet": "Dette arrangementet er satt til å avsluttes kl. <b>{current}</b>.",
+    "noFinishTime": "Dette arrangementet har ingen sluttid.",
+    "noTimesLeft": "Det er ingen flere tidspunkter i dag. Bruk Avslutt arrangementet i stedet.",
+    "newFinishTime": "Ny sluttid",
+    "optionCurrent": "{time} (nåværende)",
+    "earlier": "Dette er tidligere enn nåværende sluttid. Kundene kan ikke bestille for tidspunkter etter den.",
+    "review": "Se over endringen",
+    "optionNextDay": "{time} (neste dag)"
+  },
+  "extraWait": {
+    "title": "Legg til ekstra ventetid",
+    "hint": "Legges til hentetiden som oppgis på nye bestillinger. Sluttiden for arrangementet endres ikke.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Koble til på nytt for å laste inn",
+    "selected": "Valgt",
+    "status": "{tone, select, paused {⏸ På pause} live {● Pågår} finished {● Avsluttet} cancelled {Avlyst} other {Ikke startet}}"
+  }
+}

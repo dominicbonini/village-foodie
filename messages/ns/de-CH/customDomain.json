@@ -1,0 +1,13 @@
+{
+  "wizard": {
+    "close": "Schliessen"
+  },
+  "address": {
+    "elsewhere": "Unter dieser Adresse antwortet bereits etwas anderes. Senden Sie die Nachricht auf der nächsten Seite an die Person, die die Adresse betreut – sie weiss, was zu tun ist."
+  },
+  "providers": {
+    "godaddy": {
+      "caveat": "Wenn Sie mehrere Einträge auf einmal hinzugefügt haben, heisst die Schaltfläche „Save All Records“."
+    }
+  }
+}

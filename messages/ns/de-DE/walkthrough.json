@@ -1,0 +1,31 @@
+{
+  "intro": "In der Verwaltung richten Sie Ihren Foodtruck ein und sehen, wie es läuft. Im Dashboard nehmen Sie Bestellungen an und steuern jedes Event, während es läuft.",
+  "ariaLabel": "Rundgang durch das Dashboard",
+  "step": "{current} von {total}",
+  "skip": "Überspringen",
+  "back": "← Zurück",
+  "next": "Weiter →",
+  "done": "Fertig",
+  "stops": {
+    "menu": {
+      "title": "Speisekarte",
+      "body": "Ihre Gerichte, Preise und Allergene. Was Sie hier ändern, ist sofort live."
+    },
+    "schedule": {
+      "title": "Termine",
+      "body": "Wo und wann Sie verkaufen. Legen Sie hier ein Event an, dann können Kunden dafür bestellen."
+    },
+    "build": {
+      "title": "Menüs sowie Extras & Upselling",
+      "body": "Menüs, Upselling, Anpassungen und Ihre Küchenkapazität finden Sie unter Speisekarte – probieren Sie ruhig alles aus."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "body": "Die Angaben zu Ihrem Foodtruck und wie Kunden bezahlen."
+    },
+    "billing": {
+      "title": "Abrechnung",
+      "body": "Hier finden Sie Ihren Tarif, Ihre Abrechnung und Informationen zu den Funktionen."
+    }
+  }
+}

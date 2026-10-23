@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Il tuo primo mese è completamente gratis — tutte le funzioni sbloccate.} other {I tuoi primi # mesi sono completamente gratis — tutte le funzioni sbloccate.}}",
+    "body": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova passi al piano <plan>{fallback}</plan>{fallbackFree, select, yes { (nessun canone mensile)} other {}}, a meno che tu non scelga un altro piano. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi."
+  },
+  "card": {
+    "perTruckMonth": "per food truck / mese",
+    "mostTrucks": "Il più scelto",
+    "tryFree": "Prova gratis",
+    "seeEvery": "Vedi tutte le funzioni →",
+    "everything": "Tutto per gestire il servizio",
+    "everythingIn": "Tutto il piano {plan}, più"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> solo sugli ordini online pagati con carta. Gli ordini al banco sono sempre gratuiti.",
+    "included": "I primi <b>{included}</b> di ordini online sono inclusi ogni mese, poi <b>{fee}*</b>. Gli ordini al banco sono sempre gratuiti.",
+    "noFee": "<b>Nessuna commissione HatchGrab</b> sugli ordini online, anche nei periodi di punta. Un costo mensile fisso e prevedibile."
+  },
+  "base": {
+    "walkUp": "Ordini al banco e monitor cucina",
+    "online": "Ordini online",
+    "preorders": "Preordini e orari di ritiro",
+    "capacity": "Ordini massimi per fascia oraria",
+    "privateEvents": "Eventi privati",
+    "printing": "Stampa delle comande",
+    "app": "App cucina per iPhone, iPad e Android"
+  },
+  "added": {
+    "whatsapp_replies": "Risposte automatiche WhatsApp",
+    "schedule_graphics": "Post per i social — il tuo calendario per Facebook e Instagram — pronti da pubblicare",
+    "event_types": "Tipi di evento e prezzi per evento personalizzati"
+  },
+  "money": {
+    "unlimitedOrders": "Ordini online illimitati, 0% di commissioni HatchGrab",
+    "samePrice": "Stesso prezzo anche nel tuo mese più intenso"
+  },
+  "comingSoon": "In arrivo",
+  "bar": {
+    "title": "Quale piano mi conviene di più?",
+    "subtitle": "I tuoi ordini online al mese",
+    "first": "Meno di {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Oltre {from} → <b>{plan}</b>",
+    "only": "Qualsiasi volume → <b>{plan}</b>"
+  },
+  "footnote": "* Più le commissioni di Stripe sugli ordini online pagati con carta (tariffa attuale, {country}: {cardFee}), pagate a Stripe e non a HatchGrab. Gli ordini al banco passano dal tuo POS — HatchGrab trattiene lo 0%.",
+  "currencyLine": "Prezzi in {currency} ({code})"
+}

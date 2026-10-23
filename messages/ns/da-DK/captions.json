@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Ugens datoer",
+    "dayList": "Liste over dage",
+    "place": "Sted",
+    "venue": "Lokation",
+    "area": "Område",
+    "dayDate": "Dag og dato",
+    "times": "Tidspunkter",
+    "orderLink": "Bestillingslink",
+    "locationTag": "Stedtag"
+  },
+  "weekHeader": "{truck} — her holder vi denne uge:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — AFLYST, beklager",
+  "noDates": "Ingen datoer denne uge — kig forbi igen snart.",
+  "orderAhead": "Forudbestil her: {url}",
+  "orderAheadTagged": "Forudbestil her: {url} {tag}",
+  "eventLine": "{truck} holder ved {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} holder ved {where} {when}.",
+  "cancelledSorry": "Beklager — vi kan ikke komme til {where} {when}.",
+  "cancelledApology": "Vi beklager over for alle, der havde planlagt at komme. Vi er snart tilbage.",
+  "when": {
+    "today": "i dag",
+    "tonight": "i aften",
+    "tomorrow": "i morgen",
+    "dated": "den {date}"
+  }
+}

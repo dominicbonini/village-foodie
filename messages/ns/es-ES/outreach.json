@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Este correo no tiene la frase para darse de baja, así que no se puede enviar. Usa “Insertar baja” para añadirla.",
+    "notSetUp": "No hay ninguna frase para darse de baja configurada, así que no se puede enviar ningún correo de prospección. Añade una en el panel Firma de la pestaña Plantillas.",
+    "notLoaded": "La frase para darse de baja aún no se ha cargado, así que no se puede enviar.",
+    "unreadable": "No se ha podido leer la frase para darse de baja, así que no se ha enviado nada."
+  },
+  "retry": {
+    "notRebuilt": "No se ha podido rehacer ese mensaje con la línea de la empresa, así que no se ha enviado nada."
+  }
+}

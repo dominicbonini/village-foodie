@@ -1,0 +1,194 @@
+{
+  "$comment": "german-1 (22 October 2026): the WhatsApp allergen guard's trigger words for GERMAN (de-DE, de-AT, de-CH, de-LI — one list for the language). OPTION B, as English and French: absence / safety words only — allergy and intolerance words, Zöliakie, anaphylaxis, EpiPen, the \"-frei\" / \"ohne <allergen>\" / \"frei von\" forms, \"geeignet für\" / \"sicher für\", traces and cross-contamination — NOT the bare allergen names (a presence question, \"Ist Milch im Burger?\", may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser: lower case, accents and umlauts folded (ü → u), ß kept as a letter — so Swiss / reformed \"ss\" and old \"ß\" spellings (Nuss / Nuß) and the typed \"ue\" form (Nuesse) are each listed. The token \"frei\" mirrors English's \"free\" (a whole word only, so \"Freitag\" does not match). caveatWords: a tagged uk14 label (stored in English, lower case) → the German words a reply may use for it, including Austrian (Obers, Topfen) and Swiss (Rahm) dairy words. scripts/german-1.cjs proves it.",
+  "language": "de",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "unvertraglich",
+    "unvertraeglich",
+    "intoleranz",
+    "intolerant",
+    "zoliakie",
+    "zoeliakie",
+    "zoliakal",
+    "coeliakie",
+    "zoeliak",
+    "zoliak",
+    "anaphyla",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "glutenfrei",
+    "glutenarm",
+    "laktosefrei",
+    "lactosefrei",
+    "milchfrei",
+    "eifrei",
+    "nussfrei",
+    "nußfrei",
+    "erdnussfrei",
+    "erdnußfrei",
+    "sojafrei",
+    "sesamfrei",
+    "fischfrei",
+    "selleriefrei",
+    "senffrei",
+    "sulfitfrei",
+    "lupinenfrei",
+    "weizenfrei",
+    "frei von",
+    "ohne gluten",
+    "ohne laktose",
+    "ohne lactose",
+    "ohne milch",
+    "ohne eier",
+    "ohne huhnerei",
+    "ohne nuss",
+    "ohne nuß",
+    "ohne nusse",
+    "ohne nuesse",
+    "ohne erdnuss",
+    "ohne erdnuß",
+    "ohne erdnusse",
+    "ohne erdnuesse",
+    "ohne schalenfrucht",
+    "ohne schalenfruchte",
+    "ohne mandel",
+    "ohne haselnuss",
+    "ohne haselnuß",
+    "ohne soja",
+    "ohne sesam",
+    "ohne fisch",
+    "ohne krebstier",
+    "ohne schalentier",
+    "ohne meeresfrucht",
+    "ohne sellerie",
+    "ohne senf",
+    "ohne sulfit",
+    "ohne lupine",
+    "ohne weichtier",
+    "ohne weizen",
+    "geeignet fur",
+    "geeignet bei",
+    "sicher fur",
+    "unbedenklich fur",
+    "vertraglich fur",
+    "spuren von",
+    "spuren enthalten",
+    "kann spuren",
+    "kreuzkontamination",
+    "kreuzkontakt",
+    "kontamination",
+    "verunreinig"
+  ],
+  "tokens": [
+    "frei"
+  ],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "weizen",
+        "mehl",
+        "dinkel",
+        "roggen",
+        "gerste",
+        "hafer"
+      ],
+      "crustaceans": [
+        "krebstier",
+        "krebstiere",
+        "garnele",
+        "garnelen",
+        "shrimps",
+        "krabben",
+        "scampi",
+        "hummer"
+      ],
+      "eggs": [
+        "eier",
+        "eigelb",
+        "eiweiß",
+        "eiweiss",
+        "rührei",
+        "spiegelei",
+        "mayonnaise"
+      ],
+      "fish": [
+        "fisch",
+        "fische",
+        "lachs",
+        "thunfisch"
+      ],
+      "peanuts": [
+        "erdnuss",
+        "erdnüsse",
+        "erdnuß",
+        "erdnusse",
+        "erdnussbutter"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "milch",
+        "laktose",
+        "lactose",
+        "käse",
+        "kase",
+        "sahne",
+        "rahm",
+        "obers",
+        "butter",
+        "joghurt",
+        "quark",
+        "topfen"
+      ],
+      "tree nuts": [
+        "schalenfrucht",
+        "schalenfrüchte",
+        "nuss",
+        "nüsse",
+        "nuß",
+        "mandel",
+        "mandeln",
+        "haselnuss",
+        "walnuss",
+        "cashew",
+        "pistazie",
+        "pistazien",
+        "pekannuss",
+        "macadamia"
+      ],
+      "celery": [
+        "sellerie"
+      ],
+      "mustard": [
+        "senf"
+      ],
+      "sesame": [
+        "sesam",
+        "tahin"
+      ],
+      "sulphites": [
+        "sulfit",
+        "sulfite",
+        "schwefel"
+      ],
+      "lupin": [
+        "lupine",
+        "lupinen"
+      ],
+      "molluscs": [
+        "weichtier",
+        "weichtiere",
+        "muschel",
+        "muscheln",
+        "tintenfisch",
+        "calamari",
+        "austern"
+      ]
+    }
+  }
+}

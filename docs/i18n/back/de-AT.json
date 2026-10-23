@@ -1,0 +1,7 @@
+{
+ "compare.orders.captionNo": "A rough estimate is enough – pre-orders and customers who order without queuing, not cash or card payments at the serving window.",
+ "landing.meta.description": "Orders and pre-orders at your location – without queuing. Ordering system and kitchen screen for food trucks and mobile catering ({country}) – not a till system.",
+ "manageTeam.phonePlaceholder": "+43 664 123456",
+ "orderCard.chargesSummary": "{parts, select, tax_fees_tip {VAT, fees & tip} tax_tip {VAT & tip} fees_tip {Fees & tip} fees {Fees} other {VAT & fees}}",
+ "pricing.card.tryFree": "Try it free (gratis)"
+}

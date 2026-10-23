@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Tu carta de alérgenos",
+    "intro": "Los clientes la ven <b>exactamente como la escribes</b>: no se reescribe nada. Escribe o pega abajo, o sube una foto o un PDF y leeremos el texto para que lo revises.",
+    "empty": "Aún no hay carta de alérgenos.",
+    "placeholder": "p. ej., Todo nuestro pescado rebozado contiene trigo y leche. La freidora se comparte con productos que contienen gluten y frutos de cáscara. Hay opciones veganas: pregunta al personal.",
+    "reading": "Leyendo la imagen…",
+    "upload": "📷 Subir imagen / PDF",
+    "uploadNote": "Leemos el texto de tu imagen para que puedas revisarlo; la imagen no se guarda."
+  },
+  "cardUpload": {
+    "dishFallback": "Plato",
+    "question": "¿Tienes una carta de alérgenos para subir?",
+    "perDish": "{detected, select, yes {Súbela y la usaremos para preparar los alérgenos de tus platos. Los alérgenos detectados aparecerán en la página siguiente, donde confirmarás cada plato.} other {Súbela y la usaremos para preparar los alérgenos de tus platos.}}",
+    "cardOnly": "Sube la carta de alérgenos que verán los clientes.",
+    "yes": "Sí",
+    "no": "No",
+    "noProblem": "No pasa nada: no la necesitas. Continúa con el botón de abajo.",
+    "analysing": "Analizando la carta…",
+    "dropzone": "Arrastra y suelta o toca para elegir",
+    "imageOrPdf": "Imagen o PDF",
+    "or": "o",
+    "pastePlaceholder": "Pega aquí el texto de tu carta de alérgenos…",
+    "process": "Procesar carta",
+    "cardRead": "Carta leída ✓",
+    "unmatchedHeading": "No se han podido asociar automáticamente: asígnalos o descártalos",
+    "quotedName": "“{name}”",
+    "ambiguous": "Ambiguo: coincide con varios platos; elige el correcto.",
+    "assignTo": "Asignar a un plato…",
+    "dismiss": "Descartar",
+    "blanket": "La carta indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Añadirlo a todos? (seguirás confirmando cada uno) <muted>— desactivado por defecto</muted>",
+    "kitchenNotes": "Notas de cocina (se guardan en tu información de alérgenos)",
+    "matchSummary": "{n, plural, =0 {{matched} asociados a un plato.} one {{matched} asociados a un plato. {count} necesita que lo asignes.} other {{matched} asociados a un plato. {count} necesitan que los asignes.}}"
+  },
+  "savedCard": {
+    "showLess": "Ver menos",
+    "showMore": "Ver más",
+    "fileOnly": "Hay un archivo de carta guardado para este food truck, pero no se guardó ningún texto de resumen. Abre el original para leerlo.",
+    "viewOriginal": "Ver carta original"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "No se ha podido leer la carta de alérgenos. Vuelve a intentarlo",
+      "confirmed": "{name}: confirmado",
+      "undo": "Deshacer",
+      "saveFailed": "No se ha podido guardar. Vuelve a intentarlo",
+      "imageFailed": "No se ha podido leer esa imagen. Escribe o pega tu carta",
+      "cardRead": "{n, plural, one {Carta leída: {matched} asociados, {count} pendiente de asignar} other {Carta leída: {matched} asociados, {count} pendientes de asignar}}"
+    },
+    "genericWarn": {
+      "text": "Se ha detectado “{generic}”, pero no es específico. Elige {picks} si este plato contiene {family}, o déjalos sin marcar si no.",
+      "andOr": "{a} y/o {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confirmado",
+      "confirmed": "Confirmado",
+      "needsReview": "Por revisar"
+    },
+    "confirm": {
+      "confirming": "Confirmando…",
+      "confirmed": "Confirmado ✓",
+      "confirm": "Confirmar",
+      "changed": "· modificado",
+      "changedTitle": "Editado desde la última confirmación: vuelve a confirmar"
+    },
+    "allergens": "Alérgenos",
+    "dietary": "Dietas",
+    "uncategorised": "Sin categoría",
+    "review": {
+      "progress": "{confirmed} de {total} confirmados",
+      "allConfirmed": "✓ Todos confirmados",
+      "list": "Lista",
+      "table": "Tabla",
+      "detected": "Detectados a partir de tu carta: <b>revísalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada plato.",
+      "viewOnly": "👁 Solo lectura: solo el titular puede confirmar o cambiar los alérgenos.",
+      "emptyTitle": "No hay productos en la carta",
+      "emptyBody": "Primero añade productos a la carta y luego configura aquí sus alérgenos.",
+      "dish": "Plato",
+      "status": "Estado"
+    },
+    "cardPanel": {
+      "reading": "Leyendo la información de alérgenos…",
+      "saved": "🛡️ Carta de alérgenos guardada",
+      "viewOriginal": "Ver carta original",
+      "replace": "Sustituir carta",
+      "uploadHelp": "Sube tu carta de alérgenos (foto/PDF) o pega tu información de alérgenos: nuestra IA la organiza para los clientes.",
+      "add": "Añadir carta de alérgenos",
+      "viewOnly": "👁 Solo lectura: solo el titular puede añadir la carta de alérgenos.",
+      "intro": "Los clientes verán esta carta como la referencia de alérgenos de tu carta. Los alérgenos por plato quedan ocultos en el modo solo carta de alérgenos (los datos de tus platos se conservan por si más adelante cambias a alérgenos por plato)."
+    },
+    "subtitle": {
+      "choose": "Elige cómo ven los clientes la información de alérgenos",
+      "card": "Añade tu carta de alérgenos",
+      "cardOptional": "Añade una carta de alérgenos (opcional)",
+      "review": "Revisa y confirma cada plato"
+    },
+    "heading": {
+      "import": "Alérgenos",
+      "standalone": "Configuración de alérgenos"
+    },
+    "nav": {
+      "next": "Siguiente →",
+      "back": "← Atrás",
+      "skip": "Saltar por ahora",
+      "saving": "Guardando…",
+      "done": "Hecho",
+      "saveLater": "Guardar y terminar luego",
+      "close": "Cerrar",
+      "finish": "Terminar",
+      "skipImport": "Saltar la configuración de alérgenos por ahora"
+    },
+    "hint": {
+      "skipDefers": "Saltar lo deja para luego: los platos que no hayas confirmado siguen ocultos para los clientes hasta que se confirmen sus alérgenos.",
+      "importIncomplete": "Confirma todos los platos para continuar, o elige “Saltar la configuración de alérgenos por ahora”."
+    }
+  }
+}

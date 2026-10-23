@@ -1,0 +1,84 @@
+{
+  "loading": "Laster administrasjonspanelet…",
+  "loadFailed": "Kunne ikke laste",
+  "requestFailed": "Mislyktes",
+  "invalidToken": "Ugyldig eller utløpt token",
+  "loadFailedReason": "Kunne ikke laste denne siden: {reason}",
+  "noCountrySettings": "Kunne ikke laste landinnstillingene for denne matbilen. Last inn siden på nytt.",
+  "noPlans": "Kunne ikke laste abonnementet for denne matbilen. Last inn siden på nytt.",
+  "stale": "{hasTime, select, yes {Kunne ikke oppdatere. Viser det som ble lagret kl. {time}. Endringer du gjør, blir fortsatt lagret.} other {Kunne ikke oppdatere. Viser det som ble lagret. Endringer du gjør, blir fortsatt lagret.}}",
+  "verify": {
+    "ok": "E-posten er bekreftet — takk.",
+    "expired": "Bekreftelseslenken har utløpt. Ta kontakt, så ordner vi det før du åpner for bestillinger.",
+    "invalid": "Bekreftelseslenken virket ikke. Ta kontakt, så ordner vi det før du åpner for bestillinger."
+  },
+  "profile": {
+    "updated": "Profilen er oppdatert",
+    "saveFailed": "Kunne ikke lagre",
+    "title": "Rediger profil",
+    "name": "Navn",
+    "namePlaceholder": "Navnet ditt",
+    "email": "E-post",
+    "cancel": "Avbryt",
+    "saving": "Lagrer…",
+    "save": "Lagre"
+  },
+  "header": {
+    "subtitle": "Administrasjonspanel",
+    "ordersDashboard": "← Bestillingsoversikt"
+  },
+  "tabs": {
+    "menu": "Meny",
+    "schedule": "Kalender",
+    "social": "Sosiale medier",
+    "reports": "Rapporter",
+    "team": "Team",
+    "settings": "Innstillinger",
+    "payments": "Betalinger",
+    "billing": "Fakturering",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Kalender ({count})",
+    "stripeAttention": "Stripe trenger noe fra deg",
+    "allergensNotSet": "allergener ikke angitt"
+  },
+  "menuSections": {
+    "label": "Menydeler",
+    "items": "Retter",
+    "capacity": "Kjøkkenkapasitet",
+    "extras": "Tillegg og mersalg",
+    "deals": "Tilbud"
+  },
+  "socialSections": {
+    "label": "Deler for sosiale medier",
+    "create": "Lag et innlegg",
+    "designs": "Design",
+    "locations": "Stedsinnstillinger"
+  },
+  "notices": {
+    "review": "Gå gjennom →",
+    "tour": "Vil du ha en rask omvisning i oversikten din?",
+    "showMeAround": "Vis meg rundt",
+    "dismiss": "Lukk",
+    "approval": "{count, plural, one {Vi fant <b>{count}</b> arrangement for deg — gå gjennom og godkjenn det før det publiseres.} other {Vi fant <b>{count}</b> arrangementer for deg — gå gjennom og godkjenn dem før de publiseres.}}",
+    "allergens": "<b>Allergener ikke angitt</b> — kundene ser ikke allergeninformasjon før du har bekreftet den. Gå gjennom allergenene for hver rett i fanen Meny.",
+    "domainLive": "<link>{domain}</link> er aktiv. Ta en titt, og bekreft under Innstillinger at alt stemmer.",
+    "stripe": "<b>Stripe trenger noe fra deg</b> — kortbetalinger kan stoppe til det er ordnet.",
+    "profileTitle": "Fullfør profilen din",
+    "missing": "Mangler: {fields}.",
+    "goToSettings": "Gå til Innstillinger →",
+    "field": {
+      "truckName": "navn på matbilen",
+      "cuisineType": "kjøkkentype",
+      "contactEmail": "kontakt-e-post",
+      "contactPhone": "kontakttelefon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Du har en gratis prøveperiode} other {Du har en gratis prøveperiode på {months} måneder}}",
+    "ends": "{hasDate, select, yes {Prøveperioden slutter <hl>{date}</hl>} other {Prøveperioden slutter <hl>snart</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Alle funksjoner gratis i # måned} other {Alle funksjoner gratis i # måneder}}} other {Alle funksjoner gratis i prøveperioden}}",
+    "body": "{hasDate, select, yes {Du blir ikke belastet noe i prøveperioden, som varer til <b>{date}</b>. Fakturering starter først når du velger et abonnement og legger inn betalingsopplysningene dine. Inntil da er det ingenting å si opp og ingenting å betale. Velg abonnement før den tid — hvis ikke, går du over til {fallback}, og noen funksjoner slutter å virke.} other {Du blir ikke belastet noe mens du har prøveperiode. Fakturering starter først når du velger et abonnement og legger inn betalingsopplysningene dine. Inntil da er det ingenting å si opp og ingenting å betale. Velg abonnement før den tid — hvis ikke, går du over til {fallback}, og noen funksjoner slutter å virke.}}",
+    "fees": "*Vanlige kortgebyrer gjelder for nettbestillinger",
+    "upgrade": "Oppgrader her →"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Over ons — HatchGrab",
+    "description": "HatchGrab is opgericht door Dominic Bonini, die Village Foodie bouwde om te weten welke foodtrucks naar zijn dorp kwamen. Het is een klein bedrijf, en hij runt het zelf."
+  },
+  "eyebrow": "Over ons",
+  "title": "Hoi, ik ben Dominic.",
+  "photoAlt": "{name}, oprichter van HatchGrab",
+  "story": {
+    "village": "Ik woon in een dorp. Er komen foodtrucks langs, maar ik wist nooit welke er kwam, of wanneer, zonder door Facebook te spitten.",
+    "villageFoodie": "Dus bouwde ik Village Foodie: een eenvoudige manier om te zien welke foodtrucks naar dorpen bij jou in de buurt komen.",
+    "hatchgrab": "Hoe meer foodtrucks ik bekeek, hoe meer ik vond dat ze betere tools verdienden: iets wat gemaakt is voor een bedrijf dat elke dag ergens anders staat, niet voor een restaurant met een vast adres. Daarom ben ik HatchGrab begonnen.",
+    "small": "Het is een klein bedrijf en ik run het zelf. Als je contact opneemt, krijg je antwoord van mij, niet van een supportafdeling."
+  },
+  "signature": "<b>{name}</b> · Oprichter",
+  "company": "{company} · ingeschreven in Engeland en Wales · bedrijfsnummer {number} · statutair adres: {address}",
+  "contact": "Neem contact op"
+}

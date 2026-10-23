@@ -1,0 +1,10 @@
+{
+  "download": "Ladda ner bilden",
+  "copied": "Kopierat ✓",
+  "copyCaption": "Kopiera bildtext",
+  "share": "Dela",
+  "copiedStatus": "{kind, select, postText {Inläggstexten har kopierats.} other {Bildtexten har kopierats.}}",
+  "copyFailed": "Kunde inte kopiera – markera texten och kopiera den manuellt.",
+  "sharedStatus": "{kind, select, postText {Inläggstexten har kopierats – klistra in den i ditt inlägg.} other {Bildtexten har kopierats – klistra in den i ditt inlägg.}}",
+  "shareRefused": "{kind, select, postText {Delningen nekades, så bilden har laddats ner. Inläggstexten har kopierats.} other {Delningen nekades, så bilden har laddats ner. Bildtexten har kopierats.}}"
+}

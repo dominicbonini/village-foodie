@@ -1,0 +1,36 @@
+{
+  "h1": "Alles für Ihren Betrieb – in jedem Tarif.",
+  "lede": "Bestellungen, Vorbestellungen, Küchenkapazität und der Küchenmonitor sind in jedem Tarif enthalten.{hasUpgrades, select, yes { Mit {plans} kommen {features} und niedrigere Gebühren hinzu.} other {}}",
+  "perMonth": "{price} / Monat",
+  "group": {
+    "pay": "Ihre Kosten",
+    "run": "Ihr Tagesgeschäft",
+    "online": "Online-Bestellungen",
+    "marketing": "Marketing & Automatisierung"
+  },
+  "pay": {
+    "included": "Inklusive Online-Bestellungen pro Monat",
+    "fee": "HatchGrab-Gebühr auf Online-Bestellungen mit Karte*",
+    "walkUp": "Bestellungen vor Ort"
+  },
+  "cell": {
+    "unlimited": "Unbegrenzt",
+    "free": "Kostenlos",
+    "feeAbove": "<b>{fee}</b> über {included} hinaus",
+    "yes": "Inklusive",
+    "none": "Nicht enthalten",
+    "comingSoon": "Demnächst"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "Social Media",
+    "event_types": "eigene Eventpreise"
+  },
+  "meta": {
+    "description": "Alle HatchGrab-Funktionen in jedem Tarif im direkten Vergleich – {plans}, mit Gebühren und Kontingenten.{months, plural, =0 {} one { Im ersten Monat ist alles inklusive.} other { In den ersten # Monaten ist alles inklusive.}}"
+  },
+  "notes": {
+    "whatsapp": "Für automatische WhatsApp-Antworten benötigen Sie ein WhatsApp Business-Konto. Meta kann für einige Nachrichten Gebühren berechnen; die Antworten werden automatisch erstellt.",
+    "printing": "Für den Druck von Küchenbons benötigen Sie einen kompatiblen Bluetooth- oder kabelgebundenen Drucker (nicht im Lieferumfang)."
+  }
+}

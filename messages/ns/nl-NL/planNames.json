@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Pay as you go",
+    "subtitle": "Seizoens- en parttime foodtrucks",
+    "description": "Geen vaste maandkosten. Je betaalt alleen als een klant online met een kaart betaalt."
+  },
+  "pro": {
+    "subtitle": "Foodtrucks waar klanten regelmatig vooraf bestellen",
+    "description": "Alles, inclusief automatische antwoorden via WhatsApp en social media posts, met elke maand een aantal online bestellingen inbegrepen."
+  },
+  "unlimited": {
+    "name": "Onbeperkt",
+    "subtitle": "Drukke foodtrucks & festivals",
+    "description": "Alles, zonder kosten op online bestellingen, hoe druk je het ook krijgt."
+  },
+  "trial": {
+    "name": "Gratis proefperiode",
+    "description": "Alle functies, gratis, zolang je proefperiode loopt."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Demo-omgeving voor potentiële klanten — nooit openbaar."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester vóór de lancering — volledige toegang."
+  }
+}

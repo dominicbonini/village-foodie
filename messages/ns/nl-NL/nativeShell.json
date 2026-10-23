@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Bestelling #{id} teruggezet",
+    "saved": "Bestelling #{id} opgeslagen",
+    "undo": "↩ Ongedaan maken",
+    "paymentNotRecorded": "⚠ Bestelling #{id} — BETALING NIET GEREGISTREERD. {collect, select, yes {De bestelling is afgerond} other {De bestelling is opgeslagen}}; de betaling niet.",
+    "recordPayment": "Betaling registreren",
+    "paid": "Bestelling #{id} betaald",
+    "undonePayment": "Ongedaan — betaling verwijderd",
+    "undoneCollected": "Ongedaan — bestelling niet afgehaald",
+    "collected": "Bestelling #{id} {paidToo, select, yes {betaald en afgehaald} other {afgehaald}}",
+    "ready": "Bestelling #{id} klaar",
+    "readyBuzzer": "Bestelling #{id} klaar · <pill></pill>",
+    "status": "Bestelling #{id} {action, select, confirm {bevestigd} reject {geweigerd} ready {klaar} collected {afgehaald} undo_collected {hersteld} cancel {geannuleerd} other {bijgewerkt}}"
+  },
+  "conflicts": {
+    "more": "+{count} meer",
+    "notOnScreenPlus": "+{count} niet op dit scherm",
+    "notOnScreen": "{n, plural, one {{count} bestelling niet op dit scherm} other {{count} bestellingen niet op dit scherm}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ BETALING NIET GEREGISTREERD",
+    "paymentBody": "{orders} — alleen op dit apparaat als betaald gemarkeerd. De betaling is niet verwerkt.",
+    "paymentCheck": "Controleer de bestelling en reken opnieuw af als er nog betaald moet worden.",
+    "dismiss": "Sluiten",
+    "confirmChecked": "Bevestig dat je {orders} hebt gecontroleerd",
+    "confirmHides": "Hiermee verberg je de waarschuwing. De registratie blijft hoe dan ook op dit apparaat bewaard.",
+    "notYet": "Nog niet",
+    "iveChecked": "Ik heb {orders} gecontroleerd",
+    "statusBody": "⚠ {orders} — deze wijziging is niet doorgevoerd. Controleer de bestelling.",
+    "offline": "📴 Geen verbinding — {n, plural, one {{count} wijziging opgeslagen op dit apparaat. Die wordt verstuurd zodra je weer online bent.} other {{count} wijzigingen opgeslagen op dit apparaat. Die worden verstuurd zodra je weer online bent.}} Instellingen zijn vergrendeld.",
+    "syncing": "Weer online — {n, plural, one {{count} wijziging} other {{count} wijzigingen}} versturen…",
+    "synced": "Alle wijzigingen verstuurd.",
+    "stillQueued": "{n, plural, one {{count} wijziging opgeslagen op dit apparaat. We proberen die nog te versturen.} other {{count} wijzigingen opgeslagen op dit apparaat. We proberen ze nog te versturen.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab is vergrendeld",
+    "verifying": "Verifiëren…",
+    "unlock": "Ontgrendelen",
+    "cantUseBiometric": "Kun je Face / Touch ID niet gebruiken?",
+    "enterPin": "Voer je reservepincode in",
+    "wrongPin": "Verkeerde pincode — probeer het opnieuw.",
+    "checking": "Controleren…",
+    "tryBiometric": "Probeer liever Face / Touch ID",
+    "forgot": "Pincode vergeten? Dan moet je de app opnieuw installeren."
+  },
+  "notify": {
+    "title": "🔔 Meldingen",
+    "intro": "Meldingen op dit apparaat. Zet ze aan om te kiezen welke meldingen je krijgt.",
+    "refused": "Om dit aan te zetten, moeten meldingen in de instellingen van je apparaat zijn ingeschakeld.",
+    "newOrder": "Meldingen nieuwe bestelling",
+    "newOrderHelp": "Krijg een melding als een bestelling van een klant bevestigd moet worden.",
+    "offline": "Meldingen offline / gepauzeerd",
+    "offlineHelp": "Krijg een melding als dit apparaat offline gaat (en bestellen wordt gepauzeerd). <green>Werkt offline.</green>"
+  },
+  "van": {
+    "label": "Foodtruck",
+    "loadRetry": "Laden mislukt · Opnieuw",
+    "select": "Kiezen…"
+  },
+  "deviceSave": {
+    "network": "Kan de server niet bereiken — controleer de verbinding en probeer het opnieuw.",
+    "server": "Kon dat nu niet opslaan. Probeer het opnieuw."
+  },
+  "setup": {
+    "fetchErrorTitle": "Kon de apparaatinstellingen niet laden",
+    "fetchErrorBody": "We konden de server niet bereiken om <b>dit apparaat</b> in te stellen. Controleer de verbinding en probeer het opnieuw — je bestellingen en instellingen blijven ongewijzigd.",
+    "retry": "Opnieuw proberen",
+    "later": "Later",
+    "noVanTitle": "Geen actieve foodtruck",
+    "noVanBody": "Dit bedrijf heeft nog geen actieve foodtruck. Activeer er een in <b>Instellingen → Je foodtrucks</b>; daarna stelt dit apparaat zich automatisch in — hier hoef je verder niets te doen.",
+    "goToVans": "Naar Instellingen → Je foodtrucks",
+    "title": "Dit apparaat instellen",
+    "body": "Eenmalige instelling voor <b>dit apparaat</b>: het scherm waarmee het opent en bij welke foodtruck het hoort. Geldt alleen voor dit apparaat — andere apparaten stel je apart in, en je kunt dit later wijzigen via het profielmenu → ‘Dit apparaat’.",
+    "whichScreen": "Met welk scherm moet dit apparaat openen?",
+    "dashboard": "Dashboard",
+    "kds": "KDS",
+    "whichVan": "Bij welke foodtruck hoort dit apparaat?",
+    "selectVan": "Kies een foodtruck…",
+    "saving": "Opslaan…",
+    "tryAgain": "Opnieuw proberen",
+    "continue": "Doorgaan"
+  },
+  "device": {
+    "title": "Dit apparaat",
+    "viewing": "Je bekijkt: <b>{truck}</b>",
+    "viewingVan": "Je bekijkt: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Alleen dit apparaat — andere apparaten stel je apart in. (ID: {id}…)",
+    "truck": "Bedrijf",
+    "van": "Foodtruck",
+    "defaultScreen": "Startscherm",
+    "orderNotifications": "Bestelmeldingen",
+    "patchFailed": "{setting, select, van {Foodtruck} defaultScreen {Startscherm} other {Bestelmeldingen}} niet opgeslagen. {reason}",
+    "requireBiometric": "Vingerafdruk of gezichtsherkenning vereisen bij openen",
+    "pinTitle": "Stel een reservepincode in (4–6 cijfers)",
+    "pinHelp": "Je manier om binnen te komen als vingerafdruk of gezichtsherkenning niet werkt — het is de enige terugvaloptie, dus vergeet hem niet (een vergeten pincode betekent dat je de app opnieuw moet installeren). Werkt offline.",
+    "pinPlaceholder": "Pincode",
+    "confirmPinPlaceholder": "Bevestig pincode",
+    "pinTooShort": "Gebruik minstens 4 cijfers.",
+    "pinMismatch": "Pincodes komen niet overeen.",
+    "setPin": "Pincode instellen & inschakelen",
+    "cancel": "Annuleren",
+    "noBiometric": "Er is geen vingerafdruk of gezichtsherkenning ingesteld op dit apparaat — voeg er een toe in de instellingen van je apparaat. Je reservepincode werkt nog steeds.",
+    "footer": "Deze instellingen gelden alleen voor dit apparaat — andere apparaten stel je apart in."
+  },
+  "appLock": {
+    "unlockReason": "HatchGrab ontgrendelen",
+    "usePasscode": "Toegangscode gebruiken",
+    "cancel": "Annuleren",
+    "confirmEnable": "Bevestig om de app-vergrendeling in te schakelen"
+  },
+  "channel": {
+    "ordersName": "Nieuwe bestellingen",
+    "ordersDescription": "Meldingen als een bestelling bevestigd moet worden."
+  },
+  "localNotify": {
+    "newOrderTitle": "Nieuwe bestelling",
+    "orderReceived": "Bestelling {number} ontvangen",
+    "newOrders": "{n, plural, one {Je hebt een nieuwe bestelling} other {Je hebt {count} nieuwe bestellingen}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Bestellen gepauzeerd",
+    "pausedBody": "Je bent offline — bestellen door klanten is gepauzeerd.",
+    "offlineTitle": "Je bent offline",
+    "offlineBody": "Dit apparaat heeft geen verbinding meer."
+  }
+}

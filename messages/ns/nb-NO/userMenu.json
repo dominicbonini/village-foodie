@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Brukermeny",
+  "screenOn": "Skjerm på",
+  "screenOff": "Skjerm av",
+  "newOrderSound": "Lyd for nye bestillinger",
+  "copied": "Kopiert",
+  "orderLink": "Bestillingslenke",
+  "qrCode": "QR-kode",
+  "kitchenScreen": "Kjøkkenskjerm",
+  "thisDevice": "Denne enheten",
+  "manage": "Administrer",
+  "ordersDashboard": "Bestillingsoversikt",
+  "admin": "Admin",
+  "privacy": "Personvernerklæring",
+  "terms": "Vilkår",
+  "signOut": "Logg ut",
+  "close": "Lukk"
+}

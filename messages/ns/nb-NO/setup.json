@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Hvor du holder til",
+    "identity": "Matbilen din",
+    "menu": "Menyen din",
+    "event": "Første arrangement"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Oppsett",
+  "loading": "Laster",
+  "loadingCountries": "Laster…",
+  "verify": {
+    "ok": "E-posten er bekreftet — takk.",
+    "expired": "Den bekreftelseslenken har utløpt. Ta kontakt, så ordner vi det før du åpner for kunder.",
+    "invalid": "Den bekreftelseslenken virket ikke. Ta kontakt, så ordner vi det før du åpner for kunder."
+  },
+  "identity": {
+    "heading": "Hva heter matbilen din?",
+    "intro": "Dette er navnet kundene ser. Ingenting blir offentlig før du velger å åpne for kunder.",
+    "nameLabel": "Navn på matbilen",
+    "namePlaceholder": "Bobs Burger",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Dette nummeret er på WhatsApp",
+    "phoneHelp": "Kundene ser dette i ordrebekreftelsen, så de kan spørre om en bestilling. Haken avgjør om det står «Ring oss» eller «Send oss en WhatsApp». Du kan endre begge deler i Innstillinger."
+  },
+  "phoneRequired": "Legg til et telefonnummer — både kundene og vi bruker det for å nå deg.",
+  "createFailed": "Kunne ikke opprette matbilen din.",
+  "unreachable": "Fikk ikke kontakt med oss akkurat nå — prøv igjen.",
+  "back": "Tilbake",
+  "creating": "Oppretter matbilen din…",
+  "continue": "Fortsett"
+}

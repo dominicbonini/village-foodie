@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Afhaaltijden",
+    "takes_cash": "Accepteer je contant geld?",
+    "offline_protection": "Offlinebeveiliging voor bestellingen",
+    "buzzer_prompt": "Herinner me eraan een buzzer mee te geven"
+  },
+  "typeFollowsVanTitle": "Volgt de vaste instelling van elke foodtruck",
+  "sameSettingsAllVansLabel": "Dezelfde instellingen voor alle foodtrucks",
+  "sameSettingsAllVansHeader": "Alle foodtrucks",
+  "sameSettingsConfirm": "De instellingen van Foodtruck 1 naar elke foodtruck kopiëren? Dit kopieert alle foodtruckinstellingen van Foodtruck 1, net als ‘Zelfde als Foodtruck 1’ in Instellingen. Keukencapaciteit heeft een eigen schakelaar.",
+  "eventTypesFooterStandard": "Standaard is je gebruikelijke opzet. Wijzig je het hier, dan wijzigt het ook in Instellingen.",
+  "eventTypesFooterOneEvent": "Wil je een instelling voor maar één evenement wijzigen? Gebruik dan het dashboard van dat evenement.",
+  "eventTypesSubtitle": "Wijzigingen worden meteen opgeslagen.",
+  "matchStandardLabel": "Gelijk aan Standaard",
+  "matchStandardConfirm": "Alle instellingen van dit type terugzetten naar Standaard? Alles wat je hier hebt gewijzigd, wordt gewist.",
+  "priceLabels": {
+    "price_change_on": "Prijzen aanpassen",
+    "price_mode": "Prijsaanpassing",
+    "price_amount": "Bedrag",
+    "price_rounding": "Afronding",
+    "item_prices": "Prijzen per item"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Elke prijs zelf instellen"
+  },
+  "priceRounding": {
+    "none": "Geen",
+    "nearest_1": "Afronden op {symbol} 1",
+    "up_1": "Altijd naar boven afronden"
+  },
+  "pricesStandardCell": "Je menukaartprijzen",
+  "pricesTruckWideTitle": "Je prijzen zijn voor elke foodtruck hetzelfde",
+  "pricesMenuCell": "Menukaart",
+  "pricesTypeOffCell": "Menukaartprijzen",
+  "itemPricesShow": "Prijzen tonen",
+  "itemPricesHide": "Prijzen verbergen",
+  "priceItemsHeading": "Stel de prijs van elk item in",
+  "priceItemsOpen": "Prijs per item bekijken of wijzigen ›",
+  "priceItemsClose": "Prijzen per item verbergen ⌃",
+  "ownPriceCount": "{n, plural, one {{count} item heeft een eigen prijs} other {{count} items hebben een eigen prijs}}",
+  "priceTypeHint": "Tik op een prijs om zelf een bedrag in te voeren.",
+  "pricesLiveNotice": "Dit evenement is live. Nieuwe bestellingen krijgen de nieuwe prijzen. Bestellingen die al geplaatst zijn, houden hun prijzen.",
+  "placeTypeHelper": "Evenement toevoegen kiest automatisch dit type als je deze plek kiest.",
+  "postPictureStandardNote": "Evenementberichten gebruiken hier je standaardontwerp.",
+  "eventItemsCardDescription": "Prijzen, itemlimieten en beschikbaarheid voor alleen dit evenement. Wijzigingen gaan direct in.",
+  "eventPriceColumnLabel": "Prijs",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · dit evenement} other {menukaart {price} · dit evenement}}",
+  "eventPriceEdit": "✎ Prijzen bewerken",
+  "eventPriceCancel": "Annuleren",
+  "eventPriceSave": "Prijzen opslaan",
+  "eventPriceEditNote": "Je bewerkt de prijzen voor alleen dit evenement. Itemlimieten en beschikbaarheid zijn vergrendeld tot je opslaat.",
+  "eventPriceLiveNote": "Live: nieuwe bestellingen krijgen de nieuwe prijzen.",
+  "offlineWhenOfflineLabel": "Als je offline bent"
+}

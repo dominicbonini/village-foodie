@@ -1,0 +1,189 @@
+{
+  "cancel": "Avbryt",
+  "back": "← Tilbake",
+  "backPlain": "Tilbake",
+  "next": "Neste →",
+  "continue": "Fortsett →",
+  "closeImport": "Lukk importen",
+  "tryAgain": "Prøv igjen",
+  "catError": {
+    "empty": "Gi kategorien et navn.",
+    "tooLong": "Det navnet er for langt.",
+    "clash": "Det finnes allerede en kategori som heter «{name}»."
+  },
+  "steps": {
+    "details": "Dine opplysninger",
+    "menu": "Meny",
+    "extras": "Tillegg",
+    "allergens": "Allergener",
+    "kitchen": "Kjøkkenoppsett",
+    "schedule": "Kalender",
+    "settings": "Innstillinger"
+  },
+  "toast": {
+    "demoGone": "Demomenyen din er ikke lenger tilgjengelig – last den opp igjen for å fortsette.",
+    "eventsSaveFailed": "Kunne ikke lagre arrangementene",
+    "cardReadFailed": "Kunne ikke lese allergenlisten – prøv igjen",
+    "imageReadFailed": "Kunne ikke lese det bildet – skriv eller lim inn listen i stedet",
+    "commitFailedDetail": "Kunne ikke fullføre lagringen av menyen: {error}. Noen varer kan allerede være lagret – sjekk menyen før du prøver igjen.",
+    "commitFailed": "Kunne ikke fullføre lagringen av menyen. Noen varer kan allerede være lagret – sjekk menyen før du prøver igjen.",
+    "finishFailed": "Kunne ikke markere oppsettet som fullført – du kan likevel fortsette.",
+    "scheduleReadFailed": "Kunne ikke lese den kalenderen – prøv et tydeligere bilde, eller skriv inn datoene dine.",
+    "cardRead": "Listen er lest – {matched} koblet til retter, {pending, plural, one {# må tildeles} other {# må tildeles}} av deg"
+  },
+  "settingsReview": {
+    "anchorOrder": "Innstillinger → Bestillingsinnstillinger",
+    "anchorDisplay": "Innstillinger → Matbilene dine → Visningsinnstillinger",
+    "mins15": "15 minutter",
+    "mins30": "30 minutter",
+    "mins60": "60 minutter",
+    "hours2": "2 timer",
+    "title": "Noen innstillinger å sjekke",
+    "loading": "Laster inn innstillingene dine…",
+    "looksGood": "Ser bra ut →",
+    "secondaryAria": "{label} – {secondary}",
+    "saveFailed": "Kunne ikke lagre dette – du kan endre det under Innstillinger.",
+    "anchorContact": "Innstillinger → Kontaktinformasjon",
+    "intro": "Vi har satt opp noen vanlige innstillinger for deg. Verdt en rask titt – du kan endre alle senere under Innstillinger.",
+    "cancelAria": "Hvor lenge før henting kundene kan avbestille"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Gå gjennom dem før du åpner for bestillinger. Varene er merket «allergener ikke angitt» til du gjør det.",
+    "body": "Gå gjennom dem under Innstillinger før du åpner for bestillinger. Varene er merket «allergener ikke angitt» til du gjør det.",
+    "title": "⚠ Allergener og kosthold er ikke angitt ennå"
+  },
+  "welcome": {
+    "title": "Velkommen til HatchGrab",
+    "yourTruck": "Matbilen din",
+    "stop": "Du kan stoppe og komme tilbake når du vil.",
+    "body": "{name} er satt opp. Nå legger vi til menyen din, og deretter ditt første arrangement.",
+    "go": "Sett i gang"
+  },
+  "offer": {
+    "title": "Bruke menyen fra demoen?",
+    "use": "Bruk denne menyen",
+    "upload": "Last opp en annen meny",
+    "body": "Vi lagret menyen du lastet opp – {count, plural, one {# vare} other {# varer}}. Bruk den som utgangspunkt, eller last opp en annen."
+  },
+  "upload": {
+    "title": "Importer menyen din",
+    "body": "Last opp et bilde av menytavla, et skjermbilde eller en PDF, eller lim inn menyen som tekst. KI-en vår leser den og lager den digitale menyen din – du går gjennom alt før det lagres.",
+    "confirmCancel": "Avbryte denne importen? Gjennomgangen din av denne menyen blir forkastet.",
+    "process": "Behandle menyen",
+    "later": "Jeg gjør det senere"
+  },
+  "processing": {
+    "title": "Analyserer menyen din",
+    "body": "KI-en leser varene dine og sorterer dem i kategorier…"
+  },
+  "review": {
+    "title": "Se over den importerte menyen",
+    "editLaterSetup": "Navn, priser, tillegg, allergener og kostholdsinfo kan redigeres når som helst senere.",
+    "editLater": "Navn, priser, tillegg, allergener og kostholdsinfo kan redigeres når som helst under Innstillinger.",
+    "noPrice": "{count, plural, one {# vare} other {# varer}} hadde ingen pris vi kunne lese",
+    "renameCategoryAria": "Gi kategorien {name} nytt navn",
+    "renameAria": "Gi {name} nytt navn",
+    "renameTitle": "Gi kategorien nytt navn",
+    "deleteAria": "Slett {name}",
+    "deleteTitle": "Slett kategori",
+    "lastCategory": "Menyen må ha minst én kategori",
+    "countOf": "{kept} av {total}",
+    "existing": "finnes fra før",
+    "deleteEmptyTitle": "Slette «{name}»?",
+    "deleteEmptyBody": "Den har ingen varer, så ingenting går tapt.",
+    "delete": "Slett",
+    "moveTitle": "Hvor skal {count, plural, one {# vare} other {# varer}} flyttes?",
+    "moveBody": "Når du sletter «{name}», må rettene flyttes et annet sted – varer uten kategori blir ikke importert.",
+    "moveAria": "Flytt varer fra {name} til",
+    "chooseCategory": "Velg en kategori…",
+    "moveDelete": "Flytt og slett",
+    "itemName": "Varenavn",
+    "free": "gratis?",
+    "freeOn": "Gratis ✕",
+    "nameFirst": "Gi den nye varen et navn før du legger til en til",
+    "addItem": "+ Legg til vare",
+    "categoryName": "Kategorinavn",
+    "newCategoryAria": "Navn på ny kategori",
+    "addCategory": "+ Legg til kategori",
+    "ready": "{count, plural, one {# vare} other {# varer}} klar til å legges til. Fjern haken for dem du ikke vil ha.",
+    "noPriceBody": "Sett en pris på hver, eller merk den som gratis – ellers blir den publisert til {zero}. Du kan ikke fortsette før dette er ordnet.",
+    "incomplete": "Skriv inn et navn for å legge til denne varen – tomme rader blir ikke importert."
+  },
+  "extras": {
+    "introSetup": "Noen retter kan settes opp som <b>én vare kunden tilpasser</b> eller beholdes som <b>separate retter</b>. Velg hvordan hver skal vises. Du kan endre dette senere.",
+    "intro": "Noen retter kan settes opp som <b>én vare kunden tilpasser</b> eller beholdes som <b>separate retter</b>. Velg hvordan hver skal vises. Du kan endre dette senere under Innstillinger.",
+    "none": "Ingen retter å gruppere – hver vare er en egen rett.",
+    "axisChoice": "· valg av {axis}",
+    "grouped": "Gruppert · én vare, kunden velger",
+    "separate": "Separate varer på menyen"
+  },
+  "allergens": {
+    "title": "Allergener",
+    "detected": "Vi fant allergener i menyen din. Velg hvordan de skal vises nedenfor.",
+    "howShow": "Hvordan vil du vise allergener til kundene?",
+    "skip": "Hopp over allergenoppsettet foreløpig"
+  },
+  "kitchen": {
+    "title": "Kjøkkenoppsett",
+    "intro": "Hjelp kundene å vite hvor lenge de må vente – du kan alltid endre dette senere.",
+    "howWorks": "Slik fungerer kjøkkenkapasitet",
+    "allExist": "Alle kategoriene finnes allerede – ingen tider å angi.",
+    "totalHelp": "Angi en total kapasitet for å begrense hvor mange varer kjøkkenet tar imot per tidsluke. La stå på ∞ for ingen grense.",
+    "saveAdd": "Lagre og legg til i menyen"
+  },
+  "schedule": {
+    "title": "Legg til kalenderen min",
+    "intro": "Hvis kalenderen din ligger på nettstedet ditt, kan vi holde den oppdatert automatisk – eller du kan legge inn datoene selv.",
+    "websiteTitle": "Kalenderen min ligger på nettstedet mitt",
+    "urlPlaceholder": "https://dinmatbil.no/arrangementer",
+    "checking": "Sjekker…",
+    "verify": "Bekreft",
+    "checkingSite": "Sjekker nettstedet ditt…",
+    "takesTime": "Dette kan ta opptil 2 minutter – la siden være åpen.",
+    "canRead": "✓ Vi kan lese kalenderen din",
+    "ownSite": "Ditt eget nettsted – ikke en Facebook- eller Instagram-side.",
+    "photoTitle": "Last opp et bilde av kalenderen min",
+    "dragChoose": "Dra og slipp, eller trykk for å velge",
+    "imageOrPdf": "Bilde eller PDF",
+    "or": "eller",
+    "pastePlaceholder": "Lim inn datoene dine her…",
+    "read": "Les kalenderen",
+    "found": "{count, plural, one {# dato} other {# datoer}} funnet – disse legges til i kalenderen din.",
+    "dateTbc": "Dato kommer",
+    "save": "Lagre {count, plural, one {# dato} other {# datoer}}",
+    "manualDesc": "Legg dem til senere i fanen Kalender – ingenting å gjøre nå.",
+    "manualBody": "Helt greit. Du kan legge til og administrere datoene dine når som helst fra fanen Kalender i kontoen din.",
+    "blockedDomain": "Bruk nettadressen til nettstedet ditt – Facebook- og Instagram-sider kan ikke leses automatisk.",
+    "saveFailed": "Vi leste kalenderen din, men fikk ikke lagret den akkurat nå – prøv igjen.",
+    "websiteDesc": "Vi sjekker den jevnlig og sender nye datoer til deg for godkjenning.",
+    "keepChecking": "Vi fortsetter å sjekke denne siden og sender nye datoer til deg for godkjenning.",
+    "photoDesc": "Ta bilde av eller lim inn datoene dine – vi leser dem inn så du kan sjekke dem.",
+    "noneFound": "Vi fant ingen datoer der – prøv et tydeligere bilde, eller legg til en dato selv.",
+    "manualTitle": "Jeg legger inn datoene selv",
+    "trialNotStarted": "Å legge til arrangementer starter ikke den gratis prøveperioden – du velger senere hvilket arrangement som starter den."
+  },
+  "done": {
+    "summary": "{items, plural, one {# vare} other {# varer}} fordelt på {categories, plural, one {# kategori} other {# kategorier}}.",
+    "imported": "Menyen er importert!",
+    "added": "Varene dine er lagt til i menyen.",
+    "duplicates": "{count, plural, one {# duplikat} other {# duplikater}} hoppet over",
+    "showMe": "Vis meg rundt",
+    "remind": "Minn meg på det senere",
+    "allSet": "Alt er klart!",
+    "explore": "Jeg utforsker selv"
+  },
+  "discard": {
+    "setupTitle": "Fullføre oppsettet senere?",
+    "setupBody": "Kontoen og matbilen din er lagret – ingenting går tapt. Du kan legge til menyen når som helst: logg inn og trykk på <b>Importer meny</b> på menyskjermen for å fortsette akkurat her.",
+    "keepGoing": "Fortsett",
+    "finishLater": "Fullfør senere",
+    "title": "Forkaste denne importen?",
+    "keepEditing": "Fortsett å redigere",
+    "discard": "Forkast",
+    "body": "Endringene dine blir ikke lagret – de importerte varene, tilberedningstidene og kjøkkenkapasiteten blir ikke lagt til."
+  },
+  "allergenCardText": {
+    "contains": "Inneholder: {list}",
+    "mayContain": "Kan inneholde: {list}"
+  }
+}

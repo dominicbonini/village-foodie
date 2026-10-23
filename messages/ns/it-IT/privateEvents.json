@@ -1,0 +1,42 @@
+{
+  "publicName": "Evento privato",
+  "chip": "Privato",
+  "grid": {
+    "orderingSection": "ORDINI",
+    "linkRowLabel": "Ricevi ordini tramite link privato e codice QR",
+    "columnTitle": "Il tipo Privato integrato. Non può essere rinominato, spostato o eliminato."
+  },
+  "form": {
+    "help": "Compare nel tuo calendario come «Evento privato» solo con data e orari: mai l’indirizzo, la mappa o Village Foodie.",
+    "linkPromise": "Gli ospiti ordinano tramite un link privato e un codice QR: li riceverai dopo aver salvato.",
+    "nameLabel": "Nome dell’evento",
+    "nameHelp": "Gli ospiti lo vedono in cima alla pagina degli ordini.",
+    "namePlaceholder": "Matrimonio di Sarah e Tom",
+    "previewNote": "Come appare nel tuo calendario: niente luogo, città o CAP.",
+    "needsTimes": "Aggiungi un orario di inizio e di fine: un evento privato che riceve ordini tramite link ne ha bisogno."
+  },
+  "link": {
+    "button": "Link e QR",
+    "title": "Link privato e codice QR",
+    "label": "Link privato",
+    "copy": "Copia",
+    "copied": "Copiato",
+    "qrDownload": "Scarica QR",
+    "tableCards": "Stampa i segnatavolo",
+    "newLink": "Crea un nuovo link",
+    "working": "Elaborazione…",
+    "newLinkConfirm": "Creare un nuovo link? Il link attuale smette subito di funzionare e anche i codici QR che hai già stampato non funzioneranno più.",
+    "newLinkHelp": "Usalo se il link è finito dove non doveva. Il link attuale smette subito di funzionare e anche i codici QR stampati non funzioneranno più.",
+    "newLinkFailed": "Impossibile creare un nuovo link.",
+    "offNotice": "Gli ordini tramite link privato sono disattivati per questo evento, quindi non c’è nessun link da condividere. L’evento compare comunque nel tuo calendario come «Evento privato»."
+  },
+  "cards": {
+    "printTitle": "{truck} — segnatavolo",
+    "scan": "Inquadra per ordinare",
+    "blurb": "Ordina e paga dal telefono. Ti chiameremo per nome quando è pronto.",
+    "footer": "Ordini con HatchGrab"
+  },
+  "noSinglePost": "Gli eventi privati non hanno un post dedicato: compaiono nel tuo poster settimanale come «Evento privato».",
+  "confirmToPrivate": "In questo modo l’indirizzo e l’evento vengono nascosti dalla mappa. Gli ospiti avranno bisogno del link privato per ordinare.",
+  "confirmFromPrivate": "In questo modo l’evento diventa pubblico: verranno mostrati l’indirizzo e il segnaposto sulla mappa, e il link privato smetterà di funzionare."
+}

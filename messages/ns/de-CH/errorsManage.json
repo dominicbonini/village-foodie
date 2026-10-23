@@ -1,0 +1,14 @@
+{
+  "charges_rate_decimals": "Verwenden Sie höchstens 3 Nachkommastellen, z. B. 8.875.",
+  "charges_fee_pct": "Geben Sie einen Prozentsatz ein, z. B. 3 oder 3.5.",
+  "charges_fee_fixed": "Geben Sie einen Betrag ein, z. B. 0.50.",
+  "wp_font_too_big": "Diese Schriftart ist {size} MB gross. Das Limit liegt bei 5 MB.",
+  "wp_caption_too_long": "Diese Bildunterschrift ist zu lang – maximal 4000 Zeichen.",
+  "wp_upload_too_big": "Dieses Bild ist {size} MB gross. Das Limit liegt bei {max} MB – exportieren Sie es noch einmal in kleinerer Grösse.",
+  "wp_upload_no_size": "Dieses Bild gibt keine Grösse an – exportieren Sie es noch einmal.",
+  "wp_upload_too_small": "Dieses Bild ist {width}×{height} gross. Die kürzere Seite muss mindestens {min} px haben, damit der Text scharf bleibt.",
+  "wp_picture_size_unknown": "Die Grösse dieses Bildes konnte nicht gelesen werden.",
+  "wp_picture_wrong_shape": "Dieses Bild hat ein anderes Format als Ihr Standardbild ({width}×{height}). Exportieren Sie es in derselben Grösse.",
+  "wp_layout_size_unknown": "Die Bildgrösse des Designs ist nicht bekannt.",
+  "wp_box_not_number": "{box, select, heading {Das Feld für die Überschrift hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} date {Das Feld für das Datum hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} location {Das Feld für den Ort hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} time {Das Feld für die Uhrzeit hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} town {Das Feld für die Stadt hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} days {Das Feld für die 7 Tage hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} other {Ihr eigener Text hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.}}"
+}

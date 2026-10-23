@@ -104,7 +104,8 @@
     "UScards": "cartes américaines",
     "Australiancards": "cartes australiennes",
     "NewZealandcards": "cartes néo-zélandaises",
-    "Canadiancards": "cartes canadiennes"
+    "Canadiancards": "cartes canadiennes",
+    "Swisscards": "cartes suisses"
   },
   "perMonth": {
     "mo": "{amount}/mois",

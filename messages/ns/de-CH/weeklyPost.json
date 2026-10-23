@@ -1,0 +1,5 @@
+{
+  "error": {
+    "tooBig": "Dieses Bild ist {size, number, ::.0 group-off} MB gross. Die Obergrenze liegt bei 10 MB."
+  }
+}

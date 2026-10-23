@@ -1,0 +1,28 @@
+{
+  "notAvailable": "No disponible en la demo",
+  "demoMode": "MODO DEMO",
+  "loopLands": "Así es exactamente como llega un pedido real",
+  "showMe": "Enséñamelo",
+  "noCard": "{sub} Sin tarjeta.",
+  "notYet": "Todavía no",
+  "cashAndCollected": "Efectivo y recogido",
+  "logoPlaceholder": "Tu logo aquí",
+  "welcomeTitle": "{sample, select, yes {Aquí tienes una demo de ejemplo} other {Aquí tienes tu demo}}",
+  "welcomeIntro": "{sample, select, yes {Esta es una <b>carta de ejemplo</b> para que veas cómo funciona todo; sube la tuya cuando quieras para hacerla tuya.} other {Esta es tu propia carta, con tu imagen de marca, en un tablero real.}} Los pedidos que ya aparecen son ejemplos, para que veas un servicio con mucho movimiento.",
+  "twoThings": "Dos cosas que probar:",
+  "hitButton": "Pulsa <b>{button}</b> en un pedido",
+  "scanQr": "Escanea el <b>código QR</b> (o toca el enlace), haz un pedido como cliente y mira cómo llega",
+  "qrAlt": "Código QR de tu página de pedidos para clientes",
+  "openHere": "O ábrela en este dispositivo",
+  "copyLink": "Copiar enlace",
+  "copyDescribedAs": "enlace de pedidos",
+  "noLinkTitle": "Tu enlace de pedidos para clientes",
+  "noLinkBody": "El enlace de tu página de pedidos está en el menú, arriba a la derecha.",
+  "asLive": "El flujo de pedidos y cocina funciona exactamente igual que en un servicio real.",
+  "startExploring": "Empezar a explorar",
+  "signupOffer": {
+    "heading": "Regístrate ya y consigue tu mes gratis",
+    "sub": "El mes no empieza a contar hasta que decidas publicarte."
+  },
+  "cashIcon": "💶"
+}

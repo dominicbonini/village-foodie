@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Indtast et gyldigt mobilnummer fra {name}} other {Indtast et gyldigt mobilnummer}}{withExample, select, yes { (f.eks. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Indtast et gyldigt telefonnummer fra {name}} other {Indtast et gyldigt telefonnummer}}{withExample, select, yes { (f.eks. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Indtast et gyldigt telefonnummer fra {name}} other {Indtast et gyldigt telefonnummer}}{withExample, select, yes { (f.eks. {example})} other {}}."
+}

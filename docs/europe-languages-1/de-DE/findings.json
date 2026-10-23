@@ -1,0 +1,1644 @@
+{
+ "generated": "2026-10-23",
+ "views": 7368,
+ "pseudoViews": 3548,
+ "englishLeft": {
+  "words": [
+   {
+    "word": "Sorry",
+    "views": 13,
+    "examples": [
+     "1a/1a/orderPage/US|paymentFailed",
+     "1a/1a/orderPage/US|paymentFailedUrl",
+     "1b/components/US|reject|none|note"
+    ]
+   },
+   {
+    "word": "requested",
+    "views": 9,
+    "examples": [
+     "1c/api/US|change-email|brevoFails",
+     "1c/api/US|change-email|ok",
+     "1c/api/US|resend-verification|brevoFails"
+    ]
+   },
+   {
+    "word": "insufficient",
+    "views": 9,
+    "examples": [
+     "1d/api/US|manage|staff",
+     "1d/api/US|oos|manage|staff.invite_team_member",
+     "1d2/api/US|manage|staff.invite_team_member"
+    ]
+   },
+   {
+    "word": "permissions",
+    "views": 9,
+    "examples": [
+     "1d/api/US|manage|staff",
+     "1d/api/US|oos|manage|staff.invite_team_member",
+     "1d2/api/US|manage|staff.invite_team_member"
+    ]
+   },
+   {
+    "word": "automatically",
+    "views": 8,
+    "examples": [
+     "1c/api/US|build-request|ok",
+     "1c/api/US|build-request|okNoTruck",
+     "1c/api/US|deletion|post|ok"
+    ]
+   },
+   {
+    "word": "keep",
+    "views": 7,
+    "examples": [
+     "1c/api/US|deletion|post|okNoTrucks",
+     "1d/copy/US|serviceSettings|PRICES_LIVE_NOTICE",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_ENABLE_CONFIRM"
+    ]
+   },
+   {
+    "word": "Records",
+    "views": 7,
+    "examples": [
+     "1d2/api/US|manage|instructions.sendFails",
+     "1d2/api/US|manage|instructions.ok",
+     "1d2/wada/US|domain|record|wix"
+    ]
+   },
+   {
+    "word": "Dip",
+    "views": 6,
+    "examples": [
+     "1a/1a/shared/dealSlots|US|unmet",
+     "1a/1a/shared/dealSlots|US|met",
+     "1a/1a/shared/dealSlots|US|allFilledUnmet"
+    ]
+   },
+   {
+    "word": "loses",
+    "views": 6,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_DISABLE_CONFIRM",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_ENABLE_CONFIRM",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER"
+    ]
+   },
+   {
+    "word": "Instant",
+    "views": 5,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|formatPrepSecs|0",
+     "1d/copy/US|kitchenCapacity|formatPrepSecs|6",
+     "1d/copy/US|kitchenCapacity|prepTimeOptionsFor|0"
+    ]
+   },
+   {
+    "word": "refresh",
+    "views": 4,
+    "examples": [
+     "1c/api/US|cancel-email-change|noChangeId",
+     "1c/api/US|resend-verification|noChangeId",
+     "1d/api/US|events|noTruck"
+    ]
+   },
+   {
+    "word": "notification",
+    "views": 4,
+    "examples": [
+     "1c/setup/US|provision|operator|minimal",
+     "1c/setup/US|provision|operator|regionCode",
+     "1c/setup/US|provision|operator|public"
+    ]
+   },
+   {
+    "word": "managers",
+    "views": 4,
+    "examples": [
+     "1d2/api/US|manage|updateMember.managerOnManager",
+     "1d2/api/US|manage|invite.managerInvitesManager",
+     "1d2/api/US|manage|invite.managerInvitesOwner"
+    ]
+   },
+   {
+    "word": "Powered",
+    "views": 4,
+    "examples": [
+     "1d2/poster/US|qr|poster.standard",
+     "1d2/poster/US|qr|poster.branded",
+     "1d2/poster/US|qr|poster.longName"
+    ]
+   },
+   {
+    "word": "cleared",
+    "views": 3,
+    "examples": [
+     "1a/1a/emails/rejectSentence|US|held|false",
+     "1a/1a/emails/rejectSentence|US|held_short|false",
+     "1d/copy/US|serviceSettings|MATCH_STANDARD_CONFIRM"
+    ]
+   },
+   {
+    "word": "Signal",
+    "views": 3,
+    "examples": [
+     "1b/kds/US|screenOff0",
+     "1b/kds/US|screenOff1",
+     "1b/kds/US|screenOff2"
+    ]
+   },
+   {
+    "word": "immediately",
+    "views": 3,
+    "examples": [
+     "1c/api/US|deletion|post|okNoTrucks",
+     "1c/setup/US|provision|operator|public",
+     "1d/copy/US|serviceSettings|EVENT_ITEMS_CARD_DESCRIPTION"
+    ]
+   },
+   {
+    "word": "Cheeseburger",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Double",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Buttermilk",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Halloumi",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Stack",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Smash",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Skin",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Fries",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Onion",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Rings",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Craft",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "log",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "Nadia",
+    "views": 3,
+    "examples": [
+     "1c/demo/US|rows|return|build",
+     "1c/demo/US|rows|return|visit",
+     "1c/demo/US|rows|return|restart"
+    ]
+   },
+   {
+    "word": "most",
+    "views": 3,
+    "examples": [
+     "1c/setup/US|baseAnswerErrors|townTooLong",
+     "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC",
+     "1d2/payments/US|copy|checkCharge|feeOverPctDecimal"
+    ]
+   },
+   {
+    "word": "emailed",
+    "views": 3,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_HELP",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_MODES",
+     "1d/copy/US|settingsCopy|SETTING_COPY"
+    ]
+   },
+   {
+    "word": "know",
+    "views": 3,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_HELP",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_MODES",
+     "1d/copy/US|settingsCopy|SETTING_COPY"
+    ]
+   },
+   {
+    "word": "Keep",
+    "views": 3,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_MODES",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_REMINDER"
+    ]
+   },
+   {
+    "word": "Target",
+    "views": 3,
+    "examples": [
+     "1d2/api/US|manage|instructions.sendFails",
+     "1d2/api/US|manage|instructions.ok",
+     "1d2/wada/US|domain|record|cloudflare"
+    ]
+   },
+   {
+    "word": "pictures",
+    "views": 3,
+    "examples": [
+     "1d2/api/US|weeklyPost|overview.migration",
+     "1d2/api/US|weeklyPost|socialTag.migration",
+     "1d2/api/US|weeklyPost|captionSave.migration"
+    ]
+   },
+   {
+    "word": "yours",
+    "views": 3,
+    "examples": [
+     "1d2/api/US|weeklyPost|fontSample.notYours",
+     "1d2/api/US|weeklyPost|fontRename.notYours",
+     "1d2/api/US|weeklyPost|fontRemove.notYours"
+    ]
+   },
+   {
+    "word": "LAYOUTS",
+    "views": 3,
+    "examples": [
+     "1d2/social/US|editor|week|days",
+     "1d2/social/US|editor|week|daysMore",
+     "1d2/social/US|editor|week|sheetDays"
+    ]
+   },
+   {
+    "word": "Crispy",
+    "views": 2,
+    "examples": [
+     "1a/1a/orderPage/US|itemModal",
+     "1a/1a/orderPage/US|itemModalEdit"
+    ]
+   },
+   {
+    "word": "released",
+    "views": 2,
+    "examples": [
+     "1a/1a/emails/rejectSentence|US|held|true",
+     "1a/1a/emails/rejectSentence|US|held_short|true"
+    ]
+   },
+   {
+    "word": "within",
+    "views": 2,
+    "examples": [
+     "1a/1a/emails/rejectSentence|US|held|false",
+     "1a/1a/emails/rejectSentence|US|held_short|false"
+    ]
+   },
+   {
+    "word": "attempts",
+    "views": 2,
+    "examples": [
+     "1c/api/US|signup|rateLimitedIp",
+     "1c/api/US|signup|rateLimitedEmail"
+    ]
+   },
+   {
+    "word": "won",
+    "views": 2,
+    "examples": [
+     "1c/api/US|forgot-password|brevoFails",
+     "1c/api/US|forgot-password|ok"
+    ]
+   },
+   {
+    "word": "Someone",
+    "views": 2,
+    "examples": [
+     "1c/api/US|build-request|ok",
+     "1c/api/US|build-request|okNoTruck"
+    ]
+   },
+   {
+    "word": "personal",
+    "views": 2,
+    "examples": [
+     "1c/api/US|deletion|post|okNoTrucks",
+     "1e/parts/legal|US|meta-privacy"
+    ]
+   },
+   {
+    "word": "Signing",
+    "views": 2,
+    "examples": [
+     "1c/auth/US|verifySuccess|plain",
+     "1c/auth/US|verifySuccess|escaped"
+    ]
+   },
+   {
+    "word": "Hide",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|serviceSettings|ITEM_PRICES_HIDE",
+     "1d/copy/US|serviceSettings|PRICE_ITEMS_CLOSE"
+    ]
+   },
+   {
+    "word": "whenever",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|serviceSettings|PLACE_TYPE_HELPER",
+     "1d/copy/US|settingsCopy|SETTING_COPY"
+    ]
+   },
+   {
+    "word": "turned",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_HELP",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_MODES"
+    ]
+   },
+   {
+    "word": "yourself",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_MODES"
+    ]
+   },
+   {
+    "word": "happens",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_CARD_DESCRIPTION",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_SWITCH_HELP"
+    ]
+   },
+   {
+    "word": "goes",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_BODY"
+    ]
+   },
+   {
+    "word": "internet",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_BODY"
+    ]
+   },
+   {
+    "word": "either",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_BODY"
+    ]
+   },
+   {
+    "word": "pausing",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_BODY"
+    ]
+   },
+   {
+    "word": "turning",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_BODY"
+    ]
+   },
+   {
+    "word": "whichever",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER",
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_EXPLAINER_BODY"
+    ]
+   },
+   {
+    "word": "marked",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|settingsCopy|SETTING_COPY",
+     "1d/copy/US|privateEvents|SCRAPED_PRIVATE_HINT"
+    ]
+   },
+   {
+    "word": "starts",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|settingsCopy|TRIAL_NOT_STARTED_BILLING",
+     "1d/copy/US|settingsCopy|TRIAL_NOT_STARTED_BY_EVENTS"
+    ]
+   },
+   {
+    "word": "minutes",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_EXAMPLE",
+     "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER"
+    ]
+   },
+   {
+    "word": "maximum",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_EXAMPLE",
+     "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER"
+    ]
+   },
+   {
+    "word": "everyone",
+    "views": 2,
+    "examples": [
+     "1d/copy/US|privateEvents|PRIVATE_LINK_STANDARD_CELL",
+     "1d/copy/US|privateEvents|SCRAPED_PRIVATE_HINT"
+    ]
+   },
+   {
+    "word": "Canva",
+    "views": 2,
+    "examples": [
+     "1d2/api/US|weeklyPost|confirm.notImage",
+     "1d2/social/US|weekly|setupFirst"
+    ]
+   },
+   {
+    "word": "Aliases",
+    "views": 2,
+    "examples": [
+     "1d2/wada/US|domain|record|wix",
+     "1d2/wada/US|email|wix"
+    ]
+   },
+   {
+    "word": "Portfolio",
+    "views": 2,
+    "examples": [
+     "1d2/wada/US|domain|record|godaddy",
+     "1d2/wada/US|email|godaddy"
+    ]
+   },
+   {
+    "word": "Ltd",
+    "views": 2,
+    "examples": [
+     "1e/pages/landing|US|meta",
+     "1e/parts/legal|US|meta-privacy"
+    ]
+   },
+   {
+    "word": "placing",
+    "views": 1,
+    "examples": [
+     "1a/1a/orderPage/US|notices"
+    ]
+   },
+   {
+    "word": "currently",
+    "views": 1,
+    "examples": [
+     "1a/1a/orderPage/US|notices"
+    ]
+   },
+   {
+    "word": "contains",
+    "views": 1,
+    "examples": [
+     "1a/1a/whatsapp/US|menuLlmCaveat"
+    ]
+   },
+   {
+    "word": "cancellations",
+    "views": 1,
+    "examples": [
+     "1a/1a/api/US|cancel|noCancels"
+    ]
+   },
+   {
+    "word": "accepted",
+    "views": 1,
+    "examples": [
+     "1a/1a/api/US|cancel|noCancels"
+    ]
+   },
+   {
+    "word": "Maximum",
+    "views": 1,
+    "examples": [
+     "1b/components/US|add|scroll|stock"
+    ]
+   },
+   {
+    "word": "few",
+    "views": 1,
+    "examples": [
+     "1c/api/US|demo|rateLimited"
+    ]
+   },
+   {
+    "word": "stamp",
+    "views": 1,
+    "examples": [
+     "1c/api/US|deletion|post|trucksFail"
+    ]
+   },
+   {
+    "word": "mind",
+    "views": 1,
+    "examples": [
+     "1c/api/US|deletion|post|okNoTrucks"
+    ]
+   },
+   {
+    "word": "records",
+    "views": 1,
+    "examples": [
+     "1c/api/US|deletion|post|okNoTrucks"
+    ]
+   },
+   {
+    "word": "retain",
+    "views": 1,
+    "examples": [
+     "1c/api/US|deletion|post|okNoTrucks"
+    ]
+   },
+   {
+    "word": "Mash",
+    "views": 1,
+    "examples": [
+     "1c/setup/US|cuisine|three"
+    ]
+   },
+   {
+    "word": "refusing",
+    "views": 1,
+    "examples": [
+     "1c/setup/US|provision|refuse|countryUnknown"
+    ]
+   },
+   {
+    "word": "figures",
+    "views": 1,
+    "examples": [
+     "1c/setup/US|provision|refuse|countryUnknown"
+    ]
+   },
+   {
+    "word": "uncategorised",
+    "views": 1,
+    "examples": [
+     "1d/api/US|eventTypes|loadWithPricesVanNoName"
+    ]
+   },
+   {
+    "word": "effect",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|EVENT_ITEMS_CARD_DESCRIPTION"
+    ]
+   },
+   {
+    "word": "Changing",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|EVENT_TYPES_FOOTER_STANDARD"
+    ]
+   },
+   {
+    "word": "picks",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|PLACE_TYPE_HELPER"
+    ]
+   },
+   {
+    "word": "placed",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|PRICES_LIVE_NOTICE"
+    ]
+   },
+   {
+    "word": "theirs",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|PRICES_LIVE_NOTICE"
+    ]
+   },
+   {
+    "word": "copies",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|SAME_SETTINGS_CONFIRM"
+    ]
+   },
+   {
+    "word": "Follows",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|TYPE_FOLLOWS_VAN_TITLE"
+    ]
+   },
+   {
+    "word": "myself",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|serviceSettings|priceModeChoices|0"
+    ]
+   },
+   {
+    "word": "Decides",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_CARD_DESCRIPTION"
+    ]
+   },
+   {
+    "word": "drops",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_CARD_DESCRIPTION"
+    ]
+   },
+   {
+    "word": "Disable",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_DISABLE_CONFIRM"
+    ]
+   },
+   {
+    "word": "disable",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_DISABLE_CONFIRM"
+    ]
+   },
+   {
+    "word": "reliable",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_DISABLE_CONFIRM"
+    ]
+   },
+   {
+    "word": "flowing",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_ENABLE_CONFIRM"
+    ]
+   },
+   {
+    "word": "stay",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_ENABLE_CONFIRM"
+    ]
+   },
+   {
+    "word": "sure",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_ENABLE_CONFIRM"
+    ]
+   },
+   {
+    "word": "arriving",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|offlineProtection|OFFLINE_PROTECTION_PURPOSE"
+    ]
+   },
+   {
+    "word": "bumps",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|settingsCopy|SETTING_COPY"
+    ]
+   },
+   {
+    "word": "buzzers",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|settingsCopy|SETTING_COPY"
+    ]
+   },
+   {
+    "word": "gave",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|settingsCopy|SETTING_COPY"
+    ]
+   },
+   {
+    "word": "who",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|settingsCopy|SETTING_COPY"
+    ]
+   },
+   {
+    "word": "tied",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|settingsCopy|WHERE_YOU_TRADE_COPY"
+    ]
+   },
+   {
+    "word": "guessed",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|settingsCopy|WHERE_YOU_TRADE_COPY"
+    ]
+   },
+   {
+    "word": "infinity",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_NO_LIMIT"
+    ]
+   },
+   {
+    "word": "properly",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING"
+    ]
+   },
+   {
+    "word": "works",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER"
+    ]
+   },
+   {
+    "word": "told",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER"
+    ]
+   },
+   {
+    "word": "instantly",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|kitchenCapacity|KITCHEN_SETUP_EXPLAINER"
+    ]
+   },
+   {
+    "word": "Guests",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|privateEvents|CONFIRM_TO_PRIVATE"
+    ]
+   },
+   {
+    "word": "appear",
+    "views": 1,
+    "examples": [
+     "1d/copy/US|privateEvents|PRIVATE_NO_SINGLE_POST"
+    ]
+   },
+   {
+    "word": "PDFs",
+    "views": 1,
+    "examples": [
+     "1d/menu/US|menuTab|empty"
+    ]
+   },
+   {
+    "word": "Early",
+    "views": 1,
+    "examples": [
+     "1d/settings/US|vanBilling|page"
+    ]
+   },
+   {
+    "word": "since",
+    "views": 1,
+    "examples": [
+     "1d2/api/US|manage|domainCheck.notYet"
+    ]
+   },
+   {
+    "word": "placeId",
+    "views": 1,
+    "examples": [
+     "1d2/api/US|manage|usualType.noPlace"
+    ]
+   },
+   {
+    "word": "cycle",
+    "views": 1,
+    "examples": [
+     "1d2/api/US|manage|merge.otherWay"
+    ]
+   },
+   {
+    "word": "answered",
+    "views": 1,
+    "examples": [
+     "1d2/api/US|weeklyPost|fontChoose.libraryUnreachable"
+    ]
+   },
+   {
+    "word": "served",
+    "views": 1,
+    "examples": [
+     "1d2/api/US|weeklyPostGET|uploadedFont"
+    ]
+   },
+   {
+    "word": "unrecognised",
+    "views": 1,
+    "examples": [
+     "1d2/api/US|waSignup|badKind"
+    ]
+   },
+   {
+    "word": "sorry",
+    "views": 1,
+    "examples": [
+     "1d2/poster/US|caption|week.weekCaption"
+    ]
+   },
+   {
+    "word": "Bonini",
+    "views": 1,
+    "examples": [
+     "1e/pages/landing|US|meta"
+    ]
+   },
+   {
+    "word": "collects",
+    "views": 1,
+    "examples": [
+     "1e/parts/legal|US|meta-privacy"
+    ]
+   },
+   {
+    "word": "uses",
+    "views": 1,
+    "examples": [
+     "1e/parts/legal|US|meta-privacy"
+    ]
+   },
+   {
+    "word": "using",
+    "views": 1,
+    "examples": [
+     "1e/parts/legal|US|meta-terms"
+    ]
+   }
+  ],
+  "viewsWithEnglish": 152
+ },
+ "shots": [
+  {
+   "engine": "chromium",
+   "name": "landing",
+   "view": "1e/pages/landing|US|html",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "landing",
+   "view": "1e/pages/landing|US|html",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "features",
+   "view": "1e/pages/features|US|html",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "features",
+   "view": "1e/pages/features|US|html",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "compare",
+   "view": "1e/pages/compare|US|html",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "compare",
+   "view": "1e/pages/compare|US|html",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "signup-setup",
+   "view": "1c/setup/US|page|based|plain",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "signup-setup",
+   "view": "1c/setup/US|page|based|plain",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "signup-demo",
+   "view": "1c/demo/US|gs|trigger|slug",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "signup-demo",
+   "view": "1c/demo/US|gs|trigger|slug",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-menu",
+   "view": "1d/menu/US|menuTab|list",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-menu",
+   "view": "1d/menu/US|menuTab|list",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-schedule",
+   "view": "1d/schedule/US|tab|list",
+   "width": 390,
+   "sideways": true,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-schedule",
+   "view": "1d/schedule/US|tab|list",
+   "width": 1280,
+   "sideways": true,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-settings",
+   "view": "1d/settings/US|owner|oos|auto-replies",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-settings",
+   "view": "1d/settings/US|owner|oos|auto-replies",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-billing",
+   "view": "1e/billing/billing|US|trial",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-billing",
+   "view": "1e/billing/billing|US|trial",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-shell",
+   "view": "1d2/shell/US|shell|tab|menu",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "manage-shell",
+   "view": "1d2/shell/US|shell|tab|menu",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "order-page",
+   "view": "1a/1a/orderPage/US|menu",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "order-page",
+   "view": "1a/1a/orderPage/US|menu",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "order-basket",
+   "view": "1a/1a/orderPage/US|sheet",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "order-basket",
+   "view": "1a/1a/orderPage/US|sheet",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "status-page",
+   "view": "1a/1a/statusPage/US|confirmed",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "status-page",
+   "view": "1a/1a/statusPage/US|confirmed",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "customer-email",
+   "view": "1a/1a/emails/confirm|US|plain",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "customer-email",
+   "view": "1a/1a/emails/confirm|US|plain",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "dashboard",
+   "view": "1b/dashboard/US|orders",
+   "width": 390,
+   "sideways": false,
+   "clipped": [
+    "📍 The Green — Harnessville · 17:00–21:00",
+    "Sam Harness · 2× Margherita, 1× Garlic bread, 3× Coke, 1× Pe",
+    "Sam Harness · 2× Margherita, 1× Garlic bread, 3× Coke, 1× Pe",
+    "📝 Ring the bell",
+    "Sam Harness · 2× Margherita, 1× Garlic bread, 3× Coke, 1× Pe",
+    "Sam Harness · 2× Margherita, 1× Garlic bread, 3× Coke, 1× Pe",
+    "Walk-up · 2× Margherita, 1× Garlic bread, 3× Coke, 1× Pepper",
+    "📝 Ring the bell"
+   ]
+  },
+  {
+   "engine": "chromium",
+   "name": "dashboard",
+   "view": "1b/dashboard/US|orders",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "kds",
+   "view": "1b/kds/US|loading",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "kds",
+   "view": "1b/kds/US|loading",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "operator-email",
+   "view": "1b/operatorMail/new|US|card_paid",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "operator-email",
+   "view": "1b/operatorMail/new|US|card_paid",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "ticket",
+   "view": "1b/printing/ticket|US|pay_at_hatch|80|phone=true",
+   "width": 390,
+   "sideways": true,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "ticket",
+   "view": "1b/printing/ticket|US|pay_at_hatch|80|phone=true",
+   "width": 1280,
+   "sideways": true,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "whatsapp-allergen",
+   "view": "1a/1a/whatsapp/US|allergen",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "whatsapp-allergen",
+   "view": "1a/1a/whatsapp/US|allergen",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "whatsapp-menu",
+   "view": "1a/1a/whatsapp/US|menuDeterministic",
+   "width": 390,
+   "sideways": false,
+   "clipped": []
+  },
+  {
+   "engine": "chromium",
+   "name": "whatsapp-menu",
+   "view": "1a/1a/whatsapp/US|menuDeterministic",
+   "width": 1280,
+   "sideways": false,
+   "clipped": []
+  }
+ ],
+ "overflow390": {
+  "checked": 2008,
+  "language": [],
+  "artefact": [
+   {
+    "id": "1b/components/US|dayLoad|strip",
+    "over": 4,
+    "twin": 4
+   },
+   {
+    "id": "1b/components/US|dayLoad|strip|breached",
+    "over": 4,
+    "twin": 4
+   },
+   {
+    "id": "1d/menu/US|capacity|oneVan",
+    "over": 63,
+    "twin": 7
+   },
+   {
+    "id": "1d/menu/US|capacity|twoVans",
+    "over": 63,
+    "twin": 7
+   },
+   {
+    "id": "1d/menu/US|capacity|confirmAllSame",
+    "over": 63,
+    "twin": 7
+   },
+   {
+    "id": "1d/menu/US|capacity|unavailable",
+    "over": 63,
+    "twin": 7
+   },
+   {
+    "id": "1d/schedule/US|tab|list",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|list|past",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|list|oneVan",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|list|vanFilter",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|list|expanded",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|empty",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|pending",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|starter",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|eventTypes",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|picker",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|phone2",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|addressOpen",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|errors",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|private",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|upload",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|uploadProcessing",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|add|uploadReview",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|tidy",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|edit",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|edit|times|morning",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|edit|times|noon",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|edit|times|evening",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|edit|times|midnight",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|edit|private",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|edit|saving",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|import|paste",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|import|text",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|import|processing",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|import|review",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|import|reviewEditing",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|import|saving",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|cancel",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|cancel|none",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/schedule/US|tab|privateLink",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|owner|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|twoVans|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|manager|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|starter|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|pro|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|legacy|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|addingVan|page",
+    "over": 57,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|renamingVan|page",
+    "over": 49,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|deletingVan|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|vanBilling|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|vanUpgrade|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|qrModal|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|qrPreviews|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|verifyError|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|verifying|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|preorders|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|preordersOff|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|emoji|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|kds|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|noCuisine|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|setup|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|trial|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d/settings/US|noBase|page",
+    "over": 16,
+    "twin": 16
+   },
+   {
+    "id": "1d2/social/US|live|week",
+    "over": 42,
+    "twin": 42
+   },
+   {
+    "id": "1d2/social/US|live|event",
+    "over": 42,
+    "twin": 42
+   }
+  ]
+ }
+}

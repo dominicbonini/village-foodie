@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Periode",
+    "event": "📍 Evenement",
+    "filterBy": "Filteren op",
+    "show": "Tonen",
+    "range": "<from></from><sep>t/m</sep><until></until>",
+    "selectEvent": "Kies een evenement…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Evenement",
+    "viewReport": "Rapport bekijken",
+    "loading": "Laden…",
+    "orders": "📋 Bestellingen",
+    "items": "📦 Producten",
+    "exportCsv": "⬇ CSV exporteren"
+  },
+  "empty": {
+    "noOrders": "Geen bestellingen gevonden in deze periode.",
+    "selectEvent": "Kies hierboven een evenement om het rapport te bekijken."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} bestelling} other {{count} bestellingen}} · {total}"
+  },
+  "revenue": {
+    "title": "Omzet uitgesplitst",
+    "deals": "Omzet combideals",
+    "modifiers": "Toeslagen voor extra’s",
+    "foodSales": "Verkoop eten",
+    "total": "Totaal",
+    "other": "Overig",
+    "tax": "Btw",
+    "tips": "Fooien",
+    "serviceFees": "Servicekosten",
+    "cardFees": "Kaartkosten"
+  },
+  "itemsSold": {
+    "title": "Verkochte producten"
+  },
+  "dealsCard": {
+    "title": "Combideals"
+  },
+  "custom": {
+    "title": "Aanpassingen",
+    "paidModifiers": "Betaalde extra’s",
+    "customerNotes": "Opmerkingen van klanten",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Product",
+    "modifier": "Extra",
+    "qty": "Aantal",
+    "total": "Totaal",
+    "date": "Datum",
+    "time": "Tijd",
+    "channel": "Kanaal"
+  },
+  "breakdown": {
+    "orders": "Bestellingen uitgesplitst",
+    "items": "Producten uitgesplitst"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Aan de truck"
+  },
+  "csv": {
+    "orderId": "Bestelnummer",
+    "date": "Datum",
+    "event": "Evenement",
+    "timePlaced": "Tijd van bestellen",
+    "collectionTime": "Afhaaltijd",
+    "customerName": "Naam klant",
+    "orderType": "Soort bestelling",
+    "items": "Producten",
+    "deals": "Combideals",
+    "modifiers": "Extra’s",
+    "notes": "Opmerkingen",
+    "subtotal": "Subtotaal",
+    "tip": "Fooi",
+    "serviceFee": "Servicekosten",
+    "total": "Totaal",
+    "itemName": "Productnaam",
+    "qty": "Aantal",
+    "unitPrice": "Prijs per stuk",
+    "itemTotal": "Totaal product",
+    "orderTotal": "Totaal bestelling",
+    "unknownEvent": "Onbekend evenement",
+    "asap": "Zo snel mogelijk",
+    "unknownCustomer": "Onbekend",
+    "customerOnline": "Klant online",
+    "placedByTruck": "Ingevoerd door foodtruck"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Permitir que los clientes cancelen pedidos",
+    "sentence": "Los clientes pueden cancelar hasta <select></select> antes de su hora de recogida"
+  },
+  "autoAccept": {
+    "label": "Aceptar pedidos automáticamente",
+    "help": "Los pedidos se confirman automáticamente. Si la franja pedida está completa, el pedido pasa a la siguiente franja disponible. Solo se confirma si hay capacidad. Los pedidos con notas del cliente (p. ej., una alergia) seguirán necesitando tu confirmación."
+  },
+  "orderReady": {
+    "label": "Paso de pedido listo",
+    "help": "Muestra un botón “Marcar como listo” en la pantalla de pedidos. Las pantallas de cocina se configuran aparte, en cada dispositivo. Los clientes reciben un email cada vez que un pedido se marca como listo. Se aplica a todos los eventos; aun así, puedes activarlo o desactivarlo para un solo evento desde su panel."
+  },
+  "buzzers": {
+    "label": "¿Das avisadores para la recogida?",
+    "help": "Anota qué avisador has dado a cada cliente, para saber a quién buscar cuando su comida esté lista.",
+    "countLabel": "¿Cuántos avisadores tienes?"
+  }
+}

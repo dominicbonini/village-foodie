@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Klanten mogen bestellingen annuleren",
+    "sentence": "Klanten kunnen annuleren tot <select></select> voor hun afhaaltijd"
+  },
+  "autoAccept": {
+    "label": "Bestellingen automatisch accepteren",
+    "help": "Bestellingen worden automatisch bevestigd. Is het gevraagde tijdslot vol, dan schuift de bestelling door naar het volgende beschikbare tijdslot. Er wordt alleen bevestigd als er capaciteit is. Bestellingen met een opmerking van de klant (bijv. een allergie) moet je nog steeds zelf bevestigen."
+  },
+  "orderReady": {
+    "label": "Stap ‘Bestelling klaar’",
+    "help": "Toon een knop ‘Markeer als klaar’ op het bestellingenscherm. Keukenschermen stel je apart in, op elk apparaat. Klanten krijgen een e-mail zodra een bestelling als klaar is gemarkeerd. Geldt voor alle evenementen — je kunt het voor één evenement nog steeds aan- of uitzetten op het dashboard van dat evenement."
+  },
+  "buzzers": {
+    "label": "Geef je klanten een buzzer mee voor het afhalen?",
+    "help": "Noteer welke buzzer je aan elke klant hebt gegeven, zodat je weet naar wie je moet zoeken als het eten klaar is.",
+    "countLabel": "Hoeveel buzzers heb je?"
+  }
+}

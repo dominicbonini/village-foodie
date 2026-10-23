@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifiera din nya e-postadress för HatchGrab",
+    "heading": "Verifiera din e-postadress",
+    "button": "Verifiera e-postadressen"
+  },
+  "changeEmail": {
+    "requested": "Du har begärt att byta e-postadressen för HatchGrab till den här adressen.",
+    "click": "Klicka på knappen nedan för att verifiera. Länken går ut om 24 timmar.",
+    "ignore": "Om du inte har begärt den här ändringen kan du lugnt ignorera mejlet.",
+    "stillActive": "Din nuvarande e-postadress fortsätter att gälla."
+  },
+  "resendVerification": {
+    "requested": "Du har begärt att byta e-postadress för HatchGrab till den här adressen.",
+    "click": "Klicka nedan för att verifiera. Länken går ut om 24 timmar.",
+    "ignore": "Om du inte har begärt detta kan du ignorera mejlet.",
+    "stillActive": "Din nuvarande e-postadress fortsätter att gälla."
+  },
+  "passwordReset": {
+    "subject": "Återställ ditt lösenord för HatchGrab",
+    "heading": "Återställ ditt lösenord",
+    "requested": "Vi har fått en begäran om att återställa lösenordet för ditt HatchGrab-konto.",
+    "click": "Klicka på knappen nedan för att välja ett nytt lösenord. Länken går ut om 1 timme.",
+    "button": "Återställ lösenordet",
+    "ignore": "Om du inte har begärt detta kan du lugnt ignorera mejlet.",
+    "unchanged": "Ditt lösenord ändras inte förrän du klickar på länken ovan."
+  },
+  "deletionScheduled": {
+    "subject": "Ditt HatchGrab-konto är schemalagt för radering",
+    "received": "Vi har fått en begäran om att radera det här HatchGrab-kontot.",
+    "orderingStopped": "<b>Onlinebeställningen har stoppats omedelbart</b> för: {trucks}.",
+    "noTrucks": "(inga foodtruckar)",
+    "readable": "Din översikt går\n    att läsa i {days, plural, one {# dag} other {# dagar}} till.",
+    "scheduled": "Kontot är schemalagt för radering den <b>{date}</b>.",
+    "cannotCancel": "<b>Det här går inte att avbryta inifrån appen.</b> Om det inte var du, eller om du har\n    ångrat dig, svara på det här mejlet så snart som möjligt.",
+    "kept": "När kontot raderas tar vi bort dina personuppgifter och dina kunders uppgifter. Vi behåller\n    anonymiserade bokföringsuppgifter, som vi enligt lag måste spara."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Benutzermenü",
+  "screenOn": "Bildschirm an",
+  "screenOff": "Bildschirm aus",
+  "newOrderSound": "Ton bei neuer Bestellung",
+  "copied": "Kopiert",
+  "orderLink": "Bestelllink",
+  "qrCode": "QR-Code",
+  "kitchenScreen": "Küchenmonitor",
+  "thisDevice": "Dieses Gerät",
+  "manage": "Verwaltung",
+  "ordersDashboard": "Bestell-Dashboard",
+  "admin": "Admin",
+  "privacy": "Datenschutzerklärung",
+  "terms": "AGB",
+  "signOut": "Abmelden",
+  "close": "Schließen"
+}

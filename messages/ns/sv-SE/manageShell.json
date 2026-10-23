@@ -1,0 +1,84 @@
+{
+  "loading": "Laddar administrationen…",
+  "loadFailed": "Kunde inte ladda",
+  "requestFailed": "Misslyckades",
+  "invalidToken": "Ogiltig eller utgången token",
+  "loadFailedReason": "Kunde inte ladda sidan: {reason}",
+  "noCountrySettings": "Kunde inte ladda landsinställningarna för den här foodtrucken. Uppdatera sidan.",
+  "noPlans": "Kunde inte ladda abonnemanget för den här foodtrucken. Uppdatera sidan.",
+  "stale": "{hasTime, select, yes {Kunde inte uppdatera. Visar det som sparades kl. {time}. Ändringar du gör sparas ändå.} other {Kunde inte uppdatera. Visar det som senast sparades. Ändringar du gör sparas ändå.}}",
+  "verify": {
+    "ok": "E-postadressen är bekräftad – tack.",
+    "expired": "Bekräftelselänken har gått ut. Hör av dig så löser vi det innan du lanserar.",
+    "invalid": "Bekräftelselänken fungerade inte. Hör av dig så löser vi det innan du lanserar."
+  },
+  "profile": {
+    "updated": "Profil uppdaterad",
+    "saveFailed": "Kunde inte spara",
+    "title": "Redigera profil",
+    "name": "Namn",
+    "namePlaceholder": "Ditt namn",
+    "email": "E-post",
+    "cancel": "Avbryt",
+    "saving": "Sparar…",
+    "save": "Spara"
+  },
+  "header": {
+    "subtitle": "Administration",
+    "ordersDashboard": "← Beställningsöversikt"
+  },
+  "tabs": {
+    "menu": "Meny",
+    "schedule": "Schema",
+    "social": "Sociala medier",
+    "reports": "Rapporter",
+    "team": "Team",
+    "settings": "Inställningar",
+    "payments": "Betalningar",
+    "billing": "Fakturering",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Schema ({count})",
+    "stripeAttention": "Stripe behöver din uppmärksamhet",
+    "allergensNotSet": "allergener ej angivna"
+  },
+  "menuSections": {
+    "label": "Menyavsnitt",
+    "items": "Produkter",
+    "capacity": "Kökskapacitet",
+    "extras": "Tillval & merförsäljning",
+    "deals": "Måltider"
+  },
+  "socialSections": {
+    "label": "Avsnitt för sociala medier",
+    "create": "Skapa inlägg",
+    "designs": "Mallar",
+    "locations": "Platsinställningar"
+  },
+  "notices": {
+    "review": "Granska →",
+    "tour": "Vill du ha en snabb rundtur i din översikt?",
+    "showMeAround": "Visa mig runt",
+    "dismiss": "Stäng",
+    "approval": "{count, plural, one {Vi hittade <b>{count}</b> evenemang åt dig – granska och godkänn det innan det publiceras.} other {Vi hittade <b>{count}</b> evenemang åt dig – granska och godkänn dem innan de publiceras.}}",
+    "allergens": "<b>Allergener ej angivna</b> – kunderna kan inte se någon allergeninformation förrän du har bekräftat den. Gå igenom allergenerna för varje rätt under fliken Meny.",
+    "domainLive": "<link>{domain}</link> är igång. Ta en titt och bekräfta sedan under Inställningar att den stämmer.",
+    "stripe": "<b>Stripe behöver något från dig</b> – kortbetalningar kan stoppas tills det är löst.",
+    "profileTitle": "Komplettera din profil",
+    "missing": "Saknas: {fields}.",
+    "goToSettings": "Gå till Inställningar →",
+    "field": {
+      "truckName": "foodtruckens namn",
+      "cuisineType": "typ av kök",
+      "contactEmail": "e-post för kontakt",
+      "contactPhone": "telefon för kontakt"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Du har en gratis provperiod} other {Du har en gratis provperiod ({months} mån.)}}",
+    "ends": "{hasDate, select, yes {Provperioden slutar <hl>{date}</hl>} other {Provperioden slutar <hl>snart</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Alla funktioner gratis i # månad} other {Alla funktioner gratis i # månader}}} other {Alla funktioner gratis under provperioden}}",
+    "body": "{hasDate, select, yes {Du debiteras ingenting under provperioden, som pågår till <b>{date}</b>. Faktureringen börjar först när du väljer ett abonnemang och anger dina betaluppgifter. Fram till dess finns det inget att säga upp och inget att betala. Välj abonnemang innan dess – annars flyttas du till {fallback} och vissa funktioner slutar fungera.} other {Du debiteras ingenting under provperioden. Faktureringen börjar först när du väljer ett abonnemang och anger dina betaluppgifter. Fram till dess finns det inget att säga upp och inget att betala. Välj abonnemang innan provperioden slutar – annars flyttas du till {fallback} och vissa funktioner slutar fungera.}}",
+    "fees": "*Vanliga avgifter för kortbetalning tillkommer för onlinebeställningar",
+    "upgrade": "Uppgradera här →"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Ihr erster Monat ist komplett kostenlos – alle Funktionen freigeschaltet.} other {Ihre ersten # Monate sind komplett kostenlos – alle Funktionen freigeschaltet.}}",
+    "body": "Mit {brand} bestellen Kunden vorab und bezahlen bei der Abholung – so nehmen Sie Online-Bestellungen an, ganz ohne Zahlungsanbieter für Kartenzahlungen. Lieber im Voraus kassieren? Fügen Sie jederzeit Online-Kartenzahlungen hinzu. Nach Ende der Testphase wechseln Sie in den Tarif <plan>{fallback}</plan>{fallbackFree, select, yes { – ohne Grundgebühr –} other {}}, sofern Sie keinen anderen Tarif wählen. Keine Kreditkarte zum Start, keine Vertragsbindung, jederzeit kündbar."
+  },
+  "card": {
+    "perTruckMonth": "pro Foodtruck / Monat",
+    "mostTrucks": "Am beliebtesten",
+    "tryFree": "Kostenlos testen",
+    "seeEvery": "Alle Funktionen ansehen →",
+    "everything": "Alles für Ihren Betrieb",
+    "everythingIn": "Alles aus {plan}, dazu"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> nur auf Online-Bestellungen mit Kartenzahlung. Bestellungen vor Ort sind immer gebührenfrei.",
+    "included": "Online-Bestellungen im Wert von <b>{included}</b> pro Monat inklusive, danach <b>{fee}*</b>. Bestellungen vor Ort sind immer gebührenfrei.",
+    "noFee": "<b>Keine HatchGrab-Gebühren</b> auf Online-Bestellungen, egal wie viel los ist. Feste, planbare Monatskosten."
+  },
+  "base": {
+    "walkUp": "Bestellungen vor Ort & Küchenmonitor",
+    "online": "Online-Bestellsystem",
+    "preorders": "Vorbestellungen & Abholzeiten",
+    "capacity": "Verwaltung der Küchenkapazität",
+    "privateEvents": "Private Events",
+    "printing": "Druck von Küchenbons",
+    "app": "Küchen-App für iPhone, iPad und Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatische WhatsApp-Antworten",
+    "schedule_graphics": "Social-Media-Beiträge – Ihre Termine für Facebook und Instagram – fertig zum Posten",
+    "event_types": "Eigene Event-Typen & Eventpreise"
+  },
+  "money": {
+    "unlimitedOrders": "Unbegrenzt Online-Bestellungen, 0 % HatchGrab-Gebühr",
+    "samePrice": "Gleicher Preis auch im umsatzstärksten Monat"
+  },
+  "comingSoon": "Demnächst",
+  "bar": {
+    "title": "Welcher Tarif ist für mich am günstigsten?",
+    "subtitle": "Ihre Online-Bestellungen pro Monat",
+    "first": "Unter {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Über {from} → <b>{plan}</b>",
+    "only": "Beliebiges Volumen → <b>{plan}</b>"
+  },
+  "footnote": "* Zzgl. Stripe-Gebühren für die Kartenabwicklung bei Online-Bestellungen mit Kartenzahlung (aktuell, {country}: {cardFee}), die an Stripe gehen, nicht an HatchGrab. Bestellungen vor Ort laufen über Ihr eigenes Kartenlesegerät – HatchGrab berechnet 0 %.",
+  "currencyLine": "Preise in {currency} ({code})"
+}

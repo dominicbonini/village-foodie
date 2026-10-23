@@ -1,0 +1,30 @@
+{
+  "heading": "Imposte, mance e costi",
+  "rate": {
+    "label": "Aliquota dell’imposta sulle vendite",
+    "hint": "L’aliquota applicata a ogni ordine. I clienti la vedono aggiunta al pagamento, sugli scontrini e sulle comande.",
+    "regionDefault": "Lascia vuoto per applicare {label} con aliquota {rate}%, quella sul cibo preparato ({region})."
+  },
+  "included": {
+    "label": "{label} inclusa nei prezzi",
+    "hint": "I tuoi prezzi includono già l’{label}. Questa aliquota indica solo quanta parte di ogni prezzo è {label}, sugli scontrini e sulle comande: al pagamento non si aggiunge nulla.",
+    "default": "Lascia vuoto per usare {rate}%, l’aliquota {label} sul cibo caldo venduto da asporto ({country})."
+  },
+  "tips": {
+    "label": "Mance",
+    "hint": "I clienti che pagano online con carta possono aggiungere una mancia. Va tutta a te.",
+    "choices": "Opzioni che vedono i clienti:",
+    "chip": "{rate}%",
+    "other": "Altro importo"
+  },
+  "fee": {
+    "label": "Costo del servizio online",
+    "hint": "Aggiunto solo agli ordini online. Mai agli ordini Paga al ritiro o al banco. Lo tieni tu.",
+    "pctAria": "Percentuale del costo del servizio",
+    "fixedAria": "Importo fisso del costo del servizio",
+    "max": "Massimo applicabile: {max}",
+    "example": "I clienti lo vedono prima di pagare, su una sola riga: «{label} {amount}».",
+    "hatchgrab": "HatchGrab aggiunge un costo del servizio di {fee} agli ordini online dei tuoi clienti. Non lo paghi tu e non puoi modificarlo."
+  },
+  "saveFailed": "Salvataggio non riuscito: riprova."
+}

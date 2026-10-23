@@ -1,0 +1,30 @@
+{
+  "heading": "Steuer, Trinkgeld und Gebühren",
+  "rate": {
+    "label": "Umsatzsteuersatz",
+    "hint": "Der Satz, den Sie auf jede Bestellung erheben. Kunden sehen den Aufschlag beim Bezahlen, auf Belegen und auf Bons.",
+    "regionDefault": "Lassen Sie das Feld leer, um {label} mit {rate} % zu berechnen ({region}: Satz für zubereitete Speisen)."
+  },
+  "included": {
+    "label": "{label} in Ihren Preisen enthalten",
+    "hint": "Ihre Preise enthalten bereits {label}. Dieser Satz gibt auf Belegen und Bons nur an, wie viel von jedem Preis {label} ist – beim Bezahlen wird nichts aufgeschlagen.",
+    "default": "Lassen Sie das Feld leer, um {rate} % zu verwenden ({country}: {label}-Satz für warme Speisen zum Mitnehmen)."
+  },
+  "tips": {
+    "label": "Trinkgeld",
+    "hint": "Kunden, die online mit Karte bezahlen, können Trinkgeld geben. Es geht vollständig an Sie.",
+    "choices": "Auswahl für Kunden:",
+    "chip": "{rate} %",
+    "other": "Anderer Betrag"
+  },
+  "fee": {
+    "label": "Online-Servicegebühr",
+    "hint": "Wird nur bei Online-Bestellungen erhoben. Nie bei Bezahlung bei Abholung oder bei Bestellungen vor Ort. Sie behalten sie.",
+    "pctAria": "Servicegebühr in Prozent",
+    "fixedAria": "Servicegebühr als Festbetrag",
+    "max": "Höchstens möglich: {max}",
+    "example": "Kunden sehen sie vor dem Bezahlen als eine Zeile: „{label} {amount}“.",
+    "hatchgrab": "HatchGrab erhebt auf die Online-Bestellungen Ihrer Kunden eine Servicegebühr von {fee}. Sie zahlen sie nicht und können sie nicht ändern."
+  },
+  "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut."
+}

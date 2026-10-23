@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Hvor har matbilen din base?",
+  "stepIntro": "Dette bestemmer valuta, priser, tidssone og telefonformat. Landet kan ikke endres senere, fordi det er knyttet til kortbetalingene dine.",
+  "settingsHeading": "Hvor du selger",
+  "countryLabel": "Land",
+  "countryGuessed": "Vi gjettet dette ut fra hvor du er. Endre det hvis det er feil.",
+  "countryLocked": "Landet ditt kan ikke endres",
+  "townLabel": "By eller sted",
+  "townQuestion": "By eller sted du har base i",
+  "timezoneLabel": "Tidssone",
+  "continueButton": "Fortsett",
+  "saveFailed": "Kunne ikke lagre innstillingene – prøv igjen."
+}

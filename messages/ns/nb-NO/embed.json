@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Her står {truck} neste gang.",
+  "orderFrom": "Bestill fra {truck}",
+  "poweredBy": "Drevet av <b>HatchGrab</b>",
+  "loadFailed": "Kunne ikke laste inn kalenderen akkurat nå.",
+  "loading": "Laster inn kalenderen…",
+  "empty": "Ingen kommende arrangementer for {truck}."
+}

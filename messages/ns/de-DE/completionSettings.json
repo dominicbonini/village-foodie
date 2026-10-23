@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Bestellungen ohne Vorauszahlung annehmen",
+  "completionTitle": "Unbezahlte Bestellung abschließen",
+  "completionHelp": "Was passiert, wenn eine unbezahlte Bestellung zur Übergabe bereit ist.",
+  "pressesOne": "Ein Tippen („Bezahlt & abgeholt“)",
+  "pressesOneHelp": "Ideal, wenn Sie das Geld bei der Übergabe des Essens kassieren. Sie erhalten eine einzige Schaltfläche, „Bezahlt & abgeholt“, die die Zahlung erfasst und die Bestellung zugleich abschließt.",
+  "pressesTwo": "Zweimal tippen („Als bezahlt markieren“ & „Abgeholt“)",
+  "pressesTwoHelp": "Ideal, wenn Zahlung und Übergabe zu unterschiedlichen Zeitpunkten stattfinden – jemand bezahlt an der Ausgabe und holt das Essen ab, sobald es fertig ist. Sie erhalten zwei Schaltflächen: zuerst „Als bezahlt markieren“, dann „Abgeholt“, wenn das Essen mitgenommen wird."
+}

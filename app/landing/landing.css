@@ -1132,3 +1132,10 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing .about-body { flex-direction: row; align-items: flex-start; gap: 2.4rem; }
   .hg-landing .about-photo { width: 12.5rem; height: 12.5rem; flex-shrink: 0; border-radius: 14px; align-self: flex-start; }
 }
+
+/* europe-languages-2 (23 October 2026): Greek and Bulgarian — Archivo and Public Sans have neither alphabet, so Noto Sans
+   (app/layout.tsx, present only on those pages) fills those letters; Latin letters stay Archivo / Public Sans. */
+:root:lang(el) .hg-landing, :root:lang(bg) .hg-landing {
+  --display: var(--font-archivo), var(--font-script-fallback), system-ui, sans-serif;
+  --body: var(--font-public-sans), var(--font-script-fallback), system-ui, sans-serif;
+}

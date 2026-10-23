@@ -1,0 +1,10 @@
+{
+  "copy": "Kopiëren",
+  "copied": "Gekopieerd ✓",
+  "failed": "Kopiëren mislukt",
+  "aria": "{label} {thing}",
+  "announceCopied": "{thing} gekopieerd",
+  "announceCopiedValue": "Waarde gekopieerd",
+  "announceFailed": "Kon {thing} niet kopiëren. Selecteer de tekst en kopieer hem zelf.",
+  "announceFailedValue": "Kon de waarde niet kopiëren. Selecteer de tekst en kopieer hem zelf."
+}

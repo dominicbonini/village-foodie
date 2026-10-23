@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Hier staat {truck} binnenkort.",
+  "orderFrom": "Bestel bij {truck}",
+  "poweredBy": "Mogelijk gemaakt door <b>HatchGrab</b>",
+  "loadFailed": "De planning kon nu niet worden geladen.",
+  "loading": "Planning laden…",
+  "empty": "Geen komende evenementen voor {truck}."
+}

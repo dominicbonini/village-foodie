@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Den første måneden er helt gratis — alle funksjoner er låst opp.} other {De første # månedene er helt gratis — alle funksjoner er låst opp.}}",
+    "body": "Med {brand} forhåndsbestiller kundene og betaler når de henter, så du kan ta imot nettbestillinger uten å koble til noen kortinnløser i det hele tatt. Vil du heller ta betalt på forhånd? Legg til kortbetaling på nett når som helst. Når prøveperioden er over, går du over til <plan>{fallback}</plan>{fallbackFree, select, yes { (ingen fast månedskostnad)} other {}}, med mindre du velger et abonnement. Ikke noe kort for å starte, ingen bindingstid, si opp når som helst."
+  },
+  "card": {
+    "perTruckMonth": "per matbil / måned",
+    "mostTrucks": "Mest valgt",
+    "tryFree": "Prøv gratis",
+    "seeEvery": "Se alle funksjoner →",
+    "everything": "Alt du trenger for å drive serveringen",
+    "everythingIn": "Alt i {plan}, pluss"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> bare på nettbestillinger betalt med kort. Bestillinger ved bilen er alltid gratis.",
+    "included": "Nettbestillinger for de første <b>{included}</b> er inkludert hver måned, deretter <b>{fee}*</b>. Bestillinger ved bilen er alltid gratis.",
+    "noFee": "<b>Ingen HatchGrab-gebyrer</b> på nettbestillinger, uansett hvor travelt du har det. Én forutsigbar månedskostnad."
+  },
+  "base": {
+    "walkUp": "Bestillinger ved bilen og kjøkkenskjerm",
+    "online": "Nettbestilling",
+    "preorders": "Forhåndsbestillinger og hentetider",
+    "capacity": "Styring av kjøkkenkapasitet",
+    "privateEvents": "Private arrangementer",
+    "printing": "Utskrift av kjøkkenbonger",
+    "app": "Kjøkkenapp for iPhone, iPad og Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatiske svar på WhatsApp",
+    "schedule_graphics": "Innlegg i sosiale medier — kalenderen din for Facebook og Instagram — klare til å legges ut",
+    "event_types": "Egne arrangementstyper og arrangementspriser"
+  },
+  "money": {
+    "unlimitedOrders": "Ubegrenset med nettbestillinger, 0 % HatchGrab-gebyr",
+    "samePrice": "Samme pris i den travleste måneden din"
+  },
+  "comingSoon": "Kommer snart",
+  "bar": {
+    "title": "Hvilket abonnement er billigst for meg?",
+    "subtitle": "Nettbestillingene dine per måned",
+    "first": "Under {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Over {from} → <b>{plan}</b>",
+    "only": "Uansett volum → <b>{plan}</b>"
+  },
+  "footnote": "* I tillegg kommer Stripes kortgebyr på nettbestillinger betalt med kort (for tiden {cardFee} i {country}), som betales til Stripe, ikke HatchGrab. Bestillinger ved bilen bruker din egen betalingsterminal — HatchGrab tar 0 %.",
+  "currencyLine": "Valuta: {currency} ({code})"
+}

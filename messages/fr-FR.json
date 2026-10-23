@@ -29,7 +29,7 @@
     "couldNotPlace": "Nous n’avons pas pu passer votre commande. Aucun montant n’a été prélevé.",
     "paymentThrew": "Un problème est survenu lors du paiement. Aucun montant n’a été prélevé — veuillez réessayer ou choisir Payer au retrait.",
     "pausedNotice": "Les commandes sont suspendues pour le moment — revenez dans quelques instants. Votre commande est enregistrée ici.",
-    "busyNotice": "Nous recevons beaucoup de commandes en ce moment — appuyez à nouveau sur « Commander et payer au retrait » dans un instant. Votre commande est enregistrée ici.",
+    "busyNotice": "Nous recevons beaucoup de commandes en ce moment — appuyez à nouveau sur « Commander avec obligation de paiement » dans un instant. Votre commande est enregistrée ici.",
     "menuChangedFallback": "La carte a changé. Vérifiez votre commande avant de la passer.",
     "stockOnlyLeftItem": "il ne reste plus que {count} {name}",
     "stockSomeSoldOut": "certains articles viennent d’être épuisés",
@@ -135,7 +135,7 @@
     "payAtTruckHint": "Pas besoin de carte bancaire",
     "placingOrder": "Envoi de la commande…",
     "noEvent": "Aucun événement disponible",
-    "placeOrder": "Commander et payer au retrait",
+    "placeOrder": "Commander avec obligation de paiement",
     "payByCardLine": "Vous paierez par carte en toute sécurité sur cette page · Apple Pay et Google Pay acceptés",
     "payAtTruckLine": "Payez au food truck lors du retrait · Pas besoin de carte bancaire",
     "addItemsPrompt": "Ajoutez des articles de la carte pour passer commande",
@@ -5784,7 +5784,8 @@
       "UScards": "cartes américaines",
       "Australiancards": "cartes australiennes",
       "NewZealandcards": "cartes néo-zélandaises",
-      "Canadiancards": "cartes canadiennes"
+      "Canadiancards": "cartes canadiennes",
+      "Swisscards": "cartes suisses"
     },
     "perMonth": {
       "mo": "{amount}/mois",

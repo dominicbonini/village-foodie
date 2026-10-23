@@ -59,7 +59,8 @@
     {
       "concept": "Pre-order",
       "use": [
-        "vorbestellen / Vorbestellung"
+        "vorbestellen",
+        "Vorbestellung"
       ],
       "alts": "online vorbestellen",
       "scope": "Both",
@@ -226,15 +227,27 @@
       "en": "\\ballergens?\\b"
     },
     {
-      "concept": "Private event",
+      "concept": "Private hire",
       "use": [
-        "Foodtruck mieten / buchen",
+        "Foodtruck mieten",
+        "Foodtruck buchen",
         "Foodtruck-Catering"
       ],
       "alts": "private Feier, Firmenfeier",
       "scope": "B2C",
       "conf": "High",
-      "notes": "",
+      "notes": "hiring a truck for a private party (german-1, 22 Oct 2026, split as France's was)",
+      "en": "\\bprivate hire\\b"
+    },
+    {
+      "concept": "Private event",
+      "use": [
+        "privates Event"
+      ],
+      "alts": "geschlossene Veranstaltung (body copy)",
+      "scope": "Both",
+      "conf": "Med",
+      "notes": "the app's private event: a date hidden from the map, with its own ordering link — not \"Foodtruck mieten\" (german-1)",
       "en": "\\bprivate events?\\b"
     },
     {
@@ -260,7 +273,8 @@
     {
       "concept": "Commission-free",
       "use": [
-        "provisionsfrei"
+        "provisionsfrei",
+        "Provision"
       ],
       "alts": "",
       "scope": "B2B",

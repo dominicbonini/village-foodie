@@ -1,0 +1,19 @@
+{
+  "heading": "Merförsäljning",
+  "intro": "Locka kunderna att lägga till något extra. När någon beställer från en kategori föreslår du produkter från en annan — en dryck till pizzan, en sås till burgaren.",
+  "add": "+ Lägg till merförsäljning",
+  "toast": {
+    "updated": "Regeln för merförsäljning uppdaterad",
+    "added": "Regel för merförsäljning tillagd",
+    "removed": "Regeln borttagen"
+  },
+  "whenAdds": "När kunden lägger till…",
+  "suggestFrom": "Föreslå produkter från…",
+  "chooseCategory": "Välj kategori",
+  "cancel": "Avbryt",
+  "saveChanges": "Spara ändringar",
+  "addRule": "Lägg till regel",
+  "empty": "Inga regler för merförsäljning än.",
+  "confirmRemove": "Ta bort regeln för merförsäljning ”{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Upp till {count} produkt föreslås} other {Upp till {count} produkter föreslås}}"
+}

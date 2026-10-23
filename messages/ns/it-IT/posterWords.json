@@ -1,0 +1,25 @@
+{
+  "heading": "Settimana dal {start} al {end}",
+  "daysOff": "Oggi siamo chiusi",
+  "cancelled": "ANNULLATO",
+  "placeSample": {
+    "nameTownBelow": "Osteria del Ponte\nBergamo",
+    "nameTown": "Osteria del Ponte, Bergamo",
+    "nameOnly": "Osteria del Ponte"
+  },
+  "busyWeek": {
+    "venue1": "Sala civica di Bergamo",
+    "town1": "Bergamo",
+    "venue2": "Centro sportivo comunale e campo giochi di Seriate",
+    "town2": "Seriate",
+    "venue3": "Piazza del Mercato",
+    "town3": "Lecco",
+    "venue4": "Festival del cibo di strada",
+    "town4": "Brescia",
+    "venue5": "Trattoria del Porto",
+    "town5": "Como",
+    "venue6": "Piazza della Chiesa",
+    "town6": "Monza"
+  },
+  "poweredBy": "Con la tecnologia di HatchGrab"
+}

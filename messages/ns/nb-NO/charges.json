@@ -1,0 +1,13 @@
+{
+  "subtotal": "Delsum",
+  "taxFallback": "Mva.",
+  "taxIncluded": "Inkl. {label}",
+  "serviceFeeCustomer": "Servicegebyr for nettbestilling",
+  "serviceFee": "Servicegebyr",
+  "cardFee": "Kortgebyr",
+  "tip": "Tips",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Mva., gebyrer og tips} tax_tip {Mva. og tips} fees_tip {Gebyrer og tips} fees {Gebyrer} other {Mva. og gebyrer}}"
+}

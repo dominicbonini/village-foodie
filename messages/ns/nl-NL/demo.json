@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Niet beschikbaar in de demo",
+  "demoMode": "DEMOMODUS",
+  "loopLands": "Precies zo komt een echte bestelling binnen",
+  "showMe": "Laat zien",
+  "noCard": "{sub} Geen betaalkaart nodig.",
+  "notYet": "Nog niet",
+  "cashAndCollected": "Contant & afgehaald",
+  "logoPlaceholder": "Jouw logo hier",
+  "welcomeTitle": "{sample, select, yes {Hier is een voorbeelddemo} other {Hier is je demo}}",
+  "welcomeIntro": "{sample, select, yes {Dit is een <b>voorbeeldmenu</b> zodat je kunt zien hoe alles werkt — upload wanneer je wilt je eigen menu om het van jou te maken.} other {Dit is je eigen menu en huisstijl, op een echt scherm.}} De bestellingen die er al op staan zijn voorbeelden, zodat je een drukke dienst ziet.",
+  "twoThings": "Probeer deze twee dingen:",
+  "hitButton": "Tik op <b>{button}</b> bij een bestelling",
+  "scanQr": "Scan de <b>QR-code</b> — of tik op de link — en bestel als klant. Kijk dan hoe je bestelling binnenkomt",
+  "qrAlt": "QR-code naar je bestelpagina voor klanten",
+  "openHere": "Of open hem op dit apparaat",
+  "copyLink": "Link kopiëren",
+  "copyDescribedAs": "bestellink",
+  "noLinkTitle": "Je bestellink voor klanten",
+  "noLinkBody": "De link naar je bestelpagina staat in het menu, rechtsboven.",
+  "asLive": "Bestellen en de keukenflow werken precies zoals live.",
+  "startExploring": "Ga op ontdekking",
+  "signupOffer": {
+    "heading": "Meld je nu aan voor je gratis maand",
+    "sub": "De klok gaat pas lopen als jij besluit live te gaan."
+  },
+  "cashIcon": "💶"
+}

@@ -1,0 +1,94 @@
+{
+  "heading": "Betalningar",
+  "loading": "Kontrollerar ditt Stripe-konto …",
+  "state": {
+    "not_connected": {
+      "title": "Inte inställt",
+      "body": "Tar ungefär 10 minuter. Du behöver dina bankuppgifter och legitimation.",
+      "chip": "Inte inställt"
+    },
+    "requirements": {
+      "title": "Stripe behöver dina uppgifter",
+      "body": "Kortbetalningar fungerar inte förrän Stripe har ditt företags uppgifter och dina bankuppgifter.",
+      "chip": "Åtgärd krävs"
+    },
+    "pending": {
+      "title": "Ansluten – Stripe kontrollerar dina uppgifter",
+      "body": "Du behöver inte göra något. Stripe granskar det du skickat, och sidan uppdateras när de är klara.",
+      "chip": "Kontrolleras"
+    },
+    "ready": {
+      "title": "Ansluten",
+      "body": "Ditt Stripe-konto är anslutet och kan ta emot betalningar.",
+      "chip": "Klar"
+    },
+    "restricted": {
+      "title": "Kortbetalningar pausade",
+      "body": "Stripe har pausat kortbetalningar på ditt konto tills något har lösts.",
+      "chip": "Pausad"
+    },
+    "unsupported": {
+      "title": "Kortbetalningar är inte tillgängliga på det här kontot",
+      "body": "Stripe kan inte aktivera kortbetalningar här. Hör av dig så löser vi det tillsammans med dig.",
+      "chip": "Ej tillgängligt"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe-nycklarna matchar inte",
+    "body": "Den här webbplatsens server använder sin Stripe-nyckel för <b>{server, select, live {liveläge} other {testläge}}</b>, medan webbläsarkoden byggdes med nyckeln för <b>{browser, select, live {liveläge} other {testläge}}</b>. Kortbetalningar skulle misslyckas i samma stund som en kund försöker betala, så inställningen av Stripe är spärrad tills de stämmer överens.",
+    "fix": "Båda nycklarna måste vara inställda för samma miljö, och webbplatsen byggas om efteråt – den publicerbara nyckeln byggs in när webbplatsen byggs, den hemliga nyckeln läses vid varje anrop."
+  },
+  "permission": {
+    "title": "Bara foodtruckens ägare kan ställa in betalningar",
+    "body": "Stripe ansluts av den person vars bankkonto tar emot pengarna, så det måste ställas in från hens eget inloggade konto. Det är inget fel på den här foodtrucken eller på HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Kortbetalningar är inte konfigurerade än",
+    "fetchTitle": "Vi kunde inte kontrollera foodtruckens Stripe-konto",
+    "keyMissing": "{name} är inte angiven – de inbäddade komponenterna kan inte laddas."
+  },
+  "errors": {
+    "requestFailed": "Anropet misslyckades ({status})",
+    "unreachable": "Kunde inte nå Stripe"
+  },
+  "online": {
+    "heading": "Onlinebetalningar",
+    "body": "Kunderna betalar med kort när de beställer. Pengarna går direkt till ditt eget Stripe-konto – vi håller aldrig i dem.",
+    "feeLine": "Stripe tar {fee} per betalning för vanliga {region}. Andra kort kan kosta mer. HatchGrabs egen avgift på onlinebeställningar beror på ditt abonnemang – se Fakturering.",
+    "testMode": "Testläge. Inga riktiga betalningar kan tas emot än."
+  },
+  "trialNote": "Att ställa in det här startar inte ditt abonnemang och kostar dig ingenting i dag. Det är så dina kunder betalar dig – ditt abonnemang är en separat sak.",
+  "admin": {
+    "title": "Visas som plattformsadmin",
+    "body": "Den här foodtrucken har inte ställt in onlinebetalningar. Bara ägaren kan starta det, från sitt eget inloggade konto – det finns inget att trycka på här."
+  },
+  "setUp": {
+    "button": "Ställ in onlinebetalningar",
+    "busy": "Ställer in …"
+  },
+  "toast": {
+    "alreadySetUp": "Redan inställt – fortsätter",
+    "addDetails": "Lägg nu till dina uppgifter för Stripe",
+    "createFailed": "Kunde inte skapa kontot"
+  },
+  "onboarding": {
+    "restricted": "Stripe tar över härifrån – du loggar in hos Stripe och uppdaterar de uppgifter som behövs.",
+    "firstRun": "Stripe tar över härifrån – du loggar in hos Stripe och fyller sedan i dina företags- och bankuppgifter."
+  },
+  "details": {
+    "title": "Dina Stripe-uppgifter",
+    "body": "Byt bankkontot du får betalt till, eller uppdatera dina företagsuppgifter och dokument.",
+    "button": "Visa eller ändra"
+  },
+  "walkUp": {
+    "heading": "Betalningar på plats",
+    "body": "Hur du tar betalt i luckan. HatchGrab tar ingen plattformsavgift på beställningar på plats, oavsett vad du väljer.",
+    "ownTerminal": "Din egen kortterminal",
+    "current": "Nuvarande",
+    "ownTerminalHelp": "Zettle, Square eller det du redan använder. Inget att ställa in – bara din leverantörs egna avgifter gäller.",
+    "hatchgrab": "Via HatchGrab",
+    "comingSoon": "Kommer snart",
+    "hatchgrabHelp": "Använder samma Stripe-anslutning som dina onlinebetalningar – en kortläsare, eller kontaktlöst direkt i din mobil eller surfplatta.",
+    "hatchgrabFees": "{fee} per betalning för {region}, plus {surcharge} för kontaktlösa betalningar som tas emot i mobil eller surfplatta. Andra kort kan kosta mer."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Bekreft den nye e-postadressen din for HatchGrab",
+    "heading": "Bekreft e-postadressen din",
+    "button": "Bekreft e-postadressen"
+  },
+  "changeEmail": {
+    "requested": "Du har bedt om å endre e-postadressen din for HatchGrab til denne adressen.",
+    "click": "Klikk på knappen nedenfor for å bekrefte. Lenken utløper om 24 timer.",
+    "ignore": "Hvis du ikke ba om denne endringen, kan du trygt se bort fra denne e-posten.",
+    "stillActive": "Den nåværende e-postadressen din er fortsatt aktiv."
+  },
+  "resendVerification": {
+    "requested": "Du har bedt om å endre e-postadressen din for HatchGrab til denne adressen.",
+    "click": "Klikk nedenfor for å bekrefte. Lenken utløper om 24 timer.",
+    "ignore": "Hvis du ikke ba om dette, kan du se bort fra denne e-posten.",
+    "stillActive": "Den nåværende e-postadressen din er fortsatt aktiv."
+  },
+  "passwordReset": {
+    "subject": "Tilbakestill passordet ditt for HatchGrab",
+    "heading": "Tilbakestill passordet",
+    "requested": "Vi har fått en forespørsel om å tilbakestille passordet for HatchGrab-kontoen din.",
+    "click": "Klikk på knappen nedenfor for å velge et nytt passord. Lenken utløper om 1 time.",
+    "button": "Tilbakestill passord",
+    "ignore": "Hvis du ikke ba om dette, kan du trygt se bort fra denne e-posten.",
+    "unchanged": "Passordet ditt endres ikke før du klikker på lenken ovenfor."
+  },
+  "deletionScheduled": {
+    "subject": "HatchGrab-kontoen din er satt opp for sletting",
+    "received": "Vi har mottatt en forespørsel om å slette denne HatchGrab-kontoen.",
+    "orderingStopped": "<b>Nettbestilling er stoppet med umiddelbar virkning</b> for: {trucks}.",
+    "noTrucks": "(ingen matbiler)",
+    "readable": "Kontrollpanelet ditt er fortsatt\n    tilgjengelig for lesing i {days, plural, one {# dag} other {# dager}} til.",
+    "scheduled": "Kontoen slettes etter planen <b>{date}</b>.",
+    "cannotCancel": "<b>Dette kan ikke avbrytes fra appen.</b> Hvis det ikke var deg, eller du har\n    ombestemt deg, svar på denne e-posten så snart som mulig.",
+    "kept": "Når kontoen slettes, fjerner vi personopplysningene dine og kundenes opplysninger. Vi beholder\n    anonyme regnskapsopplysninger, som vi er pålagt å oppbevare etter loven."
+  }
+}

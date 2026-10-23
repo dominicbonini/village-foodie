@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menú de usuario",
+  "screenOn": "Pantalla encendida",
+  "screenOff": "Pantalla apagada",
+  "newOrderSound": "Sonido de pedido nuevo",
+  "copied": "Copiado",
+  "orderLink": "Enlace de pedidos",
+  "qrCode": "Código QR",
+  "kitchenScreen": "Pantalla de cocina",
+  "thisDevice": "Este dispositivo",
+  "manage": "Gestionar",
+  "ordersDashboard": "Panel de pedidos",
+  "admin": "Admin",
+  "privacy": "Política de privacidad",
+  "terms": "Condiciones",
+  "signOut": "Cerrar sesión",
+  "close": "Cerrar"
+}

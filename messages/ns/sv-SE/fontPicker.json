@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Alla",
+    "bold": "Feta & höga",
+    "hand": "Handskrivna",
+    "classic": "Klassiska",
+    "clean": "Stilrena",
+    "own": "Dina",
+    "ownCount": "Dina ({count})"
+  },
+  "yoursTag": "· din",
+  "loadingFonts": "Laddar typsnitt…",
+  "search": "Sök bland {count, number} typsnitt",
+  "uploadButton": "↑ Ladda upp ditt typsnitt",
+  "loadingLibrary": "Laddar typsnittsbiblioteket…",
+  "tryAgain": "Försök igen",
+  "noOwn": "Du har inte laddat upp något typsnitt än. Använd knappen ”↑ Ladda upp ditt typsnitt” ovan.",
+  "recent": "Senast använda",
+  "popular": "Populära för affischer",
+  "adding": "Lägger till…",
+  "noMatch": "Inget typsnitt matchar ”{query}”.",
+  "showing": "Visar {shown} av {total, number} – skriv mer för att begränsa sökningen.",
+  "couldNotAdd": "Typsnittet kunde inte läggas till",
+  "tooBig": "Typsnittet är {size, number, ::.0 group-off} MB. Gränsen är 5 MB.",
+  "woff": "Ladda upp en TTF- eller OTF-fil – du kan oftast ladda ned en där du köpte typsnittet.",
+  "uploadIncomplete": "Uppladdningen slutfördes inte",
+  "added": "”{name}” har lagts till som {face} version.",
+  "face": {
+    "regular": "normal",
+    "bold": "fet",
+    "italic": "kursiv"
+  },
+  "licenceTick": "Jag äger det här typsnittet eller har licens att använda det",
+  "checking": "Kontrollerar typsnittet…",
+  "addFont": "Lägg till",
+  "cancel": "Avbryt",
+  "missingFaces": "Lägg till {faces} version av ”{name}” (valfritt) – välj filen igen.",
+  "somethingWrong": "Något gick fel",
+  "faceLower": {
+    "regular": "normal",
+    "bold": "fet",
+    "italic": "kursiv"
+  },
+  "ownLicence": "Ditt eget",
+  "loadFailed": "Kunde inte ladda typsnitt"
+}

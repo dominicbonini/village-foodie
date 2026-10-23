@@ -1,0 +1,107 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for GREEK (el-GR, el-CY). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "el",
+  "normalise": "unicode",
+  "stems": [
+    "αλλεργ",
+    "αλεργ",
+    "δυσανεξ",
+    "κοιλιοκακ",
+    "χωρις γλουτενη",
+    "χωρίς γλουτένη",
+    "χωρις λακτοζη",
+    "χωρις γαλα",
+    "χωρις γαλακτοκομικα",
+    "χωρις αυγα",
+    "χωρις ξηρους καρπους",
+    "χωρις φιστικια",
+    "χωρις σογια",
+    "χωρις σουσαμι",
+    "χωρις ψαρι",
+    "χωρις οστρακοειδη",
+    "χωρις σελινο",
+    "χωρις μουσταρδα",
+    "χωρις θειωδη",
+    "αναφυλαξ",
+    "epipen",
+    "epi pen",
+    "αδρεναλιν",
+    "κατάλληλο για",
+    "καταλληλο για",
+    "ασφαλες για",
+    "μπορει να περιεχει",
+    "ιχνη",
+    "ίχνη",
+    "διασταυρουμενη επιμολυνση",
+    "επιμολυνση",
+    "allergy",
+    "gluten free"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "γλουτένη",
+        "σιτάρι",
+        "αλεύρι"
+      ],
+      "crustaceans": [
+        "καρκινοειδή",
+        "γαρίδες"
+      ],
+      "eggs": [
+        "αυγά",
+        "αυγό",
+        "μαγιονέζα"
+      ],
+      "fish": [
+        "ψάρι",
+        "ψάρια"
+      ],
+      "peanuts": [
+        "αράπικα φιστίκια",
+        "φυστίκια"
+      ],
+      "soy": [
+        "σόγια",
+        "τόφου"
+      ],
+      "dairy": [
+        "γάλα",
+        "λακτόζη",
+        "τυρί",
+        "κρέμα",
+        "βούτυρο",
+        "γαλακτοκομικά"
+      ],
+      "tree nuts": [
+        "ξηροί καρποί",
+        "καρύδια",
+        "αμύγδαλα",
+        "φουντούκια",
+        "φιστίκια αιγίνης"
+      ],
+      "celery": [
+        "σέλινο"
+      ],
+      "mustard": [
+        "μουστάρδα"
+      ],
+      "sesame": [
+        "σουσάμι"
+      ],
+      "sulphites": [
+        "θειώδη",
+        "διοξείδιο του θείου"
+      ],
+      "lupin": [
+        "λούπινο"
+      ],
+      "molluscs": [
+        "μαλάκια",
+        "μύδια",
+        "καλαμάρι"
+      ]
+    }
+  }
+}

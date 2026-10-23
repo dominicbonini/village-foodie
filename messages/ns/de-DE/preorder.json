@@ -1,0 +1,6 @@
+{
+  "closedPending": "Vorbestellungen geschlossen. Freigabe durch die Küche ausstehend.",
+  "deadline": "Vorbestellen bis {time}",
+  "deadlineOnDay": "Vorbestellen bis {day}, {time}",
+  "opens": "Vorbestellungen ab {day} möglich"
+}

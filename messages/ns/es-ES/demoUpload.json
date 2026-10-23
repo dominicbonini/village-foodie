@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Leyendo tu carta…",
+    "found": "Hemos encontrado tus productos…",
+    "kitchen": "Configurando tu cocina…",
+    "page": "Creando tu página de pedidos…",
+    "almost": "Casi listo…"
+  },
+  "templateSteps": {
+    "truck": "Creando tu food truck de ejemplo…",
+    "menu": "Configurando la carta…",
+    "kitchen": "Configurando la cocina…",
+    "page": "Creando la página de pedidos…",
+    "almost": "Casi listo…"
+  },
+  "dialogLabel": "Sube tu carta",
+  "heading": "✨ Sube tu carta",
+  "failedHeading": "No hemos podido leer esa carta",
+  "close": "Cerrar",
+  "intro": "Una foto de tu pizarra, una captura de pantalla, un PDF, o pégala como texto. Nuestra IA la lee y te crea una página de pedidos que funciona, con tus productos y tus precios, en menos de 60 segundos. Sin registro y sin tarjeta.",
+  "failedIntro": "A veces una foto está demasiado oscura, torcida o escrita a mano. Eso nos toca resolverlo a nosotros, no es culpa tuya. Algunas opciones:",
+  "usually": "Normalmente tarda menos de 60 segundos.",
+  "slow": "Está tardando más de lo normal; a veces pasa con cartas grandes.",
+  "keepWaiting": "Seguir esperando",
+  "sampleWhileYouWait": "O echa un vistazo con una carta de ejemplo mientras esperas",
+  "standIn": "Esta <b>no será tu carta</b>: es un ejemplo para que veas cómo funciona.",
+  "seeSample": "Ver carta de ejemplo",
+  "tryAgain": "Reintentar",
+  "tryPhotoAgain": "Volver a probar con esta foto",
+  "tryDifferent": "Probar con otra foto",
+  "uploadAnother": "← Subir otra foto",
+  "orSample": "O echa un vistazo con una carta de ejemplo",
+  "orBuild": "O la creamos nosotros por ti",
+  "buildSent": "✓ Gracias, la hemos recibido. Te escribiremos por correo.",
+  "buildBody": "Déjanos tu correo y una persona de verdad pasará tu carta y te enviará el enlace.",
+  "emailPlaceholder": "tu@tufoodtruck.es",
+  "sending": "…",
+  "send": "Enviar",
+  "noPhoto": "¿No tienes a mano una foto de la carta?",
+  "noPhotoBody": "Echa un vistazo con un food truck de ejemplo: puedes subir la tuya cuando quieras.",
+  "build": "Crear mi demo →",
+  "nothingPublished": "No se publica nada: solo lo ves tú.",
+  "error": {
+    "somethingWrong": "Algo ha salido mal. Vuelve a intentarlo.",
+    "serverUnreachable": "No hemos podido conectar con el servidor. Comprueba tu conexión y vuelve a intentarlo.",
+    "sendFailed": "No se ha podido enviar. Vuelve a intentarlo."
+  },
+  "fields": {
+    "uploadLabel": "Subir archivo de la carta",
+    "dropHere": "Suelta aquí tu carta",
+    "dragOrTap": "Arrastra y suelta o toca para elegir",
+    "fileTypes": "Imagen o PDF",
+    "or": "o",
+    "pasteLabel": "Pegar el texto de la carta",
+    "pastePlaceholder": "Pega aquí tu carta: nombres de los productos, descripciones, precios…"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Tutti",
+    "bold": "Forti e slanciati",
+    "hand": "Scritti a mano",
+    "classic": "Classici",
+    "clean": "Essenziali",
+    "own": "I tuoi",
+    "ownCount": "I tuoi ({count})"
+  },
+  "yoursTag": "· tuo",
+  "loadingFonts": "Caricamento dei font…",
+  "search": "Cerca tra {count, number} font",
+  "uploadButton": "↑ Carica il tuo font",
+  "loadingLibrary": "Caricamento della libreria di font…",
+  "tryAgain": "Riprova",
+  "noOwn": "Non hai ancora caricato nessun font. Usa il pulsante «↑ Carica il tuo font» qui sopra.",
+  "recent": "Usati di recente",
+  "popular": "Popolari per i poster",
+  "adding": "Aggiunta…",
+  "noMatch": "Nessun font corrisponde a «{query}».",
+  "showing": "{shown} di {total, number} mostrati — continua a scrivere per restringere la ricerca.",
+  "couldNotAdd": "Impossibile aggiungere il font",
+  "tooBig": "Il font pesa {size, number, ::.0 group-off} MB. Il limite è 5 MB.",
+  "woff": "Carica un file TTF o OTF — di solito puoi scaricarlo dal sito dove hai acquistato il font.",
+  "uploadIncomplete": "Il caricamento non è stato completato",
+  "added": "«{name}» aggiunto nella versione {face}.",
+  "face": {
+    "regular": "normale",
+    "bold": "grassetto",
+    "italic": "corsivo"
+  },
+  "licenceTick": "Il font è mio o ho una licenza per usarlo",
+  "checking": "Verifica del font…",
+  "addFont": "Aggiungi font",
+  "cancel": "Annulla",
+  "missingFaces": "Aggiungi la versione {faces} di «{name}» (facoltativo) — scegli di nuovo il file.",
+  "somethingWrong": "Qualcosa è andato storto",
+  "faceLower": {
+    "regular": "normale",
+    "bold": "grassetto",
+    "italic": "corsivo"
+  },
+  "ownLicence": "Tuo",
+  "loadFailed": "Impossibile caricare i font"
+}

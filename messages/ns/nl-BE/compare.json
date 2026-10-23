@@ -1,0 +1,9 @@
+{
+  "orders": {
+    "captionNo": "Een ruwe schatting is prima — voorbestellingen en klanten die de rij overslaan, niet contant of met de kaart betalen aan het loket.",
+    "captionYes": "Alleen bestellingen via je bestelpagina — niet contant of met de kaart betalen aan het loket."
+  },
+  "breakdown": {
+    "card": "Kaartverwerking — Stripe rekent {fee} per bestelling, betaald aan Stripe. Met een betaalterminal aan het loket betaal je ongeveer hetzelfde."
+  }
+}

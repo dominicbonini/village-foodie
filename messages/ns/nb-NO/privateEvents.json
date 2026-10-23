@@ -1,0 +1,42 @@
+{
+  "publicName": "Privat arrangement",
+  "chip": "Privat",
+  "grid": {
+    "orderingSection": "BESTILLING",
+    "linkRowLabel": "Ta imot bestillinger via privat lenke og QR-kode",
+    "columnTitle": "Den innebygde typen Privat. Den kan ikke få nytt navn, flyttes eller slettes."
+  },
+  "form": {
+    "help": "Vises i kalenderen din som «Privat arrangement» med bare dato og klokkeslett – aldri adressen, kartet eller Village Foodie.",
+    "linkPromise": "Gjestene bestiller via en privat lenke og QR-kode – du får dem når du har lagret.",
+    "nameLabel": "Navn på arrangementet",
+    "nameHelp": "Gjestene ser dette øverst på bestillingssiden.",
+    "namePlaceholder": "Sarah og Toms bryllup",
+    "previewNote": "Slik vises det i kalenderen din – uten sted, by eller postnummer.",
+    "needsTimes": "Legg til start- og sluttid – et privat arrangement som tar imot bestillinger via lenke, trenger dem."
+  },
+  "link": {
+    "button": "Lenke og QR",
+    "title": "Privat lenke og QR-kode",
+    "label": "Privat lenke",
+    "copy": "Kopier",
+    "copied": "Kopiert",
+    "qrDownload": "Last ned QR",
+    "tableCards": "Skriv ut bordkort",
+    "newLink": "Lag en ny lenke",
+    "working": "Jobber…",
+    "newLinkConfirm": "Lage en ny lenke? Den nåværende lenken slutter å virke med en gang, og QR-koder du allerede har skrevet ut, slutter også å virke.",
+    "newLinkHelp": "Bruk dette hvis lenken har havnet et sted den ikke skulle. Den nåværende lenken slutter å virke med en gang, og utskrevne QR-koder slutter også å virke.",
+    "newLinkFailed": "Kunne ikke lage en ny lenke.",
+    "offNotice": "Bestilling via privat lenke er slått av for dette arrangementet, så det finnes ingen lenke å dele. Arrangementet vises fortsatt i kalenderen din som «Privat arrangement»."
+  },
+  "cards": {
+    "printTitle": "{truck} – bordkort",
+    "scan": "Skann for å bestille",
+    "blurb": "Bestill og betal på mobilen. Vi roper opp navnet ditt når maten er klar.",
+    "footer": "Bestilling med HatchGrab"
+  },
+  "noSinglePost": "Private arrangementer får ikke eget innlegg – de vises på ukeplakaten din som «Privat arrangement».",
+  "confirmToPrivate": "Dette skjuler adressen og arrangementet fra kartet. Gjestene trenger den private lenken for å bestille.",
+  "confirmFromPrivate": "Dette gjør arrangementet offentlig: adressen og kartnålen vises, og den private lenken slutter å virke."
+}

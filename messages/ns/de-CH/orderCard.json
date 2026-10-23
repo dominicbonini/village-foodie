@@ -1,0 +1,4 @@
+{
+  "cashIcon": "💵",
+  "chargesSummary": "{parts, select, tax_fees_tip {MWST, Gebühren & Trinkgeld} tax_tip {MWST & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {MWST & Gebühren}}"
+}

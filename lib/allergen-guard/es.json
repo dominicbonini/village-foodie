@@ -1,0 +1,131 @@
+{
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for SPANISH (es-ES). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "es",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "intoleran",
+    "celiac",
+    "celíac",
+    "enfermedad celiaca",
+    "anafila",
+    "epipen",
+    "epi pen",
+    "adrenalina",
+    "sin gluten",
+    "sin lactosa",
+    "sin leche",
+    "sin lacteos",
+    "sin huevo",
+    "sin frutos secos",
+    "sin frutos de cascara",
+    "sin nueces",
+    "sin cacahuete",
+    "sin mani",
+    "sin soja",
+    "sin sesamo",
+    "sin pescado",
+    "sin marisco",
+    "sin crustaceo",
+    "sin molusco",
+    "sin mostaza",
+    "sin apio",
+    "sin sulfito",
+    "sin altramuz",
+    "libre de",
+    "apto para",
+    "apta para",
+    "aptos para",
+    "apto celiaco",
+    "seguro para",
+    "segura para",
+    "trazas de",
+    "puede contener",
+    "contaminacion cruzada"
+  ],
+  "tokens": [
+    "sg"
+  ],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "trigo",
+        "harina"
+      ],
+      "crustaceans": [
+        "crustáceo",
+        "crustáceos",
+        "gamba",
+        "gambas",
+        "langostino",
+        "marisco"
+      ],
+      "eggs": [
+        "huevo",
+        "huevos",
+        "mayonesa"
+      ],
+      "fish": [
+        "pescado",
+        "pescados"
+      ],
+      "peanuts": [
+        "cacahuete",
+        "cacahuetes",
+        "maní"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "leche",
+        "lactosa",
+        "lácteo",
+        "lácteos",
+        "queso",
+        "nata",
+        "mantequilla",
+        "yogur"
+      ],
+      "tree nuts": [
+        "frutos de cáscara",
+        "frutos secos",
+        "nuez",
+        "nueces",
+        "almendra",
+        "almendras",
+        "avellana",
+        "pistacho",
+        "anacardo"
+      ],
+      "celery": [
+        "apio"
+      ],
+      "mustard": [
+        "mostaza"
+      ],
+      "sesame": [
+        "sésamo",
+        "sesamo"
+      ],
+      "sulphites": [
+        "sulfito",
+        "sulfitos"
+      ],
+      "lupin": [
+        "altramuz",
+        "altramuces"
+      ],
+      "molluscs": [
+        "molusco",
+        "moluscos",
+        "mejillón",
+        "mejillones",
+        "calamar",
+        "pulpo"
+      ]
+    }
+  }
+}

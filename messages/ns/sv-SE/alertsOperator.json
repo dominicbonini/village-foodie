@@ -1,0 +1,28 @@
+{
+  "hi": "Hej {name}!",
+  "limit80": {
+    "subject": "Du har använt 80 % av månadens WhatsApp-svar",
+    "used": "Dina automatiska svar på WhatsApp har använt <b>{used} av {limit}</b> den här månaden.",
+    "nothingStopped": "Inget har stoppats. När du når {limit} pausas de automatiska svaren tills din kvot nollställs <b>{reset}</b> — kunderna kan fortfarande skriva till dig, och du ser fortfarande allt de skickar.",
+    "raise": "Du kan höja din månadsgräns under Inställningar när du vill.",
+    "raiseLink": "Du kan höja din månadsgräns under Inställningar när du vill:",
+    "button": "Öppna Inställningar"
+  },
+  "limit100": {
+    "subject": "Dina automatiska svar på WhatsApp har pausats för den här månaden",
+    "usedAll": "Du har använt alla {limit} automatiska svar på WhatsApp den här månaden, så de har pausats.",
+    "stillReach": "<b>Kunderna kan fortfarande skriva till dig som vanligt, och alla meddelanden når fortfarande fram till dig.</b> Det enda som har stoppats är att det automatiska svaret skickas tillbaka.",
+    "startAgain": "De startar igen <b>{reset}</b>, eller direkt om du höjer din månadsgräns under Inställningar.",
+    "startAgainLink": "De startar igen {reset}, eller direkt om du höjer din månadsgräns under Inställningar:",
+    "button": "Höj min gräns"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp behöver en betalningsmetod innan det kan skicka",
+    "stopped": "WhatsApp har stoppat dina automatiska svar eftersom det inte finns någon fungerande betalningsmetod på ditt WhatsApp Business-konto.",
+    "stillMessage": "<b>Kunderna kan fortfarande skriva till dig, och du ser fortfarande allt de skickar</b> — men svaren når inte fram till dem.",
+    "payDirect": "Du betalar WhatsApp direkt för de här meddelandena, så det här åtgärdas i WhatsApp Manager och inte i HatchGrab. Lägg till eller uppdatera ett kort där, så startar svaren igen av sig själva.",
+    "payDirectLink": "Du betalar WhatsApp direkt för de här meddelandena, så det här åtgärdas i WhatsApp Manager och inte i HatchGrab. Lägg till eller uppdatera ett kort där, så startar svaren igen av sig själva:",
+    "button": "Öppna WhatsApp Manager",
+    "settings": "Dina inställningar i HatchGrab: <link>{url}</link>"
+  }
+}

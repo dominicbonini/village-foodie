@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Noget gik galt",
+    "previewFailed": "Forhåndsvisningen kunne ikke laves",
+    "loadFailed": "Kunne ikke indlæse",
+    "tooBig": "Billedet fylder {size, number, ::.0 group-off} MB. Grænsen er 10 MB.",
+    "wrongType": "Vælg en PNG eller JPG.",
+    "uploadIncomplete": "Uploaden blev ikke fuldført",
+    "uploadFailed": "Uploaden mislykkedes",
+    "saveFailed": "Kunne ikke gemme",
+    "buildFailed": "Kunne ikke lave opslaget",
+    "copyFailed": "Kunne ikke kopiere – markér teksten, og kopiér den manuelt."
+  },
+  "loading": "Indlæser…",
+  "missingTable": {
+    "title": "Ugeopslaget kræver en databaseopdatering",
+    "body": "Designtabellen er ikke oprettet endnu. Når migreringen er kørt, virker denne skærm."
+  },
+  "kind": {
+    "label": "Hvilket design",
+    "event": "Enkelt arrangement",
+    "week": "Ugentligt"
+  },
+  "setup": {
+    "title": "Opsæt dit ugeopslag",
+    "intro": "Upload den tomme udgave af den ugekalender-grafik, du allerede laver – samme design, men uden dine egne tekstfelter. HatchGrab udfylder ugen ud fra din kalender.",
+    "canvaTitle": "Sådan eksporterer du en tom udgave fra Canva",
+    "canvaStep1": "Åbn dit sædvanlige design til ugekalenderen.",
+    "canvaStep2": "Slet tekstfelterne med datoer, steder og tidspunkter – behold baggrunden og de overskrifter, du vil have med.",
+    "canvaStep3": "Del › Download › PNG.",
+    "uploading": "Uploader…",
+    "upload": "Upload dit tomme billede",
+    "uploadHint": "PNG eller JPG, op til 10 MB, mindst {px} px på den korte side.",
+    "phoneTip": "Bedst på en computer eller iPad – felterne er små at trække i på en telefon.",
+    "designName": "Design til ugeopslag",
+    "backDesigns": "‹ Designs",
+    "back": "‹ Tilbage",
+    "pictureNote": "Dit billede uden dato eller sted. Dem tilføjer vi.",
+    "saved": "Designet er gemt."
+  },
+  "week": {
+    "this": "Denne uge",
+    "next": "Næste uge"
+  },
+  "post": {
+    "title": "Dit ugeopslag",
+    "editDesign": "Redigér design",
+    "weekOf": "ugen fra {date}",
+    "imageAlt": "Dit ugeopslag",
+    "building": "Laver dit opslag…",
+    "updating": "Opdaterer…",
+    "eventsTitle": "Ugens arrangementer",
+    "noEvents": "Ingen arrangementer denne uge.",
+    "eventDateCancelled": "{date} · aflyst",
+    "showCancelled": "Vis aflyste arrangementer",
+    "showPrivate": "Vis private arrangementer",
+    "privateHint": "De vises som »Privat arrangement« med dato og tidspunkter – aldrig stedet.",
+    "noteTitle": "Note",
+    "notePlaceholder": "f.eks. Forudbestil til afhentning",
+    "noteHint": "Vises i opslagsteksten og i notefeltet, hvis du har placeret et.",
+    "captionTitle": "Tekst til din side",
+    "perEventTitle": "Opslag til hvert arrangement",
+    "nothingToPost": "Intet at slå op denne uge.",
+    "textCopied": "Teksten er kopieret.",
+    "copyText": "Kopiér tekst",
+    "image": "Billede",
+    "share": "Del",
+    "noOrderLink": "Intet bestillingslink endnu – angiv din foodtrucks webadresse under Indstillinger."
+  }
+}

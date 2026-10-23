@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Este email não tem a frase de cancelamento da subscrição, por isso não pode ser enviado. Use «Inserir cancelamento» para a adicionar.",
+    "notSetUp": "Não está configurada nenhuma frase de cancelamento da subscrição, por isso não pode ser enviado nenhum email de prospeção. Adicione uma no painel Assinatura do separador Modelos.",
+    "notLoaded": "A frase de cancelamento da subscrição ainda não carregou, por isso isto não pode ser enviado.",
+    "unreadable": "Não foi possível ler a frase de cancelamento da subscrição, por isso nada foi enviado."
+  },
+  "retry": {
+    "notRebuilt": "Não foi possível reconstruir essa mensagem com a linha da empresa, por isso nada foi enviado."
+  }
+}

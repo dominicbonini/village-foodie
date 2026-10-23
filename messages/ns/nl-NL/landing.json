@@ -1,0 +1,78 @@
+{
+  "jsonLd": {
+    "subCategory": "Online bestelsysteem voor foodtrucks en mobiele catering",
+    "description": "Online bestellen, vooraf bestellen en een keukenscherm voor foodtrucks en mobiele catering ({country}).",
+    "audience": "Foodtruckondernemers en mobiele cateraars"
+  },
+  "hero": {
+    "title": "Het online bestelsysteem gemaakt voor <lean>foodtrucks.</lean>",
+    "subSmall": "Upload je menukaart, geen account nodig.<br></br>Binnen 60 seconden een werkende demo.",
+    "tagline": "Minder regelen.<br></br>Meer <lean>koken.</lean>",
+    "cta": "Upload mijn menukaart →",
+    "ctaNote": "<lead>Upload een foto van je menukaart en zie hem binnen 60 seconden werken.</lead><small>Geen account. Geen creditcard.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Het keukenscherm van HatchGrab, met bestelbonnen in de volgorde waarin ze bereid moeten worden",
+    "dashboardAlt": "Een bestelling opnemen in HatchGrab: links de menukaart, rechts het winkelmandje met het lopende totaal",
+    "phoneAlt": "Bestellen bij een foodtruck via HatchGrab: de menukaart met foto’s en prijzen, en het lopende totaal van het winkelmandje"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Eerste maand helemaal gratis, alle functies inbegrepen} other {Eerste # maanden helemaal gratis, alle functies inbegrepen}}",
+    "noCard": "Geen creditcard nodig",
+    "cancel": "Altijd opzegbaar, geen contract"
+  },
+  "does": {
+    "eyebrow": "Wat je ermee kunt",
+    "title": "Gemaakt voor foodtrucks, niet voor restaurants.",
+    "lede": "De meeste bestelsystemen gaan uit van een vast adres, betrouwbare wifi en elke week dezelfde openingstijden. Jij staat elke week ergens anders, op wisselende tijden, met slecht of geen mobiel bereik. Daar is HatchGrab voor gemaakt.",
+    "slotsTitle": "Klanten kiezen hun afhaaltijd",
+    "capacityTitle": "Maximaal aantal bestellingen per tijdslot",
+    "capacityBody": "Stel in hoeveel je tegelijk kunt bereiden en hoe lang dat duurt. Zit een afhaaltijd vol, dan kunnen klanten hem niet meer kiezen.",
+    "devicesTitle": "Werkt op elk apparaat",
+    "devicesBody": "Op de telefoon in je schort, de tablet op de toonbank, de laptop in de foodtruck — en het pinapparaat waarmee je nu al afrekent.",
+    "postsTitle": "Automatiseer je posts op Facebook en Instagram",
+    "postsBody": "Upload het ontwerp dat je nu al op Facebook of Instagram plaatst. Wij vullen je data, locaties en tijden in, klaar om te delen — elke week of elke dag.",
+    "whatsappTitle": "Automatische antwoorden via WhatsApp",
+    "whatsappBody": "“Waar staan jullie vanavond?” “Welke desserts hebben jullie?” Je WhatsApp wordt beantwoord terwijl jij naar je standplaats rijdt of achter de grill staat, op basis van je eigen menukaart en planning. Messenger en Instagram volgen binnenkort.",
+    "whatsappSoonTitle": "Automatische antwoorden via WhatsApp <soon>Binnenkort</soon>",
+    "whatsappSoonBody": "“Waar staan jullie vanavond?” “Welke desserts hebben jullie?” Binnenkort wordt je WhatsApp beantwoord terwijl jij naar je standplaats rijdt of achter de grill staat. Messenger en Instagram volgen daarna.",
+    "offlineTitle": "Geen bereik? Gewoon doorgaan.",
+    "offlineBody": "Valt je verbinding weg, dan pauzeert online bestellen automatisch, zodat klanten geen bestellingen plaatsen die jij niet ziet. Neem gewoon verder bestellingen op met de app voor iPhone, iPad en Android.",
+    "slotsBody": "Klanten bestellen vooraf en kiezen een afhaaltijd. Kortere wachtrijen, en het eten staat klaar als ze aankomen."
+  },
+  "steps": {
+    "eyebrow": "Aan de slag",
+    "title": "In zo’n 15 minuten ingesteld en klaar om bestellingen aan te nemen.",
+    "lede": "Drie dingen regelen — en voor twee daarvan heb je alleen een foto nodig.",
+    "menuTitle": "Maak je menukaart",
+    "menuBody": "Maak een foto van je menubord of plak de tekst erin. Gerechten, prijzen en extra’s worden automatisch overgenomen. Jij controleert alleen of alles klopt.",
+    "scheduleTitle": "Voeg je planning toe",
+    "scheduleBody": "Staat je planning op je website? Dan lezen wij hem daar uit en houden we hem actueel. Zo niet, maak er dan ook een foto van. Jij keurt alleen goed wat we vinden.",
+    "shareTitle": "Deel je link",
+    "shareBody": "Zet hem op Facebook, plak de QR-code op je foodtruck. Bestellingen komen binnen op je scherm, in de volgorde waarin je ze moet bereiden."
+  },
+  "testimonial": {
+    "quote": "HatchGrab maakt bestellen zoveel makkelijker. Alles is overzichtelijk, we houden onze voorraad bij en weten precies hoeveel pizza’s we nog kunnen verkopen — en de tijdsloten zijn fantastisch voor drukke dorpen.",
+    "award": "Mobiele pizzeria van het jaar",
+    "awardScope": "Regionale winnaar",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — eigenaren"
+  },
+  "pricing": {
+    "eyebrow": "Prijzen",
+    "title": "Begin gratis. Upgrade als je meer nodig hebt.",
+    "switchHead": "Overstappen van een ander platform?",
+    "switchBody": "Bekijk wat je bij HatchGrab zou betalen voor dezelfde bestellingen. Duurt ongeveer een minuut.",
+    "switchCta": "Vergelijk wat je nu betaalt"
+  },
+  "final": {
+    "truckLabel": "Foodtruck",
+    "title": "Benieuwd hoe makkelijk het instellen gaat?",
+    "lede": "Upload een foto of screenshot van je menukaart en wij maken er binnen 60 seconden een werkende bestelpagina van om mee te spelen. Jouw gerechten, jouw prijzen. Geen account, geen creditcard, niets te installeren. Kijk rustig rond en beslis dan.",
+    "cta": "Upload nu mijn menukaart →"
+  },
+  "meta": {
+    "title": "Online bestelsysteem voor foodtrucks & mobiele catering — HatchGrab {country}",
+    "description": "Laat klanten vooraf bestellen en neem bestellingen aan op je standplaats, zonder wachtrij. Online bestelsysteem met keukenscherm voor foodtrucks en mobiele catering ({country}) — geen kassasysteem."
+  }
+}

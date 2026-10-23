@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Escolha como mostra a informação sobre alergénios",
+    "detail": "Enquanto não escolher, os clientes não veem nenhum dos seus pratos — a ementa protege-se ocultando tudo o que tenha alergénios por confirmar, e neste momento isso é tudo.",
+    "where": "Ementa → Alergénios"
+  },
+  "allergensCardMissing": {
+    "title": "Adicione a sua ficha de alergénios",
+    "detail": "Escolheu mostrar uma ficha de alergénios, mas não há nenhuma guardada — os clientes seriam informados de que há informação sobre alergénios e depois não encontrariam nada.",
+    "where": "Ementa → Alergénios"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Confirme os alergénios de {count} prato} other {Confirme os alergénios de {count} pratos}}",
+    "detail": "{n, plural, one {O seu prato está oculto para os clientes até confirmar os respetivos alergénios.} other {{u, plural, one {{unverified} dos seus {total} pratos está oculto para os clientes até confirmar os respetivos alergénios.} other {{unverified} dos seus {total} pratos estão ocultos para os clientes até confirmar os respetivos alergénios.}}}} Um prato mostrado sem alergénios confirmados lê-se como «não contém nenhum», por isso a ementa oculta-o em vez de correr esse risco.",
+    "where": "Ementa → Alergénios"
+  },
+  "noVan": {
+    "title": "Adicione um food truck",
+    "detail": "Os eventos funcionam associados a um food truck — sem nenhum, não há por onde receber encomendas.",
+    "where": "Definições → Os seus food trucks"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Defina a capacidade da cozinha",
+    "detail": "Não há capacidade definida para: {vans}. Sem ela, continuaremos a prometer aos clientes uma hora de levantamento que a sua cozinha não tem forma de cumprir.",
+    "where": "Ementa → Capacidade da cozinha",
+    "unnamedVan": "Food truck sem nome"
+  },
+  "noPrepBearingCategory": {
+    "title": "Diga-nos quanto tempo demora a sua comida",
+    "detail": "{categories, select, none {Ainda não tem categorias na ementa, por isso não temos forma de calcular quanto tempo demora uma encomenda.} other {Nenhuma das suas categorias tem um tempo de preparação definido, por isso todas as encomendas nos parecem instantâneas. Continuaríamos a dar aos clientes uma hora de levantamento que a sua cozinha não tem hipótese de cumprir e, quanto mais movimento tivesse, mais desfasada ficaria.}}",
+    "where": "Ementa → Categorias → Configuração da cozinha"
+  },
+  "emailUnverified": {
+    "title": "Confirme o seu endereço de email",
+    "detail": "Enviamos para este endereço as notificações de encomendas e a recuperação da conta. Se estiver errado, só dá por isso quando algo já correu mal.",
+    "where": "Procure na sua caixa de entrada a nossa ligação de confirmação"
+  },
+  "emailUnknown": {
+    "title": "Estado da confirmação do email desconhecido",
+    "detail": "A verificação do email ainda não está ligada, por isso não é possível avaliar isto. Bloqueia de propósito em vez de passar em silêncio.",
+    "where": "—"
+  }
+}

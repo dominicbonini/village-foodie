@@ -1,0 +1,42 @@
+{
+  "publicName": "Evento privado",
+  "chip": "Privado",
+  "grid": {
+    "orderingSection": "ENCOMENDAS",
+    "linkRowLabel": "Aceitar encomendas por link privado e código QR",
+    "columnTitle": "O tipo Privado integrado. Não pode mudar de nome, ser movido nem eliminado."
+  },
+  "form": {
+    "help": "Aparece na sua agenda como «Evento privado» apenas com a data e o horário — nunca a morada, o mapa nem o Village Foodie.",
+    "linkPromise": "Os convidados encomendam através de um link privado e de um código QR — recebe-os depois de guardar.",
+    "nameLabel": "Nome do evento",
+    "nameHelp": "Os convidados veem isto no topo da página de encomenda.",
+    "namePlaceholder": "Casamento da Sarah e do Tom",
+    "previewNote": "Como aparece na sua agenda — sem local, localidade nem código postal.",
+    "needsTimes": "Adicione uma hora de início e de fim — um evento privado que aceita encomendas por link precisa delas."
+  },
+  "link": {
+    "button": "Link e QR",
+    "title": "Link privado e código QR",
+    "label": "Link privado",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "qrDownload": "Transferir QR",
+    "tableCards": "Imprimir cartões de mesa",
+    "newLink": "Criar um novo link",
+    "working": "A processar…",
+    "newLinkConfirm": "Criar um novo link? O link atual deixa de funcionar de imediato, e os códigos QR que já imprimiu também deixam de funcionar.",
+    "newLinkHelp": "Use isto se o link chegou onde não devia. O link atual deixa de funcionar de imediato, e os códigos QR impressos também.",
+    "newLinkFailed": "Não foi possível criar um novo link.",
+    "offNotice": "As encomendas por link privado estão desligadas para este evento, por isso não há link para partilhar. O evento continua a aparecer na sua agenda como «Evento privado»."
+  },
+  "cards": {
+    "printTitle": "{truck} — cartões de mesa",
+    "scan": "Leia o código para encomendar",
+    "blurb": "Encomende e pague no seu telemóvel. Chamamos o seu nome quando estiver pronto.",
+    "footer": "Encomendas com HatchGrab"
+  },
+  "noSinglePost": "Os eventos privados não têm publicação própria — aparecem no seu cartaz semanal como «Evento privado».",
+  "confirmToPrivate": "Isto oculta a morada e o evento no mapa. Os convidados vão precisar do link privado para encomendar.",
+  "confirmFromPrivate": "Isto torna o evento público: a morada e o marcador no mapa vão aparecer, e o link privado deixa de funcionar."
+}

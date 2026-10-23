@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Bestätigen Sie Ihre neue E-Mail-Adresse bei HatchGrab",
+    "heading": "Bestätigen Sie Ihre E-Mail-Adresse",
+    "button": "E-Mail-Adresse bestätigen"
+  },
+  "changeEmail": {
+    "requested": "Sie haben beantragt, Ihre E-Mail-Adresse bei HatchGrab in diese Adresse zu ändern.",
+    "click": "Klicken Sie zur Bestätigung auf die Schaltfläche unten. Dieser Link läuft in 24 Stunden ab.",
+    "ignore": "Wenn Sie diese Änderung nicht beantragt haben, können Sie diese E-Mail einfach ignorieren.",
+    "stillActive": "Ihre aktuelle E-Mail-Adresse bleibt aktiv."
+  },
+  "resendVerification": {
+    "requested": "Sie haben beantragt, Ihre E-Mail-Adresse bei HatchGrab in diese Adresse zu ändern.",
+    "click": "Klicken Sie unten zur Bestätigung. Dieser Link läuft in 24 Stunden ab.",
+    "ignore": "Wenn Sie das nicht beantragt haben, ignorieren Sie diese E-Mail.",
+    "stillActive": "Ihre aktuelle E-Mail-Adresse bleibt aktiv."
+  },
+  "passwordReset": {
+    "subject": "Setzen Sie Ihr HatchGrab-Passwort zurück",
+    "heading": "Passwort zurücksetzen",
+    "requested": "Wir haben eine Anfrage erhalten, das Passwort für Ihr HatchGrab-Konto zurückzusetzen.",
+    "click": "Klicken Sie auf die Schaltfläche unten, um ein neues Passwort zu wählen. Dieser Link läuft in 1 Stunde ab.",
+    "button": "Passwort zurücksetzen",
+    "ignore": "Wenn Sie das nicht beantragt haben, können Sie diese E-Mail einfach ignorieren.",
+    "unchanged": "Ihr Passwort ändert sich erst, wenn Sie auf den Link oben klicken."
+  },
+  "deletionScheduled": {
+    "subject": "Ihr HatchGrab-Konto ist zur Löschung vorgemerkt",
+    "received": "Wir haben eine Anfrage erhalten, dieses HatchGrab-Konto zu löschen.",
+    "orderingStopped": "<b>Die Online-Bestellannahme wurde sofort gestoppt</b> für: {trucks}.",
+    "noTrucks": "(keine Foodtrucks)",
+    "readable": "Ihr Dashboard bleibt\n    noch {days, plural, one {# Tag} other {# Tage}} lang lesbar.",
+    "scheduled": "Das Konto wird am <b>{date}</b> gelöscht.",
+    "cannotCancel": "<b>Dies kann nicht in der App rückgängig gemacht werden.</b> Wenn Sie das nicht waren oder es sich\n    anders überlegt haben, antworten Sie bitte so schnell wie möglich auf diese E-Mail.",
+    "kept": "Wenn das Konto gelöscht wird, entfernen wir Ihre personenbezogenen Daten und die Ihrer Kunden. Wir behalten\n    anonyme Buchhaltungsunterlagen, zu deren Aufbewahrung wir gesetzlich verpflichtet sind."
+  }
+}

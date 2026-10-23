@@ -1,0 +1,36 @@
+{
+  "h1": "Allt du behöver för att driva din servering, i alla abonnemang.",
+  "lede": "Beställningar, förbeställningar, kökskapacitet och köksskärmen ingår i alla abonnemang.{hasUpgrades, select, yes { {plans} ger dessutom {features} och lägre avgifter.} other {}}",
+  "perMonth": "{price}/månad",
+  "group": {
+    "pay": "Vad du betalar",
+    "run": "Driv din servering",
+    "online": "Onlinebeställningar",
+    "marketing": "Marknadsföring och automatisering"
+  },
+  "pay": {
+    "included": "Onlinebeställningar som ingår per månad",
+    "fee": "HatchGrabs avgift på onlinebeställningar med kort*",
+    "walkUp": "Beställningar på plats"
+  },
+  "cell": {
+    "unlimited": "Obegränsat",
+    "free": "Gratis",
+    "feeAbove": "<b>{fee}</b> över {included}",
+    "yes": "Ingår",
+    "none": "Ingår inte",
+    "comingSoon": "Kommer snart"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "inlägg i sociala medier",
+    "event_types": "egna evenemangspriser"
+  },
+  "meta": {
+    "description": "Alla HatchGrabs funktioner i alla abonnemang, sida vid sida – {plans}, med avgifter och vad som ingår.{months, plural, =0 {} one { Under din första månad ingår allt.} other { Under dina första # månader ingår allt.}}"
+  },
+  "notes": {
+    "whatsapp": "Automatiska svar på WhatsApp kräver ett WhatsApp Business-konto. Meta kan ta betalt för vissa meddelanden; svaren skapas automatiskt.",
+    "printing": "Utskrift av köksbongar kräver en kompatibel Bluetooth- eller kabelansluten skrivare (ingår inte)."
+  }
+}

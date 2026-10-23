@@ -1,0 +1,6 @@
+{
+  "closedPending": "Forhåndsbestilling stengt. Venter på godkjenning fra kjøkkenet.",
+  "deadline": "Forhåndsbestill innen {time}",
+  "deadlineOnDay": "Forhåndsbestill innen {time}, {day}",
+  "opens": "Forhåndsbestilling åpner {day}"
+}

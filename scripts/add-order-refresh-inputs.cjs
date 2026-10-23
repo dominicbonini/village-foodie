@@ -37,7 +37,23 @@ const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { installMocks } = require('./_printing-mocks.cjs'); const { installMiniDom } = require('./_mini-dom.cjs')
 let fails = 0
 const check = (ok, label) => { console.log(`  ${ok ? '✓' : '🔴'} ${label}`); if (!ok) fails++ }
-const sleep = ms => new Promise(r => setTimeout(r, ms))
+// ⚠️ europe-languages-2 (23 October 2026): A CLOCK THAT MOVES ONLY WHEN THE SCRIPT WAITS. The panel's max-age backstop
+// (SLOT_SNAPSHOT_MAX_AGE_MS, 10 s from mount or the last applied read) is a correct safety net — and on a busy machine the
+// real seconds a compile-and-first-render takes were counted against it, so it fired INSIDE a broken variant's short
+// scenario and rescued the broken code ("PASSED — THE HARNESS PROVES NOTHING"; failed 07:40–08:20 on 23 October, passed
+// before and after; a fake 08:18 clock did NOT reproduce it, so it is not the time of day; 24 busy loops did not reproduce it
+// either, so the exact trigger that morning is unconfirmed — this removes the one wall-clock dependency). `Date.now()` now advances
+// only while `sleep()` is waiting (by the time it really waited): a scenario lasts its scripted sleeps, whatever the load. The
+// timers are real, and so are the waits, so every rule is still exercised for real — the 5 s throttle window, the trailing
+// read, and the backstop, whose own checks below sleep past its 10 s.
+const RealNow = Date.now.bind(Date)
+const vclock = { at: RealNow(), sleepingSince: null }
+Date.now = () => (vclock.sleepingSince === null ? vclock.at : vclock.at + (RealNow() - vclock.sleepingSince))
+const sleep = async ms => {
+  if (vclock.sleepingSince !== null) return new Promise(r => setTimeout(r, ms))   // a nested wait: the outer one is counting
+  vclock.sleepingSince = RealNow()
+  try { await new Promise(r => setTimeout(r, ms)) } finally { vclock.at += RealNow() - vclock.sleepingSince; vclock.sleepingSince = null }   // the wait as it really ran — never backwards
+}
 // 19 September 2026: a row now leads with the refusal marker — '✕ ' when this order cannot be ready by
 // then, a same-width en space otherwise — so option text is matched after stripping it.
 const stripMark = (t) => String(t || '').replace(/^[\u00d7\u2007]\u0020/, '')

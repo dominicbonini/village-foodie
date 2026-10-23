@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Uten månedsavgift",
+    "subtitle": "Sesongdrift og deltid",
+    "description": "Ingen månedsavgift. Du betaler bare når en kunde betaler med kort på nett."
+  },
+  "pro": {
+    "subtitle": "Matbiler med faste forhåndsbestillinger",
+    "description": "Alt, inkludert automatiske svar på WhatsApp og innlegg i sosiale medier, med nettbestillinger inkludert hver måned."
+  },
+  "unlimited": {
+    "name": "Ubegrenset",
+    "subtitle": "Travle matbiler og festivaler",
+    "description": "Alt, uten gebyrer på nettbestillinger, uansett hvor travelt du har det."
+  },
+  "trial": {
+    "name": "Gratis prøveperiode",
+    "description": "Alle funksjoner, gratis, så lenge prøveperioden varer."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Sandkasse for potensielle kunder — aldri offentlig."
+  },
+  "tester": {
+    "name": "Testbruker",
+    "description": "Testbruker før lansering — full tilgang."
+  }
+}

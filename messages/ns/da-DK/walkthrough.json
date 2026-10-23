@@ -1,0 +1,31 @@
+{
+  "intro": "Under Administrer sætter du din foodtruck op og ser, hvordan det går. På Oversigt tager du imod bestillinger og styrer hvert arrangement, mens det står på.",
+  "ariaLabel": "Rundvisning i oversigten",
+  "step": "{current} af {total}",
+  "skip": "Spring over",
+  "back": "← Tilbage",
+  "next": "Næste →",
+  "done": "Færdig",
+  "stops": {
+    "menu": {
+      "title": "Menukort",
+      "body": "Dine retter, priser og allergener. Ændrer du noget her, er det live med det samme."
+    },
+    "schedule": {
+      "title": "Kalender",
+      "body": "Hvor og hvornår du sælger. Tilføj et arrangement her, så kan kunderne bestille til det."
+    },
+    "build": {
+      "title": "Tilbud samt Tilvalg & mersalg",
+      "body": "Tilbud, mersalg, tilpasninger og din køkkenkapacitet ligger under Menukort – prøv dig bare frem."
+    },
+    "settings": {
+      "title": "Indstillinger",
+      "body": "Din foodtrucks oplysninger og hvordan kunderne betaler."
+    },
+    "billing": {
+      "title": "Fakturering",
+      "body": "Her finder du dit abonnement, fakturering og oplysninger om funktioner."
+    }
+  }
+}

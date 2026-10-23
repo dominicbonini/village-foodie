@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Foodtruck",
+  "eventsFeed": {
+    "today": "I dag · {date}",
+    "tomorrow": "I morgon · {date}"
+  },
+  "privacyNotSaved": "Evenemanget är publicerat, men sekretessinställningen kunde inte sparas.",
+  "stockWarning": "Inga tillgängliga artiklar i ”{category}”",
+  "uncategorised": "Utan kategori"
+}

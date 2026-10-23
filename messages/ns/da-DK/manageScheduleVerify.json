@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Kontrollen er midlertidigt utilgængelig. Prøv igen om et øjeblik.",
+  "malformed": "Det ligner ikke en webadresse. Prøv f.eks. dinfoodtruck.dk/arrangementer",
+  "blocked": "Vi kunne ikke få adgang til siden — den blokerer måske automatiske tjek. Prøv den side, hvor din kalender står, eller tilføj arrangementer manuelt.",
+  "unreachable": "Vi kunne ikke nå hjemmesiden. Den er måske nede, eller adressen er forkert.",
+  "no_content": "Vi nåede siden, men kunne ikke læse noget på den. Tjek, at den er offentligt tilgængelig.",
+  "no_events": "Vi kunne ikke finde kommende arrangementer på siden. Sørg for, at URL’en peger direkte på det sted, hvor din kalender står.",
+  "blockedDomain": "Brug din hjemmesides URL — Facebook- og Instagram-sider kan ikke hentes automatisk."
+}

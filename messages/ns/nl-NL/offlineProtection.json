@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Je dashboard of keukenscherm moet tijdens de service aan en online blijven.",
+  "explainerBody": "Gaat het scherm uit, verliest het apparaat internet of ga je naar een andere website, dan neemt de offlinebeveiliging het over — die pauzeert het bestellen of zet automatisch accepteren uit, afhankelijk van wat je hebt gekozen.",
+  "reminder": "⚠️ Houd je dashboard of keukenscherm tijdens de service aan en online, anders kan de offlinebeveiliging het overnemen.",
+  "enableConfirm": "Offlinebeveiliging ingeschakeld.\n\nOm bestellingen te blijven ontvangen, moet je scherm aan blijven. Verliest dit apparaat de verbinding, dan neemt de offlinebeveiliging het over in de modus die je hebt gekozen.\n\nZorg dat ‘Scherm aan’ is ingeschakeld op dit apparaat.",
+  "disableConfirm": "Offlinebeveiliging uitschakelen voor dit evenement?\n\nVerliest dit apparaat de verbinding, dan gaan online bestellingen gewoon door — klanten kunnen dan bestellingen plaatsen die jij niet ziet. Schakel dit alleen uit als je een betrouwbare verbinding hebt.",
+  "cardDescription": "Bepaalt wat er met binnenkomende bestellingen gebeurt als je apparaat offline gaat.",
+  "purpose": "Verliest je apparaat de verbinding, dan voorkomt dit dat er bestellingen binnenkomen die je niet kunt zien.",
+  "switchLabel": "Offlinebeveiliging voor bestellingen",
+  "switchHelp": "Wat er gebeurt als deze foodtruck de verbinding verliest.",
+  "modes": {
+    "pause": {
+      "label": "Online bestellen pauzeren",
+      "help": "Klanten kunnen pas weer bestellen als je weer online bent."
+    },
+    "no_auto_accept": {
+      "label": "Bestellingen blijven aannemen, zelf bevestigen",
+      "help": "Automatisch accepteren staat dan uit: klanten kunnen nog bestellen, maar niets wordt automatisch bevestigd. Je bevestigt elke bestelling zodra je weer online bent — en wat na de door jou gekozen tijd nog wacht, wordt automatisch afgewezen. De klant krijgt daarover een e-mail."
+    }
+  },
+  "autoRejectLabel": "Bestellingen afwijzen die langer wachten dan",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

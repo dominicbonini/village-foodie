@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Utan månadsavgift",
+    "subtitle": "Säsongs- och deltidsförsäljare",
+    "description": "Ingen månadsavgift. Du betalar bara när en kund betalar online med kort."
+  },
+  "pro": {
+    "subtitle": "Foodtruckar med regelbundna förbeställningar",
+    "description": "Allt, inklusive automatiska svar på WhatsApp och inlägg i sociala medier, med onlinebeställningar som ingår varje månad."
+  },
+  "unlimited": {
+    "name": "Obegränsad",
+    "subtitle": "Foodtruckar med högt tryck och festivaler",
+    "description": "Allt, utan avgifter på onlinebeställningar, hur mycket du än har att göra."
+  },
+  "trial": {
+    "name": "Gratis provperiod",
+    "description": "Alla funktioner, gratis, under din provperiod."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Sandlåda för potentiella kunder – aldrig offentlig."
+  },
+  "tester": {
+    "name": "Testare",
+    "description": "Testare före lansering – full åtkomst."
+  }
+}

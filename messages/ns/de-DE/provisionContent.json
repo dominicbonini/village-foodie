@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Foodtruck 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burger",
+    "mains": "Hauptgerichte",
+    "sides": "Beilagen",
+    "drinks": "Getränke"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza-Foodtruck",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Salami",
+        "ndujaHoney": "Nduja & Honig",
+        "fourCheese": "Quattro Formaggi",
+        "gardenVeg": "Gemüse",
+        "garlicBread": "Knoblauchbrot",
+        "rocketParmesan": "Rucola & Parmesan",
+        "olives": "Oliven",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger-Foodtruck",
+      "items": {
+        "classicCheeseburger": "Klassischer Cheeseburger",
+        "doubleBacon": "Doppel-Bacon",
+        "buttermilkChicken": "Buttermilch-Hähnchen",
+        "halloumiStack": "Halloumi-Burger",
+        "smashBurger": "Smash Burger",
+        "skinOnFries": "Pommes mit Schale",
+        "loadedCheeseFries": "Käse-Pommes mit Topping",
+        "onionRings": "Zwiebelringe",
+        "craftLemonade": "Hausgemachte Limonade",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Curry-Foodtruck",
+      "items": {
+        "chickenTikkaMasala": "Chicken Tikka Masala",
+        "lambRoganJosh": "Lamm Rogan Josh",
+        "chanaMasala": "Chana Masala",
+        "butterChicken": "Butter Chicken",
+        "saagPaneer": "Saag Paneer",
+        "pilauRice": "Pilaw-Reis",
+        "garlicNaan": "Knoblauch-Naan",
+        "onionBhaji": "Zwiebel-Bhaji",
+        "mangoLassi": "Mango-Lassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

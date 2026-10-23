@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Prøv før du kobler til",
+    "intro": "Skriv et spørsmål slik en kunde ville spurt, og se nøyaktig hvilket svar de ville fått. Ingenting sendes til noen.",
+    "examples": {
+      "where": "Hvor står dere i kveld?",
+      "doYouDo": "Har dere pepperoni?",
+      "menu": "Hva står på menyen?"
+    },
+    "placeholder": "Hvilke desserter har dere?",
+    "send": "Send",
+    "empty": "Svaret vises her",
+    "working": "Lager svaret…",
+    "noReply": "Det ville ikke blitt sendt noe svar.",
+    "noReplyWhy": "Det ser ut som spam, en bookingforespørsel eller noe som ikke er relevant, så det automatiske svaret holder seg stille.",
+    "footnote": "Svarene er KI-genererte, varierer litt hver gang og kan av og til være feil.",
+    "failed": "Kunne ikke lage en forhåndsvisning akkurat nå.",
+    "unreachable": "Fikk ikke kontakt med serveren. Sjekk tilkoblingen og prøv igjen."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Forbereder…",
+      "unavailable": "Utilgjengelig",
+      "waiting": "Venter på Facebook-vinduet…",
+      "finishing": "Fullfører…",
+      "reconnect": "Koble til på nytt",
+      "setUp": "Sett opp"
+    },
+    "startAgain": "Start på nytt",
+    "popupHint": "Ser du ikke Facebook-vinduet? Det kan ha blitt blokkert. Tillat popup-vinduer for hatchgrab.com, og trykk deretter Start på nytt."
+  },
+  "notice": {
+    "sdkUnavailable": "WhatsApp-oppsett er ikke tilgjengelig i dette miljøet.",
+    "sdkBlocked": "Påloggingsskriptet til Meta kunne ikke lastes. Det skyldes vanligvis en annonseblokkering eller sporingsbeskyttelse.",
+    "setupFailed": "Oppsettet kunne ikke fullføres. Ingenting ble endret.",
+    "setupFinished": "Oppsettet er fullført.",
+    "metaError": "Meta rapporterte et problem under oppsettet. Ingenting ble endret. Prøv igjen, og kontakt oss hvis det fortsetter.",
+    "closed": "Oppsettet ble lukket før det var ferdig. Ingenting ble endret — trykk Sett opp for å prøve igjen.",
+    "disconnectedUnreachable": "WhatsApp er koblet fra. Vi fikk ikke kontakt med Meta for å fjerne tilgangen. Fjern HatchGrab i WhatsApp Business → Innstillinger → Konto → Business Platform.",
+    "disconnected": "WhatsApp er koblet fra. De automatiske svarene har stoppet.",
+    "close": "Lukk"
+  },
+  "card": {
+    "title": "Automatiske svar",
+    "description": "Svar automatisk på spørsmål fra kunder i sosiale medier, basert på menyen og kalenderen din.",
+    "channels": "Kanaler",
+    "requiresAccount": "Krever en WhatsApp Business-konto.",
+    "connected": "Tilkoblet",
+    "popupInstruction": "Et Facebook-vindu åpnes for å koble til WhatsApp Business-kontoen din. Hvis ingenting vises, tillater du popup-vinduer for hatchgrab.com i nettleseren og trykker Sett opp igjen.",
+    "switchedOff": "Automatiske svar på WhatsApp er slått av for matbilen din.",
+    "expiring": "WhatsApp-tilkoblingen din må fornyes snart. Trykk Koble til på nytt for at de automatiske svarene skal fortsette.",
+    "comingSoon": "Kommer snart",
+    "instagram": "Automatiske svar på direktemeldinger på Instagram. Vil kreve en profesjonell Instagram-konto.",
+    "messenger": "Automatiske svar i Facebook Messenger. Vil kreve en Facebook-side."
+  },
+  "blocked": {
+    "title": "Svarene dine blir ikke levert",
+    "body": "WhatsApp nekter å sende de automatiske svarene dine på grunn av et betalingsproblem på WhatsApp Business-kontoen din. Kundene kan fortsatt sende deg meldinger, og du ser fortsatt alt de sender — men de får ikke svar.",
+    "fix": "Du betaler WhatsApp direkte for disse meldingene, så dette ordnes i WhatsApp Manager. <link>Sjekk betalingsmåten din</link>"
+  },
+  "limit": {
+    "heading": "Automatiske svar",
+    "label": "Månedlig grense",
+    "option": "{n, number}",
+    "usage": "{used, number} av {limit, number} brukt · nullstilles {date}",
+    "perCustomer": "Opptil {n} svar per kunde i løpet av 24 timer, deretter én melding om at du svarer personlig.",
+    "emailAt": "Svarene settes på pause når grensen er nådd. Vi sender deg e-post ved 80 % og 100 %.",
+    "saved": "Den månedlige svargrensen er lagret",
+    "saveFailed": "Kunne ikke lagre grensen"
+  },
+  "billing": {
+    "heading": "Fakturering",
+    "paymentMethod": "Betalingsmåte",
+    "added": "Betalingsmåte lagt til",
+    "missing": "Ingen betalingsmåte lagt til",
+    "addInManager": "Legg til i WhatsApp Manager",
+    "summary": "Det er Meta, ikke HatchGrab, som fakturerer WhatsApp-kontoen din for svar. Fra {from} er de første {free, number} i måneden gratis. Riktig per {checked}; se <link>Metas priser</link> for endringer.",
+    "howMetaCharges": "Slik tar Meta betalt",
+    "chargesTitle": "Det er Meta som tar betalt for WhatsApp-svar, ikke HatchGrab.",
+    "chargesBody": "Hvert svar HatchGrab sender for deg, faktureres av Meta til WhatsApp Business-kontoen din. Fra {from} inkluderer Meta {free, number} gratis svar i måneden per nummer; deretter belastes hvert svar etter Metas sats. Svar du sender selv fra WhatsApp Business-appen, koster ingenting. Meta fastsetter disse prisene og kan endre dem. <link>Se Metas priser</link>",
+    "addPaymentInManager": "Legg til en betalingsmåte i WhatsApp Manager",
+    "aboveMissing": "Grensen din er høyere enn Metas {free, number} gratis svar. Uten en betalingsmåte stopper Meta alle svar når disse er brukt opp.",
+    "aboveGeneral": "Grensen din er høyere enn Metas {free, number} gratis svar. Svar utover det krever en betalingsmåte på WhatsApp-kontoen din; uten det stopper Meta alle svar når gratissvarene er brukt opp.",
+    "addPaymentMethod": "Legg til en betalingsmåte"
+  },
+  "disconnect": {
+    "link": "Koble fra WhatsApp",
+    "title": "Koble fra WhatsApp?",
+    "body": "De automatiske svarene stopper med en gang, og HatchGrab mister tilgangen til WhatsApp-kontoen din. Nummeret ditt fortsetter å virke i WhatsApp Business-appen. For å fjerne HatchGrab helt åpner du også WhatsApp Business → Innstillinger → Konto → Business Platform.",
+    "cancel": "Avbryt",
+    "confirm": "Koble fra",
+    "working": "Kobler fra…",
+    "failed": "Kunne ikke koble fra"
+  },
+  "signup": {
+    "logged": "Registrert.",
+    "partial": "Vi koblet til WhatsApp Business-kontoen din, men kunne ikke fullføre tilkoblingen. Det er ingenting galt på din side — kontakt oss, så fullfører vi det.",
+    "noNumber": "WhatsApp Business-kontoen din er koblet til, men vi fikk ikke tilbake noe telefonnummer. Trykk Koble til på nytt og fullfør nummertrinnet.",
+    "needsRegistering": "Kontoen din er koblet til, men vi må registrere dette nummeret før svarene kan starte. Kontakt kundestøtte — oppsettet ditt er lagret, ikke kjør det på nytt.",
+    "registerRefused": "Kontoen din er koblet til, men Meta ville ikke registrere nummeret. Oppsettet ditt er lagret — kontakt kundestøtte i stedet for å kjøre det på nytt.",
+    "deliveryRefused": "Kontoen din er koblet til, men Meta ville ikke slå på meldingslevering. Oppsettet ditt er lagret — kontakt kundestøtte i stedet for å kjøre det på nytt.",
+    "numberTaken": "Det WhatsApp-nummeret er allerede koblet til en annen HatchGrab-konto. Et nummer kan bare svare for én matbil. Kontakt kundestøtte, så flytter vi det over.",
+    "saveIncomplete": "Nesten ferdig — vi kunne ikke fullføre lagringen. Oppsettet ditt er lagret, så kontakt kundestøtte i stedet for å kjøre det på nytt.",
+    "connected": "WhatsApp er tilkoblet. Automatiske svar begynner nå å svare på meldinger til dette nummeret."
+  }
+}

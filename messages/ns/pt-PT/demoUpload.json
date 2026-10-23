@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "A ler a sua ementa…",
+    "found": "Encontrámos os seus artigos…",
+    "kitchen": "A configurar a sua cozinha…",
+    "page": "A criar a sua página de encomendas…",
+    "almost": "Quase pronto…"
+  },
+  "templateSteps": {
+    "truck": "A criar o seu food truck de exemplo…",
+    "menu": "A configurar a ementa…",
+    "kitchen": "A configurar a cozinha…",
+    "page": "A criar a página de encomendas…",
+    "almost": "Quase pronto…"
+  },
+  "dialogLabel": "Carregar a sua ementa",
+  "heading": "✨ Carregue a sua ementa",
+  "failedHeading": "Não conseguimos ler essa ementa",
+  "close": "Fechar",
+  "intro": "Uma fotografia do quadro da ementa, uma captura de ecrã, um PDF, ou cole-a como texto. A nossa IA lê-a e cria-lhe uma página de encomendas a funcionar — os seus artigos, os seus preços — em menos de 60 segundos. Sem registo, sem cartão.",
+  "failedIntro": "Por vezes uma fotografia está demasiado escura, inclinada ou escrita à mão. Isso é connosco, não é algo que tenha feito mal. Algumas formas de avançar:",
+  "usually": "Isto costuma demorar menos de 60 segundos.",
+  "slow": "Está a demorar mais do que o habitual — as ementas grandes às vezes demoram.",
+  "keepWaiting": "Continuar à espera",
+  "sampleWhileYouWait": "Ou explore uma ementa de exemplo enquanto espera",
+  "standIn": "Esta <b>não vai ser a sua ementa</b> — é apenas um exemplo para ver como funciona.",
+  "seeSample": "Ver ementa de exemplo",
+  "tryAgain": "Tentar novamente",
+  "tryPhotoAgain": "Tentar esta fotografia novamente",
+  "tryDifferent": "Tentar outra fotografia",
+  "uploadAnother": "← Carregar outra fotografia",
+  "orSample": "Ou explore uma ementa de exemplo",
+  "orBuild": "Ou nós criamo-la por si",
+  "buildSent": "✓ Obrigado — recebemos. Vamos enviar-lhe um email.",
+  "buildBody": "Deixe o seu email e uma pessoa real introduz a sua ementa e envia-lhe a ligação.",
+  "emailPlaceholder": "nome@oseufoodtruck.pt",
+  "sending": "…",
+  "send": "Enviar",
+  "noPhoto": "Não tem uma fotografia da ementa à mão?",
+  "noPhotoBody": "Explore antes um food truck de exemplo — pode carregar a sua quando quiser.",
+  "build": "Criar a minha demonstração →",
+  "nothingPublished": "Nada é publicado — só é visível para si.",
+  "error": {
+    "somethingWrong": "Algo correu mal. Tente novamente.",
+    "serverUnreachable": "Não conseguimos ligar-nos ao servidor. Verifique a sua ligação e tente novamente.",
+    "sendFailed": "Não foi possível enviar — tente novamente."
+  },
+  "fields": {
+    "uploadLabel": "Carregar ficheiro da ementa",
+    "dropHere": "Largue aqui a sua ementa",
+    "dragOrTap": "Arraste e largue ou toque para escolher",
+    "fileTypes": "Imagem ou PDF",
+    "or": "ou",
+    "pasteLabel": "Colar texto da ementa",
+    "pastePlaceholder": "Cole aqui a sua ementa — nomes dos artigos, descrições, preços…"
+  }
+}

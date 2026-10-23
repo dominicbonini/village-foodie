@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotale",
+  "taxFallback": "Imposte",
+  "taxIncluded": "Include {label}",
+  "serviceFeeCustomer": "Costo del servizio online",
+  "serviceFee": "Costo del servizio",
+  "cardFee": "Commissione carta",
+  "tip": "Mancia",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Imposte, costi e mancia} tax_tip {Imposte e mancia} fees_tip {Costi e mancia} fees {Costi} other {Imposte e costi}}"
+}

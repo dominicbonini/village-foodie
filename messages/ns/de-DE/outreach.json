@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Diese E-Mail enthält keinen Abmeldehinweis und kann daher nicht gesendet werden. Fügen Sie ihn mit der Schaltfläche zum Einfügen des Abmeldehinweises hinzu.",
+    "notSetUp": "Es ist kein Abmeldehinweis eingerichtet, daher kann keine Akquise-E-Mail gesendet werden. Fügen Sie einen im Bereich „Signatur“ auf dem Tab „Vorlagen“ hinzu.",
+    "notLoaded": "Der Abmeldehinweis wurde noch nicht geladen, daher kann nichts gesendet werden.",
+    "unreadable": "Der Abmeldehinweis konnte nicht gelesen werden, daher wurde nichts gesendet."
+  },
+  "retry": {
+    "notRebuilt": "Diese Nachricht konnte nicht mit der Firmenzeile neu erstellt werden, daher wurde nichts gesendet."
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Bestellung #{id} zurückgesetzt",
+    "saved": "Bestellung #{id} gespeichert",
+    "undo": "↩ Rückgängig",
+    "paymentNotRecorded": "⚠ Bestellung #{id} – ZAHLUNG NICHT ERFASST. {collect, select, yes {Die Bestellung wurde abgeschlossen} other {Die Bestellung wurde gespeichert}}, die Zahlung nicht.",
+    "recordPayment": "Zahlung erfassen",
+    "paid": "Bestellung #{id} bezahlt",
+    "undonePayment": "Rückgängig gemacht – Zahlung entfernt",
+    "undoneCollected": "Rückgängig gemacht – Bestellung nicht abgeholt",
+    "collected": "Bestellung #{id} {paidToo, select, yes {bezahlt und abgeholt} other {abgeholt}}",
+    "ready": "Bestellung #{id} fertig",
+    "readyBuzzer": "Bestellung #{id} fertig · <pill></pill>",
+    "status": "Bestellung #{id} {action, select, confirm {bestätigt} reject {abgelehnt} ready {fertig} collected {abgeholt} undo_collected {wiederhergestellt} cancel {storniert} other {aktualisiert}}"
+  },
+  "conflicts": {
+    "more": "+{count} weitere",
+    "notOnScreenPlus": "+{count} nicht auf diesem Bildschirm",
+    "notOnScreen": "{n, plural, one {{count} Bestellung nicht auf diesem Bildschirm} other {{count} Bestellungen nicht auf diesem Bildschirm}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ ZAHLUNG NICHT ERFASST",
+    "paymentBody": "{orders} – nur auf diesem Gerät als bezahlt markiert. Die Zahlung ist nicht durchgegangen.",
+    "paymentCheck": "Prüfen Sie die Bestellung und kassieren Sie erneut, falls der Betrag noch offen ist.",
+    "dismiss": "Ausblenden",
+    "confirmChecked": "Bestätigen Sie, dass Sie {orders} geprüft haben",
+    "confirmHides": "Damit wird die Warnung ausgeblendet. Der Eintrag bleibt in jedem Fall auf diesem Gerät gespeichert.",
+    "notYet": "Noch nicht",
+    "iveChecked": "Ich habe {orders} geprüft",
+    "statusBody": "⚠ {orders} – diese Änderung ist nicht durchgegangen. Prüfen Sie die Bestellung.",
+    "offline": "📴 Keine Verbindung – {n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Sie wird gesendet, sobald Sie wieder online sind.} other {{count} Änderungen auf diesem Gerät gespeichert. Sie werden gesendet, sobald Sie wieder online sind.}} Einstellungen sind gesperrt.",
+    "syncing": "Wieder online – {n, plural, one {{count} Änderung wird} other {{count} Änderungen werden}} gesendet…",
+    "synced": "Alle Änderungen gesendet.",
+    "stillQueued": "{n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Das Senden wird weiter versucht.} other {{count} Änderungen auf diesem Gerät gespeichert. Das Senden wird weiter versucht.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab ist gesperrt",
+    "verifying": "Wird überprüft…",
+    "unlock": "Entsperren",
+    "cantUseBiometric": "Face / Touch ID funktioniert nicht?",
+    "enterPin": "Backup-PIN eingeben",
+    "wrongPin": "Falsche PIN – versuchen Sie es erneut.",
+    "checking": "Wird geprüft…",
+    "tryBiometric": "Stattdessen Face / Touch ID verwenden",
+    "forgot": "PIN vergessen? Dann müssen Sie die App neu installieren."
+  },
+  "notify": {
+    "title": "🔔 Benachrichtigungen",
+    "intro": "Hinweise auf diesem Gerät. Schalten Sie sie ein, um auszuwählen, welche Sie erhalten.",
+    "refused": "Aktivieren Sie Benachrichtigungen in den Einstellungen Ihres Geräts, um dies einzuschalten.",
+    "newOrder": "Hinweise zu neuen Bestellungen",
+    "newOrderHelp": "Benachrichtigung, wenn eine Kundenbestellung bestätigt werden muss.",
+    "offline": "Hinweise zu Offline / Pause",
+    "offlineHelp": "Benachrichtigung, wenn dieses Gerät offline geht (und Bestellungen pausiert werden). <green>Funktioniert offline.</green>"
+  },
+  "van": {
+    "label": "Fahrzeug",
+    "loadRetry": "Laden fehlgeschlagen · Erneut versuchen",
+    "select": "Auswählen…"
+  },
+  "deviceSave": {
+    "network": "Server nicht erreichbar – prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "server": "Das konnte gerade nicht gespeichert werden. Bitte versuchen Sie es erneut."
+  },
+  "setup": {
+    "fetchErrorTitle": "Geräteeinrichtung konnte nicht geladen werden",
+    "fetchErrorBody": "Wir konnten den Server nicht erreichen, um <b>dieses Gerät</b> einzurichten. Prüfen Sie die Verbindung und versuchen Sie es erneut – Ihre Bestellungen und Einstellungen sind nicht betroffen.",
+    "retry": "Erneut versuchen",
+    "later": "Später",
+    "noVanTitle": "Kein aktives Fahrzeug",
+    "noVanBody": "Dieser Foodtruck hat noch kein aktives Fahrzeug. Aktivieren Sie eines unter <b>Einstellungen → Ihre Foodtrucks</b>, dann richtet sich dieses Gerät automatisch ein – hier ist nichts weiter zu tun.",
+    "goToVans": "Zu Einstellungen → Ihre Foodtrucks",
+    "title": "Dieses Gerät einrichten",
+    "body": "Einmalige Einrichtung für <b>dieses Gerät</b>: welcher Bildschirm sich öffnet und welches Fahrzeug es bedient. Gilt nur für dieses Gerät – andere Geräte werden separat eingerichtet, und Sie können das später im Profilmenü → „Dieses Gerät“ ändern.",
+    "whichScreen": "Welcher Bildschirm soll sich auf diesem Gerät öffnen?",
+    "dashboard": "Dashboard",
+    "kds": "KDS",
+    "whichVan": "Zu welchem Fahrzeug gehört dieses Gerät?",
+    "selectVan": "Fahrzeug auswählen…",
+    "saving": "Wird gespeichert…",
+    "tryAgain": "Erneut versuchen",
+    "continue": "Weiter"
+  },
+  "device": {
+    "title": "Dieses Gerät",
+    "viewing": "Sie sehen: <b>{truck}</b>",
+    "viewingVan": "Sie sehen: <b>{truck}</b> – <b>{van}</b>",
+    "only": "Nur dieses Gerät – andere Geräte werden separat eingerichtet. (ID: {id}…)",
+    "truck": "Foodtruck",
+    "van": "Fahrzeug",
+    "defaultScreen": "Startbildschirm",
+    "orderNotifications": "Bestellbenachrichtigungen",
+    "patchFailed": "{setting, select, van {Fahrzeug} defaultScreen {Startbildschirm} other {Bestellbenachrichtigungen}} nicht gespeichert. {reason}",
+    "requireBiometric": "Zum Öffnen Fingerabdruck oder Gesichtserkennung verlangen",
+    "pinTitle": "Backup-PIN festlegen (4–6 Ziffern)",
+    "pinHelp": "Ihr Zugang, falls Fingerabdruck oder Gesichtserkennung nicht funktionieren – es ist die einzige Alternative, also vergessen Sie sie nicht (eine vergessene PIN bedeutet, dass Sie die App neu installieren müssen). Funktioniert offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN bestätigen",
+    "pinTooShort": "Verwenden Sie mindestens 4 Ziffern.",
+    "pinMismatch": "Die PINs stimmen nicht überein.",
+    "setPin": "PIN festlegen & aktivieren",
+    "cancel": "Abbrechen",
+    "noBiometric": "Auf diesem Gerät sind weder Fingerabdruck noch Gesichtserkennung eingerichtet – richten Sie eines davon in den Geräteeinstellungen ein. Ihre Backup-PIN funktioniert weiterhin.",
+    "footer": "Diese Einstellungen gelten nur für dieses Gerät – andere Geräte werden separat konfiguriert."
+  },
+  "appLock": {
+    "unlockReason": "HatchGrab entsperren",
+    "usePasscode": "Code verwenden",
+    "cancel": "Abbrechen",
+    "confirmEnable": "Bestätigen, um die App-Sperre zu aktivieren"
+  },
+  "channel": {
+    "ordersName": "Neue Bestellungen",
+    "ordersDescription": "Hinweise, wenn eine Bestellung bestätigt werden muss."
+  },
+  "localNotify": {
+    "newOrderTitle": "Neue Bestellung",
+    "orderReceived": "Bestellung {number} eingegangen",
+    "newOrders": "{n, plural, one {Sie haben eine neue Bestellung} other {Sie haben {count} neue Bestellungen}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Bestellungen pausiert",
+    "pausedBody": "Sie sind offline – Kundenbestellungen sind pausiert.",
+    "offlineTitle": "Sie sind offline",
+    "offlineBody": "Dieses Gerät hat keine Verbindung mehr."
+  }
+}

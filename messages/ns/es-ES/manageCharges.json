@@ -1,0 +1,30 @@
+{
+  "heading": "Impuestos, propinas y cargos",
+  "rate": {
+    "label": "Tipo de impuesto",
+    "hint": "El tipo que aplicas a cada pedido. Los clientes lo ven sumado al pagar, en los tickets y en las comandas.",
+    "regionDefault": "Déjalo vacío para aplicar {label} al {rate} %, el tipo de la comida preparada ({region})."
+  },
+  "included": {
+    "label": "{label} incluido en tus precios",
+    "hint": "Tus precios ya incluyen el {label}. Este tipo solo indica qué parte de cada precio es {label}, en los tickets y en las comandas: no se suma nada al pagar.",
+    "default": "Déjalo vacío para usar el {rate} %, el tipo de {label} de la comida caliente para llevar ({country})."
+  },
+  "tips": {
+    "label": "Propinas",
+    "hint": "Los clientes que pagan online con tarjeta pueden añadir propina. Es toda para ti.",
+    "choices": "Opciones que ven los clientes:",
+    "chip": "{rate} %",
+    "other": "Otro importe"
+  },
+  "fee": {
+    "label": "Cargo por servicio online",
+    "hint": "Solo se añade a los pedidos online. Nunca a los pedidos con Pago al recoger ni a los pedidos en ventanilla. Te lo quedas tú.",
+    "pctAria": "Porcentaje del cargo por servicio",
+    "fixedAria": "Importe fijo del cargo por servicio",
+    "max": "Máximo que puedes cobrar: {max}",
+    "example": "Los clientes lo ven antes de pagar, en una sola línea: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab añade un cargo por servicio de {fee} a los pedidos online de tus clientes. No lo pagas tú y no puedes cambiarlo."
+  },
+  "saveFailed": "No se ha podido guardar. Inténtalo de nuevo."
+}

@@ -1,0 +1,9 @@
+{
+  "subject": "Din HatchGrab-demo – her er dit link tilbage",
+  "heading": "Din demo er gemt",
+  "intro": "Her er dit link tilbage til demoen med dit menukort i. Intet login nødvendigt – tryk bare på det.",
+  "button": "Åbn min demo",
+  "freshDay": "Hver gang du kommer tilbage, sætter vi en ny salgsdag op, så der er noget at lege med.",
+  "deletion": "Det er en demo, så vi gemmer den ikke for evigt – vi sletter den og menukortet den\n                <b>{date}</b> (om {days, plural, one {# dag} other {# dage}}). Hvis du tilmelder dig inden\n                da, følger dit menukort med.",
+  "notSent": "Gemt, men vi kunne ikke sende e-mailen lige nu."
+}

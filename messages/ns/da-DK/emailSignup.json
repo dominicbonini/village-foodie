@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hej {name},} other {Hej,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Stifter, HatchGrab",
+  "verify": {
+    "subject": "Bekræft din e-mailadresse",
+    "thanks": "{hasTruck, select, yes {Tak, fordi du sætter {truck} op på HatchGrab.} other {Tak, fordi du sætter din foodtruck op på HatchGrab.}}",
+    "button": "Bekræft min e-mailadresse",
+    "buttonText": "Bekræft min e-mailadresse: {url}",
+    "why": "Det er den adresse, du logger ind med, og hvor ordrebeskeder sendes hen – så det er en god idé at gøre det nu.",
+    "next": "Når den er bekræftet, sender jeg dig alt, hvad du skal bruge for at komme i gang.",
+    "carryOn": "Du kan fortsætte med opsætningen imens.",
+    "stuck": "Sidder du fast? Svar bare på denne mail – jeg besvarer dem selv.",
+    "fallbackLink": "Hvis knappen ikke virker, så indsæt dette: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Velkommen til HatchGrab, {name}} other {Velkommen til HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Jeg er virkelig glad for at byde {truck} velkommen til HatchGrab.} other {Jeg er virkelig glad for at byde din foodtruck velkommen til HatchGrab.}}",
+    "trial": "{months, plural, one {Din gratis prøveperiode på en måned er begyndt – alle funktioner er låst op.} other {Din gratis prøveperiode på # måneder er begyndt – alle funktioner er låst op.}}",
+    "setup": "Hvis du ikke allerede har gjort det, er opsætningen ligetil og tager omkring femten minutter.",
+    "button": "Åbn din oversigt",
+    "bookmark": "Værd at gemme som bogmærke. Det virker på alle enheder.",
+    "stuck": "Svar bare på denne mail, hvis du sidder fast – jeg besvarer dem selv.",
+    "lookingForward": "{hasTruck, select, yes {Jeg glæder mig til at se {truck} i gang med at sælge.} other {Jeg glæder mig til at se din foodtruck i gang med at sælge.}}"
+  }
+}

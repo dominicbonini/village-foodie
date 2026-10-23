@@ -1,0 +1,28 @@
+{
+  "notAvailable": "Inte tillgängligt i demon",
+  "demoMode": "DEMOLÄGE",
+  "loopLands": "Precis så kommer en riktig beställning in",
+  "showMe": "Visa mig",
+  "noCard": "{sub} Inget kort behövs.",
+  "notYet": "Inte än",
+  "cashAndCollected": "Kontant & hämtad",
+  "logoPlaceholder": "Din logga här",
+  "welcomeTitle": "{sample, select, yes {Här är en exempeldemo} other {Här är din demo}}",
+  "welcomeIntro": "{sample, select, yes {Det här är en <b>exempelmeny</b> så att du ser hur allt fungerar — ladda upp din egen när du vill för att göra den till din.} other {Det här är din egen meny och profil, på en riktig beställningstavla.}} Beställningarna som redan finns där är exempel, så att du ser hur det ser ut när det är fullt upp.",
+  "twoThings": "Två saker att testa:",
+  "hitButton": "Tryck på <b>{button}</b> på en beställning",
+  "scanQr": "Skanna <b>QR-koden</b> — eller tryck på länken — och beställ som kund, och se sedan beställningen komma in",
+  "qrAlt": "QR-kod till din beställningssida för kunder",
+  "openHere": "Eller öppna den på den här enheten",
+  "copyLink": "Kopiera länk",
+  "copyDescribedAs": "beställningslänk",
+  "noLinkTitle": "Din beställningslänk för kunder",
+  "noLinkBody": "Länken till din beställningssida finns i menyn uppe till höger.",
+  "asLive": "Beställnings- och köksflödet fungerar precis som på riktigt.",
+  "startExploring": "Börja utforska",
+  "signupOffer": {
+    "heading": "Registrera dig för din gratismånad nu",
+    "sub": "Klockan börjar inte ticka förrän du bestämmer dig för att gå live."
+  },
+  "cashIcon": "💵"
+}

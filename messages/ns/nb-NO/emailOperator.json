@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Ny bestilling #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Ny bestilling mottatt",
+    "from": "<b>Bestilling #{id}</b> fra <b>{name}</b>",
+    "collection": "Henting: {time}",
+    "asap": "Ingen bestemt tid — snarest",
+    "total": "Totalt",
+    "notes": "<b>Notater:</b> {notes}",
+    "autoConfirmed": "Automatisk bekreftet — du trenger ikke gjøre noe.",
+    "confirmPrompt": "Logg inn på HatchGrab-oversikten din for å bekrefte eller avvise denne bestillingen.",
+    "text": "Ny bestilling #{id} fra {name}{withSlot, select, yes { til {slot}} other {}}{withVenue, select, yes { på {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Totalt {total}.{withNotes, select, yes { Notater: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Nye arrangementer funnet for {truck} — se over",
+    "hi": "Hei!",
+    "found": "Vi fant <b>{n, plural, one {{count} nytt arrangement} other {{count} nye arrangementer}}</b> i kalenderen din som du må godkjenne før kundene kan se dem.",
+    "listHeading": "Arrangementer vi fant:",
+    "approve": "Når du har godkjent dem i Kalender-fanen, blir de synlige på kartet, og bestillingssiden din er klar til å ta imot forhåndsbestillinger.",
+    "cta": "Se over kalenderen din →",
+    "signoff": "— HatchGrab-teamet · hatchgrab.com",
+    "unknownVenue": "Ukjent sted",
+    "text": "Hei!\n\nVi fant {n, plural, one {{count} nytt arrangement} other {{count} nye arrangementer}} i kalenderen din som du må godkjenne:\n\n{list}\n\nSe over dem her: {url}\n\nNår du har godkjent dem, blir de synlige på kartet.\n\n— HatchGrab-teamet"
+  }
+}

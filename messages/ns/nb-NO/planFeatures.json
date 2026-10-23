@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Oppføring på oppdagelseskartet"
+    },
+    "web_dashboard": {
+      "name": "Nettbasert oversikt på alle enheter"
+    },
+    "qr_code": {
+      "name": "QR-kode"
+    },
+    "schedule_import": {
+      "name": "Automatisk import av kalender"
+    },
+    "meal_deals_upsells": {
+      "name": "Måltider og mersalg"
+    },
+    "walkup_orders": {
+      "name": "Håndtering av bestillinger ved bilen"
+    },
+    "sold_out_toggle": {
+      "name": "Merk som utsolgt med ett trykk"
+    },
+    "kitchen_app": {
+      "name": "Kjøkkenapp for iPhone, iPad og Android"
+    },
+    "offline_protection": {
+      "name": "Beskyttelse av bestillinger uten nett"
+    },
+    "online_payments": {
+      "name": "Nettbetaling"
+    },
+    "advance_preordering": {
+      "name": "Forhåndsbestilling fram i tid"
+    },
+    "preorder_deadline": {
+      "name": "Frist for forhåndsbestilling"
+    },
+    "time_slot_selection": {
+      "name": "Kunden velger tidsluke"
+    },
+    "kitchen_capacity": {
+      "name": "Styring av kjøkkenkapasitet"
+    },
+    "stock_countdown": {
+      "name": "Automatisk lagernedtelling"
+    },
+    "auto_accept": {
+      "name": "Automatisk godkjenning av nettbestillinger"
+    },
+    "branded_qr_code": {
+      "name": "QR-kode med egen logo"
+    },
+    "private_events": {
+      "name": "Private arrangementer"
+    },
+    "social_media_posts": {
+      "name": "Innlegg i sosiale medier"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatiske svar på WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatiske svar på Messenger og Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Ta betalt med telefonen"
+    },
+    "advanced_reporting": {
+      "name": "Avansert rapportering"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-varsler om bestillinger"
+    },
+    "multi_device_kitchen": {
+      "name": "Kjøkkensynkronisering på flere enheter"
+    },
+    "multi_user_access": {
+      "name": "Tilgang for flere brukere"
+    },
+    "embed_schedule": {
+      "name": "Kalenderside på din egen nettside"
+    },
+    "event_types": {
+      "name": "Egne arrangementstyper og arrangementspriser"
+    },
+    "buzzer_tracking": {
+      "name": "Sporing av personsøkere"
+    },
+    "ticket_printing": {
+      "name": "Utskrift av kjøkkenbonger"
+    },
+    "customer_display": {
+      "name": "Kundeskjerm"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitale stempelkort"
+    }
+  },
+  "cardRegionOnline": "vanlige {region}",
+  "cardRegion": {
+    "UKcards": "britiske kort",
+    "EEAcards": "kort fra EØS",
+    "UScards": "amerikanske kort",
+    "Australiancards": "australske kort",
+    "NewZealandcards": "newzealandske kort",
+    "Canadiancards": "kanadiske kort",
+    "Swisscards": "sveitsiske kort"
+  },
+  "perMonth": {
+    "mo": "{amount}/mnd.",
+    "month": "{amount}/måned"
+  },
+  "priceWord": {
+    "free": "Gratis",
+    "freeTrial": "Gratis prøveperiode",
+    "lifetime": "Livstid",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Betal ved henting",
+    "unlimited": "Ubegrenset",
+    "none": "—",
+    "masked": "Avklares"
+  },
+  "cell": {
+    "included": "Inkludert"
+  }
+}

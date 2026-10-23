@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "La kundene avbestille",
+    "sentence": "Kundene kan avbestille inntil <select></select> før hentetiden"
+  },
+  "autoAccept": {
+    "label": "Godkjenn bestillinger automatisk",
+    "help": "Bestillinger bekreftes automatisk. Hvis ønsket tidsluke er full, flyttes bestillingen til neste ledige tidsluke. Bekrefter bare når det er kapasitet. Bestillinger med kommentar fra kunden (f.eks. en allergi) må fortsatt bekreftes."
+  },
+  "orderReady": {
+    "label": "Klar-steg",
+    "help": "Vis en «Merk som klar»-knapp på bestillingsskjermen. Kjøkkenskjermer stilles inn for seg, på hver enhet. Kundene får e-post hver gang en bestilling merkes som klar. Gjelder alle arrangementer – du kan fortsatt slå det på eller av for ett arrangement i oversikten for arrangementet."
+  },
+  "buzzers": {
+    "label": "Deler du ut personsøkere til henting?",
+    "help": "Noter hvilken personsøker hver kunde fikk, så du vet hvem du skal se etter når maten er klar.",
+    "countLabel": "Hvor mange personsøkere har du?"
+  }
+}

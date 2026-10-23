@@ -1,0 +1,12 @@
+{
+  "homeLabel": "Home di HatchGrab",
+  "cta": "Carica il mio menu →",
+  "ctaShort": "Carica il menu",
+  "features": "Funzioni",
+  "pricing": "Prezzi",
+  "logIn": "Accedi",
+  "country": {
+    "button": "Paese: {name}. Cambia paese",
+    "menu": "Paese"
+  }
+}

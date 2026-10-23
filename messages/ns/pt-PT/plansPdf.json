@@ -1,0 +1,9 @@
+{
+  "title": "Planos e funcionalidades",
+  "generated": "Gerado em {date}",
+  "allowanceHeading": "Encomendas online incluídas",
+  "smallPrint": "Letra pequena",
+  "priceNoteMasked": "Os preços indicados como «A confirmar» ainda não foram publicados.",
+  "omitNote": "Os preços não foram incluídos neste documento de propósito.",
+  "terms": "Os valores são os termos publicados dos planos à data acima e podem mudar. As taxas de processamento de cartões são cobradas pela própria Stripe, não pela HatchGrab. Este documento é um resumo, não um contrato."
+}

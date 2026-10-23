@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Presenza sulla mappa pubblica"
+    },
+    "web_dashboard": {
+      "name": "Dashboard web universale"
+    },
+    "qr_code": {
+      "name": "QR code"
+    },
+    "schedule_import": {
+      "name": "Importazione automatica del calendario"
+    },
+    "meal_deals_upsells": {
+      "name": "Menu combo e upselling"
+    },
+    "walkup_orders": {
+      "name": "Gestione degli ordini al banco"
+    },
+    "sold_out_toggle": {
+      "name": "Segna come esaurito con un tocco"
+    },
+    "kitchen_app": {
+      "name": "App cucina per iPhone, iPad e Android"
+    },
+    "offline_protection": {
+      "name": "Protezione degli ordini offline"
+    },
+    "online_payments": {
+      "name": "Pagamenti online"
+    },
+    "advance_preordering": {
+      "name": "Preordini in anticipo"
+    },
+    "preorder_deadline": {
+      "name": "Termine per i preordini"
+    },
+    "time_slot_selection": {
+      "name": "Scelta della fascia oraria di ritiro da parte del cliente"
+    },
+    "kitchen_capacity": {
+      "name": "Capacità della cucina: ordini massimi per fascia oraria"
+    },
+    "stock_countdown": {
+      "name": "Conteggio automatico delle scorte"
+    },
+    "auto_accept": {
+      "name": "Accettazione automatica degli ordini online"
+    },
+    "branded_qr_code": {
+      "name": "QR code con il tuo marchio"
+    },
+    "private_events": {
+      "name": "Eventi privati"
+    },
+    "social_media_posts": {
+      "name": "Post per i social"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Risposte automatiche WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Risposte automatiche Messenger e Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Incassa con il tuo telefono"
+    },
+    "advanced_reporting": {
+      "name": "Report avanzati"
+    },
+    "sms_order_alerts": {
+      "name": "Avvisi d’ordine via SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Sincronizzazione della cucina su più dispositivi"
+    },
+    "multi_user_access": {
+      "name": "Accesso multiutente"
+    },
+    "embed_schedule": {
+      "name": "Pagina del calendario sul tuo sito web"
+    },
+    "event_types": {
+      "name": "Tipi di evento e prezzi per evento personalizzati"
+    },
+    "buzzer_tracking": {
+      "name": "Gestione dei cercapersone"
+    },
+    "ticket_printing": {
+      "name": "Stampa delle comande"
+    },
+    "customer_display": {
+      "name": "Schermo per i clienti"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Carte fedeltà digitali"
+    }
+  },
+  "cardRegionOnline": "{region} standard",
+  "cardRegion": {
+    "UKcards": "carte del Regno Unito",
+    "EEAcards": "carte dello SEE",
+    "UScards": "carte statunitensi",
+    "Australiancards": "carte australiane",
+    "NewZealandcards": "carte neozelandesi",
+    "Canadiancards": "carte canadesi",
+    "Swisscards": "carte svizzere"
+  },
+  "perMonth": {
+    "mo": "{amount}/mese",
+    "month": "{amount}/mese"
+  },
+  "priceWord": {
+    "free": "Gratis",
+    "freeTrial": "Prova gratuita",
+    "lifetime": "A vita",
+    "zeroPercent": "0%",
+    "payAtHatch": "Paga al ritiro",
+    "unlimited": "Illimitato",
+    "none": "—",
+    "masked": "Da definire"
+  },
+  "cell": {
+    "included": "Incluso"
+  }
+}

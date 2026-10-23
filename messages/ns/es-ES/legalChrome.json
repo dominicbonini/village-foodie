@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "privacyTitle": "Política de privacidad — HatchGrab",
+    "privacyDescription": "Cómo HatchGrab Ltd recoge y usa los datos personales.",
+    "termsTitle": "Condiciones del servicio — HatchGrab",
+    "termsDescription": "Las condiciones de uso de HatchGrab.",
+    "countryTermsTitle": "Condiciones por país — HatchGrab",
+    "countryTermsDescription": "Las normas adicionales que se aplican a HatchGrab en algunos países."
+  },
+  "homeLabel": "Inicio de HatchGrab",
+  "privacy": "Privacidad",
+  "terms": "Condiciones",
+  "countryTerms": "Condiciones por país",
+  "contact": "Contacto",
+  "lastUpdated": "Última actualización: {date}",
+  "questions": "¿Tienes preguntas? <link>Escríbenos</link> — somos personas de verdad."
+}

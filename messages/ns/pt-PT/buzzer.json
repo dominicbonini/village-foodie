@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "O pager <b>{number}</b> está com a <b>encomenda #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Passá-lo para <b>{hasTarget, select, yes {a encomenda #{targetId}} other {esta encomenda}}</b>?",
+  "cancel": "Cancelar",
+  "take": "Retirar o pager {number}",
+  "titleBlocking": "Pager para a encomenda #{id}?",
+  "title": "Escolher um pager",
+  "subtitle": "{hasTarget, select, yes {Encomenda #{id}} other {Esta encomenda}}{hasCurrent, select, yes { · pager atual: {current}} other {}}",
+  "allTaken": "{n, plural, one {O pager está em uso. Toque nele para o retirar de outra encomenda.} other {Os {count} pagers estão todos em uso. Toque num para o retirar de outra encomenda.}}",
+  "thisOrder": "Esta encomenda",
+  "noBuzzer": "Sem pager",
+  "done": "Concluído",
+  "lostTitle": "A encomenda #{id} não tem pager",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}outra encomenda ficou com o mesmo pager enquanto estava offline. Dê-lhe um pager diferente.",
+  "dismiss": "Ignorar",
+  "assign": "Atribuir"
+}

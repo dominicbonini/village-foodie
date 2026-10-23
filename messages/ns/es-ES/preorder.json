@@ -1,0 +1,6 @@
+{
+  "closedPending": "Pedidos anticipados cerrados. Pendiente de aprobación por la cocina.",
+  "deadline": "Pedidos anticipados hasta las {time}",
+  "deadlineOnDay": "Pedidos anticipados hasta las {time}, {day}",
+  "opens": "Apertura de pedidos anticipados: {day}"
+}

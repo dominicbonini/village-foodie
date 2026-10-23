@@ -1,0 +1,83 @@
+{
+  "title": "Eventtypen",
+  "newTypeButton": "+ Neuer Eventtyp",
+  "close": "Schließen",
+  "loading": "Wird geladen…",
+  "missingTitle": "Eventtypen sind noch nicht aktiviert.",
+  "missingBody": "Das Datenbank-Update für diese Funktion wurde noch nicht eingespielt. Es ist nichts kaputt – jedes Event nutzt Ihre normale Einrichtung.",
+  "column": "Spalte",
+  "vanGone": "Diesen Foodtruck gibt es nicht mehr.",
+  "typeGone": "Diesen Typ gibt es nicht mehr.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Mehr für {name}",
+  "rename": "Umbenennen",
+  "moveLeft": "Nach links",
+  "moveRight": "Nach rechts",
+  "delete": "Löschen",
+  "sections": {
+    "vans": "FOODTRUCKS",
+    "prices": "PREISE",
+    "itemPrices": "ARTIKELPREISE",
+    "service": "SERVICE"
+  },
+  "labelFor": "{label} für {name}",
+  "intervalEvery": "Alle {mins} Min.",
+  "noTypes": "Sie haben noch keine Eventtypen, daher nutzt jedes Event Ihre normale Einrichtung.",
+  "renameTitle": "Diesen Typ umbenennen",
+  "name": "Name",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "copyVanOne": "Einstellungen von Foodtruck 1 übernehmen",
+  "thisType": "dieser Typ",
+  "matchTitle": "„{name}“ an Standard angleichen?",
+  "matchKeeps": "Alles, was Sie im Dashboard eines einzelnen Events geändert haben, bleibt erhalten, und die Preise dieses Typs werden nicht geändert.",
+  "matchWillUse": "Verwendet wird dann: {summary}",
+  "deleteTitle": "„{name}“ löschen?",
+  "deleteBody": "{n, plural, =0 {Kein anstehendes Event verwendet „{name}“.} one {{count} anstehendes Event verwendet „{name}“. Es wird auf Standard zurückgesetzt.} other {{count} anstehende Events verwenden „{name}“. Sie werden auf Standard zurückgesetzt.}} Alles, was Sie an einem einzelnen Event geändert haben, bleibt erhalten.",
+  "keep": "Behalten",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "Vorgabe",
+    "vanSetup": "Die übliche Einrichtung dieses Foodtrucks – gilt für jedes Event ohne Typ.",
+    "standardSetup": "Ihre übliche Einrichtung – gilt für jedes Event ohne Typ.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} anstehendes Event} other {{upcomingCount} anstehende Events}} · {changed, plural, =0 {noch nichts geändert} one {{changedCount} von {total} geändert} other {{changedCount} von {total} geändert}}",
+    "noMenuItems": "Noch keine Artikel auf der Speisekarte – fügen Sie sie unter Speisekarte › Artikel hinzu."
+  },
+  "newType": {
+    "title": "Neuer Eventtyp",
+    "namePlaceholder": "z. B. Schulfest",
+    "help": "Tippen Sie auf einen Namen oder geben Sie einen eigenen ein. Der Typ beginnt als Kopie von Standard; spätere Änderungen an Standard wirken sich nicht auf ihn aus. Danach können Sie alles anpassen.",
+    "create": "Erstellen",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Kneipe",
+      "market": "Markt",
+      "privateHire": "Foodtruck mieten"
+    }
+  },
+  "select": {
+    "label": "Eventtyp",
+    "usual": "{name} ist an diesem Standort üblich."
+  },
+  "summary": {
+    "normalSetup": "Ihre normale Einrichtung",
+    "sameAsStandard": "Wie Standard",
+    "buzzersOn": "Pager an",
+    "buzzersOff": "Pager aus",
+    "takeCashOn": "Barzahlung an",
+    "takeCashOff": "Barzahlung aus",
+    "markReadyOn": "Schritt „Als fertig markieren“ an",
+    "markReadyOff": "Schritt „Als fertig markieren“ aus",
+    "collectionEvery": "Abholung alle {mins} Min.",
+    "offlineOff": "Offline-Schutz aus",
+    "offlineKeepTaking": "offline: weiter Bestellungen annehmen",
+    "offlinePause": "offline: Bestellungen pausieren"
+  },
+  "errors": {
+    "somethingWentWrong": "Etwas ist schiefgelaufen",
+    "couldNotLoad": "Konnte nicht geladen werden",
+    "couldNotSave": "Konnte nicht gespeichert werden",
+    "noVans": "Hier gibt es keine Foodtrucks, die geändert werden können."
+  }
+}

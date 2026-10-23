@@ -1,0 +1,9 @@
+{
+  "subject": "La tua demo HatchGrab — ecco il link per tornarci",
+  "heading": "La tua demo è salvata",
+  "intro": "Ecco il link per tornare alla demo con il tuo menu. Nessun accesso richiesto — basta toccarlo.",
+  "button": "Apri la mia demo",
+  "freshDay": "Ogni volta che torni, prepariamo una nuova giornata di lavoro, così hai sempre qualcosa da provare.",
+  "deletion": "Questa è una demo, quindi non la conserviamo per sempre — la elimineremo insieme al menu il\n                <b>{date}</b> (tra {days, plural, one {# giorno} other {# giorni}}). Se ti registri prima\n                di allora, il tuo menu viene con te.",
+  "notSent": "Salvata, ma in questo momento non siamo riusciti a inviare l’email."
+}

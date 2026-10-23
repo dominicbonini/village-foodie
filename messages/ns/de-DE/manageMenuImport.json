@@ -1,0 +1,189 @@
+{
+  "cancel": "Abbrechen",
+  "back": "← Zurück",
+  "backPlain": "Zurück",
+  "next": "Weiter →",
+  "continue": "Fortfahren →",
+  "closeImport": "Import schließen",
+  "tryAgain": "Erneut versuchen",
+  "catError": {
+    "empty": "Geben Sie der Kategorie einen Namen.",
+    "tooLong": "Dieser Name ist zu lang.",
+    "clash": "Es gibt bereits eine Kategorie namens „{name}“."
+  },
+  "steps": {
+    "details": "Ihre Angaben",
+    "menu": "Speisekarte",
+    "extras": "Extras",
+    "allergens": "Allergene",
+    "kitchen": "Küche",
+    "schedule": "Termine",
+    "settings": "Einstellungen"
+  },
+  "toast": {
+    "demoGone": "Ihre Demo-Speisekarte ist nicht mehr verfügbar – bitte laden Sie sie erneut hoch, um fortzufahren.",
+    "eventsSaveFailed": "Events konnten nicht gespeichert werden",
+    "cardReadFailed": "Die Allergenkarte konnte nicht gelesen werden – versuchen Sie es erneut",
+    "imageReadFailed": "Dieses Bild konnte nicht gelesen werden – geben Sie Ihre Allergenkarte stattdessen ein oder fügen Sie sie ein",
+    "commitFailedDetail": "Die Speisekarte konnte nicht vollständig gespeichert werden: {error}. Einige Artikel wurden möglicherweise schon gespeichert – prüfen Sie Ihre Speisekarte, bevor Sie es erneut versuchen.",
+    "commitFailed": "Die Speisekarte konnte nicht vollständig gespeichert werden. Einige Artikel wurden möglicherweise schon gespeichert – prüfen Sie Ihre Speisekarte, bevor Sie es erneut versuchen.",
+    "finishFailed": "Die Einrichtung konnte nicht als abgeschlossen markiert werden – Sie können trotzdem fortfahren.",
+    "scheduleReadFailed": "Diese Termine konnten nicht gelesen werden – versuchen Sie es mit einem schärferen Foto oder geben Sie Ihre Termine selbst ein.",
+    "cardRead": "Allergenkarte gelesen – {matched} zugeordnet, {pending, plural, one {# muss} other {# müssen}} noch von Ihnen zugeordnet werden"
+  },
+  "settingsReview": {
+    "anchorOrder": "Einstellungen → Bestelleinstellungen",
+    "anchorDisplay": "Einstellungen → Ihre Foodtrucks → Anzeigeeinstellungen",
+    "mins15": "15 Minuten",
+    "mins30": "30 Minuten",
+    "mins60": "60 Minuten",
+    "hours2": "2 Stunden",
+    "title": "Ein paar Einstellungen zum Prüfen",
+    "loading": "Ihre aktuellen Einstellungen werden geladen…",
+    "looksGood": "Sieht gut aus →",
+    "secondaryAria": "{label} – {secondary}",
+    "saveFailed": "Das konnte nicht gespeichert werden – Sie können es in den Einstellungen ändern.",
+    "anchorContact": "Einstellungen → Kontaktdaten",
+    "intro": "Wir haben einige gängige Einstellungen für Sie vorgenommen. Ein kurzer Blick lohnt sich – Sie können alles später in den Einstellungen ändern.",
+    "cancelAria": "Wie lange vor der Abholung Kunden stornieren können"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Prüfen Sie sie, bevor Sie live gehen. Bis dahin sind Artikel als „Allergene nicht festgelegt“ markiert.",
+    "body": "Prüfen Sie sie in den Einstellungen, bevor Sie live gehen. Bis dahin sind Artikel als „Allergene nicht festgelegt“ markiert.",
+    "title": "⚠ Allergene & Ernährungsangaben sind noch nicht festgelegt"
+  },
+  "welcome": {
+    "title": "Willkommen bei HatchGrab",
+    "yourTruck": "Ihr Foodtruck",
+    "stop": "Sie können jederzeit unterbrechen und später weitermachen.",
+    "body": "{name} ist eingerichtet. Als Nächstes fügen wir Ihre Speisekarte hinzu, danach Ihr erstes Event.",
+    "go": "Los geht’s"
+  },
+  "offer": {
+    "title": "Die Speisekarte aus Ihrer Demo verwenden?",
+    "use": "Diese Speisekarte verwenden",
+    "upload": "Andere Speisekarte hochladen",
+    "body": "Wir haben die von Ihnen hochgeladene Speisekarte gespeichert – {count, plural, one {# Artikel} other {# Artikel}}. Verwenden Sie sie als Ausgangspunkt oder laden Sie eine andere hoch."
+  },
+  "upload": {
+    "title": "Speisekarte importieren",
+    "body": "Laden Sie ein Foto Ihrer Speisekarten-Tafel, einen Screenshot oder ein PDF hoch oder fügen Sie Ihre Speisekarte als Text ein. Unsere KI liest sie aus und erstellt Ihre digitale Speisekarte – Sie prüfen alles, bevor es gespeichert wird.",
+    "confirmCancel": "Diesen Import abbrechen? Ihre Prüfung dieser Speisekarte wird verworfen.",
+    "process": "Speisekarte verarbeiten",
+    "later": "Das mache ich später"
+  },
+  "processing": {
+    "title": "Ihre Speisekarte wird analysiert",
+    "body": "Die KI liest Ihre Artikel und ordnet sie Kategorien zu…"
+  },
+  "review": {
+    "title": "Importierte Speisekarte prüfen",
+    "editLaterSetup": "Namen, Preise, Extras, Allergene und Ernährungsangaben können Sie später jederzeit bearbeiten.",
+    "editLater": "Namen, Preise, Extras, Allergene und Ernährungsangaben können Sie jederzeit in den Einstellungen bearbeiten.",
+    "noPrice": "{count, plural, one {Bei # Artikel} other {Bei # Artikeln}} konnten wir keinen Preis lesen",
+    "renameCategoryAria": "Kategorie {name} umbenennen",
+    "renameAria": "{name} umbenennen",
+    "renameTitle": "Kategorie umbenennen",
+    "deleteAria": "{name} löschen",
+    "deleteTitle": "Kategorie löschen",
+    "lastCategory": "Ihre Speisekarte braucht mindestens eine Kategorie",
+    "countOf": "{kept} von {total}",
+    "existing": "vorhanden",
+    "deleteEmptyTitle": "„{name}“ löschen?",
+    "deleteEmptyBody": "Sie enthält keine Artikel, es geht also nichts verloren.",
+    "delete": "Löschen",
+    "moveTitle": "{count, plural, one {Wohin soll # Artikel verschoben werden?} other {Wohin sollen # Artikel verschoben werden?}}",
+    "moveBody": "Wenn Sie „{name}“ löschen, müssen die Gerichte darin woanders hin – Artikel ohne Kategorie werden nicht importiert.",
+    "moveAria": "Artikel aus {name} verschieben nach",
+    "chooseCategory": "Kategorie wählen…",
+    "moveDelete": "Verschieben & löschen",
+    "itemName": "Artikelname",
+    "free": "kostenlos?",
+    "freeOn": "Kostenlos ✕",
+    "nameFirst": "Benennen Sie den neuen Artikel, bevor Sie einen weiteren hinzufügen",
+    "addItem": "+ Artikel hinzufügen",
+    "categoryName": "Kategoriename",
+    "newCategoryAria": "Name der neuen Kategorie",
+    "addCategory": "+ Kategorie hinzufügen",
+    "ready": "{count, plural, one {# Artikel ist} other {# Artikel sind}} bereit zum Hinzufügen. Entfernen Sie den Haken bei allem, was Sie nicht möchten.",
+    "noPriceBody": "Legen Sie für jeden einen Preis fest oder markieren Sie ihn als kostenlos – sonst ginge er für {zero} online. Sie können erst fortfahren, wenn das erledigt ist.",
+    "incomplete": "Geben Sie einen Namen ein, um diesen Artikel hinzuzufügen – leere Zeilen werden nicht importiert."
+  },
+  "extras": {
+    "introSetup": "Manche Gerichte können als <b>ein anpassbarer Artikel</b> eingerichtet oder als <b>separate Gerichte</b> beibehalten werden. Wählen Sie, wie jedes erscheinen soll. Sie können das später ändern.",
+    "intro": "Manche Gerichte können als <b>ein anpassbarer Artikel</b> eingerichtet oder als <b>separate Gerichte</b> beibehalten werden. Wählen Sie, wie jedes erscheinen soll. Sie können das später in den Einstellungen ändern.",
+    "none": "Keine gruppierbaren Gerichte – jeder Artikel ist ein eigenständiges Gericht.",
+    "axisChoice": "· Auswahl: {axis}",
+    "grouped": "Gruppiert · ein Artikel, Kunde wählt",
+    "separate": "Separate Artikel auf der Speisekarte"
+  },
+  "allergens": {
+    "title": "Allergene",
+    "detected": "Wir haben Allergene in Ihrer Speisekarte erkannt. Wählen Sie unten, wie sie angezeigt werden sollen.",
+    "howShow": "Wie möchten Sie Kunden die Allergene anzeigen?",
+    "skip": "Allergen-Einrichtung vorerst überspringen"
+  },
+  "kitchen": {
+    "title": "Küchen-Einrichtung",
+    "intro": "Damit Kunden wissen, wie lange sie warten müssen – Sie können das später jederzeit ändern.",
+    "howWorks": "So funktioniert die Küchenkapazität",
+    "allExist": "Alle Kategorien existieren bereits – keine Zeiten festzulegen.",
+    "totalHelp": "Legen Sie eine Gesamtkapazität fest, um zu begrenzen, wie viele Artikel die Küche pro Zeitfenster annimmt. Bei ∞ lassen für kein Limit.",
+    "saveAdd": "Speichern & zur Speisekarte hinzufügen"
+  },
+  "schedule": {
+    "title": "Meine Termine hinzufügen",
+    "intro": "Wenn Ihre Termine auf Ihrer Website stehen, können wir sie automatisch aktuell halten – oder Sie tragen Ihre Termine selbst ein.",
+    "websiteTitle": "Meine Termine stehen auf meiner Website",
+    "urlPlaceholder": "https://ihr-foodtruck.de/termine",
+    "checking": "Wird geprüft…",
+    "verify": "Prüfen",
+    "checkingSite": "Ihre Website wird geprüft…",
+    "takesTime": "Das kann bis zu 2 Minuten dauern – bitte lassen Sie dieses Fenster geöffnet.",
+    "canRead": "✓ Wir können Ihre Termine lesen",
+    "ownSite": "Ihre eigene Website – keine Facebook- oder Instagram-Seite.",
+    "photoTitle": "Foto meiner Termine hochladen",
+    "dragChoose": "Per Drag & Drop oder Antippen auswählen",
+    "imageOrPdf": "Bild oder PDF",
+    "or": "oder",
+    "pastePlaceholder": "Fügen Sie Ihre Termine hier ein…",
+    "read": "Termine auslesen",
+    "found": "{count, plural, one {# Termin gefunden – er wird} other {# Termine gefunden – sie werden}} zu Ihrem Terminplan hinzugefügt.",
+    "dateTbc": "Datum folgt",
+    "save": "{count, plural, one {# Termin} other {# Termine}} speichern",
+    "manualDesc": "Fügen Sie sie später im Tab „Termine“ hinzu – jetzt ist nichts zu tun.",
+    "manualBody": "Kein Problem. Sie können Ihre Termine jederzeit im Tab „Termine“ in Ihrem Konto hinzufügen und verwalten.",
+    "blockedDomain": "Bitte verwenden Sie die URL Ihrer Website – Facebook- und Instagram-Seiten können nicht automatisch ausgelesen werden.",
+    "saveFailed": "Wir haben Ihre Termine gelesen, konnten sie aber gerade nicht speichern – versuchen Sie es erneut.",
+    "websiteDesc": "Wir prüfen sie regelmäßig und senden Ihnen neue Termine zur Freigabe.",
+    "keepChecking": "Wir prüfen diese Seite weiterhin und senden Ihnen neue Termine zur Freigabe.",
+    "photoDesc": "Fotografieren Sie Ihre Termine oder fügen Sie sie ein – wir lesen sie ein, und Sie prüfen sie.",
+    "noneFound": "Darin konnten wir keine Termine finden – versuchen Sie es mit einem schärferen Foto oder fügen Sie selbst einen Termin hinzu.",
+    "manualTitle": "Ich trage meine Termine selbst ein",
+    "trialNotStarted": "Das Hinzufügen von Events startet Ihre kostenlose Testphase nicht – Sie wählen später, mit welchem Event sie beginnt."
+  },
+  "done": {
+    "summary": "{items, plural, one {# Artikel} other {# Artikel}} in {categories, plural, one {# Kategorie} other {# Kategorien}}.",
+    "imported": "Speisekarte importiert!",
+    "added": "Ihre Artikel wurden zur Speisekarte hinzugefügt.",
+    "duplicates": "{count, plural, one {# Duplikat} other {# Duplikate}} übersprungen",
+    "showMe": "Rundgang starten",
+    "remind": "Später erinnern",
+    "allSet": "Alles bereit!",
+    "explore": "Ich schaue mich selbst um"
+  },
+  "discard": {
+    "setupTitle": "Einrichtung später abschließen?",
+    "setupBody": "Ihr Konto und Ihr Foodtruck sind gespeichert – nichts geht verloren. Sie können Ihre Speisekarte jederzeit hinzufügen: Melden Sie sich an und tippen Sie in der Speisekarten-Ansicht auf <b>Speisekarte importieren</b>, um genau hier weiterzumachen.",
+    "keepGoing": "Weitermachen",
+    "finishLater": "Später abschließen",
+    "title": "Diesen Import verwerfen?",
+    "keepEditing": "Weiter bearbeiten",
+    "discard": "Verwerfen",
+    "body": "Ihre Änderungen werden nicht gespeichert – die importierten Artikel, Zubereitungszeiten und die Küchenkapazität werden nicht hinzugefügt."
+  },
+  "allergenCardText": {
+    "contains": "Enthält: {list}",
+    "mayContain": "Kann Spuren enthalten: {list}"
+  }
+}

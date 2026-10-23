@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "{truck} — encomendar online",
+    "orderDescription": "Encomende com antecedência ao food truck {truck} e levante a encomenda no food truck.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logótipo {truck}"
+  },
+  "shareTitle": "{truck} — agenda",
+  "shareText": "Veja onde vai estar o food truck {truck}! 🚚",
+  "linkCopied": "Link do perfil copiado para a área de transferência! 📋",
+  "facebookPage": "Página do Facebook",
+  "loadingMap": "A carregar o mapa…",
+  "view": {
+    "list": "Lista",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "Este food truck é seu?",
+  "ownThisTruckTitle": "Este food truck é seu? Clique para atualizar o seu perfil",
+  "actions": {
+    "menu": "Ementa",
+    "call": "Ligar",
+    "message": "Mensagem",
+    "share": "Partilhar",
+    "order": "Encomendar"
+  },
+  "loadingSchedule": "A carregar a agenda…",
+  "loadError": {
+    "title": "Não foi possível carregar",
+    "body": "De momento não conseguimos carregar a agenda — normalmente é uma falha breve. Tente novamente.",
+    "retry": "Tentar novamente"
+  },
+  "notFound": {
+    "title": "Food truck não encontrado",
+    "body": "Não encontrámos informações sobre este food truck. Pode ter mudado de sítio ou atualizado o perfil.",
+    "cta": "Ver todos os food trucks"
+  },
+  "noEvents": {
+    "title": "Não há eventos agendados",
+    "body": "Podem faltar-nos algumas informações sobre este food truck. É o proprietário, ou conhece a agenda dele?",
+    "cta": "Envie-nos uma mensagem para atualizar!"
+  },
+  "whereToFind": "Onde nos encontrar",
+  "missingEvent": "<strong>Falta algum evento?</strong> <br></br>Se é o proprietário deste food truck ou apenas um fã dedicado, ajude-nos a manter esta página correta! <br></br><link>Contacte-nos para acrescentar as informações em falta.</link>",
+  "weeklySchedule": "Receber a agenda semanal 🍕"
+}

@@ -1,0 +1,36 @@
+{
+  "h1": "Tutto per gestire il tuo servizio, in ogni piano.",
+  "lede": "Ordini, preordini, ordini massimi per fascia oraria e monitor cucina sono inclusi in ogni piano.{hasUpgrades, select, yes { {plans} aggiungono {features} e commissioni più basse.} other {}}",
+  "perMonth": "{price} / mese",
+  "group": {
+    "pay": "Quanto paghi",
+    "run": "Gestisci il servizio",
+    "online": "Ordini online",
+    "marketing": "Marketing e automazione"
+  },
+  "pay": {
+    "included": "Ordini online inclusi ogni mese",
+    "fee": "Commissione HatchGrab sugli ordini online con carta*",
+    "walkUp": "Ordini al banco"
+  },
+  "cell": {
+    "unlimited": "Illimitati",
+    "free": "Gratis",
+    "feeAbove": "<b>{fee}</b> oltre {included}",
+    "yes": "Incluso",
+    "none": "Non incluso",
+    "comingSoon": "In arrivo"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "post per i social",
+    "event_types": "prezzi per evento personalizzati"
+  },
+  "meta": {
+    "description": "Tutte le funzioni di HatchGrab in ogni piano, a confronto — {plans}, con commissioni e ordini inclusi.{months, plural, =0 {} one { Il tuo primo mese include tutto.} other { I tuoi primi # mesi includono tutto.}}"
+  },
+  "notes": {
+    "whatsapp": "Le risposte automatiche WhatsApp richiedono un account WhatsApp Business. Meta potrebbe addebitare alcuni messaggi; le risposte sono generate automaticamente.",
+    "printing": "La stampa delle comande richiede una stampante Bluetooth o via cavo compatibile (non inclusa)."
+  }
+}

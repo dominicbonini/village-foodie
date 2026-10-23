@@ -1,0 +1,189 @@
+{
+  "cancel": "Cancelar",
+  "back": "← Atrás",
+  "backPlain": "Atrás",
+  "next": "Siguiente →",
+  "continue": "Continuar →",
+  "closeImport": "Cerrar importación",
+  "tryAgain": "Reintentar",
+  "catError": {
+    "empty": "Ponle un nombre a la categoría.",
+    "tooLong": "Ese nombre es demasiado largo.",
+    "clash": "Ya existe una categoría llamada “{name}”."
+  },
+  "steps": {
+    "details": "Tus datos",
+    "menu": "Carta",
+    "extras": "Extras",
+    "allergens": "Alérgenos",
+    "kitchen": "Cocina",
+    "schedule": "Agenda",
+    "settings": "Ajustes"
+  },
+  "toast": {
+    "demoGone": "La carta de tu demo ya no está disponible: vuelve a subirla para continuar.",
+    "eventsSaveFailed": "No se han podido guardar los eventos",
+    "cardReadFailed": "No se ha podido leer la carta de alérgenos: inténtalo de nuevo",
+    "imageReadFailed": "No se ha podido leer esa imagen: escribe o pega tu carta de alérgenos",
+    "commitFailedDetail": "No se ha podido terminar de guardar la carta: {error}. Puede que algunos productos ya se hayan guardado; revisa tu carta antes de volver a intentarlo.",
+    "commitFailed": "No se ha podido terminar de guardar la carta. Puede que algunos productos ya se hayan guardado; revisa tu carta antes de volver a intentarlo.",
+    "finishFailed": "No se ha podido marcar la configuración como completada, pero puedes continuar.",
+    "scheduleReadFailed": "No se ha podido leer esa agenda: prueba con una foto más nítida o escribe tus fechas.",
+    "cardRead": "Carta leída: {matched} asociados; {pending, plural, one {# queda pendiente} other {# quedan pendientes}} de que lo asignes tú"
+  },
+  "settingsReview": {
+    "anchorOrder": "Ajustes → Ajustes de pedidos",
+    "anchorDisplay": "Ajustes → Tus food trucks → Ajustes de visualización",
+    "mins15": "15 minutos",
+    "mins30": "30 minutos",
+    "mins60": "60 minutos",
+    "hours2": "2 horas",
+    "title": "Algunos ajustes que revisar",
+    "loading": "Cargando tus ajustes actuales…",
+    "looksGood": "Todo bien →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "No se ha podido guardar: puedes cambiarlo en Ajustes.",
+    "anchorContact": "Ajustes → Datos de contacto",
+    "intro": "Te hemos configurado algunos ajustes habituales. Vale la pena echarles un vistazo: puedes cambiar cualquiera de ellos más adelante en Ajustes.",
+    "cancelAria": "Con cuánta antelación a la recogida pueden cancelar los clientes"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Revísalos antes de publicar tu carta. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”.",
+    "body": "Revísalos en Ajustes antes de publicar tu carta. Hasta entonces, los productos aparecen marcados como “alérgenos sin configurar”.",
+    "title": "⚠ Los alérgenos y la información dietética aún no están configurados"
+  },
+  "welcome": {
+    "title": "Te damos la bienvenida a HatchGrab",
+    "yourTruck": "Tu food truck",
+    "stop": "Puedes parar y volver cuando quieras.",
+    "body": "{name} ya está configurado. Ahora añadiremos tu carta y después tu primer evento.",
+    "go": "¡Vamos!"
+  },
+  "offer": {
+    "title": "¿Usar la carta de tu demo?",
+    "use": "Usar esta carta",
+    "upload": "Subir otra carta",
+    "body": "Hemos guardado la carta que subiste: {count, plural, one {# producto} other {# productos}}. Úsala como punto de partida o sube otra."
+  },
+  "upload": {
+    "title": "Importa tu carta",
+    "body": "Sube una foto de la pizarra de tu carta, una captura de pantalla o un PDF, o pega tu carta como texto. Nuestra IA la lee y crea tu carta digital; tú lo revisas todo antes de que se guarde.",
+    "confirmCancel": "¿Cancelar esta importación? Se descartará tu revisión de esta carta.",
+    "process": "Procesar carta",
+    "later": "Lo haré más tarde"
+  },
+  "processing": {
+    "title": "Analizando tu carta",
+    "body": "La IA está leyendo y clasificando tus productos…"
+  },
+  "review": {
+    "title": "Revisa la carta importada",
+    "editLaterSetup": "Los nombres, precios, extras, alérgenos e información dietética se pueden editar más adelante en cualquier momento.",
+    "editLater": "Los nombres, precios, extras, alérgenos e información dietética se pueden editar en cualquier momento en Ajustes.",
+    "noPrice": "{count, plural, one {# producto no tenía un precio legible} other {# productos no tenían un precio legible}}",
+    "renameCategoryAria": "Renombrar la categoría {name}",
+    "renameAria": "Renombrar {name}",
+    "renameTitle": "Renombrar categoría",
+    "deleteAria": "Eliminar {name}",
+    "deleteTitle": "Eliminar categoría",
+    "lastCategory": "Tu carta necesita al menos una categoría",
+    "countOf": "{kept} de {total}",
+    "existing": "existente",
+    "deleteEmptyTitle": "¿Eliminar “{name}”?",
+    "deleteEmptyBody": "No tiene productos, así que no se pierde nada.",
+    "delete": "Eliminar",
+    "moveTitle": "¿Adónde mover {count, plural, one {# producto} other {# productos}}?",
+    "moveBody": "Para eliminar “{name}” hay que mover sus platos a otro sitio: los productos sin categoría no se importan.",
+    "moveAria": "Mover los productos de {name} a",
+    "chooseCategory": "Elige una categoría…",
+    "moveDelete": "Mover y eliminar",
+    "itemName": "Nombre del producto",
+    "free": "¿gratis?",
+    "freeOn": "Gratis ✕",
+    "nameFirst": "Ponle nombre al nuevo producto antes de añadir otro",
+    "addItem": "+ Añadir producto",
+    "categoryName": "Nombre de la categoría",
+    "newCategoryAria": "Nombre de la nueva categoría",
+    "addCategory": "+ Añadir categoría",
+    "ready": "{count, plural, one {# producto listo} other {# productos listos}} para añadir. Desmarca los que no quieras.",
+    "noPriceBody": "Pon un precio a cada uno o márcalo como gratis; si no, se publicaría a {zero}. No puedes continuar hasta resolverlo.",
+    "incomplete": "Escribe un nombre para añadir este producto: las filas vacías no se importan."
+  },
+  "extras": {
+    "introSetup": "Algunos platos se pueden configurar como <b>un único producto personalizable</b> o mantenerse como <b>platos separados</b>. Elige cómo debe aparecer cada uno. Puedes cambiarlo más adelante.",
+    "intro": "Algunos platos se pueden configurar como <b>un único producto personalizable</b> o mantenerse como <b>platos separados</b>. Elige cómo debe aparecer cada uno. Puedes cambiarlo más adelante en Ajustes.",
+    "none": "No hay platos agrupables: cada producto es un plato independiente.",
+    "axisChoice": "· elección de {axis}",
+    "grouped": "Agrupado · un producto, el cliente elige",
+    "separate": "Productos separados en la carta"
+  },
+  "allergens": {
+    "title": "Alérgenos",
+    "detected": "Hemos detectado alérgenos en tu carta. Elige abajo cómo mostrarlos.",
+    "howShow": "¿Cómo quieres mostrar los alérgenos a los clientes?",
+    "skip": "Omitir por ahora la configuración de alérgenos"
+  },
+  "kitchen": {
+    "title": "Configuración de cocina",
+    "intro": "Ayuda a los clientes a saber cuánto tendrán que esperar; siempre puedes cambiarlo más adelante.",
+    "howWorks": "Cómo funcionan los pedidos máximos por franja",
+    "allExist": "Todas las categorías ya existen: no hay tiempos que configurar.",
+    "totalHelp": "Fija una capacidad total para limitar cuántos productos acepta la cocina por franja horaria. Déjalo en ∞ para no poner límite.",
+    "saveAdd": "Guardar y añadir a la carta"
+  },
+  "schedule": {
+    "title": "Añadir mi agenda",
+    "intro": "Si tu agenda está en tu web, podemos mantenerla actualizada automáticamente; o añade tú las fechas.",
+    "websiteTitle": "Mi agenda está en mi web",
+    "urlPlaceholder": "https://tufoodtruck.es/eventos",
+    "checking": "Comprobando…",
+    "verify": "Verificar",
+    "checkingSite": "Comprobando tu web…",
+    "takesTime": "Puede tardar hasta 2 minutos: no cierres esta ventana.",
+    "canRead": "✓ Podemos leer tu agenda",
+    "ownSite": "Tu propia web, no una página de Facebook o Instagram.",
+    "photoTitle": "Subir una foto de mi agenda",
+    "dragChoose": "Arrastra y suelta o toca para elegir",
+    "imageOrPdf": "Imagen o PDF",
+    "or": "o",
+    "pastePlaceholder": "Pega aquí tus fechas…",
+    "read": "Leer agenda",
+    "found": "{count, plural, one {Se ha encontrado # fecha; se añadirá} other {Se han encontrado # fechas; se añadirán}} a tu agenda.",
+    "dateTbc": "Fecha por confirmar",
+    "save": "Guardar {count, plural, one {# fecha} other {# fechas}}",
+    "manualDesc": "Añádelas más tarde en la pestaña Agenda; no tienes que hacer nada ahora.",
+    "manualBody": "Sin problema. Puedes añadir y gestionar tus fechas cuando quieras desde la pestaña Agenda de tu cuenta.",
+    "blockedDomain": "Usa la URL de tu web: las páginas de Facebook e Instagram no se pueden leer automáticamente.",
+    "saveFailed": "Hemos leído tu agenda, pero ahora mismo no hemos podido guardarla: inténtalo de nuevo.",
+    "websiteDesc": "La revisaremos con regularidad y te enviaremos las fechas nuevas para que las apruebes.",
+    "keepChecking": "Seguiremos revisando esta página y te enviaremos las fechas nuevas para que las apruebes.",
+    "photoDesc": "Haz una foto o pega tus fechas: las leeremos para que las revises.",
+    "noneFound": "No hemos encontrado ninguna fecha: prueba con una foto más nítida o añade tú una fecha.",
+    "manualTitle": "Prefiero añadir yo mis fechas",
+    "trialNotStarted": "Añadir eventos no inicia tu prueba gratuita: más adelante eliges qué evento la inicia."
+  },
+  "done": {
+    "summary": "{items, plural, one {# producto} other {# productos}} en {categories, plural, one {# categoría} other {# categorías}}.",
+    "imported": "¡Carta importada!",
+    "added": "Tus productos se han añadido a la carta.",
+    "duplicates": "{count, plural, one {# duplicado omitido} other {# duplicados omitidos}}",
+    "showMe": "Enséñame cómo funciona",
+    "remind": "Recuérdamelo más tarde",
+    "allSet": "¡Todo listo!",
+    "explore": "Prefiero explorar por mi cuenta"
+  },
+  "discard": {
+    "setupTitle": "¿Terminar la configuración más tarde?",
+    "setupBody": "Tu cuenta y tu food truck están guardados: no se pierde nada. Puedes añadir tu carta cuando quieras: inicia sesión y toca <b>Importar carta</b> en la pantalla de tu carta para seguir justo aquí.",
+    "keepGoing": "Continuar",
+    "finishLater": "Terminar más tarde",
+    "title": "¿Descartar esta importación?",
+    "keepEditing": "Seguir editando",
+    "discard": "Descartar",
+    "body": "Tus cambios no se guardarán: no se añadirán los productos importados, los tiempos de preparación ni los pedidos máximos por franja."
+  },
+  "allergenCardText": {
+    "contains": "Contiene: {list}",
+    "mayContain": "Puede contener: {list}"
+  }
+}

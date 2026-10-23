@@ -1,0 +1,8 @@
+{
+  "country_missing": "Wählen Sie das Land, in dem Ihr Foodtruck ansässig ist.",
+  "country_off": "Foodtrucks aus diesem Land können sich noch nicht registrieren. Wählen Sie ein anderes Land.",
+  "zone_unknown": "Diese Zeitzone bieten wir für dieses Land nicht an. Wählen Sie eine aus der Liste.",
+  "town_missing": "Nennen Sie uns den Ort oder die Stadt, in der Sie ansässig sind.",
+  "town_too_long": "Dieser Ortsname ist zu lang – höchstens 120 Zeichen.",
+  "region_closed": "Für Foodtrucks mit Sitz in der Region {region} ist die Registrierung noch nicht möglich{reason, select, language {: HatchGrab ist noch nicht auf {language} verfügbar} taxLines {: Wir fügen zuerst getrennte Zeilen für GST und PST hinzu} other {}}. Wenn Ihr Foodtruck woanders ansässig ist, wählen Sie diesen Ort bzw. diese Stadt."
+}

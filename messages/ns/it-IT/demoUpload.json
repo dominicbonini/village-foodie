@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Lettura del menu…",
+    "found": "Abbiamo trovato i tuoi piatti…",
+    "kitchen": "Configurazione della cucina…",
+    "page": "Creazione della pagina degli ordini…",
+    "almost": "Quasi pronto…"
+  },
+  "templateSteps": {
+    "truck": "Creazione del food truck di esempio…",
+    "menu": "Configurazione del menu…",
+    "kitchen": "Configurazione della cucina…",
+    "page": "Creazione della pagina degli ordini…",
+    "almost": "Quasi pronto…"
+  },
+  "dialogLabel": "Carica il tuo menu",
+  "heading": "✨ Carica il tuo menu",
+  "failedHeading": "Non siamo riusciti a leggere quel menu",
+  "close": "Chiudi",
+  "intro": "Una foto della lavagna del menu, uno screenshot, un PDF, oppure incollalo come testo. La nostra IA lo legge e ti crea una pagina degli ordini funzionante — i tuoi piatti, i tuoi prezzi — in meno di 60 secondi. Nessuna registrazione, nessuna carta.",
+  "failedIntro": "A volte una foto è troppo scura, troppo inclinata o scritta a mano. Tocca a noi gestirlo, non hai sbagliato niente. Ecco come puoi procedere:",
+  "usually": "Di solito ci vogliono meno di 60 secondi.",
+  "slow": "Ci sta volendo più del solito — con i menu lunghi a volte succede.",
+  "keepWaiting": "Continua ad aspettare",
+  "sampleWhileYouWait": "Oppure, mentre aspetti, dai un’occhiata con un menu di esempio",
+  "standIn": "Questo <b>non sarà il tuo menu</b> — è un esempio per farti vedere come funziona.",
+  "seeSample": "Vedi menu di esempio",
+  "tryAgain": "Riprova",
+  "tryPhotoAgain": "Riprova con questa foto",
+  "tryDifferent": "Prova un’altra foto",
+  "uploadAnother": "← Carica un’altra foto",
+  "orSample": "Oppure dai un’occhiata con un menu di esempio",
+  "orBuild": "Oppure lo creiamo noi per te",
+  "buildSent": "✓ Grazie — l’abbiamo ricevuto. Ti scriveremo via email.",
+  "buildBody": "Lasciaci la tua email e una persona in carne e ossa inserirà il tuo menu e ti invierà il link.",
+  "emailPlaceholder": "tu@iltuofoodtruck.it",
+  "sending": "…",
+  "send": "Invia",
+  "noPhoto": "Non hai una foto del menu a portata di mano?",
+  "noPhotoBody": "Dai un’occhiata con un food truck di esempio — puoi caricare il tuo in qualsiasi momento.",
+  "build": "Crea la mia demo →",
+  "nothingPublished": "Non viene pubblicato nulla — puoi vederlo solo tu.",
+  "error": {
+    "somethingWrong": "Qualcosa è andato storto. Riprova.",
+    "serverUnreachable": "Non siamo riusciti a raggiungere il server. Controlla la connessione e riprova.",
+    "sendFailed": "Invio non riuscito — riprova."
+  },
+  "fields": {
+    "uploadLabel": "Carica il file del menu",
+    "dropHere": "Trascina qui il tuo menu",
+    "dragOrTap": "Trascina e rilascia o tocca per scegliere",
+    "fileTypes": "Immagine o PDF",
+    "or": "oppure",
+    "pasteLabel": "Incolla il testo del menu",
+    "pastePlaceholder": "Incolla qui il tuo menu — nomi dei piatti, descrizioni, prezzi..."
+  }
+}

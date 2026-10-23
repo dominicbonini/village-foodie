@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Pieper <b>{number}</b> hoort bij <b>bestelling #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Overnemen voor <b>{hasTarget, select, yes {bestelling #{targetId}} other {deze bestelling}}</b>?",
+  "cancel": "Annuleren",
+  "take": "Pieper {number} overnemen",
+  "titleBlocking": "Pieper voor bestelling #{id}?",
+  "title": "Kies een pieper",
+  "subtitle": "{hasTarget, select, yes {Bestelling #{id}} other {Deze bestelling}}{hasCurrent, select, yes { · nu pieper {current}} other {}}",
+  "allTaken": "{n, plural, one {De pieper is in gebruik. Tik erop om hem van een andere bestelling over te nemen.} other {Alle {count} piepers zijn in gebruik. Tik op een pieper om hem van een andere bestelling over te nemen.}}",
+  "thisOrder": "Deze bestelling",
+  "noBuzzer": "Geen pieper",
+  "done": "Gereed",
+  "lostTitle": "Bestelling #{id} heeft geen pieper",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}een andere bestelling kreeg dezelfde pieper terwijl je offline was. Geef deze klant een andere.",
+  "dismiss": "Sluiten",
+  "assign": "Toewijzen"
+}

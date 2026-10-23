@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "per foodtruck / maand",
+  "transactionFees": "Transactiekosten",
+  "comingSoon": "Binnenkort",
+  "footnote2Masked": "Online betalingen verlopen via Stripe Connect. De platform- en kaarttransactiekosten worden nog vastgesteld en bij de lancering bevestigd.",
+  "card": {
+    "title": "Facturatie & betalingen",
+    "managed": "De facturatie wordt beheerd door HatchGrab",
+    "earlyAccess": "In deze introductiefase stellen we abonnementen handmatig in en passen we ze handmatig aan.",
+    "planLine": "{trial, select, yes {{truck} · abonnement {plan} (proefperiode)} other {{truck} · abonnement {plan}}}"
+  },
+  "currentPlan": "Huidig abonnement",
+  "plan": {
+    "included": "Inclusief {amount} aan online bestellingen per maand.",
+    "includedUnlimited": "Onbeperkt online bestellingen inbegrepen.",
+    "promo": "Speciale prijs.",
+    "promoUntil": "Speciale prijs tot {date}.",
+    "ended": "Je abonnement {plan} is op {date} afgelopen. Je zit nu op {now}.",
+    "trialMonths": "Een gratis proefperiode van {months} mnd."
+  },
+  "trialEnds": "Proefperiode eindigt {date}",
+  "yourTrialEnds": "Je proefperiode eindigt {date}",
+  "notStarted": {
+    "heading": "Je gratis proefperiode is nog niet begonnen"
+  },
+  "onTrial": "Je hebt alle functies. Kies een abonnement voordat je proefperiode afloopt.",
+  "onTrialNoCta": "Je hebt alle functies.",
+  "noCharge": "🔒 Tijdens je proefperiode, die loopt tot {date}, betaal je niets. Er wordt pas iets in rekening gebracht als je een abonnement kiest en je betaalgegevens invult. Tot die tijd valt er niets op te zeggen en niets te betalen.",
+  "fees": "*Op online bestellingen gelden de standaard kaarttransactiekosten",
+  "setUpPayment": "⏱ Kies een abonnement voordat je proefperiode afloopt",
+  "changeYourPlan": "Abonnement wijzigen",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Overstappen naar {plan}",
+    "tagline": "{price} — {description}",
+    "body": "We zijn automatische facturatie aan het inrichten. Wil je nu overstappen? Stuur ons een bericht, dan regelen we het binnen 24 uur.",
+    "mailSubject": "Overstappen naar {plan} — {truck}",
+    "mailBody": "Hallo, ik wil graag met {truck} overstappen naar het abonnement {plan} ({price}).",
+    "email": "Mail ons om over te stappen",
+    "cancel": "Annuleren"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Weektitel",
+    "weekHeadingSample": "Week van …",
+    "daysSample": "{first} t/m {last}",
+    "date": "Datum",
+    "place": "Plek",
+    "venue": "Locatie",
+    "area": "Plaats",
+    "time": "Tijd",
+    "rows": "Rijen",
+    "rowsSample": "{px} px uit elkaar · {first} t/m {last}",
+    "ownText": "Je eigen tekst",
+    "noteTokenSample": "De notitie die je typt wanneer je de post maakt",
+    "nothingYet": "Nog niets",
+    "thisBox": "dit vak"
+  },
+  "sample": {
+    "venue": "Café De Zwaan",
+    "area": "Haarlem"
+  },
+  "bar": {
+    "previewWith": "Voorbeeld met",
+    "undo": "Ongedaan maken",
+    "undoTitle": "Ongedaan maken (⌘Z)",
+    "redo": "Opnieuw",
+    "redoTitle": "Opnieuw (⇧⌘Z)",
+    "cancel": "Annuleren",
+    "saving": "Opslaan…",
+    "save": "Ontwerp opslaan"
+  },
+  "grid": {
+    "eachRow": "Elke rij",
+    "placeOff": "De plaatsnaam staat al in je afbeelding — HatchGrab voegt die niet toe."
+  },
+  "background": {
+    "uploading": "Uploaden…",
+    "replace": "Afbeelding vervangen",
+    "shape": {
+      "square": "Vierkant (1:1)",
+      "portrait45": "Staand (4:5)",
+      "portrait916": "Staand (9:16)",
+      "landscape169": "Liggend (16:9)",
+      "portrait": "Staand",
+      "landscape": "Liggend"
+    }
+  },
+  "scope": {
+    "title": "Tekstposities",
+    "standard": "Zelfde posities als Standaard",
+    "own": "Eigen posities voor {place}",
+    "locked": "Deze posities komen uit je standaardontwerp. Kies ‘Eigen posities voor {place}’ om ze alleen hier te verplaatsen."
+  },
+  "stage": {
+    "hint": "Sleep een vak om het te verplaatsen · sleep een hoek om het groter of kleiner te maken",
+    "zoomOut": "Uitzoomen",
+    "zoomIn": "Inzoomen"
+  },
+  "rows": {
+    "spacing": "Tussenruimte",
+    "daysRun": "Dagen lopen van {first} t/m {last}. De drie vakken van rij 1 worden met deze afstand naar beneden gekopieerd.",
+    "whichEvents": "Welke evenementen",
+    "showCancelled": "Geannuleerde evenementen tonen",
+    "showCancelledHint": "Bij een geannuleerd evenement staat de plek doorgestreept met het woord GEANNULEERD. Staat dit uit, dan lijkt de dag een vrije dag."
+  },
+  "days": {
+    "reorder": "Volgorde wijzigen",
+    "move": "verplaatsen"
+  },
+  "picture": {
+    "picture": "Afbeelding",
+    "fill": "Vak vullen",
+    "fit": "Binnen het vak passen",
+    "corners": "Hoeken",
+    "square": "Recht",
+    "rounded": "Afgerond",
+    "ifMissing": "Als een standplaats geen afbeelding heeft",
+    "noPicture": {
+      "omit": "Weglaten",
+      "blank": "Lege ruimte laten",
+      "logo": "Je logo tonen"
+    },
+    "border": "Rand",
+    "drawBorder": "Rand tekenen",
+    "drawBorderHint": "Een lijn rond de afbeelding, in je eigen kleur.",
+    "borderWidth": "Randdikte",
+    "cornerRadius": "Hoekafronding",
+    "locationPictures": "Afbeeldingen van standplaatsen",
+    "addLocationPictures": "+ Afbeeldingen van standplaatsen toevoegen",
+    "allHaveImage": "{total, plural, =0 {Je hebt nog geen standplaatsen.} one {Je standplaats heeft een afbeelding.} other {Al je # standplaatsen hebben een afbeelding.}}",
+    "someWithout": "{without} van je {total, plural, one {# standplaats} other {# standplaatsen}} {without, plural, one {heeft} other {hebben}} nog geen afbeelding"
+  },
+  "settings": {
+    "font": "Lettertype",
+    "colour": "Kleur",
+    "textColour": "Tekstkleur",
+    "ownStyleNote": "{count, plural, one {{names} heeft een eigen stijl en wordt dus niet gewijzigd.} other {{names} hebben een eigen stijl en worden dus niet gewijzigd.}}",
+    "matchAgain": "Weer gelijk maken",
+    "matchName": "Gelijk maken aan {name}",
+    "lastToggle": "{kind, select, weekly {Laat Plek of Tijd aan staan. Bij een geannuleerd evenement staat de plek doorgestreept met het woord GEANNULEERD; staan ze allebei uit, dan is nergens te zien dat het geannuleerd is.} other {Laat Locatie of Tijd aan staan. Bij een geannuleerd evenement staat de plek doorgestreept met het woord GEANNULEERD; staan ze allebei uit, dan is nergens te zien dat het geannuleerd is.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — dit lettertype heeft een echte cursief"
+  },
+  "align": {
+    "left": "Links",
+    "centre": "Midden",
+    "right": "Rechts"
+  },
+  "effects": {
+    "outlineColour": "Kleur omlijning",
+    "bandColour": "Kleur balk",
+    "bandDaysOff": "Balk op vrije dagen",
+    "bandCancelled": "Balk als het evenement geannuleerd is",
+    "bandDaysOffHint": "Wordt gebruikt in plaats van de balk hierboven op een dag zonder verkoop.",
+    "bandCancelledHint": "Wordt gebruikt in plaats van de balk hierboven als het evenement geannuleerd is."
+  },
+  "more": {
+    "dayOwnLine": "Dag op een eigen regel",
+    "dayOwnLineHint": "De weekdag boven de datum. Alleen bij Datum.",
+    "noEventDay": "Op een dag zonder evenement",
+    "wordsBeforePlaceholder": "bijv. Je vindt ons",
+    "neverHyphenate": "Eén lang woord zonder spatie wordt altijd kleiner gemaakt — we breken een plaatsnaam nooit af met een koppelteken."
+  },
+  "bits": {
+    "less": "Minder",
+    "more": "Meer",
+    "chooseColourFor": "{label} — kies een kleur",
+    "chooseColour": "Kies een kleur"
+  }
+}

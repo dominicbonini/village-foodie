@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Accetta ordini senza pagamento",
+  "completionTitle": "Completare un ordine non pagato",
+  "completionHelp": "Cosa succede quando un ordine non pagato è pronto da dare al cliente.",
+  "pressesOne": "Un tocco («Segna pagato e ritirato»)",
+  "pressesOneHelp": "Ideale se incassi mentre dai il cibo al cliente. Hai un solo pulsante, «Segna pagato e ritirato», che registra il pagamento e chiude l’ordine in un colpo solo.",
+  "pressesTwo": "Due tocchi («Segna pagato» e «Ritirato»)",
+  "pressesTwoHelp": "Ideale quando pagamento e ritiro avvengono in momenti diversi — il cliente paga al banco, poi ritira quando l’ordine è pronto. Hai due pulsanti: prima «Segna pagato», poi «Ritirato» quando prende il cibo."
+}

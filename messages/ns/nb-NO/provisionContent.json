@@ -1,0 +1,57 @@
+{
+  "firstVanName": "Matbil 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgere",
+    "mains": "Hovedretter",
+    "sides": "Tilbehør",
+    "drinks": "Drikke"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizzabil",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja og honning",
+        "fourCheese": "Fire oster",
+        "gardenVeg": "Grønnsakspizza",
+        "garlicBread": "Hvitløksbrød",
+        "rocketParmesan": "Ruccola og parmesan",
+        "olives": "Oliven",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burgerbil",
+      "items": {
+        "classicCheeseburger": "Klassisk cheeseburger",
+        "doubleBacon": "Dobbel bacon",
+        "buttermilkChicken": "Kylling i kjernemelk",
+        "halloumiStack": "Halloumiburger",
+        "smashBurger": "Smashburger",
+        "skinOnFries": "Pommes frites med skall",
+        "loadedCheeseFries": "Pommes frites med smeltet ost",
+        "onionRings": "Løkringer",
+        "craftLemonade": "Hjemmelaget limonade",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Currybil",
+      "items": {
+        "chickenTikkaMasala": "Kylling tikka masala",
+        "lambRoganJosh": "Lam rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Butter chicken",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Pilaffris",
+        "garlicNaan": "Hvitløksnaan",
+        "onionBhaji": "Løkbhaji",
+        "mangoLassi": "Mangolassi",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

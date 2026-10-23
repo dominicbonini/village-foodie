@@ -1,0 +1,28 @@
+{
+  "hi": "Hola, {name}:",
+  "limit80": {
+    "subject": "Has usado el 80 % de las respuestas de WhatsApp de este mes",
+    "used": "Tus respuestas automáticas de WhatsApp llevan <b>{used} de {limit}</b> este mes.",
+    "nothingStopped": "No se ha detenido nada. Cuando llegues a {limit}, las respuestas automáticas se pausarán hasta que tu cupo se renueve el <b>{reset}</b>; los clientes podrán seguir escribiéndote y seguirás viendo todo lo que envíen.",
+    "raise": "Puedes subir tu límite mensual en Ajustes cuando quieras.",
+    "raiseLink": "Puedes subir tu límite mensual en Ajustes cuando quieras:",
+    "button": "Abrir Ajustes"
+  },
+  "limit100": {
+    "subject": "Tus respuestas automáticas de WhatsApp se han pausado este mes",
+    "usedAll": "Has usado las {limit} respuestas automáticas de WhatsApp de este mes, así que se han pausado.",
+    "stillReach": "<b>Los clientes pueden seguir escribiéndote con normalidad y te siguen llegando todos los mensajes.</b> Lo único que se ha detenido es el envío de la respuesta automática.",
+    "startAgain": "Volverán a funcionar el <b>{reset}</b>, o enseguida si subes tu límite mensual en Ajustes.",
+    "startAgainLink": "Volverán a funcionar el {reset}, o enseguida si subes tu límite mensual en Ajustes:",
+    "button": "Subir mi límite"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp necesita un método de pago para poder enviar",
+    "stopped": "WhatsApp ha detenido el envío de tus respuestas automáticas porque no hay ningún método de pago válido en tu cuenta de WhatsApp Business.",
+    "stillMessage": "<b>Los clientes pueden seguir escribiéndote y seguirás viendo todo lo que envíen</b>, pero las respuestas no les llegan.",
+    "payDirect": "Estos mensajes se los pagas directamente a WhatsApp, así que esto se soluciona en WhatsApp Manager, no en HatchGrab. Añade o actualiza una tarjeta allí y las respuestas volverán a enviarse solas.",
+    "payDirectLink": "Estos mensajes se los pagas directamente a WhatsApp, así que esto se soluciona en WhatsApp Manager, no en HatchGrab. Añade o actualiza una tarjeta allí y las respuestas volverán a enviarse solas:",
+    "button": "Abrir WhatsApp Manager",
+    "settings": "Tus ajustes de HatchGrab: <link>{url}</link>"
+  }
+}

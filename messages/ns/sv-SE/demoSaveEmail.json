@@ -1,0 +1,9 @@
+{
+  "subject": "Din HatchGrab-demo — här är länken tillbaka",
+  "heading": "Din demo är sparad",
+  "intro": "Här är länken tillbaka till demon med din meny. Ingen inloggning behövs — tryck bara på den.",
+  "button": "Öppna min demo",
+  "freshDay": "Varje gång du kommer tillbaka lägger vi upp en ny försäljningsdag så att det finns något att testa.",
+  "deletion": "Det här är en demo, så vi sparar den inte för alltid — vi raderar den och menyn den\n                <b>{date}</b> (om {days, plural, one {# dag} other {# dagar}}). Registrerar du dig innan\n                dess följer din meny med.",
+  "notSent": "Sparad, men vi kunde inte skicka mejlet just nu."
+}

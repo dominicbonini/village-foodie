@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Bekræft din nye e-mailadresse til HatchGrab",
+    "heading": "Bekræft din e-mailadresse",
+    "button": "Bekræft e-mailadresse"
+  },
+  "changeEmail": {
+    "requested": "Du har bedt om at ændre din e-mailadresse hos HatchGrab til denne adresse.",
+    "click": "Klik på knappen nedenfor for at bekræfte. Linket udløber om 24 timer.",
+    "ignore": "Hvis du ikke har bedt om denne ændring, kan du roligt se bort fra denne e-mail.",
+    "stillActive": "Din nuværende e-mailadresse er stadig aktiv."
+  },
+  "resendVerification": {
+    "requested": "Du har bedt om at ændre din e-mail hos HatchGrab til denne adresse.",
+    "click": "Klik nedenfor for at bekræfte. Linket udløber om 24 timer.",
+    "ignore": "Hvis du ikke har bedt om dette, så se bort fra denne e-mail.",
+    "stillActive": "Din nuværende e-mail er stadig aktiv."
+  },
+  "passwordReset": {
+    "subject": "Nulstil din adgangskode til HatchGrab",
+    "heading": "Nulstil din adgangskode",
+    "requested": "Vi har modtaget en anmodning om at nulstille adgangskoden til din HatchGrab-konto.",
+    "click": "Klik på knappen nedenfor for at vælge en ny adgangskode. Linket udløber om 1 time.",
+    "button": "Nulstil adgangskode",
+    "ignore": "Hvis du ikke har bedt om dette, kan du roligt se bort fra denne e-mail.",
+    "unchanged": "Din adgangskode ændres ikke, før du klikker på linket ovenfor."
+  },
+  "deletionScheduled": {
+    "subject": "Din HatchGrab-konto er planlagt til sletning",
+    "received": "Vi har modtaget en anmodning om at slette denne HatchGrab-konto.",
+    "orderingStopped": "<b>Onlinebestilling er stoppet med det samme</b> på: {trucks}.",
+    "noTrucks": "(ingen foodtrucks)",
+    "readable": "Din oversigt kan stadig\n    læses i {days, plural, one {# dag} other {# dage}} endnu.",
+    "scheduled": "Kontoen er planlagt til sletning den <b>{date}</b>.",
+    "cannotCancel": "<b>Det kan ikke annulleres inde i appen.</b> Hvis det ikke var dig, eller hvis du har\n    fortrudt, så svar på denne e-mail så hurtigt som muligt.",
+    "kept": "Når kontoen slettes, fjerner vi dine personoplysninger og dine kunders oplysninger. Vi beholder\n    anonymiserede regnskabsdata, som vi efter loven skal opbevare."
+  }
+}

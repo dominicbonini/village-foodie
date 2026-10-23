@@ -1,0 +1,10 @@
+{
+  "notice": {
+    "close": "Schliessen"
+  },
+  "signup": {
+    "partial": "Wir haben Ihr WhatsApp Business-Konto verknüpft, konnten die Verbindung aber nicht abschliessen. Auf Ihrer Seite ist alles in Ordnung – bitte kontaktieren Sie uns, dann schliessen wir sie ab.",
+    "noNumber": "Ihr WhatsApp Business-Konto ist verknüpft, aber es wurde keine Telefonnummer übermittelt. Klicken Sie auf „Neu verbinden“ und schliessen Sie den Schritt mit der Nummer ab.",
+    "saveIncomplete": "Fast geschafft – wir konnten das Speichern nicht abschliessen. Ihre Einrichtung ist gespeichert, bitte kontaktieren Sie den Support, statt sie erneut auszuführen."
+  }
+}

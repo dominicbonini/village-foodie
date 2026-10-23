@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Durante il servizio devi tenere la dashboard o il monitor cucina acceso e online.",
+  "explainerBody": "Se lo schermo si spegne, il dispositivo perde la connessione o passi a un altro sito web, entra in funzione la protezione offline: mette in pausa gli ordini o disattiva l’accettazione automatica, a seconda di cosa hai scelto.",
+  "reminder": "⚠️ Durante il servizio tieni la dashboard o il monitor cucina acceso e online, altrimenti potrebbe entrare in funzione la protezione offline.",
+  "enableConfirm": "Protezione offline attivata.\n\nPer continuare a ricevere ordini, lo schermo deve restare acceso. Se questo dispositivo perde la connessione, la protezione offline entra in funzione nella modalità che hai scelto.\n\nAssicurati che l’opzione Schermo acceso sia attiva su questo dispositivo.",
+  "disableConfirm": "Disattivare la protezione offline per questo evento?\n\nSe questo dispositivo perde la connessione, gli ordini online continueranno ad arrivare: i clienti potrebbero fare ordini che non vedi. Disattivala solo se hai una connessione affidabile.",
+  "cardDescription": "Decide cosa succede agli ordini in arrivo quando il dispositivo va offline.",
+  "purpose": "Se il dispositivo perde la connessione, impedisce che arrivino ordini mentre non puoi vederli.",
+  "switchLabel": "Protezione ordini offline",
+  "switchHelp": "Cosa succede quando questo food truck perde la connessione.",
+  "modes": {
+    "pause": {
+      "label": "Metti in pausa gli ordini online",
+      "help": "I clienti non possono ordinare finché non torni online."
+    },
+    "no_auto_accept": {
+      "label": "Continua a ricevere ordini, li confermi tu",
+      "help": "L’accettazione automatica viene disattivata: i clienti possono ancora ordinare, ma niente viene confermato in automatico. Confermerai ogni ordine quando torni online, e quelli ancora in attesa vengono rifiutati automaticamente dopo il tempo che hai scelto, con un’email al cliente per avvisarlo."
+    }
+  },
+  "autoRejectLabel": "Rifiuta gli ordini in attesa da più di",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

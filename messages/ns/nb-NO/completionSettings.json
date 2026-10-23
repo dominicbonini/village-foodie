@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Ta imot bestillinger uten betaling",
+  "completionTitle": "Fullføre en ubetalt bestilling",
+  "completionHelp": "Hva som skjer når en ubetalt bestilling er klar til å leveres ut.",
+  "pressesOne": "Ett trykk («Merk betalt og hentet»)",
+  "pressesOneHelp": "Best når du tar betalt idet du gir kunden maten. Du får én knapp, «Merk betalt og hentet», som registrerer betalingen og fjerner bestillingen samtidig.",
+  "pressesTwo": "To trykk («Merk betalt» og «Hentet»)",
+  "pressesTwoHelp": "Best når betaling og utlevering skjer på ulike tidspunkt — kunden betaler i luka og henter når maten er klar. Du får to knapper: først «Merk betalt», så «Hentet» når kunden tar maten."
+}

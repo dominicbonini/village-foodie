@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Periodo",
+    "event": "📍 Evento",
+    "filterBy": "Filtrar por",
+    "show": "Mostrar",
+    "range": "<from></from><sep>a</sep><until></until>",
+    "selectEvent": "Elige un evento…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Evento",
+    "viewReport": "Ver informe",
+    "loading": "Cargando…",
+    "orders": "📋 Pedidos",
+    "items": "📦 Productos",
+    "exportCsv": "⬇ Exportar CSV"
+  },
+  "empty": {
+    "noOrders": "No hay pedidos en este periodo.",
+    "selectEvent": "Elige un evento arriba para ver su informe."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} pedido} other {{count} pedidos}} · {total}"
+  },
+  "revenue": {
+    "title": "Desglose de ingresos",
+    "deals": "Ingresos por menús",
+    "modifiers": "Suplementos de extras",
+    "foodSales": "Venta de comida",
+    "total": "Total",
+    "other": "Otros",
+    "tax": "Impuestos",
+    "tips": "Propinas",
+    "serviceFees": "Cargos por servicio",
+    "cardFees": "Comisiones de tarjeta"
+  },
+  "itemsSold": {
+    "title": "Productos vendidos"
+  },
+  "dealsCard": {
+    "title": "Menús"
+  },
+  "custom": {
+    "title": "Personalizaciones",
+    "paidModifiers": "Extras de pago",
+    "customerNotes": "Notas de clientes",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Producto",
+    "modifier": "Extra",
+    "qty": "Cant.",
+    "total": "Total",
+    "date": "Fecha",
+    "time": "Hora",
+    "channel": "Canal"
+  },
+  "breakdown": {
+    "orders": "Desglose por pedido",
+    "items": "Desglose por producto"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "En ventanilla"
+  },
+  "csv": {
+    "orderId": "ID del pedido",
+    "date": "Fecha",
+    "event": "Evento",
+    "timePlaced": "Hora del pedido",
+    "collectionTime": "Hora de recogida",
+    "customerName": "Nombre del cliente",
+    "orderType": "Tipo de pedido",
+    "items": "Productos",
+    "deals": "Menús",
+    "modifiers": "Extras",
+    "notes": "Notas",
+    "subtotal": "Subtotal",
+    "tip": "Propina",
+    "serviceFee": "Cargo por servicio",
+    "total": "Total",
+    "itemName": "Producto",
+    "qty": "Cant.",
+    "unitPrice": "Precio unitario",
+    "itemTotal": "Total del producto",
+    "orderTotal": "Total del pedido",
+    "unknownEvent": "Evento desconocido",
+    "asap": "Cuanto antes",
+    "unknownCustomer": "Desconocido",
+    "customerOnline": "Cliente online",
+    "placedByTruck": "Hecho por el food truck"
+  }
+}

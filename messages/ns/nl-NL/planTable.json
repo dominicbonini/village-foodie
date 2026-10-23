@@ -1,0 +1,36 @@
+{
+  "h1": "Alles om je service te draaien, in elk abonnement.",
+  "lede": "Bestellen, vooraf bestellen, het maximaal aantal bestellingen per tijdslot en het keukenscherm zitten in elk abonnement.{hasUpgrades, select, yes { {plans} voegen {features} toe, met lagere kosten.} other {}}",
+  "perMonth": "{price} / maand",
+  "group": {
+    "pay": "Wat je betaalt",
+    "run": "Je service draaien",
+    "online": "Online bestellingen",
+    "marketing": "Marketing & automatisering"
+  },
+  "pay": {
+    "included": "Online bestellingen per maand inbegrepen",
+    "fee": "HatchGrab-kosten op online kaartbestellingen*",
+    "walkUp": "Bestellingen aan de truck"
+  },
+  "cell": {
+    "unlimited": "Onbeperkt",
+    "free": "Gratis",
+    "feeAbove": "<b>{fee}</b> boven {included}",
+    "yes": "Inbegrepen",
+    "none": "Niet inbegrepen",
+    "comingSoon": "Binnenkort"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "social media",
+    "event_types": "prijzen per evenement"
+  },
+  "meta": {
+    "description": "Alle HatchGrab-functies per abonnement naast elkaar — {plans}, met kosten en inbegrepen bestellingen.{months, plural, =0 {} one { In je eerste maand is alles inbegrepen.} other { In je eerste # maanden is alles inbegrepen.}}"
+  },
+  "notes": {
+    "whatsapp": "Voor automatische antwoorden via WhatsApp heb je een WhatsApp Business-account nodig. Meta kan voor sommige berichten kosten rekenen; antwoorden worden automatisch gegenereerd.",
+    "printing": "Voor het printen van keukenbonnen heb je een compatibele Bluetooth- of kabelprinter nodig (niet meegeleverd)."
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Testen Sie es vor dem Verbinden",
+    "intro": "Geben Sie eine Frage ein, wie ein Kunde sie stellen würde, und sehen Sie genau, welche Antwort er bekäme. Es wird nichts an jemanden gesendet.",
+    "examples": {
+      "where": "Wo stehen Sie heute Abend?",
+      "doYouDo": "Haben Sie Pepperoni?",
+      "menu": "Was steht auf der Speisekarte?"
+    },
+    "placeholder": "Welche Desserts haben Sie?",
+    "send": "Senden",
+    "empty": "Ihre Antwort erscheint hier",
+    "working": "Antwort wird erstellt…",
+    "noReply": "Es würde keine Antwort gesendet.",
+    "noReplyWhy": "Das wirkt wie Spam, eine Buchungsanfrage oder etwas, das nichts damit zu tun hat – deshalb bleibt die automatische Antwort aus.",
+    "footnote": "Die Antworten werden von KI erstellt, fallen jedes Mal etwas anders aus und können gelegentlich falsch sein.",
+    "failed": "Die Vorschau konnte gerade nicht erstellt werden.",
+    "unreachable": "Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Wird vorbereitet…",
+      "unavailable": "Nicht verfügbar",
+      "waiting": "Warten auf das Facebook-Fenster…",
+      "finishing": "Wird abgeschlossen…",
+      "reconnect": "Neu verbinden",
+      "setUp": "Einrichten"
+    },
+    "startAgain": "Neu starten",
+    "popupHint": "Sie sehen das Facebook-Fenster nicht? Es wurde möglicherweise blockiert. Erlauben Sie Pop-ups für hatchgrab.com und klicken Sie dann auf „Neu starten“."
+  },
+  "notice": {
+    "sdkUnavailable": "Die WhatsApp-Einrichtung ist in dieser Umgebung nicht verfügbar.",
+    "sdkBlocked": "Das Anmeldeskript von Meta konnte nicht geladen werden. Meist liegt das an einem Werbeblocker oder Tracking-Schutz.",
+    "setupFailed": "Die Einrichtung konnte nicht abgeschlossen werden. Es wurde nichts geändert.",
+    "setupFinished": "Einrichtung abgeschlossen.",
+    "metaError": "Meta hat bei der Einrichtung ein Problem gemeldet. Es wurde nichts geändert. Versuchen Sie es erneut und kontaktieren Sie uns, falls es wieder passiert.",
+    "closed": "Die Einrichtung wurde vor dem Abschluss geschlossen. Es wurde nichts geändert – klicken Sie auf „Einrichten“, um es erneut zu versuchen.",
+    "disconnectedUnreachable": "WhatsApp ist getrennt. Wir konnten Meta nicht erreichen, um den Zugriff zu entfernen. Bitte entfernen Sie HatchGrab unter WhatsApp Business → Einstellungen → Konto → Business Platform.",
+    "disconnected": "WhatsApp ist getrennt. Die automatischen Antworten sind gestoppt.",
+    "close": "Schließen"
+  },
+  "card": {
+    "title": "Automatische Antworten",
+    "description": "Beantworten Sie Kundenfragen in Ihren sozialen Medien automatisch – anhand Ihrer Speisekarte und Ihrer Termine.",
+    "channels": "Kanäle",
+    "requiresAccount": "Erfordert ein WhatsApp Business-Konto.",
+    "connected": "Verbunden",
+    "popupInstruction": "Ein Facebook-Fenster öffnet sich, um Ihr WhatsApp Business-Konto zu verbinden. Falls nichts erscheint, erlauben Sie in Ihrem Browser Pop-ups für hatchgrab.com und klicken Sie dann erneut auf „Einrichten“.",
+    "switchedOff": "Die automatischen Antworten auf WhatsApp sind für Ihren Foodtruck ausgeschaltet.",
+    "expiring": "Ihre WhatsApp-Verbindung muss bald erneuert werden. Klicken Sie auf „Neu verbinden“, damit die automatischen Antworten weiterlaufen.",
+    "comingSoon": "Demnächst",
+    "instagram": "Automatische Antworten auf Instagram-Direktnachrichten. Erfordert ein professionelles Instagram-Konto.",
+    "messenger": "Automatische Antworten im Facebook Messenger. Erfordert eine Facebook-Seite."
+  },
+  "blocked": {
+    "title": "Ihre Antworten werden nicht zugestellt",
+    "body": "WhatsApp verweigert den Versand Ihrer automatischen Antworten wegen eines Abrechnungsproblems in Ihrem WhatsApp Business-Konto. Kunden können Ihnen weiterhin schreiben und Sie sehen alles, was sie senden – aber sie erhalten keine Antwort.",
+    "fix": "Sie bezahlen WhatsApp direkt für diese Nachrichten, daher lässt sich das im WhatsApp Manager beheben. <link>Zahlungsmethode prüfen</link>"
+  },
+  "limit": {
+    "heading": "Automatische Antworten",
+    "label": "Monatliches Limit",
+    "option": "{n, number}",
+    "usage": "{used, number} von {limit, number} genutzt · wird am {date} zurückgesetzt",
+    "perCustomer": "Bis zu {n} Antworten pro Kunde innerhalb von 24 Stunden, danach eine Nachricht, dass Sie persönlich antworten.",
+    "emailAt": "Bei Erreichen Ihres Limits werden die Antworten pausiert. Wir senden Ihnen bei 80 % und 100 % eine E-Mail.",
+    "saved": "Monatliches Antwortlimit gespeichert",
+    "saveFailed": "Das Limit konnte nicht gespeichert werden"
+  },
+  "billing": {
+    "heading": "Abrechnung",
+    "paymentMethod": "Zahlungsmethode",
+    "added": "Zahlungsmethode hinterlegt",
+    "missing": "Keine Zahlungsmethode hinterlegt",
+    "addInManager": "Im WhatsApp Manager hinzufügen",
+    "summary": "Die Antworten stellt Meta Ihrem WhatsApp-Konto in Rechnung, nicht HatchGrab. Ab {from} sind die ersten {free, number} pro Monat kostenlos. Stand: {checked}; Änderungen finden Sie in den <link>Preisen von Meta</link>.",
+    "howMetaCharges": "So rechnet Meta ab",
+    "chargesTitle": "Meta berechnet die WhatsApp-Antworten, nicht HatchGrab.",
+    "chargesBody": "Jede Antwort, die HatchGrab für Sie sendet, stellt Meta Ihrem WhatsApp Business-Konto in Rechnung. Ab {from} enthält Meta {free, number} kostenlose Antworten pro Monat und Nummer; danach wird jede Antwort zum Tarif von Meta berechnet. Antworten, die Sie selbst in der WhatsApp Business-App senden, sind kostenlos. Meta legt diese Preise fest und kann sie ändern. <link>Preise von Meta ansehen</link>",
+    "addPaymentInManager": "Zahlungsmethode im WhatsApp Manager hinzufügen",
+    "aboveMissing": "Ihr Limit liegt über den {free, number} kostenlosen Antworten von Meta. Ohne Zahlungsmethode stoppt Meta alle Antworten, sobald diese aufgebraucht sind.",
+    "aboveGeneral": "Ihr Limit liegt über den {free, number} kostenlosen Antworten von Meta. Für weitere Antworten ist eine Zahlungsmethode in Ihrem WhatsApp-Konto nötig; ohne sie stoppt Meta alle Antworten, sobald die kostenlosen aufgebraucht sind.",
+    "addPaymentMethod": "Zahlungsmethode hinzufügen"
+  },
+  "disconnect": {
+    "link": "WhatsApp trennen",
+    "title": "WhatsApp trennen?",
+    "body": "Die automatischen Antworten stoppen sofort und HatchGrab verliert den Zugriff auf Ihr WhatsApp-Konto. Ihre Nummer funktioniert in der WhatsApp Business-App weiter. Um HatchGrab vollständig zu entfernen, öffnen Sie zusätzlich WhatsApp Business → Einstellungen → Konto → Business Platform.",
+    "cancel": "Abbrechen",
+    "confirm": "Trennen",
+    "working": "Wird getrennt…",
+    "failed": "Trennen fehlgeschlagen"
+  },
+  "signup": {
+    "logged": "Protokolliert.",
+    "partial": "Wir haben Ihr WhatsApp Business-Konto verknüpft, konnten die Verbindung aber nicht abschließen. Auf Ihrer Seite ist alles in Ordnung – bitte kontaktieren Sie uns, dann schließen wir sie ab.",
+    "noNumber": "Ihr WhatsApp Business-Konto ist verknüpft, aber es wurde keine Telefonnummer übermittelt. Klicken Sie auf „Neu verbinden“ und schließen Sie den Schritt mit der Nummer ab.",
+    "needsRegistering": "Ihr Konto ist verknüpft, aber diese Nummer muss erst von uns registriert werden, bevor Antworten starten können. Bitte kontaktieren Sie den Support – Ihre Einrichtung ist gespeichert, führen Sie sie nicht erneut aus.",
+    "registerRefused": "Ihr Konto ist verknüpft, aber Meta hat die Nummer nicht registriert. Ihre Einrichtung ist gespeichert – bitte kontaktieren Sie den Support, statt sie erneut auszuführen.",
+    "deliveryRefused": "Ihr Konto ist verknüpft, aber Meta hat die Nachrichtenzustellung nicht aktiviert. Ihre Einrichtung ist gespeichert – bitte kontaktieren Sie den Support, statt sie erneut auszuführen.",
+    "numberTaken": "Diese WhatsApp-Nummer ist bereits mit einem anderen HatchGrab-Konto verbunden. Eine Nummer kann nur für einen Foodtruck antworten. Kontaktieren Sie den Support, dann übertragen wir sie.",
+    "saveIncomplete": "Fast geschafft – wir konnten das Speichern nicht abschließen. Ihre Einrichtung ist gespeichert, bitte kontaktieren Sie den Support, statt sie erneut auszuführen.",
+    "connected": "WhatsApp ist verbunden. Die automatischen Antworten beantworten ab jetzt Nachrichten an diese Nummer."
+  }
+}

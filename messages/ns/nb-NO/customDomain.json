@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Legg kalenderen din på nettstedet ditt",
+    "live": "<addr>{address}</addr> viser kalenderen din.",
+    "create": "Vi lager en side på <addr>{address}</addr> som viser kalenderen din.",
+    "exampleDomain": "dinmatbil.no",
+    "liveBadge": "Aktiv",
+    "setUp": "Sett opp",
+    "viewSetup": "Vis oppsett",
+    "continue": "Fortsett",
+    "justLive": "<b>{address}</b> virker. Ta en titt, og bekreft nedenfor at alt stemmer."
+  },
+  "waiting": {
+    "title": "Vi venter på {address}",
+    "bodySince": "Du satte dette opp {date}. Nye nettadresser begynner som regel å virke i løpet av noen minutter, og av og til tar det opptil 24 timer før de når alle — du trenger ikke gjøre noe i mellomtiden. Hvis noen andre skulle legge inn linjen for deg, er det lurt å sjekke at de har gjort det.",
+    "body": "Nye nettadresser begynner som regel å virke i løpet av noen minutter, og av og til tar det opptil 24 timer før de når alle — du trenger ikke gjøre noe i mellomtiden. Hvis noen andre skulle legge inn linjen for deg, er det lurt å sjekke at de har gjort det."
+  },
+  "ready": {
+    "title": "{address} er aktiv",
+    "body": "Ta en titt, og bekreft i innstillingene at alt stemmer."
+  },
+  "confirm": {
+    "heading": "Ta en titt, og bekreft at alt stemmer",
+    "open": "Åpne <link>{address}</link>",
+    "checkTimes": "Sjekk at datoer og klokkeslett stemmer.",
+    "yes": "Ja, det ser riktig ut",
+    "no": "Nei, det er et problem",
+    "problemLine": "Fortell oss hva du ser, så ser vi på det.",
+    "emailUs": "Send oss e-post",
+    "mailSubject": "Problem med {address}",
+    "mailLiveSince": "Aktiv siden {date}",
+    "mailSeeing": "Dette ser jeg:"
+  },
+  "confirmed": {
+    "heading": "Takk — det er notert.",
+    "body": "Du trenger ikke gjøre noe mer."
+  },
+  "turnOff": {
+    "link": "Slå av dette",
+    "heading": "Slå av din egen nettadresse?",
+    "stops": "Dette slutter å virke:",
+    "carriesOn": "Dette fortsetter akkurat som før, og det er hit QR-koden din sender folk:",
+    "reAdd": "Hvis du skal sette det opp igjen senere, lar du linjen du la inn hos firmaet som har nettadressen din, stå. Hvis ikke, ber du dem fjerne den.",
+    "cancel": "La det være på",
+    "confirm": "Slå det av",
+    "working": "Slår det av…",
+    "failed": "Vi kunne ikke slå det av akkurat nå. Ingenting er endret — adressen din virker fortsatt. Prøv igjen om litt."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Vi kunne ikke laste oppsettet ditt.",
+    "resumeFailedBody": "Ingenting er endret. Prøv igjen om litt.",
+    "close": "Lukk",
+    "resuming": "Fortsetter der du slapp…",
+    "genericError": "Noe gikk galt",
+    "saveFailed": "Kunne ikke lagre"
+  },
+  "address": {
+    "intro": "Kalenderen din får sin egen nettadresse.",
+    "question": "Hva er nettadressen din?",
+    "hint": "Den folk allerede bruker for å finne deg.",
+    "aria": "Din egen nettadresse",
+    "willBe": "Adressen din blir <addr>{address}</addr>",
+    "example": "For eksempel <addr>{address}</addr>",
+    "noChange": "Nettstedet ditt endres ikke — du legger bare til en lenke til den nye adressen.",
+    "notSetUp": "Vi har ikke satt opp dette.",
+    "restricted": "Den som har ansvar for nettadressen din, må gi oss lov til å sette opp hengelåsen — den lille låsen kundene ser ved siden av adressen. Før de legger oss til, vises den ikke, så vi har stoppet i stedet for å la deg vente på den. Be dem legge oss til, og prøv igjen.",
+    "blocked": "Nettadressen din blokkerer i dag hengelåsen helt. Den som har ansvar for den, må tillate den før dette kan virke. Be dem endre det, og prøv igjen.",
+    "elsewhere": "Noe svarer allerede på den adressen. Send meldingen på neste skjermbilde til den som har ansvar for den — de vet hva de skal gjøre.",
+    "provider": "Nettadressen din forvaltes av <b>{provider}</b>. Vi viser deg hvor du skal gå.",
+    "provisionFailed": "Vi kunne ikke sette opp den adressen.",
+    "willNotWork": "Den adressen vil ikke virke.",
+    "couldNotBeSetUp": "Den adressen kunne ikke settes opp.",
+    "couldNotSetUp": "Kunne ikke sette det opp",
+    "checking": "Sjekker…",
+    "setting": "Setter opp…",
+    "tryAgain": "Prøv igjen",
+    "setUpAddress": "Sett opp denne adressen",
+    "notNow": "Ikke nå"
+  },
+  "apex": {
+    "empty": "Skriv inn adressen du vil bruke.",
+    "not_a_domain": "Det ser ikke ut som en nettadresse.",
+    "unparseable": "Vi kunne ikke lese det som en nettadresse. Sjekk stavemåten og prøv igjen.",
+    "apex": "{host} er hele adressen til nettstedet ditt. Hvis du peker den mot oss, blir nettstedet ditt erstattet av denne siden. Sett heller et ord foran — for eksempel kalender.{host}.",
+    "too_deep": "Den adressen har for mange ledd. Noe som kalender.{domain} fungerer best."
+  },
+  "record": {
+    "addAt": "Legg til dette hos {provider}",
+    "open": "Åpne {provider}",
+    "guide": "Veiledningen fra {provider}",
+    "addAtSave": "Legg til dette hos {provider}, og lagre.",
+    "addSomewhere": "Legg til dette der nettadressen din forvaltes, og lagre.",
+    "hintChoose": "Velg dette fra listen.",
+    "hintWord": "Bare dette ordet, ikke hele adressen.",
+    "hintExact": "Kopier dette nøyaktig.",
+    "timing": "Det begynner som regel å virke innen en time, men det kan ta lengre tid. Du trenger ikke ha denne siden åpen.",
+    "someoneElse": "Er det noen andre som har ansvar for nettadressen din?",
+    "sentTo": "Sendt til {email}",
+    "emailPlaceholder": "e-postadressen deres",
+    "sending": "Sender…",
+    "send": "Send disse opplysningene",
+    "sendFailed": "Kunne ikke sende"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Åpne nettadressen din, deretter «DNS» og «Records».",
+      "add": "Velg «Add record», og velg deretter «CNAME» som «Type».",
+      "name": "Legg inn den første verdien nedenfor i «Name».",
+      "value": "Legg inn den andre verdien nedenfor i «Target».",
+      "proxy": "Sett «Proxy status» til «DNS only» — skyen ved siden av må være grå, ikke oransje.",
+      "save": "La «TTL» stå på «Auto», og velg «Save».",
+      "caveat": "Hvis skyen forblir oransje, vises aldri hengelåsen, og ingenting forteller deg hvorfor."
+    },
+    "godaddy": {
+      "open": "Åpne «Domain Portfolio», og velg nettadressen din.",
+      "dns": "Velg «DNS» under «Domain Settings».",
+      "add": "Velg «Add New Record», og velg deretter «CNAME» i menyen «Type».",
+      "name": "Legg inn den første verdien nedenfor i «Name».",
+      "value": "Legg inn den andre verdien nedenfor i «Value».",
+      "save": "La «TTL» være som den er, og velg «Save».",
+      "caveat": "Hvis du la til flere på én gang, står det «Save All Records» på knappen."
+    },
+    "123reg": {
+      "signIn": "Logg inn i «123 Reg Control Panel».",
+      "manage": "Ved siden av «Domains» velger du «Manage All», og deretter nettadressen din.",
+      "dns": "Velg «DNS», deretter «Add New Record».",
+      "type": "Velg «CNAME» fra listen «Type».",
+      "name": "Legg inn den første verdien nedenfor i «Name».",
+      "value": "Legg inn den andre verdien nedenfor i «Value», og sett et punktum på slutten av den.",
+      "save": "La «TTL» stå på «Default», og klikk «Save».",
+      "caveat": "123 Reg krever et punktum på slutten av den andre verdien, ellers virker det ikke."
+    },
+    "wix": {
+      "open": "Åpne «Domains», og klikk på ikonet «Domain Actions» ved siden av nettadressen din.",
+      "manage": "Velg «Manage DNS Records».",
+      "add": "I delen «CNAME (Aliases)» klikker du «+ Add Record», og deretter «Got it».",
+      "name": "Legg inn den første verdien nedenfor i «Host Name».",
+      "value": "Legg inn den andre verdien nedenfor i «Value».",
+      "save": "Klikk «Save», og deretter «Save Changes» i popup-vinduet.",
+      "caveat": "Hvis nettadressen din bare peker til Wix og ikke er registrert der, kan ikke Wix gjøre denne endringen — det må den som har adressen, gjøre."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Én oppføring å legge til for kalendersiden til {truckName}",
+    "hello": "Hei,",
+    "introAt": "Vi legger den oppdaterte kalenderen til {truckName} på {address}, og da må én oppføring legges til i domenet vårt hos {provider}.",
+    "introHolder": "Vi legger den oppdaterte kalenderen til {truckName} på {address}, og da må én oppføring legges til i domenet vårt hos den som har domenet vårt.",
+    "stepsAt": "Hos {provider}:",
+    "guide": "Deres egen veiledning: {url}",
+    "wholeChange": "Det er hele endringen — ingenting annet på nettstedet påvirkes, og resten av domenet vårt fungerer akkurat som nå. Det begynner som regel å virke innen en time.",
+    "pointsAt": "Siden den peker til, viser hvor vi står neste gang, og holder seg oppdatert av seg selv.",
+    "replyTo": "Svar til {email} hvis du har spørsmål.",
+    "thanks": "Takk,"
+  },
+  "liveEmail": {
+    "subject": "{address} virker",
+    "goodNews": "Gode nyheter — {address} virker.",
+    "body": "Kalenderen din vises nå på din egen adresse. Ta en titt og sjekk at alt stemmer: åpne {address}, og se etter at arrangementene er dine og at datoene stemmer.",
+    "confirm": "Når du har gjort det, åpner du innstillingene dine i HatchGrab og bekrefter at alt stemmer. Ingenting avhenger av det — det betyr bare at vi vet at et menneske har sett det."
+  }
+}

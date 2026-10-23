@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Questa email non ha la riga di disiscrizione, quindi non può essere inviata. Usa «Inserisci disiscrizione» per aggiungerla.",
+    "notSetUp": "Non è configurata nessuna frase di disiscrizione, quindi non si possono inviare email di contatto commerciale. Aggiungine una nel riquadro Firma della scheda Modelli.",
+    "notLoaded": "La frase di disiscrizione non è ancora stata caricata, quindi non è possibile inviare.",
+    "unreadable": "Non è stato possibile leggere la frase di disiscrizione, quindi non è stato inviato nulla."
+  },
+  "retry": {
+    "notRebuilt": "Non è stato possibile ricostruire il messaggio con la riga dell’azienda, quindi non è stato inviato nulla."
+  }
+}

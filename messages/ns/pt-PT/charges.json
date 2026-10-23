@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotal",
+  "taxFallback": "Impostos",
+  "taxIncluded": "Inclui {label}",
+  "serviceFeeCustomer": "Taxa de serviço online",
+  "serviceFee": "Taxa de serviço",
+  "cardFee": "Taxa de cartão",
+  "tip": "Gorjeta",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Impostos, taxas e gorjeta} tax_tip {Impostos e gorjeta} fees_tip {Taxas e gorjeta} fees {Taxas} other {Impostos e taxas}}"
+}

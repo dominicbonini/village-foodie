@@ -1,0 +1,17 @@
+{
+  "back": "← Tilbage",
+  "title": "Vælg en menu",
+  "save": "Spar {amount}",
+  "selectItems": "Vælg varer til hver del",
+  "choose": "Vælg {category}…",
+  "inYourBasket": "── I din kurv ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (i kurven){state, select, used { — allerede i en menu} taken { — valgt i en anden del} other {}}",
+  "addNew": "── Tilføj ny ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obligatorisk · vælg én} required {Obligatorisk} other {Vælg én}}{unmet, select, yes { (obligatorisk)} other {}}",
+  "notePlaceholder": "Tilføj en bemærkning, f.eks. uden løg (valgfrit)",
+  "backButton": "Tilbage",
+  "cancel": "Annuller",
+  "chooseRequired": "Vælg de obligatoriske muligheder",
+  "apply": "Vælg menu · {amount}"
+}

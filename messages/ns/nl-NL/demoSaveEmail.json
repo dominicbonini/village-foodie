@@ -1,0 +1,9 @@
+{
+  "subject": "Je HatchGrab-demo — hier is je link terug",
+  "heading": "Je demo is opgeslagen",
+  "intro": "Hier is je link terug naar de demo met jouw menukaart erin. Geen login nodig — tik er gewoon op.",
+  "button": "Mijn demo openen",
+  "freshDay": "Elke keer dat je terugkomt, zetten we een nieuwe verkoopdag klaar zodat je iets hebt om mee te spelen.",
+  "deletion": "Dit is een demo, dus we bewaren hem niet voor altijd — we verwijderen hem en de menukaart op\n                <b>{date}</b> ({days, plural, one {over # dag} other {over # dagen}}). Meld je je daarvoor\n                aan, dan neem je je menukaart mee.",
+  "notSent": "Opgeslagen, maar we konden de e-mail nu niet versturen."
+}

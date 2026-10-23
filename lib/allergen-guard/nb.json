@@ -1,0 +1,128 @@
+{
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for NORWEGIAN BOKMÅL (nb-NO). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "nb",
+  "normalise": "unicode",
+  "stems": [
+    "allergi",
+    "allergisk",
+    "allergen",
+    "intoleran",
+    "overfolsom",
+    "cøliaki",
+    "coliaki",
+    "coeliaki",
+    "glutenintoleran",
+    "anafylak",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "glutenfri",
+    "laktosefri",
+    "melkefri",
+    "eggfri",
+    "nøttefri",
+    "nottefri",
+    "peanottfri",
+    "peanøttfri",
+    "soyafri",
+    "sesamfri",
+    "fiskefri",
+    "uten gluten",
+    "uten laktose",
+    "uten melk",
+    "uten egg",
+    "uten nøtter",
+    "uten notter",
+    "uten peanøtt",
+    "uten peanott",
+    "uten soya",
+    "uten sesam",
+    "uten fisk",
+    "uten skalldyr",
+    "uten sennep",
+    "uten selleri",
+    "fri for",
+    "egnet for",
+    "trygg for",
+    "trygt for",
+    "spor av",
+    "kan inneholde",
+    "krysskontamin"
+  ],
+  "tokens": [
+    "fri"
+  ],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "hvete",
+        "mel"
+      ],
+      "crustaceans": [
+        "skalldyr",
+        "reker",
+        "reke",
+        "hummer",
+        "krabbe"
+      ],
+      "eggs": [
+        "egg",
+        "majones"
+      ],
+      "fish": [
+        "fisk",
+        "laks",
+        "tunfisk"
+      ],
+      "peanuts": [
+        "peanøtt",
+        "peanøtter"
+      ],
+      "soy": [
+        "soya",
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "melk",
+        "laktose",
+        "ost",
+        "fløte",
+        "smør",
+        "yoghurt"
+      ],
+      "tree nuts": [
+        "nøtter",
+        "nøtt",
+        "mandel",
+        "mandler",
+        "hasselnøtt",
+        "valnøtt",
+        "pistasj",
+        "cashew"
+      ],
+      "celery": [
+        "selleri"
+      ],
+      "mustard": [
+        "sennep"
+      ],
+      "sesame": [
+        "sesam"
+      ],
+      "sulphites": [
+        "sulfitt",
+        "sulfitter"
+      ],
+      "lupin": [
+        "lupin"
+      ],
+      "molluscs": [
+        "bløtdyr",
+        "blåskjell",
+        "blekksprut"
+      ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "typescript.tsserver.maxTsServerMemory": 6144,
+  "files.watcherExclude": {
+    "**/.next/**": true,
+    "**/docs/**": true,
+    "**/android/**": true,
+    "**/ios/**": true,
+    "**/public/screenshots/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/.next": true,
+    "**/docs/languages-1": true,
+    "**/docs/france-1": true
+  }
+}

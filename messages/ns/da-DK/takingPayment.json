@@ -1,0 +1,6 @@
+{
+  "heading": "Modtagelse af betaling",
+  "intro": "Sådan registrerer dit team betalingen for hver bestilling.",
+  "paidStepHelp": "Tilføjer en Bekræft-knap, når du selv tilføjer en bestilling, så du kan oprette den nu og tage imod betaling senere. Slå det til, hvis du tager imod bestillinger over telefonen eller på forhånd.",
+  "paidStepNote": "Det gælder kun bestillinger, du selv tilføjer. Det påvirker ikke onlinebestillinger."
+}

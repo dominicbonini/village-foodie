@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} horário} other {{count} horários}} acima da capacidade — rever",
+  "batchOver": "{cat} acima do lote — {count} para {slot} ({per} por lote)",
+  "eventStartOver": "Acima da capacidade no início do evento — {n, plural, one {{count} artigo} other {{count} artigos}} para {slot}",
+  "kitchenOver": "Cozinha acima da capacidade — {n, plural, one {{count} artigo} other {{count} artigos}} a cozinhar para {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} artigo} other {{count} artigos}}",
+  "placedAnyway": "Registadas mesmo assim: {list}",
+  "placedItem": "#{id} para {slot}",
+  "orphans": "{times} acima da capacidade — nenhuma encomenda encontrada a que o atribuir",
+  "dismiss": "Ignorar",
+  "kitchenCapacity": "Capacidade da cozinha",
+  "overCapacity": "Acima da capacidade",
+  "wakeUnsupported": "Este dispositivo não consegue manter o ecrã ligado.",
+  "wakeInsecure": "Não é possível manter o ecrã ligado a partir deste endereço.",
+  "wakeRetry": "Manter ecrã ligado — toque para tentar novamente",
+  "wakeAcquire": "Manter ecrã ligado",
+  "degraded": {
+    "serverError": "O servidor não conseguiu carregar as encomendas{hasStatus, select, yes { (erro {status})} other {}}. A mostrar encomendas das {at}. Podem faltar encomendas novas.",
+    "unreachable": "Sem ligação ao servidor. A mostrar encomendas das {at}. Podem faltar encomendas novas."
+  }
+}

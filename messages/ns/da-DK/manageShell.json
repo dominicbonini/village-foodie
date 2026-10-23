@@ -1,0 +1,84 @@
+{
+  "loading": "Indlæser administrationen…",
+  "loadFailed": "Kunne ikke indlæse",
+  "requestFailed": "Mislykkedes",
+  "invalidToken": "Ugyldigt eller udløbet token",
+  "loadFailedReason": "Kunne ikke indlæse siden: {reason}",
+  "noCountrySettings": "Kunne ikke indlæse foodtruckens landeindstillinger. Opdater siden.",
+  "noPlans": "Kunne ikke indlæse foodtruckens abonnement. Opdater siden.",
+  "stale": "{hasTime, select, yes {Kunne ikke opdatere. Viser det, der var gemt kl. {time}. Dine ændringer bliver stadig gemt.} other {Kunne ikke opdatere. Viser det, der var gemt. Dine ændringer bliver stadig gemt.}}",
+  "verify": {
+    "ok": "E-mail bekræftet – tak.",
+    "expired": "Bekræftelseslinket er udløbet. Kontakt os, så ordner vi det, før du går live.",
+    "invalid": "Bekræftelseslinket virkede ikke. Kontakt os, så ordner vi det, før du går live."
+  },
+  "profile": {
+    "updated": "Profilen er opdateret",
+    "saveFailed": "Kunne ikke gemme",
+    "title": "Redigér profil",
+    "name": "Navn",
+    "namePlaceholder": "Dit navn",
+    "email": "E-mail",
+    "cancel": "Annuller",
+    "saving": "Gemmer…",
+    "save": "Gem"
+  },
+  "header": {
+    "subtitle": "Administration",
+    "ordersDashboard": "← Bestillingsoversigt"
+  },
+  "tabs": {
+    "menu": "Menukort",
+    "schedule": "Kalender",
+    "social": "Sociale medier",
+    "reports": "Rapporter",
+    "team": "Team",
+    "settings": "Indstillinger",
+    "payments": "Betalinger",
+    "billing": "Abonnement",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Kalender ({count})",
+    "stripeAttention": "Stripe kræver din opmærksomhed",
+    "allergensNotSet": "allergener ikke angivet"
+  },
+  "menuSections": {
+    "label": "Sektioner i menukortet",
+    "items": "Retter",
+    "capacity": "Køkkenkapacitet",
+    "extras": "Tilvalg og mersalg",
+    "deals": "Tilbud"
+  },
+  "socialSections": {
+    "label": "Sektioner for sociale medier",
+    "create": "Lav et opslag",
+    "designs": "Designs",
+    "locations": "Indstillinger for steder"
+  },
+  "notices": {
+    "review": "Gennemgå →",
+    "tour": "Vil du have en hurtig rundvisning i din oversigt?",
+    "showMeAround": "Vis mig rundt",
+    "dismiss": "Luk",
+    "approval": "{count, plural, one {Vi har fundet <b>{count}</b> arrangement til dig – gennemgå og godkend det, før det bliver offentligt.} other {Vi har fundet <b>{count}</b> arrangementer til dig – gennemgå og godkend dem, før de bliver offentlige.}}",
+    "allergens": "<b>Allergener ikke angivet</b> – kunderne kan ikke se allergenoplysninger, før du har bekræftet dem. Gennemgå allergenerne for hver ret under fanen Menukort.",
+    "domainLive": "<link>{domain}</link> er live. Tag et kig på den, og bekræft under Indstillinger, at den er rigtig.",
+    "stripe": "<b>Stripe har brug for noget fra dig</b> – kortbetalinger kan stoppe, indtil det er ordnet.",
+    "profileTitle": "Udfyld din profil",
+    "missing": "Mangler: {fields}.",
+    "goToSettings": "Gå til Indstillinger →",
+    "field": {
+      "truckName": "foodtruckens navn",
+      "cuisineType": "køkkentype",
+      "contactEmail": "kontakt-e-mail",
+      "contactPhone": "kontakttelefon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Du har en gratis prøveperiode} other {Du har en gratis prøveperiode på {months} md.}}",
+    "ends": "{hasDate, select, yes {Prøveperioden slutter <hl>{date}</hl>} other {Prøveperioden slutter <hl>snart</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Alle funktioner gratis i # måned} other {Alle funktioner gratis i # måneder}}} other {Alle funktioner gratis i din prøveperiode}}",
+    "body": "{hasDate, select, yes {Du betaler ikke noget i din prøveperiode, som løber til <b>{date}</b>. Betalingen starter først, når du vælger et abonnement og indtaster dine betalingsoplysninger. Indtil da er der intet at opsige og intet at betale. Vælg dit abonnement inden da – ellers overgår du til {fallback}, og nogle funktioner holder op med at virke.} other {Du betaler ikke noget, så længe du er i prøveperioden. Betalingen starter først, når du vælger et abonnement og indtaster dine betalingsoplysninger. Indtil da er der intet at opsige og intet at betale. Vælg dit abonnement inden da – ellers overgår du til {fallback}, og nogle funktioner holder op med at virke.}}",
+    "fees": "*Almindelige kortgebyrer gælder for onlinebestillinger",
+    "upgrade": "Opgrader her →"
+  }
+}

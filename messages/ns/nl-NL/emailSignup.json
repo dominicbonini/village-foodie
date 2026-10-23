@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hoi {name},} other {Hoi,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Oprichter, HatchGrab",
+  "verify": {
+    "subject": "Bevestig je e-mailadres",
+    "thanks": "{hasTruck, select, yes {Bedankt voor het instellen van {truck} op HatchGrab.} other {Bedankt voor het instellen van je foodtruck op HatchGrab.}}",
+    "button": "Mijn e-mailadres bevestigen",
+    "buttonText": "Mijn e-mailadres bevestigen: {url}",
+    "why": "Met dit adres log je in en hier komen je bestelmeldingen binnen — dus het is de moeite waard om dit nu te doen.",
+    "next": "Zodra het bevestigd is, stuur ik je alles wat je nodig hebt om te beginnen.",
+    "carryOn": "Ondertussen kun je gewoon verder met instellen.",
+    "stuck": "Loop je ergens op vast? Beantwoord gewoon deze mail — ik beantwoord ze zelf.",
+    "fallbackLink": "Werkt de knop niet? Plak dan dit in je browser: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Welkom bij HatchGrab, {name}} other {Welkom bij HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Ik vind het echt leuk om {truck} welkom te heten bij HatchGrab.} other {Ik vind het echt leuk om je foodtruck welkom te heten bij HatchGrab.}}",
+    "trial": "{months, plural, one {Je gratis proefperiode van een maand is begonnen — alle functies staan aan.} other {Je gratis proefperiode van # maanden is begonnen — alle functies staan aan.}}",
+    "setup": "Als je dat nog niet gedaan hebt: instellen is eenvoudig en duurt ongeveer een kwartier.",
+    "button": "Open je dashboard",
+    "bookmark": "Handig om als bladwijzer op te slaan. Het werkt op elk apparaat.",
+    "stuck": "Beantwoord gewoon deze mail als je ergens op vastloopt — ik beantwoord ze zelf.",
+    "lookingForward": "{hasTruck, select, yes {Ik kijk ernaar uit om {truck} aan het werk te zien.} other {Ik kijk ernaar uit om je foodtruck aan het werk te zien.}}"
+  }
+}

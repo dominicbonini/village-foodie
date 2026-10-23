@@ -1,0 +1,3 @@
+{
+  "chargesSummary": "{parts, select, tax_fees_tip {USt., Gebühren & Trinkgeld} tax_tip {USt. & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {USt. & Gebühren}}"
+}

@@ -1,0 +1,28 @@
+{
+  "hi": "Hallo {name},",
+  "limit80": {
+    "subject": "Sie haben 80 % Ihrer WhatsApp-Antworten für diesen Monat verbraucht",
+    "used": "Ihre automatischen WhatsApp-Antworten haben diesen Monat <b>{used} von {limit}</b> verbraucht.",
+    "nothingStopped": "Noch ist nichts gestoppt. Wenn Sie {limit} erreichen, pausieren die automatischen Antworten, bis Ihr Kontingent am <b>{reset}</b> zurückgesetzt wird – Kunden können Ihnen weiterhin schreiben, und Sie sehen weiterhin alles, was sie senden.",
+    "raise": "Sie können Ihr monatliches Limit jederzeit in den Einstellungen erhöhen.",
+    "raiseLink": "Sie können Ihr monatliches Limit jederzeit in den Einstellungen erhöhen:",
+    "button": "Einstellungen öffnen"
+  },
+  "limit100": {
+    "subject": "WhatsApp: Automatische Antworten für diesen Monat pausiert",
+    "usedAll": "Sie haben alle {limit} automatischen WhatsApp-Antworten dieses Monats verbraucht, daher sind sie pausiert.",
+    "stillReach": "<b>Kunden können Ihnen weiterhin ganz normal schreiben, und jede Nachricht erreicht Sie weiterhin.</b> Gestoppt ist nur die automatische Antwort an die Kunden.",
+    "startAgain": "Die Antworten laufen am <b>{reset}</b> wieder an – oder sofort, wenn Sie Ihr monatliches Limit in den Einstellungen erhöhen.",
+    "startAgainLink": "Die Antworten laufen am {reset} wieder an – oder sofort, wenn Sie Ihr monatliches Limit in den Einstellungen erhöhen:",
+    "button": "Mein Limit erhöhen"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp braucht eine Zahlungsmethode, bevor Nachrichten gesendet werden können",
+    "stopped": "WhatsApp hat den Versand Ihrer automatischen Antworten gestoppt, weil in Ihrem WhatsApp Business-Konto keine funktionierende Zahlungsmethode hinterlegt ist.",
+    "stillMessage": "<b>Kunden können Ihnen weiterhin schreiben, und Sie sehen weiterhin alles, was sie senden</b> – aber die Antworten erreichen sie nicht.",
+    "payDirect": "Sie bezahlen WhatsApp für diese Nachrichten direkt, daher wird das im WhatsApp Manager behoben und nicht in HatchGrab. Fügen Sie dort eine Karte hinzu oder aktualisieren Sie sie, dann werden die Antworten automatisch wieder gesendet.",
+    "payDirectLink": "Sie bezahlen WhatsApp für diese Nachrichten direkt, daher wird das im WhatsApp Manager behoben und nicht in HatchGrab. Fügen Sie dort eine Karte hinzu oder aktualisieren Sie sie, dann werden die Antworten automatisch wieder gesendet:",
+    "button": "WhatsApp Manager öffnen",
+    "settings": "Ihre HatchGrab-Einstellungen: <link>{url}</link>"
+  }
+}

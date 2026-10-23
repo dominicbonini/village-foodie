@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotaal",
+  "taxFallback": "Btw",
+  "taxIncluded": "Inclusief {label}",
+  "serviceFeeCustomer": "Online servicekosten",
+  "serviceFee": "Servicekosten",
+  "cardFee": "Kaartkosten",
+  "tip": "Fooi",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Btw, kosten en fooi} tax_tip {Btw en fooi} fees_tip {Kosten en fooi} fees {Kosten} other {Btw en kosten}}"
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Abonnementer og funktioner",
+  "generated": "Genereret {date}",
+  "allowanceHeading": "Inkluderede onlinebestillinger",
+  "smallPrint": "Det med småt",
+  "priceNoteMasked": "Priser vist som »Oplyses senere« er endnu ikke offentliggjort.",
+  "omitNote": "Priserne er bevidst ikke medtaget i dette dokument.",
+  "terms": "Tallene er de offentliggjorte abonnementsvilkår på ovenstående dato og kan ændre sig. Gebyrer for kortbetaling opkræves af Stripe, ikke af HatchGrab. Dette dokument er et resumé, ikke en kontrakt."
+}

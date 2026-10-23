@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Todos",
+    "bold": "Fortes e altos",
+    "hand": "Manuscritos",
+    "classic": "Clássicos",
+    "clean": "Simples",
+    "own": "Os seus",
+    "ownCount": "Os seus ({count})"
+  },
+  "yoursTag": "· seu",
+  "loadingFonts": "A carregar tipos de letra…",
+  "search": "Pesquisar {count, number} tipos de letra",
+  "uploadButton": "↑ Carregar o seu tipo de letra",
+  "loadingLibrary": "A carregar a biblioteca de tipos de letra…",
+  "tryAgain": "Tentar novamente",
+  "noOwn": "Ainda não carregou nenhum tipo de letra. Use o botão «↑ Carregar o seu tipo de letra» acima.",
+  "recent": "Usados recentemente",
+  "popular": "Populares para cartazes",
+  "adding": "A adicionar…",
+  "noMatch": "Nenhum tipo de letra corresponde a «{query}».",
+  "showing": "A mostrar {shown} de {total, number} — escreva mais para restringir a pesquisa.",
+  "couldNotAdd": "Não foi possível adicionar esse tipo de letra",
+  "tooBig": "Esse tipo de letra tem {size, number, ::.0 group-off} MB. O limite é 5 MB.",
+  "woff": "Carregue um ficheiro TTF ou OTF — normalmente pode transferi-lo do local onde comprou o tipo de letra.",
+  "uploadIncomplete": "O carregamento não foi concluído",
+  "added": "«{name}» adicionado como versão {face}.",
+  "face": {
+    "regular": "normal",
+    "bold": "negrito",
+    "italic": "itálico"
+  },
+  "licenceTick": "Este tipo de letra é meu ou tenho licença para o usar",
+  "checking": "A verificar o tipo de letra…",
+  "addFont": "Adicionar",
+  "cancel": "Cancelar",
+  "missingFaces": "Adicione a versão {faces} de «{name}» (opcional) — escolha o ficheiro novamente.",
+  "somethingWrong": "Algo correu mal",
+  "faceLower": {
+    "regular": "normal",
+    "bold": "negrito",
+    "italic": "itálico"
+  },
+  "ownLicence": "Próprio",
+  "loadFailed": "Não foi possível carregar os tipos de letra"
+}

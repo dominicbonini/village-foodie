@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Tem de manter o painel ou o ecrã da cozinha ligado e com internet durante o serviço.",
+  "explainerBody": "Se o ecrã se desligar, o dispositivo perder a internet ou mudar para outro site, a proteção sem ligação entra em ação — pausando as encomendas ou desligando a aceitação automática, conforme o que escolheu.",
+  "reminder": "⚠️ Mantenha o painel ou o ecrã da cozinha ligado e com internet durante o serviço, ou a proteção sem ligação pode entrar em ação.",
+  "enableConfirm": "Proteção sem ligação ativada.\n\nPara as encomendas continuarem a entrar, o ecrã tem de ficar ligado. Se este dispositivo perder a ligação, a proteção sem ligação entra em ação no modo que escolheu.\n\nConfirme que a opção «Ecrã ligado» está ativada neste dispositivo.",
+  "disableConfirm": "Desativar a proteção sem ligação para este evento?\n\nSe este dispositivo perder a ligação, as encomendas online continuam — os clientes podem fazer encomendas que não consegue ver. Desative apenas se tiver uma ligação fiável.",
+  "cardDescription": "Decide o que acontece às encomendas recebidas quando o seu dispositivo fica sem ligação.",
+  "purpose": "Se o seu dispositivo perder a ligação, isto impede que cheguem encomendas enquanto não as consegue ver.",
+  "switchLabel": "Proteção de encomendas sem ligação",
+  "switchHelp": "O que acontece quando este food truck perde a ligação.",
+  "modes": {
+    "pause": {
+      "label": "Pausar encomendas online",
+      "help": "Os clientes não podem encomendar até voltar a ter ligação."
+    },
+    "no_auto_accept": {
+      "label": "Continuar a receber encomendas e confirmá-las eu próprio",
+      "help": "A aceitação automática é desligada: os clientes continuam a poder encomendar, mas nada é confirmado automaticamente. Confirma cada encomenda quando voltar a ter ligação — e o que ainda estiver à espera é rejeitado automaticamente após o tempo que escolheu, sendo o cliente avisado por email."
+    }
+  },
+  "autoRejectLabel": "Rejeitar encomendas à espera há mais de",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

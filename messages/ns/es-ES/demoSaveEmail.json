@@ -1,0 +1,9 @@
+{
+  "subject": "Tu demo de HatchGrab: aquí tienes tu enlace para volver",
+  "heading": "Tu demo está guardada",
+  "intro": "Aquí tienes tu enlace para volver a la demo con tu carta. No hace falta iniciar sesión: solo tócalo.",
+  "button": "Abrir mi demo",
+  "freshDay": "Cada vez que vuelvas, prepararemos un día de venta nuevo para que tengas algo con lo que probar.",
+  "deletion": "Es una demo, así que no la guardamos para siempre: la borraremos junto con la carta el\n                <b>{date}</b> ({days, plural, one {# día} other {# días}}). Si te registras antes\n                de esa fecha, tu carta se viene contigo.",
+  "notSent": "Guardada, pero no hemos podido enviar el correo ahora mismo."
+}

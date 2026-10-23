@@ -1,0 +1,31 @@
+{
+  "intro": "In Gestione configuri il tuo food truck e vedi come sta andando. Nella Dashboard ricevi gli ordini e gestisci ogni evento mentre è in corso.",
+  "ariaLabel": "Tour guidato della dashboard",
+  "step": "{current} di {total}",
+  "skip": "Salta",
+  "back": "← Indietro",
+  "next": "Avanti →",
+  "done": "Fine",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "I tuoi piatti, prezzi e allergeni. Qualsiasi modifica fatta qui è subito online."
+    },
+    "schedule": {
+      "title": "Calendario",
+      "body": "Dove e quando lavori. Aggiungi qui un evento e i clienti potranno ordinare per quell’evento."
+    },
+    "build": {
+      "title": "Menu combo, extra e upselling",
+      "body": "Menu combo, upselling, personalizzazioni e la capacità della cucina si trovano in Menu — prova a esplorarli."
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "body": "I dati del tuo food truck e come pagano i clienti."
+    },
+    "billing": {
+      "title": "Fatturazione",
+      "body": "Qui trovi il tuo piano, la fatturazione e le informazioni sulle funzionalità."
+    }
+  }
+}

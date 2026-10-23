@@ -1,0 +1,83 @@
+{
+  "title": "Evenemangstyper",
+  "newTypeButton": "+ Ny evenemangstyp",
+  "close": "Stäng",
+  "loading": "Läser in…",
+  "missingTitle": "Evenemangstyper är inte aktiverade än.",
+  "missingBody": "Databasuppdateringen för den här funktionen har inte körts. Inget är trasigt — alla evenemang använder ditt vanliga upplägg.",
+  "column": "Kolumn",
+  "vanGone": "Den foodtrucken finns inte längre.",
+  "typeGone": "Den typen finns inte längre.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Mer för {name}",
+  "rename": "Byt namn",
+  "moveLeft": "Flytta vänster",
+  "moveRight": "Flytta höger",
+  "delete": "Radera",
+  "sections": {
+    "vans": "FOODTRUCKAR",
+    "prices": "PRISER",
+    "itemPrices": "ARTIKELPRISER",
+    "service": "SERVICE"
+  },
+  "labelFor": "{label} för {name}",
+  "intervalEvery": "Var {mins} min",
+  "noTypes": "Du har inga evenemangstyper än, så alla evenemang använder ditt vanliga upplägg.",
+  "renameTitle": "Byt namn på typen",
+  "name": "Namn",
+  "cancel": "Avbryt",
+  "save": "Spara",
+  "copyVanOne": "Kopiera inställningarna från foodtruck 1",
+  "thisType": "den här typen",
+  "matchTitle": "Matcha Standard för ”{name}”?",
+  "matchKeeps": "Allt du har ändrat i ett enskilt evenemangs översikt behålls, och typens priser ändras inte.",
+  "matchWillUse": "Den kommer att använda: {summary}",
+  "deleteTitle": "Radera ”{name}”?",
+  "deleteBody": "{n, plural, =0 {Inga kommande evenemang använder ”{name}”.} one {{count} kommande evenemang använder ”{name}”. Det går tillbaka till Standard.} other {{count} kommande evenemang använder ”{name}”. De går tillbaka till Standard.}} Allt du har ändrat på ett enskilt evenemang behålls.",
+  "keep": "Behåll",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "standard",
+    "vanSetup": "Den här foodtruckens vanliga upplägg — används vid alla evenemang utan typ.",
+    "standardSetup": "Ditt vanliga upplägg — används vid alla evenemang utan typ.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} kommande evenemang} other {{upcomingCount} kommande evenemang}} · {changed, plural, =0 {inget ändrat än} one {{changedCount} av {total} ändrad} other {{changedCount} av {total} ändrade}}",
+    "noMenuItems": "Inga artiklar på menyn än — lägg till dem under Meny › Artiklar."
+  },
+  "newType": {
+    "title": "Ny evenemangstyp",
+    "namePlaceholder": "t.ex. Skolfest",
+    "help": "Tryck på ett namn eller skriv ett eget. Typen börjar som en kopia av Standard, och senare ändringar i Standard påverkar den inte. Ändra vad du vill efteråt.",
+    "create": "Skapa",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Pub",
+      "market": "Marknad",
+      "privateHire": "Hyra foodtruck"
+    }
+  },
+  "select": {
+    "label": "Evenemangstyp",
+    "usual": "{name} är det vanliga för den här platsen."
+  },
+  "summary": {
+    "normalSetup": "Ditt vanliga upplägg",
+    "sameAsStandard": "Samma som Standard",
+    "buzzersOn": "summrar på",
+    "buzzersOff": "summrar av",
+    "takeCashOn": "kontanter på",
+    "takeCashOff": "kontanter av",
+    "markReadyOn": "klarmarkering på",
+    "markReadyOff": "klarmarkering av",
+    "collectionEvery": "upphämtning var {mins} min",
+    "offlineOff": "offlineskydd av",
+    "offlineKeepTaking": "offline: fortsätt ta emot beställningar",
+    "offlinePause": "offline: pausa beställningar"
+  },
+  "errors": {
+    "somethingWentWrong": "Något gick fel",
+    "couldNotLoad": "Kunde inte läsa in",
+    "couldNotSave": "Kunde inte spara",
+    "noVans": "Företaget har inga foodtruckar att ändra."
+  }
+}

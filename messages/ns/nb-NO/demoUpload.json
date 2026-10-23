@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Leser menyen din…",
+    "found": "Fant rettene dine…",
+    "kitchen": "Setter opp kjøkkenet ditt…",
+    "page": "Lager bestillingssiden din…",
+    "almost": "Nesten klar…"
+  },
+  "templateSteps": {
+    "truck": "Lager eksempelmatbilen din…",
+    "menu": "Setter opp menyen…",
+    "kitchen": "Setter opp kjøkkenet…",
+    "page": "Lager bestillingssiden…",
+    "almost": "Nesten klar…"
+  },
+  "dialogLabel": "Last opp menyen din",
+  "heading": "✨ Last opp menyen din",
+  "failedHeading": "Vi klarte ikke å lese den menyen",
+  "close": "Lukk",
+  "intro": "Et bilde av menytavla, en skjermdump, en PDF, eller lim den inn som tekst. AI-en vår leser den og lager en fungerende bestillingsside til deg — dine retter, dine priser — på under 60 sekunder. Ingen registrering, ikke noe kort.",
+  "failedIntro": "Noen ganger er et bilde for mørkt, for skrått eller håndskrevet. Det er vår jobb å løse, ikke noe du har gjort feil. Noen måter å gå videre på:",
+  "usually": "Dette tar vanligvis under 60 sekunder.",
+  "slow": "Dette tar lengre tid enn vanlig — det gjør store menyer noen ganger.",
+  "keepWaiting": "Vent litt til",
+  "sampleWhileYouWait": "Eller se deg rundt med en eksempelmeny mens du venter",
+  "standIn": "Dette <b>blir ikke menyen din</b> — det er bare et eksempel, så du ser hvordan det fungerer.",
+  "seeSample": "Se eksempelmeny",
+  "tryAgain": "Prøv igjen",
+  "tryPhotoAgain": "Prøv dette bildet igjen",
+  "tryDifferent": "Prøv et annet bilde",
+  "uploadAnother": "← Last opp et annet bilde",
+  "orSample": "Eller se deg rundt med en eksempelmeny",
+  "orBuild": "Eller så lager vi den for deg",
+  "buildSent": "✓ Takk — vi har fått den. Vi sender deg en e-post.",
+  "buildBody": "Legg igjen e-postadressen din, så legger et ekte menneske inn menyen din og sender deg lenken.",
+  "emailPlaceholder": "deg@dinmatbil.no",
+  "sending": "…",
+  "send": "Send",
+  "noPhoto": "Har du ikke et bilde av menyen for hånden?",
+  "noPhotoBody": "Se deg rundt med en eksempelmatbil i stedet — du kan laste opp din egen når som helst.",
+  "build": "Lag demoen min →",
+  "nothingPublished": "Ingenting er publisert — bare du kan se den.",
+  "error": {
+    "somethingWrong": "Noe gikk galt. Prøv igjen.",
+    "serverUnreachable": "Vi fikk ikke kontakt med serveren. Sjekk tilkoblingen og prøv igjen.",
+    "sendFailed": "Kunne ikke sende det — prøv igjen."
+  },
+  "fields": {
+    "uploadLabel": "Last opp menyfil",
+    "dropHere": "Slipp menyen din her",
+    "dragOrTap": "Dra og slipp, eller trykk for å velge",
+    "fileTypes": "Bilde eller PDF",
+    "or": "eller",
+    "pasteLabel": "Lim inn menytekst",
+    "pastePlaceholder": "Lim inn menyen her — navn på retter, beskrivelser, priser …"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Il titolo non entrava ed è stato accorciato.",
+    "date": "La data non entrava ed è stata accorciata.",
+    "daysOff": "Il testo dei giorni di chiusura non entrava ed è stato accorciato.",
+    "place": "Il nome del luogo non entrava ed è stato accorciato.",
+    "time": "L’orario non entrava ed è stato accorciato.",
+    "note": "Il tuo testo non entrava ed è stato accorciato.",
+    "venue": "La sede non entrava ed è stata accorciata.",
+    "area": "La zona non entrava ed è stata accorciata."
+  },
+  "fontFallback": "Non è stato possibile caricare un font usato da questa grafica ({id}) — quei riquadri sono in Oswald.",
+  "wrongShapeBackground": "L’immagine di questo luogo ha un formato diverso dalla tua grafica, quindi si usa lo sfondo standard.",
+  "rowsFit": "L’ultimo giorno finisce {px} px sotto il bordo inferiore dell’immagine — riduci la spaziatura delle righe o sposta più in alto la riga 1.",
+  "placeStatus": {
+    "ownBoth": "Immagine e posizioni del testo proprie",
+    "wrongShape": "Formato diverso — non usata finché non la sostituisci",
+    "ownPicture": "Immagine propria, posizioni standard",
+    "ownPositions": "Immagine standard, posizioni del testo proprie",
+    "none": "Ancora nessuna immagine — si usa Standard"
+  },
+  "standardStatus": "Usata in tutti gli altri luoghi",
+  "option": {
+    "oneOff": "Caricane una solo per questo post",
+    "placePoster": "Locandina — {name}",
+    "standard": "Grafica Standard"
+  },
+  "previewLabel": {
+    "lastEvent": "L’anteprima usa il tuo ultimo evento qui",
+    "noEvents": "Ancora nessun evento qui — l’anteprima mostra il tuo prossimo evento con il nome di questo luogo"
+  },
+  "fontUsage": {
+    "weekly": "la grafica del tuo post settimanale",
+    "event": "la grafica del tuo post per singolo evento",
+    "place": "la tua grafica per {place}",
+    "placeUnnamed": "la tua grafica per un luogo"
+  },
+  "face": {
+    "regular": "Normale",
+    "bold": "Grassetto",
+    "italic": "Corsivo"
+  },
+  "picture": {
+    "legacy": "Locandina dell’evento",
+    "fallback": "Immagine",
+    "wrongShape": "Formato diverso — non può essere usata come sfondo intero"
+  },
+  "noPicture": {
+    "omit": "Non mostrarla",
+    "blank": "Lascia uno spazio vuoto",
+    "logo": "Mostra il tuo logo"
+  },
+  "noPicturesAll": "{total, plural, one {La tua postazione ha un’immagine.} other {Tutte le tue {total} postazioni hanno un’immagine.}}",
+  "noPicturesSome": "{without, plural, one {{without} delle tue {total} postazioni non ha ancora un’immagine} other {{without} delle tue {total} postazioni non hanno ancora un’immagine}}",
+  "licenceTick": "Possiedo questo font o ho una licenza per usarlo",
+  "fontUploadButton": "↑ Carica il tuo font"
+}

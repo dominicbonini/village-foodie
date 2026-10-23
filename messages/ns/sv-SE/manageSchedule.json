@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Inställt",
+    "finished": "Avslutat",
+    "unconfirmed": "Obekräftat",
+    "confirmed": "Bekräftat",
+    "open": "Öppet nu",
+    "closed": "Stängt"
+  },
+  "sections": {
+    "label": "Schemats delar",
+    "events": "Evenemang",
+    "eventTypes": "Evenemangstyper"
+  },
+  "header": {
+    "title": "Schema",
+    "upcoming": "{count} kommande",
+    "import": "✨ Importera schema",
+    "importHint": "foto, PDF eller text",
+    "addEvent": "+ Lägg till evenemang",
+    "scraperAuto": "Hittar evenemang automatiskt på din webbplats",
+    "changeInSettings": "Ändra i Inställningar",
+    "scraperManual": "Du sköter ditt schema manuellt"
+  },
+  "empty": {
+    "title": "Inga kommande evenemang",
+    "body": "Evenemang som hämtas från dina sociala medier och din bokningskalender visas här så att du kan bekräfta dem"
+  },
+  "list": {
+    "openNow": "Öppet nu",
+    "needsApproval": "Väntar på ditt godkännande",
+    "needsConfirmation": "Behöver bekräftas",
+    "confirmed": "Bekräftade",
+    "past": "Tidigare evenemang ({count})",
+    "found": "Vi hittade {count, plural, one {# evenemang åt dig – granska och godkänn det innan det publiceras.} other {# evenemang åt dig – granska och godkänn dem innan de publiceras.}}"
+  },
+  "card": {
+    "addName": "Lägg till ett namn",
+    "timeNeeded": "⚠ Tid saknas",
+    "setTimeFirst": "Ange en tid först",
+    "confirm": "Bekräfta",
+    "copy": "Kopiera",
+    "edit": "Redigera",
+    "makePost": "Skapa inlägg",
+    "cancel": "Ställ in",
+    "approve": "Godkänn",
+    "reject": "Avvisa",
+    "stock": "⚠️ Lager",
+    "stockHidden": "Dold – {reason}",
+    "noDeals": "Inga aktiva erbjudanden",
+    "dealsActive": "{count, plural, one {# erbjudande} other {# erbjudanden}} aktiva · {names}{hidden, plural, =0 {} one { · # dold} other { · # dolda}}",
+    "approveNeedsTimes": "Godkänn är avstängt tills evenemanget har en start- och sluttid – lägg till dem via Redigera."
+  },
+  "guessed": {
+    "title": "📍 Vi gissade den här platsen",
+    "body": "Mer än en plats matchade <b>{venue}</b>, så vi valde den som passade bäst{hasTown, select, yes { i <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Kontrollera att det är rätt plats innan du godkänner – om den är fel, använd <b>Redigera</b> för att rätta området eller {postal}, annars skickas kunderna till fel ställe.",
+    "thisVenue": "den här platsen"
+  },
+  "noLocation": {
+    "title": "📍 Ingen position än",
+    "body": "Vi kunde inte placera den här platsen på kartan, så den listas men får ingen kartnål. Lägg till {postal} via <b>Redigera</b> för att visa den på kartan."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Möjlig krock} other {Möjliga krockar}} – granska innan du {pending, select, yes {godkänner} other {bekräftar}}",
+    "duplicate": "Det här ser ut att vara samma evenemang som du redan har.",
+    "review": "Samma plats och datum, annan tid – är det samma evenemang med ändrad tid eller en separat tid? Granska innan du godkänner.",
+    "already": "Redan i ditt schema: <b>{venue}</b>{details} ({status, select, confirmed {bekräftat} open {öppet} other {{status}}})",
+    "unnamedVenue": "Namnlös plats",
+    "ack": "Ja, det är olika evenemang – {pending, select, yes {godkänn} other {bekräfta}} ändå",
+    "cancel": "Avbryt",
+    "overlap": "Evenemangets tid överlappar ett annat evenemang samma dag – en foodtruck kan inte vara på två ställen samtidigt. Kontrollera innan du godkänner."
+  },
+  "toast": {
+    "loadFailed": "Det gick inte att läsa in evenemangen",
+    "linkFailed": "Det gick inte att läsa in länken",
+    "placeTypeFailed": "Evenemanget sparades. Vanlig typ för {place} sparades inte – {reason}.",
+    "placeTypeFailedReason": "sparningen gick inte igenom",
+    "eventUpdated": "Evenemanget uppdaterat",
+    "eventAdded": "Evenemanget tillagt",
+    "eventsSaved": "{count, plural, one {# evenemang sparat} other {# evenemang sparade}}",
+    "saveEventsFailed": "Det gick inte att spara evenemangen",
+    "needsTime": "Lägg till en start- och sluttid innan du godkänner – evenemanget behöver en tid för att publiceras.",
+    "addStartTime": "Lägg till en starttid",
+    "addEndTime": "Lägg till en sluttid",
+    "chooseTruckBefore": "Välj vilken foodtruck som jobbar på evenemanget innan du godkänner.",
+    "chooseTruck": "Välj vilken foodtruck som jobbar på evenemanget",
+    "eventConfirmed": "Evenemanget bekräftat",
+    "eventRejected": "Evenemanget avvisat",
+    "undo": "↩ Ångra",
+    "eventRestored": "Evenemanget återställt",
+    "restoreFailed": "Det gick inte att återställa",
+    "eventCancelled": "Evenemanget inställt",
+    "eventCancelledOrders": "Evenemanget inställt · {count, plural, one {# beställning} other {# beställningar}} avbrutna",
+    "placeHidden": "Platsen dold",
+    "placeShown": "Platsen visas igen",
+    "saveThatFailed": "Det gick inte att spara."
+  },
+  "link": {
+    "label": "Privat länk och QR-kod",
+    "close": "Stäng"
+  }
+}

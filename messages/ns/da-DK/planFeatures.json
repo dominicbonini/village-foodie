@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Synlighed på HatchGrab-kortet"
+    },
+    "web_dashboard": {
+      "name": "Weboversigt på alle enheder"
+    },
+    "qr_code": {
+      "name": "QR-kode"
+    },
+    "schedule_import": {
+      "name": "Automatisk import af kalender"
+    },
+    "meal_deals_upsells": {
+      "name": "Menuer og mersalg"
+    },
+    "walkup_orders": {
+      "name": "Håndtering af bestillinger ved vognen"
+    },
+    "sold_out_toggle": {
+      "name": "Udsolgt med ét tryk"
+    },
+    "kitchen_app": {
+      "name": "Køkkenapp til iPhone, iPad og Android"
+    },
+    "offline_protection": {
+      "name": "Beskyttelse af bestillinger uden forbindelse"
+    },
+    "online_payments": {
+      "name": "Onlinebetaling"
+    },
+    "advance_preordering": {
+      "name": "Forudbestilling til kommende datoer"
+    },
+    "preorder_deadline": {
+      "name": "Frist for forudbestilling"
+    },
+    "time_slot_selection": {
+      "name": "Kunderne vælger tidsrum"
+    },
+    "kitchen_capacity": {
+      "name": "Styring af køkkenkapacitet"
+    },
+    "stock_countdown": {
+      "name": "Automatisk lagernedtælling"
+    },
+    "auto_accept": {
+      "name": "Automatisk accept af onlinebestillinger"
+    },
+    "branded_qr_code": {
+      "name": "QR-kode med dit logo"
+    },
+    "private_events": {
+      "name": "Private arrangementer"
+    },
+    "social_media_posts": {
+      "name": "Opslag på sociale medier"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatiske svar på WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatiske svar på Messenger og Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Tag imod betaling på din telefon"
+    },
+    "advanced_reporting": {
+      "name": "Avancerede rapporter"
+    },
+    "sms_order_alerts": {
+      "name": "Sms-beskeder om bestillinger"
+    },
+    "multi_device_kitchen": {
+      "name": "Synkronisering mellem flere skærme i køkkenet"
+    },
+    "multi_user_access": {
+      "name": "Adgang for flere brugere"
+    },
+    "embed_schedule": {
+      "name": "Kalenderside på din egen hjemmeside"
+    },
+    "event_types": {
+      "name": "Egne eventtyper og eventpriser"
+    },
+    "buzzer_tracking": {
+      "name": "Styr på buzzere"
+    },
+    "ticket_printing": {
+      "name": "Udskrivning af køkkenbonner"
+    },
+    "customer_display": {
+      "name": "Kundeskærm"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitale stempelkort"
+    }
+  },
+  "cardRegionOnline": "almindelige {region}",
+  "cardRegion": {
+    "UKcards": "britiske kort",
+    "EEAcards": "kort fra EØS",
+    "UScards": "amerikanske kort",
+    "Australiancards": "australske kort",
+    "NewZealandcards": "newzealandske kort",
+    "Canadiancards": "canadiske kort",
+    "Swisscards": "schweiziske kort"
+  },
+  "perMonth": {
+    "mo": "{amount}/md.",
+    "month": "{amount}/måned"
+  },
+  "priceWord": {
+    "free": "Gratis",
+    "freeTrial": "Gratis prøveperiode",
+    "lifetime": "Livstid",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Betal ved afhentning",
+    "unlimited": "Ubegrænset",
+    "none": "—",
+    "masked": "Oplyses senere"
+  },
+  "cell": {
+    "included": "Inkluderet"
+  }
+}

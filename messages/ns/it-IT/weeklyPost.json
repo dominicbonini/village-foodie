@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Qualcosa è andato storto",
+    "previewFailed": "Impossibile creare l’anteprima",
+    "loadFailed": "Impossibile caricare",
+    "tooBig": "L’immagine pesa {size, number, ::.0 group-off} MB. Il limite è 10 MB.",
+    "wrongType": "Scegli un file PNG o JPG.",
+    "uploadIncomplete": "Il caricamento non è stato completato",
+    "uploadFailed": "Caricamento non riuscito",
+    "saveFailed": "Impossibile salvare",
+    "buildFailed": "Impossibile creare il post",
+    "copyFailed": "Impossibile copiare — seleziona il testo e copialo a mano."
+  },
+  "loading": "Caricamento…",
+  "missingTable": {
+    "title": "Il post settimanale richiede un aggiornamento del database",
+    "body": "La tabella dei modelli non è ancora stata creata. Questa schermata funzionerà dopo l’applicazione della migrazione."
+  },
+  "kind": {
+    "label": "Quale modello",
+    "event": "Singolo evento",
+    "week": "Settimanale"
+  },
+  "setup": {
+    "title": "Imposta il tuo post settimanale",
+    "intro": "Carica la versione vuota della grafica settimanale che già prepari — lo stesso modello, senza le tue caselle di testo. HatchGrab compila la settimana dal tuo calendario.",
+    "canvaTitle": "Come esportare un modello vuoto da Canva",
+    "canvaStep1": "Apri il tuo solito modello del calendario settimanale.",
+    "canvaStep2": "Elimina le caselle di testo con date, luoghi e orari — lascia lo sfondo e i titoli che vuoi tenere.",
+    "canvaStep3": "Condividi › Scarica › PNG.",
+    "uploading": "Caricamento…",
+    "upload": "Carica l’immagine vuota",
+    "uploadHint": "PNG o JPG, fino a 10 MB, almeno {px} px sul lato corto.",
+    "phoneTip": "Meglio da computer o iPad — sul telefono le caselle sono piccole da trascinare.",
+    "designName": "Modello del post settimanale",
+    "backDesigns": "‹ Modelli",
+    "back": "‹ Indietro",
+    "pictureNote": "La tua immagine senza date né luoghi. Li aggiungiamo noi.",
+    "saved": "Modello salvato."
+  },
+  "week": {
+    "this": "Questa settimana",
+    "next": "Settimana prossima"
+  },
+  "post": {
+    "title": "Il tuo post settimanale",
+    "editDesign": "Modifica modello",
+    "weekOf": "sett. del {date}",
+    "imageAlt": "Il tuo post settimanale",
+    "building": "Creazione del post…",
+    "updating": "Aggiornamento…",
+    "eventsTitle": "Gli eventi di questa settimana",
+    "noEvents": "Nessun evento questa settimana.",
+    "eventDateCancelled": "{date} · annullato",
+    "showCancelled": "Mostra eventi annullati",
+    "showPrivate": "Mostra eventi privati",
+    "privateHint": "Compaiono come «Evento privato» con data e orari — mai il luogo.",
+    "noteTitle": "Nota",
+    "notePlaceholder": "es. Ordina in anticipo e ritira",
+    "noteHint": "Compare nella didascalia e nella casella della nota, se ne hai inserita una.",
+    "captionTitle": "Didascalia per la tua pagina",
+    "perEventTitle": "Post per ogni evento",
+    "nothingToPost": "Niente da pubblicare questa settimana.",
+    "textCopied": "Testo copiato.",
+    "copyText": "Copia testo",
+    "image": "Immagine",
+    "share": "Condividi",
+    "noOrderLink": "Ancora nessun link per gli ordini — imposta l’indirizzo web del tuo food truck nelle Impostazioni."
+  }
+}

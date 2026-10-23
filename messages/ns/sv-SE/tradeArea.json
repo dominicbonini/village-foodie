@@ -1,0 +1,8 @@
+{
+  "country_missing": "Välj landet där din foodtruck har sin bas.",
+  "country_off": "Foodtruckar i det landet kan inte registrera sig än. Välj ett annat land.",
+  "zone_unknown": "Den tidszonen erbjuder vi inte för det landet. Välj en i listan.",
+  "town_missing": "Ange orten där du har din bas.",
+  "town_too_long": "Ortnamnet är för långt – högst 120 tecken.",
+  "region_closed": "Foodtruckar med bas i {region} kan inte registrera sig än{reason, select, language {: HatchGrab finns inte på {language} än} taxLines {: vi lägger först till separata rader för GST och PST} other {}}. Om din foodtruck har sin bas någon annanstans, välj den orten."
+}

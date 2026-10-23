@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Ny beställning #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Ny beställning mottagen",
+    "from": "<b>Beställning #{id}</b> från <b>{name}</b>",
+    "collection": "Upphämtning: {time}",
+    "asap": "Ingen bestämd tid — snarast möjligt",
+    "total": "Totalt",
+    "notes": "<b>Anteckningar:</b> {notes}",
+    "autoConfirmed": "Automatiskt bekräftad — du behöver inte göra något.",
+    "confirmPrompt": "Logga in på din översikt i HatchGrab för att bekräfta eller avvisa beställningen.",
+    "text": "Ny beställning #{id} från {name}{withSlot, select, yes { för upphämtning {slot}} other {}}{withVenue, select, yes { på {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Totalt {total}.{withNotes, select, yes { Anteckningar: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Nya evenemang hittade för {truck} — granska dem",
+    "hi": "Hej!",
+    "found": "Vi hittade <b>{n, plural, one {{count} nytt evenemang} other {{count} nya evenemang}}</b> i ditt schema som du behöver godkänna innan de visas för kunderna.",
+    "listHeading": "Hittade evenemang:",
+    "approve": "När du har godkänt dem under fliken Schema visas de på kartan och din beställningssida är redo att ta emot förbeställningar.",
+    "cta": "Granska ditt schema →",
+    "signoff": "— HatchGrab-teamet · hatchgrab.com",
+    "unknownVenue": "Okänd plats",
+    "text": "Hej!\n\nVi hittade {n, plural, one {{count} nytt evenemang} other {{count} nya evenemang}} i ditt schema som du behöver godkänna:\n\n{list}\n\nGranska dem här: {url}\n\nNär du har godkänt dem visas de på kartan.\n\n— HatchGrab-teamet"
+  }
+}

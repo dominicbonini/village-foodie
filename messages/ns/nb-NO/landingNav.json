@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab – forsiden",
+  "cta": "Last opp menyen min →",
+  "ctaShort": "Last opp meny",
+  "features": "Funksjoner",
+  "pricing": "Priser",
+  "logIn": "Logg inn",
+  "country": {
+    "button": "Land: {name}. Bytt land",
+    "menu": "Land"
+  }
+}

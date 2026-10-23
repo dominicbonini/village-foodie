@@ -46,7 +46,7 @@ const BANNED = {
 const EVERY_LANGUAGE_BANNED = [{ pattern: '\\bhatch\\b', why: '"Pay at Hatch" is translated and the word "hatch" means nothing outside English (glossary rule 2)' }]
 const INVARIANTS = [{ term: 'HatchGrab', why: 'the brand — never translated (rule 1)' }, { term: 'Pro', why: 'the plan name stays "Pro" everywhere (rule 1)', word: true }]
 
-const LANG_OF_HEADING = { DE: 'de', NL: 'nl', FR: 'fr', ES: 'es', IT: 'it' }
+const LANG_OF_HEADING = { DE: 'de', NL: 'nl', FR: 'fr', ES: 'es', IT: 'it', PT: 'pt', SV: 'sv', DA: 'da', NB: 'nb', PL: 'pl', CS: 'cs', SK: 'sk', HU: 'hu', RO: 'ro', HR: 'hr', SL: 'sl', FI: 'fi', ET: 'et', LV: 'lv', LT: 'lt', EL: 'el', BG: 'bg' }   // europe-languages-1: + PT, SV, DA, NB; europe-languages-2: + 13
 const md = fs.readFileSync(path.join(REPO, SRC), 'utf8')
 const cells = line => line.split('|').slice(1, -1).map(c => c.trim())
 const bold = c => [...c.matchAll(/\*\*([^*]+)\*\*/g)].map(m => m[1].trim())

@@ -1,0 +1,9 @@
+{
+  "subject": "Ihre HatchGrab-Demo – hier ist Ihr Link zurück",
+  "heading": "Ihre Demo ist gespeichert",
+  "intro": "Hier ist Ihr Link zurück zur Demo mit Ihrer Speisekarte. Keine Anmeldung nötig – einfach antippen.",
+  "button": "Meine Demo öffnen",
+  "freshDay": "Jedes Mal, wenn Sie zurückkommen, richten wir einen neuen Verkaufstag ein, damit Sie etwas zum Ausprobieren haben.",
+  "deletion": "Da es sich um eine Demo handelt, bewahren wir sie nicht ewig auf – wir löschen sie samt Speisekarte am\n                <b>{date}</b> (in {days, plural, one {# Tag} other {# Tagen}}). Wenn Sie sich vorher\n                registrieren, kommt Ihre Speisekarte mit.",
+  "notSent": "Gespeichert, aber die E-Mail konnte gerade nicht gesendet werden."
+}

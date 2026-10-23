@@ -1,0 +1,6 @@
+{
+  "completeOrder": "Bestellung abschliessen",
+  "close": "Schliessen",
+  "payAmount": "Zahlungspflichtig bestellen · {amount}",
+  "tryAgainAmount": "Erneut zahlungspflichtig bestellen · {amount}"
+}

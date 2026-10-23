@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Je allergenenkaart",
+    "intro": "Klanten zien dit <b>precies zoals jij het schrijft</b> — er wordt niets herschreven. Typ of plak hieronder, of upload een foto/PDF en wij lezen de tekst in zodat jij hem kunt controleren.",
+    "empty": "Nog geen allergenenkaart.",
+    "placeholder": "bijv. Al onze fish & chips bevatten tarwe en melk. De friteuse wordt gedeeld met producten die gluten en noten bevatten. Vegan opties beschikbaar — vraag het ons personeel.",
+    "reading": "Afbeelding lezen…",
+    "upload": "📷 Afbeelding / PDF uploaden",
+    "uploadNote": "We lezen de tekst van je afbeelding zodat je die kunt nakijken — de afbeelding zelf wordt niet bewaard."
+  },
+  "cardUpload": {
+    "dishFallback": "Gerecht",
+    "question": "Heb je een allergenenkaart om te uploaden?",
+    "perDish": "{detected, select, yes {Upload er een en we gebruiken hem om de allergenen per gerecht op te bouwen. Gevonden allergenen zie je op de volgende pagina, waar je elk gerecht bevestigt.} other {Upload er een en we gebruiken hem om de allergenen per gerecht op te bouwen.}}",
+    "cardOnly": "Upload de allergenenkaart die klanten te zien krijgen.",
+    "yes": "Ja",
+    "no": "Nee",
+    "noProblem": "Geen probleem — je hebt er geen nodig. Ga verder met de knop hieronder.",
+    "analysing": "Kaart analyseren…",
+    "dropzone": "Sleep een bestand hierheen of tik om te kiezen",
+    "imageOrPdf": "Afbeelding of PDF",
+    "or": "of",
+    "pastePlaceholder": "Plak hier de tekst van je allergenenkaart…",
+    "process": "Kaart verwerken",
+    "cardRead": "Kaart gelezen ✓",
+    "unmatchedHeading": "Deze konden we niet automatisch koppelen — wijs ze toe of negeer ze",
+    "quotedName": "‘{name}’",
+    "ambiguous": "Onduidelijk — past bij meerdere gerechten; kies het juiste.",
+    "assignTo": "Toewijzen aan gerecht…",
+    "dismiss": "Negeren",
+    "blanket": "Volgens de kaart kan <b>{list}</b> in <b>alle</b> gerechten aanwezig zijn. Aan elk gerecht toevoegen? (je bevestigt ze daarna nog steeds één voor één) <muted>— standaard uit</muted>",
+    "kitchenNotes": "Keukennotities (opgeslagen bij je allergeneninformatie)",
+    "matchSummary": "{n, plural, =0 {{matched} gekoppeld aan een gerecht.} one {{matched} gekoppeld aan een gerecht. Nog {count} door jou toe te wijzen.} other {{matched} gekoppeld aan een gerecht. Nog {count} door jou toe te wijzen.}}"
+  },
+  "savedCard": {
+    "showLess": "Minder tonen",
+    "showMore": "Meer tonen",
+    "fileOnly": "Er is een kaartbestand opgeslagen voor deze foodtruck, maar er is geen samenvattende tekst bewaard. Open het origineel om het te lezen.",
+    "viewOriginal": "Originele kaart bekijken"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "De allergenenkaart kon niet worden gelezen — probeer het opnieuw",
+      "confirmed": "{name} bevestigd",
+      "undo": "Ongedaan maken",
+      "saveFailed": "Opslaan mislukt — probeer het opnieuw",
+      "imageFailed": "Die afbeelding konden we niet lezen — typ of plak je kaart in plaats daarvan",
+      "cardRead": "{n, plural, one {Kaart gelezen — {matched} gekoppeld, nog {count} toe te wijzen} other {Kaart gelezen — {matched} gekoppeld, nog {count} toe te wijzen}}"
+    },
+    "genericWarn": {
+      "text": "‘{generic}’ is herkend, maar is niet specifiek genoeg. Kies {picks} als dit gerecht {family} bevat — of laat ze uitgevinkt als dat niet zo is.",
+      "andOr": "{a} en/of {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Bevestigd",
+      "confirmed": "Bevestigd",
+      "needsReview": "Nakijken"
+    },
+    "confirm": {
+      "confirming": "Bevestigen…",
+      "confirmed": "Bevestigd ✓",
+      "confirm": "Bevestigen",
+      "changed": "· gewijzigd",
+      "changedTitle": "Gewijzigd sinds je laatste bevestiging — bevestig opnieuw"
+    },
+    "allergens": "Allergenen",
+    "dietary": "Dieet",
+    "uncategorised": "Zonder categorie",
+    "review": {
+      "progress": "{confirmed} van {total} bevestigd",
+      "allConfirmed": "✓ Alles bevestigd",
+      "list": "Lijst",
+      "table": "Tabel",
+      "detected": "Gevonden in je menukaart — <b>controleer deze</b>. Allergenen blijven verborgen voor klanten tot je elk gerecht bevestigt.",
+      "viewOnly": "👁 Alleen bekijken — alleen de eigenaar kan allergenen bevestigen of wijzigen.",
+      "emptyTitle": "Geen gerechten",
+      "emptyBody": "Voeg eerst gerechten toe aan je menukaart en stel hier daarna hun allergenen in.",
+      "dish": "Gerecht",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Allergeneninformatie lezen…",
+      "saved": "🛡️ Allergenenkaart opgeslagen",
+      "viewOriginal": "Originele kaart bekijken",
+      "replace": "Kaart vervangen",
+      "uploadHelp": "Upload je allergenenkaart (foto/PDF) of plak je allergeneninformatie — onze AI zet het overzichtelijk neer voor klanten.",
+      "add": "Allergenenkaart toevoegen",
+      "viewOnly": "👁 Alleen bekijken — alleen de eigenaar kan de allergenenkaart toevoegen.",
+      "intro": "Klanten zien deze kaart als het allergenenoverzicht van de menukaart. Allergenen per gerecht blijven verborgen zolang je alleen de kaart gebruikt (je gerechtgegevens worden bewaard voor als je later overstapt op allergenen per gerecht)."
+    },
+    "subtitle": {
+      "choose": "Kies hoe klanten allergeneninformatie zien",
+      "card": "Voeg je allergenenkaart toe",
+      "cardOptional": "Voeg een allergenenkaart toe (optioneel)",
+      "review": "Controleer en bevestig elk gerecht"
+    },
+    "heading": {
+      "import": "Allergenen",
+      "standalone": "Allergenen instellen"
+    },
+    "nav": {
+      "next": "Volgende →",
+      "back": "← Terug",
+      "skip": "Nu overslaan",
+      "saving": "Opslaan…",
+      "done": "Klaar",
+      "saveLater": "Opslaan & later afmaken",
+      "close": "Sluiten",
+      "finish": "Afronden",
+      "skipImport": "Allergenen voorlopig overslaan"
+    },
+    "hint": {
+      "skipDefers": "Overslaan stelt het uit — gerechten die je niet hebt bevestigd, blijven verborgen voor klanten tot hun allergenen bevestigd zijn.",
+      "importIncomplete": "Bevestig elk gerecht om verder te gaan — of kies ‘Allergenen voorlopig overslaan’."
+    }
+  }
+}

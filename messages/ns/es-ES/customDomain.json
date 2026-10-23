@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Añade tu agenda a tu web",
+    "live": "<addr>{address}</addr> muestra tu agenda.",
+    "create": "Creamos una página en <addr>{address}</addr> que muestra tu agenda.",
+    "exampleDomain": "tufoodtruck.es",
+    "liveBadge": "Activa",
+    "setUp": "Configurar",
+    "viewSetup": "Ver configuración",
+    "continue": "Continuar",
+    "justLive": "<b>{address}</b> ya funciona. Échale un vistazo y luego confírmanos aquí abajo que está bien."
+  },
+  "waiting": {
+    "title": "Estamos esperando a {address}",
+    "bodySince": "Lo configuraste el {date}. Las direcciones web nuevas suelen empezar a funcionar en unos minutos y, a veces, tardan hasta 24 horas en llegar a todo el mundo; mientras tanto, no tienes que hacer nada. Si otra persona iba a añadir la línea por ti, conviene comprobar que lo ha hecho.",
+    "body": "Las direcciones web nuevas suelen empezar a funcionar en unos minutos y, a veces, tardan hasta 24 horas en llegar a todo el mundo; mientras tanto, no tienes que hacer nada. Si otra persona iba a añadir la línea por ti, conviene comprobar que lo ha hecho."
+  },
+  "ready": {
+    "title": "{address} ya está activa",
+    "body": "Échale un vistazo y luego confírmanos en tus ajustes que está bien."
+  },
+  "confirm": {
+    "heading": "Échale un vistazo y confírmanos que está bien",
+    "open": "Abre <link>{address}</link>",
+    "checkTimes": "Comprueba que las fechas y las horas son correctas.",
+    "yes": "Sí, está bien",
+    "no": "No, hay un problema",
+    "problemLine": "Cuéntanos qué ves y lo revisaremos.",
+    "emailUs": "Escríbenos",
+    "mailSubject": "Problema con {address}",
+    "mailLiveSince": "Activa desde el {date}",
+    "mailSeeing": "Lo que veo:"
+  },
+  "confirmed": {
+    "heading": "Gracias, queda anotado.",
+    "body": "No tienes que hacer nada más."
+  },
+  "turnOff": {
+    "link": "Desactivar",
+    "heading": "¿Desactivar tu propia dirección web?",
+    "stops": "Esto dejará de funcionar:",
+    "carriesOn": "Esto sigue exactamente igual, y es adonde tu código QR lleva a la gente:",
+    "reAdd": "Si vas a volver a configurarla más adelante, deja la línea que añadiste en la empresa de tu dirección web. Si no, pídeles que la eliminen.",
+    "cancel": "Mantenerla activa",
+    "confirm": "Desactivarla",
+    "working": "Desactivando…",
+    "failed": "Ahora mismo no hemos podido desactivarla. No ha cambiado nada: tu dirección sigue funcionando. Vuelve a intentarlo dentro de un rato."
+  },
+  "wizard": {
+    "resumeFailedTitle": "No hemos podido cargar tu configuración.",
+    "resumeFailedBody": "No ha cambiado nada. Vuelve a intentarlo dentro de un rato.",
+    "close": "Cerrar",
+    "resuming": "Retomando donde lo dejaste…",
+    "genericError": "Algo ha salido mal",
+    "saveFailed": "No se ha podido guardar"
+  },
+  "address": {
+    "intro": "Tu agenda tendrá su propia dirección web.",
+    "question": "¿Cuál es tu dirección web?",
+    "hint": "La que la gente ya usa para encontrarte.",
+    "aria": "Tu propia dirección web",
+    "willBe": "Tu dirección será <addr>{address}</addr>",
+    "example": "Por ejemplo, <addr>{address}</addr>",
+    "noChange": "Tu web no cambia: solo tienes que añadir un enlace a la nueva dirección.",
+    "notSetUp": "No lo hemos configurado.",
+    "restricted": "Quien gestione tu dirección web tiene que permitirnos configurar el candado, ese pequeño candado que los clientes ven junto a ella. Hasta que nos añadan, no aparecerá, así que nos hemos detenido para que no te quedes esperándolo. Pídeles que nos añadan y vuelve a intentarlo.",
+    "blocked": "Ahora mismo tu dirección web bloquea el candado por completo. Quien la gestione tiene que permitirlo para que esto funcione. Pídeles que lo cambien y vuelve a intentarlo.",
+    "elsewhere": "Ya hay algo que responde en esa dirección. Envía el mensaje de la siguiente pantalla a quien la gestione: sabrá qué hacer.",
+    "provider": "Tu dirección web la gestiona <b>{provider}</b>. Te mostraremos adónde ir.",
+    "provisionFailed": "No hemos podido configurar esa dirección.",
+    "willNotWork": "Esa dirección no funcionará.",
+    "couldNotBeSetUp": "No se ha podido configurar esa dirección.",
+    "couldNotSetUp": "No se ha podido configurar",
+    "checking": "Comprobando…",
+    "setting": "Configurando…",
+    "tryAgain": "Reintentar",
+    "setUpAddress": "Configurar esta dirección",
+    "notNow": "Ahora no"
+  },
+  "apex": {
+    "empty": "Escribe la dirección que quieres usar.",
+    "not_a_domain": "Eso no parece una dirección web.",
+    "unparseable": "No hemos podido leerlo como una dirección web. Revisa cómo está escrito y vuelve a intentarlo.",
+    "apex": "{host} es la dirección completa de tu web. Si la apuntas hacia nosotros, esta página sustituirá a tu web. Mejor pon una palabra delante; por ejemplo, agenda.{host}.",
+    "too_deep": "Esa dirección tiene demasiadas partes. Algo como agenda.{domain} funciona mejor."
+  },
+  "record": {
+    "addAt": "Añade esto en {provider}",
+    "open": "Abrir {provider}",
+    "guide": "La guía oficial de {provider} sobre esto",
+    "addAtSave": "Añade esto en {provider} y guarda.",
+    "addSomewhere": "Añade esto donde se gestiona tu dirección web y guarda.",
+    "hintChoose": "Elígelo de la lista.",
+    "hintWord": "Solo esta palabra, no la dirección completa.",
+    "hintExact": "Cópialo exactamente.",
+    "timing": "Suele empezar a funcionar en menos de una hora, aunque puede tardar más. No hace falta que dejes esta página abierta.",
+    "someoneElse": "¿Otra persona gestiona tu dirección web?",
+    "sentTo": "Enviado a {email}",
+    "emailPlaceholder": "su dirección de email",
+    "sending": "Enviando…",
+    "send": "Enviar estos datos",
+    "sendFailed": "No se ha podido enviar"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Abre tu dirección web y luego “DNS” y “Records”.",
+      "add": "Selecciona “Add record” y elige “CNAME” como “Type”.",
+      "name": "Pon el primer valor de abajo en “Name”.",
+      "value": "Pon el segundo valor de abajo en “Target”.",
+      "proxy": "Pon “Proxy status” en “DNS only”: la nube de al lado debe estar gris, no naranja.",
+      "save": "Deja “TTL” en “Auto” y selecciona “Save”.",
+      "caveat": "Si la nube sigue naranja, el candado no aparecerá nunca y nada te dirá por qué."
+    },
+    "godaddy": {
+      "open": "Abre tu “Domain Portfolio” y elige tu dirección web.",
+      "dns": "En “Domain Settings”, selecciona “DNS”.",
+      "add": "Selecciona “Add New Record” y elige “CNAME” en el menú “Type”.",
+      "name": "Pon el primer valor de abajo en “Name”.",
+      "value": "Pon el segundo valor de abajo en “Value”.",
+      "save": "Deja “TTL” como está y selecciona “Save”.",
+      "caveat": "Si has añadido varios a la vez, el botón dice “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Inicia sesión en tu “123 Reg Control Panel”.",
+      "manage": "Junto a “Domains”, selecciona “Manage All” y elige tu dirección web.",
+      "dns": "Selecciona “DNS” y luego “Add New Record”.",
+      "type": "Elige “CNAME” en la lista “Type”.",
+      "name": "Pon el primer valor de abajo en “Name”.",
+      "value": "Pon el segundo valor de abajo en “Value” y añade un punto al final.",
+      "save": "Deja “TTL” en “Default” y haz clic en “Save”.",
+      "caveat": "123 Reg necesita un punto al final del segundo valor; si no, no funcionará."
+    },
+    "wix": {
+      "open": "Abre “Domains” y haz clic en el icono “Domain Actions” junto a tu dirección web.",
+      "manage": "Elige “Manage DNS Records”.",
+      "add": "En la sección “CNAME (Aliases)”, haz clic en “+ Add Record” y luego en “Got it”.",
+      "name": "Pon el primer valor de abajo en “Host Name”.",
+      "value": "Pon el segundo valor de abajo en “Value”.",
+      "save": "Haz clic en “Save” y luego en “Save Changes” en la ventana emergente.",
+      "caveat": "Si tu dirección web solo apunta a Wix y no está registrada allí, Wix no puede hacer este cambio: tiene que hacerlo quien la tenga registrada."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Un registro que añadir para la página de agenda de {truckName}",
+    "hello": "Hola:",
+    "introAt": "Vamos a poner la agenda actualizada de {truckName} en {address}, y para ello hay que añadir un registro a nuestro dominio en {provider}.",
+    "introHolder": "Vamos a poner la agenda actualizada de {truckName} en {address}, y para ello hay que añadir un registro a nuestro dominio en la empresa donde lo tengamos registrado.",
+    "stepsAt": "En {provider}:",
+    "guide": "Su propia guía: {url}",
+    "wholeChange": "Ese es todo el cambio: no afecta a nada más de la web, y el resto de nuestro dominio sigue funcionando exactamente igual que ahora. Suele empezar a funcionar en menos de una hora.",
+    "pointsAt": "La página a la que apunta muestra dónde vamos a vender próximamente y se actualiza sola.",
+    "replyTo": "Si tienes alguna pregunta, responde a {email}.",
+    "thanks": "Gracias,"
+  },
+  "liveEmail": {
+    "subject": "{address} ya funciona",
+    "goodNews": "Buenas noticias: {address} ya funciona.",
+    "body": "Tu agenda ya se muestra en tu propia dirección. Échale un vistazo y comprueba que está bien: abre {address} y asegúrate de que los eventos son tuyos y de que las fechas son correctas.",
+    "confirm": "Cuando lo hayas hecho, abre tus ajustes en HatchGrab y confírmanos que está bien. No depende nada de ello: solo nos sirve para saber que una persona lo ha visto."
+  }
+}

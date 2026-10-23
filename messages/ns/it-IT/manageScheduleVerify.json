@@ -1,0 +1,9 @@
+{
+  "launch_failed": "La verifica non è al momento disponibile. Riprova tra poco.",
+  "malformed": "Non sembra un indirizzo web. Prova con qualcosa come iltuofoodtruck.it/eventi",
+  "blocked": "Non siamo riusciti ad accedere a questo sito: potrebbe bloccare i controlli automatici. Prova con la pagina che elenca il tuo calendario, oppure aggiungi gli eventi manualmente.",
+  "unreachable": "Non siamo riusciti a raggiungere questo sito. Potrebbe essere offline, o l’indirizzo potrebbe essere sbagliato.",
+  "no_content": "Abbiamo raggiunto la pagina ma non siamo riusciti a leggerne il contenuto. Verifica che sia accessibile pubblicamente.",
+  "no_events": "Non abbiamo trovato eventi in programma su questa pagina. Assicurati che l’URL porti direttamente al punto in cui è pubblicato il tuo calendario.",
+  "blockedDomain": "Usa l’URL del tuo sito web: le pagine Facebook e Instagram non possono essere lette automaticamente."
+}

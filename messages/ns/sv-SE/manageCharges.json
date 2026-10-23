@@ -1,0 +1,30 @@
+{
+  "heading": "Moms, dricks och avgifter",
+  "rate": {
+    "label": "Momssats",
+    "hint": "Satsen du tar ut på varje beställning. Kunderna ser den läggas till i kassan, på kvitton och på bongar.",
+    "regionDefault": "Lämna tomt för att ta ut {label} med {rate} %, satsen för tillagad mat ({region})."
+  },
+  "included": {
+    "label": "{label} ingår i dina priser",
+    "hint": "Dina priser innehåller redan {label}. Satsen anger bara hur stor del av varje pris som är {label}, på kvitton och bongar – inget läggs till i kassan.",
+    "default": "Lämna tomt för att använda {rate} %, satsen för {label} på varm mat som säljs för avhämtning ({country})."
+  },
+  "tips": {
+    "label": "Dricks",
+    "hint": "Kunder som betalar med kort online kan lägga till dricks. Allt går till dig.",
+    "choices": "Val som kunderna ser:",
+    "chip": "{rate} %",
+    "other": "Annat belopp"
+  },
+  "fee": {
+    "label": "Serviceavgift online",
+    "hint": "Läggs bara till på onlinebeställningar. Aldrig på beställningar som betalas vid upphämtning eller görs på plats. Du behåller den.",
+    "pctAria": "Serviceavgift i procent",
+    "fixedAria": "Serviceavgift som fast belopp",
+    "max": "Högst du kan ta ut: {max}",
+    "example": "Kunderna ser den innan de betalar, på en rad: ”{label} {amount}”.",
+    "hatchgrab": "HatchGrab lägger till en serviceavgift på {fee} på dina kunders onlinebeställningar. Du betalar den inte och kan inte ändra den."
+  },
+  "saveFailed": "Kunde inte spara – försök igen."
+}

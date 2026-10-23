@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Lad kunderne annullere bestillinger",
+    "sentence": "Kunderne kan annullere op til <select></select> før deres afhentningstid"
+  },
+  "autoAccept": {
+    "label": "Accepter bestillinger automatisk",
+    "help": "Bestillinger bekræftes automatisk. Hvis det ønskede tidsrum er fuldt, rykkes bestillingen til det næste ledige tidsrum. Bekræfter kun, når der er kapacitet. Bestillinger med bemærkninger fra kunden (f.eks. en allergi) skal stadig bekræftes."
+  },
+  "orderReady": {
+    "label": "Trin: bestilling klar",
+    "help": "Vis en »Marker som klar«-knap på ordreskærmen. Køkkenskærme indstilles separat på hver enhed. Kunderne får en e-mail, hver gang en bestilling markeres som klar. Gælder alle arrangementer — du kan stadig slå det til eller fra for et enkelt arrangement på dets oversigt."
+  },
+  "buzzers": {
+    "label": "Deler du buzzere ud til afhentning?",
+    "help": "Noter, hvilken buzzer hver kunde har fået, så du ved, hvem du skal kigge efter, når maden er klar.",
+    "countLabel": "Hvor mange buzzere har du?"
+  }
+}

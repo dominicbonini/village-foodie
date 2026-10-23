@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Du skal holde din oversigt eller din køkkenskærm tændt og online under service.",
+  "explainerBody": "Hvis skærmen slukker, enheden mister internettet, eller du skifter til en anden hjemmeside, tager offlinebeskyttelsen over — enten ved at sætte bestillinger på pause eller ved at slå automatisk accept fra, alt efter hvad du har valgt.",
+  "reminder": "⚠️ Hold din oversigt eller din køkkenskærm tændt og online under service, ellers kan offlinebeskyttelsen tage over.",
+  "enableConfirm": "Offlinebeskyttelse er slået til.\n\nFor at bestillingerne kan blive ved med at komme ind, skal din skærm være tændt. Hvis enheden mister forbindelsen, tager offlinebeskyttelsen over i den tilstand, du har valgt.\n\nSørg for, at »Skærm tændt« er slået til på denne enhed.",
+  "disableConfirm": "Slå offlinebeskyttelse fra for dette arrangement?\n\nHvis enheden mister forbindelsen, fortsætter onlinebestillingerne — kunderne kan afgive bestillinger, du ikke kan se. Slå det kun fra, hvis du har en stabil forbindelse.",
+  "cardDescription": "Bestemmer, hvad der sker med indkommende bestillinger, når din enhed går offline.",
+  "purpose": "Hvis din enhed mister forbindelsen, forhindrer det, at der kommer bestillinger ind, mens du ikke kan se dem.",
+  "switchLabel": "Offlinebeskyttelse af bestillinger",
+  "switchHelp": "Hvad der sker, når denne foodtruck mister forbindelsen.",
+  "modes": {
+    "pause": {
+      "label": "Sæt onlinebestilling på pause",
+      "help": "Kunderne kan ikke bestille, før du er online igen."
+    },
+    "no_auto_accept": {
+      "label": "Tag fortsat imod bestillinger, bekræft dem selv",
+      "help": "Automatisk accept slås fra, så kunderne kan stadig bestille, men intet bekræftes automatisk. Du bekræfter hver enkelt, når du er online igen — og alt, der stadig venter efter den tid, du har valgt, afvises automatisk, og kunden får besked på e-mail."
+    }
+  },
+  "autoRejectLabel": "Afvis bestillinger, der har ventet længere end",
+  "autoRejectOption": "{n, plural, one {{count} min.} other {{count} min.}}"
+}

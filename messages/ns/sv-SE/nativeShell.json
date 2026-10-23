@@ -1,0 +1,127 @@
+{
+  "gate": {
+    "reverted": "Beställning #{id} återställd",
+    "saved": "Beställning #{id} sparad",
+    "undo": "↩ Ångra",
+    "paymentNotRecorded": "⚠ Beställning #{id} — BETALNINGEN REGISTRERADES INTE. {collect, select, yes {Beställningen slutfördes} other {Beställningen sparades}}, men inte betalningen.",
+    "recordPayment": "Registrera betalning",
+    "paid": "Beställning #{id} betald",
+    "undonePayment": "Ångrat — betalningen borttagen",
+    "undoneCollected": "Ångrat — beställningen inte hämtad",
+    "collected": "Beställning #{id} {paidToo, select, yes {betald och hämtad} other {hämtad}}",
+    "ready": "Beställning #{id} klar",
+    "readyBuzzer": "Beställning #{id} klar · <pill></pill>",
+    "status": "Beställning #{id} {action, select, confirm {bekräftad} reject {avvisad} ready {klar} collected {hämtad} undo_collected {återställd} cancel {avbruten} other {uppdaterad}}"
+  },
+  "conflicts": {
+    "more": "+{count} till",
+    "notOnScreenPlus": "+{count} inte på den här skärmen",
+    "notOnScreen": "{n, plural, one {{count} beställning inte på den här skärmen} other {{count} beställningar inte på den här skärmen}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ BETALNINGEN REGISTRERADES INTE",
+    "paymentBody": "{orders} — markerad som betald bara på den här enheten. Betalningen har inte gått igenom.",
+    "paymentCheck": "Kontrollera beställningen och ta betalt igen om det fortfarande är obetalt.",
+    "dismiss": "Stäng",
+    "confirmChecked": "Bekräfta att du har kontrollerat {orders}",
+    "confirmHides": "Det här döljer varningen. Uppgiften sparas på den här enheten i vilket fall som helst.",
+    "notYet": "Inte än",
+    "iveChecked": "Jag har kontrollerat {orders}",
+    "statusBody": "⚠ {orders} — ändringen gick inte igenom. Kontrollera beställningen.",
+    "offline": "📴 Ingen anslutning — {n, plural, one {{count} ändring sparad på den här enheten. Den skickas när du är online igen.} other {{count} ändringar sparade på den här enheten. De skickas när du är online igen.}} Inställningarna är låsta.",
+    "syncing": "Online igen — skickar {n, plural, one {{count} ändring} other {{count} ändringar}}…",
+    "synced": "Alla ändringar skickade.",
+    "stillQueued": "{n, plural, one {{count} ändring sparad på den här enheten. Försöker fortfarande skicka den.} other {{count} ändringar sparade på den här enheten. Försöker fortfarande skicka dem.}}"
+  },
+  "lock": {
+    "locked": "HatchGrab är låst",
+    "verifying": "Verifierar…",
+    "unlock": "Lås upp",
+    "cantUseBiometric": "Kan du inte använda Face ID/Touch ID?",
+    "enterPin": "Ange din reserv-PIN",
+    "wrongPin": "Fel PIN-kod — försök igen.",
+    "checking": "Kontrollerar…",
+    "tryBiometric": "Prova Face ID/Touch ID i stället",
+    "forgot": "Glömt din PIN-kod? Då måste du installera om appen."
+  },
+  "notify": {
+    "title": "🔔 Notiser",
+    "intro": "Notiser på den här enheten. Slå på för att välja vilka notiser du får.",
+    "refused": "Notiser måste vara tillåtna i enhetens Inställningar för att du ska kunna slå på det här.",
+    "newOrder": "Nya beställningar",
+    "newOrderHelp": "Få en notis när en kundbeställning behöver bekräftas.",
+    "offline": "Notiser vid offline/paus",
+    "offlineHelp": "Få en notis när enheten går offline (och beställningarna pausas). <green>Fungerar offline.</green>"
+  },
+  "van": {
+    "label": "Foodtruck",
+    "loadRetry": "Kunde inte ladda · Försök igen",
+    "select": "Välj…"
+  },
+  "deviceSave": {
+    "network": "Kunde inte nå servern — kontrollera anslutningen och försök igen.",
+    "server": "Kunde inte spara just nu. Försök igen."
+  },
+  "setup": {
+    "fetchErrorTitle": "Kunde inte ladda enhetsinställningen",
+    "fetchErrorBody": "Vi kunde inte nå servern för att ställa in <b>den här enheten</b>. Kontrollera anslutningen och försök igen — dina beställningar och inställningar påverkas inte.",
+    "retry": "Försök igen",
+    "later": "Senare",
+    "noVanTitle": "Ingen aktiv foodtruck",
+    "noVanBody": "Verksamheten har ingen aktiv foodtruck än. Aktivera en under <b>Inställningar → Dina foodtruckar</b>, så ställs den här enheten in automatiskt — du behöver inte göra något mer här.",
+    "goToVans": "Gå till Inställningar → Dina foodtruckar",
+    "title": "Ställ in den här enheten",
+    "body": "Engångsinställning för <b>den här enheten</b>: vilken skärm den öppnar och vilken foodtruck den hör till. Gäller bara den här enheten — andra enheter ställs in separat, och du kan ändra det senare via profilmenyn → ”Den här enheten”.",
+    "whichScreen": "Vilken skärm ska enheten öppna?",
+    "dashboard": "Översikt",
+    "kds": "KDS",
+    "whichVan": "Vilken foodtruck hör enheten till?",
+    "selectVan": "Välj en foodtruck…",
+    "saving": "Sparar…",
+    "tryAgain": "Försök igen",
+    "continue": "Fortsätt"
+  },
+  "device": {
+    "title": "Den här enheten",
+    "viewing": "Du visar: <b>{truck}</b>",
+    "viewingVan": "Du visar: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Bara den här enheten — andra enheter ställs in separat. (ID: {id}…)",
+    "truck": "Verksamhet",
+    "van": "Foodtruck",
+    "defaultScreen": "Startskärm",
+    "orderNotifications": "Beställningsnotiser",
+    "patchFailed": "{setting, select, van {Foodtruck} defaultScreen {Startskärm} other {Beställningsnotiser}} sparades inte. {reason}",
+    "requireBiometric": "Kräv fingeravtryck eller ansiktsupplåsning för att öppna",
+    "pinTitle": "Ställ in en reserv-PIN (4–6 siffror)",
+    "pinHelp": "Din väg in om fingeravtryck eller ansiktsupplåsning inte fungerar — det är den enda reservlösningen, så glöm den inte (en glömd PIN-kod betyder att appen måste installeras om). Fungerar offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Bekräfta PIN",
+    "pinTooShort": "Använd minst 4 siffror.",
+    "pinMismatch": "PIN-koderna stämmer inte överens.",
+    "setPin": "Spara PIN & aktivera",
+    "cancel": "Avbryt",
+    "noBiometric": "Inget fingeravtryck eller ansiktsupplåsning är inställt på den här enheten — lägg till det i enhetens inställningar. Din reserv-PIN fungerar fortfarande.",
+    "footer": "De här inställningarna gäller bara den här enheten — andra enheter ställs in separat."
+  },
+  "appLock": {
+    "unlockReason": "Lås upp HatchGrab",
+    "usePasscode": "Använd lösenkod",
+    "cancel": "Avbryt",
+    "confirmEnable": "Bekräfta för att aktivera applåset"
+  },
+  "channel": {
+    "ordersName": "Nya beställningar",
+    "ordersDescription": "Notiser när en beställning behöver bekräftas."
+  },
+  "localNotify": {
+    "newOrderTitle": "Ny beställning",
+    "orderReceived": "Beställning {number} mottagen",
+    "newOrders": "{n, plural, one {Du har en ny beställning} other {Du har {count} nya beställningar}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Beställningar pausade",
+    "pausedBody": "Du är offline — kundbeställningar är pausade.",
+    "offlineTitle": "Du är offline",
+    "offlineBody": "Den här enheten har tappat anslutningen."
+  }
+}

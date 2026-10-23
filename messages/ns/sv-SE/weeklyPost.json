@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Något gick fel",
+    "previewFailed": "Förhandsvisningen kunde inte skapas",
+    "loadFailed": "Kunde inte ladda",
+    "tooBig": "Bilden är {size, number, ::.0 group-off} MB. Gränsen är 10 MB.",
+    "wrongType": "Välj en PNG eller JPG.",
+    "uploadIncomplete": "Uppladdningen slutfördes inte",
+    "uploadFailed": "Uppladdningen misslyckades",
+    "saveFailed": "Kunde inte spara",
+    "buildFailed": "Kunde inte skapa inlägget",
+    "copyFailed": "Kunde inte kopiera – markera texten och kopiera den manuellt."
+  },
+  "loading": "Laddar…",
+  "missingTable": {
+    "title": "Veckoinlägget behöver en databasuppdatering",
+    "body": "Tabellen för mallar har inte skapats än. När migreringen har körts fungerar den här skärmen."
+  },
+  "kind": {
+    "label": "Vilken mall",
+    "event": "Enskilt evenemang",
+    "week": "Veckovis"
+  },
+  "setup": {
+    "title": "Ställ in ditt veckoinlägg",
+    "intro": "Ladda upp en tom version av den grafik för veckoschemat som du redan gör – samma design, men utan dina egna textrutor. HatchGrab fyller i veckan utifrån ditt schema.",
+    "canvaTitle": "Så exporterar du en tom version från Canva",
+    "canvaStep1": "Öppna din vanliga design för veckoschemat.",
+    "canvaStep2": "Ta bort textrutorna med datum, platser och tider – behåll bakgrunden och rubrikerna du vill ha kvar.",
+    "canvaStep3": "Dela › Ladda ned › PNG.",
+    "uploading": "Laddar upp…",
+    "upload": "Ladda upp din tomma bild",
+    "uploadHint": "PNG eller JPG, högst 10 MB, minst {px} px på kortsidan.",
+    "phoneTip": "Fungerar bäst på dator eller iPad – rutorna är små att dra på en mobil.",
+    "designName": "Mall för veckoinlägg",
+    "backDesigns": "‹ Mallar",
+    "back": "‹ Tillbaka",
+    "pictureNote": "Din bild utan datum eller plats. Det lägger vi till.",
+    "saved": "Mallen har sparats."
+  },
+  "week": {
+    "this": "Den här veckan",
+    "next": "Nästa vecka"
+  },
+  "post": {
+    "title": "Ditt veckoinlägg",
+    "editDesign": "Redigera mall",
+    "weekOf": "veckan från {date}",
+    "imageAlt": "Ditt veckoinlägg",
+    "building": "Skapar ditt inlägg…",
+    "updating": "Uppdaterar…",
+    "eventsTitle": "Veckans evenemang",
+    "noEvents": "Inga evenemang den här veckan.",
+    "eventDateCancelled": "{date} · inställt",
+    "showCancelled": "Visa inställda evenemang",
+    "showPrivate": "Visa privata evenemang",
+    "privateHint": "De visas som ”Privat evenemang” med datum och tider – aldrig platsen.",
+    "noteTitle": "Anteckning",
+    "notePlaceholder": "t.ex. Förbeställ för upphämtning",
+    "noteHint": "Visas i bildtexten, och i anteckningsrutan om du har placerat en.",
+    "captionTitle": "Bildtext till din sida",
+    "perEventTitle": "Inlägg för varje evenemang",
+    "nothingToPost": "Inget att lägga upp den här veckan.",
+    "textCopied": "Texten har kopierats.",
+    "copyText": "Kopiera text",
+    "image": "Bild",
+    "share": "Dela",
+    "noOrderLink": "Ingen beställningslänk än – ange din foodtrucks webbadress under Inställningar."
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "docTitle": "Cocina · {truck}",
+  "loading": "Cargando cocina…",
+  "pin": {
+    "title": "Introduce el PIN",
+    "placeholder": "PIN",
+    "unlock": "Desbloquear",
+    "unreachable": "Ahora mismo no se puede conectar con el servidor. Tu PIN está bien: vuelve a intentarlo en un momento.",
+    "incorrect": "PIN incorrecto",
+    "generic": "Algo ha fallado. Inténtalo de nuevo."
+  },
+  "error": {
+    "linkInvalid": "Este enlace ya no es válido.",
+    "couldNotLoad": "Error al cargar los pedidos",
+    "truckNotFound": "Food truck no encontrado"
+  },
+  "degraded": {
+    "at": "⚠️ No se puede conectar con el servidor. Mostrando comandas de las {time}. PUEDEN FALTAR PEDIDOS NUEVOS.",
+    "earlier": "⚠️ No se puede conectar con el servidor. Mostrando comandas anteriores. PUEDEN FALTAR PEDIDOS NUEVOS."
+  },
+  "header": {
+    "dashboard": "Panel",
+    "backTitle": "Volver al panel",
+    "list": "Lista",
+    "grid": "Cuadrícula",
+    "full": "Completa",
+    "cook": "Cocina",
+    "fullTitle": "Tarjetas completas — precios y datos de pago, como las ve la ventanilla.",
+    "cookTitle": "Tarjetas de cocina — letra más grande, agrupadas por categoría, sin precios.",
+    "readyStep": "Paso Listo",
+    "readyOnlyTitle": "Esta pantalla solo marca los pedidos como listos, así que no se puede desactivar: es el único paso que realiza.",
+    "readyOnTitle": "Esta pantalla marca los pedidos como listos. Toca para que lo haga otra pantalla.",
+    "readyOffTitle": "Otra pantalla marca los pedidos como listos. Toca para que lo haga esta.",
+    "handover": "Cobro y entrega",
+    "handoverOnlyTitle": "Esta pantalla solo cobra, así que no se puede desactivar: es el único paso que realiza.",
+    "handoverOnTitle": "Esta pantalla cobra y entrega. Toca para que lo haga otra pantalla.",
+    "handoverOffTitle": "Otra pantalla cobra. Toca para que lo haga esta.",
+    "soundOn": "Sonido de pedido nuevo activado — toca para desactivarlo",
+    "soundOff": "Sonido de pedido nuevo desactivado — toca para activarlo",
+    "screenOn": "Pantalla encendida",
+    "screenOff": "Pantalla apagada",
+    "screenSettings": "Ajustes de pantalla",
+    "manageEvent": "Gestionar evento",
+    "manageEventTitle": "Gestionar evento — iniciarlo, pausarlo, cambiarlo o terminarlo",
+    "soundSettings": "Ajustes de sonido",
+    "soundSettingsTitle": "Qué sonidos suenan en este dispositivo",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Ajustes de vista",
+    "on": "Sí",
+    "off": "No",
+    "newOrderSound": "Sonido de pedido nuevo",
+    "soundNeedsConfirming": "Solo pedidos por confirmar",
+    "soundAll": "Todos los pedidos nuevos",
+    "soundDue": "Sonido cuando toca cocinar un pedido",
+    "soundDueHelp": "Suena cuando una comanda se pone en ámbar.",
+    "deviceSettings": "Ajustes del dispositivo",
+    "sound": "Sonido",
+    "close": "Cerrar"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Pedidos no cargados para este evento",
+    "mismatchBody": "El servidor respondió con otro evento, así que no se muestra nada en lugar de pedidos equivocados. Vuelve a elegir el evento o recarga.",
+    "mismatchBodyAt": "El servidor respondió con otro evento, así que no se muestra nada en lugar de pedidos equivocados de {venue}. Vuelve a elegir el evento o recarga.",
+    "paused": "⏸ Pedidos en pausa{reason, select, offline { (dispositivo sin conexión)} other {}} — los clientes no pueden pedir",
+    "resume": "Reanudar",
+    "offline": "Sin conexión — mostrando los últimos pedidos conocidos. Los pedidos online se han pausado para los clientes.",
+    "queued": "{n, plural, one {{count} acción en cola} other {{count} acciones en cola}}",
+    "extraWait": "⏱ Espera extra de +{mins} min activa",
+    "clear": "Quitar",
+    "toMake": "Por hacer",
+    "today": "Hoy · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Iniciar evento",
+    "recentlyClosed": "Evento terminado · {venue}: fin a las {time}",
+    "eventStatus": "{tone, select, paused {⏸ En pausa} live {● En marcha} finished {● Terminado} cancelled {Cancelado} other {Sin empezar}}"
+  },
+  "board": {
+    "queueClear": "Cola vacía",
+    "doneToday": "Hechos hoy · {count}",
+    "paid": "✓ pagado",
+    "cardHeld": "preautorizado",
+    "due": "{amount} pendiente"
+  },
+  "screenOff": {
+    "title": "¿Permitir que se apague la pantalla?",
+    "bodyVans": "{vans} {n, plural, one {tiene} other {tienen}} activada la detección de desconexión. Si la pantalla se apaga, el dispositivo puede dejar de enviar su señal de conexión y los pedidos de clientes pueden quedar en pausa.",
+    "body": "Si la pantalla se apaga, el dispositivo puede dejar de enviar su señal de conexión.",
+    "keepHint": "Mantén la pantalla encendida para que los pedidos no se interrumpan.",
+    "keep": "Mantener encendida",
+    "allow": "Permitir apagado"
+  },
+  "event": {
+    "change": "Cambiar evento",
+    "cancel": "Cancelar",
+    "waitActive": "⏱ +{mins} min activa · Toca para quitar",
+    "addWait": "⏱ Añadir espera extra",
+    "endTitle": "¿Terminar evento?",
+    "endEarly": "Este evento no termina hasta las {time}. No se admitirán más pedidos. ¿Confirmas que quieres terminarlo?",
+    "endNow": "¿Terminar este evento? No se aceptarán más pedidos.",
+    "yes": "Sí",
+    "started": "Evento iniciado",
+    "startFutureConfirm": "Este evento es el {date}. ¿Iniciarlo ahora?",
+    "finishTimeNow": "Ahora termina a las {time}",
+    "finished": "Evento terminado",
+    "cancelled": "Evento cancelado",
+    "noteSaved": "Nota guardada",
+    "pauseConfirm": "¿Pausar pedidos? Los clientes verán “No se aceptan pedidos” hasta que reanudes.",
+    "switchConfirm": "¿Cambiar de {from} a {to}?{n, plural, =0 {} one { Se sustituirá {count} pedido de esta pantalla.} other { Se sustituirán {count} pedidos de esta pantalla.}} Toca el evento actual para volver."
+  },
+  "intro": {
+    "title": "Esta es la pantalla de cocina (KDS)",
+    "p1": "Es la vista de quien cocina: los pedidos que tienes que preparar, en el orden en que hay que prepararlos. La pantalla junto a la plancha muestra esto mientras el mostrador usa el panel de pedidos.",
+    "p2": "Las tarjetas avanzan al tocarlas, así quien cocina siempre sabe qué va después y nadie tiene que gritar. Todo lo que ves aquí son datos de demo: trastea cuanto quieras.",
+    "gotIt": "Entendido"
+  },
+  "toast": {
+    "failed": "Error",
+    "rejectFailed": "No se ha podido rechazar",
+    "buzzerSaved": "Avisador {n} guardado",
+    "buzzerRemoved": "Avisador {n} quitado",
+    "buzzerRemovedNone": "Avisador quitado",
+    "buzzerAssigned": "Avisador {n} asignado",
+    "buzzerAssignedFrom": "Avisador {n} asignado (quitado del #{from})",
+    "buzzerRemoveFailed": "{had, select, no {No se ha podido quitar el avisador {target, select, order {del pedido #{id}} other {de este pedido}}} other {No se ha podido quitar el avisador {n}: sigue en {target, select, order {el pedido #{id}} other {este pedido}}}}",
+    "buzzerAssignFailed": "No se ha podido dar el avisador {n} {target, select, order {al pedido #{id}} other {a este pedido}} — {had, select, yes {sigue teniendo el avisador {prior}} other {sigue sin avisador}}"
+  }
+}

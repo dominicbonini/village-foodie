@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Lagre menyen min →",
+    "heading": "Sett opp matbilen din",
+    "sub": "Menyen din blir med rett over.",
+    "privacy": "Vi bruker dette bare til å sette opp matbilen din og sende deg demolenken — se <link>personvernerklæringen</link> vår."
+  },
+  "sample": {
+    "bannerButton": "Sett opp matbilen min →",
+    "heading": "Sett opp matbilen din",
+    "sub": "Etterpå laster du opp din egen meny — det tar et minutt.",
+    "privacy": "Vi bruker dette bare til å sette opp matbilen din og sende deg demolenken — se <link>personvernerklæringen</link> vår."
+  },
+  "saveOnly": {
+    "bannerButton": "Lagre menyen min →",
+    "heading": "Lagre demoen din",
+    "sub": "Vi tar vare på den i 14 dager og sender deg en lenke tilbake på e-post.",
+    "privacy": "Vi bruker dette bare til å sende deg demolenken — se <link>personvernerklæringen</link> vår."
+  },
+  "confirmationHeading": "Da er alt klart",
+  "postSaveButton": "Sett opp matbilen min →",
+  "enterSetupButton": "Sett opp matbilen min →",
+  "emailOnlyLink": "Bare send meg en lenke tilbake til denne demoen",
+  "sendLinkButton": "Send meg lenken",
+  "savingButton": "Lagrer…",
+  "continueButton": "Fortsett →",
+  "createAccountButton": "Opprett kontoen min →",
+  "retryButton": "Prøv igjen",
+  "backToDemoButton": "Tilbake til demoen",
+  "savedStatus": "{hasDate, select, yes {✓ Lagret — beholdes til {date}} other {✓ Lagret}}",
+  "back": "Tilbake",
+  "close": "Lukk",
+  "truckStepHeading": "Om matbilen din",
+  "detailsStepHeading": "Fullfør oppsettet",
+  "stepper": {
+    "details": "Om deg",
+    "menu": "Meny",
+    "allergens": "Allergener",
+    "kitchen": "Kjøkken",
+    "schedule": "Kalender"
+  },
+  "confirmEmailed": "Vi har sendt deg en lenke rett tilbake til denne demoen på e-post — du trenger ikke logge inn.",
+  "confirmKeepUntil": "Vi tar vare på den til <b>{date}</b>. Menyen din blir med når du setter opp matbilen ordentlig.",
+  "loading": "Laster inn…",
+  "firstName": "Fornavn",
+  "lastName": "Etternavn",
+  "truckName": "Navn på matbilen",
+  "truckNamePlaceholder": "f.eks. Bygdekjøkkenet",
+  "cuisine": "Kjøkken",
+  "logoLabel": "Logo <opt>(valgfritt)</opt>",
+  "logoPreviewAlt": "Forhåndsvisning av logo",
+  "changeLogo": "Endre logo",
+  "removeLogo": "Fjern",
+  "uploadLogo": "📷 Last opp logo",
+  "readyTitle": "Kontoen din er klar",
+  "readyBody": "Nå gjør vi ferdig oppsettet av matbilen din — menyen, allergenene og kjøkkenet.",
+  "hangTight": "Et øyeblikk — vi setter opp alt.",
+  "stage": {
+    "account": "Oppretter kontoen din",
+    "truck": "Setter opp matbilen din",
+    "menu": "Laster inn menyen din"
+  },
+  "stageState": {
+    "done": "ferdig",
+    "recognised": "du har allerede en konto",
+    "failed": "mislyktes",
+    "active": "pågår",
+    "pending": "venter"
+  },
+  "signIn": "Logg inn",
+  "phone": "Telefon",
+  "onWhatsapp": "Dette nummeret har WhatsApp",
+  "email": "E-post",
+  "emailPlaceholder": "deg@dinmatbil.no",
+  "settingUpAs": "Setter opp som <b>{email}</b> <change>endre</change>",
+  "password": "Passord",
+  "passwordPlaceholder": "Minst 8 tegn",
+  "hidePassword": "Skjul passord",
+  "showPassword": "Vis passord",
+  "promoLabel": "Har du en kode? <opt>(valgfritt)</opt>",
+  "promoPlaceholder": "Skriv den inn her",
+  "agreeTerms": "Jeg godtar <terms>vilkårene</terms> og <privacy>personvernerklæringen</privacy>.",
+  "freeMonth": "Oppsettet starter ikke gratismåneden din. Den begynner når du velger ditt første aktive arrangement — når du er klar.",
+  "fieldError": {
+    "firstName": "Fortell oss fornavnet ditt.",
+    "lastName": "Og etternavnet ditt.",
+    "truck": "Gi matbilen din et navn.",
+    "cuisine": "Fortell oss hva du lager.",
+    "phoneMissing": "Legg til et telefonnummer — både kundene og vi bruker det for å nå deg.",
+    "email": "Skriv inn en gyldig e-postadresse.",
+    "password": "Passordet må ha minst 8 tegn.",
+    "terms": "Godta vilkårene for å fortsette."
+  },
+  "error": {
+    "saveFailed": "Kunne ikke lagre det — prøv igjen.",
+    "savedNoEmail": "Lagret — men vi fikk ikke sendt lenken på e-post akkurat nå.",
+    "unreachable": "Vi fikk ikke kontakt akkurat nå — prøv igjen.",
+    "createAccountFailed": "Kunne ikke opprette kontoen din.",
+    "truckCreateFailed": "Kontoen din er klar, men vi klarte ikke å opprette matbilen din. Prøv igjen.",
+    "truckUnreachable": "Kontoen din er klar, men vi fikk ikke opprettet matbilen din akkurat nå. Prøv igjen.",
+    "truckNoToken": "Matbilen din er satt opp, men vi fikk ikke åpnet den akkurat nå. Prøv igjen."
+  }
+}

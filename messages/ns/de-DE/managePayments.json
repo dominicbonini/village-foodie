@@ -1,0 +1,94 @@
+{
+  "heading": "Zahlungen",
+  "loading": "Ihr Stripe-Konto wird geprüft…",
+  "state": {
+    "not_connected": {
+      "title": "Nicht eingerichtet",
+      "body": "Dauert etwa 10 Minuten. Sie benötigen Ihre Bankverbindung und einen Ausweis.",
+      "chip": "Nicht eingerichtet"
+    },
+    "requirements": {
+      "title": "Stripe benötigt Ihre Angaben",
+      "body": "Kartenzahlungen funktionieren erst, wenn Stripe Ihre Unternehmens- und Bankdaten hat.",
+      "chip": "Handlungsbedarf"
+    },
+    "pending": {
+      "title": "Verbunden – Stripe prüft Ihre Angaben",
+      "body": "Sie müssen nichts tun. Stripe prüft Ihre übermittelten Angaben, und diese Seite aktualisiert sich, sobald die Prüfung abgeschlossen ist.",
+      "chip": "Wird geprüft"
+    },
+    "ready": {
+      "title": "Verbunden",
+      "body": "Ihr Stripe-Konto ist verbunden und kann Zahlungen annehmen.",
+      "chip": "Bereit"
+    },
+    "restricted": {
+      "title": "Kartenzahlungen pausiert",
+      "body": "Stripe hat Kartenzahlungen auf Ihrem Konto pausiert, bis ein offener Punkt geklärt ist.",
+      "chip": "Pausiert"
+    },
+    "unsupported": {
+      "title": "Kartenzahlungen sind für dieses Konto nicht verfügbar",
+      "body": "Stripe kann Kartenzahlungen hier nicht aktivieren. Melden Sie sich bei uns – wir klären das gemeinsam mit Ihnen.",
+      "chip": "Nicht verfügbar"
+    }
+  },
+  "keyMismatch": {
+    "title": "Stripe-Schlüssel stimmen nicht überein",
+    "body": "Der Server dieser Website verwendet seinen <b>{server, select, live {Live} other {Test}}</b>-Schlüssel für Stripe, während der Browser mit dem <b>{browser, select, live {Live} other {Test}}</b>-Schlüssel gebaut wurde. Kartenzahlungen würden genau in dem Moment fehlschlagen, in dem ein Kunde bezahlen möchte. Daher ist die Einrichtung von Stripe gesperrt, bis beide übereinstimmen.",
+    "fix": "Beide Schlüssel müssen für dieselbe Umgebung gesetzt und die Website danach neu gebaut werden – der öffentliche Schlüssel (Publishable Key) wird beim Build fest eingebaut, der geheime Schlüssel (Secret Key) bei jeder Anfrage gelesen."
+  },
+  "permission": {
+    "title": "Nur der Inhaber des Foodtrucks kann Zahlungen einrichten",
+    "body": "Stripe wird von der Person verbunden, auf deren Bankkonto das Geld eingeht. Die Einrichtung muss daher über ihr eigenes angemeldetes Konto erfolgen. Mit diesem Foodtruck und mit HatchGrab ist alles in Ordnung."
+  },
+  "config": {
+    "keyMissingTitle": "Kartenzahlungen sind noch nicht konfiguriert",
+    "fetchTitle": "Wir konnten das Stripe-Konto dieses Foodtrucks nicht prüfen",
+    "keyMissing": "{name} ist nicht gesetzt – die eingebetteten Komponenten können nicht geladen werden."
+  },
+  "errors": {
+    "requestFailed": "Anfrage fehlgeschlagen ({status})",
+    "unreachable": "Stripe ist nicht erreichbar"
+  },
+  "online": {
+    "heading": "Online-Zahlungen",
+    "body": "Kunden zahlen bei der Bestellung mit Karte. Das Geld geht direkt auf Ihr eigenes Stripe-Konto – wir verwahren es nie.",
+    "feeLine": "Stripe berechnet {fee} pro Zahlung mit Standard-{region}. Andere Karten können mehr kosten. Die eigene Gebühr von HatchGrab für Online-Bestellungen hängt von Ihrem Tarif ab – siehe Abrechnung.",
+    "testMode": "Testmodus. Es können noch keine echten Zahlungen angenommen werden."
+  },
+  "trialNote": "Die Einrichtung startet Ihr Abo nicht und kostet Sie heute nichts. Darüber bezahlen Ihre Kunden Sie – Ihr Tarif ist davon unabhängig.",
+  "admin": {
+    "title": "Ansicht als Plattform-Admin",
+    "body": "Dieser Foodtruck hat noch keine Online-Zahlungen eingerichtet. Nur der Inhaber kann das starten, über sein eigenes angemeldetes Konto – hier gibt es nichts anzuklicken."
+  },
+  "setUp": {
+    "button": "Online-Zahlungen einrichten",
+    "busy": "Wird eingerichtet…"
+  },
+  "toast": {
+    "alreadySetUp": "Bereits eingerichtet – es geht weiter",
+    "addDetails": "Geben Sie jetzt Ihre Angaben für Stripe ein",
+    "createFailed": "Das Konto konnte nicht erstellt werden"
+  },
+  "onboarding": {
+    "restricted": "Ab hier übernimmt Stripe – Sie melden sich bei Stripe an und aktualisieren die benötigten Angaben.",
+    "firstRun": "Ab hier übernimmt Stripe – Sie melden sich bei Stripe an und geben dann Ihre Unternehmens- und Bankdaten ein."
+  },
+  "details": {
+    "title": "Ihre Stripe-Daten",
+    "body": "Ändern Sie das Bankkonto für Ihre Auszahlungen oder aktualisieren Sie Ihre Unternehmensdaten und Dokumente.",
+    "button": "Ansehen oder bearbeiten"
+  },
+  "walkUp": {
+    "heading": "Zahlungen vor Ort",
+    "body": "So nehmen Sie am Foodtruck Geld ein. HatchGrab berechnet für Bestellungen vor Ort keine Plattformgebühr – egal, wofür Sie sich entscheiden.",
+    "ownTerminal": "Ihr eigenes Kartenterminal",
+    "current": "Aktuell",
+    "ownTerminalHelp": "Zettle, Square oder was Sie bereits nutzen. Keine Einrichtung nötig – es gelten nur die Gebühren Ihres Anbieters.",
+    "hatchgrab": "Über HatchGrab",
+    "comingSoon": "Demnächst",
+    "hatchgrabHelp": "Nutzt dieselbe Stripe-Verbindung wie Ihre Online-Zahlungen – mit einem Kartenlesegerät oder kontaktlos direkt auf Ihrem Smartphone oder Tablet.",
+    "hatchgrabFees": "{fee} pro Zahlung mit {region}, zuzüglich {surcharge} für kontaktlose Zahlungen auf einem Smartphone oder Tablet. Andere Karten können mehr kosten."
+  }
+}

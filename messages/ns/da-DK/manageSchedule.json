@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Aflyst",
+    "finished": "Afsluttet",
+    "unconfirmed": "Ikke bekræftet",
+    "confirmed": "Bekræftet",
+    "open": "Åben nu",
+    "closed": "Lukket"
+  },
+  "sections": {
+    "label": "Kalenderafsnit",
+    "events": "Arrangementer",
+    "eventTypes": "Arrangementstyper"
+  },
+  "header": {
+    "title": "Kalender",
+    "upcoming": "{count} kommende",
+    "import": "✨ Importer kalender",
+    "importHint": "foto, PDF eller tekst",
+    "addEvent": "+ Tilføj arrangement",
+    "scraperAuto": "Finder automatisk arrangementer på din hjemmeside",
+    "changeInSettings": "Skift under Indstillinger",
+    "scraperManual": "Du styrer selv din kalender"
+  },
+  "empty": {
+    "title": "Ingen kommende arrangementer",
+    "body": "Arrangementer, vi finder på dine sociale medier og i din bookingkalender, vises her, så du kan bekræfte dem"
+  },
+  "list": {
+    "openNow": "Åben nu",
+    "needsApproval": "Kræver din godkendelse",
+    "needsConfirmation": "Skal bekræftes",
+    "confirmed": "Bekræftet",
+    "past": "Tidligere arrangementer ({count})",
+    "found": "Vi fandt {count, plural, one {# arrangement til dig — gennemgå og godkend det, før det offentliggøres.} other {# arrangementer til dig — gennemgå og godkend dem, før de offentliggøres.}}"
+  },
+  "card": {
+    "addName": "Tilføj et navn",
+    "timeNeeded": "⚠ Mangler tidspunkt",
+    "setTimeFirst": "Angiv først et tidspunkt",
+    "confirm": "Bekræft",
+    "copy": "Kopier",
+    "edit": "Rediger",
+    "makePost": "Lav opslag",
+    "cancel": "Aflys",
+    "approve": "Godkend",
+    "reject": "Afvis",
+    "stock": "⚠️ Lager",
+    "stockHidden": "Skjult — {reason}",
+    "noDeals": "Ingen aktive tilbud",
+    "dealsActive": "{count, plural, one {# tilbud aktivt} other {# tilbud aktive}} · {names}{hidden, plural, =0 {} one { · # skjult} other { · # skjulte}}",
+    "approveNeedsTimes": "Godkend er slået fra, indtil arrangementet har et start- og sluttidspunkt — tilføj dem med Rediger."
+  },
+  "guessed": {
+    "title": "📍 Vi har gættet denne placering",
+    "body": "Mere end ét sted passede på <b>{venue}</b>, så vi valgte det mest sandsynlige{hasTown, select, yes { i <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Tjek, at det er det rigtige, før du godkender — hvis det er forkert, så brug <b>Rediger</b> til at rette området eller {postal}, ellers bliver kunderne sendt det forkerte sted hen.",
+    "thisVenue": "dette sted"
+  },
+  "noLocation": {
+    "title": "📍 Ingen placering endnu",
+    "body": "Vi kunne ikke placere stedet på kortet, så det vises på listen, men uden kortnål. Tilføj {postal} med <b>Rediger</b> for at sætte det på kortet."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Mulig konflikt} other {Mulige konflikter}} — gennemgå, før du {pending, select, yes {godkender} other {bekræfter}}",
+    "duplicate": "Det ligner det samme arrangement, som du allerede har.",
+    "review": "Samme sted og dato, men et andet tidspunkt — er det samme arrangement med et ændret tidspunkt, eller et separat tidsrum? Gennemgå, før du godkender.",
+    "already": "Allerede i din kalender: <b>{venue}</b>{details} ({status, select, confirmed {bekræftet} open {åben} other {{status}}})",
+    "unnamedVenue": "Sted uden navn",
+    "ack": "Ja, det er forskellige arrangementer — {pending, select, yes {godkend} other {bekræft}} alligevel",
+    "cancel": "Annuller",
+    "overlap": "Arrangementets tidspunkt overlapper et andet arrangement samme dag — én foodtruck kan ikke være to steder på én gang. Tjek, før du godkender."
+  },
+  "toast": {
+    "loadFailed": "Kunne ikke indlæse arrangementer",
+    "linkFailed": "Kunne ikke indlæse linket",
+    "placeTypeFailed": "Arrangementet er gemt. Den sædvanlige type for {place} blev ikke gemt — {reason}.",
+    "placeTypeFailedReason": "det lykkedes ikke at gemme",
+    "eventUpdated": "Arrangement opdateret",
+    "eventAdded": "Arrangement tilføjet",
+    "eventsSaved": "{count, plural, one {# arrangement gemt} other {# arrangementer gemt}}",
+    "saveEventsFailed": "Kunne ikke gemme arrangementer",
+    "needsTime": "Tilføj et start- og sluttidspunkt, før du godkender — arrangementet skal have et tidspunkt for at blive offentliggjort.",
+    "addStartTime": "Tilføj et starttidspunkt",
+    "addEndTime": "Tilføj et sluttidspunkt",
+    "chooseTruckBefore": "Vælg, hvilken foodtruck der kører arrangementet, før du godkender.",
+    "chooseTruck": "Vælg, hvilken foodtruck der kører arrangementet",
+    "eventConfirmed": "Arrangement bekræftet",
+    "eventRejected": "Arrangement afvist",
+    "undo": "↩ Fortryd",
+    "eventRestored": "Arrangement gendannet",
+    "restoreFailed": "Kunne ikke gendanne",
+    "eventCancelled": "Arrangement aflyst",
+    "eventCancelledOrders": "Arrangement aflyst · {count, plural, one {# bestilling} other {# bestillinger}} annulleret",
+    "placeHidden": "Sted skjult",
+    "placeShown": "Sted vises igen",
+    "saveThatFailed": "Det kunne ikke gemmes."
+  },
+  "link": {
+    "label": "Privat link og QR-kode",
+    "close": "Luk"
+  }
+}

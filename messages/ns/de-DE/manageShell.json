@@ -1,0 +1,84 @@
+{
+  "loading": "Verwaltung wird geladen…",
+  "loadFailed": "Laden fehlgeschlagen",
+  "requestFailed": "Fehlgeschlagen",
+  "invalidToken": "Ungültiges oder abgelaufenes Token",
+  "loadFailedReason": "Diese Seite konnte nicht geladen werden: {reason}",
+  "noCountrySettings": "Die Ländereinstellungen dieses Foodtrucks konnten nicht geladen werden. Bitte laden Sie die Seite neu.",
+  "noPlans": "Der Tarif dieses Foodtrucks konnte nicht geladen werden. Bitte laden Sie die Seite neu.",
+  "stale": "{hasTime, select, yes {Aktualisierung fehlgeschlagen. Angezeigt wird der Stand von {time}. Ihre Änderungen werden trotzdem gespeichert.} other {Aktualisierung fehlgeschlagen. Angezeigt wird der zuletzt gespeicherte Stand. Ihre Änderungen werden trotzdem gespeichert.}}",
+  "verify": {
+    "ok": "E-Mail-Adresse bestätigt – vielen Dank.",
+    "expired": "Dieser Bestätigungslink ist abgelaufen. Melden Sie sich bei uns, dann klären wir das vor Ihrem Start.",
+    "invalid": "Dieser Bestätigungslink hat nicht funktioniert. Melden Sie sich bei uns, dann klären wir das vor Ihrem Start."
+  },
+  "profile": {
+    "updated": "Profil aktualisiert",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "title": "Profil bearbeiten",
+    "name": "Name",
+    "namePlaceholder": "Ihr Name",
+    "email": "E-Mail",
+    "cancel": "Abbrechen",
+    "saving": "Wird gespeichert…",
+    "save": "Speichern"
+  },
+  "header": {
+    "subtitle": "Verwaltung",
+    "ordersDashboard": "← Bestell-Dashboard"
+  },
+  "tabs": {
+    "menu": "Speisekarte",
+    "schedule": "Termine",
+    "social": "Social Media",
+    "reports": "Berichte",
+    "team": "Team",
+    "settings": "Einstellungen",
+    "payments": "Zahlungen",
+    "billing": "Abrechnung",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Termine ({count})",
+    "stripeAttention": "Stripe benötigt Ihre Aufmerksamkeit",
+    "allergensNotSet": "Allergene nicht angegeben"
+  },
+  "menuSections": {
+    "label": "Bereiche der Speisekarte",
+    "items": "Gerichte",
+    "capacity": "Küchenkapazität",
+    "extras": "Extras & Upselling",
+    "deals": "Menüs"
+  },
+  "socialSections": {
+    "label": "Bereiche für Social Media",
+    "create": "Beitrag erstellen",
+    "designs": "Designs",
+    "locations": "Standort-Einstellungen"
+  },
+  "notices": {
+    "review": "Prüfen →",
+    "tour": "Möchten Sie eine kurze Tour durch Ihr Dashboard?",
+    "showMeAround": "Tour starten",
+    "dismiss": "Ausblenden",
+    "approval": "{count, plural, one {Wir haben <b>{count}</b> Event für Sie gefunden – prüfen und freigeben, bevor es veröffentlicht wird.} other {Wir haben <b>{count}</b> Events für Sie gefunden – prüfen und freigeben, bevor sie veröffentlicht werden.}}",
+    "allergens": "<b>Allergene nicht angegeben</b> – Kunden sehen keine Allergeninformationen, bis Sie diese bestätigen. Prüfen Sie die Allergene jedes Gerichts im Tab „Speisekarte“.",
+    "domainLive": "<link>{domain}</link> ist online. Sehen Sie sich die Seite an und bestätigen Sie uns dann in den Einstellungen, dass alles stimmt.",
+    "stripe": "<b>Stripe benötigt etwas von Ihnen</b> – Kartenzahlungen können ausfallen, bis das geklärt ist.",
+    "profileTitle": "Vervollständigen Sie Ihr Profil",
+    "missing": "Es fehlt: {fields}.",
+    "goToSettings": "Zu den Einstellungen →",
+    "field": {
+      "truckName": "Name des Foodtrucks",
+      "cuisineType": "Küchenrichtung",
+      "contactEmail": "Kontakt-E-Mail",
+      "contactPhone": "Kontakttelefon"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Sie sind in der kostenlosen Testphase} other {Sie sind in der {months}-monatigen kostenlosen Testphase}}",
+    "ends": "{hasDate, select, yes {Die Testphase endet am <hl>{date}</hl>} other {Die Testphase endet <hl>bald</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Alle Funktionen # Monat kostenlos} other {Alle Funktionen # Monate kostenlos}}} other {Alle Funktionen während Ihrer Testphase kostenlos}}",
+    "body": "{hasDate, select, yes {Während Ihrer Testphase, die bis zum <b>{date}</b> läuft, zahlen Sie nichts. Die Abrechnung beginnt erst, wenn Sie einen Tarif wählen und Ihre Zahlungsdaten eingeben. Bis dahin gibt es nichts zu kündigen und nichts zu bezahlen. Wählen Sie Ihren Tarif vorher – sonst wechseln Sie zu {fallback} und einige Funktionen stehen nicht mehr zur Verfügung.} other {Während der Testphase zahlen Sie nichts. Die Abrechnung beginnt erst, wenn Sie einen Tarif wählen und Ihre Zahlungsdaten eingeben. Bis dahin gibt es nichts zu kündigen und nichts zu bezahlen. Wählen Sie Ihren Tarif vorher – sonst wechseln Sie zu {fallback} und einige Funktionen stehen nicht mehr zur Verfügung.}}",
+    "fees": "*Bei Online-Bestellungen fallen die üblichen Kartengebühren an",
+    "upgrade": "Hier upgraden →"
+  }
+}

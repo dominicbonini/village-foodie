@@ -1,0 +1,17 @@
+{
+  "back": "← Tillbaka",
+  "title": "Lägg till en måltid",
+  "save": "Spara {amount}",
+  "selectItems": "Välj något för varje del",
+  "choose": "Välj {category}…",
+  "inYourBasket": "── I din varukorg ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (i varukorgen){state, select, used { — redan i en måltid} taken { — vald i en annan del} other {}}",
+  "addNew": "── Lägg till ny ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obligatoriskt · välj en} required {Obligatoriskt} other {Välj en}}{unmet, select, yes { (obligatoriskt)} other {}}",
+  "notePlaceholder": "Lägg till en kommentar, t.ex. ingen lök (valfritt)",
+  "backButton": "Tillbaka",
+  "cancel": "Avbryt",
+  "chooseRequired": "Välj obligatoriska alternativ",
+  "apply": "Lägg till måltid · {amount}"
+}

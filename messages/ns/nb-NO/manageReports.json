@@ -1,0 +1,92 @@
+{
+  "filter": {
+    "dateRange": "📅 Periode",
+    "event": "📍 Arrangement",
+    "filterBy": "Filtrer etter",
+    "show": "Vis",
+    "range": "<from></from><sep>til</sep><until></until>",
+    "selectEvent": "Velg et arrangement …",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Arrangement",
+    "viewReport": "Vis rapport",
+    "loading": "Laster …",
+    "orders": "📋 Bestillinger",
+    "items": "📦 Varer",
+    "exportCsv": "⬇ Eksporter CSV"
+  },
+  "empty": {
+    "noOrders": "Fant ingen bestillinger i denne perioden.",
+    "selectEvent": "Velg et arrangement over for å se rapporten."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} bestilling} other {{count} bestillinger}} · {total}"
+  },
+  "revenue": {
+    "title": "Inntekter fordelt",
+    "deals": "Måltidsinntekter",
+    "modifiers": "Pristillegg for valg",
+    "foodSales": "Matsalg",
+    "total": "Totalt",
+    "other": "Annet",
+    "tax": "Mva.",
+    "tips": "Tips",
+    "serviceFees": "Servicegebyrer",
+    "cardFees": "Kortgebyrer"
+  },
+  "itemsSold": {
+    "title": "Solgte varer"
+  },
+  "dealsCard": {
+    "title": "Måltider"
+  },
+  "custom": {
+    "title": "Tilpasninger",
+    "paidModifiers": "Valg med pristillegg",
+    "customerNotes": "Kommentarer fra kunder",
+    "note": "«{note}»"
+  },
+  "table": {
+    "item": "Vare",
+    "modifier": "Valg",
+    "qty": "Ant.",
+    "total": "Totalt",
+    "date": "Dato",
+    "time": "Tid",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Bestillinger i detalj",
+    "items": "Varer i detalj"
+  },
+  "channel": {
+    "online": "På nett",
+    "walkUp": "Ved bilen"
+  },
+  "csv": {
+    "orderId": "Bestillings-ID",
+    "date": "Dato",
+    "event": "Arrangement",
+    "timePlaced": "Bestilt kl.",
+    "collectionTime": "Hentetid",
+    "customerName": "Kundenavn",
+    "orderType": "Bestillingstype",
+    "items": "Varer",
+    "deals": "Måltider",
+    "modifiers": "Valg",
+    "notes": "Kommentarer",
+    "subtotal": "Delsum",
+    "tip": "Tips",
+    "serviceFee": "Servicegebyr",
+    "total": "Totalt",
+    "itemName": "Varenavn",
+    "qty": "Ant.",
+    "unitPrice": "Enhetspris",
+    "itemTotal": "Sum vare",
+    "orderTotal": "Sum bestilling",
+    "unknownEvent": "Ukjent arrangement",
+    "asap": "Snarest",
+    "unknownCustomer": "Ukjent",
+    "customerOnline": "Kunde på nett",
+    "placedByTruck": "Lagt inn av matbilen"
+  }
+}

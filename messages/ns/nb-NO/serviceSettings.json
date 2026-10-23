@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Hentetider",
+    "takes_cash": "Tar du kontanter?",
+    "offline_protection": "Beskyttelse ved frakobling",
+    "buzzer_prompt": "Minn meg på å legge til personsøker"
+  },
+  "typeFollowsVanTitle": "Følger vanlig innstilling for hver matbil",
+  "sameSettingsAllVansLabel": "Samme innstillinger for alle matbiler",
+  "sameSettingsAllVansHeader": "Alle matbiler",
+  "sameSettingsConfirm": "Kopiere innstillingene til Matbil 1 til alle matbilene? Dette kopierer alle matbilinnstillingene til Matbil 1, akkurat som «Samme som Matbil 1» i Innstillinger. Kjøkkenkapasitet har sin egen bryter.",
+  "eventTypesFooterStandard": "Standard er det vanlige oppsettet ditt. Endrer du det her, endres det også i Innstillinger.",
+  "eventTypesFooterOneEvent": "For å endre en innstilling for bare ett arrangement, bruk oversikten for det arrangementet.",
+  "eventTypesSubtitle": "Endringer lagres fortløpende.",
+  "matchStandardLabel": "Som Standard",
+  "matchStandardConfirm": "Sette alle innstillingene for denne typen tilbake til Standard? Alt du har endret her, blir nullstilt.",
+  "priceLabels": {
+    "price_change_on": "Endre priser",
+    "price_mode": "Prisendring",
+    "price_amount": "Beløp",
+    "price_rounding": "Avrunding",
+    "item_prices": "Varepriser"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Sett hver pris selv"
+  },
+  "priceRounding": {
+    "none": "Ingen",
+    "nearest_1": "Nærmeste 1 {symbol}",
+    "up_1": "Rund alltid opp"
+  },
+  "pricesStandardCell": "Menyprisene dine",
+  "pricesTruckWideTitle": "Prisene dine er like for alle matbiler",
+  "pricesMenuCell": "Meny",
+  "pricesTypeOffCell": "Menypriser",
+  "itemPricesShow": "Vis priser",
+  "itemPricesHide": "Skjul priser",
+  "priceItemsHeading": "Sett prisen på hver vare",
+  "priceItemsOpen": "Se eller endre prisen på hver vare ›",
+  "priceItemsClose": "Skjul varepriser ⌃",
+  "ownPriceCount": "{n, plural, one {{count} vare har egen pris} other {{count} varer har egen pris}}",
+  "priceTypeHint": "Trykk på en pris for å skrive inn din egen.",
+  "pricesLiveNotice": "Dette arrangementet er publisert. Nye bestillinger får de nye prisene. Bestillinger som allerede er lagt inn, beholder sine.",
+  "placeTypeHelper": "Legg til arrangement velger denne typen hver gang du velger denne plassen.",
+  "postPictureStandardNote": "Innlegg om arrangementer her bruker standarddesignet ditt.",
+  "eventItemsCardDescription": "Priser, antallsgrenser og tilgjengelighet bare for dette arrangementet. Endringer gjelder med en gang.",
+  "eventPriceColumnLabel": "Pris",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · dette arrangementet} other {meny {price} · dette arrangementet}}",
+  "eventPriceEdit": "✎ Rediger priser",
+  "eventPriceCancel": "Avbryt",
+  "eventPriceSave": "Lagre priser",
+  "eventPriceEditNote": "Du redigerer priser bare for dette arrangementet. Antallsgrenser og tilgjengelighet er låst til du lagrer.",
+  "eventPriceLiveNote": "Publisert: nye bestillinger får de nye prisene.",
+  "offlineWhenOfflineLabel": "Når frakoblet"
+}

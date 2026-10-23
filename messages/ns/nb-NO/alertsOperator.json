@@ -1,0 +1,28 @@
+{
+  "hi": "Hei {name},",
+  "limit80": {
+    "subject": "Du har brukt 80 % av denne månedens WhatsApp-svar",
+    "used": "De automatiske WhatsApp-svarene dine har brukt <b>{used} av {limit}</b> denne måneden.",
+    "nothingStopped": "Ingenting har stoppet. Når du når {limit}, settes de automatiske svarene på pause til kvoten nullstilles <b>{reset}</b> — kundene kan fortsatt sende deg meldinger, og du ser fortsatt alt de sender.",
+    "raise": "Du kan heve månedsgrensen din i Innstillinger når du vil.",
+    "raiseLink": "Du kan heve månedsgrensen din i Innstillinger når du vil:",
+    "button": "Åpne Innstillinger"
+  },
+  "limit100": {
+    "subject": "De automatiske svarene dine på WhatsApp er satt på pause denne måneden",
+    "usedAll": "Du har brukt alle {limit} automatiske WhatsApp-svar denne måneden, så de er satt på pause.",
+    "stillReach": "<b>Kundene kan fortsatt sende deg meldinger som vanlig, og alle meldinger når fortsatt fram til deg.</b> Det eneste som har stoppet, er det automatiske svaret tilbake.",
+    "startAgain": "De starter igjen <b>{reset}</b>, eller med en gang hvis du hever månedsgrensen din i Innstillinger.",
+    "startAgainLink": "De starter igjen {reset}, eller med en gang hvis du hever månedsgrensen din i Innstillinger:",
+    "button": "Hev grensen min"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp trenger en betalingsmåte før det kan sende",
+    "stopped": "WhatsApp har stoppet de automatiske svarene dine fordi det ikke finnes noen fungerende betalingsmåte på WhatsApp Business-kontoen din.",
+    "stillMessage": "<b>Kundene kan fortsatt sende deg meldinger, og du ser fortsatt alt de sender</b> — men svarene når ikke fram til dem.",
+    "payDirect": "Du betaler WhatsApp direkte for disse meldingene, så dette løses i WhatsApp Manager, ikke i HatchGrab. Legg til eller oppdater et kort der, så starter svarene igjen av seg selv.",
+    "payDirectLink": "Du betaler WhatsApp direkte for disse meldingene, så dette løses i WhatsApp Manager, ikke i HatchGrab. Legg til eller oppdater et kort der, så starter svarene igjen av seg selv:",
+    "button": "Åpne WhatsApp Manager",
+    "settings": "HatchGrab-innstillingene dine: <link>{url}</link>"
+  }
+}

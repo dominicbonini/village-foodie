@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "pr. foodtruck / måned",
+  "transactionFees": "Transaktionsgebyrer",
+  "comingSoon": "Kommer snart",
+  "footnote2Masked": "Onlinebetalinger håndteres af Stripe Connect. Platform- og kortgebyrer er endnu ikke fastlagt og bekræftes ved lanceringen.",
+  "card": {
+    "title": "Abonnement og betalinger",
+    "managed": "Abonnementet administreres af HatchGrab",
+    "earlyAccess": "I den tidlige adgangsperiode opsætter og justerer vi abonnementer manuelt.",
+    "planLine": "{trial, select, yes {{truck} · Abonnement: {plan} (prøveperiode)} other {{truck} · Abonnement: {plan}}}"
+  },
+  "currentPlan": "Nuværende abonnement",
+  "plan": {
+    "included": "Inkluderer onlinebestillinger for {amount} om måneden.",
+    "includedUnlimited": "Ubegrænsede onlinebestillinger inkluderet.",
+    "promo": "Særpris.",
+    "promoUntil": "Særpris indtil {date}.",
+    "ended": "Dit abonnement »{plan}« sluttede {date}. Du har nu {now}.",
+    "trialMonths": "En gratis prøveperiode på {months} md."
+  },
+  "trialEnds": "Prøveperioden slutter {date}",
+  "yourTrialEnds": "Din prøveperiode slutter {date}",
+  "notStarted": {
+    "heading": "Din gratis prøveperiode er ikke startet endnu"
+  },
+  "onTrial": "Du har alle funktioner. Vælg et abonnement, før din prøveperiode slutter.",
+  "onTrialNoCta": "Du har alle funktioner.",
+  "noCharge": "🔒 Du betaler ikke noget i din prøveperiode, som løber til {date}. Betalingen starter først, når du vælger et abonnement og indtaster dine betalingsoplysninger. Indtil da er der intet at opsige og intet at betale.",
+  "fees": "*Almindelige kortgebyrer gælder for onlinebestillinger",
+  "setUpPayment": "⏱ Vælg et abonnement, før din prøveperiode slutter",
+  "changeYourPlan": "Skift abonnement",
+  "planButton": "{plan} – {price}",
+  "upgradeModal": {
+    "title": "Skift til {plan}",
+    "tagline": "{price} – {description}",
+    "body": "Vi er ved at opsætte automatisk betaling. Hvis du vil skifte nu, så send os en besked, så sætter vi det op for dig inden for 24 timer.",
+    "mailSubject": "Skift til {plan} – {truck}",
+    "mailBody": "Hej. Jeg vil gerne skifte {truck} til abonnementet »{plan}« ({price}).",
+    "email": "Skriv til os for at skifte",
+    "cancel": "Annuller"
+  }
+}

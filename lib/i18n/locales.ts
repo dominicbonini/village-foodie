@@ -25,7 +25,10 @@
 // france-1 (22 October 2026): fr-FR, the first language base — a full file of its own (messages/fr-FR.json).
 // europe-settings (22 October 2026): en-MT and en-GI, sparse English overrides written over en-IE (LOCALE_PARENT) — Malta and
 // Gibraltar go live in English.
-export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI'] as const
+// europe-languages-1 (22 October 2026): German — de-DE, a full base; de-AT and de-CH sparse overrides over it, de-LI over de-CH
+// (Liechtenstein writes as Switzerland does). Then es-ES (Spain), it-IT (Italy) and pt-PT (Portugal), full bases; nl-NL (the
+// Netherlands) with nl-BE (Belgium's primary language, Flemish) a sparse override over it; sv-SE (Sweden); da-DK (Denmark); nb-NO (Norway, Bokmål).
+export const LOCALES = ['en-GB', 'en-US', 'en-IE', 'en-AU', 'en-NZ', 'en-CA', 'fr-FR', 'en-MT', 'en-GI', 'de-DE', 'de-AT', 'de-CH', 'de-LI', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'nl-BE', 'sv-SE', 'da-DK', 'nb-NO'] as const
 export type AppLocale = (typeof LOCALES)[number]
 export const DEFAULT_LOCALE: AppLocale = 'en-GB'
 
@@ -34,11 +37,11 @@ export const DEFAULT_LOCALE: AppLocale = 'en-GB'
  *  messages/en-CA.json holds only that list and is merged over en-US, which is merged over en-GB. Every other locale has no
  *  parent: its chain is itself alone, exactly as before. (languages-1: a regional variant of a language — fr-BE, de-AT — is
  *  written over its language's base the same way.) */
-export const LOCALE_PARENT: Partial<Record<AppLocale, AppLocale>> = { 'en-CA': 'en-US', 'en-MT': 'en-IE', 'en-GI': 'en-IE' }
+export const LOCALE_PARENT: Partial<Record<AppLocale, AppLocale>> = { 'en-CA': 'en-US', 'en-MT': 'en-IE', 'en-GI': 'en-IE', 'de-AT': 'de-DE', 'de-CH': 'de-DE', 'de-LI': 'de-CH', 'nl-BE': 'nl-NL' }
 
 /** languages-1: the NON-ENGLISH locales — each a full base file (see the header). france-1: fr-FR (France's country row decides when anyone sees it); a country
  *  prompt adds its locale here (docs/i18n/add-a-country.md). */
-export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR']
+export const LANGUAGE_BASES: readonly AppLocale[] = ['fr-FR', 'de-DE', 'es-ES', 'it-IT', 'pt-PT', 'nl-NL', 'sv-SE', 'da-DK', 'nb-NO']
 
 /** The override files a locale reads, outermost last: [] for en-GB, ['en-US'] for en-US, ['en-US', 'en-CA'] for en-CA,
  *  ['fr-FR'] for a language base (merged over en-GB, which is then only its fallback). */

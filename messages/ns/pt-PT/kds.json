@@ -1,0 +1,129 @@
+{
+  "docTitle": "Cozinha — {truck}",
+  "loading": "A carregar a cozinha…",
+  "pin": {
+    "title": "Introduza o PIN",
+    "placeholder": "PIN",
+    "unlock": "Desbloquear",
+    "unreachable": "Não é possível contactar o servidor neste momento. O seu PIN está correto — tente novamente daqui a pouco.",
+    "incorrect": "PIN incorreto",
+    "generic": "Algo correu mal. Tente novamente."
+  },
+  "error": {
+    "linkInvalid": "Este link já não é válido.",
+    "couldNotLoad": "Erro ao carregar encomendas",
+    "truckNotFound": "Food truck não encontrado"
+  },
+  "degraded": {
+    "at": "⚠️ Sem ligação ao servidor. A mostrar talões das {time}. PODEM FALTAR ENCOMENDAS NOVAS.",
+    "earlier": "⚠️ Sem ligação ao servidor. A mostrar talões anteriores. PODEM FALTAR ENCOMENDAS NOVAS."
+  },
+  "header": {
+    "dashboard": "Painel",
+    "backTitle": "Voltar ao painel",
+    "list": "Lista",
+    "grid": "Grelha",
+    "full": "Completo",
+    "cook": "Cozinha",
+    "fullTitle": "Cartões completos — preços e detalhes de pagamento, tal como o balcão os vê.",
+    "cookTitle": "Cartões de cozinha — letra maior, agrupados por categoria, sem preços.",
+    "readyStep": "Etapa Pronto",
+    "readyOnlyTitle": "Este ecrã só marca encomendas como prontas, por isso esta opção não pode ser desativada — é a única etapa que realiza.",
+    "readyOnTitle": "Este ecrã marca as encomendas como prontas. Toque para que seja outro ecrã a fazê-lo.",
+    "readyOffTitle": "Outro ecrã marca as encomendas como prontas. Toque para que seja este a fazê-lo.",
+    "handover": "Pagamento e entrega",
+    "handoverOnlyTitle": "Este ecrã só recebe pagamentos, por isso esta opção não pode ser desativada — é a única etapa que realiza.",
+    "handoverOnTitle": "Este ecrã recebe o pagamento e entrega as encomendas. Toque para que seja outro ecrã a fazê-lo.",
+    "handoverOffTitle": "Outro ecrã recebe o pagamento. Toque para que seja este a fazê-lo.",
+    "soundOn": "Som de nova encomenda ligado — toque para desligar",
+    "soundOff": "Som de nova encomenda desligado — toque para ligar",
+    "screenOn": "Ecrã ligado",
+    "screenOff": "Ecrã desligado",
+    "screenSettings": "Definições do ecrã",
+    "manageEvent": "Gerir evento",
+    "manageEventTitle": "Gerir evento — iniciar, pausar, alterar ou terminar",
+    "soundSettings": "Definições de som",
+    "soundSettingsTitle": "Que sons tocam neste dispositivo",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Visualização",
+    "on": "Ligado",
+    "off": "Desligado",
+    "newOrderSound": "Som de nova encomenda",
+    "soundNeedsConfirming": "Só encomendas por confirmar",
+    "soundAll": "Todas as encomendas novas",
+    "soundDue": "Som quando uma encomenda deve começar a ser cozinhada",
+    "soundDueHelp": "Toca quando um talão fica âmbar.",
+    "deviceSettings": "Definições do dispositivo",
+    "sound": "Som",
+    "close": "Fechar"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Encomendas não carregadas para este evento",
+    "mismatchBody": "O servidor respondeu com outro evento, por isso não se mostra nada em vez de encomendas erradas. Escolha o evento novamente ou recarregue.",
+    "mismatchBodyAt": "O servidor respondeu com outro evento, por isso não se mostra nada em vez de encomendas erradas para {venue}. Escolha o evento novamente ou recarregue.",
+    "paused": "⏸ Encomendas em pausa{reason, select, offline { (dispositivo offline)} other {}} — os clientes não podem encomendar",
+    "resume": "Retomar",
+    "offline": "Sem ligação — a mostrar as últimas encomendas conhecidas. As encomendas online foram pausadas para os clientes.",
+    "queued": "{n, plural, one {{count} ação em fila} other {{count} ações em fila}}",
+    "extraWait": "⏱ +{mins} min de espera extra ativos",
+    "clear": "Limpar",
+    "toMake": "Por fazer",
+    "today": "Hoje · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Iniciar evento",
+    "recentlyClosed": "Evento terminado · {venue} terminou às {time}",
+    "eventStatus": "{tone, select, paused {⏸ Em pausa} live {● Em curso} finished {● Terminado} cancelled {Cancelado} other {Não iniciado}}"
+  },
+  "board": {
+    "queueClear": "Fila vazia",
+    "doneToday": "Feitas hoje · {count}",
+    "paid": "✓ pago",
+    "cardHeld": "pré-autorizado",
+    "due": "{amount} por pagar"
+  },
+  "screenOff": {
+    "title": "Permitir que o ecrã se desligue?",
+    "bodyVans": "{vans} {n, plural, one {tem} other {têm}} a deteção offline ativada. Se o ecrã se desligar, o dispositivo pode deixar de enviar o sinal de ligação e as encomendas dos clientes podem ser pausadas.",
+    "body": "Se o ecrã se desligar, o dispositivo pode deixar de enviar o sinal de ligação.",
+    "keepHint": "Mantenha o ecrã ligado para garantir encomendas sem interrupções.",
+    "keep": "Manter ecrã ligado",
+    "allow": "Permitir desligar"
+  },
+  "event": {
+    "change": "Mudar de evento",
+    "cancel": "Cancelar",
+    "waitActive": "⏱ +{mins} min ativos · Toque para limpar",
+    "addWait": "⏱ Adicionar espera",
+    "endTitle": "Terminar evento?",
+    "endEarly": "Este evento só deve terminar às {time}. Não serão aceites mais encomendas. Confirma que quer terminar o evento?",
+    "endNow": "Terminar este evento? Não serão aceites mais encomendas.",
+    "yes": "Sim",
+    "started": "Evento iniciado",
+    "startFutureConfirm": "Este evento está marcado para {date}. Iniciá-lo agora?",
+    "finishTimeNow": "Hora de fim agora: {time}",
+    "finished": "Evento terminado",
+    "cancelled": "Evento cancelado",
+    "noteSaved": "Nota guardada",
+    "pauseConfirm": "Pausar encomendas? Os clientes verão «Não aceitamos encomendas» até retomar.",
+    "switchConfirm": "Mudar de {from} para {to}?{n, plural, =0 {} one { {count} encomenda neste ecrã será substituída.} other { {count} encomendas neste ecrã serão substituídas.}} Toque no evento atual para voltar."
+  },
+  "intro": {
+    "title": "Este é o ecrã da cozinha",
+    "p1": "É a vista de quem cozinha — as encomendas que tem de preparar, pela ordem em que as deve fazer. O ecrã junto à grelha mostra isto, enquanto o balcão usa o painel de encomendas.",
+    "p2": "Os cartões avançam à medida que lhes toca, por isso quem está a cozinhar sabe sempre o que vem a seguir e ninguém precisa de gritar. Tudo aqui são dados de demonstração — experimente à vontade.",
+    "gotIt": "Entendido"
+  },
+  "toast": {
+    "failed": "Falhou",
+    "rejectFailed": "Não foi possível recusar",
+    "buzzerSaved": "Pager {n} guardado",
+    "buzzerRemoved": "Pager {n} removido",
+    "buzzerRemovedNone": "Pager removido",
+    "buzzerAssigned": "Pager {n} atribuído",
+    "buzzerAssignedFrom": "Pager {n} atribuído (retirado da #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Não foi possível retirar o pager {target, select, order {da encomenda #{id}} other {desta encomenda}}} other {Não foi possível retirar o pager {n} — continua {target, select, order {na encomenda #{id}} other {nesta encomenda}}}}",
+    "buzzerAssignFailed": "Não foi possível dar o pager {n} {target, select, order {à encomenda #{id}} other {a esta encomenda}} — {had, select, yes {continua com o pager {prior}} other {continua sem pager}}"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "publicName": "Privat evenemang",
+  "chip": "Privat",
+  "grid": {
+    "orderingSection": "BESTÄLLNING",
+    "linkRowLabel": "Ta emot beställningar via privat länk och QR-kod",
+    "columnTitle": "Den inbyggda typen Privat. Den kan inte byta namn, flyttas eller raderas."
+  },
+  "form": {
+    "help": "Visas i ditt schema som ”Privat evenemang” med bara datum och tider — aldrig adressen, kartan eller Village Foodie.",
+    "linkPromise": "Gästerna beställer via en privat länk och QR-kod — du får dem när du har sparat.",
+    "nameLabel": "Evenemangets namn",
+    "nameHelp": "Gästerna ser detta högst upp på beställningssidan.",
+    "namePlaceholder": "Sarah & Toms bröllop",
+    "previewNote": "Så visas det i ditt schema — utan plats, ort eller postnummer.",
+    "needsTimes": "Lägg till start- och sluttid — ett privat evenemang som tar emot beställningar via länk behöver dem."
+  },
+  "link": {
+    "button": "Länk & QR",
+    "title": "Privat länk & QR-kod",
+    "label": "Privat länk",
+    "copy": "Kopiera",
+    "copied": "Kopierad",
+    "qrDownload": "Ladda ner QR",
+    "tableCards": "Skriv ut bordsskyltar",
+    "newLink": "Skapa en ny länk",
+    "working": "Arbetar…",
+    "newLinkConfirm": "Skapa en ny länk? Den nuvarande länken slutar fungera direkt, och alla QR-koder du redan har skrivit ut slutar också att fungera.",
+    "newLinkHelp": "Använd detta om länken har hamnat där den inte borde. Den nuvarande länken slutar fungera direkt, och utskrivna QR-koder slutar också att fungera.",
+    "newLinkFailed": "Det gick inte att skapa en ny länk.",
+    "offNotice": "Beställning via privat länk är avstängd för det här evenemanget, så det finns ingen länk att dela. Evenemanget visas fortfarande i ditt schema som ”Privat evenemang”."
+  },
+  "cards": {
+    "printTitle": "{truck} — bordsskyltar",
+    "scan": "Skanna för att beställa",
+    "blurb": "Beställ och betala i mobilen. Vi ropar upp ditt namn när det är klart.",
+    "footer": "Beställning via HatchGrab"
+  },
+  "noSinglePost": "Privata evenemang får inget eget inlägg — de visas på din veckoaffisch som ”Privat evenemang”.",
+  "confirmToPrivate": "Detta döljer adressen och evenemanget från kartan. Gästerna behöver den privata länken för att beställa.",
+  "confirmFromPrivate": "Detta gör evenemanget offentligt: adressen och kartnålen visas, och den privata länken slutar fungera."
+}

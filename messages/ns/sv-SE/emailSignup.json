@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hej {name}!} other {Hej!}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Grundare, HatchGrab",
+  "verify": {
+    "subject": "Bekräfta din e-postadress",
+    "thanks": "{hasTruck, select, yes {Tack för att du sätter upp {truck} på HatchGrab.} other {Tack för att du sätter upp din foodtruck på HatchGrab.}}",
+    "button": "Bekräfta min e-postadress",
+    "buttonText": "Bekräfta min e-postadress: {url}",
+    "why": "Det är med den här adressen du loggar in, och dit skickas beställningsaviseringarna — så det är värt att göra det nu.",
+    "next": "När den är bekräftad skickar jag allt du behöver för att komma igång.",
+    "carryOn": "Du kan fortsätta med inställningarna under tiden.",
+    "stuck": "Fastnat på något? Svara bara på det här mejlet — jag svarar själv.",
+    "fallbackLink": "Om knappen inte fungerar, klistra in den här länken: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Välkommen till HatchGrab, {name}} other {Välkommen till HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Jag är verkligen glad att få välkomna {truck} till HatchGrab.} other {Jag är verkligen glad att få välkomna din foodtruck till HatchGrab.}}",
+    "trial": "{months, plural, one {Din gratis provperiod på en månad har börjat — alla funktioner är upplåsta.} other {Din gratis provperiod på # månader har börjat — alla funktioner är upplåsta.}}",
+    "setup": "Om du inte redan har gjort det är det enkelt att komma igång, och det tar ungefär en kvart.",
+    "button": "Öppna din översikt",
+    "bookmark": "Värd att bokmärka. Den fungerar på alla enheter.",
+    "stuck": "Svara bara på det här mejlet om du fastnar — jag svarar själv.",
+    "lookingForward": "{hasTruck, select, yes {Jag ser fram emot att se {truck} i gång.} other {Jag ser fram emot att se din foodtruck i gång.}}"
+  }
+}

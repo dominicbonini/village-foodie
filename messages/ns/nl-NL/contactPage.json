@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Klantenservice",
+    "description": "Hulp nodig met HatchGrab? Stuur ons een bericht en we reageren per e-mail."
+  },
+  "logIn": "Inloggen",
+  "eyebrow": "Klantenservice",
+  "title": "Waarmee kunnen we helpen?",
+  "lede": "Werkt er iets niet, of heb je een vraag over je account? Je kunt ons op twee manieren bereiken — we reageren altijd per e-mail.",
+  "emailUs": "Mail ons",
+  "formHeading": "Of vul het formulier hieronder in",
+  "loadingForm": "Formulier laden…",
+  "formTitle": "Contactformulier klantenservice HatchGrab",
+  "privacy": "Privacy",
+  "terms": "Voorwaarden",
+  "about": "Over ons",
+  "copyright": "© {year} HatchGrab"
+}

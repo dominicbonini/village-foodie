@@ -1,0 +1,125 @@
+{
+  "$comment": "europe-languages-1 (22 October 2026): the WhatsApp allergen guard's trigger words for SWEDISH (sv-SE). OPTION B, as English, French and German: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents folded), so accented and unaccented spellings both match one entry; spelling variants that differ by more than accents are listed. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "sv",
+  "normalise": "unicode",
+  "stems": [
+    "allergi",
+    "allergisk",
+    "allergen",
+    "intoleran",
+    "overkanslig",
+    "celiaki",
+    "glutenintoleran",
+    "anafyla",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "glutenfri",
+    "laktosfri",
+    "mjolkfri",
+    "mjölkfri",
+    "aggfri",
+    "nötfri",
+    "notfri",
+    "jordnotsfri",
+    "sojafri",
+    "sesamfri",
+    "fiskfri",
+    "utan gluten",
+    "utan laktos",
+    "utan mjolk",
+    "utan agg",
+    "utan nötter",
+    "utan notter",
+    "utan jordnot",
+    "utan soja",
+    "utan sesam",
+    "utan fisk",
+    "utan skaldjur",
+    "utan senap",
+    "utan selleri",
+    "fri fran",
+    "passar for",
+    "lamplig for",
+    "säker för",
+    "saker for",
+    "spar av",
+    "kan innehalla",
+    "korskontamin"
+  ],
+  "tokens": [
+    "fri"
+  ],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "gluten",
+        "vete",
+        "mjöl"
+      ],
+      "crustaceans": [
+        "kräftdjur",
+        "räkor",
+        "räka",
+        "hummer",
+        "skaldjur"
+      ],
+      "eggs": [
+        "ägg",
+        "majonnäs"
+      ],
+      "fish": [
+        "fisk",
+        "lax",
+        "tonfisk"
+      ],
+      "peanuts": [
+        "jordnöt",
+        "jordnötter"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "mjölk",
+        "laktos",
+        "ost",
+        "grädde",
+        "smör",
+        "yoghurt"
+      ],
+      "tree nuts": [
+        "nötter",
+        "nöt",
+        "mandel",
+        "mandlar",
+        "hasselnöt",
+        "valnöt",
+        "pistage",
+        "cashew"
+      ],
+      "celery": [
+        "selleri"
+      ],
+      "mustard": [
+        "senap"
+      ],
+      "sesame": [
+        "sesam"
+      ],
+      "sulphites": [
+        "sulfit",
+        "sulfiter"
+      ],
+      "lupin": [
+        "lupin"
+      ],
+      "molluscs": [
+        "blötdjur",
+        "musslor",
+        "bläckfisk"
+      ]
+    }
+  }
+}

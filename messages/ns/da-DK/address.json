@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresse",
+    "postcode": "Postnummer",
+    "zip": "ZIP-kode",
+    "eircode": "Eircode",
+    "postalCode": "Postnummer",
+    "state": "Delstat",
+    "stateTerritory": "Delstat eller territorium",
+    "province": "Provins",
+    "county": "Grevskab",
+    "area": "Område (landsby eller by)",
+    "townOrArea": "By eller område",
+    "city": "By",
+    "suburb": "Bydel",
+    "townOrCity": "By"
+  },
+  "short": {
+    "area": "Område",
+    "townOrArea": "By eller område",
+    "city": "By",
+    "suburb": "Bydel",
+    "townOrCity": "By"
+  },
+  "inSentence": {
+    "postcode": "postnummer",
+    "zip": "ZIP-kode",
+    "eircode": "Eircode",
+    "postalCode": "postnummer"
+  },
+  "withArticle": {
+    "postcode": "et postnummer",
+    "zip": "en ZIP-kode",
+    "eircode": "en Eircode",
+    "postalCode": "et postnummer"
+  },
+  "tradeLabel": {
+    "area": "By",
+    "townOrArea": "By eller område",
+    "city": "By",
+    "suburb": "Bydel",
+    "townOrCity": "By"
+  },
+  "basedIn": {
+    "area": "By, du holder til i",
+    "townOrArea": "By eller område, du holder til i",
+    "city": "By, du holder til i",
+    "suburb": "Bydel, du holder til i",
+    "townOrCity": "By, du holder til i"
+  },
+  "example": "f.eks. {example}",
+  "customersSee": "Kunderne ser:",
+  "postalWarning": "Det ligner ikke {article} — for eksempel {example}. Du kan stadig gemme det.",
+  "regionChoose": "Vælg…"
+}

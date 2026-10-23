@@ -1,0 +1,13 @@
+{
+  "subtotal": "Zwischensumme",
+  "taxFallback": "Steuer",
+  "taxIncluded": "Inkl. {label}",
+  "serviceFeeCustomer": "Online-Servicegebühr",
+  "serviceFee": "Servicegebühr",
+  "cardFee": "Kartengebühr",
+  "tip": "Trinkgeld",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Steuern, Gebühren & Trinkgeld} tax_tip {Steuern & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {Steuern & Gebühren}}"
+}

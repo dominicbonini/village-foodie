@@ -1,0 +1,42 @@
+{
+  "perTruckMonth": "per foodtruck / månad",
+  "transactionFees": "Transaktionsavgifter",
+  "comingSoon": "Kommer snart",
+  "footnote2Masked": "Onlinebetalningar hanteras av Stripe Connect. Plattforms- och kortavgifter är inte fastställda än och bekräftas vid lanseringen.",
+  "card": {
+    "title": "Fakturering & betalningar",
+    "managed": "Faktureringen sköts av HatchGrab",
+    "earlyAccess": "Under den tidiga åtkomsten ställer vi in och justerar abonnemang manuellt.",
+    "planLine": "{trial, select, yes {{truck} · Abonnemang {plan} (provperiod)} other {{truck} · Abonnemang {plan}}}"
+  },
+  "currentPlan": "Nuvarande abonnemang",
+  "plan": {
+    "included": "Inkluderar onlinebeställningar för {amount} i månaden.",
+    "includedUnlimited": "Obegränsat med onlinebeställningar ingår.",
+    "promo": "Specialpris.",
+    "promoUntil": "Specialpris till {date}.",
+    "ended": "Ditt abonnemang {plan} upphörde {date}. Du har nu {now}.",
+    "trialMonths": "Gratis provperiod: {months} mån."
+  },
+  "trialEnds": "Provperioden slutar {date}",
+  "yourTrialEnds": "Din provperiod slutar {date}",
+  "notStarted": {
+    "heading": "Din gratis provperiod har inte börjat än"
+  },
+  "onTrial": "Du har alla funktioner. Välj ett abonnemang innan provperioden slutar.",
+  "onTrialNoCta": "Du har alla funktioner.",
+  "noCharge": "🔒 Du debiteras ingenting under provperioden, som pågår till {date}. Faktureringen börjar först när du väljer ett abonnemang och anger dina betaluppgifter. Fram till dess finns det inget att säga upp och inget att betala.",
+  "fees": "*Vanliga avgifter för kortbetalning tillkommer för onlinebeställningar",
+  "setUpPayment": "⏱ Välj ett abonnemang innan provperioden slutar",
+  "changeYourPlan": "Byt abonnemang",
+  "planButton": "{plan} – {price}",
+  "upgradeModal": {
+    "title": "Byt till {plan}",
+    "tagline": "{price} – {description}",
+    "body": "Vi håller på att införa automatisk fakturering. Om du vill byta nu skickar du ett meddelande till oss, så ordnar vi det inom 24 timmar.",
+    "mailSubject": "Byte till {plan} – {truck}",
+    "mailBody": "Hej! Jag vill byta {truck} till abonnemanget {plan} ({price}).",
+    "email": "Mejla oss för att byta",
+    "cancel": "Avbryt"
+  }
+}

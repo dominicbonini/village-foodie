@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotal",
+  "taxFallback": "Moms",
+  "taxIncluded": "Inkl. {label}",
+  "serviceFeeCustomer": "Servicegebyr online",
+  "serviceFee": "Servicegebyr",
+  "cardFee": "Kortgebyr",
+  "tip": "Drikkepenge",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Moms, gebyrer og drikkepenge} tax_tip {Moms og drikkepenge} fees_tip {Gebyrer og drikkepenge} fees {Gebyrer} other {Moms og gebyrer}}"
+}

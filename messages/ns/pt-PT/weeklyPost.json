@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Algo correu mal",
+    "previewFailed": "Não foi possível criar a pré-visualização",
+    "loadFailed": "Não foi possível carregar",
+    "tooBig": "Essa imagem tem {size, number, ::.0 group-off} MB. O limite é 10 MB.",
+    "wrongType": "Escolha um PNG ou JPG.",
+    "uploadIncomplete": "O carregamento não foi concluído",
+    "uploadFailed": "O carregamento falhou",
+    "saveFailed": "Não foi possível guardar",
+    "buildFailed": "Não foi possível criar a publicação",
+    "copyFailed": "Não foi possível copiar — selecione o texto e copie-o manualmente."
+  },
+  "loading": "A carregar…",
+  "missingTable": {
+    "title": "A publicação semanal precisa de uma atualização da base de dados",
+    "body": "A tabela de designs ainda não foi criada. Assim que a migração for aplicada, este ecrã vai funcionar."
+  },
+  "kind": {
+    "label": "Que design",
+    "event": "Evento único",
+    "week": "Semanal"
+  },
+  "setup": {
+    "title": "Configure a sua publicação semanal",
+    "intro": "Carregue a versão em branco do gráfico da agenda semanal que já faz — o mesmo design, sem as suas caixas de texto. O HatchGrab preenche a semana a partir da sua agenda.",
+    "canvaTitle": "Como exportar uma versão em branco do Canva",
+    "canvaStep1": "Abra o design habitual da sua agenda semanal.",
+    "canvaStep2": "Apague as caixas de texto com as datas, os locais e as horas — mantenha o fundo e os títulos que quer conservar.",
+    "canvaStep3": "Partilhar › Transferir › PNG.",
+    "uploading": "A carregar…",
+    "upload": "Carregar a imagem em branco",
+    "uploadHint": "PNG ou JPG, até 10 MB, com pelo menos {px} px no lado mais curto.",
+    "phoneTip": "Funciona melhor num computador ou iPad — as caixas são pequenas para arrastar num telemóvel.",
+    "designName": "Design da publicação semanal",
+    "backDesigns": "‹ Designs",
+    "back": "‹ Voltar",
+    "pictureNote": "A sua imagem sem datas nem locais. Nós acrescentamo-los.",
+    "saved": "Design guardado."
+  },
+  "week": {
+    "this": "Esta semana",
+    "next": "Próxima semana"
+  },
+  "post": {
+    "title": "A sua publicação semanal",
+    "editDesign": "Editar design",
+    "weekOf": "sem. de {date}",
+    "imageAlt": "A sua publicação semanal",
+    "building": "A criar a sua publicação…",
+    "updating": "A atualizar…",
+    "eventsTitle": "Eventos desta semana",
+    "noEvents": "Sem eventos esta semana.",
+    "eventDateCancelled": "{date} · cancelado",
+    "showCancelled": "Mostrar eventos cancelados",
+    "showPrivate": "Mostrar eventos privados",
+    "privateHint": "Aparecem como «Evento privado» com a data e as horas — nunca o local.",
+    "noteTitle": "Nota",
+    "notePlaceholder": "ex.: Encomende com antecedência para levantamento",
+    "noteHint": "Aparece na legenda e na caixa de nota, se colocou uma.",
+    "captionTitle": "Legenda para a sua página",
+    "perEventTitle": "Publicação para cada evento",
+    "nothingToPost": "Nada para publicar esta semana.",
+    "textCopied": "Texto copiado.",
+    "copyText": "Copiar texto",
+    "image": "Imagem",
+    "share": "Partilhar",
+    "noOrderLink": "Ainda sem link de encomendas — defina o endereço web do seu food truck nas Definições."
+  }
+}

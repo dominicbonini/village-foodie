@@ -1,0 +1,9 @@
+{
+  "title": "Planes y funciones",
+  "generated": "Generado el {date}",
+  "allowanceHeading": "Pedidos online incluidos",
+  "smallPrint": "Letra pequeña",
+  "priceNoteMasked": "Los precios indicados como “Por confirmar” aún no se han publicado.",
+  "omitNote": "Este documento no incluye precios de forma deliberada.",
+  "terms": "Las cifras son las condiciones publicadas de cada plan en la fecha indicada y pueden cambiar. Las comisiones por procesamiento de tarjetas las cobra Stripe, no HatchGrab. Este documento es un resumen, no un contrato."
+}

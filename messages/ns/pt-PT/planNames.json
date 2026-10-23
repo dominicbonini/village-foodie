@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Sem mensalidade",
+    "subtitle": "Food trucks sazonais e a tempo parcial",
+    "description": "Sem mensalidade. Só paga quando um cliente paga online com cartão."
+  },
+  "pro": {
+    "subtitle": "Food trucks com encomendas antecipadas regulares",
+    "description": "Tudo incluído, incluindo respostas automáticas do WhatsApp e publicações para redes sociais, com encomendas online incluídas todos os meses."
+  },
+  "unlimited": {
+    "name": "Ilimitado",
+    "subtitle": "Food trucks com muito movimento e festivais",
+    "description": "Tudo incluído, sem taxas nas encomendas online, por mais movimento que tenha."
+  },
+  "trial": {
+    "name": "Teste gratuito",
+    "description": "Todas as funcionalidades, grátis, enquanto durar o seu teste."
+  },
+  "demo": {
+    "name": "Demonstração",
+    "description": "Ambiente de testes para potenciais clientes — nunca público."
+  },
+  "tester": {
+    "name": "Testador",
+    "description": "Testador pré-lançamento — acesso total."
+  }
+}

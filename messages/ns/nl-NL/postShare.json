@@ -1,0 +1,10 @@
+{
+  "download": "Afbeelding downloaden",
+  "copied": "Gekopieerd ✓",
+  "copyCaption": "Bijschrift kopiëren",
+  "share": "Delen",
+  "copiedStatus": "{kind, select, postText {Posttekst gekopieerd.} other {Bijschrift gekopieerd.}}",
+  "copyFailed": "Kopiëren mislukt — selecteer de tekst en kopieer hem zelf.",
+  "sharedStatus": "{kind, select, postText {Posttekst gekopieerd — plak hem in je post.} other {Bijschrift gekopieerd — plak het in je post.}}",
+  "shareRefused": "{kind, select, postText {Delen is geweigerd, dus de afbeelding is gedownload. Posttekst gekopieerd.} other {Delen is geweigerd, dus de afbeelding is gedownload. Bijschrift gekopieerd.}}"
+}

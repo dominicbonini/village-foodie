@@ -1,0 +1,30 @@
+{
+  "heading": "Mva., tips og gebyrer",
+  "rate": {
+    "label": "Mva.-sats",
+    "hint": "Satsen du tar på hver bestilling. Kundene ser den lagt til ved betaling, på kvitteringer og på bonger.",
+    "regionDefault": "La feltet stå tomt for å ta {label} på {rate} %, satsen for ferdigmat ({region})."
+  },
+  "included": {
+    "label": "{label} inkludert i prisene",
+    "hint": "Prisene dine inkluderer allerede {label}. Satsen viser bare hvor mye av hver pris som er {label}, på kvitteringer og bonger – ingenting legges til ved betaling.",
+    "default": "La feltet stå tomt for å bruke {rate} % – satsen for {label} på varm mat til å ta med ({country})."
+  },
+  "tips": {
+    "label": "Tips",
+    "hint": "Kunder som betaler med kort på nett, kan legge til tips. Alt går til deg.",
+    "choices": "Valg kundene ser:",
+    "chip": "{rate} %",
+    "other": "Annet beløp"
+  },
+  "fee": {
+    "label": "Servicegebyr på nett",
+    "hint": "Legges bare til nettbestillinger. Aldri på bestillinger med betaling ved henting eller ved bilen. Du beholder det.",
+    "pctAria": "Servicegebyr i prosent",
+    "fixedAria": "Servicegebyr som fast beløp",
+    "max": "Maks du kan ta: {max}",
+    "example": "Kundene ser det før de betaler, som én linje: «{label} {amount}».",
+    "hatchgrab": "HatchGrab legger et servicegebyr på {fee} til kundenes nettbestillinger. Du betaler det ikke og kan ikke endre det."
+  },
+  "saveFailed": "Kunne ikke lagre – prøv igjen."
+}

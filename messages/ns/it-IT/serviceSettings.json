@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Orari di ritiro",
+    "takes_cash": "Accetti contanti?",
+    "offline_protection": "Protezione ordini offline",
+    "buzzer_prompt": "Ricordami di aggiungere un cercapersone"
+  },
+  "typeFollowsVanTitle": "Segue l’impostazione abituale di ogni food truck",
+  "sameSettingsAllVansLabel": "Stesse impostazioni per tutti i food truck",
+  "sameSettingsAllVansHeader": "Tutti i food truck",
+  "sameSettingsConfirm": "Copiare le impostazioni del Food truck 1 su tutti i food truck? Vengono copiate tutte le impostazioni del Food truck 1, come con «Uguale a Food truck 1» nelle Impostazioni. La capacità della cucina ha un interruttore a parte.",
+  "eventTypesFooterStandard": "Standard è la tua configurazione abituale. Se la modifichi qui, cambia anche nelle Impostazioni.",
+  "eventTypesFooterOneEvent": "Per cambiare un’impostazione per un solo evento, usa la dashboard di quell’evento.",
+  "eventTypesSubtitle": "Le modifiche si salvano man mano.",
+  "matchStandardLabel": "Uguale a Standard",
+  "matchStandardConfirm": "Riportare tutte le impostazioni di questo tipo su Standard? Tutto ciò che hai modificato qui verrà cancellato.",
+  "priceLabels": {
+    "price_change_on": "Modifica prezzi",
+    "price_mode": "Variazione di prezzo",
+    "price_amount": "Importo",
+    "price_rounding": "Arrotondamento",
+    "item_prices": "Prezzi dei prodotti"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Imposto io ogni prezzo"
+  },
+  "priceRounding": {
+    "none": "Nessuno",
+    "nearest_1": "Arrotonda a 1 {symbol}",
+    "up_1": "Sempre per eccesso"
+  },
+  "pricesStandardCell": "I prezzi del tuo menu",
+  "pricesTruckWideTitle": "I tuoi prezzi sono uguali per tutti i food truck",
+  "pricesMenuCell": "Menu",
+  "pricesTypeOffCell": "Prezzi del menu",
+  "itemPricesShow": "Mostra prezzi",
+  "itemPricesHide": "Nascondi prezzi",
+  "priceItemsHeading": "Imposta il prezzo di ogni prodotto",
+  "priceItemsOpen": "Vedi o modifica il prezzo di ogni prodotto ›",
+  "priceItemsClose": "Nascondi i prezzi dei prodotti ⌃",
+  "ownPriceCount": "{n, plural, one {{count} prodotto ha un prezzo proprio} other {{count} prodotti hanno un prezzo proprio}}",
+  "priceTypeHint": "Tocca un prezzo per scrivere il tuo.",
+  "pricesLiveNotice": "Questo evento è online. I nuovi ordini usano i nuovi prezzi. Gli ordini già effettuati mantengono i loro.",
+  "placeTypeHelper": "Aggiungi evento sceglie questo tipo ogni volta che selezioni questa postazione.",
+  "postPictureStandardNote": "I post degli eventi qui usano il tuo design standard.",
+  "eventItemsCardDescription": "Prezzi, limiti e disponibilità dei prodotti solo per questo evento. Le modifiche hanno effetto immediato.",
+  "eventPriceColumnLabel": "Prezzo",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · questo evento} other {menu {price} · questo evento}}",
+  "eventPriceEdit": "✎ Modifica prezzi",
+  "eventPriceCancel": "Annulla",
+  "eventPriceSave": "Salva prezzi",
+  "eventPriceEditNote": "Stai modificando i prezzi solo per questo evento. Limiti e disponibilità dei prodotti sono bloccati finché non salvi.",
+  "eventPriceLiveNote": "Online: i nuovi ordini usano i nuovi prezzi.",
+  "offlineWhenOfflineLabel": "Se offline"
+}

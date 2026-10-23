@@ -1,0 +1,101 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for LATVIAN (lv-LV). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "lv",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "nepanesam",
+    "celiakij",
+    "celiakija",
+    "bez glutena",
+    "bezglutena",
+    "bez laktozes",
+    "bez piena",
+    "bez olam",
+    "bez riekstiem",
+    "bez zemesriekstiem",
+    "bez sojas",
+    "bez sezama",
+    "bez zivim",
+    "bez vezveidigajiem",
+    "bez selerijam",
+    "bez sinepem",
+    "bez sulfitiem",
+    "anafilak",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "piemerots",
+    "drosi",
+    "dross",
+    "var saturet",
+    "pedas",
+    "krusteniska piesarnojum",
+    "piesarnojum"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "glutēns",
+        "kvieši",
+        "milti"
+      ],
+      "crustaceans": [
+        "vēžveidīgie",
+        "garneles"
+      ],
+      "eggs": [
+        "olas",
+        "ola",
+        "majonēze"
+      ],
+      "fish": [
+        "zivis",
+        "zivs"
+      ],
+      "peanuts": [
+        "zemesrieksti"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "dairy": [
+        "piens",
+        "laktoze",
+        "siers",
+        "krējums",
+        "sviests"
+      ],
+      "tree nuts": [
+        "rieksti",
+        "mandeles",
+        "lazdu rieksti",
+        "pistācijas",
+        "indijas rieksti"
+      ],
+      "celery": [
+        "selerijas"
+      ],
+      "mustard": [
+        "sinepes"
+      ],
+      "sesame": [
+        "sezams"
+      ],
+      "sulphites": [
+        "sulfīti",
+        "sēra dioksīds"
+      ],
+      "lupin": [
+        "lupīnas"
+      ],
+      "molluscs": [
+        "gliemji",
+        "mīdijas",
+        "kalmāri"
+      ]
+    }
+  }
+}

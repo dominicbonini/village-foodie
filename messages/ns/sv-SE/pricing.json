@@ -1,0 +1,48 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Din första månad är helt gratis – med alla funktioner.} other {Dina första # månader är helt gratis – med alla funktioner.}}",
+    "body": "Med {brand} förbeställer kunderna och betalar vid upphämtning, så du kan ta emot onlinebeställningar utan att koppla in någon kortinlösare alls. Vill du hellre ta betalt i förväg? Lägg till kortbetalning online när du vill. När provperioden tar slut går du över till planen <plan>{fallback}</plan>{fallbackFree, select, yes { – där du bara betalar när en kund betalar online med kort –} other {}} om du inte väljer en annan plan. Inget kort för att börja, ingen bindningstid, avsluta när du vill."
+  },
+  "card": {
+    "perTruckMonth": "per foodtruck/månad",
+    "mostTrucks": "Populärast",
+    "tryFree": "Prova gratis",
+    "seeEvery": "Se alla funktioner →",
+    "everything": "Allt du behöver för att driva din servering",
+    "everythingIn": "Allt i {plan}, plus"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}*</b> bara på onlinebeställningar med kort. Beställningar på plats är alltid gratis.",
+    "included": "De första <b>{included}</b> i onlinebeställningar ingår varje månad, därefter <b>{fee}*</b>. Beställningar på plats är alltid gratis.",
+    "noFee": "<b>Inga avgifter till HatchGrab</b> på onlinebeställningar, hur mycket du än har att göra. En förutsägbar månadskostnad."
+  },
+  "base": {
+    "walkUp": "Beställningar på plats och köksskärm",
+    "online": "Onlinebeställning",
+    "preorders": "Förbeställningar och upphämtningstider",
+    "capacity": "Kökskapacitet: max antal beställningar per tidslucka",
+    "privateEvents": "Privata evenemang",
+    "printing": "Utskrift av köksbongar",
+    "app": "Köksapp för iPhone, iPad och Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatiska svar på WhatsApp",
+    "schedule_graphics": "Inlägg i sociala medier – ditt schema för Facebook och Instagram – klara att publicera",
+    "event_types": "Egna evenemangstyper och evenemangspriser"
+  },
+  "money": {
+    "unlimitedOrders": "Obegränsat antal onlinebeställningar, 0 % avgift till HatchGrab",
+    "samePrice": "Samma pris även din mest hektiska månad"
+  },
+  "comingSoon": "Kommer snart",
+  "bar": {
+    "title": "Vilket abonnemang är billigast för mig?",
+    "subtitle": "Dina onlinebeställningar per månad",
+    "first": "Under {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Över {from} → <b>{plan}</b>",
+    "only": "Oavsett volym → <b>{plan}</b>"
+  },
+  "footnote": "* Tillkommer Stripes kortavgift på onlinebeställningar med kort (just nu {country}: {cardFee}), som betalas till Stripe, inte till HatchGrab. Beställningar på plats betalas med din egen kortläsare – HatchGrab tar 0 %.",
+  "currencyLine": "Valuta: {currency} ({code})"
+}

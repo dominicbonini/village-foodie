@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Er ging iets mis",
+    "previewFailed": "De voorbeeldweergave kon niet worden gemaakt",
+    "loadFailed": "Kon niet laden",
+    "tooBig": "Die afbeelding is {size, number, ::.0 group-off} MB. De limiet is 10 MB.",
+    "wrongType": "Kies een PNG of JPG.",
+    "uploadIncomplete": "De upload is niet voltooid",
+    "uploadFailed": "De upload is mislukt",
+    "saveFailed": "Kon niet opslaan",
+    "buildFailed": "De post kon niet worden gemaakt",
+    "copyFailed": "Kopiëren mislukt — selecteer de tekst en kopieer hem zelf."
+  },
+  "loading": "Laden…",
+  "missingTable": {
+    "title": "De wekelijkse post heeft een database-update nodig",
+    "body": "De ontwerptabel is nog niet aangemaakt. Zodra de migratie is uitgevoerd, werkt dit scherm."
+  },
+  "kind": {
+    "label": "Welk ontwerp",
+    "event": "Eén evenement",
+    "week": "Wekelijks"
+  },
+  "setup": {
+    "title": "Stel je wekelijkse post in",
+    "intro": "Upload de lege versie van de weekplanning-afbeelding die je al maakt — hetzelfde ontwerp, zonder je eigen tekstvakken. HatchGrab vult de week in vanuit je planning.",
+    "canvaTitle": "Een lege versie exporteren uit Canva",
+    "canvaStep1": "Open je gebruikelijke ontwerp voor de weekplanning.",
+    "canvaStep2": "Verwijder de tekstvakken met de datums, plaatsen en tijden — laat de achtergrond en de koppen staan die je wilt houden.",
+    "canvaStep3": "Delen › Downloaden › PNG.",
+    "uploading": "Uploaden…",
+    "upload": "Upload je lege afbeelding",
+    "uploadHint": "PNG of JPG, max. 10 MB, minstens {px} px aan de korte kant.",
+    "phoneTip": "Werkt het best op een computer of iPad — op een telefoon zijn de vakken klein om te verslepen.",
+    "designName": "Ontwerp wekelijkse post",
+    "backDesigns": "‹ Ontwerpen",
+    "back": "‹ Terug",
+    "pictureNote": "Je afbeelding zonder datum of plaats erop. Die voegen wij toe.",
+    "saved": "Ontwerp opgeslagen."
+  },
+  "week": {
+    "this": "Deze week",
+    "next": "Volgende week"
+  },
+  "post": {
+    "title": "Je wekelijkse post",
+    "editDesign": "Ontwerp bewerken",
+    "weekOf": "week van {date}",
+    "imageAlt": "Je wekelijkse post",
+    "building": "Je post wordt gemaakt…",
+    "updating": "Bijwerken…",
+    "eventsTitle": "Evenementen deze week",
+    "noEvents": "Geen evenementen deze week.",
+    "eventDateCancelled": "{date} · geannuleerd",
+    "showCancelled": "Geannuleerde evenementen tonen",
+    "showPrivate": "Privé-evenementen tonen",
+    "privateHint": "Ze worden getoond als ‘Privé-evenement’ met de datum en tijden — nooit de plaats.",
+    "noteTitle": "Notitie",
+    "notePlaceholder": "bijv. Vooraf bestellen en afhalen",
+    "noteHint": "Komt in het bijschrift, en in het notitievak als je er een hebt geplaatst.",
+    "captionTitle": "Bijschrift voor je pagina",
+    "perEventTitle": "Post per evenement",
+    "nothingToPost": "Niets te posten deze week.",
+    "textCopied": "Tekst gekopieerd.",
+    "copyText": "Tekst kopiëren",
+    "image": "Afbeelding",
+    "share": "Delen",
+    "noOrderLink": "Nog geen bestellink — stel het webadres van je foodtruck in bij Instellingen."
+  }
+}

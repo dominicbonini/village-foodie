@@ -1,0 +1,17 @@
+{
+  "back": "← Terug",
+  "title": "Combideal toepassen",
+  "save": "Bespaar {amount}",
+  "selectItems": "Kies items voor elk onderdeel",
+  "choose": "Kies: {category}…",
+  "inYourBasket": "── In je winkelmandje ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (in winkelmandje){state, select, used { — al in een combideal} taken { — gekozen bij een ander onderdeel} other {}}",
+  "addNew": "── Nieuw toevoegen ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Verplicht · kies er één} required {Verplicht} other {Kies er één}}{unmet, select, yes { (verplicht)} other {}}",
+  "notePlaceholder": "Voeg een opmerking toe, bijv. geen ui (optioneel)",
+  "backButton": "Terug",
+  "cancel": "Annuleren",
+  "chooseRequired": "Verplichte opties kiezen",
+  "apply": "Combideal toepassen · {amount}"
+}

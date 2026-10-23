@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Datas da semana",
+    "dayList": "Lista de dias",
+    "place": "Local",
+    "venue": "Espaço",
+    "area": "Localidade",
+    "dayDate": "Dia e data",
+    "times": "Horário",
+    "orderLink": "Link de encomenda",
+    "locationTag": "Etiqueta de localização"
+  },
+  "weekHeader": "{truck} — onde estamos esta semana:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — CANCELADO, lamentamos",
+  "noDates": "Sem datas esta semana — volte em breve.",
+  "orderAhead": "Encomende com antecedência: {url}",
+  "orderAheadTagged": "Encomende com antecedência: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Lamentamos — {when} não vamos conseguir estar em: {where}.",
+  "cancelledApology": "Pedimos desculpa a todos os que estavam a pensar vir. Voltamos em breve.",
+  "when": {
+    "today": "hoje",
+    "tonight": "hoje à noite",
+    "tomorrow": "amanhã",
+    "dated": "no dia {date}"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "closedPending": "Vooraf bestellen gesloten. Wacht op goedkeuring van de keuken.",
+  "deadline": "Vooraf bestellen vóór {time}",
+  "deadlineOnDay": "Vooraf bestellen vóór {time}, {day}",
+  "opens": "Vooraf bestellen kan vanaf {day}"
+}

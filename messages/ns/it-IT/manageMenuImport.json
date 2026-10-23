@@ -1,0 +1,189 @@
+{
+  "cancel": "Annulla",
+  "back": "← Indietro",
+  "backPlain": "Indietro",
+  "next": "Avanti →",
+  "continue": "Continua →",
+  "closeImport": "Chiudi importazione",
+  "tryAgain": "Riprova",
+  "catError": {
+    "empty": "Dai un nome alla categoria.",
+    "tooLong": "Quel nome è troppo lungo.",
+    "clash": "Esiste già una categoria chiamata «{name}»."
+  },
+  "steps": {
+    "details": "I tuoi dati",
+    "menu": "Menu",
+    "extras": "Extra",
+    "allergens": "Allergeni",
+    "kitchen": "Cucina",
+    "schedule": "Calendario",
+    "settings": "Impostazioni"
+  },
+  "toast": {
+    "demoGone": "Il tuo menu demo non è più disponibile: caricalo di nuovo per continuare.",
+    "eventsSaveFailed": "Impossibile salvare gli eventi",
+    "cardReadFailed": "Impossibile leggere la scheda allergeni: riprova",
+    "imageReadFailed": "Impossibile leggere quell’immagine: scrivi o incolla invece il contenuto della scheda",
+    "commitFailedDetail": "Impossibile completare il salvataggio del menu: {error}. Alcuni prodotti potrebbero essere già stati salvati: controlla il tuo menu prima di riprovare.",
+    "commitFailed": "Impossibile completare il salvataggio del menu. Alcuni prodotti potrebbero essere già stati salvati: controlla il tuo menu prima di riprovare.",
+    "finishFailed": "Impossibile segnare la configurazione come completata, ma puoi comunque continuare.",
+    "scheduleReadFailed": "Impossibile leggere quel calendario: prova con una foto più nitida o scrivi le tue date.",
+    "cardRead": "Scheda letta: {matched} abbinati, {pending, plural, one {# va assegnato da te} other {# vanno assegnati da te}}"
+  },
+  "settingsReview": {
+    "anchorOrder": "Impostazioni → Impostazioni ordini",
+    "anchorDisplay": "Impostazioni → I tuoi food truck → Impostazioni di visualizzazione",
+    "mins15": "15 minuti",
+    "mins30": "30 minuti",
+    "mins60": "60 minuti",
+    "hours2": "2 ore",
+    "title": "Alcune impostazioni da controllare",
+    "loading": "Caricamento delle impostazioni attuali…",
+    "looksGood": "Va bene →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Impossibile salvare: puoi modificarlo in Impostazioni.",
+    "anchorContact": "Impostazioni → Contatti",
+    "intro": "Abbiamo applicato alcune impostazioni comuni. Vale la pena dare un’occhiata: puoi modificarle in qualsiasi momento in Impostazioni.",
+    "cancelAria": "Fino a quanto prima del ritiro i clienti possono annullare"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Controllali prima di andare online. Finché non lo fai, i prodotti sono segnalati come «allergeni non impostati».",
+    "body": "Controllali in Impostazioni prima di andare online. Finché non lo fai, i prodotti sono segnalati come «allergeni non impostati».",
+    "title": "⚠ Allergeni e regimi alimentari non ancora impostati"
+  },
+  "welcome": {
+    "title": "Benvenuto in HatchGrab",
+    "yourTruck": "Il tuo food truck",
+    "stop": "Puoi interrompere e riprendere quando vuoi.",
+    "body": "{name} è configurato. Ora aggiungiamo il tuo menu, poi il tuo primo evento.",
+    "go": "Iniziamo"
+  },
+  "offer": {
+    "title": "Usare il menu della demo?",
+    "use": "Usa questo menu",
+    "upload": "Carica un altro menu",
+    "body": "Abbiamo salvato il menu che hai caricato: {count, plural, one {# prodotto} other {# prodotti}}. Usalo come punto di partenza o caricane un altro."
+  },
+  "upload": {
+    "title": "Importa il tuo menu",
+    "body": "Carica una foto della lavagna del menu, uno screenshot, un PDF o incolla il tuo menu come testo. La nostra IA lo legge e crea il tuo menu digitale: controlli tutto prima del salvataggio.",
+    "confirmCancel": "Annullare questa importazione? La verifica di questo menu andrà persa.",
+    "process": "Elabora menu",
+    "later": "Lo farò più tardi"
+  },
+  "processing": {
+    "title": "Analisi del menu in corso",
+    "body": "L’IA sta leggendo e suddividendo in categorie i tuoi prodotti…"
+  },
+  "review": {
+    "title": "Verifica il menu importato",
+    "editLaterSetup": "Nomi, prezzi, extra, allergeni e informazioni alimentari si possono modificare in qualsiasi momento.",
+    "editLater": "Nomi, prezzi, extra, allergeni e informazioni alimentari si possono modificare in qualsiasi momento in Impostazioni.",
+    "noPrice": "{count, plural, one {# prodotto non aveva} other {# prodotti non avevano}} un prezzo leggibile",
+    "renameCategoryAria": "Rinomina la categoria {name}",
+    "renameAria": "Rinomina {name}",
+    "renameTitle": "Rinomina categoria",
+    "deleteAria": "Elimina {name}",
+    "deleteTitle": "Elimina categoria",
+    "lastCategory": "Il tuo menu deve avere almeno una categoria",
+    "countOf": "{kept} su {total}",
+    "existing": "esistente",
+    "deleteEmptyTitle": "Eliminare «{name}»?",
+    "deleteEmptyBody": "Non contiene prodotti, quindi non si perde nulla.",
+    "delete": "Elimina",
+    "moveTitle": "Dove spostare {count, plural, one {# prodotto} other {# prodotti}}?",
+    "moveBody": "Per eliminare «{name}» serve un’altra categoria in cui spostare i suoi piatti: i prodotti senza categoria non vengono importati.",
+    "moveAria": "Sposta i prodotti da {name} a",
+    "chooseCategory": "Scegli una categoria…",
+    "moveDelete": "Sposta ed elimina",
+    "itemName": "Nome del prodotto",
+    "free": "gratis?",
+    "freeOn": "Gratis ✕",
+    "nameFirst": "Dai un nome al nuovo prodotto prima di aggiungerne un altro",
+    "addItem": "+ Aggiungi prodotto",
+    "categoryName": "Nome della categoria",
+    "newCategoryAria": "Nome della nuova categoria",
+    "addCategory": "+ Aggiungi categoria",
+    "ready": "{count, plural, one {# prodotto pronto} other {# prodotti pronti}} da aggiungere. Togli la spunta a quelli che non vuoi.",
+    "noPriceBody": "Imposta un prezzo per ciascuno o segnalo come gratuito, altrimenti verrebbe pubblicato a {zero}. Non puoi continuare finché non li hai sistemati.",
+    "incomplete": "Inserisci un nome per aggiungere questo prodotto: le righe vuote non vengono importate."
+  },
+  "extras": {
+    "introSetup": "Alcuni piatti possono essere configurati come <b>un unico prodotto personalizzabile</b> o restare <b>piatti separati</b>. Scegli come deve apparire ciascuno. Puoi cambiarlo in seguito.",
+    "intro": "Alcuni piatti possono essere configurati come <b>un unico prodotto personalizzabile</b> o restare <b>piatti separati</b>. Scegli come deve apparire ciascuno. Puoi cambiarlo in seguito in Impostazioni.",
+    "none": "Nessun piatto raggruppabile: ogni prodotto è un piatto a sé.",
+    "axisChoice": "· scelta: {axis}",
+    "grouped": "Raggruppati · un prodotto, sceglie il cliente",
+    "separate": "Prodotti separati nel menu"
+  },
+  "allergens": {
+    "title": "Allergeni",
+    "detected": "Abbiamo rilevato degli allergeni nel tuo menu. Scegli qui sotto come mostrarli.",
+    "howShow": "Come vuoi mostrare gli allergeni ai clienti?",
+    "skip": "Salta per ora la configurazione degli allergeni"
+  },
+  "kitchen": {
+    "title": "Configurazione cucina",
+    "intro": "Aiuta i clienti a sapere quanto dovranno aspettare: puoi sempre modificarlo più tardi.",
+    "howWorks": "Come funziona la capacità della cucina",
+    "allExist": "Tutte le categorie esistono già: nessun tempo da impostare.",
+    "totalHelp": "Imposta una capacità totale per limitare quanti prodotti la cucina accetta per fascia oraria. Lascia ∞ per nessun limite.",
+    "saveAdd": "Salva e aggiungi al menu"
+  },
+  "schedule": {
+    "title": "Aggiungi il mio calendario",
+    "intro": "Se il tuo calendario è sul tuo sito web possiamo tenerlo aggiornato automaticamente, oppure puoi aggiungere tu le date.",
+    "websiteTitle": "Il mio calendario è sul mio sito web",
+    "urlPlaceholder": "https://iltuofoodtruck.it/eventi",
+    "checking": "Verifica…",
+    "verify": "Verifica",
+    "checkingSite": "Verifica del tuo sito web…",
+    "takesTime": "Può richiedere fino a 2 minuti: tieni aperta questa pagina.",
+    "canRead": "✓ Riusciamo a leggere il tuo calendario",
+    "ownSite": "Il tuo sito web, non una pagina Facebook o Instagram.",
+    "photoTitle": "Carica una foto del mio calendario",
+    "dragChoose": "Trascina e rilascia o tocca per scegliere",
+    "imageOrPdf": "Immagine o PDF",
+    "or": "oppure",
+    "pastePlaceholder": "Incolla qui le tue date…",
+    "read": "Leggi calendario",
+    "found": "{count, plural, one {Trovata # data: verrà aggiunta} other {Trovate # date: verranno aggiunte}} al tuo calendario.",
+    "dateTbc": "Data da confermare",
+    "save": "Salva {count, plural, one {# data} other {# date}}",
+    "manualDesc": "Aggiungile più tardi nella scheda Calendario: per ora non devi fare nulla.",
+    "manualBody": "Nessun problema. Puoi aggiungere e gestire le tue date in qualsiasi momento dalla scheda Calendario del tuo account.",
+    "blockedDomain": "Usa l’URL del tuo sito web: le pagine Facebook e Instagram non possono essere lette automaticamente.",
+    "saveFailed": "Abbiamo letto il tuo calendario, ma al momento non siamo riusciti a salvarlo: riprova.",
+    "websiteDesc": "Lo controlleremo regolarmente e ti invieremo le nuove date da approvare.",
+    "keepChecking": "Continueremo a controllare questa pagina e ti invieremo le nuove date da approvare.",
+    "photoDesc": "Fotografa o incolla le tue date: le leggeremo e potrai controllarle.",
+    "noneFound": "Non abbiamo trovato date: prova con una foto più nitida o aggiungi tu una data.",
+    "manualTitle": "Aggiungerò le date io",
+    "trialNotStarted": "Aggiungere eventi non avvia la tua prova gratuita: sarai tu a scegliere, più avanti, l’evento che la avvia."
+  },
+  "done": {
+    "summary": "{items, plural, one {# prodotto} other {# prodotti}} in {categories, plural, one {# categoria} other {# categorie}}.",
+    "imported": "Menu importato!",
+    "added": "I tuoi prodotti sono stati aggiunti al menu.",
+    "duplicates": "{count, plural, one {# duplicato saltato} other {# duplicati saltati}}",
+    "showMe": "Fammi fare un giro",
+    "remind": "Ricordamelo più tardi",
+    "allSet": "È tutto pronto!",
+    "explore": "Esploro per conto mio"
+  },
+  "discard": {
+    "setupTitle": "Finire la configurazione più tardi?",
+    "setupBody": "Il tuo account e il tuo food truck sono salvati: non si perde nulla. Puoi aggiungere il menu in qualsiasi momento: accedi e tocca <b>Importa menu</b> nella schermata del menu per riprendere da qui.",
+    "keepGoing": "Continua",
+    "finishLater": "Finisci più tardi",
+    "title": "Scartare questa importazione?",
+    "keepEditing": "Continua a modificare",
+    "discard": "Scarta",
+    "body": "Le modifiche non verranno salvate: i prodotti importati, i tempi di preparazione e la capacità della cucina non verranno aggiunti."
+  },
+  "allergenCardText": {
+    "contains": "Contiene: {list}",
+    "mayContain": "Può contenere: {list}"
+  }
+}

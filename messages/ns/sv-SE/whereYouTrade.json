@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Var har din foodtruck sin bas?",
+  "stepIntro": "Det här styr din valuta, dina priser, din tidszon och ditt telefonnummerformat. Landet kan inte ändras senare eftersom det är kopplat till dina kortbetalningar.",
+  "settingsHeading": "Var du säljer",
+  "countryLabel": "Land",
+  "countryGuessed": "Vi gissade det utifrån var du befinner dig. Ändra det om det är fel.",
+  "countryLocked": "Ditt land kan inte ändras",
+  "townLabel": "Ort",
+  "townQuestion": "Orten där du har din bas",
+  "timezoneLabel": "Tidszon",
+  "continueButton": "Fortsätt",
+  "saveFailed": "Det gick inte att spara inställningarna – försök igen."
+}

@@ -1,0 +1,36 @@
+{
+  "h1": "Todo para gestionar tu servicio, en todos los planes.",
+  "lede": "Los pedidos, los pedidos anticipados, los pedidos máximos por franja y la pantalla de cocina están incluidos en todos los planes.{hasUpgrades, select, yes { {plans} añaden {features}, y comisiones más bajas.} other {}}",
+  "perMonth": "{price} / mes",
+  "group": {
+    "pay": "Lo que pagas",
+    "run": "Gestiona tu servicio",
+    "online": "Pedidos online",
+    "marketing": "Marketing y automatización"
+  },
+  "pay": {
+    "included": "Pedidos online incluidos cada mes",
+    "fee": "Comisión de HatchGrab en pedidos online con tarjeta*",
+    "walkUp": "Pedidos en ventanilla"
+  },
+  "cell": {
+    "unlimited": "Ilimitado",
+    "free": "Gratis",
+    "feeAbove": "<b>{fee}</b> a partir de {included}",
+    "yes": "Incluido",
+    "none": "No incluido",
+    "comingSoon": "Próximamente"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "redes sociales",
+    "event_types": "precios personalizados para eventos"
+  },
+  "meta": {
+    "description": "Todas las funciones de HatchGrab en cada plan, comparadas — {plans}, con comisiones y volúmenes incluidos.{months, plural, =0 {} one { Tu primer mes lo incluye todo.} other { Tus primeros # meses lo incluyen todo.}}"
+  },
+  "notes": {
+    "whatsapp": "Las respuestas automáticas de WhatsApp necesitan una cuenta de WhatsApp Business. Meta puede cobrar algunos mensajes; las respuestas se generan automáticamente.",
+    "printing": "La impresión de comandas necesita una impresora Bluetooth o con cable compatible (no incluida)."
+  }
+}

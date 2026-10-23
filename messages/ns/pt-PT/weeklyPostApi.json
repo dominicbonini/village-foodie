@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "O título não cabia e foi encurtado.",
+    "date": "A data não cabia e foi encurtada.",
+    "daysOff": "O texto dos dias de folga não cabia e foi encurtado.",
+    "place": "O nome do local não cabia e foi encurtado.",
+    "time": "O horário não cabia e foi encurtado.",
+    "note": "O seu texto não cabia e foi encurtado.",
+    "venue": "O espaço não cabia e foi encurtado.",
+    "area": "A localidade não cabia e foi encurtada."
+  },
+  "fontFallback": "Não foi possível carregar um tipo de letra usado por este modelo ({id}) — essas caixas estão em Oswald.",
+  "wrongShapeBackground": "A imagem deste local tem um formato diferente do seu modelo, por isso é usado o fundo padrão.",
+  "rowsFit": "O último dia fica {px} px abaixo do fundo da imagem — reduza o espaçamento entre linhas ou suba a linha 1.",
+  "placeStatus": {
+    "ownBoth": "Imagem e posições do texto próprias",
+    "wrongShape": "Formato diferente — não é usada até ser substituída",
+    "ownPicture": "Imagem própria, posições padrão",
+    "ownPositions": "Imagem padrão, posições do texto próprias",
+    "none": "Ainda sem imagem — a usar o Padrão"
+  },
+  "standardStatus": "Usado em todos os outros locais",
+  "option": {
+    "oneOff": "Carregar uma só para esta publicação",
+    "placePoster": "Cartaz: {name}",
+    "standard": "Modelo Padrão"
+  },
+  "previewLabel": {
+    "lastEvent": "A pré-visualização usa o seu último evento aqui",
+    "noEvents": "Ainda sem eventos aqui — a pré-visualização mostra o seu próximo evento com o nome deste local"
+  },
+  "fontUsage": {
+    "weekly": "o seu modelo de publicação semanal",
+    "event": "o seu modelo de publicação de evento",
+    "place": "o seu modelo para o local {place}",
+    "placeUnnamed": "o seu modelo para um local"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Negrito",
+    "italic": "Itálico"
+  },
+  "picture": {
+    "legacy": "Cartaz do evento",
+    "fallback": "Imagem",
+    "wrongShape": "Formato diferente — não pode ser usada como fundo completo"
+  },
+  "noPicture": {
+    "omit": "Não mostrar",
+    "blank": "Deixar um espaço em branco",
+    "logo": "Mostrar o seu logótipo"
+  },
+  "noPicturesAll": "{total, plural, one {O seu local tem uma imagem.} other {Os seus {total} locais têm todos uma imagem.}}",
+  "noPicturesSome": "{without, plural, one {{without} dos seus {total} locais ainda não tem imagem} other {{without} dos seus {total} locais ainda não têm imagem}}",
+  "licenceTick": "Sou proprietário deste tipo de letra ou tenho licença para o usar",
+  "fontUploadButton": "↑ Carregar o seu tipo de letra"
+}

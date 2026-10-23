@@ -1,0 +1,57 @@
+{
+  "steps": {
+    "reading": "Läser din meny…",
+    "found": "Hittade dina rätter…",
+    "kitchen": "Ställer in ditt kök…",
+    "page": "Bygger din beställningssida…",
+    "almost": "Nästan klart…"
+  },
+  "templateSteps": {
+    "truck": "Bygger din exempel-foodtruck…",
+    "menu": "Ställer in menyn…",
+    "kitchen": "Ställer in köket…",
+    "page": "Bygger beställningssidan…",
+    "almost": "Nästan klart…"
+  },
+  "dialogLabel": "Ladda upp din meny",
+  "heading": "✨ Ladda upp din meny",
+  "failedHeading": "Vi kunde inte läsa den menyn",
+  "close": "Stäng",
+  "intro": "Ett foto av din menytavla, en skärmdump, en PDF – eller klistra in den som text. Vår AI läser den och bygger en fungerande beställningssida åt dig — dina rätter, dina priser — på under 60 sekunder. Ingen registrering, inget kort.",
+  "failedIntro": "Ibland är ett foto för mörkt, för snett eller handskrivet. Det är vårt problem att lösa, inte något du har gjort fel. Några sätt att gå vidare:",
+  "usually": "Det brukar ta under 60 sekunder.",
+  "slow": "Det här tar längre tid än vanligt — stora menyer gör ibland det.",
+  "keepWaiting": "Fortsätt vänta",
+  "sampleWhileYouWait": "Eller titta runt med en exempelmeny medan du väntar",
+  "standIn": "Det här <b>blir inte din meny</b> — det är ett exempel så att du ser hur det fungerar.",
+  "seeSample": "Visa exempelmeny",
+  "tryAgain": "Försök igen",
+  "tryPhotoAgain": "Prova det här fotot igen",
+  "tryDifferent": "Prova ett annat foto",
+  "uploadAnother": "← Ladda upp ett annat foto",
+  "orSample": "Eller titta runt med en exempelmeny",
+  "orBuild": "Eller så bygger vi den åt dig",
+  "buildSent": "✓ Tack — vi har fått den. Vi mejlar dig.",
+  "buildBody": "Lämna din e-postadress så lägger en riktig person in din meny och skickar länken till dig.",
+  "emailPlaceholder": "du@dinfoodtruck.se",
+  "sending": "…",
+  "send": "Skicka",
+  "noPhoto": "Har du inget foto av menyn till hands?",
+  "noPhotoBody": "Titta runt med en exempel-foodtruck i stället — du kan ladda upp din egen när du vill.",
+  "build": "Bygg min demo →",
+  "nothingPublished": "Inget är publicerat — bara du kan se det.",
+  "error": {
+    "somethingWrong": "Något gick fel. Försök igen.",
+    "serverUnreachable": "Vi kunde inte nå servern. Kontrollera din anslutning och försök igen.",
+    "sendFailed": "Det gick inte att skicka — försök igen."
+  },
+  "fields": {
+    "uploadLabel": "Ladda upp menyfil",
+    "dropHere": "Släpp din meny här",
+    "dragOrTap": "Dra och släpp eller tryck för att välja",
+    "fileTypes": "Bild eller PDF",
+    "or": "eller",
+    "pasteLabel": "Klistra in menytext",
+    "pastePlaceholder": "Klistra in din meny här — namn på rätter, beskrivningar, priser…"
+  }
+}

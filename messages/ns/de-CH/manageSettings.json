@@ -1,0 +1,21 @@
+{
+  "emojiPicker": {
+    "categories": {
+      "sweet": "Süsses & Desserts"
+    }
+  },
+  "orders": {
+    "openCloseTitle": "Öffnen und Schliessen",
+    "autoClose": "Automatisch für Bestellungen schliessen"
+  },
+  "vans": {
+    "sameOn": "Dieser Foodtruck verwendet dieselben Einstellungen, ausser der Küchenkapazität.",
+    "sameOff": "Die Einstellungen des ersten Foodtrucks übernehmen – alles ausser der Küchenkapazität – und synchron halten."
+  },
+  "schedule": {
+    "checkingHelp": "Das kann bis zu 2 Minuten dauern – bitte lassen Sie diese Seite geöffnet und schliessen Sie den Tab nicht."
+  },
+  "qr": {
+    "close": "Schliessen"
+  }
+}

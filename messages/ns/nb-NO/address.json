@@ -1,0 +1,55 @@
+{
+  "label": {
+    "street": "Adresse",
+    "postcode": "Postnummer",
+    "zip": "ZIP-kode",
+    "eircode": "Eircode",
+    "postalCode": "Postnummer",
+    "state": "Delstat",
+    "stateTerritory": "Delstat eller territorium",
+    "province": "Provins",
+    "county": "Fylke",
+    "area": "Sted (bygd, tettsted eller by)",
+    "townOrArea": "By eller sted",
+    "city": "By",
+    "suburb": "Bydel",
+    "townOrCity": "By eller tettsted"
+  },
+  "short": {
+    "area": "Sted",
+    "townOrArea": "By eller sted",
+    "city": "By",
+    "suburb": "Bydel",
+    "townOrCity": "By eller tettsted"
+  },
+  "inSentence": {
+    "postcode": "postnummer",
+    "zip": "ZIP-kode",
+    "eircode": "Eircode",
+    "postalCode": "postnummer"
+  },
+  "withArticle": {
+    "postcode": "et postnummer",
+    "zip": "en ZIP-kode",
+    "eircode": "en Eircode",
+    "postalCode": "et postnummer"
+  },
+  "tradeLabel": {
+    "area": "By eller tettsted",
+    "townOrArea": "By eller sted",
+    "city": "By",
+    "suburb": "Bydel",
+    "townOrCity": "By eller tettsted"
+  },
+  "basedIn": {
+    "area": "By eller tettsted der du holder til",
+    "townOrArea": "By eller sted der du holder til",
+    "city": "By der du holder til",
+    "suburb": "Bydel der du holder til",
+    "townOrCity": "By eller tettsted der du holder til"
+  },
+  "example": "f.eks. {example}",
+  "customersSee": "Kundene ser:",
+  "postalWarning": "Det ser ikke ut som {article} – for eksempel {example}. Du kan likevel lagre det.",
+  "regionChoose": "Velg …"
+}

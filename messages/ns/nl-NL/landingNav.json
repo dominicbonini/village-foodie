@@ -1,0 +1,12 @@
+{
+  "homeLabel": "HatchGrab-startpagina",
+  "cta": "Upload mijn menukaart →",
+  "ctaShort": "Menu uploaden",
+  "features": "Functies",
+  "pricing": "Prijzen",
+  "logIn": "Inloggen",
+  "country": {
+    "button": "Land: {name}. Land wijzigen",
+    "menu": "Land"
+  }
+}

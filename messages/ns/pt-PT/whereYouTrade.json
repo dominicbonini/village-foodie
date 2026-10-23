@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Onde está sediado o seu food truck?",
+  "stepIntro": "Isto define a moeda, os preços, o fuso horário e o formato do telefone. O país não pode ser alterado mais tarde, porque está associado aos seus pagamentos com cartão.",
+  "settingsHeading": "Onde trabalha",
+  "countryLabel": "País",
+  "countryGuessed": "Deduzimos isto a partir da sua localização. Altere se estiver errado.",
+  "countryLocked": "O seu país não pode ser alterado",
+  "townLabel": "Localidade",
+  "townQuestion": "Localidade onde está sediado",
+  "timezoneLabel": "Fuso horário",
+  "continueButton": "Continuar",
+  "saveFailed": "Não foi possível guardar as definições — tente novamente."
+}

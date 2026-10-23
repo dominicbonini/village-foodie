@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotal",
+  "taxFallback": "Impuestos",
+  "taxIncluded": "Incluye {label}",
+  "serviceFeeCustomer": "Gastos de servicio online",
+  "serviceFee": "Gastos de servicio",
+  "cardFee": "Comisión de tarjeta",
+  "tip": "Propina",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Impuestos, gastos y propina} tax_tip {Impuestos y propina} fees_tip {Gastos y propina} fees {Gastos} other {Impuestos y gastos}}"
+}

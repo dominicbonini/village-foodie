@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Här står {truck} härnäst.",
+  "orderFrom": "Beställ från {truck}",
+  "poweredBy": "Drivs av <b>HatchGrab</b>",
+  "loadFailed": "Det gick inte att ladda schemat just nu.",
+  "loading": "Laddar schemat…",
+  "empty": "Inga kommande evenemang för {truck}."
+}

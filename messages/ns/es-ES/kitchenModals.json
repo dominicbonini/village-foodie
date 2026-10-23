@@ -1,0 +1,69 @@
+{
+  "close": "Cerrar",
+  "cancel": "Cancelar",
+  "selectReason": "Elige un motivo",
+  "reject": {
+    "title": "¿Rechazar el pedido #{orderId}?",
+    "reasonLabel": "Motivo — obligatorio (lo verá el cliente)",
+    "reason": "{reason, select, sold_out {Se ha agotado un producto} too_busy {Demasiado trabajo — no llegamos a tiempo} closing_soon {Cerramos pronto} other {Otro}}",
+    "noteRequired": "Motivo — obligatorio",
+    "noteOptional": "Nota adicional — opcional",
+    "notePlaceholder": "Añade más detalles para el cliente…",
+    "keep": "Mantener pedido",
+    "confirm": "Rechazar pedido"
+  },
+  "eventCancel": {
+    "title": "¿Cancelar este evento?",
+    "affected": "{n, plural, one {Se cancelará {count} pedido} other {Se cancelarán {count} pedidos}} y se avisará a los clientes.",
+    "reasonLabel": "Motivo — opcional",
+    "reason": "{reason, select, vehicle_breakdown {Avería del vehículo} weather {Mal tiempo} venue_issue {Problema con el lugar} personal_emergency {Emergencia personal} other {Otro}}",
+    "messageLabel": "Mensaje para los clientes — opcional",
+    "messagePlaceholder": "p. ej., Lo sentimos, se nos ha averiado el remolque de camino al lugar…",
+    "keep": "Mantener evento",
+    "cancelling": "Cancelando…",
+    "confirm": "Cancelar evento"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Reiniciar evento} other {Iniciar evento}}",
+    "changeEvent": "Cambiar de evento",
+    "changeEventType": "Cambiar tipo de evento…",
+    "privateLink": "Enlace privado y código QR",
+    "noteLabel": "Nota para los clientes",
+    "notePlaceholder": "p. ej., Aparca en el aparcamiento principal y busca la carpa naranja",
+    "noteHint": "Se muestra a los clientes en la página de pedidos, debajo de los detalles de tu evento.",
+    "saveNote": "Guardar nota",
+    "resume": "Reanudar pedidos",
+    "pause": "Pausar pedidos",
+    "changeFinishTime": "Cambiar hora de fin del evento",
+    "finishEvent": "Finalizar evento",
+    "cancelEvent": "Cancelar evento"
+  },
+  "finish": {
+    "confirmTitle": "¿Cambiar la hora de fin?",
+    "willFinish": "Este evento terminará a las <b>{selected}</b>{hasCurrent, select, yes { en lugar de a las <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} pedido está previsto} other {{count} pedidos están previstos}} para después de las {selected}.</b> {n, plural, one {Sigue} other {Siguen}} en el panel y {n, plural, one {hay que prepararlo} other {hay que prepararlos}} igualmente. Cambiar la hora de fin solo impide que se hagan pedidos NUEVOS para horas posteriores.",
+    "saving": "Guardando…",
+    "confirm": "Cambiar hora de fin",
+    "keepCurrent": "Mantener {current}",
+    "keepAsIs": "Dejar como está",
+    "title": "Cambiar hora de fin",
+    "currentlySet": "Ahora mismo este evento termina a las <b>{current}</b>.",
+    "noFinishTime": "Este evento no tiene hora de fin.",
+    "noTimesLeft": "Hoy no quedan más horas. Usa Finalizar evento.",
+    "newFinishTime": "Nueva hora de fin",
+    "optionCurrent": "{time} (actual)",
+    "earlier": "Es antes de la hora de fin actual. Los clientes no podrán pedir para horas posteriores.",
+    "review": "Revisar cambio",
+    "optionNextDay": "{time} (día siguiente)"
+  },
+  "extraWait": {
+    "title": "Añadir espera extra",
+    "hint": "Se suma a la hora de recogida indicada en los pedidos nuevos. No cambia la hora de fin del evento.",
+    "option": "+{mins} min"
+  },
+  "picker": {
+    "reconnect": "Reconecta para cargar",
+    "selected": "Seleccionado",
+    "status": "{tone, select, paused {⏸ En pausa} live {● En curso} finished {● Finalizado} cancelled {Cancelado} other {Sin empezar}}"
+  }
+}

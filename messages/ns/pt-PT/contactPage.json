@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Apoio",
+    "description": "Obtenha ajuda com a HatchGrab. Envie-nos uma mensagem e responderemos por email."
+  },
+  "logIn": "Iniciar sessão",
+  "eyebrow": "Apoio",
+  "title": "Como podemos ajudar?",
+  "lede": "Algo não está a funcionar, ou tem uma dúvida sobre a sua conta? Há duas formas de nos contactar — em ambos os casos, respondemos por email.",
+  "emailUs": "Envie-nos um email",
+  "formHeading": "Ou preencha o formulário abaixo",
+  "loadingForm": "A carregar o formulário…",
+  "formTitle": "Contactar o apoio da HatchGrab",
+  "privacy": "Privacidade",
+  "terms": "Termos",
+  "about": "Sobre nós",
+  "copyright": "© {year} HatchGrab"
+}

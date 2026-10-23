@@ -1,0 +1,83 @@
+{
+  "title": "Arrangementstyper",
+  "newTypeButton": "+ Ny arrangementstype",
+  "close": "Luk",
+  "loading": "Indlæser…",
+  "missingTitle": "Arrangementstyper er ikke slået til endnu.",
+  "missingBody": "Databaseopdateringen til denne funktion er ikke kørt endnu. Intet er gået i stykker — alle arrangementer bruger din normale opsætning.",
+  "column": "Kolonne",
+  "vanGone": "Foodtrucken er væk.",
+  "typeGone": "Den type findes ikke længere.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Mere for {name}",
+  "rename": "Omdøb",
+  "moveLeft": "Flyt til venstre",
+  "moveRight": "Flyt til højre",
+  "delete": "Slet",
+  "sections": {
+    "vans": "FOODTRUCKS",
+    "prices": "PRISER",
+    "itemPrices": "VAREPRISER",
+    "service": "SERVICE"
+  },
+  "labelFor": "{label} for {name}",
+  "intervalEvery": "Hvert {mins}. min.",
+  "noTypes": "Du har ingen arrangementstyper endnu, så alle arrangementer bruger din normale opsætning.",
+  "renameTitle": "Omdøb denne type",
+  "name": "Navn",
+  "cancel": "Annuller",
+  "save": "Gem",
+  "copyVanOne": "Kopiér fra foodtruck 1",
+  "thisType": "denne type",
+  "matchTitle": "Tilpas »{name}« til Standard?",
+  "matchKeeps": "Alt, hvad du har ændret på et enkelt arrangements oversigt, forbliver som det er, og denne types priser ændres ikke.",
+  "matchWillUse": "Den kommer til at bruge: {summary}",
+  "deleteTitle": "Slet »{name}«?",
+  "deleteBody": "{n, plural, =0 {Ingen kommende arrangementer bruger »{name}«.} one {{count} kommende arrangement bruger »{name}«. Det går tilbage til Standard.} other {{count} kommende arrangementer bruger »{name}«. De går tilbage til Standard.}} Alt, hvad du har ændret på et enkelt arrangement, forbliver som det er.",
+  "keep": "Behold",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "standard",
+    "vanSetup": "Denne foodtrucks normale opsætning — bruges ved alle arrangementer uden type.",
+    "standardSetup": "Din normale opsætning — bruges ved alle arrangementer uden type.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} kommende arrangement} other {{upcomingCount} kommende arrangementer}} · {changed, plural, =0 {intet ændret endnu} one {{changedCount} af {total} ændret} other {{changedCount} af {total} ændret}}",
+    "noMenuItems": "Ingen varer på menukortet endnu — tilføj dem under Menukort › Varer."
+  },
+  "newType": {
+    "title": "Ny arrangementstype",
+    "namePlaceholder": "f.eks. Skolefest",
+    "help": "Tryk på et navn, eller skriv dit eget. Typen starter som en kopi af Standard, og senere ændringer af Standard påvirker den ikke. Du kan ændre alt bagefter.",
+    "create": "Opret",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Bar",
+      "market": "Marked",
+      "privateHire": "Lej en foodtruck"
+    }
+  },
+  "select": {
+    "label": "Arrangementstype",
+    "usual": "{name} er det normale for dette sted."
+  },
+  "summary": {
+    "normalSetup": "Din normale opsætning",
+    "sameAsStandard": "Samme som Standard",
+    "buzzersOn": "buzzere til",
+    "buzzersOff": "buzzere fra",
+    "takeCashOn": "kontantbetaling til",
+    "takeCashOff": "kontantbetaling fra",
+    "markReadyOn": "trinnet »markér som klar« til",
+    "markReadyOff": "trinnet »markér som klar« fra",
+    "collectionEvery": "afhentning hvert {mins}. min.",
+    "offlineOff": "offlinebeskyttelse fra",
+    "offlineKeepTaking": "offline: bliv ved med at tage imod bestillinger",
+    "offlinePause": "offline: sæt bestilling på pause"
+  },
+  "errors": {
+    "somethingWentWrong": "Noget gik galt",
+    "couldNotLoad": "Kunne ikke indlæse",
+    "couldNotSave": "Kunne ikke gemme",
+    "noVans": "Der er ingen foodtrucks at ændre på denne konto."
+  }
+}

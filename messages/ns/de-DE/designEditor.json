@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Wochenüberschrift",
+    "weekHeadingSample": "Woche ab …",
+    "daysSample": "{first} bis {last}",
+    "date": "Datum",
+    "place": "Ort",
+    "venue": "Veranstaltungsort",
+    "area": "Ortschaft",
+    "time": "Uhrzeit",
+    "rows": "Zeilen",
+    "rowsSample": "{px} px Abstand · {first} bis {last}",
+    "ownText": "Eigener Text",
+    "noteTokenSample": "Die Notiz, die Sie beim Erstellen des Beitrags eingeben",
+    "nothingYet": "Noch nichts",
+    "thisBox": "dieses Feld"
+  },
+  "sample": {
+    "venue": "Gasthaus Zur Linde",
+    "area": "Bamberg"
+  },
+  "bar": {
+    "previewWith": "Vorschau mit",
+    "undo": "Rückgängig",
+    "undoTitle": "Rückgängig (⌘Z)",
+    "redo": "Wiederholen",
+    "redoTitle": "Wiederholen (⇧⌘Z)",
+    "cancel": "Abbrechen",
+    "saving": "Wird gespeichert…",
+    "save": "Design speichern"
+  },
+  "grid": {
+    "eachRow": "Jede Zeile",
+    "placeOff": "Der Ortsname ist in Ihrem Bild enthalten – HatchGrab fügt ihn nicht hinzu."
+  },
+  "background": {
+    "uploading": "Wird hochgeladen…",
+    "replace": "Bild ersetzen",
+    "shape": {
+      "square": "Quadratisch (1:1)",
+      "portrait45": "Hochformat (4:5)",
+      "portrait916": "Hochformat (9:16)",
+      "landscape169": "Querformat (16:9)",
+      "portrait": "Hochformat",
+      "landscape": "Querformat"
+    }
+  },
+  "scope": {
+    "title": "Textpositionen",
+    "standard": "Gleiche Positionen wie im Standarddesign",
+    "own": "Eigene Positionen für {place}",
+    "locked": "Diese Positionen stammen aus Ihrem Standarddesign. Wählen Sie „Eigene Positionen für {place}“, um sie nur hier zu verschieben."
+  },
+  "stage": {
+    "hint": "Feld ziehen zum Verschieben · Ecke ziehen zum Ändern der Größe",
+    "zoomOut": "Verkleinern",
+    "zoomIn": "Vergrößern"
+  },
+  "rows": {
+    "spacing": "Abstand",
+    "daysRun": "Die Tage laufen von {first} bis {last}. Die drei Felder aus Zeile 1 werden mit diesem Abstand nach unten kopiert.",
+    "whichEvents": "Welche Events",
+    "showCancelled": "Abgesagte Events anzeigen",
+    "showCancelledHint": "Bei einem abgesagten Event wird der Ort durchgestrichen und das Wort ABGESAGT angezeigt. Ist die Option aus, erscheint der Tag als freier Tag."
+  },
+  "days": {
+    "reorder": "Neu anordnen",
+    "move": "verschieben"
+  },
+  "picture": {
+    "picture": "Bild",
+    "fill": "Feld ausfüllen",
+    "fit": "Einpassen",
+    "corners": "Ecken",
+    "square": "Eckig",
+    "rounded": "Abgerundet",
+    "ifMissing": "Wenn ein Standort kein Bild hat",
+    "noPicture": {
+      "omit": "Weglassen",
+      "blank": "Leeren Platz lassen",
+      "logo": "Ihr Logo anzeigen"
+    },
+    "border": "Rahmen",
+    "drawBorder": "Rahmen zeichnen",
+    "drawBorderHint": "Eine Linie um das Bild, in Ihrer eigenen Farbe.",
+    "borderWidth": "Rahmenbreite",
+    "cornerRadius": "Eckenradius",
+    "locationPictures": "Standortbilder",
+    "addLocationPictures": "+ Standortbilder hinzufügen",
+    "allHaveImage": "{total, plural, =0 {Sie haben noch keine Standorte.} one {Ihr Standort hat ein Bild.} other {Alle # Standorte haben ein Bild.}}",
+    "someWithout": "{without} von {total, plural, one {# Standort} other {# Standorten}} {without, plural, one {hat} other {haben}} noch kein Bild"
+  },
+  "settings": {
+    "font": "Schriftart",
+    "colour": "Farbe",
+    "textColour": "Textfarbe",
+    "ownStyleNote": "{count, plural, one {{names} hat einen eigenen Stil und wird daher nicht geändert.} other {{names} haben einen eigenen Stil und werden daher nicht geändert.}}",
+    "matchAgain": "Wieder angleichen",
+    "matchName": "An {name} angleichen",
+    "lastToggle": "{kind, select, weekly {Lassen Sie entweder „Ort“ oder „Uhrzeit“ eingeschaltet. Bei einem abgesagten Event wird der Ort durchgestrichen und das Wort ABGESAGT angezeigt – wären beide aus, würde nichts auf die Absage hinweisen.} other {Lassen Sie entweder „Veranstaltungsort“ oder „Uhrzeit“ eingeschaltet. Bei einem abgesagten Event wird der Ort durchgestrichen und das Wort ABGESAGT angezeigt – wären beide aus, würde nichts auf die Absage hinweisen.}}"
+  },
+  "letters": {
+    "boldGlyph": "F",
+    "italicGlyph": "K",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} – diese Schrift hat eine echte Kursive"
+  },
+  "align": {
+    "left": "Links",
+    "centre": "Mitte",
+    "right": "Rechts"
+  },
+  "effects": {
+    "outlineColour": "Konturfarbe",
+    "bandColour": "Streifenfarbe",
+    "bandDaysOff": "Streifen an freien Tagen",
+    "bandCancelled": "Streifen bei abgesagtem Event",
+    "bandDaysOffHint": "Wird an einem Tag ohne Verkauf statt des obigen Streifens verwendet.",
+    "bandCancelledHint": "Wird statt des obigen Streifens verwendet, wenn das Event abgesagt ist."
+  },
+  "more": {
+    "dayOwnLine": "Tag in eigener Zeile",
+    "dayOwnLineHint": "Der Wochentag über dem Datum. Nur beim Datum.",
+    "noEventDay": "An einem Tag ohne Event",
+    "wordsBeforePlaceholder": "z. B. Hier finden Sie uns",
+    "neverHyphenate": "Ein langes Wort ohne Leerzeichen wird immer verkleinert – wir trennen Ortsnamen nie mit Bindestrich."
+  },
+  "bits": {
+    "less": "Weniger",
+    "more": "Mehr",
+    "chooseColourFor": "{label} – beliebige Farbe wählen",
+    "chooseColour": "Beliebige Farbe wählen"
+  }
+}

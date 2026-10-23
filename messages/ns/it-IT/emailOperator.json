@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Nuovo ordine #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Nuovo ordine ricevuto",
+    "from": "<b>Ordine #{id}</b> da <b>{name}</b>",
+    "collection": "Ritiro: {time}",
+    "asap": "Nessun orario preciso — prima possibile",
+    "total": "Totale",
+    "notes": "<b>Note:</b> {notes}",
+    "autoConfirmed": "Confermato automaticamente — non devi fare nulla.",
+    "confirmPrompt": "Accedi alla tua dashboard HatchGrab per confermare o rifiutare questo ordine.",
+    "text": "Nuovo ordine #{id} da {name}{withSlot, select, yes { per le {slot}} other {}}{withVenue, select, yes { presso {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Totale {total}.{withNotes, select, yes { Note: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Nuovi eventi trovati per {truck} — da controllare",
+    "hi": "Ciao,",
+    "found": "Abbiamo trovato nel tuo calendario <b>{n, plural, one {{count} nuovo evento} other {{count} nuovi eventi}}</b> da approvare prima che {n, plural, one {sia visibile} other {siano visibili}} ai clienti.",
+    "listHeading": "Eventi trovati:",
+    "approve": "Quando li approvi nella scheda Calendario, saranno pubblicati sulla mappa e la tua pagina ordini sarà pronta a ricevere preordini.",
+    "cta": "Controlla il tuo calendario →",
+    "signoff": "— Il team HatchGrab · hatchgrab.com",
+    "unknownVenue": "Luogo sconosciuto",
+    "text": "Ciao,\n\nAbbiamo trovato nel tuo calendario {n, plural, one {{count} nuovo evento} other {{count} nuovi eventi}} da approvare:\n\n{list}\n\nControllali qui: {url}\n\nQuando li approvi, saranno pubblicati sulla mappa.\n\n— Il team HatchGrab"
+  }
+}

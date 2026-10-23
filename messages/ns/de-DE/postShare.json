@@ -1,0 +1,10 @@
+{
+  "download": "Bild herunterladen",
+  "copied": "Kopiert ✓",
+  "copyCaption": "Bildunterschrift kopieren",
+  "share": "Teilen",
+  "copiedStatus": "{kind, select, postText {Beitragstext kopiert.} other {Bildunterschrift kopiert.}}",
+  "copyFailed": "Kopieren fehlgeschlagen – markieren Sie den Text und kopieren Sie ihn manuell.",
+  "sharedStatus": "{kind, select, postText {Beitragstext kopiert – fügen Sie ihn in Ihren Beitrag ein.} other {Bildunterschrift kopiert – fügen Sie sie in Ihren Beitrag ein.}}",
+  "shareRefused": "{kind, select, postText {Das Teilen wurde abgelehnt, daher wurde das Bild heruntergeladen. Beitragstext kopiert.} other {Das Teilen wurde abgelehnt, daher wurde das Bild heruntergeladen. Bildunterschrift kopiert.}}"
+}

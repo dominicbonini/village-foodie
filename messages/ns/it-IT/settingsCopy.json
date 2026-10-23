@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Consenti ai clienti di annullare gli ordini",
+    "sentence": "I clienti possono annullare fino a <select></select> prima dell’orario di ritiro"
+  },
+  "autoAccept": {
+    "label": "Accettazione automatica degli ordini",
+    "help": "Gli ordini si confermano da soli. Se la fascia oraria richiesta è piena, l’ordine passa alla prima fascia disponibile. Conferma solo se c’è capacità. Gli ordini con note del cliente (es. un’allergia) vanno comunque confermati."
+  },
+  "orderReady": {
+    "label": "Passaggio «ordine pronto»",
+    "help": "Mostra un pulsante «Segna come pronto» nella schermata degli ordini. I monitor cucina si impostano a parte, su ogni dispositivo. I clienti ricevono un’email ogni volta che un ordine viene segnato come pronto. Vale per tutti gli eventi: puoi comunque attivarlo o disattivarlo per un singolo evento dalla sua dashboard."
+  },
+  "buzzers": {
+    "label": "Dai ai clienti un cercapersone per il ritiro?",
+    "help": "Registra quale cercapersone hai dato a ogni cliente, così sai chi cercare quando il cibo è pronto.",
+    "countLabel": "Quanti cercapersone hai?"
+  }
+}

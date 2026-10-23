@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Pay-as-you-go",
+    "subtitle": "Für Saison- und Teilzeitbetriebe",
+    "description": "Ohne Grundgebühr. Sie zahlen nur, wenn ein Kunde online mit Karte bezahlt."
+  },
+  "pro": {
+    "subtitle": "Für Foodtrucks mit regelmäßigen Vorbestellungen",
+    "description": "Alles inklusive – auch automatische WhatsApp-Antworten und Social-Media-Beiträge – plus monatlich inklusive Online-Bestellungen."
+  },
+  "unlimited": {
+    "name": "Unlimited",
+    "subtitle": "Für gut ausgelastete Foodtrucks & Festivals",
+    "description": "Alles inklusive, ohne Gebühren auf Online-Bestellungen – egal, wie viel los ist."
+  },
+  "trial": {
+    "name": "Kostenlose Testphase",
+    "description": "Alle Funktionen, kostenlos, solange Ihre Testphase läuft."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Testumgebung für Interessenten – nie öffentlich."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester vor dem Marktstart – voller Zugriff."
+  }
+}

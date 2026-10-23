@@ -1,0 +1,83 @@
+{
+  "title": "Soorten evenementen",
+  "newTypeButton": "+ Nieuwe soort evenement",
+  "close": "Sluiten",
+  "loading": "Laden…",
+  "missingTitle": "Soorten evenementen staan nog niet aan.",
+  "missingBody": "De database-update voor deze functie is nog niet uitgevoerd. Er is niets kapot — elk evenement gebruikt je normale instellingen.",
+  "column": "Kolom",
+  "vanGone": "Die foodtruck bestaat niet meer.",
+  "typeGone": "Die soort bestaat niet meer.",
+  "standard": "Standaard",
+  "standardHeading": "STANDAARD",
+  "moreFor": "Meer voor {name}",
+  "rename": "Hernoemen",
+  "moveLeft": "Naar links",
+  "moveRight": "Naar rechts",
+  "delete": "Verwijderen",
+  "sections": {
+    "vans": "FOODTRUCKS",
+    "prices": "PRIJZEN",
+    "itemPrices": "PRIJZEN PER ITEM",
+    "service": "SERVICE"
+  },
+  "labelFor": "{label} voor {name}",
+  "intervalEvery": "Elke {mins} min",
+  "noTypes": "Je hebt nog geen soorten evenementen, dus elk evenement gebruikt je normale instellingen.",
+  "renameTitle": "Deze soort hernoemen",
+  "name": "Naam",
+  "cancel": "Annuleren",
+  "save": "Opslaan",
+  "copyVanOne": "Instellingen van foodtruck 1 kopiëren",
+  "thisType": "deze soort",
+  "matchTitle": "‘{name}’ gelijkzetten met Standaard?",
+  "matchKeeps": "Wat je op het dashboard van één evenement hebt aangepast, blijft zoals het is, en de prijzen van deze soort veranderen niet.",
+  "matchWillUse": "Wordt dan: {summary}",
+  "deleteTitle": "‘{name}’ verwijderen?",
+  "deleteBody": "{n, plural, =0 {Geen komende evenementen gebruiken ‘{name}’.} one {{count} komend evenement gebruikt ‘{name}’. Dat gaat terug naar Standaard.} other {{count} komende evenementen gebruiken ‘{name}’. Die gaan terug naar Standaard.}} Wat je bij één evenement hebt aangepast, blijft zoals het is.",
+  "keep": "Behouden",
+  "phone": {
+    "standardTag": "Standaard",
+    "defaultTag": "standaard",
+    "vanSetup": "De gewone instellingen van deze foodtruck — gebruikt bij elk evenement zonder soort.",
+    "standardSetup": "Je gewone instellingen — gebruikt bij elk evenement zonder soort.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} komend evenement} other {{upcomingCount} komende evenementen}} · {changed, plural, =0 {nog niets aangepast} one {{changedCount} van {total} aangepast} other {{changedCount} van {total} aangepast}}",
+    "noMenuItems": "Nog geen menu-items — voeg ze toe in Menu › Items."
+  },
+  "newType": {
+    "title": "Nieuwe soort evenement",
+    "namePlaceholder": "bijv. Schoolfeest",
+    "help": "Tik op een naam of typ je eigen naam. Hij begint als kopie van Standaard; als je Standaard later wijzigt, verandert hij niet mee. Pas daarna aan wat je wilt.",
+    "create": "Aanmaken",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Café",
+      "market": "Markt",
+      "privateHire": "Foodtruck huren"
+    }
+  },
+  "select": {
+    "label": "Soort evenement",
+    "usual": "{name} is gebruikelijk voor deze plek."
+  },
+  "summary": {
+    "normalSetup": "Je normale instellingen",
+    "sameAsStandard": "Gelijk aan Standaard",
+    "buzzersOn": "buzzers aan",
+    "buzzersOff": "buzzers uit",
+    "takeCashOn": "contant aannemen aan",
+    "takeCashOff": "contant aannemen uit",
+    "markReadyOn": "stap ‘klaar melden’ aan",
+    "markReadyOff": "stap ‘klaar melden’ uit",
+    "collectionEvery": "afhalen elke {mins} min",
+    "offlineOff": "offlinebeveiliging uit",
+    "offlineKeepTaking": "offline: bestellingen blijven aannemen",
+    "offlinePause": "offline: bestellen pauzeren"
+  },
+  "errors": {
+    "somethingWentWrong": "Er ging iets mis",
+    "couldNotLoad": "Laden mislukt",
+    "couldNotSave": "Opslaan mislukt",
+    "noVans": "Dit account heeft geen foodtrucks om aan te passen."
+  }
+}

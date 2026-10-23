@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Om oss — HatchGrab",
+    "description": "HatchGrab ble startet av Dominic Bonini, som lagde Village Foodie for å finne ut hvilke matbiler som kom til landsbyen hans. Det er et lite selskap, og han driver det selv."
+  },
+  "eyebrow": "Om oss",
+  "title": "Hei, jeg heter Dominic.",
+  "photoAlt": "{name}, grunnlegger av HatchGrab",
+  "story": {
+    "village": "Jeg bor i en landsby. Det kommer matbiler innom, men jeg visste aldri hvilken som kom, eller når, uten å lete gjennom Facebook.",
+    "villageFoodie": "Så jeg lagde Village Foodie, en enkel måte å se hvilke matbiler som kommer til landsbyer i nærheten av deg.",
+    "hatchgrab": "Jo flere matbiler jeg så på, jo mer tenkte jeg at de fortjente bedre verktøy: noe laget for en bedrift som står et nytt sted hver dag, ikke en restaurant med fast adresse. Derfor startet jeg HatchGrab.",
+    "small": "Det er et lite selskap, og jeg driver det selv. Tar du kontakt, får du svar fra meg, ikke fra en kundeservicekø."
+  },
+  "signature": "<b>{name}</b> · Grunnlegger",
+  "company": "{company} · registrert i England og Wales · selskapsnummer {number} · forretningsadresse: {address}",
+  "contact": "Kontakt oss"
+}

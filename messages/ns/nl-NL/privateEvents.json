@@ -1,0 +1,42 @@
+{
+  "publicName": "Privé-evenement",
+  "chip": "Privé",
+  "grid": {
+    "orderingSection": "BESTELLEN",
+    "linkRowLabel": "Bestellingen aannemen via privélink en QR-code",
+    "columnTitle": "De ingebouwde soort Privé. Die kun je niet hernoemen, verplaatsen of verwijderen."
+  },
+  "form": {
+    "help": "Staat in je planning als ‘Privé-evenement’, alleen met datum en tijden — nooit met het adres, de kaart of Village Foodie.",
+    "linkPromise": "Gasten bestellen via een privélink en QR-code — die krijg je na het opslaan.",
+    "nameLabel": "Naam evenement",
+    "nameHelp": "Gasten zien dit bovenaan de bestelpagina.",
+    "namePlaceholder": "Bruiloft van Sarah & Tom",
+    "previewNote": "Zo staat het in je planning — zonder locatie, plaats of postcode.",
+    "needsTimes": "Vul een begin- en eindtijd in — een privé-evenement dat bestellingen via een link aanneemt, heeft die nodig."
+  },
+  "link": {
+    "button": "Link & QR",
+    "title": "Privélink & QR-code",
+    "label": "Privélink",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd",
+    "qrDownload": "QR downloaden",
+    "tableCards": "Tafelkaartjes printen",
+    "newLink": "Nieuwe link maken",
+    "working": "Bezig…",
+    "newLinkConfirm": "Een nieuwe link maken? De huidige link werkt dan meteen niet meer, en QR-codes die je al hebt geprint ook niet.",
+    "newLinkHelp": "Gebruik dit als de link ergens terecht is gekomen waar hij niet hoort. De huidige link werkt dan meteen niet meer, en geprinte QR-codes ook niet.",
+    "newLinkFailed": "Kon geen nieuwe link maken.",
+    "offNotice": "Bestellen via privélink staat uit voor dit evenement, dus er is geen link om te delen. Het evenement staat nog steeds in je planning als ‘Privé-evenement’."
+  },
+  "cards": {
+    "printTitle": "{truck} — tafelkaartjes",
+    "scan": "Scan om te bestellen",
+    "blurb": "Bestel en betaal op je telefoon. We roepen je naam als het klaar is.",
+    "footer": "Bestellen via HatchGrab"
+  },
+  "noSinglePost": "Privé-evenementen krijgen geen eigen bericht — ze staan op je weekposter als ‘Privé-evenement’.",
+  "confirmToPrivate": "Hiermee verberg je het adres en het evenement op de kaart. Gasten hebben de privélink nodig om te bestellen.",
+  "confirmFromPrivate": "Hiermee wordt het evenement openbaar: het adres en de kaartpin worden getoond, en de privélink werkt niet meer."
+}

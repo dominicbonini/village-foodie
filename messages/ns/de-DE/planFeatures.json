@@ -1,0 +1,127 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Eintrag auf der Entdecken-Karte"
+    },
+    "web_dashboard": {
+      "name": "Web-Dashboard für alle Geräte"
+    },
+    "qr_code": {
+      "name": "QR-Code"
+    },
+    "schedule_import": {
+      "name": "Automatischer Terminimport"
+    },
+    "meal_deals_upsells": {
+      "name": "Menüs & Upselling"
+    },
+    "walkup_orders": {
+      "name": "Abwicklung von Bestellungen vor Ort"
+    },
+    "sold_out_toggle": {
+      "name": "Ausverkauft-Schalter"
+    },
+    "kitchen_app": {
+      "name": "Küchen-App für iPhone, iPad und Android"
+    },
+    "offline_protection": {
+      "name": "Bestellschutz bei Offline-Betrieb"
+    },
+    "online_payments": {
+      "name": "Online-Zahlungen"
+    },
+    "advance_preordering": {
+      "name": "Vorbestellung für spätere Termine"
+    },
+    "preorder_deadline": {
+      "name": "Vorbestellfrist"
+    },
+    "time_slot_selection": {
+      "name": "Zeitfensterwahl für Kunden"
+    },
+    "kitchen_capacity": {
+      "name": "Verwaltung der Küchenkapazität"
+    },
+    "stock_countdown": {
+      "name": "Automatischer Bestands-Countdown"
+    },
+    "auto_accept": {
+      "name": "Online-Bestellungen automatisch annehmen"
+    },
+    "branded_qr_code": {
+      "name": "QR-Code mit Ihrem Logo"
+    },
+    "private_events": {
+      "name": "Private Events"
+    },
+    "social_media_posts": {
+      "name": "Social-Media-Beiträge"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Automatische WhatsApp-Antworten"
+    },
+    "messenger_instagram_replies": {
+      "name": "Automatische Antworten für Messenger & Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Zahlungen auf dem Smartphone annehmen"
+    },
+    "advanced_reporting": {
+      "name": "Erweiterte Auswertungen"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-Benachrichtigungen"
+    },
+    "multi_device_kitchen": {
+      "name": "Küchen-Synchronisierung auf mehreren Geräten"
+    },
+    "multi_user_access": {
+      "name": "Zugriff für mehrere Nutzer"
+    },
+    "embed_schedule": {
+      "name": "Terminseite auf Ihrer eigenen Website"
+    },
+    "event_types": {
+      "name": "Eigene Event-Typen & Eventpreise"
+    },
+    "buzzer_tracking": {
+      "name": "Pager-Zuordnung"
+    },
+    "ticket_printing": {
+      "name": "Druck von Küchenbons"
+    },
+    "customer_display": {
+      "name": "Kundendisplay"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digitale Stempelkarten"
+    }
+  },
+  "cardRegionOnline": "{region} (Standardkarten)",
+  "cardRegion": {
+    "UKcards": "britische Karten",
+    "EEAcards": "Karten aus dem EWR",
+    "UScards": "US-Karten",
+    "Australiancards": "australische Karten",
+    "NewZealandcards": "neuseeländische Karten",
+    "Canadiancards": "kanadische Karten",
+    "Swisscards": "Schweizer Karten"
+  },
+  "perMonth": {
+    "mo": "{amount}/Mon.",
+    "month": "{amount}/Monat"
+  },
+  "priceWord": {
+    "free": "Kostenlos",
+    "freeTrial": "Kostenlose Testphase",
+    "lifetime": "Dauerhaft",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Bezahlung bei Abholung",
+    "unlimited": "Unbegrenzt",
+    "none": "—",
+    "masked": "Folgt"
+  },
+  "cell": {
+    "included": "Inklusive"
+  }
+}

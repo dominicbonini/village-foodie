@@ -1,0 +1,103 @@
+{
+  "upload": {
+    "bannerButton": "Spara min meny →",
+    "heading": "Sätt upp din foodtruck",
+    "sub": "Din meny följer med direkt.",
+    "privacy": "Vi använder bara detta för att sätta upp din foodtruck och skicka länken till din demo — läs vår <link>integritetspolicy</link>."
+  },
+  "sample": {
+    "bannerButton": "Sätt upp min foodtruck →",
+    "heading": "Sätt upp din foodtruck",
+    "sub": "Härnäst laddar du upp din egen meny — det tar en minut.",
+    "privacy": "Vi använder bara detta för att sätta upp din foodtruck och skicka länken till din demo — läs vår <link>integritetspolicy</link>."
+  },
+  "saveOnly": {
+    "bannerButton": "Spara min meny →",
+    "heading": "Spara din demo",
+    "sub": "Vi sparar den i 14 dagar och mejlar dig en länk tillbaka direkt.",
+    "privacy": "Vi använder bara detta för att skicka länken till din demo — läs vår <link>integritetspolicy</link>."
+  },
+  "confirmationHeading": "Klart!",
+  "postSaveButton": "Sätt upp min foodtruck →",
+  "enterSetupButton": "Sätt upp min foodtruck →",
+  "emailOnlyLink": "Mejla mig bara en länk så att jag kan komma tillbaka till demon",
+  "sendLinkButton": "Skicka länken",
+  "savingButton": "Sparar…",
+  "continueButton": "Fortsätt →",
+  "createAccountButton": "Skapa mitt konto →",
+  "retryButton": "Försök igen",
+  "backToDemoButton": "Tillbaka till demon",
+  "savedStatus": "{hasDate, select, yes {✓ Sparad — finns kvar till {date}} other {✓ Sparad}}",
+  "back": "Tillbaka",
+  "close": "Stäng",
+  "truckStepHeading": "Om din foodtruck",
+  "detailsStepHeading": "Slutför inställningarna",
+  "stepper": {
+    "details": "Dina uppgifter",
+    "menu": "Meny",
+    "allergens": "Allergener",
+    "kitchen": "Kök",
+    "schedule": "Schema"
+  },
+  "confirmEmailed": "Vi har mejlat dig en länk direkt tillbaka till den här demon — ingen inloggning behövs.",
+  "confirmKeepUntil": "Vi sparar den till <b>{date}</b>. Din meny följer med när du sätter upp kontot på riktigt.",
+  "loading": "Laddar…",
+  "firstName": "Förnamn",
+  "lastName": "Efternamn",
+  "truckName": "Foodtruckens namn",
+  "truckNamePlaceholder": "t.ex. Byköket",
+  "cuisine": "Kök",
+  "logoLabel": "Logotyp <opt>(valfritt)</opt>",
+  "logoPreviewAlt": "Förhandsvisning av logotypen",
+  "changeLogo": "Byt logotyp",
+  "removeLogo": "Ta bort",
+  "uploadLogo": "📷 Ladda upp logotyp",
+  "readyTitle": "Ditt konto är klart",
+  "readyBody": "Nu gör vi klart din foodtruck — meny, allergener och kök.",
+  "hangTight": "Vänta lite — vi ställer in allt.",
+  "stage": {
+    "account": "Skapar ditt konto",
+    "truck": "Sätter upp din foodtruck",
+    "menu": "Läser in din meny"
+  },
+  "stageState": {
+    "done": "klart",
+    "recognised": "du har redan ett konto",
+    "failed": "misslyckades",
+    "active": "pågår",
+    "pending": "väntar"
+  },
+  "signIn": "Logga in",
+  "phone": "Telefon",
+  "onWhatsapp": "Numret finns på WhatsApp",
+  "email": "E-post",
+  "emailPlaceholder": "du@dinfoodtruck.se",
+  "settingUpAs": "Ställer in som <b>{email}</b> <change>ändra</change>",
+  "password": "Lösenord",
+  "passwordPlaceholder": "Minst 8 tecken",
+  "hidePassword": "Dölj lösenord",
+  "showPassword": "Visa lösenord",
+  "promoLabel": "Har du en kod? <opt>(valfritt)</opt>",
+  "promoPlaceholder": "Ange den här",
+  "agreeTerms": "Jag godkänner <terms>villkoren</terms> och <privacy>integritetspolicyn</privacy>.",
+  "freeMonth": "Din gratismånad startar inte när du ställer in kontot. Den börjar när du väljer ditt första evenemang som ska gå live — när du än är redo.",
+  "fieldError": {
+    "firstName": "Ange ditt förnamn.",
+    "lastName": "Och ditt efternamn.",
+    "truck": "Ge din foodtruck ett namn.",
+    "cuisine": "Berätta vad du lagar.",
+    "phoneMissing": "Lägg till ett telefonnummer — både kunderna och vi använder det för att nå dig.",
+    "email": "Ange en giltig e-postadress.",
+    "password": "Lösenordet måste ha minst 8 tecken.",
+    "terms": "Godkänn villkoren för att fortsätta."
+  },
+  "error": {
+    "saveFailed": "Det gick inte att spara — försök igen.",
+    "savedNoEmail": "Sparat — men vi kunde inte mejla länken just nu.",
+    "unreachable": "Vi kunde inte nås just nu — försök igen.",
+    "createAccountFailed": "Det gick inte att skapa ditt konto.",
+    "truckCreateFailed": "Ditt konto är klart, men vi kunde inte skapa din foodtruck. Försök igen.",
+    "truckUnreachable": "Ditt konto är klart, men vi kunde inte skapa din foodtruck just nu. Försök igen.",
+    "truckNoToken": "Din foodtruck är klar, men vi kunde inte öppna den just nu. Försök igen."
+  }
+}

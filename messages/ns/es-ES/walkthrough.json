@@ -1,0 +1,31 @@
+{
+  "intro": "En Gestión configuras tu food truck y ves cómo va. En el Panel recibes pedidos y llevas cada evento en directo.",
+  "ariaLabel": "Recorrido por el panel",
+  "step": "{current} de {total}",
+  "skip": "Saltar",
+  "back": "← Atrás",
+  "next": "Siguiente →",
+  "done": "Hecho",
+  "stops": {
+    "menu": {
+      "title": "Carta",
+      "body": "Tus platos, precios y alérgenos. Cualquier cambio aquí se publica al momento."
+    },
+    "schedule": {
+      "title": "Agenda",
+      "body": "Dónde y cuándo vendes. Añade aquí un evento y los clientes podrán hacer pedidos para él."
+    },
+    "build": {
+      "title": "Menús, extras y ventas sugeridas",
+      "body": "Los menús, las ventas sugeridas, las personalizaciones y tu capacidad de cocina están en Carta: echa un vistazo."
+    },
+    "settings": {
+      "title": "Ajustes",
+      "body": "Los datos de tu food truck y cómo te pagan los clientes."
+    },
+    "billing": {
+      "title": "Facturación",
+      "body": "Aquí están tu plan, tu facturación y la información sobre las funciones."
+    }
+  }
+}

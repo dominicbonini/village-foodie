@@ -1,0 +1,6 @@
+{
+  "walkUp": {
+    "ownTerminal": "Je eigen betaalterminal",
+    "hatchgrabHelp": "Gebruikt dezelfde Stripe-koppeling als je online betalingen — een betaalterminal, of contactloos rechtstreeks op je telefoon of tablet."
+  }
+}

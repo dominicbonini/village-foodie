@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifique o seu novo endereço de email no HatchGrab",
+    "heading": "Verifique o seu endereço de email",
+    "button": "Verificar endereço de email"
+  },
+  "changeEmail": {
+    "requested": "Pediu para alterar o seu endereço de email no HatchGrab para este endereço.",
+    "click": "Clique no botão abaixo para verificar. Esta ligação expira dentro de 24 horas.",
+    "ignore": "Se não pediu esta alteração, pode ignorar este email em segurança.",
+    "stillActive": "O seu endereço de email atual continua ativo."
+  },
+  "resendVerification": {
+    "requested": "Pediu para alterar o seu email no HatchGrab para este endereço.",
+    "click": "Clique abaixo para verificar. Esta ligação expira dentro de 24 horas.",
+    "ignore": "Se não fez este pedido, ignore este email.",
+    "stillActive": "O seu email atual continua ativo."
+  },
+  "passwordReset": {
+    "subject": "Reponha a sua palavra-passe do HatchGrab",
+    "heading": "Repor a palavra-passe",
+    "requested": "Recebemos um pedido para repor a palavra-passe da sua conta HatchGrab.",
+    "click": "Clique no botão abaixo para escolher uma nova palavra-passe. Esta ligação expira dentro de 1 hora.",
+    "button": "Repor palavra-passe",
+    "ignore": "Se não fez este pedido, pode ignorar este email em segurança.",
+    "unchanged": "A sua palavra-passe só muda quando clicar na ligação acima."
+  },
+  "deletionScheduled": {
+    "subject": "A eliminação da sua conta HatchGrab está agendada",
+    "received": "Recebemos um pedido para eliminar esta conta HatchGrab.",
+    "orderingStopped": "<b>As encomendas online foram suspensas de imediato</b> em: {trucks}.",
+    "noTrucks": "(nenhum food truck)",
+    "readable": "O seu painel continua\n    disponível para consulta durante {days, plural, one {# dia} other {os próximos # dias}}.",
+    "scheduled": "A eliminação da conta está agendada para <b>{date}</b>.",
+    "cannotCancel": "<b>Isto não pode ser cancelado a partir da aplicação.</b> Se não fez este pedido, ou se\n    mudou de ideias, responda a este email o mais depressa possível.",
+    "kept": "Quando a conta for eliminada, removemos os seus dados pessoais e os dos seus clientes. Mantemos\n    registos contabilísticos anónimos, que somos legalmente obrigados a conservar."
+  }
+}

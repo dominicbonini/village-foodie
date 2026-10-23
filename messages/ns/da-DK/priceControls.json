@@ -1,0 +1,8 @@
+{
+  "change": "{label} – ændr",
+  "useRule": "{label} – brug reglen i stedet",
+  "typePrice": "{label} – skriv en pris",
+  "backToRule": "Tilbage til reglen",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

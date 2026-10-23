@@ -1,0 +1,117 @@
+{
+  "cardEditor": {
+    "title": "Din allergenlista",
+    "intro": "Kunderna ser den här <b>exakt som du skriver den</b> — inget skrivs om. Skriv eller klistra in nedan, eller ladda upp ett foto/en PDF så läser vi in texten åt dig att kontrollera.",
+    "empty": "Ingen allergenlista än.",
+    "placeholder": "t.ex. All vår fish & chips innehåller vete och mjölk. Fritösen delas med produkter som innehåller gluten och nötter. Veganska alternativ finns — fråga personalen.",
+    "reading": "Läser bilden…",
+    "upload": "📷 Ladda upp bild/PDF",
+    "uploadNote": "Vi läser texten från din bild så att du kan granska den — bilden sparas inte."
+  },
+  "cardUpload": {
+    "dishFallback": "Rätt",
+    "question": "Har du en allergenlista att ladda upp?",
+    "perDish": "{detected, select, yes {Ladda upp den så använder vi den för att fylla i allergenerna för dina rätter. Allergenerna vi hittar visas på nästa sida, där du bekräftar varje rätt.} other {Ladda upp den så använder vi den för att fylla i allergenerna för dina rätter.}}",
+    "cardOnly": "Ladda upp allergenlistan som kunderna ska se.",
+    "yes": "Ja",
+    "no": "Nej",
+    "noProblem": "Inga problem — du behöver ingen. Fortsätt med knappen nedan.",
+    "analysing": "Analyserar listan…",
+    "dropzone": "Dra och släpp eller tryck för att välja",
+    "imageOrPdf": "Bild eller PDF",
+    "or": "eller",
+    "pastePlaceholder": "Klistra in texten från din allergenlista här…",
+    "process": "Läs in listan",
+    "cardRead": "Listan inläst ✓",
+    "unmatchedHeading": "De här kunde inte matchas automatiskt — koppla eller avfärda",
+    "quotedName": "”{name}”",
+    "ambiguous": "Tvetydig — matchar flera rätter; välj den som stämmer.",
+    "assignTo": "Koppla till rätt…",
+    "dismiss": "Avfärda",
+    "blanket": "Listan anger att <b>{list}</b> kan förekomma i <b>alla</b> rätter. Lägga till på varje rätt? (du bekräftar ändå varje rätt) <muted>— av som standard</muted>",
+    "kitchenNotes": "Köksanteckningar (sparas i din allergeninformation)",
+    "matchSummary": "{n, plural, =0 {{matched} kopplade till en rätt.} one {{matched} kopplade till en rätt. {count} behöver kopplas av dig.} other {{matched} kopplade till en rätt. {count} behöver kopplas av dig.}}"
+  },
+  "savedCard": {
+    "showLess": "Visa mindre",
+    "showMore": "Visa mer",
+    "fileOnly": "En fil med allergenlistan är sparad för den här foodtrucken, men ingen sammanfattande text sparades. Öppna originalet för att läsa den.",
+    "viewOriginal": "Visa originallistan"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Det gick inte att läsa allergenlistan — försök igen",
+      "confirmed": "{name} bekräftad",
+      "undo": "Ångra",
+      "saveFailed": "Det gick inte att spara — försök igen",
+      "imageFailed": "Det gick inte att läsa bilden — skriv eller klistra in din lista i stället",
+      "cardRead": "{n, plural, one {Listan inläst — {matched} kopplade, {count} behöver kopplas} other {Listan inläst — {matched} kopplade, {count} behöver kopplas}}"
+    },
+    "genericWarn": {
+      "text": "”{generic}” hittades men är inte specifikt. Välj {picks} om rätten innehåller {family} — eller lämna dem omarkerade om den inte gör det.",
+      "andOr": "{a} och/eller {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Bekräftad",
+      "confirmed": "Bekräftad",
+      "needsReview": "Behöver granskas"
+    },
+    "confirm": {
+      "confirming": "Bekräftar…",
+      "confirmed": "Bekräftad ✓",
+      "confirm": "Bekräfta",
+      "changed": "· ändrad",
+      "changedTitle": "Ändrad sedan du senast bekräftade — bekräfta igen"
+    },
+    "allergens": "Allergener",
+    "dietary": "Kost",
+    "uncategorised": "Utan kategori",
+    "review": {
+      "progress": "{confirmed} av {total} bekräftade",
+      "allConfirmed": "✓ Alla bekräftade",
+      "list": "Lista",
+      "table": "Tabell",
+      "detected": "Hittade i din meny — <b>kontrollera dessa</b>. Allergenerna döljs för kunderna tills du har bekräftat varje rätt.",
+      "viewOnly": "👁 Endast visning — bara ägaren kan bekräfta eller ändra allergener.",
+      "emptyTitle": "Inga rätter på menyn",
+      "emptyBody": "Lägg till rätter på menyn först och ange sedan deras allergener här.",
+      "dish": "Rätt",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Läser allergeninformationen…",
+      "saved": "🛡️ Allergenlistan sparad",
+      "viewOriginal": "Visa originallistan",
+      "replace": "Byt lista",
+      "uploadHelp": "Ladda upp din allergenlista (foto/PDF) eller klistra in din allergeninformation — vår AI strukturerar den för kunderna.",
+      "add": "Lägg till allergenlista",
+      "viewOnly": "👁 Endast visning — bara ägaren kan lägga till allergenlistan.",
+      "intro": "Kunderna ser den här listan som menyns allergenreferens. Allergenerna per rätt döljs i läget med bara allergenlista (uppgifterna om dina rätter sparas om du byter till per rätt senare)."
+    },
+    "subtitle": {
+      "choose": "Välj hur kunderna ser allergeninformationen",
+      "card": "Lägg till din allergenlista",
+      "cardOptional": "Lägg till en allergenlista (valfritt)",
+      "review": "Kontrollera och bekräfta varje rätt"
+    },
+    "heading": {
+      "import": "Allergener",
+      "standalone": "Inställning av allergener"
+    },
+    "nav": {
+      "next": "Nästa →",
+      "back": "← Tillbaka",
+      "skip": "Hoppa över tills vidare",
+      "saving": "Sparar…",
+      "done": "Klar",
+      "saveLater": "Spara och slutför senare",
+      "close": "Stäng",
+      "finish": "Slutför",
+      "skipImport": "Hoppa över allergeninställningen tills vidare"
+    },
+    "hint": {
+      "skipDefers": "Att hoppa över skjuter bara upp det — rätter du inte har bekräftat döljs för kunderna tills deras allergener är bekräftade.",
+      "importIncomplete": "Bekräfta varje rätt för att fortsätta — eller ”Hoppa över allergeninställningen tills vidare”."
+    }
+  }
+}

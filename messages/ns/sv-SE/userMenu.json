@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Användarmeny",
+  "screenOn": "Skärm på",
+  "screenOff": "Skärm av",
+  "newOrderSound": "Beställningsljud",
+  "copied": "Kopierad",
+  "orderLink": "Beställningslänk",
+  "qrCode": "QR-kod",
+  "kitchenScreen": "Köksskärm",
+  "thisDevice": "Den här enheten",
+  "manage": "Hantera",
+  "ordersDashboard": "Beställningsöversikt",
+  "admin": "Admin",
+  "privacy": "Integritetspolicy",
+  "terms": "Villkor",
+  "signOut": "Logga ut",
+  "close": "Stäng"
+}

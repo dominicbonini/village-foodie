@@ -1,0 +1,189 @@
+{
+  "cancel": "Avbryt",
+  "back": "← Tillbaka",
+  "backPlain": "Tillbaka",
+  "next": "Nästa →",
+  "continue": "Fortsätt →",
+  "closeImport": "Stäng importen",
+  "tryAgain": "Försök igen",
+  "catError": {
+    "empty": "Ge kategorin ett namn.",
+    "tooLong": "Namnet är för långt.",
+    "clash": "Det finns redan en kategori som heter ”{name}”."
+  },
+  "steps": {
+    "details": "Dina uppgifter",
+    "menu": "Meny",
+    "extras": "Tillval",
+    "allergens": "Allergener",
+    "kitchen": "Kök",
+    "schedule": "Schema",
+    "settings": "Inställningar"
+  },
+  "toast": {
+    "demoGone": "Din demomeny finns inte längre — ladda upp den igen för att fortsätta.",
+    "eventsSaveFailed": "Det gick inte att spara evenemangen",
+    "cardReadFailed": "Det gick inte att läsa allergenlistan — försök igen",
+    "imageReadFailed": "Det gick inte att läsa bilden — skriv eller klistra in din lista i stället",
+    "commitFailedDetail": "Det gick inte att spara klart menyn: {error}. Vissa artiklar kan redan ha sparats — kontrollera menyn innan du försöker igen.",
+    "commitFailed": "Det gick inte att spara klart menyn. Vissa artiklar kan redan ha sparats — kontrollera menyn innan du försöker igen.",
+    "finishFailed": "Det gick inte att markera konfigurationen som klar — du kan ändå fortsätta.",
+    "scheduleReadFailed": "Det gick inte att läsa schemat — prova ett tydligare foto eller skriv in dina datum.",
+    "cardRead": "Listan har lästs — {matched} matchade, {pending, plural, one {# behöver} other {# behöver}} tilldelas av dig"
+  },
+  "settingsReview": {
+    "anchorOrder": "Inställningar → Beställningsinställningar",
+    "anchorDisplay": "Inställningar → Dina foodtruckar → Visningsinställningar",
+    "mins15": "15 minuter",
+    "mins30": "30 minuter",
+    "mins60": "60 minuter",
+    "hours2": "2 timmar",
+    "title": "Några inställningar att kontrollera",
+    "loading": "Läser in dina nuvarande inställningar…",
+    "looksGood": "Ser bra ut →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Det gick inte att spara — du kan ändra det under Inställningar.",
+    "anchorContact": "Inställningar → Kontaktuppgifter",
+    "intro": "Vi har gett dig några vanliga inställningar. Värt en snabb titt — du kan ändra alla senare under Inställningar.",
+    "cancelAria": "Hur långt före upphämtning kunderna kan avboka"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Granska dem innan du går live. Artiklarna markeras med ”allergener inte angivna” tills du gör det.",
+    "body": "Granska dem under Inställningar innan du går live. Artiklarna markeras med ”allergener inte angivna” tills du gör det.",
+    "title": "⚠ Allergener och kost är inte angivna än"
+  },
+  "welcome": {
+    "title": "Välkommen till HatchGrab",
+    "yourTruck": "Din foodtruck",
+    "stop": "Du kan avbryta och komma tillbaka när du vill.",
+    "body": "{name} är konfigurerad. Nu lägger vi till din meny och sedan ditt första evenemang.",
+    "go": "Nu kör vi"
+  },
+  "offer": {
+    "title": "Använda menyn från din demo?",
+    "use": "Använd den här menyn",
+    "upload": "Ladda upp en annan meny",
+    "body": "Vi sparade menyn du laddade upp — {count, plural, one {# artikel} other {# artiklar}}. Använd den som utgångspunkt eller ladda upp en annan."
+  },
+  "upload": {
+    "title": "Importera din meny",
+    "body": "Ladda upp ett foto av din menytavla, en skärmbild eller en PDF, eller klistra in menyn som text. Vår AI läser den och bygger din digitala meny — du granskar allt innan det sparas.",
+    "confirmCancel": "Avbryta importen? Din granskning av den här menyn försvinner.",
+    "process": "Bearbeta menyn",
+    "later": "Jag gör det senare"
+  },
+  "processing": {
+    "title": "Analyserar din meny",
+    "body": "AI läser och kategoriserar dina artiklar…"
+  },
+  "review": {
+    "title": "Granska den importerade menyn",
+    "editLaterSetup": "Namn, priser, tillval, allergener och kostinformation kan redigeras när som helst senare.",
+    "editLater": "Namn, priser, tillval, allergener och kostinformation kan redigeras när som helst under Inställningar.",
+    "noPrice": "{count, plural, one {# artikel} other {# artiklar}} saknade ett pris som vi kunde läsa",
+    "renameCategoryAria": "Byt namn på kategorin {name}",
+    "renameAria": "Byt namn på {name}",
+    "renameTitle": "Byt namn på kategori",
+    "deleteAria": "Radera {name}",
+    "deleteTitle": "Radera kategori",
+    "lastCategory": "Din meny behöver minst en kategori",
+    "countOf": "{kept} av {total}",
+    "existing": "befintlig",
+    "deleteEmptyTitle": "Radera ”{name}”?",
+    "deleteEmptyBody": "Den har inga artiklar, så inget går förlorat.",
+    "delete": "Radera",
+    "moveTitle": "Vart ska {count, plural, one {# artikel} other {# artiklar}} flyttas?",
+    "moveBody": "För att radera ”{name}” måste rätterna flyttas någonstans — artiklar utan kategori importeras inte.",
+    "moveAria": "Flytta artiklar från {name} till",
+    "chooseCategory": "Välj en kategori…",
+    "moveDelete": "Flytta och radera",
+    "itemName": "Artikelnamn",
+    "free": "gratis?",
+    "freeOn": "Gratis ✕",
+    "nameFirst": "Namnge den nya artikeln innan du lägger till en till",
+    "addItem": "+ Lägg till artikel",
+    "categoryName": "Kategorinamn",
+    "newCategoryAria": "Namn på ny kategori",
+    "addCategory": "+ Lägg till kategori",
+    "ready": "{count, plural, one {# artikel} other {# artiklar}} redo att läggas till. Avmarkera dem du inte vill ha.",
+    "noPriceBody": "Ange ett pris för var och en eller markera den som gratis — annars går den live för {zero}. Du kan inte fortsätta förrän detta är ordnat.",
+    "incomplete": "Ange ett namn för att lägga till artikeln — tomma rader importeras inte."
+  },
+  "extras": {
+    "introSetup": "Vissa rätter kan läggas upp som <b>en anpassningsbar artikel</b> eller behållas som <b>separata rätter</b>. Välj hur var och en ska visas. Du kan ändra detta senare.",
+    "intro": "Vissa rätter kan läggas upp som <b>en anpassningsbar artikel</b> eller behållas som <b>separata rätter</b>. Välj hur var och en ska visas. Du kan ändra detta senare under Inställningar.",
+    "none": "Inga rätter att gruppera — varje artikel är en fristående rätt.",
+    "axisChoice": "· val av {axis}",
+    "grouped": "Grupperad · en artikel, kunden väljer",
+    "separate": "Separata menyartiklar"
+  },
+  "allergens": {
+    "title": "Allergener",
+    "detected": "Vi hittade allergener i din meny. Välj hur de ska visas nedan.",
+    "howShow": "Hur vill du visa allergener för kunderna?",
+    "skip": "Hoppa över allergeninställningen tills vidare"
+  },
+  "kitchen": {
+    "title": "Köksinställningar",
+    "intro": "Hjälp kunderna att veta hur länge de får vänta — du kan alltid ändra detta senare.",
+    "howWorks": "Så fungerar kökskapacitet",
+    "allExist": "Alla kategorier finns redan — inga tider att ställa in.",
+    "totalHelp": "Ange en total kapacitet för att begränsa hur många artiklar köket tar emot per tidslucka. Lämna ∞ för ingen gräns.",
+    "saveAdd": "Spara och lägg till i menyn"
+  },
+  "schedule": {
+    "title": "Lägg till mitt schema",
+    "intro": "Om ditt schema finns på din webbplats kan vi hålla det uppdaterat automatiskt — annars lägger du till dina datum själv.",
+    "websiteTitle": "Mitt schema finns på min webbplats",
+    "urlPlaceholder": "https://dinfoodtruck.se/evenemang",
+    "checking": "Kontrollerar…",
+    "verify": "Verifiera",
+    "checkingSite": "Kontrollerar din webbplats…",
+    "takesTime": "Det kan ta upp till 2 minuter — håll sidan öppen.",
+    "canRead": "✓ Vi kan läsa ditt schema",
+    "ownSite": "Din egen webbplats — inte en Facebook- eller Instagramsida.",
+    "photoTitle": "Ladda upp ett foto av mitt schema",
+    "dragChoose": "Dra och släpp eller tryck för att välja",
+    "imageOrPdf": "Bild eller PDF",
+    "or": "eller",
+    "pastePlaceholder": "Klistra in dina datum här…",
+    "read": "Läs schemat",
+    "found": "{count, plural, one {# datum hittades} other {# datum hittades}} — de läggs till i ditt schema.",
+    "dateTbc": "Datum meddelas",
+    "save": "Spara {count, plural, one {# datum} other {# datum}}",
+    "manualDesc": "Lägg till dem senare på fliken Schema — inget att göra nu.",
+    "manualBody": "Inga problem. Du kan lägga till och hantera dina datum när som helst på fliken Schema i ditt konto.",
+    "blockedDomain": "Använd adressen till din webbplats — Facebook- och Instagramsidor kan inte läsas av automatiskt.",
+    "saveFailed": "Vi läste ditt schema men kunde inte spara det just nu — försök igen.",
+    "websiteDesc": "Vi kontrollerar den regelbundet och skickar nya datum till dig för godkännande.",
+    "keepChecking": "Vi fortsätter att kontrollera sidan och skickar nya datum till dig för godkännande.",
+    "photoDesc": "Fota eller klistra in dina datum — vi läser in dem så att du kan kontrollera dem.",
+    "noneFound": "Vi hittade inga datum där — prova ett tydligare foto eller lägg till ett datum själv.",
+    "manualTitle": "Jag lägger till mina datum själv",
+    "trialNotStarted": "Att lägga till evenemang startar inte din gratis provperiod — du väljer senare vilket evenemang som startar den."
+  },
+  "done": {
+    "summary": "{items, plural, one {# artikel} other {# artiklar}} i {categories, plural, one {# kategori} other {# kategorier}}.",
+    "imported": "Menyn är importerad!",
+    "added": "Dina artiklar har lagts till i menyn.",
+    "duplicates": "{count, plural, one {# dubblett} other {# dubbletter}} hoppades över",
+    "showMe": "Visa mig runt",
+    "remind": "Påminn mig senare",
+    "allSet": "Allt är klart!",
+    "explore": "Jag utforskar själv"
+  },
+  "discard": {
+    "setupTitle": "Slutföra konfigurationen senare?",
+    "setupBody": "Ditt konto och din foodtruck är sparade — inget går förlorat. Du kan lägga till din meny när som helst: logga in och tryck på <b>Importera meny</b> på menyskärmen för att fortsätta precis här.",
+    "keepGoing": "Fortsätt",
+    "finishLater": "Slutför senare",
+    "title": "Släng den här importen?",
+    "keepEditing": "Fortsätt redigera",
+    "discard": "Släng",
+    "body": "Dina ändringar sparas inte — de importerade artiklarna, tillagningstiderna och kökskapaciteten läggs inte till."
+  },
+  "allergenCardText": {
+    "contains": "Innehåller: {list}",
+    "mayContain": "Kan innehålla: {list}"
+  }
+}

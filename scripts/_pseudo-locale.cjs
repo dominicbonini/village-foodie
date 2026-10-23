@@ -57,12 +57,30 @@ function mapLiterals(nodes, f) {
 }
 const literalLength = nodes => nodes.reduce((a, n) => a + (n.type === TYPE.literal ? n.value.length : n.type === TYPE.tag ? literalLength(n.children) : (n.type === TYPE.select || n.type === TYPE.plural) ? Math.max(...Object.values(n.options).map(o => literalLength(o.value))) : 4), 0)
 
+// europe-languages-2 (23 October 2026): scripts/translation-check.cjs now requires every CLDR plural category the locale uses
+// (a "1" must not fall into `other`). English may leave `one` to `other` ("Orders (1)") — a translator writes the branch out,
+// so the pseudo-language does too: each category eo-XA uses that a plural lacks is a copy of its `other`.
+const PSEUDO_LOCALE = 'eo-XA'
+function completePlurals(nodes) {
+  return nodes.map(n => {
+    if (n.type === TYPE.select) return { ...n, options: Object.fromEntries(Object.entries(n.options).map(([k, o]) => [k, { ...o, value: completePlurals(o.value) }])) }
+    if (n.type === TYPE.tag) return { ...n, children: completePlurals(n.children) }
+    if (n.type !== TYPE.plural) return n
+    const pr = new Intl.PluralRules(PSEUDO_LOCALE, { type: n.pluralType === 'ordinal' ? 'ordinal' : 'cardinal' })
+    const options = Object.fromEntries(Object.entries(n.options).map(([k, o]) => [k, { ...o, value: completePlurals(o.value) }]))
+    const add = {}
+    for (const cat of pr.resolvedOptions().pluralCategories) if (cat !== 'other' && !(cat in options)) add[cat] = options.other
+    const { other, ...rest } = options
+    return { ...n, options: { ...rest, ...add, other } }
+  })
+}
+
 /** One en-GB message → its pseudo form: letters accented, ~30% longer, bracketed. An empty or letter-free message (a
  *  symbol, a lone "—") is left as it is. */
 function pseudoMessage(msg) {
   if (typeof msg !== 'string' || !/[A-Za-z]/.test(msg)) return msg
   const ast = parse(msg, { ignoreTag: false, requiresOtherClause: false })
-  const body = print(mapLiterals(ast, accent))
+  const body = print(mapLiterals(completePlurals(ast), accent))
   // The extra length comes in groups of at most six dots with a space between, so it can wrap the way a real language's
   // longer words do — one unbreakable run of 90 dots would overflow any column, which no real sentence does.
   const pad = ('·'.repeat(Math.max(1, Math.ceil(literalLength(ast) * 0.3) - 2)).match(/·{1,6}/g) || []).join(' ')

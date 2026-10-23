@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Etwas ist schiefgelaufen",
+    "previewFailed": "Die Vorschau konnte nicht erstellt werden",
+    "loadFailed": "Laden fehlgeschlagen",
+    "tooBig": "Dieses Bild ist {size, number, ::.0 group-off} MB groß. Die Obergrenze liegt bei 10 MB.",
+    "wrongType": "Bitte wählen Sie eine PNG- oder JPG-Datei.",
+    "uploadIncomplete": "Der Upload wurde nicht abgeschlossen",
+    "uploadFailed": "Der Upload ist fehlgeschlagen",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "buildFailed": "Der Beitrag konnte nicht erstellt werden",
+    "copyFailed": "Kopieren fehlgeschlagen – markieren Sie den Text und kopieren Sie ihn von Hand."
+  },
+  "loading": "Wird geladen…",
+  "missingTable": {
+    "title": "Der Wochenbeitrag benötigt ein Datenbank-Update",
+    "body": "Die Design-Tabelle wurde noch nicht angelegt. Sobald die Migration ausgeführt wurde, funktioniert diese Seite."
+  },
+  "kind": {
+    "label": "Welches Design",
+    "event": "Einzelnes Event",
+    "week": "Wöchentlich"
+  },
+  "setup": {
+    "title": "Wochenbeitrag einrichten",
+    "intro": "Laden Sie die leere Version der Wochenplan-Grafik hoch, die Sie bereits erstellen – dasselbe Design, nur ohne Ihre eigenen Textfelder. HatchGrab trägt die Woche aus Ihrem Terminplan ein.",
+    "canvaTitle": "So exportieren Sie eine leere Vorlage aus Canva",
+    "canvaStep1": "Öffnen Sie Ihr übliches Design für den Wochenplan.",
+    "canvaStep2": "Löschen Sie die Textfelder mit Daten, Orten und Uhrzeiten – lassen Sie den Hintergrund und die Überschriften stehen, die Sie behalten möchten.",
+    "canvaStep3": "Teilen › Herunterladen › PNG.",
+    "uploading": "Wird hochgeladen…",
+    "upload": "Leeres Bild hochladen",
+    "uploadHint": "PNG oder JPG, bis 10 MB, mindestens {px} px an der kurzen Seite.",
+    "phoneTip": "Am besten am Computer oder iPad – auf dem Handy sind die Felder zum Ziehen sehr klein.",
+    "designName": "Design für den Wochenbeitrag",
+    "backDesigns": "‹ Designs",
+    "back": "‹ Zurück",
+    "pictureNote": "Ihr Bild ohne Datum oder Ort darauf. Die fügen wir hinzu.",
+    "saved": "Design gespeichert."
+  },
+  "week": {
+    "this": "Diese Woche",
+    "next": "Nächste Woche"
+  },
+  "post": {
+    "title": "Ihr Wochenbeitrag",
+    "editDesign": "Design bearbeiten",
+    "weekOf": "Woche ab {date}",
+    "imageAlt": "Ihr Wochenbeitrag",
+    "building": "Ihr Beitrag wird erstellt…",
+    "updating": "Wird aktualisiert…",
+    "eventsTitle": "Events dieser Woche",
+    "noEvents": "Keine Events in dieser Woche.",
+    "eventDateCancelled": "{date} · abgesagt",
+    "showCancelled": "Abgesagte Events anzeigen",
+    "showPrivate": "Private Events anzeigen",
+    "privateHint": "Sie erscheinen als „Privates Event“ mit Datum und Uhrzeiten – nie mit dem Ort.",
+    "noteTitle": "Hinweis",
+    "notePlaceholder": "z. B. Vorbestellung zur Abholung",
+    "noteHint": "Erscheint in der Bildunterschrift und im Hinweisfeld, falls Sie eines platziert haben.",
+    "captionTitle": "Bildunterschrift für Ihre Seite",
+    "perEventTitle": "Beitrag für jedes Event",
+    "nothingToPost": "Diese Woche gibt es nichts zu posten.",
+    "textCopied": "Text kopiert.",
+    "copyText": "Text kopieren",
+    "image": "Bild",
+    "share": "Teilen",
+    "noOrderLink": "Noch kein Bestelllink – legen Sie in den Einstellungen die Webadresse Ihres Foodtrucks fest."
+  }
+}

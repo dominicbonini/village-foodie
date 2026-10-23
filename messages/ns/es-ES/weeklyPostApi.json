@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "El título no cabía y se ha acortado.",
+    "date": "La fecha no cabía y se ha acortado.",
+    "daysOff": "El texto de días sin servicio no cabía y se ha acortado.",
+    "place": "El nombre del lugar no cabía y se ha acortado.",
+    "time": "La hora no cabía y se ha acortado.",
+    "note": "Tu propio texto no cabía y se ha acortado.",
+    "venue": "El recinto no cabía y se ha acortado.",
+    "area": "La localidad no cabía y se ha acortado."
+  },
+  "fontFallback": "No se pudo cargar una fuente que usa este diseño ({id}) — esos cuadros van en Oswald.",
+  "wrongShapeBackground": "La imagen de este lugar tiene otra forma que tu diseño, así que se usa el fondo estándar.",
+  "rowsFit": "El último día queda {px} px por debajo del borde inferior de la imagen — reduce el espacio entre filas o sube la fila 1.",
+  "placeStatus": {
+    "ownBoth": "Imagen y posiciones de texto propias",
+    "wrongShape": "Otra forma — no se usa hasta que la sustituyas",
+    "ownPicture": "Imagen propia, posiciones estándar",
+    "ownPositions": "Imagen estándar, posiciones de texto propias",
+    "none": "Aún sin imagen — se usa el Estándar"
+  },
+  "standardStatus": "Se usa en todos los demás lugares",
+  "option": {
+    "oneOff": "Subir una solo para esta publicación",
+    "placePoster": "Cartel de {name}",
+    "standard": "Diseño estándar"
+  },
+  "previewLabel": {
+    "lastEvent": "La vista previa usa tu último evento aquí",
+    "noEvents": "Aún no hay eventos aquí — la vista previa muestra tu próximo evento con el nombre de este lugar"
+  },
+  "fontUsage": {
+    "weekly": "tu diseño de publicación semanal",
+    "event": "tu diseño de publicación de evento",
+    "place": "tu diseño para {place}",
+    "placeUnnamed": "tu diseño para un lugar"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Negrita",
+    "italic": "Cursiva"
+  },
+  "picture": {
+    "legacy": "Cartel del evento",
+    "fallback": "Imagen",
+    "wrongShape": "Otra forma — no se puede usar como fondo completo"
+  },
+  "noPicture": {
+    "omit": "No incluirla",
+    "blank": "Dejar un espacio en blanco",
+    "logo": "Mostrar tu logo"
+  },
+  "noPicturesAll": "{total, plural, one {Tu ubicación tiene imagen.} other {Tus {total} ubicaciones tienen imagen.}}",
+  "noPicturesSome": "{without, plural, one {{without} de tus {total} ubicaciones aún no tiene imagen} other {{without} de tus {total} ubicaciones aún no tienen imagen}}",
+  "licenceTick": "Esta fuente es mía o tengo licencia para usarla",
+  "fontUploadButton": "↑ Sube tu fuente"
+}

@@ -41,6 +41,10 @@ const CURRENCY = argv.includes('--currency') ? argv[argv.indexOf('--currency') +
 // france-1: --time 24h,dmy,monday moves the US fixture truck's clock, date order and week start to the country's (its 12-hour,
 // month-first, Sunday week otherwise shows "5:00 PM" on a French screen — a fixture fact, not the language's).
 const TIME = argv.includes('--time') ? argv[argv.indexOf('--time') + 1].split(',') : null
+// europe-languages-1 (22 October 2026): --engines chromium (default both) and --failures-only (a screenshot is written only for a view
+// that scrolls sideways or clips text) — the lean run the recipe now asks for. Without them, every shot as before.
+const ENGINES = argv.includes('--engines') ? argv[argv.indexOf('--engines') + 1].split(',') : ['webkit', 'chromium']
+const FAILURES_ONLY = argv.includes('--failures-only')
 
 // ── 1 · the copy, with the pseudo-language switched on ──────────────────────────────────────────────────────────────
 function makeCopy() {
@@ -207,7 +211,7 @@ async function shots(views) {
   fs.mkdirSync(OUT, { recursive: true })
   const picked = SHOT_VIEWS.map(([name, re]) => [name, Object.keys(views).find(k => re.test(k))]).filter(([, k]) => k)
   const found = []
-  for (const [engineName, engine] of [['webkit', webkit], ['chromium', chromium]]) {
+  for (const [engineName, engine] of [['webkit', webkit], ['chromium', chromium]].filter(([n]) => ENGINES.includes(n))) {
     const browser = await engine.launch()
     for (const [name, id] of picked) for (const w of [390, 1280]) {
       const page = await browser.newPage({ viewport: { width: w, height: 900 } })
@@ -226,7 +230,7 @@ async function shots(views) {
         return { sideways: document.documentElement.scrollWidth > innerWidth + 1, clipped: clipped.slice(0, 20) }
       })
       found.push({ engine: engineName, name, view: id, width: w, ...m })
-      await page.screenshot({ path: path.join(OUT, `${name}-${engineName}-${w}.png`), fullPage: true })
+      if (!FAILURES_ONLY || m.sideways || m.clipped.length) await page.screenshot({ path: path.join(OUT, `${name}-${engineName}-${w}.png`), fullPage: true })
       await page.close()
     }
     await browser.close()

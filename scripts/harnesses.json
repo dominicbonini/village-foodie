@@ -154,6 +154,7 @@
     "languages-1.cjs",
     "france-1.cjs",
     "europe-settings.cjs",
+    "europe-languages-1.cjs",
     "language-phase-0.cjs",
     "messages-parity.cjs",
     "ui-literals.cjs",

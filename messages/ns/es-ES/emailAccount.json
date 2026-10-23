@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifica tu nueva dirección de correo de HatchGrab",
+    "heading": "Verifica tu dirección de correo",
+    "button": "Verificar dirección de correo"
+  },
+  "changeEmail": {
+    "requested": "Has solicitado cambiar tu dirección de correo de HatchGrab a esta dirección.",
+    "click": "Haz clic en el botón de abajo para verificarla. Este enlace caduca en 24 horas.",
+    "ignore": "Si no has solicitado este cambio, puedes ignorar este correo sin problema.",
+    "stillActive": "Tu dirección de correo actual sigue activa."
+  },
+  "resendVerification": {
+    "requested": "Has solicitado cambiar tu correo de HatchGrab a esta dirección.",
+    "click": "Haz clic abajo para verificarla. Este enlace caduca en 24 horas.",
+    "ignore": "Si no lo has solicitado, ignora este correo.",
+    "stillActive": "Tu correo actual sigue activo."
+  },
+  "passwordReset": {
+    "subject": "Restablece tu contraseña de HatchGrab",
+    "heading": "Restablece tu contraseña",
+    "requested": "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta de HatchGrab.",
+    "click": "Haz clic en el botón de abajo para elegir una contraseña nueva. Este enlace caduca en 1 hora.",
+    "button": "Restablecer contraseña",
+    "ignore": "Si no lo has solicitado, puedes ignorar este correo sin problema.",
+    "unchanged": "Tu contraseña no cambiará hasta que hagas clic en el enlace de arriba."
+  },
+  "deletionScheduled": {
+    "subject": "Tu cuenta de HatchGrab está programada para eliminarse",
+    "received": "Hemos recibido una solicitud para eliminar esta cuenta de HatchGrab.",
+    "orderingStopped": "<b>Los pedidos online se han detenido de inmediato</b> en: {trucks}.",
+    "noTrucks": "(ningún food truck)",
+    "readable": "Tu panel seguirá\n    disponible para consulta durante {days, plural, one {# día} other {# días}} más.",
+    "scheduled": "La cuenta está programada para eliminarse el <b>{date}</b>.",
+    "cannotCancel": "<b>Esto no se puede cancelar desde la app.</b> Si no has sido tú, o has\n    cambiado de opinión, responde a este correo lo antes posible.",
+    "kept": "Cuando se elimine la cuenta, borraremos tus datos personales y los de tus clientes. Conservamos\n    registros contables anónimos, que la ley nos obliga a guardar."
+  }
+}

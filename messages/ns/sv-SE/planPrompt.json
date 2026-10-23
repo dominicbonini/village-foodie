@@ -1,0 +1,118 @@
+{
+  "includedOn": "{many, select, yes {{feature} ingår i {plan}.} other {{feature} ingår i {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} ingår inte i ditt abonnemang.} other {{feature} ingår inte i ditt abonnemang.}}",
+  "switchedOff": "{many, select, yes {{feature} har stängts av för din foodtruck.} other {{feature} har stängts av för din foodtruck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Uppgradera →",
+  "features": {
+    "discovery_map": {
+      "name": "Synlighet på foodtruckkartan",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Översikten på webben",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Köksappen",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-kodsmenyn",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Måltider",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Merförsäljning",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Beställningar på plats",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Onlinebeställning med Betala vid upphämtning",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Slutsåld-knappen",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Lagernedräkning",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Skydd för beställningar vid avbrott",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Onlinebetalningar",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Förbeställning till senare datum",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Tidsluckor för kunder",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Kökskapacitet",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Automatiskt godkännande",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Automatiska svar på Messenger och Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR-koder med din logga",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Avancerad rapportering",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Utskrift av köksbongar",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Synkade köksskärmar på flera enheter",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Kockskärmen",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Automatiska svar på WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Ditt schema på din egen webbplats",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Inlägg i sociala medier",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Egna evenemangstyper",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Privata evenemang",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} fascia oraria} other {{count} fasce orarie}} oltre la capacità — controlla",
+  "batchOver": "{cat}: lotto superato — {count} per le {slot} ({per} per lotto)",
+  "eventStartOver": "Capacità superata all’inizio dell’evento — {n, plural, one {{count} articolo} other {{count} articoli}} per le {slot}",
+  "kitchenOver": "Cucina oltre la capacità — {n, plural, one {{count} articolo} other {{count} articoli}} in cottura per le {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} articolo} other {{count} articoli}}",
+  "placedAnyway": "Inseriti comunque: {list}",
+  "placedItem": "#{id} per le {slot}",
+  "orphans": "{times} oltre la capacità — nessun ordine a cui attribuirlo",
+  "dismiss": "Chiudi",
+  "kitchenCapacity": "Capacità della cucina",
+  "overCapacity": "Capacità superata",
+  "wakeUnsupported": "Questo dispositivo non può tenere lo schermo acceso.",
+  "wakeInsecure": "Da questo indirizzo non è possibile tenere lo schermo acceso.",
+  "wakeRetry": "Tieni lo schermo acceso — tocca per riprovare",
+  "wakeAcquire": "Tieni lo schermo acceso",
+  "degraded": {
+    "serverError": "Il server non è riuscito a caricare gli ordini{hasStatus, select, yes { (errore {status})} other {}}. Ordini aggiornati alle {at}. Potrebbero mancare nuovi ordini.",
+    "unreachable": "Server non raggiungibile. Ordini aggiornati alle {at}. Potrebbero mancare nuovi ordini."
+  }
+}

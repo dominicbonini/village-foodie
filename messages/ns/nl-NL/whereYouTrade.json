@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Waar is je foodtruck gevestigd?",
+  "stepIntro": "Dit bepaalt je valuta, prijzen, tijdzone en de notatie van telefoonnummers. Het land kun je later niet meer wijzigen, omdat het gekoppeld is aan je kaartbetalingen.",
+  "settingsHeading": "Waar je verkoopt",
+  "countryLabel": "Land",
+  "countryGuessed": "We hebben dit afgeleid uit je locatie. Pas het aan als het niet klopt.",
+  "countryLocked": "Je land kan niet worden gewijzigd",
+  "townLabel": "Plaats",
+  "townQuestion": "Plaats waar je gevestigd bent",
+  "timezoneLabel": "Tijdzone",
+  "continueButton": "Doorgaan",
+  "saveFailed": "Instellingen konden niet worden opgeslagen — probeer het opnieuw."
+}

@@ -1,0 +1,107 @@
+{
+  "$comment": "europe-languages-2 (23 October 2026): the WhatsApp allergen guard's trigger words for HUNGARIAN (hu-HU). OPTION B, as every other list: absence / safety words only — allergy and intolerance words, coeliac disease, anaphylaxis, EpiPen, the \"free from\" / \"without <allergen>\" forms, \"suitable for\" / \"safe for\", traces and cross-contamination — NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser (lower case, accents and diacritics folded: \"bezlepkový\" and \"bezlepkovy\" are the same entry), so each stem is written once; letters the normaliser keeps (ł, ø, đ, Greek and Cyrillic) are listed in both spellings people type. caveatWords: a tagged uk14 label (stored in English, lower case) → the words a reply in the language may use for it. scripts/europe-languages-1.cjs proves it.",
+  "language": "hu",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "intoleran",
+    "erzekeny",
+    "coliakia",
+    "coeliakia",
+    "coliakias",
+    "lisztérzékeny",
+    "liszterzekeny",
+    "gluténmentes",
+    "glutenmentes",
+    "laktózmentes",
+    "laktozmentes",
+    "tejmentes",
+    "tojasmentes",
+    "diomentes",
+    "mogyoromentes",
+    "szojamentes",
+    "szezammentes",
+    "glutén nélkül",
+    "gluten nelkul",
+    "laktoz nelkul",
+    "tej nelkul",
+    "tojas nelkul",
+    "dio nelkul",
+    "mogyoro nelkul",
+    "anafilax",
+    "epipen",
+    "epi pen",
+    "adrenalin",
+    "mentes",
+    "alkalmas",
+    "biztonsagos",
+    "nyomokban",
+    "tartalmazhat",
+    "keresztszennyez"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "uk14": {
+      "gluten": [
+        "glutén",
+        "búza",
+        "liszt"
+      ],
+      "crustaceans": [
+        "rákfélék",
+        "garnélarák"
+      ],
+      "eggs": [
+        "tojás",
+        "majonéz"
+      ],
+      "fish": [
+        "hal",
+        "halak"
+      ],
+      "peanuts": [
+        "földimogyoró"
+      ],
+      "soy": [
+        "szója",
+        "tofu"
+      ],
+      "dairy": [
+        "tej",
+        "laktóz",
+        "sajt",
+        "tejszín",
+        "vaj",
+        "tejtermék"
+      ],
+      "tree nuts": [
+        "dió",
+        "mandula",
+        "mogyoró",
+        "pisztácia",
+        "kesudió"
+      ],
+      "celery": [
+        "zeller"
+      ],
+      "mustard": [
+        "mustár"
+      ],
+      "sesame": [
+        "szezám"
+      ],
+      "sulphites": [
+        "szulfit",
+        "kén-dioxid"
+      ],
+      "lupin": [
+        "csillagfürt"
+      ],
+      "molluscs": [
+        "puhatestűek",
+        "kagyló",
+        "tintahal"
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "intro": "I Administrer setter du opp matbilen din og ser hvordan det går. I Kontrollpanelet tar du imot bestillinger og styrer hvert arrangement mens det pågår.",
+  "ariaLabel": "Omvisning i kontrollpanelet",
+  "step": "{current} av {total}",
+  "skip": "Hopp over",
+  "back": "← Tilbake",
+  "next": "Neste →",
+  "done": "Ferdig",
+  "stops": {
+    "menu": {
+      "title": "Meny",
+      "body": "Rettene, prisene og allergenene dine. Endrer du noe her, gjelder det med en gang."
+    },
+    "schedule": {
+      "title": "Kalender",
+      "body": "Hvor og når du selger. Legg til et arrangement her, så kan kundene bestille til det."
+    },
+    "build": {
+      "title": "Måltider og Tillegg og mersalg",
+      "body": "Måltider, mersalg, tilpasninger og kjøkkenkapasiteten din finner du under Meny — bare prøv deg fram."
+    },
+    "settings": {
+      "title": "Innstillinger",
+      "body": "Opplysninger om matbilen din og hvordan kundene betaler."
+    },
+    "billing": {
+      "title": "Fakturering",
+      "body": "Her finner du abonnementet, faktureringen og informasjon om funksjonene."
+    }
+  }
+}

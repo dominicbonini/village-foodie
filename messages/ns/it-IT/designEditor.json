@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Titolo della settimana",
+    "weekHeadingSample": "Settimana dal …",
+    "daysSample": "Da {first} a {last}",
+    "date": "Data",
+    "place": "Luogo",
+    "venue": "Locale",
+    "area": "Zona",
+    "time": "Orario",
+    "rows": "Righe",
+    "rowsSample": "{px}px di distanza · da {first} a {last}",
+    "ownText": "Il tuo testo",
+    "noteTokenSample": "La nota che scrivi quando crei il post",
+    "nothingYet": "Ancora niente",
+    "thisBox": "questo riquadro"
+  },
+  "sample": {
+    "venue": "Osteria del Ponte",
+    "area": "Bergamo"
+  },
+  "bar": {
+    "previewWith": "Anteprima con",
+    "undo": "Annulla",
+    "undoTitle": "Annulla (⌘Z)",
+    "redo": "Ripeti",
+    "redoTitle": "Ripeti (⇧⌘Z)",
+    "cancel": "Esci",
+    "saving": "Salvataggio…",
+    "save": "Salva grafica"
+  },
+  "grid": {
+    "eachRow": "Ogni riga",
+    "placeOff": "Il nome del luogo è già nella tua immagine: HatchGrab non lo aggiungerà."
+  },
+  "background": {
+    "uploading": "Caricamento…",
+    "replace": "Sostituisci immagine",
+    "shape": {
+      "square": "Quadrato (1:1)",
+      "portrait45": "Verticale (4:5)",
+      "portrait916": "Verticale (9:16)",
+      "landscape169": "Orizzontale (16:9)",
+      "portrait": "Verticale",
+      "landscape": "Orizzontale"
+    }
+  },
+  "scope": {
+    "title": "Posizioni del testo",
+    "standard": "Stesse posizioni della grafica Standard",
+    "own": "Posizioni proprie: {place}",
+    "locked": "Queste posizioni vengono dalla tua grafica Standard. Scegli «Posizioni proprie: {place}» per spostarle solo qui."
+  },
+  "stage": {
+    "hint": "Trascina un riquadro per spostarlo · trascina un angolo per ridimensionarlo",
+    "zoomOut": "Riduci",
+    "zoomIn": "Ingrandisci"
+  },
+  "rows": {
+    "spacing": "Spaziatura",
+    "daysRun": "I giorni vanno da {first} a {last}. I tre riquadri della riga 1 vengono copiati verso il basso a questa distanza.",
+    "whichEvents": "Quali eventi",
+    "showCancelled": "Mostra eventi annullati",
+    "showCancelledHint": "Un evento annullato mostra il luogo barrato e la parola ANNULLATO. Se disattivato, il giorno appare come giorno di riposo."
+  },
+  "days": {
+    "reorder": "Riordina",
+    "move": "sposta"
+  },
+  "picture": {
+    "picture": "Immagine",
+    "fill": "Riempi il riquadro",
+    "fit": "Adatta all’interno",
+    "corners": "Angoli",
+    "square": "Squadrati",
+    "rounded": "Arrotondati",
+    "ifMissing": "Se una postazione non ha un’immagine",
+    "noPicture": {
+      "omit": "Non mostrarla",
+      "blank": "Lascia uno spazio vuoto",
+      "logo": "Mostra il tuo logo"
+    },
+    "border": "Bordo",
+    "drawBorder": "Disegna un bordo",
+    "drawBorderHint": "Una linea intorno all’immagine, nel colore che preferisci.",
+    "borderWidth": "Spessore del bordo",
+    "cornerRadius": "Raggio degli angoli",
+    "locationPictures": "Immagini delle postazioni",
+    "addLocationPictures": "+ Aggiungi immagini delle postazioni",
+    "allHaveImage": "{total, plural, =0 {Non hai ancora nessuna postazione.} one {La tua postazione ha un’immagine.} other {Tutte le tue # postazioni hanno un’immagine.}}",
+    "someWithout": "{without} delle tue {total, plural, one {# postazione} other {# postazioni}} {without, plural, one {non ha} other {non hanno}} ancora un’immagine"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Colore",
+    "textColour": "Colore del testo",
+    "ownStyleNote": "{count, plural, one {{names} ha uno stile proprio, quindi non viene modificato.} other {{names} hanno uno stile proprio, quindi non vengono modificati.}}",
+    "matchAgain": "Riallinea",
+    "matchName": "Allinea a {name}",
+    "lastToggle": "{kind, select, weekly {Tieni attivo Luogo oppure Orario. Un evento annullato mostra il luogo barrato e la parola ANNULLATO, quindi con entrambi disattivati non ci sarebbe niente a indicare che è annullato.} other {Tieni attivo Locale oppure Orario. Un evento annullato mostra il luogo barrato e la parola ANNULLATO, quindi con entrambi disattivati non ci sarebbe niente a indicare che è annullato.}}"
+  },
+  "letters": {
+    "boldGlyph": "G",
+    "italicGlyph": "C",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — questo font ha un vero corsivo"
+  },
+  "align": {
+    "left": "Sinistra",
+    "centre": "Centro",
+    "right": "Destra"
+  },
+  "effects": {
+    "outlineColour": "Colore del contorno",
+    "bandColour": "Colore della striscia",
+    "bandDaysOff": "Striscia nei giorni di riposo",
+    "bandCancelled": "Striscia se l’evento è annullato",
+    "bandDaysOffHint": "Usata al posto della striscia qui sopra nei giorni senza attività.",
+    "bandCancelledHint": "Usata al posto della striscia qui sopra quando l’evento è annullato."
+  },
+  "more": {
+    "dayOwnLine": "Giorno su una riga a sé",
+    "dayOwnLineHint": "Il giorno della settimana sopra la data. Solo per la data.",
+    "noEventDay": "Nei giorni senza eventi",
+    "wordsBeforePlaceholder": "es. Ci trovi a",
+    "neverHyphenate": "Una parola lunga senza spazi viene sempre rimpicciolita: non andiamo mai a capo con il trattino nel nome di un luogo."
+  },
+  "bits": {
+    "less": "Meno",
+    "more": "Più",
+    "chooseColourFor": "{label} — scegli un colore qualsiasi",
+    "chooseColour": "Scegli un colore qualsiasi"
+  }
+}

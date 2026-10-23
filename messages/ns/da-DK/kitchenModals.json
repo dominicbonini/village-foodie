@@ -1,0 +1,69 @@
+{
+  "close": "Luk",
+  "cancel": "Annuller",
+  "selectReason": "Vælg en årsag",
+  "reject": {
+    "title": "Afvis bestilling #{orderId}?",
+    "reasonLabel": "Årsag — obligatorisk (vises for kunden)",
+    "reason": "{reason, select, sold_out {En vare er udsolgt} too_busy {For travlt — vi kan ikke nå det} closing_soon {Vi lukker snart} other {Andet}}",
+    "noteRequired": "Årsag — obligatorisk",
+    "noteOptional": "Ekstra bemærkning — valgfri",
+    "notePlaceholder": "Tilføj flere detaljer til kunden…",
+    "keep": "Behold bestilling",
+    "confirm": "Afvis bestilling"
+  },
+  "eventCancel": {
+    "title": "Aflys dette arrangement?",
+    "affected": "{n, plural, one {{count} bestilling} other {{count} bestillinger}} bliver annulleret, og kunderne får besked.",
+    "reasonLabel": "Årsag — valgfri",
+    "reason": "{reason, select, vehicle_breakdown {Køretøjet er brudt sammen} weather {Vejret} venue_issue {Problem med stedet} personal_emergency {Personlig nødsituation} other {Andet}}",
+    "messageLabel": "Besked til kunderne — valgfri",
+    "messagePlaceholder": "F.eks. Beklager, vores trailer brød sammen på vej til stedet…",
+    "keep": "Behold arrangement",
+    "cancelling": "Aflyser…",
+    "confirm": "Aflys arrangement"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {Genstart arrangement} other {Start arrangement}}",
+    "changeEvent": "Skift arrangement",
+    "changeEventType": "Skift arrangementstype…",
+    "privateLink": "Privat link og QR-kode",
+    "noteLabel": "Besked til kunderne",
+    "notePlaceholder": "F.eks. Parkér på den store parkeringsplads, og kig efter det orange telt",
+    "noteHint": "Vises for kunderne på bestillingssiden under oplysningerne om dit arrangement.",
+    "saveNote": "Gem besked",
+    "resume": "Genoptag bestillinger",
+    "pause": "Sæt på pause",
+    "changeFinishTime": "Skift sluttidspunkt for arrangementet",
+    "finishEvent": "Afslut arrangement",
+    "cancelEvent": "Aflys arrangement"
+  },
+  "finish": {
+    "confirmTitle": "Skift sluttidspunkt?",
+    "willFinish": "Arrangementet slutter kl. <b>{selected}</b>{hasCurrent, select, yes { i stedet for kl. <b>{current}</b>} other {}}.",
+    "dueAfter": "<b>{n, plural, one {{count} bestilling skal være klar} other {{count} bestillinger skal være klar}} efter {selected}.</b> {n, plural, one {Den bliver} other {De bliver}} på oversigten og {n, plural, one {skal} other {skal}} stadig laves. Et nyt sluttidspunkt forhindrer kun, at der afgives NYE bestillinger til senere tidspunkter.",
+    "saving": "Gemmer…",
+    "confirm": "Skift sluttidspunkt",
+    "keepCurrent": "Behold {current}",
+    "keepAsIs": "Behold uændret",
+    "title": "Skift sluttidspunkt",
+    "currentlySet": "Arrangementet er lige nu sat til at slutte kl. <b>{current}</b>.",
+    "noFinishTime": "Arrangementet har intet sluttidspunkt.",
+    "noTimesLeft": "Der er ingen tidspunkter tilbage i dag. Brug Afslut arrangement i stedet.",
+    "newFinishTime": "Nyt sluttidspunkt",
+    "optionCurrent": "{time} (nuværende)",
+    "earlier": "Det er tidligere end det nuværende sluttidspunkt. Kunderne kan ikke bestille til tidspunkter efter det.",
+    "review": "Gennemse ændring",
+    "optionNextDay": "{time} (næste dag)"
+  },
+  "extraWait": {
+    "title": "Tilføj ekstra ventetid",
+    "hint": "Lægges oven i den afhentningstid, der oplyses på nye bestillinger. Arrangementets sluttidspunkt ændres ikke.",
+    "option": "+{mins} min."
+  },
+  "picker": {
+    "reconnect": "Genforbind for at indlæse",
+    "selected": "Valgt",
+    "status": "{tone, select, paused {⏸ På pause} live {● Live} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}"
+  }
+}

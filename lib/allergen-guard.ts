@@ -16,6 +16,27 @@ import type { AllergenSet } from '@/lib/allergens'
 import { languageOf } from '@/lib/i18n/locales'
 import en from './allergen-guard/en.json'
 import fr from './allergen-guard/fr.json'   // france-1 (22 October 2026)
+import de from './allergen-guard/de.json'   // europe-languages-1 (22 October 2026)
+import es from './allergen-guard/es.json'   // europe-languages-1
+import it from './allergen-guard/it.json'   // europe-languages-1
+import pt from './allergen-guard/pt.json'   // europe-languages-1
+import nl from './allergen-guard/nl.json'   // europe-languages-1
+import sv from './allergen-guard/sv.json'   // europe-languages-1
+import da from './allergen-guard/da.json'   // europe-languages-1
+import nb from './allergen-guard/nb.json'   // europe-languages-1
+import pl from './allergen-guard/pl.json'   // europe-languages-2
+import cs from './allergen-guard/cs.json'   // europe-languages-2
+import sk from './allergen-guard/sk.json'   // europe-languages-2
+import hu from './allergen-guard/hu.json'   // europe-languages-2
+import ro from './allergen-guard/ro.json'   // europe-languages-2
+import hr from './allergen-guard/hr.json'   // europe-languages-2
+import sl from './allergen-guard/sl.json'   // europe-languages-2
+import fi from './allergen-guard/fi.json'   // europe-languages-2
+import et from './allergen-guard/et.json'   // europe-languages-2
+import lv from './allergen-guard/lv.json'   // europe-languages-2
+import lt from './allergen-guard/lt.json'   // europe-languages-2
+import el from './allergen-guard/el.json'   // europe-languages-2
+import bg from './allergen-guard/bg.json'   // europe-languages-2
 
 export interface GuardWords {
   language: string
@@ -32,7 +53,9 @@ export interface GuardWords {
 }
 
 /** Every language with a list. A new language's file is imported and added here (docs/i18n/add-a-country.md). */
-export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, fr: fr as GuardWords }
+export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, fr: fr as GuardWords, de: de as GuardWords,
+  es: es as GuardWords, it: it as GuardWords, pt: pt as GuardWords, nl: nl as GuardWords, sv: sv as GuardWords, da: da as GuardWords, nb: nb as GuardWords,
+  pl: pl as GuardWords, cs: cs as GuardWords, sk: sk as GuardWords, hu: hu as GuardWords, ro: ro as GuardWords, hr: hr as GuardWords, sl: sl as GuardWords, fi: fi as GuardWords, et: et as GuardWords, lv: lv as GuardWords, lt: lt as GuardWords, el: el as GuardWords, bg: bg as GuardWords }
 
 const asciiNorm = (s: string) => ` ${s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
 const unicodeNorm = (s: string) => ` ${s.normalize('NFKD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim()} `

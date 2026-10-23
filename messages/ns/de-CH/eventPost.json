@@ -1,0 +1,8 @@
+{
+  "error": {
+    "imageTooBig": "Dieses Bild ist {size} MB gross. Die Grenze liegt bei 10 MB."
+  },
+  "modal": {
+    "close": "Schliessen"
+  }
+}

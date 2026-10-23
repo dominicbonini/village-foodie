@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} tijdslot} other {{count} tijdsloten}} boven capaciteit — controleren",
+  "batchOver": "{cat} boven batch — {count} voor {slot} ({per} per batch)",
+  "eventStartOver": "Boven capaciteit bij start evenement — {n, plural, one {{count} item} other {{count} items}} voor {slot}",
+  "kitchenOver": "Keuken boven capaciteit — {n, plural, one {{count} item} other {{count} items}} in bereiding voor {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} item} other {{count} items}}",
+  "placedAnyway": "Toch geplaatst: {list}",
+  "placedItem": "#{id} voor {slot}",
+  "orphans": "{times} boven capaciteit — geen bestellingen gevonden waar het bij hoort",
+  "dismiss": "Sluiten",
+  "kitchenCapacity": "Keukencapaciteit",
+  "overCapacity": "Boven capaciteit",
+  "wakeUnsupported": "Dit apparaat kan het scherm niet aan laten staan.",
+  "wakeInsecure": "Vanaf dit adres kan het scherm niet aan blijven.",
+  "wakeRetry": "Scherm aan laten — tik om het opnieuw te proberen",
+  "wakeAcquire": "Scherm aan laten",
+  "degraded": {
+    "serverError": "De server kon de bestellingen niet laden{hasStatus, select, yes { (fout {status})} other {}}. Bestellingen van {at} worden getoond. Nieuwe bestellingen kunnen ontbreken.",
+    "unreachable": "Kan de server niet bereiken. Bestellingen van {at} worden getoond. Nieuwe bestellingen kunnen ontbreken."
+  }
+}

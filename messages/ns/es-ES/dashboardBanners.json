@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} franja} other {{count} franjas}} por encima de la capacidad — revisar",
+  "batchOver": "{cat} supera la tanda — {count} para las {slot} ({per} por tanda)",
+  "eventStartOver": "Capacidad superada al inicio del evento — {n, plural, one {{count} producto} other {{count} productos}} para las {slot}",
+  "kitchenOver": "Cocina por encima de su capacidad — {n, plural, one {{count} producto} other {{count} productos}} en cocina para las {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} producto} other {{count} productos}}",
+  "placedAnyway": "Añadidos igualmente: {list}",
+  "placedItem": "#{id} para las {slot}",
+  "orphans": "{times}: capacidad superada — no se han encontrado pedidos a los que atribuirlo",
+  "dismiss": "Descartar",
+  "kitchenCapacity": "Capacidad de cocina",
+  "overCapacity": "Capacidad superada",
+  "wakeUnsupported": "Este dispositivo no puede mantener la pantalla encendida.",
+  "wakeInsecure": "No se puede mantener la pantalla encendida desde esta dirección.",
+  "wakeRetry": "Mantener pantalla encendida — toca para reintentar",
+  "wakeAcquire": "Mantener pantalla encendida",
+  "degraded": {
+    "serverError": "El servidor no ha podido cargar los pedidos{hasStatus, select, yes { (error {status})} other {}}. Mostrando pedidos de las {at}. Pueden faltar pedidos nuevos.",
+    "unreachable": "No se puede conectar con el servidor. Mostrando pedidos de las {at}. Pueden faltar pedidos nuevos."
+  }
+}

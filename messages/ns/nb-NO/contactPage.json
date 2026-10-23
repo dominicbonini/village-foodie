@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "title": "Kundestøtte",
+    "description": "Få hjelp med HatchGrab. Send oss en melding, så svarer vi deg på e-post."
+  },
+  "logIn": "Logg inn",
+  "eyebrow": "Kundestøtte",
+  "title": "Hva kan vi hjelpe deg med?",
+  "lede": "Er det noe som ikke fungerer, eller har du et spørsmål om kontoen din? Du kan nå oss på to måter — uansett svarer vi deg på e-post.",
+  "emailUs": "Send oss en e-post",
+  "formHeading": "Eller fyll ut skjemaet nedenfor",
+  "loadingForm": "Laster skjema…",
+  "formTitle": "Kontakt kundestøtten i HatchGrab",
+  "privacy": "Personvern",
+  "terms": "Vilkår",
+  "about": "Om oss",
+  "copyright": "© {year} HatchGrab"
+}

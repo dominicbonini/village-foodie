@@ -1,0 +1,13 @@
+{
+  "subtotal": "Delsumma",
+  "taxFallback": "Moms",
+  "taxIncluded": "Inklusive {label}",
+  "serviceFeeCustomer": "Serviceavgift online",
+  "serviceFee": "Serviceavgift",
+  "cardFee": "Kortavgift",
+  "tip": "Dricks",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Moms, avgifter och dricks} tax_tip {Moms och dricks} fees_tip {Avgifter och dricks} fees {Avgifter} other {Moms och avgifter}}"
+}

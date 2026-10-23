@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Verifisering er midlertidig utilgjengelig. Prøv igjen om litt.",
+  "malformed": "Det ser ikke ut som en nettadresse. Prøv noe sånt som dinmatbil.no/arrangementer",
+  "blocked": "Vi fikk ikke tilgang til nettstedet – det kan hende det blokkerer automatiske sjekker. Prøv siden der kalenderen din står, eller legg til arrangementer manuelt.",
+  "unreachable": "Vi nådde ikke nettstedet. Det kan være nede, eller adressen kan være feil.",
+  "no_content": "Vi nådde siden, men kunne ikke lese noe på den. Sjekk at den er offentlig tilgjengelig.",
+  "no_events": "Vi fant ingen kommende arrangementer på denne siden. Sørg for at nettadressen går rett til siden der kalenderen din står.",
+  "blockedDomain": "Bruk nettadressen til nettsiden din – Facebook- og Instagram-sider kan ikke hentes automatisk."
+}

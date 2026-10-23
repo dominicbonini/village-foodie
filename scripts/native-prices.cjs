@@ -27,7 +27,12 @@ const text = s => String(s).replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<s
 const count = (s, sub) => s.split(sub).length - 1
 const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
 
-const LINE = { AU: 'Prices in Australian dollars (AUD)', NZ: 'Prices in New Zealand dollars (NZD)', CA: 'Prices in Canadian dollars (CAD)', SE: 'Prices in Swedish kronor (SEK)' }
+// ⚠️ RE-PINNED (europe-languages-1, 22 October 2026): Sweden's pages are in Swedish now — the line is sv-SE's own frame with Intl's
+// Swedish name for the currency ("Valuta: svensk krona (SEK)"); the English lines are exactly as before.
+const SV_LINE = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../messages/sv-SE.json'), 'utf8')).pricing.currencyLine
+  .replace('{currency}', new Intl.DisplayNames(['sv-SE'], { type: 'currency' }).of('SEK')).replace('{code}', 'SEK')
+const LINE = { AU: 'Prices in Australian dollars (AUD)', NZ: 'Prices in New Zealand dollars (NZD)', CA: 'Prices in Canadian dollars (CAD)', SE: SV_LINE }
+const LINE_PREFIX = cc => (cc === 'SE' ? SV_LINE.split(' ')[0] + ' ' : 'Prices in ')
 /** The plan prices each country's cards show (fixture catalogue): Pro and Unlimited, in the home form. */
 const HOME = { AU: ['$39', '$99'], NZ: ['$49', '$119'], CA: ['$39', '$99'], SE: ['29 kr', '79 kr'] }
 /** Any amount written in an international form: A$39, NZ$49, CA$39, US$29, SEK 29. */
@@ -45,7 +50,7 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
     const want = p === 'compare' ? [cc === 'SE' ? '2 500 kr' : '$2,500'] : HOME[cc]
     t(`${cc} /${p}: ${want.join(', ')} in the home form, no international amount (A$, NZ$, CA$, SEK …)`, want.every(w => tx.includes(w)) && !INTL_AMOUNT.test(tx), { want, intl: tx.match(new RegExp(INTL_AMOUNT.source, 'g'))?.slice(0, 5) })
     const firstPrice = tx.search(cc === 'SE' ? /\d[\d ,]* kr\b/ : /\$\d/)
-    t(`${cc} /${p}: "${LINE[cc]}" exactly once, before the first price`, count(tx, LINE[cc]) === 1 && count(tx, 'Prices in ') === 1 && tx.indexOf(LINE[cc]) < firstPrice, { at: tx.indexOf(LINE[cc]), firstPrice })
+    t(`${cc} /${p}: "${LINE[cc]}" exactly once, before the first price`, count(tx, LINE[cc]) === 1 && count(tx, LINE_PREFIX(cc)) === 1 && tx.indexOf(LINE[cc]) < firstPrice, { at: tx.indexOf(LINE[cc]), firstPrice })
   }
   const land = pages['NZ|landing'].html
   t('landing: the line is the `.price-currency` paragraph straight before the cards (`.plans`) — the approved mockup', /<p class="price-currency">Prices in New Zealand dollars \(NZD\)<\/p><div class="plans">/.test(land))

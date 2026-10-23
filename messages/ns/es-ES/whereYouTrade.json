@@ -1,0 +1,13 @@
+{
+  "stepHeading": "¿Dónde tiene su base tu food truck?",
+  "stepIntro": "Esto define tu moneda, tus precios, tu zona horaria y el formato de teléfono. El país no se puede cambiar después, porque está vinculado a tus pagos con tarjeta.",
+  "settingsHeading": "Dónde vendes",
+  "countryLabel": "País",
+  "countryGuessed": "Lo hemos deducido a partir de tu ubicación. Cámbialo si no es correcto.",
+  "countryLocked": "Tu país no se puede cambiar",
+  "townLabel": "Localidad o ciudad",
+  "townQuestion": "Localidad o ciudad donde tienes tu base",
+  "timezoneLabel": "Zona horaria",
+  "continueButton": "Continuar",
+  "saveFailed": "No se han podido guardar los ajustes. Inténtalo de nuevo."
+}

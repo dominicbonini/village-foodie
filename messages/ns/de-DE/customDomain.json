@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Termine auf Ihrer Website zeigen",
+    "live": "<addr>{address}</addr> zeigt Ihre Termine.",
+    "create": "Wir erstellen unter <addr>{address}</addr> eine Seite mit Ihren Terminen.",
+    "exampleDomain": "ihr-foodtruck.de",
+    "liveBadge": "Online",
+    "setUp": "Einrichten",
+    "viewSetup": "Einrichtung ansehen",
+    "continue": "Weiter",
+    "justLive": "<b>{address}</b> funktioniert. Sehen Sie sich die Seite an und bestätigen Sie uns dann unten, dass alles stimmt."
+  },
+  "waiting": {
+    "title": "Wir warten auf {address}",
+    "bodySince": "Sie haben das am {date} eingerichtet. Neue Webadressen funktionieren meist innerhalb weniger Minuten, gelegentlich dauert es bis zu 24 Stunden, bis sie überall erreichbar sind – in der Zwischenzeit müssen Sie nichts tun. Falls jemand anderes den Eintrag für Sie hinzufügen sollte, fragen Sie am besten nach, ob das passiert ist.",
+    "body": "Neue Webadressen funktionieren meist innerhalb weniger Minuten, gelegentlich dauert es bis zu 24 Stunden, bis sie überall erreichbar sind – in der Zwischenzeit müssen Sie nichts tun. Falls jemand anderes den Eintrag für Sie hinzufügen sollte, fragen Sie am besten nach, ob das passiert ist."
+  },
+  "ready": {
+    "title": "{address} ist online",
+    "body": "Sehen Sie sich die Seite an und bestätigen Sie uns dann in Ihren Einstellungen, dass alles stimmt."
+  },
+  "confirm": {
+    "heading": "Sehen Sie nach und bestätigen Sie, dass alles stimmt",
+    "open": "<link>{address}</link> öffnen",
+    "checkTimes": "Prüfen Sie, ob Daten und Uhrzeiten stimmen.",
+    "yes": "Ja, alles stimmt",
+    "no": "Nein, es gibt ein Problem",
+    "problemLine": "Beschreiben Sie, was Sie sehen, und wir sehen es uns an.",
+    "emailUs": "E-Mail an uns",
+    "mailSubject": "Problem mit {address}",
+    "mailLiveSince": "Online seit {date}",
+    "mailSeeing": "Das sehe ich:"
+  },
+  "confirmed": {
+    "heading": "Danke – ist notiert.",
+    "body": "Sie müssen nichts weiter tun."
+  },
+  "turnOff": {
+    "link": "Deaktivieren",
+    "heading": "Eigene Webadresse deaktivieren?",
+    "stops": "Das funktioniert dann nicht mehr:",
+    "carriesOn": "Das läuft unverändert weiter, und dorthin führt Ihr QR-Code:",
+    "reAdd": "Wenn Sie die Adresse später erneut einrichten möchten, lassen Sie den Eintrag bei Ihrem Webadressen-Anbieter bestehen. Andernfalls bitten Sie den Anbieter, ihn zu entfernen.",
+    "cancel": "Aktiviert lassen",
+    "confirm": "Deaktivieren",
+    "working": "Wird deaktiviert…",
+    "failed": "Das konnte gerade nicht deaktiviert werden. Es hat sich nichts geändert – Ihre Adresse funktioniert weiterhin. Versuchen Sie es gleich noch einmal."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Ihre Einrichtung konnte nicht geladen werden.",
+    "resumeFailedBody": "Es hat sich nichts geändert. Versuchen Sie es gleich noch einmal.",
+    "close": "Schließen",
+    "resuming": "Es geht dort weiter, wo Sie aufgehört haben…",
+    "genericError": "Etwas ist schiefgelaufen",
+    "saveFailed": "Speichern fehlgeschlagen"
+  },
+  "address": {
+    "intro": "Ihre Termine erhalten eine eigene Webadresse.",
+    "question": "Wie lautet Ihre Webadresse?",
+    "hint": "Die Adresse, unter der man Sie bereits findet.",
+    "aria": "Ihre eigene Webadresse",
+    "willBe": "Ihre Adresse lautet dann <addr>{address}</addr>",
+    "example": "Zum Beispiel <addr>{address}</addr>",
+    "noChange": "Ihre Website ändert sich nicht – Sie fügen nur einen Link zur neuen Adresse hinzu.",
+    "notSetUp": "Wir haben das nicht eingerichtet.",
+    "restricted": "Wer Ihre Webadresse betreut, muss uns erlauben, das Schloss-Symbol einzurichten – das kleine Schloss, das Kunden neben der Adresse sehen. Solange wir nicht freigegeben sind, erscheint es nicht. Deshalb haben wir abgebrochen, statt Sie darauf warten zu lassen. Bitten Sie um die Freigabe und versuchen Sie es dann erneut.",
+    "blocked": "Ihre Webadresse blockiert das Schloss-Symbol derzeit vollständig. Wer sie betreut, muss es zulassen, damit das funktioniert. Bitten Sie um diese Änderung und versuchen Sie es dann erneut.",
+    "elsewhere": "Unter dieser Adresse antwortet bereits etwas anderes. Senden Sie die Nachricht auf der nächsten Seite an die Person, die die Adresse betreut – sie weiß, was zu tun ist.",
+    "provider": "Ihre Webadresse wird von <b>{provider}</b> betreut. Wir zeigen Ihnen, wo Sie hinmüssen.",
+    "provisionFailed": "Diese Adresse konnten wir nicht einrichten.",
+    "willNotWork": "Diese Adresse funktioniert nicht.",
+    "couldNotBeSetUp": "Diese Adresse konnte nicht eingerichtet werden.",
+    "couldNotSetUp": "Einrichtung fehlgeschlagen",
+    "checking": "Wird geprüft…",
+    "setting": "Wird eingerichtet…",
+    "tryAgain": "Erneut versuchen",
+    "setUpAddress": "Diese Adresse einrichten",
+    "notNow": "Nicht jetzt"
+  },
+  "apex": {
+    "empty": "Geben Sie die Adresse ein, die Sie verwenden möchten.",
+    "not_a_domain": "Das sieht nicht nach einer Webadresse aus.",
+    "unparseable": "Wir konnten das nicht als Webadresse erkennen. Prüfen Sie die Schreibweise und versuchen Sie es erneut.",
+    "apex": "{host} ist die Adresse Ihrer gesamten Website. Wenn Sie diese auf uns verweisen, wird Ihre Website durch diese Seite ersetzt. Setzen Sie stattdessen ein Wort davor – zum Beispiel termine.{host}.",
+    "too_deep": "Diese Adresse hat zu viele Teile. Am besten funktioniert etwas wie termine.{domain}."
+  },
+  "record": {
+    "addAt": "Fügen Sie das bei {provider} hinzu",
+    "open": "{provider} öffnen",
+    "guide": "Anleitung von {provider} dazu",
+    "addAtSave": "Fügen Sie das bei {provider} hinzu und speichern Sie.",
+    "addSomewhere": "Fügen Sie das dort hinzu, wo Ihre Webadresse verwaltet wird, und speichern Sie.",
+    "hintChoose": "Wählen Sie das aus der Liste.",
+    "hintWord": "Nur dieses Wort, nicht die ganze Adresse.",
+    "hintExact": "Genau so übernehmen.",
+    "timing": "Meist funktioniert es innerhalb einer Stunde, es kann aber auch länger dauern. Sie müssen diese Seite nicht geöffnet lassen.",
+    "someoneElse": "Jemand anderes betreut Ihre Webadresse?",
+    "sentTo": "Gesendet an {email}",
+    "emailPlaceholder": "deren E-Mail-Adresse",
+    "sending": "Wird gesendet…",
+    "send": "Angaben senden",
+    "sendFailed": "Senden fehlgeschlagen"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Öffnen Sie Ihre Webadresse, dann „DNS“ und „Records“.",
+      "add": "Wählen Sie „Add record“ und dann „CNAME“ als „Type“.",
+      "name": "Tragen Sie den ersten Wert unten bei „Name“ ein.",
+      "value": "Tragen Sie den zweiten Wert unten bei „Target“ ein.",
+      "proxy": "Stellen Sie „Proxy status“ auf „DNS only“ – die Wolke daneben muss grau sein, nicht orange.",
+      "save": "Lassen Sie „TTL“ auf „Auto“ und wählen Sie „Save“.",
+      "caveat": "Bleibt die Wolke orange, erscheint das Schloss-Symbol nie – und nichts zeigt Ihnen, warum."
+    },
+    "godaddy": {
+      "open": "Öffnen Sie Ihr „Domain Portfolio“ und wählen Sie Ihre Webadresse.",
+      "dns": "Wählen Sie unter „Domain Settings“ den Punkt „DNS“.",
+      "add": "Wählen Sie „Add New Record“ und dann „CNAME“ im Menü „Type“.",
+      "name": "Tragen Sie den ersten Wert unten bei „Name“ ein.",
+      "value": "Tragen Sie den zweiten Wert unten bei „Value“ ein.",
+      "save": "Lassen Sie „TTL“ unverändert und wählen Sie „Save“.",
+      "caveat": "Wenn Sie mehrere Einträge auf einmal hinzugefügt haben, heißt die Schaltfläche „Save All Records“."
+    },
+    "123reg": {
+      "signIn": "Melden Sie sich bei Ihrem „123 Reg Control Panel“ an.",
+      "manage": "Wählen Sie neben „Domains“ die Option „Manage All“ und dann Ihre Webadresse.",
+      "dns": "Wählen Sie „DNS“ und dann „Add New Record“.",
+      "type": "Wählen Sie „CNAME“ aus der Liste „Type“.",
+      "name": "Tragen Sie den ersten Wert unten bei „Name“ ein.",
+      "value": "Tragen Sie den zweiten Wert unten bei „Value“ ein und setzen Sie einen Punkt ans Ende.",
+      "save": "Lassen Sie „TTL“ auf „Default“ und klicken Sie auf „Save“.",
+      "caveat": "123 Reg braucht einen Punkt am Ende des zweiten Werts, sonst funktioniert es nicht."
+    },
+    "wix": {
+      "open": "Öffnen Sie „Domains“ und klicken Sie dann neben Ihrer Webadresse auf das Symbol „Domain Actions“.",
+      "manage": "Wählen Sie „Manage DNS Records“.",
+      "add": "Klicken Sie im Bereich „CNAME (Aliases)“ auf „+ Add Record“ und dann auf „Got it“.",
+      "name": "Tragen Sie den ersten Wert unten bei „Host Name“ ein.",
+      "value": "Tragen Sie den zweiten Wert unten bei „Value“ ein.",
+      "save": "Klicken Sie auf „Save“ und im Pop-up dann auf „Save Changes“.",
+      "caveat": "Wenn Ihre Webadresse nur auf Wix verweist, dort aber nicht registriert ist, kann Wix diese Änderung nicht vornehmen – das muss der Anbieter tun, bei dem sie registriert ist."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Ein DNS-Eintrag für die Terminseite von {truckName}",
+    "hello": "Hallo,",
+    "introAt": "Wir stellen die aktuellen Termine von {truckName} unter {address} bereit. Dafür muss bei {provider} ein Eintrag zu unserer Domain hinzugefügt werden.",
+    "introHolder": "Wir stellen die aktuellen Termine von {truckName} unter {address} bereit. Dafür muss bei dem Anbieter, bei dem unsere Domain registriert ist, ein Eintrag hinzugefügt werden.",
+    "stepsAt": "Bei {provider}:",
+    "guide": "Die Anleitung des Anbieters: {url}",
+    "wholeChange": "Das ist die ganze Änderung – sonst ist auf der Website nichts betroffen, und der Rest unserer Domain funktioniert genau wie bisher. Meist funktioniert es innerhalb einer Stunde.",
+    "pointsAt": "Die verknüpfte Seite zeigt, wo wir als Nächstes stehen, und aktualisiert sich selbst.",
+    "replyTo": "Bei Fragen antworten Sie bitte an {email}.",
+    "thanks": "Vielen Dank"
+  },
+  "liveEmail": {
+    "subject": "{address} funktioniert",
+    "goodNews": "Gute Nachrichten – {address} funktioniert.",
+    "body": "Ihre Termine werden jetzt unter Ihrer eigenen Adresse angezeigt. Sehen Sie sich die Seite an und prüfen Sie, ob alles stimmt: Öffnen Sie {address} und vergewissern Sie sich, dass es Ihre Events sind und die Daten stimmen.",
+    "confirm": "Wenn Sie das getan haben, öffnen Sie Ihre Einstellungen bei HatchGrab und bestätigen Sie uns, dass alles stimmt. Davon hängt nichts ab – so wissen wir nur, dass ein Mensch es gesehen hat."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "orderCard": {
+    "chargesSummary": "{parts, select, tax_fees_tip {USt., Gebühren & Trinkgeld} tax_tip {USt. & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {USt. & Gebühren}}"
+  },
+  "landing": {
+    "meta": {
+      "description": "Bestellungen und Vorbestellungen an Ihrem Standort – ohne Anstellen. Bestellsystem und Küchenmonitor für Foodtrucks und mobiles Catering ({country}) – kein Kassensystem."
+    }
+  },
+  "pricing": {
+    "card": {
+      "tryFree": "Gratis testen"
+    }
+  },
+  "compare": {
+    "orders": {
+      "captionNo": "Eine grobe Schätzung genügt – Vorbestellungen und Kunden, die ohne Anstellen bestellen, nicht Bar- oder Kartenzahlungen an der Ausgabe."
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+43 664 123456"
+  }
+}

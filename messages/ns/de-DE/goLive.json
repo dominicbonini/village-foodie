@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Wählen Sie, wie Sie Allergeninformationen anzeigen",
+    "detail": "Solange Sie keine Wahl treffen, sehen Kunden keines Ihrer Gerichte – die Speisekarte schützt sich selbst, indem sie alles ausblendet, dessen Allergene nicht bestätigt sind, und das ist im Moment alles.",
+    "where": "Speisekarte → Allergene"
+  },
+  "allergensCardMissing": {
+    "title": "Fügen Sie Ihre Allergenkarte hinzu",
+    "detail": "Sie haben gewählt, eine Allergenkarte anzuzeigen, aber es ist keine gespeichert – Kunden würde also gesagt, dass Allergeninformationen verfügbar sind, und dann fänden sie nichts.",
+    "where": "Speisekarte → Allergene"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Bestätigen Sie die Allergene für {count} Gericht} other {Bestätigen Sie die Allergene für {count} Gerichte}}",
+    "detail": "{n, plural, one {Ihr Gericht ist für Kunden ausgeblendet, bis Sie seine Allergene bestätigen.} other {{u, plural, one {{unverified} Ihrer {total} Gerichte ist für Kunden ausgeblendet, bis Sie seine Allergene bestätigen.} other {{unverified} Ihrer {total} Gerichte sind für Kunden ausgeblendet, bis Sie ihre Allergene bestätigen.}}}} Ein Gericht ohne bestätigte Allergene liest sich wie „enthält keine“, deshalb blendet die Speisekarte es lieber aus, als das zu riskieren.",
+    "where": "Speisekarte → Allergene"
+  },
+  "noVan": {
+    "title": "Fügen Sie einen Foodtruck hinzu",
+    "detail": "Events laufen über einen Foodtruck – ohne ihn gibt es nichts, worüber Bestellungen eingehen können.",
+    "where": "Einstellungen → Ihre Foodtrucks"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Legen Sie Ihre Küchenkapazität fest",
+    "detail": "Für {vans} ist keine Kapazität festgelegt. Ohne sie versprechen wir Kunden weiterhin Abholzeiten, die Ihre Küche unmöglich einhalten kann.",
+    "where": "Speisekarte → Küchenkapazität",
+    "unnamedVan": "Unbenannter Foodtruck"
+  },
+  "noPrepBearingCategory": {
+    "title": "Sagen Sie uns, wie lange Ihr Essen braucht",
+    "detail": "{categories, select, none {Sie haben noch keine Kategorien auf Ihrer Speisekarte, daher können wir nicht berechnen, wie lange eine Bestellung dauert.} other {Für keine Ihrer Kategorien ist eine Zubereitungszeit festgelegt, daher wirkt für uns jede Bestellung, als wäre sie sofort fertig. Wir würden Kunden weiterhin Abholzeiten nennen, die Ihre Küche nicht einhalten kann – und je mehr Betrieb Sie haben, desto weiter lägen sie daneben.}}",
+    "where": "Speisekarte → Kategorien → Kücheneinstellungen"
+  },
+  "emailUnverified": {
+    "title": "Bestätigen Sie Ihre E-Mail-Adresse",
+    "detail": "An diese Adresse senden wir Bestellbenachrichtigungen und Hilfe zur Kontowiederherstellung. Ist sie falsch, merken Sie es erst, wenn schon etwas schiefgegangen ist.",
+    "where": "Suchen Sie in Ihrem Posteingang nach unserem Bestätigungslink"
+  },
+  "emailUnknown": {
+    "title": "Status der E-Mail-Bestätigung unbekannt",
+    "detail": "Die E-Mail-Bestätigung ist noch nicht angebunden, daher lässt sich das nicht prüfen. Der Punkt blockiert bewusst, statt stillschweigend als erledigt zu gelten.",
+    "where": "—"
+  }
+}

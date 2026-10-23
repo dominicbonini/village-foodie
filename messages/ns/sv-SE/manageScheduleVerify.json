@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Verifieringen är tillfälligt otillgänglig. Försök igen om en stund.",
+  "malformed": "Det ser inte ut som en webbadress. Prova något i stil med dinfoodtruck.se/evenemang",
+  "blocked": "Vi kom inte åt webbplatsen – den kanske blockerar automatiska kontroller. Prova sidan där ditt schema finns, eller lägg till evenemang manuellt.",
+  "unreachable": "Vi kunde inte nå webbplatsen. Den kan vara nere, eller så är adressen fel.",
+  "no_content": "Vi nådde sidan men kunde inte läsa något på den. Kontrollera att den är offentligt tillgänglig.",
+  "no_events": "Vi hittade inga kommande evenemang på sidan. Se till att URL:en går direkt till sidan där ditt schema finns.",
+  "blockedDomain": "Använd din webbplats URL – Facebook- och Instagram-sidor kan inte läsas av automatiskt."
+}

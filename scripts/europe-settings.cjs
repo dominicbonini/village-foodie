@@ -163,13 +163,17 @@ const NAMES = { AT: 'Austria', BE: 'Belgium', BG: 'Bulgaria', HR: 'Croatia', CY:
   head('4 · SWITCHED ON (fixture), one country per currency — the native price form')
   const ON = { DE: ['29 €', '69 €'], CH: ['CHF 27', 'CHF 65'], CZ: ['699 Kč', '1 690 Kč'], DK: ['219 kr.', '519 kr.'], HU: ['10 990 Ft', '24 990 Ft'], NO: ['299 kr', '729 kr'],
     PL: ['129 zł', '299 zł'], RO: ['149 lei', '369 lei'], SE: ['329 kr', '769 kr'], GI: ['£29', '£69'] }
-  const LINE = { DK: 'Prices in Danish kroner (DKK)', NO: 'Prices in Norwegian kroner (NOK)', SE: 'Prices in Swedish kronor (SEK)' }
+  // ⚠️ RE-PINNED (europe-languages-1, 22 October 2026): a country whose language is built shows the line in that language
+  // (pricing.currencyLine of its locale: sv-SE "Priser i …", da-DK, nb-NO), so the check reads the frame from its messages file.
+  const lineOf = (loc, english) => { const f = path.join(REPO, `messages/${loc}.json`); const m = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')).pricing?.currencyLine : null; return m ? m.split('{currency}')[0] : english }
+  const LINE = { DK: lineOf('da-DK', 'Prices in Danish kroner (DKK)'), NO: lineOf('nb-NO', 'Prices in Norwegian kroner (NOK)'), SE: lineOf('sv-SE', 'Prices in Swedish kronor (SEK)') }
+  const PREFIX = Object.fromEntries(Object.entries(LINE).map(([c, l]) => [c, l.startsWith('Prices in ') ? 'Prices in ' : l]))
   const onRows = F.rowsWith(Object.keys(ON))
   for (const [c, want] of Object.entries(ON)) {
     const p = await R.page('landing', c.toLowerCase(), onRows), tx = text(p.html)
     const line = LINE[c]
     t(`/${c.toLowerCase()} (${by[c].currency}): renders; Pro and Unlimited as "${want.join('", "')}"; ${line ? `"${line}" once, before the first price` : 'no currency line'}; no "GB£", "EUR 29" or "RON"`,
-      !p.redirectedTo && want.every(w => tx.includes(w)) && (line ? count(tx, line) === 1 && count(tx, 'Prices in ') === 1 && tx.indexOf(line) < tx.indexOf(want[0]) : !tx.includes('Prices in '))
+      !p.redirectedTo && want.every(w => tx.includes(w)) && (line ? count(tx, line) === 1 && count(tx, PREFIX[c]) === 1 && tx.indexOf(line) < tx.indexOf(want[0]) : !tx.includes('Prices in '))
       && !/GB£|EUR \d|\d RON\b/.test(tx) && p.html.includes(`"priceCurrency":"${by[c].currency}"`), { redirect: p.redirectedTo, seen: tx.match(/Pro .{0,60}/)?.[0] })
   }
   const pdf = text(await R.pdf(onRows, 'CH'))

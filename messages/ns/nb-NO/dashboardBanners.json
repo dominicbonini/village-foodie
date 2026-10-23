@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} tidsluke} other {{count} tidsluker}} over kapasitet — se over",
+  "batchOver": "{cat} over omgangen — {count} til {slot} ({per} per omgang)",
+  "eventStartOver": "Over kapasitet ved arrangementsstart — {n, plural, one {{count} vare} other {{count} varer}} til {slot}",
+  "kitchenOver": "Kjøkkenet er over kapasitet — {n, plural, one {{count} vare} other {{count} varer}} lages til {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} vare} other {{count} varer}}",
+  "placedAnyway": "Lagt inn likevel: {list}",
+  "placedItem": "#{id} til {slot}",
+  "orphans": "{times} over kapasitet — fant ingen bestillinger å knytte det til",
+  "dismiss": "Lukk",
+  "kitchenCapacity": "Kjøkkenkapasitet",
+  "overCapacity": "Over kapasitet",
+  "wakeUnsupported": "Denne enheten kan ikke holde skjermen på.",
+  "wakeInsecure": "Skjermen kan ikke holdes på fra denne adressen.",
+  "wakeRetry": "Hold skjermen på — trykk for å prøve igjen",
+  "wakeAcquire": "Hold skjermen på",
+  "degraded": {
+    "serverError": "Serveren kunne ikke laste bestillinger{hasStatus, select, yes { (feil {status})} other {}}. Viser bestillinger fra {at}. Nye bestillinger kan mangle.",
+    "unreachable": "Får ikke kontakt med serveren. Viser bestillinger fra {at}. Nye bestillinger kan mangle."
+  }
+}

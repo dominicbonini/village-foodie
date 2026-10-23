@@ -1,0 +1,17 @@
+{
+  "tagline": "Minder regelen.<br></br>Meer koken.",
+  "features": "Functies",
+  "pricing": "Prijzen",
+  "privacy": "Privacy",
+  "terms": "Voorwaarden",
+  "contact": "Contact",
+  "about": "Over ons",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Van de makers van <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Download HatchGrab in de App Store",
+    "appStoreAlt": "Download in de App Store",
+    "googlePlayLink": "Download HatchGrab via Google Play",
+    "googlePlayAlt": "Ontdek het op Google Play"
+  }
+}

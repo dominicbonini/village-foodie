@@ -1,0 +1,8 @@
+{
+  "country_missing": "Kies het land waar je foodtruck gevestigd is.",
+  "country_off": "Foodtrucks in dat land kunnen zich nog niet aanmelden. Kies een ander land.",
+  "zone_unknown": "Die tijdzone bieden we niet aan voor dat land. Kies er een uit de lijst.",
+  "town_missing": "Vul de plaats in waar je gevestigd bent.",
+  "town_too_long": "Die plaatsnaam is te lang — maximaal 120 tekens.",
+  "region_closed": "Foodtrucks gevestigd in {region} kunnen zich nog niet aanmelden{reason, select, language {: HatchGrab is nog niet beschikbaar in deze taal ({language})} taxLines {: we voegen eerst aparte regels voor GST en PST toe} other {}}. Is je foodtruck ergens anders gevestigd? Kies dan die plaats."
+}

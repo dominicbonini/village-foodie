@@ -1,0 +1,6 @@
+{
+  "heading": "Ta betalt",
+  "intro": "Hur ditt team registrerar betalningen för varje beställning.",
+  "paidStepHelp": "Lägger till en Bekräfta-knapp när du själv lägger in en beställning, så att du kan lägga den nu och ta betalt senare. Slå på det här om du tar emot beställningar per telefon eller i förväg.",
+  "paidStepNote": "Det här gäller bara beställningar som du lägger in. Det påverkar inte onlinebeställningar."
+}

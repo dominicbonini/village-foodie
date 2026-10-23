@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Rubriken fick inte plats och kortades.",
+    "date": "Datumet fick inte plats och kortades.",
+    "daysOff": "Texten för stängda dagar fick inte plats och kortades.",
+    "place": "Platsnamnet fick inte plats och kortades.",
+    "time": "Tiden fick inte plats och kortades.",
+    "note": "Din egen text fick inte plats och kortades.",
+    "venue": "Stället fick inte plats och kortades.",
+    "area": "Orten fick inte plats och kortades."
+  },
+  "fontFallback": "Ett typsnitt som den här designen använder ({id}) kunde inte laddas – de rutorna visas i Oswald.",
+  "wrongShapeBackground": "Den här platsens bild har ett annat format än din design, så standardbakgrunden används.",
+  "rowsFit": "Den sista dagen hamnar {px} px under bildens nederkant – minska radavståndet eller flytta upp rad 1.",
+  "placeStatus": {
+    "ownBoth": "Egen bild och egna textpositioner",
+    "wrongShape": "Annat format – används inte förrän den byts ut",
+    "ownPicture": "Egen bild, standardpositioner",
+    "ownPositions": "Standardbild, egna textpositioner",
+    "none": "Ingen bild än – Standard används"
+  },
+  "standardStatus": "Används på alla andra platser",
+  "option": {
+    "oneOff": "Ladda upp en bara för det här inlägget",
+    "placePoster": "Affisch: {name}",
+    "standard": "Standarddesign"
+  },
+  "previewLabel": {
+    "lastEvent": "Förhandsvisningen använder ditt senaste evenemang här",
+    "noEvents": "Inga evenemang här än – förhandsvisningen visar ditt nästa evenemang med den här platsens namn"
+  },
+  "fontUsage": {
+    "weekly": "din design för veckoinlägg",
+    "event": "din design för inlägg om enskilda evenemang",
+    "place": "din design för {place}",
+    "placeUnnamed": "din design för en plats"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Fet",
+    "italic": "Kursiv"
+  },
+  "picture": {
+    "legacy": "Evenemangsaffisch",
+    "fallback": "Bild",
+    "wrongShape": "Annat format – kan inte användas som hel bakgrund"
+  },
+  "noPicture": {
+    "omit": "Hoppa över den",
+    "blank": "Lämna ett tomt utrymme",
+    "logo": "Visa din logga"
+  },
+  "noPicturesAll": "{total, plural, one {Din plats har en bild.} other {Alla dina {total} platser har en bild.}}",
+  "noPicturesSome": "{without, plural, one {{without} av dina {total} platser har ingen bild än} other {{without} av dina {total} platser har ingen bild än}}",
+  "licenceTick": "Jag äger det här typsnittet eller har licens att använda det",
+  "fontUploadButton": "↑ Ladda upp ditt typsnitt"
+}

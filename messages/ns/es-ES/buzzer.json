@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "El avisador <b>{number}</b> lo tiene el <b>pedido #{holderId}</b>{hasName, select, yes { ({name})} other {}}. ¿Pasarlo <b>{hasTarget, select, yes {al pedido #{targetId}} other {a este pedido}}</b>?",
+  "cancel": "Cancelar",
+  "take": "Coger avisador {number}",
+  "titleBlocking": "¿Avisador para el pedido #{id}?",
+  "title": "Elige un avisador",
+  "subtitle": "{hasTarget, select, yes {Pedido #{id}} other {Este pedido}}{hasCurrent, select, yes { · avisador actual: {current}} other {}}",
+  "allTaken": "{n, plural, one {El avisador está en uso. Tócalo para quitárselo a otro pedido.} other {Los {count} avisadores están en uso. Toca uno para quitárselo a otro pedido.}}",
+  "thisOrder": "Este pedido",
+  "noBuzzer": "Sin avisador",
+  "done": "Hecho",
+  "lostTitle": "El pedido #{id} no tiene avisador",
+  "lostBody": "{hasName, select, yes {{name}: otro} other {Otro}} pedido cogió el mismo avisador mientras estabas sin conexión. Dale uno distinto.",
+  "dismiss": "Descartar",
+  "assign": "Asignar"
+}

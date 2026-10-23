@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Dove ti trovi",
+    "identity": "Il tuo food truck",
+    "menu": "Il tuo menu",
+    "event": "Primo evento"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Configurazione",
+  "loading": "Caricamento",
+  "loadingCountries": "Caricamento…",
+  "verify": {
+    "ok": "Email confermata — grazie.",
+    "expired": "Il link di conferma è scaduto. Contattaci e sistemiamo tutto prima che tu vada online.",
+    "invalid": "Il link di conferma non ha funzionato. Contattaci e sistemiamo tutto prima che tu vada online."
+  },
+  "identity": {
+    "heading": "Come si chiama il tuo food truck?",
+    "intro": "È il nome che vedono i clienti. Niente diventa pubblico finché non scegli di andare online.",
+    "nameLabel": "Nome del food truck",
+    "namePlaceholder": "Burger da Bob",
+    "phoneLabel": "Telefono",
+    "whatsappTick": "Questo numero è su WhatsApp",
+    "phoneHelp": "I clienti lo vedono nella conferma d’ordine, così possono chiedere informazioni su un ordine. La spunta decide se il testo dice «Chiamaci» o «Scrivici su WhatsApp». Puoi cambiare entrambi in Impostazioni."
+  },
+  "phoneRequired": "Aggiungi un numero di telefono — lo usiamo sia noi sia i clienti per contattarti.",
+  "createFailed": "Impossibile creare il tuo food truck.",
+  "unreachable": "Non riusciamo a collegarci in questo momento — riprova.",
+  "back": "Indietro",
+  "creating": "Creazione del tuo food truck…",
+  "continue": "Continua"
+}

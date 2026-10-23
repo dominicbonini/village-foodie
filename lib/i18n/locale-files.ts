@@ -5,9 +5,23 @@ import enIE from '@/messages/en-IE.json'
 import enAU from '@/messages/en-AU.json'
 import enNZ from '@/messages/en-NZ.json'
 import enCA from '@/messages/en-CA.json'
-import frFR from '@/messages/fr-FR.json'
 import enMT from '@/messages/en-MT.json'
 import enGI from '@/messages/en-GI.json'
 import type { AppLocale } from './locales'
+/* eslint-disable @typescript-eslint/no-require-imports -- untyped on purpose (see scripts/split-messages.cjs) */
+const frFR: unknown = require('@/messages/fr-FR.json')
+const deDE: unknown = require('@/messages/de-DE.json')
+const deAT: unknown = require('@/messages/de-AT.json')
+const deCH: unknown = require('@/messages/de-CH.json')
+const deLI: unknown = require('@/messages/de-LI.json')
+const esES: unknown = require('@/messages/es-ES.json')
+const itIT: unknown = require('@/messages/it-IT.json')
+const ptPT: unknown = require('@/messages/pt-PT.json')
+const nlNL: unknown = require('@/messages/nl-NL.json')
+const nlBE: unknown = require('@/messages/nl-BE.json')
+const svSE: unknown = require('@/messages/sv-SE.json')
+const daDK: unknown = require('@/messages/da-DK.json')
+const nbNO: unknown = require('@/messages/nb-NO.json')
+/* eslint-enable @typescript-eslint/no-require-imports */
 
-export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI }
+export const LOCALE_FILES: Partial<Record<AppLocale, unknown>> = { 'en-US': enUS, 'en-IE': enIE, 'en-AU': enAU, 'en-NZ': enNZ, 'en-CA': enCA, 'fr-FR': frFR, 'en-MT': enMT, 'en-GI': enGI, 'de-DE': deDE, 'de-AT': deAT, 'de-CH': deCH, 'de-LI': deLI, 'es-ES': esES, 'it-IT': itIT, 'pt-PT': ptPT, 'nl-NL': nlNL, 'nl-BE': nlBE, 'sv-SE': svSE, 'da-DK': daDK, 'nb-NO': nbNO }

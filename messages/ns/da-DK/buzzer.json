@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Personsøger <b>{number}</b> er hos <b>bestilling #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Vil du tage den til <b>{hasTarget, select, yes {bestilling #{targetId}} other {denne bestilling}}</b>?",
+  "cancel": "Annuller",
+  "take": "Tag personsøger {number}",
+  "titleBlocking": "Personsøger til bestilling #{id}?",
+  "title": "Vælg en personsøger",
+  "subtitle": "{hasTarget, select, yes {Bestilling #{id}} other {Denne bestilling}}{hasCurrent, select, yes { · har nu personsøger {current}} other {}}",
+  "allTaken": "{n, plural, one {Personsøgeren er i brug. Tryk på den for at tage den fra en anden bestilling.} other {Alle {count} personsøgere er i brug. Tryk på en for at tage den fra en anden bestilling.}}",
+  "thisOrder": "Denne bestilling",
+  "noBuzzer": "Ingen personsøger",
+  "done": "Færdig",
+  "lostTitle": "Bestilling #{id} har ingen personsøger",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}en anden bestilling tog den samme personsøger, mens du var offline. Giv dem en anden.",
+  "dismiss": "Luk",
+  "assign": "Tildel"
+}
