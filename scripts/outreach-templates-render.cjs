@@ -65,7 +65,7 @@ function sequenceFixture(css) {
     </div></td>`).join('')}
   </tr>`).join('')
   return `${HEAD(css)}
-<div style="max-width:1800px;margin:0 auto;padding:12px 16px">
+<div style="padding:12px 32px">
   <div id="switcher" style="height:34px;margin-bottom:12px;background:#f1f5f9">Sequence | Templates</div>
   <div id="amber" style="height:30px;margin-bottom:8px;background:#fffbeb">1 truck changed type</div>
   <div id="grid" class="rounded-2xl border border-slate-200 bg-white p-3">
@@ -95,7 +95,7 @@ function templatesFixture(css) {
   const gutter = Number(lift(TAB, /const BOTTOM_GUTTER_PX = (\d+)/, 'bottom gutter'))
   const tall = n => `<div style="height:${n}px;background:#eef2f7;border:1px solid #cbd5e1;border-radius:8px;margin:4px">filler</div>`
   return `${HEAD(css)}
-<div style="max-width:1800px;margin:0 auto;padding:12px 16px">
+<div style="padding:12px 32px">
   <div id="switcher" style="height:34px;margin-bottom:12px;background:#f1f5f9">Sequence | Templates</div>
   <div id="panes" class="grid gap-4" style="grid-template-columns: ${cols}">
     <div id="left" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
@@ -159,7 +159,7 @@ function shellFixture(css, { broken = false } = {}) {
   return `${HEAD(css)}
 <header id="appheader" style="position:sticky;top:0;z-index:50;height:51px;background:#0f172a"></header>
 <div id="tabbar" style="position:sticky;top:51px;z-index:40;height:41px;background:#0f172a;border-bottom:1px solid #334155"></div>
-<div class="w-full max-w-[1800px] mx-auto px-4 pt-3 pb-6">
+<div class="w-full px-8 pt-3 pb-6">
   <div id="switcher" class="flex items-center gap-3 flex-wrap mb-2" style="height:34px">Sequence | Templates</div>
   <div id="panes" class="grid gap-4" style="grid-template-columns: ${cols}">
     <div id="left" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
@@ -293,7 +293,7 @@ function editorShellFixture(css, js, { broken = false } = {}) {
   return `${HEAD(css)}
 <header id="appheader" style="position:sticky;top:0;z-index:50;height:51px;background:#0f172a"></header>
 <div id="tabbar" style="position:sticky;top:51px;z-index:40;height:41px;background:#0f172a;border-bottom:1px solid #334155"></div>
-<div class="w-full max-w-[1800px] mx-auto px-4 pt-3 pb-6">
+<div class="w-full px-8 pt-3 pb-6">
   <div id="switcher" class="flex items-center gap-3 flex-wrap mb-2" style="height:34px">Sequence | Templates</div>
   <div id="panes" class="grid gap-4" style="grid-template-columns: ${cols}">
     <div id="left" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">

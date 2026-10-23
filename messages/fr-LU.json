@@ -1,0 +1,58 @@
+{
+  "auth": {
+    "fields": {
+      "emailPlaceholder": "vous@exemple.lu"
+    },
+    "signup": {
+      "emailPlaceholder": "vous@votrefoodtruck.lu"
+    }
+  },
+  "demoGetStarted": {
+    "emailPlaceholder": "vous@votrefoodtruck.lu"
+  },
+  "demoUpload": {
+    "emailPlaceholder": "vous@votrefoodtruck.lu"
+  },
+  "manageMenuImport": {
+    "schedule": {
+      "urlPlaceholder": "https://votrefoodtruck.lu/evenements"
+    }
+  },
+  "manageScheduleVerify": {
+    "malformed": "Cela ne ressemble pas à une adresse web. Essayez par exemple votrefoodtruck.lu/evenements"
+  },
+  "manageSettings": {
+    "schedule": {
+      "urlPlaceholder": "https://votrefoodtruck.lu/evenements"
+    }
+  },
+  "designEditor": {
+    "sample": {
+      "area": "Esch-sur-Alzette"
+    }
+  },
+  "manageTeam": {
+    "phonePlaceholder": "+352 621 123 456"
+  },
+  "customDomain": {
+    "card": {
+      "exampleDomain": "votrefoodtruck.lu"
+    }
+  },
+  "posterWords": {
+    "placeSample": {
+      "nameTownBelow": "Le Café de la Place\nEsch-sur-Alzette",
+      "nameTown": "Le Café de la Place, Esch-sur-Alzette"
+    },
+    "busyWeek": {
+      "venue1": "Salle des fêtes de Differdange",
+      "town1": "Differdange",
+      "venue2": "Complexe sportif et terrain de loisirs de Bettembourg",
+      "town2": "Bettembourg",
+      "town3": "Ettelbruck",
+      "town4": "Diekirch",
+      "town5": "Remich",
+      "town6": "Mersch"
+    }
+  }
+}

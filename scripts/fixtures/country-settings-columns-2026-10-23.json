@@ -1,0 +1,302 @@
+{
+ "note": "information_schema.columns for public.country_settings and public.plan_prices, read-only, 23 October 2026 (admin-countries-1)",
+ "country_settings": [
+  {
+   "column": "country_code",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "name",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "enabled",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "currency",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "locale",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "time_format",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "date_order",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "week_start",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "phone_country_code",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "address_format",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "timezones",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "default_timezone",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "prices_include_tax",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "tax_label",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "card_surcharge_allowed",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "card_surcharge_cap_pct",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "card_surcharge_credit_only",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "card_surcharge_excluded_regions",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "service_fee_allowed",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "tipping_enabled_default",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "tip_presets_pct",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "allergen_set",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "starter_monthly_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "pro_monthly_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "max_monthly_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "pro_allowance_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "max_allowance_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "platform_fee_pct",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "card_fee_online_pct",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "card_fee_online_fixed_minor",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "card_fee_in_person_pct",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "card_fee_in_person_fixed_minor",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "tap_to_pay_fixed_minor",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "card_fee_region_label",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "competitor_name",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "competitor_pct",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "competitor_fixed_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "support_hours",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "updated_at",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "updated_by",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "short_name",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "phone_example",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "phone_check",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "distance_unit",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "service_fee_recipient",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "service_fee_hatchgrab_bps",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "service_fee_hatchgrab_fixed_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "service_fee_truck_max_bps",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "service_fee_truck_max_fixed_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "platform_fee_enabled",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "fees_taxed",
+   "nullable": false,
+   "hasDefault": true
+  },
+  {
+   "column": "allergen_card_only_allowed",
+   "nullable": false,
+   "hasDefault": true
+  }
+ ],
+ "plan_prices": [
+  {
+   "column": "plan_key",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "country_code",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "monthly_minor",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "included_online_minor",
+   "nullable": true,
+   "hasDefault": false
+  },
+  {
+   "column": "fee_bps",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "extra_van_monthly_minor",
+   "nullable": false,
+   "hasDefault": false
+  },
+  {
+   "column": "updated_at",
+   "nullable": false,
+   "hasDefault": true
+  }
+ ]
+}

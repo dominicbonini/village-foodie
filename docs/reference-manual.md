@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.4
+HatchGrab Engineering Reference Manual · V16.6
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.4**
+**Version 16.6**
 
 October 2026
 
@@ -49,6 +49,103 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.6 — 23 October 2026 — **PRICING RESEARCH FOR EVERY COUNTRY, AND AN ADMIN "PRICING CHECK" TAB THAT COMPARES COMPETITOR PRICES WITH OURS LIVE**
+
+- Applies `docs/pricing-research-1-report.md` and `docs/pricing-check-1-report.md`. Facts were checked read-only on
+  23 Oct (18:25 BST) against the live database and git.
+- **Research (pricing-research-1):** food-truck-focused ordering tools priced in 46 countries (the 35 live rows,
+  France, BR, MX, JP, SG, HK, MY, AE, TH, IN, ID): 232 competitor plans.
+  - **Excluded** (Dominic's decision): general POS and payment giants, and delivery marketplaces.
+  - **Findings:** HatchGrab is cheapest at all three truck sizes in 23 of 46 countries, and in 32 with the proposed
+    prices.
+  - In US, GB, FR, ES, IT, NL, NZ, CZ and JP a free, customer-funded or below-Pro flat-fee rival means no price inside
+    the plan structure can win.
+  - **No proposed price is decided or run** (§85.2).
+- **Admin › Pricing check (pricing-check-1):** a new admin-only tab and three tables (`20261039`, run). It holds
+  competitor prices, key features and per-country benchmarks, compares them live with `plan_prices`, and suggests the
+  price that would make us cheapest, or within 5% or 10%. The research data is imported. **Nothing is verified yet**,
+  and nothing is shown to customers (§85).
+- **Still not charged:** no platform fee, no subscription billing (unchanged).
+
+| What | Where |
+|---|---|
+| **NEW — pricing research, the Pricing check tab and its tables** | **§85** (new, after §84) |
+| The pricing research pointer | §84.10 (pointer added) |
+| Admin console tabs | §12 (corrected in place) |
+| Competitor research sources | §21 (corrected in place) |
+| Backlog: per-country pricing, the `schedule-graphics-places` guard | §27 (corrected in place) |
+| Retired competitor columns | §76.1 (pointer added) |
+| Tooling: harness, screenshot script, re-pins, sweep | §79 (added at its end; one V16.5 line corrected) |
+| Price positioning | §81.1 (pointer added) |
+
+**SWEEP STATUS (applied 23 October 2026):** _stale references found: 5; corrected in place: 5; left as history (changelog
+only): 1; outstanding: 0._
+- **The five:**
+  - §12's "two tabs (🍕 Trucks, 📋 Features)";
+  - §21's "Sources: none in `docs/`";
+  - §27's open `schedule-graphics-places` guard item;
+  - §79's V16.5 line naming that harness as failing;
+  - §84.10's "another session" record, which now points to §85.
+- **The history:** the V16.5 changelog's "pricing research tables are live" line. It is still true and left as it is.
+- **Patterns searched:** "Pricing check", "pricing-check", "pricing research", "competitor_", "schedule-graphics-places"
+  and "two tabs".
+
+## V16.5 — 22–23 October 2026 — **ALL 21 EUROPEAN LANGUAGES BUILT, STATUTORY ORDER BUTTONS PER COUNTRY, LEAN LANGUAGE CHECKS, GREEK AND CYRILLIC FONTS, AND THE EUROPEAN SWITCH-ON**
+
+- Applies `reference-manual-delta-v16-5.md`, drawn from the reports it lists (all in `docs/`).
+- **Languages:** 21 language bases now exist. Together with English and French they cover every European country with a
+  row except **Luxembourg** (fr-LU not built). Two overnight/daytime runs: europe-languages-1 (de, es, it, pt, nl, sv, da,
+  nb; 12 countries) and europe-languages-2 (pl, cs, sk, hu, ro, hr, sl, fi, et, lv, lt, el, bg; 14 countries).
+- **Switch-on (Dominic, 23 Oct):** after deploying, Dominic switched on every country he could, so search engines can start
+  indexing. Verify the live list (§84.1).
+- **Order buttons** use each country's statutory "order with obligation to pay" words (EU Consumer Rights Directive
+  Art. 8(2) as transposed). France's button changed to « Commander avec obligation de paiement ». Germany and Austria's card
+  button carries no amount.
+- **Lean checks are the standard** for a new language: translation-check (structural blocks, CLDR plurals enforced), the
+  landing and order page in the language with native prices, hreflang and sitemap, and allergen-guard proofs. Screenshots
+  and the e2e walk-through only for a new alphabet. The full sweep runs once per batch.
+- **Greek and Cyrillic:** Noto Sans (greek, cyrillic subsets) loads only on el and bg pages.
+- **Editor memory:** the TypeScript project was slimmed (non-source folders excluded; non-English message files loaded
+  untyped); app type checking unchanged.
+- **Country short names** are in each country's own language (`short_name`, e.g. "Deutschland", "Ελλάδα").
+- **Still not charged:** no platform fee, no subscription billing.
+
+| What | Where |
+|---|---|
+| **NEW — European languages, statutory buttons, lean checks, fonts, short names, switch-on** | **§84** (new, after §83) |
+| France, Europe, the recipe | §83.9, §83.10, §83.11 (corrected in place) |
+| Languages | §77 (corrected in place) |
+| Marketing site | §48 (new V16.5 subsection) |
+| Legal | §43 (new V16.5 subsection) |
+| Deploy posture | §49 (new current block) |
+| Backlog | §27 (new V16.5 block; the V16.4 "languages to add" line corrected) |
+| Invariants | §35 (**35.am**, after 35.al) |
+| Tooling | §79 (added at its end) |
+
+**SWEEP STATUS (applied 23 October 2026):** _stale references found: 17; corrected in place: 17; left as history (changelog
+only): 0; outstanding: 0._ (The delta's six Part D patterns over the V16.4 text, plus the same facts' other forms in §83 and
+the V16.4 subsections of §43 and §48. These are: the French button; "waits for its language" / "can go live in English";
+"Languages to add"; "screenshots" in the recipe; the locale lists and `LANGUAGE_BASES = ['fr-FR']` in §77.2 and §83.8;
+"uncommitted" claims in §83.2, §83.3, §83.6, §83.9, §43 and §48; "switched off" for Europe in §83.10 and §83.4; the
+"until europe-settings is deployed" line; the en/fr-only guard lists. No pattern matched inside the Changelog. No §83 text
+described `short_name` as English for European rows, so pattern 5 found nothing to strike. But the live database still
+holds English short names for 14 rows: see the flags below.)
+
+**Not in the delta, found when applying (OBSERVED 23 October 2026, read-only SQL and git):**
+- 🔴 **Luxembourg is switched on without its language.** `LU` is `enabled = true` with locale `fr-LU`, which is not in
+  `LOCALES`, so its pages fall back to en-GB words. hreflang still names /lu `fr-LU` (`lib/marketing-meta.ts` takes the
+  row's locale), so an English page is tagged French. The delta expected LU off. Switching it off, or building fr-LU, is
+  Dominic's call (§84.1).
+- 🔴 **`20261038` has not run.** PL, CZ, SK, HU, RO, HR, SI, FI, EE, LV, LT, GR, CY and BG are switched on with English
+  short names ("Poland", "the Czech Republic", "Greece" …) inside their own languages' sentences. `20261037` has run: the
+  12 europe-languages-1 names are in their languages (§84.1).
+- 🔴 **France has no row** (and no `plan_prices`), so it is not live, although every other European country is
+  (§84.1). france-1's block B (`20261034_france_row.sql`) is still not run.
+- **Regional key counts differ from the delta's** (OBSERVED in `messages/`): de-AT 5 keys (delta 4), de-CH 98 (delta 95)
+  and de-LI 1 (delta "empty"). The extra keys are the localised team-phone examples from europe-languages-2 Stage 0.
+- **The pricing research tables are live:** `competitors`, `competitor_plans` and `country_benchmarks` exist
+  (`20261039`, read-only `to_regclass`), and its code and data are committed (§84.10).
 
 ## V16.4 — 21–22 October 2026 — **ADDRESS FORMATS AS A CONFIG, NATIVE PRICES PER COUNTRY, ALLERGEN CARD AS A COUNTRY SETTING, CANADA LIVE, ENGLISH-SPEAKING TERMS SECTIONS, AN ABOUT PAGE, THE LANGUAGE ENGINE, FRANCE (FRENCH) AND THE REST OF EUROPE AS DATA**
 
@@ -11341,7 +11438,7 @@ Password reset: Brevo send checked, cleans up token on failure. Email change: pr
 
 ## Admin console (V6, ADMIN_SECRET removed V6.1)
 
-The admin page authenticates solely via the operator's Supabase session. No password prompt, no ADMIN_SECRET, no fallback. Every admin route calls verifyAdmin() server-side (resolves the session to an operators row, checks is_admin). On mount the page calls GET /api/admin?section=check_admin. Shared AppHeader (truckName/truckLogoUrl null), slate-900 tabs, two tabs (🍕 Trucks, 📋 Features).
+The admin page authenticates solely via the operator's Supabase session. No password prompt, no ADMIN_SECRET, no fallback. Every admin route calls verifyAdmin() server-side (resolves the session to an operators row, checks is_admin). On mount the page calls GET /api/admin?section=check_admin. Shared AppHeader (truckName/truckLogoUrl null), slate-900 tabs, ~~two tabs (🍕 Trucks, 📋 Features)~~. ⛔ Corrected V16.6 — nine tabs, from the one `ADMIN_TABS` object in `app/admin/page.tsx` (OBSERVED 23 Oct 2026): Trucks, Features, Domains, Outreach, Events, Screenshots, Templates, Countries, Pricing check (§85). The tab bar's inner box is `max-w-6xl` from 1400px. It was `max-w-5xl`, and the ninth tab was cut off at 1512px.
 
 > **RULE (V6.1)** — Admin authorisation is session + operators.is_admin only. Never reintroduce a shared admin password or env-var secret.
 
@@ -14712,7 +14809,8 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - **US:** EasyEats (0.95% of all card sales or $90/month annual; own partner processors); Food Truck Pub ($0/$29, diner pays $0.60–$1.25 per order, no KDS); Goodfynd; RapidOrderz ($59, unverified); Toast; Square.
 - **Eurozone:** no Hatches Up-style specialist; Vev (NL, Stripe, ~€10–40/month, no platform fee) is the nearest; SumUp/Square are cheaper all-in on small tickets because of Stripe's €0.25.
 - **US card surcharges:** banned in CT, MA, ME, PR; Visa cap 3%; never on debit; more states require fees shown in the price.
-- **Sources:** ⚠️ **none in `docs/` (OBSERVED 20 Oct 2026)** — the delta says to point to `docs/` reports, but a grep of `docs/*.md` for "EasyEats" or "Eventifood" finds only this manual. The figures above are as the delta states them; their sources are unrecorded until a research report is saved.
+- ⛔ **Corrected V16.6 — the sources are now recorded:** `docs/pricing-research-1-report.md` (46 countries, 23 Oct 2026) and `docs/pricing-research-1/competitors.csv` (232 plans). The four tools above that the research did not price (Hatches Up, Eventifood, EasyEats, RapidOrderz) are in `public.competitors` / `competitor_plans`, with source `manual`, "From the manual (§21), not re-checked". The per-country picture is §85.
+- ~~**Sources:** ⚠️ **none in `docs/` (OBSERVED 20 Oct 2026)** — the delta says to point to `docs/` reports, but a grep of `docs/*.md` for "EasyEats" or "Eventifood" finds only this manual. The figures above are as the delta states them; their sources are unrecorded until a research report is saved.~~
 
 # 22. Development process
 
@@ -17727,8 +17825,8 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
   - ticket printing beyond ASCII;
   - decimal-comma checks for other locales;
   - a Latin-extended font check (PL, CZ…).
-- **Languages to add:** de (DE, AT, CH, LI), es, it, nl (NL, BE), pt, pl, cs, sk, hu, ro, bg, hr, sl, el (GR, CY), da,
-  sv, nb, fi, et, lv, lt.
+- ~~**Languages to add:** de (DE, AT, CH, LI), es, it, nl (NL, BE), pt, pl, cs, sk, hu, ro, bg, hr, sl, el (GR, CY), da,
+  sv, nb, fi, et, lv, lt.~~ ⛔ Corrected V16.5 — done (§84.2).
 - **Facts to verify** (europe-settings §14): Latvia's allergen rule, Poland's takeaway VAT, Slovakia's 19 %, Hungary's
   Tap to Pay fee, Gibraltar's UK-card fee, tipping in ES/SE.
 - **The FAQ workstream** (parked).
@@ -17743,6 +17841,40 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
     rule is Dominic's to change.
   - **The other languages' "Private event" glossary rows** (DE, NL, ES, IT) also name hiring a truck; split each in its
     language prompt (france-1 Follow-up).
+
+## Added V16.5 — every European language and the switch-on (23 October 2026)
+
+- ~~**Languages to add**~~ — done (§84.2); the V16.4 line above is struck.
+- 🔴 **Luxembourg:** fr-LU (a sparse override of fr-FR: "+352", Luxembourg VAT wording), then switch on. ⚠️ OBSERVED 23 Oct:
+  LU is already switched on and serves en-GB words under a `fr-LU` hreflang (§84.1). Build fr-LU, or switch LU off, first.
+- 🔴 **Run `20261038`** (the 14 short names): those countries are live with English short names (§84.1).
+- **France's row** (france-1 block B, `20261034`) is still not run; France is the one built language with no live country
+  (§84.1).
+- **Outside Europe** (no rows yet): Singapore, Hong Kong, Malaysia, UAE (English first), then Brazil, Mexico, Japan,
+  Thailand; India and Indonesia are Stripe invite-only.
+- **Terms and privacy in each country's language** (Dominic, 23 Oct).
+- **Contact page:** replace the Tally form (UK wording) with HatchGrab's own contact form that emails Dominic directly, no
+  third party, in each language (Dominic, 23 Oct).
+- **Second languages per country:** fr-BE, fr-CH, it-CH, de-LU, sv-FI, Russian (EE, LV), Hungarian (SK, RO),
+  Turkish/English (CY), Nynorsk (needs a per-visitor or per-truck language choice; mockup first).
+- **Decisions waiting** (europe-languages-2 §13 and europe-languages-1 §13):
+  - the French phone example (+44 → "+33 6 12 34 56 78");
+  - the RO full statutory phrase;
+  - voice per language;
+  - native checks of long labels (ASAP in et/bg, Greek and Lithuanian price words), the Canva/WhatsApp menu paths and the
+    Swiss «…» quotes.
+- **Local wallets** (TWINT, MobilePay, Vipps, Swish, Bancontact, iDEAL/Wero, MB WAY, Bizum, BLIK): not built.
+- **HUF whole-forint menu display** (currently two decimals, as Stripe charges).
+- **Admin labels** hard-coded in English in `components/admin/*`.
+- **Per-country pricing:** the pricing research's proposals await Dominic's approval (~~§84.10~~ ⛔ V16.6: §85.2).
+  - **Where the proposals are:** `docs/pricing-research-1-report.md` §10, and the suggestions in Admin › Pricing check.
+  - ⚠️ That report's §10.1 SQL only changes **switched-off** rows. Every row is now switched on, so it would change
+    nothing as written (§85.2).
+- ~~**`schedule-graphics-places.cjs` guard:** add `lib/pricing-check.ts` to its EXPECTED list when that work lands. OBSERVED
+  23 Oct: `lib/pricing-check.ts` is committed (`f17f6540`), so the guard fails until this is done.~~ ⛔ Corrected V16.6 —
+  done: `lib/pricing-check.ts` is in its EXPECTED list (`⚠️ RE-PINNED (pricing-check-1)`), and the harness passes 270/270.
+  ⚠️ **Uncommitted at 23 Oct 18:25** — commit it with the next push.
+- **Register `pricing-check-1.cjs`** (V16.6): it is not in `scripts/harnesses.json`, so the sweep doesn't run it (§85.6).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -21086,6 +21218,16 @@ of this manual).
 - **35.al-4** A language with no allergen-guard words fails safe; adding a language never changes English output (hash and
   capture pins).
 - **35.al-5** Each country prompt proves every live country byte-identical.
+
+## 35.am 🔴 STATUTORY BUTTONS, PLURALS, PLACEHOLDERS AND FONTS (V16.5)
+
+- **35.am-1** The order button words follow each country's statute; a change to `order.placeOrder` or `order.payAmount` in
+  any language needs the statute checked.
+- **35.am-2** A placeholder may be dropped from a translation only if listed with its reason in
+  `docs/i18n/placeholder-drops.json`.
+- **35.am-3** Every plural message carries every CLDR category its locale uses (translation-check, structural).
+- **35.am-4** Non-Latin fonts load only on their own language's pages; Latin pages never request them.
+- **35.am-5** A regional variant holds only keys whose wording truly differs from its base.
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
@@ -25841,7 +25983,8 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 
 - **`content/legal/country-specific-terms.md` has these sections, in this order** (OBSERVED in the working tree, 22 Oct):
   United States, Ireland, Australia, New Zealand, Canada, France, "European Economic Area and Switzerland", Gibraltar.
-  - The last two are uncommitted (europe-settings). The live page ends at France (curl, 22 Oct).
+  - ~~The last two are uncommitted (europe-settings). The live page ends at France (curl, 22 Oct).~~ ⛔ Corrected V16.5 — committed
+    and pushed (OBSERVED 23 Oct, git; the live page wasn't fetched).
   - Best-effort, no lawyer; the open questions are in each report (§83.6).
 - **`COUNTRY_TERMS_UPDATED`** '22 October 2026' and **`TERMS_VERSION`** '2026-10-22' (OBSERVED in `lib/legal.ts`) move
   together with each change.
@@ -25850,6 +25993,18 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   - each country's trader-information and withdrawal duties are the truck's, as the seller, and the country terms say
     so;
   - for France, confirmed 22 Oct: no withdrawal line, no mediator field (france-1 Follow-up).
+
+## The statutory order buttons and the European open questions (V16.5 — 22–23 October 2026)
+
+- **The order buttons** use each country's transposition of the Consumer Rights Directive Art. 8(2) (§84.3). The statutes
+  and their sources are in `docs/europe-languages-1-report.md` §3/§14 and `docs/europe-languages-2-report.md` §3/§14.
+- **Open questions, recorded with no lawyer:**
+  - "six years, as UK law requires" against local retention periods (e.g. Estonia 7, Germany often 10);
+  - the RO full statutory phrase (the button uses the shorter « Comandă cu obligație de plată »);
+  - the LV and LT national texts, unverified (the Directive's own wording is used);
+  - the FI wording (Finland has no fixed phrase);
+  - the European terms section's open points (europe-settings §11).
+- **Terms and privacy pages are English only**; translating them is backlog (§27).
 
 # 44. Commercial model — fees and pricing suppression (V11.4)
 
@@ -27913,12 +28068,46 @@ Recorded so they are not briefed again.
 - **Country pages:**
   - `/ca` is live (200, 22 Oct);
   - `/fr` is in `COUNTRY_PATH_SEGMENTS` (committed) and 302s to `/uk` while France has no row;
-  - the 29 European segments (`/at` … `/ch`, `/gi`, `/mt`) are uncommitted. Live they are 404 (curl, 22 Oct:
-    `/de`, `/mt`); once deployed, each 302s to `/uk` while switched off.
+  - ~~the 29 European segments (`/at` … `/ch`, `/gi`, `/mt`) are uncommitted. Live they are 404 (curl, 22 Oct:
+    `/de`, `/mt`); once deployed, each 302s to `/uk` while switched off.~~ ⛔ Corrected V16.5 — committed and pushed; every row is
+    switched on (OBSERVED 23 Oct, git and SQL; the live pages weren't fetched).
 - **hreflang:** each switched-on country is listed under its locale; when a non-English country is on, its language tag
   (fr-FR, de-DE …) is listed too. While a country is off, its tag appears nowhere.
 
-# 49. Deploy posture (current at V16.4; earlier postures below, each dated)
+## The European country pages (V16.5 — 22–23 October 2026)
+
+- **Pages:** /de /at /ch /li /es /it /pt /nl /be /se /dk /no /pl /cz /sk /hu /ro /hr /si /fi /ee /lv /lt /gr /cy /bg (plus
+  /fr, /mt, /gi, /lu).
+- **hreflang** is reciprocal across every live locale plus x-default. The sitemap lists each page with its locale. While a
+  country is off, its page 302s to /uk and is absent from hreflang and the sitemap (proved in fixtures,
+  `scripts/europe-languages-1.cjs`).
+- **OBSERVED 23 Oct (read-only SQL):** every European row except France (no row) is switched on. LU is on without fr-LU, so
+  /lu is English words under a `fr-LU` tag (§84.1). The live pages themselves weren't fetched for this delta.
+- **Hero images** exist for /de, /at and /ch (from fixtures).
+- **Fonts:** Greek and Cyrillic pages load Noto Sans; Latin pages never request it (§84.7).
+
+# 49. Deploy posture (current at V16.5; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.5 — EVERYTHING COMMITTED AND PUSHED; EUROPE SWITCHED ON; 20261038 NOT RUN (23 October 2026)
+
+*Replaces the V16.4 posture below as the current one; it and the earlier postures stay as dated history.*
+
+- **Git (OBSERVED 23 Oct 2026, 18:08 BST, after `git fetch`):**
+  - `git log origin/main -1` = HEAD = `f17f6540` "more europe" (23 Oct 18:07 BST);
+  - `git status` is clean.
+  - **Commits since V16.4:** `85910c74` "european launching" (11:22), `3b49cc7e` "more euro countries" (13:01) and
+    `f17f6540` "more europe" (18:07, including the pricing-check work).
+- **Vercel's deploy record** wasn't read. Dominic reports deploying before the switch-on. The live site was not fetched for
+  this delta: **UNVERIFIED** that it serves `f17f6540`.
+- **SQL state (read-only, 23 Oct; §84.1):**
+  - all 35 `country_settings` rows switched on, LU included;
+  - no FR row;
+  - `20261037` run;
+  - `20261038` **not** run;
+  - `20261039`'s three tables present;
+  - the non-euro `plan_prices` are europe-settings' figures.
+- **Vercel Node 24.x / tzdb 2026e:** still due before 1 Nov 2026 for Canada's time zones. The Vercel build log's
+  `check-tzdata` line was not visible: **UNVERIFIED**. Locally, Node v22.22.3 printed "MISSING" (22 Oct, §83.1).
 
 ### 🔴 DEPLOY POSTURE AT V16.4 — EVERYTHING TO FRANCE-1 PUSHED; EUROPE-SETTINGS UNCOMMITTED, ITS SQL ALREADY RUN (22 October 2026)
 
@@ -32326,7 +32515,8 @@ languages in §77.*
   - `service_fee_recipient` ('truck' | 'hatchgrab', default 'truck'), `service_fee_hatchgrab_bps`, `service_fee_hatchgrab_fixed_minor`, `service_fee_truck_max_bps`, `service_fee_truck_max_fixed_minor`;
   - `platform_fee_enabled` (default false), `fees_taxed` (default false).
 - **OBSERVED** **Retired, kept not dropped** (commented "RETIRED … never read or written"):
-  - the competitor columns;
+  - the competitor columns (⛔ V16.6: competitor prices now live in `public.competitors` / `competitor_plans`, §85; these
+    columns stay unread);
   - `distance_unit`;
   - `trucks.travel_radius_km`;
   - every `tax_rate_bps` (trucks, orders, order_drafts, truck_events) — replaced by `tax_rate_milli` (§37);
@@ -32622,9 +32812,12 @@ under "Decisions" below):
   - `messages/en-US.json` holds only the differences and is deep-merged over it.
   - Later languages are full files.
   - ⛔ *Corrected V16.3 — en-IE, en-AU and en-NZ are sparse overrides of en-GB too, ~~five locales in all (§82.4).
-    Non-English languages are still planned as full files (stages L-1 to L-7).~~* ⛔ Corrected V16.4 — nine locales (en-GB, en-US,
-    en-IE, en-AU, en-NZ, en-CA, fr-FR, en-MT, en-GI; the last two uncommitted). en-CA is a sparse override of en-US,
-    en-MT and en-GI of en-IE. fr-FR is a full base, built by languages-1 and france-1 (§83.8).
+    Non-English languages are still planned as full files (stages L-1 to L-7).~~* ⛔ Corrected V16.4 — ~~nine locales (en-GB, en-US,
+    en-IE, en-AU, en-NZ, en-CA, fr-FR, en-MT, en-GI; the last two uncommitted).~~ en-CA is a sparse override of en-US,
+    en-MT and en-GI of en-IE. fr-FR is a full base, built by languages-1 and france-1 (§83.8). ⛔ Corrected V16.5 — 35 locales
+    (OBSERVED 23 Oct): those nine plus 21 European language bases (de-DE, es-ES, it-IT, pt-PT, nl-NL, sv-SE, da-DK, nb-NO,
+    pl-PL, cs-CZ, sk-SK, hu-HU, ro-RO, hr-HR, sl-SI, fi-FI, et-EE, lv-LV, lt-LT, el-GR, bg-BG) and five sparse variants
+    (de-AT, de-CH, de-LI, nl-BE, el-CY). Each is a full base file; §84.2.
 - **Who sees which language:**
   - a truck's screens, tickets, kitchen and emails use its country's locale, falling back to en-GB;
   - customers see the truck's language for now;
@@ -33054,6 +33247,33 @@ correction note in its history; the hidden Smash and Grab prospect filled.
   - **Outcome (OBSERVED 22 Oct):** the 29 rows and 87 prices are byte-identical to the NOT RUN file; nothing else
     changed.
   - Who ran them isn't recorded. Every SQL call that session made was a read-only `select`.
+
+- **The harness sweep (V16.5):** 165 registered harnesses (23 Oct, OBSERVED in `scripts/harnesses.json`). The last full
+  run, 23 Oct (europe-languages-2): 164 passed · 1 failed. The failure is `schedule-graphics-places.cjs`, caused by the
+  pricing-check work's `lib/pricing-check.ts` (§27). ⛔ Corrected V16.6 — re-pinned, 270/270 (uncommitted at 23 Oct; §27).
+  - **New:** `europe-languages-1.cjs` (all 21 languages; 406 checks); `europe-languages-2-fonts.cjs` (needs a build; in
+    the by-hand group); `_real-fonts.cjs` (a module).
+  - `languages-1-e2e.cjs` gained `--engines`, `--failures-only` and `--fonts`.
+  - `add-order-refresh-inputs.cjs` now runs on a virtual clock: `Date.now()` moves only during its own sleeps. The earlier
+    flake was load, not time of day.
+  - **The harness runner refuses any harness containing the word "stripe"**, even in a comment.
+- **Translation runs used parallel agents.** Usage limits stopped them three times, and each run resumed from saved work.
+  The progress files `docs/i18n/europe-languages-{1,2}-progress.md` are how a run resumes.
+
+- **Pricing check (V16.6, pricing-check-1):**
+  - `scripts/pricing-check-1.cjs` (55 checks; no database) — 🔴 **NOT in `scripts/harnesses.json`**, so the sweep
+    doesn't run it. When the work was done, that file carried another session's uncommitted edits, so the brief's "register it" and
+    "don't touch others' files" collided, and it was left for Dominic. The file is now committed (`f17f6540`). Three
+    lines: `pricing-check-1.cjs` in `harnesses`, `pricing-check-build-data.cjs` in `excluded.fixture_generators` (it
+    rewrites the committed JSON), and `pricing-check-screenshots.cjs` in `excluded.needs_a_browser`.
+  - `scripts/pricing-check-screenshots.cjs` needs a build and both engines, and uses fixture data only. It writes
+    `docs/pricing-check-1/` (14 PNGs, 52 checks).
+  - **Re-pins:**
+    - `schedule-graphics-places.cjs`: `lib/pricing-check.ts` names `schedule_graphics` as data;
+    - `countries-screenshots.cjs`: Countries is no longer the last tab. It wasn't run, because it overwrites committed
+      PNGs and its row-order check was already stale.
+  - **Sweep (23 Oct, with `pricing-check-1` added from a scratch copy of the list):** 166 run · 165 passed · 1 failed.
+    The failure was `schedule-graphics-places` (re-pinned above).
 ---
 
 # 80. Security (V16.1 — 19 October 2026)
@@ -33113,7 +33333,7 @@ switched on; the 29 European rows are switched off (§83.1).
 - **HatchGrab Ltd is not VAT-registered** (stated 20 Oct); Terms §4 says so.
 - **Price positioning (research 19–20 Oct, see §21):** UK all-in (card fees included) 32–37% cheaper than Hatches Up
   at every volume; US software fee 23–66% under EasyEats, but all-in Stripe's 30¢ makes EasyEats cheaper for some
-  trucks unless the diner pays an online ordering fee; eurozone pricing (€0/€29/€69) planned later. ⛔ *V16.3: the IE rows are in, ~~switched off~~ (§82.2).* ⛔ Corrected V16.4 — switched on (§83.1).
+  trucks unless the diner pays an online ordering fee; eurozone pricing (€0/€29/€69) planned later. ⛔ *V16.3: the IE rows are in, ~~switched off~~ (§82.2).* ⛔ Corrected V16.4 — switched on (§83.1). ⛔ *V16.6: the per-country research of 23 Oct, and the live comparison in Admin › Pricing check, are §85. With its defaults, GB is cheapest for a small truck and not for a medium or busy one (Aphelios £29.99 flat, Perkss, Grafterr, Order Tiger). Hatches Up, at £682 a month for a medium truck, against our £376, stays well above.*
 
 ## 81.2 The tables (OBSERVED live, 20 October 2026)
 
@@ -33617,7 +33837,7 @@ code. A country stays switched off until its launch list is done.
   - `entry` flags (GB/US keep today's form exactly);
   - `includedTax` where prices include tax: FR TVA 10 % and the European VAT defaults. OBSERVED: 29 formats carry it,
     FR plus 28 European; Gibraltar has no VAT.
-- **The 29 European entries are uncommitted** (§83.1). They include Latvia's code after the town, with a comma ("Rīga,
+- **The 29 European entries** ~~**are uncommitted** (§83.1).~~ ⛔ Corrected V16.5 — are committed (OBSERVED 23 Oct). They include Latvia's code after the town, with a comma ("Rīga,
   LV-1050", the `comma` flag).
 - **Readers:**
   - `lib/event-address.ts`, `lib/event-region-read.ts`, `components/manage/AddressFields.tsx`;
@@ -33640,7 +33860,7 @@ code. A country stays switched off until its launch list is done.
   - `symbolShared`, with a reason comment;
   - `namePlural`;
   - the `homeDisplay` / `narrowIn` overrides: RON "lei"; GBP in en-GI "£".
-  - `narrowIn` is **uncommitted** (europe-settings). It applies to every amount in that locale, including menus and
+  - `narrowIn` is ~~**uncommitted**~~ ⛔ Corrected V16.5 — committed (europe-settings; OBSERVED 23 Oct). It applies to every amount in that locale, including menus and
     orders, not only plan prices.
 - **`planMoneyFormatOf`** = the home form, on a country's own pages, the PDF, Billing and the plan prompts.
   **`intlMoneyFormatOf`** = Admin and /llms.txt. JSON-LD keeps ISO codes.
@@ -33652,12 +33872,13 @@ code. A country stays switched off until its launch list is done.
 - **`country_settings.allergen_card_only_allowed`** (default true).
   - When false: the wizard and the menu-import Allergens step open on "Do you have an allergen card to upload?"; the
     API refuses a change to `card`; a stored `card` is served per dish, with a notice in Manage.
-  - **False today:** IE, LV, PL, RO, SK (OBSERVED 22 Oct). IE is switched on; the other four are switched off.
+  - **False today:** IE, LV, PL, RO, SK (OBSERVED 22 Oct; the same five on 23 Oct). ~~IE is switched on; the other four
+    are switched off.~~ ⛔ Corrected V16.5 — all five are switched on (OBSERVED 23 Oct).
 - **Sets:**
   - uk14 (GB, IE, FR, Europe), us9, anz (AU/NZ), ca (Health Canada, 13);
   - labels are stored in English; non-English locales show them translated (`lib/allergen-label.ts`).
 - **The WhatsApp guard's words are data per language** (`lib/allergen-guard/<lang>.json`, Option B). OBSERVED:
-  `en.json` and `fr.json`. A language with no list fails safe: every menu question gets the allergen reply.
+  ~~`en.json` and `fr.json`.~~ ⛔ Corrected V16.5 — 23 lists: en, fr and the 21 European languages (OBSERVED 23 Oct; §84.6). A language with no list fails safe: every menu question gets the allergen reply.
 
 ## 83.5 Canada
 
@@ -33680,7 +33901,8 @@ code. A country stays switched off until its launch list is done.
 
 - **The sections, OBSERVED in the working tree on 22 Oct, in this order:** United States, Ireland, Australia, New
   Zealand, Canada, France, "European Economic Area and Switzerland", Gibraltar.
-- **The last two are uncommitted** (europe-settings). The live page ends at France.
+- ~~**The last two are uncommitted** (europe-settings). The live page ends at France.~~ ⛔ Corrected V16.5 — all eight are
+  committed and pushed (OBSERVED 23 Oct, git); the live page itself wasn't fetched.
 - **Versioning:** `COUNTRY_TERMS_UPDATED` ('22 October 2026') and `TERMS_VERSION` ('2026-10-22') move together with
   each change. TERMS_VERSION is write-only.
 - **Open legal questions** are in each report. The most significant:
@@ -33702,9 +33924,11 @@ code. A country stays switched off until its launch list is done.
 ## 83.8 The language engine (languages-1)
 
 - **`lib/i18n/locales.ts` is the one list:** `LOCALES`, `LOCALE_PARENT`, `LANGUAGE_BASES`.
-  - **Locales (OBSERVED 22 Oct in the working tree):** en-GB, en-US, en-IE, en-AU, en-NZ, en-CA, fr-FR, en-MT, en-GI.
-    en-MT and en-GI are uncommitted.
-  - `LOCALE_PARENT`: en-CA → en-US; en-MT and en-GI → en-IE. `LANGUAGE_BASES = ['fr-FR']`.
+  - ~~**Locales (OBSERVED 22 Oct in the working tree):** en-GB, en-US, en-IE, en-AU, en-NZ, en-CA, fr-FR, en-MT, en-GI.
+    en-MT and en-GI are uncommitted.~~ ⛔ Corrected V16.5 — 35 locales (OBSERVED 23 Oct, committed): the nine above plus the 21
+    European bases and their variants (§84.2).
+  - `LOCALE_PARENT`: en-CA → en-US; en-MT and en-GI → en-IE. ~~`LANGUAGE_BASES = ['fr-FR']`.~~ ⛔ Corrected V16.5 — also de-AT and
+    de-CH → de-DE, de-LI → de-CH, nl-BE → nl-NL, el-CY → el-GR; `LANGUAGE_BASES` holds fr-FR and the 21 European bases.
 - **English variants are sparse overrides** (keys, OBSERVED): en-US 474, en-IE 6, en-AU 107, en-NZ 22, en-CA 87, en-GI
   1, en-MT 0.
 - **A language base is a full file,** with en-GB only as a last resort, key by key. fr-FR has 5,056 keys against
@@ -33727,7 +33951,8 @@ code. A country stays switched off until its launch list is done.
   europe-settings' block A.
 - **Prices and words:** fr-FR, /fr, EUR at Ireland's prices. « Sans abonnement / Pro / Illimité »; « Paiement sur
   place » / « Payer au retrait ».
-- **The order button** says « Commander et payer au retrait » (L. 221-14). « Aujourd'hui / Demain » come from Intl.
+- **The order button** ~~says « Commander et payer au retrait » (L. 221-14).~~ ⛔ Corrected V16.5 — says « Commander avec obligation de paiement » since
+  23 Oct; the old words were wrong for card payers (§84.3). « Aujourd'hui / Demain » come from Intl.
 - **TVA:** included, 10 % by default (`includedTax`), never added. « Dont TVA 10 % » appears on the customer email and
   the ticket.
 - **Decimal comma entry** in Manage (`lib/decimal-input.ts`, `useDecimalBox`), driven by the locale.
@@ -33735,10 +33960,10 @@ code. A country stays switched off until its launch list is done.
 - **Allergen card allowed:** the DGCCRF accepts a whole-menu table.
 - **Decisions (22 Oct):** no withdrawal line and no mediator field (the truck's duty); no per-item TVA yet; the Tap to
   Pay CB brand choice later.
-- **The glossary row** was split (france-1 Follow-up, uncommitted): "Private hire" « privatisation », "Private event"
+- **The glossary row** was split (france-1 Follow-up, ~~uncommitted~~ ⛔ Corrected V16.5 — committed; OBSERVED 23 Oct, `git status` clean): "Private hire" « privatisation », "Private event"
   « événement privé ». translation-check fr-FR: structural 0; glossary flags 69 → 50.
 
-## 83.10 The rest of Europe (data, switched off)
+## 83.10 The rest of Europe (data, ~~switched off~~ ⛔ Corrected V16.5 — switched on 23 Oct, OBSERVED; §84.1)
 
 - **29 rows** (europe-settings §2): currency, locale (BE nl-BE, CH de-CH, LU fr-LU, MT en-MT, GI en-GI, CY el-CY), time
   zones, phone, address format, VAT default, Stripe fees and the allergen rule. Surcharges, the service fee and tipping
@@ -33748,23 +33973,403 @@ code. A country stays switched off until its launch list is done.
   - **OBSERVED 22 Oct:** the live `plan_prices` rows hold exactly these proposed figures, and every row is still
     `updated_by = 'europe-settings draft'`.
   - **Dominic's approval is not recorded** anywhere observable (no report, no row change): **UNVERIFIED**.
+  - ⛔ Corrected V16.5 — **OBSERVED 23 Oct (read-only SQL):** the same figures are live, and every one of these countries is
+    switched on, so these prices are the live ones (§84.1). A pricing research may propose others (§84.10).
 - **Payment-method notes only** (iDEAL/Wero, Bancontact, BLIK, TWINT, MobilePay, Swish, Vipps, Bizum, MB WAY): nothing
   is built. Most can't hold a payment; pay at the truck covers them.
 - **Greece:** no in-person card payments through the processor.
-- **Malta and Gibraltar** can go live in English once europe-settings is deployed. Every other country waits for its
-  language.
-- **Until europe-settings is deployed,** the deployed code leaves these 29 rows out of every country list, logging one
-  line per row per read; their pages are 404, not 302 (§83.1).
+- ~~**Malta and Gibraltar** can go live in English once europe-settings is deployed. Every other country waits for its
+  language.~~ ⛔ Corrected V16.5 — every country except LU has its language (§84.2), and all 29 rows, Malta and Gibraltar
+  included, are switched on (OBSERVED 23 Oct, §84.1). ⚠️ LU is on too, without fr-LU (§84.1 flag).
+- ~~**Until europe-settings is deployed,** the deployed code leaves these 29 rows out of every country list, logging one
+  line per row per read; their pages are 404, not 302 (§83.1).~~ ⛔ Corrected V16.5 — europe-settings is committed and pushed
+  (`origin/main` `f17f6540`, OBSERVED 23 Oct).
 
 ## 83.11 The one-prompt recipe (`docs/i18n/add-a-country.md`)
 
 **For a European country:** the language file, the allergen-guard words, translation-check, back-translation,
-screenshots, switch on.
+~~screenshots,~~ ⛔ Corrected V16.5 — the lean checks (§84.4; screenshots only for a new alphabet), switch on.
 
 **For a new country outside Europe:** the country row and prices (NOT RUN SQL), the address format, currency, allergen
 set, locale, terms section, then the language.
 
 One language prompt switches on every country that speaks it.
+
+# 84. Every European language and the European switch-on (V16.5 — 22–23 October 2026)
+
+🔴 **THE RULE (unchanged):** a country is data plus config; its words are one messages file per language, with sparse
+regional overrides. A language prompt never changes English output.
+
+## 84.1 Live state (OBSERVED 23 October 2026, 18:08 BST — read-only SQL and git)
+
+- **`country_settings`:** 35 rows, **all 35 enabled**.
+  - The rows: AT AU BE BG CA CH CY CZ DE DK EE ES FI GB GI GR HR HU IE IT LI LT LU LV MT NL NO NZ PL PT RO SE SI SK US.
+  - Every row expected in the delta is on: GB, US, IE, AU, NZ, CA, DE, AT, CH, LI, ES, IT, PT, NL, BE, SE, DK, NO, PL,
+    CZ, SK, HU, RO, HR, SI, FI, EE, LV, LT, GR, CY, BG, MT and GI.
+  - 🔴 **Mismatch 1 — LU is enabled** (locale `fr-LU`, EUR). The delta says it must still be off. fr-LU is not in
+    `LOCALES`, so `resolveLocale` gives en-GB words. `countryPageAlternates` (`lib/marketing-meta.ts`) lists the row's own
+    locale, so /lu is in hreflang as `fr-LU` with English content.
+  - 🔴 **Mismatch 2 — there is no FR row** (and no FR `plan_prices`), so France, the first built language, is not live.
+    france-1 block B (`20261034_france_row.sql`) is still not run.
+- **`short_name` migrations:**
+  - **`20261037`** (12 countries) **has run.** OBSERVED: Deutschland, Österreich, Schweiz, Liechtenstein, España, Italia,
+    Portugal, Nederland, België, Sverige, Danmark, Norge.
+  - 🔴 **`20261038`** (14 countries) **has NOT run.** OBSERVED, still English: Poland, the Czech Republic, Slovakia,
+    Hungary, Romania, Croatia, Slovenia, Finland, Estonia, Latvia, Lithuania, Greece, Cyprus, Bulgaria. These countries are
+    switched on, so their own-language pages show the English name inside their sentences until it runs.
+  - LU "Luxembourg", MT "Malta" and GI "Gibraltar" are unchanged, as intended.
+- **Non-euro `plan_prices`, live** (OBSERVED; payg is 0 everywhere; payg/Pro fee_bps 99, Unlimited 0):
+
+| Country | Pro / Unlimited (monthly) | Pro includes |
+|---|---|---|
+| CH, LI | CHF 27 / 65 | CHF 3,700 |
+| SE | 329 / 769 kr | 45,000 kr |
+| DK | 219 / 519 kr. | 30,000 kr. |
+| NO | 299 / 729 kr | 42,000 kr |
+| PL | 129 / 299 zł | 17,500 zł |
+| CZ | 699 / 1,690 Kč | 100,000 Kč |
+| HU | 10,990 / 24,990 Ft | 1,500,000 Ft |
+| RO | 149 / 369 lei | 21,500 lei |
+| GI | £29 / £69 | £4,000 |
+
+  Switching on put the europe-settings figures live. The pricing research (§84.10) may propose others.
+- **Allergen card:** `allergen_card_only_allowed = false` for IE, LV, PL, RO and SK (OBSERVED), all switched on.
+- **Deployed vs uncommitted:**
+  - `git log origin/main -1` = HEAD = `f17f6540` "more europe" (23 Oct 18:07 BST, after `git fetch`);
+  - `git status` is clean;
+  - Dominic's commits during the day: "european launching" (`85910c74`, 11:22), "more euro countries" (`3b49cc7e`,
+    13:01) and "more europe" (18:07).
+  - The live site and Vercel's record weren't read for this delta (§49).
+
+## 84.2 The languages
+
+| Base | Regional overrides (`LOCALE_PARENT`) | Countries (primary) | Voice |
+|---|---|---|---|
+| de-DE | de-AT (5 keys, OBSERVED), de-CH (98 keys, OBSERVED: "ss", Rappen, MWST, decimal point, the amount on the card button), de-LI (1 key, OBSERVED: its phone example; over de-CH) | DE, AT, CH, LI | Sie |
+| es-ES | — | ES | tú |
+| it-IT | — | IT | tu |
+| pt-PT | — | PT | European formal |
+| nl-NL | nl-BE (28 keys: "Ter plaatse betalen", "Kaart") | NL, BE | je |
+| sv-SE, da-DK, nb-NO | — | SE, DK, NO | du |
+| pl-PL | — | PL | ty |
+| cs-CZ, sk-SK, hu-HU, ro-RO, hr-HR, sl-SI | — | CZ, SK, HU, RO, HR, SI | formal |
+| fi-FI, et-EE | — | FI, EE | sinä / sina |
+| lv-LV, lt-LT | — | LV, LT | formal |
+| el-GR | el-CY (phone example only; 1 key, OBSERVED) | GR, CY | formal |
+| bg-BG | — | BG | formal (Вие capitalised) |
+
+⚠️ **The delta said de-AT 4 keys, de-CH 95 and de-LI empty.** The observed counts are higher by the localised team-phone
+examples (europe-languages-2 Stage 0) and, in de-CH, the card button that keeps the amount.
+
+- `LOCALES` = 35 and `LANGUAGE_BASES` = fr-FR plus the 21 above (OBSERVED in `lib/i18n/locales.ts`).
+- Plan names per language (`planNames.*`); Pro is never renamed. "Pay at Hatch" per the glossary (e.g. „Bezahlung bei
+  Abholung", « Paiement sur place », "Betala vid upphämtning"); the word "hatch" appears in no language.
+- The EU 14 allergens use the official Annex II names (Regulation 1169/2011) per language; stored labels stay English.
+  Austria's A–R letter codes are not shown.
+- Regional variants load lazily with their base, never in English pages (`scripts/split-messages.cjs`).
+- `{country}` and other placeholders are never inflected: they sit after a colon, a dash, in brackets or in apposition.
+- Swiss German writes "CHF 27.50" with a decimal point; the decimal input follows Intl (`lib/decimal-input.ts`).
+- The currency line on a non-English page uses Intl's currency name in that language ("Valuta: svensk krona (SEK)";
+  `currencyLineOf` in `lib/country-settings-types.ts`). English unchanged.
+- Kept in English on purpose in every language: "registered in England and Wales", "six years, as UK law requires", the
+  typed word DELETE, and three hard-coded admin labels in `components/admin/*`.
+- Legal pages (terms, privacy), sign-in and account emails remain en-GB (unchanged from §83.8). The contact page is a Tally
+  form with UK wording.
+
+## 84.3 The statutory order buttons
+
+- `order.placeOrder` (pay at the truck, and the first press in card mode) uses each country's transposition of CRD
+  Art. 8(2): e.g. DE/AT „Zahlungspflichtig bestellen", ES « Pedido con obligación de pago », IT « Ordina con obbligo di
+  pagamento », NL/BE "Bestelling met betalingsverplichting", PL „Zamówienie z obowiązkiem zapłaty", GR/CY «Παραγγελία με
+  υποχρέωση πληρωμής». The full table with statutes and sources is in europe-languages-1 §3 and europe-languages-2 §3.
+- `order.payAmount` (card) = "Pay {amount}" in the language, except **DE and AT: no amount** (BGB § 312j, FAGG § 8 "nothing
+  other than" the words). CH and LI keep the amount (no Swiss button rule).
+- **France** changed (23 Oct): « Commander avec obligation de paiement » (`order.placeOrder`, and `order.busyNotice`, which
+  quotes it). The old « Commander et payer au retrait » was wrong for card payers. (France itself has no row yet, §84.1.)
+- Judgement calls recorded for Dominic: Romanian uses the shorter « Comandă cu obligație de plată »; Finland has no fixed
+  phrase; Latvian and Lithuanian use the Directive's own text (national texts not reachable).
+- The order page layout is unchanged (35.al-3); only the words differ.
+
+## 84.4 Lean checks (the standard; `docs/i18n/add-a-country.md` §7b)
+
+**Per language:**
+- translation-check at 0 structural. CLDR plural categories are enforced, and a placeholder may be dropped only if listed in
+  `docs/i18n/placeholder-drops.json`;
+- a short flag table;
+- with fixtures on: the landing and an order page in the language, with no English left and native prices and formats;
+- hreflang and the sitemap;
+- the allergen-guard proof: safety questions caught, plain questions through.
+
+**Per batch:** tsc, build, lint against the baseline, the full sweep, and byte-identity of every live country.
+
+**Screenshots and the e2e walk-through** only for a new alphabet.
+
+**Translation method:**
+- ten parts per language, against `STYLE-common.md`, a per-language `STYLE.md` and a shared `TERMS.md` (one word per tab
+  or button);
+- then one consistency pass per language;
+- same-spelled words are reviewed in `docs/i18n/same-words/<lang>.json`;
+- back-translations are in `docs/i18n/back/`.
+
+## 84.5 Glossary
+
+- `docs/i18n/seo-glossary-eu.md` now has a table for all 22 languages. `lib/i18n/glossary/<lang>.json` is built from it
+  (`glossary-build --check`; OBSERVED: 22 JSON files).
+- Every table splits "private hire" (hiring a truck) from the app's "private event" (a date hidden from the map with its
+  own ordering link).
+- Low-confidence rows want a native check: walk-up order, event pricing and some schedule words.
+
+## 84.6 Allergen guard
+
+- `lib/allergen-guard/<lang>.json` exists for all 21 languages (OBSERVED: 23 files with en and fr). Option B: absence and
+  safety words only.
+- Spelling variants are covered: ß/ss, ue/oe, æ/ø/å, and accent-folded stems (the customer's text is folded the same way).
+- Each list is proved by safety and plain questions per language.
+- A language with no list fails safe; the proof now uses tr-TR.
+
+## 84.7 Fonts
+
+- `app/layout.tsx` loads Noto Sans (greek, cyrillic; preload false). Its class is applied only on el and bg pages.
+- Under `:lang(el)` / `:lang(bg)`, Noto sits **before** the "Archivo Fallback" metric fallback. When it sat after it, the
+  local Arial's Greek was used instead and Noto never loaded.
+- Latin pages never request it. URLs stay Latin (/gr, /cy, /bg).
+
+## 84.8 Editor memory (TypeScript)
+
+- The project needs about 2 GB to type-check.
+- `tsconfig.json` excludes docs, android, ios, public, logs, data, assets, certificates, content and messages (OBSERVED,
+  23 Oct).
+- Generated `lib/i18n/locale-files.ts` loads non-English whole message files with an untyped `require`. English stays
+  typed; next-intl keys and `lib/i18n/typecheck.ts` are unchanged.
+- `.vscode/settings.json` sets `typescript.tsserver.maxTsServerMemory` 6144 (OBSERVED) and watcher excludes.
+
+## 84.9 Country short names
+
+- `short_name` is shown inside the language's own sentences, so it is the country's own name: Deutschland, Österreich,
+  Schweiz, Liechtenstein, España, Italia, Portugal, Nederland, België, Sverige, Danmark, Norge, Polska, Česko, Slovensko,
+  Magyarország, România, Hrvatska, Slovenija, Suomi, Eesti, Latvija, Lietuva, Ελλάδα, Κύπρος, България.
+- `name` stays English (Admin). LU, MT and GI are unchanged.
+- 🔴 **OBSERVED 23 Oct:** only the first 12 are live (`20261037`). The 14 from Polska to България wait on `20261038`, not
+  yet run (§84.1).
+
+## 84.10 Pricing research (another session; record only what you observe)
+
+A separate session researched competitor prices per country and added an admin "Pricing check" tab. It covered
+food-truck-focused ordering tools only, excluding general POS giants and delivery marketplaces.
+
+**OBSERVED 23 Oct, git and read-only SQL:**
+- **These exist and are committed** (in `f17f6540` "more europe", pushed):
+  - `docs/pricing-research-1-report.md`;
+  - `lib/pricing-check.ts`;
+  - `scripts/pricing-check-build-data.cjs`;
+  - `data/pricing-research-1/` (benchmarks, competitors and plans JSON);
+  - `supabase/migrations/20261039_pricing_check.sql`;
+  - the admin tab: `components/admin/PricingCheckTab.tsx` and `app/api/admin/pricing-check/route.ts`.
+- **The `20261039` tables exist live:** `public.competitors`, `public.competitor_plans` and `public.country_benchmarks`.
+
+**Dominic's intent:** all per-country pricing data is stored in the admin, and shown to customers only after he has
+verified it. No proposed price is recorded here as decided.
+
+⛔ **V16.6:** recorded in full in §85, from the two reports and read-only SQL.
+
+---
+
+# 85. Pricing research and Admin › Pricing check (V16.6 — 23 October 2026)
+
+🔴 **THE RULES:**
+- **No proposed price is decided until Dominic says so.** Research proposals and the tab's suggestions are
+  suggestions. Our prices change only when Dominic runs the SQL.
+- **A competitor's price is never edited in place.** An edit inserts a new row and stamps `superseded_at` on the old one,
+  so history is kept and verification starts again.
+- **Customers see nothing from these tables.** The Customer preview is an admin-only mock, and there is no public route.
+  Only rows Dominic has verified would ever be shown.
+- **No plan, price, allowance or feature tier is written in the code** (§81). Our side comes from `plan_prices` through
+  `lib/plans.ts`.
+
+## 85.1 Live state (OBSERVED 23 October 2026, 18:25 BST — read-only SQL and git)
+
+- **Tables:** `public.competitors`, `public.competitor_plans` and `public.country_benchmarks` (`20261039`) exist. Each
+  has RLS on, no policies, and no SELECT for `anon` or `authenticated`.
+- **The research import has run:** 128 competitors, 242 plans (232 `research` + 10 `manual`) and 46 benchmarks (all
+  current).
+  - **0 rows verified, 0 superseded.**
+  - `country_benchmarks` has a `notes` column. It isn't in the brief's column list; it was added because two of the
+    brief's own fixes need one.
+- **Countries:** all 35 `country_settings` rows are switched on (§84.1). France and the ten planned countries have no
+  row, so the tab places them in its **Planned** group, and its **Switched off** group is empty.
+- **Committed** in `f17f6540` "more europe":
+  - the code and data;
+  - `docs/pricing-check-1-report.md` (an earlier version);
+  - the screenshots.
+- **Uncommitted at 18:25:**
+  - the report's sweep figures;
+  - the `schedule-graphics-places.cjs` re-pin (§79);
+  - this manual.
+
+## 85.2 The research (`docs/pricing-research-1-report.md`, 23 October 2026)
+
+- **Scope:** food-truck, street-food, market and pop-up ordering tools, with prices from their own pages.
+  - **Countries:** 46, in tiers. Deep: US, GB, CA, AU, DE, FR, ES, IT, NL, BR, MX, JP. Standard: IE, NZ, AT, CH, BE, PT,
+    SE, DK, NO, FI, PL, CZ, RO, GR, SG, HK, MY, AE, TH. Light: the rest, plus IN and ID.
+  - **Excluded (Dominic's decision):** general POS and payment giants, and delivery marketplaces. Marketplace commission
+    is listed per country as context only.
+  - **No food-truck tool in a country:** the nearest small-local tool is used, marked `nearest_local`.
+- **Method:**
+  - **Truck sizes:** 150 / 600 / 2,000 online orders a month.
+  - **Order value:** 1.3 × Numbeo's "Meal, Inexpensive Restaurant" for the country.
+  - **Total:** subscription + fees + card processing.
+  - **Card rates:** ours is the country row's rate. A rival's is its own, or ours when it doesn't publish one
+    (¹, "card rate assumed").
+  - **Customer-paid fees** are shown separately.
+  - **Setup fees** are spread over 12 months.
+  - **Order caps:** a plan whose cap is below the volume is not counted.
+  - **Exchange rates:** ECB, 22 Oct 2026.
+- **Findings (as reported, not decided):**
+  - **Cheapest everywhere:** HatchGrab is cheapest at all three sizes in 23 of 46 countries, and in 32 with the proposed
+    prices. Already far cheaper than every priced rival: CA, AT, FI, EE, HU, LT, LV, SK.
+  - **Structural (no price inside Pay as you go / Pro / Unlimited wins):**
+    - US: Best Food Trucks (free);
+    - GB: Beat The Queue (customer pays 50p) and Storekit (£0);
+    - FR: Truckons (€0, customer fee);
+    - ES: TopEstrellas (€24);
+    - IT: JMENU (customer pays €0.50);
+    - NL: Qrder (€29 unlimited);
+    - NZ: HungryTrucks (NZ$46);
+    - CZ: Menu55 (350 Kč);
+    - JP: funfo (¥0);
+    - plus BR and MX.
+  - **Unlimited is the weak spot:** flat €29–59 tools beat Unlimited €69 for medium and busy trucks.
+  - **Affordability:** "our cheapest plan as a share of medium revenue" is capped at 0.99%, because Pay as you go is
+    0.99%, so it barely varies. Pro's price in local meals separates countries better: UK £29 = 1.81 meals.
+  - **Lost on card processing, not on our prices:** RO (Choice), AE (Zyda) and BR (Pix against card).
+  - **Indonesia:** Stripe takes no cards there.
+  - **Not in `lib/currencies.ts`:** the ten planned currencies.
+- **Proposals:** in that report's §10.
+  - Unlimited cuts for IE, GR, CH, SE and DK.
+  - Affordability cuts for PL, CZ, RO, HU, BG, HR, LT, LV, SI, SK and PT.
+  - New prices for the ten planned countries.
+  - ⚠️ **Status:** **none decided, none run.** Its §10.1 SQL changes only **switched-off** rows (`cs.enabled = false`).
+    Every row is now switched on, so it would change nothing as written. Any change is now a live-country change.
+- **Known slips in that report (recorded, not corrected there):**
+  - IE's and PT's meal-price source links are not Numbeo's (a gap-filling pass overwrote them). The figures used
+    (€20, €12) are Numbeo's.
+  - France appears twice in its §3 table.
+  - Its Method says HatchGrab's EU prices carry reverse-charge VAT. §81.1 says HatchGrab Ltd is **not VAT-registered**.
+    The comparison is on advertised prices either way.
+- **Coverage limit:** a 200-per-turn web-search cap cut every first-pass group short, and a second pass filled most gaps.
+  - AU's two truck tools (Where The Truck, Qhop) hide their prices.
+  - Most VAT treatment and every marketplace line are unverified.
+
+## 85.3 The tables (`supabase/migrations/20261039_pricing_check.sql`)
+
+- **`competitors`:**
+  - name, unique case-insensitively;
+  - website;
+  - `focus`: `food_truck`, `street_food_markets`, `nearest_local` or `pop_up`, or NULL = not recorded;
+  - `payment_providers`;
+  - six key features (`pre_orders`, `whatsapp`, `social_posts`, `own_domain`, `ios_app`, `android_app`), each
+    `yes` / `no` / `unknown`;
+  - `features_checked_on`, `features_verified_at`, `notes`.
+- **`competitor_plans`:** one plan in one country.
+  - `country_code` has **no FK**, because planned countries have no row.
+  - Price fields:
+    - `monthly_minor` and `yearly_only`;
+    - setup;
+    - truck and customer fees (bps + fixed);
+    - `card_mode` (`bundled` / `separate` / `unknown`), with `card_bps` / `card_fixed_minor` (NULL = not published)
+      and `card_rate_assumed`;
+    - `order_cap`, `included_orders` + `overage_fixed_minor`;
+    - `vat`.
+  - Status and provenance:
+    - `status`: `counted`, `hidden`, `closed` or `excluded`;
+    - `unclear`, `second_hand`;
+    - `source`: `research`, `manual` or `admin`;
+    - `source_url`, `checked_on`, `verified_at` / `verified_by`;
+    - `superseded_at`.
+  - A CHECK refuses a counted plan without a price.
+- **`country_benchmarks`:**
+  - meal price, source, `meal_source_ok`, `order_multiplier` (1.3);
+  - `eur_rate` and its date;
+  - our card rate (used only when the country has no row);
+  - `planned_pro_minor`, `planned_pro_included_minor`, `planned_unlimited_minor` (always shown as "proposed, not live");
+  - `ios_app_available`, `android_app_available` (NULL = unknown);
+  - `notes`.
+  - **At most one current row per country** (a partial unique index).
+- **Security** mirrors `country_settings`: service role only, read and written by `app/api/admin/pricing-check` behind
+  the admin check.
+
+## 85.4 The rules in code
+
+- **Modules:**
+  - `lib/pricing-check.ts`: the engine. Pure and client-safe; the tab and the harness run the same functions.
+  - `lib/admin/pricing-check-actions.ts`: what the route does, with field allowlists and plain-sentence refusals, over a
+    store interface.
+  - `lib/admin/pricing-check-store.ts`: the service-role store. Every supersede requires `superseded_at is null`. A
+    missing table reads as "run the migration".
+  - `app/api/admin/pricing-check/route.ts`: GET and POST. `adminUser` is `verifyAdmin`'s own check, and returns who
+    verified. Anyone else gets a 404.
+  - `components/admin/PricingCheckTab.tsx`: the tab.
+- **Our plans in a planned country:** its benchmark's proposed Pro / included / Unlimited are placed **by the shape of
+  the live rows**, never by plan key.
+  - The public plan whose included amount is always positive takes the Pro figures.
+  - The one that is always unlimited takes the Unlimited figure.
+  - A plan that is free with nothing included stays free.
+  - Each keeps the fee its live rows agree on.
+- **What price would win:** for our plan that is cheapest at that size:
+  - limit = the cheapest counted rival × 1.00 / 1.05 / 1.10 − our card cost − that plan's fee above its included amount;
+  - the price is then rounded **down** to a price point ending in 9 (9…99; 149, 199… above 100; 1 490, 1 990… above
+    1,000; the same a power of ten up). There is no app helper for this; `homeDisplay` is display only;
+  - "Already met" when today's price fits;
+  - "Not possible" when the limit is ≤ 0;
+  - a warning when the suggestion is at or below a cheaper paid plan.
+- **Stale:** `checked_on` older than six months.
+- **Our key-feature cells come from the plan switches:**
+  - pre-orders = `advance_preordering` + `time_slot_selection`;
+  - WhatsApp = `whatsapp_replies`;
+  - social posts = `schedule_graphics`;
+  - own web address has **no switch** (custom domains are not plan-gated), so "Yes";
+  - the apps = `ipad_kds`, plus the benchmark's store availability ("Not in this country").
+
+## 85.5 The tab (Admin › Pricing check)
+
+- **Layout:** a country list (Live / Switched off / Planned, search, a pill at the medium size: Cheapest / Small only /
+  Not cheapest / No rivals / No data) beside the country. It is the same on a laptop and a 27in monitor, and stacks on a
+  phone. Tables scroll inside their own boxes.
+- **Header:** four tiles — typical order (with a warning when the meal source isn't the cited one), our card cost, our
+  plans (live, or "proposed, not live"), and rivals verified "N of M". **Edit country data** supersedes the benchmark.
+- **Size and filters:** the size switch, plus three filters: food-truck tools only (on), count fees customers pay (on),
+  verified rivals only (off).
+- **Results:** the verdict, then "What {plan} price would win" in three cards. For a live country there is optional
+  NOT RUN SQL, and the tab says "Nothing changes until you run the SQL".
+- **Monthly cost to the truck:** cheapest first, HatchGrab's cheapest plan highlighted. Rows the filters leave out are
+  dimmed, not hidden.
+  - Data badges: Our live prices / Verified by you / Not verified / Card rate assumed / Unclear on their site /
+    Second-hand price / From the manual / Stale.
+  - Mark verified / Undo verified, Edit (a new row plus supersede) and History on each row.
+  - Plans not counted are listed with their reason.
+- **Key features:** HatchGrab plus the five cheapest counted rivals. A rival's cell cycles Yes → No → Not checked, and
+  stamps `features_checked_on` and `features_verified_at`. A last row lists payment providers.
+- **Top right:** Admin view / Customer preview (a mock: our bar plus verified rival plans only), Export CSV (the country,
+  or all), Add competitor.
+- **Import research data:** shown only while all three tables are empty. It refuses once any `research` row exists. It
+  has run.
+
+## 85.6 Open (23 October 2026)
+
+- 🔴 **`pricing-check-1.cjs` is not registered** in `scripts/harnesses.json` (§79). Three lines, Dominic's call.
+- **Nothing is verified:** 0 of 242 plans and no competitor's features. The Customer preview shows nothing until rows are
+  verified.
+- **Not mapped into the schema** (`docs/pricing-check-1-report.md` §6):
+  - Bestelltheke's €399 monthly cap;
+  - Cheerfy's €29 minimum and €299 maximum;
+  - VexMenu's R$0.99 per-order minimum;
+  - Anota AI's ">250 orders" floor;
+  - the CSV's other seven feature columns (KDS, printing…), which stay in the CSV only.
+- **Built for not recorded:** Eventifood, EasyEats and RapidOrderz have `focus` NULL, so "Food-truck tools only" dims
+  them. Set it in the tab if they are food-truck tools.
+- **App availability:** the benchmarks say Android = GB only (Google Play availability is the United Kingdom only, §36).
+  Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.
+- **France** stays in Planned until its row (`20261034`, block B) is run (§84.1).
 
 ---
 

@@ -98,7 +98,13 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
   t('fr-FR is in LOCALES and LANGUAGE_BASES (its one line), with its own full file', /LOCALES = \[[^\]]*'fr-FR'/.test(L) && /LANGUAGE_BASES: readonly AppLocale\[\] = \['fr-FR'/.test(L)   /* ⚠️ RE-PINNED (europe-languages-1): later bases follow fr-FR */ && fs.existsSync(path.join(REPO, 'messages/fr-FR.json')))
   const tc = spawnSync(process.execPath, ['scripts/translation-check.cjs', '--locale', 'fr-FR'], { cwd: REPO, encoding: 'utf8' })
   t('translation-check: 0 structural problems (every key, ICU skeletons identical to en-GB)', tc.status === 0 && /\*\*Structural: 0\*\*/.test(tc.stdout), tc.stdout.slice(0, 400))
-  t('…and no number, price or brand changed, no banned term, every plan named', /invariants 0 · numbers 0 · length \d+ · drift \d+ · plans 0 · other 0/.test(tc.stdout) && /banned 0/.test(tc.stdout), tc.stdout.match(/Flags:.*/)?.[0])
+  // ⚠️ RE-PINNED (admin-countries-1, 23 October 2026): the team phone example is now French (« +33 6 12 34 56 78 », Dominic's
+  // fix), so its numbers differ from en-GB's +44 one ON PURPOSE — that one key, and only it, may carry a numbers flag.
+  const tcRep = path.join(require('os').tmpdir(), `fr1-flags-${process.pid}.md`)
+  spawnSync(process.execPath, ['scripts/translation-check.cjs', '--locale', 'fr-FR', '--report', tcRep], { cwd: REPO, encoding: 'utf8' })
+  const numKeys = [...(/## Numbers, prices or brands changed[\s\S]*?(?=\n## |$)/.exec(fs.readFileSync(tcRep, 'utf8'))?.[0] ?? '').matchAll(/^\| `([^`]+)`/gm)].map(m => m[1])
+  t('…and no number, price or brand changed (but the French team phone example), no banned term, every plan named',
+    /invariants 0 · numbers [01] · length \d+ · drift \d+ · plans 0 · other 0/.test(tc.stdout) && /banned 0/.test(tc.stdout) && numKeys.every(k => k === 'manageTeam.phonePlaceholder'), [tc.stdout.match(/Flags:.*/)?.[0], numKeys])
   t('a back-translation for every key (docs/i18n/back/fr-FR.json)', (() => { const b = JSON.parse(read('docs/i18n/back/fr-FR.json')); const keys = []; const w = (o, p) => { for (const [k, v] of Object.entries(o)) { const id = p ? `${p}.${k}` : k; if (typeof v === 'string') keys.push(id); else w(v, id) } }; w(FR_MSG, ''); return keys.every(k => typeof b[k] === 'string') })())
   t('the glossary\'s FR terms: « Paiement sur place », « Payer au retrait », « Sans abonnement », « Illimité », « essai gratuit »; the list of dishes is « la carte »',
     at(FR_MSG, 'order.payAtTruck') === 'Payer au retrait' && at(FR_MSG, 'planNames.payg.name') === 'Sans abonnement' && at(FR_MSG, 'planNames.unlimited.name') === 'Illimité'

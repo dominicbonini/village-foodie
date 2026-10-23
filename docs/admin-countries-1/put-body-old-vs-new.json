@@ -1,0 +1,100 @@
+{
+ "old": [
+  {
+   "code": "IE",
+   "expectedUpdatedAt": "2026-10-22 10:26:51.320563+00",
+   "form": {
+    "enabled": true,
+    "name": "Ireland",
+    "cardFeeOnlinePct": "1.5",
+    "cardFeeOnlineFixed": "25",
+    "cardFeeInPersonPct": "1.4",
+    "cardFeeInPersonFixed": "10",
+    "tapToPayFixed": "10",
+    "cardFeeRegionLabel": "EEA cards",
+    "pricesIncludeTax": true,
+    "taxLabel": "VAT",
+    "cardSurchargeAllowed": false,
+    "cardSurchargeCapPct": "",
+    "cardSurchargeCreditOnly": false,
+    "cardSurchargeExcludedRegions": [],
+    "serviceFeeAllowed": false,
+    "tippingEnabledDefault": false,
+    "tipPresetsPct": [],
+    "serviceFeeRecipient": "truck",
+    "serviceFeeHatchgrabPct": "",
+    "serviceFeeHatchgrabFixed": "",
+    "serviceFeeTruckMaxPct": "",
+    "serviceFeeTruckMaxFixed": "",
+    "platformFeeEnabled": true,
+    "feesTaxed": false,
+    "currency": "EUR",
+    "locale": "en-IE",
+    "timeFormat": "24h",
+    "dateOrder": "dmy",
+    "weekStart": "monday",
+    "phoneCountryCode": "353",
+    "shortName": "Ireland",
+    "phoneExample": "085 123 4567",
+    "phoneCheck": "length",
+    "addressFormat": "ie",
+    "timezones": [
+     "Europe/Dublin"
+    ],
+    "defaultTimezone": "Europe/Dublin",
+    "allergenSet": "uk14",
+    "allergenCardOnlyAllowed": false,
+    "supportHours": ""
+   }
+  }
+ ],
+ "new": [
+  {
+   "code": "IE",
+   "expectedUpdatedAt": "2026-10-22 10:26:51.320563+00",
+   "form": {
+    "enabled": true,
+    "name": "Ireland",
+    "cardFeeOnlinePct": "1.5",
+    "cardFeeOnlineFixed": "25",
+    "cardFeeInPersonPct": "1.4",
+    "cardFeeInPersonFixed": "10",
+    "tapToPayFixed": "10",
+    "cardFeeRegionLabel": "EEA cards",
+    "pricesIncludeTax": true,
+    "taxLabel": "VAT",
+    "cardSurchargeAllowed": false,
+    "cardSurchargeCapPct": "",
+    "cardSurchargeCreditOnly": false,
+    "cardSurchargeExcludedRegions": [],
+    "serviceFeeAllowed": false,
+    "tippingEnabledDefault": false,
+    "tipPresetsPct": [],
+    "serviceFeeRecipient": "truck",
+    "serviceFeeHatchgrabPct": "",
+    "serviceFeeHatchgrabFixed": "",
+    "serviceFeeTruckMaxPct": "",
+    "serviceFeeTruckMaxFixed": "",
+    "platformFeeEnabled": true,
+    "feesTaxed": false,
+    "currency": "EUR",
+    "locale": "en-IE",
+    "timeFormat": "24h",
+    "dateOrder": "dmy",
+    "weekStart": "monday",
+    "phoneCountryCode": "353",
+    "shortName": "Ireland",
+    "phoneExample": "085 123 4567",
+    "phoneCheck": "length",
+    "addressFormat": "ie",
+    "timezones": [
+     "Europe/Dublin"
+    ],
+    "defaultTimezone": "Europe/Dublin",
+    "allergenSet": "uk14",
+    "allergenCardOnlyAllowed": false,
+    "supportHours": ""
+   }
+  }
+ ]
+}

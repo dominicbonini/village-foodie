@@ -33,9 +33,12 @@ interface AppHeaderProps {
    *  `relative` keeps the element positioned, keeps z-50 effective, and keeps the stacking context —
    *  identical rendering, minus the compositing hint. */
   sticky?: boolean
+  /** admin-countries-1 (23 October 2026): the admin pages pass `fullWidth` — no centred max width and the admin's 32px
+   *  side padding. Every other page passes nothing and is byte-identical. */
+  fullWidth?: boolean
 }
 
-export default function AppHeader({ truckName, truckLogoUrl, subtitle, children, sticky = true }: AppHeaderProps) {
+export default function AppHeader({ truckName, truckLogoUrl, subtitle, children, sticky = true, fullWidth = false }: AppHeaderProps) {
   return (
     <header
       className={`bg-slate-900 ${sticky ? 'sticky top-0' : 'relative'} z-50 shadow-md`}
@@ -44,8 +47,8 @@ export default function AppHeader({ truckName, truckLogoUrl, subtitle, children,
          with capacitor contentInset:'never' + viewport-fit=cover, which let CSS own the safe area. */
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >{/* HEADER_BG — change here changes all operator headers */}
-      <div className="px-4 py-3">
-        <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center justify-between relative"}>
+      <div className={fullWidth ? 'px-8 py-3' : 'px-4 py-3'}>
+        <div className={fullWidth ? 'w-full flex items-center justify-between relative' : "w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center justify-between relative"}>
 
           {/* ── Left: HatchGrab wordmark (V9.7) ──────────────────────────────────────────────────────
               🔴 UNCONDITIONAL — NO HOST DETECTION HERE, DELIBERATELY. All three renderers of AppHeader

@@ -1,0 +1,22 @@
+{
+ "auth.fields.emailPlaceholder": "you@example.lu",
+ "auth.signup.emailPlaceholder": "you@yourfoodtruck.lu",
+ "customDomain.card.exampleDomain": "yourfoodtruck.lu",
+ "demoGetStarted.emailPlaceholder": "you@yourfoodtruck.lu",
+ "demoUpload.emailPlaceholder": "you@yourfoodtruck.lu",
+ "designEditor.sample.area": "Esch-sur-Alzette",
+ "manageMenuImport.schedule.urlPlaceholder": "https://yourfoodtruck.lu/events",
+ "manageScheduleVerify.malformed": "That does not look like a web address. Try for example yourfoodtruck.lu/events",
+ "manageSettings.schedule.urlPlaceholder": "https://yourfoodtruck.lu/events",
+ "manageTeam.phonePlaceholder": "+352 621 123 456",
+ "posterWords.busyWeek.town1": "Differdange",
+ "posterWords.busyWeek.town2": "Bettembourg",
+ "posterWords.busyWeek.town3": "Ettelbruck",
+ "posterWords.busyWeek.town4": "Diekirch",
+ "posterWords.busyWeek.town5": "Remich",
+ "posterWords.busyWeek.town6": "Mersch",
+ "posterWords.busyWeek.venue1": "Differdange village hall",
+ "posterWords.busyWeek.venue2": "Bettembourg sports complex and recreation ground",
+ "posterWords.placeSample.nameTown": "The Café on the Square, Esch-sur-Alzette",
+ "posterWords.placeSample.nameTownBelow": "The Café on the Square\nEsch-sur-Alzette"
+}

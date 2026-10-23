@@ -131,7 +131,7 @@ export default function WhatsAppTemplatesPage() {
   const notConfigured = !!config && config.missing.length > 0
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 24, fontFamily: 'system-ui, sans-serif' }}>
+    <div style={{ padding: '24px 32px', fontFamily: 'system-ui, sans-serif' }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>WhatsApp message templates</h1>
       <p style={{ color: '#64748b', fontSize: 13, marginBottom: 20 }}>
         Admin only. Uses the platform WhatsApp Business Account and the platform access token. No truck

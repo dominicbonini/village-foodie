@@ -63,7 +63,7 @@ was `next build` only; the screenshots use a tiny local static server with fixtu
   |---|---|
   | Harness `pricing-check-1` | **55/55** |
   | Screenshot run | **52/52** checks; 14 PNGs (WebKit and Chromium, 1512 and 390, fixture data only) |
-  | Full sweep | SWEEP_RESULT |
+  | Full sweep | **166 run · 165 passed · 1 failed** → fixed: the one failure was a pinned list of `schedule_graphics` readers; re-pinned (§8) and **270/270** on re-run |
   | tsc | clean |
   | New files | lint clean |
   | `app/admin/page.tsx` | same 13 lint problems as at HEAD |
@@ -117,6 +117,8 @@ was `next build` only; the screenshots use a tiny local static server with fixtu
   - the wide render block;
   - the body wrapper is hidden on this tab;
   - the tab bar is `max-w-6xl`.
+- `scripts/schedule-graphics-places.cjs`: `lib/pricing-check.ts` added to its pinned list of `schedule_graphics`
+  readers, marked `⚠️ RE-PINNED (pricing-check-1)` (§8).
 - `scripts/countries-screenshots.cjs`: one check re-pinned, "Countries comes just before Pricing check, the last tab".
   Marked `⚠️ RE-PINNED (pricing-check-1)`.
   - **Not run:** it overwrites committed PNGs in `docs/screenshots/`.
@@ -389,7 +391,15 @@ esbuild and answers every `/api/*` call with fixtures:
     - an unknown action refused.
 
   The file contains no word the runner's screen refuses.
-- **Full sweep:** SWEEP_DETAIL
+- **Full sweep:** `node scripts/run-harnesses.cjs --list=<a scratch copy of scripts/harnesses.json + pricing-check-1.cjs>`,
+  17 minutes: **166 run · 165 passed · 1 failed**, with `pricing-check-1` passing.
+  - **The one failure was `schedule-graphics-places.cjs`**, "the Feature gates the tab, the pane, the shortcut and both
+    routes — and nothing else". It pins the exact list of files that name `schedule_graphics`, so that a new reader
+    needs a human to write it down. `lib/pricing-check.ts` names it as data, for the "Social media posts" row, like
+    `lib/feature-table.ts`.
+  - Re-pinned with a `⚠️ RE-PINNED (pricing-check-1)` note; that harness passes **270/270** on its own.
+  - I didn't re-run the whole 17-minute sweep: the re-pin touches only that harness.
+  - The runner's existing note that 12 files are in neither group is unchanged; my three are in the scratch list.
 - **To register it** (when you decide on §0.1), add to `scripts/harnesses.json`:
   - `"pricing-check-1.cjs"` to `harnesses`;
   - `"pricing-check-build-data.cjs"` to `excluded.fixture_generators`, since it rewrites the committed JSON;
@@ -446,4 +456,5 @@ drop table if exists public.country_benchmarks;
 commit;
 ```
 
-**Code:** delete the new files in §3 and revert `app/admin/page.tsx` and `scripts/countries-screenshots.cjs`.
+**Code:** delete the new files in §3 and revert `app/admin/page.tsx`, `scripts/countries-screenshots.cjs` and
+`scripts/schedule-graphics-places.cjs`.

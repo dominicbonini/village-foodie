@@ -1,7 +1,8 @@
 // scripts/_france-1-fixtures.cjs — the France fixtures for france-1 (22 October 2026, docs/france-1-report.md). A MODULE,
 // the same shape as scripts/_canada-1-fixtures.cjs.
 //
-// 🔴 THE FR ROW IS READ FROM THE NOT RUN SQL ITSELF (supabase/migrations/20261034_france_row.sql), not typed again here: the
+// 🔴 THE FR ROW IS READ FROM THE NOT RUN SQL ITSELF (supabase/migrations/20261040_france_row_recheck.sql — admin-countries-1,
+// 23 October 2026, which supersedes 20261034 with the same values, safe to run twice), not typed again here: the
 // insert's columns and values are parsed, so every check that renders "France" proves the SQL Dominic will run. Switched ON
 // here only (`enabled` overridden) — the SQL inserts it OFF.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
@@ -11,7 +12,7 @@ const LP1E = require('./_lp1e-fixtures.cjs')
 const NP = require('./_native-prices-fixtures.cjs')
 
 const REPO = path.resolve(__dirname, '..')
-const SQL_FILE = 'supabase/migrations/20261034_france_row.sql'
+const SQL_FILE = 'supabase/migrations/20261040_france_row_recheck.sql'
 const snake = LP1E.snake
 
 /** Splits a SQL list on its top-level commas (not inside quotes, parentheses or brackets). */
@@ -37,7 +38,7 @@ function literal(v) {
   if (/^-?\d+(\.\d+)?$/.test(v)) return Number(v)
   throw new Error(`[france-1 fixtures] cannot read the SQL value ${v}`)
 }
-const stripComments = s => s.replace(/--[^\n]*/g, '')
+const stripComments = s => s.replace(/--[^\n]*/g, '').replace(/on conflict[^;]*;/g, ';')   // 20261040's `on conflict … do nothing`
 
 /** The country_settings row and the plan_prices rows exactly as the NOT RUN SQL inserts them (snake_case, as the table). */
 function sqlRows() {

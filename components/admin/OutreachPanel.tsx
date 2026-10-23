@@ -18,6 +18,7 @@
 //     carries minWidth:1510px, so rendering it inside that container would put the last columns off-screen
 //     on every monitor — the exact arithmetic fault that container note below describes. app/admin/page.tsx
 //     renders this tab OUTSIDE the max-w-6xl wrapper, in a max-w-[1800px] one. Do not move it back in.
+//     admin-countries-1 (23 October 2026): every admin wrapper is now full width (px-8) — no max-w-6xl, no 1800px cap.
 //   • The route still exists at app/admin/outreach/page.tsx as a REDIRECT to /admin?tab=outreach, so old
 //     links and bookmarks keep working.
 //

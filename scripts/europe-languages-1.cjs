@@ -32,6 +32,12 @@ const deep = (a, b) => { const o = { ...a }; for (const [k, v] of Object.entries
 // Each: its locales (base first), the countries it completes as their PRIMARY language, the order button (the statute's words,
 // docs/europe-languages-1-report.md §3), plan names, and WhatsApp questions a customer would write.
 const LANGS = [
+  // admin-countries-1 (23 October 2026): French for LUXEMBOURG — fr-LU, a sparse override of fr-FR. France itself is proved
+  // by scripts/france-1.cjs (its row is 20261040, not in europe-settings' SQL); ⚠️ RE-PINNED the same day: Romania's button
+  // is now „Comandă ce implică o obligație de plată” (Dominic's wording).
+  { lang: 'fr', base: 'fr-FR', countries: { LU: 'fr-LU' }, button: ['Commander avec obligation de paiement', 'Payer {amount}'], plans: { payg: 'Sans abonnement', unlimited: 'Illimité' },
+    safety: ['Est-ce sans gluten ?', 'Avez-vous des options sans lactose ?', 'Mon fils est allergique aux noix', 'Je suis allergique aux arachides', 'J’ai une intolérance au lactose', 'Je suis cœliaque', 'Ma fille a un EpiPen', 'Peut-il contenir des traces de sésame ?', 'Est-ce adapté aux personnes allergiques ?', 'Y a-t-il un risque de contamination croisée ?'],
+    plain: ['Où êtes-vous aujourd’hui ?', 'Quelles pizzas avez-vous ?', 'À quelle heure fermez-vous ?', 'La Margherita a-t-elle du fromage ?', 'Combien coûte la Margherita ?'] },
   { lang: 'de', base: 'de-DE', countries: { DE: 'de-DE', AT: 'de-AT', CH: 'de-CH', LI: 'de-LI' },
     // europe-languages-2 Stage 0: Germany and Austria — the statute's words and nothing else, so no amount on the card button;
     // Switzerland has no button rule and Liechtenstein writes as Switzerland does, so they keep it.
@@ -75,7 +81,7 @@ const LANGS = [
   { lang: 'hu', base: 'hu-HU', countries: { HU: 'hu-HU' }, button: ['Fizetési kötelezettséggel járó megrendelés', 'Fizetés: {amount}'], plans: { payg: 'Havidíj nélkül', unlimited: 'Korlátlan' },
     safety: ['Ez gluténmentes?', 'Van laktózmentes választék?', 'A fiam diófélékre allergiás', 'Allergiás vagyok a földimogyoróra', 'Laktózérzékeny vagyok', 'Lisztérzékeny vagyok', 'A lányomnak EpiPenje van', 'Tartalmazhat nyomokban szezámmagot?', 'Allergiásoknak is megfelel?', 'Van keresztszennyeződés veszélye?'],
     plain: ['Hol vagytok ma?', 'Milyen pizzáitok vannak?', 'Mikor zártok?', 'Van sajt a Margheritán?', 'Mennyibe kerül a Margherita?'] },
-  { lang: 'ro', base: 'ro-RO', countries: { RO: 'ro-RO' }, button: ['Comandă cu obligație de plată', 'Plătiți {amount}'], plans: { payg: 'Fără abonament', unlimited: 'Nelimitat' },
+  { lang: 'ro', base: 'ro-RO', countries: { RO: 'ro-RO' }, button: ['Comandă ce implică o obligație de plată', 'Plătiți {amount}'], plans: { payg: 'Fără abonament', unlimited: 'Nelimitat' },
     safety: ['Este fără gluten?', 'Aveți opțiuni fără lactoză?', 'Fiul meu are alergie la nuci', 'Sunt alergică la arahide', 'Am intoleranță la lactoză', 'Am boala celiacă', 'Fiica mea are un EpiPen', 'Poate conține urme de susan?', 'Este potrivit pentru alergici?', 'Există risc de contaminare încrucișată?'],
     plain: ['Unde sunteți azi?', 'Ce pizza aveți?', 'La ce oră închideți?', 'Margherita are brânză?', 'Cât costă Margherita?'] },
   { lang: 'hr', base: 'hr-HR', countries: { HR: 'hr-HR' }, button: ['Narudžba s obvezom plaćanja', 'Platite {amount}'], plans: { payg: 'Bez mjesečne pretplate', unlimited: 'Neograničeno' },
@@ -258,7 +264,7 @@ const SEG = Object.fromEntries([...read('lib/marketing-country.ts').matchAll(/\b
     const sql = read(f)
     t(`${f.replace(/^.*\/(\d+)_.*$/, '$1')}: one begin/commit, only short_name updates, each guarded by enabled = false; the language's own name for each built country`,
       (sql.match(/\bbegin;/g) || []).length === 1 && (sql.match(/\bcommit;/g) || []).length === 1 && !/\b(insert|delete|alter|drop)\b/i.test(sql.replace(/--[^\n]*/g, ''))
-      && [...sql.matchAll(/^update [^\n]+$/gm)].every(m => /set short_name = '[^']+'\s+where country_code = '[A-Z]{2}' and enabled = false;$/.test(m[0])) && ON.every(cc => !!SHORT[cc]), SHORT)
+      && [...sql.matchAll(/^update [^\n]+$/gm)].every(m => /set short_name = '[^']+'\s+where country_code = '[A-Z]{2}' and enabled = false;$/.test(m[0])) && ON.filter(cc => cc !== 'LU').every(cc => !!SHORT[cc]), SHORT)   // LU: "Luxembourg" is already its French name
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} europe-languages-1: ${pass} passed, ${fail} failed`)

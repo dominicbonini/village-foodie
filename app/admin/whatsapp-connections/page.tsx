@@ -104,7 +104,7 @@ export default function WhatsAppConnectionsPage() {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="px-8 py-6">
       <h1 className="text-xl font-bold text-slate-800">WhatsApp connections</h1>
       <p className="mt-1 text-sm text-slate-600">
         Nightly maintenance runs at 03:00 UTC. Automatic token refresh is{' '}

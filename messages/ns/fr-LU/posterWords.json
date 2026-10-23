@@ -1,0 +1,16 @@
+{
+  "placeSample": {
+    "nameTownBelow": "Le Café de la Place\nEsch-sur-Alzette",
+    "nameTown": "Le Café de la Place, Esch-sur-Alzette"
+  },
+  "busyWeek": {
+    "venue1": "Salle des fêtes de Differdange",
+    "town1": "Differdange",
+    "venue2": "Complexe sportif et terrain de loisirs de Bettembourg",
+    "town2": "Bettembourg",
+    "town3": "Ettelbruck",
+    "town4": "Diekirch",
+    "town5": "Remich",
+    "town6": "Mersch"
+  }
+}

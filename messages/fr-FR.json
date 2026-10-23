@@ -4927,7 +4927,7 @@
     "firstName": "Prénom *",
     "lastName": "Nom *",
     "phone": "Téléphone",
-    "phonePlaceholder": "+44 7700 900000",
+    "phonePlaceholder": "+33 6 12 34 56 78",
     "email": "E-mail",
     "verifyNote": "Un lien de vérification sera envoyé à cette adresse. Votre adresse e-mail actuelle reste active jusqu’à la vérification.",
     "privacy": "Vos informations personnelles sont privées et ne sont jamais montrées aux clients. Elles servent à la gestion du compte et à la vérification de la facturation.",

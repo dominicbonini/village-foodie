@@ -258,7 +258,7 @@ export default function AdminPage() {
 
   // 🔴 'outreach' IS A REAL TAB, NOT A LINK. Its console lives in components/admin/OutreachPanel.tsx and
   // is mounted below when this is selected, so it fetches on first selection rather than on every /admin
-  // visit. ⚠️ It is rendered OUTSIDE the max-w-6xl body wrapper — see the render site for why.
+  // visit. ⚠️ It is rendered OUTSIDE the main body wrapper — see the render site for why.
   const [adminTab, setAdminTab] = useState<AdminTab>('trucks')
   // Has the Countries tab been opened yet? Set on selection, never cleared — see its render site.
   const [countriesSeen, setCountriesSeen] = useState(false)
@@ -870,7 +870,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <AppHeader truckName="Admin" truckLogoUrl={null} subtitle="Platform admin">
+      <AppHeader truckName="Admin" truckLogoUrl={null} subtitle="Platform admin" fullWidth>
         {/* ⚠️ THE OUTREACH HEADER BUTTON THAT SAT HERE IS GONE — outreach is a TAB in the row below now,
             not a route to link out to. The note it carried argued that a route could not be a tab without
             "faking a tab that navigates away"; that was resolved by moving the console itself into
@@ -886,9 +886,9 @@ export default function AdminPage() {
 
       {/* Tab bar */}
       <div className="sticky top-[51px] z-40 bg-slate-900 border-b border-slate-700 overflow-x-auto">
-        {/* max-w-6xl, the body wrapper's width (pricing-check-1): at 5xl (1024px) the ninth tab, Pricing check, was cut off at
-            1512px and had to be scrolled to. */}
-        <div className={"w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
+        {/* admin-countries-1 (23 October 2026): FULL WIDTH, like every admin body below — no centred max width, the same
+            32px side padding (px-8) on a laptop and a desktop. */}
+        <div className={"w-full px-8 flex gap-1 overflow-x-auto"}>
           {(Object.keys(ADMIN_TABS) as AdminTab[]).map(tab => (
             <button
               key={tab}
@@ -905,12 +905,11 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* 🔴 OUTREACH IS RENDERED OUTSIDE THIS WRAPPER, NOT INSIDE IT — see below. This wrapper is
-          max-w-6xl (1152px) and the outreach table's colgroup carries minWidth:1510px, so putting the
-          panel in here would push its last columns off-screen on EVERY monitor. That is arithmetic, not
-          a small-screen problem, and it is the exact fault that was fixed on that table earlier. The
-          wrapper is HIDDEN rather than unmounted so the three tab blocks inside keep their state. */}
-      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing') ? 'hidden' : "w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
+      {/* 🔴 OUTREACH, EVENTS AND PRICING ARE RENDERED OUTSIDE THIS WRAPPER — see below. This wrapper was
+          max-w-6xl (1152px) until admin-countries-1 (23 October 2026); every admin body is now full width with
+          32px side padding (px-8), and a text-heavy panel keeps its own readable width (the screenshot uploader's
+          max-w-3xl). The wrapper is HIDDEN rather than unmounted so the tab blocks inside keep their state. */}
+      <div className={(adminTab === 'outreach' || adminTab === 'events' || adminTab === 'pricing') ? 'hidden' : "w-full px-8 py-6"}>
 
         {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
             🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
@@ -1390,34 +1389,34 @@ export default function AdminPage() {
         // under the tab strip, and 24px of padding under 24px of the strip's own read as a gap. Every
         // other tab starts with a heading or a card, where the air is right — so this is one branch's
         // padding, not a change to the shell.
-        <div className="w-full max-w-[1800px] mx-auto px-4 pt-3 pb-6">
+        <div className="w-full px-8 pt-3 pb-6">
           <TemplatesPanel />
         </div>
       )}
 
       {adminTab === 'outreach' && (
-        <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
+        <div className="w-full px-8 py-6">
           <OutreachPanel />
         </div>
       )}
 
       {/* ── DISCOVERY EVENTS ───────────────────────────────────────────────────────────────────────
-          Rendered OUTSIDE the max-w-6xl body wrapper for the same reason Outreach is: the table carries
+          Rendered OUTSIDE the main body wrapper for the same reason Outreach is: the table carries
           minWidth 1060px and the wrapper caps at 1152px, which leaves no room for the page padding.
           ⚠️ Unmounted when the tab is not selected, so it fetches on first selection rather than on
           every /admin visit — and a stale event list is never held over from a previous visit. */}
       {adminTab === 'events' && (
-        <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
+        <div className="w-full px-8 py-6">
           <DiscoveryEventsPanel />
         </div>
       )}
 
       {/* ── PRICING CHECK ──────────────────────────────────────────────────────────────────────────
-          OUTSIDE the max-w-6xl body wrapper, in the wide container Outreach uses: a country list beside a country's
+          OUTSIDE the main body wrapper, in the container Outreach uses: a country list beside a country's
           tables, which wants the width of a 27in monitor rather than 1152px. Mounted on the first visit and HIDDEN after
           (like Countries), so the chosen country, size and filters survive a look at another tab. */}
       {pricingSeen && (
-        <div className={adminTab === 'pricing' ? 'w-full max-w-[1800px] mx-auto px-4 py-6' : 'hidden'}>
+        <div className={adminTab === 'pricing' ? 'w-full px-8 py-6' : 'hidden'}>
           <PricingCheckTab />
         </div>
       )}

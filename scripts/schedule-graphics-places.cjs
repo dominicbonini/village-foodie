@@ -1046,6 +1046,10 @@ function runWiringSuite(lib) {
         // is gated by it (a plan with it off shows "—") and the cards list it as a feature a plan adds. A display reader,
         // like ROW_FEATURE_MAP was, written down here so a further consumer still needs a human to add it.
         'lib/feature-table.ts',
+        // ⚠️ RE-PINNED (pricing-check-1, 23 October 2026): Admin › Pricing check's key-features row "Social media posts"
+        // reads the key as DATA — lib/pricing-check.ts KEY_FEATURES asks the catalogue which public plans have it on
+        // ("Pro & Unlimited"). A display reader, like lib/feature-table.ts; it gates nothing.
+        'lib/pricing-check.ts',
       ]
       return inCode.length === EXPECTED.length && EXPECTED.every(f => inCode.includes(f))
     })())
