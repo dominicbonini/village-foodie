@@ -2255,6 +2255,8 @@
  "landingFooter.terms": "Terms",
  "landingNav.country.button": "Country: {name}. Change country",
  "landingNav.country.menu": "Country",
+ "landingNav.country.subline": "Prices, language and settings adapt accordingly.",
+ "landingNav.country.title": "Choose your country",
  "landingNav.cta": "Upload your menu →",
  "landingNav.ctaShort": "Upload menu",
  "landingNav.features": "Features",

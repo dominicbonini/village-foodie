@@ -5545,7 +5545,9 @@
     "logIn": "Prihlásiť sa",
     "country": {
       "button": "Krajina: {name}. Zmeniť krajinu",
-      "menu": "Krajina"
+      "menu": "Krajina",
+      "title": "Vyberte si svoju krajinu",
+      "subline": "Ceny, jazyk a nastavenia sa tomu prispôsobia."
     }
   },
   "landingFooter": {

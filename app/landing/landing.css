@@ -1076,36 +1076,50 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    styles that used to live here are gone with the form. `.btn`/`.btn-primary`/`.btn-lg` above still style
    the trigger, so it matches every other CTA on the page. */
 
-/* ---------- COUNTRY MENU (Phase 2D-1, components/landing/CountryMenu.tsx) ----------
+/* ---------- COUNTRY PICKER (Phase 2D-1; country-picker-1, 23 October 2026 — components/landing/CountryMenu.tsx) ----------
    ⛔ NOT IN THE HEADER ANY MORE (Dominic, 22 October 2026): the `.cc-head` rules went with the nav's button.
-   FOOTER: under the store badges, right-aligned; centred with the rest of the footer on a phone.
-   Button and every item are at least 44px tall (touch target). The menu opens UP, so it never runs off the page. */
-.hg-landing .cc { position: relative; display: inline-flex; }
-.hg-landing .cc-btn { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 .6rem; border-radius: 7px; border: 1px solid transparent; background: transparent; color: #C3CAD8; font-family: var(--body); font-weight: 600; font-size: .9rem; cursor: pointer; white-space: nowrap; }
-.hg-landing .cc-btn:hover, .hg-landing .cc-btn[aria-expanded="true"] { color: #fff; border-color: rgba(255,255,255,.18); }
-.hg-landing .cc-btn:focus-visible, .hg-landing .cc-item:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
-.hg-landing .cc-foot .cc-btn { font-size: .85rem; }
-/* Desktop: the footer column is right-aligned, so the button's own padding is pulled back out and its text
-   lines up with the links' right edge. (Specificity 0,2,0 beats the `.hg-landing * { margin: 0 }` reset.) */
-@media(min-width:721px){ .hg-landing .cc-foot { margin-right: -.6rem; } }
+   THE TRIGGER: the current country's flag + code + chevron, INLINE as the footer link row's last item, in the links'
+   muted colour, a touch smaller. On a phone it wraps with the links, centred on its own line of the 3-column grid.
+   THE BOX: a modal dialog, centred over a dimmed page (fixed, so the footer's position never matters); three columns
+   on a laptop, two on a phone; it scrolls inside itself (max-height: the window), never the page. Closed, it is
+   display:none — out of the layout, the tab order and the accessibility tree — but its links are in the HTML. */
+.hg-landing .cc { display: inline-flex; }
+.hg-landing .cc-btn { display: inline-flex; align-items: center; gap: .35rem; padding: 0; border: 0; background: transparent; color: #C3CAD8; font-family: var(--body); font-weight: 500; font-size: .82rem; line-height: inherit; cursor: pointer; white-space: nowrap; }
+.hg-landing .cc-btn:hover, .hg-landing .cc-btn[aria-expanded="true"] { color: #fff; }
+.hg-landing .cc-btn:focus-visible, .hg-landing .cc-item:focus-visible, .hg-landing .cc-x:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 4px; }
+.hg-landing .cc-btn .cc-flag { width: 18px; height: 12px; }
+.hg-landing .cc-code { letter-spacing: .02em; }
 .hg-landing .cc-flag { display: block; width: 21px; height: 14px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,.18); flex-shrink: 0; }
 .hg-landing .cc-flag-none { background: rgba(255,255,255,.2); }
 .hg-landing .cc-chev { flex-shrink: 0; opacity: .8; }
-.hg-landing .cc-menu { position: absolute; right: 0; z-index: 60; min-width: 13rem; list-style: none; padding: .35rem; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px rgba(15,34,56,.22); }
-.hg-landing .cc-foot .cc-menu { bottom: calc(100% + .35rem); }
-.hg-landing .cc-item { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 44px; padding: 0 .7rem; border: 0; border-radius: 7px; background: transparent; color: var(--ink); font-family: var(--body); font-size: .92rem; font-weight: 500; text-align: left; cursor: pointer; }
-.hg-landing .cc-item:hover { background: var(--wash); }
-.hg-landing .cc-item[aria-checked="true"] { font-weight: 700; color: var(--head); }
+.hg-landing .cc-dlg { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(10,22,40,.55); }
+.hg-landing .cc-dlg-closed { display: none; }
+.hg-landing .cc-box:focus { outline: none; }
+.hg-landing .cc-box { position: relative; width: min(52rem, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; padding: 1.6rem 1.6rem 1.3rem; background: var(--paper); color: var(--ink); border-radius: 14px; box-shadow: 0 24px 64px rgba(10,22,40,.35); text-align: left; }
+.hg-landing .cc-x { position: absolute; top: .8rem; right: .8rem; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); cursor: pointer; }
+.hg-landing .cc-x:hover { background: var(--wash); }
+.hg-landing .cc-title { font-family: var(--display); font-size: 1.35rem; font-weight: 800; line-height: 1.2; color: var(--head); padding-right: 2.5rem; }
+.hg-landing .cc-sub { margin-top: .3rem; font-size: .92rem; color: var(--ink); opacity: .75; }
+.hg-landing .cc-list { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .15rem .9rem; margin-top: 1.1rem; }
+/* `.cc-box a.cc-item`: the box sits inside `.foot-links`, whose `a` colour, size and white hover must not reach it. */
+.hg-landing .cc-box a.cc-item { display: flex; align-items: center; gap: .6rem; min-height: 38px; padding: 0 .6rem; border-radius: 7px; color: var(--ink); font-family: var(--body); font-size: .92rem; font-weight: 500; text-decoration: none; }
+.hg-landing .cc-box a.cc-item:hover { background: var(--wash); color: var(--head); }
+.hg-landing .cc-box a.cc-item[aria-current="true"] { font-weight: 700; color: var(--head); background: var(--wash); }
 .hg-landing .cc-item .cc-flag { box-shadow: 0 0 0 1px var(--line); }
-.hg-landing .cc-item-name { flex: 1; }
-/* seo-fixes M1: the menu is always in the HTML (its options are crawlable <a href>s); closed, it is display:none — out of
-   the layout, the tab order and the accessibility tree, as when it was not rendered. The options were <button>s; as
-   anchors they keep the same box (`.cc-item` above sets it all) and never underline. */
-.hg-landing .cc-menu-closed { display: none; }
-.hg-landing a.cc-item { text-decoration: none; }
-.hg-landing .cc-tick { color: var(--orange-deep); flex-shrink: 0; }
+.hg-landing .cc-item-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hg-landing .cc-item-code { font-size: .75rem; font-weight: 600; letter-spacing: .03em; color: var(--ink); opacity: .45; }
+.hg-landing .cc-item-tick { display: inline-flex; width: 16px; flex-shrink: 0; }
+.hg-landing .cc-tick { color: var(--orange-deep); }
 @media(max-width:720px){
-  .hg-landing .cc-foot .cc-menu { right: auto; left: 50%; transform: translateX(-50%); }
+  /* the trigger: its own centred line under the 3 + 3 links, with a 44px touch target */
+  .hg-landing .foot-links .cc { grid-column: 1 / -1; }
+  .hg-landing .cc-btn { min-height: 44px; }
+  .hg-landing .cc-box { padding: 1.25rem 1rem 1rem; }
+  .hg-landing .cc-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .1rem .4rem; }
+  .hg-landing .cc-box a.cc-item { min-height: 44px; padding: .3rem .45rem; gap: .45rem; line-height: 1.2; }
+  .hg-landing .cc-item-name { white-space: normal; overflow-wrap: break-word; }
+  .hg-landing .cc-item-tick:empty { display: none; }
+  .hg-landing .cc-item-code { display: none; }
 }
 
 /* ── about-page (22 October 2026, docs/about-page-report.md; the approved mockup "about-mockup-2") ─────────────────────────

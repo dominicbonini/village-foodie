@@ -7,6 +7,8 @@
   "logIn": "Log ind",
   "country": {
     "button": "Land: {name}. Skift land",
-    "menu": "Land"
+    "menu": "Land",
+    "title": "Vælg dit land",
+    "subline": "Priser, sprog og indstillinger tilpasses derefter."
   }
 }

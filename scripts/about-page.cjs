@@ -90,10 +90,12 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
 
   head('4 · IT FEELS LOCAL — the nav and footer keep the visitor’s country; the country menu is in the FOOTER only')
   const us = await render({ country: 'US' }), ie = await render({ cookie: 'IE' })
-  const curName = html => (footOf(html).match(/<span class="cc-name">([^<]*)<\/span>/) || [])[1]
-  t('GB visitor: the footer menu shows United Kingdom', curName(gb.html) === 'United Kingdom', curName(gb.html))
-  t('?country=US: the footer menu shows United States, and the same story', curName(us.html) === 'United States' && STORY.every(s => us.html.includes(esc(s))), curName(us.html))
-  t('hg_country=IE: the footer menu shows Ireland', curName(ie.html) === 'Ireland', curName(ie.html))
+  // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): the footer trigger shows the flag and the
+  // CODE ("GB ▾"); the country's name is its label ("Country: United Kingdom. Change country"), read here with the code.
+  const curName = html => { const f = footOf(html); const m = /<span class="cc-code">([A-Z]{2})<\/span>/.exec(f), l = /class="cc-btn"[^>]*aria-label="Country: ([^".]+)\. Change country"/.exec(f); return m && l ? `${l[1]} (${m[1]})` : (f.match(/<span class="cc-name">([^<]*)<\/span>/) || [])[1] }
+  t('GB visitor: the footer menu shows United Kingdom', curName(gb.html) === 'United Kingdom (GB)', curName(gb.html))
+  t('?country=US: the footer menu shows United States, and the same story', curName(us.html) === 'United States (US)' && STORY.every(s => us.html.includes(esc(s))), curName(us.html))
+  t('hg_country=IE: the footer menu shows Ireland', curName(ie.html) === 'Ireland (IE)', curName(ie.html))
   t('the nav has no country menu (on /about, as on every page)', ![gb, us, ie].some(r => /cc-head|cc-btn/.test(navOf(r.html))))
   t('the canonical is /about for every visitor', [us, ie].every(r => r.meta.alternates.canonical === 'https://www.hatchgrab.com/about'))
   t('the footer carries the "About" link on /about too', footOf(gb.html).includes('<a href="/about">About</a>'))

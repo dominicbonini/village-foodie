@@ -7,6 +7,8 @@
   "logIn": "Inloggen",
   "country": {
     "button": "Land: {name}. Land wijzigen",
-    "menu": "Land"
+    "menu": "Land",
+    "title": "Kies je land",
+    "subline": "Prijzen, taal en instellingen passen zich daarop aan."
   }
 }

@@ -130,6 +130,10 @@ if (STAGE_B.LANDED) NAMED.push({ id: 'pricing-b-features-description', what: 'St
 const PLANS_BILLING = /^billing\/billing\|(GB|US)\|(trial|starter|pro|max|tester)(\||$)/
 const PLANS_NEW_VIEWS = /^billing\/billing\|(GB|US)\|plan\|/
 let BILL_BEFORE = null
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (country-picker-1)
+const PICKER = require('./_lp-country-picker.cjs')
+const pickerPair = (b, a) => (PICKER.LANDED && typeof a === 'string' && PICKER.find(a)?.kind === 'new' && PICKER.find(b)?.kind === 'old' && PICKER.inLinkRow(a) && PICKER.sameCountries(b, a)
+  ? [PICKER.cut(b), PICKER.cut(a)] : [b, a])
 /** BEFORE value → { expected, touched, matches? } */
 function expect(id, before) {
   let v = JSON.parse(JSON.stringify(before)); const touched = []
@@ -141,7 +145,10 @@ function expect(id, before) {
   }
   const out = { expected: v, touched }
   const sb = STAGE_B.LANDED && STAGE_B_VIEWS.find(([re]) => re.test(id))
-  if (sb) { touched.push(sb[1]); out.matches = f => sb[2](v, f) }
+  // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): PICKER-footer — on these page views the
+  // footer's picker block is verified (BEFORE's old menu, AFTER's new trigger + dialog as the link row's last item, the same
+  // countries with the same one current) and cut whole from both sides before Stage B's proof; every other byte still compares.
+  if (sb) { touched.push(sb[1]); out.matches = f => sb[2](...pickerPair(v, f)) }
   if (PLANS_BILLING.test(id)) {
     touched.push('plans-billing-plan-card')
     const proof = require('./_lp1d2-named.cjs').makeBillingProof(cc => { const k = `billing/billing|${cc}|pro|matrix`; return expect(k, BILL_BEFORE[k]).expected })

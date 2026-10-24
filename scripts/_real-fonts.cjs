@@ -39,7 +39,9 @@ const NEEDS_SCRIPT_FALLBACK = /^(el|bg)(-|$)/i
 
 /** Open `html` (a view's markup) at `width` in `browser`, as the root layout would wrap it for `lang`, with the real fonts.
  *  Returns { page, fonts } — `fonts`: every font file the page requested (paths under /_next/static/media). */
-async function open(browser, { html, lang, width = 390, height = 900, B = built() }) {
+// country-picker-1 (23 October 2026): `script` (optional) — browser JavaScript served at /view.js and run after the view's
+// markup, to bring a client component on the page to life (the country picker's box). Without it the page is unchanged.
+async function open(browser, { html, lang, width = 390, height = 900, B = built(), script = null }) {
   const ctx = await browser.newContext({ viewport: { width, height } })
   const page = await ctx.newPage()
   const fonts = []
@@ -51,7 +53,10 @@ async function open(browser, { html, lang, width = 390, height = 900, B = built(
       html = html.replace(/\bfont-([A-Z][A-Za-z]*(?:_[A-Z][A-Za-z]*)*)\b/g, (m, X) => B.varClass[`--font-${X.toLowerCase().replace(/_/g, '-')}`] ?? m)
       const body = [B.geistClass, B.monoClass, NEEDS_SCRIPT_FALLBACK.test(lang) ? B.scriptClass : null, 'antialiased'].filter(Boolean).join(' ')
       const links = B.files.map(f => `<link rel="stylesheet" href="/_next/static/chunks/${f}">`).join('')
-      return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${links}<style>body{background:#fff;margin:0}</style></head><body class="${body}">${html}</body></html>` })
+      return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${links}<style>body{background:#fff;margin:0}</style></head><body class="${body}">${html}${script ? '<script src="/view.js"></script>' : ''}</body></html>` })
+    }
+    if (u.pathname === '/view.js' && script) {
+      return route.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8', body: script })
     }
     if (u.pathname.startsWith('/_next/static/')) {
       const file = path.join(STATIC, decodeURIComponent(u.pathname.slice('/_next/static/'.length)))

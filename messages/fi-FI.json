@@ -5545,7 +5545,9 @@
     "logIn": "Kirjaudu sisään",
     "country": {
       "button": "Maa: {name}. Vaihda maata",
-      "menu": "Maa"
+      "menu": "Maa",
+      "title": "Valitse maasi",
+      "subline": "Hinnat, kieli ja asetukset mukautuvat valintasi mukaan."
     }
   },
   "landingFooter": {

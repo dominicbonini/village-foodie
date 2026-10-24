@@ -7,6 +7,8 @@
   "logIn": "Entrar",
   "country": {
     "button": "País: {name}. Cambiar de país",
-    "menu": "País"
+    "menu": "País",
+    "title": "Elige tu país",
+    "subline": "Los precios, el idioma y la configuración se adaptan a tu elección."
   }
 }

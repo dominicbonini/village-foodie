@@ -104,6 +104,9 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
             {/* about-page (22 October 2026): the founder's page — HatchGrab only, like every page this footer is on. */}
             <a href={ABOUT_PATH}>{t('about')}</a>
             <a href={contactHref('general')}>{t('contact')}</a>
+            {/* country-picker-1 (23 October 2026): the country trigger — flag, code, chevron — INLINE as the row's last item, in
+                the links' muted colour; it opens the "Choose your country" box. It had its own row under the badges. */}
+            {country && <CountryMenu menu={country} />}
           </div>
             {/* ── 🔴 APP STORE BADGE ─────────────────────────────────────────────────────
                 IN THE BRAND COLUMN, UNDER THE TAGLINE — not in .foot-base and not in .foot-links.
@@ -129,8 +132,6 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
                 ⚠️ The classes REPLACE the component's Tailwind defaults rather than adding to them, so
                 exactly one rule owns the gap. */}
             <StoreBadges className="foot-apps" linkClassName="foot-badge" countryCode={country?.current.code} locale={locale} />
-            {/* Phase 2D-1: the country button, at every width — flag, full name, chevron. */}
-            {country && <CountryMenu menu={country} />}
         </div>
       </div>
       {/* 🔴 REVERSED ON 2 SEPTEMBER 2026, ON REQUEST — THE ORIGINAL REASONING IS KEPT BELOW ON PURPOSE.

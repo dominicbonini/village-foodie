@@ -239,7 +239,12 @@ const usBehaviour = id => (US_BEHAVIOUR.find(([re]) => re.test(id)) || [null, 'U
  *  JSX text run becomes one message (`~{n} orders`) or a literal next to an expression (`<Check /> {t('…')}`). Exactly
  *  that 8-character string is removed — no other markup, text or whitespace is touched. */
 const SEP = /<!-- -->/g
-const normalize = v => (typeof v === 'string' ? v.replace(SEP, '') : v)
+// ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): + PICKER-footer — the footer's country picker
+// block (BEFORE's <div class="cc cc-foot"> menu, F's <span class="cc cc-foot"> dialog) is cut WHOLE from both sides, so every
+// other byte still compares; the new block itself is proved by scripts/country-picker-1.cjs (and the screens harness).
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (country-picker-1)
+const PICKER = require('./_lp-country-picker.cjs')
+const normalize = v => (typeof v === 'string' ? PICKER.cut(v.replace(SEP, '')) : v)
 
 // ══ ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026, docs/plans-data-model-report.md) ══════════════════════
 // Manage › Billing is ONE data-driven plan card above the frozen comparison table. STRUCTURAL, by the SAME proof Part 2

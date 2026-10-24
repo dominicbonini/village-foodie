@@ -85,10 +85,17 @@ export function permanentRedirect(to) { const e = new Error('redirect'); e.to = 
   const ukOn = await page('landing', 'GB', true)
   const ukOff = await page('landing', 'GB', false)
   const featUkOn = await page('features', 'GB', true)
-  const items = html => [...String(html).matchAll(/<a href="([^"]*)" role="menuitemradio"[^>]*class="cc-item"/g)].map(m => m[1])
+  // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): the footer's picker is a trigger + a
+  // closed "Choose your country" dialog — each country still a real <a href class="cc-item"> in the server HTML (now with its
+  // lang, the current one aria-current, sorted by the English name: United Kingdom, United States), hidden by `.cc-dlg-closed`.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (country-picker-1)
+  const PICKER = require('./_lp-country-picker.cjs')
+  const items = html => [...String(html).matchAll(PICKER.LANDED ? /<a href="([^"]*)" lang="[^"]+"(?: aria-current="true")? class="cc-item"/g : /<a href="([^"]*)" role="menuitemradio"[^>]*class="cc-item"/g)].map(m => m[1])
   t(`US on: /uk carries <a href="/us"> (and /uk) as menu options, in the server HTML, ${MENUS === 2 ? 'in header AND footer' : 'in the footer (the nav has none)'}`, JSON.stringify(items(ukOn)) === JSON.stringify(twice(['/uk', '/us'])) && (!AP.LANDED || AP.navHasNoMenu(ukOn)), items(ukOn))
   t('…on /uk/features the options point at the EQUIVALENT page (/us/features)', JSON.stringify(items(featUkOn)) === JSON.stringify(twice(['/uk/features', '/us/features'])), items(featUkOn))
-  t('…the closed menu is hidden by CSS (`cc-menu-closed`), not absent', (String(ukOn).match(/class="cc-menu cc-menu-closed"/g) || []).length === MENUS && /\.hg-landing \.cc-menu-closed \{ display: none; \}/.test(read('app/landing/landing.css')))
+  t(PICKER.LANDED ? '…the closed box is hidden by CSS (`cc-dlg-closed`), not absent' : '…the closed menu is hidden by CSS (`cc-menu-closed`), not absent', PICKER.LANDED
+    ? (String(ukOn).match(/class="cc-dlg cc-dlg-closed"/g) || []).length === 1 && /\.hg-landing \.cc-dlg-closed \{ display: none; \}/.test(read('app/landing/landing.css'))
+    : (String(ukOn).match(/class="cc-menu cc-menu-closed"/g) || []).length === MENUS && /\.hg-landing \.cc-menu-closed \{ display: none; \}/.test(read('app/landing/landing.css')))
   t('US off: no /us link anywhere on /uk', JSON.stringify(items(ukOff)) === JSON.stringify(twice(['/uk'])) && !/href="\/us/.test(String(ukOff)), items(ukOff))
   const cm = read('components/landing/CountryMenu.tsx')
   t('the click is unchanged: it prevents the default navigation and runs the same `choose` (cookie + router)', /e\.preventDefault\(\); choose\(o\.code\)/.test(cm) && /keepCountry\(code\)/.test(cm) && /router\.push\(there \+ url\.search \+ url\.hash, \{ scroll: false \}\)/.test(cm))

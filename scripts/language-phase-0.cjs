@@ -283,6 +283,13 @@ async function main() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (about-page)
   const AP = require('./_lp-about-page.cjs')
   const aboutBack = (got, exp) => { if (!AP.LANDED) return [got, exp]; const r = AP.viewBack(got, exp); return r ? [r[0], r[1]] : [got, exp] }
+  // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): PICKER-footer — BEFORE's footer menu
+  // (<div class="cc cc-foot">) and AFTER's picker (<span class="cc cc-foot">) cut whole from their sides, verified first: one
+  // each, inside the footer, AFTER's the link row's last item, both listing the same countries with the same one current.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (country-picker-1)
+  const PICKER = require('./_lp-country-picker.cjs')
+  const pickerBack = ([got, exp]) => (PICKER.LANDED && PICKER.find(got)?.kind === 'new' && PICKER.find(exp)?.kind === 'old' && PICKER.inLinkRow(got) && PICKER.sameCountries(exp, got)
+    ? [PICKER.cut(got), PICKER.cut(exp)] : [got, exp])
   const seoLanding = (cc, v) => SEO.must('copy-trust-line', SEO.trustLine)(SEO.must('seo-m5-s9-json-ld', x => SEO.jsonLdHtml(x, cc))(SEO.must('seo-m1-country-menu', x => SEO.countryMenu(x, { options: ['GB', 'US'] }))(seoFooter(v))))
 
   head('2 · keys separated from labels — every output byte-identical to BEFORE (GB and US), apart from Phase 1e’s named changes')
@@ -318,7 +325,7 @@ async function main() {
     // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): #pricing is Stage B's (banner → cards → cheapest bar → footnote)
     // — scripts/_lp-stage-b.cjs landingPricing: the section's region cut from both, the rest byte-identical.
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): + seo-fixes's named items (seoLanding, above), outside #pricing.
-    if (!LEGACY_DISPLAY) { const [g, e] = aboutBack(got.landing[k].replace(SEP, ''), seoLanding(k, landing1e(k, before.landing[k]))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing) and seo-fixes's named items`, r.ok, r.problems.join(' · ')); continue }
+    if (!LEGACY_DISPLAY) { const [g, e] = pickerBack(aboutBack(got.landing[k].replace(SEP, ''), seoLanding(k, landing1e(k, before.landing[k])))); const r = STAGE_B.landingPricing(e, g); t(`landing page (${k}) rendered HTML, apart from Stage B's #pricing (pricing-b-landing-pricing), seo-fixes's named items${PICKER.LANDED ? ' and the footer picker (PICKER-footer)' : ''}`, r.ok, r.problems.join(' · ')); continue }
     const d = diffJson(landing1e(k, before.landing[k]), got.landing[k].replace(SEP, '')); t(`landing page (${k}) rendered HTML`, d === null, d)
   }
 

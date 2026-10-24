@@ -5545,7 +5545,9 @@
     "logIn": "Zaloguj się",
     "country": {
       "button": "Kraj: {name}. Zmień kraj",
-      "menu": "Kraj"
+      "menu": "Kraj",
+      "title": "Wybierz swój kraj",
+      "subline": "Ceny, język i ustawienia dopasują się do wyboru."
     }
   },
   "landingFooter": {

@@ -5545,7 +5545,9 @@
     "logIn": "Accedi",
     "country": {
       "button": "Paese: {name}. Cambia paese",
-      "menu": "Paese"
+      "menu": "Paese",
+      "title": "Scegli il tuo paese",
+      "subline": "Prezzi, lingua e impostazioni si adattano di conseguenza."
     }
   },
   "landingFooter": {

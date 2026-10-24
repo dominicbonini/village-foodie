@@ -497,6 +497,8 @@ if (RENDER) {
    *               lastmod = MARKETING_COPY_UPDATED (2026-10-20, the latest of the three inputs here, never request time),
    *               then /privacy /terms /country-terms (lastmod = lib/legal.ts's date) and /contact (no lastmod);
    *               Village Foodie — its one entry loses lastmod. */
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (country-picker-1)
+  const PICKER = require('./_lp-country-picker.cjs')
   const ORG_ID = 'https://www.hatchgrab.com/#organization'
   const MENU_UL = /<ul id="(_R_[0-9a-z]+_)" role="menu" aria-label="Country" class="cc-menu cc-menu-closed">([\s\S]*?)<\/ul>/g
   const MENU_LI = /<li role="none"><a href="\/(uk|us)" role="menuitemradio" aria-checked="(true|false)" class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/><span class="cc-item-name">(United Kingdom|United States)<\/span>(<svg class="cc-tick" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3\.5 8\.5 6\.5 11\.5 12\.5 4\.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><\/path><\/svg>)?<\/a><\/li>/g
@@ -563,7 +565,16 @@ if (RENDER) {
     if (/^(landing|features|compare)\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return ['SEO-menu + SEO-badges' + (/^landing/.test(k) ? ' + SEO-ld' : '') + ': the country menus\' <ul> + <a role="menuitemradio"> options, the badges\' loading="lazy" (no image preload hints)' + (/^landing/.test(k) ? ', the one @graph JSON-LD' : ''),
       (a, b) => {
         if (typeof a !== 'string' || typeof b !== 'string') return null
-        let x = seoMenus(a); if (x === null) return null
+        // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): PICKER-footer — the footer's picker
+        // is now a trigger + a closed dialog (<span class="cc cc-foot">, the link row's last item), so there is no menu <ul>
+        // left for SEO-menu to verify: AFTER's block and BEFORE's footer button block (<div class="cc cc-foot">) are each
+        // verified (one, inside the footer; AFTER's in the link row) and cut whole. The new block is proved by
+        // scripts/country-picker-1.cjs.
+        if (PICKER.LANDED) {
+          if (PICKER.find(a)?.kind !== 'new' || PICKER.find(b)?.kind !== 'old' || !PICKER.inLinkRow(a)) return null
+          a = PICKER.cut(a); b = PICKER.cut(b)
+        }
+        let x = PICKER.LANDED ? a : seoMenus(a); if (x === null) return null
         const bb = seoBadges(x, b); if (!bb) return null
         x = bb[0]
         if (/^landing/.test(k)) { x = seoLdHtml(x, bb[1], ccOf(k)); if (x === null) return null }

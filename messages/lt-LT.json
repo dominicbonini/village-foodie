@@ -5545,7 +5545,9 @@
     "logIn": "Prisijungti",
     "country": {
       "button": "Šalis: {name}. Keisti šalį",
-      "menu": "Šalis"
+      "menu": "Šalis",
+      "title": "Pasirinkite savo šalį",
+      "subline": "Kainos, kalba ir nustatymai bus atitinkamai pritaikyti."
     }
   },
   "landingFooter": {

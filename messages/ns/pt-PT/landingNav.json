@@ -7,6 +7,8 @@
   "logIn": "Iniciar sessão",
   "country": {
     "button": "País: {name}. Mudar de país",
-    "menu": "País"
+    "menu": "País",
+    "title": "Escolha o seu país",
+    "subline": "Os preços, o idioma e as definições ajustam-se em conformidade."
   }
 }

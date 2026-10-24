@@ -5545,7 +5545,9 @@
     "logIn": "Přihlásit se",
     "country": {
       "button": "Země: {name}. Změnit zemi",
-      "menu": "Země"
+      "menu": "Země",
+      "title": "Vyberte svou zemi",
+      "subline": "Ceny, jazyk a nastavení se podle toho přizpůsobí."
     }
   },
   "landingFooter": {

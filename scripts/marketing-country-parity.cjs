@@ -310,6 +310,8 @@ function seoSides([B0, A], v) {
 // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): the country menu's list is ALWAYS rendered now (closed: class
 // "cc-menu cc-menu-closed", hidden by CSS), its options real links — <a href role="menuitemradio" aria-checked class="cc-item">.
 // The kit's pathname is '/', a page with no country address, so each option links to that country's landing.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (country-picker-1)
+const PICKER = require('./_lp-country-picker.cjs')
 const MENU_UL_RE = /<ul id="(_R_[0-9a-z]+_)" role="menu" aria-label="Country" class="cc-menu cc-menu-closed">(.*?)<\/ul>/
 
 async function compare() {
@@ -367,9 +369,12 @@ async function compare() {
   for (const p of Object.keys(PAGES)) {
     const real = await visit(p, { rows: [GB, US_OFF] })
     const marked = await visit(p, { rows: [GB, US_OFF], build: 'marked' })
-    const found = [...real.html.matchAll(MENU_RE)].map(m => m[0])
+    // ⚠️ RE-PINNED (country-picker-1, 23 October 2026, docs/country-picker-1-report.md): the footer's picker is a <span class="cc
+    // cc-foot"> (a flag + code trigger and its closed "Choose your country" dialog), the link row's last item — found whole.
+    const pk = PICKER.LANDED ? PICKER.find(real.html) : null
+    const found = PICKER.LANDED ? (pk ? [real.html.slice(pk.start, pk.end)] : []) : [...real.html.matchAll(MENU_RE)].map(m => m[0])
     ok(found.length === (AP.LANDED ? 1 : 2) && (!AP.LANDED || /cc-foot/.test(found[0])), `${p} · ${AP.LANDED ? 'one country button rendered, the footer\'s' : 'two country buttons rendered'}`, String(found.length))
-    const stripped = real.html.replace(MENU_RE, '<i data-cc></i>')
+    const stripped = PICKER.LANDED && pk ? real.html.slice(0, pk.start) + '<i data-cc></i>' + real.html.slice(pk.end) : real.html.replace(MENU_RE, '<i data-cc></i>')
     const markedNorm = marked.html.replace(/<i data-cc="(header|footer)"><\/i>/g, '<i data-cc></i>')
     ok(stripped === markedNorm, `${p} · removing the two buttons leaves the marked page exactly`, firstDiff(stripped, markedNorm))
     // ⚠️ RE-PINNED (about-page): with no header button, the button checks read the footer's (the same component).
@@ -377,13 +382,22 @@ async function compare() {
     const first = head ?? foot
     ok(AP.LANDED ? !head && AP.navHasNoMenu(real.html) : true, `${p} · no country button in the nav`)
     ok((AP.LANDED || /aria-label="Country: United Kingdom. Change country"/.test(head || '')) && /aria-label="Country: United Kingdom. Change country"/.test(foot || ''), `${p} · aria-label names the country`)
-    ok((AP.LANDED || /<span class="cc-name">UK<\/span>/.test(head || '')) && /<span class="cc-name">United Kingdom<\/span>/.test(foot || ''), `${p} · ${AP.LANDED ? 'the footer shows the full name' : 'header shows the short name, footer the full name'}`)
+    if (PICKER.LANDED) ok(/<span class="cc-code">GB<\/span>/.test(foot || '') && PICKER.inLinkRow(real.html), `${p} · the footer trigger shows the code (GB), the link row's last item`)
+    else ok((AP.LANDED || /<span class="cc-name">UK<\/span>/.test(head || '')) && /<span class="cc-name">United Kingdom<\/span>/.test(foot || ''), `${p} · ${AP.LANDED ? 'the footer shows the full name' : 'header shows the short name, footer the full name'}`)
     ok(/<img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/>/.test(first || ''), `${p} · the flag is a small SVG image, not text`)
     ok(!/[\u{1F1E6}-\u{1F1FF}]/u.test(real.html), `${p} · no flag emoji anywhere`)
-    ok(/aria-haspopup="menu"/.test(first || '') && /aria-expanded="false"/.test(first || ''), `${p} · a closed menu button`)
+    ok(new RegExp(`aria-haspopup="${PICKER.LANDED ? 'dialog' : 'menu'}"`).test(first || '') && /aria-expanded="false"/.test(first || ''), `${p} · a closed ${PICKER.LANDED ? 'dialog' : 'menu'} button`)
     // ⚠️ RE-PINNED (seo-fixes, 20 October 2026): each button is followed by its always-rendered, closed list — the UK only
     // (US switched off), a real link to /uk, checked, with the tick; the list's id is the button's aria-controls.
-    for (const [w, html] of AP.LANDED ? [['footer', foot]] : [['header', head], ['footer', foot]]) {
+    // ⚠️ RE-PINNED (country-picker-1): the closed DIALOG, always rendered — its id the trigger's aria-controls, labelled by its
+    // title; the UK only (US switched off): one real link to /uk, current, in English, with its code and the tick.
+    if (PICKER.LANDED) {
+      const ctl = ((foot || '').match(/aria-controls="([^"]+)"/) || [])[1]
+      const dlg = (foot || '').match(/<div class="cc-dlg cc-dlg-closed"><div id="([^"]+)" role="dialog" aria-modal="true" aria-labelledby="([^"]+)" class="cc-box" tabindex="-1">[\s\S]*?<h2 id="([^"]+)" class="cc-title">Choose your country<\/h2>[\s\S]*?<ul class="cc-list" aria-label="Country">(.*?)<\/ul>/)
+      ok(!!dlg && dlg[1] === ctl && dlg[2] === dlg[3] && /^<li><a href="\/uk" lang="en-GB" aria-current="true" class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/><span class="cc-item-name">United Kingdom<\/span><span class="cc-item-code">GB<\/span><span class="cc-item-tick"><svg class="cc-tick"[^>]*>.*?<\/svg><\/span><\/a><\/li>$/.test(dlg[4]),
+        `${p} · footer · the closed dialog is rendered: its id the trigger's aria-controls, one <a href="/uk" aria-current="true">`, dlg ? dlg[0].replace(/data:image[^"]*/g, 'DATA').slice(0, 600) : (foot || '').replace(/data:image[^"]*/g, 'DATA').slice(0, 600))
+    }
+    for (const [w, html] of PICKER.LANDED ? [] : AP.LANDED ? [['footer', foot]] : [['header', head], ['footer', foot]]) {
       const ul = (html || '').match(MENU_UL_RE)
       const ctl = ((html || '').match(/aria-controls="([^"]+)"/) || [])[1]
       ok(!!ul && ul[1] === ctl && /^<li role="none"><a href="\/uk" role="menuitemradio" aria-checked="true" class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/><span class="cc-item-name">United Kingdom<\/span><svg class="cc-tick"[^>]*>.*?<\/svg><\/a><\/li>$/.test(ul[2]) && !/<button[^>]*cc-item/.test(html),
@@ -397,7 +411,7 @@ async function compare() {
   const tables = STAGE_B ? usTables() : {}
   const us = await visit('landing', { rows, ip: 'US', tables })
   ok(us.text.includes('$39') && us.text.includes('$59') && !us.text.includes('£29'), 'landing · US visitor · $ prices, no £', us.text.match(/[£$][0-9]+/g)?.slice(0, 6).join(' '))
-  ok(us.menus.length === 0 && (AP.LANDED ? /<span class="cc-name">United States<\/span>/.test(us.html) && AP.navHasNoMenu(us.html) : /<span class="cc-name">US<\/span>/.test(us.html)) && /Country: United States\. Change country/.test(us.html), AP.LANDED ? 'landing · the footer button says United States (none in the nav)' : 'landing · the header button says US')
+  ok(us.menus.length === 0 && (PICKER.LANDED ? /<span class="cc-code">US<\/span>/.test(us.html) && AP.navHasNoMenu(us.html) : AP.LANDED ? /<span class="cc-name">United States<\/span>/.test(us.html) && AP.navHasNoMenu(us.html) : /<span class="cc-name">US<\/span>/.test(us.html)) && /Country: United States\. Change country/.test(us.html), AP.LANDED ? 'landing · the footer button says United States (none in the nav)' : 'landing · the header button says US')
   const usMarked = await visit('landing', { rows, ip: 'US', build: 'marked', tables })
   ok(usMarked.menus[0].menu.options.map(o => o.code).join() === 'GB,US' && usMarked.menus[0].menu.remember === null, 'landing · both switched-on countries in the menu; nothing to write (no ?country)')
   for (const p of ['features', 'compare']) {

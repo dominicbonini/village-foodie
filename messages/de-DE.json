@@ -5545,7 +5545,9 @@
     "logIn": "Anmelden",
     "country": {
       "button": "Land: {name}. Land ändern",
-      "menu": "Land"
+      "menu": "Land",
+      "title": "Wählen Sie Ihr Land",
+      "subline": "Preise, Sprache und Einstellungen passen sich entsprechend an."
     }
   },
   "landingFooter": {

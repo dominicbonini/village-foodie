@@ -5545,7 +5545,9 @@
     "logIn": "Logg inn",
     "country": {
       "button": "Land: {name}. Bytt land",
-      "menu": "Land"
+      "menu": "Land",
+      "title": "Velg ditt land",
+      "subline": "Priser, språk og innstillinger tilpasses deretter."
     }
   },
   "landingFooter": {

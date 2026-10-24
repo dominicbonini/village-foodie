@@ -7,6 +7,8 @@
   "logIn": "Bejelentkezés",
   "country": {
     "button": "Ország: {name}. Ország módosítása",
-    "menu": "Ország"
+    "menu": "Ország",
+    "title": "Válassza ki az országát",
+    "subline": "Az árak, a nyelv és a beállítások ehhez igazodnak."
   }
 }

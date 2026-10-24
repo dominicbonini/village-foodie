@@ -44,8 +44,14 @@ export interface VisitorCountry {
  *  import this server module's request helpers — applies the SAME rule, not a copy. */
 export const pickVisitorCountry = pickMarketingCountry
 
+/** country-picker-1: a country's name in its own language — Intl's region name in the row's locale; the English name if
+ *  Intl has none. Computed HERE, on the server, so the browser's own ICU never re-words a server-rendered link. */
+function ownNameOf(c: CountrySettings): string {
+  try { return new Intl.DisplayNames([c.locale], { type: 'region' }).of(c.countryCode) || c.name } catch { return c.name }
+}
+
 const optionOf = (c: CountrySettings): VisitorCountryOption =>
-  ({ code: c.countryCode, name: c.name, shortName: c.shortName ?? c.name, flag: flagDataUri(c.countryCode) })
+  ({ code: c.countryCode, name: c.name, shortName: c.shortName ?? c.name, ownName: ownNameOf(c), lang: c.locale, flag: flagDataUri(c.countryCode) })
 
 /**
  * The visitor's country for this request. `query` is the page's ?country value (pages pass their searchParams;

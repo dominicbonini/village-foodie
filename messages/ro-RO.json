@@ -5545,7 +5545,9 @@
     "logIn": "Autentificare",
     "country": {
       "button": "Țară: {name}. Schimbați țara",
-      "menu": "Țară"
+      "menu": "Țară",
+      "title": "Alegeți țara",
+      "subline": "Prețurile, limba și setările se vor adapta în consecință."
     }
   },
   "landingFooter": {

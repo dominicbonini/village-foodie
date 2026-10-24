@@ -5545,7 +5545,9 @@
     "logIn": "Prijava",
     "country": {
       "button": "Zemlja: {name}. Promijeni zemlju",
-      "menu": "Zemlja"
+      "menu": "Zemlja",
+      "title": "Odaberite svoju zemlju",
+      "subline": "Cijene, jezik i postavke prilagodit će se tome."
     }
   },
   "landingFooter": {

@@ -5545,7 +5545,9 @@
     "logIn": "Logi sisse",
     "country": {
       "button": "Riik: {name}. Muuda riiki",
-      "menu": "Riik"
+      "menu": "Riik",
+      "title": "Vali oma riik",
+      "subline": "Hinnad, keel ja seaded kohanduvad vastavalt."
     }
   },
   "landingFooter": {

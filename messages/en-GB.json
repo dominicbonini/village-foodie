@@ -5545,7 +5545,9 @@
     "logIn": "Log in",
     "country": {
       "button": "Country: {name}. Change country",
-      "menu": "Country"
+      "menu": "Country",
+      "title": "Choose your country",
+      "subline": "Prices, language and settings change to match."
     }
   },
   "landingFooter": {
