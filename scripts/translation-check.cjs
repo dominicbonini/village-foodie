@@ -94,6 +94,9 @@ function missingPluralCategories(msg, locale) {
   return out
 }
 
+/** compare-de-1: namespaces that exist only in the languages listed (docs/i18n/scoped-namespaces.json). */
+const SCOPED = (() => { try { const j = JSON.parse(fs.readFileSync(path.join(REPO, 'docs/i18n/scoped-namespaces.json'), 'utf8')); delete j.$comment; return j } catch { return {} } })()
+
 function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, guardLanguages, sameWords, drops }) {
   const lang = locale.split('-')[0].toLowerCase()
   const E = flat(en), T = flat(messages)
@@ -106,7 +109,10 @@ function check({ locale, messages, en, glossary, back, planKeys, knownPlanKeys, 
   let decimalComma = false
   try { decimalComma = new Intl.NumberFormat(locale).formatToParts(1.5).find(p => p.type === 'decimal')?.value === ',' } catch { /* an unknown tag */ }
   const isPlanKey = k => /^planNames\.[A-Za-z0-9_]+\.(name|description|subtitle)$/.test(k)
-  for (const k of Object.keys(E)) if (!(k in T)) S.missing.push(k)
+  // compare-de-1 (24 October 2026): a namespace scoped to the languages whose pages use it (docs/i18n/scoped-namespaces.json)
+  // is not missing in any other language — e.g. the German comparison page's words in Polish.
+  const scopedOut = k => { const sc = SCOPED[k.split('.')[0]]; return !!sc && !sc.languages.includes(lang) }
+  for (const k of Object.keys(E)) if (!(k in T) && !scopedOut(k)) S.missing.push(k)
   for (const k of Object.keys(T)) if (!(k in E)) {
     // france-1: any ACTIVE plan may carry words (Pro's description, the trial's name); `planKeys` are those that need a NAME.
     if (isPlanKey(k)) { const pk = k.split('.')[1]; const known = knownPlanKeys ?? planKeys; if (known && !known.includes(pk)) S.extra.push(`${k} (no such plan)`) }

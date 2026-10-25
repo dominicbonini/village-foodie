@@ -24,6 +24,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { nativeAuthHeader } from '@/lib/native/session'
+import { ComparisonStatusPanel } from '@/components/admin/ComparisonStatusPanel'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import {
   rowToForm, formToValues, isTimeZone,
@@ -581,6 +582,9 @@ export default function CountriesTab() {
           {addErrors.map(e => <p key={e.field + e.message} className="mt-2 text-xs font-medium text-red-600">{e.message}</p>)}
         </form>
       )}
+
+      {/* compare-de-1: each country's comparison page — Off / Admins only / Live (its own route; saves on its own). */}
+      <ComparisonStatusPanel />
 
       {/* ── search and filter chips ── */}
       <div className="flex flex-wrap items-center gap-2" data-countries-filters>

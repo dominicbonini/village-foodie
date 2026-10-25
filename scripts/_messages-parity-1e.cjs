@@ -152,6 +152,15 @@ const NEW_WORDING = {
   'aboutPage.signature': 'about-page: the signature ("<b>{name}</b> · Founder")',
   'aboutPage.company': 'about-page: the company line ("{company} · registered in England and Wales · company number {number} · registered office: {address}")',
 }
+// ⚠️ RE-PINNED (compare-de-1, 25 October 2026, docs/compare-de-1-report.md): the comparison page's words — a NEW namespace,
+// `comparison` (the German page /de/vergleich/foodtruck-bestellsystem; German and the English base only,
+// docs/i18n/scoped-namespaces.json). Every key in it is new wording, named here as a whole namespace;
+// scripts/compare-de-1.cjs holds where each renders and what it says.
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const k of flatKeys(enGB.comparison || {}, 'comparison.')) NEW_WORDING[k] = 'compare-de-1: the German comparison page (a new namespace)'
+}
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

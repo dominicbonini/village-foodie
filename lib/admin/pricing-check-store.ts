@@ -28,6 +28,15 @@ async function count(table: string, filter?: (q: any) => any): Promise<number> {
   return n ?? 0
 }
 
+/** compare-de-1: a column 20261042 adds is not there yet (42703 undefined column). */
+const missingColumn = (error: { message: string; code?: string } | null) => !!error && (error.code === '42703' || /column .* does not exist/i.test(error.message))
+/** compare-de-1: a competitors read with the 20261042 columns, falling back to the select before that migration. */
+async function readCompetitors(build: (cols: string) => PromiseLike<{ data: unknown; error: { message: string; code?: string } | null }>) {
+  const r = await build(COLUMNS.competitors)
+  return missingColumn(r.error) ? build(COLUMNS.competitorsLegacy) : r
+}
+const ENTRY_COLUMNS = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'
+
 export const servicePricingStore: PricingStore = {
   async counts() {
     const [competitors, plans, benchmarks, research] = await Promise.all([
@@ -40,7 +49,7 @@ export const servicePricingStore: PricingStore = {
   async listAll() {
     const s = await db()
     const [c, p, b] = await Promise.all([
-      s.from(TABLE.competitors).select(COLUMNS.competitors).order('name'),
+      readCompetitors(cols => s.from(TABLE.competitors).select(cols).order('name')),
       s.from(TABLE.plans).select(COLUMNS.plans).order('created_at'),
       s.from(TABLE.benchmarks).select(COLUMNS.benchmarks).order('created_at'),
     ])
@@ -90,26 +99,30 @@ export const servicePricingStore: PricingStore = {
   },
 
   async getCompetitor(id) {
-    const { data, error } = await (await db()).from(TABLE.competitors).select(COLUMNS.competitors).eq('id', id).maybeSingle()
+    const s = await db()
+    const { data, error } = await readCompetitors(cols => s.from(TABLE.competitors).select(cols).eq('id', id).maybeSingle())
     if (error) fail('read competitor', error)
     return (data as unknown as Row) ?? null
   },
 
   async findCompetitorByName(name) {
     // ilike with the wildcards escaped = a case-insensitive equality (the unique index is on lower(btrim(name))).
-    const { data, error } = await (await db()).from(TABLE.competitors).select(COLUMNS.competitors).ilike('name', name.trim().replace(/[\\%_]/g, m => '\\' + m)).limit(1)
+    const s = await db()
+    const { data, error } = await readCompetitors(cols => s.from(TABLE.competitors).select(cols).ilike('name', name.trim().replace(/[\\%_]/g, m => '\\' + m)).limit(1))
     if (error) fail('find competitor', error)
-    return ((data ?? [])[0] as unknown as Row) ?? null
+    return ((data ?? []) as unknown as Row[])[0] ?? null
   },
 
   async insertCompetitor(row) {
-    const { data, error } = await (await db()).from(TABLE.competitors).insert(row).select(COLUMNS.competitors).single()
+    const s = await db()
+    const { data, error } = await readCompetitors(cols => s.from(TABLE.competitors).insert(row).select(cols).single())
     if (error) fail('add competitor', error)
     return data as unknown as Row
   },
 
   async updateCompetitor(id, cols) {
-    const { data, error } = await (await db()).from(TABLE.competitors).update(cols).eq('id', id).select(COLUMNS.competitors)
+    const s = await db()
+    const { data, error } = await readCompetitors(sel => s.from(TABLE.competitors).update(cols).eq('id', id).select(sel))
     if (error) fail('save competitor', error)
     const rows = (data ?? []) as unknown as Row[]
     return rows.length === 1 ? rows[0] : null
@@ -136,5 +149,39 @@ export const servicePricingStore: PricingStore = {
     const { data, error } = await (await db()).from(TABLE.benchmarks).insert(row).select(COLUMNS.benchmarks).single()
     if (error) fail('save country data', error)
     return data as unknown as Row
+  },
+
+  // ── compare-de-1: public.comparison_entries (20261042). Missing table → `entriesReady` false, and the page and the tab say so.
+  async entriesReady() {
+    const { error } = await (await db()).from('comparison_entries').select('id', { count: 'exact', head: true })
+    if (!error) return true
+    if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message)) return false
+    fail('read comparison entries', error)
+  },
+  async listEntries() {
+    const { data, error } = await (await db()).from('comparison_entries').select(ENTRY_COLUMNS).order('sort_order')
+    if (error) { if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message)) return []; fail('read comparison entries', error) }
+    return (data ?? []) as unknown as Row[]
+  },
+  async insertEntry(row) {
+    const { data, error } = await (await db()).from('comparison_entries').insert(row).select(ENTRY_COLUMNS).single()
+    if (error) fail('add comparison entry', error)
+    return data as unknown as Row
+  },
+  async updateEntry(id, cols) {
+    const { data, error } = await (await db()).from('comparison_entries').update(cols).eq('id', id).select(ENTRY_COLUMNS)
+    if (error) fail('save comparison entry', error)
+    const rows = (data ?? []) as unknown as Row[]
+    return rows.length === 1 ? rows[0] : null
+  },
+  async deleteEntry(id) {
+    const { error } = await (await db()).from('comparison_entries').delete().eq('id', id)
+    if (error) fail('remove comparison entry', error)
+  },
+  async existingIds(table, ids) {
+    if (!ids.length) return []
+    const { data, error } = await (await db()).from(table === 'entries' ? 'comparison_entries' : TABLE[table]).select('id').in('id', ids)
+    if (error) fail(`read ${table}`, error)
+    return ((data ?? []) as { id: string }[]).map(r => r.id)
   },
 }

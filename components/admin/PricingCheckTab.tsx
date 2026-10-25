@@ -17,6 +17,11 @@
 // ── EDITING ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 // Edit never changes a stored price: the server inserts a new row and supersedes the old (History shows them), and the
 // new row starts unverified. Mark verified / Undo verified and a key-feature cell are the only in-place saves.
+//
+// ── COMPARISON PAGE (compare-de-1, 24 October 2026) ──────────────────────────────────────────────────────────────────
+// Section 5 of a country: which competitors its public comparison page shows (public.comparison_entries), in what order,
+// the plan whose price line it uses, the honest "passt, wenn …" line, and the three checks the public page needs — the
+// entry, its plan and its features verified. Until all three are, the page shows that competitor to admins only.
 
 import { useEffect, useMemo, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
@@ -24,15 +29,17 @@ import { formatAmount, formatWholeAmount, minorDigits } from '@/lib/money-format
 import type { PlanCatalog } from '@/lib/plans'
 import {
   checkCountry, countryStatus, eurRates, isStale, ourFeatureCell,
-  DEFAULT_OPTIONS, VOLUMES, KEY_FEATURES, FOCUS_LABEL,
+  DEFAULT_OPTIONS, VOLUMES, KEY_FEATURES, COMPARE_FEATURES, FOCUS_LABEL,
   type Benchmark, type CheckOptions, type Competitor, type CompetitorPlan, type CountryResult, type CountryRow,
-  type CountryStatus, type KeyFeatureColumn, type RivalTotal, type Tri, type VolumeKey, type Focus,
+  type CountryStatus, type KeyFeatureColumn, type CompareFeatureColumn, type ComparisonEntry, type RivalTotal, type Tri, type VolumeKey, type Focus,
 } from '@/lib/pricing-check'
 
 interface State {
   empty: boolean; importable: boolean
   competitors: Competitor[]; plans: CompetitorPlan[]; benchmarks: Benchmark[]
   catalog: PlanCatalog; countries: CountryRow[]; today: string
+  // compare-de-1: the comparison pages' entries ([] and entriesReady false until 20261042 runs)
+  entries: ComparisonEntry[]; entriesReady: boolean; compareImportable: boolean
 }
 
 async function call(method: 'GET' | 'POST', body?: unknown): Promise<{ ok: boolean; status: number; data: Record<string, unknown> }> {
@@ -202,6 +209,20 @@ export default function PricingCheckTab() {
         </div>
       )}
 
+      {state.compareImportable && (
+        <div className={`${CARD} flex flex-wrap items-center justify-between gap-3 border-orange-200 bg-orange-50`} data-import-compare>
+          <div className="text-sm text-slate-700">
+            <p className="font-bold text-slate-900">German comparison research</p>
+            <p>Import the German competitors checked for the comparison page (data/compare-de-1/competitors.json, docs/compare-de-1-report.md): their plans, features and the page’s entries, all unverified. Existing competitors are matched by name. It can only run once.</p>
+            {!state.entriesReady && <p className="mt-1 font-semibold text-amber-800">Run supabase/migrations/20261042_compare_de_1.sql first.</p>}
+          </div>
+          <button type="button" disabled={busy !== null || !state.entriesReady} onClick={() => post('import_compare', { action: 'import_compare_de' }, 'The German comparison research is in. Nothing is public until you verify it.')}
+            className="whitespace-nowrap rounded-xl bg-orange-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50">
+            {busy === 'import_compare' ? 'Importing…' : 'Import German comparison research'}
+          </button>
+        </div>
+      )}
+
       <div className="grid gap-3 lg:grid-cols-[16.5rem_minmax(0,1fr)]">
         {/* ── the country list ── */}
         <nav className={`${CARD} p-3 lg:sticky lg:top-[108px] lg:max-h-[calc(100dvh-124px)] lg:self-start lg:overflow-y-auto`} aria-label="Countries" data-country-list>
@@ -345,6 +366,9 @@ function CountryAdmin({ code, state, result, bench, derived, volume, setVolume, 
 
       {/* 4 · key features */}
       {v && <FeatureTable v={v} state={state} bench={bench} busy={busy} post={post} />}
+
+      {/* 5 · the country's comparison page (compare-de-1) */}
+      <ComparisonPanel code={code} state={state} busy={busy} post={post} />
     </>
   )
 }
@@ -545,24 +569,7 @@ function FeatureTable({ v, state, bench, busy, post }: { v: Vol; state: State; b
         <table className="w-full min-w-[760px] text-sm">
           <thead className="bg-slate-50"><tr><th className={th}>Feature</th><th className={`${th} text-orange-700`}>HatchGrab</th>{cols.map(c => <th key={c.id} className={th}>{c.name}</th>)}</tr></thead>
           <tbody className="divide-y divide-slate-100">
-            {KEY_FEATURES.map(f => (
-              <tr key={f.column}>
-                <td className="px-3 py-2 font-semibold text-slate-700">{f.label}</td>
-                <td className="px-3 py-2 font-semibold text-slate-900">{ourFeatureCell(state.catalog, f, bench)}</td>
-                {cols.map(c => {
-                  const val = c[f.column as KeyFeatureColumn]
-                  return (
-                    <td key={c.id} className="px-3 py-2">
-                      <button type="button" disabled={busy !== null} title="Click to change: Yes → No → Not checked"
-                        onClick={() => post('feature', { action: 'set_feature', competitorId: c.id, column: f.column, value: NEXT[val] })}
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${val === 'yes' ? 'bg-emerald-100 text-emerald-800' : val === 'no' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'}`}>
-                        {TRI_LABEL[val]}
-                      </button>
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
+            <FeatureRows competitors={cols} state={state} bench={bench} busy={busy} post={post} />
             <tr>
               <td className="px-3 py-2 font-semibold text-slate-700">Payment providers</td>
               <td className="px-3 py-2 text-slate-700">Stripe</td>
@@ -572,6 +579,153 @@ function FeatureTable({ v, state, bench, busy, post }: { v: Vol; state: State; b
         </table>
       </div>
       <p className="mt-2 text-xs text-slate-500">Ordering, kitchen screen, printed tickets, allergens and the rest are standard on every plan, so they are not compared here.</p>
+    </section>
+  )
+}
+
+/** Every compared feature as tri buttons (the six key ones, then the comparison page's four), then the two as-advertised
+ *  texts. A click saves at once and stamps the features checked today (set_feature, as pricing-check-1). */
+function FeatureRows({ competitors, state, bench, busy, post }: { competitors: Competitor[]; state: State; bench: Benchmark | null; busy: string | null; post: Post }) {
+  return (
+    <>
+      {[...KEY_FEATURES, ...COMPARE_FEATURES].map(f => (
+        <tr key={f.column} data-feature-row={f.column}>
+          <td className="px-3 py-2 font-semibold text-slate-700">{f.label}</td>
+          <td className="px-3 py-2 font-semibold text-slate-900">{ourFeatureCell(state.catalog, f, bench)}</td>
+          {competitors.map(c => {
+            const val = c[f.column as KeyFeatureColumn | CompareFeatureColumn]
+            return (
+              <td key={c.id} className="px-3 py-2">
+                <button type="button" disabled={busy !== null} title="Click to change: Yes → No → Not checked"
+                  onClick={() => post('feature', { action: 'set_feature', competitorId: c.id, column: f.column, value: NEXT[val] })}
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${val === 'yes' ? 'bg-emerald-100 text-emerald-800' : val === 'no' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'}`}>
+                  {TRI_LABEL[val]}
+                </button>
+              </td>
+            )
+          })}
+        </tr>
+      ))}
+      {([['paymentMethods', 'Payment methods (as advertised)', 'Card, PayPal, …'], ['minTerm', 'Minimum term (as advertised)', '12 months, none, …']] as const).map(([field, label, hint]) => (
+        <tr key={field} data-feature-row={field}>
+          <td className="px-3 py-2 font-semibold text-slate-700">{label}</td>
+          <td className="px-3 py-2 text-slate-500">From the page’s messages</td>
+          {competitors.map(c => (
+            <td key={c.id} className="px-3 py-2">
+              <TextCell value={c[field]} placeholder={hint} busy={busy !== null}
+                onSave={value => post('text', { action: 'set_competitor_text', competitorId: c.id, field, value }, 'Saved.')} />
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
+  )
+}
+
+/** A text that saves when it loses focus or on Enter, only when it changed. */
+function TextCell({ value, placeholder, busy, onSave }: { value: string | null; placeholder: string; busy: boolean; onSave: (v: string | null) => void }) {
+  const [text, setText] = useState(value ?? '')
+  const [was, setWas] = useState(value)
+  if (was !== value) { setWas(value); setText(value ?? '') }
+  const save = () => { const v = text.trim() || null; if (v !== (value ?? null)) onSave(v) }
+  return <input className={`${BOX} min-w-[9rem]`} value={text} placeholder={placeholder} disabled={busy} aria-label={placeholder}
+    onChange={e => setText(e.target.value)} onBlur={save} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
+}
+
+// ── the comparison page panel (compare-de-1) ─────────────────────────────────────────────────────────────────────────
+/** The plan a comparison entry shows: its own if current, else the current plan of the same competitor and country
+ *  (an edit supersedes a plan, and the page follows it — lib/comparison.ts does the same). */
+function entryPlan(e: ComparisonEntry, plans: CompetitorPlan[]): CompetitorPlan | null {
+  const own = e.primaryPlanId ? plans.find(p => p.id === e.primaryPlanId) ?? null : null
+  if (own && own.supersededAt === null) return own
+  const current = plans.filter(p => p.competitorId === e.competitorId && p.countryCode === e.countryCode && p.supersededAt === null)
+  return (own && current.find(p => p.planName === own.planName)) ?? current[0] ?? null
+}
+
+function ComparisonPanel({ code, state, busy, post }: { code: string; state: State; busy: string | null; post: Post }) {
+  const [adding, setAdding] = useState('')
+  const compById = new Map(state.competitors.map(c => [c.id, c]))
+  const entries = state.entries.filter(e => e.countryCode === code).sort((a, b) => a.sortOrder - b.sortOrder)
+  // Competitors with a current plan in this country that are not on the page yet.
+  const candidates = state.competitors.filter(c => !entries.some(e => e.competitorId === c.id)
+    && state.plans.some(p => p.competitorId === c.id && p.countryCode === code && p.supersededAt === null))
+  const publicCount = entries.filter(e => { const p = entryPlan(e, state.plans); return e.verifiedAt && p?.verifiedAt && compById.get(e.competitorId)?.featuresVerifiedAt }).length
+  const ok = 'bg-emerald-100 text-emerald-800', no = 'bg-orange-100 text-orange-800'
+  return (
+    <section className={CARD} data-comparison-panel>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <p className="text-sm font-bold text-slate-900">Comparison page</p>
+          <p className="text-xs text-slate-500">Who the country’s public comparison page shows. A competitor is public only when the entry, its plan and its features are all verified · {publicCount} of {entries.length} public.</p>
+        </div>
+      </div>
+      {!state.entriesReady ? (
+        <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800">Run supabase/migrations/20261042_compare_de_1.sql to manage the comparison page.</p>
+      ) : (
+        <>
+          {entries.length ? (
+            <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-100">
+              {entries.map((e, i) => {
+                const c = compById.get(e.competitorId)
+                const plan = entryPlan(e, state.plans)
+                const plans = state.plans.filter(p => p.competitorId === e.competitorId && p.countryCode === code && p.supersededAt === null)
+                return (
+                  <li key={e.id} className="space-y-2 p-3" data-entry={c?.name}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-semibold text-slate-900">{i + 1}. {c?.name ?? 'Unknown'}</p>
+                      <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+                        <span className={`rounded-full px-2 py-0.5 ${e.verifiedAt ? ok : no}`}>Entry {e.verifiedAt ? 'verified' : 'not verified'}</span>
+                        <span className={`rounded-full px-2 py-0.5 ${plan?.verifiedAt ? ok : no}`}>Plan {plan?.verifiedAt ? 'verified' : 'not verified'}</span>
+                        <span className={`rounded-full px-2 py-0.5 ${c?.featuresVerifiedAt ? ok : no}`}>Features {c?.featuresVerifiedAt ? 'verified' : 'not verified'}</span>
+                      </div>
+                    </div>
+                    <div className="grid gap-2 md:grid-cols-[14rem_minmax(0,1fr)]">
+                      <select className={BOX} aria-label="Plan shown" value={plan?.id ?? ''} disabled={busy !== null}
+                        onChange={ev => post('entry', { action: 'entry_update', id: e.id, fields: { primaryPlanId: ev.target.value || null } }, 'Saved. Verify the entry again.')}>
+                        <option value="">No plan</option>
+                        {plans.map(p => <option key={p.id} value={p.id}>{p.planName}{p.verifiedAt ? ' ✓' : ''}</option>)}
+                      </select>
+                      <TextCell value={e.chooseWhen} placeholder="passt, wenn … (shown on the page)" busy={busy !== null}
+                        onSave={value => post('entry', { action: 'entry_update', id: e.id, fields: { chooseWhen: value } }, 'Saved. Verify the entry again.')} />
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('entry', { action: e.verifiedAt ? 'entry_unverify' : 'entry_verify', id: e.id })}>{e.verifiedAt ? 'Undo entry verified' : 'Mark entry verified'}</button>
+                      {plan && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('verify', { action: plan.verifiedAt ? 'unverify' : 'verify', id: plan.id })}>{plan.verifiedAt ? 'Undo plan verified' : 'Mark plan verified'}</button>}
+                      {c && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('features', { action: c.featuresVerifiedAt ? 'unverify_features' : 'verify_features', competitorId: c.id })}>{c.featuresVerifiedAt ? 'Undo features verified' : 'Mark features verified'}</button>}
+                      <button type="button" className={BTN} disabled={busy !== null || i === 0} aria-label="Move up" onClick={() => post('entry', { action: 'entry_move', id: e.id, dir: 'up' })}>↑</button>
+                      <button type="button" className={BTN} disabled={busy !== null || i === entries.length - 1} aria-label="Move down" onClick={() => post('entry', { action: 'entry_move', id: e.id, dir: 'down' })}>↓</button>
+                      <button type="button" className={`${BTN} text-red-700`} disabled={busy !== null} onClick={() => { if (window.confirm(`Take ${c?.name ?? 'this competitor'} off the comparison page?`)) post('entry', { action: 'entry_remove', id: e.id }, 'Removed from the page.') }}>Remove</button>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : <p className="mt-2 text-sm text-slate-500">No competitors on this country’s page yet.</p>}
+          {entries.length > 0 && (
+            <div className="mt-3 overflow-x-auto rounded-xl border border-slate-100">
+              <table className="w-full min-w-[760px] text-sm" data-entry-features>
+                <thead className="bg-slate-50"><tr>
+                  <th className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">Feature</th>
+                  <th className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-orange-700">HatchGrab</th>
+                  {entries.map(e => <th key={e.id} className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">{compById.get(e.competitorId)?.name}</th>)}
+                </tr></thead>
+                <tbody className="divide-y divide-slate-100">
+                  <FeatureRows competitors={entries.map(e => compById.get(e.competitorId)).filter((c): c is Competitor => !!c)} state={state}
+                    bench={state.benchmarks.find(b => b.countryCode === code && b.supersededAt === null) ?? null} busy={busy} post={post} />
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <select className={`${BOX} max-w-xs`} aria-label="Competitor to add" value={adding} onChange={e => setAdding(e.target.value)}>
+              <option value="">Add a competitor with a plan here…</option>
+              {candidates.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+            <button type="button" className={BTN} disabled={busy !== null || !adding}
+              onClick={async () => { if (await post('entry', { action: 'entry_add', countryCode: code, competitorId: adding }, 'Added, unverified.')) setAdding('') }}>Add to the page</button>
+          </div>
+        </>
+      )}
     </section>
   )
 }

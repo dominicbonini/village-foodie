@@ -51,8 +51,14 @@ export { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_
 import { StoreBadges } from '@/components/StoreBadges'
 import { contactHref } from '@/lib/contact-topics'
 import { ABOUT_PATH } from '@/lib/about'
+import { AdminOnly } from '@/components/landing/AdminOnly'
 
-export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string } = {}) {
+/** compare-de-1 (24 October 2026): the "Vergleich" column — the visitor's own country's comparison page. The page builds
+ *  it (lib/comparison-server.ts comparisonFooter): 'live' renders in the server HTML; 'admin' renders only in the browser
+ *  of a signed-in admin (AdminOnly asks /api/auth/me), so the server HTML never names a draft; 'off' passes nothing. */
+export interface FooterComparison { mode: 'live' | 'admin'; href: string; heading: string; link: string }
+
+export function LandingFooter({ landingHref = '', featuresHref = '/features', country, locale, comparison }: { landingHref?: string; featuresHref?: string; country?: VisitorCountryMenu; locale?: string; comparison?: FooterComparison } = {}) {
   const t = translatorFor(locale, 'landingFooter')
   return (
   <footer className={HEADER_BG}>
@@ -85,6 +91,15 @@ export function LandingFooter({ landingHref = '', featuresHref = '/features', co
             The brand block on the left is untouched and keeps its position.
             ⚠️ MOBILE: @media(max-width:720px) turns .foot-grid into a centred column and switches this
             wrapper to `align-items: center`, so the stack reads brand -> links -> badge, all centred. */}
+        {comparison && (() => {
+          const box = (
+            <div className="foot-col" data-footer-comparison={comparison.mode}>
+              <p className="foot-col-h">{comparison.heading}</p>
+              <a href={comparison.href}>{comparison.link}</a>
+            </div>
+          )
+          return comparison.mode === 'live' ? box : <AdminOnly>{box}</AdminOnly>
+        })()}
         <div className="foot-right">
           <div className="foot-links">
             {/* 🔴 FEATURES IS IN THE FOOTER AT EVERY WIDTH, which is what makes the header's 820px

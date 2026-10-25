@@ -35,6 +35,8 @@ import { localeOfCountry } from '@/lib/i18n/locales'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroCtaWatcher } from '@/components/landing/HeroCtaWatcher'   // client: drives the header CTA's mobile reveal
 import { LandingFooter } from '@/components/landing/LandingFooter'
+// compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
+import { comparisonFooter } from '@/lib/comparison-server'
 // ══ 🔴 THIS IMPORT IS SMALLER THAN IT WAS, AND IT MUST NOT BECOME EMPTY (6 October 2026) ══════════
 // FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS and `type FeatureValue` went to
 // components/landing/FeatureComparison.tsx with the comparison table, and the whole
@@ -680,7 +682,7 @@ export default async function LandingPage({ params, searchParams }: { params?: P
       </section>
 
       {/* ============ FOOTER ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} />
+      <LandingFooter featuresHref={visitor.paths.features} country={visitor.menu} locale={s.locale} comparison={await comparisonFooter(s.countryCode, s.locale)} />
       {/* Mounted ONCE — every DemoCta above drives this one instance. */}
       <DemoModal />
     </div>

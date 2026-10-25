@@ -11,7 +11,7 @@
 // 🔴 FIELD ALLOWLISTS: each action names the fields it accepts; anything else is refused, not ignored. This file is the
 // ONE place the page's field names meet column names, so no column name ships to a browser.
 
-import type { Benchmark, Competitor, CompetitorPlan } from '@/lib/pricing-check'
+import type { Benchmark, Competitor, CompetitorPlan, ComparisonEntry } from '@/lib/pricing-check'
 
 type Row = Record<string, unknown>
 export interface PricingStore {
@@ -33,6 +33,15 @@ export interface PricingStore {
   supersedeBenchmark(id: string, at: string): Promise<boolean>
   unsupersedeBenchmark(id: string): Promise<void>
   insertBenchmark(row: Row): Promise<Row>
+  // ── compare-de-1: public.comparison_entries (20261042) ──
+  /** False while the table is not there (the migration has not run). */
+  entriesReady(): Promise<boolean>
+  listEntries(): Promise<Row[]>
+  insertEntry(row: Row): Promise<Row>
+  updateEntry(id: string, cols: Row): Promise<Row | null>
+  deleteEntry(id: string): Promise<void>
+  /** Which of these ids already exist in the table (the German import's once-only check). */
+  existingIds(table: 'competitors' | 'plans' | 'benchmarks' | 'entries', ids: string[]): Promise<string[]>
 }
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string }
@@ -52,6 +61,10 @@ const COMPETITOR: Record<keyof Competitor, Def> = {
   preOrders: { col: 'pre_orders', kind: { oneOf: TRI } }, whatsapp: { col: 'whatsapp', kind: { oneOf: TRI } },
   socialPosts: { col: 'social_posts', kind: { oneOf: TRI } }, ownDomain: { col: 'own_domain', kind: { oneOf: TRI } },
   iosApp: { col: 'ios_app', kind: { oneOf: TRI } }, androidApp: { col: 'android_app', kind: { oneOf: TRI } },
+  // compare-de-1 (20261042): read tolerantly — LEGACY_COMPETITOR_COLUMNS below is the select before that migration runs.
+  capacitySlots: { col: 'capacity_slots', kind: { oneOf: TRI } }, multiLocationSchedule: { col: 'multi_location_schedule', kind: { oneOf: TRI } },
+  kds: { col: 'kds', kind: { oneOf: TRI } }, payAtTruck: { col: 'pay_at_truck', kind: { oneOf: TRI } },
+  paymentMethods: { col: 'payment_methods', kind: 'textOrNull' }, minTerm: { col: 'min_term', kind: 'textOrNull' },
   featuresCheckedOn: { col: 'features_checked_on', kind: 'date' }, featuresVerifiedAt: { col: 'features_verified_at', kind: 'textOrNull' },
   notes: { col: 'notes', kind: 'textOrNull' },
 }
@@ -96,7 +109,13 @@ const PLAN_EDITABLE = ['planName', 'currency', 'priceHidden', 'monthlyMinor', 'y
 const BENCH_EDITABLE = ['mealMinor', 'mealSourceLabel', 'mealSourceUrl', 'mealSourceOk', 'orderMultiplier', 'eurRate', 'eurRateDate', 'cardBps',
   'cardFixedMinor', 'plannedProMinor', 'plannedProIncludedMinor', 'plannedUnlimitedMinor', 'iosAppAvailable', 'androidAppAvailable', 'notes', 'checkedOn'] as const
 const COMPETITOR_NEW = ['name', 'website', 'focus', 'paymentProviders', 'notes'] as const
-const FEATURE_COLS: Record<string, string> = { preOrders: 'pre_orders', whatsapp: 'whatsapp', socialPosts: 'social_posts', ownDomain: 'own_domain', iosApp: 'ios_app', androidApp: 'android_app' }
+const FEATURE_COLS: Record<string, string> = { preOrders: 'pre_orders', whatsapp: 'whatsapp', socialPosts: 'social_posts', ownDomain: 'own_domain', iosApp: 'ios_app', androidApp: 'android_app',
+  // compare-de-1: the comparison page's further rows.
+  capacitySlots: 'capacity_slots', multiLocationSchedule: 'multi_location_schedule', kds: 'kds', payAtTruck: 'pay_at_truck' }
+/** compare-de-1: the as-advertised texts an admin may set on a competitor. */
+const COMPETITOR_TEXT_COLS: Record<string, string> = { paymentMethods: 'payment_methods', minTerm: 'min_term' }
+/** compare-de-1: the columns added by 20261042 — left out of the select while that migration has not run. */
+export const COMPARE_COMPETITOR_COLUMNS = ['capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck', 'payment_methods', 'min_term'] as const
 
 const LABEL: Record<string, string> = {
   planName: 'Plan name', currency: 'Currency', monthlyMinor: 'Monthly price', setupMinor: 'Setup fee', truckFeeBps: 'Fee the truck pays (%)',
@@ -152,17 +171,28 @@ const mapOut = <T>(row: Row, defs: Record<string, Def>): T => {
   const o: Row = {}
   for (const [f, d] of Object.entries(defs)) {
     let v = row[d.col] ?? null
+    // compare-de-1: a yes/no/unknown column the row does not carry (20261042 not run yet) reads as 'unknown'.
+    if (v === null && typeof d.kind === 'object' && !d.kind.nullable && (d.kind.oneOf as readonly string[]).includes('unknown')) v = 'unknown'
     if ((d.kind === 'num') && typeof v === 'string') v = Number(v)   // numeric columns arrive as strings
     o[f] = v
   }
   return o as T
 }
+const ENTRY: Record<keyof ComparisonEntry, Def> = {
+  id: { col: 'id', kind: 'text' }, countryCode: { col: 'country_code', kind: 'country' }, competitorId: { col: 'competitor_id', kind: 'text' },
+  primaryPlanId: { col: 'primary_plan_id', kind: 'textOrNull' }, chooseWhen: { col: 'choose_when', kind: 'textOrNull' },
+  sortOrder: { col: 'sort_order', kind: 'int0' }, verifiedAt: { col: 'verified_at', kind: 'textOrNull' }, verifiedBy: { col: 'verified_by', kind: 'textOrNull' },
+  createdAt: { col: 'created_at', kind: 'textOrNull' },
+}
+export const entryOut = (r: Row) => mapOut<ComparisonEntry>(r, ENTRY)
 export const competitorOut = (r: Row) => mapOut<Competitor>(r, COMPETITOR)
 export const planOut = (r: Row) => mapOut<CompetitorPlan>(r, PLAN)
 export const benchmarkOut = (r: Row) => mapOut<Benchmark>(r, BENCH)
 /** The columns each table is read with (the store selects exactly these). */
 export const COLUMNS = {
   competitors: [...Object.values(COMPETITOR).map(d => d.col), 'updated_at'].join(', '),
+  /** compare-de-1: the competitors select before 20261042 runs (the store falls back to it on an unknown column). */
+  competitorsLegacy: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(COMPARE_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
   plans: Object.values(PLAN).map(d => d.col).join(', '),
   benchmarks: Object.values(BENCH).map(d => d.col).join(', '),
 }
@@ -175,16 +205,77 @@ function planProblem(cols: Row): string | null {
 }
 
 // ── reads ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-export async function loadState(store: PricingStore): Promise<ActionResult<{
+export async function loadState(store: PricingStore, compare?: ComparePayload | null): Promise<ActionResult<{
   empty: boolean; importable: boolean; competitors: Competitor[]; plans: CompetitorPlan[]; benchmarks: Benchmark[]
+  entries: ComparisonEntry[]; entriesReady: boolean; compareImportable: boolean
 }>> {
   const counts = await store.counts()
   const empty = counts.competitors === 0 && counts.plans === 0 && counts.benchmarks === 0
   const all = await store.listAll()
+  // compare-de-1: the comparison entries, and whether the German research can still be imported (its plan ids not yet in).
+  const entriesReady = await store.entriesReady()
+  const entries = entriesReady ? (await store.listEntries()).map(entryOut) : []
+  const entryIds = (compare?.entries ?? []).map(e => String(e.id))
+  const compareImportable = !!compare && !empty && entryIds.length > 0 && (!entriesReady || (await store.existingIds('entries', entryIds)).length === 0)
   return { ok: true, data: {
     empty, importable: empty && counts.research === 0,
     competitors: all.competitors.map(competitorOut), plans: all.plans.map(planOut), benchmarks: all.benchmarks.map(benchmarkOut),
+    entries, entriesReady, compareImportable,
   } }
+}
+
+// ── compare-de-1: the German comparison research, imported once ─────────────────────────────────────────────────────────
+/** data/compare-de-1/competitors.json — the pricing-check shape (snake_case rows) plus the comparison entries. Every id is
+ *  fixed in the file, so "already imported" is simply: any of its entry ids is already in comparison_entries. */
+export interface ComparePayload { id: string; checked_on: string; competitors: Row[]; plans: Row[]; entries: Row[] }
+
+/** The German research: competitors matched BY NAME (an existing one keeps its id and only its 'unknown' features and empty
+ *  texts are filled in), then its plans — except one the competitor already has, current, under the same name in the same
+ *  country (the earlier research's row stays; no duplicate) — and its comparison entries, pointed at whichever plan row
+ *  is the one in the table. All source 'research', all unverified. Refused when any of the file's entries is already in,
+ *  when the file is not in the expected shape, or while 20261042 has not run. */
+export async function importCompareResearch(store: PricingStore, payload: ComparePayload): Promise<ActionResult<{ competitors: number; updated: number; plans: number; entries: number }>> {
+  if (!payload || !Array.isArray(payload.competitors) || !Array.isArray(payload.plans) || !Array.isArray(payload.entries)
+    || !payload.plans.every(p => p.source === 'research' && !p.verified_at) || !payload.entries.every(e => !e.verified_at))
+    return refuse(500, 'The German research file is not in the expected shape. Nothing was changed.')
+  if (!(await store.entriesReady())) return refuse(503, 'Run supabase/migrations/20261042_compare_de_1.sql first, then reload. Nothing was changed.')
+  if ((await store.existingIds('entries', payload.entries.map(e => String(e.id)))).length) return refuse(409, 'The German comparison research has already been imported. Nothing was changed.')
+  const idOf = new Map<string, string>()
+  let added = 0, updated = 0
+  const FILL = ['pre_orders', 'whatsapp', 'social_posts', 'own_domain', 'ios_app', 'android_app', 'capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck']
+  for (const c of payload.competitors) {
+    const existing = await store.findCompetitorByName(String(c.name))
+    if (existing) {
+      const cols: Row = {}
+      for (const col of FILL) if ((existing[col] ?? 'unknown') === 'unknown' && c[col] && c[col] !== 'unknown') cols[col] = c[col]
+      for (const col of ['payment_methods', 'min_term', 'website', 'focus']) if (existing[col] == null && c[col] != null) cols[col] = c[col]
+      if (Object.keys(cols).length) { cols.features_checked_on = c.features_checked_on ?? payload.checked_on; await store.updateCompetitor(String(existing.id), cols); updated++ }
+      idOf.set(String(c.id), String(existing.id))
+    } else {
+      const { features_verified_at: _skip, ...row } = c   // eslint-disable-line @typescript-eslint/no-unused-vars
+      await store.insertCompetitor({ ...row, features_verified_at: null })
+      idOf.set(String(c.id), String(c.id)); added++
+    }
+  }
+  const current = (await store.listAll()).plans.filter(p => p.superseded_at == null)
+  const key = (cid: unknown, cc: unknown, name: unknown) => `${cid}|${cc}|${String(name).trim().toLowerCase()}`
+  const have = new Map(current.map(p => [key(p.competitor_id, p.country_code, p.plan_name), String(p.id)]))
+  const planIdOf = new Map<string, string>()
+  const fresh: Row[] = []
+  for (const p of payload.plans) {
+    const cid = idOf.get(String(p.competitor_id)) ?? String(p.competitor_id)
+    const existing = have.get(key(cid, p.country_code, p.plan_name))
+    if (existing) { planIdOf.set(String(p.id), existing); continue }
+    planIdOf.set(String(p.id), String(p.id))
+    fresh.push({ ...p, competitor_id: cid, verified_at: null, verified_by: null })
+  }
+  const n = fresh.length ? await store.insertMany('plans', fresh) : 0
+  let entries = 0
+  for (const e of payload.entries) {
+    await store.insertEntry({ ...e, competitor_id: idOf.get(String(e.competitor_id)) ?? e.competitor_id,
+      primary_plan_id: e.primary_plan_id ? planIdOf.get(String(e.primary_plan_id)) ?? null : null, verified_at: null, verified_by: null }); entries++
+  }
+  return { ok: true, data: { competitors: added, updated, plans: n, entries } }
 }
 
 // ── the one-time import ─────────────────────────────────────────────────────────────────────────────────────────────
@@ -254,7 +345,7 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
       const cid = typeof body.competitorId === 'string' ? body.competitorId : null
       const col = typeof body.column === 'string' ? FEATURE_COLS[body.column] : undefined
       if (!cid) return refuse(400, 'Which competitor?')
-      if (!col) return refuse(400, 'Only the six key features can be set here.')
+      if (!col) return refuse(400, 'Only the key features can be set here.')
       if (!TRI.includes(body.value as (typeof TRI)[number])) return refuse(400, 'A feature is yes, no or not checked.')
       const r = await store.updateCompetitor(cid, { [col]: body.value, features_checked_on: stamp.today, features_verified_at: stamp.at, updated_at: stamp.at })
       return r ? { ok: true, data: { competitor: competitorOut(r) } } : refuse(404, 'That competitor is gone. Reload the page.')
@@ -282,6 +373,75 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
       const p = planProblem(row); if (p) return refuse(400, p)
       const inserted = await store.insertPlan(row)
       return { ok: true, data: { competitor: competitorOut(competitor), plan: planOut(inserted) } }
+    }
+    // ── compare-de-1 ──────────────────────────────────────────────────────────────────────────────────────────────────
+    case 'verify_features':
+    case 'unverify_features': {
+      const cid = typeof body.competitorId === 'string' ? body.competitorId : null
+      if (!cid) return refuse(400, 'Which competitor?')
+      const on = body.action === 'verify_features'
+      const r = await store.updateCompetitor(cid, { features_verified_at: on ? stamp.at : null, ...(on ? { features_checked_on: stamp.today } : {}), updated_at: stamp.at })
+      return r ? { ok: true, data: { competitor: competitorOut(r) } } : refuse(404, 'That competitor is gone. Reload the page.')
+    }
+    case 'set_competitor_text': {
+      const cid = typeof body.competitorId === 'string' ? body.competitorId : null
+      const col = typeof body.field === 'string' ? COMPETITOR_TEXT_COLS[body.field] : undefined
+      if (!cid) return refuse(400, 'Which competitor?')
+      if (!col) return refuse(400, 'Only payment methods and minimum term can be set here.')
+      if (body.value !== null && typeof body.value !== 'string') return refuse(400, 'That must be text.')
+      const v = typeof body.value === 'string' && body.value.trim() ? body.value.trim() : null
+      const r = await store.updateCompetitor(cid, { [col]: v, features_checked_on: stamp.today, updated_at: stamp.at })
+      return r ? { ok: true, data: { competitor: competitorOut(r) } } : refuse(404, 'That competitor is gone. Reload the page.')
+    }
+    case 'entry_add': {
+      const code = typeof body.countryCode === 'string' ? body.countryCode.trim().toUpperCase() : ''
+      const cid = typeof body.competitorId === 'string' ? body.competitorId : null
+      if (!/^[A-Z]{2}$/.test(code) || !cid) return refuse(400, 'Which country and which competitor?')
+      if (!(await store.entriesReady())) return refuse(503, 'Run supabase/migrations/20261042_compare_de_1.sql first, then reload.')
+      const list = (await store.listEntries()).filter(e => e.country_code === code)
+      if (list.some(e => e.competitor_id === cid)) return refuse(409, 'That competitor is already on this country’s page.')
+      const planId = typeof body.primaryPlanId === 'string' && body.primaryPlanId ? body.primaryPlanId : null
+      const r = await store.insertEntry({ country_code: code, competitor_id: cid, primary_plan_id: planId, choose_when: null,
+        sort_order: list.reduce((m, e) => Math.max(m, Number(e.sort_order) || 0), 0) + 1, verified_at: null, verified_by: null })
+      return { ok: true, data: { entry: entryOut(r) } }
+    }
+    case 'entry_update': {
+      if (!id) return refuse(400, 'Which entry?')
+      const f = (body.fields && typeof body.fields === 'object' ? body.fields : {}) as Row
+      const cols: Row = {}
+      for (const [k, v] of Object.entries(f)) {
+        if (k === 'chooseWhen') { if (v !== null && typeof v !== 'string') return refuse(400, 'The “passt, wenn” line must be text.'); cols.choose_when = typeof v === 'string' && v.trim() ? v.trim() : null }
+        else if (k === 'primaryPlanId') { if (v !== null && typeof v !== 'string') return refuse(400, 'Choose a plan.'); cols.primary_plan_id = v || null }
+        else return refuse(400, `“${k}” can’t be changed here.`)
+      }
+      // An edit takes the verification back: the line or the plan shown has changed since it was checked.
+      const r = await store.updateEntry(id, { ...cols, verified_at: null, verified_by: null })
+      return r ? { ok: true, data: { entry: entryOut(r) } } : refuse(404, 'That entry is gone. Reload the page.')
+    }
+    case 'entry_verify':
+    case 'entry_unverify': {
+      if (!id) return refuse(400, 'Which entry?')
+      const on = body.action === 'entry_verify'
+      const r = await store.updateEntry(id, { verified_at: on ? stamp.at : null, verified_by: on ? stamp.by : null })
+      return r ? { ok: true, data: { entry: entryOut(r) } } : refuse(404, 'That entry is gone. Reload the page.')
+    }
+    case 'entry_move': {
+      if (!id || (body.dir !== 'up' && body.dir !== 'down')) return refuse(400, 'Which entry, and up or down?')
+      const all = await store.listEntries()
+      const me = all.find(e => e.id === id)
+      if (!me) return refuse(404, 'That entry is gone. Reload the page.')
+      const list = all.filter(e => e.country_code === me.country_code).sort((a, b) => Number(a.sort_order) - Number(b.sort_order))
+      const i = list.findIndex(e => e.id === id), j = body.dir === 'up' ? i - 1 : i + 1
+      if (j < 0 || j >= list.length) return { ok: true, data: { entry: entryOut(me) } }
+      // Renumber the country's list 1…n with the two swapped, so equal or missing orders can't stall a move.
+      const next = list.slice(); [next[i], next[j]] = [next[j], next[i]]
+      for (let k = 0; k < next.length; k++) if (Number(next[k].sort_order) !== k + 1) await store.updateEntry(String(next[k].id), { sort_order: k + 1 })
+      return { ok: true, data: { moved: true } }
+    }
+    case 'entry_remove': {
+      if (!id) return refuse(400, 'Which entry?')
+      await store.deleteEntry(id)
+      return { ok: true, data: { removed: true } }
     }
     default:
       return refuse(400, 'Unknown action.')

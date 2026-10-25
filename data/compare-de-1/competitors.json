@@ -1,0 +1,1734 @@
+{
+ "$comment": "compare-de-1 (24 October 2026): German food-truck ordering tools checked on the vendors' own websites on 2026-10-24 (docs/compare-de-1-report.md). Imported ONCE by Admin › Pricing check › \"Import German comparison research\" (lib/admin/pricing-check-actions.ts importCompareResearch). Every row source research, unverified: nothing is public until an admin verifies it. \"evidence\" (the vendor's own words per cell) and \"groups\" (tills, marketplaces) are for the report and the reviewer; the import does not read them.",
+ "id": "compare-de-1",
+ "checked_on": "2026-10-24",
+ "competitors": [
+  {
+   "id": "683bf425-5177-5d27-84fa-66e5e475dd57",
+   "name": "OrderFront",
+   "website": "https://www.orderfront.de/",
+   "focus": "nearest_local",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "yes",
+   "ios_app": "no",
+   "android_app": "no",
+   "capacity_slots": "yes",
+   "multi_location_schedule": "unknown",
+   "kds": "yes",
+   "pay_at_truck": "yes",
+   "payment_methods": "Karte, Apple Pay, Google Pay, Klarna; bar bei Abholung",
+   "min_term": "Keine (monatlich kündbar)",
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Kein Food-Truck-Bezug auf den gelesenen Seiten (Zielgruppe Restaurants, Pizzerien, Imbisse, Cafés). Monatspreis versteckt („Warum stehen hier keine Zahlen?“). Zahlungsgebühr „online ab 2,5 %, vor Ort am Terminal ab 1,4 %, bei Barzahlung nichts“, zahlt der Betrieb, „Sie lässt sich anteilig als Servicegebühr an den Gast weitergeben.“ Keine Provision. 30 Tage kostenlos testen. Kapazität auch „mit Zeitfenstern und Kapazität je Ofen“ (Startseite)."
+  },
+  {
+   "id": "a59dfb20-aa52-5416-bd76-6d131565beb4",
+   "name": "gastro25",
+   "website": "https://www.gastro25.de/",
+   "focus": "food_truck",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "yes",
+   "ios_app": "unknown",
+   "android_app": "unknown",
+   "capacity_slots": "unknown",
+   "multi_location_schedule": "unknown",
+   "kds": "unknown",
+   "pay_at_truck": "yes",
+   "payment_methods": "Karte, Apple Pay, Google Pay, Klarna; bar",
+   "min_term": "Keine (monatlich kündbar)",
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Hat eine Branchenseite /fuer/food-truck, Hauptzielgruppe laut Footer „inhabergeführte Restaurants im DACH-Raum“ mit 1 bis 3 Standorten. Zwei Monate kostenlos testen. „Unlimitierte Bestellungen, null Provision“. Stripe-Gebühren nicht genannt. FAQ-Antworten zu Kündigung im Seiteninhalt leer."
+  },
+  {
+   "id": "144a2a9a-9e85-5229-bb85-356fade03d72",
+   "name": "Jamezz",
+   "website": "https://jamezz.com/de/",
+   "focus": "nearest_local",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "yes",
+   "ios_app": "unknown",
+   "android_app": "unknown",
+   "capacity_slots": "unknown",
+   "multi_location_schedule": "unknown",
+   "kds": "yes",
+   "pay_at_truck": "unknown",
+   "payment_methods": "Karte, Apple Pay, Google Pay, PayPal und mehr",
+   "min_term": null,
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Niederländischer Anbieter (Breda). Food Trucks nur als Kachel/Bildunterschrift („Food Trucks - Mobile Bestelllösung mit Jamezz“) und FAQ-Satz „Jamezz läuft auch eigenständig mit Küchendruckern für Pop-ups und Food Trucks.“ – keine eigene Food-Truck-Seite. „0% Provision auf alle Bestellungen“. Preise nicht veröffentlicht."
+  },
+  {
+   "id": "55411a79-af58-5ba3-b9d6-39d2257eb11e",
+   "name": "GASTRODIGITAL",
+   "website": "https://gastro.digital/",
+   "focus": "nearest_local",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "unknown",
+   "ios_app": "unknown",
+   "android_app": "unknown",
+   "capacity_slots": "unknown",
+   "multi_location_schedule": "unknown",
+   "kds": "unknown",
+   "pay_at_truck": "yes",
+   "payment_methods": "PayPal, Klarna, Karte; bar",
+   "min_term": "Pro Bestellung: monatlich kündbar; Flat: nicht angegeben",
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Kein Food-Truck-Bezug. MwSt. auf der Preisseite nicht angegeben (kein Treffer für MwSt/netto/brutto). Wer die 0,49 € zahlt, steht nicht ausdrücklich da (vermutlich der Betrieb – nicht verifiziert). Jährliche Zahlung: „Bei jährlicher Zahlung schenken wir dir 2 Monate: Du zahlst den Monatspreis nur für 10 statt 12 Monate.“ – ob das für das Bestellsystem gilt, ist im Bestellsystem-Abschnitt nicht gesagt. „Die Einrichtung durch unser Team ist im kostenlosen Test nicht enthalten.“ (Preis dafür nicht genannt). „Keine Provision auf deinen Umsatz“. Capterra nennt „ab 41 €“ – nicht verwendet (keine Vendor-Quelle)."
+  },
+  {
+   "id": "66d800ba-468b-5e57-981f-0f305acfb3f1",
+   "name": "Vev",
+   "website": "https://vev.co/",
+   "focus": "food_truck",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "unknown",
+   "ios_app": "yes",
+   "android_app": "unknown",
+   "capacity_slots": "yes",
+   "multi_location_schedule": "unknown",
+   "kds": "unknown",
+   "pay_at_truck": "yes",
+   "payment_methods": null,
+   "min_term": "Keine",
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "KEINE deutsche Version (Sprachen: EN, NL, ES). Preise wurden uns nur in USD angezeigt („From $9.99/m“, auch auf /nl/pricing „Vanaf $9.99/m“) – kein EUR-Preis, daher monthly_eur null. Jährliche Zahlung „vorab“ mit Rabatt (Höhe nicht genannt). „Zero setup costs.“, 30 Tage gratis. Transaktionsgebühren nicht genannt. Im Kern ein Termin-/Buchungstool (Appointments, Classes, Events)."
+  },
+  {
+   "id": "d03a6e1f-3358-5708-bcaf-0ca3ade8a187",
+   "name": "FoxiFood",
+   "website": "https://www.foxifood.com/de/",
+   "focus": "food_truck",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "yes",
+   "ios_app": "unknown",
+   "android_app": "unknown",
+   "capacity_slots": "unknown",
+   "multi_location_schedule": "unknown",
+   "kds": "yes",
+   "pay_at_truck": "yes",
+   "payment_methods": "Karte; bar, Überweisung",
+   "min_term": "Keine",
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Hat Food-Truck-Anwendungsfall-Seite (dort v. a. QR-Bestellung beim Anstehen: „Kunden scannen und bestellen schon beim Anstehen – am Fenster ist ihr Essen dann fertig.“). Widerspruch: Preisseite „1,5/2% + 0,25 €“ Stripe + 0,45 € Kundengebühr, Funktionsseite „Nur 2 % + 0,45 EUR pro Kartenbestellung (Abholung/Vor-Ort)“. „Rabatt für Ihre Kunden** 5%“ – „Die 5% gehen als Rabatt an den Endkunden.“ MwSt. nicht angegeben. Food-Truck-Seite brauchte 2 Versuche (1. Versuch Timeout)."
+  },
+  {
+   "id": "8235f42e-5939-57a2-849e-a8706be352c1",
+   "name": "Bestelltheke",
+   "website": "https://bestelltheke.de/",
+   "focus": "nearest_local",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "yes",
+   "ios_app": "unknown",
+   "android_app": "unknown",
+   "capacity_slots": "yes",
+   "multi_location_schedule": "unknown",
+   "kds": "yes",
+   "pay_at_truck": "yes",
+   "payment_methods": "Karte, PayPal; bar",
+   "min_term": "Keine (monatlich kündbar)",
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Kein Food-Truck-Bezug (Branchen: Pizzeria, Döner, Sushi, Café, Bowls). Betreiber PixAgentur. „Keine Einrichtungsgebühr.“; einmalig 49 € für Übernahme eines bestehenden Shops. Zahlungsanbieter-Gebühren extra („üblich rund 1,4 % + 25 ct“). Widerspruch zum Küchenmonitor: Vergleichstabelle nur in Komplett, Start-Featureliste nennt „Küchenmonitor & Bondruck“. Startadresse ihre-adresse.bestelltheke.de."
+  },
+  {
+   "id": "8b784de4-0b2c-5d24-8587-98df2a990969",
+   "name": "FoodsHero",
+   "website": "https://foodshero.de/",
+   "focus": "nearest_local",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "yes",
+   "social_posts": "yes",
+   "own_domain": "unknown",
+   "ios_app": "unknown",
+   "android_app": "unknown",
+   "capacity_slots": "unknown",
+   "multi_location_schedule": "unknown",
+   "kds": "yes",
+   "pay_at_truck": "unknown",
+   "payment_methods": null,
+   "min_term": null,
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Agentur (Hero Agency UG, Köln), Restaurants „deutschlandweit“, kein Food-Truck-Bezug. Alle Preise verstehen sich netto zuzüglich der gesetzlichen Umsatzsteuer. „Keine FoodsHero-Provision pro Bestellung“; Zahlungsdienstleister-Gebühren extra. Online-Zahlungen laut Preisliste erst im Business-Tarif. Mindestlaufzeit: FAQ-Antwort nicht sichtbar."
+  },
+  {
+   "id": "abd86253-f769-53db-8468-7fa7a171d12f",
+   "name": "GastroDok",
+   "website": "https://gastrodok.de/",
+   "focus": "food_truck",
+   "payment_providers": null,
+   "pre_orders": "yes",
+   "whatsapp": "unknown",
+   "social_posts": "unknown",
+   "own_domain": "unknown",
+   "ios_app": "unknown",
+   "android_app": "unknown",
+   "capacity_slots": "yes",
+   "multi_location_schedule": "unknown",
+   "kds": "unknown",
+   "pay_at_truck": "yes",
+   "payment_methods": "Keine Online-Zahlung (bar oder Karte vor Ort)",
+   "min_term": "Monatlich kündbar; Jahresabo bis Laufzeitende",
+   "features_checked_on": "2026-10-24",
+   "features_verified_at": null,
+   "notes": "Hat Seite „Imbiss & Foodtruck“. Hauptgeschäft sonst Vorlagen (HACCP, Kassenbuch). „GastroDok erhebt pro Bestellung keine Provision“, „Reservierungssystem und Bestellsystem richten Sie kostenlos ein“, 14 Tage kostenlos testen. Monatswert des Jahresabos (24,17 €) ist aus 290 €/12 gerechnet, nicht vom Anbieter so angegeben."
+  }
+ ],
+ "plans": [
+  {
+   "id": "c43e319a-0eb8-58d5-8d7b-e390a97a455f",
+   "competitor_id": "683bf425-5177-5d27-84fa-66e5e475dd57",
+   "country_code": "DE",
+   "plan_name": "Starter",
+   "currency": "EUR",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "bundled",
+   "card_bps": 250,
+   "card_fixed_minor": 0,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.orderfront.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "Warum stehen hier keine Zahlen? … Deine Konditionen besprechen wir persönlich."
+  },
+  {
+   "id": "2a856281-d68b-5c7f-9e7b-7ae9f2353fd7",
+   "competitor_id": "683bf425-5177-5d27-84fa-66e5e475dd57",
+   "country_code": "DE",
+   "plan_name": "Premium",
+   "currency": "EUR",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "bundled",
+   "card_bps": 250,
+   "card_fixed_minor": 0,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.orderfront.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "Es gibt einen festen Monatsbeitrag (Betrag nicht genannt)"
+  },
+  {
+   "id": "e9ace262-113b-5808-843a-9ac2d2f955e9",
+   "competitor_id": "683bf425-5177-5d27-84fa-66e5e475dd57",
+   "country_code": "DE",
+   "plan_name": "Multi",
+   "currency": "EUR",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "bundled",
+   "card_bps": 250,
+   "card_fixed_minor": 0,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.orderfront.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "Preis nicht genannt"
+  },
+  {
+   "id": "b3e0e175-40fa-570b-9c91-aced30deaf9a",
+   "competitor_id": "a59dfb20-aa52-5416-bd76-6d131565beb4",
+   "country_code": "DE",
+   "plan_name": "Gastro25 Komplett",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 6900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.gastro25.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "69EUR/ Monat – zzgl. MwSt., monatlich kündbar / Keine Einrichtungsgebühr, keine Mindestlaufzeit."
+  },
+  {
+   "id": "5d9341a1-21db-5246-9d82-a788adee3c3f",
+   "competitor_id": "a59dfb20-aa52-5416-bd76-6d131565beb4",
+   "country_code": "DE",
+   "plan_name": "Business & Ketten",
+   "currency": "EUR",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.gastro25.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "Auf Anfrage"
+  },
+  {
+   "id": "6a840462-d167-5373-9a6e-71568ed1aa86",
+   "competitor_id": "144a2a9a-9e85-5229-bb85-356fade03d72",
+   "country_code": "DE",
+   "plan_name": "Webshop (Abonnement pro Standort)",
+   "currency": "EUR",
+   "price_hidden": true,
+   "monthly_minor": null,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://jamezz.com/de/online-bestell-webshop",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "Jamezz Webshop funktioniert mit einer einmaligen Einrichtungsgebühr und einem festen monatlichen Abonnement"
+  },
+  {
+   "id": "5e722239-c387-58ba-89bb-80f6311f7d3b",
+   "competitor_id": "55411a79-af58-5ba3-b9d6-39d2257eb11e",
+   "country_code": "DE",
+   "plan_name": "Online-Bestellsystem pay per order",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 49,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://gastro.digital/preise/",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "0,49 € / Bestellung – keine Fixkosten, ideal zum Testen, monatlich kündbar"
+  },
+  {
+   "id": "5e107a65-52de-59a7-922c-cd03af84f2e8",
+   "competitor_id": "55411a79-af58-5ba3-b9d6-39d2257eb11e",
+   "country_code": "DE",
+   "plan_name": "Online-Bestellsystem Flat",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 9900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://gastro.digital/preise/",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "99 € / Monat – unbegrenzte Bestellungen, kein Aufpreis pro Bestellung"
+  },
+  {
+   "id": "d9ea8ad3-b849-5caa-b536-5b379aa03872",
+   "competitor_id": "d03a6e1f-3358-5708-bcaf-0ca3ade8a187",
+   "country_code": "DE",
+   "plan_name": "Pay-per-Order (einziger Tarif)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 45,
+   "card_mode": "separate",
+   "card_bps": 150,
+   "card_fixed_minor": 25,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.foxifood.com/de/preise/",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "Monatliche Gebühr 0 € · Einrichtungsgebühr 0 € · Bearbeitungsgebühr (Foxi) 0,45 € (zahlt der Kunde) · Kartengebühr (Stripe)* 1,5/2% + 0,25 €"
+  },
+  {
+   "id": "cb4689d1-094b-50da-94b1-76e7713f5617",
+   "competitor_id": "8235f42e-5939-57a2-849e-a8706be352c1",
+   "country_code": "DE",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 500,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://bestelltheke.de/#preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "5 % pro Bestellung, keine Grundgebühr – Provisionsdeckel: 399 €/Monat (zzgl. USt.)"
+  },
+  {
+   "id": "59ab7ff0-fba7-586d-8a56-36e2db0f74de",
+   "competitor_id": "8235f42e-5939-57a2-849e-a8706be352c1",
+   "country_code": "DE",
+   "plan_name": "Komplett",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 700,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://bestelltheke.de/#preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "7 % pro Bestellung, keine Grundgebühr – Provisionsdeckel: 499 €/Monat (zzgl. USt.)"
+  },
+  {
+   "id": "85ffec03-6540-5cd3-8c25-67f30057ecb5",
+   "competitor_id": "8235f42e-5939-57a2-849e-a8706be352c1",
+   "country_code": "DE",
+   "plan_name": "Basis Flat",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 24900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://bestelltheke.de/#preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "249 €/Monat – Fester Preis · zzgl. USt., 0 % Provision"
+  },
+  {
+   "id": "11790f3d-5305-57e5-9d71-86259cbbf868",
+   "competitor_id": "8235f42e-5939-57a2-849e-a8706be352c1",
+   "country_code": "DE",
+   "plan_name": "Komplett Flat",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 34900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://bestelltheke.de/#preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "349 €/Monat – Fester Preis · zzgl. USt., 0 % Provision"
+  },
+  {
+   "id": "6f073e79-5d2c-5196-b7fb-0f4146f4fc1b",
+   "competitor_id": "8b784de4-0b2c-5d24-8587-98df2a990969",
+   "country_code": "DE",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 9900,
+   "yearly_only": false,
+   "setup_minor": 29900,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://foodshero.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "99 € netto / Monat · Einrichtung: 299 € einmalig"
+  },
+  {
+   "id": "03873780-f4ee-53ce-a569-4ada54ad5464",
+   "competitor_id": "8b784de4-0b2c-5d24-8587-98df2a990969",
+   "country_code": "DE",
+   "plan_name": "Business",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 24900,
+   "yearly_only": false,
+   "setup_minor": 79900,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://foodshero.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "249 € netto / Monat · Einrichtung: 799 € einmalig"
+  },
+  {
+   "id": "cb3aa027-8473-54d4-9727-124a8f2f12be",
+   "competitor_id": "8b784de4-0b2c-5d24-8587-98df2a990969",
+   "country_code": "DE",
+   "plan_name": "Growth",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 39900,
+   "yearly_only": false,
+   "setup_minor": 99900,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://foodshero.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "399 € netto / Monat · Einrichtung: 999 € einmalig"
+  },
+  {
+   "id": "c316ff83-c9cb-5283-bb72-1fa2cbb38ed7",
+   "competitor_id": "8b784de4-0b2c-5d24-8587-98df2a990969",
+   "country_code": "DE",
+   "plan_name": "Premium",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 79900,
+   "yearly_only": false,
+   "setup_minor": 149900,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://foodshero.de/preise",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "ab 799 € netto / Monat · Einrichtung: ab 1.499 € einmalig"
+  },
+  {
+   "id": "9867747d-a938-584f-b2e3-606b24367a58",
+   "competitor_id": "abd86253-f769-53db-8468-7fa7a171d12f",
+   "country_code": "DE",
+   "plan_name": "Bestellsystem (monatlich)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 2900,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://gastrodok.de/",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "29 € / Monat oder 290 € / Jahr inkl. USt"
+  },
+  {
+   "id": "8679861f-2c6b-5d3e-b714-9f3242405911",
+   "competitor_id": "abd86253-f769-53db-8468-7fa7a171d12f",
+   "country_code": "DE",
+   "plan_name": "Bestellsystem (jährlich)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 2417,
+   "yearly_only": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": true,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "incl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://gastrodok.de/",
+   "checked_on": "2026-10-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "290 € / Jahr inkl. USt (= 24,17 € pro Monat gerechnet)"
+  }
+ ],
+ "entries": [
+  {
+   "id": "c4846dee-55ac-5cca-af19-7fe5a155d37f",
+   "country_code": "DE",
+   "competitor_id": "a59dfb20-aa52-5416-bd76-6d131565beb4",
+   "primary_plan_id": "b3e0e175-40fa-570b-9c91-aced30deaf9a",
+   "choose_when": "Sie für einen festen Monatspreis ohne Provision einen eigenen Bestellshop mit wählbarer Abholzeit und Barzahlung bei Abholung wollen.",
+   "sort_order": 1,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "2b15decf-0d1c-5ccc-88a2-ba30230e24cd",
+   "country_code": "DE",
+   "competitor_id": "abd86253-f769-53db-8468-7fa7a171d12f",
+   "primary_plan_id": "9867747d-a938-584f-b2e3-606b24367a58",
+   "choose_when": "Sie nur Vorbestellungen mit Abholzeit und Slot-Limit annehmen und weiter selbst vor Ort kassieren wollen – eine Online-Zahlung gibt es nicht.",
+   "sort_order": 2,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "58f8374d-ea8f-551e-955d-10062da2c358",
+   "country_code": "DE",
+   "competitor_id": "d03a6e1f-3358-5708-bcaf-0ca3ade8a187",
+   "primary_plan_id": "d9ea8ad3-b849-5caa-b536-5b379aa03872",
+   "choose_when": "Sie keine Fixkosten wollen und es in Ordnung ist, dass Ihre Gäste pro Bestellung eine Servicegebühr zahlen.",
+   "sort_order": 3,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "e4e9335d-c531-5ed6-88cb-7f94eaeed251",
+   "country_code": "DE",
+   "competitor_id": "8235f42e-5939-57a2-849e-a8706be352c1",
+   "primary_plan_id": "cb4689d1-094b-50da-94b1-76e7713f5617",
+   "choose_when": "Sie einen deutschen Bestellshop mit eigener Domain, Zeitfenstern und Slot-Kapazität suchen und lieber prozentual pro Bestellung oder pauschal zahlen.",
+   "sort_order": 4,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "f930bd26-ce73-5e01-b533-2ed6453a2dc6",
+   "country_code": "DE",
+   "competitor_id": "55411a79-af58-5ba3-b9d6-39d2257eb11e",
+   "primary_plan_id": "5e722239-c387-58ba-89bb-80f6311f7d3b",
+   "choose_when": "Sie wenige Bestellungen haben und lieber pro Bestellung statt monatlich zahlen oder Bestellsystem, Reservierung und Gutscheine bei einem Anbieter wollen.",
+   "sort_order": 5,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "86b1e03e-686f-5706-958a-52a0918f927b",
+   "country_code": "DE",
+   "competitor_id": "683bf425-5177-5d27-84fa-66e5e475dd57",
+   "primary_plan_id": "c43e319a-0eb8-58d5-8d7b-e390a97a455f",
+   "choose_when": "Sie ein Bestellsystem mit eigener Domain, Abholzeitfenstern mit Kapazitätsgrenze und Küchenmonitor suchen und den Monatspreis im Gespräch klären möchten.",
+   "sort_order": 6,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4800b9d1-8fd8-5eb5-8454-41de7b4675ee",
+   "country_code": "DE",
+   "competitor_id": "8b784de4-0b2c-5d24-8587-98df2a990969",
+   "primary_plan_id": "6f073e79-5d2c-5196-b7fb-0f4146f4fc1b",
+   "choose_when": "Sie eine Agentur suchen, die Website, Bestellsystem und auf Wunsch Social Media und einen WhatsApp-Assistenten für Sie betreibt.",
+   "sort_order": 7,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "553ef092-59ed-5b17-9c62-15336f34cf67",
+   "country_code": "DE",
+   "competitor_id": "144a2a9a-9e85-5229-bb85-356fade03d72",
+   "primary_plan_id": "6a840462-d167-5373-9a6e-71568ed1aa86",
+   "choose_when": "Sie neben dem Webshop auch Bestellterminals oder QR-Bestellung aus einer Hand wollen und ein individuelles Angebot einholen möchten.",
+   "sort_order": 8,
+   "verified_at": null,
+   "verified_by": null
+  }
+ ],
+ "groups": {
+  "tills": [
+   {
+    "name": "SumUp",
+    "tse": "yes",
+    "preorder_pickup_time": "yes",
+    "source_url": "https://www.sumup.com/de-de/order-and-pay/ ; https://www.sumup.com/de-de/kassensystem/",
+    "quote": "Ihre Kund:innen können im Voraus bestellen und ein Zeitfenster für die Abholung wählen. / Wir sorgen für TSE-Konformität …",
+    "line_de": "SumUp: Kassensystem laut SumUp TSE-konform; „Order & Pay“ mit Vorbestellung und wählbarem Abholzeitfenster gibt es nur mit Kassensystem Plus (49 €/Monat, 2,5 % Transaktionsgebühr)."
+   },
+   {
+    "name": "Zettle (PayPal Point of Sale)",
+    "tse": "yes",
+    "preorder_pickup_time": "unknown",
+    "source_url": "https://www.zettle.com/de/kassensystem/registrierkasse/kassensichv",
+    "quote": "PayPal Point of Sale-Kassensysteme lassen sich mit einer technischen Sicherheitseinrichtung (TSE) verbinden (Seitentitel: „KassenSichV-konforme Kasse“)",
+    "line_de": "Zettle/PayPal Point of Sale: laut Anbieter KassenSichV-konforme Kasse mit TSE-Anbindung ohne Monatsgebühr; Vorbestellung mit Abholzeit auf den gelesenen Seiten nicht erwähnt."
+   },
+   {
+    "name": "orderbird",
+    "tse": "yes",
+    "preorder_pickup_time": "unknown",
+    "source_url": "https://www.orderbird.com/de/ ; https://www.orderbird.com/de/bestellmanagement",
+    "quote": "100 % finanzamtkonform – Kassensystem mit zertifizierter TSE",
+    "line_de": "orderbird: Kassensystem „mit zertifizierter TSE“; online nur QR-Bestellung am Tisch beschrieben, Vorbestellung mit Abholzeit nicht erwähnt."
+   },
+   {
+    "name": "ready2order",
+    "tse": "yes",
+    "preorder_pickup_time": "unknown",
+    "source_url": "https://ready2order.com/de/",
+    "quote": "100% finanzamtkonforme TSE-Kasse / Erfüllt KassenSichV, TSE und GoBD",
+    "line_de": "ready2order: „100% finanzamtkonforme TSE-Kasse“; Vorbestellung mit Abholzeit auf der Startseite nicht erwähnt (nur „Take Away“)."
+   }
+  ],
+  "marketplaces": [
+   {
+    "name": "Lieferando",
+    "pickup_commission": "not published",
+    "delivery_commission": "not published",
+    "published": false,
+    "source_url": "https://www.lieferando.de/partner-werden",
+    "quote": "Partnerseite antwortet mit HTTP 403 (blockiert); auf lieferando.de/JET-Seiten keine aktuellen Provisionssätze gefunden.",
+    "line_de": "Lieferando: Provision für Abholung und Lieferung nicht veröffentlicht bzw. Partnerseite für uns blockiert (HTTP 403)."
+   },
+   {
+    "name": "Wolt",
+    "pickup_commission": "not published",
+    "delivery_commission": "not published",
+    "published": false,
+    "source_url": "https://merchant.wolt.com/de/deu/business/restaurants",
+    "quote": "Wolt berechnet dir eine Provision für die Bestellungen, die über die Wolt Plattform bei dir eingehen. / Es fällt keine Anmeldegebühr an …",
+    "line_de": "Wolt: Provision wird erhoben, Prozentsätze für Deutschland nicht veröffentlicht; keine Anmeldegebühr."
+   },
+   {
+    "name": "Uber Eats",
+    "pickup_commission": "14 %",
+    "delivery_commission": "30 % (Uber-Kuriere); 14 % bei Selbstzustellung",
+    "published": true,
+    "source_url": "https://merchants.ubereats.com/de/de/pricing/",
+    "quote": "14% Abholgebühr · 30 % Liefergebühr (33 % für Uber One Mitglieder) · 14% Gebühr für Selbstzustellung (12% für Uber One Mitglieder) – „Die auf dieser Seite aufgeführten Preismodelle sind nur in Deutschland verfügbar.“",
+    "line_de": "Uber Eats: 14 % für Abholung, 30 % für Lieferung durch Uber-Kuriere, 14 % bei eigener Lieferung (laut deutscher Händler-Preisseite; MwSt.-Hinweis fehlt)."
+   }
+  ]
+ },
+ "blocked": [
+  {
+   "site": "my-foodtrucks.com",
+   "what": "Domain löst nicht auf (DNS: ENOTFOUND für www.my-foodtrucks.com und my-foodtrucks.com); drei Websuchen fanden den Artikel „Die besten mobilen Bestellsysteme für deinen Food Truck“ nicht. Liste konnte nicht geprüft werden."
+  },
+  {
+   "site": "lieferando.de/partner-werden",
+   "what": "HTTP 403 Forbidden – Händler-Konditionen nicht lesbar."
+  }
+ ],
+ "evidence": {
+  "683bf425-5177-5d27-84fa-66e5e475dd57": {
+   "name": "OrderFront",
+   "urls_read": [
+    "https://www.orderfront.de/",
+    "https://www.orderfront.de/preise",
+    "https://www.orderfront.de/produkt/bestellseite",
+    "https://www.orderfront.de/funktionen",
+    "https://www.orderfront.de/funktionen/abholung",
+    "https://www.orderfront.de/hardware"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Zeiten, Vorlauf und Vorbestellfenster – pro Kanal einstellbar. / Abholzeiten, die zu deiner Küche passen",
+     "url": "https://www.orderfront.de/funktionen/abholung"
+    },
+    "capacity_slots": {
+     "value": "yes",
+     "quote": "Du legst fest, wie viele Bestellungen pro Zeitfenster reinkommen dürfen und wie lange die Vorlaufzeit ist.",
+     "url": "https://www.orderfront.de/funktionen/abholung"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "Nur feste Filialen: „Mehrere Standorte“ / „Eine Zentrale für Speisekarte, Preise und Angebote.“ Kein Tour- oder Wochenplan erwähnt.",
+     "url": "https://www.orderfront.de/"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "WhatsApp nur als Kontaktkanal („Lieber direkt schreiben?“), keine automatischen Antworten erwähnt.",
+     "url": "https://www.orderfront.de/"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "Nur „der Link in der Instagram- und TikTok-Bio“, keine Posts erwähnt.",
+     "url": "https://www.orderfront.de/"
+    },
+    "own_domain": {
+     "value": "yes",
+     "quote": "Eigene Domain oder Subdomain.",
+     "url": "https://www.orderfront.de/produkt/bestellseite"
+    },
+    "ios_app": {
+     "value": "no",
+     "quote": "Ein aktuelles Tablet reicht, eine App gibt es nicht zu installieren. (Browserbasiert; iPad wird als Gerät empfohlen)",
+     "url": "https://www.orderfront.de/hardware"
+    },
+    "android_app": {
+     "value": "no",
+     "quote": "Ein aktuelles Tablet reicht, eine App gibt es nicht zu installieren.",
+     "url": "https://www.orderfront.de/hardware"
+    },
+    "kds": {
+     "value": "yes",
+     "quote": "Bestellung direkt an Küchenmonitor und Drucker / Starter: „Bestellungen, Küchenmonitor, Bondruck und TSE.“",
+     "url": "https://www.orderfront.de/"
+    },
+    "pay_at_truck": {
+     "value": "yes",
+     "quote": "Bar bei Abholung bleibt möglich.",
+     "url": "https://www.orderfront.de/produkt/bestellseite"
+    }
+   },
+   "payment_methods": {
+    "value": "Karte, Apple Pay, Google Pay, Klarna (über Stripe); bar bei Abholung; Terminal vor Ort. PayPal nicht genannt.",
+    "quote": "Karte, Apple Pay, Google Pay und Klarna laufen über Stripe.",
+    "url": "https://www.orderfront.de/produkt/bestellseite"
+   },
+   "min_term": {
+    "value": "Monatlich kündbar, keine Mindestlaufzeit",
+    "quote": "Gar nicht. Monatlich kündbar, keine Mindestlaufzeit.",
+    "url": "https://www.orderfront.de/preise"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Starter",
+     "quote": "Warum stehen hier keine Zahlen? … Deine Konditionen besprechen wir persönlich.",
+     "url": "https://www.orderfront.de/preise"
+    },
+    {
+     "plan": "Premium",
+     "quote": "Es gibt einen festen Monatsbeitrag (Betrag nicht genannt)",
+     "url": "https://www.orderfront.de/preise"
+    },
+    {
+     "plan": "Multi",
+     "quote": "Preis nicht genannt",
+     "url": "https://www.orderfront.de/preise"
+    }
+   ]
+  },
+  "a59dfb20-aa52-5416-bd76-6d131565beb4": {
+   "name": "gastro25",
+   "urls_read": [
+    "https://www.gastro25.de/",
+    "https://www.gastro25.de/preise",
+    "https://www.gastro25.de/fuer/food-truck",
+    "https://www.gastro25.de/funktionen"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Geplante Bestellungen (Vorbestellung) / Gast kommt „zur gewählten Uhrzeit“",
+     "url": "https://www.gastro25.de/fuer/food-truck"
+    },
+    "capacity_slots": {
+     "value": "unknown",
+     "quote": "Nur Slot-Takt: „Bei kurzen Garzeiten (z. B. Bowl in 3 Minuten) sind 5-Minuten-Abholfenster optimal.“ Keine Höchstzahl pro Slot genannt.",
+     "url": "https://www.gastro25.de/fuer/food-truck"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "Dein eigener Shop mit QR-Code am Truck funktioniert an jedem Standort sofort — kein Wochen-/Tourplan für Gäste erwähnt.",
+     "url": "https://www.gastro25.de/fuer/food-truck"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://www.gastro25.de/"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://www.gastro25.de/"
+    },
+    "own_domain": {
+     "value": "yes",
+     "quote": "Custom-Domain mit DNS-Check-Widget / „eigene Domain, eigene Marke und direkter Checkout“",
+     "url": "https://www.gastro25.de/funktionen"
+    },
+    "ios_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt (Gäste: „ohne App, ohne Anmeldung“)",
+     "url": "https://www.gastro25.de/fuer/food-truck"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://www.gastro25.de/fuer/food-truck"
+    },
+    "kds": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://www.gastro25.de/funktionen"
+    },
+    "pay_at_truck": {
+     "value": "yes",
+     "quote": "Barzahlung standardmäßig, Stripe optional / „zahle bar bei Abholung“",
+     "url": "https://www.gastro25.de/preise"
+    }
+   },
+   "payment_methods": {
+    "value": "Kreditkarte, Apple Pay, Google Pay, Klarna (Stripe, optional); bar. PayPal nicht genannt.",
+    "quote": "Kreditkarte, Apple Pay, Google Pay und Klarna direkt auf dein Konto statt über eine Plattform.",
+    "url": "https://www.gastro25.de/funktionen"
+   },
+   "min_term": {
+    "value": "keine Mindestlaufzeit, monatlich kündbar",
+    "quote": "69 € pro Monat. Alles drin. Keine Einrichtungsgebühr, keine Mindestlaufzeit.",
+    "url": "https://www.gastro25.de/preise"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Gastro25 Komplett",
+     "quote": "69EUR/ Monat – zzgl. MwSt., monatlich kündbar / Keine Einrichtungsgebühr, keine Mindestlaufzeit.",
+     "url": "https://www.gastro25.de/preise"
+    },
+    {
+     "plan": "Business & Ketten",
+     "quote": "Auf Anfrage",
+     "url": "https://www.gastro25.de/preise"
+    }
+   ]
+  },
+  "144a2a9a-9e85-5229-bb85-356fade03d72": {
+   "name": "Jamezz",
+   "urls_read": [
+    "https://jamezz.com/de/",
+    "https://jamezz.com/de/online-bestell-webshop",
+    "https://jamezz.com/de/faq"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Beim Abschluss wählt der Kunde selbst, wann er abholen oder liefern lassen möchte.",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    },
+    "capacity_slots": {
+     "value": "unknown",
+     "quote": "Nur: „geschäftige Zeiten für neue Bestellungen blockieren“; keine Höchstzahl pro Zeitfenster genannt.",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "nicht erwähnt („Sie zahlen ein monatliches Abonnement pro Standort“)",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "Nur „einen Link auf Instagram oder Facebook“",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    },
+    "own_domain": {
+     "value": "yes",
+     "quote": "Kunden bestellen direkt über Ihre eigene Domain, mit Ihrem Branding und Hausstil.",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    },
+    "ios_app": {
+     "value": "unknown",
+     "quote": "Betriebssystem nicht genannt; Tablet-Bestellung „läuft auf den Tablets des Betriebs“",
+     "url": "https://jamezz.com/de/faq"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "nicht genannt",
+     "url": "https://jamezz.com/de/faq"
+    },
+    "kds": {
+     "value": "yes",
+     "quote": "mit Küchendisplays, Bondrucker oder Order-Ready-Displays betrieben werden",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    },
+    "pay_at_truck": {
+     "value": "unknown",
+     "quote": "Für den Webshop nicht erwähnt; nur „Barzahlung ist an Bestellterminals mit optionalen Bargeldmodulen möglich.“",
+     "url": "https://jamezz.com/de/faq"
+    }
+   },
+   "payment_methods": {
+    "value": "Kreditkarte, Apple Pay, Google Pay, PayPal „und mehr“ (Partner: Mollie, Adyen, CM.com, PAY.)",
+    "quote": "Kreditkarte, Apple Pay, Google Pay, PayPal und mehr.",
+    "url": "https://jamezz.com/de/online-bestell-webshop"
+   },
+   "min_term": {
+    "value": "Nicht angegeben",
+    "quote": "",
+    "url": "https://jamezz.com/de/faq"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Webshop (Abonnement pro Standort)",
+     "quote": "Jamezz Webshop funktioniert mit einer einmaligen Einrichtungsgebühr und einem festen monatlichen Abonnement",
+     "url": "https://jamezz.com/de/online-bestell-webshop"
+    }
+   ]
+  },
+  "55411a79-af58-5ba3-b9d6-39d2257eb11e": {
+   "name": "GASTRODIGITAL",
+   "urls_read": [
+    "https://gastro.digital/",
+    "https://gastro.digital/preise/",
+    "https://gastro.digital/bestellsystem/"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Abholung mit festen Zeitfenstern / Bestellungen im Voraus erhalten",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "capacity_slots": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "own_domain": {
+     "value": "unknown",
+     "quote": "Nicht ausdrücklich; nur „Lieferung und Abholung direkt über deine Website“",
+     "url": "https://gastro.digital/"
+    },
+    "ios_app": {
+     "value": "unknown",
+     "quote": "Kein Betriebssystem genannt; „Bestellungen landen automatisch auf Tablet oder Küchendrucker.“",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "Kein Betriebssystem genannt",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "kds": {
+     "value": "unknown",
+     "quote": "Kein Küchenmonitor genannt; „Bestellungen landen automatisch auf Tablet oder Küchendrucker.“ Bondruck über Windows-PC-Software.",
+     "url": "https://gastro.digital/bestellsystem/"
+    },
+    "pay_at_truck": {
+     "value": "yes",
+     "quote": "Bei Abholung zahlen Gäste online vorab, bar oder mit Karte vor Ort.",
+     "url": "https://gastro.digital/bestellsystem/"
+    }
+   },
+   "payment_methods": {
+    "value": "PayPal, Klarna, Kreditkarte, Barzahlung. Apple Pay/Google Pay nicht genannt.",
+    "quote": "PayPal, Klarna, Kreditkarte und Barzahlung",
+    "url": "https://gastro.digital/bestellsystem/"
+   },
+   "min_term": {
+    "value": "Pro-Bestellung-Tarif monatlich kündbar; für die Flat nicht angegeben",
+    "quote": "keine Fixkosten, ideal zum Testen, monatlich kündbar",
+    "url": "https://gastro.digital/preise/"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Pro Bestellung",
+     "quote": "0,49 € / Bestellung – keine Fixkosten, ideal zum Testen, monatlich kündbar",
+     "url": "https://gastro.digital/preise/"
+    },
+    {
+     "plan": "Pauschal-Flat",
+     "quote": "99 € / Monat – unbegrenzte Bestellungen, kein Aufpreis pro Bestellung",
+     "url": "https://gastro.digital/preise/"
+    }
+   ]
+  },
+  "66d800ba-468b-5e57-981f-0f305acfb3f1": {
+   "name": "Vev",
+   "urls_read": [
+    "https://vev.co/specialty/foodtruck",
+    "https://vev.co/pricing",
+    "https://vev.co/nl/pricing"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Have your customers pay ahead for their order. … pick a time that suits them best.",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "capacity_slots": {
+     "value": "yes",
+     "quote": "Set up the number of customers you can have at the same time.",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "nicht erwähnt (nur Feiertage/Urlaub: „Want to stay open on public holidays or take a well-deserved vacation?“)",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "not mentioned",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "Only: „Add your link to your website and socials.“",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "own_domain": {
+     "value": "unknown",
+     "quote": "not mentioned",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "ios_app": {
+     "value": "yes",
+     "quote": "Accept contactless payments with only your iPhone (Tap to Pay on iPhone) – iPad nicht genannt",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "not mentioned",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "kds": {
+     "value": "unknown",
+     "quote": "not mentioned",
+     "url": "https://vev.co/specialty/foodtruck"
+    },
+    "pay_at_truck": {
+     "value": "yes",
+     "quote": "Let your customers scan your QR for you to get paid.",
+     "url": "https://vev.co/specialty/foodtruck"
+    }
+   },
+   "payment_methods": {
+    "value": "Online-Vorauszahlung und kontaktlos (Tap to Pay on iPhone, QR); einzelne Methoden nicht aufgelistet",
+    "quote": "Accept contactless payments with only your iPhone",
+    "url": "https://vev.co/specialty/foodtruck"
+   },
+   "min_term": {
+    "value": "No contract / Geen contract",
+    "quote": "No contract.",
+    "url": "https://vev.co/pricing"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Vev",
+     "quote": "From $9.99/m – Prices exclude tax. (in USD angezeigt, kein EUR-Preis sichtbar)",
+     "url": "https://vev.co/pricing"
+    },
+    {
+     "plan": "Pro",
+     "quote": "From $19.99/m (USD)",
+     "url": "https://vev.co/pricing"
+    },
+    {
+     "plan": "Ultra (laut FAQ)",
+     "quote": "From $39.99/m (USD)",
+     "url": "https://vev.co/pricing"
+    }
+   ]
+  },
+  "d03a6e1f-3358-5708-bcaf-0ca3ade8a187": {
+   "name": "FoxiFood",
+   "urls_read": [
+    "https://www.foxifood.com/de/",
+    "https://www.foxifood.com/de/preise/",
+    "https://www.foxifood.com/de/funktionen/",
+    "https://www.foxifood.com/de/anwendungsfalle/food-truck/"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Lassen Sie Kunden Bestellungen im Voraus für ein bestimmtes Datum und Uhrzeit aufgeben.",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "capacity_slots": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "Nur: „Stellen Sie Ihren Truck überall auf und nehmen Sie weiter Bestellungen entgegen.“ Kein Wochen-/Tourplan.",
+     "url": "https://www.foxifood.com/de/anwendungsfalle/food-truck/"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "Nur „Social-Media-Links“ (Marketing-Tools) und „Social-Media-Kampagnen“ als Marketing-Dienstleistung; keine automatischen Posts beschrieben.",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "own_domain": {
+     "value": "yes",
+     "quote": "Betreiben Sie Ihre Restaurant-Bestellwebsite unter eigener Domain.",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "ios_app": {
+     "value": "unknown",
+     "quote": "„Ihr Restaurant in der Foxi.food App für iOS und Android.“ – Gäste-App/Listing; Betreiber-App nicht beschrieben.",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "„Ihr Restaurant in der Foxi.food App für iOS und Android.“ – Gäste-App/Listing; Betreiber-App nicht beschrieben.",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "kds": {
+     "value": "yes",
+     "quote": "Ersetzen Sie Papiertickets durch ein digitales Küchendisplay.",
+     "url": "https://www.foxifood.com/de/funktionen/"
+    },
+    "pay_at_truck": {
+     "value": "yes",
+     "quote": "ob der Kunde mit Karte, bar oder per Überweisung zahlt (FAQ: „Barzahlung im Restaurant“)",
+     "url": "https://www.foxifood.com/de/preise/"
+    }
+   },
+   "payment_methods": {
+    "value": "Karte über Stripe („Visa, Mastercard und mehr“), bar, Überweisung. PayPal/Klarna/Apple Pay/Google Pay nicht genannt.",
+    "quote": "ob der Kunde mit Karte, bar oder per Überweisung zahlt",
+    "url": "https://www.foxifood.com/de/preise/"
+   },
+   "min_term": {
+    "value": "Keine Vertragsbindung",
+    "quote": "Vertragsbindung Keine",
+    "url": "https://www.foxifood.com/de/preise/"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Pay-per-Order (einziger Tarif)",
+     "quote": "Monatliche Gebühr 0 € · Einrichtungsgebühr 0 € · Bearbeitungsgebühr (Foxi) 0,45 € (zahlt der Kunde) · Kartengebühr (Stripe)* 1,5/2% + 0,25 €",
+     "url": "https://www.foxifood.com/de/preise/"
+    }
+   ]
+  },
+  "8235f42e-5939-57a2-849e-a8706be352c1": {
+   "name": "Bestelltheke",
+   "urls_read": [
+    "https://bestelltheke.de/",
+    "https://bestelltheke.de/funktionen/vorbestellung-zeitfenster"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Der Gast wählt „so schnell wie möglich“ oder ein konkretes Zeitfenster — auch für den nächsten Tag.",
+     "url": "https://bestelltheke.de/funktionen/vorbestellung-zeitfenster"
+    },
+    "capacity_slots": {
+     "value": "yes",
+     "quote": "Sie steuern, wie viel pro Slot reinkommt.",
+     "url": "https://bestelltheke.de/"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "Nur feste Filialen: „Filialen in einem System — jede mit eigener Karte und eigenen Zeiten.“",
+     "url": "https://bestelltheke.de/"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "WhatsApp nur als Kontaktweg, keine Funktion",
+     "url": "https://bestelltheke.de/"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "Nur: „Der Bestell-Link kommt auf Google, Instagram und Ihre Speisekarte.“",
+     "url": "https://bestelltheke.de/"
+    },
+    "own_domain": {
+     "value": "yes",
+     "quote": "ihre-pizzeria.de statt Portal-Unterseite — mit Schloss in der Adresszeile.",
+     "url": "https://bestelltheke.de/"
+    },
+    "ios_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://bestelltheke.de/"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://bestelltheke.de/"
+    },
+    "kds": {
+     "value": "yes",
+     "quote": "Bestellungen als Karten auf dem Tablet — durchziehen statt abhaken. (Küchenmonitor)",
+     "url": "https://bestelltheke.de/"
+    },
+    "pay_at_truck": {
+     "value": "yes",
+     "quote": "Karte, PayPal, Bar — das Geld geht direkt an Sie, nicht über uns.",
+     "url": "https://bestelltheke.de/funktionen/vorbestellung-zeitfenster"
+    }
+   },
+   "payment_methods": {
+    "value": "Karte, PayPal, Bar",
+    "quote": "Karte, PayPal, Bar — das Geld geht direkt an Sie, nicht über uns.",
+    "url": "https://bestelltheke.de/"
+   },
+   "min_term": {
+    "value": "Keine Vertragsbindung, monatlich kündbar",
+    "quote": "Keine Vertragsbindung / Monatlich kündbar, Wechsel jederzeit.",
+    "url": "https://bestelltheke.de/"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Start",
+     "quote": "5 % pro Bestellung, keine Grundgebühr – Provisionsdeckel: 399 €/Monat (zzgl. USt.)",
+     "url": "https://bestelltheke.de/#preise"
+    },
+    {
+     "plan": "Komplett",
+     "quote": "7 % pro Bestellung, keine Grundgebühr – Provisionsdeckel: 499 €/Monat (zzgl. USt.)",
+     "url": "https://bestelltheke.de/#preise"
+    },
+    {
+     "plan": "Basis Flat",
+     "quote": "249 €/Monat – Fester Preis · zzgl. USt., 0 % Provision",
+     "url": "https://bestelltheke.de/#preise"
+    },
+    {
+     "plan": "Komplett Flat",
+     "quote": "349 €/Monat – Fester Preis · zzgl. USt., 0 % Provision",
+     "url": "https://bestelltheke.de/#preise"
+    }
+   ]
+  },
+  "8b784de4-0b2c-5d24-8587-98df2a990969": {
+   "name": "FoodsHero",
+   "urls_read": [
+    "https://foodshero.de/",
+    "https://foodshero.de/preise"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "Abholung, Lieferung & Vorbestellung / Direktbestellungen für Abholung und Lieferung, Zeitfenster, Liefergebiete, Online-Zahlung",
+     "url": "https://foodshero.de/"
+    },
+    "capacity_slots": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://foodshero.de/"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://foodshero.de/"
+    },
+    "whatsapp": {
+     "value": "yes",
+     "quote": "WhatsApp-Assistent als Zusatzleistung: „ab 149 € / Monat + Drittanbieter“",
+     "url": "https://foodshero.de/preise"
+    },
+    "social_posts": {
+     "value": "yes",
+     "quote": "Nur Premium: „Bis zu 3 Inhalte pro Woche (nach Vereinbarung)“ (Agentur erstellt Inhalte)",
+     "url": "https://foodshero.de/preise"
+    },
+    "own_domain": {
+     "value": "unknown",
+     "quote": "FAQ-Frage „Gehört mir meine Domain?“ – Antwort im Seiteninhalt nicht sichtbar",
+     "url": "https://foodshero.de/"
+    },
+    "ios_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://foodshero.de/"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://foodshero.de/"
+    },
+    "kds": {
+     "value": "yes",
+     "quote": "Küchendisplay und Bondrucker bekommen die Bestellung in Echtzeit.",
+     "url": "https://foodshero.de/"
+    },
+    "pay_at_truck": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://foodshero.de/"
+    }
+   },
+   "payment_methods": {
+    "value": "„Sichere Online-Zahlungen“ (erst ab Business); einzelne Methoden nicht genannt",
+    "quote": "Sichere Online-Zahlungen",
+    "url": "https://foodshero.de/"
+   },
+   "min_term": {
+    "value": "Nicht angegeben",
+    "quote": "",
+    "url": "https://foodshero.de/preise"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Start",
+     "quote": "99 € netto / Monat · Einrichtung: 299 € einmalig",
+     "url": "https://foodshero.de/preise"
+    },
+    {
+     "plan": "Business",
+     "quote": "249 € netto / Monat · Einrichtung: 799 € einmalig",
+     "url": "https://foodshero.de/preise"
+    },
+    {
+     "plan": "Growth",
+     "quote": "399 € netto / Monat · Einrichtung: 999 € einmalig",
+     "url": "https://foodshero.de/preise"
+    },
+    {
+     "plan": "Premium",
+     "quote": "ab 799 € netto / Monat · Einrichtung: ab 1.499 € einmalig",
+     "url": "https://foodshero.de/preise"
+    }
+   ]
+  },
+  "abd86253-f769-53db-8468-7fa7a171d12f": {
+   "name": "GastroDok",
+   "urls_read": [
+    "https://gastrodok.de/",
+    "https://gastrodok.de/loesungen/imbiss-foodtruck"
+   ],
+   "features": {
+    "pre_order_pickup_time": {
+     "value": "yes",
+     "quote": "… und wählen eine Abholzeit / „Vorbestellung zur Abholung mit Zeitfenstern“",
+     "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+    },
+    "capacity_slots": {
+     "value": "yes",
+     "quote": "Abholfenster in 10-Minuten-Slots, maximal 6 Bestellungen je Slot / „Abhol-Zeitfenster mit Vorlaufzeit und Kapazitätsgrenze“",
+     "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+    },
+    "multi_location_schedule": {
+     "value": "unknown",
+     "quote": "Nur: „eine feste Adresse, die an jedem Standort dieselbe bleibt.“ Kein Wochen-/Standortplan für Gäste erwähnt.",
+     "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+    },
+    "whatsapp": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+    },
+    "social_posts": {
+     "value": "unknown",
+     "quote": "Nur Link-Seite (QR Pro) als „Bio-Link für das Google-Unternehmensprofil und Instagram“",
+     "url": "https://gastrodok.de/"
+    },
+    "own_domain": {
+     "value": "unknown",
+     "quote": "Nicht angeboten laut gelesenen Seiten: Seiten bekommen „eine eigene Adresse bei GastroDok“",
+     "url": "https://gastrodok.de/"
+    },
+    "ios_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://gastrodok.de/"
+    },
+    "android_app": {
+     "value": "unknown",
+     "quote": "nicht erwähnt",
+     "url": "https://gastrodok.de/"
+    },
+    "kds": {
+     "value": "unknown",
+     "quote": "Kein Küchenmonitor genannt; nur „Die Küche arbeitet nach Liste statt nach Zuruf.“",
+     "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+    },
+    "pay_at_truck": {
+     "value": "yes",
+     "quote": "bar oder mit Karte an Ihrer Kasse / „Zahlung der Gäste vor Ort“",
+     "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+    }
+   },
+   "payment_methods": {
+    "value": "Keine Online-Zahlung – Gäste zahlen bar oder mit Karte vor Ort",
+    "quote": "keine Online-Zahlung",
+    "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+   },
+   "min_term": {
+    "value": "monatlich kündbar (Jahresabo zum Laufzeitende)",
+    "quote": "Alle Abos sind monatlich kündbar, Jahresabos zum Ende der Laufzeit.",
+    "url": "https://gastrodok.de/"
+   },
+   "plan_quotes": [
+    {
+     "plan": "Bestellsystem (monatlich)",
+     "quote": "29 € / Monat oder 290 € / Jahr inkl. USt",
+     "url": "https://gastrodok.de/"
+    },
+    {
+     "plan": "Bestellsystem (jährlich)",
+     "quote": "290 € / Jahr inkl. USt (= 24,17 € pro Monat gerechnet)",
+     "url": "https://gastrodok.de/"
+    }
+   ]
+  }
+ }
+}

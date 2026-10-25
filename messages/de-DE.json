@@ -6267,5 +6267,152 @@
     "customersSee": "Kunden sehen:",
     "postalWarning": "Das sieht nicht wie {article} aus – zum Beispiel {example}. Sie können es trotzdem speichern.",
     "regionChoose": "Auswählen…"
+  },
+  "comparison": {
+    "path": {
+      "section": "vergleich",
+      "slug": "foodtruck-bestellsystem"
+    },
+    "meta": {
+      "title": "Foodtruck-Bestellsystem Vergleich 2026: Funktionen & Preise",
+      "description": "Bestellsysteme für Foodtrucks im Vergleich: Vorbestellung mit Abholzeit, Küchenkapazität, Wochenplan, Gebühren und Laufzeit – geprüft auf den Anbieterseiten.",
+      "about": "Online-Bestellsysteme für Foodtrucks"
+    },
+    "breadcrumb": {
+      "home": "HatchGrab",
+      "here": "Vergleich",
+      "label": "Brotkrümelnavigation"
+    },
+    "h1": "Bestellsystem für Foodtrucks: Vergleich 2026",
+    "byline": "Zuletzt geprüft: {date} · Erstellt von HatchGrab. Wir sind selbst einer der verglichenen Anbieter (siehe <link>So haben wir verglichen</link>).",
+    "tldr": {
+      "title": "Kurz gesagt",
+      "body": "Wenn Ihre Gäste vorab per Handy bestellen und eine Abholzeit wählen sollen, brauchen Sie ein Bestellsystem, nicht nur ein Kassensystem. Achten Sie auf vier Dinge: Abholzeiten, die sich nach Ihrer Küchenkapazität richten; einen Wochenplan für wechselnde Standorte; geringe oder keine Gebühren pro Bestellung; und keine lange Vertragslaufzeit. Kartenleser und Kassensysteme decken die Zahlung am Fenster ab und ergänzen ein Bestellsystem."
+    },
+    "table": {
+      "title": "Die Bestellsysteme im Vergleich",
+      "caption": "Funktionen und Kosten von Online-Bestellsystemen für Foodtrucks in {country}, Stand {date}",
+      "note": "„Ja“ nur, wenn der Anbieter es selbst öffentlich angibt.",
+      "feature": "Funktion",
+      "rows": {
+        "preorder": "Vorbestellung mit wählbarer Abholzeit",
+        "capacity": "Abholzeiten nach Küchenkapazität",
+        "schedule": "Wochenplan mit wechselnden Standorten",
+        "whatsapp": "Automatische WhatsApp-Antworten",
+        "social": "Social-Media-Posts mit Ihrem Wochenplan",
+        "domain": "Eigene Webadresse",
+        "ipad": "iPad-App",
+        "android": "Android-App",
+        "kds": "Küchenmonitor (KDS)",
+        "payAtTruck": "Bezahlen am Truck",
+        "payments": "Online-Zahlungsarten",
+        "minTerm": "Mindestlaufzeit",
+        "baseFee": "Grundgebühr pro Monat",
+        "orderFee": "Gebühr pro Online-Bestellung"
+      },
+      "yes": "Ja",
+      "no": "Nein",
+      "unknown": "Nicht angegeben",
+      "fromPlan": "Ab {plan}",
+      "appNotInCountry": "Nicht in {country}",
+      "appFlagOff": "Ja – Flag noch aus, wird mit Store-Freigabe sichtbar",
+      "ourPayments": "Karte, Apple Pay, Google Pay",
+      "ourMinTerm": "Keine",
+      "range": "{from} bis {to}",
+      "feePlan": "{fee} ({plans})",
+      "noFee": "keine",
+      "morePending": "Weitere Anbieter erscheinen hier, sobald wir ihre Angaben anhand ihrer eigenen Website geprüft haben.",
+      "priceHidden": "Auf Anfrage",
+      "feeAfter": "{fee} über {included} pro Monat"
+    },
+    "costs": {
+      "title": "Was kostet ein Bestellsystem für Foodtrucks?",
+      "ourPlan": "{plan}: {price} pro Monat, {fee}",
+      "feeOnly": "{fee} pro Online-Kartenbestellung",
+      "feeIncluded": "Online-Bestellungen bis {included} pro Monat inklusive, danach {fee}",
+      "feeNone": "keine HatchGrab-Gebühr auf Online-Bestellungen",
+      "rivalPlan": "{plan}: {price}",
+      "perMonth": "{price} pro Monat",
+      "perMonthYearly": "{price} pro Monat bei jährlicher Zahlung",
+      "vatExcl": "zzgl. MwSt.",
+      "vatIncl": "inkl. MwSt.",
+      "setup": "einmalig {price} Einrichtung",
+      "truckFee": "{fee} pro Bestellung",
+      "customerFee": "{fee} pro Bestellung, zahlt der Gast",
+      "source": "Quelle",
+      "checked": "geprüft am {date}",
+      "cardFee": "Bei Online-Kartenzahlungen kommen bei HatchGrab die Gebühren von Stripe dazu: {cardFee} pro Kartenzahlung in {country}.",
+      "vat": "HatchGrab Ltd ist ein Unternehmen aus dem Vereinigten Königreich und in {country} nicht umsatzsteuerlich registriert, daher wird auf unsere Gebühren keine Umsatzsteuer aufgeschlagen. Wenn Sie umsatzsteuerlich registriert sind, geben Sie uns Ihre USt-IdNr.; die Umsatzsteuer auf unsere Gebühren führen Sie dann im Reverse-Charge-Verfahren selbst ab.",
+      "bundledFee": "{fee} pro Online-Zahlung, inkl. Kartengebühr"
+    },
+    "fit": {
+      "title": "Welches System passt zu wem?",
+      "ours": "HatchGrab passt, wenn …",
+      "oursBody": "Sie an wechselnden Standorten stehen, Vorbestellungen mit Abholzeit annehmen wollen, Ihre Küche nicht überlasten möchten und keine Vertragsbindung wollen.",
+      "oursNot": "HatchGrab passt nicht, wenn …",
+      "oursNotBody": "Ihre Gäste mit PayPal oder Klarna zahlen sollen oder Sie eine zertifizierte Kasse mit TSE aus einer Hand suchen.",
+      "appClause": "Oder wenn Sie die Küchen-App auf dem iPad oder auf Android in {country} brauchen: Sie ist dort noch nicht in den Stores.",
+      "tills": "Kassensysteme und Kartenleser",
+      "marketplaces": "Lieferplattformen",
+      "rival": "{name} passt, wenn …",
+      "tillsBody": "Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab – laut eigener Website zum Beispiel SumUp, Zettle (PayPal), orderbird und ready2order. Vorbestellung mit wählbarer Abholzeit bietet von diesen vier nur SumUp an, im Tarif Kassensystem Plus. Ein Bestellsystem ergänzt die Kasse, es ersetzt sie nicht.",
+      "marketplacesBody": "Lieferplattformen bringen neue Gäste, nehmen aber auf jede Bestellung Provision. Uber Eats nennt für Deutschland 14 % bei Abholung und 30 % bei Lieferung durch Uber-Kuriere. Wolt erhebt laut eigener Website eine Provision, nennt aber keine Sätze. Die Sätze von Lieferando konnten wir nicht prüfen. Auch für Stammgäste, die bei Ihnen vorbestellen, fällt diese Provision an."
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "whatQ": "Was ist ein Bestellsystem für Foodtrucks?",
+      "whatA": "Ein Bestellsystem nimmt Bestellungen online an, bevor die Gäste am Truck stehen: Sie wählen Gerichte und eine Abholzeit, bezahlen online oder bei der Abholung, und die Bestellung erscheint in Ihrer Küche. Ein Kassensystem oder Kartenleser dagegen kassiert am Fenster. Beides ergänzt sich.",
+      "costQ": "Was kostet HatchGrab in {country}?",
+      "costA": "{plans}. Bei Online-Kartenzahlungen kommen die Gebühren von Stripe dazu: {cardFee} pro Kartenzahlung.",
+      "termQ": "Gibt es eine Mindestlaufzeit?",
+      "termA": "Nein. Es gibt keine Mindestlaufzeit und keine Kündigungsfrist. Sie können jederzeit kündigen; die Gebühr wird monatlich im Voraus berechnet, und Sie behalten den Zugang bis zum Ende des bezahlten Monats.",
+      "locationsQ": "Funktioniert es mit wechselnden Standorten?",
+      "locationsA": "Ja. Sie legen Ihren Wochenplan mit Ort und Zeiten an, und Gäste bestellen für den Standort und den Tag, an dem Sie dort stehen.",
+      "capacityQ": "Wie verhindert das System, dass meine Küche überlastet wird?",
+      "capacityA": "Gäste sehen nur Abholzeiten, die Ihre Küche tatsächlich schaffen kann. Das System rechnet mit der Zubereitungszeit jedes Gerichts und damit, wie viele Sie gleichzeitig zubereiten.",
+      "tseQ": "Brauche ich trotzdem eine Kasse mit TSE?",
+      "tseA": "HatchGrab ist kein Kassensystem und hat keine TSE. Wie Sie Online-Bestellungen in Ihrer Kasse erfassen, klären Sie bitte mit Ihrer Steuerberatung.",
+      "paymentsQ": "Welche Zahlungsarten unterstützt HatchGrab?",
+      "paymentsA": "Gäste können online mit Karte, Apple Pay oder Google Pay oder direkt am Truck bezahlen. PayPal und Klarna werden derzeit nicht unterstützt.",
+      "costTrial": "{months, plural, one {Der erste Monat ist} other {Die ersten # Monate sind}} kostenlos, mit allen Funktionen."
+    },
+    "method": {
+      "title": "So haben wir verglichen",
+      "checked": "Wir haben jede Angabe am {date} auf der Website des jeweiligen Anbieters geprüft und verlinken die Quelle.",
+      "prices": "Preise stehen so da, wie der Anbieter sie angibt, auch zur Mehrwertsteuer.",
+      "meaning": "„Ja“ bedeutet: Der Anbieter gibt die Funktion selbst öffentlich an. „Nicht angegeben“ bedeutet: Wir haben dazu auf seiner Website nichts gefunden – das bedeutet nicht, dass es die Funktion nicht gibt.",
+      "vendor": "HatchGrab betreibt diese Seite und ist selbst einer der verglichenen Anbieter.",
+      "review": "Wir prüfen die Angaben mindestens alle drei Monate.",
+      "corrections": "Fehler gefunden? Schreiben Sie uns über unser <link>Kontaktformular</link>.",
+      "machine": "Für KI-Assistenten und Entwickler: diese Tabelle <md>als Markdown</md> · <json>als JSON</json>"
+    },
+    "cta": {
+      "title": "{months, plural, one {# Monat} other {# Monate}} kostenlos testen",
+      "noCard": "Keine Kreditkarte nötig",
+      "cancel": "Monatlich kündbar",
+      "button": "Jetzt kostenlos testen"
+    },
+    "admin": {
+      "status": "Entwurf · noindex · nicht in Sitemap, llms.txt oder hreflang · Link im Footer nur für Admins",
+      "statusLive": "Live · öffentlich und indexierbar",
+      "viewAdmin": "Admin-Ansicht",
+      "viewPublic": "So sieht es öffentlich aus",
+      "pricingCheck": "Zum Pricing check",
+      "checklist": "Checkliste vor dem Livegang",
+      "goLive": "Live schalten Sie die Seite in Admin › Länder.",
+      "check": {
+        "apps": "iPad- und Android-Flag für {country} an",
+        "verified": "Mindestens 2 geprüfte Anbieter ({n} geprüft)",
+        "placeholders": "Kein „[ … ]“-Platzhalter mehr im Text",
+        "vat": "Umsatzsteuer-Hinweis vorhanden",
+        "impressum": "Impressum-Entscheidung festgehalten"
+      },
+      "unverified": "nicht geprüft · öffentlich verborgen",
+      "label": "Admin"
+    },
+    "footer": {
+      "heading": "Vergleich",
+      "link": "Bestellsystem-Vergleich"
+    }
   }
 }

@@ -7,6 +7,10 @@
 //          { action: 'edit_benchmark', countryCode, fields } — the same for a country's data
 //          { action: 'set_feature', competitorId, column, value }
 //          { action: 'add_competitor', competitor, plan }
+//          compare-de-1: { action: 'import_compare_de' }  — data/compare-de-1/competitors.json, once (refused once its plan ids are in)
+//          { action: 'verify_features' | 'unverify_features', competitorId } · { action: 'set_competitor_text', competitorId, field, value }
+//          { action: 'entry_add', countryCode, competitorId, primaryPlanId? } · { action: 'entry_update', id, fields }
+//          { action: 'entry_verify' | 'entry_unverify' | 'entry_remove', id } · { action: 'entry_move', id, dir }
 //
 // 🔴 ADMIN ONLY, SERVICE ROLE, SERVER ONLY. The three tables have RLS on and no policies; this route is their only
 // reader and writer. Every method passes the admin check first (lib/auth/admin.ts — adminUser is verifyAdmin's own
@@ -17,12 +21,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminUser } from '@/lib/auth/admin'
 import { servicePricingStore, TablesMissing } from '@/lib/admin/pricing-check-store'
-import { loadState, importResearch, act, type ActionResult } from '@/lib/admin/pricing-check-actions'
+import { loadState, importResearch, importCompareResearch, act, type ActionResult, type ComparePayload } from '@/lib/admin/pricing-check-actions'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { listCountrySettings } from '@/lib/country-settings'
 import competitors from '@/data/pricing-research-1/competitors.json'
 import plans from '@/data/pricing-research-1/plans.json'
 import benchmarks from '@/data/pricing-research-1/benchmarks.json'
+import compareDe from '@/data/compare-de-1/competitors.json'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,7 +51,7 @@ async function guarded(req: NextRequest, run: (user: { id: string }) => Promise<
 
 export async function GET(req: NextRequest) {
   return guarded(req, async () => {
-    const [state, catalog, countries] = await Promise.all([loadState(servicePricingStore), getPlanCatalog(), listCountrySettings()])
+    const [state, catalog, countries] = await Promise.all([loadState(servicePricingStore, compareDe as unknown as ComparePayload), getPlanCatalog(), listCountrySettings()])
     if (!state.ok) return reply(state)
     return NextResponse.json({
       ...state.data, catalog,
@@ -62,6 +67,7 @@ export async function POST(req: NextRequest) {
   try { const b = await req.json(); if (b && typeof b === 'object') body = b } catch { /* an empty body is refused below */ }
   return guarded(req, async user => {
     if (body.action === 'import') return reply(await importResearch(servicePricingStore, { competitors, plans, benchmarks } as never))
+    if (body.action === 'import_compare_de') return reply(await importCompareResearch(servicePricingStore, compareDe as unknown as ComparePayload))
     const at = new Date().toISOString()
     return reply(await act(servicePricingStore, body, { by: user.id, at, today: at.slice(0, 10) }))
   })

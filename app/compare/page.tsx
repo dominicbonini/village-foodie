@@ -29,6 +29,8 @@ import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+// compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
+import { comparisonFooter } from '@/lib/comparison-server'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
 import CostComparison from './CostComparison'
 import { translatorFor } from '@/lib/i18n/translator'
@@ -227,7 +229,7 @@ export default async function CostPage({ params, searchParams }: { params?: Prom
         {...(currencyLineOf(settings) ? { currencyLine: translatorFor(settings.locale, 'pricing')('currencyLine', currencyLineOf(settings)!) } : {})} />
 
       <div className={CHROME}>
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
+        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} />
       </div>
 
       {/* Mounted ONCE — all three CTAs above drive this one instance. Same placement as

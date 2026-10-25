@@ -36,6 +36,8 @@ import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+// compare-de-1: the footer's "Vergleich" column for the country's own comparison page (live, or admins only).
+import { comparisonFooter } from '@/lib/comparison-server'
 import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the chrome's CTA
 // Language Phase 1e: the page's client components (country menu, demo modal and CTAs) read the visitor's locale
 // from this boundary.
@@ -227,7 +229,7 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             ⚠️ THE WAY BACK IS STILL THERE — the nav's own "Pricing" link resolves to /landing#pricing
             on this route, via the `landingHref` prop above, and the footer carries one too. */}
 
-        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} />
+        <LandingFooter landingHref={visitor.paths.landing} featuresHref={visitor.paths.features} country={visitor.menu} locale={settings.locale} comparison={await comparisonFooter(settings.countryCode, settings.locale)} />
       </div>
 
       {/* Mounted ONCE — the nav's CTA drives this one instance. It portals to document.body, so it is

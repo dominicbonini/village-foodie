@@ -1,0 +1,4 @@
+{
+  "$comment": "compare-de-1 (24 October 2026): a namespace that exists only for the pages that use it. scripts/translation-check.cjs does not count its keys as missing in a language that is not listed here — a language without the page needs none of its words. Every listed language is checked as usual (missing, extra, ICU, flags). The page falls back to nothing: a country whose language has no `comparison` words has no comparison page (lib/comparison.ts comparePagePath).",
+  "comparison": { "languages": ["en", "de"], "why": "the German food-truck ordering-system comparison page (/de/vergleich/foodtruck-bestellsystem); de-AT, de-CH and de-LI inherit de-DE's words" }
+}

@@ -7,6 +7,7 @@ import { planDataUpdatedAt } from '@/lib/plans-server'
 import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH, PRIVACY_UPDATED, TERMS_UPDATED, COUNTRY_TERMS_UPDATED, legalUpdatedDate } from '@/lib/legal'
 import { BRANDS } from '@/lib/brand'
 import { ABOUT_PATH, ABOUT_UPDATED } from '@/lib/about'
+import { liveComparisonPages } from '@/lib/comparison-server'
 
 // app/sitemap.ts — serves /sitemap.xml. There was none before.
 //
@@ -77,8 +78,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           alternates: { languages: countryPageAlternates('features', code, alternates).languages } },
       ]
     }))
+    // compare-de-1 (24 October 2026): a country's comparison page — ONLY while its comparison_status is 'live'. lastmod is
+    // the newest check date the public page shows; hreflang names the page itself only (one language, one country).
+    const comparisons: MetadataRoute.Sitemap = (await liveComparisonPages()).map(c => ({
+      url: c.url, lastModified: new Date(c.checked), changeFrequency: 'monthly', priority: 0.7, alternates: { languages: { [c.locale]: c.url } },
+    }))
     return [
       ...countryPages.flat(),
+      ...comparisons,
       { url: HATCHGRAB_ORIGIN + PRIVACY_PATH, lastModified: legalUpdatedDate(PRIVACY_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
       { url: HATCHGRAB_ORIGIN + TERMS_PATH, lastModified: legalUpdatedDate(TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },
       { url: HATCHGRAB_ORIGIN + COUNTRY_TERMS_PATH, lastModified: legalUpdatedDate(COUNTRY_TERMS_UPDATED), changeFrequency: 'yearly', priority: 0.3 },

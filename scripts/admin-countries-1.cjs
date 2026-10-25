@@ -204,7 +204,10 @@ const ACTIVE_PUBLIC_PLANS = ['payg', 'pro', 'unlimited']   // public.plans where
     && !Object.keys(written).some(c => /^(starter|pro|max)_|platform_fee_pct|distance_unit|competitor_/.test(c)))
   fs.mkdirSync(path.join(REPO, 'docs/admin-countries-1'), { recursive: true })
   fs.writeFileSync(path.join(REPO, 'docs/admin-countries-1/ie-save-before-after.json'), JSON.stringify({ before, written, after, differs: diff }, null, 1) + '\n')
-  t('the save path is untouched: no change to lib/admin/*, the route, or the loader', execFileSync('git', ['diff', '--stat', 'HEAD', '--', 'lib/admin', 'app/api/admin/countries', 'lib/country-settings.ts'], { cwd: REPO }).toString() === '')
+  // ⚠️ RE-PINNED (compare-de-1, 25 October 2026): the save path's own files, by name. compare-de-1 changed other files under
+  // lib/admin (the Pricing check's actions and store) and added app/api/admin/countries/comparison — neither is on this path.
+  t('the save path is untouched: no change to the country actions and store, the countries route, or the loader', execFileSync('git', ['diff', '--stat', 'HEAD', '--',
+    'lib/admin/country-actions.ts', 'lib/admin/country-store.ts', 'app/api/admin/countries/route.ts', 'lib/country-settings.ts'], { cwd: REPO }).toString() === '')
 
   // ══ 4 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('4 · The small fixes')

@@ -17,8 +17,11 @@ import { ABOUT_PATH } from '@/lib/about'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/pricing'
 
+/** compare-de-1 (24 October 2026): a LIVE comparison page — /llms.txt lists it under "Comparisons" (only while live). */
+export interface LlmsComparison { country: string; language: string; url: string; md: string; json: string; checked: string }
+
 /** The llms.txt body for these switched-on countries — pure, so the harness builds it from fixtures. */
-export function llmsText(countries: CountrySettings[], catalog: PlanCatalog): string {
+export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, comparisons: LlmsComparison[] = []): string {
   const name = BRANDS.HATCHGRAB.name
   const url = (cc: string, page: 'landing' | 'features' | 'compare') => HATCHGRAB_ORIGIN + (countryPagePath(cc, page) ?? '')
   const months = offerTrialMonths(catalog)
@@ -57,6 +60,13 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog): st
   L.push('## Countries', '')
   for (const c of countries) L.push(`- ${c.name}: ${url(c.countryCode, 'landing')}`)
   L.push('')
+  // compare-de-1: the comparison pages, in English, only those that are live (app/llms.txt/route.ts passes them).
+  if (comparisons.length) {
+    L.push('## Comparisons', '')
+    L.push(`Food-truck ordering systems compared on features and published prices, each fact checked on the vendor's own website. ${name} publishes these pages and is one of the tools compared.`, '')
+    for (const c of comparisons) L.push(`- ${c.country} (in ${c.language}, checked ${c.checked}): ${c.url} — Markdown: ${c.md} — JSON: ${c.json}`)
+    L.push('')
+  }
   // about-page (22 October 2026): who runs it — the About page's own fact (lib/company.ts COMPANY.founder).
   L.push('## About', '')
   L.push(`${name} is run by its founder, ${COMPANY.founder.name}, from the UK.`, '')

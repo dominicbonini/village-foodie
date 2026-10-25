@@ -1026,6 +1026,12 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    ⚠️ .foot-grid IS UNCHANGED — still a two-child `space-between` row. The brand block keeps its
    position and its width; only the right-hand child gained an internal column. */
 .hg-landing .foot-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1.25rem; }
+/* compare-de-1 (24 October 2026): the "Vergleich" column — a third .foot-grid child between the brand block and the links,
+   only on a country whose comparison page is live (or, in the browser, for an admin). */
+.hg-landing .foot-col { display: flex; flex-direction: column; gap: .45rem; }
+.hg-landing .foot-col-h { color: #fff; font-weight: 700; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
+.hg-landing .foot-col a { color: #C3CAD8; text-decoration: none; font-size: .9rem; }
+.hg-landing .foot-col a:hover { color: #fff; }
 .hg-landing .foot-apps { display: flex; flex-wrap: wrap; gap: 1.25rem; }
 .hg-landing .foot-badge { display: inline-block; line-height: 0; }
 .hg-landing .foot-badge img { height: 40px; width: auto; display: block; }

@@ -13,6 +13,8 @@ import { listCountrySettingsCached } from '@/lib/country-settings'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { MARKETING_COUNTRY, routableCountries } from '@/lib/marketing-country'
 import { llmsText } from '@/lib/llms-text'
+// compare-de-1: the live comparison pages, under "Comparisons" (none while every country is off or admin-only).
+import { liveComparisonPages } from '@/lib/comparison-server'
 
 export async function GET() {
   const host = (await headers()).get('host') ?? ''
@@ -22,7 +24,7 @@ export async function GET() {
   // The marketing order: the UK first (the site's floor), then by name — as the country menu lists them.
   const countries = all.filter(c => live.has(c.countryCode)).sort((a, b) => (a.countryCode === MARKETING_COUNTRY ? -1 : b.countryCode === MARKETING_COUNTRY ? 1 : a.name.localeCompare(b.name)))
   const catalog = await getPlanCatalog()
-  return new Response(llmsText(countries, catalog), {
+  return new Response(llmsText(countries, catalog, await liveComparisonPages()), {
     headers: { 'Content-Type': 'text/markdown; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
   })
 }

@@ -28,6 +28,19 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/api/weekly-post': ['./assets/fonts/weekly-post/**'],
   },
+  /* compare-de-1 (24 October 2026): a comparison page's Markdown and JSON twins — /de/vergleich/foodtruck-bestellsystem.md
+   * and .json — are served by app/api/compare/[country]/[section]/[slug]/[format]/route.ts. afterFiles is checked before
+   * the dynamic routes, so the twin never reaches app/[country]/[section]/[slug] as a slug with a dot in it. The route
+   * applies the page's own visibility (off → 404; admin → admins only), and proxy.ts adds noindex/no-store on both. */
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: [
+        { source: '/:country([a-z]{2})/:section([a-z0-9-]+)/:slug([a-z0-9-]+).:format(md|json)', destination: '/api/compare/:country/:section/:slug/:format' },
+      ],
+      fallback: [],
+    }
+  },
   images: {
     remotePatterns: [
       {

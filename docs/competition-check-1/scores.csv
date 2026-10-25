@@ -1,0 +1,44 @@
+country,language,site_has_language,competition,demand,gap,engine_agreement,opportunity,confidence,one_line_reason
+PL,pl,y,1.8,4.5,no local page compares FT pre-ordering; 2 English/foreign page(s) do,n/a (only the Bing index answered),18.9,low,Lowest-competition big scene: 1 local FT comparison (GoPOS guide); comparisons are English; ~700 new trucks H1 2026.
+DE,de,y,2.0,4.5,no local page compares FT pre-ordering,n/a (engines answered different keywords; no overlap to compare),18.0,very low,"Only 2 keywords answered (Bing+Brave); small German FT vendors (OrderFront, gastro25, Jamezz) and one POS comparison; 1,400+ trucks."
+DK,da,y,1.3,3.5,no local page compares FT pre-ordering; 1 English/foreign page(s) do,n/a (only the Bing index answered),16.4,low,Almost no local FT content; Truckly.dk (time slots) ranks #1; scene modest; Bing via DuckDuckGo only.
+FR,fr,y,2.1,4.0,1 local page(s),n/a (only the Bing index answered),15.6,very low,"One keyword only: page 1 is FT pre-order vendors (Autoflowly, Hopchef, Nomad, Beau Camion) — many tools, no comparison of them."
+SE,sv,y,1.6,3.5,no local page compares FT pre-ordering; 1 English/foreign page(s) do,n/a (only the Bing index answered),15.4,low,"Jamezz ranks on most ordering terms; ""kassasystem"" terms are local POS; no local pre-order comparison."
+RO,ro,y,1.7,3.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),15.0,low,"No local FT comparison; festival-led scene (~500 trucks, 2023); Bing via Yahoo only."
+IT,it,y,3.1,4.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),13.0,very low,"Two keywords only: 3 machine-translated ""migliori POS"" pages + small vendors; 4,286 street-food businesses."
+US,en,y,3.6,5,2 local page(s),n/a (only the Bing index answered),12.0,low,"Many English FT comparisons (13 local URLs), but demand is the largest; foodtruckr compares online ordering options."
+GB,en,y,3.8,5,3 local page(s),n/a (only the Bing index answered),11.0,low,"Most crowded measured market: 17 FT comparison URLs, Order Tiger #2 for ordering terms; high demand."
+AU,en,y,3.6,4.5,4 local page(s),n/a (only the Bing index answered),10.8,very low,Results came from a US-hosted Bing (Yahoo AU closed) — not Australian results; no .au pages; English competition high.
+CZ,cs,y,2.0,2.5,no local page compares FT pre-ordering; 1 English/foreign page(s) do,n/a (only the Bing index answered),10.0,low,"POS-led results (pokladni-system.cz); half the results are English; small, unmeasured scene."
+EE,et,y,1.1,2.0,no local page compares FT pre-ordering,n/a (only the Bing index answered),9.8,low,Near-empty: local POS FT pages only; small scene.
+NO,nb,y,1.1,2.0,no local page compares FT pre-ordering; 2 English/foreign page(s) do,n/a (only the Bing index answered),9.8,low,No Norwegian FT page at all; 58% English results; thin festival scene.
+HU,hu,y,1.6,2.0,no local page compares FT pre-ordering; 1 English/foreign page(s) do,n/a (only the Bing index answered),8.8,low,"No local comparison; ""best"" query is all English; ~150 trucks."
+CA,en,y,3.7,3.5,5 local page(s),n/a (only the Bing index answered),8.0,low,"English FT comparisons as in US (18 URLs), none Canadian; mid demand."
+LT,lt,y,2.1,2.0,no local page compares FT pre-ordering; 1 English/foreign page(s) do,n/a (only the Bing index answered),7.8,low,Machine-translated guides only; truck sellers and hire directories; small scene.
+AT,de,y,3.3,2.5,no local page compares FT pre-ordering,n/a (engines answered different keywords; no overlap to compare),6.8,very low,"One keyword (Brave): Capterra AT, GetApp AT, kassensystemevergleich, my-foodtrucks.com list; small scene."
+FI,fi,y,1.6,1.5,no local page compares FT pre-ordering; 3 English/foreign page(s) do,n/a (only the Bing index answered),6.6,low,"""ruokarekka"" pulls generic restaurant SaaS; small scene."
+LV,lv,y,1.6,1.5,no local page compares FT pre-ordering; 1 English/foreign page(s) do,n/a (only the Bing index answered),6.6,low,FoxiFood has a Latvian FT page; native word drifts to government sites; small scene.
+NZ,en,y,3.6,2.5,4 local page(s),n/a (only the Bing index answered),6.0,very low,US-host results (identical to AU) — not New Zealand results; small scene.
+FI,sv,n,1.6,2.5,no local page compares FT pre-ordering; 2 English/foreign page(s) do,n/a (only the Bing index answered),5.5,low,DuckDuckGo could not localise sv-FI (ran as fi-fi); site has no Swedish for Finland.
+IE,en,y,3.8,2.5,3 local page(s),n/a (only the Bing index answered),5.5,low,"Same English comparisons as GB, no .ie pages; small scene (band 2)."
+BG,bg,y,1.5,1,no local page compares FT pre-ordering,n/a (only the Bing index answered),4.5,very low,Only 7 of 28 results mention food trucks; no scene found.
+SI,sl,y,1.5,1,no local page compares FT pre-ordering,n/a (only the Bing index answered),4.5,very low,Most English-heavy pair (52%); no scene found.
+SK,sk,y,1.5,1,no local page compares FT pre-ordering,n/a (only the Bing index answered),4.5,low,Czech and English pages fill results; no scene found.
+HR,hr,y,1.6,1,no local page compares FT pre-ordering,n/a (only the Bing index answered),4.4,very low,No FT comparison; one general hospitality list; no scene found.
+GI,en,y,3.8,1.5,3 local page(s),n/a (only the Bing index answered),3.3,very low,UK-host results; no scene.
+MT,en,y,3.9,1.5,3 local page(s),n/a (only the Bing index answered),3.2,very low,UK-host results; tiny scene.
+CA,fr,n,3.5,2.5,2 local page(s),n/a (only the Bing index answered),3.1,low,"French results are France sites (37/94), none from Québec; site has no French for Canada."
+CY,en,n,3.9,1.5,1 local page(s),n/a (only the Bing index answered),1.6,low,English results are all UK/US pages; site has no English for Cyprus; tiny scene.
+BE,fr,n,,3.0,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+BE,nl,y,,3.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+CH,de,y,,3.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+CH,fr,n,,3.0,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+CH,it,n,,3.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+CY,el,y,,1.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+ES,es,y,,3.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+GR,el,y,,2.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+LI,de,y,,1.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+LU,de,n,,1.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+LU,fr,y,,1,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+NL,nl,y,,3.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."
+PT,pt,y,,3.5,no local page compares FT pre-ordering,n/a (only the Bing index answered),,none,"Not scored: no engine returned usable results (Google/Brave blocked, Bing empty); demand from signals only."

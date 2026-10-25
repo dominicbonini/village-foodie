@@ -1,0 +1,67 @@
+/* app/[country]/[section]/[slug]/comparison.css — the comparison page (compare-de-1, 24 October 2026). Scoped under
+   .hg-landing like landing.css, two classes deep so its `* { margin: 0 }` reset cannot strip the spacing. Only the
+   table scrolls sideways (inside .cmp-scroll); the page never does. */
+.hg-landing .cmp { padding-block: 2rem 4rem; }
+.hg-landing .cmp-wrap { max-width: 64rem; }
+.hg-landing .cmp h1 { font-family: var(--font-archivo), sans-serif; font-weight: 800; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; color: var(--head, #16314F); margin-top: .75rem; }
+.hg-landing .cmp h2 { font-family: var(--font-archivo), sans-serif; font-weight: 800; font-size: clamp(1.3rem, 2.6vw, 1.7rem); color: var(--head, #16314F); margin-top: 2.5rem; margin-bottom: .75rem; }
+.hg-landing .cmp h3 { font-weight: 700; font-size: 1.02rem; color: var(--head, #16314F); margin-bottom: .3rem; }
+.hg-landing .cmp p { line-height: 1.6; margin-top: .6rem; }
+.hg-landing .cmp a { color: var(--orange-deep); text-decoration: underline; text-underline-offset: 2px; }
+.hg-landing .cmp .btn { text-decoration: none; }
+
+.hg-landing .cmp-crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: .4rem; padding: 0; font-size: .85rem; color: var(--ink-soft); }
+.hg-landing .cmp-crumbs li + li::before { content: '›'; margin-right: .4rem; color: var(--ink-faint); }
+.hg-landing .cmp-byline { font-size: .9rem; color: var(--ink-soft); }
+
+.hg-landing .cmp-tldr { margin-top: 1.5rem; padding: 1.1rem 1.25rem; border: 1px solid var(--orange-line); background: var(--orange-wash); border-radius: 14px; }
+.hg-landing .cmp-tldr h2 { margin-top: 0; font-size: 1.1rem; }
+
+.hg-landing .cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.hg-landing .cmp-table { width: 100%; min-width: 40rem; border-collapse: collapse; font-size: .92rem; }
+.hg-landing .cmp-table caption { caption-side: top; text-align: left; padding: .75rem 1rem; font-size: .85rem; color: var(--ink-soft); }
+.hg-landing .cmp-table th, .hg-landing .cmp-table td { padding: .6rem .8rem; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.hg-landing .cmp-table thead th { background: #F6F8FB; font-size: .85rem; white-space: nowrap; }
+.hg-landing .cmp-table tbody th { font-weight: 600; color: var(--head, #16314F); min-width: 12rem; position: sticky; left: 0; background: #fff; }
+.hg-landing .cmp-table .cmp-us { background: var(--orange-wash); }
+.hg-landing .cmp-table thead .cmp-us { color: var(--orange-deep); }
+.hg-landing .cmp-tri-yes { color: #15803D; font-weight: 600; }
+.hg-landing .cmp-tri-no { color: #B91C1C; }
+.hg-landing .cmp-tri-unknown { color: var(--ink-soft); }
+.hg-landing .cmp-note { font-size: .85rem; color: var(--ink-soft); }
+
+.hg-landing .cmp-badge { display: inline-block; margin-left: .35rem; padding: .05rem .45rem; border-radius: 999px; background: #FFEDD5; color: #9A3412; font-size: .72rem; font-weight: 700; white-space: nowrap; vertical-align: middle; }
+
+.hg-landing .cmp-cost { margin-top: 1rem; }
+.hg-landing .cmp-cost ul { padding-left: 1.2rem; }
+.hg-landing .cmp-cost li { line-height: 1.6; }
+.hg-landing .cmp-src { font-size: .82rem; color: var(--ink-soft); margin-top: .2rem; }
+
+.hg-landing .cmp-fit { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: .9rem; }
+.hg-landing .cmp-fit > div { border: 1px solid var(--line); border-radius: 14px; padding: 1rem 1.1rem; background: #fff; }
+.hg-landing .cmp-fit p { margin-top: .2rem; }
+.hg-landing .cmp-fit .cmp-card { background: #F6F8FB; }
+
+.hg-landing .cmp-faq { border-top: 1px solid var(--line); padding: .8rem 0; }
+.hg-landing .cmp-faq summary { cursor: pointer; font-weight: 600; color: var(--head, #16314F); }
+.hg-landing .cmp-faq p { margin-top: .5rem; }
+
+.hg-landing .cmp-cta { margin-top: 3rem; padding: 1.5rem; border-radius: 16px; background: var(--orange-wash); border: 1px solid var(--orange-line); text-align: center; }
+.hg-landing .cmp-cta h2 { margin-top: 0; }
+.hg-landing .cmp-cta .btn { margin-top: 1rem; display: inline-flex; }
+
+/* The admin banner — admins only, never in a public response. */
+.hg-landing .cmp-admin { background: #FFF7ED; border-bottom: 2px solid #FDBA74; padding: .9rem 0; font-size: .88rem; color: #7C2D12; }
+.hg-landing .cmp-admin p { margin-top: .35rem; }
+.hg-landing .cmp-admin-links { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }
+.hg-landing .cmp-admin-links a { color: #9A3412; font-weight: 600; }
+.hg-landing .cmp-admin-links a[aria-current='page'] { text-decoration: none; background: #FED7AA; padding: 0 .4rem; border-radius: 6px; }
+.hg-landing .cmp-admin-h { font-weight: 700; }
+.hg-landing .cmp-admin-list { list-style: none; padding: 0; margin-top: .25rem; display: grid; gap: .15rem; }
+.hg-landing .cmp-admin-list li[data-ok='yes'] { color: #166534; }
+.hg-landing .cmp-admin-list li[data-ok='no'] { color: #B91C1C; }
+.hg-landing .cmp-admin-note { font-style: italic; }
+
+@media (max-width: 720px) {
+  .hg-landing .cmp-table tbody th { min-width: 9rem; }
+}

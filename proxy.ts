@@ -12,6 +12,7 @@ import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE } from '@/lib/visitor-c
 import { PAGE_LANG_HEADER } from '@/lib/page-lang'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH } from '@/lib/legal'
+import { comparisonAddressOf, comparisonFlagsOf } from '@/lib/comparison-flags'
 
 // seo-fixes S4: the legal documents, written in en-GB on every host.
 const LEGAL_DOCUMENT_PATHS = new Set([PRIVACY_PATH, TERMS_PATH, COUNTRY_TERMS_PATH])
@@ -310,7 +311,8 @@ export async function proxy(request: NextRequest) {
   // else sets nothing and keeps "en". ⛔ A client-sent copy of the header is ALWAYS removed first, so it can't be forged.
   request.headers.delete(PAGE_LANG_HEADER)
   if (isHatchGrab(host)) {
-    const langPage = countryPageOf(pathname)
+    // compare-de-1: a comparison page (/de/vergleich/…) is a country page too — <html lang="de-DE">.
+    const langPage = countryPageOf(pathname) ?? comparisonAddressOf(pathname)
     if (langPage) {
       const row = (await listCountrySettingsCached().catch(() => [])).find(c => c.countryCode === langPage.code)
       if (row?.locale) request.headers.set(PAGE_LANG_HEADER, row.locale)
@@ -547,6 +549,20 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/landing') {
     const to = new URL('/', request.url); to.search = request.nextUrl.search
     return carrySessionCookies(NextResponse.redirect(to, 308))
+  }
+
+  // ── compare-de-1 (24 October 2026): A COMPARISON PAGE THAT IS NOT LIVE IS NEVER INDEXED OR CACHED ─────────────────
+  // /de/vergleich/foodtruck-bestellsystem and its .md / .json twins. While the country's comparison_status is 'off' or
+  // 'admin' the page is a 404 for everyone but a verified admin (the page and the twin route check that themselves);
+  // here every such response — the admin's 200 and everyone else's 404 — also says noindex, nofollow and private,
+  // no-store, so no crawler, CDN or shared cache keeps a draft. 'live' adds nothing: the page is public. The flags are
+  // the 60-second cached read (lib/comparison-flags.ts); only a path shaped like a comparison address pays for it.
+  if (isHatchGrab(host)) {
+    const cmp = comparisonAddressOf(pathname)
+    if (cmp && (await comparisonFlagsOf(cmp.code)).status !== 'live') {
+      supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow')
+      supabaseResponse.headers.set('Cache-Control', 'private, no-store')
+    }
   }
 
   return supabaseResponse
