@@ -24,6 +24,7 @@ import { servicePricingStore, TablesMissing } from '@/lib/admin/pricing-check-st
 import { loadState, importResearch, importCompareResearch, act, type ActionResult, type ComparePayload } from '@/lib/admin/pricing-check-actions'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { listCountrySettings } from '@/lib/country-settings'
+import { isCountedCompetitor } from '@/lib/pricing-check'
 import competitors from '@/data/pricing-research-1/competitors.json'
 import plans from '@/data/pricing-research-1/plans.json'
 import benchmarks from '@/data/pricing-research-1/benchmarks.json'
@@ -53,8 +54,14 @@ export async function GET(req: NextRequest) {
   return guarded(req, async () => {
     const [state, catalog, countries] = await Promise.all([loadState(servicePricingStore, compareDe as unknown as ComparePayload), getPlanCatalog(), listCountrySettings()])
     if (!state.ok) return reply(state)
+    // competitor-check-1: candidates, closed and not-relevant competitors are never counted or shown here
+    // (lib/pricing-check.ts isCountedCompetitor); the Automatic checks tab lists them on its own route.
+    const counted = state.data.competitors.filter(isCountedCompetitor)
+    const ids = new Set(counted.map(c => c.id))
     return NextResponse.json({
       ...state.data, catalog,
+      competitors: counted, plans: state.data.plans.filter(p => ids.has(p.competitorId)), entries: state.data.entries.filter(e => ids.has(e.competitorId)),
+      hiddenCompetitors: state.data.competitors.length - counted.length,
       countries: countries.map(c => ({ countryCode: c.countryCode, name: c.name, enabled: c.enabled, currency: c.currency,
         cardFeeOnlinePct: c.cardFeeOnlinePct, cardFeeOnlineFixedMinor: c.cardFeeOnlineFixedMinor })),
       today: new Date().toISOString().slice(0, 10),

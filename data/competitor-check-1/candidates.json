@@ -1,0 +1,1015 @@
+{
+ "$comment": "competitor-check-1 (25 October 2026): candidate competitors from docs/competition-check-1/gemini-deep-research.csv (preorder_tools_found), plus Gustoco, leafsystems and DISH for DE as the brief asks. Deduped by domain and name within the file and against the 132 live competitors (read 25 Oct 2026); the SQL repeats that guard at run time. Inserted with lifecycle candidate: never counted or shown in Pricing check until a classification is accepted and the competitor is verified.",
+ "candidates": [
+  {
+   "name": "Square",
+   "domain": "squareup.com",
+   "website": "https://squareup.com",
+   "check_urls": [
+    "https://squareup.com/gb/en/solutions/food-truck"
+   ],
+   "countries": [
+    "GB"
+   ]
+  },
+  {
+   "name": "Epos Now",
+   "domain": "eposnow.com",
+   "website": "https://www.eposnow.com",
+   "check_urls": [
+    "https://www.eposnow.com/uk/systems/hospitality-pos/food-truck/"
+   ],
+   "countries": [
+    "GB"
+   ]
+  },
+  {
+   "name": "XPRIO",
+   "domain": "xprio.com",
+   "website": "https://xprio.com",
+   "check_urls": [
+    "https://xprio.com/en/food-truck-app/"
+   ],
+   "countries": [
+    "GB",
+    "NZ",
+    "MT"
+   ]
+  },
+  {
+   "name": "TapaPOS",
+   "domain": "tapapay.app",
+   "website": "https://tapapay.app",
+   "check_urls": [
+    "https://tapapay.app/food-truck-epos"
+   ],
+   "countries": [
+    "IE"
+   ]
+  },
+  {
+   "name": "Flash Order",
+   "domain": "flashordr.com",
+   "website": "https://flashordr.com",
+   "check_urls": [
+    "https://flashordr.com/food-truck-ordering-system/"
+   ],
+   "countries": [
+    "US"
+   ]
+  },
+  {
+   "name": "INFI",
+   "domain": "infi.us",
+   "website": "https://infi.us",
+   "check_urls": [
+    "https://infi.us/food-trucks"
+   ],
+   "countries": [
+    "US"
+   ]
+  },
+  {
+   "name": "RestApp",
+   "domain": "restapp.com",
+   "website": "https://www.restapp.com",
+   "check_urls": [
+    "https://www.restapp.com/business-types/online-ordering-for-food-trucks/"
+   ],
+   "countries": [
+    "US"
+   ]
+  },
+  {
+   "name": "Menuthere",
+   "domain": "menuthere.com",
+   "website": "https://menuthere.com",
+   "check_urls": [
+    "https://menuthere.com/en/solutions/food-trucks",
+    "https://menuthere.com/de/shopify-for-food-trucks"
+   ],
+   "countries": [
+    "US",
+    "DE"
+   ]
+  },
+  {
+   "name": "Regulars",
+   "domain": "tryregulars.com",
+   "website": "https://tryregulars.com",
+   "check_urls": [
+    "https://tryregulars.com/"
+   ],
+   "countries": [
+    "US"
+   ]
+  },
+  {
+   "name": "Order Local",
+   "domain": "getorderlocal.com",
+   "website": "https://getorderlocal.com",
+   "check_urls": [
+    "https://getorderlocal.com/for-food-trucks"
+   ],
+   "countries": [
+    "CA"
+   ]
+  },
+  {
+   "name": "Preorder",
+   "domain": "order-pre.com",
+   "website": "https://order-pre.com",
+   "check_urls": [
+    "https://order-pre.com/"
+   ],
+   "countries": [
+    "CA"
+   ]
+  },
+  {
+   "name": "CloudOrders",
+   "domain": "cloudorders.co",
+   "website": "https://cloudorders.co",
+   "check_urls": [
+    "https://cloudorders.co/food-trucks"
+   ],
+   "countries": [
+    "CA"
+   ]
+  },
+  {
+   "name": "iShopo",
+   "domain": "ishopo.ca",
+   "website": "https://ishopo.ca",
+   "check_urls": [
+    "https://ishopo.ca/food-truck-ordering-system/"
+   ],
+   "countries": [
+    "CA"
+   ]
+  },
+  {
+   "name": "Dine360",
+   "domain": "dine360.ca",
+   "website": "https://dine360.ca",
+   "check_urls": [
+    "https://dine360.ca/restaurant-types/food-truck/"
+   ],
+   "countries": [
+    "CA"
+   ]
+  },
+  {
+   "name": "Feadys",
+   "domain": "feadys.com",
+   "website": "https://feadys.com",
+   "check_urls": [
+    "https://feadys.com/"
+   ],
+   "countries": [
+    "CA",
+    "CH"
+   ]
+  },
+  {
+   "name": "Y wait",
+   "domain": "ywait.com.au",
+   "website": "https://ywait.com.au",
+   "check_urls": [
+    "https://ywait.com.au/business-types/food-trucks/"
+   ],
+   "countries": [
+    "AU"
+   ]
+  },
+  {
+   "name": "Wollopit",
+   "domain": "wollopit.com.au",
+   "website": "https://wollopit.com.au",
+   "check_urls": [
+    "https://wollopit.com.au/for/food-trucks/"
+   ],
+   "countries": [
+    "AU"
+   ]
+  },
+  {
+   "name": "Asky",
+   "domain": "asky.ai",
+   "website": "https://asky.ai",
+   "check_urls": [
+    "https://asky.ai/au/food-trucks/"
+   ],
+   "countries": [
+    "AU"
+   ]
+  },
+  {
+   "name": "MetaPOS",
+   "domain": "metapos.com.au",
+   "website": "https://metapos.com.au",
+   "check_urls": [
+    "https://metapos.com.au/food-truck.php"
+   ],
+   "countries": [
+    "AU"
+   ]
+  },
+  {
+   "name": "SmakSpace",
+   "domain": "smakspace.co.nz",
+   "website": "https://smakspace.co.nz",
+   "check_urls": [
+    "https://smakspace.co.nz/solutions/food-trucks"
+   ],
+   "countries": [
+    "NZ"
+   ]
+  },
+  {
+   "name": "CliqMenu",
+   "domain": "cliqmenu.com",
+   "website": "https://cliqmenu.com",
+   "check_urls": [
+    "https://cliqmenu.com/"
+   ],
+   "countries": [
+    "NZ"
+   ]
+  },
+  {
+   "name": "FoodChow",
+   "domain": "foodchow.com",
+   "website": "https://www.foodchow.com",
+   "check_urls": [
+    "https://www.foodchow.com/en/Gibraltar"
+   ],
+   "countries": [
+    "GI"
+   ]
+  },
+  {
+   "name": "Gustoco",
+   "domain": "gustoco.de",
+   "website": "https://www.gustoco.de",
+   "check_urls": [
+    "https://www.gustoco.de/food-truck-bestellsystem/"
+   ],
+   "countries": [
+    "DE"
+   ],
+   "explicit": true
+  },
+  {
+   "name": "leafsystems",
+   "domain": "leaf-systems.eu",
+   "website": "https://leaf-systems.eu",
+   "check_urls": [
+    "https://leaf-systems.eu/kassenloesung-fuer-foodtrucks/"
+   ],
+   "countries": [
+    "DE",
+    "AT"
+   ],
+   "explicit": true
+  },
+  {
+   "name": "DISH",
+   "domain": "dish.co",
+   "website": "https://www.dish.co",
+   "check_urls": [
+    "https://www.dish.co/DE/de/foodtruck-und-foodstand/",
+    "https://www.dish.co/NL/nl/selfservice/bestelsite/",
+    "https://www.dish.co/ES/es/dish-professional-order/",
+    "https://www.dish.co/IT/it/snack-bar-e-ristorante-fast-food/",
+    "https://www.dish.co/SK/sk/food-truck-a-st%C3%A1nok/",
+    "https://www.dish.co/HU/hu/"
+   ],
+   "countries": [
+    "DE",
+    "NL",
+    "ES",
+    "IT",
+    "SK",
+    "HU"
+   ],
+   "explicit": true
+  },
+  {
+   "name": "Ordero",
+   "domain": "ordero.ch",
+   "website": "https://ordero.ch",
+   "check_urls": [
+    "https://ordero.ch/"
+   ],
+   "countries": [
+    "CH"
+   ]
+  },
+  {
+   "name": "Rent-a-Shop",
+   "domain": "rent-a-shop.ch",
+   "website": "https://www.rent-a-shop.ch",
+   "check_urls": [
+    "https://www.rent-a-shop.ch/foodtruck-kassensystem"
+   ],
+   "countries": [
+    "CH"
+   ]
+  },
+  {
+   "name": "SwissPOS",
+   "domain": "swisspos.ch",
+   "website": "https://www.swisspos.ch",
+   "check_urls": [
+    "https://www.swisspos.ch/kassensystem/foodtruck-events"
+   ],
+   "countries": [
+    "CH"
+   ]
+  },
+  {
+   "name": "EatSelf",
+   "domain": "eatself.com",
+   "website": "https://www.eatself.com",
+   "check_urls": [
+    "https://www.eatself.com/essai-gratuit/"
+   ],
+   "countries": [
+    "CH",
+    "LU"
+   ]
+  },
+  {
+   "name": "Restomax",
+   "domain": "restomax.be",
+   "website": "https://www.restomax.be",
+   "check_urls": [
+    "https://www.restomax.be/fastfood-click-collect"
+   ],
+   "countries": [
+    "BE"
+   ]
+  },
+  {
+   "name": "Fritzy",
+   "domain": "fritzy.be",
+   "website": "https://fritzy.be",
+   "check_urls": [
+    "https://fritzy.be/le-jour-des-frites"
+   ],
+   "countries": [
+    "BE"
+   ]
+  },
+  {
+   "name": "DigiCommerce",
+   "domain": "stage.app.digicommerce.be",
+   "website": "https://stage.app.digicommerce.be",
+   "check_urls": [
+    "https://stage.app.digicommerce.be/"
+   ],
+   "countries": [
+    "BE"
+   ]
+  },
+  {
+   "name": "Menuella",
+   "domain": "menuella.com",
+   "website": "https://www.menuella.com",
+   "check_urls": [
+    "https://www.menuella.com/nl/voor/foodtruck",
+    "https://www.menuella.com/fr/pour/food-truck",
+    "https://www.menuella.com/es/guides/restaurant-online-ordering",
+    "https://www.menuella.com/fi/for/food-trucks",
+    "https://www.menuella.com/hr/for/food-trucks"
+   ],
+   "countries": [
+    "NL",
+    "FR",
+    "ES",
+    "FI",
+    "HR"
+   ]
+  },
+  {
+   "name": "ExtendaGO Ordin",
+   "domain": "extendago.com",
+   "website": "https://www.extendago.com",
+   "check_urls": [
+    "https://www.extendago.com/nl/add-ons/go-ordin/"
+   ],
+   "countries": [
+    "NL"
+   ]
+  },
+  {
+   "name": "iButler",
+   "domain": "i-butler.nl",
+   "website": "https://www.i-butler.nl",
+   "check_urls": [
+    "https://www.i-butler.nl/producten/afhalen-bezorgen/"
+   ],
+   "countries": [
+    "NL"
+   ]
+  },
+  {
+   "name": "Bistriqx",
+   "domain": "bistriqx.com",
+   "website": "https://bistriqx.com",
+   "check_urls": [
+    "https://bistriqx.com/"
+   ],
+   "countries": [
+    "NL"
+   ]
+  },
+  {
+   "name": "bonappli",
+   "domain": "bonappli.fr",
+   "website": "https://bonappli.fr",
+   "check_urls": [
+    "https://bonappli.fr/solutions/food-truck"
+   ],
+   "countries": [
+    "FR"
+   ]
+  },
+  {
+   "name": "Vroomeat",
+   "domain": "vroomeat.fr",
+   "website": "https://vroomeat.fr",
+   "check_urls": [
+    "https://vroomeat.fr/"
+   ],
+   "countries": [
+    "FR"
+   ]
+  },
+  {
+   "name": "Food Truck Concept",
+   "domain": "foodtruck-concept.com",
+   "website": "https://foodtruck-concept.com",
+   "check_urls": [
+    "https://foodtruck-concept.com/assistance-marketing-food-truck"
+   ],
+   "countries": [
+    "FR"
+   ]
+  },
+  {
+   "name": "LivePepper",
+   "domain": "livepepper.fr",
+   "website": "https://www.livepepper.fr",
+   "check_urls": [
+    "https://www.livepepper.fr/"
+   ],
+   "countries": [
+    "FR"
+   ]
+  },
+  {
+   "name": "L'Addition",
+   "domain": "commande-en-ligne.laddition.com",
+   "website": "https://commande-en-ligne.laddition.com",
+   "check_urls": [
+    "https://commande-en-ligne.laddition.com/commande-en-ligne/foodtruck-baostreet"
+   ],
+   "countries": [
+    "FR"
+   ]
+  },
+  {
+   "name": "Ounti",
+   "domain": "ounti.com",
+   "website": "https://ounti.com",
+   "check_urls": [
+    "https://ounti.com/es/website-for-food-trucks"
+   ],
+   "countries": [
+    "ES"
+   ]
+  },
+  {
+   "name": "Foodlz",
+   "domain": "foodlz.io",
+   "website": "https://foodlz.io",
+   "check_urls": [
+    "https://foodlz.io/pt"
+   ],
+   "countries": [
+    "PT"
+   ]
+  },
+  {
+   "name": "Waiterio",
+   "domain": "waiterio.com",
+   "website": "https://www.waiterio.com",
+   "check_urls": [
+    "https://www.waiterio.com/pt/software-para-food-truck/"
+   ],
+   "countries": [
+    "PT"
+   ]
+  },
+  {
+   "name": "Tilby",
+   "domain": "tilby.com",
+   "website": "https://tilby.com",
+   "check_urls": [
+    "http://tilby.com/"
+   ],
+   "countries": [
+    "IT"
+   ]
+  },
+  {
+   "name": "NewPOS",
+   "domain": "newpos.ai",
+   "website": "https://www.newpos.ai",
+   "check_urls": [
+    "https://www.newpos.ai/it/l/gastronomie/foodtruck",
+    "https://www.newpos.ai/pl/l/gastronomia/foodtruck"
+   ],
+   "countries": [
+    "IT",
+    "PL"
+   ]
+  },
+  {
+   "name": "MenuForma",
+   "domain": "menuforma.com",
+   "website": "https://menuforma.com",
+   "check_urls": [
+    "https://menuforma.com/"
+   ],
+   "countries": [
+    "IT",
+    "SK",
+    "RO"
+   ]
+  },
+  {
+   "name": "Software Food Good",
+   "domain": "boomsrl.it",
+   "website": "https://boomsrl.it",
+   "check_urls": [
+    "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+   ],
+   "countries": [
+    "IT"
+   ]
+  },
+  {
+   "name": "Zegashop",
+   "domain": "zegashop.com",
+   "website": "https://www.zegashop.com",
+   "check_urls": [
+    "https://www.zegashop.com/business/how-to-create-an-online-ordering-website-for-food-trucks-in-greece/"
+   ],
+   "countries": [
+    "GR"
+   ]
+  },
+  {
+   "name": "Taptouch POS",
+   "domain": "taptouchpos.com",
+   "website": "https://taptouchpos.com",
+   "check_urls": [
+    "https://taptouchpos.com/nl/hospitality/online-ordering/"
+   ],
+   "countries": [
+    "CY"
+   ]
+  },
+  {
+   "name": "Sapaad",
+   "domain": "sapaad.com",
+   "website": "https://www.sapaad.com",
+   "check_urls": [
+    "https://www.sapaad.com/pos-for-food-trucks/"
+   ],
+   "countries": [
+    "CY"
+   ]
+  },
+  {
+   "name": "Creavo Order",
+   "domain": "creavo.fi",
+   "website": "https://creavo.fi",
+   "check_urls": [
+    "https://creavo.fi/brandipaketti"
+   ],
+   "countries": [
+    "FI"
+   ]
+  },
+  {
+   "name": "Ordeliya",
+   "domain": "ordeliya.com",
+   "website": "https://ordeliya.com",
+   "check_urls": [
+    "https://ordeliya.com/et"
+   ],
+   "countries": [
+    "EE"
+   ]
+  },
+  {
+   "name": "GoPOS / GoOrder",
+   "domain": "gopos.pl",
+   "website": "https://gopos.pl",
+   "check_urls": [
+    "https://gopos.pl/foodtruck"
+   ],
+   "countries": [
+    "PL"
+   ]
+  },
+  {
+   "name": "POSbistro",
+   "domain": "posbistro.com",
+   "website": "https://posbistro.com",
+   "check_urls": [
+    "https://posbistro.com/typ-biznesu/oprogramowanie-dla-food-trucka/"
+   ],
+   "countries": [
+    "PL"
+   ]
+  },
+  {
+   "name": "apetitio",
+   "domain": "apetitio.pl",
+   "website": "https://apetitio.pl",
+   "check_urls": [
+    "https://apetitio.pl/biznes/foodtrucki"
+   ],
+   "countries": [
+    "PL"
+   ]
+  },
+  {
+   "name": "restauracja.online",
+   "domain": "restauracja.online",
+   "website": "https://restauracja.online",
+   "check_urls": [
+    "https://restauracja.online/oferta/ogrodki-restauracji-food-trucki-samoobsluga-w-restauracji"
+   ],
+   "countries": [
+    "PL"
+   ]
+  },
+  {
+   "name": "ord.to",
+   "domain": "ord.to",
+   "website": "https://ord.to",
+   "check_urls": [
+    "https://ord.to/pl/designed-for-foodtrucks"
+   ],
+   "countries": [
+    "PL"
+   ]
+  },
+  {
+   "name": "ABS POS",
+   "domain": "abspos.pl",
+   "website": "https://abspos.pl",
+   "check_urls": [
+    "https://abspos.pl/oprogramowanie-dla-kebab-food-truck/"
+   ],
+   "countries": [
+    "PL"
+   ]
+  },
+  {
+   "name": "Foodeliver",
+   "domain": "4bsystems.pl",
+   "website": "https://4bsystems.pl",
+   "check_urls": [
+    "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodelier-system-zamowien-online-dla-gastronomii/"
+   ],
+   "countries": [
+    "PL"
+   ]
+  },
+  {
+   "name": "Restaumatic",
+   "domain": "restaumatic.com",
+   "website": "https://www.restaumatic.com",
+   "check_urls": [
+    "https://www.restaumatic.com/"
+   ],
+   "countries": [
+    "PL",
+    "SK",
+    "RO",
+    "HR"
+   ]
+  },
+  {
+   "name": "4SaleFood",
+   "domain": "4salefood.net",
+   "website": "https://4salefood.net",
+   "check_urls": [
+    "https://4salefood.net/sk"
+   ],
+   "countries": [
+    "SK"
+   ]
+  },
+  {
+   "name": "Orderly",
+   "domain": "orderly.hu",
+   "website": "https://orderly.hu",
+   "check_urls": [
+    "https://orderly.hu/"
+   ],
+   "countries": [
+    "HU"
+   ]
+  },
+  {
+   "name": "StandMágus / OnlineMágus",
+   "domain": "vendeglato-szoftver.hu",
+   "website": "https://www.vendeglato-szoftver.hu",
+   "check_urls": [
+    "https://www.vendeglato-szoftver.hu/"
+   ],
+   "countries": [
+    "HU"
+   ]
+  },
+  {
+   "name": "eSystem",
+   "domain": "vendeglatoprogram.com",
+   "website": "https://vendeglatoprogram.com",
+   "check_urls": [
+    "https://vendeglatoprogram.com/"
+   ],
+   "countries": [
+    "HU"
+   ]
+  },
+  {
+   "name": "QRM.hu",
+   "domain": "qrm.hu",
+   "website": "https://qrm.hu",
+   "check_urls": [
+    "https://qrm.hu/"
+   ],
+   "countries": [
+    "HU"
+   ]
+  },
+  {
+   "name": "Happy Gastro",
+   "domain": "happygastro.hu",
+   "website": "https://www.happygastro.hu",
+   "check_urls": [
+    "https://www.happygastro.hu/"
+   ],
+   "countries": [
+    "HU"
+   ]
+  },
+  {
+   "name": "Orsys",
+   "domain": "orsys.hu",
+   "website": "https://www.orsys.hu",
+   "check_urls": [
+    "https://www.orsys.hu/en"
+   ],
+   "countries": [
+    "HU"
+   ]
+  },
+  {
+   "name": "Appy POS",
+   "domain": "appy.ro",
+   "website": "https://appy.ro",
+   "check_urls": [
+    "https://appy.ro/"
+   ],
+   "countries": [
+    "RO"
+   ]
+  },
+  {
+   "name": "TapTasty",
+   "domain": "taptasty.com",
+   "website": "https://www.taptasty.com",
+   "check_urls": [
+    "https://www.taptasty.com/ro/preturi/"
+   ],
+   "countries": [
+    "RO"
+   ]
+  }
+ ],
+ "already_known": [
+  {
+   "name": "Grafterr",
+   "domain": "grafterr.com",
+   "matches": "Grafterr"
+  },
+  {
+   "name": "Food Truck Pub",
+   "domain": "foodtruck.pub",
+   "matches": "Food Truck Pub"
+  },
+  {
+   "name": "Order Tiger",
+   "domain": "ordertiger.com",
+   "matches": "Order Tiger"
+  },
+  {
+   "name": "FoxiFood",
+   "domain": "foxifood.com",
+   "matches": "FoxiFood"
+  },
+  {
+   "name": "Zay-OS",
+   "domain": "zay-os.com",
+   "matches": "Zay-OS (Zayos)"
+  },
+  {
+   "name": "OrderFront",
+   "domain": "orderfront.de",
+   "matches": "OrderFront"
+  },
+  {
+   "name": "Jamezz",
+   "domain": "jamezz.com",
+   "matches": "Jamezz"
+  },
+  {
+   "name": "Nomad",
+   "domain": "nomadcaisse.fr",
+   "matches": "Nomad (nomadcaisse.fr)"
+  },
+  {
+   "name": "Achil",
+   "domain": "achil.com",
+   "matches": "Achil"
+  },
+  {
+   "name": "Restaurant-Internet",
+   "domain": "restaurant-internet.com",
+   "matches": "Restaurant-internet.com"
+  },
+  {
+   "name": "Place à Emporter",
+   "domain": "repousseleslimites.com",
+   "matches": "Place à emporter"
+  },
+  {
+   "name": "Qromo",
+   "domain": "qromo.it",
+   "matches": "Qromo"
+  },
+  {
+   "name": "GloriaFood",
+   "domain": "gloriafood.com",
+   "matches": "GloriaFood"
+  },
+  {
+   "name": "MENU TIGER",
+   "domain": "qrcode-tiger.com",
+   "matches": "MENU TIGER"
+  },
+  {
+   "name": "Choice QR",
+   "domain": "choiceqr.com",
+   "matches": "Choice"
+  }
+ ],
+ "skipped": [
+  {
+   "country": "US",
+   "name": "OrderUp Apps",
+   "url": "https://squareup.com/us/en/app-marketplace/app/orderup-apps",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "US",
+   "name": "Streetstop",
+   "url": "https://apps.apple.com/us/app/streetstop/id1146821301",
+   "why": "app-store only"
+  },
+  {
+   "country": "US",
+   "name": "TruckFindr",
+   "url": "https://apps.apple.com/us/app/truckfindr-food-truck-finder/id1541904121",
+   "why": "app-store only"
+  },
+  {
+   "country": "AU",
+   "name": "POSApt",
+   "url": "https://bestpossystemaustralia.com.au/9-best-food-truck-pos-systems-australia/",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "NZ",
+   "name": "Street Food Spot NZ",
+   "url": "https://play.google.com/store/apps/details?id=nz.streetfoodspot.app&hl=en_IE",
+   "why": "app-store only"
+  },
+  {
+   "country": "NZ",
+   "name": "Food Truck Pub",
+   "url": "https://apps.apple.com/nz/app/food-truck-pub/id1409399891?platform=ipad",
+   "why": "app-store listing; kept from its own site foodtruck.pub"
+  },
+  {
+   "country": "MT",
+   "name": "Wolt Malta",
+   "url": "https://wolt.com/fi/mlt/gozo/restaurant/hungry-joes-food-truck-gozo",
+   "why": "marketplace"
+  },
+  {
+   "country": "DE",
+   "name": "ready2order",
+   "url": "https://www.softwareadvice.de/directory/3917/food-truck-pos/software",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "AT",
+   "name": "GlobalFoodSoft",
+   "url": "https://www.melsrollingkitchen.de/",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "ES",
+   "name": "Waiterio",
+   "url": "https://ingenieriademenu.com/software-tpv-hosteleria/",
+   "why": "generic page (an article on ingenieriademenu.com; Waiterio is kept from its own site, PT)"
+  },
+  {
+   "country": "ES",
+   "name": "Mr Noow",
+   "url": "https://www.monouso.es/blog/plataformas-de-delivery-para-tu-restaurante/",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "PT",
+   "name": "Wix Restaurants",
+   "url": "https://pt.wix.com/blog/receba-pedidos-online-e-mostre-com-orgulho-o-seu-cardapio-com-wix-restaurants",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "PT",
+   "name": "KuKu Express POS",
+   "url": "https://play.google.com/store/apps/details?id=com.kukuexpress.pos&hl=pt",
+   "why": "app-store only"
+  },
+  {
+   "country": "GR",
+   "name": "Worldline All-in-One / GonnaOrder / BringFood / Menuthere / Butler / eLINK OnlineFood / GETFOOD Pro / Storekit",
+   "url": "https://menuthere.com/en/best-online-ordering-systems/greece",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "GR",
+   "name": "Food Truck Pub",
+   "url": "https://apps.apple.com/gr/app/food-truck-pub/id1409399891",
+   "why": "app-store listing; kept from its own site foodtruck.pub"
+  },
+  {
+   "country": "CY",
+   "name": "SumUp",
+   "url": "https://www.sumup.com/en-gb/business-guide/how-to-start-a-food-business-from-home/",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "DK",
+   "name": "Wolt",
+   "url": "https://www.foxifood.com/da/guides/",
+   "why": "marketplace"
+  },
+  {
+   "country": "FI",
+   "name": "Wolt",
+   "url": "https://wolt.com/fi/fin/pietarsaari/promotions-near-you",
+   "why": "marketplace"
+  },
+  {
+   "country": "CZ",
+   "name": "Objednáme",
+   "url": "https://www.crestcom.cz/en/tiskova-zprava/?id=5133",
+   "why": "generic page (not the tool's own site)"
+  },
+  {
+   "country": "RO",
+   "name": "DISH",
+   "url": "https://www.metro.ro/servicii/dish",
+   "why": "reseller page (metro.ro); DISH is kept from its own site"
+  },
+  {
+   "country": "BG",
+   "name": "Takeaway.com",
+   "url": "https://novinionline.com/takeaway-com-%D0%BE%D1%82%D0%BB%D0%B8%D1%87%D0%B8-%D0%BD%D0%B0%D0%B9-%D0%B4%D0%BE%D0%B1%D1%80%D0%B8%D1%82%D0%B5-%D1%80%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%D1%82%D0%B8-%D0%B2-%D0%B1%D1%8A%D0%BB",
+   "why": "marketplace"
+  }
+ ]
+}

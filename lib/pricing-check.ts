@@ -52,7 +52,23 @@ export interface Competitor {
   featuresCheckedOn: string | null
   featuresVerifiedAt: string | null
   notes: string | null
+  // competitor-check-1 (20261043): the lifecycle and the automatic checker's schedule. Read tolerantly — before that
+  // migration runs every competitor reads 'active', with no pages and no schedule.
+  lifecycle: 'active' | 'candidate' | 'closed' | 'not_relevant'
+  addedAsCandidate: boolean
+  checkUrls: string[]
+  checkIntervalDays: number
+  nextCheckAt: string | null
+  lastCheckedAt: string | null
+  deepCheckedAt: string | null
+  checkRequestedAt: string | null
 }
+
+/** competitor-check-1: whether a competitor is counted and shown anywhere in Pricing check (and the comparison pages).
+ *  Only an active one; a competitor added as a CANDIDATE also needs its features verified (after its classification was
+ *  accepted). Closed and not-relevant competitors are kept for history but never counted. */
+export const isCountedCompetitor = (c: Pick<Competitor, 'lifecycle' | 'addedAsCandidate' | 'featuresVerifiedAt'>) =>
+  c.lifecycle === 'active' && !(c.addedAsCandidate && !c.featuresVerifiedAt)
 
 /** compare-de-1 (20261042): one competitor on a country's comparison page. */
 export interface ComparisonEntry {

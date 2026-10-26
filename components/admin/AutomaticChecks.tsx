@@ -1,0 +1,254 @@
+'use client'
+// components/admin/AutomaticChecks.tsx — Admin › Pricing check › Automatic checks (competitor-check-1, 25 October 2026;
+// docs/competitor-check-1-report.md). What the automatic competitor checker (GitHub Actions + the Claude API) found, for
+// Dominic to accept or reject — nothing it finds changes a price until it is accepted here, and an accepted change is
+// unverified until it is verified again in the country view.
+//
+// Layout: tiles (full deep check, API spend, regular checks, couldn't check); the buttons (Settings, Pause, Start full
+// deep check); filter chips; the findings table (scrolls sideways in its own box on a phone); the "confirmed unchanged by
+// both checks" footer row; recent runs. Talks to /api/admin/competitor-check only.
+import { useEffect, useMemo, useState } from 'react'
+import { nativeAuthHeader } from '@/lib/native/session'
+import { FIELD_LABEL, CLASSIFICATION_LABEL, type Field, type Classification } from '@/lib/competitor-check/model'
+import type { Overview } from '@/lib/competitor-check/overview'
+
+type Row = Record<string, unknown>
+interface Data { settings: Row; runs: Row[]; findings: Row[]; competitors: { id: string; name: string; lifecycle: string }[]; overview: Overview; today: string }
+
+async function call(method: 'GET' | 'POST', body?: unknown): Promise<{ ok: boolean; data: Row }> {
+  const res = await fetch('/api/admin/competitor-check', { method, headers: { 'Content-Type': 'application/json', ...(await nativeAuthHeader()) }, body: body === undefined ? undefined : JSON.stringify(body) })
+  let data: Row = {}
+  try { data = await res.json() } catch { /* status says it */ }
+  return { ok: res.ok, data }
+}
+
+const CARD = 'rounded-2xl border border-slate-200 bg-white p-4'
+const BTN = 'whitespace-nowrap rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50'
+const BOX = 'w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400'
+const usd = (n: number) => `$${n.toFixed(2)}`
+const day = (ymd: string | null | undefined) => { if (!ymd) return '—'; const d = new Date(`${String(ymd).slice(0, 10)}T00:00:00Z`); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }) }
+const OUTCOME_LABEL: Record<string, string> = { changed: 'Changed', unchanged: 'Unchanged', new_plan: 'New plan', plan_gone: 'Plan gone', new_url: 'New page', classification: 'Classified', blocked: 'Blocked', page_gone: 'Page gone', not_stated: 'Not stated' }
+
+type Chip = 'review' | 'blocked' | 'gone' | 'unchanged' | 'all'
+
+export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => void }) {
+  const [data, setData] = useState<Data | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [chip, setChip] = useState<Chip>('review')
+  const [busy, setBusy] = useState<string | null>(null)
+  const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  const load = async () => {
+    const r = await call('GET')
+    if (!r.ok) { setError(typeof r.data.error === 'string' ? r.data.error : 'The automatic checks could not be loaded.'); return }
+    setError(null); setData(r.data as unknown as Data); onCount?.((r.data as unknown as Data).overview.toReview)
+  }
+  useEffect(() => {
+    let off = false
+    call('GET').then(r => {
+      if (off) return
+      if (!r.ok) { setError(typeof r.data.error === 'string' ? r.data.error : 'The automatic checks could not be loaded.'); return }
+      setData(r.data as unknown as Data); onCount?.((r.data as unknown as Data).overview.toReview)
+    }).catch(() => { if (!off) setError('The automatic checks could not be loaded.') })
+    return () => { off = true }
+  }, [onCount])
+
+  const post = async (label: string, body: Row, done?: string) => {
+    setBusy(label); setNotice(null)
+    const r = await call('POST', body)
+    setBusy(null)
+    if (!r.ok) { setNotice({ ok: false, text: typeof r.data.error === 'string' ? r.data.error : 'That could not be saved.' }); return false }
+    await load()
+    if (done) setNotice({ ok: true, text: done })
+    return true
+  }
+
+  const nameOf = useMemo(() => new Map((data?.competitors ?? []).map(c => [c.id, c.name])), [data])
+  if (error) return <div className={`${CARD} text-sm font-semibold text-red-700`} data-automatic-checks>{error}</div>
+  if (!data) return <p className="text-sm text-slate-500" data-automatic-checks>Loading the automatic checks…</p>
+  const o = data.overview
+  const pending = data.findings.filter(f => f.review_status === 'pending')
+  const confirmedUnchanged = pending.filter(f => f.outcome === 'unchanged' && f.quote_in_page === true && f.second_check === 'confirmed')
+  const shown = chip === 'review' ? pending.filter(f => !(f.outcome === 'unchanged' && f.quote_in_page === true && f.second_check === 'confirmed'))
+    : chip === 'blocked' ? pending.filter(f => f.outcome === 'blocked') : chip === 'gone' ? pending.filter(f => f.outcome === 'page_gone')
+    : chip === 'unchanged' ? confirmedUnchanged : data.findings
+  const chips: [Chip, string, number][] = [['review', 'To review', pending.length - confirmedUnchanged.length], ['blocked', 'Blocked', o.couldNotCheck.blocked], ['gone', 'Page gone', o.couldNotCheck.pageGone], ['all', 'All', data.findings.length]]
+  const spendPct = o.spend.monthlyCapUsd ? Math.min(100, (o.spend.monthUsd / o.spend.monthlyCapUsd) * 100) : 0
+
+  return (
+    <div className="space-y-3" data-automatic-checks>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-base font-black text-slate-900">Automatic checks {o.paused && <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">Paused</span>}</p>
+          <p className="text-sm text-slate-500">Each competitor&apos;s own website, re-read every {o.routine.intervalDays} days. Nothing changes until you accept it, and every accepted change needs verifying again.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className={BTN} onClick={() => setSettingsOpen(true)}>Settings</button>
+          <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('pause', { action: o.paused ? 'resume' : 'pause' }, o.paused ? 'Checks resumed.' : 'Checks paused. The next run stops before its first competitor.')}>{o.paused ? 'Resume checks' : 'Pause checks'}</button>
+          <button type="button" disabled={busy !== null} onClick={() => { if (window.confirm('Start a full deep check of every competitor? The next scheduled run picks it up, about ' + o.deep.perDay + ' a day, within the caps.')) post('deep', { action: 'start_deep' }, 'Full deep check requested. The next scheduled run starts it.') }}
+            className="whitespace-nowrap rounded-xl bg-orange-600 px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50">Start full deep check</button>
+        </div>
+      </div>
+
+      {notice && <div className={`rounded-xl px-3 py-2 text-sm font-semibold ${notice.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`} role="status">{notice.text}</div>}
+
+      {/* tiles */}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4" data-check-tiles>
+        <div className={CARD} data-tile="deep">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Full deep check</p>
+          <p className="mt-1 text-xl font-black text-slate-900">{o.deep.done} of {o.deep.total}</p>
+          <div className="mt-1.5 h-1.5 rounded-full bg-slate-100"><div className="h-1.5 rounded-full bg-orange-500" style={{ width: `${o.deep.total ? (o.deep.done / o.deep.total) * 100 : 0}%` }} /></div>
+          <p className="mt-1 text-xs text-slate-500">{o.deep.requested ? (o.deep.remaining ? `About ${o.deep.perDay} a day · done by ${day(o.deep.finishOn)}` : 'Finished') : 'Not started — press Start full deep check'}</p>
+        </div>
+        <div className={CARD} data-tile="spend">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">API spend this month</p>
+          <p className="mt-1 text-xl font-black text-slate-900">{usd(o.spend.monthUsd)} <span className="text-sm font-semibold text-slate-500">of {usd(o.spend.monthlyCapUsd)}</span></p>
+          <div className="mt-1.5 h-1.5 rounded-full bg-slate-100"><div className={`h-1.5 rounded-full ${spendPct > 85 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${spendPct}%` }} /></div>
+          <p className="mt-1 text-xs text-slate-500">Today {usd(o.spend.todayUsd)} · daily cap {usd(o.spend.dailyCapUsd)}</p>
+        </div>
+        <div className={CARD} data-tile="routine">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Regular checks</p>
+          <p className="mt-1 text-xl font-black text-slate-900">Every {o.routine.intervalDays} days</p>
+          <p className="text-xs text-slate-500">{o.routine.active} competitors · about {o.routine.perDay} a day</p>
+          <p className="mt-1 truncate text-xs text-slate-500">Next: {o.routine.nextDue.length ? o.routine.nextDue.map(n => `${n.name} (${day(n.on)})`).join(', ') : 'none scheduled yet'}</p>
+        </div>
+        <div className={CARD} data-tile="blocked">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Couldn&apos;t check</p>
+          <p className="mt-1 text-xl font-black text-slate-900">{o.couldNotCheck.blocked + o.couldNotCheck.pageGone}</p>
+          <p className="text-xs text-slate-500">{o.couldNotCheck.blocked} blocked · {o.couldNotCheck.pageGone} page gone</p>
+        </div>
+      </div>
+
+      {/* findings */}
+      <section className={CARD} data-findings>
+        <div className="flex flex-wrap items-center gap-2">
+          {chips.map(([k, label, n]) => (
+            <button key={k} type="button" aria-pressed={chip === k} onClick={() => setChip(k)} data-chip={k}
+              className={`rounded-full border px-3 py-1 text-xs font-semibold ${chip === k ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`}>
+              {label} <span className={chip === k ? 'text-slate-300' : 'text-slate-400'}>{n}</span>
+            </button>
+          ))}
+          {chip === 'unchanged' && confirmedUnchanged.length > 0 && (
+            <button type="button" className="ml-auto whitespace-nowrap rounded-xl bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50" disabled={busy !== null}
+              onClick={() => post('all', { action: 'accept_unchanged', ids: confirmedUnchanged.map(f => f.id) }, `${confirmedUnchanged.length} accepted — only their checked dates moved on.`)}>Accept all {confirmedUnchanged.length}</button>
+          )}
+        </div>
+        <div className="mt-2 overflow-x-auto rounded-xl border border-slate-100">
+          <table className="w-full min-w-[980px] text-sm">
+            <thead className="bg-slate-50 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">
+              <tr><th className="px-3 py-2">Competitor · plan</th><th className="px-3 py-2">Country</th><th className="px-3 py-2">What</th><th className="px-3 py-2">Stored → found</th><th className="px-3 py-2">Quote</th><th className="px-3 py-2">Second check</th><th className="px-3 py-2"></th></tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {shown.length === 0 && <tr><td colSpan={7} className="px-3 py-6 text-center text-slate-500">Nothing here.</td></tr>}
+              {shown.map(f => {
+                const found = (f.found ?? {}) as Row
+                const quoted = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification'].includes(String(f.outcome))
+                const confirmed = f.second_check === 'confirmed' && f.quote_in_page === true
+                const couldnt = quoted && (f.second_check === 'disagreed' || f.quote_in_page !== true)
+                return (
+                  <tr key={String(f.id)} data-finding={String(f.outcome)} className="align-top">
+                    <td className="px-3 py-2"><p className="font-semibold text-slate-900">{nameOf.get(String(f.competitor_id)) ?? 'Unknown'}</p>{typeof found.plan_name === 'string' && <p className="text-xs text-slate-500">{found.plan_name}</p>}</td>
+                    <td className="px-3 py-2 font-mono text-xs text-slate-500">{String(f.country_code ?? '—')}</td>
+                    <td className="px-3 py-2"><p className="text-slate-800">{FIELD_LABEL[f.field as Field] ?? String(f.field)}</p><p className="text-xs font-semibold text-slate-500">{OUTCOME_LABEL[String(f.outcome)] ?? String(f.outcome)}</p></td>
+                    <td className="px-3 py-2 text-slate-800"><span className="text-slate-500">{String(f.stored_value ?? '—')}</span> → <b>{f.outcome === 'classification' && found.classification ? CLASSIFICATION_LABEL[found.classification as Classification] : String(f.found_value ?? '—')}</b></td>
+                    <td className="max-w-[22rem] px-3 py-2">
+                      {f.quote ? <><p className="text-slate-800">“{String(f.quote)}”</p>{f.quote_en && f.quote_en !== f.quote && <p className="text-xs italic text-slate-500">{String(f.quote_en)}</p>}</> : <span className="text-slate-400">—</span>}
+                      {typeof f.source_url === 'string' && <a className="mt-0.5 block truncate text-xs text-orange-700 underline" href={f.source_url} target="_blank" rel="noreferrer noopener">{f.source_url}</a>}
+                    </td>
+                    <td className="px-3 py-2">
+                      {confirmed ? <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800">Confirmed</span>
+                        : couldnt ? <><span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">Couldn&apos;t confirm</span>
+                          {f.quote_in_page !== true && <p className="mt-0.5 text-xs text-slate-500">Quote not found on the page</p>}
+                          {f.second_check === 'disagreed' && f.second_value ? <p className="mt-0.5 text-xs text-slate-500">Second check found: {String(f.second_value)}</p> : null}</>
+                        : <span className="text-xs text-slate-400">Not run</span>}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2">
+                      {f.review_status === 'pending' ? (
+                        <div className="flex gap-1">
+                          <button type="button" className={BTN} disabled={busy !== null} data-accept onClick={() => post('accept', { action: 'accept', id: f.id }, 'Accepted. Verify it again in the country view before it shows publicly.')}>Accept</button>
+                          <button type="button" className={BTN} disabled={busy !== null} data-reject onClick={() => post('reject', { action: 'reject', id: f.id }, 'Rejected.')}>Reject</button>
+                        </div>
+                      ) : <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${f.review_status === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{f.review_status === 'accepted' ? 'Accepted' : 'Rejected'}</span>}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm" data-unchanged-footer>
+          <span className="text-slate-700"><b>{confirmedUnchanged.length}</b> confirmed unchanged by both checks</span>
+          <button type="button" className={BTN} disabled={!confirmedUnchanged.length} onClick={() => setChip('unchanged')}>Review and accept all</button>
+        </div>
+      </section>
+
+      {/* recent runs */}
+      <section className={CARD} data-runs>
+        <p className="text-sm font-bold text-slate-900">Recent runs</p>
+        <div className="mt-2 overflow-x-auto">
+          <table className="w-full min-w-[560px] text-sm">
+            <thead className="text-left text-[11px] font-bold uppercase tracking-wide text-slate-500"><tr><th className="px-2 py-1.5">Date</th><th className="px-2 py-1.5">Mode</th><th className="px-2 py-1.5">Checked</th><th className="px-2 py-1.5">Result</th><th className="px-2 py-1.5 text-right">Cost</th></tr></thead>
+            <tbody className="divide-y divide-slate-100">
+              {data.runs.length === 0 && <tr><td colSpan={5} className="px-2 py-4 text-center text-slate-500">No runs yet. The workflow runs daily at 02:10 UTC once it is merged.</td></tr>}
+              {data.runs.slice(0, 15).map(r => {
+                const n = data.findings.filter(f => f.run_id === r.id)
+                const changes = n.filter(f => f.outcome !== 'unchanged').length
+                return (
+                  <tr key={String(r.id)}>
+                    <td className="px-2 py-1.5 text-slate-700">{day(String(r.started_at))} {String(r.started_at).slice(11, 16)}</td>
+                    <td className="px-2 py-1.5 capitalize text-slate-700">{String(r.mode)}{r.trigger === 'manual' ? ' · manual' : ''}</td>
+                    <td className="px-2 py-1.5 text-slate-700">{String(r.competitors_checked)}</td>
+                    <td className="px-2 py-1.5 text-slate-700">{changes} to review · {n.length - changes} unchanged{r.stopped_reason && r.stopped_reason !== 'done' ? <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">{String(r.stopped_reason).replace('_', ' ')}</span> : null}</td>
+                    <td className="px-2 py-1.5 text-right font-semibold text-slate-900">{usd(Number(r.cost_usd || 0))}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {settingsOpen && <SettingsModal settings={data.settings} busy={busy !== null} onClose={() => setSettingsOpen(false)}
+        onSave={async fields => { if (await post('settings', { action: 'settings', fields }, 'Settings saved.')) setSettingsOpen(false) }} />}
+    </div>
+  )
+}
+
+function SettingsModal({ settings, busy, onClose, onSave }: { settings: Row; busy: boolean; onClose: () => void; onSave: (f: Row) => void }) {
+  const prices = settings.prices as { web_search_per_search: number; models: Record<string, { input_per_mtok: number; output_per_mtok: number; cache_write_per_mtok?: number; cache_read_per_mtok?: number }>; source?: string; checked_on?: string }
+  const [f, setF] = useState({
+    paused: settings.paused === true, daily: String(settings.daily_cap_usd), monthly: String(settings.monthly_cap_usd), deep: String(settings.deep_per_day),
+    interval: String(settings.check_interval_days), extractor: String(settings.extractor_model), verifier: String(settings.verifier_model),
+    prices: JSON.stringify(prices, null, 2),
+  })
+  const [err, setErr] = useState<string | null>(null)
+  const save = () => {
+    let p: unknown
+    try { p = JSON.parse(f.prices) } catch { setErr('Prices must be valid JSON.'); return }
+    onSave({ paused: f.paused, daily_cap_usd: Number(f.daily), monthly_cap_usd: Number(f.monthly), deep_per_day: Number(f.deep), check_interval_days: Number(f.interval),
+      extractor_model: f.extractor.trim(), verifier_model: f.verifier.trim(), prices: p })
+  }
+  const label = 'mb-1 block text-xs font-semibold text-slate-600'
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4" role="dialog" aria-modal="true" aria-label="Automatic check settings" data-settings>
+      <div className="mt-8 w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl">
+        <div className="flex items-center justify-between"><p className="text-base font-black text-slate-900">Settings</p><button type="button" className={BTN} onClick={onClose}>Close</button></div>
+        <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+          <label className="col-span-2 inline-flex items-center gap-2 font-semibold text-slate-700"><input type="checkbox" checked={f.paused} onChange={e => setF({ ...f, paused: e.target.checked })} /> Paused</label>
+          <label><span className={label}>Daily cap (USD)</span><input className={BOX} inputMode="decimal" value={f.daily} onChange={e => setF({ ...f, daily: e.target.value })} /></label>
+          <label><span className={label}>Monthly cap (USD)</span><input className={BOX} inputMode="decimal" value={f.monthly} onChange={e => setF({ ...f, monthly: e.target.value })} /></label>
+          <label><span className={label}>Deep checks per day</span><input className={BOX} inputMode="numeric" value={f.deep} onChange={e => setF({ ...f, deep: e.target.value })} /></label>
+          <label><span className={label}>Check every (days)</span><input className={BOX} inputMode="numeric" value={f.interval} onChange={e => setF({ ...f, interval: e.target.value })} /></label>
+          <label><span className={label}>Reading model</span><input className={BOX} value={f.extractor} onChange={e => setF({ ...f, extractor: e.target.value })} /></label>
+          <label><span className={label}>Second-check model</span><input className={BOX} value={f.verifier} onChange={e => setF({ ...f, verifier: e.target.value })} /></label>
+          <label className="col-span-2"><span className={label}>Prices (USD per million tokens; per web search){prices.checked_on ? ` — checked ${prices.checked_on}` : ''}</span>
+            <textarea className={`${BOX} h-40 font-mono text-xs`} value={f.prices} onChange={e => setF({ ...f, prices: e.target.value })} /></label>
+        </div>
+        {err && <p className="mt-2 text-sm font-semibold text-red-700">{err}</p>}
+        <div className="mt-4 flex justify-end gap-2"><button type="button" className={BTN} onClick={onClose}>Cancel</button>
+          <button type="button" disabled={busy} onClick={save} className="rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white disabled:opacity-50">Save</button></div>
+      </div>
+    </div>
+  )
+}

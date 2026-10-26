@@ -1,0 +1,77 @@
+name: Competitor check
+
+# competitor-check-1 (25 October 2026, docs/competitor-check-1-report.md): re-reads every known competitor's own website with
+# the Claude API (web fetch + web search) and PROPOSES changes, which Dominic accepts or rejects in Admin › Pricing check ›
+# Automatic checks. It writes only competitor_check_runs, competitor_check_findings and the competitors' scheduling
+# columns — never a plan, a price, a feature or a verification.
+#
+# ⚠️ SCHEDULED WORKFLOWS RUN ONLY FROM THE DEFAULT BRANCH: nothing runs on the timer until this file is merged.
+# 🔴 SECRETS (names only): ANTHROPIC_API_KEY (new — add it under Settings › Secrets and variables › Actions),
+# NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (the scraper's), and — for the summary email, optional —
+# BREVO_API_KEY and EMAIL_FROM_ADDRESS (without them the email is skipped with a warning; the run still works).
+on:
+  schedule:
+    - cron: '10 2 * * *'          # daily, 02:10 UTC — clear of the 03:30 prune and the 06:00 discovery scrape
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'routine, deep, single, or scheduled (what the timer runs: the deep share while a full deep check is requested, then the routine share)'
+        required: true
+        default: 'routine'
+        type: choice
+        options: [routine, deep, single, scheduled]
+      competitor:
+        description: 'For mode single: the competitor''s name or id'
+        required: false
+        default: ''
+      limit:
+        description: 'At most this many competitors (blank = the settings: deep per day, or the routine share)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Call the API but write nothing — print the findings'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+# Two runs never overlap: a manual run waits for the scheduled one, and vice versa.
+concurrency:
+  group: competitor-check
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240          # 15 deep checks with their second checks fit well inside; the budget caps stop it first
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+      - name: Check competitors
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          EMAIL_FROM_ADDRESS: ${{ secrets.EMAIL_FROM_ADDRESS }}
+          MODE: ${{ github.event_name == 'schedule' && 'scheduled' || github.event.inputs.mode }}
+          COMPETITOR: ${{ github.event.inputs.competitor }}
+          LIMIT: ${{ github.event.inputs.limit }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        # Inputs reach the script as environment variables, never pasted into the shell line.
+        run: |
+          set -euo pipefail
+          args=(--mode "$MODE")
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then args+=(--manual); fi
+          if [ -n "${COMPETITOR:-}" ]; then args+=(--competitor "$COMPETITOR"); fi
+          if [ -n "${LIMIT:-}" ]; then args+=(--limit "$LIMIT"); fi
+          if [ "${DRY_RUN:-false}" = "true" ]; then args+=(--dry-run); fi
+          node scripts/competitor-check/run.mjs "${args[@]}"

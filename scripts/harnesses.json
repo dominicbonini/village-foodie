@@ -176,7 +176,8 @@
     "midnight-events.cjs",
     "admin-countries-1.cjs",
     "country-picker-1.cjs",
-    "compare-de-1.cjs"
+    "compare-de-1.cjs",
+    "competitor-check-1.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -209,6 +210,7 @@
         "_admin-countries-1-fixtures.cjs",
         "_country-picker-1-fixtures.cjs",
         "_compare-de-1-fixtures.cjs",
+        "_competitor-check-1-fixtures.cjs",
         "_lp-country-picker.cjs",
         "_plans-catalog-fixture.cjs",
         "_lp-seo-fixes.cjs",
@@ -326,6 +328,7 @@
         "admin-countries-1-screens.cjs",
         "country-picker-1-screens.cjs",
         "compare-de-1-screens.cjs",
+        "competitor-check-1-screens.cjs",
         "outreach-bold-persists-render.cjs",
         "outreach-editor-render.cjs",
         "outreach-templates-render.cjs",

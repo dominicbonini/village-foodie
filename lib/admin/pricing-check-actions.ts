@@ -49,7 +49,7 @@ const refuse = <T>(status: number, error: string): ActionResult<T> => ({ ok: fal
 export interface Stamp { by: string; at: string; today: string }
 
 // ── columns ↔ fields ────────────────────────────────────────────────────────────────────────────────────────────────
-type Kind = 'text' | 'textOrNull' | 'url' | 'bool' | 'boolOrNull' | 'int0' | 'int0OrNull' | 'int1OrNull' | 'num' | 'date' | 'currency' | 'country'
+type Kind = 'text' | 'textOrNull' | 'url' | 'bool' | 'boolOrNull' | 'int0' | 'int0OrNull' | 'int1OrNull' | 'num' | 'date' | 'currency' | 'country' | 'textArray'
   | { oneOf: readonly string[]; nullable?: boolean }
 interface Def { col: string; kind: Kind }
 const TRI = ['yes', 'no', 'unknown'] as const
@@ -67,6 +67,12 @@ const COMPETITOR: Record<keyof Competitor, Def> = {
   paymentMethods: { col: 'payment_methods', kind: 'textOrNull' }, minTerm: { col: 'min_term', kind: 'textOrNull' },
   featuresCheckedOn: { col: 'features_checked_on', kind: 'date' }, featuresVerifiedAt: { col: 'features_verified_at', kind: 'textOrNull' },
   notes: { col: 'notes', kind: 'textOrNull' },
+  // competitor-check-1 (20261043): read tolerantly (CHECK_COMPETITOR_COLUMNS), defaults below when absent.
+  lifecycle: { col: 'lifecycle', kind: { oneOf: ['active', 'candidate', 'closed', 'not_relevant'] } },
+  addedAsCandidate: { col: 'added_as_candidate', kind: 'bool' }, checkUrls: { col: 'check_urls', kind: 'textArray' },
+  checkIntervalDays: { col: 'check_interval_days', kind: 'int0' }, nextCheckAt: { col: 'next_check_at', kind: 'textOrNull' },
+  lastCheckedAt: { col: 'last_checked_at', kind: 'textOrNull' }, deepCheckedAt: { col: 'deep_checked_at', kind: 'textOrNull' },
+  checkRequestedAt: { col: 'check_requested_at', kind: 'textOrNull' },
 }
 const PLAN: Record<keyof CompetitorPlan, Def> = {
   id: { col: 'id', kind: 'text' }, competitorId: { col: 'competitor_id', kind: 'text' },
@@ -116,6 +122,10 @@ const FEATURE_COLS: Record<string, string> = { preOrders: 'pre_orders', whatsapp
 const COMPETITOR_TEXT_COLS: Record<string, string> = { paymentMethods: 'payment_methods', minTerm: 'min_term' }
 /** compare-de-1: the columns added by 20261042 — left out of the select while that migration has not run. */
 export const COMPARE_COMPETITOR_COLUMNS = ['capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck', 'payment_methods', 'min_term'] as const
+/** competitor-check-1: the columns added by 20261043 — left out of the select while that migration has not run. */
+export const CHECK_COMPETITOR_COLUMNS = ['lifecycle', 'added_as_candidate', 'check_urls', 'check_interval_days', 'next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at'] as const
+/** competitor-check-1: what a competitor column reads as when the row does not carry it (before 20261043). */
+const ABSENT: Record<string, unknown> = { lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90 }
 
 const LABEL: Record<string, string> = {
   planName: 'Plan name', currency: 'Currency', monthlyMinor: 'Monthly price', setupMinor: 'Setup fee', truckFeeBps: 'Fee the truck pays (%)',
@@ -151,6 +161,7 @@ function check(field: string, kind: Kind, v: unknown): { ok: true; value: unknow
     case 'date': return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v)) ? { ok: true, value: v } : { ok: false, error: `${label} must be a date.` }
     case 'currency': return typeof v === 'string' && /^[A-Z]{3}$/.test(v.trim().toUpperCase()) ? { ok: true, value: v.trim().toUpperCase() } : { ok: false, error: `${label} must be a three-letter code, e.g. GBP.` }
     case 'country': return typeof v === 'string' && /^[A-Z]{2}$/.test(v.trim().toUpperCase()) ? { ok: true, value: v.trim().toUpperCase() } : { ok: false, error: 'Country must be a two-letter code.' }
+    case 'textArray': return Array.isArray(v) && v.every(x => typeof x === 'string') ? { ok: true, value: v } : { ok: false, error: `${label} must be a list.` }
   }
 }
 
@@ -170,7 +181,7 @@ function toColumns<T extends string>(fields: unknown, allowed: readonly T[], def
 const mapOut = <T>(row: Row, defs: Record<string, Def>): T => {
   const o: Row = {}
   for (const [f, d] of Object.entries(defs)) {
-    let v = row[d.col] ?? null
+    let v = row[d.col] ?? (d.col in ABSENT ? ABSENT[d.col] : null)
     // compare-de-1: a yes/no/unknown column the row does not carry (20261042 not run yet) reads as 'unknown'.
     if (v === null && typeof d.kind === 'object' && !d.kind.nullable && (d.kind.oneOf as readonly string[]).includes('unknown')) v = 'unknown'
     if ((d.kind === 'num') && typeof v === 'string') v = Number(v)   // numeric columns arrive as strings
@@ -191,14 +202,34 @@ export const benchmarkOut = (r: Row) => mapOut<Benchmark>(r, BENCH)
 /** The columns each table is read with (the store selects exactly these). */
 export const COLUMNS = {
   competitors: [...Object.values(COMPETITOR).map(d => d.col), 'updated_at'].join(', '),
+  /** competitor-check-1: the select before 20261043 runs (the store falls back to it on an unknown column). */
+  competitorsNoCheck: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(CHECK_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
   /** compare-de-1: the competitors select before 20261042 runs (the store falls back to it on an unknown column). */
-  competitorsLegacy: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(COMPARE_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
+  competitorsLegacy: [...Object.values(COMPETITOR).map(d => d.col).filter(c => !(COMPARE_COMPETITOR_COLUMNS as readonly string[]).includes(c) && !(CHECK_COMPETITOR_COLUMNS as readonly string[]).includes(c)), 'updated_at'].join(', '),
   plans: Object.values(PLAN).map(d => d.col).join(', '),
   benchmarks: Object.values(BENCH).map(d => d.col).join(', '),
 }
 
+/** 🔴 THE HISTORY RULE, in one place: a NEW row with the old row's values and `cols` on top (source 'admin', unverified,
+ *  checked today unless `cols` says otherwise), inserted first; then the old row superseded — a lost race takes the new
+ *  row back out. Used by Edit (edit_plan) and by accepting an automatic check's finding (competitor-check-1). */
+export async function newPlanVersion(store: PricingStore, old: Row, cols: Row, stamp: Stamp): Promise<ActionResult<{ plan: CompetitorPlan; row: Row }>> {
+  if (old.superseded_at != null) return refuse(409, 'That plan has been edited since this page loaded. Reload to see it.')
+  const next: Row = {}
+  for (const d of Object.values(PLAN)) if (!['id', 'superseded_at', 'verified_at', 'verified_by', 'created_at'].includes(d.col)) next[d.col] = old[d.col] ?? null
+  Object.assign(next, cols, { source: 'admin', checked_on: cols.checked_on ?? stamp.today })
+  if ('card_bps' in cols && !('card_rate_assumed' in cols)) next.card_rate_assumed = cols.card_bps === null
+  const p = planProblem(next); if (p) return refuse(400, p)
+  const inserted = await store.insertPlan(next)
+  if (!(await store.supersedePlan(String(old.id), stamp.at))) {
+    await store.deletePlan(inserted.id as string)
+    return refuse(409, 'That plan has been edited since this page loaded. Nothing was changed — reload to see it.')
+  }
+  return { ok: true, data: { plan: planOut(inserted), row: inserted } }
+}
+
 /** A plan row must still make sense as a whole: a counted plan has a price. */
-function planProblem(cols: Row): string | null {
+export function planProblem(cols: Row): string | null {
   if (cols.status === 'counted' && cols.monthly_minor === null) return 'A counted plan needs a monthly price (or set it to “Price hidden”).'
   if (cols.price_hidden === true && cols.status === 'counted') return 'A hidden price can’t be counted — set Counted to “Price hidden”.'
   return null
@@ -312,18 +343,8 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
       if (old.superseded_at !== null) return refuse(409, 'That plan has been edited since this page loaded. Reload to see it.')
       const r = toColumns(body.fields, PLAN_EDITABLE, PLAN as Record<string, Def>)
       if (!r.ok) return refuse(400, r.error)
-      const next: Row = {}
-      for (const d of Object.values(PLAN)) if (!['id', 'superseded_at', 'verified_at', 'verified_by', 'created_at'].includes(d.col)) next[d.col] = old[d.col] ?? null
-      Object.assign(next, r.cols, { source: 'admin', checked_on: r.cols.checked_on ?? stamp.today })
-      if ('card_bps' in r.cols && !('card_rate_assumed' in r.cols)) next.card_rate_assumed = r.cols.card_bps === null
-      const p = planProblem(next); if (p) return refuse(400, p)
-      // New row first, then the old one superseded; a lost race takes the new row back out.
-      const inserted = await store.insertPlan(next)
-      if (!(await store.supersedePlan(id, stamp.at))) {
-        await store.deletePlan(inserted.id as string)
-        return refuse(409, 'That plan has been edited since this page loaded. Nothing was changed — reload to see it.')
-      }
-      return { ok: true, data: { plan: planOut(inserted) } }
+      const v = await newPlanVersion(store, old, r.cols, stamp)
+      return v.ok ? { ok: true, data: { plan: v.data.plan } } : v
     }
     case 'edit_benchmark': {
       const code = typeof body.countryCode === 'string' ? body.countryCode.trim().toUpperCase() : ''

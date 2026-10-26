@@ -23,7 +23,7 @@ import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-acti
 import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT } from '@/lib/comparison'
 import { comparisonFlags, comparisonFlagsOf } from '@/lib/comparison-flags'
 export { comparisonFlags, comparisonFlagsOf, clearComparisonCache } from '@/lib/comparison-flags'
-import type { Competitor, CompetitorPlan, ComparisonEntry } from '@/lib/pricing-check'
+import { isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
 
 /** The countries whose page is public (sitemap, /llms.txt, footers). */
 export async function liveComparisonCodes(): Promise<string[]> {
@@ -49,7 +49,9 @@ export function comparisonPath(code: string, locale: string): string | null {
 async function comparisonData(code: string): Promise<{ competitors: Competitor[]; plans: CompetitorPlan[]; entries: ComparisonEntry[] }> {
   try {
     const [all, entries] = await Promise.all([servicePricingStore.listAll(), servicePricingStore.listEntries()])
-    const mine = entries.map(entryOut).filter(e => e.countryCode === code)
+    // competitor-check-1: a competitor that is not counted (a candidate, closed, not relevant) is never on a page.
+    const counted = new Set(all.competitors.map(competitorOut).filter(isCountedCompetitor).map(c => c.id))
+    const mine = entries.map(entryOut).filter(e => e.countryCode === code && counted.has(e.competitorId))
     const ids = new Set(mine.map(e => e.competitorId))
     return {
       competitors: all.competitors.map(competitorOut).filter(c => ids.has(c.id)),

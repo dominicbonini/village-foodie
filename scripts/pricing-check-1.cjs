@@ -164,6 +164,14 @@ function memoryStore() {
       if (db.benchmarks.some(b => b.country_code === row.country_code && b.superseded_at === null)) throw new Error('one current benchmark per country')
       const r = { superseded_at: null, created_at: '2026-10-23T09:00:00Z', ...row, id: id() }; db.benchmarks.push(r); return { ...r }
     },
+    // ⚠️ RE-PINNED (compare-de-1 / competitor-check-1, 25 October 2026): PricingStore gained the comparison entries
+    // (20261042); loadState asks entriesReady(). This store has no entries table — as before 20261042 runs.
+    async entriesReady() { return false },
+    async listEntries() { return [] },
+    async insertEntry() { throw new Error('no comparison_entries in this store') },
+    async updateEntry() { return null },
+    async deleteEntry() {},
+    async existingIds(table, ids) { const t = { competitors: db.competitors, plans: db.plans, benchmarks: db.benchmarks }[table] || []; return t.filter(r => ids.includes(r.id)).map(r => r.id) },
   }
 }
 

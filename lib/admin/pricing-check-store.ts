@@ -30,9 +30,11 @@ async function count(table: string, filter?: (q: any) => any): Promise<number> {
 
 /** compare-de-1: a column 20261042 adds is not there yet (42703 undefined column). */
 const missingColumn = (error: { message: string; code?: string } | null) => !!error && (error.code === '42703' || /column .* does not exist/i.test(error.message))
-/** compare-de-1: a competitors read with the 20261042 columns, falling back to the select before that migration. */
+/** compare-de-1 / competitor-check-1: a competitors read with every column, falling back to the select before 20261043,
+ *  then to the one before 20261042 — so the tab works whichever migrations have run. */
 async function readCompetitors(build: (cols: string) => PromiseLike<{ data: unknown; error: { message: string; code?: string } | null }>) {
-  const r = await build(COLUMNS.competitors)
+  let r = await build(COLUMNS.competitors)
+  if (missingColumn(r.error)) r = await build(COLUMNS.competitorsNoCheck)
   return missingColumn(r.error) ? build(COLUMNS.competitorsLegacy) : r
 }
 const ENTRY_COLUMNS = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'

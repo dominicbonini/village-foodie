@@ -23,7 +23,9 @@
 // the plan whose price line it uses, the honest "passt, wenn …" line, and the three checks the public page needs — the
 // entry, its plan and its features verified. Until all three are, the page shows that competitor to admins only.
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+// competitor-check-1: the "Automatic checks" view (what the competitor checker found, to accept or reject).
+import AutomaticChecks from '@/components/admin/AutomaticChecks'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatAmount, formatWholeAmount, minorDigits } from '@/lib/money-format'
 import type { PlanCatalog } from '@/lib/plans'
@@ -91,6 +93,16 @@ export default function PricingCheckTab() {
   const [editPlan, setEditPlan] = useState<CompetitorPlan | 'new' | null>(null)
   const [history, setHistory] = useState<CompetitorPlan | null>(null)
   const [editCountry, setEditCountry] = useState(false)
+  // competitor-check-1: which part of the tab, and how many findings wait for review (the tab's count).
+  const [section, setSection] = useState<'prices' | 'checks'>('prices')
+  const [toReview, setToReview] = useState<number | null>(null)
+  const onCount = useCallback((n: number) => setToReview(n), [])
+  useEffect(() => {
+    let off = false
+    nativeAuthHeader().then(h => fetch('/api/admin/competitor-check', { headers: h })).then(r => (r.ok ? r.json() : null))
+      .then(d => { if (!off && d?.overview) setToReview(d.overview.toReview) }).catch(() => { /* the tab works without the count */ })
+    return () => { off = true }
+  }, [])
 
   const load = async () => {
     const r = await call('GET')
@@ -170,8 +182,29 @@ export default function PricingCheckTab() {
     a.click(); URL.revokeObjectURL(a.href)
   }
 
+  const checkNow = async (c: Competitor) => {
+    setBusy('check'); setNotice(null)
+    const res = await fetch('/api/admin/competitor-check', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(await nativeAuthHeader()) }, body: JSON.stringify({ action: 'check_now', competitorId: c.id }) })
+    setBusy(null)
+    if (res.ok) { await load(); setNotice({ ok: true, text: `${c.name} goes first in the next automatic check.` }) }
+    else setNotice({ ok: false, text: ((await res.json().catch(() => ({}))) as { error?: string }).error ?? 'That could not be queued.' })
+  }
+
+  const sections = (
+    <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-sm font-semibold" role="tablist" aria-label="Pricing check" data-sections>
+      {([['prices', 'Prices and features'], ['checks', 'Automatic checks']] as const).map(([k, label]) => (
+        <button key={k} type="button" role="tab" aria-selected={section === k} onClick={() => setSection(k)} data-section={k}
+          className={`rounded-lg px-3 py-1 ${section === k ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}`}>
+          {label}{k === 'checks' && toReview ? <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold ${section === k ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-800'}`}>{toReview}</span> : null}
+        </button>
+      ))}
+    </div>
+  )
+  if (section === 'checks') return <div className="space-y-3" data-pricing-check>{sections}<AutomaticChecks onCount={onCount} /></div>
+
   return (
     <div className="space-y-3" data-pricing-check>
+      {sections}
       {/* ── the header ── */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -261,7 +294,7 @@ export default function PricingCheckTab() {
             view === 'admin'
               ? <CountryAdmin code={code} state={state} result={result} bench={bench} derived={derived} volume={volume} setVolume={setVolume}
                   options={options} setOptions={setOptions} busy={busy} post={post}
-                  onEditPlan={setEditPlan} onHistory={setHistory} onEditCountry={() => setEditCountry(true)} />
+                  onEditPlan={setEditPlan} onHistory={setHistory} onEditCountry={() => setEditCountry(true)} onCheckNow={checkNow} />
               : <CustomerPreview code={code} state={state} result={result} bench={bench} name={derived.nameOf(code)} volume={volume} setVolume={setVolume} />
           ) : <div className={`${CARD} text-sm text-slate-500`}>No countries yet.</div>}
         </div>
@@ -286,10 +319,10 @@ export default function PricingCheckTab() {
 type Derived = { results: Map<string, CountryResult>; nameOf: (c: string) => string; group: (c: string) => string; byCode: Map<string, CountryRow> }
 type Post = (label: string, body: Record<string, unknown>, done?: string) => Promise<boolean>
 
-function CountryAdmin({ code, state, result, bench, derived, volume, setVolume, options, setOptions, busy, post, onEditPlan, onHistory, onEditCountry }: {
+function CountryAdmin({ code, state, result, bench, derived, volume, setVolume, options, setOptions, busy, post, onEditPlan, onHistory, onEditCountry, onCheckNow }: {
   code: string; state: State; result: CountryResult; bench: Benchmark | null; derived: Derived; volume: VolumeKey; setVolume: (v: VolumeKey) => void
   options: CheckOptions; setOptions: (o: CheckOptions) => void; busy: string | null; post: Post
-  onEditPlan: (p: CompetitorPlan) => void; onHistory: (p: CompetitorPlan) => void; onEditCountry: () => void
+  onEditPlan: (p: CompetitorPlan) => void; onHistory: (p: CompetitorPlan) => void; onEditCountry: () => void; onCheckNow: (c: Competitor) => void
 }) {
   const cur = result.currency
   const v = result.volumes.find(x => x.key === volume)
@@ -362,7 +395,7 @@ function CountryAdmin({ code, state, result, bench, derived, volume, setVolume, 
       )}
 
       {/* 3 · the monthly cost table */}
-      {v && <RivalTable v={v} cur={cur} live={live} today={state.today} busy={busy} post={post} onEditPlan={onEditPlan} onHistory={onHistory} />}
+      {v && <RivalTable v={v} cur={cur} live={live} today={state.today} busy={busy} post={post} onEditPlan={onEditPlan} onHistory={onHistory} onCheckNow={onCheckNow} />}
 
       {/* 4 · key features */}
       {v && <FeatureTable v={v} state={state} bench={bench} busy={busy} post={post} />}
@@ -465,9 +498,9 @@ function feesText(p: CompetitorPlan): string {
   return parts.join(' · ') || 'None'
 }
 
-function RivalTable({ v, cur, live, today, busy, post, onEditPlan, onHistory }: {
+function RivalTable({ v, cur, live, today, busy, post, onEditPlan, onHistory, onCheckNow }: {
   v: Vol; cur: string; live: boolean; today: string; busy: string | null; post: Post
-  onEditPlan: (p: CompetitorPlan) => void; onHistory: (p: CompetitorPlan) => void
+  onEditPlan: (p: CompetitorPlan) => void; onHistory: (p: CompetitorPlan) => void; onCheckNow: (c: Competitor) => void
 }) {
   const counted = v.rivals.filter(r => r.reason === null)
   const notCounted = v.rivals.filter(r => r.reason !== null)
@@ -524,6 +557,10 @@ function RivalTable({ v, cur, live, today, busy, post, onEditPlan, onHistory }: 
                       onClick={() => post('verify', { action: row.r.plan.verifiedAt ? 'unverify' : 'verify', id: row.r.plan.id })}>{row.r.plan.verifiedAt ? 'Undo verified' : 'Mark verified'}</button>
                     <button type="button" className={BTN} onClick={() => onEditPlan(row.r.plan)}>Edit</button>
                     <button type="button" className={BTN} onClick={() => onHistory(row.r.plan)}>History</button>
+                    {/* competitor-check-1: puts this competitor first in the next automatic check. */}
+                    {row.r.competitor && (row.r.competitor.checkRequestedAt
+                      ? <span className="self-center rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-bold text-sky-800" data-check-queued>Check queued</span>
+                      : <button type="button" className={BTN} disabled={busy !== null} data-check-now onClick={() => onCheckNow(row.r.competitor!)}>Check now</button>)}
                   </div>
                 </td>
               </tr>
