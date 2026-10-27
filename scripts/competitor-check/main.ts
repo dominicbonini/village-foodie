@@ -4,7 +4,9 @@
 //
 //   node scripts/competitor-check/run.mjs --mode scheduled|routine|deep|single [--competitor <id or name>] [--limit N] [--dry-run]
 //
-// Environment (GitHub secrets — NAMES only here): ANTHROPIC_API_KEY (read by the SDK), NEXT_PUBLIC_SUPABASE_URL and
+// Environment (NAMES only here): the Claude API login is Workload Identity Federation (competitor-check-1c) — the SDK reads
+// ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID, ANTHROPIC_WORKSPACE_ID and the
+// GitHub OIDC token in ANTHROPIC_IDENTITY_TOKEN_FILE (the workflow keeps it fresh). NEXT_PUBLIC_SUPABASE_URL and
 // SUPABASE_SERVICE_ROLE_KEY (as the scraper's workflows), and for the summary email BREVO_API_KEY / EMAIL_FROM_ADDRESS
 // (lib/email.ts skips the email, with a warning, when they are not set). No value is ever printed.
 // 🔴 --dry-run calls the API and WRITES NOTHING: no run row, no finding, no schedule; it prints the findings.
@@ -31,8 +33,13 @@ async function main() {
   if (limit !== null && !(Number.isInteger(limit) && limit > 0 && limit <= 500)) throw new Error('--limit must be a whole number from 1 to 500')
   const dryRun = has('dry-run')
   const trigger = has('manual') || mode !== 'scheduled' ? 'manual' : 'schedule'
-  for (const name of ['ANTHROPIC_API_KEY', 'NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']) if (!process.env[name]) throw new Error(`${name} is not set (a repository secret).`)
+  // Before any API call: the federation login needs all four variables, and an API key would outrank it in the SDK.
+  for (const name of ['ANTHROPIC_FEDERATION_RULE_ID', 'ANTHROPIC_ORGANIZATION_ID', 'ANTHROPIC_SERVICE_ACCOUNT_ID', 'ANTHROPIC_WORKSPACE_ID'])
+    if (!process.env[name]) throw new Error(`${name} is not set (a repository variable, for the Claude API's Workload Identity Federation login).`)
+  if (process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is set. Remove it: this checker logs in with Workload Identity Federation, and an API key would be used instead.')
+  for (const name of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']) if (!process.env[name]) throw new Error(`${name} is not set (a repository secret).`)
 
+  // No credential argument: the SDK finds the federation variables and the token file itself.
   const anthropic = new Anthropic({ maxRetries: 5, timeout: 300_000 })   // retries 408/409/429/5xx (incl. overloaded) with backoff
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } })
   const deps: CheckerDeps = {

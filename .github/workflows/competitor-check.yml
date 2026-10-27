@@ -6,9 +6,12 @@ name: Competitor check
 # columns — never a plan, a price, a feature or a verification.
 #
 # ⚠️ SCHEDULED WORKFLOWS RUN ONLY FROM THE DEFAULT BRANCH: nothing runs on the timer until this file is merged.
-# 🔴 SECRETS (names only): ANTHROPIC_API_KEY (new — add it under Settings › Secrets and variables › Actions),
-# NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (the scraper's), and — for the summary email, optional —
-# BREVO_API_KEY and EMAIL_FROM_ADDRESS (without them the email is skipped with a warning; the run still works).
+# 🔴 CLAUDE API LOGIN: Workload Identity Federation (competitor-check-1c, 27 October 2026) — no API key anywhere. The job
+# asks GitHub for an OIDC token (audience https://api.anthropic.com), writes it to /tmp/gha-jwt and re-fetches it every 60 s;
+# the SDK exchanges it using four repository VARIABLES (Settings › Secrets and variables › Actions › Variables):
+# ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID, ANTHROPIC_WORKSPACE_ID.
+# SECRETS (names only): NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (the scraper's), and — for the summary
+# email, optional — BREVO_API_KEY and EMAIL_FROM_ADDRESS (without them the email is skipped with a warning).
 on:
   schedule:
     - cron: '10 2 * * *'          # daily, 02:10 UTC — clear of the 03:30 prune and the 06:00 discovery scrape
@@ -47,6 +50,16 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 240          # 15 deep checks with their second checks fit well inside; the budget caps stop it first
+    # id-token: write lets the job ask GitHub for the OIDC token the Claude API login exchanges.
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+      ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+      ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+      ANTHROPIC_IDENTITY_TOKEN_FILE: /tmp/gha-jwt
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,9 +68,22 @@ jobs:
       - run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
+      # The GitHub OIDC token for the Claude API login. A token lasts about 5 minutes and can be exchanged only once, so a
+      # background loop re-fetches it every 60 s for the rest of the job; the SDK re-reads the file at each refresh. Each
+      # fetch writes a temporary file and renames it, so the SDK never reads a half-written token; a failed re-fetch
+      # keeps the last good one.
+      - name: Get the GitHub OIDC token
+        run: |
+          set -euo pipefail
+          fetch_jwt() {
+            curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.anthropic.com" | jq -r .value > /tmp/gha-jwt.next \
+              && [ -s /tmp/gha-jwt.next ] && [ "$(cat /tmp/gha-jwt.next)" != "null" ] && mv /tmp/gha-jwt.next /tmp/gha-jwt
+          }
+          fetch_jwt || { echo "Could not get a GitHub OIDC token (is id-token: write set?)"; exit 1; }
+          export -f fetch_jwt
+          nohup bash -c 'while true; do sleep 60; fetch_jwt || echo "OIDC token re-fetch failed; keeping the last one"; done' > /tmp/gha-jwt-refresh.log 2>&1 &
       - name: Check competitors
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
