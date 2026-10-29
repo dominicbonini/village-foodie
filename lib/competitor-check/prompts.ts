@@ -33,8 +33,9 @@ Copy a verbatim quote from the page (exact characters, its own language) and giv
 
 export interface StoredPlanForPrompt { id: string; plan_name: string; country_code: string; currency: string; price_hidden: boolean; monthly_minor: number | null; yearly_only: boolean; vat: string;
   setup_minor: number; truck_fee_bps: number; truck_fee_fixed_minor: number; customer_fee_bps: number; customer_fee_fixed_minor: number; card_mode: string; card_bps: number | null; card_fixed_minor: number | null; source_url: string | null }
-/** comparison-features-1: a checked feature, as the extractor is asked about it. */
-export interface CheckFeature { key: string; label: string; explain: string }
+/** comparison-features-1: a checked feature, as the extractor is asked about it. competitor-check-3: with where it shows (the
+ *  quick pass asks only about the features shown on the country's page) and whether its answer comes from the plans. */
+export interface CheckFeature { key: string; label: string; explain: string; showScope?: 'all' | 'some' | 'hidden'; showCountries?: string[]; fromPlans?: boolean }
 export interface StoredCompetitorForPrompt { name: string; website: string | null; lifecycle: string; focus: string | null; check_urls: string[]
   /** The competitor's current answers, by feature key (for the country checked, when one is). */
   features: Record<string, { value: string; note: string | null }>; plans: StoredPlanForPrompt[] }
@@ -68,4 +69,28 @@ export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'r
 
 export function verifierMessage(claim: { competitor: string; field: string; plan: string | null; value: string; url: string }): string {
   return `Claim to verify about ${claim.competitor}:\n- What: ${claim.field}${claim.plan ? ` (plan "${claim.plan}")` : ''}\n- Claimed value: ${claim.value}\n- Page: ${claim.url}\n\nFetch ${claim.url} and say whether it states this value.`
+}
+
+// ── competitor-check-3: the quick pass ──────────────────────────────────────────────────────────────────────────────
+/** The first, STABLE part of a quick-pass message — the same for every competitor checked in this country (cached). */
+export function passFeatureBlock(country: string, features: readonly CheckFeature[]): string {
+  return [`QUICK PASS — ${country} ONLY.`,
+    `Features to check in ${country} (key — what it means):\n${features.map(f => `- ${f.key} — ${f.label}: ${f.explain}`).join('\n') || '- (none)'}`,
+    `Also: "term" (minimum contract) and "trial" (free trial) as feature findings, and every plan's price and fees.`].join('\n\n')
+}
+/** The competitor's part of a quick-pass message. */
+export function passCompetitorBlock(c: StoredCompetitorForPrompt, country: string, today: string, maxFetches: number, maxSearches: number): string {
+  const urls = c.check_urls.length ? c.check_urls : c.website ? [c.website] : []
+  return [
+    `Read at most ${maxFetches} page${maxFetches === 1 ? '' : 's'} (the pricing page first)${maxSearches ? ` and at most ${maxSearches} search of its own site` : ', no search'}. Record, for ${country}: if it does not sell to businesses there, one "availability" finding "not_in_country" and stop; otherwise every plan's price and fees as advertised (monthly_price, setup_fee, truck_fee, customer_fee, card_rate; new_plan / plan_gone), the features above (one "feature" finding each — "unchanged" when the stored answer still holds), "term" and "trial". Nothing else. Then call record_findings once.`,
+    `Today is ${today}. Competitor: ${c.name}.`,
+    `Pages to read (start here):\n${urls.map(u => `- ${u}`).join('\n') || '- (none stored: find the official website with one search)'}`,
+    `Stored data (money in the currency's smallest unit, fees in basis points):\n${JSON.stringify({ website: c.website, features: c.features, plans: c.plans }, null, 1)}`,
+  ].join('\n\n')
+}
+/** A candidate's classification read: one page, one finding. */
+export function classifyMessage(c: { name: string; website: string | null; check_urls: string[] }, today: string): string {
+  const url = c.website ?? c.check_urls[0] ?? null
+  return [`CLASSIFICATION READ. Read ONE page — the homepage — and record exactly one "classification" finding: what this company sells (${CLASSIFICATIONS.join(', ')}), with its verbatim quote. No prices, no features, nothing else. Then call record_findings once.`,
+    `Today is ${today}. Competitor: ${c.name}.`, `Page to read:\n- ${url ?? '(none stored: find the official website with one search)'}`].join('\n\n')
 }

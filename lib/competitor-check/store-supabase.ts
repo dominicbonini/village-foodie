@@ -11,7 +11,8 @@ import { valueOut, featureWords, type FeatureValueRow } from '@/lib/comparison-f
 import { featuresOrFile } from '@/lib/comparison-features-file'
 import comparisonEn from '@/messages/ns/en-GB/comparison.json'
 import { SCHEDULE_COLUMNS, type CheckerStore, type CheckSettings, type CompetitorForCheck } from './checker'
-import { countriesOf, type Prices, type QueueCountry } from './core'
+import { countriesOf, type PassState, type Prices, type QueueCountry } from './core'
+import { DEFAULT_PASS, type PassSettings, type PassBatch } from './pass'
 import type { StoredPlanForPrompt } from './prompts'
 
 type Row = Record<string, unknown>
@@ -19,11 +20,24 @@ const COMPETITOR_COLS = ['id', 'name', 'website', 'focus', 'lifecycle', 'check_u
   'deep_checked_at', 'check_requested_at', 'notes'].join(', ')   // comparison-features-1: the fixed feature columns are retired
 const VALUE_COLS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at'
 /** global-players-1 (20261046), read tolerantly: the select falls back to COMPETITOR_COLS before it runs. */
-const GLOBAL_COLS = 'not_in_countries, deep_checked_in'
+const GLOBAL_COLS = 'not_in_countries, deep_checked_in, pass_state'
 const missingColumn = (e: { message: string; code?: string } | null) => !!e && (e.code === '42703' || /column .* does not exist/i.test(e.message))
 const tableMissing = (e: { message: string; code?: string }) => e.code === '42P01' || e.code === 'PGRST205' || /relation .* does not exist|schema cache/i.test(e.message)
 const PLAN_COLS = 'id, competitor_id, plan_name, country_code, currency, price_hidden, monthly_minor, yearly_only, vat, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, source_url'
 
+/** competitor-check-3: the quick pass's settings, each falling back to its default before 20261049 runs. */
+export function passSettingsOut(r: Row): PassSettings {
+  const n = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) ? v : d)
+  const b = r.pass_batch && typeof r.pass_batch === 'object' && !Array.isArray(r.pass_batch) ? r.pass_batch as PassBatch : null
+  return {
+    extractorModel: typeof r.pass_extractor_model === 'string' ? r.pass_extractor_model : DEFAULT_PASS.extractorModel,
+    verifierModel: typeof r.pass_verifier_model === 'string' ? r.pass_verifier_model : DEFAULT_PASS.verifierModel,
+    perDay: n(r.pass_per_day, DEFAULT_PASS.perDay), requestedAt: (r.pass_requested_at as string | null) ?? null,
+    country: typeof r.pass_country === 'string' && /^[A-Z]{2}$/.test(r.pass_country) ? r.pass_country : null,
+    maxFetches: n(r.pass_max_fetches, DEFAULT_PASS.maxFetches), maxSearches: n(r.pass_max_searches, DEFAULT_PASS.maxSearches),
+    maxPageTokens: n(r.pass_max_page_tokens, DEFAULT_PASS.maxPageTokens), batch: b && typeof b.id === 'string' ? b : null,
+  }
+}
 export function settingsOut(r: Row): CheckSettings {
   return {
     paused: r.paused === true, dailyCapUsd: Number(r.daily_cap_usd), monthlyCapUsd: Number(r.monthly_cap_usd), deepPerDay: Number(r.deep_per_day),
@@ -32,6 +46,8 @@ export function settingsOut(r: Row): CheckSettings {
     // competitor-check-2 (20261045), read tolerantly: before it runs, no country deep check.
     deepCountry: typeof r.deep_country === 'string' && /^[A-Z]{2}$/.test(r.deep_country) ? r.deep_country : null,
     deepQueue: Array.isArray(r.deep_queue) ? (r.deep_queue as unknown[]).filter((c): c is string => typeof c === 'string' && /^[A-Z]{2}$/.test(c)) : [],
+    // competitor-check-3 (20261049), read tolerantly: before it runs, the defaults and no pass started.
+    pass: passSettingsOut(r),
   }
 }
 export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = [], values: readonly FeatureValueRow[] = []): CompetitorForCheck {
@@ -47,6 +63,7 @@ export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly stri
     plans: own as unknown as StoredPlanForPrompt[],
     countries: countriesOf(String(r.lifecycle), own.map(p => String(p.country_code)), r.notes, { focus: (r.focus as string | null) ?? null, notIn, allCodes }),
     deepCheckedIn: r.deep_checked_in && typeof r.deep_checked_in === 'object' && !Array.isArray(r.deep_checked_in) ? r.deep_checked_in as Record<string, string> : {},
+    passState: r.pass_state && typeof r.pass_state === 'object' && !Array.isArray(r.pass_state) ? r.pass_state as PassState : {},   // competitor-check-3
   }
 }
 
@@ -64,7 +81,9 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
         db.from('competitor_plans').select(PLAN_COLS).is('superseded_at', null),
         db.from('country_settings').select('country_code').eq('enabled', true),
       ])
-      const c = missingColumn(c0.error) ? await db.from('competitors').select(COMPETITOR_COLS).order('name') : c0
+      // Before 20261049 there is no pass_state; before 20261046 neither not_in_countries nor deep_checked_in.
+      const c1 = missingColumn(c0.error) ? await db.from('competitors').select(`${COMPETITOR_COLS}, not_in_countries, deep_checked_in`).order('name') : c0
+      const c = missingColumn(c1.error) ? await db.from('competitors').select(COMPETITOR_COLS).order('name') : c1
       if (c.error) fail('read competitors', c.error)
       if (p.error) fail('read plans', p.error)
       if (k.error) fail('read countries', k.error)
@@ -85,8 +104,11 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       const { data, error } = await db.from('comparison_features').select('key, group_key, sort_order, checked, show_scope, show_countries, hatchgrab_source, labels, explanations, updated_at')
       if (error && !tableMissing(error)) fail('read features', error)
       const msgs = (comparisonEn as unknown as { features?: Record<string, { label?: string; explain?: string }> }).features ?? {}
+      // competitor-check-3: with where each shows, and whether its answer comes from the plans (the pass asks only about the
+      // features shown on a country's page, and reads prices from the plans).
       return featuresOrFile(error ? null : (data as Row[])).features.filter(f => f.checked)
-        .map(f => ({ key: f.key, ...featureWords(f, 'en-GB', k => (k.endsWith('.label') ? msgs[f.key]?.label : msgs[f.key]?.explain) ?? f.key) }))
+        .map(f => ({ key: f.key, ...featureWords(f, 'en-GB', k => (k.endsWith('.label') ? msgs[f.key]?.label : msgs[f.key]?.explain) ?? f.key),
+          showScope: f.showScope, showCountries: f.showCountries, fromPlans: /(^|;)\s*price:(monthly|perorder|cardfee|setup)\b/.test(f.hatchgrabSource) }))
     },
     async spend(today) {
       const month = `${today.slice(0, 7)}-01T00:00:00Z`
@@ -116,13 +138,21 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       if (bad.length) throw new Error(`[competitor-check] refused: the checker may only write the scheduling columns, not ${bad.join(', ')}`)
       let { error } = await db.from('competitors').update(cols).eq('id', id)
       // Before 20261046 runs there is no deep_checked_in: the rest of the schedule is still written.
-      if (missingColumn(error) && 'deep_checked_in' in cols) { const { deep_checked_in: _x, ...rest } = cols; void _x; ({ error } = await db.from('competitors').update(rest).eq('id', id)) }
+      // Before 20261046 / 20261049 there is no deep_checked_in / pass_state: the rest of the schedule is still written.
+      if (missingColumn(error) && ('deep_checked_in' in cols || 'pass_state' in cols)) {
+        const { deep_checked_in: _x, pass_state: _y, ...rest } = cols; void _x; void _y
+        ;({ error } = Object.keys(rest).length ? await db.from('competitors').update(rest).eq('id', id) : { error: null })
+      }
       if (error) fail('write schedule', error)
     },
     async countries() {
       const { data, error } = await db.from('country_settings').select('country_code, enabled, comparison_status')
       if (error) fail('read countries', error)
       return ((data ?? []) as Row[]).map(r => ({ code: String(r.country_code), enabled: r.enabled === true, comparisonStatus: (r.comparison_status as string | null) ?? null })) as QueueCountry[]
+    },
+    async setPassBatch(batch) {
+      const { error } = await db.from('competitor_check_settings').update({ pass_batch: batch }).eq('id', true)
+      if (error) fail('record the quick pass batch', error)
     },
     async setDeepCountry(code) {
       if (code !== null && !/^[A-Z]{2}$/.test(code)) throw new Error(`[competitor-check] refused: "${code}" is not a country code`)

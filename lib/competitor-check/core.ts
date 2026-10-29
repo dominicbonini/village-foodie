@@ -72,6 +72,11 @@ export function costOf(usage: Usage | null | undefined, model: string, prices: P
     + read * (p.cache_read_per_mtok ?? p.input_per_mtok)) / 1e6 + searches * prices.web_search_per_search
   return { inputTokens: input + write + read, outputTokens: output, webSearches: searches, webFetches: fetches, usd }
 }
+/** competitor-check-3: a Message Batch result costs `scale` of the token price (0.5); a web search keeps its full fee. */
+export const scaleTokens = (s: Spend, scale: number, prices: Prices): Spend => {
+  const searches = s.webSearches * prices.web_search_per_search
+  return { ...s, usd: (s.usd - searches) * scale + searches }
+}
 export const addSpend = (a: Spend, b: Spend): Spend => ({
   inputTokens: a.inputTokens + b.inputTokens, outputTokens: a.outputTokens + b.outputTokens,
   webSearches: a.webSearches + b.webSearches, webFetches: a.webFetches + b.webFetches, usd: a.usd + b.usd,
@@ -100,7 +105,11 @@ export interface SchedRow {
   /** global-players-1 (20261046): per country, when it was last deep-checked THERE — for a competitor in several countries,
    *  which the deep check reads one country at a time. */
   deepCheckedIn?: Record<string, string>
+  /** competitor-check-3 (20261049): where the quick pass has been — a candidate's classification read, and per country. */
+  passState?: PassState
 }
+/** competitor-check-3: competitors.pass_state. */
+export interface PassState { class?: 'relevant' | 'not_relevant' | 'unclear'; class_at?: string; done?: Record<string, string> }
 export const addDays = (ymd: string, n: number) => { const d = new Date(`${ymd}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10) }
 /** A small allowance on top of the even share, so a day that fell behind (a capped or failed run) catches up. */
 export const CATCH_UP_PER_DAY = 2
@@ -237,3 +246,35 @@ export function deepTargets<T extends SchedRow>(rows: readonly T[], queue: reado
  *  the whole queue from there is done. */
 export const nextDeepCountry = (rows: readonly SchedRow[], queue: readonly string[], current: string, deepRequestedAt: string | null) =>
   queueFrom(queue, current).find(code => deepCountryProgress(rows, code, deepRequestedAt).pending.length > 0) ?? null
+
+// ── competitor-check-3: THE QUICK PASS — one cheap check of every competitor in every country it sells in ──────────────
+/** One item of the pass: a candidate's classification read (once), or a competitor checked in one country. */
+export type PassItem<T extends SchedRow> = { kind: 'classify'; row: T; country: null; done: boolean } | { kind: 'check'; row: T; country: string; done: boolean }
+const at = (s: string | undefined | null, since: string) => !!s && s >= since
+/**
+ * Every item of the pass started at `requestedAt`, in order, each marked done or not:
+ *   • first, each CANDIDATE's classification read (by name) — not done until it has been read since the request;
+ *   • then each check: every ACTIVE competitor — and a candidate the read found relevant — in each of its countries (its
+ *     plans', a candidate's / POS player's recorded ones, minus not_in_countries: SchedRow.countries), country by country in
+ *     the deep queue's order from `start` (null: the whole queue, then any country outside it), by name within a country.
+ * A check is done once pass_state.done[country] is later than the request. Nothing before the pass is started.
+ */
+export function passItems<T extends SchedRow>(rows: readonly T[], queue: readonly string[], start: string | null, requestedAt: string | null): PassItem<T>[] {
+  if (!requestedAt) return []
+  const byName = (a: T, b: T) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id)
+  const classify: PassItem<T>[] = rows.filter(r => r.lifecycle === 'candidate').sort(byName)
+    .map(row => ({ kind: 'classify' as const, row, country: null, done: at(row.passState?.class_at, requestedAt) }))
+  const eligible = rows.filter(r => r.lifecycle === 'active' || (r.lifecycle === 'candidate' && r.passState?.class === 'relevant' && at(r.passState.class_at, requestedAt)))
+  const order = start ? queueFrom(queue, start) : [...queue, ...[...new Set(eligible.flatMap(r => r.countries ?? []))].filter(c => !queue.includes(c)).sort()]
+  const checks: PassItem<T>[] = order.flatMap(code => eligible.filter(r => r.countries?.includes(code)).sort(byName)
+    .map(row => ({ kind: 'check' as const, row, country: code, done: at(row.passState?.done?.[code], requestedAt) })))
+  return [...classify, ...checks]
+}
+/** What is still to do, in order. */
+export const passTargets = <T extends SchedRow>(rows: readonly T[], queue: readonly string[], start: string | null, requestedAt: string | null) =>
+  passItems(rows, queue, start, requestedAt).filter(i => !i.done)
+/** The pass's progress for the tile. */
+export const passProgress = (rows: readonly SchedRow[], queue: readonly string[], start: string | null, requestedAt: string | null) => {
+  const all = passItems(rows, queue, start, requestedAt)
+  return { total: all.length, done: all.filter(i => i.done).length, classify: all.filter(i => i.kind === 'classify').length }
+}

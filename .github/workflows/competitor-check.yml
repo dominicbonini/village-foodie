@@ -23,11 +23,11 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'routine, deep, single, or scheduled (what the timer runs: the deep share while a full deep check is requested, then the routine share)'
+        description: 'routine, deep, single, pass (the quick pass''s share), or scheduled (what the timer runs: the quick pass, the deep share, then the routine share)'
         required: true
         default: 'routine'
         type: choice
-        options: [routine, deep, single, scheduled]
+        options: [routine, deep, single, pass, scheduled]
       competitor:
         description: 'For mode single: the competitor''s name or id'
         required: false

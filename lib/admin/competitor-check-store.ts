@@ -53,7 +53,9 @@ export const serviceCheckStore: CheckAdminStore = {
   async competitors() {
     // global-players-1 (20261046): focus, not_in_countries and deep_checked_in, falling back to the select before it runs.
     const s = await db()
-    let r = await s.from('competitors').select(`${COMPETITOR_COLS}, focus, not_in_countries, deep_checked_in`).order('name')
+    // competitor-check-3 (20261049): pass_state too.
+    let r = await s.from('competitors').select(`${COMPETITOR_COLS}, focus, not_in_countries, deep_checked_in, pass_state`).order('name')
+    if (r.error && missing(r.error)) r = await s.from('competitors').select(`${COMPETITOR_COLS}, focus, not_in_countries, deep_checked_in`).order('name') as typeof r
     if (r.error && missing(r.error)) r = await s.from('competitors').select(`${COMPETITOR_COLS}, focus`).order('name') as typeof r
     if (r.error) { if (missing(r.error)) return []; fail('read competitors', r.error) }
     return (r.data ?? []) as unknown as Row[]

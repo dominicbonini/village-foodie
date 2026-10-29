@@ -37,6 +37,11 @@
 //       adds just the new key, a bad file writes nothing; every feature added marks each active competitor 'unknown' and due;
 //       the extractor is asked about the CHECKED features (key, label, explanation) and records one 'feature' finding each;
 //       a key not in the list is dropped; the extra cost per competitor of the longer list.
+// competitor-check-3 (29 October 2026, docs/competitor-check-3-report.md):
+//  17 · the quick pass: each competitor once per country; hidden features never asked; candidates get a classification
+//       read first; the fetch, search and page caps hold; no request reaches 100,000 input tokens; the verifier only on
+//       prices, fees, term, trial and changed answers; a stopped pass resumes where it stopped; the caps stop it; the batch
+//       path used only when the docs allow; the cost estimate.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -68,6 +73,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     "export { COUNTRY_MAX_FETCHES } from '@/lib/competitor-check/checker'",
     "export { importFeatures, featuresProblems } from '@/lib/data-import/features'",
     "export { EXTRACTOR_SYSTEM, extractorMessage } from '@/lib/competitor-check/prompts'",
+    "export * as pass from '@/lib/competitor-check/pass'",
   ].join('\n'))
   const NOW = new Date('2026-10-26T02:10:00Z')
 
@@ -762,6 +768,153 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const extraRoutine = c({ input_tokens: listTokens * 2, output_tokens: 8 * 70 }) + 2 * c(FX.USAGE.verifier)
     console.log(`      estimate: the list is ~${listTokens} tokens; extra per competitor — deep +$${extraDeep.toFixed(2)} (list × 4 turns, 45 findings, 27 quoted ones second-checked), routine +$${extraRoutine.toFixed(2)} (list × 2 turns, ~8 changes, 2 second checks)`)
     t('the report\'s estimate: the list ≈ 1,100 tokens; deep ≈ +$0.93 a competitor, routine ≈ +$0.08', listTokens > 1000 && listTokens < 1200 && Math.abs(extraDeep - 0.93) < 0.02 && Math.abs(extraRoutine - 0.076) < 0.01, { listTokens, extraDeep, extraRoutine })
+  }
+
+  // ── 17 · competitor-check-3: the quick pass ──
+  head('17 · the quick pass — every competitor once per country, cheap, capped, resumable, batched when the docs allow')
+  {
+    const P = L.pass
+    const REQ = '2026-10-29T12:00:00Z'
+    const FEATS = [
+      { key: 'preorder', label: 'Pre-orders', explain: 'Order ahead.', showScope: 'all', showCountries: [] },
+      { key: 'paypal', label: 'PayPal or Klarna', explain: 'Pay with PayPal.', showScope: 'some', showCountries: ['DE', 'AT'] },
+      { key: 'localpay', label: 'Local payment methods', explain: 'BLIK, iDEAL.', showScope: 'some', showCountries: ['PL'] },
+      { key: 'asap', label: 'Orders for as soon as possible', explain: 'No chosen time.', showScope: 'hidden', showCountries: [] },
+      { key: 'term', label: 'Minimum contract', explain: 'How long.', showScope: 'all', showCountries: [] },
+      { key: 'trial', label: 'Free trial', explain: 'Free time.', showScope: 'all', showCountries: [] },
+      { key: 'monthly', label: 'Monthly price', explain: 'Per month.', showScope: 'all', showCountries: [], fromPlans: true },
+    ]
+    const passSettings = over => FX.SETTINGS({ features: FEATS, ...over, pass: { ...FX.SETTINGS().pass, requestedAt: REQ, ...(over && over.pass) } })
+    const rows = () => [FX.competitor(51, { countries: ['DE'] }), FX.competitor(52, { countries: ['DE', 'AT'] }),
+      FX.competitor(53, { lifecycle: 'candidate', countries: ['DE', 'AT'] }), FX.competitor(54, { countries: ['FR'] })]
+    const queue = ['DE', 'AT', 'CZ', 'PL', 'FR']
+    // ── coverage ──
+    const items = L.passItems(rows(), queue, null, REQ)
+    const pairs = items.filter(i => i.kind === 'check').map(i => `${i.row.id}:${i.country}`)
+    t('coverage: every active competitor once per country it sells in, country by country in the queue\'s order; the candidate first gets one classification read',
+      JSON.stringify(items.map(i => (i.kind === 'classify' ? `class:${i.row.id}` : `${i.row.id}:${i.country}`))) === JSON.stringify(['class:c-053', 'c-051:DE', 'c-052:DE', 'c-052:AT', 'c-054:FR']) && new Set(pairs).size === pairs.length, items.map(i => `${i.kind}:${i.row.id}:${i.country}`))
+    t('…started from a country, only that country and the ones after it (classification reads still first)', JSON.stringify(L.passItems(rows(), queue, 'AT', REQ).map(i => i.country)) === JSON.stringify([null, 'AT', 'FR']))
+    t('…nothing before it is started', L.passItems(rows(), queue, null, null).length === 0)
+    // ── what one check asks ──
+    const req = (c, cc, over) => P.passRequest(c, { kind: 'check', country: cc }, passSettings(over), '2026-10-30')
+    const de = req(FX.competitor(51), 'DE'), pl = req(FX.competitor(51), 'PL')
+    const text = r => r.user.map(b => b.text).join('\n')
+    t('it asks ONLY about the features shown on that country\'s page: DE — pre-orders, PayPal (some: DE), term, trial; never the hidden one (ASAP), never PL\'s local payments, never a plan-read price as a feature',
+      /- preorder —/.test(text(de)) && /- paypal —/.test(text(de)) && !/- localpay —/.test(text(de)) && !/asap/.test(text(de)) && !/- monthly —/.test(text(de)) && /- localpay —/.test(text(pl)) && !/- paypal —/.test(text(pl)), text(de).slice(0, 400))
+    t('the hard limits per check: 3 pages, 1 search, each page capped at 6,000 tokens; a Haiku model; no refusal fallback (Haiku has none; batches reject it)',
+      de.tools[0].max_uses === 3 && de.tools[0].max_content_tokens === 6000 && de.tools[1].type === 'web_search_20260318' && de.tools[1].max_uses === 1 && de.model === 'claude-haiku-5-5'
+      && !('fallbacks' in P.passParams(de)) && !('betas' in P.passParams(de)))
+    t('prompt caching: the system prompt and the country\'s feature list carry cache_control, and the list is byte-identical for two competitors in the same country (a stable prefix)',
+      de.system[0].cache_control?.type === 'ephemeral' && de.user[0].cache_control?.type === 'ephemeral' && req(FX.competitor(52), 'DE').user[0].text === de.user[0].text && req(FX.competitor(52), 'DE').user[1].text !== de.user[1].text)
+    const big = req(FX.competitor(51), 'DE', { pass: { maxFetches: 10, maxSearches: 5, maxPageTokens: 20000 } })
+    t('a request is shrunk before it is sent so its worst case (prompt + every page at the cap + searches + output) stays under 100,000 input tokens', big.bound < P.PRICE_STEP_TOKENS && big.fetches < 10 && big.fetches >= 1, { fetches: big.fetches, searches: big.searches, bound: big.bound })
+    const cls = P.passRequest(FX.competitor(53, { lifecycle: 'candidate' }), { kind: 'classify', country: null }, passSettings(), '2026-10-30')
+    t('a classification read: one page, no search, no features — one "classification" finding', cls.tools[0].max_uses === 1 && cls.tools.length === 2 && /CLASSIFICATION READ/.test(text(cls)) && !/Features to check/.test(text(cls)))
+    // ── a run, one by one (no batch API) ──
+    const classifyApi = (inner, verdict = 'food_truck_ordering', calls = []) => async p => {
+      const u = p.messages[0].content
+      const first = Array.isArray(u) ? u.map(b => b.text).join('\n') : u
+      if (/CLASSIFICATION READ/.test(first)) {
+        calls.push({ ...JSON.parse(JSON.stringify(p)), _kind: 'classify' })
+        const url = (/- (https:\/\/\S+)/.exec(first) || [])[1]
+        return FX.msg([...FX.fetchPair(url, 'Das Bestellsystem für Ihren Foodtruck.'), FX.toolUse('record_findings', { findings: [FX.F({ field: 'classification', outcome: 'classification', classification: verdict,
+          quote: 'Das Bestellsystem für Ihren Foodtruck.', quote_en: 'The ordering system for your food truck.', source_url: url })], pages_read: [url], notes: null })], 'tool_use', { input_tokens: 6000, output_tokens: 300 }, 'claude-haiku-5-5')
+      }
+      const flat = { ...p, messages: [{ role: 'user', content: first }, ...p.messages.slice(1)] }
+      return inner(flat)
+    }
+    const calls = []
+    const rowsA = rows()
+    const store = FX.memoryCheckerStore({ settings: () => passSettings(), competitors: rowsA })
+    const deps1 = (api, st, extra = {}) => ({ api, store: st, now: () => new Date('2026-10-30T02:10:00Z'), log: () => {}, dryRun: false, ...extra })
+    const r1 = await L.runChecker(deps1(classifyApi(FX.fakeApi(() => 'ok:29', calls), 'food_truck_ordering', calls), store), { mode: 'pass', trigger: 'manual' })
+    const ext = calls.filter(p => p._kind === 'classify' || !p.tools.some(x => x.name === 'record_verdict'))
+    t('the candidate\'s classification read runs first and finds it relevant; its finding waits for Dominic', calls[0]._kind === 'classify' && store.findings.some(f => f.competitor_id === 'c-053' && f.field === 'classification' && f.review_status === 'pending')
+      && store.schedule.some(([id, c]) => id === 'c-053' && c.pass_state && c.pass_state.class === 'relevant'), store.schedule.filter(([id]) => id === 'c-053'))
+    t('then every check of the share: c-051 DE, c-052 DE and AT, c-054 FR — written as findings, pass_state marked per country', r1[0].mode === 'pass' && r1[0].checked === 5
+      && ['c-051:DE', 'c-052:DE', 'c-052:AT', 'c-054:FR'].every(k => { const [id, cc] = k.split(':'); return store.schedule.some(([i, c]) => i === id && c.pass_state && c.pass_state.done && c.pass_state.done[cc]) }), r1.map(r => [r.mode, r.checked, r.stoppedReason]))
+    const verifierCalls = calls.filter(p => p.tools.some(x => x.name === 'record_verdict'))
+    const checked = store.findings.filter(f => f.second_check !== 'not_run')
+    t('the verifier runs ONLY on prices (and term / trial / changed answers): every price finding second-checked, the unchanged pre-orders answer not', verifierCalls.length === checked.length
+      && checked.every(f => f.field === 'monthly_price') && store.findings.filter(f => f.field === 'feature' && f.found.feature_key === 'preorder').every(f => f.second_check === 'not_run'), { verifier: verifierCalls.length, fields: checked.map(f => f.field) })
+    t('needsSecondCheck: prices, fees, plans, term and trial always; another feature only when its answer differs from the stored one',
+      P.needsSecondCheck({ field: 'card_rate', found: {} }) && P.needsSecondCheck({ field: 'feature', outcome: 'unchanged', stored_value: 'no', found: { feature_key: 'term', feature: 'no' } })
+      && !P.needsSecondCheck({ field: 'feature', outcome: 'unchanged', stored_value: 'yes', found: { feature_key: 'preorder', feature: 'yes' } })
+      && P.needsSecondCheck({ field: 'feature', outcome: 'unchanged', stored_value: 'no — x', found: { feature_key: 'preorder', feature: 'yes' } }) && !P.needsSecondCheck({ field: 'availability', found: {} }))
+    // A relevant candidate now gets its checks; a not-relevant one does not.
+    t('…a candidate read as relevant gets its country checks in the pass', L.passItems(rowsA, queue, null, REQ).some(i => i.kind === 'check' && i.row.id === 'c-053'))
+    const rowsN = [FX.competitor(55, { lifecycle: 'candidate', countries: ['DE'] })]
+    const notRel = FX.memoryCheckerStore({ settings: () => passSettings(), competitors: rowsN })
+    await L.runChecker(deps1(classifyApi(FX.fakeApi(() => 'ok:29'), 'marketplace'), notRel), { mode: 'pass', trigger: 'manual' })
+    t('…a candidate read as not relevant gets no checks: just its "not relevant" classification finding to accept', notRel.findings.length === 1 && notRel.findings[0].found.classification === 'marketplace'
+      && L.passTargets(rowsN, queue, null, REQ).length === 0, notRel.findings.map(f => f.field))
+    // ── resume, caps ──
+    const rowsC = rows().filter(r => r.lifecycle === 'active')
+    const capStore = FX.memoryCheckerStore({ settings: () => passSettings({ dailyCapUsd: 0.06 }), competitors: rowsC })
+    const c1 = await L.runChecker(deps1(FX.fakeApi(() => 'ok:29'), capStore), { mode: 'pass', trigger: 'manual' })
+    const doneFirst = capStore.schedule.filter(([, c]) => c.pass_state).length
+    t('the daily cap stops the pass (stopped_reason daily_cap) part-way', c1[0].stoppedReason === 'daily_cap' && doneFirst > 0 && doneFirst < 4, { reason: c1[0].stoppedReason, done: doneFirst })
+    const capStore2 = FX.memoryCheckerStore({ settings: () => passSettings(), competitors: rowsC })
+    await L.runChecker({ ...deps1(FX.fakeApi(() => 'ok:29'), capStore2), now: () => new Date('2026-10-31T02:10:00Z') }, { mode: 'pass', trigger: 'manual' })
+    const seen = [...capStore.schedule, ...capStore2.schedule].filter(([, c]) => c.pass_state).map(([id, c]) => `${id}:${Object.keys(c.pass_state.done).sort().join('+')}`)
+    t('a stopped pass resumes where it stopped: the next run checks only what was left, nothing twice', capStore2.schedule.filter(([, c]) => c.pass_state).length === 4 - doneFirst
+      && L.passTargets(rowsC, queue, null, REQ).length === 0, seen)
+    t('…and the monthly cap stops it too', (await L.runChecker(deps1(FX.fakeApi(() => 'ok:29'), FX.memoryCheckerStore({ settings: () => passSettings({ monthlyCapUsd: 10 }), competitors: rows().filter(r => r.lifecycle === 'active'),
+      priorRuns: [{ id: 'old', started_at: '2026-10-03T02:10:00Z', cost_usd: 9.99, competitors_checked: 30 }] })), { mode: 'pass', trigger: 'manual' }))[0].stoppedReason === 'monthly_cap')
+    // ── no request reaches 100,000 input tokens ──
+    let n = 0
+    const fat = async () => { n++; return FX.msg([{ type: 'text', text: 'still reading' }], 'end_turn', { input_tokens: 99_500, output_tokens: 100 }, 'claude-haiku-5-5') }
+    const fatStore = FX.memoryCheckerStore({ settings: () => passSettings(), competitors: [FX.competitor(56, { countries: ['DE'] })] })
+    const fr = await L.runChecker(deps1(fat, fatStore), { mode: 'pass', trigger: 'manual' })
+    t('a response whose next turn would reach 100,000 input tokens is the last: no further turn is sent, the check fails (and is retried next run)', n === 1 && /100,000 input tokens/.test(fr[0].failed[0]?.error ?? '') && !fatStore.schedule.some(([, c]) => c.pass_state), { calls: n, failed: fr[0].failed })
+    // ── the batch path ──
+    t('the batch path is used only when the docs allow it (STEP 0a found batches support the web tools) and the checker has the batch API; never for a dry run',
+      P.BATCH_SUPPORTS_SERVER_TOOLS === true && /Tool use, including all server tools \(web search, web fetch/.test(read('docs/competitor-check-1-report.md'))
+      && P.passTransport({ batch: {}, dryRun: false }) === 'batch' && P.passTransport({ dryRun: false }) === 'sync' && P.passTransport({ batch: {}, dryRun: true }) === 'sync')
+    const submitted = [], api = FX.fakeApi(() => 'ok:29')
+    let status = 'in_progress'
+    const batchApi = {
+      async create(requests) { submitted.push(requests); return { id: `msgbatch_${submitted.length}` } },
+      async retrieve() { return { processing_status: status } },
+      async results(id) { const reqs = submitted[Number(id.split('_')[1]) - 1]; return (async function* () { for (const r of reqs) yield { custom_id: r.custom_id, result: { type: 'succeeded', message: await api(r.params) } } })() },
+    }
+    const bStore = FX.memoryCheckerStore({ settings: () => passSettings({ pass: { perDay: 2 } }), competitors: rows().filter(r => r.lifecycle === 'active') })
+    const b1 = await L.runChecker(deps1(api, bStore, { batch: batchApi }), { mode: 'pass', trigger: 'schedule' })
+    t('run 1: the share goes in as ONE batch (2 = pass_per_day), each request a pass request with a unique custom_id under 64 characters, no fallback; recorded as in flight; nothing written yet',
+      submitted.length === 1 && submitted[0].length === 2 && new Set(submitted[0].map(r => r.custom_id)).size === 2 && submitted[0].every(r => r.custom_id.length <= 64 && /^[A-Za-z0-9_-]+$/.test(r.custom_id) && !r.params.fallbacks && r.params.model === 'claude-haiku-5-5')
+      && bStore.passBatches[0].id === 'msgbatch_1' && bStore.findings.length === 0 && b1.length === 0, { submitted: submitted.map(x => x.length), batches: bStore.passBatches.map(b => b && b.id) })
+    await L.runChecker(deps1(api, bStore, { batch: batchApi }), { mode: 'pass', trigger: 'schedule' })
+    t('while the batch is still processing, nothing is collected or submitted', submitted.length === 1 && bStore.findings.length === 0)
+    status = 'ended'
+    const b3 = await L.runChecker(deps1(api, bStore, { batch: batchApi }), { mode: 'pass', trigger: 'schedule' })
+    const run = bStore.runs.find(r => r.mode === 'pass')
+    const fullPrice = L.costOf(FX.USAGE.routine, 'claude-sonnet-5-5', FX.PRICES)
+    t('when it has ended: its results are written as findings, each item marked done, the run costed at the batch price (half the tokens), then the next share submitted',
+      b3[0].mode === 'pass' && b3[0].checked === 2 && bStore.findings.length > 0 && bStore.schedule.filter(([, c]) => c.pass_state).length === 2 && submitted.length === 2
+      && bStore.passBatches.includes(null) && run && run.cost_usd > 0, { checked: b3[0].checked, runs: bStore.runs.map(r => [r.mode, r.cost_usd]), batches: bStore.passBatches.map(b => b && b.id) })
+    // Each of the 2 items: its batch read at half the token price (the search fee in full), plus one second check (its price
+    // finding) asked directly, at the full price.
+    const expected = 2 * (L.scaleTokens(fullPrice, 0.5, FX.PRICES).usd + L.costOf(FX.USAGE.verifier, 'claude-sonnet-5-5', FX.PRICES).usd)
+    t('…the batch reads are costed at half the token price (the search fee in full); second checks at the full price', Math.abs(run.cost_usd - Number(expected.toFixed(4))) < 0.0002, { run: run.cost_usd, expected })
+    const capB = FX.memoryCheckerStore({ settings: () => passSettings({ dailyCapUsd: 0.01 }), competitors: rows().filter(r => r.lifecycle === 'active') })
+    const before = submitted.length
+    await L.runChecker(deps1(api, capB, { batch: batchApi }), { mode: 'pass', trigger: 'schedule' })
+    t('the caps apply to a batch before it goes in: none fits, none is submitted', submitted.length === before && capB.passBatches.length === 0)
+    t('the migration (NOT RUN): pass settings with Haiku defaults and the limits, pass_state, mode pass', (() => { const m = read('supabase/migrations/20261049_competitor_check_3.sql')
+      return /pass_extractor_model text not null default 'claude-haiku-5-5'/.test(m) && /pass_per_day\s+integer not null default 40/.test(m) && /pass_max_fetches\s+integer not null default 3/.test(m)
+        && /pass_max_searches\s+integer not null default 1/.test(m) && /pass_max_page_tokens integer not null default 6000/.test(m) && /pass_state jsonb not null default/.test(m) && /'single', 'pass'/.test(m) })())
+    t('20261048 matches what ran: no temporary table, two self-contained statements with a CTE each', (() => { const m = read('supabase/migrations/20261048_comparison_features_data.sql')
+      return !/create temporary table/i.test(m) && (m.match(/^with legacy as \(/gm) || []).length === 2 })())
+    // ── the estimate ──
+    const PASS_USAGE = { input_tokens: 30000, output_tokens: 2500, server_tool_use: { web_search_requests: 1, web_fetch_requests: 3 } }
+    const CLASS_USAGE = { input_tokens: 8000, output_tokens: 300, server_tool_use: { web_search_requests: 0, web_fetch_requests: 1 } }
+    const H = 'claude-haiku-5-5'
+    const perCheck = L.scaleTokens(L.costOf(PASS_USAGE, H, FX.PRICES), 0.5, FX.PRICES).usd + 4 * L.costOf(FX.USAGE.verifier, H, FX.PRICES).usd
+    const perClass = L.scaleTokens(L.costOf(CLASS_USAGE, H, FX.PRICES), 0.5, FX.PRICES).usd
+    const CHECKS = 155, CLASSIFY = 70, OVER = 1.2
+    const total = (CHECKS * perCheck + CLASSIFY * perClass) * OVER
+    console.log(`      estimate: a check $${perCheck.toFixed(4)} (batch extractor + 4 second checks), a classification read $${perClass.toFixed(5)}; ${CHECKS} checks + ${CLASSIFY} reads × 1.2 = $${total.toFixed(2)}`)
+    t('the report\'s estimate: ≈ $0.0187 a check, ≈ $0.0005 a classification read, the full pass ≈ $3.5 (155 checks + 70 reads, +20%)', Math.abs(perCheck - 0.018725) < 0.0002 && Math.abs(perClass - 0.000475) < 0.00005 && Math.abs(total - 3.52) < 0.05, { perCheck, perClass, total })
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} competitor-check-1: ${pass} passed, ${fail} failed`)

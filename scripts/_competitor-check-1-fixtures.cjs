@@ -22,7 +22,10 @@ const PRICES = {
   },
 }
 const SETTINGS = (over = {}) => ({ paused: false, dailyCapUsd: 8, monthlyCapUsd: 90, deepPerDay: 15, checkIntervalDays: 90, deepRequestedAt: null,
-  extractorModel: 'claude-sonnet-5-5', verifierModel: 'claude-sonnet-5-5', prices: PRICES, deepCountry: null, deepQueue: [], ...over })
+  extractorModel: 'claude-sonnet-5-5', verifierModel: 'claude-sonnet-5-5', prices: PRICES, deepCountry: null, deepQueue: [],
+  // competitor-check-3: the quick pass's settings (its defaults: Haiku, 40 a day, 3 pages, 1 search, 6,000-token pages; not started).
+  pass: { extractorModel: 'claude-haiku-5-5', verifierModel: 'claude-haiku-5-5', perDay: 40, requestedAt: null, country: null, maxFetches: 3, maxSearches: 1, maxPageTokens: 6000, batch: null },
+  ...over })
 /** competitor-check-2: country_settings as the checker reads them — DE has a comparison page (admin), the rest do not. */
 const COUNTRIES = [['DE', 'admin'], ['AT', 'off'], ['CZ', 'off'], ['PL', 'off'], ['FR', 'off'], ['NL', 'off'], ['GB', 'off'], ['IE', 'off'], ['US', 'off', false]]
   .map(([code, comparisonStatus, enabled = true]) => ({ code, enabled, comparisonStatus }))
@@ -77,7 +80,9 @@ const competitor = (i, over = {}) => ({
 function fakeApi(script, calls = []) {
   return async params => {
     calls.push(JSON.parse(JSON.stringify(params)))   // a copy: the checker keeps appending to its messages array
-    const user = typeof params.messages[0].content === 'string' ? params.messages[0].content : ''
+    // competitor-check-3: a quick-pass message is an array of text blocks (the cached feature list, then the competitor).
+    const first = params.messages[0].content
+    const user = typeof first === 'string' ? first : Array.isArray(first) ? first.map(b => (b && b.text) || '').join('\n') : ''
     const isVerifier = params.tools.some(t => t.name === 'record_verdict')
     const turn = params.messages.filter(m => m.role === 'assistant').length
     if (isVerifier) {
@@ -119,11 +124,14 @@ function fakeApi(script, calls = []) {
 /** An in-memory CheckerStore that records every call. competitor-check-2: `countries` (country_settings) and the deep
  *  check's moves (setDeepCountry, kept in `deepMoves` and applied on top of `settings()`). */
 function memoryCheckerStore({ settings, competitors, priorRuns = [], countries = COUNTRIES }) {
-  const calls = [], runs = [...priorRuns], findings = [], schedule = [], deepMoves = []
+  const calls = [], runs = [...priorRuns], findings = [], schedule = [], deepMoves = [], passBatches = []
   let n = 0
+  // competitor-check-3: the quick pass's batch in flight (setPassBatch) is applied on top of settings(), like deepMoves.
+  const withMoves = s => { const t = deepMoves.length ? { ...s, deepCountry: deepMoves[deepMoves.length - 1] } : s; return passBatches.length ? { ...t, pass: { ...t.pass, batch: passBatches[passBatches.length - 1] } } : t }
   return {
-    calls, runs, findings, schedule, deepMoves,
-    async settings() { calls.push(['settings']); return deepMoves.length ? { ...settings(), deepCountry: deepMoves[deepMoves.length - 1] } : settings() },
+    calls, runs, findings, schedule, deepMoves, passBatches,
+    async settings() { calls.push(['settings']); return withMoves(settings()) },
+    async setPassBatch(b) { calls.push(['setPassBatch', b && b.id]); passBatches.push(b) },
     async features() { calls.push(['features']); return CHECK_FEATURES.map(f => ({ ...f })) },
     async countries() { calls.push(['countries']); return countries.map(c => ({ ...c })) },
     async setDeepCountry(code) { calls.push(['setDeepCountry', code]); deepMoves.push(code) },
@@ -138,7 +146,7 @@ function memoryCheckerStore({ settings, competitors, priorRuns = [], countries =
     async createRun(row) { calls.push(['createRun', row]); const r = { id: `run-${++n}`, cost_usd: 0, competitors_checked: 0, ...row }; runs.push(r); return r.id },
     async updateRun(id, cols) { calls.push(['updateRun', id, cols]); Object.assign(runs.find(r => r.id === id), cols) },
     async insertFindings(rows) { calls.push(['insertFindings', rows.length]); findings.push(...rows) },
-    async setSchedule(id, cols) { calls.push(['setSchedule', id, cols]); schedule.push([id, cols]); const c = competitors.find(x => x.id === id); if (c) for (const [k, v] of Object.entries(cols)) c[{ next_check_at: 'nextCheckAt', last_checked_at: 'lastCheckedAt', deep_checked_at: 'deepCheckedAt', check_requested_at: 'checkRequestedAt', deep_checked_in: 'deepCheckedIn' }[k]] = v },
+    async setSchedule(id, cols) { calls.push(['setSchedule', id, cols]); schedule.push([id, cols]); const c = competitors.find(x => x.id === id); if (c) for (const [k, v] of Object.entries(cols)) c[{ next_check_at: 'nextCheckAt', last_checked_at: 'lastCheckedAt', deep_checked_at: 'deepCheckedAt', check_requested_at: 'checkRequestedAt', deep_checked_in: 'deepCheckedIn', pass_state: 'passState' }[k]] = v },
   }
 }
 

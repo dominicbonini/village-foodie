@@ -5,6 +5,7 @@
 //   POST  { action: 'accept' | 'reject', id } · { action: 'accept_unchanged', ids } · { action: 'settings', fields }
 //         { action: 'pause' | 'resume' } · { action: 'start_deep', country: '<code>' | 'ALL' } · { action: 'check_now', competitorId }
 //         (competitor-check-2: the deep check runs country by country; Settings also takes deep_queue)
+//         { action: 'start_pass', country: '<code>' | 'ALL' } (competitor-check-3: the quick pass; Settings takes its fields)
 //
 // 🔴 ADMIN ONLY, SERVICE ROLE, SERVER ONLY — the pricing-check route's guard (lib/auth/admin.ts adminUser), anyone else
 // gets a 404. Nothing here calls the Claude API: the checker runs in GitHub Actions; this route only reviews what it found.
@@ -12,7 +13,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminUser } from '@/lib/auth/admin'
 import { servicePricingStore } from '@/lib/admin/pricing-check-store'
 import { serviceCheckStore } from '@/lib/admin/competitor-check-store'
-import { acceptFinding, rejectFinding, acceptAllUnchanged, settingsCols, loadChecks, startDeep } from '@/lib/admin/competitor-check-actions'
+import { acceptFinding, rejectFinding, acceptAllUnchanged, settingsCols, loadChecks, startDeep, startPass } from '@/lib/admin/competitor-check-actions'
 import type { ActionResult } from '@/lib/admin/pricing-check-actions'
 import { featureWords } from '@/lib/comparison-features'
 import { featuresOrFile } from '@/lib/comparison-features-file'
@@ -72,6 +73,7 @@ export async function POST(req: NextRequest) {
       }
       case 'pause': case 'resume': return NextResponse.json({ settings: await serviceCheckStore.updateSettings({ paused: body.action === 'pause', updated_at: at, updated_by: user.id }) })
       case 'start_deep': return reply(await startDeep(serviceCheckStore, body.country, stamp))
+      case 'start_pass': return reply(await startPass(serviceCheckStore, body.country, stamp))   // competitor-check-3
       case 'check_now': {
         const cid = typeof body.competitorId === 'string' ? body.competitorId : ''
         if (!cid) return NextResponse.json({ error: 'Which competitor?' }, { status: 400 })

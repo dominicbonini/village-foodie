@@ -247,7 +247,14 @@ export function settingsCols(f: Row, enabledCodes?: readonly string[]): { ok: tr
     cols.deep_queue = q
   }
   if ('paused' in f) { if (typeof f.paused !== 'boolean') return { ok: false, error: 'Paused must be yes or no.' }; cols.paused = f.paused }
-  for (const k of ['extractor_model', 'verifier_model']) if (k in f) { if (typeof f[k] !== 'string' || !MODEL_ID.test(f[k] as string)) return { ok: false, error: 'A model must be a Claude model id, e.g. claude-sonnet-5-5.' }; cols[k] = f[k] }
+  for (const k of ['extractor_model', 'verifier_model', 'pass_extractor_model', 'pass_verifier_model']) if (k in f) { if (typeof f[k] !== 'string' || !MODEL_ID.test(f[k] as string)) return { ok: false, error: 'A model must be a Claude model id, e.g. claude-sonnet-5-5.' }; cols[k] = f[k] }
+  // competitor-check-3: the quick pass's share and its hard limits per check.
+  for (const [k, min, max, label] of [['pass_per_day', 0, 500, 'Quick-pass checks per day'], ['pass_max_fetches', 1, 10, 'Pages per check'], ['pass_max_searches', 0, 5, 'Searches per check'], ['pass_max_page_tokens', 1000, 20000, 'Page length (tokens)']] as const) {
+    if (!(k in f)) continue
+    const v = f[k]
+    if (typeof v !== 'number' || !Number.isInteger(v) || v < min || v > max) return { ok: false, error: `${label} must be a whole number from ${min} to ${max}.` }
+    cols[k] = v
+  }
   if ('prices' in f) {
     const p = f.prices as Row
     const ok = p && typeof p === 'object' && typeof p.web_search_per_search === 'number' && p.web_search_per_search >= 0 && p.models && typeof p.models === 'object'
@@ -256,7 +263,7 @@ export function settingsCols(f: Row, enabledCodes?: readonly string[]): { ok: tr
     cols.prices = p
   }
   const models = (cols.prices ?? null) as Row | null
-  for (const k of ['extractor_model', 'verifier_model']) if (cols[k] && models && !(models.models as Row)[cols[k] as string]) return { ok: false, error: `Add a price for ${cols[k]} before choosing it.` }
+  for (const k of ['extractor_model', 'verifier_model', 'pass_extractor_model', 'pass_verifier_model']) if (cols[k] && models && !(models.models as Row)[cols[k] as string]) return { ok: false, error: `Add a price for ${cols[k]} before choosing it.` }
   if (!Object.keys(cols).length) return { ok: false, error: 'Nothing to save.' }
   return { ok: true, cols }
 }
@@ -265,7 +272,7 @@ export function settingsCols(f: Row, enabledCodes?: readonly string[]): { ok: tr
 async function withCountries(store: CheckAdminStore): Promise<Row[]> {
   const [competitors, plans, countries] = await Promise.all([store.competitors(), store.planCountries(), store.countries()])
   const allCodes = countries.filter(c => c.enabled).map(c => c.code)
-  return competitors.map(c => ({ ...c, countries: countriesOf(String(c.lifecycle ?? 'active'), plans.filter(p => p.competitor_id === c.id).map(p => p.country_code), c.notes,
+  return competitors.map(c => ({ ...c, pass_state: c.pass_state ?? {}, countries: countriesOf(String(c.lifecycle ?? 'active'), plans.filter(p => p.competitor_id === c.id).map(p => p.country_code), c.notes,
     { focus: (c.focus as string | null) ?? null, notIn: Array.isArray(c.not_in_countries) ? c.not_in_countries as string[] : [], allCodes }) }))
 }
 
@@ -282,6 +289,18 @@ export async function loadChecks(store: CheckAdminStore, today: string) {
       .sort((a, b) => a.name.localeCompare(b.name)),
     overview: overviewOf({ settings, competitors, runs, findings, today, countries }),
   }
+}
+
+/** competitor-check-3: "Start quick pass" — every country in the queue's order ('ALL'), or from one switched-on country
+ *  onwards. Sets pass_requested_at (every competitor and country is due again) and pass_country. */
+export async function startPass(store: CheckAdminStore, choice: unknown, stamp: Stamp): Promise<ActionResult<{ settings: Row }>> {
+  const settings = await store.settings()
+  if (!settings) return refuse(503, 'Run supabase/migrations/20261043_competitor_check_1.sql first.')
+  if (!('pass_requested_at' in settings)) return refuse(503, 'Run supabase/migrations/20261049_competitor_check_3.sql first — it adds the quick pass.')
+  const on = (await store.countries()).filter(c => c.enabled).map(c => c.code)
+  if (choice !== 'ALL' && !(typeof choice === 'string' && on.includes(choice))) return refuse(400, 'Pick a switched-on country, or All countries.')
+  const saved = await store.updateSettings({ pass_requested_at: stamp.at, pass_country: choice === 'ALL' ? null : choice, updated_at: stamp.at, updated_by: stamp.by })
+  return { ok: true, data: { settings: saved } }
 }
 
 /** competitor-check-2: "Start deep check" — one switched-on country (it starts there and goes on through the queue), or

@@ -97,6 +97,13 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
     if (window.confirm(`Start a deep check of ${what}? Every competitor there is checked again in depth — about ${o.deep.perDay} a day, within the caps. The next scheduled run starts it.`))
       post('deep', { action: 'start_deep', country: deepPick }, 'Deep check started. The next scheduled run picks it up.')
   }
+  // competitor-check-3: the quick pass — every competitor in each of its countries, cheaply, from the picked country onwards.
+  const passReady = 'pass_requested_at' in data.settings   // 20261049 has run
+  const startPass = () => {
+    const what = deepPick === 'ALL' ? 'every competitor in every country it sells in' : `every competitor in ${countryName(deepPick)} and the countries after it in the order`
+    if (window.confirm(`Start a quick pass of ${what}? Each check reads a few pages on ${String(data.settings.pass_extractor_model ?? 'Haiku')} — about ${String(data.settings.pass_per_day ?? 40)} a day, within the caps. The next scheduled run starts it.`))
+      post('pass', { action: 'start_pass', country: deepPick }, 'Quick pass started. The next scheduled run submits its first share.')
+  }
 
   return (
     <div className="space-y-3" data-automatic-checks>
@@ -117,13 +124,29 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
           </label>
           <button type="button" disabled={busy !== null || !deepReady} onClick={startDeep} title={deepReady ? undefined : 'Run supabase/migrations/20261045_competitor_check_2.sql first'}
             className="whitespace-nowrap rounded-xl bg-orange-600 px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50" data-start-deep>Start deep check</button>
+          <button type="button" disabled={busy !== null || !passReady} onClick={startPass} title={passReady ? undefined : 'Run supabase/migrations/20261049_competitor_check_3.sql first'}
+            className="whitespace-nowrap rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50" data-start-pass>Start quick pass</button>
         </div>
       </div>
 
       {notice && <div className={`rounded-xl px-3 py-2 text-sm font-semibold ${notice.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`} role="status">{notice.text}</div>}
 
       {/* tiles */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4" data-check-tiles>
+      <div className={`grid grid-cols-1 gap-2 sm:grid-cols-2 ${o.pass ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}`} data-check-tiles>
+        {o.pass && (
+          <div className={CARD} data-tile="pass">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Quick pass</p>
+            {o.pass.requested ? <>
+              <p className="mt-1 text-xl font-black text-slate-900">{o.pass.done} of {o.pass.total} <span className="text-sm font-semibold text-slate-500">checks</span></p>
+              <div className="mt-1.5 h-1.5 rounded-full bg-slate-100"><div className="h-1.5 rounded-full bg-slate-900" style={{ width: `${o.pass.total ? (o.pass.done / o.pass.total) * 100 : 0}%` }} /></div>
+              <p className="mt-1 text-xs text-slate-500" data-pass-line>About {o.pass.perDay} a day · cost so far {usd(o.pass.costUsd)} · estimated total {usd(o.pass.estimateUsd)}</p>
+              {o.pass.batch ? <p className="text-xs text-slate-500">A batch of {o.pass.batch.items} is out — collected next run</p> : o.pass.finishOn ? <p className="text-xs text-slate-500">Done by about {day(o.pass.finishOn)}</p> : null}
+            </> : <>
+              <p className="mt-1 text-xl font-black text-slate-900">Not running</p>
+              <p className="mt-1 text-xs text-slate-500">Pick a country (or All countries) and press Start quick pass.</p>
+            </>}
+          </div>
+        )}
         <div className={CARD} data-tile="deep">
           {o.deep.country ? <>
             <p className="truncate text-[11px] font-bold uppercase tracking-wide text-slate-500">Deep check · {countryName(o.deep.country)}</p>
@@ -257,6 +280,9 @@ function SettingsModal({ settings, queue, busy, onClose, onSave }: { settings: R
     paused: settings.paused === true, daily: String(settings.daily_cap_usd), monthly: String(settings.monthly_cap_usd), deep: String(settings.deep_per_day),
     interval: String(settings.check_interval_days), extractor: String(settings.extractor_model), verifier: String(settings.verifier_model),
     prices: JSON.stringify(prices, null, 2), order: queue.stored.join(', '),
+    // competitor-check-3: the quick pass's own models, share and hard limits.
+    passExtractor: String(settings.pass_extractor_model ?? 'claude-haiku-5-5'), passVerifier: String(settings.pass_verifier_model ?? 'claude-haiku-5-5'),
+    passPerDay: String(settings.pass_per_day ?? 40), passFetches: String(settings.pass_max_fetches ?? 3), passSearches: String(settings.pass_max_searches ?? 1), passPage: String(settings.pass_max_page_tokens ?? 6000),
   })
   const [err, setErr] = useState<string | null>(null)
   const save = () => {
@@ -265,7 +291,9 @@ function SettingsModal({ settings, queue, busy, onClose, onSave }: { settings: R
     // competitor-check-2: the deep check's country order (empty = the default); only once 20261045 has added the column.
     const order = f.order.split(/[\s,]+/).map(c => c.trim().toUpperCase()).filter(Boolean)
     onSave({ paused: f.paused, daily_cap_usd: Number(f.daily), monthly_cap_usd: Number(f.monthly), deep_per_day: Number(f.deep), check_interval_days: Number(f.interval),
-      extractor_model: f.extractor.trim(), verifier_model: f.verifier.trim(), prices: p, ...('deep_queue' in settings ? { deep_queue: order } : {}) })
+      extractor_model: f.extractor.trim(), verifier_model: f.verifier.trim(), prices: p, ...('deep_queue' in settings ? { deep_queue: order } : {}),
+      ...('pass_requested_at' in settings ? { pass_extractor_model: f.passExtractor.trim(), pass_verifier_model: f.passVerifier.trim(), pass_per_day: Number(f.passPerDay),
+        pass_max_fetches: Number(f.passFetches), pass_max_searches: Number(f.passSearches), pass_max_page_tokens: Number(f.passPage) } : {}) })
   }
   const label = 'mb-1 block text-xs font-semibold text-slate-600'
   return (
@@ -278,6 +306,16 @@ function SettingsModal({ settings, queue, busy, onClose, onSave }: { settings: R
           <label><span className={label}>Monthly cap (USD)</span><input className={BOX} inputMode="decimal" value={f.monthly} onChange={e => setF({ ...f, monthly: e.target.value })} /></label>
           <label><span className={label}>Deep checks per day</span><input className={BOX} inputMode="numeric" value={f.deep} onChange={e => setF({ ...f, deep: e.target.value })} /></label>
           <label><span className={label}>Check every (days)</span><input className={BOX} inputMode="numeric" value={f.interval} onChange={e => setF({ ...f, interval: e.target.value })} /></label>
+          {'pass_requested_at' in settings && <>
+            <p className="col-span-2 mt-1 text-xs font-bold uppercase tracking-wide text-slate-500" data-pass-settings>Quick pass</p>
+            <label><span className={label}>Pass reading model</span><input className={BOX} value={f.passExtractor} onChange={e => setF({ ...f, passExtractor: e.target.value })} /></label>
+            <label><span className={label}>Pass second-check model</span><input className={BOX} value={f.passVerifier} onChange={e => setF({ ...f, passVerifier: e.target.value })} /></label>
+            <label><span className={label}>Pass checks per day</span><input className={BOX} inputMode="numeric" value={f.passPerDay} onChange={e => setF({ ...f, passPerDay: e.target.value })} /></label>
+            <label><span className={label}>Pages per check</span><input className={BOX} inputMode="numeric" value={f.passFetches} onChange={e => setF({ ...f, passFetches: e.target.value })} /></label>
+            <label><span className={label}>Searches per check</span><input className={BOX} inputMode="numeric" value={f.passSearches} onChange={e => setF({ ...f, passSearches: e.target.value })} /></label>
+            <label><span className={label}>Page length (tokens)</span><input className={BOX} inputMode="numeric" value={f.passPage} onChange={e => setF({ ...f, passPage: e.target.value })} /></label>
+            <p className="col-span-2 mt-1 text-xs font-bold uppercase tracking-wide text-slate-500">Deep check</p>
+          </>}
           <label><span className={label}>Reading model</span><input className={BOX} value={f.extractor} onChange={e => setF({ ...f, extractor: e.target.value })} /></label>
           <label><span className={label}>Second-check model</span><input className={BOX} value={f.verifier} onChange={e => setF({ ...f, verifier: e.target.value })} /></label>
           {'deep_queue' in settings && <label className="col-span-2"><span className={label}>Deep check order (country codes; empty = the default)</span>

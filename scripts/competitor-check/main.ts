@@ -2,7 +2,9 @@
 // docs/competitor-check-1-report.md). Run by .github/workflows/competitor-check.yml through scripts/competitor-check/run.mjs
 // (which bundles this file with esbuild so the "@/" imports resolve).
 //
-//   node scripts/competitor-check/run.mjs --mode scheduled|routine|deep|single [--competitor <id or name>] [--limit N] [--dry-run]
+//   node scripts/competitor-check/run.mjs --mode scheduled|routine|deep|single|pass [--competitor <id or name>] [--limit N] [--dry-run]
+// competitor-check-3: mode pass runs the quick pass's share (collect the batch in flight, submit the next); the nightly
+// 'scheduled' job runs it first, then the deep and routine shares.
 //
 // Environment (NAMES only here): the Claude API login is Workload Identity Federation (competitor-check-1c) — the SDK reads
 // ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID, ANTHROPIC_WORKSPACE_ID and the
@@ -24,8 +26,8 @@ function arg(name: string): string | null {
 const has = (name: string) => process.argv.includes(`--${name}`)
 
 async function main() {
-  const mode = (arg('mode') ?? 'scheduled') as 'scheduled' | 'routine' | 'deep' | 'single'
-  if (!['scheduled', 'routine', 'deep', 'single'].includes(mode)) throw new Error(`--mode must be scheduled, routine, deep or single (got "${mode}")`)
+  const mode = (arg('mode') ?? 'scheduled') as 'scheduled' | 'routine' | 'deep' | 'single' | 'pass'
+  if (!['scheduled', 'routine', 'deep', 'single', 'pass'].includes(mode)) throw new Error(`--mode must be scheduled, routine, deep, single or pass (got "${mode}")`)
   const competitor = arg('competitor')
   if (mode === 'single' && !competitor) throw new Error('--mode single needs --competitor <id or name>')
   const limitArg = arg('limit')
@@ -44,6 +46,12 @@ async function main() {
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } })
   const deps: CheckerDeps = {
     api: params => anthropic.beta.messages.create(params as never) as never,
+    // competitor-check-3: the Message Batches API — the quick pass submits its share as one batch (50% off tokens).
+    batch: {
+      create: requests => anthropic.beta.messages.batches.create({ requests } as never) as never,
+      retrieve: id => anthropic.beta.messages.batches.retrieve(id) as never,
+      results: id => anthropic.beta.messages.batches.results(id) as never,
+    },
     store: supabaseCheckerStore(db),
     now: () => new Date(),
     log: line => console.log(line),
