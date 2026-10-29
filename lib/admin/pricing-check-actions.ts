@@ -40,7 +40,7 @@ export interface PricingStore {
   insertEntry(row: Row): Promise<Row>
   updateEntry(id: string, cols: Row): Promise<Row | null>
   deleteEntry(id: string): Promise<void>
-  /** Which of these ids already exist in the table (the German import's once-only check). */
+  /** Which of these ids already exist in the table. */
   existingIds(table: 'competitors' | 'plans' | 'benchmarks' | 'entries', ids: string[]): Promise<string[]>
 }
 
@@ -236,77 +236,22 @@ export function planProblem(cols: Row): string | null {
 }
 
 // ── reads ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-export async function loadState(store: PricingStore, compare?: ComparePayload | null): Promise<ActionResult<{
+export async function loadState(store: PricingStore): Promise<ActionResult<{
   empty: boolean; importable: boolean; competitors: Competitor[]; plans: CompetitorPlan[]; benchmarks: Benchmark[]
-  entries: ComparisonEntry[]; entriesReady: boolean; compareImportable: boolean
+  entries: ComparisonEntry[]; entriesReady: boolean
 }>> {
   const counts = await store.counts()
   const empty = counts.competitors === 0 && counts.plans === 0 && counts.benchmarks === 0
   const all = await store.listAll()
-  // compare-de-1: the comparison entries, and whether the German research can still be imported (its plan ids not yet in).
+  // compare-de-1: the comparison entries. (competitor-check-2: the German research is no longer imported from here — the
+  // nightly workflow's first step imports it, lib/data-import; the tab shows that line.)
   const entriesReady = await store.entriesReady()
   const entries = entriesReady ? (await store.listEntries()).map(entryOut) : []
-  const entryIds = (compare?.entries ?? []).map(e => String(e.id))
-  const compareImportable = !!compare && !empty && entryIds.length > 0 && (!entriesReady || (await store.existingIds('entries', entryIds)).length === 0)
   return { ok: true, data: {
     empty, importable: empty && counts.research === 0,
     competitors: all.competitors.map(competitorOut), plans: all.plans.map(planOut), benchmarks: all.benchmarks.map(benchmarkOut),
-    entries, entriesReady, compareImportable,
+    entries, entriesReady,
   } }
-}
-
-// ── compare-de-1: the German comparison research, imported once ─────────────────────────────────────────────────────────
-/** data/compare-de-1/competitors.json — the pricing-check shape (snake_case rows) plus the comparison entries. Every id is
- *  fixed in the file, so "already imported" is simply: any of its entry ids is already in comparison_entries. */
-export interface ComparePayload { id: string; checked_on: string; competitors: Row[]; plans: Row[]; entries: Row[] }
-
-/** The German research: competitors matched BY NAME (an existing one keeps its id and only its 'unknown' features and empty
- *  texts are filled in), then its plans — except one the competitor already has, current, under the same name in the same
- *  country (the earlier research's row stays; no duplicate) — and its comparison entries, pointed at whichever plan row
- *  is the one in the table. All source 'research', all unverified. Refused when any of the file's entries is already in,
- *  when the file is not in the expected shape, or while 20261042 has not run. */
-export async function importCompareResearch(store: PricingStore, payload: ComparePayload): Promise<ActionResult<{ competitors: number; updated: number; plans: number; entries: number }>> {
-  if (!payload || !Array.isArray(payload.competitors) || !Array.isArray(payload.plans) || !Array.isArray(payload.entries)
-    || !payload.plans.every(p => p.source === 'research' && !p.verified_at) || !payload.entries.every(e => !e.verified_at))
-    return refuse(500, 'The German research file is not in the expected shape. Nothing was changed.')
-  if (!(await store.entriesReady())) return refuse(503, 'Run supabase/migrations/20261042_compare_de_1.sql first, then reload. Nothing was changed.')
-  if ((await store.existingIds('entries', payload.entries.map(e => String(e.id)))).length) return refuse(409, 'The German comparison research has already been imported. Nothing was changed.')
-  const idOf = new Map<string, string>()
-  let added = 0, updated = 0
-  const FILL = ['pre_orders', 'whatsapp', 'social_posts', 'own_domain', 'ios_app', 'android_app', 'capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck']
-  for (const c of payload.competitors) {
-    const existing = await store.findCompetitorByName(String(c.name))
-    if (existing) {
-      const cols: Row = {}
-      for (const col of FILL) if ((existing[col] ?? 'unknown') === 'unknown' && c[col] && c[col] !== 'unknown') cols[col] = c[col]
-      for (const col of ['payment_methods', 'min_term', 'website', 'focus']) if (existing[col] == null && c[col] != null) cols[col] = c[col]
-      if (Object.keys(cols).length) { cols.features_checked_on = c.features_checked_on ?? payload.checked_on; await store.updateCompetitor(String(existing.id), cols); updated++ }
-      idOf.set(String(c.id), String(existing.id))
-    } else {
-      const { features_verified_at: _skip, ...row } = c   // eslint-disable-line @typescript-eslint/no-unused-vars
-      await store.insertCompetitor({ ...row, features_verified_at: null })
-      idOf.set(String(c.id), String(c.id)); added++
-    }
-  }
-  const current = (await store.listAll()).plans.filter(p => p.superseded_at == null)
-  const key = (cid: unknown, cc: unknown, name: unknown) => `${cid}|${cc}|${String(name).trim().toLowerCase()}`
-  const have = new Map(current.map(p => [key(p.competitor_id, p.country_code, p.plan_name), String(p.id)]))
-  const planIdOf = new Map<string, string>()
-  const fresh: Row[] = []
-  for (const p of payload.plans) {
-    const cid = idOf.get(String(p.competitor_id)) ?? String(p.competitor_id)
-    const existing = have.get(key(cid, p.country_code, p.plan_name))
-    if (existing) { planIdOf.set(String(p.id), existing); continue }
-    planIdOf.set(String(p.id), String(p.id))
-    fresh.push({ ...p, competitor_id: cid, verified_at: null, verified_by: null })
-  }
-  const n = fresh.length ? await store.insertMany('plans', fresh) : 0
-  let entries = 0
-  for (const e of payload.entries) {
-    await store.insertEntry({ ...e, competitor_id: idOf.get(String(e.competitor_id)) ?? e.competitor_id,
-      primary_plan_id: e.primary_plan_id ? planIdOf.get(String(e.primary_plan_id)) ?? null : null, verified_at: null, verified_by: null }); entries++
-  }
-  return { ok: true, data: { competitors: added, updated, plans: n, entries } }
 }
 
 // ── the one-time import ─────────────────────────────────────────────────────────────────────────────────────────────

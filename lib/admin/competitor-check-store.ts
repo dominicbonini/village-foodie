@@ -12,7 +12,7 @@ const fail = (what: string, e: { message: string }): never => { throw new Error(
 /** The admin's competitor writes on this tab — never a price, a feature value or a verification (those go through the
  *  Pricing check store, in acceptFinding). */
 const ADMIN_COLS = ['check_requested_at', 'check_urls', 'check_interval_days', 'lifecycle', 'focus'] as const
-const COMPETITOR_COLS = 'id, name, website, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, features_verified_at'
+const COMPETITOR_COLS = 'id, name, website, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, features_verified_at, notes'
 
 export const serviceCheckStore: CheckAdminStore = {
   async settings() {
@@ -70,5 +70,18 @@ export const serviceCheckStore: CheckAdminStore = {
     const { data, error } = await (await db()).from('competitor_plans').update({ checked_on: date }).eq('id', id).is('superseded_at', null).select('id')
     if (error) fail('save checked date', error)
     return (data ?? []).length === 1
+  },
+  // competitor-check-2: read only — the Deep check picker and the default queue.
+  async countries() {
+    const s = await db()
+    let r = await s.from('country_settings').select('country_code, name, enabled, comparison_status')
+    if (r.error && missing(r.error)) r = await s.from('country_settings').select('country_code, name, enabled') as typeof r   // before 20261042
+    if (r.error) fail('read countries', r.error)
+    return ((r.data ?? []) as Row[]).map(c => ({ code: String(c.country_code), name: String(c.name ?? c.country_code), enabled: c.enabled === true, comparisonStatus: (c.comparison_status as string | null) ?? null }))
+  },
+  async planCountries() {
+    const { data, error } = await (await db()).from('competitor_plans').select('competitor_id, country_code').is('superseded_at', null)
+    if (error) { if (missing(error)) return []; fail('read plan countries', error) }
+    return (data ?? []) as { competitor_id: string; country_code: string }[]
   },
 }

@@ -3,7 +3,8 @@
 //   GET   settings, the tiles (lib/competitor-check/overview.ts), the findings (every pending one + recent reviewed ones),
 //         recent runs, and the competitors' names
 //   POST  { action: 'accept' | 'reject', id } · { action: 'accept_unchanged', ids } · { action: 'settings', fields }
-//         { action: 'pause' | 'resume' } · { action: 'start_deep' } · { action: 'check_now', competitorId }
+//         { action: 'pause' | 'resume' } · { action: 'start_deep', country: '<code>' | 'ALL' } · { action: 'check_now', competitorId }
+//         (competitor-check-2: the deep check runs country by country; Settings also takes deep_queue)
 //
 // 🔴 ADMIN ONLY, SERVICE ROLE, SERVER ONLY — the pricing-check route's guard (lib/auth/admin.ts adminUser), anyone else
 // gets a 404. Nothing here calls the Claude API: the checker runs in GitHub Actions; this route only reviews what it found.
@@ -11,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminUser } from '@/lib/auth/admin'
 import { servicePricingStore } from '@/lib/admin/pricing-check-store'
 import { serviceCheckStore } from '@/lib/admin/competitor-check-store'
-import { acceptFinding, rejectFinding, acceptAllUnchanged, settingsCols, loadChecks } from '@/lib/admin/competitor-check-actions'
+import { acceptFinding, rejectFinding, acceptAllUnchanged, settingsCols, loadChecks, startDeep } from '@/lib/admin/competitor-check-actions'
 import type { ActionResult } from '@/lib/admin/pricing-check-actions'
 
 export const dynamic = 'force-dynamic'
@@ -24,8 +25,10 @@ async function guarded(req: NextRequest, run: (user: { id: string }) => Promise<
   if (!user) return notFound()
   try { return await run(user) }
   catch (e) {
-    console.error('[admin/competitor-check]', e instanceof Error ? e.message : e)
-    return NextResponse.json({ error: 'That could not be done just now. Nothing was changed — try again in a moment.' }, { status: 500 })
+    // competitor-check-2: say WHAT failed (the store names the step and the database's reason), not "try again".
+    const why = e instanceof Error ? e.message.replace(/^\[(competitor-check|pricing-check)-store\]\s*/, '') : String(e)
+    console.error('[admin/competitor-check]', why)
+    return NextResponse.json({ error: `That failed — ${why}. Reload to see what was saved.` }, { status: 500 })
   }
 }
 
@@ -52,14 +55,15 @@ export async function POST(req: NextRequest) {
         return reply(await acceptAllUnchanged(servicePricingStore, serviceCheckStore, ids, stamp))
       }
       case 'settings': {
-        const r = settingsCols((body.fields ?? {}) as Record<string, unknown>)
+        const fields = (body.fields ?? {}) as Record<string, unknown>
+        const r = settingsCols(fields, 'deep_queue' in fields ? (await serviceCheckStore.countries()).filter(c => c.enabled).map(c => c.code) : undefined)
         if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 })
         const saved = await serviceCheckStore.updateSettings({ ...r.cols, updated_at: at, updated_by: user.id })
         if ('check_interval_days' in r.cols) await serviceCheckStore.setAllIntervals(Number(r.cols.check_interval_days))
         return NextResponse.json({ settings: saved })
       }
       case 'pause': case 'resume': return NextResponse.json({ settings: await serviceCheckStore.updateSettings({ paused: body.action === 'pause', updated_at: at, updated_by: user.id }) })
-      case 'start_deep': return NextResponse.json({ settings: await serviceCheckStore.updateSettings({ deep_requested_at: at, updated_at: at, updated_by: user.id }) })
+      case 'start_deep': return reply(await startDeep(serviceCheckStore, body.country, stamp))
       case 'check_now': {
         const cid = typeof body.competitorId === 'string' ? body.competitorId : ''
         if (!cid) return NextResponse.json({ error: 'Which competitor?' }, { status: 400 })

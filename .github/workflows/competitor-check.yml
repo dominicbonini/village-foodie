@@ -12,6 +12,11 @@ name: Competitor check
 # ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_SERVICE_ACCOUNT_ID, ANTHROPIC_WORKSPACE_ID.
 # SECRETS (names only): NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (the scraper's), and — for the summary
 # email, optional — BREVO_API_KEY and EMAIL_FROM_ADDRESS (without them the email is skipped with a warning).
+# competitor-check-2 (29 October 2026, docs/competitor-check-2-report.md):
+#   • the FIRST step imports any registered data file not yet imported in its current version (lib/data-import) — no API
+#     call, no login; a failed import is a red cross, and the check still runs;
+#   • a failed Claude API login stops the run at once and exits non-zero, as does a run in which every competitor failed;
+#   • the token refresh logs each re-fetch with a time and a running count, printed at the end of the job.
 on:
   schedule:
     - cron: '10 2 * * *'          # daily, 02:10 UTC — clear of the 03:30 prune and the 06:00 discovery scrape
@@ -68,11 +73,21 @@ jobs:
       - run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: 'true'
+      # Before any API call and with no Claude login: data files (data/compare-de-1/competitors.json first) are imported
+      # once per version — public.data_imports records each file's sha256.
+      - name: Import new data files
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/competitor-check/run.mjs scripts/data-import/main.ts
       # The GitHub OIDC token for the Claude API login. A token lasts about 5 minutes and can be exchanged only once, so a
       # background loop re-fetches it every 60 s for the rest of the job; the SDK re-reads the file at each refresh. Each
       # fetch writes a temporary file and renames it, so the SDK never reads a half-written token; a failed re-fetch
       # keeps the last good one.
+      # !cancelled(): the check runs even when the import above failed (the job still ends with a red cross).
       - name: Get the GitHub OIDC token
+        id: oidc
+        if: ${{ !cancelled() }}
         run: |
           set -euo pipefail
           fetch_jwt() {
@@ -80,9 +95,12 @@ jobs:
               && [ -s /tmp/gha-jwt.next ] && [ "$(cat /tmp/gha-jwt.next)" != "null" ] && mv /tmp/gha-jwt.next /tmp/gha-jwt
           }
           fetch_jwt || { echo "Could not get a GitHub OIDC token (is id-token: write set?)"; exit 1; }
+          echo "$(date -u +%FT%TZ) token fetched (0)" > /tmp/gha-jwt-refresh.log
           export -f fetch_jwt
-          nohup bash -c 'while true; do sleep 60; fetch_jwt || echo "OIDC token re-fetch failed; keeping the last one"; done' > /tmp/gha-jwt-refresh.log 2>&1 &
+          # Each re-fetch is logged with the time (UTC) and a running count; the last step prints the log.
+          nohup bash -c 'n=0; while true; do sleep 60; n=$((n+1)); if fetch_jwt; then echo "$(date -u +%FT%TZ) token refreshed ($n)"; else echo "$(date -u +%FT%TZ) token re-fetch FAILED ($n); keeping the last one"; fi; done' >> /tmp/gha-jwt-refresh.log 2>&1 &
       - name: Check competitors
+        if: ${{ !cancelled() && steps.oidc.outcome == 'success' }}
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -101,3 +119,6 @@ jobs:
           if [ -n "${LIMIT:-}" ]; then args+=(--limit "$LIMIT"); fi
           if [ "${DRY_RUN:-false}" = "true" ]; then args+=(--dry-run); fi
           node scripts/competitor-check/run.mjs "${args[@]}"
+      - name: Token refresh log
+        if: ${{ always() }}
+        run: cat /tmp/gha-jwt-refresh.log 2>/dev/null || echo "No token refresh log (the token step did not run)."

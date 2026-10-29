@@ -9,13 +9,16 @@
 // page, a gone page, a new plan and a candidate's classification. The CSS is app/globals.css compiled by the repo's own
 // Tailwind (so it is never older than the component). Writes docs/competitor-check-1/<engine>-<width>.png and FAILS if
 // the page scrolls sideways or the findings table spills out of its own box.
+// competitor-check-2 (29 October 2026): the deep check runs country by country — the fixture is a deep check on Germany
+// (DE has a comparison page; 70 candidates recorded for DE/AT), the Deep check picker and Start deep check. The shots now
+// go to docs/competitor-check-2/ (docs/competitor-check-1/ keeps the 25 October ones).
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'competitor-check-1-screens' })
 const FX = require('./_competitor-check-1-fixtures.cjs')
 const { REPO } = kit
-const OUT = path.join(REPO, 'docs/competitor-check-1')
+const OUT = path.join(REPO, 'docs/competitor-check-2')
 
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${JSON.stringify(detail).slice(0, 600)}` : '')) } }
@@ -42,18 +45,23 @@ async function fixtureData() {
     { competitor_id: 'c-007', field: 'classification', outcome: 'classification', source_url: 'https://gustoco.example/food-truck-bestellsystem/', found: { classification: 'food_truck_ordering' }, stored_value: 'candidate', found_value: 'food_truck_ordering', quote: 'Das Bestellsystem für Ihren Foodtruck: Gäste bestellen vorab per Handy.', quote_en: 'The ordering system for your food truck: guests order ahead by phone.', quote_in_page: true, second_check: 'confirmed' },
   ].map(f => ({ run_id: 'run-1', plan_id: null, country_code: null, second_value: null, second_quote: null, review_status: 'pending', ...f }))
   const findings = [...store.findings, ...extra].map((f, i) => ({ ...f, id: `f-${i}`, created_at: NOW.toISOString() }))
-  const settings = { paused: false, daily_cap_usd: 8, monthly_cap_usd: 90, deep_per_day: 15, check_interval_days: 90, deep_requested_at: '2026-10-25T10:00:00Z', extractor_model: 'claude-sonnet-5-5', verifier_model: 'claude-sonnet-5-5', prices: FX.PRICES }
-  // A plausible list behind the tiles: 132 competitors and 70 candidates, 6 deep-checked so far, routine dates spread.
+  const settings = { paused: false, daily_cap_usd: 8, monthly_cap_usd: 90, deep_per_day: 15, check_interval_days: 90, deep_requested_at: '2026-10-25T10:00:00Z', deep_country: 'DE', deep_queue: [], extractor_model: 'claude-sonnet-5-5', verifier_model: 'claude-sonnet-5-5', prices: FX.PRICES }
+  // A plausible list behind the tiles: 132 competitors (16 in DE, 9 in AT, the rest spread over GB, FR, NL, IE) and 70
+  // candidates recorded for DE and AT; 6 deep-checked so far, routine dates spread.
+  const spread = ['GB', 'FR', 'NL', 'IE', 'CZ', 'PL']
   const competitors = [
     ...Array.from({ length: 132 }, (_, i) => ({ id: `c-${String(i + 1).padStart(3, '0')}`, name: i < 6 ? `Testtruck Ordering ${String(i + 1).padStart(3, '0')}` : `Competitor ${i + 1}`, lifecycle: 'active', check_urls: ['https://x.example'], check_interval_days: 90,
-      next_check_at: new Date(Date.UTC(2026, 9, 27 + Math.floor(i / 1.5))).toISOString().slice(0, 10), deep_checked_at: i < 6 ? '2026-10-26T02:20:00Z' : null })),
-    ...Array.from({ length: 70 }, (_, i) => ({ id: `cand-${i}`, name: `Candidate ${i}`, lifecycle: 'candidate', check_urls: ['https://y.example'], check_interval_days: 90, next_check_at: null, deep_checked_at: null })),
+      next_check_at: new Date(Date.UTC(2026, 9, 27 + Math.floor(i / 1.5))).toISOString().slice(0, 10), deep_checked_at: i < 6 ? '2026-10-26T02:20:00Z' : null,
+      countries: i < 16 ? ['DE'] : i < 25 ? ['AT'] : [spread[i % spread.length]] })),
+    ...Array.from({ length: 70 }, (_, i) => ({ id: `cand-${i}`, name: `Candidate ${i}`, lifecycle: 'candidate', check_urls: ['https://y.example'], check_interval_days: 90, next_check_at: null, deep_checked_at: null, countries: i % 3 ? ['DE', 'AT'] : ['DE'] })),
   ]
   competitors[6] = { ...competitors[6], id: 'c-007', name: 'Gustoco (candidate)', lifecycle: 'candidate' }
   const runs = [store.runs[0], { id: 'run-0', mode: 'routine', trigger: 'schedule', started_at: '2026-10-25T02:10:00Z', competitors_checked: 2, cost_usd: 0.31, stopped_reason: 'done' },
     { id: 'run-00', mode: 'deep', trigger: 'manual', started_at: '2026-10-24T18:02:00Z', competitors_checked: 3, cost_usd: 2.14, stopped_reason: 'daily_cap' }]
+  const names = { DE: 'Germany', AT: 'Austria', CZ: 'Czechia', PL: 'Poland', FR: 'France', GB: 'United Kingdom', IE: 'Ireland', NL: 'Netherlands' }
   return { settings, runs, findings, today: '2026-10-26', competitors: competitors.map(c => ({ id: c.id, name: c.name, lifecycle: c.lifecycle })),
-    overview: L.overviewOf({ settings, competitors, runs, findings, today: '2026-10-26' }) }
+    countries: FX.COUNTRIES.filter(c => c.enabled).map(c => ({ code: c.code, name: names[c.code], comparisonPage: c.comparisonStatus === 'admin' })).sort((a, b) => a.name.localeCompare(b.name)),
+    overview: L.overviewOf({ settings, competitors, runs, findings, today: '2026-10-26', countries: FX.COUNTRIES }) }
 }
 
 async function browserBundle(data) {
@@ -102,6 +110,8 @@ setTimeout(() => document.documentElement.setAttribute('data-ready', '1'), 300)`
         t(`${engine} ${width}: no page error; four tiles; findings rows`, !errors.length && m.tiles === 4 && m.rows >= 5, { errors, tiles: m.tiles, rows: m.rows })
         t(`${engine} ${width}: the page never scrolls sideways${width === 390 ? '; the findings table scrolls inside its own box' : ''}`, !m.sideways && (width > 500 || m.boxScrolls === true), m)
         t(`${engine} ${width}: "Couldn't confirm", "Confirmed" chips and the unchanged footer show`, /Couldn.t confirm/.test(m.text) && /confirmed unchanged by both checks/.test(m.text))
+        t(`${engine} ${width}: the deep tile shows the country, its progress and "Then:"; the Deep check picker and Start deep check`, /Deep check · Germany/i.test(m.text) && /\d+ of \d+ competitors/.test(m.text) && /Then: Austria, Czechia, Poland/.test(m.text)
+          && /Start deep check/.test(m.text) && (await page.$$eval('[data-deep-picker] option', os => os.map(o => o.textContent))).some(x => x === 'Germany (has a comparison page)'), m.text.slice(0, 700))
         await page.screenshot({ path: path.join(OUT, `${engine}-${width}.png`), fullPage: true })
         await ctx.close()
       }

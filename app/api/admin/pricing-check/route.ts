@@ -7,7 +7,8 @@
 //          { action: 'edit_benchmark', countryCode, fields } — the same for a country's data
 //          { action: 'set_feature', competitorId, column, value }
 //          { action: 'add_competitor', competitor, plan }
-//          compare-de-1: { action: 'import_compare_de' }  — data/compare-de-1/competitors.json, once (refused once its plan ids are in)
+//          (compare-de-1's German-research import action is gone — competitor-check-2: data files are imported by the nightly
+//          workflow, lib/data-import; GET returns the read-only `imports` lines)
 //          { action: 'verify_features' | 'unverify_features', competitorId } · { action: 'set_competitor_text', competitorId, field, value }
 //          { action: 'entry_add', countryCode, competitorId, primaryPlanId? } · { action: 'entry_update', id, fields }
 //          { action: 'entry_verify' | 'entry_unverify' | 'entry_remove', id } · { action: 'entry_move', id, dir }
@@ -20,15 +21,15 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { adminUser } from '@/lib/auth/admin'
-import { servicePricingStore, TablesMissing } from '@/lib/admin/pricing-check-store'
-import { loadState, importResearch, importCompareResearch, act, type ActionResult, type ComparePayload } from '@/lib/admin/pricing-check-actions'
+import { servicePricingStore, TablesMissing, readDataImports } from '@/lib/admin/pricing-check-store'
+import { loadState, importResearch, act, type ActionResult } from '@/lib/admin/pricing-check-actions'
+import { importLines } from '@/lib/data-import/importer'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { listCountrySettings } from '@/lib/country-settings'
 import { isCountedCompetitor } from '@/lib/pricing-check'
 import competitors from '@/data/pricing-research-1/competitors.json'
 import plans from '@/data/pricing-research-1/plans.json'
 import benchmarks from '@/data/pricing-research-1/benchmarks.json'
-import compareDe from '@/data/compare-de-1/competitors.json'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,14 +46,16 @@ async function guarded(req: NextRequest, run: (user: { id: string }) => Promise<
   try { return await run(user) }
   catch (e) {
     if (e instanceof TablesMissing) return NextResponse.json(MISSING, { status: 503 })
-    console.error('[admin/pricing-check]', e instanceof Error ? e.message : e)
-    return NextResponse.json({ error: 'That could not be done just now. Nothing was changed — try again in a moment.' }, { status: 500 })
+    // competitor-check-2: say WHAT failed (the store's words name the step and the database's reason), not "try again".
+    const why = e instanceof Error ? e.message.replace(/^\[pricing-check-store\]\s*/, '') : String(e)
+    console.error('[admin/pricing-check]', why)
+    return NextResponse.json({ error: `That failed — ${why}. Reload to see what was saved.` }, { status: 500 })
   }
 }
 
 export async function GET(req: NextRequest) {
   return guarded(req, async () => {
-    const [state, catalog, countries] = await Promise.all([loadState(servicePricingStore, compareDe as unknown as ComparePayload), getPlanCatalog(), listCountrySettings()])
+    const [state, catalog, countries, imports] = await Promise.all([loadState(servicePricingStore), getPlanCatalog(), listCountrySettings(), readDataImports()])
     if (!state.ok) return reply(state)
     // competitor-check-1: candidates, closed and not-relevant competitors are never counted or shown here
     // (lib/pricing-check.ts isCountedCompetitor); the Automatic checks tab lists them on its own route.
@@ -62,6 +65,7 @@ export async function GET(req: NextRequest) {
       ...state.data, catalog,
       competitors: counted, plans: state.data.plans.filter(p => ids.has(p.competitorId)), entries: state.data.entries.filter(e => ids.has(e.competitorId)),
       hiddenCompetitors: state.data.competitors.length - counted.length,
+      imports: importLines(imports),
       countries: countries.map(c => ({ countryCode: c.countryCode, name: c.name, enabled: c.enabled, currency: c.currency,
         cardFeeOnlinePct: c.cardFeeOnlinePct, cardFeeOnlineFixedMinor: c.cardFeeOnlineFixedMinor })),
       today: new Date().toISOString().slice(0, 10),
@@ -74,7 +78,6 @@ export async function POST(req: NextRequest) {
   try { const b = await req.json(); if (b && typeof b === 'object') body = b } catch { /* an empty body is refused below */ }
   return guarded(req, async user => {
     if (body.action === 'import') return reply(await importResearch(servicePricingStore, { competitors, plans, benchmarks } as never))
-    if (body.action === 'import_compare_de') return reply(await importCompareResearch(servicePricingStore, compareDe as unknown as ComparePayload))
     const at = new Date().toISOString()
     return reply(await act(servicePricingStore, body, { by: user.id, at, today: at.slice(0, 10) }))
   })

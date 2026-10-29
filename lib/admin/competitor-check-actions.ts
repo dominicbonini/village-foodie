@@ -16,6 +16,7 @@ import { newPlanVersion, planProblem, type PricingStore, type ActionResult, type
 import { CLASSIFICATION_EFFECT, FEATURE_FIELDS, PLAN_FIELDS, type Classification } from '@/lib/competitor-check/model'
 import { minorDigits } from '@/lib/money-format'
 import { overviewOf } from '@/lib/competitor-check/overview'
+import { countriesOf, deepQueueOf, type QueueCountry } from '@/lib/competitor-check/core'
 
 type Row = Record<string, unknown>
 const refuse = <T>(status: number, error: string): ActionResult<T> => ({ ok: false, status, error })
@@ -35,6 +36,10 @@ export interface CheckAdminStore {
   setAllIntervals(days: number): Promise<void>
   /** checked_on on ONE current plan — the only in-place plan write, for an "unchanged" confirmed by both checks. */
   touchPlanChecked(id: string, date: string): Promise<boolean>
+  /** competitor-check-2: every country's code, name, switch and comparison status (read only). */
+  countries(): Promise<(QueueCountry & { name: string })[]>
+  /** competitor-check-2: the country of every CURRENT plan, by competitor. */
+  planCountries(): Promise<{ competitor_id: string; country_code: string }[]>
 }
 
 const FEATURE_COL: Record<string, string> = Object.fromEntries(FEATURE_FIELDS.map(f => [f, f]))
@@ -156,7 +161,7 @@ export async function acceptAllUnchanged(pricing: PricingStore, checks: CheckAdm
 // ── settings ────────────────────────────────────────────────────────────────────────────────────────────────────────
 const MODEL_ID = /^claude-[a-z0-9-]{2,60}$/
 /** Validates the Settings form. Prices must name a price for each chosen model. */
-export function settingsCols(f: Row): { ok: true; cols: Row } | { ok: false; error: string } {
+export function settingsCols(f: Row, enabledCodes?: readonly string[]): { ok: true; cols: Row } | { ok: false; error: string } {
   const cols: Row = {}
   const num = (k: string, min: number, max: number, label: string) => {
     if (!(k in f)) return true
@@ -169,6 +174,16 @@ export function settingsCols(f: Row): { ok: true; cols: Row } | { ok: false; err
   }
   if ('deep_per_day' in cols && !Number.isInteger(cols.deep_per_day)) return { ok: false, error: 'Deep checks per day must be a whole number.' }
   if ('check_interval_days' in cols && !Number.isInteger(cols.check_interval_days)) return { ok: false, error: 'The interval must be a whole number of days.' }
+  // competitor-check-2: the deep check's country order — two-letter codes, each once; [] = the default order. When the
+  // switched-on countries are given, every code must be one of them.
+  if ('deep_queue' in f) {
+    const q = f.deep_queue
+    if (!Array.isArray(q) || q.length > 80 || !q.every(c => typeof c === 'string' && /^[A-Z]{2}$/.test(c)) || new Set(q).size !== q.length)
+      return { ok: false, error: 'The deep check order must be country codes such as DE, AT, CZ — each once.' }
+    const unknown = enabledCodes ? (q as string[]).filter(c => !enabledCodes.includes(c)) : []
+    if (unknown.length) return { ok: false, error: `Not a switched-on country: ${unknown.join(', ')}.` }
+    cols.deep_queue = q
+  }
   if ('paused' in f) { if (typeof f.paused !== 'boolean') return { ok: false, error: 'Paused must be yes or no.' }; cols.paused = f.paused }
   for (const k of ['extractor_model', 'verifier_model']) if (k in f) { if (typeof f[k] !== 'string' || !MODEL_ID.test(f[k] as string)) return { ok: false, error: 'A model must be a Claude model id, e.g. claude-sonnet-5-5.' }; cols[k] = f[k] }
   if ('prices' in f) {
@@ -184,15 +199,44 @@ export function settingsCols(f: Row): { ok: true; cols: Row } | { ok: false; err
   return { ok: true, cols }
 }
 
+/** competitor-check-2: every competitor row with its countries (current plans' countries; a candidate's recorded ones). */
+async function withCountries(store: CheckAdminStore): Promise<Row[]> {
+  const [competitors, plans] = await Promise.all([store.competitors(), store.planCountries()])
+  return competitors.map(c => ({ ...c, countries: countriesOf(String(c.lifecycle ?? 'active'), plans.filter(p => p.competitor_id === c.id).map(p => p.country_code), c.notes) }))
+}
+
 /** Everything the tab shows, or null while 20261043 has not run. */
 export async function loadChecks(store: CheckAdminStore, today: string) {
   const settings = await store.settings()
   if (!settings) return null
-  const [runs, findings, competitors] = await Promise.all([store.runs(40), store.findings(300), store.competitors()])
+  const [runs, findings, competitors, countries] = await Promise.all([store.runs(40), store.findings(300), withCountries(store), store.countries()])
   return {
     settings, runs, findings, today,
     competitors: competitors.map(c => ({ id: c.id, name: c.name, lifecycle: c.lifecycle })),
-    overview: overviewOf({ settings, competitors, runs, findings, today }),
+    // competitor-check-2: the Deep check picker's countries — every switched-on one, and whether it has a comparison page.
+    countries: countries.filter(c => c.enabled).map(c => ({ code: c.code, name: c.name, comparisonPage: c.comparisonStatus === 'admin' || c.comparisonStatus === 'live' }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+    overview: overviewOf({ settings, competitors, runs, findings, today, countries }),
   }
+}
+
+/** competitor-check-2: "Start deep check" — one switched-on country (it starts there and goes on through the queue), or
+ *  'ALL' (the first country of the queue in force). Sets deep_requested_at (every competitor is due again) and deep_country. */
+export async function startDeep(store: CheckAdminStore, choice: unknown, stamp: Stamp): Promise<ActionResult<{ settings: Row }>> {
+  const settings = await store.settings()
+  if (!settings) return refuse(503, 'Run supabase/migrations/20261043_competitor_check_1.sql first.')
+  if (!('deep_country' in settings)) return refuse(503, 'Run supabase/migrations/20261045_competitor_check_2.sql first — it adds the deep check\u2019s country.')
+  const countries = await store.countries()
+  const on = countries.filter(c => c.enabled).map(c => c.code)
+  let code: string | null = null
+  if (choice === 'ALL') {
+    const comps = await withCountries(store)
+    const rows = comps.map(c => ({ id: String(c.id), name: String(c.name), lifecycle: c.lifecycle as 'active', checkIntervalDays: 90, nextCheckAt: null, lastCheckedAt: null, deepCheckedAt: null, checkRequestedAt: null, countries: c.countries as string[] }))
+    code = deepQueueOf(Array.isArray(settings.deep_queue) ? settings.deep_queue as string[] : [], countries, rows).find(c => on.includes(c)) ?? null
+    if (!code) return refuse(409, 'No switched-on country to start with.')
+  } else if (typeof choice === 'string' && on.includes(choice)) code = choice
+  else return refuse(400, 'Pick a switched-on country, or All countries.')
+  const saved = await store.updateSettings({ deep_requested_at: stamp.at, deep_country: code, updated_at: stamp.at, updated_by: stamp.by })
+  return { ok: true, data: { settings: saved } }
 }
 

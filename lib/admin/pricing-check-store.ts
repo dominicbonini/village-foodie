@@ -8,6 +8,7 @@
 import 'server-only'
 import type { PricingStore } from '@/lib/admin/pricing-check-actions'
 import { COLUMNS } from '@/lib/admin/pricing-check-actions'
+import type { ImportRecord } from '@/lib/data-import/importer'
 
 type Row = Record<string, unknown>
 const db = async () => (await import('@/lib/supabase')).supabase
@@ -36,6 +37,12 @@ async function readCompetitors(build: (cols: string) => PromiseLike<{ data: unkn
   let r = await build(COLUMNS.competitors)
   if (missingColumn(r.error)) r = await build(COLUMNS.competitorsNoCheck)
   return missingColumn(r.error) ? build(COLUMNS.competitorsLegacy) : r
+}
+/** competitor-check-2: public.data_imports (20261045), for the tab's read-only import lines; null while it is not there. */
+export async function readDataImports(): Promise<ImportRecord[] | null> {
+  const { data, error } = await (await db()).from('data_imports').select('file_path, sha256, imported_at, result, counts, message').order('imported_at', { ascending: false }).limit(200)
+  if (error) { if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message)) return null; fail('read data_imports', error) }
+  return (data ?? []) as ImportRecord[]
 }
 const ENTRY_COLUMNS = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'
 

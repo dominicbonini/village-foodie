@@ -2,7 +2,8 @@
 //   • quotes: a quote must appear in the text of a page actually fetched in the same conversation;
 //   • cost: a response's usage × the prices in competitor_check_settings (data, not code), plus web searches;
 //   • the budget guard: stop before a competitor that would cross the daily or monthly cap;
-//   • scheduling: who is due, the daily routine quota, and spreading first check dates evenly across the interval.
+//   • scheduling: who is due, the daily routine quota, and spreading first check dates evenly across the interval;
+//   • competitor-check-2: the deep check COUNTRY BY COUNTRY — the queue, who is in a country, and when to move on.
 
 // ── quotes ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 /** Case, whitespace, quote marks, dashes and non-breaking spaces made uniform, so a quote copied from a page matches it. */
@@ -94,6 +95,8 @@ export type Lifecycle = 'active' | 'candidate' | 'closed' | 'not_relevant'
 export interface SchedRow {
   id: string; name: string; lifecycle: Lifecycle; checkIntervalDays: number
   nextCheckAt: string | null; lastCheckedAt: string | null; deepCheckedAt: string | null; checkRequestedAt: string | null
+  /** competitor-check-2: the countries it is in — those of its current plans, and for a candidate the ones recorded for it. */
+  countries?: string[]
 }
 export const addDays = (ymd: string, n: number) => { const d = new Date(`${ymd}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10) }
 /** A small allowance on top of the even share, so a day that fell behind (a capped or failed run) catches up. */
@@ -148,3 +151,61 @@ export const afterCheck = (row: Pick<SchedRow, 'checkIntervalDays'>, today: stri
   next_check_at: addDays(today, row.checkIntervalDays), last_checked_at: nowIso, check_requested_at: null,
   ...(deep ? { deep_checked_at: nowIso } : {}),
 })
+
+// ── competitor-check-2: the deep check, country by country ──────────────────────────────────────────────────────────
+/** The countries 20261044 recorded on a candidate, in its notes ("… · countries: DE, AT"). */
+export function candidateCountries(notes: unknown): string[] {
+  const m = /countries:\s*([A-Z]{2}(?:\s*,\s*[A-Z]{2})*)/.exec(typeof notes === 'string' ? notes : '')
+  return m ? m[1].split(',').map(c => c.trim()) : []
+}
+/** A competitor's countries: its current plans' countries, plus — while it is a candidate — the ones recorded for it. */
+export const countriesOf = (lifecycle: string, planCountries: readonly string[], notes: unknown) =>
+  [...new Set([...planCountries, ...(lifecycle === 'candidate' ? candidateCountries(notes) : [])])]
+
+export interface QueueCountry { code: string; enabled: boolean; comparisonStatus: string | null }
+/** After the countries with a comparison page (admin or live), these, in this order (the brief of competitor-check-2). */
+export const DEEP_QUEUE_NEXT = ['AT', 'CZ', 'PL'] as const
+/** The default order: switched-on countries with a comparison page first, then AT, CZ, PL, then the other switched-on
+ *  countries by how many competitors are in them (most first; ties by code). */
+export function defaultDeepQueue(countries: readonly QueueCountry[], rows: readonly SchedRow[]): string[] {
+  const on = countries.filter(c => c.enabled)
+  const n = (code: string) => rows.filter(r => (r.lifecycle === 'active' || r.lifecycle === 'candidate') && r.countries?.includes(code)).length
+  const byCount = (a: string, b: string) => n(b) - n(a) || a.localeCompare(b)
+  const pages = on.filter(c => c.comparisonStatus === 'admin' || c.comparisonStatus === 'live').map(c => c.code).sort(byCount)
+  const next = DEEP_QUEUE_NEXT.filter(code => on.some(c => c.code === code) && !pages.includes(code))
+  const rest = on.map(c => c.code).filter(code => !pages.includes(code) && !(next as string[]).includes(code)).sort(byCount)
+  return [...pages, ...next, ...rest]
+}
+/** The queue in force: the stored one (Settings) when there is one, else the default. */
+export const deepQueueOf = (stored: readonly string[] | null | undefined, countries: readonly QueueCountry[], rows: readonly SchedRow[]) =>
+  (stored && stored.length ? [...stored] : defaultDeepQueue(countries, rows))
+/** The countries from `current` to the end of the queue (current first, even when it is not in the queue). */
+export const queueFrom = (queue: readonly string[], current: string) => {
+  const i = queue.indexOf(current)
+  return i < 0 ? [current, ...queue] : queue.slice(i)
+}
+
+const isDeepPending = (r: SchedRow, deepRequestedAt: string | null) =>
+  (r.lifecycle === 'active' || r.lifecycle === 'candidate') && (!r.deepCheckedAt || (deepRequestedAt !== null && r.deepCheckedAt < deepRequestedAt))
+/** A country's deep progress: its competitors (active, or a candidate recorded for it) and how many are done since the request. */
+export function deepCountryProgress(rows: readonly SchedRow[], code: string, deepRequestedAt: string | null) {
+  const inCountry = rows.filter(r => (r.lifecycle === 'active' || r.lifecycle === 'candidate') && r.countries?.includes(code))
+  const pending = inCountry.filter(r => isDeepPending(r, deepRequestedAt))
+  return { total: inCountry.length, done: inCountry.length - pending.length, pending }
+}
+/** Today's deep list, country by country: the current country's competitors not deep-checked since the request ("Check
+ *  now" requests first, then by name); when they run out, the next country in the queue's — up to `limit`. */
+export function selectDeepByCountry<T extends SchedRow>(rows: readonly T[], queue: readonly string[], current: string, deepRequestedAt: string | null, limit: number): T[] {
+  const out: T[] = []
+  for (const code of queueFrom(queue, current)) {
+    if (out.length >= limit) break
+    const pending = (deepCountryProgress(rows, code, deepRequestedAt).pending as T[]).filter(r => !out.includes(r))
+      .sort((a, b) => Number(!a.checkRequestedAt) - Number(!b.checkRequestedAt) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id))
+    out.push(...pending.slice(0, limit - out.length))
+  }
+  return out
+}
+/** The country the deep check is on after a run: the first from `current` on that still has someone to check; null when
+ *  the whole queue from there is done. */
+export const nextDeepCountry = (rows: readonly SchedRow[], queue: readonly string[], current: string, deepRequestedAt: string | null) =>
+  queueFrom(queue, current).find(code => deepCountryProgress(rows, code, deepRequestedAt).pending.length > 0) ?? null

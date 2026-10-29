@@ -12,7 +12,7 @@
 // 🔴 --dry-run calls the API and WRITES NOTHING: no run row, no finding, no schedule; it prints the findings.
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
-import { runChecker, summaryEmail, type CheckerDeps } from '@/lib/competitor-check/checker'
+import { runChecker, summaryEmail, exitCodeOf, type CheckerDeps } from '@/lib/competitor-check/checker'
 import { supabaseCheckerStore } from '@/lib/competitor-check/store-supabase'
 import { sendConfirmationEmail } from '@/lib/email'
 import { ADMIN_ALERT_TO } from '@/lib/custom-domain/alert'
@@ -51,12 +51,14 @@ async function main() {
   }
   console.log(`competitor-check · mode ${mode}${competitor ? ` · ${competitor}` : ''}${limit ? ` · limit ${limit}` : ''}${dryRun ? ' · DRY RUN (writes nothing)' : ''}`)
   const reports = await runChecker(deps, { mode: mode === 'scheduled' ? 'scheduled' : mode, trigger, competitor, limit })
-  for (const r of reports) console.log(`${r.mode}: ${r.checked} checked, ${r.failed.length} failed, ${r.findings.length} findings, $${r.spend.usd.toFixed(3)} — ${r.stoppedReason}`)
+  for (const r of reports) console.log(`${r.mode}: ${r.checked} checked, ${r.failed.length} failed, ${r.findings.length} findings, $${r.spend.usd.toFixed(3)} — ${r.stoppedReason}${r.error ? ` (${r.error})` : ''}`)
   if (!dryRun) {
     const mail = summaryEmail(reports, 'https://www.hatchgrab.com/admin?tab=pricing')
     if (mail) await sendConfirmationEmail({ to: ADMIN_ALERT_TO, subject: mail.subject, html: mail.html, text: mail.text, senderName: 'HatchGrab' })
   }
-  if (reports.some(r => r.stoppedReason === 'error')) process.exitCode = 1
+  // competitor-check-2: a failed login, or a run in which every competitor failed, is a red cross in Actions.
+  process.exitCode = exitCodeOf(reports)
+  if (process.exitCode) console.error('competitor-check: a run stopped with an error (above) — exiting non-zero.')
 }
 
 main().catch(e => { console.error(`competitor-check failed: ${e instanceof Error ? e.message : e}`); process.exit(1) })

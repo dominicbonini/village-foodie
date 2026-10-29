@@ -53,7 +53,9 @@ async function renderer(kit, tag = 'cde1') {
     "export { clearPlanCatalogCache as __p } from '@/lib/plans-server'",
     "export { clearComparisonCache as __cmp, comparisonAddressOf } from '@/lib/comparison-flags'",
     "export { comparisonFooter } from '@/lib/comparison-server'",
-    "export { importCompareResearch, loadState } from '@/lib/admin/pricing-check-actions'",
+    "export { loadState } from '@/lib/admin/pricing-check-actions'",
+    // competitor-check-2: the German research is imported by lib/data-import (the button and importCompareResearch are gone).
+    "export { importResearch, researchProblems } from '@/lib/data-import/research'",
     "export { PLACEHOLDER } from '@/lib/comparison'",
   ].join('\n'), { stubs: { '@/lib/auth/admin': ADMIN_STUB } })
   const SEG = { country: 'de', section: 'vergleich', slug: 'foodtruck-bestellsystem' }

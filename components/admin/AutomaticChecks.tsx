@@ -4,8 +4,8 @@
 // Dominic to accept or reject — nothing it finds changes a price until it is accepted here, and an accepted change is
 // unverified until it is verified again in the country view.
 //
-// Layout: tiles (full deep check, API spend, regular checks, couldn't check); the buttons (Settings, Pause, Start full
-// deep check); filter chips; the findings table (scrolls sideways in its own box on a phone); the "confirmed unchanged by
+// Layout: tiles (deep check, API spend, regular checks, couldn't check); the buttons (Settings, Pause, the Deep check
+// country picker and Start deep check — competitor-check-2: the deep check runs country by country); filter chips; the findings table (scrolls sideways in its own box on a phone); the "confirmed unchanged by
 // both checks" footer row; recent runs. Talks to /api/admin/competitor-check only.
 import { useEffect, useMemo, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
@@ -13,7 +13,8 @@ import { FIELD_LABEL, CLASSIFICATION_LABEL, type Field, type Classification } fr
 import type { Overview } from '@/lib/competitor-check/overview'
 
 type Row = Record<string, unknown>
-interface Data { settings: Row; runs: Row[]; findings: Row[]; competitors: { id: string; name: string; lifecycle: string }[]; overview: Overview; today: string }
+interface Data { settings: Row; runs: Row[]; findings: Row[]; competitors: { id: string; name: string; lifecycle: string }[]; overview: Overview; today: string
+  countries?: { code: string; name: string; comparisonPage: boolean }[] }
 
 async function call(method: 'GET' | 'POST', body?: unknown): Promise<{ ok: boolean; data: Row }> {
   const res = await fetch('/api/admin/competitor-check', { method, headers: { 'Content-Type': 'application/json', ...(await nativeAuthHeader()) }, body: body === undefined ? undefined : JSON.stringify(body) })
@@ -38,6 +39,7 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
   const [busy, setBusy] = useState<string | null>(null)
   const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [deepPick, setDeepPick] = useState('ALL')
 
   const load = async () => {
     const r = await call('GET')
@@ -75,6 +77,14 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
     : chip === 'unchanged' ? confirmedUnchanged : data.findings
   const chips: [Chip, string, number][] = [['review', 'To review', pending.length - confirmedUnchanged.length], ['blocked', 'Blocked', o.couldNotCheck.blocked], ['gone', 'Page gone', o.couldNotCheck.pageGone], ['all', 'All', data.findings.length]]
   const spendPct = o.spend.monthlyCapUsd ? Math.min(100, (o.spend.monthUsd / o.spend.monthlyCapUsd) * 100) : 0
+  const countries = data.countries ?? []
+  const countryName = (code: string) => countries.find(c => c.code === code)?.name ?? code
+  const deepReady = 'deep_country' in data.settings   // 20261045 has run
+  const startDeep = () => {
+    const what = deepPick === 'ALL' ? `every country, in order (${o.queue.inForce.slice(0, 4).map(countryName).join(', ')}${o.queue.inForce.length > 4 ? ' …' : ''})` : `${countryName(deepPick)}, then the countries after it in the order`
+    if (window.confirm(`Start a deep check of ${what}? Every competitor there is checked again in depth — about ${o.deep.perDay} a day, within the caps. The next scheduled run starts it.`))
+      post('deep', { action: 'start_deep', country: deepPick }, 'Deep check started. The next scheduled run picks it up.')
+  }
 
   return (
     <div className="space-y-3" data-automatic-checks>
@@ -86,8 +96,15 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
         <div className="flex flex-wrap gap-2">
           <button type="button" className={BTN} onClick={() => setSettingsOpen(true)}>Settings</button>
           <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('pause', { action: o.paused ? 'resume' : 'pause' }, o.paused ? 'Checks resumed.' : 'Checks paused. The next run stops before its first competitor.')}>{o.paused ? 'Resume checks' : 'Pause checks'}</button>
-          <button type="button" disabled={busy !== null} onClick={() => { if (window.confirm('Start a full deep check of every competitor? The next scheduled run picks it up, about ' + o.deep.perDay + ' a day, within the caps.')) post('deep', { action: 'start_deep' }, 'Full deep check requested. The next scheduled run starts it.') }}
-            className="whitespace-nowrap rounded-xl bg-orange-600 px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50">Start full deep check</button>
+          <label className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-slate-700">
+            <span className="whitespace-nowrap">Deep check</span>
+            <select className={`${BOX} max-w-[15rem]`} value={deepPick} onChange={e => setDeepPick(e.target.value)} disabled={!deepReady} data-deep-picker>
+              <option value="ALL">All countries, in order</option>
+              {countries.map(c => <option key={c.code} value={c.code}>{c.name}{c.comparisonPage ? ' (has a comparison page)' : ''}</option>)}
+            </select>
+          </label>
+          <button type="button" disabled={busy !== null || !deepReady} onClick={startDeep} title={deepReady ? undefined : 'Run supabase/migrations/20261045_competitor_check_2.sql first'}
+            className="whitespace-nowrap rounded-xl bg-orange-600 px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50" data-start-deep>Start deep check</button>
         </div>
       </div>
 
@@ -96,10 +113,17 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
       {/* tiles */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4" data-check-tiles>
         <div className={CARD} data-tile="deep">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Full deep check</p>
-          <p className="mt-1 text-xl font-black text-slate-900">{o.deep.done} of {o.deep.total}</p>
-          <div className="mt-1.5 h-1.5 rounded-full bg-slate-100"><div className="h-1.5 rounded-full bg-orange-500" style={{ width: `${o.deep.total ? (o.deep.done / o.deep.total) * 100 : 0}%` }} /></div>
-          <p className="mt-1 text-xs text-slate-500">{o.deep.requested ? (o.deep.remaining ? `About ${o.deep.perDay} a day · done by ${day(o.deep.finishOn)}` : 'Finished') : 'Not started — press Start full deep check'}</p>
+          {o.deep.country ? <>
+            <p className="truncate text-[11px] font-bold uppercase tracking-wide text-slate-500">Deep check · {countryName(o.deep.country)}</p>
+            <p className="mt-1 text-xl font-black text-slate-900">{o.deep.countryDone} of {o.deep.countryTotal} <span className="text-sm font-semibold text-slate-500">competitors</span></p>
+            <div className="mt-1.5 h-1.5 rounded-full bg-slate-100"><div className="h-1.5 rounded-full bg-orange-500" style={{ width: `${o.deep.countryTotal ? (o.deep.countryDone / o.deep.countryTotal) * 100 : 0}%` }} /></div>
+            <p className="mt-1 truncate text-xs text-slate-500" data-deep-then>Then: {o.deep.then.length ? `${o.deep.then.slice(0, 4).map(countryName).join(', ')}${o.deep.then.length > 4 ? ` and ${o.deep.then.length - 4} more` : ''}` : 'nothing — the last country'}</p>
+            <p className="text-xs text-slate-500">About {o.deep.perDay} a day{o.deep.finishOn ? ` · all done by ${day(o.deep.finishOn)}` : ''}</p>
+          </> : <>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Deep check</p>
+            <p className="mt-1 text-xl font-black text-slate-900">{o.deep.requested ? 'Finished' : 'Not running'}</p>
+            <p className="mt-1 text-xs text-slate-500">{deepReady ? 'Pick a country (or All countries) and press Start deep check.' : 'Run supabase/migrations/20261045_competitor_check_2.sql to check country by country.'}</p>
+          </>}
         </div>
         <div className={CARD} data-tile="spend">
           <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">API spend this month</p>
@@ -209,25 +233,27 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
         </div>
       </section>
 
-      {settingsOpen && <SettingsModal settings={data.settings} busy={busy !== null} onClose={() => setSettingsOpen(false)}
+      {settingsOpen && <SettingsModal settings={data.settings} queue={o.queue} busy={busy !== null} onClose={() => setSettingsOpen(false)}
         onSave={async fields => { if (await post('settings', { action: 'settings', fields }, 'Settings saved.')) setSettingsOpen(false) }} />}
     </div>
   )
 }
 
-function SettingsModal({ settings, busy, onClose, onSave }: { settings: Row; busy: boolean; onClose: () => void; onSave: (f: Row) => void }) {
+function SettingsModal({ settings, queue, busy, onClose, onSave }: { settings: Row; queue: Overview['queue']; busy: boolean; onClose: () => void; onSave: (f: Row) => void }) {
   const prices = settings.prices as { web_search_per_search: number; models: Record<string, { input_per_mtok: number; output_per_mtok: number; cache_write_per_mtok?: number; cache_read_per_mtok?: number }>; source?: string; checked_on?: string }
   const [f, setF] = useState({
     paused: settings.paused === true, daily: String(settings.daily_cap_usd), monthly: String(settings.monthly_cap_usd), deep: String(settings.deep_per_day),
     interval: String(settings.check_interval_days), extractor: String(settings.extractor_model), verifier: String(settings.verifier_model),
-    prices: JSON.stringify(prices, null, 2),
+    prices: JSON.stringify(prices, null, 2), order: queue.stored.join(', '),
   })
   const [err, setErr] = useState<string | null>(null)
   const save = () => {
     let p: unknown
     try { p = JSON.parse(f.prices) } catch { setErr('Prices must be valid JSON.'); return }
+    // competitor-check-2: the deep check's country order (empty = the default); only once 20261045 has added the column.
+    const order = f.order.split(/[\s,]+/).map(c => c.trim().toUpperCase()).filter(Boolean)
     onSave({ paused: f.paused, daily_cap_usd: Number(f.daily), monthly_cap_usd: Number(f.monthly), deep_per_day: Number(f.deep), check_interval_days: Number(f.interval),
-      extractor_model: f.extractor.trim(), verifier_model: f.verifier.trim(), prices: p })
+      extractor_model: f.extractor.trim(), verifier_model: f.verifier.trim(), prices: p, ...('deep_queue' in settings ? { deep_queue: order } : {}) })
   }
   const label = 'mb-1 block text-xs font-semibold text-slate-600'
   return (
@@ -242,6 +268,9 @@ function SettingsModal({ settings, busy, onClose, onSave }: { settings: Row; bus
           <label><span className={label}>Check every (days)</span><input className={BOX} inputMode="numeric" value={f.interval} onChange={e => setF({ ...f, interval: e.target.value })} /></label>
           <label><span className={label}>Reading model</span><input className={BOX} value={f.extractor} onChange={e => setF({ ...f, extractor: e.target.value })} /></label>
           <label><span className={label}>Second-check model</span><input className={BOX} value={f.verifier} onChange={e => setF({ ...f, verifier: e.target.value })} /></label>
+          {'deep_queue' in settings && <label className="col-span-2"><span className={label}>Deep check order (country codes; empty = the default)</span>
+            <input className={BOX} value={f.order} placeholder={queue.default.join(', ')} onChange={e => setF({ ...f, order: e.target.value })} data-deep-order />
+            <span className="mt-1 block text-xs text-slate-500">Default: {queue.default.slice(0, 8).join(', ')}{queue.default.length > 8 ? ', …' : ''} — countries with a comparison page, then AT, CZ, PL, then by number of competitors.</span></label>}
           <label className="col-span-2"><span className={label}>Prices (USD per million tokens; per web search){prices.checked_on ? ` — checked ${prices.checked_on}` : ''}</span>
             <textarea className={`${BOX} h-40 font-mono text-xs`} value={f.prices} onChange={e => setF({ ...f, prices: e.target.value })} /></label>
         </div>

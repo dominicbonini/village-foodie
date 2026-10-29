@@ -177,7 +177,8 @@
     "admin-countries-1.cjs",
     "country-picker-1.cjs",
     "compare-de-1.cjs",
-    "competitor-check-1.cjs"
+    "competitor-check-1.cjs",
+    "pricing-check-1.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -308,7 +309,8 @@
         "_batch-reservation-golden-on-generate.cjs",
         "_scraper-prompts-capture.mjs",
         "_batch-rolling-golden-generate.cjs",
-        "split-messages.cjs"
+        "split-messages.cjs",
+        "pricing-check-build-data.cjs"
       ]
     },
     "one_off_tools": {
@@ -348,7 +350,8 @@
         "phase3-screens-shots.cjs",
         "address-formats-2-screens.cjs",
         "native-prices-screens.cjs",
-        "canada-1-screens.cjs"
+        "canada-1-screens.cjs",
+        "pricing-check-screenshots.cjs"
       ]
     }
   }

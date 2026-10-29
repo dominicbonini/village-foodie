@@ -41,7 +41,8 @@ interface State {
   competitors: Competitor[]; plans: CompetitorPlan[]; benchmarks: Benchmark[]
   catalog: PlanCatalog; countries: CountryRow[]; today: string
   // compare-de-1: the comparison pages' entries ([] and entriesReady false until 20261042 runs)
-  entries: ComparisonEntry[]; entriesReady: boolean; compareImportable: boolean
+  entries: ComparisonEntry[]; entriesReady: boolean
+  imports?: { path: string; ok: boolean | null; text: string }[]
 }
 
 async function call(method: 'GET' | 'POST', body?: unknown): Promise<{ ok: boolean; status: number; data: Record<string, unknown> }> {
@@ -242,19 +243,10 @@ export default function PricingCheckTab() {
         </div>
       )}
 
-      {state.compareImportable && (
-        <div className={`${CARD} flex flex-wrap items-center justify-between gap-3 border-orange-200 bg-orange-50`} data-import-compare>
-          <div className="text-sm text-slate-700">
-            <p className="font-bold text-slate-900">German comparison research</p>
-            <p>Import the German competitors checked for the comparison page (data/compare-de-1/competitors.json, docs/compare-de-1-report.md): their plans, features and the page’s entries, all unverified. Existing competitors are matched by name. It can only run once.</p>
-            {!state.entriesReady && <p className="mt-1 font-semibold text-amber-800">Run supabase/migrations/20261042_compare_de_1.sql first.</p>}
-          </div>
-          <button type="button" disabled={busy !== null || !state.entriesReady} onClick={() => post('import_compare', { action: 'import_compare_de' }, 'The German comparison research is in. Nothing is public until you verify it.')}
-            className="whitespace-nowrap rounded-xl bg-orange-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50">
-            {busy === 'import_compare' ? 'Importing…' : 'Import German comparison research'}
-          </button>
-        </div>
-      )}
+      {/* competitor-check-2: data files are imported by the nightly competitor-check workflow (lib/data-import) — read only. */}
+      {(state.imports ?? []).map(l => (
+        <p key={l.path} className={`text-xs ${l.ok === false ? 'font-semibold text-red-700' : 'text-slate-500'}`} data-import-line={l.ok === null ? 'pending' : l.ok ? 'ok' : 'error'}>{l.text}</p>
+      ))}
 
       <div className="grid gap-3 lg:grid-cols-[16.5rem_minmax(0,1fr)]">
         {/* ── the country list ── */}

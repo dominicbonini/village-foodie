@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.6
+HatchGrab Engineering Reference Manual · V16.7
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.6**
+**Version 16.7**
 
 October 2026
 
@@ -49,6 +49,85 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.7 — 24–27 October 2026 — **SEO AND AI-SEARCH RESEARCH, THE GERMAN COMPARISON PAGE (ADMIN-ONLY), AND AN AUTOMATIC COMPETITOR CHECKER ON THE CLAUDE API WITH A KEYLESS LOGIN**
+
+- Applies `docs/seo-geo-1-report.md`, `docs/competition-check-1-report.md`, `docs/compare-de-1-report.md`,
+  `docs/competitor-check-1-report.md` and `docs/competitor-check-1c-report.md`. Facts were checked read-only on 29 Oct
+  (live database, git, curl).
+- **Search research:** three passes: seo-geo-1, competition-check-1 on the Bing index, and Gemini Deep Research for
+  Google.
+  - **No local-language page in any country compares food-truck pre-ordering tools.**
+  - Non-English markets are less crowded.
+- **First comparison country: Germany** (stated, 24 Oct).
+  - The page `/de/vergleich/foodtruck-bestellsystem` is built and server-rendered.
+  - It is admin-only until Dominic switches it live.
+  - Only competitor facts Dominic has verified ever show publicly.
+- **Automatic competitor checker:** GitHub Actions + the Claude API (web fetch, web search).
+  - One full deep check, then every competitor every 90 days, spread out.
+  - It only proposes changes; Dominic accepts each one.
+  - Daily and monthly spend caps.
+- **Claude API login:** Workload Identity Federation from GitHub Actions — no stored API key, nothing to rotate. Validated
+  by Dominic on 27 Oct.
+- **Not charged yet:** still no platform fee and no subscription billing.
+
+| What | Where |
+|---|---|
+| **NEW — comparison pages, search research and the automatic competitor checker** | **§86** (new, after §85) |
+| Pricing after V16.6: positioning discussed, the EU geo-blocking note, key features, iOS availability | §85.7 (new) |
+| Competitor research ("Eurozone") | §21 (corrected in place) |
+| France's row (it exists and is switched on) | §27, §48, §49, §76, §77, §83, §84, §85 (corrected in place) |
+| The apps' store availability (UK only) | §11, §36, §85.6 (corrected in place) |
+| JSON-LD `operatingSystem`, `/llms.txt`, robots | §82 (corrected in place) |
+| The sitemap's lastmod; the 21 Oct AI-search observation | §48 (corrected in place) |
+| The About page's words (rewritten 29 Oct, OBSERVED) | §83.7 (corrected in place) |
+| Admin console tabs | §12 (corrected in place) |
+| Euro prices "planned later" | §27, §81.1 (corrected in place) |
+| Invariants | §35.an (new) |
+| Backlog | §27 (new "Added V16.7" block) |
+| Deploy posture | §49 (new current block; V16.5's stays as dated history) |
+| Tooling: research, the Claude API from CI, harnesses, other assistants, mockups | §79 (added at its end) |
+
+**SWEEP STATUS (applied 29 October 2026):** _pattern hits: 32 — stale and corrected in place: 19; left as history
+(changelog only): 3; not stale (true, already struck, or a different meaning): 10; outstanding: 0. Found outside the
+patterns and corrected: 8 (27 corrections in all)._
+- **Pattern 1** (Vev / "no Hatches Up-style specialist"): 1 found, 1 corrected (§21).
+- **Pattern 2** (France has no row, and its wider forms): France's row is OBSERVED live, so the pattern applied.
+  - 17 found; 15 corrected (§27 ×2, §48 ×2, §49, §76, §77, §83 ×4, §84 ×2, §85 ×2);
+  - 2 left as history: the V16.5 and V16.4 changelog lines.
+- **Pattern 3** (`/llms.txt` 404, robots blocking GPTBot / ClaudeBot):
+  - 5 found: 1 corrected (§48, the 21 Oct observation);
+  - 1 in the V16.3 changelog (history);
+  - 3 not stale: a dated 21 Oct posture in §49, already superseded there; a line V16.4 already struck (§82); and one
+    that is true ("404 on Village Foodie").
+- **Pattern 4** (`MARKETING_COPY_UPDATED` as the sitemap's only lastmod source): 2 found.
+  - §48's line is corrected (incomplete).
+  - §35.ak-8's rule to move it with copy changes is true and stays.
+- **Pattern 5** (`slot throttling` / `throttl`): 6 found, none of them marketing wording (rate limits, a throttled log, a
+  write throttle); 0 corrected.
+- **Pattern 6** (iOS in every country / App Store availability / "iPhone app … not recorded"): 1 found, 1 corrected
+  (§85.6).
+- **Found outside the patterns, corrected:**
+  - §11, §36: the UK-only store availability (Part C3);
+  - §82: the JSON-LD `operatingSystem` known gap, and the `/llms.txt` observation;
+  - §12: the admin tabs;
+  - §81.1 and §27: "eurozone pricing planned later";
+  - §83.7: the About page's words, which changed on 29 Oct after this delta was written.
+
+**OBSERVED WHEN APPLYING (29 October 2026 — where the live system differs from the delta or adds to it):**
+- **France's row exists and is switched on.** All 36 `country_settings` rows are enabled.
+- **DE `comparison_status` is `admin`** (the delta expected that only if the separate update had been run; it has been).
+  DE app flags are false; GB's are true.
+- **The German comparison research is not imported:** DE has 7 current plans, and `comparison_entries` is empty. This
+  matches the failing "Import German comparison research" button (§27).
+- **The checker has run four times:**
+  - two manual routine runs on 27 Oct, 0 checked;
+  - scheduled runs on 28 Oct (4 checked, $0.84) and 29 Oct (2 checked, $0.30).
+  - The scheduled runs fired at 08:21 and 08:23 UTC, not 02:10: GitHub's cron delay.
+  - **Measured routine cost:** $1.14 for 6 competitors (≈ $0.19 each, against the $0.16 estimate).
+  - There are 39 findings, all pending. No run lasted over 4 minutes, so token renewal past 10 minutes is still unproven.
+- **Everything is pushed:** `origin/main` = HEAD = `b01d0f66` "about us" (29 Oct). That commit rewrote the About page's
+  words (about-page-2, after this delta's period), and the live `/about` shows the new heading.
 
 ## V16.6 — 23 October 2026 — **PRICING RESEARCH FOR EVERY COUNTRY, AND AN ADMIN "PRICING CHECK" TAB THAT COMPARES COMPETITOR PRICES WITH OURS LIVE**
 
@@ -10050,6 +10129,10 @@ the one clean control case for defects (a) and (b) — **the evidence, not just 
 
 # 11. Native app and offline architecture
 
+⛔ **V16.7 — where the apps are available:** the iOS (iPad) app is in the **UK App Store only** (Apple lookup for id
+6803543106, 24 Oct: GB 1 result; US, IE, AU, CA, NZ, DE, PL, SE, NL, DK, NO, CZ 0), and Android is UK-only on Play
+(deliberate since 1 Sep). Any statement that the apps are available to operators in other countries is false (§86.2).
+
 ## Why native is needed
 
 Food trucks operate in villages with patchy 4G. A web-only KDS that loses connection during service is a critical failure.
@@ -11438,7 +11521,8 @@ Password reset: Brevo send checked, cleans up token on failure. Email change: pr
 
 ## Admin console (V6, ADMIN_SECRET removed V6.1)
 
-The admin page authenticates solely via the operator's Supabase session. No password prompt, no ADMIN_SECRET, no fallback. Every admin route calls verifyAdmin() server-side (resolves the session to an operators row, checks is_admin). On mount the page calls GET /api/admin?section=check_admin. Shared AppHeader (truckName/truckLogoUrl null), slate-900 tabs, ~~two tabs (🍕 Trucks, 📋 Features)~~. ⛔ Corrected V16.6 — nine tabs, from the one `ADMIN_TABS` object in `app/admin/page.tsx` (OBSERVED 23 Oct 2026): Trucks, Features, Domains, Outreach, Events, Screenshots, Templates, Countries, Pricing check (§85). The tab bar's inner box is `max-w-6xl` from 1400px. It was `max-w-5xl`, and the ninth tab was cut off at 1512px.
+The admin page authenticates solely via the operator's Supabase session. No password prompt, no ADMIN_SECRET, no fallback. Every admin route calls verifyAdmin() server-side (resolves the session to an operators row, checks is_admin). On mount the page calls GET /api/admin?section=check_admin. Shared AppHeader (truckName/truckLogoUrl null), slate-900 tabs, ~~two tabs (🍕 Trucks, 📋 Features)~~. ⛔ Corrected V16.6 — nine tabs, from the one `ADMIN_TABS` object in `app/admin/page.tsx` (OBSERVED 23 Oct 2026): Trucks, Features, Domains, Outreach, Events, Screenshots, Templates, Countries, Pricing check (§85). The tab bar's inner box is `max-w-6xl` from 1400px. It was `max-w-5xl`, and the ninth tab was cut off at 1512px. ⛔ *V16.7: Countries gains a "Comparison pages" panel (Off / Admins only / Live per
+country); Pricing check gains a "Comparison page" area in each country and an "Automatic checks" view (§86.3, §86.4).*
 
 > **RULE (V6.1)** — Admin authorisation is session + operators.is_admin only. Never reintroduce a shared admin password or env-var secret.
 
@@ -14807,7 +14891,7 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 
 - **UK:** Hatches Up (4.5% + 20p online, 1.5% + 10p in person, no monthly); Eventifood (software only, own processor, 1/2/3% or £30/£60/£75 a month); SumUp; Square; Food Engine.
 - **US:** EasyEats (0.95% of all card sales or $90/month annual; own partner processors); Food Truck Pub ($0/$29, diner pays $0.60–$1.25 per order, no KDS); Goodfynd; RapidOrderz ($59, unverified); Toast; Square.
-- **Eurozone:** no Hatches Up-style specialist; Vev (NL, Stripe, ~€10–40/month, no platform fee) is the nearest; SumUp/Square are cheaper all-in on small tickets because of Stripe's €0.25.
+- **Eurozone:** ~~no Hatches Up-style specialist; Vev (NL, Stripe, ~€10–40/month, no platform fee) is the nearest;~~ ⛔ Corrected V16.7 — there are many: NL has several food-truck ordering tools with time slots (Qrder, Jamezz, Bestelly, Vev, FoodTruck POS, Digitale Menukaart); DE has gastro25, GastroDok, OrderFront, Gustoco and others; FR has many (Eatch, Truckons, Autoflowly, Nomad…) — `docs/seo-geo-1-report.md`, `docs/compare-de-1-report.md`, §86.2. SumUp/Square are cheaper all-in on small tickets because of Stripe's €0.25.
 - **US card surcharges:** banned in CT, MA, ME, PR; Visa cap 3%; never on debit; more states require fees shown in the price.
 - ⛔ **Corrected V16.6 — the sources are now recorded:** `docs/pricing-research-1-report.md` (46 countries, 23 Oct 2026) and `docs/pricing-research-1/competitors.csv` (232 plans). The four tools above that the research did not price (Hatches Up, Eventifood, EasyEats, RapidOrderz) are in `public.competitors` / `competitor_plans`, with source `manual`, "From the manual (§21), not re-checked". The per-country picture is §85.
 - ~~**Sources:** ⚠️ **none in `docs/` (OBSERVED 20 Oct 2026)** — the delta says to point to `docs/` reports, but a grep of `docs/*.md` for "EasyEats" or "Eventifood" finds only this manual. The figures above are as the delta states them; their sources are unrecorded until a research report is saved.~~
@@ -17770,7 +17854,8 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - **Plans editing in admin** — SQL only today.
 - **SEO leftovers** — apex 308 (Vercel), caching country pages, flags as files, the 699 KB screenshot.
 - **Eurozone launch** (€0/€29/€69, translations, iDEAL in NL) — check EU VAT for selling to small trucks without
-  VAT numbers before launch; Stripe interchange-plus pricing as the later lever.
+  VAT numbers before launch; Stripe interchange-plus pricing as the later lever. ⛔ *Corrected V16.7 — the euro prices and
+  every European language are live (§84); iDEAL/Wero is still not built (§86.2); VAT is §81.1's reverse-charge wording.*
 - **Starter/Max wording outside the V16.2 sweep's patterns** — 41 lines (§5, §9, §11, §16, §18, §19, §20, §21, §27,
   §35, §37, §38, §40, §46, §64, §67, §68, §70, §73, §74) still describe the retired tiers (e.g. Reports' "Starter
   view", "WhatsApp on Max", event types "Max + trial only"). Correct in place against the code
@@ -17836,7 +17921,7 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
   - 🔴 **Canada's time zones:** a local build on Node 22.22.3 reports the 2026 Canadian tz changes MISSING. Check the
     Vercel build log, or move Vercel to Node 24.x, before 1 Nov 2026 (§83.1).
   - **The non-euro European prices** are in the live table as proposed; approval isn't recorded (§83.10).
-  - **France has no row:** france-1 block B is not run (§83.1).
+  - ~~**France has no row:** france-1 block B is not run (§83.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
   - **The Admin › Countries testing rule** still names the Ireland column, and Ireland is now switched on (§76.1). The
     rule is Dominic's to change.
   - **The other languages' "Private event" glossary rows** (DE, NL, ES, IT) also name hiring a truck; split each in its
@@ -17848,8 +17933,8 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - 🔴 **Luxembourg:** fr-LU (a sparse override of fr-FR: "+352", Luxembourg VAT wording), then switch on. ⚠️ OBSERVED 23 Oct:
   LU is already switched on and serves en-GB words under a `fr-LU` hreflang (§84.1). Build fr-LU, or switch LU off, first.
 - 🔴 **Run `20261038`** (the 14 short names): those countries are live with English short names (§84.1).
-- **France's row** (france-1 block B, `20261034`) is still not run; France is the one built language with no live country
-  (§84.1).
+- ~~**France's row** (france-1 block B, `20261034`) is still not run; France is the one built language with no live country
+  (§84.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
 - **Outside Europe** (no rows yet): Singapore, Hong Kong, Malaysia, UAE (English first), then Brazil, Mexico, Japan,
   Thailand; India and Indonesia are Stripe invite-only.
 - **Terms and privacy in each country's language** (Dominic, 23 Oct).
@@ -17875,6 +17960,72 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
   done: `lib/pricing-check.ts` is in its EXPECTED list (`⚠️ RE-PINNED (pricing-check-1)`), and the harness passes 270/270.
   ⚠️ **Uncommitted at 23 Oct 18:25** — commit it with the next push.
 - **Register `pricing-check-1.cjs`** (V16.6): it is not in `scripts/harnesses.json`, so the sweep doesn't run it (§85.6).
+
+## Added V16.7 — comparison pages, search research and the checker (27 October 2026)
+
+**Checker and Pricing check**
+- **"Import German comparison research" fails** ("That could not be done just now. Nothing was changed"; observed by
+  Dominic, 27 Oct). Investigate, then **replace the button with an automatic import** (stated). OBSERVED 29 Oct: DE has
+  7 plans and `comparison_entries` is empty, so the research is still not in.
+- **A failed Claude API login produced a green GitHub tick** (27 Oct). Make it fail the run.
+- **Deep check one country at a time,** then lighter periodic checks, within the $100 monthly allowance (stated, 27 Oct):
+  pick a country in Admin, finish it, and move on as the budget allows.
+- **Token renewal:** confirm on the first long run that it keeps the login alive past 10 minutes. If not, move the
+  refresh loop into the checker step. (No run so far has lasted over 4 minutes.)
+- **Measure a `deep` run** with limit 3, then decide: the verifier on Haiku, or a first deep check over two months.
+  (Routine is measured: ≈ $0.19 a competitor, §86.4.)
+- **Review the 39 pending findings** from the 28 and 29 Oct runs.
+- **Scheduled runs fire about 6 hours late** (02:10 UTC cron; they ran at 08:21 and 08:23). GitHub delays scheduled
+  workflows; fine as long as it runs daily.
+- **Re-pin `scripts/competitor-check-1.cjs`:** it still expects `secrets.ANTHROPIC_API_KEY`. Re-pin it to the federation
+  variables.
+- **`docs/competitor-check-1-report.md`** still tells Dominic to add an API key (superseded by the 1c report).
+- **Register `scripts/pricing-check-1.cjs`** in `scripts/harnesses.json` (carried from V16.6).
+- **Add web addresses** for Hatches Up, EasyEats, Eventifood and RapidOrderz, or they are never checked.
+- **The optional summary email** needs `BREVO_API_KEY` and `EMAIL_FROM_ADDRESS` as Actions secrets.
+- **The Automatic checks tab** was built without the mockup; compare the two.
+
+**Comparison pages**
+- **Germany go-live:**
+  - the apps in the German App Store and Play, then the DE app-flag SQL;
+  - verify at least 2 competitors;
+  - the **Impressum decision** (`lib/comparison-decisions.ts`);
+  - Lieferando's rates (blocked);
+  - Gustoco and leafsystems (new DE rivals from Gemini) checked and added.
+- **Go-live checklist for every comparison page:**
+  - Bing Webmaster Tools (import from Google Search Console, then submit the sitemap);
+  - an IndexNow key file plus a ping **when a page goes live** (not on every deploy);
+  - request indexing in Google Search Console;
+  - check that Vercel's firewall / bot protection is not blocking AI crawlers;
+  - run the AI spot-check questions about 72 hours after going live (a check, not a lever).
+- **When a second comparison page exists:** visible links between the countries' comparison pages, plus hreflang between
+  them.
+- **Austria** next (it reuses the German page).
+- **ai-files-1** (never run): a `/llms.txt` features section, English-only card sentences in the international number
+  form, a last-updated line, JSON-LD `featureList` and `dateModified`, and `operatingSystem` per country from the app
+  flags. It must be re-issued, because compare-de-1 already added the app flags.
+
+**Pricing decisions (Dominic's; none taken)**
+- **The discussed prices:** UK £59 / IE €49 / NZ NZ$79 / US $59 (to be re-issued as decisions for live countries; the
+  research's guarded SQL changes nothing, as V16.6 records).
+- **One euro price, or per-country euro prices** (the EU geo-blocking note, §85.7).
+
+**Payments and markets**
+- **BLIK** (PL) before a Polish page: check it works with authorise-now, capture-later. The same check for Swish
+  (a Stripe preview), iDEAL/Wero, Bancontact, MobilePay and Vipps.
+- **fr-BE** for Wallonia and Brussels; a Czech EET 2.0 question (from 1 Jan 2027) before a Czech page.
+- **Norway:** Stripe's assumed 2.4% + 2 kr card rate looks high against Zettle and SumUp.
+
+**Site and repo**
+- **de-DE `manageSettings.getApp.body`** claims iPhone, iPad and Android. That is false: the apps are UK-only, and the
+  iOS app is the iPad app. Correct it when the stores change.
+- **JSON-LD `operatingSystem: "Web, iOS, Android"`** is on every country page. Outside the UK, the iOS and Android parts
+  aren't true for an operator yet (§82; ai-files-1).
+- **The apex `hatchgrab.com`** still redirects with 307, not 308 (OBSERVED by curl, 29 Oct; a Vercel setting; carried).
+- **The GitHub repository `dominicbonini/village-foodie` is public** (27 Oct). Dominic to decide whether that is intended.
+- **Lint** reports 16 existing `<a href="/login">`-style errors twice since the new three-segment route (no new problem).
+- **Load flakes:** `add-order-refresh`, `add-order-refresh-inputs` and `us-polish-batch` time out under full-sweep load
+  and pass alone; `add-order-refresh-inputs` failed different checks on each of three runs alone (§79; watch).
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -21229,6 +21380,32 @@ of this manual).
 - **35.am-4** Non-Latin fonts load only on their own language's pages; Latin pages never request them.
 - **35.am-5** A regional variant holds only keys whose wording truly differs from its base.
 
+## 35.an 🔴 COMPETITOR FACTS, COMPARISON PAGES AND THE CHECKER (V16.7)
+
+- **35.an-1 Public competitor facts are verified facts.**
+  - A competitor appears on a public surface only when its entry, plan and features carry Dominic's verification.
+  - Every fact has a source URL and a checked date.
+  - No Product, Review, Rating or AggregateRating markup for any competitor.
+- **35.an-2 Comparison visibility is decided on the server, once** (`resolveComparison`), for the page and every twin.
+  A non-live comparison is never publicly cached, is `noindex`, and is absent from the sitemap, `/llms.txt` and
+  hreflang.
+- **35.an-3 Automated checks propose; they never edit.** The competitor checker writes only runs, findings and the
+  scheduling columns. Every accepted change creates a new version and clears verification.
+- **35.an-4 No quote, no finding.** Every checker finding carries a verbatim quote that code has found in a page fetched
+  in that run, or it is marked "Couldn't confirm".
+- **35.an-5 API spend is capped in data:** daily and monthly caps in `competitor_check_settings`; a run stops before
+  crossing either.
+- **35.an-6 CI calls the Claude API by Workload Identity Federation only.** `ANTHROPIC_API_KEY` must not exist in the
+  checker's environment, and the checker refuses to start if it does.
+- **35.an-7 Product claims follow data:**
+  - the apps are claimed only where the country's app flags are true;
+  - payment methods only as built (cards, Apple Pay, Google Pay, pay at the truck);
+  - kitchen capacity only in the truthful wording;
+  - never "fiscal till".
+- **35.an-8 Web research is sequential and polite:** one request at a time, with pauses between; no workaround for a
+  block; never parallel agents against one search engine.
+- **35.an-9 Imports run automatically.** An admin "import" button is not an acceptable delivery.
+
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
 **All three recorded facts verified before changing anything:** no `.entitlements` file anywhere under `ios/` (`find` returns nothing); **no `CODE_SIGN_ENTITLEMENTS` in either build configuration**; and **no Push Notifications capability** — an enabled capability leaves a `SystemCapabilities` block and an entitlements key, and neither existed. §36's statement that the APNs path *"has been written, deployed and reasoned about, and has never been able to obtain a token"* was accurate, and the reason was this and only this.
@@ -21317,7 +21494,7 @@ the ONLY thing that can differ between what was verified and what a reviewer see
 ✅ **STATED, from the Console.** The Android app was **submitted for review on 1 September 2026.**
 The **production track shows Active**, release **HatchGrab V1**, **version code 1**, under the temporary
 app name `com.hatchgrab.app (unreviewed)` — **which is what Play displays until a reviewer approves the
-listing, not a sign anything is wrong.** **Availability is the United Kingdom only, deliberately.**
+listing, not a sign anything is wrong.** **Availability is the United Kingdom only, deliberately.** ⛔ *V16.7: the iOS app is likewise in the UK App Store only (Apple lookup, 24 Oct; §86.2).*
 
 ⛔ **THIS SUPERSEDES THE V11.52 HEADING THIS SUBSECTION CARRIED** — *"the BINARY is ready; the LISTING
 is what blocks submission"*. **The listing no longer blocks anything; it was produced and filed.** The
@@ -28026,7 +28203,9 @@ Recorded so they are not briefed again.
     disallows every private area (§82.9; uncommitted at 21 Oct).*
   - the sitemap's lastmod from real dates (`MARKETING_COPY_UPDATED` in `lib/marketing-meta.ts` — 🔴 **move it when
     landing or /features copy changes**; `'2026-10-20'` today), legal and contact pages listed, `xhtml:link`
-    alternates;
+    alternates; ⛔ *Corrected V16.7 — incomplete: a country page's lastmod is the latest of that copy date, the plan
+    data and the country row's last change (`app/sitemap.ts`, seo-geo-1). The rule to move `MARKETING_COPY_UPDATED` with
+    copy changes still stands.*
   - canonical + og:url on legal/contact/signup/login (HatchGrab URLs on both hosts, except VF `/contact`, which is
     self-canonical and in the VF sitemap);
   - `/signup` and `/login` `noindex, follow`;
@@ -28050,8 +28229,10 @@ Recorded so they are not briefed again.
   - robots.txt on the HatchGrab host allows the named answer and training bots and repeats every private
     disallow; `/llms.txt` is new; JSON-LD gains `legalName`, `operatingSystem` and `countriesSupported`
     (`areaServed` removed). Village Foodie is unchanged.
-- **Live at 21 Oct (OBSERVED by curl):** the landing tidy and /features are live; AI search is **not** (uncommitted:
-  the live robots.txt still blocks GPTBot and ClaudeBot, `/llms.txt` is 404, the JSON-LD still has `areaServed`).
+- **Live at 21 Oct (OBSERVED by curl):** the landing tidy and /features are live; ~~AI search is **not** (uncommitted:
+  the live robots.txt still blocks GPTBot and ClaudeBot, `/llms.txt` is 404, the JSON-LD still has `areaServed`).~~
+  ⛔ Corrected V16.7 — AI search is live: robots.txt allows the named bots and `/llms.txt` is 200 (curl, 22, 24 and 29 Oct;
+  §82).
 - **Still open:** the apex `hatchgrab.com` → www is still a **307** (OBSERVED by curl 21 Oct 2026).
 
 ## Native prices, /about, the footer country picker and the new country pages (V16.4 — 21–22 October 2026)
@@ -28067,7 +28248,7 @@ Recorded so they are not briefed again.
 - **The country picker** is in the footer only, on every HatchGrab marketing page (`components/landing/CountryMenu.tsx`).
 - **Country pages:**
   - `/ca` is live (200, 22 Oct);
-  - `/fr` is in `COUNTRY_PATH_SEGMENTS` (committed) and 302s to `/uk` while France has no row;
+  - `/fr` is in `COUNTRY_PATH_SEGMENTS` (committed) ~~and 302s to `/uk` while France has no row~~; ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
   - ~~the 29 European segments (`/at` … `/ch`, `/gi`, `/mt`) are uncommitted. Live they are 404 (curl, 22 Oct:
     `/de`, `/mt`); once deployed, each 302s to `/uk` while switched off.~~ ⛔ Corrected V16.5 — committed and pushed; every row is
     switched on (OBSERVED 23 Oct, git and SQL; the live pages weren't fetched).
@@ -28081,12 +28262,50 @@ Recorded so they are not briefed again.
 - **hreflang** is reciprocal across every live locale plus x-default. The sitemap lists each page with its locale. While a
   country is off, its page 302s to /uk and is absent from hreflang and the sitemap (proved in fixtures,
   `scripts/europe-languages-1.cjs`).
-- **OBSERVED 23 Oct (read-only SQL):** every European row except France (no row) is switched on. LU is on without fr-LU, so
+- **OBSERVED 23 Oct (read-only SQL):** every European row ~~except France (no row)~~ is switched on (⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).) LU is on without fr-LU, so
   /lu is English words under a `fr-LU` tag (§84.1). The live pages themselves weren't fetched for this delta.
 - **Hero images** exist for /de, /at and /ch (from fixtures).
 - **Fonts:** Greek and Cyrillic pages load Noto Sans; Latin pages never request it (§84.7).
 
-# 49. Deploy posture (current at V16.5; earlier postures below, each dated)
+# 49. Deploy posture (current at V16.7; earlier postures below, each dated)
+
+### 🔴 DEPLOY POSTURE AT V16.7 — EVERYTHING PUSHED; COMPARISON TABLES, CHECKER AND CANDIDATES RUN; THE GERMAN PAGE ADMIN-ONLY (29 October 2026)
+
+*Replaces the V16.5 posture below as the current one. It, the earlier postures, and V16.6's live state (§85.1) stay as
+dated history.*
+
+- **Git (OBSERVED 29 Oct 2026, after `git fetch`):**
+  - `git log origin/main -1` = HEAD = `b01d0f66` "about us" (29 Oct 11:24 UTC);
+  - `git status` is clean.
+  - **Commits since V16.6:**
+    - `0a70ec7e` "admin updates" (23 Oct) and `ae48f010` "country piocker" (24 Oct);
+    - `7d879790` "comparison" (25 Oct, compare-de-1);
+    - `a8883fe6` "compare ongoing" (26 Oct, competitor-check-1);
+    - `f99a88e5` "competitor checks" (27 Oct 10:50 UTC, the federation login);
+    - `b01d0f66` "about us" (29 Oct, the About page's new words).
+  - **All pushed.** The competitor-check workflow runs from `main` (Dominic pushed on 27 Oct around 10:50).
+- **Migrations (OBSERVED by read-only SQL):**
+  - France's row exists and is switched on (written 23 Oct 21:21 UTC; 3 `plan_prices` rows).
+  - 20261042 (comparison), 20261043 (checker) and 20261044 (candidates) are run (stated by Dominic on 27 Oct; the tables,
+    columns and 70 candidates are there).
+- **`country_settings`:**
+  - 36 rows, all enabled;
+  - DE `comparison_status = 'admin'`;
+  - app flags GB true, DE false.
+- **Counts:**
+  - 202 competitors (70 candidates);
+  - 242 competitor plans (7 DE);
+  - 0 `comparison_entries`;
+  - 4 `competitor_check_runs`, all `done` (§86.4);
+  - 39 findings, all pending.
+- **Public (curl, 29 Oct):**
+  - `/de/vergleich/foodtruck-bestellsystem` and `.md` → 404 with `X-Robots-Tag: noindex, nofollow`;
+  - `/llms.txt` 200 (426 lines, no "Comparisons");
+  - `/fr` 200;
+  - `/about` shows the new heading;
+  - the apex `hatchgrab.com` → 307.
+- **STATED, not observable from here:** the Workload Identity Federation rule and its successful test (27 Oct), the four
+  repository variables, the Console workspace and any spend limit on it.
 
 ### 🔴 DEPLOY POSTURE AT V16.5 — EVERYTHING COMMITTED AND PUSHED; EUROPE SWITCHED ON; 20261038 NOT RUN (23 October 2026)
 
@@ -28120,7 +28339,7 @@ Recorded so they are not briefed again.
     - allergen-card-country, address-formats-2, ireland-3, native-prices, anz-terms (`fadb352f`);
     - canada-1 (`7f905934`), canada-2 (`fc33b3d9`), the About page (`ae871119`);
     - languages-1 and france-1 (`2d725e3e`).
-  - **The live site serves them** (curl, 22 Oct): `/about` and `/ca` 200, `/fr` 302 → `/uk`, `/llms.txt` 200, the `/nz`
+  - **The live site serves them** (curl, 22 Oct): `/about` and `/ca` 200, ~~`/fr` 302 → `/uk`~~ (⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).), `/llms.txt` 200, the `/nz`
     currency line, France in `/country-terms`.
   - **Uncommitted on `main`** (`git status`): europe-settings (the 29 formats, `narrowIn`, en-MT / en-GI, the European
     segments, the EEA and Gibraltar terms, its harness, SQL and report) and the france-1 Follow-up (the glossary split).
@@ -32501,7 +32720,7 @@ languages in §77.*
   | Service fee | allowed |
 
 - ⛔ **V16.3:** an **IE** row exists, ~~switched off (EUR, uk14, inserted 21 Oct); AU and NZ have no rows yet (§82.2).~~
-  ⛔ Corrected V16.4 — IE, AU, NZ and CA rows exist and are switched on; France has no row; 29 more European rows are switched off
+  ⛔ Corrected V16.4 — IE, AU, NZ and CA rows exist and are switched on; ~~France has no row; 29 more European rows are switched off~~ ⛔ Corrected V16.7 — France's row exists too, and all 36 rows are switched on (OBSERVED 29 Oct)
   (OBSERVED 22 Oct, §83.1).
 
 - ~~**OBSERVED** A CHECK refuses switching a country on while any plan price is NULL. **The US cannot be
@@ -32823,7 +33042,7 @@ under "Decisions" below):
   - customers see the truck's language for now;
   - marketing follows the **page's** country (`/uk` en-GB, `/us` en-US) — corrected V16.0; see §77.6. ⛔ *V16.3:
     also `/ie` en-IE, `/au` en-AU, `/nz` en-NZ, ~~all switched off (§82.4).~~* ⛔ Corrected V16.4 — all switched on, with `/ca`
-    en-CA; `/fr` fr-FR is built, switched off (§83.1).
+    en-CA; `/fr` fr-FR is built, ~~switched off~~ (§83.1). ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
 - ~~"Pay at Hatch" stays a brand name in every country.~~ ⛔ Corrected V16.3 — "Pay at Hatch" is the UK's wording
   only; en-US, en-IE, en-AU and en-NZ display "Pay at the truck". The id and the mask list are unchanged
   (`lib/price-words.ts`) (§82.4).
@@ -33274,6 +33493,27 @@ correction note in its history; the hidden Smash and Grab prospect filled.
       PNGs and its row-order check was already stale.
   - **Sweep (23 Oct, with `pricing-check-1` added from a scratch copy of the list):** 166 run · 165 passed · 1 failed.
     The failure was `schedule-graphics-places` (re-pinned above).
+
+- **Comparison pages and the competitor checker (V16.7):**
+  - **Claude Code for web research** (stated, 24 Oct): it fetches without per-site approval. Run searches sequentially
+    (§86.2, the competition-check lesson).
+  - **The Claude API from CI:** GitHub Actions with Workload Identity Federation (`id-token: write`, four repository
+    variables, a token file refreshed every 60 s). No API-key secrets.
+  - **New harnesses:**
+    - `compare-de-1` and `competitor-check-1` are registered in `harnesses`;
+    - `compare-de-1-screens` and `competitor-check-1-screens` are in the needs-a-browser group (run by hand);
+    - shared modules `_compare-de-1-fixtures.cjs` and `_competitor-check-1-fixtures.cjs`.
+  - **The checker's fixtures are hand-built** in the documented response shape. No real API call was made in testing.
+  - **Sweeps:**
+    - compare-de-1 (25 Oct): 168 listed; 161 passed; the 7 failures were re-pinned or fixed and pass alone.
+    - competitor-check-1 (25 Oct): 169 run, 166 passed. `currency-registry` caught a banned phrase and was fixed;
+      `add-order-refresh` and `add-order-refresh-inputs` are load flakes (§27).
+  - **Re-pins:** `admin-countries-1`, `_messages-parity-1e` (the `comparison` namespace; later the About page's keys),
+    `pricing-check-1`'s in-memory store and `about-page`.
+  - **AI research by other assistants:** Gemini Deep Research is useful for the Google view; give it a research prompt that
+    doesn't reveal the hypothesis. ChatGPT's output on 24 Oct was not usable. Ask the spot-check questions in fresh chats
+    with no context.
+  - **Mockups live as Claude artifacts,** not in the repo. A brief built from one must describe the layout in words.
 ---
 
 # 80. Security (V16.1 — 19 October 2026)
@@ -33333,7 +33573,7 @@ switched on; the 29 European rows are switched off (§83.1).
 - **HatchGrab Ltd is not VAT-registered** (stated 20 Oct); Terms §4 says so.
 - **Price positioning (research 19–20 Oct, see §21):** UK all-in (card fees included) 32–37% cheaper than Hatches Up
   at every volume; US software fee 23–66% under EasyEats, but all-in Stripe's 30¢ makes EasyEats cheaper for some
-  trucks unless the diner pays an online ordering fee; eurozone pricing (€0/€29/€69) planned later. ⛔ *V16.3: the IE rows are in, ~~switched off~~ (§82.2).* ⛔ Corrected V16.4 — switched on (§83.1). ⛔ *V16.6: the per-country research of 23 Oct, and the live comparison in Admin › Pricing check, are §85. With its defaults, GB is cheapest for a small truck and not for a medium or busy one (Aphelios £29.99 flat, Perkss, Grafterr, Order Tiger). Hatches Up, at £682 a month for a medium truck, against our £376, stays well above.*
+  trucks unless the diner pays an online ordering fee; ~~eurozone pricing (€0/€29/€69) planned later.~~ ⛔ Corrected V16.7 — euro countries carry €0 / €29 / €69 now (§83, §84). ⛔ *V16.3: the IE rows are in, ~~switched off~~ (§82.2).* ⛔ Corrected V16.4 — switched on (§83.1). ⛔ *V16.6: the per-country research of 23 Oct, and the live comparison in Admin › Pricing check, are §85. With its defaults, GB is cheapest for a small truck and not for a medium or busy one (Aphelios £29.99 flat, Perkss, Grafterr, Order Tiger). Hatches Up, at £682 a month for a medium truck, against our £376, stays well above.*
 
 ## 81.2 The tables (OBSERVED live, 20 October 2026)
 
@@ -33705,10 +33945,16 @@ with a hidden test truck; then switch on in Admin › Countries.
   - **Village Foodie is unchanged:** the 5 June 2026 rules, which block training bots.
 - **/llms.txt** (HatchGrab host only, 404 on Village Foodie): built at request time from the switched-on countries,
   public plans and prices, the fee rule, the trial and the footnotes. Every sentence is the site's own.
+  ⛔ *V16.7 — OBSERVED 24 Oct (seo-geo-1) and 29 Oct (curl): `/llms.txt` 200, 426 lines, 36 countries; robots.txt
+  allows the AI answer and training bots by name (GPTBot, ClaudeBot, OAI-SearchBot, PerplexityBot, CCBot…). **Known
+  gaps:** each country's card sentence is in that country's language and in the home number form (against the
+  price-form invariant for side-by-side surfaces, §35.al), and there is no features section (ai-files-1, §27).*
 - **JSON-LD:**
   - Organization `legalName` "HatchGrab Ltd" and `addressCountry` GB;
   - SoftwareApplication `operatingSystem` "Web, iOS, Android" and `countriesSupported` (the switched-on countries),
-    replacing the invalid `areaServed`;
+    replacing the invalid `areaServed`; ⛔ *V16.7 — known gap: `operatingSystem` says "Web, iOS, Android" on every
+    country page, but outside the UK the iOS and Android parts aren't true for an operator yet (the apps are UK-only, §86.2;
+    backlog §27).*
   - no rich result until real reviews exist (none invented).
 - ~~⚠️ **NOT LIVE at 21 Oct (OBSERVED by curl):** ai-search-1 is uncommitted. The live `www.hatchgrab.com/robots.txt`
   still disallows GPTBot, ClaudeBot and CCBot; `/llms.txt` is 404; the live JSON-LD still has `areaServed`. All three
@@ -33777,8 +34023,8 @@ code. A country stays switched off until its launch list is done.
   - **Enabled:** GB, US, IE, AU, NZ, CA. AU and NZ were last written 21 Oct 21:11 UTC and CA 22 Oct 12:32 UTC, each by
     `dominic@hatchgrab.com`. IE was last written 22 Oct 10:26 UTC by `allergen-card-country`, which set
     `allergen_card_only_allowed = false`; when IE was switched on can't be seen after the fact.
-  - **No FR row, and no FR `plan_prices`.** france-1's block B (`20261034_france_row.sql`) has **not** run, so France
-    exists only in code.
+  - ~~**No FR row, and no FR `plan_prices`.** france-1's block B (`20261034_france_row.sql`) has **not** run, so France
+    exists only in code.~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
   - **Present and switched off:** AT BE BG HR CY CZ DK EE FI DE GI GR HU IT LV LI LT LU MT NL NO PL PT RO SK SI ES SE CH.
     They were inserted 22 Oct 19:34:02 UTC, `updated_by = 'europe-settings draft'`, with 87 `plan_prices` rows (3 each).
   - europe-settings §0 records that they went in before the deploy and before price approval. They are byte-identical
@@ -33811,7 +34057,7 @@ code. A country stays switched off until its launch list is done.
     - the france-1 Follow-up: the glossary split.
   - **Live (curl, 22 Oct):**
     - `/about` 200 and `/ca` 200;
-    - `/fr` 302s to `/uk` (no FR row);
+    - ~~`/fr` 302s to `/uk` (no FR row);~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
     - `/de` and `/mt` are **404**, because the deployed code has no European segments yet;
     - `/llms.txt` 200; `/nz` shows "Prices in New Zealand dollars (NZD)";
     - the live `/country-terms` has the France section but not the EEA or Gibraltar ones.
@@ -33913,7 +34159,9 @@ code. A country stays switched off until its launch list is done.
 ## 83.7 About page and the country picker
 
 - **/about** is on the HatchGrab host only (Village Foodie 404). Live, 200 (curl, 22 Oct).
-  - **Content:** "Hi, I'm Dominic.", the founder's story, the company line from `lib/company.ts`, Contact us.
+  - **Content:** ~~"Hi, I'm Dominic.", the founder's story,~~ ⛔ Corrected V16.7 (OBSERVED 29 Oct, `b01d0f66`) — "Built around the way
+    food trucks actually work", six paragraphs on why HatchGrab exists, a two-line signature ("Founder, HatchGrab"), in every
+    language; then the company line from `lib/company.ts`, Contact us.
   - **Photo:** `public/about/dominic.jpg` when present (square crop). OBSERVED 22 Oct: no `public/about/` folder yet,
     so no photo.
   - **`ABOUT_UPDATED`** in `lib/about.ts` moves when the page changes.
@@ -33945,9 +34193,9 @@ code. A country stays switched off until its launch list is done.
 - **Known limits:** tickets fold to ASCII; legal pages, sign-in and account emails stay en-GB; stored English
   (cancellation reasons) shows in English.
 
-## 83.9 France (built, switched off)
+## 83.9 France (built; ~~switched off~~ ⛔ Corrected V16.7 — live, §86.1)
 
-- **No FR row yet** (OBSERVED 22 Oct, §83.1). `/fr` 302s to `/uk`. The FR address format is in the live CHECK, via
+- ~~**No FR row yet** (OBSERVED 22 Oct, §83.1). `/fr` 302s to `/uk`.~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap). The FR address format is in the live CHECK, via
   europe-settings' block A.
 - **Prices and words:** fr-FR, /fr, EUR at Ireland's prices. « Sans abonnement / Pro / Illimité »; « Paiement sur
   place » / « Payer au retrait ».
@@ -34009,8 +34257,8 @@ regional overrides. A language prompt never changes English output.
   - 🔴 **Mismatch 1 — LU is enabled** (locale `fr-LU`, EUR). The delta says it must still be off. fr-LU is not in
     `LOCALES`, so `resolveLocale` gives en-GB words. `countryPageAlternates` (`lib/marketing-meta.ts`) lists the row's own
     locale, so /lu is in hreflang as `fr-LU` with English content.
-  - 🔴 **Mismatch 2 — there is no FR row** (and no FR `plan_prices`), so France, the first built language, is not live.
-    france-1 block B (`20261034_france_row.sql`) is still not run.
+  - ~~🔴 **Mismatch 2 — there is no FR row** (and no FR `plan_prices`), so France, the first built language, is not live.
+    france-1 block B (`20261034_france_row.sql`) is still not run.~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
 - **`short_name` migrations:**
   - **`20261037`** (12 countries) **has run.** OBSERVED: Deutschland, Österreich, Schweiz, Liechtenstein, España, Italia,
     Portugal, Nederland, België, Sverige, Danmark, Norge.
@@ -34085,7 +34333,7 @@ examples (europe-languages-2 Stage 0) and, in de-CH, the card button that keeps 
 - `order.payAmount` (card) = "Pay {amount}" in the language, except **DE and AT: no amount** (BGB § 312j, FAGG § 8 "nothing
   other than" the words). CH and LI keep the amount (no Swiss button rule).
 - **France** changed (23 Oct): « Commander avec obligation de paiement » (`order.placeOrder`, and `order.busyNotice`, which
-  quotes it). The old « Commander et payer au retrait » was wrong for card payers. (France itself has no row yet, §84.1.)
+  quotes it). The old « Commander et payer au retrait » was wrong for card payers. (~~France itself has no row yet, §84.1.~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).)
 - Judgement calls recorded for Dominic: Romanian uses the shorter « Comandă cu obligație de plată »; Finland has no fixed
   phrase; Latvian and Lithuanian use the Directive's own text (national texts not reachable).
 - The order page layout is unchanged (35.al-3); only the words differ.
@@ -34195,8 +34443,8 @@ verified it. No proposed price is recorded here as decided.
   - **0 rows verified, 0 superseded.**
   - `country_benchmarks` has a `notes` column. It isn't in the brief's column list; it was added because two of the
     brief's own fixes need one.
-- **Countries:** all 35 `country_settings` rows are switched on (§84.1). France and the ten planned countries have no
-  row, so the tab places them in its **Planned** group, and its **Switched off** group is empty.
+- **Countries:** all 35 `country_settings` rows are switched on (§84.1). ~~France and~~ the ten planned countries have no
+  row (⛔ Corrected V16.7 — France has one; §86.1), so the tab places them in its **Planned** group, and its **Switched off** group is empty.
 - **Committed** in `f17f6540` "more europe":
   - the code and data;
   - `docs/pricing-check-1-report.md` (an earlier version);
@@ -34368,8 +34616,264 @@ verified it. No proposed price is recorded here as decided.
 - **Built for not recorded:** Eventifood, EasyEats and RapidOrderz have `focus` NULL, so "Food-truck tools only" dims
   them. Set it in the tab if they are food-truck tools.
 - **App availability:** the benchmarks say Android = GB only (Google Play availability is the United Kingdom only, §36).
-  Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.
-- **France** stays in Planned until its row (`20261034`, block B) is run (§84.1).
+  ~~Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.~~ ⛔ Corrected V16.7 —
+  known: the UK App Store only (Apple lookup for id 6803543106, 24 Oct; §86.2). The benchmarks' column is still NULL; the
+  per-country flags are now `country_settings.ios_app_available` / `android_app_available` (GB true only, §86.3).
+- ~~**France** stays in Planned until its row (`20261034`, block B) is run (§84.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
+
+
+## 85.7 Pricing after V16.6 (V16.7 — 23–27 October 2026)
+
+- **Price positioning, discussed with Dominic on 23 Oct — NOT decided:**
+  - UK Unlimited £59: within 10% of the cheapest paid food-truck tool at medium, Aphelios £29.99, and it keeps the £49
+    founder offer meaningful;
+  - IE €49, NZ NZ$79, US $59;
+  - CA and AU are already cheapest.
+  - Card fees are about 80% of a truck's monthly bill, so "within 10%" is £20–40 a month.
+- **EU legal note (not legal advice):**
+  - The Geo-blocking Regulation covers online services sold to businesses buying for their own use, including from
+    non-EU sellers.
+  - Different prices on different country pages are allowed. But a customer may not be refused or redirected because of
+    where they are based, so a truck could choose the cheapest euro price.
+  - **Recommended:** one euro price, with local adjustments only in non-euro currencies. Dominic's decision: not
+    recorded.
+- **Key features for comparisons** (stated, 23 Oct): pre-orders, WhatsApp, social media posts, own web address, and the
+  iOS and Android apps. The rest is standard on every plan.
+- **iOS availability is now known:** the UK App Store only (Apple lookup, 24 Oct; §86.2). §85.6's "not recorded" is
+  corrected.
+
+---
+
+# 86. Comparison pages, search research and the automatic competitor checker (V16.7 — 24–27 October 2026)
+
+🔴 **THE RULES OF THIS SECTION**
+- **Competitor facts are data** with a source URL and a checked date, never prose in code.
+- **Nothing about a competitor is shown publicly until Dominic has verified it** (stated, 23 Oct). Automated checks
+  propose; Dominic disposes.
+- **Comparison pages compare features.** Price is one plain line per tool, with its source and date (stated, 24 Oct).
+- **Web research and website checks run in Claude Code**, which fetches without per-site approval (stated, 24 Oct).
+  They run **sequentially** — never several agents hammering a search engine at once (§86.2, the competition-check
+  lesson).
+- **Imports are automatic.** No admin "import" button (stated, 27 Oct).
+
+## 86.1 Live state (OBSERVED 29 October 2026 — read-only SQL, git, curl)
+
+- **Migrations run:** 20261042 (comparison), 20261043 (checker) and 20261044 (candidates).
+  - The tables exist: `comparison_entries` (9 columns), `competitor_check_runs` (13), `competitor_check_findings` (21),
+    `competitor_check_settings` (12).
+  - France's row (fr-FR, EUR, 3 `plan_prices` rows) exists, written 23 Oct 21:21 UTC.
+- **`country_settings`:** 36 rows, all enabled.
+  - DE `comparison_status = 'admin'`; AT, FR and GB are `off`.
+  - App flags: GB `ios_app_available` / `android_app_available` true; DE, AT and FR false.
+- **Competitors:**
+  - 202 competitors: 132 + 70 `lifecycle = 'candidate'`.
+  - 242 competitor plans, all current, none superseded; 7 of them for DE.
+  - `comparison_entries`: 0.
+- **Checker:**
+  - Settings: not paused, $8 a day, $90 a month, 15 deep a day, a 90-day interval, `deep_requested_at` null, both models
+    `claude-sonnet-5-5`.
+  - Runs: four (§86.4); findings: 39, all pending.
+- **Public (curl, anonymous):**
+  - `/de/vergleich/foodtruck-bestellsystem` and its `.md` twin: 404 with `X-Robots-Tag: noindex, nofollow` and a
+    private, no-store `Cache-Control`;
+  - `/llms.txt`: 200, 426 lines, no "Comparisons" section;
+  - the sitemap: no comparison page; `/fr` is in it and answers 200.
+- **Git:** `origin/main` = HEAD = `b01d0f66` (29 Oct). compare-de-1 is in `7d879790` (25 Oct), the checker in `a8883fe6`
+  (26 Oct) and the federation login in `f99a88e5` (27 Oct), all pushed.
+
+## 86.2 Search and AI-search research
+
+- **Which engine feeds which AI (competition-check-1, 24 Oct):**
+  - Google → Gemini and AI Overviews (confirmed);
+  - Bing → Microsoft Copilot (confirmed) and ChatGPT search (reported, plus OpenAI's own crawler);
+  - Brave → Claude (reported);
+  - Perplexity → its own index plus others (reported).
+- **seo-geo-1 (24 Oct):** verified a marketing brief's claims for PL, CZ/SK, SE, NL/BE, DK/NO. Most were only partly true:
+  - NL and BE are **not** "data voids": several food-truck ordering tools with time slots exist (Qrder, Jamezz, Bestelly,
+    Vev, Payli and others).
+  - The brief's Choice figure merged two vendors; FoxiFood is a US LLC, not Slovak.
+  - **New rivals found:** Frivo (PL), FoxiFood (CZ/SK), Payli (BE), Truckly (DK) and more.
+  - **Data:** `docs/seo-geo-1/competitors-verified.csv` (149 rows) and `keywords.csv` (628).
+- **What HatchGrab can truthfully claim** (seo-geo-1, from code and this manual):
+  - **Built:**
+    - collection time slots (5/10/15/20/30 min per van);
+    - kitchen capacity;
+    - a weekly multi-location schedule;
+    - KDS and printed tickets;
+    - pay at the truck;
+    - allergens;
+    - menu import from a photo;
+    - an own web address on every plan;
+    - "no contract, cancel any time" (Terms).
+  - **WhatsApp auto-replies and social posts:** Pro and Unlimited only.
+  - **Payments:** cards only, with Apple Pay / Google Pay as card wallets. **BLIK, iDEAL/Wero, Bancontact, Swish,
+    MobilePay, Vipps, Klarna, TWINT, Bizum and MB WAY are not built.**
+  - 🔴 **Kitchen-capacity wording:** never "slot throttling". Truthful: "Customers only see collection times your kitchen
+    can actually make, based on each item's prep time and how many you cook at once."
+  - 🔴 **The iOS app is in the UK App Store only.** Apple's lookup for id 6803543106 (24 Oct): GB 1 result; US, IE, AU,
+    CA, NZ, DE, PL, SE, NL, DK, NO and CZ 0. **Android is UK-only on Play** (deliberate since 1 Sep; not re-checked).
+  - **HatchGrab is not a fiscal till** (no TSE, EET, GKS or kassaregister). Where one is required, it sits beside the
+    truck's certified till.
+- **competition-check-1 (24 Oct): a Bing-index picture only.**
+  - Google answered nothing (a JavaScript-only results page; Startpage showed a bot check), and Brave almost nothing
+    (HTTP 429). Bing, via DuckDuckGo and Yahoo, answered 30 of 43 country/language pairs.
+  - **Hypothesis confirmed on Bing:** non-English languages averaged 1.87 / 5 for competition, against 3.74 for English.
+  - **No local-language page in any country compares food-truck pre-ordering tools.**
+  - 🔴 **Lesson:** six agents searched in parallel from Dominic's own connection and tripped the engines' rate limits.
+    Research runs one request at a time, with pauses.
+- **Gemini Deep Research (25 Oct, the Google view, `docs/competition-check-1/gemini-deep-research.csv`):**
+  - **Germany:** competition 4/5 (vendor product pages rank: Gustoco, OrderFront, Jamezz, FoxiFood, DISH; no independent
+    comparison), demand 5/5. The comparison slot is open; the generic term "Bestellsystem" is not easy.
+  - **English markets are crowded, Australia included** (Y wait, Wollopit, Asky). seo-geo-1's "start with Australia" was
+    wrong.
+  - **Least competition with real demand on Google:** CZ (1/4), then AT, CH-de, BE, ES, HU and RO (2/4). Sweden's search
+    failed (inconclusive).
+- **ChatGPT Deep Research (24 Oct): rejected as unreliable.** It gave implausible domains (e.g. eat24.com, closed in
+  2018; one "ordereat" site under six country endings) and no per-claim links. Not used for decisions.
+- **Market order (agreed or recommended):**
+  1. Germany first (stated).
+  2. Austria next (it reuses the German page).
+  3. Hold the Netherlands (crowded; iDEAL missing).
+  4. Poland only after BLIK.
+  5. English markets on long-tail pages only.
+
+## 86.3 The German comparison page (compare-de-1, 25 October 2026)
+
+- **Address:** `/de/vergleich/foodtruck-bestellsystem`. The slug comes from messages, so it can be reused for `/at/…`;
+  the English base is `/…/comparison/food-truck-ordering-system`. Route: `app/[country]/[section]/[slug]/page.tsx`.
+- **Visibility is one server-side rule** (`resolveComparison`) for the page and its `.md` / `.json` twins, read from
+  `country_settings.comparison_status`:
+  - `off` → 404.
+  - `admin` → 404 for everyone except a verified admin session. Admins get a banner, `noindex,nofollow` (meta and
+    `X-Robots-Tag`) and `Cache-Control: private, no-store`. The page is absent from the sitemap, `/llms.txt` and
+    hreflang.
+  - `live` → public, indexable and self-canonical. It is in the sitemap (lastmod = the newest check date shown), in
+    `/llms.txt` ("Comparisons", English) and in hreflang (only between live comparison pages).
+  - **Going live** is the "Live" button in Admin › Countries › Comparison pages, not SQL.
+- **What shows publicly:** HatchGrab, plus `comparison_entries` rows whose entry, plan **and** features are all verified.
+  - Admins see everything, with unverified items badged "nicht geprüft · öffentlich verborgen".
+  - "So sieht es öffentlich aus" (`?view=public`) renders the public version.
+- **Built for AI and search:** everything is server-rendered (the table, prices, the FAQ in `<details>`, the method).
+  - An answer-first "Kurz gesagt".
+  - A real `<table>` with a caption and `th scope`.
+  - Every price with its source link and checked date.
+  - An honest "HatchGrab passt nicht, wenn …".
+  - A disclosure that HatchGrab runs the page and is one of the vendors compared.
+  - **JSON-LD:** WebPage (datePublished, dateModified), BreadcrumbList, FAQPage, ItemList (name and url only). **No
+    Product, Review or Rating for anyone.**
+  - **Twins:** Markdown and JSON carry the same data; the JSON gives per-cell sources and dates.
+- **HatchGrab's cells come from data:**
+  - plan switches ("Ab Pro");
+  - `plan_prices` and trial months;
+  - the per-country app flags `ios_app_available` and `android_app_available`. While they are false, the public cell
+    says "Nicht in Deutschland".
+- **Data (migration 20261042):**
+  - `country_settings`: `comparison_status` (off/admin/live), `ios_app_available` and `android_app_available` (GB true).
+  - Competitor columns: `capacity_slots`, `multi_location_schedule`, `kds` and `pay_at_truck` (yes/no/unknown), plus
+    `payment_methods` and `min_term`.
+  - `public.comparison_entries`: country, competitor, primary plan, the honest "passt, wenn …" line, order and
+    verification.
+- **Code:**
+  - `lib/comparison.ts` (pure), `lib/comparison-server.ts`, `-flags.ts`, `-types.ts`;
+  - `lib/comparison-decisions.ts`;
+  - the twins route and the `proxy.ts` headers;
+  - the `LandingFooter` "Vergleich" column: in the server HTML only when live, added in the browser for admins.
+- **German competitors checked on their own sites (24 Oct):** gastro25, GastroDok, FoxiFood, Bestelltheke,
+  GASTRODIGITAL, OrderFront, FoodsHero, Jamezz, and Vev (no German price).
+  - GastroSystem was dropped (it sells kitchen equipment). my-foodtrucks.com does not resolve, and Lieferando's partner
+    page was blocked (403).
+  - **None of the ten states a weekly schedule with changing locations.** Only FoodsHero offers WhatsApp replies and
+    social posts, as paid agency extras. These are HatchGrab's clearest German selling points.
+  - The tills (SumUp, Zettle, orderbird, ready2order) are TSE-certified. Uber Eats Germany: 14% pickup / 30% delivery.
+  - ⚠️ **OBSERVED 29 Oct:** these facts are in `data/compare-de-1/competitors.json` but **not imported** (DE 7 plans,
+    0 entries). The import button fails (§27).
+- **Decisions (stated):**
+  - Germany first (24 Oct).
+  - The iPad and Android apps will be made available in Germany before the page goes public, so their rows can say
+    "Ja" (24 Oct).
+- **Go-live checklist** (shown in the admin banner):
+  - the DE app flags on;
+  - at least 2 verified competitors;
+  - no "[ … ]" placeholder;
+  - VAT wording present;
+  - the Impressum decision recorded (`IMPRESSUM_DECISION.DE` is null on purpose).
+- **Proof (25 Oct):** `scripts/compare-de-1.cjs` 64/0; screenshots 17/0 (WebKit, Chromium, 1512 and 390); tsc clean.
+
+## 86.4 The automatic competitor checker (competitor-check-1 and -1c, 25–27 October 2026)
+
+- **Why:** Dominic's plan includes $100 of Claude API credits a month (stated, 25 Oct). He wants every known competitor
+  re-checked every 3 months, staggered, after one full deep check of every site "to ensure not making mistakes"
+  (stated).
+- **Modes:**
+  - `deep`: every stored field of every competitor, up to `deep_per_day` a day.
+  - `routine`: each competitor every 90 days, spread evenly, about 1–2 a day.
+  - `single`: one competitor, run manually.
+- **How a check avoids mistakes:**
+  1. An extractor call reads the competitor's own pages (web fetch; web search only to find moved pages). It returns
+     findings through one strict `record_findings` tool, each with a verbatim quote, an English translation and the URL.
+  2. **Code checks that every quote appears in the text of a page actually fetched.** A made-up quote fails.
+  3. A separate verifier call, seeing only the claim and the URL, re-reads the page. Deep mode: every finding; routine:
+     every change. Disagreements show as "Couldn't confirm".
+  4. Page text is data, never instructions; the only write path is the findings schema.
+- **It writes only** `competitor_check_runs`, `competitor_check_findings` and the competitors' scheduling columns
+  (`next_check_at`, `last_checked_at`, `deep_checked_at`, `check_requested_at`).
+  - It never edits plans, prices, features or verification.
+  - Dominic accepts or rejects each finding in **Admin › Pricing check › Automatic checks**. Accepting saves a new
+    version and clears verification.
+- **Tables (20261043):**
+  - `competitors` gains `lifecycle` (active / candidate / closed / not_relevant), `added_as_candidate`, `check_urls`,
+    `check_interval_days` and the scheduling dates.
+  - `competitor_check_runs`, `competitor_check_findings` (a typed `found` jsonb; a `review_status` of pending /
+    accepted / rejected) and `competitor_check_settings` (one row).
+  - All three new tables: RLS on, no policies.
+  - Exact columns: `docs/competitor-check-1-report.md` §3.
+- **Budget:** each run's cost is computed from each response's usage × prices stored in `competitor_check_settings`
+  (data, not code).
+  - A run stops before crossing the daily cap ($8 default) or the monthly cap ($90 default), and records why.
+  - A $100 spend limit on the "Competitor checks" workspace in the Claude Console is the backstop (recommended; whether
+    it is set is UNVERIFIED).
+- **Estimates (from guessed token counts):**
+  - deep ≈ $0.72 a competitor, ≈ $142 for the first full deep check. That is over the monthly cap: either let it run over
+    two months, or move the verifier to Haiku (≈ $48);
+  - routine ≈ $7 a month.
+  - **Measured (OBSERVED 29 Oct):** two scheduled routine runs checked 6 competitors for $1.14, ≈ $0.19 each.
+- **Candidates:** 70 tools from Gemini's research (migration 20261044), with `lifecycle = 'candidate'`. They are never
+  counted or shown until a classification is accepted and they are verified.
+  - Four stored competitors have no website and are skipped: Hatches Up, EasyEats, Eventifood and RapidOrderz.
+- **Where it runs:** `.github/workflows/competitor-check.yml`, daily at 02:10 UTC plus manual runs (mode, competitor,
+  limit, dry_run); one run at a time. Entry point: `scripts/competitor-check/main.ts`. Scheduled runs need the workflow
+  on `main`.
+  - OBSERVED: the 28 and 29 Oct runs started at 08:21 and 08:23 UTC (GitHub's cron delay).
+- **Login — Workload Identity Federation (competitor-check-1c, 27 Oct):** no `ANTHROPIC_API_KEY` anywhere.
+  - **The job** has `permissions: id-token: write, contents: read`. A step fetches GitHub's OIDC token for audience
+    `https://api.anthropic.com` into `/tmp/gha-jwt`, and a background loop re-fetches it every 60 s (GitHub tokens last
+    about 5 minutes and are single-use).
+  - **Four repository variables** (not secrets): `ANTHROPIC_FEDERATION_RULE_ID`, `ANTHROPIC_ORGANIZATION_ID`,
+    `ANTHROPIC_SERVICE_ACCOUNT_ID` and `ANTHROPIC_WORKSPACE_ID`; plus `ANTHROPIC_IDENTITY_TOKEN_FILE=/tmp/gha-jwt`.
+  - **The client** is built with no credential argument; `@anthropic-ai/sdk` 1.3.0 reads the variables. It refuses to
+    start if a variable is missing or `ANTHROPIC_API_KEY` is set (a key silently outranks federation).
+  - **Console side (set up by Dominic, 27 Oct):**
+    - workspace "Competitor checks";
+    - rule `gha-competitor-check`;
+    - service account `competitor-checker`;
+    - allowed events "Any event" (runs come from `schedule` and `workflow_dispatch`, never `push`);
+    - scope `workspace:developer`;
+    - token lifetime 600 s.
+  - 🔴 **The subject must match exactly.** GitHub sends `repo:dominicbonini/village-foodie:ref:refs/heads/main`. The
+    first attempt (27 Oct) failed with `match_subject_prefix`. It was fixed in the rule's match configuration: the exact
+    subject, or `repo:dominicbonini/village-foodie:*` plus the claims `ref = refs/heads/main` and
+    `repository_owner = dominicbonini`.
+  - **Validated by Dominic, 27 Oct:** a `single` dry run on gastro25 succeeded (about 3 minutes). Token renewal past
+    10 minutes is not yet proven.
+- **Known defect:** the failed login on 27 Oct still produced a green GitHub tick. A login failure must fail the run
+  (§27).
+- **More detail:** the exact tables, settings and harness are in `docs/competitor-check-1-report.md`; the federation
+  change is in `docs/competitor-check-1c-report.md`.
+
+## 86.5 Mockups (not in the repo)
+
+The approved mockups (Admin › Pricing check, Automatic checks, the German page and its footer) are Claude artifacts, not
+repo files. compare-de-1 and competitor-check-1 were built from the briefs' words.
 
 ---
 

@@ -14,6 +14,10 @@
 //       last_checked_at, deep_checked_at, check_requested_at). `CheckerStore.setSchedule` refuses any other column.
 // The budget guard runs before every competitor; one competitor failing never stops the run; findings are written per
 // competitor, so a stopped run keeps what it found. A dry run calls the API and writes nothing.
+// competitor-check-2: 🔴 A FAILED LOGIN STOPS EVERYTHING — an authentication or permission error (the federation token
+// exchange, a 401 or 403) ends the run at once with stopped_reason 'error' and the reason, and nothing else is tried; a run in
+// which EVERY competitor failed is 'error' too. Either way the script exits non-zero (exitCodeOf), so Actions shows a red cross.
+// The deep check works COUNTRY BY COUNTRY (deep_country, deep_queue: lib/competitor-check/core.ts selectDeepByCountry).
 import type Anthropic from '@anthropic-ai/sdk'
 import {
   RECORD_FINDINGS_TOOL, RECORD_VERDICT_TOOL, QUOTED_OUTCOMES, PLAN_FIELDS, FEATURE_FIELDS, hostOf, onOwnSite, APP_STORE_HOSTS,
@@ -21,7 +25,7 @@ import {
 } from './model'
 import {
   quoteInPages, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
-  afterCheck, type Prices, type Spend, type SchedRow, type Lifecycle,
+  afterCheck, deepQueueOf, selectDeepByCountry, nextDeepCountry, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
 } from './core'
 import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, type StoredPlanForPrompt } from './prompts'
 
@@ -31,6 +35,8 @@ export type Mode = 'deep' | 'routine' | 'single'
 export interface CheckSettings {
   paused: boolean; dailyCapUsd: number; monthlyCapUsd: number; deepPerDay: number; checkIntervalDays: number
   deepRequestedAt: string | null; extractorModel: string; verifierModel: string; prices: Prices
+  /** competitor-check-2 (20261045): the country the deep check is on (null: none), and the stored order (empty: the default). */
+  deepCountry: string | null; deepQueue: string[]
 }
 export interface CompetitorForCheck extends SchedRow {
   website: string | null; focus: string | null; checkUrls: string[]; minTerm: string | null; paymentMethods: string | null
@@ -54,6 +60,10 @@ export interface CheckerStore {
   updateRun(id: string, cols: Row): Promise<void>
   insertFindings(rows: FindingRow[]): Promise<void>
   setSchedule(id: string, cols: Partial<Record<(typeof SCHEDULE_COLUMNS)[number], string | null>>): Promise<void>
+  /** competitor-check-2: every country's switch and comparison status (read only), for the default deep queue. */
+  countries(): Promise<QueueCountry[]>
+  /** competitor-check-2: moves the deep check on to the next country (null: the queue is done) — settings.deep_country only. */
+  setDeepCountry(code: string | null): Promise<void>
 }
 export interface CheckerDeps {
   /** One Messages API call (the SDK's client.beta.messages.create, or a harness's recorded fixtures). */
@@ -68,7 +78,26 @@ export interface CheckerDeps {
 export interface RunReport {
   runId: string | null; mode: Mode; checked: number; failed: { name: string; error: string }[]; spend: Spend
   stoppedReason: 'done' | 'daily_cap' | 'monthly_cap' | 'paused' | 'error'; findings: FindingRow[]
+  /** competitor-check-2: why a run stopped with 'error' (a failed login, or every competitor failed). */
+  error?: string
+  /** competitor-check-2: the ids checked successfully (the deep check's country progress). */
+  checkedIds?: string[]
 }
+
+/** competitor-check-2: the reason, when an error is a failed LOGIN — the federation token exchange (the SDK's
+ *  WorkloadIdentityError, or an identity-token file it can't read), or a 401 / 403 from the API. Null for anything else. */
+export function loginFailure(e: unknown): string | null {
+  if (!e || typeof e !== 'object') return null
+  const kind = (e as { constructor?: { name?: string } }).constructor?.name ?? ''
+  const status = (e as { status?: unknown }).status
+  const text = e instanceof Error ? e.message : String(e)
+  if (['WorkloadIdentityError', 'AuthenticationError', 'PermissionDeniedError'].includes(kind) || status === 401 || status === 403
+    || /identity token|token exchange|token endpoint|workload identity/i.test(text))
+    return `The Claude API login failed (${kind || `status ${status}`}): ${text}`
+  return null
+}
+/** competitor-check-2: the script's exit code — non-zero when any run stopped with 'error'. */
+export const exitCodeOf = (reports: readonly RunReport[]) => (reports.some(r => r.stoppedReason === 'error') ? 1 : 0)
 
 const ymd = (d: Date) => d.toISOString().slice(0, 10)
 const minor = (n: number | null, cur: string) => (n === null ? 'not stated' : `${(n / 100).toFixed(2)} ${cur}`)
@@ -217,6 +246,7 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
       row.second_value = v.value.value
       row.second_quote = v.value.quote
     } catch (e) {
+      if (loginFailure(e)) throw e   // a failed login is never just one claim's problem
       deps.log(`  verifier failed for ${c.name} · ${row.field}: ${e instanceof Error ? e.message : e}`)
     }
   }
@@ -228,14 +258,14 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
   spentBefore: { todayUsd: number; monthUsd: number; priorAvgUsd: number | null }): Promise<RunReport> {
   const started = deps.now()
   const runId = deps.dryRun ? `dry-run-${mode}` : await deps.store.createRun({ mode, trigger, started_at: started.toISOString() })
-  const report: RunReport = { runId: deps.dryRun ? null : runId, mode, checked: 0, failed: [], spend: ZERO_SPEND, stoppedReason: 'done', findings: [] }
+  const report: RunReport = { runId: deps.dryRun ? null : runId, mode, checked: 0, failed: [], spend: ZERO_SPEND, stoppedReason: 'done', findings: [], checkedIds: [] }
   const depth = mode === 'routine' ? 'routine' : 'deep'
   const save = async () => {
     if (deps.dryRun) return
     await deps.store.updateRun(runId, {
       competitors_checked: report.checked, input_tokens: report.spend.inputTokens, output_tokens: report.spend.outputTokens,
       web_searches: report.spend.webSearches, web_fetches: report.spend.webFetches, cost_usd: Number(report.spend.usd.toFixed(4)),
-      notes: report.failed.length ? report.failed.map(f => `${f.name}: ${f.error}`).join(' · ').slice(0, 4000) : null,
+      notes: report.error || report.failed.length ? [report.error, ...report.failed.map(f => `${f.name}: ${f.error}`)].filter(Boolean).join(' · ').slice(0, 4000) : null,
     })
   }
   for (const c of list) {
@@ -250,6 +280,7 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
       report.spend = addSpend(report.spend, r.spend)
       report.findings.push(...r.findings)
       report.checked++
+      report.checkedIds!.push(c.id)
       deps.log(`  ${c.name}: ${r.findings.length} finding(s)${r.dropped ? `, ${r.dropped} dropped (another website)` : ''} · $${r.spend.usd.toFixed(3)}`)
       if (deps.dryRun) deps.log(JSON.stringify(r.findings, null, 1))
       else {
@@ -259,10 +290,22 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
       }
     } catch (e) {
       const error = e instanceof Error ? e.message : String(e)
+      const login = loginFailure(e)
+      if (login) {
+        // Stop the whole run at once: every other competitor would fail the same way.
+        report.stoppedReason = 'error'; report.error = `${login} — the run stopped before checking anything else.`
+        deps.log(`  ${report.error}`)
+        await save()
+        break
+      }
       report.failed.push({ name: c.name, error })
       deps.log(`  ${c.name}: FAILED — ${error}`)
     }
     await save()
+  }
+  if (report.stoppedReason === 'done' && report.checked === 0 && report.failed.length > 0) {
+    report.stoppedReason = 'error'; report.error = `Every competitor in this run failed (${report.failed.length}).`
+    deps.log(`  ${report.error}`)
   }
   if (!deps.dryRun) await deps.store.updateRun(runId, { finished_at: deps.now().toISOString(), stopped_reason: report.stoppedReason })
   await save()
@@ -291,14 +334,27 @@ export async function runChecker(deps: CheckerDeps, job: { mode: Mode | 'schedul
     return reports
   }
   const deepDone = new Set<string>()
-  if (job.mode === 'deep' || (job.mode === 'scheduled' && settings.deepRequestedAt)) {
-    const list = selectDeep(all, settings.deepRequestedAt, job.limit ?? settings.deepPerDay)
+  // competitor-check-2: the scheduled deep share runs while a country is set (Start deep check); it works through that
+  // country, then the next in the queue. A manual deep run with no country set takes everyone by name, as before.
+  if (job.mode === 'deep' || (job.mode === 'scheduled' && settings.deepCountry)) {
+    const limit = job.limit ?? settings.deepPerDay
+    const queue = settings.deepCountry ? deepQueueOf(settings.deepQueue, await deps.store.countries(), all) : []
+    const list = settings.deepCountry ? selectDeepByCountry(all, queue, settings.deepCountry, settings.deepRequestedAt, limit) : selectDeep(all, settings.deepRequestedAt, limit)
     if (list.length) {
       const r = await runOne(deps, settings, 'deep', job.trigger, list, spentSoFar())
       reports.push(r)
       for (const c of list.slice(0, r.checked + r.failed.length)) deepDone.add(c.id)
-      if (r.stoppedReason !== 'done') return reports
+      const at = deps.now().toISOString()
+      for (const id of r.checkedIds ?? []) { const c = all.find(x => x.id === id); if (c) c.deepCheckedAt = at }
     }
+    if (settings.deepCountry && !deps.dryRun) {
+      const next = nextDeepCountry(all, queue, settings.deepCountry, settings.deepRequestedAt)
+      if (next !== settings.deepCountry) {
+        await deps.store.setDeepCountry(next)
+        deps.log(next ? `Deep check: ${settings.deepCountry} is done — on to ${next}.` : `Deep check: ${settings.deepCountry} is done, and so is the rest of the queue.`)
+      }
+    }
+    if (reports.length && reports[reports.length - 1].stoppedReason !== 'done') return reports
     if (job.mode === 'deep') return reports
   }
   // Routine: first check dates for active competitors that have none, spread evenly over the interval.

@@ -1,5 +1,10 @@
 # competitor-check-1 — report
 
+> **Superseded login steps (note added 29 October 2026, competitor-check-2).** Every step below that says to add an
+> `ANTHROPIC_API_KEY` secret (§1, §3, §10) is replaced by the Workload Identity Federation login in
+> `docs/competitor-check-1c-report.md` — four repository variables and no API key. The checker refuses to start if
+> `ANTHROPIC_API_KEY` is set.
+
 **25 October 2026.** Written for Dominic. Nothing was committed, pushed or deployed. No database change was run, and
 **no real Claude API call was made**: there is no key, and every proof uses hand-built fixture responses (§7).
 

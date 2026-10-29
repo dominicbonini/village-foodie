@@ -167,27 +167,30 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   t('data file: every plan and entry points at a competitor in the file; every primary plan exists', data.plans.every(p => data.competitors.some(c => c.id === p.competitor_id)) && data.entries.every(e => data.competitors.some(c => c.id === e.competitor_id) && (!e.primary_plan_id || data.plans.some(p => p.id === e.primary_plan_id))))
   t('data file: GastroSystem left out (not an ordering system); each competitor row has exactly the table\'s columns', !data.competitors.some(c => /gastrosystem/i.test(c.name))
     && data.competitors.every(c => Object.keys(c).sort().join() === ['id', 'name', 'website', 'focus', 'payment_providers', 'pre_orders', 'whatsapp', 'social_posts', 'own_domain', 'ios_app', 'android_app', 'capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck', 'payment_methods', 'min_term', 'features_checked_on', 'features_verified_at', 'notes'].sort().join()))
-  // The import over an in-memory store: once, never twice, existing plans reused.
-  const mem = { competitors: [{ ...comp('live-bt', 'Bestelltheke', { capacity_slots: 'unknown', payment_methods: null }) }], plans: [plan('live-bt-start', 'live-bt', 'Start')], benchmarks: [{ id: 'b' }], entries: [] }
+  // The import over an in-memory store (competitor-check-2: lib/data-import/research.ts, run by the nightly workflow —
+  // the Admin button is gone): every row checked first; existing competitors matched; a rerun adds nothing.
+  t('data file: every row passes the import\'s checks — the five price-hidden plans are status "hidden", not "counted" (the CHECK that failed the button on 25 and 27 Oct)',
+    M.researchProblems(data).length === 0 && data.plans.filter(p => p.price_hidden).every(p => p.status === 'hidden' && p.monthly_minor === null) && data.plans.filter(p => p.price_hidden).length === 5, M.researchProblems(data))
+  const mem = { competitors: [{ ...comp('live-bt', 'Bestelltheke', { capacity_slots: 'unknown', payment_methods: null }) }], plans: [plan('live-bt-start', 'live-bt', 'Start')], entries: [] }
   const store = {
-    async counts() { return { competitors: mem.competitors.length, plans: mem.plans.length, benchmarks: 1, research: 1 } },
-    async listAll() { return { competitors: mem.competitors, plans: mem.plans, benchmarks: [] } },
-    async insertMany(_t, rows) { mem.plans.push(...rows); return rows.length },
-    async findCompetitorByName(n) { return mem.competitors.find(c => c.name.toLowerCase() === n.toLowerCase()) ?? null },
-    async insertCompetitor(r) { mem.competitors.push(r); return r },
-    async updateCompetitor(id, cols) { const c = mem.competitors.find(x => x.id === id); Object.assign(c, cols); return c },
-    async entriesReady() { return true }, async listEntries() { return mem.entries },
-    async insertEntry(r) { mem.entries.push(r); return r }, async updateEntry() { return null }, async deleteEntry() {},
-    async existingIds(table, ids) { const src = table === 'entries' ? mem.entries : table === 'plans' ? mem.plans : mem.competitors; return src.filter(r => ids.includes(r.id)).map(r => r.id) },
+    async competitors() { return mem.competitors.map(c => ({ ...c })) },
+    async plans() { return mem.plans.map(p => ({ ...p })) },
+    async entries() { return mem.entries.map(e => ({ ...e })) },
+    async insertCompetitor(r) { mem.competitors.push({ lifecycle: 'active', ...r }) },
+    async updateCompetitor(id, cols) { Object.assign(mem.competitors.find(x => x.id === id), cols) },
+    async insertPlans(rows) { mem.plans.push(...rows) },
+    async insertEntries(rows) { mem.entries.push(...rows) },
   }
-  const r1 = await M.importCompareResearch(store, data)
+  const stamp = { today: '2026-10-29', path: 'data/compare-de-1/competitors.json' }
+  const r1 = await M.importResearch(store, data, stamp)
   const bt = mem.competitors.find(c => c.name === 'Bestelltheke')
   const btEntry = mem.entries.find(e => e.competitor_id === 'live-bt')
-  t('import: inserts once — new competitors, their plans and every entry, all unverified', r1.ok && r1.data.entries === data.entries.length && mem.entries.every(e => e.verified_at === null), r1)
+  t('import: new competitors, their plans and every entry, all unverified', r1.entriesAdded === data.entries.length && mem.entries.every(e => e.verified_at === null) && mem.plans.every(p => p.verified_at == null || p.id === 'live-bt-start'), r1)
   t('import: an existing competitor (by name) keeps its id; only its unknown features / empty texts are filled', bt.id === 'live-bt' && bt.capacity_slots === 'yes' && bt.payment_methods !== null && bt.pre_orders === 'yes')
   t('import: a plan the competitor already has (same name, same country) is not duplicated; the entry points at the live row', mem.plans.filter(p => p.competitor_id === 'live-bt' && p.plan_name === 'Start').length === 1 && btEntry.primary_plan_id === 'live-bt-start', btEntry)
-  const r2 = await M.importCompareResearch(store, data)
-  t('import: a second run is refused (409) and changes nothing', !r2.ok && r2.status === 409 && mem.entries.length === data.entries.length, r2)
+  const before = JSON.stringify(mem)
+  const r2 = await M.importResearch(store, data, stamp)
+  t('import: a second run adds nothing (every competitor, plan and entry is matched)', JSON.stringify(mem) === before && r2.added === 0 && r2.plansAdded === 0 && r2.entriesAdded === 0, r2)
 
   // ── source rules ──
   head('rules in the source')
