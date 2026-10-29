@@ -5588,18 +5588,20 @@
   "aboutPage": {
     "meta": {
       "title": "Meist — HatchGrab",
-      "description": "HatchGrabi asutas Dominic Bonini, kes lõi Village Foodie, et teada saada, millised toiduautod tema külla tulevad. See on väike ettevõte ja ta juhib seda ise."
+      "description": "HatchGrab loob praktilist tarkvara toiduautodele ja mobiilsele toitlustusele: veebitellimused, kättesaamise ajad ja vähem korduvaid küsimusi. Asutaja Dominic Bonini."
     },
     "eyebrow": "Meist",
-    "title": "Tere, mina olen Dominic.",
+    "title": "Loodud selle järgi, kuidas toiduautod päriselt töötavad",
     "photoAlt": "{name}, HatchGrabi asutaja",
     "story": {
-      "village": "Ma elan külas. Toiduautod käivad siin, aga ma ei teadnud kunagi, milline neist tuleb või millal, ilma Facebookis tuhnimata.",
-      "villageFoodie": "Seepärast lõin Village Foodie — lihtsa viisi näha, millised toiduautod sinu lähedal asuvatesse küladesse tulevad.",
-      "hatchgrab": "Mida rohkem toiduautosid ma vaatasin, seda enam leidsin, et need väärivad paremaid tööriistu: midagi, mis on loodud ettevõttele, mis on iga päev eri kohas, mitte kindla aadressiga restoranile. Seepärast asutasingi HatchGrabi.",
-      "small": "See on väike ettevõte ja ma juhin seda ise. Kui võtad ühendust, vastan sulle mina, mitte tugiteenuse järjekord."
+      "start": "HatchGrab sai alguse lihtsast tähelepanekust: toiduautod vajavad oma äri juhtimiseks paremaid tööriistu.",
+      "villageFoodie": "Pärast seda, kui olin loonud Village Foodie – kataloogi, mis aitab inimestel leida nende piirkonda külastavaid toiduautosid –, süvenesin rohkem väljakutsetesse, millega liikuvad toiduettevõtted kokku puutuvad. Erinevalt tavalistest restoranidest on toiduautod pidevalt liikvel: nad töötavad eri kohtades ja teenindavad kliente muutuvates oludes.",
+      "fixedAddress": "Ometi on suur osa neile kättesaadavast tarkvarast mõeldud kindla aadressiga ettevõtetele.",
+      "change": "HatchGrab loodi selleks, et seda muuta.",
+      "build": "Loome praktilist tarkvara spetsiaalselt toiduautodele ja mobiilsele toitlustusele, mis aitab neil võtta vastu veebitellimusi, hallata kättesaamise aegu, hoida tellimused sujuvalt liikumas ja kulutada vähem aega korduvatele küsimustele.",
+      "focus": "Meie eesmärk on lihtne: muuta toiduauto pidamine lihtsamaks tööriistadega, mis on loodud selle järgi, kuidas need ettevõtted päriselt toimivad."
     },
-    "signature": "<b>{name}</b> · asutaja",
+    "signature": "<b>{name}</b><br></br>Asutaja, HatchGrab",
     "company": "{company} · registreeritud Inglismaal ja Walesis · registrikood {number} · registrijärgne aadress: {address}",
     "contact": "Võta meiega ühendust"
   },

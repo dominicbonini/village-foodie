@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "About — HatchGrab",
-    "description": "HatchGrab was started by Dominic Bonini, who built Village Foodie to find out which food trucks were coming to his village. It’s a small company, and he runs it himself."
+    "description": "HatchGrab builds practical software for food trucks and mobile caterers: online orders, collection times and fewer repetitive questions. Founded by Dominic Bonini."
   },
   "eyebrow": "About",
-  "title": "Hi, I’m Dominic.",
+  "title": "Built around the way food trucks actually work",
   "photoAlt": "{name}, founder of HatchGrab",
   "story": {
-    "village": "I live in a village. Food trucks visit, but I never knew which one was coming, or when, without digging through Facebook.",
-    "villageFoodie": "So I built Village Foodie, a simple way to see which trucks are coming to villages near you.",
-    "hatchgrab": "The more trucks I looked at, the more I thought they deserved better tools: something built for a business that’s somewhere different every day, not a restaurant with a fixed address. That’s why I started HatchGrab.",
-    "small": "It’s a small company and I run it myself. If you get in touch, you’ll hear back from me, not a support queue."
+    "start": "HatchGrab started with a simple observation: food trucks need better tools to run their businesses.",
+    "villageFoodie": "After creating Village Foodie, a directory helping people discover food trucks visiting their local area, I spent more time learning about the challenges mobile food businesses face. Unlike traditional restaurants, food trucks are constantly moving, working at different locations and serving customers in changing conditions.",
+    "fixedAddress": "Yet much of the software available to them is designed around businesses with a fixed address.",
+    "change": "HatchGrab was created to change that.",
+    "build": "We build practical software specifically for food trucks and mobile caterers, helping them take online orders, manage collection times, keep orders flowing smoothly and spend less time dealing with repetitive questions.",
+    "focus": "Our focus is simple: make running a food truck easier, with tools designed around how these businesses actually operate."
   },
-  "signature": "<b>{name}</b> · Founder",
+  "signature": "<b>{name}</b><br></br>Founder, HatchGrab",
   "company": "{company} · registered in England and Wales · company number {number} · registered office: {address}",
   "contact": "Contact us"
 }

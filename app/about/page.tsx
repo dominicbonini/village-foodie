@@ -108,11 +108,14 @@ export default async function AboutPage({ searchParams }: { searchParams: Search
                 {/* eslint-disable-next-line @next/next/no-img-element -- one optional local file; next/image would need its dimensions */}
                 {photo && <img className="about-photo" src={ABOUT_PHOTO_PATH} alt={t('photoAlt', { name })} />}
                 <div className="about-story">
-                  <p>{t('story.village')}</p>
+                  {/* about-page-2 (29 October 2026): Dominic's new text — six paragraphs and a two-line signature. */}
+                  <p>{t('story.start')}</p>
                   <p>{t('story.villageFoodie')}</p>
-                  <p>{t('story.hatchgrab')}</p>
-                  <p>{t('story.small')}</p>
-                  <p className="about-sign">{t.rich('signature', { name, b: c => <b>{c}</b> })}</p>
+                  <p>{t('story.fixedAddress')}</p>
+                  <p>{t('story.change')}</p>
+                  <p>{t('story.build')}</p>
+                  <p>{t('story.focus')}</p>
+                  <p className="about-sign">{t.rich('signature', { name, b: c => <b>{c}</b>, br: () => <br /> })}</p>
                 </div>
               </div>
               <p className="about-legal">

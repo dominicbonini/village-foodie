@@ -21,12 +21,18 @@ const head = s => console.log('\n── ' + s + ' ' + '─'.repeat(Math.max(0, 1
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 
 const HG = 'www.hatchgrab.com', VF = 'www.villagefoodie.co.uk'
+// ⚠️ RE-PINNED (about-page-2, 29 October 2026): Dominic's new About text — a new h1, six paragraphs, a two-line signature
+// and a description to match. US English (and Canada's, over it) says "pickup times" where en-GB says "collection times".
 const STORY = [
-  'I live in a village. Food trucks visit, but I never knew which one was coming, or when, without digging through Facebook.',
-  'So I built Village Foodie, a simple way to see which trucks are coming to villages near you.',
-  'The more trucks I looked at, the more I thought they deserved better tools: something built for a business that’s somewhere different every day, not a restaurant with a fixed address. That’s why I started HatchGrab.',
-  'It’s a small company and I run it myself. If you get in touch, you’ll hear back from me, not a support queue.',
+  'HatchGrab started with a simple observation: food trucks need better tools to run their businesses.',
+  'After creating Village Foodie, a directory helping people discover food trucks visiting their local area, I spent more time learning about the challenges mobile food businesses face. Unlike traditional restaurants, food trucks are constantly moving, working at different locations and serving customers in changing conditions.',
+  'Yet much of the software available to them is designed around businesses with a fixed address.',
+  'HatchGrab was created to change that.',
+  'We build practical software specifically for food trucks and mobile caterers, helping them take online orders, manage collection times, keep orders flowing smoothly and spend less time dealing with repetitive questions.',
+  'Our focus is simple: make running a food truck easier, with tools designed around how these businesses actually operate.',
 ]
+const STORY_US = STORY.map(s => s.replace('manage collection times', 'manage pickup times'))
+const TITLE = 'Built around the way food trucks actually work'
 const COMPANY_LINE = 'HatchGrab Ltd · registered in England and Wales · company number 17381557 · registered office: Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom'
 const PHOTO_URL = 'https://www.hatchgrab.com/about/dominic.jpg'
 const PHOTO_STUB = `export const aboutPhotoExists = () => true\nexport const aboutPhotoUrl = () => '${PHOTO_URL}'`
@@ -67,9 +73,9 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
   t('it renders on the HatchGrab host', !gb.error && gb.html.length > 1000, gb.error)
   const C = content(gb.html)
   const at = s => C.indexOf(esc(s))
-  t('the eyebrow "About" (shown in capitals by .eyebrow\'s text-transform) and the h1 "Hi, I’m Dominic."', /<p class="eyebrow">About<\/p><h1>Hi, I’m Dominic\.<\/h1>/.test(C))
-  t('the four story paragraphs, verbatim and in order, each its own <p>', STORY.every((s, i) => C.includes(`<p>${esc(s)}</p>`) && (i === 0 || at(STORY[i - 1]) < at(s))), STORY.filter(s => !C.includes(`<p>${esc(s)}</p>`)))
-  t('the signature: "Dominic Bonini" bold, then " · Founder", after the story', /<p class="about-sign"><b>Dominic Bonini<\/b> · Founder<\/p>/.test(C) && C.indexOf('about-sign') > at(STORY[3]))
+  t(`the eyebrow "About" (shown in capitals by .eyebrow's text-transform) and the h1 "${TITLE}"`, C.includes(`<p class="eyebrow">About</p><h1>${TITLE}</h1>`))
+  t('the six story paragraphs, verbatim and in order, each its own <p>', STORY.every((s, i) => C.includes(`<p>${esc(s)}</p>`) && (i === 0 || at(STORY[i - 1]) < at(s))), STORY.filter(s => !C.includes(`<p>${esc(s)}</p>`)))
+  t('the signature: "Dominic Bonini" bold, then on its own line "Founder, HatchGrab", after the story', /<p class="about-sign"><b>Dominic Bonini<\/b><br\/>Founder, HatchGrab<\/p>/.test(C) && C.indexOf('about-sign') > at(STORY[5]), C.slice(C.indexOf('about-sign') - 10, C.indexOf('about-sign') + 120))
   t('the company line from lib/company.ts, then "Contact us" linking to the contact page', C.includes(`<p class="about-legal">${esc(COMPANY_LINE)}<!-- --> · <a href="/contact?topic=General%20Enquiry">Contact us</a></p>`), C.slice(C.indexOf('about-legal') - 20))
   t('the company line comes after the signature (above the thin rule, .about-legal\'s border-top)', C.indexOf('about-legal') > C.indexOf('about-sign'))
   t('no <script> needed for the words: they are all outside any script, in the prerendered HTML', STORY.every(s => gb.html.replace(/<script[\s\S]*?<\/script>/g, '').includes(esc(s))))
@@ -83,7 +89,7 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
   head('3 · METADATA — self-canonical /about, no hreflang, the title and a plain description')
   const m = gb.meta
   t('title "About — HatchGrab" (absolute: the layout template cannot add the brand twice)', m.title && m.title.absolute === 'About — HatchGrab', m.title)
-  t('a plain founder-story description', m.description === 'HatchGrab was started by Dominic Bonini, who built Village Foodie to find out which food trucks were coming to his village. It’s a small company, and he runs it himself.', m.description)
+  t('a plain description of what HatchGrab builds and who founded it', m.description === 'HatchGrab builds practical software for food trucks and mobile caterers: online orders, collection times and fewer repetitive questions. Founded by Dominic Bonini.', m.description)
   t('canonical https://www.hatchgrab.com/about, and og:url the same', m.alternates && m.alternates.canonical === 'https://www.hatchgrab.com/about' && m.openGraph && m.openGraph.url === 'https://www.hatchgrab.com/about', m.alternates)
   t('no hreflang alternates (one page for every country)', !m.alternates.languages)
   t('indexable', m.robots && m.robots.index === true && m.robots.follow === true)
@@ -94,7 +100,7 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
   // CODE ("GB ▾"); the country's name is its label ("Country: United Kingdom. Change country"), read here with the code.
   const curName = html => { const f = footOf(html); const m = /<span class="cc-code">([A-Z]{2})<\/span>/.exec(f), l = /class="cc-btn"[^>]*aria-label="Country: ([^".]+)\. Change country"/.exec(f); return m && l ? `${l[1]} (${m[1]})` : (f.match(/<span class="cc-name">([^<]*)<\/span>/) || [])[1] }
   t('GB visitor: the footer menu shows United Kingdom', curName(gb.html) === 'United Kingdom (GB)', curName(gb.html))
-  t('?country=US: the footer menu shows United States, and the same story', curName(us.html) === 'United States (US)' && STORY.every(s => us.html.includes(esc(s))), curName(us.html))
+  t('?country=US: the footer menu shows United States, and the same story in US English ("pickup times")', curName(us.html) === 'United States (US)' && STORY_US.every(s => us.html.includes(esc(s))), curName(us.html))
   t('hg_country=IE: the footer menu shows Ireland', curName(ie.html) === 'Ireland (IE)', curName(ie.html))
   t('the nav has no country menu (on /about, as on every page)', ![gb, us, ie].some(r => /cc-head|cc-btn/.test(navOf(r.html))))
   t('the canonical is /about for every visitor', [us, ie].every(r => r.meta.alternates.canonical === 'https://www.hatchgrab.com/about'))
@@ -177,7 +183,7 @@ const footOf = html => (String(html).match(/<footer[\s\S]*?<\/footer>/) || [''])
   t('a planted Village Foodie link is caught', hasVfLink('<a href="https://www.villagefoodie.co.uk/">Village Foodie</a>'))
   t('a planted photo is caught', hasPhoto(PC) && !hasPhoto(C))
   t('the nav detector sees the old header menu', /cc-head|cc-btn/.test(navOf('<nav><div class="cc cc-head"><button class="cc-btn"></button></div></nav>')))
-  t('a reworded paragraph would fail §1', !content(gb.html.replace('digging through Facebook', 'scrolling Facebook')).includes(`<p>${esc(STORY[0])}</p>`))
+  t('a reworded paragraph would fail §1', !content(gb.html.replace('a simple observation', 'an observation')).includes(`<p>${esc(STORY[0])}</p>`))
 
   console.log(`\n${fail ? '🔴' : '✅'} about-page: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

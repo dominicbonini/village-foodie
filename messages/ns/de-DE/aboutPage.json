@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "Über uns – HatchGrab",
-    "description": "HatchGrab wurde von Dominic Bonini gegründet, der Village Foodie entwickelt hat, um herauszufinden, welche Foodtrucks in sein Dorf kommen. Es ist ein kleines Unternehmen, das er selbst führt."
+    "description": "HatchGrab entwickelt praktische Software für Foodtrucks und mobiles Catering: Online-Bestellungen, Abholzeiten und weniger immer gleiche Fragen. Gegründet von Dominic Bonini."
   },
   "eyebrow": "Über uns",
-  "title": "Hallo, ich bin Dominic.",
+  "title": "Gebaut für die Art, wie Foodtrucks wirklich arbeiten",
   "photoAlt": "{name}, Gründer von HatchGrab",
   "story": {
-    "village": "Ich wohne in einem Dorf. Hier kommen Foodtrucks vorbei, aber ich wusste nie, welcher wann kommt – jedenfalls nicht, ohne mich durch Facebook zu wühlen.",
-    "villageFoodie": "Also habe ich Village Foodie entwickelt – eine einfache Möglichkeit zu sehen, welche Foodtrucks in Dörfer in Ihrer Nähe kommen.",
-    "hatchgrab": "Je mehr Foodtrucks ich mir ansah, desto mehr fand ich, dass sie bessere Werkzeuge verdienen: etwas, das für ein Unternehmen gemacht ist, das jeden Tag woanders steht – nicht für ein Restaurant mit fester Adresse. Deshalb habe ich HatchGrab gegründet.",
-    "small": "Es ist ein kleines Unternehmen, und ich führe es selbst. Wenn Sie sich melden, antworte ich Ihnen persönlich – keine Support-Warteschlange."
+    "start": "HatchGrab begann mit einer einfachen Beobachtung: Foodtrucks brauchen bessere Werkzeuge, um ihr Geschäft zu führen.",
+    "villageFoodie": "Nachdem ich Village Foodie entwickelt hatte – ein Verzeichnis, mit dem Menschen Foodtrucks entdecken, die in ihre Gegend kommen –, habe ich mich intensiver mit den Herausforderungen mobiler Gastronomiebetriebe beschäftigt. Anders als klassische Restaurants sind Foodtrucks ständig unterwegs, stehen an wechselnden Standorten und bedienen ihre Gäste unter immer neuen Bedingungen.",
+    "fixedAddress": "Doch die meiste Software, die es für sie gibt, ist für Betriebe mit fester Adresse gemacht.",
+    "change": "HatchGrab wurde gegründet, um das zu ändern.",
+    "build": "Wir entwickeln praktische Software speziell für Foodtrucks und mobiles Catering: Damit nehmen sie Online-Bestellungen an, steuern ihre Abholzeiten, halten den Bestellfluss am Laufen und verbringen weniger Zeit mit immer gleichen Fragen.",
+    "focus": "Unser Ziel ist einfach: einen Foodtruck leichter zu führen – mit Werkzeugen, die darauf ausgerichtet sind, wie diese Betriebe wirklich arbeiten."
   },
-  "signature": "<b>{name}</b> · Gründer",
+  "signature": "<b>{name}</b><br></br>Gründer, HatchGrab",
   "company": "{company} · eingetragen in England und Wales · Firmennummer {number} · eingetragener Sitz: {address}",
   "contact": "Kontakt"
 }

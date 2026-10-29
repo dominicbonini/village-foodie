@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "O nás — HatchGrab",
-    "description": "HatchGrab založil Dominic Bonini, který vytvořil Village Foodie, aby zjistil, které food trucky přijedou do jeho vesnice. Je to malá firma a vede ji sám."
+    "description": "HatchGrab vyvíjí praktický software pro food trucky a mobilní catering: online objednávky, časy vyzvednutí a méně opakovaných dotazů. Zakladatel: Dominic Bonini."
   },
   "eyebrow": "O nás",
-  "title": "Dobrý den, jsem Dominic.",
+  "title": "Vytvořeno podle toho, jak food trucky skutečně fungují",
   "photoAlt": "{name}, zakladatel HatchGrab",
   "story": {
-    "village": "Bydlím na vesnici. Jezdí k nám food trucky, ale nikdy jsem nevěděl, který přijede a kdy, aniž bych se musel prokousat Facebookem.",
-    "villageFoodie": "Tak jsem vytvořil Village Foodie — jednoduchý způsob, jak zjistit, které food trucky přijedou do vesnic ve vašem okolí.",
-    "hatchgrab": "Čím víc food trucků jsem poznal, tím víc jsem si myslel, že si zaslouží lepší nástroje: něco vytvořeného pro podnik, který je každý den jinde, ne pro restauraci s pevnou adresou. Proto jsem založil HatchGrab.",
-    "small": "Je to malá firma a vedu ji sám. Když se ozvete, odpovím vám já, ne fronta podpory."
+    "start": "HatchGrab vznikl z jednoduchého postřehu: food trucky potřebují lepší nástroje pro vedení svého podnikání.",
+    "villageFoodie": "Poté, co jsem vytvořil Village Foodie, katalog, který lidem pomáhá objevovat food trucky přijíždějící do jejich okolí, jsem se víc věnoval tomu, s jakými problémy se mobilní gastropodniky potýkají. Na rozdíl od tradičních restaurací jsou food trucky neustále v pohybu: pracují na různých místech a obsluhují zákazníky v proměnlivých podmínkách.",
+    "fixedAddress": "Přesto je většina softwaru, který mají k dispozici, navržena pro podniky s pevnou adresou.",
+    "change": "HatchGrab vznikl, aby to změnil.",
+    "build": "Vyvíjíme praktický software přímo pro food trucky a mobilní catering. Pomáhá jim přijímat online objednávky, spravovat časy vyzvednutí, udržet plynulý tok objednávek a trávit méně času odpovídáním na stále stejné otázky.",
+    "focus": "Náš cíl je jednoduchý: usnadnit provozování food trucku pomocí nástrojů navržených podle toho, jak tyto podniky skutečně fungují."
   },
-  "signature": "<b>{name}</b> · zakladatel",
+  "signature": "<b>{name}</b><br></br>Zakladatel, HatchGrab",
   "company": "{company} · zapsaná v Anglii a Walesu · číslo společnosti {number} · sídlo: {address}",
   "contact": "Kontaktujte nás"
 }

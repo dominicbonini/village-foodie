@@ -5588,18 +5588,20 @@
   "aboutPage": {
     "meta": {
       "title": "O nama — HatchGrab",
-      "description": "HatchGrab je pokrenuo Dominic Bonini, koji je izradio Village Foodie kako bi saznao koji food truckovi dolaze u njegovo selo. To je mala tvrtka i on je sam vodi."
+      "description": "HatchGrab razvija praktičan softver za food truckove i mobilni catering: online narudžbe, vremena preuzimanja i manje ponavljajućih pitanja. Osnivač: Dominic Bonini."
     },
     "eyebrow": "O nama",
-    "title": "Pozdrav, ja sam Dominic.",
+    "title": "Izgrađeno prema tome kako food truckovi zaista rade",
     "photoAlt": "{name}, osnivač tvrtke HatchGrab",
     "story": {
-      "village": "Živim u selu. Food truckovi dolaze, ali nikad nisam znao koji dolazi ni kada, a da ne preturam po Facebooku.",
-      "villageFoodie": "Zato sam izradio Village Foodie, jednostavan način da vidite koji food truckovi dolaze u sela u vašoj blizini.",
-      "hatchgrab": "Što sam više food truckova upoznavao, to sam više mislio da zaslužuju bolje alate: nešto stvoreno za posao koji je svaki dan negdje drugdje, a ne za restoran sa stalnom adresom. Zato sam pokrenuo HatchGrab.",
-      "small": "To je mala tvrtka i sam je vodim. Ako nam se javite, odgovorit ću vam ja osobno, a ne red čekanja službe za korisnike."
+      "start": "HatchGrab je nastao iz jednostavnog zapažanja: food truckovima trebaju bolji alati za vođenje posla.",
+      "villageFoodie": "Nakon što sam izradio Village Foodie, imenik koji ljudima pomaže otkriti food truckove koji dolaze u njihovo područje, posvetio sam se boljem upoznavanju izazova s kojima se suočavaju mobilni ugostiteljski obrti. Za razliku od tradicionalnih restorana, food truckovi su stalno u pokretu: rade na različitim lokacijama i poslužuju goste u uvjetima koji se stalno mijenjaju.",
+      "fixedAddress": "Ipak, velik dio softvera koji im je dostupan osmišljen je za tvrtke sa stalnom adresom.",
+      "change": "HatchGrab je stvoren da to promijeni.",
+      "build": "Razvijamo praktičan softver posebno za food truckove i mobilni catering koji im pomaže primati online narudžbe, upravljati vremenima preuzimanja, održavati glatki tijek narudžbi i trošiti manje vremena na ponavljajuća pitanja.",
+      "focus": "Naš je cilj jednostavan: olakšati vođenje food trucka alatima osmišljenima prema tome kako ti obrti zaista rade."
     },
-    "signature": "<b>{name}</b> · Osnivač",
+    "signature": "<b>{name}</b><br></br>Osnivač, HatchGrab",
     "company": "{company} · tvrtka registrirana u Engleskoj i Walesu · broj tvrtke {number} · sjedište: {address}",
     "contact": "Kontaktirajte nas"
   },

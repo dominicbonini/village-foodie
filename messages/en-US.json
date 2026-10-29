@@ -936,5 +936,13 @@
     "label": {
       "area": "City or town"
     }
+  },
+  "aboutPage": {
+    "meta": {
+      "description": "HatchGrab builds practical software for food trucks and mobile caterers: online orders, pickup times and fewer repetitive questions. Founded by Dominic Bonini."
+    },
+    "story": {
+      "build": "We build practical software specifically for food trucks and mobile caterers, helping them take online orders, manage pickup times, keep orders flowing smoothly and spend less time dealing with repetitive questions."
+    }
   }
 }

@@ -5588,18 +5588,20 @@
   "aboutPage": {
     "meta": {
       "title": "Tietoa meistä — HatchGrab",
-      "description": "HatchGrabin perusti Dominic Bonini, joka teki Village Foodie -palvelun saadakseen selville, mitkä ruokarekat tulevat hänen kyläänsä. Se on pieni yritys, jota hän pyörittää itse."
+      "description": "HatchGrab tekee käytännöllisiä ohjelmistoja ruokarekoille ja liikkuvalle ruokamyynnille: verkkotilaukset, noutoajat ja vähemmän toistuvia kysymyksiä. Perustaja Dominic Bonini."
     },
     "eyebrow": "Tietoa meistä",
-    "title": "Hei, olen Dominic.",
+    "title": "Rakennettu sen mukaan, miten ruokarekat oikeasti toimivat",
     "photoAlt": "{name}, HatchGrabin perustaja",
     "story": {
-      "village": "Asun kylässä. Ruokarekkoja käy kylässä, mutta en koskaan tiennyt, mikä niistä on tulossa tai milloin, ellen kaivanut tietoa Facebookista.",
-      "villageFoodie": "Niinpä tein Village Foodie -palvelun, josta näkee helposti, mitkä ruokarekat ovat tulossa lähikyliin.",
-      "hatchgrab": "Mitä enemmän ruokarekkoja tutkin, sitä vahvemmin ajattelin, että ne ansaitsevat parempia työkaluja: jotain, joka on tehty joka päivä eri paikassa toimivalle yritykselle eikä kiinteän osoitteen ravintolalle. Siksi perustin HatchGrabin.",
-      "small": "Se on pieni yritys, ja pyöritän sitä itse. Kun otat yhteyttä, vastaus tulee minulta, ei tukijonosta."
+      "start": "HatchGrab sai alkunsa yksinkertaisesta havainnosta: ruokarekat tarvitsevat parempia työkaluja liiketoimintansa pyörittämiseen.",
+      "villageFoodie": "Luotuani Village Foodie -hakemiston, joka auttaa ihmisiä löytämään lähialueellaan vierailevat ruokarekat, perehdyin tarkemmin liikkuvien ruokayritysten haasteisiin. Toisin kuin perinteiset ravintolat ruokarekat ovat jatkuvasti liikkeellä: ne toimivat eri paikoissa ja palvelevat asiakkaita vaihtuvissa olosuhteissa.",
+      "fixedAddress": "Silti suuri osa niille tarjolla olevista ohjelmistoista on suunniteltu yrityksille, joilla on kiinteä osoite.",
+      "change": "HatchGrab perustettiin muuttamaan tämä.",
+      "build": "Teemme käytännöllisiä ohjelmistoja nimenomaan ruokarekoille ja liikkuvalle ruokamyynnille. Niiden avulla ne voivat ottaa vastaan verkkotilauksia, hallita noutoaikoja, pitää tilaukset sujuvasti liikkeessä ja käyttää vähemmän aikaa samojen kysymysten toisteluun.",
+      "focus": "Tavoitteemme on yksinkertainen: tehdä ruokarekan pyörittämisestä helpompaa työkaluilla, jotka on suunniteltu sen mukaan, miten nämä yritykset oikeasti toimivat."
     },
-    "signature": "<b>{name}</b> · Perustaja",
+    "signature": "<b>{name}</b><br></br>Perustaja, HatchGrab",
     "company": "{company} · rekisteröity Englannissa ja Walesissa · yritysnumero {number} · rekisteröity osoite: {address}",
     "contact": "Ota yhteyttä"
   },

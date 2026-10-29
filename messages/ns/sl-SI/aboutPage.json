@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "O nas — HatchGrab",
-    "description": "HatchGrab je ustanovil Dominic Bonini, ki je ustvaril Village Foodie, da bi izvedel, kateri food trucki prihajajo v njegovo vas. To je majhno podjetje, ki ga vodi sam."
+    "description": "HatchGrab razvija praktično programsko opremo za food trucke in mobilno gostinstvo: spletna naročila, časi prevzema in manj ponavljajočih se vprašanj. Ustanovitelj: Dominic Bonini."
   },
   "eyebrow": "O nas",
-  "title": "Pozdravljeni, sem Dominic.",
+  "title": "Zasnovano po tem, kako food trucki zares delajo",
   "photoAlt": "{name}, ustanovitelj podjetja HatchGrab",
   "story": {
-    "village": "Živim na vasi. Food trucki prihajajo, a nikoli nisem vedel, kateri bo prišel in kdaj, ne da bi brskal po Facebooku.",
-    "villageFoodie": "Zato sem ustvaril Village Foodie, preprost način, da vidite, kateri food trucki prihajajo v vasi v vaši bližini.",
-    "hatchgrab": "Več food truckov kot sem si ogledal, bolj sem bil prepričan, da si zaslužijo boljša orodja: nekaj, kar je narejeno za podjetje, ki je vsak dan drugje, in ne za restavracijo s stalnim naslovom. Zato sem ustanovil HatchGrab.",
-    "small": "To je majhno podjetje in vodim ga sam. Če mi pišete, vam odgovorim jaz, ne čakalna vrsta podpore."
+    "start": "HatchGrab se je začel s preprostim opažanjem: food trucki potrebujejo boljša orodja za vodenje svojega posla.",
+    "villageFoodie": "Ko sem ustvaril Village Foodie, imenik, ki ljudem pomaga odkriti food trucke, ki obiščejo njihov kraj, sem se bolj posvetil izzivom, s katerimi se spopadajo mobilna gostinska podjetja. Za razliko od tradicionalnih restavracij so food trucki nenehno na poti: delajo na različnih lokacijah in strežejo strankam v spreminjajočih se razmerah.",
+    "fixedAddress": "Kljub temu je velik del programske opreme, ki jim je na voljo, zasnovan za podjetja s stalnim naslovom.",
+    "change": "HatchGrab je nastal, da bi to spremenil.",
+    "build": "Razvijamo praktično programsko opremo posebej za food trucke in mobilno gostinstvo, ki jim pomaga sprejemati spletna naročila, upravljati čase prevzema, ohranjati tekoč pretok naročil in porabiti manj časa za ponavljajoča se vprašanja.",
+    "focus": "Naš cilj je preprost: olajšati vodenje food trucka z orodji, zasnovanimi po tem, kako ta podjetja zares delujejo."
   },
-  "signature": "<b>{name}</b> · Ustanovitelj",
+  "signature": "<b>{name}</b><br></br>Ustanovitelj, HatchGrab",
   "company": "{company} · registrirano v Angliji in Walesu · matična številka {number} · sedež: {address}",
   "contact": "Pišite nam"
 }

@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "Par mums — HatchGrab",
-    "description": "HatchGrab dibināja Dominiks Bonīni, kurš izveidoja Village Foodie, lai uzzinātu, kuri food truck brauks uz viņa ciematu. Tas ir neliels uzņēmums, un viņš to vada pats."
+    "description": "HatchGrab veido praktisku programmatūru food truck un izbraukuma ēdināšanai: pasūtījumi tiešsaistē, saņemšanas laiki un mazāk atkārtotu jautājumu. Dibinātājs: Dominiks Bonīni."
   },
   "eyebrow": "Par mums",
-  "title": "Sveiki, es esmu Dominiks.",
+  "title": "Veidots tā, kā food truck patiešām strādā",
   "photoAlt": "{name}, HatchGrab dibinātājs",
   "story": {
-    "village": "Es dzīvoju ciematā. Tajā iebrauc ēdienu busiņi, bet es nekad nezināju, kurš brauks vai kad, ja nepārmeklēju Facebook.",
-    "villageFoodie": "Tāpēc es izveidoju Village Foodie — vienkāršu veidu, kā redzēt, kuri busiņi brauks uz jums tuvējiem ciematiem.",
-    "hatchgrab": "Jo vairāk busiņu es aplūkoju, jo vairāk domāju, ka tie ir pelnījuši labākus rīkus: kaut ko, kas radīts uzņēmumam, kurš katru dienu ir citur, nevis restorānam ar pastāvīgu adresi. Tāpēc es dibināju HatchGrab.",
-    "small": "Tas ir neliels uzņēmums, un es to vadu pats. Ja sazināsieties ar mums, atbildi saņemsiet no manis, nevis no atbalsta rindas."
+    "start": "HatchGrab sākās ar vienkāršu novērojumu: food truck uzņēmumiem vajag labākus rīkus sava biznesa vadīšanai.",
+    "villageFoodie": "Pēc tam, kad biju izveidojis Village Foodie – katalogu, kas palīdz cilvēkiem atklāt food truck, kuri apmeklē viņu apkaimi, – es vairāk laika veltīju tam, lai iepazītu izaicinājumus, ar kuriem saskaras mobilie ēdināšanas uzņēmumi. Atšķirībā no tradicionāliem restorāniem food truck pastāvīgi pārvietojas: tie strādā dažādās vietās un apkalpo klientus mainīgos apstākļos.",
+    "fixedAddress": "Tomēr liela daļa tiem pieejamās programmatūras ir veidota uzņēmumiem ar pastāvīgu adresi.",
+    "change": "HatchGrab tika izveidots, lai to mainītu.",
+    "build": "Mēs veidojam praktisku programmatūru tieši food truck un izbraukuma ēdināšanas uzņēmumiem, kas palīdz pieņemt pasūtījumus tiešsaistē, pārvaldīt saņemšanas laikus, uzturēt raitu pasūtījumu plūsmu un tērēt mazāk laika atkārtotiem jautājumiem.",
+    "focus": "Mūsu mērķis ir vienkāršs: atvieglot food truck vadīšanu ar rīkiem, kas veidoti tā, kā šie uzņēmumi patiešām darbojas."
   },
-  "signature": "<b>{name}</b> · Dibinātājs",
+  "signature": "<b>{name}</b><br></br>Dibinātājs, HatchGrab",
   "company": "{company} · reģistrēts Anglijā un Velsā · reģistrācijas numurs {number} · juridiskā adrese: {address}",
   "contact": "Sazinieties ar mums"
 }

@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "Om oss — HatchGrab",
-    "description": "HatchGrab ble startet av Dominic Bonini, som lagde Village Foodie for å finne ut hvilke matbiler som kom til landsbyen hans. Det er et lite selskap, og han driver det selv."
+    "description": "HatchGrab lager praktisk programvare for matbiler og mobil servering: nettbestillinger, hentetider og færre gjentatte spørsmål. Grunnlagt av Dominic Bonini."
   },
   "eyebrow": "Om oss",
-  "title": "Hei, jeg heter Dominic.",
+  "title": "Laget for slik matbiler faktisk jobber",
   "photoAlt": "{name}, grunnlegger av HatchGrab",
   "story": {
-    "village": "Jeg bor i en landsby. Det kommer matbiler innom, men jeg visste aldri hvilken som kom, eller når, uten å lete gjennom Facebook.",
-    "villageFoodie": "Så jeg lagde Village Foodie, en enkel måte å se hvilke matbiler som kommer til landsbyer i nærheten av deg.",
-    "hatchgrab": "Jo flere matbiler jeg så på, jo mer tenkte jeg at de fortjente bedre verktøy: noe laget for en bedrift som står et nytt sted hver dag, ikke en restaurant med fast adresse. Derfor startet jeg HatchGrab.",
-    "small": "Det er et lite selskap, og jeg driver det selv. Tar du kontakt, får du svar fra meg, ikke fra en kundeservicekø."
+    "start": "HatchGrab startet med en enkel observasjon: Matbiler trenger bedre verktøy for å drive virksomheten sin.",
+    "villageFoodie": "Etter at jeg laget Village Foodie, en oversikt som hjelper folk å finne matbiler som besøker nærområdet deres, brukte jeg mer tid på å lære om utfordringene mobile matbedrifter møter. I motsetning til vanlige restauranter er matbiler stadig på farten: De jobber på ulike steder og betjener kunder under skiftende forhold.",
+    "fixedAddress": "Likevel er mye av programvaren som finnes for dem, laget for bedrifter med fast adresse.",
+    "change": "HatchGrab ble laget for å endre på det.",
+    "build": "Vi lager praktisk programvare spesielt for matbiler og mobil servering. Den hjelper dem å ta imot nettbestillinger, styre hentetider, holde bestillingene i flyt og bruke mindre tid på de samme spørsmålene om og om igjen.",
+    "focus": "Målet vårt er enkelt: å gjøre det lettere å drive en matbil, med verktøy laget for hvordan disse bedriftene faktisk jobber."
   },
-  "signature": "<b>{name}</b> · Grunnlegger",
+  "signature": "<b>{name}</b><br></br>Grunnlegger, HatchGrab",
   "company": "{company} · registrert i England og Wales · selskapsnummer {number} · forretningsadresse: {address}",
   "contact": "Kontakt oss"
 }

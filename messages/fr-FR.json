@@ -5588,18 +5588,20 @@
   "aboutPage": {
     "meta": {
       "title": "À propos — HatchGrab",
-      "description": "HatchGrab a été lancé par Dominic Bonini, qui a créé Village Foodie pour savoir quels food trucks venaient dans son village. C’est une petite entreprise, et il la dirige lui-même."
+      "description": "HatchGrab développe des logiciels pratiques pour les food trucks et la restauration ambulante : commandes en ligne, heures de retrait et moins de questions répétitives. Fondé par Dominic Bonini."
     },
     "eyebrow": "À propos",
-    "title": "Bonjour, je suis Dominic.",
+    "title": "Pensé pour la façon dont les food trucks travaillent vraiment",
     "photoAlt": "{name}, fondateur de HatchGrab",
     "story": {
-      "village": "J’habite dans un village. Des food trucks y passent, mais je ne savais jamais lequel allait venir, ni quand, sans fouiller sur Facebook.",
-      "villageFoodie": "Alors j’ai créé Village Foodie, un moyen simple de voir quels food trucks viennent dans les villages près de chez vous.",
-      "hatchgrab": "Plus je découvrais de food trucks, plus je me disais qu’ils méritaient de meilleurs outils : quelque chose de pensé pour une activité qui change d’endroit chaque jour, et non pour un restaurant à l’adresse fixe. C’est pour ça que j’ai lancé HatchGrab.",
-      "small": "C’est une petite entreprise, et je la dirige moi-même. Si vous me contactez, c’est moi qui vous répondrai, pas une file d’attente du service client."
+      "start": "HatchGrab est né d’un constat simple : les food trucks ont besoin de meilleurs outils pour gérer leur activité.",
+      "villageFoodie": "Après avoir créé Village Foodie, un annuaire qui aide chacun à découvrir les food trucks de passage près de chez soi, j’ai pris le temps de mieux comprendre les difficultés des entreprises de restauration ambulante. Contrairement aux restaurants traditionnels, les food trucks se déplacent sans cesse, s’installent à des endroits différents et servent leurs clients dans des conditions toujours changeantes.",
+      "fixedAddress": "Pourtant, la plupart des logiciels qui leur sont proposés sont conçus pour des commerces à adresse fixe.",
+      "change": "HatchGrab a été créé pour changer cela.",
+      "build": "Nous développons des logiciels pratiques, pensés spécialement pour les food trucks et la restauration ambulante : prendre des commandes en ligne, gérer les heures de retrait, garder des commandes qui s’enchaînent sans accroc et passer moins de temps à répondre aux mêmes questions.",
+      "focus": "Notre objectif est simple : faciliter la gestion d’un food truck, avec des outils conçus pour la façon dont ces entreprises fonctionnent réellement."
     },
-    "signature": "<b>{name}</b> · Fondateur",
+    "signature": "<b>{name}</b><br></br>Fondateur, HatchGrab",
     "company": "{company} · immatriculée en Angleterre et au pays de Galles · numéro d’immatriculation {number} · siège social : {address}",
     "contact": "Nous contacter"
   },

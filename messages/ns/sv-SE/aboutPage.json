@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "Om oss – HatchGrab",
-    "description": "HatchGrab grundades av Dominic Bonini, som byggde Village Foodie för att ta reda på vilka foodtruckar som skulle komma till hans by. Det är ett litet företag, och han driver det själv."
+    "description": "HatchGrab bygger praktisk programvara för foodtruckar och mobil catering: onlinebeställningar, upphämtningstider och färre återkommande frågor. Grundat av Dominic Bonini."
   },
   "eyebrow": "Om oss",
-  "title": "Hej, jag heter Dominic.",
+  "title": "Byggt efter hur foodtruckar faktiskt arbetar",
   "photoAlt": "{name}, grundare av HatchGrab",
   "story": {
-    "village": "Jag bor i en by. Foodtruckar kommer på besök, men jag visste aldrig vilken som skulle komma, eller när, utan att leta runt på Facebook.",
-    "villageFoodie": "Så jag byggde Village Foodie, ett enkelt sätt att se vilka foodtruckar som kommer till byar nära dig.",
-    "hatchgrab": "Ju fler foodtruckar jag tittade på, desto mer tyckte jag att de förtjänade bättre verktyg: något byggt för ett företag som står på en ny plats varje dag, inte en restaurang med fast adress. Därför startade jag HatchGrab.",
-    "small": "Det är ett litet företag och jag driver det själv. Om du hör av dig får du svar från mig, inte från en supportkö."
+    "start": "HatchGrab började med en enkel iakttagelse: foodtruckar behöver bättre verktyg för att driva sina företag.",
+    "villageFoodie": "Efter att ha skapat Village Foodie, en katalog som hjälper folk att hitta foodtruckar som besöker deras närområde, ägnade jag mer tid åt att lära mig om utmaningarna som mobila matföretag möter. Till skillnad från vanliga restauranger är foodtruckar ständigt i rörelse: de står på olika platser och serverar kunder under föränderliga förhållanden.",
+    "fixedAddress": "Ändå är mycket av programvaran som finns för dem utformad för företag med en fast adress.",
+    "change": "HatchGrab skapades för att ändra på det.",
+    "build": "Vi bygger praktisk programvara särskilt för foodtruckar och mobil catering. Den hjälper dem att ta emot onlinebeställningar, hantera upphämtningstider, hålla beställningarna flytande och lägga mindre tid på återkommande frågor.",
+    "focus": "Vårt fokus är enkelt: att göra det lättare att driva en foodtruck, med verktyg som är utformade efter hur de här företagen faktiskt arbetar."
   },
-  "signature": "<b>{name}</b> · Grundare",
+  "signature": "<b>{name}</b><br></br>Grundare, HatchGrab",
   "company": "{company} · registrerat i England och Wales · bolagsnummer {number} · registrerad adress: {address}",
   "contact": "Kontakta oss"
 }

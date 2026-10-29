@@ -1,18 +1,20 @@
 {
   "meta": {
     "title": "Quiénes somos — HatchGrab",
-    "description": "HatchGrab lo fundó Dominic Bonini, que creó Village Foodie para saber qué food trucks iban a pasar por su pueblo. Es una empresa pequeña y la dirige él mismo."
+    "description": "HatchGrab crea software práctico para food trucks y catering móvil: pedidos online, horas de recogida y menos preguntas repetidas. Fundado por Dominic Bonini."
   },
   "eyebrow": "Quiénes somos",
-  "title": "Hola, soy Dominic.",
+  "title": "Pensado para cómo trabajan de verdad los food trucks",
   "photoAlt": "{name}, fundador de HatchGrab",
   "story": {
-    "village": "Vivo en un pueblo. Pasan food trucks, pero nunca sabía cuál iba a venir, ni cuándo, sin rebuscar en Facebook.",
-    "villageFoodie": "Así que creé Village Foodie, una forma sencilla de ver qué food trucks van a los pueblos cerca de ti.",
-    "hatchgrab": "Cuantos más food trucks conocía, más pensaba que merecían mejores herramientas: algo pensado para un negocio que cada día está en un sitio distinto, no para un restaurante con dirección fija. Por eso fundé HatchGrab.",
-    "small": "Es una empresa pequeña y la dirijo yo mismo. Si nos escribes, te contestaré yo, no una cola de soporte."
+    "start": "HatchGrab nació de una observación sencilla: los food trucks necesitan mejores herramientas para gestionar su negocio.",
+    "villageFoodie": "Después de crear Village Foodie, un directorio que ayuda a la gente a descubrir los food trucks que visitan su zona, dediqué más tiempo a conocer los retos a los que se enfrentan los negocios de comida ambulante. A diferencia de los restaurantes tradicionales, los food trucks están siempre en movimiento: trabajan en distintas ubicaciones y atienden a sus clientes en condiciones cambiantes.",
+    "fixedAddress": "Sin embargo, gran parte del software que tienen a su alcance está pensado para negocios con una dirección fija.",
+    "change": "HatchGrab nació para cambiar eso.",
+    "build": "Creamos software práctico pensado específicamente para food trucks y catering móvil, que les ayuda a recibir pedidos online, gestionar las horas de recogida, mantener los pedidos en marcha sin tropiezos y dedicar menos tiempo a responder siempre las mismas preguntas.",
+    "focus": "Nuestro objetivo es sencillo: hacer más fácil gestionar un food truck, con herramientas diseñadas para la forma en que estos negocios trabajan de verdad."
   },
-  "signature": "<b>{name}</b> · Fundador",
+  "signature": "<b>{name}</b><br></br>Fundador, HatchGrab",
   "company": "{company} · registrada en Inglaterra y Gales · número de sociedad {number} · domicilio social: {address}",
   "contact": "Contacta con nosotros"
 }

@@ -5588,18 +5588,20 @@
   "aboutPage": {
     "meta": {
       "title": "Over ons — HatchGrab",
-      "description": "HatchGrab is opgericht door Dominic Bonini, die Village Foodie bouwde om te weten welke foodtrucks naar zijn dorp kwamen. Het is een klein bedrijf, en hij runt het zelf."
+      "description": "HatchGrab maakt praktische software voor foodtrucks en mobiele catering: online bestellingen, afhaaltijden en minder steeds terugkerende vragen. Opgericht door Dominic Bonini."
     },
     "eyebrow": "Over ons",
-    "title": "Hoi, ik ben Dominic.",
+    "title": "Gebouwd rond hoe foodtrucks echt werken",
     "photoAlt": "{name}, oprichter van HatchGrab",
     "story": {
-      "village": "Ik woon in een dorp. Er komen foodtrucks langs, maar ik wist nooit welke er kwam, of wanneer, zonder door Facebook te spitten.",
-      "villageFoodie": "Dus bouwde ik Village Foodie: een eenvoudige manier om te zien welke foodtrucks naar dorpen bij jou in de buurt komen.",
-      "hatchgrab": "Hoe meer foodtrucks ik bekeek, hoe meer ik vond dat ze betere tools verdienden: iets wat gemaakt is voor een bedrijf dat elke dag ergens anders staat, niet voor een restaurant met een vast adres. Daarom ben ik HatchGrab begonnen.",
-      "small": "Het is een klein bedrijf en ik run het zelf. Als je contact opneemt, krijg je antwoord van mij, niet van een supportafdeling."
+      "start": "HatchGrab begon met een simpele observatie: foodtrucks hebben betere tools nodig om hun bedrijf te runnen.",
+      "villageFoodie": "Nadat ik Village Foodie had gemaakt, een overzicht waarmee mensen foodtrucks ontdekken die hun omgeving bezoeken, ben ik me meer gaan verdiepen in de uitdagingen van mobiele horecabedrijven. Anders dan traditionele restaurants zijn foodtrucks voortdurend onderweg: ze staan op wisselende locaties en bedienen hun klanten in steeds andere omstandigheden.",
+      "fixedAddress": "Toch is veel van de software die voor hen beschikbaar is, ontworpen voor bedrijven met een vast adres.",
+      "change": "HatchGrab is opgericht om dat te veranderen.",
+      "build": "Wij maken praktische software speciaal voor foodtrucks en mobiele catering. Zo nemen ze online bestellingen aan, beheren ze afhaaltijden, lopen de bestellingen soepel door en zijn ze minder tijd kwijt aan steeds dezelfde vragen.",
+      "focus": "Ons doel is eenvoudig: een foodtruck runnen makkelijker maken, met tools die zijn afgestemd op hoe deze bedrijven echt werken."
     },
-    "signature": "<b>{name}</b> · Oprichter",
+    "signature": "<b>{name}</b><br></br>Oprichter, HatchGrab",
     "company": "{company} · ingeschreven in Engeland en Wales · bedrijfsnummer {number} · statutair adres: {address}",
     "contact": "Neem contact op"
   },

@@ -142,14 +142,18 @@ const NEW_WORDING = {
   'tradeArea.region_closed': 'canada-1 / canada-2: "Trucks based in {region} can’t sign up yet: HatchGrab isn’t available in {language} yet…" (Quebec) / "…: we’re adding separate GST and PST lines first…" (Saskatchewan, Manitoba)',
   // ⚠️ RE-PINNED (about-page, 22 October 2026, docs/about-page-report.md): the About page's words — new, Dominic's own (the brief,
   // verbatim); scripts/about-page.cjs holds each one's exact text and where it renders.
-  'aboutPage.meta.description': 'about-page: the About page meta description (a plain founder-story sentence)',
-  'aboutPage.title': 'about-page: the About h1 ("Hi, I’m Dominic.")',
+  'aboutPage.meta.description': 'about-page-2: the About page meta description (what HatchGrab builds; founded by Dominic Bonini)',
+  'aboutPage.title': 'about-page-2: the About h1 ("Built around the way food trucks actually work")',
   'aboutPage.photoAlt': 'about-page: the founder photo alt ("{name}, founder of HatchGrab")',
-  'aboutPage.story.village': 'about-page: story paragraph 1 ("I live in a village…")',
-  'aboutPage.story.villageFoodie': 'about-page: story paragraph 2 ("So I built Village Foodie…", plain text)',
-  'aboutPage.story.hatchgrab': 'about-page: story paragraph 3 ("…That’s why I started HatchGrab.")',
-  'aboutPage.story.small': 'about-page: story paragraph 4 ("It’s a small company and I run it myself…")',
-  'aboutPage.signature': 'about-page: the signature ("<b>{name}</b> · Founder")',
+  // ⚠️ RE-PINNED (about-page-2, 29 October 2026): Dominic's new About text — six paragraphs and a two-line signature;
+  // scripts/about-page.cjs holds each one's exact text.
+  'aboutPage.story.start': 'about-page-2: story paragraph 1 ("HatchGrab started with a simple observation…")',
+  'aboutPage.story.villageFoodie': 'about-page-2: story paragraph 2 ("After creating Village Foodie, a directory…", plain text)',
+  'aboutPage.story.fixedAddress': 'about-page-2: story paragraph 3 ("Yet much of the software… a fixed address.")',
+  'aboutPage.story.change': 'about-page-2: story paragraph 4 ("HatchGrab was created to change that.")',
+  'aboutPage.story.build': 'about-page-2: story paragraph 5 ("We build practical software specifically for food trucks…")',
+  'aboutPage.story.focus': 'about-page-2: story paragraph 6 ("Our focus is simple…")',
+  'aboutPage.signature': 'about-page-2: the signature ("<b>{name}</b><br></br>Founder, HatchGrab")',
   'aboutPage.company': 'about-page: the company line ("{company} · registered in England and Wales · company number {number} · registered office: {address}")',
 }
 // ⚠️ RE-PINNED (compare-de-1, 25 October 2026, docs/compare-de-1-report.md): the comparison page's words — a NEW namespace,

@@ -5588,18 +5588,20 @@
   "aboutPage": {
     "meta": {
       "title": "Apie mus – HatchGrab",
-      "description": "HatchGrab įkūrė Dominic Bonini, kuris sukūrė Village Foodie, kad sužinotų, kurie food truck atvyksta į jo kaimą. Tai nedidelė įmonė, kuriai jis vadovauja pats."
+      "description": "HatchGrab kuria praktišką programinę įrangą food truck ir mobiliojo maitinimo verslams: užsakymai internetu, atsiėmimo laikai ir mažiau pasikartojančių klausimų. Įkūrėjas Dominic Bonini."
     },
     "eyebrow": "Apie mus",
-    "title": "Sveiki, aš – Dominic.",
+    "title": "Sukurta pagal tai, kaip food truck iš tikrųjų dirba",
     "photoAlt": "{name}, HatchGrab įkūrėjas",
     "story": {
-      "village": "Gyvenu kaime. Į jį atvažiuoja food truck, bet niekada nežinodavau, kuris atvyks ir kada, jei neieškodavau Facebook.",
-      "villageFoodie": "Todėl sukūriau Village Foodie – paprastą būdą pamatyti, kurie food truck atvyksta į netoliese esančius kaimus.",
-      "hatchgrab": "Kuo daugiau food truck stebėjau, tuo labiau įsitikinau, kad jie nusipelno geresnių įrankių: sukurtų verslui, kuris kasdien būna vis kitoje vietoje, o ne restoranui su pastoviu adresu. Todėl ir įkūriau HatchGrab.",
-      "small": "Tai nedidelė įmonė, ir aš jai vadovauju pats. Jei susisieksite, atsakysiu jums aš, o ne pagalbos tarnybos eilė."
+      "start": "HatchGrab prasidėjo nuo paprasto pastebėjimo: food truck verslui reikia geresnių įrankių.",
+      "villageFoodie": "Sukūręs Village Foodie – katalogą, padedantį žmonėms atrasti jų apylinkėse apsilankančius food truck, – daugiau laiko skyriau susipažinti su iššūkiais, su kuriais susiduria mobiliojo maitinimo verslai. Kitaip nei tradiciniai restoranai, food truck nuolat juda: jie dirba skirtingose vietose ir aptarnauja klientus besikeičiančiomis sąlygomis.",
+      "fixedAddress": "Vis dėlto didelė dalis jiems prieinamos programinės įrangos sukurta verslams su pastoviu adresu.",
+      "change": "HatchGrab buvo sukurtas tam, kad tai pakeistų.",
+      "build": "Kuriame praktišką programinę įrangą būtent food truck ir mobiliojo maitinimo verslams: ji padeda priimti užsakymus internetu, valdyti atsiėmimo laikus, užtikrinti sklandų užsakymų srautą ir mažiau laiko skirti pasikartojantiems klausimams.",
+      "focus": "Mūsų tikslas paprastas: palengvinti food truck valdymą įrankiais, sukurtais pagal tai, kaip šie verslai iš tikrųjų veikia."
     },
-    "signature": "<b>{name}</b> · Įkūrėjas",
+    "signature": "<b>{name}</b><br></br>Įkūrėjas, HatchGrab",
     "company": "{company} · registruota Anglijoje ir Velse · įmonės kodas {number} · registruotoji buveinė: {address}",
     "contact": "Susisiekite su mumis"
   },

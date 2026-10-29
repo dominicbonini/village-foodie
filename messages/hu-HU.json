@@ -5588,18 +5588,20 @@
   "aboutPage": {
     "meta": {
       "title": "Rólunk — HatchGrab",
-      "description": "A HatchGrabet Dominic Bonini alapította, aki a Village Foodie-t azért hozta létre, hogy megtudja, mely food truckok érkeznek a falujába. Kis cég, amelyet ő maga vezet."
+      "description": "A HatchGrab gyakorlatias szoftvert fejleszt food truckoknak és mobil vendéglátóknak: online rendelések, átvételi idők és kevesebb ismétlődő kérdés. Alapító: Dominic Bonini."
     },
     "eyebrow": "Rólunk",
-    "title": "Üdvözlöm! Dominic vagyok.",
+    "title": "Arra építve, ahogyan a food truckok valóban működnek",
     "photoAlt": "{name}, a HatchGrab alapítója",
     "story": {
-      "village": "Egy faluban élek. Járnak hozzánk food truckok, de sosem tudtam, melyik jön és mikor, hacsak át nem bogarásztam a Facebookot.",
-      "villageFoodie": "Ezért elkészítettem a Village Foodie-t: egy egyszerű módot arra, hogy lássa, mely food truckok érkeznek a környékbeli falvakba.",
-      "hatchgrab": "Minél több food truckot ismertem meg, annál inkább úgy éreztem, jobb eszközöket érdemelnek: olyat, amelyet egy minden nap máshol álló vállalkozásra terveztek, nem pedig egy állandó címmel rendelkező étteremre. Ezért indítottam el a HatchGrabet.",
-      "small": "Kis cég, és magam vezetem. Ha felveszi velem a kapcsolatot, tőlem kap választ, nem egy ügyfélszolgálati várólistától."
+      "start": "A HatchGrab egy egyszerű megfigyelésből indult: a food truckoknak jobb eszközökre van szükségük a vállalkozásuk működtetéséhez.",
+      "villageFoodie": "Miután létrehoztam a Village Foodie-t, egy katalógust, amely segít az embereknek felfedezni a környékükre látogató food truckokat, több időt töltöttem azzal, hogy megismerjem a mobil vendéglátó vállalkozások kihívásait. A hagyományos éttermekkel ellentétben a food truckok folyamatosan úton vannak: különböző helyszíneken dolgoznak, és változó körülmények között szolgálják ki a vendégeiket.",
+      "fixedAddress": "Mégis, a számukra elérhető szoftverek nagy része állandó címmel rendelkező vállalkozásokra készült.",
+      "change": "A HatchGrab azért jött létre, hogy ezen változtasson.",
+      "build": "Gyakorlatias szoftvert fejlesztünk kifejezetten food truckoknak és mobil vendéglátóknak: online rendeléseket fogadhatnak vele, kezelhetik az átvételi időket, gördülékenyen tarthatják a rendelések áramlását, és kevesebb időt kell az ismétlődő kérdésekkel tölteniük.",
+      "focus": "A célunk egyszerű: megkönnyíteni egy food truck működtetését olyan eszközökkel, amelyek arra épülnek, ahogyan ezek a vállalkozások valóban működnek."
     },
-    "signature": "<b>{name}</b> · Alapító",
+    "signature": "<b>{name}</b><br></br>Alapító, HatchGrab",
     "company": "{company} · Angliában és Walesben bejegyzett cég · cégjegyzékszám: {number} · székhely: {address}",
     "contact": "Kapcsolat"
   },
