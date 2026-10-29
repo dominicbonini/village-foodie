@@ -30,6 +30,12 @@
 .hg-landing .cmp-tri-yes { color: #15803D; font-weight: 600; }
 .hg-landing .cmp-tri-no { color: #B91C1C; }
 .hg-landing .cmp-tri-unknown { color: var(--ink-soft); }
+/* comparison-features-1: partly, the group heading rows, and the terms section. */
+.hg-landing .cmp-tri-partial { color: #B45309; font-weight: 600; }
+.hg-landing .cmp-table .cmp-group-row th { background: #EEF2F7; color: var(--head, #16314F); font-size: .8rem; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; position: sticky; left: 0; }
+.hg-landing .cmp-terms { display: grid; gap: .6rem; margin: 0; }
+.hg-landing .cmp-terms dt { font-weight: 700; color: var(--head, #16314F); }
+.hg-landing .cmp-terms dd { margin: .1rem 0 0; }
 .hg-landing .cmp-note { font-size: .85rem; color: var(--ink-soft); }
 
 .hg-landing .cmp-badge { display: inline-block; margin-left: .35rem; padding: .05rem .45rem; border-radius: 999px; background: #FFEDD5; color: #9A3412; font-size: .72rem; font-weight: 700; white-space: nowrap; vertical-align: middle; }

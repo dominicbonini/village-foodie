@@ -44,6 +44,10 @@ export async function readDataImports(): Promise<ImportRecord[] | null> {
   if (error) { if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message)) return null; fail('read data_imports', error) }
   return (data ?? []) as ImportRecord[]
 }
+/** comparison-features-1 (20261047). */
+const FEATURE_COLUMNS = 'key, group_key, sort_order, checked, show_scope, show_countries, hatchgrab_source, labels, explanations, updated_at'
+const VALUE_COLUMNS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at'
+const tableMissing = (error: { message: string; code?: string }) => error.code === '42P01' || error.code === 'PGRST205' || /relation .* does not exist|schema cache/i.test(error.message)
 const ENTRY_COLUMNS_BASE = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'
 /** global-players-1: group_label (20261046), falling back to the select before it runs. */
 async function entryCols<R extends { error: { message: string; code?: string } | null }>(build: (cols: string) => PromiseLike<R>): Promise<R> {
@@ -194,6 +198,78 @@ export const servicePricingStore: PricingStore = {
   async deleteEntry(id) {
     const { error } = await (await db()).from('comparison_entries').delete().eq('id', id)
     if (error) fail('remove comparison entry', error)
+  },
+  // ── comparison-features-1: the master list and the answers (20261047). Missing tables → null / [] (the callers fall back).
+  async features() {
+    const { data, error } = await (await db()).from('comparison_features').select(FEATURE_COLUMNS)
+    if (error) { if (tableMissing(error)) return null; fail('read features', error) }
+    return (data ?? []) as unknown as Row[]
+  },
+  async insertFeature(row) {
+    const { data, error } = await (await db()).from('comparison_features').insert(row).select(FEATURE_COLUMNS).single()
+    if (error) fail('add feature', error)
+    return data as unknown as Row
+  },
+  async updateFeature(key, cols) {
+    const { data, error } = await (await db()).from('comparison_features').update(cols).eq('key', key).select(FEATURE_COLUMNS)
+    if (error) fail('save feature', error)
+    return ((data ?? []) as unknown as Row[])[0] ?? null
+  },
+  async featureValues() {
+    // Paged: thousands of rows once every feature has a row per competitor.
+    const s = await db(), out: Row[] = []
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await s.from('competitor_feature_values').select(VALUE_COLUMNS).is('superseded_at', null).order('id').range(from, from + 999)
+      if (error) { if (tableMissing(error)) return []; fail('read feature values', error) }
+      out.push(...((data ?? []) as unknown as Row[]))
+      if ((data ?? []).length < 1000) return out
+    }
+  },
+  async getFeatureValue(id) {
+    const { data, error } = await (await db()).from('competitor_feature_values').select(VALUE_COLUMNS).eq('id', id).maybeSingle()
+    if (error) fail('read feature value', error)
+    return (data as unknown as Row) ?? null
+  },
+  async insertFeatureValue(row) {
+    const { data, error } = await (await db()).from('competitor_feature_values').insert(row).select(VALUE_COLUMNS).single()
+    if (error) fail('add feature value', error)
+    return data as unknown as Row
+  },
+  async supersedeFeatureValue(id, at) {
+    const { data, error } = await (await db()).from('competitor_feature_values').update({ superseded_at: at }).eq('id', id).is('superseded_at', null).select('id')
+    if (error) fail('supersede feature value', error)
+    return (data ?? []).length === 1
+  },
+  async unsupersedeFeatureValue(id) {
+    const { error } = await (await db()).from('competitor_feature_values').update({ superseded_at: null }).eq('id', id)
+    if (error) fail('restore feature value', error)
+  },
+  async setFeatureValuesVerified(ids, at, by) {
+    if (!ids.length) return 0
+    const { data, error } = await (await db()).from('competitor_feature_values').update({ verified_at: at, verified_by: by }).in('id', ids).is('superseded_at', null).select('id')
+    if (error) fail('verify feature values', error)
+    return (data ?? []).length
+  },
+  async touchFeatureValueChecked(id, date) {
+    const { data, error } = await (await db()).from('competitor_feature_values').update({ checked_on: date }).eq('id', id).is('superseded_at', null).select('id')
+    if (error) fail('save checked date', error)
+    return (data ?? []).length === 1
+  },
+  async markFeatureDue(key, today) {
+    const s = await db()
+    const [c, v] = await Promise.all([
+      s.from('competitors').select('id, next_check_at').eq('lifecycle', 'active'),
+      s.from('competitor_feature_values').select('competitor_id').eq('feature_key', key).is('country_code', null).is('superseded_at', null),
+    ])
+    if (c.error) fail('read competitors', c.error)
+    if (v.error) fail('read feature values', v.error)
+    const have = new Set(((v.data ?? []) as Row[]).map(r => String(r.competitor_id)))
+    const active = (c.data ?? []) as { id: string; next_check_at: string | null }[]
+    const rows = active.filter(x => !have.has(x.id)).map(x => ({ competitor_id: x.id, feature_key: key, country_code: null, value: 'unknown' }))
+    for (let i = 0; i < rows.length; i += 500) { const { error } = await s.from('competitor_feature_values').insert(rows.slice(i, i + 500)); if (error) fail('mark feature due', error) }
+    const due = active.filter(x => !x.next_check_at || x.next_check_at > today).map(x => x.id)
+    for (let i = 0; i < due.length; i += 200) { const { error } = await s.from('competitors').update({ next_check_at: today }).in('id', due.slice(i, i + 200)); if (error) fail('mark competitors due', error) }
+    return rows.length
   },
   async existingIds(table, ids) {
     if (!ids.length) return []

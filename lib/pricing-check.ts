@@ -21,34 +21,21 @@
 //         customer pays are shown on their own and added only when "Count fees customers pay" is on. Only status
 //         'counted' plans with a price count.
 
-import type { Feature } from '@/lib/features'
-import { planAllowsFeature, planPriceFor, publicPlans, type PlanCatalog, type PlanKey } from '@/lib/plans'
+import { planPriceFor, publicPlans, type PlanCatalog, type PlanKey } from '@/lib/plans'
 import { minorDigits } from '@/lib/money-format'
 
 // ── the stored rows (camelCase; the route maps the columns) ─────────────────────────────────────────────────────────
 export type Focus = 'food_truck' | 'street_food_markets' | 'nearest_local' | 'pop_up' | 'pos'   // 'pos': global-players-1 (20261046)
 export type Tri = 'yes' | 'no' | 'unknown'
-export const KEY_FEATURE_COLUMNS = ['preOrders', 'whatsapp', 'socialPosts', 'ownDomain', 'iosApp', 'androidApp'] as const
-/** compare-de-1: the further yes/no/unknown features the comparison page shows (editable in the Pricing check tab). */
-export const COMPARE_FEATURE_COLUMNS = ['capacitySlots', 'multiLocationSchedule', 'kds', 'payAtTruck'] as const
-export type CompareFeatureColumn = (typeof COMPARE_FEATURE_COLUMNS)[number]
-export const COMPARE_FEATURE_LABEL: Record<CompareFeatureColumn, string> = {
-  capacitySlots: 'Pickup times follow kitchen capacity', multiLocationSchedule: 'Weekly schedule with changing locations',
-  kds: 'Kitchen display (KDS)', payAtTruck: 'Pay at the truck',
-}
-export type KeyFeatureColumn = (typeof KEY_FEATURE_COLUMNS)[number]
-
 export interface Competitor {
   id: string
   name: string
   website: string | null
   focus: Focus | null
   paymentProviders: string | null
-  preOrders: Tri; whatsapp: Tri; socialPosts: Tri; ownDomain: Tri; iosApp: Tri; androidApp: Tri
-  // compare-de-1 (24 October 2026): the comparison table's further rows (20261042). 'unknown' / null until that migration
-  // runs and the cells are filled (the store reads them tolerantly).
-  capacitySlots: Tri; multiLocationSchedule: Tri; kds: Tri; payAtTruck: Tri
-  paymentMethods: string | null; minTerm: string | null
+  // comparison-features-1 (29 Oct 2026): the fixed feature fields are gone — a competitor's answers are rows in
+  // competitor_feature_values (lib/comparison-features.ts). featuresCheckedOn / featuresVerifiedAt stay: the stamp a
+  // candidate needs before it is counted.
   featuresCheckedOn: string | null
   featuresVerifiedAt: string | null
   notes: string | null
@@ -133,8 +120,6 @@ export interface Benchmark {
   plannedProMinor: number | null
   plannedProIncludedMinor: number | null
   plannedUnlimitedMinor: number | null
-  iosAppAvailable: boolean | null
-  androidAppAvailable: boolean | null
   notes: string | null
   checkedOn: string
   supersededAt: string | null
@@ -142,7 +127,15 @@ export interface Benchmark {
 }
 
 /** The country_settings fields this page reads (the card rate and the switch). */
-export interface CountryRow { countryCode: string; name: string; enabled: boolean; currency: string; cardFeeOnlinePct: number; cardFeeOnlineFixedMinor: number }
+export interface CountryRow {
+  countryCode: string; name: string; enabled: boolean; currency: string; cardFeeOnlinePct: number; cardFeeOnlineFixedMinor: number
+  /** comparison-features-1: THE ONE SOURCE for the app rows — country_settings.ios_app_available / android_app_available, as
+   *  the comparison page reads them (country_benchmarks' app columns are retired). */
+  iosAppAvailable?: boolean; androidAppAvailable?: boolean
+  /** comparison-features-1: whether a truck here may take tips / pass a service fee (lib/comparison-features.ts countryCharges). */
+  charges?: { tips: boolean; serviceFee: boolean }
+  comparisonStatus?: string
+}
 
 export interface CheckOptions { foodTruckOnly: boolean; countCustomerFees: boolean; verifiedOnly: boolean }
 export const DEFAULT_OPTIONS: CheckOptions = { foodTruckOnly: true, countCustomerFees: true, verifiedOnly: false }
@@ -426,39 +419,4 @@ export function isStale(checkedOn: string, today: string): boolean {
   const [y, m, d] = today.split('-').map(Number)
   const cut = new Date(Date.UTC(y, m - 1 - 6, d)).toISOString().slice(0, 10)
   return checkedOn < cut
-}
-
-// ── key features ─────────────────────────────────────────────────────────────────────────────────────────────────────
-/** The six compared features. Ours come from the plan switches (Feature keys are capabilities, allowed in code; WHICH
- *  plans have them is data). Own web address has no switch: custom domains are not plan-gated, so it is on every plan.
- *  The apps are the operator app (`ipad_kds`), and the benchmark says whether the store sells it in the country. */
-export const KEY_FEATURES: readonly { column: KeyFeatureColumn; label: string; features: readonly Feature[]; app?: 'ios' | 'android' }[] = [
-  { column: 'preOrders', label: 'Pre-orders with collection times', features: ['advance_preordering', 'time_slot_selection'] },
-  { column: 'whatsapp', label: 'WhatsApp auto-replies', features: ['whatsapp_replies'] },
-  { column: 'socialPosts', label: 'Social media posts', features: ['schedule_graphics'] },
-  { column: 'ownDomain', label: 'Own web address', features: [] },
-  { column: 'iosApp', label: 'iPhone and iPad app', features: ['ipad_kds'], app: 'ios' },
-  { column: 'androidApp', label: 'Android app', features: ['ipad_kds'], app: 'android' },
-]
-
-/** compare-de-1: the comparison page's further rows, the same way: our cell from the plan switches. Changing locations has
- *  no switch (the weekly schedule is the product itself), so it is on every plan. */
-export const COMPARE_FEATURES: readonly { column: CompareFeatureColumn; label: string; features: readonly Feature[] }[] = [
-  { column: 'capacitySlots', label: COMPARE_FEATURE_LABEL.capacitySlots, features: ['smart_batch_pacing'] },
-  { column: 'multiLocationSchedule', label: COMPARE_FEATURE_LABEL.multiLocationSchedule, features: [] },
-  { column: 'kds', label: COMPARE_FEATURE_LABEL.kds, features: ['web_dashboard'] },
-  { column: 'payAtTruck', label: COMPARE_FEATURE_LABEL.payAtTruck, features: ['online_ordering_pay_at_hatch'] },
-]
-
-/** Our cell for one key feature: "Yes" on every public plan, else the plans that have it ("Pro & Unlimited"). */
-export function ourFeatureCell(catalog: PlanCatalog, def: { features: readonly Feature[]; app?: 'ios' | 'android' }, benchmark: Benchmark | null): string {
-  if (def.app) {
-    const avail = def.app === 'ios' ? benchmark?.iosAppAvailable : benchmark?.androidAppAvailable
-    if (avail === false) return 'Not in this country'
-  }
-  const pub = publicPlans(catalog)
-  const has = pub.filter(p => def.features.every(f => planAllowsFeature(catalog, p.key, f)))
-  let cell = has.length === pub.length ? 'Yes' : has.length === 0 ? 'No' : has.map(p => p.name).join(' & ')
-  if (def.app && (def.app === 'ios' ? benchmark?.iosAppAvailable : benchmark?.androidAppAvailable) == null && has.length) cell += ' (store countries not recorded)'
-  return cell
 }

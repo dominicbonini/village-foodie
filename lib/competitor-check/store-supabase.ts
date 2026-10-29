@@ -7,17 +7,21 @@
 // feature or a verification, so the checker cannot, whatever the model says. competitor-check-2: and on the settings row
 // ONLY deep_country (setDeepCountry, the deep check moving on to the next country); country_settings is read, never written.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { FEATURE_FIELDS } from './model'
+import { valueOut, featureWords, type FeatureValueRow } from '@/lib/comparison-features'
+import { featuresOrFile } from '@/lib/comparison-features-file'
+import comparisonEn from '@/messages/ns/en-GB/comparison.json'
 import { SCHEDULE_COLUMNS, type CheckerStore, type CheckSettings, type CompetitorForCheck } from './checker'
 import { countriesOf, type Prices, type QueueCountry } from './core'
 import type { StoredPlanForPrompt } from './prompts'
 
 type Row = Record<string, unknown>
 const COMPETITOR_COLS = ['id', 'name', 'website', 'focus', 'lifecycle', 'check_urls', 'check_interval_days', 'next_check_at', 'last_checked_at',
-  'deep_checked_at', 'check_requested_at', 'min_term', 'payment_methods', 'notes', ...FEATURE_FIELDS].join(', ')
+  'deep_checked_at', 'check_requested_at', 'notes'].join(', ')   // comparison-features-1: the fixed feature columns are retired
+const VALUE_COLS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at'
 /** global-players-1 (20261046), read tolerantly: the select falls back to COMPETITOR_COLS before it runs. */
 const GLOBAL_COLS = 'not_in_countries, deep_checked_in'
 const missingColumn = (e: { message: string; code?: string } | null) => !!e && (e.code === '42703' || /column .* does not exist/i.test(e.message))
+const tableMissing = (e: { message: string; code?: string }) => e.code === '42P01' || e.code === 'PGRST205' || /relation .* does not exist|schema cache/i.test(e.message)
 const PLAN_COLS = 'id, competitor_id, plan_name, country_code, currency, price_hidden, monthly_minor, yearly_only, vat, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, source_url'
 
 export function settingsOut(r: Row): CheckSettings {
@@ -30,7 +34,7 @@ export function settingsOut(r: Row): CheckSettings {
     deepQueue: Array.isArray(r.deep_queue) ? (r.deep_queue as unknown[]).filter((c): c is string => typeof c === 'string' && /^[A-Z]{2}$/.test(c)) : [],
   }
 }
-export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = []): CompetitorForCheck {
+export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = [], values: readonly FeatureValueRow[] = []): CompetitorForCheck {
   const own = plans.filter(p => p.competitor_id === r.id)
   const notIn = Array.isArray(r.not_in_countries) ? (r.not_in_countries as string[]) : []
   return {
@@ -38,9 +42,8 @@ export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly stri
     lifecycle: r.lifecycle as CompetitorForCheck['lifecycle'], checkUrls: Array.isArray(r.check_urls) ? (r.check_urls as string[]) : [],
     checkIntervalDays: Number(r.check_interval_days) || 90, nextCheckAt: (r.next_check_at as string | null) ?? null,
     lastCheckedAt: (r.last_checked_at as string | null) ?? null, deepCheckedAt: (r.deep_checked_at as string | null) ?? null,
-    checkRequestedAt: (r.check_requested_at as string | null) ?? null, minTerm: (r.min_term as string | null) ?? null,
-    paymentMethods: (r.payment_methods as string | null) ?? null,
-    features: Object.fromEntries(FEATURE_FIELDS.map(f => [f, String(r[f] ?? 'unknown')])),
+    checkRequestedAt: (r.check_requested_at as string | null) ?? null,
+    featureValues: values.filter(v => v.competitorId === String(r.id)),
     plans: own as unknown as StoredPlanForPrompt[],
     countries: countriesOf(String(r.lifecycle), own.map(p => String(p.country_code)), r.notes, { focus: (r.focus as string | null) ?? null, notIn, allCodes }),
     deepCheckedIn: r.deep_checked_in && typeof r.deep_checked_in === 'object' && !Array.isArray(r.deep_checked_in) ? r.deep_checked_in as Record<string, string> : {},
@@ -67,7 +70,23 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       if (k.error) fail('read countries', k.error)
       const plans = (p.data ?? []) as unknown as Row[]
       const allCodes = ((k.data ?? []) as Row[]).map(r => String(r.country_code))
-      return ((c.data ?? []) as unknown as Row[]).map(r => competitorForCheck(r, plans, allCodes))
+      // comparison-features-1: every current answer (paged); none while 20261047 has not run.
+      const values: FeatureValueRow[] = []
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await db.from('competitor_feature_values').select(VALUE_COLS).is('superseded_at', null).order('id').range(from, from + 999)
+        if (error) { if (tableMissing(error)) break; fail('read feature values', error) }
+        values.push(...((data ?? []) as Row[]).map(valueOut))
+        if ((data ?? []).length < 1000) break
+      }
+      return ((c.data ?? []) as unknown as Row[]).map(r => competitorForCheck(r, plans, allCodes, values))
+    },
+    async features() {
+      // The CHECKED features with their English words: an Admin-added one's own, a seeded one's from the en-GB messages.
+      const { data, error } = await db.from('comparison_features').select('key, group_key, sort_order, checked, show_scope, show_countries, hatchgrab_source, labels, explanations, updated_at')
+      if (error && !tableMissing(error)) fail('read features', error)
+      const msgs = (comparisonEn as unknown as { features?: Record<string, { label?: string; explain?: string }> }).features ?? {}
+      return featuresOrFile(error ? null : (data as Row[])).features.filter(f => f.checked)
+        .map(f => ({ key: f.key, ...featureWords(f, 'en-GB', k => (k.endsWith('.label') ? msgs[f.key]?.label : msgs[f.key]?.explain) ?? f.key) }))
     },
     async spend(today) {
       const month = `${today.slice(0, 7)}-01T00:00:00Z`

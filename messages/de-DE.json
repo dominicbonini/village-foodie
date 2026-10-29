@@ -6296,30 +6296,12 @@
       "caption": "Funktionen und Kosten von Online-Bestellsystemen für Foodtrucks in {country}, Stand {date}",
       "note": "„Ja“ nur, wenn der Anbieter es selbst öffentlich angibt.",
       "feature": "Funktion",
-      "rows": {
-        "preorder": "Vorbestellung mit wählbarer Abholzeit",
-        "capacity": "Abholzeiten nach Küchenkapazität",
-        "schedule": "Wochenplan mit wechselnden Standorten",
-        "whatsapp": "Automatische WhatsApp-Antworten",
-        "social": "Social-Media-Posts mit Ihrem Wochenplan",
-        "domain": "Eigene Webadresse",
-        "ipad": "iPad-App",
-        "android": "Android-App",
-        "kds": "Küchenmonitor (KDS)",
-        "payAtTruck": "Bezahlen am Truck",
-        "payments": "Online-Zahlungsarten",
-        "minTerm": "Mindestlaufzeit",
-        "baseFee": "Grundgebühr pro Monat",
-        "orderFee": "Gebühr pro Online-Bestellung"
-      },
       "yes": "Ja",
       "no": "Nein",
       "unknown": "Nicht angegeben",
       "fromPlan": "Ab {plan}",
       "appNotInCountry": "Nicht in {country}",
       "appFlagOff": "Ja – Flag noch aus, wird mit Store-Freigabe sichtbar",
-      "ourPayments": "Karte, Apple Pay, Google Pay",
-      "ourMinTerm": "Keine",
       "range": "{from} bis {to}",
       "feePlan": "{fee} ({plans})",
       "noFee": "keine",
@@ -6421,6 +6403,250 @@
     "footer": {
       "heading": "Vergleich",
       "link": "Bestellsystem-Vergleich"
+    },
+    "featureGroups": {
+      "ordering": "Bestellung",
+      "payments": "Bezahlen",
+      "kitchen": "Küche",
+      "marketing": "Marketing",
+      "apps_hardware": "Apps und Hardware",
+      "price_contract": "Preis und Vertrag"
+    },
+    "cell": {
+      "yes": "Ja",
+      "no": "Nein",
+      "partial": "Teilweise",
+      "unknown": "Nicht angegeben",
+      "withNote": "{word}, {note}",
+      "soon": "demnächst",
+      "fromPlan": "ab {plan}",
+      "perCardPayment": "{fee} pro Kartenzahlung",
+      "trial": "{months, plural, one {# Monat} other {# Monate}} kostenlos",
+      "setupFee": "{price} einmalig",
+      "perMonth": "{price} pro Monat",
+      "notInCountry": "nicht in {country}",
+      "flagOff": "Flag noch aus, wird mit Store-Freigabe sichtbar"
+    },
+    "explained": {
+      "title": "Begriffe erklärt"
+    },
+    "costBlock": {
+      "title": "Was ein Truck pro Monat zahlt",
+      "sizes": "Online-Umsatz pro Monat",
+      "sizeSales": "{sales} pro Monat",
+      "sizeOrders": "etwa {orders} Bestellungen",
+      "lead": "Für einen Truck mit {sales} Online-Bestellungen pro Monat (etwa {orders} Bestellungen). Jeder Balken zeigt die monatlichen Gesamtkosten: die Gebühr des Bestellsystems plus die Kartengebühren auf diese Bestellungen.",
+      "legendSoftware": "Softwaregebühr",
+      "legendCard": "Kartengebühren",
+      "software": "Softwaregebühr {amount} pro Monat",
+      "card": "Kartengebühren {amount} pro Monat",
+      "total": "{amount} pro Monat inklusive Kartengebühren",
+      "share": "{pct} des Umsatzes",
+      "assumed": "(Satz nicht veröffentlicht, angenommen)",
+      "customerFee": "Dazu {amount} pro Monat, die die Gäste zahlen ({fee} pro Bestellung) – nicht im Balken",
+      "summaryCheapest": "Die eigene Gebühr von {us} beträgt {ours} pro Monat, beim günstigsten gezeigten Anbieter {theirs} pro Monat. Die Kartengebühren ({card} pro Monat) fallen bei jeder Kartenzahlung an, egal mit welchem System – entscheidend ist also die Softwaregebühr.",
+      "summaryNotCheapest": "Die eigene Gebühr von {us} beträgt {ours} pro Monat und ist damit höher als {theirs} pro Monat bei {rival}, dem günstigsten gezeigten Anbieter. Die Kartengebühren ({card} pro Monat) fallen bei jeder Kartenzahlung an, egal mit welchem System.",
+      "summaryAlone": "Die eigene Gebühr von {us} beträgt {ours} pro Monat. Die Kartengebühren ({card} pro Monat) fallen bei jeder Kartenzahlung an, egal mit welchem System.",
+      "footOrder": "Durchschnittliche Bestellung {order}: ein typisches Gericht zu {meal} × {multiplier} Gerichte pro Bestellung ({source}).",
+      "footCard": "Die Kartengebühren rechnen mit {rate} pro Kartenzahlung: {source}.",
+      "footCardSource": "Stripe-Satz für {country}",
+      "footAssumed": "{names} {count, plural, one {veröffentlicht} other {veröffentlichen}} keinen Kartensatz, daher ist unserer angenommen.",
+      "footChecked": "Preise geprüft am {date}.",
+      "footCalculator": "Eigene Zahlen im Rechner ausrechnen.",
+      "noRivals": "In {country} ist noch kein Anbieter geprüft, daher gibt es nichts zu vergleichen."
+    },
+    "features": {
+      "preorder": {
+        "label": "Vorbestellung mit wählbarer Abholzeit",
+        "explain": "Gäste bestellen vorab und wählen, wann sie abholen."
+      },
+      "capacity": {
+        "label": "Abholzeiten nach Küchenkapazität",
+        "explain": "Gäste sehen nur Abholzeiten, die die Küche wirklich schafft."
+      },
+      "asap": {
+        "label": "Bestellung für so bald wie möglich",
+        "explain": "Gäste bestellen ohne Zeitwahl und holen ab, sobald es fertig ist."
+      },
+      "ahead": {
+        "label": "Vorbestellung für einen späteren Tag oder ein Event",
+        "explain": "Gäste bestellen heute für einen Markt oder ein Event an einem späteren Tag."
+      },
+      "schedule": {
+        "label": "Wochenplan mit wechselnden Standorten",
+        "explain": "Der Wochenplan mit Orten und Zeiten; Gäste bestellen für den Ort und Tag, an dem der Truck dort steht."
+      },
+      "walkup": {
+        "label": "Bestellungen am Fenster im selben Bildschirm wie Online-Bestellungen",
+        "explain": "Bestellungen am Fenster landen in derselben Liste wie Online-Bestellungen."
+      },
+      "stock": {
+        "label": "Ausverkauft und Bestandsgrenzen pro Event",
+        "explain": "Gerichte als ausverkauft markieren und festlegen, wie viele pro Event verkauft werden."
+      },
+      "allergens": {
+        "label": "Allergene auf der Speisekarte",
+        "explain": "Jedes Gericht zeigt den Gästen vor der Bestellung seine Allergene."
+      },
+      "menuphoto": {
+        "label": "Speisekarte aus einem Foto anlegen",
+        "explain": "Ein Foto oder PDF der Speisekarte trägt die Gerichte zum Prüfen ein."
+      },
+      "options": {
+        "label": "Optionen und Extras zu Gerichten",
+        "explain": "Größen, Soßen und Extras, auch Pflichtauswahl."
+      },
+      "deals": {
+        "label": "Menüs und Kombi-Angebote",
+        "explain": "Mehrere Artikel zusammen zu einem Preis."
+      },
+      "private": {
+        "label": "Private Veranstaltungen und Buchungen",
+        "explain": "Bestellungen für eine private Veranstaltung über einen eigenen Link und Anfragen, den Truck zu buchen.",
+        "ours": "private Veranstaltungen mit eigenem Bestelllink; keine Buchungsanfragen"
+      },
+      "qr": {
+        "label": "Bestellung am Tisch per QR-Code",
+        "explain": "Gäste scannen am Tisch einen Code, und die Bestellung kommt mit der Tischnummer.",
+        "ours": "ein QR-Code öffnet die Bestellseite; keine Tischnummern"
+      },
+      "cards": {
+        "label": "Online-Kartenzahlung inkl. Apple Pay und Google Pay",
+        "explain": "Gäste zahlen bei der Bestellung online mit Karte, Apple Pay oder Google Pay."
+      },
+      "payattruck": {
+        "label": "Bezahlen am Truck",
+        "explain": "Gäste bestellen online und zahlen bei der Abholung."
+      },
+      "localpay": {
+        "label": "Lokale Zahlungsarten (BLIK, iDEAL, Swish, MobilePay …)",
+        "explain": "Die landesüblichen Online-Zahlungsarten neben Karten.",
+        "ours": "nur Karten"
+      },
+      "paypal": {
+        "label": "PayPal oder Klarna",
+        "explain": "Gäste können mit PayPal oder Klarna zahlen."
+      },
+      "custfee": {
+        "label": "Option: Gast zahlt die Bestellgebühr",
+        "explain": "Der Betrieb kann eine Servicegebühr an den Gast weitergeben."
+      },
+      "tips": {
+        "label": "Trinkgeld",
+        "explain": "Gäste können bei der Online-Zahlung Trinkgeld geben."
+      },
+      "paymethods": {
+        "label": "Angebotene Zahlungsarten",
+        "explain": "Wie Gäste bezahlen können, so wie der Anbieter es angibt.",
+        "ours": "Karte, Apple Pay, Google Pay; Zahlung am Truck"
+      },
+      "kds": {
+        "label": "Küchenmonitor (KDS)",
+        "explain": "Bestellungen erscheinen auf einem Bildschirm in der Küche, in der Reihenfolge der Zubereitung."
+      },
+      "tickets": {
+        "label": "Gedruckte Küchenbons",
+        "explain": "Jede Bestellung wird im Truck auf einem Bondrucker gedruckt.",
+        "ours": "in der iPad- und Android-App; Drucker nicht enthalten"
+      },
+      "buzzers": {
+        "label": "Pager",
+        "explain": "Gäste bekommen einen Pager, der meldet, dass die Bestellung fertig ist.",
+        "ours": "Pager-Nummern werden zur Bestellung erfasst; Pager nicht enthalten"
+      },
+      "offline": {
+        "label": "Funktioniert auch ohne Internet",
+        "explain": "Bestellungen und Änderungen ohne Verbindung werden gespeichert und gesendet, sobald sie wieder da ist.",
+        "ours": "in der iPad- und Android-App; nicht im Web-Dashboard"
+      },
+      "vans": {
+        "label": "Mehrere Trucks",
+        "explain": "Ein Konto für mehr als einen Truck.",
+        "ours": "weitere Trucks gegen eine monatliche Zusatzgebühr"
+      },
+      "staff": {
+        "label": "Mitarbeiter-Zugänge",
+        "explain": "Mitarbeitende melden sich mit eigenem Zugang und eigener Rolle an."
+      },
+      "reports": {
+        "label": "Umsatzberichte",
+        "explain": "Summen, Bestseller und Umsätze nach Event oder Zeitraum, mit Tabellen-Export."
+      },
+      "domain": {
+        "label": "Eigene Webadresse",
+        "explain": "Die Bestellseite unter der eigenen Domain des Betriebs."
+      },
+      "whatsapp": {
+        "label": "Automatische WhatsApp-Antworten",
+        "explain": "WhatsApp-Nachrichten von Gästen werden automatisch beantwortet."
+      },
+      "social": {
+        "label": "Social-Media-Posts aus Ihrem Wochenplan",
+        "explain": "Fertige Posts, die zeigen, wo der Truck diese Woche steht."
+      },
+      "igmsg": {
+        "label": "Antworten auf Instagram und im Messenger",
+        "explain": "Nachrichten auf Instagram und im Facebook Messenger werden automatisch beantwortet."
+      },
+      "discovery": {
+        "label": "Eintrag auf einer Foodtruck-Karte",
+        "explain": "Gäste finden den Truck auf einer öffentlichen Karte mit Foodtrucks in ihrer Nähe.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Treueprogramm",
+        "explain": "Gäste sammeln Vorteile, wenn sie wiederkommen."
+      },
+      "ipad": {
+        "label": "iPad-App",
+        "explain": "Die App des Trucks zum Annehmen und Verwalten von Bestellungen auf dem iPad."
+      },
+      "android": {
+        "label": "Android-App",
+        "explain": "Dieselbe App auf einem Android-Tablet oder -Smartphone."
+      },
+      "hardware": {
+        "label": "Hardware inklusive (Tablet, Drucker)",
+        "explain": "Der Anbieter stellt Tablet oder Drucker.",
+        "ours": "eigene Geräte nutzen"
+      },
+      "terminal": {
+        "label": "Kartenterminal für das Fenster inklusive",
+        "explain": "Der Anbieter stellt ein Kartenterminal für Zahlungen am Truck."
+      },
+      "fiscal": {
+        "label": "Zertifizierte Kasse nach Steuerrecht (TSE, EET, Kassaregister …)",
+        "explain": "Eine Kasse, die nach den Regeln des Landes für das Erfassen von Verkäufen zertifiziert ist."
+      },
+      "delivery": {
+        "label": "Lieferung",
+        "explain": "Bestellungen werden an die Adresse des Gastes geliefert.",
+        "ours": "nur Abholung"
+      },
+      "monthly": {
+        "label": "Grundgebühr pro Monat",
+        "explain": "Was der Betrieb jeden Monat für die Software zahlt."
+      },
+      "perorder": {
+        "label": "Gebühr pro Online-Bestellung",
+        "explain": "Was der Anbieter zusätzlich zur Grundgebühr auf jede Online-Bestellung berechnet."
+      },
+      "cardfee": {
+        "label": "Kartengebühr",
+        "explain": "Die Gebühr des Zahlungsanbieters auf jede Kartenzahlung."
+      },
+      "term": {
+        "label": "Mindestlaufzeit",
+        "explain": "Wie lange der Betrieb gebunden ist, bevor er kündigen kann."
+      },
+      "setup": {
+        "label": "Einrichtungsgebühr",
+        "explain": "Eine einmalige Gebühr zum Start."
+      },
+      "trial": {
+        "label": "Kostenloser Test",
+        "explain": "Zeit, das System kostenlos zu nutzen, bevor etwas fällig wird."
+      }
     }
   }
 }

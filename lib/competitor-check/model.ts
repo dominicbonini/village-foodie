@@ -12,13 +12,14 @@
 
 /** Every field a finding can be about. Plan-level fields name a plan; the rest are about the competitor. */
 export const PLAN_FIELDS = ['monthly_price', 'setup_fee', 'truck_fee', 'customer_fee', 'card_rate', 'plan'] as const
-export const FEATURE_FIELDS = ['pre_orders', 'whatsapp', 'social_posts', 'own_domain', 'ios_app', 'android_app',
-  'capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck'] as const
-export const TEXT_FIELDS = ['min_term', 'payment_methods'] as const
+// comparison-features-1 (29 Oct 2026): the ten fixed feature fields and the two texts (min_term, payment_methods) are gone.
+// Every feature is ONE field, 'feature', naming its key from the master list (public.comparison_features — the checked
+// ones are in the message), with its value (yes / no / partial / unknown) and the note as advertised.
 export const OTHER_FIELDS = ['url', 'classification', 'availability'] as const   // availability: global-players-1
-export const FIELDS = [...PLAN_FIELDS, ...FEATURE_FIELDS, ...TEXT_FIELDS, ...OTHER_FIELDS] as const
+export const FIELDS = [...PLAN_FIELDS, 'feature', ...OTHER_FIELDS] as const
 export type Field = (typeof FIELDS)[number]
-export type FeatureField = (typeof FEATURE_FIELDS)[number]
+/** A feature's answer, as stored (competitor_feature_values.value). */
+export const FEATURE_ANSWERS = ['yes', 'no', 'partial', 'unknown'] as const
 
 // global-players-1 (20261046): 'in_country' / 'not_in_country' — whether it sells to businesses in the country checked.
 export const OUTCOMES = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification', 'blocked', 'page_gone', 'not_stated', 'in_country', 'not_in_country'] as const
@@ -46,10 +47,7 @@ export const CLASSIFICATION_EFFECT: Record<Classification, { lifecycle: 'active'
 
 export const FIELD_LABEL: Record<Field, string> = {
   monthly_price: 'Price', setup_fee: 'Setup fee', truck_fee: 'Fee per order (truck pays)', customer_fee: 'Fee per order (customer pays)',
-  card_rate: 'Card rate', plan: 'Plan', pre_orders: 'Pre-orders with collection times', whatsapp: 'WhatsApp auto-replies',
-  social_posts: 'Social media posts', own_domain: 'Own web address', ios_app: 'iPhone and iPad app', android_app: 'Android app',
-  capacity_slots: 'Pickup times follow kitchen capacity', multi_location_schedule: 'Weekly schedule with changing locations',
-  kds: 'Kitchen display (KDS)', pay_at_truck: 'Pay at the truck', min_term: 'Minimum term', payment_methods: 'Payment methods',
+  card_rate: 'Card rate', plan: 'Plan', feature: 'Feature',
   url: 'Page', classification: 'What it is', availability: 'Sold in this country',
 }
 
@@ -65,7 +63,11 @@ export interface RawFinding {
   period: 'month' | 'year' | 'one_off' | null
   vat: 'incl' | 'excl' | 'unknown' | null
   percent: number | null
-  feature: 'yes' | 'no' | 'not_stated' | null
+  /** comparison-features-1: for field 'feature' — which feature (a key from the list in the message), its answer, and the
+   *  note as advertised ("add-on, 10 € a month"). */
+  feature_key: string | null
+  feature: 'yes' | 'no' | 'partial' | 'unknown' | null
+  note: string | null
   classification: Classification | null
   url: string | null
   quote: string | null
@@ -96,7 +98,7 @@ export const RECORD_FINDINGS_TOOL = {
           type: 'object',
           additionalProperties: false,
           required: ['field', 'plan_name', 'country_code', 'outcome', 'found_value', 'amount', 'currency', 'period', 'vat', 'percent',
-            'feature', 'classification', 'url', 'quote', 'quote_en', 'source_url'],
+            'feature_key', 'feature', 'note', 'classification', 'url', 'quote', 'quote_en', 'source_url'],
           properties: {
             field: { type: 'string', enum: [...FIELDS] },
             plan_name: nullable('string'),
@@ -108,7 +110,9 @@ export const RECORD_FINDINGS_TOOL = {
             period: nullableEnum(['month', 'year', 'one_off']),
             vat: nullableEnum(['incl', 'excl', 'unknown']),
             percent: nullable('number'),
-            feature: nullableEnum(['yes', 'no', 'not_stated']),
+            feature_key: nullable('string'),
+            feature: nullableEnum(FEATURE_ANSWERS),
+            note: nullable('string'),
             classification: nullableEnum(CLASSIFICATIONS),
             url: nullable('string'),
             quote: nullable('string'),
@@ -171,17 +175,21 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
     if (!inList(r.field, FIELDS)) errors.push(`${at}.field is not one of the fields.`)
     if (!inList(r.outcome, OUTCOMES)) errors.push(`${at}.outcome is not one of the outcomes.`)
     for (const k of ['plan_name', 'found_value', 'quote', 'quote_en']) if (!strOrNull(r[k])) errors.push(`${at}.${k} must be text (at most ${MAX_TEXT} characters) or null.`)
+    if (!strOrNull(r.note, 300)) errors.push(`${at}.note must be text (at most 300 characters) or null.`)
+    if (!(r.feature_key === null || (typeof r.feature_key === 'string' && /^[a-z][a-z0-9_]{1,30}$/.test(r.feature_key)))) errors.push(`${at}.feature_key must be a feature key from the list, or null.`)
     if (!(r.country_code === null || (typeof r.country_code === 'string' && /^[A-Z]{2}$/.test(r.country_code)))) errors.push(`${at}.country_code must be two capital letters or null.`)
     if (!(r.currency === null || (typeof r.currency === 'string' && /^[A-Z]{3}$/.test(r.currency)))) errors.push(`${at}.currency must be an ISO code (EUR, GBP…) or null.`)
     for (const k of ['amount', 'percent']) if (!numOrNull(r[k])) errors.push(`${at}.${k} must be a non-negative number or null.`)
     if (!inList(r.period, ['month', 'year', 'one_off', null])) errors.push(`${at}.period is invalid.`)
     if (!inList(r.vat, ['incl', 'excl', 'unknown', null])) errors.push(`${at}.vat is invalid.`)
-    if (!inList(r.feature, ['yes', 'no', 'not_stated', null])) errors.push(`${at}.feature is invalid.`)
+    if (!inList(r.feature, [...FEATURE_ANSWERS, null])) errors.push(`${at}.feature is invalid.`)
     if (!inList(r.classification, [...CLASSIFICATIONS, null])) errors.push(`${at}.classification is invalid.`)
     for (const k of ['url', 'source_url']) if (!(r[k] === null || isHttpUrl(r[k]))) errors.push(`${at}.${k} must be an http(s) URL or null.`)
     if (inList(r.outcome, QUOTED_OUTCOMES) && (!isStr(r.quote) || !String(r.quote).trim() || !isStr(r.quote_en) || !isHttpUrl(r.source_url)))
       errors.push(`${at}: a "${String(r.outcome)}" finding needs a verbatim quote, its English translation and the page's URL.`)
-    if (inList(r.field, FEATURE_FIELDS) && inList(r.outcome, ['changed', 'unchanged']) && r.feature === null) errors.push(`${at}: a feature finding needs "feature" (yes / no / not_stated).`)
+    if (r.field === 'feature' && (r.feature_key === null || (inList(r.outcome, ['changed', 'unchanged']) && r.feature === null)))
+      errors.push(`${at}: a feature finding needs "feature_key" (from the list) and "feature" (yes / no / partial / unknown).`)
+    if (r.field !== 'feature' && r.feature_key !== null) errors.push(`${at}: "feature_key" goes with the field "feature" only.`)
     if (r.outcome === 'classification' && r.classification === null) errors.push(`${at}: a classification finding needs "classification".`)
     if (r.outcome === 'new_url' && r.url === null) errors.push(`${at}: a new_url finding needs "url".`)
     if ((r.outcome === 'in_country' || r.outcome === 'not_in_country') !== (r.field === 'availability')) errors.push(`${at}: "in_country" and "not_in_country" go with the field "availability", and only they do.`)

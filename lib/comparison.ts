@@ -10,11 +10,17 @@
 // visitor) sees HatchGrab plus those competitors; an admin sees every entry, each unverified one marked.
 //
 // ── WHERE EACH CELL COMES FROM ───────────────────────────────────────────────────────────────────────────────────────
-// HatchGrab: the plan switches (public.plan_features — "Ab Pro" when only some plans have a feature), the plan prices
-// (public.plan_prices), the country's app flags (country_settings.ios_app_available / android_app_available) and the
-// page's messages (payment methods, minimum term). ⛔ No plan, price, allowance, trial length or tier is written here
-// (manual §81). A competitor: public.competitors (features, payment methods, minimum term, website) and the entry's plan
-// in public.competitor_plans, followed to its current version when it was edited. "Ja" only where the vendor says so.
+// comparison-features-1 (29 October 2026): THE ROWS ARE THE MASTER FEATURE LIST (public.comparison_features,
+// lib/comparison-features.ts) — every feature whose show_scope is 'all', or 'some' naming this country, grouped, each group
+// a heading row. HatchGrab's "No" rows show like any other.
+// HatchGrab: each feature's hatchgrab_source — the plan switches (public.plan_features — "ab Pro" when only some plans have
+// it), the plan prices (public.plan_prices), the card rate, the country's app flags (country_settings.ios_app_available /
+// android_app_available) or a fixed answer in messages. ⛔ No plan, price, allowance, trial length or tier is written here
+// (manual §81). A competitor: its answers in public.competitor_feature_values (the country's own row, else the one for
+// every country) and the entry's plan in public.competitor_plans, followed to its current version when it was edited.
+// 🔴 CELL WORDS COME ONLY FROM A FIXED SET (comparison.cell.yes / no / partial / unknown) plus the short note as advertised;
+// the .json twin carries the machine value. 🔴 EVERY AMOUNT HAS ITS UNIT AND PERIOD ("pro Monat", "pro Bestellung",
+// "einmalig", "pro Kartenzahlung"). "Ja" only where the vendor says so.
 //
 // ⛔ No Product, Review, Rating or AggregateRating in the JSON-LD: this page compares tools, it does not rate them.
 import type { CountrySettings } from '@/lib/country-settings-types'
@@ -22,9 +28,13 @@ import { planMoneyFormatOf } from '@/lib/country-settings-types'
 import { feeLabel, formatAmount, formatWholeAmount, pctLabel, type MoneyFormat } from '@/lib/money-format'
 import { formatYmd } from '@/lib/time-utils'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
-import { planAllowsFeature, publicPlans, type PlanCatalog } from '@/lib/plans'
+import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, type OfferPlan } from '@/lib/plan-offer'
-import { KEY_FEATURES, COMPARE_FEATURES, isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry, type Tri } from '@/lib/pricing-check'
+import { isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
+import {
+  featuresShownIn, featureWords, ourAnswer, effectiveValue, featuresVerifiedFor, FEATURE_GROUPS,
+  type ComparisonFeature, type FeatureValueRow, type FeatureValue, type FeatureGroup, type PriceKind,
+} from '@/lib/comparison-features'
 import { BRANDS } from '@/lib/brand'
 import { HATCHGRAB_ORIGIN } from '@/lib/marketing-country'
 import { organizationLd, websiteLd } from '@/lib/structured-data'
@@ -49,6 +59,11 @@ export interface ComparisonInput {
   competitors: Competitor[]
   plans: CompetitorPlan[]
   entries: ComparisonEntry[]
+  /** comparison-features-1: the master feature list and the competitors' current answers. */
+  features: ComparisonFeature[]
+  values: FeatureValueRow[]
+  /** Whether a truck here can take tips / pass a service fee (lib/comparison-features.ts countryCharges). */
+  charges?: { tips: boolean; serviceFee: boolean }
   /** Addresses, absolute (HATCHGRAB_ORIGIN): the page, the country's landing, its features page, the twins, contact. */
   urls: { page: string; home: string; features: string; md: string; json: string; contact: string }
   /** Today, YYYY-MM-DD — HatchGrab's own cells are read live, so they are checked today. */
@@ -62,7 +77,9 @@ export interface ViewOptions {
   publicView: boolean
 }
 
-export interface Cell { text: string; source: string | null; checkedOn: string | null; tri?: Tri; unverified?: boolean }
+/** One cell: its words (a fixed word, plus the note — or the note alone when the value is unknown), the machine value,
+ *  the fixed word and the note separately (the .json twin), its source and checked date. */
+export interface Cell { text: string; value: FeatureValue; word: string; note: string | null; source: string | null; checkedOn: string | null; unverified?: boolean }
 export interface Column {
   key: string; name: string; url: string | null; us: boolean
   /** global-players-1: the short group label under the tool's name — the entry's override, else its focus's
@@ -72,7 +89,8 @@ export interface Column {
   verified: boolean; entryVerified: boolean; planVerified: boolean; featuresVerified: boolean
   plan: CompetitorPlan | null; chooseWhen: string | null
 }
-export interface Row { key: string; label: string; cells: Cell[] }
+export interface Row { key: string; group: FeatureGroup; label: string; explain: string; cells: Cell[] }
+export interface RowGroup { key: FeatureGroup; label: string; rows: Row[] }
 export interface CostLine { tool: string; us: boolean; lines: string[]; source: string | null; checkedOn: string | null; unverified: boolean }
 export interface ChecklistItem { key: string; label: string; ok: boolean }
 
@@ -86,7 +104,11 @@ export interface ComparisonView {
   /** The earliest date a shown entry was added — the page's datePublished. */
   publishedOn: string
   columns: Column[]
+  /** Every row, in order (the twins); and the same rows by group (the page's table). */
   rows: Row[]
+  groups: RowGroup[]
+  /** "Begriffe erklärt": each shown feature's one-sentence explanation. */
+  explained: { key: string; label: string; explain: string }[]
   /** Fewer than two verified competitors: the "Weitere Anbieter…" note shows under the table. */
   morePending: boolean
   costs: CostLine[]
@@ -98,21 +120,8 @@ export interface ComparisonView {
   checklist: ChecklistItem[]
 }
 
-const ROWS = ['preorder', 'capacity', 'schedule', 'whatsapp', 'social', 'domain', 'ipad', 'android', 'kds', 'payAtTruck', 'payments', 'minTerm', 'baseFee', 'orderFee'] as const
-type RowKey = (typeof ROWS)[number]
-
-/** Each feature row → the competitor column it reads and the plan switches HatchGrab's cell reads (lib/pricing-check.ts). */
-const FEATURE_ROW: Partial<Record<RowKey, { def: { features: readonly import('@/lib/features').Feature[]; app?: 'ios' | 'android' }; column: keyof Competitor }>> = (() => {
-  const key = Object.fromEntries(KEY_FEATURES.map(f => [f.column, f]))
-  const cmp = Object.fromEntries(COMPARE_FEATURES.map(f => [f.column, f]))
-  return {
-    preorder: { def: key.preOrders, column: 'preOrders' }, capacity: { def: cmp.capacitySlots, column: 'capacitySlots' },
-    schedule: { def: cmp.multiLocationSchedule, column: 'multiLocationSchedule' }, whatsapp: { def: key.whatsapp, column: 'whatsapp' },
-    social: { def: key.socialPosts, column: 'socialPosts' }, domain: { def: key.ownDomain, column: 'ownDomain' },
-    ipad: { def: key.iosApp, column: 'iosApp' }, android: { def: key.androidApp, column: 'androidApp' },
-    kds: { def: cmp.kds, column: 'kds' }, payAtTruck: { def: cmp.payAtTruck, column: 'payAtTruck' },
-  }
-})()
+/** The price rows whose competitor side comes from the entry's plan (the rest come from its answers). */
+const PLAN_PRICE: readonly PriceKind[] = ['monthly', 'perorder', 'cardfee', 'setup']
 
 /** The plan an entry shows: its own while current, else the current plan with the same name for the same competitor and
  *  country (a plan is never edited in place — an edit inserts a new row), else that competitor's first current plan. */
@@ -124,10 +133,11 @@ export function entryPlan(e: Pick<ComparisonEntry, 'primaryPlanId' | 'competitor
 }
 
 /** Public = the entry, its plan and the competitor's features are all verified. */
-export function entryIsPublic(e: ComparisonEntry, competitors: Competitor[], plans: CompetitorPlan[]): boolean {
+export function entryIsPublic(e: ComparisonEntry, competitors: Competitor[], plans: CompetitorPlan[], features?: { values: FeatureValueRow[]; keys: string[] }): boolean {
   const c = competitors.find(x => x.id === e.competitorId)
   const p = entryPlan(e, plans)
-  return !!(e.verifiedAt && p?.verifiedAt && c?.featuresVerifiedAt && isCountedCompetitor(c))
+  return !!(e.verifiedAt && p?.verifiedAt && c?.featuresVerifiedAt && isCountedCompetitor(c)
+    && (!features || featuresVerifiedFor(features.values, c.id, e.countryCode, features.keys)))
 }
 
 /** "[ … ]" or "[…]" or "[ ... ]" — an unfinished line in the copy. The checklist refuses to go live with one. */
@@ -168,41 +178,70 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     if (col.verified || showAll) columns.push(col)
   }
   const compOf = new Map(input.competitors.map(c => [c.id, c]))
+
+  // ── the features shown here (the master list), and each column's features verification ──
+  const shownFeatures = featuresShownIn(input.features, settings.countryCode)
+  const shownKeys = shownFeatures.map(f => f.key)
+  for (const col of columns) {
+    if (col.us) continue
+    // The competitor's stamp AND every stated answer shown here carries its own (Mark features verified, per country).
+    col.featuresVerified = col.featuresVerified && featuresVerifiedFor(input.values, col.key, settings.countryCode, shownKeys)
+    col.verified = col.verified && col.featuresVerified
+  }
+  for (let i = columns.length - 1; i > 0; i--) if (!columns[i].verified && !showAll) columns.splice(i, 1)
   const verifiedCount = columns.filter(c => !c.us && c.verified).length
+  const trialMonths = offerTrialMonths(catalog)
+
+  // ── the cell words: ONLY the fixed set, plus the note (a note alone when the value is not stated) ──
+  const word = (v: FeatureValue) => t(`cell.${v}`)
+  const cell = (value: FeatureValue, note: string | null, source: string | null, checkedOn: string | null, unverified?: boolean): Cell => {
+    const n = note?.trim() || null
+    const text = value === 'unknown' && n ? n : n ? t('cell.withNote', { word: word(value), note: n }) : word(value)
+    return { text, value, word: word(value), note: n, source, checkedOn, ...(unverified ? { unverified } : {}) }
+  }
 
   // ── HatchGrab's cells ──
-  const pub = publicPlans(catalog).filter(p => offers.some(o => o.plan.key === p.key))
-  const ourFeature = (def: { features: readonly import('@/lib/features').Feature[]; app?: 'ios' | 'android' }): string => {
-    const has = pub.filter(p => def.features.every(f => planAllowsFeature(catalog, p.key, f)))
-    if (def.app) {
-      const on = def.app === 'ios' ? flags.iosApp : flags.androidApp
-      if (has.length && !on) return showAll ? t('table.appFlagOff') : t('table.appNotInCountry', { country })
-    }
-    if (!pub.length || has.length === pub.length) return t('table.yes')
-    if (!has.length) return t('table.no')
-    return t('table.fromPlan', { plan: has[0].name })
-  }
-  const ourSource = (key: RowKey) => (key === 'baseFee' || key === 'orderFee' ? `${urls.home}#pricing` : urls.features)
+  const ourSource = (f: ComparisonFeature) => (f.groupKey === 'price_contract' ? `${urls.home}#pricing` : urls.features)
   const ourBase = (): string => {
     if (!offers.length) return t('table.unknown')
     const lo = Math.min(...offers.map(o => o.monthlyMinor)), hi = Math.max(...offers.map(o => o.monthlyMinor))
-    return lo === hi ? formatWholeAmount(lo, money) : t('table.range', { from: formatWholeAmount(lo, money), to: formatWholeAmount(hi, money) })
+    return t('cell.perMonth', { price: lo === hi ? formatWholeAmount(lo, money) : t('table.range', { from: formatWholeAmount(lo, money), to: formatWholeAmount(hi, money) }) })
   }
   const ourOrderFee = (): string => {
     if (!offers.length) return t('table.unknown')
-    // One part per fee, in plan order: "0,99 % (Starter) · keine (Pro, Unlimited)".
+    // One part per fee, in plan order, each with its unit: "0,99 % pro Online-Kartenbestellung (Starter) · keine (Pro, Unlimited)".
     const groups: { fee: string; plans: string[] }[] = []
     for (const o of offers) {
       const fee = o.shape === 'noFee' ? t('table.noFee') : o.shape === 'included'
-        ? t('table.feeAfter', { fee: pct(o.feeBps), included: formatWholeAmount(o.includedMinor ?? 0, money) }) : pct(o.feeBps)
+        ? t('table.feeAfter', { fee: pct(o.feeBps), included: formatWholeAmount(o.includedMinor ?? 0, money) }) : t('costs.feeOnly', { fee: pct(o.feeBps) })
       const g = groups.find(x => x.fee === fee)
       if (g) g.plans.push(o.plan.name); else groups.push({ fee, plans: [o.plan.name] })
     }
     return groups.length === 1 ? groups[0].fee : groups.map(g => t('table.feePlan', { fee: g.fee, plans: g.plans.join(', ') })).join(' · ')
   }
+  const ourPrice = (kind: PriceKind, f: ComparisonFeature): Cell => {
+    const src = ourSource(f)
+    switch (kind) {
+      case 'monthly': return cell(offers.length ? 'yes' : 'unknown', offers.length ? ourBase() : null, src, input.today)
+      case 'perorder': return cell(offers.length ? (offers.every(o => o.shape === 'noFee') ? 'no' : 'yes') : 'unknown', offers.length ? ourOrderFee() : null, src, input.today)
+      case 'cardfee': return cell('yes', t('cell.perCardPayment', { fee: cardFeeOnlineLabel(settings) }), src, input.today)
+      case 'term': return cell('no', null, src, input.today)    // no minimum contract (faq.termA)
+      case 'setup': return cell('no', null, src, input.today)   // plan_prices has no set-up fee (confirmed 29 Oct)
+      case 'trial_months': return trialMonths ? cell('yes', t('cell.trial', { months: trialMonths }), src, input.today) : cell('no', null, src, input.today)
+    }
+  }
+  const ourCell = (f: ComparisonFeature): Cell => {
+    const a = ourAnswer(f, { catalog, appFlags: { ios: flags.iosApp, android: flags.androidApp }, charges: input.charges })
+    if (a.note?.kind === 'price') return ourPrice(a.note.price, f)
+    const note = !a.note ? null
+      : a.note.kind === 'plans' ? t('cell.fromPlan', { plan: a.note.plans[0] })
+      : a.note.kind === 'flagOff' ? (showAll ? t('cell.flagOff') : t('cell.notInCountry', { country }))
+      : a.note.kind === 'soon' ? t('cell.soon')
+      : a.note.kind === 'message' ? t(`features.${f.key}.ours`) : null
+    return cell(a.value, note, ourSource(f), input.today)
+  }
 
   // ── a competitor's cells ──
-  const triText = (v: Tri) => (v === 'yes' ? t('table.yes') : v === 'no' ? t('table.no') : t('table.unknown'))
   // A competitor's amounts in its plan's own currency, written the country's way.
   const theirs = (minor: number, p: CompetitorPlan) => formatAmount(minor, { ...money, currency: p.currency })
   const priceText = (p: CompetitorPlan): string => {
@@ -212,37 +251,46 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   }
   const fixedFee = (bps: number, fixedMinor: number, cur: string) =>
     bps && fixedMinor ? feeLabel({ pct: bps / 100, fixedMinor }, { ...money, currency: cur }) : bps ? pct(bps) : formatAmount(fixedMinor, { ...money, currency: cur })
-  const rivalOrderFee = (p: CompetitorPlan): string => {
-    if (p.unclear && !p.truckFeeBps && !p.truckFeeFixedMinor && !p.customerFeeBps && !p.customerFeeFixedMinor && !(p.cardMode === 'bundled' && p.cardBps)) return t('table.unknown')
+  const rivalOrderFee = (p: CompetitorPlan): { value: FeatureValue; text: string | null } => {
+    if (p.unclear && !p.truckFeeBps && !p.truckFeeFixedMinor && !p.customerFeeBps && !p.customerFeeFixedMinor && !(p.cardMode === 'bundled' && p.cardBps)) return { value: 'unknown', text: null }
     const parts: string[] = []
     if (p.truckFeeBps || p.truckFeeFixedMinor) parts.push(t('costs.truckFee', { fee: fixedFee(p.truckFeeBps, p.truckFeeFixedMinor, p.currency) }))
     if (p.customerFeeBps || p.customerFeeFixedMinor) parts.push(t('costs.customerFee', { fee: fixedFee(p.customerFeeBps, p.customerFeeFixedMinor, p.currency) }))
     // A payment fee that already includes the card processing (the vendor's own "online ab 2,5 %").
     if (p.cardMode === 'bundled' && (p.cardBps || p.cardFixedMinor)) parts.push(t('costs.bundledFee', { fee: fixedFee(p.cardBps ?? 0, p.cardFixedMinor ?? 0, p.currency) }))
-    return parts.length ? parts.join(', ') : t('table.noFee')
+    return parts.length ? { value: 'yes', text: parts.join(', ') } : { value: 'no', text: t('table.noFee') }
+  }
+  const rivalPrice = (kind: PriceKind, col: Column, c: Competitor): Cell => {
+    const p = col.plan
+    const planCell = (value: FeatureValue, note: string | null) => cell(value, note, p?.sourceUrl ?? c.website, p?.checkedOn ?? null, !col.planVerified)
+    if (!p) return planCell('unknown', null)
+    switch (kind) {
+      case 'monthly': return p.priceHidden || p.monthlyMinor === null ? planCell('unknown', t('table.priceHidden')) : planCell('yes', priceText(p))
+      case 'perorder': { const r = rivalOrderFee(p); return planCell(r.value, r.text) }
+      case 'cardfee':
+        if (p.cardMode === 'bundled' && (p.cardBps || p.cardFixedMinor)) return planCell('yes', t('costs.bundledFee', { fee: fixedFee(p.cardBps ?? 0, p.cardFixedMinor ?? 0, p.currency) }))
+        return p.cardBps !== null && !p.cardRateAssumed ? planCell('yes', t('cell.perCardPayment', { fee: fixedFee(p.cardBps, p.cardFixedMinor ?? 0, p.currency) })) : planCell('unknown', null)
+      case 'setup': return p.setupMinor ? planCell('yes', t('cell.setupFee', { price: theirs(p.setupMinor, p) })) : planCell('no', null)
+      default: return planCell('unknown', null)
+    }
+  }
+  const rivalCell = (f: ComparisonFeature, col: Column): Cell => {
+    const c = compOf.get(col.key)!
+    const kind = /(?:^|;)\s*price:([a-z]+)/.exec(f.hatchgrabSource)?.[1] as PriceKind | undefined
+    if (kind && PLAN_PRICE.includes(kind)) return rivalPrice(kind, col, c)
+    const v = effectiveValue(input.values, c.id, f.key, settings.countryCode)
+    // No answer yet: "not stated", dated by the competitor's features check (a cell always has a date and a source).
+    if (!v) return cell('unknown', null, c.website, c.featuresCheckedOn, !col.featuresVerified)
+    return cell(v.value, v.note, v.sourceUrl ?? c.website, v.checkedOn ?? c.featuresCheckedOn, !col.featuresVerified)
   }
 
-  const rows: Row[] = ROWS.map(key => {
-    const label = t(`table.rows.${key}`)
-    const cells: Cell[] = columns.map(col => {
-      if (col.us) {
-        const f = FEATURE_ROW[key]
-        const text = f ? ourFeature(f.def) : key === 'payments' ? t('table.ourPayments') : key === 'minTerm' ? t('table.ourMinTerm') : key === 'baseFee' ? ourBase() : ourOrderFee()
-        return { text, source: ourSource(key), checkedOn: input.today }
-      }
-      const c = compOf.get(col.key)!
-      const f = FEATURE_ROW[key]
-      const featureCell = (text: string, tri?: Tri): Cell => ({ text, tri, source: c.website, checkedOn: c.featuresCheckedOn, unverified: !col.featuresVerified })
-      if (f) { const v = c[f.column] as Tri; return featureCell(triText(v), v) }
-      if (key === 'payments') return featureCell(c.paymentMethods ?? t('table.unknown'))
-      if (key === 'minTerm') return featureCell(c.minTerm ?? t('table.unknown'))
-      const p = col.plan
-      const planCell = (text: string): Cell => ({ text, source: p?.sourceUrl ?? c.website, checkedOn: p?.checkedOn ?? null, unverified: !col.planVerified })
-      if (!p) return planCell(t('table.unknown'))
-      return planCell(key === 'baseFee' ? priceText(p) : rivalOrderFee(p))
-    })
-    return { key, label, cells }
+  // ── the rows, grouped ──
+  const rows: Row[] = shownFeatures.map(f => {
+    const w = featureWords(f, settings.locale, k => t(k))
+    return { key: f.key, group: f.groupKey, label: w.label, explain: w.explain, cells: columns.map(col => (col.us ? ourCell(f) : rivalCell(f, col))) }
   })
+  const groups: RowGroup[] = FEATURE_GROUPS.map(g => ({ key: g, label: t(`featureGroups.${g}`), rows: rows.filter(r => r.group === g) })).filter(g => g.rows.length)
+  const explained = rows.map(r => ({ key: r.key, label: r.label, explain: r.explain })).filter(e => e.explain)
 
   // ── costs ──
   const ourLine = (o: OfferPlan) => t('costs.ourPlan', {
@@ -258,7 +306,7 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
     const bits = [priceText(p)]
     if (p.setupMinor) bits.push(t('costs.setup', { price: theirs(p.setupMinor, p) }))
     const fee = rivalOrderFee(p)
-    if (fee !== t('table.noFee') && fee !== t('table.unknown')) bits.push(fee)
+    if (fee.value === 'yes' && fee.text) bits.push(fee.text)
     costs.push({ tool: col.name, us: false, lines: [t('costs.rivalPlan', { plan: p.planName, price: bits.join(', ') })], source: p.sourceUrl, checkedOn: p.checkedOn, unverified: !col.planVerified })
   }
   const cardFee = t('costs.cardFee', { cardFee: cardFeeOnlineLabel(settings), country })
@@ -282,7 +330,6 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   }
 
   // ── FAQ (the cost answer from plan_prices and the trial from the plans) ──
-  const trialMonths = offerTrialMonths(catalog)
   const costA = t('faq.costA', { plans: offers.map(ourLine).join('; '), cardFee: cardFeeOnlineLabel(settings) })
   const faq = [
     { q: t('faq.whatQ'), a: t('faq.whatA') },
@@ -296,17 +343,18 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
 
   // ── dates: the newest check among what is shown ──
   const shown = columns.filter(c => !c.us)
-  const checkedOn = maxDate(shown.flatMap(c => [c.plan?.checkedOn, compOf.get(c.key)?.featuresCheckedOn,
+  const checkedOn = maxDate(shown.flatMap(c => [c.plan?.checkedOn,
+    ...rows.map(r => r.cells[columns.indexOf(c)]?.checkedOn),
     day(entries.find(e => e.competitorId === c.key)?.verifiedAt)])) ?? input.today
   const publishedOn = minDate(shown.map(c => day(entries.find(e => e.competitorId === c.key)?.createdAt))) ?? checkedOn
 
   // ── the go-live checklist (admins) — every text the page can show is scanned for a placeholder ──
   const texts = [
-    ...rows.flatMap(r => [r.label, ...r.cells.map(c => c.text)]), ...costs.flatMap(c => c.lines), cardFee, vat,
+    ...rows.flatMap(r => [r.label, r.explain, ...r.cells.map(c => c.text)]), ...costs.flatMap(c => c.lines), cardFee, vat,
     fit.oursBody, fit.oursNotBody, ...fit.rivals.map(r => r.text), ...fit.cards.flatMap(c => [c.title, c.body]),
     ...faq.flatMap(f => [f.q, f.a]), t('tldr.body'), t('meta.title'), t('meta.description'), t('h1'),
   ]
-  const allVerified = input.entries.filter(e => e.countryCode === settings.countryCode && entryIsPublic(e, input.competitors, input.plans)).length
+  const allVerified = input.entries.filter(e => e.countryCode === settings.countryCode && entryIsPublic(e, input.competitors, input.plans, { values: input.values, keys: shownKeys })).length
   const checklist: ChecklistItem[] = [
     { key: 'apps', label: t('admin.check.apps', { country }), ok: flags.iosApp && flags.androidApp },
     { key: 'verified', label: t('admin.check.verified', { n: allVerified }), ok: allVerified >= 2 },
@@ -318,7 +366,7 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   return {
     status: flags.status, admin: opts.admin, publicView: !showAll,
     checkedOn, checkedLabel: formatYmd(checkedOn, ts, { day: 'numeric', month: 'long', year: 'numeric' }), publishedOn,
-    columns, rows, morePending: verifiedCount < 2, costs, cardFee, vat, fit, faq, trialMonths, checklist,
+    columns, rows, groups, explained, morePending: verifiedCount < 2, costs, cardFee, vat, fit, faq, trialMonths, checklist,
   }
 }
 
@@ -373,8 +421,16 @@ export function comparisonMarkdown(v: ComparisonView, input: ComparisonInput, t:
   out.push(`## ${t('table.title')}`, '', `_${t('table.caption', { country: input.countryName, date: v.checkedLabel })}_`, '')
   out.push(`| ${mdCell(t('table.feature'))} | ${v.columns.map(c => mdCell(c.group ? `${c.name} (${c.group})` : c.name)).join(' | ')} |`)
   out.push(`|${' --- |'.repeat(v.columns.length + 1)}`)
-  for (const r of v.rows) out.push(`| ${mdCell(r.label)} | ${r.cells.map(c => mdCell(c.text)).join(' | ')} |`)
+  // comparison-features-1: each group a heading row, then its features; every cell its words and note.
+  for (const g of v.groups) {
+    out.push(`| **${mdCell(g.label)}** |${' |'.repeat(v.columns.length)}`)
+    for (const r of g.rows) out.push(`| ${mdCell(r.label)} | ${r.cells.map(c => mdCell(c.text)).join(' | ')} |`)
+  }
   out.push('', t('table.note'))
+  if (v.explained.length) {
+    out.push('', `## ${t('explained.title')}`, '')
+    for (const e of v.explained) out.push(`- **${e.label}:** ${e.explain}`)
+  }
   if (v.morePending) out.push('', t('table.morePending'))
   out.push('', `## ${t('costs.title')}`, '')
   for (const c of v.costs) {
@@ -406,10 +462,13 @@ export function comparisonJson(v: ComparisonView, input: ComparisonInput, t: Com
     publisher: BRANDS.HATCHGRAB.name,
     publisherIsCompared: true,
     tools: v.columns.map(c => ({ name: c.name, ...(c.group ? { group: c.group } : {}), url: c.url, isPublisher: c.us, ...(c.plan ? { plan: c.plan.planName } : {}), ...(!c.verified ? { verified: false } : {}) })),
+    // comparison-features-1: every cell's machine value (yes / no / partial / unknown), its word from the fixed set, the note
+    // as advertised, the whole text, the source URL and the checked date.
     rows: v.rows.map(r => ({
-      key: r.key, label: r.label,
-      cells: r.cells.map((c, i) => ({ tool: v.columns[i].name, value: c.text, ...(c.tri ? { status: c.tri } : {}), source: c.source, checked: c.checkedOn, ...(c.unverified ? { verified: false } : {}) })),
+      key: r.key, group: v.groups.find(g => g.key === r.group)?.label ?? r.group, label: r.label, explanation: r.explain,
+      cells: r.cells.map((c, i) => ({ tool: v.columns[i].name, value: c.value, label: c.word, note: c.note, text: c.text, source: c.source, checked: c.checkedOn, ...(c.unverified ? { verified: false } : {}) })),
     })),
+    explained: v.explained.map(e => ({ feature: e.label, meaning: e.explain })),
     costs: v.costs.map(c => ({ tool: c.tool, lines: c.lines, source: c.source, checked: c.checkedOn })),
     cardFees: v.cardFee,
     vat: v.vat,

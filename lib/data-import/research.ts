@@ -20,6 +20,11 @@
 // and gets the row's "countries: …" in its notes.
 import { hostOf, APP_STORE_HOSTS } from '@/lib/competitor-check/model'
 import { COUNTRIES_MARK } from '@/lib/competitor-check/core'
+import { LEGACY_FEATURE_COLUMNS } from '@/lib/comparison-features'
+// comparison-features-1 (29 Oct 2026): a file's feature columns (pre_orders … pay_at_truck, payment_methods, min_term) are
+// written as ANSWERS — competitor_feature_values rows for every country, unverified, with the file's date — never to the
+// retired competitor columns. An answer is added only where the competitor has none that says anything; a placeholder
+// ('unknown', nothing stated) is superseded by it.
 
 type Row = Record<string, unknown>
 export interface ResearchFile { id?: string; checked_on: string; competitors: Row[]; plans: Row[]; entries: Row[] }
@@ -32,6 +37,11 @@ export interface ResearchStore {
   /** id, country_code, competitor_id of every comparison entry. */
   entries(): Promise<Row[]>
   insertCompetitor(row: Row): Promise<void>
+  /** comparison-features-1: current answers (competitor_id, feature_key, country_code, value, note, source_url, id); and
+   *  their writes. Optional: without them the file's features are not written. */
+  featureValues?(): Promise<Row[]>
+  insertFeatureValues?(rows: Row[]): Promise<void>
+  supersedeFeatureValues?(ids: string[], at: string): Promise<void>
   updateCompetitor(id: string, cols: Row): Promise<void>
   insertPlans(rows: Row[]): Promise<void>
   insertEntries(rows: Row[]): Promise<void>
@@ -41,11 +51,12 @@ export interface ResearchCounts {
   competitors: number; added: number; updated: number; upgraded: number
   plans: number; plansAdded: number; plansExisting: number
   entries: number; entriesAdded: number; entriesExisting: number
+  answersAdded?: number
 }
 
 const TRI = ['yes', 'no', 'unknown']
 const FEATURES = ['pre_orders', 'whatsapp', 'social_posts', 'own_domain', 'ios_app', 'android_app', 'capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck']
-const TEXTS = ['website', 'focus', 'payment_providers', 'payment_methods', 'min_term']
+const TEXTS = ['website', 'focus', 'payment_providers']
 const FOCUS = ['food_truck', 'street_food_markets', 'nearest_local', 'pop_up', 'pos']
 const NON_NEGATIVE = ['monthly_minor', 'setup_minor', 'truck_fee_bps', 'truck_fee_fixed_minor', 'customer_fee_bps', 'customer_fee_fixed_minor', 'card_bps', 'card_fixed_minor', 'included_orders', 'overage_fixed_minor']
 
@@ -116,7 +127,9 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
       const match = find(c)
       const fileCandidate = c.lifecycle === 'candidate'
       if (!match) {
-        const { features_verified_at: _skip, ...row } = c   // eslint-disable-line @typescript-eslint/no-unused-vars
+        const { features_verified_at: _skip, ...all } = c   // eslint-disable-line @typescript-eslint/no-unused-vars
+        // The retired feature columns never reach the competitors table (they become answers below).
+        const row = Object.fromEntries(Object.entries(all).filter(([k]) => !(k in LEGACY_FEATURE_COLUMNS)))
         // A candidate row has had no features checked: no checked date, and added_as_candidate (hidden until verified).
         await store.insertCompetitor({ ...row, ...(fileCandidate ? { added_as_candidate: true } : {}),
           features_checked_on: c.features_checked_on ?? (fileCandidate ? null : file.checked_on), features_verified_at: null })
@@ -126,10 +139,9 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
       }
       idOf.set(String(c.id), String(match.id))
       const cols: Row = {}
-      for (const f of FEATURES) if ((match[f] ?? 'unknown') === 'unknown' && c[f] != null && c[f] !== 'unknown') cols[f] = c[f]
       for (const f of TEXTS) if ((match[f] == null || match[f] === '') && c[f] != null && c[f] !== '') cols[f] = c[f]
       const checkedOn = String(c.features_checked_on ?? file.checked_on)
-      if (Object.keys(cols).length && (!match.features_checked_on || String(match.features_checked_on) < checkedOn)) cols.features_checked_on = checkedOn
+      if (FEATURES.some(f => c[f] != null && c[f] !== 'unknown') && (!match.features_checked_on || String(match.features_checked_on) < checkedOn)) cols.features_checked_on = checkedOn
       if (match.lifecycle === 'candidate' && !fileCandidate) {
         // A researched competitor (read on its own website) is no longer a candidate: active and counted like the file's
         // other competitors, still unverified. The note keeps where it came from.
@@ -150,6 +162,31 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
       if (Object.keys(cols).length) { await store.updateCompetitor(String(match.id), cols); Object.assign(match, cols); counts.updated++ }
     }
   } catch (e) { throw new Error(`Competitors: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
+
+  // ── comparison-features-1: the file's feature columns, as answers (every country, unverified, the file's date) ──
+  if (store.featureValues && store.insertFeatureValues) {
+    try {
+      const current = await store.featureValues()
+      const says = (r: Row) => r.value !== 'unknown' || !!r.note || !!r.source_url
+      const fresh: Row[] = [], placeholders: string[] = []
+      for (const c of file.competitors) {
+        const cid = idOf.get(String(c.id)) ?? String(c.id)
+        for (const [col, m] of Object.entries(LEGACY_FEATURE_COLUMNS)) {
+          const raw = c[col]
+          const note = m.text && typeof raw === 'string' && raw.trim() ? raw.trim().slice(0, 300) : null
+          if (m.text ? !note : raw !== 'yes' && raw !== 'no') continue
+          const cur = current.find(r => r.competitor_id === cid && r.feature_key === m.key && r.country_code == null && r.superseded_at == null)
+          if (cur && says(cur)) continue
+          if (cur) placeholders.push(String(cur.id))
+          fresh.push({ competitor_id: cid, feature_key: m.key, country_code: null, value: m.text ? 'unknown' : raw, note,
+            checked_on: c.features_checked_on ?? file.checked_on, verified_at: null, verified_by: null })
+        }
+      }
+      if (placeholders.length && store.supersedeFeatureValues) await store.supersedeFeatureValues(placeholders, new Date().toISOString())
+      if (fresh.length) await store.insertFeatureValues(fresh)
+      counts.answersAdded = fresh.length
+    } catch (e) { throw new Error(`Feature answers: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
+  }
 
   // ── plans: skip an id already in, or a current plan of the same name in the same country ──
   const plans = await store.plans()

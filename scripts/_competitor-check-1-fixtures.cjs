@@ -40,15 +40,24 @@ const fetchPair = (url, text) => {
   ]
 }
 const toolUse = (name, input) => ({ type: 'tool_use', id: `toolu_fixture_${++seq}`, name, input })
+// comparison-features-1: a finding also carries feature_key and note (field 'feature' — one per feature of the master list).
 const F = o => ({ field: 'monthly_price', plan_name: null, country_code: null, outcome: 'unchanged', found_value: null, amount: null, currency: null, period: null, vat: null,
-  percent: null, feature: null, classification: null, url: null, quote: null, quote_en: null, source_url: null, ...o })
+  percent: null, feature_key: null, feature: null, note: null, classification: null, url: null, quote: null, quote_en: null, source_url: null, ...o })
+/** comparison-features-1: the CHECKED features a fixture checker is asked about (a slice of the master list's words). */
+const CHECK_FEATURES = [
+  { key: 'preorder', label: 'Pre-orders with a chosen collection time', explain: 'Customers order in advance and choose the time they collect.' },
+  { key: 'whatsapp', label: 'WhatsApp auto-replies', explain: "Customers' WhatsApp messages are answered automatically." },
+  { key: 'term', label: 'Minimum contract', explain: 'How long the business is tied in before it can cancel.' },
+]
 
 /** A fictional competitor in the checker's shape. */
 const competitor = (i, over = {}) => ({
   id: `c-${String(i).padStart(3, '0')}`, name: `Testtruck Ordering ${String(i).padStart(3, '0')}`, lifecycle: 'active', checkIntervalDays: 90,
   nextCheckAt: null, lastCheckedAt: null, deepCheckedAt: null, checkRequestedAt: null,
-  website: `https://tt${i}.example`, focus: 'food_truck', checkUrls: [`https://tt${i}.example/preise`], minTerm: 'Keine', paymentMethods: 'Karte', countries: ['DE'],
-  features: { pre_orders: 'yes', whatsapp: 'no', social_posts: 'unknown', own_domain: 'yes', ios_app: 'unknown', android_app: 'unknown', capacity_slots: 'unknown', multi_location_schedule: 'unknown', kds: 'unknown', pay_at_truck: 'unknown' },
+  website: `https://tt${i}.example`, focus: 'food_truck', checkUrls: [`https://tt${i}.example/preise`], countries: ['DE'],
+  // comparison-features-1: its answers (competitor_feature_values) — pre-orders yes, WhatsApp no, no minimum term.
+  featureValues: [['preorder', 'yes', null], ['whatsapp', 'no', null], ['term', 'no', 'Keine']].map(([k, v, note]) => ({ id: `fv-${i}-${k}`, competitorId: `c-${String(i).padStart(3, '0')}`,
+    featureKey: k, countryCode: null, value: v, note, quote: null, sourceUrl: null, checkedOn: '2026-10-01', verifiedAt: null, verifiedBy: null, supersededAt: null, createdAt: null })),
   plans: [{ id: `p-${i}`, plan_name: 'Starter', country_code: 'DE', currency: 'EUR', price_hidden: false, monthly_minor: 2900, yearly_only: false, vat: 'excl', setup_minor: 0,
     truck_fee_bps: 0, truck_fee_fixed_minor: 0, customer_fee_bps: 0, customer_fee_fixed_minor: 0, card_mode: 'unknown', card_bps: null, card_fixed_minor: null, source_url: `https://tt${i}.example/preise` }],
   ...over,
@@ -88,7 +97,7 @@ function fakeApi(script, calls = []) {
     const mode = script(name)
     const priceFinding = (price, quote) => F({ field: 'monthly_price', plan_name: 'Starter', country_code: 'DE', outcome: price === 29 ? 'unchanged' : 'changed',
       found_value: `${price} € pro Monat zzgl. MwSt.`, amount: price, currency: 'EUR', period: 'month', vat: 'excl', quote, quote_en: `Starter: €${price} per month plus VAT.`, source_url: url })
-    const preorder = F({ field: 'pre_orders', outcome: 'unchanged', feature: 'yes', found_value: 'yes', quote: 'Ihre Gäste wählen eine Abholzeit.', quote_en: 'Your guests choose a collection time.', source_url: url })
+    const preorder = F({ field: 'feature', feature_key: 'preorder', outcome: 'unchanged', feature: 'yes', found_value: 'yes', quote: 'Ihre Gäste wählen eine Abholzeit.', quote_en: 'Your guests choose a collection time.', source_url: url })
     if (mode.startsWith('ok:')) {
       const price = Number(mode.slice(3))
       return msg([...fetchPair(url, PAGE(name, price)), toolUse('record_findings', { findings: [priceFinding(price, `Starter: ${price} € pro Monat zzgl. MwSt.`), preorder], pages_read: [url], notes: null })], 'tool_use', usage)
@@ -115,9 +124,10 @@ function memoryCheckerStore({ settings, competitors, priorRuns = [], countries =
   return {
     calls, runs, findings, schedule, deepMoves,
     async settings() { calls.push(['settings']); return deepMoves.length ? { ...settings(), deepCountry: deepMoves[deepMoves.length - 1] } : settings() },
+    async features() { calls.push(['features']); return CHECK_FEATURES.map(f => ({ ...f })) },
     async countries() { calls.push(['countries']); return countries.map(c => ({ ...c })) },
     async setDeepCountry(code) { calls.push(['setDeepCountry', code]); deepMoves.push(code) },
-    async competitors() { calls.push(['competitors']); return competitors.map(c => ({ ...c, plans: c.plans.map(p => ({ ...p })) })) },
+    async competitors() { calls.push(['competitors']); return competitors.map(c => ({ ...c, plans: c.plans.map(p => ({ ...p })), featureValues: (c.featureValues ?? []).map(v => ({ ...v })) })) },
     async spend(today) {
       const month = today.slice(0, 7)
       const sum = rs => rs.reduce((s, r) => s + (r.cost_usd || 0), 0)
@@ -141,8 +151,9 @@ function sdkError(kind, status, message) {
 }
 
 /** competitor-check-2: an in-memory data-import store (lib/data-import) over plain arrays, recording every write. */
-function memoryImportStore({ competitors = [], plans = [], entries = [], imports = [] } = {}) {
-  const db = { competitors: competitors.map(c => ({ ...c })), plans: plans.map(p => ({ ...p })), entries: entries.map(e => ({ ...e })), imports: imports === null ? null : [...imports] }
+function memoryImportStore({ competitors = [], plans = [], entries = [], imports = [], features = [], values = [] } = {}) {
+  const db = { competitors: competitors.map(c => ({ ...c })), plans: plans.map(p => ({ ...p })), entries: entries.map(e => ({ ...e })), imports: imports === null ? null : [...imports],
+    features: features === null ? null : features.map(f => ({ ...f })), values: values.map(v => ({ ...v })) }
   const writes = []
   return {
     db, writes,
@@ -155,7 +166,22 @@ function memoryImportStore({ competitors = [], plans = [], entries = [], imports
     async updateCompetitor(id, cols) { writes.push(['updateCompetitor', id, Object.keys(cols)]); Object.assign(db.competitors.find(c => c.id === id), cols) },
     async insertPlans(rows) { writes.push(['insertPlans', rows.length]); db.plans.push(...rows.map(r => ({ superseded_at: null, ...r }))) },
     async insertEntries(rows) { writes.push(['insertEntries', rows.length]); db.entries.push(...rows) },
+    // comparison-features-1: the master list and the answers.
+    async features() { return db.features === null ? null : db.features.map(f => ({ ...f })) },
+    async insertFeatures(rows) { writes.push(['insertFeatures', rows.length]); db.features.push(...rows.map(r => ({ ...r }))) },
+    async featureValues() { return db.values.filter(v => !v.superseded_at).map(v => ({ ...v })) },
+    async insertFeatureValues(rows) { writes.push(['insertFeatureValues', rows.length]); db.values.push(...rows.map((r, i) => ({ id: `iv-${db.values.length + i}`, superseded_at: null, ...r }))) },
+    async supersedeFeatureValues(ids, at) { for (const v of db.values) if (ids.includes(v.id)) v.superseded_at = at },
+    async markFeatureDue(key, today) {
+      writes.push(['markFeatureDue', key])
+      let k = 0
+      for (const c of db.competitors.filter(x => (x.lifecycle ?? 'active') === 'active')) {
+        if (!db.values.some(v => v.competitor_id === c.id && v.feature_key === key && v.country_code == null && !v.superseded_at)) { db.values.push({ id: `due-${key}-${c.id}`, competitor_id: c.id, feature_key: key, country_code: null, value: 'unknown', superseded_at: null }); k++ }
+        if (!c.next_check_at || c.next_check_at > today) c.next_check_at = today
+      }
+      return k
+    },
   }
 }
 
-module.exports = { USAGE, PRICES, SETTINGS, COUNTRIES, PAGE, competitor, fakeApi, memoryCheckerStore, memoryImportStore, sdkError, F, msg, fetchPair, toolUse }
+module.exports = { CHECK_FEATURES, USAGE, PRICES, SETTINGS, COUNTRIES, PAGE, competitor, fakeApi, memoryCheckerStore, memoryImportStore, sdkError, F, msg, fetchPair, toolUse }

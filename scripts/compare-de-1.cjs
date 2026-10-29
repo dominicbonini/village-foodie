@@ -21,6 +21,11 @@
 //   9 · global-players-1 (29 October 2026): the group label under each tool's name (by focus, or the entry's override) in
 //       the HTML, the .md and the .json; the tills card names only the VERIFIED, counted 'pos' competitors in the table
 //       (no fixed example names); an unverified or still-candidate 'pos' entry stays hidden publicly (an admin sees it).
+//  10 · comparison-features-1 (29 October 2026): the rows are the master feature list — 'all', or 'some' naming DE; hidden
+//       never; each group a real <th scope="rowgroup"> heading; cell words ONLY from the fixed set (+ the note); the .json
+//       carries the machine value, word, note, source and date of every cell; "Begriffe erklärt"; every amount on the page,
+//       in the .md and the .json carries its unit and period; HatchGrab's "Nein" rows show; an unverified answer hides the
+//       competitor publicly.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 const fs = require('fs')
 const path = require('path')
@@ -104,12 +109,15 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
 
   // ── 3 · the server HTML ──
   head('3 · the server HTML — table, prices, FAQ')
-  t('the table: <caption> naming Deutschland and the date, th scope="col" and scope="row", 14 rows', /<caption>Funktionen und Kosten von Online-Bestellsystemen für Foodtrucks in Deutschland, Stand 22\. Oktober 2026<\/caption>/.test(dec(live.html))
-    && /<th scope="col"/.test(live.html) && (live.html.match(/<tr data-row="/g) || []).length === 14, (/<caption>[^<]*/.exec(dec(live.html)) || [])[0])
+  // 🔁 re-pinned 29 Oct 2026 (comparison-features-1): the rows are the master list's features shown in DE (30), not 14.
+  const shownDE = JSON.parse(read('data/comparison-features/features.json')).features.filter(f => f.show_scope === 'all' || (f.show_scope === 'some' && f.show_countries.includes('DE')))
+  t(`the table: <caption> naming Deutschland and the date, th scope="col" and scope="row", one row per feature shown in DE (${shownDE.length})`, /<caption>Funktionen und Kosten von Online-Bestellsystemen für Foodtrucks in Deutschland, Stand 22\. Oktober 2026<\/caption>/.test(dec(live.html))
+    && /<th scope="col"/.test(live.html) && (live.html.match(/<tr data-row="/g) || []).length === shownDE.length && shownDE.length === 30, (/<caption>[^<]*/.exec(dec(live.html)) || [])[0])
   t('the table scrolls in its own box (role="region", focusable)', /<div class="cmp-scroll" role="region" aria-labelledby="tabelle" tabindex="0">/.test(live.html))
   t('HatchGrab\'s base fee in the German form: "0 € bis 69 €"', pubTxt.includes('0 € bis 69 €'), (/data-row="baseFee"[\s\S]*?<\/tr>/.exec(live.html) || [])[0])
   t('HatchGrab\'s order fee from fee_bps, plan by plan ("0,99 %", "keine")', /0,99\s%/.test(pubTxt) && /keine \(Unlimited\)/.test(pubTxt), (/data-row="orderFee"[\s\S]*?<\/tr>/.exec(dec(live.html)) || [])[0])
-  t('"Ab Pro" where only some plans have a feature (WhatsApp)', /data-row="whatsapp"><th scope="row">Automatische WhatsApp-Antworten<\/th><td class="cmp-us"><span>Ab Pro<\/span>/.test(dec(live.html)), (/data-row="whatsapp"[\s\S]*?<\/tr>/.exec(dec(live.html)) || [])[0])
+  // 🔁 re-pinned 29 Oct 2026: a cell is a fixed word plus the note — "Ja, ab Pro".
+  t('"Ja, ab Pro" where only some plans have a feature (WhatsApp)', /data-row="whatsapp"><th scope="row">Automatische WhatsApp-Antworten<\/th><td class="cmp-us" data-value="yes"><span class="cmp-tri cmp-tri-yes">Ja, ab Pro<\/span>/.test(dec(live.html)), (/data-row="whatsapp"[\s\S]*?<\/tr>/.exec(dec(live.html)) || [])[0])
   t('a competitor\'s cells: Ja / Nein / Nicht angegeben, its price and fee as advertised', /Nicht angegeben/.test(pubTxt) && /49 € pro Monat zzgl\. MwSt\./.test(pubTxt.replace(/ /g, ' ')) && /2,5 % pro Bestellung/.test(pubTxt.replace(/ /g, ' ')))
   t('the costs: one line per HatchGrab plan and per competitor, with source and checked date; the card-fee and VAT sentences',
     /data-costs/.test(live.html) && /Pro: 29\s€ pro Monat/.test(pubTxt) && /geprüft am 2026-10-19/.test(pubTxt) && /Gebühren von S[a-z]+e dazu/.test(pubTxt) && /Reverse-Charge-Verfahren/.test(pubTxt))
@@ -121,7 +129,7 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   // ── 4 · app rows ──
   head('4 · the app rows follow the flags')
   const ipadCell = html => text((/<tr data-row="ipad"[\s\S]*?<\/tr>/.exec(html) || [''])[0])
-  t('flags off, public: "Nicht in Deutschland"', /iPad-App Nicht in Deutschland/.test(ipadCell(live.html)), ipadCell(live.html))
+  t('flags off, public: "Nein, nicht in Deutschland" (🔁 re-pinned 29 Oct 2026: word + note)', /iPad-App Nein, nicht in Deutschland/.test(ipadCell(live.html)), ipadCell(live.html))
   t('flags off, admin view: the admin wording', /Flag noch aus/.test(ipadCell(adAdmin.html)), ipadCell(adAdmin.html))
   const appsOn = await page({ status: 'live', apps: true })
   t('flags on: "Ja", and the "passt nicht" box drops the app clause', /^iPad-App Ja/.test(ipadCell(appsOn.html).trim()) && !/in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(appsOn.html) || [''])[0])) && /in den Stores/.test(text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(live.html) || [''])[0])), ipadCell(appsOn.html))
@@ -174,7 +182,11 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   // the Admin button is gone): every row checked first; existing competitors matched; a rerun adds nothing.
   t('data file: every row passes the import\'s checks — the five price-hidden plans are status "hidden", not "counted" (the CHECK that failed the button on 25 and 27 Oct)',
     M.researchProblems(data).length === 0 && data.plans.filter(p => p.price_hidden).every(p => p.status === 'hidden' && p.monthly_minor === null) && data.plans.filter(p => p.price_hidden).length === 5, M.researchProblems(data))
-  const mem = { competitors: [{ ...comp('live-bt', 'Bestelltheke', { capacity_slots: 'unknown', payment_methods: null }) }], plans: [plan('live-bt-start', 'live-bt', 'Start')], entries: [] }
+  // 🔁 re-pinned 29 Oct 2026 (comparison-features-1): the file's features arrive as ANSWERS (competitor_feature_values), never
+  // in the retired columns. Bestelltheke already answers pre-orders (kept) and has a placeholder for capacity (replaced).
+  const mem = { competitors: [{ ...comp('live-bt', 'Bestelltheke') }], plans: [plan('live-bt-start', 'live-bt', 'Start')], entries: [],
+    values: [{ id: 'bt-pre', competitor_id: 'live-bt', feature_key: 'preorder', country_code: null, value: 'no', note: 'as stated by us', source_url: null, superseded_at: null },
+      { id: 'bt-cap', competitor_id: 'live-bt', feature_key: 'capacity', country_code: null, value: 'unknown', note: null, source_url: null, superseded_at: null }] }
   const store = {
     async competitors() { return mem.competitors.map(c => ({ ...c })) },
     async plans() { return mem.plans.map(p => ({ ...p })) },
@@ -183,13 +195,20 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
     async updateCompetitor(id, cols) { Object.assign(mem.competitors.find(x => x.id === id), cols) },
     async insertPlans(rows) { mem.plans.push(...rows) },
     async insertEntries(rows) { mem.entries.push(...rows) },
+    async featureValues() { return mem.values.filter(v => v.superseded_at === null).map(v => ({ ...v })) },
+    async insertFeatureValues(rows) { mem.values.push(...rows.map((r, i) => ({ id: `nv-${mem.values.length + i}`, superseded_at: null, ...r }))) },
+    async supersedeFeatureValues(ids, at) { for (const v of mem.values) if (ids.includes(v.id)) v.superseded_at = at },
   }
   const stamp = { today: '2026-10-29', path: 'data/compare-de-1/competitors.json' }
   const r1 = await M.importResearch(store, data, stamp)
   const bt = mem.competitors.find(c => c.name === 'Bestelltheke')
   const btEntry = mem.entries.find(e => e.competitor_id === 'live-bt')
   t('import: new competitors, their plans and every entry, all unverified', r1.entriesAdded === data.entries.length && mem.entries.every(e => e.verified_at === null) && mem.plans.every(p => p.verified_at == null || p.id === 'live-bt-start'), r1)
-  t('import: an existing competitor (by name) keeps its id; only its unknown features / empty texts are filled', bt.id === 'live-bt' && bt.capacity_slots === 'yes' && bt.payment_methods !== null && bt.pre_orders === 'yes')
+  const btAns = k => mem.values.find(v => v.competitor_id === 'live-bt' && v.feature_key === k && v.superseded_at === null)
+  t('import: an existing competitor (by name) keeps its id; its answers: an answer that says something is kept, a placeholder is replaced, the texts arrive as notes',
+    bt.id === 'live-bt' && btAns('preorder').value === 'no' && btAns('capacity').value === 'yes' && mem.values.find(v => v.id === 'bt-cap').superseded_at !== null
+    && btAns('paymethods').value === 'unknown' && !!btAns('paymethods').note && btAns('capacity').verified_at === null, mem.values.filter(v => v.competitor_id === 'live-bt'))
+  t('import: no retired feature column is written to a competitor', mem.competitors.filter(c => c.id !== 'live-bt').every(c => !['pre_orders', 'capacity_slots', 'payment_methods', 'min_term'].some(k => k in c)))
   t('import: a plan the competitor already has (same name, same country) is not duplicated; the entry points at the live row', mem.plans.filter(p => p.competitor_id === 'live-bt' && p.plan_name === 'Start').length === 1 && btEntry.primary_plan_id === 'live-bt-start', btEntry)
   const before = JSON.stringify(mem)
   const r2 = await M.importResearch(store, data, stamp)
@@ -224,6 +243,64 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
       return g && g.food_truck === 'Food truck ordering system' && g.nearest_local === 'Ordering system' && g.pos === 'Till system' && /\{names\}/.test(en.comparison.fit.tillsBodyNamed) })())
     t('the migration (NOT RUN) adds focus pos, not_in_countries, deep_checked_in, the outcomes and comparison_entries.group_label', (() => { const m = read('supabase/migrations/20261046_global_players_1.sql')
       return /'pop_up', 'pos'/.test(m) && /not_in_countries text\[\]/.test(m) && /deep_checked_in\s+jsonb/.test(m) && /'in_country', 'not_in_country'/.test(m) && /add column if not exists group_label text/.test(m) })())
+  }
+
+  // ── 10 · comparison-features-1: the master list on the page, and the AI-readable rules ──
+  head('10 · the feature list on the page — groups, fixed words, units, "Begriffe erklärt", the .json values')
+  {
+    const FEATS = JSON.parse(read('data/comparison-features/features.json')).features
+    const msgs = JSON.parse(read('messages/ns/de-DE/comparison.json'))
+    const labelOf = k => msgs.features[k].label
+    const pub = live, md = (await twin('md', { status: 'live' })).body, js = JSON.parse((await twin('json', { status: 'live' })).body)
+    const groupsShown = [...new Set(FEATS.filter(f => f.show_scope === 'all' || f.show_countries.includes('DE')).map(f => f.group_key))]
+    t(`each group is a real heading row: ${groupsShown.length} × <th scope="rowgroup" colspan>, one <tbody> each, in the list's order`,
+      (pub.html.match(/<th scope="rowgroup" colSpan="\d+"|<th scope="rowgroup" colspan="\d+"/gi) || []).length === groupsShown.length && (pub.html.match(/<tbody data-group-rows=/g) || []).length === groupsShown.length
+      && /Bestellung[\s\S]*Bezahlen[\s\S]*Küche[\s\S]*Marketing[\s\S]*Apps und Hardware[\s\S]*Preis und Vertrag/.test(text(pub.html.slice(pub.html.indexOf('<table'), pub.html.indexOf('</table>')))))
+    const hiddenLabels = FEATS.filter(f => f.show_scope === 'hidden').map(f => labelOf(f.key))
+    t(`hidden features (${hiddenLabels.length}) are nowhere — page, .md, .json`, hiddenLabels.every(l => !text(pub.html).includes(l) && !md.includes(l) && !JSON.stringify(js).includes(l)), hiddenLabels.filter(l => text(pub.html).includes(l)))
+    t('scope "some": PayPal/Klarna and the certified till show in DE; local payments (PL, NL…) and the discovery map (GB) do not',
+      text(pub.html).includes(labelOf('paypal')) && text(pub.html).includes(labelOf('fiscal')) && !text(pub.html).includes(labelOf('localpay')) && !text(pub.html).includes(labelOf('discovery')))
+    const WORDS = { yes: 'Ja', no: 'Nein', partial: 'Teilweise', unknown: 'Nicht angegeben' }
+    const cells = js.rows.flatMap(r => r.cells.map(c => ({ ...c, row: r.key })))
+    t(`.json: every one of ${cells.length} cells has its machine value (yes/no/partial/unknown), its word from the fixed set, the note, the source and the date`,
+      cells.length > 0 && cells.every(c => WORDS[c.value] === c.label && 'note' in c && /^https:/.test(c.source) && /^\d{4}-\d{2}-\d{2}$/.test(c.checked)), cells.find(c => !(WORDS[c.value] === c.label && /^https:/.test(c.source) && /^\d{4}-\d{2}-\d{2}$/.test(c.checked))))
+    t('cell words come ONLY from the fixed set: each text is the word, "word, note", or — not stated — the note alone',
+      cells.every(c => c.text === c.label || c.text === `${c.label}, ${c.note}` || (c.value === 'unknown' && c.text === c.note)), cells.filter(c => !(c.text === c.label || c.text === `${c.label}, ${c.note}` || (c.value === 'unknown' && c.text === c.note))).slice(0, 3))
+    t('…and the page shows exactly those texts', cells.every(c => dec(pub.html).includes(`>${c.text}</span>`)))
+    t('HatchGrab\'s "Nein" rows appear like any other (hardware, card reader, delivery, PayPal, a certified till)', ['hardware', 'terminal', 'delivery', 'paypal', 'fiscal'].every(k => js.rows.find(r => r.key === k).cells[0].value === 'no')
+      && js.rows.find(r => r.key === 'hardware').cells[0].text === 'Nein, eigene Geräte nutzen' && js.rows.find(r => r.key === 'delivery').cells[0].text === 'Nein, nur Abholung')
+    t('the answers confirmed from the code: printed tickets "Ja, in der iPad- und Android-App; Drucker nicht enthalten", offline "Teilweise"', js.rows.find(r => r.key === 'tickets').cells[0].text === 'Ja, in der iPad- und Android-App; Drucker nicht enthalten'
+      && js.rows.find(r => r.key === 'offline').cells[0].value === 'partial')
+    // Every amount carries its unit and period (no bare numbers): money and percentages, in each cell / line / sentence.
+    const AMOUNT = /\d[\d.,   ]*\s?(€|EUR|%)|€\s?\d/
+    const UNIT = /pro Monat|pro Bestellung|pro Online-|pro Kartenzahlung|einmalig|Einrichtung|bei jährlicher|inkl\. Kartengebühr|im Monat/
+    const bare = texts => texts.filter(x => AMOUNT.test(x) && !UNIT.test(x))
+    const pageTexts = [...cells.map(c => c.text), ...js.costs.flatMap(c => c.lines), js.cardFees, ...js.faq.map(f => f.answer)]
+    t('every amount in the table, the costs, the card-fee sentence and the FAQ answers has its unit and period (page and .json)', bare(pageTexts).length === 0, bare(pageTexts))
+    const mdCells = md.split('\n').filter(l => l.startsWith('|')).flatMap(l => l.split('|').map(x => x.trim()).filter(Boolean)).concat(md.split('\n').filter(l => l.startsWith('- ')))
+    t('…and in the .md: every table cell and cost line with an amount has its unit and period', bare(mdCells).length === 0, bare(mdCells))
+    const priceRows = js.rows.filter(r => r.group === 'Preis und Vertrag')
+    t('the price rows: HatchGrab "0 € bis 69 € pro Monat", the card fee "pro Kartenzahlung", no set-up fee, the trial in months; a rival\'s price "pro Monat zzgl. MwSt."',
+      /€ pro Monat$/.test(priceRows.find(r => r.key === 'monthly').cells[0].text) && /pro Kartenzahlung/.test(priceRows.find(r => r.key === 'cardfee').cells[0].text)
+      && priceRows.find(r => r.key === 'setup').cells[0].text === 'Nein' && priceRows.find(r => r.key === 'term').cells[0].text === 'Nein' && /Monate kostenlos$/.test(priceRows.find(r => r.key === 'trial').cells[0].text)
+      && /pro Monat zzgl\. MwSt\./.test(priceRows.find(r => r.key === 'monthly').cells[1].text), priceRows.map(r => r.cells.map(c => c.text)))
+    const shown = js.rows.length
+    t(`"Begriffe erklärt": each shown feature's one-sentence explanation — ${shown} on the page, in the .md and the .json`,
+      /<section aria-labelledby="begriffe" data-explained="true"><h2 id="begriffe">Begriffe erklärt<\/h2>/.test(pub.html) && (pub.html.match(/<dt>/g) || []).length === shown
+      && /## Begriffe erklärt/.test(md) && js.explained.length === shown && js.explained.every(e => e.meaning.endsWith('.')))
+    // An answer that says something but is not verified hides the competitor publicly (an admin still sees it, badged).
+    const tables = F.CMP_TABLES()
+    tables.competitor_feature_values = tables.competitor_feature_values.map(v => (v.competitor_id === F.A && v.feature_key === 'kds' ? { ...v, verified_at: null } : v))
+    const hid = await page({ status: 'live', tables }), seen = await page({ status: 'admin', admin: true, tables })
+    t('one unverified answer (A · KDS) hides A publicly; the admin view still shows A, badged', !/Testanbieter A/.test(text(hid.html)) && /data-tool="Testanbieter A"/.test(seen.html))
+    const placeholders = F.CMP_TABLES()
+    placeholders.competitor_feature_values.push({ id: 'ph', competitor_id: F.A, feature_key: 'allergens', country_code: null, value: 'unknown', note: null, quote: null, source_url: null, checked_on: null, verified_at: null, superseded_at: null })
+    t('an unknown placeholder (a feature just added) needs no verification: A stays public, the cell says "Nicht angegeben"',
+      /Testanbieter A/.test(text((await page({ status: 'live', tables: placeholders })).html)))
+    const deOnly = F.CMP_TABLES()
+    deOnly.competitor_feature_values.push({ ...deOnly.competitor_feature_values.find(v => v.competitor_id === F.A && v.feature_key === 'whatsapp'), id: 'de-wa', country_code: 'DE', value: 'yes', note: 'Zusatzmodul, 10 € pro Monat' })
+    const jDe = JSON.parse((await twin('json', { status: 'live', tables: deOnly })).body)
+    t('a country\'s own answer wins in that country ("Ja, Zusatzmodul, 10 € pro Monat"), with its note and unit', jDe.rows.find(r => r.key === 'whatsapp').cells.find(c => c.tool === 'Testanbieter A').text === 'Ja, Zusatzmodul, 10 € pro Monat')
   }
 
   // ── source rules ──

@@ -32,6 +32,11 @@
 //       a deep check of country X for a competitor in several countries asks for X only (and drops other countries'
 //       findings); accepting "not sold in X" takes it out of X; the first accepted plan of a POS player in a comparison
 //       country adds an unverified comparison entry; the cost estimate of a country check.
+// comparison-features-1 (29 October 2026, docs/comparison-features-1-report.md):
+//  16 · the master feature list imports once (only missing keys — Admin's choices kept), a rerun is a no-op, a changed file
+//       adds just the new key, a bad file writes nothing; every feature added marks each active competitor 'unknown' and due;
+//       the extractor is asked about the CHECKED features (key, label, explanation) and records one 'feature' finding each;
+//       a key not in the list is dropped; the extra cost per competitor of the longer list.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -61,6 +66,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     "export { startDeep, loadChecks } from '@/lib/admin/competitor-check-actions'",
     "export { isPendingPos } from '@/lib/pricing-check'",
     "export { COUNTRY_MAX_FETCHES } from '@/lib/competitor-check/checker'",
+    "export { importFeatures, featuresProblems } from '@/lib/data-import/features'",
+    "export { EXTRACTOR_SYSTEM, extractorMessage } from '@/lib/competitor-check/prompts'",
   ].join('\n'))
   const NOW = new Date('2026-10-26T02:10:00Z')
 
@@ -178,7 +185,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const ext = calls.filter(p => !p.tools.some(x => x.name === 'record_verdict'))
     const answer = ext[1] && ext[1].messages[ext[1].messages.length - 1].content
     t('the unknown tool call (update_price) is answered with an error and never run', Array.isArray(answer) && answer[0].is_error === true && /Unknown tool/.test(answer[0].content), answer)
-    t('the only writes are a run, a PENDING finding and the schedule — no plan, price, feature or verification', store.calls.every(c => ['settings', 'competitors', 'createRun', 'updateRun', 'insertFindings', 'setSchedule'].includes(c[0]))
+    t('the only writes are a run, a PENDING finding and the schedule — no plan, price, feature or verification', store.calls.every(c => ['settings', 'features', 'competitors', 'createRun', 'updateRun', 'insertFindings', 'setSchedule'].includes(c[0]))
       && store.findings.length === 1 && store.findings[0].review_status === 'pending' && store.schedule.every(([, cols]) => Object.keys(cols).every(k => L.SCHEDULE_COLUMNS.includes(k))))
     t('…and that finding cannot pass: its quote is not on the page and the second check disagrees', store.findings[0].quote_in_page === false && store.findings[0].second_check === 'disagreed', store.findings[0])
     t('the tools offered: web fetch and web search limited to the competitor\'s own domain and the app stores, and record_findings (strict)',
@@ -225,9 +232,18 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   // ── 8 · accepting ──
   head('8 · Accept: new versions, fields, and verification cleared')
   {
-    const mem = { plans: [], competitors: [], findings: [] }
+    // 🔁 re-pinned 29 Oct 2026 (comparison-features-1): a feature finding writes competitor_feature_values (the answers), not
+    // a competitor column — so this store has them too. f2 / f7 / f9 are OLD findings (fields whatsapp, min_term) and still
+    // accept, onto their keys; f12 / f13 are new 'feature' findings (f13 from a DE country check → a DE row).
+    const mem = { plans: [], competitors: [], findings: [], values: [{ id: 'v-term', competitor_id: 'k-1', feature_key: 'term', country_code: null, value: 'unknown', note: 'Keine', checked_on: '2026-10-01', superseded_at: null, verified_at: '2026-10-10T00:00:00Z' }] }
     let n = 0
     const pricing = {
+      async featureValues() { return mem.values.filter(v => v.superseded_at === null).map(v => ({ ...v })) },
+      async insertFeatureValue(row) { if (mem.values.some(v => v.superseded_at === null && v.competitor_id === row.competitor_id && v.feature_key === row.feature_key && (v.country_code ?? '') === (row.country_code ?? ''))) throw new Error('one current answer')
+        const r = { id: `nv-${++n}`, superseded_at: null, ...row }; mem.values.push(r); return { ...r } },
+      async supersedeFeatureValue(id, at) { const v = mem.values.find(x => x.id === id && x.superseded_at === null); if (!v) return false; v.superseded_at = at; return true },
+      async unsupersedeFeatureValue(id) { const v = mem.values.find(x => x.id === id); if (v) v.superseded_at = null },
+      async touchFeatureValueChecked(id, date) { const v = mem.values.find(x => x.id === id && x.superseded_at === null); if (!v) return false; v.checked_on = date; return true },
       async getPlan(id) { return mem.plans.find(p => p.id === id) ?? null },
       async insertPlan(row) { const r = { superseded_at: null, verified_at: null, verified_by: null, ...row, id: `np-${++n}` }; mem.plans.push(r); return { ...r } },
       async supersedePlan(id, at) { const p = mem.plans.find(x => x.id === id && x.superseded_at === null); if (!p) return false; p.superseded_at = at; return true },
@@ -259,6 +275,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
       finding('f8', { outcome: 'unchanged', plan_id: 'np-1', found: { amount: 35 } }),
       finding('f9', { field: 'min_term', found_value: '12 Monate' }),
       finding('f10', { outcome: 'page_gone', field: 'url', source_url: 'https://k1.example/preise' }),
+      finding('f12', { field: 'feature', country_code: null, found: { feature_key: 'kds', feature: 'partial', note: 'add-on, 10 € a month' }, quote: 'KDS als Zusatzmodul', source_url: 'https://k1.example/kds' }),
+      finding('f13', { field: 'feature', country_code: 'DE', found: { feature_key: 'kds', feature: 'yes', note: null }, quote: 'Küchenmonitor inklusive', source_url: 'https://k1.example/de/kds' }),
     )
     const stamp = { by: 'admin-1', at: '2026-10-26T09:00:00Z', today: '2026-10-26' }
     const ok = []
@@ -266,12 +284,18 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     t('every accept path succeeds', ok.every(x => x === true), ok)
     const starter = mem.plans.filter(p => p.plan_name === 'Starter')
     t('a price change: a NEW row (35 €, source admin, unverified, checked today) and the old one superseded', starter.length === 2 && starter[0].superseded_at === stamp.at && starter[1].monthly_minor === 3500 && starter[1].verified_at === null && starter[1].source === 'admin' && starter[1].checked_on === '2026-10-26', starter)
-    t('a feature: the field set and features_verified_at cleared', mem.competitors[0].whatsapp === 'yes' && mem.competitors[0].features_verified_at === null)
+    const ans = (k, cc = null) => mem.values.find(v => v.competitor_id === 'k-1' && v.feature_key === k && v.country_code === cc && v.superseded_at === null)
+    t('an OLD feature finding (field whatsapp) accepts onto its key: a new answer row "yes", unverified, with the quote and page; features_verified_at cleared',
+      ans('whatsapp')?.value === 'yes' && ans('whatsapp').verified_at === null && ans('whatsapp').quote === 'q' && ans('whatsapp').source_url === 'https://k1.example/preise' && mem.competitors[0].features_verified_at === null, ans('whatsapp'))
     t('a new plan: inserted unverified', mem.plans.some(p => p.plan_name === 'Unlimited' && p.monthly_minor === 7900 && p.verified_at === null && p.status === 'counted'))
     t('a plan gone: a new version with status closed, the old superseded', mem.plans.some(p => p.plan_name === 'Pro' && p.status === 'closed' && p.superseded_at === null) && mem.plans.find(p => p.id === 'pl-2').superseded_at === stamp.at)
     t('a new URL is added to check_urls', mem.competitors[0].check_urls.includes('https://k1.example/agb'))
     t('a classification sets lifecycle and focus, verification cleared', mem.competitors[1].lifecycle === 'active' && mem.competitors[1].focus === 'food_truck' && mem.competitors[1].features_verified_at === null)
-    t('a minimum-term change: the text set, verification cleared', mem.competitors[0].min_term === '12 Monate' && mem.competitors[0].features_verified_at === null)
+    t('an old minimum-term finding: the text arrives as the note of the "term" answer (a new row; the old superseded), verification cleared',
+      ans('term').note === '12 Monate' && ans('term').verified_at === null && mem.values.find(v => v.id === 'v-term').superseded_at !== null, ans('term'))
+    const r12 = await L.acceptFinding(pricing, checks, 'f12', stamp), r13 = await L.acceptFinding(pricing, checks, 'f13', stamp)
+    t('a new feature finding: value "partial" with its note as advertised, for every country (a routine read)', r12.ok && ans('kds').value === 'partial' && ans('kds').note === 'add-on, 10 € a month', ans('kds'))
+    t('…and one read on a country site writes a COUNTRY-SPECIFIC answer (DE), beside the every-country one', r13.ok && ans('kds', 'DE').value === 'yes' && ans('kds').value === 'partial')
     mem.competitors[0].features_verified_at = '2026-10-26T10:00:00Z'
     const fv = mem.competitors[0].features_verified_at
     const u = await L.acceptFinding(pricing, checks, 'f8', stamp)
@@ -663,6 +687,81 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     console.log(`      estimate (fixture-style tokens): a country check $${sold.toFixed(3)} where it sells (10 claims second-checked), $${notSold.toFixed(3)} where it does not;`
       + ` 6 players × 36 countries, if each sells in 12: $${(6 * (12 * sold + 24 * notSold)).toFixed(2)} for the first full pass`)
     t('the estimate is what the report states: ≈ $0.50 a country where it sells, ≈ $0.10 where it does not', Math.abs(sold - 0.5) < 0.001 && Math.abs(notSold - 0.101) < 0.001, { sold, notSold })
+  }
+
+  // ── 16 · comparison-features-1: the master list, its import and the checker's questions ──
+  head('16 · the feature list — imported once, every new feature makes competitors due, the extractor asks about each')
+  {
+    const crypto = require('crypto')
+    const sha = b => crypto.createHash('sha256').update(b).digest('hex')
+    const FILE = [L.DATA_FILES.find(f => f.kind === 'features')]
+    const raw = read('data/comparison-features/features.json')
+    const doc = JSON.parse(raw)
+    const files = { 'data/comparison-features/features.json': Buffer.from(raw) }
+    const comps = [{ id: 'a1', name: 'Active One', lifecycle: 'active', next_check_at: '2027-01-10' }, { id: 'a2', name: 'Active Two', lifecycle: 'active', next_check_at: null },
+      { id: 'c1', name: 'A Candidate', lifecycle: 'candidate', next_check_at: null }]
+    const store = FX.memoryImportStore({ competitors: comps, values: [{ id: 'kept', competitor_id: 'a1', feature_key: 'preorder', country_code: null, value: 'yes', note: null, superseded_at: null }] })
+    const deps = { store, read: p => files[p], sha256: sha, now: () => new Date('2026-10-30T02:10:00Z'), log: () => {} }
+    const deps2 = (api, st) => ({ api, store: st, now: () => NOW, log: () => {}, dryRun: false })
+    t('the registry has the feature list (kind "features")', FILE[0] && FILE[0].path === 'data/comparison-features/features.json' && L.featuresProblems(doc).length === 0, L.featuresProblems(doc))
+    const o1 = await L.runImports(deps, FILE)
+    t('first run: all 45 features added and recorded', o1[0].status === 'imported' && store.db.features.length === 45 && o1[0].counts.added === 45 && store.db.imports[0].result === 'ok', o1)
+    const unknowns = store.db.values.filter(v => v.value === 'unknown')
+    t('every feature added marks each ACTIVE competitor\'s answer "unknown" (none for a candidate; an answer that exists is kept) and every active competitor DUE (next check today)',
+      unknowns.length === 2 * 45 - 1 && !store.db.values.some(v => v.competitor_id === 'c1') && store.db.values.find(v => v.id === 'kept').value === 'yes'
+      && store.db.competitors.filter(c => c.lifecycle === 'active').every(c => c.next_check_at === '2026-10-30') && store.db.competitors.find(c => c.id === 'c1').next_check_at === null, { unknowns: unknowns.length })
+    const w = store.writes.length
+    t('a rerun of the same file is a no-op', (await L.runImports(deps, FILE))[0].status === 'unchanged' && store.writes.length === w)
+    // Admin unticks one; then a new version of the file adds a feature — only the new key is added; Admin's choice stays.
+    store.db.features.find(f => f.key === 'asap').checked = false
+    const changed = { ...doc, features: [...doc.features, { key: 'giftcards', group_key: 'payments', sort_order: 99, checked: true, show_scope: 'hidden', show_countries: [], hatchgrab_source: 'confirm' }] }
+    files['data/comparison-features/features.json'] = Buffer.from(JSON.stringify(changed))
+    const o3 = await L.runImports(deps, FILE)
+    t('a changed file adds only the new key (and marks competitors due for it); a key already in the list keeps Admin\'s choices', o3[0].status === 'imported' && o3[0].counts.added === 1
+      && store.db.features.length === 46 && store.db.features.find(f => f.key === 'asap').checked === false && store.db.values.filter(v => v.feature_key === 'giftcards').length === 2, o3)
+    const bad = { ...doc, features: [...doc.features, { key: 'Bad Key', group_key: 'nowhere', sort_order: 1, checked: true, show_scope: 'some', show_countries: [], hatchgrab_source: 'guess' }] }
+    files['data/comparison-features/features.json'] = Buffer.from(JSON.stringify(bad))
+    const fresh = FX.memoryImportStore({ competitors: comps })
+    const o4 = await L.runImports({ ...deps, store: fresh }, FILE)
+    t('a bad file (bad key, group, scope with no country, an unknown source) writes nothing and records why', o4[0].status === 'error' && fresh.writes.length === 1 && /Bad Key/.test(o4[0].message) && /not a HatchGrab source/.test(o4[0].message), o4[0].message)
+    let missingTable = null
+    try { await L.importFeatures(FX.memoryImportStore({ features: null }), doc, { today: '2026-10-30' }) } catch (e) { missingTable = e.message }
+    t('before 20261047 runs, it says which SQL to run', /20261047_comparison_features_1\.sql/.test(missingTable || ''), missingTable)
+    t('Admin\'s line: "Comparison feature list imported 30 Oct: 45 features (45 added) — competitors marked due"', /^Comparison feature list imported 30 Oct: 45 features \(45 added\)/.test(L.importLines([{ file_path: 'data/comparison-features/features.json', sha256: 'a'.repeat(64), imported_at: '2026-10-30T02:11:00Z', result: 'ok', counts: o1[0].counts, message: null }])[2].text))
+    files['data/comparison-features/features.json'] = Buffer.from(raw)
+
+    // The extractor is asked about every CHECKED feature: its key, label and explanation, in the user message.
+    const calls = []
+    const cs = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(41)] })
+    await L.runChecker(deps2(FX.fakeApi(() => 'ok:29', calls), cs), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 041' })
+    const msg = calls[0].messages[0].content
+    t('the message lists the checked features — "- preorder — Pre-orders with a chosen collection time: Customers order in advance…"', FX.CHECK_FEATURES.every(f => msg.includes(`- ${f.key} — ${f.label}: ${f.explain}`)), msg.slice(msg.indexOf('Features to check'), msg.indexOf('Features to check') + 400))
+    t('…with the competitor\'s current answer for each (value and note) in the stored data', /"term": \{\s*"value": "no",\s*"note": "Keine"/.test(msg) && /"preorder": \{\s*"value": "yes"/.test(msg))
+    t('the strict tool records each feature as field "feature": feature_key, feature (yes / no / partial / unknown), note — and the system prompt explains them',
+      L.RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.required.includes('feature_key') && JSON.stringify(L.RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.properties.feature).includes('partial')
+      && /field "feature" with its "feature_key"/.test(L.EXTRACTOR_SYSTEM) && L.FIELDS.includes('feature') && !L.FIELDS.includes('pre_orders') && !L.FIELDS.includes('min_term'))
+    t('deep asks for EVERY feature in the list; routine for what CHANGED (and unknowns now stated)', /Return a finding for EVERY feature in the list/.test(msg)
+      && /Return a finding for each stored value that CHANGED, and for each feature whose stored answer is unknown/.test(L.extractorMessage({ name: 'x', website: null, lifecycle: 'active', focus: null, check_urls: [], features: {}, plans: [] }, 'routine', '2026-10-30')))
+    t('the finding from the fixture lands as a feature finding (preorder, quote found on the page, both checks confirm)', cs.findings.some(f => f.field === 'feature' && f.found.feature_key === 'preorder' && f.quote_in_page && f.second_check === 'confirmed'))
+    // A key the list does not have is dropped (never stored).
+    const odd = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(42)] })
+    const oddApi = async p => { const r = await FX.fakeApi(() => 'ok:29')(p); for (const b of r.content) if (b.type === 'tool_use' && b.name === 'record_findings') b.input.findings.forEach(fd => { if (fd.field === 'feature') fd.feature_key = 'teleporting' }); return r }
+    await L.runChecker(deps2(oddApi, odd), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 042' })
+    t('a finding about a feature that is not in the checked list is dropped', !odd.findings.some(f => f.field === 'feature'), odd.findings.map(f => f.field))
+    t('validator: a feature finding needs its key and answer; feature_key only with field "feature"', !L.validateRecordFindings({ findings: [FX.F({ field: 'feature', outcome: 'changed', feature: 'yes', quote: 'q', quote_en: 'q', source_url: 'https://x.example/' })], pages_read: [], notes: null }).ok
+      && !L.validateRecordFindings({ findings: [FX.F({ field: 'plan', feature_key: 'kds', outcome: 'not_stated' })], pages_read: [], notes: null }).ok
+      && L.validateRecordFindings({ findings: [FX.F({ field: 'feature', feature_key: 'kds', feature: 'partial', note: 'add-on', outcome: 'changed', quote: 'q', quote_en: 'q', source_url: 'https://x.example/' })], pages_read: [], notes: null }).ok)
+
+    // The extra cost per competitor of the longer list: the list in every extractor turn, a finding per feature, and a second
+    // check of each quoted one (deep). Fixture token counts × the settings' prices.
+    const en = JSON.parse(read('messages/ns/en-GB/comparison.json')).features
+    const list = doc.features.map(f => `- ${f.key} — ${en[f.key].label}: ${en[f.key].explain}`).join('\n')
+    const listTokens = Math.ceil(list.length / 4)
+    const c = u => L.costOf(u, 'claude-sonnet-5-5', FX.PRICES).usd
+    const extraDeep = c({ input_tokens: listTokens * 4, output_tokens: 45 * 70 }) + 27 * c(FX.USAGE.verifier)
+    const extraRoutine = c({ input_tokens: listTokens * 2, output_tokens: 8 * 70 }) + 2 * c(FX.USAGE.verifier)
+    console.log(`      estimate: the list is ~${listTokens} tokens; extra per competitor — deep +$${extraDeep.toFixed(2)} (list × 4 turns, 45 findings, 27 quoted ones second-checked), routine +$${extraRoutine.toFixed(2)} (list × 2 turns, ~8 changes, 2 second checks)`)
+    t('the report\'s estimate: the list ≈ 1,100 tokens; deep ≈ +$0.93 a competitor, routine ≈ +$0.08', listTokens > 1000 && listTokens < 1200 && Math.abs(extraDeep - 0.93) < 0.02 && Math.abs(extraRoutine - 0.076) < 0.01, { listTokens, extraDeep, extraRoutine })
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} competitor-check-1: ${pass} passed, ${fail} failed`)

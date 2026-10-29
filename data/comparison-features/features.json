@@ -1,0 +1,434 @@
+{
+ "$comment": "comparison-features-1 (29 October 2026, docs/comparison-features-1-report.md): THE MASTER LIST of compared features, seeded into public.comparison_features by the automatic importer (lib/data-import, kind \"features\") once per version of this file. Only MISSING keys are added — a feature already in the table keeps Admin's choices (checked, where it shows). Every feature starts checked. hatchgrab_source says where HatchGrab's own answer comes from (lib/comparison-features.ts); the words are in messages (comparison.features.<key>.label / .explain / .ours) for en-GB and de-DE. HatchGrab's answers were confirmed from the code on 29 October 2026 (the report, §1).",
+ "id": "comparison-features-1",
+ "checked_on": "2026-10-29",
+ "features": [
+  {
+   "key": "preorder",
+   "group_key": "ordering",
+   "sort_order": 10,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:advance_preordering+time_slot_selection"
+  },
+  {
+   "key": "capacity",
+   "group_key": "ordering",
+   "sort_order": 20,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:smart_batch_pacing"
+  },
+  {
+   "key": "asap",
+   "group_key": "ordering",
+   "sort_order": 30,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "builtin"
+  },
+  {
+   "key": "ahead",
+   "group_key": "ordering",
+   "sort_order": 40,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:advance_preordering"
+  },
+  {
+   "key": "schedule",
+   "group_key": "ordering",
+   "sort_order": 50,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "builtin"
+  },
+  {
+   "key": "walkup",
+   "group_key": "ordering",
+   "sort_order": 60,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:walkup_orders"
+  },
+  {
+   "key": "stock",
+   "group_key": "ordering",
+   "sort_order": 70,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:stock_countdown"
+  },
+  {
+   "key": "allergens",
+   "group_key": "ordering",
+   "sort_order": 80,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "builtin"
+  },
+  {
+   "key": "menuphoto",
+   "group_key": "ordering",
+   "sort_order": 90,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "builtin"
+  },
+  {
+   "key": "options",
+   "group_key": "ordering",
+   "sort_order": 100,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "builtin"
+  },
+  {
+   "key": "deals",
+   "group_key": "ordering",
+   "sort_order": 110,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "plan:meal_deals"
+  },
+  {
+   "key": "private",
+   "group_key": "ordering",
+   "sort_order": 120,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:partial:note"
+  },
+  {
+   "key": "qr",
+   "group_key": "ordering",
+   "sort_order": 130,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:no:note"
+  },
+  {
+   "key": "cards",
+   "group_key": "payments",
+   "sort_order": 10,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:online_payments"
+  },
+  {
+   "key": "payattruck",
+   "group_key": "payments",
+   "sort_order": 20,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:online_ordering_pay_at_hatch"
+  },
+  {
+   "key": "localpay",
+   "group_key": "payments",
+   "sort_order": 30,
+   "checked": true,
+   "show_scope": "some",
+   "show_countries": [
+    "PL",
+    "NL",
+    "BE",
+    "SE",
+    "DK",
+    "NO",
+    "CH"
+   ],
+   "hatchgrab_source": "fixed:no:note"
+  },
+  {
+   "key": "paypal",
+   "group_key": "payments",
+   "sort_order": 40,
+   "checked": true,
+   "show_scope": "some",
+   "show_countries": [
+    "DE",
+    "AT"
+   ],
+   "hatchgrab_source": "fixed:no"
+  },
+  {
+   "key": "custfee",
+   "group_key": "payments",
+   "sort_order": 50,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "country:service_fee"
+  },
+  {
+   "key": "tips",
+   "group_key": "payments",
+   "sort_order": 60,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "country:tips"
+  },
+  {
+   "key": "paymethods",
+   "group_key": "payments",
+   "sort_order": 70,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:yes:note"
+  },
+  {
+   "key": "kds",
+   "group_key": "kitchen",
+   "sort_order": 10,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:web_dashboard"
+  },
+  {
+   "key": "tickets",
+   "group_key": "kitchen",
+   "sort_order": 20,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:yes:note"
+  },
+  {
+   "key": "buzzers",
+   "group_key": "kitchen",
+   "sort_order": 30,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:partial:note"
+  },
+  {
+   "key": "offline",
+   "group_key": "kitchen",
+   "sort_order": 40,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:partial:note"
+  },
+  {
+   "key": "vans",
+   "group_key": "kitchen",
+   "sort_order": 50,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:yes:note"
+  },
+  {
+   "key": "staff",
+   "group_key": "kitchen",
+   "sort_order": 60,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "builtin"
+  },
+  {
+   "key": "reports",
+   "group_key": "kitchen",
+   "sort_order": 70,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "plan:advanced_reporting"
+  },
+  {
+   "key": "domain",
+   "group_key": "marketing",
+   "sort_order": 10,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "builtin"
+  },
+  {
+   "key": "whatsapp",
+   "group_key": "marketing",
+   "sort_order": 20,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:whatsapp_replies"
+  },
+  {
+   "key": "social",
+   "group_key": "marketing",
+   "sort_order": 30,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:schedule_graphics"
+  },
+  {
+   "key": "igmsg",
+   "group_key": "marketing",
+   "sort_order": 40,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "soon"
+  },
+  {
+   "key": "discovery",
+   "group_key": "marketing",
+   "sort_order": 50,
+   "checked": true,
+   "show_scope": "some",
+   "show_countries": [
+    "GB"
+   ],
+   "hatchgrab_source": "fixed:yes:note"
+  },
+  {
+   "key": "loyalty",
+   "group_key": "marketing",
+   "sort_order": 60,
+   "checked": true,
+   "show_scope": "hidden",
+   "show_countries": [],
+   "hatchgrab_source": "soon"
+  },
+  {
+   "key": "ipad",
+   "group_key": "apps_hardware",
+   "sort_order": 10,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:ipad_kds;flag:ios"
+  },
+  {
+   "key": "android",
+   "group_key": "apps_hardware",
+   "sort_order": 20,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "plan:ipad_kds;flag:android"
+  },
+  {
+   "key": "hardware",
+   "group_key": "apps_hardware",
+   "sort_order": 30,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:no:note"
+  },
+  {
+   "key": "terminal",
+   "group_key": "apps_hardware",
+   "sort_order": 40,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:no"
+  },
+  {
+   "key": "fiscal",
+   "group_key": "apps_hardware",
+   "sort_order": 50,
+   "checked": true,
+   "show_scope": "some",
+   "show_countries": [
+    "DE",
+    "AT",
+    "CZ",
+    "SE",
+    "BE",
+    "PL",
+    "IT",
+    "HU"
+   ],
+   "hatchgrab_source": "fixed:no"
+  },
+  {
+   "key": "delivery",
+   "group_key": "apps_hardware",
+   "sort_order": 60,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "fixed:no:note"
+  },
+  {
+   "key": "monthly",
+   "group_key": "price_contract",
+   "sort_order": 10,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "price:monthly"
+  },
+  {
+   "key": "perorder",
+   "group_key": "price_contract",
+   "sort_order": 20,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "price:perorder"
+  },
+  {
+   "key": "cardfee",
+   "group_key": "price_contract",
+   "sort_order": 30,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "price:cardfee"
+  },
+  {
+   "key": "term",
+   "group_key": "price_contract",
+   "sort_order": 40,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "price:term"
+  },
+  {
+   "key": "setup",
+   "group_key": "price_contract",
+   "sort_order": 50,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "price:setup"
+  },
+  {
+   "key": "trial",
+   "group_key": "price_contract",
+   "sort_order": 60,
+   "checked": true,
+   "show_scope": "all",
+   "show_countries": [],
+   "hatchgrab_source": "price:trial_months"
+  }
+ ]
+}

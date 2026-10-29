@@ -24,12 +24,22 @@ const plan = (id, cid, name, over = {}) => ({
 })
 const entry = (id, cid, pid, n, over = {}) => ({ id, country_code: 'DE', competitor_id: cid, primary_plan_id: pid, choose_when: `Sie Testfall ${n} sind.`,
   sort_order: n, verified_at: '2026-10-22T09:00:00Z', verified_by: 'admin-1', created_at: '2026-10-18T09:00:00Z', ...over })
+/** comparison-features-1: a competitor's answers (competitor_feature_values) — the values the retired columns held in comp(),
+ *  for every country, stamped verified like the competitor (or not). `over`: key → value, or key → [value, note]. */
+const ANSWERS = { preorder: 'yes', whatsapp: 'no', domain: 'yes', ipad: 'no', android: 'no', capacity: 'yes', kds: 'yes', payattruck: 'yes', paymethods: ['unknown', 'Karte, PayPal; bar'], term: ['unknown', 'Keine'] }
+let answerSeq = 0
+const answers = (cid, verifiedAt, over = {}) => Object.entries({ ...ANSWERS, ...over }).map(([key, v]) => {
+  const [value, note] = Array.isArray(v) ? v : [v, null]
+  return { id: `v-${++answerSeq}`, competitor_id: cid, feature_key: key, country_code: null, value, note, quote: null, source_url: `https://example.test/${key}`,
+    checked_on: '2026-10-20', verified_at: verifiedAt, verified_by: verifiedAt ? 'admin-1' : null, superseded_at: null, created_at: '2026-10-20T09:00:00Z' }
+})
 const PA = 'p0000000-0000-4000-8000-00000000000a', PB = 'p0000000-0000-4000-8000-00000000000b', PC = 'p0000000-0000-4000-8000-00000000000c'
 /** A verified (entry, plan, features); B's plan unverified; C nothing verified. */
 const CMP_TABLES = () => ({
   competitors: [comp(A, 'Testanbieter A'), comp(B, 'Testanbieter B', { pre_orders: 'unknown' }), comp(C, 'Testanbieter C', { features_verified_at: null })],
   competitor_plans: [plan(PA, A, 'Basis', { truck_fee_bps: 250 }), plan(PB, B, 'Start', { verified_at: null, monthly_minor: 1900 }), plan(PC, C, 'Flat', { verified_at: null, monthly_minor: 9900, setup_minor: 29900 })],
   comparison_entries: [entry('e1', A, PA, 1), entry('e2', B, PB, 2), entry('e3', C, PC, 3, { verified_at: null, verified_by: null })],
+  competitor_feature_values: [...answers(A, '2026-10-21T09:00:00Z'), ...answers(B, '2026-10-21T09:00:00Z', { preorder: 'unknown' }), ...answers(C, null)],
 })
 /** global-players-1: CMP_TABLES plus till / POS players — P and R verified (R's entry has its own group label), Q a
  *  still-candidate POS player whose automatically added entry is unverified, and L a local-restaurant tool. */
@@ -39,6 +49,7 @@ const GLOBAL_TABLES = () => {
   return {
     competitors: [...base.competitors, comp(P, 'Testkasse P', pos), comp(RR, 'Testkasse R', pos),
       comp(Q, 'Testkasse Q', { focus: 'pos', lifecycle: 'candidate', added_as_candidate: true, features_verified_at: null }), comp(L, 'Testlokal L', { focus: 'nearest_local' })],
+    competitor_feature_values: [...base.competitor_feature_values, ...answers(P, '2026-10-21T09:00:00Z'), ...answers(RR, '2026-10-21T09:00:00Z'), ...answers(Q, null), ...answers(L, '2026-10-21T09:00:00Z')],
     competitor_plans: [...base.competitor_plans, plan('pp', P, 'Kasse Plus', { monthly_minor: 3900 }), plan('pr', RR, 'Shop', { monthly_minor: 6900 }),
       plan('pq', Q, 'Kasse', { verified_at: null }), plan('pl', L, 'Lokal')],
     comparison_entries: [...base.comparison_entries, entry('e4', P, 'pp', 4), entry('e6', RR, 'pr', 6, { group_label: 'Kasse mit Online-Shop' }),
@@ -99,4 +110,4 @@ async function renderer(kit, tag = 'cde1') {
   return { M, ctx, catalog, SEG, req, page, twin, landing, sitemap: o => req(o, () => M.sitemap()), llms: o => req(o, async () => (await M.llmsGET()).text()) }
 }
 
-module.exports = { A, B, C, PA, PB, PC, comp, plan, entry, CMP_TABLES, GLOBAL_TABLES, rowsWith, renderer }
+module.exports = { A, B, C, PA, PB, PC, comp, plan, entry, answers, CMP_TABLES, GLOBAL_TABLES, rowsWith, renderer }

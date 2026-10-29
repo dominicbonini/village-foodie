@@ -11,9 +11,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { FIELD_LABEL, CLASSIFICATION_LABEL, type Field, type Classification } from '@/lib/competitor-check/model'
 import type { Overview } from '@/lib/competitor-check/overview'
+import { LEGACY_FEATURE_COLUMNS } from '@/lib/comparison-features'
 
 type Row = Record<string, unknown>
 interface Data { settings: Row; runs: Row[]; findings: Row[]; competitors: { id: string; name: string; lifecycle: string }[]; overview: Overview; today: string
+  /** comparison-features-1: each feature key's English label (a 'feature' finding names its key). */
+  featureLabels?: Record<string, string>
   countries?: { code: string; name: string; comparisonPage: boolean }[] }
 
 async function call(method: 'GET' | 'POST', body?: unknown): Promise<{ ok: boolean; data: Row }> {
@@ -32,6 +35,14 @@ const OUTCOME_LABEL: Record<string, string> = { changed: 'Changed', unchanged: '
   in_country: 'Sold here', not_in_country: 'Not sold here' }   // global-players-1
 
 type Chip = 'review' | 'blocked' | 'gone' | 'unchanged' | 'all'
+
+/** comparison-features-1: what a finding is about — a feature's label (its key from the master list, or an old finding's
+ *  retired field mapped to its key), else the field's label. */
+function whatOf(f: Row, labels: Record<string, string>): string {
+  const key = f.field === 'feature' ? String(((f.found ?? {}) as Row).feature_key ?? '') : LEGACY_FEATURE_COLUMNS[String(f.field)]?.key
+  if (key) return labels[key] ?? key
+  return FIELD_LABEL[f.field as Field] ?? String(f.field)
+}
 
 export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => void }) {
   const [data, setData] = useState<Data | null>(null)
@@ -175,7 +186,7 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
                   <tr key={String(f.id)} data-finding={String(f.outcome)} className="align-top">
                     <td className="px-3 py-2"><p className="font-semibold text-slate-900">{nameOf.get(String(f.competitor_id)) ?? 'Unknown'}</p>{typeof found.plan_name === 'string' && <p className="text-xs text-slate-500">{found.plan_name}</p>}</td>
                     <td className="px-3 py-2 font-mono text-xs text-slate-500">{String(f.country_code ?? '—')}</td>
-                    <td className="px-3 py-2"><p className="text-slate-800">{FIELD_LABEL[f.field as Field] ?? String(f.field)}</p><p className="text-xs font-semibold text-slate-500">{OUTCOME_LABEL[String(f.outcome)] ?? String(f.outcome)}</p></td>
+                    <td className="px-3 py-2"><p className="text-slate-800">{whatOf(f, data.featureLabels ?? {})}</p><p className="text-xs font-semibold text-slate-500">{OUTCOME_LABEL[String(f.outcome)] ?? String(f.outcome)}</p></td>
                     <td className="px-3 py-2 text-slate-800"><span className="text-slate-500">{String(f.stored_value ?? '—')}</span> → <b>{f.outcome === 'classification' && found.classification ? CLASSIFICATION_LABEL[found.classification as Classification] : String(f.found_value ?? '—')}</b></td>
                     <td className="max-w-[22rem] px-3 py-2">
                       {f.quote ? <><p className="text-slate-800">“{String(f.quote)}”</p>{f.quote_en && f.quote_en !== f.quote && <p className="text-xs italic text-slate-500">{String(f.quote_en)}</p>}</> : <span className="text-slate-400">—</span>}

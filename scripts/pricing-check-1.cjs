@@ -13,6 +13,15 @@
 //   • the price-point rule, the stale rule, our key-feature cells, a planned country's proposed prices;
 //   • the admin actions (lib/admin/pricing-check-actions.ts) on an in-memory store: import once and only once,
 //     an edit inserts a new row and supersedes the old, verification resets, field allowlists refuse unknown fields.
+// comparison-features-1 (29 October 2026, docs/comparison-features-1-report.md) — 🔁 RE-PINNED: the "key feature" cells
+// (KEY_FEATURES / ourFeatureCell, the benchmark's app columns) and set_feature are gone. Now proven instead:
+//   • HatchGrab's answers come from their sources — a plan switch ("from Pro"), built in, the country's app flag
+//     (country_settings, the ONE source; "iPad app"), plan data, a fixed answer, coming soon, the country's charges;
+//   • scope 'some' shows a feature only in its countries; hidden features are checked but never shown;
+//   • the Feature list's actions: Check on marks every active competitor due; Add feature keeps its words per locale;
+//     an answer is a new row (the old superseded); Mark features verified stamps that country's rows;
+//   • the 20261048 data move maps all twelve old columns and keeps their verification;
+//   • the cost block: software fee + card fees = the total, and a customer-paid fee never enters a bar.
 // Nothing here reaches a database or the network.
 
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
@@ -29,9 +38,12 @@ const DATA = path.join(REPO, 'data/pricing-research-1')
 const read = f => JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8'))
 const camel = s => s.replace(/_([a-z])/g, (_, c) => c.toUpperCase())
 const rowOf = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [camel(k), v]))
+/** comparison-features-1: the shipped feature list's rows (what the importer seeds). */
+const m_FILE_FEATURES_ROWS = () => JSON.parse(fs.readFileSync(path.join(REPO, 'data/comparison-features/features.json'), 'utf8')).features.map(f => ({ ...f, labels: {}, explanations: {} }))
 
 ;(async () => {
-  const m = await kit.bundle('engine', "export * from '@/lib/pricing-check'\nexport * as actions from '@/lib/admin/pricing-check-actions'")
+  const m = await kit.bundle('engine', ["export * from '@/lib/pricing-check'", "export * as actions from '@/lib/admin/pricing-check-actions'",
+    "export * as cf from '@/lib/comparison-features'", "export { FILE_FEATURES } from '@/lib/comparison-features-file'", "export * as cost from '@/lib/cost-block'"].join('\n'))
   const raw = { competitors: read('competitors.json'), plans: read('plans.json'), benchmarks: read('benchmarks.json') }
   const competitors = raw.competitors.map(rowOf)
   const plans = raw.plans.map(p => ({ ...rowOf(p), verifiedAt: null, verifiedBy: null, supersededAt: null, createdAt: null }))
@@ -116,14 +128,67 @@ const rowOf = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [camel(k
   // ── stale ──
   t('stale: older than six months', m.isStale('2026-04-22', '2026-10-23') && !m.isStale('2026-04-23', '2026-10-23') && !m.isStale('2026-10-23', '2026-10-23'))
 
-  // ── our key-feature cells, from the catalogue's switches ──
-  const cell = (col, code) => m.ourFeatureCell(catalog, m.KEY_FEATURES.find(f => f.column === col), benchmarks.find(b => b.countryCode === code))
+  // ── comparison-features-1: HatchGrab's answers, from their sources (lib/comparison-features.ts ourAnswer) ──
   const names = catalog.plans.filter(p => p.isPublic && p.active).sort((a, b) => a.sortOrder - b.sortOrder).map(p => p.name)
-  t(`features: WhatsApp = "${names.slice(1).join(' & ')}" (the plans whose switch is on)`, cell('whatsapp', 'GB') === names.slice(1).join(' & '), cell('whatsapp', 'GB'))
-  t('features: social posts the same', cell('socialPosts', 'GB') === names.slice(1).join(' & '))
-  t('features: pre-orders and own web address on every plan → Yes', cell('preOrders', 'GB') === 'Yes' && cell('ownDomain', 'GB') === 'Yes')
-  t('features: Android in GB → Yes; in IE → Not in this country', cell('androidApp', 'GB') === 'Yes' && cell('androidApp', 'IE') === 'Not in this country')
-  t('features: iPhone app, store countries not recorded', /not recorded/.test(cell('iosApp', 'GB')))
+  const F = Object.fromEntries(m.FILE_FEATURES.map(f => [f.key, f]))
+  const ans = (key, flags = { ios: true, android: true }, charges) => m.cf.ourAnswer(F[key], { catalog, appFlags: flags, charges })
+  t('the shipped list: 45 features in six groups, every one checked', m.FILE_FEATURES.length === 45 && new Set(m.FILE_FEATURES.map(f => f.groupKey)).size === 6 && m.FILE_FEATURES.every(f => f.checked))
+  t(`a plan switch: WhatsApp = Yes from ${names[1]} (the plans whose switch is on)`, ans('whatsapp').value === 'yes' && ans('whatsapp').note.kind === 'plans' && ans('whatsapp').note.plans[0] === names[1], ans('whatsapp'))
+  t('…social posts the same; pre-orders on every plan → Yes, no note', ans('social').note?.plans?.[0] === names[1] && ans('preorder').value === 'yes' && ans('preorder').note === null)
+  t('built in: own web address, weekly schedule, allergens → Yes', ['domain', 'schedule', 'allergens'].every(k => ans(k).value === 'yes' && ans(k).badge === 'yes'))
+  t('the country flag is the ONE source for the apps: on → Yes; off → No, "not in this country"', ans('android', { ios: true, android: true }).value === 'yes'
+    && ans('android', { ios: true, android: false }).value === 'no' && ans('android', { ios: true, android: false }).note.kind === 'flagOff' && ans('ipad', { ios: false, android: true }).note.app === 'ios')
+  t('plan data: monthly, fee per order, card fee, minimum contract, set-up fee, free trial come from the price sources', ['monthly', 'perorder', 'cardfee', 'term', 'setup', 'trial'].every(k => ans(k).note?.kind === 'price'))
+  t('fixed answers: hardware No (note), printed tickets Yes (note), PayPal No, a fiscal till No', ans('hardware').value === 'no' && ans('hardware').note.kind === 'message'
+    && ans('tickets').value === 'yes' && ans('paypal').value === 'no' && ans('paypal').note === null && ans('fiscal').value === 'no')
+  t('confirmed from the code (29 Oct): ASAP Yes, offline Partly, buzzers Partly, private events Partly, table/QR No, delivery No (collection only)',
+    ans('asap').value === 'yes' && ans('offline').value === 'partial' && ans('buzzers').value === 'partial' && ans('private').value === 'partial' && ans('qr').value === 'no' && ans('delivery').value === 'no')
+  t('"coming soon" answers Coming soon, never Yes: Instagram/Messenger replies, loyalty', ['igmsg', 'loyalty'].every(k => ans(k).badge === 'soon' && ans(k).value !== 'yes'))
+  t('the country decides tips and the customer fee (GB: none; a country that allows them: Yes); unknown country → to confirm',
+    ans('tips', undefined, { tips: false, serviceFee: false }).value === 'no' && ans('custfee', undefined, { tips: true, serviceFee: true }).value === 'yes' && ans('tips').badge === 'confirm')
+  t('an Admin-added feature starts "to confirm" (never a guessed Yes)', m.cf.ourAnswer({ hatchgrabSource: 'confirm' }, { catalog, appFlags: { ios: true, android: true } }).badge === 'confirm')
+  t('every source in the list is in the grammar', m.FILE_FEATURES.every(f => m.cf.sourceProblem(f.hatchgrabSource) === null) && m.cf.sourceProblem('plan:x;teleport') !== null)
+  const shDE = m.cf.featuresShownIn(m.FILE_FEATURES, 'DE').map(f => f.key), shGB = m.cf.featuresShownIn(m.FILE_FEATURES, 'GB').map(f => f.key), shPL = m.cf.featuresShownIn(m.FILE_FEATURES, 'PL').map(f => f.key)
+  t('scope "some": PayPal and the fiscal till only in their countries (DE yes, GB no); local payments in PL, not DE; the discovery map in GB only',
+    shDE.includes('paypal') && shDE.includes('fiscal') && !shGB.includes('paypal') && !shGB.includes('fiscal') && shPL.includes('localpay') && !shDE.includes('localpay') && shGB.includes('discovery') && !shDE.includes('discovery'))
+  const hidden = m.FILE_FEATURES.filter(f => f.showScope === 'hidden').map(f => f.key)
+  t(`hidden features (${hidden.length}) are CHECKED but never shown — in no country`, hidden.length === 13 && m.FILE_FEATURES.filter(f => hidden.includes(f.key)).every(f => f.checked)
+    && ['DE', 'GB', 'PL', 'AT', 'US'].every(c => !m.cf.featuresShownIn(m.FILE_FEATURES, c).some(f => hidden.includes(f.key)))
+    && m.cf.featuresCheckedFor(m.FILE_FEATURES, 'DE').some(f => f.key === 'asap'), hidden)
+  t('"iPad app" everywhere: the label, and no "iPhone and iPad" left in the code or the comparison messages',
+    JSON.parse(fs.readFileSync(path.join(REPO, 'messages/ns/en-GB/comparison.json'), 'utf8')).features.ipad.label === 'iPad app'
+    && !['lib/pricing-check.ts', 'lib/competitor-check/model.ts', 'components/admin/PricingCheckTab.tsx', 'lib/comparison.ts'].some(p => /iPhone and iPad|iPhone app/.test(fs.readFileSync(path.join(REPO, p), 'utf8'))))
+  t('Pricing check reads the app flags from country_settings (CountryRow), not the benchmark (its app columns are retired)',
+    !/iosAppAvailable|androidAppAvailable/.test(fs.readFileSync(path.join(REPO, 'lib/admin/pricing-check-actions.ts'), 'utf8').replace(/\/\/.*$/gm, ''))
+    && /iosAppAvailable: flags\.get\(c\.countryCode\)\?\.iosApp === true/.test(fs.readFileSync(path.join(REPO, 'app/api/admin/pricing-check/route.ts'), 'utf8')))
+  const move = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261048_comparison_features_data.sql'), 'utf8')
+  t('the data move (NOT RUN) maps all twelve old columns to their keys and keeps the verification stamp and checked date',
+    Object.entries(m.cf.LEGACY_FEATURE_COLUMNS).every(([col, d]) => new RegExp(`\\('${d.key}',\\s+(c\\.${col}|'unknown'),?\\s*(c\\.${col}|null)`).test(move))
+    && /c\.features_verified_at as verified_at/.test(move) && /c\.features_checked_on as checked_on/.test(move) && /comment on column public\.country_benchmarks\.ios_app_available\s+is 'RETIRED/.test(move))
+
+  // ── comparison-features-1: the cost block (lib/cost-block.ts) ──
+  {
+    const gbR = run('GB', { ...m.DEFAULT_OPTIONS, verifiedOnly: false })
+    // Every GB plan verified for the preview (the block shows verified rivals only).
+    const verifiedPlans = plans.map(p => ({ ...p, verifiedAt: '2026-10-23T09:00:00Z' }))
+    const r = m.checkCountry({ countryCode: 'GB', benchmark: benchmarks.find(b => b.countryCode === 'GB'), country: COUNTRIES.GB, catalog, plans: verifiedPlans, competitors, rates }, m.DEFAULT_OPTIONS)
+    const d = m.cost.costBlockOf(r, 'medium', benchmarks.find(b => b.countryCode === 'GB'), 'en-GB')
+    t('cost block: every bar is software fee + card fees = the total (to the unit)', d.bars.length > 2 && d.bars.every(b => Math.abs(b.softwareMinor + b.cardMinor - b.totalMinor) < 1e-6), d.bars.slice(0, 3))
+    const withCustomer = d.bars.filter(b => b.customerMinor)
+    const rv = r.volumes.find(v => v.key === 'medium')
+    t('a fee the CUSTOMER pays never enters a bar: it is a separate note', withCustomer.length > 0 && withCustomer.every(b => {
+      const src = rv.rivals.find(x => x.competitor?.id === b.key && Math.abs(x.truckMinor - b.totalMinor) < 1e-6)
+      return src && Math.abs(b.totalMinor - src.truckMinor) < 1e-6 && b.customerMinor === src.customerMinor })
+      && d.bars.every(b => b.totalMinor === b.softwareMinor + b.cardMinor), withCustomer.slice(0, 2))
+    t('our bar: our plan + our fee above its included amount = software; our card cost = card fees', d.bars.find(b => b.us).softwareMinor === rv.best.subMinor + rv.best.feeMinor && d.bars.find(b => b.us).cardMinor === rv.best.cardMinor)
+    const words = m.cost.costBlockWords(d, (k, v = {}) => `${k}|${Object.entries(v).map(([a, b]) => `${a}=${b}`).join(',')}`, { countryName: 'the United Kingdom' })
+    t('the summary from data: cheapest (or not) on the software fee, naming the cheapest rival', d.summary.kind === (d.summary.oursMinor <= d.summary.theirsMinor ? 'cheapest' : 'notCheapest')
+      && words.summary.startsWith(`costBlock.summary${d.summary.kind === 'cheapest' ? 'Cheapest' : 'NotCheapest'}|`))
+    t('sizes are online sales a month (orders × the order value) with "about N orders"', d.sizes.length === 3 && d.sizes.every(z => z.salesMinor === rv.orderMinor * z.orders) && words.sizes.every(z => /costBlock\.sizeOrders\|orders=/.test(z.orders)))
+    t('an assumed card rate says so; the footnote names who is assumed, our rate and the date', d.bars.filter(b => b.cardAssumed).every(b => /costBlock\.assumed/.test(words.bars.find(x => x.key === b.key).card))
+      && words.footnote.some(l => l.startsWith('costBlock.footOrder|')) && words.footnote.some(l => l.startsWith('costBlock.footCard|')))
+    void gbR
+  }
 
   // ── no plan named in the engine (manual §81) ──
   const src = fs.readFileSync(path.join(REPO, 'lib/pricing-check.ts'), 'utf8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')
@@ -140,7 +205,7 @@ const rowOf = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [camel(k
 // An in-memory PricingStore with the database's two rules that matter here: at most one current benchmark per country,
 // and a supersede that only touches a row still current.
 function memoryStore() {
-  const db = { competitors: [], plans: [], benchmarks: [] }
+  const db = { competitors: [], plans: [], benchmarks: [], features: [], values: [] }
   let n = 0
   const id = () => `00000000-0000-4000-8000-${String(++n).padStart(12, '0')}`
   return {
@@ -171,6 +236,28 @@ function memoryStore() {
     async insertEntry() { throw new Error('no comparison_entries in this store') },
     async updateEntry() { return null },
     async deleteEntry() {},
+    // comparison-features-1: the master list and the answers — one current answer per competitor, feature and country.
+    async features() { return db.features.map(x => ({ ...x })) },
+    async insertFeature(row) { if (db.features.some(f => f.key === row.key)) throw new Error('duplicate key'); db.features.push({ ...row }); return { ...row } },
+    async updateFeature(key, cols) { const f = db.features.find(x => x.key === key); if (!f) return null; Object.assign(f, cols); return { ...f } },
+    async featureValues() { return db.values.filter(v => v.superseded_at === null).map(x => ({ ...x })) },
+    async insertFeatureValue(row) {
+      if (db.values.some(v => v.superseded_at === null && v.competitor_id === row.competitor_id && v.feature_key === row.feature_key && (v.country_code ?? '') === (row.country_code ?? ''))) throw new Error('one current answer per competitor, feature and country')
+      const r = { id: id(), superseded_at: null, created_at: '2026-10-23T09:00:00Z', ...row }; db.values.push(r); return { ...r }
+    },
+    async supersedeFeatureValue(vid, at) { const v = db.values.find(x => x.id === vid && x.superseded_at === null); if (!v) return false; v.superseded_at = at; return true },
+    async unsupersedeFeatureValue(vid) { const v = db.values.find(x => x.id === vid); if (v) v.superseded_at = null },
+    async setFeatureValuesVerified(ids, at, by) { let k = 0; for (const v of db.values) if (ids.includes(v.id) && v.superseded_at === null) { v.verified_at = at; v.verified_by = by; k++ } return k },
+    async touchFeatureValueChecked(vid, date) { const v = db.values.find(x => x.id === vid && x.superseded_at === null); if (!v) return false; v.checked_on = date; return true },
+    async markFeatureDue(key, today) {
+      const active = db.competitors.filter(c => (c.lifecycle ?? 'active') === 'active')
+      let k = 0
+      for (const c of active) {
+        if (!db.values.some(v => v.competitor_id === c.id && v.feature_key === key && v.country_code === null && v.superseded_at === null)) { db.values.push({ id: id(), competitor_id: c.id, feature_key: key, country_code: null, value: 'unknown', note: null, superseded_at: null }); k++ }
+        if (!c.next_check_at || c.next_check_at > today) c.next_check_at = today
+      }
+      return k
+    },
     async existingIds(table, ids) { const t = { competitors: db.competitors, plans: db.plans, benchmarks: db.benchmarks }[table] || []; return t.filter(r => ids.includes(r.id)).map(r => r.id) },
   }
 }
@@ -208,11 +295,46 @@ async function actionsProof(A, raw) {
   const gbNow = s.db.benchmarks.filter(b => b.country_code === 'GB' && b.superseded_at === null)
   t('actions: editing country data supersedes the old benchmark (one current row)', eb.ok && gbNow.length === 1 && gbNow[0].meal_minor === 1500 && gbB.superseded_at === stamp.at && gbNow[0].eur_rate === gbB.eur_rate, eb.error)
 
-  const f = await A.act(s, { action: 'set_feature', competitorId: btq.competitor_id, column: 'whatsapp', value: 'no' }, stamp)
-  const c = s.db.competitors.find(x => x.id === btq.competitor_id)
-  t('actions: a feature cell saves and stamps today', f.ok && c.whatsapp === 'no' && c.features_checked_on === stamp.today && c.features_verified_at === stamp.at)
-  const f2 = await A.act(s, { action: 'set_feature', competitorId: btq.competitor_id, column: 'name', value: 'yes' }, stamp)
-  t('actions: only the six feature columns can be set', !f2.ok && f2.status === 400)
+  // 🔁 re-pinned 29 Oct 2026 (comparison-features-1): set_feature (a column on competitors) is gone — an answer is a row.
+  const cid = btq.competitor_id
+  const gone = await A.act(s, { action: 'set_feature', competitorId: cid, column: 'whatsapp', value: 'no' }, stamp)
+  t('actions: the old set_feature is gone (refused as unknown)', !gone.ok && gone.status === 400)
+  const a1 = await A.act(s, { action: 'feature_value', competitorId: cid, featureKey: 'whatsapp', countryCode: null, value: 'no', note: 'not offered' }, stamp)
+  const a2 = await A.act(s, { action: 'feature_value', competitorId: cid, featureKey: 'whatsapp', countryCode: null, value: 'partial' }, stamp)
+  const wa = s.db.values.filter(v => v.competitor_id === cid && v.feature_key === 'whatsapp')
+  t('actions: an answer is a NEW row and the old one is superseded (history kept); the admin is the verifier; the note carries over', a1.ok && a2.ok && wa.length === 2
+    && wa[0].superseded_at === stamp.at && wa[1].superseded_at === null && wa[1].value === 'partial' && wa[1].note === 'not offered' && wa[1].verified_by === stamp.by, wa)
+  const de = await A.act(s, { action: 'feature_value', competitorId: cid, featureKey: 'whatsapp', countryCode: 'DE', value: 'yes' }, stamp)
+  t('actions: a country\'s own answer is a separate row (DE), beside the every-country one', de.ok && s.db.values.filter(v => v.competitor_id === cid && v.feature_key === 'whatsapp' && v.superseded_at === null).length === 2)
+  const bad = await A.act(s, { action: 'feature_value', competitorId: cid, featureKey: 'whatsapp', countryCode: null, value: 'maybe' }, stamp)
+  t('actions: an answer outside yes / no / partly / not stated is refused', !bad.ok && bad.status === 400)
+  // Mark features verified, per country: DE stamps the DE row and the every-country row — not another country's.
+  s.db.values.push({ id: 'fr-only', competitor_id: cid, feature_key: 'kds', country_code: 'FR', value: 'yes', superseded_at: null, verified_at: null })
+  for (const v of s.db.values) if (v.competitor_id === cid) v.verified_at = null
+  const ver = await A.act(s, { action: 'verify_features', competitorId: cid, countryCode: 'DE' }, stamp)
+  const cur = s.db.values.filter(v => v.competitor_id === cid && v.superseded_at === null)
+  t('actions: Mark features verified stamps that competitor\'s CURRENT answers for that country (and every country), not another country\'s, and the competitor\'s stamp',
+    ver.ok && cur.filter(v => v.country_code !== 'FR').every(v => v.verified_at === stamp.at) && cur.find(v => v.id === 'fr-only').verified_at === null
+    && s.db.competitors.find(x => x.id === cid).features_verified_at === stamp.at, cur)
+  t('actions: verifying needs a country', !(await A.act(s, { action: 'verify_features', competitorId: cid }, stamp)).ok)
+  // The Feature list: Check on → every active competitor due; scope; Add feature.
+  s.db.features.push(...m_FILE_FEATURES_ROWS())
+  s.db.features.find(f => f.key === 'tips').checked = false
+  const before = s.db.values.length
+  const on = await A.act(s, { action: 'feature_update', key: 'tips', checked: true }, stamp)
+  const active = s.db.competitors.filter(c => (c.lifecycle ?? 'active') === 'active')
+  t('actions: switching a feature to CHECKED marks every active competitor\'s answer unknown and every one due (next_check_at today)', on.ok && on.data.markedDue === active.length
+    && s.db.values.length === before + active.length && active.every(c => c.next_check_at === stamp.today) && s.db.values.slice(before).every(v => v.value === 'unknown'), on)
+  const some = await A.act(s, { action: 'feature_update', key: 'tips', showScope: 'some', showCountries: ['GB', 'IE', 'GB'] }, stamp)
+  t('actions: Show on website "Some countries" saves its countries (each once)', some.ok && JSON.stringify(s.db.features.find(f => f.key === 'tips').show_countries) === '["GB","IE"]')
+  t('actions: "Some countries" with no country is refused', !(await A.act(s, { action: 'feature_update', key: 'tips', showScope: 'some', showCountries: [] }, stamp)).ok)
+  const addF = await A.act(s, { action: 'feature_add', key: 'giftcards', groupKey: 'payments', labels: { 'en-GB': 'Gift cards', 'de-DE': 'Gutscheine' },
+    explanations: { 'en-GB': 'Customers pay with a gift card.', 'de-DE': 'Gäste zahlen mit einem Gutschein.' }, showScope: 'hidden' }, stamp)
+  const g = s.db.features.find(f => f.key === 'giftcards')
+  t('actions: Add feature keeps its words per locale (labels / explanations), starts checked and "to confirm", and marks competitors due', addF.ok && g.labels['de-DE'] === 'Gutscheine'
+    && g.explanations['en-GB'] === 'Customers pay with a gift card.' && g.checked === true && g.hatchgrab_source === 'confirm' && addF.data.markedDue === active.length)
+  t('actions: Add feature needs English AND German, and a new key', !(await A.act(s, { action: 'feature_add', key: 'x2', groupKey: 'payments', labels: { 'en-GB': 'X' }, explanations: { 'en-GB': 'x', 'de-DE': 'x' } }, stamp)).ok
+    && !(await A.act(s, { action: 'feature_add', key: 'giftcards', groupKey: 'payments', labels: { 'en-GB': 'X', 'de-DE': 'X' }, explanations: { 'en-GB': 'x', 'de-DE': 'x' } }, stamp)).ok)
 
   const add = await A.act(s, { action: 'add_competitor', competitor: { name: 'Test Truck Tool', website: 'https://example.com', focus: 'food_truck' },
     plan: { countryCode: 'GB', planName: 'Basic', currency: 'GBP', monthlyMinor: 1900, cardMode: 'unknown', checkedOn: '2026-10-23' } }, stamp)

@@ -21,16 +21,20 @@
 // global-players-1: a competitor that sells in SEVERAL countries is deep-checked for the one country it was picked for —
 // the extractor is told that country only (prompts.ts countryTask), sees only that country's stored plans, reads at most
 // COUNTRY_MAX_FETCHES pages, and any finding about another country is dropped; deep_checked_in stamps the country.
+// comparison-features-1: the extractor is asked about every CHECKED feature of the master list (key, label, explanation —
+// CheckSettings.features) and records one 'feature' finding each: value, note, verbatim quote, URL. A finding about a key
+// not in the list is dropped. Quote checks and the verifier are unchanged.
 import type Anthropic from '@anthropic-ai/sdk'
 import {
-  RECORD_FINDINGS_TOOL, RECORD_VERDICT_TOOL, QUOTED_OUTCOMES, PLAN_FIELDS, FEATURE_FIELDS, hostOf, onOwnSite, APP_STORE_HOSTS,
+  RECORD_FINDINGS_TOOL, RECORD_VERDICT_TOOL, QUOTED_OUTCOMES, PLAN_FIELDS, hostOf, onOwnSite, APP_STORE_HOSTS,
   validateRecordFindings, validateRecordVerdict, type RawFinding, type Field,
 } from './model'
 import {
   quoteInPages, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
   afterCheck, deepQueueOf, deepTargets, nextDeepCountry, isMultiCountry, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
 } from './core'
-import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, type StoredPlanForPrompt } from './prompts'
+import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, type StoredPlanForPrompt, type CheckFeature } from './prompts'
+import { effectiveValue, type FeatureValueRow } from '@/lib/comparison-features'
 
 type Row = Record<string, unknown>
 export type Mode = 'deep' | 'routine' | 'single'
@@ -40,10 +44,13 @@ export interface CheckSettings {
   deepRequestedAt: string | null; extractorModel: string; verifierModel: string; prices: Prices
   /** competitor-check-2 (20261045): the country the deep check is on (null: none), and the stored order (empty: the default). */
   deepCountry: string | null; deepQueue: string[]
+  /** comparison-features-1: the CHECKED features the extractor is asked about (store.features(), read once per job). */
+  features?: CheckFeature[]
 }
 export interface CompetitorForCheck extends SchedRow {
-  website: string | null; focus: string | null; checkUrls: string[]; minTerm: string | null; paymentMethods: string | null
-  features: Record<string, string>; plans: StoredPlanForPrompt[]
+  website: string | null; focus: string | null; checkUrls: string[]
+  /** comparison-features-1: its current answers (competitor_feature_values), every country's and each country's own. */
+  featureValues: FeatureValueRow[]; plans: StoredPlanForPrompt[]
 }
 export interface FindingRow {
   run_id: string; competitor_id: string; plan_id: string | null; country_code: string | null; field: Field
@@ -69,6 +76,8 @@ export interface CheckerStore {
   countries(): Promise<QueueCountry[]>
   /** competitor-check-2: moves the deep check on to the next country (null: the queue is done) — settings.deep_country only. */
   setDeepCountry(code: string | null): Promise<void>
+  /** comparison-features-1: the CHECKED features, with their English words (the master list; the shipped file until seeded). */
+  features?(): Promise<CheckFeature[]>
 }
 export interface CheckerDeps {
   /** One Messages API call (the SDK's client.beta.messages.create, or a harness's recorded fixtures). */
@@ -109,7 +118,7 @@ const minor = (n: number | null, cur: string) => (n === null ? 'not stated' : `$
 const bps = (b: number) => `${(b / 100).toLocaleString('en-GB', { maximumFractionDigits: 2 })}%`
 
 /** The stored value a finding is compared with, written plainly — from OUR data, never the model's. */
-export function storedValueOf(field: Field, c: CompetitorForCheck, plan: StoredPlanForPrompt | null): string | null {
+export function storedValueOf(field: Field, c: CompetitorForCheck, plan: StoredPlanForPrompt | null, featureKey: string | null = null, country: string | null = null): string | null {
   if (plan) {
     switch (field) {
       case 'monthly_price': return plan.price_hidden ? 'price on request' : `${minor(plan.monthly_minor, plan.currency)} per month${plan.yearly_only ? ' (billed yearly)' : ''}, VAT ${plan.vat}`
@@ -120,9 +129,10 @@ export function storedValueOf(field: Field, c: CompetitorForCheck, plan: StoredP
       case 'plan': return plan.plan_name
     }
   }
-  if ((FEATURE_FIELDS as readonly string[]).includes(field)) return c.features[field] ?? 'unknown'
-  if (field === 'min_term') return c.minTerm
-  if (field === 'payment_methods') return c.paymentMethods
+  if (field === 'feature') {
+    const v = featureKey ? effectiveValue(c.featureValues, c.id, featureKey, country) : null
+    return v ? `${v.value}${v.note ? ` — ${v.note}` : ''}` : 'unknown'
+  }
   if (field === 'classification') return `${c.lifecycle}${c.focus ? ` · ${c.focus}` : ''}`
   if (field === 'url') return c.checkUrls.join(' · ') || null
   return null
@@ -130,12 +140,18 @@ export function storedValueOf(field: Field, c: CompetitorForCheck, plan: StoredP
 /** The finding's value in words, when the model gave typed parts but no text. */
 export function describeFound(f: RawFinding): string | null {
   if (f.found_value) return f.found_value
-  if (f.feature) return f.feature
+  if (f.feature) return `${f.feature}${f.note ? ` — ${f.note}` : ''}`
   if (f.classification) return f.classification
   if (f.url) return f.url
   const parts = [f.amount !== null ? `${f.amount} ${f.currency ?? ''}`.trim() : null, f.percent !== null ? `${f.percent}%` : null,
     f.period ? `per ${f.period}` : null, f.vat ? `VAT ${f.vat}` : null].filter(Boolean)
   return parts.length ? parts.join(', ') : null
+}
+
+/** comparison-features-1: the competitor's current answers for the checked keys, as the message shows them (the country's own
+ *  row when a country is checked, else the every-country one). */
+export function answersFor(c: Pick<CompetitorForCheck, 'id' | 'featureValues'>, keys: readonly string[], country: string | null): Record<string, { value: string; note: string | null }> {
+  return Object.fromEntries(keys.map(k => { const v = effectiveValue(c.featureValues, c.id, k, country); return [k, { value: v?.value ?? 'unknown', note: v?.note ?? null }] }))
 }
 
 /** The competitor's own domains (website and stored pages); the web tools are limited to these and the app stores. */
@@ -204,14 +220,15 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
   const domains = domainsOf(c)
   const allowed = [...domains, ...APP_STORE_HOSTS]
   const today = ymd(deps.now())
+  const keys = (settings.features ?? []).map(f => f.key)
   const fetches = country ? COUNTRY_MAX_FETCHES : depth === 'deep' ? 12 : 6
   const searches = country ? Math.ceil(COUNTRY_MAX_FETCHES / 2) : depth === 'deep' ? 6 : 3
   const ex = await converse(deps, {
     model: settings.extractorModel, system: EXTRACTOR_SYSTEM, toolName: RECORD_FINDINGS_TOOL.name, prices: settings.prices,
     effort: depth === 'deep' ? 'medium' : 'low', maxTurns: depth === 'deep' ? 12 : 8, validate: validateRecordFindings,
     user: extractorMessage({ name: c.name, website: c.website, lifecycle: c.lifecycle, focus: c.focus, check_urls: c.checkUrls,
-      min_term: c.minTerm, payment_methods: c.paymentMethods, features: c.features, plans: c.plans }, depth, today,
-      country ? { code: country, maxFetches: COUNTRY_MAX_FETCHES } : undefined),
+      features: answersFor(c, keys, country), plans: c.plans }, depth, today,
+      country ? { code: country, maxFetches: COUNTRY_MAX_FETCHES } : undefined, settings.features ?? []),
     tools: [
       { type: 'web_fetch_20260318', name: 'web_fetch', max_uses: fetches, max_content_tokens: 12000, allowed_domains: allowed },
       { type: 'web_search_20260318', name: 'web_search', max_uses: searches, allowed_domains: allowed },
@@ -230,11 +247,14 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
     if (country && !f.country_code) f.country_code = country
     // An availability finding outside a country check has no country to be about.
     if (!country && f.field === 'availability') { dropped++; continue }
+    // comparison-features-1: a feature must be one of the checked keys; outside a country check it is about every country.
+    if (f.field === 'feature' && (!f.feature_key || !keys.includes(f.feature_key))) { dropped++; continue }
+    if (f.field === 'feature' && !country) f.country_code = null
     const plan = matchPlan(c, f)
     const { field, plan_name, country_code, outcome, found_value, quote, quote_en, source_url, ...typed } = f
     findings.push({
       run_id: runId, competitor_id: c.id, plan_id: plan?.id ?? null, country_code: country_code ?? plan?.country_code ?? null, field,
-      stored_value: outcome === 'new_plan' ? null : storedValueOf(field, c, plan), found_value: describeFound(f),
+      stored_value: outcome === 'new_plan' ? null : storedValueOf(field, c, plan, f.feature_key, country), found_value: describeFound(f),
       found: { ...typed, plan_name, found_value }, quote, quote_en, source_url, outcome,
       quote_in_page: (QUOTED_OUTCOMES as readonly string[]).includes(outcome) ? quoteInPages(quote, pages) : false,
       second_check: 'not_run', second_value: null, second_quote: null, review_status: 'pending',
@@ -282,7 +302,7 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
     })
   }
   for (const c of list) {
-    const live = deps.dryRun ? settings : await deps.store.settings()
+    const live = deps.dryRun ? settings : { ...(await deps.store.settings()), features: settings.features }
     if (live.paused) { report.stoppedReason = 'paused'; break }
     const guard = budgetStop({ spentTodayUsd: spentBefore.todayUsd + report.spend.usd, spentMonthUsd: spentBefore.monthUsd + report.spend.usd,
       runUsd: report.spend.usd, runChecked: report.checked + report.failed.length, priorAvgUsd: spentBefore.priorAvgUsd,
@@ -330,7 +350,8 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
 /** A whole job: 'scheduled' (the daily cron) runs the full deep check's daily share while one is requested, then the
  *  routine share; 'deep' / 'routine' / 'single' are the manual modes. */
 export async function runChecker(deps: CheckerDeps, job: { mode: Mode | 'scheduled'; trigger: 'schedule' | 'manual'; competitor?: string | null; limit?: number | null }): Promise<RunReport[]> {
-  const settings = await deps.store.settings()
+  // comparison-features-1: the checked features are read once per job and carried with the settings.
+  const settings = { ...(await deps.store.settings()), features: deps.store.features ? await deps.store.features() : [] }
   const today = ymd(deps.now())
   const all = (await deps.store.competitors()).filter(c => c.checkUrls.length > 0 || !!c.website)
   const reports: RunReport[] = []

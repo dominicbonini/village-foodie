@@ -12,6 +12,7 @@
 // ONE place the page's field names meet column names, so no column name ships to a browser.
 
 import type { Benchmark, Competitor, CompetitorPlan, ComparisonEntry } from '@/lib/pricing-check'
+import { updateFeature, addFeature, setFeatureValue, verifyFeatures } from '@/lib/admin/feature-actions'
 
 type Row = Record<string, unknown>
 export interface PricingStore {
@@ -42,6 +43,27 @@ export interface PricingStore {
   deleteEntry(id: string): Promise<void>
   /** Which of these ids already exist in the table. */
   existingIds(table: 'competitors' | 'plans' | 'benchmarks' | 'entries', ids: string[]): Promise<string[]>
+  // ── comparison-features-1 (20261047): the master feature list and the competitors' answers. Optional, so a store
+  //    without them (a harness's, or before the migration) still serves the rest; the actions refuse with a plain 503.
+  /** Every comparison_features row; null while the table is not there. */
+  features?(): Promise<Row[] | null>
+  insertFeature?(row: Row): Promise<Row>
+  updateFeature?(key: string, cols: Row): Promise<Row | null>
+  /** Every CURRENT competitor_feature_values row ([] while the table is not there). */
+  featureValues?(): Promise<Row[]>
+  getFeatureValue?(id: string): Promise<Row | null>
+  insertFeatureValue?(row: Row): Promise<Row>
+  /** Stamp superseded_at on ONE row, only while it is current. False when it no longer is. */
+  supersedeFeatureValue?(id: string, at: string): Promise<boolean>
+  /** Put a superseded row back (its replacement's insert failed). */
+  unsupersedeFeatureValue?(id: string): Promise<void>
+  /** Set (or clear) verified_at / verified_by on current rows, by id. */
+  setFeatureValuesVerified?(ids: string[], at: string | null, by: string | null): Promise<number>
+  /** checked_on on ONE current row — an "unchanged" confirmed by both checks. */
+  touchFeatureValueChecked?(id: string, date: string): Promise<boolean>
+  /** A feature added or switched to checked: an 'unknown' row for every active competitor that has no current row for it,
+   *  and every active competitor due (next_check_at no later than today). Returns how many rows were added. */
+  markFeatureDue?(key: string, today: string): Promise<number>
 }
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string }
@@ -52,19 +74,13 @@ export interface Stamp { by: string; at: string; today: string }
 type Kind = 'text' | 'textOrNull' | 'url' | 'bool' | 'boolOrNull' | 'int0' | 'int0OrNull' | 'int1OrNull' | 'num' | 'date' | 'currency' | 'country' | 'textArray'
   | { oneOf: readonly string[]; nullable?: boolean }
 interface Def { col: string; kind: Kind }
-const TRI = ['yes', 'no', 'unknown'] as const
 
 const COMPETITOR: Record<keyof Competitor, Def> = {
   id: { col: 'id', kind: 'text' }, name: { col: 'name', kind: 'text' }, website: { col: 'website', kind: 'url' },
   focus: { col: 'focus', kind: { oneOf: ['food_truck', 'street_food_markets', 'nearest_local', 'pop_up', 'pos'], nullable: true } },
   paymentProviders: { col: 'payment_providers', kind: 'textOrNull' },
-  preOrders: { col: 'pre_orders', kind: { oneOf: TRI } }, whatsapp: { col: 'whatsapp', kind: { oneOf: TRI } },
-  socialPosts: { col: 'social_posts', kind: { oneOf: TRI } }, ownDomain: { col: 'own_domain', kind: { oneOf: TRI } },
-  iosApp: { col: 'ios_app', kind: { oneOf: TRI } }, androidApp: { col: 'android_app', kind: { oneOf: TRI } },
-  // compare-de-1 (20261042): read tolerantly — LEGACY_COMPETITOR_COLUMNS below is the select before that migration runs.
-  capacitySlots: { col: 'capacity_slots', kind: { oneOf: TRI } }, multiLocationSchedule: { col: 'multi_location_schedule', kind: { oneOf: TRI } },
-  kds: { col: 'kds', kind: { oneOf: TRI } }, payAtTruck: { col: 'pay_at_truck', kind: { oneOf: TRI } },
-  paymentMethods: { col: 'payment_methods', kind: 'textOrNull' }, minTerm: { col: 'min_term', kind: 'textOrNull' },
+  // comparison-features-1 (29 Oct 2026): the twelve fixed feature columns (pre_orders … pay_at_truck, payment_methods,
+  // min_term) are RETIRED and no longer read — the answers are in competitor_feature_values (lib/comparison-features.ts).
   featuresCheckedOn: { col: 'features_checked_on', kind: 'date' }, featuresVerifiedAt: { col: 'features_verified_at', kind: 'textOrNull' },
   notes: { col: 'notes', kind: 'textOrNull' },
   // competitor-check-1 (20261043): read tolerantly (CHECK_COMPETITOR_COLUMNS), defaults below when absent.
@@ -102,7 +118,7 @@ const BENCH: Record<keyof Benchmark, Def> = {
   cardBps: { col: 'card_bps', kind: 'int0OrNull' }, cardFixedMinor: { col: 'card_fixed_minor', kind: 'int0OrNull' },
   plannedProMinor: { col: 'planned_pro_minor', kind: 'int0OrNull' }, plannedProIncludedMinor: { col: 'planned_pro_included_minor', kind: 'int0OrNull' },
   plannedUnlimitedMinor: { col: 'planned_unlimited_minor', kind: 'int0OrNull' },
-  iosAppAvailable: { col: 'ios_app_available', kind: 'boolOrNull' }, androidAppAvailable: { col: 'android_app_available', kind: 'boolOrNull' },
+  // comparison-features-1: ios_app_available / android_app_available are RETIRED here — the app rows read country_settings.
   notes: { col: 'notes', kind: 'textOrNull' }, checkedOn: { col: 'checked_on', kind: 'date' },
   supersededAt: { col: 'superseded_at', kind: 'textOrNull' }, createdAt: { col: 'created_at', kind: 'textOrNull' },
 }
@@ -113,13 +129,8 @@ const PLAN_EDITABLE = ['planName', 'currency', 'priceHidden', 'monthlyMinor', 'y
   'overageFixedMinor', 'vat', 'status', 'unclear', 'secondHand', 'sourceUrl', 'checkedOn', 'notes'] as const
 /** What "Edit country data" may change (currency only when the country has no benchmark yet). */
 const BENCH_EDITABLE = ['mealMinor', 'mealSourceLabel', 'mealSourceUrl', 'mealSourceOk', 'orderMultiplier', 'eurRate', 'eurRateDate', 'cardBps',
-  'cardFixedMinor', 'plannedProMinor', 'plannedProIncludedMinor', 'plannedUnlimitedMinor', 'iosAppAvailable', 'androidAppAvailable', 'notes', 'checkedOn'] as const
+  'cardFixedMinor', 'plannedProMinor', 'plannedProIncludedMinor', 'plannedUnlimitedMinor', 'notes', 'checkedOn'] as const
 const COMPETITOR_NEW = ['name', 'website', 'focus', 'paymentProviders', 'notes'] as const
-const FEATURE_COLS: Record<string, string> = { preOrders: 'pre_orders', whatsapp: 'whatsapp', socialPosts: 'social_posts', ownDomain: 'own_domain', iosApp: 'ios_app', androidApp: 'android_app',
-  // compare-de-1: the comparison page's further rows.
-  capacitySlots: 'capacity_slots', multiLocationSchedule: 'multi_location_schedule', kds: 'kds', payAtTruck: 'pay_at_truck' }
-/** compare-de-1: the as-advertised texts an admin may set on a competitor. */
-const COMPETITOR_TEXT_COLS: Record<string, string> = { paymentMethods: 'payment_methods', minTerm: 'min_term' }
 /** compare-de-1: the columns added by 20261042 — left out of the select while that migration has not run. */
 export const COMPARE_COMPETITOR_COLUMNS = ['capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck', 'payment_methods', 'min_term'] as const
 /** competitor-check-1: the columns added by 20261043 — left out of the select while that migration has not run. */
@@ -308,15 +319,10 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
       try { return { ok: true, data: { benchmark: benchmarkOut(await store.insertBenchmark(next)) } } }
       catch (e) { if (old) await store.unsupersedeBenchmark(old.id as string); throw e }
     }
-    case 'set_feature': {
-      const cid = typeof body.competitorId === 'string' ? body.competitorId : null
-      const col = typeof body.column === 'string' ? FEATURE_COLS[body.column] : undefined
-      if (!cid) return refuse(400, 'Which competitor?')
-      if (!col) return refuse(400, 'Only the key features can be set here.')
-      if (!TRI.includes(body.value as (typeof TRI)[number])) return refuse(400, 'A feature is yes, no or not checked.')
-      const r = await store.updateCompetitor(cid, { [col]: body.value, features_checked_on: stamp.today, features_verified_at: stamp.at, updated_at: stamp.at })
-      return r ? { ok: true, data: { competitor: competitorOut(r) } } : refuse(404, 'That competitor is gone. Reload the page.')
-    }
+    // ── comparison-features-1: the master list and the answers (lib/admin/feature-actions.ts) ──
+    case 'feature_update': return updateFeature(store, body, stamp)
+    case 'feature_add': return addFeature(store, body, stamp)
+    case 'feature_value': return setFeatureValue(store, body, stamp)
     case 'add_competitor': {
       const comp = toColumns(body.competitor, COMPETITOR_NEW, COMPETITOR as Record<string, Def>)
       if (!comp.ok) return refuse(400, comp.error)
@@ -343,23 +349,9 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
     }
     // ── compare-de-1 ──────────────────────────────────────────────────────────────────────────────────────────────────
     case 'verify_features':
-    case 'unverify_features': {
-      const cid = typeof body.competitorId === 'string' ? body.competitorId : null
-      if (!cid) return refuse(400, 'Which competitor?')
-      const on = body.action === 'verify_features'
-      const r = await store.updateCompetitor(cid, { features_verified_at: on ? stamp.at : null, ...(on ? { features_checked_on: stamp.today } : {}), updated_at: stamp.at })
-      return r ? { ok: true, data: { competitor: competitorOut(r) } } : refuse(404, 'That competitor is gone. Reload the page.')
-    }
-    case 'set_competitor_text': {
-      const cid = typeof body.competitorId === 'string' ? body.competitorId : null
-      const col = typeof body.field === 'string' ? COMPETITOR_TEXT_COLS[body.field] : undefined
-      if (!cid) return refuse(400, 'Which competitor?')
-      if (!col) return refuse(400, 'Only payment methods and minimum term can be set here.')
-      if (body.value !== null && typeof body.value !== 'string') return refuse(400, 'That must be text.')
-      const v = typeof body.value === 'string' && body.value.trim() ? body.value.trim() : null
-      const r = await store.updateCompetitor(cid, { [col]: v, features_checked_on: stamp.today, updated_at: stamp.at })
-      return r ? { ok: true, data: { competitor: competitorOut(r) } } : refuse(404, 'That competitor is gone. Reload the page.')
-    }
+    case 'unverify_features':
+      // comparison-features-1: per country — the competitor's current answers there, and its features stamp.
+      return verifyFeatures(store, body, stamp, body.action === 'verify_features')
     case 'entry_add': {
       const code = typeof body.countryCode === 'string' ? body.countryCode.trim().toUpperCase() : ''
       const cid = typeof body.competitorId === 'string' ? body.competitorId : null

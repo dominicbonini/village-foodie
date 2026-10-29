@@ -24,7 +24,10 @@ const RF = require('./_real-fonts.cjs')
 const F = require('./_compare-de-1-fixtures.cjs')
 const { REPO } = kit
 const GLOBAL = process.argv.includes('--global-players')
-const OUT = path.join(REPO, GLOBAL ? 'docs/global-players-1' : 'docs/compare-de-1')
+// comparison-features-1 (29 October 2026): `--comparison-features` photographs the ADMIN view (the master feature list's rows,
+// grouped, and "Begriffe erklärt") in WebKit at 1512 and 390 into docs/comparison-features-1/webkit-page-admin-<w>.png.
+const FEATURES = process.argv.includes('--comparison-features')
+const OUT = path.join(REPO, GLOBAL ? 'docs/global-players-1' : FEATURES ? 'docs/comparison-features-1' : 'docs/compare-de-1')
 
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${JSON.stringify(detail).slice(0, 900)}` : '')) } }
@@ -38,15 +41,17 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
   const css = `<style>${fs.readFileSync(path.join(REPO, 'app/[country]/[section]/[slug]/comparison.css'), 'utf8')}\n${footCol}</style>`
   if (!footCol) throw new Error('the footer\'s .foot-col rules are not in app/landing/landing.css')
   const R = await F.renderer(kit, 'cde1s')
-  const views = GLOBAL ? { admin: (await R.page({ status: 'admin', admin: true, tables: F.GLOBAL_TABLES() })).html } : {
+  const views = GLOBAL ? { admin: (await R.page({ status: 'admin', admin: true, tables: F.GLOBAL_TABLES() })).html }
+    : FEATURES ? { 'page-admin': (await R.page({ status: 'admin', admin: true })).html } : {
     admin: (await R.page({ status: 'admin', admin: true })).html,
     public: (await R.page({ status: 'live' })).html,
     footer: await R.landing('live'),
   }
-  if (GLOBAL) t('fixtures: the admin view holds the POS players P, R and the unverified Q, each with its group label', ['Testkasse P', 'Testkasse Q', 'Testkasse R'].every(n => views.admin.includes(`data-tool="${n}"`)) && /class="cmp-group"/.test(views.admin))
+  if (FEATURES) t('fixtures: the admin view has the six group headings and "Begriffe erklärt"', (views['page-admin'].match(/scope="rowgroup"/g) || []).length === 6 && /data-explained/.test(views['page-admin']))
+  else if (GLOBAL) t('fixtures: the admin view holds the POS players P, R and the unverified Q, each with its group label', ['Testkasse P', 'Testkasse Q', 'Testkasse R'].every(n => views.admin.includes(`data-tool="${n}"`)) && /class="cmp-group"/.test(views.admin))
   else t('fixtures: the public view holds Testanbieter A and not B or C; the admin view holds all three', /Testanbieter A/.test(views.public) && !/Testanbieter [BC]/.test(views.public) && /Testanbieter C/.test(views.admin))
   const pw = require(path.join(REPO, 'node_modules/playwright'))
-  for (const engine of GLOBAL ? ['webkit'] : ['webkit', 'chromium']) {
+  for (const engine of GLOBAL || FEATURES ? ['webkit'] : ['webkit', 'chromium']) {
     const browser = await pw[engine].launch()
     try {
       for (const width of [1512, 390]) {
@@ -67,6 +72,10 @@ const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + labe
             if (width === 390) t(`${engine} 390 ${name}: the table scrolls sideways inside its own box`, m.boxScrolls === true, m)
             // The tills card alone (an admin also sees Q's own "passt, wenn" box, badged, elsewhere in the section).
             const tills = c => c.slice(c.indexOf('Kassensysteme und Kartenleser'), c.indexOf('Lieferplattformen'))
+            if (FEATURES) {
+              const g = await v.page.evaluate(() => ({ heads: [...document.querySelectorAll('.cmp-table th[scope="rowgroup"]')].map(e => e.textContent), terms: document.querySelectorAll('.cmp-terms dt').length }))
+              t(`${engine} ${width} ${name}: the group headings and the explanations are on the page`, g.heads.join('|') === 'Bestellung|Bezahlen|Küche|Marketing|Apps und Hardware|Preis und Vertrag' && g.terms === 30, g)
+            }
             if (GLOBAL) t(`${engine} ${width} ${name}: a group label under every name (Kassensystem, Kasse mit Online-Shop, Bestellsystem …); the tills card names Testkasse P and R only`,
               m.groupVisible && m.groups.includes('Kassensystem') && m.groups.includes('Kasse mit Online-Shop') && m.groups.includes('Bestellsystem') && m.groups.includes('Bestellsystem für Foodtrucks')
               && /Testkasse P und Testkasse R stehen auch in der Tabelle oben/.test(tills(m.card)) && !/Testkasse Q/.test(tills(m.card)), { groups: m.groups, card: m.card.slice(m.card.indexOf("Kassensysteme"), m.card.indexOf("Kassensysteme") + 300) })

@@ -97,7 +97,7 @@ export default async function ComparisonPage({ params, searchParams }: { params:
   const badge = <span className="cmp-badge">{t('admin.unverified')}</span>
   const cellText = (c: Cell) => (
     <>
-      <span className={c.tri ? `cmp-tri cmp-tri-${c.tri}` : undefined}>{c.text}</span>
+      <span className={`cmp-tri cmp-tri-${c.value}`}>{c.text}</span>
       {c.unverified && !v.publicView && badge}
     </>
   )
@@ -162,19 +162,33 @@ export default async function ComparisonPage({ params, searchParams }: { params:
                       ))}
                     </tr>
                   </thead>
-                  <tbody>
-                    {v.rows.map(row => (
-                      <tr key={row.key} data-row={row.key}>
-                        <th scope="row">{row.label}</th>
-                        {row.cells.map((c, i) => <td key={v.columns[i].key} className={v.columns[i].us ? 'cmp-us' : undefined}>{cellText(c)}</td>)}
-                      </tr>
-                    ))}
-                  </tbody>
+                  {/* comparison-features-1: one <tbody> per group, headed by a real row-group heading. */}
+                  {v.groups.map(g => (
+                    <tbody key={g.key} data-group-rows={g.key}>
+                      <tr className="cmp-group-row"><th scope="rowgroup" colSpan={v.columns.length + 1}>{g.label}</th></tr>
+                      {g.rows.map(row => (
+                        <tr key={row.key} data-row={row.key}>
+                          <th scope="row">{row.label}</th>
+                          {row.cells.map((c, i) => <td key={v.columns[i].key} className={v.columns[i].us ? 'cmp-us' : undefined} data-value={c.value}>{cellText(c)}</td>)}
+                        </tr>
+                      ))}
+                    </tbody>
+                  ))}
                 </table>
               </div>
               <p className="cmp-note">{t('table.note')}</p>
               {v.morePending && <p className="cmp-note" data-more-pending>{t('table.morePending')}</p>}
             </section>
+
+            {/* comparison-features-1: "Begriffe erklärt" — each shown feature in one sentence. */}
+            {v.explained.length > 0 && (
+              <section aria-labelledby="begriffe" data-explained>
+                <h2 id="begriffe">{t('explained.title')}</h2>
+                <dl className="cmp-terms">
+                  {v.explained.map(e => <div key={e.key}><dt>{e.label}</dt><dd>{e.explain}</dd></div>)}
+                </dl>
+              </section>
+            )}
 
             {/* 5 · costs */}
             <section aria-labelledby="kosten" data-costs>

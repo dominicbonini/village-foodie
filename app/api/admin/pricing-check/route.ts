@@ -24,6 +24,19 @@ import { adminUser } from '@/lib/auth/admin'
 import { servicePricingStore, TablesMissing, readDataImports } from '@/lib/admin/pricing-check-store'
 import { loadState, importResearch, act, type ActionResult } from '@/lib/admin/pricing-check-actions'
 import { importLines } from '@/lib/data-import/importer'
+import { comparisonFlags } from '@/lib/comparison-flags'
+import { countryCharges, valueOut, featureWords, type ComparisonFeature } from '@/lib/comparison-features'
+import { featuresOrFile } from '@/lib/comparison-features-file'
+import comparisonEn from '@/messages/ns/en-GB/comparison.json'
+
+/** comparison-features-1: a feature with its English words (Admin is English) — the row's own for an Admin-added one, the
+ *  en-GB messages for a seeded one — and the note of HatchGrab's fixed answer. */
+type EnFeatures = Record<string, { label?: string; explain?: string; ours?: string }>
+function englishFeature(f: ComparisonFeature) {
+  const msgs = (comparisonEn as unknown as { features: EnFeatures }).features?.[f.key] ?? {}
+  const w = featureWords(f, 'en-GB', k => (k.endsWith('.label') ? msgs.label : msgs.explain) ?? f.key)
+  return { ...f, label: w.label, explain: w.explain, ours: msgs.ours ?? null }
+}
 import { getPlanCatalog } from '@/lib/plans-server'
 import { listCountrySettings } from '@/lib/country-settings'
 import { isCountedCompetitor, isPendingPos } from '@/lib/pricing-check'
@@ -55,7 +68,8 @@ async function guarded(req: NextRequest, run: (user: { id: string }) => Promise<
 
 export async function GET(req: NextRequest) {
   return guarded(req, async () => {
-    const [state, catalog, countries, imports] = await Promise.all([loadState(servicePricingStore), getPlanCatalog(), listCountrySettings(), readDataImports()])
+    const [state, catalog, countries, imports, flags, featureRows, valueRows] = await Promise.all([loadState(servicePricingStore), getPlanCatalog(),
+      listCountrySettings(), readDataImports(), comparisonFlags(), servicePricingStore.features?.() ?? null, servicePricingStore.featureValues?.() ?? []])
     if (!state.ok) return reply(state)
     // competitor-check-1: candidates, closed and not-relevant competitors are never counted or shown here
     // (lib/pricing-check.ts isCountedCompetitor); the Automatic checks tab lists them on its own route.
@@ -69,8 +83,15 @@ export async function GET(req: NextRequest) {
       competitors: counted, plans: state.data.plans.filter(p => ids.has(p.competitorId)), entries: state.data.entries.filter(e => ids.has(e.competitorId)),
       hiddenCompetitors: state.data.competitors.length - counted.length,
       imports: importLines(imports),
+      // comparison-features-1: the app flags are country_settings' (as the comparison page reads them), and what a truck there
+      // may add at checkout (tips, a service fee) — HatchGrab's answers for those rows.
       countries: countries.map(c => ({ countryCode: c.countryCode, name: c.name, enabled: c.enabled, currency: c.currency,
-        cardFeeOnlinePct: c.cardFeeOnlinePct, cardFeeOnlineFixedMinor: c.cardFeeOnlineFixedMinor })),
+        cardFeeOnlinePct: c.cardFeeOnlinePct, cardFeeOnlineFixedMinor: c.cardFeeOnlineFixedMinor,
+        iosAppAvailable: flags.get(c.countryCode)?.iosApp === true, androidAppAvailable: flags.get(c.countryCode)?.androidApp === true,
+        comparisonStatus: flags.get(c.countryCode)?.status ?? 'off', charges: countryCharges(c) })),
+      // comparison-features-1: the master list (the file's until the importer has seeded the table), in English, and the answers.
+      ...(() => { const { features, fromFile } = featuresOrFile(featureRows); return { features: features.map(englishFeature), featuresFromFile: fromFile } })(),
+      values: valueRows.map(valueOut).filter(v => ids.has(v.competitorId)),
       today: new Date().toISOString().slice(0, 10),
     })
   })

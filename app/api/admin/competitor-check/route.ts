@@ -14,6 +14,9 @@ import { servicePricingStore } from '@/lib/admin/pricing-check-store'
 import { serviceCheckStore } from '@/lib/admin/competitor-check-store'
 import { acceptFinding, rejectFinding, acceptAllUnchanged, settingsCols, loadChecks, startDeep } from '@/lib/admin/competitor-check-actions'
 import type { ActionResult } from '@/lib/admin/pricing-check-actions'
+import { featureWords } from '@/lib/comparison-features'
+import { featuresOrFile } from '@/lib/comparison-features-file'
+import comparisonEn from '@/messages/ns/en-GB/comparison.json'
 
 export const dynamic = 'force-dynamic'
 const notFound = () => NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -35,7 +38,12 @@ async function guarded(req: NextRequest, run: (user: { id: string }) => Promise<
 export async function GET(req: NextRequest) {
   return guarded(req, async () => {
     const data = await loadChecks(serviceCheckStore, new Date().toISOString().slice(0, 10))
-    return data ? NextResponse.json(data) : NextResponse.json(MISSING, { status: 503 })
+    if (!data) return NextResponse.json(MISSING, { status: 503 })
+    // comparison-features-1: each feature's English label, for the findings table (field 'feature' names a key).
+    const msgs = (comparisonEn as unknown as { features?: Record<string, { label?: string; explain?: string }> }).features ?? {}
+    const featureLabels = Object.fromEntries(featuresOrFile(await servicePricingStore.features?.() ?? null).features
+      .map(f => [f.key, featureWords(f, 'en-GB', k => (k.endsWith('.label') ? msgs[f.key]?.label : msgs[f.key]?.explain) ?? f.key).label]))
+    return NextResponse.json({ ...data, featureLabels })
   })
 }
 

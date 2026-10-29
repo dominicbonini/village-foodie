@@ -23,6 +23,8 @@ import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-acti
 import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT } from '@/lib/comparison'
 import { comparisonFlags, comparisonFlagsOf } from '@/lib/comparison-flags'
 export { comparisonFlags, comparisonFlagsOf, clearComparisonCache } from '@/lib/comparison-flags'
+import { valueOut, countryCharges, type ComparisonFeature, type FeatureValueRow } from '@/lib/comparison-features'
+import { featuresOrFile, FILE_FEATURES } from '@/lib/comparison-features-file'
 import { isCountedCompetitor, isPendingPos, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
 
 /** The countries whose page is public (sitemap, /llms.txt, footers). */
@@ -46,9 +48,11 @@ export function comparisonPath(code: string, locale: string): string | null {
 
 /** The comparison data: competitors, their plans and the country's entries. Never throws — a failed read is an empty
  *  page (HatchGrab alone), logged. */
-async function comparisonData(code: string): Promise<{ competitors: Competitor[]; plans: CompetitorPlan[]; entries: ComparisonEntry[] }> {
+async function comparisonData(code: string): Promise<{ competitors: Competitor[]; plans: CompetitorPlan[]; entries: ComparisonEntry[]; features: ComparisonFeature[]; values: FeatureValueRow[] }> {
   try {
-    const [all, entries] = await Promise.all([servicePricingStore.listAll(), servicePricingStore.listEntries()])
+    // comparison-features-1: the master list (the file's until the importer has seeded the table) and the answers.
+    const [all, entries, featureRows, valueRows] = await Promise.all([servicePricingStore.listAll(), servicePricingStore.listEntries(),
+      servicePricingStore.features?.() ?? Promise.resolve(null), servicePricingStore.featureValues?.() ?? Promise.resolve([])])
     // competitor-check-1: a competitor that is not counted (a candidate, closed, not relevant) is never on a page.
     // global-players-1: except that a 'pos' competitor's entry (added automatically, unverified) reaches the page data so an
     // ADMIN sees it — lib/comparison.ts still shows it publicly only once it is counted AND verified.
@@ -59,10 +63,12 @@ async function comparisonData(code: string): Promise<{ competitors: Competitor[]
       competitors: all.competitors.map(competitorOut).filter(c => ids.has(c.id)),
       plans: all.plans.map(planOut).filter(p => ids.has(p.competitorId) && p.countryCode === code),
       entries: mine,
+      features: featuresOrFile(featureRows).features,
+      values: valueRows.map(valueOut).filter(v => ids.has(v.competitorId) && (v.countryCode === null || v.countryCode === code)),
     }
   } catch (e) {
     console.error('[comparison] could not read the comparison data:', e instanceof Error ? e.message : e)
-    return { competitors: [], plans: [], entries: [] }
+    return { competitors: [], plans: [], entries: [], features: [...FILE_FEATURES], values: [] }
   }
 }
 
@@ -78,6 +84,7 @@ export async function comparisonPage(code: string, flags?: ComparisonFlags): Pro
   try { countryName = new Intl.DisplayNames([settings.locale], { type: 'region' }).of(key) ?? settings.name } catch { /* the row's name */ }
   return {
     settings, countryName, catalog: localizePlans(catalog, settings.locale), flags: f, ...data,
+    charges: countryCharges(settings),
     urls: {
       page, home: HATCHGRAB_ORIGIN + countryPagePath(key, 'landing'), features: HATCHGRAB_ORIGIN + countryPagePath(key, 'features'),
       md: `${page}.md`, json: `${page}.json`, contact: HATCHGRAB_ORIGIN + contactHref('general'),

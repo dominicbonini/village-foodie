@@ -6269,30 +6269,12 @@
       "caption": "Features and costs of online ordering systems for food trucks in {country}, as of {date}",
       "note": "“Yes” only where the vendor says so publicly.",
       "feature": "Feature",
-      "rows": {
-        "preorder": "Pre-orders with a chosen collection time",
-        "capacity": "Collection times follow kitchen capacity",
-        "schedule": "Weekly schedule with changing locations",
-        "whatsapp": "Automatic WhatsApp replies",
-        "social": "Social media posts of your weekly schedule",
-        "domain": "Own web address",
-        "ipad": "iPad app",
-        "android": "Android app",
-        "kds": "Kitchen display (KDS)",
-        "payAtTruck": "Pay at the truck",
-        "payments": "Online payment methods",
-        "minTerm": "Minimum term",
-        "baseFee": "Monthly fee",
-        "orderFee": "Fee per online order"
-      },
       "yes": "Yes",
       "no": "No",
       "unknown": "Not stated",
       "fromPlan": "From {plan}",
       "appNotInCountry": "Not in {country}",
       "appFlagOff": "Yes – flag still off, shown once the stores list it",
-      "ourPayments": "Card, Apple Pay, Google Pay",
-      "ourMinTerm": "None",
       "range": "{from} to {to}",
       "feePlan": "{fee} ({plans})",
       "noFee": "none",
@@ -6394,6 +6376,250 @@
     "footer": {
       "heading": "Compare",
       "link": "Ordering system comparison"
+    },
+    "featureGroups": {
+      "ordering": "Ordering",
+      "payments": "Payments",
+      "kitchen": "Kitchen",
+      "marketing": "Marketing",
+      "apps_hardware": "Apps and hardware",
+      "price_contract": "Price and contract"
+    },
+    "cell": {
+      "yes": "Yes",
+      "no": "No",
+      "partial": "Partly",
+      "unknown": "Not stated",
+      "withNote": "{word}, {note}",
+      "soon": "coming soon",
+      "fromPlan": "from {plan}",
+      "perCardPayment": "{fee} per card payment",
+      "trial": "{months, plural, one {# month} other {# months}} free",
+      "setupFee": "{price} one-off",
+      "perMonth": "{price} a month",
+      "notInCountry": "not in {country}",
+      "flagOff": "flag still off; shown once the stores list it"
+    },
+    "explained": {
+      "title": "What the features mean"
+    },
+    "costBlock": {
+      "title": "What a truck pays each month",
+      "sizes": "Online sales a month",
+      "sizeSales": "{sales} a month",
+      "sizeOrders": "about {orders} orders",
+      "lead": "For a truck taking {sales} of online orders a month (about {orders} orders). Each bar is the total monthly cost: the ordering system’s own fee plus the card fees on those orders.",
+      "legendSoftware": "Software fee",
+      "legendCard": "Card fees",
+      "software": "Software fee {amount} a month",
+      "card": "Card fees {amount} a month",
+      "total": "{amount} per month including card fees",
+      "share": "{pct} of sales",
+      "assumed": "(rate not published, assumed)",
+      "customerFee": "Plus {amount} a month paid by customers ({fee} per order) — not in the bar",
+      "summaryCheapest": "{us}’s own fee is {ours} per month, against {theirs} per month for the cheapest rival shown. The card fees ({card} a month) are charged on every card payment whichever system you use, so the difference that matters is the software fee.",
+      "summaryNotCheapest": "{us}’s own fee is {ours} per month, more than {theirs} per month for {rival}, the cheapest rival shown. The card fees ({card} a month) are charged on every card payment whichever system you use.",
+      "summaryAlone": "{us}’s own fee is {ours} per month. The card fees ({card} a month) are charged on every card payment whichever system you use.",
+      "footOrder": "Average order {order}: a typical meal of {meal} × {multiplier} dishes per order ({source}).",
+      "footCard": "Card fees use {rate} per card payment: {source}.",
+      "footCardSource": "Stripe’s rate for {country}",
+      "footAssumed": "{names} {count, plural, one {does} other {do}} not publish a card rate, so ours is assumed.",
+      "footChecked": "Prices checked on {date}.",
+      "footCalculator": "Work out your own figures in the calculator.",
+      "noRivals": "No rival is verified in {country} yet, so there is nothing to compare."
+    },
+    "features": {
+      "preorder": {
+        "label": "Pre-orders with a chosen collection time",
+        "explain": "Customers order in advance and choose the time they collect."
+      },
+      "capacity": {
+        "label": "Collection times limited by kitchen capacity",
+        "explain": "Customers only see collection times the kitchen can actually make."
+      },
+      "asap": {
+        "label": "Orders for as soon as possible",
+        "explain": "Customers can order without choosing a time and collect as soon as it is ready."
+      },
+      "ahead": {
+        "label": "Order ahead for a later day or event",
+        "explain": "Customers can order today for a market or event on a later day."
+      },
+      "schedule": {
+        "label": "Weekly schedule with changing locations",
+        "explain": "The truck's week of places and times; customers order for the place and day it is there."
+      },
+      "walkup": {
+        "label": "Walk-up orders on the same screen as online orders",
+        "explain": "Orders taken at the window go into the same list as online orders."
+      },
+      "stock": {
+        "label": "Sold-out and stock limits per event",
+        "explain": "Mark dishes sold out and set how many of each can be sold at an event."
+      },
+      "allergens": {
+        "label": "Allergens on the menu",
+        "explain": "Each dish shows its allergens to customers before they order."
+      },
+      "menuphoto": {
+        "label": "Menu set up from a photo",
+        "explain": "A photo or PDF of the menu fills in the dishes for you to check."
+      },
+      "options": {
+        "label": "Options and extras on dishes",
+        "explain": "Sizes, sauces and extras, including choices the customer must make."
+      },
+      "deals": {
+        "label": "Meal deals and bundles",
+        "explain": "Several items sold together at one price."
+      },
+      "private": {
+        "label": "Private events and bookings",
+        "explain": "Orders for a private event through its own link, and requests to book the truck.",
+        "ours": "private events with their own order link; no booking requests"
+      },
+      "qr": {
+        "label": "Table / QR ordering at seats",
+        "explain": "Customers scan a code at their table and the order arrives with the table number.",
+        "ours": "a QR code opens the order page; no table numbers"
+      },
+      "cards": {
+        "label": "Online card payments incl. Apple Pay and Google Pay",
+        "explain": "Customers pay online by card, Apple Pay or Google Pay when they order."
+      },
+      "payattruck": {
+        "label": "Pay at the truck",
+        "explain": "Customers order online and pay when they collect."
+      },
+      "localpay": {
+        "label": "Local payment methods (BLIK, iDEAL, Swish, MobilePay…)",
+        "explain": "The country's own online payment methods, besides cards.",
+        "ours": "cards only"
+      },
+      "paypal": {
+        "label": "PayPal or Klarna",
+        "explain": "Customers can pay with PayPal or Klarna."
+      },
+      "custfee": {
+        "label": "Option for the customer to pay the order fee",
+        "explain": "The business can pass a service fee on to the customer."
+      },
+      "tips": {
+        "label": "Tips",
+        "explain": "Customers can add a tip when they pay online."
+      },
+      "paymethods": {
+        "label": "Payment methods offered",
+        "explain": "How customers can pay, as the vendor states it.",
+        "ours": "card, Apple Pay, Google Pay; pay at the truck"
+      },
+      "kds": {
+        "label": "Kitchen display (KDS)",
+        "explain": "Orders appear on a screen in the kitchen, in the order to make them."
+      },
+      "tickets": {
+        "label": "Printed kitchen tickets",
+        "explain": "Each order prints on a receipt printer in the truck.",
+        "ours": "in the iPad and Android app; printer not supplied"
+      },
+      "buzzers": {
+        "label": "Buzzers",
+        "explain": "Customers get a buzzer that tells them their order is ready.",
+        "ours": "buzzer numbers recorded with each order; buzzers not supplied"
+      },
+      "offline": {
+        "label": "Keeps working if the internet drops",
+        "explain": "Orders and changes made without a connection are kept and sent once it is back.",
+        "ours": "in the iPad and Android app; not in the web dashboard"
+      },
+      "vans": {
+        "label": "Several vans or trucks",
+        "explain": "One account runs more than one truck.",
+        "ours": "extra vans for an added monthly fee"
+      },
+      "staff": {
+        "label": "Staff logins",
+        "explain": "Staff sign in with their own login and role."
+      },
+      "reports": {
+        "label": "Sales reports",
+        "explain": "Totals, best sellers and sales by event or date, with a spreadsheet export."
+      },
+      "domain": {
+        "label": "Own web address",
+        "explain": "The ordering page on the business's own domain."
+      },
+      "whatsapp": {
+        "label": "WhatsApp auto-replies",
+        "explain": "Customers' WhatsApp messages are answered automatically."
+      },
+      "social": {
+        "label": "Social media posts from your schedule",
+        "explain": "Ready-made posts showing where the truck is this week."
+      },
+      "igmsg": {
+        "label": "Instagram and Messenger replies",
+        "explain": "Instagram and Facebook Messenger messages are answered automatically."
+      },
+      "discovery": {
+        "label": "Listed on a food-truck discovery map",
+        "explain": "Customers find the truck on a public map of food trucks near them.",
+        "ours": "Village Foodie"
+      },
+      "loyalty": {
+        "label": "Loyalty",
+        "explain": "Customers collect rewards for coming back."
+      },
+      "ipad": {
+        "label": "iPad app",
+        "explain": "The truck's app for taking and managing orders on an iPad."
+      },
+      "android": {
+        "label": "Android app",
+        "explain": "The same app on an Android tablet or phone."
+      },
+      "hardware": {
+        "label": "Hardware supplied (tablet, printer)",
+        "explain": "The vendor provides the tablet or the printer.",
+        "ours": "use your own"
+      },
+      "terminal": {
+        "label": "Card reader for the window supplied",
+        "explain": "The vendor provides a card reader for payments at the truck."
+      },
+      "fiscal": {
+        "label": "Certified till for tax rules (TSE, EET, kassaregister…)",
+        "explain": "A till certified for the country's rules on recording sales."
+      },
+      "delivery": {
+        "label": "Delivery",
+        "explain": "Orders delivered to the customer's address.",
+        "ours": "collection only"
+      },
+      "monthly": {
+        "label": "Monthly price",
+        "explain": "What the business pays each month for the software."
+      },
+      "perorder": {
+        "label": "Fee per online order",
+        "explain": "What the vendor charges on each online order, on top of the monthly price."
+      },
+      "cardfee": {
+        "label": "Card fee",
+        "explain": "The payment provider's fee on each card payment."
+      },
+      "term": {
+        "label": "Minimum contract",
+        "explain": "How long the business is tied in before it can cancel."
+      },
+      "setup": {
+        "label": "Set-up fee",
+        "explain": "A one-off charge to start."
+      },
+      "trial": {
+        "label": "Free trial",
+        "explain": "Time to use the system for free before paying."
+      }
     }
   }
 }

@@ -30,11 +30,21 @@ import { nativeAuthHeader } from '@/lib/native/session'
 import { formatAmount, formatWholeAmount, minorDigits } from '@/lib/money-format'
 import type { PlanCatalog } from '@/lib/plans'
 import {
-  checkCountry, countryStatus, eurRates, isStale, ourFeatureCell,
-  DEFAULT_OPTIONS, VOLUMES, KEY_FEATURES, COMPARE_FEATURES, FOCUS_LABEL,
+  checkCountry, countryStatus, eurRates, isStale,
+  DEFAULT_OPTIONS, VOLUMES, FOCUS_LABEL,
   type Benchmark, type CheckOptions, type Competitor, type CompetitorPlan, type CountryResult, type CountryRow,
-  type CountryStatus, type KeyFeatureColumn, type CompareFeatureColumn, type ComparisonEntry, type RivalTotal, type Tri, type VolumeKey, type Focus,
+  type CountryStatus, type ComparisonEntry, type RivalTotal, type VolumeKey, type Focus,
 } from '@/lib/pricing-check'
+// comparison-features-1: the master feature list, the competitors' answers, and the cost block (Customer preview).
+import {
+  FEATURE_GROUPS, featuresCheckedFor, effectiveValue, ourAnswer, rowsForCountry,
+  type ComparisonFeature, type FeatureValueRow, type FeatureValue, type FeatureGroup, type ShowScope,
+} from '@/lib/comparison-features'
+import { costBlockOf, costBlockWords } from '@/lib/cost-block'
+import CostBlock from '@/components/comparison/CostBlock'
+import { translatorFor } from '@/lib/i18n/translator'
+import { ensureLanguage } from '@/lib/i18n/registry'
+import '@/lib/i18n/catalog/comparison'
 
 interface State {
   empty: boolean; importable: boolean
@@ -43,7 +53,11 @@ interface State {
   // compare-de-1: the comparison pages' entries ([] and entriesReady false until 20261042 runs)
   entries: ComparisonEntry[]; entriesReady: boolean
   imports?: { path: string; ok: boolean | null; text: string }[]
+  // comparison-features-1
+  features: Feat[]; featuresFromFile: boolean; values: FeatureValueRow[]
 }
+/** A feature with its English words (the route resolves them) and the note of HatchGrab's fixed answer. */
+type Feat = ComparisonFeature & { label: string; explain: string; ours: string | null }
 
 async function call(method: 'GET' | 'POST', body?: unknown): Promise<{ ok: boolean; status: number; data: Record<string, unknown> }> {
   const res = await fetch('/api/admin/pricing-check', {
@@ -68,6 +82,8 @@ const toMinor = (major: string, cur: string): number | null => {
   return Number.isFinite(n) ? Math.round(n * 10 ** minorDigits(cur)) : NaN
 }
 const toMajorText = (minor: number | null, cur: string) => (minor === null ? '' : String(minor / 10 ** minorDigits(cur)))
+/** A country's name in a language (the cost block speaks the page's). */
+const regionIn = (code: string, locale: string, fallback: string) => { try { return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? fallback } catch { return fallback } }
 const regionName = (code: string) => { try { return new Intl.DisplayNames(['en-GB'], { type: 'region' }).of(code) ?? code } catch { return code } }
 
 const PILL: Record<CountryStatus, { label: string; cls: string }> = {
@@ -95,7 +111,7 @@ export default function PricingCheckTab() {
   const [history, setHistory] = useState<CompetitorPlan | null>(null)
   const [editCountry, setEditCountry] = useState(false)
   // competitor-check-1: which part of the tab, and how many findings wait for review (the tab's count).
-  const [section, setSection] = useState<'prices' | 'checks'>('prices')
+  const [section, setSection] = useState<'prices' | 'checks' | 'features'>('prices')
   const [toReview, setToReview] = useState<number | null>(null)
   const onCount = useCallback((n: number) => setToReview(n), [])
   useEffect(() => {
@@ -163,8 +179,7 @@ export default function PricingCheckTab() {
     const rows = state.plans.filter(p => p.supersededAt === null && (scope === 'all' || p.countryCode === code))
     const cols = ['country', 'competitor', 'built_for', 'website', 'plan', 'currency', 'price_hidden', 'monthly', 'yearly_only', 'setup', 'truck_fee_pct',
       'truck_fee_fixed', 'customer_fee_pct', 'customer_fee_fixed', 'card_mode', 'card_pct', 'card_fixed', 'card_rate_assumed', 'order_cap', 'included_orders',
-      'overage', 'vat', 'status', 'unclear', 'second_hand', 'source', 'source_url', 'checked_on', 'verified_at', 'pre_orders', 'whatsapp', 'social_posts',
-      'own_domain', 'ios_app', 'android_app', 'payment_providers', 'notes']
+      'overage', 'vat', 'status', 'unclear', 'second_hand', 'source', 'source_url', 'checked_on', 'verified_at', 'payment_providers', 'notes']
     const major = (m: number | null, cur: string) => (m === null ? '' : String(m / 10 ** minorDigits(cur)))
     const esc = (v: unknown) => { const s = v === null || v === undefined ? '' : String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
     const lines = [cols.join(',')]
@@ -174,7 +189,7 @@ export default function PricingCheckTab() {
         major(p.setupMinor, p.currency), p.truckFeeBps / 100, major(p.truckFeeFixedMinor, p.currency), p.customerFeeBps / 100, major(p.customerFeeFixedMinor, p.currency),
         p.cardMode, p.cardBps === null ? '' : p.cardBps / 100, major(p.cardFixedMinor, p.currency), p.cardRateAssumed, p.orderCap ?? '', p.includedOrders ?? '',
         major(p.overageFixedMinor, p.currency), p.vat, p.status, p.unclear, p.secondHand, p.source, p.sourceUrl, p.checkedOn, p.verifiedAt ?? '',
-        c?.preOrders, c?.whatsapp, c?.socialPosts, c?.ownDomain, c?.iosApp, c?.androidApp, c?.paymentProviders, p.notes].map(esc).join(','))
+        c?.paymentProviders, p.notes].map(esc).join(','))
     }
     const blob = new Blob([lines.join('\n') + '\n'], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
@@ -193,7 +208,7 @@ export default function PricingCheckTab() {
 
   const sections = (
     <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-sm font-semibold" role="tablist" aria-label="Pricing check" data-sections>
-      {([['prices', 'Prices and features'], ['checks', 'Automatic checks']] as const).map(([k, label]) => (
+      {([['prices', 'Prices and features'], ['checks', 'Automatic checks'], ['features', 'Feature list']] as const).map(([k, label]) => (
         <button key={k} type="button" role="tab" aria-selected={section === k} onClick={() => setSection(k)} data-section={k}
           className={`rounded-lg px-3 py-1 ${section === k ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'}`}>
           {label}{k === 'checks' && toReview ? <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold ${section === k ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-800'}`}>{toReview}</span> : null}
@@ -202,6 +217,13 @@ export default function PricingCheckTab() {
     </div>
   )
   if (section === 'checks') return <div className="space-y-3" data-pricing-check>{sections}<AutomaticChecks onCount={onCount} /></div>
+  if (section === 'features') return (
+    <div className="space-y-3" data-pricing-check>
+      {sections}
+      {notice && <div className={`rounded-xl px-3 py-2 text-sm font-semibold ${notice.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`} role="status">{notice.text}</div>}
+      <FeatureList state={state} busy={busy} post={post} />
+    </div>
+  )
 
   return (
     <div className="space-y-3" data-pricing-check>
@@ -287,7 +309,7 @@ export default function PricingCheckTab() {
               ? <CountryAdmin code={code} state={state} result={result} bench={bench} derived={derived} volume={volume} setVolume={setVolume}
                   options={options} setOptions={setOptions} busy={busy} post={post}
                   onEditPlan={setEditPlan} onHistory={setHistory} onEditCountry={() => setEditCountry(true)} onCheckNow={checkNow} />
-              : <CustomerPreview code={code} state={state} result={result} bench={bench} name={derived.nameOf(code)} volume={volume} setVolume={setVolume} />
+              : <CustomerPreview code={code} result={result} bench={bench} name={derived.nameOf(code)} volume={volume} setVolume={setVolume} />
           ) : <div className={`${CARD} text-sm text-slate-500`}>No countries yet.</div>}
         </div>
       </div>
@@ -390,7 +412,7 @@ function CountryAdmin({ code, state, result, bench, derived, volume, setVolume, 
       {v && <RivalTable v={v} cur={cur} live={live} today={state.today} busy={busy} post={post} onEditPlan={onEditPlan} onHistory={onHistory} onCheckNow={onCheckNow} />}
 
       {/* 4 · key features */}
-      {v && <FeatureTable v={v} state={state} bench={bench} busy={busy} post={post} />}
+      {v && <FeatureMatrix v={v} code={code} state={state} busy={busy} post={post} />}
 
       {/* 5 · the country's comparison page (compare-de-1) */}
       <ComparisonPanel code={code} state={state} busy={busy} post={post} />
@@ -582,74 +604,217 @@ function RivalTable({ v, cur, live, today, busy, post, onEditPlan, onHistory, on
   )
 }
 
-const TRI_LABEL: Record<Tri, string> = { yes: 'Yes', no: 'No', unknown: 'Not checked' }
-const NEXT: Record<Tri, Tri> = { yes: 'no', no: 'unknown', unknown: 'yes' }
+// ── comparison-features-1: HatchGrab's answer and a competitor's, in Admin's English ──────────────────────────────────
+const VALUE_LABEL: Record<FeatureValue, string> = { yes: 'Yes', no: 'No', partial: 'Partly', unknown: 'Not stated' }
+const VALUE_CLS: Record<FeatureValue, string> = { yes: 'bg-emerald-100 text-emerald-800', no: 'bg-red-100 text-red-700', partial: 'bg-amber-100 text-amber-800', unknown: 'bg-slate-100 text-slate-500' }
+const NEXT_VALUE: Record<FeatureValue, FeatureValue> = { yes: 'no', no: 'partial', partial: 'unknown', unknown: 'yes' }
+const GROUP_LABEL: Record<FeatureGroup, string> = { ordering: 'Ordering', payments: 'Payments', kitchen: 'Kitchen', marketing: 'Marketing', apps_hardware: 'Apps and hardware', price_contract: 'Price and contract' }
 
-function FeatureTable({ v, state, bench, busy, post }: { v: Vol; state: State; bench: Benchmark | null; busy: string | null; post: Post }) {
-  // The five cheapest counted rivals (one column per tool), with the current filters.
-  const cols: Competitor[] = []
-  for (const r of v.rivals) {
+/** HatchGrab's answer for a feature in a country, in English: its value and note (from the plans, the country's flags, a
+ *  fixed answer, coming soon) — the comparison page writes the same in the country's language. */
+function ourText(f: Feat, state: State, country: CountryRow | null): { value: FeatureValue; badge: string; text: string } {
+  const a = ourAnswer(f, { catalog: state.catalog, appFlags: { ios: !!country?.iosAppAvailable, android: !!country?.androidAppAvailable }, charges: country?.charges })
+  if (a.note?.kind === 'price') return { value: 'yes', badge: 'yes', text: 'From plan data' }
+  const note = !a.note ? null : a.note.kind === 'plans' ? `from ${a.note.plans[0]}` : a.note.kind === 'flagOff' ? `not in ${country?.name ?? 'this country'} (app flag off)`
+    : a.note.kind === 'soon' ? 'coming soon' : f.ours
+  const badge = a.badge === 'soon' ? 'coming soon' : a.badge === 'confirm' ? 'to confirm' : a.badge
+  return { value: a.value, badge, text: a.badge === 'soon' ? 'Coming soon' : note ? `${VALUE_LABEL[a.value]}, ${note}` : VALUE_LABEL[a.value] }
+}
+
+/** The country's feature matrix: every CHECKED feature that may apply here, HatchGrab's answer, and each of the five cheapest
+ *  counted rivals' answers with their note and source. A click on an answer saves a new one (Yes → No → Partly → Not stated);
+ *  "Mark verified" stamps that rival's current answers for this country. */
+function FeatureMatrix({ v, competitors, code, state, busy, post, title }: { v?: Vol; competitors?: Competitor[]; code: string; state: State; busy: string | null; post: Post; title?: string }) {
+  const cols: Competitor[] = competitors ? [...competitors] : []
+  if (!competitors && v) for (const r of v.rivals) {
     if (r.reason !== null || r.filteredOut || !r.competitor || cols.some(c => c.id === r.competitor!.id)) continue
     cols.push(r.competitor); if (cols.length === 5) break
   }
+  const country = state.countries.find(c => c.countryCode === code) ?? null
+  const feats = featuresCheckedFor(state.features, code) as Feat[]
   const th = 'px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500'
   return (
     <section className={CARD} data-features>
-      <p className="text-sm font-bold text-slate-900">Key features</p>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-sm font-bold text-slate-900">{title ?? `Features in ${country?.name ?? code}`}</p>
+        <p className="text-xs text-slate-500">Every checked feature. Hidden ones are checked but never shown on a website.{state.featuresFromFile ? ' The list is the shipped file until the importer seeds the table.' : ''}</p>
+      </div>
       <div className="mt-2 overflow-x-auto rounded-xl border border-slate-100">
-        <table className="w-full min-w-[760px] text-sm">
-          <thead className="bg-slate-50"><tr><th className={th}>Feature</th><th className={`${th} text-orange-700`}>HatchGrab</th>{cols.map(c => <th key={c.id} className={th}>{c.name}</th>)}</tr></thead>
-          <tbody className="divide-y divide-slate-100">
-            <FeatureRows competitors={cols} state={state} bench={bench} busy={busy} post={post} />
-            <tr>
-              <td className="px-3 py-2 font-semibold text-slate-700">Payment providers</td>
-              <td className="px-3 py-2 text-slate-700">Stripe</td>
-              {cols.map(c => <td key={c.id} className="px-3 py-2 text-slate-600">{c.paymentProviders ?? <span className="text-slate-400">Not recorded</span>}</td>)}
-            </tr>
-          </tbody>
+        <table className="w-full min-w-[820px] text-sm">
+          <thead className="bg-slate-50"><tr><th className={th}>Feature</th><th className={`${th} text-orange-700`}>HatchGrab</th>
+            {cols.map(c => {
+              const rows = rowsForCountry(state.values, c.id, code)
+              const done = rows.length > 0 && rows.every(r => r.verifiedAt)
+              return (
+                <th key={c.id} className={th}>{c.name}
+                  <button type="button" className="ml-1 block font-semibold normal-case tracking-normal text-orange-700 underline disabled:opacity-50" disabled={busy !== null}
+                    onClick={() => post('features', { action: done ? 'unverify_features' : 'verify_features', competitorId: c.id, countryCode: code }, done ? 'Verification taken back.' : `${c.name}'s answers for ${code} are verified.`)}>
+                    {done ? 'Undo verified' : 'Mark verified'}</button>
+                </th>
+              )
+            })}</tr></thead>
+          {FEATURE_GROUPS.map(g => {
+            const list = feats.filter(f => f.groupKey === g)
+            if (!list.length) return null
+            return (
+              <tbody key={g} className="divide-y divide-slate-100">
+                <tr><th colSpan={cols.length + 2} scope="rowgroup" className="bg-slate-50/60 px-3 py-1.5 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">{GROUP_LABEL[g]}</th></tr>
+                {list.map(f => {
+                  const ours = ourText(f, state, country)
+                  return (
+                    <tr key={f.key} data-feature-row={f.key}>
+                      <td className="px-3 py-2 font-semibold text-slate-700">{f.label}{f.showScope === 'hidden' && <span className="ml-1 text-[11px] font-normal text-slate-400">(hidden)</span>}</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">{ours.text}</td>
+                      {cols.map(c => {
+                        const val = effectiveValue(state.values, c.id, f.key, code)
+                        const value = val?.value ?? 'unknown'
+                        return (
+                          <td key={c.id} className="px-3 py-2 align-top">
+                            <button type="button" disabled={busy !== null || f.groupKey === 'price_contract' && ['monthly', 'perorder', 'cardfee', 'setup'].includes(f.key)} title="Click to change: Yes → No → Partly → Not stated"
+                              onClick={() => post('feature', { action: 'feature_value', competitorId: c.id, featureKey: f.key, countryCode: val?.countryCode ?? null, value: NEXT_VALUE[value] })}
+                              className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${VALUE_CLS[value]}`} data-value={value}>
+                              {f.groupKey === 'price_contract' && ['monthly', 'perorder', 'cardfee', 'setup'].includes(f.key) ? 'From the plan' : VALUE_LABEL[value]}
+                            </button>
+                            {val?.note && <p className="mt-0.5 text-xs text-slate-600">{val.note}</p>}
+                            <p className="mt-0.5 text-[11px] text-slate-400">
+                              {val?.sourceUrl ? <a className="underline" href={val.sourceUrl} target="_blank" rel="noreferrer">source</a> : null}
+                              {val?.countryCode ? ` · ${val.countryCode} only` : ''}{val?.verifiedAt ? ' · ✓' : val && val.value !== 'unknown' ? ' · not verified' : ''}
+                            </p>
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            )
+          })}
         </table>
       </div>
-      <p className="mt-2 text-xs text-slate-500">Ordering, kitchen screen, printed tickets, allergens and the rest are standard on every plan, so they are not compared here.</p>
     </section>
   )
 }
 
-/** Every compared feature as tri buttons (the six key ones, then the comparison page's four), then the two as-advertised
- *  texts. A click saves at once and stamps the features checked today (set_feature, as pricing-check-1). */
-function FeatureRows({ competitors, state, bench, busy, post }: { competitors: Competitor[]; state: State; bench: Benchmark | null; busy: string | null; post: Post }) {
+// ── comparison-features-1: Admin › Pricing check › Feature list (the master list) ───────────────────────────────────────
+const SCOPE_LABEL: Record<ShowScope, string> = { all: 'All countries', some: 'Some countries', hidden: 'Hidden' }
+const BADGE_CLS: Record<string, string> = { yes: 'bg-emerald-100 text-emerald-800', no: 'bg-red-100 text-red-700', partial: 'bg-amber-100 text-amber-800',
+  'coming soon': 'bg-sky-100 text-sky-800', 'to confirm': 'bg-slate-200 text-slate-700' }
+
+function FeatureList({ state, busy, post }: { state: State; busy: string | null; post: Post }) {
+  const [adding, setAdding] = useState(false)
+  const enabled = state.countries.filter(c => c.enabled).sort((a, b) => a.name.localeCompare(b.name))
+  const gb = state.countries.find(c => c.countryCode === 'GB') ?? null
   return (
-    <>
-      {[...KEY_FEATURES, ...COMPARE_FEATURES].map(f => (
-        <tr key={f.column} data-feature-row={f.column}>
-          <td className="px-3 py-2 font-semibold text-slate-700">{f.label}</td>
-          <td className="px-3 py-2 font-semibold text-slate-900">{ourFeatureCell(state.catalog, f, bench)}</td>
-          {competitors.map(c => {
-            const val = c[f.column as KeyFeatureColumn | CompareFeatureColumn]
-            return (
-              <td key={c.id} className="px-3 py-2">
-                <button type="button" disabled={busy !== null} title="Click to change: Yes → No → Not checked"
-                  onClick={() => post('feature', { action: 'set_feature', competitorId: c.id, column: f.column, value: NEXT[val] })}
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${val === 'yes' ? 'bg-emerald-100 text-emerald-800' : val === 'no' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'}`}>
-                  {TRI_LABEL[val]}
-                </button>
-              </td>
-            )
-          })}
-        </tr>
-      ))}
-      {([['paymentMethods', 'Payment methods (as advertised)', 'Card, PayPal, …'], ['minTerm', 'Minimum term (as advertised)', '12 months, none, …']] as const).map(([field, label, hint]) => (
-        <tr key={field} data-feature-row={field}>
-          <td className="px-3 py-2 font-semibold text-slate-700">{label}</td>
-          <td className="px-3 py-2 text-slate-500">From the page’s messages</td>
-          {competitors.map(c => (
-            <td key={c.id} className="px-3 py-2">
-              <TextCell value={c[field]} placeholder={hint} busy={busy !== null}
-                onSave={value => post('text', { action: 'set_competitor_text', competitorId: c.id, field, value }, 'Saved.')} />
-            </td>
-          ))}
-        </tr>
-      ))}
-    </>
+    <section className="space-y-3" data-feature-list>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-black text-slate-900">Feature list</h2>
+          <p className="max-w-3xl text-sm text-slate-500">Every compared feature. <b>Check</b>: the automatic checker asks about it. <b>Show on website</b>: which countries’ comparison pages show it. HatchGrab’s answer comes from the plans, the country’s flags or a fixed answer — never typed per page.</p>
+          {state.featuresFromFile && <p className="mt-1 text-xs font-semibold text-amber-800">Showing the shipped list (data/comparison-features/features.json): the importer has not seeded the table yet, so changes can’t be saved.</p>}
+        </div>
+        <button type="button" onClick={() => setAdding(true)} disabled={state.featuresFromFile}
+          className="whitespace-nowrap rounded-xl bg-orange-600 px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50" data-add-feature>+ Add feature</button>
+      </div>
+      {FEATURE_GROUPS.map(g => {
+        const list = (state.features.filter(f => f.groupKey === g) as Feat[]).sort((a, b) => a.sortOrder - b.sortOrder || a.key.localeCompare(b.key))
+        if (!list.length) return null
+        return (
+          <div key={g} className={CARD} data-feature-group={g}>
+            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{GROUP_LABEL[g]} · {list.length}</p>
+            <ul className="mt-2 divide-y divide-slate-100">
+              {list.map(f => {
+                const byCountry = /flag:|country:/.test(f.hatchgrabSource)
+                const ours = ourText(f, state, gb)
+                return (
+                  <li key={f.key} className="grid gap-2 py-2.5 md:grid-cols-[minmax(0,1fr)_10rem_5rem_minmax(13rem,16rem)] md:items-center" data-feature={f.key}>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-slate-900">{f.label} <span className="font-mono text-[11px] font-normal text-slate-400">{f.key}</span></p>
+                      <p className="text-xs text-slate-500">{f.explain}</p>
+                    </div>
+                    <div className="text-xs">
+                      <span className="mr-1 font-semibold text-slate-400 md:hidden">HatchGrab</span>
+                      <span className={`rounded-full px-2 py-0.5 font-bold ${BADGE_CLS[ours.badge] ?? BADGE_CLS.yes}`} data-our-badge={ours.badge}>{ours.badge}</span>
+                      {byCountry && <span className="ml-1 text-slate-500">by country</span>}
+                      {ours.text !== VALUE_LABEL[ours.value] && ours.badge !== 'coming soon' && <p className="mt-0.5 text-slate-500">{ours.text}</p>}
+                    </div>
+                    <label className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                      <input type="checkbox" checked={f.checked} disabled={busy !== null || state.featuresFromFile} data-check-tick
+                        onChange={e => post('feature', { action: 'feature_update', key: f.key, checked: e.target.checked }, e.target.checked ? `${f.label} is checked — every competitor is due.` : `${f.label} is no longer checked.`)} />Check
+                    </label>
+                    <ScopePicker f={f} enabled={enabled} disabled={busy !== null || state.featuresFromFile}
+                      onSave={(scope, countries) => post('feature', { action: 'feature_update', key: f.key, showScope: scope, showCountries: countries }, 'Saved.')} />
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )
+      })}
+      {adding && <AddFeatureModal enabled={enabled} busy={busy !== null} onClose={() => setAdding(false)}
+        onSave={async body => { if (await post('feature', { action: 'feature_add', ...body }, 'Added. Every competitor is due, so the next check fills it.')) setAdding(false) }} />}
+    </section>
+  )
+}
+
+/** "Show on website": All countries / Some countries (with a country picker) / Hidden. */
+function ScopePicker({ f, enabled, disabled, onSave }: { f: Feat; enabled: CountryRow[]; disabled: boolean; onSave: (scope: ShowScope, countries: string[]) => void }) {
+  const [open, setOpen] = useState(false)
+  const pick = (code: string, on: boolean) => {
+    const next = on ? [...new Set([...f.showCountries, code])] : f.showCountries.filter(c => c !== code)
+    if (next.length) onSave('some', next.sort())
+  }
+  return (
+    <div className="min-w-0 text-sm">
+      <select className={BOX} value={f.showScope} disabled={disabled} aria-label={`Show ${f.label} on website`} data-scope
+        onChange={e => { const v = e.target.value as ShowScope; if (v === 'some') setOpen(true); else onSave(v, f.showCountries) }}>
+        {(['all', 'some', 'hidden'] as const).map(k => <option key={k} value={k}>{SCOPE_LABEL[k]}</option>)}
+      </select>
+      {(f.showScope === 'some' || open) && (
+        <div className="mt-1">
+          <button type="button" className="text-xs font-semibold text-orange-700 underline" onClick={() => setOpen(!open)} data-scope-countries>
+            {f.showCountries.length ? f.showCountries.join(', ') : 'Pick countries'}{open ? ' ▲' : ' ▼'}
+          </button>
+          {open && (
+            <div className="mt-1 grid max-h-48 grid-cols-2 gap-x-2 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 text-xs sm:grid-cols-3">
+              {enabled.map(c => (
+                <label key={c.countryCode} className="inline-flex items-center gap-1">
+                  <input type="checkbox" disabled={disabled} checked={f.showCountries.includes(c.countryCode)} onChange={e => pick(c.countryCode, e.target.checked)} />
+                  <span className="font-mono">{c.countryCode}</span> <span className="truncate text-slate-500">{c.name}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Add feature: key, group, and its label and one-sentence explanation in English and German (kept with the feature —
+ *  a seeded feature's words are in messages); where it shows. It starts checked, and HatchGrab's answer "to confirm". */
+function AddFeatureModal({ enabled, busy, onClose, onSave }: { enabled: CountryRow[]; busy: boolean; onClose: () => void; onSave: (b: Record<string, unknown>) => void }) {
+  const [f, setF] = useState({ key: '', group: 'ordering' as FeatureGroup, labelEn: '', labelDe: '', explainEn: '', explainDe: '', scope: 'hidden' as ShowScope, countries: '' })
+  const set = (k: keyof typeof f, v: string) => setF({ ...f, [k]: v })
+  return (
+    <Modal title="Add feature" onClose={onClose}>
+      <div className="grid gap-3 sm:grid-cols-2" data-add-feature-form>
+        <Field label="Key" hint="Lower-case, e.g. giftcards"><input className={BOX} value={f.key} onChange={e => set('key', e.target.value)} /></Field>
+        <Field label="Group"><select className={BOX} value={f.group} onChange={e => set('group', e.target.value)}>{FEATURE_GROUPS.map(g => <option key={g} value={g}>{GROUP_LABEL[g]}</option>)}</select></Field>
+        <Field label="Label (English)"><input className={BOX} value={f.labelEn} onChange={e => set('labelEn', e.target.value)} /></Field>
+        <Field label="Label (German)"><input className={BOX} value={f.labelDe} onChange={e => set('labelDe', e.target.value)} /></Field>
+        <Field label="Explanation (English)" hint="One sentence"><textarea className={`${BOX} h-20`} value={f.explainEn} onChange={e => set('explainEn', e.target.value)} /></Field>
+        <Field label="Explanation (German)" hint="Ein Satz"><textarea className={`${BOX} h-20`} value={f.explainDe} onChange={e => set('explainDe', e.target.value)} /></Field>
+        <Field label="Show on website"><select className={BOX} value={f.scope} onChange={e => set('scope', e.target.value)}>{(['all', 'some', 'hidden'] as const).map(k => <option key={k} value={k}>{SCOPE_LABEL[k]}</option>)}</select></Field>
+        {f.scope === 'some' && <Field label="Countries" hint={`Codes, e.g. ${enabled.slice(0, 3).map(c => c.countryCode).join(', ')}`}><input className={BOX} value={f.countries} onChange={e => set('countries', e.target.value)} /></Field>}
+      </div>
+      <p className="mt-3 text-xs text-slate-500">Other languages fall back to English. HatchGrab’s answer starts as “to confirm”; every competitor becomes due, so the next check fills it.</p>
+      <div className="mt-4 flex justify-end gap-2">
+        <button type="button" className={BTN} onClick={onClose}>Cancel</button>
+        <button type="button" disabled={busy} className="rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+          onClick={() => onSave({ key: f.key.trim(), groupKey: f.group, labels: { 'en-GB': f.labelEn, 'de-DE': f.labelDe }, explanations: { 'en-GB': f.explainEn, 'de-DE': f.explainDe },
+            showScope: f.scope, showCountries: f.countries.split(/[\s,]+/).map(c => c.trim().toUpperCase()).filter(Boolean) })}>Add</button>
+      </div>
+    </Modal>
   )
 }
 
@@ -726,7 +891,7 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
                     <div className="flex flex-wrap gap-1.5">
                       <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('entry', { action: e.verifiedAt ? 'entry_unverify' : 'entry_verify', id: e.id })}>{e.verifiedAt ? 'Undo entry verified' : 'Mark entry verified'}</button>
                       {plan && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('verify', { action: plan.verifiedAt ? 'unverify' : 'verify', id: plan.id })}>{plan.verifiedAt ? 'Undo plan verified' : 'Mark plan verified'}</button>}
-                      {c && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('features', { action: c.featuresVerifiedAt ? 'unverify_features' : 'verify_features', competitorId: c.id })}>{c.featuresVerifiedAt ? 'Undo features verified' : 'Mark features verified'}</button>}
+                      {c && <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('features', { action: c.featuresVerifiedAt ? 'unverify_features' : 'verify_features', competitorId: c.id, countryCode: code })}>{c.featuresVerifiedAt ? 'Undo features verified' : 'Mark features verified'}</button>}
                       <button type="button" className={BTN} disabled={busy !== null || i === 0} aria-label="Move up" onClick={() => post('entry', { action: 'entry_move', id: e.id, dir: 'up' })}>↑</button>
                       <button type="button" className={BTN} disabled={busy !== null || i === entries.length - 1} aria-label="Move down" onClick={() => post('entry', { action: 'entry_move', id: e.id, dir: 'down' })}>↓</button>
                       <button type="button" className={`${BTN} text-red-700`} disabled={busy !== null} onClick={() => { if (window.confirm(`Take ${c?.name ?? 'this competitor'} off the comparison page?`)) post('entry', { action: 'entry_remove', id: e.id }, 'Removed from the page.') }}>Remove</button>
@@ -737,18 +902,9 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
             </ul>
           ) : <p className="mt-2 text-sm text-slate-500">No competitors on this country’s page yet.</p>}
           {entries.length > 0 && (
-            <div className="mt-3 overflow-x-auto rounded-xl border border-slate-100">
-              <table className="w-full min-w-[760px] text-sm" data-entry-features>
-                <thead className="bg-slate-50"><tr>
-                  <th className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">Feature</th>
-                  <th className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-orange-700">HatchGrab</th>
-                  {entries.map(e => <th key={e.id} className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-slate-500">{compById.get(e.competitorId)?.name}</th>)}
-                </tr></thead>
-                <tbody className="divide-y divide-slate-100">
-                  <FeatureRows competitors={entries.map(e => compById.get(e.competitorId)).filter((c): c is Competitor => !!c)} state={state}
-                    bench={state.benchmarks.find(b => b.countryCode === code && b.supersededAt === null) ?? null} busy={busy} post={post} />
-                </tbody>
-              </table>
+            <div className="mt-3" data-entry-features>
+              <FeatureMatrix competitors={entries.map(e => compById.get(e.competitorId)).filter((c): c is Competitor => !!c)} code={code} state={state} busy={busy} post={post}
+                title="The page’s competitors — their answers for this country" />
             </div>
           )}
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -765,56 +921,30 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
   )
 }
 
-// ── the customer preview (a mock; admin-only, no public route) ───────────────────────────────────────────────────────
-function CustomerPreview({ code, state, result, bench, name, volume, setVolume }: {
-  code: string; state: State; result: CountryResult; bench: Benchmark | null; name: string; volume: VolumeKey; setVolume: (v: VolumeKey) => void
+// ── the customer preview (admin only, no public route) — comparison-features-1: THE COST BLOCK ─────────────────────────────
+/** The cost block (components/comparison/CostBlock.tsx) for this country, in its language where the page messages exist
+ *  (de-DE, else en-GB), with verified rivals only — exactly what a customer would see once it is placed on a page. */
+function CustomerPreview({ code, result, bench, name, volume, setVolume }: {
+  code: string; result: CountryResult; bench: Benchmark | null; name: string; volume: VolumeKey; setVolume: (v: VolumeKey) => void
 }) {
-  const cur = result.currency
-  const v = result.volumes.find(x => x.key === volume)
-  const verified = (v?.rivals ?? []).filter(r => r.reason === null && r.plan.verifiedAt)
-  const bars = v?.best ? [{ label: `HatchGrab — ${v.best.plan.name}`, minor: v.best.totalMinor, ours: true }, ...verified.map(r => ({ label: rivalName(r), minor: r.comparableMinor, ours: false }))]
-    .sort((a, b) => a.minor - b.minor) : []
-  const max = Math.max(1, ...bars.map(b => b.minor))
-  const comps = [...new Map(verified.map(r => [r.competitor!.id, r.competitor!])).values()]
+  const locale = code === 'DE' || code === 'AT' ? 'de-DE' : 'en-GB'
+  // The browser loads a language's words on demand (lib/i18n/registry.ts): wait for them, so the block never shows English first.
+  const [loaded, setLoaded] = useState<string | null>(locale === 'en-GB' ? locale : null)
+  useEffect(() => {
+    let off = false
+    ensureLanguage(locale).then(() => { if (!off) setLoaded(locale) }).catch(() => { if (!off) setLoaded(locale) })
+    return () => { off = true }
+  }, [locale])
+  if (loaded !== locale) return <p className="text-sm text-slate-500" data-preview>Loading the preview…</p>
+  const t = translatorFor(locale, 'comparison') as unknown as (k: string, v?: Record<string, string | number>) => string
+  const data = costBlockOf(result, volume, bench, locale)
+  const seg = code.toLowerCase() === 'gb' ? 'uk' : code.toLowerCase()
   return (
-    <section className={CARD} data-preview>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-wide text-sky-700">Customer preview · a mock, not published anywhere</p>
-          <p className="text-lg font-black text-slate-900">What a truck pays each month · {name}</p>
-        </div>
-        <SizeSwitch volume={volume} setVolume={setVolume} />
-      </div>
-      {!verified.length ? (
-        <p className="mt-3 rounded-xl bg-slate-50 p-3 text-sm text-slate-600">No rival is verified in {code} yet, so a customer would see nothing to compare. Mark rivals verified in Admin view first.</p>
-      ) : (
-        <>
-          <ul className="mt-3 space-y-2">
-            {bars.map(b => (
-              <li key={b.label} className="grid grid-cols-[minmax(0,12rem)_minmax(0,1fr)_auto] items-center gap-2 text-sm">
-                <span className={`truncate ${b.ours ? 'font-bold text-orange-700' : 'text-slate-700'}`}>{b.label}</span>
-                <span className="h-3 rounded-full bg-slate-100"><span className={`block h-3 rounded-full ${b.ours ? 'bg-orange-500' : 'bg-slate-400'}`} style={{ width: `${(b.minor / max) * 100}%` }} /></span>
-                <span className="font-semibold text-slate-900">{whole(b.minor, cur)}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 text-sm font-bold text-slate-900">What’s included</p>
-          <div className="mt-1 overflow-x-auto rounded-xl border border-slate-100">
-            <table className="w-full min-w-[640px] text-sm">
-              <thead className="bg-slate-50"><tr><th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-slate-500">Feature</th>
-                <th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-orange-700">HatchGrab</th>
-                {comps.map(c => <th key={c.id} className="px-3 py-2 text-left text-[11px] font-bold uppercase text-slate-500">{c.name}</th>)}</tr></thead>
-              <tbody className="divide-y divide-slate-100">
-                {KEY_FEATURES.map(f => (
-                  <tr key={f.column}><td className="px-3 py-2 text-slate-700">{f.label}</td>
-                    <td className="px-3 py-2 font-semibold">{ourFeatureCell(state.catalog, f, bench)}</td>
-                    {comps.map(c => <td key={c.id} className="px-3 py-2 text-slate-600">{c.featuresVerifiedAt ? TRI_LABEL[c[f.column as KeyFeatureColumn]] : 'Not checked'}</td>)}</tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+    <section className="space-y-2" data-preview>
+      <p className="text-[11px] font-bold uppercase tracking-wide text-sky-700">Customer preview · the cost block, not published anywhere</p>
+      {data ? <CostBlock data={data} words={costBlockWords(data, t, { countryName: regionIn(code, locale, name) })} onSize={setVolume} calculatorHref={`/${seg}/compare`} />
+        : <p className={`${CARD} text-sm text-slate-600`}>No figures for {name} yet (benchmark or our plans missing).</p>}
+      {data && data.bars.length === 1 && <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-600">No rival is verified in {code} yet — mark rivals’ plans verified in Admin view to show them here.</p>}
     </section>
   )
 }
@@ -948,13 +1078,12 @@ function CountryModal({ name, bench, hasRow, today, busy, onClose, onSave }: {
   name: string; bench: Benchmark | null; hasRow: boolean; today: string; busy: boolean; onClose: () => void; onSave: (fields: Record<string, unknown>) => void
 }) {
   const cur0 = bench?.currency ?? 'EUR'
-  const tri = (b: boolean | null | undefined) => (b === true ? 'yes' : b === false ? 'no' : '')
   const [f, setF] = useState({
     currency: cur0, meal: toMajorText(bench?.mealMinor ?? null, cur0), mealSourceLabel: bench?.mealSourceLabel ?? '', mealSourceUrl: bench?.mealSourceUrl ?? '',
     mealSourceOk: bench?.mealSourceOk ?? true, orderMultiplier: String(bench?.orderMultiplier ?? 1.3), eurRate: String(bench?.eurRate ?? ''), eurRateDate: bench?.eurRateDate ?? today,
     cardPct: bench?.cardBps === null || bench?.cardBps === undefined ? '' : String(bench.cardBps / 100), cardFixed: toMajorText(bench?.cardFixedMinor ?? null, cur0),
     pro: toMajorText(bench?.plannedProMinor ?? null, cur0), proIncl: toMajorText(bench?.plannedProIncludedMinor ?? null, cur0), unl: toMajorText(bench?.plannedUnlimitedMinor ?? null, cur0),
-    ios: tri(bench?.iosAppAvailable), android: tri(bench?.androidAppAvailable), notes: bench?.notes ?? '', checkedOn: today,
+    notes: bench?.notes ?? '', checkedOn: today,
   })
   const [err, setErr] = useState<string | null>(null)
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF(prev => ({ ...prev, [k]: v }))
@@ -963,7 +1092,7 @@ function CountryModal({ name, bench, hasRow, today, busy, onClose, onSave }: {
     const fields: Record<string, unknown> = {
       mealMinor: toMinor(f.meal, cur), mealSourceLabel: f.mealSourceLabel, mealSourceUrl: f.mealSourceUrl, mealSourceOk: f.mealSourceOk,
       orderMultiplier: Number(f.orderMultiplier), eurRate: Number(f.eurRate), eurRateDate: f.eurRateDate,
-      iosAppAvailable: f.ios === '' ? null : f.ios === 'yes', androidAppAvailable: f.android === '' ? null : f.android === 'yes', notes: f.notes, checkedOn: f.checkedOn,
+      notes: f.notes, checkedOn: f.checkedOn,
     }
     if (!hasRow) Object.assign(fields, {
       cardBps: f.cardPct.trim() === '' ? null : Math.round(Number(f.cardPct) * 100), cardFixedMinor: f.cardPct.trim() === '' ? null : toMinor(f.cardFixed, cur) ?? 0,
@@ -991,8 +1120,6 @@ function CountryModal({ name, bench, hasRow, today, busy, onClose, onSave }: {
           <Field label="Proposed Pro includes"><input className={BOX} inputMode="decimal" value={f.proIncl} onChange={e => set('proIncl', e.target.value)} /></Field>
           <Field label="Proposed Unlimited price"><input className={BOX} inputMode="decimal" value={f.unl} onChange={e => set('unl', e.target.value)} /></Field>
         </>}
-        <Field label="iPhone app sold here"><select className={BOX} value={f.ios} onChange={e => set('ios', e.target.value)}><option value="">Not known</option><option value="yes">Yes</option><option value="no">No</option></select></Field>
-        <Field label="Android app sold here"><select className={BOX} value={f.android} onChange={e => set('android', e.target.value)}><option value="">Not known</option><option value="yes">Yes</option><option value="no">No</option></select></Field>
         <Field label="Checked on"><input className={BOX} type="date" value={f.checkedOn} onChange={e => set('checkedOn', e.target.value)} /></Field>
       </div>
       <label className="mt-3 inline-flex items-center gap-1.5 text-sm text-slate-700"><input type="checkbox" checked={f.mealSourceOk} onChange={e => set('mealSourceOk', e.target.checked)} />The source link is the cited source</label>

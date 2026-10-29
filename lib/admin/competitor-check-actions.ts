@@ -18,7 +18,9 @@
 //     reader" stays (active, focus pos).
 // Every change must then be verified again before it shows publicly (the comparison pages show verified data only).
 import { newPlanVersion, planProblem, type PricingStore, type ActionResult, type Stamp } from '@/lib/admin/pricing-check-actions'
-import { CLASSIFICATION_EFFECT, FEATURE_FIELDS, PLAN_FIELDS, type Classification } from '@/lib/competitor-check/model'
+import { CLASSIFICATION_EFFECT, PLAN_FIELDS, type Classification } from '@/lib/competitor-check/model'
+import { LEGACY_FEATURE_COLUMNS, effectiveValue, valueOut, type FeatureValue } from '@/lib/comparison-features'
+import { writeAnswer } from '@/lib/admin/feature-actions'
 import { minorDigits } from '@/lib/money-format'
 import { overviewOf } from '@/lib/competitor-check/overview'
 import { countriesOf, deepQueueOf, type QueueCountry } from '@/lib/competitor-check/core'
@@ -49,8 +51,13 @@ export interface CheckAdminStore {
 /** global-players-1: the pricing store's entry methods the Accept paths use (the comparison page's entries). */
 type EntryStore = Pick<PricingStore, 'entriesReady' | 'listEntries' | 'insertEntry' | 'deleteEntry' | 'listAll'>
 
-const FEATURE_COL: Record<string, string> = Object.fromEntries(FEATURE_FIELDS.map(f => [f, f]))
-const TEXT_COL: Record<string, string> = { min_term: 'min_term', payment_methods: 'payment_methods' }
+/** comparison-features-1: which feature a finding is about — field 'feature' names its key; a finding made before the
+ *  master list (field pre_orders … min_term) maps to its key (lib/comparison-features.ts LEGACY_FEATURE_COLUMNS). */
+function featureOf(f: Row): { key: string; legacyText: boolean } | null {
+  if (f.field === 'feature') { const k = (f.found as Row | null)?.feature_key; return typeof k === 'string' ? { key: k, legacyText: false } : null }
+  const legacy = LEGACY_FEATURE_COLUMNS[String(f.field)]
+  return legacy ? { key: legacy.key, legacyText: !!legacy.text } : null
+}
 const toMinor = (amount: unknown, currency: string) => (typeof amount === 'number' && Number.isFinite(amount) ? Math.round(amount * 10 ** minorDigits(currency)) : null)
 const toBps = (percent: unknown) => (typeof percent === 'number' && Number.isFinite(percent) ? Math.round(percent * 100) : null)
 
@@ -85,11 +92,19 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
   const isPlanField = (PLAN_FIELDS as readonly string[]).includes(field)
   let entryAdded = false
   const featuresTouched = { features_checked_on: stamp.today, features_verified_at: null, updated_at: stamp.at }
+  // comparison-features-1: a feature finding writes competitor_feature_values — for the country it was read in (a country
+  // check), else for every country.
+  const feat = featureOf(f)
+  const featCountry = f.field === 'feature' && typeof f.country_code === 'string' && /^[A-Z]{2}$/.test(f.country_code) ? f.country_code : null
 
   if (outcome === 'unchanged') {
     // Both checks agreed nothing changed: only the date it was last checked moves on. Verification is kept.
     if (isPlanField && f.plan_id) { if (!(await checks.touchPlanChecked(String(f.plan_id), stamp.today))) return refuse(409, 'That plan has been edited since. Reload the page.') }
-    else if (FEATURE_COL[field] || TEXT_COL[field]) await pricing.updateCompetitor(cid, { features_checked_on: stamp.today, updated_at: stamp.at })
+    else if (feat) {
+      const cur = pricing.featureValues ? effectiveValue((await pricing.featureValues()).map(valueOut), cid, feat.key, featCountry) : null
+      if (cur && pricing.touchFeatureValueChecked) await pricing.touchFeatureValueChecked(cur.id, stamp.today)
+      await pricing.updateCompetitor(cid, { features_checked_on: stamp.today, updated_at: stamp.at })
+    }
   } else if (outcome === 'changed' || (outcome === 'not_stated' && !isPlanField)) {
     if (isPlanField) {
       if (!f.plan_id) return refuse(409, 'This finding names no stored plan. Add the plan by hand (+ Add competitor) or reject it.')
@@ -100,13 +115,18 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
       if (!c.ok) return refuse(400, c.error)
       const v = await newPlanVersion(pricing, old, { ...c.cols, source_url: f.source_url ?? old.source_url }, stamp)
       if (!v.ok) return v
-    } else if (FEATURE_COL[field]) {
-      const tri = outcome === 'not_stated' || found.feature === 'not_stated' ? 'unknown' : found.feature === 'yes' || found.feature === 'no' ? found.feature : null
-      if (!tri) return refuse(400, 'This finding has no yes / no to save.')
-      await pricing.updateCompetitor(cid, { [FEATURE_COL[field]]: tri, ...featuresTouched })
-    } else if (TEXT_COL[field]) {
-      const text = outcome === 'not_stated' ? null : typeof f.found_value === 'string' && f.found_value.trim() ? f.found_value.trim().slice(0, 300) : null
-      await pricing.updateCompetitor(cid, { [TEXT_COL[field]]: text, ...featuresTouched })
+    } else if (feat) {
+      // The answer: the finding's value (an old finding's not_stated is unknown), its note as advertised (an old text
+      // finding's text), its quote and page — a new row, unverified; the competitor's features stamp cleared.
+      const text = typeof f.found_value === 'string' && f.found_value.trim() ? f.found_value.trim() : null
+      const value: FeatureValue | null = outcome === 'not_stated' ? 'unknown' : feat.legacyText ? 'unknown'
+        : found.feature === 'not_stated' ? 'unknown' : (['yes', 'no', 'partial', 'unknown'] as const).find(v => v === found.feature) ?? null
+      if (!value) return refuse(400, 'This finding has no answer (yes / no / partly / not stated) to save.')
+      const note = outcome === 'not_stated' ? null : feat.legacyText ? text : typeof found.note === 'string' && found.note.trim() ? found.note.trim() : null
+      const w = await writeAnswer(pricing, { competitorId: cid, key: feat.key, countryCode: featCountry, value, note,
+        quote: typeof f.quote === 'string' ? f.quote : null, sourceUrl: typeof f.source_url === 'string' ? f.source_url : null }, stamp)
+      if (!w.ok) return w
+      await pricing.updateCompetitor(cid, featuresTouched)
     } else return refuse(400, 'This finding has nothing to save.')
   } else if (outcome === 'new_plan') {
     const code = typeof f.country_code === 'string' && /^[A-Z]{2}$/.test(f.country_code) ? f.country_code : null
