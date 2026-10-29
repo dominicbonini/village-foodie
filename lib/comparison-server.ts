@@ -23,7 +23,7 @@ import { competitorOut, planOut, entryOut } from '@/lib/admin/pricing-check-acti
 import { buildComparison, type ComparisonFlags, type ComparisonInput, type ComparisonT } from '@/lib/comparison'
 import { comparisonFlags, comparisonFlagsOf } from '@/lib/comparison-flags'
 export { comparisonFlags, comparisonFlagsOf, clearComparisonCache } from '@/lib/comparison-flags'
-import { isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
+import { isCountedCompetitor, isPendingPos, type Competitor, type CompetitorPlan, type ComparisonEntry } from '@/lib/pricing-check'
 
 /** The countries whose page is public (sitemap, /llms.txt, footers). */
 export async function liveComparisonCodes(): Promise<string[]> {
@@ -50,7 +50,9 @@ async function comparisonData(code: string): Promise<{ competitors: Competitor[]
   try {
     const [all, entries] = await Promise.all([servicePricingStore.listAll(), servicePricingStore.listEntries()])
     // competitor-check-1: a competitor that is not counted (a candidate, closed, not relevant) is never on a page.
-    const counted = new Set(all.competitors.map(competitorOut).filter(isCountedCompetitor).map(c => c.id))
+    // global-players-1: except that a 'pos' competitor's entry (added automatically, unverified) reaches the page data so an
+    // ADMIN sees it — lib/comparison.ts still shows it publicly only once it is counted AND verified.
+    const counted = new Set(all.competitors.map(competitorOut).filter(c => isCountedCompetitor(c) || isPendingPos(c)).map(c => c.id))
     const mine = entries.map(entryOut).filter(e => e.countryCode === code && counted.has(e.competitorId))
     const ids = new Set(mine.map(e => e.competitorId))
     return {

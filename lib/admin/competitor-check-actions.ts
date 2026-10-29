@@ -11,6 +11,11 @@
 //   • a classification → lifecycle and focus (lib/competitor-check/model.ts CLASSIFICATION_EFFECT), verification cleared —
 //     a candidate is then still hidden until its features are verified (lib/pricing-check.ts isCountedCompetitor).
 //   • "unchanged" (both checks agreed) → only checked_on / features_checked_on; nothing else, verification kept.
+//   • global-players-1: "not sold in X" (not_in_country) → X added to not_in_countries, its current plans in X closed (new
+//     versions) and its comparison entry in X removed — it drops out of X's deep check and table; "sold in X" (in_country)
+//     → X taken off not_in_countries. The FIRST plan accepted in X for a 'pos' competitor, when X has a comparison page
+//     (admin or live), also adds it to X's comparison_entries, unverified. A 'pos' competitor classified "POS or card
+//     reader" stays (active, focus pos).
 // Every change must then be verified again before it shows publicly (the comparison pages show verified data only).
 import { newPlanVersion, planProblem, type PricingStore, type ActionResult, type Stamp } from '@/lib/admin/pricing-check-actions'
 import { CLASSIFICATION_EFFECT, FEATURE_FIELDS, PLAN_FIELDS, type Classification } from '@/lib/competitor-check/model'
@@ -41,6 +46,8 @@ export interface CheckAdminStore {
   /** competitor-check-2: the country of every CURRENT plan, by competitor. */
   planCountries(): Promise<{ competitor_id: string; country_code: string }[]>
 }
+/** global-players-1: the pricing store's entry methods the Accept paths use (the comparison page's entries). */
+type EntryStore = Pick<PricingStore, 'entriesReady' | 'listEntries' | 'insertEntry' | 'deleteEntry' | 'listAll'>
 
 const FEATURE_COL: Record<string, string> = Object.fromEntries(FEATURE_FIELDS.map(f => [f, f]))
 const TEXT_COL: Record<string, string> = { min_term: 'min_term', payment_methods: 'payment_methods' }
@@ -67,7 +74,7 @@ export function planColsOf(field: string, found: Row, currency: string): { ok: t
 }
 
 /** Accepts ONE pending finding. */
-export async function acceptFinding(pricing: PricingStore, checks: CheckAdminStore, id: string, stamp: Stamp): Promise<ActionResult<{ finding: Row }>> {
+export async function acceptFinding(pricing: PricingStore, checks: CheckAdminStore, id: string, stamp: Stamp): Promise<ActionResult<{ finding: Row; entryAdded?: boolean }>> {
   const f = await checks.getFinding(id)
   if (!f) return refuse(404, 'That finding is gone. Reload the page.')
   if (f.review_status !== 'pending') return refuse(409, 'That finding has already been reviewed.')
@@ -76,6 +83,7 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
   const comp = await pricing.getCompetitor(cid)
   if (!comp) return refuse(404, 'That competitor is gone.')
   const isPlanField = (PLAN_FIELDS as readonly string[]).includes(field)
+  let entryAdded = false
   const featuresTouched = { features_checked_on: stamp.today, features_verified_at: null, updated_at: stamp.at }
 
   if (outcome === 'unchanged') {
@@ -114,7 +122,11 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
       source: 'admin', source_url: f.source_url ?? null, checked_on: stamp.today,
     }
     const p = planProblem(row); if (p) return refuse(400, `${p} Add it by hand instead, or reject this.`)
-    await pricing.insertPlan(row)
+    // global-players-1: a 'pos' competitor's FIRST plan in a country with a comparison page joins that page, unverified.
+    const isPos = comp.focus === 'pos'
+    const hadPlanHere = isPos && (await pricing.listAll()).plans.some(x => x.competitor_id === cid && x.country_code === code && x.superseded_at == null)
+    const inserted = await pricing.insertPlan(row)
+    if (isPos && !hadPlanHere) entryAdded = await addPosEntry(pricing, checks, cid, code, String(inserted.id))
   } else if (outcome === 'plan_gone') {
     if (!f.plan_id) return refuse(409, 'This finding names no stored plan.')
     const old = await pricing.getPlan(String(f.plan_id))
@@ -127,15 +139,45 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
     if (!url) return refuse(400, 'This finding has no URL.')
     const next = outcome === 'new_url' ? [...new Set([...urls, url])] : urls.filter(u => u !== url)
     await checks.updateCompetitor(cid, { check_urls: next })
+  } else if (outcome === 'not_in_country' || outcome === 'in_country') {
+    const code = typeof f.country_code === 'string' && /^[A-Z]{2}$/.test(f.country_code) ? f.country_code : null
+    if (!code) return refuse(400, 'This finding names no country.')
+    const row = (await checks.competitors()).find(c => c.id === cid)
+    const notIn = Array.isArray(row?.not_in_countries) ? (row!.not_in_countries as string[]) : []
+    if (outcome === 'in_country') { if (notIn.includes(code)) await checks.updateCompetitor(cid, { not_in_countries: notIn.filter(c => c !== code) }) }
+    else {
+      if (!row || !('not_in_countries' in row)) return refuse(503, 'Run supabase/migrations/20261046_global_players_1.sql first — it records where a competitor does not sell.')
+      await checks.updateCompetitor(cid, { not_in_countries: [...new Set([...notIn, code])].sort() })
+      // No plans in X any more (each closed as a new version — the history rule), and off X's comparison page.
+      for (const p of (await pricing.listAll()).plans.filter(x => x.competitor_id === cid && x.country_code === code && x.superseded_at == null && x.status !== 'closed')) {
+        const v = await newPlanVersion(pricing, p, { status: 'closed' }, stamp)
+        if (!v.ok) return v
+      }
+      if (await pricing.entriesReady()) for (const e of (await pricing.listEntries()).filter(e => e.competitor_id === cid && e.country_code === code)) await pricing.deleteEntry(String(e.id))
+    }
   } else if (outcome === 'classification') {
-    const effect = CLASSIFICATION_EFFECT[found.classification as Classification]
+    const posKept = comp.focus === 'pos' && found.classification === 'pos_or_card_reader'
+    const effect = posKept ? { lifecycle: 'active' as const, focus: 'pos' } : CLASSIFICATION_EFFECT[found.classification as Classification]
     if (!effect) return refuse(400, 'This finding has no classification.')
     await checks.updateCompetitor(cid, { lifecycle: effect.lifecycle, focus: effect.focus })
     await pricing.updateCompetitor(cid, { features_verified_at: null, updated_at: stamp.at })
   }
   // 'blocked', and 'not_stated' on a plan field: acknowledged only — nothing to save.
   const done = await checks.reviewFinding(id, { review_status: 'accepted', reviewed_by: stamp.by, reviewed_at: stamp.at })
-  return done ? { ok: true, data: { finding: done } } : refuse(409, 'That finding has already been reviewed.')
+  return done ? { ok: true, data: { finding: done, ...(entryAdded ? { entryAdded } : {}) } } : refuse(409, 'That finding has already been reviewed.')
+}
+
+/** global-players-1: adds a 'pos' competitor to country `code`'s comparison page — only when the country has one (admin or
+ *  live) and the competitor is not on it yet — unverified, last in the order, showing `planId`. True when it was added. */
+async function addPosEntry(pricing: EntryStore, checks: CheckAdminStore, cid: string, code: string, planId: string): Promise<boolean> {
+  const country = (await checks.countries()).find(c => c.code === code)
+  if (!country || (country.comparisonStatus !== 'admin' && country.comparisonStatus !== 'live')) return false
+  if (!(await pricing.entriesReady())) return false
+  const list = (await pricing.listEntries()).filter(e => e.country_code === code)
+  if (list.some(e => e.competitor_id === cid)) return false
+  await pricing.insertEntry({ country_code: code, competitor_id: cid, primary_plan_id: planId, choose_when: null,
+    sort_order: list.reduce((m, e) => Math.max(m, Number(e.sort_order) || 0), 0) + 1, verified_at: null, verified_by: null })
+  return true
 }
 
 export async function rejectFinding(checks: CheckAdminStore, id: string, stamp: Stamp): Promise<ActionResult<{ finding: Row }>> {
@@ -201,8 +243,10 @@ export function settingsCols(f: Row, enabledCodes?: readonly string[]): { ok: tr
 
 /** competitor-check-2: every competitor row with its countries (current plans' countries; a candidate's recorded ones). */
 async function withCountries(store: CheckAdminStore): Promise<Row[]> {
-  const [competitors, plans] = await Promise.all([store.competitors(), store.planCountries()])
-  return competitors.map(c => ({ ...c, countries: countriesOf(String(c.lifecycle ?? 'active'), plans.filter(p => p.competitor_id === c.id).map(p => p.country_code), c.notes) }))
+  const [competitors, plans, countries] = await Promise.all([store.competitors(), store.planCountries(), store.countries()])
+  const allCodes = countries.filter(c => c.enabled).map(c => c.code)
+  return competitors.map(c => ({ ...c, countries: countriesOf(String(c.lifecycle ?? 'active'), plans.filter(p => p.competitor_id === c.id).map(p => p.country_code), c.notes,
+    { focus: (c.focus as string | null) ?? null, notIn: Array.isArray(c.not_in_countries) ? c.not_in_countries as string[] : [], allCodes }) }))
 }
 
 /** Everything the tab shows, or null while 20261043 has not run. */

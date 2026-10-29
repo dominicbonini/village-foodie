@@ -443,7 +443,7 @@
  "comparison.fit.oursNotBody": "your customers should pay with PayPal or Klarna, or you want a certified till with a TSE from one supplier.",
  "comparison.fit.rival": "{name} fits if …",
  "comparison.fit.tills": "Tills and card readers",
- "comparison.fit.tillsBody": "Till systems take payment at the window and cover the TSE obligation — according to their own website for example SumUp, Zettle (PayPal), orderbird and ready2order. Of these four, only SumUp offers pre-ordering with a selectable pick-up time, in the Kassensystem Plus tariff. An ordering system complements the till; it does not replace it.",
+ "comparison.fit.tillsBody": "Till systems take payment at the window and cover the TSE obligation. An ordering system complements the till; it does not replace it.",
  "comparison.fit.title": "Which system suits whom?",
  "comparison.footer.heading": "Compare",
  "comparison.footer.link": "Ordering system comparison",
@@ -5176,5 +5176,9 @@
  "whereYouTrade.stepIntro": "This determines your currency, prices, time zone and the phone number format. The country cannot be changed later because it is linked to your card payments.",
  "whereYouTrade.timezoneLabel": "Time zone",
  "whereYouTrade.townLabel": "Town or city",
- "whereYouTrade.townQuestion": "Town or city in which you are based"
+ "whereYouTrade.townQuestion": "Town or city in which you are based",
+ "comparison.fit.tillsBodyNamed": "Till systems take payment at the window and cover the TSE obligation. {names} {count, plural, one {is} other {are}} also in the table above. An ordering system complements the till; it does not replace it.",
+ "comparison.groups.food_truck": "Ordering system for food trucks",
+ "comparison.groups.nearest_local": "Ordering system",
+ "comparison.groups.pos": "Till system"
 }

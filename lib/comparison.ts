@@ -24,7 +24,7 @@ import { formatYmd } from '@/lib/time-utils'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import { planAllowsFeature, publicPlans, type PlanCatalog } from '@/lib/plans'
 import { offerPlans, offerTrialMonths, type OfferPlan } from '@/lib/plan-offer'
-import { KEY_FEATURES, COMPARE_FEATURES, type Competitor, type CompetitorPlan, type ComparisonEntry, type Tri } from '@/lib/pricing-check'
+import { KEY_FEATURES, COMPARE_FEATURES, isCountedCompetitor, type Competitor, type CompetitorPlan, type ComparisonEntry, type Tri } from '@/lib/pricing-check'
 import { BRANDS } from '@/lib/brand'
 import { HATCHGRAB_ORIGIN } from '@/lib/marketing-country'
 import { organizationLd, websiteLd } from '@/lib/structured-data'
@@ -65,6 +65,9 @@ export interface ViewOptions {
 export interface Cell { text: string; source: string | null; checkedOn: string | null; tri?: Tri; unverified?: boolean }
 export interface Column {
   key: string; name: string; url: string | null; us: boolean
+  /** global-players-1: the short group label under the tool's name — the entry's override, else its focus's
+   *  (comparison.groups.*: food-truck ordering system / ordering system / till system); null when the focus is unknown. */
+  group: string | null
   /** All three checks done (entry, plan, features). Always true for HatchGrab. */
   verified: boolean; entryVerified: boolean; planVerified: boolean; featuresVerified: boolean
   plan: CompetitorPlan | null; chooseWhen: string | null
@@ -124,7 +127,7 @@ export function entryPlan(e: Pick<ComparisonEntry, 'primaryPlanId' | 'competitor
 export function entryIsPublic(e: ComparisonEntry, competitors: Competitor[], plans: CompetitorPlan[]): boolean {
   const c = competitors.find(x => x.id === e.competitorId)
   const p = entryPlan(e, plans)
-  return !!(e.verifiedAt && p?.verifiedAt && c?.featuresVerifiedAt)
+  return !!(e.verifiedAt && p?.verifiedAt && c?.featuresVerifiedAt && isCountedCompetitor(c))
 }
 
 /** "[ … ]" or "[…]" or "[ ... ]" — an unfinished line in the copy. The checklist refuses to go live with one. */
@@ -146,18 +149,22 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   // ── the columns: HatchGrab, then the entries in their order (public ones only, unless an admin sees everything) ──
   const offers: OfferPlan[] = offerPlans(catalog, settings.countryCode)
   const entries = input.entries.filter(e => e.countryCode === settings.countryCode).sort((a, b) => a.sortOrder - b.sortOrder)
-  const us: Column = { key: 'hatchgrab', name: BRANDS.HATCHGRAB.name, url: urls.home, us: true, verified: true, entryVerified: true, planVerified: true, featuresVerified: true, plan: null, chooseWhen: null }
+  // global-players-1: food trucks, markets and pop-ups share the food-truck group; a local-restaurant tool and a till its own.
+  const groupOf = (focus: Competitor['focus'] | null, override: string | null | undefined): string | null =>
+    override?.trim() ? override.trim() : focus === 'pos' ? t('groups.pos') : focus === 'nearest_local' ? t('groups.nearest_local') : focus ? t('groups.food_truck') : null
+  const us: Column = { key: 'hatchgrab', name: BRANDS.HATCHGRAB.name, url: urls.home, us: true, group: t('groups.food_truck'), verified: true, entryVerified: true, planVerified: true, featuresVerified: true, plan: null, chooseWhen: null }
   const columns: Column[] = [us]
   for (const e of entries) {
     const c = input.competitors.find(x => x.id === e.competitorId)
     if (!c) continue
     const plan = entryPlan(e, input.plans)
     const col: Column = {
-      key: c.id, name: c.name, url: c.website, us: false,
+      key: c.id, name: c.name, url: c.website, us: false, group: groupOf(c.focus, e.groupLabel),
       entryVerified: !!e.verifiedAt, planVerified: !!plan?.verifiedAt, featuresVerified: !!c.featuresVerifiedAt, verified: false,
       plan, chooseWhen: e.chooseWhen,
     }
-    col.verified = col.entryVerified && col.planVerified && col.featuresVerified
+    // global-players-1: a pending 'pos' competitor (not yet counted — a candidate) is never public, whatever is verified.
+    col.verified = col.entryVerified && col.planVerified && col.featuresVerified && isCountedCompetitor(c)
     if (col.verified || showAll) columns.push(col)
   }
   const compOf = new Map(input.competitors.map(c => [c.id, c]))
@@ -258,12 +265,20 @@ export function buildComparison(input: ComparisonInput, t: ComparisonT, opts: Vi
   const vat = t('costs.vat', { country })
 
   // ── fit ──
+  // global-players-1: the tills card names the till / POS players that are PUBLIC in this country's table (verified and
+  // counted — never an unverified one, in either view), instead of fixed example names.
+  function tillsBody(): string {
+    const names = columns.filter(c => !c.us && c.verified && compOf.get(c.key)?.focus === 'pos').map(c => c.name)
+    if (!names.length) return t('fit.tillsBody')
+    const list = new Intl.ListFormat(settings.locale, { style: 'long', type: 'conjunction' }).format(names)
+    return t('fit.tillsBodyNamed', { names: list, count: names.length })
+  }
   const appsMissing = !flags.iosApp || !flags.androidApp
   const fit = {
     ours: t('fit.ours'), oursBody: t('fit.oursBody'), oursNot: t('fit.oursNot'),
     oursNotBody: appsMissing ? `${t('fit.oursNotBody')} ${t('fit.appClause', { country })}` : t('fit.oursNotBody'),
     rivals: columns.filter(c => !c.us && c.chooseWhen).map(c => ({ name: t('fit.rival', { name: c.name }), text: c.chooseWhen!, unverified: !c.entryVerified })),
-    cards: [{ title: t('fit.tills'), body: t('fit.tillsBody') }, { title: t('fit.marketplaces'), body: t('fit.marketplacesBody') }],
+    cards: [{ title: t('fit.tills'), body: tillsBody() }, { title: t('fit.marketplaces'), body: t('fit.marketplacesBody') }],
   }
 
   // ── FAQ (the cost answer from plan_prices and the trial from the plans) ──
@@ -356,7 +371,7 @@ export function comparisonMarkdown(v: ComparisonView, input: ComparisonInput, t:
   out.push(`# ${t('h1')}`, '', flat('byline', { date: v.checkedLabel }), '', `URL: ${input.urls.page}`, '')
   out.push(`## ${t('tldr.title')}`, '', t('tldr.body'), '')
   out.push(`## ${t('table.title')}`, '', `_${t('table.caption', { country: input.countryName, date: v.checkedLabel })}_`, '')
-  out.push(`| ${mdCell(t('table.feature'))} | ${v.columns.map(c => mdCell(c.name)).join(' | ')} |`)
+  out.push(`| ${mdCell(t('table.feature'))} | ${v.columns.map(c => mdCell(c.group ? `${c.name} (${c.group})` : c.name)).join(' | ')} |`)
   out.push(`|${' --- |'.repeat(v.columns.length + 1)}`)
   for (const r of v.rows) out.push(`| ${mdCell(r.label)} | ${r.cells.map(c => mdCell(c.text)).join(' | ')} |`)
   out.push('', t('table.note'))
@@ -390,7 +405,7 @@ export function comparisonJson(v: ComparisonView, input: ComparisonInput, t: Com
     checked: v.checkedOn,
     publisher: BRANDS.HATCHGRAB.name,
     publisherIsCompared: true,
-    tools: v.columns.map(c => ({ name: c.name, url: c.url, isPublisher: c.us, ...(c.plan ? { plan: c.plan.planName } : {}), ...(!c.verified ? { verified: false } : {}) })),
+    tools: v.columns.map(c => ({ name: c.name, ...(c.group ? { group: c.group } : {}), url: c.url, isPublisher: c.us, ...(c.plan ? { plan: c.plan.planName } : {}), ...(!c.verified ? { verified: false } : {}) })),
     rows: v.rows.map(r => ({
       key: r.key, label: r.label,
       cells: r.cells.map((c, i) => ({ tool: v.columns[i].name, value: c.text, ...(c.tri ? { status: c.tri } : {}), source: c.source, checked: c.checkedOn, ...(c.unverified ? { verified: false } : {}) })),

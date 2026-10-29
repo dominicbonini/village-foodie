@@ -11,6 +11,8 @@ type Row = Record<string, unknown>
 /** The registered files. A new data file is imported by adding it here. */
 export const DATA_FILES = [
   { path: 'data/compare-de-1/competitors.json', label: 'German research', kind: 'research' },
+  // global-players-1: the big POS players as candidates in every switched-on country (no plans, features or entries).
+  { path: 'data/global-players/competitors.json', label: 'Global POS players', kind: 'players' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 
@@ -66,6 +68,10 @@ export function importLines(rows: ImportRecord[] | null, files: readonly DataFil
     if (!last) return { path: f.path, ok: null, text: `${f.label}: not imported yet — the next competitor-check run imports it.` }
     if (last.result === 'error') return { path: f.path, ok: false, text: `${f.label}: the import on ${shortDay(last.imported_at)} failed — ${last.message ?? 'no reason recorded'} The next run tries again.` }
     const c = last.counts as Record<string, number>
+    if (f.kind === 'players') {
+      const matched = c.competitors - c.added
+      return { path: f.path, ok: true, text: `${f.label} imported ${shortDay(last.imported_at)}: ${c.competitors} competitors (${c.added} added${matched ? `, ${matched} matched an existing row` : ''}) — the checker finds where each sells, its plans and features` }
+    }
     const extra = [c.added < c.competitors ? `${c.competitors - c.added} matched existing competitors${c.upgraded ? `, ${c.upgraded} of them candidates` : ''}` : null,
       c.plansExisting ? `${c.plansExisting} plan${c.plansExisting === 1 ? ' was' : 's were'} already there` : null].filter(Boolean)
     return { path: f.path, ok: true, text: `${f.label} imported ${shortDay(last.imported_at)}: ${c.competitors} competitors, ${c.plans} plans, ${c.entries} entries${extra.length ? ` (${extra.join('; ')})` : ''}` }

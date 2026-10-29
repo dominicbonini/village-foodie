@@ -18,6 +18,9 @@
 //   7 · the footer's "Vergleich" link: in the server HTML only when live; never in it for admin (the browser adds it for
 //       an admin) or off; only on the country's own pages;
 //   8 · the go-live checklist, the import's once-only rule and the data file's shape (every row research, unverified).
+//   9 · global-players-1 (29 October 2026): the group label under each tool's name (by focus, or the entry's override) in
+//       the HTML, the .md and the .json; the tills card names only the VERIFIED, counted 'pos' competitors in the table
+//       (no fixed example names); an unverified or still-candidate 'pos' entry stays hidden publicly (an admin sees it).
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 const fs = require('fs')
 const path = require('path')
@@ -191,6 +194,37 @@ const { A, B, C, PA, PB, PC, comp, plan, entry } = F
   const before = JSON.stringify(mem)
   const r2 = await M.importResearch(store, data, stamp)
   t('import: a second run adds nothing (every competitor, plan and entry is matched)', JSON.stringify(mem) === before && r2.added === 0 && r2.plansAdded === 0 && r2.entriesAdded === 0, r2)
+
+  // ── 9 · global-players-1: group labels and the tills card ──
+  head('9 · global players — group labels; the tills card names only verified POS players')
+  {
+    const tables = F.GLOBAL_TABLES()   // P, R verified POS players (R with its own label), Q an unverified candidate, L local
+    const pub = await page({ status: 'live', tables })
+    const adm = await page({ status: 'admin', admin: true, tables })
+    const groupOf = (html, name) => dec((new RegExp(`data-tool="${name}"[\\s\\S]*?</th>`).exec(html) || [''])[0]).replace(/<[^>]+>/g, '|').split('|').map(x => x.trim()).filter(Boolean).pop()
+    t('HTML: under each name its group — HatchGrab and a food-truck tool "Bestellsystem für Foodtrucks", a local tool "Bestellsystem", a POS player "Kassensystem", an override "Kasse mit Online-Shop"',
+      groupOf(pub.html, 'HatchGrab') === 'Bestellsystem für Foodtrucks' && groupOf(pub.html, 'Testanbieter A') === 'Bestellsystem für Foodtrucks' && groupOf(pub.html, 'Testlokal L') === 'Bestellsystem'
+      && groupOf(pub.html, 'Testkasse P') === 'Kassensystem' && groupOf(pub.html, 'Testkasse R') === 'Kasse mit Online-Shop' && /class="cmp-group"/.test(pub.html),
+      ['HatchGrab', 'Testanbieter A', 'Testlokal L', 'Testkasse P', 'Testkasse R'].map(n => groupOf(pub.html, n)))
+    const md = (await twin('md', { status: 'live', tables })).body, js = JSON.parse((await twin('json', { status: 'live', tables })).body)
+    t('.md: the header cells carry the group ("Testkasse P (Kassensystem)", "Testkasse R (Kasse mit Online-Shop)")', /\| Testkasse P \(Kassensystem\) \|/.test(md) && /Testkasse R \(Kasse mit Online-Shop\)/.test(md) && /HatchGrab \(Bestellsystem für Foodtrucks\)/.test(md), md.split('\n').find(l => /HatchGrab/.test(l) && l.startsWith('|')))
+    t('.json: each tool has its group', js.tools.find(x => x.name === 'Testkasse P').group === 'Kassensystem' && js.tools.find(x => x.name === 'Testkasse R').group === 'Kasse mit Online-Shop' && js.tools.find(x => x.name === 'HatchGrab').group === 'Bestellsystem für Foodtrucks', js.tools)
+    t('the unverified, still-candidate POS player (Q) is nowhere public — not the page, the .md or the .json', !/Testkasse Q/.test(pub.html) && !/Testkasse Q/.test(md) && !JSON.stringify(js).includes('Testkasse Q'))
+    t('…an admin sees it, badged, with its group', /data-tool="Testkasse Q"/.test(adm.html) && groupOf(adm.html, 'Testkasse Q') === 'Kassensystem')
+    const card = html => text((/<div class="cmp-fit">[\s\S]*?<\/section>/.exec(html) || [''])[0])
+    t('the tills card names the verified POS players in this country and says they are in the table — no fixed example names (SumUp, orderbird …)',
+      /Testkasse P und Testkasse R stehen auch in der Tabelle oben/.test(card(pub.html)) && !/orderbird|ready2order|SumUp|Zettle/.test(card(pub.html)), card(pub.html))
+    t('…never the unverified one, in either view', !/Testkasse Q/.test(card(pub.html)) && !/Testkasse Q stehen|Testkasse Q steht/.test(card(adm.html)) && /Testkasse P und Testkasse R stehen/.test(card(adm.html)))
+    t('…and with no verified POS player, the card names none', !/auch in der Tabelle oben/.test(card(live.html)) && /Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab\. Ein Bestellsystem ergänzt die Kasse/.test(card(live.html)), card(live.html))
+    const one = await page({ status: 'live', tables: { ...tables, comparison_entries: tables.comparison_entries.filter(e => e.id !== 'e6') } })
+    t('…one name: "Testkasse P steht auch in der Tabelle oben"', /Testkasse P steht auch in der Tabelle oben/.test(card(one.html)), card(one.html))
+    const ldAll = JSON.stringify(ld(pub.html))
+    t('still no Product, Review, Rating or AggregateRating markup', !/"@type":"(Product|Review|Rating|AggregateRating)"/.test(ldAll))
+    t('English base labels exist (en-GB): Food truck ordering system / Ordering system / Till system', (() => { const en = JSON.parse(read('messages/en-GB.json')); const g = (en.comparison || {}).groups
+      return g && g.food_truck === 'Food truck ordering system' && g.nearest_local === 'Ordering system' && g.pos === 'Till system' && /\{names\}/.test(en.comparison.fit.tillsBodyNamed) })())
+    t('the migration (NOT RUN) adds focus pos, not_in_countries, deep_checked_in, the outcomes and comparison_entries.group_label', (() => { const m = read('supabase/migrations/20261046_global_players_1.sql')
+      return /'pop_up', 'pos'/.test(m) && /not_in_countries text\[\]/.test(m) && /deep_checked_in\s+jsonb/.test(m) && /'in_country', 'not_in_country'/.test(m) && /add column if not exists group_label text/.test(m) })())
+  }
 
   // ── source rules ──
   head('rules in the source')

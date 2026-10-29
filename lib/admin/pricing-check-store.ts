@@ -44,7 +44,12 @@ export async function readDataImports(): Promise<ImportRecord[] | null> {
   if (error) { if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message)) return null; fail('read data_imports', error) }
   return (data ?? []) as ImportRecord[]
 }
-const ENTRY_COLUMNS = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'
+const ENTRY_COLUMNS_BASE = 'id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at'
+/** global-players-1: group_label (20261046), falling back to the select before it runs. */
+async function entryCols<R extends { error: { message: string; code?: string } | null }>(build: (cols: string) => PromiseLike<R>): Promise<R> {
+  const r = await build(`${ENTRY_COLUMNS_BASE}, group_label`)
+  return missingColumn(r.error) ? build(ENTRY_COLUMNS_BASE) : r
+}
 
 export const servicePricingStore: PricingStore = {
   async counts() {
@@ -168,17 +173,20 @@ export const servicePricingStore: PricingStore = {
     fail('read comparison entries', error)
   },
   async listEntries() {
-    const { data, error } = await (await db()).from('comparison_entries').select(ENTRY_COLUMNS).order('sort_order')
+    const s = await db()
+    const { data, error } = await entryCols(cols => s.from('comparison_entries').select(cols).order('sort_order'))
     if (error) { if (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache/i.test(error.message)) return []; fail('read comparison entries', error) }
     return (data ?? []) as unknown as Row[]
   },
   async insertEntry(row) {
-    const { data, error } = await (await db()).from('comparison_entries').insert(row).select(ENTRY_COLUMNS).single()
+    const s = await db()
+    const { data, error } = await entryCols(cols => s.from('comparison_entries').insert(row).select(cols).single())
     if (error) fail('add comparison entry', error)
     return data as unknown as Row
   },
   async updateEntry(id, cols) {
-    const { data, error } = await (await db()).from('comparison_entries').update(cols).eq('id', id).select(ENTRY_COLUMNS)
+    const s = await db()
+    const { data, error } = await entryCols(sel => s.from('comparison_entries').update(cols).eq('id', id).select(sel))
     if (error) fail('save comparison entry', error)
     const rows = (data ?? []) as unknown as Row[]
     return rows.length === 1 ? rows[0] : null

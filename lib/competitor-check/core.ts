@@ -97,6 +97,9 @@ export interface SchedRow {
   nextCheckAt: string | null; lastCheckedAt: string | null; deepCheckedAt: string | null; checkRequestedAt: string | null
   /** competitor-check-2: the countries it is in — those of its current plans, and for a candidate the ones recorded for it. */
   countries?: string[]
+  /** global-players-1 (20261046): per country, when it was last deep-checked THERE — for a competitor in several countries,
+   *  which the deep check reads one country at a time. */
+  deepCheckedIn?: Record<string, string>
 }
 export const addDays = (ymd: string, n: number) => { const d = new Date(`${ymd}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10) }
 /** A small allowance on top of the even share, so a day that fell behind (a capped or failed run) catches up. */
@@ -146,21 +149,34 @@ export function selectDeep<T extends SchedRow>(rows: readonly T[], deepRequested
 export const deepRemaining = (rows: readonly SchedRow[], deepRequestedAt: string | null) =>
   rows.filter(r => (r.lifecycle === 'active' || r.lifecycle === 'candidate') && (!r.deepCheckedAt || (deepRequestedAt !== null && r.deepCheckedAt < deepRequestedAt))).length
 
-/** One competitor's new schedule after a check: the next check one interval from today. */
-export const afterCheck = (row: Pick<SchedRow, 'checkIntervalDays'>, today: string, nowIso: string, deep: boolean) => ({
+/** One competitor's new schedule after a check: the next check one interval from today. A deep check of ONE country
+ *  (global-players-1) also stamps that country in deep_checked_in. */
+export const afterCheck = (row: Pick<SchedRow, 'checkIntervalDays' | 'deepCheckedIn'>, today: string, nowIso: string, deep: boolean, country?: string | null) => ({
   next_check_at: addDays(today, row.checkIntervalDays), last_checked_at: nowIso, check_requested_at: null,
   ...(deep ? { deep_checked_at: nowIso } : {}),
+  ...(deep && country ? { deep_checked_in: { ...(row.deepCheckedIn ?? {}), [country]: nowIso } } : {}),
 })
 
 // ── competitor-check-2: the deep check, country by country ──────────────────────────────────────────────────────────
-/** The countries 20261044 recorded on a candidate, in its notes ("… · countries: DE, AT"). */
-export function candidateCountries(notes: unknown): string[] {
-  const m = /countries:\s*([A-Z]{2}(?:\s*,\s*[A-Z]{2})*)/.exec(typeof notes === 'string' ? notes : '')
-  return m ? m[1].split(',').map(c => c.trim()) : []
+/** The countries mark in a competitor's notes: "countries: DE, AT" (20261044) or "countries: all switched-on"
+ *  (global-players-1 — every switched-on country). */
+export const COUNTRIES_MARK = /countries:\s*(?:all switched-on|[A-Z]{2}(?:\s*,\s*[A-Z]{2})*)/
+/** The countries recorded in a competitor's notes; "all switched-on" is every code in `allCodes`. */
+export function candidateCountries(notes: unknown, allCodes: readonly string[] = []): string[] {
+  const m = COUNTRIES_MARK.exec(typeof notes === 'string' ? notes : '')
+  if (!m) return []
+  return /all switched-on/.test(m[0]) ? [...allCodes] : m[0].replace(/^countries:\s*/, '').split(',').map(c => c.trim())
 }
-/** A competitor's countries: its current plans' countries, plus — while it is a candidate — the ones recorded for it. */
-export const countriesOf = (lifecycle: string, planCountries: readonly string[], notes: unknown) =>
-  [...new Set([...planCountries, ...(lifecycle === 'candidate' ? candidateCountries(notes) : [])])]
+/** A competitor's countries: its current plans' countries, plus the ones recorded in its notes while it is a candidate —
+ *  or always, for a 'pos' competitor (global-players-1: compared wherever it sells) — minus the countries an accepted
+ *  "not sold here" finding ruled out (not_in_countries). `allCodes`: the switched-on countries. */
+export function countriesOf(lifecycle: string, planCountries: readonly string[], notes: unknown,
+  more: { focus?: string | null; notIn?: readonly string[] | null; allCodes?: readonly string[] } = {}): string[] {
+  const recorded = lifecycle === 'candidate' || more.focus === 'pos' ? candidateCountries(notes, more.allCodes ?? []) : []
+  const out = new Set([...planCountries, ...recorded])
+  for (const c of more.notIn ?? []) out.delete(c)
+  return [...out]
+}
 
 export interface QueueCountry { code: string; enabled: boolean; comparisonStatus: string | null }
 /** After the countries with a comparison page (admin or live), these, in this order (the brief of competitor-check-2). */
@@ -185,23 +201,35 @@ export const queueFrom = (queue: readonly string[], current: string) => {
   return i < 0 ? [current, ...queue] : queue.slice(i)
 }
 
-const isDeepPending = (r: SchedRow, deepRequestedAt: string | null) =>
-  (r.lifecycle === 'active' || r.lifecycle === 'candidate') && (!r.deepCheckedAt || (deepRequestedAt !== null && r.deepCheckedAt < deepRequestedAt))
+/** global-players-1: a competitor in several countries is checked one country at a time (lib/competitor-check/prompts.ts
+ *  countryTask), so each country keeps its own date; a competitor in one country keeps using deep_checked_at. */
+export const isMultiCountry = (r: Pick<SchedRow, 'countries'>) => (r.countries?.length ?? 0) > 1
+/** Not yet deep-checked in `code` since the request. */
+const isDeepPendingIn = (r: SchedRow, code: string, deepRequestedAt: string | null) => {
+  if (r.lifecycle !== 'active' && r.lifecycle !== 'candidate') return false
+  const at = isMultiCountry(r) ? r.deepCheckedIn?.[code] ?? null : r.deepCheckedAt
+  return !at || (deepRequestedAt !== null && at < deepRequestedAt)
+}
 /** A country's deep progress: its competitors (active, or a candidate recorded for it) and how many are done since the request. */
 export function deepCountryProgress(rows: readonly SchedRow[], code: string, deepRequestedAt: string | null) {
   const inCountry = rows.filter(r => (r.lifecycle === 'active' || r.lifecycle === 'candidate') && r.countries?.includes(code))
-  const pending = inCountry.filter(r => isDeepPending(r, deepRequestedAt))
+  const pending = inCountry.filter(r => isDeepPendingIn(r, code, deepRequestedAt))
   return { total: inCountry.length, done: inCountry.length - pending.length, pending }
 }
 /** Today's deep list, country by country: the current country's competitors not deep-checked since the request ("Check
  *  now" requests first, then by name); when they run out, the next country in the queue's — up to `limit`. */
 export function selectDeepByCountry<T extends SchedRow>(rows: readonly T[], queue: readonly string[], current: string, deepRequestedAt: string | null, limit: number): T[] {
-  const out: T[] = []
+  return deepTargets(rows, queue, current, deepRequestedAt, limit).map(x => x.row)
+}
+/** The same list with the country each competitor was picked for (global-players-1: a competitor in several countries is
+ *  then checked for THAT country only). A competitor is picked once a day, for the first country it is pending in. */
+export function deepTargets<T extends SchedRow>(rows: readonly T[], queue: readonly string[], current: string, deepRequestedAt: string | null, limit: number): { row: T; country: string }[] {
+  const out: { row: T; country: string }[] = []
   for (const code of queueFrom(queue, current)) {
     if (out.length >= limit) break
-    const pending = (deepCountryProgress(rows, code, deepRequestedAt).pending as T[]).filter(r => !out.includes(r))
+    const pending = (deepCountryProgress(rows, code, deepRequestedAt).pending as T[]).filter(r => !out.some(x => x.row === r))
       .sort((a, b) => Number(!a.checkRequestedAt) - Number(!b.checkRequestedAt) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id))
-    out.push(...pending.slice(0, limit - out.length))
+    out.push(...pending.slice(0, limit - out.length).map(row => ({ row, country: code })))
   }
   return out
 }

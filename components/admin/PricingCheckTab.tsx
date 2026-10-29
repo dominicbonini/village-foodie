@@ -531,7 +531,9 @@ function RivalTable({ v, cur, live, today, busy, post, onEditPlan, onHistory, on
             ) : (
               <tr key={row.r.plan.id} className={row.r.filteredOut ? 'opacity-45' : ''} data-rival-row={i}>
                 <td className={td}>
-                  <p className="font-semibold text-slate-900">{row.r.plan.sourceUrl ? <a className="hover:underline" href={row.r.plan.sourceUrl} target="_blank" rel="noreferrer">{row.r.competitor?.name}</a> : row.r.competitor?.name}</p>
+                  <p className="font-semibold text-slate-900">{row.r.plan.sourceUrl ? <a className="hover:underline" href={row.r.plan.sourceUrl} target="_blank" rel="noreferrer">{row.r.competitor?.name}</a> : row.r.competitor?.name}
+                    {/* global-players-1: a till / POS player — left out by "Food-truck tools only" (on by default). */}
+                    {row.r.competitor?.focus === 'pos' && <span className="ml-1.5 rounded bg-slate-800 px-1.5 py-0.5 align-middle text-[10px] font-bold text-white" data-pos-badge>POS</span>}</p>
                   <p className="text-xs text-slate-500">{row.r.plan.planName}{row.r.plan.yearlyOnly ? ' · billed yearly' : ''}</p>
                 </td>
                 <td className={td}>{row.r.competitor?.focus ? FOCUS_LABEL[row.r.competitor.focus] : <span className="text-slate-400">Not recorded</span>}</td>
@@ -701,7 +703,7 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
                 return (
                   <li key={e.id} className="space-y-2 p-3" data-entry={c?.name}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-semibold text-slate-900">{i + 1}. {c?.name ?? 'Unknown'}</p>
+                      <p className="font-semibold text-slate-900">{i + 1}. {c?.name ?? 'Unknown'}{c?.focus === 'pos' && <span className="ml-1.5 rounded bg-slate-800 px-1.5 py-0.5 align-middle text-[10px] font-bold text-white" data-pos-badge>POS</span>}</p>
                       <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
                         <span className={`rounded-full px-2 py-0.5 ${e.verifiedAt ? ok : no}`}>Entry {e.verifiedAt ? 'verified' : 'not verified'}</span>
                         <span className={`rounded-full px-2 py-0.5 ${plan?.verifiedAt ? ok : no}`}>Plan {plan?.verifiedAt ? 'verified' : 'not verified'}</span>
@@ -716,6 +718,10 @@ function ComparisonPanel({ code, state, busy, post }: { code: string; state: Sta
                       </select>
                       <TextCell value={e.chooseWhen} placeholder="passt, wenn … (shown on the page)" busy={busy !== null}
                         onSave={value => post('entry', { action: 'entry_update', id: e.id, fields: { chooseWhen: value } }, 'Saved. Verify the entry again.')} />
+                      {/* global-players-1: the label under the tool's name on the page; empty = the label for its focus. */}
+                      <span className="text-xs font-semibold text-slate-500 md:self-center">Group label</span>
+                      <TextCell value={e.groupLabel ?? null} placeholder="e.g. Kasse mit Online-Shop (empty = by focus)" busy={busy !== null}
+                        onSave={value => post('entry', { action: 'entry_update', id: e.id, fields: { groupLabel: value } }, 'Saved. Verify the entry again.')} />
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       <button type="button" className={BTN} disabled={busy !== null} onClick={() => post('entry', { action: e.verifiedAt ? 'entry_unverify' : 'entry_verify', id: e.id })}>{e.verifiedAt ? 'Undo entry verified' : 'Mark entry verified'}</button>

@@ -13,7 +13,13 @@
 // has a current plan of the same name in the same country. An entry is skipped when its id, or one for the same country
 // and competitor, is already there. So a run that stopped half-way is finished by the next one, and nothing is duplicated.
 // Every plan and entry arrives source 'research' and unverified: nothing is public until an admin verifies it.
+// global-players-1 (29 October 2026): a file row may be a CANDIDATE (data/global-players/competitors.json — the big POS
+// players, name, website, focus 'pos', "countries: all switched-on" in its notes, nothing else). A candidate row never
+// raises a match to active and never lowers it: an existing match keeps its lifecycle (a not-relevant one — a POS ruled
+// out before the 29 Oct decision — becomes a candidate again), gets focus 'pos' even over another focus (the "upgrade"),
+// and gets the row's "countries: …" in its notes.
 import { hostOf, APP_STORE_HOSTS } from '@/lib/competitor-check/model'
+import { COUNTRIES_MARK } from '@/lib/competitor-check/core'
 
 type Row = Record<string, unknown>
 export interface ResearchFile { id?: string; checked_on: string; competitors: Row[]; plans: Row[]; entries: Row[] }
@@ -40,7 +46,7 @@ export interface ResearchCounts {
 const TRI = ['yes', 'no', 'unknown']
 const FEATURES = ['pre_orders', 'whatsapp', 'social_posts', 'own_domain', 'ios_app', 'android_app', 'capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck']
 const TEXTS = ['website', 'focus', 'payment_providers', 'payment_methods', 'min_term']
-const FOCUS = ['food_truck', 'street_food_markets', 'nearest_local', 'pop_up']
+const FOCUS = ['food_truck', 'street_food_markets', 'nearest_local', 'pop_up', 'pos']
 const NON_NEGATIVE = ['monthly_minor', 'setup_minor', 'truck_fee_bps', 'truck_fee_fixed_minor', 'customer_fee_bps', 'customer_fee_fixed_minor', 'card_bps', 'card_fixed_minor', 'included_orders', 'overage_fixed_minor']
 
 const nameKey = (v: unknown) => String(v ?? '').trim().toLowerCase()
@@ -61,6 +67,7 @@ export function researchProblems(file: ResearchFile): string[] {
     for (const f of FEATURES) if (c[f] != null && !TRI.includes(String(c[f]))) out.push(`${who}: ${f} must be yes, no or unknown (is "${c[f]}").`)
     if (c.focus != null && !FOCUS.includes(String(c.focus))) out.push(`${who}: focus "${c.focus}" is not one the table allows.`)
     if (c.features_verified_at) out.push(`${who}: arrives verified — research must arrive unverified.`)
+    if (c.lifecycle != null && !['active', 'candidate'].includes(String(c.lifecycle))) out.push(`${who}: lifecycle must be active or candidate.`)
   }
   for (const p of file.plans) {
     const who = `Plan "${names.get(String(p.competitor_id)) ?? p.competitor_id} · ${p.plan_name}" (${p.country_code})`
@@ -107,10 +114,13 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
   try {
     for (const c of file.competitors) {
       const match = find(c)
+      const fileCandidate = c.lifecycle === 'candidate'
       if (!match) {
         const { features_verified_at: _skip, ...row } = c   // eslint-disable-line @typescript-eslint/no-unused-vars
-        await store.insertCompetitor({ ...row, features_checked_on: c.features_checked_on ?? file.checked_on, features_verified_at: null })
-        existing.push({ ...row, lifecycle: 'active' })
+        // A candidate row has had no features checked: no checked date, and added_as_candidate (hidden until verified).
+        await store.insertCompetitor({ ...row, ...(fileCandidate ? { added_as_candidate: true } : {}),
+          features_checked_on: c.features_checked_on ?? (fileCandidate ? null : file.checked_on), features_verified_at: null })
+        existing.push({ ...row, lifecycle: fileCandidate ? 'candidate' : 'active' })
         idOf.set(String(c.id), String(c.id)); counts.added++
         continue
       }
@@ -120,12 +130,22 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
       for (const f of TEXTS) if ((match[f] == null || match[f] === '') && c[f] != null && c[f] !== '') cols[f] = c[f]
       const checkedOn = String(c.features_checked_on ?? file.checked_on)
       if (Object.keys(cols).length && (!match.features_checked_on || String(match.features_checked_on) < checkedOn)) cols.features_checked_on = checkedOn
-      if (match.lifecycle === 'candidate') {
+      if (match.lifecycle === 'candidate' && !fileCandidate) {
         // A researched competitor (read on its own website) is no longer a candidate: active and counted like the file's
         // other competitors, still unverified. The note keeps where it came from.
         cols.lifecycle = 'active'; cols.added_as_candidate = false
         cols.notes = `${match.notes ? `${match.notes} · ` : ''}upgraded from candidate by ${stamp.path} (${stamp.today})`
         counts.upgraded++
+      }
+      if (fileCandidate) {
+        // global-players-1: the upgrade a candidate row brings — focus 'pos' over any other focus, its countries in the
+        // notes; a not-relevant match (a POS ruled out before 29 Oct) becomes a candidate again. Never active → candidate.
+        if (c.focus === 'pos' && match.focus !== 'pos') cols.focus = 'pos'
+        const mark = typeof c.notes === 'string' ? COUNTRIES_MARK.exec(c.notes)?.[0] : undefined
+        const notes = String(cols.notes ?? match.notes ?? '')
+        if (mark && COUNTRIES_MARK.exec(notes)?.[0] !== mark)
+          cols.notes = COUNTRIES_MARK.test(notes) ? notes.replace(COUNTRIES_MARK, mark) : `${notes ? `${notes} · ` : ''}${stamp.path} · ${mark}`
+        if (match.lifecycle === 'not_relevant') { cols.lifecycle = 'candidate'; cols.added_as_candidate = true }
       }
       if (Object.keys(cols).length) { await store.updateCompetitor(String(match.id), cols); Object.assign(match, cols); counts.updated++ }
     }

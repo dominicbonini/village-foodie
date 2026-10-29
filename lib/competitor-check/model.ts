@@ -15,15 +15,16 @@ export const PLAN_FIELDS = ['monthly_price', 'setup_fee', 'truck_fee', 'customer
 export const FEATURE_FIELDS = ['pre_orders', 'whatsapp', 'social_posts', 'own_domain', 'ios_app', 'android_app',
   'capacity_slots', 'multi_location_schedule', 'kds', 'pay_at_truck'] as const
 export const TEXT_FIELDS = ['min_term', 'payment_methods'] as const
-export const OTHER_FIELDS = ['url', 'classification'] as const
+export const OTHER_FIELDS = ['url', 'classification', 'availability'] as const   // availability: global-players-1
 export const FIELDS = [...PLAN_FIELDS, ...FEATURE_FIELDS, ...TEXT_FIELDS, ...OTHER_FIELDS] as const
 export type Field = (typeof FIELDS)[number]
 export type FeatureField = (typeof FEATURE_FIELDS)[number]
 
-export const OUTCOMES = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification', 'blocked', 'page_gone', 'not_stated'] as const
+// global-players-1 (20261046): 'in_country' / 'not_in_country' — whether it sells to businesses in the country checked.
+export const OUTCOMES = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification', 'blocked', 'page_gone', 'not_stated', 'in_country', 'not_in_country'] as const
 export type Outcome = (typeof OUTCOMES)[number]
 /** Outcomes that state a value from a page, so they need the verbatim quote, its translation and the page. */
-export const QUOTED_OUTCOMES: readonly Outcome[] = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification']
+export const QUOTED_OUTCOMES: readonly Outcome[] = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification', 'in_country', 'not_in_country']
 
 export const CLASSIFICATIONS = ['food_truck_ordering', 'restaurant_ordering', 'pos_or_card_reader', 'marketplace', 'not_relevant'] as const
 export type Classification = (typeof CLASSIFICATIONS)[number]
@@ -32,7 +33,9 @@ export const CLASSIFICATION_LABEL: Record<Classification, string> = {
   pos_or_card_reader: 'POS or card reader', marketplace: 'Marketplace', not_relevant: 'Not relevant',
 }
 /** What accepting a classification sets: lifecycle and focus (competitors.focus). Only the two ordering tools stay in the
- *  check; tills, card readers and marketplaces are not what HatchGrab competes with on pre-ordering. */
+ *  check; tills, card readers and marketplaces are not what HatchGrab competes with on pre-ordering.
+ *  global-players-1: EXCEPT a competitor whose focus is already 'pos' (the big POS players, Dominic's 29 Oct decision) —
+ *  "POS or card reader" keeps it, active (lib/admin/competitor-check-actions.ts acceptFinding). */
 export const CLASSIFICATION_EFFECT: Record<Classification, { lifecycle: 'active' | 'not_relevant'; focus: string | null }> = {
   food_truck_ordering: { lifecycle: 'active', focus: 'food_truck' },
   restaurant_ordering: { lifecycle: 'active', focus: 'nearest_local' },
@@ -47,7 +50,7 @@ export const FIELD_LABEL: Record<Field, string> = {
   social_posts: 'Social media posts', own_domain: 'Own web address', ios_app: 'iPhone and iPad app', android_app: 'Android app',
   capacity_slots: 'Pickup times follow kitchen capacity', multi_location_schedule: 'Weekly schedule with changing locations',
   kds: 'Kitchen display (KDS)', pay_at_truck: 'Pay at the truck', min_term: 'Minimum term', payment_methods: 'Payment methods',
-  url: 'Page', classification: 'What it is',
+  url: 'Page', classification: 'What it is', availability: 'Sold in this country',
 }
 
 /** One finding as the model records it (the record_findings tool's item). */
@@ -181,6 +184,7 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
     if (inList(r.field, FEATURE_FIELDS) && inList(r.outcome, ['changed', 'unchanged']) && r.feature === null) errors.push(`${at}: a feature finding needs "feature" (yes / no / not_stated).`)
     if (r.outcome === 'classification' && r.classification === null) errors.push(`${at}: a classification finding needs "classification".`)
     if (r.outcome === 'new_url' && r.url === null) errors.push(`${at}: a new_url finding needs "url".`)
+    if ((r.outcome === 'in_country' || r.outcome === 'not_in_country') !== (r.field === 'availability')) errors.push(`${at}: "in_country" and "not_in_country" go with the field "availability", and only they do.`)
   })
   return errors.length ? { ok: false, errors } : { ok: true, value: o as unknown as RecordFindingsInput }
 }

@@ -28,7 +28,8 @@ const BTN = 'whitespace-nowrap rounded-xl border border-slate-200 bg-white px-3 
 const BOX = 'w-full min-w-0 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400'
 const usd = (n: number) => `$${n.toFixed(2)}`
 const day = (ymd: string | null | undefined) => { if (!ymd) return '—'; const d = new Date(`${String(ymd).slice(0, 10)}T00:00:00Z`); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }) }
-const OUTCOME_LABEL: Record<string, string> = { changed: 'Changed', unchanged: 'Unchanged', new_plan: 'New plan', plan_gone: 'Plan gone', new_url: 'New page', classification: 'Classified', blocked: 'Blocked', page_gone: 'Page gone', not_stated: 'Not stated' }
+const OUTCOME_LABEL: Record<string, string> = { changed: 'Changed', unchanged: 'Unchanged', new_plan: 'New plan', plan_gone: 'Plan gone', new_url: 'New page', classification: 'Classified', blocked: 'Blocked', page_gone: 'Page gone', not_stated: 'Not stated',
+  in_country: 'Sold here', not_in_country: 'Not sold here' }   // global-players-1
 
 type Chip = 'review' | 'blocked' | 'gone' | 'unchanged' | 'all'
 
@@ -167,7 +168,7 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
               {shown.length === 0 && <tr><td colSpan={7} className="px-3 py-6 text-center text-slate-500">Nothing here.</td></tr>}
               {shown.map(f => {
                 const found = (f.found ?? {}) as Row
-                const quoted = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification'].includes(String(f.outcome))
+                const quoted = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification', 'in_country', 'not_in_country'].includes(String(f.outcome))
                 const confirmed = f.second_check === 'confirmed' && f.quote_in_page === true
                 const couldnt = quoted && (f.second_check === 'disagreed' || f.quote_in_page !== true)
                 return (

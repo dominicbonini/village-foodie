@@ -27,6 +27,11 @@
 //  13 · the deep check country by country: only deep_country's competitors (plus its candidates), the default queue, a
 //       finished country moves on to the next, the queue's end stops it; the caps still stop a run;
 //  14 · the Automatic checks tab: the Deep check picker, Start deep check, and the tile's country, progress and "Then:".
+// global-players-1 (29 October 2026, docs/global-players-1-report.md):
+//  15 · the global players' file imports once and upgrades matching rows (by name or domain) instead of duplicating them;
+//       a deep check of country X for a competitor in several countries asks for X only (and drops other countries'
+//       findings); accepting "not sold in X" takes it out of X; the first accepted plan of a POS player in a comparison
+//       country adds an unverified comparison entry; the cost estimate of a country check.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -54,6 +59,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     "export { runImports, importLines, DATA_FILES } from '@/lib/data-import/importer'",
     "export { importResearch, researchProblems } from '@/lib/data-import/research'",
     "export { startDeep, loadChecks } from '@/lib/admin/competitor-check-actions'",
+    "export { isPendingPos } from '@/lib/pricing-check'",
+    "export { COUNTRY_MAX_FETCHES } from '@/lib/competitor-check/checker'",
   ].join('\n'))
   const NOW = new Date('2026-10-26T02:10:00Z')
 
@@ -326,9 +333,12 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   }
 
   // ── 11 · the data importer ──
+  // 🔁 re-pinned 29 Oct 2026 (global-players-1): the registry now has two files, so this section imports the German one
+  // alone (GERMAN); section 15 proves the global players' file.
   head('11 · the data importer — once per version, candidates upgraded, the button gone')
   {
     const crypto = require('crypto')
+    const GERMAN = [L.DATA_FILES[0]]
     const sha = b => crypto.createHash('sha256').update(b).digest('hex')
     const real = read('data/compare-de-1/competitors.json')
     const data = JSON.parse(real)
@@ -345,7 +355,7 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
       plans: [{ id: 'live-bt-start', competitor_id: 'live-bt', country_code: 'DE', plan_name: 'Start', superseded_at: null }],
     })
     const store = seed()
-    const o1 = await L.runImports(deps(store))
+    const o1 = await L.runImports(deps(store), GERMAN)
     const c = store.db.imports[0].counts
     t('first run: the file is imported and recorded (path, sha256, ok, counts)', o1[0].status === 'imported' && store.db.imports.length === 1 && store.db.imports[0].sha256 === sha(files['data/compare-de-1/competitors.json']) && store.db.imports[0].result === 'ok'
       && c.competitors === 9 && c.plans === 19 && c.entries === 8 && c.plansExisting === 1 && c.entriesAdded === 8, { o1, c })
@@ -356,26 +366,26 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     t('…only EMPTY fields are filled (an existing website and name are kept); every plan and entry unverified; 6 competitors added, 3 matched (2 of them candidates)', store.db.competitors.find(x => x.id === 'cand-gd').website === 'https://www.gastrodok.de/preise'
       && store.db.competitors.find(x => x.id === 'cand-gd').name === 'Gastro Dok GmbH' && store.db.plans.filter(p => p.id !== 'live-bt-start').every(p => p.verified_at === null && p.source === 'research') && c.added === 6 && c.upgraded === 2, c)
     const writes1 = store.writes.length
-    const o2 = await L.runImports(deps(store))
+    const o2 = await L.runImports(deps(store), GERMAN)
     t('a rerun of the SAME file is a no-op: nothing written, not even a record', o2[0].status === 'unchanged' && store.writes.length === writes1 && store.db.imports.length === 1, o2)
     // A changed file: one new plan for OrderFront. Imported again — only the new row is added.
     const changed = JSON.parse(real)
     changed.plans.push({ ...changed.plans.find(p => p.plan_name === 'Starter'), id: '00000000-0000-5000-8000-000000000001', plan_name: 'Starter Plus', status: 'hidden' })
     files['data/compare-de-1/competitors.json'] = Buffer.from(JSON.stringify(changed, null, 1))
     const before = { c: store.db.competitors.length, p: store.db.plans.length, e: store.db.entries.length }
-    const o3 = await L.runImports(deps(store))
+    const o3 = await L.runImports(deps(store), GERMAN)
     t('a CHANGED file (new sha256) is imported again: just the one new plan, no duplicate competitor or entry', o3[0].status === 'imported' && store.db.imports.length === 2 && store.db.plans.length === before.p + 1 && store.db.competitors.length === before.c && store.db.entries.length === before.e
       && o3[0].counts.plansAdded === 1 && o3[0].counts.added === 0, { o3, before })
     // The failure that broke the button: a price-hidden plan marked counted. Refused before ANY write, with the row named.
     const bad = JSON.parse(real); bad.plans.find(p => p.plan_name === 'Multi').status = 'counted'
     files['data/compare-de-1/competitors.json'] = Buffer.from(JSON.stringify(bad))
     const fresh = seed()
-    const o4 = await L.runImports(deps(fresh))
+    const o4 = await L.runImports(deps(fresh), GERMAN)
     t('a bad file (a price-hidden plan "counted" — what failed the button) writes NOTHING and records the reason, naming the row', o4[0].status === 'error' && fresh.writes.length === 1 && fresh.writes[0][0] === 'recordImport'
       && /OrderFront · Multi/.test(fresh.db.imports[0].message) && /a price on request is status "hidden"/.test(fresh.db.imports[0].message), fresh.db.imports[0])
     files['data/compare-de-1/competitors.json'] = Buffer.from(real)
     let missing = null
-    try { await L.runImports(deps(FX.memoryImportStore({ imports: null }))) } catch (e) { missing = e.message }
+    try { await L.runImports(deps(FX.memoryImportStore({ imports: null })), GERMAN) } catch (e) { missing = e.message }
     t('before 20261045 runs: it stops with the file to run, importing nothing', /20261045_competitor_check_2\.sql/.test(missing || ''), missing)
     t('the registry starts with data/compare-de-1/competitors.json', L.DATA_FILES[0].path === 'data/compare-de-1/competitors.json')
     const lines = L.importLines([{ file_path: 'data/compare-de-1/competitors.json', sha256: 'a'.repeat(64), imported_at: '2026-10-30T02:11:00Z', result: 'ok', counts: c, message: null }])
@@ -458,11 +468,14 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const deepIds = store.schedule.filter(([, c]) => c.deep_checked_at).map(([id]) => id)
     t('day 1 checks 4 DE competitors and DE stays current', days[0].deep === 4 && days[0].country === 'DE' && deepIds.slice(0, 4).every(id => comps.find(c => c.id === id).countries.includes('DE')), days)
     t('day 2 finishes DE (3 left) and starts AT with the rest of the share; deep_country moves DE → AT', days[1].deep === 4 && store.deepMoves[0] === 'AT', { days, moves: store.deepMoves })
-    // Day 3's share of 4 is AT's last (c-008), CZ's two and PL's candidate, so the country moves straight from AT to FR.
+    // 🔁 re-pinned 29 Oct 2026 (global-players-1): c-006 sells in DE AND AT, so it is now checked once PER COUNTRY (DE on
+    // day 1-2, AT on day 3). Day 3's share of 4 is c-006 (AT), AT's last (c-008) and CZ's two, so the country moves AT → PL.
     const day3 = store.schedule.filter(([, c]) => c.deep_checked_at && c.deep_checked_at.startsWith('2026-10-28')).map(([id]) => id)
-    t('a day that finishes several countries moves straight past them (day 3: AT\'s last, CZ\'s two, PL\'s candidate → FR); at the end of the queue deep_country is cleared (null)',
-      JSON.stringify(store.deepMoves) === JSON.stringify(['AT', 'FR', null]) && JSON.stringify(day3.sort()) === JSON.stringify(['c-008', 'c-009', 'c-010', 'c-013']), { moves: store.deepMoves, day3 })
-    t('every competitor in a queued country was deep-checked exactly once', new Set(deepIds).size === deepIds.length && deepIds.length === 13, deepIds)
+    t('a day that finishes several countries moves straight past them (day 3: c-006 for AT, AT\'s last, CZ\'s two → PL); at the end of the queue deep_country is cleared (null)',
+      JSON.stringify(store.deepMoves) === JSON.stringify(['AT', 'PL', null]) && JSON.stringify(day3.sort()) === JSON.stringify(['c-006', 'c-008', 'c-009', 'c-010']), { moves: store.deepMoves, day3 })
+    const perCountry = store.schedule.filter(([, c]) => c.deep_checked_at).map(([id, c]) => `${id}:${c.deep_checked_in ? Object.keys(c.deep_checked_in).pop() : '-'}`)
+    t('every competitor was deep-checked once per country it is in: 13 single-country checks, and c-006 twice (DE, then AT)', deepIds.length === 14 && new Set(perCountry).size === 14
+      && deepIds.filter(id => id !== 'c-006').length === new Set(deepIds.filter(id => id !== 'c-006')).size && perCountry.includes('c-006:DE') && perCountry.includes('c-006:AT'), perCountry)
     t('…and on the days after, no deep run at all', days.slice(4).every(d => d.deep === 0), days)
     // The caps still stop a country run, and the country stays.
     const capped = FX.memoryCheckerStore({ settings: () => FX.SETTINGS({ deepRequestedAt: '2026-10-25T10:00:00Z', deepCountry: 'DE', deepPerDay: 7, dailyCapUsd: 1.5 }), competitors: rows() })
@@ -512,6 +525,144 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     t('with no country running after a request: the tile says Finished', /Finished/.test(html2) && !/Deep check · /.test(html2))
     const src = read('components/admin/AutomaticChecks.tsx')
     t('Settings has the deep check order (editable; empty = the default, shown)', /Deep check order \(country codes; empty = the default\)/.test(src) && /deep_queue: order/.test(src))
+  }
+
+  // ── 15 · global players ──
+  head('15 · global players — imported once, one country at a time, not sold here, first plan joins the page')
+  {
+    const crypto = require('crypto')
+    const sha = b => crypto.createHash('sha256').update(b).digest('hex')
+    const GLOBAL = [L.DATA_FILES[1]]
+    const raw = read('data/global-players/competitors.json')
+    const file = JSON.parse(raw)
+    t('the file: Square, SumUp, Zettle (PayPal), Lightspeed, Toast, Clover — name, website, focus pos, lifecycle candidate, "countries: all switched-on"; no plans, features or entries; registered',
+      JSON.stringify(file.competitors.map(c => c.name)) === JSON.stringify(['Square', 'SumUp', 'Zettle (PayPal)', 'Lightspeed', 'Toast', 'Clover']) && file.plans.length === 0 && file.entries.length === 0
+      && file.competitors.every(c => Object.keys(c).sort().join() === 'focus,id,lifecycle,name,notes,website' && c.focus === 'pos' && c.lifecycle === 'candidate' && /countries: all switched-on/.test(c.notes))
+      && GLOBAL[0].path === 'data/global-players/competitors.json' && L.researchProblems(file).length === 0, L.researchProblems(file))
+    // Live-like: Square already a GB candidate (live, 29 Oct); SumUp an active local-restaurant row on another domain;
+    // iZettle ruled not relevant earlier, on zettle.com (matched by DOMAIN only).
+    const store = FX.memoryImportStore({ competitors: [
+      { id: 'live-sq', name: 'Square', website: 'https://squareup.com', lifecycle: 'candidate', focus: null, added_as_candidate: true, notes: 'competitor-check-1 candidate · gemini-deep-research.csv · countries: GB' },
+      { id: 'live-su', name: 'SumUp', website: 'https://www.sumup.de/', lifecycle: 'active', focus: 'nearest_local', added_as_candidate: false, notes: null },
+      { id: 'live-iz', name: 'iZettle', website: 'https://www.zettle.com/gb', lifecycle: 'not_relevant', focus: null, added_as_candidate: true, notes: 'competitor-check-1 candidate · countries: GB' },
+    ] })
+    const files = { 'data/global-players/competitors.json': Buffer.from(raw) }
+    const deps = { store, read: p => files[p], sha256: sha, now: () => new Date('2026-10-30T02:10:00Z'), log: () => {} }
+    const o1 = await L.runImports(deps, GLOBAL)
+    const by = id => store.db.competitors.find(c => c.id === id)
+    t('first run: imported and recorded; 3 added (Lightspeed, Toast, Clover), 3 matched', o1[0].status === 'imported' && o1[0].counts.added === 3 && store.db.competitors.length === 6 && store.db.imports[0].result === 'ok', o1)
+    t('Square (a GB candidate, matched by name): same row, focus pos, still a candidate, its countries now "all switched-on" (GB replaced)', by('live-sq').focus === 'pos' && by('live-sq').lifecycle === 'candidate'
+      && /countries: all switched-on/.test(by('live-sq').notes) && !/countries: GB/.test(by('live-sq').notes) && store.db.competitors.filter(c => /square/i.test(c.name)).length === 1, by('live-sq'))
+    t('SumUp (an ACTIVE local-restaurant row): upgraded to focus pos, never lowered to candidate; its website kept', by('live-su').focus === 'pos' && by('live-su').lifecycle === 'active' && by('live-su').website === 'https://www.sumup.de/' && /countries: all switched-on/.test(by('live-su').notes), by('live-su'))
+    t('iZettle (not relevant, matched by DOMAIN only): a candidate again (the 29 Oct decision), focus pos, its name kept; no second Zettle row', by('live-iz').lifecycle === 'candidate' && by('live-iz').focus === 'pos' && by('live-iz').name === 'iZettle' && !store.db.competitors.some(c => c.name === 'Zettle (PayPal)'))
+    t('the new rows: candidates, added_as_candidate, no features checked date, nothing verified', ['Lightspeed', 'Toast', 'Clover'].every(n => { const c = store.db.competitors.find(x => x.name === n); return c && c.lifecycle === 'candidate' && c.added_as_candidate === true && c.features_checked_on === null && c.features_verified_at === null }))
+    const w = store.writes.length
+    const o2 = await L.runImports(deps, GLOBAL)
+    t('a rerun of the same file is a no-op', o2[0].status === 'unchanged' && store.writes.length === w)
+    t('Admin\'s line: "Global POS players imported 30 Oct: 6 competitors (3 added, 3 matched an existing row) — …"', /^Global POS players imported 30 Oct: 6 competitors \(3 added, 3 matched an existing row\)/.test(L.importLines(store.db.imports)[1].text), L.importLines(store.db.imports))
+    const ALL = FX.COUNTRIES.filter(c => c.enabled).map(c => c.code)
+    t('"countries: all switched-on" means every switched-on country — for a POS player even once active; minus the ones ruled out', JSON.stringify(L.countriesOf('candidate', [], by('live-sq').notes, { focus: 'pos', allCodes: ALL })) === JSON.stringify(ALL)
+      && JSON.stringify(L.countriesOf('active', ['DE'], by('live-su').notes, { focus: 'pos', allCodes: ALL, notIn: ['FR'] }).sort()) === JSON.stringify(ALL.filter(c => c !== 'FR').sort())
+      && JSON.stringify(L.countriesOf('active', ['DE'], 'x · countries: AT', { focus: 'food_truck', allCodes: ALL })) === '["DE"]')
+
+    // ── one country at a time ──
+    const calls = []
+    const multi = FX.competitor(21, { focus: 'pos', countries: ['DE', 'AT', 'FR'], plans: [...FX.competitor(21).plans, { ...FX.competitor(21).plans[0], id: 'p-21-at', plan_name: 'Österreich-Tarif', country_code: 'AT' }] })
+    const single = FX.competitor(22)
+    const cs = FX.memoryCheckerStore({ settings: () => FX.SETTINGS({ deepRequestedAt: '2026-10-25T10:00:00Z', deepCountry: 'DE', deepPerDay: 2 }), competitors: [multi, single] })
+    const dayRun = async d => L.runChecker({ api: FX.fakeApi(() => 'ok:29', calls), store: cs, now: () => new Date(Date.parse('2026-10-26T02:10:00Z') + d * 86_400_000), log: () => {}, dryRun: false }, { mode: 'scheduled', trigger: 'schedule' })
+    await dayRun(0)
+    const ext = calls.filter(p => !p.tools.some(x => x.name === 'record_verdict'))
+    const msgOf = n => ext.find(p => p.messages[0].content.includes(`Competitor: Testtruck Ordering ${n}`)).messages[0].content
+    const m21 = msgOf('021'), m22 = msgOf('022')
+    t('day 1 (DE): the multi-country competitor is asked for DE ONLY — the country task, only its DE plans in the stored data', /COUNTRY CHECK: DE ONLY/.test(m21) && /"country_code": "DE"/.test(m21) && !/Österreich-Tarif/.test(m21) && !/"country_code": "AT"/.test(m21), m21.slice(0, 600))
+    const tools21 = ext.find(p => p.messages[0].content === m21).tools
+    t(`…its reading is bounded: at most ${L.COUNTRY_MAX_FETCHES} pages and ${Math.ceil(L.COUNTRY_MAX_FETCHES / 2)} searches (a full deep check: 12 and 6)`, tools21[0].max_uses === L.COUNTRY_MAX_FETCHES && tools21[1].max_uses === Math.ceil(L.COUNTRY_MAX_FETCHES / 2), tools21.map(x => x.max_uses))
+    t('…a single-country competitor gets the whole deep check, as before (no country task)', !/COUNTRY CHECK/.test(m22) && /FULL DEEP CHECK/.test(m22))
+    t('…the DE check stamps deep_checked_in.DE; findings are DE\'s', cs.schedule.some(([id, c]) => id === 'c-021' && c.deep_checked_in && c.deep_checked_in.DE) && cs.findings.filter(f => f.competitor_id === 'c-021').every(f => f.country_code === 'DE'))
+    const before = cs.findings.length
+    await dayRun(1)
+    const m21at = calls.filter(p => !p.tools.some(x => x.name === 'record_verdict')).map(p => p.messages[0].content).filter(c => c.includes('Testtruck Ordering 021')).pop()
+    // The day-2 DEEP run's findings for c-021 (the routine run that follows reads whole competitors, as before).
+    const deep2 = cs.runs.filter(r => r.mode === 'deep').pop().id
+    const day2 = cs.findings.slice(before).filter(f => f.run_id === deep2 && f.competitor_id === 'c-021')
+    t('day 2 (AT): the same competitor again, asked for AT ONLY — with its AT plan; the fixture\'s DE-tagged findings are DROPPED', /COUNTRY CHECK: AT ONLY/.test(m21at) && /Österreich-Tarif/.test(m21at) && day2.length > 0 && day2.every(f => f.country_code === 'AT'), { day2: day2.map(f => [f.field, f.country_code]) })
+    t('…and the deep check moved DE → AT → FR as each country was done', JSON.stringify(cs.deepMoves.slice(0, 2)) === '["AT","FR"]', cs.deepMoves)
+    t('the validator: "availability" goes with in_country / not_in_country, and only it', !L.validateRecordFindings({ findings: [FX.F({ field: 'availability', outcome: 'changed', quote: 'q', quote_en: 'q', source_url: 'https://x.example/' })], pages_read: [], notes: null }).ok
+      && !L.validateRecordFindings({ findings: [FX.F({ field: 'monthly_price', outcome: 'not_in_country', quote: 'q', quote_en: 'q', source_url: 'https://x.example/' })], pages_read: [], notes: null }).ok
+      && L.validateRecordFindings({ findings: [FX.F({ field: 'availability', outcome: 'not_in_country', quote: 'Not available in Austria', quote_en: 'Not available in Austria', source_url: 'https://x.example/' })], pages_read: [], notes: null }).ok)
+
+    // ── Accept: not sold here; the first plan joins the page; a POS player classified as a POS stays ──
+    const mem = { plans: [], competitors: [], findings: [], entries: [] }
+    let n = 0
+    const plan0 = { competitor_id: 'k-p', plan_name: 'Kasse', currency: 'EUR', price_hidden: false, monthly_minor: 2900, yearly_only: false, setup_minor: 0, truck_fee_bps: 0, truck_fee_fixed_minor: 0, customer_fee_bps: 0, customer_fee_fixed_minor: 0,
+      card_mode: 'unknown', card_bps: null, card_fixed_minor: null, card_rate_assumed: true, order_cap: null, included_orders: null, overage_fixed_minor: null, vat: 'excl', status: 'counted', unclear: false, second_hand: false,
+      source: 'research', source_url: 'https://kp.example/at', checked_on: '2026-10-01', verified_at: '2026-10-10T00:00:00Z', verified_by: 'u', notes: null, superseded_at: null, created_at: null }
+    mem.plans.push({ ...plan0, id: 'kp-at', country_code: 'AT' })
+    mem.entries.push({ id: 'e-at', country_code: 'AT', competitor_id: 'k-p', primary_plan_id: 'kp-at', sort_order: 1, verified_at: null })
+    mem.competitors.push({ id: 'k-p', name: 'Testkasse', focus: 'pos', lifecycle: 'candidate', added_as_candidate: true, check_urls: [], not_in_countries: [], features_verified_at: null },
+      { id: 'k-f', name: 'Testtruck', focus: 'food_truck', lifecycle: 'active', added_as_candidate: false, check_urls: [], not_in_countries: [], features_verified_at: null })
+    const pricing = {
+      async getPlan(id) { return mem.plans.find(p => p.id === id) ?? null },
+      async insertPlan(row) { const r = { superseded_at: null, verified_at: null, verified_by: null, ...row, id: `np-${++n}` }; mem.plans.push(r); return { ...r } },
+      async supersedePlan(id, at) { const p = mem.plans.find(x => x.id === id && x.superseded_at === null); if (!p) return false; p.superseded_at = at; return true },
+      async deletePlan(id) { mem.plans = mem.plans.filter(p => p.id !== id) },
+      async getCompetitor(id) { return mem.competitors.find(c => c.id === id) ?? null },
+      async updateCompetitor(id, cols) { const c = mem.competitors.find(x => x.id === id); Object.assign(c, cols); return { ...c } },
+      async listAll() { return { competitors: mem.competitors, plans: mem.plans, benchmarks: [] } },
+      async entriesReady() { return true }, async listEntries() { return mem.entries.map(e => ({ ...e })) },
+      async insertEntry(r) { const e = { id: `ne-${++n}`, ...r }; mem.entries.push(e); return e }, async deleteEntry(id) { mem.entries = mem.entries.filter(e => e.id !== id) },
+    }
+    const checks = {
+      async getFinding(id) { return mem.findings.find(f => f.id === id) ?? null },
+      async reviewFinding(id, cols) { const f = mem.findings.find(x => x.id === id && x.review_status === 'pending'); if (!f) return null; Object.assign(f, cols); return { ...f } },
+      async updateCompetitor(id, cols) { const c = mem.competitors.find(x => x.id === id); Object.assign(c, cols); return { id } },
+      async competitors() { return mem.competitors.map(c => ({ ...c })) },
+      async countries() { return [{ code: 'DE', name: 'Germany', enabled: true, comparisonStatus: 'admin' }, { code: 'AT', name: 'Austria', enabled: true, comparisonStatus: 'off' }, { code: 'FR', name: 'France', enabled: true, comparisonStatus: 'off' }] },
+      async touchPlanChecked() { return true },
+    }
+    const fnd = (id, o) => ({ id, review_status: 'pending', competitor_id: 'k-p', plan_id: null, country_code: 'DE', field: 'plan', outcome: 'new_plan', found: {}, found_value: null, quote: 'q', quote_in_page: true, second_check: 'confirmed', source_url: 'https://kp.example/', ...o })
+    mem.findings.push(
+      fnd('g1', { field: 'availability', outcome: 'not_in_country', country_code: 'AT', found_value: 'not sold in Austria' }),
+      fnd('g2', { found: { plan_name: 'Kasse Plus', amount: 39, currency: 'EUR', period: 'month', vat: 'excl' } }),
+      fnd('g3', { found: { plan_name: 'Kasse Pro', amount: 59, currency: 'EUR', period: 'month', vat: 'excl' } }),
+      fnd('g4', { country_code: 'FR', found: { plan_name: 'Caisse', amount: 29, currency: 'EUR', period: 'month', vat: 'excl' } }),
+      fnd('g5', { competitor_id: 'k-f', found: { plan_name: 'Truck', amount: 19, currency: 'EUR', period: 'month', vat: 'excl' } }),
+      fnd('g6', { field: 'classification', outcome: 'classification', found: { classification: 'pos_or_card_reader' } }),
+    )
+    const stamp = { by: 'admin-1', at: '2026-10-30T09:00:00Z', today: '2026-10-30' }
+    const r1 = await L.acceptFinding(pricing, checks, 'g1', stamp)
+    t('accept "not sold in AT": AT recorded in not_in_countries, its AT plan closed (a new version, the old superseded), its AT entry removed', r1.ok && JSON.stringify(mem.competitors[0].not_in_countries) === '["AT"]'
+      && mem.plans.find(p => p.id === 'kp-at').superseded_at === stamp.at && mem.plans.some(p => p.country_code === 'AT' && p.status === 'closed' && p.superseded_at === null) && !mem.entries.some(e => e.country_code === 'AT'), { r1, entries: mem.entries })
+    const rowsAfter = [{ ...FX.competitor(30), id: 'k-p', lifecycle: 'candidate', countries: L.countriesOf('candidate', [], 'x · countries: all switched-on', { focus: 'pos', allCodes: ['DE', 'AT', 'FR'], notIn: mem.competitors[0].not_in_countries }) }]
+    t('…so it drops out of AT\'s deep check (and AT\'s table)', L.deepCountryProgress(rowsAfter, 'AT', null).total === 0 && L.deepCountryProgress(rowsAfter, 'DE', null).total === 1)
+    const r2 = await L.acceptFinding(pricing, checks, 'g2', stamp)
+    const added = mem.entries.find(e => e.country_code === 'DE' && e.competitor_id === 'k-p')
+    t('accept the FIRST DE plan of a POS player (DE has a comparison page): the plan, and an UNVERIFIED DE comparison entry showing it', r2.ok && r2.data.entryAdded === true && added && added.verified_at === null && added.primary_plan_id === mem.plans.find(p => p.plan_name === 'Kasse Plus').id, { r2, added })
+    const r3 = await L.acceptFinding(pricing, checks, 'g3', stamp)
+    t('…a second DE plan adds no second entry', r3.ok && !r3.data.entryAdded && mem.entries.filter(e => e.country_code === 'DE' && e.competitor_id === 'k-p').length === 1)
+    const r4 = await L.acceptFinding(pricing, checks, 'g4', stamp), r5 = await L.acceptFinding(pricing, checks, 'g5', stamp)
+    t('…no entry in a country without a comparison page (FR), and none for a food-truck tool', r4.ok && r5.ok && !r4.data.entryAdded && !r5.data.entryAdded && !mem.entries.some(e => e.country_code === 'FR' || e.competitor_id === 'k-f'))
+    t('the Pricing check shows a POS player still being checked once it has an entry (so it can be verified), never publicly', L.isPendingPos(L.competitorOut({ id: 'x', name: 'X', focus: 'pos', lifecycle: 'candidate', added_as_candidate: true }))
+      && !L.isCountedCompetitor(L.competitorOut({ id: 'x', name: 'X', focus: 'pos', lifecycle: 'candidate', added_as_candidate: true })) && /isPendingPos\(c\) && withEntry\.has\(c\.id\)/.test(read('app/api/admin/pricing-check/route.ts')))
+    const r6 = await L.acceptFinding(pricing, checks, 'g6', stamp)
+    t('a POS player classified "POS or card reader" stays — active, focus pos (any other POS is still ruled not relevant)', r6.ok && mem.competitors[0].lifecycle === 'active' && mem.competitors[0].focus === 'pos')
+    mem.competitors[0].not_in_countries = undefined; delete mem.competitors[0].not_in_countries
+    mem.findings.push(fnd('g7', { field: 'availability', outcome: 'not_in_country', country_code: 'FR' }))
+    const r7 = await L.acceptFinding(pricing, checks, 'g7', stamp)
+    t('before 20261046 runs, "not sold here" is refused with the file to run', !r7.ok && r7.status === 503 && /20261046/.test(r7.error), r7)
+    t('the tab labels the outcomes "Sold here" / "Not sold here"; Pricing check shows a POS badge; "Food-truck tools only" (on by default) leaves POS players out',
+      /in_country: 'Sold here', not_in_country: 'Not sold here'/.test(read('components/admin/AutomaticChecks.tsx')) && /data-pos-badge/.test(read('components/admin/PricingCheckTab.tsx'))
+      && /c\.focus !== 'pos'/.test(read('lib/pricing-check.ts')) && /foodTruckOnly: true/.test(read('lib/pricing-check.ts')))
+
+    // ── cost ──
+    const COUNTRY_USAGE = { input_tokens: 60000, output_tokens: 3000, server_tool_use: { web_search_requests: 2, web_fetch_requests: 6 } }
+    const NOT_SOLD_USAGE = { input_tokens: 25000, output_tokens: 800, server_tool_use: { web_search_requests: 1, web_fetch_requests: 2 } }
+    const c = u => L.costOf(u, 'claude-sonnet-5-5', FX.PRICES).usd
+    const sold = c(COUNTRY_USAGE) + 10 * c(FX.USAGE.verifier), notSold = c(NOT_SOLD_USAGE) + c(FX.USAGE.verifier)
+    console.log(`      estimate (fixture-style tokens): a country check $${sold.toFixed(3)} where it sells (10 claims second-checked), $${notSold.toFixed(3)} where it does not;`
+      + ` 6 players × 36 countries, if each sells in 12: $${(6 * (12 * sold + 24 * notSold)).toFixed(2)} for the first full pass`)
+    t('the estimate is what the report states: ≈ $0.50 a country where it sells, ≈ $0.10 where it does not', Math.abs(sold - 0.5) < 0.001 && Math.abs(notSold - 0.101) < 0.001, { sold, notSold })
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} competitor-check-1: ${pass} passed, ${fail} failed`)

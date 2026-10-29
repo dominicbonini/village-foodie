@@ -31,6 +31,20 @@ const CMP_TABLES = () => ({
   competitor_plans: [plan(PA, A, 'Basis', { truck_fee_bps: 250 }), plan(PB, B, 'Start', { verified_at: null, monthly_minor: 1900 }), plan(PC, C, 'Flat', { verified_at: null, monthly_minor: 9900, setup_minor: 29900 })],
   comparison_entries: [entry('e1', A, PA, 1), entry('e2', B, PB, 2), entry('e3', C, PC, 3, { verified_at: null, verified_by: null })],
 })
+/** global-players-1: CMP_TABLES plus till / POS players — P and R verified (R's entry has its own group label), Q a
+ *  still-candidate POS player whose automatically added entry is unverified, and L a local-restaurant tool. */
+const P = 'c0000000-0000-4000-8000-0000000000a1', Q = 'c0000000-0000-4000-8000-0000000000a2', RR = 'c0000000-0000-4000-8000-0000000000a3', L = 'c0000000-0000-4000-8000-0000000000a4'
+const GLOBAL_TABLES = () => {
+  const base = CMP_TABLES(), pos = { focus: 'pos', lifecycle: 'active', added_as_candidate: false }
+  return {
+    competitors: [...base.competitors, comp(P, 'Testkasse P', pos), comp(RR, 'Testkasse R', pos),
+      comp(Q, 'Testkasse Q', { focus: 'pos', lifecycle: 'candidate', added_as_candidate: true, features_verified_at: null }), comp(L, 'Testlokal L', { focus: 'nearest_local' })],
+    competitor_plans: [...base.competitor_plans, plan('pp', P, 'Kasse Plus', { monthly_minor: 3900 }), plan('pr', RR, 'Shop', { monthly_minor: 6900 }),
+      plan('pq', Q, 'Kasse', { verified_at: null }), plan('pl', L, 'Lokal')],
+    comparison_entries: [...base.comparison_entries, entry('e4', P, 'pp', 4), entry('e6', RR, 'pr', 6, { group_label: 'Kasse mit Online-Shop' }),
+      entry('e5', Q, 'pq', 5, { verified_at: null, verified_by: null }), entry('e7', L, 'pl', 7)],
+  }
+}
 const rowsWith = (status, apps = false) => EF.rowsWith(['DE']).map(r => r.countryCode === 'DE'
   ? { ...r, comparisonStatus: status, iosAppAvailable: apps, androidAppAvailable: apps }
   : { ...r, comparisonStatus: 'off', iosAppAvailable: r.countryCode === 'GB', androidAppAvailable: r.countryCode === 'GB' })
@@ -85,4 +99,4 @@ async function renderer(kit, tag = 'cde1') {
   return { M, ctx, catalog, SEG, req, page, twin, landing, sitemap: o => req(o, () => M.sitemap()), llms: o => req(o, async () => (await M.llmsGET()).text()) }
 }
 
-module.exports = { A, B, C, PA, PB, PC, comp, plan, entry, CMP_TABLES, rowsWith, renderer }
+module.exports = { A, B, C, PA, PB, PC, comp, plan, entry, CMP_TABLES, GLOBAL_TABLES, rowsWith, renderer }

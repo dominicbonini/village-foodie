@@ -85,8 +85,14 @@
     "tills": "Tills and card machines",
     "marketplaces": "Delivery platforms",
     "rival": "{name} fits if …",
-    "tillsBody": "Tills take payment at the truck and cover the TSE requirement — for example SumUp, Zettle (PayPal), orderbird and ready2order, by their own websites. Of those four, only SumUp offers pre-ordering with a chosen collection time, on its Kassensystem Plus plan. An ordering system works alongside a till; it does not replace it.",
+    "tillsBody": "Tills take payment at the truck and cover the TSE requirement. An ordering system works alongside a till; it does not replace it.",
+    "tillsBodyNamed": "Tills take payment at the truck and cover the TSE requirement. {names} {count, plural, one {is} other {are}} also in the table above. An ordering system works alongside a till; it does not replace it.",
     "marketplacesBody": "Delivery platforms bring new customers but take commission on every order. Uber Eats states 14% for collection and 30% for delivery by Uber couriers in Germany. Wolt says on its own website that it charges commission but gives no rates. We could not check Lieferando’s rates. That commission applies to regulars who pre-order with you, too."
+  },
+  "groups": {
+    "food_truck": "Food truck ordering system",
+    "nearest_local": "Ordering system",
+    "pos": "Till system"
   },
   "faq": {
     "title": "Frequently asked questions",

@@ -26,7 +26,7 @@ import { loadState, importResearch, act, type ActionResult } from '@/lib/admin/p
 import { importLines } from '@/lib/data-import/importer'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { listCountrySettings } from '@/lib/country-settings'
-import { isCountedCompetitor } from '@/lib/pricing-check'
+import { isCountedCompetitor, isPendingPos } from '@/lib/pricing-check'
 import competitors from '@/data/pricing-research-1/competitors.json'
 import plans from '@/data/pricing-research-1/plans.json'
 import benchmarks from '@/data/pricing-research-1/benchmarks.json'
@@ -59,7 +59,10 @@ export async function GET(req: NextRequest) {
     if (!state.ok) return reply(state)
     // competitor-check-1: candidates, closed and not-relevant competitors are never counted or shown here
     // (lib/pricing-check.ts isCountedCompetitor); the Automatic checks tab lists them on its own route.
-    const counted = state.data.competitors.filter(isCountedCompetitor)
+    // global-players-1: plus a 'pos' competitor still being checked that has a comparison entry (added automatically when
+    // its first plan in a comparison country was accepted) — so Dominic can see and verify it like any other.
+    const withEntry = new Set(state.data.entries.map(e => e.competitorId))
+    const counted = state.data.competitors.filter(c => isCountedCompetitor(c) || (isPendingPos(c) && withEntry.has(c.id)))
     const ids = new Set(counted.map(c => c.id))
     return NextResponse.json({
       ...state.data, catalog,

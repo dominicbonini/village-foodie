@@ -20,6 +20,7 @@ export const schedOf = (r: Row): SchedRow => ({
   nextCheckAt: (r.next_check_at as string | null) ?? null, lastCheckedAt: (r.last_checked_at as string | null) ?? null,
   deepCheckedAt: (r.deep_checked_at as string | null) ?? null, checkRequestedAt: (r.check_requested_at as string | null) ?? null,
   countries: Array.isArray(r.countries) ? (r.countries as string[]) : [],
+  deepCheckedIn: r.deep_checked_in && typeof r.deep_checked_in === 'object' && !Array.isArray(r.deep_checked_in) ? r.deep_checked_in as Record<string, string> : {},   // global-players-1
 })
 export function overviewOf(a: { settings: Row; competitors: Row[]; runs: Row[]; findings: Row[]; today: string; countries?: QueueCountry[] }): Overview {
   const s = a.settings

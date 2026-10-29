@@ -15,6 +15,9 @@ import type { StoredPlanForPrompt } from './prompts'
 type Row = Record<string, unknown>
 const COMPETITOR_COLS = ['id', 'name', 'website', 'focus', 'lifecycle', 'check_urls', 'check_interval_days', 'next_check_at', 'last_checked_at',
   'deep_checked_at', 'check_requested_at', 'min_term', 'payment_methods', 'notes', ...FEATURE_FIELDS].join(', ')
+/** global-players-1 (20261046), read tolerantly: the select falls back to COMPETITOR_COLS before it runs. */
+const GLOBAL_COLS = 'not_in_countries, deep_checked_in'
+const missingColumn = (e: { message: string; code?: string } | null) => !!e && (e.code === '42703' || /column .* does not exist/i.test(e.message))
 const PLAN_COLS = 'id, competitor_id, plan_name, country_code, currency, price_hidden, monthly_minor, yearly_only, vat, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, source_url'
 
 export function settingsOut(r: Row): CheckSettings {
@@ -27,8 +30,9 @@ export function settingsOut(r: Row): CheckSettings {
     deepQueue: Array.isArray(r.deep_queue) ? (r.deep_queue as unknown[]).filter((c): c is string => typeof c === 'string' && /^[A-Z]{2}$/.test(c)) : [],
   }
 }
-export function competitorForCheck(r: Row, plans: Row[]): CompetitorForCheck {
+export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = []): CompetitorForCheck {
   const own = plans.filter(p => p.competitor_id === r.id)
+  const notIn = Array.isArray(r.not_in_countries) ? (r.not_in_countries as string[]) : []
   return {
     id: String(r.id), name: String(r.name), website: (r.website as string | null) ?? null, focus: (r.focus as string | null) ?? null,
     lifecycle: r.lifecycle as CompetitorForCheck['lifecycle'], checkUrls: Array.isArray(r.check_urls) ? (r.check_urls as string[]) : [],
@@ -38,7 +42,8 @@ export function competitorForCheck(r: Row, plans: Row[]): CompetitorForCheck {
     paymentMethods: (r.payment_methods as string | null) ?? null,
     features: Object.fromEntries(FEATURE_FIELDS.map(f => [f, String(r[f] ?? 'unknown')])),
     plans: own as unknown as StoredPlanForPrompt[],
-    countries: countriesOf(String(r.lifecycle), own.map(p => String(p.country_code)), r.notes),
+    countries: countriesOf(String(r.lifecycle), own.map(p => String(p.country_code)), r.notes, { focus: (r.focus as string | null) ?? null, notIn, allCodes }),
+    deepCheckedIn: r.deep_checked_in && typeof r.deep_checked_in === 'object' && !Array.isArray(r.deep_checked_in) ? r.deep_checked_in as Record<string, string> : {},
   }
 }
 
@@ -51,14 +56,18 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       return settingsOut(data as Row)
     },
     async competitors() {
-      const [c, p] = await Promise.all([
-        db.from('competitors').select(COMPETITOR_COLS).order('name'),
+      const [c0, p, k] = await Promise.all([
+        db.from('competitors').select(`${COMPETITOR_COLS}, ${GLOBAL_COLS}`).order('name'),
         db.from('competitor_plans').select(PLAN_COLS).is('superseded_at', null),
+        db.from('country_settings').select('country_code').eq('enabled', true),
       ])
+      const c = missingColumn(c0.error) ? await db.from('competitors').select(COMPETITOR_COLS).order('name') : c0
       if (c.error) fail('read competitors', c.error)
       if (p.error) fail('read plans', p.error)
+      if (k.error) fail('read countries', k.error)
       const plans = (p.data ?? []) as unknown as Row[]
-      return ((c.data ?? []) as unknown as Row[]).map(r => competitorForCheck(r, plans))
+      const allCodes = ((k.data ?? []) as Row[]).map(r => String(r.country_code))
+      return ((c.data ?? []) as unknown as Row[]).map(r => competitorForCheck(r, plans, allCodes))
     },
     async spend(today) {
       const month = `${today.slice(0, 7)}-01T00:00:00Z`
@@ -86,7 +95,9 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
     async setSchedule(id, cols) {
       const bad = Object.keys(cols).filter(k => !(SCHEDULE_COLUMNS as readonly string[]).includes(k))
       if (bad.length) throw new Error(`[competitor-check] refused: the checker may only write the scheduling columns, not ${bad.join(', ')}`)
-      const { error } = await db.from('competitors').update(cols).eq('id', id)
+      let { error } = await db.from('competitors').update(cols).eq('id', id)
+      // Before 20261046 runs there is no deep_checked_in: the rest of the schedule is still written.
+      if (missingColumn(error) && 'deep_checked_in' in cols) { const { deep_checked_in: _x, ...rest } = cols; void _x; ({ error } = await db.from('competitors').update(rest).eq('id', id)) }
       if (error) fail('write schedule', error)
     },
     async countries() {

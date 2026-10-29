@@ -1,0 +1,57 @@
+{
+ "$comment": "global-players-1 (29 October 2026, docs/global-players-1-report.md): the big restaurant till / POS players, compared in every country where they sell (Dominic, 29 Oct). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import, kind \"players\"). Name, main website, focus \"pos\" and lifecycle \"candidate\" only — \"countries: all switched-on\" in the notes, the way 20261044 records candidate countries. NO prices, features or availability: the automatic checker finds them one country at a time, and Dominic accepts and verifies them. An existing row with the same name or domain is upgraded (focus pos, countries) rather than duplicated; its lifecycle is never lowered.",
+ "id": "global-players-1",
+ "checked_on": "2026-10-29",
+ "competitors": [
+  {
+   "id": "8d76b552-fb88-5840-82e6-e1c00c106664",
+   "name": "Square",
+   "website": "https://squareup.com/",
+   "focus": "pos",
+   "lifecycle": "candidate",
+   "notes": "global-players-1 candidate · countries: all switched-on"
+  },
+  {
+   "id": "d0eb16fa-4f72-57e7-86e6-383769afd992",
+   "name": "SumUp",
+   "website": "https://www.sumup.com/",
+   "focus": "pos",
+   "lifecycle": "candidate",
+   "notes": "global-players-1 candidate · countries: all switched-on"
+  },
+  {
+   "id": "aa8cf034-f429-52eb-9cbf-f23c35e42a3a",
+   "name": "Zettle (PayPal)",
+   "website": "https://www.zettle.com/",
+   "focus": "pos",
+   "lifecycle": "candidate",
+   "notes": "global-players-1 candidate · countries: all switched-on"
+  },
+  {
+   "id": "1774b420-e555-587a-a407-4f6254bd346e",
+   "name": "Lightspeed",
+   "website": "https://www.lightspeedhq.com/",
+   "focus": "pos",
+   "lifecycle": "candidate",
+   "notes": "global-players-1 candidate · countries: all switched-on"
+  },
+  {
+   "id": "757fad52-a236-5491-a015-7d84d1503a46",
+   "name": "Toast",
+   "website": "https://pos.toasttab.com/",
+   "focus": "pos",
+   "lifecycle": "candidate",
+   "notes": "global-players-1 candidate · countries: all switched-on"
+  },
+  {
+   "id": "8ceb8696-a091-59cb-846d-ca37c262c6aa",
+   "name": "Clover",
+   "website": "https://www.clover.com/",
+   "focus": "pos",
+   "lifecycle": "candidate",
+   "notes": "global-players-1 candidate · countries: all switched-on"
+  }
+ ],
+ "plans": [],
+ "entries": []
+}

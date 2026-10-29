@@ -85,8 +85,14 @@
     "tills": "Kassensysteme und Kartenleser",
     "marketplaces": "Lieferplattformen",
     "rival": "{name} passt, wenn …",
-    "tillsBody": "Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab – laut eigener Website zum Beispiel SumUp, Zettle (PayPal), orderbird und ready2order. Vorbestellung mit wählbarer Abholzeit bietet von diesen vier nur SumUp an, im Tarif Kassensystem Plus. Ein Bestellsystem ergänzt die Kasse, es ersetzt sie nicht.",
+    "tillsBody": "Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab. Ein Bestellsystem ergänzt die Kasse, es ersetzt sie nicht.",
+    "tillsBodyNamed": "Kassensysteme kassieren am Fenster und decken die TSE-Pflicht ab. {names} {count, plural, one {steht} other {stehen}} auch in der Tabelle oben. Ein Bestellsystem ergänzt die Kasse, es ersetzt sie nicht.",
     "marketplacesBody": "Lieferplattformen bringen neue Gäste, nehmen aber auf jede Bestellung Provision. Uber Eats nennt für Deutschland 14 % bei Abholung und 30 % bei Lieferung durch Uber-Kuriere. Wolt erhebt laut eigener Website eine Provision, nennt aber keine Sätze. Die Sätze von Lieferando konnten wir nicht prüfen. Auch für Stammgäste, die bei Ihnen vorbestellen, fällt diese Provision an."
+  },
+  "groups": {
+    "food_truck": "Bestellsystem für Foodtrucks",
+    "nearest_local": "Bestellsystem",
+    "pos": "Kassensystem"
   },
   "faq": {
     "title": "Häufige Fragen",

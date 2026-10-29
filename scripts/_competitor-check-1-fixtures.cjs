@@ -128,7 +128,7 @@ function memoryCheckerStore({ settings, competitors, priorRuns = [], countries =
     async createRun(row) { calls.push(['createRun', row]); const r = { id: `run-${++n}`, cost_usd: 0, competitors_checked: 0, ...row }; runs.push(r); return r.id },
     async updateRun(id, cols) { calls.push(['updateRun', id, cols]); Object.assign(runs.find(r => r.id === id), cols) },
     async insertFindings(rows) { calls.push(['insertFindings', rows.length]); findings.push(...rows) },
-    async setSchedule(id, cols) { calls.push(['setSchedule', id, cols]); schedule.push([id, cols]); const c = competitors.find(x => x.id === id); if (c) for (const [k, v] of Object.entries(cols)) c[{ next_check_at: 'nextCheckAt', last_checked_at: 'lastCheckedAt', deep_checked_at: 'deepCheckedAt', check_requested_at: 'checkRequestedAt' }[k]] = v },
+    async setSchedule(id, cols) { calls.push(['setSchedule', id, cols]); schedule.push([id, cols]); const c = competitors.find(x => x.id === id); if (c) for (const [k, v] of Object.entries(cols)) c[{ next_check_at: 'nextCheckAt', last_checked_at: 'lastCheckedAt', deep_checked_at: 'deepCheckedAt', check_requested_at: 'checkRequestedAt', deep_checked_in: 'deepCheckedIn' }[k]] = v },
   }
 }
 

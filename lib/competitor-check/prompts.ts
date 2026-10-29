@@ -22,6 +22,7 @@ Outcomes: ${OUTCOMES.join(', ')}.
 - "new_url": a page worth reading next time (pricing, features, food-truck page, terms, payments) that is not in the stored list; put it in "url".
 - "blocked": a page you could not read (access refused, an error); "page_gone": a stored page that no longer exists and you found no replacement.
 - "classification" (only when asked): what this company sells — one of ${CLASSIFICATIONS.join(', ')} — with a quote.
+- "in_country" / "not_in_country" (field "availability", only in a COUNTRY CHECK): whether the company sells to businesses in that country, with a quote (its country page, its list of countries, or its terms).
 Fee fields: "percent" for a percentage, "amount" + "currency" for a fixed part. A fee the customer pays on top is customer_fee; a fee the business pays is truck_fee; a payment-processing rate is card_rate.`
 
 export const VERIFIER_SYSTEM = `You verify one claim about what a company's own web page says.
@@ -34,11 +35,23 @@ export interface StoredPlanForPrompt { id: string; plan_name: string; country_co
   setup_minor: number; truck_fee_bps: number; truck_fee_fixed_minor: number; customer_fee_bps: number; customer_fee_fixed_minor: number; card_mode: string; card_bps: number | null; card_fixed_minor: number | null; source_url: string | null }
 export interface StoredCompetitorForPrompt { name: string; website: string | null; lifecycle: string; focus: string | null; check_urls: string[]; min_term: string | null; payment_methods: string | null; features: Record<string, string>; plans: StoredPlanForPrompt[] }
 
+/** global-players-1: the country check's task — for a competitor that sells in several countries, the deep check works on
+ *  ONE country at a time, and the stored data in the message is that country's only. */
+export function countryTask(code: string, maxFetches: number): string {
+  return `COUNTRY CHECK: ${code} ONLY. This company sells in several countries; work on ${code} and nothing else. Find its website and pricing page for ${code} (its own site's country version — search its own site if needed). Read at most ${maxFetches} pages. Record:
+(a) one "availability" finding: "in_country" if it sells to businesses in ${code}, "not_in_country" if it does not — with a quote; if it does not, stop there;
+(b) its plans and prices for ${code} as advertised, each with country_code "${code}" (new_plan for a plan we do not have);
+(c) its features as offered in ${code}, including any online-ordering or pre-order add-on (pickup times, kitchen display, online store), each with a quote.
+Never record a plan, price or feature of another country.`
+}
+
 /** The user message: the mode's task, today's date, the URLs (fetchable because they are here) and the stored data. */
-export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'routine', today: string): string {
-  const task = mode === 'deep'
+export function extractorMessage(c: StoredCompetitorForPrompt, mode: 'deep' | 'routine', today: string, country?: { code: string; maxFetches: number }): string {
+  if (country) c = { ...c, plans: c.plans.filter(p => p.country_code === country.code) }
+  const deepTask = mode === 'deep'
     ? `FULL DEEP CHECK. Read the pricing page(s), the features page(s), the food-truck page if there is one, the terms (for the minimum term) and the payment page. Return a finding for EVERY stored field and every stored plan — changed or unchanged — plus any new plans, plans that have gone, and new URLs worth reading next time.${c.lifecycle === 'candidate' ? ' This company is a CANDIDATE: also record one "classification" finding (what it sells) with its quote.' : ''}`
     : 'ROUTINE CHECK. Check the prices, fees, minimum term, card rate and the feature fields, and whether plans were added or removed. Return a finding for each stored value you could check (changed or unchanged), plus new and gone plans.'
+  const task = country ? `${countryTask(country.code, country.maxFetches)}\n\n${deepTask}` : deepTask
   const urls = c.check_urls.length ? c.check_urls : c.website ? [c.website] : []
   return [
     `${task}`,

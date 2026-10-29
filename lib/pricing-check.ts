@@ -26,7 +26,7 @@ import { planAllowsFeature, planPriceFor, publicPlans, type PlanCatalog, type Pl
 import { minorDigits } from '@/lib/money-format'
 
 // ── the stored rows (camelCase; the route maps the columns) ─────────────────────────────────────────────────────────
-export type Focus = 'food_truck' | 'street_food_markets' | 'nearest_local' | 'pop_up'
+export type Focus = 'food_truck' | 'street_food_markets' | 'nearest_local' | 'pop_up' | 'pos'   // 'pos': global-players-1 (20261046)
 export type Tri = 'yes' | 'no' | 'unknown'
 export const KEY_FEATURE_COLUMNS = ['preOrders', 'whatsapp', 'socialPosts', 'ownDomain', 'iosApp', 'androidApp'] as const
 /** compare-de-1: the further yes/no/unknown features the comparison page shows (editable in the Pricing check tab). */
@@ -69,11 +69,17 @@ export interface Competitor {
  *  accepted). Closed and not-relevant competitors are kept for history but never counted. */
 export const isCountedCompetitor = (c: Pick<Competitor, 'lifecycle' | 'addedAsCandidate' | 'featuresVerifiedAt'>) =>
   c.lifecycle === 'active' && !(c.addedAsCandidate && !c.featuresVerifiedAt)
+/** global-players-1: a 'pos' competitor still being checked (active or candidate, not yet counted). Admins see its
+ *  comparison entries and verify them; nothing of it is public until isCountedCompetitor holds. */
+export const isPendingPos = (c: Pick<Competitor, 'lifecycle' | 'focus' | 'addedAsCandidate' | 'featuresVerifiedAt'>) =>
+  c.focus === 'pos' && (c.lifecycle === 'active' || c.lifecycle === 'candidate') && !isCountedCompetitor(c)
 
 /** compare-de-1 (20261042): one competitor on a country's comparison page. */
 export interface ComparisonEntry {
   id: string; countryCode: string; competitorId: string; primaryPlanId: string | null; chooseWhen: string | null
   sortOrder: number; verifiedAt: string | null; verifiedBy: string | null; createdAt: string | null
+  /** global-players-1 (20261046): overrides the group label under the tool's name (null: the label for its focus). */
+  groupLabel: string | null
 }
 
 export interface CompetitorPlan {
@@ -156,11 +162,12 @@ export const MARGINS = [
   { key: 'within10', label: 'Within 10%', factor: 1.1 },
 ] as const
 
-/** A food-truck tool, for the "Food-truck tools only" filter: anything built for trucks, markets or pop-ups. */
-export const isFoodTruckTool = (c: Pick<Competitor, 'focus'> | null | undefined) => !!c?.focus && c.focus !== 'nearest_local'
+/** A food-truck tool, for the "Food-truck tools only" filter (on by default): anything built for trucks, markets or
+ *  pop-ups — never a local-restaurant tool, and never a till / POS player (global-players-1). */
+export const isFoodTruckTool = (c: Pick<Competitor, 'focus'> | null | undefined) => !!c?.focus && c.focus !== 'nearest_local' && c.focus !== 'pos'
 
 export const FOCUS_LABEL: Record<Focus, string> = {
-  food_truck: 'Food trucks', street_food_markets: 'Street food & markets', pop_up: 'Pop-ups', nearest_local: 'Local restaurants',
+  food_truck: 'Food trucks', street_food_markets: 'Street food & markets', pop_up: 'Pop-ups', nearest_local: 'Local restaurants', pos: 'POS / tills',
 }
 
 // ── money ────────────────────────────────────────────────────────────────────────────────────────────────────────────

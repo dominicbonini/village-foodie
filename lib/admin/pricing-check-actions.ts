@@ -56,7 +56,7 @@ const TRI = ['yes', 'no', 'unknown'] as const
 
 const COMPETITOR: Record<keyof Competitor, Def> = {
   id: { col: 'id', kind: 'text' }, name: { col: 'name', kind: 'text' }, website: { col: 'website', kind: 'url' },
-  focus: { col: 'focus', kind: { oneOf: ['food_truck', 'street_food_markets', 'nearest_local', 'pop_up'], nullable: true } },
+  focus: { col: 'focus', kind: { oneOf: ['food_truck', 'street_food_markets', 'nearest_local', 'pop_up', 'pos'], nullable: true } },
   paymentProviders: { col: 'payment_providers', kind: 'textOrNull' },
   preOrders: { col: 'pre_orders', kind: { oneOf: TRI } }, whatsapp: { col: 'whatsapp', kind: { oneOf: TRI } },
   socialPosts: { col: 'social_posts', kind: { oneOf: TRI } }, ownDomain: { col: 'own_domain', kind: { oneOf: TRI } },
@@ -194,6 +194,7 @@ const ENTRY: Record<keyof ComparisonEntry, Def> = {
   primaryPlanId: { col: 'primary_plan_id', kind: 'textOrNull' }, chooseWhen: { col: 'choose_when', kind: 'textOrNull' },
   sortOrder: { col: 'sort_order', kind: 'int0' }, verifiedAt: { col: 'verified_at', kind: 'textOrNull' }, verifiedBy: { col: 'verified_by', kind: 'textOrNull' },
   createdAt: { col: 'created_at', kind: 'textOrNull' },
+  groupLabel: { col: 'group_label', kind: 'textOrNull' },   // global-players-1 (20261046), read tolerantly
 }
 export const entryOut = (r: Row) => mapOut<ComparisonEntry>(r, ENTRY)
 export const competitorOut = (r: Row) => mapOut<Competitor>(r, COMPETITOR)
@@ -378,6 +379,13 @@ export async function act(store: PricingStore, body: Row, stamp: Stamp): Promise
       for (const [k, v] of Object.entries(f)) {
         if (k === 'chooseWhen') { if (v !== null && typeof v !== 'string') return refuse(400, 'The “passt, wenn” line must be text.'); cols.choose_when = typeof v === 'string' && v.trim() ? v.trim() : null }
         else if (k === 'primaryPlanId') { if (v !== null && typeof v !== 'string') return refuse(400, 'Choose a plan.'); cols.primary_plan_id = v || null }
+        else if (k === 'groupLabel') {
+          // global-players-1: the label under the tool's name; empty = the label for its focus.
+          if (v !== null && typeof v !== 'string') return refuse(400, 'The group label must be text.')
+          const label = typeof v === 'string' && v.trim() ? v.trim() : null
+          if (label && label.length > 60) return refuse(400, 'The group label can be at most 60 characters.')
+          cols.group_label = label
+        }
         else return refuse(400, `“${k}” can’t be changed here.`)
       }
       // An edit takes the verification back: the line or the plan shown has changed since it was checked.

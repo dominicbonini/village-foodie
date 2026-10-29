@@ -18,6 +18,9 @@
 // exchange, a 401 or 403) ends the run at once with stopped_reason 'error' and the reason, and nothing else is tried; a run in
 // which EVERY competitor failed is 'error' too. Either way the script exits non-zero (exitCodeOf), so Actions shows a red cross.
 // The deep check works COUNTRY BY COUNTRY (deep_country, deep_queue: lib/competitor-check/core.ts selectDeepByCountry).
+// global-players-1: a competitor that sells in SEVERAL countries is deep-checked for the one country it was picked for —
+// the extractor is told that country only (prompts.ts countryTask), sees only that country's stored plans, reads at most
+// COUNTRY_MAX_FETCHES pages, and any finding about another country is dropped; deep_checked_in stamps the country.
 import type Anthropic from '@anthropic-ai/sdk'
 import {
   RECORD_FINDINGS_TOOL, RECORD_VERDICT_TOOL, QUOTED_OUTCOMES, PLAN_FIELDS, FEATURE_FIELDS, hostOf, onOwnSite, APP_STORE_HOSTS,
@@ -25,7 +28,7 @@ import {
 } from './model'
 import {
   quoteInPages, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
-  afterCheck, deepQueueOf, selectDeepByCountry, nextDeepCountry, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
+  afterCheck, deepQueueOf, deepTargets, nextDeepCountry, isMultiCountry, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
 } from './core'
 import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, type StoredPlanForPrompt } from './prompts'
 
@@ -49,7 +52,9 @@ export interface FindingRow {
   second_value: string | null; second_quote: string | null; review_status: 'pending'
 }
 /** The scheduling columns — the ONLY competitor columns the checker may write. */
-export const SCHEDULE_COLUMNS = ['next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at'] as const
+export const SCHEDULE_COLUMNS = ['next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at', 'deep_checked_in'] as const
+/** global-players-1: a country check reads at most this many pages (and half as many searches) — its cost stays bounded. */
+export const COUNTRY_MAX_FETCHES = 8
 
 export interface CheckerStore {
   settings(): Promise<CheckSettings>
@@ -59,7 +64,7 @@ export interface CheckerStore {
   createRun(row: Row): Promise<string>
   updateRun(id: string, cols: Row): Promise<void>
   insertFindings(rows: FindingRow[]): Promise<void>
-  setSchedule(id: string, cols: Partial<Record<(typeof SCHEDULE_COLUMNS)[number], string | null>>): Promise<void>
+  setSchedule(id: string, cols: Partial<Record<(typeof SCHEDULE_COLUMNS)[number], string | null | Record<string, string>>>): Promise<void>
   /** competitor-check-2: every country's switch and comparison status (read only), for the default deep queue. */
   countries(): Promise<QueueCountry[]>
   /** competitor-check-2: moves the deep check on to the next country (null: the queue is done) — settings.deep_country only. */
@@ -194,19 +199,22 @@ async function converse<T>(deps: CheckerDeps, a: {
 }
 
 /** Checks ONE competitor: extractor, quote check, verifier. Returns its findings (not yet written) and what it cost. */
-export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings, c: CompetitorForCheck, depth: 'deep' | 'routine', runId: string):
+export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings, c: CompetitorForCheck, depth: 'deep' | 'routine', runId: string, country: string | null = null):
   Promise<{ findings: FindingRow[]; spend: Spend; dropped: number }> {
   const domains = domainsOf(c)
   const allowed = [...domains, ...APP_STORE_HOSTS]
   const today = ymd(deps.now())
+  const fetches = country ? COUNTRY_MAX_FETCHES : depth === 'deep' ? 12 : 6
+  const searches = country ? Math.ceil(COUNTRY_MAX_FETCHES / 2) : depth === 'deep' ? 6 : 3
   const ex = await converse(deps, {
     model: settings.extractorModel, system: EXTRACTOR_SYSTEM, toolName: RECORD_FINDINGS_TOOL.name, prices: settings.prices,
     effort: depth === 'deep' ? 'medium' : 'low', maxTurns: depth === 'deep' ? 12 : 8, validate: validateRecordFindings,
     user: extractorMessage({ name: c.name, website: c.website, lifecycle: c.lifecycle, focus: c.focus, check_urls: c.checkUrls,
-      min_term: c.minTerm, payment_methods: c.paymentMethods, features: c.features, plans: c.plans }, depth, today),
+      min_term: c.minTerm, payment_methods: c.paymentMethods, features: c.features, plans: c.plans }, depth, today,
+      country ? { code: country, maxFetches: COUNTRY_MAX_FETCHES } : undefined),
     tools: [
-      { type: 'web_fetch_20260318', name: 'web_fetch', max_uses: depth === 'deep' ? 12 : 6, max_content_tokens: 12000, allowed_domains: allowed },
-      { type: 'web_search_20260318', name: 'web_search', max_uses: depth === 'deep' ? 6 : 3, allowed_domains: allowed },
+      { type: 'web_fetch_20260318', name: 'web_fetch', max_uses: fetches, max_content_tokens: 12000, allowed_domains: allowed },
+      { type: 'web_search_20260318', name: 'web_search', max_uses: searches, allowed_domains: allowed },
       RECORD_FINDINGS_TOOL,
     ],
   })
@@ -217,6 +225,11 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
     // A finding about another website is not one: the rules allow the competitor's own site and the app stores only.
     if (f.source_url && !onOwnSite(f.source_url, domains)) { dropped++; continue }
     if (f.outcome === 'new_url' && f.url && !onOwnSite(f.url, domains)) { dropped++; continue }
+    // A country check is about that country only: a finding about another one is dropped; the rest are that country's.
+    if (country && f.country_code && f.country_code !== country) { dropped++; continue }
+    if (country && !f.country_code) f.country_code = country
+    // An availability finding outside a country check has no country to be about.
+    if (!country && f.field === 'availability') { dropped++; continue }
     const plan = matchPlan(c, f)
     const { field, plan_name, country_code, outcome, found_value, quote, quote_en, source_url, ...typed } = f
     findings.push({
@@ -255,7 +268,7 @@ export async function checkCompetitor(deps: CheckerDeps, settings: CheckSettings
 
 /** One run: picks the competitors, guards the budget, checks each, writes per competitor. */
 async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, trigger: 'schedule' | 'manual', list: CompetitorForCheck[],
-  spentBefore: { todayUsd: number; monthUsd: number; priorAvgUsd: number | null }): Promise<RunReport> {
+  spentBefore: { todayUsd: number; monthUsd: number; priorAvgUsd: number | null }, countryOf: ReadonlyMap<string, string> = new Map()): Promise<RunReport> {
   const started = deps.now()
   const runId = deps.dryRun ? `dry-run-${mode}` : await deps.store.createRun({ mode, trigger, started_at: started.toISOString() })
   const report: RunReport = { runId: deps.dryRun ? null : runId, mode, checked: 0, failed: [], spend: ZERO_SPEND, stoppedReason: 'done', findings: [], checkedIds: [] }
@@ -276,17 +289,19 @@ async function runOne(deps: CheckerDeps, settings: CheckSettings, mode: Mode, tr
       caps: { dailyUsd: live.dailyCapUsd, monthlyUsd: live.monthlyCapUsd } })
     if (guard.stop) { report.stoppedReason = guard.reason; deps.log(`  stopped before ${c.name}: ${guard.reason} (next one estimated at $${guard.estimateUsd.toFixed(2)})`); break }
     try {
-      const r = await withTimeout(checkCompetitor(deps, live, c, depth, runId), deps.timeLimitMs ?? (depth === 'deep' ? 600_000 : 300_000), c.name)
+      // global-players-1: a competitor in several countries, picked for a country, is checked for that country only.
+      const country = depth === 'deep' && isMultiCountry(c) ? countryOf.get(c.id) ?? null : null
+      const r = await withTimeout(checkCompetitor(deps, live, c, depth, runId, country), deps.timeLimitMs ?? (depth === 'deep' ? 600_000 : 300_000), country ? `${c.name} (${country})` : c.name)
       report.spend = addSpend(report.spend, r.spend)
       report.findings.push(...r.findings)
       report.checked++
       report.checkedIds!.push(c.id)
-      deps.log(`  ${c.name}: ${r.findings.length} finding(s)${r.dropped ? `, ${r.dropped} dropped (another website)` : ''} · $${r.spend.usd.toFixed(3)}`)
+      deps.log(`  ${c.name}${country ? ` · ${country}` : ''}: ${r.findings.length} finding(s)${r.dropped ? `, ${r.dropped} dropped (another website)` : ''} · $${r.spend.usd.toFixed(3)}`)
       if (deps.dryRun) deps.log(JSON.stringify(r.findings, null, 1))
       else {
         if (r.findings.length) await deps.store.insertFindings(r.findings)
         const now = deps.now()
-        await deps.store.setSchedule(c.id, afterCheck({ checkIntervalDays: c.checkIntervalDays || live.checkIntervalDays }, ymd(now), now.toISOString(), depth === 'deep'))
+        await deps.store.setSchedule(c.id, afterCheck({ checkIntervalDays: c.checkIntervalDays || live.checkIntervalDays, deepCheckedIn: c.deepCheckedIn }, ymd(now), now.toISOString(), depth === 'deep', country))
       }
     } catch (e) {
       const error = e instanceof Error ? e.message : String(e)
@@ -339,13 +354,20 @@ export async function runChecker(deps: CheckerDeps, job: { mode: Mode | 'schedul
   if (job.mode === 'deep' || (job.mode === 'scheduled' && settings.deepCountry)) {
     const limit = job.limit ?? settings.deepPerDay
     const queue = settings.deepCountry ? deepQueueOf(settings.deepQueue, await deps.store.countries(), all) : []
-    const list = settings.deepCountry ? selectDeepByCountry(all, queue, settings.deepCountry, settings.deepRequestedAt, limit) : selectDeep(all, settings.deepRequestedAt, limit)
+    const targets = settings.deepCountry ? deepTargets(all, queue, settings.deepCountry, settings.deepRequestedAt, limit) : selectDeep(all, settings.deepRequestedAt, limit).map(row => ({ row, country: '' }))
+    const list = targets.map(x => x.row)
+    const countryOf = new Map(targets.filter(x => x.country).map(x => [x.row.id, x.country]))
     if (list.length) {
-      const r = await runOne(deps, settings, 'deep', job.trigger, list, spentSoFar())
+      const r = await runOne(deps, settings, 'deep', job.trigger, list, spentSoFar(), countryOf)
       reports.push(r)
       for (const c of list.slice(0, r.checked + r.failed.length)) deepDone.add(c.id)
       const at = deps.now().toISOString()
-      for (const id of r.checkedIds ?? []) { const c = all.find(x => x.id === id); if (c) c.deepCheckedAt = at }
+      for (const id of r.checkedIds ?? []) {
+        const c = all.find(x => x.id === id)
+        if (!c) continue
+        c.deepCheckedAt = at
+        if (countryOf.has(id) && isMultiCountry(c)) c.deepCheckedIn = { ...(c.deepCheckedIn ?? {}), [countryOf.get(id)!]: at }
+      }
     }
     if (settings.deepCountry && !deps.dryRun) {
       const next = nextDeepCountry(all, queue, settings.deepCountry, settings.deepRequestedAt)

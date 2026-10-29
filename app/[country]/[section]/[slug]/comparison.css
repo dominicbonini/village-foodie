@@ -25,6 +25,8 @@
 .hg-landing .cmp-table tbody th { font-weight: 600; color: var(--head, #16314F); min-width: 12rem; position: sticky; left: 0; background: #fff; }
 .hg-landing .cmp-table .cmp-us { background: var(--orange-wash); }
 .hg-landing .cmp-table thead .cmp-us { color: var(--orange-deep); }
+/* global-players-1: the group label under a tool's name. --hero-grey, not --ink-soft (4.44:1 misses AA at this size). */
+.hg-landing .cmp-table thead .cmp-group { display: block; margin-top: .15rem; font-size: .75rem; font-weight: 500; color: var(--hero-grey, #3E5472); white-space: normal; }
 .hg-landing .cmp-tri-yes { color: #15803D; font-weight: 600; }
 .hg-landing .cmp-tri-no { color: #B91C1C; }
 .hg-landing .cmp-tri-unknown { color: var(--ink-soft); }

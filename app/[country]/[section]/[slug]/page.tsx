@@ -156,6 +156,8 @@ export default async function ComparisonPage({ params, searchParams }: { params:
                         <th scope="col" key={c.key} className={c.us ? 'cmp-us' : undefined} data-tool={c.name}>
                           {c.url && !c.us ? <a href={c.url} rel="nofollow noopener" target="_blank">{c.name}</a> : c.name}
                           {!c.verified && !v.publicView && <> {badge}</>}
+                          {/* global-players-1: the group the tool belongs to (comparison.groups, or the entry's own label). */}
+                          {c.group && <span className="cmp-group" data-group>{c.group}</span>}
                         </th>
                       ))}
                     </tr>

@@ -11,7 +11,7 @@ const missing = (e: { message: string; code?: string } | null) => !!e && (e.code
 const fail = (what: string, e: { message: string }): never => { throw new Error(`[competitor-check-store] ${what}: ${e.message}`) }
 /** The admin's competitor writes on this tab — never a price, a feature value or a verification (those go through the
  *  Pricing check store, in acceptFinding). */
-const ADMIN_COLS = ['check_requested_at', 'check_urls', 'check_interval_days', 'lifecycle', 'focus'] as const
+const ADMIN_COLS = ['check_requested_at', 'check_urls', 'check_interval_days', 'lifecycle', 'focus', 'not_in_countries'] as const   // not_in_countries: global-players-1
 const COMPETITOR_COLS = 'id, name, website, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, features_verified_at, notes'
 
 export const serviceCheckStore: CheckAdminStore = {
@@ -51,9 +51,12 @@ export const serviceCheckStore: CheckAdminStore = {
     return ((data ?? []) as Row[])[0] ?? null
   },
   async competitors() {
-    const { data, error } = await (await db()).from('competitors').select(COMPETITOR_COLS).order('name')
-    if (error) { if (missing(error)) return []; fail('read competitors', error) }
-    return (data ?? []) as unknown as Row[]
+    // global-players-1 (20261046): focus, not_in_countries and deep_checked_in, falling back to the select before it runs.
+    const s = await db()
+    let r = await s.from('competitors').select(`${COMPETITOR_COLS}, focus, not_in_countries, deep_checked_in`).order('name')
+    if (r.error && missing(r.error)) r = await s.from('competitors').select(`${COMPETITOR_COLS}, focus`).order('name') as typeof r
+    if (r.error) { if (missing(r.error)) return []; fail('read competitors', r.error) }
+    return (r.data ?? []) as unknown as Row[]
   },
   async updateCompetitor(id, cols) {
     const bad = Object.keys(cols).filter(k => !(ADMIN_COLS as readonly string[]).includes(k))
