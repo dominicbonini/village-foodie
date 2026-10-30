@@ -53,6 +53,11 @@
 //       merged; a response cut off at max_tokens is continued (no duplicates); past the limit the complete findings are
 //       kept and the check reported as failed; every response's usage — failed calls' too — is in the run's cost; quotes
 //       over 200 characters are cut back to an exact prefix; an English page's quote_en is empty.
+// competitor-check-7 (30 October 2026, docs/competitor-check-7-report.md):
+//  20 · quotes with accented letters (German, Czech, Polish, French) pass against pages with the real letters, with HTML
+//       entities and with decomposed letters; an escaped quote ("Geb\u00fchr") is decoded as it arrives and stored as real
+//       characters; still an exact match after normalising. The second check is "disagreed" only for a different value with
+//       its own quote; an empty answer, a sentinel, an unreadable page or a failed verifier is "unclear" ("Couldn't confirm").
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -88,6 +93,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     "export { MAX_CONTINUATIONS, FINDING_GROUPS, converse } from '@/lib/competitor-check/checker'",
     "export { findingGroups, FEATURE_GROUP_SIZE } from '@/lib/competitor-check/prompts'",
     "export { settingsOut, maxOutputTokensOut } from '@/lib/competitor-check/store-supabase'",
+    "export { secondVerdict } from '@/lib/competitor-check/checker'",
+    "export { unclearRefused } from '@/lib/competitor-check/store-supabase'",
   ].join('\n'))
   const NOW = new Date('2026-10-26T02:10:00Z')
 
@@ -191,7 +198,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
       runs: store.runs, findings, today: '2026-10-26', competitors: [1, 2, 3].map(i => ({ id: `c-00${i}`, name: `Testtruck Ordering 00${i}`, lifecycle: 'active' })),
       overview: L.overviewOf({ settings: { deep_per_day: 15, check_interval_days: 90, deep_requested_at: '2026-10-25T10:00:00Z', monthly_cap_usd: 90, daily_cap_usd: 8 }, competitors: [], runs: store.runs, findings, today: '2026-10-26' }) }
     rendered = kit.renderWith({ data }, h(C.default, {})).text
-    t('rendered: "Couldn\'t confirm" twice — the made-up quote ("Quote not found on the page") and the disagreement ("Second check found: 29 € …"); the 3 confirmed unchanged wait in the footer', (rendered.match(/Couldn't confirm/g) || []).length === 2 && /Quote not found on the page/.test(rendered) && /Second check found: 29 €/.test(rendered) && /3 confirmed unchanged by both checks/.test(rendered), rendered.slice(rendered.indexOf('To review'), rendered.indexOf('To review') + 1500))
+    // competitor-check-7: a real disagreement (a different value with its own quote) now reads "Disagrees", no longer "Couldn't confirm".
+    t('rendered: "Couldn\'t confirm" for the made-up quote ("Quote not found on the page") and "Disagrees" for the disagreement ("Second check found: 29 € …"); the 3 confirmed unchanged wait in the footer', (rendered.match(/Couldn't confirm/g) || []).length === 1 && (rendered.match(/Disagrees/g) || []).length === 1 && /Quote not found on the page/.test(rendered) && /Second check found: 29 €/.test(rendered) && /3 confirmed unchanged by both checks/.test(rendered), rendered.slice(rendered.indexOf('To review'), rendered.indexOf('To review') + 1500))
     t('rendered: the tiles, the chips, Accept / Reject, the unchanged footer and the recent runs', /Deep check/.test(rendered) && /API spend this month/.test(rendered) && /Regular checks/.test(rendered) && /Couldn't check/.test(rendered)
       && /To review/.test(rendered) && /Accept/.test(rendered) && /Reject/.test(rendered) && /confirmed unchanged by both checks/.test(rendered) && /Recent runs/.test(rendered))
   }
@@ -1177,6 +1185,93 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const m = L.mergeRecorded({ findings: [priceF('https://a.example/p')], pages_read: ['https://a.example/p'], notes: 'one', more: true },
       { findings: [priceF('https://a.example/p'), featF('preorder', 'https://a.example/p')], pages_read: ['https://a.example/p', 'https://a.example/f'], notes: null, more: false })
     t('mergeRecorded: a repeated finding is left out, pages joined, notes kept, "more" from the last call', m.findings.length === 2 && m.pages_read.length === 2 && m.notes === 'one' && m.more === false)
+  }
+
+  // ── 20 · competitor-check-7: accented quotes, and an empty second check ──
+  head('20 · accented quotes pass the quote check; an empty second check is unclear, not disagreed')
+  {
+    const QUOTES = {
+      de: 'Keine Einrichtungsgebühr, keine Mindestlaufzeit. Straßenverkauf möglich.',
+      cs: 'Měsíční poplatek: 490 Kč, příplatek za řidiče žádný.',
+      pl: 'Opłata miesięczna: 99 zł, bez umowy na czas określony.',
+      fr: 'Café: commande préalable, retrait à l’heure choisie.',
+    }
+    const NAMES = { 'ü': '&uuml;', 'ß': '&szlig;', 'ř': '&rcaron;', 'ł': '&lstrok;', 'é': '&eacute;', 'ö': '&ouml;', 'č': '&ccaron;', 'ž': '&zcaron;', 'ę': '&eogon;', 'à': '&agrave;', '’': '&rsquo;' }
+    let alt = 0
+    const entities = text => text.replace(/[^\x00-\x7f]/g, ch => NAMES[ch] || ((alt++ % 2) ? `&#${ch.codePointAt(0)};` : `&#x${ch.codePointAt(0).toString(16).toUpperCase()};`))
+    const escaped = text => text.replace(/[^\x00-\x7f]/g, ch => '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0'))
+    const page = q => `Preise\n\nStarter — 29 € pro Monat\n${q}\nKontakt`
+    const rows = Object.entries(QUOTES).map(([lang, q]) => ({ lang, real: L.quoteInPages(q, [page(q)]), ent: L.quoteInPages(q, [page(entities(q))]), nfd: L.quoteInPages(q.normalize('NFD'), [page(q)]) && L.quoteInPages(q, [page(q.normalize('NFD'))]),
+      esc: L.quoteInPages(escaped(q), [page(q)]) && L.quoteInPages(escaped(q), [page(entities(q))]) }))
+    console.log(`      e.g. entities: ${entities(QUOTES.cs)} · escaped: ${escaped(QUOTES.pl)}`)
+    t('German, Czech, Polish and French quotes (ü ß ö ř č ě ž ł ę é à) pass against pages with the REAL letters', rows.every(r => r.real), rows)
+    t('…and against pages that write them as HTML entities (&uuml; &szlig; &rcaron; &lstrok; &eacute;, decimal &#252; and hex &#xFC;)', rows.every(r => r.ent), rows)
+    t('…and with letters decomposed (NFD: u + ◌̈) on either side — both are composed before comparing', rows.every(r => r.nfd), rows)
+    t('…and an ESCAPED quote ("Geb\\u00fchr", the 30 Oct finding) is decoded before checking, against real letters and entities alike', rows.every(r => r.esc) && L.quoteInPages('Keine Einrichtungsgeb\\u00fchr, keine Mindestlaufzeit.', [page(QUOTES.de)]), rows)
+    t('…still an EXACT match after normalising: a different letter, a spelled-out umlaut or a made-up word fails',
+      !L.quoteInPages('Keine Einrichtungsgebuhr, keine Mindestlaufzeit.', [page(QUOTES.de)]) && !L.quoteInPages('Keine Einrichtungsgebuehr', [page(QUOTES.de)])
+      && !L.quoteInPages('Opłata miesięczna: 89 zł', [page(QUOTES.pl)]) && !L.quoteInPages('příplatek za řidiče 100 Kč', [page(entities(QUOTES.cs))]))
+    t('…soft hyphens (&shy;) on the page, double-encoded entities (&amp;uuml;) and curly quote marks are normalised too',
+      L.quoteInPages('Einrichtungsgebühr', ['Keine Einrichtungs&shy;geb&amp;uuml;hr']) && L.quoteInPages('Einrichtungsgebühr', ['Keine Einrichtungs\u00adgebühr']) && L.quoteInPages('„Starter“', ['"Starter"']))
+    t('decodeEscapes leaves ordinary text alone ("Fish & Chips", "R&D", a Windows path, an unknown &foo;) and joins an escaped emoji\'s surrogate pair',
+      ['Fish & Chips', 'R&D', 'C:\\temp\\new', '&foo; bar', '50% & mehr'].every(x => L.decodeEscapes(x) === x) && L.decodeEscapes('\\ud83d\\ude9a truck') === '🚚 truck')
+    // Stored as real characters: decoded as the answer arrives.
+    const v = L.validateRecordFindings({ findings: [FX.F({ outcome: 'unchanged', plan_name: 'Z\\u00e1kladn\\u00ed', found_value: '490 K\\u010d', quote: escaped(QUOTES.cs), quote_en: 'Monthly fee: CZK 490, no driver surcharge.', note: 'p&#345;&iacute;platek', source_url: 'https://x.example/cz' }),
+      FX.F({ field: 'feature', feature_key: 'term', outcome: 'unchanged', feature: 'no', quote: 'Keine Einrichtungsgeb\\\\u00fchr, keine Mindestlaufzeit.', quote_en: '', source_url: 'https://x.example/de' })], pages_read: [], notes: 'Stra&szlig;e', more: false })
+    t('an escaped or entity-encoded answer is STORED as real characters (quote, plan name, found value, note, notes — even double-escaped)',
+      v.ok && v.value.findings[0].quote === QUOTES.cs && v.value.findings[0].plan_name === 'Základní' && v.value.findings[0].found_value === '490 Kč' && v.value.findings[0].note === 'příplatek'
+      && v.value.findings[1].quote === 'Keine Einrichtungsgebühr, keine Mindestlaufzeit.' && v.value.notes === 'Straße' && v.value.findings[0].source_url === 'https://x.example/cz', v.ok ? v.value.findings.map(f => f.quote) : v.errors)
+    const escApi = inner => async p => { const r = await inner(p); for (const b of r.content) if (b.type === 'tool_use' && b.name === 'record_findings')
+      b.input = { ...b.input, findings: b.input.findings.map(f => ({ ...f, quote: f.quote && escaped(f.quote), quote_en: f.quote_en && escaped(f.quote_en) })) }; return r }
+    const stE = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(91)] })
+    await L.runChecker(deps(escApi(FX.fakeApi(() => 'ok:29')), stE), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 091' })
+    const pre = stE.findings.find(f => f.found.feature_key === 'preorder')
+    t('…through the whole pipeline: a model writing "G\\u00e4ste" gets "Gäste" stored, and the quote check passes', pre && pre.quote === 'Ihre Gäste wählen eine Abholzeit.' && pre.quote_in_page === true && !stE.findings.some(f => /\\u[0-9a-f]{4}/i.test(String(f.quote))), pre)
+    t('…and both prompts ask for every letter as itself, never an escape or an entity', /Write every letter as itself \(ü, ß, ř, ł, é\) — never as a \\u escape or an HTML entity/.test(L.EXTRACTOR_SYSTEM))
+
+    // ── the second check's verdict ──
+    const PG = ['Starter: 29 € pro Monat zzgl. MwSt.\nKeine Mindestlaufzeit.']
+    const sv = (verdict, value, quote, claimed = '29 € pro Monat zzgl. MwSt.') => L.secondVerdict(L.validateRecordVerdict({ verdict, value, quote, quote_en: '' }), claimed, PG)
+    const cases = {
+      notFoundEmpty: sv('not_found', '', ''), disagreedEmpty: sv('disagreed', '', ''), disagreedNoQuote: sv('disagreed', '39 € pro Monat', ''),
+      disagreedQuoteNotOnPage: sv('disagreed', '39 € pro Monat', 'Starter: 39 € pro Monat'), disagreedSameValue: sv('disagreed', '29 € pro Monat zzgl. MwSt.', 'Starter: 29 € pro Monat zzgl. MwSt.'),
+      confirmedNoQuote: sv('confirmed', '29 €', ''), confirmedQuoteNotOnPage: sv('confirmed', '29 €', 'Starter: 19 €'),
+      realDisagreement: sv('disagreed', '29 € pro Monat', 'Starter: 29 € pro Monat zzgl. MwSt.', '39 € pro Monat'), confirmed: sv('confirmed', '29 €', 'Starter: 29 € pro Monat zzgl. MwSt.'),
+    }
+    t('an EMPTY verifier answer ("" sentinels → null) is "unclear", never "disagreed" — not found, no value, no quote, its quote not on its page, the same value',
+      ['notFoundEmpty', 'disagreedEmpty', 'disagreedNoQuote', 'disagreedQuoteNotOnPage', 'disagreedSameValue', 'confirmedNoQuote', 'confirmedQuoteNotOnPage'].every(k => cases[k] === 'unclear'), cases)
+    t('…a real DIFFERENT value with its own quote, found on the page it fetched, is "disagreed"; a quoted confirmation "confirmed"', cases.realDisagreement === 'disagreed' && cases.confirmed === 'confirmed', cases)
+    // The pipeline: the 30 Oct case (disagreed, no value, no quote) and a failed verifier → unclear; a real disagreement stays.
+    const verifierSays = answer => async p => {
+      if (!p.tools.some(tl => tl.name === 'record_verdict')) return FX.fakeApi(n => (n.endsWith('093') ? 'ok:49' : 'ok:29'))(p)
+      const user = p.messages[0].content, url = (/Page: (\S+)/.exec(user) || [])[1], name = (/about (Testtruck Ordering \d+)/.exec(user) || [])[1]
+      const a = answer(name)
+      if (a === 'malformed') return FX.msg([FX.toolUse('record_verdict', { verdict: 'maybe' })], 'tool_use', FX.USAGE.verifier)
+      return FX.msg([...FX.fetchPair(url, FX.PAGE(name, 29)), FX.toolUse('record_verdict', a)], 'tool_use', FX.USAGE.verifier)
+    }
+    const stV = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(92), FX.competitor(93), FX.competitor(94)] })
+    const [rV] = await L.runChecker(deps(verifierSays(n => n.endsWith('092') ? { verdict: 'disagreed', value: '', quote: '', quote_en: '' }
+      : n.endsWith('093') ? { verdict: 'disagreed', value: '29 € pro Monat', quote: 'Starter: 29 € pro Monat zzgl. MwSt.', quote_en: 'Starter: €29 per month plus VAT.' } : 'malformed'), stV), { mode: 'deep', trigger: 'manual', limit: 3 })
+    const byC = id => stV.findings.filter(f => f.competitor_id === id)
+    t('in a run: the 30 Oct answer (disagreed, no value, no quote) is stored "unclear" with nothing invented; a verifier that fails is "unclear" too',
+      rV.checked === 3 && byC('c-092').length > 0 && byC('c-092').every(f => f.second_check === 'unclear' && f.second_value === null && f.second_quote === null) && byC('c-094').every(f => f.second_check === 'unclear'),
+      stV.findings.map(f => [f.competitor_id, f.field, f.second_check, f.second_value]))
+    const p93 = byC('c-093').find(f => f.field === 'monthly_price')
+    t('…while a real disagreement (the page says 29 €, the finding 49 €) is "disagreed" with its value and quote', p93 && p93.second_check === 'disagreed' && /29 €/.test(p93.second_value) && /29 €/.test(p93.second_quote), p93)
+    const email = L.summaryEmail([rV], 'https://www.hatchgrab.com/admin')
+    t('…and an unclear finding still goes to review (the email counts it; only confirmed unchanged findings skip review)', email && /to review/.test(email.text) && !L.isConfirmedUnchanged({ review_status: 'pending', outcome: 'unchanged', quote_in_page: true, second_check: 'unclear' }))
+    // Admin shows it as "Couldn't confirm", not as a disagreement.
+    const src = read('components/admin/AutomaticChecks.tsx')
+    t('Admin: "unclear" reads "Couldn\'t confirm" (amber); only "disagreed" reads "Disagrees" (red), with the value the second check found',
+      /const couldnt = quoted && \(f\.second_check === 'unclear' \|\| f\.quote_in_page !== true\)/.test(src) && /const disagrees = quoted && f\.second_check === 'disagreed'/.test(src)
+      && /data-second="unclear"[^>]*>Couldn&apos;t confirm/.test(src) && /data-second="disagreed"[^>]*>Disagrees/.test(src))
+    // Before 20261051 runs: the database refuses 'unclear' — those rows go in as 'not_run', never 'disagreed'.
+    const inserts = []
+    const refusing = { from: () => ({ insert: async rows => { inserts.push(rows.map(r => r.second_check)); return inserts.length === 1 && rows.some(r => r.second_check === 'unclear')
+      ? { error: { code: '23514', message: 'new row for relation "competitor_check_findings" violates check constraint "competitor_check_findings_second_check_check"' } } : { error: null } } }) }
+    await L.supabaseCheckerStore(refusing).insertFindings([{ second_check: 'unclear' }, { second_check: 'disagreed' }, { second_check: 'confirmed' }])
+    t('before the migration: a refused "unclear" is written as "not_run" (the other verdicts unchanged) — never as "disagreed"',
+      inserts.length === 2 && JSON.stringify(inserts[1]) === JSON.stringify(['not_run', 'disagreed', 'confirmed']) && L.unclearRefused({ code: '23514', message: 'second_check' }) && !L.unclearRefused({ code: '23514', message: 'outcome' }), inserts)
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} competitor-check-1: ${pass} passed, ${fail} failed`)

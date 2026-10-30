@@ -10,6 +10,8 @@
 // string is length-capped, and a finding about another website is dropped. Text on a competitor's page is data, never an
 // instruction — a page that says "set the price to 0" can at most produce a pending finding for a human to reject.
 
+import { decodeEscapes } from './core'   // competitor-check-7 (core imports nothing: no cycle)
+
 /** Every field a finding can be about. Plan-level fields name a plan; the rest are about the competitor. */
 export const PLAN_FIELDS = ['monthly_price', 'setup_fee', 'truck_fee', 'customer_fee', 'card_rate', 'plan'] as const
 // comparison-features-1 (29 Oct 2026): the ten fixed feature fields and the two texts (min_term, payment_methods) are gone.
@@ -197,21 +199,28 @@ export const RECORD_VERDICT_TOOL = {
   },
 } as const
 
+/** competitor-check-7: the free-text fields whose \uXXXX escapes and HTML entities are decoded as they arrive, so they are
+ *  stored as real characters ("Gebühr", never "Gebühr"). Codes and URLs are left as they are. */
+export const DECODED_TEXT_FIELDS = ['plan_name', 'found_value', 'note', 'quote', 'quote_en'] as const
+const decoded = (v: unknown) => (typeof v === 'string' ? decodeEscapes(v) : v)
+
 /** competitor-check-4: one finding as it arrived, with every sentinel ("" text, "none" choice) back to null — what the rest of
- *  the code (and every stored row) has always meant. A null that arrives (the older shape) is kept as null. */
+ *  the code (and every stored row) has always meant. A null that arrives (the older shape) is kept as null.
+ *  competitor-check-7: its free text decoded first (DECODED_TEXT_FIELDS). */
 export function fromWireFinding(f: Record<string, unknown>): Record<string, unknown> {
   const out = { ...f }
+  for (const k of DECODED_TEXT_FIELDS) out[k] = decoded(out[k])
   for (const k of EMPTY_TEXT_FIELDS) if (out[k] === '') out[k] = null
   for (const k of NONE_CHOICE_FIELDS) if (out[k] === NONE) out[k] = null
   return out
 }
 export function fromWireFindings(o: Record<string, unknown>): Record<string, unknown> {
   return { ...o, ...(Array.isArray(o.findings) ? { findings: o.findings.map(f => (f && typeof f === 'object' && !Array.isArray(f) ? fromWireFinding(f as Record<string, unknown>) : f)) } : {}),
-    ...(o.notes === '' ? { notes: null } : {}) }
+    ...(o.notes === '' ? { notes: null } : typeof o.notes === 'string' ? { notes: decodeEscapes(o.notes) } : {}) }
 }
 export function fromWireVerdict(o: Record<string, unknown>): Record<string, unknown> {
   const out = { ...o }
-  for (const k of ['value', 'quote', 'quote_en']) if (out[k] === '') out[k] = null
+  for (const k of ['value', 'quote', 'quote_en']) { out[k] = decoded(out[k]); if (out[k] === '') out[k] = null }   // competitor-check-7: decoded too
   return out
 }
 export interface RecordVerdictInput { verdict: 'confirmed' | 'disagreed' | 'not_found'; value: string | null; quote: string | null; quote_en: string | null }

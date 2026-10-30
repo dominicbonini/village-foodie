@@ -204,7 +204,10 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
                 const found = (f.found ?? {}) as Row
                 const quoted = ['changed', 'unchanged', 'new_plan', 'plan_gone', 'new_url', 'classification', 'in_country', 'not_in_country'].includes(String(f.outcome))
                 const confirmed = f.second_check === 'confirmed' && f.quote_in_page === true
-                const couldnt = quoted && (f.second_check === 'disagreed' || f.quote_in_page !== true)
+                // competitor-check-7: a disagreement is only a different value WITH its own quote; anything the second check
+                // could not settle ('unclear'), or a quote not found on the page, is "Couldn't confirm".
+                const disagrees = quoted && f.second_check === 'disagreed'
+                const couldnt = quoted && (f.second_check === 'unclear' || f.quote_in_page !== true)
                 return (
                   <tr key={String(f.id)} data-finding={String(f.outcome)} className="align-top">
                     <td className="px-3 py-2"><p className="font-semibold text-slate-900">{nameOf.get(String(f.competitor_id)) ?? 'Unknown'}</p>{typeof found.plan_name === 'string' && <p className="text-xs text-slate-500">{found.plan_name}</p>}</td>
@@ -217,9 +220,13 @@ export default function AutomaticChecks({ onCount }: { onCount?: (n: number) => 
                     </td>
                     <td className="px-3 py-2">
                       {confirmed ? <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800">Confirmed</span>
-                        : couldnt ? <><span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">Couldn&apos;t confirm</span>
+                        : disagrees ? <><span data-second="disagreed" className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-bold text-red-800">Disagrees</span>
+                          {f.second_value ? <p className="mt-0.5 text-xs text-slate-500">Second check found: {String(f.second_value)}</p> : null}
+                          {f.second_quote ? <p className="mt-0.5 text-xs italic text-slate-500">“{String(f.second_quote)}”</p> : null}
+                          {f.quote_in_page !== true && <p className="mt-0.5 text-xs text-slate-500">Quote not found on the page</p>}</>
+                        : couldnt ? <><span data-second="unclear" className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">Couldn&apos;t confirm</span>
                           {f.quote_in_page !== true && <p className="mt-0.5 text-xs text-slate-500">Quote not found on the page</p>}
-                          {f.second_check === 'disagreed' && f.second_value ? <p className="mt-0.5 text-xs text-slate-500">Second check found: {String(f.second_value)}</p> : null}</>
+                          {f.second_check === 'unclear' && <p className="mt-0.5 text-xs text-slate-500">The second check couldn&apos;t find the value</p>}</>
                         : <span className="text-xs text-slate-400">Not run</span>}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2">

@@ -21,6 +21,8 @@ const COMPETITOR_COLS = ['id', 'name', 'website', 'focus', 'lifecycle', 'check_u
 const VALUE_COLS = 'id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at'
 /** global-players-1 (20261046), read tolerantly: the select falls back to COMPETITOR_COLS before it runs. */
 const GLOBAL_COLS = 'not_in_countries, deep_checked_in, pass_state'
+/** competitor-check-7: the findings table refused 'unclear' (its second_check CHECK, before 20261051). */
+export const unclearRefused = (e: { message: string; code?: string } | null) => !!e && e.code === '23514' && /second_check/.test(e.message)
 const missingColumn = (e: { message: string; code?: string } | null) => !!e && (e.code === '42703' || /column .* does not exist/i.test(e.message))
 const tableMissing = (e: { message: string; code?: string }) => e.code === '42P01' || e.code === 'PGRST205' || /relation .* does not exist|schema cache/i.test(e.message)
 const PLAN_COLS = 'id, competitor_id, plan_name, country_code, currency, price_hidden, monthly_minor, yearly_only, vat, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, source_url'
@@ -137,7 +139,11 @@ export function supabaseCheckerStore(db: SupabaseClient): CheckerStore {
       if (error) fail('update run', error)
     },
     async insertFindings(rows) {
-      const { error } = await db.from('competitor_check_findings').insert(rows)
+      let { error } = await db.from('competitor_check_findings').insert(rows)
+      // competitor-check-7: before 20261051 runs, second_check's CHECK has no 'unclear' — those rows go in as 'not_run'
+      // (never as 'disagreed'), and Admin shows them as not confirmed.
+      if (error && unclearRefused(error) && rows.some(r => r.second_check === 'unclear'))
+        ({ error } = await db.from('competitor_check_findings').insert(rows.map(r => (r.second_check === 'unclear' ? { ...r, second_check: 'not_run' as const } : r))))
       if (error) fail('write findings', error)
     },
     async setSchedule(id, cols) {

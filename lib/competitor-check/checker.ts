@@ -33,7 +33,7 @@ import {
   validateRecordFindings, validateRecordVerdict, maxOutputTokensFor, mergeRecorded, type RawFinding, type Field, type RecordFindingsInput,
 } from './model'
 import {
-  quoteInPages, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
+  quoteInPages, normaliseForQuote, fetchedPages, costOf, addSpend, ZERO_SPEND, budgetStop, routineQuota, spreadFirstDates, selectRoutine, selectDeep,
   afterCheck, deepQueueOf, deepTargets, nextDeepCountry, isMultiCountry, scaleTokens, type Prices, type Spend, type SchedRow, type Lifecycle, type QueueCountry,
 } from './core'
 import { EXTRACTOR_SYSTEM, VERIFIER_SYSTEM, extractorMessage, verifierMessage, findingGroups, type StoredPlanForPrompt, type CheckFeature } from './prompts'
@@ -64,8 +64,19 @@ export interface CompetitorForCheck extends SchedRow {
 export interface FindingRow {
   run_id: string; competitor_id: string; plan_id: string | null; country_code: string | null; field: Field
   stored_value: string | null; found_value: string | null; found: Row; quote: string | null; quote_en: string | null; source_url: string | null
-  outcome: RawFinding['outcome']; quote_in_page: boolean; second_check: 'confirmed' | 'disagreed' | 'not_run'
+  outcome: RawFinding['outcome']; quote_in_page: boolean; second_check: SecondCheck
   second_value: string | null; second_quote: string | null; review_status: 'pending'
+}
+/** The second check's verdict. competitor-check-7: 'unclear' — it ran but could not confirm (no value or no quote, the value
+ *  not found, the page not readable, its own quote not on its page): Admin shows "Couldn't confirm". 'disagreed' only when it
+ *  gave a DIFFERENT value with its own quote, found on the page it fetched. */
+export type SecondCheck = 'confirmed' | 'disagreed' | 'unclear' | 'not_run'
+/** competitor-check-7: the verdict a verifier's answer earns (its quote checked against the pages IT fetched). */
+export function secondVerdict(v: { verdict: string; value: string | null; quote: string | null }, claimed: string | null, ownPages: readonly string[]): Exclude<SecondCheck, 'not_run'> {
+  const quoted = !!v.quote?.trim() && quoteInPages(v.quote, ownPages)
+  if (v.verdict === 'confirmed' && quoted) return 'confirmed'
+  const differs = !!v.value?.trim() && normaliseForQuote(v.value) !== normaliseForQuote(claimed ?? '')
+  return v.verdict === 'disagreed' && differs && quoted ? 'disagreed' : 'unclear'
 }
 /** The scheduling columns — the ONLY competitor columns the checker may write. */
 export const SCHEDULE_COLUMNS = ['next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at', 'deep_checked_in', 'pass_state'] as const
@@ -380,11 +391,12 @@ export async function secondCheck(deps: CheckerDeps, v: { model: string; prices:
       })
       spend = addSpend(spend, r.spend)
       const ownPages = fetchedPages(r.contents).map(p => p.text)
-      row.second_check = r.value.verdict === 'confirmed' && quoteInPages(r.value.quote, ownPages) ? 'confirmed' : 'disagreed'
+      row.second_check = secondVerdict(r.value, row.found_value, ownPages)
       row.second_value = r.value.value
       row.second_quote = r.value.quote
     } catch (e) {
       if (loginFailure(e)) throw e   // a failed login is never just one claim's problem
+      row.second_check = 'unclear'   // competitor-check-7: it ran and could not confirm — never a disagreement
       deps.log(`  verifier failed for ${c.name} · ${row.field}: ${e instanceof Error ? e.message : e}`)
     }
   }

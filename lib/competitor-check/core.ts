@@ -6,9 +6,45 @@
 //   • competitor-check-2: the deep check COUNTRY BY COUNTRY — the queue, who is in a country, and when to move on.
 
 // ── quotes ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-/** Case, whitespace, quote marks, dashes and non-breaking spaces made uniform, so a quote copied from a page matches it. */
+// competitor-check-7 (30 Oct 2026): a quote arrived as "Keine Einrichtungsgeb\u00fchr" — the six characters \u00fc, not "ü"
+// (the model double-escaped it in its tool input; the SDK and our code pass text through as it is) — and failed the quote
+// check. decodeEscapes turns such escapes, and HTML entities, back into the characters they stand for: on the model's
+// answer as it arrives (model.ts fromWire*, so quotes are stored as real characters) and on both sides of the quote check.
+const MARKS: Record<string, string> = { grave: '\u0300', acute: '\u0301', circ: '\u0302', tilde: '\u0303', macr: '\u0304', breve: '\u0306', dot: '\u0307',
+  uml: '\u0308', ring: '\u030A', dblac: '\u030B', caron: '\u030C', cedil: '\u0327', ogon: '\u0328' }
+const NAMED: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0', shy: '\u00ad', ndash: '–', mdash: '—', hellip: '…',
+  laquo: '«', raquo: '»', ldquo: '“', rdquo: '”', bdquo: '„', lsquo: '‘', rsquo: '’', sbquo: '‚', euro: '€', pound: '£', yen: '¥', cent: '¢', copy: '©',
+  reg: '®', trade: '™', times: '×', middot: '·', deg: '°', bull: '•', szlig: 'ß', AElig: 'Æ', aelig: 'æ', OElig: 'Œ', oelig: 'œ', Oslash: 'Ø', oslash: 'ø',
+  ETH: 'Ð', eth: 'ð', THORN: 'Þ', thorn: 'þ', Lstrok: 'Ł', lstrok: 'ł', Dstrok: 'Đ', dstrok: 'đ', inodot: 'ı', imath: 'ı' }
+const entity = (name: string): string | null => {
+  if (NAMED[name] !== undefined) return NAMED[name]
+  const m = /^([A-Za-z])(grave|acute|circ|tilde|macr|breve|dot|uml|ring|dblac|caron|cedil|ogon)$/.exec(name)   // &uuml; &rcaron; &eacute; …
+  if (!m) return null
+  const c = (m[1] + MARKS[m[2]]).normalize('NFC')
+  return c.length === 1 ? c : null   // a letter + mark with no precomposed character is not an entity
+}
+/** \uXXXX escapes written out literally (any number of backslashes; surrogate pairs join up) and HTML entities — named
+ *  (&uuml; &szlig; &rcaron; &lstrok;), decimal (&#252;) and hex (&#xFC;) — as the characters they stand for. Repeated
+ *  while it changes something (a double-encoded "&amp;uuml;"), at most three times. Anything else is left as it is. */
+export function decodeEscapes(s: string): string {
+  let out = s
+  for (let i = 0; i < 3; i++) {
+    const next = out
+      .replace(/\\+u([0-9a-fA-F]{4})/g, (_, h: string) => String.fromCharCode(parseInt(h, 16)))
+      .replace(/&#(\d{1,7});/g, (all, d: string) => { const n = Number(d); return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : all })
+      .replace(/&#[xX]([0-9a-fA-F]{1,6});/g, (all, h: string) => { const n = parseInt(h, 16); return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : all })
+      .replace(/&([A-Za-z]{2,8});/g, (all, name: string) => entity(name) ?? all)
+    if (next === out) break
+    out = next
+  }
+  return out
+}
+/** Escapes and entities decoded, Unicode composed (NFKC: NFC's composition — "u" + "◌̈" is "ü" — plus the compatibility
+ *  forms), soft hyphens dropped, and case, whitespace, quote marks, dashes and non-breaking spaces made uniform, so a quote
+ *  copied from a page matches it. Applied to the quote AND the page alike; the quote must then be found exactly. */
 export function normaliseForQuote(s: string): string {
-  return s.normalize('NFKC')
+  return decodeEscapes(s).normalize('NFKC')
+    .replace(/\u00ad/g, '')
     .replace(/[    ​]/g, ' ')
     .replace(/[“”„‟«»″〝〞]/g, '"')
     .replace(/[‘’‚‛′´`]/g, "'")
