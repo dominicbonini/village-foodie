@@ -74,7 +74,45 @@ export interface RawFinding {
   quote_en: string | null
   source_url: string | null
 }
-export interface RecordFindingsInput { findings: RawFinding[]; pages_read: string[]; notes: string | null }
+/** competitor-check-5: `more` — another record_findings call (the next group) follows; false (or absent) on the last. */
+export interface RecordFindingsInput { findings: RawFinding[]; pages_read: string[]; notes: string | null; more?: boolean }
+
+// ── competitor-check-5 (30 Oct 2026): the answer is cut off (max_tokens) ───────────────────────────────────────────
+/** The longest quote kept: the shortest exact passage that proves the value. A longer one is cut back to a prefix (still an
+ *  exact substring of the page, so the quote check still needs an exact match). */
+export const QUOTE_MAX = 200
+/** Each model's maximum output on the Messages API (https://platform.claude.com/docs/en/about-claude/models/overview, "Max
+ *  output", read 30 Oct 2026: 128K tokens for Claude Haiku 5.5 and Claude Sonnet 5.5). A setting overrides it per model
+ *  (competitor_check_settings.max_output_tokens). max_tokens is only a ceiling — billing and the output rate limit count
+ *  the tokens actually produced (https://platform.claude.com/docs/en/api/rate-limits). */
+export const DEFAULT_MAX_OUTPUT_TOKENS: Readonly<Record<string, number>> = { 'claude-haiku-5-5': 128_000, 'claude-sonnet-5-5': 128_000 }
+/** A model with no setting and no default above. */
+export const FALLBACK_MAX_OUTPUT_TOKENS = 32_000
+export function maxOutputTokensFor(model: string, setting?: Readonly<Record<string, number>> | null): number {
+  const v = setting?.[model]
+  return typeof v === 'number' && Number.isInteger(v) && v >= 1024 ? v : DEFAULT_MAX_OUTPUT_TOKENS[model] ?? FALLBACK_MAX_OUTPUT_TOKENS
+}
+/** A quote cut back to at most `max` characters: a prefix, ended at a word break when one is near. */
+export function capQuote(q: string | null, max = QUOTE_MAX): string | null {
+  if (q === null || q.length <= max) return q
+  const head = q.slice(0, max)
+  const space = head.search(/\s\S*$/)
+  return (space >= max / 2 ? head.slice(0, space) : head).trimEnd()
+}
+const squash = (s: string) => s.toLowerCase().replace(/[\s"'„“”‚‘’«»]+/g, ' ').trim()
+/** Two record_findings calls as one: the second call's findings that the first already has (same field, feature, plan,
+ *  country, URL, classification — a finding repeated after a continuation) are left out. */
+export function mergeRecorded(a: RecordFindingsInput, b: RecordFindingsInput): RecordFindingsInput {
+  const key = (f: RawFinding) => [f.field, f.feature_key, (f.plan_name ?? '').trim().toLowerCase(), f.country_code, f.url, f.classification,
+    f.outcome === 'blocked' || f.outcome === 'page_gone' ? f.source_url : null].join('|')
+  const seen = new Set(a.findings.map(key))
+  return {
+    findings: [...a.findings, ...b.findings.filter(f => { const k = key(f); if (seen.has(k)) return false; seen.add(k); return true })],
+    pages_read: [...new Set([...a.pages_read, ...b.pages_read])],
+    notes: [a.notes, b.notes].filter(Boolean).join(' · ') || null,
+    more: b.more,
+  }
+}
 
 // Strict tool schemas support `anyOf`, `enum` and `null` (the skill's "JSON Schema Limitations"), so a nullable value is an
 // anyOf of its type and null — not a type array, which that list does not name.
@@ -96,14 +134,14 @@ export const NONE_CHOICE_FIELDS = ['period', 'vat', 'feature', 'classification']
 /** The one client tool the extractor may call. strict: the API holds the model to this schema. */
 export const RECORD_FINDINGS_TOOL = {
   name: 'record_findings',
-  description: 'Record what you found on the competitor\'s own pages. Call it exactly once, at the end, with every finding. '
-    + 'Every value must come with a verbatim quote copied from a page you fetched in this conversation, its English translation, and that page\'s URL. '
+  description: 'Record what you found on the competitor\'s own pages — in the groups the message lists, one call per group, "more": true on every call but the last. '
+    + `Every value must come with a verbatim quote copied from a page you fetched in this conversation (the shortest exact passage that proves it, at most ${QUOTE_MAX} characters), its English translation ("" when the page is in English), and that page's URL. `
     + 'Every property is required: write "" for a text that does not apply and "none" for a choice that does not apply; amount and percent are null when not stated.',
   strict: true,
   input_schema: {
     type: 'object',
     additionalProperties: false,
-    required: ['findings', 'pages_read', 'notes'],
+    required: ['findings', 'pages_read', 'notes', 'more'],
     properties: {
       findings: {
         type: 'array',
@@ -136,6 +174,7 @@ export const RECORD_FINDINGS_TOOL = {
       },
       pages_read: { type: 'array', items: { type: 'string' } },
       notes: text,
+      more: { type: 'boolean' },   // competitor-check-5: another group follows
     },
   },
 } as const
@@ -191,12 +230,13 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
   if (!input || typeof input !== 'object' || Array.isArray(input)) return { ok: false, errors: ['The input must be an object.'] }
   // competitor-check-4: the sentinels become null first; everything below is the same check as before.
   const o = fromWireFindings(input as Record<string, unknown>)
-  const extra = Object.keys(o).filter(k => !['findings', 'pages_read', 'notes'].includes(k))
+  const extra = Object.keys(o).filter(k => !['findings', 'pages_read', 'notes', 'more'].includes(k))
   if (extra.length) errors.push(`Unknown properties: ${extra.join(', ')}.`)
   if (!Array.isArray(o.findings)) return { ok: false, errors: [...errors, '"findings" must be an array.'] }
   if (o.findings.length > 200) errors.push('Too many findings (at most 200).')
   if (!Array.isArray(o.pages_read) || !o.pages_read.every(p => isStr(p, 600))) errors.push('"pages_read" must be a list of URLs.')
   if (!strOrNull(o.notes)) errors.push('"notes" must be text or null.')
+  if (!(o.more === undefined || typeof o.more === 'boolean')) errors.push('"more" must be true or false.')
   const KEYS = Object.keys(RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.properties)
   o.findings.forEach((f, i) => {
     const at = `findings[${i}]`
@@ -217,8 +257,9 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
     if (!inList(r.feature, [...FEATURE_ANSWERS, null])) errors.push(`${at}.feature is invalid.`)
     if (!inList(r.classification, [...CLASSIFICATIONS, null])) errors.push(`${at}.classification is invalid.`)
     for (const k of ['url', 'source_url']) if (!(r[k] === null || isHttpUrl(r[k]))) errors.push(`${at}.${k} must be an http(s) URL or null.`)
-    if (inList(r.outcome, QUOTED_OUTCOMES) && (!isStr(r.quote) || !String(r.quote).trim() || !isStr(r.quote_en) || !isHttpUrl(r.source_url)))
-      errors.push(`${at}: a "${String(r.outcome)}" finding needs a verbatim quote, its English translation and the page's URL.`)
+    // competitor-check-5: the translation may be empty — the page is in English.
+    if (inList(r.outcome, QUOTED_OUTCOMES) && (!isStr(r.quote) || !String(r.quote).trim() || !isHttpUrl(r.source_url)))
+      errors.push(`${at}: a "${String(r.outcome)}" finding needs a verbatim quote and the page's URL.`)
     if (r.field === 'feature' && (r.feature_key === null || (inList(r.outcome, ['changed', 'unchanged']) && r.feature === null)))
       errors.push(`${at}: a feature finding needs "feature_key" (from the list) and "feature" (yes / no / partial / unknown).`)
     if (r.field !== 'feature' && r.feature_key !== null) errors.push(`${at}: "feature_key" goes with the field "feature" only.`)
@@ -226,7 +267,14 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
     if (r.outcome === 'new_url' && r.url === null) errors.push(`${at}: a new_url finding needs "url".`)
     if ((r.outcome === 'in_country' || r.outcome === 'not_in_country') !== (r.field === 'availability')) errors.push(`${at}: "in_country" and "not_in_country" go with the field "availability", and only they do.`)
   })
-  return errors.length ? { ok: false, errors } : { ok: true, value: o as unknown as RecordFindingsInput }
+  if (errors.length) return { ok: false, errors }
+  // competitor-check-5: a quote longer than QUOTE_MAX is cut back to a prefix (an exact substring still); a "translation"
+  // that only repeats the quote (an English page) is empty.
+  for (const r of o.findings as RawFinding[]) {
+    r.quote_en = r.quote_en !== null && r.quote !== null && squash(r.quote_en) === squash(r.quote) ? null : capQuote(r.quote_en, QUOTE_MAX + 100)
+    r.quote = capQuote(r.quote)
+  }
+  return { ok: true, value: o as unknown as RecordFindingsInput }
 }
 
 export function validateRecordVerdict(input: unknown): RecordVerdictInput | null {

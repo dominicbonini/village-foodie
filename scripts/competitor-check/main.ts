@@ -45,7 +45,9 @@ async function main() {
   const anthropic = new Anthropic({ maxRetries: 5, timeout: 300_000 })   // retries 408/409/429/5xx (incl. overloaded) with backoff
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } })
   const deps: CheckerDeps = {
-    api: params => anthropic.beta.messages.create(params as never) as never,
+    // competitor-check-5: STREAMED — max_tokens is now each model's maximum (128K), and the SDK refuses a non-streamed request
+    // that could run past 10 minutes; finalMessage() gives the same message create() did.
+    api: params => anthropic.beta.messages.stream(params as never).finalMessage() as never,
     // competitor-check-3: the Message Batches API — the quick pass submits its share as one batch (50% off tokens).
     batch: {
       create: requests => anthropic.beta.messages.batches.create({ requests } as never) as never,

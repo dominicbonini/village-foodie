@@ -22,12 +22,12 @@
 // 🔴 FINDINGS are written exactly as the routine and deep checks write them (Dominic accepts each); pass_state records each
 // competitor and country done, so a stopped pass resumes where it stopped. The daily and monthly caps cover everything.
 import type Anthropic from '@anthropic-ai/sdk'
-import { RECORD_FINDINGS_TOOL, APP_STORE_HOSTS, validateRecordFindings, type Classification } from './model'
+import { RECORD_FINDINGS_TOOL, APP_STORE_HOSTS, validateRecordFindings, maxOutputTokensFor, type Classification, type RecordFindingsInput } from './model'
 import { EXTRACTOR_SYSTEM, passFeatureBlock, passCompetitorBlock, classifyMessage, type CheckFeature } from './prompts'
 import { addSpend, ZERO_SPEND, budgetStop, passTargets, type PassItem, type PassState, type Spend } from './core'
 import {
-  converse, rowsFrom, secondCheck, domainsOf, answersFor, loginFailure,
-  type CheckerDeps, type CheckSettings, type CompetitorForCheck, type FindingRow, type RunReport,
+  converse, rowsFrom, secondCheck, domainsOf, answersFor, loginFailure, FINDING_GROUPS, MAX_CONTINUATIONS,
+  type CheckerDeps, type CheckSettings, type CompetitorForCheck, type FindingRow, type RunReport, type Meter, type Recorded,
 } from './checker'
 
 type Row = Record<string, unknown>
@@ -43,7 +43,9 @@ export const SEARCH_RESULT_TOKENS = 8_000
 export const BATCH_TOKEN_SCALE = 0.5
 /** A check's cost before any pass has run (the fixture estimate in docs/competitor-check-3-report.md §5). */
 export const PASS_ESTIMATE_USD = 0.03
-const OUTPUT_TOKENS = 6_000
+/** What one answer adds to the next turn's input — for the worst-case bound only (competitor-check-5: max_tokens itself is
+ *  the per-model setting, far higher, so an answer is never cut off). */
+const OUTPUT_ESTIMATE = 6_000
 /** The findings the verifier checks in the pass: prices and fees (and new or gone plans), and these two features. */
 export const PASS_VERIFIED_FIELDS = ['monthly_price', 'setup_fee', 'truck_fee', 'customer_fee', 'card_rate', 'plan'] as const
 export const PASS_VERIFIED_FEATURES = ['term', 'trial'] as const
@@ -94,16 +96,17 @@ export function passRequest(c: CompetitorForCheck, item: Pick<PassItem<Competito
     ...(q > 0 ? [{ type: 'web_search_20260318', name: 'web_search', max_uses: q, allowed_domains: allowed }] : []),
     RECORD_FINDINGS_TOOL,
   ]
-  const bound = (f: number, q: number) => roughTokens({ system, user, tools: tools(f, q) }) + f * p.maxPageTokens + q * SEARCH_RESULT_TOKENS + OUTPUT_TOKENS
+  const bound = (f: number, q: number) => roughTokens({ system, user, tools: tools(f, q) }) + f * p.maxPageTokens + q * SEARCH_RESULT_TOKENS + OUTPUT_ESTIMATE
   while (bound(fetches, searches) >= PRICE_STEP_TOKENS && fetches > 1) fetches--
   while (bound(fetches, searches) >= PRICE_STEP_TOKENS && searches > 0) searches--
-  return { model: p.extractorModel, system, user, tools: tools(fetches, searches), fetches, searches, bound: bound(fetches, searches), keys, allowed }
+  return { model: p.extractorModel, system, user, tools: tools(fetches, searches), fetches, searches, bound: bound(fetches, searches), keys, allowed,
+    maxTokens: maxOutputTokensFor(p.extractorModel, s.maxOutputTokens) }
 }
 
 /** The Messages API body of a check (what a batch request carries) — no refusal fallback: Haiku has none and batches
  *  reject the parameter. */
 export function passParams(r: ReturnType<typeof passRequest>): Row {
-  return { model: r.model, max_tokens: OUTPUT_TOKENS, system: r.system, messages: [{ role: 'user', content: r.user }], tools: r.tools, output_config: { effort: 'low' } }
+  return { model: r.model, max_tokens: r.maxTokens, system: r.system, messages: [{ role: 'user', content: r.user }], tools: r.tools, output_config: { effort: 'low' } }
 }
 
 /** Does the verifier check this finding? Prices, fees, plans, the minimum term, the trial — and a feature answer that
@@ -125,22 +128,30 @@ export function classOf(rows: FindingRow[], c: Pick<CompetitorForCheck, 'focus'>
   return k === 'food_truck_ordering' || k === 'restaurant_ordering' || (k === 'pos_or_card_reader' && c.focus === 'pos') ? 'relevant' : 'not_relevant'
 }
 
-/** One item: the read (from a batch result, or asked now), the rows, the second check. */
+/** One item: the read (from a batch result, or asked now), the rows, the second check. competitor-check-5: a cut-off answer
+ *  is continued; if it still cannot finish, its complete findings are kept and `incomplete` says why. */
 export async function processPassItem(deps: CheckerDeps, s: CheckSettings, item: PassItem<CompetitorForCheck>, runId: string, seed?: Anthropic.Beta.BetaMessage):
-  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null }> {
+  Promise<{ findings: FindingRow[]; spend: Spend; dropped: number; klass: 'relevant' | 'not_relevant' | 'unclear' | null; incomplete: string | null }> {
   const c = item.row
   const r = passRequest(c, item, s, deps.now().toISOString().slice(0, 10))
-  const ex = await converse(deps, {
+  let ex: { value: RecordFindingsInput; contents: unknown[][]; spend: Spend }, incomplete: string | null = null
+  try { ex = await converse(deps, {
     model: r.model, system: r.system, user: r.user, tools: r.tools, toolName: RECORD_FINDINGS_TOOL.name, prices: s.prices,
-    effort: 'low', maxTurns: 3, validate: validateRecordFindings, maxInputTokens: PRICE_STEP_TOKENS, maxTokens: OUTPUT_TOKENS,
+    effort: 'low', maxTurns: 3 + MAX_CONTINUATIONS, validate: validateRecordFindings, maxInputTokens: PRICE_STEP_TOKENS, maxTokens: r.maxTokens, groups: FINDING_GROUPS,
     ...(seed ? { seed, seedScale: BATCH_TOKEN_SCALE } : {}),
-  })
+  }) } catch (e) {
+    const partial = (e as { partial?: Recorded<RecordFindingsInput> }).partial
+    if (!partial || loginFailure(e)) throw e
+    ex = { ...partial, spend: ZERO_SPEND }
+    incomplete = `${e instanceof Error ? e.message : String(e)} — ${partial.value.findings.length} finding(s) from its complete calls kept; sent again in the next share`
+  }
   const keep = item.kind === 'classify' ? ['classification'] : null
   const { findings: all, dropped } = rowsFrom(c, ex, { runId, country: item.country, keys: [...r.keys, ...PASS_VERIFIED_FEATURES], domains: domainsOf(c) })
   const findings = keep ? all.filter(f => keep.includes(f.field)) : all
   const verify = item.kind === 'classify' ? ZERO_SPEND
-    : await secondCheck(deps, { model: s.pass.verifierModel, prices: s.prices, pageTokens: s.pass.maxPageTokens, allowed: r.allowed, maxInputTokens: PRICE_STEP_TOKENS }, c, findings, needsSecondCheck)
-  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' ? classOf(findings, c) : null }
+    : await secondCheck(deps, { model: s.pass.verifierModel, prices: s.prices, pageTokens: s.pass.maxPageTokens, allowed: r.allowed, maxInputTokens: PRICE_STEP_TOKENS,
+      maxTokens: maxOutputTokensFor(s.pass.verifierModel, s.maxOutputTokens) }, c, findings, needsSecondCheck)
+  return { findings, spend: addSpend(ex.spend, verify), dropped: dropped + (all.length - findings.length), klass: item.kind === 'classify' && !incomplete ? classOf(findings, c) : null, incomplete }
 }
 
 /** pass_state after an item: the classification, or the country done. */
@@ -205,13 +216,18 @@ async function saveRun(deps: CheckerDeps, runId: string, r: RunReport, finished:
     ...(finished ? { finished_at: deps.now().toISOString(), stopped_reason: r.stoppedReason } : {}),
   })
 }
-/** Writes an item's findings and marks it done (pass_state), so a stopped pass resumes after it. */
-async function writeItem(deps: CheckerDeps, item: PassItem<CompetitorForCheck>, out: Awaited<ReturnType<typeof processPassItem>>, r: RunReport) {
-  r.findings.push(...out.findings); r.checked++; r.checkedIds!.push(item.row.id)
-  r.spend = addSpend(r.spend, out.spend)
-  deps.log(`  ${item.row.name}${item.country ? ` · ${item.country}` : ' · classification'}: ${out.findings.length} finding(s)${out.klass ? ` (${out.klass})` : ''} · $${out.spend.usd.toFixed(4)}`)
+/** Writes an item's findings and marks it done (pass_state), so a stopped pass resumes after it. competitor-check-5: its cost is
+ *  the meter's (every response); an incomplete item keeps its findings but is failed and NOT marked done (sent again). */
+async function writeItem(deps: CheckerDeps, item: PassItem<CompetitorForCheck>, out: Awaited<ReturnType<typeof processPassItem>>, r: RunReport, meter: Meter) {
+  const name = `${item.row.name}${item.country ? ` · ${item.country}` : ''}`
+  r.findings.push(...out.findings)
+  if (out.incomplete) r.failed.push({ name, error: out.incomplete })
+  else { r.checked++; r.checkedIds!.push(item.row.id) }
+  r.spend = addSpend(r.spend, meter.spend)
+  deps.log(`  ${item.row.name}${item.country ? ` · ${item.country}` : ' · classification'}: ${out.incomplete ? 'INCOMPLETE — ' : ''}${out.findings.length} finding(s)${out.klass ? ` (${out.klass})` : ''} · $${meter.spend.usd.toFixed(4)}`)
   if (deps.dryRun) return
   if (out.findings.length) await deps.store.insertFindings(out.findings)
+  if (out.incomplete) return
   const next = nextPassState(item.row.passState, item, deps.now().toISOString(), out.klass)
   item.row.passState = next
   await deps.store.setSchedule(item.row.id, { pass_state: next as Record<string, unknown> })
@@ -235,8 +251,10 @@ async function collectBatch(deps: CheckerDeps, s: CheckSettings, b: PassBatch, b
       report.failed.push({ name: `${row.name}${it.country ? ` · ${it.country}` : ''}`, error: `batch item ${res.result.type} (${why}) — sent again in the next share` })
       continue
     }
-    try { await writeItem(deps, item, await processPassItem(deps, s, item, runId, res.result.message), report) }
+    const meter: Meter = { spend: ZERO_SPEND }
+    try { await writeItem(deps, item, await processPassItem({ ...deps, meter }, s, item, runId, res.result.message), report, meter) }
     catch (e) {
+      report.spend = addSpend(report.spend, meter.spend)   // competitor-check-5: a failed item's calls cost too
       if (loginFailure(e)) { report.stoppedReason = 'error'; report.error = `${loginFailure(e)} — the pass stopped.`; break }
       report.failed.push({ name: `${row.name}${it.country ? ` · ${it.country}` : ''}`, error: e instanceof Error ? e.message : String(e) })
     }
@@ -258,8 +276,10 @@ async function runPassSync(deps: CheckerDeps, s: CheckSettings, items: PassItem<
     const guard = budgetStop({ spentTodayUsd: sp.todayUsd + report.spend.usd, spentMonthUsd: sp.monthUsd + report.spend.usd, runUsd: report.spend.usd,
       runChecked: report.checked + report.failed.length, priorAvgUsd: PASS_ESTIMATE_USD, caps: { dailyUsd: live.dailyCapUsd, monthlyUsd: live.monthlyCapUsd } })
     if (guard.stop) { report.stoppedReason = guard.reason; deps.log(`  stopped before ${item.row.name}: ${guard.reason}`); break }
-    try { await writeItem(deps, item, await processPassItem(deps, live, item, runId), report) }
+    const meter: Meter = { spend: ZERO_SPEND }
+    try { await writeItem(deps, item, await processPassItem({ ...deps, meter }, live, item, runId), report, meter) }
     catch (e) {
+      report.spend = addSpend(report.spend, meter.spend)   // competitor-check-5: a failed item's calls cost too
       const login = loginFailure(e)
       if (login) { report.stoppedReason = 'error'; report.error = `${login} — the pass stopped.`; await saveRun(deps, runId, report, false); break }
       report.failed.push({ name: `${item.row.name}${item.country ? ` · ${item.country}` : ''}`, error: e instanceof Error ? e.message : String(e) })

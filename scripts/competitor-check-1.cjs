@@ -47,6 +47,12 @@
 //       with unions (anyOf or type arrays, counted recursively — the API refuses more than 16); the "" / "none" sentinels map
 //       back to exactly the nulls stored before; a batch's errored items stay pending and are sent again, with the API's
 //       message recorded and no cost; an all-errored batch exits non-zero while the night's other shares still run.
+// competitor-check-5 (30 October 2026, docs/competitor-check-5-report.md):
+//  19 · a long extraction completes instead of failing: max_tokens is each model's maximum (a setting, 128K by default);
+//       record_findings is called once per group (prices and terms, then the features a dozen at a time) and the calls are
+//       merged; a response cut off at max_tokens is continued (no duplicates); past the limit the complete findings are
+//       kept and the check reported as failed; every response's usage — failed calls' too — is in the run's cost; quotes
+//       over 200 characters are cut back to an exact prefix; an English page's quote_en is empty.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -79,6 +85,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     "export { importFeatures, featuresProblems } from '@/lib/data-import/features'",
     "export { EXTRACTOR_SYSTEM, extractorMessage } from '@/lib/competitor-check/prompts'",
     "export * as pass from '@/lib/competitor-check/pass'",
+    "export { MAX_CONTINUATIONS, FINDING_GROUPS, converse } from '@/lib/competitor-check/checker'",
+    "export { findingGroups, FEATURE_GROUP_SIZE } from '@/lib/competitor-check/prompts'",
+    "export { settingsOut, maxOutputTokensOut } from '@/lib/competitor-check/store-supabase'",
   ].join('\n'))
   const NOW = new Date('2026-10-26T02:10:00Z')
 
@@ -1025,6 +1034,149 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const nStore = FX.memoryCheckerStore({ settings: () => FX.SETTINGS({ deepRequestedAt: '2026-10-25T10:00:00Z', deepCountry: 'DE', deepPerDay: 1, pass: { ...ps({ batch: inFlight }).pass } }), competitors: rowsF.map(r => ({ ...r })) })
     const nr = await L.runChecker({ ...deps(FX.fakeApi(() => 'ok:29'), nStore), batch: mkBatch(inFlight.items.map(i => ({ custom_id: i.customId, result: { type: 'errored', error: ERR } })), []) }, { mode: 'scheduled', trigger: 'schedule' })
     t('in the nightly job: the all-errored batch makes it a red cross (exit 1), yet the deep share still runs', nr.some(r => r.mode === 'pass' && r.stoppedReason === 'error') && nr.some(r => r.mode === 'deep' && r.checked === 1) && L.exitCodeOf(nr) === 1, nr.map(r => [r.mode, r.checked, r.stoppedReason]))
+  }
+
+  // ── 19 · competitor-check-5: long extractions complete; failed calls cost ──
+  head('19 · long extractions finish in groups, a cut-off is continued, failed calls are costed')
+  {
+    const EX_USAGE = { input_tokens: 30000, output_tokens: 3000, server_tool_use: { web_search_requests: 0, web_fetch_requests: 1 } }
+    const costOfRes = r => L.costOf(r.usage, r.model, FX.PRICES).usd
+    const userOf = p => { const c = p.messages[0].content; return typeof c === 'string' ? c : c.map(b => b.text || '').join('\n') }
+    const isVerifier = p => p.tools.some(tl => tl.name === 'record_verdict')
+    const FEATS = Array.from({ length: 45 }, (_, i) => ({ key: `feat${String(i + 1).padStart(2, '0')}`, label: `Feature ${i + 1}`, explain: `What feature ${i + 1} does.` }))
+    const pageOf = name => `${FX.PAGE(name, 29)}\n${FEATS.map((f, i) => `Funktion ${i + 1}: ja.`).join('\n')}`
+    const priceF = url => FX.F({ field: 'monthly_price', plan_name: 'Starter', country_code: 'DE', outcome: 'unchanged', found_value: '29 € pro Monat zzgl. MwSt.', amount: 29, currency: 'EUR', period: 'month', vat: 'excl',
+      quote: 'Starter: 29 € pro Monat zzgl. MwSt.', quote_en: 'Starter: €29 per month plus VAT.', source_url: url })
+    const featF = (key, url) => { const n = Number(key.replace(/\D/g, '')) || 0
+      return key === 'preorder' ? FX.F({ field: 'feature', feature_key: 'preorder', outcome: 'unchanged', feature: 'yes', found_value: 'yes', quote: 'Ihre Gäste wählen eine Abholzeit.', quote_en: 'Your guests choose a collection time.', source_url: url })
+        : key === 'whatsapp' ? FX.F({ field: 'feature', feature_key: 'whatsapp', outcome: 'unchanged', feature: 'no', found_value: 'no', quote: 'WhatsApp: nicht verfügbar.', quote_en: 'WhatsApp: not available.', source_url: url })
+        : key === 'term' ? FX.F({ field: 'feature', feature_key: 'term', outcome: 'unchanged', feature: 'no', note: 'Keine', found_value: 'no', quote: 'Keine Mindestlaufzeit, monatlich kündbar.', quote_en: 'No minimum term, cancel monthly.', source_url: url })
+        : FX.F({ field: 'feature', feature_key: key, outcome: 'changed', feature: 'yes', found_value: 'yes', quote: `Funktion ${n}: ja.`, quote_en: `Feature ${n}: yes.`, source_url: url }) }
+    /** A model that answers in turns: `script(turn, ctx)` → { blocks, stop }; the verifier as the shared fixture. Every
+     *  response is kept, so the run's cost can be checked against them. */
+    const scripted = (script, seen = { calls: [], responses: [] }) => async p => {
+      seen.calls.push(JSON.parse(JSON.stringify(p)))
+      const res = isVerifier(p) ? await FX.fakeApi(() => 'ok:29')(p) : (() => {
+        const user = userOf(p), url = (/- (https:\/\/\S+)/.exec(user) || [])[1], name = (/Competitor: (Testtruck Ordering \d+)/.exec(user) || [])[1]
+        const groups = [...user.matchAll(/^Group (\d+)\. (.*)$/gm)].map(m => m[2])
+        const turn = p.messages.filter(m => m.role === 'assistant').length
+        const keysOf = g => ((/^Features: (.*)\.$/.exec(g) || [])[1] || '').split(', ').filter(Boolean)
+        const o = script(turn, { url, name, groups, keysOf, fetch: () => FX.fetchPair(url, pageOf(name)) })
+        if (o.throw) throw o.throw
+        return FX.msg(o.blocks, o.stop || 'tool_use', EX_USAGE)
+      })()
+      seen.responses.push(res)
+      return res
+    }
+    const rec = (findings, more) => FX.toolUse('record_findings', { findings, pages_read: [], notes: '', more })
+    const storeWith = (i, feats) => { const st = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(i)] }); if (feats) st.features = async () => feats.map(f => ({ ...f })); return st }
+
+    // ── a 45-feature deep check, in groups ──
+    const groups45 = L.findingGroups(FEATS)
+    const seen1 = { calls: [], responses: [] }
+    const st1 = storeWith(81, FEATS)
+    const [r1] = await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...(turn === 0 ? x.fetch() : []), rec(turn === 0 ? [priceF(x.url)] : x.keysOf(x.groups[turn]).map(k => featF(k, x.url)), turn < x.groups.length - 1)] }), seen1), st1),
+      { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 081' })
+    const ex1 = seen1.calls.filter(p => !isVerifier(p))
+    const feats1 = st1.findings.filter(f => f.field === 'feature')
+    t(`a 45-feature deep check completes across ${groups45.length} record_findings calls (prices and terms, then ${groups45.length - 1} groups of at most ${L.FEATURE_GROUP_SIZE}) — every feature and the price found, quote-checked, marked checked`,
+      groups45.length === 5 && r1.checked === 1 && r1.failed.length === 0 && ex1.length === 5 && feats1.length === 45 && new Set(feats1.map(f => f.found.feature_key)).size === 45
+      && st1.findings.filter(f => f.field === 'monthly_price').length === 1 && st1.findings.every(f => f.quote_in_page) && st1.schedule.some(([id, c]) => id === 'c-081' && c.next_check_at),
+      { checked: r1.checked, failed: r1.failed, calls: ex1.length, features: feats1.length })
+    t('…the message lists the groups in order and the extractor is told one call per group, "more" true on every call but the last',
+      /Record in 5 groups/.test(userOf(ex1[0])) && /Group 1\. Prices and terms/.test(userOf(ex1[0])) && /Group 5\. Features: feat37, .*feat45\./.test(userOf(ex1[0])) && /"more": true on every call except the last/.test(L.EXTRACTOR_SYSTEM)
+      && ex1[1].messages[2].content[0].type === 'tool_result' && !ex1[1].messages[2].content[0].is_error)
+    t('…each request asks for the model\'s maximum output (max_tokens 128,000 for Sonnet 5.5 and Haiku 5.5 — the docs\' "Max output"), not a small fixed number',
+      seen1.calls.every(p => p.max_tokens === 128000) && L.maxOutputTokensFor('claude-haiku-5-5') === 128000 && L.maxOutputTokensFor('claude-unknown-1') === 32000)
+    const over = storeWith(82); const seenO = { calls: [], responses: [] }
+    over.settings = async () => ({ ...settings, maxOutputTokens: { 'claude-sonnet-5-5': 64000 } })
+    await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...x.fetch(), rec([priceF(x.url)], false)] }), seenO), over), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 082' })
+    t('…max_tokens comes from the per-model setting (max_output_tokens) when it names the model; bad entries are ignored',
+      seenO.calls.length > 0 && seenO.calls.every(p => p.max_tokens === 64000)
+      && JSON.stringify(L.maxOutputTokensOut({ 'claude-sonnet-5-5': 64000, 'claude-haiku-5-5': 'lots', tiny: 10, frac: 2048.5 })) === JSON.stringify({ 'claude-sonnet-5-5': 64000 })
+      && JSON.stringify(L.settingsOut({ max_output_tokens: { 'claude-haiku-5-5': 50000 }, prices: FX.PRICES }).maxOutputTokens) === JSON.stringify({ 'claude-haiku-5-5': 50000 })
+      && JSON.stringify(L.settingsOut({ prices: FX.PRICES }).maxOutputTokens) === '{}')
+    const P = L.pass
+    const pr = P.passRequest(FX.competitor(83), { kind: 'check', country: 'DE' }, FX.SETTINGS({ features: FX.CHECK_FEATURES.map(f => ({ ...f, showScope: 'all' })) }), '2026-10-30')
+    t('…the quick pass and its batch too (Haiku: 128,000) — while its worst-case input bound still counts a 6,000-token answer (3 pages kept, under 100,000)',
+      P.passParams(pr).max_tokens === 128000 && pr.fetches === 3 && pr.bound < P.PRICE_STEP_TOKENS, { max: P.passParams(pr).max_tokens, fetches: pr.fetches, bound: pr.bound })
+
+    // ── a cut-off answer is continued ──
+    const seen2 = { calls: [], responses: [] }
+    const st2 = storeWith(84)
+    const [r2] = await L.runChecker(deps(scripted((turn, x) => turn === 0
+      ? { blocks: [...x.fetch(), rec([priceF(x.url), featF('term', x.url)], true), rec([featF('preorder', x.url)], true)], stop: 'max_tokens' }
+      : { blocks: [rec([priceF(x.url), featF('preorder', x.url), featF('whatsapp', x.url)], false)] }, seen2), st2), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 084' })
+    const ex2 = seen2.calls.filter(p => !isVerifier(p))
+    const cont = ex2[1] && ex2[1].messages[2].content
+    t('a max_tokens stop is CONTINUED: the complete call recorded, the unfinished last call answered "not recorded", the model told to go on with the rest',
+      ex2.length === 2 && Array.isArray(cont) && cont.length === 3 && !cont[0].is_error && cont[1].is_error && /Cut off \(max_tokens\) — not recorded/.test(cont[1].content)
+      && cont[2].type === 'text' && /cut off \(max_tokens\)\. Continue with the remaining findings only/.test(cont[2].text), cont)
+    const keyOf = f => `${f.field}:${f.found.feature_key || f.found.plan_name}`
+    t('…and the findings merge WITHOUT duplicates (the price repeated after the continuation is recorded once); the check completes',
+      r2.checked === 1 && r2.failed.length === 0 && JSON.stringify(st2.findings.map(keyOf).sort()) === JSON.stringify(['feature:preorder', 'feature:term', 'feature:whatsapp', 'monthly_price:Starter']),
+      st2.findings.map(keyOf))
+
+    // ── past the continuation limit ──
+    const seen3 = { calls: [], responses: [] }
+    const st3 = storeWith(85)
+    const order = ['price', 'preorder', 'whatsapp', 'term']
+    const [r3] = await L.runChecker(deps(scripted((turn, x) => ({ blocks: [...(turn === 0 ? x.fetch() : []), rec([order[turn] === 'price' ? priceF(x.url) : featF(order[turn], x.url)], true), rec([featF('term', x.url)], true)], stop: 'max_tokens' }), seen3), st3),
+      { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 085' })
+    const run3 = st3.runs[0]
+    t(`still cut off after ${L.MAX_CONTINUATIONS} continuations: the check fails — but the ${L.MAX_CONTINUATIONS + 1} complete calls' findings are KEPT (written, quote-checked, verified), the rest reported as failed`,
+      seen3.calls.filter(p => !isVerifier(p)).length === L.MAX_CONTINUATIONS + 1 && r3.checked === 0 && r3.failed.length === 1
+      && /cut off \(max_tokens\) 3 times/.test(r3.failed[0].error) && /3 finding\(s\) from its complete calls kept; the rest was not recorded/.test(r3.failed[0].error)
+      && JSON.stringify(st3.findings.map(keyOf).sort()) === JSON.stringify(['feature:preorder', 'feature:whatsapp', 'monthly_price:Starter']) && st3.findings.every(f => f.second_check === 'confirmed')
+      && /cut off/.test(run3.notes), { failed: r3.failed, findings: st3.findings.map(keyOf) })
+    t('…and the competitor is NOT marked checked (it is tried again); the run is a red cross like any run where everything failed',
+      !st3.schedule.some(([id]) => id === 'c-085') && r3.stoppedReason === 'error' && L.exitCodeOf([r3]) === 1)
+    const want3 = seen3.responses.reduce((sum, r) => sum + costOfRes(r), 0)
+    t('…its cost is every response\'s usage — the three cut-off answers and the verifier calls — in the run and its row (not $0)',
+      want3 > 0 && Math.abs(r3.spend.usd - want3) < 1e-9 && run3.cost_usd === Number(want3.toFixed(4)) && run3.input_tokens === seen3.responses.reduce((s2, r) => s2 + r.usage.input_tokens, 0), { want: want3, run: run3.cost_usd })
+
+    // ── failed calls cost ──
+    const st4 = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(86), FX.competitor(87)] })
+    const seen4 = { calls: [], responses: [] }
+    const bad = FX.fakeApi(n => (n.endsWith('086') ? 'malformed' : 'ok:29'))
+    const [r4] = await L.runChecker(deps(async p => { const r = await bad(p); seen4.responses.push(r); return r }, st4), { mode: 'deep', trigger: 'manual', limit: 2 })
+    const failedCost = seen4.responses.filter(r => /Testtruck Ordering 086/.test(JSON.stringify(r)) || r.content.some(b => b.type === 'tool_use' && b.input && b.input.extra === 1)).reduce((sum, r) => sum + costOfRes(r), 0)
+    const all4 = seen4.responses.reduce((sum, r) => sum + costOfRes(r), 0)
+    t('a competitor that FAILS (record_findings malformed twice): both of its calls are in the run\'s cost — the run costs exactly every response it received',
+      r4.failed.length === 1 && r4.checked === 1 && failedCost > 0 && Math.abs(r4.spend.usd - all4) < 1e-9 && st4.runs[0].cost_usd === Number(all4.toFixed(4)), { failedCost, all: all4, run: st4.runs[0].cost_usd })
+    const st5 = storeWith(88); const seen5 = { calls: [], responses: [] }
+    const boom = Object.assign(new Error('overloaded_error: Overloaded'), { status: 529 })
+    const [r5] = await L.runChecker(deps(scripted((turn, x) => turn === 0 ? { blocks: [...x.fetch(), FX.toolUse('web_search_lookalike', {})] } : { throw: boom }, seen5), st5), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 088' })
+    const want5 = seen5.responses.reduce((sum, r) => sum + costOfRes(r), 0)
+    t('…an API error on the second call: the first call\'s usage still counts (run cost > 0, equal to the responses received), and towards the caps',
+      r5.failed.length === 1 && /Overloaded/.test(r5.failed[0].error) && want5 > 0 && Math.abs(r5.spend.usd - want5) < 1e-9 && st5.runs[0].cost_usd === Number(want5.toFixed(4)))
+    const st6 = FX.memoryCheckerStore({ settings: () => FX.SETTINGS({ dailyCapUsd: 0.3 }), competitors: [FX.competitor(89), FX.competitor(90)] })
+    const [r6] = await L.runChecker(deps(FX.fakeApi(() => 'malformed'), st6), { mode: 'deep', trigger: 'manual', limit: 2 })
+    t('…so failed calls bring the daily cap closer: two malformed checks at $0.44 each stop at a $0.30 cap after the first',
+      r6.stoppedReason === 'daily_cap' && r6.failed.length === 1 && r6.spend.usd > 0.3, { stopped: r6.stoppedReason, failed: r6.failed.length, usd: r6.spend.usd })
+
+    // ── shorter findings ──
+    const longQ = 'Starter: 29 € pro Monat zzgl. MwSt. — ' + 'inklusive Vorbestellung, Abholzeiten, Kassensystem, Küchenmonitor und WhatsApp-Benachrichtigungen für alle Standorte, '.repeat(3) + 'monatlich kündbar.'
+    const vq = L.validateRecordFindings({ findings: [FX.F({ outcome: 'unchanged', plan_name: 'Starter', amount: 29, currency: 'EUR', period: 'month', quote: longQ, quote_en: 'Starter: €29 per month plus VAT.', source_url: 'https://x.example/p' })], pages_read: [], notes: null, more: false })
+    const cutQ = vq.ok && vq.value.findings[0].quote
+    t(`a quote over ${L.QUOTE_MAX} characters is cut back to an EXACT prefix (ended at a word break) — still found verbatim on the page by the quote check; a made-up quote still is not`,
+      longQ.length > 300 && vq.ok && cutQ.length <= L.QUOTE_MAX && cutQ.length >= L.QUOTE_MAX / 2 && longQ.startsWith(cutQ) && !/\s$/.test(cutQ)
+      && L.quoteInPages(cutQ, [`Preise\n${longQ}\nmehr`]) && !L.quoteInPages(L.capQuote('Starter: 19 € pro Monat ' + 'x'.repeat(300)), [`Preise\n${longQ}`]) && L.capQuote('kurz') === 'kurz', { len: cutQ && cutQ.length })
+    t(`…and the prompt asks for the shortest exact passage, at most ${L.QUOTE_MAX} characters`, L.EXTRACTOR_SYSTEM.includes(`the shortest exact passage that proves the value (a table cell or part of a sentence), at most ${L.QUOTE_MAX} characters`)
+      && L.RECORD_FINDINGS_TOOL.description.includes(`at most ${L.QUOTE_MAX} characters`))
+    const en = L.validateRecordFindings({ findings: [
+      FX.F({ outcome: 'unchanged', plan_name: 'Starter', quote: 'Starter: $29 per month', quote_en: '', source_url: 'https://x.example/p' }),
+      FX.F({ outcome: 'unchanged', plan_name: 'Pro', quote: 'Pro: $49 per month', quote_en: 'Pro: $49 per month', source_url: 'https://x.example/p' }),
+      FX.F({ outcome: 'unchanged', plan_name: 'Plus', quote: 'Plus: 39 € pro Monat', quote_en: 'Plus: €39 per month', source_url: 'https://x.example/p' })], pages_read: [], notes: '', more: false })
+    t('quote_en is EMPTY for an English page: "" is accepted (no translation needed) and a "translation" that only repeats the quote is dropped; a German quote keeps its translation',
+      en.ok && en.value.findings[0].quote_en === null && en.value.findings[1].quote_en === null && en.value.findings[2].quote_en === 'Plus: €39 per month'
+      && L.EXTRACTOR_SYSTEM.includes('Give an English translation of that quote, or "" when the page is already in English.'), en.ok ? en.value.findings.map(f => f.quote_en) : en.errors)
+    t('…a quoted finding still needs its quote and URL (only the translation became optional)',
+      !L.validateRecordFindings({ findings: [FX.F({ outcome: 'changed', quote: '', quote_en: '', source_url: 'https://x.example/p' })], pages_read: [], notes: '', more: false }).ok
+      && !L.validateRecordFindings({ findings: [FX.F({ outcome: 'changed', quote: 'Starter: 29 €', quote_en: '', source_url: '' })], pages_read: [], notes: '', more: false }).ok)
+    const m = L.mergeRecorded({ findings: [priceF('https://a.example/p')], pages_read: ['https://a.example/p'], notes: 'one', more: true },
+      { findings: [priceF('https://a.example/p'), featF('preorder', 'https://a.example/p')], pages_read: ['https://a.example/p', 'https://a.example/f'], notes: null, more: false })
+    t('mergeRecorded: a repeated finding is left out, pages joined, notes kept, "more" from the last call', m.findings.length === 2 && m.pages_read.length === 2 && m.notes === 'one' && m.more === false)
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} competitor-check-1: ${pass} passed, ${fail} failed`)

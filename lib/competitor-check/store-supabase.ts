@@ -38,6 +38,11 @@ export function passSettingsOut(r: Row): PassSettings {
     maxPageTokens: n(r.pass_max_page_tokens, DEFAULT_PASS.maxPageTokens), batch: b && typeof b.id === 'string' ? b : null,
   }
 }
+/** competitor-check-5: max_output_tokens ({"claude-sonnet-5-5": 128000, …}) — only whole numbers of at least 1,024 are kept. */
+export function maxOutputTokensOut(v: unknown): Record<string, number> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return {}
+  return Object.fromEntries(Object.entries(v as Row).filter((e): e is [string, number] => typeof e[1] === 'number' && Number.isInteger(e[1]) && e[1] >= 1024))
+}
 export function settingsOut(r: Row): CheckSettings {
   return {
     paused: r.paused === true, dailyCapUsd: Number(r.daily_cap_usd), monthlyCapUsd: Number(r.monthly_cap_usd), deepPerDay: Number(r.deep_per_day),
@@ -48,6 +53,8 @@ export function settingsOut(r: Row): CheckSettings {
     deepQueue: Array.isArray(r.deep_queue) ? (r.deep_queue as unknown[]).filter((c): c is string => typeof c === 'string' && /^[A-Z]{2}$/.test(c)) : [],
     // competitor-check-3 (20261049), read tolerantly: before it runs, the defaults and no pass started.
     pass: passSettingsOut(r),
+    // competitor-check-5 (20261050), read tolerantly: before it runs (or for a model it does not name), each model's maximum.
+    maxOutputTokens: maxOutputTokensOut(r.max_output_tokens),
   }
 }
 export function competitorForCheck(r: Row, plans: Row[], allCodes: readonly string[] = [], values: readonly FeatureValueRow[] = []): CompetitorForCheck {
