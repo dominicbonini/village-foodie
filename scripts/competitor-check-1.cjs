@@ -42,6 +42,11 @@
 //       read first; the fetch, search and page caps hold; no request reaches 100,000 input tokens; the verifier only on
 //       prices, fees, term, trial and changed answers; a stopped pass resumes where it stopped; the caps stop it; the batch
 //       path used only when the docs allow; the cost estimate.
+// competitor-check-4 (30 October 2026, docs/competitor-check-4-report.md):
+//  18 · every tool schema the checker sends (deep, routine, pass, classification read, verifier) has at most 12 parameters
+//       with unions (anyOf or type arrays, counted recursively — the API refuses more than 16); the "" / "none" sentinels map
+//       back to exactly the nulls stored before; a batch's errored items stay pending and are sent again, with the API's
+//       message recorded and no cost; an all-errored batch exits non-zero while the night's other shares still run.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
 const fs = require('fs')
@@ -915,6 +920,111 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     const total = (CHECKS * perCheck + CLASSIFY * perClass) * OVER
     console.log(`      estimate: a check $${perCheck.toFixed(4)} (batch extractor + 4 second checks), a classification read $${perClass.toFixed(5)}; ${CHECKS} checks + ${CLASSIFY} reads × 1.2 = $${total.toFixed(2)}`)
     t('the report\'s estimate: ≈ $0.0187 a check, ≈ $0.0005 a classification read, the full pass ≈ $3.5 (155 checks + 70 reads, +20%)', Math.abs(perCheck - 0.018725) < 0.0002 && Math.abs(perClass - 0.000475) < 0.00005 && Math.abs(total - 3.52) < 0.05, { perCheck, perClass, total })
+  }
+
+  // ── 18 · competitor-check-4: the schemas the API accepts, the sentinels, a failed batch ──
+  head('18 · schemas under the union limit, sentinels that mean null, a failed batch recovered')
+  {
+    /** Parameters with a union (anyOf, or a type array), counted through properties and items. */
+    const unions = sch => {
+      let n = 0
+      const walk = (x, isParam) => {
+        if (!x || typeof x !== 'object') return
+        if (isParam && (Array.isArray(x.anyOf) || Array.isArray(x.type))) n++
+        if (x.properties) for (const v of Object.values(x.properties)) walk(v, true)
+        if (x.items) walk(x.items, false)
+        for (const v of x.anyOf ?? []) walk(v, false)
+      }
+      walk(sch, false)
+      return n
+    }
+    // The tool schemas the checker actually SENDS: a deep check, a routine check, a quick-pass check, a classification read
+    // and the verifier — collected from the requests themselves.
+    const sent = []
+    const tap = inner => async p => { sent.push(JSON.parse(JSON.stringify(p))); return inner(p) }
+    const st = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(61)] })
+    await L.runChecker(deps(tap(FX.fakeApi(() => 'ok:49')), st), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 061' })
+    await L.runChecker(deps(tap(FX.fakeApi(() => 'ok:49')), FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(62, { nextCheckAt: '2026-10-01' })] })), { mode: 'routine', trigger: 'manual' })
+    const passS = FX.SETTINGS({ pass: { ...FX.SETTINGS().pass, requestedAt: '2026-10-29T12:00:00Z' } })
+    const clsApi = async p => {
+      const first = p.messages[0].content, txt = Array.isArray(first) ? first.map(b => b.text).join('\n') : first
+      if (!/CLASSIFICATION READ/.test(txt)) return FX.fakeApi(() => 'ok:49')(p)
+      const url = (/- (https:\/\/\S+)/.exec(txt) || [])[1]
+      return FX.msg([...FX.fetchPair(url, 'Bestellsystem für Foodtrucks.'), FX.toolUse('record_findings', { findings: [FX.F({ field: 'classification', outcome: 'classification', classification: 'food_truck_ordering', quote: 'Bestellsystem für Foodtrucks.', quote_en: 'Ordering system for food trucks.', source_url: url })], pages_read: [url], notes: null })], 'tool_use', { input_tokens: 5000, output_tokens: 200 }, 'claude-haiku-5-5')
+    }
+    await L.runChecker(deps(tap(clsApi), FX.memoryCheckerStore({ settings: () => passS, competitors: [FX.competitor(63, { countries: ['DE'] }), FX.competitor(64, { lifecycle: 'candidate', countries: ['DE'] })] })), { mode: 'pass', trigger: 'manual' })
+    const schemas = new Map()
+    for (const p of sent) for (const tl of p.tools) if (tl.input_schema) schemas.set(tl.name, tl.input_schema)
+    const counts = Object.fromEntries([...schemas].map(([k, v]) => [k, unions(v)]))
+    const kinds = { deep: sent.some(p => /FULL DEEP CHECK/.test(JSON.stringify(p.messages[0]))), pass: sent.some(p => /QUICK PASS/.test(JSON.stringify(p.messages[0]))),
+      classify: sent.some(p => /CLASSIFICATION READ/.test(JSON.stringify(p.messages[0]))), routine: sent.some(p => /ROUTINE CHECK/.test(JSON.stringify(p.messages[0]))), verifier: schemas.has('record_verdict') }
+    console.log(`      unions per schema sent: ${JSON.stringify(counts)} (deep, routine, pass, classification read and verifier all sent: ${JSON.stringify(kinds)})`)
+    t('every schema the checker sends — record_findings (deep, routine, pass, classification read) and record_verdict — has at most 12 parameters with unions (the API refuses more than 16)',
+      Object.values(kinds).every(Boolean) && schemas.size === 2 && Object.values(counts).every(n => n <= 12) && counts.record_findings === 2 && counts.record_verdict === 0, counts)
+    t('…every request carrying record_findings or record_verdict carries the SAME schema (so the guard covers each one sent)',
+      sent.every(p => p.tools.filter(tl => tl.input_schema).every(tl => JSON.stringify(tl.input_schema) === JSON.stringify(schemas.get(tl.name)))))
+    const old = { type: 'object', properties: { findings: { type: 'array', items: { type: 'object', properties: Object.fromEntries(['plan_name', 'country_code', 'found_value', 'amount', 'currency', 'period', 'vat', 'percent', 'feature_key', 'feature', 'note', 'classification', 'url', 'quote', 'quote_en', 'source_url']
+      .map(k => [k, { anyOf: [{ type: 'string' }, { type: 'null' }] }])) } }, notes: { anyOf: [{ type: 'string' }, { type: 'null' }] } } }
+    t('the guard would have caught it: the schema of 30 Oct counts 17 (the API\'s own number)', unions(old) === 17)
+    t('strict mode kept on both tools; every property still required', L.RECORD_FINDINGS_TOOL.strict === true && L.RECORD_VERDICT_TOOL.strict === true
+      && L.RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.required.length === Object.keys(L.RECORD_FINDINGS_TOOL.input_schema.properties.findings.items.properties).length)
+    // The sentinels mean exactly what null meant: "" text and "none" choice → null.
+    const wireOf = f => Object.fromEntries(Object.entries(f).map(([k, v]) => [k, v === null && ['period', 'vat', 'feature', 'classification'].includes(k) ? 'none' : v === null && !['amount', 'percent'].includes(k) ? '' : v]))
+    const nullForm = { findings: [FX.F({ field: 'feature', feature_key: 'kds', feature: 'partial', note: null, outcome: 'changed', quote: 'KDS als Zusatz', quote_en: 'KDS as an add-on', source_url: 'https://x.example/kds' }),
+      FX.F({ field: 'monthly_price', plan_name: 'Starter', outcome: 'changed', amount: 39, currency: 'EUR', period: 'month', vat: null, quote: 'Starter 39 €', quote_en: 'Starter €39', source_url: 'https://x.example/p' })], pages_read: [], notes: null }
+    const wireForm = { ...nullForm, findings: nullForm.findings.map(wireOf), notes: '' }
+    const a1 = L.validateRecordFindings(nullForm), a2 = L.validateRecordFindings(wireForm)
+    t('the sentinels round-trip: "" and "none" on the wire validate to exactly the nulls of before (a missing vat stays null, not "none"; a note stays null)',
+      a1.ok && a2.ok && JSON.stringify(a1.value) === JSON.stringify(a2.value) && a2.value.findings[1].vat === null && a2.value.findings[0].note === null && a2.value.notes === null
+      && wireForm.findings[1].vat === 'none' && wireForm.findings[0].note === '', { a1: a1.ok || a1.errors, a2: a2.ok || a2.errors })
+    t('…and the verdict: "" → null', JSON.stringify(L.validateRecordVerdict({ verdict: 'not_found', value: '', quote: '', quote_en: '' })) === JSON.stringify({ verdict: 'not_found', value: null, quote: null, quote_en: null }))
+    // The whole pipeline: the same run with a model answering in the new shape writes byte-identical finding rows.
+    const toWire = inner => async p => { const r = await inner(p); for (const b of r.content) if (b.type === 'tool_use' && b.name === 'record_findings') b.input = { ...b.input, findings: b.input.findings.map(wireOf), notes: b.input.notes ?? '' }
+      else if (b.type === 'tool_use' && b.name === 'record_verdict') b.input = Object.fromEntries(Object.entries(b.input).map(([k, v]) => [k, v === null ? '' : v])); return r }
+    const sA = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(65)] }), sB = FX.memoryCheckerStore({ settings: () => settings, competitors: [FX.competitor(65)] })
+    await L.runChecker(deps(FX.fakeApi(() => 'ok:49'), sA), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 065' })
+    await L.runChecker(deps(toWire(FX.fakeApi(() => 'ok:49')), sB), { mode: 'single', trigger: 'manual', competitor: 'Testtruck Ordering 065' })
+    t('…through the whole pipeline: a run answered with sentinels stores byte-identical findings to one answered with nulls (nothing stored changes meaning)',
+      sA.findings.length > 0 && JSON.stringify(sA.findings) === JSON.stringify(sB.findings), { a: sA.findings.length, b: sB.findings.length })
+
+    // ── a failed batch ──
+    const REQ = '2026-10-29T12:00:00Z'
+    const ps = over => FX.SETTINGS({ pass: { ...FX.SETTINGS().pass, requestedAt: REQ, perDay: 2, ...over } })
+    const ERR = { type: 'error', error: { type: 'invalid_request_error', message: 'Schemas contains too many parameters with union types (17 parameters with type arrays or anyOf).' } }
+    const mkBatch = (results, submitted) => ({
+      async create(requests) { submitted.push(requests); return { id: `msgbatch_new${submitted.length}` } },
+      async retrieve() { return { processing_status: 'ended' } },
+      async results() { return (async function* () { for (const r of results) yield r })() },
+    })
+    const rowsF = [FX.competitor(71, { countries: ['DE'] }), FX.competitor(72, { countries: ['DE'] })]
+    const inFlight = { id: 'msgbatch_01Jb6Zv1SGfDfDEsQPh49oqp', submittedAt: '2026-10-30T08:33:01Z', estimateUsd: 0.09,
+      items: rowsF.map(r => ({ customId: `${r.id}_DE`, competitorId: r.id, country: 'DE', kind: 'check' })) }
+    const sub1 = []
+    const fStore = FX.memoryCheckerStore({ settings: () => ps({ batch: inFlight }), competitors: rowsF })
+    const fr = await L.runChecker({ ...deps(FX.fakeApi(() => 'ok:29'), fStore), batch: mkBatch(inFlight.items.map(i => ({ custom_id: i.customId, result: { type: 'errored', error: ERR } })), sub1) }, { mode: 'pass', trigger: 'schedule' })
+    const collect = fr.find(r => r.mode === 'pass')
+    const runRow = fStore.runs.find(r => r.mode === 'pass')
+    t('a batch whose every item errored: each recorded as failed WITH the API\'s message, none marked passed, no finding, $0 recorded', collect.checked === 0 && collect.failed.length === 2
+      && collect.failed.every(x => /invalid_request_error: Schemas contains too many parameters/.test(x.error)) && !fStore.schedule.some(([, c]) => c.pass_state) && fStore.findings.length === 0
+      && runRow.cost_usd === 0 && /invalid_request_error/.test(runRow.notes), { failed: collect.failed, run: runRow })
+    t('…the run ends with stopped_reason error and a NON-ZERO exit (like a fully failed deep run)', collect.stoppedReason === 'error' && runRow.stopped_reason === 'error' && L.exitCodeOf(fr) === 1)
+    const fStore2 = FX.memoryCheckerStore({ settings: () => ps({ batch: inFlight }), competitors: rowsF })
+    const subs = []
+    await L.runChecker({ ...deps(FX.fakeApi(() => 'ok:29'), fStore2), batch: mkBatch(inFlight.items.map(i => ({ custom_id: i.customId, result: { type: 'errored', error: ERR } })), subs) }, { mode: 'pass', trigger: 'schedule' })
+    t('…and the errored items stay pending, so the next share sends them again (both resubmitted in the same run, with the fixed schema)',
+      subs.length === 1 && JSON.stringify(subs[0].map(r => r.custom_id).sort()) === JSON.stringify(['c-071_DE', 'c-072_DE']) && fStore2.passBatches.includes(null) && fStore2.passBatches[fStore2.passBatches.length - 1].id === 'msgbatch_new1'
+      && subs[0].every(r => unions(r.params.tools.find(tl => tl.name === 'record_findings').input_schema) <= 12), { subs: subs.map(x => x.map(r => r.custom_id)), batches: fStore2.passBatches.map(b => b && b.id) })
+    // Mixed: one succeeded, one errored → the good one is done, the other pending, the run is not an error.
+    const good = await FX.fakeApi(() => 'ok:29')({ model: 'claude-haiku-5-5', messages: [{ role: 'user', content: 'QUICK PASS — DE ONLY.\n\nCompetitor: Testtruck Ordering 071.\n\nPages to read (start here):\n- https://tt71.example/preise' }], tools: [{ name: 'record_findings' }] })
+    const mStore = FX.memoryCheckerStore({ settings: () => ps({ batch: inFlight }), competitors: rowsF.map(r => ({ ...r })) })
+    const mr = await L.runChecker({ ...deps(FX.fakeApi(() => 'ok:29'), mStore), batch: mkBatch([{ custom_id: 'c-071_DE', result: { type: 'succeeded', message: good } }, { custom_id: 'c-072_DE', result: { type: 'errored', error: ERR } }], []) }, { mode: 'pass', trigger: 'schedule' })
+    const mrep = mr.find(r => r.mode === 'pass')
+    t('a batch with SOME errored items: the good item is passed, the errored one pending, the run not an error (exit 0)', mrep.checked === 1 && mrep.failed.length === 1 && mrep.stoppedReason === 'done'
+      && mStore.schedule.some(([id, c]) => id === 'c-071' && c.pass_state) && !mStore.schedule.some(([id, c]) => id === 'c-072' && c.pass_state) && L.exitCodeOf(mr) === 0, mrep)
+    // In the nightly job an all-errored batch is a red cross, but the deep and routine shares still run (only a failed login stops them).
+    const nStore = FX.memoryCheckerStore({ settings: () => FX.SETTINGS({ deepRequestedAt: '2026-10-25T10:00:00Z', deepCountry: 'DE', deepPerDay: 1, pass: { ...ps({ batch: inFlight }).pass } }), competitors: rowsF.map(r => ({ ...r })) })
+    const nr = await L.runChecker({ ...deps(FX.fakeApi(() => 'ok:29'), nStore), batch: mkBatch(inFlight.items.map(i => ({ custom_id: i.customId, result: { type: 'errored', error: ERR } })), []) }, { mode: 'scheduled', trigger: 'schedule' })
+    t('in the nightly job: the all-errored batch makes it a red cross (exit 1), yet the deep share still runs', nr.some(r => r.mode === 'pass' && r.stoppedReason === 'error') && nr.some(r => r.mode === 'deep' && r.checked === 1) && L.exitCodeOf(nr) === 1, nr.map(r => [r.mode, r.checked, r.stoppedReason]))
   }
 
   console.log(`\n${fail ? '🔴' : '✅'} competitor-check-1: ${pass} passed, ${fail} failed`)

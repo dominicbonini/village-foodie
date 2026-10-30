@@ -60,7 +60,7 @@ export const DEFAULT_PASS: PassSettings = { extractorModel: 'claude-haiku-5-5', 
 export interface BatchApi {
   create(requests: { custom_id: string; params: Row }[]): Promise<{ id: string }>
   retrieve(id: string): Promise<{ processing_status: string }>
-  results(id: string): Promise<AsyncIterable<{ custom_id: string; result: { type: string; message?: Anthropic.Beta.BetaMessage } }>>
+  results(id: string): Promise<AsyncIterable<{ custom_id: string; result: { type: string; message?: Anthropic.Beta.BetaMessage; error?: { error?: { type?: string; message?: string } } } }>>
 }
 
 /** Batch when the docs allow it and the checker has the batch API; never for a dry run (it would bill a whole batch). */
@@ -217,8 +217,11 @@ async function writeItem(deps: CheckerDeps, item: PassItem<CompetitorForCheck>, 
   await deps.store.setSchedule(item.row.id, { pass_state: next as Record<string, unknown> })
 }
 
-/** The batch's results: each item read from its result (continued one by one only if it needs another turn); an errored or
- *  expired item is left undone, so the next share takes it again. */
+/** The batch's results: each item read from its result (continued one by one only if it needs another turn); an errored,
+ *  expired or cancelled item is recorded as failed WITH THE API'S OWN MESSAGE (competitor-check-4: e.g. the schema 400 of
+ *  30 Oct) and left undone in pass_state, so the next share sends it again. The run's cost comes only from the results'
+ *  usage — an item the API rejected costs nothing. A batch whose every item failed ends the run with stopped_reason 'error'
+ *  (a non-zero exit, as a fully failed deep run). */
 async function collectBatch(deps: CheckerDeps, s: CheckSettings, b: PassBatch, byId: Map<string, CompetitorForCheck>, trigger: 'schedule' | 'manual'): Promise<RunReport> {
   const { runId, report } = await startRun(deps, trigger)
   const items = new Map(b.items.map(i => [i.customId, i]))
@@ -227,7 +230,11 @@ async function collectBatch(deps: CheckerDeps, s: CheckSettings, b: PassBatch, b
     const row = it ? byId.get(it.competitorId) : undefined
     if (!it || !row) continue
     const item = (it.kind === 'classify' ? { kind: 'classify', row, country: null, done: false } : { kind: 'check', row, country: it.country!, done: false }) as PassItem<CompetitorForCheck>
-    if (res.result.type !== 'succeeded' || !res.result.message) { report.failed.push({ name: `${row.name}${it.country ? ` · ${it.country}` : ''}`, error: `batch item ${res.result.type} — retried in the next share` }); continue }
+    if (res.result.type !== 'succeeded' || !res.result.message) {
+      const why = res.result.error?.error ? `${res.result.error.error.type ?? 'error'}: ${res.result.error.error.message ?? ''}`.trim() : res.result.type
+      report.failed.push({ name: `${row.name}${it.country ? ` · ${it.country}` : ''}`, error: `batch item ${res.result.type} (${why}) — sent again in the next share` })
+      continue
+    }
     try { await writeItem(deps, item, await processPassItem(deps, s, item, runId, res.result.message), report) }
     catch (e) {
       if (loginFailure(e)) { report.stoppedReason = 'error'; report.error = `${loginFailure(e)} — the pass stopped.`; break }

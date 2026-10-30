@@ -78,14 +78,27 @@ export interface RecordFindingsInput { findings: RawFinding[]; pages_read: strin
 
 // Strict tool schemas support `anyOf`, `enum` and `null` (the skill's "JSON Schema Limitations"), so a nullable value is an
 // anyOf of its type and null — not a type array, which that list does not name.
+// 🔴 competitor-check-4 (30 Oct 2026): the API refuses a schema with more than 16 parameters with unions (anyOf or type
+// arrays — "exponential compilation cost"); record_findings had 17 and every check failed with a 400. Now a text that does
+// not apply is the EMPTY STRING and a choice that does not apply is "none" (SENTINELS) — required, non-nullable, still strict.
+// Only amount and percent stay nullable (a number has no safe sentinel): 2 unions, against a guard of 12 in
+// scripts/competitor-check-1.cjs. fromWire* maps every sentinel back to null before anything reads it, so nothing stored
+// changes meaning.
 const nullable = (t: string) => ({ anyOf: [{ type: t }, { type: 'null' }] })
-const nullableEnum = (values: readonly string[]) => ({ anyOf: [{ type: 'string', enum: [...values] }, { type: 'null' }] })
+/** The "does not apply" value of a choice. */
+export const NONE = 'none'
+const choice = (values: readonly string[]) => ({ type: 'string', enum: [...values, NONE] })
+const text = { type: 'string' } as const
+/** The text fields whose "" means null, and the choices whose "none" means null — on the wire (competitor-check-4). */
+export const EMPTY_TEXT_FIELDS = ['plan_name', 'country_code', 'found_value', 'currency', 'feature_key', 'note', 'url', 'quote', 'quote_en', 'source_url'] as const
+export const NONE_CHOICE_FIELDS = ['period', 'vat', 'feature', 'classification'] as const
 
 /** The one client tool the extractor may call. strict: the API holds the model to this schema. */
 export const RECORD_FINDINGS_TOOL = {
   name: 'record_findings',
   description: 'Record what you found on the competitor\'s own pages. Call it exactly once, at the end, with every finding. '
-    + 'Every value must come with a verbatim quote copied from a page you fetched in this conversation, its English translation, and that page\'s URL.',
+    + 'Every value must come with a verbatim quote copied from a page you fetched in this conversation, its English translation, and that page\'s URL. '
+    + 'Every property is required: write "" for a text that does not apply and "none" for a choice that does not apply; amount and percent are null when not stated.',
   strict: true,
   input_schema: {
     type: 'object',
@@ -101,28 +114,28 @@ export const RECORD_FINDINGS_TOOL = {
             'feature_key', 'feature', 'note', 'classification', 'url', 'quote', 'quote_en', 'source_url'],
           properties: {
             field: { type: 'string', enum: [...FIELDS] },
-            plan_name: nullable('string'),
-            country_code: nullable('string'),
+            plan_name: text,
+            country_code: text,
             outcome: { type: 'string', enum: [...OUTCOMES] },
-            found_value: nullable('string'),
+            found_value: text,
             amount: nullable('number'),
-            currency: nullable('string'),
-            period: nullableEnum(['month', 'year', 'one_off']),
-            vat: nullableEnum(['incl', 'excl', 'unknown']),
+            currency: text,
+            period: choice(['month', 'year', 'one_off']),
+            vat: choice(['incl', 'excl', 'unknown']),
             percent: nullable('number'),
-            feature_key: nullable('string'),
-            feature: nullableEnum(FEATURE_ANSWERS),
-            note: nullable('string'),
-            classification: nullableEnum(CLASSIFICATIONS),
-            url: nullable('string'),
-            quote: nullable('string'),
-            quote_en: nullable('string'),
-            source_url: nullable('string'),
+            feature_key: text,
+            feature: choice(FEATURE_ANSWERS),
+            note: text,
+            classification: choice(CLASSIFICATIONS),
+            url: text,
+            quote: text,
+            quote_en: text,
+            source_url: text,
           },
         },
       },
       pages_read: { type: 'array', items: { type: 'string' } },
-      notes: nullable('string'),
+      notes: text,
     },
   },
 } as const
@@ -130,7 +143,7 @@ export const RECORD_FINDINGS_TOOL = {
 /** The verifier's one client tool. */
 export const RECORD_VERDICT_TOOL = {
   name: 'record_verdict',
-  description: 'Record whether the page states the claimed value. Call it exactly once. Quote the page verbatim.',
+  description: 'Record whether the page states the claimed value. Call it exactly once. Quote the page verbatim. Write "" for a value or quote you do not have.',
   strict: true,
   input_schema: {
     type: 'object',
@@ -138,12 +151,30 @@ export const RECORD_VERDICT_TOOL = {
     required: ['verdict', 'value', 'quote', 'quote_en'],
     properties: {
       verdict: { type: 'string', enum: ['confirmed', 'disagreed', 'not_found'] },
-      value: nullable('string'),
-      quote: nullable('string'),
-      quote_en: nullable('string'),
+      value: text,
+      quote: text,
+      quote_en: text,
     },
   },
 } as const
+
+/** competitor-check-4: one finding as it arrived, with every sentinel ("" text, "none" choice) back to null — what the rest of
+ *  the code (and every stored row) has always meant. A null that arrives (the older shape) is kept as null. */
+export function fromWireFinding(f: Record<string, unknown>): Record<string, unknown> {
+  const out = { ...f }
+  for (const k of EMPTY_TEXT_FIELDS) if (out[k] === '') out[k] = null
+  for (const k of NONE_CHOICE_FIELDS) if (out[k] === NONE) out[k] = null
+  return out
+}
+export function fromWireFindings(o: Record<string, unknown>): Record<string, unknown> {
+  return { ...o, ...(Array.isArray(o.findings) ? { findings: o.findings.map(f => (f && typeof f === 'object' && !Array.isArray(f) ? fromWireFinding(f as Record<string, unknown>) : f)) } : {}),
+    ...(o.notes === '' ? { notes: null } : {}) }
+}
+export function fromWireVerdict(o: Record<string, unknown>): Record<string, unknown> {
+  const out = { ...o }
+  for (const k of ['value', 'quote', 'quote_en']) if (out[k] === '') out[k] = null
+  return out
+}
 export interface RecordVerdictInput { verdict: 'confirmed' | 'disagreed' | 'not_found'; value: string | null; quote: string | null; quote_en: string | null }
 
 // ── validation (the API's strict mode first; this second, so a schema change can never let a bad value through) ──────
@@ -158,7 +189,8 @@ const isHttpUrl = (v: unknown) => typeof v === 'string' && v.length <= 600 && /^
 export function validateRecordFindings(input: unknown): { ok: true; value: RecordFindingsInput } | { ok: false; errors: string[] } {
   const errors: string[] = []
   if (!input || typeof input !== 'object' || Array.isArray(input)) return { ok: false, errors: ['The input must be an object.'] }
-  const o = input as Record<string, unknown>
+  // competitor-check-4: the sentinels become null first; everything below is the same check as before.
+  const o = fromWireFindings(input as Record<string, unknown>)
   const extra = Object.keys(o).filter(k => !['findings', 'pages_read', 'notes'].includes(k))
   if (extra.length) errors.push(`Unknown properties: ${extra.join(', ')}.`)
   if (!Array.isArray(o.findings)) return { ok: false, errors: [...errors, '"findings" must be an array.'] }
@@ -199,7 +231,7 @@ export function validateRecordFindings(input: unknown): { ok: true; value: Recor
 
 export function validateRecordVerdict(input: unknown): RecordVerdictInput | null {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return null
-  const o = input as Record<string, unknown>
+  const o = fromWireVerdict(input as Record<string, unknown>)   // competitor-check-4: "" back to null
   if (Object.keys(o).some(k => !['verdict', 'value', 'quote', 'quote_en'].includes(k))) return null
   if (!inList(o.verdict, ['confirmed', 'disagreed', 'not_found'])) return null
   if (!strOrNull(o.value) || !strOrNull(o.quote) || !strOrNull(o.quote_en)) return null

@@ -421,7 +421,9 @@ export async function runChecker(deps: CheckerDeps, job: { mode: Mode | 'schedul
     const queue = deepQueueOf(settings.deepQueue, await deps.store.countries(), all)
     const r = await runPass(deps, settings, all, queue, { trigger: job.trigger, limit: job.mode === 'pass' ? job.limit : null }, spentSoFar)
     reports.push(...r.reports); reserved += r.reservedUsd
-    if (job.mode === 'pass' || r.reports.some(x => x.stoppedReason === 'error')) return reports
+    // competitor-check-4: only a failed LOGIN stops the whole job here; a batch whose items all errored is a red cross (its
+    // report is 'error') but the deep and routine shares still run.
+    if (job.mode === 'pass' || r.reports.some(x => x.stoppedReason === 'error' && /login failed/.test(x.error ?? ''))) return reports
   }
   const deepDone = new Set<string>()
   // competitor-check-2: the scheduled deep share runs while a country is set (Start deep check); it works through that
